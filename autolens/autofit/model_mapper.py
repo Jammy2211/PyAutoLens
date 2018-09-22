@@ -948,8 +948,6 @@ class PriorModel(AbstractPriorModel):
         """
         new_model = PriorModel(self.cls, self.config)
 
-        print(arguments)
-
         model_arguments = {t.name: arguments[t.prior] for t in self.direct_prior_tuples}
 
         for tuple_prior_tuple in self.tuple_prior_tuples:

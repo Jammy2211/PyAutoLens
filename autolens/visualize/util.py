@@ -46,6 +46,7 @@ def get_xylabels(units):
     return xlabel, ylabel
 
 def plot_image(array, figsize, aspect, cmap, norm_scale):
+
     plt.figure(figsize=figsize)
     plt.imshow(array, aspect=aspect, cmap=cmap, norm=norm_scale)
 

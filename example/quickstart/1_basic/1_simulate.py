@@ -1,5 +1,5 @@
 from autolens.imaging import imaging_util
-from autolens.imaging import image
+from autolens.imaging import image as im
 from autolens.imaging import mask
 from autolens.lensing import ray_tracing
 from autolens.lensing import galaxy as g
@@ -13,7 +13,7 @@ import os
 # demonstrate lens modeling in example/phase/2_phase.py.
 
 # First, lets setup the PSF we are going to blur our simulated image with, using a Gaussian profile on an 11x11 grid.
-psf = image.PSF.simulate_as_gaussian(shape=(11, 11), sigma=0.75)
+psf = im.PSF.simulate_as_gaussian(shape=(11, 11), sigma=0.75)
 array_plotters.plot_psf(psf=psf)
 
 # We need to set up the grids of Cartesian coordinates we will use to perform ray-tracing. The function below
