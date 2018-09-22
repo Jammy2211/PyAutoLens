@@ -45,9 +45,10 @@ def get_xylabels(units):
 
     return xlabel, ylabel
 
-def plot_image(array, figsize, aspect, cmap, norm_scale):
+def plot_image(array, as_subplot, figsize, aspect, cmap, norm_scale):
 
-    plt.figure(figsize=figsize)
+    if not as_subplot:
+        plt.figure(figsize=figsize)
     plt.imshow(array, aspect=aspect, cmap=cmap, norm=norm_scale)
 
 def set_title_and_labels(title, xlabel, ylabel, titlesize, xlabelsize, ylabelsize):
