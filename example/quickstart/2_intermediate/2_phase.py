@@ -25,26 +25,22 @@ image = im.load_from_path(image_path=path + '/../data/2_intermediate/image.fits'
 # To fit all these different components.
 object_plotters.plot_image_data_from_image(image=image)
 
-# To model galaxies in a lensing system, we create 'GalaxyModel' (gp) objects, which as the name suggests is an object
+# To model galaxies in a lensing system, we create 'GalaxyModel' (gm) objects, which as the name suggests is an object
 # representing our model of a galaxy. The profiles we pass a GalaxyModel are variable, such that their parameters are
 # varied and optimized to find the best fit to the observed image data.
 
 # Lets model the lens galaxy with an SIE mass profile (which is what it was simulated using).
 # We'll grab from the mass_profile (mp)' module.
-lens_galaxy = gp.GalaxyModel(mass=mp.EllipticalIsothermal)
-
-# Lets model the source galaxy with an elliptical exponential light profile (again, what it was simulated using).
-# We'll grab this from the 'light_profile (lp)' module.
+lens_galaxy = gp.GalaxyModel(light=lp.EllipticalDevVaucouleurs, mass=mp.EllipticalIsothermal)
 source_galaxy = gp.GalaxyModel(light=lp.EllipticalExponential)
-
-# Finally, we need to set up a 'phase', which is where the analysis using these galaxy models is performed.
-# In this example, we have a lens plane and source plane, so we use a LensSourcePlanePhase.
-phase = ph.LensSourcePlanePhase(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy], phase_name='ph_1_basic')
-
-# When we run this phase, we pass it the image it'll fit, whih is the one we just simulated and loaded.
+phase = ph.LensSourcePlanePhase(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy], phase_name='ph_simple')
 results = phase.run(image)
+object_plotters.plot_results(results=results)
 
-# We can plot the results, e.g. the model source-galaxy image, the residuals of the fit and the chi-squareds!
+lens_galaxy = gp.GalaxyModel(dev=lp.EllipticalDevVaucouleurs, sie=mp.EllipticalIsothermal, shear=mp.ExternalShear)
+source_galaxy = gp.GalaxyModel(disk=lp.EllipticalExponential, bulge=lp.EllipticalSersic)
+phase = ph.LensSourcePlanePhase(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy], phase_name='ph_complex')
+results = phase.run(image)
 object_plotters.plot_results(results=results)
 
 # One can also print the results to see the best-fit model parameters

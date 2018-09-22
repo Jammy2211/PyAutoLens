@@ -155,12 +155,13 @@ def plot_results(results, output_path=None, output_format='show'):
         contributions = results.contributions
 
         for i in range(len(results.hyper_galaxy_images)):
+
             array_plotters.plot_contributions(
                 contributions=contributions[i],
                 xticks=results.xticks, yticks=results.yticks, units='arcsec', xyticksize=40,
                 norm='linear', norm_min=None, norm_max=None, linthresh=0.001, linscale=0.001,
                 figsize=(20, 15), aspect='auto', cmap='jet', cb_ticksize=20,
-                title='Chi Squareds', titlesize=46, xlabelsize=36, ylabelsize=36,
+                title='Contributions', titlesize=46, xlabelsize=36, ylabelsize=36,
                 output_path=output_path, output_filename='contributions', output_type=output_format)
 
         array_plotters.plot_scaled_noise_map(
