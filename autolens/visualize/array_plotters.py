@@ -40,7 +40,7 @@ def plot_psf(psf, xticks=None, yticks=None, units='pixels', xyticksize=40,
                output_path=output_path, output_filename=output_filename, output_format=output_format)
 
 def plot_model_image(model_image, xticks=None, yticks=None, units='pixels', xyticksize=40,
-                     norm='symmetric_log', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
+                     norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
                      figsize=(20, 15), aspect='auto', cmap='jet', cb_ticksize=20,
                      title='Model Image', titlesize=46, xlabelsize=36, ylabelsize=36,
                      output_path=None, output_filename='model_image', output_format='show'):

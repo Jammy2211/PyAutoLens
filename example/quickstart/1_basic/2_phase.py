@@ -1,11 +1,10 @@
 from autolens.pipeline import phase as ph
-from autolens.autofit import non_linear as nl
-from autolens.lensing import galaxy_model as gp
+from autolens.lensing import galaxy_model as gm
 from autolens.imaging import image as im
 from autolens.profiles import light_profiles as lp
 from autolens.profiles import mass_profiles as mp
 from autolens.visualize import object_plotters
-import shutil
+from autolens.visualize import array_plotters
 import os
 
 # In this example, we'll generate a phase which fits a lens + source plane system.
@@ -21,23 +20,23 @@ image = im.load_from_path(image_path=path + '/../data/1_basic/image.fits',
 
 # A quick visual inspection of the image will remind us that we didn't simulate the lens galaxy's light, thus the
 # model used in this phase needs to only represent the lens's mass and source's light.
-object_plotters.plot_image_data_from_image(image=image)
+# object_plotters.plot_image_data_from_image(image=image)
 
-# To model galaxies in a lensing system, we create 'GalaxyModel' (gp) objects, which as the name suggests is an object
+# To model galaxies in a lensing system, we create 'GalaxyModel' (gm) objects, which as the name suggests is an object
 # representing our model of a galaxy. The profiles we pass a GalaxyModel are variable, such that their parameters are
 # varied and optimized to find the best fit to the observed image data.
 
 # Lets model the lens galaxy with an SIE mass profile (which is what it was simulated using).
 # We'll grab from the mass_profile (mp)' module.
-lens_galaxy = gp.GalaxyModel(mass=mp.EllipticalIsothermal)
+lens_galaxy = gm.GalaxyModel(mass=mp.EllipticalIsothermal)
 
 # Lets model the source galaxy with an elliptical exponential light profile (again, what it was simulated using).
 # We'll grab this from the 'light_profile (lp)' module.
-source_galaxy = gp.GalaxyModel(light=lp.EllipticalExponential)
+source_galaxy = gm.GalaxyModel(light=lp.EllipticalExponential)
 
 # Finally, we need to set up a 'phase', which is where the analysis using these galaxy models is performed.
 # In this example, we have a lens plane and source plane, so we use a LensSourcePlanePhase.
-phase = ph.LensSourcePlanePhase(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy], phase_name='ph_1_basic')
+phase = ph.LensSourcePlanePhase(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy], phase_name='ph_basic')
 
 # When we run this phase, we pass it the image it'll fit, whih is the one we just simulated and loaded.
 results = phase.run(image)
