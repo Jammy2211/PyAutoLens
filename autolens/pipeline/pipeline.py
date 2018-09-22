@@ -1,4 +1,3 @@
-from autolens import conf
 import logging
 
 logger = logging.getLogger(__name__)
@@ -65,7 +64,3 @@ class PipelinePositions(Pipeline):
             logger.info("Running Phase {} (Number {})".format(phase.phase_name, i))
             results.append(phase.run(positions, pixel_scale, ph.ResultsCollection(results)))
         return results
-
-
-def setup_pipeline_path(pipeline_name):
-    conf.instance.output_path = "{}/".format(conf.instance.output_path) + pipeline_name + '/'

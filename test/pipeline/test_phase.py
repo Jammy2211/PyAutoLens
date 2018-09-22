@@ -311,7 +311,7 @@ class TestPhase(object):
 # class TestPixelizedPhase(object):
 #     def test_constructor(self):
 #         phase = ph.PixelizedSourceLensAndPhase()
-#         assert isinstance(phase.source_galaxies, gp.GalaxyModel)
+#         assert isinstance(phase.source_galaxies, gm.GalaxyModel)
 #         assert phase.lens_galaxies is None
 
 
