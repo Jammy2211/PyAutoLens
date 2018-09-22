@@ -6,7 +6,51 @@ import scipy.signal
 from autolens import exc
 
 
-class PreparatoryImage(ScaledArray):
+class Image(ScaledArray):
+
+    def __init__(self, array, pixel_scale, psf, noise_map, background_noise_map=None):
+        """
+        A 2d array representing a real or simulated image.
+
+        Parameters
+        ----------
+        array : ndarray
+            An array of the image.
+        pixel_scale : float
+            The scale of each pixel in arc seconds
+        psf : PSF
+            An array describing the PSF of the image.
+        noise_map : ndarray
+            An array describing the total noise_map in each image pixel.
+        background_noise_map : ndarray
+            An array describing the background noise_map in each image pixel (used for hyper_image background noise_map
+            scaling).
+        """
+        super(Image, self).__init__(array, pixel_scale)
+        self.psf = psf
+        self.noise_map = noise_map
+        self.background_noise_map = background_noise_map
+
+    def __array_finalize__(self, obj):
+        super(Image, self).__array_finalize__(obj)
+        if isinstance(obj, Image):
+            self.psf = obj.psf
+            self.noise_map = obj.noise_map
+
+    @property
+    def signal_to_noise_map(self):
+        """The estimated signal-to-noise_map mappers of the image."""
+        signal_to_noise_map = np.divide(self, self.noise_map)
+        signal_to_noise_map[signal_to_noise_map < 0] = 0
+        return signal_to_noise_map
+
+    @property
+    def signal_to_noise_max(self):
+        """The maximum value of signal-to-noise_map in an image pixel in the image's signal-to-noise_map mappers"""
+        return np.max(self.signal_to_noise_map)
+
+
+class PreparatoryImage(Image):
 
     def __init__(self, array, pixel_scale, psf, noise_map=None, background_noise_map=None, poisson_noise_map=None,
                  exposure_time=None, effective_exposure_map=None):
@@ -35,10 +79,7 @@ class PreparatoryImage(ScaledArray):
         effective_exposure_map : ndarray
             An array representing the effective exposure time of each pixel.
         """
-        super(PreparatoryImage, self).__init__(array, pixel_scale)
-        self.psf = psf
-        self.noise_map = noise_map
-        self.background_noise_map = background_noise_map
+        super(PreparatoryImage, self).__init__(array, pixel_scale, psf, noise_map, background_noise_map)
         self.poisson_noise_map = poisson_noise_map
         self.exposure_time = exposure_time
         self.effective_exposure_map = effective_exposure_map
@@ -234,18 +275,6 @@ class PreparatoryImage(ScaledArray):
         """
         return self.counts_to_electrons_per_second(self.estimated_noise_map_counts)
 
-    @property
-    def signal_to_noise_map(self):
-        """The estimated signal-to-noise_map mappers of the image."""
-        signal_to_noise_map = np.divide(self, self.noise_map)
-        signal_to_noise_map[signal_to_noise_map < 0] = 0
-        return signal_to_noise_map
-
-    @property
-    def signal_to_noise_max(self):
-        """The maximum value of signal-to-noise_map in an image pixel in the image's signal-to-noise_map mappers"""
-        return np.max(self.signal_to_noise_map)
-
     def background_noise_from_edges(self, no_edges):
         """Estimate the background signal_to_noise_ratio by binning data_to_image located at the edge(s) of an image
         into a histogram and fitting a Gaussian profiles to this histogram. The standard deviation (sigma) of this
@@ -269,38 +298,6 @@ class PreparatoryImage(ScaledArray):
             edges = np.concatenate((edges, top_edge, bottom_edge, right_edge, left_edge))
 
         return norm.fit(edges)[1]
-
-
-class Image(ScaledArray):
-
-    def __init__(self, array, pixel_scale, psf, noise_map, background_noise_map=None):
-        """
-        A 2d array representing a real or simulated image.
-
-        Parameters
-        ----------
-        array : ndarray
-            An array of the image.
-        pixel_scale : float
-            The scale of each pixel in arc seconds
-        psf : PSF
-            An array describing the PSF of the image.
-        noise_map : ndarray
-            An array describing the total noise_map in each image pixel.
-        background_noise_map : ndarray
-            An array describing the background noise_map in each image pixel (used for hyper_image background noise_map
-            scaling).
-        """
-        super(Image, self).__init__(array, pixel_scale)
-        self.psf = psf
-        self.noise_map = noise_map
-        self.background_noise_map = background_noise_map
-
-    def __array_finalize__(self, obj):
-        super(Image, self).__array_finalize__(obj)
-        if isinstance(obj, Image):
-            self.psf = obj.psf
-            self.noise_map = obj.noise_map
 
 
 class PSF(Array):

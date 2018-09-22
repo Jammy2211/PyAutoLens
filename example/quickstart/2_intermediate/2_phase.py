@@ -23,7 +23,7 @@ image = im.load_from_path(image_path=path + '/../data/2_intermediate/image.fits'
 
 # In this example, we simulated the lens galaxy's light as well as the source - this means we need a more complex model
 # To fit all these different components.
-object_plotters.plot_image_data_from_image(image=image)
+object_plotters.plot_image(image=image)
 
 # To model galaxies in a lensing system, we create 'GalaxyModel' (gm) objects, which as the name suggests is an object
 # representing our model of a galaxy. The profiles we pass a GalaxyModel are variable, such that their parameters are
