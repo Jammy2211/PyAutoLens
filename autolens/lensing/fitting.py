@@ -63,6 +63,7 @@ class AbstractFitter(object):
     def yticks(self):
         return self.lensing_image.image.yticks
 
+
 class AbstractHyperFitter(object):
 
     def __init__(self, lensing_image, hyper_model_image=None, hyper_galaxy_images=None,

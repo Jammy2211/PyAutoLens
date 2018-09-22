@@ -780,18 +780,20 @@ class TestPSF(object):
             assert psf == pytest.approx(psf_data, 1e-3)
 
         def test__input_is_above_normalization_so_is_normalized(self):
-            psf_data = np.ones((3, 3)) / 9.0
+
+            psf_data = np.ones((3, 3))
 
             psf = image.PSF(array=psf_data, renormalize=True)
 
             assert psf == pytest.approx(np.ones((3, 3)) / 9.0, 1e-3)
 
-        def test__input_is_below_normalization_so_is_normalized(self):
-            psf_data = np.ones((3, 3)) / 90.0
+        def test__same_as_above__renomalized_false_does_not_renormalize(self):
 
-            psf = image.PSF(array=psf_data, renormalize=True)
+            psf_data = np.ones((3, 3))
 
-            assert psf == pytest.approx(np.ones((3, 3)) / 90.0, 1e-3)
+            psf = image.PSF(array=psf_data, renormalize=False)
+
+            assert psf == pytest.approx(np.ones((3, 3)), 1e-3)
 
 
     class TestConvolve(object):
@@ -941,11 +943,16 @@ class TestPSF(object):
 
             from autolens.profiles import light_profiles as lp
 
-            grid = imaging_util.image_grid_1d_masked_from_mask_and_pixel_scale(mask=np.full((3, 3), False), pixel_scale=1.0)
+            grid = imaging_util.image_grid_1d_masked_from_mask_and_pixel_scale(mask=np.full((3, 3), False),
+                                                                               pixel_scale=1.0)
+
             gaussian = lp.EllipticalGaussian(centre=(0.1, 0.1), axis_ratio=0.9, phi=45.0, intensity=1.0, sigma=1.0)
-            profile_gaussian = gaussian.intensities_from_grid(grid)
-            profile_psf = image.PSF(array=profile_gaussian, renormalize=True)
+            profile_gaussian_1d = gaussian.intensities_from_grid(grid)
+            profile_gaussian_2d = imaging_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(
+                array_1d=profile_gaussian_1d, shape=(3,3))
+            profile_psf = image.PSF(array=profile_gaussian_2d, renormalize=True)
 
-            imaging_psf = image.PSF.simulate_as_gaussian(shape=(3,3), centre=(0.1, 0.1), axis_ratio=0.9, phi=45.0, sigma=1.0)
+            imaging_psf = image.PSF.simulate_as_gaussian(shape=(3,3), centre=(0.1, 0.1), axis_ratio=0.9, phi=45.0,
+                                                         sigma=1.0)
 
-            assert profile_psf[0] == pytest.approx(imaging_psf[0,0], 1e-4)
+            assert profile_psf == pytest.approx(imaging_psf, 1e-4)

@@ -96,8 +96,6 @@ class PreparatoryImage(ScaledArray):
 
         if add_noise is True:
             array += generate_poisson_noise(array, effective_exposure_map, seed)
-
-        if add_noise is True:
             array_counts = np.multiply(array, effective_exposure_map)
             noise_map = np.divide(np.sqrt(array_counts), effective_exposure_map)
         else:
@@ -239,7 +237,9 @@ class PreparatoryImage(ScaledArray):
     @property
     def signal_to_noise_map(self):
         """The estimated signal-to-noise_map mappers of the image."""
-        return np.divide(self, self.noise_map)
+        signal_to_noise_map = np.divide(self, self.noise_map)
+        signal_to_noise_map[signal_to_noise_map < 0] = 0
+        return signal_to_noise_map
 
     @property
     def signal_to_noise_max(self):
@@ -306,7 +306,7 @@ class Image(ScaledArray):
 class PSF(Array):
 
     # noinspection PyUnusedLocal
-    def __init__(self, array, renormalize=True):
+    def __init__(self, array, renormalize=False):
         """
         Class storing a 2D Point Spread Function (PSF), including its blurring kernel.
 
@@ -371,7 +371,7 @@ class PSF(Array):
 
     def renormalize(self):
         """Renormalize the PSF such that its data_vector values sum to unity."""
-        return np.divide(self, np.sum(self))
+        self[:,:] = np.divide(self, np.sum(self))
 
     def convolve(self, array):
         """
