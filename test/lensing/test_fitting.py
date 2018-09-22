@@ -405,7 +405,7 @@ def make_li_no_blur():
                    [0.0, 0.0, 0.0, 0.0]])
     psf = image.PSF(array=(np.array([[0.0, 0.0, 0.0],
                                      [0.0, 1.0, 0.0],
-                                     [0.0, 0.0, 0.0]])))
+                                     [0.0, 0.0, 0.0]])), renormalize=False)
     im = image.Image(im, pixel_scale=1.0, psf=psf, noise_map=np.ones((4, 4)))
 
     ma = np.array([[True, True, True, True],
@@ -424,7 +424,7 @@ def make_li_blur():
                    [0.0, 0.0, 0.0, 0.0]])
     psf = image.PSF(array=(np.array([[1.0, 1.0, 1.0],
                                      [1.0, 1.0, 1.0],
-                                     [1.0, 1.0, 1.0]])))
+                                     [1.0, 1.0, 1.0]])), renormalize=False)
     im = image.Image(im, pixel_scale=1.0, psf=psf, noise_map=np.ones((4, 4)))
 
     ma = np.array([[True, True, True, True],
@@ -439,7 +439,7 @@ def make_li_blur():
 def make_li_no_blur_1x1():
     psf = image.PSF(array=(np.array([[0.0, 0.0, 0.0],
                                      [0.0, 1.0, 0.0],
-                                     [0.0, 0.0, 0.0]])))
+                                     [0.0, 0.0, 0.0]])), renormalize=False)
 
     im = image.Image(np.ones((3, 3)), pixel_scale=1.0, psf=psf, noise_map=np.ones((3, 3)))
 

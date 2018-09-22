@@ -1,6 +1,3 @@
-import getdist
-import getdist.plots
-
 from autolens import exc
 import math
 import os
@@ -11,6 +8,7 @@ from autolens.imaging import hyper_image
 from autolens import conf
 from autolens.autofit import model_mapper as mm
 import logging
+import matplotlib.pyplot as plt
 
 logging.basicConfig()
 logger = logging.getLogger(__name__)
@@ -230,8 +228,8 @@ class DownhillSimplex(NonLinearOptimizer):
 
 class MultiNest(NonLinearOptimizer):
 
-    def __init__(self, include_hyper_image=False, model_mapper=None,
-                 sigma_limit=3, run=pymultinest.run, name=None, label_config=None):
+    def __init__(self, include_hyper_image=False, model_mapper=None, sigma_limit=3, run=pymultinest.run, name=None,
+                 label_config=None):
         """Class to setup and run a MultiNest lensing and output the MultiNest nlo.
 
         This interfaces with an input model_mapper, which is used for setting up the individual model instances that \
@@ -277,6 +275,7 @@ class MultiNest(NonLinearOptimizer):
 
     @property
     def pdf(self):
+        import getdist
         return getdist.mcsamples.loadMCSamples(self.chains_path + '/mn')
 
     def fit(self, analysis):
@@ -505,17 +504,21 @@ class MultiNest(NonLinearOptimizer):
 
     def output_pdf_plots(self):
 
+        import getdist.plots
         pdf_plot = getdist.plots.GetDistPlotter()
 
         for param_name in self.param_names:
             pdf_plot.plot_1d(roots=self.pdf, param=param_name)
             pdf_plot.export(fname=self.path + '/pdfs/' + param_name + '_1D.png')
+            plt.close()
 
         try:
             pdf_plot.triangle_plot(roots=self.pdf)
             pdf_plot.export(fname=self.path + '/pdfs/Triangle.png')
         except np.linalg.LinAlgError:
             pass
+
+        plt.close()
 
     def output_results(self, during_analysis=False):
 
