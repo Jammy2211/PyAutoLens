@@ -331,7 +331,7 @@ class TestSphericalProfile(object):
 # class TestTransform(object):
 #
 #     def test_symmetry(self):
-#         p = gp.EllipticalProfile((3, 5), 2, 2)
+#         p = gm.EllipticalProfile((3, 5), 2, 2)
 #         assert (p.transform_grid_from_reference_frame(p.transform_grid_to_reference_frame((5, 7))) == (5, 7)).all()
 
 

@@ -1,17 +1,18 @@
-from autolens.lensing import galaxy_model as gp, lensing_image as mi
+from autolens.lensing import galaxy_model as gm
+from autolens.lensing import lensing_image as li
 from autolens.lensing import galaxy as g
 from autolens.lensing import ray_tracing
 from autolens.imaging import mask as msk
-from autolens.imaging import image as img
+from autolens.imaging import image as im
 from autolens.lensing import fitting
 from autolens.autofit import non_linear
 from autolens.visualize import object_plotters
+from autolens.visualize import array_plotters
 from autolens import exc
 from autolens import conf
 from astropy import cosmology as cosmo
 import numpy as np
 import logging
-import matplotlib.pyplot as plt
 import os
 
 from autolens.pipeline.phase_property import PhasePropertyList
@@ -396,7 +397,7 @@ class PhaseImaging(Phase):
         """
         mask = self.mask_function(image)
         image = self.modify_image(image, previous_results)
-        lensing_image = mi.LensingImage(image, mask, sub_grid_size=self.sub_grid_size,
+        lensing_image = li.LensingImage(image, mask, sub_grid_size=self.sub_grid_size,
                                         image_psf_shape=self.image_psf_shape, positions=self.positions)
         self.pass_priors(previous_results)
         analysis = self.__class__.Analysis(lensing_image=lensing_image, phase_name=self.phase_name,
@@ -588,9 +589,12 @@ class LensPlanePhase(PhaseImaging):
             """
             super(LensPlanePhase.Result, self).__init__(constant, likelihood, variable, analysis)
             tracer = analysis.unmasked_tracer_for_instance(constant)
-            self.model_image = analysis.unmasked_model_image_for_tracer(tracer)
-            self.lens_galaxy_model_images = analysis.unmasked_model_images_of_galaxies_for_tracer(tracer)
-            self.lens_subtracted_image = analysis.lensing_image.image - self.model_image
+            self.unmasked_model_image = analysis.unmasked_model_image_for_tracer(tracer)
+            self.lens_galaxy_unmasked_model_images = analysis.unmasked_model_images_of_galaxies_for_tracer(tracer)
+            self.lens_subtracted_unmasked_image = analysis.lensing_image.image - self.unmasked_model_image
+            if analysis.visualize_results:
+                array_plotters.plot_model_image(self.unmasked_model_image, output_filename='unmasked_model_image',
+                                            output_path=analysis.output_image_path, output_format='png')
 
 
 class LensPlaneHyperPhase(LensPlanePhase):
@@ -607,13 +611,14 @@ class LensPlaneHyperPhase(LensPlanePhase):
                                                   sub_grid_size=sub_grid_size, mask_function=mask_function,
                                                   phase_name=phase_name)
 
+
     class Analysis(LensPlanePhase.Analysis):
 
         def __init__(self, lensing_image, phase_name, previous_results=None):
             super(LensPlanePhase.Analysis, self).__init__(lensing_image, phase_name, previous_results)
-            self.hyper_model_image = self.map_to_1d(previous_results.last.model_image)
+            self.hyper_model_image = self.map_to_1d(previous_results.last.unmasked_model_image)
             self.hyper_galaxy_images = list(map(lambda galaxy_image: self.map_to_1d(galaxy_image),
-                                                previous_results.last.lens_galaxy_model_images))
+                                                previous_results.last.lens_galaxy_unmasked_model_images))
             self.hyper_minimum_values = len(self.hyper_galaxy_images) * [0.0]
 
         def fit(self, instance):
@@ -644,13 +649,14 @@ class LensPlaneHyperPhase(LensPlanePhase):
             logger.debug(
                 "\nRunning lens lensing for... \n\nHyper Lens Galaxy::\n{}\n\n".format(instance.lens_galaxies))
 
+
     class Result(PhaseImaging.Result):
 
         def __init__(self, constant, likelihood, variable, analysis):
             """
             The result of a phase
             """
-            super(PhaseImaging.Result, self).__init__(constant, likelihood, variable, analysis)
+            super(LensPlaneHyperPhase.Result, self).__init__(constant, likelihood, variable, analysis)
 
 
 class LensLightHyperOnlyPhase(LensPlaneHyperPhase, HyperOnly):
@@ -677,7 +683,7 @@ class LensLightHyperOnlyPhase(LensPlaneHyperPhase, HyperOnly):
                 use_hyper_galaxy[self.hyper_index] = g.HyperGalaxy
 
                 self.lens_galaxies = list(map(lambda lens_galaxy, use_hyper:
-                                              gp.GalaxyModel.from_galaxy(lens_galaxy, hyper_galaxy=use_hyper),
+                                              gm.GalaxyModel.from_galaxy(lens_galaxy, hyper_galaxy=use_hyper),
                                               previous_results.last.constant.lens_galaxies, use_hyper_galaxy))
 
         hyper_result = previous_results[-1]
@@ -714,7 +720,7 @@ class LensLightHyperOnlyPhase(LensPlaneHyperPhase, HyperOnly):
         """
         mask = self.mask_function(image)
         image = self.modify_image(image, previous_results)
-        lensing_image = mi.LensingImage(image, mask, sub_grid_size=self.sub_grid_size)
+        lensing_image = li.LensingImage(image, mask, sub_grid_size=self.sub_grid_size)
         self.pass_priors(previous_results)
         analysis = self.__class__.Analysis(lensing_image=lensing_image, phase_name=self.phase_name,
                                            previous_results=previous_results, hyper_index=self.hyper_index)
@@ -723,11 +729,12 @@ class LensLightHyperOnlyPhase(LensPlaneHyperPhase, HyperOnly):
     class Analysis(LensPlaneHyperPhase.Analysis):
 
         def __init__(self, lensing_image, phase_name, previous_results=None, hyper_index=None):
+
             super(LensPlaneHyperPhase.Analysis, self).__init__(lensing_image, phase_name, previous_results)
 
-            self.hyper_model_image = self.map_to_1d(previous_results.last.model_image)
+            self.hyper_model_image = self.map_to_1d(previous_results.last.unmasked_model_image)
             self.hyper_galaxy_images = list(map(lambda galaxy_image: self.map_to_1d(galaxy_image),
-                                                previous_results.last.lens_galaxy_model_images))
+                                                previous_results.last.lens_galaxy_unmasked_model_images))
             self.hyper_galaxy_images = [self.hyper_galaxy_images[hyper_index]]
             self.hyper_minimum_values = len(self.hyper_galaxy_images) * [0.0]
 
@@ -748,9 +755,9 @@ class LensSourcePlanePhase(PhaseImaging):
 
         Parameters
         ----------
-        lens_galaxies : [g.Galaxy] | [gp.GalaxyModel]
+        lens_galaxies : [g.Galaxy] | [gm.GalaxyModel]
             A galaxy that acts as a gravitational lens
-        source_galaxies: [g.Galaxy] | [gp.GalaxyModel]
+        source_galaxies: [g.Galaxy] | [gm.GalaxyModel]
             A galaxy that is being lensed
         optimizer_class: class
             The class of a non-linear optimizer
@@ -803,7 +810,9 @@ class LensSourcePlanePhase(PhaseImaging):
 
         def unmasked_tracer_for_instance(self, instance):
             unmasked_grids = self.lensing_image.unmasked_grids
-            return ray_tracing.TracerImagePlane(lens_galaxies=instance.lens_galaxies, image_plane_grids=unmasked_grids)
+            return ray_tracing.TracerImageSourcePlanes(lens_galaxies=instance.lens_galaxies,
+                                                       source_galaxies=instance.source_galaxies,
+                                                       image_plane_grids=unmasked_grids)
 
         def unmasked_model_image_for_tracer(self, tracer):
             return fitting.unmasked_model_image_from_tracer_and_lensing_image(tracer=tracer,
@@ -830,11 +839,13 @@ class LensSourcePlanePhase(PhaseImaging):
 
             super(LensSourcePlanePhase.Result, self).__init__(constant, likelihood, variable, analysis)
 
-            # TODO : Need to split lens and source galaxy m odel images somehow
+            # TODO : Need to split lens and source galaxy model images somehow
 
             tracer = analysis.unmasked_tracer_for_instance(constant)
-            self.model_image = analysis.unmasked_model_image_for_tracer(tracer)
-            self.source_galaxy_model_images = analysis.unmasked_model_images_of_galaxies_for_tracer(tracer)
+            self.unmasked_model_image = analysis.unmasked_model_image_for_tracer(tracer)
+            self.source_galaxy_unmasked_model_images = analysis.unmasked_model_images_of_galaxies_for_tracer(tracer)
+            array_plotters.plot_model_image(self.unmasked_model_image, output_filename='unmasked_model_image',
+                                            output_path=analysis.output_image_path, output_format='png')
 
 
 class LensSourcePlaneHyperPhase(LensSourcePlanePhase):
@@ -853,9 +864,9 @@ class LensSourcePlaneHyperPhase(LensSourcePlanePhase):
 
         Parameters
         ----------
-        lens_galaxies : [g.Galaxy] | [gp.GalaxyModel]
+        lens_galaxies : [g.Galaxy] | [gm.GalaxyModel]
             A galaxy that acts as a gravitational lens
-        source_galaxies: [g.Galaxy] | [gp.GalaxyModel]
+        source_galaxies: [g.Galaxy] | [gm.GalaxyModel]
             A galaxy that is being lensed
         optimizer_class: class
             The class of a non-linear optimizer
@@ -945,7 +956,7 @@ class LensMassAndSourceProfileHyperOnlyPhase(LensSourcePlaneHyperPhase, HyperOnl
                 self.lens_galaxies = previous_results[-1].variable.lens_galaxies
                 self.lens_galaxies[0].sie = previous_results[0].constant.lens_galaxies[0].sie
                 self.source_galaxies = list(map(lambda source_galaxy, use_hyper:
-                                                gp.GalaxyModel.from_galaxy(source_galaxy, hyper_galaxy=use_hyper),
+                                                gm.GalaxyModel.from_galaxy(source_galaxy, hyper_galaxy=use_hyper),
                                                 previous_results.last.constant.source_galaxies, use_hyper_galaxy))
 
         overall_result = previous_results[-1]
@@ -981,7 +992,7 @@ class LensMassAndSourceProfileHyperOnlyPhase(LensSourcePlaneHyperPhase, HyperOnl
         """
         mask = self.mask_function(image)
         image = self.modify_image(image, previous_results)
-        lensing_image = mi.LensingImage(image, mask, sub_grid_size=self.sub_grid_size)
+        lensing_image = li.LensingImage(image, mask, sub_grid_size=self.sub_grid_size)
         self.pass_priors(previous_results)
         analysis = self.__class__.Analysis(lensing_image=lensing_image, phase_name=self.phase_name,
                                            previous_results=previous_results, hyper_index=self.hyper_index)
@@ -1016,9 +1027,9 @@ class LensMassAndSourcePixelizationPhase(PhaseImaging):
 
         Parameters
         ----------
-        lens_galaxies : [g.Galaxy] | [gp.GalaxyModel]
+        lens_galaxies : [g.Galaxy] | [gm.GalaxyModel]
             A galaxy that acts as a gravitational lens
-        source_galaxies: [g.Galaxy] | [gp.GalaxyModel]
+        source_galaxies: [g.Galaxy] | [gm.GalaxyModel]
             A galaxy that is being lensed
         optimizer_class: class
             The class of a non-linear optimizer

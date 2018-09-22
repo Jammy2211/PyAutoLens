@@ -15,14 +15,14 @@ dirpath = os.path.dirname(os.path.realpath(__file__))
 dirpath = os.path.dirname(dirpath)
 output_path = '/gpfs/data/pdtw24/Lens/int/lens_profile/'
 
-def test_lens_x1_gal_pipeline():
+def pipeline():
 
     pipeline_name = "l1g"
     data_name = '/l1g'
 
     tools.reset_paths(data_name, pipeline_name, output_path)
 
-    sersic = lp.EllipticalSersic(centre=(0.01, 0.01), axis_ratio=0.8, phi=90.0, intensity=1.0, effective_radius=1.3,
+    sersic = lp.EllipticalSersic(centre=(0.0, 0.0), axis_ratio=0.8, phi=90.0, intensity=1.0, effective_radius=1.3,
                                  sersic_index=3.0)
 
     lens_galaxy = galaxy.Galaxy(light_profile=sersic)
@@ -31,22 +31,15 @@ def test_lens_x1_gal_pipeline():
                                      source_galaxies=[], target_signal_to_noise=30.0)
     image = tools.load_image(data_name=data_name, pixel_scale=0.1)
 
-    pipeline = make_lens_x1_gal_pipeline(pipeline_name=pipeline_name)
+    pipeline = make_pipeline(pipeline_name=pipeline_name)
 
     results = pipeline.run(image=image)
     for result in results:
         print(result)
 
-def make_lens_x1_gal_pipeline(pipeline_name):
-    # 1) Lens Light : EllipticalSersic
-    #    Mass: None
-    #    Source: None
-    #    Hyper Galaxy: None
-    #    NLO: MultiNest
-    #    Image : Observed Image
-    #    Mask : Circle - 3.0"
-
-    phase1 = ph.LensPlanePhase(lens_galaxies=[gp.GalaxyModel(elliptical_sersic=lp.EllipticalSersic)],
+def make_pipeline(pipeline_name):
+    
+    phase1 = ph.LensPlanePhase(lens_galaxies=[gp.GalaxyModel(sersic=lp.EllipticalSersic)],
                                optimizer_class=nl.MultiNest, phase_name="{}/phase1".format(pipeline_name))
 
     phase1.optimizer.n_live_points = 40
@@ -55,4 +48,4 @@ def make_lens_x1_gal_pipeline(pipeline_name):
     return pl.PipelineImaging(pipeline_name, phase1)
 
 if __name__ == "__main__":
-    test_lens_x1_gal_pipeline()
+    pipeline()
