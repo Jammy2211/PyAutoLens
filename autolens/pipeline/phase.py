@@ -146,7 +146,12 @@ class Phase(object):
             self.__should_visualise = IntervalCounter(visualise_interval)
             self.position_threshold = conf.instance.general.get('positions', 'position_threshold', float)
             self.plot_count = 0
-            self.visualize_results = conf.instance.general.get('output', 'visualize_results', bool)
+            self.visualize_hyper_arrays = conf.instance.general.get('output', 'visualize_hyper_arrays',
+                                                                          bool)
+            self.visualize_results_subplot = conf.instance.general.get('output', 'visualize_results_subplot',
+                                                                          bool)
+            self.visualize_results_individual = conf.instance.general.get('output', 'visualize_results_individual',
+                                                                          bool)
             self.output_image_path = "{}/".format(conf.instance.output_path) + '/' + self.phase_name + '/images/'
             make_path_if_does_not_exist(path=self.output_image_path)
 
@@ -182,11 +187,10 @@ class Phase(object):
             """
             if self.should_log:
                 self.log(instance)
-            if self.visualize_results:
-                if self.should_visualise:
-                    self.plot_count += 1
-                    logger.info("Saving visualisations {}".format(self.plot_count))
-                    self.visualize(instance, suffix=None, during_analysis=True)
+            if self.should_visualise:
+                self.plot_count += 1
+                logger.info("Saving visualisations {}".format(self.plot_count))
+                self.visualize(instance, suffix=None, during_analysis=True)
             return None
 
         def visualize(self, instance, suffix, during_analysis):
@@ -373,7 +377,7 @@ class PhaseImaging(Phase):
         """
         analysis = self.make_analysis(image=image, previous_results=previous_results)
         result = self.optimizer.fit(analysis)
-        if analysis.visualize_results:
+        if analysis.visualize_hyper_arrays:
             analysis.visualize(instance=result.constant, suffix=None, during_analysis=False)
 
         return self.__class__.Result(result.constant, result.likelihood, result.variable, analysis)
@@ -429,10 +433,17 @@ class PhaseImaging(Phase):
 
             tracer, fitter = super().visualize(instance, suffix, during_analysis)
 
-            object_plotters.plot_image_data_from_image(image=self.lensing_image.image,
-                                                       output_path=self.output_image_path, output_format='png')
+            if self.visualize_results_subplot:
 
-            object_plotters.plot_results(results=fitter, output_path=self.output_image_path, output_format='png')
+                object_plotters.plot_image_as_subplot(image=self.lensing_image.image,
+                                           output_path=self.output_image_path, output_format='png')
+
+            if self.visualize_results_individual:
+
+                object_plotters.plot_image(image=self.lensing_image.image,
+                                           output_path=self.output_image_path, output_format='png')
+
+                object_plotters.plot_results(results=fitter, output_path=self.output_image_path, output_format='png')
 
             return tracer, fitter
 
@@ -592,7 +603,7 @@ class LensPlanePhase(PhaseImaging):
             self.unmasked_model_image = analysis.unmasked_model_image_for_tracer(tracer)
             self.lens_galaxy_unmasked_model_images = analysis.unmasked_model_images_of_galaxies_for_tracer(tracer)
             self.lens_subtracted_unmasked_image = analysis.lensing_image.image - self.unmasked_model_image
-            if analysis.visualize_results:
+            if analysis.visualize_hyper_arrays:
                 array_plotters.plot_model_image(self.unmasked_model_image, output_filename='unmasked_model_image',
                                             output_path=analysis.output_image_path, output_format='png')
 
