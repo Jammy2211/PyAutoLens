@@ -51,7 +51,7 @@ image_simulated = image.PreparatoryImage.simulate(array=tracer.image_plane_image
 # Now we can visualize the image, noise-map and psf. Note we're using an object plotter (rather than the array
 # plotters that we used above), which automatically plots all of the simulated image data.
 # Now we're using an image with a defined pixel scale, the x and y axis of these figures are in arc-seconds
-object_plotters.plot_image_data_from_image(image=image_simulated)
+object_plotters.plot_image(image=image_simulated)
 
 # Finally, lets output these files to.fits so that we can fit them in the phase and pipeline examples
 path = "{}".format(os.path.dirname(os.path.realpath(__file__))) # Setup path so we can output the simulated data.
