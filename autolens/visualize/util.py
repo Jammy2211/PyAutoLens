@@ -86,3 +86,12 @@ def output_array(array, output_path, output_filename, output_format):
         hdu = fits.PrimaryHDU()
         hdu.data = array
         hdu.writeto(output_path + output_filename + '.fits')
+
+def output_subplot_array(output_path, output_filename, output_format):
+
+    if output_format is 'show':
+        plt.show()
+    elif output_format is 'png':
+        plt.savefig(output_path + output_filename + '.png', bbox_inches='tight')
+    elif output_format is 'fits':
+        raise exc.VisualizeException('You cannot output a subplots with format .fits')

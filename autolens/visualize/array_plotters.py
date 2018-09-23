@@ -21,7 +21,7 @@ def plot_noise_map(noise_map, as_subplot=False,
                    xticks=None, yticks=None, units='pixels', xyticksize=40,
                    norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
                    figsize=(20, 15), aspect='auto', cmap='jet', cb_ticksize=20,
-                   title='Noise Map (electrons per second)', titlesize=46, xlabelsize=36, ylabelsize=36,
+                   title='Noise-Map (electrons per second)', titlesize=46, xlabelsize=36, ylabelsize=36,
                    output_path=None, output_filename='noise_map', output_format='show'):
 
     plot_array(array=noise_map, as_subplot=as_subplot,
@@ -49,7 +49,7 @@ def plot_signal_to_noise_map(signal_to_noise_map, as_subplot=False,
              xticks=None, yticks=None, units='pixels', xyticksize=40,
              norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
              figsize=(20, 15), aspect='auto', cmap='jet', cb_ticksize=20,
-             title='Signal To Noise Ratios', titlesize=46, xlabelsize=36, ylabelsize=36,
+             title='Signal-To-Noise Map', titlesize=46, xlabelsize=36, ylabelsize=36,
              output_path=None, output_filename='signal_to_noise_map', output_format='show'):
 
     plot_array(array=signal_to_noise_map, as_subplot=as_subplot,
@@ -91,7 +91,7 @@ def plot_chi_squareds(chi_squareds, as_subplot=False,
                       xticks=None, yticks=None, units='pixels', xyticksize=40,
                       norm='linear', norm_min=None, norm_max=None, linthresh=0.001, linscale=0.001,
                       figsize=(20, 15), aspect='auto', cmap='jet', cb_ticksize=20,
-                      title='Chi Squareds', titlesize=46, xlabelsize=36, ylabelsize=36,
+                      title='Chi-Squareds', titlesize=46, xlabelsize=36, ylabelsize=36,
                       output_path=None, output_filename='chi_squareds', output_type='show'):
 
     plot_array(array=chi_squareds, as_subplot=as_subplot,
@@ -117,7 +117,7 @@ def plot_contributions(contributions, as_subplot=False,  xticks=None, yticks=Non
 def plot_scaled_noise_map(scaled_noise_map, as_subplot=False,  xticks=None, yticks=None, units='pixels', xyticksize=40,
                           norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
                           figsize=(20, 15), aspect='auto', cmap='jet', cb_ticksize=20,
-                          title='Scaled Noise Map (electrons per second)', titlesize=46, xlabelsize=36, ylabelsize=36,
+                          title='Scaled Noise-Map (electrons per second)', titlesize=46, xlabelsize=36, ylabelsize=36,
                           output_path=None, output_filename='scaled_noise_map', output_format='show'):
 
     plot_array(array=scaled_noise_map, as_subplot=as_subplot,
@@ -130,7 +130,7 @@ def plot_scaled_noise_map(scaled_noise_map, as_subplot=False,  xticks=None, ytic
 def plot_scaled_chi_squareds(scaled_chi_squareds, as_subplot=False,  xticks=None, yticks=None, units='pixels', xyticksize=40,
                              norm='linear', norm_min=None, norm_max=None, linthresh=0.001, linscale=0.001,
                              figsize=(20, 15), aspect='auto', cmap='jet', cb_ticksize=20,
-                             title='Scaled Chi Squareds', titlesize=46, xlabelsize=36, ylabelsize=36,
+                             title='Scaled Chi-Squareds', titlesize=46, xlabelsize=36, ylabelsize=36,
                              output_path=None, output_filename='scaled_chi_squareds', output_format='show'):
 
     plot_array(array=scaled_chi_squareds, as_subplot=as_subplot,

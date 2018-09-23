@@ -16,8 +16,8 @@ import os
 # Setup the path of the analysis so we can load the example data.
 path = "{}".format(os.path.dirname(os.path.realpath(__file__)))
 
-# Load an image from the 'data/1_basic' folder.
-image = im.load_from_path(image_path=path + '/../data/2_intermediate/image.fits',
+# Load an _image from the 'data/1_basic' folder.
+image = im.load_from_path(image_path=path + '/../data/2_intermediate/_image.fits',
                           noise_path=path+'/../data/2_intermediate/noise_map.fits',
                           psf_path=path + '/../data/2_intermediate/psf.fits', pixel_scale=0.1)
 
@@ -27,7 +27,7 @@ object_plotters.plot_image(image=image)
 
 # To model galaxies in a lensing system, we create 'GalaxyModel' (gm) objects, which as the name suggests is an object
 # representing our model of a galaxy. The profiles we pass a GalaxyModel are variable, such that their parameters are
-# varied and optimized to find the best fit to the observed image data.
+# varied and optimized to find the best fit to the observed _image data.
 
 # Lets model the lens galaxy with an SIE mass profile (which is what it was simulated using).
 # We'll grab from the mass_profile (mp)' module.
@@ -35,13 +35,13 @@ lens_galaxy = gp.GalaxyModel(light=lp.EllipticalDevVaucouleurs, mass=mp.Elliptic
 source_galaxy = gp.GalaxyModel(light=lp.EllipticalExponential)
 phase = ph.LensSourcePlanePhase(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy], phase_name='ph_simple')
 results = phase.run(image)
-object_plotters.plot_results(results=results)
+object_plotters.plot_fitter_lens_plane_only(fitter=results)
 
 lens_galaxy = gp.GalaxyModel(dev=lp.EllipticalDevVaucouleurs, sie=mp.EllipticalIsothermal, shear=mp.ExternalShear)
 source_galaxy = gp.GalaxyModel(disk=lp.EllipticalExponential, bulge=lp.EllipticalSersic)
 phase = ph.LensSourcePlanePhase(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy], phase_name='ph_complex')
 results = phase.run(image)
-object_plotters.plot_results(results=results)
+object_plotters.plot_fitter_lens_plane_only(fitter=results)
 
 # One can also print the results to see the best-fit model parameters
 print(results)
