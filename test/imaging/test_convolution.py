@@ -564,7 +564,7 @@ def sim_grid_9x9():
 class TestCompareToFull2dConv:
 
     def test__compare_convolver_to_2d_convolution(self):
-        # Setup a blurred image, using the PSF to perform the convolution in 2D, then mask it to make a 1d array.
+        # Setup a blurred _image, using the PSF to perform the convolution in 2D, then mask it to make a 1d array.
 
         im = np.arange(900).reshape(30, 30)
         psf = image.PSF(array=np.arange(49).reshape(7, 7))
@@ -572,7 +572,7 @@ class TestCompareToFull2dConv:
         msk = mask.Mask.circular(shape=(30, 30), pixel_scale=1.0, radius_mask_arcsec=4.0)
         blurred_masked_im_0 = msk.map_2d_array_to_masked_1d_array(blurred_im)
 
-        # Now reproduce this image using the frame convolver_image
+        # Now reproduce this _image using the frame convolver_image
 
         blurring_mask = msk.blurring_mask_for_psf_shape(psf.shape)
         convolver = convolution.ConvolverImage(mask=msk, blurring_mask=blurring_mask, psf=psf)

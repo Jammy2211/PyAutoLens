@@ -77,7 +77,7 @@ def make_pipeline(pipeline_name):
     phase2h = ph.LensLightHyperOnlyPhase(optimizer_class=nl.MultiNest, phase_name="{}/phase2h".format(pipeline_name),
                                          mask_function=modify_mask_function)
 
-    class LensPlaneBothGalaxyPhase(ph.LensPlanePhase):
+    class LensPlaneBothGalaxyPhase(ph.LensPlaneHyperPhase):
         def pass_priors(self, previous_results):
             self.lens_galaxies[0] = previous_results[0].variable.lens_galaxies[0]
             self.lens_galaxies[1] = previous_results[1].variable.lens_galaxies[0]

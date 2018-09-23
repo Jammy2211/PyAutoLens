@@ -4,7 +4,7 @@ import numba
 
 # TODO : Unit test this properly, using a cleverly made mock data-set
 
-def inversion_from_mapper_regularization_and_data(mapper, regularization, image, noise_map, convolver):
+def inversion_from_mapper_regularization_and_data(image, noise_map, convolver, mapper, regularization):
     
     blurred_mapping_matrix = convolver.convolve_mapping_matrix(mapping_matrix=mapper.mapping_matrix)
 
