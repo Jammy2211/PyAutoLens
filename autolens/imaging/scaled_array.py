@@ -67,7 +67,7 @@ class Array(np.ndarray):
         file_path : str
             The full path of the fits file.
         hdu : int
-            The HDU number in the fits file containing the image data.
+            The HDU number in the fits file containing the _image data.
         pixel_scale: float
             The arc-second to pixel conversion factor of each pixel.
         """
@@ -76,7 +76,7 @@ class Array(np.ndarray):
 
 class ScaledArray(Array):
     """
-    Class storing the grids for 2D pixel grids (e.g. image, PSF, signal_to_noise_ratio).
+    Class storing the grids for 2D pixel grids (e.g. _image, PSF, signal_to_noise_ratio).
     """
 
     # noinspection PyUnusedLocal
@@ -85,7 +85,7 @@ class ScaledArray(Array):
         Parameters
         ----------
         array: ndarray
-            An array representing data (e.g. an image, noise-mappers, etc.)
+            An array representing data (e.g. an _image, noise-mappers, etc.)
         pixel_scale: float
             The arc-second to pixel conversion factor of each pixel.
         """
@@ -112,7 +112,7 @@ class ScaledArray(Array):
         file_path : str
             The full path of the fits file.
         hdu : int
-            The HDU number in the fits file containing the image data.
+            The HDU number in the fits file containing the _image data.
         pixel_scale: float
             The arc-second to pixel conversion factor of each pixel.
         """
@@ -124,7 +124,7 @@ class ScaledArray(Array):
         Returns
         -------
         central_pixel_coordinates:
-            The coordinates of the central pixel in the image. If a dimension of the image are odd then the \
+            The coordinates of the central pixel in the _image. If a dimension of the _image are odd then the \
             corresponding coordinate will be fractional values in the centre.
         """
         return float(self.shape[0] - 1) / 2, float(self.shape[1] - 1) / 2
@@ -140,7 +140,7 @@ class ScaledArray(Array):
     def pixel_coordinates_to_arc_second_coordinates(self, pixel_coordinates):
         """ Converts a pixel coordinate pair to an arc seconds coordinate pair.
 
-        The pixel coordinate origin is at the top left corner of the image, whilst the arc-second coordinate origin \
+        The pixel coordinate origin is at the top left corner of the _image, whilst the arc-second coordinate origin \
         is at the centre start with negative x and y values from the top-left.
 
         This means that the top-left pixel coordinates, [0, 0], will give negative arc second coordinates.
@@ -162,7 +162,7 @@ class ScaledArray(Array):
         """
         Converts an arc second coordinate pair to a pixel coordinate pair.
 
-        The pixel coordinate origin is at the top left corner of the image, whilst the arc-second coordinate origin \
+        The pixel coordinate origin is at the top left corner of the _image, whilst the arc-second coordinate origin \
         is at the centre start with negative x and y values from the top-left.
 
         This means that the top-left pixel coordinates, [0, 0], will give negative arc second coordinates.
@@ -183,7 +183,7 @@ class ScaledArray(Array):
 
     @property
     def shape_arc_seconds(self):
-        """The shape of the image in arc seconds"""
+        """The shape of the _image in arc seconds"""
         return tuple(map(lambda d: self.pixels_to_arc_seconds(d), self.shape))
 
     def flatten(self, order='C'):
@@ -196,7 +196,7 @@ class ScaledArray(Array):
         return self.new_with_array(super(ScaledArray, self).flatten(order))
 
     def sub_pixel_to_coordinate(self, sub_pixel, arcsec, sub_grid_size):
-        """Convert a sub-pixel coordinate in an image-pixel to a sub-coordinate, using the pixel scale sub_grid_size."""
+        """Convert a sub-pixel coordinate in an _image-pixel to a sub-coordinate, using the pixel scale sub_grid_size."""
 
         half = self.pixel_scale / 2
         step = self.pixel_scale / (sub_grid_size + 1)
@@ -243,10 +243,10 @@ class ScaledArray(Array):
 
     @property
     def xticks(self):
-        """Compute the xticks labels of this grid, used for plotting the x-axis ticks when visualizing an image-grid"""
+        """Compute the xticks labels of this grid, used for plotting the x-axis ticks when visualizing an _image-grid"""
         return np.around(np.linspace(-self.shape_arc_seconds[1]/2.0, self.shape_arc_seconds[1]/2.0, 4), 2)
 
     @property
     def yticks(self):
-        """Compute the yticks labels of this grid, used for plotting the y-axis ticks when visualizing an image-grid"""
+        """Compute the yticks labels of this grid, used for plotting the y-axis ticks when visualizing an _image-grid"""
         return np.around(np.linspace(-self.shape_arc_seconds[0]/2.0, self.shape_arc_seconds[0]/2.0, 4), 2)
