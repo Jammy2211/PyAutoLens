@@ -43,7 +43,7 @@ import os
 # Setup the path of the analysis so we can load the example data.
 path = "{}".format(os.path.dirname(os.path.realpath(__file__)))
 
-# Load an image from the 'phase_basic_data' folder. It is assumed that this folder contains image.fits, noise.fits and
+# Load an image from the 'phase_basic_data' folder. It is assumed that this folder contains image.fits, noise_map.fits and
 # psf.fits - we've included some example data there already.
 image = im.load(path=path + '/../data/basic/', pixel_scale=0.07)
 

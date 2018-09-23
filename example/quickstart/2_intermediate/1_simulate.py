@@ -38,7 +38,7 @@ source_galaxy = g.Galaxy(disk=lp.EllipticalExponential(centre=(0.01, 0.01), axis
 # specified as 'light' and 'mass'. Above, we've used accronyms of the profiles e.g. 'dev', 'sie', 'disk', etc.).
 # You can use whatever term you want - a Galaxy only cares about the type of profile you supply it.
 
-# Pass into the ray-tracing module and simulate the image - refer to example/simulate/1_simulate.py is unclear!
+# Pass into the ray-tracing module and simulate the _image - refer to example/simulate/1_simulate.py is unclear!
 tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
                                              image_plane_grids=imaging_grids)
 image_simulated = image.PreparatoryImage.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=0.1,
@@ -47,7 +47,7 @@ object_plotters.plot_image(image=image_simulated)
 
 # Finally, lets output these files to.fits so that we can fit them in the phase and pipeline examples
 path = "{}".format(os.path.dirname(os.path.realpath(__file__))) # Setup path so we can output the simulated data.
-imaging_util.numpy_array_to_fits(array=image_simulated, path=path+'/../data/2_intermediate/image.fits')
+imaging_util.numpy_array_to_fits(array=image_simulated, path=path+'/../data/2_intermediate/_image.fits')
 imaging_util.numpy_array_to_fits(array=image_simulated.estimated_noise_map, path=path + '/../data/2_intermediate/'
                                                                                         'noise_map.fits')
 imaging_util.numpy_array_to_fits(array=psf, path=path+'/../data/2_intermediate/psf.fits')

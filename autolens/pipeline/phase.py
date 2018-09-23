@@ -193,13 +193,6 @@ class Phase(object):
                 self.visualize(instance, suffix=None, during_analysis=True)
             return None
 
-        def visualize(self, instance, suffix, during_analysis):
-
-            tracer = self.tracer_for_instance(instance)
-            fitter = self.fitter_for_tracer(tracer)
-
-            return tracer, fitter
-
         @classmethod
         def log(cls, instance):
             raise NotImplementedError()
@@ -207,7 +200,7 @@ class Phase(object):
         def tracer_for_instance(self, instance):
             raise NotImplementedError()
 
-        def fitter_for_tracer(self, tracer):
+        def fit_for_tracer(self, tracer):
             raise NotImplementedError()
 
     class Result(non_linear.Result):
@@ -234,7 +227,7 @@ class PhasePositions(Phase):
         ----------
         previous_results: ResultsCollection
             An object describing the results of the last phase or None if no phase has been executed
-        image: img.Image
+        _image: img.Image
             An lensing_image that has been masked
 
         Returns
@@ -253,7 +246,7 @@ class PhasePositions(Phase):
 
         Parameters
         ----------
-        image: im.Image
+        _image: im.Image
             An lensing_image that has been masked
         previous_results: ResultsCollection
             The result from the previous phase
@@ -291,14 +284,14 @@ class PhasePositions(Phase):
                 A fractional value indicating how well this model fit and the model lensing_image itself
             """
             tracer = self.tracer_for_instance(instance)
-            fitter = self.fitter_for_tracer(tracer)
-            return fitter.likelihood
+            fit = self.fit_for_tracer(tracer)
+            return fit.likelihood
 
         def tracer_for_instance(self, instance):
             return ray_tracing.TracerImageSourcePlanesPositions(lens_galaxies=instance.lens_galaxies,
                                                                 positions=self.positions)
 
-        def fitter_for_tracer(self, tracer):
+        def fit_for_tracer(self, tracer):
             return fitting.PositionFitter(positions=tracer.source_plane.positions, noise=self.pixel_scale)
 
         @classmethod
@@ -423,15 +416,16 @@ class PhaseImaging(Phase):
 
                 tracer = ray_tracing.TracerImageSourcePlanesPositions(lens_galaxies=instance.lens_galaxies,
                                                                       positions=self.lensing_image.positions)
-                fitter = fitting.PositionFitter(positions=tracer.source_plane.positions,
+                fit = fitting.PositionFitter(positions=tracer.source_plane.positions,
                                                 noise=self.lensing_image.image.pixel_scale)
 
-                if not fitter.maximum_separation_within_threshold(self.position_threshold):
+                if not fit.maximum_separation_within_threshold(self.position_threshold):
                     raise exc.RayTracingException
 
         def visualize(self, instance, suffix, during_analysis):
 
-            tracer, fitter = super().visualize(instance, suffix, during_analysis)
+            tracer = self.tracer_for_instance(instance)
+            fit = fitting.fit_from_lensing_image_and_tracer(self.lensing_image, tracer)
 
             if self.visualize_results_subplot:
 
@@ -443,9 +437,7 @@ class PhaseImaging(Phase):
                 object_plotters.plot_image(image=self.lensing_image.image,
                                            output_path=self.output_image_path, output_format='png')
 
-                object_plotters.plot_results(results=fitter, output_path=self.output_image_path, output_format='png')
-
-            return tracer, fitter
+            return fit
 
         def map_to_1d(self, data):
             """Convinience method"""
@@ -460,12 +452,12 @@ class PhaseImaging(Phase):
             """
             super(PhaseImaging.Result, self).__init__(constant, likelihood, variable)
             tracer = analysis.tracer_for_instance(constant)
-            fitter = analysis.fitter_for_tracer(tracer)
-            self.model_image = fitter.model_image
-            self.residuals = fitter.residuals
-            self.chi_squareds = fitter.chi_squareds
-            self.xticks = fitter.xticks
-            self.yticks = fitter.yticks
+            unmasked_tracer = analysis.unmasked_tracer_for_instance(constant)
+
+            # TODO : This is heavy on memory, better way to handle (e.g. pickling?)
+
+            self.fit = fitting.fit_from_lensing_image_and_tracer(lensing_image=analysis.lensing_image, tracer=tracer,
+                                                                 unmasked_tracer=unmasked_tracer)
 
 
 class PositionsImagingPhase(PhaseImaging):
@@ -500,8 +492,8 @@ class PositionsImagingPhase(PhaseImaging):
                 A fractional value indicating how well this model fit and the model lensing_image itself
             """
             tracer = self.tracer_for_instance(instance)
-            fitter = self.fitter_for_tracer(tracer)
-            return fitter.likelihood
+            fit = self.fit_for_tracer(tracer)
+            return fit.likelihood
 
         def visualize(self, instance, suffix, during_analysis):
             pass
@@ -510,7 +502,7 @@ class PositionsImagingPhase(PhaseImaging):
             return ray_tracing.TracerImageSourcePlanesPositions(lens_galaxies=instance.lens_galaxies,
                                                                 positions=self.lensing_image.positions)
 
-        def fitter_for_tracer(self, tracer):
+        def fit_for_tracer(self, tracer):
             return fitting.PositionFitter(positions=tracer.source_plane.positions,
                                           noise=self.lensing_image.image.pixel_scale)
 
@@ -564,27 +556,29 @@ class LensPlanePhase(PhaseImaging):
             """
             self.try_output(instance)
             tracer = self.tracer_for_instance(instance)
-            fitter = self.fitter_for_tracer(tracer)
-            return fitter.likelihood
+            return fitting.fast_likelihood_from_lensing_image_and_tracer(self.lensing_image, tracer)
+
+        def visualize(self, instance, suffix, during_analysis):
+
+            fit = super().visualize(instance, suffix, during_analysis)
+
+            if self.visualize_results_subplot:
+
+                object_plotters.plot_fit_as_subplot_lens_plane_only(fit=fit, output_path=self.output_image_path,
+                                                                   output_format='png')
+
+            if self.visualize_results_individual:
+
+                object_plotters.plot_fit_lens_plane_only(fit=fit, output_path=self.output_image_path,
+                                                         output_format='png')
 
         def tracer_for_instance(self, instance):
-            return ray_tracing.TracerImagePlane(lens_galaxies=instance.lens_galaxies,
+            return ray_tracing.TracerImagePlane(lens_galaxies=instance.lens_galaxies, 
                                                 image_plane_grids=self.lensing_image.grids)
-
-        def fitter_for_tracer(self, tracer):
-            return fitting.ProfileFitter(lensing_image=self.lensing_image, tracer=tracer)
 
         def unmasked_tracer_for_instance(self, instance):
             unmasked_grids = self.lensing_image.unmasked_grids
             return ray_tracing.TracerImagePlane(lens_galaxies=instance.lens_galaxies, image_plane_grids=unmasked_grids)
-
-        def unmasked_model_image_for_tracer(self, tracer):
-            return fitting.unmasked_model_image_from_tracer_and_lensing_image(tracer=tracer,
-                                                                              lensing_image=self.lensing_image)
-
-        def unmasked_model_images_of_galaxies_for_tracer(self, tracer):
-            return fitting.unmasked_model_images_of_galaxies_from_tracer_and_lensing_image(tracer=tracer,
-                                                                        lensing_image=self.lensing_image)
 
         @classmethod
         def log(cls, instance):
@@ -599,13 +593,17 @@ class LensPlanePhase(PhaseImaging):
             The result of a phase
             """
             super(LensPlanePhase.Result, self).__init__(constant, likelihood, variable, analysis)
-            tracer = analysis.unmasked_tracer_for_instance(constant)
-            self.unmasked_model_image = analysis.unmasked_model_image_for_tracer(tracer)
-            self.lens_galaxy_unmasked_model_images = analysis.unmasked_model_images_of_galaxies_for_tracer(tracer)
+
+            tracer = analysis.tracer_for_instance(constant)
+            unmasked_tracer = analysis.unmasked_tracer_for_instance(constant)
+            fit = fitting.fit_from_lensing_image_and_tracer(lensing_image=analysis.lensing_image, tracer=tracer,
+                                                            unmasked_tracer=unmasked_tracer)
+            self.unmasked_model_image = fit.unmasked_model_image
+            self.lens_galaxy_unmasked_model_images = fit.unmasked_model_images_of_galaxies
             self.lens_subtracted_unmasked_image = analysis.lensing_image.image - self.unmasked_model_image
             if analysis.visualize_hyper_arrays:
                 array_plotters.plot_model_image(self.unmasked_model_image, output_filename='unmasked_model_image',
-                                            output_path=analysis.output_image_path, output_format='png')
+                                                output_path=analysis.output_image_path, output_format='png')
 
 
 class LensPlaneHyperPhase(LensPlanePhase):
@@ -648,12 +646,21 @@ class LensPlaneHyperPhase(LensPlanePhase):
             """
             self.try_output(instance)
             tracer = self.tracer_for_instance(instance)
-            fitter = self.fitter_for_tracer(tracer)
-            return fitter.likelihood
+            return fitting.fast_likelihood_from_lensing_image_and_tracer(self.lensing_image, tracer)
 
-        def fitter_for_tracer(self, tracer):
-            return fitting.HyperProfileFitter(self.lensing_image, tracer, self.hyper_model_image,
-                                              self.hyper_galaxy_images, self.hyper_minimum_values)
+        def visualize(self, instance, suffix, during_analysis):
+
+            fit = super().visualize(instance, suffix, during_analysis)
+
+            if self.visualize_results_subplot:
+
+                object_plotters.plot_fit_as_subplot_hyper_lens_plane_only(fit=fit, output_path=self.output_image_path,
+                                                                          output_format='png')
+
+            if self.visualize_results_individual:
+
+                object_plotters.plot_fit_hyper_lens_plane_only(fit=fit, output_path=self.output_image_path,
+                                                               output_format='png')
 
         @classmethod
         def log(cls, instance):
@@ -668,6 +675,8 @@ class LensPlaneHyperPhase(LensPlanePhase):
             The result of a phase
             """
             super(LensPlaneHyperPhase.Result, self).__init__(constant, likelihood, variable, analysis)
+            tracer = analysis.tracer_for_instance(constant)
+            self.fit = fitting.fast_likelihood_from_lensing_image_and_tracer(analysis.lensing_image, tracer)
 
 
 class LensLightHyperOnlyPhase(LensPlaneHyperPhase, HyperOnly):
@@ -808,31 +817,18 @@ class LensSourcePlanePhase(PhaseImaging):
             self.try_output(instance)
             self.check_positions_trace_within_threshold(instance)
             tracer = self.tracer_for_instance(instance)
-            fitter = self.fitter_for_tracer(tracer)
-            return fitter.likelihood
+            return fitting.fast_likelihood_from_lensing_image_and_tracer(self.lensing_image, tracer)
 
         def tracer_for_instance(self, instance):
             return ray_tracing.TracerImageSourcePlanes(lens_galaxies=instance.lens_galaxies,
                                                        source_galaxies=instance.source_galaxies,
                                                        image_plane_grids=self.lensing_image.grids)
 
-        def fitter_for_tracer(self, tracer):
-            return fitting.ProfileFitter(lensing_image=self.lensing_image, tracer=tracer)
-
         def unmasked_tracer_for_instance(self, instance):
             unmasked_grids = self.lensing_image.unmasked_grids
             return ray_tracing.TracerImageSourcePlanes(lens_galaxies=instance.lens_galaxies,
                                                        source_galaxies=instance.source_galaxies,
                                                        image_plane_grids=unmasked_grids)
-
-        def unmasked_model_image_for_tracer(self, tracer):
-            return fitting.unmasked_model_image_from_tracer_and_lensing_image(tracer=tracer,
-                                                                              lensing_image=self.lensing_image)
-
-        def unmasked_model_images_of_galaxies_for_tracer(self, tracer):
-            return fitting.unmasked_model_images_of_galaxies_from_tracer_and_lensing_image(tracer=tracer,
-                                                                        lensing_image=self.lensing_image)
-
 
         @classmethod
         def log(cls, instance):
@@ -850,11 +846,14 @@ class LensSourcePlanePhase(PhaseImaging):
 
             super(LensSourcePlanePhase.Result, self).__init__(constant, likelihood, variable, analysis)
 
-            # TODO : Need to split lens and source galaxy model images somehow
+            tracer = analysis.tracer_for_instance(constant)
+            unmasked_tracer = analysis.unmasked_tracer_for_instance(constant)
+            fit = fitting.fit_from_lensing_image_and_tracer(lensing_image=analysis.lensing_image, tracer=tracer,
+                                                            unmasked_tracer=unmasked_tracer)
 
-            tracer = analysis.unmasked_tracer_for_instance(constant)
-            self.unmasked_model_image = analysis.unmasked_model_image_for_tracer(tracer)
-            self.source_galaxy_unmasked_model_images = analysis.unmasked_model_images_of_galaxies_for_tracer(tracer)
+            # TODO : Need to split lens and source galaxy model images somehow
+            self.unmasked_model_image = fit.unmasked_model_image
+            self.source_galaxy_unmasked_model_images = fit.unmasked_model_images_of_galaxies_for_tracer
             array_plotters.plot_model_image(self.unmasked_model_image, output_filename='unmasked_model_image',
                                             output_path=analysis.output_image_path, output_format='png')
 
@@ -918,12 +917,12 @@ class LensSourcePlaneHyperPhase(LensSourcePlanePhase):
                 A fractional value indicating how well this model fit and the model lensing_image itself
             """
             tracer = self.tracer_for_instance(instance)
-            fitter = self.fitter_for_tracer(tracer)
-            return fitter.likelihood
+            fit = self.fit_for_tracer(tracer)
+            return fit.likelihood
 
-        def fitter_for_tracer(self, tracer):
-            return fitting.HyperProfileFitter(self.lensing_image, tracer, self.hyper_model_image,
-                                              self.hyper_galaxy_images, self.hyper_minimum_values)
+        def fit_for_tracer(self, tracer):
+            return fitting.HyperProfileFit(self.lensing_image, tracer, self.hyper_model_image,
+                                           self.hyper_galaxy_images, self.hyper_minimum_values)
 
         @classmethod
         def log(cls, instance):
@@ -1079,19 +1078,19 @@ class LensMassAndSourcePixelizationPhase(PhaseImaging):
             self.check_positions_trace_within_threshold(instance)
             self.try_output(instance)
             tracer = self.tracer_for_instance(instance)
-            fitter = self.fitter_for_tracer(tracer)
-            return fitter.evidence
+            fit = self.fit_for_tracer(tracer)
+            return fit.evidence
 
         def visualize(self, instance, suffix, during_analysis):
-            tracer, fitter = super().visualize(instance, suffix, during_analysis)
+            tracer, fit = super().visualize(instance, suffix, during_analysis)
 
         def tracer_for_instance(self, instance):
             return ray_tracing.TracerImageSourcePlanes(lens_galaxies=instance.lens_galaxies,
                                                        source_galaxies=instance.source_galaxies,
                                                        image_plane_grids=self.lensing_image.grids)
 
-        def fitter_for_tracer(self, tracer):
-            return fitting.PixelizationFitter(lensing_image=self.lensing_image, tracer=tracer)
+        def fit_for_tracer(self, tracer):
+            return fitting.InversionFit(lensing_image=self.lensing_image, tracer=tracer)
 
         @classmethod
         def log(cls, instance):

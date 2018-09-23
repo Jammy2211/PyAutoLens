@@ -60,7 +60,7 @@ class Memoizer(object):
 
 @numba.jit(nopython=True, cache=True)
 def total_image_pixels_from_mask(mask):
-    """Compute the total number of unmasked image pixels in a mask."""
+    """Compute the total number of unmasked _image pixels in a mask."""
 
     total_image_pixels = 0
 
@@ -74,7 +74,7 @@ def total_image_pixels_from_mask(mask):
 
 @numba.jit(nopython=True, cache=True)
 def total_sub_pixels_from_mask_and_sub_grid_size(mask, sub_grid_size):
-    """Compute the total number of sub-pixels in unmasked image pixels in a mask."""
+    """Compute the total number of sub-pixels in unmasked _image pixels in a mask."""
     return total_image_pixels_from_mask(mask) * sub_grid_size ** 2
 
 
@@ -97,7 +97,7 @@ def total_border_pixels_from_mask(mask):
 @numba.jit(nopython=True, cache=True)
 def image_grid_2d_from_shape_and_pixel_scale(shape, pixel_scale):
     """
-    Computes the (x,y) arc second coordinates of every pixel in an image of shape (rows, columns).
+    Computes the (x,y) arc second coordinates of every pixel in an _image of shape (rows, columns).
 
     Coordinates are defined from the top-left corner, such that the first pixel at location [0, 0] has negative x \
     and y values in arc seconds.
@@ -189,9 +189,9 @@ def grid_to_pixel_from_mask(mask):
 
 @numba.jit(nopython=True, cache=True)
 def sub_to_image_from_mask(mask, sub_grid_size):
-    """Compute a 1D array that maps every unmasked pixel's sub-pixel to its corresponding 1d image-pixel.
+    """Compute a 1D array that maps every unmasked pixel's sub-pixel to its corresponding 1d _image-pixel.
 
-    For example, if sub-pixel 8 is in image-pixel 1, sub_to_image[7] = 1."""
+    For example, if sub-pixel 8 is in _image-pixel 1, sub_to_image[7] = 1."""
 
     total_sub_pixels = total_sub_pixels_from_mask_and_sub_grid_size(mask, sub_grid_size)
 
@@ -239,7 +239,7 @@ def border_pixels_from_mask(mask):
 @numba.jit(nopython=True, cache=True)
 def border_sub_pixels_from_mask_pixel_scale_and_sub_grid_size(mask, pixel_scale, sub_grid_size):
     """Compute a 1D array listing all sub-pixel border pixel indexes in the mask. A border sub-pixel is a sub-pixel \
-    whose image pixel is not fully surrounded by False mask values and it is closest to the edge."""
+    whose _image pixel is not fully surrounded by False mask values and it is closest to the edge."""
     border_pixel_total = total_border_pixels_from_mask(mask)
     border_sub_pixels = np.zeros(border_pixel_total)
 
@@ -283,7 +283,7 @@ def border_sub_pixels_from_mask_pixel_scale_and_sub_grid_size(mask, pixel_scale,
 
 @numba.jit(nopython=True, cache=True)
 def mask_circular_from_shape_pixel_scale_and_radius(shape, pixel_scale, radius_arcsec, centre=(0.0, 0.0)):
-    """Compute a circular mask from an input mask radius and image shape."""
+    """Compute a circular mask from an input mask radius and _image shape."""
 
     mask = np.full(shape, True)
 
@@ -307,7 +307,7 @@ def mask_circular_from_shape_pixel_scale_and_radius(shape, pixel_scale, radius_a
 @numba.jit(nopython=True, cache=True)
 def mask_annular_from_shape_pixel_scale_and_radii(shape, pixel_scale, inner_radius_arcsec, outer_radius_arcsec,
                                                   centre=(0.0, 0.0)):
-    """Compute an annular mask from an input inner and outer mask radius and image shape."""
+    """Compute an annular mask from an input inner and outer mask radius and _image shape."""
 
     mask = np.full(shape, True)
 
