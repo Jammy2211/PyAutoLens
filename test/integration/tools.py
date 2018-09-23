@@ -22,10 +22,10 @@ def reset_paths(data_name, pipeline_name, output_path):
     except FileNotFoundError:
         pass
 
-    # try:
-    #     shutil.rmtree(output_path + pipeline_name)
-    # except FileNotFoundError:
-    #     pass
+    try:
+        shutil.rmtree(output_path + pipeline_name)
+    except FileNotFoundError:
+        pass
 
 
 def simulate_integration_image(data_name, pixel_scale, lens_galaxies, source_galaxies, target_signal_to_noise):
@@ -62,7 +62,7 @@ def simulate_integration_image(data_name, pixel_scale, lens_galaxies, source_gal
     if os.path.exists(output_path) == False:
         os.makedirs(output_path)
 
-    imaging_util.numpy_array_to_fits(sim_image, path=output_path + 'image.fits')
+    imaging_util.numpy_array_to_fits(sim_image, path=output_path + '_image.fits')
     imaging_util.numpy_array_to_fits(sim_image.noise_map, path=output_path + 'noise_map.fits')
     imaging_util.numpy_array_to_fits(psf, path=output_path + '/psf.fits')
     imaging_util.numpy_array_to_fits(sim_image.effective_exposure_map, path=output_path + 'exposure_map.fits')
@@ -71,7 +71,7 @@ def load_image(data_name, pixel_scale):
 
     data_dir = "{}/data/{}".format(dirpath, data_name)
 
-    data = scaled_array.ScaledArray.from_fits_with_scale(file_path=data_dir + '/image.fits', hdu=0,
+    data = scaled_array.ScaledArray.from_fits_with_scale(file_path=data_dir + '/_image.fits', hdu=0,
                                                          pixel_scale=pixel_scale)
     noise = scaled_array.ScaledArray.from_fits(file_path=data_dir + '/noise_map.fits', hdu=0)
     psf = im.PSF.from_fits(file_path=data_dir + '/psf.fits', hdu=0)

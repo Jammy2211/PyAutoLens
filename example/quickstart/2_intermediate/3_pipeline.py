@@ -23,10 +23,10 @@ def make():
                                   optimizer_class=nl.MultiNest, phase_name='ph1')
 
     # In phase 2, we fit the source galaxy's light. Thus, we want to make 2 changes from the previous phase:
-    # 1) We want to fit the lens subtracted image computed in phase 1, instead of the observed image.
-    # 2) We want to mask the central regions of this image, where there are residuals from the lens light subtraction.
+    # 1) We want to fit the lens subtracted _image computed in phase 1, instead of the observed _image.
+    # 2) We want to mask the central regions of this _image, where there are residuals from the lens light subtraction.
 
-    # Below, we use the 'modify_image' and 'mask_function' to overwrite the image and mask that are used in this phase.
+    # Below, we use the 'modify_image' and 'mask_function' to overwrite the _image and mask that are used in this phase.
     # The modify_image function has access to and uses 'previous_results' - these are the results computed in phase 1.
     class LensSubtractedPhase(phase.LensSourcePlanePhase):
 
@@ -39,7 +39,7 @@ def make():
                                  outer_radius_arcsec=3.)
 
     # We setup phase 2 just like any other phase, now using the LensSubtracted phase we created above so that our new
-    # image and masks are used.
+    # _image and masks are used.
 
     phase2 = LensSubtractedPhase(lens_galaxies=[gp.GalaxyModel(sie=mp.EllipticalIsothermal)],
                                  source_galaxies=[gp.GalaxyModel(sersic=lp.EllipticalSersic)],
@@ -66,7 +66,7 @@ def make():
 
     return pipeline.PipelineImaging(pipeline_name, phase1, phase2, phase3)
 
-# Load the image data, make the pipeline above and run it.
+# Load the _image data, make the pipeline above and run it.
 path = "{}".format(os.path.dirname(os.path.realpath(__file__)))
 image = im.load(path=path + '/../data/1_basic/', pixel_scale=0.07)
 pipeline_basic = make()
