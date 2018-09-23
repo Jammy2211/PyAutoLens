@@ -1,7 +1,7 @@
 class HyperImage(object):
 
     def __init__(self, background_sky_scale=0.0, background_noise_scale=0.0):
-        """Class for scaling the background sky and noise_map of an image.
+        """Class for scaling the background sky and noise_map of an _image.
 
         Parameters
         -----------
@@ -14,13 +14,13 @@ class HyperImage(object):
         self.background_noise_scale = background_noise_scale
 
     def sky_scaled_image_from_image(self, image):
-        """Compute a new image with the background sky level scaled. This can simply multiple by a constant factor \
-        (assuming a uniform background sky) because the image is in units electrons per second.
+        """Compute a new _image with the background sky level scaled. This can simply multiple by a constant factor \
+        (assuming a uniform background sky) because the _image is in units electrons per second.
 
         Parameters
         -----------
         image : ndarray
-            The image before scaling (electrons per second).
+            The _image before scaling (electrons per second).
         """
         return image + self.background_sky_scale
 

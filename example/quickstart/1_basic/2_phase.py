@@ -13,18 +13,18 @@ import os
 # Setup the path of the analysis so we can load the example data.
 path = "{}".format(os.path.dirname(os.path.realpath(__file__)))
 
-# Load an image from the 'data/1_basic' folder.
-image = im.load_from_path(image_path=path + '/../data/1_basic/image.fits',
+# Load an _image from the 'data/1_basic' folder.
+image = im.load_from_path(image_path=path + '/../data/1_basic/_image.fits',
                           noise_path=path+'/../data/1_basic/noise_map.fits',
                           psf_path=path + '/../data/1_basic/psf.fits', pixel_scale=0.1)
 
-# A quick visual inspection of the image will remind us that we didn't simulate the lens galaxy's light, thus the
+# A quick visual inspection of the _image will remind us that we didn't simulate the lens galaxy's light, thus the
 # model used in this phase needs to only represent the lens's mass and source's light.
-# object_plotters.plot_image_data_from_image(image=image)
+# object_plotters.plot_image_data_from_image(_image=_image)
 
 # To model galaxies in a lensing system, we create 'GalaxyModel' (gm) objects, which as the name suggests is an object
 # representing our model of a galaxy. The profiles we pass a GalaxyModel are variable, such that their parameters are
-# varied and optimized to find the best fit to the observed image data.
+# varied and optimized to find the best fit to the observed _image data.
 
 # Lets model the lens galaxy with an SIE mass profile (which is what it was simulated using).
 # We'll grab from the mass_profile (mp)' module.
@@ -38,11 +38,11 @@ source_galaxy = gm.GalaxyModel(light=lp.EllipticalExponential)
 # In this example, we have a lens plane and source plane, so we use a LensSourcePlanePhase.
 phase = ph.LensSourcePlanePhase(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy], phase_name='ph_basic')
 
-# When we run this phase, we pass it the image it'll fit, whih is the one we just simulated and loaded.
+# When we run this phase, we pass it the _image it'll fit, whih is the one we just simulated and loaded.
 results = phase.run(image)
 
-# We can plot the results, e.g. the model source-galaxy image, the residuals of the fit and the chi-squareds!
-object_plotters.plot_results(results=results)
+# We can plot the results, e.g. the model source-galaxy _image, the residuals of the fit and the chi-squareds!
+object_plotters.plot_fitter_lens_plane_only(fitter=results)
 
 # One can also print the results to see the best-fit model parameters
 print(results)
