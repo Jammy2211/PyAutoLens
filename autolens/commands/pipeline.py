@@ -88,9 +88,9 @@ class Pipeline(Base):
         Returns
         -------
         str: image_hdu
-            The hdu of the image data in the data file
+            The hdu of the _image data in the data file
         """
-        return int(self.options["--image-hdu"])
+        return int(self.options["--_image-hdu"])
 
     @property
     def noise_hdu(self):
@@ -116,21 +116,21 @@ class Pipeline(Base):
     @prepend_working_directory
     def image_path(self):
         """
-        Get the relative or absolute path to the input image. If the path does not begin with '/' then the current
+        Get the relative or absolute path to the input _image. If the path does not begin with '/' then the current
         working directory will be prepended.
 
         Returns
         -------
         str: path
-            The path to the image
+            The path to the _image
         """
-        return self.options['--image']
+        return self.options['--_image']
 
     @property
     @prepend_working_directory
     def data_path(self):
         """
-        Get the relative or absolute path to the input data. Input data includes image, noise and psf with different
+        Get the relative or absolute path to the input data. Input data includes _image, noise and psf with different
         hdu values input by the user. If the path does not begin with '/' then the current working directory will be
         prepended.
 
