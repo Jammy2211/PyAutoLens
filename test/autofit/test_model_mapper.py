@@ -3,7 +3,7 @@ from autolens.autofit import model_mapper
 import pytest
 from autolens.profiles import geometry_profiles, light_profiles, mass_profiles
 import os
-from autolens.lensing import galaxy_prior
+from autolens.lensing import galaxy_model
 from autolens.lensing import galaxy as g
 
 data_path = "{}/../".format(os.path.dirname(os.path.realpath(__file__)))
@@ -133,7 +133,8 @@ class TestGenerateModelInfo(object):
         assert model_info == """MockClassMM
 
 mock_class_one                          UniformPrior, lower_limit = 0.0, upper_limit = 1.0
-mock_class_two                          UniformPrior, lower_limit = 0.0, upper_limit = 1.0"""
+mock_class_two                          UniformPrior, lower_limit = 0.0, upper_limit = 1.0
+"""
 
     def test_with_constant(self, test_config):
         mm = model_mapper.ModelMapper(test_config)
@@ -146,7 +147,8 @@ mock_class_two                          UniformPrior, lower_limit = 0.0, upper_l
         assert model_info == """MockClassMM
 
 mock_class_one                          UniformPrior, lower_limit = 0.0, upper_limit = 1.0
-mock_class_two                          Constant, value = 1"""
+mock_class_two                          Constant, value = 1
+"""
 
 
 class WithFloat(object):
@@ -163,7 +165,7 @@ class WithTuple(object):
 class TestRegression(object):
     def test_set_tuple_constant(self):
         mm = model_mapper.ModelMapper()
-        mm.galaxy = galaxy_prior.GalaxyPrior(sersic=light_profiles.EllipticalSersic)
+        mm.galaxy = galaxy_model.GalaxyModel(sersic=light_profiles.EllipticalSersic)
 
         assert mm.total_priors == 7
 
@@ -174,7 +176,7 @@ class TestRegression(object):
 
     def test_get_tuple_constants(self):
         mm = model_mapper.ModelMapper()
-        mm.galaxy = galaxy_prior.GalaxyPrior(sersic=light_profiles.EllipticalSersic)
+        mm.galaxy = galaxy_model.GalaxyModel(sersic=light_profiles.EllipticalSersic)
 
         assert isinstance(mm.galaxy.sersic.centre_0, model_mapper.Prior)
         assert isinstance(mm.galaxy.sersic.centre_1, model_mapper.Prior)
@@ -265,7 +267,7 @@ class TestModelInstance(object):
         instance = model_mapper.ModelInstance()
         instance.galaxy_1 = g.Galaxy()
         instance.galaxy_2 = g.Galaxy()
-        instance.other = galaxy_prior.GalaxyPrior()
+        instance.other = galaxy_model.GalaxyModel()
         assert instance.instances_of(g.Galaxy) == [instance.galaxy_1, instance.galaxy_2]
 
     def test_instances_from_list(self):
@@ -279,9 +281,9 @@ class TestModelInstance(object):
         instance = model_mapper.ModelInstance()
         galaxy_1 = g.Galaxy(redshift=1)
         galaxy_2 = g.Galaxy(redshift=2)
-        instance.galaxies = [galaxy_1, galaxy_2, galaxy_prior.GalaxyPrior]
+        instance.galaxies = [galaxy_1, galaxy_2, galaxy_model.GalaxyModel]
         instance.galaxy_3 = g.Galaxy(redshift=3)
-        instance.galaxy_prior = galaxy_prior.GalaxyPrior()
+        instance.galaxy_prior = galaxy_model.GalaxyModel()
 
         assert instance.instances_of(g.Galaxy) == [instance.galaxy_3, galaxy_1, galaxy_2]
 
@@ -1006,7 +1008,7 @@ class TestFlatPriorModel(object):
         from autolens.lensing import galaxy
 
         mapper = model_mapper.ModelMapper(width_config=width_config)
-        mapper.list = [galaxy_prior.GalaxyPrior(variable_redshift=True)]
+        mapper.list = [galaxy_model.GalaxyModel(variable_redshift=True)]
 
         assert len(mapper.flat_prior_model_tuples) == 1
         assert mapper.flat_prior_model_tuples[0][1].cls == galaxy.Redshift

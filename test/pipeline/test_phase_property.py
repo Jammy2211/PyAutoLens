@@ -1,7 +1,7 @@
 from autolens.pipeline import phase as ph
 from autolens.pipeline import phase_property
 from autolens.lensing import galaxy as g
-from autolens.lensing import galaxy_prior as gp
+from autolens.lensing import galaxy_model as gp
 from autolens.autofit import non_linear
 from autolens.autofit import model_mapper as mm
 import pytest
@@ -50,7 +50,7 @@ def make_list_phase():
 
 class TestPhaseProperty(object):
     def test_phase_property(self, phase):
-        phase.prop = gp.GalaxyPrior()
+        phase.prop = gp.GalaxyModel()
 
         assert phase.variable.prop == phase.prop
 
@@ -60,7 +60,7 @@ class TestPhaseProperty(object):
         assert phase.constant.prop == galaxy
         assert not hasattr(phase.variable, "prop")
 
-        phase.prop = gp.GalaxyPrior()
+        phase.prop = gp.GalaxyModel()
         assert not hasattr(phase.constant, "prop")
 
 
@@ -76,7 +76,7 @@ class TestPhasePropertyList(object):
         assert list_phase.prop == objects
 
     def test_classes(self, list_phase):
-        objects = [gp.GalaxyPrior(), gp.GalaxyPrior()]
+        objects = [gp.GalaxyModel(), gp.GalaxyModel()]
 
         list_phase.prop = objects
 
@@ -96,7 +96,7 @@ class TestPhasePropertyList(object):
         assert list_phase.prop == objects
 
     def test_mix(self, list_phase):
-        objects = [gp.GalaxyPrior(), g.Galaxy()]
+        objects = [gp.GalaxyModel(), g.Galaxy()]
 
         list_phase.prop = objects
 
@@ -106,13 +106,13 @@ class TestPhasePropertyList(object):
         assert list_phase.prop == objects
 
     def test_set_item(self, list_phase):
-        galaxy_prior_0 = gp.GalaxyPrior()
+        galaxy_prior_0 = gp.GalaxyModel()
         objects = [galaxy_prior_0, g.Galaxy()]
 
         list_phase.prop = objects
         assert_ordered(list_phase.prop)
 
-        galaxy_prior_1 = gp.GalaxyPrior()
+        galaxy_prior_1 = gp.GalaxyModel()
         list_phase.prop[1] = galaxy_prior_1
 
         assert_ordered(list_phase.prop)

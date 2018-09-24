@@ -51,7 +51,7 @@ def is_profile_class(cls):
     return is_light_profile_class(cls) or is_mass_profile_class(cls)
 
 
-class GalaxyPrior(model_mapper.AbstractPriorModel):
+class GalaxyModel(model_mapper.AbstractPriorModel):
     """
     @DynamicAttrs
     """
@@ -132,7 +132,7 @@ class GalaxyPrior(model_mapper.AbstractPriorModel):
                      or isinstance(value, model_mapper.Prior)
                      or isinstance(value, model_mapper.Constant)):
             value = galaxy.Redshift(value)
-        super(GalaxyPrior, self).__setattr__(key, value)
+        super(GalaxyModel, self).__setattr__(key, value)
 
     @property
     def constant_light_profiles(self):
@@ -287,10 +287,10 @@ class GalaxyPrior(model_mapper.AbstractPriorModel):
 
         Returns
         -------
-        new_model: GalaxyPrior
+        new_model: GalaxyModel
             A model with some or all priors replaced.
         """
-        new_model = GalaxyPrior(align_centres=self.align_centres, align_orientations=self.align_orientations,
+        new_model = GalaxyModel(align_centres=self.align_centres, align_orientations=self.align_orientations,
                                 config=self.config)
 
         for key, value in filter(lambda t: isinstance(t[1], model_mapper.PriorModel), self.__dict__.items()):
@@ -308,6 +308,6 @@ class GalaxyPrior(model_mapper.AbstractPriorModel):
         g: galaxy.Galaxy
             A galaxy
         kwargs
-            Key word arguments to override GalaxyPrior constructor arguments.
+            Key word arguments to override GalaxyModel constructor arguments.
         """
-        return GalaxyPrior(**{**g.__dict__, **kwargs})
+        return GalaxyModel(**{**g.__dict__, **kwargs})

@@ -1264,6 +1264,7 @@ class SphericalSersicRadialGradient(EllipticalSersicRadialGradient):
 
 # noinspection PyAbstractClass
 class ExternalShear(geometry_profiles.EllipticalProfile, MassProfile):
+
     def __init__(self, magnitude=0.2, phi=0.0):
         """
         An external shear term, to model the line-of-sight contribution of other galaxies / satellites.
