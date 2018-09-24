@@ -5,7 +5,6 @@ from autolens.imaging import imaging_util
 from autolens.lensing import ray_tracing
 from autolens import conf
 
-import matplotlib.pyplot as plt
 import numpy as np
 import shutil
 import os
@@ -22,10 +21,10 @@ def reset_paths(data_name, pipeline_name, output_path):
     except FileNotFoundError:
         pass
 
-    try:
-        shutil.rmtree(output_path + pipeline_name)
-    except FileNotFoundError:
-        pass
+    # try:
+    #     shutil.rmtree(output_path + pipeline_name)
+    # except FileNotFoundError:
+    #     pass
 
 
 def simulate_integration_image(data_name, pixel_scale, lens_galaxies, source_galaxies, target_signal_to_noise):
