@@ -1,6 +1,3 @@
-import getdist
-import getdist.plots
-
 from autolens import exc
 import math
 import os
@@ -11,6 +8,7 @@ from autolens.imaging import hyper_image
 from autolens import conf
 from autolens.autofit import model_mapper as mm
 import logging
+import matplotlib.pyplot as plt
 
 logging.basicConfig()
 logger = logging.getLogger(__name__)
@@ -230,8 +228,8 @@ class DownhillSimplex(NonLinearOptimizer):
 
 class MultiNest(NonLinearOptimizer):
 
-    def __init__(self, include_hyper_image=False, model_mapper=None,
-                 sigma_limit=3, run=pymultinest.run, name=None, label_config=None):
+    def __init__(self, include_hyper_image=False, model_mapper=None, sigma_limit=3, run=pymultinest.run, name=None,
+                 label_config=None):
         """Class to setup and run a MultiNest lensing and output the MultiNest nlo.
 
         This interfaces with an input model_mapper, which is used for setting up the individual model instances that \
@@ -277,6 +275,7 @@ class MultiNest(NonLinearOptimizer):
 
     @property
     def pdf(self):
+        import getdist
         return getdist.mcsamples.loadMCSamples(self.chains_path + '/mn')
 
     def fit(self, analysis):
@@ -290,11 +289,14 @@ class MultiNest(NonLinearOptimizer):
         self.save_model_info()
 
         class Fitness(object):
-            def __init__(self, instance_from_physical_vector, _constant):
+
+            def __init__(self, instance_from_physical_vector, _constant, output_results):
                 self.result = None
                 self.instance_from_physical_vector = instance_from_physical_vector
                 self.constant = _constant
                 self.max_likelihood = -np.inf
+                self.output_results = output_results
+                self.accepted_samples = 0
 
             def __call__(self, cube, ndim, nparams, lnew):
 
@@ -302,17 +304,26 @@ class MultiNest(NonLinearOptimizer):
                 instance += self.constant
 
                 try:
-                    _likelihood = analysis.fit(instance)
+                    likelihood = analysis.fit(instance)
                 except exc.InversionException or exc.RayTracingException:
-                    _likelihood = -np.inf
+                    likelihood = -np.inf
 
                 # TODO: Use multinest to provide best model
 
-                if _likelihood > self.max_likelihood:
-                    self.max_likelihood = _likelihood
-                    self.result = Result(instance, _likelihood)
+                if likelihood > self.max_likelihood:
 
-                return _likelihood
+                    # TODO : make the 10 below a config file param e.g. output_results_every_accepted_samples
+
+                    self.accepted_samples += 1
+
+                    if self.accepted_samples == 10:
+                        self.accepted_samples = 0
+                        self.output_results(during_analysis=True)
+
+                    self.max_likelihood = likelihood
+                    self.result = Result(instance, likelihood)
+
+                return likelihood
 
         # noinspection PyUnusedLocal
         def prior(cube, ndim, nparams):
@@ -324,7 +335,7 @@ class MultiNest(NonLinearOptimizer):
 
             return cube
 
-        fitness_function = Fitness(self.variable.instance_from_physical_vector, self.constant)
+        fitness_function = Fitness(self.variable.instance_from_physical_vector, self.constant, self.output_results)
 
         logger.info("Running MultiNest...")
         self.run(fitness_function.__call__, prior, self.variable.total_priors,
@@ -339,8 +350,8 @@ class MultiNest(NonLinearOptimizer):
                  log_zero=self.log_zero, max_iter=self.max_iter, init_MPI=self.init_MPI)
         logger.info("MultiNest complete")
 
+        self.output_results(during_analysis=False)
         self.output_pdf_plots()
-        self.output_results()
 
         constant = self.most_likely_instance_from_summary()
         constant += self.constant
@@ -493,11 +504,13 @@ class MultiNest(NonLinearOptimizer):
 
     def output_pdf_plots(self):
 
+        import getdist.plots
         pdf_plot = getdist.plots.GetDistPlotter()
 
         for param_name in self.param_names:
             pdf_plot.plot_1d(roots=self.pdf, param=param_name)
             pdf_plot.export(fname=self.path + '/pdfs/' + param_name + '_1D.png')
+            plt.close()
 
         try:
             pdf_plot.triangle_plot(roots=self.pdf)
@@ -505,57 +518,65 @@ class MultiNest(NonLinearOptimizer):
         except np.linalg.LinAlgError:
             pass
 
-    def output_results(self):
+        plt.close()
 
-        with open(self.file_results, 'w') as results:
+    def output_results(self, during_analysis=False):
 
-            max_likelihood = self.max_likelihood_from_summary()
+        if os.path.isfile(self.file_summary):
 
-            results.write('Most likely model, Likelihood = ' + str(max_likelihood) + '\n')
-            results.write('\n')
+            with open(self.file_results, 'w') as results:
 
-            most_likely = self.most_likely_from_summary()
+                max_likelihood = self.max_likelihood_from_summary()
 
-            for i in range(self.variable.total_priors):
-                line = self.param_names[i]
-                line += ' ' * (50 - len(line)) + str(most_likely[i])
-                results.write(line + '\n')
+                results.write('Most likely model, Likelihood = ' + str(max_likelihood) + '\n')
+                results.write('\n')
 
-            most_probable = self.most_probable_from_summary()
+                most_likely = self.most_likely_from_summary()
 
-            lower_limit = self.model_at_lower_sigma_limit(sigma_limit=3.0)
-            upper_limit = self.model_at_upper_sigma_limit(sigma_limit=3.0)
+                for i in range(self.variable.total_parameters):
+                    line = self.param_names[i]
+                    line += ' ' * (50 - len(line)) + str(most_likely[i])
+                    results.write(line + '\n')
 
-            results.write('\n')
-            results.write('Most probable model (3 sigma limits)' + '\n')
-            results.write('\n')
+                if during_analysis is False:
 
-            for i in range(self.variable.total_priors):
-                line = self.param_names[i]
-                line += ' ' * (50 - len(line)) + str(most_probable[i]) + ' (' + str(lower_limit[i]) + ', ' + str(
-                    upper_limit[i]) + ')'
-                results.write(line + '\n')
+                    most_probable = self.most_probable_from_summary()
 
-            lower_limit = self.model_at_lower_sigma_limit(sigma_limit=1.0)
-            upper_limit = self.model_at_upper_sigma_limit(sigma_limit=1.0)
+                    lower_limit = self.model_at_lower_sigma_limit(sigma_limit=3.0)
+                    upper_limit = self.model_at_upper_sigma_limit(sigma_limit=3.0)
 
-            results.write('\n')
-            results.write('Most probable model (1 sigma limits)' + '\n')
-            results.write('\n')
+                    results.write('\n')
+                    results.write('Most probable model (3 sigma limits)' + '\n')
+                    results.write('\n')
 
-            for i in range(self.variable.total_priors):
-                line = self.param_names[i]
-                line += ' ' * (50 - len(line)) + str(most_probable[i]) + ' (' + str(lower_limit[i]) + ', ' + str(
-                    upper_limit[i]) + ')'
-                results.write(line + '\n')
+                    for i in range(self.variable.total_parameters):
+                        line = self.param_names[i]
+                        line += ' ' * (50 - len(line)) + str(most_probable[i]) + ' (' + str(
+                            lower_limit[i]) + ', ' + str(
+                            upper_limit[i]) + ')'
+                        results.write(line + '\n')
 
-            results.write('\n')
-            results.write('Constants' + '\n')
-            results.write('\n')
+                    lower_limit = self.model_at_lower_sigma_limit(sigma_limit=1.0)
+                    upper_limit = self.model_at_upper_sigma_limit(sigma_limit=1.0)
 
-            constant_names = self.constant_names
-            constants = self.variable.constant_tuples_ordered_by_id
+                    results.write('\n')
+                    results.write('Most probable model (1 sigma limits)' + '\n')
+                    results.write('\n')
 
-            for i in range(self.variable.total_constants):
-                line = constant_names[i]
-                line += ' ' * (50 - len(line)) + str(constants[i][1].value)
+                    for i in range(self.variable.total_parameters):
+                        line = self.param_names[i]
+                        line += ' ' * (50 - len(line)) + str(most_probable[i]) + ' (' + str(
+                            lower_limit[i]) + ', ' + str(
+                            upper_limit[i]) + ')'
+                        results.write(line + '\n')
+
+                results.write('\n')
+                results.write('Constants' + '\n')
+                results.write('\n')
+
+                constant_names = self.constant_names
+                constants = self.variable.constant_tuples_ordered_by_id
+
+                for i in range(self.variable.total_constants):
+                    line = constant_names[i]
+                    line += ' ' * (50 - len(line)) + str(constants[i][1].value)

@@ -34,7 +34,7 @@ def simulate_integration_image(data_name, pixel_scale, lens_galaxies, source_gal
     psf_shape = (11, 11)
     image_shape = (150, 150)
 
-    psf = im.PSF.simulate_as_gaussian(shape=psf_shape, sigma=0.3)
+    psf = im.PSF.simulate_as_gaussian(shape=psf_shape, sigma=0.6)
 
     image_grids = mask.ImagingGrids.unmasked_grids_for_simulation(shape=image_shape, pixel_scale=pixel_scale,
                                                                   sub_grid_size=1, psf_shape=psf_shape)
@@ -56,15 +56,13 @@ def simulate_integration_image(data_name, pixel_scale, lens_galaxies, source_gal
                                                                        pixel_scale=pixel_scale,
                                                                        target_signal_to_noise=target_signal_to_noise,
                                                                        effective_exposure_map=np.ones(image_shape),
-                                                                       background_sky_map=0.01*np.ones(image_shape),
+                                                                       background_sky_map=10.0*np.ones(image_shape),
                                                                        psf=psf, seed=1)
-
-    sim_image.noise_map = np.ones(sim_image.shape)
 
     if os.path.exists(output_path) == False:
         os.makedirs(output_path)
 
-    imaging_util.numpy_array_to_fits(sim_image, path=output_path + 'image.fits')
+    imaging_util.numpy_array_to_fits(sim_image, path=output_path + '_image.fits')
     imaging_util.numpy_array_to_fits(sim_image.noise_map, path=output_path + 'noise_map.fits')
     imaging_util.numpy_array_to_fits(psf, path=output_path + '/psf.fits')
     imaging_util.numpy_array_to_fits(sim_image.effective_exposure_map, path=output_path + 'exposure_map.fits')
@@ -73,7 +71,8 @@ def load_image(data_name, pixel_scale):
 
     data_dir = "{}/data/{}".format(dirpath, data_name)
 
-    data = scaled_array.ScaledArray.from_fits_with_scale(file_path=data_dir + '/image.fits', hdu=0, pixel_scale=pixel_scale)
+    data = scaled_array.ScaledArray.from_fits_with_scale(file_path=data_dir + '/_image.fits', hdu=0,
+                                                         pixel_scale=pixel_scale)
     noise = scaled_array.ScaledArray.from_fits(file_path=data_dir + '/noise_map.fits', hdu=0)
     psf = im.PSF.from_fits(file_path=data_dir + '/psf.fits', hdu=0)
 
