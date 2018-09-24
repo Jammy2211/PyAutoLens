@@ -1,3 +1,4 @@
+from autolens import conf
 from autolens import exc
 import math
 import os
@@ -507,18 +508,25 @@ class MultiNest(NonLinearOptimizer):
         import getdist.plots
         pdf_plot = getdist.plots.GetDistPlotter()
 
-        for param_name in self.param_names:
-            pdf_plot.plot_1d(roots=self.pdf, param=param_name)
-            pdf_plot.export(fname=self.path + '/pdfs/' + param_name + '_1D.png')
-            plt.close()
+        plot_pdf_1d_params = conf.instance.general.get('output', 'plot_pdf_1d_params', bool)
 
-        try:
-            pdf_plot.triangle_plot(roots=self.pdf)
-            pdf_plot.export(fname=self.path + '/pdfs/Triangle.png')
-        except np.linalg.LinAlgError:
-            pass
+        if plot_pdf_1d_params:
 
-        plt.close()
+            for param_name in self.param_names:
+                pdf_plot.plot_1d(roots=self.pdf, param=param_name)
+                pdf_plot.export(fname=self.path + '/pdfs/' + param_name + '_1D.png')
+                plt.close()
+
+        plot_pdf_triangle = conf.instance.general.get('output', 'plot_pdf_triangle', bool)
+
+        if plot_pdf_triangle:
+
+            try:
+                pdf_plot.triangle_plot(roots=self.pdf)
+                pdf_plot.export(fname=self.path + '/pdfs/Triangle.png')
+                plt.close()
+            except np.linalg.LinAlgError:
+                pass
 
     def output_results(self, during_analysis=False):
 
