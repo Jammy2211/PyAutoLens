@@ -533,7 +533,7 @@ class MultiNest(NonLinearOptimizer):
 
                 most_likely = self.most_likely_from_summary()
 
-                for i in range(self.variable.total_parameters):
+                for i in range(self.variable.total_priors):
                     line = self.param_names[i]
                     line += ' ' * (50 - len(line)) + str(most_likely[i])
                     results.write(line + '\n')
@@ -549,7 +549,7 @@ class MultiNest(NonLinearOptimizer):
                     results.write('Most probable model (3 sigma limits)' + '\n')
                     results.write('\n')
 
-                    for i in range(self.variable.total_parameters):
+                    for i in range(self.variable.total_priors):
                         line = self.param_names[i]
                         line += ' ' * (50 - len(line)) + str(most_probable[i]) + ' (' + str(
                             lower_limit[i]) + ', ' + str(
@@ -563,7 +563,7 @@ class MultiNest(NonLinearOptimizer):
                     results.write('Most probable model (1 sigma limits)' + '\n')
                     results.write('\n')
 
-                    for i in range(self.variable.total_parameters):
+                    for i in range(self.variable.total_priors):
                         line = self.param_names[i]
                         line += ' ' * (50 - len(line)) + str(most_probable[i]) + ' (' + str(
                             lower_limit[i]) + ', ' + str(
