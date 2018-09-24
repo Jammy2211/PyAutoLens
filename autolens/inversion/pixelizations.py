@@ -9,7 +9,7 @@ import scipy.spatial
 class Pixelization(object):
 
     def __init__(self, pixels=100):
-        """ Abstract base class for a pixelization, which discretizes a set of coordinates (e.g. an image-grid) into \
+        """ Abstract base class for a pixelization, which discretizes a set of coordinates (e.g. an _image-grid) into \
         pixels.
 
         Parameters
@@ -28,7 +28,7 @@ class Rectangular(Pixelization):
     def __init__(self, shape=(3, 3)):
         """A rectangular pixelization, where pixels are defined on a Cartesian and uniform grid of shape (rows, columns).
 
-        Like an image, the indexing of the rectangular grid begins in the top-left corner and goes right and down.
+        Like an _image, the indexing of the rectangular grid begins in the top-left corner and goes right and down.
 
         Parameters
         -----------
@@ -176,9 +176,9 @@ class Rectangular(Pixelization):
         Parameters
         ----------
         grids: mask.ImagingGrids
-            A collection of grid describing the observed image's pixel coordinates (includes an image and sub grid).
+            A collection of grid describing the observed _image's pixel coordinates (includes an _image and sub grid).
         borders : mask.ImagingGridBorders
-            The borders of the grids (defined by their image-plane mask).
+            The borders of the grids (defined by their _image-plane mask).
         """
         relocated_grids = borders.relocated_grids_from_grids(grids)
         geometry = self.geometry_from_pixelization_sub_grid(relocated_grids.sub)
@@ -194,7 +194,7 @@ class Voronoi(Pixelization):
         """Abstract base class for a Voronoi pixelization, which represents pixels as an irregular grid of Voronoi \
          pixels which can form any shape, size or tesselation.
 
-         The traced image-pixels are paired to Voronoi pixels as the nearest-neighbors of the Voronoi pixel-centers.
+         The traced _image-pixels are paired to Voronoi pixels as the nearest-neighbors of the Voronoi pixel-centers.
 
          Parameters
          ----------
@@ -237,7 +237,7 @@ class Cluster(Voronoi):
 
     def __init__(self, pixels):
         """A cluster pixelization, which represents pixels as a Voronoi grid (see Voronoi). For this pixelization, the \
-        pixel-centers are derived from a sparse-grid in the observed image which are lensed to form the pixel centers.
+        pixel-centers are derived from a sparse-grid in the observed _image which are lensed to form the pixel centers.
 
         Parameters
         ----------
@@ -255,13 +255,13 @@ class Cluster(Voronoi):
         Parameters
         ----------
         grids: mask.ImagingGrids
-            A collection of grid describing the observed image's pixel coordinates (includes an image and sub grid).
+            A collection of grid describing the observed _image's pixel coordinates (includes an _image and sub grid).
         borders : mask.ImagingGridBorders
-            The borders of the grids (defined by their image-plane mask).
+            The borders of the grids (defined by their _image-plane mask).
         pixel_centers : ndarray
-            The center of each Voronoi pixel, computed from an traced image-plane grid.
+            The center of each Voronoi pixel, computed from an traced _image-plane grid.
         image_to_voronoi : ndarray
-            The mapping of each image pixel to Voronoi pixels.
+            The mapping of each _image pixel to Voronoi pixels.
         """
 
         relocated_grids = borders.relocated_grids_from_grids(grids)
