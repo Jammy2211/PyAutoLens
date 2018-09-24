@@ -4,7 +4,7 @@ from autolens.lensing import galaxy_model as gp
 from autolens.imaging import image as im
 from autolens.profiles import light_profiles as lp
 from autolens.profiles import mass_profiles as mp
-from autolens.visualize import object_plotters
+from autolens.visualize import image_plotters
 import shutil
 import os
 
@@ -23,7 +23,7 @@ image = im.load_from_path(image_path=path + '/../data/2_intermediate/_image.fits
 
 # In this example, we simulated the lens galaxy's light as well as the source - this means we need a more complex model
 # To fit all these different components.
-object_plotters.plot_image(image=image)
+image_plotters.plot_image(image=image)
 
 # To model galaxies in a lensing system, we create 'GalaxyModel' (gm) objects, which as the name suggests is an object
 # representing our model of a galaxy. The profiles we pass a GalaxyModel are variable, such that their parameters are
@@ -35,13 +35,13 @@ lens_galaxy = gp.GalaxyModel(light=lp.EllipticalDevVaucouleurs, mass=mp.Elliptic
 source_galaxy = gp.GalaxyModel(light=lp.EllipticalExponential)
 phase = ph.LensSourcePlanePhase(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy], phase_name='ph_simple')
 results = phase.run(image)
-object_plotters.plot_fitter_lens_plane_only(fitter=results)
+image_plotters.plot_fitter_lens_plane_only(fitter=results)
 
 lens_galaxy = gp.GalaxyModel(dev=lp.EllipticalDevVaucouleurs, sie=mp.EllipticalIsothermal, shear=mp.ExternalShear)
 source_galaxy = gp.GalaxyModel(disk=lp.EllipticalExponential, bulge=lp.EllipticalSersic)
 phase = ph.LensSourcePlanePhase(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy], phase_name='ph_complex')
 results = phase.run(image)
-object_plotters.plot_fitter_lens_plane_only(fitter=results)
+image_plotters.plot_fitter_lens_plane_only(fitter=results)
 
 # One can also print the results to see the best-fit model parameters
 print(results)
