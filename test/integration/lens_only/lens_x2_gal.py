@@ -2,7 +2,7 @@ from autolens.pipeline import pipeline as pl
 from autolens.pipeline import phase as ph
 from autolens.profiles import light_profiles as lp
 from autolens.imaging import mask as msk
-from autolens.lensing import galaxy_model as gp
+from autolens.lensing import galaxy_model as gm
 from autolens.autofit import non_linear as nl
 from autolens.autofit import model_mapper as mm
 from autolens.lensing import galaxy
@@ -16,7 +16,7 @@ import shutil
 home = str(Path.home())
 dirpath = os.path.dirname(os.path.realpath(__file__))
 dirpath = os.path.dirname(dirpath)
-output_path = '{}/data/pdtw24/Lens/int/lens_profile/'.format(home)
+output_path = '{}/data/pdtw24/Lens/int/lens_only/'.format(home)
 
 def test_pipeline():
 
@@ -59,8 +59,8 @@ def make_pipeline(pipeline_name):
     def modify_mask_function(img):
         return msk.Mask.circular(shape=img.shape, pixel_scale=img.pixel_scale, radius_mask_arcsec=5.)
 
-    phase1 = LensPlanex2GalPhase(lens_galaxies=[gp.GalaxyModel(sersic=lp.EllipticalSersic),
-                                                gp.GalaxyModel(sersic=lp.EllipticalSersic)],
+    phase1 = LensPlanex2GalPhase(lens_galaxies=[gm.GalaxyModel(sersic=lp.EllipticalSersic),
+                                                gm.GalaxyModel(sersic=lp.EllipticalSersic)],
                                  mask_function=modify_mask_function, optimizer_class=nl.MultiNest,
                                  phase_name="{}/phase1".format(pipeline_name))
 
