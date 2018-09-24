@@ -90,7 +90,7 @@ class Pipeline(Base):
         str: image_hdu
             The hdu of the _image data in the data file
         """
-        return int(self.options["--_image-hdu"])
+        return int(self.options["--image-hdu"])
 
     @property
     def noise_hdu(self):
@@ -124,7 +124,7 @@ class Pipeline(Base):
         str: path
             The path to the _image
         """
-        return self.options['--_image']
+        return self.options['--image']
 
     @property
     @prepend_working_directory
