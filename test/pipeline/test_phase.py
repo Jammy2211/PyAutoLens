@@ -91,7 +91,7 @@ def make_galaxy_prior():
     return gp.GalaxyModel()
 
 
-@pytest.fixture(name="_image")
+@pytest.fixture(name="image")
 def make_image():
     image = img.Image(np.array(np.zeros(shape)), pixel_scale=1.0, psf=img.PSF(np.ones((3, 3))),
                       noise_map=np.ones(shape))
@@ -173,14 +173,6 @@ class TestPhase(object):
 
     def test_default_mask_function(self, phase, image):
         assert len(li.LensingImage(image, phase.mask_function(image))) == 32
-
-    # TODO: removed because galaxy_images seems to have been removed?
-    # def test_galaxy_images(self, _image, phase):
-    #     clean_images()
-    #     phase.lens_galaxies = [g.Galaxy()]
-    #     phase.source_galaxies = [g.Galaxy()]
-    #     result = phase.run(_image)
-    #     assert len(result.galaxy_images) == 2
 
     def test_duplication(self):
         phase = ph.LensSourcePlanePhase(lens_galaxies=[gp.GalaxyModel()], source_galaxies=[gp.GalaxyModel()])
