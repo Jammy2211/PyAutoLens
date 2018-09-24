@@ -74,7 +74,7 @@ class TestAddition(object):
 
         three = one + two
 
-        assert three.total_parameters == 14
+        assert three.total_priors == 14
 
 
 class TestUniformPrior(object):
@@ -151,17 +151,28 @@ mock_class_two                          Constant, value = 1
 """
 
 
+class WithFloat(object):
+    def __init__(self, value):
+        self.value = value
+
+
+class WithTuple(object):
+    def __init__(self, tup=(0., 0.)):
+        self.tup = tup
+
+
+# noinspection PyUnresolvedReferences
 class TestRegression(object):
     def test_set_tuple_constant(self):
         mm = model_mapper.ModelMapper()
         mm.galaxy = galaxy_model.GalaxyModel(sersic=light_profiles.EllipticalSersic)
 
-        assert mm.total_parameters == 7
+        assert mm.total_priors == 7
 
         mm.galaxy.sersic.centre_0 = model_mapper.Constant(0)
         mm.galaxy.sersic.centre_1 = model_mapper.Constant(0)
 
-        assert mm.total_parameters == 5
+        assert mm.total_priors == 5
 
     def test_get_tuple_constants(self):
         mm = model_mapper.ModelMapper()
@@ -169,6 +180,33 @@ class TestRegression(object):
 
         assert isinstance(mm.galaxy.sersic.centre_0, model_mapper.Prior)
         assert isinstance(mm.galaxy.sersic.centre_1, model_mapper.Prior)
+
+    def test_tuple_parameter(self, mapper):
+        mapper.with_float = WithFloat
+        mapper.with_tuple = WithTuple
+
+        assert mapper.total_priors == 3
+
+        mapper.with_tuple.tup_0 = mapper.with_float.value
+
+        assert mapper.total_priors == 2
+
+    def test_tuple_parameter_float(self, mapper):
+        mapper.with_float = WithFloat
+        mapper.with_tuple = WithTuple
+
+        mapper.with_float.value = model_mapper.Constant(1)
+
+        assert mapper.total_priors == 2
+
+        mapper.with_tuple.tup_0 = mapper.with_float.value
+
+        assert mapper.total_priors == 1
+
+        instance = mapper.instance_from_unit_vector([0.])
+
+        assert instance.with_float.value == 1
+        assert instance.with_tuple.tup == (1., 0.)
 
 
 class TestModelingMapper(object):
@@ -872,9 +910,14 @@ class TestConstant(object):
         assert instance.centre == (1., 2.)
 
 
+@pytest.fixture(name="mock_config")
+def make_mock_config():
+    return MockConfig()
+
+
 @pytest.fixture(name="mapper")
-def make_mapper(test_config, width_config):
-    return model_mapper.ModelMapper(config=test_config, width_config=width_config)
+def make_mapper(mock_config, width_config):
+    return model_mapper.ModelMapper(config=mock_config, width_config=width_config)
 
 
 @pytest.fixture(name="mapper_with_one")
