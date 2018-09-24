@@ -147,9 +147,9 @@ class Phase(object):
             self.position_threshold = conf.instance.general.get('positions', 'position_threshold', float)
             self.plot_count = 0
             self.visualize_hyper_arrays = conf.instance.general.get('output', 'visualize_hyper_arrays',
-                                                                          bool)
+                                                                    bool)
             self.visualize_results_subplot = conf.instance.general.get('output', 'visualize_results_subplot',
-                                                                          bool)
+                                                                       bool)
             self.visualize_results_individual = conf.instance.general.get('output', 'visualize_results_individual',
                                                                           bool)
             self.output_image_path = "{}/".format(conf.instance.output_path) + '/' + self.phase_name + '/images/'
@@ -401,7 +401,6 @@ class PhaseImaging(Phase):
                                            previous_results=previous_results)
         return analysis
 
-
     class Analysis(Phase.Analysis):
 
         def __init__(self, lensing_image, phase_name, previous_results=None):
@@ -417,7 +416,7 @@ class PhaseImaging(Phase):
                 tracer = ray_tracing.TracerImageSourcePlanesPositions(lens_galaxies=instance.lens_galaxies,
                                                                       positions=self.lensing_image.positions)
                 fit = fitting.PositionFitter(positions=tracer.source_plane.positions,
-                                                noise=self.lensing_image.image.pixel_scale)
+                                             noise=self.lensing_image.image.pixel_scale)
 
                 if not fit.maximum_separation_within_threshold(self.position_threshold):
                     raise exc.RayTracingException
@@ -428,12 +427,10 @@ class PhaseImaging(Phase):
             fit = fitting.fit_from_lensing_image_and_tracer(self.lensing_image, tracer)
 
             if self.visualize_results_subplot:
-
                 object_plotters.plot_image_as_subplot(image=self.lensing_image.image,
-                                           output_path=self.output_image_path, output_format='png')
+                                                      output_path=self.output_image_path, output_format='png')
 
             if self.visualize_results_individual:
-
                 object_plotters.plot_image(image=self.lensing_image.image,
                                            output_path=self.output_image_path, output_format='png')
 
@@ -442,7 +439,6 @@ class PhaseImaging(Phase):
         def map_to_1d(self, data):
             """Convinience method"""
             return self.lensing_image.mask.map_2d_array_to_masked_1d_array(data)
-
 
     class Result(Phase.Result):
 
@@ -461,7 +457,6 @@ class PhaseImaging(Phase):
 
 
 class PositionsImagingPhase(PhaseImaging):
-
     lens_galaxies = PhasePropertyList("lens_galaxies")
 
     def __init__(self, positions, lens_galaxies=None, optimizer_class=non_linear.MultiNest,
@@ -534,7 +529,6 @@ class LensPlanePhase(PhaseImaging):
                                              mask_function=mask_function, phase_name=phase_name)
         self.lens_galaxies = lens_galaxies
 
-
     class Analysis(PhaseImaging.Analysis):
 
         def __init__(self, lensing_image, phase_name, previous_results=None):
@@ -563,17 +557,15 @@ class LensPlanePhase(PhaseImaging):
             fit = super().visualize(instance, suffix, during_analysis)
 
             if self.visualize_results_subplot:
-
                 object_plotters.plot_fit_as_subplot_lens_plane_only(fit=fit, output_path=self.output_image_path,
-                                                                   output_format='png')
+                                                                    output_format='png')
 
             if self.visualize_results_individual:
-
                 object_plotters.plot_fit_lens_plane_only(fit=fit, output_path=self.output_image_path,
                                                          output_format='png')
 
         def tracer_for_instance(self, instance):
-            return ray_tracing.TracerImagePlane(lens_galaxies=instance.lens_galaxies, 
+            return ray_tracing.TracerImagePlane(lens_galaxies=instance.lens_galaxies,
                                                 image_plane_grids=self.lensing_image.grids)
 
         def unmasked_tracer_for_instance(self, instance):
@@ -584,7 +576,6 @@ class LensPlanePhase(PhaseImaging):
         def log(cls, instance):
             logger.debug(
                 "\nRunning lens lensing for... \n\nLens Galaxy::\n{}\n\n".format(instance.lens_galaxies))
-
 
     class Result(PhaseImaging.Result):
 
@@ -620,7 +611,6 @@ class LensPlaneHyperPhase(LensPlanePhase):
                                                   sub_grid_size=sub_grid_size, mask_function=mask_function,
                                                   phase_name=phase_name)
 
-
     class Analysis(LensPlanePhase.Analysis):
 
         def __init__(self, lensing_image, phase_name, previous_results=None):
@@ -653,12 +643,10 @@ class LensPlaneHyperPhase(LensPlanePhase):
             fit = super().visualize(instance, suffix, during_analysis)
 
             if self.visualize_results_subplot:
-
                 object_plotters.plot_fit_as_subplot_hyper_lens_plane_only(fit=fit, output_path=self.output_image_path,
                                                                           output_format='png')
 
             if self.visualize_results_individual:
-
                 object_plotters.plot_fit_hyper_lens_plane_only(fit=fit, output_path=self.output_image_path,
                                                                output_format='png')
 
@@ -666,7 +654,6 @@ class LensPlaneHyperPhase(LensPlanePhase):
         def log(cls, instance):
             logger.debug(
                 "\nRunning lens lensing for... \n\nHyper Lens Galaxy::\n{}\n\n".format(instance.lens_galaxies))
-
 
     class Result(PhaseImaging.Result):
 
@@ -749,7 +736,6 @@ class LensLightHyperOnlyPhase(LensPlaneHyperPhase, HyperOnly):
     class Analysis(LensPlaneHyperPhase.Analysis):
 
         def __init__(self, lensing_image, phase_name, previous_results=None, hyper_index=None):
-
             super(LensPlaneHyperPhase.Analysis, self).__init__(lensing_image, phase_name, previous_results)
 
             self.hyper_model_image = self.map_to_1d(previous_results.last.unmasked_model_image)
@@ -793,7 +779,6 @@ class LensSourcePlanePhase(PhaseImaging):
         self.lens_galaxies = lens_galaxies or []
         self.source_galaxies = source_galaxies or []
 
-
     class Analysis(PhaseImaging.Analysis):
 
         def __init__(self, lensing_image, phase_name, previous_results=None):
@@ -835,7 +820,6 @@ class LensSourcePlanePhase(PhaseImaging):
             logger.debug(
                 "\nRunning lens/source lensing for... \n\nLens Galaxy:\n{}\n\nSource Galaxy:\n{}\n\n".format(
                     instance.lens_galaxies, instance.source_galaxies))
-
 
     class Result(PhaseImaging.Result):
 
