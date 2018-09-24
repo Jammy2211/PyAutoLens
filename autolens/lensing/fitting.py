@@ -37,6 +37,11 @@ def fit_from_lensing_image_and_tracer(lensing_image, tracer, unmasked_tracer=Non
             return HyperInversionFit(lensing_image=lensing_image, tracer=tracer, hyper_model_image=hyper_model_image,
                                      hyper_galaxy_images=hyper_galaxy_images, hyper_minimum_values=hyper_minimum_values)
 
+    elif tracer.has_light_profile and tracer.has_pixelization:
+
+        if not tracer.has_hyper_galaxy:
+            return ProfileInversionFit(lensing_image=lensing_image, tracer=tracer)
+
     else:
 
         raise exc.FittingException('The fit routine did not call a Fit class - check the '
@@ -65,6 +70,11 @@ def fast_likelihood_from_lensing_image_and_tracer(lensing_image, tracer, hyper_m
                                                           hyper_model_image=hyper_model_image,
                                                           hyper_galaxy_images=hyper_galaxy_images,
                                                           hyper_minimum_values=hyper_minimum_values)
+
+    elif tracer.has_light_profile and tracer.has_pixelization:
+
+        if not tracer.has_hyper_galaxy:
+            return ProfileInversionFit.fast_evidence(lensing_image=lensing_image, tracer=tracer)
 
     else:
 
@@ -234,6 +244,82 @@ class InversionFit(AbstractInversionFit):
                                                   inversion.log_det_curvature_reg_matrix_term,
                                                   inversion.log_det_regularization_matrix_term, noise_term)
 
+
+class AbstractProfileInversionFit(AbstractFit):
+
+    def __init__(self, lensing_image, tracer):
+
+        self.convolve_image = lensing_image.convolver_image.convolve_image
+        self._profile_model_image = self.convolve_image(tracer._image_plane_image, tracer._image_plane_blurring_image)
+        self._profile_subtracted_image = lensing_image[:] - self._profile_model_image
+
+        self.mapper = tracer.mappers_of_planes[0]
+        self.regularization = tracer.regularization_of_planes[0]
+        self.inversion = inversions.inversion_from_mapper_regularization_and_data(self._profile_subtracted_image,
+                                                                                  lensing_image.noise_map,
+                                                                                  lensing_image.convolver_mapping_matrix,
+                                                                                  self.mapper, self.regularization)
+
+        self._inversion_model_image = self.inversion.reconstructed_image
+
+        _model_image = self._profile_model_image + self._inversion_model_image
+
+        super(AbstractProfileInversionFit, self).__init__(lensing_image, tracer, _model_image)
+
+        self.evidence = evidence_from_reconstruction_terms(self.chi_squared_term, self.inversion.regularization_term,
+                                                           self.inversion.log_det_curvature_reg_matrix_term,
+                                                           self.inversion.log_det_regularization_matrix_term,
+                                                           self.noise_term)
+
+    @property
+    def profile_subtracted_image(self):
+        return self.map_to_2d(self._profile_subtracted_image)
+
+    @property
+    def profile_model_image(self):
+        return self.map_to_2d(self._profile_model_image)
+
+    @property
+    def inversion_model_image(self):
+        return self.map_to_2d(self._inversion_model_image)
+
+
+class ProfileInversionFit(AbstractProfileInversionFit):
+
+    def __init__(self, lensing_image, tracer):
+        """
+        Class to evaluate the fit between a model described by a tracer and an actual lensing_image.
+
+        Parameters
+        ----------
+        lensing_image: li.LensingImage
+            An lensing_image that has been masked for efficiency
+        tracer: ray_tracing.AbstractTracer
+            An object describing the model
+        """
+
+        super(ProfileInversionFit, self).__init__(lensing_image, tracer)
+
+    @classmethod
+    def fast_evidence(cls, lensing_image, tracer):
+
+        convolve_image = lensing_image.convolver_image.convolve_image
+        _profile_model_image = convolve_image(tracer._image_plane_image, tracer._image_plane_blurring_image)
+        _profile_subtracted_image = lensing_image[:] - _profile_model_image
+        mapper = tracer.mappers_of_planes[0]
+        regularization = tracer.regularization_of_planes[0]
+        inversion = inversions.inversion_from_mapper_regularization_and_data(_profile_subtracted_image,
+                                                                             lensing_image.noise_map,
+                                                                             lensing_image.convolver_mapping_matrix,
+                                                                             mapper, regularization)
+        _model_image = _profile_model_image + inversion.reconstructed_image
+        _residuals = residuals_from_image_and_model(lensing_image[:], _model_image)
+        _chi_squareds = chi_squareds_from_residuals_and_noise(_residuals, lensing_image.noise_map)
+        chi_squared_term = chi_squared_term_from_chi_squareds(_chi_squareds)
+        noise_term = noise_term_from_noise_map(lensing_image.noise_map)
+        return evidence_from_reconstruction_terms(chi_squared_term, inversion.regularization_term,
+                                                  inversion.log_det_curvature_reg_matrix_term,
+                                                  inversion.log_det_regularization_matrix_term, noise_term)
 
 class AbstractHyperFit(AbstractFit):
 

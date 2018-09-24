@@ -1467,6 +1467,61 @@ class TestHyperInversionFit:
             assert fast_scaled_evidence == scaled_evidence
 
 
+class TestProfileInversionFit:
+
+
+    class TestCompareToManual:
+
+        def test___manual_image_and_psf(self, li_manual):
+
+            galaxy_light = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=1.0))
+
+            pix = pixelizations.Rectangular(shape=(3, 3))
+            reg = regularization.Constant(regularization_coefficients=(1.0,))
+            galaxy_pix = g.Galaxy(pixelization=pix, regularization=reg)
+
+            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[galaxy_light], source_galaxies=[galaxy_pix],
+                                                         image_plane_grids=li_manual.grids, borders=li_manual.borders)
+
+            fit = fitting.fit_from_lensing_image_and_tracer(lensing_image=li_manual, tracer=tracer)
+
+            image_im = tracer._image_plane_image
+            blurring_im = tracer._image_plane_blurring_image
+            profile_model_image = li_manual.convolver_image.convolve_image(image_im, blurring_im)
+            profile_subtracted_image = li_manual[:] - profile_model_image
+
+            assert li_manual.grids.image.map_to_2d(profile_model_image) == pytest.approx(fit.profile_model_image, 1e-4)
+            assert li_manual.grids.image.map_to_2d(profile_subtracted_image) == \
+                   pytest.approx(fit.profile_subtracted_image, 1e-4)
+
+            mapper = pix.mapper_from_grids_and_borders(li_manual.grids, li_manual.borders)
+            inversion = inversions.inversion_from_mapper_regularization_and_data(mapper=mapper, regularization=reg,
+                        image=profile_subtracted_image, noise_map=li_manual.noise_map,
+                                                        convolver=li_manual.convolver_mapping_matrix)
+
+            model_image = profile_model_image + inversion.reconstructed_image
+            residuals = fitting.residuals_from_image_and_model(li_manual, model_image)
+            chi_squareds = fitting.chi_squareds_from_residuals_and_noise(residuals, li_manual.noise_map)
+
+            assert li_manual.grids.image.map_to_2d(li_manual.noise_map) == pytest.approx(fit.noise_map, 1e-4)
+            assert li_manual.grids.image.map_to_2d(inversion.reconstructed_image) == \
+                   pytest.approx(fit.inversion_model_image, 1e-4)
+            assert li_manual.grids.image.map_to_2d(model_image) == pytest.approx(fit.model_image, 1e-4)
+            assert li_manual.grids.image.map_to_2d(residuals) == pytest.approx(fit.residuals, 1e-4)
+            assert li_manual.grids.image.map_to_2d(chi_squareds) == pytest.approx(fit.chi_squareds, 1e-4)
+
+            chi_squared_term = fitting.chi_squared_term_from_chi_squareds(chi_squareds)
+            noise_term = fitting.noise_term_from_noise_map(li_manual.noise_map)
+            evidence = fitting.evidence_from_reconstruction_terms(chi_squared_term, inversion.regularization_term,
+                 inversion.log_det_curvature_reg_matrix_term, inversion.log_det_regularization_matrix_term, noise_term)
+
+            assert evidence == fit.evidence
+
+            fast_evidence = fitting.fast_likelihood_from_lensing_image_and_tracer(lensing_image=li_manual,
+                                                                                  tracer=tracer)
+            assert fast_evidence == evidence
+
+
 class MockTracerPositions:
 
     def __init__(self, positions, noise=None):

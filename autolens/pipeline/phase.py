@@ -373,6 +373,7 @@ class PhaseImaging(Phase):
         analysis = self.make_analysis(image=image, previous_results=previous_results)
         result = self.optimizer.fit(analysis)
         analysis.visualize(instance=result.constant, suffix=None, during_analysis=False)
+
         return self.__class__.Result(result.constant, result.likelihood, result.variable, analysis)
 
     def make_analysis(self, image, previous_results=None):
@@ -567,7 +568,7 @@ class LensPlanePhase(PhaseImaging):
             super(LensPlanePhase.Analysis, self).__init__(lensing_image, phase_name, previous_results)
 
         def tracer_for_instance(self, instance):
-            return ray_tracing.TracerImagePlane(lens_galaxies=instance.lens_galaxies,
+            return ray_tracing.TracerImagePlane(lens_galaxies=instance.lens_galaxies, 
                                                 image_plane_grids=self.lensing_image.grids)
 
         def unmasked_tracer_for_instance(self, instance):
