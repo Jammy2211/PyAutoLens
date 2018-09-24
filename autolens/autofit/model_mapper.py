@@ -121,7 +121,7 @@ class ModelMapper(AbstractModel):
         super(ModelMapper, self).__setattr__(key, value)
 
     @property
-    def total_parameters(self):
+    def total_priors(self):
         return len(self.prior_tuples_ordered_by_id)
 
     @property
