@@ -2,7 +2,7 @@ from autolens.pipeline import pipeline as pl
 from autolens.pipeline import phase as ph
 from autolens.profiles import light_profiles as lp
 from autolens.lensing import galaxy
-from autolens.lensing import galaxy_prior as gp
+from autolens.lensing import galaxy_model as gp
 from autolens.imaging import mask as msk
 from autolens.autofit import non_linear as nl
 from autolens.autofit import model_mapper as mm
@@ -14,7 +14,8 @@ dirpath = os.path.dirname(dirpath)
 output_path = '/gpfs/data/pdtw24/Lens/int/lens_profile/'
 
 
-def test_lens_x2_gal_separate_pipeline():
+def test_pipeline():
+
     pipeline_name = "l2g_sep"
     data_name = '/l2g_sep'
 
@@ -32,7 +33,7 @@ def test_lens_x2_gal_separate_pipeline():
     tools.simulate_integration_image(data_name=data_name, pixel_scale=0.2, lens_galaxies=[lens_galaxy_0, lens_galaxy_1],
                                      source_galaxies=[], target_signal_to_noise=50.0)
 
-    pipeline = make_lens_x2_gal_separate_pipeline(pipeline_name=pipeline_name)
+    pipeline = make_pipeline(pipeline_name=pipeline_name)
     image = tools.load_image(data_name=data_name, pixel_scale=0.2)
 
     results = pipeline.run(image=image)
@@ -40,16 +41,16 @@ def test_lens_x2_gal_separate_pipeline():
         print(result)
 
 
-def make_lens_x2_gal_separate_pipeline(pipeline_name):
+def make_pipeline(pipeline_name):
     def modify_mask_function(img):
         return msk.Mask.circular(shape=img.shape, pixel_scale=img.pixel_scale, radius_mask_arcsec=5.)
 
     class LensPlaneGalaxy0Phase(ph.LensPlanePhase):
         def pass_priors(self, previous_results):
-            self.lens_galaxies[0].elliptical_sersic.centre_0 = mm.UniformPrior(-2.0, 0.0)
-            self.lens_galaxies[0].elliptical_sersic.centre_1 = mm.UniformPrior(-2.0, 0.0)
+            self.lens_galaxies[0].sersic.centre_0 = -1.0
+            self.lens_galaxies[0].sersic.centre_1 = -1.0
 
-    phase1 = LensPlaneGalaxy0Phase(lens_galaxies=[gp.GalaxyPrior(elliptical_sersic=lp.EllipticalSersic)],
+    phase1 = LensPlaneGalaxy0Phase(lens_galaxies=[gp.GalaxyModel(sersic=lp.EllipticalSersic)],
                                    mask_function=modify_mask_function, optimizer_class=nl.MultiNest,
                                    phase_name="{}/phase1".format(pipeline_name))
 
@@ -59,11 +60,11 @@ def make_lens_x2_gal_separate_pipeline(pipeline_name):
     class LensPlaneGalaxy1Phase(ph.LensPlanePhase):
         def pass_priors(self, previous_results):
             self.lens_galaxies[0] = previous_results[-1].constant.lens_galaxies[0]
-            self.lens_galaxies[1].elliptical_sersic.centre_0 = mm.UniformPrior(0.0, 2.0)
-            self.lens_galaxies[1].elliptical_sersic.centre_1 = mm.UniformPrior(0.0, 2.0)
+            self.lens_galaxies[1].sersic.centre_0 = 1.0
+            self.lens_galaxies[1].sersic.centre_1 = 1.0
 
-    phase2 = LensPlaneGalaxy1Phase(lens_galaxies=[gp.GalaxyPrior(elliptical_sersic=lp.EllipticalSersic),
-                                                  gp.GalaxyPrior(elliptical_sersic=lp.EllipticalSersic)],
+    phase2 = LensPlaneGalaxy1Phase(lens_galaxies=[gp.GalaxyModel(sersic=lp.EllipticalSersic),
+                                                  gp.GalaxyModel(sersic=lp.EllipticalSersic)],
                                    mask_function=modify_mask_function, optimizer_class=nl.MultiNest,
                                    phase_name="{}/phase2".format(pipeline_name))
 
@@ -73,10 +74,14 @@ def make_lens_x2_gal_separate_pipeline(pipeline_name):
     class LensPlaneBothGalaxyPhase(ph.LensPlanePhase):
         def pass_priors(self, previous_results):
             self.lens_galaxies[0] = previous_results[0].variable.lens_galaxies[0]
-            self.lens_galaxies[1] = previous_results[1].variable.lens_galaxies[1]
+            self.lens_galaxies[1] = previous_results[1].variable.lens_galaxies[0]
+            self.lens_galaxies[0].sersic.centre_0 = -1.0
+            self.lens_galaxies[0].sersic.centre_1 = -1.0
+            self.lens_galaxies[1].sersic.centre_0 = 1.0
+            self.lens_galaxies[1].sersic.centre_1 = 1.0
 
-    phase3 = LensPlaneBothGalaxyPhase(lens_galaxies=[gp.GalaxyPrior(elliptical_sersic=lp.EllipticalSersic),
-                                                     gp.GalaxyPrior(elliptical_sersic=lp.EllipticalSersic)],
+    phase3 = LensPlaneBothGalaxyPhase(lens_galaxies=[gp.GalaxyModel(sersic=lp.EllipticalSersic),
+                                                     gp.GalaxyModel(sersic=lp.EllipticalSersic)],
                                       mask_function=modify_mask_function, optimizer_class=nl.MultiNest,
                                       phase_name="{}/phase3".format(pipeline_name))
 
@@ -87,4 +92,4 @@ def make_lens_x2_gal_separate_pipeline(pipeline_name):
 
 
 if __name__ == "__main__":
-    test_lens_x2_gal_separate_pipeline()
+    test_pipeline()

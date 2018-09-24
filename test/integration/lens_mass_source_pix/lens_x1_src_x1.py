@@ -3,7 +3,7 @@ from autolens.pipeline import phase as ph
 from autolens.profiles import light_profiles as lp
 from autolens.profiles import mass_profiles as mp
 from autolens.inversion import pixelizations as pix
-from autolens.lensing import galaxy_prior as gp
+from autolens.lensing import galaxy_model as gp
 from autolens.autofit import non_linear as nl
 from autolens.autofit import model_mapper as mm
 from autolens.lensing import galaxy
@@ -62,8 +62,8 @@ def make_lens_x1_src_x1_pix_pipeline(pipeline_name):
             self.source_galaxies[0].mapper.shape.shape_0 = mm.UniformPrior(19.5, 20.5)
             self.source_galaxies[0].mapper.shape.shape_1 = mm.UniformPrior(19.5, 20.5)
 
-    phase1 = SourcePix(lens_galaxies=[gp.GalaxyPrior(sie=mp.EllipticalIsothermal)],
-                       source_galaxies=[gp.GalaxyPrior(pixelization=pix.RectangularRegConst)],
+    phase1 = SourcePix(lens_galaxies=[gp.GalaxyModel(sie=mp.EllipticalIsothermal)],
+                       source_galaxies=[gp.GalaxyModel(pixelization=pix.RectangularRegConst)],
                        optimizer_class=nl.MultiNest, phase_name="{}/phase1".format(pipeline_name))
 
     phase1.optimizer.n_live_points = 60
