@@ -336,14 +336,14 @@ class TestNonLinearOptimizer(object):
             mapper = model_mapper.ModelMapper(config=mm_config, mock_class=MockClassNLOx4)
             nlo = non_linear.NonLinearOptimizer(model_mapper=mapper)
 
-            assert nlo.variable.total_parameters == 4
+            assert nlo.variable.total_priors == 4
 
         def test__2_classes__six_parameters(self, mm_config, nlo_setup_path):
             conf.instance.output_path = nlo_setup_path + '2_classes'
             mapper = model_mapper.ModelMapper(config=mm_config, class_1=MockClassNLOx4, class_2=MockClassNLOx6)
             nlo = non_linear.NonLinearOptimizer(model_mapper=mapper)
 
-            assert nlo.variable.total_parameters == 10
+            assert nlo.variable.total_priors == 10
 
     # TODO : Reimplement tests once integration tests are up and running
 
@@ -962,7 +962,7 @@ class TestRealClasses(object):
                                           mass_profile_2=mass_profiles.SphericalNFW)
         nlo = non_linear.NonLinearOptimizer(model_mapper=mapper)
 
-        assert nlo.variable.total_parameters == 29
+        assert nlo.variable.total_priors == 29
 
     # def test__create_param_names_2_light_models__2_mass_models(self, mm_config, nlo_paramnames_path):
     #
