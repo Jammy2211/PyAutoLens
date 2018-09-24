@@ -65,7 +65,7 @@ class NLO(non_linear.NonLinearOptimizer):
                 return -2 * likelihood
 
         fitness_function = Fitness(self.variable.instance_from_physical_vector, self.constant)
-        fitness_function(self.variable.total_parameters * [0.5])
+        fitness_function(self.variable.total_priors * [0.5])
 
         return fitness_function.result
 
@@ -175,14 +175,6 @@ class TestPhase(object):
 
     def test_default_mask_function(self, phase, image):
         assert len(li.LensingImage(image, phase.mask_function(image))) == 32
-
-    # TODO: removed because galaxy_images seems to have been removed?
-    # def test_galaxy_images(self, _image, phase):
-    #     clean_images()
-    #     phase.lens_galaxies = [g.Galaxy()]
-    #     phase.source_galaxies = [g.Galaxy()]
-    #     result = phase.run(_image)
-    #     assert len(result.galaxy_images) == 2
 
     def test_duplication(self):
         phase = ph.LensSourcePlanePhase(lens_galaxies=[gm.GalaxyModel()], source_galaxies=[gm.GalaxyModel()])
