@@ -43,20 +43,20 @@ import os
 # Setup the path of the analysis so we can load the example data.
 path = "{}".format(os.path.dirname(os.path.realpath(__file__)))
 
-# Load an image from the 'phase_basic_data' folder. It is assumed that this folder contains image.fits, noise.fits and
+# Load an image from the 'phase_basic_data' folder. It is assumed that this folder contains image.fits, noise_map.fits and
 # psf.fits - we've included some example data there already.
 image = im.load(path=path + '/../data/basic/', pixel_scale=0.07)
 
-# The GalaxyPrior class represents a galaxy object, where the parameters of its associated profiles are variable and
+# The GalaxyModel class represents a galaxy object, where the parameters of its associated profiles are variable and
 # fitted for by the lensing.
 
 # Here, we make a lens galaxy with both a light profile (an elliptical Sersic) and mass profile
 # (a singular isothermal sphere). These profiles are loaded from the 'light_profile (lp)' and 'mass_profile (mp)'
 # modules, check them out in the source code to see all the profiles you can choose from!
-lens_galaxy = gp.GalaxyPrior(light=lp.EllipticalSersic, mass=mp.EllipticalIsothermal)
+lens_galaxy = gp.GalaxyModel(light=lp.EllipticalSersic, mass=mp.EllipticalIsothermal)
 
 # We make the source galaxy just like the lens galaxy - lets use another Sersic light profile.
-source_galaxy = gp.GalaxyPrior(light=lp.EllipticalSersic)
+source_galaxy = gp.GalaxyModel(light=lp.EllipticalSersic)
 
 # Finally, we need to set up the 'phase' in which the lensing is performed. Depending on the lensing you can choose
 # from 3 phases, which represent the number of planes in the lens system (LensPlanePhase, LensSourcePlanePhase,
@@ -99,7 +99,7 @@ def make():
 
     # This line follows the same syntax as our phase did in phase/basic.py. However, as we're breaking the analysis
     # down to only fit the lens's light, that means we use the 'LensPlanePhase' and just specify the lens galaxy.
-    phase1 = phase.LensPlanePhase(lens_galaxies=[gp.GalaxyPrior(sersic=lp.EllipticalSersic)],
+    phase1 = phase.LensPlanePhase(lens_galaxies=[gp.GalaxyModel(sersic=lp.EllipticalSersic)],
                                   optimizer_class=nl.MultiNest, phase_name='ph1')
 
     # In phase 2, we fit the source galaxy's light. Thus, we want to make 2 changes from the previous phase:
@@ -120,15 +120,15 @@ def make():
 
     # We setup phase 2 just like any other phase, now using the LensSubtracted phase we created above so that our new
     # image and masks are used.
-    phase2 = LensSubtractedPhase(lens_galaxies=[gp.GalaxyPrior(sie=mp.EllipticalIsothermal)],
-                                 source_galaxies=[gp.GalaxyPrior(sersic=lp.EllipticalSersic)],
+    phase2 = LensSubtractedPhase(lens_galaxies=[gp.GalaxyModel(sie=mp.EllipticalIsothermal)],
+                                 source_galaxies=[gp.GalaxyModel(sersic=lp.EllipticalSersic)],
                                  optimizer_class=nl.MultiNest, mask_function=mask_function,
                                  phase_name='ph2')
 
     # Finally, in phase 3, we want to fit all of the lens and source component simulateously, using the results of
     # phases 1 and 2 to initialize the analysis. To do this, we use the 'pass_priors' function, which allows us to
     # map the previous_results of the lens and source galaxies to the galaxies in this phase.
-    # The term 'variable' signifies that when we map these results to setup the GalaxyPrior, we want the parameters
+    # The term 'variable' signifies that when we map these results to setup the GalaxyModel, we want the parameters
 
     # To still be treated as free parameters that are varied during the fit.
 
@@ -137,13 +137,13 @@ def make():
         def pass_priors(self, previous_results):
             phase_1_results = previous_results[0]
             phase_2_results = previous_results[1]
-            self.lens_galaxies[0] = gp.GalaxyPrior(sersic=phase_1_results.variable.lens_galaxies[0].sersic,
+            self.lens_galaxies[0] = gp.GalaxyModel(sersic=phase_1_results.variable.lens_galaxies[0].sersic,
                                                    sie=phase_2_results.variable.lens_galaxies[0].sie)
             self.source_galaxies = phase_2_results.variable.source_galaxies
 
-    phase3 = LensSourcePhase(lens_galaxies=[gp.GalaxyPrior(sersic=lp.EllipticalSersic,
+    phase3 = LensSourcePhase(lens_galaxies=[gp.GalaxyModel(sersic=lp.EllipticalSersic,
                                                            sie=mp.EllipticalIsothermal)],
-                              source_galaxies=[gp.GalaxyPrior(sersic=lp.EllipticalSersic)],
+                              source_galaxies=[gp.GalaxyModel(sersic=lp.EllipticalSersic)],
                               optimizer_class=nl.MultiNest, phase_name='ph3')
 
     return pipeline.PipelineImaging(pipeline_name, phase1, phase2, phase3)

@@ -2,7 +2,7 @@ from autolens.pipeline import pipeline as pl
 from autolens.pipeline import phase as ph
 from autolens.profiles import light_profiles as lp
 from autolens.profiles import mass_profiles as mp
-from autolens.lensing import galaxy_prior as gp
+from autolens.lensing import galaxy_model as gp
 from autolens.autofit import non_linear as nl
 from autolens.autofit import model_mapper as mm
 from autolens.lensing import galaxy
@@ -53,8 +53,8 @@ def test_lens_x1_src_x1_profile_pos_pipeline():
 
 def make_lens_x1_src_x1_profile_pos_pipeline(pipeline_name):
 
-    phase1 = ph.LensSourcePlanePhase(lens_galaxies=[gp.GalaxyPrior(sie=mp.EllipticalIsothermal)],
-                                     source_galaxies=[gp.GalaxyPrior(sersic=lp.EllipticalSersic)],
+    phase1 = ph.LensSourcePlanePhase(lens_galaxies=[gp.GalaxyModel(sie=mp.EllipticalIsothermal)],
+                                     source_galaxies=[gp.GalaxyModel(sersic=lp.EllipticalSersic)],
                                      optimizer_class=nl.MultiNest,
                                      positions=[[[1.0, 1.0], [1.0, -1.0], [-1.0, 1.0], [-1.0, -1.0]]],
                                      phase_name="{}/phase1".format(pipeline_name))

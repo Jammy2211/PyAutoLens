@@ -161,7 +161,7 @@ class SphericalProfile(GeometryProfile):
         Parameters
         ----------
         grid : ndarray
-            The (x, y) coordinates in the original reference frame of the observed image.
+            The (x, y) coordinates in the original reference frame of the observed _image.
         """
         transformed = np.subtract(grid, self.centre)
         return transformed.view(TransformedGrid)
@@ -173,7 +173,7 @@ class SphericalProfile(GeometryProfile):
         Parameters
         ----------
         grid : TransformedGrid(ndarray)
-            The (x, y) coordinates in the reference frame of the profile image.
+            The (x, y) coordinates in the reference frame of the profile _image.
         """
         transformed = np.add(grid, self.centre)
         return transformed.view(TransformedGrid)
@@ -285,7 +285,7 @@ class EllipticalProfile(SphericalProfile):
         Parameters
         ----------
         grid : ndarray
-            The (x, y) coordinates in the original reference frame of the observed image.
+            The (x, y) coordinates in the original reference frame of the observed _image.
         """
         shifted_coordinates = np.subtract(grid, self.centre)
         radius = np.sqrt(np.sum(shifted_coordinates ** 2.0, 1))
@@ -302,7 +302,7 @@ class EllipticalProfile(SphericalProfile):
         Parameters
         ----------
         grid : TransformedGrid(ndarray)
-            The (x, y) coordinates in the reference frame of the profile image.
+            The (x, y) coordinates in the reference frame of the profile _image.
         """
         x = np.add(np.add(np.multiply(grid[:, 0], self.cos_phi), - np.multiply(grid[:, 1], self.sin_phi)),
                    self.centre[0])

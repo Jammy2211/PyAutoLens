@@ -12,29 +12,29 @@ class LensingImage(im.Image):
     def __init__(self, image, mask, sub_grid_size=2, image_psf_shape=None, mapping_matrix_psf_shape=None,
                  positions=None):
         """
-        The lensing image is the collection of data (images, noise-maps, PSF), a mask, grids, convolvers and other \
-        utilities that are used for modeling and fitting an image of a strong lens.
+        The lensing _image is the collection of data (images, noise-maps, PSF), a mask, grids, convolvers and other \
+        utilities that are used for modeling and fitting an _image of a strong lens.
 
-        Whilst the image data is initially loaded in 2D, for the lensing image the masked-image (and noise-maps) \
+        Whilst the _image data is initially loaded in 2D, for the lensing _image the masked-_image (and noise-maps) \
         are reduced to 1D arrays for faster calculations.
 
         Parameters
         ----------
         image: im.Image
-            The original image data in 2D.
+            The original _image data in 2D.
         mask: msk.Mask
-            The 2D mask that is applied to the image.
+            The 2D mask that is applied to the _image.
         sub_grid_size : int
-            The size of the sub-grid used for each lensing SubGrid. E.g. a value of 2 grids each image-pixel on a 2x2 \
+            The size of the sub-grid used for each lensing SubGrid. E.g. a value of 2 grids each _image-pixel on a 2x2 \
             sub-grid.
         image_psf_shape : (int, int)
             The shape of the PSF used for convolving model images generated using analytic light profiles. A smaller \
-            shape will trim the PSF relative to the input image PSF, giving a faster analysis run-time.
+            shape will trim the PSF relative to the input _image PSF, giving a faster analysis run-time.
         mapping_matrix_psf_shape : (int, int)
             The shape of the PSF used for convolving the inversion mapping matrix. A smaller \
-            shape will trim the PSF relative to the input image PSF, giving a faster analysis run-time.
+            shape will trim the PSF relative to the input _image PSF, giving a faster analysis run-time.
         positions : [[]]
-            Lists of image-pixel coordinates (arc-seconds) that mappers close to one another in the source-plane(s), used \
+            Lists of _image-pixel coordinates (arc-seconds) that mappers close to one another in the source-plane(s), used \
             to speed up the non-linear sampling.
         """
         super().__init__(array=image, pixel_scale=image.pixel_scale,

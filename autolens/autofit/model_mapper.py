@@ -527,6 +527,8 @@ class ModelMapper(AbstractModel):
                 line = prior_model_name + '_' + param_name
                 model_info.append(line + ' ' * (40 - len(line)) + prior[1].model_info)
 
+            model_info.append('')
+
         return '\n'.join(model_info)
 
 
@@ -949,8 +951,6 @@ class PriorModel(AbstractPriorModel):
             A new model mapper populated with Gaussian priors
         """
         new_model = PriorModel(self.cls, self.config)
-
-        print(arguments)
 
         model_arguments = {t.name: arguments[t.prior] for t in self.direct_prior_tuples}
 
