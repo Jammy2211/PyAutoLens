@@ -45,8 +45,10 @@ def get_xylabels(units):
 
     return xlabel, ylabel
 
-def plot_image(array, figsize, aspect, cmap, norm_scale):
-    plt.figure(figsize=figsize)
+def plot_image(array, as_subplot, figsize, aspect, cmap, norm_scale):
+
+    if not as_subplot:
+        plt.figure(figsize=figsize)
     plt.imshow(array, aspect=aspect, cmap=cmap, norm=norm_scale)
 
 def set_title_and_labels(title, xlabel, ylabel, titlesize, xlabelsize, ylabelsize):
@@ -59,8 +61,8 @@ def set_ticks(array, units, xticks, yticks, xyticksize):
 
     if units is 'pixels':
 
-        plt.xticks(np.round((array.shape[0] * np.array([0.0, 0.33, 0.66, 0.99])),0))
-        plt.yticks(np.round((array.shape[1] * np.array([0.0, 0.33, 0.66, 0.99])),0))
+        plt.xticks(np.round((array.shape[0] * np.array([0.0, 0.33, 0.66, 0.99]))))
+        plt.yticks(np.round((array.shape[1] * np.array([0.0, 0.33, 0.66, 0.99]))))
 
     elif units is 'arcsec' or units is 'kpc':
 
@@ -84,3 +86,12 @@ def output_array(array, output_path, output_filename, output_format):
         hdu = fits.PrimaryHDU()
         hdu.data = array
         hdu.writeto(output_path + output_filename + '.fits')
+
+def output_subplot_array(output_path, output_filename, output_format):
+
+    if output_format is 'show':
+        plt.show()
+    elif output_format is 'png':
+        plt.savefig(output_path + output_filename + '.png', bbox_inches='tight')
+    elif output_format is 'fits':
+        raise exc.VisualizeException('You cannot output a subplots with format .fits')
