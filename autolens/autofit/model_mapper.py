@@ -725,9 +725,13 @@ class TuplePrior(object):
         tuple: (float,...)
             A tuple of float values
         """
-        return tuple(
-            [arguments[prior[1]] for prior in self.prior_tuples] + [constant[1].value for constant in
-                                                                    self.constant_tuples])
+
+        def convert(tup):
+            if hasattr(tup, "prior"):
+                return arguments[tup.prior]
+            return tup.constant.value
+
+        return tuple(map(convert, sorted(self.prior_tuples + self.constant_tuples, key=lambda tup: tup.name)))
 
     def gaussian_tuple_prior_for_arguments(self, arguments):
         """
