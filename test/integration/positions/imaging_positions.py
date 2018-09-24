@@ -2,7 +2,7 @@ from autolens.pipeline import pipeline as pl
 from autolens.pipeline import phase as ph
 from autolens.profiles import light_profiles as lp
 from autolens.profiles import mass_profiles as mp
-from autolens.lensing import galaxy_prior as gp
+from autolens.lensing import galaxy_model as gp
 from autolens.autofit import non_linear as nl
 from autolens.lensing import galaxy
 from autolens import conf
@@ -53,7 +53,7 @@ def test_lens_x1_gal_pipeline():
 def make_imaging_positions_pipeline(pipeline_name):
 
     phase1 = ph.PositionsImagingPhase(positions=[[[1.0, 1.0], [1.0, -1.0], [-1.0, 1.0], [-1.0, -1.0]]],
-                                      lens_galaxies=[gp.GalaxyPrior(sis=mp.SphericalIsothermal)],
+                                      lens_galaxies=[gp.GalaxyModel(sis=mp.SphericalIsothermal)],
                                       optimizer_class=nl.MultiNest, phase_name="{}/phase1".format(pipeline_name))
 
     phase1.optimizer.n_live_points = 40

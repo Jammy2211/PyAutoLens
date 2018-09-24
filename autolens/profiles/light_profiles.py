@@ -25,7 +25,7 @@ class LightProfile(object):
         Parameters
         ----------
         grid : ndarray
-            The (x, y) coordinates in the original reference frame of the observed image.
+            The (x, y) coordinates in the original reference frame of the observed _image.
         Returns
         -------
         intensity : float
@@ -139,7 +139,7 @@ class EllipticalGaussian(EllipticalLP):
         Parameters
         ----------
         grid : ndarray
-            The (x, y) coordinates in the original reference frame of the observed image.
+            The (x, y) coordinates in the original reference frame of the observed _image.
         Returns
         -------
         intensity : float
@@ -212,7 +212,7 @@ class EllipticalSersic(geometry_profiles.EllipticalSersic, EllipticalLP):
         Parameters
         ----------
         grid : ndarray
-            The (x, y) coordinates in the original reference frame of the observed image.
+            The (x, y) coordinates in the original reference frame of the observed _image.
         Returns
         -------
         intensity : float
