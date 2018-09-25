@@ -172,7 +172,7 @@ def sub_grid_1d_masked_from_mask_pixel_scale_and_sub_grid_size(mask, pixel_scale
 def grid_to_pixel_from_mask(mask):
     """Compute a 1D array that maps every unmasked pixel to its corresponding 2d pixel using its (x,y) pixel indexes.
 
-    For example if pixel [2,5] corresponds to the second pixel on the 1D array, grid_to_pixel[1] = [2,5]"""
+    For howtolens if pixel [2,5] corresponds to the second pixel on the 1D array, grid_to_pixel[1] = [2,5]"""
 
     total_image_pixels = total_image_pixels_from_mask(mask)
     grid_to_pixel = np.zeros(shape=(total_image_pixels, 2))
@@ -191,7 +191,7 @@ def grid_to_pixel_from_mask(mask):
 def sub_to_image_from_mask(mask, sub_grid_size):
     """Compute a 1D array that maps every unmasked pixel's sub-pixel to its corresponding 1d _image-pixel.
 
-    For example, if sub-pixel 8 is in _image-pixel 1, sub_to_image[7] = 1."""
+    For howtolens, if sub-pixel 8 is in _image-pixel 1, sub_to_image[7] = 1."""
 
     total_sub_pixels = total_sub_pixels_from_mask_and_sub_grid_size(mask, sub_grid_size)
 

@@ -1,6 +1,6 @@
 from autolens import conf
-from autolens.visualize import array_plotters
-from autolens.visualize import util
+from autolens.plotting import array_plotters
+from autolens.plotting import util
 from matplotlib import pyplot as plt
 
 def plot_image(image, output_path=None, output_filename='images', output_format='show', ignore_config=True):
@@ -60,7 +60,7 @@ def plot_image(image, output_path=None, output_filename='images', output_format=
 
     plot_image_as_subplot = conf.instance.general.get('output', 'plot_image_as_subplot', bool)
     
-    if plot_image_as_subplot and ignore_config is False:
+    if plot_image_as_subplot or ignore_config is True:
     
         plt.figure(figsize=(25, 20))
         plt.subplot(2, 2, 1)
@@ -84,10 +84,11 @@ def plot_image(image, output_path=None, output_filename='images', output_format=
             output_path=output_path, output_filename=None, output_format=output_format)
     
         plt.subplot(2, 2, 3)
-    
+
         array_plotters.plot_psf(
             psf=image.psf, as_subplot=True,
-            xticks=image.xticks, yticks=image.yticks, units='arcsec', xyticksize=16,
+            xticks=image.psf.xticks(image.pixel_scale), yticks=image.psf.yticks(image.pixel_scale), units='arcsec',
+            xyticksize=16,
             norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
             figsize=None, aspect='auto', cmap='jet', cb_ticksize=16,
             titlesize=16, xlabelsize=16, ylabelsize=16,
@@ -106,7 +107,7 @@ def plot_image(image, output_path=None, output_filename='images', output_format=
         util.output_subplot_array(output_path=output_path, output_filename=output_filename, output_format=output_format)
         plt.close()
 
-def plot_image_individuals(image, output_path=None, output_format='show'):
+def plot_image_individuals(image, output_path=None, output_format='show', ignore_config=True):
     """Plot the observed _image of an analysis, using the *Image* class object.
 
     The visualization and output type can be fully customized.
@@ -164,11 +165,9 @@ def plot_image_individuals(image, output_path=None, output_format='show'):
     plot_image_image = conf.instance.general.get('output', 'plot_image_image', bool)
     plot_image_noise_map = conf.instance.general.get('output', 'plot_image_noise_map', bool)
     plot_image_psf = conf.instance.general.get('output', 'plot_image_psf', bool)
-    plot_image_signal_to_noise_map = \
-        conf.instance.general.get('output', 'plot_image_signal_to_noise_map', bool)
+    plot_image_signal_to_noise_map = conf.instance.general.get('output', 'plot_image_signal_to_noise_map', bool)
 
-
-    if plot_image_image:
+    if plot_image_image or ignore_config is True:
 
         array_plotters.plot_image(
             image=image, as_subplot=False, 
@@ -178,7 +177,7 @@ def plot_image_individuals(image, output_path=None, output_format='show'):
             titlesize=46, xlabelsize=36, ylabelsize=36,
             output_path=output_path, output_format=output_format)
 
-    if plot_image_noise_map:
+    if plot_image_noise_map or ignore_config is True:
 
         array_plotters.plot_noise_map(
             noise_map=image.noise_map, as_subplot=False, 
@@ -188,17 +187,18 @@ def plot_image_individuals(image, output_path=None, output_format='show'):
             titlesize=46, xlabelsize=36, ylabelsize=36,
             output_path=output_path, output_format=output_format)
 
-    if plot_image_psf:
+    if plot_image_psf or ignore_config is True:
 
         array_plotters.plot_psf(
-            psf=image.psf, as_subplot=False, 
-            xticks=image.xticks, yticks=image.yticks, units='arcsec', xyticksize=40,
+            psf=image.psf, as_subplot=False,
+            xticks=image.psf.xticks(image.pixel_scale), yticks=image.psf.yticks(image.pixel_scale), units='arcsec',
+            xyticksize=40,
             norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
             figsize=(20, 15), aspect='auto', cmap='jet', cb_ticksize=20,
             titlesize=46, xlabelsize=36, ylabelsize=36,
             output_path=output_path, output_format=output_format)
 
-    if plot_image_signal_to_noise_map:
+    if plot_image_signal_to_noise_map or ignore_config is True:
 
         array_plotters.plot_signal_to_noise_map(
             signal_to_noise_map=image.signal_to_noise_map, as_subplot=False, 
