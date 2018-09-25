@@ -63,9 +63,7 @@ class NonLinearOptimizer(object):
 
         if name is None:
             name = ""
-        self.path = "{}/{}".format(conf.instance.output_path, name)
-        if not os.path.exists(self.path):
-            os.makedirs(self.path)
+        self.path = link.make_linked_folder("{}/{}".format(conf.instance.output_path, name))
         self.chains_path = "{}/{}".format(self.path, 'chains')
         if not os.path.exists(self.chains_path):
             os.makedirs(self.chains_path)
@@ -335,7 +333,7 @@ class MultiNest(NonLinearOptimizer):
 
         logger.info("Running MultiNest...")
         self.run(fitness_function.__call__, prior, self.variable.total_priors,
-                 outputfiles_basename="{}/mn".format(link.make_linked_folder(self.chains_path)),
+                 outputfiles_basename="{}/mn".format(self.chains_path),
                  n_live_points=self.n_live_points,
                  const_efficiency_mode=self.const_efficiency_mode,
                  importance_nested_sampling=self.importance_nested_sampling,
