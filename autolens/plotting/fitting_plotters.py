@@ -453,7 +453,7 @@ def plot_fitting_individuals_lens_plane_only(fitting, output_path=None, output_f
 
     if plot_fitting_model_image:
         array_plotters.plot_array(
-            array=fitting.model_image,
+            array=fitting.model_image, grid=None, as_subplot=False,
             xticks=fitting.image.xticks, yticks=fitting.image.yticks, units='arcsec', xyticksize=40,
             norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
             figsize=(20, 15), aspect='auto', cmap='jet', cb_ticksize=20,
@@ -463,7 +463,7 @@ def plot_fitting_individuals_lens_plane_only(fitting, output_path=None, output_f
     if plot_fitting_residuals:
 
         array_plotters.plot_array(
-            array=fitting.residuals,
+            array=fitting.residuals, grid=None, as_subplot=False,
             xticks=fitting.image.xticks, yticks=fitting.image.yticks, units='arcsec', xyticksize=40,
             norm='linear', norm_min=None, norm_max=None, linthresh=0.001, linscale=0.001,
             figsize=(20, 15), aspect='auto', cmap='jet', cb_ticksize=20,
@@ -473,7 +473,7 @@ def plot_fitting_individuals_lens_plane_only(fitting, output_path=None, output_f
     if plot_fitting_chi_squareds:
 
         array_plotters.plot_array(
-            array=fitting.chi_squareds,
+            array=fitting.chi_squareds, grid=None, as_subplot=False,
             xticks=fitting.image.xticks, yticks=fitting.image.yticks, units='arcsec', xyticksize=40,
             norm='linear', norm_min=None, norm_max=None, linthresh=0.001, linscale=0.001,
             figsize=(20, 15), aspect='auto', cmap='jet', cb_ticksize=20,
