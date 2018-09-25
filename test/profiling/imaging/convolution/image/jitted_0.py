@@ -1,11 +1,10 @@
+import numba
 import numpy as np
+import pytest
+from profiling import profiling_data
+from profiling import tools
 
 from autolens.profiles import light_profiles
-from profiling import profiling_data
-from imaging import convolution
-from profiling import tools
-import numba
-import pytest
 
 
 class FrameMakerOriginal(object):
@@ -360,7 +359,7 @@ class KernelConvolverOriginal(object):
         return new_array
 
 
-sub_grid_size=2
+sub_grid_size = 2
 psf_shape = (41, 41)
 sersic = light_profiles.EllipticalSersic(centre=(0.0, 0.0), axis_ratio=0.8, phi=90.0, intensity=0.1,
                                          effective_radius=0.8, sersic_index=4.0)
@@ -372,7 +371,7 @@ lsst_kernel_convolver = KernelConvolverOriginal(kernel=lsst._image_plane_image.p
 lsst_image = sersic.intensities_from_grid(grid=lsst.grids._image_plane_image)
 lsst_blurring_image = sersic.intensities_from_grid(grid=lsst.grids.blurring)
 
-assert (lsst_kernel_convolver.convolve_array(lsst_image, lsst_blurring_image) == 
+assert (lsst_kernel_convolver.convolve_array(lsst_image, lsst_blurring_image) ==
         pytest.approx(lsst_kernel_convolver.convolve_array_jitted(lsst_image, lsst_blurring_image)))
 
 euclid = profiling_data.setup_class(name='Euclid', pixel_scale=0.1, sub_grid_size=sub_grid_size, psf_shape=psf_shape)
@@ -407,25 +406,31 @@ ao_image = sersic.intensities_from_grid(grid=ao.grids._image_plane_image)
 ao_blurring_image = sersic.intensities_from_grid(grid=ao.grids.blurring)
 ao_kernel_convolver.convolve_array_jitted(pixel_array=ao_image, blurring_array=ao_blurring_image)
 
+
 @tools.tick_toc_x1
 def lsst_solution():
     lsst_kernel_convolver.convolve_array_jitted(pixel_array=lsst_image, blurring_array=lsst_blurring_image)
+
 
 @tools.tick_toc_x1
 def euclid_solution():
     euclid_kernel_convolver.convolve_array_jitted(pixel_array=euclid_image, blurring_array=euclid_blurring_image)
 
+
 @tools.tick_toc_x1
 def hst_solution():
     hst_kernel_convolver.convolve_array_jitted(pixel_array=hst_image, blurring_array=hst_blurring_image)
+
 
 @tools.tick_toc_x1
 def hst_up_solution():
     hst_up_kernel_convolver.convolve_array_jitted(pixel_array=hst_up_image, blurring_array=hst_up_blurring_image)
 
+
 @tools.tick_toc_x1
 def ao_solution():
     ao_kernel_convolver.convolve_array_jitted(pixel_array=ao_image, blurring_array=ao_blurring_image)
+
 
 if __name__ == "__main__":
     lsst_solution()

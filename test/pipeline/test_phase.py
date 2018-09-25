@@ -1,18 +1,20 @@
-from autolens.pipeline import phase as ph
+import os
+from os import path
+
+import numpy as np
+import pytest
+
+from autolens import conf
 from autolens.autofit import model_mapper as mm
 from autolens.autofit import non_linear
-from autolens.imaging import mask as msk
 from autolens.imaging import image as img
-from autolens.lensing import lensing_image as li
+from autolens.imaging import mask as msk
 from autolens.lensing import galaxy as g
 from autolens.lensing import galaxy_model as gm
+from autolens.lensing import lensing_image as li
+from autolens.pipeline import phase as ph
 from autolens.profiles import light_profiles as lp
 from autolens.profiles import mass_profiles as mp
-from autolens import conf
-from os import path
-import pytest
-import numpy as np
-import os
 
 pytestmark = pytest.mark.filterwarnings(
     "ignore:Using a non-tuple sequence for multidimensional indexing is deprecated; use `arr[tuple(seq)]` instead of "

@@ -1,12 +1,12 @@
+import numba
+import numpy as np
+from analysis import galaxy
+from analysis import ray_tracing
 from profiling import profiling_data
 from profiling import tools
-from analysis import ray_tracing
-from analysis import galaxy
-from profiles import mass_profiles
+
 from autolens import exc
-import numpy as np
-import pytest
-import numba
+from profiles import mass_profiles
 
 
 class Pixelization(object):
@@ -70,7 +70,8 @@ class Pixelization(object):
 
     def mapping_matrix_from_sub_to_pix_jitted(self, sub_to_pix, grids):
 
-        return self.mapping_matrix_from_sub_to_pix_jit(sub_to_pix, self.pixels, grids._image_plane_image, grids.sub.sub_to_image,
+        return self.mapping_matrix_from_sub_to_pix_jit(sub_to_pix, self.pixels, grids._image_plane_image,
+                                                       grids.sub.sub_to_image,
                                                        grids.sub.sub_grid_fraction)
 
     @staticmethod
@@ -87,7 +88,7 @@ class Pixelization(object):
 
 class Rectangular(Pixelization):
 
-    def __init__(self, shape=(3,3), regularization_coefficients=(1.0,)):
+    def __init__(self, shape=(3, 3), regularization_coefficients=(1.0,)):
         """A rectangular inversion where pixels appear on a Cartesian, uniform and rectangular grid \
         of  shape (rows, columns).
 
@@ -262,9 +263,8 @@ class Rectangular(Pixelization):
         grid_to_pix = np.zeros(grid.shape[0])
 
         for i in range(grid.shape[0]):
-
-            x_pixel = np.floor((grid[i,0] - x_min) / x_pixel_scale)
-            y_pixel = np.floor((grid[i,1] - y_min) / y_pixel_scale)
+            x_pixel = np.floor((grid[i, 0] - x_min) / x_pixel_scale)
+            y_pixel = np.floor((grid[i, 1] - y_min) / y_pixel_scale)
 
             grid_to_pix[i] = x_pixel * y_shape + y_pixel
 
@@ -289,7 +289,7 @@ class Rectangular(Pixelization):
         return sub_to_pix
 
 
-sub_grid_size=4
+sub_grid_size = 4
 
 sie = mass_profiles.EllipticalIsothermal(centre=(0.010, 0.032), einstein_radius=1.47, axis_ratio=0.849, phi=73.6)
 shear = mass_profiles.ExternalShear(magnitude=0.0663, phi=160.5)
@@ -321,25 +321,31 @@ pix.mapping_matrix_from_sub_to_pix_jitted(sub_to_pix=hst_sub_to_pix, grids=hst.g
 pix.mapping_matrix_from_sub_to_pix_jitted(sub_to_pix=hst_up_sub_to_pix, grids=hst_up.grids)
 pix.mapping_matrix_from_sub_to_pix_jitted(sub_to_pix=ao_sub_to_pix, grids=ao.grids)
 
+
 @tools.tick_toc_x1
 def lsst_solution():
     pix.mapping_matrix_from_sub_to_pix_jitted(sub_to_pix=lsst_sub_to_pix, grids=lsst.grids)
+
 
 @tools.tick_toc_x1
 def euclid_solution():
     pix.mapping_matrix_from_sub_to_pix_jitted(sub_to_pix=euclid_sub_to_pix, grids=euclid.grids)
 
+
 @tools.tick_toc_x1
 def hst_solution():
     pix.mapping_matrix_from_sub_to_pix_jitted(sub_to_pix=hst_sub_to_pix, grids=hst.grids)
-    
+
+
 @tools.tick_toc_x1
 def hst_up_solution():
     pix.mapping_matrix_from_sub_to_pix_jitted(sub_to_pix=hst_up_sub_to_pix, grids=hst_up.grids)
 
+
 @tools.tick_toc_x1
 def ao_solution():
     pix.mapping_matrix_from_sub_to_pix_jitted(sub_to_pix=ao_sub_to_pix, grids=ao.grids)
+
 
 if __name__ == "__main__":
     lsst_solution()

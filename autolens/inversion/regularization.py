@@ -1,5 +1,6 @@
 import numpy as np
 
+
 class Regularization(object):
 
     def __init__(self, regularization_coefficients):
