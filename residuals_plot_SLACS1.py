@@ -1,5 +1,5 @@
 from autolens.imaging import scaled_array
-from autolens.visualize import array_plotters
+from autolens.plotting import array_plotters
 
 new_shape = (100, 100)
 xticks = [-1.5, -0.5, 0.5, 1.5]

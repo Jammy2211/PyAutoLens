@@ -1,6 +1,6 @@
 from autolens import conf
-from autolens.visualize import array_plotters
-from autolens.visualize import util
+from autolens.plotting import array_plotters
+from autolens.plotting import util
 from matplotlib import pyplot as plt
 from autolens import exc
 
