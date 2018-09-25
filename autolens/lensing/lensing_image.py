@@ -55,8 +55,8 @@ class LensingImage(im.Image):
                                                           self.blurring_mask, self.image.psf.trim(image_psf_shape))
         self.convolver_mapping_matrix = convolution.ConvolverMappingMatrix(self.mask,
                                                                     self.image.psf.trim(mapping_matrix_psf_shape))
-        self.grids = msk.ImagingGrids.grids_from_mask_sub_grid_size_and_blurring_shape(mask=mask,
-                                                sub_grid_size=sub_grid_size, psf_shape=image_psf_shape)
+        self.grids = msk.ImagingGrids.grids_from_mask_sub_grid_size_and_psf_shape(mask=mask,
+                                                                                  sub_grid_size=sub_grid_size, psf_shape=image_psf_shape)
 
         self.unmasked_grids = msk.ImagingGrids.unmasked_grids_from_mask_sub_grid_size_and_psf_shape(mask=mask,
                                                        sub_grid_size=sub_grid_size, psf_shape=image_psf_shape)

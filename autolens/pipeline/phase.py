@@ -6,9 +6,9 @@ from autolens.imaging import mask as msk
 from autolens.imaging import image as im
 from autolens.lensing import fitting
 from autolens.autofit import non_linear
-from autolens.visualize import image_plotters
-from autolens.visualize import fit_plotters
-from autolens.visualize import array_plotters
+from autolens.plotting import imaging_plotters
+from autolens.plotting import fitting_plotters
+from autolens.plotting import array_plotters
 from autolens import exc
 from autolens import conf
 from astropy import cosmology as cosmo
@@ -437,15 +437,15 @@ class PhaseImaging(Phase):
             unmasked_tracer = self.unmasked_tracer_for_instance(instance)
             fit = self.fit_for_tracers(tracer=tracer, unmasked_tracer=unmasked_tracer)
 
-            image_plotters.plot_image(image=self.lensing_image.image, output_path=self.output_image_path,
-                                      output_format='png', ignore_config=False)
+            imaging_plotters.plot_image(image=self.lensing_image.image, output_path=self.output_image_path,
+                                        output_format='png', ignore_config=False)
 
-            image_plotters.plot_image_individuals(image=self.lensing_image.image, output_path=self.output_image_path,
-                                                  output_format='png')
+            imaging_plotters.plot_image_individuals(image=self.lensing_image.image, output_path=self.output_image_path,
+                                                    output_format='png')
 
-            fit_plotters.plot_fit(fit=fit, output_path=self.output_image_path, output_format='png', ignore_config=False)
+            fitting_plotters.plot_fit(fit=fit, output_path=self.output_image_path, output_format='png', ignore_config=False)
 
-            fit_plotters.plot_fit_individuals(fit=fit, output_path=self.output_image_path, output_format='png')
+            fitting_plotters.plot_fit_individuals(fit=fit, output_path=self.output_image_path, output_format='png')
 
             return fit
 
@@ -593,7 +593,7 @@ class LensPlanePhase(PhaseImaging):
             self.unmasked_model_image = self.fit.unmasked_model_image
             self.lens_galaxy_unmasked_model_images = self.fit.unmasked_model_images_of_galaxies
             self.lens_subtracted_unmasked_image = analysis.lensing_image.image - self.unmasked_model_image
-            fit_plotters.plot_fit_hyper_arrays(self.fit, output_path=analysis.output_image_path, output_format='png')
+            fitting_plotters.plot_fit_hyper_arrays(self.fit, output_path=analysis.output_image_path, output_format='png')
 
 
 class LensPlaneHyperPhase(LensPlanePhase):
