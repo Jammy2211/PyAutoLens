@@ -844,17 +844,18 @@ class PriorModel(AbstractPriorModel):
                 attribute_name))
 
     def __setattr__(self, key, value):
-        try:
-            if "_" in key:
-                tuple_name = key.split("_")[0]
-                tuple_prior = [v for k, v in self.tuple_prior_tuples if tuple_name == k][0]
-                setattr(tuple_prior, key, value)
-                return
+        if key != "component_number":
+            try:
+                if "_" in key:
+                    tuple_name = key.split("_")[0]
+                    tuple_prior = [v for k, v in self.tuple_prior_tuples if tuple_name == k][0]
+                    setattr(tuple_prior, key, value)
+                    return
+            except IndexError:
+                pass
             if isinstance(value, float) or isinstance(value, int):
                 super().__setattr__(key, Constant(value))
                 return
-        except IndexError:
-            pass
         super(PriorModel, self).__setattr__(key, value)
 
     def __getattr__(self, item):
