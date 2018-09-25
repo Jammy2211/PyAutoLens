@@ -1220,8 +1220,6 @@ class TestPlane(object):
             plane = ray_tracing.Plane(galaxies=[g0, g1], grids=imaging_grids)
 
             assert plane._plane_image(shape=(2, 3)) == pytest.approx(g0_image + g1_image, 1e-4)
-            assert plane._plane_images_of_galaxies(shape=(2, 3))[0] == pytest.approx(g0_image, 1e-4)
-            assert plane._plane_images_of_galaxies(shape=(2, 3))[1] == pytest.approx(g1_image, 1e-4)
 
     class TestXYTicksOfPlane:
 
@@ -1423,21 +1421,6 @@ class TestTracerImageAndSource(object):
 
     class TestImagePlaneImages:
 
-        def test__no_galaxies__image_plane_image__sum_of_image_and_source_plane_images(self, imaging_grids, galaxy_non):
-            image_plane = ray_tracing.Plane(galaxies=[galaxy_non], grids=imaging_grids, compute_deflections=True)
-            source_plane = ray_tracing.Plane(galaxies=[galaxy_non], grids=imaging_grids, compute_deflections=False)
-
-            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[galaxy_non], source_galaxies=[galaxy_non],
-                                                         image_plane_grids=imaging_grids)
-
-            image_plane_image_1d = image_plane._image_plane_image + source_plane._image_plane_image
-            assert (image_plane_image_1d == tracer._image_plane_image).all()
-
-            image_plane_image_2d = imaging_grids.image.map_to_2d(image_plane._image_plane_image) + \
-                                   imaging_grids.image.map_to_2d(source_plane._image_plane_image)
-            assert image_plane_image_2d.shape == (3, 4)
-            assert (image_plane_image_2d == tracer.image_plane_image).all()
-
         def test__galaxy_light__no_mass__image_sum_of_image_and_source_plane(self, imaging_grids):
             g0 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=1.0))
             g1 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=2.0))
@@ -1479,6 +1462,7 @@ class TestTracerImageAndSource(object):
             assert (image_plane_image_2d == tracer.image_plane_image).all()
 
         def test__galaxy_entered_3_times__diffferent_intensities_for_each(self, imaging_grids):
+
             g0 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=1.0))
             g1 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=2.0))
             g2 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=3.0))
@@ -1530,6 +1514,7 @@ class TestTracerImageAndSource(object):
                     imaging_grids.image.map_to_2d(source_plane._image_plane_image)).all()
 
         def test__1_plane__single_plane_tracer(self, imaging_grids):
+
             g0 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=1.0))
             g1 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=2.0))
             g2 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=3.0))
@@ -1580,18 +1565,6 @@ class TestTracerImageAndSource(object):
             assert (image_plane_image_2d == tracer.image_plane_image_for_simulation).all()
 
     class TestImagePlaneBlurringImages:
-
-        def test__galaxy_non__image_plane_blurring_image__sum_of_image_and_source_plane_images(self, imaging_grids,
-                                                                                               galaxy_non):
-            image_plane = ray_tracing.Plane(galaxies=[galaxy_non], grids=imaging_grids, compute_deflections=True)
-            source_plane = ray_tracing.Plane(galaxies=[galaxy_non], grids=imaging_grids, compute_deflections=False)
-
-            image_plane_blurring_image = image_plane._image_plane_blurring_image + source_plane._image_plane_blurring_image
-
-            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[galaxy_non], source_galaxies=[galaxy_non],
-                                                         image_plane_grids=imaging_grids)
-
-            assert (image_plane_blurring_image == tracer._image_plane_blurring_image).all()
 
         def test__galaxy_light__no_mass__image_sum_of_image_and_source_plane(self, imaging_grids):
             g0 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=1.0))
@@ -1665,162 +1638,174 @@ class TestTracerImageAndSource(object):
 
     class TestSurfaceDensity:
 
-        def test__no_galaxies__surface_density__sum_of_image_and_source_plane_images(self, imaging_grids, galaxy_non):
-            
-            image_plane = ray_tracing.Plane(galaxies=[galaxy_non], grids=imaging_grids, compute_deflections=True)
-            source_plane = ray_tracing.Plane(galaxies=[galaxy_non], grids=imaging_grids, compute_deflections=False)
+        def test__galaxy_mass_sis__source_plane_surface_density_is_ignored(self, imaging_grids):
 
-            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[galaxy_non], source_galaxies=[galaxy_non],
-                                                         image_plane_grids=imaging_grids)
-
-            surface_density_1d = image_plane._surface_density + source_plane._surface_density
-            assert (surface_density_1d == tracer._surface_density).all()
-
-            surface_density_2d = imaging_grids.image.map_to_2d(image_plane._surface_density) + \
-                                   imaging_grids.image.map_to_2d(source_plane._surface_density)
-            assert surface_density_2d.shape == (3, 4)
-            assert (surface_density_2d == tracer.surface_density).all()
-
-        def test__galaxy_light__no_mass__image_sum_of_image_and_source_plane(self, imaging_grids):
-            g0 = g.Galaxy(light_profile=mp.SphericalIsothermal(einstein_radius=1.0))
-            g1 = g.Galaxy(light_profile=mp.SphericalIsothermal(einstein_radius=2.0))
+            g0 = g.Galaxy(mass_profile=mp.SphericalIsothermal(einstein_radius=1.0))
+            g1 = g.Galaxy(mass_profile=mp.SphericalIsothermal(einstein_radius=2.0))
 
             image_plane = ray_tracing.Plane(galaxies=[g0], grids=imaging_grids, compute_deflections=True)
-            source_plane = ray_tracing.Plane(galaxies=[g1], grids=imaging_grids, compute_deflections=False)
 
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g1],
                                                          image_plane_grids=imaging_grids)
 
-            surface_density_1d = image_plane._surface_density + source_plane._surface_density
-            assert (surface_density_1d == tracer._surface_density).all()
-
-            surface_density_2d = imaging_grids.image.map_to_2d(image_plane._surface_density) + \
-                                   imaging_grids.image.map_to_2d(source_plane._surface_density)
-            assert surface_density_2d.shape == (3, 4)
-            assert (surface_density_2d == tracer.surface_density).all()
-
-        def test__galaxy_light_mass_sis__source_plane_image_includes_deflections(self, imaging_grids):
-            g0 = g.Galaxy(light_profile=mp.SphericalIsothermal(einstein_radius=1.0),
-                          mass_profile=mp.SphericalIsothermal(einstein_radius=1.0))
-            g1 = g.Galaxy(light_profile=mp.SphericalIsothermal(einstein_radius=2.0))
-
-            image_plane = ray_tracing.Plane(galaxies=[g0], grids=imaging_grids, compute_deflections=True)
-
-            deflections_grid = ray_tracing.deflections_from_grid_collection(imaging_grids, galaxies=[g0])
-            source_grid = ray_tracing.traced_collection_for_deflections(imaging_grids, deflections_grid)
-            source_plane = ray_tracing.Plane(galaxies=[g1], grids=source_grid, compute_deflections=False)
-
-            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g1],
-                                                         image_plane_grids=imaging_grids)
-
-            surface_density_1d = image_plane._surface_density + source_plane._surface_density
-            assert (surface_density_1d == tracer._surface_density).all()
-
-            surface_density_2d = imaging_grids.image.map_to_2d(image_plane._surface_density) + \
-                                   imaging_grids.image.map_to_2d(source_plane._surface_density)
-            assert surface_density_2d.shape == (3, 4)
-            assert (surface_density_2d == tracer.surface_density).all()
-
-        def test__galaxy_entered_3_times__diffferent_intensities_for_each(self, imaging_grids):
-            g0 = g.Galaxy(light_profile=mp.SphericalIsothermal(einstein_radius=1.0))
-            g1 = g.Galaxy(light_profile=mp.SphericalIsothermal(einstein_radius=2.0))
-            g2 = g.Galaxy(light_profile=mp.SphericalIsothermal(einstein_radius=3.0))
-
-            g0_image = ray_tracing.intensities_from_grid(imaging_grids.sub, galaxies=[g0])
-            g1_image = ray_tracing.intensities_from_grid(imaging_grids.sub, galaxies=[g1])
-            g2_image = ray_tracing.intensities_from_grid(imaging_grids.sub, galaxies=[g2])
-
-            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0, g1], source_galaxies=[g2],
-                                                         image_plane_grids=imaging_grids)
-
-            assert (tracer._surface_density == g0_image + g1_image + g2_image).all()
-            assert (tracer.surface_densitys_of_planes[0] ==
-                    tracer.surface_densitys_of_galaxies[0] + tracer.surface_densitys_of_galaxies[1]).all()
-            assert (tracer._surface_densitys_of_galaxies[0] == g0_image).all()
-            assert (tracer._surface_densitys_of_galaxies[1] == g1_image).all()
-            assert (tracer._surface_densitys_of_galaxies[2] == g2_image).all()
-
-            assert (tracer.surface_density == imaging_grids.image.map_to_2d(g0_image) +
-                    imaging_grids.image.map_to_2d(g1_image) +
-                    imaging_grids.image.map_to_2d(g2_image)).all()
-
-            assert (tracer.surface_densitys_of_galaxies[0] == imaging_grids.image.map_to_2d(g0_image)).all()
-            assert (tracer.surface_densitys_of_galaxies[1] == imaging_grids.image.map_to_2d(g1_image)).all()
-            assert (tracer.surface_densitys_of_galaxies[2] == imaging_grids.image.map_to_2d(g2_image)).all()
-
-        def test__2_planes__returns_surface_density_of_each_plane(self, imaging_grids):
-            g0 = g.Galaxy(light_profile=mp.SphericalIsothermal(einstein_radius=1.0),
-                          mass_profile=mp.SphericalIsothermal(einstein_radius=1.0))
-
-            image_plane = ray_tracing.Plane(galaxies=[g0], grids=imaging_grids, compute_deflections=True)
-            source_plane_imaging_grids = image_plane.trace_to_next_plane()
-            source_plane = ray_tracing.Plane(galaxies=[g0], grids=source_plane_imaging_grids, compute_deflections=False)
-
-            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g0],
-                                                         image_plane_grids=imaging_grids)
-
-            assert (tracer._surface_density == image_plane._surface_density + source_plane._surface_density).all()
-            assert (tracer._surface_densitys_of_planes[0] == image_plane._surface_density).all()
-            assert (tracer._surface_densitys_of_planes[1] == source_plane._surface_density).all()
-
-            surface_density_2d = imaging_grids.image.map_to_2d(image_plane._surface_density) + \
-                                   imaging_grids.image.map_to_2d(source_plane._surface_density)
-            assert surface_density_2d.shape == (3, 4)
-            assert (surface_density_2d == tracer.surface_density).all()
-            assert (tracer.surface_densitys_of_planes[0] ==
-                    imaging_grids.image.map_to_2d(image_plane._surface_density)).all()
-            assert (tracer.surface_densitys_of_planes[1] ==
-                    imaging_grids.image.map_to_2d(source_plane._surface_density)).all()
-
-        def test__1_plane__single_plane_tracer(self, imaging_grids):
-            g0 = g.Galaxy(light_profile=mp.SphericalIsothermal(einstein_radius=1.0))
-            g1 = g.Galaxy(light_profile=mp.SphericalIsothermal(einstein_radius=2.0))
-            g2 = g.Galaxy(light_profile=mp.SphericalIsothermal(einstein_radius=3.0))
-
-            image_plane = ray_tracing.Plane(galaxies=[g0, g1, g2], grids=imaging_grids, compute_deflections=True)
-
-            tracer = ray_tracing.TracerImagePlane(lens_galaxies=[g0, g1, g2], image_plane_grids=imaging_grids)
-
-            assert (tracer._surface_density == image_plane._surface_density).all()
-            assert (sum(tracer._surface_densitys_of_galaxies) == image_plane._surface_density).all()
-            assert (tracer._surface_densitys_of_galaxies[0] == image_plane._surface_densitys_of_galaxies[0]).all()
-            assert (tracer._surface_densitys_of_galaxies[1] == image_plane._surface_densitys_of_galaxies[1]).all()
-            assert (tracer._surface_densitys_of_galaxies[2] == image_plane._surface_densitys_of_galaxies[2]).all()
+            surface_density_1d = image_plane._surface_density
+            assert (surface_density_1d == tracer.image_plane._surface_density).all()
 
             surface_density_2d = imaging_grids.image.map_to_2d(image_plane._surface_density)
             assert surface_density_2d.shape == (3, 4)
             assert (surface_density_2d == tracer.surface_density).all()
-            assert (sum(tracer.surface_densitys_of_galaxies) ==
-                    imaging_grids.image.map_to_2d(image_plane._surface_density)).all()
-            assert (tracer.surface_densitys_of_galaxies[0] ==
-                    imaging_grids.image.map_to_2d(image_plane._surface_densitys_of_galaxies[0])).all()
-            assert (tracer.surface_densitys_of_galaxies[1] ==
-                    imaging_grids.image.map_to_2d(image_plane._surface_densitys_of_galaxies[1])).all()
-            assert (tracer.surface_densitys_of_galaxies[2] ==
-                    imaging_grids.image.map_to_2d(image_plane._surface_densitys_of_galaxies[2])).all()
 
-        def test__unmasked_2d_image_from_plane__mapped_correctly(self, unmasked_grids, galaxy_light, galaxy_mass):
-            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[galaxy_light, galaxy_mass],
-                                                         source_galaxies=[galaxy_light],
+        def test__galaxy_entered_3_times__different_surface_density_for_each(self, imaging_grids):
+
+            g0 = g.Galaxy(mass_profile=mp.SphericalIsothermal(einstein_radius=1.0))
+            g1 = g.Galaxy(mass_profile=mp.SphericalIsothermal(einstein_radius=2.0))
+            g2 = g.Galaxy(mass_profile=mp.SphericalIsothermal(einstein_radius=3.0))
+
+            g0_surface_density = ray_tracing.surface_density_from_grid(imaging_grids.sub, galaxies=[g0])
+            g1_surface_density = ray_tracing.surface_density_from_grid(imaging_grids.sub, galaxies=[g1])
+
+            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0, g1], source_galaxies=[g2],
+                                                         image_plane_grids=imaging_grids)
+
+            assert (tracer.image_plane._surface_density == g0_surface_density + g1_surface_density).all()
+            assert (tracer.image_plane._surface_density_of_galaxies[0] == g0_surface_density).all()
+            assert (tracer.image_plane._surface_density_of_galaxies[1] == g1_surface_density).all()
+
+            assert (tracer.surface_density == imaging_grids.image.map_to_2d(g0_surface_density) +
+                    imaging_grids.image.map_to_2d(g1_surface_density)).all()
+
+            assert (tracer.surface_density_of_galaxies[0] == imaging_grids.image.map_to_2d(g0_surface_density)).all()
+            assert (tracer.surface_density_of_galaxies[1] == imaging_grids.image.map_to_2d(g1_surface_density)).all()
+
+        def test__unmasked_2d_surface_density_from_plane__mapped_correctly(self, unmasked_grids, galaxy_mass):
+
+            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[galaxy_mass], source_galaxies=[g.Galaxy()],
                                                          image_plane_grids=unmasked_grids)
 
-            surface_density_2d = unmasked_grids.image.map_to_2d(tracer.image_plane._surface_density) + \
-                                   unmasked_grids.image.map_to_2d(tracer.source_plane._surface_density)
+            surface_density_2d = unmasked_grids.image.map_to_2d(tracer.image_plane._surface_density)
 
             assert surface_density_2d.shape == (1, 2)
             assert (surface_density_2d == tracer.surface_density).all()
 
-        def test__unmasked_2d_image_for_simulation__mapped_correctly_not_trimmed(self, unmasked_grids, galaxy_light,
-                                                                                 galaxy_mass):
-            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[galaxy_light, galaxy_mass],
-                                                         source_galaxies=[galaxy_light],
+    class TestPotential:
+
+        def test__galaxy_mass_sis__source_plane_potential_is_ignored(self, imaging_grids):
+
+            g0 = g.Galaxy(mass_profile=mp.SphericalIsothermal(einstein_radius=1.0))
+            g1 = g.Galaxy(mass_profile=mp.SphericalIsothermal(einstein_radius=2.0))
+
+            image_plane = ray_tracing.Plane(galaxies=[g0], grids=imaging_grids, compute_deflections=True)
+
+            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g1],
+                                                         image_plane_grids=imaging_grids)
+
+            potential_1d = image_plane._potential
+            assert (potential_1d == tracer.image_plane._potential).all()
+
+            potential_2d = imaging_grids.image.map_to_2d(image_plane._potential)
+            assert potential_2d.shape == (3, 4)
+            assert (potential_2d == tracer.potential).all()
+
+        def test__galaxy_entered_3_times__different_potential_for_each(self, imaging_grids):
+
+            g0 = g.Galaxy(mass_profile=mp.SphericalIsothermal(einstein_radius=1.0))
+            g1 = g.Galaxy(mass_profile=mp.SphericalIsothermal(einstein_radius=2.0))
+            g2 = g.Galaxy(mass_profile=mp.SphericalIsothermal(einstein_radius=3.0))
+
+            g0_potential = ray_tracing.potential_from_grid(imaging_grids.sub, galaxies=[g0])
+            g1_potential = ray_tracing.potential_from_grid(imaging_grids.sub, galaxies=[g1])
+
+            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0, g1], source_galaxies=[g2],
+                                                         image_plane_grids=imaging_grids)
+
+            assert (tracer.image_plane._potential == g0_potential + g1_potential).all()
+            assert (tracer.image_plane._potential_of_galaxies[0] == g0_potential).all()
+            assert (tracer.image_plane._potential_of_galaxies[1] == g1_potential).all()
+
+            assert (tracer.potential == imaging_grids.image.map_to_2d(g0_potential) +
+                    imaging_grids.image.map_to_2d(g1_potential)).all()
+
+            assert (tracer.potential_of_galaxies[0] == imaging_grids.image.map_to_2d(g0_potential)).all()
+            assert (tracer.potential_of_galaxies[1] == imaging_grids.image.map_to_2d(g1_potential)).all()
+
+        def test__unmasked_2d_potential_from_plane__mapped_correctly(self, unmasked_grids, galaxy_mass):
+
+            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[galaxy_mass], source_galaxies=[g.Galaxy()],
                                                          image_plane_grids=unmasked_grids)
 
-            surface_density_2d = unmasked_grids.image.map_to_2d_keep_padded(tracer.image_plane._surface_density) + \
-                                   unmasked_grids.image.map_to_2d_keep_padded(tracer.source_plane._surface_density)
+            potential_2d = unmasked_grids.image.map_to_2d(tracer.image_plane._potential)
 
-            assert surface_density_2d.shape == (3, 4)
-            assert (surface_density_2d == tracer.surface_density_for_simulation).all()
+            assert potential_2d.shape == (1, 2)
+            assert (potential_2d == tracer.potential).all()
+
+
+    class TestDeflections:
+
+        def test__galaxy_mass_sis__source_plane_deflections_is_ignored(self, imaging_grids):
+
+            g0 = g.Galaxy(mass_profile=mp.SphericalIsothermal(einstein_radius=1.0))
+            g1 = g.Galaxy(mass_profile=mp.SphericalIsothermal(einstein_radius=2.0))
+
+            image_plane = ray_tracing.Plane(galaxies=[g0], grids=imaging_grids, compute_deflections=True)
+
+            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g1],
+                                                         image_plane_grids=imaging_grids)
+
+            deflections_1d = image_plane._deflections
+            assert (deflections_1d == tracer.image_plane._deflections).all()
+
+            deflections_x_2d = imaging_grids.image.map_to_2d(image_plane._deflections[:,0])
+            assert deflections_x_2d.shape == (3, 4)
+            assert (deflections_x_2d == tracer.deflections_x).all()
+
+            deflections_y_2d = imaging_grids.image.map_to_2d(image_plane._deflections[:,1])
+            assert deflections_y_2d.shape == (3, 4)
+            assert (deflections_y_2d == tracer.deflections_y).all()
+
+        def test__galaxy_entered_3_times__different_deflections_for_each(self, imaging_grids):
+
+            g0 = g.Galaxy(mass_profile=mp.SphericalIsothermal(einstein_radius=1.0))
+            g1 = g.Galaxy(mass_profile=mp.SphericalIsothermal(einstein_radius=2.0))
+            g2 = g.Galaxy(mass_profile=mp.SphericalIsothermal(einstein_radius=3.0))
+
+            g0_deflections = ray_tracing.deflections_from_grid(imaging_grids.sub, galaxies=[g0])
+            g1_deflections = ray_tracing.deflections_from_grid(imaging_grids.sub, galaxies=[g1])
+
+            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0, g1], source_galaxies=[g2],
+                                                         image_plane_grids=imaging_grids)
+
+            assert (tracer.image_plane._deflections[:,0] == g0_deflections[:,0] + g1_deflections[:,0]).all()
+            assert (tracer.image_plane._deflections_of_galaxies[0][:,0] == g0_deflections[:,0]).all()
+            assert (tracer.image_plane._deflections_of_galaxies[1][:,0] == g1_deflections[:,0]).all()
+
+            assert (tracer.deflections_x == imaging_grids.image.map_to_2d(g0_deflections[:,0]) +
+                    imaging_grids.image.map_to_2d(g1_deflections[:,0])).all()
+
+            assert (tracer.deflections_x_of_galaxies[0] == imaging_grids.image.map_to_2d(g0_deflections[:,0])).all()
+            assert (tracer.deflections_x_of_galaxies[1] == imaging_grids.image.map_to_2d(g1_deflections[:,0])).all()
+
+            assert (tracer.image_plane._deflections[:,1] == g0_deflections[:,1] + g1_deflections[:,1]).all()
+            assert (tracer.image_plane._deflections_of_galaxies[0][:,1] == g0_deflections[:,1]).all()
+            assert (tracer.image_plane._deflections_of_galaxies[1][:,1] == g1_deflections[:,1]).all()
+
+            assert (tracer.deflections_y == imaging_grids.image.map_to_2d(g0_deflections[:,1]) +
+                    imaging_grids.image.map_to_2d(g1_deflections[:,1])).all()
+
+            assert (tracer.deflections_y_of_galaxies[0] == imaging_grids.image.map_to_2d(g0_deflections[:,1])).all()
+            assert (tracer.deflections_y_of_galaxies[1] == imaging_grids.image.map_to_2d(g1_deflections[:,1])).all()
+
+        def test__unmasked_2d_deflections_from_plane__mapped_correctly(self, unmasked_grids, galaxy_mass):
+
+            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[galaxy_mass], source_galaxies=[g.Galaxy()],
+                                                         image_plane_grids=unmasked_grids)
+
+            deflections_x_2d = unmasked_grids.image.map_to_2d(tracer.image_plane._deflections[:,0])
+            deflections_y_2d = unmasked_grids.image.map_to_2d(tracer.image_plane._deflections[:,1])
+
+            assert deflections_x_2d.shape == (1, 2)
+            assert (deflections_x_2d == tracer.deflections_x).all()
+            assert (deflections_y_2d == tracer.deflections_y).all()
+
 
     class TestPlaneImages:
 
@@ -1849,10 +1834,6 @@ class TestTracerImageAndSource(object):
                     tracer.image_plane._plane_image(shape=(3, 3))).all()
             assert (tracer._plane_images_of_planes(shape=(3, 3))[1] ==
                     tracer.source_plane._plane_image(shape=(3, 3))).all()
-            assert (tracer._plane_images_of_planes(shape=(3, 3))[0] ==
-                    tracer.image_plane._plane_images_of_galaxies(shape=(3, 3))[0]).all()
-            assert (tracer._plane_images_of_planes(shape=(3, 3))[1] ==
-                    tracer.source_plane._plane_images_of_galaxies(shape=(3, 3))[0]).all()
 
         def test__same_as_above_but_multiple_galaxies_in_a_plane(self, imaging_grids):
             g0 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=1.0),
@@ -1887,12 +1868,6 @@ class TestTracerImageAndSource(object):
                     tracer.image_plane._plane_image(shape=(3, 3))).all()
             assert (tracer._plane_images_of_planes(shape=(3, 3))[1] ==
                     tracer.source_plane._plane_image(shape=(3, 3))).all()
-            assert (tracer._plane_images_of_planes(shape=(3, 3))[0] ==
-                    tracer.image_plane._plane_images_of_galaxies(shape=(3, 3))[0] +
-                    tracer.image_plane._plane_images_of_galaxies(shape=(3, 3))[1]).all()
-            assert (tracer._plane_images_of_planes(shape=(3, 3))[1] ==
-                    tracer.source_plane._plane_images_of_galaxies(shape=(3, 3))[0] +
-                    tracer.source_plane._plane_images_of_galaxies(shape=(3, 3))[1]).all()
 
         def test__ensure_index_of_plane_image_has_negative_arcseconds_at_start(self, imaging_grids):
             # The grid coordinates -2.0 -> 2.0 mean a plane of shape (5,5) has arc second coordinates running over
@@ -2592,10 +2567,6 @@ class TestMultiTracer(object):
                 shape=(3, 3))).all()
             assert (tracer._plane_images_of_planes(shape=(3, 3))[1] == tracer.planes[1]._plane_image(
                 shape=(3, 3))).all()
-            assert (tracer._plane_images_of_planes(shape=(3, 3))[0] ==
-                    tracer.planes[0]._plane_images_of_galaxies(shape=(3, 3))[0]).all()
-            assert (tracer._plane_images_of_planes(shape=(3, 3))[1] ==
-                    tracer.planes[1]._plane_images_of_galaxies(shape=(3, 3))[0]).all()
 
         def test__same_as_above_but_multiple_galaxies_in_a_plane(self, imaging_grids):
             g0 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=1.0),
@@ -2632,14 +2603,6 @@ class TestMultiTracer(object):
             assert (tracer._plane_images_of_planes(shape=(3, 3))[2] == tracer.planes[2]._plane_image(
                 shape=(3, 3))).all()
 
-            assert (tracer._plane_images_of_planes(shape=(3, 3))[0] ==
-                    tracer.planes[0]._plane_images_of_galaxies(shape=(3, 3))[0]).all()
-            assert (tracer._plane_images_of_planes(shape=(3, 3))[1] ==
-                    tracer.planes[1]._plane_images_of_galaxies(shape=(3, 3))[0]).all()
-            assert (tracer._plane_images_of_planes(shape=(3, 3))[2] ==
-                    tracer.planes[2]._plane_images_of_galaxies(shape=(3, 3))[0] +
-                    tracer.planes[2]._plane_images_of_galaxies(shape=(3, 3))[1]).all()
-
         def test__same_as_above_but_swap_two_galaxy_redshifts__planes_are_reordered(self, imaging_grids):
             g0 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=1.0),
                           mass_profile=mp.SphericalIsothermal(einstein_radius=1.0), redshift=0.1)
@@ -2674,14 +2637,6 @@ class TestMultiTracer(object):
                 shape=(3, 3))).all()
             assert (tracer._plane_images_of_planes(shape=(3, 3))[2] == tracer.planes[2]._plane_image(
                 shape=(3, 3))).all()
-
-            assert (tracer._plane_images_of_planes(shape=(3, 3))[0] ==
-                    tracer.planes[0]._plane_images_of_galaxies(shape=(3, 3))[0]).all()
-            assert (tracer._plane_images_of_planes(shape=(3, 3))[1] ==
-                    tracer.planes[1]._plane_images_of_galaxies(shape=(3, 3))[0]).all()
-            assert (tracer._plane_images_of_planes(shape=(3, 3))[2] ==
-                    tracer.planes[2]._plane_images_of_galaxies(shape=(3, 3))[0] +
-                    tracer.planes[2]._plane_images_of_galaxies(shape=(3, 3))[1]).all()
 
     class TestImageGridsOfPlanes:
 

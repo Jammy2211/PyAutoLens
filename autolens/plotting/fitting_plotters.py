@@ -35,35 +35,6 @@ def plot_fitting_lens_plane_only(fit, output_path=None, output_filename='fit', o
     -----------
     fit : autolens.lensing.fittingting.Fitter
         Class containing fitting between the model _image and observed lensing _image (including residuals, chi_squareds etc.)
-    units : str
-        The units the figure is in, which determine the xyticks and xylabels. Options are arcsec | kpc.
-    norm : str
-        The normalization of the colormap used for plotting. Choose from linear | log | symmetric_log \
-        (see matplotlib.colors)
-    norm_min : float
-        The minimum value in the colormap (see matplotlib.colors). If None, the minimum value in the array is used.
-    norm_max : float
-        The maximum value in the colormap (see matplotlib.colors). If None, the maximum value in the array is used.
-    linthresh : float
-        If the symmetric log norm is used, this sets the range within which the colormap is linear \
-         (see matplotlib.colors).
-    liscale : float
-        If the symmetric log norm is used, this stretches the linear range relative to the log range \
-        (see matplotlib.colors).
-    figsize : (int, int)
-        The size the figure is plotted (see matplotlib.pyplot).
-    aspect : str
-        The aspect ratio of the _image, the default 'auto' scales this to the window size (see matplotlib.pyplot).
-    cmap : str
-        The colormap style (e.g. 'jet', 'warm', 'binary, see matplotlib.pyplot).
-    title : str
-        The title of the _image.
-    titlesize : int
-        The font size of the figure title.
-    xlabelsize : int
-        The font size of the figure xlabel.
-    ylabelsize : int
-        The font size of the figure ylabel.
     output_path : str
         The path where the _image is output if the output_type is a file format (e.g. png, fittings)
     output_filename : str
@@ -128,35 +99,6 @@ def plot_fitting_hyper_lens_plane_only(fit, output_path=None, output_filename='f
     -----------
     fit : autolens.lensing.fittingting.Fitter
         Class containing fitting between the model _image and observed lensing _image (including residuals, chi_squareds etc.)
-    units : str
-        The units the figure is in, which determine the xyticks and xylabels. Options are arcsec | kpc.
-    norm : str
-        The normalization of the colormap used for plotting. Choose from linear | log | symmetric_log \
-        (see matplotlib.colors)
-    norm_min : float
-        The minimum value in the colormap (see matplotlib.colors). If None, the minimum value in the array is used.
-    norm_max : float
-        The maximum value in the colormap (see matplotlib.colors). If None, the maximum value in the array is used.
-    linthresh : float
-        If the symmetric log norm is used, this sets the range within which the colormap is linear \
-         (see matplotlib.colors).
-    liscale : float
-        If the symmetric log norm is used, this stretches the linear range relative to the log range \
-        (see matplotlib.colors).
-    figsize : (int, int)
-        The size the figure is plotted (see matplotlib.pyplot).
-    aspect : str
-        The aspect ratio of the _image, the default 'auto' scales this to the window size (see matplotlib.pyplot).
-    cmap : str
-        The colormap style (e.g. 'jet', 'warm', 'binary, see matplotlib.pyplot).
-    title : str
-        The title of the _image.
-    titlesize : int
-        The font size of the figure title.
-    xlabelsize : int
-        The font size of the figure xlabel.
-    ylabelsize : int
-        The font size of the figure ylabel.
     output_path : str
         The path where the _image is output if the output_type is a file format (e.g. png, fittings)
     output_filename : str
@@ -268,35 +210,6 @@ def plot_fitting_lens_and_source_planes(fit, output_path=None, output_filename='
     -----------
     fit : autolens.lensing.fittingting.Fitter
         Class containing fitting between the model _image and observed lensing _image (including residuals, chi_squareds etc.)
-    units : str
-        The units the figure is in, which determine the xyticks and xylabels. Options are arcsec | kpc.
-    norm : str
-        The normalization of the colormap used for plotting. Choose from linear | log | symmetric_log \
-        (see matplotlib.colors)
-    norm_min : float
-        The minimum value in the colormap (see matplotlib.colors). If None, the minimum value in the array is used.
-    norm_max : float
-        The maximum value in the colormap (see matplotlib.colors). If None, the maximum value in the array is used.
-    linthresh : float
-        If the symmetric log norm is used, this sets the range within which the colormap is linear \
-         (see matplotlib.colors).
-    liscale : float
-        If the symmetric log norm is used, this stretches the linear range relative to the log range \
-        (see matplotlib.colors).
-    figsize : (int, int)
-        The size the figure is plotted (see matplotlib.pyplot).
-    aspect : str
-        The aspect ratio of the _image, the default 'auto' scales this to the window size (see matplotlib.pyplot).
-    cmap : str
-        The colormap style (e.g. 'jet', 'warm', 'binary, see matplotlib.pyplot).
-    title : str
-        The title of the _image.
-    titlesize : int
-        The font size of the figure title.
-    xlabelsize : int
-        The font size of the figure xlabel.
-    ylabelsize : int
-        The font size of the figure ylabel.
     output_path : str
         The path where the _image is output if the output_type is a file format (e.g. png, fittings)
     output_filename : str
@@ -409,39 +322,8 @@ def plot_fitting_individuals_lens_plane_only(fitting, output_path=None, output_f
     -----------
     fitting : autolens.lensing.fittingting.Fitter
         Class containing fitting between the model _image and observed lensing _image (including residuals, chi_squareds etc.)
-    units : str
-        The units the figure is in, which determine the xyticks and xylabels. Options are arcsec | kpc.
-    norm : str
-        The normalization of the colormap used for plotting. Choose from linear | log | symmetric_log \
-        (see matplotlib.colors)
-    norm_min : float
-        The minimum value in the colormap (see matplotlib.colors). If None, the minimum value in the array is used.
-    norm_max : float
-        The maximum value in the colormap (see matplotlib.colors). If None, the maximum value in the array is used.
-    linthresh : float
-        If the symmetric log norm is used, this sets the range within which the colormap is linear \
-         (see matplotlib.colors).
-    liscale : float
-        If the symmetric log norm is used, this stretches the linear range relative to the log range \
-        (see matplotlib.colors).
-    figsize : (int, int)
-        The size the figure is plotted (see matplotlib.pyplot).
-    aspect : str
-        The aspect ratio of the _image, the default 'auto' scales this to the window size (see matplotlib.pyplot).
-    cmap : str
-        The colormap style (e.g. 'jet', 'warm', 'binary, see matplotlib.pyplot).
-    title : str
-        The title of the _image.
-    titlesize : int
-        The font size of the figure title.
-    xlabelsize : int
-        The font size of the figure xlabel.
-    ylabelsize : int
-        The font size of the figure ylabel.
     output_path : str
         The path where the _image is output if the output_type is a file format (e.g. png, fittings)
-    output_filename : str
-        The name of the file that is output, if the output_type is a file format (e.g. png, fittings)
     output_format : str
         How the _image is output. File formats (e.g. png, fittings) output the _image to harddisk. 'show' displays the _image \
         in the python interpreter window.
@@ -490,39 +372,8 @@ def plot_fitting_individuals_hyper_lens_plane_only(fit, output_path=None, output
     -----------
     fit : autolens.lensing.fittingting.Fitter
         Class containing fitting between the model _image and observed lensing _image (including residuals, chi_squareds etc.)
-    units : str
-        The units the figure is in, which determine the xyticks and xylabels. Options are arcsec | kpc.
-    norm : str
-        The normalization of the colormap used for plotting. Choose from linear | log | symmetric_log \
-        (see matplotlib.colors)
-    norm_min : float
-        The minimum value in the colormap (see matplotlib.colors). If None, the minimum value in the array is used.
-    norm_max : float
-        The maximum value in the colormap (see matplotlib.colors). If None, the maximum value in the array is used.
-    linthresh : float
-        If the symmetric log norm is used, this sets the range within which the colormap is linear \
-         (see matplotlib.colors).
-    liscale : float
-        If the symmetric log norm is used, this stretches the linear range relative to the log range \
-        (see matplotlib.colors).
-    figsize : (int, int)
-        The size the figure is plotted (see matplotlib.pyplot).
-    aspect : str
-        The aspect ratio of the _image, the default 'auto' scales this to the window size (see matplotlib.pyplot).
-    cmap : str
-        The colormap style (e.g. 'jet', 'warm', 'binary, see matplotlib.pyplot).
-    title : str
-        The title of the _image.
-    titlesize : int
-        The font size of the figure title.
-    xlabelsize : int
-        The font size of the figure xlabel.
-    ylabelsize : int
-        The font size of the figure ylabel.
     output_path : str
         The path where the _image is output if the output_type is a file format (e.g. png, fittings)
-    output_filename : str
-        The name of the file that is output, if the output_type is a file format (e.g. png, fittings)
     output_format : str
         How the _image is output. File formats (e.g. png, fittings) output the _image to harddisk. 'show' displays the _image \
         in the python interpreter window.
@@ -605,39 +456,8 @@ def plot_fitting_individuals_lens_and_source_planes(fit, output_path=None, outpu
     -----------
     fit : autolens.lensing.fittingting.Fitter
         Class containing fitting between the model _image and observed lensing _image (including residuals, chi_squareds etc.)
-    units : str
-        The units the figure is in, which determine the xyticks and xylabels. Options are arcsec | kpc.
-    norm : str
-        The normalization of the colormap used for plotting. Choose from linear | log | symmetric_log \
-        (see matplotlib.colors)
-    norm_min : float
-        The minimum value in the colormap (see matplotlib.colors). If None, the minimum value in the array is used.
-    norm_max : float
-        The maximum value in the colormap (see matplotlib.colors). If None, the maximum value in the array is used.
-    linthresh : float
-        If the symmetric log norm is used, this sets the range within which the colormap is linear \
-         (see matplotlib.colors).
-    liscale : float
-        If the symmetric log norm is used, this stretches the linear range relative to the log range \
-        (see matplotlib.colors).
-    figsize : (int, int)
-        The size the figure is plotted (see matplotlib.pyplot).
-    aspect : str
-        The aspect ratio of the _image, the default 'auto' scales this to the window size (see matplotlib.pyplot).
-    cmap : str
-        The colormap style (e.g. 'jet', 'warm', 'binary, see matplotlib.pyplot).
-    title : str
-        The title of the _image.
-    titlesize : int
-        The font size of the figure title.
-    xlabelsize : int
-        The font size of the figure xlabel.
-    ylabelsize : int
-        The font size of the figure ylabel.
     output_path : str
         The path where the _image is output if the output_type is a file format (e.g. png, fittings)
-    output_filename : str
-        The name of the file that is output, if the output_type is a file format (e.g. png, fittings)
     output_format : str
         How the _image is output. File formats (e.g. png, fittings) output the _image to harddisk. 'show' displays the _image \
         in the python interpreter window.
