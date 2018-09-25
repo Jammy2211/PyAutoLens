@@ -1,5 +1,6 @@
 import logging
 import os
+import shutil
 from base64 import b64encode
 from os.path import expanduser
 
@@ -24,18 +25,10 @@ def path_for(path):
     return "{}/{}".format(autolens_dir, b64_string[:start] + b64_string[-end:])
 
 
-def make_linked_file(path):
-    actual_path = path_for(path)
-    open(actual_path, 'a').close()
-    try:
-        os.symlink(actual_path, path)
-    except FileExistsError as e:
-        logger.exception(e)
-    return actual_path
-
-
 def make_linked_folder(path):
     actual_path = path_for(path)
+    if os.path.exists(actual_path) and not os.path.exists(path):
+        shutil.rmtree(actual_path)
     try:
         os.mkdir(actual_path)
     except FileExistsError as e:
