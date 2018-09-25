@@ -72,7 +72,7 @@ class NLO(non_linear.NonLinearOptimizer):
 
 @pytest.fixture(name="grids")
 def make_grids(lensing_image):
-    return msk.ImagingGrids.grids_from_mask_sub_grid_size_and_blurring_shape(
+    return msk.ImagingGrids.grids_from_mask_sub_grid_size_and_psf_shape(
         lensing_image.mask, 1, lensing_image.psf.shape)
 
 
