@@ -1,16 +1,17 @@
-import numba
-import numpy as np
-from analysis import galaxy
-from analysis import ray_tracing
 from profiling import profiling_data
 from profiling import tools
-
-from autolens import exc
+from analysis import ray_tracing
+from analysis import galaxy
 from profiles import light_profiles
 from profiles import mass_profiles
+from autolens import exc
+import numpy as np
+import pytest
+import numba
 
 
 class RegularizationWeighted(object):
+    
     pixels = None
     regularization_coefficients = None
     pix_signal_scale = None
@@ -72,7 +73,7 @@ class Pixelization(object):
 
 class RectangularRegWeight(Pixelization, RegularizationWeighted):
 
-    def __init__(self, shape=(3, 3), regularization_coefficients=(1.0,), pix_signal_scale=1.0):
+    def __init__(self, shape=(3,3), regularization_coefficients=(1.0,), pix_signal_scale=1.0):
         """A rectangular inversion where pixels appear on a Cartesian, uniform and rectangular grid \
         of  shape (rows, columns).
 
@@ -179,8 +180,9 @@ class RectangularRegWeight(Pixelization, RegularizationWeighted):
         grid_to_pix = np.zeros(grid.shape[0])
 
         for i in range(grid.shape[0]):
-            x_pixel = np.floor((grid[i, 0] - x_min) / x_pixel_scale)
-            y_pixel = np.floor((grid[i, 1] - y_min) / y_pixel_scale)
+
+            x_pixel = np.floor((grid[i,0] - x_min) / x_pixel_scale)
+            y_pixel = np.floor((grid[i,1] - y_min) / y_pixel_scale)
 
             grid_to_pix[i] = x_pixel * y_shape + y_pixel
 
@@ -204,7 +206,7 @@ class RectangularRegWeight(Pixelization, RegularizationWeighted):
         return image_to_pix
 
 
-sub_grid_size = 4
+sub_grid_size=4
 
 sie = mass_profiles.EllipticalIsothermal(centre=(0.010, 0.032), einstein_radius=1.47, axis_ratio=0.849, phi=73.6)
 shear = mass_profiles.ExternalShear(magnitude=0.0663, phi=160.5)
@@ -221,14 +223,10 @@ hst = profiling_data.setup_class(name='HST', pixel_scale=0.05, sub_grid_size=sub
 hst_up = profiling_data.setup_class(name='HSTup', pixel_scale=0.03, sub_grid_size=sub_grid_size)
 ao = profiling_data.setup_class(name='AO', pixel_scale=0.01, sub_grid_size=sub_grid_size)
 
-lsst_tracer = ray_tracing.Tracer(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
-                                 image_plane_grids=lsst.grids)
-euclid_tracer = ray_tracing.Tracer(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
-                                   image_plane_grids=euclid.grids)
-hst_tracer = ray_tracing.Tracer(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
-                                image_plane_grids=hst.grids)
-hst_up_tracer = ray_tracing.Tracer(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
-                                   image_plane_grids=hst_up.grids)
+lsst_tracer = ray_tracing.Tracer(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy], image_plane_grids=lsst.grids)
+euclid_tracer = ray_tracing.Tracer(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy], image_plane_grids=euclid.grids)
+hst_tracer = ray_tracing.Tracer(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy], image_plane_grids=hst.grids)
+hst_up_tracer = ray_tracing.Tracer(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy], image_plane_grids=hst_up.grids)
 ao_tracer = ray_tracing.Tracer(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy], image_plane_grids=ao.grids)
 
 lsst_image = lsst_tracer.source_plane.galaxy_light_profiles_image_from_planes()
@@ -243,31 +241,25 @@ hst_image_to_pix = pix.image_to_pix_from_pix_grids(grids=hst_tracer.source_plane
 hst_up_image_to_pix = pix.image_to_pix_from_pix_grids(grids=hst_up_tracer.source_plane.grids, borders=hst_up.borders)
 ao_image_to_pix = pix.image_to_pix_from_pix_grids(grids=ao_tracer.source_plane.grids, borders=ao.borders)
 
-
 @tools.tick_toc_x1
 def lsst_solution():
     pix.pix_signals_from_images(image_to_pix=lsst_image_to_pix, galaxy_image=lsst_image)
-
 
 @tools.tick_toc_x1
 def euclid_solution():
     pix.pix_signals_from_images(image_to_pix=euclid_image_to_pix, galaxy_image=euclid_image)
 
-
 @tools.tick_toc_x1
 def hst_solution():
     pix.pix_signals_from_images(image_to_pix=hst_image_to_pix, galaxy_image=hst_image)
-
-
+    
 @tools.tick_toc_x1
 def hst_up_solution():
     pix.pix_signals_from_images(image_to_pix=hst_up_image_to_pix, galaxy_image=hst_up_image)
 
-
 @tools.tick_toc_x1
 def ao_solution():
     pix.pix_signals_from_images(image_to_pix=ao_image_to_pix, galaxy_image=ao_image)
-
 
 if __name__ == "__main__":
     lsst_solution()
