@@ -25,7 +25,7 @@ class TestMask(object):
 
     def test__mask_unmasked__5x5__input__all_are_false(self):
 
-        msk = mask.Mask.unmasked_for_shape_and_pixel_scale(shape=(5, 5), pixel_scale=1)
+        msk = mask.Mask.unmasked_for_shape_and_pixel_scale(shape=(5, 5), pixel_scale=1.5)
 
         assert msk.shape == (5, 5)
         assert (msk == np.array([[False, False, False, False, False],
@@ -175,7 +175,7 @@ def make_sub_grid(msk):
 
 @pytest.fixture(name="imaging_grids")
 def make_imaging_grids(centre_mask):
-    return mask.ImagingGrids.grids_from_mask_sub_grid_size_and_blurring_shape(centre_mask, 2, (3, 3))
+    return mask.ImagingGrids.grids_from_mask_sub_grid_size_and_psf_shape(centre_mask, 2, (3, 3))
 
 
 class TestImageGrid:
@@ -190,6 +190,21 @@ class TestImageGrid:
         image_grid_util = imaging_util.image_grid_1d_masked_from_mask_and_pixel_scale(mask=msk, pixel_scale=2.0)
 
         image_grid = mask.ImageGrid.from_mask(msk)
+
+        assert type(image_grid) == mask.ImageGrid
+        assert image_grid == pytest.approx(image_grid_util, 1e-4)
+        assert (image_grid.grid_to_pixel == msk.grid_to_pixel).all()
+
+    def test__image_grid_from_shape_and_pixel_scale__compare_to_array_util(self):
+
+        msk = np.array([[False, False, False, False],
+                        [False, False, False, False],
+                        [False, False, False, False]])
+        msk = mask.Mask(array=msk, pixel_scale=2.0)
+
+        image_grid_util = imaging_util.image_grid_1d_masked_from_mask_and_pixel_scale(mask=msk, pixel_scale=2.0)
+
+        image_grid = mask.ImageGrid.from_shape_and_pixel_scale(shape=(3,4), pixel_scale=2.0)
 
         assert type(image_grid) == mask.ImageGrid
         assert image_grid == pytest.approx(image_grid_util, 1e-4)
@@ -286,6 +301,20 @@ class TestSubGrid(object):
         msk = mask.Mask(msk, pixel_scale=3.0)
 
         sub_grid = mask.SubGrid.from_mask_and_sub_grid_size(msk, sub_grid_size=2)
+
+        assert sub_grid == pytest.approx(sub_grid_util, 1e-4)
+
+    def test__from_shape_and_pixel_scale(self):
+
+        msk = np.array([[False, False, False],
+                        [False, False, False],
+                        [False, False, False]])
+
+        sub_grid_util = imaging_util.sub_grid_1d_masked_from_mask_pixel_scale_and_sub_grid_size(mask=msk,
+                                                                                                pixel_scale=3.0,
+                                                                                                sub_grid_size=2)
+
+        sub_grid = mask.SubGrid.from_shape_pixel_scale_and_sub_grid_size(shape=(3, 3), pixel_scale=3.0, sub_grid_size=2)
 
         assert sub_grid == pytest.approx(sub_grid_util, 1e-4)
 
@@ -671,6 +700,21 @@ class TestImagingGrids(object):
                                             [1., -1.],
                                             [1., 0.],
                                             [1., 1.]])).all()
+
+    def test__from_shape_and_pixel_scale(self):
+
+        ma = mask.Mask(np.array([[False, False, False],
+                                 [False, False, False],
+                                 [False, False, False]]), pixel_scale=2.0)
+
+        imaging_grids_mask = mask.ImagingGrids.grids_from_mask_sub_grid_size_and_psf_shape(mask=ma, sub_grid_size=2,
+                                                                                           psf_shape=(1, 1))
+
+        imaging_grids_shape = mask.ImagingGrids.from_shape_and_pixel_scale(shape=(3,3), pixel_scale=2.0,
+                                                                           sub_grid_size=2)
+
+        assert (imaging_grids_mask.image == imaging_grids_shape.image).all()
+        assert (imaging_grids_mask.sub == imaging_grids_shape.sub).all()
 
     def test__unmasked_grids(self):
 

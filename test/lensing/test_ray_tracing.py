@@ -18,8 +18,8 @@ def make_imaging_grids():
                              [True, False, False, True],
                              [True, True, True, True]]), pixel_scale=6.0)
 
-    imaging_grids =  mask.ImagingGrids.grids_from_mask_sub_grid_size_and_blurring_shape(mask=ma, sub_grid_size=2,
-                                                                              psf_shape=(3, 3))
+    imaging_grids =  mask.ImagingGrids.grids_from_mask_sub_grid_size_and_psf_shape(mask=ma, sub_grid_size=2,
+                                                                                   psf_shape=(3, 3))
 
     # Manually overwrite a set of cooridnates to make tests of grids and defledctions straightforward
 

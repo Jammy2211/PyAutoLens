@@ -16,7 +16,7 @@ class Convolver(object):
     into for a given PSF psf size, e.g.:
 
     |x|x|x|x|x|x|x|x|x|x|
-    |x|x|x|x|x|x|x|x|x|x|     This is an example masked_image.Mask, where:
+    |x|x|x|x|x|x|x|x|x|x|     This is an howtolens masked_image.Mask, where:
     |x|x|x|x|x|x|x|x|x|x|
     |x|x|x|x|x|x|x|x|x|x|     x = True (Pixel is masked and excluded from lensing)
     |x|x|x|o|o|o|x|x|x|x|     o = False (Pixel is not masked and included in lensing)
@@ -46,7 +46,7 @@ class Convolver(object):
     image_frame_psfs - The psf values that overlap each masked_image pixel it will blur light into.
     image_frame_length - The number of masked_image-pixels it will blur light into (because unmasked pixels are excluded)
 
-    For example, if we had the following 3x3 psf:
+    For howtolens, if we had the following 3x3 psf:
 
     |0.1|0.2|0.3|
     |0.4|0.5|0.6|
@@ -84,11 +84,11 @@ class Convolver(object):
     using blurring frames, however it is omitted for mapping_matrix matrix images.
 
     First, a blurring mask is computed from a mask, which describes all pixels which are close enough to the mask \
-    to blur light into it for a given psf size. Following the example above, the following blurring mask is \
+    to blur light into it for a given psf size. Following the howtolens above, the following blurring mask is \
     computed:
 
     |x|x|x|x|x|x|x|x|x|x|
-    |x|x|x|x|x|x|x|x|x|x|     This is an example masked_image.Mask, where:
+    |x|x|x|x|x|x|x|x|x|x|     This is an howtolens masked_image.Mask, where:
     |x|x|x|x|x|x|x|x|x|x|
     |x|x|o|o|o|o|o|x|x|x|     x = True (Pixel is masked and excluded from lensing)
     |x|x|o|x|x|x|o|x|x|x|     o = False (Pixel is not masked and included in lensing)
