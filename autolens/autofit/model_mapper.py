@@ -269,22 +269,22 @@ class ModelMapper(AbstractModel):
                 for constant_tuple in prior_model_tuple.prior_model.constant_tuples}
 
     @property
-    def class_prior_tuples_dict(self):
+    def prior_model_name_prior_tuples_dict(self):
         """
         Returns
         -------
         class_priors_dict: {String: [Prior]}
-            A dictionary mapping_matrix the names of reconstructable class instances to lists of associated priors
+            A dictionary mapping_matrix the names of priors to lists of associated priors
         """
         return {name: list(prior_model.prior_tuples) for name, prior_model in self.prior_model_tuples}
 
     @property
-    def class_constant_tuples_dict(self):
+    def prior_model_name_constant_tuples_dict(self):
         """
         Returns
         -------
         class_constants_dict: {String: [Constant]}
-            A dictionary mapping_matrix the names of reconstructable class instances to lists of associated constants
+            A dictionary mapping_matrix the names of priors to lists of associated constants
         """
         return {name: list(prior_model.constant_tuples) for name, prior_model in self.prior_model_tuples}
 
@@ -519,15 +519,11 @@ class ModelMapper(AbstractModel):
 
             prior_model_iterator = prior_model.prior_tuples + prior_model.constant_tuples
 
-            for i, prior in enumerate(prior_model_iterator):
-                class_priors_dict_ordered = sorted(
-                    self.class_prior_tuples_dict[prior_model_name], key=lambda p: p[1].id) + sorted(
-                    self.class_constant_tuples_dict[prior_model_name],
-                    key=lambda p: p[1].id)
+            for i, attribute_tuple in enumerate(prior_model_iterator):
+                attribute = attribute_tuple[1]
 
-                param_name = str(class_priors_dict_ordered[i][0])
-                line = prior_model_name + '_' + param_name
-                model_info.append(line + ' ' * (40 - len(line)) + prior[1].model_info)
+                line = prior_model_name + '_' + attribute_tuple.name
+                model_info.append(line + ' ' * (40 - len(line)) + attribute.model_info)
 
             model_info.append('')
 
