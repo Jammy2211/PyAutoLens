@@ -393,6 +393,16 @@ class PSF(Array):
 
         return scipy.signal.convolve2d(array, self, mode='same')
 
+    def xticks(self, pixel_scale):
+        """Compute the xticks labels of this grid, used for plotting the x-axis ticks when visualizing an _image-grid"""
+        x_arc_seconds = pixel_scale * self.shape[1]
+        return np.around(np.linspace(-x_arc_seconds/2.0, x_arc_seconds/2.0, 4), 2)
+
+    def yticks(self, pixel_scale):
+        """Compute the yticks labels of this grid, used for plotting the y-axis ticks when visualizing an _image-grid"""
+        y_arc_seconds = pixel_scale * self.shape[0]
+        return np.around(np.linspace(-y_arc_seconds/2.0, y_arc_seconds/2.0, 4), 2)
+
 
 def setup_random_seed(seed):
     """Setup the random seed. If the input seed is -1, the code will use a random seed for every run. If it is \
@@ -432,6 +442,18 @@ def generate_poisson_noise(image, effective_exposure_map, seed=-1):
     setup_random_seed(seed)
     image_counts = np.multiply(image, effective_exposure_map)
     return image - np.divide(np.random.poisson(image_counts, image.shape), effective_exposure_map)
+
+
+def load_data(image_path, image_hdu, noise_map_path, noise_map_hdu, psf_path, psf_hdu, pixel_scale,
+              psf_trimmed_shape=None):
+    data = ScaledArray.from_fits_with_scale(file_path=image_path, hdu=image_hdu, pixel_scale=pixel_scale)
+    noise = Array.from_fits(file_path=noise_map_path, hdu=noise_map_hdu)
+    psf = PSF.from_fits(file_path=psf_path, hdu=psf_hdu)
+
+    if psf_trimmed_shape is not None:
+        psf = psf.trim(psf_trimmed_shape)
+
+    return Image(array=data, pixel_scale=pixel_scale, psf=psf, noise_map=noise)
 
 
 def load_from_path(image_path, noise_path, psf_path, pixel_scale, psf_trimmed_shape=None):

@@ -19,7 +19,7 @@ class Pixelization(object):
 
         A number of 1D and 2D arrays are used to represent mappings betwen masked_image, sub, pix, and cluster pixels. The \
         nomenclature here follows grid_to_grid, such that it maps the index of a value on one grid to another. For \
-        example:
+        howtolens:
 
         - pix_to_image[2] = 5 tells us that the 3rd inversion-pixel maps to the 6th masked_image-pixel.
         - sub_to_pixelization[4,2] = 2 tells us that the 5th sub-pixel maps to the 3rd inversion-pixel.
@@ -41,15 +41,15 @@ class Pixelization(object):
         Nightingale & Dye 2015 and Nightingale, Dye & Massey 2018.
 
         The matrix has dimensions [image_pixels, pix_pixels] and non-zero entries represents an \
-        masked_image-pixel to pixel mapping_matrix. For example, if masked_image-pixel 0 maps to pixel 2, element \
+        masked_image-pixel to pixel mapping_matrix. For howtolens, if masked_image-pixel 0 maps to pixel 2, element \
         [0,2] of the mapping_matrix matrix will = 1.
 
         The mapping_matrix matrix is created using sub-gridding. Here, each observed masked_image-pixel is divided into a finer \
-        sub_grid. For example, if the sub-grid is sub_grid_size=4, each masked_image-pixel is split into a uniform 4 x 4 \
+        sub_grid. For howtolens, if the sub-grid is sub_grid_size=4, each masked_image-pixel is split into a uniform 4 x 4 \
         sub grid and all 16 sub-pixels are individually paired with pixels.
 
         The entries in the mapping_matrix matrix therefore become fractional surface brightness values, representing the \
-        number of sub-pixel to pixel mappings. For example if 3 sub-pixels from masked_image-pixel 4 mappers to \
+        number of sub-pixel to pixel mappings. For howtolens if 3 sub-pixels from masked_image-pixel 4 mappers to \
         pixel 2, then element [4,2] of the mapping_matrix matrix will = 3.0 * (1/sub_grid_size**2) = 3/16 = 0.1875.
 
         Parameters
