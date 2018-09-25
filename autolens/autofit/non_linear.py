@@ -1,15 +1,17 @@
-from autolens import exc
+import logging
 import math
 import os
+
+import matplotlib.pyplot as plt
+import numpy as np
 import pymultinest
 import scipy.optimize
-import numpy as np
-from autolens.imaging import hyper_image
+
 from autolens import conf
-from autolens.autofit import model_mapper as mm
-import logging
-import matplotlib.pyplot as plt
+from autolens import exc
 from autolens.autofit import link
+from autolens.autofit import model_mapper as mm
+from autolens.imaging import hyper_image
 
 logging.basicConfig()
 logger = logging.getLogger(__name__)
@@ -280,13 +282,6 @@ class MultiNest(NonLinearOptimizer):
         return getdist.mcsamples.loadMCSamples(self.chains_path + '/mn')
 
     def fit(self, analysis):
-
-        if len(self.path) > 77:
-            raise exc.MultiNestException(
-                'The path to the MultiNest results is longer than 77 characters (={}). Unfortunately, PyMultiNest '
-                'cannot use a path longer than this. Set your results path to something with fewer characters to '
-                'fix.'.format(len(self.path)))
-
         self.save_model_info()
 
         class Fitness(object):
@@ -357,11 +352,10 @@ class MultiNest(NonLinearOptimizer):
 
         constant = self.most_likely_instance_from_summary()
         constant += self.constant
-        likelihood = self.max_likelihood_from_summary()
         variable = self.variable.mapper_from_gaussian_tuples(
             tuples=self.gaussian_priors_at_sigma_limit(self.sigma_limit))
 
-        return Result(constant=constant, likelihood=likelihood, variable=variable)
+        return Result(constant=constant, likelihood=self.max_likelihood_from_summary(), variable=variable)
 
     def open_summary_file(self):
 

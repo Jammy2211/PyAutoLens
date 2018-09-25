@@ -1,19 +1,20 @@
-from autolens.imaging import image as im
-from autolens.imaging import scaled_array
-from autolens.imaging import mask
-from autolens.imaging import imaging_util
-from autolens.lensing import ray_tracing
-from autolens import conf
+import os
+import shutil
 
 import numpy as np
-import shutil
-import os
+
+from autolens import conf
+from autolens.imaging import image as im
+from autolens.imaging import imaging_util
+from autolens.imaging import mask
+from autolens.imaging import scaled_array
+from autolens.lensing import ray_tracing
 
 dirpath = os.path.dirname(os.path.realpath(__file__))
 output_path = '/gpfs/data/pdtw24/Lens/integration/'
 
-def reset_paths(data_name, pipeline_name, output_path):
 
+def reset_paths(data_name, pipeline_name, output_path):
     conf.instance.output_path = output_path
 
     try:
@@ -28,7 +29,6 @@ def reset_paths(data_name, pipeline_name, output_path):
 
 
 def simulate_integration_image(data_name, pixel_scale, lens_galaxies, source_galaxies, target_signal_to_noise):
-
     output_path = "{}/data/".format(os.path.dirname(os.path.realpath(__file__))) + data_name + '/'
     psf_shape = (11, 11)
     image_shape = (150, 150)
@@ -55,7 +55,7 @@ def simulate_integration_image(data_name, pixel_scale, lens_galaxies, source_gal
                                                                        pixel_scale=pixel_scale,
                                                                        target_signal_to_noise=target_signal_to_noise,
                                                                        effective_exposure_map=np.ones(image_shape),
-                                                                       background_sky_map=10.0*np.ones(image_shape),
+                                                                       background_sky_map=10.0 * np.ones(image_shape),
                                                                        psf=psf, seed=1)
 
     if os.path.exists(output_path) == False:
@@ -66,8 +66,8 @@ def simulate_integration_image(data_name, pixel_scale, lens_galaxies, source_gal
     imaging_util.numpy_array_to_fits(psf, path=output_path + '/psf.fits')
     imaging_util.numpy_array_to_fits(sim_image.effective_exposure_map, path=output_path + 'exposure_map.fits')
 
-def load_image(data_name, pixel_scale):
 
+def load_image(data_name, pixel_scale):
     data_dir = "{}/data/{}".format(dirpath, data_name)
 
     data = scaled_array.ScaledArray.from_fits_with_scale(file_path=data_dir + '/_image.fits', hdu=0,
