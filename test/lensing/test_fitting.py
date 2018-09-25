@@ -297,7 +297,7 @@ class TestUnmaskedModelImages:
         tracer = ray_tracing.TracerImagePlane(lens_galaxies=[galaxy_light], image_plane_grids=li.unmasked_grids)
         unmasked_model_images = fitting.unmasked_model_images_of_galaxies_from_lensing_image_and_tracer(li, tracer)
 
-        manual_model_images = list(map(lambda image: tracer.image_grids.image.map_to_2d_keep_padded(image),
+        manual_model_images = list(map(lambda image: tracer.image_plane.grids.image.map_to_2d_keep_padded(image),
                                        tracer._image_plane_images_of_galaxies))
         manual_model_images = list(map(lambda image: psf.convolve(image), manual_model_images))
 
@@ -317,7 +317,7 @@ class TestUnmaskedModelImages:
         tracer = ray_tracing.TracerImagePlane(lens_galaxies=[galaxy_light], image_plane_grids=li.unmasked_grids)
         unmasked_model_images = fitting.unmasked_model_images_of_galaxies_from_lensing_image_and_tracer(li, tracer)
 
-        manual_model_images = list(map(lambda image: tracer.image_grids.image.map_to_2d_keep_padded(image),
+        manual_model_images = list(map(lambda image: tracer.image_plane.grids.image.map_to_2d_keep_padded(image),
                                        tracer._image_plane_images_of_galaxies))
         manual_model_images = list(map(lambda image: psf.convolve(image), manual_model_images))
 
@@ -340,7 +340,7 @@ class TestUnmaskedModelImages:
         tracer = ray_tracing.TracerImagePlane(lens_galaxies=[g0, g1], image_plane_grids=li.unmasked_grids)
         unmasked_model_images = fitting.unmasked_model_images_of_galaxies_from_lensing_image_and_tracer(li, tracer)
 
-        manual_model_images = list(map(lambda image: tracer.image_grids.image.map_to_2d_keep_padded(image),
+        manual_model_images = list(map(lambda image: tracer.image_plane.grids.image.map_to_2d_keep_padded(image),
                                        tracer._image_plane_images_of_galaxies))
         manual_model_images = list(map(lambda image: psf.convolve(image), manual_model_images))
 
@@ -370,7 +370,7 @@ class TestUnmaskedModelImages:
                                                      image_plane_grids=li.unmasked_grids)
         unmasked_model_images = fitting.unmasked_model_images_of_galaxies_from_lensing_image_and_tracer(li, tracer)
 
-        manual_model_images = list(map(lambda image: tracer.image_grids.image.map_to_2d_keep_padded(image),
+        manual_model_images = list(map(lambda image: tracer.image_plane.grids.image.map_to_2d_keep_padded(image),
                                        tracer._image_plane_images_of_galaxies))
         manual_model_images = list(map(lambda image: psf.convolve(image), manual_model_images))
 
