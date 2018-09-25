@@ -340,7 +340,8 @@ class MultiNest(NonLinearOptimizer):
 
         logger.info("Running MultiNest...")
         self.run(fitness_function.__call__, prior, self.variable.total_priors,
-                 outputfiles_basename="{}/mn".format(self.chains_path), n_live_points=self.n_live_points,
+                 outputfiles_basename="{}/mn".format(link.make_linked_folder(self.chains_path)),
+                 n_live_points=self.n_live_points,
                  const_efficiency_mode=self.const_efficiency_mode,
                  importance_nested_sampling=self.importance_nested_sampling,
                  evidence_tolerance=self.evidence_tolerance, sampling_efficiency=self.sampling_efficiency,
