@@ -1,20 +1,21 @@
-from autolens.imaging import imaging_util
-from autolens.imaging import image as im
-from autolens.imaging import mask as msk
-from autolens.lensing import lensing_image as li
-from autolens.lensing import ray_tracing
-from autolens.lensing import fitting
-from autolens.lensing import galaxy as g
-from autolens.profiles import light_profiles as lp
-from autolens.profiles import mass_profiles as mp
-
-import numpy as np
-import pytest
 import os
 import shutil
 
-def test__simulate_lensed_source_and_fit__no_psf_blurring__chi_squared_is_0__noise_term_correct():
+import numpy as np
+import pytest
 
+from autolens.imaging import image as im
+from autolens.imaging import imaging_util
+from autolens.imaging import mask as msk
+from autolens.lensing import fitting
+from autolens.lensing import galaxy as g
+from autolens.lensing import lensing_image as li
+from autolens.lensing import ray_tracing
+from autolens.profiles import light_profiles as lp
+from autolens.profiles import mass_profiles as mp
+
+
+def test__simulate_lensed_source_and_fit__no_psf_blurring__chi_squared_is_0__noise_term_correct():
     psf = im.PSF(array=np.array([[0.0, 0.0, 0.0],
                                  [0.0, 1.0, 0.0],
                                  [0.0, 0.0, 0.0]]))
@@ -32,7 +33,8 @@ def test__simulate_lensed_source_and_fit__no_psf_blurring__chi_squared_is_0__noi
                                                    add_noise=False)
     image_simulated.noise_map = np.ones(image_simulated.shape)
 
-    path = "{}/data".format(os.path.dirname(os.path.realpath(__file__))) # Setup path so we can output the simulated data.
+    path = "{}/data".format(
+        os.path.dirname(os.path.realpath(__file__)))  # Setup path so we can output the simulated data.
 
     try:
         shutil.rmtree(path)
@@ -42,9 +44,9 @@ def test__simulate_lensed_source_and_fit__no_psf_blurring__chi_squared_is_0__noi
     if os.path.exists(path) == False:
         os.makedirs(path)
 
-    imaging_util.numpy_array_to_fits(array=image_simulated, path=path+'/_image.fits')
-    imaging_util.numpy_array_to_fits(array=image_simulated.noise_map, path=path+'/noise_map.fits')
-    imaging_util.numpy_array_to_fits(array=psf, path=path+'/psf.fits')
+    imaging_util.numpy_array_to_fits(array=image_simulated, path=path + '/_image.fits')
+    imaging_util.numpy_array_to_fits(array=image_simulated.noise_map, path=path + '/noise_map.fits')
+    imaging_util.numpy_array_to_fits(array=psf, path=path + '/psf.fits')
 
     image = im.load_from_path(image_path=path + '/_image.fits',
                               noise_path=path + '/noise_map.fits',
@@ -61,8 +63,8 @@ def test__simulate_lensed_source_and_fit__no_psf_blurring__chi_squared_is_0__noi
 
     assert fitter.chi_squared_term == 0.0
 
-def test__simulate_lensed_source_and_fit__include_psf_blurring__chi_squared_is_0__noise_term_correct():
 
+def test__simulate_lensed_source_and_fit__include_psf_blurring__chi_squared_is_0__noise_term_correct():
     psf = im.PSF.simulate_as_gaussian(shape=(3, 3), sigma=0.75)
 
     imaging_grids = msk.ImagingGrids.unmasked_grids_for_simulation(shape=(11, 11), pixel_scale=0.2, psf_shape=psf.shape)
@@ -78,7 +80,8 @@ def test__simulate_lensed_source_and_fit__include_psf_blurring__chi_squared_is_0
                                                    add_noise=False)
     image_simulated.noise_map = np.ones(image_simulated.shape)
 
-    path = "{}/data".format(os.path.dirname(os.path.realpath(__file__))) # Setup path so we can output the simulated data.
+    path = "{}/data".format(
+        os.path.dirname(os.path.realpath(__file__)))  # Setup path so we can output the simulated data.
 
     try:
         shutil.rmtree(path)
@@ -88,9 +91,9 @@ def test__simulate_lensed_source_and_fit__include_psf_blurring__chi_squared_is_0
     if os.path.exists(path) == False:
         os.makedirs(path)
 
-    imaging_util.numpy_array_to_fits(array=image_simulated, path=path+'/_image.fits')
-    imaging_util.numpy_array_to_fits(array=image_simulated.noise_map, path=path+'/noise_map.fits')
-    imaging_util.numpy_array_to_fits(array=psf, path=path+'/psf.fits')
+    imaging_util.numpy_array_to_fits(array=image_simulated, path=path + '/_image.fits')
+    imaging_util.numpy_array_to_fits(array=image_simulated.noise_map, path=path + '/noise_map.fits')
+    imaging_util.numpy_array_to_fits(array=psf, path=path + '/psf.fits')
 
     image = im.load_from_path(image_path=path + '/_image.fits',
                               noise_path=path + '/noise_map.fits',

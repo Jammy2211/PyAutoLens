@@ -1,14 +1,13 @@
-from autolens.inversion import inversions
-from autolens import exc
 import numpy as np
 import pytest
-import scipy.spatial
+
+from autolens import exc
+from autolens.inversion import inversions
 
 
 class TestDataVectorFromData(object):
 
     def test__simple_blurred_mapping_matrix__correct_data_vector(self):
-
         blurred_mapping_matrix = np.array([[1.0, 1.0, 0.0],
                                            [1.0, 0.0, 0.0],
                                            [0.0, 1.0, 0.0],
@@ -25,7 +24,6 @@ class TestDataVectorFromData(object):
         assert (data_vector == np.array([2.0, 3.0, 1.0])).all()
 
     def test__simple_blurred_mapping_matrix__change_image_values__correct_data_vector(self):
-
         blurred_mapping_matrix = np.array([[1.0, 1.0, 0.0],
                                            [1.0, 0.0, 0.0],
                                            [0.0, 1.0, 0.0],
@@ -42,7 +40,6 @@ class TestDataVectorFromData(object):
         assert (data_vector == np.array([4.0, 14.0, 10.0])).all()
 
     def test__simple_blurred_mapping_matrix__change_noise_values__correct_data_vector(self):
-
         blurred_mapping_matrix = np.array([[1.0, 1.0, 0.0],
                                            [1.0, 0.0, 0.0],
                                            [0.0, 1.0, 0.0],
@@ -62,7 +59,6 @@ class TestDataVectorFromData(object):
 class TestCurvatureMatrixFromBlurred(object):
 
     def test__simple_blurred_mapping_matrix(self):
-
         blurred_mapping_matrix = np.array([[1.0, 1.0, 0.0],
                                            [1.0, 0.0, 0.0],
                                            [0.0, 1.0, 0.0],
@@ -80,7 +76,6 @@ class TestCurvatureMatrixFromBlurred(object):
                                               [0.0, 1.0, 1.0]])).all()
 
     def test__simple_blurred_mapping_matrix__change_noise_values(self):
-
         blurred_mapping_matrix = np.array([[1.0, 1.0, 0.0],
                                            [1.0, 0.0, 0.0],
                                            [0.0, 1.0, 0.0],
@@ -101,7 +96,6 @@ class TestCurvatureMatrixFromBlurred(object):
 class TestRegularizationTerm:
 
     def test__solution_all_1s__regularization_matrix_simple(self):
-
         solution_vector = np.array([1.0, 1.0, 1.0])
 
         regularization_matrix = np.array([[1.0, 0.0, 0.0],
@@ -129,7 +123,6 @@ class TestRegularizationTerm:
         assert re.regularization_term == 3.0
 
     def test__solution_and_regularization_matrix_range_of_values(self):
-
         solution_vector = np.array([2.0, 3.0, 5.0])
 
         regularization_matrix = np.array([[2.0, -1.0, 0.0],
@@ -160,7 +153,6 @@ class TestRegularizationTerm:
 class TestLogDetMatrix:
 
     def test__determinant_of_positive_definite_matrix_via_cholesky(self):
-
         matrix = np.array([[1.0, 0.0, 0.0],
                            [0.0, 1.0, 0.0],
                            [0.0, 0.0, 1.0]])
@@ -187,8 +179,7 @@ class TestLogDetMatrix:
         assert log_determinant == pytest.approx(re.log_determinant_of_matrix_cholesky(matrix), 1e-4)
 
     def test__matrix_not_positive_definite__raises_reconstruction_exception(self):
-
-        matrix = np.array([[2.0,  0.0, 0.0],
+        matrix = np.array([[2.0, 0.0, 0.0],
                            [-1.0, 2.0, -1.0],
                            [0.0, -1.0, 0.0]])
 
@@ -203,7 +194,6 @@ class TestLogDetMatrix:
 class TestReconstructedImage:
 
     def test__solution_all_1s__simple_blurred_mapping_matrix__correct_reconstructed_image(self):
-
         solution_vector = np.array([1.0, 1.0, 1.0, 1.0])
 
         blurred_mapping_matrix = np.array([[1.0, 1.0, 1.0, 1.0],

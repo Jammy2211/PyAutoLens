@@ -1,13 +1,13 @@
+from matplotlib import pyplot as plt
+
 from autolens import conf
 from autolens.plotting import array_plotters
 from autolens.plotting import util
-from matplotlib import pyplot as plt
-from autolens import exc
+
 
 def plot_fit(fit, output_path=None, output_filename='fit', output_format='show', ignore_config=True):
-
     plot_fit_as_subplot = conf.instance.general.get('output', 'plot_fit_as_subplot', bool)
-    
+
     if not plot_fit_as_subplot and ignore_config is False:
         return
 
@@ -24,12 +24,10 @@ def plot_fit(fit, output_path=None, output_filename='fit', output_format='show',
     elif fit.total_planes == 2:
 
         if not fit.is_hyper_fit:
-
             plot_fit_lens_and_source_planes(fit, output_path, output_filename, output_format)
 
 
 def plot_fit_individuals(fit, output_path=None, output_format='show'):
-
     if fit.total_planes == 1:
 
         if not fit.is_hyper_fit:
@@ -43,7 +41,6 @@ def plot_fit_individuals(fit, output_path=None, output_format='show'):
     elif fit.total_planes == 2:
 
         if not fit.is_hyper_fit:
-
             plot_fit_individuals_lens_and_source_planes(fit, output_path, output_format)
 
 
@@ -137,6 +134,7 @@ def plot_fit_lens_plane_only(fit, output_path=None, output_filename='fit', outpu
 
     util.output_subplot_array(output_path=output_path, output_filename=output_filename, output_format=output_format)
     plt.close()
+
 
 def plot_fit_hyper_lens_plane_only(fit, output_path=None, output_filename='fit', output_format='show'):
     """Plot the model _image of an analysis, using the *Fitter* class object.
@@ -277,6 +275,7 @@ def plot_fit_hyper_lens_plane_only(fit, output_path=None, output_filename='fit',
     util.output_subplot_array(output_path=output_path, output_filename=output_filename, output_format=output_format)
     plt.close()
 
+
 def plot_fit_lens_and_source_planes(fit, output_path=None, output_filename='fit', output_format='show'):
     """Plot the model _image of an analysis, using the *Fitter* class object.
 
@@ -346,7 +345,6 @@ def plot_fit_lens_and_source_planes(fit, output_path=None, output_filename='fit'
         output_path=output_path, output_format=output_format)
 
     if fit.model_images_of_planes[0] is not None:
-
         plt.subplot(3, 3, 5)
 
         array_plotters.plot_model_image(
@@ -400,6 +398,7 @@ def plot_fit_lens_and_source_planes(fit, output_path=None, output_filename='fit'
     util.output_subplot_array(output_path=output_path, output_filename=output_filename, output_format=output_format)
     plt.close()
 
+
 def plot_fit_individuals_lens_plane_only(fit, output_path=None, output_format='show'):
     """Plot the model _image of an analysis, using the *Fitter* class object.
 
@@ -452,7 +451,6 @@ def plot_fit_individuals_lens_plane_only(fit, output_path=None, output_format='s
     plot_fit_chi_squareds = conf.instance.general.get('output', 'plot_fit_chi_squareds', bool)
 
     if plot_fit_model_image:
-
         array_plotters.plot_model_image(
             model_image=fit.model_image,
             xticks=fit.image.xticks, yticks=fit.image.yticks, units='arcsec', xyticksize=40,
@@ -462,7 +460,6 @@ def plot_fit_individuals_lens_plane_only(fit, output_path=None, output_format='s
             output_path=output_path, output_format=output_format)
 
     if plot_fit_residuals:
-    
         array_plotters.plot_residuals(
             residuals=fit.residuals,
             xticks=fit.image.xticks, yticks=fit.image.yticks, units='arcsec', xyticksize=40,
@@ -472,7 +469,6 @@ def plot_fit_individuals_lens_plane_only(fit, output_path=None, output_format='s
             output_path=output_path, output_format=output_format)
 
     if plot_fit_chi_squareds:
-
         array_plotters.plot_chi_squareds(
             chi_squareds=fit.chi_squareds,
             xticks=fit.image.xticks, yticks=fit.image.yticks, units='arcsec', xyticksize=40,
@@ -480,6 +476,7 @@ def plot_fit_individuals_lens_plane_only(fit, output_path=None, output_format='s
             figsize=(20, 15), aspect='auto', cmap='jet', cb_ticksize=20,
             titlesize=46, xlabelsize=36, ylabelsize=36,
             output_path=output_path, output_type=output_format)
+
 
 def plot_fit_individuals_hyper_lens_plane_only(fit, output_path=None, output_format='show'):
     """Plot the model _image of an analysis, using the *Fitter* class object.
@@ -536,7 +533,6 @@ def plot_fit_individuals_hyper_lens_plane_only(fit, output_path=None, output_for
     plot_fit_scaled_noise_map = conf.instance.general.get('output', 'plot_fit_scaled_noise_map', bool)
 
     if plot_fit_model_image:
-
         array_plotters.plot_model_image(
             model_image=fit.model_image,
             xticks=fit.image.xticks, yticks=fit.image.yticks, units='arcsec', xyticksize=40,
@@ -546,7 +542,6 @@ def plot_fit_individuals_hyper_lens_plane_only(fit, output_path=None, output_for
             output_path=output_path, output_format=output_format)
 
     if plot_fit_residuals:
-
         array_plotters.plot_residuals(
             residuals=fit.residuals,
             xticks=fit.image.xticks, yticks=fit.image.yticks, units='arcsec', xyticksize=40,
@@ -556,7 +551,6 @@ def plot_fit_individuals_hyper_lens_plane_only(fit, output_path=None, output_for
             output_path=output_path, output_format=output_format)
 
     if plot_fit_chi_squareds:
-
         array_plotters.plot_chi_squareds(
             chi_squareds=fit.chi_squareds,
             xticks=fit.image.xticks, yticks=fit.image.yticks, units='arcsec', xyticksize=40,
@@ -581,7 +575,6 @@ def plot_fit_individuals_hyper_lens_plane_only(fit, output_path=None, output_for
             output_path=output_path, output_filename='lens_plane_contributions', output_type=output_format)
 
     if plot_fit_scaled_noise_map:
-
         array_plotters.plot_scaled_noise_map(
             scaled_noise_map=fit.scaled_noise_map,
             xticks=fit.image.xticks, yticks=fit.image.yticks, units='arcsec', xyticksize=40,
@@ -591,7 +584,6 @@ def plot_fit_individuals_hyper_lens_plane_only(fit, output_path=None, output_for
             output_path=output_path, output_format=output_format)
 
     if plot_fit_scaled_chi_squareds:
-
         array_plotters.plot_scaled_chi_squareds(
             scaled_chi_squareds=fit.scaled_chi_squareds,
             xticks=fit.image.xticks, yticks=fit.image.yticks, units='arcsec', xyticksize=40,
@@ -599,6 +591,7 @@ def plot_fit_individuals_hyper_lens_plane_only(fit, output_path=None, output_for
             figsize=(20, 15), aspect='auto', cmap='jet', cb_ticksize=20,
             titlesize=46, xlabelsize=36, ylabelsize=36,
             output_path=output_path, output_format=output_format)
+
 
 def plot_fit_individuals_lens_and_source_planes(fit, output_path=None, output_format='show'):
     """Plot the model _image of an analysis, using the *Fitter* class object.
@@ -655,7 +648,6 @@ def plot_fit_individuals_lens_and_source_planes(fit, output_path=None, output_fo
     plot_fit_chi_squareds = conf.instance.general.get('output', 'plot_fit_chi_squareds', bool)
 
     if plot_fit_model_image:
-
         array_plotters.plot_model_image(
             model_image=fit.model_image,
             xticks=fit.image.xticks, yticks=fit.image.yticks, units='arcsec', xyticksize=40,
@@ -665,7 +657,6 @@ def plot_fit_individuals_lens_and_source_planes(fit, output_path=None, output_fo
             output_path=output_path, output_format=output_format)
 
     if plot_fit_lens_model_image:
-
         array_plotters.plot_model_image(
             model_image=fit.model_images_of_planes[0],
             xticks=fit.image.xticks, yticks=fit.image.yticks, units='arcsec', xyticksize=40,
@@ -675,7 +666,6 @@ def plot_fit_individuals_lens_and_source_planes(fit, output_path=None, output_fo
             output_path=output_path, output_format=output_format)
 
     if plot_fit_source_model_image:
-
         array_plotters.plot_model_image(
             model_image=fit.model_images_of_planes[1],
             xticks=fit.image.xticks, yticks=fit.image.yticks, units='arcsec', xyticksize=40,
@@ -685,7 +675,6 @@ def plot_fit_individuals_lens_and_source_planes(fit, output_path=None, output_fo
             output_path=output_path, output_format=output_format)
 
     if plot_fit_plane_image:
-
         array_plotters.plot_plane_image(
             plane_image=fit.plane_images[1],
             xticks=fit.image.xticks, yticks=fit.image.yticks, units='arcsec', xyticksize=40,
@@ -695,7 +684,6 @@ def plot_fit_individuals_lens_and_source_planes(fit, output_path=None, output_fo
             output_path=output_path, output_format=output_format)
 
     if plot_fit_residuals:
-
         array_plotters.plot_residuals(
             residuals=fit.residuals,
             xticks=fit.image.xticks, yticks=fit.image.yticks, units='arcsec', xyticksize=40,
@@ -705,7 +693,6 @@ def plot_fit_individuals_lens_and_source_planes(fit, output_path=None, output_fo
             output_path=output_path, output_format=output_format)
 
     if plot_fit_chi_squareds:
-
         array_plotters.plot_chi_squareds(
             chi_squareds=fit.chi_squareds,
             xticks=fit.image.xticks, yticks=fit.image.yticks, units='arcsec', xyticksize=40,
@@ -714,17 +701,16 @@ def plot_fit_individuals_lens_and_source_planes(fit, output_path=None, output_fo
             titlesize=46, xlabelsize=36, ylabelsize=36,
             output_path=output_path, output_type=output_format)
 
-def plot_fit_hyper_arrays(fit, output_path=None, output_format='show'):
 
+def plot_fit_hyper_arrays(fit, output_path=None, output_format='show'):
     plot_fit_hyper_arrays = conf.instance.general.get('output', 'plot_fit_hyper_arrays', bool)
 
     if plot_fit_hyper_arrays:
 
         array_plotters.plot_model_image(fit.unmasked_model_image, output_filename='unmasked_model_image',
-                                    output_path=output_path, output_format=output_format)
+                                        output_path=output_path, output_format=output_format)
 
         for i, unmasked_galaxy_model_image in enumerate(fit.unmasked_model_images_of_galaxies):
-
             array_plotters.plot_model_image(unmasked_galaxy_model_image,
                                             output_filename='unmasked_galaxy_image_' + str(i),
                                             output_path=output_path, output_format=output_format)

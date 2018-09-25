@@ -1,8 +1,10 @@
+from itertools import count
+
 import numpy as np
+
 from autolens import exc
 from autolens.profiles import light_profiles as lp
 from autolens.profiles import mass_profiles as mp
-from itertools import count
 
 
 def is_light_profile(obj):
