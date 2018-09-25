@@ -1,7 +1,7 @@
 """Reset Config."""
 
-from autolens import conf
 from .base import Base, current_directory
+from autolens import conf
 
 config_path = "{}/config".format(current_directory)
 

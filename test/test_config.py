@@ -1,10 +1,8 @@
-from os import path
-
-import pytest
-
 from autolens import conf
 from autolens import exc
 from autolens.profiles import light_profiles
+from os import path
+import pytest
 
 directory = path.dirname(path.realpath(__file__))
 

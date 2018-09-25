@@ -1,19 +1,22 @@
-import os
-
+from autolens.pipeline import pipeline as pl
+from autolens.pipeline import phase as ph
+from autolens.profiles import light_profiles as lp
+from autolens.lensing import galaxy_model as gm
 from autolens.autofit import non_linear as nl
 from autolens.lensing import galaxy
-from autolens.lensing import galaxy_model as gm
-from autolens.pipeline import phase as ph
-from autolens.pipeline import pipeline as pl
-from autolens.profiles import light_profiles as lp
+from autolens import conf
 from test.integration import tools
+
+import numpy as np
+import shutil
+import os
 
 dirpath = os.path.dirname(os.path.realpath(__file__))
 dirpath = os.path.dirname(dirpath)
 output_path = '/gpfs/data/pdtw24/Lens/int/lens_only/'
 
-
 def pipeline():
+
     pipeline_name = "l1g"
     data_name = '/l1g'
 
@@ -34,8 +37,8 @@ def pipeline():
     for result in results:
         print(result)
 
-
 def make_pipeline(pipeline_name):
+    
     phase1 = ph.LensPlanePhase(lens_galaxies=[gm.GalaxyModel(sersic=lp.EllipticalSersic)],
                                optimizer_class=nl.MultiNest, phase_name="{}/phase1".format(pipeline_name))
 
@@ -43,7 +46,6 @@ def make_pipeline(pipeline_name):
     phase1.optimizer.sampling_efficiency = 0.8
 
     return pl.PipelineImaging(pipeline_name, phase1)
-
 
 if __name__ == "__main__":
     pipeline()

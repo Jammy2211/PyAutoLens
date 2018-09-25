@@ -1,10 +1,9 @@
-import numpy as np
-import scipy.spatial
-import sklearn.cluster
-
-from autolens import exc
 from autolens.imaging import mask
 from autolens.inversion import mappers
+from autolens import exc
+import numpy as np
+import sklearn.cluster
+import scipy.spatial
 
 
 class Pixelization(object):

@@ -1,20 +1,24 @@
-import os
-
-from autolens.autofit import non_linear as nl
-from autolens.lensing import galaxy
-from autolens.lensing import galaxy_model as gm
-from autolens.pipeline import phase as ph
 from autolens.pipeline import pipeline as pl
+from autolens.pipeline import phase as ph
 from autolens.profiles import light_profiles as lp
 from autolens.profiles import mass_profiles as mp
+from autolens.lensing import galaxy_model as gm
+from autolens.autofit import non_linear as nl
+from autolens.autofit import model_mapper as mm
+from autolens.lensing import galaxy
+from autolens import conf
 from test.integration import tools
+
+import numpy as np
+import shutil
+import os
 
 dirpath = os.path.dirname(os.path.realpath(__file__))
 dirpath = os.path.dirname(dirpath)
 output_path = '/gpfs/data/pdtw24/Lens/int/lens_and_source/'
 
-
 def pipeline():
+
     pipeline_name = "l1_s1"
     data_name = '/l1_s1'
 
@@ -37,8 +41,8 @@ def pipeline():
     for result in results:
         print(result)
 
-
 def make_pipeline(pipeline_name):
+
     phase1 = ph.LensSourcePlanePhase(lens_galaxies=[gm.GalaxyModel(sie=mp.EllipticalIsothermal)],
                                      source_galaxies=[gm.GalaxyModel(sersic=lp.EllipticalSersic)],
                                      optimizer_class=nl.MultiNest, phase_name="{}/phase1".format(pipeline_name))

@@ -1,12 +1,10 @@
-import inspect
-import logging
-from functools import wraps
-
-import numba
+from autolens import exc
 import numpy as np
 from astropy.io import fits
-
-from autolens import exc
+import numba
+from functools import wraps
+import inspect
+import logging
 
 logger = logging.getLogger(__name__)
 logger.level = logging.DEBUG
