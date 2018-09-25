@@ -61,8 +61,7 @@ class NonLinearOptimizer(object):
 
         self.named_config = conf.instance.non_linear
 
-        if name is None:
-            name = "phase"
+        name = name or "phase"
 
         sym_path = "{}/{}/optimizer".format(conf.instance.output_path, name)
 
