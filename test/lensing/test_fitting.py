@@ -833,46 +833,6 @@ class TestProfileFit:
 
     class TestPlaneImagesGrids:
 
-        def test__plane_image_of_plane_2d__ensure_index_goes_from_top_left(self, li_no_blur):
-            # The grid coordinates -2.0 -> 2.0 mean a plane of shape (5,5) has arc second coordinates running over
-            # -1.6, -0.8, 0.0, 0.8, 1.6. The centre -1.6, -1.6 of the galaxy means its brighest pixel should be
-            # index 0 of the 1D grid and (0,0) of the 2d plane _image.
-
-            li_no_blur.grids.image[:, :] = np.array([[-2.0, -2.0], [2.0, 2.0], [0.0, 0.0], [0.0, 0.0]])
-
-            g0 = g.Galaxy(light_profile=lp.EllipticalSersic(centre=(-1.6, -1.6), intensity=1.0))
-            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g0],
-                                                         image_plane_grids=li_no_blur.grids)
-            fit = fitting.ProfileFit(lensing_image=li_no_blur, tracer=tracer, plane_shape=(5, 5))
-            plane_image = fit.plane_images[1]
-
-            assert plane_image.shape == (5, 5)
-            assert np.unravel_index(plane_image.argmax(), plane_image.shape) == (0, 0)
-
-            g0 = g.Galaxy(light_profile=lp.EllipticalSersic(centre=(1.6, -1.6), intensity=1.0))
-            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g0],
-                                                         image_plane_grids=li_no_blur.grids)
-            fit = fitting.ProfileFit(lensing_image=li_no_blur, tracer=tracer, plane_shape=(5, 5))
-            plane_image = fit.plane_images[1]
-
-            assert np.unravel_index(plane_image.argmax(), plane_image.shape) == (0, 4)
-
-            g0 = g.Galaxy(light_profile=lp.EllipticalSersic(centre=(-1.6, 1.6), intensity=1.0))
-            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g0],
-                                                         image_plane_grids=li_no_blur.grids)
-            fit = fitting.ProfileFit(lensing_image=li_no_blur, tracer=tracer, plane_shape=(5, 5))
-            plane_image = fit.plane_images[1]
-
-            assert np.unravel_index(plane_image.argmax(), plane_image.shape) == (4, 0)
-
-            g0 = g.Galaxy(light_profile=lp.EllipticalSersic(centre=(1.6, 1.6), intensity=1.0))
-            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g0],
-                                                         image_plane_grids=li_no_blur.grids)
-            fit = fitting.ProfileFit(lensing_image=li_no_blur, tracer=tracer, plane_shape=(5, 5))
-            plane_image = fit.plane_images[1]
-
-            assert np.unravel_index(plane_image.argmax(), plane_image.shape) == (4, 4)
-
         def test__plane_image_grids_is_correct(self, li_no_blur):
             # The grid coordinates -2.0 -> 2.0 mean a plane of shape (5,5) has arc second coordinates running over
             # -1.6, -0.8, 0.0, 0.8, 1.6. The centre -1.6, -1.6 of the galaxy means its brighest pixel should be
