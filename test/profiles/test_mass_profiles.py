@@ -1,8 +1,6 @@
-import math
-
 import numpy as np
+import math
 import pytest
-
 from autolens.profiles import light_profiles as lp
 from autolens.profiles import mass_profiles as mp
 

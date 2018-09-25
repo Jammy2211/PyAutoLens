@@ -1,10 +1,9 @@
-import numpy as np
-import scipy.signal
-from scipy.stats import norm
-
-from autolens import exc
-from autolens.imaging import imaging_util
 from autolens.imaging.scaled_array import ScaledArray, Array
+from autolens.imaging import imaging_util
+import numpy as np
+from scipy.stats import norm
+import scipy.signal
+from autolens import exc
 
 
 class Image(ScaledArray):
@@ -90,7 +89,7 @@ class PreparatoryImage(Image):
                  add_noise=False, seed=-1):
 
         effective_exposure_map = ScaledArray.single_value(value=exposure_time, shape=array.shape,
-                                                          pixel_scale=pixel_scale)
+                                                           pixel_scale=pixel_scale)
         if background_sky_level is not None:
             background_sky_map = ScaledArray.single_value(value=background_sky_level, shape=array.shape,
                                                           pixel_scale=pixel_scale)
@@ -134,7 +133,7 @@ class PreparatoryImage(Image):
             array = cls.trim_psf_edges(array, psf)
             effective_exposure_map = cls.trim_psf_edges(effective_exposure_map, psf)
             if background_sky_map is not None:
-                background_sky_map = cls.trim_psf_edges(background_sky_map, psf)
+               background_sky_map = cls.trim_psf_edges(background_sky_map, psf)
 
         if add_noise is True:
             array += generate_poisson_noise(array, effective_exposure_map, seed)
@@ -369,7 +368,7 @@ class PSF(Array):
 
     def renormalize(self):
         """Renormalize the PSF such that its data_vector values sum to unity."""
-        self[:, :] = np.divide(self, np.sum(self))
+        self[:,:] = np.divide(self, np.sum(self))
 
     def convolve(self, array):
         """

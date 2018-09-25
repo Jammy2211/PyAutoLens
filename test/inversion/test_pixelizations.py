@@ -1,7 +1,11 @@
-import numpy as np
-import pytest
-
+from test.mock.mock_mask import MockSubGridCoords, MockGridCollection, MockBorderCollection
+from autolens.imaging import mask as msk
+from autolens.inversion import regularization
+from autolens.inversion import mappers as pm
 from autolens.inversion import pixelizations
+
+import pytest
+import numpy as np
 
 
 class MockGeometry(object):
@@ -26,22 +30,27 @@ def make_three_pixels():
 
 
 class TestRectangular:
+
+
     class TestConstructor:
 
         def test__number_of_pixels_and_regularization_set_up_correctly(self):
+
             pix = pixelizations.Rectangular(shape=(3, 3))
 
             assert pix.shape == (3, 3)
             assert pix.pixels == 9
 
+
     class TestSetupGeometry:
 
         def test__3x3_grid__buffer_is_small__grid_give_min_minus_1_max_1__sets_up_geometry_correctly(self):
+
             pix = pixelizations.Rectangular(shape=(3, 3))
 
             pixelization_grid = np.array([[-1.0, -1.0], [-1.0, 0.0], [-1.0, 1.0],
-                                          [0.0, -1.0], [0.0, 0.0], [0.0, 1.0],
-                                          [1.0, -1.0], [1.0, 0.0], [1.0, 1.0]])
+                                 [0.0, -1.0], [0.0, 0.0], [0.0, 1.0],
+                                 [1.0, -1.0], [1.0, 0.0], [1.0, 1.0]])
 
             geometry = pix.geometry_from_pixelization_sub_grid(pixelization_grid, buffer=1e-8)
 
@@ -53,11 +62,12 @@ class TestRectangular:
             assert geometry.y_pixel_scale == (geometry.y_max - geometry.y_min) / 3
 
         def test__3x3_grid__same_as_above_change_buffer(self):
+
             pix = pixelizations.Rectangular(shape=(3, 3))
 
             pixelization_grid = np.array([[-1.0, -1.0], [-1.0, 0.0], [-1.0, 1.0],
-                                          [0.0, -1.0], [0.0, 0.0], [0.0, 1.0],
-                                          [1.0, -1.0], [1.0, 0.0], [1.0, 1.0]])
+                                 [0.0, -1.0], [0.0, 0.0], [0.0, 1.0],
+                                 [1.0, -1.0], [1.0, 0.0], [1.0, 1.0]])
 
             geometry = pix.geometry_from_pixelization_sub_grid(pixelization_grid, buffer=1e-4)
 
@@ -69,11 +79,12 @@ class TestRectangular:
             assert geometry.y_max == 1.0 + 1e-4
 
         def test__5x4_grid__buffer_is_small(self):
+
             pix = pixelizations.Rectangular(shape=(5, 4))
 
             pixelization_grid = np.array([[-1.0, -1.0], [-1.0, 0.0], [-1.0, 1.0],
-                                          [0.0, -1.0], [0.0, 0.0], [0.0, 1.0],
-                                          [1.0, -1.0], [1.0, 0.0], [1.0, 1.0]])
+                                 [0.0, -1.0], [0.0, 0.0], [0.0, 1.0],
+                                 [1.0, -1.0], [1.0, 0.0], [1.0, 1.0]])
 
             geometry = pix.geometry_from_pixelization_sub_grid(pixelization_grid, buffer=1e-8)
 
@@ -85,6 +96,7 @@ class TestRectangular:
             assert geometry.y_pixel_scale == (geometry.y_max - geometry.y_min) / 4
 
         def test__3x3_grid__larger_range_of_grid(self):
+
             pix = pixelizations.Rectangular(shape=(3, 3))
 
             pixelization_grid = np.array([[1.0, 2.0], [3.0, 4.0], [5.0, 6.0], [7.0, 8.0]])
@@ -98,9 +110,11 @@ class TestRectangular:
             assert geometry.y_max == 8.0 + 1e-8
             assert geometry.y_pixel_scale == pytest.approx((geometry.y_max - geometry.y_min) / 3, 1e-4)
 
+
     class TestPixelNeighbors:
 
         def test__compute_pixel_neighbors__3x3_grid(self):
+
             # |0|1|2|
             # |3|4|5|
             # |6|7|8|
@@ -193,6 +207,8 @@ class TestRectangular:
 
 
 class TestVoronoi:
+
+
     class TestVoronoiGrid:
 
         def test__points_in_x_cross_shape__sets_up_diamond_voronoi_vertices(self):
@@ -289,6 +305,7 @@ class TestVoronoi:
             assert [5, 8] in voronoi.ridge_points or [8, 5] in voronoi.ridge_points
             assert [3, 6] in voronoi.ridge_points or [6, 3] in voronoi.ridge_points
 
+
     class TestNeighbors:
 
         def test__points_in_x_cross_shape__neighbors_of_each_pixel_correct(self):
@@ -331,6 +348,8 @@ class TestVoronoi:
 
 
 class TestAmorphous:
+
+
     class TestKMeans:
 
         def test__simple_points__sets_up_two_clusters(self):
@@ -393,39 +412,44 @@ class TestAmorphous:
 
 
 class TestPixelizationGrid:
+
     class TestCoordinateGridWithinAnnulus:
 
         def test__shape_3x3__circle_radius_15__all_9_pixels_in_grid_with_correct_coordinates(self):
+
             pixelization_grid = pixelizations.PixelizationGrid(shape=(3, 3))
 
             coordinate_grid = pixelization_grid.coordinate_grid_within_annulus(inner_radius=0.0, outer_radius=1.5)
 
             assert (coordinate_grid == np.array([[-1.0, -1.0], [-1.0, 0.0], [-1.0, 1.0],
-                                                 [0.0, -1.0], [0.0, 0.0], [0.0, 1.0],
-                                                 [1.0, -1.0], [1.0, 0.0], [1.0, 1.0]])).all()
+                                                  [0.0, -1.0],  [0.0, 0.0],  [0.0, 1.0],
+                                                  [1.0, -1.0],  [1.0, 0.0],  [1.0, 1.0]])).all()
 
         def test__shape_3x3__circle_radius_3__all_9_pixels_in_grid_with_correct_coordinates(self):
+
             pixelization_grid = pixelizations.PixelizationGrid(shape=(3, 3))
 
             coordinate_grid = pixelization_grid.coordinate_grid_within_annulus(inner_radius=0.0, outer_radius=3)
 
             assert (coordinate_grid == np.array([[-2.0, -2.0], [-2.0, 0.0], [-2.0, 2.0],
-                                                 [0.0, -2.0], [0.0, 0.0], [0.0, 2.0],
-                                                 [2.0, -2.0], [2.0, 0.0], [2.0, 2.0]])).all()
+                                                  [0.0, -2.0],  [0.0, 0.0],  [0.0, 2.0],
+                                                  [2.0, -2.0],  [2.0, 0.0],  [2.0, 2.0]])).all()
 
         def test__shape_3x2__circle_radius_15__all_6_pixels_in_grid_with_correct_coordinates(self):
+
             pixelization_grid = pixelizations.PixelizationGrid(shape=(3, 2))
 
             coordinate_grid = pixelization_grid.coordinate_grid_within_annulus(inner_radius=0.0, outer_radius=1.5)
 
             assert (coordinate_grid == np.array([[-1.0, -0.75], [-1.0, 0.75],
-                                                 [0.0, -0.75], [0.0, 0.75],
-                                                 [1.0, -0.75], [1.0, 0.75]])).all()
+                                                  [0.0, -0.75],  [0.0, 0.75],
+                                                  [1.0, -0.75],  [1.0, 0.75]])).all()
 
         def test__shape_2x3__circle_radius_15__all_6_pixels_in_grid_with_correct_coordinates(self):
+
             pixelization_grid = pixelizations.PixelizationGrid(shape=(2, 3))
 
             coordinate_grid = pixelization_grid.coordinate_grid_within_annulus(inner_radius=0.0, outer_radius=1.5)
 
             assert (coordinate_grid == np.array([[-0.75, -1.0], [-0.75, 0.0], [-0.75, 1.0],
-                                                 [0.75, -1.0], [0.75, 0.0], [0.75, 1.0]])).all()
+                                                  [0.75, -1.0],  [0.75, 0.0], [0.75, 1.0]])).all()

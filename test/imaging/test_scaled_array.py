@@ -1,10 +1,8 @@
-import os
-
-import numpy as np
-import pytest
-
 from autolens.imaging import imaging_util
 from autolens.imaging import scaled_array
+import numpy as np
+import pytest
+import os
 
 test_data_dir = "{}/../test_files/array/".format(os.path.dirname(os.path.realpath(__file__)))
 
@@ -146,27 +144,30 @@ class TestGrids:
 class TestTicks:
 
     def test__compute_xticks_property__include_round_to_2dp(self):
-        sca = scaled_array.ScaledArray(array=np.ones((3, 3)), pixel_scale=1.0)
+
+        sca = scaled_array.ScaledArray(array=np.ones((3,3)), pixel_scale=1.0)
         assert sca.xticks == pytest.approx(np.array([-1.5, -0.5, 0.5, 1.5]), 1e-3)
 
-        sca = scaled_array.ScaledArray(array=np.ones((3, 3)), pixel_scale=0.5)
+        sca = scaled_array.ScaledArray(array=np.ones((3,3)), pixel_scale=0.5)
         assert sca.xticks == pytest.approx(np.array([-0.75, -0.25, 0.25, 0.75]), 1e-3)
 
-        sca = scaled_array.ScaledArray(array=np.ones((3, 6)), pixel_scale=1.0)
+        sca = scaled_array.ScaledArray(array=np.ones((3,6)), pixel_scale=1.0)
         assert sca.xticks == pytest.approx(np.array([-3.0, -1.0, 1.0, 3.0]), 1e-3)
 
-        sca = scaled_array.ScaledArray(array=np.ones((6, 3)), pixel_scale=1.0)
+        sca = scaled_array.ScaledArray(array=np.ones((6,3)), pixel_scale=1.0)
         assert sca.xticks == pytest.approx(np.array([-1.5, -0.5, 0.5, 1.5]), 1e-3)
 
+
     def test__compute_yticks_property__include_round_to_2dp(self):
-        sca = scaled_array.ScaledArray(array=np.ones((3, 3)), pixel_scale=1.0)
+
+        sca = scaled_array.ScaledArray(array=np.ones((3,3)), pixel_scale=1.0)
         assert sca.yticks == pytest.approx(np.array([-1.5, -0.5, 0.5, 1.5]), 1e-3)
 
-        sca = scaled_array.ScaledArray(array=np.ones((3, 3)), pixel_scale=0.5)
+        sca = scaled_array.ScaledArray(array=np.ones((3,3)), pixel_scale=0.5)
         assert sca.yticks == pytest.approx(np.array([-0.75, -0.25, 0.25, 0.75]), 1e-3)
 
-        sca = scaled_array.ScaledArray(array=np.ones((6, 3)), pixel_scale=1.0)
+        sca = scaled_array.ScaledArray(array=np.ones((6,3)), pixel_scale=1.0)
         assert sca.yticks == pytest.approx(np.array([-3.0, -1.0, 1.0, 3.0]), 1e-3)
 
-        sca = scaled_array.ScaledArray(array=np.ones((3, 6)), pixel_scale=1.0)
+        sca = scaled_array.ScaledArray(array=np.ones((3,6)), pixel_scale=1.0)
         assert sca.yticks == pytest.approx(np.array([-1.5, -0.5, 0.5, 1.5]), 1e-3)

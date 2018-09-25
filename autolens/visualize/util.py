@@ -1,12 +1,12 @@
-import matplotlib.colors as colors
-import matplotlib.pyplot as plt
-import numpy as np
-from astropy.io import fits
-
 from autolens import exc
-
+from astropy.io import fits
+import matplotlib.pyplot as plt
+import matplotlib.colors as colors
+from matplotlib.ticker import LogFormatter
+import numpy as np
 
 def get_normalization_min_max(array, norm_min, norm_max):
+
     if norm_min is None:
         norm_min = array.min()
     if norm_max is None:
@@ -14,8 +14,8 @@ def get_normalization_min_max(array, norm_min, norm_max):
 
     return norm_min, norm_max
 
-
 def get_normalization_scale(norm, norm_min, norm_max, linthresh, linscale):
+
     if norm is 'linear':
         return colors.Normalize(vmin=norm_min, vmax=norm_max)
     elif norm is 'log':
@@ -28,8 +28,8 @@ def get_normalization_scale(norm, norm_min, norm_max, linthresh, linscale):
         raise exc.VisualizeException('The normalization (norm) supplied to the plotter is not a valid string (must be '
                                      'linear | log | symmetric_log')
 
-
 def get_xylabels(units):
+
     if units is 'pixels':
         xlabel = 'x (pixels)'
         ylabel = 'y (pixels)'
@@ -45,8 +45,8 @@ def get_xylabels(units):
 
     return xlabel, ylabel
 
-
 def plot_image(array, grid, as_subplot, figsize, aspect, cmap, norm_scale):
+
     if not as_subplot:
         plt.figure(figsize=figsize)
 
@@ -56,14 +56,14 @@ def plot_image(array, grid, as_subplot, figsize, aspect, cmap, norm_scale):
         plt.imshow(array, aspect=aspect, cmap=cmap, norm=norm_scale,
                    extent=(np.min(grid[:, 0]), np.max(grid[:, 0]), np.min(grid[:, 1]), np.max(grid[:, 1])))
 
-
 def set_title_and_labels(title, xlabel, ylabel, titlesize, xlabelsize, ylabelsize):
+
     plt.title(title, fontsize=titlesize)
     plt.xlabel(xlabel, fontsize=xlabelsize)
     plt.ylabel(ylabel, fontsize=ylabelsize)
 
-
 def set_ticks(array, units, xticks, yticks, xyticksize):
+
     if units is 'pixels':
 
         plt.xticks(np.round((array.shape[0] * np.array([0.0, 0.33, 0.66, 0.99]))))
@@ -76,18 +76,18 @@ def set_ticks(array, units, xticks, yticks, xyticksize):
 
     plt.tick_params(labelsize=xyticksize)
 
-
 def set_colorbar(cb_ticksize):
+
     cb = plt.colorbar()
     cb.ax.tick_params(labelsize=cb_ticksize)
 
-
 def plot_grid(grid):
+
     if grid is not None:
         plt.scatter(x=grid[:, 0], y=grid[:, 1])
 
-
 def output_array(array, output_path, output_filename, output_format):
+
     if output_format is 'show':
         plt.show()
     elif output_format is 'png':
@@ -97,8 +97,8 @@ def output_array(array, output_path, output_filename, output_format):
         hdu.data = array
         hdu.writeto(output_path + output_filename + '.fits')
 
-
 def output_subplot_array(output_path, output_filename, output_format):
+
     if output_format is 'show':
         plt.show()
     elif output_format is 'png':
