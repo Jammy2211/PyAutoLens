@@ -21,7 +21,7 @@ class Regularization(object):
         is described further in the (*inversion.Inversion* class).
 
         The regularization matrix, H, is calculated by defining a set of B matrices which describe how the \
-        pixels neighbor one another. For example, lets take a 3x3 square grid:
+        pixels neighbor one another. For howtolens, lets take a 3x3 square grid:
         ______
         |0|1|2|
         |3|4|5|
@@ -71,7 +71,7 @@ class Regularization(object):
         H_y = B_y.T * B_y
         H = H_x + H_y
 
-        Whilst the example above used a square-grid with regularization to the right and downwards, this matrix \
+        Whilst the howtolens above used a square-grid with regularization to the right and downwards, this matrix \
         formalism can be extended to describe regularization in more directions (e.g. upwards, to the left).
 
         It can also describe irregular grids, e.g. an irregular Voronoi grid, where a B matrix is computed for every \
@@ -115,7 +115,7 @@ class Regularization(object):
 
         For the constant regularization_matrix scheme, there is only 1 regularization coefficient that is applied to \
         all neighboring pixels. This means that we when write B, we only need to regularize pixels in one direction \
-        (e.g. pixel 0 regularizes pixel 1, but NOT visa versa). For example:
+        (e.g. pixel 0 regularizes pixel 1, but NOT visa versa). For howtolens:
 
         B = [-1, 1]  [0->1]
             [0, -1]  1 does not regularization with 0
@@ -128,7 +128,7 @@ class Regularization(object):
         no signal is present and less smoothing where it is, see (Nightingale, Dye and Massey 2018)).
 
         Unlike the constant regularization_matrix scheme, neighboring pixels must now be regularized with one another \
-        in both directions (e.g. if pixel 0 regularizes pixel 1, pixel 1 must also regularize pixel 0). For example: \
+        in both directions (e.g. if pixel 0 regularizes pixel 1, pixel 1 must also regularize pixel 0). For howtolens: \
 
         B = [-1, 1]  [0->1]
             [-1, -1]  1 now also regularizes 0
