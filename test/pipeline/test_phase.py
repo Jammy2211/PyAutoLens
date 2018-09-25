@@ -5,7 +5,7 @@ from autolens.imaging import mask as msk
 from autolens.imaging import image as img
 from autolens.lensing import lensing_image as li
 from autolens.lensing import galaxy as g
-from autolens.lensing import galaxy_model as gp
+from autolens.lensing import galaxy_model as gm
 from autolens.profiles import light_profiles as lp
 from autolens.profiles import mass_profiles as mp
 from autolens import conf
@@ -54,9 +54,9 @@ class NLO(non_linear.NonLinearOptimizer):
                 self.constant = constant
 
             def __call__(self, vector):
+
                 instance = self.instance_from_physical_vector(vector)
-                for key, value in self.constant.__dict__.items():
-                    setattr(instance, key, value)
+                instance += self.constant
 
                 likelihood = analysis.fit(instance)
                 self.result = non_linear.Result(instance, likelihood)
@@ -86,9 +86,9 @@ def make_galaxy():
     return g.Galaxy()
 
 
-@pytest.fixture(name="galaxy_prior")
-def make_galaxy_prior():
-    return gp.GalaxyModel()
+@pytest.fixture(name="galaxy_model")
+def make_galaxy_model():
+    return gm.GalaxyModel()
 
 
 @pytest.fixture(name="image")
@@ -134,9 +134,9 @@ class TestPhase(object):
         assert phase.optimizer.constant.lens_galaxies == [galaxy]
         assert phase.optimizer.variable.lens_galaxies == []
 
-    def test_set_variables(self, phase, galaxy_prior):
-        phase.lens_galaxies = [galaxy_prior]
-        assert phase.optimizer.variable.lens_galaxies == [galaxy_prior]
+    def test_set_variables(self, phase, galaxy_model):
+        phase.lens_galaxies = [galaxy_model]
+        assert phase.optimizer.variable.lens_galaxies == [galaxy_model]
         assert phase.optimizer.constant.lens_galaxies == []
 
     def test_make_analysis(self, phase, image, lensing_image):
@@ -148,34 +148,36 @@ class TestPhase(object):
         clean_images()
 
         phase = ph.LensSourcePlanePhase(optimizer_class=NLO,
-                                        lens_galaxies=[g.Galaxy()], source_galaxies=[g.Galaxy()])
+                                        lens_galaxies=[gm.GalaxyModel(light=lp.EllipticalSersic)],
+                                        source_galaxies=[gm.GalaxyModel(light=lp.EllipticalSersic)])
         result = phase.run(image=image)
         assert isinstance(result.constant.lens_galaxies[0], g.Galaxy)
         assert isinstance(result.constant.source_galaxies[0], g.Galaxy)
 
     def test_customize(self, results, image):
+
         class MyPlanePhaseAnd(ph.LensSourcePlanePhase):
             def pass_priors(self, previous_results):
                 self.lens_galaxies = previous_results.last.constant.lens_galaxies
                 self.source_galaxies = previous_results.last.variable.source_galaxies
 
         galaxy = g.Galaxy()
-        galaxy_prior = gp.GalaxyModel()
+        galaxy_model = gm.GalaxyModel()
 
         setattr(results.constant, "lens_galaxies", [galaxy])
-        setattr(results.variable, "source_galaxies", [galaxy_prior])
+        setattr(results.variable, "source_galaxies", [galaxy_model])
 
         phase = MyPlanePhaseAnd(optimizer_class=NLO)
         phase.make_analysis(image=image, previous_results=ph.ResultsCollection([results]))
 
         assert phase.lens_galaxies == [galaxy]
-        assert phase.source_galaxies == [galaxy_prior]
+        assert phase.source_galaxies == [galaxy_model]
 
     def test_default_mask_function(self, phase, image):
         assert len(li.LensingImage(image, phase.mask_function(image))) == 32
 
     def test_duplication(self):
-        phase = ph.LensSourcePlanePhase(lens_galaxies=[gp.GalaxyModel()], source_galaxies=[gp.GalaxyModel()])
+        phase = ph.LensSourcePlanePhase(lens_galaxies=[gm.GalaxyModel()], source_galaxies=[gm.GalaxyModel()])
 
         ph.LensSourcePlanePhase()
 
@@ -249,11 +251,11 @@ class TestPhase(object):
     #     assert g0_blurred_image == pytest.approx(unmasked_model_images[0], 1e-4)
     #     assert g1_blurred_image == pytest.approx(unmasked_model_images[1], 1e-4)
 
-    def test__phase_can_receive_list_of_galaxy_priors(self):
-        phase = ph.LensPlanePhase(lens_galaxies=[gp.GalaxyModel(sersic=lp.EllipticalSersic,
+    def test__phase_can_receive_list_of_galaxy_models(self):
+        phase = ph.LensPlanePhase(lens_galaxies=[gm.GalaxyModel(sersic=lp.EllipticalSersic,
                                                                 sis=mp.SphericalIsothermal,
                                                                 variable_redshift=True),
-                                                 gp.GalaxyModel(sis=mp.SphericalIsothermal,
+                                                 gm.GalaxyModel(sis=mp.SphericalIsothermal,
                                                                 variable_redshift=True)],
                                   optimizer_class=non_linear.MultiNest)
 
@@ -272,24 +274,22 @@ class TestPhase(object):
         assert instance.lens_galaxies[1].redshift == 0.8
 
         class LensPlanePhase2(ph.LensPlanePhase):
-            def pass_priors(self, previous_results):
+            def pass_models(self, previous_results):
                 self.lens_galaxies[0].sis.einstein_radius = mm.Constant(10.0)
 
-        phase = LensPlanePhase2(lens_galaxies=[gp.GalaxyModel(sersic=lp.EllipticalSersic,
+        phase = LensPlanePhase2(lens_galaxies=[gm.GalaxyModel(sersic=lp.EllipticalSersic,
                                                               sis=mp.SphericalIsothermal,
                                                               variable_redshift=True),
-                                               gp.GalaxyModel(sis=mp.SphericalIsothermal,
+                                               gm.GalaxyModel(sis=mp.SphericalIsothermal,
                                                               variable_redshift=True)],
                                 optimizer_class=non_linear.MultiNest)
 
         # noinspection PyTypeChecker
-        phase.pass_priors(None)
+        phase.pass_models(None)
 
         instance = phase.optimizer.variable.instance_from_physical_vector([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.1, 0.2,
                                                                            0.4, 0.5, 0.6, 0.7, 0.8])
         instance += phase.optimizer.constant
-
-        print(instance)
 
         assert instance.lens_galaxies[0].sersic.centre[0] == 0.0
         assert instance.lens_galaxies[0].sis.centre[0] == 0.1
