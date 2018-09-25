@@ -1,13 +1,13 @@
-import numba
-import numpy as np
-from analysis import galaxy
-from analysis import ray_tracing
 from profiling import profiling_data
 from profiling import tools
-
-from autolens import exc
+from analysis import ray_tracing
+from analysis import galaxy
 from profiles import light_profiles
 from profiles import mass_profiles
+from autolens import exc
+import numpy as np
+import pytest
+import numba
 
 
 class RegularizationWeighted(object):
@@ -80,7 +80,6 @@ class RegularizationWeighted(object):
                 regularization_matrix[j, i] -= reg_weight[j]
 
         return regularization_matrix
-
 
 class Pixelization(object):
 
@@ -364,30 +363,26 @@ ao_regularization_weights = pix.regularization_weights_from_pix_signals(ao_pix_s
 
 pix_neighbors = pix.neighbors_from_pixelization()
 
-
 @tools.tick_toc_x1
 def lsst_solution():
     pix.regularization_matrix_from_pix_neighbors(lsst_regularization_weights, pix_neighbors)
-
 
 @tools.tick_toc_x1
 def euclid_solution():
     pix.regularization_matrix_from_pix_neighbors(euclid_regularization_weights, pix_neighbors)
 
-
 @tools.tick_toc_x1
 def hst_solution():
     pix.regularization_matrix_from_pix_neighbors(hst_regularization_weights, pix_neighbors)
-
 
 @tools.tick_toc_x1
 def hst_up_solution():
     pix.regularization_matrix_from_pix_neighbors(hst_up_regularization_weights, pix_neighbors)
 
-
 @tools.tick_toc_x1
 def ao_solution():
     pix.regularization_matrix_from_pix_neighbors(ao_regularization_weights, pix_neighbors)
+
 
 
 if __name__ == "__main__":

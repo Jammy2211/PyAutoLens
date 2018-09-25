@@ -9,10 +9,8 @@ import os
 
 path = os.path.dirname(os.path.realpath(__file__))
 
-
 def load(name):
     return np.load("{}/{}.npy".format(path, name))
-
 
 grid = load("deflection_data/grid")
 
@@ -32,7 +30,6 @@ kernel_convolver = convolver.convolver_for_kernel(kernel=np.ones(psf_shape))
 kernel_convolver.convolve_mapping_matrix(mapping)
 repeats = 1
 
-
 def tick_toc(func):
     def wrapper():
         start = time.time()
@@ -44,16 +41,15 @@ def tick_toc(func):
 
     return wrapper
 
-
 @tick_toc
 def current_solution():
+
     kernel_convolver.convolve_mapping_matrix(mapping)
 
 
 @tick_toc
 def jitted_solution():
     kernel_convolver.convolve_mapping_matrix(mapping)
-
 
 if __name__ == "__main__":
     current_solution()

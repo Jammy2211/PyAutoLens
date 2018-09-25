@@ -1,11 +1,14 @@
-import scipy
-from analysis import galaxy
-from analysis import ray_tracing
 from profiling import profiling_data
 from profiling import tools
-
+from analysis import ray_tracing
+from analysis import galaxy
 from profiles import mass_profiles
+from autolens import exc
+import numpy as np
+import pytest
+import numba
 
+import scipy
 
 class Voronoi(object):
 
@@ -38,7 +41,6 @@ class Voronoi(object):
         """
         return scipy.spatial.Voronoi(cluster_grid, qhull_options='Qbb Qc Qx Qm')
 
-
 sub_grid_size = 4
 
 pix = Voronoi(pixels=200)
@@ -60,31 +62,25 @@ hst_tracer = ray_tracing.Tracer(lens_galaxies=[lens_galaxy], source_galaxies=[],
 hst_up_tracer = ray_tracing.Tracer(lens_galaxies=[lens_galaxy], source_galaxies=[], image_plane_grids=hst_up.grids)
 ao_tracer = ray_tracing.Tracer(lens_galaxies=[lens_galaxy], source_galaxies=[], image_plane_grids=ao.grids)
 
-
 @tools.tick_toc_x1
 def lsst_solution():
     pix.voronoi_from_cluster_grid()
-
 
 @tools.tick_toc_x1
 def euclid_solution():
     pix.mapping_matrix_from_sub_to_pix(sub_to_pix=euclid_sub_to_pix, grids=euclid.grids)
 
-
 @tools.tick_toc_x1
 def hst_solution():
     pix.mapping_matrix_from_sub_to_pix(sub_to_pix=hst_sub_to_pix, grids=hst.grids)
-
 
 @tools.tick_toc_x1
 def hst_up_solution():
     pix.mapping_matrix_from_sub_to_pix(sub_to_pix=hst_up_sub_to_pix, grids=hst_up.grids)
 
-
 @tools.tick_toc_x1
 def ao_solution():
     pix.mapping_matrix_from_sub_to_pix(sub_to_pix=ao_sub_to_pix, grids=ao.grids)
-
 
 if __name__ == "__main__":
     lsst_solution()

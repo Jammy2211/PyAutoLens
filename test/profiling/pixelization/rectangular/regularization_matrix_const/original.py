@@ -1,10 +1,16 @@
-import numpy as np
+from profiling import profiling_data
 from profiling import tools
-
+from analysis import ray_tracing
+from analysis import galaxy
+from profiles import mass_profiles
 from autolens import exc
+import numpy as np
+import pytest
+import numba
 
 
 class RegularizationConstant(object):
+
     pixels = None
     regularization_coefficients = None
 
@@ -59,7 +65,7 @@ class Pixelization(object):
 
 class RectangularRegConst(Pixelization, RegularizationConstant):
 
-    def __init__(self, shape=(3, 3), regularization_coefficients=(1.0,)):
+    def __init__(self, shape=(3,3), regularization_coefficients=(1.0,)):
         """A rectangular inversion where pixels appear on a Cartesian, uniform and rectangular grid \
         of  shape (rows, columns).
 
@@ -150,12 +156,11 @@ class RectangularRegConst(Pixelization, RegularizationConstant):
         return pixel_neighbors
 
 
-sub_grid_size = 4
+sub_grid_size=4
 
 pix = RectangularRegConst(shape=(20, 20))
 
 pix_neighbors = pix.neighbors_from_pixelization()
-
 
 @tools.tick_toc_x1
 def solution():

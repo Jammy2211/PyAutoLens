@@ -1,20 +1,23 @@
-import os
-
+from autolens.pipeline import pipeline as pl
+from autolens.pipeline import phase as ph
+from autolens.profiles import light_profiles as lp
+from autolens.lensing import galaxy_model as gm
 from autolens.autofit import non_linear as nl
 from autolens.lensing import galaxy
-from autolens.lensing import galaxy_model as gm
-from autolens.pipeline import phase as ph
-from autolens.pipeline import pipeline as pl
-from autolens.profiles import light_profiles as lp
+from autolens import conf
 from test.integration import tools
+
+import numpy as np
+import shutil
+import os
 
 dirpath = os.path.dirname(os.path.realpath(__file__))
 dirpath = os.path.dirname(dirpath)
 output_path = '{}/integration_output'.format(dirpath)
 config_path = output_path + 'config'
 
-
 def pipeline():
+
     pipeline_name = "const_float"
     data_name = '/const_float'
 
@@ -35,8 +38,8 @@ def pipeline():
     for result in results:
         print(result)
 
-
 def make_pipeline(pipeline_name):
+    
     class MMPhase(ph.LensPlanePhase):
 
         def pass_priors(self, previous_results):
@@ -47,13 +50,12 @@ def make_pipeline(pipeline_name):
             self.lens_galaxies[0].sersic.sersic_index = 3.0
 
     phase1 = MMPhase(lens_galaxies=[gm.GalaxyModel(sersic=lp.EllipticalSersic)],
-                     optimizer_class=nl.MultiNest, phase_name="{}/phase1".format(pipeline_name))
+                               optimizer_class=nl.MultiNest, phase_name="{}/phase1".format(pipeline_name))
 
     phase1.optimizer.n_live_points = 20
     phase1.optimizer.sampling_efficiency = 0.8
 
     return pl.PipelineImaging(pipeline_name, phase1)
-
 
 if __name__ == "__main__":
     pipeline()

@@ -1,8 +1,7 @@
-import colorama
-
+from autolens.commands.base import Base, prepend_working_directory
 from autolens import conf
 from autolens import pipeline
-from autolens.commands.base import Base, prepend_working_directory
+import colorama
 
 
 def color(text, fore):
