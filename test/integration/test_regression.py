@@ -41,8 +41,12 @@ class TestPhaseModelMapper(object):
         phase.make_analysis(image)
 
         assert phase.lens_galaxies[0].sersic.intensity == phase.lens_galaxies[0].sersic.axis_ratio
-
         assert initial_total_priors - 1 == phase.variable.total_priors
+        assert len(phase.variable.flat_prior_model_tuples) == 1
 
-        print(phase.variable.model_info)
-        assert False
+        lines = list(
+            filter(lambda line: "axis_ratio" in line or "intensity" in line, phase.variable.model_info.split("\n")))
+
+        assert len(lines) == 2
+        assert "lens_galaxies_axis_ratio                UniformPrior, lower_limit = 0.5, upper_limit = 1.0" in lines
+        assert "lens_galaxies_intensity                 UniformPrior, lower_limit = 0.5, upper_limit = 1.0" in lines
