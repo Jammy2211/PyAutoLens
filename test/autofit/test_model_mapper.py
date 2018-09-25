@@ -681,15 +681,15 @@ class TestUtility(object):
     def test_class_priors_dict(self):
         mapper = model_mapper.ModelMapper(MockConfig(), mock_class=MockClassMM)
 
-        assert list(mapper.class_prior_tuples_dict.keys()) == ["mock_class"]
-        assert len(mapper.class_prior_tuples_dict["mock_class"]) == 2
+        assert list(mapper.prior_model_name_prior_tuples_dict.keys()) == ["mock_class"]
+        assert len(mapper.prior_model_name_prior_tuples_dict["mock_class"]) == 2
 
         mapper = model_mapper.ModelMapper(MockConfig(), mock_class_1=MockClassMM, mock_class_2=MockClassMM)
 
         mapper.mock_class_1.one = mapper.mock_class_2.one
         mapper.mock_class_1.two = mapper.mock_class_2.two
 
-        assert mapper.class_prior_tuples_dict["mock_class_1"] == mapper.class_prior_tuples_dict["mock_class_2"]
+        assert mapper.prior_model_name_prior_tuples_dict["mock_class_1"] == mapper.prior_model_name_prior_tuples_dict["mock_class_2"]
 
     def test_value_vector_for_hypercube_vector(self):
         mapper = model_mapper.ModelMapper(MockConfig(), mock_class=MockClassMM)
