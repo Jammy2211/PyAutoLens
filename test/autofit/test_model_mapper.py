@@ -1,10 +1,12 @@
+import os
+
+import pytest
+
 from autolens import conf
 from autolens.autofit import model_mapper
-import pytest
-from autolens.profiles import geometry_profiles, light_profiles, mass_profiles
-import os
-from autolens.lensing import galaxy_model
 from autolens.lensing import galaxy as g
+from autolens.lensing import galaxy_model
+from autolens.profiles import geometry_profiles, light_profiles, mass_profiles
 
 data_path = "{}/../".format(os.path.dirname(os.path.realpath(__file__)))
 

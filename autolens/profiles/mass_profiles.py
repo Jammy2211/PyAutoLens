@@ -1,12 +1,14 @@
-from autolens.profiles import geometry_profiles
-from scipy.integrate import quad
-from scipy import special
-import numpy as np
+import inspect
+
 import numba
+import numpy as np
 from numba import cfunc
 from numba.types import intc, CPointer, float64
 from scipy import LowLevelCallable
-import inspect
+from scipy import special
+from scipy.integrate import quad
+
+from autolens.profiles import geometry_profiles
 
 
 def jit_integrand(integrand_function):

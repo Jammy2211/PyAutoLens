@@ -1,8 +1,9 @@
+import os
+
+from autolens import conf
 from autolens.autofit import model_mapper as mm
 from autolens.lensing import galaxy_model as gp
 from autolens.profiles import light_profiles, mass_profiles
-from autolens import conf
-import os
 
 
 class TestCase:
