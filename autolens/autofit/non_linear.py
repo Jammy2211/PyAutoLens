@@ -61,12 +61,13 @@ class NonLinearOptimizer(object):
 
         self.named_config = conf.instance.non_linear
 
-        sym_path = "{}/{}".format(conf.instance.output_path, name)
+        name = name or "phase"
+
+        sym_path = "{}/{}/optimizer".format(conf.instance.output_path, name)
 
         if not os.path.exists(sym_path):
-            os.makedirs(sym_path)
-        if name is None:
-            name = ""
+            os.makedirs("/".join(sym_path.split("/")[:-1]))
+
         self.path = link.make_linked_folder(sym_path)
         self.chains_path = "{}/{}".format(self.path, 'chains')
         if not os.path.exists(self.chains_path):

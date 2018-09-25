@@ -8,6 +8,7 @@ SUB_PATH_LENGTH = 10
 AUTOLENS_FOLDER = ".autolens"
 
 logger = logging.getLogger(__file__)
+logger.level = logging.DEBUG
 
 home = expanduser("~")
 autolens_dir = "{}/{}".format(home, AUTOLENS_FOLDER)

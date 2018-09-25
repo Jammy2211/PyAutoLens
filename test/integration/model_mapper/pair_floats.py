@@ -1,4 +1,5 @@
 import os
+import shutil
 
 from autolens.autofit import non_linear as nl
 from autolens.lensing import galaxy
@@ -11,6 +12,11 @@ from test.integration import tools
 dirpath = os.path.dirname(os.path.realpath(__file__))
 dirpath = os.path.dirname(dirpath)
 output_path = '{}/integration_output'.format(dirpath)
+
+try:
+    shutil.rmtree(output_path)
+except FileNotFoundError:
+    pass
 
 
 def pipeline():
