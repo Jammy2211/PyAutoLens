@@ -3,12 +3,12 @@ from autolens.lensing import galaxy_model as gm
 from autolens.imaging import image as im
 from autolens.profiles import light_profiles as lp
 from autolens.profiles import mass_profiles as mp
-from autolens.visualize import image_plotters
-from autolens.visualize import array_plotters
+from autolens.plotting import imaging_plotters
+from autolens.plotting import array_plotters
 import os
 
 # In this example, we'll generate a phase which fits a lens + source plane system.
-# The example data we fit is generated using the example in 'example/1_basic/1_simulate.py
+# The howtolens data we fit is generated using the howtolens in 'howtolens/1_basic/1_simulate.py
 
 # Setup the path of the analysis so we can load the example data.
 path = "{}".format(os.path.dirname(os.path.realpath(__file__)))
@@ -42,7 +42,7 @@ phase = ph.LensSourcePlanePhase(lens_galaxies=[lens_galaxy], source_galaxies=[so
 results = phase.run(image)
 
 # We can plot the results, e.g. the model source-galaxy _image, the residuals of the fit and the chi-squareds!
-image_plotters.plot_fitter_lens_plane_only(fitter=results)
+imaging_plotters.plot_fitter_lens_plane_only(fitter=results)
 
 # One can also print the results to see the best-fit model parameters
 print(results)

@@ -1,4 +1,4 @@
-from autolens.visualize import util
+from autolens.plotting import util
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.ticker import LogFormatter
