@@ -1,14 +1,10 @@
+from analysis import galaxy
+from analysis import ray_tracing
+from pixelization import pixelization
 from profiling import profiling_data
 from profiling import tools
-from analysis import ray_tracing
-from analysis import galaxy
-from profiles import mass_profiles
-from pixelization import pixelization
-from autolens import exc
-import numpy as np
-import pytest
-import numba
 
+from profiles import mass_profiles
 
 sub_grid_size = 4
 psf_size = (41, 41)
@@ -42,12 +38,16 @@ hst_up_recon = hst_up_tracer.reconstructors(hst_up.borders, cluster_mask=None)
 
 lsst_reconstructed = lsst_recon.from_reconstructor_and_data(lsst.masked_image, lsst.masked_image.background_noise,
                                                             lsst.masked_image.convolver_mapping_matrix)
-euclid_reconstructed = euclid_recon.from_reconstructor_and_data(euclid.masked_image, euclid.masked_image.background_noise,
+euclid_reconstructed = euclid_recon.from_reconstructor_and_data(euclid.masked_image,
+                                                                euclid.masked_image.background_noise,
                                                                 euclid.masked_image.convolver_mapping_matrix)
 hst_reconstructed = hst_recon.from_reconstructor_and_data(hst.masked_image, hst.masked_image.background_noise,
                                                           hst.masked_image.convolver_mapping_matrix)
-hst_up_reconstructed = hst_up_recon.from_reconstructor_and_data(hst_up.masked_image, hst_up.masked_image.background_noise,
+hst_up_reconstructed = hst_up_recon.from_reconstructor_and_data(hst_up.masked_image,
+                                                                hst_up.masked_image.background_noise,
                                                                 hst_up.masked_image.convolver_mapping_matrix)
+
+
 # ao_reconstructed = ao_recon.reconstruct_image(ao.masked_image, ao.masked_image.noise_map,
 #                                                   ao.masked_image.convolver_mapping_matrix)
 
@@ -55,21 +55,26 @@ hst_up_reconstructed = hst_up_recon.from_reconstructor_and_data(hst_up.masked_im
 def lsst_solution():
     lsst_reconstructed.log_determinant_of_matrix_cholesky(lsst_reconstructed.covariance_regularization)
 
+
 @tools.tick_toc_x1
 def euclid_solution():
     euclid_reconstructed.log_determinant_of_matrix_cholesky(euclid_reconstructed.covariance_regularization)
+
 
 @tools.tick_toc_x1
 def hst_solution():
     hst_reconstructed.log_determinant_of_matrix_cholesky(hst_reconstructed.covariance_regularization)
 
+
 @tools.tick_toc_x1
 def hst_up_solution():
     hst_up_reconstructed.log_determinant_of_matrix_cholesky(hst_up_reconstructed.covariance_regularization)
 
+
 @tools.tick_toc_x1
 def ao_solution():
     ao_reconstructed.log_determinant_of_matrix_cholesky(ao_reconstructed.covariance_regularization)
+
 
 if __name__ == "__main__":
     lsst_solution()

@@ -1,12 +1,14 @@
-import math
-from scipy.special import erfinv
 import inspect
-import os
 import itertools
-from autolens import exc
-from autolens import conf
+import math
+import os
 from collections import namedtuple
 from functools import wraps
+
+from scipy.special import erfinv
+
+from autolens import conf
+from autolens import exc
 
 PriorTuple = namedtuple("PriorTuple", ["name", "prior"])
 ConstantTuple = namedtuple("ConstantTuple", ["name", "constant"])
