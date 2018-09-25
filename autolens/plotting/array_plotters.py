@@ -107,7 +107,7 @@ def set_colorbar(cb_ticksize):
 
 def plot_grid(grid):
     if grid is not None:
-        plt.scatter(x=grid[:, 0], y=grid[:, 1])
+        plt.scatter(x=grid[:, 0], y=grid[:, 1], marker=',')
 
 
 def output_array(array, output_path, output_filename, output_format):
