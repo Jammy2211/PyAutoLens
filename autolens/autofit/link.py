@@ -41,14 +41,6 @@ def make_linked_folder(path):
     except FileExistsError as e:
         logger.exception(e)
     try:
-        split_path = list(filter(lambda component: component, path.split("/")))
-        for i in range(len(split_path) - 1):
-            try:
-                make_path = "/{}".format("/".join(split_path[:i + 1]))
-                print(make_path)
-                os.mkdir(make_path)
-            except (IsADirectoryError, FileExistsError) as e:
-                logger.exception(e)
         os.symlink(actual_path, path)
     except FileExistsError as e:
         logger.exception(e)
