@@ -341,6 +341,7 @@ class AbstractTracerMulti(AbstractTracer):
     def image_plane(self):
         return self.planes[0]
 
+
 class TracerMulti(AbstractTracerMulti):
 
     def __init__(self, galaxies, image_plane_grids, borders=None, cosmology=cosmo.Planck15):
@@ -441,14 +442,11 @@ class Plane(object):
         return self.grids.map_function(np.subtract, self.deflections)
 
     def _plane_image(self, shape=(30, 30)):
-        return sum(self._plane_images_of_galaxies(shape))
-
-    def _plane_images_of_galaxies(self, shape=(30, 30)):
         plane_grid = uniform_grid_from_lensed_grid(self.grids.image, shape)
-        return [self.plane_image_from_galaxy(plane_grid, galaxy) for galaxy in self.galaxies]
+        return self.plane_image_from_galaxies(plane_grid)
 
-    def plane_image_from_galaxy(self, plane_grid, galaxy):
-        return intensities_from_grid(plane_grid, [galaxy])
+    def plane_image_from_galaxies(self, plane_grid):
+        return sum([intensities_from_grid(plane_grid, [galaxy]) for galaxy in self.galaxies])
 
     @property
     def hyper_galaxies(self):
