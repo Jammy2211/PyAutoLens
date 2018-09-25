@@ -1,25 +1,22 @@
-from autolens.pipeline import pipeline as pl
-from autolens.pipeline import phase as ph
-from autolens.profiles import light_profiles as lp
-from autolens.imaging import mask as msk
-from autolens.lensing import galaxy_model as gm
-from autolens.autofit import non_linear as nl
-from autolens.autofit import model_mapper as mm
-from autolens.lensing import galaxy
-from autolens import conf
-from test.integration import tools
+import os
 from pathlib import Path
 
-import os
-import shutil
+from autolens.autofit import non_linear as nl
+from autolens.imaging import mask as msk
+from autolens.lensing import galaxy
+from autolens.lensing import galaxy_model as gm
+from autolens.pipeline import phase as ph
+from autolens.pipeline import pipeline as pl
+from autolens.profiles import light_profiles as lp
+from test.integration import tools
 
 home = str(Path.home())
 dirpath = os.path.dirname(os.path.realpath(__file__))
 dirpath = os.path.dirname(dirpath)
 output_path = '{}/data/pdtw24/Lens/int/lens_only/'.format(home)
 
-def test_pipeline():
 
+def test_pipeline():
     pipeline_name = "l2g"
     data_name = '/l2g'
 
@@ -46,11 +43,9 @@ def test_pipeline():
 
 
 def make_pipeline(pipeline_name):
-
     class LensPlanex2GalPhase(ph.LensPlanePhase):
 
         def pass_priors(self, previous_results):
-
             self.lens_galaxies[0].sersic.centre_0 = -1.0
             self.lens_galaxies[0].sersic.centre_1 = -1.0
             self.lens_galaxies[1].sersic.centre_0 = 1.0

@@ -1,8 +1,9 @@
+import numpy as np
 from profiling import profiling_data
 from profiling import tools
+
 from autolens import exc
-import numpy as np
-import pytest
+
 
 class Pixelization(object):
 
@@ -32,9 +33,10 @@ class Pixelization(object):
         self.regularization_coefficients = regularization_coefficients
         self.pix_signal_scale = pix_signal_scale
 
+
 class Rectangular(Pixelization):
 
-    def __init__(self, shape=(3,3), regularization_coefficients=(1.0,)):
+    def __init__(self, shape=(3, 3), regularization_coefficients=(1.0,)):
         """A rectangular inversion where pixels appear on a Cartesian, uniform and rectangular grid \
         of  shape (rows, columns).
 
@@ -98,7 +100,8 @@ class Rectangular(Pixelization):
 
         return self.Geometry(x_min, x_max, x_pixel_scale, y_min, y_max, y_pixel_scale)
 
-sub_grid_size=4
+
+sub_grid_size = 4
 
 lsst = profiling_data.setup_class(name='LSST', pixel_scale=0.2, sub_grid_size=sub_grid_size)
 euclid = profiling_data.setup_class(name='Euclid', pixel_scale=0.1, sub_grid_size=sub_grid_size)
@@ -108,21 +111,26 @@ ao = profiling_data.setup_class(name='AO', pixel_scale=0.01, sub_grid_size=sub_g
 
 pix = Rectangular()
 
+
 @tools.tick_toc_x10
 def lsst_solution():
     pix.geometry_from_pix_sub_grid(pix_sub_grid=lsst.grids.sub)
+
 
 @tools.tick_toc_x10
 def euclid_solution():
     pix.geometry_from_pix_sub_grid(pix_sub_grid=euclid.grids.sub)
 
+
 @tools.tick_toc_x10
 def hst_solution():
     pix.geometry_from_pix_sub_grid(pix_sub_grid=hst.grids.sub)
 
+
 @tools.tick_toc_x10
 def hst_up_solution():
     pix.geometry_from_pix_sub_grid(pix_sub_grid=hst_up.grids.sub)
+
 
 @tools.tick_toc_x10
 def ao_solution():

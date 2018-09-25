@@ -30,6 +30,9 @@ source_galaxy = galaxy.Galaxy(light=exponential_light_profile)
 # of arc-second Cartesian coordinates we'll trace through our strong lensing configuration. Lets use a 5" x 5" grid.
 image_plane_grids = mask.ImagingGrids.from_shape_and_pixel_scale(shape=(200, 200), pixel_scale=0.1)
 
+# (If you're wondering why this uses the 'mask' module, and why it says 'Grids' plural, we'll cover this later in the
+# tutorials!)
+
 # Finally, we can use our lens and source galaxies to trace our coordinate-grid!
 tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
                                              image_plane_grids=image_plane_grids)
