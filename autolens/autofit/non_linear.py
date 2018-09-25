@@ -280,13 +280,6 @@ class MultiNest(NonLinearOptimizer):
         return getdist.mcsamples.loadMCSamples(self.chains_path + '/mn')
 
     def fit(self, analysis):
-
-        if len(self.path) > 77:
-            raise exc.MultiNestException(
-                'The path to the MultiNest results is longer than 77 characters (={}). Unfortunately, PyMultiNest '
-                'cannot use a path longer than this. Set your results path to something with fewer characters to '
-                'fix.'.format(len(self.path)))
-
         self.save_model_info()
 
         class Fitness(object):
