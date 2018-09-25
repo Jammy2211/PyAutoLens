@@ -52,9 +52,9 @@ class Data(object):
 
         self.masked_image = lensing_image.LensingImage(image=im, mask=ma)
 
-        self.grids = mask.GridCollection.grids_from_mask_sub_grid_size_and_blurring_shape(mask=ma,
-                                                                                          sub_grid_size=sub_grid_size,
-                                                                                          psf_shape=psf.shape)
+        self.grids = mask.GridCollection.grids_from_mask_sub_grid_size_and_psf_shape(mask=ma,
+                                                                                     sub_grid_size=sub_grid_size,
+                                                                                     psf_shape=psf.shape)
 
         self.borders = mask.ImagingGridBorders.from_mask_and_sub_grid_size(mask=ma, sub_grid_size=sub_grid_size)
 
