@@ -1,11 +1,14 @@
 import numpy as np
 import pytest
 
-from autolens.lensing import fitting, ray_tracing, lensing_image
+from autolens.lensing import lensing_image
+from autolens.lensing import ray_tracing
+from autolens.lensing import fitting
 from autolens.lensing import galaxy as g
 from autolens.imaging import mask as mask
 from autolens.imaging import image
 from autolens.profiles import light_profiles as lp
+from autolens.profiles import mass_profiles as mp
 from autolens.inversion import pixelizations
 from autolens.inversion import regularization
 from autolens.inversion import inversions
@@ -477,6 +480,10 @@ class MockTracer(object):
         self.has_grid_mappers = has_grid_mappers
 
     @property
+    def all_planes(self):
+        return []
+
+    @property
     def _image_plane_image(self):
         return self.image
 
@@ -501,8 +508,16 @@ class MockTracer(object):
         return [self.blurring_image]
 
     @property
-    def reconstructors(self):
-        return [MockReconstructor()]
+    def mappers_of_planes(self):
+        return [MockMapper()]
+
+    @property
+    def regularization_of_planes(self):
+        return [MockMapper()]
+
+    @property
+    def image_grids_of_planes(self):
+        return None
 
     def plane_images_of_planes(self, shape):
         return None
@@ -512,7 +527,7 @@ class MockTracer(object):
         return [MockHyperGalaxy(), MockHyperGalaxy()]
 
 
-class MockReconstructor(object):
+class MockMapper(object):
 
     def __init__(self):
         self.mapping_matrix = np.ones((1,1))
@@ -588,25 +603,26 @@ def make_li_manual():
     return lensing_image.LensingImage(im, ma, sub_grid_size=1)
 
 
-@pytest.fixture(name='hyper_manual')
-def make_hyper_manual():
+@pytest.fixture(name='hyper')
+def make_hyper():
 
-    class HyperManual(object):
+    class Hyper(object):
 
         def __init__(self):
             pass
 
-    hyper_manual = HyperManual()
+    hyper = Hyper()
 
-    hyper_manual.hyper_model_image = np.array([1.0, 3.0, 5.0, 7.0, 9.0, 8.0, 6.0, 4.0, 0.0])
-    hyper_manual.hyper_galaxy_images = [np.array([1.0, 3.0, 5.0, 7.0, 9.0, 8.0, 6.0, 4.0, 0.0]),
+    hyper.hyper_model_image = np.array([1.0, 3.0, 5.0, 7.0, 9.0, 8.0, 6.0, 4.0, 0.0])
+    hyper.hyper_galaxy_images = [np.array([1.0, 3.0, 5.0, 7.0, 9.0, 8.0, 6.0, 4.0, 0.0]),
                            np.array([1.0, 3.0, 5.0, 7.0, 9.0, 8.0, 6.0, 4.0, 0.0])]
-    hyper_manual.hyper_minimum_values = [0.2, 0.8]
-    hyper_manual.hyper_galaxy = g.HyperGalaxy(contribution_factor=4.0, noise_factor=2.0, noise_power=3.0)
-    return hyper_manual
+    hyper.hyper_minimum_values = [0.2, 0.8]
+    hyper.hyper_galaxy = g.HyperGalaxy(contribution_factor=4.0, noise_factor=2.0, noise_power=3.0)
+    return hyper
 
 
-class TestProfileFitter:
+
+class TestProfileFit:
 
 
     class TestModelImages:
@@ -780,8 +796,58 @@ class TestProfileFitter:
             assert (fit.model_images_of_planes[1] == model_image_plane_1).all()
             assert (fit.model_images_of_planes[2] == model_image_plane_2).all()
 
+        def test__model_images_of_planes__is_galaxy_has_no_light_profile__replace_with_none(self):
 
-    class TestPlaneImages:
+            psf = image.PSF(array=(np.array([[0.0, 3.0, 0.0],
+                                             [0.0, 2.0, 1.0],
+                                             [0.0, 0.0, 0.0]])))
+            im = image.Image(array=np.ones((4, 4)), pixel_scale=1.0, psf=psf, noise_map=np.ones((4, 4)))
+            ma = mask.Mask(array=np.array([[True, True, True, True],
+                                           [True, False, False, True],
+                                           [True, False, False, True],
+                                           [True, True, True, True]]), pixel_scale=1.0)
+            li = lensing_image.LensingImage(im, ma, sub_grid_size=1)
+
+            g0 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=1.0))
+            g0_image = ray_tracing.intensities_from_grid(grid=li.grids.sub, galaxies=[g0])
+            g0_blurring_image = ray_tracing.intensities_from_grid(grid=li.grids.blurring, galaxies=[g0])
+            g0_model_image = li.grids.image.map_to_2d(li.convolver_image.convolve_image(g0_image, g0_blurring_image))
+
+            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g0],
+                                                         image_plane_grids=li.grids)
+
+            fit = fitting.ProfileFit(lensing_image=li, tracer=tracer)
+
+            assert (fit.model_images_of_planes[0] == g0_model_image).all()
+            assert (fit.model_images_of_planes[1] == g0_model_image).all()
+
+
+            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g.Galaxy()],
+                                                         image_plane_grids=li.grids)
+
+            fit = fitting.ProfileFit(lensing_image=li, tracer=tracer)
+
+            assert (fit.model_images_of_planes[0] == g0_model_image).all()
+            assert fit.model_images_of_planes[1] == None
+
+            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g.Galaxy()], source_galaxies=[g0],
+                                                         image_plane_grids=li.grids)
+
+            fit = fitting.ProfileFit(lensing_image=li, tracer=tracer)
+
+            assert fit.model_images_of_planes[0] == None
+            assert (fit.model_images_of_planes[1] == g0_model_image).all()
+
+            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g.Galaxy()], source_galaxies=[g.Galaxy()],
+                                                         image_plane_grids=li.grids)
+
+            fit = fitting.ProfileFit(lensing_image=li, tracer=tracer)
+
+            assert fit.model_images_of_planes[0] == None
+            assert fit.model_images_of_planes[1] == None
+
+
+    class TestPlaneImagesGrids:
 
         def test__plane_image_of_plane_2d__ensure_index_goes_from_top_left(self, li_no_blur):
             # The grid coordinates -2.0 -> 2.0 mean a plane of shape (5,5) has arc second coordinates running over
@@ -822,6 +888,30 @@ class TestProfileFitter:
             plane_image = fit.plane_images[1]
 
             assert np.unravel_index(plane_image.argmax(), plane_image.shape) == (4, 4)
+
+        def test__plane_image_grids_is_correct(self, li_no_blur):
+            # The grid coordinates -2.0 -> 2.0 mean a plane of shape (5,5) has arc second coordinates running over
+            # -1.6, -0.8, 0.0, 0.8, 1.6. The centre -1.6, -1.6 of the galaxy means its brighest pixel should be
+            # index 0 of the 1D grid and (0,0) of the 2d plane _image.
+
+            grid = np.array([[-1.0, -1.0], [1.0, 1.0], [1.0, 1.0], [-1.0, -1.0]])
+            li_no_blur.grids.image[:, :] = grid
+
+            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g.Galaxy()], source_galaxies=[g.Galaxy()],
+                                                         image_plane_grids=li_no_blur.grids)
+            fit = fitting.ProfileFit(lensing_image=li_no_blur, tracer=tracer)
+
+            assert (fit.plane_grids[0] == grid).all()
+            assert (fit.plane_grids[1] == grid).all()
+
+            galaxy_sis = g.Galaxy(sis=mp.SphericalIsothermal(einstein_radius=1.0))
+            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[galaxy_sis], source_galaxies=[g.Galaxy()],
+                                                         image_plane_grids=li_no_blur.grids)
+            fit = fitting.ProfileFit(lensing_image=li_no_blur, tracer=tracer)
+
+            assert (fit.plane_grids[0] == grid).all()
+            assert fit.plane_grids[1] == pytest.approx(np.array([[-1.0+0.707, -1.0+0.707], [1.0-0.707, 1.0-0.707],
+                                                    [1.0 - 0.707, 1.0 - 0.707], [-1.0+0.707, -1.0+0.707]]), 1e-2)
 
 
     class TestLikelihood:
@@ -870,6 +960,28 @@ class TestProfileFitter:
             assert fit.likelihood == -0.5 * (16.0 + np.log(2 * np.pi * 1.0))
 
 
+    class TestAbstractLogic:
+
+        def test__logic_in_abstract_fit(self, li_no_blur, galaxy_light):
+
+            tracer = ray_tracing.TracerImagePlane(lens_galaxies=[galaxy_light], image_plane_grids=li_no_blur.grids)
+
+            fit = fitting.ProfileFit(lensing_image=li_no_blur, tracer=tracer)
+
+            assert fit.is_hyper_fit == False
+            assert fit.total_planes == 1
+            assert fit.total_inversions == 0
+
+            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[galaxy_light], source_galaxies=[galaxy_light],
+                                                         image_plane_grids=li_no_blur.grids)
+
+            fit = fitting.ProfileFit(lensing_image=li_no_blur, tracer=tracer)
+
+            assert fit.is_hyper_fit == False
+            assert fit.total_planes == 2
+            assert fit.total_inversions == 0
+
+
     class TestCompareToManual:
 
         def test___manual_image_and_psf(self, li_manual):
@@ -914,7 +1026,7 @@ class TestProfileFitter:
             assert (unmasked_model_image_of_galaxies[1] == fit.unmasked_model_images_of_galaxies[1]).all()
 
 
-class TestHyperProfileFitter:
+class TestHyperProfileFit:
 
 
     class TestScaledLikelihood:
@@ -977,13 +1089,41 @@ class TestHyperProfileFitter:
             assert fit.scaled_likelihood == -0.5 * (scaled_chi_squared_term + scaled_noise_term)
 
 
+    class TestAbstractLogic:
+
+        def test__logic_in_abstract_fit(self, li_no_blur, galaxy_light, hyper):
+
+            tracer = ray_tracing.TracerImagePlane(lens_galaxies=[galaxy_light], image_plane_grids=li_no_blur.grids)
+
+            fit = fitting.HyperProfileFit(lensing_image=li_no_blur, tracer=tracer,
+                                          hyper_model_image=hyper.hyper_model_image,
+                                          hyper_galaxy_images=hyper.hyper_galaxy_images,
+                                          hyper_minimum_values=hyper.hyper_minimum_values)
+
+            assert fit.is_hyper_fit == True
+            assert fit.total_planes == 1
+            assert fit.total_inversions == 0
+
+            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[galaxy_light], source_galaxies=[galaxy_light],
+                                                         image_plane_grids=li_no_blur.grids)
+
+            fit = fitting.HyperProfileFit(lensing_image=li_no_blur, tracer=tracer,
+                                          hyper_model_image=hyper.hyper_model_image,
+                                          hyper_galaxy_images=hyper.hyper_galaxy_images,
+                                          hyper_minimum_values=hyper.hyper_minimum_values)
+
+
+            assert fit.is_hyper_fit == True
+            assert fit.total_planes == 2
+            assert fit.total_inversions == 0
+
+
+
     class TestCompareToManual:
 
-        def test___manual_image_and_psf(self, li_manual, hyper_manual):
+        def test___manual_image_and_psf(self, li_manual, hyper):
 
-            hyp = hyper_manual
-
-            g0 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=1.0), hyper_galaxy=hyp.hyper_galaxy)
+            g0 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=1.0), hyper_galaxy=hyper.hyper_galaxy)
 
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g0],
                                                          image_plane_grids=li_manual.grids)
@@ -992,8 +1132,8 @@ class TestHyperProfileFitter:
                                                                   image_plane_grids=li_manual.unmasked_grids)
 
             fit = fitting.fit_from_lensing_image_and_tracer(lensing_image=li_manual, tracer=tracer,
-                  unmasked_tracer=unmasked_tracer, hyper_model_image=hyp.hyper_model_image,
-                  hyper_galaxy_images=hyp.hyper_galaxy_images, hyper_minimum_values=hyp.hyper_minimum_values)
+                  unmasked_tracer=unmasked_tracer, hyper_model_image=hyper.hyper_model_image,
+                  hyper_galaxy_images=hyper.hyper_galaxy_images, hyper_minimum_values=hyper.hyper_minimum_values)
 
             image_im = tracer._image_plane_image
             blurring_im = tracer._image_plane_blurring_image
@@ -1012,11 +1152,11 @@ class TestHyperProfileFitter:
 
             assert likelihood == pytest.approx(fit.likelihood, 1e-4)
 
-            contributions = fitting.contributions_from_hyper_images_and_galaxies(hyp.hyper_model_image,
-                            hyp.hyper_galaxy_images, [hyp.hyper_galaxy, hyp.hyper_galaxy], hyp.hyper_minimum_values)
+            contributions = fitting.contributions_from_hyper_images_and_galaxies(hyper.hyper_model_image,
+                            hyper.hyper_galaxy_images, [hyper.hyper_galaxy, hyper.hyper_galaxy], hyper.hyper_minimum_values)
 
             scaled_noise_map = fitting.scaled_noise_from_hyper_galaxies_and_contributions(contributions,
-                           [hyp.hyper_galaxy, hyp.hyper_galaxy], li_manual.noise_map)
+                           [hyper.hyper_galaxy, hyper.hyper_galaxy], li_manual.noise_map)
             scaled_chi_squareds = fitting.chi_squareds_from_residuals_and_noise(residuals, scaled_noise_map)
 
             assert li_manual.grids.image.map_to_2d(contributions[0]) == pytest.approx(fit.contributions[0], 1e-4)
@@ -1032,7 +1172,7 @@ class TestHyperProfileFitter:
             assert scaled_likelihood == pytest.approx(fit.scaled_likelihood, 1e-4)
 
             fast_scaled_likelihood = fitting.fast_likelihood_from_lensing_image_and_tracer(li_manual, tracer,
-                                     hyp.hyper_model_image, hyp.hyper_galaxy_images, hyp.hyper_minimum_values)
+                                     hyper.hyper_model_image, hyper.hyper_galaxy_images, hyper.hyper_minimum_values)
 
             assert fast_scaled_likelihood == fit.scaled_likelihood
 
@@ -1046,7 +1186,25 @@ class TestHyperProfileFitter:
             assert (unmasked_model_image_of_galaxies[1] == fit.unmasked_model_images_of_galaxies[1]).all()
 
 
-class TestInversionFitter:
+class TestInversionFit:
+
+
+    class TestAbstractLogic:
+
+        def test__logic_in_abstract_fit(self, li_no_blur):
+
+            galaxy_pix = g.Galaxy(pixelization=pixelizations.Rectangular(shape=(3, 3)),
+                                  regularization=regularization.Constant(regularization_coefficients=(1.0,)))
+
+            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g.Galaxy()], source_galaxies=[galaxy_pix],
+                                                         image_plane_grids=li_no_blur.grids, borders=li_no_blur.borders)
+
+            fit = fitting.InversionFit(lensing_image=li_no_blur, tracer=tracer)
+
+
+            assert fit.is_hyper_fit == False
+            assert fit.total_planes == 2
+            assert fit.total_inversions == 1
 
 
     class TestRectangularInversion:
@@ -1147,7 +1305,7 @@ class TestInversionFitter:
             assert fast_evidence == evidence
 
 
-class TestHyperInversionFitter:
+class TestHyperInversionFit:
 
 
     class TestRectangularInversion:
@@ -1218,17 +1376,38 @@ class TestHyperInversionFitter:
             assert fit.scaled_evidence == pytest.approx(scaled_evidence, 1e-4)
 
 
+    class TestAbstractLogic:
+
+        def test__logic_in_abstract_fit(self, li_no_blur, hyper):
+
+            galaxy_pix = g.Galaxy(pixelization=pixelizations.Rectangular(shape=(3, 3)),
+                                  regularization=regularization.Constant(regularization_coefficients=(1.0,)))
+
+            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g.Galaxy()], source_galaxies=[galaxy_pix],
+                                                         image_plane_grids=li_no_blur.grids,
+                                                         borders=li_no_blur.borders)
+
+            fit = fitting.HyperInversionFit(lensing_image=li_no_blur, tracer=tracer,
+                                            hyper_model_image=hyper.hyper_model_image,
+                                            hyper_galaxy_images=hyper.hyper_galaxy_images,
+                                            hyper_minimum_values=hyper.hyper_minimum_values)
+
+            assert fit.is_hyper_fit == True
+            assert fit.total_planes == 2
+            assert fit.total_inversions == 1
+
+
     class TestCompareToManual:
 
-        def test___manual_image_and_psf(self, li_manual, hyper_manual):
+        def test___manual_image_and_psf(self, li_manual, hyper):
 
-            hyp = hyper_manual
+            hyp = hyper
 
             pix = pixelizations.Rectangular(shape=(3, 3))
             mapper = pix.mapper_from_grids_and_borders(li_manual.grids, li_manual.borders)
             reg = regularization.Constant(regularization_coefficients=(1.0,))
 
-            galaxy = g.Galaxy(hyper_galaxy=hyp.hyper_galaxy)
+            galaxy = g.Galaxy(hyper_galaxy=hyper.hyper_galaxy)
             inv_galaxy = g.Galaxy(pixelization=pix, regularization=reg)
 
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[galaxy, galaxy],
@@ -1236,8 +1415,8 @@ class TestHyperInversionFitter:
                                                          image_plane_grids=li_manual.grids, borders=li_manual.borders)
 
             fit = fitting.fit_from_lensing_image_and_tracer(
-                lensing_image=li_manual, tracer=tracer, hyper_model_image=hyp.hyper_model_image,
-                hyper_galaxy_images=hyp.hyper_galaxy_images, hyper_minimum_values=hyp.hyper_minimum_values)
+                lensing_image=li_manual, tracer=tracer, hyper_model_image=hyper.hyper_model_image,
+                hyper_galaxy_images=hyper.hyper_galaxy_images, hyper_minimum_values=hyper.hyper_minimum_values)
 
             inversion = inversions.inversion_from_mapper_regularization_and_data(mapper=mapper, regularization=reg,
                         image=li_manual, noise_map=li_manual.noise_map, convolver=li_manual.convolver_mapping_matrix)
@@ -1257,10 +1436,10 @@ class TestHyperInversionFitter:
 
             assert evidence == fit.evidence
 
-            contributions = fitting.contributions_from_hyper_images_and_galaxies(hyp.hyper_model_image,
-                            hyp.hyper_galaxy_images, [hyp.hyper_galaxy, hyp.hyper_galaxy], hyp.hyper_minimum_values)
+            contributions = fitting.contributions_from_hyper_images_and_galaxies(hyper.hyper_model_image,
+                            hyper.hyper_galaxy_images, [hyper.hyper_galaxy, hyper.hyper_galaxy], hyper.hyper_minimum_values)
             scaled_noise_map = fitting.scaled_noise_from_hyper_galaxies_and_contributions(contributions,
-                           [hyp.hyper_galaxy, hyp.hyper_galaxy], li_manual.noise_map)
+                           [hyper.hyper_galaxy, hyper.hyper_galaxy], li_manual.noise_map)
 
             scaled_inversion = inversions.inversion_from_mapper_regularization_and_data(mapper=mapper, regularization=reg,
                         image=li_manual, noise_map=scaled_noise_map, convolver=li_manual.convolver_mapping_matrix)
@@ -1269,6 +1448,7 @@ class TestHyperInversionFitter:
             scaled_chi_squareds = fitting.chi_squareds_from_residuals_and_noise(scaled_residuals, scaled_noise_map)
 
             assert li_manual.grids.image.map_to_2d(contributions[0]) == pytest.approx(fit.contributions[0], 1e-4)
+            assert li_manual.grids.image.map_to_2d(contributions[1]) == pytest.approx(fit.contributions[1], 1e-4)
             assert li_manual.grids.image.map_to_2d(scaled_noise_map) == pytest.approx(fit.scaled_noise_map, 1e-4)
             assert li_manual.grids.image.map_to_2d(scaled_chi_squareds) == pytest.approx(fit.scaled_chi_squareds, 1e-4)
 
@@ -1281,10 +1461,65 @@ class TestHyperInversionFitter:
             assert scaled_evidence == fit.scaled_evidence
 
             fast_scaled_evidence = fitting.fast_likelihood_from_lensing_image_and_tracer(lensing_image=li_manual,
-                                   tracer=tracer, hyper_model_image=hyp.hyper_model_image,
-                                   hyper_galaxy_images=hyp.hyper_galaxy_images,
-                                   hyper_minimum_values=hyp.hyper_minimum_values)
+                                   tracer=tracer, hyper_model_image=hyper.hyper_model_image,
+                                   hyper_galaxy_images=hyper.hyper_galaxy_images,
+                                   hyper_minimum_values=hyper.hyper_minimum_values)
             assert fast_scaled_evidence == scaled_evidence
+
+
+class TestProfileInversionFit:
+
+
+    class TestCompareToManual:
+
+        def test___manual_image_and_psf(self, li_manual):
+
+            galaxy_light = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=1.0))
+
+            pix = pixelizations.Rectangular(shape=(3, 3))
+            reg = regularization.Constant(regularization_coefficients=(1.0,))
+            galaxy_pix = g.Galaxy(pixelization=pix, regularization=reg)
+
+            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[galaxy_light], source_galaxies=[galaxy_pix],
+                                                         image_plane_grids=li_manual.grids, borders=li_manual.borders)
+
+            fit = fitting.fit_from_lensing_image_and_tracer(lensing_image=li_manual, tracer=tracer)
+
+            image_im = tracer._image_plane_image
+            blurring_im = tracer._image_plane_blurring_image
+            profile_model_image = li_manual.convolver_image.convolve_image(image_im, blurring_im)
+            profile_subtracted_image = li_manual[:] - profile_model_image
+
+            assert li_manual.grids.image.map_to_2d(profile_model_image) == pytest.approx(fit.profile_model_image, 1e-4)
+            assert li_manual.grids.image.map_to_2d(profile_subtracted_image) == \
+                   pytest.approx(fit.profile_subtracted_image, 1e-4)
+
+            mapper = pix.mapper_from_grids_and_borders(li_manual.grids, li_manual.borders)
+            inversion = inversions.inversion_from_mapper_regularization_and_data(mapper=mapper, regularization=reg,
+                        image=profile_subtracted_image, noise_map=li_manual.noise_map,
+                                                        convolver=li_manual.convolver_mapping_matrix)
+
+            model_image = profile_model_image + inversion.reconstructed_image
+            residuals = fitting.residuals_from_image_and_model(li_manual, model_image)
+            chi_squareds = fitting.chi_squareds_from_residuals_and_noise(residuals, li_manual.noise_map)
+
+            assert li_manual.grids.image.map_to_2d(li_manual.noise_map) == pytest.approx(fit.noise_map, 1e-4)
+            assert li_manual.grids.image.map_to_2d(inversion.reconstructed_image) == \
+                   pytest.approx(fit.inversion_model_image, 1e-4)
+            assert li_manual.grids.image.map_to_2d(model_image) == pytest.approx(fit.model_image, 1e-4)
+            assert li_manual.grids.image.map_to_2d(residuals) == pytest.approx(fit.residuals, 1e-4)
+            assert li_manual.grids.image.map_to_2d(chi_squareds) == pytest.approx(fit.chi_squareds, 1e-4)
+
+            chi_squared_term = fitting.chi_squared_term_from_chi_squareds(chi_squareds)
+            noise_term = fitting.noise_term_from_noise_map(li_manual.noise_map)
+            evidence = fitting.evidence_from_reconstruction_terms(chi_squared_term, inversion.regularization_term,
+                 inversion.log_det_curvature_reg_matrix_term, inversion.log_det_regularization_matrix_term, noise_term)
+
+            assert evidence == fit.evidence
+
+            fast_evidence = fitting.fast_likelihood_from_lensing_image_and_tracer(lensing_image=li_manual,
+                                                                                  tracer=tracer)
+            assert fast_evidence == evidence
 
 
 class MockTracerPositions:
@@ -1295,51 +1530,51 @@ class MockTracerPositions:
         self.noise = noise
 
 
-class TestPositionFitter:
+class TestPositionFit:
 
     def test__x1_positions__mock_position_tracer__maximum_separation_is_correct(self):
 
         tracer = MockTracerPositions(positions=[np.array([[0.0, 0.0], [0.0, 1.0]])])
-        fit = fitting.PositionFitter(positions=tracer.positions, noise=1.0)
+        fit = fitting.PositionFit(positions=tracer.positions, noise=1.0)
         assert fit.maximum_separations[0] == 1.0
 
         tracer = MockTracerPositions(positions=[np.array([[0.0, 0.0], [1.0, 1.0]])])
-        fit = fitting.PositionFitter(positions=tracer.positions, noise=1.0)
+        fit = fitting.PositionFit(positions=tracer.positions, noise=1.0)
         assert fit.maximum_separations[0] == np.sqrt(2)
 
         tracer = MockTracerPositions(positions=[np.array([[0.0, 0.0], [1.0, 3.0]])])
-        fit = fitting.PositionFitter(positions=tracer.positions, noise=1.0)
+        fit = fitting.PositionFit(positions=tracer.positions, noise=1.0)
         assert fit.maximum_separations[0] == np.sqrt(np.square(1.0) + np.square(3.0))
 
         tracer = MockTracerPositions(positions=[np.array([[-2.0, -4.0], [1.0, 3.0]])])
-        fit = fitting.PositionFitter(positions=tracer.positions, noise=1.0)
+        fit = fitting.PositionFit(positions=tracer.positions, noise=1.0)
         assert fit.maximum_separations[0] == np.sqrt(np.square(3.0) + np.square(7.0))
 
         tracer = MockTracerPositions(positions=[np.array([[8.0, 4.0], [-9.0, -4.0]])])
-        fit = fitting.PositionFitter(positions=tracer.positions, noise=1.0)
+        fit = fitting.PositionFit(positions=tracer.positions, noise=1.0)
         assert fit.maximum_separations[0] == np.sqrt(np.square(17.0) + np.square(8.0))
 
     def test_multiple_positions__mock_position_tracer__maximum_separation_is_correct(self):
 
         tracer = MockTracerPositions(positions=[np.array([[0.0, 0.0], [0.0, 1.0], [0.0, 0.5]])])
-        fit = fitting.PositionFitter(positions=tracer.positions, noise=1.0)
+        fit = fitting.PositionFit(positions=tracer.positions, noise=1.0)
         assert fit.maximum_separations[0] == 1.0
 
         tracer = MockTracerPositions(positions=[np.array([[0.0, 0.0], [0.0, 0.0], [3.0, 3.0]])])
-        fit = fitting.PositionFitter(positions=tracer.positions, noise=1.0)
+        fit = fitting.PositionFit(positions=tracer.positions, noise=1.0)
         assert fit.maximum_separations[0] == np.sqrt(18)
 
         tracer = MockTracerPositions(positions=[np.array([[0.0, 0.0], [1.0, 1.0], [3.0, 3.0]])])
-        fit = fitting.PositionFitter(positions=tracer.positions, noise=1.0)
+        fit = fitting.PositionFit(positions=tracer.positions, noise=1.0)
         assert fit.maximum_separations[0] == np.sqrt(18)
 
         tracer = MockTracerPositions(positions=[np.array([[-2.0, -4.0], [1.0, 3.0], [0.1, 0.1], [-0.1, -0.1],
                                                           [0.3, 0.4], [-0.6, 0.5]])])
-        fit = fitting.PositionFitter(positions=tracer.positions, noise=1.0)
+        fit = fitting.PositionFit(positions=tracer.positions, noise=1.0)
         assert fit.maximum_separations[0] == np.sqrt(np.square(3.0) + np.square(7.0))
 
         tracer = MockTracerPositions(positions=[np.array([[8.0, 4.0], [8.0, 4.0], [-9.0, -4.0]])])
-        fit = fitting.PositionFitter(positions=tracer.positions, noise=1.0)
+        fit = fitting.PositionFit(positions=tracer.positions, noise=1.0)
         assert fit.maximum_separations[0] == np.sqrt(np.square(17.0) + np.square(8.0))
 
     def test_multiple_sets_of_positions__multiple_sets_of_max_distances(self):
@@ -1348,7 +1583,7 @@ class TestPositionFitter:
                                                 np.array([[0.0, 0.0], [0.0, 0.0], [3.0, 3.0]]),
                                                 np.array([[0.0, 0.0], [1.0, 1.0], [3.0, 3.0]])])
 
-        fit = fitting.PositionFitter(positions=tracer.positions, noise=1.0)
+        fit = fitting.PositionFit(positions=tracer.positions, noise=1.0)
 
         assert fit.maximum_separations[0] == 1.0
         assert fit.maximum_separations[1] == np.sqrt(18)
@@ -1360,13 +1595,13 @@ class TestPositionFitter:
                                                 np.array([[0.0, 0.0], [0.0, 0.0], [3.0, 3.0]]),
                                                 np.array([[0.0, 0.0], [1.0, 1.0], [3.0, 3.0]])])
 
-        fit = fitting.PositionFitter(positions=tracer.positions, noise=1.0)
+        fit = fitting.PositionFit(positions=tracer.positions, noise=1.0)
         assert fit.chi_squareds[0] == 1.0
         assert fit.chi_squareds[1] == pytest.approx(18.0, 1e-4)
         assert fit.chi_squareds[2] == pytest.approx(18.0, 1e-4)
         assert fit.likelihood == pytest.approx(-0.5*(1.0 + 18 + 18), 1e-4)
 
-        fit = fitting.PositionFitter(positions=tracer.positions, noise=2.0)
+        fit = fitting.PositionFit(positions=tracer.positions, noise=2.0)
         assert fit.chi_squareds[0] == (1.0 / 2.0) ** 2.0
         assert fit.chi_squareds[1] == pytest.approx((np.sqrt(18.0) / 2.0) ** 2.0, 1e-4)
         assert fit.chi_squareds[2] == pytest.approx((np.sqrt(18.0) / 2.0) ** 2.0, 1e-4)
@@ -1376,7 +1611,7 @@ class TestPositionFitter:
     def test__threshold__if_not_met_returns_ray_tracing_exception(self):
 
         tracer = MockTracerPositions(positions=[np.array([[0.0, 0.0], [0.0, 1.0]])])
-        fit = fitting.PositionFitter(positions=tracer.positions, noise=1.0)
+        fit = fitting.PositionFit(positions=tracer.positions, noise=1.0)
 
         assert fit.maximum_separation_within_threshold(threshold=100.0) == True
         assert fit.maximum_separation_within_threshold(threshold=0.1) == False
