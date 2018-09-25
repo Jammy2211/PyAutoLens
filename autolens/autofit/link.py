@@ -15,7 +15,7 @@ autolens_dir = "{}/{}".format(home, AUTOLENS_FOLDER)
 try:
     os.mkdir(autolens_dir)
 except FileExistsError as ex:
-    logger.exception(ex)
+    logger.debug(ex)
 
 
 def path_for(path):
@@ -63,9 +63,9 @@ def make_linked_folder(path):
     try:
         os.mkdir(actual_path)
     except FileExistsError as e:
-        logger.exception(e)
+        logger.debug(e)
     try:
         os.symlink(actual_path, path)
     except FileExistsError as e:
-        logger.exception(e)
+        logger.debug(e)
     return actual_path
