@@ -88,7 +88,7 @@ class Pipeline(Base):
         Returns
         -------
         str: image_hdu
-            The hdu of the _image data in the data file
+            The hdu of the image data in the data file
         """
         return int(self.options["--image-hdu"])
 
@@ -122,7 +122,7 @@ class Pipeline(Base):
         Returns
         -------
         str: path
-            The path to the _image
+            The path to the image
         """
         return self.options['--image']
 

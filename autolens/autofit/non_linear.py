@@ -1,4 +1,3 @@
-from autolens import conf
 from autolens import exc
 import math
 import os
