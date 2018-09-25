@@ -1013,12 +1013,11 @@ class TestRealClasses(object):
     def test__read_multinest_most_probable_via_summary__multiple_profiles(self, mm_config, mn_summary_path):
         conf.instance.output_path = mn_summary_path + '/multi_profile'
 
-        create_summary_10_parameters(path=mn_summary_path + '/multi_profile/chains')
-
         mapper = model_mapper.ModelMapper(config=mm_config, light_profile=light_profiles.EllipticalExponential,
                                           mass_profile=mass_profiles.SphericalNFW)
         mn = non_linear.MultiNest(model_mapper=mapper)
 
+        create_summary_10_parameters(path=mn.chains_path)
         most_probable = mn.most_probable_from_summary()
 
         assert most_probable == [1.0, 2.0, 3.0, 4.0, -5.0, -6.0, -7.0, -8.0, 9.0, 10.0]
@@ -1026,11 +1025,10 @@ class TestRealClasses(object):
     def test__setup_most_probable_model_instance_via_multinest_summary(self, mm_config, mn_summary_path):
         conf.instance.output_path = mn_summary_path + '/multi_profile'
 
-        create_summary_10_parameters(path=mn_summary_path + '/multi_profile/chains')
-
         mapper = model_mapper.ModelMapper(config=mm_config, light_profile=light_profiles.EllipticalExponential,
                                           mass_profile=mass_profiles.SphericalNFW)
         mn = non_linear.MultiNest(model_mapper=mapper)
+        create_summary_10_parameters(path=mn.chains_path)
 
         most_likely = mn.most_likely_from_summary()
 
@@ -1039,11 +1037,10 @@ class TestRealClasses(object):
     def test__read_multinest_most_likely_via_summary__multiple_profiles(self, mm_config, mn_summary_path):
         conf.instance.output_path = mn_summary_path + '/multi_profile'
 
-        create_summary_10_parameters(path=mn_summary_path + '/multi_profile/chains')
-
         mapper = model_mapper.ModelMapper(config=mm_config, light_profile=light_profiles.EllipticalExponential,
                                           mass_profile=mass_profiles.SphericalNFW)
         mn = non_linear.MultiNest(model_mapper=mapper)
+        create_summary_10_parameters(path=mn.chains_path)
 
         max_likelihood = mn.max_likelihood_from_summary()
         max_log_likelihood = mn.max_log_likelihood_from_summary()
@@ -1051,14 +1048,13 @@ class TestRealClasses(object):
         assert max_likelihood == 0.02
         assert max_log_likelihood == 9999999.9
 
-    def test__setup_most_likely_model_instance_via_multinest_summaryy(self, mm_config, mn_summary_path):
-        conf.instance.output_path = mn_summary_path + '/multi_profile'
-
-        create_summary_10_parameters(path=mn_summary_path + '/multi_profile/chains')
-
+    def test__setup_most_likely_model_instance_via_multinest_summary(self, mm_config, mn_summary_path):
         mapper = model_mapper.ModelMapper(config=mm_config, light_profile=light_profiles.EllipticalExponential,
                                           mass_profile=mass_profiles.SphericalNFW)
         mn = non_linear.MultiNest(model_mapper=mapper)
+        conf.instance.output_path = mn_summary_path + '/multi_profile'
+
+        create_summary_10_parameters(path=mn.chains_path)
 
         most_probable = mn.most_probable_instance_from_summary()
         most_likely = mn.most_likely_instance_from_summary()
@@ -1107,11 +1103,10 @@ class TestRealClasses(object):
                                                                                                   mn_samples_path):
         conf.instance.output_path = mn_samples_path
 
-        create_weighted_samples_10_parameters(mn_samples_path + '/chains')
-
         mapper = model_mapper.ModelMapper(config=mm_config, light_profile=light_profiles.EllipticalExponential,
                                           mass_profile=mass_profiles.SphericalNFW)
         mn = non_linear.MultiNest(model_mapper=mapper)
+        create_weighted_samples_10_parameters(mn.chains_path)
 
         weighted_sample_model, weight, likelihood = mn.weighted_sample_instance_from_weighted_samples(index=5)
 
