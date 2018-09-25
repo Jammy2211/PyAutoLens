@@ -1,11 +1,8 @@
 import numpy as np
-
-from autolens.profiles import light_profiles
+import pytest
 from profiling import profiling_data
 from profiling import tools
-from imaging import mask
-import pytest
-import numba
+
 
 class ImageGridBorder(np.ndarray):
 
@@ -77,9 +74,9 @@ class ImageGridBorder(np.ndarray):
         poly = self.polynomial_fit_to_border(grid)
 
         try:
-           move_factors = np.polyval(poly, grid_thetas) / grid_radii
+            move_factors = np.polyval(poly, grid_thetas) / grid_radii
         except RuntimeWarning:
-           move_factors = 1.0
+            move_factors = 1.0
 
         move_factors[move_factors > 1.0] = 1.0
 
@@ -95,6 +92,7 @@ class SubGridBorder(ImageGridBorder):
     @classmethod
     def from_mask(cls, mask, sub_grid_size, polynomial_degree=3, centre=(0.0, 0.0)):
         return cls(mask.border_sub_pixel_indices(sub_grid_size), polynomial_degree, centre)
+
 
 sub_grid_size = 4
 
@@ -116,6 +114,7 @@ hst_up = profiling_data.setup_class(name='HSTup', pixel_scale=0.03, sub_grid_siz
 hst_up_border = SubGridBorder.from_mask(mask=hst_up.masked_image.mask, sub_grid_size=sub_grid_size)
 ao = profiling_data.setup_class(name='AO', pixel_scale=0.01, sub_grid_size=sub_grid_size)
 ao_border = SubGridBorder.from_mask(mask=ao.masked_image.mask, sub_grid_size=sub_grid_size)
+
 
 # no jit - no need to run functions first
 

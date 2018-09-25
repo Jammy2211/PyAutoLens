@@ -1,16 +1,11 @@
-from profiling import profiling_data
-from profiling import tools
-from analysis import ray_tracing
-from analysis import galaxy
-from profiles import mass_profiles
-from autolens import exc
-import numpy as np
-import pytest
 import numba
+import numpy as np
+from profiling import tools
+
+from autolens import exc
 
 
 class RegularizationConstant(object):
-
     pixels = None
     regularization_coefficients = None
 
@@ -39,7 +34,7 @@ class RegularizationConstant(object):
     def regularization_matrix_from_pix_neighbors_jitted(self, pix_neighbors):
         pix_neighbors = np.array([1, 1, 1, 1], dtype='int')
         return self.regularization_matrix_from_pix_neighbors_jit(pix_neighbors, self.pixels,
-                                                    self.regularization_coefficients[0])
+                                                                 self.regularization_coefficients[0])
 
     @staticmethod
     @numba.jit(nopython=True)
@@ -86,7 +81,7 @@ class Pixelization(object):
 
 class RectangularRegConst(Pixelization, RegularizationConstant):
 
-    def __init__(self, shape=(3,3), regularization_coefficients=(1.0,)):
+    def __init__(self, shape=(3, 3), regularization_coefficients=(1.0,)):
         """A rectangular inversion where pixels appear on a Cartesian, uniform and rectangular grid \
         of  shape (rows, columns).
 
@@ -177,7 +172,7 @@ class RectangularRegConst(Pixelization, RegularizationConstant):
         return pixel_neighbors
 
 
-sub_grid_size=4
+sub_grid_size = 4
 
 pix = RectangularRegConst(shape=(20, 20))
 
@@ -188,9 +183,11 @@ pix_neighbors = pix.neighbors_from_pixelization()
 
 pix.regularization_matrix_from_pix_neighbors_jitted(pix_neighbors)
 
+
 @tools.tick_toc_x1
 def solution():
     pix.regularization_matrix_from_pix_neighbors_jitted(pix_neighbors)
+
 
 if __name__ == "__main__":
     solution()
