@@ -18,12 +18,9 @@ except FileExistsError as ex:
 
 
 def path_for(path):
-    print(path)
     start = int(SUB_PATH_LENGTH / 2)
     end = SUB_PATH_LENGTH - start
-    print("start = {}, end = {}".format(start, end))
     b64_string = b64encode(bytes(path, encoding="utf-8")).decode("utf-8")
-    print(b64_string)
     return "{}/{}".format(autolens_dir, b64_string[:start] + b64_string[-end:])
 
 
