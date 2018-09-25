@@ -37,3 +37,4 @@ test_files/non_linear/nlo/
 test/test_files/non_linear/nlo/
 test/test_files/array/test
 residuals_plot*.py
+*output/
