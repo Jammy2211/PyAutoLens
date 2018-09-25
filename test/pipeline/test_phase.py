@@ -14,6 +14,11 @@ import pytest
 import numpy as np
 import os
 
+pytestmark = pytest.mark.filterwarnings(
+    "ignore:Using a non-tuple sequence for multidimensional indexing is deprecated; use `arr[tuple(seq)]` instead of "
+    "`arr[seq]`. In the future this will be interpreted as an array index, `arr[np.array(seq)]`, which will result "
+    "either in an error or a different result.")
+
 directory = path.dirname(path.realpath(__file__))
 
 general_conf = '{}/../test_files/config'.format(directory)
@@ -54,7 +59,6 @@ class NLO(non_linear.NonLinearOptimizer):
                 self.constant = constant
 
             def __call__(self, vector):
-
                 instance = self.instance_from_physical_vector(vector)
                 instance += self.constant
 
@@ -155,7 +159,6 @@ class TestPhase(object):
         assert isinstance(result.constant.source_galaxies[0], g.Galaxy)
 
     def test_customize(self, results, image):
-
         class MyPlanePhaseAnd(ph.LensSourcePlanePhase):
             def pass_priors(self, previous_results):
                 self.lens_galaxies = previous_results.last.constant.lens_galaxies
@@ -274,6 +277,7 @@ class TestPhase(object):
         assert instance.lens_galaxies[1].redshift == 0.8
 
         class LensPlanePhase2(ph.LensPlanePhase):
+            # noinspection PyUnusedLocal
             def pass_models(self, previous_results):
                 self.lens_galaxies[0].sis.einstein_radius = mm.Constant(10.0)
 
