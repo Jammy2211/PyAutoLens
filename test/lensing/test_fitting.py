@@ -1401,16 +1401,14 @@ class TestHyperInversionFit:
 
         def test___manual_image_and_psf(self, li_manual, hyper):
 
-            hyp = hyper
-
             pix = pixelizations.Rectangular(shape=(3, 3))
             mapper = pix.mapper_from_grids_and_borders(li_manual.grids, li_manual.borders)
             reg = regularization.Constant(regularization_coefficients=(1.0,))
 
-            galaxy = g.Galaxy(hyper_galaxy=hyper.hyper_galaxy)
+            hyp_galaxy = g.Galaxy(hyper_galaxy=hyper.hyper_galaxy)
             inv_galaxy = g.Galaxy(pixelization=pix, regularization=reg)
 
-            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[galaxy, galaxy],
+            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[hyp_galaxy, hyp_galaxy],
                                                          source_galaxies=[inv_galaxy],
                                                          image_plane_grids=li_manual.grids, borders=li_manual.borders)
 
@@ -1444,12 +1442,15 @@ class TestHyperInversionFit:
             scaled_inversion = inversions.inversion_from_mapper_regularization_and_data(mapper=mapper, regularization=reg,
                         image=li_manual, noise_map=scaled_noise_map, convolver=li_manual.convolver_mapping_matrix)
 
+            scaled_model_image = scaled_inversion.reconstructed_image
             scaled_residuals = fitting.residuals_from_image_and_model(li_manual, scaled_inversion.reconstructed_image)
             scaled_chi_squareds = fitting.chi_squareds_from_residuals_and_noise(scaled_residuals, scaled_noise_map)
 
             assert li_manual.grids.image.map_to_2d(contributions[0]) == pytest.approx(fit.contributions[0], 1e-4)
             assert li_manual.grids.image.map_to_2d(contributions[1]) == pytest.approx(fit.contributions[1], 1e-4)
             assert li_manual.grids.image.map_to_2d(scaled_noise_map) == pytest.approx(fit.scaled_noise_map, 1e-4)
+            assert li_manual.grids.image.map_to_2d(scaled_model_image) == pytest.approx(fit.scaled_model_image, 1e-4)
+            assert li_manual.grids.image.map_to_2d(scaled_residuals) == pytest.approx(fit.scaled_residuals, 1e-4)
             assert li_manual.grids.image.map_to_2d(scaled_chi_squareds) == pytest.approx(fit.scaled_chi_squareds, 1e-4)
 
             scaled_chi_squared_term = fitting.chi_squared_term_from_chi_squareds(scaled_chi_squareds)
@@ -1520,6 +1521,100 @@ class TestProfileInversionFit:
             fast_evidence = fitting.fast_likelihood_from_lensing_image_and_tracer(lensing_image=li_manual,
                                                                                   tracer=tracer)
             assert fast_evidence == evidence
+
+
+class TestHyperProfileInversionFit:
+
+
+    class TestCompareToManual:
+
+        def test___manual_image_and_psf(self, li_manual, hyper):
+
+            pix = pixelizations.Rectangular(shape=(3, 3))
+            reg = regularization.Constant(regularization_coefficients=(1.0,))
+
+            hyp_galaxy = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=1.0), hyper_galaxy=hyper.hyper_galaxy)
+            inv_galaxy = g.Galaxy(pixelization=pix, regularization=reg)
+
+            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[hyp_galaxy, hyp_galaxy],
+                                                         source_galaxies=[inv_galaxy],
+                                                         image_plane_grids=li_manual.grids, borders=li_manual.borders)
+
+            fit = fitting.fit_from_lensing_image_and_tracer(
+                lensing_image=li_manual, tracer=tracer, hyper_model_image=hyper.hyper_model_image,
+                hyper_galaxy_images=hyper.hyper_galaxy_images, hyper_minimum_values=hyper.hyper_minimum_values)
+
+            image_im = tracer._image_plane_image
+            blurring_im = tracer._image_plane_blurring_image
+            profile_model_image = li_manual.convolver_image.convolve_image(image_im, blurring_im)
+            profile_subtracted_image = li_manual[:] - profile_model_image
+
+            assert li_manual.grids.image.map_to_2d(profile_model_image) == pytest.approx(fit.profile_model_image, 1e-4)
+            assert li_manual.grids.image.map_to_2d(profile_subtracted_image) == \
+                   pytest.approx(fit.profile_subtracted_image, 1e-4)
+
+            mapper = pix.mapper_from_grids_and_borders(li_manual.grids, li_manual.borders)
+            inversion = inversions.inversion_from_mapper_regularization_and_data(mapper=mapper, regularization=reg,
+                        image=profile_subtracted_image, noise_map=li_manual.noise_map,
+                                                        convolver=li_manual.convolver_mapping_matrix)
+
+            model_image = profile_model_image + inversion.reconstructed_image
+            residuals = fitting.residuals_from_image_and_model(li_manual, model_image)
+            chi_squareds = fitting.chi_squareds_from_residuals_and_noise(residuals, li_manual.noise_map)
+
+            assert li_manual.grids.image.map_to_2d(li_manual.noise_map) == pytest.approx(fit.noise_map, 1e-4)
+            assert li_manual.grids.image.map_to_2d(inversion.reconstructed_image) == \
+                   pytest.approx(fit.inversion_model_image, 1e-4)
+            assert li_manual.grids.image.map_to_2d(model_image) == pytest.approx(fit.model_image, 1e-4)
+            assert li_manual.grids.image.map_to_2d(residuals) == pytest.approx(fit.residuals, 1e-4)
+            assert li_manual.grids.image.map_to_2d(chi_squareds) == pytest.approx(fit.chi_squareds, 1e-4)
+
+            chi_squared_term = fitting.chi_squared_term_from_chi_squareds(chi_squareds)
+            noise_term = fitting.noise_term_from_noise_map(li_manual.noise_map)
+            evidence = fitting.evidence_from_reconstruction_terms(chi_squared_term, inversion.regularization_term,
+                 inversion.log_det_curvature_reg_matrix_term, inversion.log_det_regularization_matrix_term, noise_term)
+
+            assert evidence == fit.evidence
+
+            contributions = fitting.contributions_from_hyper_images_and_galaxies(hyper.hyper_model_image,
+                                                                                 hyper.hyper_galaxy_images,
+                                                                                 [hyper.hyper_galaxy,
+                                                                                  hyper.hyper_galaxy],
+                                                                                 hyper.hyper_minimum_values)
+            scaled_noise_map = fitting.scaled_noise_from_hyper_galaxies_and_contributions(contributions,
+                                                                                          [hyper.hyper_galaxy,
+                                                                                           hyper.hyper_galaxy],
+                                                                                          li_manual.noise_map)
+
+            scaled_inversion = inversions.inversion_from_mapper_regularization_and_data(
+                mapper=mapper, regularization=reg, image=profile_subtracted_image, noise_map=scaled_noise_map,
+                convolver=li_manual.convolver_mapping_matrix)
+
+            scaled_model_image = profile_model_image + scaled_inversion.reconstructed_image
+            scaled_residuals = fitting.residuals_from_image_and_model(li_manual, scaled_model_image)
+            scaled_chi_squareds = fitting.chi_squareds_from_residuals_and_noise(scaled_residuals, scaled_noise_map)
+
+            assert li_manual.grids.image.map_to_2d(contributions[0]) == pytest.approx(fit.contributions[0], 1e-4)
+            assert li_manual.grids.image.map_to_2d(contributions[1]) == pytest.approx(fit.contributions[1], 1e-4)
+            assert li_manual.grids.image.map_to_2d(scaled_noise_map) == pytest.approx(fit.scaled_noise_map, 1e-4)
+            assert li_manual.grids.image.map_to_2d(scaled_model_image) == pytest.approx(fit.scaled_model_image, 1e-4)
+            assert li_manual.grids.image.map_to_2d(scaled_residuals) == pytest.approx(fit.scaled_residuals, 1e-4)
+            assert li_manual.grids.image.map_to_2d(scaled_chi_squareds) == pytest.approx(fit.scaled_chi_squareds, 1e-4)
+
+            scaled_chi_squared_term = fitting.chi_squared_term_from_chi_squareds(scaled_chi_squareds)
+            scaled_noise_term = fitting.noise_term_from_noise_map(scaled_noise_map)
+            scaled_evidence = fitting.evidence_from_reconstruction_terms(
+                scaled_chi_squared_term, scaled_inversion.regularization_term,
+                scaled_inversion.log_det_curvature_reg_matrix_term, scaled_inversion.log_det_regularization_matrix_term,
+                scaled_noise_term)
+
+            assert scaled_evidence == fit.scaled_evidence
+
+            fast_scaled_evidence = fitting.fast_likelihood_from_lensing_image_and_tracer(
+                lensing_image=li_manual, tracer=tracer, hyper_model_image=hyper.hyper_model_image,
+                hyper_galaxy_images=hyper.hyper_galaxy_images, hyper_minimum_values=hyper.hyper_minimum_values)
+
+            assert fast_scaled_evidence == scaled_evidence
 
 
 class MockTracerPositions:
