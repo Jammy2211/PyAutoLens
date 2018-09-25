@@ -1192,7 +1192,7 @@ class TestPlane(object):
 
     class TestPlaneImage:
 
-        def test__shape_3x3__image_of_plane__same_as_light_profile_on_identicla_uniform_grid(self, imaging_grids):
+        def test__shape_3x3__image_of_plane__same_as_light_profile_on_identical_uniform_grid(self, imaging_grids):
             g0 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=1.0))
 
             g0_image = g0.intensities_from_grid(grid=np.array([[-1.0, -1.0], [-1.0, 0.0], [-1.0, 1.0],
@@ -1203,7 +1203,9 @@ class TestPlane(object):
 
             plane = ray_tracing.Plane(galaxies=[g0], grids=imaging_grids)
 
-            assert plane._plane_image(shape=(3, 3)) == pytest.approx(g0_image, 1e-4)
+            plane_image = plane._plane_image(shape=(3, 3))
+            assert plane_image == pytest.approx(g0_image, 1e-4)
+            assert (plane_image.grid == imaging_grids.image).all()
 
         def test__different_shape_and_multiple_galaxies(self, imaging_grids):
             g0 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=1.0))
@@ -1219,7 +1221,9 @@ class TestPlane(object):
 
             plane = ray_tracing.Plane(galaxies=[g0, g1], grids=imaging_grids)
 
-            assert plane._plane_image(shape=(2, 3)) == pytest.approx(g0_image + g1_image, 1e-4)
+            plane_image = plane._plane_image(shape=(2, 3))
+            assert plane_image == pytest.approx(g0_image + g1_image, 1e-4)
+            assert (plane_image.grid == imaging_grids.image).all()
 
     class TestXYTicksOfPlane:
 
@@ -1738,7 +1742,6 @@ class TestTracerImageAndSource(object):
             assert potential_2d.shape == (1, 2)
             assert (potential_2d == tracer.potential).all()
 
-
     class TestDeflections:
 
         def test__galaxy_mass_sis__source_plane_deflections_is_ignored(self, imaging_grids):
@@ -1806,10 +1809,10 @@ class TestTracerImageAndSource(object):
             assert (deflections_x_2d == tracer.deflections_x).all()
             assert (deflections_y_2d == tracer.deflections_y).all()
 
-
     class TestPlaneImages:
 
         def test__galaxy_light_mass_sis__plane_images_match_galaxy_images(self, imaging_grids):
+            
             g0 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=1.0),
                           mass_profile=mp.SphericalIsothermal(einstein_radius=1.0))
             g1 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=2.0))
@@ -1828,14 +1831,17 @@ class TestTracerImageAndSource(object):
 
             g1_image = g1.intensities_from_grid(grid=g1_image_grid)
 
-            assert (tracer._plane_images_of_planes(shape=(3, 3))[0] == g0_image).all()
-            assert (tracer._plane_images_of_planes(shape=(3, 3))[1] == g1_image).all()
-            assert (tracer._plane_images_of_planes(shape=(3, 3))[0] ==
-                    tracer.image_plane._plane_image(shape=(3, 3))).all()
-            assert (tracer._plane_images_of_planes(shape=(3, 3))[1] ==
-                    tracer.source_plane._plane_image(shape=(3, 3))).all()
+            plane_images = tracer._plane_images_of_planes(shape=(3, 3))
+            assert (plane_images[0] == g0_image).all()
+            assert (plane_images[1] == g1_image).all()
+            assert (plane_images[0] == tracer.image_plane._plane_image(shape=(3, 3))).all()
+            assert (plane_images[1] == tracer.source_plane._plane_image(shape=(3, 3))).all()
+            
+            assert (plane_images[0].grid == imaging_grids.image).all()
+            assert (plane_images[1].grid == tracer.source_plane.grids.image).all()
 
         def test__same_as_above_but_multiple_galaxies_in_a_plane(self, imaging_grids):
+            
             g0 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=1.0),
                           mass_profile=mp.SphericalIsothermal(einstein_radius=1.0))
 
@@ -1862,12 +1868,14 @@ class TestTracerImageAndSource(object):
             g2_image = g2.intensities_from_grid(grid=g2_image_grid)
             g3_image = g3.intensities_from_grid(grid=g2_image_grid)
 
-            assert (tracer._plane_images_of_planes(shape=(3, 3))[0] == g0_image + g1_image).all()
-            assert (tracer._plane_images_of_planes(shape=(3, 3))[1] == g2_image + g3_image).all()
-            assert (tracer._plane_images_of_planes(shape=(3, 3))[0] ==
-                    tracer.image_plane._plane_image(shape=(3, 3))).all()
-            assert (tracer._plane_images_of_planes(shape=(3, 3))[1] ==
-                    tracer.source_plane._plane_image(shape=(3, 3))).all()
+            plane_images = tracer._plane_images_of_planes(shape=(3, 3))
+            assert (plane_images[0] == g0_image + g1_image).all()
+            assert (plane_images[1] == g2_image + g3_image).all()
+            assert (plane_images[0] == tracer.image_plane._plane_image(shape=(3, 3))).all()
+            assert (plane_images[1] == tracer.source_plane._plane_image(shape=(3, 3))).all()
+
+            assert (plane_images[0].grid == imaging_grids.image).all()
+            assert (plane_images[1].grid == tracer.source_plane.grids.image).all()
 
         def test__ensure_index_of_plane_image_has_negative_arcseconds_at_start(self, imaging_grids):
             # The grid coordinates -2.0 -> 2.0 mean a plane of shape (5,5) has arc second coordinates running over
@@ -2561,14 +2569,17 @@ class TestMultiTracer(object):
 
             g1_image = g1.intensities_from_grid(grid=g1_image_grid)
 
-            assert (tracer._plane_images_of_planes(shape=(3, 3))[0] == g0_image).all()
-            assert (tracer._plane_images_of_planes(shape=(3, 3))[1] == g1_image).all()
-            assert (tracer._plane_images_of_planes(shape=(3, 3))[0] == tracer.planes[0]._plane_image(
-                shape=(3, 3))).all()
-            assert (tracer._plane_images_of_planes(shape=(3, 3))[1] == tracer.planes[1]._plane_image(
-                shape=(3, 3))).all()
+            plane_images = tracer._plane_images_of_planes(shape=(3, 3))
+            assert (plane_images[0] == g0_image).all()
+            assert (plane_images[1] == g1_image).all()
+            assert (plane_images[0] == tracer.planes[0]._plane_image(shape=(3, 3))).all()
+            assert (plane_images[1] == tracer.planes[1]._plane_image(shape=(3, 3))).all()
+            
+            assert (plane_images[0].grid == imaging_grids.image).all()
+            assert (plane_images[1].grid == tracer.planes[1].grids.image).all()
 
         def test__same_as_above_but_multiple_galaxies_in_a_plane(self, imaging_grids):
+
             g0 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=1.0),
                           mass_profile=mp.SphericalIsothermal(einstein_radius=1.0), redshift=0.1)
             g1 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=2.0), redshift=0.2)
@@ -2592,16 +2603,18 @@ class TestMultiTracer(object):
             g2_image = g2.intensities_from_grid(grid=g2_image_grid)
             g3_image = g3.intensities_from_grid(grid=g2_image_grid)
 
-            assert (tracer._plane_images_of_planes(shape=(3, 3))[0] == g0_image).all()
-            assert (tracer._plane_images_of_planes(shape=(3, 3))[1] == g1_image).all()
-            assert (tracer._plane_images_of_planes(shape=(3, 3))[2] == g2_image + g3_image).all()
+            plane_images = tracer._plane_images_of_planes(shape=(3, 3))
+            assert (plane_images[0] == g0_image).all()
+            assert (plane_images[1] == g1_image).all()
+            assert (plane_images[2] == g2_image + g3_image).all()
 
-            assert (tracer._plane_images_of_planes(shape=(3, 3))[0] == tracer.planes[0]._plane_image(
-                shape=(3, 3))).all()
-            assert (tracer._plane_images_of_planes(shape=(3, 3))[1] == tracer.planes[1]._plane_image(
-                shape=(3, 3))).all()
-            assert (tracer._plane_images_of_planes(shape=(3, 3))[2] == tracer.planes[2]._plane_image(
-                shape=(3, 3))).all()
+            assert (plane_images[0] == tracer.planes[0]._plane_image(shape=(3, 3))).all()
+            assert (plane_images[1] == tracer.planes[1]._plane_image(shape=(3, 3))).all()
+            assert (plane_images[2] == tracer.planes[2]._plane_image(shape=(3, 3))).all()
+            
+            assert (plane_images[0].grid == imaging_grids.image).all()
+            assert (plane_images[1].grid == tracer.planes[1].grids.image).all()
+            assert (plane_images[2].grid == tracer.planes[2].grids.image).all()
 
         def test__same_as_above_but_swap_two_galaxy_redshifts__planes_are_reordered(self, imaging_grids):
             g0 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=1.0),
