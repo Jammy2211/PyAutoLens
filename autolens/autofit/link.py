@@ -3,7 +3,7 @@ import logging
 from os.path import expanduser
 from base64 import b64encode
 
-SUB_DIR_LENGTH = 5
+SUB_PATH_LENGTH = 5
 AUTOLENS_FOLDER = ".autolens"
 
 logger = logging.getLogger(__file__)
@@ -17,5 +17,5 @@ except Exception as e:
     logger.exception(e)
 
 
-def directory_for(directory):
-    return "{}/{}".format(autolens_dir, b64encode(bytes(directory, encoding="utf-8")).decode("utf-8")[:SUB_DIR_LENGTH])
+def path_for(path):
+    return "{}/{}".format(autolens_dir, b64encode(bytes(path, encoding="utf-8")).decode("utf-8")[:SUB_PATH_LENGTH])
