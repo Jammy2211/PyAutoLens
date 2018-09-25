@@ -1,6 +1,8 @@
 import os
 import shutil
 
+import pytest
+
 from autolens.autofit import link
 
 
@@ -41,8 +43,5 @@ class TestCase(object):
 
     def test_longer_path(self):
         temp_folder_path = "/tmp/folder/path"
-        path = link.make_linked_folder(temp_folder_path)
-        assert link.autolens_dir in path
-        assert os.path.exists(path)
-        assert os.path.exists(temp_folder_path)
-        delete_trees(path, "/tmp/folder")
+        with pytest.raises(FileNotFoundError):
+            link.make_linked_folder(temp_folder_path)
