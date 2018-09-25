@@ -6,7 +6,6 @@ from functools import wraps
 import pytest
 
 from autolens import conf
-from autolens import exc
 from autolens.autofit import model_mapper
 from autolens.autofit import non_linear
 from autolens.profiles import light_profiles, mass_profiles
@@ -1259,11 +1258,6 @@ class TestFitting(object):
             assert result.likelihood == 1
 
     class TestMultiNest(object):
-
-        def test__path_length_error__if_path_is_above_77_characters__raise_exception(self, multi_nest):
-            with pytest.raises(exc.MultiNestException):
-                multi_nest.path = 78 * 'a'
-                multi_nest.fit(MockAnalysis())
 
         def test_variable(self, multi_nest, test_config):
             multi_nest.variable.mock_class = model_mapper.PriorModel(MockClassNLOx4, test_config)
