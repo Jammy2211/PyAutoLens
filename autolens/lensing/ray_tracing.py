@@ -1,11 +1,13 @@
+import math
+from functools import wraps
+
+import numpy as np
+from astropy import constants
+from astropy import cosmology as cosmo
+
 from autolens import exc
 from autolens.imaging import imaging_util
 from autolens.imaging import mask as msk
-from astropy import constants
-from functools import wraps
-import math
-import numpy as np
-from astropy import cosmology as cosmo
 
 
 class TracerGeometry(object):
@@ -59,7 +61,6 @@ class TracerGeometry(object):
 
 
 class AbstractTracer(object):
-
     image_grids = None
 
     @property
@@ -68,15 +69,15 @@ class AbstractTracer(object):
 
     @property
     def has_light_profile(self):
-        return any(list(map(lambda galaxy : galaxy.has_light_profile, self.galaxies)))
+        return any(list(map(lambda galaxy: galaxy.has_light_profile, self.galaxies)))
 
     @property
     def has_pixelization(self):
-        return any(list(map(lambda galaxy : galaxy.has_pixelization, self.galaxies)))
+        return any(list(map(lambda galaxy: galaxy.has_pixelization, self.galaxies)))
 
     @property
     def has_regularization(self):
-        return any(list(map(lambda galaxy : galaxy.has_regularization, self.galaxies)))
+        return any(list(map(lambda galaxy: galaxy.has_regularization, self.galaxies)))
 
     @property
     def has_unmasked_grids(self):
@@ -84,7 +85,7 @@ class AbstractTracer(object):
 
     @property
     def has_hyper_galaxy(self):
-        return any(list(map(lambda galaxy : galaxy.has_hyper_galaxy, self.galaxies)))
+        return any(list(map(lambda galaxy: galaxy.has_hyper_galaxy, self.galaxies)))
 
     @property
     def galaxies(self):
@@ -105,23 +106,25 @@ class AbstractTracer(object):
 
     @property
     def image_plane_images_of_planes(self):
-        return list(map(lambda image : self.image_grids.image.map_to_2d(image), self._image_plane_images_of_planes))
+        return list(map(lambda image: self.image_grids.image.map_to_2d(image), self._image_plane_images_of_planes))
 
     @property
     def image_plane_images_of_galaxies(self):
-        return list(map(lambda image : self.image_grids.image.map_to_2d(image), self._image_plane_images_of_galaxies))
+        return list(map(lambda image: self.image_grids.image.map_to_2d(image), self._image_plane_images_of_galaxies))
 
     @property
     def image_plane_image_for_simulation(self):
         if not self.has_unmasked_grids:
-            raise exc.RayTracingException('To retrieve an _image plane _image for the simulation, the grids in the tracer'
-                                          'must be unmasked grids')
-        return sum(map(lambda image : self.image_grids.image.map_to_2d_keep_padded(image),
-                        self._image_plane_images_of_planes))
+            raise exc.RayTracingException(
+                'To retrieve an _image plane _image for the simulation, the grids in the tracer'
+                'must be unmasked grids')
+        return sum(map(lambda image: self.image_grids.image.map_to_2d_keep_padded(image),
+                       self._image_plane_images_of_planes))
 
     def plane_images_of_planes(self, shape=(30, 30)):
-        return list(map(lambda plane_image :
-        imaging_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(array_1d=plane_image, shape=shape).T,
+        return list(map(lambda plane_image:
+                        imaging_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(array_1d=plane_image,
+                                                                                               shape=shape).T,
                         self._plane_images_of_planes(shape=shape)))
 
     def _plane_images_of_planes(self, shape=(30, 30)):
@@ -242,7 +245,8 @@ class TracerImageSourcePlanes(AbstractTracer):
         self.image_plane = Plane(lens_galaxies, image_plane_grids, borders=borders, compute_deflections=True)
 
         if not source_galaxies:
-            raise exc.RayTracingException('No source galaxies have been input into the Tracer (TracerImageSourcePlanes)')
+            raise exc.RayTracingException(
+                'No source galaxies have been input into the Tracer (TracerImageSourcePlanes)')
 
         if cosmology is not None:
             self.geometry = TracerGeometry(redshifts=[lens_galaxies[0].redshift, source_galaxies[0].redshift],
@@ -444,11 +448,11 @@ class Plane(object):
 
     @property
     def xticks_from_image_grid(self):
-        return np.around(np.linspace(np.amin(self.grids.image[:,0]), np.amax(self.grids.image[:,0]), 4), 2)
+        return np.around(np.linspace(np.amin(self.grids.image[:, 0]), np.amax(self.grids.image[:, 0]), 4), 2)
 
     @property
     def yticks_from_image_grid(self):
-        return np.around(np.linspace(np.amin(self.grids.image[:,1]), np.amax(self.grids.image[:,1]), 4), 2)
+        return np.around(np.linspace(np.amin(self.grids.image[:, 1]), np.amax(self.grids.image[:, 1]), 4), 2)
 
     @property
     def _image_plane_image(self):
@@ -456,7 +460,7 @@ class Plane(object):
 
     @property
     def _image_plane_images_of_galaxies(self):
-            return [self._image_plane_image_from_galaxy(galaxy) for galaxy in self.galaxies]
+        return [self._image_plane_image_from_galaxy(galaxy) for galaxy in self.galaxies]
 
     def _image_plane_image_from_galaxy(self, galaxy):
         return intensities_from_grid(self.grids.sub, [galaxy])
@@ -551,17 +555,16 @@ class TracerMultiPositions(AbstractTracerMulti):
 
             if plane_index > 0:
                 for previous_plane_index in range(plane_index):
-
                     scaling_factor = self.geometry.scaling_factor(plane_i=previous_plane_index, plane_j=plane_index)
-                    scaled_deflections = list(map(lambda deflections :
+                    scaled_deflections = list(map(lambda deflections:
                                                   np.multiply(scaling_factor, deflections),
                                                   self.planes[previous_plane_index].deflections))
 
-                    new_positions = list(map(lambda positions, deflections :
+                    new_positions = list(map(lambda positions, deflections:
                                              np.subtract(positions, deflections), new_positions, scaled_deflections))
 
             self.planes.append(PlanePositions(galaxies=self.planes_galaxies[plane_index], positions=new_positions,
-                                     compute_deflections=compute_deflections))
+                                              compute_deflections=compute_deflections))
 
 
 class PlanePositions(object):
@@ -585,13 +588,13 @@ class PlanePositions(object):
 
         if compute_deflections:
             def calculate_deflections(positions):
-                    return sum(map(lambda galaxy: galaxy.deflections_from_grid(positions), galaxies))
+                return sum(map(lambda galaxy: galaxy.deflections_from_grid(positions), galaxies))
 
-            self.deflections = list(map(lambda positions : calculate_deflections(positions), self.positions))
+            self.deflections = list(map(lambda positions: calculate_deflections(positions), self.positions))
 
     def trace_to_next_plane(self):
         """Trace the positions to the next plane."""
-        return list(map(lambda positions, deflections : np.subtract(positions, deflections),
+        return list(map(lambda positions, deflections: np.subtract(positions, deflections),
                         self.positions, self.deflections))
 
 
@@ -633,23 +636,29 @@ def sub_to_image_grid(func):
 
     return wrapper
 
+
 @sub_to_image_grid
 def intensities_from_grid(grid, galaxies):
     return sum(map(lambda g: g.intensities_from_grid(grid), galaxies))
+
 
 @sub_to_image_grid
 def surface_density_from_grid(grid, galaxies):
     return sum(map(lambda g: g.surface_density_from_grid(grid), galaxies))
 
+
 @sub_to_image_grid
 def potential_from_grid(grid, galaxies):
     return sum(map(lambda g: g.potential_from_grid(grid), galaxies))
 
+
 def deflections_from_grid(grid, galaxies):
     return sum(map(lambda galaxy: galaxy.deflections_from_grid(grid), galaxies))
 
+
 def deflections_from_grid_collection(grid_collection, galaxies):
     return grid_collection.apply_function(lambda grid: deflections_from_grid(grid, galaxies))
+
 
 def traced_collection_for_deflections(grids, deflections):
     def subtract_scaled_deflections(grid, scaled_deflection):
@@ -659,8 +668,8 @@ def traced_collection_for_deflections(grids, deflections):
 
     return result
 
-def uniform_grid_from_lensed_grid(grid, shape):
 
+def uniform_grid_from_lensed_grid(grid, shape):
     x_min = np.amin(grid[:, 0])
     x_max = np.amax(grid[:, 0])
     y_min = np.amin(grid[:, 1])
@@ -669,10 +678,10 @@ def uniform_grid_from_lensed_grid(grid, shape):
     x_pixel_scale = ((x_max - x_min) / shape[0])
     y_pixel_scale = ((y_max - y_min) / shape[1])
 
-    x_grid = np.linspace(x_min + (x_pixel_scale/2.0), x_max - (x_pixel_scale/2.0), shape[0])
-    y_grid = np.linspace(y_min + (y_pixel_scale/2.0), y_max - (y_pixel_scale/2.0), shape[1])
+    x_grid = np.linspace(x_min + (x_pixel_scale / 2.0), x_max - (x_pixel_scale / 2.0), shape[0])
+    y_grid = np.linspace(y_min + (y_pixel_scale / 2.0), y_max - (y_pixel_scale / 2.0), shape[1])
 
-    source_plane_grid = np.zeros((shape[0]*shape[1], 2))
+    source_plane_grid = np.zeros((shape[0] * shape[1], 2))
 
     i = 0
     for x in range(shape[0]):
