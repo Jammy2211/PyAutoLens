@@ -7,8 +7,8 @@ class TestCase(object):
         assert os.path.exists(link.autolens_dir)
 
     def test_consistent_dir(self):
-        directory = link.directory_for("/a/random/directory")
+        directory = link.path_for("/a/random/directory")
         assert link.autolens_dir in directory
-        assert len(directory.split("/")[-1]) == link.SUB_DIR_LENGTH
-        assert directory == link.directory_for("/a/random/directory")
-        assert directory != link.directory_for("/b/random/directory")
+        assert len(directory.split("/")[-1]) == link.SUB_PATH_LENGTH
+        assert directory == link.path_for("/a/random/directory")
+        assert directory != link.path_for("/b/random/directory")
