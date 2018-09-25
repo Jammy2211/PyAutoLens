@@ -179,12 +179,23 @@ class AbstractProfileFit(AbstractFit):
 
 class AbstractInversion(object):
 
+    def __init__(self, inversion):
+        self.inversion = inversion
+
     @property
     def evidence(self):
         return evidence_from_reconstruction_terms(self.chi_squared_term, self.inversion.regularization_term,
                                                   self.inversion.log_det_curvature_reg_matrix_term,
                                                   self.inversion.log_det_regularization_matrix_term,
                                                   self.noise_term)
+
+    @property
+    def chi_squared_term(self):
+        raise NotImplementedError()
+
+    @property
+    def noise_term(self):
+        raise NotImplementedError()
 
 
 class AbstractInversionFit(AbstractFit, AbstractInversion):
