@@ -1,13 +1,13 @@
+import numba
+import numpy as np
+from analysis import galaxy
+from analysis import ray_tracing
 from profiling import profiling_data
 from profiling import tools
-from analysis import ray_tracing
-from analysis import galaxy
+
+from autolens import exc
 from profiles import light_profiles
 from profiles import mass_profiles
-from autolens import exc
-import numpy as np
-import pytest
-import numba
 
 
 class RegularizationWeighted(object):
@@ -54,6 +54,7 @@ class RegularizationWeighted(object):
         """
         return (self.regularization_coefficients[0] * pix_signals +
                 self.regularization_coefficients[1] * (1.0 - pix_signals)) ** 2.0
+
 
 class Pixelization(object):
 
@@ -260,21 +261,26 @@ hst_pix_signals = pix.pix_signals_from_images(image_to_pix=hst_image_to_pix, gal
 hst_up_pix_signals = pix.pix_signals_from_images(image_to_pix=hst_up_image_to_pix, galaxy_image=hst_up_image)
 ao_pix_signals = pix.pix_signals_from_images(image_to_pix=ao_image_to_pix, galaxy_image=ao_image)
 
+
 @tools.tick_toc_x1
 def lsst_solution():
     pix.regularization_weights_from_pix_signals(lsst_pix_signals)
+
 
 @tools.tick_toc_x1
 def euclid_solution():
     pix.regularization_weights_from_pix_signals(euclid_pix_signals)
 
+
 @tools.tick_toc_x1
 def hst_solution():
     pix.regularization_weights_from_pix_signals(hst_pix_signals)
 
+
 @tools.tick_toc_x1
 def hst_up_solution():
     pix.regularization_weights_from_pix_signals(hst_up_pix_signals)
+
 
 @tools.tick_toc_x1
 def ao_solution():
