@@ -1,9 +1,7 @@
-import numpy as np
 from profiling import profiling_data
 from profiling import tools
-
 from profiles import geometry_profiles
-
+import numpy as np
 
 class SphericalProfile(geometry_profiles.Profile):
 
@@ -31,10 +29,9 @@ class SphericalProfile(geometry_profiles.Profile):
         cos_theta, sin_theta = self.grid_angle_to_profile(theta_grid)
         return np.multiply(radius[:, None], np.vstack((cos_theta, sin_theta)).T)
 
-
 geometry = SphericalProfile(centre=(0.0, 0.0))
 
-sub_grid_size = 4
+sub_grid_size=4
 
 lsst = profiling_data.setup_class(name='LSST', pixel_scale=0.2, sub_grid_size=sub_grid_size)
 euclid = profiling_data.setup_class(name='Euclid', pixel_scale=0.1, sub_grid_size=sub_grid_size)
@@ -48,31 +45,25 @@ hst_radius = np.ones(hst.grids.sub.shape[0])
 hst_up_radius = np.ones(hst_up.grids.sub.shape[0])
 ao_radius = np.ones(ao.grids.sub.shape[0])
 
-
 @tools.tick_toc_x20
 def lsst_solution():
     geometry.grid_radius_to_cartesian(grid=lsst.grids.sub, radius=lsst_radius)
-
 
 @tools.tick_toc_x20
 def euclid_solution():
     geometry.grid_radius_to_cartesian(grid=euclid.grids.sub, radius=euclid_radius)
 
-
 @tools.tick_toc_x20
 def hst_solution():
     geometry.grid_radius_to_cartesian(grid=hst.grids.sub, radius=hst_radius)
-
 
 @tools.tick_toc_x20
 def hst_up_solution():
     geometry.grid_radius_to_cartesian(grid=hst_up.grids.sub, radius=hst_up_radius)
 
-
 @tools.tick_toc_x20
 def ao_solution():
     geometry.grid_radius_to_cartesian(grid=ao.grids.sub, radius=ao_radius)
-
 
 if __name__ == "__main__":
     lsst_solution()

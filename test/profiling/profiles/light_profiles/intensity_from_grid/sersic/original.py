@@ -1,9 +1,8 @@
-import numpy as np
 from profiling import profiling_data
 from profiling import tools
-
 from profiles import light_profiles
-
+import numpy as np
+import pytest
 
 class EllipticalSersic(light_profiles.EllipticalLightProfile):
 
@@ -58,7 +57,7 @@ class EllipticalSersic(light_profiles.EllipticalLightProfile):
                         np.add(np.power(np.divide(grid_radii, self.effective_radius), 1. / self.sersic_index), -1))))
 
 
-sub_grid_size = 4
+sub_grid_size=4
 
 lsst = profiling_data.setup_class(name='LSST', pixel_scale=0.2, sub_grid_size=sub_grid_size)
 euclid = profiling_data.setup_class(name='Euclid', pixel_scale=0.1, sub_grid_size=sub_grid_size)
@@ -67,35 +66,30 @@ hst_up = profiling_data.setup_class(name='HSTup', pixel_scale=0.03, sub_grid_siz
 ao = profiling_data.setup_class(name='AO', pixel_scale=0.01, sub_grid_size=sub_grid_size)
 
 sersic = EllipticalSersic(centre=(0.0, 0.0), axis_ratio=0.8, phi=90.0, intensity=0.1,
-                          effective_radius=0.8, sersic_index=4.0)
-
+                                   effective_radius=0.8, sersic_index=4.0)
 
 @tools.tick_toc_x10
 def lsst_solution():
     sersic.intensity_from_grid(grid=lsst.coords.sub_grid_coords)
 
-
 @tools.tick_toc_x10
 def euclid_solution():
     sersic.intensity_from_grid(grid=euclid.coords.sub_grid_coords)
-
 
 @tools.tick_toc_x10
 def hst_solution():
     sersic.intensity_from_grid(grid=hst.coords.sub_grid_coords)
 
-
 @tools.tick_toc_x10
 def hst_up_solution():
     sersic.intensity_from_grid(grid=hst_up.coords.sub_grid_coords)
-
 
 @tools.tick_toc_x10
 def ao_solution():
     sersic.intensity_from_grid(grid=ao.coords.sub_grid_coords)
 
-
 if __name__ == "__main__":
+
     lsst_solution()
     euclid_solution()
     hst_solution()

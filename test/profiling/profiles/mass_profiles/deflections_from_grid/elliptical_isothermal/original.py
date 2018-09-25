@@ -1,9 +1,9 @@
-import numpy as np
 from profiling import profiling_data
 from profiling import tools
-
 from profiles import geometry_profiles
-
+from profiles import mass_profiles
+import numpy as np
+import pytest
 
 class EllipticalIsothermal(geometry_profiles.EllipticalProfile):
 
@@ -56,10 +56,9 @@ class EllipticalIsothermal(geometry_profiles.EllipticalProfile):
         except ZeroDivisionError:
             return self.grid_radius_to_cartesian(grid, np.full(grid.shape[0], 2.0 * self.einstein_radius_rescaled))
 
-
 sie = EllipticalIsothermal(centre=(0.0, 0.0), axis_ratio=0.8, phi=90.0, einstein_radius=1.4)
 
-subgrd_size = 4
+subgrd_size=4
 
 lsst = profiling_data.setup_class(name='LSST', pixel_scale=0.2, sub_grid_size=subgrd_size)
 euclid = profiling_data.setup_class(name='Euclid', pixel_scale=0.1, sub_grid_size=subgrd_size)
@@ -67,33 +66,28 @@ hst = profiling_data.setup_class(name='HST', pixel_scale=0.05, sub_grid_size=sub
 hst_up = profiling_data.setup_class(name='HSTup', pixel_scale=0.03, sub_grid_size=subgrd_size)
 ao = profiling_data.setup_class(name='AO', pixel_scale=0.01, sub_grid_size=subgrd_size)
 
-
 @tools.tick_toc_x10
 def lsst_solution():
     sie.deflections_from_grid(grid=lsst.coords.sub_grid_coords)
-
 
 @tools.tick_toc_x10
 def euclid_solution():
     sie.deflections_from_grid(grid=euclid.coords.sub_grid_coords)
 
-
 @tools.tick_toc_x10
 def hst_solution():
     sie.deflections_from_grid(grid=hst.coords.sub_grid_coords)
-
 
 @tools.tick_toc_x10
 def hst_up_solution():
     sie.deflections_from_grid(grid=hst_up.coords.sub_grid_coords)
 
-
 @tools.tick_toc_x10
 def ao_solution():
     sie.deflections_from_grid(grid=ao.coords.sub_grid_coords)
 
-
 if __name__ == "__main__":
+
     lsst_solution()
     euclid_solution()
     hst_solution()

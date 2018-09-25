@@ -1,11 +1,10 @@
-import numpy as np
-import pytest
 from profiling import profiling_data
 from profiling import tools
-from scipy.integrate import quad
-
 from profiles import mass_profiles
-
+import numpy as np
+from scipy.integrate import quad
+import numba
+import pytest
 
 class EllipticalPowerLaw(mass_profiles.EllipticalMassProfile, mass_profiles.MassProfile):
 
@@ -51,9 +50,11 @@ class EllipticalPowerLaw(mass_profiles.EllipticalMassProfile, mass_profiles.Mass
         """
 
         def calculate_deflection_component(grid, npow, index, axis_ratio, einstein_radius_rescaled, slope, core_radius):
+
             deflection_grid = np.zeros(grid.shape[0])
 
             for i in range(grid.shape[0]):
+
                 deflection_grid[i] = self.axis_ratio * grid[i, index] * quad(self.deflection_func, a=0.0, b=1.0,
                                                                              args=(grid[i, 0], grid[i, 1], npow,
                                                                                    axis_ratio,
@@ -80,9 +81,11 @@ class EllipticalPowerLaw(mass_profiles.EllipticalMassProfile, mass_profiles.Mass
         """
 
         def calculate_deflection_component(grid, npow, index, axis_ratio, einstein_radius_rescaled, slope, core_radius):
+
             deflection_grid = np.zeros(grid.shape[0])
 
             for i in range(grid.shape[0]):
+
                 deflection_grid[i] = self.axis_ratio * grid[i, index] * quad(self.deflection_func, a=0.0, b=1.0,
                                                                              args=(grid[i, 0], grid[i, 1], npow,
                                                                                    axis_ratio,
@@ -107,7 +110,7 @@ class EllipticalPowerLaw(mass_profiles.EllipticalMassProfile, mass_profiles.Mass
 
 sis = EllipticalPowerLaw(centre=(0.0, 0.0), einstein_radius=1.4, slope=2.0)
 
-subgrd_size = 4
+subgrd_size=4
 
 lsst = profiling_data.setup_class(name='LSST', pixel_scale=0.2, subgrid_size=subgrd_size)
 euclid = profiling_data.setup_class(name='Euclid', pixel_scale=0.1, subgrid_size=subgrd_size)
@@ -118,33 +121,28 @@ ao = profiling_data.setup_class(name='AO', pixel_scale=0.01, subgrid_size=subgrd
 assert (sis.deflections_from_grid(grid=lsst.coords.sub_grid_coords) ==
         pytest.approx(sis.deflections_from_grid_jitted(grid=lsst.coords.sub_grid_coords), 1e-4))
 
-
 @tools.tick_toc_x1
 def lsst_solution():
     sis.deflections_from_grid_jitted(grid=lsst.coords.sub_grid_coords)
-
 
 @tools.tick_toc_x1
 def euclid_solution():
     sis.deflections_from_grid_jitted(grid=euclid.coords.sub_grid_coords)
 
-
 @tools.tick_toc_x1
 def hst_solution():
     sis.deflections_from_grid_jitted(grid=hst.coords.sub_grid_coords)
-
 
 @tools.tick_toc_x1
 def hst_up_solution():
     sis.deflections_from_grid_jitted(grid=hst_up.coords.sub_grid_coords)
 
-
 @tools.tick_toc_x1
 def ao_solution():
     sis.deflections_from_grid_jitted(grid=ao.coords.sub_grid_coords)
 
-
 if __name__ == "__main__":
+
     lsst_solution()
     euclid_solution()
     hst_solution()

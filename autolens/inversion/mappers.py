@@ -1,5 +1,5 @@
-import numba
 import numpy as np
+import numba
 
 
 class Mapper(object):
@@ -152,6 +152,7 @@ class RectangularMapper(Mapper):
     @staticmethod
     @numba.jit(nopython=True)
     def grid_to_pixelization_from_grid_jit(grid, x_min, x_pixel_scale, y_min, y_pixel_scale, y_shape):
+
         grid_to_pixelization = np.zeros(grid.shape[0])
 
         for i in range(grid.shape[0]):
@@ -199,6 +200,7 @@ class VoronoiMapper(Mapper):
         image_to_pixelization = np.zeros((self.grids.image.shape[0]), dtype=int)
 
         for image_index, pixel_coordinate in enumerate(self.grids.image):
+
             nearest_cluster = self.image_to_voronoi[image_index]
 
             image_to_pixelization[image_index] = self.pair_image_and_pixel(pixel_coordinate, nearest_cluster)
