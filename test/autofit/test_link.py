@@ -12,3 +12,9 @@ class TestCase(object):
         assert len(directory.split("/")[-1]) == link.SUB_PATH_LENGTH
         assert directory == link.path_for("/a/random/directory")
         assert directory != link.path_for("/b/random/directory")
+
+    def test_make_linked_file(self):
+        temp_file_path = "/tmp/linked_file"
+        path = link.make_linked_file(temp_file_path)
+        assert os.path.exists(path)
+        assert os.path.exists(temp_file_path)
