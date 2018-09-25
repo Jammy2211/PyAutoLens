@@ -442,8 +442,17 @@ class Plane(object):
         return self.grids.map_function(np.subtract, self.deflections)
 
     def _plane_image(self, shape=(30, 30)):
-        plane_grid = uniform_grid_from_lensed_grid(self.grids.image, shape)
-        return self.plane_image_from_galaxies(plane_grid)
+
+        class PlaneImage(np.ndarray):
+
+            def __new__(cls, image, grid):
+                plane = np.array(image, dtype='float64').view(cls)
+                plane.grid = grid
+                return plane
+
+        grid = uniform_grid_from_lensed_grid(self.grids.image, shape)
+        image = self.plane_image_from_galaxies(grid)
+        return PlaneImage(image=image, grid=self.grids.image)
 
     def plane_image_from_galaxies(self, plane_grid):
         return sum([intensities_from_grid(plane_grid, [galaxy]) for galaxy in self.galaxies])
