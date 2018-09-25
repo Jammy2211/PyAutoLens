@@ -1,10 +1,11 @@
+import numba
+import numpy as np
+import pytest
 from profiling import profiling_data
 from profiling import tools
+
 from profiles import geometry_profiles
-from profiles import mass_profiles
-import numpy as np
-import numba
-import pytest
+
 
 class SphericalPowerLaw(geometry_profiles.SphericalProfile):
 
@@ -51,21 +52,19 @@ class SphericalPowerLaw(geometry_profiles.SphericalProfile):
     @staticmethod
     @numba.jit(nopython=True)
     def deflections_from_grid_jit(grid, einstein_radius_rescaled, slope):
-
         deflections = np.zeros(grid.shape[0])
 
         for i in range(deflections.shape[0]):
-
             eta = np.sqrt(np.add(np.square(grid[i, 0]), np.square(grid[i, 1])))
             deflections[i] = 2.0 * einstein_radius_rescaled * \
-               np.divide(np.power(eta, (3.0 - slope)), np.multiply((3.0 - slope), eta))
+                             np.divide(np.power(eta, (3.0 - slope)), np.multiply((3.0 - slope), eta))
 
         return deflections
 
 
 sis = SphericalPowerLaw(centre=(0.0, 0.0), einstein_radius=1.4, slope=2.0)
 
-subgrd_size=4
+subgrd_size = 4
 
 lsst = profiling_data.setup_class(name='LSST', pixel_scale=0.2, sub_grid_size=subgrd_size)
 euclid = profiling_data.setup_class(name='Euclid', pixel_scale=0.1, sub_grid_size=subgrd_size)
@@ -76,28 +75,33 @@ ao = profiling_data.setup_class(name='AO', pixel_scale=0.01, sub_grid_size=subgr
 assert (sis.deflections_from_grid(grid=lsst.coords.sub_grid_coords) ==
         pytest.approx(sis.deflections_from_grid_jitted(grid=lsst.coords.sub_grid_coords), 1e-4))
 
+
 @tools.tick_toc_x10
 def lsst_solution():
     sis.deflections_from_grid_jitted(grid=lsst.coords.sub_grid_coords)
+
 
 @tools.tick_toc_x10
 def euclid_solution():
     sis.deflections_from_grid_jitted(grid=euclid.coords.sub_grid_coords)
 
+
 @tools.tick_toc_x10
 def hst_solution():
     sis.deflections_from_grid_jitted(grid=hst.coords.sub_grid_coords)
+
 
 @tools.tick_toc_x10
 def hst_up_solution():
     sis.deflections_from_grid_jitted(grid=hst_up.coords.sub_grid_coords)
 
+
 @tools.tick_toc_x10
 def ao_solution():
     sis.deflections_from_grid_jitted(grid=ao.coords.sub_grid_coords)
 
-if __name__ == "__main__":
 
+if __name__ == "__main__":
     lsst_solution()
     euclid_solution()
     hst_solution()
