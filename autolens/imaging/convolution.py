@@ -1,6 +1,7 @@
-import numpy as np
-from autolens import exc
 import numba
+import numpy as np
+
+from autolens import exc
 
 """
 This module is for the application of convolution to _image vectors.
@@ -251,7 +252,8 @@ class Convolver(object):
             for y in range(self.mask_index_array.shape[1]):
                 if not mask[x][y]:
                     image_frame_indexes, image_frame_psfs = self.frame_at_coords_jit((x, y), mask,
-                                                                                        self.mask_index_array, self.psf[:, :])
+                                                                                     self.mask_index_array,
+                                                                                     self.psf[:, :])
                     self.image_frame_indexes[image_index, :] = image_frame_indexes
                     self.image_frame_psfs[image_index, :] = image_frame_psfs
                     self.image_frame_lengths[image_index] = image_frame_indexes[image_frame_indexes >= 0].shape[0]
@@ -280,8 +282,8 @@ class Convolver(object):
         half_x = int(psf_shape[0] / 2)
         half_y = int(psf_shape[1] / 2)
 
-        frame = -1*np.ones((psf_max_size))
-        psf_frame = -1.0*np.ones((psf_max_size))
+        frame = -1 * np.ones((psf_max_size))
+        psf_frame = -1.0 * np.ones((psf_max_size))
 
         count = 0
         for i in range(psf_shape[0]):
@@ -331,7 +333,7 @@ class ConvolverImage(Convolver):
             for y in range(mask.shape[1]):
                 if mask[x][y] and not blurring_mask[x, y]:
                     image_frame_indexes, image_frame_psfs = self.frame_at_coords_jit((x, y), mask,
-                                                                                        self.mask_index_array, self.psf)
+                                                                                     self.mask_index_array, self.psf)
                     self.blurring_frame_indexes[image_index, :] = image_frame_indexes
                     self.blurring_frame_psfs[image_index, :] = image_frame_psfs
                     self.blurring_frame_lengths[image_index] = image_frame_indexes[image_frame_indexes >= 0].shape[0]
@@ -348,13 +350,13 @@ class ConvolverImage(Convolver):
             1D array of the blurring _image values which blur into the _image-array after PSF convolution.
         """
         return self.convolve_jit(image_array, self.image_frame_indexes, self.image_frame_psfs, self.image_frame_lengths,
-                                  blurring_array, self.blurring_frame_indexes, self.blurring_frame_psfs,
+                                 blurring_array, self.blurring_frame_indexes, self.blurring_frame_psfs,
                                  self.blurring_frame_lengths)
 
     @staticmethod
     @numba.jit(nopython=True, cache=True)
     def convolve_jit(image_array, image_frame_indexes, image_frame_kernels, image_frame_lengths,
-                           blurring_array, blurring_frame_indexes, blurring_frame_kernels, blurring_frame_lengths):
+                     blurring_array, blurring_frame_indexes, blurring_frame_kernels, blurring_frame_lengths):
 
         new_array = np.zeros(image_array.shape)
 
@@ -366,7 +368,6 @@ class ConvolverImage(Convolver):
             value = image_array[image_index]
 
             for kernel_index in range(frame_length):
-
                 vector_index = frame_indexes[kernel_index]
                 kernel = frame_kernels[kernel_index]
                 new_array[vector_index] += value * kernel
@@ -379,7 +380,6 @@ class ConvolverImage(Convolver):
             value = blurring_array[blurring_index]
 
             for kernel_index in range(frame_length):
-
                 vector_index = frame_indexes[kernel_index]
                 kernel = frame_kernels[kernel_index]
                 new_array[vector_index] += value * kernel
@@ -432,7 +432,6 @@ class ConvolverMappingMatrix(Convolver):
                     frame_length = image_frame_lengths[image_index]
 
                     for kernel_index in range(frame_length):
-
                         vector_index = frame_indexes[kernel_index]
                         kernel = frame_kernels[kernel_index]
                         blurred_mapping_matrix[vector_index, pixel_index] += value * kernel

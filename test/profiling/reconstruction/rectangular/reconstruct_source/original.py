@@ -1,13 +1,12 @@
+import numba
+import numpy as np
+from analysis import galaxy
+from analysis import ray_tracing
+from pixelization import pixelization
 from profiling import profiling_data
 from profiling import tools
-from analysis import ray_tracing
-from analysis import galaxy
+
 from profiles import mass_profiles
-from pixelization import pixelization
-from autolens import exc
-import numpy as np
-import pytest
-import numba
 
 
 class Reconstructor(object):
@@ -47,7 +46,7 @@ class Reconstructor(object):
         covariance_matrix = np.zeros((mapping_shape[1], mapping_shape[1]))
 
         for image_index in range(mapping_shape[0]):
-            index=0
+            index = 0
             for pix_index in range(mapping_shape[1]):
                 if blurred_mapping[image_index, pix_index] > 0.0:
                     index += 1
@@ -55,11 +54,11 @@ class Reconstructor(object):
                     iflist[index] = pix_index
 
             if index > 0:
-                for i1 in range(index+1):
-                    for j1 in range(index+1):
+                for i1 in range(index + 1):
+                    for j1 in range(index + 1):
                         ix = iflist[i1]
                         iy = iflist[j1]
-                        covariance_matrix[ix, iy] += flist[i1]*flist[j1]
+                        covariance_matrix[ix, iy] += flist[i1] * flist[j1]
 
         for i in range(mapping_shape[1]):
             for j in range(mapping_shape[1]):
@@ -138,19 +137,24 @@ hst_up_blurred_mapping = hst_up.masked_image.convolver_mapping_matrix.convolve_m
 # ao_blurred_mapping = ao.masked_image.convolver_mapping_matrix.convolve_mapping_matrix_jit(ao_recon.mapping_matrix)
 
 lsst_data_vector = lsst_recon.data_vector_from_blurred_mapping_and_data_jitted(lsst_blurred_mapping, lsst.masked_image,
-                                                            lsst.masked_image.background_noise)
-euclid_data_vector = euclid_recon.data_vector_from_blurred_mapping_and_data_jitted(euclid_blurred_mapping, euclid.masked_image,
-                                                              euclid.masked_image.background_noise)
+                                                                               lsst.masked_image.background_noise)
+euclid_data_vector = euclid_recon.data_vector_from_blurred_mapping_and_data_jitted(euclid_blurred_mapping,
+                                                                                   euclid.masked_image,
+                                                                                   euclid.masked_image.background_noise)
 hst_data_vector = hst_recon.data_vector_from_blurred_mapping_and_data_jitted(hst_blurred_mapping, hst.masked_image,
-                                                           hst.masked_image.background_noise)
-hst_up_data_vector = hst_up_recon.data_vector_from_blurred_mapping_and_data_jitted(hst_up_blurred_mapping, hst_up.masked_image,
-                                                              hst_up.masked_image.background_noise)
+                                                                             hst.masked_image.background_noise)
+hst_up_data_vector = hst_up_recon.data_vector_from_blurred_mapping_and_data_jitted(hst_up_blurred_mapping,
+                                                                                   hst_up.masked_image,
+                                                                                   hst_up.masked_image.background_noise)
 
 lsst_covariance_matrix = lsst_recon.covariance_matrix_from_blurred_mapping_jitted(lsst_blurred_mapping,
                                                                                   lsst.masked_image.background_noise)
-euclid_covariance_matrix = euclid_recon.covariance_matrix_from_blurred_mapping_jitted(euclid_blurred_mapping, euclid.masked_image.background_noise)
-hst_covariance_matrix = hst_recon.covariance_matrix_from_blurred_mapping_jitted(hst_blurred_mapping, hst.masked_image.background_noise)
-hst_up_covariance_matrix = hst_up_recon.covariance_matrix_from_blurred_mapping_jitted(hst_up_blurred_mapping, hst_up.masked_image.background_noise)
+euclid_covariance_matrix = euclid_recon.covariance_matrix_from_blurred_mapping_jitted(euclid_blurred_mapping,
+                                                                                      euclid.masked_image.background_noise)
+hst_covariance_matrix = hst_recon.covariance_matrix_from_blurred_mapping_jitted(hst_blurred_mapping,
+                                                                                hst.masked_image.background_noise)
+hst_up_covariance_matrix = hst_up_recon.covariance_matrix_from_blurred_mapping_jitted(hst_up_blurred_mapping,
+                                                                                      hst_up.masked_image.background_noise)
 # ao_recon.covariance_matrix_from_blurred_mapping_jit(ao_blurred_mapping, ao.masked_image.noise_map)
 
 lsst_cov_reg = lsst_covariance_matrix + lsst_recon.regularization
@@ -158,9 +162,11 @@ euclid_cov_reg = euclid_covariance_matrix + euclid_recon.regularization
 hst_cov_reg = hst_covariance_matrix + hst_recon.regularization
 hst_up_cov_reg = hst_up_covariance_matrix + hst_up_recon.regularization
 
+
 @tools.tick_toc_x1
 def lsst_solution():
     np.linalg.solve(lsst_cov_reg, lsst_data_vector)
+
 
 @tools.tick_toc_x1
 def euclid_solution():
