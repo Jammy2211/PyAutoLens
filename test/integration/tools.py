@@ -5,7 +5,6 @@ from autolens.imaging import imaging_util
 from autolens.lensing import ray_tracing
 from autolens import conf
 
-import matplotlib.pyplot as plt
 import numpy as np
 import shutil
 import os
