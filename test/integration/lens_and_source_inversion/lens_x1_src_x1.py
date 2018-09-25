@@ -1,29 +1,29 @@
-from autolens.pipeline import pipeline as pl
+import os
+import shutil
+
+from autolens import conf
+from autolens.autofit import model_mapper as mm
+from autolens.autofit import non_linear as nl
+from autolens.inversion import pixelizations as pix
+from autolens.lensing import galaxy
+from autolens.lensing import galaxy_model as gm
 from autolens.pipeline import phase as ph
+from autolens.pipeline import pipeline as pl
 from autolens.profiles import light_profiles as lp
 from autolens.profiles import mass_profiles as mp
-from autolens.inversion import pixelizations as pix
-from autolens.lensing import galaxy_model as gm
-from autolens.autofit import non_linear as nl
-from autolens.autofit import model_mapper as mm
-from autolens.lensing import galaxy
-from autolens import conf
 from test.integration import tools
-
-import shutil
-import os
 
 dirpath = os.path.dirname(os.path.realpath(__file__))
 dirpath = os.path.dirname(dirpath)
 output_path = '/gpfs/data/pdtw24/Lens/int/lens_and_source_inversion/'
 
-def test_lens_x1_src_x1_pix_pipeline():
 
+def test_lens_x1_src_x1_pix_pipeline():
     pipeline_name = "l1_s1"
     data_name = '/l1_s1'
 
     try:
-        shutil.rmtree(dirpath+'/data'+data_name)
+        shutil.rmtree(dirpath + '/data' + data_name)
     except FileNotFoundError:
         pass
 
@@ -51,8 +51,8 @@ def test_lens_x1_src_x1_pix_pipeline():
     for result in results:
         print(result)
 
-def make_lens_x1_src_x1_pix_pipeline(pipeline_name):
 
+def make_lens_x1_src_x1_pix_pipeline(pipeline_name):
     class SourcePix(ph.LensMassAndSourcePixelizationPhase):
         def pass_priors(self, previous_results):
             self.lens_galaxies[0].sie.centre.centre_0 = mm.UniformPrior(0.0, 0.02)

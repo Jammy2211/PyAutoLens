@@ -1,9 +1,10 @@
-from autolens.imaging import imaging_util
-from autolens.imaging import scaled_array
-from autolens import exc
+import logging
+
 import numpy as np
 
-import logging
+from autolens import exc
+from autolens.imaging import imaging_util
+from autolens.imaging import scaled_array
 
 logging.basicConfig()
 logger = logging.getLogger(__name__)
@@ -202,7 +203,8 @@ class ImagingGrids(object):
         psf_shape : (int, int)
             the shape of the PSF used in the analysis, which therefore defines the mask's blurring-region.
         """
-        image_padded_grid = ImageUnmaskedGrid.unmasked_grid_from_shapes_and_pixel_scale(shape=mask.shape, psf_shape=psf_shape,
+        image_padded_grid = ImageUnmaskedGrid.unmasked_grid_from_shapes_and_pixel_scale(shape=mask.shape,
+                                                                                        psf_shape=psf_shape,
                                                                                         pixel_scale=mask.pixel_scale)
         sub_padded_grid = SubUnmaskedGrid.unmasked_grid_from_mask_sub_grid_size_and_psf_shape(mask=mask,
                                                                                               sub_grid_size=sub_grid_size,
@@ -229,7 +231,8 @@ class ImagingGrids(object):
         """
         return cls.unmasked_grids_from_mask_sub_grid_size_and_psf_shape(mask=Mask(array=np.full(shape, False),
                                                                                   pixel_scale=pixel_scale),
-                                                                        sub_grid_size=sub_grid_size, psf_shape=psf_shape)
+                                                                        sub_grid_size=sub_grid_size,
+                                                                        psf_shape=psf_shape)
 
     def apply_function(self, func):
         if self.blurring is not None:
@@ -355,12 +358,12 @@ class ImageGrid(np.ndarray):
     @property
     def xticks(self):
         """Compute the xticks labels of this grid, used for plotting the x-axis ticks when visualizing an _image-grid"""
-        return np.around(np.linspace(np.amin(self[:,0]), np.amax(self[:,0]), 4), 2)
+        return np.around(np.linspace(np.amin(self[:, 0]), np.amax(self[:, 0]), 4), 2)
 
     @property
     def yticks(self):
         """Compute the yticks labels of this grid, used for plotting the y-axis ticks when visualizing an _image-grid"""
-        return np.around(np.linspace(np.amin(self[:,1]), np.amax(self[:,1]), 4), 2)
+        return np.around(np.linspace(np.amin(self[:, 1]), np.amax(self[:, 1]), 4), 2)
 
 
 class SubGrid(ImageGrid):
@@ -531,8 +534,9 @@ class ImageUnmaskedGrid(ImageGrid):
            The shape of the psf which defines the blurring region and therefore size of padding.
         """
         padded_shape = (shape[0] + psf_shape[0] - 1, shape[1] + psf_shape[1] - 1)
-        padded_image_grid = imaging_util.image_grid_1d_masked_from_mask_and_pixel_scale(mask=np.full(padded_shape, False),
-                                                                                        pixel_scale=pixel_scale)
+        padded_image_grid = imaging_util.image_grid_1d_masked_from_mask_and_pixel_scale(
+            mask=np.full(padded_shape, False),
+            pixel_scale=pixel_scale)
         return ImageUnmaskedGrid(arr=padded_image_grid, mask_shape=shape, padded_shape=padded_shape)
 
     def convolve_array_1d_with_psf(self, padded_array_1d, psf):
@@ -548,7 +552,8 @@ class ImageUnmaskedGrid(ImageGrid):
                                                                                                  self.padded_shape)
         blurred_padded_array_2d = psf.convolve(padded_array_2d)
         return imaging_util.map_2d_array_to_masked_1d_array_from_array_2d_and_mask(array_2d=blurred_padded_array_2d,
-                                                                    mask=np.full(self.padded_shape, False))
+                                                                                   mask=np.full(self.padded_shape,
+                                                                                                False))
 
     def map_to_2d(self, padded_array_1d):
         """ Map a padded 1D array of values to its origianl 2D array.
@@ -561,8 +566,8 @@ class ImageUnmaskedGrid(ImageGrid):
         padded_array_2d = self.map_to_2d_keep_padded(padded_array_1d)
         pad_size_0 = self.padded_shape[0] - self.mask_shape[0]
         pad_size_1 = self.padded_shape[1] - self.mask_shape[1]
-        return padded_array_2d[pad_size_0//2:self.padded_shape[0]-pad_size_0//2,
-                               pad_size_1//2:self.padded_shape[1]-pad_size_1//2]
+        return padded_array_2d[pad_size_0 // 2:self.padded_shape[0] - pad_size_0 // 2,
+               pad_size_1 // 2:self.padded_shape[1] - pad_size_1 // 2]
 
     def map_to_2d_keep_padded(self, padded_array_1d):
         """ Map a padded 1D array of values to its padded 2D array.
