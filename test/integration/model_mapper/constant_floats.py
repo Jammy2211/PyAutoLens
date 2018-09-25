@@ -1,4 +1,5 @@
 import os
+import shutil
 
 from autolens.autofit import non_linear as nl
 from autolens.lensing import galaxy
@@ -12,6 +13,11 @@ dirpath = os.path.dirname(os.path.realpath(__file__))
 dirpath = os.path.dirname(dirpath)
 output_path = '{}/integration_output'.format(dirpath)
 config_path = output_path + 'config'
+
+try:
+    shutil.rmtree(output_path)
+except FileNotFoundError:
+    pass
 
 
 def pipeline():
@@ -29,9 +35,9 @@ def pipeline():
                                      source_galaxies=[], target_signal_to_noise=10.0)
     image = tools.load_image(data_name=data_name, pixel_scale=0.5)
 
-    pipeline = make_pipeline(pipeline_name=pipeline_name)
+    cf_pipeline = make_pipeline(pipeline_name=pipeline_name)
 
-    results = pipeline.run(image=image)
+    results = cf_pipeline.run(image=image)
     for result in results:
         print(result)
 
