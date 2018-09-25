@@ -1,9 +1,11 @@
+import numba
+import numpy as np
+import pytest
 from profiling import profiling_data
 from profiling import tools
+
 from profiles import geometry_profiles
-import pytest
-import numpy as np
-import numba
+
 
 class SphericalProfile(geometry_profiles.SphericalProfile):
 
@@ -37,20 +39,19 @@ class SphericalProfile(geometry_profiles.SphericalProfile):
     @staticmethod
     @numba.jit(nopython=True)
     def grid_radius_to_cartesian_jit(grid, radius):
-
         cartesian = np.zeros(grid.shape)
 
         for i in range(grid.shape[0]):
-
-            theta_coordinate_to_profile = np.arctan2(grid[i,1], grid[i,0])
+            theta_coordinate_to_profile = np.arctan2(grid[i, 1], grid[i, 0])
             cartesian[i, 0] = radius[i] * np.cos(theta_coordinate_to_profile)
             cartesian[i, 1] = radius[i] * np.sin(theta_coordinate_to_profile)
 
         return cartesian
 
+
 geometry = SphericalProfile(centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0)
 
-sub_grid_size=4
+sub_grid_size = 4
 
 lsst = profiling_data.setup_class(name='LSST', pixel_scale=0.2, sub_grid_size=sub_grid_size)
 euclid = profiling_data.setup_class(name='Euclid', pixel_scale=0.1, sub_grid_size=sub_grid_size)
@@ -65,27 +66,34 @@ hst_up_radius = np.ones(hst_up.coords.sub_grid_coords.shape[0])
 ao_radius = np.ones(ao.coords.sub_grid_coords.shape[0])
 
 assert (geometry.grid_radius_to_cartesian(grid=lsst.coords.sub_grid_coords, radius=lsst_radius) ==
-        pytest.approx(geometry.grid_radius_to_cartesian_jitted(grid=lsst.coords.sub_grid_coords, radius=lsst_radius), 1e-4))
+        pytest.approx(geometry.grid_radius_to_cartesian_jitted(grid=lsst.coords.sub_grid_coords, radius=lsst_radius),
+                      1e-4))
+
 
 @tools.tick_toc_x20
 def lsst_solution():
     geometry.grid_radius_to_cartesian_jitted(grid=lsst.coords.sub_grid_coords, radius=lsst_radius)
 
+
 @tools.tick_toc_x20
 def euclid_solution():
     geometry.grid_radius_to_cartesian_jitted(grid=euclid.coords.sub_grid_coords, radius=euclid_radius)
+
 
 @tools.tick_toc_x20
 def hst_solution():
     geometry.grid_radius_to_cartesian_jitted(grid=hst.coords.sub_grid_coords, radius=hst_radius)
 
+
 @tools.tick_toc_x20
 def hst_up_solution():
     geometry.grid_radius_to_cartesian_jitted(grid=hst_up.coords.sub_grid_coords, radius=hst_up_radius)
 
+
 @tools.tick_toc_x20
 def ao_solution():
     geometry.grid_radius_to_cartesian_jitted(grid=ao.coords.sub_grid_coords, radius=ao_radius)
+
 
 if __name__ == "__main__":
     lsst_solution()
