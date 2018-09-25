@@ -122,13 +122,7 @@ class AbstractTracer(object):
                        self._image_plane_images_of_planes))
 
     def plane_images_of_planes(self, shape=(30, 30)):
-        return list(map(lambda plane_image:
-                        imaging_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(array_1d=plane_image,
-                                                                                               shape=shape).T,
-                        self._plane_images_of_planes(shape=shape)))
-
-    def _plane_images_of_planes(self, shape=(30, 30)):
-        return [plane._plane_image(shape) for plane in self.all_planes]
+        return [plane.plane_image(shape) for plane in self.all_planes]
 
     @property
     def image_grids_of_planes(self):
@@ -441,7 +435,7 @@ class Plane(object):
         """Trace this plane's grids to the next plane, using its deflection angles."""
         return self.grids.map_function(np.subtract, self.deflections)
 
-    def _plane_image(self, shape=(30, 30)):
+    def plane_image(self, shape=(30, 30)):
 
         class PlaneImage(np.ndarray):
 
@@ -451,7 +445,8 @@ class Plane(object):
                 return plane
 
         grid = uniform_grid_from_lensed_grid(self.grids.image, shape)
-        image = self.plane_image_from_galaxies(grid)
+        image_1d = self.plane_image_from_galaxies(grid)
+        image = imaging_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(array_1d=image_1d, shape=shape)
         return PlaneImage(image=image, grid=self.grids.image)
 
     def plane_image_from_galaxies(self, plane_grid):
