@@ -1,23 +1,19 @@
-from autolens.pipeline import pipeline as pl
-from autolens.pipeline import phase as ph
-from autolens.profiles import light_profiles as lp
-from autolens.profiles import mass_profiles as mp
-from autolens.lensing import galaxy_model as gm
+import os
+
 from autolens.autofit import non_linear as nl
 from autolens.lensing import galaxy
-from autolens import conf
+from autolens.lensing import galaxy_model as gm
+from autolens.pipeline import phase as ph
+from autolens.pipeline import pipeline as pl
+from autolens.profiles import light_profiles as lp
 from test.integration import tools
-
-import numpy as np
-import shutil
-import os
 
 dirpath = os.path.dirname(os.path.realpath(__file__))
 dirpath = os.path.dirname(dirpath)
-output_path = '/gpfs/data/pdtw24/Lens/int/model_mapper/'
+output_path = '{}/integration_output'.format(dirpath)
+
 
 def pipeline():
-
     pipeline_name = "pair_tuples_x1"
     data_name = '/pair_tuples_x1'
 
@@ -38,21 +34,21 @@ def pipeline():
     for result in results:
         print(result)
 
-def make_pipeline(pipeline_name):
 
+def make_pipeline(pipeline_name):
     class MMPhase(ph.LensPlanePhase):
 
         def pass_priors(self, previous_results):
-
             self.lens_galaxies[0].sersic.centre_0 = self.lens_galaxies[0].sersic.axis_ratio
 
     phase1 = MMPhase(lens_galaxies=[gm.GalaxyModel(sersic=lp.EllipticalSersic)],
-                               optimizer_class=nl.MultiNest, phase_name="{}/phase1".format(pipeline_name))
+                     optimizer_class=nl.MultiNest, phase_name="{}/phase1".format(pipeline_name))
 
     phase1.optimizer.n_live_points = 20
     phase1.optimizer.sampling_efficiency = 0.8
 
     return pl.PipelineImaging(pipeline_name, phase1)
+
 
 if __name__ == "__main__":
     pipeline()
