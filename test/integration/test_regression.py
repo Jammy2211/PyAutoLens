@@ -1,0 +1,52 @@
+import os
+
+from autolens.autofit import non_linear as nl
+from autolens.lensing import galaxy
+from autolens.lensing import galaxy_model as gm
+from autolens.pipeline import phase as ph
+from autolens.profiles import light_profiles as lp
+from test.integration import tools
+
+dirpath = os.path.dirname(os.path.realpath(__file__))
+dirpath = os.path.dirname(dirpath)
+output_path = '{}/integration_output'.format(dirpath)
+
+pipeline_name = "test"
+
+
+class TestPhaseModelMapper(object):
+    def test_pairing_works(self):
+        data_name = '/pair_floats'
+
+        tools.reset_paths(data_name, pipeline_name, output_path)
+
+        sersic = lp.EllipticalSersic(centre=(0.0, 0.0), axis_ratio=0.8, phi=90.0, intensity=1.0, effective_radius=1.3,
+                                     sersic_index=3.0)
+
+        lens_galaxy = galaxy.Galaxy(light_profile=sersic)
+
+        tools.simulate_integration_image(data_name=data_name, pixel_scale=0.5, lens_galaxies=[lens_galaxy],
+                                         source_galaxies=[], target_signal_to_noise=10.0)
+        image = tools.load_image(data_name=data_name, pixel_scale=0.5)
+
+        class MMPhase(ph.LensPlanePhase):
+
+            def pass_priors(self, previous_results):
+                self.lens_galaxies[0].sersic.intensity = self.lens_galaxies[0].sersic.axis_ratio
+
+        phase = MMPhase(lens_galaxies=[gm.GalaxyModel(sersic=lp.EllipticalSersic)],
+                        optimizer_class=nl.MultiNest, phase_name="{}/phase1".format(pipeline_name))
+
+        initial_total_priors = phase.variable.total_priors
+        phase.make_analysis(image)
+
+        assert phase.lens_galaxies[0].sersic.intensity == phase.lens_galaxies[0].sersic.axis_ratio
+        assert initial_total_priors - 1 == phase.variable.total_priors
+        assert len(phase.variable.flat_prior_model_tuples) == 1
+
+        lines = list(
+            filter(lambda line: "axis_ratio" in line or "intensity" in line, phase.variable.model_info.split("\n")))
+
+        assert len(lines) == 2
+        assert "lens_galaxies_axis_ratio                UniformPrior, lower_limit = 0.5, upper_limit = 1.0" in lines
+        assert "lens_galaxies_intensity                 UniformPrior, lower_limit = 0.5, upper_limit = 1.0" in lines
