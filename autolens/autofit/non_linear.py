@@ -350,11 +350,10 @@ class MultiNest(NonLinearOptimizer):
 
         constant = self.most_likely_instance_from_summary()
         constant += self.constant
-        likelihood = self.max_likelihood_from_summary()
         variable = self.variable.mapper_from_gaussian_tuples(
             tuples=self.gaussian_priors_at_sigma_limit(self.sigma_limit))
 
-        return Result(constant=constant, likelihood=likelihood, variable=variable)
+        return Result(constant=constant, likelihood=self.max_likelihood_from_summary(), variable=variable)
 
     def open_summary_file(self):
 
