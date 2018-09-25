@@ -40,7 +40,7 @@ class InterpolationScheme(object):
         sub-set of deflection angles on a uniform regular grid and bilinearly interpolating these values to determine \
         the masked_image-grid and sub-grid deflection angle values.
 
-        This class describes the interpolation scheme that is used to do this, for example the shape of the \
+        This class describes the interpolation scheme that is used to do this, for howtolens the shape of the \
         interpolation-grid and the neighbors of every pixel on the grid in the 4 directions required for bilinear \
         interpolation.
 
