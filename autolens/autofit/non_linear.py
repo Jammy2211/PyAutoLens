@@ -280,13 +280,6 @@ class MultiNest(NonLinearOptimizer):
         return getdist.mcsamples.loadMCSamples(self.chains_path + '/mn')
 
     def fit(self, analysis):
-
-        if len(self.path) > 77:
-            raise exc.MultiNestException(
-                'The path to the MultiNest results is longer than 77 characters (={}). Unfortunately, PyMultiNest '
-                'cannot use a path longer than this. Set your results path to something with fewer characters to '
-                'fix.'.format(len(self.path)))
-
         self.save_model_info()
 
         class Fitness(object):
@@ -357,11 +350,10 @@ class MultiNest(NonLinearOptimizer):
 
         constant = self.most_likely_instance_from_summary()
         constant += self.constant
-        likelihood = self.max_likelihood_from_summary()
         variable = self.variable.mapper_from_gaussian_tuples(
             tuples=self.gaussian_priors_at_sigma_limit(self.sigma_limit))
 
-        return Result(constant=constant, likelihood=likelihood, variable=variable)
+        return Result(constant=constant, likelihood=self.max_likelihood_from_summary(), variable=variable)
 
     def open_summary_file(self):
 
