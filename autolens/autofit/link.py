@@ -39,7 +39,7 @@ def path_for(path):
     return "{}/{}".format(autolens_dir, b64_string[:start] + b64_string[-end:])
 
 
-def make_linked_folder(path):
+def make_linked_folder(sym_path):
     """
     Create a folder in the ~/.autolens directory and create a sym link to it at the provided path.
 
@@ -49,7 +49,7 @@ def make_linked_folder(path):
 
     Parameters
     ----------
-    path: str
+    sym_path: str
         The path where multinest output is apparently saved
 
     Returns
@@ -57,15 +57,22 @@ def make_linked_folder(path):
     actual_path: str
         The path where multinest output is actually saved
     """
-    actual_path = path_for(path)
-    if os.path.exists(actual_path) and not os.path.exists(path):
-        shutil.rmtree(actual_path)
+    source_path = path_for(sym_path)
+    if os.path.exists(source_path) and not os.path.exists(sym_path):
+        logger.info("Source {} exists but target {} does not. Removing source.".format(source_path, sym_path))
+        shutil.rmtree(source_path)
     try:
-        os.mkdir(actual_path)
+        logger.info("Making source {}".format(source_path))
+        os.mkdir(source_path)
+        logger.info("Success")
     except FileExistsError as e:
+        logger.info("Source already existed")
         logger.debug(e)
     try:
-        os.symlink(actual_path, path)
+        logger.info("Making linking from source {} to sym {}".format(source_path, sym_path))
+        os.symlink(source_path, sym_path)
+        logger.info("Success")
     except FileExistsError as e:
+        logger.info("Sym already existed")
         logger.debug(e)
-    return actual_path
+    return source_path
