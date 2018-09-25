@@ -12,17 +12,17 @@ def plot_fitting(fit, output_path=None, output_filename='fit', output_format='sh
 
     if fit.total_planes == 1:
 
-        if not fit.is_hyper_fitting:
+        if not fit.is_hyper_fit:
 
             plot_fitting_lens_plane_only(fit, output_path, output_filename, output_format)
 
-        elif fit.is_hyper_fitting:
+        elif fit.is_hyper_fit:
 
             plot_fitting_hyper_lens_plane_only(fit, output_path, output_filename, output_format)
 
     elif fit.total_planes == 2:
 
-        if not fit.is_hyper_fitting:
+        if not fit.is_hyper_fit:
             plot_fitting_lens_and_source_planes(fit, output_path, output_filename, output_format)
 
 
@@ -386,17 +386,17 @@ def plot_fitting_individuals(fit, output_path=None, output_format='show'):
     
     if fit.total_planes == 1:
 
-        if not fit.is_hyper_fitting:
+        if not fit.is_hyper_fit:
 
             plot_fitting_individuals_lens_plane_only(fit, output_path, output_format)
 
-        elif fit.is_hyper_fitting:
+        elif fit.is_hyper_fit:
 
             plot_fitting_individuals_hyper_lens_plane_only(fit, output_path, output_format)
 
     elif fit.total_planes == 2:
 
-        if not fit.is_hyper_fitting:
+        if not fit.is_hyper_fit:
             plot_fitting_individuals_lens_and_source_planes(fit, output_path, output_format)
 
 
