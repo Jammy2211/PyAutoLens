@@ -1,21 +1,23 @@
-import os
-
-from autolens import conf
+from autolens.pipeline import pipeline as pl
+from autolens.pipeline import phase as ph
+from autolens.profiles import light_profiles as lp
+from autolens.lensing import galaxy_model as gm
 from autolens.autofit import non_linear as nl
 from autolens.lensing import galaxy
-from autolens.lensing import galaxy_model as gm
-from autolens.pipeline import phase as ph
-from autolens.pipeline import pipeline as pl
-from autolens.profiles import light_profiles as lp
+from autolens import conf
 from test.integration import tools
+
+import numpy as np
+import shutil
+import os
 
 dirpath = os.path.dirname(os.path.realpath(__file__))
 dirpath = os.path.dirname(dirpath)
 output_path = '{}/integration_output'.format(dirpath)
 
-
 def pipeline():
-    conf.instance = conf.Config(config_path=output_path + '/config', output_path=output_path)
+
+    conf.instance = conf.Config(config_path=output_path+'/config', output_path=output_path)
     pipeline_name = "link_variable_const_tuples"
     data_name = '/link_variable_const_tuples'
 
@@ -36,19 +38,18 @@ def pipeline():
     for result in results:
         print(result)
 
-
 def make_pipeline(pipeline_name):
+
     class MMPhase(ph.LensPlanePhase):
 
         def pass_priors(self, previous_results):
             self.lens_galaxies[0].sersic.centre_0 = 1.0
             self.lens_galaxies[0].sersic.centre_1 = 2.0
-
     #        self.lens_galaxies[0].sersic.centre_0 = -1.0
     #        self.lens_galaxies[0].sersic.centre_1 = -1.0
 
     phase1 = MMPhase(lens_galaxies=[gm.GalaxyModel(sersic=lp.EllipticalSersic)],
-                     optimizer_class=nl.MultiNest, phase_name="{}/phase1".format(pipeline_name))
+                               optimizer_class=nl.MultiNest, phase_name="{}/phase1".format(pipeline_name))
 
     phase1.optimizer.n_live_points = 20
     phase1.optimizer.sampling_efficiency = 0.8
@@ -59,13 +60,12 @@ def make_pipeline(pipeline_name):
             self.lens_galaxies = previous_results[0].variable.lens_galaxies
 
     phase2 = MMPhase2(lens_galaxies=[gm.GalaxyModel(sersic=lp.EllipticalSersic)],
-                      optimizer_class=nl.MultiNest, phase_name="{}/phase2".format(pipeline_name))
+                               optimizer_class=nl.MultiNest, phase_name="{}/phase2".format(pipeline_name))
 
     phase2.optimizer.n_live_points = 20
     phase2.optimizer.sampling_efficiency = 0.8
 
     return pl.PipelineImaging(pipeline_name, phase1, phase2)
-
 
 if __name__ == "__main__":
     pipeline()

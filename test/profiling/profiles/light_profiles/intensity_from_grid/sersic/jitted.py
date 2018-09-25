@@ -1,11 +1,9 @@
-import numba
-import numpy as np
-import pytest
 from profiling import profiling_data
 from profiling import tools
-
 from profiles import light_profiles
-
+import numpy as np
+import numba
+import pytest
 
 class EllipticalSersic(light_profiles.EllipticalLightProfile):
 
@@ -60,26 +58,24 @@ class EllipticalSersic(light_profiles.EllipticalLightProfile):
                         np.add(np.power(np.divide(grid_radii, self.effective_radius), 1. / self.sersic_index), -1))))
 
     def intensity_from_grid_jitted(self, grid):
-        return self.intensity_from_grid_jit(grid, self.axis_ratio, self.intensity, self.effective_radius,
-                                            self.sersic_index,
-                                            self.sersic_constant)
+        return self.intensity_from_grid_jit(grid, self.axis_ratio, self.intensity, self.effective_radius, self.sersic_index,
+                             self.sersic_constant)
 
     @staticmethod
     @numba.jit(nopython=True)
     def intensity_from_grid_jit(grid, axis_ratio, intensity, effective_radius, sersic_index, sersic_constant):
+
         intensities = np.zeros(grid.shape[0])
 
         for i in range(grid.shape[0]):
-            intensities[i] = intensity * np.exp(
-                -sersic_constant * (((np.multiply(np.sqrt(axis_ratio), np.sqrt(np.add(np.square(grid[i, 0]),
-                                                                                      np.square(np.divide(grid[i, 1],
-                                                                                                          axis_ratio))))) / effective_radius) **
-                                     (1. / sersic_index)) - 1))
+
+            intensities[i] = intensity * np.exp(-sersic_constant * (((np.multiply(np.sqrt(axis_ratio), np.sqrt(np.add(np.square(grid[i, 0]),
+                                                                     np.square(np.divide(grid[i, 1], axis_ratio))))) / effective_radius) **
+                                                                     (1. / sersic_index)) - 1))
 
         return intensities
 
-
-sub_grid_size = 4
+sub_grid_size=4
 
 lsst = profiling_data.setup_class(name='LSST', pixel_scale=0.2, sub_grid_size=sub_grid_size)
 euclid = profiling_data.setup_class(name='Euclid', pixel_scale=0.1, sub_grid_size=sub_grid_size)
@@ -88,38 +84,33 @@ hst_up = profiling_data.setup_class(name='HSTup', pixel_scale=0.03, sub_grid_siz
 ao = profiling_data.setup_class(name='AO', pixel_scale=0.01, sub_grid_size=sub_grid_size)
 
 sersic = EllipticalSersic(centre=(0.0, 0.0), axis_ratio=0.8, phi=90.0, intensity=0.1,
-                          effective_radius=0.8, sersic_index=4.0)
+                                   effective_radius=0.8, sersic_index=4.0)
 
 assert (sersic.intensity_from_grid(grid=lsst.coords.sub_grid_coords) ==
         pytest.approx(sersic.intensity_from_grid_jitted(grid=lsst.coords.sub_grid_coords), 1e-4))
-
 
 @tools.tick_toc_x10
 def lsst_solution():
     sersic.intensity_from_grid_jitted(grid=lsst.coords.sub_grid_coords)
 
-
 @tools.tick_toc_x10
 def euclid_solution():
     sersic.intensity_from_grid_jitted(grid=euclid.coords.sub_grid_coords)
-
 
 @tools.tick_toc_x10
 def hst_solution():
     sersic.intensity_from_grid_jitted(grid=hst.coords.sub_grid_coords)
 
-
 @tools.tick_toc_x10
 def hst_up_solution():
     sersic.intensity_from_grid_jitted(grid=hst_up.coords.sub_grid_coords)
-
 
 @tools.tick_toc_x10
 def ao_solution():
     sersic.intensity_from_grid_jitted(grid=ao.coords.sub_grid_coords)
 
-
 if __name__ == "__main__":
+
     lsst_solution()
     euclid_solution()
     hst_solution()

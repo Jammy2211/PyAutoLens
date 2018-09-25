@@ -1,8 +1,8 @@
 import configparser
-import os
-import shutil
 
 from autolens import exc
+import os
+import shutil
 
 directory = os.path.dirname(os.path.realpath(__file__))
 

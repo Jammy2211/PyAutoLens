@@ -1,11 +1,10 @@
+from autolens.imaging import imaging_util
+from autolens.imaging import image as im
+from autolens.imaging import mask as msk
+from autolens.imaging import convolution
+from autolens.lensing import lensing_image as li
 import numpy as np
 import pytest
-
-from autolens.imaging import convolution
-from autolens.imaging import image as im
-from autolens.imaging import imaging_util
-from autolens.imaging import mask as msk
-from autolens.lensing import lensing_image as li
 
 
 @pytest.fixture(name='image')
@@ -16,10 +15,10 @@ def make_image():
 
 @pytest.fixture(name="mask")
 def make_mask():
-    return msk.Mask(np.array([[True, True, True, True],
-                              [True, False, False, True],
-                              [True, False, False, True],
-                              [True, True, True, True]]), pixel_scale=3.0)
+    return msk.Mask( np.array([[True,  True,  True, True],
+                               [True, False, False, True],
+                               [True, False, False, True],
+                               [True,  True,  True, True]]), pixel_scale=3.0)
 
 
 @pytest.fixture(name="lensing_image")
@@ -35,51 +34,53 @@ class TestMaskedImage(object):
         assert (image.background_noise_map == lensing_image.image.background_noise_map)
 
     def test__image_and_image_mapper(self, lensing_image):
-        assert (lensing_image.image == np.ones((4, 4))).all()
-        assert (lensing_image.image.noise_map == np.ones((4, 4))).all()
+        assert (lensing_image.image == np.ones((4,4))).all()
+        assert (lensing_image.image.noise_map == np.ones((4,4))).all()
 
     def test_masking(self, lensing_image):
         assert lensing_image.noise_map.shape == (4,)
 
     def test_grids(self, lensing_image):
+
         assert lensing_image.grids.image.shape == (4, 2)
 
         assert (lensing_image.grids.image == np.array([[-1.5, -1.5], [-1.5, 1.5], [1.5, -1.5], [1.5, 1.5]])).all()
         assert (lensing_image.grids.sub == np.array([[-2.0, -2.0], [-2.0, -1.0], [-1.0, -2.0], [-1.0, -1.0],
-                                                     [-2.0, 1.0], [-2.0, 2.0], [-1.0, 1.0], [-1.0, 2.0],
-                                                     [1.0, -2.0], [1.0, -1.0], [2.0, -2.0], [2.0, -1.0],
-                                                     [1.0, 1.0], [1.0, 2.0], [2.0, 1.0], [2.0, 2.0]])).all()
+                                                    [-2.0, 1.0], [-2.0, 2.0], [-1.0, 1.0], [-1.0, 2.0],
+                                                    [1.0, -2.0], [1.0, -1.0], [2.0, -2.0], [2.0, -1.0],
+                                                    [1.0, 1.0], [1.0, 2.0], [2.0, 1.0], [2.0, 2.0]])).all()
         assert (lensing_image.grids.blurring == np.array([[-4.5, -4.5], [-4.5, -1.5], [-4.5, 1.5], [-4.5, 4.5],
-                                                          [-1.5, -4.5], [-1.5, 4.5], [1.5, -4.5], [1.5, 4.5],
-                                                          [4.5, -4.5], [4.5, -1.5], [4.5, 1.5], [4.5, 4.5]])).all()
+                                                         [-1.5, -4.5],  [-1.5, 4.5],  [1.5, -4.5], [1.5, 4.5],
+                                                          [4.5, -4.5],  [4.5, -1.5],  [4.5, 1.5],  [4.5, 4.5]])).all()
 
     def test_unmasked_grids(self, lensing_image):
-        unmasked_image_util = imaging_util.image_grid_1d_masked_from_mask_and_pixel_scale(np.full((6, 6), False),
-                                                                                          lensing_image.image.pixel_scale)
 
-        unmasked_sub_util = imaging_util.sub_grid_1d_masked_from_mask_pixel_scale_and_sub_grid_size(
-            np.full((6, 6), False),
-            lensing_image.image.pixel_scale, lensing_image.grids.sub.sub_grid_size)
+        unmasked_image_util = imaging_util.image_grid_1d_masked_from_mask_and_pixel_scale(np.full((6, 6), False),
+                                                                                        lensing_image.image.pixel_scale)
+
+        unmasked_sub_util = imaging_util.sub_grid_1d_masked_from_mask_pixel_scale_and_sub_grid_size(np.full((6, 6), False),
+                          lensing_image.image.pixel_scale, lensing_image.grids.sub.sub_grid_size)
 
         assert (lensing_image.unmasked_grids.image == unmasked_image_util).all()
-        assert lensing_image.unmasked_grids.image.mask_shape == (4, 4)
-        assert lensing_image.unmasked_grids.image.padded_shape == (6, 6)
+        assert lensing_image.unmasked_grids.image.mask_shape == (4,4)
+        assert lensing_image.unmasked_grids.image.padded_shape == (6,6)
 
         assert (lensing_image.unmasked_grids.sub == unmasked_sub_util).all()
-        assert lensing_image.unmasked_grids.sub.mask_shape == (4, 4)
-        assert lensing_image.unmasked_grids.sub.padded_shape == (6, 6)
+        assert lensing_image.unmasked_grids.sub.mask_shape == (4,4)
+        assert lensing_image.unmasked_grids.sub.padded_shape == (6,6)
 
         assert (lensing_image.unmasked_grids.blurring == np.array([[0.0, 0.0]])).all()
 
     def test_borders(self, lensing_image):
+
         assert (lensing_image.borders.image == np.array([0, 1, 2, 3])).all()
         assert (lensing_image.borders.sub == np.array([0, 5, 10, 15])).all()
 
     def test_blurring_mask(self, lensing_image):
         assert (lensing_image.blurring_mask == np.array([[False, False, False, False],
-                                                         [False, True, True, False],
-                                                         [False, True, True, False],
-                                                         [False, False, False, False]])).all()
+                                                        [False,  True,  True, False],
+                                                        [False,  True,  True, False],
+                                                        [False, False, False, False]])).all()
 
     def test_convolvers(self, lensing_image):
         assert type(lensing_image.convolver_image) == convolution.ConvolverImage
@@ -94,6 +95,7 @@ class TestMaskedImage(object):
         assert subtracted_image == np.array([0, 1, 0, 1])
 
     def test__constructor_inputs(self):
+
         psf = im.PSF(np.ones((7, 7)), 1)
         image = im.Image(np.ones((51, 51)), pixel_scale=3., psf=psf, noise_map=np.ones((51, 51)))
         mask = msk.Mask.masked_for_shape_and_pixel_scale(shape=(51, 51), pixel_scale=1.0)
@@ -103,6 +105,6 @@ class TestMaskedImage(object):
                                         mapping_matrix_psf_shape=(3, 3), positions=[np.array([[1.0, 1.0]])])
 
         assert lensing_image.sub_grid_size == 8
-        assert lensing_image.convolver_image.psf_shape == (5, 5)
+        assert lensing_image.convolver_image.psf_shape == (5,5)
         assert lensing_image.convolver_mapping_matrix.psf_shape == (3, 3)
         assert (lensing_image.positions[0] == np.array([[1.0, 1.0]])).all()
