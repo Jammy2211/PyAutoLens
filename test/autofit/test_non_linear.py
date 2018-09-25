@@ -323,7 +323,6 @@ class TestNonLinearOptimizer(object):
             non_linear.NonLinearOptimizer(model_mapper=mapper)
 
             assert os.path.exists(nlo_setup_path + '1_class')
-            assert os.path.exists(nlo_setup_path + '1_class/chains')
 
     class TestTotalParameters:
 
@@ -906,7 +905,7 @@ class TestRealClasses(object):
         non_linear.NonLinearOptimizer(model_mapper=mapper)
 
         assert os.path.exists(nlo_setup_path + '/1_profile')
-        assert os.path.exists(nlo_setup_path + '/1_profile/chains')
+        # assert os.path.exists(nlo_setup_path + '/1_profile/chains')
 
     def test__number_of_params__multiple_light_and_mass_profiles(self, mm_config):
         mapper = model_mapper.ModelMapper(config=mm_config, light_profile=light_profiles.EllipticalSersic,
