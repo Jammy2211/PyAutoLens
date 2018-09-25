@@ -1,6 +1,7 @@
-import numpy as np
-from functools import wraps
 import inspect
+from functools import wraps
+
+import numpy as np
 
 
 def transform_grid(func):

@@ -1,15 +1,17 @@
-from autolens import exc
+import logging
 import math
 import os
+
+import matplotlib.pyplot as plt
+import numpy as np
 import pymultinest
 import scipy.optimize
-import numpy as np
-from autolens.imaging import hyper_image
+
 from autolens import conf
-from autolens.autofit import model_mapper as mm
-import logging
-import matplotlib.pyplot as plt
+from autolens import exc
 from autolens.autofit import link
+from autolens.autofit import model_mapper as mm
+from autolens.imaging import hyper_image
 
 logging.basicConfig()
 logger = logging.getLogger(__name__)
