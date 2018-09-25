@@ -7,17 +7,15 @@ from autolens.lensing import galaxy
 from autolens import conf
 from test.integration import tools
 
-import numpy as np
-import shutil
 import os
 
 dirpath = os.path.dirname(os.path.realpath(__file__))
 dirpath = os.path.dirname(dirpath)
 output_path = '/gpfs/data/pdtw24/Lens/int/mm'
 
-def pipeline():
 
-    conf.instance = conf.Config(config_path=output_path+'/config', output_path=output_path)
+def pipeline():
+    conf.instance = conf.Config(config_path=output_path + '/config', output_path=output_path)
     pipeline_name = "link_variable_const_floats"
     data_name = '/link_variable_const_floats'
 
@@ -38,8 +36,8 @@ def pipeline():
     for result in results:
         print(result)
 
-def make_pipeline(pipeline_name):
 
+def make_pipeline(pipeline_name):
     class MMPhase(ph.LensPlanePhase):
 
         def pass_priors(self, previous_results):
@@ -47,7 +45,7 @@ def make_pipeline(pipeline_name):
             self.lens_galaxies[0].sersic.phi = 90.0
 
     phase1 = MMPhase(lens_galaxies=[gp.GalaxyModel(sersic=lp.EllipticalSersic)],
-                               optimizer_class=nl.MultiNest, phase_name="{}/phase1".format(pipeline_name))
+                     optimizer_class=nl.MultiNest, phase_name="{}/phase1".format(pipeline_name))
 
     phase1.optimizer.n_live_points = 20
     phase1.optimizer.sampling_efficiency = 0.8
@@ -58,12 +56,13 @@ def make_pipeline(pipeline_name):
             self.lens_galaxies = previous_results[0].variable.lens_galaxies
 
     phase2 = MMPhase2(lens_galaxies=[gp.GalaxyModel(sersic=lp.EllipticalSersic)],
-                               optimizer_class=nl.MultiNest, phase_name="{}/phase2".format(pipeline_name))
+                      optimizer_class=nl.MultiNest, phase_name="{}/phase2".format(pipeline_name))
 
     phase2.optimizer.n_live_points = 20
     phase2.optimizer.sampling_efficiency = 0.8
 
     return pl.PipelineImaging(pipeline_name, phase1, phase2)
+
 
 if __name__ == "__main__":
     pipeline()
