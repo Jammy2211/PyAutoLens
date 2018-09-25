@@ -61,7 +61,7 @@ class TracerGeometry(object):
 
 
 class AbstractTracer(object):
-    image_grids = None
+    image_plane_grids = None
 
     @property
     def all_planes(self):
@@ -106,11 +106,11 @@ class AbstractTracer(object):
 
     @property
     def image_plane_images_of_planes(self):
-        return list(map(lambda image: self.image_grids.image.map_to_2d(image), self._image_plane_images_of_planes))
+        return list(map(lambda image: self.image_plane.grids.image.map_to_2d(image), self._image_plane_images_of_planes))
 
     @property
     def image_plane_images_of_galaxies(self):
-        return list(map(lambda image: self.image_grids.image.map_to_2d(image), self._image_plane_images_of_galaxies))
+        return list(map(lambda image: self.image_plane.grids.image.map_to_2d(image), self._image_plane_images_of_galaxies))
 
     @property
     def image_plane_image_for_simulation(self):
@@ -118,7 +118,7 @@ class AbstractTracer(object):
             raise exc.RayTracingException(
                 'To retrieve an _image plane _image for the simulation, the grids in the tracer'
                 'must be unmasked grids')
-        return sum(map(lambda image: self.image_grids.image.map_to_2d_keep_padded(image),
+        return sum(map(lambda image: self.image_plane.grids.image.map_to_2d_keep_padded(image),
                        self._image_plane_images_of_planes))
 
     def plane_images_of_planes(self, shape=(30, 30)):
@@ -204,8 +204,6 @@ class TracerImagePlane(AbstractTracer):
         if not lens_galaxies:
             raise exc.RayTracingException('No lens galaxies have been input into the Tracer')
 
-        self.image_grids = image_plane_grids
-
         if cosmology is not None:
             self.geometry = TracerGeometry(redshifts=[lens_galaxies[0].redshift], cosmology=cosmology)
         else:
@@ -240,8 +238,6 @@ class TracerImageSourcePlanes(AbstractTracer):
             The cosmology of the ray-tracing calculation.
         """
 
-        self.image_grids = image_plane_grids
-
         self.image_plane = Plane(lens_galaxies, image_plane_grids, borders=borders, compute_deflections=True)
 
         if not source_galaxies:
@@ -257,6 +253,42 @@ class TracerImageSourcePlanes(AbstractTracer):
         source_plane_grids = self.image_plane.trace_to_next_plane()
 
         self.source_plane = Plane(source_galaxies, source_plane_grids, borders=borders, compute_deflections=False)
+
+    @property
+    def surface_density(self):
+        return sum(self.surface_density_of_galaxies)
+
+    @property
+    def surface_density_of_galaxies(self):
+        return list(map(lambda surface_density: self.image_plane.grids.image.map_to_2d(surface_density),
+                        self.image_plane._surface_density_of_galaxies))
+
+    @property
+    def potential(self):
+        return sum(self.potential_of_galaxies)
+
+    @property
+    def potential_of_galaxies(self):
+        return list(map(lambda potential: self.image_plane.grids.image.map_to_2d(potential),
+                        self.image_plane._potential_of_galaxies))
+    
+    @property
+    def deflections_x(self):
+        return sum(self.deflections_x_of_galaxies)
+
+    @property
+    def deflections_x_of_galaxies(self):
+        return list(map(lambda deflections: self.image_plane.grids.image.map_to_2d(deflections[:,0]),
+                        self.image_plane._deflections_of_galaxies))
+
+    @property
+    def deflections_y(self):
+        return sum(self.deflections_y_of_galaxies)
+
+    @property
+    def deflections_y_of_galaxies(self):
+        return list(map(lambda deflections: self.image_plane.grids.image.map_to_2d(deflections[:,1]),
+                        self.image_plane._deflections_of_galaxies))
 
 
 class AbstractTracerMulti(AbstractTracer):
@@ -305,6 +337,9 @@ class AbstractTracerMulti(AbstractTracer):
                                                  self.galaxies_redshift_order)))
             self.planes_galaxies[plane_index] = list(filter(None, self.planes_galaxies[plane_index]))
 
+    @property
+    def image_plane(self):
+        return self.planes[0]
 
 class TracerMulti(AbstractTracerMulti):
 
@@ -327,8 +362,6 @@ class TracerMulti(AbstractTracerMulti):
 
         if not galaxies:
             raise exc.RayTracingException('No galaxies have been input into the Tracer (TracerMulti)')
-
-        self.image_grids = image_plane_grids
 
         super(TracerMulti, self).__init__(galaxies, cosmology)
 
@@ -684,7 +717,7 @@ def surface_density_from_grid(grid, galaxies):
 def potential_from_grid(grid, galaxies):
     return sum(map(lambda g: g.potential_from_grid(grid), galaxies))
 
-# TODO : There will be a much cleaner way to apply sub data to image to the array wihtout the need for a transpose
+# TODO : There will be a much cleaner way to apply sub data to surface_density to the array wihtout the need for a transpose
 
 def deflections_from_grid(grid, galaxies):
     deflections = sum(map(lambda galaxy: galaxy.deflections_from_grid(grid), galaxies))

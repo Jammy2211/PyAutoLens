@@ -13,47 +13,8 @@ def plot_image(image, output_path=None, output_filename='images', output_format=
     -----------
     image : autolens.imaging.image.Image
         Class containing the _image, noise-mappers and PSF that are to be plotted.
-    units : str
-        The units the figure is in, which determine the xyticks and xylabels. Options are arcsec | kpc.
-    norm : str
-        The normalization of the colormap used for plotting. Choose from linear | log | symmetric_log \
-        (see matplotlib.colors)
-    norm_min : float
-        The minimum value in the colormap (see matplotlib.colors). If None, the minimum value in the array is used.
-    norm_max : float
-        The maximum value in the colormap (see matplotlib.colors). If None, the maximum value in the array is used.
-    linthresh : float
-        If the symmetric log norm is used, this sets the range within which the colormap is linear \
-         (see matplotlib.colors).
-    liscale : float
-        If the symmetric log norm is used, this stretches the linear range relative to the log range \
-        (see matplotlib.colors).
-    figsize : (int, int)
-        The size the figure is plotted (see matplotlib.pyplot).
-    aspect : str
-        The aspect ratio of the _image, the default 'auto' scales this to the window size (see matplotlib.pyplot).
-    cmap : str
-        The colormap style (e.g. 'jet', 'warm', 'binary, see matplotlib.pyplot).
-    image_title : str
-        The title of the _image.
-    noise_map_title : str
-        The title of the noise-mappers _image.
-    psf_title : str
-        The title of the psf _image.
-    titlesize : int
-        The font size of the figure title.
-    xlabelsize : int
-        The font size of the figure xlabel.
-    ylabelsize : int
-        The font size of the figure ylabel.
     output_path : str
         The path where the _image is output if the output_type is a file format (e.g. png, fits)
-    output_image_filename : str
-        The name of the file that the _image is output, if the output_type is a file format (e.g. png, fits)
-    output_noise_map_filename : str
-        The name of the file that the _image is output, if the output_type is a file format (e.g. png, fits)
-    output_psf_filename : str
-        The name of the file that the _image is output, if the output_type is a file format (e.g. png, fits)
     output_format : str
         How the _image is output. File formats (e.g. png, fits) output the _image to harddisk. 'show' displays the _image \
         in the python interpreter window.
@@ -119,47 +80,8 @@ def plot_image_individuals(image, output_path=None, output_format='show', ignore
     -----------
     image : autolens.imaging.image.Image
         Class containing the _image, noise-mappers and PSF that are to be plotted.
-    units : str
-        The units the figure is in, which determine the xyticks and xylabels. Options are arcsec | kpc.
-    norm : str
-        The normalization of the colormap used for plotting. Choose from linear | log | symmetric_log \
-        (see matplotlib.colors)
-    norm_min : float
-        The minimum value in the colormap (see matplotlib.colors). If None, the minimum value in the array is used.
-    norm_max : float
-        The maximum value in the colormap (see matplotlib.colors). If None, the maximum value in the array is used.
-    linthresh : float
-        If the symmetric log norm is used, this sets the range within which the colormap is linear \
-         (see matplotlib.colors).
-    liscale : float
-        If the symmetric log norm is used, this stretches the linear range relative to the log range \
-        (see matplotlib.colors).
-    figsize : (int, int)
-        The size the figure is plotted (see matplotlib.pyplot).
-    aspect : str
-        The aspect ratio of the _image, the default 'auto' scales this to the window size (see matplotlib.pyplot).
-    cmap : str
-        The colormap style (e.g. 'jet', 'warm', 'binary, see matplotlib.pyplot).
-    image_title : str
-        The title of the _image.
-    noise_map_title : str
-        The title of the noise-mappers _image.
-    psf_title : str
-        The title of the psf _image.
-    titlesize : int
-        The font size of the figure title.
-    xlabelsize : int
-        The font size of the figure xlabel.
-    ylabelsize : int
-        The font size of the figure ylabel.
     output_path : str
         The path where the _image is output if the output_type is a file format (e.g. png, fits)
-    output_image_filename : str
-        The name of the file that the _image is output, if the output_type is a file format (e.g. png, fits)
-    output_noise_map_filename : str
-        The name of the file that the _image is output, if the output_type is a file format (e.g. png, fits)
-    output_psf_filename : str
-        The name of the file that the _image is output, if the output_type is a file format (e.g. png, fits)
     output_format : str
         How the _image is output. File formats (e.g. png, fits) output the _image to harddisk. 'show' displays the _image \
         in the python interpreter window.
