@@ -1,11 +1,12 @@
+import numba
 import numpy as np
-
-from autolens.profiles import light_profiles
+import pytest
 from profiling import profiling_data
 from profiling import tools
+
 from autolens import exc
-import numba
-import pytest
+from autolens.profiles import light_profiles
+
 
 class Convolver(object):
 
@@ -59,7 +60,7 @@ class Convolver(object):
                     self.frame_array.append(frame)
                     self.frame_kernel_array.append(kernel_frame)
 
-        self.frame_lengths = np.asarray(list(map(lambda frame : frame.shape[0], self.frame_array)), dtype='int')
+        self.frame_lengths = np.asarray(list(map(lambda frame: frame.shape[0], self.frame_array)), dtype='int')
 
         self.blurring_frame_array = []
         self.blurring_frame_kernel_array = []
@@ -70,7 +71,7 @@ class Convolver(object):
                     self.blurring_frame_array.append(frame)
                     self.blurring_frame_kernel_array.append(kernel_frame)
 
-        self.blurring_frame_lengths = np.asarray(list(map(lambda frame : frame.shape[0], self.blurring_frame_array)),
+        self.blurring_frame_lengths = np.asarray(list(map(lambda frame: frame.shape[0], self.blurring_frame_array)),
                                                  dtype='int')
 
     @staticmethod
@@ -110,12 +111,13 @@ class Convolver(object):
                     value = mask_index_array[x, y]
                     if value >= 0 and not mask[x, y]:
                         frame[count] = value
-                        kernel_frame[count] = kernel[i,j]
+                        kernel_frame[count] = kernel[i, j]
                         count += 1
 
         return frame[0:count], kernel_frame[0:count]
 
-sub_grid_size=4
+
+sub_grid_size = 4
 # psf_shape = (21, 21)
 psf_shape = (41, 41)
 sersic = light_profiles.EllipticalSersic(centre=(0.0, 0.0), axis_ratio=0.8, phi=90.0, intensity=0.1,
@@ -129,13 +131,18 @@ lsst_convolver = Convolver(mask=lsst.mask, blurring_mask=lsst.masked_image.blurr
 assert lsst.masked_image.convolver.frame_array[0] == pytest.approx(lsst_convolver.frame_array[0], 1e-2)
 assert lsst.masked_image.convolver.frame_array[1] == pytest.approx(lsst_convolver.frame_array[1], 1e-2)
 assert lsst.masked_image.convolver.frame_kernel_array[1] == pytest.approx(lsst_convolver.frame_kernel_array[1], 1e-2)
-assert lsst.masked_image.convolver.blurring_frame_array[0] == pytest.approx(lsst_convolver.blurring_frame_array[0], 1e-2)
-assert lsst.masked_image.convolver.blurring_frame_array[1] == pytest.approx(lsst_convolver.blurring_frame_array[1], 1e-2)
-assert lsst.masked_image.convolver.blurring_frame_kernel_array[1] == pytest.approx(lsst_convolver.blurring_frame_kernel_array[1], 1e-2)
+assert lsst.masked_image.convolver.blurring_frame_array[0] == pytest.approx(lsst_convolver.blurring_frame_array[0],
+                                                                            1e-2)
+assert lsst.masked_image.convolver.blurring_frame_array[1] == pytest.approx(lsst_convolver.blurring_frame_array[1],
+                                                                            1e-2)
+assert lsst.masked_image.convolver.blurring_frame_kernel_array[1] == pytest.approx(
+    lsst_convolver.blurring_frame_kernel_array[1], 1e-2)
 
 euclid = profiling_data.setup_class(name='Euclid', pixel_scale=0.1, sub_grid_size=sub_grid_size, psf_shape=psf_shape)
 hst = profiling_data.setup_class(name='HST', pixel_scale=0.05, sub_grid_size=sub_grid_size, psf_shape=psf_shape)
 hst_up = profiling_data.setup_class(name='HSTup', pixel_scale=0.03, sub_grid_size=sub_grid_size, psf_shape=psf_shape)
+
+
 # ao = profiling_data.setup_class(phase_name='AO', pixel_scale=0.01, sub_grid_size=sub_grid_size, psf_shape=psf_shape)
 
 @tools.tick_toc_x1
@@ -143,23 +150,29 @@ def lsst_solution():
     Convolver(mask=lsst.mask, blurring_mask=lsst.masked_image.blurring_mask,
               kernel=lsst._image_plane_image.psf.trim(psf_shape))
 
+
 @tools.tick_toc_x1
 def euclid_solution():
     Convolver(mask=euclid.mask, blurring_mask=euclid.masked_image.blurring_mask,
               kernel=euclid._image_plane_image.psf.trim(psf_shape))
+
 
 @tools.tick_toc_x1
 def hst_solution():
     Convolver(mask=hst.mask, blurring_mask=hst.masked_image.blurring_mask,
               kernel=hst._image_plane_image.psf.trim(psf_shape))
 
+
 @tools.tick_toc_x1
 def hst_up_solution():
     Convolver(mask=hst_up.mask, blurring_mask=hst_up.masked_image.blurring_mask,
               kernel=hst_up._image_plane_image.psf.trim(psf_shape))
+
+
 @tools.tick_toc_x1
 def ao_solution():
     Convolver(mask=ao.mask, blurring_mask=ao.blurring_mask, kernel=ao._image_plane_image.psf.trim(psf_shape))
+
 
 if __name__ == "__main__":
     lsst_solution()

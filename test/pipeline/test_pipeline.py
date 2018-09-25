@@ -1,7 +1,8 @@
-from autolens.pipeline import pipeline as pl
+import numpy as np
+
 from autolens.autofit import model_mapper
 from autolens.autofit import non_linear
-import numpy as np
+from autolens.pipeline import pipeline as pl
 
 
 class MockAnalysis(object):
