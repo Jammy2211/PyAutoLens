@@ -1,9 +1,10 @@
-import numpy as np
-
 from autolens.inversion import regularization
+import pytest
+import numpy as np
 
 
 class TestRegularizationConstant:
+
     class TestRegularizationMatrixFromNeighbors:
 
         def test__1_b_matrix_size_3x3__weights_all_1s__makes_correct_regularization_matrix(self):
@@ -28,6 +29,7 @@ class TestRegularizationConstant:
             assert (abs(np.linalg.det(regularization_matrix)) > 1e-8)
 
         def test__1_b_matrix_size_4x4__weights_all_1s__makes_correct_regularization_matrix(self):
+
             test_b_matrix = np.array([[-1, 1, 0, 0],
                                       [0, -1, 1, 0],
                                       [0, 0, -1, 1],
@@ -44,6 +46,7 @@ class TestRegularizationConstant:
             assert (abs(np.linalg.det(regularization_matrix)) > 1e-8)
 
         def test__1_b_matrix_size_4x4__coefficient_2__makes_correct_regularization_matrix(self):
+
             pixel_neighbors = np.array([[1, 3], [0, 2], [1, 3], [0, 2]])
 
             test_b_matrix = 2.0 * np.array([[-1, 1, 0, 0],
@@ -60,8 +63,9 @@ class TestRegularizationConstant:
             assert (abs(np.linalg.det(regularization_matrix)) > 1e-8)
 
         def test__1_b_matrix_size_9x9__coefficient_2__makes_correct_regularization_matrix(self):
+
             pixel_neighbors = [[1, 3], [4, 2, 0], [1, 5], [4, 6, 0], [7, 1, 5, 3], [4, 2, 8], [7, 3], [4, 8, 6],
-                               [7, 5]]
+                             [7, 5]]
 
             test_b_matrix_0 = np.array([[-1, 1, 0, 0, 0, 0, 0, 0, 0],
                                         [-1, 0, 0, 1, 0, 0, 0, 0, 0],
@@ -97,9 +101,12 @@ class TestRegularizationConstant:
 
 
 class TestRegularizationWeighted:
+
+
     class TestPixelSignals:
 
         def test__x3_image_pixels_signals_1s__pixel_scale_1__pixel_signals_all_1s(self):
+
             reg = regularization.Weighted(signal_scale=1.0)
 
             image_to_pixelization = np.array([0, 1, 2])
@@ -111,6 +118,7 @@ class TestRegularizationWeighted:
             assert (pixel_signals == np.array([1.0, 1.0, 1.0])).all()
 
         def test__x4_image_pixels_signals_1s__pixel_signals_still_all_1s(self):
+
             reg = regularization.Weighted(signal_scale=1.0)
 
             image_to_pixelization = np.array([0, 1, 2, 0])
@@ -122,6 +130,7 @@ class TestRegularizationWeighted:
             assert (pixel_signals == np.array([1.0, 1.0, 1.0])).all()
 
         def test__galaxy_flux_in_a_pixel_pixel_is_double_the_others__pixel_signal_is_1_others_a_half(self):
+
             reg = regularization.Weighted(signal_scale=1.0)
 
             image_to_pixelization = np.array([0, 1, 2])
@@ -133,6 +142,7 @@ class TestRegularizationWeighted:
             assert (pixel_signals == np.array([1.0, 0.5, 0.5])).all()
 
         def test__same_as_above_but_pixel_scale_2__scales_pixel_signals(self):
+
             reg = regularization.Weighted(signal_scale=2.0)
 
             image_to_pixelization = np.array([0, 1, 2])
@@ -143,9 +153,11 @@ class TestRegularizationWeighted:
 
             assert (pixel_signals == np.array([1.0, 0.25, 0.25])).all()
 
+
     class TestRegularizationWeights(object):
 
         def test__pixel_signals_all_1s__coefficients_all_1s__weights_all_1s(self):
+
             reg = regularization.Weighted(regularization_coefficients=(1.0, 1.0))
 
             pixel_signals = np.array([1.0, 1.0, 1.0])
@@ -155,6 +167,7 @@ class TestRegularizationWeighted:
             assert (weights == np.array([1.0, 1.0, 1.0])).all()
 
         def test__pixel_signals_vary__coefficents_all_1s__weights_still_all_1s(self):
+
             reg = regularization.Weighted(regularization_coefficients=(1.0, 1.0))
 
             pixel_signals = np.array([0.25, 0.5, 0.75])
@@ -164,6 +177,7 @@ class TestRegularizationWeighted:
             assert (weights == np.array([1.0, 1.0, 1.0])).all()
 
         def test__pixel_signals_vary__coefficents_1_and_0__weights_are_pixel_signals_squared(self):
+
             reg = regularization.Weighted(regularization_coefficients=(1.0, 0.0))
 
             pixel_signals = np.array([0.25, 0.5, 0.75])
@@ -173,6 +187,7 @@ class TestRegularizationWeighted:
             assert (weights == np.array([0.25 ** 2.0, 0.5 ** 2.0, 0.75 ** 2.0])).all()
 
         def test__pixel_signals_vary__coefficents_0_and_1__weights_are_1_minus_pixel_signals_squared(self):
+
             reg = regularization.Weighted(regularization_coefficients=(0.0, 1.0))
 
             pixel_signals = np.array([0.25, 0.5, 0.75])
@@ -184,6 +199,7 @@ class TestRegularizationWeighted:
     class TestRegularizationMatrix:
 
         def test__1_b_matrix_size_4x4__weights_all_1s__makes_correct_regularization_matrix(self):
+
             reg = regularization.Weighted()
 
             pixel_neighbors = np.array([[2], [3], [0], [1]])
@@ -203,6 +219,7 @@ class TestRegularizationWeighted:
             assert (regularization_matrix == test_regularization_matrix).all()
 
         def test__2_b_matrices_size_3x3__weights_all_1s__makes_correct_regularization_matrix(self):
+
             # Here, we define the pixel_neighbors first here and make the B matrices based on them.
 
             # You'll notice that actually, the B Matrix doesn't have to have the -1's going down the diagonal and we
@@ -235,6 +252,7 @@ class TestRegularizationWeighted:
             assert (regularization_matrix == test_regularization_matrix).all()
 
         def test__2_b_matrices_size_4x4__weights_all_1s__makes_correct_regularization_matrix(self):
+
             reg = regularization.Weighted()
 
             test_b_matrix_1 = np.array([[-1, 1, 0, 0],
@@ -262,6 +280,7 @@ class TestRegularizationWeighted:
             assert (regularization_matrix == test_regularization_matrix).all()
 
         def test__4_b_matrices_size_6x6__weights_all_1s__makes_correct_regularization_matrix(self):
+
             # Again, lets exploit the freedom we have when setting up our B matrices to make matching it to pairs a
             # lot less Stressful.
 
@@ -316,6 +335,7 @@ class TestRegularizationWeighted:
             assert (regularization_matrix == test_regularization_matrix).all()
 
         def test__1_b_matrix_size_3x3_variables_regularization_weights__makes_correct_regularization_matrix(self):
+
             # Simple case, where we have just one regularization direction, regularizing pixel 0 -> 1 and 1 -> 2.
 
             # This means our B matrix is:
@@ -346,6 +366,7 @@ class TestRegularizationWeighted:
             assert (regularization_matrix == test_regularization_matrix).all()
 
         def test__2_b_matrices_size_4x4_variables_regularization_weights__makes_correct_regularization_matrix(self):
+
             # Simple case, where we have just one regularization direction, regularizing pixel 0 -> 1 and 1 -> 2.
 
             # This means our B matrix is:
@@ -383,6 +404,7 @@ class TestRegularizationWeighted:
             assert (regularization_matrix == test_regularization_matrix).all()
 
         def test__4_b_matrices_size_6x6_with_regularization_weights__makes_correct_regularization_matrix(self):
+
             reg = regularization.Weighted()
 
             pixel_neighbors = [[1, 4], [2, 4, 0], [3, 4, 5, 1], [5, 2], [5, 0, 1, 2], [2, 3, 4]]

@@ -1,15 +1,13 @@
-import os
-
-import pytest
-
 from autolens import conf
 from autolens import exc
-from autolens.autofit import model_mapper as mm
+from autolens.lensing import galaxy_model as gp
+from autolens.lensing import galaxy as g
 from autolens.inversion import pixelizations
 from autolens.inversion import regularization
-from autolens.lensing import galaxy as g
-from autolens.lensing import galaxy_model as gp
 from autolens.profiles import mass_profiles, light_profiles, light_and_mass_profiles
+from autolens.autofit import model_mapper as mm
+import pytest
+import os
 
 
 class MockPriorModel:
@@ -225,6 +223,7 @@ class TestResultForArguments:
 class TestPixelization(object):
 
     def test_pixelization(self, test_config):
+
         galaxy_prior = gp.GalaxyModel(variable_redshift=True, pixelization=pixelizations.Voronoi,
                                       regularization=regularization.Constant, config=test_config)
 
@@ -237,6 +236,7 @@ class TestPixelization(object):
         assert galaxy.pixelization.pixels == 10
 
     def test_fixed_pixelization(self, test_config):
+
         galaxy_prior = gp.GalaxyModel(variable_redshift=True, pixelization=pixelizations.Voronoi(),
                                       regularization=regularization.Constant(), config=test_config)
 
@@ -247,13 +247,15 @@ class TestPixelization(object):
         assert galaxy.pixelization.pixels == 100
 
     def test__if_no_pixelization_raises_error(self, test_config):
+
         with pytest.raises(exc.PriorException):
             gp.GalaxyModel(variable_redshift=True, pixelization=pixelizations.Voronoi, config=test_config)
 
 
 class TestRegularization(object):
-
+    
     def test_regularization(self, test_config):
+
         galaxy_prior = gp.GalaxyModel(variable_redshift=True, pixelization=pixelizations.Voronoi,
                                       regularization=regularization.Constant, config=test_config)
 
@@ -266,6 +268,7 @@ class TestRegularization(object):
         assert galaxy.regularization.regularization_coefficients == (5,)
 
     def test_fixed_regularization(self, test_config):
+
         galaxy_prior = gp.GalaxyModel(variable_redshift=True, pixelization=pixelizations.Voronoi(),
                                       regularization=regularization.Constant(), config=test_config)
 
@@ -276,6 +279,7 @@ class TestRegularization(object):
         assert galaxy.regularization.regularization_coefficients == (1.,)
 
     def test__if_no_pixelization_raises_error(self, test_config):
+
         with pytest.raises(exc.PriorException):
             gp.GalaxyModel(variable_redshift=True, regularization=regularization.Constant, config=test_config)
 

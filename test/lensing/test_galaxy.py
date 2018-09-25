@@ -1,11 +1,11 @@
-import numpy as np
-import pytest
-
 from autolens import exc
 from autolens.lensing import galaxy as g
-from autolens.profiles import light_and_mass_profiles as lmp
 from autolens.profiles import light_profiles as lp
 from autolens.profiles import mass_profiles as mp
+from autolens.profiles import light_and_mass_profiles as lmp
+
+import pytest
+import numpy as np
 
 
 @pytest.fixture(name="sersic_0")

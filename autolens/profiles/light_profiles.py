@@ -1,7 +1,6 @@
-import numpy as np
-from scipy.integrate import quad
-
 from autolens.profiles import geometry_profiles
+from scipy.integrate import quad
+import numpy as np
 
 
 class LightProfile(object):

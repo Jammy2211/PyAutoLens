@@ -1,20 +1,21 @@
-import os
-
-from autolens.autofit import non_linear as nl
-from autolens.imaging import mask as msk
-from autolens.lensing import galaxy
-from autolens.lensing import galaxy_model as gm
-from autolens.pipeline import phase as ph
 from autolens.pipeline import pipeline as pl
+from autolens.pipeline import phase as ph
 from autolens.profiles import light_profiles as lp
+from autolens.lensing import galaxy_model as gm
+from autolens.autofit import non_linear as nl
+from autolens.autofit import model_mapper as mm
+from autolens.lensing import galaxy
+from autolens.imaging import mask as msk
 from test.integration import tools
+
+import os
 
 dirpath = os.path.dirname(os.path.realpath(__file__))
 dirpath = os.path.dirname(dirpath)
 output_path = '/gpfs/data/pdtw24/Lens/int/lens_only/'
 
-
 def test_pipeline():
+
     pipeline_name = "l2g_hyp"
     data_name = '/l2g_hyp'
 
@@ -42,8 +43,8 @@ def test_pipeline():
     for result in results:
         print(result)
 
-
 def make_pipeline(pipeline_name):
+
     def modify_mask_function(img):
         return msk.Mask.circular(shape=img.shape, pixel_scale=img.pixel_scale, radius_mask_arcsec=5.)
 
@@ -96,7 +97,6 @@ def make_pipeline(pipeline_name):
     phase3.optimizer.sampling_efficiency = 0.8
 
     return pl.PipelineImaging(pipeline_name, phase1, phase2, phase2h, phase3)
-
 
 if __name__ == "__main__":
     test_pipeline()
