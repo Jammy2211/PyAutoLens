@@ -11,7 +11,7 @@ import os
 
 dirpath = os.path.dirname(os.path.realpath(__file__))
 dirpath = os.path.dirname(dirpath)
-output_path = '/gpfs/data/pdtw24/Lens/int/model_mapper/'
+output_path = '{}/integration_output'.format(dirpath)
 
 def pipeline():
 
