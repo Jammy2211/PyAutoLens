@@ -1,9 +1,9 @@
+import numba
 import numpy as np
-
-from autolens.profiles import light_profiles
 from profiling import profiling_data
 from profiling import tools
-import numba
+
+from autolens.profiles import light_profiles
 
 
 class Convolver(object):
@@ -345,7 +345,7 @@ class ConvolverImage(Convolver):
         return new_array
 
 
-sub_grid_size=4
+sub_grid_size = 4
 psf_shape = (21, 21)
 # psf_shape = (41, 41)
 sersic = light_profiles.EllipticalSersic(centre=(0.0, 0.0), axis_ratio=0.8, phi=90.0, intensity=0.1,
@@ -368,25 +368,31 @@ hst_up_blurring_image = sersic.intensities_from_grid(grid=hst_up.grids.blurring)
 ao_image = sersic.intensities_from_grid(grid=ao.grids._image_plane_image)
 ao_blurring_image = sersic.intensities_from_grid(grid=ao.grids.blurring)
 
+
 @tools.tick_toc_x1
 def lsst_solution():
     lsst.masked_image.convolver_image.convolve_image(image_array=lsst_image, blurring_array=lsst_blurring_image)
+
 
 @tools.tick_toc_x1
 def euclid_solution():
     euclid.masked_image.convolver_image.convolve_image(image_array=euclid_image, blurring_array=euclid_blurring_image)
 
+
 @tools.tick_toc_x1
 def hst_solution():
     hst.masked_image.convolver_image.convolve_image(image_array=hst_image, blurring_array=hst_blurring_image)
+
 
 @tools.tick_toc_x1
 def hst_up_solution():
     hst_up.masked_image.convolver_image.convolve_image(image_array=hst_up_image, blurring_array=hst_up_blurring_image)
 
+
 @tools.tick_toc_x1
 def ao_solution():
     ao.masked_image.convolver_image.convolve_image(image_array=ao_image, blurring_array=ao_blurring_image)
+
 
 if __name__ == "__main__":
     lsst_solution()

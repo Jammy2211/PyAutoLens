@@ -1,9 +1,10 @@
+import itertools
 import os
 import shutil
 from functools import wraps
-import itertools
 
 import pytest
+
 from autolens import conf
 from autolens import exc
 from autolens.autofit import model_mapper

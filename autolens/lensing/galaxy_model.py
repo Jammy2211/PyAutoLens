@@ -1,9 +1,10 @@
-from autolens import exc
-from autolens.lensing import galaxy
 import inspect
-from autolens.profiles import light_profiles, mass_profiles
+
+from autolens import exc
 from autolens.autofit import model_mapper
-from autolens.autofit.model_mapper import PriorTuple, ConstantTuple, PriorModelTuple, cast_collection
+from autolens.autofit.model_mapper import PriorTuple, ConstantTuple, cast_collection
+from autolens.lensing import galaxy
+from autolens.profiles import light_profiles, mass_profiles
 
 
 def is_light_profile_class(cls):
