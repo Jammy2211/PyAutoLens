@@ -40,7 +40,11 @@ def fit_from_lensing_image_and_tracer(lensing_image, tracer, unmasked_tracer=Non
     elif tracer.has_light_profile and tracer.has_pixelization:
 
         if not tracer.has_hyper_galaxy:
-            return ProfileInversionFit(lensing_image=lensing_image, tracer=tracer)
+            return ProfileInversionFit(lensing_image=lensing_image, tracer=tracer, unmasked_tracer=unmasked_tracer)
+        elif tracer.has_hyper_galaxy:
+            return HyperProfileInversionFit(lensing_image=lensing_image, tracer=tracer,
+                                            hyper_model_image=hyper_model_image, hyper_galaxy_images=hyper_galaxy_images,
+                                            hyper_minimum_values=hyper_minimum_values, unmasked_tracer=unmasked_tracer)
 
     else:
 
@@ -75,6 +79,11 @@ def fast_likelihood_from_lensing_image_and_tracer(lensing_image, tracer, hyper_m
 
         if not tracer.has_hyper_galaxy:
             return ProfileInversionFit.fast_evidence(lensing_image=lensing_image, tracer=tracer)
+        elif tracer.has_hyper_galaxy:
+            return HyperProfileInversionFit.fast_scaled_evidence(lensing_image=lensing_image, tracer=tracer,
+                                                                 hyper_model_image=hyper_model_image,
+                                                                 hyper_galaxy_images=hyper_galaxy_images,
+                                                                 hyper_minimum_values=hyper_minimum_values)
 
     else:
 
@@ -96,7 +105,7 @@ class AbstractFit(object):
         self._noise_map = lensing_image.noise_map
 
         self._model_image = _model_image
-        self._residuals = residuals_from_image_and_model(self._image, _model_image)
+        self._residuals = residuals_from_image_and_model(self._image, self._model_image)
         self._chi_squareds = chi_squareds_from_residuals_and_noise(self._residuals, lensing_image.noise_map)
 
     @property
@@ -167,6 +176,64 @@ class AbstractProfileFit(AbstractFit):
                         self._model_images_of_planes))
 
 
+class AbstractInversion(object):
+
+    @property
+    def evidence(self):
+        return evidence_from_reconstruction_terms(self.chi_squared_term, self.inversion.regularization_term,
+                                                           self.inversion.log_det_curvature_reg_matrix_term,
+                                                           self.inversion.log_det_regularization_matrix_term,
+                                                           self.noise_term)
+
+
+class AbstractInversionFit(AbstractFit, AbstractInversion):
+
+    def __init__(self, lensing_image, tracer):
+
+        self.mapper = tracer.mappers_of_planes[0]
+        self.regularization = tracer.regularization_of_planes[0]
+        self.inversion = inversions.inversion_from_mapper_regularization_and_data(lensing_image[:],
+                                                                                  lensing_image.noise_map,
+                                                                                  lensing_image.convolver_mapping_matrix,
+                                                                                  self.mapper, self.regularization)
+
+        super(AbstractInversionFit, self).__init__(lensing_image, tracer, self.inversion.reconstructed_image)
+
+
+class AbstractProfileInversionFit(AbstractFit, AbstractInversion):
+
+    def __init__(self, lensing_image, tracer, unmasked_tracer):
+
+        self.convolve_image = lensing_image.convolver_image.convolve_image
+        self._profile_model_image = self.convolve_image(tracer._image_plane_image, tracer._image_plane_blurring_image)
+        self._profile_subtracted_image = lensing_image[:] - self._profile_model_image
+
+        self.mapper = tracer.mappers_of_planes[0]
+        self.regularization = tracer.regularization_of_planes[0]
+        self.inversion = inversions.inversion_from_mapper_regularization_and_data(self._profile_subtracted_image,
+                                                                                  lensing_image.noise_map,
+                                                                                  lensing_image.convolver_mapping_matrix,
+                                                                                  self.mapper, self.regularization)
+
+        self._inversion_model_image = self.inversion.reconstructed_image
+
+        _model_image = self._profile_model_image + self._inversion_model_image
+
+        super(AbstractProfileInversionFit, self).__init__(lensing_image, tracer, _model_image)
+
+    @property
+    def profile_subtracted_image(self):
+        return self.map_to_2d(self._profile_subtracted_image)
+
+    @property
+    def profile_model_image(self):
+        return self.map_to_2d(self._profile_model_image)
+
+    @property
+    def inversion_model_image(self):
+        return self.map_to_2d(self._inversion_model_image)
+
+
 class ProfileFit(AbstractProfileFit):
 
     def __init__(self, lensing_image, tracer, unmasked_tracer=None, plane_shape=(30, 30)):
@@ -191,25 +258,6 @@ class ProfileFit(AbstractProfileFit):
         chi_squared_term = chi_squared_term_from_chi_squareds(_chi_squareds)
         noise_term = noise_term_from_noise_map(lensing_image.image.noise_map)
         return likelihood_from_chi_squared_and_noise_terms(chi_squared_term, noise_term)
-
-
-class AbstractInversionFit(AbstractFit):
-
-    def __init__(self, lensing_image, tracer):
-
-        self.mapper = tracer.mappers_of_planes[0]
-        self.regularization = tracer.regularization_of_planes[0]
-        self.inversion = inversions.inversion_from_mapper_regularization_and_data(lensing_image[:],
-                                                                                  lensing_image.noise_map,
-                                                                                  lensing_image.convolver_mapping_matrix,
-                                                                                  self.mapper, self.regularization)
-
-        super(AbstractInversionFit, self).__init__(lensing_image, tracer, self.inversion.reconstructed_image)
-
-        self.evidence = evidence_from_reconstruction_terms(self.chi_squared_term, self.inversion.regularization_term,
-                                                           self.inversion.log_det_curvature_reg_matrix_term,
-                                                           self.inversion.log_det_regularization_matrix_term,
-                                                           self.noise_term)
 
 
 class InversionFit(AbstractInversionFit):
@@ -245,48 +293,9 @@ class InversionFit(AbstractInversionFit):
                                                   inversion.log_det_regularization_matrix_term, noise_term)
 
 
-class AbstractProfileInversionFit(AbstractFit):
-
-    def __init__(self, lensing_image, tracer):
-
-        self.convolve_image = lensing_image.convolver_image.convolve_image
-        self._profile_model_image = self.convolve_image(tracer._image_plane_image, tracer._image_plane_blurring_image)
-        self._profile_subtracted_image = lensing_image[:] - self._profile_model_image
-
-        self.mapper = tracer.mappers_of_planes[0]
-        self.regularization = tracer.regularization_of_planes[0]
-        self.inversion = inversions.inversion_from_mapper_regularization_and_data(self._profile_subtracted_image,
-                                                                                  lensing_image.noise_map,
-                                                                                  lensing_image.convolver_mapping_matrix,
-                                                                                  self.mapper, self.regularization)
-
-        self._inversion_model_image = self.inversion.reconstructed_image
-
-        _model_image = self._profile_model_image + self._inversion_model_image
-
-        super(AbstractProfileInversionFit, self).__init__(lensing_image, tracer, _model_image)
-
-        self.evidence = evidence_from_reconstruction_terms(self.chi_squared_term, self.inversion.regularization_term,
-                                                           self.inversion.log_det_curvature_reg_matrix_term,
-                                                           self.inversion.log_det_regularization_matrix_term,
-                                                           self.noise_term)
-
-    @property
-    def profile_subtracted_image(self):
-        return self.map_to_2d(self._profile_subtracted_image)
-
-    @property
-    def profile_model_image(self):
-        return self.map_to_2d(self._profile_model_image)
-
-    @property
-    def inversion_model_image(self):
-        return self.map_to_2d(self._inversion_model_image)
-
-
 class ProfileInversionFit(AbstractProfileInversionFit):
 
-    def __init__(self, lensing_image, tracer):
+    def __init__(self, lensing_image, tracer, unmasked_tracer=None):
         """
         Class to evaluate the fit between a model described by a tracer and an actual lensing_image.
 
@@ -298,7 +307,7 @@ class ProfileInversionFit(AbstractProfileInversionFit):
             An object describing the model
         """
 
-        super(ProfileInversionFit, self).__init__(lensing_image, tracer)
+        super(ProfileInversionFit, self).__init__(lensing_image, tracer, unmasked_tracer)
 
     @classmethod
     def fast_evidence(cls, lensing_image, tracer):
@@ -321,7 +330,8 @@ class ProfileInversionFit(AbstractProfileInversionFit):
                                                   inversion.log_det_curvature_reg_matrix_term,
                                                   inversion.log_det_regularization_matrix_term, noise_term)
 
-class AbstractHyperFit(AbstractFit):
+
+class AbstractHyper(AbstractFit):
 
     def contributions_and_scaled_noise_map_from_hyper_images(self, tracer, hyper_model_image, hyper_galaxy_images,
                                                              hyper_minimum_values):
@@ -356,7 +366,26 @@ class AbstractHyperFit(AbstractFit):
         return list(map(lambda contributions : self.map_to_2d(contributions), self._contributions))
 
 
-class HyperProfileFit(AbstractProfileFit, AbstractHyperFit):
+class AbstractHyperInversion(AbstractHyper):
+
+    @property
+    def scaled_model_image(self):
+        return self.map_to_2d(self._scaled_model_image)
+
+    @property
+    def scaled_residuals(self):
+        return self.map_to_2d(self._scaled_residuals)
+
+    @property
+    def scaled_evidence(self):
+        return evidence_from_reconstruction_terms(self.scaled_chi_squared_term,
+                                                  self.scaled_inversion.regularization_term,
+                                                  self.scaled_inversion.log_det_curvature_reg_matrix_term,
+                                                  self.scaled_inversion.log_det_regularization_matrix_term,
+                                                  self.scaled_noise_term)
+
+
+class HyperProfileFit(AbstractProfileFit, AbstractHyper):
 
     def __init__(self, lensing_image, tracer, hyper_model_image, hyper_galaxy_images, hyper_minimum_values,
                  unmasked_tracer=None, plane_shape=(30, 30)):
@@ -400,7 +429,7 @@ class HyperProfileFit(AbstractProfileFit, AbstractHyperFit):
         return likelihood_from_chi_squared_and_noise_terms(self.scaled_chi_squared_term, self.scaled_noise_term)
 
 
-class HyperInversionFit(AbstractInversionFit, AbstractHyperFit):
+class HyperInversionFit(AbstractInversionFit, AbstractHyperInversion):
 
     def __init__(self, lensing_image, tracer, hyper_model_image, hyper_galaxy_images, hyper_minimum_values):
         """
@@ -440,9 +469,8 @@ class HyperInversionFit(AbstractInversionFit, AbstractHyperFit):
         mapper = tracer.mappers_of_planes[0]
         regularization = tracer.regularization_of_planes[0]
 
-        scaled_inversion = inversions.inversion_from_mapper_regularization_and_data(lensing_image[:], _scaled_noise_map,
-                                                                             lensing_image.convolver_mapping_matrix,
-                                                                             mapper, regularization)
+        scaled_inversion = inversions.inversion_from_mapper_regularization_and_data(
+            lensing_image[:], _scaled_noise_map, lensing_image.convolver_mapping_matrix, mapper, regularization)
 
         _scaled_residuals = residuals_from_image_and_model(lensing_image[:], scaled_inversion.reconstructed_image)
         _scaled_chi_squareds = chi_squareds_from_residuals_and_noise(_scaled_residuals, _scaled_noise_map)
@@ -452,21 +480,64 @@ class HyperInversionFit(AbstractInversionFit, AbstractHyperFit):
                                                   scaled_inversion.log_det_curvature_reg_matrix_term,
                                                   scaled_inversion.log_det_regularization_matrix_term, scaled_noise_term)
 
-    @property
-    def scaled_model_image(self):
-        return self.map_to_2d(self._scaled_model_image)
 
-    @property
-    def scaled_residuals(self):
-        return self.map_to_2d(self._scaled_residuals)
+class HyperProfileInversionFit(AbstractProfileInversionFit, AbstractHyperInversion):
 
-    @property
-    def scaled_evidence(self):
-        return evidence_from_reconstruction_terms(self.scaled_chi_squared_term,
-                                                  self.scaled_inversion.regularization_term,
-                                                  self.scaled_inversion.log_det_curvature_reg_matrix_term,
-                                                  self.scaled_inversion.log_det_regularization_matrix_term,
-                                                  self.scaled_noise_term)
+    def __init__(self, lensing_image, tracer, hyper_model_image, hyper_galaxy_images, hyper_minimum_values,
+                 unmasked_tracer=None):
+        """
+        Class to evaluate the fit between a model described by a tracer and an actual lensing_image.
+
+        Parameters
+        ----------
+        lensing_image: li.LensingImage
+            An lensing_image that has been masked for efficiency
+        tracer: ray_tracing.AbstractTracer
+            An object describing the model
+        """
+
+        super(HyperProfileInversionFit, self).__init__(lensing_image, tracer, unmasked_tracer)
+
+        self.contributions_and_scaled_noise_map_from_hyper_images(tracer, hyper_model_image,
+                                                                  hyper_galaxy_images, hyper_minimum_values)
+
+        self.scaled_inversion = inversions.inversion_from_mapper_regularization_and_data(
+            self._profile_subtracted_image, self._scaled_noise_map, lensing_image.convolver_mapping_matrix,
+            self.mapper, self.regularization)
+
+        self._scaled_model_image = self._profile_model_image + self.scaled_inversion.reconstructed_image
+        self._scaled_residuals = residuals_from_image_and_model(self._image, self._scaled_model_image)
+        self._scaled_chi_squareds = chi_squareds_from_residuals_and_noise(self._scaled_residuals,
+                                                                          self._scaled_noise_map)
+
+    @classmethod
+    def fast_scaled_evidence(cls, lensing_image, tracer, hyper_model_image, hyper_galaxy_images,
+                               hyper_minimum_values):
+
+        _contributions = contributions_from_hyper_images_and_galaxies(hyper_model_image, hyper_galaxy_images,
+                                                                      tracer.hyper_galaxies, hyper_minimum_values)
+        _scaled_noise_map = scaled_noise_from_hyper_galaxies_and_contributions(_contributions, tracer.hyper_galaxies,
+                                                                               lensing_image.noise_map)
+
+        convolve_image = lensing_image.convolver_image.convolve_image
+        _profile_model_image = convolve_image(tracer._image_plane_image, tracer._image_plane_blurring_image)
+        _profile_subtracted_image = lensing_image[:] - _profile_model_image
+
+        mapper = tracer.mappers_of_planes[0]
+        regularization = tracer.regularization_of_planes[0]
+
+        scaled_inversion = inversions.inversion_from_mapper_regularization_and_data(
+            _profile_subtracted_image, _scaled_noise_map, lensing_image.convolver_mapping_matrix, mapper, regularization)
+
+        _scaled_model_image = _profile_model_image + scaled_inversion.reconstructed_image
+        _scaled_residuals = residuals_from_image_and_model(lensing_image[:], _scaled_model_image)
+        _scaled_chi_squareds = chi_squareds_from_residuals_and_noise(_scaled_residuals, _scaled_noise_map)
+        scaled_chi_squared_term = chi_squared_term_from_chi_squareds(_scaled_chi_squareds)
+        scaled_noise_term = noise_term_from_noise_map(_scaled_noise_map)
+        return evidence_from_reconstruction_terms(scaled_chi_squared_term, scaled_inversion.regularization_term,
+                                                  scaled_inversion.log_det_curvature_reg_matrix_term,
+                                                  scaled_inversion.log_det_regularization_matrix_term,
+                                                  scaled_noise_term)
 
 
 class PositionFit:
