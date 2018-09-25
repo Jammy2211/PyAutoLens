@@ -1,13 +1,13 @@
-from autolens.pipeline import pipeline as pl
-from autolens.pipeline import phase as ph
-from autolens.profiles import light_profiles as lp
+import os
+
+from autolens.autofit import non_linear as nl
+from autolens.imaging import mask as msk
 from autolens.lensing import galaxy
 from autolens.lensing import galaxy_model as gm
-from autolens.imaging import mask as msk
-from autolens.autofit import non_linear as nl
-from autolens.autofit import model_mapper as mm
+from autolens.pipeline import phase as ph
+from autolens.pipeline import pipeline as pl
+from autolens.profiles import light_profiles as lp
 from test.integration import tools
-import os
 
 dirpath = os.path.dirname(os.path.realpath(__file__))
 dirpath = os.path.dirname(dirpath)
@@ -15,7 +15,6 @@ output_path = '/gpfs/data/pdtw24/Lens/int/lens_only/'
 
 
 def test_pipeline():
-
     pipeline_name = "l2g_sep"
     data_name = '/l2g_sep'
 

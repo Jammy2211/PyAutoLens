@@ -1,7 +1,7 @@
-import os
 import logging
-from os.path import expanduser
+import os
 from base64 import b64encode
+from os.path import expanduser
 
 SUB_PATH_LENGTH = 10
 AUTOLENS_FOLDER = ".autolens"

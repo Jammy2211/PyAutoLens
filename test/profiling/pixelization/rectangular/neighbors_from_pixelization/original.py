@@ -1,8 +1,7 @@
-from profiling import profiling_data
 from profiling import tools
+
 from autolens import exc
-import numpy as np
-import pytest
+
 
 class Pixelization(object):
 
@@ -31,6 +30,7 @@ class Pixelization(object):
         self.pixels = pixels
         self.regularization_coefficients = regularization_coefficients
         self.pix_signal_scale = pix_signal_scale
+
 
 class Rectangular(Pixelization):
 
@@ -124,35 +124,42 @@ class Rectangular(Pixelization):
 
         return pixel_neighbors
 
+
 @tools.tick_toc_x10
 def solution_10x10():
     pix = Rectangular(shape=(10, 10))
     pix.neighbors_from_pixelization()
+
 
 @tools.tick_toc_x10
 def solution_20x20():
     pix = Rectangular(shape=(20, 20))
     pix.neighbors_from_pixelization()
 
+
 @tools.tick_toc_x10
 def solution_30x30():
     pix = Rectangular(shape=(30, 30))
     pix.neighbors_from_pixelization()
+
 
 @tools.tick_toc_x10
 def solution_40x40():
     pix = Rectangular(shape=(40, 40))
     pix.neighbors_from_pixelization()
 
+
 @tools.tick_toc_x10
 def solution_50x50():
     pix = Rectangular(shape=(50, 50))
     pix.neighbors_from_pixelization()
 
+
 @tools.tick_toc_x10
 def solution_100x100():
     pix = Rectangular(shape=(100, 100))
     pix.neighbors_from_pixelization()
+
 
 if __name__ == "__main__":
     solution_10x10()
