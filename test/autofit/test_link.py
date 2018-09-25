@@ -1,6 +1,7 @@
 import os
-from autolens.autofit import link
 import shutil
+
+from autolens.autofit import link
 
 
 def delete_trees(*paths):

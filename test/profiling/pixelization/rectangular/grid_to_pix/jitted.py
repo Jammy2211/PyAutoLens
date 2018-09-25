@@ -1,9 +1,11 @@
+import numba
+import numpy as np
+import pytest
 from profiling import profiling_data
 from profiling import tools
+
 from autolens import exc
-import numpy as np
-import numba
-import pytest
+
 
 class Pixelization(object):
 
@@ -36,7 +38,7 @@ class Pixelization(object):
 
 class Rectangular(Pixelization):
 
-    def __init__(self, shape=(3,3), regularization_coefficients=(1.0,)):
+    def __init__(self, shape=(3, 3), regularization_coefficients=(1.0,)):
         """A rectangular inversion where pixels appear on a Cartesian, uniform and rectangular grid \
         of  shape (rows, columns).
 
@@ -142,15 +144,15 @@ class Rectangular(Pixelization):
         grid_to_pix = np.zeros(grid.shape[0])
 
         for i in range(grid.shape[0]):
-
-            x_pixel = np.floor((grid[i,0] - x_min) / x_pixel_scale)
-            y_pixel = np.floor((grid[i,1] - y_min) / y_pixel_scale)
+            x_pixel = np.floor((grid[i, 0] - x_min) / x_pixel_scale)
+            y_pixel = np.floor((grid[i, 1] - y_min) / y_pixel_scale)
 
             grid_to_pix[i] = x_pixel * y_shape + y_pixel
 
         return grid_to_pix
 
-sub_grid_size=4
+
+sub_grid_size = 4
 
 lsst = profiling_data.setup_class(name='LSST', pixel_scale=0.2, sub_grid_size=sub_grid_size)
 euclid = profiling_data.setup_class(name='Euclid', pixel_scale=0.1, sub_grid_size=sub_grid_size)
@@ -169,28 +171,33 @@ hst_up_geometry = pix.geometry_from_pix_sub_grid(pix_sub_grid=hst_up.grids.sub)
 ao_geometry = pix.geometry_from_pix_sub_grid(pix_sub_grid=ao.grids.sub)
 
 assert pix.grid_to_pix_from_grid(grid=lsst.grids.sub, geometry=lsst_geometry) == \
-    pytest.approx(pix.grid_to_pix_from_grid_jitted(grid=lsst.grids.sub, geometry=lsst_geometry))
+       pytest.approx(pix.grid_to_pix_from_grid_jitted(grid=lsst.grids.sub, geometry=lsst_geometry))
 pix.grid_to_pix_from_grid_jitted(grid=lsst.grids.sub, geometry=lsst_geometry)
 pix.grid_to_pix_from_grid_jitted(grid=euclid.grids.sub, geometry=euclid_geometry)
 pix.grid_to_pix_from_grid_jitted(grid=hst.grids.sub, geometry=hst_geometry)
 pix.grid_to_pix_from_grid_jitted(grid=hst_up.grids.sub, geometry=hst_up_geometry)
 pix.grid_to_pix_from_grid_jitted(grid=ao.grids.sub, geometry=ao_geometry)
 
+
 @tools.tick_toc_x1
 def lsst_solution():
     pix.grid_to_pix_from_grid_jitted(grid=lsst.grids.sub, geometry=lsst_geometry)
+
 
 @tools.tick_toc_x1
 def euclid_solution():
     pix.grid_to_pix_from_grid_jitted(grid=euclid.grids.sub, geometry=euclid_geometry)
 
+
 @tools.tick_toc_x1
 def hst_solution():
     pix.grid_to_pix_from_grid_jitted(grid=hst.grids.sub, geometry=hst_geometry)
 
+
 @tools.tick_toc_x1
 def hst_up_solution():
     pix.grid_to_pix_from_grid_jitted(grid=hst_up.grids.sub, geometry=hst_up_geometry)
+
 
 @tools.tick_toc_x1
 def ao_solution():
