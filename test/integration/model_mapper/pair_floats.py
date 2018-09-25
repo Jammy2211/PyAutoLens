@@ -34,9 +34,9 @@ def pipeline():
                                      source_galaxies=[], target_signal_to_noise=10.0)
     image = tools.load_image(data_name=data_name, pixel_scale=0.5)
 
-    pipeline = make_pipeline(pipeline_name=pipeline_name)
+    pf_pipeline = make_pipeline(pipeline_name=pipeline_name)
 
-    results = pipeline.run(image=image)
+    results = pf_pipeline.run(image=image)
     for result in results:
         print(result)
 
