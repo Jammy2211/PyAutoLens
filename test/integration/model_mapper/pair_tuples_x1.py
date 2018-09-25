@@ -2,7 +2,7 @@ from autolens.pipeline import pipeline as pl
 from autolens.pipeline import phase as ph
 from autolens.profiles import light_profiles as lp
 from autolens.profiles import mass_profiles as mp
-from autolens.lensing import galaxy_model as gp
+from autolens.lensing import galaxy_model as gm
 from autolens.autofit import non_linear as nl
 from autolens.lensing import galaxy
 from autolens import conf
@@ -14,7 +14,7 @@ import os
 
 dirpath = os.path.dirname(os.path.realpath(__file__))
 dirpath = os.path.dirname(dirpath)
-output_path = '/gpfs/data/pdtw24/Lens/int/mm/'
+output_path = '/gpfs/data/pdtw24/Lens/int/model_mapper/'
 
 def pipeline():
 
@@ -46,7 +46,7 @@ def make_pipeline(pipeline_name):
 
             self.lens_galaxies[0].sersic.centre_0 = self.lens_galaxies[0].sersic.axis_ratio
 
-    phase1 = MMPhase(lens_galaxies=[gp.GalaxyModel(sersic=lp.EllipticalSersic)],
+    phase1 = MMPhase(lens_galaxies=[gm.GalaxyModel(sersic=lp.EllipticalSersic)],
                                optimizer_class=nl.MultiNest, phase_name="{}/phase1".format(pipeline_name))
 
     phase1.optimizer.n_live_points = 20

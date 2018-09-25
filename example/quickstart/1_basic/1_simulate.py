@@ -5,7 +5,7 @@ from autolens.lensing import ray_tracing
 from autolens.lensing import galaxy as g
 from autolens.profiles import light_profiles as lp
 from autolens.profiles import mass_profiles as mp
-from autolens.visualize import object_plotters
+from autolens.visualize import image_plotters
 from autolens.visualize import array_plotters
 import os
 
@@ -51,7 +51,7 @@ image_simulated = image.PreparatoryImage.simulate(array=tracer.image_plane_image
 # Now we can visualize the _image, noise-map and psf. Note we're using an object plotter (rather than the array
 # plotters that we used above), which automatically plots all of the simulated _image data.
 # Now we're using an _image with a defined pixel scale, the x and y axis of these figures are in arc-seconds
-object_plotters.plot_image(image=image_simulated)
+image_plotters.plot_image(image=image_simulated)
 
 # Finally, lets output these files to.fits so that we can fit them in the phase and pipeline examples
 path = "{}".format(os.path.dirname(os.path.realpath(__file__))) # Setup path so we can output the simulated data.
