@@ -5,7 +5,7 @@ from autolens.lensing import ray_tracing
 from autolens.lensing import galaxy as g
 from autolens.profiles import light_profiles as lp
 from autolens.profiles import mass_profiles as mp
-from autolens.visualize import image_plotters
+from autolens.plotting import imaging_plotters
 import os
 
 # In this example, we'll simulate another lens + source galaxy system, but include the lens's light and make the
@@ -43,7 +43,7 @@ tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source
                                              image_plane_grids=imaging_grids)
 image_simulated = image.PreparatoryImage.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=0.1,
                                                 exposure_time=300.0, psf=psf, background_sky_level=0.1, add_noise=True)
-image_plotters.plot_image(image=image_simulated)
+imaging_plotters.plot_image(image=image_simulated)
 
 # Finally, lets output these files to.fits so that we can fit them in the phase and pipeline examples
 path = "{}".format(os.path.dirname(os.path.realpath(__file__))) # Setup path so we can output the simulated data.
