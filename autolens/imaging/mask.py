@@ -32,7 +32,7 @@ class Mask(scaled_array.ScaledArray):
         pixel_scale: float
             The arc-second to pixel conversion factor of each pixel.
         """
-        return cls(np.full(tuple(map(lambda d: int(d / pixel_scale), shape)), False), pixel_scale)
+        return cls(np.full(tuple(map(lambda d: int(d), shape)), False), pixel_scale)
 
     @classmethod
     def masked_for_shape_and_pixel_scale(cls, shape, pixel_scale):
@@ -46,7 +46,7 @@ class Mask(scaled_array.ScaledArray):
         pixel_scale: float
             The arc-second to pixel conversion factor of each pixel.
         """
-        return cls(np.full(tuple(map(lambda d: int(d / pixel_scale), shape)), True), pixel_scale)
+        return cls(np.full(tuple(map(lambda d: int(d), shape)), True), pixel_scale)
 
     @classmethod
     def circular(cls, shape, pixel_scale, radius_mask_arcsec, centre=(0., 0.)):
@@ -171,7 +171,7 @@ class ImagingGrids(object):
         self.blurring = blurring
 
     @classmethod
-    def grids_from_mask_sub_grid_size_and_blurring_shape(cls, mask, sub_grid_size, psf_shape):
+    def grids_from_mask_sub_grid_size_and_psf_shape(cls, mask, sub_grid_size, psf_shape):
         """Setup the *ImagingGrids* from a mask, sub-grid size and psf-shape.
 
         Parameters
@@ -186,6 +186,14 @@ class ImagingGrids(object):
         image_grid = ImageGrid.from_mask(mask)
         sub_grid = SubGrid.from_mask_and_sub_grid_size(mask, sub_grid_size)
         blurring_grid = ImageGrid.blurring_grid_from_mask_and_psf_shape(mask, psf_shape)
+        return ImagingGrids(image_grid, sub_grid, blurring_grid)
+
+    @classmethod
+    def from_shape_and_pixel_scale(cls, shape, pixel_scale, sub_grid_size=1, psf_shape=(1,1)):
+        image_grid = ImageGrid.from_shape_and_pixel_scale(shape=shape, pixel_scale=pixel_scale)
+        sub_grid = SubGrid.from_shape_pixel_scale_and_sub_grid_size(shape=shape, pixel_scale=pixel_scale,
+                                                                    sub_grid_size=sub_grid_size)
+        blurring_grid = np.array([[0.0, 0.0]])
         return ImagingGrids(image_grid, sub_grid, blurring_grid)
 
     @classmethod
@@ -257,7 +265,7 @@ class ImageGrid(np.ndarray):
 
     An *ImageGrid* is a ndarray of shape [image_pixels, 2], where image_pixels is the total number of unmasked \
     _image-pixels. The first element maps of the ndarray corresponds to the unmasked pixel index and second element the \
-    x or y arc second coordinates. For example:
+    x or y arc second coordinates. For howtolens:
 
     - image_grid[3,1] = the 4th unmasked pixel's y-coordinate.
     - image_grid[6,0] = the 5th unmasked pixel's x-coordinate.
@@ -266,7 +274,7 @@ class ImageGrid(np.ndarray):
     grid.
 
     |x|x|x|x|x|x|x|x|x|x|
-    |x|x|x|x|x|x|x|x|x|x|     This is an example mask.Mask, where:
+    |x|x|x|x|x|x|x|x|x|x|     This is an howtolens mask.Mask, where:
     |x|x|x|x|x|x|x|x|x|x|
     |x|x|x|x|o|o|x|x|x|x|     x = True (Pixel is masked and excluded from lensing)
     |x|x|x|o|o|o|o|x|x|x|     o = False (Pixel is not masked and included in lensing)
@@ -312,6 +320,12 @@ class ImageGrid(np.ndarray):
             The mask whose unmasked pixels are used to setup the sub-pixel grids."""
         return cls(imaging_util.image_grid_1d_masked_from_mask_and_pixel_scale(mask, mask.pixel_scale),
                    mask.shape, mask.grid_to_pixel)
+
+    @classmethod
+    def from_shape_and_pixel_scale(cls, shape, pixel_scale):
+        mask = Mask.unmasked_for_shape_and_pixel_scale(shape=shape, pixel_scale=pixel_scale)
+        array = imaging_util.image_grid_1d_masked_from_mask_and_pixel_scale(mask=mask, pixel_scale=mask.pixel_scale)
+        return cls(array, mask.shape, mask.grid_to_pixel)
 
     @classmethod
     def blurring_grid_from_mask_and_psf_shape(cls, mask, psf_shape):
@@ -376,7 +390,7 @@ class SubGrid(ImageGrid):
 
     A *SubGrid* is a NumPy array of shape [image_pixels*sub_grid_pixels**2, 2]. The first element of the ndarray \
     corresponds to the unmasked sub-pixel index, and second element the sub-pixel's (x,y) arc second coordinates. \
-    For example:
+    For howtolens:
 
     - sub_grid[9, 1] - using a 2x2 sub-grid, gives the 3rd _image-pixel's 2nd sub-pixel y-coordinate.
     - sub_grid[9, 1] - using a 3x3 sub-grid, gives the 2nd _image-pixel's 1st sub-pixel y-coordinate.
@@ -387,7 +401,7 @@ class SubGrid(ImageGrid):
     2 pixels, to keep the illustration brief.
 
     |x|x|x|x|x|x|x|x|x|x|
-    |x|x|x|x|x|x|x|x|x|x|     This is an example mask.Mask, where:
+    |x|x|x|x|x|x|x|x|x|x|     This is an howtolens mask.Mask, where:
     |x|x|x|x|x|x|x|x|x|x|
     |x|x|x|x|x|x|x|x|x|x|     x = True (Pixel is masked and excluded from lensing)
     |x|x|x|x|o|o|x|x|x|x|     o = False (Pixel is not masked and included in lensing)
@@ -414,7 +428,7 @@ class SubGrid(ImageGrid):
     |x|x|x|x|x|x|x|x|x|x| \/
     |x|x|x|x|x|x|x|x|x|x|
 
-    However, we now go to each mask-pixel and derive a sub-pixel grid for it. For example, for pixel 0,
+    However, we now go to each mask-pixel and derive a sub-pixel grid for it. For howtolens, for pixel 0,
     if *sub_grid_size=2*, we use a 2x2 sub-grid:
 
     Pixel 0 - (2x2):
@@ -465,6 +479,13 @@ class SubGrid(ImageGrid):
                                                                                                   sub_grid_size)
         return SubGrid(sub_grid_masked, mask.shape, mask.grid_to_pixel, mask, sub_grid_size)
 
+    @classmethod
+    def from_shape_pixel_scale_and_sub_grid_size(cls, shape, pixel_scale, sub_grid_size):
+        mask = Mask.unmasked_for_shape_and_pixel_scale(shape=shape, pixel_scale=pixel_scale)
+        sub_grid = imaging_util.sub_grid_1d_masked_from_mask_pixel_scale_and_sub_grid_size(mask, mask.pixel_scale,
+                                                                                sub_grid_size)
+        return SubGrid(sub_grid, mask.shape, mask.grid_to_pixel, mask, sub_grid_size)
+
     def __array_finalize__(self, obj):
         if isinstance(obj, SubGrid):
             self.sub_grid_size = obj.sub_grid_size
@@ -489,7 +510,7 @@ class SubGrid(ImageGrid):
     def sub_to_image(self):
         """ Compute the mapping between every sub-pixel and its host unmasked _image-pixel.
 
-        For example:
+        For howtolens:
 
         - sub_to_pixel[8] = 2 -  The seventh sub-pixel is within the 3rd unmasked _image pixel.
         - sub_to_pixel[20] = 4 -  The nineteenth sub-pixel is within the 5th unmasked _image pixel.
