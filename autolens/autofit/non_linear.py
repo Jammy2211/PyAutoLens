@@ -9,6 +9,7 @@ from autolens import conf
 from autolens.autofit import model_mapper as mm
 import logging
 import matplotlib.pyplot as plt
+from autolens.autofit import link
 
 logging.basicConfig()
 logger = logging.getLogger(__name__)
