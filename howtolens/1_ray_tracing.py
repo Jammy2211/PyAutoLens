@@ -6,7 +6,7 @@ from autolens.imaging import mask
 from autolens.plotting import ray_tracing_plotters
 
 # In this example, we'll perform ray-tracing in AutoLens. We'll set up a simple lens + source configuration.
-# To do this, we'll use the 'galaxy', 'mass_profiles' and 'light_profiles' modules, to create a lens galaxy with an
+# For this, we'll use the 'galaxy', 'mass_profiles' and 'light_profiles' modules, to create a lens galaxy with an
 # isothermal mass distribution and a source-galaxy with an exponential disk surface brightness.
 
 # First, we need to choose our lens galaxy's mass-profile from the 'mass_profiles' module. Lets keep it simple, and
@@ -24,14 +24,15 @@ lens_galaxy = galaxy.Galaxy(mass=sis_mass_profile)
 source_galaxy = galaxy.Galaxy(light=exponential_light_profile)
 
 # Before we can perform ray-tracing, we define our image-plane grid. This grid is the two-dimensional set
-# of (x,y) arc-second coordinates that are traced through the strong lensing configuration.
+# of (x,y) arc-second coordinates that are traced through the strong lensing system.
 # Lets use a 5" x 5" grid on a 2D grid of 50 x 50 pixels.
 image_plane_grids = mask.ImagingGrids.from_shape_and_pixel_scale(shape=(50, 50), pixel_scale=0.1)
 
 # (If you're wondering why this uses the 'mask' module, and why it says 'Grids' plural, we'll cover this later in the
 # tutorials!)
 
-# Finally, we can use our lens and source galaxies to trace our coordinate-grid!
+# Finally, we can use our lens and source galaxies to trace our coordinate-grid. We have two planes, an image-plane and
+# a source plane, so from the 'ray_tracing' module we call the tracer which deals with this particular system.
 tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
                                              image_plane_grids=image_plane_grids)
 
