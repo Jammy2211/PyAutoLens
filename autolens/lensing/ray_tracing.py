@@ -187,10 +187,7 @@ class TracerImageSourcePlanes(AbstractTracer):
             The cosmology of the ray-tracing calculation.
         """
 
-        if cosmology is not None:
-
-            self.cosmology = cosmology
-
+        self.cosmology = cosmology
         self.image_plane = plane.Plane(lens_galaxies, image_plane_grids, borders=borders, compute_deflections=True,
                                        cosmology=cosmology)
 
@@ -200,23 +197,22 @@ class TracerImageSourcePlanes(AbstractTracer):
                                         cosmology=cosmology)
 
     @property
+    @plane.cosmology_check
     def angular_diameter_distance_from_image_to_source_plane(self):
         return self.cosmology.angular_diameter_distance_z1z2(self.image_plane.redshift,
                                                              self.source_plane.redshift).to('kpc').value
 
-    def ang_between_planes(self, plane_i, plane_j):
-        return self.cosmology.angular_diameter_distance_z1z2(self.redshifts[plane_i], self.redshifts[plane_j]). \
-            to('kpc').value
-
     @property
+    @plane.cosmology_check
     def critical_density_kpc(self):
         return self.constant_kpc * self.source_plane.angular_diameter_distance_to_earth / \
                (self.angular_diameter_distance_from_image_to_source_plane *
                 self.image_plane.angular_diameter_distance_to_earth)
 
     @property
+    @plane.cosmology_check
     def critical_density_arcsec(self):
-        return self.critical_density_kpc * self.image_plane.kpc_per_arcsec ** 2.0
+        return self.critical_density_kpc * self.image_plane.kpc_per_arcsec_proper ** 2.0
 
     @property
     def surface_density(self):
