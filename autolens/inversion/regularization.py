@@ -3,7 +3,7 @@ import numpy as np
 
 class Regularization(object):
 
-    def __init__(self, regularization_coefficients):
+    def __init__(self, regularization_coefficients=(1.0,)):
         """ Abstract base class for a regularization-scheme, which is applied to a pixelization to enforce a \
         smooth-source solution and prevent over-fitting noise in the _image. This is achieved by computing a \
         'regularization term' - which is the sum of differences in reconstructed flux between every set of neighboring \
