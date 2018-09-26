@@ -265,18 +265,39 @@ class TestTracerImageSourcePlanes(object):
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g1],
                                                          image_plane_grids=imaging_grids, cosmology=cosmo.Planck15)
 
-            assert tracer.image_plane.arcsec_per_kpc == pytest.approx(0.525060, 1e-5)
-            assert tracer.image_plane.kpc_per_arcsec == pytest.approx(1.904544, 1e-5)
+            assert tracer.image_plane.arcsec_per_kpc_proper == pytest.approx(0.525060, 1e-5)
+            assert tracer.image_plane.kpc_per_arcsec_proper == pytest.approx(1.904544, 1e-5)
             assert tracer.image_plane.angular_diameter_distance_to_earth == pytest.approx(392840, 1e-5)
 
-            assert tracer.source_plane.arcsec_per_kpc == pytest.approx(0.1214785, 1e-5)
-            assert tracer.source_plane.kpc_per_arcsec == pytest.approx(8.231907, 1e-5)
+            assert tracer.source_plane.arcsec_per_kpc_proper == pytest.approx(0.1214785, 1e-5)
+            assert tracer.source_plane.kpc_per_arcsec_proper == pytest.approx(8.231907, 1e-5)
             assert tracer.source_plane.angular_diameter_distance_to_earth == pytest.approx(1697952, 1e-5)
 
             assert tracer.angular_diameter_distance_from_image_to_source_plane == pytest.approx(1481890.4, 1e-5)
 
             assert tracer.critical_density_kpc == pytest.approx(4.85e9, 1e-2)
             assert tracer.critical_density_arcsec == pytest.approx(17593241668, 1e-2)
+
+        def test__no_cosmology__returns_none(self, imaging_grids):
+
+            g0 = g.Galaxy(redshift=0.1)
+            g1 = g.Galaxy(redshift=1.0)
+
+            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g1],
+                                                         image_plane_grids=imaging_grids)
+
+            assert tracer.image_plane.arcsec_per_kpc_proper == None
+            assert tracer.image_plane.kpc_per_arcsec_proper == None
+            assert tracer.image_plane.angular_diameter_distance_to_earth == None
+
+            assert tracer.source_plane.arcsec_per_kpc_proper == None
+            assert tracer.source_plane.kpc_per_arcsec_proper == None
+            assert tracer.source_plane.angular_diameter_distance_to_earth == None
+
+            assert tracer.angular_diameter_distance_from_image_to_source_plane == None
+
+            assert tracer.critical_density_kpc == None
+            assert tracer.critical_density_arcsec == None
 
     class TestImagePlaneImages:
 

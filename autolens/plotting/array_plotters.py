@@ -5,12 +5,12 @@ import numpy as np
 from astropy.io import fits
 
 def plot_array(array, grid, as_subplot,
-               xticks, yticks, xyticksize, units,
+               units, kpc_per_arcsec,
+               xticks, yticks, xyticksize,
                norm, norm_min, norm_max, linthresh, linscale,
                figsize, aspect, cmap, cb_ticksize,
                title, titlesize, xlabelsize, ylabelsize,
                output_path, output_filename, output_format):
-    xlabel, ylabel = get_xylabels(units)
 
     norm_min, norm_max = get_normalization_min_max(array=array, norm_min=norm_min, norm_max=norm_max)
     norm_scale = get_normalization_scale(norm=norm, norm_min=norm_min, norm_max=norm_max,
@@ -18,9 +18,9 @@ def plot_array(array, grid, as_subplot,
 
     plot_image(array=array, grid=grid, as_subplot=as_subplot, figsize=figsize, aspect=aspect, cmap=cmap,
                     norm_scale=norm_scale)
-    set_ticks(array=array, units=units, xticks=xticks, yticks=yticks, xyticksize=xyticksize)
-    set_title_and_labels(title=title, xlabel=xlabel, ylabel=ylabel, titlesize=titlesize,
-                              xlabelsize=xlabelsize, ylabelsize=ylabelsize)
+    set_title(title=title, titlesize=titlesize)
+    set_xy_labels_and_ticks(array=array, units=units, kpc_per_arcsec=kpc_per_arcsec, xticks=xticks, yticks=yticks,
+                            xlabelsize=xlabelsize, ylabelsize=ylabelsize, xyticksize=xyticksize)
     set_colorbar(cb_ticksize=cb_ticksize)
     plot_grid(grid)
 
@@ -52,23 +52,6 @@ def get_normalization_scale(norm, norm_min, norm_max, linthresh, linscale):
                                      'linear | log | symmetric_log')
 
 
-def get_xylabels(units):
-    if units is 'pixels':
-        xlabel = 'x (pixels)'
-        ylabel = 'y (pixels)'
-    elif units is 'arcsec':
-        xlabel = 'x (arcsec)'
-        ylabel = 'y (arcsec)'
-    elif units is 'kpc':
-        xlabel = 'x (kpc)'
-        ylabel = 'y (kpc)'
-    else:
-        raise exc.VisualizeException('The units supplied to the plotted are not a valid string (must be pixels | '
-                                     'arcsec | kpc)')
-
-    return xlabel, ylabel
-
-
 def plot_image(array, grid, as_subplot, figsize, aspect, cmap, norm_scale):
     if not as_subplot:
         plt.figure(figsize=figsize)
@@ -80,22 +63,36 @@ def plot_image(array, grid, as_subplot, figsize, aspect, cmap, norm_scale):
                    extent=(np.min(grid[:, 0]), np.max(grid[:, 0]), np.min(grid[:, 1]), np.max(grid[:, 1])))
 
 
-def set_title_and_labels(title, xlabel, ylabel, titlesize, xlabelsize, ylabelsize):
+def set_title(title, titlesize):
     plt.title(title, fontsize=titlesize)
-    plt.xlabel(xlabel, fontsize=xlabelsize)
-    plt.ylabel(ylabel, fontsize=ylabelsize)
 
 
-def set_ticks(array, units, xticks, yticks, xyticksize):
+def set_xy_labels_and_ticks(array, units, kpc_per_arcsec, xticks, yticks, xlabelsize, ylabelsize, xyticksize):
+
     if units is 'pixels':
 
         plt.xticks(np.round((array.shape[0] * np.array([0.0, 0.33, 0.66, 0.99]))))
         plt.yticks(np.round((array.shape[1] * np.array([0.0, 0.33, 0.66, 0.99]))))
+        plt.xlabel('x (pixels)', fontsize=xlabelsize)
+        plt.ylabel('y (pixels)', fontsize=ylabelsize)
 
-    elif units is 'arcsec' or units is 'kpc':
+    elif units is 'arcsec' or kpc_per_arcsec is None:
 
         plt.xticks(array.shape[0] * np.array([0.0, 0.33, 0.66, 0.99]), xticks)
         plt.yticks(array.shape[1] * np.array([0.0, 0.33, 0.66, 0.99]), yticks)
+        plt.xlabel('x (arcsec)', fontsize=xlabelsize)
+        plt.ylabel('y (arcsec)', fontsize=ylabelsize)
+
+    elif units is 'kpc':
+
+        plt.xticks(array.shape[0] * np.array([0.0, 0.33, 0.66, 0.99]), np.round(kpc_per_arcsec * xticks, 1))
+        plt.yticks(array.shape[1] * np.array([0.0, 0.33, 0.66, 0.99]), np.round(kpc_per_arcsec * yticks, 1))
+        plt.xlabel('x (kpc)', fontsize=xlabelsize)
+        plt.ylabel('y (kpc)', fontsize=ylabelsize)
+
+    else:
+        raise exc.VisualizeException('The units supplied to the plotted are not a valid string (must be pixels | '
+                                     'arcsec | kpc)')
 
     plt.tick_params(labelsize=xyticksize)
 
