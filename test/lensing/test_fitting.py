@@ -9,6 +9,7 @@ from autolens.inversion import regularization
 from autolens.lensing import fitting
 from autolens.lensing import galaxy as g
 from autolens.lensing import lensing_image
+from autolens.lensing import plane as pl
 from autolens.lensing import ray_tracing
 from autolens.profiles import light_profiles as lp
 from autolens.profiles import mass_profiles as mp
@@ -334,8 +335,8 @@ class TestUnmaskedModelImages:
                                        [True, True, True]]), pixel_scale=1.0)
         li = lensing_image.LensingImage(im, ma, sub_grid_size=1)
 
-        g0 = g.Galaxy(redshift=0.1, light_profile=lp.EllipticalSersic(intensity=0.1))
-        g1 = g.Galaxy(redshift=1.0, light_profile=lp.EllipticalSersic(intensity=0.2))
+        g0 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=0.1))
+        g1 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=0.2))
 
         tracer = ray_tracing.TracerImagePlane(lens_galaxies=[g0, g1], image_plane_grids=li.unmasked_grids)
         unmasked_model_images = fitting.unmasked_model_images_of_galaxies_from_lensing_image_and_tracer(li, tracer)
@@ -351,6 +352,7 @@ class TestUnmaskedModelImages:
         assert (manual_model_images[0][1:4, 1:4] + manual_model_images[1][1:4, 1:4] == unmasked_model_image).all()
 
     def test___same_as_above_but_image_and_souce_plane(self):
+
         psf = image.PSF(array=(np.array([[0.0, 0.0, 0.0],
                                          [0.0, 1.0, 0.0],
                                          [0.0, 0.0, 0.0]])))
@@ -361,10 +363,10 @@ class TestUnmaskedModelImages:
                                        [True, True, True]]), pixel_scale=1.0)
         li = lensing_image.LensingImage(im, ma, sub_grid_size=1)
 
-        g0 = g.Galaxy(redshift=0.1, light_profile=lp.EllipticalSersic(intensity=0.1))
-        g1 = g.Galaxy(redshift=1.0, light_profile=lp.EllipticalSersic(intensity=0.2))
-        g2 = g.Galaxy(redshift=1.0, light_profile=lp.EllipticalSersic(intensity=0.3))
-        g3 = g.Galaxy(redshift=1.0, light_profile=lp.EllipticalSersic(intensity=0.4))
+        g0 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=0.1))
+        g1 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=0.2))
+        g2 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=0.3))
+        g3 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=0.4))
 
         tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0, g1], source_galaxies=[g2, g3],
                                                      image_plane_grids=li.unmasked_grids)
@@ -795,8 +797,8 @@ class TestProfileFit:
             li = lensing_image.LensingImage(im, ma, sub_grid_size=1)
 
             g0 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=1.0))
-            g0_image = ray_tracing.intensities_from_grid(grid=li.grids.sub, galaxies=[g0])
-            g0_blurring_image = ray_tracing.intensities_from_grid(grid=li.grids.blurring, galaxies=[g0])
+            g0_image = pl.intensities_from_grid(grid=li.grids.sub, galaxies=[g0])
+            g0_blurring_image = pl.intensities_from_grid(grid=li.grids.blurring, galaxies=[g0])
             g0_model_image = li.grids.image.map_to_2d(li.convolver_image.convolve_image(g0_image, g0_blurring_image))
 
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g0],

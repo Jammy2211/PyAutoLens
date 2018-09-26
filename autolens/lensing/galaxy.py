@@ -58,6 +58,10 @@ class Galaxy(object):
         return [value for value in self.__dict__.values() if is_mass_profile(value)]
 
     @property
+    def has_redshift(self):
+        return self.redshift is not None
+
+    @property
     def has_pixelization(self):
         """
         Returns

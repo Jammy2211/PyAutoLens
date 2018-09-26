@@ -1282,6 +1282,12 @@ class ExternalShear(geometry_profiles.EllipticalProfile, MassProfile):
         super(ExternalShear, self).__init__(centre=(0.0, 0.0), phi=phi, axis_ratio=1.0)
         self.magnitude = magnitude
 
+    def surface_density_from_grid(self, grid):
+        return np.zeros((grid.shape[0],))
+
+    def potential_from_grid(self, grid):
+        return np.zeros((grid.shape[0],))
+
     @geometry_profiles.transform_grid
     def deflections_from_grid(self, grid):
         """
