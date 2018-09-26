@@ -1156,6 +1156,26 @@ class TestSersicMassRadialGradientMP(object):
 
 
 class TestExternalShear(object):
+    
+    def test__surface_density_returns_zeros(self):
+        
+        shear = mp.ExternalShear(magnitude=0.1, phi=45.0)
+        surface_density = shear.surface_density_from_grid(grid=np.array([0.1]))
+        assert (surface_density == np.array([0.0])).all()
+
+        shear = mp.ExternalShear(magnitude=0.1, phi=45.0)
+        surface_density = shear.surface_density_from_grid(grid=np.array([0.1, 0.2, 0.3]))
+        assert (surface_density == np.array([0.0, 0.0, 0.0])).all()
+
+    def test__potential_returns_zeros(self):
+        
+        shear = mp.ExternalShear(magnitude=0.1, phi=45.0)
+        potential = shear.potential_from_grid(grid=np.array([0.1]))
+        assert (potential == np.array([0.0])).all()
+
+        shear = mp.ExternalShear(magnitude=0.1, phi=45.0)
+        potential = shear.potential_from_grid(grid=np.array([0.1, 0.2, 0.3]))
+        assert (potential == np.array([0.0, 0.0, 0.0])).all()
 
     def test__deflections_correct_values(self):
         shear = mp.ExternalShear(magnitude=0.1, phi=45.0)
