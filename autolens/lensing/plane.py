@@ -192,11 +192,11 @@ class Plane(object):
 
     @property
     def xticks(self):
-        return np.around(np.linspace(np.amin(self.grids.image[:, 0]), np.amax(self.grids.image[:, 0]), 4), 2)
+        return np.linspace(np.amin(self.grids.image[:, 0]), np.amax(self.grids.image[:, 0]), 4)
 
     @property
     def yticks(self):
-        return np.around(np.linspace(np.amin(self.grids.image[:, 1]), np.amax(self.grids.image[:, 1]), 4), 2)
+        return np.linspace(np.amin(self.grids.image[:, 1]), np.amax(self.grids.image[:, 1]), 4)
 
     @property
     def _image_plane_image(self):
