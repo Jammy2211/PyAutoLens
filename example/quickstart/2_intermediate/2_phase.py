@@ -17,9 +17,9 @@ import os
 path = "{}".format(os.path.dirname(os.path.realpath(__file__)))
 
 # Load an _image from the 'data/1_basic' folder.
-image = im.load_from_path(image_path=path + '/../data/2_intermediate/_image.fits',
-                          noise_path=path+'/../data/2_intermediate/noise_map.fits',
-                          psf_path=path + '/../data/2_intermediate/psf.fits', pixel_scale=0.1)
+image = im.load_imaging_from_path(image_path=path + '/../data/2_intermediate/_image.fits',
+                                  noise_path=path+'/../data/2_intermediate/noise_map.fits',
+                                  psf_path=path + '/../data/2_intermediate/psf.fits', pixel_scale=0.1)
 
 # In this example, we simulated the lens galaxy's light as well as the source - this means we need a more complex model
 # To fit all these different components.

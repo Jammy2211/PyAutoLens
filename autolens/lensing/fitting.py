@@ -95,9 +95,12 @@ def fast_likelihood_from_lensing_image_and_tracer(lensing_image, tracer, hyper_m
 class AbstractFit(object):
 
     def __init__(self, lensing_image, tracer, _model_image):
+
         self.is_hyper_fit = False
         self.total_planes = len(tracer.all_planes)
         self.total_inversions = len(tracer.mappers_of_planes)
+
+        self.kpc_per_arcsec_proper = [plane.kpc_per_arcsec_proper for plane in tracer.all_planes]
 
         self.map_to_2d = lensing_image.grids.image.map_to_2d
         self.image = lensing_image.image

@@ -2,6 +2,7 @@ import inspect
 import logging
 from functools import wraps
 
+import os
 import numba
 import numpy as np
 from astropy.io import fits
@@ -444,7 +445,11 @@ def trim_array_2d_to_new_shape(array_2d, new_shape):
     return array
 
 
-def numpy_array_to_fits(array, path):
+def numpy_array_to_fits(array, path, overwrite=False):
+
+    if overwrite:
+        os.remove(path)
+
     new_hdr = fits.Header()
     hdu = fits.PrimaryHDU(array, new_hdr)
     hdu.writeto(path)
