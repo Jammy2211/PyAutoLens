@@ -145,7 +145,8 @@ class TestGrids:
 
 class TestTicks:
 
-    def test__compute_xticks_property__include_round_to_2dp(self):
+    def test__compute_xticks_property(self):
+
         sca = scaled_array.ScaledArray(array=np.ones((3, 3)), pixel_scale=1.0)
         assert sca.xticks == pytest.approx(np.array([-1.5, -0.5, 0.5, 1.5]), 1e-3)
 
@@ -158,7 +159,8 @@ class TestTicks:
         sca = scaled_array.ScaledArray(array=np.ones((6, 3)), pixel_scale=1.0)
         assert sca.xticks == pytest.approx(np.array([-1.5, -0.5, 0.5, 1.5]), 1e-3)
 
-    def test__compute_yticks_property__include_round_to_2dp(self):
+    def test__compute_yticks_property(self):
+
         sca = scaled_array.ScaledArray(array=np.ones((3, 3)), pixel_scale=1.0)
         assert sca.yticks == pytest.approx(np.array([-1.5, -0.5, 0.5, 1.5]), 1e-3)
 
