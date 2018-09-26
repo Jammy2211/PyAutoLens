@@ -67,9 +67,9 @@ class Pipeline(Base):
     def run_pipeline(self, pl):
         from autolens.imaging import image as im
         if self.is_using_hdu:
-            image = im.load_from_file(self.data_path, self.image_hdu, self.noise_hdu, self.psf_hdu, self.pixel_scale)
+            image = im.load_imaging_from_fits(self.data_path, self.image_hdu, self.noise_hdu, self.psf_hdu, self.pixel_scale)
         else:
-            image = im.load_from_path(self.image_path, self.noise_path, self.psf_path, pixel_scale=self.pixel_scale)
+            image = im.load_imaging_from_path(self.image_path, self.noise_path, self.psf_path, pixel_scale=self.pixel_scale)
         pl.run(image)
 
     @property

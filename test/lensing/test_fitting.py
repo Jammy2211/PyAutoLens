@@ -1,5 +1,6 @@
 import numpy as np
 import pytest
+from astropy import cosmology as cosmo
 
 from autolens.imaging import image
 from autolens.imaging import mask as mask
@@ -621,6 +622,7 @@ def make_hyper():
 
 
 class TestProfileFit:
+
     class TestModelImages:
 
         def test__mock_tracer__2x2_image_all_1s__3x3__psf_central_1__no_blurring(self, li_no_blur):
@@ -922,6 +924,45 @@ class TestProfileFit:
             assert fit.is_hyper_fit == False
             assert fit.total_planes == 2
             assert fit.total_inversions == 0
+
+
+    class TestKpcPerArcsec:
+
+        def test__image_and_source_plane__kpc_per_arcsec_carries_from_tracer(self, li_no_blur):
+
+            g0 = g.Galaxy(redshift=0.1)
+            g1 = g.Galaxy(redshift=1.0)
+
+            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g1],
+                                                         image_plane_grids=li_no_blur.grids, cosmology=cosmo.Planck15)
+
+            fit = fitting.ProfileFit(lensing_image=li_no_blur, tracer=tracer)
+
+            assert fit.kpc_per_arcsec_proper[0] == tracer.image_plane.kpc_per_arcsec_proper
+            assert fit.kpc_per_arcsec_proper[1] == tracer.source_plane.kpc_per_arcsec_proper
+
+            assert fit.kpc_per_arcsec_proper[0] == pytest.approx(1.904544, 1e-5)
+            assert fit.kpc_per_arcsec_proper[1] == pytest.approx(8.231907, 1e-5)
+
+        def test__multi_plpane__kpc_per_arcsec_carries_from_tracer(self, li_no_blur):
+
+            g0 = g.Galaxy(redshift=0.1)
+            g1 = g.Galaxy(redshift=1.0)
+            g2 = g.Galaxy(redshift=2.0)
+
+            tracer = ray_tracing.TracerMulti(galaxies=[g0, g1, g2], image_plane_grids=li_no_blur.grids,
+                                             cosmology=cosmo.Planck15)
+
+            fit = fitting.ProfileFit(lensing_image=li_no_blur, tracer=tracer)
+
+            assert fit.kpc_per_arcsec_proper[0] == tracer.planes[0].kpc_per_arcsec_proper
+            assert fit.kpc_per_arcsec_proper[1] == tracer.planes[1].kpc_per_arcsec_proper
+            assert fit.kpc_per_arcsec_proper[2] == tracer.planes[2].kpc_per_arcsec_proper
+
+            assert fit.kpc_per_arcsec_proper[0] == pytest.approx(1.904544, 1e-5)
+            assert fit.kpc_per_arcsec_proper[1] == pytest.approx(8.231907, 1e-5)
+            assert fit.kpc_per_arcsec_proper[2] == pytest.approx(8.58368, 1e-5)
+
 
     class TestCompareToManual:
 

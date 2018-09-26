@@ -445,8 +445,8 @@ def generate_poisson_noise(image, effective_exposure_map, seed=-1):
     return image - np.divide(np.random.poisson(image_counts, image.shape), effective_exposure_map)
 
 
-def load_data(image_path, image_hdu, noise_map_path, noise_map_hdu, psf_path, psf_hdu, pixel_scale,
-              psf_trimmed_shape=None):
+def load_imaging_from_fits(image_path, noise_map_path, psf_path, pixel_scale, image_hdu=0, noise_map_hdu=0, psf_hdu=0,
+                           psf_trimmed_shape=None):
     data = ScaledArray.from_fits_with_scale(file_path=image_path, hdu=image_hdu, pixel_scale=pixel_scale)
     noise = Array.from_fits(file_path=noise_map_path, hdu=noise_map_hdu)
     psf = PSF.from_fits(file_path=psf_path, hdu=psf_hdu)
@@ -457,7 +457,7 @@ def load_data(image_path, image_hdu, noise_map_path, noise_map_hdu, psf_path, ps
     return Image(array=data, pixel_scale=pixel_scale, psf=psf, noise_map=noise)
 
 
-def load_from_path(image_path, noise_path, psf_path, pixel_scale, psf_trimmed_shape=None):
+def load_imaging_from_path(image_path, noise_path, psf_path, pixel_scale, psf_trimmed_shape=None):
     data = ScaledArray.from_fits_with_scale(file_path=image_path, hdu=0, pixel_scale=pixel_scale)
     noise = Array.from_fits(file_path=noise_path, hdu=0)
     psf = PSF.from_fits(file_path=psf_path, hdu=0)
@@ -466,11 +466,7 @@ def load_from_path(image_path, noise_path, psf_path, pixel_scale, psf_trimmed_sh
     return Image(array=data, pixel_scale=pixel_scale, psf=psf, noise_map=noise)
 
 
-def load_from_file(path, image_hdu, noise_hdu, psf_hdu, pixel_scale, psf_trimmed_shape=None):
-    data = ScaledArray.from_fits_with_scale(file_path=path, hdu=image_hdu, pixel_scale=pixel_scale)
-    noise = Array.from_fits(file_path=path, hdu=noise_hdu)
-    psf = PSF.from_fits(file_path=path, hdu=psf_hdu)
-    if psf_trimmed_shape is not None:
-        psf = psf.trim(psf_trimmed_shape)
-
-    return Image(array=data, pixel_scale=pixel_scale, psf=psf, noise_map=noise)
+def output_imaging_to_fits(image, image_path, noise_map_path, psf_path, overwrite=False):
+    imaging_util.numpy_array_to_fits(array=image, path=image_path, overwrite=overwrite)
+    imaging_util.numpy_array_to_fits(array=image.noise_map, path=noise_map_path, overwrite=overwrite)
+    imaging_util.numpy_array_to_fits(array=image.psf, path=psf_path, overwrite=overwrite)

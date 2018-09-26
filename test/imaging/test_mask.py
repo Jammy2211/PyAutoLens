@@ -726,8 +726,8 @@ class TestImagingGrids(object):
         assert (unmasked_grids.blurring == np.array([0.0, 0.0])).all()
 
     def test__for_simulation(self):
-        unmasked_grids = mask.ImagingGrids.unmasked_grids_for_simulation(shape=(2, 2), pixel_scale=1.0, sub_grid_size=2,
-                                                                         psf_shape=(3, 3))
+        unmasked_grids = mask.ImagingGrids.grids_for_simulation(shape=(2, 2), pixel_scale=1.0, sub_grid_size=2,
+                                                                psf_shape=(3, 3))
 
         image_padded_grid_util = imaging_util.image_grid_1d_masked_from_mask_and_pixel_scale(
             mask=np.full((4, 4), False),

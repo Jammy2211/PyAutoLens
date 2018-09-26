@@ -11,10 +11,10 @@ import os
 path = "{}".format(os.path.dirname(os.path.realpath(__file__)))
 
 # Load an _image from the 'data/1_basic' folder.
-image = image.load_data(image_path=path + '/../data/2_imaging/image.fits', image_hdu=0,
-                        noise_map_path=path+'/../data/2_imaging/noise_map.fits', noise_map_hdu=0,
-                        psf_path=path + '/../data/2_imaging/psf.fits', psf_hdu=0,
-                        pixel_scale=0.1)
+image = image.load_imaging_from_fits(image_path=path + '/../data/2_imaging/image.fits', image_hdu=0,
+                                     noise_map_path=path+'/../data/2_imaging/noise_map.fits', noise_map_hdu=0,
+                                     psf_path=path + '/../data/2_imaging/psf.fits', psf_hdu=0,
+                                     pixel_scale=0.1)
 
 imaging_plotters.plot_image(image=image)
 imaging_plotters.plot_image_individuals(image=image)
