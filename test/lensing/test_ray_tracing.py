@@ -745,7 +745,7 @@ class TestTracerImageSourcePlanes(object):
 
     class TestXYTicksOfPlanes:
 
-        def test__compute_xticks_from_image_grids_correctly__are_rounded_to_2dp(self, imaging_grids):
+        def test__compute_xticks_from_image_grids_correctly(self, imaging_grids):
             g0 = g.Galaxy()
             g1 = g.Galaxy()
 
@@ -771,12 +771,12 @@ class TestTracerImageSourcePlanes(object):
                                                  shape_2d=(3, 4), grid_to_pixel=None)
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g1],
                                                          image_plane_grids=imaging_grids)
-            assert tracer.xticks_of_planes[0] == pytest.approx(np.array([-1.0, -0.33, 0.33, 1.0]), 1e-3)
-            assert tracer.xticks_of_planes[1] == pytest.approx(np.array([-1.0, -0.33, 0.33, 1.0]), 1e-3)
+            assert tracer.xticks_of_planes[0] == pytest.approx(np.array([-1.0, -0.33333, 0.33333, 1.0]), 1e-3)
+            assert tracer.xticks_of_planes[1] == pytest.approx(np.array([-1.0, -0.33333, 0.33333, 1.0]), 1e-3)
             assert (tracer.xticks_of_planes[0] == tracer.image_plane.xticks).all()
             assert (tracer.xticks_of_planes[1] == tracer.source_plane.xticks).all()
 
-        def test__compute_yticks_from_image_grids_correctly__are_rounded_to_2dp(self, imaging_grids):
+        def test__compute_yticks_from_image_grids_correctly(self, imaging_grids):
             g0 = g.Galaxy()
             g1 = g.Galaxy()
 
@@ -803,8 +803,8 @@ class TestTracerImageSourcePlanes(object):
                                                  shape_2d=(3, 4), grid_to_pixel=None)
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g1],
                                                          image_plane_grids=imaging_grids)
-            assert tracer.yticks_of_planes[0] == pytest.approx(np.array([-1.0, -0.33, 0.33, 1.0]), 1e-3)
-            assert tracer.yticks_of_planes[1] == pytest.approx(np.array([-1.0, -0.33, 0.33, 1.0]), 1e-3)
+            assert tracer.yticks_of_planes[0] == pytest.approx(np.array([-1.0, -0.33333, 0.33333, 1.0]), 1e-3)
+            assert tracer.yticks_of_planes[1] == pytest.approx(np.array([-1.0, -0.33333, 0.33333, 1.0]), 1e-3)
             assert (tracer.yticks_of_planes[0] == tracer.image_plane.yticks).all()
             assert (tracer.yticks_of_planes[1] == tracer.source_plane.yticks).all()
 
@@ -966,41 +966,41 @@ class TestMultiTracer(object):
 
             assert tracer.source_plane_index == 2
 
-            assert tracer.arcsec_per_kpc_of_plane(plane_i=0) == pytest.approx(0.525060, 1e-5)
-            assert tracer.kpc_per_arcsec_of_plane(plane_i=0) == pytest.approx(1.904544, 1e-5)
+            assert tracer.arcsec_per_kpc_proper_of_plane(i=0) == pytest.approx(0.525060, 1e-5)
+            assert tracer.kpc_per_arcsec_proper_of_plane(i=0) == pytest.approx(1.904544, 1e-5)
 
-            assert tracer.angular_diameter_distance_of_plane_to_earth(plane_i=0) == pytest.approx(392840, 1e-5)
-            assert tracer.angular_diameter_distance_between_planes(plane_i=0, plane_j=0) == 0.0
-            assert tracer.angular_diameter_distance_between_planes(plane_i=0, plane_j=1) == pytest.approx(1481890.4,
-                                                                                                            1e-5)
-            assert tracer.angular_diameter_distance_between_planes(plane_i=0, plane_j=2) == pytest.approx(1626471,
-                                                                                                            1e-5)
+            assert tracer.angular_diameter_distance_of_plane_to_earth(i=0) == pytest.approx(392840, 1e-5)
+            assert tracer.angular_diameter_distance_between_planes(i=0, j=0) == 0.0
+            assert tracer.angular_diameter_distance_between_planes(i=0, j=1) == pytest.approx(1481890.4,
+                                                                                              1e-5)
+            assert tracer.angular_diameter_distance_between_planes(i=0, j=2) == pytest.approx(1626471,
+                                                                                              1e-5)
 
-            assert tracer.arcsec_per_kpc_of_plane(plane_i=1) == pytest.approx(0.1214785, 1e-5)
-            assert tracer.kpc_per_arcsec_of_plane(plane_i=1) == pytest.approx(8.231907, 1e-5)
+            assert tracer.arcsec_per_kpc_proper_of_plane(i=1) == pytest.approx(0.1214785, 1e-5)
+            assert tracer.kpc_per_arcsec_proper_of_plane(i=1) == pytest.approx(8.231907, 1e-5)
 
-            assert tracer.angular_diameter_distance_of_plane_to_earth(plane_i=1) == pytest.approx(1697952, 1e-5)
-            assert tracer.angular_diameter_distance_between_planes(plane_i=1, plane_j=0) == pytest.approx(-2694346,
-                                                                                                            1e-5)
-            assert tracer.angular_diameter_distance_between_planes(plane_i=1, plane_j=1) == 0.0
-            assert tracer.angular_diameter_distance_between_planes(plane_i=1, plane_j=2) == pytest.approx(638544,
-                                                                                                            1e-5)
+            assert tracer.angular_diameter_distance_of_plane_to_earth(i=1) == pytest.approx(1697952, 1e-5)
+            assert tracer.angular_diameter_distance_between_planes(i=1, j=0) == pytest.approx(-2694346,
+                                                                                              1e-5)
+            assert tracer.angular_diameter_distance_between_planes(i=1, j=1) == 0.0
+            assert tracer.angular_diameter_distance_between_planes(i=1, j=2) == pytest.approx(638544,
+                                                                                              1e-5)
 
-            assert tracer.arcsec_per_kpc_of_plane(plane_i=2) == pytest.approx(0.116500, 1e-5)
-            assert tracer.kpc_per_arcsec_of_plane(plane_i=2) == pytest.approx(8.58368, 1e-5)
+            assert tracer.arcsec_per_kpc_proper_of_plane(i=2) == pytest.approx(0.116500, 1e-5)
+            assert tracer.kpc_per_arcsec_proper_of_plane(i=2) == pytest.approx(8.58368, 1e-5)
 
-            assert tracer.angular_diameter_distance_of_plane_to_earth(plane_i=2) == pytest.approx(1770512, 1e-5)
-            assert tracer.angular_diameter_distance_between_planes(plane_i=2, plane_j=0) == pytest.approx(-4435831,
-                                                                                                            1e-5)
-            assert tracer.angular_diameter_distance_between_planes(plane_i=2, plane_j=1) == pytest.approx(-957816)
-            assert tracer.angular_diameter_distance_between_planes(plane_i=2, plane_j=2) == 0.0
+            assert tracer.angular_diameter_distance_of_plane_to_earth(i=2) == pytest.approx(1770512, 1e-5)
+            assert tracer.angular_diameter_distance_between_planes(i=2, j=0) == pytest.approx(-4435831,
+                                                                                              1e-5)
+            assert tracer.angular_diameter_distance_between_planes(i=2, j=1) == pytest.approx(-957816)
+            assert tracer.angular_diameter_distance_between_planes(i=2, j=2) == 0.0
 
-            assert tracer.critical_density_kpc_between_planes(plane_i=0, plane_j=1) == pytest.approx(4.85e9, 1e-2)
-            assert tracer.critical_density_arcsec_between_planes(plane_i=0, plane_j=1) == pytest.approx(17593241668, 1e-2)
+            assert tracer.critical_density_kpc_between_planes(i=0, j=1) == pytest.approx(4.85e9, 1e-2)
+            assert tracer.critical_density_arcsec_between_planes(i=0, j=1) == pytest.approx(17593241668, 1e-2)
 
-            assert tracer.scaling_factor_between_planes(plane_i=0, plane_j=1) == pytest.approx(0.9500, 1e-4)
-            assert tracer.scaling_factor_between_planes(plane_i=0, plane_j=2) == pytest.approx(1.0, 1e-4)
-            assert tracer.scaling_factor_between_planes(plane_i=1, plane_j=2) == pytest.approx(1.0, 1e-4)
+            assert tracer.scaling_factor_between_planes(i=0, j=1) == pytest.approx(0.9500, 1e-4)
+            assert tracer.scaling_factor_between_planes(i=0, j=2) == pytest.approx(1.0, 1e-4)
+            assert tracer.scaling_factor_between_planes(i=1, j=2) == pytest.approx(1.0, 1e-4)
 
         def test__4_planes__z01_z1_z2_and_z3(self, imaging_grids):
 
@@ -1014,61 +1014,61 @@ class TestMultiTracer(object):
 
             assert tracer.source_plane_index == 3
 
-            assert tracer.arcsec_per_kpc_of_plane(plane_i=0) == pytest.approx(0.525060, 1e-5)
-            assert tracer.kpc_per_arcsec_of_plane(plane_i=0) == pytest.approx(1.904544, 1e-5)
+            assert tracer.arcsec_per_kpc_proper_of_plane(i=0) == pytest.approx(0.525060, 1e-5)
+            assert tracer.kpc_per_arcsec_proper_of_plane(i=0) == pytest.approx(1.904544, 1e-5)
 
-            assert tracer.angular_diameter_distance_of_plane_to_earth(plane_i=0) == pytest.approx(392840, 1e-5)
-            assert tracer.angular_diameter_distance_between_planes(plane_i=0, plane_j=0) == 0.0
-            assert tracer.angular_diameter_distance_between_planes(plane_i=0, plane_j=1) == pytest.approx(1481890.4,
-                                                                                                            1e-5)
-            assert tracer.angular_diameter_distance_between_planes(plane_i=0, plane_j=2) == pytest.approx(1626471,
-                                                                                                            1e-5)
-            assert tracer.angular_diameter_distance_between_planes(plane_i=0, plane_j=3) == pytest.approx(1519417,
-                                                                                                            1e-5)
+            assert tracer.angular_diameter_distance_of_plane_to_earth(i=0) == pytest.approx(392840, 1e-5)
+            assert tracer.angular_diameter_distance_between_planes(i=0, j=0) == 0.0
+            assert tracer.angular_diameter_distance_between_planes(i=0, j=1) == pytest.approx(1481890.4,
+                                                                                              1e-5)
+            assert tracer.angular_diameter_distance_between_planes(i=0, j=2) == pytest.approx(1626471,
+                                                                                              1e-5)
+            assert tracer.angular_diameter_distance_between_planes(i=0, j=3) == pytest.approx(1519417,
+                                                                                              1e-5)
 
-            assert tracer.arcsec_per_kpc_of_plane(plane_i=1) == pytest.approx(0.1214785, 1e-5)
-            assert tracer.kpc_per_arcsec_of_plane(plane_i=1) == pytest.approx(8.231907, 1e-5)
+            assert tracer.arcsec_per_kpc_proper_of_plane(i=1) == pytest.approx(0.1214785, 1e-5)
+            assert tracer.kpc_per_arcsec_proper_of_plane(i=1) == pytest.approx(8.231907, 1e-5)
 
-            assert tracer.angular_diameter_distance_of_plane_to_earth(plane_i=1) == pytest.approx(1697952, 1e-5)
-            assert tracer.angular_diameter_distance_between_planes(plane_i=1, plane_j=0) == pytest.approx(-2694346,
-                                                                                                            1e-5)
-            assert tracer.angular_diameter_distance_between_planes(plane_i=1, plane_j=1) == 0.0
-            assert tracer.angular_diameter_distance_between_planes(plane_i=1, plane_j=2) == pytest.approx(638544,
-                                                                                                            1e-5)
-            assert tracer.angular_diameter_distance_between_planes(plane_i=1, plane_j=3) == pytest.approx(778472,
-                                                                                                            1e-5)
+            assert tracer.angular_diameter_distance_of_plane_to_earth(i=1) == pytest.approx(1697952, 1e-5)
+            assert tracer.angular_diameter_distance_between_planes(i=1, j=0) == pytest.approx(-2694346,
+                                                                                              1e-5)
+            assert tracer.angular_diameter_distance_between_planes(i=1, j=1) == 0.0
+            assert tracer.angular_diameter_distance_between_planes(i=1, j=2) == pytest.approx(638544,
+                                                                                              1e-5)
+            assert tracer.angular_diameter_distance_between_planes(i=1, j=3) == pytest.approx(778472,
+                                                                                              1e-5)
 
-            assert tracer.arcsec_per_kpc_of_plane(plane_i=2) == pytest.approx(0.116500, 1e-5)
-            assert tracer.kpc_per_arcsec_of_plane(plane_i=2) == pytest.approx(8.58368, 1e-5)
+            assert tracer.arcsec_per_kpc_proper_of_plane(i=2) == pytest.approx(0.116500, 1e-5)
+            assert tracer.kpc_per_arcsec_proper_of_plane(i=2) == pytest.approx(8.58368, 1e-5)
 
-            assert tracer.angular_diameter_distance_of_plane_to_earth(plane_i=2) == pytest.approx(1770512, 1e-5)
-            assert tracer.angular_diameter_distance_between_planes(plane_i=2, plane_j=0) == pytest.approx(-4435831,
-                                                                                                            1e-5)
-            assert tracer.angular_diameter_distance_between_planes(plane_i=2, plane_j=1) == pytest.approx(-957816)
-            assert tracer.angular_diameter_distance_between_planes(plane_i=2, plane_j=2) == 0.0
-            assert tracer.angular_diameter_distance_between_planes(plane_i=2, plane_j=3) == pytest.approx(299564)
+            assert tracer.angular_diameter_distance_of_plane_to_earth(i=2) == pytest.approx(1770512, 1e-5)
+            assert tracer.angular_diameter_distance_between_planes(i=2, j=0) == pytest.approx(-4435831,
+                                                                                              1e-5)
+            assert tracer.angular_diameter_distance_between_planes(i=2, j=1) == pytest.approx(-957816)
+            assert tracer.angular_diameter_distance_between_planes(i=2, j=2) == 0.0
+            assert tracer.angular_diameter_distance_between_planes(i=2, j=3) == pytest.approx(299564)
 
-            assert tracer.arcsec_per_kpc_of_plane(plane_i=3) == pytest.approx(0.12674, 1e-5)
-            assert tracer.kpc_per_arcsec_of_plane(plane_i=3) == pytest.approx(7.89009, 1e-5)
+            assert tracer.arcsec_per_kpc_proper_of_plane(i=3) == pytest.approx(0.12674, 1e-5)
+            assert tracer.kpc_per_arcsec_proper_of_plane(i=3) == pytest.approx(7.89009, 1e-5)
 
-            assert tracer.angular_diameter_distance_of_plane_to_earth(plane_i=3) == pytest.approx(1627448, 1e-5)
-            assert tracer.angular_diameter_distance_between_planes(plane_i=3, plane_j=0) == pytest.approx(-5525155,
-                                                                                                            1e-5)
-            assert tracer.angular_diameter_distance_between_planes(plane_i=3, plane_j=1) == pytest.approx(-1556945,
-                                                                                                            1e-5)
-            assert tracer.angular_diameter_distance_between_planes(plane_i=3, plane_j=2) == pytest.approx(-399419,
-                                                                                                            1e-5)
-            assert tracer.angular_diameter_distance_between_planes(plane_i=3, plane_j=3) == 0.0
+            assert tracer.angular_diameter_distance_of_plane_to_earth(i=3) == pytest.approx(1627448, 1e-5)
+            assert tracer.angular_diameter_distance_between_planes(i=3, j=0) == pytest.approx(-5525155,
+                                                                                              1e-5)
+            assert tracer.angular_diameter_distance_between_planes(i=3, j=1) == pytest.approx(-1556945,
+                                                                                              1e-5)
+            assert tracer.angular_diameter_distance_between_planes(i=3, j=2) == pytest.approx(-399419,
+                                                                                              1e-5)
+            assert tracer.angular_diameter_distance_between_planes(i=3, j=3) == 0.0
 
-            assert tracer.critical_density_kpc_between_planes(plane_i=0, plane_j=1) == pytest.approx(4.85e9, 1e-2)
-            assert tracer.critical_density_arcsec_between_planes(plane_i=0, plane_j=1) == pytest.approx(17593241668, 1e-2)
+            assert tracer.critical_density_kpc_between_planes(i=0, j=1) == pytest.approx(4.85e9, 1e-2)
+            assert tracer.critical_density_arcsec_between_planes(i=0, j=1) == pytest.approx(17593241668, 1e-2)
 
-            assert tracer.scaling_factor_between_planes(plane_i=0, plane_j=1) == pytest.approx(0.9348, 1e-4)
-            assert tracer.scaling_factor_between_planes(plane_i=0, plane_j=2) == pytest.approx(0.984, 1e-4)
-            assert tracer.scaling_factor_between_planes(plane_i=0, plane_j=3) == pytest.approx(1.0, 1e-4)
-            assert tracer.scaling_factor_between_planes(plane_i=1, plane_j=2) == pytest.approx(0.754, 1e-4)
-            assert tracer.scaling_factor_between_planes(plane_i=1, plane_j=3) == pytest.approx(1.0, 1e-4)
-            assert tracer.scaling_factor_between_planes(plane_i=2, plane_j=3) == pytest.approx(1.0, 1e-4)
+            assert tracer.scaling_factor_between_planes(i=0, j=1) == pytest.approx(0.9348, 1e-4)
+            assert tracer.scaling_factor_between_planes(i=0, j=2) == pytest.approx(0.984, 1e-4)
+            assert tracer.scaling_factor_between_planes(i=0, j=3) == pytest.approx(1.0, 1e-4)
+            assert tracer.scaling_factor_between_planes(i=1, j=2) == pytest.approx(0.754, 1e-4)
+            assert tracer.scaling_factor_between_planes(i=1, j=3) == pytest.approx(1.0, 1e-4)
+            assert tracer.scaling_factor_between_planes(i=2, j=3) == pytest.approx(1.0, 1e-4)
 
     class TestRayTracingPlanes:
 
@@ -1618,7 +1618,7 @@ class TestMultiTracer(object):
 
     class TestXYTicksOfPlanes:
 
-        def test__compute_xticks_from_image_grids_correctly__are_rounded_to_2dp(self, imaging_grids):
+        def test__compute_xticks_from_image_grids_correctly(self, imaging_grids):
             g0 = g.Galaxy(redshift=0.1)
             g1 = g.Galaxy(redshift=0.2)
             g2 = g.Galaxy(redshift=0.3)
@@ -1652,14 +1652,14 @@ class TestMultiTracer(object):
             tracer = ray_tracing.TracerMulti(galaxies=[g0, g1, g2], image_plane_grids=imaging_grids,
                                              cosmology=cosmo.Planck15)
 
-            assert tracer.xticks_of_planes[0] == pytest.approx(np.array([-1.0, -0.33, 0.33, 1.0]), 1e-3)
-            assert tracer.xticks_of_planes[1] == pytest.approx(np.array([-1.0, -0.33, 0.33, 1.0]), 1e-3)
-            assert tracer.xticks_of_planes[2] == pytest.approx(np.array([-1.0, -0.33, 0.33, 1.0]), 1e-3)
+            assert tracer.xticks_of_planes[0] == pytest.approx(np.array([-1.0, -0.33333, 0.33333, 1.0]), 1e-3)
+            assert tracer.xticks_of_planes[1] == pytest.approx(np.array([-1.0, -0.33333, 0.33333, 1.0]), 1e-3)
+            assert tracer.xticks_of_planes[2] == pytest.approx(np.array([-1.0, -0.33333, 0.33333, 1.0]), 1e-3)
             assert (tracer.xticks_of_planes[0] == tracer.planes[0].xticks).all()
             assert (tracer.xticks_of_planes[1] == tracer.planes[1].xticks).all()
             assert (tracer.xticks_of_planes[2] == tracer.planes[2].xticks).all()
 
-        def test__compute_yticks_from_image_grids_correctly__are_rounded_to_2dp(self, imaging_grids):
+        def test__compute_yticks_from_image_grids_correctly(self, imaging_grids):
             g0 = g.Galaxy(redshift=0.1)
             g1 = g.Galaxy(redshift=0.2)
             g2 = g.Galaxy(redshift=0.3)
@@ -1693,9 +1693,9 @@ class TestMultiTracer(object):
             tracer = ray_tracing.TracerMulti(galaxies=[g0, g1, g2], image_plane_grids=imaging_grids,
                                              cosmology=cosmo.Planck15)
 
-            assert tracer.yticks_of_planes[0] == pytest.approx(np.array([-1.0, -0.33, 0.33, 1.0]), 1e-3)
-            assert tracer.yticks_of_planes[1] == pytest.approx(np.array([-1.0, -0.33, 0.33, 1.0]), 1e-3)
-            assert tracer.yticks_of_planes[2] == pytest.approx(np.array([-1.0, -0.33, 0.33, 1.0]), 1e-3)
+            assert tracer.yticks_of_planes[0] == pytest.approx(np.array([-1.0, -0.33333, 0.33333, 1.0]), 1e-3)
+            assert tracer.yticks_of_planes[1] == pytest.approx(np.array([-1.0, -0.33333, 0.33333, 1.0]), 1e-3)
+            assert tracer.yticks_of_planes[2] == pytest.approx(np.array([-1.0, -0.33333, 0.33333, 1.0]), 1e-3)
             assert (tracer.yticks_of_planes[0] == tracer.planes[0].yticks).all()
             assert (tracer.yticks_of_planes[1] == tracer.planes[1].yticks).all()
             assert (tracer.yticks_of_planes[2] == tracer.planes[2].yticks).all()

@@ -1182,7 +1182,7 @@ class TestPlane(object):
 
     class TestXYTicksOfPlane:
 
-        def test__compute_xticks_from_image_grid_correctly__are_rounded_to_2dp(self, imaging_grids):
+        def test__compute_xticks_from_image_grid_correctly(self, imaging_grids):
             g0 = g.Galaxy()
 
             imaging_grids.image = mask.ImageGrid(np.array([[0.0, 0.0], [0.0, 0.0], [0.3, 0.3], [-0.3, -0.3]]),
@@ -1198,9 +1198,11 @@ class TestPlane(object):
             imaging_grids.image = mask.ImageGrid(np.array([[-1.0, -0.5], [1.0, 0.5], [0.3, 0.3], [-0.3, -0.3]]),
                                                  shape_2d=(3, 3), grid_to_pixel=None)
             plane = pl.Plane(galaxies=[g0], grids=imaging_grids)
-            assert plane.xticks == pytest.approx(np.array([-1.0, -0.33, 0.33, 1.0]), 1e-3)
 
-        def test__compute_yticks_from_image_grid_correctly__are_rounded_to_2dp(self, imaging_grids):
+            assert plane.xticks == pytest.approx(np.array([-1.0, -0.33333, 0.33333, 1.0]), 1e-2)
+
+        def test__compute_yticks_from_image_grid_correctly(self, imaging_grids):
+
             g0 = g.Galaxy()
 
             imaging_grids.image = mask.ImageGrid(np.array([[0.0, 0.0], [0.0, 0.0], [0.3, 0.3], [-0.3, -0.3]]),
@@ -1216,7 +1218,7 @@ class TestPlane(object):
             imaging_grids.image = mask.ImageGrid(np.array([[-0.5, -1.0], [0.5, 1.0], [0.3, 0.3], [-0.3, -0.3]]),
                                                  shape_2d=(3, 3), grid_to_pixel=None)
             plane = pl.Plane(galaxies=[g0], grids=imaging_grids)
-            assert plane.yticks == pytest.approx(np.array([-1.0, -0.33, 0.33, 1.0]), 1e-3)
+            assert plane.yticks == pytest.approx(np.array([-1.0, -0.33333, 0.33333, 1.0]), 1e-3)
 
     class TestPixeizationMapper:
 
