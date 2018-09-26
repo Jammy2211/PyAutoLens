@@ -752,17 +752,10 @@ class TestHyperGalaxy(object):
 
 class TestBooleanProperties(object):
 
-    def test_has_pixelization(self):
-        assert g.Galaxy().has_pixelization is False
-        assert g.Galaxy(pixelization=object(), regularization=object()).has_pixelization is True
-
-    def test_has_regularization(self):
-        assert g.Galaxy().has_regularization is False
-        assert g.Galaxy(pixelization=object(), regularization=object()).has_regularization is True
-
-    def test_has_hyper_galaxy(self):
-        assert g.Galaxy().has_pixelization is False
-        assert g.Galaxy(hyper_galaxy=object()).has_hyper_galaxy is True
+    def test_has_profile(self):
+        assert g.Galaxy().has_profile is False
+        assert g.Galaxy(light_profile=lp.LightProfile()).has_profile is True
+        assert g.Galaxy(mass_profile=mp.MassProfile()).has_profile is True
 
     def test_has_light_profile(self):
         assert g.Galaxy().has_light_profile is False
@@ -774,10 +767,23 @@ class TestBooleanProperties(object):
         assert g.Galaxy(light_profile=lp.LightProfile()).has_mass_profile is False
         assert g.Galaxy(mass_profile=mp.MassProfile()).has_mass_profile is True
 
-    def test_has_profile(self):
-        assert g.Galaxy().has_profile is False
-        assert g.Galaxy(light_profile=lp.LightProfile()).has_profile is True
-        assert g.Galaxy(mass_profile=mp.MassProfile()).has_profile is True
+    def test_has_redshift(self):
+
+        assert g.Galaxy().has_redshift is False
+        assert g.Galaxy(light_profile=lp.LightProfile()).has_redshift is False
+        assert g.Galaxy(redshift=0.1).has_redshift is True
+
+    def test_has_pixelization(self):
+        assert g.Galaxy().has_pixelization is False
+        assert g.Galaxy(pixelization=object(), regularization=object()).has_pixelization is True
+
+    def test_has_regularization(self):
+        assert g.Galaxy().has_regularization is False
+        assert g.Galaxy(pixelization=object(), regularization=object()).has_regularization is True
+
+    def test_has_hyper_galaxy(self):
+        assert g.Galaxy().has_pixelization is False
+        assert g.Galaxy(hyper_galaxy=object()).has_hyper_galaxy is True
 
     def test__only_pixelization_raises_error(self):
         with pytest.raises(exc.GalaxyException):
