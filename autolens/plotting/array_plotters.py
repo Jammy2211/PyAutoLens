@@ -78,8 +78,8 @@ def set_xy_labels_and_ticks(array, units, kpc_per_arcsec, xticks, yticks, xlabel
 
     elif units is 'arcsec' or kpc_per_arcsec is None:
 
-        plt.xticks(array.shape[0] * np.array([0.0, 0.33, 0.66, 0.99]), xticks)
-        plt.yticks(array.shape[1] * np.array([0.0, 0.33, 0.66, 0.99]), yticks)
+        plt.xticks(array.shape[0] * np.array([0.0, 0.33, 0.66, 0.99]), np.round(xticks, 1))
+        plt.yticks(array.shape[1] * np.array([0.0, 0.33, 0.66, 0.99]), np.round(yticks, 1))
         plt.xlabel('x (arcsec)', fontsize=xlabelsize)
         plt.ylabel('y (arcsec)', fontsize=ylabelsize)
 
