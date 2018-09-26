@@ -1,66 +1,16 @@
 import math
-from functools import wraps
 
 import numpy as np
 from astropy import constants
 from astropy import cosmology as cosmo
 
 from autolens import exc
-from autolens.imaging import imaging_util
+from autolens.lensing import plane
 from autolens.imaging import mask as msk
 
 
-class TracerGeometry(object):
-
-    def __init__(self, redshifts, cosmology):
-        """The geometry of a ray-tracer, comprising an arbritrary number of planes.
-
-        This allows one to compute the angular diameter distances and critical densities between each plane and \
-        the Earth.
-
-        Parameters
-        ----------
-        redshifts : [float]
-            The redshifts of the plane's of this tracer.
-        cosmology : astropy.cosmology.Planck15
-            The cosmology of the ray-tracing calculation.
-        """
-        self.cosmology = cosmology
-        self.redshifts = redshifts
-        self.final_plane = len(self.redshifts) - 1
-        self.ang_to_final_plane = self.ang_to_earth(plane_i=self.final_plane)
-
-    def arcsec_per_kpc(self, plane_i):
-        return self.cosmology.arcsec_per_kpc_proper(z=self.redshifts[plane_i]).value
-
-    def kpc_per_arcsec(self, plane_i):
-        return 1.0 / self.cosmology.arcsec_per_kpc_proper(z=self.redshifts[plane_i]).value
-
-    def ang_to_earth(self, plane_i):
-        return self.cosmology.angular_diameter_distance(self.redshifts[plane_i]).to('kpc').value
-
-    def ang_between_planes(self, plane_i, plane_j):
-        return self.cosmology.angular_diameter_distance_z1z2(self.redshifts[plane_i], self.redshifts[plane_j]). \
-            to('kpc').value
-
-    @property
-    def constant_kpc(self):
-        # noinspection PyUnresolvedReferences
-        return constants.c.to('kpc / s').value ** 2.0 / (4 * math.pi * constants.G.to('kpc3 / M_sun s2').value)
-
-    def critical_density_kpc(self, plane_i, plane_j):
-        return self.constant_kpc * self.ang_to_earth(plane_j) / \
-               (self.ang_between_planes(plane_i, plane_j) * self.ang_to_earth(plane_i))
-
-    def critical_density_arcsec(self, plane_i, plane_j):
-        return self.critical_density_kpc(plane_i, plane_j) * self.kpc_per_arcsec(plane_i) ** 2.0
-
-    def scaling_factor(self, plane_i, plane_j):
-        return (self.ang_between_planes(plane_i, plane_j) * self.ang_to_final_plane) / (
-                self.ang_to_earth(plane_j) * self.ang_between_planes(plane_i, self.final_plane))
-
-
 class AbstractTracer(object):
+
     image_plane_grids = None
 
     @property
@@ -68,16 +18,20 @@ class AbstractTracer(object):
         raise NotImplementedError()
 
     @property
+    def redshifts(self):
+        return [plane.redshift for plane in self.all_planes]
+
+    @property
     def has_light_profile(self):
-        return any(list(map(lambda galaxy: galaxy.has_light_profile, self.galaxies)))
+        return any(list(map(lambda plane : plane.has_light_profile, self.all_planes)))
 
     @property
     def has_pixelization(self):
-        return any(list(map(lambda galaxy: galaxy.has_pixelization, self.galaxies)))
+        return any(list(map(lambda plane : plane.has_pixelization, self.all_planes)))
 
     @property
     def has_regularization(self):
-        return any(list(map(lambda galaxy: galaxy.has_regularization, self.galaxies)))
+        return any(list(map(lambda plane : plane.has_regularization, self.all_planes)))
 
     @property
     def has_unmasked_grids(self):
@@ -85,20 +39,20 @@ class AbstractTracer(object):
 
     @property
     def has_hyper_galaxy(self):
-        return any(list(map(lambda galaxy: galaxy.has_hyper_galaxy, self.galaxies)))
-
-    @property
-    def galaxies(self):
-        return [galaxy for plane in self.all_planes for galaxy in plane.galaxies]
+        return any(list(map(lambda plane : plane.has_hyper_galaxy, self.all_planes)))
 
     @property
     def hyper_galaxies(self):
-        return [hyper_galaxy for plane in self.all_planes for hyper_galaxy in
-                plane.hyper_galaxies]
+        return list(filter(None, [hyper_galaxy for plane in self.all_planes for hyper_galaxy in plane.hyper_galaxies]))
 
     @property
-    def all_with_hyper_galaxies(self):
-        return len(list(filter(None, self.hyper_galaxies))) == len(self.galaxies)
+    def constant_kpc(self):
+        # noinspection PyUnresolvedReferences
+        return constants.c.to('kpc / s').value ** 2.0 / (4 * math.pi * constants.G.to('kpc3 / M_sun s2').value)
+
+    @property
+    def map_to_2d(self):
+        return self.image_plane.grids.image.map_to_2d
 
     @property
     def image_plane_image(self):
@@ -106,11 +60,11 @@ class AbstractTracer(object):
 
     @property
     def image_plane_images_of_planes(self):
-        return list(map(lambda image: self.image_plane.grids.image.map_to_2d(image), self._image_plane_images_of_planes))
+        return list(map(lambda image: self.map_to_2d(image), self._image_plane_images_of_planes))
 
     @property
     def image_plane_images_of_galaxies(self):
-        return list(map(lambda image: self.image_plane.grids.image.map_to_2d(image), self._image_plane_images_of_galaxies))
+        return list(map(lambda image: self.map_to_2d(image), self._image_plane_images_of_galaxies))
 
     @property
     def image_plane_image_for_simulation(self):
@@ -138,11 +92,11 @@ class AbstractTracer(object):
 
     @property
     def xticks_of_planes(self):
-        return [plane.xticks_from_image_grid for plane in self.all_planes]
+        return [plane.xticks for plane in self.all_planes]
 
     @property
     def yticks_of_planes(self):
-        return [plane.yticks_from_image_grid for plane in self.all_planes]
+        return [plane.yticks for plane in self.all_planes]
 
     @property
     def _image_plane_image(self):
@@ -203,7 +157,8 @@ class TracerImagePlane(AbstractTracer):
         else:
             self.geometry = None
 
-        self.image_plane = Plane(lens_galaxies, image_plane_grids, borders=borders, compute_deflections=True)
+        self.image_plane = plane.Plane(lens_galaxies, image_plane_grids, borders=borders, compute_deflections=True,
+                                       cosmology=cosmology)
 
 
 class TracerImageSourcePlanes(AbstractTracer):
@@ -232,21 +187,36 @@ class TracerImageSourcePlanes(AbstractTracer):
             The cosmology of the ray-tracing calculation.
         """
 
-        self.image_plane = Plane(lens_galaxies, image_plane_grids, borders=borders, compute_deflections=True)
-
-        if not source_galaxies:
-            raise exc.RayTracingException(
-                'No source galaxies have been input into the Tracer (TracerImageSourcePlanes)')
-
         if cosmology is not None:
-            self.geometry = TracerGeometry(redshifts=[lens_galaxies[0].redshift, source_galaxies[0].redshift],
-                                           cosmology=cosmology)
-        else:
-            self.geometry = None
+
+            self.cosmology = cosmology
+
+        self.image_plane = plane.Plane(lens_galaxies, image_plane_grids, borders=borders, compute_deflections=True,
+                                       cosmology=cosmology)
 
         source_plane_grids = self.image_plane.trace_to_next_plane()
 
-        self.source_plane = Plane(source_galaxies, source_plane_grids, borders=borders, compute_deflections=False)
+        self.source_plane = plane.Plane(source_galaxies, source_plane_grids, borders=borders, compute_deflections=False,
+                                        cosmology=cosmology)
+
+    @property
+    def angular_diameter_distance_from_image_to_source_plane(self):
+        return self.cosmology.angular_diameter_distance_z1z2(self.image_plane.redshift,
+                                                             self.source_plane.redshift).to('kpc').value
+
+    def ang_between_planes(self, plane_i, plane_j):
+        return self.cosmology.angular_diameter_distance_z1z2(self.redshifts[plane_i], self.redshifts[plane_j]). \
+            to('kpc').value
+
+    @property
+    def critical_density_kpc(self):
+        return self.constant_kpc * self.source_plane.angular_diameter_distance_to_earth / \
+               (self.angular_diameter_distance_from_image_to_source_plane *
+                self.image_plane.angular_diameter_distance_to_earth)
+
+    @property
+    def critical_density_arcsec(self):
+        return self.critical_density_kpc * self.image_plane.kpc_per_arcsec ** 2.0
 
     @property
     def surface_density(self):
@@ -254,7 +224,7 @@ class TracerImageSourcePlanes(AbstractTracer):
 
     @property
     def surface_density_of_galaxies(self):
-        return list(map(lambda surface_density: self.image_plane.grids.image.map_to_2d(surface_density),
+        return list(map(lambda surface_density: self.map_to_2d(surface_density),
                         self.image_plane._surface_density_of_galaxies))
 
     @property
@@ -263,7 +233,7 @@ class TracerImageSourcePlanes(AbstractTracer):
 
     @property
     def potential_of_galaxies(self):
-        return list(map(lambda potential: self.image_plane.grids.image.map_to_2d(potential),
+        return list(map(lambda potential: self.map_to_2d(potential),
                         self.image_plane._potential_of_galaxies))
     
     @property
@@ -272,7 +242,7 @@ class TracerImageSourcePlanes(AbstractTracer):
 
     @property
     def deflections_x_of_galaxies(self):
-        return list(map(lambda deflections: self.image_plane.grids.image.map_to_2d(deflections[:,0]),
+        return list(map(lambda deflections: self.map_to_2d(deflections[:,0]),
                         self.image_plane._deflections_of_galaxies))
 
     @property
@@ -281,15 +251,11 @@ class TracerImageSourcePlanes(AbstractTracer):
 
     @property
     def deflections_y_of_galaxies(self):
-        return list(map(lambda deflections: self.image_plane.grids.image.map_to_2d(deflections[:,1]),
+        return list(map(lambda deflections: self.map_to_2d(deflections[:,1]),
                         self.image_plane._deflections_of_galaxies))
 
 
 class AbstractTracerMulti(AbstractTracer):
-
-    @property
-    def all_planes(self):
-        return self.planes
 
     def __init__(self, galaxies, cosmology):
         """The ray-tracing calculations, defined by a lensing system with just one _image-plane and source-plane.
@@ -308,6 +274,8 @@ class AbstractTracerMulti(AbstractTracer):
             The cosmology of the ray-tracing calculation.
         """
 
+        self.cosmology = cosmology
+
         if not galaxies:
             raise exc.RayTracingException('No galaxies have been input into the Tracer (TracerMulti)')
 
@@ -319,7 +287,6 @@ class AbstractTracerMulti(AbstractTracer):
         galaxy_redshifts = list(map(lambda galaxy: galaxy.redshift, self.galaxies_redshift_order))
         self.planes_redshift_order = [redshift for i, redshift in enumerate(galaxy_redshifts)
                                       if redshift not in galaxy_redshifts[:i]]
-        self.geometry = TracerGeometry(redshifts=self.planes_redshift_order, cosmology=cosmology)
 
         # TODO : Idea is to get a list of all galaxies in each plane - can you clean up the logic below?
 
@@ -332,8 +299,52 @@ class AbstractTracerMulti(AbstractTracer):
             self.planes_galaxies[plane_index] = list(filter(None, self.planes_galaxies[plane_index]))
 
     @property
+    def all_planes(self):
+        return [plane for plane in self.planes]
+
+    @property
     def image_plane(self):
         return self.planes[0]
+
+    @property
+    def source_plane_index(self):
+        return len(self.planes_redshift_order) - 1
+
+    @property
+    def angular_diameter_distance_to_source_plane(self):
+        return self.cosmology.angular_diameter_distance(self.planes_redshift_order[-1]).to('kpc').value
+
+    def arcsec_per_kpc_of_plane(self, plane_i):
+        return self.cosmology.arcsec_per_kpc_proper(z=self.planes_redshift_order[plane_i]).value
+
+    def kpc_per_arcsec_of_plane(self, plane_i):
+        return 1.0 / self.arcsec_per_kpc_of_plane(plane_i)
+
+    def angular_diameter_distance_of_plane_to_earth(self, plane_i):
+        return self.cosmology.angular_diameter_distance(self.planes_redshift_order[plane_i]).to('kpc').value
+
+    def angular_diameter_distance_between_planes(self, plane_i, plane_j):
+        return self.cosmology.angular_diameter_distance_z1z2(self.planes_redshift_order[plane_i],
+                                                             self.planes_redshift_order[plane_j]). \
+            to('kpc').value
+
+    @property
+    def constant_kpc(self):
+        # noinspection PyUnresolvedReferences
+        return constants.c.to('kpc / s').value ** 2.0 / (4 * math.pi * constants.G.to('kpc3 / M_sun s2').value)
+
+    def critical_density_kpc_between_planes(self, plane_i, plane_j):
+        return self.constant_kpc * self.angular_diameter_distance_of_plane_to_earth(plane_j) / \
+               (self.angular_diameter_distance_between_planes(plane_i, plane_j) * self.angular_diameter_distance_of_plane_to_earth(plane_i))
+
+    def critical_density_arcsec_between_planes(self, plane_i, plane_j):
+        return self.critical_density_kpc_between_planes(plane_i, plane_j) * self.kpc_per_arcsec_of_plane(plane_i) ** 2.0
+
+    def scaling_factor_between_planes(self, plane_i, plane_j):
+        return (self.angular_diameter_distance_between_planes(plane_i, plane_j) *
+                self.angular_diameter_distance_to_source_plane) / \
+               (self.angular_diameter_distance_of_plane_to_earth(plane_j) *
+                self.angular_diameter_distance_between_planes(plane_i, self.source_plane_index))
 
 
 class TracerMulti(AbstractTracerMulti):
@@ -355,9 +366,6 @@ class TracerMulti(AbstractTracerMulti):
             The cosmology of the ray-tracing calculation.
         """
 
-        if not galaxies:
-            raise exc.RayTracingException('No galaxies have been input into the Tracer (TracerMulti)')
-
         super(TracerMulti, self).__init__(galaxies, cosmology)
 
         self.planes = []
@@ -375,8 +383,9 @@ class TracerMulti(AbstractTracerMulti):
 
             if plane_index > 0:
                 for previous_plane_index in range(plane_index):
-                    scaling_factor = self.geometry.scaling_factor(plane_i=previous_plane_index,
-                                                                  plane_j=plane_index)
+
+                    scaling_factor = self.scaling_factor_between_planes(plane_i=previous_plane_index,
+                                                                        plane_j=plane_index)
 
                     def scale(grid):
                         return np.multiply(scaling_factor, grid)
@@ -394,156 +403,9 @@ class TracerMulti(AbstractTracerMulti):
                     else:
                         new_grid = None
 
-            self.planes.append(Plane(galaxies=self.planes_galaxies[plane_index], grids=new_grid, borders=borders,
-                                     compute_deflections=compute_deflections))
+            self.planes.append(plane.Plane(galaxies=self.planes_galaxies[plane_index], grids=new_grid, borders=borders,
+                                     compute_deflections=compute_deflections, cosmology=cosmology))
 
-
-class Plane(object):
-
-    def __init__(self, galaxies, grids, borders=None, compute_deflections=True):
-        """A plane represents a set of galaxies at a given redshift in a ray-tracer and a the grid of _image-plane \
-        or lensed coordinates.
-
-        From a plane, the _image's of its galaxies can be computed (in both the _image-plane and source-plane). The \
-        surface-density, potential and deflection angles of the galaxies can also be computed.
-
-        Parameters
-        -----------
-        galaxies : [Galaxy]
-            The list of lens galaxies in this plane.
-        grids : mask.ImagingGrids
-            The grids of (x,y) arc-second coordinates of this plane.
-        compute_deflections : bool
-            If true, the deflection-angles of this plane's coordinates are calculated use its galaxy's mass-profiles.
-        """
-        self.galaxies = galaxies
-        self.grids = grids
-        self.borders = borders
-
-        if compute_deflections:
-
-            def calculate_deflections(grid):
-                return sum(map(lambda galaxy: galaxy.deflections_from_grid(grid), galaxies))
-
-            self.deflections = self.grids.apply_function(calculate_deflections)
-
-        else:
-
-            self.deflections = None
-
-    def trace_to_next_plane(self):
-        """Trace this plane's grids to the next plane, using its deflection angles."""
-        return self.grids.map_function(np.subtract, self.deflections)
-
-    def plane_image(self, shape=(30, 30)):
-
-        class PlaneImage(np.ndarray):
-
-            def __new__(cls, image, grid):
-                plane = np.array(image, dtype='float64').view(cls)
-                plane.grid = grid
-                return plane
-
-        grid = uniform_grid_from_lensed_grid(self.grids.image, shape)
-        image_1d = self.plane_image_from_galaxies(grid)
-        image = imaging_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(array_1d=image_1d, shape=shape)
-        return PlaneImage(image=image, grid=self.grids.image)
-
-    def plane_image_from_galaxies(self, plane_grid):
-        return sum([intensities_from_grid(plane_grid, [galaxy]) for galaxy in self.galaxies])
-
-    @property
-    def hyper_galaxies(self):
-        return list(filter(None.__ne__, [galaxy.hyper_galaxy for galaxy in self.galaxies]))
-
-    @property
-    def mapper(self):
-
-        galaxies_with_pixelization = list(filter(lambda galaxy: galaxy.has_pixelization, self.galaxies))
-
-        if len(galaxies_with_pixelization) == 0:
-            return None
-        if len(galaxies_with_pixelization) == 1:
-            pixelization = galaxies_with_pixelization[0].pixelization
-            return pixelization.mapper_from_grids_and_borders(self.grids, self.borders)
-        elif len(galaxies_with_pixelization) > 1:
-            raise exc.PixelizationException('The number of galaxies with pixelizations in one plane is above 1')
-
-    @property
-    def regularization(self):
-
-        galaxies_with_regularization = list(filter(lambda galaxy: galaxy.has_regularization, self.galaxies))
-
-        if len(galaxies_with_regularization) == 0:
-            return None
-        if len(galaxies_with_regularization) == 1:
-            return galaxies_with_regularization[0].regularization
-        elif len(galaxies_with_regularization) > 1:
-            raise exc.PixelizationException('The number of galaxies with regularizations in one plane is above 1')
-
-    @property
-    def xticks_from_image_grid(self):
-        return np.around(np.linspace(np.amin(self.grids.image[:, 0]), np.amax(self.grids.image[:, 0]), 4), 2)
-
-    @property
-    def yticks_from_image_grid(self):
-        return np.around(np.linspace(np.amin(self.grids.image[:, 1]), np.amax(self.grids.image[:, 1]), 4), 2)
-
-    @property
-    def _image_plane_image(self):
-        return sum(self._image_plane_images_of_galaxies)
-
-    @property
-    def _image_plane_images_of_galaxies(self):
-        return [self._image_plane_image_from_galaxy(galaxy) for galaxy in self.galaxies]
-
-    def _image_plane_image_from_galaxy(self, galaxy):
-        return intensities_from_grid(self.grids.sub, [galaxy])
-
-    @property
-    def _image_plane_blurring_image(self):
-        return sum(self._image_plane_blurring_images_of_galaxies)
-
-    @property
-    def _image_plane_blurring_images_of_galaxies(self):
-        return [self._image_plane_blurring_image_from_galaxy(galaxy) for galaxy in self.galaxies]
-
-    def _image_plane_blurring_image_from_galaxy(self, galaxy):
-        return intensities_from_grid(self.grids.blurring, [galaxy])
-
-    @property
-    def _surface_density(self):
-        return sum(self._surface_density_of_galaxies)
-
-    @property
-    def _surface_density_of_galaxies(self):
-        return [self._surface_density_from_galaxy(galaxy) for galaxy in self.galaxies]
-
-    def _surface_density_from_galaxy(self, galaxy):
-        return surface_density_from_grid(self.grids.sub, [galaxy])
-
-    @property
-    def _potential(self):
-        return sum(self._potential_of_galaxies)
-
-    @property
-    def _potential_of_galaxies(self):
-        return [self._potential_from_galaxy(galaxy) for galaxy in self.galaxies]
-
-    def _potential_from_galaxy(self, galaxy):
-        return potential_from_grid(self.grids.sub, [galaxy])
-
-    @property
-    def _deflections(self):
-        return sum(self._deflections_of_galaxies)
-
-    @property
-    def _deflections_of_galaxies(self):
-        return [self._deflections_from_galaxy(galaxy) for galaxy in self.galaxies]
-
-    def _deflections_from_galaxy(self, galaxy):
-        return deflections_from_grid(self.grids.sub, [galaxy])
-    
     
 class TracerImageSourcePlanesPositions(AbstractTracer):
 
@@ -571,17 +433,15 @@ class TracerImageSourcePlanesPositions(AbstractTracer):
             The cosmology of the ray-tracing calculation.
         """
 
-        if cosmology is not None:
-            self.geometry = TracerGeometry(redshifts=[lens_galaxies[0].redshift, source_galaxies[0].redshift],
-                                           cosmology=cosmology)
-        else:
-            self.geometry = None
+        self.cosmology = cosmology
 
-        self.image_plane = PlanePositions(lens_galaxies, positions, compute_deflections=True)
+        self.image_plane = plane.PlanePositions(lens_galaxies, positions, compute_deflections=True,
+                                                cosmology=cosmology)
 
         source_plane_grids = self.image_plane.trace_to_next_plane()
 
-        self.source_plane = PlanePositions(None, source_plane_grids, compute_deflections=False)
+        self.source_plane = plane.PlanePositions(None, source_plane_grids, compute_deflections=False,
+                                                 cosmology=cosmology)
 
 
 class TracerMultiPositions(AbstractTracerMulti):
@@ -604,7 +464,7 @@ class TracerMultiPositions(AbstractTracerMulti):
         """
 
         if not galaxies:
-            raise exc.RayTracingException('No galaxies have been input into the Tracer (TracerImageSourcePlanes)')
+            raise exc.RayTracingException('No galaxies have been input into the Tracer (TracerImageSourceplane.Planes)')
 
         super(TracerMultiPositions, self).__init__(galaxies, cosmology)
 
@@ -623,7 +483,10 @@ class TracerMultiPositions(AbstractTracerMulti):
 
             if plane_index > 0:
                 for previous_plane_index in range(plane_index):
-                    scaling_factor = self.geometry.scaling_factor(plane_i=previous_plane_index, plane_j=plane_index)
+
+                    scaling_factor = self.scaling_factor_between_planes(plane_i=previous_plane_index,
+                                                                        plane_j=plane_index)
+
                     scaled_deflections = list(map(lambda deflections:
                                                   np.multiply(scaling_factor, deflections),
                                                   self.planes[previous_plane_index].deflections))
@@ -631,137 +494,5 @@ class TracerMultiPositions(AbstractTracerMulti):
                     new_positions = list(map(lambda positions, deflections:
                                              np.subtract(positions, deflections), new_positions, scaled_deflections))
 
-            self.planes.append(PlanePositions(galaxies=self.planes_galaxies[plane_index], positions=new_positions,
+            self.planes.append(plane.PlanePositions(galaxies=self.planes_galaxies[plane_index], positions=new_positions,
                                               compute_deflections=compute_deflections))
-
-
-class PlanePositions(object):
-
-    def __init__(self, galaxies, positions, compute_deflections=True):
-        """A plane represents a set of galaxies at a given redshift in a ray-tracer and the positions of _image-plane \
-        coordinates which mappers close to one another in the source-plane.
-
-        Parameters
-        -----------
-        galaxies : [Galaxy]
-            The list of lens galaxies in this plane.
-        positions : [[[]]]
-            The (x,y) arc-second coordinates of _image-plane pixels which (are expected to) mappers to the same location(s) \
-            in the final source-plane.
-        compute_deflections : bool
-            If true, the deflection-angles of this plane's coordinates are calculated use its galaxy's mass-profiles.
-        """
-        self.galaxies = galaxies
-        self.positions = positions
-
-        if compute_deflections:
-            def calculate_deflections(positions):
-                return sum(map(lambda galaxy: galaxy.deflections_from_grid(positions), galaxies))
-
-            self.deflections = list(map(lambda positions: calculate_deflections(positions), self.positions))
-
-    def trace_to_next_plane(self):
-        """Trace the positions to the next plane."""
-        return list(map(lambda positions, deflections: np.subtract(positions, deflections),
-                        self.positions, self.deflections))
-
-
-def sub_to_image_grid(func):
-    """
-    Wrap the function in a function that, if the grid is a sub-grid (grids.SubGrid), rebins the computed values to \
-    the _image-grid by taking the mean of each set of sub-gridded values.
-
-    Parameters
-    ----------
-    func : (profiles, *args, **kwargs) -> Object
-        A function that requires transformed coordinates
-    """
-
-    @wraps(func)
-    def wrapper(grid, galaxies, *args, **kwargs):
-        """
-
-        Parameters
-        ----------
-        profile : GeometryProfile
-            The profiles that owns the function
-        grid : ndarray
-            PlaneCoordinates in either cartesian or profiles coordinate system
-        args
-        kwargs
-
-        Returns
-        -------
-            A value or coordinate in the same coordinate system as those passed in.
-        """
-
-        result = func(grid, galaxies, *args, *kwargs)
-
-        if isinstance(grid, msk.SubGrid):
-            return grid.sub_data_to_image(result)
-        else:
-            return result
-
-    return wrapper
-
-
-@sub_to_image_grid
-def intensities_from_grid(grid, galaxies):
-    return sum(map(lambda g: g.intensities_from_grid(grid), galaxies))
-
-
-@sub_to_image_grid
-def surface_density_from_grid(grid, galaxies):
-    return sum(map(lambda g: g.surface_density_from_grid(grid), galaxies))
-
-
-@sub_to_image_grid
-def potential_from_grid(grid, galaxies):
-    return sum(map(lambda g: g.potential_from_grid(grid), galaxies))
-
-# TODO : There will be a much cleaner way to apply sub data to surface_density to the array wihtout the need for a transpose
-
-def deflections_from_grid(grid, galaxies):
-    deflections = sum(map(lambda galaxy: galaxy.deflections_from_grid(grid), galaxies))
-    if isinstance(grid, msk.SubGrid):
-        return np.asarray([grid.sub_data_to_image(deflections[:,0]), grid.sub_data_to_image(deflections[:,1])]).T
-    return sum(map(lambda galaxy: galaxy.deflections_from_grid(grid), galaxies))
-
-def deflections_from_sub_grid(sub_grid, galaxies):
-    return sum(map(lambda galaxy: galaxy.deflections_from_grid(sub_grid), galaxies))
-
-
-def deflections_from_grid_collection(grid_collection, galaxies):
-    return grid_collection.apply_function(lambda grid: deflections_from_sub_grid(grid, galaxies))
-
-
-def traced_collection_for_deflections(grids, deflections):
-    def subtract_scaled_deflections(grid, scaled_deflection):
-        return np.subtract(grid, scaled_deflection)
-
-    result = grids.map_function(subtract_scaled_deflections, deflections)
-
-    return result
-
-
-def uniform_grid_from_lensed_grid(grid, shape):
-    x_min = np.amin(grid[:, 0])
-    x_max = np.amax(grid[:, 0])
-    y_min = np.amin(grid[:, 1])
-    y_max = np.amax(grid[:, 1])
-
-    x_pixel_scale = ((x_max - x_min) / shape[0])
-    y_pixel_scale = ((y_max - y_min) / shape[1])
-
-    x_grid = np.linspace(x_min + (x_pixel_scale / 2.0), x_max - (x_pixel_scale / 2.0), shape[0])
-    y_grid = np.linspace(y_min + (y_pixel_scale / 2.0), y_max - (y_pixel_scale / 2.0), shape[1])
-
-    source_plane_grid = np.zeros((shape[0] * shape[1], 2))
-
-    i = 0
-    for x in range(shape[0]):
-        for y in range(shape[1]):
-            source_plane_grid[i] = np.array([x_grid[x], y_grid[y]])
-            i += 1
-
-    return source_plane_grid

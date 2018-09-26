@@ -157,7 +157,7 @@ class PreparatoryImage(Image):
         # ESTIMATE HTE POISSON NOISE MAP FROM THE IMAGE
 
         array_counts = np.multiply(array, effective_exposure_map)
-        poisson_noise_map = np.divide(np.sqrt(array_counts), effective_exposure_map)
+        poisson_noise_map = np.divide(np.sqrt(np.abs(array_counts)), effective_exposure_map)
 
         return PreparatoryImage(array, pixel_scale=pixel_scale, noise_map=noise_map, psf=psf,
                                 background_noise_map=background_noise_map, poisson_noise_map=poisson_noise_map,
