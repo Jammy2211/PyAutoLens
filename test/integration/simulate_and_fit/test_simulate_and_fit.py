@@ -20,7 +20,7 @@ def test__simulate_lensed_source_and_fit__no_psf_blurring__chi_squared_is_0__noi
                                  [0.0, 1.0, 0.0],
                                  [0.0, 0.0, 0.0]]))
 
-    imaging_grids = msk.ImagingGrids.unmasked_grids_for_simulation(shape=(11, 11), pixel_scale=0.2, psf_shape=psf.shape)
+    imaging_grids = msk.ImagingGrids.grids_for_simulation(shape=(11, 11), pixel_scale=0.2, psf_shape=psf.shape)
 
     lens_galaxy = g.Galaxy(light=lp.EllipticalSersic(centre=(0.1, 0.1), intensity=0.1),
                            mass=mp.EllipticalIsothermal(centre=(0.1, 0.1), einstein_radius=1.8))
@@ -48,9 +48,9 @@ def test__simulate_lensed_source_and_fit__no_psf_blurring__chi_squared_is_0__noi
     imaging_util.numpy_array_to_fits(array=image_simulated.noise_map, path=path + '/noise_map.fits')
     imaging_util.numpy_array_to_fits(array=psf, path=path + '/psf.fits')
 
-    image = im.load_from_path(image_path=path + '/_image.fits',
-                              noise_path=path + '/noise_map.fits',
-                              psf_path=path + '/psf.fits', pixel_scale=0.2)
+    image = im.load_imaging_from_path(image_path=path + '/_image.fits',
+                                      noise_path=path + '/noise_map.fits',
+                                      psf_path=path + '/psf.fits', pixel_scale=0.2)
 
     mask = msk.Mask.circular(shape=image.shape, pixel_scale=0.2, radius_mask_arcsec=0.8)
 
@@ -67,7 +67,7 @@ def test__simulate_lensed_source_and_fit__no_psf_blurring__chi_squared_is_0__noi
 def test__simulate_lensed_source_and_fit__include_psf_blurring__chi_squared_is_0__noise_term_correct():
     psf = im.PSF.simulate_as_gaussian(shape=(3, 3), sigma=0.75)
 
-    imaging_grids = msk.ImagingGrids.unmasked_grids_for_simulation(shape=(11, 11), pixel_scale=0.2, psf_shape=psf.shape)
+    imaging_grids = msk.ImagingGrids.grids_for_simulation(shape=(11, 11), pixel_scale=0.2, psf_shape=psf.shape)
 
     lens_galaxy = g.Galaxy(light=lp.EllipticalSersic(centre=(0.1, 0.1), intensity=0.1),
                            mass=mp.EllipticalIsothermal(centre=(0.1, 0.1), einstein_radius=1.8))
@@ -95,9 +95,9 @@ def test__simulate_lensed_source_and_fit__include_psf_blurring__chi_squared_is_0
     imaging_util.numpy_array_to_fits(array=image_simulated.noise_map, path=path + '/noise_map.fits')
     imaging_util.numpy_array_to_fits(array=psf, path=path + '/psf.fits')
 
-    image = im.load_from_path(image_path=path + '/_image.fits',
-                              noise_path=path + '/noise_map.fits',
-                              psf_path=path + '/psf.fits', pixel_scale=0.2)
+    image = im.load_imaging_from_path(image_path=path + '/_image.fits',
+                                      noise_path=path + '/noise_map.fits',
+                                      psf_path=path + '/psf.fits', pixel_scale=0.2)
 
     mask = msk.Mask.circular(shape=image.shape, pixel_scale=0.2, radius_mask_arcsec=0.8)
 
