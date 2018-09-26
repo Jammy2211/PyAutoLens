@@ -19,7 +19,7 @@ array_plotters.plot_psf(psf=psf)
 # We need to set up the grids of Cartesian coordinates we will use to perform ray-tracing. The function below
 # sets these grids up using the shape and pixel-scale of the _image we will ultimately simulate. The PSF shape is
 # required to ensure that edge-effects do not impact PSF blurring later in the simulation.
-imaging_grids = mask.ImagingGrids.unmasked_grids_for_simulation(shape=(100, 100), pixel_scale=0.1, psf_shape=psf.shape)
+imaging_grids = mask.ImagingGrids.grids_for_simulation(shape=(100, 100), pixel_scale=0.1, psf_shape=psf.shape)
 
 # Now lets make our lens and source galaxies, using the 'galaxy' module (imported as 'g'), 'light_profiles' module
 # (imported as 'lp') and 'mass profiles' module (imported as 'mp') to setup the lens and source galaxies.

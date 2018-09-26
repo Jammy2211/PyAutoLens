@@ -14,9 +14,9 @@ import os
 path = "{}".format(os.path.dirname(os.path.realpath(__file__)))
 
 # Load an _image from the 'data/1_basic' folder.
-image = im.load_from_path(image_path=path + '/../data/1_basic/_image.fits',
-                          noise_path=path+'/../data/1_basic/noise_map.fits',
-                          psf_path=path + '/../data/1_basic/psf.fits', pixel_scale=0.1)
+image = im.load_imaging_from_path(image_path=path + '/../data/1_basic/_image.fits',
+                                  noise_path=path+'/../data/1_basic/noise_map.fits',
+                                  psf_path=path + '/../data/1_basic/psf.fits', pixel_scale=0.1)
 
 # A quick visual inspection of the _image will remind us that we didn't simulate the lens galaxy's light, thus the
 # model used in this phase needs to only represent the lens's mass and source's light.

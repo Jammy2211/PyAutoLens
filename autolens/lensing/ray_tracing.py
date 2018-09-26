@@ -310,18 +310,18 @@ class AbstractTracerMulti(AbstractTracer):
     def angular_diameter_distance_to_source_plane(self):
         return self.cosmology.angular_diameter_distance(self.planes_redshift_order[-1]).to('kpc').value
 
-    def arcsec_per_kpc_of_plane(self, plane_i):
-        return self.cosmology.arcsec_per_kpc_proper(z=self.planes_redshift_order[plane_i]).value
+    def arcsec_per_kpc_proper_of_plane(self, i):
+        return self.cosmology.arcsec_per_kpc_proper(z=self.planes_redshift_order[i]).value
 
-    def kpc_per_arcsec_of_plane(self, plane_i):
-        return 1.0 / self.arcsec_per_kpc_of_plane(plane_i)
+    def kpc_per_arcsec_proper_of_plane(self, i):
+        return 1.0 / self.arcsec_per_kpc_proper_of_plane(i)
 
-    def angular_diameter_distance_of_plane_to_earth(self, plane_i):
-        return self.cosmology.angular_diameter_distance(self.planes_redshift_order[plane_i]).to('kpc').value
+    def angular_diameter_distance_of_plane_to_earth(self, i):
+        return self.cosmology.angular_diameter_distance(self.planes_redshift_order[i]).to('kpc').value
 
-    def angular_diameter_distance_between_planes(self, plane_i, plane_j):
-        return self.cosmology.angular_diameter_distance_z1z2(self.planes_redshift_order[plane_i],
-                                                             self.planes_redshift_order[plane_j]). \
+    def angular_diameter_distance_between_planes(self, i, j):
+        return self.cosmology.angular_diameter_distance_z1z2(self.planes_redshift_order[i],
+                                                             self.planes_redshift_order[j]). \
             to('kpc').value
 
     @property
@@ -329,18 +329,18 @@ class AbstractTracerMulti(AbstractTracer):
         # noinspection PyUnresolvedReferences
         return constants.c.to('kpc / s').value ** 2.0 / (4 * math.pi * constants.G.to('kpc3 / M_sun s2').value)
 
-    def critical_density_kpc_between_planes(self, plane_i, plane_j):
-        return self.constant_kpc * self.angular_diameter_distance_of_plane_to_earth(plane_j) / \
-               (self.angular_diameter_distance_between_planes(plane_i, plane_j) * self.angular_diameter_distance_of_plane_to_earth(plane_i))
+    def critical_density_kpc_between_planes(self, i, j):
+        return self.constant_kpc * self.angular_diameter_distance_of_plane_to_earth(j) / \
+               (self.angular_diameter_distance_between_planes(i, j) * self.angular_diameter_distance_of_plane_to_earth(i))
 
-    def critical_density_arcsec_between_planes(self, plane_i, plane_j):
-        return self.critical_density_kpc_between_planes(plane_i, plane_j) * self.kpc_per_arcsec_of_plane(plane_i) ** 2.0
+    def critical_density_arcsec_between_planes(self, i, j):
+        return self.critical_density_kpc_between_planes(i, j) * self.kpc_per_arcsec_proper_of_plane(i) ** 2.0
 
-    def scaling_factor_between_planes(self, plane_i, plane_j):
-        return (self.angular_diameter_distance_between_planes(plane_i, plane_j) *
+    def scaling_factor_between_planes(self, i, j):
+        return (self.angular_diameter_distance_between_planes(i, j) *
                 self.angular_diameter_distance_to_source_plane) / \
-               (self.angular_diameter_distance_of_plane_to_earth(plane_j) *
-                self.angular_diameter_distance_between_planes(plane_i, self.source_plane_index))
+               (self.angular_diameter_distance_of_plane_to_earth(j) *
+                self.angular_diameter_distance_between_planes(i, self.source_plane_index))
 
 
 class TracerMulti(AbstractTracerMulti):
@@ -380,8 +380,8 @@ class TracerMulti(AbstractTracerMulti):
             if plane_index > 0:
                 for previous_plane_index in range(plane_index):
 
-                    scaling_factor = self.scaling_factor_between_planes(plane_i=previous_plane_index,
-                                                                        plane_j=plane_index)
+                    scaling_factor = self.scaling_factor_between_planes(i=previous_plane_index,
+                                                                        j=plane_index)
 
                     def scale(grid):
                         return np.multiply(scaling_factor, grid)
@@ -480,8 +480,8 @@ class TracerMultiPositions(AbstractTracerMulti):
             if plane_index > 0:
                 for previous_plane_index in range(plane_index):
 
-                    scaling_factor = self.scaling_factor_between_planes(plane_i=previous_plane_index,
-                                                                        plane_j=plane_index)
+                    scaling_factor = self.scaling_factor_between_planes(i=previous_plane_index,
+                                                                        j=plane_index)
 
                     scaled_deflections = list(map(lambda deflections:
                                                   np.multiply(scaling_factor, deflections),

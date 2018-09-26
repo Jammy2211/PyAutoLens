@@ -222,7 +222,7 @@ class ImagingGrids(object):
         return ImagingGrids(image=image_padded_grid, sub=sub_padded_grid, blurring=np.array([[0.0, 0.0]]))
 
     @classmethod
-    def unmasked_grids_for_simulation(cls, shape, pixel_scale, psf_shape, sub_grid_size=1):
+    def grids_for_simulation(cls, shape, pixel_scale, psf_shape, sub_grid_size=1):
         """Setup a collection of imaging-grids for simulating an _image of a strong lens. 
         
         This routine uses padded-grids which ensure that the PSF blurring in the simulation routine \ 
