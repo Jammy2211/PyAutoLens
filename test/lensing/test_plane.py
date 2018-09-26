@@ -348,13 +348,31 @@ class TestPlane(object):
 
     class TestRedshift:
 
+        def test__galaxy_redshifts_gives_list_of_redshifts(self, imaging_grids):
+
+            g0 = g.Galaxy(redshift=1.0)
+            g1 = g.Galaxy(redshift=1.0)
+            g2 = g.Galaxy(redshift=1.0)
+
+            plane = pl.Plane(grids=imaging_grids, galaxies=[g0, g1, g2])
+
+            assert plane.galaxy_redshifts == [1.0, 1.0, 1.0]
+
+        def test__galaxy_has_no_redshift__cosmology_input__raises_exception(self, imaging_grids):
+
+            g0 = g.Galaxy()
+            g1 = g.Galaxy(redshift=1.0)
+
+            with pytest.raises(exc.RayTracingException):
+                pl.Plane(grids=imaging_grids, galaxies=[g0, g1], cosmology=cosmo.LambdaCDM)
+
+
         def test__galaxies_entered_all_have_no_redshifts__no_exception_raised(self, imaging_grids):
 
             g0 = g.Galaxy()
             g1 = g.Galaxy()
 
             pl.Plane(grids=imaging_grids, galaxies=[g0, g1])
-
 
         def test__galaxies_entered_all_have_same_redshifts__no_exception_raised(self, imaging_grids):
 
@@ -401,15 +419,29 @@ class TestPlane(object):
             
             g0 = g.Galaxy(redshift=0.1)            
             plane = pl.Plane(galaxies=[g0], grids=imaging_grids, cosmology=cosmo.Planck15)
-            assert plane.arcsec_per_kpc == pytest.approx(0.525060, 1e-5)
-            assert plane.kpc_per_arcsec == pytest.approx(1.904544, 1e-5)
+            assert plane.arcsec_per_kpc_proper == pytest.approx(0.525060, 1e-5)
+            assert plane.kpc_per_arcsec_proper == pytest.approx(1.904544, 1e-5)
             assert plane.angular_diameter_distance_to_earth == pytest.approx(392840, 1e-5)
 
             g0 = g.Galaxy(redshift=1.0)
             plane = pl.Plane(galaxies=[g0], grids=imaging_grids, cosmology=cosmo.Planck15)
-            assert plane.arcsec_per_kpc == pytest.approx(0.1214785, 1e-5)
-            assert plane.kpc_per_arcsec == pytest.approx(8.231907, 1e-5)
+            assert plane.arcsec_per_kpc_proper == pytest.approx(0.1214785, 1e-5)
+            assert plane.kpc_per_arcsec_proper == pytest.approx(8.231907, 1e-5)
             assert plane.angular_diameter_distance_to_earth == pytest.approx(1697952, 1e-5)
+
+        def test__cosmology_is_none__arguments_return_none(self, imaging_grids):
+
+            g0 = g.Galaxy(redshift=0.1)
+            plane = pl.Plane(galaxies=[g0], grids=imaging_grids)
+            assert plane.arcsec_per_kpc_proper == None
+            assert plane.kpc_per_arcsec_proper == None
+            assert plane.angular_diameter_distance_to_earth == None
+
+            g0 = g.Galaxy(redshift=1.0)
+            plane = pl.Plane(galaxies=[g0], grids=imaging_grids)
+            assert plane.arcsec_per_kpc_proper == None
+            assert plane.kpc_per_arcsec_proper == None
+            assert plane.angular_diameter_distance_to_earth == None
 
     class TestBooleans:
 

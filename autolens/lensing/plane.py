@@ -8,6 +8,42 @@ from autolens import exc
 from autolens.imaging import imaging_util
 from autolens.imaging import mask as msk
 
+def cosmology_check(func):
+    """
+    Wrap the function in a function that, if the grid is a sub-grid (grids.SubGrid), rebins the computed values to \
+    the _image-grid by taking the mean of each set of sub-gridded values.
+
+    Parameters
+    ----------
+    func : (profiles, *args, **kwargs) -> Object
+        A function that requires transformed coordinates
+    """
+
+    @wraps(func)
+    def wrapper(self, *args, **kwargs):
+        """
+
+        Parameters
+        ----------
+        profile : GeometryProfile
+            The profiles that owns the function
+        grid : ndarray
+            PlaneCoordinates in either cartesian or profiles coordinate system
+        args
+        kwargs
+
+        Returns
+        -------
+            A value or coordinate in the same coordinate system as those passed in.
+        """
+
+        if self.cosmology is not None:
+            return func(self, *args, *kwargs)
+        else:
+            return None
+
+    return wrapper
+
 
 class Plane(object):
 
@@ -28,16 +64,22 @@ class Plane(object):
             If true, the deflection-angles of this plane's coordinates are calculated use its galaxy's mass-profiles.
         """
 
+        self.galaxies = galaxies
+
         if not galaxies:
             raise exc.RayTracingException('An empty list of galaxies was supplied to Plane')
 
-        galaxy_redshifts = [galaxy.redshift for galaxy in galaxies]
-        if any([redshift is not None for redshift in galaxy_redshifts]):
+        if cosmology is not None:
+            if any([redshift is None for redshift in self.galaxy_redshifts]):
+                raise exc.RayTracingException('A cosmology has been supplied to ray-tracing, but a galaxy does not'
+                                              'have a redshift. Either do not supply a cosmology or give the galaxy'
+                                              'a redshift.')
+
+        if any([redshift is not None for redshift in self.galaxy_redshifts]):
             if not all([galaxies[0].redshift == galaxy.redshift for galaxy in galaxies]):
                 raise exc.RayTracingException('The galaxies supplied to A Plane have different redshifts or one galaxy'
                                           'does not have a redshift.')
 
-        self.galaxies = galaxies
         self.grids = grids
         self.borders = borders
 
@@ -76,6 +118,10 @@ class Plane(object):
         return sum([intensities_from_grid(plane_grid, [galaxy]) for galaxy in self.galaxies])
 
     @property
+    def galaxy_redshifts(self):
+        return [galaxy.redshift for galaxy in self.galaxies]
+
+    @property
     def redshift(self):
         return self.galaxies[0].redshift
 
@@ -85,14 +131,17 @@ class Plane(object):
         return constants.c.to('kpc / s').value ** 2.0 / (4 * math.pi * constants.G.to('kpc3 / M_sun s2').value)
 
     @property
-    def arcsec_per_kpc(self):
+    @cosmology_check
+    def arcsec_per_kpc_proper(self):
         return self.cosmology.arcsec_per_kpc_proper(z=self.redshift).value
 
     @property
-    def kpc_per_arcsec(self):
-        return 1.0 / self.arcsec_per_kpc
+    @cosmology_check
+    def kpc_per_arcsec_proper(self):
+        return 1.0 / self.arcsec_per_kpc_proper
 
     @property
+    @cosmology_check
     def angular_diameter_distance_to_earth(self):
         return self.cosmology.angular_diameter_distance(self.redshift).to('kpc').value
 
