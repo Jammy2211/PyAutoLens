@@ -1,30 +1,18 @@
-import numpy as np
-from autolens import exc
 import numba
+import numpy as np
+
+from autolens import exc
 
 """
-This module is for the application of convolution to sparse_grid vectors.
+This module is for the application of convolution to _image vectors.
 
-Take a simple mask:
 
-[[True, False, True],
- [False, False, False],
- [True, False, True]]
- 
-Here True means that the value is masked.
 
-A set of values in a corresponding image_grid might be represented in a 1D array:
+A Convolver can be created for a given mask and psf:
 
-[2, 8, 2, 5, 7, 5, 3, 1, 4]
+convolver = Convolver(mask, psf)
 
-This module allows us to find the relationships between data_to_image in a mask for a psf of a given sub_grid_size so that
-convolutions can be efficiently applied to reduced arrays such as the one above.
-
-A Convolver can be created for a given mask:
-
-frame_maker = Convolver(self.mask)
-
-This can then produce a convolver_image for any given psf shape and corresponding blurring region mask:
+This can then produce a convolved _image for any convolver_image for any given psf shape and corresponding blurring region mask:
 
 convolver_image = frame_maker.convolver_for_kernel_shape((3, 3), blurring_region_mask)
 
@@ -65,16 +53,41 @@ entry with a False value for mask.
 
 
 class Convolver(object):
-    """Class to setup the 1D convolution of an masked_image / mapping_matrix matrix.
+    """Class to setup the 1D convolution of an _image / mapping_matrix matrix.
+
+    Take a simple 3x3 _image and mask:
+
+    [[2, 8, 2],
+    [5, 7, 5],
+    [3, 1, 4]]
+
+    [[True, False, True],   (True means that the value is masked)
+    [False, False, False],
+    [True, False, True]]
+
+    A set of values in a corresponding 1d array of this _image might be represented as:
+
+    [2, 8, 2, 5, 7, 5, 3, 1, 4]
+
+    and after masking as:
+
+    [8, 5, 7, 5, 1]
+
+    Setup is required to perform 2D real-space convolution on the masked _image array. This module finds the \
+    relationship between the unmasked 2D _image data, masked _image data and psf, so that 2D real-space convolutions \
+    can be efficiently applied to reduced 1D masked arrays.
+
+    This calculation also accounts for the blurring of light outside of the masked regions which blurs into \
+    the masked region.
 
     IMAGE FRAMES:
     ------------
 
-    For a masked masked_image, in 2D, one can compute for every unmasked pixel all other unmasked pixels it will blur light \
-    into for a given PSF psf size, e.g.:
+    For a masked _image in 2D, one can compute for every pixel all of the unmasked pixels it will blur light into for \
+    a given PSF psf size, e.g.:
 
     |x|x|x|x|x|x|x|x|x|x|
-    |x|x|x|x|x|x|x|x|x|x|     This is an example masked_image.Mask, where:
+    |x|x|x|x|x|x|x|x|x|x|     This is an howtolens imaging.Mask, where:
     |x|x|x|x|x|x|x|x|x|x|
     |x|x|x|x|x|x|x|x|x|x|     x = True (Pixel is masked and excluded from lensing)
     |x|x|x|o|o|o|x|x|x|x|     o = False (Pixel is not masked and included in lensing)
@@ -84,8 +97,8 @@ class Convolver(object):
     |x|x|x|x|x|x|x|x|x|x|
     |x|x|x|x|x|x|x|x|x|x|
 
-    Here, there are 9 unmasked pixels. Indexing of each unmasked pixel goes from the top-left corner right,
-    and downwards, therefore:
+    Here, there are 9 unmasked pixels. Indexing of each unmasked pixel goes from the top-left corner right and \
+    downwards, therefore:
 
     |x|x|x|x|x|x|x|x|x|x|
     |x|x|x|x|x|x|x|x|x|x|
@@ -98,13 +111,13 @@ class Convolver(object):
     |x|x|x|x|x|x|x|x|x|x|
     |x|x|x|x|x|x|x|x|x|x|
 
-    For every unmasked pixel, the Convolver over-lays the PSF psf and computes three quantities;
+    For every unmasked pixel, the Convolver over-lays the PSF and computes three quantities;
 
-    image_frame_indexes - The indexes of all masked_image pixels it will blur light into.
-    image_frame_psfs - The psf values that overlap each masked_image pixel it will blur light into.
-    image_frame_length - The number of masked_image-pixels it will blur light into (because unmasked pixels are excluded)
+    image_frame_indexes - The indexes of all masked _image pixels it will blur light into.
+    image_frame_psfs - The psf values that overlap each masked _image pixel it will blur light into.
+    image_frame_length - The number of masked _image-pixels it will blur light into (unmasked pixels are excluded)
 
-    For example, if we had the following 3x3 psf:
+    For howtolens, if we had the following 3x3 psf:
 
     |0.1|0.2|0.3|
     |0.4|0.5|0.6|
@@ -116,7 +129,7 @@ class Convolver(object):
     image_frame_psfs = [0.5, 0.6, 0.8, 0.9]
     image_frame_length = 4
 
-    Noting that the other 5 psf values (0.1, 0.2, 0.3, 0.4, 0.7) overlap masked pixels and are thus discard.
+    Noting that the other 5 psf values (0.1, 0.2, 0.3, 0.4, 0.7) overlap masked pixels and are thus discarded.
 
     For pixel 1, we get the following results:
 
@@ -124,29 +137,30 @@ class Convolver(object):
     image_frame_psfs = [0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
     image_frame_lengths = 6
 
-    In the majority of cases, there will be no unmasked pixels when the psf overlaps. This is the case above for \
+    In the majority of cases, the psf will overlap only unmasked pixels. This is the case above for \
     central pixel 4, where:
 
     image_frame_indexes = [0, 1, 2, 3, 4, 5, 6, 7, 8]
     image_frame_psfs = [0,1, 0.2, 0,3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
-    image_frame_lengths = 6
+    image_frame_lengths = 9
 
-    Once we have set up all these quantities, the convolution routine simply uses them to convolve_image a 1D array of masked_image
-    data / a mapping_matrix matrix masked_image.
+    Once we have set up all these quantities, the convolution routine simply uses them to convolve a 1D array of a
+    masked _image or the masked _image of a mapping_matrix in the inversion module.
 
     BLURRING FRAMES:
     --------------
 
-    Whilst the scheme above accounts for all blurred light within the mask, it does not account for the fact that
-    pixels outside of the mask will also blur light into it. For galaxy light profiles, this effect is accounted for \
-    using blurring frames, however it is omitted for mapping_matrix matrix images.
+    Whilst the scheme above accounts for all blurred light within the mask, it does not account for the fact that \
+    pixels outside of the mask will also blur light into it. This effect is accounted for using blurring frames.
+
+    It is omitted for mapping_matrix matrix blurring, as a inversion does not fit data outside of the mask.
 
     First, a blurring mask is computed from a mask, which describes all pixels which are close enough to the mask \
-    to blur light into it for a given psf size. Following the example above, the following blurring mask is \
+    to blur light into it for a given psf size. Following the howtolens above, the following blurring mask is \
     computed:
 
     |x|x|x|x|x|x|x|x|x|x|
-    |x|x|x|x|x|x|x|x|x|x|     This is an example masked_image.Mask, where:
+    |x|x|x|x|x|x|x|x|x|x|     This is an howtolens _image.Mask, where:
     |x|x|x|x|x|x|x|x|x|x|
     |x|x|o|o|o|o|o|x|x|x|     x = True (Pixel is masked and excluded from lensing)
     |x|x|o|x|x|x|o|x|x|x|     o = False (Pixel is not masked and included in lensing)
@@ -171,35 +185,36 @@ class Convolver(object):
 
     For every unmasked blurring-pixel, the Convolver over-lays the PSF psf and computes three quantities;
 
-    blurring_frame_indexes - The indexes of all unmasked masked_image pixels it will blur light into.
-    bluring_frame_kernels - The psf values that overlap each unmasked masked_image pixel it will blur light into.
-    blurring_frame_length - The number of masked_image-pixels it will blur light into (because unmasked pixels are excluded)
+    blurring_frame_indexes - The indexes of all unmasked _image pixels (not unmasked blurring _image pixells) it will \
+    blur light into.
+    bluring_frame_kernels - The psf values that overlap each _image pixel it will blur light into.
+    blurring_frame_length - The number of _image-pixels it will blur light into.
 
-    Note, therefore, that the blurring frame does not perform any blurring which blurs light into other blurring pixels.
-    It only performs computations which add light inside of the mask, which is the most computationally efficient method.
+    The blurring frame therefore does not perform any blurring which blurs light into other blurring pixels. \
+    It only performs computations which add light inside of the mask.
 
-    For pixel 0 above, when we overlap the 3x3 psf above only 1 unmasked masked_image pixels overlap the psf, such that:
+    For pixel 0 above, when we overlap the 3x3 psf above only 1 unmasked _image pixels overlaps the psf, such that:
 
-    blurring_frame_indexes = [0]
+    blurring_frame_indexes = [0] (This 0 refers to _image pixel 0 within the mask, not blurring_frame_pixel 0)
     blurring_frame_psfs = [0.9]
     blurring_frame_length = 1
 
-    For pixel 1 above, when we overlap the 3x3 psf above 2 unmasked masked_image pixels overlap the psf, such that:
+    For pixel 1 above, when we overlap the 3x3 psf above 2 unmasked _image pixels overlap the psf, such that:
 
-    blurring_frame_indexes = [0, 1]
+    blurring_frame_indexes = [0, 1]  (This 0 and 1 refer to _image pixels 0 and 1 within the mask)
     blurring_frame_psfs = [0.8, 0.9]
     blurring_frame_length = 2
 
-    For pixel 3 above, when we overlap the 3x3 psf above 3 unmasked masked_image pixels overlap the psf, such that:
+    For pixel 3 above, when we overlap the 3x3 psf above 3 unmasked _image pixels overlap the psf, such that:
 
-    blurring_frame_indexes = [0, 1, 2]
+    blurring_frame_indexes = [0, 1, 2]  (Again, these are _image pixels 0, 1 and 2)
     blurring_frame_psfs = [0.7, 0.8, 0.9]
     blurring_frame_length = 3
     """
 
     def __init__(self, mask, psf):
         """
-        Class to create masked_image frames and blurring frames used to convolve_image a psf with a 1D masked_image of non-masked \
+        Class to create _image frames and blurring frames used to convolve a psf with a 1D _image of non-masked \
         values.
 
         Parameters
@@ -208,7 +223,7 @@ class Convolver(object):
             A mask where True eliminates data.
         burring_mask : Mask
             A mask of pixels outside the mask but whose light blurs into it after convolution.
-        psf : masked_image.PSF or ndarray
+        psf : _image.PSF or ndarray
             An array representing a PSF psf.
         """
 
@@ -237,7 +252,8 @@ class Convolver(object):
             for y in range(self.mask_index_array.shape[1]):
                 if not mask[x][y]:
                     image_frame_indexes, image_frame_psfs = self.frame_at_coords_jit((x, y), mask,
-                                                                                        self.mask_index_array, self.psf[:, :])
+                                                                                     self.mask_index_array,
+                                                                                     self.psf[:, :])
                     self.image_frame_indexes[image_index, :] = image_frame_indexes
                     self.image_frame_psfs[image_index, :] = image_frame_psfs
                     self.image_frame_lengths[image_index] = image_frame_indexes[image_frame_indexes >= 0].shape[0]
@@ -266,8 +282,8 @@ class Convolver(object):
         half_x = int(psf_shape[0] / 2)
         half_y = int(psf_shape[1] / 2)
 
-        frame = -1*np.ones((psf_max_size))
-        psf_frame = -1.0*np.ones((psf_max_size))
+        frame = -1 * np.ones((psf_max_size))
+        psf_frame = -1.0 * np.ones((psf_max_size))
 
         count = 0
         for i in range(psf_shape[0]):
@@ -288,17 +304,17 @@ class ConvolverImage(Convolver):
 
     def __init__(self, mask, blurring_mask, psf):
         """
-        Class to create masked_image frames and blurring frames used to convolve_image a psf with a 1D masked_image of non-masked \
+        Class to create _image frames and blurring frames used to convolve a psf with a 1D _image of non-masked \
         values.
 
         Parameters
         ----------
         mask : Mask
-            A mask where True eliminates data.
-        burring_mask : Mask
-            A mask of pixels outside the mask but whose light blurs into it after convolution.
-        psf : masked_image.PSF or ndarray
-            An array representing a PSF psf.
+            The _image mask, where True eliminates data.
+        blurring_mask : Mask
+            A mask of pixels outside the mask but whose light blurs into it after PSF convolution.
+        psf : _image.PSF or ndarray
+            An array representing a PSF.
         """
 
         if mask.shape != blurring_mask.shape:
@@ -317,22 +333,30 @@ class ConvolverImage(Convolver):
             for y in range(mask.shape[1]):
                 if mask[x][y] and not blurring_mask[x, y]:
                     image_frame_indexes, image_frame_psfs = self.frame_at_coords_jit((x, y), mask,
-                                                                                        self.mask_index_array, self.psf)
+                                                                                     self.mask_index_array, self.psf)
                     self.blurring_frame_indexes[image_index, :] = image_frame_indexes
                     self.blurring_frame_psfs[image_index, :] = image_frame_psfs
                     self.blurring_frame_lengths[image_index] = image_frame_indexes[image_frame_indexes >= 0].shape[0]
                     image_index += 1
 
     def convolve_image(self, image_array, blurring_array):
-        return self.convolve_image_jit(image_array, self.image_frame_indexes,
-                                       self.image_frame_psfs, self.image_frame_lengths,
-                                       blurring_array, self.blurring_frame_indexes,
-                                       self.blurring_frame_psfs, self.blurring_frame_lengths)
+        """For a given 1D _image array and blurring array, convolve the two using this convolver.
+
+        Parameters
+        -----------
+        image_array : ndarray
+            1D array of the _image values which are to be blurred with the convolver's PSF.
+        blurring_array : ndarray
+            1D array of the blurring _image values which blur into the _image-array after PSF convolution.
+        """
+        return self.convolve_jit(image_array, self.image_frame_indexes, self.image_frame_psfs, self.image_frame_lengths,
+                                 blurring_array, self.blurring_frame_indexes, self.blurring_frame_psfs,
+                                 self.blurring_frame_lengths)
 
     @staticmethod
     @numba.jit(nopython=True, cache=True)
-    def convolve_image_jit(image_array, image_frame_indexes, image_frame_kernels, image_frame_lengths,
-                           blurring_array, blurring_frame_indexes, blurring_frame_kernels, blurring_frame_lengths):
+    def convolve_jit(image_array, image_frame_indexes, image_frame_kernels, image_frame_lengths,
+                     blurring_array, blurring_frame_indexes, blurring_frame_kernels, blurring_frame_lengths):
 
         new_array = np.zeros(image_array.shape)
 
@@ -344,20 +368,18 @@ class ConvolverImage(Convolver):
             value = image_array[image_index]
 
             for kernel_index in range(frame_length):
-
                 vector_index = frame_indexes[kernel_index]
                 kernel = frame_kernels[kernel_index]
                 new_array[vector_index] += value * kernel
 
-        for image_index in range(len(blurring_array)):
+        for blurring_index in range(len(blurring_array)):
 
-            frame_indexes = blurring_frame_indexes[image_index]
-            frame_kernels = blurring_frame_kernels[image_index]
-            frame_length = blurring_frame_lengths[image_index]
-            value = blurring_array[image_index]
+            frame_indexes = blurring_frame_indexes[blurring_index]
+            frame_kernels = blurring_frame_kernels[blurring_index]
+            frame_length = blurring_frame_lengths[blurring_index]
+            value = blurring_array[blurring_index]
 
             for kernel_index in range(frame_length):
-
                 vector_index = frame_indexes[kernel_index]
                 kernel = frame_kernels[kernel_index]
                 new_array[vector_index] += value * kernel
@@ -369,54 +391,34 @@ class ConvolverMappingMatrix(Convolver):
 
     def __init__(self, mask, psf):
         """
-        Class to create number array and frames used to convolve_image a psf with a 1D vector of non-masked values.
+        Class to create number array and frames used to convolve a psf with a 1D vector of non-masked values.
 
         Parameters
         ----------
         mask : Mask
-            A mask where True eliminates data.
-        mask : Mask
-            A mask of pixels outside the mask but whose light blurs into it after convolution.
-        psf : masked_image.PSF or ndarray
-            An array representing a PSF psf.
-
-        Attributes
-        ----------
-        blurring_frame_indexes: [ndarray]
-            An array of frames created by the frame maker. Maps positions in the psf to values in the 1D vector for
-            masked pixels.
-        image_frame_indexes: [ndarray]
-            An array of frames created by the frame maker. A frame maps positions in the psf to values in the 1D
-            vector.
+            An _image mask, where True eliminates data.
+        psf : _image.PSF or ndarray
+            An array representing a PSF.
         """
 
         super(ConvolverMappingMatrix, self).__init__(mask, psf)
 
-    def convolve_mapping_matrix(self, mapping):
-        """
-        Simple version of function that applies this convolver_image to a whole mapping_matrix matrix.
+    def convolve_mapping_matrix(self, mapping_matrix):
+        """For a given inversion mapping matrix, convolver every pixel's mapped _image using this convolver.
 
         Parameters
-        ----------
-        blurring_array: [Float]
-            An array representing the mapping_matrix of a source pixel to a set of masked_image pixels within the blurring region.
-        array: [float]
-            An array representing the mapping_matrix of a source pixel to a set of masked_image pixels.
-
-        Returns
-        -------
-        convolved_array: [float]
-            A matrix representing the mapping_matrix of source data_to_image to image_grid data_to_image accounting for
-            convolution
+        -----------
+        mapping_matrix : ndarray
+            The 2D mapping matix describing how every inversion pixel maps to an _image pixel.
         """
-        return self.convolve_matrix_jit(mapping, self.image_frame_indexes,
+        return self.convolve_matrix_jit(mapping_matrix, self.image_frame_indexes,
                                         self.image_frame_psfs, self.image_frame_lengths)
 
     @staticmethod
     @numba.jit(nopython=True, cache=True)
     def convolve_matrix_jit(mapping_matrix, image_frame_indexes, image_frame_kernels, image_frame_lengths):
 
-        blurred_mapping = np.zeros(mapping_matrix.shape)
+        blurred_mapping_matrix = np.zeros(mapping_matrix.shape)
 
         for pixel_index in range(mapping_matrix.shape[1]):
             for image_index in range(mapping_matrix.shape[0]):
@@ -430,9 +432,8 @@ class ConvolverMappingMatrix(Convolver):
                     frame_length = image_frame_lengths[image_index]
 
                     for kernel_index in range(frame_length):
-
                         vector_index = frame_indexes[kernel_index]
                         kernel = frame_kernels[kernel_index]
-                        blurred_mapping[vector_index, pixel_index] += value * kernel
+                        blurred_mapping_matrix[vector_index, pixel_index] += value * kernel
 
-        return blurred_mapping
+        return blurred_mapping_matrix

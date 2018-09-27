@@ -1,23 +1,20 @@
-from autolens import conf
 import logging
 
 logger = logging.getLogger(__name__)
 
-import numpy as np
 
 class Pipeline(object):
 
-    def __init__(self, pipeline_name):
+    def __init__(self, pipeline_name, *phases):
         """
 
         Parameters
         ----------
         pipeline_name: str
             The phase_name of this pipeline
-        phases: [ph.Phase]
-            Phases
         """
         self.pipeline_name = pipeline_name
+        self.phases = phases
 
     def __add__(self, other):
         """
@@ -25,12 +22,12 @@ class Pipeline(object):
 
         Parameters
         ----------
-        other: PipelineImaging
+        other: Pipeline
             Another pipeline
 
         Returns
         -------
-        composed_pipeline: PipelineImaging
+        composed_pipeline: Pipeline
             A pipeline that runs all the  phases from this pipeline and then all the phases from the other pipeline
         """
         return self.__class__("{} + {}".format(self.pipeline_name, other.pipeline_name), *(self.phases + other.phases))
@@ -39,9 +36,7 @@ class Pipeline(object):
 class PipelineImaging(Pipeline):
 
     def __init__(self, pipeline_name, *phases):
-
-        self.phases = phases
-        super(PipelineImaging, self).__init__(pipeline_name)
+        super(PipelineImaging, self).__init__(pipeline_name, *phases)
 
     def run(self, image):
 
@@ -59,12 +54,9 @@ class PipelineImaging(Pipeline):
 class PipelinePositions(Pipeline):
 
     def __init__(self, pipeline_name, *phases):
-
-        self.phases = phases
-        super(PipelinePositions, self).__init__(pipeline_name)
+        super(PipelinePositions, self).__init__(pipeline_name, *phases)
 
     def run(self, positions, pixel_scale):
-
         from autolens.pipeline import phase as ph
 
         results = []
@@ -72,6 +64,3 @@ class PipelinePositions(Pipeline):
             logger.info("Running Phase {} (Number {})".format(phase.phase_name, i))
             results.append(phase.run(positions, pixel_scale, ph.ResultsCollection(results)))
         return results
-
-def setup_pipeline_path(pipeline_name):
-    conf.instance.output_path = "{}/".format(conf.instance.output_path) + pipeline_name + '/'

@@ -1,10 +1,10 @@
+import numpy as np
 from profiling import profiling_data
 from profiling import tools
-from profiles import geometry_profiles
-from profiles import mass_profiles
 from scipy.integrate import quad
-import numpy as np
-import pytest
+
+from profiles import mass_profiles
+
 
 class EllipticalPowerLaw(mass_profiles.EllipticalMassProfile, mass_profiles.MassProfile):
 
@@ -77,7 +77,7 @@ class EllipticalPowerLaw(mass_profiles.EllipticalMassProfile, mass_profiles.Mass
 
 power_law = EllipticalPowerLaw(centre=(0.0, 0.0), einstein_radius=1.4, slope=2.0)
 
-subgrd_size=4
+subgrd_size = 4
 
 lsst = profiling_data.setup_class(name='LSST', pixel_scale=0.2, sub_grid_size=subgrd_size)
 euclid = profiling_data.setup_class(name='Euclid', pixel_scale=0.1, sub_grid_size=subgrd_size)
@@ -85,28 +85,33 @@ hst = profiling_data.setup_class(name='HST', pixel_scale=0.05, sub_grid_size=sub
 hst_up = profiling_data.setup_class(name='HSTup', pixel_scale=0.03, sub_grid_size=subgrd_size)
 ao = profiling_data.setup_class(name='AO', pixel_scale=0.01, sub_grid_size=subgrd_size)
 
+
 @tools.tick_toc_x1
 def lsst_solution():
     power_law.deflections_from_grid(grid=lsst.coords.sub_grid_coords)
+
 
 @tools.tick_toc_x1
 def euclid_solution():
     power_law.deflections_from_grid(grid=euclid.coords.sub_grid_coords)
 
+
 @tools.tick_toc_x1
 def hst_solution():
     power_law.deflections_from_grid(grid=hst.coords.sub_grid_coords)
+
 
 @tools.tick_toc_x1
 def hst_up_solution():
     power_law.deflections_from_grid(grid=hst_up.coords.sub_grid_coords)
 
+
 @tools.tick_toc_x1
 def ao_solution():
     power_law.deflections_from_grid(grid=ao.coords.sub_grid_coords)
 
-if __name__ == "__main__":
 
+if __name__ == "__main__":
     lsst_solution()
     euclid_solution()
     hst_solution()
