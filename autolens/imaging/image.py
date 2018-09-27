@@ -457,9 +457,9 @@ def load_imaging_from_fits(image_path, noise_map_path, psf_path, pixel_scale, im
     return Image(array=data, pixel_scale=pixel_scale, psf=psf, noise_map=noise)
 
 
-def load_imaging_from_path(image_path, noise_path, psf_path, pixel_scale, psf_trimmed_shape=None):
+def load_imaging_from_path(image_path, noise_map_path, psf_path, pixel_scale, psf_trimmed_shape=None):
     data = ScaledArray.from_fits_with_scale(file_path=image_path, hdu=0, pixel_scale=pixel_scale)
-    noise = Array.from_fits(file_path=noise_path, hdu=0)
+    noise = Array.from_fits(file_path=noise_map_path, hdu=0)
     psf = PSF.from_fits(file_path=psf_path, hdu=0)
     if psf_trimmed_shape is not None:
         psf = psf.trim(psf_trimmed_shape)
