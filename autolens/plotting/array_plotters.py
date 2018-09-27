@@ -56,11 +56,11 @@ def plot_image(array, grid, as_subplot, figsize, aspect, cmap, norm_scale):
     if not as_subplot:
         plt.figure(figsize=figsize)
 
-    if grid is None:
-        plt.imshow(array, aspect=aspect, cmap=cmap, norm=norm_scale)
-    elif grid is not None:
-        plt.imshow(array, aspect=aspect, cmap=cmap, norm=norm_scale,
-                   extent=(np.min(grid[:, 0]), np.max(grid[:, 0]), np.min(grid[:, 1]), np.max(grid[:, 1])))
+  #  if grid is None:
+    plt.imshow(array, aspect=aspect, cmap=cmap, norm=norm_scale)
+  #  elif grid is not None:
+  #      plt.imshow(array, aspect=aspect, cmap=cmap, norm=norm_scale,
+  #                 extent=(np.min(grid[:, 0]), np.max(grid[:, 0]), np.min(grid[:, 1]), np.max(grid[:, 1])))
 
 
 def set_title(title, titlesize):
@@ -103,8 +103,9 @@ def set_colorbar(cb_ticksize):
 
 
 def plot_grid(grid):
-    if grid is not None:
-        plt.scatter(x=grid[:, 0], y=grid[:, 1], marker=',')
+   pass
+   # if grid is not None:
+   #     plt.scatter(x=grid[:, 0], y=grid[:, 1], marker=',')
 
 
 def output_array(array, output_path, output_filename, output_format):

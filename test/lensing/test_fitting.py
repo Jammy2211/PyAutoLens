@@ -974,8 +974,8 @@ class TestProfileFit:
             unmasked_tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g0],
                                                                   image_plane_grids=li_manual.unmasked_grids)
 
-            fit = fitting.fit_from_lensing_image_and_tracer(lensing_image=li_manual, tracer=tracer,
-                                                            unmasked_tracer=unmasked_tracer)
+            fit = fitting.fit_lensing_image_with_tracer(lensing_image=li_manual, tracer=tracer,
+                                                        unmasked_tracer=unmasked_tracer)
 
             image_im = tracer._image_plane_image
             blurring_im = tracer._image_plane_blurring_image
@@ -1103,11 +1103,11 @@ class TestHyperProfileFit:
             unmasked_tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g0],
                                                                   image_plane_grids=li_manual.unmasked_grids)
 
-            fit = fitting.fit_from_lensing_image_and_tracer(lensing_image=li_manual, tracer=tracer,
-                                                            unmasked_tracer=unmasked_tracer,
-                                                            hyper_model_image=hyper.hyper_model_image,
-                                                            hyper_galaxy_images=hyper.hyper_galaxy_images,
-                                                            hyper_minimum_values=hyper.hyper_minimum_values)
+            fit = fitting.fit_lensing_image_with_tracer(lensing_image=li_manual, tracer=tracer,
+                                                        unmasked_tracer=unmasked_tracer,
+                                                        hyper_model_image=hyper.hyper_model_image,
+                                                        hyper_galaxy_images=hyper.hyper_galaxy_images,
+                                                        hyper_minimum_values=hyper.hyper_minimum_values)
 
             image_im = tracer._image_plane_image
             blurring_im = tracer._image_plane_blurring_image
@@ -1252,7 +1252,7 @@ class TestInversionFit:
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g.Galaxy()], source_galaxies=[g0],
                                                          image_plane_grids=li_manual.grids, borders=li_manual.borders)
 
-            fit = fitting.fit_from_lensing_image_and_tracer(lensing_image=li_manual, tracer=tracer)
+            fit = fitting.fit_lensing_image_with_tracer(lensing_image=li_manual, tracer=tracer)
 
             mapper = pix.mapper_from_grids_and_borders(li_manual.grids, li_manual.borders)
             inversion = inversions.inversion_from_mapper_regularization_and_data(mapper=mapper, regularization=reg,
@@ -1383,7 +1383,7 @@ class TestHyperInversionFit:
                                                          source_galaxies=[inv_galaxy],
                                                          image_plane_grids=li_manual.grids, borders=li_manual.borders)
 
-            fit = fitting.fit_from_lensing_image_and_tracer(
+            fit = fitting.fit_lensing_image_with_tracer(
                 lensing_image=li_manual, tracer=tracer, hyper_model_image=hyper.hyper_model_image,
                 hyper_galaxy_images=hyper.hyper_galaxy_images, hyper_minimum_values=hyper.hyper_minimum_values)
 
@@ -1467,7 +1467,7 @@ class TestProfileInversionFit:
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[galaxy_light], source_galaxies=[galaxy_pix],
                                                          image_plane_grids=li_manual.grids, borders=li_manual.borders)
 
-            fit = fitting.fit_from_lensing_image_and_tracer(lensing_image=li_manual, tracer=tracer)
+            fit = fitting.fit_lensing_image_with_tracer(lensing_image=li_manual, tracer=tracer)
 
             image_im = tracer._image_plane_image
             blurring_im = tracer._image_plane_blurring_image
@@ -1523,7 +1523,7 @@ class TestHyperProfileInversionFit:
                                                          source_galaxies=[inv_galaxy],
                                                          image_plane_grids=li_manual.grids, borders=li_manual.borders)
 
-            fit = fitting.fit_from_lensing_image_and_tracer(
+            fit = fitting.fit_lensing_image_with_tracer(
                 lensing_image=li_manual, tracer=tracer, hyper_model_image=hyper.hyper_model_image,
                 hyper_galaxy_images=hyper.hyper_galaxy_images, hyper_minimum_values=hyper.hyper_minimum_values)
 
