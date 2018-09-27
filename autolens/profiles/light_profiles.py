@@ -1,7 +1,7 @@
-from autolens.profiles import geometry_profiles
-from scipy.integrate import quad
 import numpy as np
-from itertools import count
+from scipy.integrate import quad
+
+from autolens.profiles import geometry_profiles
 
 
 class LightProfile(object):
@@ -26,7 +26,7 @@ class LightProfile(object):
         Parameters
         ----------
         grid : ndarray
-            The (x, y) coordinates in the original reference frame of the observed image.
+            The (x, y) coordinates in the original reference frame of the observed _image.
         Returns
         -------
         intensity : float
@@ -36,10 +36,8 @@ class LightProfile(object):
 
 
 # noinspection PyAbstractClass
-class EllipticalLP(geometry_profiles.EllipticalProfileGP, LightProfile):
+class EllipticalLP(geometry_profiles.EllipticalProfile, LightProfile):
     """Generic class for an elliptical light profiles"""
-
-    _ids = count()
 
     def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0):
         """  Abstract class for an elliptical light-profile.
@@ -54,16 +52,6 @@ class EllipticalLP(geometry_profiles.EllipticalProfileGP, LightProfile):
             Rotational angle of profiles ellipse counter-clockwise from positive x-axis
         """
         super(EllipticalLP, self).__init__(centre, axis_ratio, phi)
-
-        self.component_number = next(self._ids)
-
-    @property
-    def subscript(self):
-        return 'l'
-
-    @property
-    def parameter_labels(self):
-        return ['x', 'y', 'q', r'\phi']
 
     def luminosity_within_circle(self, radius):
         """
@@ -107,7 +95,7 @@ class EllipticalLP(geometry_profiles.EllipticalProfileGP, LightProfile):
         return 2 * np.pi * r * self.intensities_from_grid_radii(x)
 
 
-class EllipticalGaussianLP(EllipticalLP):
+class EllipticalGaussian(EllipticalLP):
 
     def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=0.1, sigma=0.01):
         """ The elliptical Gaussian profile, used for modeling a PSF.
@@ -125,7 +113,7 @@ class EllipticalGaussianLP(EllipticalLP):
         sigma : float
             The full-width half-maximum of the Gaussian.
         """
-        super(EllipticalGaussianLP, self).__init__(centre, axis_ratio, phi)
+        super(EllipticalGaussian, self).__init__(centre, axis_ratio, phi)
 
         self.intensity = intensity
         self.sigma = sigma
@@ -139,8 +127,8 @@ class EllipticalGaussianLP(EllipticalLP):
         grid_radii : float
             The radial distance from the centre of the profiles for each coordinate on the grid.
         """
-        return np.multiply(np.divide(self.intensity, self.sigma*np.sqrt(2.0*np.pi)),
-                           np.exp(-0.5*np.square(np.divide(grid_radii, self.sigma))))
+        return np.multiply(np.divide(self.intensity, self.sigma * np.sqrt(2.0 * np.pi)),
+                           np.exp(-0.5 * np.square(np.divide(grid_radii, self.sigma))))
 
     @geometry_profiles.transform_grid
     def intensities_from_grid(self, grid):
@@ -152,7 +140,7 @@ class EllipticalGaussianLP(EllipticalLP):
         Parameters
         ----------
         grid : ndarray
-            The (x, y) coordinates in the original reference frame of the observed image.
+            The (x, y) coordinates in the original reference frame of the observed _image.
         Returns
         -------
         intensity : float
@@ -160,12 +148,8 @@ class EllipticalGaussianLP(EllipticalLP):
         """
         return self.intensities_from_grid_radii(self.grid_to_elliptical_radii(grid))
 
-    @property
-    def parameter_labels(self):
-        return ['x', 'y', 'q', r'\phi', 'I', r'\sigma']
 
-
-class SphericalGaussianLP(EllipticalGaussianLP):
+class SphericalGaussian(EllipticalGaussian):
 
     def __init__(self, centre=(0.0, 0.0), intensity=0.1, sigma=0.01):
         """ The spherical Gaussian profile, used for modeling a PSF.
@@ -179,14 +163,10 @@ class SphericalGaussianLP(EllipticalGaussianLP):
         sigma : float
             The full-width half-maximum of the Gaussian.
         """
-        super(SphericalGaussianLP, self).__init__(centre, 1.0, 0.0, intensity, sigma)
-
-    @property
-    def parameter_labels(self):
-        return ['x', 'y', 'I', r'\sigma']
+        super(SphericalGaussian, self).__init__(centre, 1.0, 0.0, intensity, sigma)
 
 
-class EllipticalSersicLP(geometry_profiles.EllipticalSersicGP, EllipticalLP):
+class EllipticalSersic(geometry_profiles.EllipticalSersic, EllipticalLP):
 
     def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=0.1, effective_radius=0.6,
                  sersic_index=4.0):
@@ -205,14 +185,10 @@ class EllipticalSersicLP(geometry_profiles.EllipticalSersicGP, EllipticalLP):
         effective_radius : float
             The circular radius containing half the light of this profile.
         sersic_index : Int
-            Controls the concetration of the of the light profile.
+            Controls the concentration of the of the light profile.
         """
-        super(EllipticalSersicLP, self).__init__(centre, axis_ratio, phi, intensity, effective_radius,
-                                                 sersic_index)
-
-    @property
-    def parameter_labels(self):
-        return ['x', 'y', 'q', r'\phi', 'I', 'R', 'n']
+        super(EllipticalSersic, self).__init__(centre, axis_ratio, phi, intensity, effective_radius,
+                                               sersic_index)
 
     def intensities_from_grid_radii(self, grid_radii):
         """
@@ -237,7 +213,7 @@ class EllipticalSersicLP(geometry_profiles.EllipticalSersicGP, EllipticalLP):
         Parameters
         ----------
         grid : ndarray
-            The (x, y) coordinates in the original reference frame of the observed image.
+            The (x, y) coordinates in the original reference frame of the observed _image.
         Returns
         -------
         intensity : float
@@ -246,7 +222,7 @@ class EllipticalSersicLP(geometry_profiles.EllipticalSersicGP, EllipticalLP):
         return self.intensities_from_grid_radii(self.grid_to_eccentric_radii(grid))
 
 
-class SphericalSersicLP(EllipticalSersicLP):
+class SphericalSersic(EllipticalSersic):
 
     def __init__(self, centre=(0.0, 0.0), intensity=0.1, effective_radius=0.6, sersic_index=4.0):
         """ The spherical Sersic profile, used for fitting a galaxy's light.
@@ -260,16 +236,12 @@ class SphericalSersicLP(EllipticalSersicLP):
         effective_radius : float
             The circular radius containing half the light of this profile.
         sersic_index : Int
-            Controls the concetration of the of the light profile.
+            Controls the concentration of the of the light profile.
         """
-        super(SphericalSersicLP, self).__init__(centre, 1.0, 0.0, intensity, effective_radius, sersic_index)
-
-    @property
-    def parameter_labels(self):
-        return ['x', 'y', 'I', 'R', 'n']
+        super(SphericalSersic, self).__init__(centre, 1.0, 0.0, intensity, effective_radius, sersic_index)
 
 
-class EllipticalExponentialLP(EllipticalSersicLP):
+class EllipticalExponential(EllipticalSersic):
 
     def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=0.1, effective_radius=0.6):
         """ The elliptical exponential profile, used for fitting a galaxy's light.
@@ -289,14 +261,10 @@ class EllipticalExponentialLP(EllipticalSersicLP):
         effective_radius : float
             The circular radius containing half the light of this profile.
         """
-        super(EllipticalExponentialLP, self).__init__(centre, axis_ratio, phi, intensity, effective_radius, 1.0)
-
-    @property
-    def parameter_labels(self):
-        return ['x', 'y', 'q', r'\phi', 'I', 'R']
+        super(EllipticalExponential, self).__init__(centre, axis_ratio, phi, intensity, effective_radius, 1.0)
 
 
-class SphericalExponentialLP(EllipticalExponentialLP):
+class SphericalExponential(EllipticalExponential):
 
     def __init__(self, centre=(0.0, 0.0), intensity=0.1, effective_radius=0.6):
         """ The spherical exponential profile, used for fitting a galaxy's light.
@@ -312,14 +280,10 @@ class SphericalExponentialLP(EllipticalExponentialLP):
         effective_radius : float
             The circular radius containing half the light of this profile.
         """
-        super(SphericalExponentialLP, self).__init__(centre, 1.0, 0.0, intensity, effective_radius)
-
-    @property
-    def parameter_labels(self):
-        return ['x', 'y', 'I', 'R']
+        super(SphericalExponential, self).__init__(centre, 1.0, 0.0, intensity, effective_radius)
 
 
-class EllipticalDevVaucouleursLP(EllipticalSersicLP):
+class EllipticalDevVaucouleurs(EllipticalSersic):
 
     def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=0.1, effective_radius=0.6):
         """ The elliptical Dev Vaucouleurs profile, used for fitting a galaxy's light.
@@ -339,14 +303,10 @@ class EllipticalDevVaucouleursLP(EllipticalSersicLP):
         effective_radius : float
             The circular radius containing half the light of this profile.
         """
-        super(EllipticalDevVaucouleursLP, self).__init__(centre, axis_ratio, phi, intensity, effective_radius, 4.0)
-
-    @property
-    def parameter_labels(self):
-        return ['x', 'y', 'q', r'\phi', 'I', 'R']
+        super(EllipticalDevVaucouleurs, self).__init__(centre, axis_ratio, phi, intensity, effective_radius, 4.0)
 
 
-class SphericalDevVaucouleursLP(EllipticalDevVaucouleursLP):
+class SphericalDevVaucouleurs(EllipticalDevVaucouleurs):
 
     def __init__(self, centre=(0.0, 0.0), intensity=0.1, effective_radius=0.6):
         """ The spherical Dev Vaucouleurs profile, used for fitting a galaxy's light.
@@ -362,14 +322,10 @@ class SphericalDevVaucouleursLP(EllipticalDevVaucouleursLP):
         effective_radius : float
             The circular radius containing half the light of this profile.
         """
-        super(SphericalDevVaucouleursLP, self).__init__(centre, 1.0, 0.0, intensity, effective_radius)
-
-    @property
-    def parameter_labels(self):
-        return ['x', 'y', 'I', 'R']
+        super(SphericalDevVaucouleurs, self).__init__(centre, 1.0, 0.0, intensity, effective_radius)
 
 
-class EllipticalCoreSersicLP(EllipticalSersicLP):
+class EllipticalCoreSersic(EllipticalSersic):
 
     def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=0.1, effective_radius=0.6,
                  sersic_index=4.0, radius_break=0.01, intensity_break=0.05, gamma=0.25, alpha=3.0):
@@ -398,16 +354,12 @@ class EllipticalCoreSersicLP(EllipticalSersicLP):
         alpha :
             Controls the sharpness of the transition between the inner core / outer Sersic profiles.
         """
-        super(EllipticalCoreSersicLP, self).__init__(centre, axis_ratio, phi, intensity, effective_radius, sersic_index,
-                                                     )
+        super(EllipticalCoreSersic, self).__init__(centre, axis_ratio, phi, intensity, effective_radius, sersic_index,
+                                                   )
         self.radius_break = radius_break
         self.intensity_break = intensity_break
         self.alpha = alpha
         self.gamma = gamma
-
-    @property
-    def parameter_labels(self):
-        return ['x', 'y', 'q', r'\phi', 'I', 'R', 'n', 'Rb', 'Ib', '\gamma', r'\alpha']
 
     @property
     def intensity_prime(self):
@@ -434,7 +386,7 @@ class EllipticalCoreSersicLP(EllipticalSersicLP):
                                                                 1.0 / (self.alpha * self.sersic_index)))))))
 
 
-class SphericalCoreSersicLP(EllipticalCoreSersicLP):
+class SphericalCoreSersic(EllipticalCoreSersic):
 
     def __init__(self, centre=(0.0, 0.0), intensity=0.1, effective_radius=0.6,
                  sersic_index=4.0, radius_break=0.01, intensity_break=0.05, gamma=0.25, alpha=3.0):
@@ -459,13 +411,9 @@ class SphericalCoreSersicLP(EllipticalCoreSersicLP):
         alpha :
             Controls the sharpness of the transition between the inner core / outer Sersic profiles.
         """
-        super(SphericalCoreSersicLP, self).__init__(centre, 1.0, 0.0, intensity, effective_radius, sersic_index,
-                                                     radius_break, intensity_break, gamma, alpha)
+        super(SphericalCoreSersic, self).__init__(centre, 1.0, 0.0, intensity, effective_radius, sersic_index,
+                                                  radius_break, intensity_break, gamma, alpha)
         self.radius_break = radius_break
         self.intensity_break = intensity_break
         self.alpha = alpha
         self.gamma = gamma
-
-    @property
-    def parameter_labels(self):
-        return ['x', 'y', 'I', 'R', 'n', 'Rb', 'Ib', '\gamma', r'\alpha']

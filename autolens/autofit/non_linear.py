@@ -1,48 +1,22 @@
-import getdist
-import getdist.plots
-
-from autolens import exc
+import logging
 import math
 import os
+
+import matplotlib.pyplot as plt
+import numpy as np
 import pymultinest
 import scipy.optimize
-import numpy as np
-from autolens.imaging import hyper_image
+
 from autolens import conf
+from autolens import exc
+from autolens.autofit import link
 from autolens.autofit import model_mapper as mm
-import logging
+from autolens.imaging import hyper_image
 
 logging.basicConfig()
 logger = logging.getLogger(__name__)
 
 SIMPLEX_TUPLE_WIDTH = 0.1
-
-
-def generate_parameter_latex(parameters, subscript=''):
-    """Generate a latex label for a non-linear search parameter.
-
-    This is used for the param names file and outputting the nlo of a run to a latex table.
-
-    Parameters
-    ----------
-    parameters : [str]
-        The parameter names to be converted to latex.
-    subscript : str
-        The subscript of the latex entry, often giving the parameter type (e.g. light or dark matter) or numerical \
-        number of the component of the model_mapper.
-
-    """
-
-    latex = []
-
-    if subscript == '':
-        for param in parameters:
-            latex.append('$' + param + '$')
-    else:
-        for param in parameters:
-            latex.append('$' + param + r'_{\mathrm{' + subscript + '}}$')
-
-    return latex
 
 
 class Result(object):
@@ -71,7 +45,7 @@ class Result(object):
 
 class NonLinearOptimizer(object):
 
-    def __init__(self, include_hyper_image=False, model_mapper=None, name=None, **classes):
+    def __init__(self, include_hyper_image=False, model_mapper=None, name=None, label_config=None, **classes):
         """Abstract base class for non-linear optimizers.
 
         This class sets up the file structure for the non-linear optimizer nlo, which are standardized across all \
@@ -84,17 +58,27 @@ class NonLinearOptimizer(object):
         obj_name : str
             Unique identifier of the data_vector being analysed (e.g. the analysis_path of the data_vector set)
         """
+
         self.named_config = conf.instance.non_linear
 
-        if name is None:
-            name = ""
-        self.path = "{}/{}".format(conf.instance.output_path, name)
-        if not os.path.exists(self.path):
-            os.makedirs(self.path)
-        self.variable = mm.ModelMapper() if model_mapper is None else model_mapper
+        name = name or "phase"
+
+        sym_path = "{}/{}/optimizer".format(conf.instance.output_path, name)
+
+        if not os.path.exists(sym_path):
+            os.makedirs("/".join(sym_path.split("/")[:-1]))
+
+        self.path = link.make_linked_folder(sym_path)
+        self.chains_path = "{}/{}".format(self.path, 'chains')
+        if not os.path.exists(self.chains_path):
+            os.makedirs(self.chains_path)
+
+        self.variable = model_mapper or mm.ModelMapper()
         self.constant = mm.ModelInstance()
 
-        self.file_param_names = "{}/{}".format(self.path, 'mn.paramnames')
+        self.label_config = label_config or conf.instance.label
+
+        self.file_param_names = "{}/{}".format(self.chains_path, 'mn.paramnames')
         self.file_model_info = "{}/{}".format(self.path, 'model.info')
 
         # If the include_hyper_image flag is set to True make this an additional prior model
@@ -123,58 +107,62 @@ class NonLinearOptimizer(object):
         if not os.path.exists(self.path):
             os.makedirs(self.path)  # Create results folder if doesnt exist
 
-        self.create_paramnames_names()
-        self.create_paramnames_labels_temp()
         self.create_paramnames_file()
-        self.variable.output_model_info(self.file_model_info)
-
-    #  self.variable.check_model_info(self.file_model_info)
+        if not os.path.isfile(self.file_model_info):
+            with open(self.file_model_info, 'w') as file:
+                file.write(self.variable.model_info)
+            file.close()
 
     def fit(self, analysis):
         raise NotImplementedError("Fitness function must be overridden by non linear optimizers")
 
-    def create_paramnames_names(self):
+    @property
+    def param_names(self):
         """The param_names vector is a list each parameter's analysis_path, and is used for *GetDist* visualization.
 
         The parameter names are determined from the class instance names of the model_mapper. Latex tags are \
         properties of each model class."""
 
-        self.paramnames_names = []
+        paramnames_names = []
 
-        for prior_name, prior_model in self.variable.prior_models:
-            class_priors_dict_ordered = sorted(self.variable.class_priors_dict[prior_name],
-                                               key=lambda prior: prior[1].id)
-            for param_no, param in enumerate(class_priors_dict_ordered):
-                self.paramnames_names.append(prior_name + '_' + param[0])
+        prior_prior_model_name_dict = self.variable.prior_prior_model_name_dict
 
-    def create_paramnames_labels(self):
+        for prior_name, prior in self.variable.prior_tuples_ordered_by_id:
+            paramnames_names.append(prior_prior_model_name_dict[prior] + '_' + prior_name)
+
+        return paramnames_names
+
+    @property
+    def constant_names(self):
+        constant_names = []
+
+        constant_prior_model_name_dict = self.variable.constant_prior_model_name_dict
+
+        for constant_name, constant in self.variable.constant_tuples_ordered_by_id:
+            constant_names.append(constant_prior_model_name_dict[constant] + '_' + constant_name)
+
+        return constant_names
+
+    @property
+    def param_labels(self):
         """The param_names vector is a list each parameter's analysis_path, and is used for *GetDist* visualization.
 
-        The parameter names are determined from the class instance names of the model_mapper. Latex tags are \
+        The parameter names are determined from the class instance names of the model_mapper. Latex tags are
         properties of each model class."""
 
-        self.paramnames_labels = []
+        paramnames_labels = []
+        prior_class_dict = self.variable.prior_class_dict
+        prior_prior_model_dict = self.variable.prior_prior_model_dict
 
-        for prior_name, prior_model in self.variable.prior_models:
-            param_labels = prior_model.cls.parameter_labels.__get__(prior_model.cls)
-            component_number = prior_model.cls().component_number
-            subscript = prior_model.cls.subscript.__get__(prior_model.cls) + str(component_number + 1)
-            param_labels = generate_parameter_latex(param_labels, subscript)
-            class_priors_dict_ordered = sorted(self.variable.class_priors_dict[prior_name],
-                                               key=lambda prior: prior[1].id)
-            for param_no, param in enumerate(class_priors_dict_ordered):
-                self.paramnames_labels.append(param_labels[param_no])
+        for prior_name, prior in self.variable.prior_tuples_ordered_by_id:
+            param_string = self.label_config.label(prior_name)
+            prior_model = prior_prior_model_dict[prior]
+            cls = prior_class_dict[prior]
+            cls_string = "{}{}".format(self.label_config.subscript(cls), prior_model.component_number + 1)
+            param_label = "{}_{{\\mathrm{{{}}}}}".format(param_string, cls_string)
+            paramnames_labels.append(param_label)
 
-    def create_paramnames_labels_temp(self):
-        """The param_names vector is a list each parameter's analysis_path, and is used for *GetDist* visualization.
-
-        The parameter names are determined from the class instance names of the model_mapper. Latex tags are \
-        properties of each model class."""
-
-        self.paramnames_labels = []
-
-        for i in range(self.variable.total_parameters):
-            self.paramnames_labels.append('p' + str(i))
+        return paramnames_labels
 
     def create_paramnames_file(self):
         """The param_names file lists every parameter's analysis_path and Latex tag, and is used for *GetDist*
@@ -182,19 +170,21 @@ class NonLinearOptimizer(object):
 
         The parameter names are determined from the class instance names of the model_mapper. Latex tags are
         properties of each model class."""
+        paramnames_names = self.param_names
+        paramnames_labels = self.param_labels
         with open(self.file_param_names, 'w') as paramnames:
-            for i in range(self.variable.total_parameters):
-                line = self.paramnames_names[i]
-                line += ' ' * (50 - len(line)) + self.paramnames_labels[i]
+            for i in range(self.variable.total_priors):
+                line = paramnames_names[i]
+                line += ' ' * (50 - len(line)) + paramnames_labels[i]
                 paramnames.write(line + '\n')
 
 
 class DownhillSimplex(NonLinearOptimizer):
 
     def __init__(self, include_hyper_image=False, model_mapper=None,
-                 fmin=scipy.optimize.fmin, name=None):
+                 fmin=scipy.optimize.fmin, name=None, label_config=None):
         super(DownhillSimplex, self).__init__(include_hyper_image=include_hyper_image,
-                                              model_mapper=model_mapper, name=name)
+                                              model_mapper=model_mapper, name=name, label_config=label_config)
 
         self.xtol = self.config("xtol", float)
         self.ftol = self.config("ftol", float)
@@ -210,7 +200,7 @@ class DownhillSimplex(NonLinearOptimizer):
         logger.debug("Creating DownhillSimplex NLO")
 
     def fit(self, analysis):
-        initial_vector = self.variable.physical_vector_from_prior_medians
+        initial_vector = self.variable.physical_values_from_prior_medians
 
         class Fitness(object):
             def __init__(self, instance_from_physical_vector, constant):
@@ -244,8 +234,8 @@ class DownhillSimplex(NonLinearOptimizer):
 
 class MultiNest(NonLinearOptimizer):
 
-    def __init__(self, include_hyper_image=False, model_mapper=None,
-                 sigma_limit=3, run=pymultinest.run, name=None):
+    def __init__(self, include_hyper_image=False, model_mapper=None, sigma_limit=3, run=pymultinest.run, name=None,
+                 label_config=None):
         """Class to setup and run a MultiNest lensing and output the MultiNest nlo.
 
         This interfaces with an input model_mapper, which is used for setting up the individual model instances that \
@@ -257,10 +247,11 @@ class MultiNest(NonLinearOptimizer):
             The path where the non_linear nlo are stored.
         """
 
-        super(MultiNest, self).__init__(include_hyper_image=include_hyper_image, model_mapper=model_mapper, name=name)
+        super(MultiNest, self).__init__(include_hyper_image=include_hyper_image, model_mapper=model_mapper, name=name,
+                                        label_config=label_config)
 
-        self.file_summary = "{}/{}".format(self.path, 'mnsummary.txt')
-        self.file_weighted_samples = "{}/{}".format(self.path, 'mn.txt')
+        self.file_summary = "{}/{}".format(self.chains_path, 'mnsummary.txt')
+        self.file_weighted_samples = "{}/{}".format(self.chains_path, 'mn.txt')
         self.file_results = "{}/{}".format(self.path, 'mn.results')
         self._weighted_sample_model = None
         self.sigma_limit = sigma_limit
@@ -290,24 +281,21 @@ class MultiNest(NonLinearOptimizer):
 
     @property
     def pdf(self):
-        return getdist.mcsamples.loadMCSamples(self.path + '/mn')
+        import getdist
+        return getdist.mcsamples.loadMCSamples(self.chains_path + '/mn')
 
     def fit(self, analysis):
-
-        if len(self.path) > 77:
-            raise exc.MultiNestException('The path to the MultiNest results is longer than 77 characters (='
-                                         + str(len(self.path)) + ')' +
-                                         ' Unfortunately, PyMultiNest cannot use a path longer than this. ' \
-                                         'Set your results path to something with fewer characters to fix.')
-
         self.save_model_info()
 
         class Fitness(object):
-            def __init__(self, instance_from_physical_vector, constant):
+
+            def __init__(self, instance_from_physical_vector, _constant, output_results):
                 self.result = None
                 self.instance_from_physical_vector = instance_from_physical_vector
-                self.constant = constant
+                self.constant = _constant
                 self.max_likelihood = -np.inf
+                self.output_results = output_results
+                self.accepted_samples = 0
 
             def __call__(self, cube, ndim, nparams, lnew):
 
@@ -316,12 +304,21 @@ class MultiNest(NonLinearOptimizer):
 
                 try:
                     likelihood = analysis.fit(instance)
-                except exc.ReconstructionException or exc.RayTracingException:
+                except exc.InversionException or exc.RayTracingException:
                     likelihood = -np.inf
 
                 # TODO: Use multinest to provide best model
 
                 if likelihood > self.max_likelihood:
+
+                    # TODO : make the 10 below a config file param e.g. output_results_every_accepted_samples
+
+                    self.accepted_samples += 1
+
+                    if self.accepted_samples == 10:
+                        self.accepted_samples = 0
+                        self.output_results(during_analysis=True)
+
                     self.max_likelihood = likelihood
                     self.result = Result(instance, likelihood)
 
@@ -332,16 +329,17 @@ class MultiNest(NonLinearOptimizer):
 
             phys_cube = self.variable.physical_vector_from_hypercube_vector(hypercube_vector=cube)
 
-            for i in range(self.variable.total_parameters):
+            for i in range(self.variable.total_priors):
                 cube[i] = phys_cube[i]
 
             return cube
 
-        fitness_function = Fitness(self.variable.instance_from_physical_vector, self.constant)
+        fitness_function = Fitness(self.variable.instance_from_physical_vector, self.constant, self.output_results)
 
         logger.info("Running MultiNest...")
-        self.run(fitness_function.__call__, prior, self.variable.total_parameters,
-                 outputfiles_basename="{}/mn".format(self.path), n_live_points=self.n_live_points,
+        self.run(fitness_function.__call__, prior, self.variable.total_priors,
+                 outputfiles_basename="{}/mn".format(self.chains_path),
+                 n_live_points=self.n_live_points,
                  const_efficiency_mode=self.const_efficiency_mode,
                  importance_nested_sampling=self.importance_nested_sampling,
                  evidence_tolerance=self.evidence_tolerance, sampling_efficiency=self.sampling_efficiency,
@@ -352,16 +350,15 @@ class MultiNest(NonLinearOptimizer):
                  log_zero=self.log_zero, max_iter=self.max_iter, init_MPI=self.init_MPI)
         logger.info("MultiNest complete")
 
+        self.output_results(during_analysis=False)
         self.output_pdf_plots()
-        self.output_results()
 
         constant = self.most_likely_instance_from_summary()
         constant += self.constant
-        likelihood = self.max_likelihood_from_summary()
         variable = self.variable.mapper_from_gaussian_tuples(
             tuples=self.gaussian_priors_at_sigma_limit(self.sigma_limit))
 
-        return Result(constant=constant, likelihood=likelihood, variable=variable)
+        return Result(constant=constant, likelihood=self.max_likelihood_from_summary(), variable=variable)
 
     def open_summary_file(self):
 
@@ -369,7 +366,7 @@ class MultiNest(NonLinearOptimizer):
 
         expected_parameters = (len(summary.readline()) - 113) / 112
 
-        if expected_parameters != self.variable.total_parameters:
+        if expected_parameters != self.variable.total_priors:
             raise exc.MultiNestException(
                 'The file_summary file has a different number of parameters than the input model')
 
@@ -380,7 +377,7 @@ class MultiNest(NonLinearOptimizer):
         summary = self.open_summary_file()
 
         summary.seek(0)
-        summary.read(2 + offset * self.variable.total_parameters)
+        summary.read(2 + offset * self.variable.total_priors)
         vector = []
         for param in range(number_entries):
             vector.append(float(summary.read(28)))
@@ -398,7 +395,7 @@ class MultiNest(NonLinearOptimizer):
         model in the second half of entries. The offset parameter is used to start at the desired model.
 
         """
-        return self.read_vector_from_summary(number_entries=self.variable.total_parameters, offset=0)
+        return self.read_vector_from_summary(number_entries=self.variable.total_priors, offset=0)
 
     def most_likely_from_summary(self):
         """
@@ -408,7 +405,7 @@ class MultiNest(NonLinearOptimizer):
         This file stores the parameters of the most probable model in the first half of entries and the most likely
         model in the second half of entries. The offset parameter is used to start at the desired model.
         """
-        return self.read_vector_from_summary(number_entries=self.variable.total_parameters, offset=56)
+        return self.read_vector_from_summary(number_entries=self.variable.total_priors, offset=56)
 
     def max_likelihood_from_summary(self):
         return self.read_vector_from_summary(number_entries=2, offset=112)[0]
@@ -506,60 +503,86 @@ class MultiNest(NonLinearOptimizer):
 
     def output_pdf_plots(self):
 
+        import getdist.plots
         pdf_plot = getdist.plots.GetDistPlotter()
 
-        for i in range(self.variable.total_parameters):
-            pdf_plot.plot_1d(roots=self.pdf, param=self.paramnames_names[i])
-            pdf_plot.export(fname=self.path + '/pdfs/' + self.paramnames_names[i] + '_1D.png')
+        plot_pdf_1d_params = conf.instance.general.get('output', 'plot_pdf_1d_params', bool)
 
-        try:
-            pdf_plot.triangle_plot(roots=self.pdf)
-            pdf_plot.export(fname=self.path + '/pdfs/Triangle.png')
-        except np.linalg.LinAlgError:
-            pass
+        if plot_pdf_1d_params:
 
-    def output_results(self):
+            for param_name in self.param_names:
+                pdf_plot.plot_1d(roots=self.pdf, param=param_name)
+                pdf_plot.export(fname=self.path + '/pdfs/' + param_name + '_1D.png')
+                plt.close()
 
-        results = open(self.file_results, 'w')
+        plot_pdf_triangle = conf.instance.general.get('output', 'plot_pdf_triangle', bool)
 
-        max_likelihood = self.max_likelihood_from_summary()
+        if plot_pdf_triangle:
 
-        results.write('Most likely model, Likelihood = ' + str(max_likelihood) + '\n')
-        results.write('\n')
+            try:
+                pdf_plot.triangle_plot(roots=self.pdf)
+                pdf_plot.export(fname=self.path + '/pdfs/Triangle.png')
+                plt.close()
+            except np.linalg.LinAlgError:
+                pass
 
-        most_likely = self.most_likely_from_summary()
+    def output_results(self, during_analysis=False):
 
-        for i in range(self.variable.total_parameters):
-            line = self.paramnames_names[i]
-            line += ' ' * (50 - len(line)) + str(most_likely[i])
-            results.write(line + '\n')
+        if os.path.isfile(self.file_summary):
 
-        most_probable = self.most_probable_from_summary()
+            with open(self.file_results, 'w') as results:
 
-        lower_limit = self.model_at_lower_sigma_limit(sigma_limit=3.0)
-        upper_limit = self.model_at_upper_sigma_limit(sigma_limit=3.0)
+                max_likelihood = self.max_likelihood_from_summary()
 
-        results.write('\n')
-        results.write('Most probable model (3 sigma limits)' + '\n')
-        results.write('\n')
+                results.write('Most likely model, Likelihood = ' + str(max_likelihood) + '\n')
+                results.write('\n')
 
-        for i in range(self.variable.total_parameters):
-            line = self.paramnames_names[i]
-            line += ' ' * (50 - len(line)) + str(most_probable[i]) + ' (' + str(lower_limit[i]) + ', ' + str(
-                upper_limit[i]) + ')'
-            results.write(line + '\n')
+                most_likely = self.most_likely_from_summary()
 
-        lower_limit = self.model_at_lower_sigma_limit(sigma_limit=1.0)
-        upper_limit = self.model_at_upper_sigma_limit(sigma_limit=1.0)
+                for i in range(self.variable.total_priors):
+                    line = self.param_names[i]
+                    line += ' ' * (50 - len(line)) + str(most_likely[i])
+                    results.write(line + '\n')
 
-        results.write('\n')
-        results.write('Most probable model (1 sigma limits)' + '\n')
-        results.write('\n')
+                if during_analysis is False:
 
-        for i in range(self.variable.total_parameters):
-            line = self.paramnames_names[i]
-            line += ' ' * (50 - len(line)) + str(most_probable[i]) + ' (' + str(lower_limit[i]) + ', ' + str(
-                upper_limit[i]) + ')'
-            results.write(line + '\n')
+                    most_probable = self.most_probable_from_summary()
 
-        results.close()
+                    lower_limit = self.model_at_lower_sigma_limit(sigma_limit=3.0)
+                    upper_limit = self.model_at_upper_sigma_limit(sigma_limit=3.0)
+
+                    results.write('\n')
+                    results.write('Most probable model (3 sigma limits)' + '\n')
+                    results.write('\n')
+
+                    for i in range(self.variable.total_priors):
+                        line = self.param_names[i]
+                        line += ' ' * (50 - len(line)) + str(most_probable[i]) + ' (' + str(
+                            lower_limit[i]) + ', ' + str(
+                            upper_limit[i]) + ')'
+                        results.write(line + '\n')
+
+                    lower_limit = self.model_at_lower_sigma_limit(sigma_limit=1.0)
+                    upper_limit = self.model_at_upper_sigma_limit(sigma_limit=1.0)
+
+                    results.write('\n')
+                    results.write('Most probable model (1 sigma limits)' + '\n')
+                    results.write('\n')
+
+                    for i in range(self.variable.total_priors):
+                        line = self.param_names[i]
+                        line += ' ' * (50 - len(line)) + str(most_probable[i]) + ' (' + str(
+                            lower_limit[i]) + ', ' + str(
+                            upper_limit[i]) + ')'
+                        results.write(line + '\n')
+
+                results.write('\n')
+                results.write('Constants' + '\n')
+                results.write('\n')
+
+                constant_names = self.constant_names
+                constants = self.variable.constant_tuples_ordered_by_id
+
+                for i in range(self.variable.total_constants):
+                    line = constant_names[i]
+                    line += ' ' * (50 - len(line)) + str(constants[i][1].value)

@@ -1,29 +1,31 @@
+import numba
+import numpy as np
+import pytest
 from profiling import profiling_data
 from profiling import tools
+
 from autolens import exc
-import numpy as np
-import numba
-import pytest
+
 
 class Pixelization(object):
 
     def __init__(self, pixels, regularization_coefficients=(1.0,), pix_signal_scale=1.0):
         """
-        Abstract base class for a pixelization, which discretizes a set of masked_image and sub grid grid into \
+        Abstract base class for a inversion, which discretizes a set of masked_image and sub grid grid into \
         pixels. These pixels then fit a  data_vector-set using a linear inversion, where their regularization_matrix matrix
         enforces smoothness between pixel values.
 
         A number of 1D and 2D arrays are used to represent mappings betwen masked_image, sub, pix, and cluster pixels. The \
         nomenclature here follows grid_to_grid, such that it maps the index of a value on one grid to another. For \
-        example:
+        howtolens:
 
-        - pix_to_image[2] = 5 tells us that the 3rd pixelization-pixel maps to the 6th masked_image-pixel.
-        - sub_to_pixelization[4,2] = 2 tells us that the 5th sub-pixel maps to the 3rd pixelization-pixel.
+        - pix_to_image[2] = 5 tells us that the 3rd inversion-pixel maps to the 6th masked_image-pixel.
+        - sub_to_pixelization[4,2] = 2 tells us that the 5th sub-pixel maps to the 3rd inversion-pixel.
 
         Parameters
         ----------
         pixels : int
-            The number of pixels in the pixelization.
+            The number of pixels in the inversion.
         regularization_coefficients : (float,)
             The regularization_matrix coefficients used to smooth the pix reconstructed_image.
         pix_signal_scale : float
@@ -36,8 +38,8 @@ class Pixelization(object):
 
 class Rectangular(Pixelization):
 
-    def __init__(self, shape=(3,3), regularization_coefficients=(1.0,)):
-        """A rectangular pixelization where pixels appear on a Cartesian, uniform and rectangular grid \
+    def __init__(self, shape=(3, 3), regularization_coefficients=(1.0,)):
+        """A rectangular inversion where pixels appear on a Cartesian, uniform and rectangular grid \
         of  shape (rows, columns).
 
         Like an masked_image grid, the indexing of the rectangular grid begins in the top-left corner and goes right and down.
@@ -51,7 +53,7 @@ class Rectangular(Pixelization):
         """
 
         if shape[0] <= 2 or shape[1] <= 2:
-            raise exc.PixelizationException('The rectangular pixelization must be at least dimensions 3x3')
+            raise exc.PixelizationException('The rectangular inversion must be at least dimensions 3x3')
 
         super(Rectangular, self).__init__(shape[0] * shape[1], regularization_coefficients)
 
@@ -102,7 +104,7 @@ class Rectangular(Pixelization):
 
     def grid_to_pix_from_grid(self, grid, geometry):
         """Compute the mappings between a set of masked_image pixels (or sub-pixels) and pixels, using the masked_image's
-        traced pix-plane grid (or sub-grid) and the uniform rectangular pixelization's geometry.
+        traced pix-plane grid (or sub-grid) and the uniform rectangular inversion's geometry.
 
         Parameters
         ----------
@@ -123,7 +125,7 @@ class Rectangular(Pixelization):
 
     def grid_to_pix_from_grid_jitted(self, grid, geometry):
         """Compute the mappings between a set of masked_image pixels (or sub-pixels) and pixels, using the masked_image's
-        traced pix-plane grid (or sub-grid) and the uniform rectangular pixelization's geometry.
+        traced pix-plane grid (or sub-grid) and the uniform rectangular inversion's geometry.
 
         Parameters
         ----------
@@ -142,15 +144,15 @@ class Rectangular(Pixelization):
         grid_to_pix = np.zeros(grid.shape[0])
 
         for i in range(grid.shape[0]):
-
-            x_pixel = np.floor((grid[i,0] - x_min) / x_pixel_scale)
-            y_pixel = np.floor((grid[i,1] - y_min) / y_pixel_scale)
+            x_pixel = np.floor((grid[i, 0] - x_min) / x_pixel_scale)
+            y_pixel = np.floor((grid[i, 1] - y_min) / y_pixel_scale)
 
             grid_to_pix[i] = x_pixel * y_shape + y_pixel
 
         return grid_to_pix
 
-sub_grid_size=4
+
+sub_grid_size = 4
 
 lsst = profiling_data.setup_class(name='LSST', pixel_scale=0.2, sub_grid_size=sub_grid_size)
 euclid = profiling_data.setup_class(name='Euclid', pixel_scale=0.1, sub_grid_size=sub_grid_size)
@@ -169,28 +171,33 @@ hst_up_geometry = pix.geometry_from_pix_sub_grid(pix_sub_grid=hst_up.grids.sub)
 ao_geometry = pix.geometry_from_pix_sub_grid(pix_sub_grid=ao.grids.sub)
 
 assert pix.grid_to_pix_from_grid(grid=lsst.grids.sub, geometry=lsst_geometry) == \
-    pytest.approx(pix.grid_to_pix_from_grid_jitted(grid=lsst.grids.sub, geometry=lsst_geometry))
+       pytest.approx(pix.grid_to_pix_from_grid_jitted(grid=lsst.grids.sub, geometry=lsst_geometry))
 pix.grid_to_pix_from_grid_jitted(grid=lsst.grids.sub, geometry=lsst_geometry)
 pix.grid_to_pix_from_grid_jitted(grid=euclid.grids.sub, geometry=euclid_geometry)
 pix.grid_to_pix_from_grid_jitted(grid=hst.grids.sub, geometry=hst_geometry)
 pix.grid_to_pix_from_grid_jitted(grid=hst_up.grids.sub, geometry=hst_up_geometry)
 pix.grid_to_pix_from_grid_jitted(grid=ao.grids.sub, geometry=ao_geometry)
 
+
 @tools.tick_toc_x1
 def lsst_solution():
     pix.grid_to_pix_from_grid_jitted(grid=lsst.grids.sub, geometry=lsst_geometry)
+
 
 @tools.tick_toc_x1
 def euclid_solution():
     pix.grid_to_pix_from_grid_jitted(grid=euclid.grids.sub, geometry=euclid_geometry)
 
+
 @tools.tick_toc_x1
 def hst_solution():
     pix.grid_to_pix_from_grid_jitted(grid=hst.grids.sub, geometry=hst_geometry)
 
+
 @tools.tick_toc_x1
 def hst_up_solution():
     pix.grid_to_pix_from_grid_jitted(grid=hst_up.grids.sub, geometry=hst_up_geometry)
+
 
 @tools.tick_toc_x1
 def ao_solution():

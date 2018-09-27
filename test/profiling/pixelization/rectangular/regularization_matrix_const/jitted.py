@@ -1,22 +1,17 @@
-from profiling import profiling_data
-from profiling import tools
-from analysis import ray_tracing
-from analysis import galaxy
-from profiles import mass_profiles
-from autolens import exc
-import numpy as np
-import pytest
 import numba
+import numpy as np
+from profiling import tools
+
+from autolens import exc
 
 
 class RegularizationConstant(object):
-
     pixels = None
     regularization_coefficients = None
 
     def regularization_matrix_from_pix_neighbors(self, pix_neighbors):
         """
-        Setup a pixelization's constant regularization_matrix matrix (see test_pixelization.py)
+        Setup a inversion's constant regularization_matrix matrix (see test_pixelizations.py)
 
         Parameters
         ----------
@@ -39,7 +34,7 @@ class RegularizationConstant(object):
     def regularization_matrix_from_pix_neighbors_jitted(self, pix_neighbors):
         pix_neighbors = np.array([1, 1, 1, 1], dtype='int')
         return self.regularization_matrix_from_pix_neighbors_jit(pix_neighbors, self.pixels,
-                                                    self.regularization_coefficients[0])
+                                                                 self.regularization_coefficients[0])
 
     @staticmethod
     @numba.jit(nopython=True)
@@ -62,21 +57,21 @@ class Pixelization(object):
 
     def __init__(self, pixels=100, regularization_coefficients=(1.0,)):
         """
-        Abstract base class for a pixelization, which discretizes a set of masked_image and sub grid grid into \
+        Abstract base class for a inversion, which discretizes a set of masked_image and sub grid grid into \
         pixels. These pixels fit an masked_image using a linear inversion, where a regularization_matrix matrix
         enforces smoothness between pixel values.
 
         A number of 1D and 2D arrays are used to represent mappings betwen masked_image, sub, pix, and cluster pixels. The \
         nomenclature here follows grid_to_grid, such that it maps the index of a value on one grid to another. For \
-        example:
+        howtolens:
 
-        - pix_to_image[2] = 5 tells us that the 3rd pixelization-pixel maps to the 6th masked_image-pixel.
-        - sub_to_pixelization[4,2] = 2 tells us that the 5th sub-pixel maps to the 3rd pixelization-pixel.
+        - pix_to_image[2] = 5 tells us that the 3rd inversion-pixel maps to the 6th masked_image-pixel.
+        - sub_to_pixelization[4,2] = 2 tells us that the 5th sub-pixel maps to the 3rd inversion-pixel.
 
         Parameters
         ----------
         pixels : int
-            The number of pixels in the pixelization.
+            The number of pixels in the inversion.
         regularization_coefficients : (float,)
             The regularization_matrix coefficients used to smooth the pix reconstructed_image.
         """
@@ -86,8 +81,8 @@ class Pixelization(object):
 
 class RectangularRegConst(Pixelization, RegularizationConstant):
 
-    def __init__(self, shape=(3,3), regularization_coefficients=(1.0,)):
-        """A rectangular pixelization where pixels appear on a Cartesian, uniform and rectangular grid \
+    def __init__(self, shape=(3, 3), regularization_coefficients=(1.0,)):
+        """A rectangular inversion where pixels appear on a Cartesian, uniform and rectangular grid \
         of  shape (rows, columns).
 
         Like an masked_image grid, the indexing of the rectangular grid begins in the top-left corner and goes right and down.
@@ -101,7 +96,7 @@ class RectangularRegConst(Pixelization, RegularizationConstant):
         """
 
         if shape[0] <= 2 or shape[1] <= 2:
-            raise exc.PixelizationException('The rectangular pixelization must be at least dimensions 3x3')
+            raise exc.PixelizationException('The rectangular inversion must be at least dimensions 3x3')
 
         super(RectangularRegConst, self).__init__(shape[0] * shape[1], regularization_coefficients)
 
@@ -177,7 +172,7 @@ class RectangularRegConst(Pixelization, RegularizationConstant):
         return pixel_neighbors
 
 
-sub_grid_size=4
+sub_grid_size = 4
 
 pix = RectangularRegConst(shape=(20, 20))
 
@@ -188,9 +183,11 @@ pix_neighbors = pix.neighbors_from_pixelization()
 
 pix.regularization_matrix_from_pix_neighbors_jitted(pix_neighbors)
 
+
 @tools.tick_toc_x1
 def solution():
     pix.regularization_matrix_from_pix_neighbors_jitted(pix_neighbors)
+
 
 if __name__ == "__main__":
     solution()
