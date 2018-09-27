@@ -1,9 +1,8 @@
 import numpy as np
 
-from autolens.profiles import light_profiles
 from profiling import profiling_data
 from profiling import tools
-from imaging import mask
+
 
 class ImageGridBorder(np.ndarray):
 
@@ -96,9 +95,9 @@ class SubGridBorder(ImageGridBorder):
     def from_mask(cls, mask, sub_grid_size, polynomial_degree=3, centre=(0.0, 0.0)):
         return cls(mask.border_sub_pixel_indices(sub_grid_size), polynomial_degree, centre)
 
-    
+
 sub_grid_size = 4
-    
+
 lsst = profiling_data.setup_class(name='LSST', pixel_scale=0.2, sub_grid_size=sub_grid_size)
 lsst_border = SubGridBorder.from_mask(mask=lsst.masked_image.mask, sub_grid_size=sub_grid_size)
 
@@ -119,22 +118,27 @@ ao_border = SubGridBorder.from_mask(mask=ao.masked_image.mask, sub_grid_size=sub
 def lsst_solution():
     lsst_border.relocated_grid_from_grid(grid=lsst.grids.sub)
 
+
 @tools.tick_toc_x1
 def euclid_solution():
     euclid_border.relocated_grid_from_grid(grid=euclid.grids.sub)
+
 
 @tools.tick_toc_x1
 def hst_solution():
     hst_border.relocated_grid_from_grid(grid=hst.grids.sub)
 
+
 @tools.tick_toc_x1
 def hst_up_solution():
     hst_up_border.relocated_grid_from_grid(grid=hst_up.grids.sub)
 
+
 @tools.tick_toc_x1
 def ao_solution():
     ao_border.relocated_grid_from_grid(grid=ao.grids.sub)
-    
+
+
 if __name__ == "__main__":
     lsst_solution()
     euclid_solution()
