@@ -190,7 +190,7 @@ class ImagingGrids(object):
         return ImagingGrids(image_grid, sub_grid, blurring_grid)
 
     @classmethod
-    def from_shape_and_pixel_scale(cls, shape, pixel_scale, sub_grid_size=1, psf_shape=(1, 1)):
+    def from_shape_and_pixel_scale(cls, shape, pixel_scale, sub_grid_size=2, psf_shape=(1, 1)):
         image_grid = ImageGrid.from_shape_and_pixel_scale(shape=shape, pixel_scale=pixel_scale)
         sub_grid = SubGrid.from_shape_pixel_scale_and_sub_grid_size(shape=shape, pixel_scale=pixel_scale,
                                                                     sub_grid_size=sub_grid_size)
