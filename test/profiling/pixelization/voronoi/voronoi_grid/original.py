@@ -1,20 +1,17 @@
+import scipy
+from analysis import galaxy
+from analysis import ray_tracing
 from profiling import profiling_data
 from profiling import tools
-from analysis import ray_tracing
-from analysis import galaxy
-from profiles import mass_profiles
-from autolens import exc
-import numpy as np
-import pytest
-import numba
 
-import scipy
+from profiles import mass_profiles
+
 
 class Voronoi(object):
 
     def __init__(self, pixels=100, regularization_coefficients=(1.0,)):
         """
-        Abstract base class for a Voronoi pixelization, which represents pixels as a set of centers where \
+        Abstract base class for a Voronoi inversion, which represents pixels as a set of centers where \
         all of the nearest-neighbor pix-grid (i.e. traced masked_image-pixels) are mapped to them.
 
         This forms a Voronoi grid pix-plane, the properties of which are used for fast calculations, defining the \
@@ -23,7 +20,7 @@ class Voronoi(object):
         Parameters
         ----------
         pixels : int
-            The number of pixels in the pixelization.
+            The number of pixels in the inversion.
         regularization_coefficients : (float,)
             The regularization_matrix coefficients used to smooth the pix reconstructed_image.
         """
@@ -32,7 +29,7 @@ class Voronoi(object):
 
     @staticmethod
     def voronoi_from_cluster_grid(cluster_grid):
-        """Compute the Voronoi grid of the pixelization, using the pixel centers.
+        """Compute the Voronoi grid of the inversion, using the pixel centers.
 
         Parameters
         ----------
@@ -40,6 +37,7 @@ class Voronoi(object):
             The x and y image_grid to derive the Voronoi grid_coords.
         """
         return scipy.spatial.Voronoi(cluster_grid, qhull_options='Qbb Qc Qx Qm')
+
 
 sub_grid_size = 4
 
@@ -62,25 +60,31 @@ hst_tracer = ray_tracing.Tracer(lens_galaxies=[lens_galaxy], source_galaxies=[],
 hst_up_tracer = ray_tracing.Tracer(lens_galaxies=[lens_galaxy], source_galaxies=[], image_plane_grids=hst_up.grids)
 ao_tracer = ray_tracing.Tracer(lens_galaxies=[lens_galaxy], source_galaxies=[], image_plane_grids=ao.grids)
 
+
 @tools.tick_toc_x1
 def lsst_solution():
     pix.voronoi_from_cluster_grid()
+
 
 @tools.tick_toc_x1
 def euclid_solution():
     pix.mapping_matrix_from_sub_to_pix(sub_to_pix=euclid_sub_to_pix, grids=euclid.grids)
 
+
 @tools.tick_toc_x1
 def hst_solution():
     pix.mapping_matrix_from_sub_to_pix(sub_to_pix=hst_sub_to_pix, grids=hst.grids)
+
 
 @tools.tick_toc_x1
 def hst_up_solution():
     pix.mapping_matrix_from_sub_to_pix(sub_to_pix=hst_up_sub_to_pix, grids=hst_up.grids)
 
+
 @tools.tick_toc_x1
 def ao_solution():
     pix.mapping_matrix_from_sub_to_pix(sub_to_pix=ao_sub_to_pix, grids=ao.grids)
+
 
 if __name__ == "__main__":
     lsst_solution()

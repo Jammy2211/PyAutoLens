@@ -1,6 +1,7 @@
-import numpy as np
-from functools import wraps
 import inspect
+from functools import wraps
+
+import numpy as np
 
 
 def transform_grid(func):
@@ -53,10 +54,6 @@ class GeometryProfile(object):
         """Abstract GeometryProfile, describing an object with x, y cartesian coordinates"""
         self.centre = centre
 
-    @property
-    def parameter_labels(self):
-        return ['x', 'y']
-
     def transform_grid_to_reference_frame(self, grid):
         raise NotImplemented()
 
@@ -74,9 +71,9 @@ class GeometryProfile(object):
         Examples
         ----------
         p = profiles.Profile(centre=(1, 1))
-        elliptical_profile = profiles.EllipticalProfileGP.from_profile(p, axis_ratio=1, phi=2)
+        elliptical_profile = profiles.EllipticalProfile.from_profile(p, axis_ratio=1, phi=2)
 
-        elliptical_profile = profiles.EllipticalProfileGP(1, 2)
+        elliptical_profile = profiles.EllipticalProfile(1, 2)
         profiles.Profile.from_profile(elliptical_profile).__class__ == profiles.Profile
 
         Parameters
@@ -105,7 +102,7 @@ class GeometryProfile(object):
                                '\n'.join(["{}: {}".format(k, v) for k, v in self.__dict__.items()]))
 
 
-class SphericalProfileGP(GeometryProfile):
+class SphericalProfile(GeometryProfile):
 
     def __init__(self, centre=(0.0, 0.0)):
         """ Generic circular profiles class to contain functions shared by light and mass profiles.
@@ -115,11 +112,7 @@ class SphericalProfileGP(GeometryProfile):
         centre: (float, float)
             The coordinates of the centre of the profile.
         """
-        super(SphericalProfileGP, self).__init__(centre)
-
-    @property
-    def parameter_labels(self):
-        return ['x', 'y']
+        super(SphericalProfile, self).__init__(centre)
 
     @transform_grid
     def grid_to_radius(self, grid):
@@ -169,7 +162,7 @@ class SphericalProfileGP(GeometryProfile):
         Parameters
         ----------
         grid : ndarray
-            The (x, y) coordinates in the original reference frame of the observed image.
+            The (x, y) coordinates in the original reference frame of the observed _image.
         """
         transformed = np.subtract(grid, self.centre)
         return transformed.view(TransformedGrid)
@@ -181,13 +174,13 @@ class SphericalProfileGP(GeometryProfile):
         Parameters
         ----------
         grid : TransformedGrid(ndarray)
-            The (x, y) coordinates in the reference frame of the profile image.
+            The (x, y) coordinates in the reference frame of the profile _image.
         """
         transformed = np.add(grid, self.centre)
         return transformed.view(TransformedGrid)
 
 
-class EllipticalProfileGP(SphericalProfileGP):
+class EllipticalProfile(SphericalProfile):
 
     def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0):
         """ Generic elliptical profiles class to contain functions shared by light and mass profiles.
@@ -201,17 +194,13 @@ class EllipticalProfileGP(SphericalProfileGP):
         phi : float
             Rotational angle of profiles ellipse counter-clockwise from positive x-axis
         """
-        super(EllipticalProfileGP, self).__init__(centre)
+        super(EllipticalProfile, self).__init__(centre)
         self.axis_ratio = axis_ratio
         self.phi = phi
 
     @property
     def phi_radians(self):
         return np.radians(self.phi)
-
-    @property
-    def parameter_labels(self):
-        return ['x', 'y', 'q', r'\phi']
 
     @property
     def cos_phi(self):
@@ -297,7 +286,7 @@ class EllipticalProfileGP(SphericalProfileGP):
         Parameters
         ----------
         grid : ndarray
-            The (x, y) coordinates in the original reference frame of the observed image.
+            The (x, y) coordinates in the original reference frame of the observed _image.
         """
         shifted_coordinates = np.subtract(grid, self.centre)
         radius = np.sqrt(np.sum(shifted_coordinates ** 2.0, 1))
@@ -314,7 +303,7 @@ class EllipticalProfileGP(SphericalProfileGP):
         Parameters
         ----------
         grid : TransformedGrid(ndarray)
-            The (x, y) coordinates in the reference frame of the profile image.
+            The (x, y) coordinates in the reference frame of the profile _image.
         """
         x = np.add(np.add(np.multiply(grid[:, 0], self.cos_phi), - np.multiply(grid[:, 1], self.sin_phi)),
                    self.centre[0])
@@ -327,7 +316,7 @@ class EllipticalProfileGP(SphericalProfileGP):
         return np.sqrt((u * ((coordinates[0] ** 2) + (coordinates[1] ** 2 / (1 - (1 - self.axis_ratio ** 2) * u)))))
 
 
-class EllipticalSersicGP(EllipticalProfileGP):
+class EllipticalSersic(EllipticalProfile):
 
     def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=0.1, effective_radius=0.6,
                  sersic_index=4.0):
@@ -348,7 +337,7 @@ class EllipticalSersicGP(EllipticalProfileGP):
         sersic_index : Int
             The concentration of the light profiles
         """
-        super(EllipticalSersicGP, self).__init__(centre, axis_ratio, phi)
+        super(EllipticalSersic, self).__init__(centre, axis_ratio, phi)
         self.intensity = intensity
         self.effective_radius = effective_radius
         self.sersic_index = sersic_index

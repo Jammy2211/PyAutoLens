@@ -1,60 +1,77 @@
-from autolens.imaging import image as im
-from autolens.imaging import convolution
-from autolens.lensing import grids
 import numpy as np
+
+from autolens.imaging import convolution
+from autolens.imaging import image as im
+from autolens.imaging import mask as msk
 
 
 class LensingImage(im.Image):
 
-    def __new__(cls, image, mask, sub_grid_size=2, image_psf_shape=None, pixelization_psf_shape=None, positions=None):
+    def __new__(cls, image, mask, sub_grid_size=2, image_psf_shape=None, mapping_matrix_psf_shape=None, positions=None):
         return np.array(mask.map_2d_array_to_masked_1d_array(image)).view(cls)
 
-    def __init__(self, image, mask, sub_grid_size=2, image_psf_shape=None, pixelization_psf_shape=None,
+    def __init__(self, image, mask, sub_grid_size=2, image_psf_shape=None, mapping_matrix_psf_shape=None,
                  positions=None):
         """
-        An masked_image that has been masked. Only data within the mask is kept. This data is kept in 1D with a corresponding
-        array mapping_matrix data back to 2D.
+        The lensing _image is the collection of data (images, noise-maps, PSF), a mask, grids, convolvers and other \
+        utilities that are used for modeling and fitting an _image of a strong lens.
+
+        Whilst the _image data is initially loaded in 2D, for the lensing _image the masked-_image (and noise-maps) \
+        are reduced to 1D arrays for faster calculations.
 
         Parameters
         ----------
         image: im.Image
-            A 2D masked_image
+            The original _image data in 2D.
         mask: msk.Mask
-            A mask to be applied to the masked_image
+            The 2D mask that is applied to the _image.
         sub_grid_size : int
-
+            The size of the sub-grid used for each lensing SubGrid. E.g. a value of 2 grids each _image-pixel on a 2x2 \
+            sub-grid.
+        image_psf_shape : (int, int)
+            The shape of the PSF used for convolving model images generated using analytic light profiles. A smaller \
+            shape will trim the PSF relative to the input _image PSF, giving a faster analysis run-time.
+        mapping_matrix_psf_shape : (int, int)
+            The shape of the PSF used for convolving the inversion mapping matrix. A smaller \
+            shape will trim the PSF relative to the input _image PSF, giving a faster analysis run-time.
+        positions : [[]]
+            Lists of _image-pixel coordinates (arc-seconds) that mappers close to one another in the source-plane(s), used \
+            to speed up the non-linear sampling.
         """
-        super().__init__(array=image, pixel_scale=image.pixel_scale, noise=mask.map_2d_array_to_masked_1d_array(image.noise), psf=image.psf)
+        super().__init__(array=image, pixel_scale=image.pixel_scale,
+                         noise_map=mask.map_2d_array_to_masked_1d_array(image.noise_map), psf=image.psf,
+                         background_noise_map=image.background_noise_map)
 
         self.image = image
-        self.image_shape = image.shape
         self.mask = mask
         self.sub_grid_size = sub_grid_size
 
         if image_psf_shape is None:
             image_psf_shape = self.image.psf.shape
-        if pixelization_psf_shape is None:
-            pixelization_psf_shape = self.image.psf.shape
+        if mapping_matrix_psf_shape is None:
+            mapping_matrix_psf_shape = self.image.psf.shape
 
         self.blurring_mask = mask.blurring_mask_for_psf_shape(image_psf_shape)
         self.convolver_image = convolution.ConvolverImage(self.mask,
                                                           self.blurring_mask, self.image.psf.trim(image_psf_shape))
         self.convolver_mapping_matrix = convolution.ConvolverMappingMatrix(self.mask,
-                                                                           self.image.psf.trim(pixelization_psf_shape))
-        self.grids = grids.LensingGrids.from_mask_sub_grid_size_and_blurring_shape(mask=mask, sub_grid_size=sub_grid_size,
-                                                                                   blurring_shape=image_psf_shape)
+                                                                           self.image.psf.trim(
+                                                                               mapping_matrix_psf_shape))
+        self.grids = msk.ImagingGrids.grids_from_mask_sub_grid_size_and_psf_shape(mask=mask,
+                                                                                  sub_grid_size=sub_grid_size,
+                                                                                  psf_shape=image_psf_shape)
 
-        self.grid_mappers = grids.LensingGrids.grid_mappers_from_mask_sub_grid_size_and_psf_shape(mask=mask,
-                                                                                                  sub_grid_size=sub_grid_size, psf_shape=image_psf_shape)
+        self.unmasked_grids = msk.ImagingGrids.unmasked_grids_from_mask_sub_grid_size_and_psf_shape(mask=mask,
+                                                                                                    sub_grid_size=sub_grid_size,
+                                                                                                    psf_shape=image_psf_shape)
 
-        self.borders = grids.BorderCollection.from_mask_and_sub_grid_size(mask=mask, sub_grid_size=sub_grid_size)
+        self.borders = msk.ImagingGridBorders.from_mask_and_sub_grid_size(mask=mask, sub_grid_size=sub_grid_size)
         self.positions = positions
 
     def __array_finalize__(self, obj):
         super(LensingImage, self).__array_finalize__(obj)
         if isinstance(obj, LensingImage):
             self.image = obj.image
-            self.image_shape = obj.image_shape
             self.mask = obj.mask
             self.blurring_mask = obj.blurring_mask
             self.convolver_image = obj.convolver_image

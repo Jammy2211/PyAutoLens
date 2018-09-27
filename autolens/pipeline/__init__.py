@@ -27,4 +27,11 @@ def add(module):
     pipeline_dict[module.pipeline_name] = PipelineTuple(module)
 
 
+#  Add pipeline modules here.
 add(initializer)
+
+
+class TestPipeline(object):
+    # noinspection PyMethodMayBeStatic
+    def run(self, image):
+        print(image)
