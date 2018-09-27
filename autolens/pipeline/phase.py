@@ -453,8 +453,8 @@ class PhaseImaging(Phase):
                                                                          tracer=tracer)
 
         def fit_for_tracers(self, tracer, unmasked_tracer):
-            return fitting.fit_from_lensing_image_and_tracer(lensing_image=self.lensing_image, tracer=tracer,
-                                                             unmasked_tracer=unmasked_tracer)
+            return fitting.fit_lensing_image_with_tracer(lensing_image=self.lensing_image, tracer=tracer,
+                                                         unmasked_tracer=unmasked_tracer)
 
         def check_positions_trace_within_threshold(self, instance):
 
@@ -625,11 +625,11 @@ class LensPlaneHyperPhase(LensPlanePhase):
                                                                          hyper_minimum_values=self.hyper_minimum_values)
 
         def fit_for_tracers(self, tracer, unmasked_tracer):
-            return fitting.fit_from_lensing_image_and_tracer(lensing_image=self.lensing_image, tracer=tracer,
-                                                             unmasked_tracer=unmasked_tracer,
-                                                             hyper_model_image=self.hyper_model_image,
-                                                             hyper_galaxy_images=self.hyper_galaxy_images,
-                                                             hyper_minimum_values=self.hyper_minimum_values)
+            return fitting.fit_lensing_image_with_tracer(lensing_image=self.lensing_image, tracer=tracer,
+                                                         unmasked_tracer=unmasked_tracer,
+                                                         hyper_model_image=self.hyper_model_image,
+                                                         hyper_galaxy_images=self.hyper_galaxy_images,
+                                                         hyper_minimum_values=self.hyper_minimum_values)
 
         @classmethod
         def log(cls, instance):
@@ -844,9 +844,9 @@ class LensSourcePlaneHyperPhase(LensSourcePlanePhase):
                                                                          self.hyper_minimum_values)
 
         def fit_for_tracer(self, tracer):
-            return fitting.fit_from_lensing_image_and_tracer(self.lensing_image, tracer,
-                                                             self.hyper_model_image, self.hyper_galaxy_images,
-                                                             self.hyper_minimum_values)
+            return fitting.fit_lensing_image_with_tracer(self.lensing_image, tracer,
+                                                         self.hyper_model_image, self.hyper_galaxy_images,
+                                                         self.hyper_minimum_values)
 
         @classmethod
         def log(cls, instance):

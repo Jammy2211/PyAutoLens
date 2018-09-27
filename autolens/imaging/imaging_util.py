@@ -447,7 +447,7 @@ def trim_array_2d_to_new_shape(array_2d, new_shape):
 
 def numpy_array_to_fits(array, path, overwrite=False):
 
-    if overwrite:
+    if overwrite and os.path.exists(path):
         os.remove(path)
 
     new_hdr = fits.Header()
