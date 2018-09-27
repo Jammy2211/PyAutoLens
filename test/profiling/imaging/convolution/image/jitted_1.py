@@ -1,12 +1,11 @@
+import numba
 import numpy as np
-
-from autolens.profiles import light_profiles
+import pytest
 from profiling import profiling_data
 from profiling import tools
-from imaging import convolution
-import pytest
-import numba
+
 from autolens import exc
+from autolens.profiles import light_profiles
 
 
 class Convolver(object):
@@ -19,7 +18,7 @@ class Convolver(object):
     into for a given PSF psf size, e.g.:
 
     |x|x|x|x|x|x|x|x|x|x|
-    |x|x|x|x|x|x|x|x|x|x|     This is an example masked_image.Mask, where:
+    |x|x|x|x|x|x|x|x|x|x|     This is an howtolens masked_image.Mask, where:
     |x|x|x|x|x|x|x|x|x|x|
     |x|x|x|x|x|x|x|x|x|x|     x = True (Pixel is masked and excluded from lensing)
     |x|x|x|o|o|o|x|x|x|x|     o = False (Pixel is not masked and included in lensing)
@@ -49,7 +48,7 @@ class Convolver(object):
     image_frame_psfs - The psf values that overlap each masked_image pixel it will blur light into.
     image_frame_length - The number of masked_image-pixels it will blur light into (because unmasked pixels are excluded)
 
-    For example, if we had the following 3x3 psf:
+    For howtolens, if we had the following 3x3 psf:
 
     |0.1|0.2|0.3|
     |0.4|0.5|0.6|
@@ -87,11 +86,11 @@ class Convolver(object):
     using blurring frames, however it is omitted for mapping_matrix matrix images.
 
     First, a blurring mask is computed from a mask, which describes all pixels which are close enough to the mask \
-    to blur light into it for a given psf size. Following the example above, the following blurring mask is \
+    to blur light into it for a given psf size. Following the howtolens above, the following blurring mask is \
     computed:
 
     |x|x|x|x|x|x|x|x|x|x|
-    |x|x|x|x|x|x|x|x|x|x|     This is an example masked_image.Mask, where:
+    |x|x|x|x|x|x|x|x|x|x|     This is an howtolens masked_image.Mask, where:
     |x|x|x|x|x|x|x|x|x|x|
     |x|x|o|o|o|o|o|x|x|x|     x = True (Pixel is masked and excluded from lensing)
     |x|x|o|x|x|x|o|x|x|x|     o = False (Pixel is not masked and included in lensing)
@@ -386,12 +385,11 @@ class ConvolverImage(Convolver):
         return new_array
 
 
-
-sub_grid_size=4
+sub_grid_size = 4
 psf_shape = (21, 21)
 # psf_shape = (41, 41)
-sersic = light_profiles.EllipticalSersicLP(centre=(0.0, 0.0), axis_ratio=0.8, phi=90.0, intensity=0.1,
-                                           effective_radius=0.8, sersic_index=4.0)
+sersic = light_profiles.EllipticalSersic(centre=(0.0, 0.0), axis_ratio=0.8, phi=90.0, intensity=0.1,
+                                         effective_radius=0.8, sersic_index=4.0)
 
 lsst = profiling_data.setup_class(name='LSST', pixel_scale=0.2, sub_grid_size=sub_grid_size, psf_shape=psf_shape)
 euclid = profiling_data.setup_class(name='Euclid', pixel_scale=0.1, sub_grid_size=sub_grid_size, psf_shape=psf_shape)
@@ -399,18 +397,18 @@ hst = profiling_data.setup_class(name='HST', pixel_scale=0.05, sub_grid_size=sub
 hst_up = profiling_data.setup_class(name='HSTup', pixel_scale=0.03, sub_grid_size=sub_grid_size, psf_shape=psf_shape)
 ao = profiling_data.setup_class(name='AO', pixel_scale=0.01, sub_grid_size=sub_grid_size, psf_shape=psf_shape)
 
-lsst_image = sersic.intensities_from_grid(grid=lsst.grids.image_plane_image)
+lsst_image = sersic.intensities_from_grid(grid=lsst.grids._image_plane_image)
 lsst_blurring_image = sersic.intensities_from_grid(grid=lsst.grids.blurring)
 assert lsst.masked_image.convolver_image.convolve_image(lsst_image, lsst_blurring_image) == \
        pytest.approx(lsst.masked_image.convolver_image.convolve_image(lsst_image, lsst_blurring_image), 1e-4)
 
-euclid_image = sersic.intensities_from_grid(grid=euclid.grids.image_plane_image)
+euclid_image = sersic.intensities_from_grid(grid=euclid.grids._image_plane_image)
 euclid_blurring_image = sersic.intensities_from_grid(grid=euclid.grids.blurring)
-hst_image = sersic.intensities_from_grid(grid=hst.grids.image_plane_image)
+hst_image = sersic.intensities_from_grid(grid=hst.grids._image_plane_image)
 hst_blurring_image = sersic.intensities_from_grid(grid=hst.grids.blurring)
-hst_up_image = sersic.intensities_from_grid(grid=hst_up.grids.image_plane_image)
+hst_up_image = sersic.intensities_from_grid(grid=hst_up.grids._image_plane_image)
 hst_up_blurring_image = sersic.intensities_from_grid(grid=hst_up.grids.blurring)
-ao_image = sersic.intensities_from_grid(grid=ao.grids.image_plane_image)
+ao_image = sersic.intensities_from_grid(grid=ao.grids._image_plane_image)
 ao_blurring_image = sersic.intensities_from_grid(grid=ao.grids.blurring)
 
 euclid.masked_image.convolver_image.convolve_image(image_array=euclid_image,
@@ -425,21 +423,26 @@ ao.masked_image.convolver_image.convolve_image(image_array=ao_image, blurring_ar
 def lsst_solution():
     lsst.masked_image.convolver_image.convolve_image(image_array=lsst_image, blurring_array=lsst_blurring_image)
 
+
 @tools.tick_toc_x1
 def euclid_solution():
     euclid.masked_image.convolver_image.convolve_image(image_array=euclid_image, blurring_array=euclid_blurring_image)
+
 
 @tools.tick_toc_x1
 def hst_solution():
     hst.masked_image.convolver_image.convolve_image(image_array=hst_image, blurring_array=hst_blurring_image)
 
+
 @tools.tick_toc_x1
 def hst_up_solution():
     hst_up.masked_image.convolver_image.convolve_image(image_array=hst_up_image, blurring_array=hst_up_blurring_image)
 
+
 @tools.tick_toc_x1
 def ao_solution():
     ao.masked_image.convolver_image.convolve_image(image_array=ao_image, blurring_array=ao_blurring_image)
+
 
 if __name__ == "__main__":
     lsst_solution()

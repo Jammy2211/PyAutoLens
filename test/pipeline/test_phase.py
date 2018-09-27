@@ -1,26 +1,33 @@
-from autolens.pipeline import phase as ph
+import os
+from os import path
+
+import numpy as np
+import pytest
+
+from autolens import conf
 from autolens.autofit import model_mapper as mm
 from autolens.autofit import non_linear
-from autolens.imaging import mask as msk
 from autolens.imaging import image as img
-from autolens.lensing import lensing_image as li
-from autolens.lensing import grids
+from autolens.imaging import mask as msk
 from autolens.lensing import galaxy as g
-from autolens.lensing import galaxy_prior as gp
+from autolens.lensing import galaxy_model as gm
+from autolens.lensing import lensing_image as li
+from autolens.pipeline import phase as ph
 from autolens.profiles import light_profiles as lp
 from autolens.profiles import mass_profiles as mp
-from autolens import conf
-from os import path
-import pytest
-import numpy as np
-import os
+
+pytestmark = pytest.mark.filterwarnings(
+    "ignore:Using a non-tuple sequence for multidimensional indexing is deprecated; use `arr[tuple(seq)]` instead of "
+    "`arr[seq]`. In the future this will be interpreted as an array index, `arr[np.array(seq)]`, which will result "
+    "either in an error or a different result.")
 
 directory = path.dirname(path.realpath(__file__))
 
-general_conf = directory+'/../test_files/config/'
+general_conf = '{}/../test_files/config'.format(directory)
 conf.instance.general = conf.NamedConfig("{}/general.ini".format(general_conf))
 
 shape = (10, 10)
+
 
 class MockAnalysis(object):
 
@@ -55,8 +62,7 @@ class NLO(non_linear.NonLinearOptimizer):
 
             def __call__(self, vector):
                 instance = self.instance_from_physical_vector(vector)
-                for key, value in self.constant.__dict__.items():
-                    setattr(instance, key, value)
+                instance += self.constant
 
                 likelihood = analysis.fit(instance)
                 self.result = non_linear.Result(instance, likelihood)
@@ -65,14 +71,14 @@ class NLO(non_linear.NonLinearOptimizer):
                 return -2 * likelihood
 
         fitness_function = Fitness(self.variable.instance_from_physical_vector, self.constant)
-        fitness_function(self.variable.total_parameters * [0.5])
+        fitness_function(self.variable.total_priors * [0.5])
 
         return fitness_function.result
 
 
 @pytest.fixture(name="grids")
 def make_grids(lensing_image):
-    return grids.LensingGrids.from_mask_sub_grid_size_and_blurring_shape(
+    return msk.ImagingGrids.grids_from_mask_sub_grid_size_and_psf_shape(
         lensing_image.mask, 1, lensing_image.psf.shape)
 
 
@@ -86,20 +92,22 @@ def make_galaxy():
     return g.Galaxy()
 
 
-@pytest.fixture(name="galaxy_prior")
-def make_galaxy_prior():
-    return gp.GalaxyPrior()
+@pytest.fixture(name="galaxy_model")
+def make_galaxy_model():
+    return gm.GalaxyModel()
 
 
 @pytest.fixture(name="image")
 def make_image():
-    image = img.Image(np.array(np.zeros(shape)), pixel_scale=1.0, psf=img.PSF(np.ones((3, 3))), noise=np.ones(shape))
+    image = img.Image(np.array(np.zeros(shape)), pixel_scale=1.0, psf=img.PSF(np.ones((3, 3))),
+                      noise_map=np.ones(shape))
     return image
 
 
 @pytest.fixture(name="lensing_image")
 def make_lensing_image():
-    image = img.Image(np.array(np.zeros(shape)), pixel_scale=1.0, psf=img.PSF(np.ones((3, 3))), noise=np.ones(shape))
+    image = img.Image(np.array(np.zeros(shape)), pixel_scale=1.0, psf=img.PSF(np.ones((3, 3))),
+                      noise_map=np.ones(shape))
     mask = msk.Mask.circular(shape=shape, pixel_scale=1, radius_mask_arcsec=3.0)
     return li.LensingImage(image, mask)
 
@@ -132,9 +140,9 @@ class TestPhase(object):
         assert phase.optimizer.constant.lens_galaxies == [galaxy]
         assert phase.optimizer.variable.lens_galaxies == []
 
-    def test_set_variables(self, phase, galaxy_prior):
-        phase.lens_galaxies = [galaxy_prior]
-        assert phase.optimizer.variable.lens_galaxies == [galaxy_prior]
+    def test_set_variables(self, phase, galaxy_model):
+        phase.lens_galaxies = [galaxy_model]
+        assert phase.optimizer.variable.lens_galaxies == [galaxy_model]
         assert phase.optimizer.constant.lens_galaxies == []
 
     def test_make_analysis(self, phase, image, lensing_image):
@@ -143,11 +151,11 @@ class TestPhase(object):
         assert analysis.lensing_image == lensing_image
 
     def test_fit(self, image):
-
         clean_images()
 
         phase = ph.LensSourcePlanePhase(optimizer_class=NLO,
-                                        lens_galaxies=[g.Galaxy()], source_galaxies=[g.Galaxy()])
+                                        lens_galaxies=[gm.GalaxyModel(light=lp.EllipticalSersic)],
+                                        source_galaxies=[gm.GalaxyModel(light=lp.EllipticalSersic)])
         result = phase.run(image=image)
         assert isinstance(result.constant.lens_galaxies[0], g.Galaxy)
         assert isinstance(result.constant.source_galaxies[0], g.Galaxy)
@@ -159,30 +167,22 @@ class TestPhase(object):
                 self.source_galaxies = previous_results.last.variable.source_galaxies
 
         galaxy = g.Galaxy()
-        galaxy_prior = gp.GalaxyPrior()
+        galaxy_model = gm.GalaxyModel()
 
         setattr(results.constant, "lens_galaxies", [galaxy])
-        setattr(results.variable, "source_galaxies", [galaxy_prior])
+        setattr(results.variable, "source_galaxies", [galaxy_model])
 
         phase = MyPlanePhaseAnd(optimizer_class=NLO)
         phase.make_analysis(image=image, previous_results=ph.ResultsCollection([results]))
 
         assert phase.lens_galaxies == [galaxy]
-        assert phase.source_galaxies == [galaxy_prior]
+        assert phase.source_galaxies == [galaxy_model]
 
     def test_default_mask_function(self, phase, image):
         assert len(li.LensingImage(image, phase.mask_function(image))) == 32
 
-    # TODO: removed because galaxy_images seems to have been removed?
-    # def test_galaxy_images(self, image, phase):
-    #     clean_images()
-    #     phase.lens_galaxies = [g.Galaxy()]
-    #     phase.source_galaxies = [g.Galaxy()]
-    #     result = phase.run(image)
-    #     assert len(result.galaxy_images) == 2
-
     def test_duplication(self):
-        phase = ph.LensSourcePlanePhase(lens_galaxies=[gp.GalaxyPrior()], source_galaxies=[gp.GalaxyPrior()])
+        phase = ph.LensSourcePlanePhase(lens_galaxies=[gm.GalaxyModel()], source_galaxies=[gm.GalaxyModel()])
 
         ph.LensSourcePlanePhase()
 
@@ -210,28 +210,58 @@ class TestPhase(object):
         assert tracer.image_plane.galaxies[0] == lens_galaxy
         assert tracer.source_plane.galaxies[0] == source_galaxy
 
-    def test_unmasked_model_image_for_instance(self, image):
-        lens_galaxy = g.Galaxy(light_profile=lp.SphericalSersicLP(intensity=1.0))
-        image_grid_mapper = grids.ImageGridMapper.mapper_from_shapes_and_pixel_scale(shape=image.shape,
-                                                                                   psf_shape=image.psf.shape,
-                                                                                   pixel_scale=image.pixel_scale)
-        image_1d = lens_galaxy.intensities_from_grid(image_grid_mapper)
-        blurred_image_1d = image_grid_mapper.convolve_unmasked_array_with_psf_and_trim(image_1d, image.psf)
-        blurred_image = image_grid_mapper.map_unmasked_1d_array_to_2d_array(blurred_image_1d)
+    # TODO : Need to test using results
 
-        phase = ph.LensPlanePhase(lens_galaxies=[lens_galaxy])
-        analysis = phase.make_analysis(image)
-        instance = phase.constant
-        unmasked_model_image = analysis.unmasked_model_image_for_instance(instance)
+    # def test_unmasked_model_image_for_instance(self, _image):
+    #
+    #     lens_galaxy = g.Galaxy(light_profile=lp.SphericalSersic(intensity=1.0))
+    #     image_padded_grid = msk.ImageUnmaskedGrid.unmasked_grid_from_shapes_and_pixel_scale(shape=_image.shape,
+    #                                                                                         psf_shape=_image.psf.shape,
+    #                                                                                         pixel_scale=_image.pixel_scale)
+    #     image_1d = lens_galaxy.intensities_from_grid(image_padded_grid)
+    #     blurred_image_1d = image_padded_grid.convolve_array_1d_with_psf(image_1d, _image.psf)
+    #     blurred_image = image_padded_grid.map_to_2d(blurred_image_1d)
+    #
+    #     phase = ph.LensPlanePhase(lens_galaxies=[lens_galaxy])
+    #     analysis = phase.make_analysis(_image)
+    #     instance = phase.constant
+    #     unmasked_tracer = analysis.unmasked_tracer_for_instance(instance)
+    #     unmasked_model_image = analysis.unmasked_model_image_for_tracer(unmasked_tracer)
+    #
+    #     assert blurred_image == pytest.approx(unmasked_model_image, 1e-4)
+    #
+    # def test_unmasked_model_images_of_galaxies_for_instance(self, _image):
+    #
+    #     g0= g.Galaxy(light_profile=lp.SphericalSersic(intensity=1.0))
+    #     g1 = g.Galaxy(light_profile=lp.SphericalSersic(intensity=2.0))
+    #
+    #     image_padded_grid = msk.ImageUnmaskedGrid.unmasked_grid_from_shapes_and_pixel_scale(shape=_image.shape,
+    #                                                                                         psf_shape=_image.psf.shape,
+    #                                                                                         pixel_scale=_image.pixel_scale)
+    #
+    #     g0_image_1d = g0.intensities_from_grid(image_padded_grid)
+    #     g0_blurred_image_1d = image_padded_grid.convolve_array_1d_with_psf(g0_image_1d, _image.psf)
+    #     g0_blurred_image = image_padded_grid.map_to_2d(g0_blurred_image_1d)
+    #
+    #     g1_image_1d = g1.intensities_from_grid(image_padded_grid)
+    #     g1_blurred_image_1d = image_padded_grid.convolve_array_1d_with_psf(g1_image_1d, _image.psf)
+    #     g1_blurred_image = image_padded_grid.map_to_2d(g1_blurred_image_1d)
+    #
+    #     phase = ph.LensPlanePhase(lens_galaxies=[g0, g1])
+    #     analysis = phase.make_analysis(_image)
+    #     instance = phase.constant
+    #     unmasked_tracer = analysis.unmasked_tracer_for_instance(instance)
+    #     unmasked_model_images = analysis.unmasked_model_images_of_galaxies_for_tracer(unmasked_tracer)
+    #
+    #     assert g0_blurred_image == pytest.approx(unmasked_model_images[0], 1e-4)
+    #     assert g1_blurred_image == pytest.approx(unmasked_model_images[1], 1e-4)
 
-        assert (blurred_image == unmasked_model_image).all()
-
-    def test__phase_can_receive_list_of_galaxy_priors(self):
-        phase = ph.LensPlanePhase(lens_galaxies=[gp.GalaxyPrior(sersic=lp.EllipticalSersicLP,
-                                                                sis=mp.SphericalIsothermalMP,
+    def test__phase_can_receive_list_of_galaxy_models(self):
+        phase = ph.LensPlanePhase(lens_galaxies=[gm.GalaxyModel(sersic=lp.EllipticalSersic,
+                                                                sis=mp.SphericalIsothermal,
                                                                 variable_redshift=True),
-                                                 gp.GalaxyPrior(sis=mp.SphericalIsothermalMP,
-                                                                  variable_redshift=True)],
+                                                 gm.GalaxyModel(sis=mp.SphericalIsothermal,
+                                                                variable_redshift=True)],
                                   optimizer_class=non_linear.MultiNest)
 
         instance = phase.optimizer.variable.instance_from_physical_vector(
@@ -249,24 +279,23 @@ class TestPhase(object):
         assert instance.lens_galaxies[1].redshift == 0.8
 
         class LensPlanePhase2(ph.LensPlanePhase):
-            def pass_priors(self, previous_results):
+            # noinspection PyUnusedLocal
+            def pass_models(self, previous_results):
                 self.lens_galaxies[0].sis.einstein_radius = mm.Constant(10.0)
 
-        phase = LensPlanePhase2(lens_galaxies=[gp.GalaxyPrior(sersic=lp.EllipticalSersicLP,
-                                                              sis=mp.SphericalIsothermalMP,
+        phase = LensPlanePhase2(lens_galaxies=[gm.GalaxyModel(sersic=lp.EllipticalSersic,
+                                                              sis=mp.SphericalIsothermal,
                                                               variable_redshift=True),
-                                               gp.GalaxyPrior(sis=mp.SphericalIsothermalMP,
-                                                                variable_redshift=True)],
+                                               gm.GalaxyModel(sis=mp.SphericalIsothermal,
+                                                              variable_redshift=True)],
                                 optimizer_class=non_linear.MultiNest)
 
         # noinspection PyTypeChecker
-        phase.pass_priors(None)
+        phase.pass_models(None)
 
         instance = phase.optimizer.variable.instance_from_physical_vector([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.1, 0.2,
                                                                            0.4, 0.5, 0.6, 0.7, 0.8])
         instance += phase.optimizer.constant
-
-        print(instance)
 
         assert instance.lens_galaxies[0].sersic.centre[0] == 0.0
         assert instance.lens_galaxies[0].sis.centre[0] == 0.1
@@ -282,7 +311,7 @@ class TestPhase(object):
 # class TestPixelizedPhase(object):
 #     def test_constructor(self):
 #         phase = ph.PixelizedSourceLensAndPhase()
-#         assert isinstance(phase.source_galaxies, gp.GalaxyPrior)
+#         assert isinstance(phase.source_galaxies, gm.GalaxyModel)
 #         assert phase.lens_galaxies is None
 
 
@@ -301,7 +330,7 @@ class TestResult(object):
     # result = ph.LensSourcePlanePhase.Result(constant=mm.ModelInstance(), likelihood=1,
     # variable=mm.ModelMapper(), lensing=lensing) assert (result.image_plane_source_images[0] == np.array([
     # 1.0])).all() assert (result.image_plane_source_images[1] == np.array([1.0])).all() assert (
-    # result.image == np.array([2.0])).all()
+    # result._image == np.array([2.0])).all()
 
     def test_results(self):
         results = ph.ResultsCollection([1, 2, 3])
