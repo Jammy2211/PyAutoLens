@@ -1,5 +1,6 @@
-import numpy as np
 import logging
+
+import numpy as np
 
 from autolens.imaging import imaging_util
 
@@ -8,6 +9,7 @@ logger = logging.getLogger(__name__)
 
 
 class Array(np.ndarray):
+
     def __new__(cls, array, *args, **kwargs):
         return np.array(array, dtype='float64').view(cls)
 
@@ -30,6 +32,13 @@ class Array(np.ndarray):
         super(Array, self).__setstate__(state[0:-1])
 
     def trim(self, new_shape):
+        """Trim the array to a new shape.
+        
+        Parameters
+        -----------
+        new_shape : (int, int)
+            The new two-dimensional shape of the array.
+        """
         return self.new_with_array(imaging_util.trim_array_2d_to_new_shape(self, new_shape))
 
     def new_with_array(self, array):
@@ -52,14 +61,14 @@ class Array(np.ndarray):
     @classmethod
     def from_fits(cls, file_path, hdu):
         """
-        Loads the data_vector from a .fits file.
+        Loads the data from a .fits file.
 
         Parameters
         ----------
         file_path : str
             The full path of the fits file.
         hdu : int
-            The HDU number in the fits file containing the masked_image data_vector.
+            The HDU number in the fits file containing the _image data.
         pixel_scale: float
             The arc-second to pixel conversion factor of each pixel.
         """
@@ -68,7 +77,7 @@ class Array(np.ndarray):
 
 class ScaledArray(Array):
     """
-    Class storing the grids for 2D pixel grids (e.g. masked_image, PSF, signal_to_noise_ratio).
+    Class storing the grids for 2D pixel grids (e.g. _image, PSF, signal_to_noise_ratio).
     """
 
     # noinspection PyUnusedLocal
@@ -77,9 +86,9 @@ class ScaledArray(Array):
         Parameters
         ----------
         array: ndarray
-            An array representing the data_vector
+            An array representing data (e.g. an _image, noise-mappers, etc.)
         pixel_scale: float
-            The scale of one pixel in arc seconds
+            The arc-second to pixel conversion factor of each pixel.
         """
         # noinspection PyArgumentList
         super(ScaledArray, self).__init__()
@@ -97,14 +106,14 @@ class ScaledArray(Array):
     @classmethod
     def from_fits_with_scale(cls, file_path, hdu, pixel_scale):
         """
-        Loads the data_vector from a .fits file.
+        Loads the data from a .fits file.
 
         Parameters
         ----------
         file_path : str
             The full path of the fits file.
         hdu : int
-            The HDU number in the fits file containing the masked_image data_vector.
+            The HDU number in the fits file containing the _image data.
         pixel_scale: float
             The arc-second to pixel conversion factor of each pixel.
         """
@@ -116,29 +125,26 @@ class ScaledArray(Array):
         Returns
         -------
         central_pixel_coordinates:
-            The coordinates of the central pixel in the masked_image. If a dimension of the masked_image are odd then the
-            corresponding coordinate will be fra
-    @propertyctional.
+            The coordinates of the central pixel in the _image. If a dimension of the _image are odd then the \
+            corresponding coordinate will be fractional values in the centre.
         """
         return float(self.shape[0] - 1) / 2, float(self.shape[1] - 1) / 2
 
     def pixels_to_arc_seconds(self, pixels):
-        """
-        Converts a value from pixels to arc seconds.
-        """
+        """Converts coordinate values from pixels to arc seconds."""
         return self.pixel_scale * pixels
 
     def arc_seconds_to_pixels(self, arc_seconds):
-        """
-        Converts a value from arc seconds to pixels.
-        """
+        """Converts coordinate values from arc seconds to pixels."""
         return arc_seconds / self.pixel_scale
 
     def pixel_coordinates_to_arc_second_coordinates(self, pixel_coordinates):
-        """
-        Converts a pixel coordinate pair to an arc seconds coordinate pair. The pixel coordinate origin is at the top
-        left corner of the masked_image whilst the arc second coordinate origin is at the centre. This means that the original
-        pixel coordinates, (0, 0), will give negative arc second coordinates.
+        """ Converts a pixel coordinate pair to an arc seconds coordinate pair.
+
+        The pixel coordinate origin is at the top left corner of the _image, whilst the arc-second coordinate origin \
+        is at the centre start with negative x and y values from the top-left.
+
+        This means that the top-left pixel coordinates, [0, 0], will give negative arc second coordinates.
 
         Parameters
         ----------
@@ -155,9 +161,12 @@ class ScaledArray(Array):
 
     def arc_second_coordinates_to_pixel_coordinates(self, arc_second_coordinates):
         """
-        Converts an arc second coordinate pair to a pixel coordinate pair. The pixel coordinate origin is at the top
-        left corner of the masked_image whilst the arc second coordinate origin is at the centre. This means that the original
-        pixel coordinates, (0, 0), will give negative arc second coordinates.
+        Converts an arc second coordinate pair to a pixel coordinate pair.
+
+        The pixel coordinate origin is at the top left corner of the _image, whilst the arc-second coordinate origin \
+        is at the centre start with negative x and y values from the top-left.
+
+        This means that the top-left pixel coordinates, [0, 0], will give negative arc second coordinates.
 
         Parameters
         ----------
@@ -175,9 +184,7 @@ class ScaledArray(Array):
 
     @property
     def shape_arc_seconds(self):
-        """
-        The shape of the masked_image in arc seconds
-        """
+        """The shape of the _image in arc seconds"""
         return tuple(map(lambda d: self.pixels_to_arc_seconds(d), self.shape))
 
     def flatten(self, order='C'):
@@ -190,8 +197,7 @@ class ScaledArray(Array):
         return self.new_with_array(super(ScaledArray, self).flatten(order))
 
     def sub_pixel_to_coordinate(self, sub_pixel, arcsec, sub_grid_size):
-        """Convert a coordinate on the regular masked_image-pixel grid_coords to a sub-coordinate, using the pixel scale and
-        sub-grid_coords sub_grid_size """
+        """Convert a sub-pixel coordinate in an _image-pixel to a sub-coordinate, using the pixel scale sub_grid_size."""
 
         half = self.pixel_scale / 2
         step = self.pixel_scale / (sub_grid_size + 1)
@@ -200,11 +206,10 @@ class ScaledArray(Array):
 
     @property
     def grid_2d(self):
-        """
-        Computes the arc second grids of every pixel on the data_vector-grid_coords.
+        """ The arc second-grid of (x,y) coordinates of every pixel.
 
         This is defined from the top-left corner, such that the first pixel at location [0, 0] will have a negative x \
-        value and positive y value in arc seconds.
+        value y value in arc seconds.
         """
         return imaging_util.image_grid_2d_from_shape_and_pixel_scale(self.shape, self.pixel_scale)
 
@@ -230,13 +235,19 @@ class ScaledArray(Array):
         array = np.ones(shape) * value
         return cls(array, pixel_scale)
 
-    def sub_grid_mapper(self, sub_grid_size):
-        return SubGridMapper(arr=self.grid_masked, mask=self, original_shape=self.original_shape,
-                             padded_shape=self.padded_shape, sub_grid_size=sub_grid_size)
-
     def __eq__(self, other):
         super_result = super(ScaledArray, self).__eq__(other)
         try:
             return super_result.all()
         except AttributeError:
             return super_result
+
+    @property
+    def xticks(self):
+        """Compute the xticks labels of this grid, used for plotting the x-axis ticks when visualizing an _image-grid"""
+        return np.linspace(-self.shape_arc_seconds[1] / 2.0, self.shape_arc_seconds[1] / 2.0, 4)
+
+    @property
+    def yticks(self):
+        """Compute the yticks labels of this grid, used for plotting the y-axis ticks when visualizing an _image-grid"""
+        return np.linspace(-self.shape_arc_seconds[0] / 2.0, self.shape_arc_seconds[0] / 2.0, 4)

@@ -14,16 +14,7 @@ class MaskException(Exception):
     pass
 
 
-class CoordinatesException(Exception):
-    """Exception thrown when coordinate assertion fails"""
-    pass
-
-
-class PixelizationException(Exception):
-    pass
-
-
-class ReconstructionException(Exception):
+class GalaxyException(Exception):
     pass
 
 
@@ -31,5 +22,17 @@ class RayTracingException(Exception):
     pass
 
 
-class PhaseException(Exception):
+class PixelizationException(Exception):
+    pass
+
+
+class InversionException(Exception):
+    pass
+
+
+class FittingException(Exception):
+    pass
+
+
+class VisualizeException(Exception):
     pass

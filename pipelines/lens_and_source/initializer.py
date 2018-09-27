@@ -6,24 +6,24 @@ This pipeline is composed of 3 phases:
 1) Fit and subtract the lens light using an elliptical Sersic.
 2) Fit the source using the lens subtracted image from phase 1, with an SIE mass model (lens) and elliptical
 Sersic (source).
-3) Fit the lens and source simulataneously, using priors based on the results of phases 1 and 2.
+3) Fit the lens and source simultaneously, using priors based on the results of phases 1 and 2.
 """
 
 pipeline_name = 'initializer'
 
-def make():
 
+def make():
     from autolens.pipeline import phase
     from autolens.pipeline import pipeline
     from autolens.autofit import non_linear as nl
     from autolens.imaging import mask
-    from autolens.lensing import galaxy_prior as gp
+    from autolens.lensing import galaxy_model as gp
     from autolens.profiles import light_profiles as lp
     from autolens.profiles import mass_profiles as mp
 
     pipeline.setup_pipeline_path(pipeline_name)
 
-    phase1 = phase.LensPlanePhase(lens_galaxies=[gp.GalaxyPrior(sersic=lp.EllipticalSersicLP)],
+    phase1 = phase.LensPlanePhase(lens_galaxies=[gp.GalaxyModel(sersic=lp.EllipticalSersic)],
                                   optimizer_class=nl.MultiNest, phase_name='ph1_subtract_lens')
 
     phase1.optimizer.n_live_points = 50
@@ -40,10 +40,10 @@ def make():
 
     def annular_mask_function(img):
         return mask.Mask.annular(img.shape, pixel_scale=img.pixel_scale, inner_radius_arcsec=0.4,
-                                outer_radius_arcsec=3.)
+                                 outer_radius_arcsec=3.)
 
-    phase2 = LensSubtractedPhase(lens_galaxies=[gp.GalaxyPrior(sie=mp.SphericalIsothermalMP)],
-                                 source_galaxies=[gp.GalaxyPrior(sersic=lp.EllipticalSersicLP)],
+    phase2 = LensSubtractedPhase(lens_galaxies=[gp.GalaxyModel(sie=mp.SphericalIsothermal)],
+                                 source_galaxies=[gp.GalaxyModel(sersic=lp.EllipticalSersic)],
                                  optimizer_class=nl.MultiNest, mask_function=annular_mask_function,
                                  phase_name='ph2_fit_source')
 
@@ -53,13 +53,13 @@ def make():
     class LensSourcePhase(phase.LensSourcePlanePhase):
 
         def pass_priors(self, previous_results):
-            self.lens_galaxies[0] = gp.GalaxyPrior(
+            self.lens_galaxies[0] = gp.GalaxyModel(
                 sersic=previous_results.first.variable.lens_galaxies[0].sersic,
                 sie=previous_results.last.variable.lens_galaxies[0].sie)
             self.source_galaxies = previous_results.last.variable.source_galaxies
 
     phase3 = LensSourcePhase(optimizer_class=nl.MultiNest, phase_name='ph3_fit_all')
-    
+
     phase3.optimizer.n_live_points = 60
     phase3.optimizer.sampling_efficiency = 0.8
 

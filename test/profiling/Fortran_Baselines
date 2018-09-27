@@ -12,11 +12,11 @@ Source Pixels = 363
 source_sub_grid_size = 4
 
 Time to set up galaxy contributions                                     =   2.999000000045271E-003
-Time to set up scaled noise map                                         =   2.999999999985903E-003
+Time to set up scaled noise_map map                                         =   2.999999999985903E-003
 Time to set up weighted regularization                                  =   2.000000000009550E-003
 
 Time to reconstruct lens light profile (x1 Sersic, including geometry)  =   0.110982999999976
-Time to convolve lens light profile with PSF                            =   4.099400000001197E-002
+Time to convolve_image lens light profile with PSF                            =   4.099400000001197E-002
 
 Time to calculate deflection angles (x1 SIE)                            =   6.598900000000185E-002
 Time to calculate traced xy coordinates (includes border)               =   2.499599999998736E-002
@@ -42,11 +42,11 @@ Source Pixels = 1135
 source_sub_grid_size = 4
 
 Time to set up galaxy contributions                                     =   1.299699999992754E-002
-Time to set up scaled noise map                                         =   5.999000000088017E-003
+Time to set up scaled noise_map map                                         =   5.999000000088017E-003
 Time to set up weighted regularization                                  =   6.998999999950684E-003
 
 Time to reconstruct lens light profile (x1 Sersic, including geometry)  =  0.153977000000054
-Time to convolve lens light profile with PSF                            =  9.598599999992530E-002
+Time to convolve_image lens light profile with PSF                            =  9.598599999992530E-002
 
 Time to calculate deflection angles (x1 SIE)                            =  0.151975999999991
 Time to calculate traced xy coordinates (includes border)               =  0.109984000000054

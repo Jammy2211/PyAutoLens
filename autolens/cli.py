@@ -5,7 +5,8 @@ Usage:
   autolens reset_config
   autolens pipeline
   autolens pipeline <name> --info
-  autolens pipeline <name> (--image=<image>) (--pixel-scale=<pixel-scale>) [--config=<config>] [--output=<output>]
+  autolens pipeline <name> (--image=<image>) (--noise=<noise>) (--psf=<psf>) (--pixel-scale=<pixel-scale>) [--config=<config>] [--output=<output>]
+  autolens pipeline <name> (--data=<data>) (--image-hdu=<image_hdu>) (--noise-hdu=<noise_hdu>) (--psf-hdu=<psf_hdu>) (--pixel-scale=<pixel-scale>) [--config=<config>] [--output=<output>]
   autolens -h | --help
   autolens --version
 
@@ -20,7 +21,8 @@ Options:
 Examples:
   autolens reset_config
   autolens pipeline
-  autolens pipeline profile --image=hst_0/ --pixel-scale=0.05
+  autolens pipeline profile --image=hst_0.fits --noise=hst_0_noise.fits --psf=hst_0_psf.fits --pixel-scale=0.05
+  autolens pipeline profile --data=hst_0.fits --image-hdu=1 --noise-hdu=2 --psf-hdu=3 --pixel-scale=0.05
   autolens pipeline profile --image=hst_0 --pixel-scale=0.05 --output=output_folder --config=config_folder
 
 Help:
@@ -36,7 +38,7 @@ from . import __version__
 
 
 def main():
-    """Main CLI entrypoint."""
+    """Main CLI entry point."""
     import autolens.commands
 
     options = docopt(__doc__, version=__version__)

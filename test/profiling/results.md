@@ -1,6 +1,6 @@
 # Deflection
 
-Running 100 calls on mass_profiles.EllipticalIsothermalMP(axis_ratio=0.9)
+Running 100 calls on mass_profiles.EllipticalIsothermal(axis_ratio=0.9)
 
 #### Original Coordinate Transformation
 looping numpy array and applying function to each coordinate pair
@@ -28,35 +28,35 @@ new_deflection_elliptical_isothermal: 0.023957014083862305
 
 ## Results from Several Mass Profiles
 
-#### SphericalPowerLawMP
+#### SphericalPowerLaw
 old_method: 1.2667009830474854
 
 new_method: 0.026113033294677734
 
 x faster: 48.50838157149901
 
-#### EllipticalIsothermalMP
+#### EllipticalIsothermal
 old_method: 1.4990592002868652
 
 new_method: 0.020721912384033203
 
 x faster: 72.34174011091423
 
-#### SphericalIsothermalMP
+#### SphericalIsothermal
 old_method: 1.1057920455932617
 
 new_method: 0.01303863525390625
 
 x faster: 84.8088794616735
 
-#### SphericalCoredPowerLawMP
+#### SphericalCoredPowerLaw
 old_method: 1.3261933326721191
 
 new_method: 0.028895854949951172
 
 x faster: 45.895625340352154
 
-#### SphericalCoredIsothermalMP
+#### SphericalCoredIsothermal
 old_method: 1.339472770690918
 
 new_method: 0.029388904571533203
@@ -75,35 +75,35 @@ x faster: 78.20874665971452
 
 #### To Eccentric Radius
 
-Running 100 calls on EllipticalProfileGP.to_eccentric_radius.
+Running 100 calls on EllipticalProfile.to_eccentric_radius.
 
 classic_grid_to_eccentric_radius: 0.9260859489440918
 new_grid_to_eccentric_radius:   0.011136054992675781
 
 ## Results from Several Light Profiles
 
-#### EllipticalSersicLP
+#### EllipticalSersic
 old_method: 1.1218419075012207
 
 new_method: 0.012676715850830078
 
 x faster: 88.49625728794433
 
-#### EllipticalExponentialLP
+#### EllipticalExponential
 old_method: 1.0966298580169678
 
 new_method: 0.012710094451904297
 
 x faster: 86.28022885012193
 
-#### EllipticalDevVaucouleursLP
+#### EllipticalDevVaucouleurs
 old_method: 1.104621171951294
 
 new_method: 0.012662172317504883
 
 x faster: 87.23788811689168
 
-#### EllipticalCoreSersicLP
+#### EllipticalCoreSersic
 old_method: 1.2265520095825195
 
 new_method: 0.017539024353027344
