@@ -8,8 +8,8 @@ from autolens.lensing import ray_tracing
 minimum_value_profile = 0.1
 
 
-def fit_from_lensing_image_and_tracer(lensing_image, tracer, unmasked_tracer=None, hyper_model_image=None,
-                                      hyper_galaxy_images=None, hyper_minimum_values=None, plane_shape=(30, 30)):
+def fit_lensing_image_with_tracer(lensing_image, tracer, unmasked_tracer=None, hyper_model_image=None,
+                                  hyper_galaxy_images=None, hyper_minimum_values=None, plane_shape=(30, 30)):
     """Fit.
 
     Parameters

@@ -28,7 +28,7 @@ euclid_tracer = ray_tracing.Tracer(lens_galaxies=[lens_galaxy], source_galaxies=
 hst_tracer = ray_tracing.Tracer(lens_galaxies=[lens_galaxy], source_galaxies=[source_pix], image_plane_grids=hst.grids)
 hst_up_tracer = ray_tracing.Tracer(lens_galaxies=[lens_galaxy], source_galaxies=[source_pix],
                                    image_plane_grids=hst_up.grids)
-# ao_tracer = ray_tracing.TracerImagePlane(lens_galaxies=[lens_galaxies], source_galaxies=[source_pix], image_plane_grids=ao.grids)
+# ao_tracer = ray_tracing.TracerImagePlane(lens_galaxies=[lens_galaxies], source_galaxies=[source_pix], image_plane_grid=ao.grids)
 
 lsst_recon = lsst_tracer.reconstructors(lsst.borders, cluster_mask=None)
 euclid_recon = euclid_tracer.reconstructors(euclid.borders, cluster_mask=None)
