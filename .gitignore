@@ -13,10 +13,12 @@ lib/
 .env
 .pytest_cache
 data/*
+scripts
 output/*
 test_files/*
 test/integration/data/*
 MultiNest/
+data/kevin
 multinest
 .DS_Store
 temp.txt

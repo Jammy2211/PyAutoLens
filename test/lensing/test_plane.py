@@ -1130,6 +1130,9 @@ class TestPlane(object):
             assert plane_image == pytest.approx(g0_image, 1e-4)
             assert (plane_image.grid == imaging_grids.image).all()
 
+            assert plane_image.xticks == pytest.approx(np.array([-1.5, -0.5, 0.5, 1.5]), 1e-2)
+            assert plane_image.yticks == pytest.approx(np.array([-1.5, -0.5, 0.5, 1.5]), 1e-2)
+
         def test__different_shape_and_multiple_galaxies(self, imaging_grids):
             g0 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=1.0))
             g1 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=1.0))
@@ -1149,6 +1152,8 @@ class TestPlane(object):
             plane_image = plane.plane_image(shape=(2, 3))
             assert plane_image == pytest.approx(g0_image + g1_image, 1e-4)
             assert (plane_image.grid == imaging_grids.image).all()
+            assert plane_image.xticks == pytest.approx(np.array([-1.5, -0.5, 0.5, 1.5]), 1e-2)
+            assert plane_image.yticks == pytest.approx(np.array([-1.5, -0.5, 0.5, 1.5]), 1e-2)
 
         def test__ensure_index_of_plane_image_has_negative_arcseconds_at_start(self, imaging_grids):
             # The grid coordinates -2.0 -> 2.0 mean a plane of shape (5,5) has arc second coordinates running over

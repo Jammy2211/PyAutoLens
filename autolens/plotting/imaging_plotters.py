@@ -4,7 +4,7 @@ from autolens import conf
 from autolens.plotting import array_plotters
 
 
-def plot_image(image, output_path=None, output_filename='images', output_format='show', ignore_config=True):
+def plot_image(image, units='arcsec', output_path=None, output_filename='images', output_format='show', ignore_config=True):
     """Plot the observed _image of an analysis, using the *Image* class object.
 
     The visualization and output type can be fully customized.
@@ -28,8 +28,9 @@ def plot_image(image, output_path=None, output_filename='images', output_format=
         plt.subplot(2, 2, 1)
 
         array_plotters.plot_array(
-            array=image, grid=None, as_subplot=True, kpc_per_arcsec=None,
-            xticks=image.xticks, yticks=image.yticks, units='arcsec', xyticksize=16,
+            array=image, grid=None, as_subplot=True,
+            units=units, kpc_per_arcsec=None,
+            xticks=image.xticks, yticks=image.yticks, xyticksize=16,
             norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
             figsize=None, aspect='auto', cmap='jet', cb_ticksize=16,
             title='Observed Image', titlesize=16, xlabelsize=16, ylabelsize=16,
@@ -38,8 +39,9 @@ def plot_image(image, output_path=None, output_filename='images', output_format=
         plt.subplot(2, 2, 2)
 
         array_plotters.plot_array(
-            array=image.noise_map, grid=None, as_subplot=True, kpc_per_arcsec=None,
-            xticks=image.xticks, yticks=image.yticks, units='arcsec', xyticksize=16,
+            array=image.noise_map, grid=None, as_subplot=True,
+            units=units, kpc_per_arcsec=None,
+            xticks=image.xticks, yticks=image.yticks, xyticksize=16,
             norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
             figsize=None, aspect='auto', cmap='jet', cb_ticksize=16,
             title='Noise Map', titlesize=16, xlabelsize=16, ylabelsize=16,
@@ -48,9 +50,9 @@ def plot_image(image, output_path=None, output_filename='images', output_format=
         plt.subplot(2, 2, 3)
 
         array_plotters.plot_array(
-            array=image.psf, grid=None, as_subplot=True, kpc_per_arcsec=None,
-            xticks=image.psf.xticks(image.pixel_scale), yticks=image.psf.yticks(image.pixel_scale), units='arcsec',
-            xyticksize=16,
+            array=image.psf, grid=None, as_subplot=True,
+            units='arcsec', kpc_per_arcsec=None,
+            xticks=image.psf.xticks(image.pixel_scale), yticks=image.psf.yticks(image.pixel_scale), xyticksize=16,
             norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
             figsize=None, aspect='auto', cmap='jet', cb_ticksize=16,
             title='PSF', titlesize=16, xlabelsize=16, ylabelsize=16,
@@ -59,8 +61,9 @@ def plot_image(image, output_path=None, output_filename='images', output_format=
         plt.subplot(2, 2, 4)
 
         array_plotters.plot_array(
-            array=image.signal_to_noise_map, grid=None, as_subplot=True, kpc_per_arcsec=None,
-            xticks=image.xticks, yticks=image.yticks, units='arcsec', xyticksize=16,
+            array=image.signal_to_noise_map, grid=None, as_subplot=True,
+            units=units, kpc_per_arcsec=None,
+            xticks=image.xticks, yticks=image.yticks, xyticksize=16,
             norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
             figsize=None, aspect='auto', cmap='jet', cb_ticksize=16,
             title='Signal To Noise Map', titlesize=16, xlabelsize=16, ylabelsize=16,
