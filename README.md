@@ -46,7 +46,9 @@ image = im.load_imaging_from_path(image_path=path + '/data/phase_image.fits',
 # (a singular isothermal sphere). We load these profiles from the 'light_profile (lp)' and 'mass_profile (mp)'
 # modules (check out the source code to see all the profiles that are available).
 
-# To setup our model galaxies, we use the 'galaxy_model' module and GalaxyModel class. A GalaxyModel represents a galaxy where the parameters of its associated profiles are variable and fitted for by the analysis.
+# To setup our model galaxies, we use the 'galaxy_model' module and GalaxyModel class. 
+# A GalaxyModel represents a galaxy where the parameters of its associated profiles are 
+# variable and fitted for by the analysis.
 lens_galaxy_model = gp.GalaxyModel(light=lp.EllipticalSersic, mass=mp.EllipticalIsothermal)
 source_galaxy_model = gp.GalaxyModel(light=lp.EllipticalSersic)
 
