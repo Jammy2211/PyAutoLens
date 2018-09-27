@@ -38,7 +38,4 @@ test_files/non_linear/nlo/
 test_files/non_linear/nlo/
 test/test_files/non_linear/nlo/
 test/test_files/array/test
-residuals_plot_SLACS1.py
-residuals_plot_SLACS2.py
-residuals_plot_SLACS3.py
 *output/
