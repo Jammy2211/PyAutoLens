@@ -250,6 +250,10 @@ class TracerImageSourcePlanes(AbstractTracer):
         return list(map(lambda deflections: self.map_to_2d(deflections[:,1]),
                         self.image_plane._deflections_of_galaxies))
 
+    @property
+    def source_plane_image(self):
+        return self.plane_images_of_planes(shape=(50, 50))
+
 
 class AbstractTracerMulti(AbstractTracer):
 

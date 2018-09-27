@@ -104,15 +104,17 @@ class Plane(object):
 
         class PlaneImage(np.ndarray):
 
-            def __new__(cls, image, grid):
+            def __new__(cls, image, grid, xticks, yticks):
                 plane = np.array(image, dtype='float64').view(cls)
                 plane.grid = grid
+                plane.xticks = xticks
+                plane.yticks = yticks
                 return plane
 
         grid = uniform_grid_from_lensed_grid(self.grids.image, shape)
         image_1d = self.plane_image_from_galaxies(grid)
         image = imaging_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(array_1d=image_1d, shape=shape)
-        return PlaneImage(image=image, grid=self.grids.image)
+        return PlaneImage(image=image, grid=self.grids.image, xticks=self.xticks, yticks=self.yticks)
 
     def plane_image_from_galaxies(self, plane_grid):
         return sum([intensities_from_grid(plane_grid, [galaxy]) for galaxy in self.galaxies])
