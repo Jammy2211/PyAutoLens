@@ -69,7 +69,7 @@ fitting_plotters.plot_fitting(fit=results.fit)
 - Reconstruct source galaxies using a variety of pixel-grids.
 - Perform multi-plane lens analysis.
 
-# HowToLens
+## HowToLens
 
 Detailed tutorials demonstrating how to use PyAutoLens can be found in the 'howtolens' folder.
 
