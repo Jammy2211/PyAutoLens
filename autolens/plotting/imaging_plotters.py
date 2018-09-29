@@ -28,12 +28,9 @@ def plot_image(image, positions=None, units='arcsec', output_path=None, output_f
         plt.subplot(2, 2, 1)
 
         if positions is not None:
-            print(positions)
             positions = list(map(lambda pos :
                                  image.grid_arc_seconds_to_grid_pixels(grid_arc_seconds=pos),
                                  positions))
-            print(positions)
-            stop
 
         array_plotters.plot_array(
             array=image, points=positions, grid=None, as_subplot=True,
