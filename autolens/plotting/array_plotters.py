@@ -2,6 +2,8 @@ from autolens import exc
 import matplotlib.pyplot as plt
 import matplotlib.colors as colors
 import numpy as np
+import itertools
+
 from astropy.io import fits
 
 def plot_array(array, points, grid, as_subplot,
@@ -23,8 +25,8 @@ def plot_array(array, points, grid, as_subplot,
     set_xy_labels_and_ticks(shape=array.shape, units=units, kpc_per_arcsec=kpc_per_arcsec, xticks=xticks, yticks=yticks,
                             xlabelsize=xlabelsize, ylabelsize=ylabelsize, xyticksize=xyticksize)
     set_colorbar(cb_ticksize=cb_ticksize)
-    plot_points(points)
-    plot_grid(grid)
+    plot_points(points=points, pointsize=10)
+    plot_grid(grid=grid, pointsize=10)
 
     if not as_subplot:
         output_array(array=array, output_path=output_path, output_filename=output_filename,
@@ -61,13 +63,12 @@ def plot_image(array, grid, as_subplot, figsize, aspect, cmap, norm_scale):
     plt.imshow(array, aspect=aspect, cmap=cmap, norm=norm_scale, extent=(0, array.shape[1], 0, array.shape[0]))
 
 
-def plot_points(points):
+def plot_points(points, pointsize):
 
     if points is not None:
-
-        x_points = points[0,0]
-        y_points = points[0,1]
-        plt.scatter(x=x_points, y=y_points)
+        point_colors = itertools.cycle(["w", "c", "y", "r", "k", "b", "g", "m"])
+        for point_set in points:
+            plt.scatter(x=point_set[:,0], y=point_set[:,1], color=next(point_colors), s=10.0)
 
 
 def set_title(title, titlesize):
@@ -109,7 +110,7 @@ def set_colorbar(cb_ticksize):
     cb.ax.tick_params(labelsize=cb_ticksize)
 
 
-def plot_grid(grid):
+def plot_grid(grid, pointsize):
    pass
    # if grid is not None:
    #     plt.scatter(x=grid[:, 0], y=grid[:, 1], marker=',')

@@ -167,7 +167,7 @@ class ScaledArray(Array):
         grid_arc_seconds: ndarray
             The grid of (x,y) coordinates in arc seconds.
         """
-        return (grid_arc_seconds + self.central_pixel_coordinates) / self.pixel_scale
+        return (grid_arc_seconds / self.pixel_scale) + self.central_pixel_coordinates
 
     @property
     def shape_arc_seconds(self):
