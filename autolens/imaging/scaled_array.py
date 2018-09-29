@@ -138,49 +138,36 @@ class ScaledArray(Array):
         """Converts coordinate values from arc seconds to pixels."""
         return arc_seconds / self.pixel_scale
 
-    def pixel_coordinates_to_arc_second_coordinates(self, pixel_coordinates):
-        """ Converts a pixel coordinate pair to an arc seconds coordinate pair.
+    def grid_pixels_to_grid_arcseconds(self, grid_pixels):
+        """ Converts a grid in coordinates of pixels to a grid in arc seconds.
 
-        The pixel coordinate origin is at the top left corner of the _image, whilst the arc-second coordinate origin \
+        The pixel coordinate origin is at the top left corner of an image, whilst the arc-second coordinate origin \
         is at the centre start with negative x and y values from the top-left.
 
         This means that the top-left pixel coordinates, [0, 0], will give negative arc second coordinates.
 
         Parameters
         ----------
-        pixel_coordinates: (float, float)
-            The coordinates of a point in pixels
-
-        Returns
-        -------
-        arc_second_coordinates: (float, float)
-            The coordinates of a point in arc seconds
+        grid_pixels : ndarray
+            The grid of (x,y) coordinates in units of pixels
         """
-        return tuple(map(lambda coord, centre: self.pixels_to_arc_seconds(coord - centre), pixel_coordinates,
-                         self.central_pixel_coordinates))
+        return self.pixel_scale * (grid_pixels - self.central_pixel_coordinates)
 
-    def arc_second_coordinates_to_pixel_coordinates(self, arc_second_coordinates):
+    def grid_arc_seconds_to_grid_pixels(self, grid_arc_seconds):
         """
         Converts an arc second coordinate pair to a pixel coordinate pair.
 
-        The pixel coordinate origin is at the top left corner of the _image, whilst the arc-second coordinate origin \
+        The pixel coordinate origin is at the top left corner of an image, whilst the arc-second coordinate origin \
         is at the centre start with negative x and y values from the top-left.
 
         This means that the top-left pixel coordinates, [0, 0], will give negative arc second coordinates.
 
         Parameters
         ----------
-        arc_second_coordinates: (float, float)
-            The coordinates of a point in arc seconds
-
-        Returns
-        -------
-        pixel_coordinates: (float, float)
-            The coordinates of a point in pixels
+        grid_arc_seconds: ndarray
+            The grid of (x,y) coordinates in arc seconds.
         """
-        return tuple(map(lambda coord, centre: self.arc_seconds_to_pixels(coord) + centre,
-                         arc_second_coordinates,
-                         self.central_pixel_coordinates))
+        return (grid_arc_seconds + self.central_pixel_coordinates) / self.pixel_scale
 
     @property
     def shape_arc_seconds(self):

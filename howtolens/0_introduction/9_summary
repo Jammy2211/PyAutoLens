@@ -1,0 +1,42 @@
+In these tutorials, you learnt the core of PyAutoLens, and are now ready to begin modeling real
+strong lenses. In particular, you've learnt that:
+
+1) How AutoLens uses Cartesian grids of (x,y) coordinates to perform ray-tracing.
+2) That these grids can be combined with light and mass profiles to compute images and deflection angles.
+3) That profiles can be combined to model galaxies.
+1) How inputting galaxies into a tracer allows one to perform ray-tracing.
+2) How to simulate a telescope's image of a strong lens.
+3) How to fit a telescope's image of a strong lens.
+4) How to find the best-fit lens model of a strong lens, using a non-linear optimization algorithm.
+
+Now you're familiar with the basics of AutoLens, I recommend that you take the examples that can be found in this
+'examples' directory. Each exercise is aimed at introducing a new concept about strong lens modeling:
+
+'lens_light' - In this example, the lens galaxy's light is also simulated, and thus also needs to be modeled. I'll
+               provide you with the phase to fit this image, and I'll introduce a few new ways to customize the
+               priors. We'll also look at how this impacts the run time of AutoLens.
+
+'x2_lenses' - In this example, there will be two lens galaxies. You'll need to write the phase yourself here,
+              and we'll see how long a phase takes to run now there are a significantly higher number of parameters in
+              the galaxy-model.
+
+'complex_source' - In this example, the source galaxy is generated using a very complex light-profile. We'll see if the
+                   simple models we try to fit it with can produce a model image that doesn't leave residuals, and
+                   whether adding more complexity to a source galaxy-model improves the results.
+
+After you are finished with these examples, I would recommend you try modelng one of the real strong lenses that came
+packaged with AutoLens (see the 'AutoLens/data folder)'
+
+Finally, once you're feeling confident in using AutoLens, and are familiar with strong lens modelng, you may want to
+take one of the advanced AutoLens tutorials, to begin using AutoLens's advanced lens modeling features (I recommend
+you stick to the numerical order below):
+
+1_pipeline - In the examples above, you'll learn that as the lens model becomes more complex, that phases take longer to
+             run. Furthermore, you'll often end up computing an incorrect solution. In this tutorial, we'll learn how
+             to link multiple phases together to form a pipeline. By linking phases, we can gradually increase the lens
+             model complexity such that we can fit complex lens models much faste than just using one phase.
+
+2_inversion - Here, we'll learn about AutoLens's inversion module. This allows us to reconstruct a source galaxy on a
+              pixel-grid, instead of relying on the light-profiles we've used up to now. The truth is, real galaxies
+              look far more complicated than idealized symmetric Sersic functions - thus we need to use a pixel-grid
+              to obtain reliable strong len models!
