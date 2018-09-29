@@ -48,7 +48,7 @@ def plot_fitting_lens_plane_only(fit, units='kpc', output_path=None, output_file
     plt.subplot(2, 2, 1)
 
     array_plotters.plot_array(
-        array=fit.image, grid=None, as_subplot=True,
+        array=fit.image, points=None, grid=None, as_subplot=True,
         units=units, kpc_per_arcsec=fit.kpc_per_arcsec_proper[0],
         xticks=fit.image.xticks, yticks=fit.image.yticks, xyticksize=16,
         norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
@@ -59,7 +59,7 @@ def plot_fitting_lens_plane_only(fit, units='kpc', output_path=None, output_file
     plt.subplot(2, 2, 2)
 
     array_plotters.plot_array(
-        array=fit.model_image, grid=None, as_subplot=True,
+        array=fit.model_image, points=None, grid=None, as_subplot=True,
         units=units, kpc_per_arcsec=fit.kpc_per_arcsec_proper[0],
         xticks=fit.image.xticks, yticks=fit.image.yticks, xyticksize=16,
         norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
@@ -70,7 +70,7 @@ def plot_fitting_lens_plane_only(fit, units='kpc', output_path=None, output_file
     plt.subplot(2, 2, 3)
 
     array_plotters.plot_array(
-        array=fit.residuals, grid=None, as_subplot=True,
+        array=fit.residuals, points=None, grid=None, as_subplot=True,
         units=units, kpc_per_arcsec=fit.kpc_per_arcsec_proper[0],
         xticks=fit.image.xticks, yticks=fit.image.yticks, xyticksize=16,
         norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
@@ -81,7 +81,7 @@ def plot_fitting_lens_plane_only(fit, units='kpc', output_path=None, output_file
     plt.subplot(2, 2, 4)
 
     array_plotters.plot_array(
-        array=fit.chi_squareds, grid=None, as_subplot=True,
+        array=fit.chi_squareds, points=None, grid=None, as_subplot=True,
         units=units, kpc_per_arcsec=fit.kpc_per_arcsec_proper[0],
         xticks=fit.image.xticks, yticks=fit.image.yticks, xyticksize=16,
         norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
@@ -117,7 +117,7 @@ def plot_fitting_hyper_lens_plane_only(fit, units='kpc', output_path=None, outpu
     plt.subplot(3, 3, 1)
 
     array_plotters.plot_array(
-        array=fit.image, grid=None, as_subplot=True,
+        array=fit.image, points=None, grid=None, as_subplot=True,
         units=units, kpc_per_arcsec=fit.kpc_per_arcsec_proper[0],
         xticks=fit.image.xticks, yticks=fit.image.yticks, xyticksize=16,
         norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
@@ -128,7 +128,7 @@ def plot_fitting_hyper_lens_plane_only(fit, units='kpc', output_path=None, outpu
     plt.subplot(3, 3, 2)
 
     array_plotters.plot_array(
-        array=fit.model_image, grid=None, as_subplot=True,
+        array=fit.model_image, points=None, grid=None, as_subplot=True,
         units=units, kpc_per_arcsec=fit.kpc_per_arcsec_proper[0],
         xticks=fit.image.xticks, yticks=fit.image.yticks, xyticksize=16,
         norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
@@ -139,7 +139,7 @@ def plot_fitting_hyper_lens_plane_only(fit, units='kpc', output_path=None, outpu
     plt.subplot(3, 3, 3)
 
     array_plotters.plot_array(
-        array=fit.residuals, grid=None, as_subplot=True,
+        array=fit.residuals, points=None, grid=None, as_subplot=True,
         units=units, kpc_per_arcsec=fit.kpc_per_arcsec_proper[0],
         xticks=fit.image.xticks, yticks=fit.image.yticks, xyticksize=16,
         norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
@@ -157,7 +157,7 @@ def plot_fitting_hyper_lens_plane_only(fit, units='kpc', output_path=None, outpu
         contributions = fit.contributions[0]
 
     array_plotters.plot_array(
-        array=contributions, grid=None, as_subplot=True,
+        array=contributions, points=None, grid=None, as_subplot=True,
         units=units, kpc_per_arcsec=fit.kpc_per_arcsec_proper[0],
         xticks=fit.image.xticks, yticks=fit.image.yticks, xyticksize=16,
         norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
@@ -168,7 +168,7 @@ def plot_fitting_hyper_lens_plane_only(fit, units='kpc', output_path=None, outpu
     plt.subplot(3, 3, 5)
 
     array_plotters.plot_array(
-        array=fit.chi_squareds, grid=None, as_subplot=True,
+        array=fit.chi_squareds, points=None, grid=None, as_subplot=True,
         units=units, kpc_per_arcsec=fit.kpc_per_arcsec_proper[0],
         xticks=fit.image.xticks, yticks=fit.image.yticks, xyticksize=16,
         norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
@@ -179,7 +179,7 @@ def plot_fitting_hyper_lens_plane_only(fit, units='kpc', output_path=None, outpu
     plt.subplot(3, 3, 6)
 
     array_plotters.plot_array(
-        array=fit.scaled_chi_squareds, grid=None, as_subplot=True,
+        array=fit.scaled_chi_squareds, points=None, grid=None, as_subplot=True,
         units=units, kpc_per_arcsec=fit.kpc_per_arcsec_proper[0],
         xticks=fit.image.xticks, yticks=fit.image.yticks, xyticksize=16,
         norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
@@ -190,7 +190,7 @@ def plot_fitting_hyper_lens_plane_only(fit, units='kpc', output_path=None, outpu
     plt.subplot(3, 3, 8)
 
     array_plotters.plot_array(
-        array=fit.noise_map, grid=None, as_subplot=True,
+        array=fit.noise_map, points=None, grid=None, as_subplot=True,
         units=units, kpc_per_arcsec=fit.kpc_per_arcsec_proper[0],
         xticks=fit.image.xticks, yticks=fit.image.yticks, xyticksize=16,
         norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
@@ -201,7 +201,7 @@ def plot_fitting_hyper_lens_plane_only(fit, units='kpc', output_path=None, outpu
     plt.subplot(3, 3, 9)
 
     array_plotters.plot_array(
-        array=fit.scaled_noise_map, grid=None, as_subplot=True,
+        array=fit.scaled_noise_map, points=None, grid=None, as_subplot=True,
         units=units, kpc_per_arcsec=fit.kpc_per_arcsec_proper[0],
         xticks=fit.image.xticks, yticks=fit.image.yticks, xyticksize=16,
         norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
@@ -235,7 +235,7 @@ def plot_fitting_lens_and_source_planes(fit, units='kpc', output_path=None, outp
     plt.subplot(3, 3, 1)
 
     array_plotters.plot_array(
-        array=fit.image, grid=None, as_subplot=True,
+        array=fit.image, points=None, grid=None, as_subplot=True,
         units=units, kpc_per_arcsec=fit.kpc_per_arcsec_proper[0],
         xticks=fit.image.xticks, yticks=fit.image.yticks, xyticksize=16,
         norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
@@ -246,7 +246,7 @@ def plot_fitting_lens_and_source_planes(fit, units='kpc', output_path=None, outp
     plt.subplot(3, 3, 4)
 
     array_plotters.plot_array(
-        array=fit.model_image, grid=None, as_subplot=True,
+        array=fit.model_image, points=None, grid=None, as_subplot=True,
         units=units, kpc_per_arcsec=fit.kpc_per_arcsec_proper[0],
         xticks=fit.image.xticks, yticks=fit.image.yticks, xyticksize=16,
         norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
@@ -259,7 +259,7 @@ def plot_fitting_lens_and_source_planes(fit, units='kpc', output_path=None, outp
         plt.subplot(3, 3, 5)
 
         array_plotters.plot_array(
-            array=fit.model_images_of_planes[0], grid=None, as_subplot=True,
+            array=fit.model_images_of_planes[0], points=None, grid=None, as_subplot=True,
             units=units, kpc_per_arcsec=fit.kpc_per_arcsec_proper[0],
             xticks=fit.xticks, yticks=fit.image.yticks, xyticksize=16,
             norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
@@ -270,7 +270,7 @@ def plot_fitting_lens_and_source_planes(fit, units='kpc', output_path=None, outp
     plt.subplot(3, 3, 6)
 
     array_plotters.plot_array(
-        array=fit.model_images_of_planes[1], grid=None, as_subplot=True,
+        array=fit.model_images_of_planes[1], points=None, grid=None, as_subplot=True,
         units=units, kpc_per_arcsec=fit.kpc_per_arcsec_proper[0],
         xticks=fit.image.xticks, yticks=fit.image.yticks, xyticksize=16,
         norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
@@ -292,7 +292,7 @@ def plot_fitting_lens_and_source_planes(fit, units='kpc', output_path=None, outp
     plt.subplot(3, 3, 8)
 
     array_plotters.plot_array(
-        array=fit.residuals, grid=None, as_subplot=True,
+        array=fit.residuals, points=None, grid=None, as_subplot=True,
         units=units, kpc_per_arcsec=fit.kpc_per_arcsec_proper[0],
         xticks=fit.image.xticks, yticks=fit.image.yticks, xyticksize=16,
         norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
@@ -303,7 +303,7 @@ def plot_fitting_lens_and_source_planes(fit, units='kpc', output_path=None, outp
     plt.subplot(3, 3, 9)
 
     array_plotters.plot_array(
-        array=fit.chi_squareds, grid=None, as_subplot=True,
+        array=fit.chi_squareds, points=None, grid=None, as_subplot=True,
         units=units, kpc_per_arcsec=fit.kpc_per_arcsec_proper[0],
         xticks=fit.image.xticks, yticks=fit.image.yticks, xyticksize=16,
         norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
@@ -319,7 +319,7 @@ def plot_fitting_individuals(fit, units='kpc', plot_model_image=False, plot_lens
                              plot_source_plane_image=False, plot_residuals=False, plot_chi_squareds=False,
                              plot_contributions=False, plot_scaled_chi_squareds=False, plot_scaled_noise_map=False,
                              output_path=None,  output_format='show', ignore_config=True):
-    
+
     if fit.total_planes == 1:
 
         if not fit.is_hyper_fit:
@@ -344,7 +344,7 @@ def plot_fitting_individuals(fit, units='kpc', plot_model_image=False, plot_lens
                                                             output_format, ignore_config)
 
 
-def plot_fitting_individuals_lens_plane_only(fitting, plot_model_image, plot_residuals, plot_chi_squareds,
+def plot_fitting_individuals_lens_plane_only(fit, plot_model_image, plot_residuals, plot_chi_squareds,
                                              units='kpc', output_path=None, output_format='show', ignore_config=True):
     """Plot the model _image of an analysis, using the *Fitter* class object.
 
@@ -352,7 +352,7 @@ def plot_fitting_individuals_lens_plane_only(fitting, plot_model_image, plot_res
 
     Parameters
     -----------
-    fitting : autolens.lensing.fittingting.Fitter
+    fit : autolens.lensing.fittingting.Fitter
         Class containing fitting between the model _image and observed lensing _image (including residuals, chi_squareds etc.)
     output_path : str
         The path where the _image is output if the output_type is a file format (e.g. png, fittings)
@@ -369,9 +369,9 @@ def plot_fitting_individuals_lens_plane_only(fitting, plot_model_image, plot_res
 
     if plot_model_image:
         array_plotters.plot_array(
-            array=fitting.model_image, grid=None, as_subplot=False,
+            array=fit.model_image, points=None, grid=None, as_subplot=False,
             units=units, kpc_per_arcsec=fit.kpc_per_arcsec_proper[0],
-            xticks=fitting.image.xticks, yticks=fitting.image.yticks, xyticksize=40,
+            xticks=fit.image.xticks, yticks=fit.image.yticks, xyticksize=40,
             norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
             figsize=(20, 15), aspect='auto', cmap='jet', cb_ticksize=20,
             title='Model Image', titlesize=46, xlabelsize=36, ylabelsize=36,
@@ -380,9 +380,9 @@ def plot_fitting_individuals_lens_plane_only(fitting, plot_model_image, plot_res
     if plot_residuals:
 
         array_plotters.plot_array(
-            array=fitting.residuals, grid=None, as_subplot=False,
+            array=fit.residuals, points=None, grid=None, as_subplot=False,
             units=units, kpc_per_arcsec=fit.kpc_per_arcsec_proper[0],
-            xticks=fitting.image.xticks, yticks=fitting.image.yticks, xyticksize=40,
+            xticks=fit.image.xticks, yticks=fit.image.yticks, xyticksize=40,
             norm='linear', norm_min=None, norm_max=None, linthresh=0.001, linscale=0.001,
             figsize=(20, 15), aspect='auto', cmap='jet', cb_ticksize=20,
             title='Residuals', titlesize=46, xlabelsize=36, ylabelsize=36,
@@ -391,9 +391,9 @@ def plot_fitting_individuals_lens_plane_only(fitting, plot_model_image, plot_res
     if plot_chi_squareds:
 
         array_plotters.plot_array(
-            array=fitting.chi_squareds, grid=None, as_subplot=False,
+            array=fit.chi_squareds, points=None, grid=None, as_subplot=False,
             units=units, kpc_per_arcsec=fit.kpc_per_arcsec_proper[0],
-            xticks=fitting.image.xticks, yticks=fitting.image.yticks, xyticksize=40,
+            xticks=fit.image.xticks, yticks=fit.image.yticks, xyticksize=40,
             norm='linear', norm_min=None, norm_max=None, linthresh=0.001, linscale=0.001,
             figsize=(20, 15), aspect='auto', cmap='jet', cb_ticksize=20,
             title='Chi-Squareds', titlesize=46, xlabelsize=36, ylabelsize=36,
@@ -402,7 +402,7 @@ def plot_fitting_individuals_lens_plane_only(fitting, plot_model_image, plot_res
 
 def plot_fitting_individuals_hyper_lens_plane_only(fit, plot_model_image, plot_residuals, plot_chi_squareds,
                                                    plot_contributions, plot_scaled_chi_squareds, plot_scaled_noise_map,
-                                                   units='kpc', output_path=None, output_format='show', 
+                                                   units='kpc', output_path=None, output_format='show',
                                                    ignore_config=True):
     """Plot the model _image of an analysis, using the *Fitter* class object.
 
@@ -430,7 +430,7 @@ def plot_fitting_individuals_hyper_lens_plane_only(fit, plot_model_image, plot_r
 
     if plot_model_image:
         array_plotters.plot_array(
-            array=fit.model_image, grid=None, as_subplot=False,
+            array=fit.model_image, points=None, grid=None, as_subplot=False,
             units=units, kpc_per_arcsec=fit.kpc_per_arcsec_proper[0],
             xticks=fit.image.xticks, yticks=fit.image.yticks, xyticksize=40,
             norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
@@ -440,7 +440,7 @@ def plot_fitting_individuals_hyper_lens_plane_only(fit, plot_model_image, plot_r
 
     if plot_residuals:
         array_plotters.plot_array(
-            array=fit.residuals, grid=None, as_subplot=False,
+            array=fit.residuals, points=None, grid=None, as_subplot=False,
             units=units, kpc_per_arcsec=fit.kpc_per_arcsec_proper[0],
             xticks=fit.image.xticks, yticks=fit.image.yticks, xyticksize=40,
             norm='linear', norm_min=None, norm_max=None, linthresh=0.001, linscale=0.001,
@@ -450,7 +450,7 @@ def plot_fitting_individuals_hyper_lens_plane_only(fit, plot_model_image, plot_r
 
     if plot_chi_squareds:
         array_plotters.plot_array(
-            array=fit.chi_squareds, grid=None, as_subplot=False,
+            array=fit.chi_squareds, points=None, grid=None, as_subplot=False,
             units=units, kpc_per_arcsec=fit.kpc_per_arcsec_proper[0],
             xticks=fit.image.xticks, yticks=fit.image.yticks, xyticksize=40,
             norm='linear', norm_min=None, norm_max=None, linthresh=0.001, linscale=0.001,
@@ -466,7 +466,7 @@ def plot_fitting_individuals_hyper_lens_plane_only(fit, plot_model_image, plot_r
             contributions = fit.contributions[0]
 
         array_plotters.plot_array(
-            array=contributions, grid=None, as_subplot=False,
+            array=contributions, points=None, grid=None, as_subplot=False,
             units=units, kpc_per_arcsec=fit.kpc_per_arcsec_proper[0],
             xticks=fit.image.xticks, yticks=fit.image.yticks, xyticksize=40,
             norm='linear', norm_min=None, norm_max=None, linthresh=0.001, linscale=0.001,
@@ -476,7 +476,7 @@ def plot_fitting_individuals_hyper_lens_plane_only(fit, plot_model_image, plot_r
 
     if plot_scaled_noise_map:
         array_plotters.plot_array(
-            array=fit.scaled_noise_map, grid=None, as_subplot=False,
+            array=fit.scaled_noise_map, points=None, grid=None, as_subplot=False,
             units=units, kpc_per_arcsec=fit.kpc_per_arcsec_proper[0],
             xticks=fit.image.xticks, yticks=fit.image.yticks, xyticksize=40,
             norm='linear', norm_min=None, norm_max=None, linthresh=0.001, linscale=0.001,
@@ -486,7 +486,7 @@ def plot_fitting_individuals_hyper_lens_plane_only(fit, plot_model_image, plot_r
 
     if plot_scaled_chi_squareds:
         array_plotters.plot_array(
-            array=fit.scaled_chi_squareds, grid=None, as_subplot=False,
+            array=fit.scaled_chi_squareds, points=None, grid=None, as_subplot=False,
             units=units, kpc_per_arcsec=fit.kpc_per_arcsec_proper[0],
             xticks=fit.image.xticks, yticks=fit.image.yticks, xyticksize=40,
             norm='linear', norm_min=None, norm_max=None, linthresh=0.001, linscale=0.001,
@@ -526,7 +526,7 @@ def plot_fitting_individuals_lens_and_source_planes(fit, plot_model_image, plot_
 
     if plot_model_image:
         array_plotters.plot_array(
-            array=fit.model_image, grid=None, as_subplot=False,
+            array=fit.model_image, points=None, grid=None, as_subplot=False,
             units=units, kpc_per_arcsec=fit.kpc_per_arcsec_proper[0],
             xticks=fit.image.xticks, yticks=fit.image.yticks, xyticksize=40,
             norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
@@ -537,7 +537,7 @@ def plot_fitting_individuals_lens_and_source_planes(fit, plot_model_image, plot_
     if plot_lens_model_image:
 
         array_plotters.plot_array(
-            array=fit.model_images_of_planes[0], grid=None, as_subplot=False,
+            array=fit.model_images_of_planes[0], points=None, grid=None, as_subplot=False,
             units=units, kpc_per_arcsec=fit.kpc_per_arcsec_proper[0],
             xticks=fit.image.xticks, yticks=fit.image.yticks, xyticksize=40,
             norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
@@ -548,7 +548,7 @@ def plot_fitting_individuals_lens_and_source_planes(fit, plot_model_image, plot_
     if plot_source_model_image:
 
         array_plotters.plot_array(
-            array=fit.model_images_of_planes[1], grid=None, as_subplot=False,
+            array=fit.model_images_of_planes[1], points=None, grid=None, as_subplot=False,
             units=units, kpc_per_arcsec=fit.kpc_per_arcsec_proper[0],
             xticks=fit.image.xticks, yticks=fit.image.yticks, xyticksize=40,
             norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
@@ -558,7 +558,7 @@ def plot_fitting_individuals_lens_and_source_planes(fit, plot_model_image, plot_
 
     if plot_source_plane_image:
         array_plotters.plot_array(
-            array=fit.plane_images[1], grid=None, as_subplot=False,
+            array=fit.plane_images[1], points=None, grid=None, as_subplot=False,
             units=units, kpc_per_arcsec=fit.kpc_per_arcsec_proper[1],
             xticks=fit.image.xticks, yticks=fit.image.yticks, xyticksize=40,
             norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
@@ -568,7 +568,7 @@ def plot_fitting_individuals_lens_and_source_planes(fit, plot_model_image, plot_
 
     if plot_residuals:
         array_plotters.plot_array(
-            array=fit.residuals, grid=None, as_subplot=False,
+            array=fit.residuals, points=None, grid=None, as_subplot=False,
             units=units, kpc_per_arcsec=fit.kpc_per_arcsec_proper[0],
             xticks=fit.image.xticks, yticks=fit.image.yticks, xyticksize=40,
             norm='linear', norm_min=None, norm_max=None, linthresh=0.001, linscale=0.001,
@@ -578,7 +578,7 @@ def plot_fitting_individuals_lens_and_source_planes(fit, plot_model_image, plot_
 
     if plot_chi_squareds:
         array_plotters.plot_array(
-            array=fit.chi_squareds, grid=None, as_subplot=False,
+            array=fit.chi_squareds, points=None, grid=None, as_subplot=False,
             units=units, kpc_per_arcsec=fit.kpc_per_arcsec_proper[0],
             xticks=fit.image.xticks, yticks=fit.image.yticks, xyticksize=40,
             norm='linear', norm_min=None, norm_max=None, linthresh=0.001, linscale=0.001,
