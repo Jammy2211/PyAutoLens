@@ -4,7 +4,7 @@ import matplotlib.colors as colors
 import numpy as np
 from astropy.io import fits
 
-def plot_array(array, grid, as_subplot,
+def plot_array(array, points, grid, as_subplot,
                units, kpc_per_arcsec,
                xticks, yticks, xyticksize,
                norm, norm_min, norm_max, linthresh, linscale,
@@ -17,11 +17,13 @@ def plot_array(array, grid, as_subplot,
                                               linthresh=linthresh, linscale=linscale)
 
     plot_image(array=array, grid=grid, as_subplot=as_subplot, figsize=figsize, aspect=aspect, cmap=cmap,
-                    norm_scale=norm_scale)
+               norm_scale=norm_scale)
+
     set_title(title=title, titlesize=titlesize)
-    set_xy_labels_and_ticks(array=array, units=units, kpc_per_arcsec=kpc_per_arcsec, xticks=xticks, yticks=yticks,
+    set_xy_labels_and_ticks(shape=array.shape, units=units, kpc_per_arcsec=kpc_per_arcsec, xticks=xticks, yticks=yticks,
                             xlabelsize=xlabelsize, ylabelsize=ylabelsize, xyticksize=xyticksize)
     set_colorbar(cb_ticksize=cb_ticksize)
+    plot_points(points)
     plot_grid(grid)
 
     if not as_subplot:
@@ -56,37 +58,42 @@ def plot_image(array, grid, as_subplot, figsize, aspect, cmap, norm_scale):
     if not as_subplot:
         plt.figure(figsize=figsize)
 
-  #  if grid is None:
-    plt.imshow(array, aspect=aspect, cmap=cmap, norm=norm_scale)
-  #  elif grid is not None:
-  #      plt.imshow(array, aspect=aspect, cmap=cmap, norm=norm_scale,
-  #                 extent=(np.min(grid[:, 0]), np.max(grid[:, 0]), np.min(grid[:, 1]), np.max(grid[:, 1])))
+    plt.imshow(array, aspect=aspect, cmap=cmap, norm=norm_scale, extent=(0, array.shape[1], 0, array.shape[0]))
+
+
+def plot_points(points):
+
+    if points is not None:
+
+        x_points = points[0,0]
+        y_points = points[0,1]
+        plt.scatter(x=x_points, y=y_points)
 
 
 def set_title(title, titlesize):
     plt.title(title, fontsize=titlesize)
 
 
-def set_xy_labels_and_ticks(array, units, kpc_per_arcsec, xticks, yticks, xlabelsize, ylabelsize, xyticksize):
+def set_xy_labels_and_ticks(shape, units, kpc_per_arcsec, xticks, yticks, xlabelsize, ylabelsize, xyticksize):
 
     if units is 'pixels':
 
-        plt.xticks(np.round((array.shape[0] * np.array([0.0, 0.33, 0.66, 0.99]))))
-        plt.yticks(np.round((array.shape[1] * np.array([0.0, 0.33, 0.66, 0.99]))))
+        plt.xticks(np.round((shape[0] * np.array([0.0, 0.33, 0.66, 0.99]))))
+        plt.yticks(np.round((shape[1] * np.array([0.0, 0.33, 0.66, 0.99]))))
         plt.xlabel('x (pixels)', fontsize=xlabelsize)
         plt.ylabel('y (pixels)', fontsize=ylabelsize)
 
     elif units is 'arcsec' or kpc_per_arcsec is None:
 
-        plt.xticks(array.shape[0] * np.array([0.0, 0.33, 0.66, 0.99]), np.round(xticks, 1))
-        plt.yticks(array.shape[1] * np.array([0.0, 0.33, 0.66, 0.99]), np.round(yticks, 1))
+        plt.xticks(shape[0] * np.array([0.0, 0.33, 0.66, 0.99]), np.round(xticks, 1))
+        plt.yticks(shape[1] * np.array([0.0, 0.33, 0.66, 0.99]), np.round(yticks, 1))
         plt.xlabel('x (arcsec)', fontsize=xlabelsize)
         plt.ylabel('y (arcsec)', fontsize=ylabelsize)
 
     elif units is 'kpc':
 
-        plt.xticks(array.shape[0] * np.array([0.0, 0.33, 0.66, 0.99]), np.round(kpc_per_arcsec * xticks, 1))
-        plt.yticks(array.shape[1] * np.array([0.0, 0.33, 0.66, 0.99]), np.round(kpc_per_arcsec * yticks, 1))
+        plt.xticks(shape[0] * np.array([0.0, 0.33, 0.66, 0.99]), np.round(kpc_per_arcsec * xticks, 1))
+        plt.yticks(shape[1] * np.array([0.0, 0.33, 0.66, 0.99]), np.round(kpc_per_arcsec * yticks, 1))
         plt.xlabel('x (kpc)', fontsize=xlabelsize)
         plt.ylabel('y (kpc)', fontsize=ylabelsize)
 
