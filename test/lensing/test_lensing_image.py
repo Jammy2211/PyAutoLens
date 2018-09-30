@@ -62,11 +62,11 @@ class TestMaskedImage(object):
             lensing_image.image.pixel_scale, lensing_image.grids.sub.sub_grid_size)
 
         assert (lensing_image.unmasked_grids.image == unmasked_image_util).all()
-        assert lensing_image.unmasked_grids.image.mask_shape == (4, 4)
+        assert lensing_image.unmasked_grids.image.image_shape == (4, 4)
         assert lensing_image.unmasked_grids.image.padded_shape == (6, 6)
 
         assert (lensing_image.unmasked_grids.sub == unmasked_sub_util).all()
-        assert lensing_image.unmasked_grids.sub.mask_shape == (4, 4)
+        assert lensing_image.unmasked_grids.sub.image_shape == (4, 4)
         assert lensing_image.unmasked_grids.sub.padded_shape == (6, 6)
 
         assert (lensing_image.unmasked_grids.blurring == np.array([[0.0, 0.0]])).all()
