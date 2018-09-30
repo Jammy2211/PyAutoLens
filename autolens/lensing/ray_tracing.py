@@ -152,11 +152,6 @@ class TracerImagePlane(AbstractTracer):
         if not lens_galaxies:
             raise exc.RayTracingException('No lens galaxies have been input into the Tracer')
 
-        if cosmology is not None:
-            self.geometry = TracerGeometry(redshifts=[lens_galaxies[0].redshift], cosmology=cosmology)
-        else:
-            self.geometry = None
-
         self.image_plane = plane.Plane(lens_galaxies, image_plane_grids, borders=borders, compute_deflections=True,
                                        cosmology=cosmology)
 
