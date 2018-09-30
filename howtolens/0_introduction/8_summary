@@ -1,0 +1,13 @@
+In these tutorials, you learnt the core of using PyAutoLens. In particular, you've learnt:
+
+1) How AutoLens uses Cartesian grids of (x,y) coordinates to perform ray-tracing.
+2) That these grids can be combined with light and mass profiles to compute images and deflection angles.
+3) That profiles can be combined to model galaxies.
+4) How inputting galaxies into a tracer allows one to perform ray-tracing.
+5) How to simulate a telescope's image of a strong lens.
+6) How to fit a telescope's image of a strong lens.
+
+What you haven't learnt, however, is how to 'model' a real strong gravitatioanl lens. In the real world, we've no idea
+what the 'correct' set of light and mass profile parameters are that will give a good fit to a lens. Lens modeling is
+the process of finding the lens model which provides the best-fit, and that will be the focus of our next set of
+tutorials.
