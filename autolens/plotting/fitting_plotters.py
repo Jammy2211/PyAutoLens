@@ -261,7 +261,7 @@ def plot_fitting_lens_and_source_planes(fit, units='kpc', output_path=None, outp
         array_plotters.plot_array(
             array=fit.model_images_of_planes[0], points=None, grid=None, as_subplot=True,
             units=units, kpc_per_arcsec=fit.kpc_per_arcsec_proper[0],
-            xticks=fit.xticks, yticks=fit.image.yticks, xyticksize=16,
+            xticks=fit.image.xticks, yticks=fit.image.yticks, xyticksize=16,
             norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
             figsize=None, aspect='auto', cmap='jet', cb_ticksize=16,
             title='Lens Model Image', titlesize=16, xlabelsize=16, ylabelsize=16,
@@ -281,7 +281,7 @@ def plot_fitting_lens_and_source_planes(fit, units='kpc', output_path=None, outp
     plt.subplot(3, 3, 7)
 
     array_plotters.plot_array(
-        array=fit.plane_images[1], grid=fit.plane_images[1].grid, as_subplot=True,
+        array=fit.plane_images[1], grid=fit.plane_images[1].grid, points=None, as_subplot=True,
         units=units, kpc_per_arcsec=fit.kpc_per_arcsec_proper[1],
         xticks=fit.plane_images[1].xticks, yticks=fit.plane_images[1].yticks, xyticksize=16,
         norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,

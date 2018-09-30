@@ -62,8 +62,9 @@ class GalaxyModel(model_mapper.AbstractPriorModel):
         return [flat_prior_model for prior_model in self.prior_models for flat_prior_model in
                 prior_model.flat_prior_model_tuples]
 
-    def __init__(self, align_centres=False, align_orientations=False, redshift=None, variable_redshift=False,
-                 pixelization=None, regularization=None, hyper_galaxy=None, config=None, **kwargs):
+    def __init__(self, align_centres=False, align_axis_ratios=False, align_orientations=False, redshift=None,
+                 variable_redshift=False, pixelization=None, regularization=None, hyper_galaxy=None, config=None,
+                 **kwargs):
         """
         Class to produce Galaxy instances from sets of profile classes using the model mapper
 
@@ -82,6 +83,7 @@ class GalaxyModel(model_mapper.AbstractPriorModel):
         """
 
         self.align_centres = align_centres
+        self.align_axis_ratios = align_axis_ratios
         self.align_orientations = align_orientations
 
         profile_models = []
@@ -99,6 +101,11 @@ class GalaxyModel(model_mapper.AbstractPriorModel):
                 centre = profile_models[0].centre
                 for profile_model in profile_models:
                     profile_model.centre = centre
+
+            if self.align_axis_ratios:
+                axis_ratio = profile_models[0].axis_ratio
+                for profile_model in profile_models:
+                    profile_model.axis_ratio = axis_ratio
 
             if self.align_orientations:
                 phi = profile_models[0].phi
@@ -291,8 +298,8 @@ class GalaxyModel(model_mapper.AbstractPriorModel):
         new_model: GalaxyModel
             A model with some or all priors replaced.
         """
-        new_model = GalaxyModel(align_centres=self.align_centres, align_orientations=self.align_orientations,
-                                config=self.config)
+        new_model = GalaxyModel(align_centres=self.align_centres, align_axis_ratios=self.align_axis_ratios,
+                                align_orientations=self.align_orientations, config=self.config)
 
         for key, value in filter(lambda t: isinstance(t[1], model_mapper.PriorModel), self.__dict__.items()):
             setattr(new_model, key, value.gaussian_prior_model_for_arguments(arguments))
