@@ -1,10 +1,13 @@
 Welcome to HowToLens - The PyAutoLens tutorial!
 
-In this first set of tutorials, we'll learn how to perform basic strong lens modeling in PyAutoLens.
+In this first set of tutorials, we'll learn how to use PyAutoLens. At the end, you'll be able to:
 
-At the end of these 5 tutorials, you'll be able to:
-
-1) Perform ray-tracing and generate images of different image-plane / source-plane strong lensing configurations.
-2) Simulate telescope imaging data of a strong gravitational lens.
-3) Fit strong lensing data with model images generated via ray-tracing.
-4) Find the model which provides the best-fit to strong gravitational lens imaging.
+1) Create uniform grids of (x,y) Cartesian coordinates.
+2) Combine these grids with light and mass profiles to make images, surface densities, gravitational potentials
+   and deflection angle-maps.
+3) Combine these light and mass profiles to make galaxies.
+4) Perform ray-tracing with these galaxies, whereby a grid is ray-traced through an image-plane / source-plane
+   strong lensing configuration.
+5) Simulate telescope imaging data of a strong gravitational lens.
+6) Fit strong lensing data with model images generated via ray-tracing.
+7) Find the model which provides the best-fit to strong gravitational lens imaging.
