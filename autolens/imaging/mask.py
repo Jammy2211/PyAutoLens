@@ -523,7 +523,7 @@ class SubGrid(ImageGrid):
 
 class ImageUnmaskedGrid(ImageGrid):
 
-    def __new__(cls, arr, mask_shape, padded_shape, *args, **kwargs):
+    def __new__(cls, arr, image_shape, padded_shape, *args, **kwargs):
         """An *ImageUnmaskedGrid* stores the (x,y) arc-second coordinates of a mask's pixels in 1D, in an analogous \
         fashion to an *ImageGrid*. An *ImageUnmaskedGrid* deviate from a normal grid in that:
 
@@ -534,7 +534,7 @@ class ImageUnmaskedGrid(ImageGrid):
         opposed to just within the masked region.
         """
         arr = arr.view(cls)
-        arr.mask_shape = mask_shape
+        arr.image_shape = image_shape
         arr.padded_shape = padded_shape
         return arr
 
@@ -558,7 +558,7 @@ class ImageUnmaskedGrid(ImageGrid):
         padded_image_grid = imaging_util.image_grid_1d_masked_from_mask_and_pixel_scale(
             mask=np.full(padded_shape, False),
             pixel_scale=pixel_scale)
-        return ImageUnmaskedGrid(arr=padded_image_grid, mask_shape=shape, padded_shape=padded_shape)
+        return ImageUnmaskedGrid(arr=padded_image_grid, image_shape=shape, padded_shape=padded_shape)
 
     def convolve_array_1d_with_psf(self, padded_array_1d, psf):
         """Convolve a 2d padded array of values (e.g. intensities beforoe PSF blurring) with a PSF, and then trim \
@@ -585,8 +585,8 @@ class ImageUnmaskedGrid(ImageGrid):
             A 1D array of values which were computed using the *ImageUnmaskedGrid*.
         """
         padded_array_2d = self.map_to_2d_keep_padded(padded_array_1d)
-        pad_size_0 = self.padded_shape[0] - self.mask_shape[0]
-        pad_size_1 = self.padded_shape[1] - self.mask_shape[1]
+        pad_size_0 = self.padded_shape[0] - self.image_shape[0]
+        pad_size_1 = self.padded_shape[1] - self.image_shape[1]
         return padded_array_2d[pad_size_0 // 2:self.padded_shape[0] - pad_size_0 // 2,
                pad_size_1 // 2:self.padded_shape[1] - pad_size_1 // 2]
 
@@ -604,7 +604,7 @@ class ImageUnmaskedGrid(ImageGrid):
 
 class SubUnmaskedGrid(SubGrid, ImageUnmaskedGrid):
 
-    def __init__(self, arr, mask, mask_shape, padded_shape, sub_grid_size=1):
+    def __init__(self, arr, mask, image_shape, padded_shape, sub_grid_size=1):
         """A *SubUnmaskedGrid* stores the (x,y) arc-second coordinates of a mask's sub-pixels in 1D, in an analogous \
         fashion to a *SubGrid*. A *SubUnmaskedGrid* deviate from a normal grid in that:
 
@@ -615,7 +615,7 @@ class SubUnmaskedGrid(SubGrid, ImageUnmaskedGrid):
         opposed to just within the masked region.
         """
         super(SubUnmaskedGrid, self).__init__(arr, mask.shape, mask.grid_to_pixel, mask, sub_grid_size)
-        self.mask_shape = mask_shape
+        self.image_shape = image_shape
         self.padded_shape = padded_shape
 
     @classmethod
@@ -640,7 +640,7 @@ class SubUnmaskedGrid(SubGrid, ImageUnmaskedGrid):
         padded_sub_grid = imaging_util.sub_grid_1d_masked_from_mask_pixel_scale_and_sub_grid_size(
             mask=np.full(padded_shape, False), pixel_scale=mask.pixel_scale, sub_grid_size=sub_grid_size)
 
-        return SubUnmaskedGrid(arr=padded_sub_grid, mask=mask, mask_shape=mask.shape, padded_shape=padded_shape,
+        return SubUnmaskedGrid(arr=padded_sub_grid, mask=mask, image_shape=mask.shape, padded_shape=padded_shape,
                                sub_grid_size=sub_grid_size)
 
     def __array_finalize__(self, obj):
@@ -649,7 +649,7 @@ class SubUnmaskedGrid(SubGrid, ImageUnmaskedGrid):
             self.sub_grid_length = obj.sub_grid_length
             self.sub_grid_fraction = obj.sub_grid_fraction
             self.mask = obj.mask
-            self.mask_shape = obj.mask_shape
+            self.image_shape = obj.image_shape
             self.padded_shape = obj.padded_shape
 
 
