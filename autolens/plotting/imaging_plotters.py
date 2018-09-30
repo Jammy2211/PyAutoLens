@@ -4,7 +4,8 @@ from autolens import conf
 from autolens.plotting import array_plotters
 
 
-def plot_image(image, units='arcsec', output_path=None, output_filename='images', output_format='show', ignore_config=True):
+def plot_image(image, positions=None, units='arcsec', output_path=None, output_filename='images', output_format='show',
+               ignore_config=True):
     """Plot the observed _image of an analysis, using the *Image* class object.
 
     The visualization and output type can be fully customized.
@@ -27,8 +28,13 @@ def plot_image(image, units='arcsec', output_path=None, output_filename='images'
         plt.figure(figsize=(25, 20))
         plt.subplot(2, 2, 1)
 
+        if positions is not None:
+            positions = list(map(lambda pos :
+                                 image.grid_arc_seconds_to_grid_pixels(grid_arc_seconds=pos),
+                                 positions))
+
         array_plotters.plot_array(
-            array=image, grid=None, as_subplot=True,
+            array=image, points=positions, grid=None, as_subplot=True,
             units=units, kpc_per_arcsec=None,
             xticks=image.xticks, yticks=image.yticks, xyticksize=16,
             norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
@@ -39,7 +45,7 @@ def plot_image(image, units='arcsec', output_path=None, output_filename='images'
         plt.subplot(2, 2, 2)
 
         array_plotters.plot_array(
-            array=image.noise_map, grid=None, as_subplot=True,
+            array=image.noise_map, points=None, grid=None, as_subplot=True,
             units=units, kpc_per_arcsec=None,
             xticks=image.xticks, yticks=image.yticks, xyticksize=16,
             norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
@@ -50,7 +56,7 @@ def plot_image(image, units='arcsec', output_path=None, output_filename='images'
         plt.subplot(2, 2, 3)
 
         array_plotters.plot_array(
-            array=image.psf, grid=None, as_subplot=True,
+            array=image.psf, points=None, grid=None, as_subplot=True,
             units='arcsec', kpc_per_arcsec=None,
             xticks=image.psf.xticks(image.pixel_scale), yticks=image.psf.yticks(image.pixel_scale), xyticksize=16,
             norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
@@ -61,7 +67,7 @@ def plot_image(image, units='arcsec', output_path=None, output_filename='images'
         plt.subplot(2, 2, 4)
 
         array_plotters.plot_array(
-            array=image.signal_to_noise_map, grid=None, as_subplot=True,
+            array=image.signal_to_noise_map, points=None, grid=None, as_subplot=True,
             units=units, kpc_per_arcsec=None,
             xticks=image.xticks, yticks=image.yticks, xyticksize=16,
             norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
@@ -74,8 +80,8 @@ def plot_image(image, units='arcsec', output_path=None, output_filename='images'
         plt.close()
 
 
-def plot_image_individuals(image, plot_image=False, plot_noise_map=False, plot_psf=False, plot_signal_to_noise_map=False,
-                           output_path=None, output_format='show', ignore_config=True):
+def plot_image_individuals(image, positions=None, plot_image=False, plot_noise_map=False, plot_psf=False,
+                           plot_signal_to_noise_map=False, output_path=None, output_format='show', ignore_config=True):
     """Plot the observed _image of an analysis, using the *Image* class object.
 
     The visualization and output type can be fully customized.
@@ -101,7 +107,7 @@ def plot_image_individuals(image, plot_image=False, plot_noise_map=False, plot_p
     if plot_image:
 
         array_plotters.plot_array(
-            array=image, grid=None, as_subplot=False,
+            array=image, points=positions, grid=None, as_subplot=False,
             units='arcsec', kpc_per_arcsec=None,
             xticks=image.xticks, yticks=image.yticks, xyticksize=40,
             norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
@@ -112,7 +118,7 @@ def plot_image_individuals(image, plot_image=False, plot_noise_map=False, plot_p
     if plot_noise_map:
 
         array_plotters.plot_array(
-            array=image.noise_map, grid=None, as_subplot=False,
+            array=image.noise_map, points=None, grid=None, as_subplot=False,
             units='arcsec', kpc_per_arcsec=None,
             xticks=image.xticks, yticks=image.yticks, xyticksize=40,
             norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
@@ -123,7 +129,7 @@ def plot_image_individuals(image, plot_image=False, plot_noise_map=False, plot_p
     if plot_psf:
 
         array_plotters.plot_array(
-            array=image.psf, grid=None, as_subplot=False,
+            array=image.psf, points=None, grid=None, as_subplot=False,
             units='arcsec', kpc_per_arcsec=None,
             xticks=image.psf.xticks(image.pixel_scale), yticks=image.psf.yticks(image.pixel_scale), xyticksize=40,
             norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
@@ -134,10 +140,23 @@ def plot_image_individuals(image, plot_image=False, plot_noise_map=False, plot_p
     if plot_signal_to_noise_map:
 
         array_plotters.plot_array(
-            array=image.signal_to_noise_map, grid=None, as_subplot=False,
+            array=image.signal_to_noise_map, points=None, grid=None, as_subplot=False,
             units='arcsec', kpc_per_arcsec=None,
             xticks=image.xticks, yticks=image.yticks, xyticksize=40,
             norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
             figsize=(20, 15), aspect='auto', cmap='jet', cb_ticksize=20,
             title='Signal To Noise Map', titlesize=46, xlabelsize=36, ylabelsize=36,
             output_path=output_path, output_filename='signal_to_noise_map', output_format=output_format)
+
+def plot_grid(grid, xmin=None, xmax=None, ymin=None, ymax=None):
+
+    plt.figure()
+    plt.scatter(x=grid[:, 0], y=grid[:, 1], marker='.')
+    array_plotters.set_title(title='Grid', titlesize=36)
+    plt.xlabel('x (arcsec)', fontsize=36)
+    plt.ylabel('y (arcsec)', fontsize=36)
+    plt.tick_params(labelsize=40)
+    if xmin is not None and xmax is not None and ymin is not None and ymax is not None:
+        plt.axis([xmin, xmax, ymin, ymax])
+    plt.show()
+    plt.close()
