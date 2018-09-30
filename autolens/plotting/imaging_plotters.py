@@ -4,7 +4,8 @@ from autolens import conf
 from autolens.plotting import array_plotters
 
 
-def plot_image(image, positions=None, units='arcsec', output_path=None, output_filename='images', output_format='show', ignore_config=True):
+def plot_image(image, positions=None, units='arcsec', output_path=None, output_filename='images', output_format='show',
+               ignore_config=True):
     """Plot the observed _image of an analysis, using the *Image* class object.
 
     The visualization and output type can be fully customized.
