@@ -29,7 +29,7 @@ class LightProfile(object):
             The (x, y) coordinates in the original reference frame of the observed _image.
         Returns
         -------
-        intensity : float
+        intensity : ndarray
             The value of intensity at the given radius
         """
         raise NotImplementedError("intensity_from_grid should be overridden")
@@ -82,7 +82,7 @@ class EllipticalLP(geometry_profiles.EllipticalProfile, LightProfile):
 
         Returns
         -------
-        intensity : float
+        luminosity : float
             The total luminosity within the specified ellipse.
         """
         return quad(self.luminosity_integral, a=0.0, b=major_axis, args=(self.axis_ratio,))[0]
@@ -141,10 +141,6 @@ class EllipticalGaussian(EllipticalLP):
         ----------
         grid : ndarray
             The (x, y) coordinates in the original reference frame of the observed _image.
-        Returns
-        -------
-        intensity : float
-            The value of intensity at the given radius
         """
         return self.intensities_from_grid_radii(self.grid_to_elliptical_radii(grid))
 

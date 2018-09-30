@@ -1,0 +1,14 @@
+At the end of the introduction tutorials, we could fit strong lensing imaging with a tracer. However, we simulated the
+image ourselves, which meant we knew the combination of light-profiles and mass-profiles provided a good fit.
+
+In this set of tutorials, we'll deal the situation that we face in the real world and assume we have no knowledge of
+which solutions actually provide a good fit. This process of finding the good solutions is called 'lens modeling',
+and its what we wrote PyAutoLens to do.
+
+At the end of tutorials you will understand:
+
+1) The concept of a non-linear search and non-linear parameter space.
+2) How to perform a non-linear search with PyAutoLens to fit a lens model.
+3) The trade-off between realism and complexity when choosing a lens model.
+4) Why an incorrect lens model may be inferred and how to prevent this from happening.
+5) The challenges that are involved in inferred a robust lens model in a computationally reasonable run-time.

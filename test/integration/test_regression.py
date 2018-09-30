@@ -48,9 +48,10 @@ class TestPhaseModelMapper(object):
         lines = list(
             filter(lambda line: "axis_ratio" in line or "intensity" in line, phase.variable.model_info.split("\n")))
 
+
         assert len(lines) == 2
-        assert "lens_galaxies_axis_ratio                UniformPrior, lower_limit = 0.5, upper_limit = 1.0" in lines
-        assert "lens_galaxies_intensity                 UniformPrior, lower_limit = 0.5, upper_limit = 1.0" in lines
+        assert "lens_galaxies_axis_ratio                UniformPrior, lower_limit = 0.2, upper_limit = 1.0" in lines
+        assert "lens_galaxies_intensity                 UniformPrior, lower_limit = 0.2, upper_limit = 1.0" in lines
 
     def test_constants_work(self):
         pipeline_name = "const_float"
