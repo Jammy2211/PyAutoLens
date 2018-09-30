@@ -14,6 +14,7 @@ lib/
 .pytest_cache
 data/*
 scripts
+output/*
 test_files/*
 test/integration/data/*
 MultiNest/
