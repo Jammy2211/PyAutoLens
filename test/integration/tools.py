@@ -3,7 +3,6 @@ import shutil
 
 import numpy as np
 
-from autolens import conf
 from autolens.imaging import image as im
 from autolens.imaging import imaging_util
 from autolens.imaging import mask
@@ -11,11 +10,8 @@ from autolens.imaging import scaled_array
 from autolens.lensing import ray_tracing
 
 dirpath = os.path.dirname(os.path.realpath(__file__))
-output_path = '/gpfs/data/pdtw24/Lens/integration/'
-
 
 def reset_paths(data_name, pipeline_name, output_path):
-    conf.instance.output_path = output_path
 
     try:
         shutil.rmtree(dirpath + '/data' + data_name)
