@@ -21,8 +21,8 @@ except FileNotFoundError:
 
 
 def pipeline():
-    pipeline_name = "const_float"
-    data_name = '/const_float'
+    pipeline_name = "set_constant_float"
+    data_name = '/set_constant_float'
 
     tools.reset_paths(data_name, pipeline_name, output_path)
 
