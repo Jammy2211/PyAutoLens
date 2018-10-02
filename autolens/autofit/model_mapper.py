@@ -833,6 +833,34 @@ class PriorModel(AbstractPriorModel):
                 setattr(self, arg, self.make_prior(arg, cls))
 
     def make_prior(self, attribute_name, cls):
+        """
+        Create a prior for an attribute of a class with a given name. The prior is created by searching the default
+        prior config for the attribute.
+
+        Entries in configuration with a u become uniform priors; with a g become gaussian priors; with a c become
+        constants.
+
+        If prior configuration for a given attribute is not specified in the configuration for a class then the
+        configuration corresponding to the parents of that class is searched. If no configuration can be found then a
+        prior exception is raised.
+
+        Parameters
+        ----------
+        attribute_name: str
+            The name of the attribute for which a prior is created
+        cls: class
+            The class to which the attribute belongs
+
+        Returns
+        -------
+        prior: Prior
+            A prior
+
+        Raises
+        ------
+        exc.PriorException
+            If no configuration can be found
+        """
         config_arr = self.config.get_for_nearest_ancestor(cls, attribute_name)
         if config_arr[0] == "u":
             return UniformPrior(config_arr[1], config_arr[2])
