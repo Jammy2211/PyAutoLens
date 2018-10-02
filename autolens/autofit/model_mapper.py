@@ -581,9 +581,14 @@ class ModelInstance(AbstractModel):
                 source if isinstance(instance, cls)]
 
 
-class Constant(object):
+class Attribute(object):
     _ids = itertools.count()
 
+    def __init__(self):
+        self.id = next(self._ids)
+
+
+class Constant(Attribute):
     def __init__(self, value):
         """
         Represents a constant value. No prior is added to the model mapper for constants reducing the dimensionality
@@ -595,7 +600,7 @@ class Constant(object):
             The value this constant should take.
         """
         self.value = value
-        self.id = next(self._ids)
+        super().__init__()
 
     def __eq__(self, other):
         return self.value == other
@@ -623,16 +628,11 @@ class Constant(object):
 prior_number = 0
 
 
-class Prior(object):
+class Prior(Attribute):
     """An object used to mappers a unit value to an attribute value for a specific class attribute"""
-
-    _ids = itertools.count()
 
     def value_for(self, unit):
         raise NotImplementedError()
-
-    def __init__(self):
-        self.id = next(self._ids)
 
     def __eq__(self, other):
         return self.id == other.id
