@@ -130,7 +130,7 @@ class TestGenerateModelInfo(object):
         mm = model_mapper.ModelMapper(test_config)
         mm.mock_class = MockClassMM
 
-        model_info = mm.model_info
+        model_info = mm.info
 
         assert model_info == """MockClassMM
 
@@ -144,7 +144,7 @@ mock_class_two                          UniformPrior, lower_limit = 0.0, upper_l
 
         mm.mock_class.two = model_mapper.Constant(1)
 
-        model_info = mm.model_info
+        model_info = mm.info
 
         assert model_info == """MockClassMM
 
