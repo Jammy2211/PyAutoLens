@@ -90,6 +90,15 @@ class TestPriorLinking(object):
         assert new_model.one.mean == 0.5
         assert new_model.two is initial_model.two
 
+    def test_tuple_passing(self, test_config):
+        initial_model = model_mapper.PriorModel(MockProfile, test_config)
+        initial_model.centre_0 = 1.
+
+        new_model = initial_model.linked_model_for_class(MockProfile)
+
+        assert new_model.centre_0 == model_mapper.Constant(1.)
+        assert new_model.centre_1 is initial_model.centre_1
+
 
 class TestAddition(object):
     def test_abstract_plus_abstract(self):
