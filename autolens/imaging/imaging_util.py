@@ -401,7 +401,7 @@ def map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(array_1d, shape):
     return array_2d
 
 
-def trim_array_2d_to_new_shape(array_2d, new_shape):
+def trim_array_2d_around_centre(array_2d, new_shape):
     """
     Trim the data_vector array to a new sub_grid_size around its central pixel.
 
@@ -415,34 +415,55 @@ def trim_array_2d_to_new_shape(array_2d, new_shape):
         The (x,y) new pixel dimension of the trimmed data_vector-array.
     """
 
-    shape = array_2d.shape
-
-    if new_shape[0] > shape[0]:
+    if new_shape[0] > array_2d.shape[0]:
         raise ValueError(
             'grids.Grid2d.trim_data - You have specified a new x_size bigger than the data_vector array')
-    elif new_shape[1] > shape[1]:
+    elif new_shape[1] > array_2d.shape[1]:
         raise ValueError(
             'grids.Grid2d.trim_data - You have specified a new y_size bigger than the data_vector array')
 
-    x_trim = int((shape[0] - new_shape[0]) / 2)
-    y_trim = int((shape[1] - new_shape[1]) / 2)
+    if array_2d.shape[0] % 2 == 0 and not new_shape[0] % 2 == 0:
+        raise ValueError('You cannot trim an array from even shape to odd shape - change new_shape to even')
 
-    array = array_2d[x_trim:shape[0] - x_trim, y_trim:shape[1] - y_trim]
+    if array_2d.shape[1] % 2 == 0 and not new_shape[1] % 2 == 0:
+        raise ValueError('You cannot trim an array from even shape to odd shape - change new_shape to even')
 
-    if array.shape[0] != new_shape[0]:
-        logger.debug(
-            'masked_image.data_vector.trim_data - Your specified x_size was odd (even) when the masked_image x '
-            'dimension is even (odd)')
-        logger.debug(
-            'The method has automatically used x_size+1 to ensure the masked_image is not miscentred by a half-pixel.')
-    elif array.shape[1] != new_shape[1]:
-        logger.debug(
-            'masked_image.data_vector.trim_data - Your specified y_size was odd (even) when the masked_image y '
-            'dimension is even (odd)')
-        logger.debug(
-            'The method has automatically used y_size+1 to ensure the masked_image is not miscentred by a half-pixel.')
+    if not array_2d.shape[0] % 2 == 0 and new_shape[0] % 2 == 0:
+        raise ValueError('You cannot trim an array from odd shape to even shape - change new_shape to odd')
+
+    if not array_2d.shape[1] % 2 == 0 and new_shape[1] % 2 == 0:
+        raise ValueError('You cannot trim an array from odd shape to even shape - change new_shape to odd')
+
+    x_trim = int((array_2d.shape[0] - new_shape[0]) / 2)
+    y_trim = int((array_2d.shape[1] - new_shape[1]) / 2)
+
+    array = array_2d[x_trim:array_2d.shape[0] - x_trim, y_trim:array_2d.shape[1] - y_trim]
 
     return array
+
+
+def trim_array_2d_around_region(array_2d, x0, x1, y0, y1):
+    """
+    Trim the data_vector array to a new sub_grid_size around its central pixel.
+
+    NOTE: The centre of the array cannot be shifted. Therefore, even arrays must be trimmed to even arrays \
+    (e.g. 8x8 -> 4x4) and odd to odd (e.g. 5x5 -> 3x3).
+
+    Parameters
+    ----------
+    array_2d
+    new_shape : (int, int)
+        The (x,y) new pixel dimension of the trimmed data_vector-array.
+    """
+
+    if x1 > array_2d.shape[0]:
+        raise ValueError(
+            'grids.Grid2d.trim_data - You have specified a new x_size bigger than the data_vector array')
+    elif y1 > array_2d.shape[1]:
+        raise ValueError(
+            'grids.Grid2d.trim_data - You have specified a new y_size bigger than the data_vector array')
+
+    return array_2d[y0:y1, x0:x1]
 
 
 def numpy_array_to_fits(array, path, overwrite=False):
