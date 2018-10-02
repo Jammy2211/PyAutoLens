@@ -914,7 +914,7 @@ class PriorModel(AbstractPriorModel):
         for attribute_tuple in attribute_tuples:
             name = attribute_tuple.name
             if name in constructor_args or (
-                    is_tuple_like_attribute_name(name) and "_".join(name.split("_")[:-1]) in constructor_args):
+                    is_tuple_like_attribute_name(name) and tuple_name(name) in constructor_args):
                 attribute = kwargs[name] if name in kwargs else attribute_tuple.attribute
                 if make_constants_variable and isinstance(attribute, Constant):
                     new_attribute = getattr(new_model, name)
@@ -1147,3 +1147,20 @@ def is_tuple_like_attribute_name(attribute_name):
     """
     pattern = re.compile("^[a-zA-Z_0-9]*_[0-9]$")
     return pattern.match(attribute_name)
+
+
+def tuple_name(attribute_name):
+    """
+    Extract the name of a tuple attribute from the name of one of its components, e.g. centre_0 -> centre
+
+    Parameters
+    ----------
+    attribute_name: str
+        The name of an attribute which is a component of a tuple
+
+    Returns
+    -------
+    tuple_name: str
+        The name of the tuple of which the attribute is a member
+    """
+    return "_".join(attribute_name.split("_")[:-1])
