@@ -3,7 +3,6 @@ import itertools
 import math
 import os
 import re
-from collections import namedtuple
 from functools import wraps
 
 from scipy.special import erfinv
@@ -12,10 +11,45 @@ from autolens import conf
 from autolens import exc
 from autolens.conf import DefaultPriorConfig
 
-PriorTuple = namedtuple("PriorTuple", ["name", "prior"])
-ConstantTuple = namedtuple("ConstantTuple", ["name", "constant"])
-PriorModelTuple = namedtuple("PriorModelTuple", ["name", "prior_model"])
-AttributeTuple = namedtuple("AttributeTuple", ["name", "attribute"])
+
+class AttributeNameValue(object):
+    def __init__(self, name, value):
+        self.name = name
+        self.value = value
+
+    def __iter__(self):
+        return iter(self.tuple)
+
+    @property
+    def tuple(self):
+        return self.name, self.value
+
+    def __getitem__(self, item):
+        return self.tuple[item]
+
+    def __eq__(self, other):
+        return self.tuple == other.tuple
+
+    def __hash__(self):
+        return hash(self.tuple)
+
+
+class ConstantNameValue(AttributeNameValue):
+    @property
+    def constant(self):
+        return self.value
+
+
+class PriorNameValue(AttributeNameValue):
+    @property
+    def prior(self):
+        return self.value
+
+
+class PriorModelNameValue(AttributeNameValue):
+    @property
+    def prior_model(self):
+        return self.value
 
 
 def cast_collection(named_tuple):
@@ -134,7 +168,7 @@ class ModelMapper(AbstractModel):
         return len(self.constant_tuples_ordered_by_id)
 
     @property
-    @cast_collection(PriorModelTuple)
+    @cast_collection(PriorModelNameValue)
     def prior_model_tuples(self):
         """
         Returns
@@ -144,7 +178,7 @@ class ModelMapper(AbstractModel):
         return list(filter(lambda t: isinstance(t[1], AbstractPriorModel), self.__dict__.items()))
 
     @property
-    @cast_collection(PriorModelTuple)
+    @cast_collection(PriorModelNameValue)
     def list_prior_model_tuples(self):
         """
         Returns
@@ -154,7 +188,7 @@ class ModelMapper(AbstractModel):
         return list(filter(lambda t: isinstance(t[1], ListPriorModel), self.__dict__.items()))
 
     @property
-    @cast_collection(PriorModelTuple)
+    @cast_collection(PriorModelNameValue)
     def flat_prior_model_tuples(self):
         """
         Returns
@@ -170,7 +204,7 @@ class ModelMapper(AbstractModel):
                 prior_model.flat_prior_model_tuples]
 
     @property
-    @cast_collection(PriorTuple)
+    @cast_collection(PriorNameValue)
     def prior_tuple_dict(self):
         """
         Returns
@@ -183,7 +217,7 @@ class ModelMapper(AbstractModel):
                 for prior_tuple in prior_model.prior_tuples}.values()
 
     @property
-    @cast_collection(ConstantTuple)
+    @cast_collection(ConstantNameValue)
     def constant_tuple_dict(self):
         """
         Returns
@@ -196,7 +230,7 @@ class ModelMapper(AbstractModel):
                 for constant_tuple in prior_model.constant_tuples}.values()
 
     @property
-    @cast_collection(PriorTuple)
+    @cast_collection(PriorNameValue)
     def prior_tuples_ordered_by_id(self):
         """
         Returns
@@ -207,7 +241,7 @@ class ModelMapper(AbstractModel):
         return sorted(list(self.prior_tuple_dict), key=lambda prior_tuple: prior_tuple.prior.id)
 
     @property
-    @cast_collection(ConstantTuple)
+    @cast_collection(ConstantNameValue)
     def constant_tuples_ordered_by_id(self):
         """
         Returns
@@ -468,7 +502,7 @@ class ModelMapper(AbstractModel):
         mapper: ModelMapper
             A new model mapper with all priors replaced by gaussian priors.
         """
-        tuples = [PriorTuple(*tup) for tup in tuples]
+        tuples = [PriorNameValue(*tup) for tup in tuples]
         prior_tuples = self.prior_tuples_ordered_by_id
         prior_class_dict = self.prior_class_dict
         arguments = {}
@@ -705,7 +739,7 @@ class TuplePrior(object):
         super(TuplePrior, self).__setattr__(key, value)
 
     @property
-    @cast_collection(PriorTuple)
+    @cast_collection(PriorNameValue)
     def prior_tuples(self):
         """
         Returns
@@ -716,7 +750,7 @@ class TuplePrior(object):
         return list(filter(lambda t: isinstance(t[1], Prior), self.__dict__.items()))
 
     @property
-    @cast_collection(ConstantTuple)
+    @cast_collection(ConstantNameValue)
     def constant_tuples(self):
         """
         Returns
@@ -915,7 +949,7 @@ class PriorModel(AbstractPriorModel):
             name = attribute_tuple.name
             if name in constructor_args or (
                     is_tuple_like_attribute_name(name) and tuple_name(name) in constructor_args):
-                attribute = kwargs[name] if name in kwargs else attribute_tuple.attribute
+                attribute = kwargs[name] if name in kwargs else attribute_tuple.value
                 if make_constants_variable and isinstance(attribute, Constant):
                     new_attribute = getattr(new_model, name)
                     if isinstance(new_attribute, Prior):
@@ -949,7 +983,7 @@ class PriorModel(AbstractPriorModel):
         self.__getattribute__(item)
 
     @property
-    @cast_collection(PriorTuple)
+    @cast_collection(PriorNameValue)
     def tuple_prior_tuples(self):
         """
         Returns
@@ -959,7 +993,7 @@ class PriorModel(AbstractPriorModel):
         return list(filter(lambda t: type(t[1]) is TuplePrior, self.__dict__.items()))
 
     @property
-    @cast_collection(PriorTuple)
+    @cast_collection(PriorNameValue)
     def direct_prior_tuples(self):
         """
         Returns
@@ -969,7 +1003,7 @@ class PriorModel(AbstractPriorModel):
         return list(filter(lambda t: isinstance(t[1], Prior), self.__dict__.items()))
 
     @property
-    @cast_collection(PriorTuple)
+    @cast_collection(PriorNameValue)
     def prior_tuples(self):
         """
         Returns
@@ -980,7 +1014,7 @@ class PriorModel(AbstractPriorModel):
                 tuple_prior[1].prior_tuples] + self.direct_prior_tuples
 
     @property
-    @cast_collection(ConstantTuple)
+    @cast_collection(ConstantNameValue)
     def direct_constant_tuples(self):
         """
         Returns
@@ -991,7 +1025,7 @@ class PriorModel(AbstractPriorModel):
         return list(filter(lambda t: isinstance(t[1], Constant), self.__dict__.items()))
 
     @property
-    @cast_collection(ConstantTuple)
+    @cast_collection(ConstantNameValue)
     def constant_tuples(self):
         """
         Returns
@@ -1002,7 +1036,7 @@ class PriorModel(AbstractPriorModel):
                 tuple_prior[1].constant_tuples] + self.direct_constant_tuples
 
     @property
-    @cast_collection(AttributeTuple)
+    @cast_collection(AttributeNameValue)
     def attribute_tuples(self):
         return self.prior_tuples + self.constant_tuples
 
@@ -1107,7 +1141,7 @@ class ListPriorModel(list, AbstractPriorModel):
             [prior_model.gaussian_prior_model_for_arguments(arguments) for prior_model in self])
 
     @property
-    @cast_collection(PriorTuple)
+    @cast_collection(PriorNameValue)
     def prior_tuples(self):
         """
         Returns
@@ -1117,7 +1151,7 @@ class ListPriorModel(list, AbstractPriorModel):
         return set([prior for prior_model in self for prior in prior_model.prior_tuples])
 
     @property
-    @cast_collection(ConstantTuple)
+    @cast_collection(ConstantNameValue)
     def constant_tuples(self):
         """
         Returns
