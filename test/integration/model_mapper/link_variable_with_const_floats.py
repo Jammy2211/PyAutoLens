@@ -23,9 +23,9 @@ except FileNotFoundError:
 
 
 def pipeline():
-    conf.instance = conf.Config(config_path=output_path + '/config', output_path=output_path)
-    pipeline_name = "link_variable_const_floats"
-    data_name = '/link_variable_const_floats'
+
+    pipeline_name = "link_variable_with_constants_to_floats"
+    data_name = '/link_variable_with_constants_to_floats'
 
     tools.reset_paths(data_name, pipeline_name, output_path)
 

@@ -588,8 +588,8 @@ class LensPlanePhase(PhaseImaging):
             self.unmasked_model_image = self.fit.unmasked_model_image
             self.lens_galaxy_unmasked_model_images = self.fit.unmasked_model_images_of_galaxies
             self.lens_subtracted_unmasked_image = analysis.lensing_image.image - self.unmasked_model_image
-            fitting_plotters.plot_fitting_hyper_arrays(self.fit, output_path=analysis.output_image_path,
-                                                   output_format='png')
+      #      fitting_plotters.plot_fitting_hyper_arrays(self.fit, output_path=analysis.output_image_path,
+      #                                             output_format='png')
 
 
 class LensPlaneHyperPhase(LensPlanePhase):
