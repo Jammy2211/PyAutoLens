@@ -2,7 +2,7 @@ import inspect
 
 from autolens import exc
 from autolens.autofit import model_mapper
-from autolens.autofit.model_mapper import PriorTuple, ConstantTuple, cast_collection
+from autolens.autofit.model_mapper import PriorNameValue, ConstantNameValue, cast_collection
 from autolens.lensing import galaxy
 from autolens.profiles import light_profiles, mass_profiles
 
@@ -217,7 +217,7 @@ class GalaxyModel(model_mapper.AbstractPriorModel):
         return {key: value for key, value in self.prior_model_dict.items() if is_mass_profile_class(value.cls)}
 
     @property
-    @cast_collection(PriorTuple)
+    @cast_collection(PriorNameValue)
     def prior_tuples(self):
         """
         Returns
@@ -228,7 +228,7 @@ class GalaxyModel(model_mapper.AbstractPriorModel):
         return [prior for prior_model in self.prior_models for prior in prior_model.prior_tuples]
 
     @property
-    @cast_collection(ConstantTuple)
+    @cast_collection(ConstantNameValue)
     def constant_tuples(self):
         """
         Returns
