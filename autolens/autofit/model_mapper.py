@@ -2,6 +2,7 @@ import inspect
 import itertools
 import math
 import os
+import re
 from collections import namedtuple
 from functools import wraps
 
@@ -912,7 +913,8 @@ class PriorModel(AbstractPriorModel):
         new_model = PriorModel(cls, self.config)
         for attribute_tuple in attribute_tuples:
             name = attribute_tuple.name
-            if name in constructor_args:
+            if name in constructor_args or (
+                    is_tuple_like_attribute_name(name) and "_".join(name.split("_")[:-1]) in constructor_args):
                 attribute = kwargs[name] if name in kwargs else attribute_tuple.attribute
                 if make_constants_variable and isinstance(attribute, Constant):
                     new_attribute = getattr(new_model, name)
@@ -1127,3 +1129,21 @@ class ListPriorModel(list, AbstractPriorModel):
     @property
     def prior_class_dict(self):
         return {prior: cls for prior_model in self for prior, cls in prior_model.prior_class_dict.items()}
+
+
+def is_tuple_like_attribute_name(attribute_name):
+    """
+    Determine if a string matches the pattern "{attribute_name}_#", that is if it seems to be a tuple.
+
+    Parameters
+    ----------
+    attribute_name: str
+        The name of some attribute that may refer to a tuple.
+
+    Returns
+    -------
+    is_tuple_like: bool
+        True iff the attribute name looks like that which refers to a tuple.
+    """
+    pattern = re.compile("^[a-zA-Z_0-9]*_[0-9]$")
+    return pattern.match(attribute_name)

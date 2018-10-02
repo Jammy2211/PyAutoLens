@@ -93,11 +93,19 @@ class TestPriorLinking(object):
     def test_tuple_passing(self, test_config):
         initial_model = model_mapper.PriorModel(MockProfile, test_config)
         initial_model.centre_0 = 1.
+        assert isinstance(initial_model.centre_0, model_mapper.Constant)
 
         new_model = initial_model.linked_model_for_class(MockProfile)
 
-        assert new_model.centre_0 == model_mapper.Constant(1.)
+        assert new_model.centre_0 is initial_model.centre_0
         assert new_model.centre_1 is initial_model.centre_1
+
+    def test_is_tuple_like_attribute_name(self):
+        assert model_mapper.is_tuple_like_attribute_name("centre_0")
+        assert model_mapper.is_tuple_like_attribute_name("centre_1")
+        assert not model_mapper.is_tuple_like_attribute_name("centre")
+        assert model_mapper.is_tuple_like_attribute_name("centre_why_not_0")
+        assert not model_mapper.is_tuple_like_attribute_name("centre_why_not")
 
 
 class TestAddition(object):
