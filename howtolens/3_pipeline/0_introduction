@@ -1,7 +1,7 @@
-In the examples above, you'll learn that as the lens model becomes more complex, that phases take longer to
-             run. Furthermore, you'll often end up computing an incorrect solution. In this tutorial, we'll learn how
-             to link multiple phases together to form a pipeline. By linking phases, we can gradually increase the lens
-             model complexity such that we can fit complex lens models much faste than just using one phase.
+You are now familiar with PyAutoLens and have a reasonable understanding of lens modeling. In this chapter, we'll
+introduce pipelines, a concept we not so subtly hinted at towards the end of the last chapter. Pipelines allow one to
+generically link phases together, so that realistic lens models navigating a complex non-linear parameter can be
+fitted successfully in a completely generalizeable way.
 
 Now you're familiar with the basics of AutoLens, I recommend that you take the examples that can be found in this
 'examples' directory. Each exercise is aimed at introducing a new concept about strong lens modeling:

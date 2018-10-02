@@ -14,8 +14,9 @@ output_path = '{}/integration_output'.format(dirpath)
 
 
 def pipeline():
-    pipeline_name = "const_tuple_x2"
-    data_name = '/const_tuple_x2'
+
+    pipeline_name = "constant_tuples_x2"
+    data_name = '/constant_tuples_x2'
 
     tools.reset_paths(data_name, pipeline_name, output_path)
 

@@ -34,7 +34,7 @@ lens_name = 'AO/'
 pixel_scale = 0.01
 
 psf = image.PSF.from_fits(file_path=path + '../profiling/data/psf', hdu=3, pixel_scale=pixel_scale)
-psf = psf.trim(psf_size)
+psf = psf.trim_around_centre(psf_size)
 ma = mask.Mask.padded_mask_unmasked_psf_edges(shape_arc_seconds=(15.0, 15.0), pixel_scale=pixel_scale,
                                               pad_size=psf_size)
 
