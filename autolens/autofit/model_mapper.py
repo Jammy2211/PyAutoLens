@@ -804,7 +804,7 @@ class PriorModel(AbstractPriorModel):
 
         self.cls = cls
         self.config = (config or conf.instance.prior_default)
-        self.width_config = (config or conf.instance.prior_width)
+        self.width_config = conf.instance.prior_width
 
         self.component_number = next(self._ids)
 
@@ -843,6 +843,15 @@ class PriorModel(AbstractPriorModel):
         raise exc.PriorException(
             "Default prior for {} has no type indicator (u - Uniform, g - Gaussian, c - Constant".format(
                 attribute_name))
+
+    def linked_model_for_class(self, cls):
+        constructor_args = inspect.getfullargspec(cls).args
+        prior_tuples = self.prior_tuples
+        new_model = PriorModel(cls, self.config)
+        for prior_tuple in prior_tuples:
+            if prior_tuple.name in constructor_args:
+                setattr(new_model, prior_tuple.name, prior_tuple.prior)
+        return new_model
 
     def __setattr__(self, key, value):
         if key != "component_number":
