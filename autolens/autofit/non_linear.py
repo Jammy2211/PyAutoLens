@@ -173,7 +173,7 @@ class NonLinearOptimizer(object):
         paramnames_names = self.param_names
         paramnames_labels = self.param_labels
         with open(self.file_param_names, 'w') as paramnames:
-            for i in range(self.variable.total_priors):
+            for i in range(self.variable.prior_count):
                 line = paramnames_names[i]
                 line += ' ' * (50 - len(line)) + paramnames_labels[i]
                 paramnames.write(line + '\n')
@@ -329,7 +329,7 @@ class MultiNest(NonLinearOptimizer):
 
             phys_cube = self.variable.physical_vector_from_hypercube_vector(hypercube_vector=cube)
 
-            for i in range(self.variable.total_priors):
+            for i in range(self.variable.prior_count):
                 cube[i] = phys_cube[i]
 
             return cube
@@ -337,7 +337,7 @@ class MultiNest(NonLinearOptimizer):
         fitness_function = Fitness(self.variable.instance_from_physical_vector, self.constant, self.output_results)
 
         logger.info("Running MultiNest...")
-        self.run(fitness_function.__call__, prior, self.variable.total_priors,
+        self.run(fitness_function.__call__, prior, self.variable.prior_count,
                  outputfiles_basename="{}/mn".format(self.chains_path),
                  n_live_points=self.n_live_points,
                  const_efficiency_mode=self.const_efficiency_mode,
@@ -366,7 +366,7 @@ class MultiNest(NonLinearOptimizer):
 
         expected_parameters = (len(summary.readline()) - 113) / 112
 
-        if expected_parameters != self.variable.total_priors:
+        if expected_parameters != self.variable.prior_count:
             raise exc.MultiNestException(
                 'The file_summary file has a different number of parameters than the input model')
 
@@ -377,7 +377,7 @@ class MultiNest(NonLinearOptimizer):
         summary = self.open_summary_file()
 
         summary.seek(0)
-        summary.read(2 + offset * self.variable.total_priors)
+        summary.read(2 + offset * self.variable.prior_count)
         vector = []
         for param in range(number_entries):
             vector.append(float(summary.read(28)))
@@ -395,7 +395,7 @@ class MultiNest(NonLinearOptimizer):
         model in the second half of entries. The offset parameter is used to start at the desired model.
 
         """
-        return self.read_vector_from_summary(number_entries=self.variable.total_priors, offset=0)
+        return self.read_vector_from_summary(number_entries=self.variable.prior_count, offset=0)
 
     def most_likely_from_summary(self):
         """
@@ -405,7 +405,7 @@ class MultiNest(NonLinearOptimizer):
         This file stores the parameters of the most probable model in the first half of entries and the most likely
         model in the second half of entries. The offset parameter is used to start at the desired model.
         """
-        return self.read_vector_from_summary(number_entries=self.variable.total_priors, offset=56)
+        return self.read_vector_from_summary(number_entries=self.variable.prior_count, offset=56)
 
     def max_likelihood_from_summary(self):
         return self.read_vector_from_summary(number_entries=2, offset=112)[0]
@@ -539,7 +539,7 @@ class MultiNest(NonLinearOptimizer):
 
                 most_likely = self.most_likely_from_summary()
 
-                for i in range(self.variable.total_priors):
+                for i in range(self.variable.prior_count):
                     line = self.param_names[i]
                     line += ' ' * (50 - len(line)) + str(most_likely[i])
                     results.write(line + '\n')
@@ -555,7 +555,7 @@ class MultiNest(NonLinearOptimizer):
                     results.write('Most probable model (3 sigma limits)' + '\n')
                     results.write('\n')
 
-                    for i in range(self.variable.total_priors):
+                    for i in range(self.variable.prior_count):
                         line = self.param_names[i]
                         line += ' ' * (50 - len(line)) + str(most_probable[i]) + ' (' + str(
                             lower_limit[i]) + ', ' + str(
@@ -569,7 +569,7 @@ class MultiNest(NonLinearOptimizer):
                     results.write('Most probable model (1 sigma limits)' + '\n')
                     results.write('\n')
 
-                    for i in range(self.variable.total_priors):
+                    for i in range(self.variable.prior_count):
                         line = self.param_names[i]
                         line += ' ' * (50 - len(line)) + str(most_probable[i]) + ' (' + str(
                             lower_limit[i]) + ', ' + str(
@@ -583,6 +583,6 @@ class MultiNest(NonLinearOptimizer):
                 constant_names = self.constant_names
                 constants = self.variable.constant_tuples_ordered_by_id
 
-                for i in range(self.variable.total_constants):
+                for i in range(self.variable.constant_count):
                     line = constant_names[i]
                     line += ' ' * (50 - len(line)) + str(constants[i][1].value)
