@@ -4,6 +4,7 @@ import math
 import os
 from collections import namedtuple
 from functools import wraps
+from autolens.conf import DefaultPriorConfig
 
 from scipy.special import erfinv
 
@@ -54,7 +55,7 @@ class ModelMapper(AbstractModel):
         """
         Parameters
         ----------
-        config: auto_lens.config.config.Config
+        config: DefaultPriorConfig
             An object that wraps a configuration
 
         Examples
@@ -505,17 +506,17 @@ class ModelMapper(AbstractModel):
         return self.mapper_from_prior_arguments(arguments)
 
     @property
-    def model_info(self):
+    def info(self):
         """
         Use the priors that make up the model_mapper to generate information on each parameter of the overall model.
 
         This information is extracted from each priors *model_info* property.
         """
-        model_info = []
+        info = []
 
         for prior_model_name, prior_model in self.flat_prior_model_tuples:
 
-            model_info.append(prior_model.cls.__name__ + '\n')
+            info.append(prior_model.cls.__name__ + '\n')
 
             prior_model_iterator = prior_model.prior_tuples + prior_model.constant_tuples
 
@@ -523,11 +524,11 @@ class ModelMapper(AbstractModel):
                 attribute = attribute_tuple[1]
 
                 line = prior_model_name + '_' + attribute_tuple.name
-                model_info.append(line + ' ' * (40 - len(line)) + attribute.model_info)
+                info.append(line + ' ' * (40 - len(line)) + attribute.info)
 
-            model_info.append('')
+            info.append('')
 
-        return '\n'.join(model_info)
+        return '\n'.join(info)
 
 
 class ModelInstance(AbstractModel):
@@ -579,7 +580,7 @@ class Constant(object):
         return self.id
 
     @property
-    def model_info(self):
+    def info(self):
         return 'Constant, value = {}'.format(self.value)
 
 
@@ -644,7 +645,7 @@ class UniformPrior(Prior):
         return self.lower_limit + unit * (self.upper_limit - self.lower_limit)
 
     @property
-    def model_info(self):
+    def info(self):
         """The line of text describing this prior for the model_mapper.info file"""
         return 'UniformPrior, lower_limit = ' + str(self.lower_limit) + ', upper_limit = ' + str(self.upper_limit)
 
@@ -672,7 +673,7 @@ class GaussianPrior(Prior):
         return self.mean + (self.sigma * math.sqrt(2) * erfinv((unit * 2.0) - 1.0))
 
     @property
-    def model_info(self):
+    def info(self):
         """The line of text describing this prior for the model_mapper.info file"""
         return 'GaussianPrior, mean = ' + str(self.mean) + ', sigma = ' + str(self.sigma)
 
