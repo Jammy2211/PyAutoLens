@@ -74,6 +74,22 @@ class TestPriorLinking(object):
         assert new_model.one is initial_model.one
         assert new_model.two is initial_model.two
 
+    def test_uniform_prior_mean(self):
+        uniform_prior = model_mapper.UniformPrior(0., 1.)
+        assert uniform_prior.mean == 0.5
+
+        uniform_prior.mean = 1.
+        assert uniform_prior.lower_limit == 0.5
+        assert uniform_prior.upper_limit == 1.5
+
+    def test_make_constants_variable(self, initial_model):
+        initial_model.one = 1
+
+        new_model = initial_model.linked_model_for_class(MockClassMM, make_constants_variable=True)
+
+        assert new_model.one.mean == 0.5
+        assert new_model.two is initial_model.two
+
 
 class TestAddition(object):
     def test_abstract_plus_abstract(self):
