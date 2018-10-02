@@ -124,11 +124,11 @@ class ModelMapper(AbstractModel):
         super(ModelMapper, self).__setattr__(key, value)
 
     @property
-    def total_priors(self):
+    def prior_count(self):
         return len(self.prior_tuples_ordered_by_id)
 
     @property
-    def total_constants(self):
+    def constant_count(self):
         return len(self.constant_tuples_ordered_by_id)
 
     @property
