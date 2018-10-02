@@ -61,7 +61,7 @@ class ModelMapper(AbstractModel):
 
         Examples
         --------
-        # The ModelMapper converts a set of classes whose input attributes may be modeled using a non-linear search, \ 
+        # The ModelMapper converts a set of classes whose input attributes may be modeled using a non-linear search,  
         # to parameters with priors attached.
 
         # A config is passed into the model mapper to provide default setup values for the priors:
@@ -76,7 +76,7 @@ class ModelMapper(AbstractModel):
         mapper.gaussian = light_profiles.EllipticalGaussian)
         mapper.any_class = SomeClass
 
-        # A PriorModel instance is created each time we add a class to the mapper. We can access those models using \
+        # A PriorModel instance is created each time we add a class to the mapper. We can access those models using
         # the mapper attributes:
 
         sersic_model = mapper.sersic
@@ -646,6 +646,16 @@ class UniformPrior(Prior):
         return self.lower_limit + unit * (self.upper_limit - self.lower_limit)
 
     @property
+    def mean(self):
+        return (self.upper_limit - self.lower_limit) / 2
+
+    @mean.setter
+    def mean(self, new_value):
+        difference = new_value - self.mean
+        self.lower_limit += difference
+        self.upper_limit += difference
+
+    @property
     def info(self):
         """The line of text describing this prior for the model_mapper.info file"""
         return 'UniformPrior, lower_limit = ' + str(self.lower_limit) + ', upper_limit = ' + str(self.upper_limit)
@@ -873,7 +883,7 @@ class PriorModel(AbstractPriorModel):
             "Default prior for {} has no type indicator (u - Uniform, g - Gaussian, c - Constant".format(
                 attribute_name))
 
-    def linked_model_for_class(self, cls, **kwargs):
+    def linked_model_for_class(self, cls, make_constants_variable=False, **kwargs):
         constructor_args = inspect.getfullargspec(cls).args
         attribute_tuples = self.attribute_tuples
         new_model = PriorModel(cls, self.config)
@@ -881,6 +891,11 @@ class PriorModel(AbstractPriorModel):
             name = attribute_tuple.name
             if name in constructor_args:
                 attribute = kwargs[name] if name in kwargs else attribute_tuple.attribute
+                if make_constants_variable and isinstance(attribute, Constant):
+                    new_attribute = getattr(new_model, name)
+                    if isinstance(new_attribute, Prior):
+                        new_attribute.mean = attribute.value
+                        continue
                 setattr(new_model, name, attribute)
         return new_model
 
