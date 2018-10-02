@@ -55,10 +55,12 @@ class TestPriorLinking(object):
 
     def test_override(self, initial_model):
         new_prior = model_mapper.GaussianPrior(1., 1.)
-        new_model = initial_model.linked_model_for_class(MockClassMM, two=new_prior)
+        new_model = initial_model.linked_model_for_class(MockClassMM, one=1., two=new_prior)
 
         assert new_model != initial_model
-        assert new_model.one is initial_model.one
+        assert new_model.one is not initial_model.one
+        assert new_model.one == model_mapper.Constant(1.)
+        assert isinstance(new_model.one, model_mapper.Constant)
         assert new_model.two is not initial_model.two
         assert new_model.two is new_prior
 
@@ -68,6 +70,7 @@ class TestPriorLinking(object):
         new_model = initial_model.linked_model_for_class(MockClassMM)
 
         assert new_model.one == model_mapper.Constant(1)
+        assert isinstance(new_model.one, model_mapper.Constant)
         assert new_model.one is initial_model.one
         assert new_model.two is initial_model.two
 
