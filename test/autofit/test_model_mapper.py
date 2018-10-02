@@ -107,6 +107,11 @@ class TestPriorLinking(object):
         assert model_mapper.is_tuple_like_attribute_name("centre_why_not_0")
         assert not model_mapper.is_tuple_like_attribute_name("centre_why_not")
 
+    def test_tuple_name(self):
+        assert model_mapper.tuple_name("centre_0") == "centre"
+        assert model_mapper.tuple_name("centre_1") == "centre"
+        assert model_mapper.tuple_name("centre_why_not_0") == "centre_why_not"
+
 
 class TestAddition(object):
     def test_abstract_plus_abstract(self):
