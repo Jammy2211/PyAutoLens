@@ -35,6 +35,16 @@ def make_width_config():
                                              "test_files/config/priors/width"))
 
 
+class TestPriorLinking(object):
+    def test_same_class(self, test_config):
+        initial_model = model_mapper.PriorModel(MockClassMM, test_config)
+        new_model = initial_model.linked_model_for_class(MockClassMM)
+
+        assert new_model != initial_model
+        assert new_model.one is initial_model.one
+        assert new_model.two is initial_model.two
+
+
 class TestAddition(object):
     def test_abstract_plus_abstract(self):
         one = model_mapper.AbstractModel()
