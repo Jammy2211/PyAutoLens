@@ -61,7 +61,7 @@ class ModelMapper(AbstractModel):
 
         Examples
         --------
-        # The ModelMapper converts a set of classes whose input attributes may be modeled using a non-linear search,  
+        # The ModelMapper converts a set of classes whose input attributes may be modeled using a non-linear search,
         # to parameters with priors attached.
 
         # A config is passed into the model mapper to provide default setup values for the priors:
@@ -884,6 +884,29 @@ class PriorModel(AbstractPriorModel):
                 attribute_name))
 
     def linked_model_for_class(self, cls, make_constants_variable=False, **kwargs):
+        """
+        Create a PriorModel wrapping the specified class with attributes from this instance. Priors can be overridden
+        using keyword arguments. Any constructor arguments of the new class for which there is no attribute associated
+        with this class and no keyword argument are created from config.
+
+        If make_constants_variable is True then constants associated with this instance will be used to set the mean
+        of priors in the new instance rather than overriding them.
+
+        Parameters
+        ----------
+        cls: class
+            The class that the new PriorModel will wrap
+        make_constants_variable: bool
+            If True constants from this instance will be used to determine the mean values for priors in the new
+            instance rather than overriding them
+        kwargs
+            Keyword arguments passed in here are used to override attributes from this instance or add new attributes
+
+        Returns
+        -------
+        new_model: PriorModel
+            A new prior model with priors derived from this instance
+        """
         constructor_args = inspect.getfullargspec(cls).args
         attribute_tuples = self.attribute_tuples
         new_model = PriorModel(cls, self.config)
