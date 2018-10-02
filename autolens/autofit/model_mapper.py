@@ -844,13 +844,15 @@ class PriorModel(AbstractPriorModel):
             "Default prior for {} has no type indicator (u - Uniform, g - Gaussian, c - Constant".format(
                 attribute_name))
 
-    def linked_model_for_class(self, cls):
+    def linked_model_for_class(self, cls, **kwargs):
         constructor_args = inspect.getfullargspec(cls).args
         prior_tuples = self.prior_tuples
         new_model = PriorModel(cls, self.config)
         for prior_tuple in prior_tuples:
-            if prior_tuple.name in constructor_args:
-                setattr(new_model, prior_tuple.name, prior_tuple.prior)
+            name = prior_tuple.name
+            if name in constructor_args:
+                prior = kwargs[name] if name in kwargs else prior_tuple.prior
+                setattr(new_model, name, prior)
         return new_model
 
     def __setattr__(self, key, value):
