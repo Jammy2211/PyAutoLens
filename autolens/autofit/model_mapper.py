@@ -14,6 +14,7 @@ from autolens.conf import DefaultPriorConfig
 PriorTuple = namedtuple("PriorTuple", ["name", "prior"])
 ConstantTuple = namedtuple("ConstantTuple", ["name", "constant"])
 PriorModelTuple = namedtuple("PriorModelTuple", ["name", "prior_model"])
+AttributeTuple = namedtuple("AttributeTuple", ["name", "attribute"])
 
 
 def cast_collection(named_tuple):
@@ -874,13 +875,13 @@ class PriorModel(AbstractPriorModel):
 
     def linked_model_for_class(self, cls, **kwargs):
         constructor_args = inspect.getfullargspec(cls).args
-        prior_tuples = self.prior_tuples
+        attribute_tuples = self.attribute_tuples
         new_model = PriorModel(cls, self.config)
-        for prior_tuple in prior_tuples:
-            name = prior_tuple.name
+        for attribute_tuple in attribute_tuples:
+            name = attribute_tuple.name
             if name in constructor_args:
-                prior = kwargs[name] if name in kwargs else prior_tuple.prior
-                setattr(new_model, name, prior)
+                attribute = kwargs[name] if name in kwargs else attribute_tuple.attribute
+                setattr(new_model, name, attribute)
         return new_model
 
     def __setattr__(self, key, value):
@@ -959,6 +960,11 @@ class PriorModel(AbstractPriorModel):
         """
         return [constant_tuple for tuple_prior in self.tuple_prior_tuples for constant_tuple in
                 tuple_prior[1].constant_tuples] + self.direct_constant_tuples
+
+    @property
+    @cast_collection(AttributeTuple)
+    def attribute_tuples(self):
+        return self.prior_tuples + self.constant_tuples
 
     @property
     def prior_class_dict(self):
