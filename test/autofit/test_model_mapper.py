@@ -62,6 +62,15 @@ class TestPriorLinking(object):
         assert new_model.two is not initial_model.two
         assert new_model.two is new_prior
 
+    def test_constants(self, initial_model):
+        initial_model.one = 1
+
+        new_model = initial_model.linked_model_for_class(MockClassMM)
+
+        assert new_model.one == model_mapper.Constant(1)
+        assert new_model.one is initial_model.one
+        assert new_model.two is initial_model.two
+
 
 class TestAddition(object):
     def test_abstract_plus_abstract(self):
