@@ -14,7 +14,7 @@ sersic = light_profiles.EllipticalSersic(centre=(0.0, 0.0), axis_ratio=0.8, phi=
 lsst = profiling_data.setup_class(name='LSST', pixel_scale=0.2, subgrid_size=subgrid_size, psf_shape=kernel_shape)
 lsst_image = sersic.intensities_from_grid(grid=lsst.coords.image_coords)
 lsst_blurring_image = sersic.intensities_from_grid(grid=lsst.coords.blurring_coords)
-lsst_kernel_convolver = lsst.masked_image.convolver.convolver_for_kernel(lsst._image_plane_image.psf.trim(kernel_shape))
+lsst_kernel_convolver = lsst.masked_image.convolver.convolver_for_kernel(lsst._image_plane_image.psf.trim_around_centre(kernel_shape))
 
 assert lsst_kernel_convolver.convolve_image(image_array=lsst_image, blurring_array=lsst_blurring_image) == \
        pytest.approx(lsst_kernel_convolver.convolve_image(image_array=lsst_image, blurring_array=lsst_blurring_image),
@@ -24,7 +24,7 @@ euclid = profiling_data.setup_class(name='Euclid', pixel_scale=0.1, subgrid_size
 euclid_image = sersic.intensities_from_grid(grid=euclid.coords.image_coords)
 euclid_blurring_image = sersic.intensities_from_grid(grid=euclid.coords.blurring_coords)
 euclid_kernel_convolver = euclid.masked_image.convolver.convolver_for_kernel(
-    euclid._image_plane_image.psf.trim(kernel_shape))
+    euclid._image_plane_image.psf.trim_around_centre(kernel_shape))
 
 assert euclid_kernel_convolver.convolve_image(image_array=euclid_image, blurring_array=euclid_blurring_image) == \
        pytest.approx(
@@ -33,7 +33,7 @@ assert euclid_kernel_convolver.convolve_image(image_array=euclid_image, blurring
 hst = profiling_data.setup_class(name='HST', pixel_scale=0.05, subgrid_size=subgrid_size, psf_shape=kernel_shape)
 hst_image = sersic.intensities_from_grid(grid=hst.coords.image_coords)
 hst_blurring_image = sersic.intensities_from_grid(grid=hst.coords.blurring_coords)
-hst_kernel_convolver = hst.masked_image.convolver.convolver_for_kernel(hst._image_plane_image.psf.trim(kernel_shape))
+hst_kernel_convolver = hst.masked_image.convolver.convolver_for_kernel(hst._image_plane_image.psf.trim_around_centre(kernel_shape))
 
 assert hst_kernel_convolver.convolve_image(image_array=hst_image, blurring_array=hst_blurring_image) == \
        pytest.approx(hst_kernel_convolver.convolve_image(image_array=hst_image, blurring_array=hst_blurring_image),
@@ -43,7 +43,7 @@ hst_up = profiling_data.setup_class(name='HSTup', pixel_scale=0.03, subgrid_size
 hst_up_image = sersic.intensities_from_grid(grid=hst_up.coords.image_coords)
 hst_up_blurring_image = sersic.intensities_from_grid(grid=hst_up.coords.blurring_coords)
 hst_up_kernel_convolver = hst_up.masked_image.convolver.convolver_for_kernel(
-    hst_up._image_plane_image.psf.trim(kernel_shape))
+    hst_up._image_plane_image.psf.trim_around_centre(kernel_shape))
 
 assert hst_up_kernel_convolver.convolve_image(image_array=hst_up_image, blurring_array=hst_up_blurring_image) == \
        pytest.approx(
@@ -52,7 +52,7 @@ assert hst_up_kernel_convolver.convolve_image(image_array=hst_up_image, blurring
 ao = profiling_data.setup_class(name='AO', pixel_scale=0.01, subgrid_size=subgrid_size, psf_shape=kernel_shape)
 ao_image = sersic.intensities_from_grid(grid=ao.coords.image_coords)
 ao_blurring_image = sersic.intensities_from_grid(grid=ao.coords.blurring_coords)
-ao_kernel_convolver = ao.masked_image.convolver.convolver_for_kernel(ao._image_plane_image.psf.trim(kernel_shape))
+ao_kernel_convolver = ao.masked_image.convolver.convolver_for_kernel(ao._image_plane_image.psf.trim_around_centre(kernel_shape))
 
 assert ao_kernel_convolver.convolve_image(image_array=ao_image, blurring_array=ao_blurring_image) == \
        pytest.approx(ao_kernel_convolver.convolve_image(image_array=ao_image, blurring_array=ao_blurring_image), 1e-4)

@@ -31,7 +31,7 @@ class Array(np.ndarray):
             setattr(self, key, value)
         super(Array, self).__setstate__(state[0:-1])
 
-    def trim(self, new_shape):
+    def trim_around_centre(self, new_shape):
         """Trim the array to a new shape.
         
         Parameters
@@ -39,7 +39,17 @@ class Array(np.ndarray):
         new_shape : (int, int)
             The new two-dimensional shape of the array.
         """
-        return self.new_with_array(imaging_util.trim_array_2d_to_new_shape(self, new_shape))
+        return self.new_with_array(imaging_util.trim_array_2d_around_centre(self, new_shape))
+
+    def trim_around_region(self, x0, x1, y0, y1):
+        """Trim the array to a new shape.
+
+        Parameters
+        -----------
+        new_shape : (int, int)
+            The new two-dimensional shape of the array.
+        """
+        return self.new_with_array(imaging_util.trim_array_2d_around_region(self, x0, x1, y0, y1))
 
     def new_with_array(self, array):
         """

@@ -4,6 +4,7 @@ import numpy as np
 import pytest
 
 from autolens import exc
+from autolens.imaging import scaled_array
 from autolens.imaging import image
 from autolens.imaging import imaging_util
 
@@ -715,6 +716,7 @@ class TestPrepatoryImage:
 
 
 class TestImage(object):
+
     class TestConstructor:
 
         def test__setup_image__correct_attributes(self):
@@ -733,6 +735,154 @@ class TestImage(object):
             assert (im.psf == 3.0 * np.ones((3, 3))).all()
             assert (im.noise_map == 5.0 * np.ones((3, 3))).all()
             assert (im.background_noise_map == None)
+
+
+    class TestTrimming:
+
+        def test_trim_around_centre(self):
+
+            image_array = scaled_array.ScaledArray(np.ones((6, 6)), pixel_scale=1.0)
+            image_array[2:4, 2:4] = 2.0
+
+            noise_map_array = scaled_array.Array(np.ones((6, 6)))
+            noise_map_array[3,3] = 2.0
+
+            im = image.Image(array=image_array, pixel_scale=1.0, psf=image.PSF(np.zeros((3,3))),
+                             noise_map=noise_map_array)
+
+            im = im.trim_image_and_noise_around_centre(new_shape=(4, 4))
+
+            assert (im == np.array([[1.0, 1.0, 1.0, 1.0],
+                                    [1.0, 2.0, 2.0, 1.0],
+                                    [1.0, 2.0, 2.0, 1.0],
+                                    [1.0, 1.0, 1.0, 1.0]])).all()
+            assert im.pixel_scale == 1.0
+            assert (im.psf == np.zeros((3,3))).all()
+
+            assert (im.noise_map == np.array([[1.0, 1.0, 1.0, 1.0],
+                                              [1.0, 1.0, 1.0, 1.0],
+                                              [1.0, 1.0, 2.0, 1.0],
+                                              [1.0, 1.0, 1.0, 1.0]])).all()
+
+            assert im.background_noise_map == None
+
+        def test_trim_around_centre__include_background_noise(self):
+
+            image_array = scaled_array.ScaledArray(np.ones((6, 6)), pixel_scale=1.0)
+            image_array[2:4, 2:4] = 2.0
+
+            noise_map_array = scaled_array.Array(np.ones((6, 6)))
+            noise_map_array[3,3] = 2.0
+
+            bg_noise_map_array = scaled_array.Array(np.ones((6, 6)))
+            bg_noise_map_array[2,2] = 2.0
+
+            im = image.Image(array=image_array, pixel_scale=1.0, psf=image.PSF(np.zeros((3,3))),
+                             noise_map=noise_map_array, background_noise_map=bg_noise_map_array)
+
+            im = im.trim_image_and_noise_around_centre(new_shape=(4, 4))
+
+            assert (im == np.array([[1.0, 1.0, 1.0, 1.0],
+                                    [1.0, 2.0, 2.0, 1.0],
+                                    [1.0, 2.0, 2.0, 1.0],
+                                    [1.0, 1.0, 1.0, 1.0]])).all()
+            assert im.pixel_scale == 1.0
+            assert (im.psf == np.zeros((3,3))).all()
+
+            assert (im.noise_map == np.array([[1.0, 1.0, 1.0, 1.0],
+                                              [1.0, 1.0, 1.0, 1.0],
+                                              [1.0, 1.0, 2.0, 1.0],
+                                              [1.0, 1.0, 1.0, 1.0]])).all()
+
+            assert (im.background_noise_map == np.array([[1.0, 1.0, 1.0, 1.0],
+                                                         [1.0, 2.0, 1.0, 1.0],
+                                                         [1.0, 1.0, 1.0, 1.0],
+                                                         [1.0, 1.0, 1.0, 1.0]])).all()
+
+        def test_trim_around_region(self):
+
+            image_array = scaled_array.ScaledArray(np.ones((6, 6)), pixel_scale=1.0)
+            image_array[2:4, 2:4] = 2.0
+
+            noise_map_array = scaled_array.Array(np.ones((6, 6)))
+            noise_map_array[3,3] = 2.0
+
+            im = image.Image(array=image_array, pixel_scale=1.0, psf=image.PSF(np.zeros((3,3))),
+                             noise_map=noise_map_array)
+
+            im = im.trim_image_and_noise_around_region(x0=1, x1=5, y0=1, y1=5)
+
+            assert (im == np.array([[1.0, 1.0, 1.0, 1.0],
+                                    [1.0, 2.0, 2.0, 1.0],
+                                    [1.0, 2.0, 2.0, 1.0],
+                                    [1.0, 1.0, 1.0, 1.0]])).all()
+            assert im.pixel_scale == 1.0
+            assert (im.psf == np.zeros((3,3))).all()
+
+            assert (im.noise_map == np.array([[1.0, 1.0, 1.0, 1.0],
+                                              [1.0, 1.0, 1.0, 1.0],
+                                              [1.0, 1.0, 2.0, 1.0],
+                                              [1.0, 1.0, 1.0, 1.0]])).all()
+
+            assert im.background_noise_map == None
+
+        def test_trim_around_region__include_background_noise(self):
+
+            image_array = scaled_array.ScaledArray(np.ones((6, 6)), pixel_scale=1.0)
+            image_array[2:4, 2:4] = 2.0
+
+            noise_map_array = scaled_array.Array(np.ones((6, 6)))
+            noise_map_array[3,3] = 2.0
+
+            bg_noise_map_array = scaled_array.Array(np.ones((6, 6)))
+            bg_noise_map_array[2,2] = 2.0
+
+            im = image.Image(array=image_array, pixel_scale=1.0, psf=image.PSF(np.zeros((3,3))),
+                             noise_map=noise_map_array, background_noise_map=bg_noise_map_array)
+
+            im = im.trim_image_and_noise_around_region(x0=1, x1=5, y0=1, y1=5)
+
+            assert (im == np.array([[1.0, 1.0, 1.0, 1.0],
+                                    [1.0, 2.0, 2.0, 1.0],
+                                    [1.0, 2.0, 2.0, 1.0],
+                                    [1.0, 1.0, 1.0, 1.0]])).all()
+            assert im.pixel_scale == 1.0
+            assert (im.psf == np.zeros((3,3))).all()
+
+            assert (im.noise_map == np.array([[1.0, 1.0, 1.0, 1.0],
+                                              [1.0, 1.0, 1.0, 1.0],
+                                              [1.0, 1.0, 2.0, 1.0],
+                                              [1.0, 1.0, 1.0, 1.0]])).all()
+
+            assert (im.background_noise_map == np.array([[1.0, 1.0, 1.0, 1.0],
+                                                         [1.0, 2.0, 1.0, 1.0],
+                                                         [1.0, 1.0, 1.0, 1.0],
+                                                         [1.0, 1.0, 1.0, 1.0]])).all()
+
+
+class TestNoiseMap(object):
+
+    class TestFromWeightMap:
+
+        def test__weight_map_no_zeros__uses_1_over_sqrt_value(self):
+
+            weight_map = np.array([[1.0, 4.0, 16.0],
+                                   [1.0, 4.0, 16.0]])
+
+            noise_map = image.NoiseMap.from_weight_map(weight_map=weight_map)
+
+            assert (noise_map == np.array([[1.0, 0.5, 0.25],
+                                           [1.0, 0.5, 0.25]])).all()
+
+        def test__weight_map_no_zeros__zeros_set_to_10000000(self):
+
+            weight_map = np.array([[1.0, 4.0, 0.0],
+                                   [1.0, 4.0, 16.0]])
+
+            noise_map = image.NoiseMap.from_weight_map(weight_map=weight_map)
+
+            assert (noise_map == np.array([[1.0, 0.5, 1.0e8],
+                                           [1.0, 0.5, 0.25]])).all()
 
 
 class TestPSF(object):
