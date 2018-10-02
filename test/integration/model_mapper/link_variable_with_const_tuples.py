@@ -21,9 +21,9 @@ except FileNotFoundError:
 
 
 def pipeline():
-    conf.instance = conf.Config(config_path=output_path + '/config', output_path=output_path)
-    pipeline_name = "link_variable_const_tuples"
-    data_name = '/link_variable_const_tuples'
+
+    pipeline_name = "link_variable_with_constants_to_tuples"
+    data_name = '/link_variable_constants_to_tuples'
 
     tools.reset_paths(data_name, pipeline_name, output_path)
 
@@ -49,9 +49,6 @@ def make_pipeline(pipeline_name):
         def pass_priors(self, previous_results):
             self.lens_galaxies[0].sersic.centre_0 = 1.0
             self.lens_galaxies[0].sersic.centre_1 = 2.0
-
-    #        self.lens_galaxies[0].sersic.centre_0 = -1.0
-    #        self.lens_galaxies[0].sersic.centre_1 = -1.0
 
     phase1 = MMPhase(lens_galaxies=[gm.GalaxyModel(sersic=lp.EllipticalSersic)],
                      optimizer_class=nl.MultiNest, phase_name="{}/phase1".format(pipeline_name))
