@@ -34,6 +34,9 @@ class LightProfile(object):
         """
         raise NotImplementedError("intensity_from_grid should be overridden")
 
+    def luminosity_within_ellipse(self, major_axis):
+        raise NotImplementedError()
+
 
 # noinspection PyAbstractClass
 class EllipticalLP(geometry_profiles.EllipticalProfile, LightProfile):
