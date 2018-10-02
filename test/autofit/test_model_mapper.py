@@ -35,14 +35,32 @@ def make_width_config():
                                              "test_files/config/priors/width"))
 
 
+@pytest.fixture(name="initial_model")
+def make_initial_model(test_config):
+    return model_mapper.PriorModel(MockClassMM, test_config)
+
+
 class TestPriorLinking(object):
-    def test_same_class(self, test_config):
-        initial_model = model_mapper.PriorModel(MockClassMM, test_config)
+    def test_same_class(self, initial_model):
         new_model = initial_model.linked_model_for_class(MockClassMM)
 
         assert new_model != initial_model
         assert new_model.one is initial_model.one
         assert new_model.two is initial_model.two
+
+    def test_extended_class(self, initial_model):
+        new_model = initial_model.linked_model_for_class(ExtendedMockClass)
+
+        assert hasattr(new_model, "three")
+
+    def test_override(self, initial_model):
+        new_prior = model_mapper.GaussianPrior(1., 1.)
+        new_model = initial_model.linked_model_for_class(MockClassMM, two=new_prior)
+
+        assert new_model != initial_model
+        assert new_model.one is initial_model.one
+        assert new_model.two is not initial_model.two
+        assert new_model.two is new_prior
 
 
 class TestAddition(object):
@@ -105,6 +123,12 @@ class MockClassMM(object):
     def __init__(self, one, two):
         self.one = one
         self.two = two
+
+
+class ExtendedMockClass(MockClassMM):
+    def __init__(self, one, two, three):
+        super().__init__(one, two)
+        self.three = three
 
 
 class MockConfig(conf.DefaultPriorConfig):
