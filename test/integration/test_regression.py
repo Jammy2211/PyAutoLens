@@ -46,7 +46,7 @@ class TestPhaseModelMapper(object):
         assert len(phase.variable.flat_prior_model_tuples) == 1
 
         lines = list(
-            filter(lambda line: "axis_ratio" in line or "intensity" in line, phase.variable.model_info.split("\n")))
+            filter(lambda line: "axis_ratio" in line or "intensity" in line, phase.variable.info.split("\n")))
 
 
         assert len(lines) == 2
