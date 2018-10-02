@@ -201,12 +201,30 @@ class TestConversion:
 class TestTrim:
 
     def test__compare_to_imaging_util(self):
+
         array = np.ones((5, 5))
         array[2, 2] = 2.0
 
         array = scaled_array.ScaledArray(array, pixel_scale=1.0)
 
-        modified = array.trim(new_shape=(3, 3))
+        modified = array.trim_around_centre(new_shape=(3, 3))
+
+        assert type(modified) == scaled_array.ScaledArray
+        assert (modified == np.array([[1.0, 1.0, 1.0],
+                                      [1.0, 2.0, 1.0],
+                                      [1.0, 1.0, 1.0]])).all()
+        assert modified.shape == (3, 3)
+        assert modified.shape_arc_seconds == (3.0, 3.0)
+
+
+class TrimAroundRegion:
+
+    def test__compare_to_imaging_util(self):
+
+        array = np.ones((6, 6))
+        array[4, 4] = 2.0
+
+        modified = imaging_util.trim_array_2d_around_region(array_2d=array, x0=3, x1=6, y0=3, y1=6)
 
         assert type(modified) == scaled_array.ScaledArray
         assert (modified == np.array([[1.0, 1.0, 1.0],
