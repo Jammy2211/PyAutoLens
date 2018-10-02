@@ -38,6 +38,27 @@ class Image(ScaledArray):
             self.psf = obj.psf
             self.noise_map = obj.noise_map
 
+    def trim_image_and_noise_around_centre(self, new_shape):
+
+        if self.background_noise_map is not None:
+            background_noise_map = self.background_noise_map.trim_around_centre(new_shape)
+        else:
+            background_noise_map = None
+
+        return Image(array=self.trim_around_centre(new_shape), pixel_scale=self.pixel_scale, psf=self.psf,
+                     noise_map=self.noise_map.trim_around_centre(new_shape), background_noise_map=background_noise_map)
+
+    def trim_image_and_noise_around_region(self, x0, x1, y0, y1):
+
+        if self.background_noise_map is not None:
+            background_noise_map = self.background_noise_map.trim_around_region(x0, x1, y0, y1)
+        else:
+            background_noise_map = None
+
+        return Image(array=self.trim_around_region(x0, x1, y0, y1), pixel_scale=self.pixel_scale, psf=self.psf,
+                     noise_map=self.noise_map.trim_around_region(x0, x1, y0, y1),
+                     background_noise_map=background_noise_map)
+
     @property
     def signal_to_noise_map(self):
         """The estimated signal-to-noise_map mappers of the _image."""
@@ -301,6 +322,15 @@ class PreparatoryImage(Image):
         return norm.fit(edges)[1]
 
 
+class NoiseMap(Array):
+
+    @classmethod
+    def from_weight_map(cls, weight_map):
+        noise_map = 1.0/np.sqrt(weight_map)
+        noise_map[noise_map == np.inf] = 1.0e8
+        return NoiseMap(array=noise_map)
+
+
 class PSF(Array):
 
     # noinspection PyUnusedLocal
@@ -446,15 +476,20 @@ def generate_poisson_noise(image, effective_exposure_map, seed=-1):
 
 
 def load_imaging_from_fits(image_path, noise_map_path, psf_path, pixel_scale, image_hdu=0, noise_map_hdu=0, psf_hdu=0,
-                           psf_trimmed_shape=None):
+                           psf_trimmed_shape=None, noise_map_is_weight_map=False):
     data = ScaledArray.from_fits_with_scale(file_path=image_path, hdu=image_hdu, pixel_scale=pixel_scale)
-    noise = Array.from_fits(file_path=noise_map_path, hdu=noise_map_hdu)
+    if not noise_map_is_weight_map:
+        noise_map = NoiseMap.from_fits(file_path=noise_map_path, hdu=noise_map_hdu)
+    elif noise_map_is_weight_map:
+        weight_map = Array.from_fits(file_path=noise_map_path, hdu=noise_map_hdu)
+        noise_map = NoiseMap.from_weight_map(weight_map=weight_map)
+
     psf = PSF.from_fits(file_path=psf_path, hdu=psf_hdu)
 
     if psf_trimmed_shape is not None:
-        psf = psf.trim(psf_trimmed_shape)
+        psf = psf.trim_around_centre(psf_trimmed_shape)
 
-    return Image(array=data, pixel_scale=pixel_scale, psf=psf, noise_map=noise)
+    return Image(array=data, pixel_scale=pixel_scale, psf=psf, noise_map=noise_map)
 
 
 def load_imaging_from_path(image_path, noise_map_path, psf_path, pixel_scale, psf_trimmed_shape=None):
@@ -462,7 +497,7 @@ def load_imaging_from_path(image_path, noise_map_path, psf_path, pixel_scale, ps
     noise = Array.from_fits(file_path=noise_map_path, hdu=0)
     psf = PSF.from_fits(file_path=psf_path, hdu=0)
     if psf_trimmed_shape is not None:
-        psf = psf.trim(psf_trimmed_shape)
+        psf = psf.trim_around_centre(psf_trimmed_shape)
     return Image(array=data, pixel_scale=pixel_scale, psf=psf, noise_map=noise)
 
 
