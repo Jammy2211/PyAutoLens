@@ -71,6 +71,9 @@ class MassProfile(object):
     def deflections_from_grid(self, grid):
         raise NotImplementedError("deflections_from_grid should be overridden")
 
+    def dimensionless_mass_within_ellipse(self, major_axis):
+        raise NotImplementedError()
+
 
 # noinspection PyAbstractClass
 class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
