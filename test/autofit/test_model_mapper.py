@@ -76,7 +76,7 @@ class TestAddition(object):
 
         three = one + two
 
-        assert three.total_priors == 14
+        assert three.prior_count == 14
 
 
 class TestUniformPrior(object):
@@ -165,16 +165,24 @@ class WithTuple(object):
 
 # noinspection PyUnresolvedReferences
 class TestRegression(object):
+    def test_tuple_constant_model_info(self, mapper):
+        mapper.profile = light_profiles.EllipticalCoreSersic
+        info = mapper.info
+
+        mapper.profile.centre_0 = 1.
+
+        assert len(info.split('\n')) == len(mapper.info.split('\n'))
+
     def test_set_tuple_constant(self):
         mm = model_mapper.ModelMapper()
         mm.galaxy = galaxy_model.GalaxyModel(sersic=light_profiles.EllipticalSersic)
 
-        assert mm.total_priors == 7
+        assert mm.prior_count == 7
 
         mm.galaxy.sersic.centre_0 = model_mapper.Constant(0)
         mm.galaxy.sersic.centre_1 = model_mapper.Constant(0)
 
-        assert mm.total_priors == 5
+        assert mm.prior_count == 5
 
     def test_get_tuple_constants(self):
         mm = model_mapper.ModelMapper()
@@ -187,11 +195,11 @@ class TestRegression(object):
         mapper.with_float = WithFloat
         mapper.with_tuple = WithTuple
 
-        assert mapper.total_priors == 3
+        assert mapper.prior_count == 3
 
         mapper.with_tuple.tup_0 = mapper.with_float.value
 
-        assert mapper.total_priors == 2
+        assert mapper.prior_count == 2
 
     def test_tuple_parameter_float(self, mapper):
         mapper.with_float = WithFloat
@@ -199,11 +207,11 @@ class TestRegression(object):
 
         mapper.with_float.value = model_mapper.Constant(1)
 
-        assert mapper.total_priors == 2
+        assert mapper.prior_count == 2
 
         mapper.with_tuple.tup_0 = mapper.with_float.value
 
-        assert mapper.total_priors == 1
+        assert mapper.prior_count == 1
 
         instance = mapper.instance_from_unit_vector([0.])
 
@@ -689,7 +697,8 @@ class TestUtility(object):
         mapper.mock_class_1.one = mapper.mock_class_2.one
         mapper.mock_class_1.two = mapper.mock_class_2.two
 
-        assert mapper.prior_model_name_prior_tuples_dict["mock_class_1"] == mapper.prior_model_name_prior_tuples_dict["mock_class_2"]
+        assert mapper.prior_model_name_prior_tuples_dict["mock_class_1"] == mapper.prior_model_name_prior_tuples_dict[
+            "mock_class_2"]
 
     def test_value_vector_for_hypercube_vector(self):
         mapper = model_mapper.ModelMapper(MockConfig(), mock_class=MockClassMM)
