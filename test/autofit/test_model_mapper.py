@@ -171,6 +171,9 @@ class TestRegression(object):
 
         mapper.profile.centre_0 = 1.
 
+        assert len(mapper.profile.centre.constant_tuples) == 1
+        assert len(mapper.profile.constant_tuples) == 1
+
         assert len(info.split('\n')) == len(mapper.info.split('\n'))
 
     def test_set_tuple_constant(self):
