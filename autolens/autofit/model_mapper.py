@@ -4,12 +4,12 @@ import math
 import os
 from collections import namedtuple
 from functools import wraps
-from autolens.conf import DefaultPriorConfig
 
 from scipy.special import erfinv
 
 from autolens import conf
 from autolens import exc
+from autolens.conf import DefaultPriorConfig
 
 PriorTuple = namedtuple("PriorTuple", ["name", "prior"])
 ConstantTuple = namedtuple("ConstantTuple", ["name", "constant"])
@@ -894,10 +894,21 @@ class PriorModel(AbstractPriorModel):
         """
         Returns
         -------
-        priors: [(String, Union(Prior, TuplePrior))]
+        priors: [(String, Prior))]
         """
         return [prior for tuple_prior in self.tuple_prior_tuples for prior in
                 tuple_prior[1].prior_tuples] + self.direct_prior_tuples
+
+    @property
+    @cast_collection(ConstantTuple)
+    def direct_constant_tuples(self):
+        """
+        Returns
+        -------
+        constants: [(String, Constant)]
+            A list of constants
+        """
+        return list(filter(lambda t: isinstance(t[1], Constant), self.__dict__.items()))
 
     @property
     @cast_collection(ConstantTuple)
@@ -906,9 +917,9 @@ class PriorModel(AbstractPriorModel):
         Returns
         -------
         constants: [(String, Constant)]
-            A list of constants
         """
-        return list(filter(lambda t: isinstance(t[1], Constant), self.__dict__.items()))
+        return [constant_tuple for tuple_prior in self.tuple_prior_tuples for constant_tuple in
+                tuple_prior[1].constant_tuples] + self.direct_constant_tuples
 
     @property
     def prior_class_dict(self):
@@ -928,10 +939,9 @@ class PriorModel(AbstractPriorModel):
             An instance of the class
         """
         model_arguments = {t.name: arguments[t.prior] for t in self.direct_prior_tuples}
+        constant_arguments = {t.name: t.constant.value for t in self.direct_constant_tuples}
         for tuple_prior in self.tuple_prior_tuples:
             model_arguments[tuple_prior.name] = tuple_prior.prior.value_for_arguments(arguments)
-
-        constant_arguments = {t.name: t.constant.value for t in self.constant_tuples}
 
         return self.cls(**{**model_arguments, **constant_arguments})
 
