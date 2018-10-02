@@ -110,7 +110,7 @@ class NonLinearOptimizer(object):
         self.create_paramnames_file()
         if not os.path.isfile(self.file_model_info):
             with open(self.file_model_info, 'w') as file:
-                file.write(self.variable.model_info)
+                file.write(self.variable.info)
             file.close()
 
     def fit(self, analysis):
