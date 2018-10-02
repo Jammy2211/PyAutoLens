@@ -62,8 +62,16 @@ class GalaxyModel(model_mapper.AbstractPriorModel):
         return [flat_prior_model for prior_model in self.prior_models for flat_prior_model in
                 prior_model.flat_prior_model_tuples]
 
-    def __init__(self, align_centres=False, align_axis_ratios=False, align_orientations=False, redshift=None,
-                 variable_redshift=False, pixelization=None, regularization=None, hyper_galaxy=None, config=None,
+    def __init__(self,
+                 align_centres=False,
+                 align_axis_ratios=False,
+                 align_orientations=False,
+                 redshift=None,
+                 variable_redshift=False,
+                 pixelization=None,
+                 regularization=None,
+                 hyper_galaxy=None,
+                 config=None,
                  **kwargs):
         """
         Class to produce Galaxy instances from sets of profile classes using the model mapper
@@ -142,6 +150,21 @@ class GalaxyModel(model_mapper.AbstractPriorModel):
             value = galaxy.Redshift(value)
         super(GalaxyModel, self).__setattr__(key, value)
 
+    def linked_model_for_classes(self, **classes):
+        light_profile_class_tuples = [(name, cls) for name, cls in classes.items() if is_light_profile_class(cls)]
+        mass_profile_class_tuples = [(name, cls) for name, cls in classes.items() if is_mass_profile_class(cls)]
+
+        def link_models_to_classes(models, class_tuples):
+            result = []
+            for n, class_tuple in enumerate(class_tuples):
+                result.append((class_tuple[0], models[n % len(models)].linked_model_for_class(class_tuple[1])))
+            return result
+
+        light_profile_model_tuples = link_models_to_classes(self.light_profile_prior_models, light_profile_class_tuples)
+        mass_profile_model_tuples = link_models_to_classes(self.mass_profile_prior_models, mass_profile_class_tuples)
+
+        return GalaxyModel(**{**dict(light_profile_model_tuples), **dict(mass_profile_model_tuples)})
+
     @property
     def constant_light_profiles(self):
         """
@@ -186,6 +209,16 @@ class GalaxyModel(model_mapper.AbstractPriorModel):
                        self.__dict__.items())}
 
     @property
+    def light_profile_prior_models(self):
+        return [item for item in self.__dict__.values() if
+                isinstance(item, model_mapper.PriorModel) and is_light_profile_class(item.cls)]
+
+    @property
+    def mass_profile_prior_models(self):
+        return [item for item in self.__dict__.values() if
+                isinstance(item, model_mapper.PriorModel) and is_mass_profile_class(item.cls)]
+
+    @property
     def constant_profile_dict(self):
         """
         Returns
@@ -195,26 +228,6 @@ class GalaxyModel(model_mapper.AbstractPriorModel):
         """
         return {key: value for key, value in self.__dict__.items() if
                 galaxy.is_light_profile(value) or galaxy.is_mass_profile(value)}
-
-    @property
-    def light_profile_prior_model_dict(self):
-        """
-        Returns
-        -------
-        profile_prior_model_dict: {str: PriorModel}
-            A dictionary mapping_matrix instance variable names to variable light profiles.
-        """
-        return {key: value for key, value in self.prior_model_dict.items() if is_light_profile_class(value.cls)}
-
-    @property
-    def mass_profile_prior_model_dict(self):
-        """
-        Returns
-        -------
-        profile_prior_model_dict: {str: PriorModel}
-            A dictionary mapping_matrix instance variable names to variable mass profiles.
-        """
-        return {key: value for key, value in self.prior_model_dict.items() if is_mass_profile_class(value.cls)}
 
     @property
     @cast_collection(PriorNameValue)
