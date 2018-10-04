@@ -30,9 +30,9 @@ image = im.load_imaging_from_path(image_path=path + '/data/3_complex_source_imag
 
 imaging_plotters.plot_image(image=image)
 
-# Yep, that's pretty complex. There are clearly more than 4 multiple peaks of light - I wouldn't like to guess
-# whether there is one of two sources, or more! You'll also notice I omitted the lens galaxy's light for this system,
-# to keep the number of parameters manageable.
+# Yep, that's pretty complex. There are clearly more than 4 peaks of light - I wouldn't like to guess whether there is
+# one or two sources (or more). You'll also notice I omitted the lens galaxy's light for this system, this is to
+# keep the number of parameters down and the phases running fast, but we wouldn't get such a luxury in a real galaxy.
 
 def make_pipeline():
 
@@ -40,56 +40,60 @@ def make_pipeline():
 
     # To begin, we need to initialize the lens's mass model. We should be able to do this by using a simple source
     # model. It won't fit the complicated structure of the source, but it'll give us a robust estimate of the
-    # einstein radius and other parameters.
+    # einstein radius and the other lens-mass parameters.
 
-    # I'm pretty confident this will run fine without any prior-passes. In general, a thick, giant ring of source
-    # light is something we can be confident MultiNest will fit without much issue, especially when the lens galaxy's
-    # light isn't being modeled.
+    # This should run fine without any prior-passes. In general, a thick, giant ring of source light is something we
+    # can be confident MultiNest will fit without much issue, especially when the lens galaxy's light isn't included
+    # such that the parameter space is just 12 parameters.
 
     phase1 = ph.LensSourcePlanePhase(lens_galaxies=[gm.GalaxyModel(mass=mp.EllipticalIsothermal)],
                                      source_galaxies=[gm.GalaxyModel(light=lp.EllipticalSersic)],
                                      optimizer_class=nl.MultiNest, phase_name=pipeline_name+'/phase_1_simple_source')
 
+
     # Now lets add another source component, using the previous model as the initialization on the lens / source
-    # parameters.
+    # parameters. We'll vary the parameters of the lens mass model and first source galaxy component during the fit.
 
     class X2SourcePhase(ph.LensSourcePlanePhase):
 
         def pass_priors(self, previous_results):
 
-            self.lens_galaxies = previous_results[0].len_galaxies
-            self.source_galaxies[0] = previous_results[0].source_galaxies[0]
+            self.lens_galaxies = previous_results[0].variable.len_galaxies
+            self.source_galaxies[0] = previous_results[0].variable.source_galaxies[0]
+
+    # You'll notice I've stop writing 'phase_1_results = previous_results[0]' and so on - we know how
+    # the previous results are structured now so lets not clutter our code!
 
     phase2 = X2SourcePhase(lens_galaxies=[gm.GalaxyModel(mass=mp.EllipticalIsothermal)],
                            source_galaxies=[gm.GalaxyModel(light_0=lp.EllipticalExponential,
                                                            light_1=lp.EllipticalSersic)],
                            optimizer_class=nl.MultiNest, phase_name=pipeline_name+'/phase_2_x2_source')
 
-    # And another...
+    # Now lets do the same again, but with 3 source galaxy components.
 
     class X3SourcePhase(ph.LensSourcePlanePhase):
 
         def pass_priors(self, previous_results):
 
-            self.lens_galaxies = previous_results[1].len_galaxies
-            self.source_galaxies[0] = previous_results[1].source_galaxies[0]
-            self.source_galaxies[1] = previous_results[1].source_galaxies[1]
+            self.lens_galaxies = previous_results[1].variable.len_galaxies
+            self.source_galaxies[0] = previous_results[1].variable.source_galaxies[0]
+            self.source_galaxies[1] = previous_results[1].variable.source_galaxies[1]
 
     phase3 = X3SourcePhase(lens_galaxies=[gm.GalaxyModel(mass=mp.EllipticalIsothermal)],
                            source_galaxies=[gm.GalaxyModel(light_0=lp.EllipticalExponential,
                                                            light_1=lp.EllipticalSersic)],
                            optimizer_class=nl.MultiNest, phase_name=pipeline_name+'/phase_3_x3_source')
 
-    # And one more for luck
+    # And one more for luck!
 
     class X4SourcePhase(ph.LensSourcePlanePhase):
 
         def pass_priors(self, previous_results):
 
-            self.lens_galaxies = previous_results[2].len_galaxies
-            self.source_galaxies[0] = previous_results[2].source_galaxies[0]
-            self.source_galaxies[2] = previous_results[2].source_galaxies[1]
-            self.source_galaxies[2] = previous_results[2].source_galaxies[2]
+            self.lens_galaxies = previous_results[2].variable.len_galaxies
+            self.source_galaxies[0] = previous_results[2].variable.source_galaxies[0]
+            self.source_galaxies[1] = previous_results[2].variable.source_galaxies[1]
+            self.source_galaxies[2] = previous_results[2].variable.source_galaxies[2]
 
     phase4 = X4SourcePhase(lens_galaxies=[gm.GalaxyModel(mass=mp.EllipticalIsothermal)],
                            source_galaxies=[gm.GalaxyModel(light_0=lp.EllipticalExponential,
@@ -103,8 +107,8 @@ pipeline_complex_source.run(image=image)
 
 
 # Okay, so with 4 sources, we still couldn't get a good a fit to the source that didn't leave residuals. But guess what,
-# I simulated the lens with 4 sources - it should of been able to get a residual-less fit. Lets confirm that by
-# fitting the input model:
+# I simulated the lens with 4 sources. There is a 'perfect fit' somewhere in that parameter space - lets confirm that
+# by fitting the input model (which I've copied from simulations.py):
 
 lensing_image = li.LensingImage(image=image, mask=mask.Mask.circular(shape=image.shape, pixel_scale=image.pixel_scale,
                                                                      radius_mask_arcsec=3.0))
