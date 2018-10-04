@@ -12,15 +12,15 @@ from autolens.profiles import light_profiles as lp
 from autolens.profiles import mass_profiles as mp
 from autolens.plotting import imaging_plotters
 
-# So far, we've not paid too much attention to the source galaxy's morphology. We've assumed its a single-component
+# So far, we've not paid much attention to the source galaxy's morphology. We've assumed its a single-component
 # exponential profile, which is a fairly crude assumption. A quick look at any image of a real galaxy reveals a wealth
-# of other different structures that could be present - bulges, disks, bars, star-forming knots and so on.
-# Furthermore, there's no reason why there should only be one source-galaxy anyway!
+# of different structures that could be present - bulges, disks, bars, star-forming knots and so on.
+# Furthermore, there could be more than one source-galaxy!
 
 # In this example, we'll explore how far we can get trying to fit a complex source using a pipeline. Fitting complex
-# source's is something of an exercise in diminishing returns. Each component we add to our source model brings with it
-# an extra 5-7, and if there are, lets say, 4 components, that means we're going to looking at 20-30+ parameters
-# in one non-linear search. If there were multiple source's, we'd be headed for a world of pain.
+# source's is an exercise in diminishing returns. Each component we add to our source model brings with it an extra 5-7,
+# parameters and if there are. If there are 4 components, or multiple galaxies, we're quickly entering the somewhat
+# nasty regime of 20-30+ parameters in our non-linear search.
 
 # Lets have a look at our strong lens with a complex source
 path = '/home/jammy/PyCharm/Projects/AutoLens/howtolens/3_pipelines'
@@ -36,7 +36,7 @@ imaging_plotters.plot_image(image=image)
 
 def make_pipeline():
 
-    pipeline_name = 'howtolens/complex_source'
+    pipeline_name = 'howtolens/3_pipelines/3_complex_source'
 
     # To begin, we need to initialize the lens's mass model. We should be able to do this by using a simple source
     # model. It won't fit the complicated structure of the source, but it'll give us a robust estimate of the
