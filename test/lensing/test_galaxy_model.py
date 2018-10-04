@@ -66,6 +66,25 @@ def make_galaxy_prior(mapper, test_config):
     return galaxy_prior_1
 
 
+class TestLinkedModelForClasses(object):
+    def test_one_to_one(self, test_config):
+        initial_model = gp.GalaxyModel(light_profile=light_profiles.EllipticalDevVaucouleurs,
+                                       mass_profile=mass_profiles.EllipticalCoredIsothermal,
+                                       config=test_config)
+
+        new_model = initial_model.linked_model_for_classes(light_profile=light_profiles.EllipticalDevVaucouleurs,
+                                                           mass_profile=mass_profiles.EllipticalCoredIsothermal)
+
+        assert isinstance(new_model.light_profile, mm.PriorModel)
+        assert isinstance(new_model.mass_profile, mm.PriorModel)
+
+        assert new_model.light_profile is not initial_model.light_profile
+        assert new_model.mass_profile is not initial_model.mass_profile
+
+        assert new_model.light_profile.intensity is initial_model.light_profile.intensity
+        assert new_model.mass_profile.axis_ratio is initial_model.mass_profile.axis_ratio
+
+
 class TestMassAndLightProfiles(object):
     def test_constant_profile(self, mass_and_light):
         prior = gp.GalaxyModel(profile=mass_and_light)
@@ -136,7 +155,6 @@ class TestGalaxyPrior:
         assert prior_models[0].centre == prior_models[1].centre
 
     def test_align_axis_ratios(self, galaxy_prior, test_config):
-        
         prior_models = galaxy_prior.prior_models
 
         assert prior_models[0].axis_ratio != prior_models[1].axis_ratio
