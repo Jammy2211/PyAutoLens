@@ -38,11 +38,11 @@ class TestPhaseModelMapper(object):
         phase = MMPhase(lens_galaxies=[gm.GalaxyModel(sersic=lp.EllipticalSersic)],
                         optimizer_class=nl.MultiNest, phase_name="{}/phase1".format(pipeline_name))
 
-        initial_total_priors = phase.variable.total_priors
+        initial_total_priors = phase.variable.prior_count
         phase.make_analysis(image)
 
         assert phase.lens_galaxies[0].sersic.intensity == phase.lens_galaxies[0].sersic.axis_ratio
-        assert initial_total_priors - 1 == phase.variable.total_priors
+        assert initial_total_priors - 1 == phase.variable.prior_count
         assert len(phase.variable.flat_prior_model_tuples) == 1
 
         lines = list(
