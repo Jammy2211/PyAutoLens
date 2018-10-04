@@ -290,8 +290,8 @@ def mask_circular_from_shape_pixel_scale_and_radius(shape, pixel_scale, radius_a
 
     mask = np.full(shape, True)
 
-    x_cen = (float(mask.shape[0] - 1) / 2) + centre[0]
-    y_cen = (float(mask.shape[1] - 1) / 2) + centre[1]
+    x_cen = (float(mask.shape[0] - 1) / 2) + (centre[0] / pixel_scale)
+    y_cen = (float(mask.shape[1] - 1) / 2) + (centre[1] / pixel_scale)
 
     for x in range(mask.shape[0]):
         for y in range(mask.shape[1]):
@@ -314,8 +314,8 @@ def mask_annular_from_shape_pixel_scale_and_radii(shape, pixel_scale, inner_radi
 
     mask = np.full(shape, True)
 
-    x_cen = (float(mask.shape[0] - 1) / 2) + centre[0]
-    y_cen = (float(mask.shape[1] - 1) / 2) + centre[1]
+    x_cen = (float(mask.shape[0] - 1) / 2) + (centre[0] / pixel_scale)
+    y_cen = (float(mask.shape[1] - 1) / 2) + (centre[1] / pixel_scale)
 
     for x in range(mask.shape[0]):
         for y in range(mask.shape[1]):
@@ -330,6 +330,28 @@ def mask_annular_from_shape_pixel_scale_and_radii(shape, pixel_scale, inner_radi
 
     return mask
 
+@numba.jit(nopython=True, cache=True)
+def mask_anti_annular_from_shape_pixel_scale_and_radii(shape, pixel_scale, inner_radius_arcsec, outer_radius_arcsec,
+                                                  outer_radius_2_arcsec, centre=(0.0, 0.0)):
+    """Compute an annular mask from an input inner and outer mask radius and _image shape."""
+
+    mask = np.full(shape, True)
+
+    x_cen = (float(mask.shape[0] - 1) / 2) + (centre[0] / pixel_scale)
+    y_cen = (float(mask.shape[1] - 1) / 2) + (centre[1] / pixel_scale)
+
+    for x in range(mask.shape[0]):
+        for y in range(mask.shape[1]):
+
+            x_arcsec = (x - x_cen) * pixel_scale
+            y_arcsec = (y - y_cen) * pixel_scale
+
+            r_arcsec = np.sqrt(x_arcsec ** 2 + y_arcsec ** 2)
+
+            if  inner_radius_arcsec >= r_arcsec or outer_radius_2_arcsec >= r_arcsec >= outer_radius_arcsec:
+                mask[x, y] = False
+
+    return mask
 
 @numba.jit(nopython=True, cache=True)
 def mask_blurring_from_mask_and_psf_shape(mask, psf_shape):

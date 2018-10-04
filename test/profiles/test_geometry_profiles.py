@@ -10,6 +10,7 @@ class TestEllipticalProfile(object):
     class TestAnglesFromXAxis(object):
 
         def test__profile_angle_phi_is_0__cosine_and_sin_of_phi_is_1_and_0(self):
+
             elliptical_profile = gp.EllipticalProfile(centre=(1, 1), axis_ratio=1.0, phi=0.0)
 
             cos_phi, sin_phi = elliptical_profile.cos_and_sin_from_x_axis()

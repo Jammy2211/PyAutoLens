@@ -49,6 +49,8 @@ class TestMask(object):
 
         msk = mask.Mask.circular(shape=(5, 4), pixel_scale=2.7, radius_mask_arcsec=3.5, centre=(1.0, 1.0))
 
+        print(msk)
+
         assert (msk == msk_util).all()
 
     def test__mask_annulus__compare_to_array_util(self):
@@ -59,6 +61,16 @@ class TestMask(object):
 
         msk = mask.Mask.annular(shape=(5, 4), pixel_scale=2.7, inner_radius_arcsec=0.8, outer_radius_arcsec=3.5,
                                 centre=(1.0, 1.0))
+
+        assert (msk == msk_util).all()
+
+    def test__mask_anti_annulus__compare_to_array_util(self):
+
+        msk_util = imaging_util.mask_anti_annular_from_shape_pixel_scale_and_radii(shape=(9, 9), pixel_scale=1.2,
+                   inner_radius_arcsec=0.8, outer_radius_arcsec=2.2, outer_radius_2_arcsec=3.0, centre=(1.0, 1.0))
+
+        msk = mask.Mask.anti_annular(shape=(9, 9), pixel_scale=1.2, inner_radius_arcsec=0.8,
+                                     outer_radius_arcsec=2.2, outer_radius_2_arcsec=3.0, centre=(1.0, 1.0))
 
         assert (msk == msk_util).all()
 
