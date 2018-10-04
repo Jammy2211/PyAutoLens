@@ -646,8 +646,8 @@ class TestMaskCircular(object):
                                   [False, False, False, False]])).all()
 
     def test__centre_shift__simple_shift_back(self):
-        mask = util.mask_circular_from_shape_pixel_scale_and_radius(shape=(3, 3), pixel_scale=1.0,
-                                                                    radius_arcsec=0.5, centre=(-1, 0))
+        mask = util.mask_circular_from_shape_pixel_scale_and_radius(shape=(3, 3), pixel_scale=3.0,
+                                                                    radius_arcsec=0.5, centre=(-3, 0))
 
         assert mask.shape == (3, 3)
         assert (mask == np.array([[True, False, True],
@@ -655,8 +655,8 @@ class TestMaskCircular(object):
                                   [True, True, True]])).all()
 
     def test__centre_shift__simple_shift_forward(self):
-        mask = util.mask_circular_from_shape_pixel_scale_and_radius(shape=(3, 3), pixel_scale=1.0,
-                                                                    radius_arcsec=0.5, centre=(0, 1))
+        mask = util.mask_circular_from_shape_pixel_scale_and_radius(shape=(3, 3), pixel_scale=3.0,
+                                                                    radius_arcsec=0.5, centre=(0.0, 3.0))
 
         assert mask.shape == (3, 3)
         assert (mask == np.array([[True, True, True],
@@ -664,8 +664,8 @@ class TestMaskCircular(object):
                                   [True, True, True]])).all()
 
     def test__centre_shift__diagonal_shift(self):
-        mask = util.mask_circular_from_shape_pixel_scale_and_radius(shape=(3, 3), pixel_scale=1.0,
-                                                                    radius_arcsec=0.5, centre=(1, 1))
+        mask = util.mask_circular_from_shape_pixel_scale_and_radius(shape=(3, 3), pixel_scale=3.0,
+                                                                    radius_arcsec=0.5, centre=(3, 3))
 
         assert (mask == np.array([[True, True, True],
                                   [True, True, True],
@@ -727,9 +727,9 @@ class TestMaskAnnular(object):
                                   [False, True, True, False]])).all()
 
     def test__centre_shift__simple_shift_back(self):
-        mask = util.mask_annular_from_shape_pixel_scale_and_radii(shape=(3, 3), pixel_scale=1.0,
+        mask = util.mask_annular_from_shape_pixel_scale_and_radii(shape=(3, 3), pixel_scale=3.0,
                                                                   inner_radius_arcsec=0.5,
-                                                                  outer_radius_arcsec=3.0, centre=(-1.0, 0.0))
+                                                                  outer_radius_arcsec=9.0, centre=(-3.0, 0.0))
 
         assert mask.shape == (3, 3)
         assert (mask == np.array([[False, True, False],
@@ -737,9 +737,9 @@ class TestMaskAnnular(object):
                                   [False, False, False]])).all()
 
     def test__centre_shift__simple_shift_forward(self):
-        mask = util.mask_annular_from_shape_pixel_scale_and_radii(shape=(3, 3), pixel_scale=1.0,
+        mask = util.mask_annular_from_shape_pixel_scale_and_radii(shape=(3, 3), pixel_scale=3.0,
                                                                   inner_radius_arcsec=0.5,
-                                                                  outer_radius_arcsec=3.0, centre=(0.0, 1.0))
+                                                                  outer_radius_arcsec=9.0, centre=(0.0, 3.0))
 
         assert mask.shape == (3, 3)
         assert (mask == np.array([[False, False, False],
@@ -747,14 +747,81 @@ class TestMaskAnnular(object):
                                   [False, False, False]])).all()
 
     def test__centre_shift__diagonal_shift(self):
-        mask = util.mask_annular_from_shape_pixel_scale_and_radii(shape=(3, 3), pixel_scale=1.0,
+        mask = util.mask_annular_from_shape_pixel_scale_and_radii(shape=(3, 3), pixel_scale=3.0,
                                                                   inner_radius_arcsec=0.5,
-                                                                  outer_radius_arcsec=3.0, centre=(1.0, 1.0))
+                                                                  outer_radius_arcsec=9.0, centre=(3.0, 3.0))
 
         assert mask.shape == (3, 3)
         assert (mask == np.array([[False, False, False],
                                   [False, False, False],
                                   [False, False, True]])).all()
+
+
+class TestMaskAntiAnnular(object):
+
+    def test__5x5_mask_inner_radius_includes_central_pixel__outer_extended_beyond_radius(self):
+
+        mask = util.mask_anti_annular_from_shape_pixel_scale_and_radii(shape=(5, 5), pixel_scale=1.0,
+                                                                  inner_radius_arcsec=0.5, outer_radius_arcsec=10.0,
+                                                                  outer_radius_2_arcsec=20.0)
+
+        assert (mask == np.array([[True, True, True, True, True],
+                                  [True, True, True, True, True],
+                                  [True, True, False, True, True],
+                                  [True, True, True, True, True],
+                                  [True, True, True, True, True]])).all()
+
+    def test__5x5_mask_inner_radius_includes_3x3_central_pixels__outer_extended_beyond_radius(self):
+
+        mask = util.mask_anti_annular_from_shape_pixel_scale_and_radii(shape=(5, 5), pixel_scale=1.0,
+                                                                  inner_radius_arcsec=1.5, outer_radius_arcsec=10.0,
+                                                                  outer_radius_2_arcsec=20.0)
+
+        assert (mask == np.array([[True,  True,  True,  True, True],
+                                  [True, False, False, False, True],
+                                  [True, False, False, False, True],
+                                  [True, False, False, False, True],
+                                  [True,  True,  True,  True, True]])).all()
+
+    def test__5x5_mask_inner_radius_includes_central_pixel__outer_radius_includes_outer_pixels(self):
+
+        mask = util.mask_anti_annular_from_shape_pixel_scale_and_radii(shape=(5, 5), pixel_scale=1.0,
+                                                                  inner_radius_arcsec=0.5, outer_radius_arcsec=1.5,
+                                                                  outer_radius_2_arcsec=20.0)
+
+        assert (mask == np.array([[False, False, False, False, False],
+                                  [False, True,  True,  True,  False],
+                                  [False, True, False,  True,  False],
+                                  [False, True,  True,  True,  False],
+                                  [False, False, False, False, False]])).all()
+
+    def test__7x7_second_outer_radius_mask_works_too(self):
+
+        mask = util.mask_anti_annular_from_shape_pixel_scale_and_radii(shape=(7, 7), pixel_scale=1.0,
+                                                                  inner_radius_arcsec=0.5, outer_radius_arcsec=1.5,
+                                                                  outer_radius_2_arcsec=2.9)
+
+        assert (mask == np.array([[True,  True,  True,  True,  True,  True, True],
+                                  [True, False, False, False, False, False, True],
+                                  [True, False, True,   True,  True, False, True],
+                                  [True, False, True,  False,  True, False, True],
+                                  [True, False, True,   True,  True, False, True],
+                                  [True, False, False, False, False, False, True],
+                                  [True,  True,  True,  True,  True,  True, True]])).all()
+
+    def test__centre_shift__diagonal_shift(self):
+
+        mask = util.mask_anti_annular_from_shape_pixel_scale_and_radii(shape=(7, 7), pixel_scale=3.0,
+                                                                  inner_radius_arcsec=1.5, outer_radius_arcsec=4.5,
+                                                                  outer_radius_2_arcsec=8.7, centre=(3.0, 3.0))
+
+        assert (mask == np.array([[True,  True,  True,  True,  True,  True,  True],
+                                  [True,  True,  True,  True,  True,  True,  True],
+                                  [True,  True, False, False, False, False, False],
+                                  [True,  True, False, True,   True,  True, False],
+                                  [True,  True, False, True,  False,  True, False],
+                                  [True,  True, False, True,   True,  True, False],
+                                  [True,  True, False, False, False, False, False]])).all()
 
 
 class TestMaskBlurring(object):
@@ -1265,7 +1332,6 @@ class TestTrimAroundPixels:
                                       [1.0, 1.0],
                                       [1.0, 1.0],
                                       [1.0, 1.0]])).all()
-
 
 
 class TestFits:
