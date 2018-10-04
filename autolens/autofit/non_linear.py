@@ -63,23 +63,24 @@ class NonLinearOptimizer(object):
 
         name = name or "phase"
 
+        self.phase_path = "{}/{}/".format(conf.instance.output_path, name)
+        self.opt_path = "{}/{}/optimizer".format(conf.instance.output_path, name)
+
         sym_path = "{}/{}/optimizer".format(conf.instance.output_path, name)
 
         if not os.path.exists(sym_path):
             os.makedirs("/".join(sym_path.split("/")[:-1]))
 
         self.path = link.make_linked_folder(sym_path)
-        self.chains_path = "{}/{}".format(self.path, 'chains')
-        if not os.path.exists(self.chains_path):
-            os.makedirs(self.chains_path)
 
         self.variable = model_mapper or mm.ModelMapper()
         self.constant = mm.ModelInstance()
 
         self.label_config = label_config or conf.instance.label
 
-        self.file_param_names = "{}/{}".format(self.chains_path, 'mn.paramnames')
-        self.file_model_info = "{}/{}".format(self.path, 'model.info')
+        dirpath = os.path.dirname(os.path.realpath(__file__))
+        self.file_param_names = "{}/{}".format(self.opt_path, 'multinest.paramnames')
+        self.file_model_info = "{}/{}".format(self.phase_path, 'model.info')
 
         # If the include_hyper_image flag is set to True make this an additional prior model
         if include_hyper_image:
@@ -112,6 +113,7 @@ class NonLinearOptimizer(object):
             with open(self.file_model_info, 'w') as file:
                 file.write(self.variable.info)
             file.close()
+
 
     def fit(self, analysis):
         raise NotImplementedError("Fitness function must be overridden by non linear optimizers")
@@ -250,9 +252,9 @@ class MultiNest(NonLinearOptimizer):
         super(MultiNest, self).__init__(include_hyper_image=include_hyper_image, model_mapper=model_mapper, name=name,
                                         label_config=label_config)
 
-        self.file_summary = "{}/{}".format(self.chains_path, 'mnsummary.txt')
-        self.file_weighted_samples = "{}/{}".format(self.chains_path, 'mn.txt')
-        self.file_results = "{}/{}".format(self.path, 'mn.results')
+        self.file_summary = "{}/{}".format(self.opt_path, 'multinestsummary.txt')
+        self.file_weighted_samples = "{}/{}".format(self.opt_path, 'multinest.txt')
+        self.file_results = "{}/{}".format(self.phase_path, 'model.results')
         self._weighted_sample_model = None
         self.sigma_limit = sigma_limit
 
@@ -282,7 +284,7 @@ class MultiNest(NonLinearOptimizer):
     @property
     def pdf(self):
         import getdist
-        return getdist.mcsamples.loadMCSamples(self.chains_path + '/mn')
+        return getdist.mcsamples.loadMCSamples(self.path + '/multinest')
 
     def fit(self, analysis):
         self.save_model_info()
@@ -338,7 +340,7 @@ class MultiNest(NonLinearOptimizer):
 
         logger.info("Running MultiNest...")
         self.run(fitness_function.__call__, prior, self.variable.total_priors,
-                 outputfiles_basename="{}/mn".format(self.chains_path),
+                 outputfiles_basename="{}/multinest".format(self.path),
                  n_live_points=self.n_live_points,
                  const_efficiency_mode=self.const_efficiency_mode,
                  importance_nested_sampling=self.importance_nested_sampling,
@@ -512,7 +514,7 @@ class MultiNest(NonLinearOptimizer):
 
             for param_name in self.param_names:
                 pdf_plot.plot_1d(roots=self.pdf, param=param_name)
-                pdf_plot.export(fname=self.path + '/pdfs/' + param_name + '_1D.png')
+                pdf_plot.export(fname=self.phase_path + 'images/pdf_' + param_name + '_1D.png')
                 plt.close()
 
         plot_pdf_triangle = conf.instance.general.get('output', 'plot_pdf_triangle', bool)
@@ -521,7 +523,7 @@ class MultiNest(NonLinearOptimizer):
 
             try:
                 pdf_plot.triangle_plot(roots=self.pdf)
-                pdf_plot.export(fname=self.path + '/pdfs/Triangle.png')
+                pdf_plot.export(fname=self.phase_path + 'images/pdf_triangle.png')
                 plt.close()
             except np.linalg.LinAlgError:
                 pass
