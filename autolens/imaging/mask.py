@@ -33,7 +33,7 @@ class Mask(scaled_array.ScaledArray):
         pixel_scale: float
             The arc-second to pixel conversion factor of each pixel.
         """
-        return cls(np.full(tuple(map(lambda d: int(d), shape)), False), pixel_scale)
+        return cls(np.full(tuple(map(lambda d: int(d), shape)), False, dtype='bool'), pixel_scale)
 
     @classmethod
     def masked_for_shape_and_pixel_scale(cls, shape, pixel_scale):
@@ -47,7 +47,7 @@ class Mask(scaled_array.ScaledArray):
         pixel_scale: float
             The arc-second to pixel conversion factor of each pixel.
         """
-        return cls(np.full(tuple(map(lambda d: int(d), shape)), True), pixel_scale)
+        return cls(np.full(tuple(map(lambda d: int(d), shape)), True, dtype='bool'), pixel_scale)
 
     @classmethod
     def circular(cls, shape, pixel_scale, radius_mask_arcsec, centre=(0., 0.)):
@@ -67,7 +67,7 @@ class Mask(scaled_array.ScaledArray):
         """
         mask = imaging_util.mask_circular_from_shape_pixel_scale_and_radius(shape, pixel_scale, radius_mask_arcsec,
                                                                             centre)
-        return cls(mask, pixel_scale)
+        return cls(mask.astype('bool'), pixel_scale)
 
     @classmethod
     def annular(cls, shape, pixel_scale, inner_radius_arcsec, outer_radius_arcsec, centre=(0., 0.)):
@@ -89,6 +89,29 @@ class Mask(scaled_array.ScaledArray):
         """
         mask = imaging_util.mask_annular_from_shape_pixel_scale_and_radii(shape, pixel_scale, inner_radius_arcsec,
                                                                           outer_radius_arcsec, centre)
+        return cls(mask.astype('bool'), pixel_scale)
+
+    @classmethod
+    def anti_annular(cls, shape, pixel_scale, inner_radius_arcsec, outer_radius_arcsec, outer_radius_2_arcsec,
+                     centre=(0., 0.)):
+        """
+        Setup the mask as an annulus, using a specified inner and outer radius in arc seconds.
+
+        Parameters
+        ----------
+        shape : (int, int)
+            The (x,y) shape of the mask in units of pixels.
+        pixel_scale: float
+            The arc-second to pixel conversion factor of each pixel.
+        inner_radius : float
+            The inner radius of the annulus mask in arc seconds.
+        outer_radius : float
+            The outer radius of the annulus mask in arc seconds.
+        centre: (float, float)
+            The centre of the mask.
+        """
+        mask = imaging_util.mask_anti_annular_from_shape_pixel_scale_and_radii(shape, pixel_scale, inner_radius_arcsec,
+                                                                    outer_radius_arcsec, outer_radius_2_arcsec, centre)
         return cls(mask, pixel_scale)
 
     @property
