@@ -480,6 +480,7 @@ class PhaseImaging(Phase):
             """
             super(PhaseImaging.Result, self).__init__(constant, likelihood, variable)
 
+
             tracer = analysis.tracer_for_instance(constant)
             unmasked_tracer = analysis.unmasked_tracer_for_instance(constant)
             self.fit = analysis.fit_for_tracers(tracer=tracer, unmasked_tracer=unmasked_tracer)
