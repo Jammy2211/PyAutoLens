@@ -339,7 +339,7 @@ class MultiNest(NonLinearOptimizer):
         fitness_function = Fitness(self.variable.instance_from_physical_vector, self.constant, self.output_results)
 
         logger.info("Running MultiNest...")
-        self.run(fitness_function.__call__, prior, self.variable.total_priors,
+        self.run(fitness_function.__call__, prior, self.variable.prior_count,
                  outputfiles_basename="{}/multinest".format(self.path),
                  n_live_points=self.n_live_points,
                  const_efficiency_mode=self.const_efficiency_mode,
