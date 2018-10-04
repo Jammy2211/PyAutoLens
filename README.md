@@ -1,8 +1,6 @@
-# AutoLens
+# PyAutoLens
 
-AutoLens makes it simple to model strong gravitational lenses.
-
-AutoLens is based on these papers:
+PyAutoLens makes it simple to model strong gravitational lenses with complex light and mass profiles. It is based on the following papers:
 
 https://arxiv.org/abs/1412.7436<br/>
 https://arxiv.org/abs/1708.07377
@@ -12,14 +10,12 @@ https://arxiv.org/abs/1708.07377
 AutoLens requires [PyMultiNest](http://johannesbuchner.github.io/pymultinest-tutorial/install.html) and [Numba](https://github.com/numba/numba).
 
 ```
-$ pip install numba
-$ pip install pymultinest
-$ git clone https://github.com/Jammy2211/PyAutoLens
+$ pip install autolens
 ```
 
 ## Python Example
 
-AutoLens can model a lens in just a small number of python code. The example below demonstrates a simple analysis which fits the lens galaxy's light, mass and the source galaxy's light.
+With PyAutoLens, you can begin modeling a lens in just a couple of minutes. The example below demonstrates a simple analysis which fits a lens galaxy's light, mass and a source galaxy.
 
 ```python
 from autolens.pipeline import phase as ph
@@ -31,16 +27,15 @@ from autolens.profiles import mass_profiles as mp
 from autolens.plotting import fitting_plotters
 import os
 
-# In this example, we'll generate a phase which fits a lens + source plane system. The example data we fit is
-# generated using PyAutoLens, in the 'howtolens/3_simulate.py' tutorial.
+# In this example, we'll generate a phase which fits a lens + source plane system.
 
-# Setup the path of the analysis so we can load the example data.
+# First, lets setup the path to this script so we can easily load the example data.
 path = "{}".format(os.path.dirname(os.path.realpath(__file__)))
 
-# Load an image, its noise-map and PSF from the 'data' folder.
-image = im.load_imaging_from_path(image_path=path + '/data/phase_image.fits',
-                                  noise_map_path=path + '/data/phase_noise_map.fits',
-                                  psf_path=path + '/data/phase_psf.fits', pixel_scale=0.1)
+# Now, load the image, noise-map and PSF from the 'data' folder.
+image = im.load_imaging_from_path(image_path=path + '/data/image.fits',
+                                  noise_map_path=path + '/data/noise_map.fits',
+                                  psf_path=path + '/data/psf.fits', pixel_scale=0.1)
 
 # We're going to model our lens galaxy using a light profile (an elliptical Sersic) and mass profile
 # (a singular isothermal sphere). We load these profiles from the 'light_profile (lp)' and 'mass_profile (mp)'
@@ -53,7 +48,7 @@ lens_galaxy_model = gp.GalaxyModel(light=lp.EllipticalSersic, mass=mp.Elliptical
 source_galaxy_model = gp.GalaxyModel(light=lp.EllipticalSersic)
 
 # To perform the analysis, we set up a phase using the 'phase' module (imported as 'ph').
-# A phase takes our galaxy models and fits their parameters using a non-linear optimizer (in this case, MultiNest).
+# A phase takes our galaxy models and fits their parameters using a non-linear search (in this case, MultiNest).
 phase = ph.LensSourcePlanePhase(lens_galaxies=[lens_galaxy_model], source_galaxies=[source_galaxy_model],
                                 optimizer_class=nl.MultiNest, phase_name='phase_example')
 
@@ -65,13 +60,24 @@ fitting_plotters.plot_fitting(fit=results.fit)
 ```
 ## Advanced Lens Modeling
 
-- Build pipelines out of phases, enabling automated fitting of complex lens models.
-- Reconstruct source galaxies using a variety of pixel-grids.
-- Perform multi-plane lens analysis.
+The example above shows the simplest analysis one can perform in PyAutoLens. PyAutoLens's advanced modeling features include:
+
+- **Pipelines** - build automated analysis pipelines out of phases to fit complex lens models to large samples of strong lenses.
+- **Inversions** - Reconstruct complex source galaxy morphologies on a variety of pixel-grids.
+- **Adaption** - Adapt the analysis to the features of the observed strong lens imaging.
+- **Multi-Plane** - Model multi-plane lenses, including systems with multiple lensed source galaxies.
 
 ## HowToLens
 
-Detailed tutorials demonstrating how to use PyAutoLens can be found in the 'howtolens' folder.
+Detailed tutorials demonstrating how to use PyAutoLens can be found in the 'howtolens' folder:
+
+- **Introduction** - How to use PyAutolens, familiarizing you with the interface and project structure.
+- **Lens Modeling** - How to model strong lenses, including a primer on Bayesian non-linear analysis.
+- **Pipelines** - How to build pipelines, in particular how to tailor them to your own science case.
+
+## Support & Discussion
+
+If you're having difficulty with installation, lens modeling, or just want a chat, feel free to message us on our [SLACK channel](https://pyautolens.slack.com/).
 
 ## Contributing
 
