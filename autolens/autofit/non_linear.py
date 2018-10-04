@@ -252,8 +252,8 @@ class MultiNest(NonLinearOptimizer):
         super(MultiNest, self).__init__(include_hyper_image=include_hyper_image, model_mapper=model_mapper, name=name,
                                         label_config=label_config)
 
-        self.file_summary = "{}/{}".format(self.opt_path, 'multinestsummary.txt')
-        self.file_weighted_samples = "{}/{}".format(self.opt_path, 'multinest.txt')
+        self.file_summary = "{}/{}".format(self.path, 'multinestsummary.txt')
+        self.file_weighted_samples = "{}/{}".format(self.path, 'multinest.txt')
         self.file_results = "{}/{}".format(self.phase_path, 'model.results')
         self._weighted_sample_model = None
         self.sigma_limit = sigma_limit
@@ -284,7 +284,7 @@ class MultiNest(NonLinearOptimizer):
     @property
     def pdf(self):
         import getdist
-        return getdist.mcsamples.loadMCSamples(self.path + '/multinest')
+        return getdist.mcsamples.loadMCSamples(self.opt_path + '/multinest')
 
     def fit(self, analysis):
         self.save_model_info()
