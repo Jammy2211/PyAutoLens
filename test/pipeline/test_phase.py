@@ -71,7 +71,7 @@ class NLO(non_linear.NonLinearOptimizer):
                 return -2 * likelihood
 
         fitness_function = Fitness(self.variable.instance_from_physical_vector, self.constant)
-        fitness_function(self.variable.total_priors * [0.5])
+        fitness_function(self.variable.prior_count * [0.5])
 
         return fitness_function.result
 
