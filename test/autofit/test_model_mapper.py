@@ -35,6 +35,84 @@ def make_width_config():
                                              "test_files/config/priors/width"))
 
 
+@pytest.fixture(name="initial_model")
+def make_initial_model(test_config):
+    return model_mapper.PriorModel(MockClassMM, test_config)
+
+
+class TestPriorLinking(object):
+    def test_same_class(self, initial_model):
+        new_model = initial_model.linked_model_for_class(MockClassMM)
+
+        assert new_model != initial_model
+        assert new_model.one is initial_model.one
+        assert new_model.two is initial_model.two
+
+    def test_extended_class(self, initial_model):
+        new_model = initial_model.linked_model_for_class(ExtendedMockClass)
+
+        assert hasattr(new_model, "three")
+
+    def test_override(self, initial_model):
+        new_prior = model_mapper.GaussianPrior(1., 1.)
+        new_model = initial_model.linked_model_for_class(MockClassMM, one=1., two=new_prior)
+
+        assert new_model != initial_model
+        assert new_model.one is not initial_model.one
+        assert new_model.one == model_mapper.Constant(1.)
+        assert isinstance(new_model.one, model_mapper.Constant)
+        assert new_model.two is not initial_model.two
+        assert new_model.two is new_prior
+
+    def test_constants(self, initial_model):
+        initial_model.one = 1
+
+        new_model = initial_model.linked_model_for_class(MockClassMM)
+
+        assert new_model.one == model_mapper.Constant(1)
+        assert isinstance(new_model.one, model_mapper.Constant)
+        assert new_model.one is initial_model.one
+        assert new_model.two is initial_model.two
+
+    def test_uniform_prior_mean(self):
+        uniform_prior = model_mapper.UniformPrior(0., 1.)
+        assert uniform_prior.mean == 0.5
+
+        uniform_prior.mean = 1.
+        assert uniform_prior.lower_limit == 0.5
+        assert uniform_prior.upper_limit == 1.5
+
+    def test_make_constants_variable(self, initial_model):
+        initial_model.one = 1
+
+        new_model = initial_model.linked_model_for_class(MockClassMM, make_constants_variable=True)
+
+        assert new_model.one.mean == 0.5
+        assert new_model.two is initial_model.two
+
+    def test_tuple_passing(self, test_config):
+        initial_model = model_mapper.PriorModel(MockProfile, test_config)
+        initial_model.centre_0 = 1.
+        assert isinstance(initial_model.centre_0, model_mapper.Constant)
+
+        new_model = initial_model.linked_model_for_class(MockProfile)
+
+        assert new_model.centre_0 is initial_model.centre_0
+        assert new_model.centre_1 is initial_model.centre_1
+
+    def test_is_tuple_like_attribute_name(self):
+        assert model_mapper.is_tuple_like_attribute_name("centre_0")
+        assert model_mapper.is_tuple_like_attribute_name("centre_1")
+        assert not model_mapper.is_tuple_like_attribute_name("centre")
+        assert model_mapper.is_tuple_like_attribute_name("centre_why_not_0")
+        assert not model_mapper.is_tuple_like_attribute_name("centre_why_not")
+
+    def test_tuple_name(self):
+        assert model_mapper.tuple_name("centre_0") == "centre"
+        assert model_mapper.tuple_name("centre_1") == "centre"
+        assert model_mapper.tuple_name("centre_why_not_0") == "centre_why_not"
+
+
 class TestAddition(object):
     def test_abstract_plus_abstract(self):
         one = model_mapper.AbstractModel()
@@ -76,7 +154,7 @@ class TestAddition(object):
 
         three = one + two
 
-        assert three.total_priors == 14
+        assert three.prior_count == 14
 
 
 class TestUniformPrior(object):
@@ -95,6 +173,12 @@ class MockClassMM(object):
     def __init__(self, one, two):
         self.one = one
         self.two = two
+
+
+class ExtendedMockClass(MockClassMM):
+    def __init__(self, one, two, three):
+        super().__init__(one, two)
+        self.three = three
 
 
 class MockConfig(conf.DefaultPriorConfig):
@@ -165,16 +249,27 @@ class WithTuple(object):
 
 # noinspection PyUnresolvedReferences
 class TestRegression(object):
+    def test_tuple_constant_model_info(self, mapper):
+        mapper.profile = light_profiles.EllipticalCoreSersic
+        info = mapper.info
+
+        mapper.profile.centre_0 = 1.
+
+        assert len(mapper.profile.centre.constant_tuples) == 1
+        assert len(mapper.profile.constant_tuples) == 1
+
+        assert len(info.split('\n')) == len(mapper.info.split('\n'))
+
     def test_set_tuple_constant(self):
         mm = model_mapper.ModelMapper()
         mm.galaxy = galaxy_model.GalaxyModel(sersic=light_profiles.EllipticalSersic)
 
-        assert mm.total_priors == 7
+        assert mm.prior_count == 7
 
         mm.galaxy.sersic.centre_0 = model_mapper.Constant(0)
         mm.galaxy.sersic.centre_1 = model_mapper.Constant(0)
 
-        assert mm.total_priors == 5
+        assert mm.prior_count == 5
 
     def test_get_tuple_constants(self):
         mm = model_mapper.ModelMapper()
@@ -187,11 +282,11 @@ class TestRegression(object):
         mapper.with_float = WithFloat
         mapper.with_tuple = WithTuple
 
-        assert mapper.total_priors == 3
+        assert mapper.prior_count == 3
 
         mapper.with_tuple.tup_0 = mapper.with_float.value
 
-        assert mapper.total_priors == 2
+        assert mapper.prior_count == 2
 
     def test_tuple_parameter_float(self, mapper):
         mapper.with_float = WithFloat
@@ -199,11 +294,11 @@ class TestRegression(object):
 
         mapper.with_float.value = model_mapper.Constant(1)
 
-        assert mapper.total_priors == 2
+        assert mapper.prior_count == 2
 
         mapper.with_tuple.tup_0 = mapper.with_float.value
 
-        assert mapper.total_priors == 1
+        assert mapper.prior_count == 1
 
         instance = mapper.instance_from_unit_vector([0.])
 
@@ -689,7 +784,8 @@ class TestUtility(object):
         mapper.mock_class_1.one = mapper.mock_class_2.one
         mapper.mock_class_1.two = mapper.mock_class_2.two
 
-        assert mapper.prior_model_name_prior_tuples_dict["mock_class_1"] == mapper.prior_model_name_prior_tuples_dict["mock_class_2"]
+        assert mapper.prior_model_name_prior_tuples_dict["mock_class_1"] == mapper.prior_model_name_prior_tuples_dict[
+            "mock_class_2"]
 
     def test_value_vector_for_hypercube_vector(self):
         mapper = model_mapper.ModelMapper(MockConfig(), mock_class=MockClassMM)
