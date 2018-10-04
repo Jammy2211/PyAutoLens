@@ -1,0 +1,16 @@
+You are now familiar with PyAutoLens and have a beginner's understanding of lens modeling. In this chapter, we'll
+introduce pipelines, a concept we not so subtly hinted at towards the end of the last chapter. Pipelines allow us to
+generically link phases together, so that we can seamlessly navigate the complex non-linear parameter spaces that come
+when fitting realistic lens models.
+
+The interface for writing pipelines doesn't mesh nicely with Juypter notebooks. Pipelines are a fairly long block of
+code, which runs all at once. Breaking it down into notebook cells obfuscates this interface, and running
+each cell by itself does nothing.
+
+Therefore, I recommend you do these tutorials using python scripts. Whereas these scripts were in a sub-directory
+previously, I've relegated the Jupyter notebooks to that directory for this chapter. If you want, you can completely
+ignore my advise and use notebacks them - I won't take it personally - but you've been warned!
+
+In general, when using PyAutoLens, my advise is to write pipelines as scripts, and run them as Juypter notebooks.
+Your code will be a lot cleaner and you'll make fewer mistakes. Once we've written a few pipelines, I'll give an
+example of how I recommend that you setup your workspace.

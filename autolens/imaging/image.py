@@ -37,6 +37,7 @@ class Image(ScaledArray):
         if isinstance(obj, Image):
             self.psf = obj.psf
             self.noise_map = obj.noise_map
+            self.background_noise_map = obj.background_noise_map
 
     def trim_image_and_noise_around_centre(self, new_shape):
 
