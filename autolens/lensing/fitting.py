@@ -172,7 +172,6 @@ class AbstractProfileFit(AbstractFit):
             unmasked_model_images_of_galaxies_from_lensing_image_and_tracer(lensing_image, unmasked_tracer)
 
         self.plane_images = tracer.plane_images_of_planes(shape=plane_shape)
-        self.plane_grids = tracer.image_grids_of_planes
 
     @property
     def model_images_of_planes(self):
