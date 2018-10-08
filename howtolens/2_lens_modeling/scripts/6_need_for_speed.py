@@ -54,13 +54,13 @@
 # reasonable lens model which fits the data reasonably well, why bother fitting all the image data?
 # You can do that in the last phase, right?
 
-# Herein lies the beauty behind pipelines. Not only can we tune their navigation of non-linear parameter space, we can
+# Herein lies the beauty behind runners. Not only can we tune their navigation of non-linear parameter space, we can
 # freely butcher our data to keep AutoLens running fast. Yeah, the last phase might take a while to run, because
 # we're fitting a larger quantity of data, but at this point we've tuned our lens model priors so much the phase can't
 # take too long.
 
 # Therefore, there are n o exercises in this tutorial and no code to run. We're going to hold off thinking about
-# run-speed until we introduce pipelines. Instead, I just want you to think about how you might write a pipeline to
+# run-speed until we introduce runners. Instead, I just want you to think about how you might write a pipeline to
 # perform the following analyses:
 
 # 1) The only thing you care about is the highly magnified source-galaxy. You don't care about the lens galaxy's
