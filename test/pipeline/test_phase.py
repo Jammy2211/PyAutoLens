@@ -99,15 +99,15 @@ def make_galaxy_model():
 
 @pytest.fixture(name="image")
 def make_image():
-    image = img.Image(np.array(np.zeros(shape)), pixel_scales=1.0, psf=img.PSF(np.ones((3, 3))),
-                      noise_map=np.ones(shape))
+    image = img.Image(np.array(np.zeros(shape)), pixel_scale=1.0, psf=img.PSF(np.ones((3, 3)), pixel_scale=1.0),
+                      noise_map=img.NoiseMap(np.ones(shape), pixel_scale=1.0))
     return image
 
 
 @pytest.fixture(name="lensing_image")
 def make_lensing_image():
-    image = img.Image(np.array(np.zeros(shape)), pixel_scales=1.0, psf=img.PSF(np.ones((3, 3))),
-                      noise_map=np.ones(shape))
+    image = img.Image(np.array(np.zeros(shape)), pixel_scale=1.0, psf=img.PSF(np.ones((3, 3)), pixel_scale=1.0),
+                      noise_map=img.NoiseMap(np.ones(shape), pixel_scale=1.0))
     mask = msk.Mask.circular(shape=shape, pixel_scale=1, radius_mask_arcsec=3.0)
     return li.LensingImage(image, mask)
 
@@ -217,7 +217,7 @@ class TestPhase(object):
     #     lens_galaxy = g.Galaxy(light_profile=lp.SphericalSersic(intensity=1.0))
     #     image_padded_grid = msk.ImageUnmaskedGrid.unmasked_grid_from_shapes_and_pixel_scale(shape=_image.shape,
     #                                                                                         psf_shape=_image.psf.shape,
-    #                                                                                         pixel_scales=_image.pixel_scales)
+    #                                                                                         pixel_scale=_image.pixel_scale)
     #     image_1d = lens_galaxy.intensities_from_grid(image_padded_grid)
     #     blurred_image_1d = image_padded_grid.convolve_array_1d_with_psf(image_1d, _image.psf)
     #     blurred_image = image_padded_grid.map_to_2d(blurred_image_1d)
@@ -237,7 +237,7 @@ class TestPhase(object):
     #
     #     image_padded_grid = msk.ImageUnmaskedGrid.unmasked_grid_from_shapes_and_pixel_scale(shape=_image.shape,
     #                                                                                         psf_shape=_image.psf.shape,
-    #                                                                                         pixel_scales=_image.pixel_scales)
+    #                                                                                         pixel_scale=_image.pixel_scale)
     #
     #     g0_image_1d = g0.intensities_from_grid(image_padded_grid)
     #     g0_blurred_image_1d = image_padded_grid.convolve_array_1d_with_psf(g0_image_1d, _image.psf)
