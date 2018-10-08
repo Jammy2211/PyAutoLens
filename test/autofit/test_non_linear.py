@@ -1173,6 +1173,10 @@ def make_downhill_simplex(test_config, width_config):
 @pytest.fixture(name="multi_nest")
 def make_multi_nest(test_config, width_config, label_config):
     mn_fit_path = "{}/test_fit".format(os.path.dirname(os.path.realpath(__file__)))
+    try:
+        shutil.rmtree(mn_fit_path)
+    except FileNotFoundError as e:
+        print(e)
 
     conf.instance.output_path = mn_fit_path
 
