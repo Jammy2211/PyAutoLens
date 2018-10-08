@@ -1,14 +1,12 @@
 import logging
 import os
 import shutil
-from base64 import b64encode
 from os.path import expanduser
 
 SUB_PATH_LENGTH = 10
 AUTOLENS_FOLDER = ".autolens"
 
 logger = logging.getLogger(__file__)
-logger.level = logging.DEBUG
 
 home = expanduser("~")
 autolens_dir = "{}/{}".format(home, AUTOLENS_FOLDER)
@@ -60,20 +58,20 @@ def make_linked_folder(sym_path):
     """
     source_path = path_for(sym_path)
     if os.path.exists(source_path) and not os.path.exists(sym_path):
-        logger.info("Source {} exists but target {} does not. Removing source.".format(source_path, sym_path))
+        logger.debug("Source {} exists but target {} does not. Removing source.".format(source_path, sym_path))
         shutil.rmtree(source_path)
     try:
-        logger.info("Making source {}".format(source_path))
+        logger.debug("Making source {}".format(source_path))
         os.mkdir(source_path)
-        logger.info("Success")
+        logger.debug("Success")
     except FileExistsError as e:
         logger.info("Source already existed")
         logger.debug(e)
     try:
-        logger.info("Making linking from source {} to sym {}".format(source_path, sym_path))
+        logger.debug("Making linking from source {} to sym {}".format(source_path, sym_path))
         os.symlink(source_path, sym_path)
-        logger.info("Success")
+        logger.debug("Success")
     except FileExistsError as e:
-        logger.info("Sym already existed")
+        logger.debug("Sym already existed")
         logger.debug(e)
     return source_path
