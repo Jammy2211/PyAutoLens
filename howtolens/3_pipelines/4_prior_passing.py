@@ -1,4 +1,4 @@
-# In the previous 3 pipelines, we passed priors using the 'variable' attribute of the previous results. However, its
+# In the previous 3 runners, we passed priors using the 'variable' attribute of the previous results. However, its
 # not yet clear how these priors are passed. Do they use a UniformPrior or GaussianPrior? What are the liimts / sigma
 # on these priors? Can I change this behaviour?
 
