@@ -1,8 +1,9 @@
-from runners.lens_and_source import initializer
-from autolens.imaging import scaled_array
-from autolens.imaging import image
-from autolens import conf
 import os
+
+from autolens import conf
+from autolens.imaging import image
+from autolens.imaging import scaled_array
+from autolens.runners.lens_and_source import initializer
 
 dirpath = os.path.dirname(os.path.realpath(__file__))
 conf.instance.output_path = os.path.expanduser("~/")
