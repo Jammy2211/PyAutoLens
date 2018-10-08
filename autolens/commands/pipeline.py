@@ -208,7 +208,7 @@ class Pipeline(Base):
 
 def print_pipelines():
     """
-    Prints a list of available pipelines taken from the pipeline dictionary.
+    Prints a list of available runners taken from the pipeline dictionary.
     """
     print("Available Pipelines:\n")
     print(
