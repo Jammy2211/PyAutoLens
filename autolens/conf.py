@@ -230,7 +230,7 @@ def is_config(config_path=CONFIG_PATH):
 
 
 def copy_default(config_path):
-    shutil.copytree("{}/../config".format(directory), config_path)
+    shutil.copytree("{}/config".format(directory), config_path)
 
 
 def remove_config(config_path=CONFIG_PATH):
