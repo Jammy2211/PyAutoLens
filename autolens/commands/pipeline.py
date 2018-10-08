@@ -43,24 +43,27 @@ class Pipeline(Base):
     def run(self):
         name = self.options['<name>']
         conf.instance = conf.Config(self.config_path, self.output_path)
-        if self.options['--info']:
-            tup = runners.pipeline_dict[name]
-            print()
-            pl = tup.make()
-            print(red(name))
-            print(tup.doc)
-            print()
-            print(red("Phases"))
-            print("\n".join(["{}\n   {}".format(phase.__class__.__name__, blue(phase.doc)) for phase in pl.phases]))
-            return
-        if name is not None:
-            if name not in runners.pipeline_dict:
-                if name == "test":
-                    self.run_pipeline(runners.TestPipeline())
-                    return
-                print("No pipeline called '{}' found".format(name))
+        try:
+            if self.options['--info']:
+                tup = runners.pipeline_dict[name]
+                print()
+                pl = tup.make()
+                print(red(name))
+                print(tup.doc)
+                print()
+                print(red("Phases"))
+                print("\n".join(["{}\n   {}".format(phase.__class__.__name__, blue(phase.doc)) for phase in pl.phases]))
                 return
-            self.run_pipeline(runners.pipeline_dict[name].make())
+            if name is not None:
+                if name not in runners.pipeline_dict:
+                    if name == "test":
+                        self.run_pipeline(runners.TestPipeline())
+                        return
+                    print("No pipeline called '{}' found".format(name))
+                    return
+                self.run_pipeline(runners.pipeline_dict[name].make())
+        except KeyError:
+            print("Pipeline '{}' does not exist.\n".format(name))
 
         print_pipelines()
 
