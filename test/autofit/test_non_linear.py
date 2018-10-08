@@ -1238,11 +1238,11 @@ class TestFitting(object):
             result = multi_nest.fit(MockAnalysis())
 
             assert result.constant.mock_class.one == 9.0
-            assert result.constant.mock_class.two == -10.0
+            assert result.constant.mock_class.two == 10.0
             assert result.likelihood == 0.02
 
             assert result.variable.mock_class.one.mean == 1
-            assert result.variable.mock_class.two.mean == -2
+            assert result.variable.mock_class.two.mean == 2
 
 
 @pytest.fixture(name='label_optimizer')
