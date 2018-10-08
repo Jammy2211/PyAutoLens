@@ -102,7 +102,7 @@ lsst = profiling_data.setup_class(name='LSST', pixel_scale=0.2, sub_grid_size=su
 euclid = profiling_data.setup_class(name='Euclid', pixel_scale=0.1, sub_grid_size=sub_grid_size, psf_shape=psf_size)
 hst = profiling_data.setup_class(name='HST', pixel_scale=0.05, sub_grid_size=sub_grid_size, psf_shape=psf_size)
 hst_up = profiling_data.setup_class(name='HSTup', pixel_scale=0.03, sub_grid_size=sub_grid_size, psf_shape=psf_size)
-# ao = profiling_data.setup_class(analysis_path='AO', pixel_scale=0.01, sub_grid_size=sub_grid_size, psf_shape=psf_size)
+# ao = profiling_data.setup_class(analysis_path='AO', pixel_scales=0.01, sub_grid_size=sub_grid_size, psf_shape=psf_size)
 
 lsst_tracer = ray_tracing.Tracer(lens_galaxies=[lens_galaxy], source_galaxies=[source_pix],
                                  image_plane_grids=lsst.grids)

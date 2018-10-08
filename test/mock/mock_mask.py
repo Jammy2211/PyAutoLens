@@ -21,9 +21,10 @@ class MockSubGridCoords(np.ndarray):
 class MockGridCollection(object):
 
     def __init__(self, image, sub, blurring=None):
-        self.image = msk.ImageGrid(image, shape_2d=(1, 1), grid_to_pixel=None)
+        self.image = msk.ImageGrid(image, pixel_scale=1.0, shape_2d=(1, 1), grid_to_pixel=None)
         self.sub = sub
-        self.blurring = msk.ImageGrid(blurring, shape_2d=(1, 1), grid_to_pixel=None) if blurring is not None else None
+        self.blurring = msk.ImageGrid(blurring, pixel_scale=1.0, shape_2d=(1, 1),
+                                      grid_to_pixel=None) if blurring is not None else None
 
 
 class MockBorderCollection(object):
