@@ -10,7 +10,7 @@ logging.basicConfig()
 logger = logging.getLogger(__name__)
 
 
-class Mask(scaled_array.ScaledArray):
+class Mask(scaled_array.ScaledSquarePixelArray):
     """
     A mask represented by an ndarray where True is masked.
     """
@@ -111,7 +111,7 @@ class Mask(scaled_array.ScaledArray):
             The centre of the mask.
         """
         mask = imaging_util.mask_anti_annular_from_shape_pixel_scale_and_radii(shape, pixel_scale, inner_radius_arcsec,
-                                                                    outer_radius_arcsec, outer_radius_2_arcsec, centre)
+                                                                               outer_radius_arcsec, outer_radius_2_arcsec, centre)
         return cls(mask, pixel_scale)
 
     @property
@@ -163,8 +163,8 @@ class Mask(scaled_array.ScaledArray):
     def border_sub_pixel_indices(self, sub_grid_size):
         """The indicies of the mask's border sub-pixels, where a border sub-pixel is the sub-pixel in a mask border \
         _image-pixel which is closest to the edge."""
-        return imaging_util.border_sub_pixels_from_mask_pixel_scale_and_sub_grid_size(self, self.pixel_scale,
-                                                                                      sub_grid_size).astype('int')
+        return imaging_util.border_sub_pixels_from_mask_pixel_scales_and_sub_grid_size(self, self.pixel_scales,
+                                                                                       sub_grid_size).astype('int')
 
 
 class ImagingGrids(object):
@@ -329,8 +329,9 @@ class ImageGrid(np.ndarray):
     |x|x|x|x|x|x|x|x|x|x|      image_grid[9] = [ 1.5,  0.5]
     """
 
-    def __new__(cls, arr, shape_2d, grid_to_pixel, *args, **kwargs):
+    def __new__(cls, arr, pixel_scale, shape_2d, grid_to_pixel, *args, **kwargs):
         obj = arr.view(cls)
+        obj.pixel_scale = pixel_scale
         obj.shape_2d = shape_2d
         obj.grid_to_pixel = grid_to_pixel
         return obj
@@ -344,14 +345,14 @@ class ImageGrid(np.ndarray):
         -----------
         mask : Mask
             The mask whose unmasked pixels are used to setup the sub-pixel grids."""
-        return cls(imaging_util.image_grid_1d_masked_from_mask_and_pixel_scale(mask, mask.pixel_scale),
-                   mask.shape, mask.grid_to_pixel)
+        array = imaging_util.image_grid_1d_masked_from_mask_and_pixel_scales(mask=mask, pixel_scales=mask.pixel_scales)
+        return cls(array, mask.pixel_scale, mask.shape, mask.grid_to_pixel)
 
     @classmethod
     def from_shape_and_pixel_scale(cls, shape, pixel_scale):
         mask = Mask.unmasked_for_shape_and_pixel_scale(shape=shape, pixel_scale=pixel_scale)
-        array = imaging_util.image_grid_1d_masked_from_mask_and_pixel_scale(mask=mask, pixel_scale=mask.pixel_scale)
-        return cls(array, mask.shape, mask.grid_to_pixel)
+        array = imaging_util.image_grid_1d_masked_from_mask_and_pixel_scales(mask=mask, pixel_scales=mask.pixel_scales)
+        return cls(array, mask.pixel_scale, mask.shape, mask.grid_to_pixel)
 
     @classmethod
     def blurring_grid_from_mask_and_psf_shape(cls, mask, psf_shape):
@@ -370,6 +371,9 @@ class ImageGrid(np.ndarray):
         """
         return imaging_util.map_masked_1d_array_to_2d_array_from_array_1d_shape_and_one_to_two(array_1d, self.shape_2d,
                                                                                                self.grid_to_pixel)
+
+    def scaled_array_from_array_1d(self, array_1d):
+        return scaled_array.ScaledSquarePixelArray(array=self.map_to_2d(array_1d), pixel_scale=self.pixel_scale)
 
     def __reduce__(self):
         # Get the parent's __reduce__ tuple
@@ -391,16 +395,6 @@ class ImageGrid(np.ndarray):
     @property
     def total_pixels(self):
         return self.shape[0]
-
-    @property
-    def xticks(self):
-        """Compute the xticks labels of this grid, used for plotting the x-axis ticks when visualizing an _image-grid"""
-        return np.around(np.linspace(np.amin(self[:, 0]), np.amax(self[:, 0]), 4), 2)
-
-    @property
-    def yticks(self):
-        """Compute the yticks labels of this grid, used for plotting the y-axis ticks when visualizing an _image-grid"""
-        return np.around(np.linspace(np.amin(self[:, 1]), np.amax(self[:, 1]), 4), 2)
 
 
 class SubGrid(ImageGrid):
@@ -478,9 +472,10 @@ class SubGrid(ImageGrid):
              image_grid[8] = [-0.25, 0.25]
     """
 
-    def __init__(self, array, shape_2d, grid_to_pixel, mask, sub_grid_size=1):
+    def __init__(self, array, pixel_scale, shape_2d, grid_to_pixel, mask, sub_grid_size=1):
         # noinspection PyArgumentList
         super(SubGrid, self).__init__()
+        self.pixel_scale = pixel_scale
         self.shape_2d = shape_2d
         self.grid_to_pixel = grid_to_pixel
         self.sub_grid_size = sub_grid_size
@@ -500,17 +495,17 @@ class SubGrid(ImageGrid):
         sub_grid_size : int
             The size (sub_grid_size x sub_grid_size) of each _image-pixels sub-grid.
         """
-        sub_grid_masked = imaging_util.sub_grid_1d_masked_from_mask_pixel_scale_and_sub_grid_size(mask,
-                                                                                                  mask.pixel_scale,
-                                                                                                  sub_grid_size)
-        return SubGrid(sub_grid_masked, mask.shape, mask.grid_to_pixel, mask, sub_grid_size)
+        sub_grid_masked = imaging_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(mask,
+                                                                                                   mask.pixel_scales,
+                                                                                                   sub_grid_size)
+        return SubGrid(sub_grid_masked, mask.pixel_scale, mask.shape, mask.grid_to_pixel, mask, sub_grid_size)
 
     @classmethod
     def from_shape_pixel_scale_and_sub_grid_size(cls, shape, pixel_scale, sub_grid_size):
         mask = Mask.unmasked_for_shape_and_pixel_scale(shape=shape, pixel_scale=pixel_scale)
-        sub_grid = imaging_util.sub_grid_1d_masked_from_mask_pixel_scale_and_sub_grid_size(mask, mask.pixel_scale,
-                                                                                           sub_grid_size)
-        return SubGrid(sub_grid, mask.shape, mask.grid_to_pixel, mask, sub_grid_size)
+        sub_grid = imaging_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(mask, mask.pixel_scales,
+                                                                                            sub_grid_size)
+        return SubGrid(sub_grid, pixel_scale, mask.shape, mask.grid_to_pixel, mask, sub_grid_size)
 
     def __array_finalize__(self, obj):
         if isinstance(obj, SubGrid):
@@ -546,7 +541,7 @@ class SubGrid(ImageGrid):
 
 class ImageUnmaskedGrid(ImageGrid):
 
-    def __new__(cls, arr, image_shape, padded_shape, *args, **kwargs):
+    def __new__(cls, arr, pixel_scale, image_shape, padded_shape, *args, **kwargs):
         """An *ImageUnmaskedGrid* stores the (x,y) arc-second coordinates of a mask's pixels in 1D, in an analogous \
         fashion to an *ImageGrid*. An *ImageUnmaskedGrid* deviate from a normal grid in that:
 
@@ -557,6 +552,7 @@ class ImageUnmaskedGrid(ImageGrid):
         opposed to just within the masked region.
         """
         arr = arr.view(cls)
+        arr.pixel_scale = pixel_scale
         arr.image_shape = image_shape
         arr.padded_shape = padded_shape
         return arr
@@ -578,10 +574,11 @@ class ImageUnmaskedGrid(ImageGrid):
            The shape of the psf which defines the blurring region and therefore size of padding.
         """
         padded_shape = (shape[0] + psf_shape[0] - 1, shape[1] + psf_shape[1] - 1)
-        padded_image_grid = imaging_util.image_grid_1d_masked_from_mask_and_pixel_scale(
+        padded_image_grid = imaging_util.image_grid_1d_masked_from_mask_and_pixel_scales(
             mask=np.full(padded_shape, False),
-            pixel_scale=pixel_scale)
-        return ImageUnmaskedGrid(arr=padded_image_grid, image_shape=shape, padded_shape=padded_shape)
+            pixel_scales=(pixel_scale, pixel_scale))
+        return ImageUnmaskedGrid(arr=padded_image_grid, pixel_scale=pixel_scale, image_shape=shape,
+                                 padded_shape=padded_shape)
 
     def convolve_array_1d_with_psf(self, padded_array_1d, psf):
         """Convolve a 2d padded array of values (e.g. intensities beforoe PSF blurring) with a PSF, and then trim \
@@ -627,7 +624,7 @@ class ImageUnmaskedGrid(ImageGrid):
 
 class SubUnmaskedGrid(SubGrid, ImageUnmaskedGrid):
 
-    def __init__(self, arr, mask, image_shape, padded_shape, sub_grid_size=1):
+    def __init__(self, arr, pixel_scale, mask, image_shape, padded_shape, sub_grid_size=1):
         """A *SubUnmaskedGrid* stores the (x,y) arc-second coordinates of a mask's sub-pixels in 1D, in an analogous \
         fashion to a *SubGrid*. A *SubUnmaskedGrid* deviate from a normal grid in that:
 
@@ -637,7 +634,7 @@ class SubUnmaskedGrid(SubGrid, ImageUnmaskedGrid):
         Padded-grids allow quantities like intensities to be computed on large 2D arrays spanning the entire _image, as \
         opposed to just within the masked region.
         """
-        super(SubUnmaskedGrid, self).__init__(arr, mask.shape, mask.grid_to_pixel, mask, sub_grid_size)
+        super(SubUnmaskedGrid, self).__init__(arr, pixel_scale, mask.shape, mask.grid_to_pixel, mask, sub_grid_size)
         self.image_shape = image_shape
         self.padded_shape = padded_shape
 
@@ -660,11 +657,11 @@ class SubUnmaskedGrid(SubGrid, ImageUnmaskedGrid):
 
         padded_shape = (mask.shape[0] + psf_shape[0] - 1, mask.shape[1] + psf_shape[1] - 1)
 
-        padded_sub_grid = imaging_util.sub_grid_1d_masked_from_mask_pixel_scale_and_sub_grid_size(
-            mask=np.full(padded_shape, False), pixel_scale=mask.pixel_scale, sub_grid_size=sub_grid_size)
+        padded_sub_grid = imaging_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(
+            mask=np.full(padded_shape, False), pixel_scales=mask.pixel_scales, sub_grid_size=sub_grid_size)
 
-        return SubUnmaskedGrid(arr=padded_sub_grid, mask=mask, image_shape=mask.shape, padded_shape=padded_shape,
-                               sub_grid_size=sub_grid_size)
+        return SubUnmaskedGrid(arr=padded_sub_grid, pixel_scale=mask.pixel_scale, mask=mask, image_shape=mask.shape,
+                               padded_shape=padded_shape, sub_grid_size=sub_grid_size)
 
     def __array_finalize__(self, obj):
         if isinstance(obj, SubUnmaskedGrid):
