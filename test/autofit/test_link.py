@@ -23,7 +23,6 @@ class TestCase(object):
     def test_consistent_dir(self):
         directory = link.path_for("/a/random/directory")
         assert link.autolens_dir in directory
-        # assert len(directory.split("/")[-1]) == link.SUB_PATH_LENGTH
         assert directory == link.path_for("/a/random/directory")
         assert directory != link.path_for("/b/random/directory")
         assert link.path_for("/tmp/linked_file") != link.path_for("/tmp/linked_folder")
