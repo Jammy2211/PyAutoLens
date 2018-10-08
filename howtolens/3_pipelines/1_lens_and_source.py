@@ -8,7 +8,7 @@ from autolens.profiles import light_profiles as lp
 from autolens.profiles import mass_profiles as mp
 
 # In chapter 2, we fitted a strong lens which included the contribution of light from the lens galaxy. We're going to
-# fit this lens again (I promise, this is the last time!). However, now we're approaching lens modeling with pipelines,
+# fit this lens again (I promise, this is the last time!). However, now we're approaching lens modeling with runners,
 # we can perform a completely different (and significantly faster) analysis.
 
 # Load up the PDFs from the previous tutorial -
@@ -47,8 +47,8 @@ def make_pipeline():
     # To begin, we name our pipeline, which will specify the directory that it appears in the output folder.
     pipeline_name = 'howtolens/3_pipelines/1_lens_and_source'
 
-    # Its been a long time since we thought about masks - but in pipelines they're a pretty important. The bigger the
-    # mask, the slower the run-time. In the early phases of most pipelines, we're not too bothered about fitting the
+    # Its been a long time since we thought about masks - but in runners they're a pretty important. The bigger the
+    # mask, the slower the run-time. In the early phases of most runners, we're not too bothered about fitting the
     # image perfectly and aggresive masking (removing lots of image-pixels) is a good way to get things running fast.
 
     # In this phase, we're only interested in fitting the lens's light, so we'll mask out the source-galaxy entirely.
@@ -107,7 +107,7 @@ def make_pipeline():
             phase_1_results = previous_results[0]
             return image - phase_1_results.fit.unmasked_model_image
 
-    # The function above demonstrates the most important thing about pipelines - that every phase has access to the
+    # The function above demonstrates the most important thing about runners - that every phase has access to the
     # results of all previous phases. This means we can feed information through the pipeline and therefore use the
     # results of previous phases to setup new phases. We'll see this again in phase 3.
 
