@@ -2,6 +2,7 @@ from matplotlib import pyplot as plt
 
 from autolens import conf
 from autolens.plotting import array_plotters
+from autolens.plotting import inversion_plotters
 
 
 def plot_fitting(fit, units='kpc', output_path=None, output_filename='fit', output_format='show', ignore_config=True):
@@ -231,8 +232,8 @@ def plot_fitting_lens_and_source_planes(fit, units='kpc', output_path=None, outp
         in the python interpreter window.
     """
 
-    plt.figure(figsize=(25, 20))
-    plt.subplot(3, 3, 1)
+    plt.figure(figsize=(40, 26))
+    plt.subplot(2, 3, 1)
 
     array_plotters.plot_array(
         array=fit.image, points=None, grid=None, as_subplot=True,
@@ -243,20 +244,9 @@ def plot_fitting_lens_and_source_planes(fit, units='kpc', output_path=None, outp
         title='Observed Image', titlesize=16, xlabelsize=16, ylabelsize=16,
         output_path=output_path, output_filename=None, output_format=output_format)
 
-    plt.subplot(3, 3, 4)
-
-    array_plotters.plot_array(
-        array=fit.model_image, points=None, grid=None, as_subplot=True,
-        units=units, kpc_per_arcsec=fit.kpc_per_arcsec_proper[0],
-        xticks=fit.image.xticks, yticks=fit.image.yticks, xyticksize=16,
-        norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
-        figsize=None, aspect='auto', cmap='jet', cb_ticksize=16,
-        title='Model Image', titlesize=16, xlabelsize=16, ylabelsize=16,
-        output_path=output_path, output_filename=None, output_format=output_format)
-
     if fit.model_images_of_planes[0] is not None:
 
-        plt.subplot(3, 3, 5)
+        plt.subplot(2, 3, 2)
 
         array_plotters.plot_array(
             array=fit.model_images_of_planes[0], points=None, grid=None, as_subplot=True,
@@ -267,18 +257,31 @@ def plot_fitting_lens_and_source_planes(fit, units='kpc', output_path=None, outp
             title='Lens Model Image', titlesize=16, xlabelsize=16, ylabelsize=16,
             output_path=output_path, output_filename=None, output_format=output_format)
 
-    plt.subplot(3, 3, 6)
+    plt.subplot(2, 3, 3)
 
-    array_plotters.plot_array(
-        array=fit.model_images_of_planes[1], points=None, grid=None, as_subplot=True,
-        units=units, kpc_per_arcsec=fit.kpc_per_arcsec_proper[0],
-        xticks=fit.image.xticks, yticks=fit.image.yticks, xyticksize=16,
-        norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
-        figsize=None, aspect='auto', cmap='jet', cb_ticksize=16,
-        title='Source Model Image', titlesize=16, xlabelsize=16, ylabelsize=16,
-        output_path=output_path, output_filename=None, output_format=output_format)
+    if fit.total_inversions == 0:
 
-    plt.subplot(3, 3, 7)
+        array_plotters.plot_array(
+            array=fit.model_images_of_planes[1], points=None, grid=None, as_subplot=True,
+            units=units, kpc_per_arcsec=fit.kpc_per_arcsec_proper[0],
+            xticks=fit.image.xticks, yticks=fit.image.yticks, xyticksize=16,
+            norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
+            figsize=None, aspect='auto', cmap='jet', cb_ticksize=16,
+            title='Source Model Image', titlesize=16, xlabelsize=16, ylabelsize=16,
+            output_path=output_path, output_filename=None, output_format=output_format)
+
+    else:
+
+        inversion_plotters.plot_reconstruction(mapper=fit.mapper, inversion=fit.inversion,
+            as_subplot=True,
+            units=units, kpc_per_arcsec=fit.kpc_per_arcsec_proper[0],
+            xticks=fit.image.xticks, yticks=fit.image.yticks, xyticksize=16,
+            norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
+            figsize=None, aspect='auto', cmap='jet', cb_ticksize=16,
+            title='Source Model Image', titlesize=16, xlabelsize=16, ylabelsize=16,
+            output_path=output_path, output_filename=None, output_format=output_format)
+
+    plt.subplot(2, 3, 4)
 
     array_plotters.plot_array(
         array=fit.plane_images[1], grid=fit.plane_images[1].grid, points=None, as_subplot=True,
@@ -289,7 +292,7 @@ def plot_fitting_lens_and_source_planes(fit, units='kpc', output_path=None, outp
         title='Source-Plane Image', titlesize=16, xlabelsize=16, ylabelsize=16,
         output_path=output_path, output_filename=None, output_format=output_format)
 
-    plt.subplot(3, 3, 8)
+    plt.subplot(2, 3, 5)
 
     array_plotters.plot_array(
         array=fit.residuals, points=None, grid=None, as_subplot=True,
@@ -300,7 +303,7 @@ def plot_fitting_lens_and_source_planes(fit, units='kpc', output_path=None, outp
         title='Residuals', titlesize=16, xlabelsize=16, ylabelsize=16,
         output_path=output_path, output_filename=None, output_format=output_format)
 
-    plt.subplot(3, 3, 9)
+    plt.subplot(2, 3, 6)
 
     array_plotters.plot_array(
         array=fit.chi_squareds, points=None, grid=None, as_subplot=True,

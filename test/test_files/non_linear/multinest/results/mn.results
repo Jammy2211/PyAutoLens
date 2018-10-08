@@ -1,0 +1,20 @@
+Most likely model, Likelihood = 0.02
+
+mock_class_one                          9.0
+mock_class_two                          10.0
+mock_class_three                        11.0
+mock_class_four                         12.0
+
+Most probable model (3 sigma limits)
+
+mock_class_one                          1.0 (0.8802415615355199, 1.1195259985150692)
+mock_class_two                          2.0 (1.8804740014849308, 2.1197584384644803)
+mock_class_three                        3.0 (2.8804740014849326, 3.119758438464474)
+mock_class_four                         4.1 (3.8804740014849326, 4.119758438464474)
+
+Most probable model (1 sigma limits)
+
+mock_class_one                          1.0 (0.9275915805968072, 1.071970072572093)
+mock_class_two                          2.0 (1.9280299274279094, 2.0724084194031906)
+mock_class_three                        3.0 (2.928029927428015, 3.0724084194030854)
+mock_class_four                         4.1 (3.928029927428014, 4.072408419403085)
