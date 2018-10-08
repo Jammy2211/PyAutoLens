@@ -10,7 +10,7 @@ from test.integration import tools
 
 dirpath = os.path.dirname(os.path.realpath(__file__))
 dirpath = os.path.dirname(dirpath)
-output_path = '{}/integration_output'.format(dirpath)
+output_path = '{}/output'.format(dirpath)
 
 pipeline_name = "test"
 
