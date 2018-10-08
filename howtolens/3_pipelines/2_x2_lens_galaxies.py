@@ -22,7 +22,7 @@ from autolens.plotting import imaging_plotters
 # the opposite - specific to the image we're modeling. Fitting multiple lens galaxies is really difficult and
 # writing a pipeline that we can generalize to many lenses isn't currently possible with PyAutoLens.
 
-# First, lets load and inspect the image. You'll notice that we've upped the pixel_scale to 0.05". The 0.1" we've been
+# First, lets load and inspect the image. You'll notice that we've upped the pixel_scales to 0.05". The 0.1" we've been
 # using up to now isn't high enough resolution to fit a multi-galaxy lensing system very well.
 path = '/home/jammy/PyCharm/Projects/AutoLens/howtolens/3_pipelines'
 image = im.load_imaging_from_path(image_path=path + '/data/2_x2_lens_galaxies_image.fits',
