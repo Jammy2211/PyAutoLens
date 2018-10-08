@@ -158,7 +158,7 @@ fitting_plotters.plot_fitting(fit=phase_2_results.fit)
 # Phase 2 can't be generalized to another lens - it's priors are tuned to the image we fitted. If we had a lot of
 # lenses, we'd have to write a new phase_2 for every single one. This isn't ideal, is it?
 
-# Well, let me reassure you, that PyAutoLens has you covered. In the next set of tutorials, we'll cover 'pipelines'. As
+# Well, let me reassure you, that PyAutoLens has you covered. In the next set of tutorials, we'll cover 'runners'. As
 # you might of guessed, a pipeline comprises a set of phases that are linked together. This allows us to start with a
 # simple, easy-to-fit lens model, and gradually makes it more complex. Crucially, as the pipeline runs, we 'feed' the
 # results of previous phases through the pipeline, allowing us to tune our priors automatically, in a way that can be

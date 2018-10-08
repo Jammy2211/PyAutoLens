@@ -18,7 +18,7 @@ class Pipeline(object):
 
     def __add__(self, other):
         """
-        Compose two pipelines
+        Compose two runners
 
         Parameters
         ----------

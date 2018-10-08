@@ -1,4 +1,4 @@
-from pipelines.lens_and_source import initializer
+from autolens.runners.lens_and_source import initializer
 
 
 class PipelineTuple(object):
