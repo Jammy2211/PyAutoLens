@@ -14,4 +14,4 @@ class ResetConfig(Base):
             if input("Are you sure? This will reset the state of your config. (y/n)\n").lower() != 'y':
                 return
             conf.remove_config(config_path)
-        conf.copy_default(current_directory)
+        conf.copy_default(config_path)
