@@ -10,7 +10,7 @@ from autolens.lensing import lensing_image as li
 
 @pytest.fixture(name='image')
 def make_image():
-    psf = im.PSF(array=np.ones((3, 3)), renormalize=False)
+    psf = im.PSF(array=np.ones((3, 3)), pixel_scale=3.0, renormalize=False)
     return im.Image(np.ones((4, 4)), pixel_scale=3., psf=psf, noise_map=np.ones((4, 4)))
 
 
@@ -54,12 +54,11 @@ class TestMaskedImage(object):
                                                           [4.5, -4.5], [4.5, -1.5], [4.5, 1.5], [4.5, 4.5]])).all()
 
     def test_unmasked_grids(self, lensing_image):
-        unmasked_image_util = imaging_util.image_grid_1d_masked_from_mask_and_pixel_scale(np.full((6, 6), False),
-                                                                                          lensing_image.image.pixel_scale)
+        unmasked_image_util = imaging_util.image_grid_1d_masked_from_mask_and_pixel_scales(np.full((6, 6), False),
+                                                                                 lensing_image.image.pixel_scales)
 
-        unmasked_sub_util = imaging_util.sub_grid_1d_masked_from_mask_pixel_scale_and_sub_grid_size(
-            np.full((6, 6), False),
-            lensing_image.image.pixel_scale, lensing_image.grids.sub.sub_grid_size)
+        unmasked_sub_util = imaging_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(
+            np.full((6, 6), False), lensing_image.image.pixel_scales, lensing_image.grids.sub.sub_grid_size)
 
         assert (lensing_image.unmasked_grids.image == unmasked_image_util).all()
         assert lensing_image.unmasked_grids.image.image_shape == (4, 4)
