@@ -175,7 +175,7 @@ class Pipeline(Base):
         """
         Returns
         -------
-        pixel_scale: float
+        pixel_scales: float
             The size of a single pixel, in arc seconds, as input by the user
         """
         return float(self.options['--pixel-scale'])

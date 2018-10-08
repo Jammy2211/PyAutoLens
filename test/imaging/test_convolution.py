@@ -571,7 +571,7 @@ class TestCompareToFull2dConv:
         # Setup a blurred _image, using the PSF to perform the convolution in 2D, then mask it to make a 1d array.
 
         im = np.arange(900).reshape(30, 30)
-        psf = image.PSF(array=np.arange(49).reshape(7, 7))
+        psf = image.PSF(array=np.arange(49).reshape(7, 7), pixel_scale=1.0)
         blurred_im = psf.convolve(im)
         msk = mask.Mask.circular(shape=(30, 30), pixel_scale=1.0, radius_mask_arcsec=4.0)
         blurred_masked_im_0 = msk.map_2d_array_to_masked_1d_array(blurred_im)

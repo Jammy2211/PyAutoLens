@@ -6,6 +6,7 @@ from astropy import cosmology as cosmo
 
 from autolens import exc
 from autolens.imaging import imaging_util
+from autolens.imaging import scaled_array
 from autolens.imaging import mask as msk
 
 def cosmology_check(func):
@@ -101,23 +102,7 @@ class Plane(object):
         return self.grids.map_function(np.subtract, self.deflections)
 
     def plane_image(self, shape=(30, 30)):
-
-        class PlaneImage(np.ndarray):
-
-            def __new__(cls, image, grid, xticks, yticks):
-                plane = np.array(image, dtype='float64').view(cls)
-                plane.grid = grid
-                plane.xticks = xticks
-                plane.yticks = yticks
-                return plane
-
-        grid = uniform_grid_from_lensed_grid(self.grids.image, shape)
-        image_1d = self.plane_image_from_galaxies(grid)
-        image = imaging_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(array_1d=image_1d, shape=shape)
-        return PlaneImage(image=image, grid=self.grids.image, xticks=self.xticks, yticks=self.yticks)
-
-    def plane_image_from_galaxies(self, plane_grid):
-        return sum([intensities_from_grid(plane_grid, [galaxy]) for galaxy in self.galaxies])
+        return plane_image_from_grid_and_galaxies(shape=shape, grid=self.grids.image, galaxies=self.galaxies)
 
     @property
     def galaxy_redshifts(self):
@@ -191,14 +176,6 @@ class Plane(object):
             return galaxies_with_regularization[0].regularization
         elif len(galaxies_with_regularization) > 1:
             raise exc.PixelizationException('The number of galaxies with regularizations in one plane is above 1')
-
-    @property
-    def xticks(self):
-        return np.linspace(np.amin(self.grids.image[:, 0]), np.amax(self.grids.image[:, 0]), 4)
-
-    @property
-    def yticks(self):
-        return np.linspace(np.amin(self.grids.image[:, 1]), np.amax(self.grids.image[:, 1]), 4)
 
     @property
     def _image_plane_image(self):
@@ -275,6 +252,14 @@ class PlanePositions(object):
                         self.positions, self.deflections))
 
 
+class PlaneImage(scaled_array.ScaledRectangularPixelArray):
+
+    def __init__(self, array, pixel_scales, grid):
+
+        super(PlaneImage, self).__init__(array=array, pixel_scales=pixel_scales)
+        self.grid = grid
+
+
 def sub_to_image_grid(func):
     """
     Wrap the function in a function that, if the grid is a sub-grid (grids.SubGrid), rebins the computed values to \
@@ -345,7 +330,8 @@ def deflections_from_grid_collection(grid_collection, galaxies):
     return grid_collection.apply_function(lambda grid: deflections_from_sub_grid(grid, galaxies))
 
 
-def uniform_grid_from_lensed_grid(grid, shape):
+def plane_image_from_grid_and_galaxies(shape, grid, galaxies):
+
     x_min = np.amin(grid[:, 0])
     x_max = np.amax(grid[:, 0])
     y_min = np.amin(grid[:, 1])
@@ -354,18 +340,14 @@ def uniform_grid_from_lensed_grid(grid, shape):
     x_pixel_scale = ((x_max - x_min) / shape[0])
     y_pixel_scale = ((y_max - y_min) / shape[1])
 
-    x_grid = np.linspace(x_min + (x_pixel_scale / 2.0), x_max - (x_pixel_scale / 2.0), shape[0])
-    y_grid = np.linspace(y_min + (y_pixel_scale / 2.0), y_max - (y_pixel_scale / 2.0), shape[1])
+    uniform_grid = imaging_util.image_grid_1d_masked_from_mask_and_pixel_scales(
+        mask=np.full(shape=shape, fill_value=False), pixel_scales=(x_pixel_scale, y_pixel_scale))
 
-    source_plane_grid = np.zeros((shape[0] * shape[1], 2))
+    image_1d = sum([intensities_from_grid(uniform_grid, [galaxy]) for galaxy in galaxies])
 
-    i = 0
-    for x in range(shape[0]):
-        for y in range(shape[1]):
-            source_plane_grid[i] = np.array([x_grid[x], y_grid[y]])
-            i += 1
+    image_2d = imaging_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(array_1d=image_1d, shape=shape)
 
-    return source_plane_grid
+    return PlaneImage(array=image_2d, pixel_scales=(x_pixel_scale, y_pixel_scale), grid=grid)
 
 
 def traced_collection_for_deflections(grids, deflections):
