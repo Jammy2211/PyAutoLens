@@ -99,15 +99,15 @@ def make_galaxy_model():
 
 @pytest.fixture(name="image")
 def make_image():
-    image = img.Image(np.array(np.zeros(shape)), pixel_scale=1.0, psf=img.PSF(np.ones((3, 3))),
-                      noise_map=np.ones(shape))
+    image = img.Image(np.array(np.zeros(shape)), pixel_scale=1.0, psf=img.PSF(np.ones((3, 3)), pixel_scale=1.0),
+                      noise_map=img.NoiseMap(np.ones(shape), pixel_scale=1.0))
     return image
 
 
 @pytest.fixture(name="lensing_image")
 def make_lensing_image():
-    image = img.Image(np.array(np.zeros(shape)), pixel_scale=1.0, psf=img.PSF(np.ones((3, 3))),
-                      noise_map=np.ones(shape))
+    image = img.Image(np.array(np.zeros(shape)), pixel_scale=1.0, psf=img.PSF(np.ones((3, 3)), pixel_scale=1.0),
+                      noise_map=img.NoiseMap(np.ones(shape), pixel_scale=1.0))
     mask = msk.Mask.circular(shape=shape, pixel_scale=1, radius_mask_arcsec=3.0)
     return li.LensingImage(image, mask)
 
