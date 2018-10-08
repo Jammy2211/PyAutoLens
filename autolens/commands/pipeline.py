@@ -55,13 +55,11 @@ class Pipeline(Base):
                 print("\n".join(["{}\n   {}".format(phase.__class__.__name__, blue(phase.doc)) for phase in pl.phases]))
                 return
             if name is not None:
-                if name not in runners.pipeline_dict:
-                    if name == "test":
-                        self.run_pipeline(runners.TestPipeline())
-                        return
-                    print("No pipeline called '{}' found".format(name))
+                if name == "test":
+                    self.run_pipeline(runners.TestPipeline())
                     return
                 self.run_pipeline(runners.pipeline_dict[name].make())
+                return
         except KeyError:
             print("Pipeline '{}' does not exist.\n".format(name))
 
