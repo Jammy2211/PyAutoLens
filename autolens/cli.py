@@ -31,8 +31,10 @@ Help:
 """
 
 from inspect import getmembers, isclass
+from autolens import conf
 
 from docopt import docopt
+import os
 
 from . import __version__
 
@@ -40,6 +42,11 @@ from . import __version__
 def main():
     """Main CLI entry point."""
     import autolens.commands
+
+    cwd_config_path = "{}/config".format(os.getcwd())
+
+    if not conf.is_config(cwd_config_path):
+        conf.copy_default(cwd_config_path)
 
     options = docopt(__doc__, version=__version__)
 
