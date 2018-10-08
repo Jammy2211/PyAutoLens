@@ -1,4 +1,4 @@
-from pipelines.lens_and_source import initializer
+from runners.lens_and_source import initializer
 from autolens.imaging import scaled_array
 from autolens.imaging import image
 from autolens import conf
