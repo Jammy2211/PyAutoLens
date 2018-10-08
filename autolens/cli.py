@@ -35,8 +35,12 @@ from autolens import conf
 
 from docopt import docopt
 import os
+import logging
 
 from . import __version__
+
+
+logging.level = logging.WARN
 
 
 def main():
