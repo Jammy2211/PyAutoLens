@@ -143,7 +143,7 @@ hst = profiling_data.setup_class(name='HST', pixel_scale=0.05, sub_grid_size=sub
 hst_up = profiling_data.setup_class(name='HSTup', pixel_scale=0.03, sub_grid_size=sub_grid_size, psf_shape=psf_shape)
 
 
-# ao = profiling_data.setup_class(phase_name='AO', pixel_scale=0.01, sub_grid_size=sub_grid_size, psf_shape=psf_shape)
+# ao = profiling_data.setup_class(phase_name='AO', pixel_scales=0.01, sub_grid_size=sub_grid_size, psf_shape=psf_shape)
 
 @tools.tick_toc_x1
 def lsst_solution():

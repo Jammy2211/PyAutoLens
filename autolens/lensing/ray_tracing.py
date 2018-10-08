@@ -91,14 +91,6 @@ class AbstractTracer(object):
         return list(filter(None, [plane.regularization for plane in self.all_planes]))
 
     @property
-    def xticks_of_planes(self):
-        return [plane.xticks for plane in self.all_planes]
-
-    @property
-    def yticks_of_planes(self):
-        return [plane.yticks for plane in self.all_planes]
-
-    @property
     def _image_plane_image(self):
         return sum(self._image_plane_images_of_planes)
 
