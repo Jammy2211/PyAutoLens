@@ -36,6 +36,7 @@ setup(
     url='https://github.com/Jammy2211/PyAutoLens',
     author='James Nightingale and Richard Hayes',
     author_email='james.w.nightingale@durham.ac.uk',
+    include_package_data=True,
     license='MIT License',
     classifiers=[
         'Intended Audience :: Science/Research',
