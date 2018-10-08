@@ -252,7 +252,7 @@ class TestUnmaskedModelImages:
     def test___3x3_unmasked_image__no_psf_blurring__produces_unmasked_image(self, galaxy_light):
         psf = image.PSF(array=(np.array([[0.0, 0.0, 0.0],
                                          [0.0, 1.0, 0.0],
-                                         [0.0, 0.0, 0.0]])))
+                                         [0.0, 0.0, 0.0]])), pixel_scale=1.0)
         im = image.Image(array=np.ones((3, 3)), pixel_scale=1.0, psf=psf, noise_map=np.ones((3, 3)))
 
         ma = mask.Mask(array=np.array([[True, True, True],
@@ -270,7 +270,7 @@ class TestUnmaskedModelImages:
     def test___3x3_unmasked_image__asymetric_psf_blurring__produces_unmasked_image(self, galaxy_light):
         psf = image.PSF(array=(np.array([[0.0, 3.0, 0.0],
                                          [0.0, 1.0, 2.0],
-                                         [0.0, 0.0, 0.0]])))
+                                         [0.0, 0.0, 0.0]])), pixel_scale=1.0)
         im = image.Image(array=np.ones((3, 3)), pixel_scale=1.0, psf=psf, noise_map=np.ones((3, 3)))
 
         ma = mask.Mask(array=np.array([[True, True, True],
@@ -288,7 +288,7 @@ class TestUnmaskedModelImages:
     def test___of_galaxies__x1_galaxy__3x3_unmasked_image__no_psf_blurring(self, galaxy_light):
         psf = image.PSF(array=(np.array([[0.0, 0.0, 0.0],
                                          [0.0, 1.0, 0.0],
-                                         [0.0, 0.0, 0.0]])))
+                                         [0.0, 0.0, 0.0]])), pixel_scale=1.0)
         im = image.Image(array=np.ones((3, 3)), pixel_scale=1.0, psf=psf, noise_map=np.ones((3, 3)))
 
         ma = mask.Mask(array=np.array([[True, True, True],
@@ -308,7 +308,7 @@ class TestUnmaskedModelImages:
     def test___of_galaxies__x1_galaxy__3x3_unmasked_image__asymetric_psf_blurring(self, galaxy_light):
         psf = image.PSF(array=(np.array([[0.0, 0.0, 0.0],
                                          [0.0, 1.0, 0.0],
-                                         [0.0, 0.0, 0.0]])))
+                                         [0.0, 0.0, 0.0]])), pixel_scale=1.0)
         im = image.Image(array=np.ones((3, 3)), pixel_scale=1.0, psf=psf, noise_map=np.ones((3, 3)))
 
         ma = mask.Mask(array=np.array([[True, True, True],
@@ -328,7 +328,7 @@ class TestUnmaskedModelImages:
     def test___of_galaxies__x2_galaxies__3x3_unmasked_image__asymetric_psf_blurring(self):
         psf = image.PSF(array=(np.array([[0.0, 0.0, 0.0],
                                          [0.0, 1.0, 0.0],
-                                         [0.0, 0.0, 0.0]])))
+                                         [0.0, 0.0, 0.0]])), pixel_scale=1.0)
         im = image.Image(array=np.ones((3, 3)), pixel_scale=1.0, psf=psf, noise_map=np.ones((3, 3)))
 
         ma = mask.Mask(array=np.array([[True, True, True],
@@ -356,7 +356,7 @@ class TestUnmaskedModelImages:
 
         psf = image.PSF(array=(np.array([[0.0, 0.0, 0.0],
                                          [0.0, 1.0, 0.0],
-                                         [0.0, 0.0, 0.0]])))
+                                         [0.0, 0.0, 0.0]])), pixel_scale=1.0)
         im = image.Image(array=np.ones((3, 3)), pixel_scale=1.0, psf=psf, noise_map=np.ones((3, 3)))
 
         ma = mask.Mask(array=np.array([[True, True, True],
@@ -389,7 +389,7 @@ class TestUnmaskedModelImages:
     def test__none_in__returns_none(self):
         psf = image.PSF(array=(np.array([[0.0, 0.0, 0.0],
                                          [0.0, 1.0, 0.0],
-                                         [0.0, 0.0, 0.0]])))
+                                         [0.0, 0.0, 0.0]])), pixel_scale=1.0)
         im = image.Image(array=np.ones((3, 3)), pixel_scale=1.0, psf=psf, noise_map=np.ones((3, 3)))
 
         ma = mask.Mask(array=np.array([[True, True, True],
@@ -424,7 +424,7 @@ def make_li_no_blur():
                    [0.0, 0.0, 0.0, 0.0]])
     psf = image.PSF(array=(np.array([[0.0, 0.0, 0.0],
                                      [0.0, 1.0, 0.0],
-                                     [0.0, 0.0, 0.0]])), renormalize=False)
+                                     [0.0, 0.0, 0.0]])), pixel_scale=1.0, renormalize=False)
     im = image.Image(im, pixel_scale=1.0, psf=psf, noise_map=np.ones((4, 4)))
 
     ma = np.array([[True, True, True, True],
@@ -444,7 +444,7 @@ def make_li_blur():
                    [0.0, 0.0, 0.0, 0.0]])
     psf = image.PSF(array=(np.array([[1.0, 1.0, 1.0],
                                      [1.0, 1.0, 1.0],
-                                     [1.0, 1.0, 1.0]])), renormalize=False)
+                                     [1.0, 1.0, 1.0]])), pixel_scale=1.0, renormalize=False)
     im = image.Image(im, pixel_scale=1.0, psf=psf, noise_map=np.ones((4, 4)))
 
     ma = np.array([[True, True, True, True],
@@ -460,7 +460,7 @@ def make_li_blur():
 def make_li_no_blur_1x1():
     psf = image.PSF(array=(np.array([[0.0, 0.0, 0.0],
                                      [0.0, 1.0, 0.0],
-                                     [0.0, 0.0, 0.0]])), renormalize=False)
+                                     [0.0, 0.0, 0.0]])), pixel_scale=1.0, renormalize=False)
 
     im = image.Image(np.ones((3, 3)), pixel_scale=1.0, psf=psf, noise_map=np.ones((3, 3)))
 
@@ -593,7 +593,7 @@ def make_li_manual():
                    [0.0, 0.0, 0.0, 0.0, 0.0]])
     psf = image.PSF(array=(np.array([[1.0, 5.0, 9.0],
                                      [2.0, 5.0, 1.0],
-                                     [3.0, 4.0, 0.0]])))
+                                     [3.0, 4.0, 0.0]])), pixel_scale=1.0)
     im = image.Image(im, pixel_scale=1.0, psf=psf, noise_map=np.ones((5, 5)))
     ma = mask.Mask(array=np.array([[True, True, True, True, True],
                                    [True, False, False, False, True],
@@ -680,7 +680,7 @@ class TestProfileFit:
         def test__real_tracer__2x2_image__psf_is_non_symmetric_producing_l_shape(self, galaxy_light):
             psf = image.PSF(array=(np.array([[0.0, 3.0, 0.0],
                                              [0.0, 2.0, 1.0],
-                                             [0.0, 0.0, 0.0]])))
+                                             [0.0, 0.0, 0.0]])), pixel_scale=1.0)
             im = image.Image(array=np.ones((4, 4)), pixel_scale=1.0, psf=psf, noise_map=np.ones((4, 4)))
 
             ma = mask.Mask(array=np.array([[True, True, True, True],
@@ -716,7 +716,7 @@ class TestProfileFit:
         def test__model_images_of_planes__real_tracer__2x2_image__psf_is_non_symmetric_producing_l_shape(self):
             psf = image.PSF(array=(np.array([[0.0, 3.0, 0.0],
                                              [0.0, 2.0, 1.0],
-                                             [0.0, 0.0, 0.0]])))
+                                             [0.0, 0.0, 0.0]])), pixel_scale=1.0)
             im = image.Image(array=np.ones((4, 4)), pixel_scale=1.0, psf=psf, noise_map=np.ones((4, 4)))
 
             ma = mask.Mask(array=np.array([[True, True, True, True],
@@ -750,7 +750,7 @@ class TestProfileFit:
         def test__same_as_above_but_multi_tracer(self):
             psf = image.PSF(array=(np.array([[0.0, 3.0, 0.0],
                                              [0.0, 2.0, 1.0],
-                                             [0.0, 0.0, 0.0]])))
+                                             [0.0, 0.0, 0.0]])), pixel_scale=1.0)
             im = image.Image(array=np.ones((4, 4)), pixel_scale=1.0, psf=psf, noise_map=np.ones((4, 4)))
 
             ma = mask.Mask(array=np.array([[True, True, True, True],
@@ -790,7 +790,7 @@ class TestProfileFit:
         def test__model_images_of_planes__is_galaxy_has_no_light_profile__replace_with_none(self):
             psf = image.PSF(array=(np.array([[0.0, 3.0, 0.0],
                                              [0.0, 2.0, 1.0],
-                                             [0.0, 0.0, 0.0]])))
+                                             [0.0, 0.0, 0.0]])), pixel_scale=1.0)
             im = image.Image(array=np.ones((4, 4)), pixel_scale=1.0, psf=psf, noise_map=np.ones((4, 4)))
             ma = mask.Mask(array=np.array([[True, True, True, True],
                                            [True, False, False, True],
@@ -849,16 +849,16 @@ class TestProfileFit:
                                                          image_plane_grids=li_no_blur.grids)
             fit = fitting.ProfileFit(lensing_image=li_no_blur, tracer=tracer)
 
-            assert (fit.plane_grids[0] == grid).all()
-            assert (fit.plane_grids[1] == grid).all()
+            assert (fit.plane_images[0].grid == grid).all()
+            assert (fit.plane_images[1].grid == grid).all()
 
             galaxy_sis = g.Galaxy(sis=mp.SphericalIsothermal(einstein_radius=1.0))
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[galaxy_sis], source_galaxies=[g.Galaxy()],
                                                          image_plane_grids=li_no_blur.grids)
             fit = fitting.ProfileFit(lensing_image=li_no_blur, tracer=tracer)
 
-            assert (fit.plane_grids[0] == grid).all()
-            assert fit.plane_grids[1] == pytest.approx(
+            assert (fit.plane_images[0].grid == grid).all()
+            assert fit.plane_images[1].grid == pytest.approx(
                 np.array([[-1.0 + 0.707, -1.0 + 0.707], [1.0 - 0.707, 1.0 - 0.707],
                           [1.0 - 0.707, 1.0 - 0.707], [-1.0 + 0.707, -1.0 + 0.707]]), 1e-2)
 
@@ -867,7 +867,7 @@ class TestProfileFit:
         def test__1x1_image__tracing_fits_data_perfectly__no_psf_blurring__lh_is_noise_term(self):
             psf = image.PSF(array=(np.array([[0.0, 0.0, 0.0],
                                              [0.0, 1.0, 0.0],
-                                             [0.0, 0.0, 0.0]])))
+                                             [0.0, 0.0, 0.0]])), pixel_scale=1.0)
 
             im = image.Image(np.ones((3, 3)), pixel_scale=1.0, psf=psf, noise_map=np.ones((3, 3)))
 
@@ -886,7 +886,7 @@ class TestProfileFit:
         def test___1x1_image__tracing_fits_data_with_chi_sq_5(self):
             psf = image.PSF(array=(np.array([[0.0, 0.0, 0.0],
                                              [0.0, 1.0, 0.0],
-                                             [0.0, 0.0, 0.0]])))
+                                             [0.0, 0.0, 0.0]])), pixel_scale=1.0)
 
             im = image.Image(5.0 * np.ones((3, 3)), pixel_scale=1.0, psf=psf, noise_map=np.ones((3, 3)))
 
@@ -1201,7 +1201,7 @@ class TestInversionFit:
 
             psf = image.PSF(array=np.array([[0.0, 0.0, 0.0],
                                             [0.0, 1.0, 0.0],
-                                            [0.0, 0.0, 0.0]]))
+                                            [0.0, 0.0, 0.0]]), pixel_scale=1.0)
             im = image.Image(im, pixel_scale=1.0, psf=psf, noise_map=np.ones((5, 5)))
             li = lensing_image.LensingImage(im, ma, sub_grid_size=2)
 
@@ -1300,7 +1300,7 @@ class TestHyperInversionFit:
             ma = mask.Mask(ma, pixel_scale=1.0)
             psf = image.PSF(array=np.array([[0.0, 0.0, 0.0],
                                             [0.0, 1.0, 0.0],
-                                            [0.0, 0.0, 0.0]]))
+                                            [0.0, 0.0, 0.0]]), pixel_scale=1.0)
             im = image.Image(im, pixel_scale=1.0, psf=psf, noise_map=np.ones((5, 5)))
             li = lensing_image.LensingImage(im, ma, sub_grid_size=2)
 

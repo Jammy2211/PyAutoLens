@@ -14,7 +14,7 @@ image_grids = mask.ImagingGrids.from_shape_and_pixel_scale(shape=(100, 100), pix
                                                                  sub_grid_size=2)
 
 # If we print the grid, we see it consists of a set of arc-second coordinates
-# (noting that the difference between each coordinate is the 'pixel_scale' of 0.05" defined above)
+# (noting that the difference between each coordinate is the 'pixel_scales' of 0.05" defined above)
 print('(x,y) image-pixel 1:')
 print(image_grids.image[0])
 print('(x,y) image-pixel 2:')
