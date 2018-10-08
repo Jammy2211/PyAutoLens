@@ -1173,6 +1173,10 @@ def make_downhill_simplex(test_config, width_config):
 @pytest.fixture(name="multi_nest")
 def make_multi_nest(test_config, width_config, label_config):
     mn_fit_path = "{}/test_fit".format(os.path.dirname(os.path.realpath(__file__)))
+    try:
+        shutil.rmtree(mn_fit_path)
+    except FileNotFoundError as e:
+        print(e)
 
     conf.instance.output_path = mn_fit_path
 
@@ -1238,11 +1242,11 @@ class TestFitting(object):
             result = multi_nest.fit(MockAnalysis())
 
             assert result.constant.mock_class.one == 9.0
-            assert result.constant.mock_class.two == 10.0
+            assert result.constant.mock_class.two == -10.0
             assert result.likelihood == 0.02
 
             assert result.variable.mock_class.one.mean == 1
-            assert result.variable.mock_class.two.mean == 2
+            assert result.variable.mock_class.two.mean == -2
 
 
 @pytest.fixture(name='label_optimizer')
