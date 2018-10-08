@@ -23,10 +23,20 @@ class TestCase(object):
     def test_consistent_dir(self):
         directory = link.path_for("/a/random/directory")
         assert link.autolens_dir in directory
-        assert len(directory.split("/")[-1]) == link.SUB_PATH_LENGTH
+        # assert len(directory.split("/")[-1]) == link.SUB_PATH_LENGTH
         assert directory == link.path_for("/a/random/directory")
         assert directory != link.path_for("/b/random/directory")
         assert link.path_for("/tmp/linked_file") != link.path_for("/tmp/linked_folder")
+
+        link_1 = link.path_for(
+            "/abcdefghijklmnopqrstuv/a/long/directory/that/has/a/difference/in/the/middle/of/the/path"
+            "/abcdefghijklmnopqrstuv")
+
+        link_2 = link.path_for(
+            "/abcdefghijklmnopqrstuv/a/long/directory/that/is/different/in/the/middle/of/the/path"
+            "/abcdefghijklmnopqrstuv")
+
+        assert link_1 != link_2
 
     def test_make_linked_folder(self):
         path = link.make_linked_folder(temp_folder_path)
@@ -59,4 +69,3 @@ class TestCase(object):
 
         link.make_linked_folder(temp_folder_path)
         assert os.path.exists(temp_file_path)
-
