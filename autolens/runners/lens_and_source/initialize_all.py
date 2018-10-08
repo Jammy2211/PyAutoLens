@@ -20,8 +20,6 @@ def make():
     from autolens.profiles import light_profiles as lp
     from autolens.profiles import mass_profiles as mp
 
-    pipeline.setup_pipeline_path(pipeline_name)
-
     phase1 = phase.LensSourcePlanePhase(lens_galaxies=[gp.GalaxyModel(light=lp.EllipticalSersic,
                                                                       mass=mp.EllipticalIsothermal)],
                                         source_galaxies=[gp.GalaxyModel(light=lp.EllipticalSersic)],
