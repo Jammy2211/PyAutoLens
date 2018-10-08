@@ -21,8 +21,6 @@ def make():
     from autolens.profiles import light_profiles as lp
     from autolens.profiles import mass_profiles as mp
 
-    pipeline.setup_pipeline_path(pipeline_name)
-
     phase1 = phase.LensPlanePhase(lens_galaxies=[gp.GalaxyModel(sersic=lp.EllipticalSersic)],
                                   optimizer_class=nl.MultiNest, phase_name='ph1_subtract_lens')
 
