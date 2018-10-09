@@ -23,7 +23,7 @@ def vertical_sersic():
                                sersic_index=4.0)
 
 
-class TestGaussianLP:
+class TestGaussian:
 
     def test__constructor(self):
         gaussian = lp.EllipticalGaussian(centre=(1.0, 1.0), axis_ratio=0.5, phi=45.0, intensity=2.0,
@@ -74,9 +74,10 @@ class TestGaussianLP:
         assert gaussian.intensities_from_grid(grid=np.array([[0.0, 3.0]])) == pytest.approx(0.0647, 1e-2)
 
     def test__intensity_from_grid__change_geometry(self):
+
         gaussian = lp.EllipticalGaussian(centre=(1.0, 1.0), axis_ratio=1.0, phi=0.0, intensity=1.0,
                                          sigma=1.0)
-        assert gaussian.intensities_from_grid(grid=np.array([[0.0, 1.0]])) == pytest.approx(0.24197, 1e-2)
+        assert gaussian.intensities_from_grid(grid=np.array([[1.0, 0.0]])) == pytest.approx(0.24197, 1e-2)
 
         gaussian = lp.EllipticalGaussian(centre=(0.0, 0.0), axis_ratio=0.5, phi=0.0, intensity=1.0,
                                          sigma=1.0)
@@ -109,7 +110,7 @@ class TestGaussianLP:
         assert (elliptical.intensities_from_grid(grid) == spherical.intensities_from_grid(grid)).all()
 
 
-class TestSersicLP:
+class TestSersic:
 
     def test__constructor(self):
         sersic = lp.EllipticalSersic(axis_ratio=1.0, phi=0.0, intensity=1.0,
@@ -165,7 +166,7 @@ class TestSersicLP:
         assert (elliptical.intensities_from_grid(grid) == spherical.intensities_from_grid(grid)).all()
 
 
-class TestExponentialLP:
+class TestExponential:
 
     def test__constructor(self):
         exponential = lp.EllipticalExponential(axis_ratio=0.5, phi=0.0, intensity=1.0,
@@ -222,7 +223,7 @@ class TestExponentialLP:
         assert (elliptical.intensities_from_grid(grid) == spherical.intensities_from_grid(grid)).all()
 
 
-class TestDevVaucouleursLP:
+class TestDevVaucouleurs:
 
     def test__constructor(self):
         dev_vaucouleurs = lp.EllipticalDevVaucouleurs(axis_ratio=0.6, phi=10.0, intensity=2.0,

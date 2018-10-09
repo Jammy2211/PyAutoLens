@@ -67,9 +67,9 @@ def total_image_pixels_from_mask(mask):
 
     total_image_pixels = 0
 
-    for x in range(mask.shape[0]):
-        for y in range(mask.shape[1]):
-            if not mask[x, y]:
+    for y in range(mask.shape[0]):
+        for x in range(mask.shape[1]):
+            if not mask[y, x]:
                 total_image_pixels += 1
 
     return total_image_pixels
@@ -87,18 +87,18 @@ def total_border_pixels_from_mask(mask):
 
     border_pixel_total = 0
 
-    for x in range(mask.shape[0]):
-        for y in range(mask.shape[1]):
-            if not mask[x, y]:
-                if mask[x + 1, y] or mask[x - 1, y] or mask[x, y + 1] or mask[x, y - 1] or \
-                        mask[x + 1, y + 1] or mask[x + 1, y - 1] or mask[x - 1, y + 1] or mask[x - 1, y - 1]:
+    for y in range(mask.shape[0]):
+        for x in range(mask.shape[1]):
+            if not mask[y, x]:
+                if mask[y + 1, x] or mask[y - 1, x] or mask[y, x + 1] or mask[y, x - 1] or \
+                        mask[y + 1, x + 1] or mask[y + 1, x - 1] or mask[y - 1, x + 1] or mask[y - 1, x - 1]:
                     border_pixel_total += 1
 
     return border_pixel_total
 
 
 @numba.jit(nopython=True, cache=True)
-def image_grid_2d_from_shape_and_pixel_scales(shape, x_pixel_scale, y_pixel_scale):
+def image_grid_2d_from_shape_and_pixel_scales(shape, pixel_scales):
     """
     Computes the (x,y) arc second coordinates of every pixel in an _image of shape (rows, columns).
 
@@ -108,72 +108,127 @@ def image_grid_2d_from_shape_and_pixel_scales(shape, x_pixel_scale, y_pixel_scal
 
     grid_2d = np.zeros((shape[0], shape[1], 2))
 
-    x_cen = float(shape[0] - 1) / 2
-    y_cen = float(shape[1] - 1) / 2
+    y_cen = float(shape[0] - 1) / 2
+    x_cen = float(shape[1] - 1) / 2
 
-    for x in range(shape[0]):
-        for y in range(shape[1]):
+    for y in range(shape[0]):
+        for x in range(shape[1]):
 
-            grid_2d[x, y, 0] = (x - x_cen) * x_pixel_scale
-            grid_2d[x, y, 1] = (y - y_cen) * y_pixel_scale
+            grid_2d[y, x, 0] = -(y - y_cen) * pixel_scales[0]
+            grid_2d[y, x, 1] = (x - x_cen) * pixel_scales[1]
 
     return grid_2d
 
 
 @numba.jit(nopython=True, cache=True)
-def image_grid_1d_masked_from_mask_and_pixel_scales(mask, x_pixel_scale, y_pixel_scale):
+def image_grid_1d_masked_from_mask_and_pixel_scales(mask, pixel_scales):
     """Compute a 1D grid of (x,y) coordinates, using the center of every unmasked pixel."""
 
-    grid_2d = image_grid_2d_from_shape_and_pixel_scales(mask.shape, x_pixel_scale, y_pixel_scale)
+    grid_2d = image_grid_2d_from_shape_and_pixel_scales(mask.shape, pixel_scales)
 
     total_image_pixels = total_image_pixels_from_mask(mask)
     image_grid = np.zeros(shape=(total_image_pixels, 2))
     pixel_count = 0
 
-    for x in range(mask.shape[0]):
-        for y in range(mask.shape[1]):
-            if not mask[x, y]:
-                image_grid[pixel_count, :] = grid_2d[x, y]
+    for y in range(mask.shape[0]):
+        for x in range(mask.shape[1]):
+            if not mask[y, x]:
+                image_grid[pixel_count, :] = grid_2d[y, x]
                 pixel_count += 1
 
     return image_grid
 
 
 @numba.jit(nopython=True, cache=True)
-def sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(mask, x_pixel_scale, y_pixel_scale, sub_grid_size):
+def sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(mask, pixel_scales, sub_grid_size):
     """Compute a 1D grid of (x,y) sub-pixel coordinates, using the sub-pixel centers of every unmasked pixel."""
 
     total_sub_pixels = total_sub_pixels_from_mask_and_sub_grid_size(mask, sub_grid_size)
 
     sub_grid = np.zeros(shape=(total_sub_pixels, 2))
 
-    x_cen = float(mask.shape[0] - 1) / 2
-    y_cen = float(mask.shape[1] - 1) / 2
+    y_cen = float(mask.shape[0] - 1) / 2
+    x_cen = float(mask.shape[1] - 1) / 2
 
     sub_index = 0
 
-    x_sub_half = x_pixel_scale / 2
-    x_sub_step = x_pixel_scale / (sub_grid_size + 1)
+    y_sub_half = pixel_scales[0] / 2
+    y_sub_step = pixel_scales[0] / (sub_grid_size + 1)
 
-    y_sub_half = y_pixel_scale / 2
-    y_sub_step = y_pixel_scale / (sub_grid_size + 1)
+    x_sub_half = pixel_scales[1] / 2
+    x_sub_step = pixel_scales[1] / (sub_grid_size + 1)
 
-    for x in range(mask.shape[0]):
-        for y in range(mask.shape[1]):
+    for y in range(mask.shape[0]):
+        for x in range(mask.shape[1]):
 
-            if not mask[x, y]:
+            if not mask[y, x]:
 
-                x_arcsec = (x - x_cen) * x_pixel_scale
-                y_arcsec = (y - y_cen) * y_pixel_scale
+                y_arcsec = (y - y_cen) * pixel_scales[0]
+                x_arcsec = (x - x_cen) * pixel_scales[1]
 
-                for x1 in range(sub_grid_size):
-                    for y1 in range(sub_grid_size):
-                        sub_grid[sub_index, 0] = x_arcsec - x_sub_half + (x1 + 1) * x_sub_step
-                        sub_grid[sub_index, 1] = y_arcsec - y_sub_half + (y1 + 1) * y_sub_step
+                for y1 in range(sub_grid_size):
+                    for x1 in range(sub_grid_size):
+
+                        sub_grid[sub_index, 0] = -(y_arcsec - y_sub_half + (y1 + 1) * y_sub_step)
+                        sub_grid[sub_index, 1] = x_arcsec - x_sub_half + (x1 + 1) * x_sub_step
                         sub_index += 1
 
     return sub_grid
 
+
+@numba.jit(nopython=True, cache=True)
+def grid_pixels_1d_to_grid_arc_seconds_1d(grid_pixels, shape, pixel_scales):
+    """ Converts a grid in coordinates of pixels to a grid in arc seconds.
+
+    The pixel coordinate origin is at the top left corner of an image, whilst the arc-second coordinate origin \
+    is at the centre start with negative x and y values from the top-left.
+
+    This means that the top-left pixel coordinates, [0, 0], will give negative arc second coordinates.
+
+    Parameters
+    ----------
+    grid_pixels : ndarray
+        The grid of (x,y) coordinates in units of pixels
+    """
+
+    grid_arc_seconds = np.zeros((grid_pixels.shape[0], 2))
+
+    y_cen = float(shape[0] - 1) / 2
+    x_cen = float(shape[1] - 1) / 2
+
+    for i in range(grid_pixels.shape[0]):
+
+            grid_arc_seconds[i, 0] = -(pixel_scales[0] * (grid_pixels[i,0] - y_cen))
+            grid_arc_seconds[i, 1] =  (pixel_scales[1] * (grid_pixels[i,1] - x_cen))
+
+    return grid_arc_seconds
+
+@numba.jit(nopython=True, cache=True)
+def grid_arc_seconds_1d_to_grid_pixels_1d(grid_arc_seconds, shape, pixel_scales):
+    """ Converts a grid in coordinates of pixels to a grid in arc seconds.
+
+    The pixel coordinate origin is at the top left corner of an image, whilst the arc-second coordinate origin \
+    is at the centre start with negative x and y values from the top-left.
+
+    This means that the top-left pixel coordinates, [0, 0], will give negative arc second coordinates.
+
+    Parameters
+    ----------
+    grid_pixels : ndarray
+        The grid of (x,y) coordinates in units of pixels
+    """
+
+    grid_pixels = np.zeros((grid_arc_seconds.shape[0], 2))
+
+    y_cen = float(shape[0] - 1) / 2
+    x_cen = float(shape[1] - 1) / 2
+
+    for i in range(grid_arc_seconds.shape[0]):
+
+            grid_pixels[i, 0] = int((-grid_arc_seconds[i,0] / pixel_scales[0])  + y_cen)
+            grid_pixels[i, 1] = int((grid_arc_seconds[i,1] / pixel_scales[1])  + x_cen)
+
+    return grid_pixels
 
 @numba.jit(nopython=True, cache=True)
 def grid_to_pixel_from_mask(mask):
@@ -185,10 +240,10 @@ def grid_to_pixel_from_mask(mask):
     grid_to_pixel = np.zeros(shape=(total_image_pixels, 2))
     pixel_count = 0
 
-    for x in range(mask.shape[0]):
-        for y in range(mask.shape[1]):
-            if not mask[x, y]:
-                grid_to_pixel[pixel_count, :] = x, y
+    for y in range(mask.shape[0]):
+        for x in range(mask.shape[1]):
+            if not mask[y, x]:
+                grid_to_pixel[pixel_count, :] = y, x
                 pixel_count += 1
 
     return grid_to_pixel
@@ -206,11 +261,11 @@ def sub_to_image_from_mask(mask, sub_grid_size):
     image_index = 0
     sub_index = 0
 
-    for x in range(mask.shape[0]):
-        for y in range(mask.shape[1]):
-            if not mask[x, y]:
-                for x1 in range(sub_grid_size):
-                    for y1 in range(sub_grid_size):
+    for y in range(mask.shape[0]):
+        for x in range(mask.shape[1]):
+            if not mask[y, x]:
+                for y1 in range(sub_grid_size):
+                    for x1 in range(sub_grid_size):
                         sub_to_image[sub_index] = image_index
                         sub_index += 1
 
@@ -230,11 +285,11 @@ def border_pixels_from_mask(mask):
     border_index = 0
     image_index = 0
 
-    for x in range(mask.shape[0]):
-        for y in range(mask.shape[1]):
-            if not mask[x, y]:
-                if mask[x + 1, y] or mask[x - 1, y] or mask[x, y + 1] or mask[x, y - 1] or \
-                        mask[x + 1, y + 1] or mask[x + 1, y - 1] or mask[x - 1, y + 1] or mask[x - 1, y - 1]:
+    for y in range(mask.shape[0]):
+        for x in range(mask.shape[1]):
+            if not mask[y, x]:
+                if mask[y + 1, x] or mask[y - 1, x] or mask[y, x + 1] or mask[y, x - 1] or \
+                        mask[y + 1, x + 1] or mask[y + 1, x - 1] or mask[y - 1, x + 1] or mask[y - 1, x - 1]:
                     border_pixels[border_index] = image_index
                     border_index += 1
 
@@ -244,7 +299,7 @@ def border_pixels_from_mask(mask):
 
 
 @numba.jit(nopython=True, cache=True)
-def border_sub_pixels_from_mask_pixel_scales_and_sub_grid_size(mask, x_pixel_scale, y_pixel_scale, sub_grid_size):
+def border_sub_pixels_from_mask_pixel_scales_and_sub_grid_size(mask, pixel_scales, sub_grid_size):
     """Compute a 1D array listing all sub-pixel border pixel indexes in the mask. A border sub-pixel is a sub-pixel \
     whose _image pixel is not fully surrounded by False mask values and it is closest to the edge."""
     border_pixel_total = total_border_pixels_from_mask(mask)
@@ -252,33 +307,33 @@ def border_sub_pixels_from_mask_pixel_scales_and_sub_grid_size(mask, x_pixel_sca
 
     image_index = 0
 
-    x_cen = float(mask.shape[0] - 1) / 2
-    y_cen = float(mask.shape[1] - 1) / 2
+    y_cen = float(mask.shape[0] - 1) / 2
+    x_cen = float(mask.shape[1] - 1) / 2
 
-    x_sub_half = x_pixel_scale / 2
-    x_sub_step = x_pixel_scale / (sub_grid_size + 1)
+    y_sub_half = pixel_scales[0] / 2
+    y_sub_step = pixel_scales[0] / (sub_grid_size + 1)
 
-    y_sub_half = y_pixel_scale / 2
-    y_sub_step = y_pixel_scale / (sub_grid_size + 1)
+    x_sub_half = pixel_scales[1] / 2
+    x_sub_step = pixel_scales[1] / (sub_grid_size + 1)
 
     border_index = 0
 
-    for x in range(mask.shape[0]):
-        for y in range(mask.shape[1]):
-            if not mask[x, y]:
-                if mask[x + 1, y] or mask[x - 1, y] or mask[x, y + 1] or mask[x, y - 1] or \
-                        mask[x + 1, y + 1] or mask[x + 1, y - 1] or mask[x - 1, y + 1] or mask[x - 1, y - 1]:
+    for y in range(mask.shape[0]):
+        for x in range(mask.shape[1]):
+            if not mask[y, x]:
+                if mask[y + 1, x] or mask[y - 1, x] or mask[y, x + 1] or mask[y, x - 1] or \
+                        mask[y + 1, x + 1] or mask[y + 1, x - 1] or mask[y - 1, x + 1] or mask[y - 1, x - 1]:
 
-                    x_arcsec = (x - x_cen) * x_pixel_scale
-                    y_arcsec = (y - y_cen) * y_pixel_scale
+                    y_arcsec = (y - y_cen) * pixel_scales[0]
+                    x_arcsec = (x - x_cen) * pixel_scales[1]
 
                     sub_grid = np.zeros((sub_grid_size ** 2, 2))
                     sub_index = 0
 
-                    for x1 in range(sub_grid_size):
-                        for y1 in range(sub_grid_size):
-                            sub_grid[sub_index, 0] = x_arcsec - x_sub_half + (x1 + 1) * x_sub_step
-                            sub_grid[sub_index, 1] = y_arcsec - y_sub_half + (y1 + 1) * y_sub_step
+                    for y1 in range(sub_grid_size):
+                        for x1 in range(sub_grid_size):
+                            sub_grid[sub_index, 0] = y_arcsec - y_sub_half + (y1 + 1) * y_sub_step
+                            sub_grid[sub_index, 1] = x_arcsec - x_sub_half + (x1 + 1) * x_sub_step
                             sub_index += 1
 
                     sub_grid_radii = np.add(np.square(sub_grid[:, 0]), np.square(sub_grid[:, 1]))
@@ -297,19 +352,19 @@ def mask_circular_from_shape_pixel_scale_and_radius(shape, pixel_scale, radius_a
 
     mask = np.full(shape, True)
 
-    x_cen = (float(mask.shape[0] - 1) / 2) + (centre[0] / pixel_scale)
-    y_cen = (float(mask.shape[1] - 1) / 2) + (centre[1] / pixel_scale)
+    y_cen = (float(mask.shape[0] - 1) / 2) - (centre[0] / pixel_scale)
+    x_cen = (float(mask.shape[1] - 1) / 2) + (centre[1] / pixel_scale)
 
-    for x in range(mask.shape[0]):
-        for y in range(mask.shape[1]):
+    for y in range(mask.shape[0]):
+        for x in range(mask.shape[1]):
 
-            x_arcsec = (x - x_cen) * pixel_scale
             y_arcsec = (y - y_cen) * pixel_scale
+            x_arcsec = (x - x_cen) * pixel_scale
 
             r_arcsec = np.sqrt(x_arcsec ** 2 + y_arcsec ** 2)
 
             if r_arcsec <= radius_arcsec:
-                mask[x, y] = False
+                mask[y, x] = False
 
     return mask
 
@@ -321,19 +376,19 @@ def mask_annular_from_shape_pixel_scale_and_radii(shape, pixel_scale, inner_radi
 
     mask = np.full(shape, True)
 
-    x_cen = (float(mask.shape[0] - 1) / 2) + (centre[0] / pixel_scale)
-    y_cen = (float(mask.shape[1] - 1) / 2) + (centre[1] / pixel_scale)
+    y_cen = (float(mask.shape[0] - 1) / 2) - (centre[0] / pixel_scale)
+    x_cen = (float(mask.shape[1] - 1) / 2) + (centre[1] / pixel_scale)
 
-    for x in range(mask.shape[0]):
-        for y in range(mask.shape[1]):
+    for y in range(mask.shape[0]):
+        for x in range(mask.shape[1]):
 
-            x_arcsec = (x - x_cen) * pixel_scale
             y_arcsec = (y - y_cen) * pixel_scale
+            x_arcsec = (x - x_cen) * pixel_scale
 
             r_arcsec = np.sqrt(x_arcsec ** 2 + y_arcsec ** 2)
 
             if outer_radius_arcsec >= r_arcsec >= inner_radius_arcsec:
-                mask[x, y] = False
+                mask[y, x] = False
 
     return mask
 
@@ -344,19 +399,19 @@ def mask_anti_annular_from_shape_pixel_scale_and_radii(shape, pixel_scale, inner
 
     mask = np.full(shape, True)
 
+    y_cen = (float(mask.shape[1] - 1) / 2) - (centre[1] / pixel_scale)
     x_cen = (float(mask.shape[0] - 1) / 2) + (centre[0] / pixel_scale)
-    y_cen = (float(mask.shape[1] - 1) / 2) + (centre[1] / pixel_scale)
 
-    for x in range(mask.shape[0]):
-        for y in range(mask.shape[1]):
+    for y in range(mask.shape[0]):
+        for x in range(mask.shape[1]):
 
-            x_arcsec = (x - x_cen) * pixel_scale
             y_arcsec = (y - y_cen) * pixel_scale
+            x_arcsec = (x - x_cen) * pixel_scale
 
             r_arcsec = np.sqrt(x_arcsec ** 2 + y_arcsec ** 2)
 
             if  inner_radius_arcsec >= r_arcsec or outer_radius_2_arcsec >= r_arcsec >= outer_radius_arcsec:
-                mask[x, y] = False
+                mask[y, x] = False
 
     return mask
 
@@ -369,14 +424,14 @@ def mask_blurring_from_mask_and_psf_shape(mask, psf_shape):
 
     blurring_mask = np.full(mask.shape, True)
 
-    for x in range(mask.shape[0]):
-        for y in range(mask.shape[1]):
-            if not mask[x, y]:
-                for y1 in range((-psf_shape[1] + 1) // 2, (psf_shape[1] + 1) // 2):
-                    for x1 in range((-psf_shape[0] + 1) // 2, (psf_shape[0] + 1) // 2):
-                        if 0 <= x + x1 <= mask.shape[0] - 1 and 0 <= y + y1 <= mask.shape[1] - 1:
-                            if mask[x + x1, y + y1]:
-                                blurring_mask[x + x1, y + y1] = False
+    for y in range(mask.shape[0]):
+        for x in range(mask.shape[1]):
+            if not mask[y, x]:
+                for y1 in range((-psf_shape[0] + 1) // 2, (psf_shape[0] + 1) // 2):
+                    for x1 in range((-psf_shape[1] + 1) // 2, (psf_shape[1] + 1) // 2):
+                        if 0 <= x + x1 <= mask.shape[1] - 1 and 0 <= y + y1 <= mask.shape[0] - 1:
+                            if mask[y + y1, x + x1]:
+                                blurring_mask[y + y1, x + x1] = False
                         else:
                             raise exc.MaskException(
                                 "setup_blurring_mask extends beyond the sub_grid_size of the mask - pad the "
@@ -394,10 +449,10 @@ def map_2d_array_to_masked_1d_array_from_array_2d_and_mask(mask, array_2d):
     array_1d = np.zeros(shape=total_image_pixels)
     index = 0
 
-    for x in range(mask.shape[0]):
-        for y in range(mask.shape[1]):
-            if not mask[x, y]:
-                array_1d[index] = array_2d[x, y]
+    for y in range(mask.shape[0]):
+        for x in range(mask.shape[1]):
+            if not mask[y, x]:
+                array_1d[index] = array_2d[y, x]
                 index += 1
 
     return array_1d
@@ -422,9 +477,9 @@ def map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(array_1d, shape):
     array_2d = np.zeros(shape)
 
     index = 0
-    for x in range(shape[0]):
-        for y in range(shape[1]):
-            array_2d[x, y] = array_1d[index]
+    for y in range(shape[0]):
+        for x in range(shape[1]):
+            array_2d[y, x] = array_1d[index]
             index += 1
 
     return array_2d
@@ -463,15 +518,15 @@ def trim_array_2d_around_centre(array_2d, new_shape):
     if not array_2d.shape[1] % 2 == 0 and new_shape[1] % 2 == 0:
         raise ValueError('You cannot trim an array from odd shape to even shape - change new_shape to odd')
 
-    x_trim = int((array_2d.shape[0] - new_shape[0]) / 2)
-    y_trim = int((array_2d.shape[1] - new_shape[1]) / 2)
+    y_trim = int((array_2d.shape[0] - new_shape[0]) / 2)
+    x_trim = int((array_2d.shape[1] - new_shape[1]) / 2)
 
-    array = array_2d[x_trim:array_2d.shape[0] - x_trim, y_trim:array_2d.shape[1] - y_trim]
+    array = array_2d[y_trim:array_2d.shape[0] - y_trim, x_trim:array_2d.shape[1] - x_trim]
 
     return array
 
 
-def trim_array_2d_around_region(array_2d, x0, x1, y0, y1):
+def trim_array_2d_around_region(array_2d, y0, y1, x0, x1):
     """
     Trim the data_vector array to a new sub_grid_size around its central pixel.
 
@@ -485,12 +540,12 @@ def trim_array_2d_around_region(array_2d, x0, x1, y0, y1):
         The (x,y) new pixel dimension of the trimmed data_vector-array.
     """
 
-    if x1 > array_2d.shape[0]:
-        raise ValueError(
-            'grids.Grid2d.trim_data - You have specified a new x_size bigger than the data_vector array')
-    elif y1 > array_2d.shape[1]:
+    if y1 > array_2d.shape[1]:
         raise ValueError(
             'grids.Grid2d.trim_data - You have specified a new y_size bigger than the data_vector array')
+    elif x1 > array_2d.shape[0]:
+        raise ValueError(
+            'grids.Grid2d.trim_data - You have specified a new x_size bigger than the data_vector array')
 
     return array_2d[y0:y1, x0:x1]
 
@@ -501,13 +556,13 @@ def numpy_array_to_fits(array, path, overwrite=False):
         os.remove(path)
 
     new_hdr = fits.Header()
-    hdu = fits.PrimaryHDU(array, new_hdr)
+    hdu = fits.PrimaryHDU(np.flipud(array), new_hdr)
     hdu.writeto(path)
 
 
 def numpy_array_from_fits(path, hdu):
     hdu_list = fits.open(path)
-    return np.array(hdu_list[hdu].data)
+    return np.flipud(np.array(hdu_list[hdu].data))
 
 
 def compute_variances_from_noise(noise):
