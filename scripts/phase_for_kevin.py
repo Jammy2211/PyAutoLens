@@ -20,15 +20,14 @@ image = im.load_imaging_from_fits(image_path=path + '/../data/slacs03_all/slacs_
 
 image[image > 0.7] = 0.7
 
-plt.imshow(image)
+plt.imshow(image.noise_map)
 plt.show()
 
+
+# image = image.trim_image_and_noise_around_region(x0=1042, x1=1342, y0=900, y1=1200)
+imaging_plotters.plot_image_individuals(image=image, plot_image=True, plot_noise_map=False)
 print(image.shape)
 stop
-
-image = image.trim_image_and_noise_around_region(x0=1042, x1=1342, y0=900, y1=1200)
-imaging_plotters.plot_image_individuals(image=image, plot_image=True, plot_noise_map=False)
-
 
 class CustomPhase(ph.LensSourcePlanePhase):
 

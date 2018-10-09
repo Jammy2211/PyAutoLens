@@ -30,7 +30,20 @@ def make_imaging_grids():
     imaging_grids.sub[1] = np.array([1.0, 0.0])
     imaging_grids.sub[2] = np.array([1.0, 1.0])
     imaging_grids.sub[3] = np.array([1.0, 0.0])
+    imaging_grids.sub[4] = np.array([-1.0, 2.0])
+    imaging_grids.sub[5] = np.array([-1.0, 4.0])
+    imaging_grids.sub[6] = np.array([1.0, 2.0])
+    imaging_grids.sub[7] = np.array([1.0, 4.0])
     imaging_grids.blurring[0] = np.array([1.0, 0.0])
+    imaging_grids.blurring[1] = np.array([-6.0, -3.0])
+    imaging_grids.blurring[2] = np.array([-6.0, 3.0])
+    imaging_grids.blurring[3] = np.array([-6.0, 9.0])
+    imaging_grids.blurring[4] = np.array([0.0, -9.0])
+    imaging_grids.blurring[5] = np.array([0.0, 9.0])
+    imaging_grids.blurring[6] = np.array([6.0, -9.0])
+    imaging_grids.blurring[7] = np.array([6.0, -3.0])
+    imaging_grids.blurring[8] = np.array([6.0, 3.0])
+    imaging_grids.blurring[9] = np.array([6.0, 9.0])
 
     return imaging_grids
 
@@ -1235,24 +1248,24 @@ class TestPlaneImage:
         imaging_grids.image = mask.ImageGrid(np.array([[-2.0, -2.0], [2.0, 2.0]]), pixel_scale=1.0, shape_2d=(5, 5),
                                              grid_to_pixel=None)
 
-        g0 = g.Galaxy(light_profile=lp.EllipticalSersic(centre=(-1.6, -1.6), intensity=1.0))
+        g0 = g.Galaxy(light_profile=lp.EllipticalSersic(centre=(1.6, -1.6), intensity=1.0))
         plane = pl.Plane(galaxies=[g0], grids=imaging_grids)
         plane_image = plane.plane_image(shape=(5 ,5))
 
         assert plane_image.shape == (5, 5)
         assert np.unravel_index(plane_image.argmax(), plane_image.shape) == (0, 0)
 
-        g0 = g.Galaxy(light_profile=lp.EllipticalSersic(centre=(-1.6, 1.6), intensity=1.0))
+        g0 = g.Galaxy(light_profile=lp.EllipticalSersic(centre=(1.6, 1.6), intensity=1.0))
         plane = pl.Plane(galaxies=[g0], grids=imaging_grids)
         plane_image = plane.plane_image(shape=(5 ,5))
         assert np.unravel_index(plane_image.argmax(), plane_image.shape) == (0, 4)
 
-        g0 = g.Galaxy(light_profile=lp.EllipticalSersic(centre=(1.6, -1.6), intensity=1.0))
+        g0 = g.Galaxy(light_profile=lp.EllipticalSersic(centre=(-1.6, -1.6), intensity=1.0))
         plane = pl.Plane(galaxies=[g0], grids=imaging_grids)
         plane_image = plane.plane_image(shape=(5 ,5))
         assert np.unravel_index(plane_image.argmax(), plane_image.shape) == (4, 0)
 
-        g0 = g.Galaxy(light_profile=lp.EllipticalSersic(centre=(1.6, 1.6), intensity=1.0))
+        g0 = g.Galaxy(light_profile=lp.EllipticalSersic(centre=(-1.6, 1.6), intensity=1.0))
         plane = pl.Plane(galaxies=[g0], grids=imaging_grids)
         plane_image = plane.plane_image(shape=(5 ,5))
         assert np.unravel_index(plane_image.argmax(), plane_image.shape) == (4, 4)
@@ -1266,7 +1279,7 @@ class TestPlaneImage:
         plane_image = pl.PlaneImage(array=np.ones((3,3)), pixel_scales=(5.0, 0.5), grid=None)
         assert plane_image.xticks == pytest.approx(np.array([-0.75, -0.25, 0.25, 0.75]), 1e-3)
 
-        plane_image = pl.PlaneImage(array=np.ones((3,6)), pixel_scales=(5.0, 1.0), grid=None)
+        plane_image = pl.PlaneImage(array=np.ones((1,6)), pixel_scales=(5.0, 1.0), grid=None)
         assert plane_image.xticks == pytest.approx(np.array([-3.0, -1.0, 1.0, 3.0]), 1e-2)
 
     def test__compute_yticks_from_image_grid_correctly(self):
@@ -1277,5 +1290,5 @@ class TestPlaneImage:
         plane_image = pl.PlaneImage(array=np.ones((3,3)), pixel_scales=(0.5, 5.0), grid=None)
         assert plane_image.yticks == pytest.approx(np.array([-0.75, -0.25, 0.25, 0.75]), 1e-3)
 
-        plane_image = pl.PlaneImage(array=np.ones((6,3)), pixel_scales=(1.0, 5.0), grid=None)
+        plane_image = pl.PlaneImage(array=np.ones((6,1)), pixel_scales=(1.0, 5.0), grid=None)
         assert plane_image.yticks == pytest.approx(np.array([-3.0, -1.0, 1.0, 3.0]), 1e-2)
