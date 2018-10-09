@@ -65,7 +65,7 @@ class TestMask(object):
     def test__mask_anti_annulus__compare_to_array_util(self):
 
         msk_util = imaging_util.mask_anti_annular_from_shape_pixel_scale_and_radii(shape=(9, 9), pixel_scale=1.2,
-                                                                                   inner_radius_arcsec=0.8, outer_radius_arcsec=2.2, outer_radius_2_arcsec=3.0, centre=(1.0, 1.0))
+                  inner_radius_arcsec=0.8, outer_radius_arcsec=2.2, outer_radius_2_arcsec=3.0, centre=(1.0, 1.0))
 
         msk = mask.Mask.anti_annular(shape=(9, 9), pixel_scale=1.2, inner_radius_arcsec=0.8,
                                      outer_radius_arcsec=2.2, outer_radius_2_arcsec=3.0, centre=(1.0, 1.0))
@@ -147,7 +147,7 @@ class TestMask(object):
                         [True, True, True, True, True, False, True]])
 
         border_sub_pixels_util = imaging_util.border_sub_pixels_from_mask_pixel_scales_and_sub_grid_size(mask=msk,
-                                                                         pixel_scales=(3.0, 3.0), sub_grid_size=2)
+                                 pixel_scales=(3.0, 3.0), sub_grid_size=2)
 
         msk = mask.Mask(msk, pixel_scale=3.0)
 
@@ -278,7 +278,7 @@ class TestSubGrid(object):
     def test_sub_grid(self, sub_grid):
         assert sub_grid.shape == (5, 2)
         assert sub_grid.pixel_scale == 1.0
-        assert (sub_grid == np.array([[-1, 0], [0, -1], [0, 0], [0, 1], [1, 0]])).all()
+        assert (sub_grid == np.array([[1, 0], [0, -1], [0, 0], [0, 1], [-1, 0]])).all()
 
     def test_sub_to_pixel(self, sub_grid):
         assert (sub_grid.sub_to_image == np.array(range(5))).all()
@@ -406,8 +406,7 @@ class TestUnmaskedGrids:
                                                                                                  pixel_scale=3.0)
 
             image_padded_grid_util = imaging_util.image_grid_1d_masked_from_mask_and_pixel_scales(
-                mask=np.full((6, 6), False),
-                pixel_scales=(3.0, 3.0))
+                mask=np.full((6, 6), False), pixel_scales=(3.0, 3.0))
             assert (image_padded_grid == image_padded_grid_util).all()
             assert image_padded_grid.image_shape == (4, 4)
             assert image_padded_grid.padded_shape == (6, 6)
@@ -416,8 +415,7 @@ class TestUnmaskedGrids:
                                                                                                  psf_shape=(3, 3),
                                                                                                  pixel_scale=2.0)
             image_padded_grid_util = imaging_util.image_grid_1d_masked_from_mask_and_pixel_scales(
-                mask=np.full((6, 7), False),
-                pixel_scales=(2.0, 2.0))
+                mask=np.full((6, 7), False), pixel_scales=(2.0, 2.0))
             assert (image_padded_grid == image_padded_grid_util).all()
             assert image_padded_grid.image_shape == (4, 5)
             assert image_padded_grid.padded_shape == (6, 7)
@@ -426,8 +424,7 @@ class TestUnmaskedGrids:
                                                                                                  psf_shape=(3, 3),
                                                                                                  pixel_scale=1.0)
             image_padded_grid_util = imaging_util.image_grid_1d_masked_from_mask_and_pixel_scales(
-                mask=np.full((7, 6), False),
-                pixel_scales=(1.0, 1.0))
+                mask=np.full((7, 6), False), pixel_scales=(1.0, 1.0))
             assert (image_padded_grid == image_padded_grid_util).all()
             assert image_padded_grid.image_shape == (5, 4)
             assert image_padded_grid.padded_shape == (7, 6)
@@ -436,8 +433,7 @@ class TestUnmaskedGrids:
                                                                                                  psf_shape=(5, 5),
                                                                                                  pixel_scale=8.0)
             image_padded_grid_util = imaging_util.image_grid_1d_masked_from_mask_and_pixel_scales(
-                mask=np.full((6, 9), False),
-                pixel_scales=(8.0, 8.0))
+                mask=np.full((6, 9), False), pixel_scales=(8.0, 8.0))
             assert (image_padded_grid == image_padded_grid_util).all()
             assert image_padded_grid.image_shape == (2, 5)
             assert image_padded_grid.padded_shape == (6, 9)
@@ -683,18 +679,18 @@ class TestImagingGrids(object):
 
     def test__grids(self, imaging_grids):
         assert (imaging_grids.image == np.array([[0., 0.]])).all()
-        np.testing.assert_almost_equal(imaging_grids.sub, np.array([[-0.16666667, -0.16666667],
-                                                                    [-0.16666667, 0.16666667],
-                                                                    [0.16666667, -0.16666667],
-                                                                    [0.16666667, 0.16666667]]))
-        assert (imaging_grids.blurring == np.array([[-1., -1.],
-                                                    [-1., 0.],
-                                                    [-1., 1.],
+        np.testing.assert_almost_equal(imaging_grids.sub, np.array([[0.16666667, -0.16666667],
+                                                                    [0.16666667, 0.16666667],
+                                                                    [-0.16666667, -0.16666667],
+                                                                    [-0.16666667, 0.16666667]]))
+        assert (imaging_grids.blurring == np.array([[1., -1.],
+                                                    [1., 0.],
+                                                    [1., 1.],
                                                     [0., -1.],
                                                     [0., 1.],
-                                                    [1., -1.],
-                                                    [1., 0.],
-                                                    [1., 1.]])).all()
+                                                    [-1., -1.],
+                                                    [-1., 0.],
+                                                    [-1., 1.]])).all()
 
     def test__from_shape_and_pixel_scale(self):
         ma = mask.Mask(np.array([[False, False, False],
@@ -766,18 +762,18 @@ class TestImagingGrids(object):
         new_collection = imaging_grids.apply_function(add_one)
         assert isinstance(new_collection, mask.ImagingGrids)
         assert (new_collection.image == np.add(1, np.array([[0., 0.]]))).all()
-        np.testing.assert_almost_equal(new_collection.sub, np.add(1, np.array([[-0.16666667, -0.16666667],
-                                                                               [-0.16666667, 0.16666667],
-                                                                               [0.16666667, -0.16666667],
-                                                                               [0.16666667, 0.16666667]])))
-        assert (new_collection.blurring == np.add(1, np.array([[-1., -1.],
-                                                               [-1., 0.],
-                                                               [-1., 1.],
+        np.testing.assert_almost_equal(new_collection.sub, np.add(1, np.array([[0.16666667, -0.16666667],
+                                                                               [0.16666667, 0.16666667],
+                                                                               [-0.16666667, -0.16666667],
+                                                                               [-0.16666667, 0.16666667]])))
+        assert (new_collection.blurring == np.add(1, np.array([[1., -1.],
+                                                               [1., 0.],
+                                                               [1., 1.],
                                                                [0., -1.],
                                                                [0., 1.],
-                                                               [1., -1.],
-                                                               [1., 0.],
-                                                               [1., 1.]]))).all()
+                                                               [-1., -1.],
+                                                               [-1., 0.],
+                                                               [-1., 1.]]))).all()
 
     def test__map_function(self, imaging_grids):
         def add_number(coords, number):
@@ -787,18 +783,18 @@ class TestImagingGrids(object):
 
         assert isinstance(new_collection, mask.ImagingGrids)
         assert (new_collection.image == np.add(1, np.array([[0., 0.]]))).all()
-        np.testing.assert_almost_equal(new_collection.sub, np.add(2, np.array([[-0.16666667, -0.16666667],
-                                                                               [-0.16666667, 0.16666667],
-                                                                               [0.16666667, -0.16666667],
-                                                                               [0.16666667, 0.16666667]])))
-        assert (new_collection.blurring == np.add(3, np.array([[-1., -1.],
-                                                               [-1., 0.],
-                                                               [-1., 1.],
+        np.testing.assert_almost_equal(new_collection.sub, np.add(2, np.array([[0.16666667, -0.16666667],
+                                                                               [0.16666667, 0.16666667],
+                                                                               [-0.16666667, -0.16666667],
+                                                                               [-0.16666667, 0.16666667]])))
+        assert (new_collection.blurring == np.add(3, np.array([[1., -1.],
+                                                               [1., 0.],
+                                                               [1., 1.],
                                                                [0., -1.],
                                                                [0., 1.],
-                                                               [1., -1.],
-                                                               [1., 0.],
-                                                               [1., 1.]]))).all()
+                                                               [-1., -1.],
+                                                               [-1., 0.],
+                                                               [-1., 1.]]))).all()
 
 
 class TestImagingBorders(object):

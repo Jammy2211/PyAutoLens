@@ -109,32 +109,33 @@ class TestGrid2d:
 
     def test__array_3x3__sets_up_arcsecond_grid(self):
 
-        grid_2d = util.image_grid_2d_from_shape_and_pixel_scales(shape=(3, 3), x_pixel_scale=1.0, y_pixel_scale=2.0)
+        grid_2d = util.image_grid_2d_from_shape_and_pixel_scales(shape=(3, 3), pixel_scales=(2.0, 1.0))
 
-        assert (grid_2d == np.array([[[-1., -2.], [-1., 0.], [-1., 2.]],
-                                     [[0., -2.], [0., 0.], [0., 2.]],
-                                     [[1., -2.], [1., 0.], [1., 2.]]])).all()
+        assert (grid_2d == np.array([[[2., -1.], [2., 0.], [2., 1.]],
+                                     [[0., -1.], [0., 0.], [0., 1.]],
+                                     [[-2., -1.], [-2., 0.], [-2., 1.]]])).all()
 
     def test__array_4x4_and_different_pixel_scale__sets_up_arcsecond_grid(self):
-        grid_2d = util.image_grid_2d_from_shape_and_pixel_scales(shape=(4, 4), x_pixel_scale=0.5, y_pixel_scale=0.5)
 
-        assert (grid_2d == np.array([[[-0.75, -0.75], [-0.75, -0.25], [-0.75, 0.25], [-0.75, 0.75]],
-                                     [[-0.25, -0.75], [-0.25, -0.25], [-0.25, 0.25], [-0.25, 0.75]],
+        grid_2d = util.image_grid_2d_from_shape_and_pixel_scales(shape=(4, 4), pixel_scales=(0.5, 0.5))
+
+        assert (grid_2d == np.array([[[0.75, -0.75], [0.75, -0.25], [0.75, 0.25], [0.75, 0.75]],
                                      [[0.25, -0.75], [0.25, -0.25], [0.25, 0.25], [0.25, 0.75]],
-                                     [[0.75, -0.75], [0.75, -0.25], [0.75, 0.25], [0.75, 0.75]]])).all()
+                                     [[-0.25, -0.75], [-0.25, -0.25], [-0.25, 0.25], [-0.25, 0.75]],
+                                     [[-0.75, -0.75], [-0.75, -0.25], [-0.75, 0.25], [-0.75, 0.75]]])).all()
 
     def test__array_2x3__sets_up_arcsecond_grid(self):
-        grid_2d = util.image_grid_2d_from_shape_and_pixel_scales(shape=(2, 3), x_pixel_scale=1.0, y_pixel_scale=1.0)
+        grid_2d = util.image_grid_2d_from_shape_and_pixel_scales(shape=(2, 3), pixel_scales=(1.0, 1.0))
 
-        assert (grid_2d == np.array([[[-0.5, -1.], [-0.5, 0.], [-0.5, 1.]],
-                                     [[0.5, -1.], [0.5, 0.], [0.5, 1.]]])).all()
+        assert (grid_2d == np.array([[[0.5, -1.], [0.5, 0.], [0.5, 1.]],
+                                     [[-0.5, -1.], [-0.5, 0.], [-0.5, 1.]]])).all()
 
     def test__array_3x2__sets_up_arcsecond_grid(self):
-        grid_2d = util.image_grid_2d_from_shape_and_pixel_scales(shape=(3, 2), x_pixel_scale=1.0, y_pixel_scale=1.0)
+        grid_2d = util.image_grid_2d_from_shape_and_pixel_scales(shape=(3, 2), pixel_scales=(1.0, 1.0))
 
-        assert (grid_2d == np.array([[[-1., -0.5], [-1., 0.5]],
+        assert (grid_2d == np.array([[[1., -0.5], [1., 0.5]],
                                      [[0., -0.5], [0., 0.5]],
-                                     [[1., -0.5], [1., 0.5]]])).all()
+                                     [[-1., -0.5], [-1., 0.5]]])).all()
 
 
 class TestImageGridMasked(object):
@@ -144,7 +145,7 @@ class TestImageGridMasked(object):
                          [True, False, True],
                          [True, True, True]])
 
-        image_grid = util.image_grid_1d_masked_from_mask_and_pixel_scales(mask=mask, x_pixel_scale=3.0, y_pixel_scale=6.0)
+        image_grid = util.image_grid_1d_masked_from_mask_and_pixel_scales(mask=mask, pixel_scales=(3.0, 6.0))
 
         assert (image_grid[0] == np.array([0.0, 0.0])).all()
 
@@ -153,9 +154,11 @@ class TestImageGridMasked(object):
                          [False, False, False],
                          [True, False, True]])
 
-        image_grid = util.image_grid_1d_masked_from_mask_and_pixel_scales(mask=mask, x_pixel_scale=3.0, y_pixel_scale=6.0)
+        image_grid = util.image_grid_1d_masked_from_mask_and_pixel_scales(mask=mask, pixel_scales=(6.0, 3.0))
 
-        assert (image_grid == np.array([[-3., 0.], [0., -6.], [0., 0.], [0., 6.], [3., 0.]])).all()
+        assert (image_grid == np.array([           [6., 0.],
+                                        [0., -3.], [0., 0.], [0., 3.],
+                                                   [-6., 0.]])).all()
 
     def test__setup_4x4_image__ten_coordinates_in_grid__new_pixel_scale(self):
         mask = np.array([[True, False, False, True],
@@ -163,21 +166,23 @@ class TestImageGridMasked(object):
                          [True, False, False, True],
                          [False, False, False, True]])
 
-        image_grid = util.image_grid_1d_masked_from_mask_and_pixel_scales(mask=mask, x_pixel_scale=1.0, y_pixel_scale=1.0)
+        image_grid = util.image_grid_1d_masked_from_mask_and_pixel_scales(mask=mask, pixel_scales=(1.0, 1.0))
 
-        assert (image_grid == np.array(
-            [[-1.5, -0.5], [-1.5, 0.5], [-0.5, -1.5], [-0.5, -0.5], [-0.5, 0.5], [0.5, -0.5], [0.5, 0.5],
-             [1.5, -1.5], [1.5, -0.5], [1.5, 0.5]])).all()
+        assert (image_grid == np.array(             [[1.5, -0.5], [1.5, 0.5],
+                                       [0.5, -1.5], [0.5, -0.5], [0.5, 0.5],
+                                                     [-0.5, -0.5], [-0.5, 0.5],
+                                        [-1.5, -1.5], [-1.5, -0.5], [-1.5, 0.5]])).all()
 
     def test__setup_3x4_image__six_grid(self):
         mask = np.array([[True, False, True, True],
                          [False, False, False, True],
                          [True, False, True, False]])
 
-        image_grid = util.image_grid_1d_masked_from_mask_and_pixel_scales(mask=mask, x_pixel_scale=3.0, y_pixel_scale=3.0)
+        image_grid = util.image_grid_1d_masked_from_mask_and_pixel_scales(mask=mask, pixel_scales=(3.0, 3.0))
 
-        assert (image_grid == np.array(
-            [[-3., -1.5], [0., -4.5], [0., -1.5], [0., 1.5], [3., -1.5], [3., 4.5]])).all()
+        assert (image_grid == np.array([             [3., -1.5],
+                                       [0., -4.5], [0., -1.5], [0., 1.5],
+                                                    [-3., -1.5],           [-3., 4.5]])).all()
 
 
 class TestSubGridMasked(object):
@@ -187,80 +192,88 @@ class TestSubGridMasked(object):
                          [True, False, True],
                          [True, True, True]])
 
-        sub_grid = util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(mask=mask, x_pixel_scale=3.0, y_pixel_scale=6.0,
+        sub_grid = util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(mask=mask, pixel_scales=(3.0, 6.0),
                                                                                     sub_grid_size=2)
 
-        assert (sub_grid == np.array([[[-0.5, -1.0], [-0.5, 1.0], [0.5, -1.0], [0.5, 1.0]]])).all()
+        assert (sub_grid[0:4] == np.array([[0.5, -1.0], [0.5, 1.0],
+                                          [-0.5, -1.0], [-0.5, 1.0]])).all()
 
     def test__3x3_mask_with_row_of_pixels__2x2_sub_grid__grid(self):
         mask = np.array([[True, True, True],
                          [False, False, False],
                          [True, True, True]])
 
-        sub_grid = util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(mask=mask, x_pixel_scale=3.0, y_pixel_scale=3.0,
+        sub_grid = util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(mask=mask, pixel_scales=(3.0, 3.0),
                                                                                     sub_grid_size=2)
 
-        assert (sub_grid == np.array([[-0.5, -3.5], [-0.5, -2.5], [0.5, -3.5], [0.5, -2.5],
-                                      [-0.5, -0.5], [-0.5, 0.5], [0.5, -0.5], [0.5, 0.5],
-                                      [-0.5, 2.5], [-0.5, 3.5], [0.5, 2.5], [0.5, 3.5]])).all()
+        assert (sub_grid[0:4] == np.array([[0.5, -3.5], [0.5, -2.5],
+                                           [-0.5, -3.5], [-0.5, -2.5]])).all()
+
+        assert (sub_grid[4:8] == np.array([[0.5, -0.5], [0.5, 0.5],
+                                           [-0.5, -0.5], [-0.5, 0.5]])).all()
+
+        assert (sub_grid[8:12] == np.array([[0.5,  2.5], [0.5, 3.5],
+                                            [-0.5, 2.5], [-0.5, 3.5]])).all()
 
     def test__3x3_mask_with_row_and_column_of_pixels__2x2_sub_grid__grid(self):
         mask = np.array([[True, True, False],
                          [False, False, False],
                          [True, True, False]])
 
-        sub_grid = util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(mask=mask, x_pixel_scale=3.0, y_pixel_scale=3.0,
+        sub_grid = util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(mask=mask, pixel_scales=(3.0, 3.0),
                                                                                     sub_grid_size=2)
 
-        assert (sub_grid == np.array([[-3.5, 2.5], [-3.5, 3.5], [-2.5, 2.5], [-2.5, 3.5],
-                                      [-0.5, -3.5], [-0.5, -2.5], [0.5, -3.5], [0.5, -2.5],
-                                      [-0.5, -0.5], [-0.5, 0.5], [0.5, -0.5], [0.5, 0.5],
-                                      [-0.5, 2.5], [-0.5, 3.5], [0.5, 2.5], [0.5, 3.5],
-                                      [2.5, 2.5], [2.5, 3.5], [3.5, 2.5], [3.5, 3.5]])).all()
+        assert (sub_grid == np.array([[3.5, 2.5], [3.5, 3.5], [2.5, 2.5], [2.5, 3.5],
+                                      [0.5, -3.5], [0.5, -2.5], [-0.5, -3.5], [-0.5, -2.5],
+                                      [0.5, -0.5], [0.5, 0.5], [-0.5, -0.5], [-0.5, 0.5],
+                                      [0.5, 2.5], [0.5, 3.5], [-0.5, 2.5], [-0.5, 3.5],
+                                      [-2.5, 2.5], [-2.5, 3.5], [-3.5, 2.5], [-3.5, 3.5]])).all()
 
     def test__3x3_mask_with_row_and_column_of_pixels__2x2_sub_grid__different_pixel_scale(self):
         mask = np.array([[True, True, False],
                          [False, False, False],
                          [True, True, False]])
 
-        sub_grid = util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(mask=mask, x_pixel_scale=0.3,
-                                                                                    y_pixel_scale=0.3,
+        sub_grid = util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(mask=mask, pixel_scales=(0.3, 0.3),
                                                                                     sub_grid_size=2)
 
         sub_grid = np.round(sub_grid, decimals=2)
 
         np.testing.assert_almost_equal(sub_grid,
-                                       np.array([[-0.35, 0.25], [-0.35, 0.35], [-0.25, 0.25], [-0.25, 0.35],
-                                                 [-0.05, -0.35], [-0.05, -0.25], [0.05, -0.35], [0.05, -0.25],
-                                                 [-0.05, -0.05], [-0.05, 0.05], [0.05, -0.05], [0.05, 0.05],
-                                                 [-0.05, 0.25], [-0.05, 0.35], [0.05, 0.25], [0.05, 0.35],
-                                                 [0.25, 0.25], [0.25, 0.35], [0.35, 0.25], [0.35, 0.35]]))
+                                       np.array([[0.35, 0.25], [0.35, 0.35], [0.25, 0.25], [0.25, 0.35],
+                                                 [0.05, -0.35], [0.05, -0.25], [-0.05, -0.35], [-0.05, -0.25],
+                                                 [0.05, -0.05], [0.05, 0.05], [-0.05, -0.05], [-0.05, 0.05],
+                                                 [0.05, 0.25], [0.05, 0.35], [-0.05, 0.25], [-0.05, 0.35],
+                                                 [-0.25, 0.25], [-0.25, 0.35], [-0.35, 0.25], [-0.35, 0.35]]))
 
     def test__3x3_mask_with_one_pixel__3x3_sub_grid__grid(self):
         mask = np.array([[True, True, True],
                          [True, False, True],
                          [True, True, True]])
 
-        sub_grid = util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(mask=mask, x_pixel_scale=3.0, y_pixel_scale=3.0,
+        sub_grid = util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(mask=mask, pixel_scales=(3.0, 3.0),
                                                                                     sub_grid_size=3)
 
-        assert (sub_grid == np.array([[[-0.75, -0.75], [-0.75, 0.], [-0.75, 0.75], [0., -0.75], [0., 0.],
-                                       [0., 0.75], [0.75, -0.75], [0.75, 0.], [0.75, 0.75]]])).all()
+        assert (sub_grid == np.array([[[0.75, -0.75], [0.75, 0.], [0.75, 0.75], [0., -0.75], [0., 0.],
+                                       [0., 0.75], [-0.75, -0.75], [-0.75, 0.], [-0.75, 0.75]]])).all()
 
     def test__3x3_mask_with_one_row__3x3_sub_grid__grid(self):
         mask = np.array([[True, True, False],
                          [True, False, True],
                          [True, True, False]])
 
-        sub_grid = util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(mask=mask, x_pixel_scale=2.0, y_pixel_scale=2.0,
+        sub_grid = util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(mask=mask, pixel_scales=(2.0, 2.0),
                                                                                     sub_grid_size=3)
 
-        assert (sub_grid == np.array([[-2.5, 1.5], [-2.5, 2.], [-2.5, 2.5], [-2., 1.5], [-2., 2.],
-                                      [-2., 2.5], [-1.5, 1.5], [-1.5, 2.], [-1.5, 2.5],
-                                      [-0.5, -0.5], [-0.5, 0.], [-0.5, 0.5], [0., -0.5], [0., 0.], [0., 0.5],
+        assert (sub_grid == np.array([[2.5, 1.5], [2.5, 2.], [2.5, 2.5],
+                                      [2., 1.5], [2., 2.], [2., 2.5],
+                                      [1.5, 1.5], [1.5, 2.], [1.5, 2.5],
                                       [0.5, -0.5], [0.5, 0.], [0.5, 0.5],
-                                      [1.5, 1.5], [1.5, 2.], [1.5, 2.5], [2., 1.5], [2., 2.], [2., 2.5],
-                                      [2.5, 1.5], [2.5, 2.], [2.5, 2.5]])).all()
+                                      [0., -0.5], [0., 0.], [0., 0.5],
+                                      [-0.5, -0.5], [-0.5, 0.], [-0.5, 0.5],
+                                      [-1.5, 1.5], [-1.5, 2.], [-1.5, 2.5],
+                                      [-2., 1.5], [-2., 2.], [-2., 2.5],
+                                      [-2.5, 1.5], [-2.5, 2.], [-2.5, 2.5]])).all()
 
     def test__4x4_mask_with_one_pixel__4x4_sub_grid__grid(self):
         mask = np.array([[True, True, True, True],
@@ -268,29 +281,31 @@ class TestSubGridMasked(object):
                          [True, False, False, True],
                          [True, True, True, False]])
 
-        sub_grid = util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(mask=mask, x_pixel_scale=2.0, y_pixel_scale=2.0,
+        sub_grid = util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(mask=mask, pixel_scales=(2.0, 2.0),
                                                                                     sub_grid_size=4)
 
         sub_grid = np.round(sub_grid, decimals=1)
 
-        assert (sub_grid == np.array([[-1.6, -1.6], [-1.6, -1.2], [-1.6, -0.8], [-1.6, -0.4], [-1.2, -1.6],
-                                      [-1.2, -1.2], [-1.2, -0.8], [-1.2, -0.4], [-0.8, -1.6], [-0.8, -1.2],
-                                      [-0.8, -0.8], [-0.8, -0.4], [-0.4, -1.6], [-0.4, -1.2], [-0.4, -0.8],
-                                      [-0.4, -0.4],
-                                      [-1.6, 0.4], [-1.6, 0.8], [-1.6, 1.2], [-1.6, 1.6], [-1.2, 0.4],
-                                      [-1.2, 0.8], [-1.2, 1.2], [-1.2, 1.6], [-0.8, 0.4], [-0.8, 0.8],
-                                      [-0.8, 1.2], [-0.8, 1.6], [-0.4, 0.4], [-0.4, 0.8], [-0.4, 1.2],
-                                      [-0.4, 1.6],
-                                      [0.4, -1.6], [0.4, -1.2], [0.4, -0.8], [0.4, -0.4], [0.8, -1.6],
-                                      [0.8, -1.2], [0.8, -0.8], [0.8, -0.4], [1.2, -1.6], [1.2, -1.2],
-                                      [1.2, -0.8], [1.2, -0.4], [1.6, -1.6], [1.6, -1.2], [1.6, -0.8],
-                                      [1.6, -0.4],
-                                      [0.4, 0.4], [0.4, 0.8], [0.4, 1.2], [0.4, 1.6], [0.8, 0.4], [0.8, 0.8],
-                                      [0.8, 1.2], [0.8, 1.6], [1.2, 0.4], [1.2, 0.8], [1.2, 1.2], [1.2, 1.6],
+        assert (sub_grid == np.array([[1.6, -1.6], [1.6, -1.2], [1.6, -0.8], [1.6, -0.4],
+                                      [1.2, -1.6], [1.2, -1.2], [1.2, -0.8], [1.2, -0.4],
+                                      [0.8, -1.6], [0.8, -1.2], [0.8, -0.8], [0.8, -0.4],
+                                      [0.4, -1.6], [0.4, -1.2], [0.4, -0.8], [0.4, -0.4],
                                       [1.6, 0.4], [1.6, 0.8], [1.6, 1.2], [1.6, 1.6],
-                                      [2.4, 2.4], [2.4, 2.8], [2.4, 3.2], [2.4, 3.6], [2.8, 2.4], [2.8, 2.8],
-                                      [2.8, 3.2], [2.8, 3.6], [3.2, 2.4], [3.2, 2.8], [3.2, 3.2], [3.2, 3.6],
-                                      [3.6, 2.4], [3.6, 2.8], [3.6, 3.2], [3.6, 3.6]])).all()
+                                      [1.2, 0.4], [1.2, 0.8], [1.2, 1.2], [1.2, 1.6],
+                                      [0.8, 0.4], [0.8, 0.8], [0.8, 1.2], [0.8, 1.6],
+                                      [0.4, 0.4], [0.4, 0.8], [0.4, 1.2], [0.4, 1.6],
+                                      [-0.4, -1.6], [-0.4, -1.2], [-0.4, -0.8], [-0.4, -0.4],
+                                      [-0.8, -1.6], [-0.8, -1.2], [-0.8, -0.8], [-0.8, -0.4],
+                                      [-1.2, -1.6], [-1.2, -1.2], [-1.2, -0.8], [-1.2, -0.4],
+                                      [-1.6, -1.6], [-1.6, -1.2], [-1.6, -0.8], [-1.6, -0.4],
+                                      [-0.4, 0.4], [-0.4, 0.8], [-0.4, 1.2], [-0.4, 1.6],
+                                      [-0.8, 0.4], [-0.8, 0.8], [-0.8, 1.2], [-0.8, 1.6],
+                                      [-1.2, 0.4], [-1.2, 0.8], [-1.2, 1.2], [-1.2, 1.6],
+                                      [-1.6, 0.4], [-1.6, 0.8], [-1.6, 1.2], [-1.6, 1.6],
+                                      [-2.4, 2.4], [-2.4, 2.8], [-2.4, 3.2], [-2.4, 3.6],
+                                      [-2.8, 2.4], [-2.8, 2.8], [-2.8, 3.2], [-2.8, 3.6],
+                                      [-3.2, 2.4], [-3.2, 2.8], [-3.2, 3.2], [-3.2, 3.6],
+                                      [-3.6, 2.4], [-3.6, 2.8], [-3.6, 3.2], [-3.6, 3.6]])).all()
 
     def test__4x3_mask_with_one_pixel__2x2_sub_grid__grid(self):
         mask = np.array([[True, True, True],
@@ -298,25 +313,76 @@ class TestSubGridMasked(object):
                          [True, False, False],
                          [False, True, True]])
 
-        sub_grid = util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(mask=mask, x_pixel_scale=3.0, y_pixel_scale=3.0,
+        sub_grid = util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(mask=mask, pixel_scales=(3.0, 3.0),
                                                                                     sub_grid_size=2)
 
-        assert (sub_grid == np.array(
-            [[-2., -0.5], [-2., 0.5], [-1., -0.5], [-1., 0.5], [1., -0.5], [1., 0.5], [2., -0.5], [2., 0.5],
-             [1., 2.5], [1., 3.5], [2., 2.5], [2., 3.5], [4., -3.5], [4., -2.5], [5., -3.5], [5., -2.5]])).all()
+        assert (sub_grid == np.array([[2., -0.5], [2., 0.5], [1., -0.5], [1., 0.5],
+                                      [-1., -0.5], [-1., 0.5], [-2., -0.5], [-2., 0.5],
+                                       [-1., 2.5], [-1., 3.5], [-2., 2.5], [-2., 3.5],
+                                      [-4., -3.5], [-4., -2.5], [-5., -3.5], [-5., -2.5]])).all()
 
     def test__3x4_mask_with_one_pixel__2x2_sub_grid__grid(self):
+
         mask = np.array([[True, True, True, False],
                          [True, False, False, True],
                          [False, True, False, True]])
 
-        sub_grid = util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(mask=mask, x_pixel_scale=3.0, y_pixel_scale=3.0,
+        sub_grid = util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(mask=mask, pixel_scales=(3.0, 3.0),
                                                                                     sub_grid_size=2)
 
-        assert (sub_grid == np.array(
-            [[-3.5, 4.], [-3.5, 5.], [-2.5, 4.], [-2.5, 5.], [-0.5, -2.], [-0.5, -1.], [0.5, -2.], [0.5, -1.],
-             [-0.5, 1.], [-0.5, 2.], [0.5, 1.], [0.5, 2.], [2.5, -5.], [2.5, -4.], [3.5, -5.], [3.5, -4.],
-             [2.5, 1.], [2.5, 2.], [3.5, 1.], [3.5, 2.]])).all()
+        assert (sub_grid == np.array([[3.5, 4.], [3.5, 5.], [2.5, 4.], [2.5, 5.],
+                                      [0.5, -2.], [0.5, -1.], [-0.5, -2.], [-0.5, -1.],
+                                      [0.5, 1.], [0.5, 2.], [-0.5, 1.], [-0.5, 2.],
+                                      [-2.5, -5.], [-2.5, -4.], [-3.5, -5.], [-3.5, -4.],
+                                      [-2.5, 1.], [-2.5, 2.], [-3.5, 1.], [-3.5, 2.]])).all()
+
+
+class TestGridPixelArcSecondConversion(object):
+
+    def test__1d_pixel_grid_to_1d_arc_second_grid(self):
+
+        grid_pixels = np.array([[0, 0], [0, 1],
+                                [1, 0], [1, 1]])
+
+        grid_arc_seconds = util.grid_pixels_1d_to_grid_arc_seconds_1d(grid_pixels=grid_pixels, shape=(2,2),
+                                                                      pixel_scales=(2.0, 4.0))
+
+        assert (grid_arc_seconds == np.array([[1.0, -2.0], [1.0, 2.0],
+                                              [-1.0, -2.0], [-1.0, 2.0]])).all()
+
+        grid_pixels = np.array([[0, 0], [0, 1], [0, 2],
+                                [1, 0], [1, 1], [1, 2],
+                                [2, 0], [2, 1], [2, 2]])
+
+        grid_arc_seconds = util.grid_pixels_1d_to_grid_arc_seconds_1d(grid_pixels=grid_pixels, shape=(3,3),
+                                                                      pixel_scales=(3.0, 6.0))
+
+        assert (grid_arc_seconds == np.array([[3.0, -6.0], [3.0, 0.0], [3.0, 6.0],
+                                              [0.0, -6.0], [0.0, 0.0], [0.0, 6.0],
+                                              [-3.0, -6.0], [-3.0, 0.0], [-3.0, 6.0]])).all()
+
+    def test__1d_arc_second_grid_to_1d_pixel_grid(self):
+
+        grid_arc_seconds = np.array([[1.0, -2.0], [1.0, 2.0],
+                                     [-1.0, -2.0], [-1.0, 2.0]])
+
+        grid_pixels = util.grid_arc_seconds_1d_to_grid_pixels_1d(grid_arc_seconds=grid_arc_seconds, shape=(2,2),
+                                                                      pixel_scales=(2.0, 4.0))
+
+        assert (grid_pixels == np.array([[0, 0], [0, 1],
+                                         [1, 0], [1, 1]])).all()
+
+
+        grid_arc_seconds = np.array([[3.0, -6.0], [3.0, 0.0], [3.0, 6.0],
+                                         [0.0, -6.0], [0.0, 0.0], [0.0, 6.0],
+                                         [-3.0, -6.0], [-3.0, 0.0], [-3.0, 6.0]])
+
+        grid_pixels = util.grid_arc_seconds_1d_to_grid_pixels_1d(grid_arc_seconds=grid_arc_seconds, shape=(3,3),
+                                                                      pixel_scales=(3.0, 6.0))
+
+        assert (grid_pixels == np.array([[0, 0], [0, 1], [0, 2],
+                                         [1, 0], [1, 1], [1, 2],
+                                         [2, 0], [2, 1], [2, 2]])).all()
 
 
 class TestGridToPixel(object):
@@ -337,16 +403,21 @@ class TestGridToPixel(object):
 
         grid_to_pixel = util.grid_to_pixel_from_mask(mask)
 
-        assert (grid_to_pixel == np.array([[0, 1], [1, 0], [1, 1], [1, 2], [2, 1]])).all()
+        assert (grid_to_pixel == np.array([        [0, 1],
+                                           [1, 0], [1, 1], [1, 2],
+                                                   [2, 1]])).all()
 
     def test__setup_3x4_image__six_pixels(self):
+
         mask = np.array([[True, False, True, True],
                          [False, False, False, True],
                          [True, False, True, False]])
 
         grid_to_pixel = util.grid_to_pixel_from_mask(mask)
 
-        assert (grid_to_pixel == np.array([[0, 1], [1, 0], [1, 1], [1, 2], [2, 1], [2, 3]])).all()
+        assert (grid_to_pixel == np.array([        [0, 1],
+                                           [1, 0], [1, 1], [1, 2],
+                                                   [2, 1],         [2, 3]])).all()
 
     def test__setup_4x3_image__six_pixels(self):
         mask = np.array([[True, False, True],
@@ -356,7 +427,10 @@ class TestGridToPixel(object):
 
         grid_to_pixel = util.grid_to_pixel_from_mask(mask)
 
-        assert (grid_to_pixel == np.array([[0, 1], [1, 0], [1, 1], [1, 2], [2, 1], [3, 2]])).all()
+        assert (grid_to_pixel == np.array([        [0, 1],
+                                           [1, 0], [1, 1], [1, 2],
+                                                   [2, 1],
+                                                           [3, 2]])).all()
 
 
 class TestSubToImage(object):
@@ -499,7 +573,7 @@ class TestSubBorderPixels(object):
                          [True, True, True, True, True, True, True]])
 
         border_sub_pixels = util.border_sub_pixels_from_mask_pixel_scales_and_sub_grid_size(mask=mask,
-                                                                                            x_pixel_scale=3.0, y_pixel_scale=3.0,
+                                                                                            pixel_scales=(3.0, 3.0),
                                                                                             sub_grid_size=2)
 
         assert (border_sub_pixels == np.array([0, 4, 9, 12, 21, 26, 30, 35])).all()
@@ -514,7 +588,7 @@ class TestSubBorderPixels(object):
                          [True, True, True, True, True, True, True]])
 
         border_sub_pixels = util.border_sub_pixels_from_mask_pixel_scales_and_sub_grid_size(mask=mask,
-                                                                                            x_pixel_scale=3.0, y_pixel_scale=3.0,
+                                                                                            pixel_scales=(3.0, 3.0),
                                                                                             sub_grid_size=4)
 
         assert (border_sub_pixels == np.array([0, 16, 35, 48, 83, 108, 124, 143])).all()
@@ -529,7 +603,7 @@ class TestSubBorderPixels(object):
                          [True, True, True, True, True, True, True]])
 
         border_sub_pixels = util.border_sub_pixels_from_mask_pixel_scales_and_sub_grid_size(mask=mask,
-                                                                                            x_pixel_scale=3.0, y_pixel_scale=3.0,
+                                                                                            pixel_scales=(3.0, 3.0),
                                                                                             sub_grid_size=2)
         assert (border_sub_pixels == np.array([0, 4, 9, 12, 21, 24, 33, 38, 47, 50, 54, 59])).all()
 
@@ -544,7 +618,7 @@ class TestSubBorderPixels(object):
                          [True, True, True, True, True, True, True]])
 
         border_sub_pixels = util.border_sub_pixels_from_mask_pixel_scales_and_sub_grid_size(mask=mask,
-                                                                                            x_pixel_scale=3.0, y_pixel_scale=3.0,
+                                                                                            pixel_scales=(3.0, 3.0),
                                                                                             sub_grid_size=2)
         assert (border_sub_pixels == np.array([0, 4, 8, 13, 16, 25, 30, 34, 43, 47, 50, 59, 62, 66, 71])).all()
 
@@ -558,7 +632,7 @@ class TestSubBorderPixels(object):
                          [True, True, True, True, True, True, True, True]])
 
         border_sub_pixels = util.border_sub_pixels_from_mask_pixel_scales_and_sub_grid_size(mask=mask,
-                                                                                            x_pixel_scale=3.0, y_pixel_scale=3.0,
+                                                                                            pixel_scales=(3.0, 3.0),
                                                                                             sub_grid_size=2)
         assert (border_sub_pixels == np.array([0, 4, 8, 13, 16, 25, 30, 34, 43, 47, 50, 54, 59])).all()
 
@@ -652,16 +726,16 @@ class TestMaskCircular(object):
                                   [False, False, False, False],
                                   [False, False, False, False]])).all()
 
-    def test__centre_shift__simple_shift_back(self):
+    def test__centre_shift__simple_shift_downwards(self):
         mask = util.mask_circular_from_shape_pixel_scale_and_radius(shape=(3, 3), pixel_scale=3.0,
                                                                     radius_arcsec=0.5, centre=(-3, 0))
 
         assert mask.shape == (3, 3)
-        assert (mask == np.array([[True, False, True],
+        assert (mask == np.array([[True, True, True],
                                   [True, True, True],
-                                  [True, True, True]])).all()
+                                  [True, False, True]])).all()
 
-    def test__centre_shift__simple_shift_forward(self):
+    def test__centre_shift__simple_shift_right(self):
         mask = util.mask_circular_from_shape_pixel_scale_and_radius(shape=(3, 3), pixel_scale=3.0,
                                                                     radius_arcsec=0.5, centre=(0.0, 3.0))
 
@@ -674,9 +748,9 @@ class TestMaskCircular(object):
         mask = util.mask_circular_from_shape_pixel_scale_and_radius(shape=(3, 3), pixel_scale=3.0,
                                                                     radius_arcsec=0.5, centre=(3, 3))
 
-        assert (mask == np.array([[True, True, True],
+        assert (mask == np.array([[True, True, False],
                                   [True, True, True],
-                                  [True, True, False]])).all()
+                                  [True, True, True]])).all()
 
 
 class TestMaskAnnular(object):
@@ -733,10 +807,10 @@ class TestMaskAnnular(object):
                                   [True, True, True, True],
                                   [False, True, True, False]])).all()
 
-    def test__centre_shift__simple_shift_back(self):
+    def test__centre_shift__simple_shift_upwards(self):
         mask = util.mask_annular_from_shape_pixel_scale_and_radii(shape=(3, 3), pixel_scale=3.0,
                                                                   inner_radius_arcsec=0.5,
-                                                                  outer_radius_arcsec=9.0, centre=(-3.0, 0.0))
+                                                                  outer_radius_arcsec=9.0, centre=(3.0, 0.0))
 
         assert mask.shape == (3, 3)
         assert (mask == np.array([[False, True, False],
@@ -756,7 +830,7 @@ class TestMaskAnnular(object):
     def test__centre_shift__diagonal_shift(self):
         mask = util.mask_annular_from_shape_pixel_scale_and_radii(shape=(3, 3), pixel_scale=3.0,
                                                                   inner_radius_arcsec=0.5,
-                                                                  outer_radius_arcsec=9.0, centre=(3.0, 3.0))
+                                                                  outer_radius_arcsec=9.0, centre=(-3.0, 3.0))
 
         assert mask.shape == (3, 3)
         assert (mask == np.array([[False, False, False],
@@ -820,7 +894,7 @@ class TestMaskAntiAnnular(object):
 
         mask = util.mask_anti_annular_from_shape_pixel_scale_and_radii(shape=(7, 7), pixel_scale=3.0,
                                                                        inner_radius_arcsec=1.5, outer_radius_arcsec=4.5,
-                                                                       outer_radius_2_arcsec=8.7, centre=(3.0, 3.0))
+                                                                       outer_radius_2_arcsec=8.7, centre=(3.0, -3.0))
 
         assert (mask == np.array([[True,  True,  True,  True,  True,  True,  True],
                                   [True,  True,  True,  True,  True,  True,  True],
