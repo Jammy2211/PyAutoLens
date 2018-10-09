@@ -16,10 +16,9 @@ def plot_array(array, points, grid, as_subplot,
 
     norm_min, norm_max = get_normalization_min_max(array=array, norm_min=norm_min, norm_max=norm_max)
     norm_scale = get_normalization_scale(norm=norm, norm_min=norm_min, norm_max=norm_max,
-                                              linthresh=linthresh, linscale=linscale)
+                                         linthresh=linthresh, linscale=linscale)
 
-    plot_image(array=array, grid=grid, as_subplot=as_subplot, figsize=figsize, aspect=aspect, cmap=cmap,
-               norm_scale=norm_scale)
+    plot_image(array=array, as_subplot=as_subplot, figsize=figsize, aspect=aspect, cmap=cmap, norm_scale=norm_scale)
 
     set_title(title=title, titlesize=titlesize)
     set_xy_labels_and_ticks(shape=array.shape, units=units, kpc_per_arcsec=kpc_per_arcsec, xticks=xticks, yticks=yticks,
@@ -56,11 +55,13 @@ def get_normalization_scale(norm, norm_min, norm_max, linthresh, linscale):
                                      'linear | log | symmetric_log')
 
 
-def plot_image(array, grid, as_subplot, figsize, aspect, cmap, norm_scale):
+def plot_image(array, as_subplot, figsize, aspect, cmap, norm_scale):
+
     if not as_subplot:
         plt.figure(figsize=figsize)
 
-    plt.imshow(np.flipud(array.T), aspect=aspect, cmap=cmap, norm=norm_scale, extent=(0, array.shape[1], 0, array.shape[0]))
+    plt.imshow(array, aspect=aspect, cmap=cmap, norm=norm_scale, extent=(0, array.shape[1], 0,
+                                                                                    array.shape[0]))
 
 
 def plot_points(points, pointsize):
@@ -111,9 +112,11 @@ def set_colorbar(cb_ticksize):
 
 
 def plot_grid(grid, pointsize):
-   pass
-   # if grid is not None:
-   #     plt.scatter(x=grid[:, 0], y=grid[:, 1], marker=',')
+
+    pass
+
+#   if grid is not None:
+#       plt.scatter(x=grid[:, 0], y=grid[:, 1], s=1)
 
 
 def output_array(array, output_path, output_filename, output_format):
