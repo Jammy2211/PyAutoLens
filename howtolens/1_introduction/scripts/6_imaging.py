@@ -13,7 +13,7 @@ from autolens.plotting import imaging_plotters
 
 # To simulate an image, we need to model the telescope's optics. We'll do this by convolving the image with a
 # Point-Spread Function, which we can simulate as a Gaussian using the imaging module.
-psf = im.PSF.simulate_as_gaussian(shape=(11, 11), sigma=0.75)
+psf = im.PSF.simulate_as_gaussian(shape=(11, 11), pixel_scale=0.1, sigma=0.75)
 
 # To simulate an image, we use a special type of grid. This pads the grids 2D dimensions relative to the PSF-shape,
 # to ensure that the edge's of our simulated image are not degraded.

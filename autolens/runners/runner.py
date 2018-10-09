@@ -12,9 +12,9 @@ def load_image(data_name, pixel_scale, image_hdu, noise_hdu, psf_hdu, psf_trimme
                effective_exposure_time=None):
     data_dir = "{}/../data/{}".format(dirpath, data_name)
 
-    data = scaled_array.ScaledSquarePixelArray.from_fits_with_scale(file_path=data_dir, hdu=image_hdu, pixel_scale=pixel_scale)
+    data = scaled_array.ScaledSquarePixelArray.from_fits(file_path=data_dir, hdu=image_hdu, pixel_scale=pixel_scale)
     data = data.trim_around_centre((301, 301))
-    background_noise = scaled_array.ScaledSquarePixelArray.from_fits_with_scale(file_path=data_dir, hdu=noise_hdu)
+    background_noise = scaled_array.ScaledSquarePixelArray.from_fits(file_path=data_dir, hdu=noise_hdu)
     background_noise = background_noise.trim_around_centre((301, 301))
     psf = image.PSF.from_fits_with_scale(file_path=data_dir, hdu=psf_hdu)
     if psf_trimmed_shape is not None:
