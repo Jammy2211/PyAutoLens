@@ -8,6 +8,7 @@ exclude results
 exclude scripts
 exclude output
 exclude .coverage
+exclude howtolens
 exclude .travis.yml
 include README.rst
 include setup.cfg
