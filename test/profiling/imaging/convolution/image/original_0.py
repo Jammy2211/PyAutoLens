@@ -426,7 +426,7 @@ hst_up_kernel_convolver = KernelConvolverOriginal(kernel=hst_up._image_plane_ima
                                                   frame_array=hst_up.masked_image.convolver.frame_array,
                                                   blurring_frame_array=hst_up.masked_image.convolver.blurring_frame_array)
 
-# ao = profiling_data.setup_class(phase_name='AO', pixel_scale=0.01, sub_grid_size=sub_grid_size, psf_shape=psf_shape)
+# ao = profiling_data.setup_class(phase_name='AO', pixel_scales=0.01, sub_grid_size=sub_grid_size, psf_shape=psf_shape)
 # ao_kernel_convolver = KernelConvolverOriginal(psf=ao.masked_image.psf.trim(psf_shape),
 #                                                  image_frame_indexes=ao.masked_image.convolver_image.image_frame_indexes,
 #                                                  blurring_frame_indexes=ao.masked_image.convolver_image.blurring_frame_indexes)

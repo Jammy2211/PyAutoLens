@@ -3,6 +3,7 @@ import shutil
 
 import numpy as np
 
+from autolens import conf
 from autolens.imaging import image as im
 from autolens.imaging import imaging_util
 from autolens.imaging import mask
@@ -13,15 +14,17 @@ dirpath = os.path.dirname(os.path.realpath(__file__))
 
 def reset_paths(data_name, pipeline_name, output_path):
 
+    conf.instance.output_path = output_path
+
     try:
         shutil.rmtree(dirpath + '/data' + data_name)
     except FileNotFoundError:
         pass
 
-    try:
-        shutil.rmtree(output_path + pipeline_name)
-    except FileNotFoundError:
-        pass
+    # try:
+    #     shutil.rmtree(output_path + pipeline_name)
+    # except FileNotFoundError:
+    #     pass
 
 
 def simulate_integration_image(data_name, pixel_scale, lens_galaxies, source_galaxies, target_signal_to_noise):
@@ -29,7 +32,7 @@ def simulate_integration_image(data_name, pixel_scale, lens_galaxies, source_gal
     psf_shape = (11, 11)
     image_shape = (150, 150)
 
-    psf = im.PSF.simulate_as_gaussian(shape=psf_shape, sigma=0.6)
+    psf = im.PSF.simulate_as_gaussian(shape=psf_shape, pixel_scale=pixel_scale, sigma=0.6)
 
     image_grids = mask.ImagingGrids.grids_for_simulation(shape=image_shape, pixel_scale=pixel_scale,
                                                          sub_grid_size=1, psf_shape=psf_shape)
@@ -57,7 +60,7 @@ def simulate_integration_image(data_name, pixel_scale, lens_galaxies, source_gal
     if os.path.exists(output_path) == False:
         os.makedirs(output_path)
 
-    imaging_util.numpy_array_to_fits(sim_image, path=output_path + '_image.fits')
+    imaging_util.numpy_array_to_fits(sim_image, path=output_path + 'image.fits')
     imaging_util.numpy_array_to_fits(sim_image.noise_map, path=output_path + 'noise_map.fits')
     imaging_util.numpy_array_to_fits(psf, path=output_path + '/psf.fits')
     imaging_util.numpy_array_to_fits(sim_image.effective_exposure_map, path=output_path + 'exposure_map.fits')
@@ -66,9 +69,10 @@ def simulate_integration_image(data_name, pixel_scale, lens_galaxies, source_gal
 def load_image(data_name, pixel_scale):
     data_dir = "{}/data/{}".format(dirpath, data_name)
 
-    data = scaled_array.ScaledArray.from_fits_with_scale(file_path=data_dir + '/_image.fits', hdu=0,
+    data = scaled_array.ScaledSquarePixelArray.from_fits(file_path=data_dir + '/image.fits', hdu=0,
                                                          pixel_scale=pixel_scale)
-    noise = scaled_array.ScaledArray.from_fits(file_path=data_dir + '/noise_map.fits', hdu=0)
-    psf = im.PSF.from_fits(file_path=data_dir + '/psf.fits', hdu=0)
+    noise = scaled_array.ScaledSquarePixelArray.from_fits(file_path=data_dir + '/noise_map.fits', hdu=0,
+                                                          pixel_scale=pixel_scale)
+    psf = im.PSF.from_fits_with_scale(file_path=data_dir + '/psf.fits', hdu=0, pixel_scale=pixel_scale)
 
     return im.Image(array=data, pixel_scale=pixel_scale, psf=psf, noise_map=noise)

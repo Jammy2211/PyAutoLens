@@ -41,7 +41,7 @@ def plot_image(image,
 
         if positions is not None:
             positions = list(map(lambda pos:
-                                 image.grid_arc_seconds_to_grid_pixels(grid_arc_seconds=pos),
+                                 image.grid_arc_seconds_to_grid_pixels(grid_pixels=pos),
                                  positions))
 
         array_plotters.plot_array(
@@ -58,7 +58,7 @@ def plot_image(image,
         array_plotters.plot_array(
             array=image.noise_map, points=None, grid=None, as_subplot=True,
             units=units, kpc_per_arcsec=None,
-            xticks=image.xticks, yticks=image.yticks, xyticksize=16,
+            xticks=image.noise_map.xticks, yticks=image.noise_map.yticks, xyticksize=16,
             norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
             figsize=None, aspect='auto', cmap='jet', cb_ticksize=16,
             title='Noise Map', titlesize=16, xlabelsize=16, ylabelsize=16,
@@ -69,7 +69,7 @@ def plot_image(image,
         array_plotters.plot_array(
             array=image.psf, points=None, grid=None, as_subplot=True,
             units='arcsec', kpc_per_arcsec=None,
-            xticks=image.psf.xticks(image.pixel_scale), yticks=image.psf.yticks(image.pixel_scale), xyticksize=16,
+            xticks=image.psf.xticks, yticks=image.psf.yticks, xyticksize=16,
             norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
             figsize=None, aspect='auto', cmap='jet', cb_ticksize=16,
             title='PSF', titlesize=16, xlabelsize=16, ylabelsize=16,
@@ -143,7 +143,7 @@ def plot_image_individuals(image,
         array_plotters.plot_array(
             array=image.noise_map, points=None, grid=None, as_subplot=False,
             units='arcsec', kpc_per_arcsec=None,
-            xticks=image.xticks, yticks=image.yticks, xyticksize=40,
+            xticks=image.noise_map.xticks, yticks=image.noise_map.yticks, xyticksize=40,
             norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
             figsize=figsize, aspect='auto', cmap='jet', cb_ticksize=20,
             title='Noise-Map', titlesize=46, xlabelsize=36, ylabelsize=36,
@@ -153,7 +153,7 @@ def plot_image_individuals(image,
         array_plotters.plot_array(
             array=image.psf, points=None, grid=None, as_subplot=False,
             units='arcsec', kpc_per_arcsec=None,
-            xticks=image.psf.xticks(image.pixel_scale), yticks=image.psf.yticks(image.pixel_scale), xyticksize=40,
+            xticks=image.psf.xticks, yticks=image.psf.yticks, xyticksize=40,
             norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
             figsize=figsize, aspect='auto', cmap='jet', cb_ticksize=20,
             title='PSF', titlesize=46, xlabelsize=36, ylabelsize=36,
@@ -172,10 +172,10 @@ def plot_image_individuals(image,
 
 def plot_grid(grid, xmin=None, xmax=None, ymin=None, ymax=None):
     plt.figure()
-    plt.scatter(x=grid[:, 0], y=grid[:, 1], marker='.')
+    plt.scatter(y=grid[:, 0], x=grid[:, 1], marker='.')
     array_plotters.set_title(title='Grid', titlesize=36)
-    plt.xlabel('x (arcsec)', fontsize=36)
     plt.ylabel('y (arcsec)', fontsize=36)
+    plt.xlabel('x (arcsec)', fontsize=36)
     plt.tick_params(labelsize=40)
     if xmin is not None and xmax is not None and ymin is not None and ymax is not None:
         plt.axis([xmin, xmax, ymin, ymax])
