@@ -358,8 +358,7 @@ class PSF(ScaledSquarePixelArray):
         from autolens.profiles.light_profiles import EllipticalGaussian
         gaussian = EllipticalGaussian(centre=centre, axis_ratio=axis_ratio, phi=phi, intensity=1.0, sigma=sigma)
         grid_1d = imaging_util.image_grid_1d_masked_from_mask_and_pixel_scales(mask=np.full(shape, False),
-                                                                               x_pixel_scale=pixel_scale,
-                                                                               y_pixel_scale=pixel_scale)
+                                                                               pixel_scales=(pixel_scale, pixel_scale))
         gaussian_1d = gaussian.intensities_from_grid(grid=grid_1d)
         gaussian_2d = imaging_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(array_1d=gaussian_1d,
                                                                                              shape=shape)

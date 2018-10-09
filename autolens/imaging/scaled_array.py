@@ -94,7 +94,7 @@ class ScaledArray(Array):
         ----------
         array: ndarray
             An array representing data (e.g. an _image, noise-mappers, etc.)
-        pixel_scales: float
+        pixel_scales: (float, float)
             The arc-second to pixel conversion factor of each pixel.
         """
         # noinspection PyArgumentList
@@ -107,43 +107,70 @@ class ScaledArray(Array):
 
     @property
     def central_pixel_coordinates(self):
-        return (self.x_central_pixel_coordinates, self.y_central_pixel_coordinates)
+        return (float(self.shape[0] - 1) / 2, float(self.shape[1] - 1) / 2)
 
-    @property
-    def x_central_pixel_coordinates(self):
-        """
-        Returns
-        -------
-        central_pixel_coordinates:
-            The coordinates of the central pixel in the _image. If a dimension of the _image are odd then the \
-            corresponding coordinate will be fractional values in the centre.
-        """
-        return float(self.shape[0] - 1) / 2
+    def grid_pixels_to_grid_arc_seconds(self, grid_pixels):
+        """ Converts a grid in coordinates of pixels to a grid in arc seconds.
 
-    @property
-    def y_central_pixel_coordinates(self):
+        The pixel coordinate origin is at the top left corner of an image, whilst the arc-second coordinate origin \
+        is at the centre start with negative x and y values from the top-left.
+
+        This means that the top-left pixel coordinates, [0, 0], will give negative arc second coordinates.
+
+        Parameters
+        ----------
+        grid_pixels : ndarray
+            The grid of (x,y) coordinates in units of pixels
         """
-        Returns
-        -------
-        central_pixel_coordinates:
-            The coordinates of the central pixel in the _image. If a dimension of the _image are odd then the \
-            corresponding coordinate will be fractional values in the centre.
+        return imaging_util.grid_pixels_1d_to_grid_arc_seconds_1d(grid_pixels=grid_pixels, shape=self.shape,
+                                                                  pixel_scales=self.pixel_scales)
+
+    def grid_arc_seconds_to_grid_pixels(self, grid_arc_seconds):
         """
-        return float(self.shape[1] - 1) / 2
+        Converts an arc second coordinate pair to a pixel coordinate pair.
+
+        The pixel coordinate origin is at the top left corner of an image, whilst the arc-second coordinate origin \
+        is at the centre start with negative x and y values from the top-left.
+
+        This means that the top-left pixel coordinates, [0, 0], will give negative arc second coordinates.
+
+        Parameters
+        ----------
+        grid_pixels: ndarray
+            The grid of (x,y) coordinates in arc seconds.
+        """
+        return imaging_util.grid_arc_seconds_1d_to_grid_pixels_1d(grid_arc_seconds=grid_arc_seconds, shape=self.shape,
+                                                                  pixel_scales=self.pixel_scales)
+
+    def y_pixels_to_arc_seconds(self, pixels):
+        """Converts coordinate values from pixels to arc seconds."""
+        return self.pixel_scales[0] * pixels
+
+    def x_pixels_to_arc_seconds(self, pixels):
+        """Converts coordinate values from pixels to arc seconds."""
+        return self.pixel_scales[1] * pixels
+
+    def y_arc_seconds_to_pixels(self, arc_seconds):
+        """Converts coordinate values from arc seconds to pixels."""
+        return arc_seconds / self.pixel_scales[0]
+
+    def x_arc_seconds_to_pixels(self, arc_seconds):
+        """Converts coordinate values from arc seconds to pixels."""
+        return arc_seconds / self.pixel_scales[1]
 
     @property
     def shape_arc_seconds(self):
-        return (self.x_shape_arc_seconds, self.y_shape_arc_seconds)
-
-    @property
-    def xticks(self):
-        """Compute the xticks labels of this grid, used for plotting the x-axis ticks when visualizing an _image-grid"""
-        return np.linspace(-self.x_shape_arc_seconds / 2.0, self.x_shape_arc_seconds / 2.0, 4)
+        return (self.y_pixels_to_arc_seconds(self.shape[0]), self.x_pixels_to_arc_seconds(self.shape[1]))
 
     @property
     def yticks(self):
         """Compute the yticks labels of this grid, used for plotting the y-axis ticks when visualizing an _image-grid"""
-        return np.linspace(-self.y_shape_arc_seconds / 2.0, self.y_shape_arc_seconds / 2.0, 4)
+        return np.linspace(-self.shape_arc_seconds[0] / 2.0, self.shape_arc_seconds[0] / 2.0, 4)
+
+    @property
+    def xticks(self):
+        """Compute the xticks labels of this grid, used for plotting the x-axis ticks when visualizing an _image-grid"""
+        return np.linspace(-self.shape_arc_seconds[1] / 2.0, self.shape_arc_seconds[1] / 2.0, 4)
 
 
 class ScaledSquarePixelArray(ScaledArray):
@@ -165,13 +192,13 @@ class ScaledSquarePixelArray(ScaledArray):
         super(ScaledSquarePixelArray, self).__init__(array=array)
         self.pixel_scale = pixel_scale
 
-    @property
-    def pixel_scales(self):
-        return (self.pixel_scale, self.pixel_scale)
-
     def __array_finalize__(self, obj):
         if isinstance(obj, ScaledSquarePixelArray):
             self.pixel_scale = obj.pixel_scale
+
+    @property
+    def pixel_scales(self):
+        return (self.pixel_scale, self.pixel_scale)
 
     @classmethod
     def from_fits(cls, file_path, hdu, pixel_scale):
@@ -211,55 +238,6 @@ class ScaledSquarePixelArray(ScaledArray):
         array = np.ones(shape) * value
         return cls(array, pixel_scale)
 
-    def pixels_to_arc_seconds(self, pixels):
-        """Converts coordinate values from pixels to arc seconds."""
-        return self.pixel_scale * pixels
-
-    @property
-    def x_shape_arc_seconds(self):
-        """The shape of the _image in arc seconds"""
-        return self.pixels_to_arc_seconds(self.shape[0])
-
-    @property
-    def y_shape_arc_seconds(self):
-        """The shape of the _image in arc seconds"""
-        return self.pixels_to_arc_seconds(self.shape[1])
-
-    def arc_seconds_to_pixels(self, arc_seconds):
-        """Converts coordinate values from arc seconds to pixels."""
-        return arc_seconds / self.pixel_scale
-
-    def grid_pixels_to_grid_arcseconds(self, grid_pixels):
-        """ Converts a grid in coordinates of pixels to a grid in arc seconds.
-
-        The pixel coordinate origin is at the top left corner of an image, whilst the arc-second coordinate origin \
-        is at the centre start with negative x and y values from the top-left.
-
-        This means that the top-left pixel coordinates, [0, 0], will give negative arc second coordinates.
-
-        Parameters
-        ----------
-        grid_pixels : ndarray
-            The grid of (x,y) coordinates in units of pixels
-        """
-        return self.pixel_scale * (grid_pixels - self.central_pixel_coordinates)
-
-    def grid_arc_seconds_to_grid_pixels(self, grid_arc_seconds):
-        """
-        Converts an arc second coordinate pair to a pixel coordinate pair.
-
-        The pixel coordinate origin is at the top left corner of an image, whilst the arc-second coordinate origin \
-        is at the centre start with negative x and y values from the top-left.
-
-        This means that the top-left pixel coordinates, [0, 0], will give negative arc second coordinates.
-
-        Parameters
-        ----------
-        grid_arc_seconds: ndarray
-            The grid of (x,y) coordinates in arc seconds.
-        """
-        return (grid_arc_seconds / self.pixel_scale) + self.central_pixel_coordinates
-
     def flatten(self, order='C'):
         """
         Returns
@@ -284,8 +262,7 @@ class ScaledSquarePixelArray(ScaledArray):
         This is defined from the top-left corner, such that the first pixel at location [0, 0] will have a negative x \
         value y value in arc seconds.
         """
-        return imaging_util.image_grid_2d_from_shape_and_pixel_scales(shape=self.shape, x_pixel_scale=self.pixel_scale,
-                                                                      y_pixel_scale=self.pixel_scale)
+        return imaging_util.image_grid_2d_from_shape_and_pixel_scales(shape=self.shape, pixel_scales=self.pixel_scales)
 
     def __eq__(self, other):
         super_result = super(ScaledSquarePixelArray, self).__eq__(other)
@@ -301,7 +278,7 @@ class ScaledRectangularPixelArray(ScaledArray):
     """
 
     # noinspection PyUnusedLocal
-    def __init__(self, array, x_pixel_scale, y_pixel_scale):
+    def __init__(self, array, pixel_scales):
         """
         Parameters
         ----------
@@ -312,16 +289,14 @@ class ScaledRectangularPixelArray(ScaledArray):
         """
         # noinspection PyArgumentList
         super(ScaledRectangularPixelArray, self).__init__(array=array)
-        self.x_pixel_scale = x_pixel_scale
-        self.y_pixel_scale = y_pixel_scale
+        self.pixel_scales = pixel_scales
 
     def __array_finalize__(self, obj):
         if isinstance(obj, ScaledRectangularPixelArray):
-            self.x_pixel_scale = obj.x_pixel_scale
-            self.y_pixel_scale = obj.y_pixel_scale
+            self.pixel_scales = obj.pixel_scales
 
     @classmethod
-    def single_value(cls, value, shape, x_pixel_scale, y_pixel_scale):
+    def single_value(cls, value, shape, pixel_scales):
         """
         Creates an instance of Array and fills it with a single value
 
@@ -340,10 +315,10 @@ class ScaledRectangularPixelArray(ScaledArray):
             An array filled with a single value
         """
         array = np.ones(shape) * value
-        return cls(array, x_pixel_scale, y_pixel_scale)
+        return cls(array, pixel_scales)
 
     @classmethod
-    def from_fits(cls, file_path, hdu, x_pixel_scale, y_pixel_scale):
+    def from_fits(cls, file_path, hdu, pixel_scales):
         """
         Loads the data from a .fits file.
 
@@ -356,68 +331,7 @@ class ScaledRectangularPixelArray(ScaledArray):
         pixel_scale: float
             The arc-second to pixel conversion factor of each pixel.
         """
-        return cls(imaging_util.numpy_array_from_fits(file_path, hdu), x_pixel_scale, y_pixel_scale)
-
-    @property
-    def pixel_scales(self):
-        return (self.x_pixel_scale, self.y_pixel_scale)
-
-    def x_pixels_to_arc_seconds(self, pixels):
-        """Converts coordinate values from pixels to arc seconds."""
-        return self.x_pixel_scale * pixels
-
-    def y_pixels_to_arc_seconds(self, pixels):
-        """Converts coordinate values from pixels to arc seconds."""
-        return self.y_pixel_scale * pixels
-
-    def x_arc_seconds_to_pixels(self, arc_seconds):
-        """Converts coordinate values from arc seconds to pixels."""
-        return arc_seconds / self.x_pixel_scale
-
-    def y_arc_seconds_to_pixels(self, arc_seconds):
-        """Converts coordinate values from arc seconds to pixels."""
-        return arc_seconds / self.y_pixel_scale
-
-    @property
-    def x_shape_arc_seconds(self):
-        """The shape of the _image in arc seconds"""
-        return self.x_pixels_to_arc_seconds(pixels=self.shape[0])
-
-    @property
-    def y_shape_arc_seconds(self):
-        """The shape of the _image in arc seconds"""
-        return self.y_pixels_to_arc_seconds(pixels=self.shape[1])
-
-    def grid_pixels_to_grid_arcseconds(self, grid_pixels):
-        """ Converts a grid in coordinates of pixels to a grid in arc seconds.
-
-        The pixel coordinate origin is at the top left corner of an image, whilst the arc-second coordinate origin \
-        is at the centre start with negative x and y values from the top-left.
-
-        This means that the top-left pixel coordinates, [0, 0], will give negative arc second coordinates.
-
-        Parameters
-        ----------
-        grid_pixels : ndarray
-            The grid of (x,y) coordinates in units of pixels
-        """
-        return self.pixel_scales * (grid_pixels - self.central_pixel_coordinates)
-
-    def grid_arc_seconds_to_grid_pixels(self, grid_arc_seconds):
-        """
-        Converts an arc second coordinate pair to a pixel coordinate pair.
-
-        The pixel coordinate origin is at the top left corner of an image, whilst the arc-second coordinate origin \
-        is at the centre start with negative x and y values from the top-left.
-
-        This means that the top-left pixel coordinates, [0, 0], will give negative arc second coordinates.
-
-        Parameters
-        ----------
-        grid_arc_seconds: ndarray
-            The grid of (x,y) coordinates in arc seconds.
-        """
-        return (grid_arc_seconds / self.pixel_scales) + self.central_pixel_coordinates
+        return cls(imaging_util.numpy_array_from_fits(file_path, hdu), pixel_scales)
 
     def flatten(self, order='C'):
         """
@@ -443,8 +357,7 @@ class ScaledRectangularPixelArray(ScaledArray):
         This is defined from the top-left corner, such that the first pixel at location [0, 0] will have a negative x \
         value y value in arc seconds.
         """
-        return imaging_util.image_grid_2d_from_shape_and_pixel_scales(shape=self.shape, x_pixel_scale=self.x_pixel_scale,
-                                                                      y_pixel_scale=self.y_pixel_scale)
+        return imaging_util.image_grid_2d_from_shape_and_pixel_scales(shape=self.shape, pixel_scales=self.pixel_scales)
 
     def __eq__(self, other):
         super_result = super(ScaledRectangularPixelArray, self).__eq__(other)
