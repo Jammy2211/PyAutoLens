@@ -10,16 +10,24 @@ from autolens.plotting import imaging_plotters
 from autolens.plotting import fitting_plotters
 import os
 import numpy as np
+import matplotlib.pyplot as plt
 
 path = "{}".format(os.path.dirname(os.path.realpath(__file__)))
-image = im.load_imaging_from_fits(image_path=path + '/../data/kevin/v03_drz_final5-ac.fits', image_hdu=1,
+image = im.load_imaging_from_fits(image_path=path + '/../data/slacs03_all/slacs_4_post.fits', image_hdu=1,
                                   noise_map_path=path+'/../data/kevin/v22_drz_final5-ac-WHT.fits', noise_map_hdu=1,
                                   psf_path=path + '/../data/kevin/v22_psf.fits', psf_hdu=0,
                                   pixel_scale=0.05, noise_map_is_weight_map=True)
 
-image = image.trim_image_and_noise_around_region(x0=1042, x1=1342, y0=900, y1=1200)
-imaging_plotters.plot_image_individuals(image=image, plot_image=True, plot_noise_map=False)
+image[image > 0.7] = 0.7
 
+plt.imshow(image.noise_map)
+plt.show()
+
+
+# image = image.trim_image_and_noise_around_region(x0=1042, x1=1342, y0=900, y1=1200)
+imaging_plotters.plot_image_individuals(image=image, plot_image=True, plot_noise_map=False)
+print(image.shape)
+stop
 
 class CustomPhase(ph.LensSourcePlanePhase):
 

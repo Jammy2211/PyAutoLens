@@ -99,15 +99,15 @@ def make_galaxy_model():
 
 @pytest.fixture(name="image")
 def make_image():
-    image = img.Image(np.array(np.zeros(shape)), pixel_scale=1.0, psf=img.PSF(np.ones((3, 3))),
-                      noise_map=np.ones(shape))
+    image = img.Image(np.array(np.zeros(shape)), pixel_scale=1.0, psf=img.PSF(np.ones((3, 3)), pixel_scale=1.0),
+                      noise_map=img.NoiseMap(np.ones(shape), pixel_scale=1.0))
     return image
 
 
 @pytest.fixture(name="lensing_image")
 def make_lensing_image():
-    image = img.Image(np.array(np.zeros(shape)), pixel_scale=1.0, psf=img.PSF(np.ones((3, 3))),
-                      noise_map=np.ones(shape))
+    image = img.Image(np.array(np.zeros(shape)), pixel_scale=1.0, psf=img.PSF(np.ones((3, 3)), pixel_scale=1.0),
+                      noise_map=img.NoiseMap(np.ones(shape), pixel_scale=1.0))
     mask = msk.Mask.circular(shape=shape, pixel_scale=1, radius_mask_arcsec=3.0)
     return li.LensingImage(image, mask)
 
@@ -220,7 +220,7 @@ class TestPhase(object):
     #                                                                                         pixel_scale=_image.pixel_scale)
     #     image_1d = lens_galaxy.intensities_from_grid(image_padded_grid)
     #     blurred_image_1d = image_padded_grid.convolve_array_1d_with_psf(image_1d, _image.psf)
-    #     blurred_image = image_padded_grid.map_to_2d(blurred_image_1d)
+    #     blurred_image = image_padded_grid.scaled_array_from_array_1d(blurred_image_1d)
     #
     #     phase = ph.LensPlanePhase(lens_galaxies=[lens_galaxy])
     #     analysis = phase.make_analysis(_image)
@@ -241,11 +241,11 @@ class TestPhase(object):
     #
     #     g0_image_1d = g0.intensities_from_grid(image_padded_grid)
     #     g0_blurred_image_1d = image_padded_grid.convolve_array_1d_with_psf(g0_image_1d, _image.psf)
-    #     g0_blurred_image = image_padded_grid.map_to_2d(g0_blurred_image_1d)
+    #     g0_blurred_image = image_padded_grid.scaled_array_from_array_1d(g0_blurred_image_1d)
     #
     #     g1_image_1d = g1.intensities_from_grid(image_padded_grid)
     #     g1_blurred_image_1d = image_padded_grid.convolve_array_1d_with_psf(g1_image_1d, _image.psf)
-    #     g1_blurred_image = image_padded_grid.map_to_2d(g1_blurred_image_1d)
+    #     g1_blurred_image = image_padded_grid.scaled_array_from_array_1d(g1_blurred_image_1d)
     #
     #     phase = ph.LensPlanePhase(lens_galaxies=[g0, g1])
     #     analysis = phase.make_analysis(_image)

@@ -10,14 +10,14 @@ path = "{}/".format(os.path.dirname(os.path.realpath(__file__)))
 
 
 def load_data(name, pixel_scale, psf_shape):
-    im = scaled_array.ScaledArray.from_fits_with_scale(file_path=path + 'data/' + name + '/masked_image', hdu=0,
+    im = scaled_array.ScaledSquarePixelArray.from_fits(file_path=path + 'data/' + name + '/masked_image', hdu=0,
                                                        pixel_scale=pixel_scale)
-    noise = scaled_array.ScaledArray.from_fits_with_scale(file_path=path + 'data/' + name + '/noise_map', hdu=0,
+    noise = scaled_array.ScaledSquarePixelArray.from_fits(file_path=path + 'data/' + name + '/noise_map', hdu=0,
                                                           pixel_scale=pixel_scale)
-    exposure_time = scaled_array.ScaledArray.from_fits_with_scale(file_path=path + 'data/' + name + '/exposure_time',
+    exposure_time = scaled_array.ScaledSquarePixelArray.from_fits(file_path=path + 'data/' + name + '/exposure_time',
                                                                   hdu=0,
                                                                   pixel_scale=pixel_scale)
-    psf = image.PSF.from_fits(file_path=path + 'data/LSST/psf', hdu=0, pixel_scale=pixel_scale).trim_around_centre(psf_shape)
+    psf = image.PSF.from_fits_with_scale(file_path=path + 'data/LSST/psf', hdu=0, pixel_scale=pixel_scale).trim_around_centre(psf_shape)
 
     return im, noise, exposure_time, psf
 
@@ -47,10 +47,10 @@ class Data(object):
 
         im, noise, exposure_time, psf = load_data(name=name, pixel_scale=pixel_scale, psf_shape=psf_shape)
 
-        im = image.Image(array=im, effective_exposure_time=exposure_time, pixel_scale=pixel_scale, psf=psf,
+        im = image.Image(array=im, effective_exposure_time=exposure_time, pixel_scales=pixel_scale, psf=psf,
                          background_noise=noise, poisson_noise=noise)
 
-        ma = mask.Mask.circular(shape=im.shape_arc_seconds, pixel_scale=im.pixel_scale,
+        ma = mask.Mask.circular(shape=im.shape_arc_seconds, pixel_scale=im.pixel_scales,
                                 radius_mask_arcsec=radius_mask)
 
         self.masked_image = lensing_image.LensingImage(image=im, mask=ma)

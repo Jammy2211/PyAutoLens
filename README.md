@@ -62,7 +62,7 @@ fitting_plotters.plot_fitting(fit=results.fit)
 
 The example above shows the simplest analysis one can perform in PyAutoLens. PyAutoLens's advanced modeling features include:
 
-- **Pipelines** - build automated analysis pipelines out of phases to fit complex lens models to large samples of strong lenses.
+- **Pipelines** - build automated analysis runners out of phases to fit complex lens models to large samples of strong lenses.
 - **Inversions** - Reconstruct complex source galaxy morphologies on a variety of pixel-grids.
 - **Adaption** - Adapt the analysis to the features of the observed strong lens imaging.
 - **Multi-Plane** - Model multi-plane lenses, including systems with multiple lensed source galaxies.
@@ -73,7 +73,7 @@ Detailed tutorials demonstrating how to use PyAutoLens can be found in the 'howt
 
 - **Introduction** - How to use PyAutolens, familiarizing you with the interface and project structure.
 - **Lens Modeling** - How to model strong lenses, including a primer on Bayesian non-linear analysis.
-- **Pipelines** - How to build pipelines, in particular how to tailor them to your own science case.
+- **Pipelines** - How to build runners, in particular how to tailor them to your own science case.
 
 ## Support & Discussion
 

@@ -102,7 +102,7 @@ class AbstractFit(object):
 
         self.kpc_per_arcsec_proper = [plane.kpc_per_arcsec_proper for plane in tracer.all_planes]
 
-        self.map_to_2d = lensing_image.grids.image.map_to_2d
+        self.scaled_array_from_array_1d = lensing_image.grids.image.scaled_array_from_array_1d
         self.image = lensing_image.image
         self._image = lensing_image[:]
         self._noise_map = lensing_image.noise_map
@@ -125,19 +125,19 @@ class AbstractFit(object):
 
     @property
     def noise_map(self):
-        return self.map_to_2d(self._noise_map)
+        return self.scaled_array_from_array_1d(self._noise_map)
 
     @property
     def model_image(self):
-        return self.map_to_2d(self._model_image)
+        return self.scaled_array_from_array_1d(self._model_image)
 
     @property
     def residuals(self):
-        return self.map_to_2d(self._residuals)
+        return self.scaled_array_from_array_1d(self._residuals)
 
     @property
     def chi_squareds(self):
-        return self.map_to_2d(self._chi_squareds)
+        return self.scaled_array_from_array_1d(self._chi_squareds)
 
 
 class AbstractProfileFit(AbstractFit):
@@ -172,11 +172,10 @@ class AbstractProfileFit(AbstractFit):
             unmasked_model_images_of_galaxies_from_lensing_image_and_tracer(lensing_image, unmasked_tracer)
 
         self.plane_images = tracer.plane_images_of_planes(shape=plane_shape)
-        self.plane_grids = tracer.image_grids_of_planes
 
     @property
     def model_images_of_planes(self):
-        return list(map(lambda image: self.map_to_2d(image) if image is not None else None,
+        return list(map(lambda image: self.scaled_array_from_array_1d(image) if image is not None else None,
                         self._model_images_of_planes))
 
 
@@ -225,15 +224,15 @@ class AbstractProfileInversionFit(AbstractFit, AbstractInversion):
 
     @property
     def profile_subtracted_image(self):
-        return self.map_to_2d(self._profile_subtracted_image)
+        return self.scaled_array_from_array_1d(self._profile_subtracted_image)
 
     @property
     def profile_model_image(self):
-        return self.map_to_2d(self._profile_model_image)
+        return self.scaled_array_from_array_1d(self._profile_model_image)
 
     @property
     def inversion_model_image(self):
-        return self.map_to_2d(self._inversion_model_image)
+        return self.scaled_array_from_array_1d(self._inversion_model_image)
 
 
 class ProfileFit(AbstractProfileFit):
@@ -355,26 +354,26 @@ class AbstractHyper(AbstractFit):
 
     @property
     def scaled_noise_map(self):
-        return self.map_to_2d(self._scaled_noise_map)
+        return self.scaled_array_from_array_1d(self._scaled_noise_map)
 
     @property
     def scaled_chi_squareds(self):
-        return self.map_to_2d(self._scaled_chi_squareds)
+        return self.scaled_array_from_array_1d(self._scaled_chi_squareds)
 
     @property
     def contributions(self):
-        return list(map(lambda contributions: self.map_to_2d(contributions), self._contributions))
+        return list(map(lambda contributions: self.scaled_array_from_array_1d(contributions), self._contributions))
 
 
 class AbstractHyperInversion(AbstractHyper):
 
     @property
     def scaled_model_image(self):
-        return self.map_to_2d(self._scaled_model_image)
+        return self.scaled_array_from_array_1d(self._scaled_model_image)
 
     @property
     def scaled_residuals(self):
-        return self.map_to_2d(self._scaled_residuals)
+        return self.scaled_array_from_array_1d(self._scaled_residuals)
 
     @property
     def scaled_evidence(self):
