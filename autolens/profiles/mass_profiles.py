@@ -820,8 +820,8 @@ class EllipticalNFW(AbstractEllipticalGeneralizedNFW):
 
             return deflection_grid
 
-        deflection_x = calculate_deflection_component(0.0, 0)
         deflection_y = calculate_deflection_component(1.0, 1)
+        deflection_x = calculate_deflection_component(0.0, 0)
 
         return self.rotate_grid_from_profile(np.multiply(1.0, np.vstack((deflection_x, deflection_y)).T))
 
