@@ -812,6 +812,7 @@ class EllipticalNFW(AbstractEllipticalGeneralizedNFW):
             deflection_grid = np.zeros(grid.shape[0])
 
             for i in range(grid.shape[0]):
+
                 deflection_grid[i] = self.axis_ratio * grid[i, index] * quad(self.deflection_func, a=0.0, b=1.0,
                                                                              args=(grid[i, 0], grid[i, 1], npow,
                                                                                    self.axis_ratio, self.kappa_s,
