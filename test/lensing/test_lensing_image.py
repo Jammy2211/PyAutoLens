@@ -44,21 +44,23 @@ class TestMaskedImage(object):
     def test_grids(self, lensing_image):
         assert lensing_image.grids.image.shape == (4, 2)
 
-        assert (lensing_image.grids.image == np.array([[-1.5, -1.5], [-1.5, 1.5], [1.5, -1.5], [1.5, 1.5]])).all()
-        assert (lensing_image.grids.sub == np.array([[-2.0, -2.0], [-2.0, -1.0], [-1.0, -2.0], [-1.0, -1.0],
-                                                     [-2.0, 1.0], [-2.0, 2.0], [-1.0, 1.0], [-1.0, 2.0],
-                                                     [1.0, -2.0], [1.0, -1.0], [2.0, -2.0], [2.0, -1.0],
-                                                     [1.0, 1.0], [1.0, 2.0], [2.0, 1.0], [2.0, 2.0]])).all()
-        assert (lensing_image.grids.blurring == np.array([[-4.5, -4.5], [-4.5, -1.5], [-4.5, 1.5], [-4.5, 4.5],
-                                                          [-1.5, -4.5], [-1.5, 4.5], [1.5, -4.5], [1.5, 4.5],
-                                                          [4.5, -4.5], [4.5, -1.5], [4.5, 1.5], [4.5, 4.5]])).all()
+        assert (lensing_image.grids.image == np.array([[1.5, -1.5], [1.5, 1.5],
+                                                       [-1.5, -1.5], [-1.5, 1.5]])).all()
+        assert (lensing_image.grids.sub == np.array([[2.0, -2.0], [2.0, -1.0], [1.0, -2.0], [1.0, -1.0],
+                                                     [2.0, 1.0], [2.0, 2.0], [1.0, 1.0], [1.0, 2.0],
+                                                     [-1.0, -2.0], [-1.0, -1.0], [-2.0, -2.0], [-2.0, -1.0],
+                                                     [-1.0, 1.0], [-1.0, 2.0], [-2.0, 1.0], [-2.0, 2.0]])).all()
+        assert (lensing_image.grids.blurring == np.array([[4.5, -4.5], [4.5, -1.5], [4.5, 1.5], [4.5, 4.5],
+                                                          [1.5, -4.5], [1.5, 4.5], [-1.5, -4.5], [-1.5, 4.5],
+                                                          [-4.5, -4.5], [-4.5, -1.5], [-4.5, 1.5], [-4.5, 4.5]])).all()
 
     def test_unmasked_grids(self, lensing_image):
-        unmasked_image_util = imaging_util.image_grid_1d_masked_from_mask_and_pixel_scales(np.full((6, 6), False),
-                                                                                 lensing_image.image.pixel_scales)
+        unmasked_image_util = imaging_util.image_grid_1d_masked_from_mask_and_pixel_scales(mask=np.full((6, 6), False),
+                          pixel_scales=lensing_image.image.pixel_scales)
 
         unmasked_sub_util = imaging_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(
-            np.full((6, 6), False), lensing_image.image.pixel_scales, lensing_image.grids.sub.sub_grid_size)
+            mask=np.full((6, 6), False), pixel_scales=lensing_image.image.pixel_scales,
+            sub_grid_size=lensing_image.grids.sub.sub_grid_size)
 
         assert (lensing_image.unmasked_grids.image == unmasked_image_util).all()
         assert lensing_image.unmasked_grids.image.image_shape == (4, 4)

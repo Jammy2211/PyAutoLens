@@ -130,7 +130,7 @@ class SphericalProfile(GeometryProfile):
         -------
         The radius at those coordinates
         """
-        return np.sqrt(np.add(np.square(grid[:, 0]), np.square(grid[:, 1])))
+        return np.sqrt(np.add(np.square(grid[:, 1]), np.square(grid[:, 0])))
 
     def grid_angle_to_profile(self, theta_grid):
         """The angle between each coordinate on the grid and the profile, in radians."""
@@ -151,7 +151,7 @@ class SphericalProfile(GeometryProfile):
         -------
         The radius at those coordinates
         """
-        theta_grid = np.arctan2(grid[:, 1], grid[:, 0])
+        theta_grid = np.arctan2(grid[:, 0], grid[:, 1])
         cos_theta, sin_theta = self.grid_angle_to_profile(theta_grid)
         return np.multiply(radius[:, None], np.vstack((cos_theta, sin_theta)).T)
 
@@ -239,9 +239,9 @@ class EllipticalProfile(SphericalProfile):
         ----------
         The coordinates rotated back to their original Cartesian grid_coords.
          """
-        x = np.add(np.multiply(grid_elliptical[:, 0], self.cos_phi), - np.multiply(grid_elliptical[:, 1], self.sin_phi))
         y = np.add(np.multiply(grid_elliptical[:, 0], self.sin_phi), np.multiply(grid_elliptical[:, 1], self.cos_phi))
-        return np.vstack((x, y)).T
+        x = np.add(np.multiply(grid_elliptical[:, 0], self.cos_phi), - np.multiply(grid_elliptical[:, 1], self.sin_phi))
+        return np.vstack((y, x)).T
 
     @transform_grid
     def grid_to_elliptical_radii(self, grid):
@@ -259,7 +259,7 @@ class EllipticalProfile(SphericalProfile):
         -------
         The elliptical radius at those coordinates
         """
-        return np.sqrt(np.add(np.square(grid[:, 0]), np.square(np.divide(grid[:, 1], self.axis_ratio))))
+        return np.sqrt(np.add(np.square(grid[:, 1]), np.square(np.divide(grid[:, 0], self.axis_ratio))))
 
     @transform_grid
     def grid_to_eccentric_radii(self, grid):
@@ -290,8 +290,8 @@ class EllipticalProfile(SphericalProfile):
         """
         shifted_coordinates = np.subtract(grid, self.centre)
         radius = np.sqrt(np.sum(shifted_coordinates ** 2.0, 1))
-        theta_coordinate_to_profile = np.arctan2(shifted_coordinates[:, 1],
-                                                 shifted_coordinates[:, 0]) - self.phi_radians
+        theta_coordinate_to_profile = np.arctan2(shifted_coordinates[:, 0],
+                                                 shifted_coordinates[:, 1]) - self.phi_radians
         transformed = np.vstack(
             (radius * np.cos(theta_coordinate_to_profile), radius * np.sin(theta_coordinate_to_profile))).T
         return transformed.view(TransformedGrid)
@@ -305,15 +305,12 @@ class EllipticalProfile(SphericalProfile):
         grid : TransformedGrid(ndarray)
             The (x, y) coordinates in the reference frame of the profile _image.
         """
-        x = np.add(np.add(np.multiply(grid[:, 0], self.cos_phi), - np.multiply(grid[:, 1], self.sin_phi)),
-                   self.centre[0])
-        y = np.add(
-            np.add(np.multiply(grid[:, 0], self.sin_phi), np.multiply(grid[:, 1], self.cos_phi) - self.centre[1]),
-            self.centre[1])
-        return np.vstack((x, y)).T
+        y = np.add(np.add(np.multiply(grid[:, 0], self.sin_phi), np.multiply(grid[:, 1], self.cos_phi)),self.centre[0])
+        x = np.add(np.add(np.multiply(grid[:, 0], self.cos_phi), - np.multiply(grid[:, 1], self.sin_phi)),self.centre[1])
+        return np.vstack((y, x)).T
 
     def eta_u(self, u, coordinates):
-        return np.sqrt((u * ((coordinates[0] ** 2) + (coordinates[1] ** 2 / (1 - (1 - self.axis_ratio ** 2) * u)))))
+        return np.sqrt((u * ((coordinates[1] ** 2) + (coordinates[0] ** 2 / (1 - (1 - self.axis_ratio ** 2) * u)))))
 
 
 class EllipticalSersic(EllipticalProfile):

@@ -41,7 +41,7 @@ def plot_image(image,
 
         if positions is not None:
             positions = list(map(lambda pos:
-                                 image.grid_arc_seconds_to_grid_pixels(grid_arc_seconds=pos),
+                                 image.grid_arc_seconds_to_grid_pixels(grid_pixels=pos),
                                  positions))
 
         array_plotters.plot_array(
@@ -172,10 +172,10 @@ def plot_image_individuals(image,
 
 def plot_grid(grid, xmin=None, xmax=None, ymin=None, ymax=None):
     plt.figure()
-    plt.scatter(x=grid[:, 0], y=grid[:, 1], marker='.')
+    plt.scatter(y=grid[:, 0], x=grid[:, 1], marker='.')
     array_plotters.set_title(title='Grid', titlesize=36)
-    plt.xlabel('x (arcsec)', fontsize=36)
     plt.ylabel('y (arcsec)', fontsize=36)
+    plt.xlabel('x (arcsec)', fontsize=36)
     plt.tick_params(labelsize=40)
     if xmin is not None and xmax is not None and ymin is not None and ymax is not None:
         plt.axis([xmin, xmax, ymin, ymax])
