@@ -60,7 +60,7 @@ def plot_image(array, as_subplot, figsize, aspect, cmap, norm_scale):
     if not as_subplot:
         plt.figure(figsize=figsize)
 
-    plt.imshow(np.flipud(array.T), aspect=aspect, cmap=cmap, norm=norm_scale, extent=(0, array.shape[1], 0, array.shape[0]))
+    plt.imshow(array.T, aspect=aspect, cmap=cmap, norm=norm_scale, extent=(0, array.shape[1], 0, array.shape[0]))
 
 
 def plot_points(points, pointsize):
