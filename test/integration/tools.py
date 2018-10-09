@@ -69,9 +69,9 @@ def simulate_integration_image(data_name, pixel_scale, lens_galaxies, source_gal
 def load_image(data_name, pixel_scale):
     data_dir = "{}/data/{}".format(dirpath, data_name)
 
-    data = scaled_array.ScaledSquarePixelArray.from_fits_with_scale(file_path=data_dir + '/image.fits', hdu=0,
-                                                                    pixel_scale=pixel_scale)
-    noise = scaled_array.ScaledSquarePixelArray.from_fits_with_scale(file_path=data_dir + '/noise_map.fits', hdu=0,
+    data = scaled_array.ScaledSquarePixelArray.from_fits(file_path=data_dir + '/image.fits', hdu=0,
+                                                         pixel_scale=pixel_scale)
+    noise = scaled_array.ScaledSquarePixelArray.from_fits(file_path=data_dir + '/noise_map.fits', hdu=0,
                                                           pixel_scale=pixel_scale)
     psf = im.PSF.from_fits_with_scale(file_path=data_dir + '/psf.fits', hdu=0, pixel_scale=pixel_scale)
 

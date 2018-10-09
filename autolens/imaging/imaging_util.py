@@ -98,7 +98,7 @@ def total_border_pixels_from_mask(mask):
 
 
 @numba.jit(nopython=True, cache=True)
-def image_grid_2d_from_shape_and_pixel_scales(shape, pixel_scales):
+def image_grid_2d_from_shape_and_pixel_scales(shape, x_pixel_scale, y_pixel_scale):
     """
     Computes the (x,y) arc second coordinates of every pixel in an _image of shape (rows, columns).
 
@@ -113,17 +113,18 @@ def image_grid_2d_from_shape_and_pixel_scales(shape, pixel_scales):
 
     for x in range(shape[0]):
         for y in range(shape[1]):
-            grid_2d[x, y, 0] = (x - x_cen) * pixel_scales[0]
-            grid_2d[x, y, 1] = (y - y_cen) * pixel_scales[1]
+
+            grid_2d[x, y, 0] = (x - x_cen) * x_pixel_scale
+            grid_2d[x, y, 1] = (y - y_cen) * y_pixel_scale
 
     return grid_2d
 
 
 @numba.jit(nopython=True, cache=True)
-def image_grid_1d_masked_from_mask_and_pixel_scales(mask, pixel_scales):
+def image_grid_1d_masked_from_mask_and_pixel_scales(mask, x_pixel_scale, y_pixel_scale):
     """Compute a 1D grid of (x,y) coordinates, using the center of every unmasked pixel."""
 
-    grid_2d = image_grid_2d_from_shape_and_pixel_scales(mask.shape, pixel_scales)
+    grid_2d = image_grid_2d_from_shape_and_pixel_scales(mask.shape, x_pixel_scale, y_pixel_scale)
 
     total_image_pixels = total_image_pixels_from_mask(mask)
     image_grid = np.zeros(shape=(total_image_pixels, 2))
@@ -139,7 +140,7 @@ def image_grid_1d_masked_from_mask_and_pixel_scales(mask, pixel_scales):
 
 
 @numba.jit(nopython=True, cache=True)
-def sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(mask, pixel_scales, sub_grid_size):
+def sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(mask, x_pixel_scale, y_pixel_scale, sub_grid_size):
     """Compute a 1D grid of (x,y) sub-pixel coordinates, using the sub-pixel centers of every unmasked pixel."""
 
     total_sub_pixels = total_sub_pixels_from_mask_and_sub_grid_size(mask, sub_grid_size)
@@ -151,19 +152,19 @@ def sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(mask, pixel_scal
 
     sub_index = 0
 
-    x_sub_half = pixel_scales[0] / 2
-    x_sub_step = pixel_scales[0] / (sub_grid_size + 1)
+    x_sub_half = x_pixel_scale / 2
+    x_sub_step = x_pixel_scale / (sub_grid_size + 1)
 
-    y_sub_half = pixel_scales[1] / 2
-    y_sub_step = pixel_scales[1] / (sub_grid_size + 1)
+    y_sub_half = y_pixel_scale / 2
+    y_sub_step = y_pixel_scale / (sub_grid_size + 1)
 
     for x in range(mask.shape[0]):
         for y in range(mask.shape[1]):
 
             if not mask[x, y]:
 
-                x_arcsec = (x - x_cen) * pixel_scales[0]
-                y_arcsec = (y - y_cen) * pixel_scales[1]
+                x_arcsec = (x - x_cen) * x_pixel_scale
+                y_arcsec = (y - y_cen) * y_pixel_scale
 
                 for x1 in range(sub_grid_size):
                     for y1 in range(sub_grid_size):
@@ -243,7 +244,7 @@ def border_pixels_from_mask(mask):
 
 
 @numba.jit(nopython=True, cache=True)
-def border_sub_pixels_from_mask_pixel_scales_and_sub_grid_size(mask, pixel_scales, sub_grid_size):
+def border_sub_pixels_from_mask_pixel_scales_and_sub_grid_size(mask, x_pixel_scale, y_pixel_scale, sub_grid_size):
     """Compute a 1D array listing all sub-pixel border pixel indexes in the mask. A border sub-pixel is a sub-pixel \
     whose _image pixel is not fully surrounded by False mask values and it is closest to the edge."""
     border_pixel_total = total_border_pixels_from_mask(mask)
@@ -254,11 +255,11 @@ def border_sub_pixels_from_mask_pixel_scales_and_sub_grid_size(mask, pixel_scale
     x_cen = float(mask.shape[0] - 1) / 2
     y_cen = float(mask.shape[1] - 1) / 2
 
-    x_sub_half = pixel_scales[0] / 2
-    x_sub_step = pixel_scales[0] / (sub_grid_size + 1)
+    x_sub_half = x_pixel_scale / 2
+    x_sub_step = x_pixel_scale / (sub_grid_size + 1)
 
-    y_sub_half = pixel_scales[1] / 2
-    y_sub_step = pixel_scales[1] / (sub_grid_size + 1)
+    y_sub_half = y_pixel_scale / 2
+    y_sub_step = y_pixel_scale / (sub_grid_size + 1)
 
     border_index = 0
 
@@ -268,8 +269,8 @@ def border_sub_pixels_from_mask_pixel_scales_and_sub_grid_size(mask, pixel_scale
                 if mask[x + 1, y] or mask[x - 1, y] or mask[x, y + 1] or mask[x, y - 1] or \
                         mask[x + 1, y + 1] or mask[x + 1, y - 1] or mask[x - 1, y + 1] or mask[x - 1, y - 1]:
 
-                    x_arcsec = (x - x_cen) * pixel_scales[0]
-                    y_arcsec = (y - y_cen) * pixel_scales[1]
+                    x_arcsec = (x - x_cen) * x_pixel_scale
+                    y_arcsec = (y - y_cen) * y_pixel_scale
 
                     sub_grid = np.zeros((sub_grid_size ** 2, 2))
                     sub_index = 0

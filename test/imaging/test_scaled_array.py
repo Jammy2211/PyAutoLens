@@ -15,7 +15,7 @@ def make_array_grid():
 
 @pytest.fixture(name="array_grid_rectangular")
 def make_array_grid_rectangular():
-    return scaled_array.ScaledRectangularPixelArray(np.zeros((5, 5)), pixel_scales=(0.5, 1.0))
+    return scaled_array.ScaledRectangularPixelArray(np.zeros((5, 5)), x_pixel_scale=0.5, y_pixel_scale=1.0)
 
 
 class TestScaledSquarePixelArray:
@@ -60,7 +60,7 @@ class TestScaledSquarePixelArray:
             assert data_grid.shape_arc_seconds == pytest.approx((0.4, 0.3))
     
         def test__from_fits__input_data_grid_3x3__all_attributes_correct_including_data_inheritance(self):
-            data_grid = scaled_array.ScaledSquarePixelArray.from_fits_with_scale(file_path=test_data_dir + '3x3_ones.fits', hdu=0,
+            data_grid = scaled_array.ScaledSquarePixelArray.from_fits(file_path=test_data_dir + '3x3_ones.fits', hdu=0,
                                                                       pixel_scale=1.0)
     
             assert (data_grid == np.ones((3, 3))).all()
@@ -70,7 +70,7 @@ class TestScaledSquarePixelArray:
             assert data_grid.shape_arc_seconds == pytest.approx((3.0, 3.0))
     
         def test__from_fits__input_data_grid_4x3__all_attributes_correct_including_data_inheritance(self):
-            data_grid = scaled_array.ScaledSquarePixelArray.from_fits_with_scale(file_path=test_data_dir + '4x3_ones.fits', hdu=0,
+            data_grid = scaled_array.ScaledSquarePixelArray.from_fits(file_path=test_data_dir + '4x3_ones.fits', hdu=0,
                                                                       pixel_scale=0.1)
     
             assert (data_grid == np.ones((4, 3))).all()
@@ -119,18 +119,22 @@ class TestScaledSquarePixelArray:
     
         def test__3x3_grid__central_pixel_is_1_and_1(self):
             grid = scaled_array.ScaledSquarePixelArray(np.zeros((3, 3)), pixel_scale=0.1)
-            assert grid.central_pixel_coordinates == (1, 1)
-    
+            assert grid.x_central_pixel_coordinates == 1
+            assert grid.y_central_pixel_coordinates == 1
+
         def test__4x4_grid__central_pixel_is_1dot5_and_1dot5(self):
             grid = scaled_array.ScaledSquarePixelArray(np.zeros((4, 4)), pixel_scale=0.1)
-            assert grid.central_pixel_coordinates == (1.5, 1.5)
+            assert grid.x_central_pixel_coordinates == 1.5
+            assert grid.y_central_pixel_coordinates == 1.5
     
         def test__5x3_grid__central_pixel_is_2_and_1(self):
             grid = scaled_array.ScaledSquarePixelArray(np.zeros((5, 3)), pixel_scale=0.1)
-            assert grid.central_pixel_coordinates == (2, 1)
+            assert grid.x_central_pixel_coordinates == 2.0
+            assert grid.y_central_pixel_coordinates == 1.0
     
         def test__central_pixel_coordinates_5x5(self, array_grid):
-            assert array_grid.central_pixel_coordinates == (2, 2)
+            assert array_grid.x_central_pixel_coordinates == 2.0
+            assert array_grid.y_central_pixel_coordinates == 2.0
     
     
     class TestConversion:
@@ -241,8 +245,8 @@ class TestScaledSquarePixelArray:
     class TestGrids:
     
         def test__grid_2d__compare_to_array_util(self):
-            grid_2d_util = imaging_util.image_grid_2d_from_shape_and_pixel_scales(shape=(4, 7),
-                                                                                  pixel_scales=(0.56, 0.56))
+            grid_2d_util = imaging_util.image_grid_2d_from_shape_and_pixel_scales(shape=(4, 7), x_pixel_scale=0.56,
+                                                                                  y_pixel_scale=0.56)
     
             sca = scaled_array.ScaledSquarePixelArray(array=np.zeros((4, 7)), pixel_scale=0.56)
     
@@ -250,6 +254,8 @@ class TestScaledSquarePixelArray:
     
         def test__array_3x3__sets_up_arcsecond_grid(self):
             sca = scaled_array.ScaledSquarePixelArray(array=np.zeros((3, 3)), pixel_scale=1.0)
+
+            print(sca)
     
             assert (sca.grid_2d == np.array([[[-1., -1.], [-1., 0.], [-1., 1.]],
                                              [[0., -1.], [0., 0.], [0., 1.]],
@@ -266,10 +272,10 @@ class TestScaledSquarePixelArray:
             sca = scaled_array.ScaledSquarePixelArray(array=np.ones((3, 3)), pixel_scale=0.5)
             assert sca.xticks == pytest.approx(np.array([-0.75, -0.25, 0.25, 0.75]), 1e-3)
     
-            sca = scaled_array.ScaledSquarePixelArray(array=np.ones((3, 6)), pixel_scale=1.0)
+            sca = scaled_array.ScaledSquarePixelArray(array=np.ones((6, 3)), pixel_scale=1.0)
             assert sca.xticks == pytest.approx(np.array([-3.0, -1.0, 1.0, 3.0]), 1e-3)
     
-            sca = scaled_array.ScaledSquarePixelArray(array=np.ones((6, 3)), pixel_scale=1.0)
+            sca = scaled_array.ScaledSquarePixelArray(array=np.ones((3, 6)), pixel_scale=1.0)
             assert sca.xticks == pytest.approx(np.array([-1.5, -0.5, 0.5, 1.5]), 1e-3)
     
         def test__compute_yticks_property(self):
@@ -280,10 +286,10 @@ class TestScaledSquarePixelArray:
             sca = scaled_array.ScaledSquarePixelArray(array=np.ones((3, 3)), pixel_scale=0.5)
             assert sca.yticks == pytest.approx(np.array([-0.75, -0.25, 0.25, 0.75]), 1e-3)
     
-            sca = scaled_array.ScaledSquarePixelArray(array=np.ones((6, 3)), pixel_scale=1.0)
+            sca = scaled_array.ScaledSquarePixelArray(array=np.ones((3, 6)), pixel_scale=1.0)
             assert sca.yticks == pytest.approx(np.array([-3.0, -1.0, 1.0, 3.0]), 1e-3)
     
-            sca = scaled_array.ScaledSquarePixelArray(array=np.ones((3, 6)), pixel_scale=1.0)
+            sca = scaled_array.ScaledSquarePixelArray(array=np.ones((6, 3)), pixel_scale=1.0)
             assert sca.yticks == pytest.approx(np.array([-1.5, -0.5, 0.5, 1.5]), 1e-3)
 
 
@@ -301,7 +307,7 @@ class TestScaledRectangularPixelArray:
         def test__init__input_data_grid_single_value__all_attributes_correct_including_data_inheritance(self):
 
             data_grid = scaled_array.ScaledRectangularPixelArray.single_value(value=5.0, shape=(3, 3),
-                                                                         pixel_scales=(1.0, 2.0))
+                                                                         x_pixel_scale=1.0, y_pixel_scale=2.0)
 
             assert (data_grid == 5.0 * np.ones((3, 3))).all()
             assert data_grid.pixel_scales == (1.0, 2.0)
@@ -311,7 +317,7 @@ class TestScaledRectangularPixelArray:
 
         def test__init__input_data_grid_3x3__all_attributes_correct_including_data_inheritance(self):
 
-            data_grid = scaled_array.ScaledRectangularPixelArray(array=np.ones((3, 3)), pixel_scales=(1.0, 2.0))
+            data_grid = scaled_array.ScaledRectangularPixelArray(array=np.ones((3, 3)), x_pixel_scale=1.0, y_pixel_scale=2.0)
 
             assert data_grid.pixel_scales == (1.0, 2.0)
             assert data_grid.shape == (3, 3)
@@ -321,7 +327,8 @@ class TestScaledRectangularPixelArray:
 
         def test__init__input_data_grid_4x3__all_attributes_correct_including_data_inheritance(self):
 
-            data_grid = scaled_array.ScaledRectangularPixelArray(array=np.ones((4, 3)), pixel_scales=(0.1, 0.2))
+            data_grid = scaled_array.ScaledRectangularPixelArray(array=np.ones((4, 3)), x_pixel_scale=0.1,
+                                                                 y_pixel_scale=0.2)
 
             assert (data_grid == np.ones((4, 3))).all()
             assert data_grid.pixel_scales == (0.1, 0.2)
@@ -331,8 +338,8 @@ class TestScaledRectangularPixelArray:
 
         def test__from_fits__input_data_grid_3x3__all_attributes_correct_including_data_inheritance(self):
 
-            data_grid = scaled_array.ScaledRectangularPixelArray.from_fits_with_scale(
-                file_path=test_data_dir + '3x3_ones.fits', hdu=0, pixel_scales=(1.0, 2.0))
+            data_grid = scaled_array.ScaledRectangularPixelArray.from_fits(
+                file_path=test_data_dir + '3x3_ones.fits', hdu=0, x_pixel_scale=1.0, y_pixel_scale=2.0)
 
             assert (data_grid == np.ones((3, 3))).all()
             assert data_grid.pixel_scales == (1.0, 2.0)
@@ -341,8 +348,8 @@ class TestScaledRectangularPixelArray:
             assert data_grid.shape_arc_seconds == pytest.approx((3.0, 6.0))
 
         def test__from_fits__input_data_grid_4x3__all_attributes_correct_including_data_inheritance(self):
-            data_grid = scaled_array.ScaledRectangularPixelArray.from_fits_with_scale(
-                file_path=test_data_dir + '4x3_ones.fits', hdu=0, pixel_scales=(0.1, 0.2))
+            data_grid = scaled_array.ScaledRectangularPixelArray.from_fits(
+                file_path=test_data_dir + '4x3_ones.fits', hdu=0, x_pixel_scale=0.1, y_pixel_scale=0.2)
 
             assert (data_grid == np.ones((4, 3))).all()
             assert data_grid.pixel_scales == (0.1, 0.2)
@@ -357,7 +364,7 @@ class TestScaledRectangularPixelArray:
             array = np.ones((5, 5))
             array[2, 2] = 2.0
 
-            array = scaled_array.ScaledRectangularPixelArray(array, pixel_scales=(1.0, 2.0))
+            array = scaled_array.ScaledRectangularPixelArray(array, x_pixel_scale=1.0, y_pixel_scale=2.0)
 
             modified = array.trim_around_centre(new_shape=(3, 3))
 
@@ -373,7 +380,7 @@ class TestScaledRectangularPixelArray:
             array = np.ones((6, 6))
             array[4, 4] = 2.0
 
-            array = scaled_array.ScaledRectangularPixelArray(array, pixel_scales=(1.0, 2.0))
+            array = scaled_array.ScaledRectangularPixelArray(array, x_pixel_scale=1.0, y_pixel_scale=2.0)
 
             modified = imaging_util.trim_array_2d_around_region(array_2d=array, x0=3, x1=6, y0=3, y1=6)
 
@@ -387,15 +394,15 @@ class TestScaledRectangularPixelArray:
     class TestCentralPixel:
 
         def test__3x3_grid__central_pixel_is_1_and_1(self):
-            grid = scaled_array.ScaledRectangularPixelArray(np.zeros((3, 3)), pixel_scales=(0.1, 0.2))
+            grid = scaled_array.ScaledRectangularPixelArray(np.zeros((3, 3)), x_pixel_scale=1.0, y_pixel_scale=2.0)
             assert grid.central_pixel_coordinates == (1, 1)
 
         def test__4x4_grid__central_pixel_is_1dot5_and_1dot5(self):
-            grid = scaled_array.ScaledRectangularPixelArray(np.zeros((4, 4)), pixel_scales=(0.1, 0.2))
+            grid = scaled_array.ScaledRectangularPixelArray(np.zeros((4, 4)), x_pixel_scale=1.0, y_pixel_scale=2.0)
             assert grid.central_pixel_coordinates == (1.5, 1.5)
 
         def test__5x3_grid__central_pixel_is_2_and_1(self):
-            grid = scaled_array.ScaledRectangularPixelArray(np.zeros((5, 3)), pixel_scales=(0.1, 0.2))
+            grid = scaled_array.ScaledRectangularPixelArray(np.zeros((5, 3)), x_pixel_scale=1.0, y_pixel_scale=2.0)
             assert grid.central_pixel_coordinates == (2, 1)
 
         def test__central_pixel_coordinates_5x5(self, array_grid_rectangular):
@@ -413,7 +420,8 @@ class TestScaledRectangularPixelArray:
 
         def test__1d_pixel_grid_to_1d_arc_second_grid(self):
 
-            array_grid_rectangular = scaled_array.ScaledRectangularPixelArray(np.zeros((2, 2)), pixel_scales=(2.0, 4.0))
+            array_grid_rectangular = scaled_array.ScaledRectangularPixelArray(np.zeros((2, 2)), x_pixel_scale=2.0, 
+                                                                              y_pixel_scale=4.0)
 
             grid_pixels = np.array([[0, 0], [0, 1],
                                     [1, 0], [1, 1]])
@@ -423,7 +431,8 @@ class TestScaledRectangularPixelArray:
             assert (grid_arc_seconds == np.array([[-1.0, -2.0], [-1.0, 2.0],
                                                   [1.0, -2.0], [1.0, 2.0]])).all()
 
-            array_grid_rectangular = scaled_array.ScaledRectangularPixelArray(np.zeros((3, 3)), pixel_scales=(2.0, 4.0))
+            array_grid_rectangular = scaled_array.ScaledRectangularPixelArray(np.zeros((3, 3)), x_pixel_scale=2.0, 
+                                                                              y_pixel_scale=4.0)
 
             grid_pixels = np.array([[0, 0], [0, 1], [0, 2],
                                     [1, 0], [1, 1], [1, 2],
@@ -437,7 +446,8 @@ class TestScaledRectangularPixelArray:
 
         def test__2d_pixel_grid_to_2d_arc_second_grid(self):
 
-            array_grid_rectangular = scaled_array.ScaledRectangularPixelArray(np.zeros((2, 2)), pixel_scales=(2.0, 4.0))
+            array_grid_rectangular = scaled_array.ScaledRectangularPixelArray(np.zeros((2, 2)), x_pixel_scale=2.0, 
+                                                                              y_pixel_scale=4.0)
 
             grid_pixels = np.array([[[0, 0], [0, 1]],
                                     [[1, 0], [1, 1]]])
@@ -447,7 +457,8 @@ class TestScaledRectangularPixelArray:
             assert (grid_arc_seconds == np.array([[[-1.0, -2.0], [-1.0, 2.0]],
                                                   [[1.0, -2.0], [1.0, 2.0]]])).all()
 
-            array_grid_rectangular = scaled_array.ScaledRectangularPixelArray(np.zeros((3, 3)), pixel_scales=(2.0, 4.0))
+            array_grid_rectangular = scaled_array.ScaledRectangularPixelArray(np.zeros((3, 3)), x_pixel_scale=2.0, 
+                                                                              y_pixel_scale=4.0)
 
             grid_pixels = np.array([[[0, 0], [0, 1], [0, 2]],
                                     [[1, 0], [1, 1], [1, 2]],
@@ -460,7 +471,8 @@ class TestScaledRectangularPixelArray:
                                                    [[2.0, -4.0],  [2.0, 0.0],  [2.0, 4.0]]])).all()
 
         def test__1d_arc_second_grid_to_1d_pixel_grid(self):
-            array_grid_rectangular = scaled_array.ScaledRectangularPixelArray(np.zeros((2, 2)), pixel_scales=(2.0, 4.0))
+            array_grid_rectangular = scaled_array.ScaledRectangularPixelArray(np.zeros((2, 2)), x_pixel_scale=2.0, 
+                                                                              y_pixel_scale=4.0)
 
             grid_arc_seconds = np.array([[-1.0, -2.0], [-1.0, 2.0],
                                          [1.0, -2.0], [1.0, 2.0]])
@@ -470,7 +482,8 @@ class TestScaledRectangularPixelArray:
             assert (grid_pixels == np.array([[0, 0], [0, 1],
                                              [1, 0], [1, 1]])).all()
 
-            array_grid_rectangular = scaled_array.ScaledRectangularPixelArray(np.zeros((3, 3)), pixel_scales=(2.0, 4.0))
+            array_grid_rectangular = scaled_array.ScaledRectangularPixelArray(np.zeros((3, 3)), x_pixel_scale=2.0, 
+                                                                              y_pixel_scale=4.0)
 
             grid_arc_seconds = np.array([[-2.0, -4.0], [-2.0, 0.0], [-2.0, 4.0],
                                          [0.0, -4.0], [0.0, 0.0], [0.0, 4.0],
@@ -483,7 +496,8 @@ class TestScaledRectangularPixelArray:
                                              [2, 0], [2, 1], [2, 2]])).all()
 
         def test__2d_arc_second_grid_to_2d_pixel_grid(self):
-            array_grid_rectangular = scaled_array.ScaledRectangularPixelArray(np.zeros((2, 2)), pixel_scales=(2.0, 4.0))
+            array_grid_rectangular = scaled_array.ScaledRectangularPixelArray(np.zeros((2, 2)), x_pixel_scale=2.0, 
+                                                                              y_pixel_scale=4.0)
 
             grid_arc_seconds = np.array([[[-1.0, -2.0], [-1.0, 2.0]],
                                           [[1.0, -2.0],  [1.0, 2.0]]])
@@ -493,7 +507,8 @@ class TestScaledRectangularPixelArray:
             assert (grid_pixels == np.array([[[0, 0], [0, 1]],
                                              [[1, 0], [1, 1]]])).all()
 
-            array_grid_rectangular = scaled_array.ScaledRectangularPixelArray(np.zeros((3, 3)), pixel_scales=(2.0, 4.0))
+            array_grid_rectangular = scaled_array.ScaledRectangularPixelArray(np.zeros((3, 3)), x_pixel_scale=2.0, 
+                                                                              y_pixel_scale=4.0)
 
             grid_arc_seconds = np.array([[[-2.0, -4.0], [-2.0, 0.0], [-2.0, 4.0]],
                                           [[0.0, -4.0],  [0.0, 0.0],  [0.0, 4.0]],
@@ -508,14 +523,17 @@ class TestScaledRectangularPixelArray:
     class TestGrids:
 
         def test__grid_2d__compare_to_array_util(self):
-            grid_2d_util = imaging_util.image_grid_2d_from_shape_and_pixel_scales(shape=(4, 7), pixel_scales=(0.56, 0.8))
+            grid_2d_util = imaging_util.image_grid_2d_from_shape_and_pixel_scales(shape=(4, 7), x_pixel_scale=0.56, 
+                                                                                  y_pixel_scale=0.8)
 
-            sca = scaled_array.ScaledRectangularPixelArray(array=np.zeros((4, 7)), pixel_scales=(0.56, 0.8))
+            sca = scaled_array.ScaledRectangularPixelArray(array=np.zeros((4, 7)), x_pixel_scale=0.56, 
+                                                           y_pixel_scale=0.8)
 
             assert sca.grid_2d == pytest.approx(grid_2d_util, 1e-4)
 
         def test__array_3x3__sets_up_arcsecond_grid(self):
-            sca = scaled_array.ScaledRectangularPixelArray(array=np.zeros((3, 3)), pixel_scales=(1.0, 2.0))
+            sca = scaled_array.ScaledRectangularPixelArray(array=np.zeros((3, 3)), x_pixel_scale=1.0, 
+                                                           y_pixel_scale=2.0)
 
             assert (sca.grid_2d == np.array([[[-1., -2.], [-1., 0.], [-1., 2.]],
                                              [[0., -2.], [0., 0.], [0., 2.]],
@@ -525,28 +543,28 @@ class TestScaledRectangularPixelArray:
 
         def test__compute_xticks_property(self):
 
-            sca = scaled_array.ScaledRectangularPixelArray(array=np.ones((3, 3)), pixel_scales=(5.0, 1.0))
+            sca = scaled_array.ScaledRectangularPixelArray(array=np.ones((3, 3)), x_pixel_scale=1.0, y_pixel_scale=5.0)
             assert sca.xticks == pytest.approx(np.array([-1.5, -0.5, 0.5, 1.5]), 1e-3)
 
-            sca = scaled_array.ScaledRectangularPixelArray(array=np.ones((3, 3)), pixel_scales=(5.0, 0.5))
+            sca = scaled_array.ScaledRectangularPixelArray(array=np.ones((3, 3)), x_pixel_scale=0.5, y_pixel_scale=5.0)
             assert sca.xticks == pytest.approx(np.array([-0.75, -0.25, 0.25, 0.75]), 1e-3)
 
-            sca = scaled_array.ScaledRectangularPixelArray(array=np.ones((3, 6)), pixel_scales=(5.0, 1.0))
+            sca = scaled_array.ScaledRectangularPixelArray(array=np.ones((6, 3)), x_pixel_scale=1.0, y_pixel_scale=5.0)
             assert sca.xticks == pytest.approx(np.array([-3.0, -1.0, 1.0, 3.0]), 1e-3)
 
-            sca = scaled_array.ScaledRectangularPixelArray(array=np.ones((6, 3)), pixel_scales=(5.0, 1.0))
+            sca = scaled_array.ScaledRectangularPixelArray(array=np.ones((3, 6)), x_pixel_scale=1.0, y_pixel_scale=5.0)
             assert sca.xticks == pytest.approx(np.array([-1.5, -0.5, 0.5, 1.5]), 1e-3)
 
         def test__compute_yticks_property(self):
 
-            sca = scaled_array.ScaledRectangularPixelArray(array=np.ones((3, 3)), pixel_scales=(1.0, 5.0))
+            sca = scaled_array.ScaledRectangularPixelArray(array=np.ones((3, 3)), x_pixel_scale=5.0, y_pixel_scale=1.0)
             assert sca.yticks == pytest.approx(np.array([-1.5, -0.5, 0.5, 1.5]), 1e-3)
 
-            sca = scaled_array.ScaledRectangularPixelArray(array=np.ones((3, 3)), pixel_scales=(0.5, 5.0))
+            sca = scaled_array.ScaledRectangularPixelArray(array=np.ones((3, 3)), x_pixel_scale=5.0, y_pixel_scale=0.5)
             assert sca.yticks == pytest.approx(np.array([-0.75, -0.25, 0.25, 0.75]), 1e-3)
 
-            sca = scaled_array.ScaledRectangularPixelArray(array=np.ones((6, 3)), pixel_scales=(1.0, 5.0))
+            sca = scaled_array.ScaledRectangularPixelArray(array=np.ones((3, 6)), x_pixel_scale=5.0, y_pixel_scale=1.0)
             assert sca.yticks == pytest.approx(np.array([-3.0, -1.0, 1.0, 3.0]), 1e-3)
 
-            sca = scaled_array.ScaledRectangularPixelArray(array=np.ones((3, 6)), pixel_scales=(1.0, 5.0))
+            sca = scaled_array.ScaledRectangularPixelArray(array=np.ones((6, 3)), x_pixel_scale=5.0, y_pixel_scale=1.0)
             assert sca.yticks == pytest.approx(np.array([-1.5, -0.5, 0.5, 1.5]), 1e-3)
