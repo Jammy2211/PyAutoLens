@@ -175,7 +175,7 @@ class Pipeline(Base):
         """
         Returns
         -------
-        pixel_scale: float
+        pixel_scales: float
             The size of a single pixel, in arc seconds, as input by the user
         """
         return float(self.options['--pixel-scale'])
@@ -208,7 +208,7 @@ class Pipeline(Base):
 
 def print_pipelines():
     """
-    Prints a list of available pipelines taken from the pipeline dictionary.
+    Prints a list of available runners taken from the pipeline dictionary.
     """
     print("Available Pipelines:\n")
     print(

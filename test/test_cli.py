@@ -21,7 +21,7 @@ class TestCLI(object):
     def test_cli_files(self):
         directory = path.dirname(path.realpath(__file__))
 
-        data_directory = "{}/integration/data/l2g".format(directory)
+        data_directory = "{}/integration/data/lens_x2_galaxy".format(directory)
 
         result = subprocess.check_output(
             "python {0}/../autolens pipeline test "
