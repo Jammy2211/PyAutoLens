@@ -332,22 +332,22 @@ def deflections_from_grid_collection(grid_collection, galaxies):
 
 def plane_image_from_grid_and_galaxies(shape, grid, galaxies):
 
-    x_min = np.amin(grid[:, 0])
-    x_max = np.amax(grid[:, 0])
-    y_min = np.amin(grid[:, 1])
-    y_max = np.amax(grid[:, 1])
+    y_min = np.amin(grid[:, 0])
+    y_max = np.amax(grid[:, 0])
+    x_min = np.amin(grid[:, 1])
+    x_max = np.amax(grid[:, 1])
 
-    x_pixel_scale = ((x_max - x_min) / shape[0])
-    y_pixel_scale = ((y_max - y_min) / shape[1])
+    y_pixel_scale = ((y_max - y_min) / shape[0])
+    x_pixel_scale = ((x_max - x_min) / shape[1])
 
-    uniform_grid = imaging_util.image_grid_1d_masked_from_mask_and_pixel_scales(
-        mask=np.full(shape=shape, fill_value=False), pixel_scales=(x_pixel_scale, y_pixel_scale))
+    uniform_grid = imaging_util.image_grid_1d_masked_from_mask_and_pixel_scales(mask=np.full(shape=shape,
+                   fill_value=False), pixel_scales=(y_pixel_scale, x_pixel_scale))
 
     image_1d = sum([intensities_from_grid(uniform_grid, [galaxy]) for galaxy in galaxies])
 
     image_2d = imaging_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(array_1d=image_1d, shape=shape)
 
-    return PlaneImage(array=image_2d, pixel_scales=(x_pixel_scale, y_pixel_scale), grid=grid)
+    return PlaneImage(array=image_2d, pixel_scales=(y_pixel_scale, x_pixel_scale), grid=grid)
 
 
 def traced_collection_for_deflections(grids, deflections):

@@ -239,7 +239,7 @@ class EllipticalCoredPowerLaw(EllipticalMassProfile, MassProfile):
 
     @staticmethod
     @jit_integrand
-    def potential_func(u, x, y, axis_ratio, slope, core_radius):
+    def potential_func(u, y, x, axis_ratio, slope, core_radius):
         eta = np.sqrt((u * ((x ** 2) + (y ** 2 / (1 - (1 - axis_ratio ** 2) * u)))))
         return (eta / u) * ((3.0 - slope) * eta) ** -1.0 * \
                ((core_radius ** 2 + eta ** 2) ** ((3.0 - slope) / 2.0) -
@@ -247,7 +247,7 @@ class EllipticalCoredPowerLaw(EllipticalMassProfile, MassProfile):
 
     @staticmethod
     @jit_integrand
-    def deflection_func(u, x, y, npow, axis_ratio, einstein_radius_rescaled, slope, core_radius):
+    def deflection_func(u, y, x, npow, axis_ratio, einstein_radius_rescaled, slope, core_radius):
         eta_u = np.sqrt((u * ((x ** 2) + (y ** 2 / (1 - (1 - axis_ratio ** 2) * u)))))
         return einstein_radius_rescaled * (core_radius ** 2 + eta_u ** 2) ** (-(slope - 1) / 2.0) / (
                 (1 - (1 - axis_ratio ** 2) * u) ** (npow + 0.5))
@@ -316,14 +316,14 @@ class EllipticalPowerLaw(EllipticalCoredPowerLaw):
 
     @staticmethod
     @jit_integrand
-    def potential_func(u, x, y, axis_ratio, slope, core_radius):
+    def potential_func(u, y, x, axis_ratio, slope, core_radius):
         eta_u = np.sqrt((u * ((x ** 2) + (y ** 2 / (1 - (1 - axis_ratio ** 2) * u)))))
         return (eta_u / u) * ((3.0 - slope) * eta_u) ** -1.0 * eta_u ** (3.0 - slope) / \
                ((1 - (1 - axis_ratio ** 2) * u) ** 0.5)
 
     @staticmethod
     @jit_integrand
-    def deflection_func(u, x, y, npow, axis_ratio, einstein_radius_rescaled, slope, core_radius):
+    def deflection_func(u, y, x, npow, axis_ratio, einstein_radius_rescaled, slope, core_radius):
         eta_u = np.sqrt((u * ((x ** 2) + (y ** 2 / (1 - (1 - axis_ratio ** 2) * u)))))
         return einstein_radius_rescaled * eta_u ** (-(slope - 1)) / ((1 - (1 - axis_ratio ** 2) * u) ** (npow + 0.5))
 
@@ -670,7 +670,7 @@ class EllipticalGeneralizedNFW(AbstractEllipticalGeneralizedNFW):
     @staticmethod
     # TODO : Decorator needs to know that potential_integral is 1D array
     #    @jit_integrand
-    def potential_func(u, x, y, axis_ratio, minimum_log_eta, maximum_log_eta, tabulate_bins, potential_integral):
+    def potential_func(u, y, x, axis_ratio, minimum_log_eta, maximum_log_eta, tabulate_bins, potential_integral):
         eta_u = np.sqrt((u * ((x ** 2) + (y ** 2 / (1 - (1 - axis_ratio ** 2) * u)))))
         bin_size = (maximum_log_eta - minimum_log_eta) / (tabulate_bins - 1)
         i = 1 + int((np.log10(eta_u) - minimum_log_eta) / bin_size)
@@ -682,7 +682,7 @@ class EllipticalGeneralizedNFW(AbstractEllipticalGeneralizedNFW):
     @staticmethod
     # TODO : Decorator needs to know that surface_density_integral is 1D array
     #    @jit_integrand
-    def deflection_func(u, x, y, npow, axis_ratio, minimum_log_eta, maximum_log_eta, tabulate_bins,
+    def deflection_func(u, y, x, npow, axis_ratio, minimum_log_eta, maximum_log_eta, tabulate_bins,
                         surface_density_integral):
 
         eta_u = np.sqrt((u * ((x ** 2) + (y ** 2 / (1 - (1 - axis_ratio ** 2) * u)))))
@@ -791,6 +791,9 @@ class EllipticalNFW(AbstractEllipticalGeneralizedNFW):
         potential_grid = np.zeros(grid.shape[0])
 
         for i in range(grid.shape[0]):
+
+            print(grid[i, 0], grid[i, 1])
+
             potential_grid[i] = quad(self.potential_func, a=0.0, b=1.0,
                                      args=(grid[i, 0], grid[i, 1], self.axis_ratio, self.kappa_s, self.scale_radius),
                                      epsrel=1.49e-5)[0]
@@ -812,6 +815,9 @@ class EllipticalNFW(AbstractEllipticalGeneralizedNFW):
             deflection_grid = np.zeros(grid.shape[0])
 
             for i in range(grid.shape[0]):
+
+                print(grid[i, 0], grid[i, 1])
+
                 deflection_grid[i] = self.axis_ratio * grid[i, index] * quad(self.deflection_func, a=0.0, b=1.0,
                                                                              args=(grid[i, 0], grid[i, 1], npow,
                                                                                    self.axis_ratio, self.kappa_s,
@@ -819,8 +825,10 @@ class EllipticalNFW(AbstractEllipticalGeneralizedNFW):
 
             return deflection_grid
 
-        deflection_x = calculate_deflection_component(0.0, 0)
         deflection_y = calculate_deflection_component(1.0, 1)
+        deflection_x = calculate_deflection_component(0.0, 0)
+        print(deflection_y)
+        print(deflection_x)
 
         return self.rotate_grid_from_profile(np.multiply(1.0, np.vstack((deflection_x, deflection_y)).T))
 
@@ -830,7 +838,7 @@ class EllipticalNFW(AbstractEllipticalGeneralizedNFW):
 
     @staticmethod
     @jit_integrand
-    def potential_func(u, x, y, axis_ratio, kappa_s, scale_radius):
+    def potential_func(u, y, x, axis_ratio, kappa_s, scale_radius):
 
         eta_u = (1.0 / scale_radius) * np.sqrt((u * ((x ** 2) + (y ** 2 / (1 - (1 - axis_ratio ** 2) * u)))))
 
@@ -847,7 +855,7 @@ class EllipticalNFW(AbstractEllipticalGeneralizedNFW):
 
     @staticmethod
     @jit_integrand
-    def deflection_func(u, x, y, npow, axis_ratio, kappa_s, scale_radius):
+    def deflection_func(u, y, x, npow, axis_ratio, kappa_s, scale_radius):
 
         eta_u = (1.0 / scale_radius) * np.sqrt((u * ((x ** 2) + (y ** 2 / (1 - (1 - axis_ratio ** 2) * u)))))
 
@@ -976,7 +984,7 @@ class AbstractEllipticalSersic(geometry_profiles.EllipticalSersic, EllipticalMas
 class EllipticalSersic(AbstractEllipticalSersic):
     @staticmethod
     @jit_integrand
-    def deflection_func(u, x, y, npow, axis_ratio, intensity, sersic_index, effective_radius, mass_to_light_ratio,
+    def deflection_func(u, y, x, npow, axis_ratio, intensity, sersic_index, effective_radius, mass_to_light_ratio,
                         sersic_constant):
         eta_u = np.sqrt(axis_ratio) * np.sqrt((u * ((x ** 2) + (y ** 2 / (1 - (1 - axis_ratio ** 2) * u)))))
 
@@ -1231,7 +1239,7 @@ class EllipticalSersicRadialGradient(AbstractEllipticalSersic):
 
     @staticmethod
     @jit_integrand
-    def deflection_func(u, x, y, npow, axis_ratio, intensity, sersic_index, effective_radius, mass_to_light_ratio,
+    def deflection_func(u, y, x, npow, axis_ratio, intensity, sersic_index, effective_radius, mass_to_light_ratio,
                         mass_to_light_gradient, sersic_constant):
         eta_u = np.sqrt(axis_ratio) * np.sqrt((u * ((x ** 2) + (y ** 2 / (1 - (1 - axis_ratio ** 2) * u)))))
 
