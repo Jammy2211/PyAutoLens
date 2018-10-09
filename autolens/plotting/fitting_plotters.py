@@ -62,7 +62,7 @@ def plot_fitting_lens_plane_only(fit, units='kpc', output_path=None, output_file
     array_plotters.plot_array(
         array=fit.model_image, points=None, grid=None, as_subplot=True,
         units=units, kpc_per_arcsec=fit.kpc_per_arcsec_proper[0],
-        xticks=fit.image.xticks, yticks=fit.image.yticks, xyticksize=16,
+        xticks=fit.model_image.xticks, yticks=fit.model_image.yticks, xyticksize=16,
         norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
         figsize=None, aspect='auto', cmap='jet', cb_ticksize=16,
         title='Model Image', titlesize=16, xlabelsize=16, ylabelsize=16,
@@ -73,7 +73,7 @@ def plot_fitting_lens_plane_only(fit, units='kpc', output_path=None, output_file
     array_plotters.plot_array(
         array=fit.residuals, points=None, grid=None, as_subplot=True,
         units=units, kpc_per_arcsec=fit.kpc_per_arcsec_proper[0],
-        xticks=fit.image.xticks, yticks=fit.image.yticks, xyticksize=16,
+        xticks=fit.residuals.xticks, yticks=fit.residuals.yticks, xyticksize=16,
         norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
         figsize=None, aspect='auto', cmap='jet', cb_ticksize=16,
         title='Residuals', titlesize=16, xlabelsize=16, ylabelsize=16,
@@ -84,7 +84,7 @@ def plot_fitting_lens_plane_only(fit, units='kpc', output_path=None, output_file
     array_plotters.plot_array(
         array=fit.chi_squareds, points=None, grid=None, as_subplot=True,
         units=units, kpc_per_arcsec=fit.kpc_per_arcsec_proper[0],
-        xticks=fit.image.xticks, yticks=fit.image.yticks, xyticksize=16,
+        xticks=fit.chi_squareds.xticks, yticks=fit.chi_squareds.yticks, xyticksize=16,
         norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
         figsize=None, aspect='auto', cmap='jet', cb_ticksize=16,
         title='Chi Squareds', titlesize=16, xlabelsize=16, ylabelsize=16,
@@ -131,7 +131,7 @@ def plot_fitting_hyper_lens_plane_only(fit, units='kpc', output_path=None, outpu
     array_plotters.plot_array(
         array=fit.model_image, points=None, grid=None, as_subplot=True,
         units=units, kpc_per_arcsec=fit.kpc_per_arcsec_proper[0],
-        xticks=fit.image.xticks, yticks=fit.image.yticks, xyticksize=16,
+        xticks=fit.model_image.xticks, yticks=fit.model_image.yticks, xyticksize=16,
         norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
         figsize=None, aspect='auto', cmap='jet', cb_ticksize=16,
         title='Model Image', titlesize=16, xlabelsize=16, ylabelsize=16,
@@ -142,7 +142,7 @@ def plot_fitting_hyper_lens_plane_only(fit, units='kpc', output_path=None, outpu
     array_plotters.plot_array(
         array=fit.residuals, points=None, grid=None, as_subplot=True,
         units=units, kpc_per_arcsec=fit.kpc_per_arcsec_proper[0],
-        xticks=fit.image.xticks, yticks=fit.image.yticks, xyticksize=16,
+        xticks=fit.residuals.xticks, yticks=fit.residuals.yticks, xyticksize=16,
         norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
         figsize=None, aspect='auto', cmap='jet', cb_ticksize=16,
         title='Residuals', titlesize=16, xlabelsize=16, ylabelsize=16,
@@ -160,7 +160,7 @@ def plot_fitting_hyper_lens_plane_only(fit, units='kpc', output_path=None, outpu
     array_plotters.plot_array(
         array=contributions, points=None, grid=None, as_subplot=True,
         units=units, kpc_per_arcsec=fit.kpc_per_arcsec_proper[0],
-        xticks=fit.image.xticks, yticks=fit.image.yticks, xyticksize=16,
+        xticks=contributions.xticks, yticks=contributions.yticks, xyticksize=16,
         norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
         figsize=None, aspect='auto', cmap='jet', cb_ticksize=16,
         title='Lens-Plane Contributions', titlesize=16, xlabelsize=16, ylabelsize=16,
@@ -171,7 +171,7 @@ def plot_fitting_hyper_lens_plane_only(fit, units='kpc', output_path=None, outpu
     array_plotters.plot_array(
         array=fit.chi_squareds, points=None, grid=None, as_subplot=True,
         units=units, kpc_per_arcsec=fit.kpc_per_arcsec_proper[0],
-        xticks=fit.image.xticks, yticks=fit.image.yticks, xyticksize=16,
+        xticks=fit.chi_squareds.xticks, yticks=fit.chi_squareds.yticks, xyticksize=16,
         norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
         figsize=None, aspect='auto', cmap='jet', cb_ticksize=16,
         title='Chi-Squareds', titlesize=16, xlabelsize=16, ylabelsize=16,
@@ -182,7 +182,7 @@ def plot_fitting_hyper_lens_plane_only(fit, units='kpc', output_path=None, outpu
     array_plotters.plot_array(
         array=fit.scaled_chi_squareds, points=None, grid=None, as_subplot=True,
         units=units, kpc_per_arcsec=fit.kpc_per_arcsec_proper[0],
-        xticks=fit.image.xticks, yticks=fit.image.yticks, xyticksize=16,
+        xticks=fit.scaled_chi_squareds.xticks, yticks=fit.scaled_chi_squareds.yticks, xyticksize=16,
         norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
         figsize=None, aspect='auto', cmap='jet', cb_ticksize=16,
         title='Scaled Chi-Squareds', titlesize=16, xlabelsize=16, ylabelsize=16,
@@ -193,7 +193,7 @@ def plot_fitting_hyper_lens_plane_only(fit, units='kpc', output_path=None, outpu
     array_plotters.plot_array(
         array=fit.noise_map, points=None, grid=None, as_subplot=True,
         units=units, kpc_per_arcsec=fit.kpc_per_arcsec_proper[0],
-        xticks=fit.image.xticks, yticks=fit.image.yticks, xyticksize=16,
+        xticks=fit.noise_map.xticks, yticks=fit.noise_map.yticks, xyticksize=16,
         norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
         figsize=None, aspect='auto', cmap='jet', cb_ticksize=16,
         title='Noise Map', titlesize=16, xlabelsize=16, ylabelsize=16,
@@ -204,7 +204,7 @@ def plot_fitting_hyper_lens_plane_only(fit, units='kpc', output_path=None, outpu
     array_plotters.plot_array(
         array=fit.scaled_noise_map, points=None, grid=None, as_subplot=True,
         units=units, kpc_per_arcsec=fit.kpc_per_arcsec_proper[0],
-        xticks=fit.image.xticks, yticks=fit.image.yticks, xyticksize=16,
+        xticks=fit.scaled_noise_map.xticks, yticks=fit.scaled_noise_map.yticks, xyticksize=16,
         norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
         figsize=None, aspect='auto', cmap='jet', cb_ticksize=16,
         title='Scaled Noise Map', titlesize=16, xlabelsize=16, ylabelsize=16,
@@ -264,7 +264,7 @@ def plot_fitting_lens_and_source_planes(fit, units='kpc', output_path=None, outp
         array_plotters.plot_array(
             array=fit.model_images_of_planes[1], points=None, grid=None, as_subplot=True,
             units=units, kpc_per_arcsec=fit.kpc_per_arcsec_proper[0],
-            xticks=fit.image.xticks, yticks=fit.image.yticks, xyticksize=16,
+            xticks=fit.model_images_of_planes[1].xticks, yticks=fit.model_images_of_planes[1].yticks, xyticksize=16,
             norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
             figsize=None, aspect='auto', cmap='jet', cb_ticksize=16,
             title='Source Model Image', titlesize=16, xlabelsize=16, ylabelsize=16,
@@ -297,7 +297,7 @@ def plot_fitting_lens_and_source_planes(fit, units='kpc', output_path=None, outp
     array_plotters.plot_array(
         array=fit.residuals, points=None, grid=None, as_subplot=True,
         units=units, kpc_per_arcsec=fit.kpc_per_arcsec_proper[0],
-        xticks=fit.image.xticks, yticks=fit.image.yticks, xyticksize=16,
+        xticks=fit.residuals.xticks, yticks=fit.residuals.yticks, xyticksize=16,
         norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
         figsize=None, aspect='auto', cmap='jet', cb_ticksize=16,
         title='Residuals', titlesize=16, xlabelsize=16, ylabelsize=16,
@@ -308,7 +308,7 @@ def plot_fitting_lens_and_source_planes(fit, units='kpc', output_path=None, outp
     array_plotters.plot_array(
         array=fit.chi_squareds, points=None, grid=None, as_subplot=True,
         units=units, kpc_per_arcsec=fit.kpc_per_arcsec_proper[0],
-        xticks=fit.image.xticks, yticks=fit.image.yticks, xyticksize=16,
+        xticks=fit.chi_squareds.xticks, yticks=fit.chi_squareds.yticks, xyticksize=16,
         norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
         figsize=None, aspect='auto', cmap='jet', cb_ticksize=16,
         title='Chi-Squareds', titlesize=16, xlabelsize=16, ylabelsize=16,
@@ -374,7 +374,7 @@ def plot_fitting_individuals_lens_plane_only(fit, plot_model_image, plot_residua
         array_plotters.plot_array(
             array=fit.model_image, points=None, grid=None, as_subplot=False,
             units=units, kpc_per_arcsec=fit.kpc_per_arcsec_proper[0],
-            xticks=fit.image.xticks, yticks=fit.image.yticks, xyticksize=40,
+            xticks=fit.model_image.xticks, yticks=fit.model_image.yticks, xyticksize=40,
             norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
             figsize=(20, 15), aspect='auto', cmap='jet', cb_ticksize=20,
             title='Model Image', titlesize=46, xlabelsize=36, ylabelsize=36,
@@ -385,7 +385,7 @@ def plot_fitting_individuals_lens_plane_only(fit, plot_model_image, plot_residua
         array_plotters.plot_array(
             array=fit.residuals, points=None, grid=None, as_subplot=False,
             units=units, kpc_per_arcsec=fit.kpc_per_arcsec_proper[0],
-            xticks=fit.image.xticks, yticks=fit.image.yticks, xyticksize=40,
+            xticks=fit.residuals.xticks, yticks=fit.residuals.yticks, xyticksize=40,
             norm='linear', norm_min=None, norm_max=None, linthresh=0.001, linscale=0.001,
             figsize=(20, 15), aspect='auto', cmap='jet', cb_ticksize=20,
             title='Residuals', titlesize=46, xlabelsize=36, ylabelsize=36,
@@ -396,7 +396,7 @@ def plot_fitting_individuals_lens_plane_only(fit, plot_model_image, plot_residua
         array_plotters.plot_array(
             array=fit.chi_squareds, points=None, grid=None, as_subplot=False,
             units=units, kpc_per_arcsec=fit.kpc_per_arcsec_proper[0],
-            xticks=fit.image.xticks, yticks=fit.image.yticks, xyticksize=40,
+            xticks=fit.chi_squareds.xticks, yticks=fit.chi_squareds.yticks, xyticksize=40,
             norm='linear', norm_min=None, norm_max=None, linthresh=0.001, linscale=0.001,
             figsize=(20, 15), aspect='auto', cmap='jet', cb_ticksize=20,
             title='Chi-Squareds', titlesize=46, xlabelsize=36, ylabelsize=36,
@@ -435,7 +435,7 @@ def plot_fitting_individuals_hyper_lens_plane_only(fit, plot_model_image, plot_r
         array_plotters.plot_array(
             array=fit.model_image, points=None, grid=None, as_subplot=False,
             units=units, kpc_per_arcsec=fit.kpc_per_arcsec_proper[0],
-            xticks=fit.image.xticks, yticks=fit.image.yticks, xyticksize=40,
+            xticks=fit.model_image.xticks, yticks=fit.model_image.yticks, xyticksize=40,
             norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
             figsize=(20, 15), aspect='auto', cmap='jet', cb_ticksize=20,
             title='Observed Image', titlesize=46, xlabelsize=36, ylabelsize=36,
@@ -445,7 +445,7 @@ def plot_fitting_individuals_hyper_lens_plane_only(fit, plot_model_image, plot_r
         array_plotters.plot_array(
             array=fit.residuals, points=None, grid=None, as_subplot=False,
             units=units, kpc_per_arcsec=fit.kpc_per_arcsec_proper[0],
-            xticks=fit.image.xticks, yticks=fit.image.yticks, xyticksize=40,
+            xticks=fit.residuals.xticks, yticks=fit.residuals.yticks, xyticksize=40,
             norm='linear', norm_min=None, norm_max=None, linthresh=0.001, linscale=0.001,
             figsize=(20, 15), aspect='auto', cmap='jet', cb_ticksize=20,
             title='Residuals', titlesize=46, xlabelsize=36, ylabelsize=36,
@@ -455,7 +455,7 @@ def plot_fitting_individuals_hyper_lens_plane_only(fit, plot_model_image, plot_r
         array_plotters.plot_array(
             array=fit.chi_squareds, points=None, grid=None, as_subplot=False,
             units=units, kpc_per_arcsec=fit.kpc_per_arcsec_proper[0],
-            xticks=fit.image.xticks, yticks=fit.image.yticks, xyticksize=40,
+            xticks=fit.chi_squareds.xticks, yticks=fit.chi_squareds.yticks, xyticksize=40,
             norm='linear', norm_min=None, norm_max=None, linthresh=0.001, linscale=0.001,
             figsize=(20, 15), aspect='auto', cmap='jet', cb_ticksize=20,
             title='Chi Squareds', titlesize=46, xlabelsize=36, ylabelsize=36,
@@ -471,7 +471,7 @@ def plot_fitting_individuals_hyper_lens_plane_only(fit, plot_model_image, plot_r
         array_plotters.plot_array(
             array=contributions, points=None, grid=None, as_subplot=False,
             units=units, kpc_per_arcsec=fit.kpc_per_arcsec_proper[0],
-            xticks=fit.image.xticks, yticks=fit.image.yticks, xyticksize=40,
+            xticks=contributions.xticks, yticks=contributions.yticks, xyticksize=40,
             norm='linear', norm_min=None, norm_max=None, linthresh=0.001, linscale=0.001,
             figsize=(20, 15), aspect='auto', cmap='jet', cb_ticksize=20,
             title='Lens-Plane Contributions', titlesize=46, xlabelsize=36, ylabelsize=36,
@@ -481,7 +481,7 @@ def plot_fitting_individuals_hyper_lens_plane_only(fit, plot_model_image, plot_r
         array_plotters.plot_array(
             array=fit.scaled_noise_map, points=None, grid=None, as_subplot=False,
             units=units, kpc_per_arcsec=fit.kpc_per_arcsec_proper[0],
-            xticks=fit.image.xticks, yticks=fit.image.yticks, xyticksize=40,
+            xticks=fit.scaled_noise_map.xticks, yticks=fit.scaled_noise_map.yticks, xyticksize=40,
             norm='linear', norm_min=None, norm_max=None, linthresh=0.001, linscale=0.001,
             figsize=(20, 15), aspect='auto', cmap='jet', cb_ticksize=20,
             title='Scaled Noise Map', titlesize=46, xlabelsize=36, ylabelsize=36,
@@ -491,7 +491,7 @@ def plot_fitting_individuals_hyper_lens_plane_only(fit, plot_model_image, plot_r
         array_plotters.plot_array(
             array=fit.scaled_chi_squareds, points=None, grid=None, as_subplot=False,
             units=units, kpc_per_arcsec=fit.kpc_per_arcsec_proper[0],
-            xticks=fit.image.xticks, yticks=fit.image.yticks, xyticksize=40,
+            xticks=fit.scaled_chi_squareds.xticks, yticks=fit.scaled_chi_squareds.yticks, xyticksize=40,
             norm='linear', norm_min=None, norm_max=None, linthresh=0.001, linscale=0.001,
             figsize=(20, 15), aspect='auto', cmap='jet', cb_ticksize=20,
             title='Scaled Chi-Squareds', titlesize=46, xlabelsize=36, ylabelsize=36,
@@ -531,7 +531,7 @@ def plot_fitting_individuals_lens_and_source_planes(fit, plot_model_image, plot_
         array_plotters.plot_array(
             array=fit.model_image, points=None, grid=None, as_subplot=False,
             units=units, kpc_per_arcsec=fit.kpc_per_arcsec_proper[0],
-            xticks=fit.image.xticks, yticks=fit.image.yticks, xyticksize=40,
+            xticks=fit.model_image.xticks, yticks=fit.model_image.yticks, xyticksize=40,
             norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
             figsize=(20, 15), aspect='auto', cmap='jet', cb_ticksize=20,
             title='Model Image', titlesize=46, xlabelsize=36, ylabelsize=36,
@@ -553,7 +553,7 @@ def plot_fitting_individuals_lens_and_source_planes(fit, plot_model_image, plot_
         array_plotters.plot_array(
             array=fit.model_images_of_planes[1], points=None, grid=None, as_subplot=False,
             units=units, kpc_per_arcsec=fit.kpc_per_arcsec_proper[0],
-            xticks=fit.image.xticks, yticks=fit.image.yticks, xyticksize=40,
+            xticks=fit.model_images_of_planes[1].xticks, yticks=fit.model_images_of_planes[1].yticks, xyticksize=40,
             norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
             figsize=(20, 15), aspect='auto', cmap='jet', cb_ticksize=20,
             title='Source Model Image', titlesize=46, xlabelsize=36, ylabelsize=36,
@@ -563,7 +563,7 @@ def plot_fitting_individuals_lens_and_source_planes(fit, plot_model_image, plot_
         array_plotters.plot_array(
             array=fit.plane_images[1], points=None, grid=None, as_subplot=False,
             units=units, kpc_per_arcsec=fit.kpc_per_arcsec_proper[1],
-            xticks=fit.image.xticks, yticks=fit.image.yticks, xyticksize=40,
+            xticks=fit.plane_images[1].xticks, yticks=fit.plane_images[1].yticks, xyticksize=40,
             norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
             figsize=(20, 15), aspect='auto', cmap='jet', cb_ticksize=20,
             title='Source-Plane Image', titlesize=46, xlabelsize=36, ylabelsize=36,
@@ -573,7 +573,7 @@ def plot_fitting_individuals_lens_and_source_planes(fit, plot_model_image, plot_
         array_plotters.plot_array(
             array=fit.residuals, points=None, grid=None, as_subplot=False,
             units=units, kpc_per_arcsec=fit.kpc_per_arcsec_proper[0],
-            xticks=fit.image.xticks, yticks=fit.image.yticks, xyticksize=40,
+            xticks=fit.residuals.xticks, yticks=fit.residuals.yticks, xyticksize=40,
             norm='linear', norm_min=None, norm_max=None, linthresh=0.001, linscale=0.001,
             figsize=(20, 15), aspect='auto', cmap='jet', cb_ticksize=20,
             title='Residuals', titlesize=46, xlabelsize=36, ylabelsize=36,
@@ -583,7 +583,7 @@ def plot_fitting_individuals_lens_and_source_planes(fit, plot_model_image, plot_
         array_plotters.plot_array(
             array=fit.chi_squareds, points=None, grid=None, as_subplot=False,
             units=units, kpc_per_arcsec=fit.kpc_per_arcsec_proper[0],
-            xticks=fit.image.xticks, yticks=fit.image.yticks, xyticksize=40,
+            xticks=fit.residuals.xticks, yticks=fit.residuals.yticks, xyticksize=40,
             norm='linear', norm_min=None, norm_max=None, linthresh=0.001, linscale=0.001,
             figsize=(20, 15), aspect='auto', cmap='jet', cb_ticksize=20,
             title='Chi-Squareds', titlesize=46, xlabelsize=36, ylabelsize=36,

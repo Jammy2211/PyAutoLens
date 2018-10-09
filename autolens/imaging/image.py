@@ -358,7 +358,8 @@ class PSF(ScaledSquarePixelArray):
         from autolens.profiles.light_profiles import EllipticalGaussian
         gaussian = EllipticalGaussian(centre=centre, axis_ratio=axis_ratio, phi=phi, intensity=1.0, sigma=sigma)
         grid_1d = imaging_util.image_grid_1d_masked_from_mask_and_pixel_scales(mask=np.full(shape, False),
-                                                                               pixel_scales=(1.0, 1.0))
+                                                                               x_pixel_scale=pixel_scale,
+                                                                               y_pixel_scale=pixel_scale)
         gaussian_1d = gaussian.intensities_from_grid(grid=grid_1d)
         gaussian_2d = imaging_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(array_1d=gaussian_1d,
                                                                                              shape=shape)
@@ -468,14 +469,14 @@ def generate_poisson_noise(image, effective_exposure_map, seed=-1):
 
 def load_imaging_from_fits(image_path, noise_map_path, psf_path, pixel_scale, image_hdu=0, noise_map_hdu=0, psf_hdu=0,
                            psf_trimmed_shape=None, noise_map_is_weight_map=False):
-    data = ScaledSquarePixelArray.from_fits_with_scale(file_path=image_path, hdu=image_hdu, pixel_scale=pixel_scale)
+    data = ScaledSquarePixelArray.from_fits(file_path=image_path, hdu=image_hdu, pixel_scale=pixel_scale)
     if not noise_map_is_weight_map:
-        noise_map = NoiseMap.from_fits_with_scale(file_path=noise_map_path, hdu=noise_map_hdu)
+        noise_map = NoiseMap.from_fits(file_path=noise_map_path, hdu=noise_map_hdu, pixel_scale=pixel_scale)
     elif noise_map_is_weight_map:
-        weight_map = Array.from_fits_with_scale(file_path=noise_map_path, hdu=noise_map_hdu)
-        noise_map = NoiseMap.from_weight_map(weight_map=weight_map)
+        weight_map = Array.from_fits(file_path=noise_map_path, hdu=noise_map_hdu)
+        noise_map = NoiseMap.from_weight_map(weight_map=weight_map, pixel_scale=pixel_scale)
 
-    psf = PSF.from_fits_with_scale(file_path=psf_path, hdu=psf_hdu)
+    psf = PSF.from_fits_with_scale(file_path=psf_path, hdu=psf_hdu, pixel_scale=pixel_scale)
 
     if psf_trimmed_shape is not None:
         psf = psf.trim_around_centre(psf_trimmed_shape)
@@ -484,8 +485,8 @@ def load_imaging_from_fits(image_path, noise_map_path, psf_path, pixel_scale, im
 
 
 def load_imaging_from_path(image_path, noise_map_path, psf_path, pixel_scale, psf_trimmed_shape=None):
-    data = ScaledSquarePixelArray.from_fits_with_scale(file_path=image_path, hdu=0, pixel_scale=pixel_scale)
-    noise = ScaledSquarePixelArray.from_fits_with_scale(file_path=noise_map_path, hdu=0, pixel_scale=pixel_scale)
+    data = ScaledSquarePixelArray.from_fits(file_path=image_path, hdu=0, pixel_scale=pixel_scale)
+    noise = ScaledSquarePixelArray.from_fits(file_path=noise_map_path, hdu=0, pixel_scale=pixel_scale)
     psf = PSF.from_fits_with_scale(file_path=psf_path, hdu=0, pixel_scale=pixel_scale)
     if psf_trimmed_shape is not None:
         psf = psf.trim_around_centre(psf_trimmed_shape)
