@@ -302,11 +302,11 @@ class PhasePositions(Phase):
 
     class Result(Phase.Result):
 
-        def __init__(self, constant, likelihood, variable, analysis):
+        def __init__(self, constant, likelihood, variable):
             """
             The result of a phase
             """
-            super(PhasePositions.Result, self).__init__(constant, likelihood, variable, analysis)
+            super(PhasePositions.Result, self).__init__(constant, likelihood, variable)
 
 
 class PhaseImaging(Phase):
@@ -484,65 +484,6 @@ class PhaseImaging(Phase):
             tracer = analysis.tracer_for_instance(constant)
             unmasked_tracer = analysis.unmasked_tracer_for_instance(constant)
             self.fit = analysis.fit_for_tracers(tracer=tracer, unmasked_tracer=unmasked_tracer)
-
-
-class PositionsImagingPhase(PhaseImaging):
-    lens_galaxies = PhasePropertyList("lens_galaxies")
-
-    def __init__(self, positions, lens_galaxies=None, optimizer_class=non_linear.MultiNest,
-                 phase_name="positions_phase"):
-        super(PositionsImagingPhase, self).__init__(optimizer_class=optimizer_class, sub_grid_size=1,
-                                                    mask_function=default_mask_function,
-                                                    positions=positions, phase_name=phase_name)
-
-        self.lens_galaxies = lens_galaxies
-
-    class Analysis(PhaseImaging.Analysis):
-
-        def __init__(self, lensing_image, phase_name, previous_results=None):
-            super(PositionsImagingPhase.Analysis, self).__init__(lensing_image, phase_name, previous_results)
-
-        def fit(self, instance):
-            """
-            Determine the fit of a lens galaxy and source galaxy to the lensing_image in this lensing.
-
-            Parameters
-            ----------
-            instance
-                A model instance with attributes
-
-            Returns
-            -------
-            fit: Fit
-                A fractional value indicating how well this model fit and the model lensing_image itself
-            """
-            tracer = self.tracer_for_instance(instance)
-            fit = self.fit_for_tracer(tracer)
-            return fit.likelihood
-
-        def visualize(self, instance, suffix, during_analysis):
-            pass
-
-        def tracer_for_instance(self, instance):
-            return ray_tracing.TracerImageSourcePlanesPositions(lens_galaxies=instance.lens_galaxies,
-                                                                positions=self.lensing_image.positions)
-
-        def fit_for_tracer(self, tracer):
-            return fitting.PositionFit(positions=tracer.source_plane.positions,
-                                       noise=self.lensing_image.image.pixel_scale)
-
-        @classmethod
-        def log(cls, instance):
-            logger.debug(
-                "\nRunning lens lensing for... \n\nLens Galaxy::\n{}\n\n".format(instance.lens_galaxies))
-
-    class Result(Phase.Result):
-
-        def __init__(self, constant, likelihood, variable, analysis):
-            """
-            The result of a phase
-            """
-            super(PositionsImagingPhase.Result, self).__init__(constant, likelihood, variable, analysis)
 
 
 class LensPlanePhase(PhaseImaging):

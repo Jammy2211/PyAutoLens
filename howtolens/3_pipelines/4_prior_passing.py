@@ -1,4 +1,4 @@
-# In the previous 3 pipelines, we passed priors using the 'variable' attribute of the previous results. However, its
+# In the previous 3 runners, we passed priors using the 'variable' attribute of the previous results. However, its
 # not yet clear how these priors are passed. Do they use a UniformPrior or GaussianPrior? What are the liimts / sigma
 # on these priors? Can I change this behaviour?
 
@@ -38,9 +38,15 @@ def pass_priors(self, previous_results):
 
 
 # There's a couple  more thing we should think about. You might be worried that we're always at risk of not specifying
-# broad enough priors, and that we'll end up trimming out the best-fit solution to our lens model. In truth, this can
-# happen between phases - balancing broadness and narrowness is a bit of an art form.
+# broad enough priors, and that we'll end up trimming out the best-fit solution to our lens model. This can happen -
+# balancing broadness and narrowness is a bit of an art form.
 
-# However, think about a pipeline with
+# You may also be worried that our priors will impact our inferred errors. If our priors are narrow, the errors that
+# we infer will, you guessed it, also be quite narrow. They might not be representative of the 'true errors' - and
+# as a scientist we want true errors!
 
-# You should
+# In light of this, I recommend that a pipeline's final phase is a phase where we take a hit on run-time, and choose
+# settings that more thoroughly sample non-linear parameter space. This includes larger values of sigma on each
+# GaussianPrior, and upping the MultiNest live points / reducing its sampling efficiency. In truth, the degree to which
+# this matters depends on your lens model complexity, data-quality and science case, so it's something you should
+# learn how to do yourself.

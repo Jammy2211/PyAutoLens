@@ -15,7 +15,7 @@ image_grids = mask.ImagingGrids.from_shape_and_pixel_scale(shape=(100, 100), pix
 
 # Next, lets create a light profile using the 'light_profiles' module. We'll use a Sersic function,
 # which is a analytic function often use to depict galaxies.
-sersic_light_profile = light_profiles.EllipticalSersic(centre=(0.0, 0.0), axis_ratio=0.8, phi=45.0,
+sersic_light_profile = light_profiles.EllipticalSersic(centre=(2.0, 1.0), axis_ratio=0.8, phi=45.0,
                                                        intensity=1.0, effective_radius=1.0, sersic_index=2.5)
 # We can print a profile to confirm its parameters.
 print(sersic_light_profile)
@@ -39,6 +39,7 @@ print(light_profile_intensities[5050])
 
 # We can use a profile plotter to plot this intensity map (the image is mapped to 2D before plotting).
 profile_plotters.plot_intensities(light_profile=sersic_light_profile, grid=image_grids.image)
+stop
 
 # Lets create a singular isothermal sphere (SIS) mass-profile using the 'mass-profiles' module.
 sis_mass_profile = mass_profiles.SphericalIsothermal(centre=(0.1, 0.1), einstein_radius=1.6)

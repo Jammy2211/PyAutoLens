@@ -36,8 +36,8 @@ def path_for(path):
     """
     start = int(SUB_PATH_LENGTH / 2)
     end = SUB_PATH_LENGTH - start
-    b64_string = b64encode(bytes(path, encoding="utf-8")).decode("utf-8")
-    return "{}/{}".format(autolens_dir, b64_string[:start] + b64_string[-end:])
+    encoded_string = str(hash(path))
+    return "{}/al_{}".format(autolens_dir, (encoded_string[:start] + encoded_string[-end:]).replace("-", ""))
 
 
 def make_linked_folder(sym_path):

@@ -30,7 +30,20 @@ def make_imaging_grids():
     imaging_grids.sub[1] = np.array([1.0, 0.0])
     imaging_grids.sub[2] = np.array([1.0, 1.0])
     imaging_grids.sub[3] = np.array([1.0, 0.0])
+    imaging_grids.sub[4] = np.array([-1.0, 2.0])
+    imaging_grids.sub[5] = np.array([-1.0, 4.0])
+    imaging_grids.sub[6] = np.array([1.0, 2.0])
+    imaging_grids.sub[7] = np.array([1.0, 4.0])
     imaging_grids.blurring[0] = np.array([1.0, 0.0])
+    imaging_grids.blurring[1] = np.array([-6.0, -3.0])
+    imaging_grids.blurring[2] = np.array([-6.0, 3.0])
+    imaging_grids.blurring[3] = np.array([-6.0, 9.0])
+    imaging_grids.blurring[4] = np.array([0.0, -9.0])
+    imaging_grids.blurring[5] = np.array([0.0, 9.0])
+    imaging_grids.blurring[6] = np.array([6.0, -9.0])
+    imaging_grids.blurring[7] = np.array([6.0, -3.0])
+    imaging_grids.blurring[8] = np.array([6.0, 3.0])
+    imaging_grids.blurring[9] = np.array([6.0, 9.0])
 
     return imaging_grids
 
@@ -255,44 +268,6 @@ class TestSetupTracedGrid:
         grid_traced = pl.traced_collection_for_deflections(imaging_grids, deflections)
 
         assert grid_traced.image[0] == pytest.approx(np.array([1.0 - 2.0 * 0.707, 1.0 - 2.0 * 0.707]), 1e-3)
-
-
-class TestUniformGridFromLensedGrid:
-
-    def test__3x3_grid__extracts_max_min_coordinates__creates_regular_grid_including_half_pixel_offset_from_edge(self):
-        grid = np.array([[-1.5, -1.5], [1.5, 1.5]])
-
-        source_plane_grid = pl.uniform_grid_from_lensed_grid(grid, shape=(3, 3))
-
-        assert (source_plane_grid == np.array([[-1.0, -1.0], [-1.0, 0.0], [-1.0, 1.0],
-                                               [0.0, -1.0], [0.0, 0.0], [0.0, 1.0],
-                                               [1.0, -1.0], [1.0, 0.0], [1.0, 1.0]])).all()
-
-    def test__3x3_grid__extracts_max_min_coordinates__ignores_other_coordinates_more_central(self):
-        grid = np.array([[-1.5, -1.5], [1.5, 1.5], [0.1, -0.1], [-1.0, 0.6], [1.4, -1.3], [1.5, 1.5]])
-
-        source_plane_grid = pl.uniform_grid_from_lensed_grid(grid, shape=(3, 3))
-
-        assert (source_plane_grid == np.array([[-1.0, -1.0], [-1.0, 0.0], [-1.0, 1.0],
-                                               [0.0, -1.0], [0.0, 0.0], [0.0, 1.0],
-                                               [1.0, -1.0], [1.0, 0.0], [1.0, 1.0]])).all()
-
-    def test__2x3_grid__shape_change_correct_and_coordinates_shift(self):
-        grid = np.array([[-1.5, -1.5], [1.5, 1.5]])
-
-        source_plane_grid = pl.uniform_grid_from_lensed_grid(grid, shape=(2, 3))
-
-        assert (source_plane_grid == np.array([[-0.75, -1.0], [-0.75, 0.0], [-0.75, 1.0],
-                                               [0.75, -1.0], [0.75, 0.0], [0.75, 1.0]])).all()
-
-    def test__3x2_grid__shape_change_correct_and_coordinates_shift(self):
-        grid = np.array([[-1.5, -1.5], [1.5, 1.5]])
-
-        source_plane_grid = pl.uniform_grid_from_lensed_grid(grid, shape=(3, 2))
-
-        assert (source_plane_grid == np.array([[-1.0, -0.75], [-1.0, 0.75],
-                                               [0.0, -0.75], [0.0, 0.75],
-                                               [1.0, -0.75], [1.0, 0.75]])).all()
 
 
 class TestPlane(object):
@@ -1111,120 +1086,6 @@ class TestPlane(object):
             assert (plane._deflections_of_galaxies[1] == g1_deflections).all()
             assert (plane._deflections_of_galaxies[2] == g2_deflections).all()
 
-    class TestPlaneImage:
-
-        def test__shape_3x3__image_of_plane__same_as_light_profile_on_identical_uniform_grid(self, imaging_grids):
-
-            g0 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=1.0))
-
-            g0_image = g0.intensities_from_grid(grid=np.array([[-1.0, -1.0], [-1.0, 0.0], [-1.0, 1.0],
-                                                               [0.0, -1.0], [0.0, 0.0], [0.0, 1.0],
-                                                               [1.0, -1.0], [1.0, 0.0], [1.0, 1.0]]))
-            g0_image = imaging_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(g0_image, shape=(3 ,3))
-
-            imaging_grids.image = np.array([[-1.5, -1.5], [1.5, 1.5]])
-
-            plane = pl.Plane(galaxies=[g0], grids=imaging_grids)
-
-            plane_image = plane.plane_image(shape=(3, 3))
-            assert plane_image == pytest.approx(g0_image, 1e-4)
-            assert (plane_image.grid == imaging_grids.image).all()
-
-            assert plane_image.xticks == pytest.approx(np.array([-1.5, -0.5, 0.5, 1.5]), 1e-2)
-            assert plane_image.yticks == pytest.approx(np.array([-1.5, -0.5, 0.5, 1.5]), 1e-2)
-
-        def test__different_shape_and_multiple_galaxies(self, imaging_grids):
-            g0 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=1.0))
-            g1 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=1.0))
-
-            g0_image = g0.intensities_from_grid(grid=np.array([[-0.75, -1.0], [-0.75, 0.0], [-0.75, 1.0],
-                                                               [0.75, -1.0], [0.75, 0.0], [0.75, 1.0]]))
-            g0_image = imaging_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(g0_image, shape=(2 ,3))
-
-            g1_image = g1.intensities_from_grid(grid=np.array([[-0.75, -1.0], [-0.75, 0.0], [-0.75, 1.0],
-                                                               [0.75, -1.0], [0.75, 0.0], [0.75, 1.0]]))
-            g1_image = imaging_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(g1_image, shape=(2 ,3))
-
-            imaging_grids.image = np.array([[-1.5, -1.5], [1.5, 1.5]])
-
-            plane = pl.Plane(galaxies=[g0, g1], grids=imaging_grids)
-
-            plane_image = plane.plane_image(shape=(2, 3))
-            assert plane_image == pytest.approx(g0_image + g1_image, 1e-4)
-            assert (plane_image.grid == imaging_grids.image).all()
-            assert plane_image.xticks == pytest.approx(np.array([-1.5, -0.5, 0.5, 1.5]), 1e-2)
-            assert plane_image.yticks == pytest.approx(np.array([-1.5, -0.5, 0.5, 1.5]), 1e-2)
-
-        def test__ensure_index_of_plane_image_has_negative_arcseconds_at_start(self, imaging_grids):
-            # The grid coordinates -2.0 -> 2.0 mean a plane of shape (5,5) has arc second coordinates running over
-            # -1.6, -0.8, 0.0, 0.8, 1.6. The centre -1.6, -1.6 of the galaxy means its brighest pixel should be
-            # index 0 of the 1D grid and (0,0) of the 2d plane _image.
-
-            imaging_grids.image = mask.ImageGrid(np.array([[-2.0, -2.0], [2.0, 2.0]]), shape_2d=(5, 5),
-                                                 grid_to_pixel=None)
-
-            g0 = g.Galaxy(light_profile=lp.EllipticalSersic(centre=(-1.6, -1.6), intensity=1.0))
-            plane = pl.Plane(galaxies=[g0], grids=imaging_grids)
-            plane_image = plane.plane_image(shape=(5 ,5))
-
-            assert plane_image.shape == (5, 5)
-            assert np.unravel_index(plane_image.argmax(), plane_image.shape) == (0, 0)
-
-            g0 = g.Galaxy(light_profile=lp.EllipticalSersic(centre=(-1.6, 1.6), intensity=1.0))
-            plane = pl.Plane(galaxies=[g0], grids=imaging_grids)
-            plane_image = plane.plane_image(shape=(5 ,5))
-            assert np.unravel_index(plane_image.argmax(), plane_image.shape) == (0, 4)
-
-            g0 = g.Galaxy(light_profile=lp.EllipticalSersic(centre=(1.6, -1.6), intensity=1.0))
-            plane = pl.Plane(galaxies=[g0], grids=imaging_grids)
-            plane_image = plane.plane_image(shape=(5 ,5))
-            assert np.unravel_index(plane_image.argmax(), plane_image.shape) == (4, 0)
-
-            g0 = g.Galaxy(light_profile=lp.EllipticalSersic(centre=(1.6, 1.6), intensity=1.0))
-            plane = pl.Plane(galaxies=[g0], grids=imaging_grids)
-            plane_image = plane.plane_image(shape=(5 ,5))
-            assert np.unravel_index(plane_image.argmax(), plane_image.shape) == (4, 4)
-
-    class TestXYTicksOfPlane:
-
-        def test__compute_xticks_from_image_grid_correctly(self, imaging_grids):
-            g0 = g.Galaxy()
-
-            imaging_grids.image = mask.ImageGrid(np.array([[0.0, 0.0], [0.0, 0.0], [0.3, 0.3], [-0.3, -0.3]]),
-                                                 shape_2d=(3, 3), grid_to_pixel=None)
-            plane = pl.Plane(galaxies=[g0], grids=imaging_grids)
-            assert plane.xticks == pytest.approx(np.array([-0.3, -0.1, 0.1, 0.3]), 1e-3)
-
-            imaging_grids.image = mask.ImageGrid(np.array([[-6.0, -10.5], [6.0, 0.5], [0.3, 0.3], [-0.3, -0.3]]),
-                                                 shape_2d=(3, 3), grid_to_pixel=None)
-            plane = pl.Plane(galaxies=[g0], grids=imaging_grids)
-            assert plane.xticks == pytest.approx(np.array([-6.0, -2.0, 2.0, 6.0]), 1e-3)
-
-            imaging_grids.image = mask.ImageGrid(np.array([[-1.0, -0.5], [1.0, 0.5], [0.3, 0.3], [-0.3, -0.3]]),
-                                                 shape_2d=(3, 3), grid_to_pixel=None)
-            plane = pl.Plane(galaxies=[g0], grids=imaging_grids)
-
-            assert plane.xticks == pytest.approx(np.array([-1.0, -0.33333, 0.33333, 1.0]), 1e-2)
-
-        def test__compute_yticks_from_image_grid_correctly(self, imaging_grids):
-
-            g0 = g.Galaxy()
-
-            imaging_grids.image = mask.ImageGrid(np.array([[0.0, 0.0], [0.0, 0.0], [0.3, 0.3], [-0.3, -0.3]]),
-                                                 shape_2d=(3, 3), grid_to_pixel=None)
-            plane = pl.Plane(galaxies=[g0], grids=imaging_grids)
-            assert plane.yticks == pytest.approx(np.array([-0.3, -0.1, 0.1, 0.3]), 1e-3)
-
-            imaging_grids.image = mask.ImageGrid(np.array([[-10.5, -6.0], [0.5, 6.0], [0.3, 0.3], [-0.3, -0.3]]),
-                                                 shape_2d=(3, 3), grid_to_pixel=None)
-            plane = pl.Plane(galaxies=[g0], grids=imaging_grids)
-            assert plane.yticks == pytest.approx(np.array([-6.0, -2.0, 2.0, 6.0]), 1e-3)
-
-            imaging_grids.image = mask.ImageGrid(np.array([[-0.5, -1.0], [0.5, 1.0], [0.3, 0.3], [-0.3, -0.3]]),
-                                                 shape_2d=(3, 3), grid_to_pixel=None)
-            plane = pl.Plane(galaxies=[g0], grids=imaging_grids)
-            assert plane.yticks == pytest.approx(np.array([-1.0, -0.33333, 0.33333, 1.0]), 1e-3)
-
     class TestPixeizationMapper:
 
         def test__no_galaxies_with_pixelizations_in_plane__returns_none(self, imaging_grids):
@@ -1290,3 +1151,144 @@ class TestPlane(object):
 
             with pytest.raises(exc.PixelizationException):
                 plane.regularization
+
+
+class TestPlaneImageFromGrid:
+
+    def test__3x3_grid__extracts_max_min_coordinates__creates_regular_grid_including_half_pixel_offset_from_edge(self):
+
+        galaxy = g.Galaxy(light=lp.EllipticalSersic(intensity=1.0))
+
+        grid = np.array([[-1.5, -1.5], [1.5, 1.5]])
+
+        plane_image = pl.plane_image_from_grid_and_galaxies(shape=(3, 3), grid=grid, galaxies=[galaxy])
+
+        plane_image_galaxy = galaxy.intensities_from_grid(grid=np.array([[-1.0, -1.0], [-1.0, 0.0], [-1.0, 1.0],
+                                                                           [0.0, -1.0], [0.0, 0.0], [0.0, 1.0],
+                                                                           [1.0, -1.0], [1.0, 0.0], [1.0, 1.0]]))
+
+        plane_image_galaxy = imaging_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(
+            array_1d=plane_image_galaxy, shape=(3,3))
+
+        assert (plane_image == plane_image_galaxy).all()
+
+    def test__3x3_grid__extracts_max_min_coordinates__ignores_other_coordinates_more_central(self):
+
+        galaxy = g.Galaxy(light=lp.EllipticalSersic(intensity=1.0))
+
+        grid = np.array([[-1.5, -1.5], [1.5, 1.5], [0.1, -0.1], [-1.0, 0.6], [1.4, -1.3], [1.5, 1.5]])
+
+        plane_image = pl.plane_image_from_grid_and_galaxies(shape=(3, 3), grid=grid, galaxies=[galaxy])
+
+        plane_image_galaxy = galaxy.intensities_from_grid(grid=np.array([[-1.0, -1.0], [-1.0, 0.0], [-1.0, 1.0],
+                                                                           [0.0, -1.0], [0.0, 0.0], [0.0, 1.0],
+                                                                           [1.0, -1.0], [1.0, 0.0], [1.0, 1.0]]))
+
+        plane_image_galaxy = imaging_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(
+            array_1d=plane_image_galaxy, shape=(3,3))
+
+        assert (plane_image == plane_image_galaxy).all()
+
+    def test__2x3_grid__shape_change_correct_and_coordinates_shift(self):
+
+        galaxy = g.Galaxy(light=lp.EllipticalSersic(intensity=1.0))
+
+        grid = np.array([[-1.5, -1.5], [1.5, 1.5]])
+
+        plane_image = pl.plane_image_from_grid_and_galaxies(shape=(2, 3), grid=grid, galaxies=[galaxy])
+
+        plane_image_galaxy = galaxy.intensities_from_grid(grid=np.array([[-0.75, -1.0], [-0.75, 0.0], [-0.75, 1.0],
+                                                                          [0.75, -1.0], [0.75, 0.0], [0.75, 1.0]]))
+
+        plane_image_galaxy = imaging_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(
+            array_1d=plane_image_galaxy, shape=(2,3))
+
+        assert (plane_image == plane_image_galaxy).all()
+
+    def test__3x2_grid__shape_change_correct_and_coordinates_shift(self):
+
+        galaxy = g.Galaxy(light=lp.EllipticalSersic(intensity=1.0))
+
+        grid = np.array([[-1.5, -1.5], [1.5, 1.5]])
+
+        plane_image = pl.plane_image_from_grid_and_galaxies(shape=(3, 2), grid=grid, galaxies=[galaxy])
+
+        plane_image_galaxy = galaxy.intensities_from_grid(grid=np.array([[-1.0, -0.75], [-1.0, 0.75],
+                                                                          [0.0, -0.75], [0.0, 0.75],
+                                                                          [1.0, -0.75], [1.0, 0.75]]))
+
+        plane_image_galaxy = imaging_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(
+            array_1d=plane_image_galaxy, shape=(3,2))
+
+        assert (plane_image == plane_image_galaxy).all()
+
+
+class TestPlaneImage:
+
+    def test__3x3_grid__extracts_max_min_coordinates__ignores_other_coordinates_more_central(self, imaging_grids):
+
+        imaging_grids.image = np.array([[-1.5, -1.5], [1.5, 1.5], [0.1, -0.1], [-1.0, 0.6], [1.4, -1.3], [1.5, 1.5]])
+
+        galaxy = g.Galaxy(light=lp.EllipticalSersic(intensity=1.0))
+
+        plane = pl.Plane(galaxies=[galaxy], grids=imaging_grids, compute_deflections=False)
+
+        plane_image_from_plane = plane.plane_image(shape=(3,3))
+
+        plane_image_from_func = pl.plane_image_from_grid_and_galaxies(shape=(3, 3), grid=imaging_grids.image,
+                                                                      galaxies=[galaxy])
+
+        assert (plane_image_from_func == plane_image_from_plane).all()
+
+    def test__ensure_index_of_plane_image_has_negative_arcseconds_at_start(self, imaging_grids):
+        # The grid coordinates -2.0 -> 2.0 mean a plane of shape (5,5) has arc second coordinates running over
+        # -1.6, -0.8, 0.0, 0.8, 1.6. The centre -1.6, -1.6 of the galaxy means its brighest pixel should be
+        # index 0 of the 1D grid and (0,0) of the 2d plane _image.
+
+        imaging_grids.image = mask.ImageGrid(np.array([[-2.0, -2.0], [2.0, 2.0]]), pixel_scale=1.0, shape_2d=(5, 5),
+                                             grid_to_pixel=None)
+
+        g0 = g.Galaxy(light_profile=lp.EllipticalSersic(centre=(1.6, -1.6), intensity=1.0))
+        plane = pl.Plane(galaxies=[g0], grids=imaging_grids)
+        plane_image = plane.plane_image(shape=(5 ,5))
+
+        assert plane_image.shape == (5, 5)
+        assert np.unravel_index(plane_image.argmax(), plane_image.shape) == (0, 0)
+
+        g0 = g.Galaxy(light_profile=lp.EllipticalSersic(centre=(1.6, 1.6), intensity=1.0))
+        plane = pl.Plane(galaxies=[g0], grids=imaging_grids)
+        plane_image = plane.plane_image(shape=(5 ,5))
+        assert np.unravel_index(plane_image.argmax(), plane_image.shape) == (0, 4)
+
+        g0 = g.Galaxy(light_profile=lp.EllipticalSersic(centre=(-1.6, -1.6), intensity=1.0))
+        plane = pl.Plane(galaxies=[g0], grids=imaging_grids)
+        plane_image = plane.plane_image(shape=(5 ,5))
+        assert np.unravel_index(plane_image.argmax(), plane_image.shape) == (4, 0)
+
+        g0 = g.Galaxy(light_profile=lp.EllipticalSersic(centre=(-1.6, 1.6), intensity=1.0))
+        plane = pl.Plane(galaxies=[g0], grids=imaging_grids)
+        plane_image = plane.plane_image(shape=(5 ,5))
+        assert np.unravel_index(plane_image.argmax(), plane_image.shape) == (4, 4)
+
+
+    def test__compute_xticks_from_image_grid_correctly(self):
+
+        plane_image = pl.PlaneImage(array=np.ones((3,3)), pixel_scales=(5.0, 1.0), grid=None)
+        assert plane_image.xticks == pytest.approx(np.array([-1.5, -0.5, 0.5, 1.5]), 1e-3)
+
+        plane_image = pl.PlaneImage(array=np.ones((3,3)), pixel_scales=(5.0, 0.5), grid=None)
+        assert plane_image.xticks == pytest.approx(np.array([-0.75, -0.25, 0.25, 0.75]), 1e-3)
+
+        plane_image = pl.PlaneImage(array=np.ones((1,6)), pixel_scales=(5.0, 1.0), grid=None)
+        assert plane_image.xticks == pytest.approx(np.array([-3.0, -1.0, 1.0, 3.0]), 1e-2)
+
+    def test__compute_yticks_from_image_grid_correctly(self):
+
+        plane_image = pl.PlaneImage(array=np.ones((3,3)), pixel_scales=(1.0, 5.0), grid=None)
+        assert plane_image.yticks == pytest.approx(np.array([-1.5, -0.5, 0.5, 1.5]), 1e-3)
+
+        plane_image = pl.PlaneImage(array=np.ones((3,3)), pixel_scales=(0.5, 5.0), grid=None)
+        assert plane_image.yticks == pytest.approx(np.array([-0.75, -0.25, 0.25, 0.75]), 1e-3)
+
+        plane_image = pl.PlaneImage(array=np.ones((6,1)), pixel_scales=(1.0, 5.0), grid=None)
+        assert plane_image.yticks == pytest.approx(np.array([-3.0, -1.0, 1.0, 3.0]), 1e-2)
