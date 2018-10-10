@@ -287,9 +287,9 @@ class ScaledRectangularPixelArray(ScaledArray):
         pixel_scales : (float, float)
             The arc-second to pixel conversion factor of each pixel.
         """
+        self.pixel_scales = pixel_scales
         # noinspection PyArgumentList
         super(ScaledRectangularPixelArray, self).__init__(array=array)
-        self.pixel_scales = pixel_scales
 
     def __array_finalize__(self, obj):
         if isinstance(obj, ScaledRectangularPixelArray):

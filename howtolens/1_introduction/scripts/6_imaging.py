@@ -13,11 +13,11 @@ from autolens.plotting import imaging_plotters
 
 # To simulate an image, we need to model the telescope's optics. We'll do this by convolving the image with a
 # Point-Spread Function, which we can simulate as a Gaussian using the imaging module.
-psf = im.PSF.simulate_as_gaussian(shape=(11, 11), pixel_scale=0.1, sigma=0.75)
+psf = im.PSF.simulate_as_gaussian(shape=(11, 11), pixel_scale=0.1, sigma=0.1)
 
 # To simulate an image, we use a special type of grid. This pads the grids 2D dimensions relative to the PSF-shape,
 # to ensure that the edge's of our simulated image are not degraded.
-image_plane_grids = mask.ImagingGrids.grids_for_simulation(shape=(100, 100), pixel_scale=0.05, psf_shape=psf.shape)
+image_plane_grids = mask.ImagingGrids.grids_for_simulation(shape=(100, 100), pixel_scale=0.1, psf_shape=psf.shape)
 print(image_plane_grids.image.image_shape)
 print(image_plane_grids.image.padded_shape)
 
@@ -51,7 +51,8 @@ image_simulated = im.PreparatoryImage.simulate(array=tracer.image_plane_image_fo
 imaging_plotters.plot_image(image=image_simulated)
 
 # Finally, lets output these files to.fits files, we'll begin to analyze them in the next tutorial!
-path = 'path/to/howtolens' # Unfortunately, in a Jupyter notebook you have to manually specify the path to PyAutoLens and this tutorial.
+# Unfortunately, in a Jupyter notebook you have to manually specify the path to PyAutoLens and this tutorial.
+path = '/home/jammy/PyCharm/Projects/AutoLens/howtolens/1_introduction'
 im.output_imaging_to_fits(image=image_simulated, image_path=path+'/data/image.fits',
                                                  noise_map_path=path+'/data/noise_map.fits',
                                                  psf_path=path+'/data/psf.fits',

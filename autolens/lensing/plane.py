@@ -256,8 +256,9 @@ class PlaneImage(scaled_array.ScaledRectangularPixelArray):
 
     def __init__(self, array, pixel_scales, grid):
 
-        super(PlaneImage, self).__init__(array=array, pixel_scales=pixel_scales)
         self.grid = grid
+        self.pixel_scales = pixel_scales
+        super(PlaneImage, self).__init__(array=array, pixel_scales=pixel_scales)
 
 
 def sub_to_image_grid(func):

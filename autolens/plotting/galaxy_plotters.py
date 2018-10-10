@@ -23,7 +23,7 @@ def plot_intensities_individual(galaxy, grid, output_path=None, output_filename=
     intensities_1d = galaxy.intensities_from_grid_individual(grid=grid)
     intensities = list(map(lambda intensities : grid.scaled_array_from_array_1d(intensities), intensities_1d))
 
-    plt.figure(figsize=(25, 20))
+    plt.figure(figsize=(13, 4))
 
     for i in range(len(intensities)):
 
@@ -32,7 +32,7 @@ def plot_intensities_individual(galaxy, grid, output_path=None, output_filename=
         array_plotters.plot_array(
             array=intensities[i], points=None, grid=None, as_subplot=True,
             units='arcsec', kpc_per_arcsec=None,
-            xticks=intensities.xticks, yticks=intensities.yticks, xyticksize=16,
+            xticks=intensities[i].xticks, yticks=intensities[i].yticks, xyticksize=16,
             norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
             figsize=None, aspect='auto', cmap='jet', cb_ticksize=16,
             title='Galaxy Light (Component ' + str(i) + ')', titlesize=16, xlabelsize=16, ylabelsize=16,
@@ -75,10 +75,10 @@ def plot_deflections(galaxy, grid, output_path=None, output_filename='deflection
 
     deflections = galaxy.deflections_from_grid(grid)
 
-    deflections_x = grid.scaled_array_from_array_1d(deflections[:,0])
-    deflections_y = grid.scaled_array_from_array_1d(deflections[:,1])
+    deflections_y = grid.scaled_array_from_array_1d(deflections[:,0])
+    deflections_x = grid.scaled_array_from_array_1d(deflections[:,1])
 
-    plt.figure(figsize=(25, 20))
+    plt.figure(figsize=(14, 6))
     plt.subplot(1, 2, 1)
 
     array_plotters.plot_array(

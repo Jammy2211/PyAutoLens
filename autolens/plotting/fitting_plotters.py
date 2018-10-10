@@ -232,7 +232,7 @@ def plot_fitting_lens_and_source_planes(fit, units='kpc', output_path=None, outp
         in the python interpreter window.
     """
 
-    plt.figure(figsize=(40, 26))
+    plt.figure(figsize=(18, 10))
     plt.subplot(2, 3, 1)
 
     array_plotters.plot_array(

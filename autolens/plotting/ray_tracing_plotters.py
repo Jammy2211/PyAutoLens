@@ -25,11 +25,11 @@ def plot_ray_tracing(tracer, units='kpc', output_path=None, output_filename='tra
 
     if plot_ray_tracing_as_subplot or ignore_config is True:
 
-        plt.figure(figsize=(25, 20))
+        plt.figure(figsize=(20, 14))
         plt.subplot(2, 3, 1)
 
         array_plotters.plot_array(
-            array=tracer.image_plane_image, grid=None, as_subplot=True,
+            array=tracer.image_plane_image, points=None, grid=None, as_subplot=True,
             units=units, kpc_per_arcsec=tracer.image_plane.kpc_per_arcsec_proper,
             xticks=tracer.image_plane_image.xticks, yticks=tracer.image_plane_image.yticks, xyticksize=16,
             norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
@@ -40,7 +40,7 @@ def plot_ray_tracing(tracer, units='kpc', output_path=None, output_filename='tra
         plt.subplot(2, 3, 2)
 
         array_plotters.plot_array(
-            array=tracer.surface_density, grid=None, as_subplot=True,
+            array=tracer.surface_density, points=None, grid=None, as_subplot=True,
             units=units, kpc_per_arcsec=tracer.image_plane.kpc_per_arcsec_proper,
             xticks=tracer.surface_density.xticks, yticks=tracer.surface_density.yticks, xyticksize=16,
             norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
@@ -51,7 +51,7 @@ def plot_ray_tracing(tracer, units='kpc', output_path=None, output_filename='tra
         plt.subplot(2, 3, 3)
 
         array_plotters.plot_array(
-            array=tracer.potential, grid=None, as_subplot=True,
+            array=tracer.potential, points=None, grid=None, as_subplot=True,
             units=units, kpc_per_arcsec=tracer.image_plane.kpc_per_arcsec_proper,
             xticks=tracer.potential.xticks, yticks=tracer.potential.yticks, xyticksize=16,
             norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
@@ -64,7 +64,7 @@ def plot_ray_tracing(tracer, units='kpc', output_path=None, output_filename='tra
         plane_image = tracer.plane_images_of_planes(shape=(50, 50))[1]
 
         array_plotters.plot_array(
-            array=plane_image, grid=None, as_subplot=True,
+            array=plane_image, points=None, grid=None, as_subplot=True,
             units=units, kpc_per_arcsec=tracer.source_plane.kpc_per_arcsec_proper,
             xticks=plane_image.xticks, yticks=plane_image.yticks, xyticksize=16,
             norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
@@ -75,7 +75,7 @@ def plot_ray_tracing(tracer, units='kpc', output_path=None, output_filename='tra
         plt.subplot(2, 3, 5)
 
         array_plotters.plot_array(
-            array=tracer.deflections_x, grid=None, as_subplot=True,
+            array=tracer.deflections_x, points=None, grid=None, as_subplot=True,
             units=units, kpc_per_arcsec=tracer.image_plane.kpc_per_arcsec_proper,
             xticks=tracer.deflections_x.xticks, yticks=tracer.deflections_x.yticks, xyticksize=16,
             norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
@@ -86,7 +86,7 @@ def plot_ray_tracing(tracer, units='kpc', output_path=None, output_filename='tra
         plt.subplot(2, 3, 6)
 
         array_plotters.plot_array(
-            array=tracer.deflections_y, grid=None, as_subplot=True,
+            array=tracer.deflections_y, points=None, grid=None, as_subplot=True,
             units=units, kpc_per_arcsec=tracer.image_plane.kpc_per_arcsec_proper,
             xticks=tracer.deflections_y.xticks, yticks=tracer.deflections_y.yticks, xyticksize=16,
             norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
@@ -128,7 +128,7 @@ def plot_ray_tracing_individual(tracer, units='kpc', plot_image_plane_image=Fals
     if plot_image_plane_image:
 
         array_plotters.plot_array(
-            array=tracer.image_plane_image, grid=None, as_subplot=False,
+            array=tracer.image_plane_image, points=None, grid=None, as_subplot=False,
             units=units, kpc_per_arcsec=tracer.image_plane.kpc_per_arcsec_proper,
             xticks=tracer.image_plane_image.xticks, yticks=tracer.image_plane_image.yticks, xyticksize=16,
             norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
@@ -139,7 +139,7 @@ def plot_ray_tracing_individual(tracer, units='kpc', plot_image_plane_image=Fals
     if plot_surface_density:
 
         array_plotters.plot_array(
-            array=tracer.surface_density, grid=None, as_subplot=False,
+            array=tracer.surface_density, points=None, grid=None, as_subplot=False,
             units=units, kpc_per_arcsec=tracer.image_plane.kpc_per_arcsec_proper,
             xticks=tracer.surface_density.xticks, yticks=tracer.surface_density.yticks, xyticksize=16,
             norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
@@ -150,7 +150,7 @@ def plot_ray_tracing_individual(tracer, units='kpc', plot_image_plane_image=Fals
     if plot_potential:
 
         array_plotters.plot_array(
-            array=tracer.potential, grid=None, as_subplot=False,
+            array=tracer.potential, points=None, grid=None, as_subplot=False,
             units=units, kpc_per_arcsec=tracer.image_plane.kpc_per_arcsec_proper,
             xticks=tracer.potential.xticks, yticks=tracer.potential.yticks, xyticksize=16,
             norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
@@ -163,7 +163,7 @@ def plot_ray_tracing_individual(tracer, units='kpc', plot_image_plane_image=Fals
         plane_image = tracer.plane_images_of_planes(shape=(50, 50))[1]
     
         array_plotters.plot_array(
-            array=plane_image, grid=None, as_subplot=False,
+            array=plane_image, points=None, grid=None, as_subplot=False,
             units=units, kpc_per_arcsec=tracer.source_plane.kpc_per_arcsec_proper,
             xticks=plane_image.xticks, yticks=plane_image.yticks, xyticksize=16,
             norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
@@ -174,7 +174,7 @@ def plot_ray_tracing_individual(tracer, units='kpc', plot_image_plane_image=Fals
     if plot_deflections:
 
         array_plotters.plot_array(
-            array=tracer.deflections_x, grid=None, as_subplot=False,
+            array=tracer.deflections_x, points=None, grid=None, as_subplot=False,
             units=units, kpc_per_arcsec=tracer.image_plane.kpc_per_arcsec_proper,
             xticks=tracer.deflections_x.xticks, yticks=tracer.deflections_x.yticks, xyticksize=16,
             norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
@@ -183,7 +183,7 @@ def plot_ray_tracing_individual(tracer, units='kpc', plot_image_plane_image=Fals
             output_path=output_path, output_filename='deflections_x', output_format=output_format)
     
         array_plotters.plot_array(
-            array=tracer.deflections_y, grid=None, as_subplot=False,
+            array=tracer.deflections_y, points=None, grid=None, as_subplot=False,
             units=units, kpc_per_arcsec=tracer.image_plane.kpc_per_arcsec_proper,
             xticks=tracer.deflections_y.xticks, yticks=tracer.deflections_y.yticks, xyticksize=16,
             norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,

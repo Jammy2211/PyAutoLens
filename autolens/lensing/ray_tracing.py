@@ -51,8 +51,8 @@ class AbstractTracer(object):
         return constants.c.to('kpc / s').value ** 2.0 / (4 * math.pi * constants.G.to('kpc3 / M_sun s2').value)
 
     @property
-    def map_to_2d(self):
-        return self.image_plane.grids.image.map_to_2d
+    def scaled_array_from_array_1d(self):
+        return self.image_plane.grids.image.scaled_array_from_array_1d
 
     @property
     def image_plane_image(self):
@@ -60,11 +60,11 @@ class AbstractTracer(object):
 
     @property
     def image_plane_images_of_planes(self):
-        return list(map(lambda image: self.map_to_2d(image), self._image_plane_images_of_planes))
+        return list(map(lambda image: self.scaled_array_from_array_1d(image), self._image_plane_images_of_planes))
 
     @property
     def image_plane_images_of_galaxies(self):
-        return list(map(lambda image: self.map_to_2d(image), self._image_plane_images_of_galaxies))
+        return list(map(lambda image: self.scaled_array_from_array_1d(image), self._image_plane_images_of_galaxies))
 
     @property
     def image_plane_image_for_simulation(self):
@@ -207,7 +207,7 @@ class TracerImageSourcePlanes(AbstractTracer):
 
     @property
     def surface_density_of_galaxies(self):
-        return list(map(lambda surface_density: self.map_to_2d(surface_density),
+        return list(map(lambda surface_density: self.scaled_array_from_array_1d(surface_density),
                         self.image_plane._surface_density_of_galaxies))
 
     @property
@@ -216,17 +216,8 @@ class TracerImageSourcePlanes(AbstractTracer):
 
     @property
     def potential_of_galaxies(self):
-        return list(map(lambda potential: self.map_to_2d(potential),
+        return list(map(lambda potential: self.scaled_array_from_array_1d(potential),
                         self.image_plane._potential_of_galaxies))
-    
-    @property
-    def deflections_x(self):
-        return sum(self.deflections_x_of_galaxies)
-
-    @property
-    def deflections_x_of_galaxies(self):
-        return list(map(lambda deflections: self.map_to_2d(deflections[:,0]),
-                        self.image_plane._deflections_of_galaxies))
 
     @property
     def deflections_y(self):
@@ -234,7 +225,16 @@ class TracerImageSourcePlanes(AbstractTracer):
 
     @property
     def deflections_y_of_galaxies(self):
-        return list(map(lambda deflections: self.map_to_2d(deflections[:,1]),
+        return list(map(lambda deflections: self.scaled_array_from_array_1d(deflections[:,0]),
+                        self.image_plane._deflections_of_galaxies))
+
+    @property
+    def deflections_x(self):
+        return sum(self.deflections_x_of_galaxies)
+
+    @property
+    def deflections_x_of_galaxies(self):
+        return list(map(lambda deflections: self.scaled_array_from_array_1d(deflections[:,1]),
                         self.image_plane._deflections_of_galaxies))
 
     @property
