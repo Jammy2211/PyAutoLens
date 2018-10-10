@@ -46,36 +46,33 @@ class Rectangular(Pixelization):
 
     class Geometry(object):
 
-        def __init__(self, x_min, x_max, x_pixel_scale, y_min, y_max, y_pixel_scale):
+        def __init__(self, y_min, y_max, x_min, x_max, pixel_scales):
             """The geometry of a rectangular grid
 
             Parameters
             -----------
-            x_min : float
-                Minimum arcsecond x value of the pixelization (e.g. the left-edge).
-            x_max : float
-                Maximum arcsecond x value of the pixelization (e.g. the right-edge).
-            x_pixel_scale : float
-                The pixel-to-arcsecond scale of a pixel in the x-direction.
             y_min : float
                 Minimum arcsecond y value of the pixelization (e.g. the top-edge).
             y_max : float
                 Maximum arcsecond y value of the pixelization (e.g. the bottom-edge).
-            y_pixel_scale : float
-                The pixel-to-arcsecond scale of a pixel in the y-direction.
+            x_min : float
+                Minimum arcsecond x value of the pixelization (e.g. the left-edge).
+            x_max : float
+                Maximum arcsecond x value of the pixelization (e.g. the right-edge).
+            pixel_scales : (float, float)
+                The pixel-to-arcsecond scale of a pixel in the y and x directions.
             """
             self.x_min = x_min
             self.x_max = x_max
-            self.x_pixel_scale = x_pixel_scale
             self.y_min = y_min
             self.y_max = y_max
-            self.y_pixel_scale = y_pixel_scale
-
-        def arc_second_to_pixel_index_x(self, coordinate):
-            return np.floor((coordinate - self.x_min) / self.x_pixel_scale)
+            self.pixel_scales = pixel_scales
 
         def arc_second_to_pixel_index_y(self, coordinate):
-            return np.floor((coordinate - self.y_min) / self.y_pixel_scale)
+            return np.floor((coordinate - self.y_min) / self.pixel_scales[0])
+
+        def arc_second_to_pixel_index_x(self, coordinate):
+            return np.floor((coordinate - self.x_min) / self.pixel_scales[1])
 
     def geometry_from_pixelization_sub_grid(self, pixelization_sub_grid, buffer=1e-8):
         """Determine the geometry of the rectangular grid, by alligning it with the outer-most pixels on a grid \
@@ -88,14 +85,13 @@ class Rectangular(Pixelization):
         buffer : float
             The size the grid-geometry is extended beyond the most exterior grid.
         """
-        x_min = np.min(pixelization_sub_grid[:, 0]) - buffer
-        x_max = np.max(pixelization_sub_grid[:, 0]) + buffer
-        y_min = np.min(pixelization_sub_grid[:, 1]) - buffer
-        y_max = np.max(pixelization_sub_grid[:, 1]) + buffer
-        x_pixel_scale = (x_max - x_min) / self.shape[0]
-        y_pixel_scale = (y_max - y_min) / self.shape[1]
+        y_min = np.min(pixelization_sub_grid[:, 0]) - buffer
+        y_max = np.max(pixelization_sub_grid[:, 0]) + buffer
+        x_min = np.min(pixelization_sub_grid[:, 1]) - buffer
+        x_max = np.max(pixelization_sub_grid[:, 1]) + buffer
+        pixel_scales = ((y_max - y_min) / self.shape[0], (x_max - x_min) / self.shape[1])
 
-        return self.Geometry(x_min, x_max, x_pixel_scale, y_min, y_max, y_pixel_scale)
+        return self.Geometry(y_min=y_min, y_max=y_max, x_min=x_min, x_max=x_max, pixel_scales=pixel_scales)
 
     def neighbors_from_pixelization(self):
         """Compute the neighbors of every pixel as a list of the pixel index's each pixel shares a vertex with.
@@ -319,18 +315,18 @@ class PixelizationGrid(object):
 
     def coordinate_grid_within_annulus(self, inner_radius, outer_radius, centre=(0., 0.)):
 
-        x_pixel_scale = 2.0 * outer_radius / self.shape[0]
-        y_pixel_scale = 2.0 * outer_radius / self.shape[1]
+        y_pixel_scale = 2.0 * outer_radius / self.shape[0]
+        x_pixel_scale = 2.0 * outer_radius / self.shape[1]
 
         central_pixel = float(self.shape[0] - 1) / 2, float(self.shape[1] - 1) / 2
 
         pixel_count = 0
 
-        for x in range(self.shape[0]):
-            for y in range(self.shape[1]):
+        for y in range(self.shape[0]):
+            for x in range(self.shape[1]):
 
-                x_arcsec = ((x - central_pixel[0]) * x_pixel_scale) - centre[0]
-                y_arcsec = ((y - central_pixel[1]) * y_pixel_scale) - centre[1]
+                y_arcsec = ((y - central_pixel[1]) * y_pixel_scale) - centre[0]
+                x_arcsec = ((x - central_pixel[0]) * x_pixel_scale) - centre[1]
                 radius_arcsec = np.sqrt(x_arcsec ** 2 + y_arcsec ** 2)
 
                 if radius_arcsec < outer_radius or radius_arcsec > inner_radius:
@@ -340,16 +336,16 @@ class PixelizationGrid(object):
 
         pixel_count = 0
 
-        for x in range(self.shape[0]):
-            for y in range(self.shape[1]):
+        for y in range(self.shape[0]):
+            for x in range(self.shape[1]):
 
-                x_arcsec = ((x - central_pixel[0]) * x_pixel_scale) - centre[0]
-                y_arcsec = ((y - central_pixel[1]) * y_pixel_scale) - centre[1]
+                y_arcsec = -((y - central_pixel[0]) * y_pixel_scale) - centre[0]
+                x_arcsec = ((x - central_pixel[1]) * x_pixel_scale) - centre[1]
                 radius_arcsec = np.sqrt(x_arcsec ** 2 + y_arcsec ** 2)
 
                 if radius_arcsec < outer_radius or radius_arcsec > inner_radius:
-                    coordinates_array[pixel_count, 0] = x_arcsec
-                    coordinates_array[pixel_count, 1] = y_arcsec
+                    coordinates_array[pixel_count, 0] = y_arcsec
+                    coordinates_array[pixel_count, 1] = x_arcsec
 
                     pixel_count += 1
 
