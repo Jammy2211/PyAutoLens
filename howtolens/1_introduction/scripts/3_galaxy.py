@@ -38,9 +38,12 @@ galaxy_plotters.plot_intensities(galaxy=galaxy_with_light_profile, grid=image_gr
 
 # The neat thing about galaxies, is we can pass them multiple profiles. Lets create a
 # galaxy with three light profiles.
-light_profile_1 = light_profiles.SphericalSersic(centre=(0.0,  0.0), intensity=1.0, effective_radius=1.0, sersic_index=2.5)
-light_profile_2 = light_profiles.SphericalSersic(centre=(1.0,  1.0), intensity=1.0, effective_radius=2.0, sersic_index=3.0)
-light_profile_3 = light_profiles.SphericalSersic(centre=(1.0, -1.0), intensity=1.0, effective_radius=2.0, sersic_index=2.0)
+light_profile_1 = light_profiles.SphericalSersic(centre=(0.0,  0.0), intensity=1.0, effective_radius=1.0,
+                                                 sersic_index=2.5)
+light_profile_2 = light_profiles.SphericalSersic(centre=(1.0,  1.0), intensity=1.0, effective_radius=2.0,
+                                                 sersic_index=3.0)
+light_profile_3 = light_profiles.SphericalSersic(centre=(1.0, -1.0), intensity=1.0, effective_radius=2.0,
+                                                 sersic_index=2.0)
 galaxy_with_3_light_profiles = galaxy.Galaxy(light_1=light_profile_1, light_2=light_profile_2, light_3=light_profile_3)
 
 # If we plot the galaxy, we indeed see 3 blobs of light

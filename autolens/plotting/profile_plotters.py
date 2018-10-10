@@ -50,10 +50,10 @@ def plot_deflections(mass_profile, grid, output_path=None, output_filename='defl
 
     deflections = mass_profile.deflections_from_grid(grid)
 
-    deflections_x = grid.scaled_array_from_array_1d(deflections[:,0])
-    deflections_y = grid.scaled_array_from_array_1d(deflections[:,1])
+    deflections_y = grid.scaled_array_from_array_1d(deflections[:,0])
+    deflections_x = grid.scaled_array_from_array_1d(deflections[:,1])
 
-    plt.figure(figsize=(25, 20))
+    plt.figure(figsize=(14, 6))
     plt.subplot(1, 2, 1)
 
     array_plotters.plot_array(

@@ -249,7 +249,7 @@ class TestImageGrid:
 
         msk = mask.Mask(array=msk, pixel_scale=2.0)
         image_grid = mask.ImageGrid.from_mask(msk)
-        array_2d_grid = image_grid.map_to_2d(array_1d)
+        array_2d_grid = image_grid.scaled_array_from_array_1d(array_1d)
 
         assert (array_2d_util == array_2d_grid).all()
 
@@ -321,7 +321,7 @@ class TestSubGrid(object):
 
         msk = mask.Mask(array=msk, pixel_scale=2.0)
         image_grid = mask.SubGrid.from_mask_and_sub_grid_size(msk, sub_grid_size=2)
-        array_2d_grid = image_grid.map_to_2d(array_1d)
+        array_2d_grid = image_grid.scaled_array_from_array_1d(array_1d)
 
         assert (array_2d_util == array_2d_grid).all()
 
