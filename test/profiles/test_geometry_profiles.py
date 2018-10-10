@@ -63,8 +63,8 @@ class TestEllipticalProfile(object):
 
             transformed_grid = elliptical_profile.transform_grid_to_reference_frame(grid=np.array([[1.0, 1.0]]))
 
-            assert transformed_grid[0, 0] == pytest.approx(1.0, 1e-3)
-            assert transformed_grid[0, 1] == pytest.approx(-1.0, 1e-3)
+            assert transformed_grid[0, 0] == pytest.approx(-1.0, 1e-3)
+            assert transformed_grid[0, 1] == pytest.approx(1.0, 1e-3)
 
             transformed_back_grid = elliptical_profile.transform_grid_from_reference_frame(transformed_grid)
 
@@ -77,7 +77,7 @@ class TestEllipticalProfile(object):
 
             transformed_grid = elliptical_profile.transform_grid_to_reference_frame(grid=np.array([[0.0, 1.0]]))
 
-            assert transformed_grid[0, 0] == pytest.approx(1.0, 1e-3)
+            assert transformed_grid[0, 0] == pytest.approx(-1.0, 1e-3)
             assert transformed_grid[0, 1] == pytest.approx(0.0, 1e-3)
 
             transformed_back_grid = elliptical_profile.transform_grid_from_reference_frame(transformed_grid)
@@ -105,8 +105,8 @@ class TestEllipticalProfile(object):
 
             transformed_grid = elliptical_profile.transform_grid_to_reference_frame(grid=np.array([[1.0, 1.0]]))
 
-            assert transformed_grid[0, 0] == pytest.approx(-1.0, 1e-3)
-            assert transformed_grid[0, 1] == pytest.approx(1.0, 1e-3)
+            assert transformed_grid[0, 0] == pytest.approx(1.0, 1e-3)
+            assert transformed_grid[0, 1] == pytest.approx(-1.0, 1e-3)
 
             transformed_back_grid = elliptical_profile.transform_grid_from_reference_frame(transformed_grid)
 
@@ -133,8 +133,8 @@ class TestEllipticalProfile(object):
 
             transformed_grid = elliptical_profile.transform_grid_to_reference_frame(grid=np.array([[1.0, 1.0]]))
 
-            assert transformed_grid[0, 0] == pytest.approx(0.0, 1e-3)
-            assert transformed_grid[0, 1] == pytest.approx(2 ** 0.5, 1e-3)
+            assert transformed_grid[0, 0] == pytest.approx(2 ** 0.5, 1e-3)
+            assert transformed_grid[0, 1] == pytest.approx(0.0, 1e-3)
 
             transformed_back_grid = elliptical_profile.transform_grid_from_reference_frame(transformed_grid)
 
@@ -147,8 +147,8 @@ class TestEllipticalProfile(object):
 
             transformed_grid = elliptical_profile.transform_grid_to_reference_frame(grid=np.array([[3.0, 4.0]]))
 
-            assert transformed_grid[0, 0] == pytest.approx(1.0, 1e-3)
-            assert transformed_grid[0, 1] == pytest.approx(-1.0, 1e-3)
+            assert transformed_grid[0, 0] == pytest.approx(-1.0, 1e-3)
+            assert transformed_grid[0, 1] == pytest.approx(1.0, 1e-3)
 
             transformed_back_grid = elliptical_profile.transform_grid_from_reference_frame(transformed_grid)
 

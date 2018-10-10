@@ -153,7 +153,7 @@ class SphericalProfile(GeometryProfile):
         """
         theta_grid = np.arctan2(grid[:, 0], grid[:, 1])
         cos_theta, sin_theta = self.grid_angle_to_profile(theta_grid)
-        return np.multiply(radius[:, None], np.vstack((cos_theta, sin_theta)).T)
+        return np.multiply(radius[:, None], np.vstack((sin_theta, cos_theta)).T)
 
     def transform_grid_to_reference_frame(self, grid):
         """Transform a grid of (x,y) coordinates to the reference frame of the profile, including a translation to \
@@ -239,8 +239,8 @@ class EllipticalProfile(SphericalProfile):
         ----------
         The coordinates rotated back to their original Cartesian grid_coords.
          """
-        y = np.add(np.multiply(grid_elliptical[:, 0], self.sin_phi), np.multiply(grid_elliptical[:, 1], self.cos_phi))
-        x = np.add(np.multiply(grid_elliptical[:, 0], self.cos_phi), - np.multiply(grid_elliptical[:, 1], self.sin_phi))
+        y = np.add(np.multiply(grid_elliptical[:, 1], self.sin_phi), np.multiply(grid_elliptical[:, 0], self.cos_phi))
+        x = np.add(np.multiply(grid_elliptical[:, 1], self.cos_phi), - np.multiply(grid_elliptical[:, 0], self.sin_phi))
         return np.vstack((y, x)).T
 
     @transform_grid
@@ -293,7 +293,7 @@ class EllipticalProfile(SphericalProfile):
         theta_coordinate_to_profile = np.arctan2(shifted_coordinates[:, 0],
                                                  shifted_coordinates[:, 1]) - self.phi_radians
         transformed = np.vstack(
-            (radius * np.cos(theta_coordinate_to_profile), radius * np.sin(theta_coordinate_to_profile))).T
+            (radius * np.sin(theta_coordinate_to_profile), radius * np.cos(theta_coordinate_to_profile))).T
         return transformed.view(TransformedGrid)
 
     def transform_grid_from_reference_frame(self, grid):
@@ -305,8 +305,8 @@ class EllipticalProfile(SphericalProfile):
         grid : TransformedGrid(ndarray)
             The (x, y) coordinates in the reference frame of the profile _image.
         """
-        y = np.add(np.add(np.multiply(grid[:, 0], self.sin_phi), np.multiply(grid[:, 1], self.cos_phi)),self.centre[0])
-        x = np.add(np.add(np.multiply(grid[:, 0], self.cos_phi), - np.multiply(grid[:, 1], self.sin_phi)),self.centre[1])
+        y = np.add(np.add(np.multiply(grid[:, 1], self.sin_phi), np.multiply(grid[:, 0], self.cos_phi)), self.centre[0])
+        x = np.add(np.add(np.multiply(grid[:, 1], self.cos_phi), - np.multiply(grid[:, 0], self.sin_phi)), self.centre[1])
         return np.vstack((y, x)).T
 
     def eta_u(self, u, coordinates):
