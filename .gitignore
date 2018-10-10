@@ -33,12 +33,10 @@ autolens-0.2.5.tar.gz__pycache__
 __pycache__/
 test/autofit/test_fit/
 prof/
-output/*
-test/integration/data/*
-test/integration/output/*
+*output/
+test/integration/tests/simulate_and_fit/data/_image.fits
 test/test_files/non_linear/multinest/priors/phase/optimizer
 test/test_files/non_linear/multinest/samples/phase/optimizer
 test/test_files/non_linear/multinest/summary/multi_profile/phase/optimizer
 config/
 test/test_files/array/test.fits
-scripts/phase_for_kevin
