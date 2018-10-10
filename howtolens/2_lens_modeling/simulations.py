@@ -10,7 +10,7 @@ import os
 
 # This is the simulated image we fit in tutorial '1_phase'.
 
-psf = im.PSF.simulate_as_gaussian(shape=(11, 11), sigma=0.75)
+psf = im.PSF.simulate_as_gaussian(shape=(11, 11), sigma=0.1, pixel_scale=0.1)
 
 image_plane_grids = mask.ImagingGrids.grids_for_simulation(shape=(130, 130), pixel_scale=0.1, psf_shape=(11, 11))
 
@@ -32,7 +32,7 @@ imaging_plotters.plot_image(image=image_simulated)
 
 # This is the simulated image we fit in the exercise '3_realism_and_complexity'
 
-psf = im.PSF.simulate_as_gaussian(shape=(11, 11), sigma=0.75)
+psf = im.PSF.simulate_as_gaussian(shape=(11, 11), sigma=0.05, pixel_scale=0.05)
 image_plane_grids = mask.ImagingGrids.grids_for_simulation(shape=(130, 130), pixel_scale=0.1, psf_shape=(11, 11))
 
 lens_galaxy = g.Galaxy(light=lp.EllipticalSersic(centre=(0.0, 0.0), axis_ratio=0.9, phi=45.0, intensity=0.04,
@@ -51,30 +51,6 @@ path = "{}".format(os.path.dirname(os.path.realpath(__file__))) # Setup path so 
 im.output_imaging_to_fits(image=image_simulated, image_path=path+'/data/3_realism_and_complexity_image.fits',
                                                  noise_map_path=path+'/data/3_realism_and_complexity_noise_map.fits',
                                                  psf_path=path+'/data/3_realism_and_complexity_psf.fits',
-                          overwrite=True)
-
-imaging_plotters.plot_image(image=image_simulated)
-
-stopp
-
-# This is the simulated image we fit in the exercise 'bad fits'
-
-psf = im.PSF.simulate_as_gaussian(shape=(11, 11), sigma=0.75)
-image_plane_grids = mask.ImagingGrids.grids_for_simulation(shape=(130, 130), pixel_scale=0.1, psf_shape=(11, 11))
-
-lens_galaxy = g.Galaxy(mass=mp.EllipticalIsothermal(centre=(0.0, 0.0), axis_ratio=0.8, phi=0.0, einstein_radius=1.6))
-source_galaxy = g.Galaxy(light=lp.EllipticalSersic(centre=(1.0, 0.0), axis_ratio=0.5, phi=90.0, intensity=0.2, 
-                                                   effective_radius=0.3, sersic_index=3.0))
-tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
-                                             image_plane_grids=image_plane_grids)
-
-image_simulated = im.PreparatoryImage.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=0.1,
-                                               exposure_time=300.0, psf=psf, background_sky_level=0.1, add_noise=True)
-
-path = "{}".format(os.path.dirname(os.path.realpath(__file__))) # Setup path so we can output the simulated data.
-im.output_imaging_to_fits(image=image_simulated, image_path=path+'/data/phase_incorrect_image.fits',
-                                                 noise_map_path=path+'/data/phase_incorrect_noise_map.fits',
-                                                 psf_path=path+'/data/phase_incorrect_psf.fits',
                           overwrite=True)
 
 imaging_plotters.plot_image(image=image_simulated)
