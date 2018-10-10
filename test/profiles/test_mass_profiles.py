@@ -15,8 +15,7 @@ class TestCoredPowerLaw(object):
         power_law = mp.EllipticalCoredPowerLaw(centre=(1, 1), axis_ratio=1.0, phi=45.0,
                                                einstein_radius=1.0, slope=2.2, core_radius=0.1)
 
-        assert power_law.x_cen == 1.0
-        assert power_law.y_cen == 1.0
+        assert power_law.centre == (1.0, 1.0)
         assert power_law.axis_ratio == 1.0
         assert power_law.phi == 45.0
         assert power_law.einstein_radius == 1.0
@@ -28,8 +27,7 @@ class TestCoredPowerLaw(object):
         power_law = mp.SphericalCoredPowerLaw(centre=(1, 1), einstein_radius=1.0, slope=2.2,
                                               core_radius=0.1)
 
-        assert power_law.x_cen == 1.0
-        assert power_law.y_cen == 1.0
+        assert power_law.centre == (1.0, 1.0)
         assert power_law.axis_ratio == 1.0
         assert power_law.phi == 0.0
         assert power_law.einstein_radius == 1.0
@@ -184,8 +182,7 @@ class TestPowerLaw(object):
     def test__constructor(self):
         power_law = mp.EllipticalPowerLaw(centre=(1, 1), axis_ratio=1.0, phi=45.0, einstein_radius=1.0, slope=2.0)
 
-        assert power_law.x_cen == 1.0
-        assert power_law.y_cen == 1.0
+        assert power_law.centre == (1.0, 1.0)
         assert power_law.axis_ratio == 1.0
         assert power_law.phi == 45.0
         assert power_law.einstein_radius == 1.0
@@ -194,8 +191,7 @@ class TestPowerLaw(object):
 
         power_law = mp.SphericalPowerLaw(centre=(1, 1), einstein_radius=1.0, slope=2.0)
 
-        assert power_law.x_cen == 1.0
-        assert power_law.y_cen == 1.0
+        assert power_law.centre == (1.0, 1.0)
         assert power_law.axis_ratio == 1.0
         assert power_law.phi == 0.0
         assert power_law.einstein_radius == 1.0
@@ -301,8 +297,7 @@ class TestCoredIsothermal(object):
         cored_isothermal = mp.EllipticalCoredIsothermal(centre=(1, 1), axis_ratio=1.0, phi=45.0,
                                                         einstein_radius=1.0, core_radius=0.2)
 
-        assert cored_isothermal.x_cen == 1.0
-        assert cored_isothermal.y_cen == 1.0
+        assert cored_isothermal.centre == (1.0, 1.0)
         assert cored_isothermal.axis_ratio == 1.0
         assert cored_isothermal.phi == 45.0
         assert cored_isothermal.einstein_radius == 1.0
@@ -314,8 +309,7 @@ class TestCoredIsothermal(object):
         cored_isothermal = mp.SphericalCoredIsothermal(centre=(1, 1),
                                                        einstein_radius=1.0, core_radius=0.2)
 
-        assert cored_isothermal.x_cen == 1.0
-        assert cored_isothermal.y_cen == 1.0
+        assert cored_isothermal.centre == (1.0, 1.0)
         assert cored_isothermal.axis_ratio == 1.0
         assert cored_isothermal.phi == 0.0
         assert cored_isothermal.einstein_radius == 1.0
@@ -428,8 +422,7 @@ class TestIsothermal(object):
         isothermal = mp.EllipticalIsothermal(centre=(1, 1), axis_ratio=1.0, phi=45.0,
                                              einstein_radius=1.0)
 
-        assert isothermal.x_cen == 1.0
-        assert isothermal.y_cen == 1.0
+        assert isothermal.centre == (1.0, 1.0)
         assert isothermal.axis_ratio == 1.0
         assert isothermal.phi == 45.0
         assert isothermal.einstein_radius == 1.0
@@ -438,8 +431,7 @@ class TestIsothermal(object):
 
         isothermal = mp.SphericalIsothermal(centre=(1, 1), einstein_radius=1.0)
 
-        assert isothermal.x_cen == 1.0
-        assert isothermal.y_cen == 1.0
+        assert isothermal.centre == (1.0, 1.0)
         assert isothermal.axis_ratio == 1.0
         assert isothermal.phi == 0.0
         assert isothermal.einstein_radius == 1.0
@@ -744,8 +736,7 @@ class TestSersic(object):
         sersic = mp.EllipticalSersic(centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=1.0,
                                      effective_radius=0.6, sersic_index=2.0, mass_to_light_ratio=1.0)
 
-        assert sersic.x_cen == 0.0
-        assert sersic.y_cen == 0.0
+        assert sersic.centre == (0.0, 0.0)
         assert sersic.axis_ratio == 1.0
         assert sersic.phi == 0.0
         assert sersic.intensity == 1.0
@@ -758,8 +749,7 @@ class TestSersic(object):
         sersic = mp.SphericalSersic(centre=(0.0, 0.0), intensity=1.0,
                                     effective_radius=0.6, sersic_index=2.0, mass_to_light_ratio=1.0)
 
-        assert sersic.x_cen == 0.0
-        assert sersic.y_cen == 0.0
+        assert sersic.centre == (0.0, 0.0)
         assert sersic.axis_ratio == 1.0
         assert sersic.phi == 0.0
         assert sersic.intensity == 1.0
@@ -874,8 +864,7 @@ class TestExponential(object):
         exponential = mp.EllipticalExponential(centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=1.0,
                                                effective_radius=0.6, mass_to_light_ratio=1.0)
 
-        assert exponential.x_cen == 0.0
-        assert exponential.y_cen == 0.0
+        assert exponential.centre == (0.0, 0.0)
         assert exponential.axis_ratio == 1.0
         assert exponential.phi == 0.0
         assert exponential.intensity == 1.0
@@ -888,8 +877,7 @@ class TestExponential(object):
         exponential = mp.SphericalExponential(centre=(0.0, 0.0), intensity=1.0, effective_radius=0.6,
                                               mass_to_light_ratio=1.0)
 
-        assert exponential.x_cen == 0.0
-        assert exponential.y_cen == 0.0
+        assert exponential.centre == (0.0, 0.0)
         assert exponential.axis_ratio == 1.0
         assert exponential.phi == 0.0
         assert exponential.intensity == 1.0
@@ -952,8 +940,7 @@ class TestDevVaucouleurs(object):
                                           intensity=1.0,
                                           effective_radius=0.6, mass_to_light_ratio=1.0)
 
-        assert dev.x_cen == 0.0
-        assert dev.y_cen == 0.0
+        assert dev.centre == (0.0, 0.0)
         assert dev.axis_ratio == 1.0
         assert dev.phi == 0.0
         assert dev.intensity == 1.0
@@ -966,8 +953,7 @@ class TestDevVaucouleurs(object):
         dev = mp.SphericalDevVaucouleurs(centre=(0.0, 0.0), intensity=1.0,
                                          effective_radius=0.6, mass_to_light_ratio=1.0)
 
-        assert dev.x_cen == 0.0
-        assert dev.y_cen == 0.0
+        assert dev.centre == (0.0, 0.0)
         assert dev.axis_ratio == 1.0
         assert dev.phi == 0.0
         assert dev.intensity == 1.0
@@ -1024,8 +1010,7 @@ class TestSersicMassRadialGradient(object):
                                                    effective_radius=0.6, sersic_index=2.0, mass_to_light_ratio=1.0,
                                                    mass_to_light_gradient=2.0)
 
-        assert sersic.x_cen == 0.0
-        assert sersic.y_cen == 0.0
+        assert sersic.centre == (0.0, 0.0)
         assert sersic.axis_ratio == 1.0
         assert sersic.phi == 0.0
         assert sersic.intensity == 1.0
@@ -1039,8 +1024,7 @@ class TestSersicMassRadialGradient(object):
         sersic = mp.SphericalSersicRadialGradient(centre=(0.0, 0.0), intensity=1.0, effective_radius=0.6,
                                                   sersic_index=2.0, mass_to_light_ratio=1.0, mass_to_light_gradient=2.0)
 
-        assert sersic.x_cen == 0.0
-        assert sersic.y_cen == 0.0
+        assert sersic.centre == (0.0, 0.0)
         assert sersic.axis_ratio == 1.0
         assert sersic.phi == 0.0
         assert sersic.intensity == 1.0

@@ -927,7 +927,7 @@ class TestRealClasses(object):
     #         path=nlo_paramnames_path)
     #
     #     nlo.variable.add_classes(
-    #         light_profile_0=light_profiles.EllipticalSersic,
+    #         light_profile_0=light_profiles.AbstractEllipticalSersic,
     #         light_profile_1=light_profiles.EllipticalExponential,
     #         mass_profile_0=mass_profiles.SphericalIsothermal,
     #         mass_profile_1=mass_profiles.SphericalNFW)
@@ -964,7 +964,7 @@ class TestRealClasses(object):
     # def test__output_model_info__2_models(self, mm_config, nlo_model_info_path):
     #     conf.instance.output_path = nlo_model_info_path
     #
-    #     mapper = model_mapper.ModelMapper(config=mm_config, light_profile_0=light_profiles.EllipticalSersic,
+    #     mapper = model_mapper.ModelMapper(config=mm_config, light_profile_0=light_profiles.AbstractEllipticalSersic,
     #                                       light_profile_1=light_profiles.EllipticalExponential,
     #                                       mass_profile_0=mass_profiles.SphericalIsothermal,
     #                                       mass_profile_1=mass_profiles.SphericalNFW)
@@ -977,7 +977,7 @@ class TestRealClasses(object):
     #     model_info_str = model_info_test.readlines()
     #
     #     assert model_info_str[0] == r'VARIABLE:' + '\n'
-    #     assert model_info_str[1] == r'EllipticalSersic' + '\n'
+    #     assert model_info_str[1] == r'AbstractEllipticalSersic' + '\n'
     #     assert model_info_str[2] == r'' + '\n'
     #     assert model_info_str[3] == r'centre_0: UniformPrior, lower_limit = 0.0, upper_limit = 1.0' + '\n'
     #     assert model_info_str[4] == r'centre_1: UniformPrior, lower_limit = 0.0, upper_limit = 0.5' + '\n'
