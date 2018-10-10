@@ -704,7 +704,7 @@ class TestNFW(object):
         assert nfw.surface_density_from_grid(grid=np.array([[1.0, 0.0]])) == pytest.approx(1.388511, 1e-3)
 
         nfw = mp.EllipticalNFW(centre=(0.0, 0.0), axis_ratio=0.5, phi=0.0, kappa_s=1.0, scale_radius=1.0)
-        assert nfw.surface_density_from_grid(grid=np.array([[0.25, 0.0]])) == pytest.approx(1.388511, 1e-3)
+        assert nfw.surface_density_from_grid(grid=np.array([[0.0, 0.25]])) == pytest.approx(1.388511, 1e-3)
 
     def test__potential_correct_values(self):
         nfw = mp.SphericalNFW(centre=(0.3, 0.2), kappa_s=2.5, scale_radius=4.0)
