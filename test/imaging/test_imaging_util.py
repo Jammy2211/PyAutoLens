@@ -1383,6 +1383,94 @@ class TestTrim:
             util.trim_array_2d_around_centre(array_2d=array, new_shape=(3, 8))
 
 
+class TestPad:
+
+    def test__from_even_to_odd_or_odd_to_even__raises_error(self):
+
+        array = np.ones((5, 5))
+
+        with pytest.raises(ValueError):
+            util.trim_array_2d_around_centre(array_2d=array, new_shape=(4, 4))
+
+        array = np.ones((6, 6))
+
+        with pytest.raises(ValueError):
+            util.trim_array_2d_around_centre(array_2d=array, new_shape=(3, 3))
+
+        array = np.ones((6, 5))
+
+        with pytest.raises(ValueError):
+            util.trim_array_2d_around_centre(array_2d=array, new_shape=(3, 3))
+
+        array = np.ones((5, 6))
+
+        with pytest.raises(ValueError):
+            util.trim_array_2d_around_centre(array_2d=array, new_shape=(3, 3))
+
+    def test__from_3x3_to_5x5(self):
+        array = np.ones((3, 3))
+        array[1, 1] = 2.0
+
+        modified = util.pad_array_2d_around_centre(array_2d=array, new_shape=(5, 5))
+
+        assert (modified == np.array([[0.0, 0.0, 0.0, 0.0, 0.0],
+                                      [0.0, 1.0, 1.0, 1.0, 0.0],
+                                      [0.0, 1.0, 2.0, 1.0, 0.0],
+                                      [0.0, 1.0, 1.0, 1.0, 0.0],
+                                      [0.0, 0.0, 0.0, 0.0, 0.0]])).all()
+
+    def test__from_4x4_to_6x6(self):
+
+        array = np.ones((4, 4))
+        array[1:3, 1:3] = 2.0
+
+        modified = util.pad_array_2d_around_centre(array_2d=array, new_shape=(6, 6))
+
+        assert (modified == np.array([[0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+                                      [0.0, 1.0, 1.0, 1.0, 1.0, 0.0],
+                                      [0.0, 1.0, 2.0, 2.0, 1.0, 0.0],
+                                      [0.0, 1.0, 2.0, 2.0, 1.0, 0.0],
+                                      [0.0, 1.0, 1.0, 1.0, 1.0, 0.0],
+                                      [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],])).all()
+
+    def test__from_3x2_to_5x4(self):
+        array = np.ones((3, 2))
+        array[1, 0:2] = 2.0
+
+        modified = util.pad_array_2d_around_centre(array_2d=array, new_shape=(5, 4))
+
+        assert (modified == np.array([[0.0, 0.0, 0.0, 0.0],
+                                      [0.0, 1.0, 1.0, 0.0],
+                                      [0.0, 2.0, 2.0, 0.0],
+                                      [0.0, 1.0, 1.0, 0.0],
+                                      [0.0, 0.0, 0.0, 0.0]])).all()
+
+    def test__from_2x3_to_4x5(self):
+        array = np.ones((2, 3))
+        array[0:2, 1] = 2.0
+
+        modified = util.pad_array_2d_around_centre(array_2d=array, new_shape=(4, 5))
+
+        assert (modified == np.array([[0.0, 0.0, 0.0, 0.0, 0.0],
+                                      [0.0, 1.0, 2.0, 1.0, 0.0],
+                                      [0.0, 1.0, 2.0, 1.0, 0.0],
+                                      [0.0, 0.0, 0.0, 0.0, 0.0],])).all()
+
+    def test__x_size_smaller_than_array__raises_error(self):
+        array = np.ones((5, 5))
+        array[2, 2] = 2.0
+
+        with pytest.raises(ValueError):
+            util.trim_array_2d_around_centre(array_2d=array, new_shape=(3, 8))
+
+    def test__y_size_smaller_than_array__raises_error(self):
+        array = np.ones((5, 5))
+        array[2, 2] = 2.0
+
+        with pytest.raises(ValueError):
+            util.trim_array_2d_around_centre(array_2d=array, new_shape=(8, 3))
+
+
 class TestTrimAroundPixels:
 
     def test__from_6x6(self):

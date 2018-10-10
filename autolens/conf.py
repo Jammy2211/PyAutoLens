@@ -6,7 +6,7 @@ from autolens import exc
 
 directory = os.path.dirname(os.path.realpath(__file__))
 
-CONFIG_DIR = '{}/..'.format(directory)
+CONFIG_DIR = '{}'.format(directory)
 CONFIG_PATH = '{}/config'.format(CONFIG_DIR)
 
 CONFIG_URL = 'https://drive.google.com/uc?authuser=0&id=1IZE4biWzuxyudDtNr4skyM0PiBHiJhBN&export=download'

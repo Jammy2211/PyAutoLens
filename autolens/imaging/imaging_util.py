@@ -485,6 +485,45 @@ def map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(array_1d, shape):
     return array_2d
 
 
+def pad_array_2d_around_centre(array_2d, new_shape):
+    """
+    Trim the data_vector array to a new sub_grid_size around its central pixel.
+
+    NOTE: The centre of the array cannot be shifted. Therefore, even arrays must be trimmed to even arrays \
+    (e.g. 8x8 -> 4x4) and odd to odd (e.g. 5x5 -> 3x3).
+
+    Parameters
+    ----------
+    array_2d
+    new_shape : (int, int)
+        The (x,y) new pixel dimension of the trimmed data_vector-array.
+    """
+
+    if new_shape[0] < array_2d.shape[0]:
+        raise ValueError(
+            'grids.Grid2d.pad_data - You have specified a new x_size smaller than the input 2d array')
+    elif new_shape[1] < array_2d.shape[1]:
+        raise ValueError(
+            'grids.Grid2d.pad_data - You have specified a new y_size bigger than the input 2d array')
+
+    if array_2d.shape[0] % 2 == 0 and not new_shape[0] % 2 == 0:
+        raise ValueError('You cannot pad an array from even shape to odd shape - change new_shape to even')
+
+    if array_2d.shape[1] % 2 == 0 and not new_shape[1] % 2 == 0:
+        raise ValueError('You cannot pad an array from even shape to odd shape - change new_shape to even')
+
+    if not array_2d.shape[0] % 2 == 0 and new_shape[0] % 2 == 0:
+        raise ValueError('You cannot pad an array from odd shape to even shape - change new_shape to odd')
+
+    if not array_2d.shape[1] % 2 == 0 and new_shape[1] % 2 == 0:
+        raise ValueError('You cannot pad an array from odd shape to even shape - change new_shape to odd')
+
+    y_pad = int((new_shape[0] - array_2d.shape[0]) / 2)
+    x_pad = int((new_shape[1] - array_2d.shape[1]) / 2)
+
+    return np.pad(array=array_2d, pad_width=(y_pad, x_pad), mode='constant')
+
+
 def trim_array_2d_around_centre(array_2d, new_shape):
     """
     Trim the data_vector array to a new sub_grid_size around its central pixel.
