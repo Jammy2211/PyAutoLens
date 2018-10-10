@@ -1105,3 +1105,101 @@ class TestPSF(object):
                                                          axis_ratio=0.9, phi=45.0, sigma=1.0)
 
             assert profile_psf == pytest.approx(imaging_psf, 1e-4)
+
+
+class TestLoadImagingFromFits(object):
+
+    def test__no_settings_just_pass_fits(self):
+
+        im = image.load_imaging_from_fits(image_path=test_data_dir + '3x3_ones.fits',
+                                          noise_map_path=test_data_dir + '3x3_ones.fits',
+                                          psf_path=test_data_dir + '3x3_ones.fits', pixel_scale=0.1)
+
+        assert (im == np.ones((3,3))).all()
+        assert (im.noise_map == np.ones((3,3))).all()
+        assert (im.psf == np.ones((3,3))).all()
+        assert (im.pixel_scale == 0.1)
+
+    def test__pad_shape_of_image_noise_and_psf(self):
+
+        im = image.load_imaging_from_fits(image_path=test_data_dir + '3x3_ones.fits',
+                                          noise_map_path=test_data_dir + '3x3_ones.fits',
+                                          psf_path=test_data_dir + '3x3_ones.fits', pixel_scale=0.1,
+                                          image_shape=(5,5), psf_shape=(7,7))
+
+        padded_array = np.array([[0.0, 0.0, 0.0, 0.0, 0.0],
+                                 [0.0, 1.0, 1.0, 1.0, 0.0],
+                                 [0.0, 1.0, 1.0, 1.0, 0.0],
+                                 [0.0, 1.0, 1.0, 1.0, 0.0],
+                                 [0.0, 0.0, 0.0, 0.0, 0.0]])
+
+        assert (im == padded_array).all()
+        assert (im.noise_map == padded_array).all()
+
+        psf_padded_array = np.array([[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+                                     [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+                                     [0.0, 0.0, 1.0, 1.0, 1.0, 0.0, 0.0],
+                                     [0.0, 0.0, 1.0, 1.0, 1.0, 0.0, 0.0],
+                                     [0.0, 0.0, 1.0, 1.0, 1.0, 0.0, 0.0],
+                                     [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+                                     [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]])
+
+        assert (im.psf == psf_padded_array).all()
+        assert (im.pixel_scale == 0.1)
+
+class TestLoadImagingFromFits(object):
+
+    def test__no_settings_just_pass_fits(self):
+
+        im = image.load_imaging_from_fits(image_path=test_data_dir + '3x3_ones.fits',
+                                          noise_map_path=test_data_dir + '3x3_ones.fits',
+                                          psf_path=test_data_dir + '3x3_ones.fits', pixel_scale=0.1)
+
+        assert (im == np.ones((3,3))).all()
+        assert (im.noise_map == np.ones((3,3))).all()
+        assert (im.psf == np.ones((3,3))).all()
+        assert (im.pixel_scale == 0.1)
+
+    def test__pad_shape_of_image_noise_and_psf(self):
+
+        im = image.load_imaging_from_fits(image_path=test_data_dir + '3x3_ones.fits',
+                                          noise_map_path=test_data_dir + '3x3_ones.fits',
+                                          psf_path=test_data_dir + '3x3_ones.fits', pixel_scale=0.1,
+                                          image_shape=(5,5), psf_shape=(7,7))
+
+        padded_array = np.array([[0.0, 0.0, 0.0, 0.0, 0.0],
+                                 [0.0, 1.0, 1.0, 1.0, 0.0],
+                                 [0.0, 1.0, 1.0, 1.0, 0.0],
+                                 [0.0, 1.0, 1.0, 1.0, 0.0],
+                                 [0.0, 0.0, 0.0, 0.0, 0.0]])
+
+        assert (im == padded_array).all()
+        assert (im.noise_map == padded_array).all()
+
+        psf_padded_array = np.array([[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+                                     [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+                                     [0.0, 0.0, 1.0, 1.0, 1.0, 0.0, 0.0],
+                                     [0.0, 0.0, 1.0, 1.0, 1.0, 0.0, 0.0],
+                                     [0.0, 0.0, 1.0, 1.0, 1.0, 0.0, 0.0],
+                                     [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+                                     [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]])
+
+        assert (im.psf == psf_padded_array).all()
+        assert (im.pixel_scale == 0.1)
+
+    def test__trim_shape_of_image_noise_and_psf(self):
+
+        im = image.load_imaging_from_fits(image_path=test_data_dir + '3x3_ones.fits',
+                                          noise_map_path=test_data_dir + '3x3_ones.fits',
+                                          psf_path=test_data_dir + '3x3_ones.fits', pixel_scale=0.1,
+                                          image_shape=(1,1), psf_shape=(1,1))
+
+        padded_array = np.array([[1.0]])
+
+        assert (im == padded_array).all()
+        assert (im.noise_map == padded_array).all()
+
+        psf_padded_array = np.array([[1.0]])
+
+        assert (im.psf == psf_padded_array).all()
+        assert (im.pixel_scale == 0.1)
