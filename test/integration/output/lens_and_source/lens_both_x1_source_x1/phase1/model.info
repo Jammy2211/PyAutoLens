@@ -1,0 +1,24 @@
+SphericalDevVaucouleurs
+
+lens_galaxies_centre_0                  GaussianPrior, mean = 0.0, sigma = 1.0
+lens_galaxies_centre_1                  GaussianPrior, mean = 0.0, sigma = 1.0
+lens_galaxies_intensity                 UniformPrior, lower_limit = 0.0, upper_limit = 1.0
+lens_galaxies_effective_radius          UniformPrior, lower_limit = 0.0, upper_limit = 2.0
+
+EllipticalIsothermal
+
+lens_galaxies_centre_0                  GaussianPrior, mean = 0.0, sigma = 1.0
+lens_galaxies_centre_1                  GaussianPrior, mean = 0.0, sigma = 1.0
+lens_galaxies_axis_ratio                UniformPrior, lower_limit = 0.2, upper_limit = 1.0
+lens_galaxies_phi                       UniformPrior, lower_limit = 0.0, upper_limit = 180.0
+lens_galaxies_einstein_radius           UniformPrior, lower_limit = 0.0, upper_limit = 4.0
+
+EllipticalSersic
+
+source_galaxies_centre_0                GaussianPrior, mean = 0.0, sigma = 1.0
+source_galaxies_centre_1                GaussianPrior, mean = 0.0, sigma = 1.0
+source_galaxies_axis_ratio              UniformPrior, lower_limit = 0.2, upper_limit = 1.0
+source_galaxies_phi                     UniformPrior, lower_limit = 0.0, upper_limit = 180.0
+source_galaxies_intensity               UniformPrior, lower_limit = 0.0, upper_limit = 1.0
+source_galaxies_effective_radius        UniformPrior, lower_limit = 0.0, upper_limit = 4.0
+source_galaxies_sersic_index            UniformPrior, lower_limit = 0.8, upper_limit = 8.0
