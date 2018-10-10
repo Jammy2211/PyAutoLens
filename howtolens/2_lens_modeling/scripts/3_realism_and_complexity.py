@@ -31,7 +31,6 @@ from autolens.plotting import fitting_plotters
 # The goal of this, rather short, exercise, is to fit this 'realistic' model to a simulated image, where the lens's
 # light is visible and mass is elliptical. What could go wrong?
 
-
 # First, lets load a new simulated image..
 path = 'path/to/AutoLens/howtolens/1_introduction'
 path = '/home/jammy/PyCharm/Projects/AutoLens/howtolens/2_lens_modeling'
