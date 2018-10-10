@@ -714,7 +714,7 @@ def unmasked_model_image_from_lensing_image_and_tracer(lensing_image, tracer):
     elif tracer is not None:
         model_image_1d = lensing_image.unmasked_grids.image.convolve_array_1d_with_psf(tracer._image_plane_image,
                                                                                        lensing_image.psf)
-        return lensing_image.unmasked_grids.image.map_to_2d(model_image_1d)
+        return lensing_image.unmasked_grids.image.scaled_array_from_array_1d(model_image_1d)
 
 
 def unmasked_model_images_of_galaxies_from_lensing_image_and_tracer(lensing_image, tracer):
@@ -725,4 +725,4 @@ def unmasked_model_images_of_galaxies_from_lensing_image_and_tracer(lensing_imag
                                           lensing_image.unmasked_grids.image.convolve_array_1d_with_psf(image,
                                                                                                         lensing_image.psf),
                                           tracer._image_plane_images_of_galaxies))
-        return list(map(lambda image: lensing_image.unmasked_grids.image.map_to_2d(image), model_galaxy_images_1d))
+        return list(map(lambda image: lensing_image.unmasked_grids.image.scaled_array_from_array_1d(image), model_galaxy_images_1d))

@@ -97,6 +97,7 @@ plane_plotters.plot_plane_grid(plane=tracer.source_plane, xmin=-0.2, xmax=0.2, y
 
 # Lets plot the lensing quantities again. Note that, because we supplied our galaxies with redshifts and our tracer
 # with a cosmology, our units have been conerted to kiloparsecs!
+# (This line can take a bit of time to run)
 ray_tracing_plotters.plot_ray_tracing(tracer=tracer)
 
 # In the previous example, we saw that the tracer had attributes we plotted (e.g. surface density, potential, etc.)

@@ -31,7 +31,6 @@ print(image_grids.image.shape)
 
 # We can also plot the grid, albeit it's a fairly bland uniform grid of dots.
 imaging_plotters.plot_grid(grid=image_grids.image)
-stop
 
 # You might be wondering why the image_grids are using the attribute 'image' (e.g. image_grids.image).
 
@@ -56,7 +55,7 @@ print(image_grids.sub[2])
 print('(y,x) sub-pixel 4 (of image pixel 1):')
 print(image_grids.sub[3])
 print('(y,x) sub-pixel 1 (of image pixel 2):')
-print(image_grids.sub[3])
+print(image_grids.sub[4])
 print('etc.')
 
 # Congratulations, you've completed your first PyAutoLens tutorial! Before moving on to the next one, experiment with
