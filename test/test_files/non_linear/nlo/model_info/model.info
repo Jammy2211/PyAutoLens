@@ -1,5 +1,5 @@
 VARIABLE:
-EllipticalSersic
+AbstractEllipticalSersic
 
 light_profile_0_centre_0                UniformPrior, lower_limit = -1.0, upper_limit = 1.0
 light_profile_0_centre_1                UniformPrior, lower_limit = -1.0, upper_limit = 1.0

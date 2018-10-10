@@ -82,7 +82,7 @@ new_grid_to_eccentric_radius:   0.011136054992675781
 
 ## Results from Several Light Profiles
 
-#### EllipticalSersic
+#### AbstractEllipticalSersic
 old_method: 1.1218419075012207
 
 new_method: 0.012676715850830078

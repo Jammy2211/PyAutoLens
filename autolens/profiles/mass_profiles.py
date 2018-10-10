@@ -9,6 +9,7 @@ from scipy import special
 from scipy.integrate import quad
 
 from autolens.profiles import geometry_profiles
+from autolens.profiles import light_profiles
 
 
 def jit_integrand(integrand_function):
@@ -928,7 +929,7 @@ class SphericalNFW(EllipticalNFW):
 
 
 # noinspection PyAbstractClass
-class AbstractEllipticalSersic(geometry_profiles.EllipticalSersic, EllipticalMassProfile):
+class AbstractEllipticalSersic(light_profiles.AbstractEllipticalSersic, EllipticalMassProfile):
 
     def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=0.1, effective_radius=0.6,
                  sersic_index=4.0, mass_to_light_ratio=1.0):
