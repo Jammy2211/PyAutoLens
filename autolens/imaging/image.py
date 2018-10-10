@@ -467,7 +467,7 @@ def generate_poisson_noise(image, effective_exposure_map, seed=-1):
 
 
 def load_imaging_from_fits(image_path, noise_map_path, psf_path, pixel_scale, image_hdu=0, noise_map_hdu=0, psf_hdu=0,
-                           psf_trimmed_shape=None, noise_map_is_weight_map=False):
+                           image_shape=None, psf_shape=None, noise_map_is_weight_map=False):
 
     data = ScaledSquarePixelArray.from_fits(file_path=image_path, hdu=image_hdu, pixel_scale=pixel_scale)
 
@@ -477,11 +477,14 @@ def load_imaging_from_fits(image_path, noise_map_path, psf_path, pixel_scale, im
         weight_map = Array.from_fits(file_path=noise_map_path, hdu=noise_map_hdu)
         noise_map = NoiseMap.from_weight_map(weight_map=weight_map, pixel_scale=pixel_scale)
 
+    if image_shape is not None:
+        data = data.resize_around_centre(new_shape=image_shape)
+        noise_map = noise_map.resize_around_centre(new_shape=image_shape)
 
     psf = PSF.from_fits_with_scale(file_path=psf_path, hdu=psf_hdu, pixel_scale=pixel_scale)
 
-    if psf_trimmed_shape is not None:
-        psf = psf.trim_around_centre(psf_trimmed_shape)
+    if psf_shape is not None:
+        psf = psf.resize_around_centre(new_shape=psf_shape)
 
     return Image(array=data, pixel_scale=pixel_scale, psf=psf, noise_map=noise_map)
 
