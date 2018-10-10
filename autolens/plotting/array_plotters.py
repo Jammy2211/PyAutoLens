@@ -131,6 +131,7 @@ def output_array(array, output_path, output_filename, output_format):
 
 
 def output_subplot_array(output_path, output_filename, output_format):
+
     if output_format is 'show':
         plt.show()
     elif output_format is 'png':
