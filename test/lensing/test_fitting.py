@@ -674,7 +674,7 @@ class TestProfileFit:
             tracer_image = tracer._image_plane_image
             assert (tracer_image == fit._model_image).all()
 
-            tracer_image_2d = li_no_blur.grids.image.map_to_2d(tracer_image)
+            tracer_image_2d = li_no_blur.grids.image.scaled_array_from_array_1d(tracer_image)
             assert (tracer_image_2d == fit.model_image).all()
 
         def test__real_tracer__2x2_image__psf_is_non_symmetric_producing_l_shape(self, galaxy_light):
@@ -741,8 +741,8 @@ class TestProfileFit:
                 li.convolver_image.convolve_image(tracer._image_plane_images_of_galaxies[1],
                                                   tracer._image_plane_blurring_images_of_galaxies[1])
 
-            model_lens_image = li.grids.image.map_to_2d(model_lens_image)
-            model_source_image = li.grids.image.map_to_2d(model_source_image)
+            model_lens_image = li.grids.image.scaled_array_from_array_1d(model_lens_image)
+            model_source_image = li.grids.image.scaled_array_from_array_1d(model_source_image)
 
             assert (fit.model_images_of_planes[0] == model_lens_image).all()
             assert (fit.model_images_of_planes[1] == model_source_image).all()
@@ -779,9 +779,9 @@ class TestProfileFit:
             model_image_plane_2 = li.convolver_image.convolve_image(tracer._image_plane_images_of_galaxies[2],
                                                                     tracer._image_plane_blurring_images_of_galaxies[2])
 
-            model_image_plane_0 = li.grids.image.map_to_2d(model_image_plane_0)
-            model_image_plane_1 = li.grids.image.map_to_2d(model_image_plane_1)
-            model_image_plane_2 = li.grids.image.map_to_2d(model_image_plane_2)
+            model_image_plane_0 = li.grids.image.scaled_array_from_array_1d(model_image_plane_0)
+            model_image_plane_1 = li.grids.image.scaled_array_from_array_1d(model_image_plane_1)
+            model_image_plane_2 = li.grids.image.scaled_array_from_array_1d(model_image_plane_2)
 
             assert (fit.model_images_of_planes[0] == model_image_plane_0).all()
             assert (fit.model_images_of_planes[1] == model_image_plane_1).all()
@@ -801,7 +801,7 @@ class TestProfileFit:
             g0 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=1.0))
             g0_image = pl.intensities_from_grid(grid=li.grids.sub, galaxies=[g0])
             g0_blurring_image = pl.intensities_from_grid(grid=li.grids.blurring, galaxies=[g0])
-            g0_model_image = li.grids.image.map_to_2d(li.convolver_image.convolve_image(g0_image, g0_blurring_image))
+            g0_model_image = li.grids.image.scaled_array_from_array_1d(li.convolver_image.convolve_image(g0_image, g0_blurring_image))
 
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g0],
                                                          image_plane_grids=li.grids)
@@ -983,10 +983,10 @@ class TestProfileFit:
             residuals = fitting.residuals_from_image_and_model(li_manual, model_image)
             chi_squareds = fitting.chi_squareds_from_residuals_and_noise(residuals, li_manual.noise_map)
 
-            assert li_manual.grids.image.map_to_2d(li_manual.noise_map) == pytest.approx(fit.noise_map, 1e-4)
-            assert li_manual.grids.image.map_to_2d(model_image) == pytest.approx(fit.model_image, 1e-4)
-            assert li_manual.grids.image.map_to_2d(residuals) == pytest.approx(fit.residuals, 1e-4)
-            assert li_manual.grids.image.map_to_2d(chi_squareds) == pytest.approx(fit.chi_squareds, 1e-4)
+            assert li_manual.grids.image.scaled_array_from_array_1d(li_manual.noise_map) == pytest.approx(fit.noise_map, 1e-4)
+            assert li_manual.grids.image.scaled_array_from_array_1d(model_image) == pytest.approx(fit.model_image, 1e-4)
+            assert li_manual.grids.image.scaled_array_from_array_1d(residuals) == pytest.approx(fit.residuals, 1e-4)
+            assert li_manual.grids.image.scaled_array_from_array_1d(chi_squareds) == pytest.approx(fit.chi_squareds, 1e-4)
 
             chi_squared_term = fitting.chi_squared_term_from_chi_squareds(chi_squareds)
             noise_term = fitting.noise_term_from_noise_map(li_manual.noise_map)
@@ -1115,10 +1115,10 @@ class TestHyperProfileFit:
             residuals = fitting.residuals_from_image_and_model(li_manual, model_image)
             chi_squareds = fitting.chi_squareds_from_residuals_and_noise(residuals, li_manual.noise_map)
 
-            assert li_manual.grids.image.map_to_2d(model_image) == pytest.approx(fit.model_image, 1e-4)
-            assert li_manual.grids.image.map_to_2d(residuals) == pytest.approx(fit.residuals, 1e-4)
-            assert li_manual.grids.image.map_to_2d(li_manual.noise_map) == pytest.approx(fit.noise_map, 1e-4)
-            assert li_manual.grids.image.map_to_2d(chi_squareds) == pytest.approx(fit.chi_squareds, 1e-4)
+            assert li_manual.grids.image.scaled_array_from_array_1d(model_image) == pytest.approx(fit.model_image, 1e-4)
+            assert li_manual.grids.image.scaled_array_from_array_1d(residuals) == pytest.approx(fit.residuals, 1e-4)
+            assert li_manual.grids.image.scaled_array_from_array_1d(li_manual.noise_map) == pytest.approx(fit.noise_map, 1e-4)
+            assert li_manual.grids.image.scaled_array_from_array_1d(chi_squareds) == pytest.approx(fit.chi_squareds, 1e-4)
 
             chi_squared_term = fitting.chi_squared_term_from_chi_squareds(chi_squareds)
             noise_term = fitting.noise_term_from_noise_map(li_manual.noise_map)
@@ -1138,10 +1138,10 @@ class TestHyperProfileFit:
                                                                                           li_manual.noise_map)
             scaled_chi_squareds = fitting.chi_squareds_from_residuals_and_noise(residuals, scaled_noise_map)
 
-            assert li_manual.grids.image.map_to_2d(contributions[0]) == pytest.approx(fit.contributions[0], 1e-4)
-            assert li_manual.grids.image.map_to_2d(contributions[1]) == pytest.approx(fit.contributions[1], 1e-4)
-            assert li_manual.grids.image.map_to_2d(scaled_noise_map) == pytest.approx(fit.scaled_noise_map, 1e-4)
-            assert li_manual.grids.image.map_to_2d(scaled_chi_squareds) == pytest.approx(fit.scaled_chi_squareds, 1e-4)
+            assert li_manual.grids.image.scaled_array_from_array_1d(contributions[0]) == pytest.approx(fit.contributions[0], 1e-4)
+            assert li_manual.grids.image.scaled_array_from_array_1d(contributions[1]) == pytest.approx(fit.contributions[1], 1e-4)
+            assert li_manual.grids.image.scaled_array_from_array_1d(scaled_noise_map) == pytest.approx(fit.scaled_noise_map, 1e-4)
+            assert li_manual.grids.image.scaled_array_from_array_1d(scaled_chi_squareds) == pytest.approx(fit.scaled_chi_squareds, 1e-4)
 
             scaled_chi_squared_term = fitting.chi_squared_term_from_chi_squareds(scaled_chi_squareds)
             scaled_noise_term = fitting.noise_term_from_noise_map(scaled_noise_map)
@@ -1263,11 +1263,11 @@ class TestInversionFit:
             residuals = fitting.residuals_from_image_and_model(li_manual, inversion.reconstructed_image)
             chi_squareds = fitting.chi_squareds_from_residuals_and_noise(residuals, li_manual.noise_map)
 
-            assert li_manual.grids.image.map_to_2d(li_manual.noise_map) == pytest.approx(fit.noise_map, 1e-4)
-            assert li_manual.grids.image.map_to_2d(inversion.reconstructed_image) == pytest.approx(fit.model_image,
-                                                                                                   1e-4)
-            assert li_manual.grids.image.map_to_2d(residuals) == pytest.approx(fit.residuals, 1e-4)
-            assert li_manual.grids.image.map_to_2d(chi_squareds) == pytest.approx(fit.chi_squareds, 1e-4)
+            assert li_manual.grids.image.scaled_array_from_array_1d(li_manual.noise_map) == pytest.approx(fit.noise_map, 1e-4)
+            assert li_manual.grids.image.scaled_array_from_array_1d(inversion.reconstructed_image) == pytest.approx(fit.model_image,
+                                                                                                                    1e-4)
+            assert li_manual.grids.image.scaled_array_from_array_1d(residuals) == pytest.approx(fit.residuals, 1e-4)
+            assert li_manual.grids.image.scaled_array_from_array_1d(chi_squareds) == pytest.approx(fit.chi_squareds, 1e-4)
 
             chi_squared_term = fitting.chi_squared_term_from_chi_squareds(chi_squareds)
             noise_term = fitting.noise_term_from_noise_map(li_manual.noise_map)
@@ -1395,11 +1395,11 @@ class TestHyperInversionFit:
             residuals = fitting.residuals_from_image_and_model(li_manual, inversion.reconstructed_image)
             chi_squareds = fitting.chi_squareds_from_residuals_and_noise(residuals, li_manual.noise_map)
 
-            assert li_manual.grids.image.map_to_2d(li_manual.noise_map) == pytest.approx(fit.noise_map, 1e-4)
-            assert li_manual.grids.image.map_to_2d(inversion.reconstructed_image) == pytest.approx(fit.model_image,
-                                                                                                   1e-4)
-            assert li_manual.grids.image.map_to_2d(residuals) == pytest.approx(fit.residuals, 1e-4)
-            assert li_manual.grids.image.map_to_2d(chi_squareds) == pytest.approx(fit.chi_squareds, 1e-4)
+            assert li_manual.grids.image.scaled_array_from_array_1d(li_manual.noise_map) == pytest.approx(fit.noise_map, 1e-4)
+            assert li_manual.grids.image.scaled_array_from_array_1d(inversion.reconstructed_image) == pytest.approx(fit.model_image,
+                                                                                                                    1e-4)
+            assert li_manual.grids.image.scaled_array_from_array_1d(residuals) == pytest.approx(fit.residuals, 1e-4)
+            assert li_manual.grids.image.scaled_array_from_array_1d(chi_squareds) == pytest.approx(fit.chi_squareds, 1e-4)
 
             chi_squared_term = fitting.chi_squared_term_from_chi_squareds(chi_squareds)
             noise_term = fitting.noise_term_from_noise_map(li_manual.noise_map)
@@ -1430,12 +1430,12 @@ class TestHyperInversionFit:
             scaled_residuals = fitting.residuals_from_image_and_model(li_manual, scaled_inversion.reconstructed_image)
             scaled_chi_squareds = fitting.chi_squareds_from_residuals_and_noise(scaled_residuals, scaled_noise_map)
 
-            assert li_manual.grids.image.map_to_2d(contributions[0]) == pytest.approx(fit.contributions[0], 1e-4)
-            assert li_manual.grids.image.map_to_2d(contributions[1]) == pytest.approx(fit.contributions[1], 1e-4)
-            assert li_manual.grids.image.map_to_2d(scaled_noise_map) == pytest.approx(fit.scaled_noise_map, 1e-4)
-            assert li_manual.grids.image.map_to_2d(scaled_model_image) == pytest.approx(fit.scaled_model_image, 1e-4)
-            assert li_manual.grids.image.map_to_2d(scaled_residuals) == pytest.approx(fit.scaled_residuals, 1e-4)
-            assert li_manual.grids.image.map_to_2d(scaled_chi_squareds) == pytest.approx(fit.scaled_chi_squareds, 1e-4)
+            assert li_manual.grids.image.scaled_array_from_array_1d(contributions[0]) == pytest.approx(fit.contributions[0], 1e-4)
+            assert li_manual.grids.image.scaled_array_from_array_1d(contributions[1]) == pytest.approx(fit.contributions[1], 1e-4)
+            assert li_manual.grids.image.scaled_array_from_array_1d(scaled_noise_map) == pytest.approx(fit.scaled_noise_map, 1e-4)
+            assert li_manual.grids.image.scaled_array_from_array_1d(scaled_model_image) == pytest.approx(fit.scaled_model_image, 1e-4)
+            assert li_manual.grids.image.scaled_array_from_array_1d(scaled_residuals) == pytest.approx(fit.scaled_residuals, 1e-4)
+            assert li_manual.grids.image.scaled_array_from_array_1d(scaled_chi_squareds) == pytest.approx(fit.scaled_chi_squareds, 1e-4)
 
             scaled_chi_squared_term = fitting.chi_squared_term_from_chi_squareds(scaled_chi_squareds)
             scaled_noise_term = fitting.noise_term_from_noise_map(scaled_noise_map)
@@ -1474,8 +1474,8 @@ class TestProfileInversionFit:
             profile_model_image = li_manual.convolver_image.convolve_image(image_im, blurring_im)
             profile_subtracted_image = li_manual[:] - profile_model_image
 
-            assert li_manual.grids.image.map_to_2d(profile_model_image) == pytest.approx(fit.profile_model_image, 1e-4)
-            assert li_manual.grids.image.map_to_2d(profile_subtracted_image) == \
+            assert li_manual.grids.image.scaled_array_from_array_1d(profile_model_image) == pytest.approx(fit.profile_model_image, 1e-4)
+            assert li_manual.grids.image.scaled_array_from_array_1d(profile_subtracted_image) == \
                    pytest.approx(fit.profile_subtracted_image, 1e-4)
 
             mapper = pix.mapper_from_grids_and_borders(li_manual.grids, li_manual.borders)
@@ -1488,12 +1488,12 @@ class TestProfileInversionFit:
             residuals = fitting.residuals_from_image_and_model(li_manual, model_image)
             chi_squareds = fitting.chi_squareds_from_residuals_and_noise(residuals, li_manual.noise_map)
 
-            assert li_manual.grids.image.map_to_2d(li_manual.noise_map) == pytest.approx(fit.noise_map, 1e-4)
-            assert li_manual.grids.image.map_to_2d(inversion.reconstructed_image) == \
+            assert li_manual.grids.image.scaled_array_from_array_1d(li_manual.noise_map) == pytest.approx(fit.noise_map, 1e-4)
+            assert li_manual.grids.image.scaled_array_from_array_1d(inversion.reconstructed_image) == \
                    pytest.approx(fit.inversion_model_image, 1e-4)
-            assert li_manual.grids.image.map_to_2d(model_image) == pytest.approx(fit.model_image, 1e-4)
-            assert li_manual.grids.image.map_to_2d(residuals) == pytest.approx(fit.residuals, 1e-4)
-            assert li_manual.grids.image.map_to_2d(chi_squareds) == pytest.approx(fit.chi_squareds, 1e-4)
+            assert li_manual.grids.image.scaled_array_from_array_1d(model_image) == pytest.approx(fit.model_image, 1e-4)
+            assert li_manual.grids.image.scaled_array_from_array_1d(residuals) == pytest.approx(fit.residuals, 1e-4)
+            assert li_manual.grids.image.scaled_array_from_array_1d(chi_squareds) == pytest.approx(fit.chi_squareds, 1e-4)
 
             chi_squared_term = fitting.chi_squared_term_from_chi_squareds(chi_squareds)
             noise_term = fitting.noise_term_from_noise_map(li_manual.noise_map)
@@ -1532,8 +1532,8 @@ class TestHyperProfileInversionFit:
             profile_model_image = li_manual.convolver_image.convolve_image(image_im, blurring_im)
             profile_subtracted_image = li_manual[:] - profile_model_image
 
-            assert li_manual.grids.image.map_to_2d(profile_model_image) == pytest.approx(fit.profile_model_image, 1e-4)
-            assert li_manual.grids.image.map_to_2d(profile_subtracted_image) == \
+            assert li_manual.grids.image.scaled_array_from_array_1d(profile_model_image) == pytest.approx(fit.profile_model_image, 1e-4)
+            assert li_manual.grids.image.scaled_array_from_array_1d(profile_subtracted_image) == \
                    pytest.approx(fit.profile_subtracted_image, 1e-4)
 
             mapper = pix.mapper_from_grids_and_borders(li_manual.grids, li_manual.borders)
@@ -1546,12 +1546,12 @@ class TestHyperProfileInversionFit:
             residuals = fitting.residuals_from_image_and_model(li_manual, model_image)
             chi_squareds = fitting.chi_squareds_from_residuals_and_noise(residuals, li_manual.noise_map)
 
-            assert li_manual.grids.image.map_to_2d(li_manual.noise_map) == pytest.approx(fit.noise_map, 1e-4)
-            assert li_manual.grids.image.map_to_2d(inversion.reconstructed_image) == \
+            assert li_manual.grids.image.scaled_array_from_array_1d(li_manual.noise_map) == pytest.approx(fit.noise_map, 1e-4)
+            assert li_manual.grids.image.scaled_array_from_array_1d(inversion.reconstructed_image) == \
                    pytest.approx(fit.inversion_model_image, 1e-4)
-            assert li_manual.grids.image.map_to_2d(model_image) == pytest.approx(fit.model_image, 1e-4)
-            assert li_manual.grids.image.map_to_2d(residuals) == pytest.approx(fit.residuals, 1e-4)
-            assert li_manual.grids.image.map_to_2d(chi_squareds) == pytest.approx(fit.chi_squareds, 1e-4)
+            assert li_manual.grids.image.scaled_array_from_array_1d(model_image) == pytest.approx(fit.model_image, 1e-4)
+            assert li_manual.grids.image.scaled_array_from_array_1d(residuals) == pytest.approx(fit.residuals, 1e-4)
+            assert li_manual.grids.image.scaled_array_from_array_1d(chi_squareds) == pytest.approx(fit.chi_squareds, 1e-4)
 
             chi_squared_term = fitting.chi_squared_term_from_chi_squareds(chi_squareds)
             noise_term = fitting.noise_term_from_noise_map(li_manual.noise_map)
@@ -1580,12 +1580,12 @@ class TestHyperProfileInversionFit:
             scaled_residuals = fitting.residuals_from_image_and_model(li_manual, scaled_model_image)
             scaled_chi_squareds = fitting.chi_squareds_from_residuals_and_noise(scaled_residuals, scaled_noise_map)
 
-            assert li_manual.grids.image.map_to_2d(contributions[0]) == pytest.approx(fit.contributions[0], 1e-4)
-            assert li_manual.grids.image.map_to_2d(contributions[1]) == pytest.approx(fit.contributions[1], 1e-4)
-            assert li_manual.grids.image.map_to_2d(scaled_noise_map) == pytest.approx(fit.scaled_noise_map, 1e-4)
-            assert li_manual.grids.image.map_to_2d(scaled_model_image) == pytest.approx(fit.scaled_model_image, 1e-4)
-            assert li_manual.grids.image.map_to_2d(scaled_residuals) == pytest.approx(fit.scaled_residuals, 1e-4)
-            assert li_manual.grids.image.map_to_2d(scaled_chi_squareds) == pytest.approx(fit.scaled_chi_squareds, 1e-4)
+            assert li_manual.grids.image.scaled_array_from_array_1d(contributions[0]) == pytest.approx(fit.contributions[0], 1e-4)
+            assert li_manual.grids.image.scaled_array_from_array_1d(contributions[1]) == pytest.approx(fit.contributions[1], 1e-4)
+            assert li_manual.grids.image.scaled_array_from_array_1d(scaled_noise_map) == pytest.approx(fit.scaled_noise_map, 1e-4)
+            assert li_manual.grids.image.scaled_array_from_array_1d(scaled_model_image) == pytest.approx(fit.scaled_model_image, 1e-4)
+            assert li_manual.grids.image.scaled_array_from_array_1d(scaled_residuals) == pytest.approx(fit.scaled_residuals, 1e-4)
+            assert li_manual.grids.image.scaled_array_from_array_1d(scaled_chi_squareds) == pytest.approx(fit.scaled_chi_squareds, 1e-4)
 
             scaled_chi_squared_term = fitting.chi_squared_term_from_chi_squareds(scaled_chi_squareds)
             scaled_noise_term = fitting.noise_term_from_noise_map(scaled_noise_map)

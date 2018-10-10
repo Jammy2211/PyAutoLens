@@ -14,11 +14,11 @@ from autolens.plotting import fitting_plotters
 # via a tracer, and by compairing to the simulated image we'll get diagostics about the quality of the fit.
 
 # First, we load the image-data we simualted in the previous tutorial.
-path = 'path/to/AutoLens/howtolens/0_introduction' # Unfortunately, in a Jupyter notebook you have to manually specify the path to PyAutoLens and this tutorial.
-path = '/home/jammy/PyCharm/Projects/AutoLens/howtolens/0_introduction'
+path = 'path/to/AutoLens/howtolens/1_introduction' # Unfortunately, in a Jupyter notebook you have to manually specify the path to PyAutoLens and this tutorial.
+path = '/home/jammy/PyCharm/Projects/AutoLens/howtolens/1_introduction'
 image = im.load_imaging_from_path(image_path=path + '/data/image.fits',
                                   noise_map_path=path+'/data/noise_map.fits',
-                                  psf_path=path + '/data/psf.fits', pixel_scale=0.05)
+                                  psf_path=path + '/data/psf.fits', pixel_scale=0.1)
 
 # To fit an image, we first specify a mask. A mask describes the sections of the image that we fit.
 
@@ -134,10 +134,9 @@ print(fit.likelihood)
 # It decreases! This model was a worse fit to the data.
 
 # Lets change the tracer, one more time, to a solution that is nowhere near the correct one.
-lens_galaxy = g.Galaxy(mass=mp.EllipticalIsothermal(centre=(-0.05, -0.05), einstein_radius=1.2, axis_ratio=0.6,
-                                                    phi=80.0))
-source_galaxy = g.Galaxy(light=lp.EllipticalSersic(centre=(0.2, 0.4), axis_ratio=0.7, phi=50.0,
-                                                        intensity=1.2, effective_radius=0.8, sersic_index=3.5))
+lens_galaxy = g.Galaxy(mass=mp.EllipticalIsothermal(centre=(0.005, 0.005), einstein_radius=1.3, axis_ratio=0.8, phi=45.0))
+source_galaxy = g.Galaxy(light=lp.EllipticalSersic(centre=(0.1, 0.1), axis_ratio=0.7, phi=65.0,
+                                                        intensity=1.0, effective_radius=0.4, sersic_index=3.5))
 tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
                                              image_plane_grids=lensing_image.grids)
 fit = fitting.fit_lensing_image_with_tracer(lensing_image=lensing_image, tracer=tracer)
