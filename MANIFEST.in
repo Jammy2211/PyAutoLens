@@ -15,6 +15,6 @@ prune .cache
 prune .git
 prune build
 prune dist
-recursive-include config *
+recursive-include autolens/config *
 recursive-exclude *.egg-info *
 recursive-include tests *

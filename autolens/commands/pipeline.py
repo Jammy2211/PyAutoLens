@@ -1,7 +1,7 @@
 import colorama
 
 from autolens import conf
-from autolens import pipeline
+from autolens import runners
 from autolens.commands.base import Base, prepend_working_directory
 
 
@@ -43,33 +43,36 @@ class Pipeline(Base):
     def run(self):
         name = self.options['<name>']
         conf.instance = conf.Config(self.config_path, self.output_path)
-        if self.options['--info']:
-            tup = pipeline.pipeline_dict[name]
-            print()
-            pl = tup.make()
-            print(red(name))
-            print(tup.doc)
-            print()
-            print(red("Phases"))
-            print("\n".join(["{}\n   {}".format(phase.__class__.__name__, blue(phase.doc)) for phase in pl.phases]))
-            return
-        if name is not None:
-            if name not in pipeline.pipeline_dict:
-                if name == "test":
-                    self.run_pipeline(pipeline.TestPipeline())
-                    return
-                print("No pipeline called '{}' found".format(name))
+        try:
+            if self.options['--info']:
+                tup = runners.pipeline_dict[name]
+                print()
+                pl = tup.make()
+                print(red(name))
+                print(tup.doc)
+                print()
+                print(red("Phases"))
+                print("\n".join(["{}\n   {}".format(phase.__class__.__name__, blue(phase.doc)) for phase in pl.phases]))
                 return
-            self.run_pipeline(pipeline.pipeline_dict[name].make())
+            if name is not None:
+                if name == "test":
+                    self.run_pipeline(runners.TestPipeline())
+                    return
+                self.run_pipeline(runners.pipeline_dict[name].make())
+                return
+        except KeyError:
+            print("Pipeline '{}' does not exist.\n".format(name))
 
         print_pipelines()
 
     def run_pipeline(self, pl):
         from autolens.imaging import image as im
         if self.is_using_hdu:
-            image = im.load_imaging_from_fits(self.data_path, self.image_hdu, self.noise_hdu, self.psf_hdu, self.pixel_scale)
+            image = im.load_imaging_from_fits(self.data_path, self.image_hdu, self.noise_hdu, self.psf_hdu,
+                                              self.pixel_scale)
         else:
-            image = im.load_imaging_from_path(self.image_path, self.noise_path, self.psf_path, pixel_scale=self.pixel_scale)
+            image = im.load_imaging_from_path(self.image_path, self.noise_path, self.psf_path,
+                                              pixel_scale=self.pixel_scale)
         pl.run(image)
 
     @property
@@ -216,4 +219,4 @@ def print_pipelines():
             ["{}\n  {}".format(key, blue(value.short_doc)) for
              key, value
              in
-             pipeline.pipeline_dict.items()]))
+             runners.pipeline_dict.items()]))
