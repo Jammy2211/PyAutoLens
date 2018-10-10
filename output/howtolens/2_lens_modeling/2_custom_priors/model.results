@@ -1,0 +1,32 @@
+Most likely model, Likelihood = 50010.42604939937
+
+source_galaxies_centre_0                          0.00229685016357231
+source_galaxies_centre_1                          0.0013376596537860732
+source_galaxies_intensity                         0.20683988486468988
+lens_galaxies_centre_0                            -0.008962967647723946
+lens_galaxies_centre_1                            0.00839372614210461
+lens_galaxies_einstein_radius                     1.6008714988848292
+source_galaxies_effective_radius                  0.19112195653123532
+
+Most probable model (3 sigma limits)
+
+source_galaxies_centre_0                          0.0020004229237357524 (-0.0013349448151975373, 0.0056756150234796715)
+source_galaxies_centre_1                          0.001958848084698754 (-0.0017874778162692076, 0.00567494817367604)
+source_galaxies_intensity                         0.20591515240560027 (0.19955002390659216, 0.2127115759642885)
+lens_galaxies_centre_0                            0.0006110825909869861 (-0.022464761536903334, 0.02422330754806975)
+lens_galaxies_centre_1                            0.0034755539856761147 (-0.02087972739962683, 0.02593127678456473)
+lens_galaxies_einstein_radius                     1.600541840208814 (1.5980211976776382, 1.6030982047133178)
+source_galaxies_effective_radius                  0.19236376616148015 (0.18676146239583688, 0.19788691737648983)
+
+Most probable model (1 sigma limits)
+
+source_galaxies_centre_0                          0.0020004229237357524 (0.0008231417923794844, 0.0031187273077462226)
+source_galaxies_centre_1                          0.001958848084698754 (0.000675310877948393, 0.0032552301409449758)
+source_galaxies_intensity                         0.20591515240560027 (0.20370124292559227, 0.20803836085281294)
+lens_galaxies_centre_0                            0.0006110825909869861 (-0.008115343713518394, 0.008933897428195538)
+lens_galaxies_centre_1                            0.0034755539856761147 (-0.004801011020568811, 0.012546064427284905)
+lens_galaxies_einstein_radius                     1.600541840208814 (1.5997293666979322, 1.6013290859218965)
+source_galaxies_effective_radius                  0.19236376616148015 (0.19066444664876642, 0.19403641741433159)
+
+Constants
+
