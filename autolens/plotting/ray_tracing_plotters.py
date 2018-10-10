@@ -75,6 +75,17 @@ def plot_ray_tracing(tracer, units='kpc', output_path=None, output_filename='tra
         plt.subplot(2, 3, 5)
 
         array_plotters.plot_array(
+            array=tracer.deflections_y, points=None, grid=None, as_subplot=True,
+            units=units, kpc_per_arcsec=tracer.image_plane.kpc_per_arcsec_proper,
+            xticks=tracer.deflections_y.xticks, yticks=tracer.deflections_y.yticks, xyticksize=16,
+            norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
+            figsize=None, aspect='auto', cmap='jet', cb_ticksize=16,
+            title='Deflection Angles (y)', titlesize=16, xlabelsize=16, ylabelsize=16,
+            output_path=output_path, output_filename=None, output_format=output_format)
+
+        plt.subplot(2, 3, 6)
+
+        array_plotters.plot_array(
             array=tracer.deflections_x, points=None, grid=None, as_subplot=True,
             units=units, kpc_per_arcsec=tracer.image_plane.kpc_per_arcsec_proper,
             xticks=tracer.deflections_x.xticks, yticks=tracer.deflections_x.yticks, xyticksize=16,
@@ -83,16 +94,6 @@ def plot_ray_tracing(tracer, units='kpc', output_path=None, output_filename='tra
             title='Deflection Angles (x)', titlesize=16, xlabelsize=16, ylabelsize=16,
             output_path=output_path, output_filename=None, output_format=output_format)
 
-        plt.subplot(2, 3, 6)
-
-        array_plotters.plot_array(
-            array=tracer.deflections_y, points=None, grid=None, as_subplot=True,
-            units=units, kpc_per_arcsec=tracer.image_plane.kpc_per_arcsec_proper,
-            xticks=tracer.deflections_y.xticks, yticks=tracer.deflections_y.yticks, xyticksize=16,
-            norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
-            figsize=None, aspect='auto', cmap='jet', cb_ticksize=16,
-            title='Deflection Angles (y)', titlesize=16, xlabelsize=16, ylabelsize=16,
-            output_path=output_path, output_filename=None, output_format=output_format)
 
         array_plotters.output_subplot_array(output_path=output_path, output_filename=output_filename,
                                             output_format=output_format)
@@ -174,15 +175,6 @@ def plot_ray_tracing_individual(tracer, units='kpc', plot_image_plane_image=Fals
     if plot_deflections:
 
         array_plotters.plot_array(
-            array=tracer.deflections_x, points=None, grid=None, as_subplot=False,
-            units=units, kpc_per_arcsec=tracer.image_plane.kpc_per_arcsec_proper,
-            xticks=tracer.deflections_x.xticks, yticks=tracer.deflections_x.yticks, xyticksize=16,
-            norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
-            figsize=None, aspect='auto', cmap='jet', cb_ticksize=16,
-            title='Deflection Angles (x)', titlesize=16, xlabelsize=16, ylabelsize=16,
-            output_path=output_path, output_filename='deflections_x', output_format=output_format)
-    
-        array_plotters.plot_array(
             array=tracer.deflections_y, points=None, grid=None, as_subplot=False,
             units=units, kpc_per_arcsec=tracer.image_plane.kpc_per_arcsec_proper,
             xticks=tracer.deflections_y.xticks, yticks=tracer.deflections_y.yticks, xyticksize=16,
@@ -190,3 +182,12 @@ def plot_ray_tracing_individual(tracer, units='kpc', plot_image_plane_image=Fals
             figsize=None, aspect='auto', cmap='jet', cb_ticksize=16,
             title='Deflection Angles (y)', titlesize=16, xlabelsize=16, ylabelsize=16,
             output_path=output_path, output_filename='deflections_y', output_format=output_format)
+
+        array_plotters.plot_array(
+            array=tracer.deflections_x, points=None, grid=None, as_subplot=False,
+            units=units, kpc_per_arcsec=tracer.image_plane.kpc_per_arcsec_proper,
+            xticks=tracer.deflections_x.xticks, yticks=tracer.deflections_x.yticks, xyticksize=16,
+            norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
+            figsize=None, aspect='auto', cmap='jet', cb_ticksize=16,
+            title='Deflection Angles (x)', titlesize=16, xlabelsize=16, ylabelsize=16,
+            output_path=output_path, output_filename='deflections_x', output_format=output_format)
