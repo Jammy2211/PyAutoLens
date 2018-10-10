@@ -21,18 +21,21 @@ class LightProfile(object):
     # noinspection PyMethodMayBeStatic
     def intensities_from_grid(self, grid):
         """
-        Abstract method for obtaining intensity at a grid of Cartesian (x,y) coordinates.
+        Abstract method for obtaining intensity at a grid of Cartesian (y,x) coordinates.
 
         Parameters
         ----------
         grid : ndarray
-            The (x, y) coordinates in the original reference frame of the observed _image.
+            The (y, x) coordinates in the original reference frame of the grid.
         Returns
         -------
         intensity : ndarray
             The value of intensity at the given radius
         """
         raise NotImplementedError("intensity_from_grid should be overridden")
+
+    def luminosity_within_circle(self, radius):
+        raise NotImplementedError()
 
     def luminosity_within_ellipse(self, major_axis):
         raise NotImplementedError()
@@ -48,7 +51,7 @@ class EllipticalLP(geometry_profiles.EllipticalProfile, LightProfile):
         Parameters
         ----------
         centre: (float, float)
-            The image_grid of the centre of the profiles
+            The (y,x) coordinates of the centre of the profiles
         axis_ratio : float
             Ratio of light profiles ellipse's minor and major axes (b/a)
         phi : float
@@ -59,34 +62,24 @@ class EllipticalLP(geometry_profiles.EllipticalProfile, LightProfile):
     def luminosity_within_circle(self, radius):
         """
         Compute the light profiles's total luminosity within a circle of specified radius. This is performed via \
-        integration_old and is centred on the light profile's centre.
+        numerical integration and is centred on the light profile's centre.
 
         Parameters
         ----------
         radius : float
             The radius of the circle to compute the luminosity within.
-
-        Returns
-        -------
-        luminosity : float
-            The total luminosity within the specified circle.
         """
         return quad(self.luminosity_integral, a=0.0, b=radius, args=(1.0,))[0]
 
     def luminosity_within_ellipse(self, major_axis):
         """
         Compute the light profiles's total luminosity within an ellipse of specified major axis. This is performed via\
-        integration_old and is centred, oriented and aligned with on the ellipitcal light profile.
+        numerical integration and is centred and oriented withthe ellipitical light profile.
 
         Parameters
         ----------
         major_axis: float
             The major-axis of the ellipse to compute the luminosity within.
-
-        Returns
-        -------
-        luminosity : float
-            The total luminosity within the specified ellipse.
         """
         return quad(self.luminosity_integral, a=0.0, b=major_axis, args=(self.axis_ratio,))[0]
 
@@ -101,12 +94,12 @@ class EllipticalLP(geometry_profiles.EllipticalProfile, LightProfile):
 class EllipticalGaussian(EllipticalLP):
 
     def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=0.1, sigma=0.01):
-        """ The elliptical Gaussian profile, used for modeling a PSF.
+        """ The elliptical Gaussian profile.
 
         Parameters
         ----------
         centre: (float, float)
-            The centre of the light profile.
+            The (y,x) centre of the light profile.
         axis_ratio : float
             Ratio of light profiles ellipse's minor and major axes (b/a).
         phi : float
@@ -122,8 +115,7 @@ class EllipticalGaussian(EllipticalLP):
         self.sigma = sigma
 
     def intensities_from_grid_radii(self, grid_radii):
-        """
-        Calculate the intensity of the Gaussian light profile on a grid of radial coordinates.
+        """Calculate the intensity of the Gaussian light profile on a grid of radial coordinates.
 
         Parameters
         ----------
@@ -136,14 +128,14 @@ class EllipticalGaussian(EllipticalLP):
     @geometry_profiles.transform_grid
     def intensities_from_grid(self, grid):
         """
-        Calculate the intensity of the light profile on a grid of Cartesian (x,y) coordinates.
+        Calculate the intensity of the light profile on a grid of Cartesian (y,x) coordinates.
 
         If the coordinates have not been transformed to the profile's geometry, this is performed automatically.
 
         Parameters
         ----------
         grid : ndarray
-            The (x, y) coordinates in the original reference frame of the observed _image.
+            The (y, x) coordinates in the original reference frame of the grid.
         """
         return self.intensities_from_grid_radii(self.grid_to_elliptical_radii(grid))
 
@@ -156,7 +148,7 @@ class SphericalGaussian(EllipticalGaussian):
         Parameters
         ----------
         centre: (float, float)
-            The centre of the light profile.
+            The (y,x) centre of the light profile.
         intensity : float
             Overall intensity normalisation of the light profiles (electrons per second).
         sigma : float
@@ -165,7 +157,65 @@ class SphericalGaussian(EllipticalGaussian):
         super(SphericalGaussian, self).__init__(centre, 1.0, 0.0, intensity, sigma)
 
 
-class EllipticalSersic(geometry_profiles.EllipticalSersic, EllipticalLP):
+class AbstractEllipticalSersic(geometry_profiles.EllipticalProfile):
+
+    def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=0.1, effective_radius=0.6,
+                 sersic_index=4.0):
+        """ Abstract base class for an elliptical Sersic profile, used for computing its effective radius and 
+        Sersic constant.
+
+        Parameters
+        ----------
+        centre: (float, float)
+            The (y,x) coordinates of the centre of the profiles
+        axis_ratio : float
+            Ratio of light profiles ellipse's minor and major axes (b/a)
+        phi : float
+            Rotational angle of profiles ellipse counter-clockwise from positive x-axis
+        intensity : float
+            Overall intensity normalisation in the light profiles (electrons per second)
+        effective_radius : float
+            The circular radius containing half the light of this model_mapper
+        sersic_index : Int
+            The Sersic index, which controls the light profile concentration
+        """
+        super(AbstractEllipticalSersic, self).__init__(centre, axis_ratio, phi)
+        self.intensity = intensity
+        self.effective_radius = effective_radius
+        self.sersic_index = sersic_index
+
+    @property
+    def elliptical_effective_radius(self):
+        """The effective_radius of a Sersic light profile is defined as the circular effective radius. This is the \
+        radius within which a circular aperture contains half the profiles's total integrated light. For elliptical \
+        systems, this won't robustly capture the light profile's elliptical shape.
+
+        The elliptical effective radius instead describes the major-axis radius of the ellipse containing \
+        half the light, and may be more appropriate for highly flattened systems like disk galaxies."""
+        return self.effective_radius / np.sqrt(self.axis_ratio)
+
+    @property
+    def sersic_constant(self):
+        """ A parameter derived from Sersic index which ensures that effective radius contains 50% of the profile's
+        total integrated light.
+        """
+        return (2 * self.sersic_index) - (1. / 3.) + (4. / (405. * self.sersic_index)) + (
+                46. / (25515. * self.sersic_index ** 2)) + (131. / (1148175. * self.sersic_index ** 3)) - (
+                       2194697. / (30690717750. * self.sersic_index ** 4))
+
+    def intensity_at_radius(self, radius):
+        """ Compute the intensity of the profile at a given radius.
+
+        Parameters
+        ----------
+        radius : float
+            The distance from the centre of the profiles
+        """
+        return self.intensity * np.exp(
+            -self.sersic_constant * (((radius / self.effective_radius) ** (1. / self.sersic_index)) - 1))
+
+
+class EllipticalSersic(AbstractEllipticalSersic, EllipticalLP):
 
     def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=0.1, effective_radius=0.6,
                  sersic_index=4.0):
@@ -174,7 +224,7 @@ class EllipticalSersic(geometry_profiles.EllipticalSersic, EllipticalLP):
         Parameters
         ----------
         centre: (float, float)
-            The centre of the light profile.
+            The (y,x) centre of the light profile.
         axis_ratio : float
             Ratio of light profiles ellipse's minor and major axes (b/a).
         phi : float
@@ -205,18 +255,14 @@ class EllipticalSersic(geometry_profiles.EllipticalSersic, EllipticalLP):
     @geometry_profiles.transform_grid
     def intensities_from_grid(self, grid):
         """
-        Calculate the intensity of the light profile on a grid of Cartesian (x,y) coordinates.
+        Calculate the intensity of the light profile on a grid of Cartesian (y,x) coordinates.
 
         If the coordinates have not been transformed to the profile's geometry, this is performed automatically.
 
         Parameters
         ----------
         grid : ndarray
-            The (x, y) coordinates in the original reference frame of the observed _image.
-        Returns
-        -------
-        intensity : float
-            The value of intensity at the given radius
+            The (y, x) coordinates in the original reference frame of the grid.
         """
         return self.intensities_from_grid_radii(self.grid_to_eccentric_radii(grid))
 
@@ -229,7 +275,7 @@ class SphericalSersic(EllipticalSersic):
         Parameters
         ----------
         centre: (float, float)
-            The centre of the light profile.
+            The (y,x) centre of the light profile.
         intensity : float
             Overall intensity normalisation of the light profiles (electrons per second).
         effective_radius : float
@@ -250,7 +296,7 @@ class EllipticalExponential(EllipticalSersic):
         Parameters
         ----------
         centre: (float, float)
-            The centre of the light profile.
+            The (y,x) centre of the light profile.
         axis_ratio : float
             Ratio of light profiles ellipse's minor and major axes (b/a).
         phi : float
@@ -273,7 +319,7 @@ class SphericalExponential(EllipticalExponential):
         Parameters
         ----------
         centre: (float, float)
-            The centre of the light profile.
+            The (y,x) centre of the light profile.
         intensity : float
             Overall intensity normalisation of the light profiles (electrons per second).
         effective_radius : float
@@ -292,7 +338,7 @@ class EllipticalDevVaucouleurs(EllipticalSersic):
         Parameters
         ----------
         centre: (float, float)
-            The centre of the light profile.
+            The (y,x) centre of the light profile.
         axis_ratio : float
             Ratio of light profiles ellipse's minor and major axes (b/a).
         phi : float
@@ -315,7 +361,7 @@ class SphericalDevVaucouleurs(EllipticalDevVaucouleurs):
         Parameters
         ----------
         centre: (float, float)
-            The centre of the light profile.
+            The (y,x) centre of the light profile.
         intensity : float
             Overall intensity normalisation of the light profiles (electrons per second).
         effective_radius : float
@@ -333,7 +379,7 @@ class EllipticalCoreSersic(EllipticalSersic):
         Parameters
         ----------
         centre: (float, float)
-            The centre of the light profile.
+            The (y,x) centre of the light profile.
         axis_ratio : float
             Ratio of light profiles ellipse's minor and major axes (b/a).
         phi : float
@@ -394,7 +440,7 @@ class SphericalCoreSersic(EllipticalCoreSersic):
         Parameters
         ----------
         centre: (float, float)
-            The centre of the light profile.
+            The (y,x) centre of the light profile.
         intensity : float
             Overall intensity normalisation of the light profiles (electrons per second).
         effective_radius : float
