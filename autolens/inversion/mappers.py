@@ -137,28 +137,29 @@ class RectangularMapper(Mapper):
     def image_to_pixelization(self):
         """The mappings between a set of _image pixels and pixelization pixels."""
         return self.grid_to_pixelization_from_grid_jit(self.grids.image,
-                                                       self.geometry.x_min, self.geometry.x_pixel_scale,
-                                                       self.geometry.y_min, self.geometry.y_pixel_scale,
-                                                       self.shape[1]).astype(dtype='int')
+                                                       self.geometry.y_min, self.geometry.x_min,
+                                                       self.geometry.pixel_scales,
+                                                       self.shape).astype(dtype='int')
 
     @property
     def sub_to_pixelization(self):
         """The mappings between a set of sub-pixels and pixelization pixels"""
         return self.grid_to_pixelization_from_grid_jit(self.grids.sub,
-                                                       self.geometry.x_min, self.geometry.x_pixel_scale,
-                                                       self.geometry.y_min, self.geometry.y_pixel_scale,
-                                                       self.shape[1]).astype(dtype='int')
+                                                       self.geometry.y_min, self.geometry.x_min,
+                                                       self.geometry.pixel_scales,
+                                                       self.shape).astype(dtype='int')
 
     @staticmethod
     @numba.jit(nopython=True)
-    def grid_to_pixelization_from_grid_jit(grid, x_min, x_pixel_scale, y_min, y_pixel_scale, y_shape):
+    def grid_to_pixelization_from_grid_jit(grid, y_min, x_min, pixel_scales, shape):
+
         grid_to_pixelization = np.zeros(grid.shape[0])
 
         for i in range(grid.shape[0]):
-            x_pixel = np.floor((grid[i, 0] - x_min) / x_pixel_scale)
-            y_pixel = np.floor((grid[i, 1] - y_min) / y_pixel_scale)
+            y_pixel = shape[0] - np.floor((grid[i, 0] - y_min) / pixel_scales[0]) - 1
+            x_pixel = np.floor((grid[i, 1] - x_min) / pixel_scales[1])
 
-            grid_to_pixelization[i] = x_pixel * y_shape + y_pixel
+            grid_to_pixelization[i] = y_pixel * (shape[1]) + x_pixel
 
         return grid_to_pixelization
 
