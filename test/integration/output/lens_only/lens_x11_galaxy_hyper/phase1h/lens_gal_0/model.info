@@ -1,5 +1,0 @@
-HyperGalaxy
-
-lens_galaxies_contribution_factor       UniformPrior, lower_limit = -50.0, upper_limit = 50.0
-lens_galaxies_noise_factor              UniformPrior, lower_limit = 0.0, upper_limit = 10.0
-lens_galaxies_noise_power               UniformPrior, lower_limit = -10.0, upper_limit = 10.0
