@@ -1,5 +1,0 @@
-SphericalIsothermal
-
-lens_galaxies_centre_0                  GaussianPrior, mean = 0.0, sigma = 1.0
-lens_galaxies_centre_1                  GaussianPrior, mean = 0.0, sigma = 1.0
-lens_galaxies_einstein_radius           UniformPrior, lower_limit = 0.0, upper_limit = 4.0
