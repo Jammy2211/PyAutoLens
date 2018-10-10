@@ -1,0 +1,23 @@
+Most likely model, Likelihood = 48469.67637650206
+
+lens_galaxies_centre_0                            0.5958209443634126
+lens_galaxies_centre_1                            -0.5997499010406178
+lens_galaxies_axis_ratio                          0.46690661154077046
+lens_galaxies_phi                                 18.11173548387695
+lens_galaxies_intensity                           0.1552523476747777
+lens_galaxies_effective_radius                    0.15918285856593667
+lens_galaxies_sersic_index                        3.9751706787895973
+lens_galaxies_centre_0                            -0.2127673878296724
+lens_galaxies_centre_1                            0.2215732205664671
+lens_galaxies_axis_ratio                          0.9625364986400349
+lens_galaxies_phi                                 36.15066395154186
+lens_galaxies_einstein_radius                     0.12377253492927598
+source_galaxies_centre_0                          -0.08217939793514945
+source_galaxies_centre_1                          0.04780241322158162
+source_galaxies_axis_ratio                        0.8690315411326233
+source_galaxies_phi                               84.32668631647968
+source_galaxies_intensity                         0.060454900154953174
+source_galaxies_effective_radius                  0.6984202759049021
+
+Constants
+
