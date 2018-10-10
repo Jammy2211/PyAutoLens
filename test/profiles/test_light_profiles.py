@@ -29,8 +29,7 @@ class TestGaussian:
         gaussian = lp.EllipticalGaussian(centre=(1.0, 1.0), axis_ratio=0.5, phi=45.0, intensity=2.0,
                                          sigma=0.1)
 
-        assert gaussian.x_cen == 1.0
-        assert gaussian.y_cen == 1.0
+        assert gaussian.centre == (1.0, 1.0)
         assert gaussian.axis_ratio == 0.5
         assert gaussian.phi == 45.0
         assert gaussian.intensity == 2.0
@@ -117,8 +116,7 @@ class TestSersic:
                                      effective_radius=0.6,
                                      sersic_index=4.0)
 
-        assert sersic.x_cen == 0.0
-        assert sersic.y_cen == 0.0
+        assert sersic.centre == (0.0, 0.0)
         assert sersic.axis_ratio == 1.0
         assert sersic.phi == 0.0
         assert sersic.intensity == 1.0
@@ -172,8 +170,7 @@ class TestExponential:
         exponential = lp.EllipticalExponential(axis_ratio=0.5, phi=0.0, intensity=1.0,
                                                effective_radius=0.6)
 
-        assert exponential.x_cen == 0.0
-        assert exponential.y_cen == 0.0
+        assert exponential.centre == (0.0, 0.0)
         assert exponential.axis_ratio == 0.5
         assert exponential.phi == 0.0
         assert exponential.intensity == 1.0
@@ -230,8 +227,7 @@ class TestDevVaucouleurs:
                                                       effective_radius=0.9,
                                                       centre=(0.0, 0.1))
 
-        assert dev_vaucouleurs.x_cen == 0.0
-        assert dev_vaucouleurs.y_cen == 0.1
+        assert dev_vaucouleurs.centre == (0.0, 0.1)
         assert dev_vaucouleurs.axis_ratio == 0.6
         assert dev_vaucouleurs.phi == 10.0
         assert dev_vaucouleurs.intensity == 2.0
@@ -289,8 +285,7 @@ class TestCoreSersic(object):
                                                effective_radius=5.0, sersic_index=4.0, radius_break=0.01,
                                                intensity_break=0.1, gamma=1.0, alpha=1.0)
 
-        assert cored_sersic.x_cen == 0.0
-        assert cored_sersic.y_cen == 0.0
+        assert cored_sersic.centre == (0.0, 0.0)
         assert cored_sersic.axis_ratio == 0.5
         assert cored_sersic.phi == 0.0
         assert cored_sersic.intensity == 1.0

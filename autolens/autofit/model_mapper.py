@@ -107,7 +107,7 @@ class ModelMapper(AbstractModel):
         
         mapper = ModelMapper()
 
-        mapper.sersic = light_profiles.EllipticalSersic
+        mapper.sersic = light_profiles.AbstractEllipticalSersic
         mapper.gaussian = light_profiles.EllipticalGaussian)
         mapper.any_class = SomeClass
 
@@ -136,11 +136,11 @@ class ModelMapper(AbstractModel):
 
         sersic_1 = mapper.sersic_1
 
-        # But this attribute is an instance of the actual EllipticalSersic:P class
+        # But this attribute is an instance of the actual AbstractEllipticalSersic:P class
 
         # A ModelMapper can be concisely constructed using keyword arguments:
 
-        mapper = prior.ModelMapper(config, source_light_profile=light_profile.EllipticalSersic,
+        mapper = prior.ModelMapper(config, source_light_profile=light_profile.AbstractEllipticalSersic,
                                     lens_mass_profile=mass_profile.EllipticalCoredIsothermal,
                                     lens_light_profile=light_profile.EllipticalCoreSersic)
         """

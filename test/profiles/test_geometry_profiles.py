@@ -341,13 +341,6 @@ class TestSphericalProfile(object):
             assert transformed_grid[0, 1] == pytest.approx(grid_original[0, 1], 1e-2)
 
 
-# class TestTransform(object):
-#
-#     def test_symmetry(self):
-#         p = gm.EllipticalProfile((3, 5), 2, 2)
-#         assert (p.transform_grid_from_reference_frame(p.transform_grid_to_reference_frame((5, 7))) == (5, 7)).all()
-
-
 class TestFromProfile(object):
 
     def test__profile_from_profile__centre_x_1_y_1_is_passed(self):
