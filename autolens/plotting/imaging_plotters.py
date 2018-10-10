@@ -88,6 +88,7 @@ def plot_image(image,
 
         array_plotters.output_subplot_array(output_path=output_path, output_filename=output_filename,
                                             output_format=output_format)
+
         plt.close()
 
 

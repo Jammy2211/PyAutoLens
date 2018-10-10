@@ -209,8 +209,8 @@ class ScaledSquarePixelArray(ScaledArray):
             The arc-second to pixel conversion factor of each pixel.
         """
         # noinspection PyArgumentList
-        super(ScaledSquarePixelArray, self).__init__(array=array)
         self.pixel_scale = pixel_scale
+        super(ScaledSquarePixelArray, self).__init__(array=array)
 
     def __array_finalize__(self, obj):
         if isinstance(obj, ScaledSquarePixelArray):
