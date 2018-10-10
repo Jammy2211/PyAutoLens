@@ -1,0 +1,20 @@
+Most likely model, Likelihood = -10.071003115593525
+
+lens_galaxies_centre_0                            0.004500994963496365
+lens_galaxies_centre_1                            -0.014289786621067018
+lens_galaxies_einstein_radius                     1.4092403867357528
+
+Most probable model (3 sigma limits)
+
+lens_galaxies_centre_0                            0.003260322382440906 (-0.1429827132512685, 0.12696056129579625)
+lens_galaxies_centre_1                            0.012827018386322617 (-0.11071275822971915, 0.14916237686137102)
+lens_galaxies_einstein_radius                     1.4145863648476984 (1.3438537295072612, 1.488305675707518)
+
+Most probable model (1 sigma limits)
+
+lens_galaxies_centre_0                            0.003260322382440906 (-0.03656190493271683, 0.047599108142056035)
+lens_galaxies_centre_1                            0.012827018386322617 (-0.029393651699015866, 0.05164521237722308)
+lens_galaxies_einstein_radius                     1.4145863648476984 (1.3943493691613404, 1.4348746320304313)
+
+Constants
+
