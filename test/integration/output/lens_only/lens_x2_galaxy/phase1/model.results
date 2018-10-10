@@ -1,0 +1,41 @@
+Most likely model, Likelihood = 11705.204557474686
+
+lens_galaxies_axis_ratio                          0.8125076076278053
+lens_galaxies_phi                                 2.3474293562220305
+lens_galaxies_intensity                           0.9954604789547137
+lens_galaxies_effective_radius                    1.3169088214168467
+lens_galaxies_sersic_index                        2.9503258067535336
+lens_galaxies_axis_ratio                          0.8044308107150733
+lens_galaxies_phi                                 177.73254380081403
+lens_galaxies_intensity                           0.9918117606564656
+lens_galaxies_effective_radius                    1.3006016598645775
+lens_galaxies_sersic_index                        3.007300831097732
+
+Most probable model (3 sigma limits)
+
+lens_galaxies_axis_ratio                          0.8063217696221773 (0.7740354875562615, 0.8527798632628774)
+lens_galaxies_phi                                 3.2952509045481753 (174.30722768526175, 181.15485461499478)
+lens_galaxies_intensity                           0.9693192632480145 (0.8300770488231725, 1.0192264927966708)
+lens_galaxies_effective_radius                    1.3277587583944976 (1.2635115388382507, 1.436447359957503)
+lens_galaxies_sersic_index                        3.003527408733777 (2.9103317852919455, 3.320655035934146)
+lens_galaxies_axis_ratio                          0.8122423844793133 (0.7740354875562615, 0.8527798632628774)
+lens_galaxies_phi                                 178.44218250324448 (174.30722768526175, 181.15485461499478)
+lens_galaxies_intensity                           0.9637067290007518 (0.8300770488231725, 1.0192264927966708)
+lens_galaxies_effective_radius                    1.3192772441866163 (1.2635115388382507, 1.436447359957503)
+lens_galaxies_sersic_index                        3.0663342984710864 (2.9103317852919455, 3.320655035934146)
+
+Most probable model (1 sigma limits)
+
+lens_galaxies_axis_ratio                          0.8063217696221773 (0.7991750133688252, 0.8243031190612866)
+lens_galaxies_phi                                 3.2952509045481753 (177.52383805651266, 179.62045325966628)
+lens_galaxies_intensity                           0.9693192632480145 (0.9479152536272801, 1.0001657882819182)
+lens_galaxies_effective_radius                    1.3277587583944976 (1.2890292611529452, 1.3349398532261838)
+lens_galaxies_sersic_index                        3.003527408733777 (3.0013790389627086, 3.1163791127774556)
+lens_galaxies_axis_ratio                          0.8122423844793133 (0.7991750133688252, 0.8243031190612866)
+lens_galaxies_phi                                 178.44218250324448 (177.52383805651266, 179.62045325966628)
+lens_galaxies_intensity                           0.9637067290007518 (0.9479152536272801, 1.0001657882819182)
+lens_galaxies_effective_radius                    1.3192772441866163 (1.2890292611529452, 1.3349398532261838)
+lens_galaxies_sersic_index                        3.0663342984710864 (3.0013790389627086, 3.1163791127774556)
+
+Constants
+

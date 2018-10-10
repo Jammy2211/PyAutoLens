@@ -1,0 +1,32 @@
+Most likely model, Likelihood = -2522.6805651819714
+
+lens_galaxies_centre_0                            0.20065950091188003
+lens_galaxies_centre_1                            0.19334353489176898
+lens_galaxies_axis_ratio                          0.6640830603729706
+lens_galaxies_phi                                 48.77839693244884
+lens_galaxies_intensity                           0.9987575712336643
+lens_galaxies_effective_radius                    1.6106818283807933
+lens_galaxies_sersic_index                        3.2292381345928485
+
+Most probable model (3 sigma limits)
+
+lens_galaxies_centre_0                            0.20268074671444583 (0.19093656485850694, 0.2139597089071271)
+lens_galaxies_centre_1                            0.19528212212547363 (0.18375833819485468, 0.20793516042806423)
+lens_galaxies_axis_ratio                          0.6693437408437608 (0.624084378693908, 0.7141997991549995)
+lens_galaxies_phi                                 47.32458775912936 (42.756149888398205, 52.06870066955513)
+lens_galaxies_intensity                           0.9905185049715735 (0.9427815285907164, 1.0054684049224238)
+lens_galaxies_effective_radius                    1.611021130525669 (1.5627696623312124, 1.6687385799355305)
+lens_galaxies_sersic_index                        3.2893521715004295 (3.135186802182962, 3.443492849481797)
+
+Most probable model (1 sigma limits)
+
+lens_galaxies_centre_0                            0.20268074671444583 (0.19885740645439973, 0.20676194334866974)
+lens_galaxies_centre_1                            0.19528212212547363 (0.19090256307868583, 0.19918051445360457)
+lens_galaxies_axis_ratio                          0.6693437408437608 (0.653736430772099, 0.6856434895017172)
+lens_galaxies_phi                                 47.32458775912936 (45.656625376549066, 48.93848300513816)
+lens_galaxies_intensity                           0.9905185049715735 (0.9874556439281128, 1.0007300992587136)
+lens_galaxies_effective_radius                    1.611021130525669 (1.5939581180701914, 1.626557379760194)
+lens_galaxies_sersic_index                        3.2893521715004295 (3.2379310435609137, 3.342390456410114)
+
+Constants
+
