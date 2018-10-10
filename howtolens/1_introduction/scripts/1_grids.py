@@ -31,7 +31,6 @@ print(image_grids.image.shape)
 
 # We can also plot the grid, albeit it's a fairly bland uniform grid of dots.
 imaging_plotters.plot_grid(grid=image_grids.image)
-stop
 
 # You might be wondering why the image_grids are using the attribute 'image' (e.g. image_grids.image).
 

@@ -434,10 +434,10 @@ class EllipticalIsothermal(EllipticalPowerLaw):
         try:
             factor = 2.0 * self.einstein_radius_rescaled * self.axis_ratio / np.sqrt(1 - self.axis_ratio ** 2)
 
-            psi = np.sqrt(np.add(np.multiply(self.axis_ratio ** 2, np.square(grid[:, 0])), np.square(grid[:, 1])))
+            psi = np.sqrt(np.add(np.multiply(self.axis_ratio ** 2, np.square(grid[:, 1])), np.square(grid[:, 0])))
 
-            deflection_x = np.arctan(np.divide(np.multiply(np.sqrt(1 - self.axis_ratio ** 2), grid[:, 0]), psi))
-            deflection_y = np.arctanh(np.divide(np.multiply(np.sqrt(1 - self.axis_ratio ** 2), grid[:, 1]), psi))
+            deflection_y = np.arctanh(np.divide(np.multiply(np.sqrt(1 - self.axis_ratio ** 2), grid[:, 0]), psi))
+            deflection_x = np.arctan(np.divide(np.multiply(np.sqrt(1 - self.axis_ratio ** 2), grid[:, 1]), psi))
 
             return self.rotate_grid_from_profile(np.multiply(factor, np.vstack((deflection_y, deflection_x)).T))
         except ZeroDivisionError:
@@ -549,11 +549,7 @@ class AbstractEllipticalGeneralizedNFW(geometry_profiles.EllipticalProfile, Mass
 
         surface_density_grid = np.zeros(grid.shape[0])
 
-        print(grid)
-
         grid_eta = self.grid_to_elliptical_radii(grid)
-
-        print(grid_eta)
 
         for i in range(grid.shape[0]):
             surface_density_grid[i] = self.surface_density_func(grid_eta[i])
@@ -795,7 +791,6 @@ class EllipticalNFW(AbstractEllipticalGeneralizedNFW):
         potential_grid = np.zeros(grid.shape[0])
 
         for i in range(grid.shape[0]):
-
             potential_grid[i] = quad(self.potential_func, a=0.0, b=1.0,
                                      args=(grid[i, 0], grid[i, 1], self.axis_ratio, self.kappa_s, self.scale_radius),
                                      epsrel=1.49e-5)[0]
@@ -817,9 +812,6 @@ class EllipticalNFW(AbstractEllipticalGeneralizedNFW):
             deflection_grid = np.zeros(grid.shape[0])
 
             for i in range(grid.shape[0]):
-
-                print(grid[i, 0], grid[i, 1])
-
                 deflection_grid[i] = self.axis_ratio * grid[i, index] * quad(self.deflection_func, a=0.0, b=1.0,
                                                                              args=(grid[i, 0], grid[i, 1], npow,
                                                                                    self.axis_ratio, self.kappa_s,
@@ -1309,6 +1301,6 @@ class ExternalShear(geometry_profiles.EllipticalProfile, MassProfile):
         grid : mask.ImageGrid
             The grid of coordinates the deflection angles are computed on.
         """
-        deflection_y = -np.multiply(self.magnitude, grid[:, 1])
-        deflection_x = np.multiply(self.magnitude, grid[:, 0])
+        deflection_y = -np.multiply(self.magnitude, grid[:, 0])
+        deflection_x = np.multiply(self.magnitude, grid[:, 1])
         return self.rotate_grid_from_profile(np.vstack((deflection_y, deflection_x)).T)

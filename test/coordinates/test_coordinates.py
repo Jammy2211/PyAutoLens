@@ -123,25 +123,25 @@ def test__deflection_angles():
 
     image_grid = mask.ImageGrid.from_shape_and_pixel_scale(shape=(5, 5), pixel_scale=1.0)
 
-    sis = mp.SphericalIsothermal(centre=(0.1, 0.0), einstein_radius=1.0)
+    sis = mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=1.0)
     deflections_1d = sis.deflections_from_grid(grid=image_grid)
-    deflections_x_2d = image_grid.map_to_2d(array_1d=deflections_1d[:,0])
+    deflections_x_2d = image_grid.map_to_2d(array_1d=deflections_1d[:,1])
 
-    assert deflections_x_2d[0,0] == deflections_x_2d[0,4]
-    assert deflections_x_2d[1,1] == deflections_x_2d[1,3]
-    assert deflections_x_2d[3,1] == deflections_x_2d[3,3]
-    assert deflections_x_2d[4,0] == deflections_x_2d[4,4]
-    assert deflections_x_2d[0,2] == -1.0*deflections_x_2d[4,2]
+    assert deflections_x_2d[0,0] == pytest.approx(-1.0*deflections_x_2d[0,4], 1e-2)
+    assert deflections_x_2d[1,1] == pytest.approx(-1.0*deflections_x_2d[1,3], 1e-2)
+    assert deflections_x_2d[3,1] == pytest.approx(-1.0*deflections_x_2d[3,3], 1e-2)
+    assert deflections_x_2d[4,0] == pytest.approx(-1.0*deflections_x_2d[4,4], 1e-2)
+    assert deflections_x_2d[0,2] == pytest.approx(deflections_x_2d[4,2], 1e-2)
 
-    sis = mp.SphericalIsothermal(centre=(0.0, 0.1), einstein_radius=1.0)
+    sis = mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=1.0)
     deflections_1d = sis.deflections_from_grid(grid=image_grid)
-    deflections_y_2d = image_grid.map_to_2d(array_1d=deflections_1d[:,1])
+    deflections_y_2d = image_grid.map_to_2d(array_1d=deflections_1d[:,0])
 
-    assert deflections_y_2d[0,0] == pytest.approx(deflections_y_2d[4,0], 1e-2)
-    assert deflections_y_2d[1,1] == pytest.approx(deflections_y_2d[3,1], 1e-2)
-    assert deflections_y_2d[1,3] == pytest.approx(deflections_y_2d[3,3], 1e-2)
-    assert deflections_y_2d[0,4] == pytest.approx(deflections_y_2d[4,4], 1e-2)
-    assert deflections_y_2d[2,0] == pytest.approx(-1.0*deflections_y_2d[2,4], 1e-2)
+    assert deflections_y_2d[0,0] == pytest.approx(-1.0*deflections_y_2d[4,0], 1e-2)
+    assert deflections_y_2d[1,1] == pytest.approx(-1.0*deflections_y_2d[3,1], 1e-2)
+    assert deflections_y_2d[1,3] == pytest.approx(-1.0*deflections_y_2d[3,3], 1e-2)
+    assert deflections_y_2d[0,4] == pytest.approx(-1.0*deflections_y_2d[4,4], 1e-2)
+    assert deflections_y_2d[2,0] == pytest.approx(deflections_y_2d[2,4], 1e-2)
 
 # def test__move_source_galaxy_around_source_plane__peak_follows_source_direction():
 #
