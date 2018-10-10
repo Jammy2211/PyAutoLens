@@ -81,7 +81,7 @@ class TestGaussian:
 
         gaussian = lp.EllipticalGaussian(centre=(0.0, 0.0), axis_ratio=0.5, phi=0.0, intensity=1.0,
                                          sigma=1.0)
-        assert gaussian.intensities_from_grid(grid=np.array([[0.0, 1.0]])) == pytest.approx(0.05399, 1e-2)
+        assert gaussian.intensities_from_grid(grid=np.array([[1.0, 0.0]])) == pytest.approx(0.05399, 1e-2)
 
         gaussian_0 = lp.EllipticalGaussian(centre=(-3.0, -0.0), axis_ratio=0.5, phi=0.0, intensity=1.0,
                                            sigma=1.0)
@@ -143,7 +143,7 @@ class TestSersic:
         sersic = lp.EllipticalSersic(axis_ratio=0.5, phi=0.0, intensity=3.0,
                                      effective_radius=2.0,
                                      sersic_index=2.0)
-        assert sersic.intensities_from_grid(grid=np.array([[0.0, 1.0]])) == pytest.approx(5.38066670129, 1e-3)
+        assert sersic.intensities_from_grid(grid=np.array([[1.0, 0.0]])) == pytest.approx(5.38066670129, 1e-3)
 
     def test__intensity_from_grid__change_geometry(self):
         sersic_0 = lp.EllipticalSersic(axis_ratio=0.5, phi=0.0, intensity=3.0,
@@ -194,15 +194,15 @@ class TestExponential:
     def test__intensity_from_grid__correct_values(self):
         exponential = lp.EllipticalExponential(axis_ratio=0.5, phi=0.0, intensity=3.0,
                                                effective_radius=2.0)
-        assert exponential.intensities_from_grid(grid=np.array([[0.0, 1.0]])) == pytest.approx(4.9047, 1e-3)
+        assert exponential.intensities_from_grid(grid=np.array([[1.0, 0.0]])) == pytest.approx(4.9047, 1e-3)
 
         exponential = lp.EllipticalExponential(axis_ratio=0.5, phi=90.0, intensity=2.0,
                                                effective_radius=3.0)
-        assert exponential.intensities_from_grid(grid=np.array([[1.0, 0.0]])) == pytest.approx(4.8566, 1e-3)
+        assert exponential.intensities_from_grid(grid=np.array([[0.0, 1.0]])) == pytest.approx(4.8566, 1e-3)
 
         exponential = lp.EllipticalExponential(axis_ratio=0.5, phi=90.0, intensity=4.0,
                                                effective_radius=3.0)
-        assert exponential.intensities_from_grid(grid=np.array([[1.0, 0.0]])) == pytest.approx(2.0 * 4.8566, 1e-3)
+        assert exponential.intensities_from_grid(grid=np.array([[0.0, 1.0]])) == pytest.approx(2.0 * 4.8566, 1e-3)
 
     def test__intensity_from_grid__change_geometry(self):
         exponential_0 = lp.EllipticalExponential(axis_ratio=0.5, phi=0.0, intensity=3.0,
@@ -252,16 +252,16 @@ class TestDevVaucouleurs:
     def test__intensity_from_grid__correct_values(self):
         dev_vaucouleurs = lp.EllipticalDevVaucouleurs(axis_ratio=0.5, phi=0.0, intensity=3.0,
                                                       effective_radius=2.0)
-        assert dev_vaucouleurs.intensities_from_grid(grid=np.array([[0.0, 1.0]])) == pytest.approx(5.6697, 1e-3)
+        assert dev_vaucouleurs.intensities_from_grid(grid=np.array([[1.0, 0.0]])) == pytest.approx(5.6697, 1e-3)
 
         dev_vaucouleurs = lp.EllipticalDevVaucouleurs(axis_ratio=0.5, phi=90.0, intensity=2.0,
                                                       effective_radius=3.0)
 
-        assert dev_vaucouleurs.intensities_from_grid(grid=np.array([[1.0, 0.0]])) == pytest.approx(7.4455, 1e-3)
+        assert dev_vaucouleurs.intensities_from_grid(grid=np.array([[0.0, 1.0]])) == pytest.approx(7.4455, 1e-3)
 
         dev_vaucouleurs = lp.EllipticalDevVaucouleurs(axis_ratio=0.5, phi=90.0, intensity=4.0,
                                                       effective_radius=3.0)
-        assert dev_vaucouleurs.intensities_from_grid(grid=np.array([[1.0, 0.0]])) == pytest.approx(2.0 * 7.4455, 1e-3)
+        assert dev_vaucouleurs.intensities_from_grid(grid=np.array([[0.0, 1.0]])) == pytest.approx(2.0 * 7.4455, 1e-3)
 
     def test__intensity_from_grid__change_geometry(self):
         dev_vaucouleurs_0 = lp.EllipticalDevVaucouleurs(axis_ratio=0.5, phi=0.0, intensity=3.0,
@@ -282,7 +282,7 @@ class TestDevVaucouleurs:
         assert (elliptical.intensities_from_grid(grid) == spherical.intensities_from_grid(grid)).all()
 
 
-class TestCoreSersicLP(object):
+class TestCoreSersic(object):
 
     def test__constructor(self):
         cored_sersic = lp.EllipticalCoreSersic(axis_ratio=0.5, phi=0.0, intensity=1.0,
