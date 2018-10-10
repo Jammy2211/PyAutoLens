@@ -5,11 +5,11 @@ from autolens.imaging import mask
 from autolens.plotting import imaging_plotters
 from autolens.plotting import profile_plotters
 
-# In this example, we'll create a grid of Cartesian (x,y) coordinates and pass it to the 'light_profiles'
+# In this example, we'll create a grid of Cartesian (y,x) coordinates and pass it to the 'light_profiles'
 # module to create images on this grid and the 'mass_profiles' module to create deflection-angle maps on this grid.
 
-# Lets use the same grid as the previous tutorial (if you skipped that tutorial, I recommend you go
-# back to it!)
+# Lets use the a same resolution grid as the previous tutorial but make it 100 x 100 (if you skipped that 
+# tutorial, I recommend you go back to it!)
 image_grids = mask.ImagingGrids.from_shape_and_pixel_scale(shape=(100, 100), pixel_scale=0.05,
                                                                  sub_grid_size=2)
 
@@ -39,7 +39,6 @@ print(light_profile_intensities[5050])
 
 # We can use a profile plotter to plot this intensity map (the image is mapped to 2D before plotting).
 profile_plotters.plot_intensities(light_profile=sersic_light_profile, grid=image_grids.image)
-stop
 
 # Lets create a singular isothermal sphere (SIS) mass-profile using the 'mass-profiles' module.
 sis_mass_profile = mass_profiles.SphericalIsothermal(centre=(0.1, 0.1), einstein_radius=1.6)
