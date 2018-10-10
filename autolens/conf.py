@@ -230,7 +230,7 @@ def is_config(config_path=CONFIG_PATH):
 
 
 def copy_default(config_path):
-    shutil.copytree("{}/../config".format(directory), config_path)
+    shutil.copytree("{}/config".format(directory), config_path)
 
 
 def remove_config(config_path=CONFIG_PATH):
@@ -244,7 +244,6 @@ def remove_config(config_path=CONFIG_PATH):
 class Config(object):
     def __init__(self, config_path, output_path):
         if not is_config(config_path):
-            print("No config found at {}. Creating default config...".format(config_path))
             copy_default(config_path)
         self.config_path = config_path
         self.prior_default = DefaultPriorConfig("{}/priors/default".format(config_path))
