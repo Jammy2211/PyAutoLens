@@ -15,7 +15,6 @@ lib/
 data/*
 scripts
 output/*
-test_files/*
 test/integration/data/*
 MultiNest/
 data/kevin
@@ -34,8 +33,4 @@ autolens-0.2.5.tar.gz__pycache__
 __pycache__/
 test/autofit/test_fit/
 prof/
-test_files/non_linear/nlo/
-test_files/non_linear/nlo/
-test/test_files/non_linear/nlo/
-test/test_files/array/test
 *output/
