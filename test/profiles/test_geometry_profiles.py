@@ -71,6 +71,20 @@ class TestEllipticalProfile(object):
             assert transformed_back_grid[0, 0] == pytest.approx(1.0, 1e-3)
             assert transformed_back_grid[0, 1] == pytest.approx(1.0, 1e-3)
 
+        def test__profile_angle_phi_90__grid_y_0_x_1__rotated_grid_clockwise_so_y_1_x_0(self):
+
+            elliptical_profile = gp.EllipticalProfile(axis_ratio=1.0, phi=90.0)
+
+            transformed_grid = elliptical_profile.transform_grid_to_reference_frame(grid=np.array([[0.0, 1.0]]))
+
+            assert transformed_grid[0, 0] == pytest.approx(1.0, 1e-3)
+            assert transformed_grid[0, 1] == pytest.approx(0.0, 1e-3)
+
+            transformed_back_grid = elliptical_profile.transform_grid_from_reference_frame(transformed_grid)
+
+            assert transformed_back_grid[0, 0] == pytest.approx(0.0, 1e-3)
+            assert transformed_back_grid[0, 1] == pytest.approx(1.0, 1e-3)
+
         def test__profile_angle_phi_180__grid_y_1_x_1__rotated_grid_clockwise_so_y_and_x_negative_1(self):
 
             elliptical_profile = gp.EllipticalProfile(axis_ratio=1.0, phi=180.0)
