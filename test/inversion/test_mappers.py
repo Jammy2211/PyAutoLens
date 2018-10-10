@@ -137,6 +137,7 @@ class TestMappingMatrix:
 
 
 class TestRectangularPixMapper:
+
     class TestImageAndSubToPixelization:
 
         def test__3x3_grid_of_pixel_grid__1_coordinate_per_square_pixel__in_centre_of_pixels(self):
@@ -145,9 +146,9 @@ class TestRectangularPixMapper:
             #  |_|_|_| Boundaries for pixels x = 1 and y = 1 - (1/3) to (1/3)
             #  |_|_|_| Boundaries for pixels x = 2 and y = 2 - (1/3)" to 1.0"
 
-            pixelization_grid = np.array([[-1.0, -1.0], [-1.0, 0.0], [-1.0, 1.0],
+            pixelization_grid = np.array([[1.0, -1.0], [1.0, 0.0], [1.0, 1.0],
                                           [0.0, -1.0], [0.0, 0.0], [0.0, 1.0],
-                                          [1.0, -1.0], [1.0, 0.0], [1.0, 1.0]])
+                                          [-1.0, -1.0], [-1.0, 0.0], [-1.0, 1.0]])
 
             pix = pixelizations.Rectangular(shape=(3, 3))
 
@@ -169,9 +170,9 @@ class TestRectangularPixMapper:
             #  |_|_|_| Boundaries for pixels x = 1 and y = 1 - (1/3) to (1/3)
             #  |_|_|_| Boundaries for pixels x = 2 and y = 2 - (1/3)" to 1.0"
 
-            pixelization_grid = np.array([[-0.34, -0.34], [-0.34, 0.325], [-1.0, 1.0],
+            pixelization_grid = np.array([[1.0, -1.0], [1.0, 0.0], [1.0, 1.0],
                                           [-0.32, -1.0], [-0.32, 0.32], [0.0, 1.0],
-                                          [1.0, -1.0], [1.0, 0.0], [1.0, 1.0]])
+                                          [-0.34, -0.34], [-0.34, 0.325], [-1.0, 1.0]])
 
             pix = pixelizations.Rectangular(shape=(3, 3))
 
@@ -193,9 +194,9 @@ class TestRectangularPixMapper:
             # -(1/3) to (1/3) |_|_|_|
             #  (1/3) to 1.0   |_|_|_|
 
-            pixelization_grid = np.array([[-1.0, -1.0], [0.0, 0.0], [-1.0, 1.0],
+            pixelization_grid = np.array([[1.0, -1.0], [0.0, 0.0], [1.0, 1.0],
                                           [0.0, 0.0], [0.0, 0.0], [0.0, 0.0],
-                                          [1.0, -1.0], [0.0, 0.0], [1.0, 1.0]])
+                                          [-1.0, -1.0], [0.0, 0.0], [-1.0, 1.0]])
 
             pix = pixelizations.Rectangular(shape=(3, 3))
 
@@ -227,8 +228,9 @@ class TestRectangularPixMapper:
             # Bounadries for row pixel 2  0.0 to 0.5
             # Bounadries for row pixel 3  0.5 to 1.0
 
-            pixelization_grid = np.array([[-1.0, -1.0], [-1.0, -0.32], [-1.0, 0.34], [-0.49, -1.0],
-                                          [0.01, 0.34], [1.0, 1.0]])
+            pixelization_grid = np.array([[ 1.0, -1.0], [ 1.0,  0.0],
+                                          [ 1.0, 1.0], [ 0.5, -1.0],
+                                          [-0.5, 1.0], [-1.0, 1.0]])
 
             pix = pixelizations.Rectangular(shape=(4, 3))
 
@@ -259,8 +261,8 @@ class TestRectangularPixMapper:
             # Bounadries for column pixel 2  0.0 to 0.5
             # Bounadries for column pixel 3  0.5 to 1.0
 
-            pixelization_grid = np.array([[-1.0, -1.0], [-1.0, -0.49], [-1.0, 0.01], [-0.32, 0.01],
-                                          [0.34, -0.01], [1.0, 1.0]])
+            pixelization_grid = np.array([[1.0, -1.0], [1.0, -0.49], [1.0, 0.01], [0.32, 0.01],
+                                          [-0.34, -0.01], [-1.0, 1.0]])
 
             pix = pixelizations.Rectangular(shape=(3, 4))
 
@@ -282,7 +284,7 @@ class TestRectangularPixMapper:
             #  |_|_|_| Boundaries for pixels x = 1 and y = 1 -0.5 to 0.5
             #  |_|_|_| Boundaries for pixels x = 2 and y = 2  0.5 to 1.5
 
-            pixelization_grid = np.array([[-1.5, -1.5], [-1.0, 0.0], [-1.0, 0.6], [1.4, 0.0], [1.5, 1.5]])
+            pixelization_grid = np.array([[1.5, -1.5], [1.0, 0.0], [1.0, 0.6], [-1.4, 0.0], [-1.5, 1.5]])
 
             pix = pixelizations.Rectangular(shape=(3, 3))
 
@@ -304,7 +306,7 @@ class TestRectangularPixMapper:
             #  |_|_|_| Boundaries for pixels x = 1 and y = 1 -0.5 to 0.5
             #  |_|_|_| Boundaries for pixels x = 2 and y = 2  0.5 to 1.5
 
-            pixelization_grid = np.array([[-1.0, -1.5], [-1.0, -0.49], [-0.32, -1.5], [-0.32, 0.51], [1.0, 1.5]])
+            pixelization_grid = np.array([[1.0, -1.5], [1.0, -0.49], [0.32, -1.5], [0.32, 0.51], [-1.0, 1.5]])
 
             pix = pixelizations.Rectangular(shape=(3, 3))
 
@@ -327,7 +329,7 @@ class TestRectangularPixMapper:
             #  |_|_|_|
             #  |_|_|_|
 
-            pixelization_grid = np.array([[-1.0, -1.5], [-1.0, -0.49], [-0.49, -1.5], [0.6, 0.0], [1.0, 1.5]])
+            pixelization_grid = np.array([[1.0, -1.5], [1.0, -0.49], [0.49, -1.5], [-0.6, 0.0], [-1.0, 1.5]])
 
             pix = pixelizations.Rectangular(shape=(4, 3))
 
@@ -349,7 +351,7 @@ class TestRectangularPixMapper:
             #  |_|_|_|_|
             #  |_|_|_|_|
 
-            pixelization_grid = np.array([[-1.0, -1.5], [-1.0, -0.49], [-0.32, -1.5], [0.34, 0.49], [1.0, 1.5]])
+            pixelization_grid = np.array([[1.0, -1.5], [1.0, -0.49], [0.32, -1.5], [-0.34, 0.49], [-1.0, 1.5]])
 
             pix = pixelizations.Rectangular(shape=(3, 4))
 
@@ -371,13 +373,13 @@ class TestRectangularPixMapper:
             # -(1/3) to (1/3) |_|_|_|
             #  (1/3) to 1.0   |_|_|_|
 
-            pixelization_grid = np.array([[-1.0, -1.0], [0.0, 0.0], [-1.0, 1.0],
+            pixelization_grid = np.array([[1.0, -1.0], [0.0, 0.0], [1.0, 1.0],
                                           [0.0, 0.0], [0.0, 0.0], [0.0, 0.0],
-                                          [1.0, -1.0], [0.0, 0.0], [1.0, 1.0]])
+                                          [-1.0, -1.0], [0.0, 0.0], [-1.0, 1.0]])
 
-            pixelization_sub_grid = np.array([[-1.0, -1.0], [-1.0, 0.0], [-1.0, 1.0],
+            pixelization_sub_grid = np.array([[1.0, -1.0], [1.0, 0.0], [1.0, 1.0],
                                               [0.0, -1.0], [0.0, 0.0], [0.0, 1.0],
-                                              [1.0, -1.0], [1.0, 0.0], [1.0, 1.0]])
+                                              [-1.0, -1.0], [-1.0, 0.0], [-1.0, 1.0]])
 
             pix = pixelizations.Rectangular(shape=(3, 3))
 
