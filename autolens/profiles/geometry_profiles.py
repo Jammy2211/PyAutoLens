@@ -51,7 +51,7 @@ class TransformedGrid(np.ndarray):
 class GeometryProfile(object):
 
     def __init__(self, centre=(0.0, 0.0)):
-        """Abstract GeometryProfile, describing an object with x, y cartesian coordinates"""
+        """Abstract GeometryProfile, describing an object with y, x cartesian coordinates"""
         self.centre = centre
 
     def transform_grid_to_reference_frame(self, grid):
@@ -89,14 +89,6 @@ class GeometryProfile(object):
         arguments = {argument[0]: argument[1] for argument in arguments.items() if argument[0] in init_args}
         return cls(**arguments)
 
-    @property
-    def x_cen(self):
-        return self.centre[0]
-
-    @property
-    def y_cen(self):
-        return self.centre[1]
-
     def __repr__(self):
         return '{}\n{}'.format(self.__class__.__name__,
                                '\n'.join(["{}: {}".format(k, v) for k, v in self.__dict__.items()]))
@@ -110,7 +102,7 @@ class SphericalProfile(GeometryProfile):
         Parameters
         ----------
         centre: (float, float)
-            The coordinates of the centre of the profile.
+            The (y,x) coordinates of the centre of the profile.
         """
         super(SphericalProfile, self).__init__(centre)
 
@@ -124,57 +116,56 @@ class SphericalProfile(GeometryProfile):
         Parameters
         ----------
         grid : TransformedGrid(ndarray)
-            The (x, y) coordinates in the reference frame of the profile.
-
-        Returns
-        -------
-        The radius at those coordinates
+            The (y, x) coordinates in the reference frame of the profile.
         """
         return np.sqrt(np.add(np.square(grid[:, 1]), np.square(grid[:, 0])))
 
-    def grid_angle_to_profile(self, theta_grid):
-        """The angle between each coordinate on the grid and the profile, in radians."""
-        return np.cos(theta_grid), np.sin(theta_grid)
+    def grid_angle_to_profile(self, grid_thetas):
+        """The angle between each (y,x) coordinate on the grid and the profile, in radians.
+        
+        Parameters
+        -----------
+        grid_thetas : ndarray
+            The angle theta counter-clockwise from the positive x-axis to each coordinate in radians.
+        """
+        return np.cos(grid_thetas), np.sin(grid_thetas)
 
     def grid_radius_to_cartesian(self, grid, radius):
         """
-        Convert a grid of coordinates with their specified circular radii to their original Cartesian coordinates.
+        Convert a grid of (y,x) coordinates with their specified circular radii to their original (y,x) Cartesian 
+        coordinates.
 
         Parameters
         ----------
         grid : TransformedGrid(ndarray)
-            The (x, y) coordinates in the reference frame of the profile.
+            The (y, x) coordinates in the reference frame of the profile.
         radius : ndarray
             The circular radius of each coordinate from the profile center.
-
-        Returns
-        -------
-        The radius at those coordinates
         """
-        theta_grid = np.arctan2(grid[:, 0], grid[:, 1])
-        cos_theta, sin_theta = self.grid_angle_to_profile(theta_grid)
+        grid_thetas = np.arctan2(grid[:, 0], grid[:, 1])
+        cos_theta, sin_theta = self.grid_angle_to_profile(grid_thetas)
         return np.multiply(radius[:, None], np.vstack((sin_theta, cos_theta)).T)
 
     def transform_grid_to_reference_frame(self, grid):
-        """Transform a grid of (x,y) coordinates to the reference frame of the profile, including a translation to \
+        """Transform a grid of (y,x) coordinates to the reference frame of the profile, including a translation to \
         its centre.
 
         Parameters
         ----------
         grid : ndarray
-            The (x, y) coordinates in the original reference frame of the observed _image.
+            The (y, x) coordinates in the original reference frame of the grid.
         """
         transformed = np.subtract(grid, self.centre)
         return transformed.view(TransformedGrid)
 
     def transform_grid_from_reference_frame(self, grid):
-        """Transform a grid of (x,y) coordinates from the reference frame of the profile to the original observer \
+        """Transform a grid of (y,x) coordinates from the reference frame of the profile to the original observer \
         reference frame, including a translation from the profile's centre.
 
         Parameters
         ----------
         grid : TransformedGrid(ndarray)
-            The (x, y) coordinates in the reference frame of the profile _image.
+            The (y, x) coordinates in the reference frame of the profile.
         """
         transformed = np.add(grid, self.centre)
         return transformed.view(TransformedGrid)
@@ -188,7 +179,7 @@ class EllipticalProfile(SphericalProfile):
         Parameters
         ----------
         centre: (float, float)
-            The coordinates of the centre of the profiles
+            The (y,x) coordinates of the centre of the profiles
         axis_ratio : float
             Ratio of profiles ellipse's minor and major axes (b/a)
         phi : float
@@ -212,33 +203,33 @@ class EllipticalProfile(SphericalProfile):
 
     def cos_and_sin_from_x_axis(self):
         """ Determine the sin and cosine of the angle between the profile's ellipse and the positive x-axis, \
-        counter-clockwise.
-
-        Returns
-        -------
-        The sin and cosine of the angle, counter-clockwise from the positive x-axis.
-        """
+        counter-clockwise. """
         phi_radians = np.radians(self.phi)
         return np.cos(phi_radians), np.sin(phi_radians)
 
-    def grid_angle_to_profile(self, grid_theta):
-        """The angle between each angle theta on the grid and the profile, in radians."""
-        theta_coordinate_to_profile = np.add(grid_theta, - self.phi_radians)
+    def grid_angle_to_profile(self, grid_thetas):
+        """The angle between each angle theta on the grid and the profile, in radians.
+
+        Parameters
+        -----------
+        grid_thetas : ndarray
+            The angle theta counter-clockwise from the positive x-axis to each coordinate in radians.
+        """
+        theta_coordinate_to_profile = np.add(grid_thetas, - self.phi_radians)
         return np.cos(theta_coordinate_to_profile), np.sin(theta_coordinate_to_profile)
 
     def rotate_grid_from_profile(self, grid_elliptical):
-        """ Rotate elliptical coordinates from the reference frame of the profile back to the coordinates original \
-         Cartesian grid (coordinates are not shifted back to their original centre).
+        """ Rotate a grid of elliptical (y,x) coordinates from the reference frame of the profile back to the
+        unrotated coordinate grid reference frame (coordinates are not shifted back to their original centre).
+
+        This routine is used after computing deflection angles in the reference frame of the profile, so that the
+        deflections can be re-rotated to the frame of the original coordinates before performing ray-tracing.
 
         Parameters
         ----------
         grid_elliptical : TransformedGrid(ndarray)
-            The (x, y) coordinates in the reference frame of an elliptical profile.
-
-        Returns
-        ----------
-        The coordinates rotated back to their original Cartesian grid_coords.
-         """
+            The (y, x) coordinates in the reference frame of an elliptical profile.
+        """
         y = np.add(np.multiply(grid_elliptical[:, 1], self.sin_phi), np.multiply(grid_elliptical[:, 0], self.cos_phi))
         x = np.add(np.multiply(grid_elliptical[:, 1], self.cos_phi), - np.multiply(grid_elliptical[:, 0], self.sin_phi))
         return np.vstack((y, x)).T
@@ -246,47 +237,40 @@ class EllipticalProfile(SphericalProfile):
     @transform_grid
     def grid_to_elliptical_radii(self, grid):
         """
-        Convert coordinates to an elliptical radius.
+        Convert a grid of (y,x) coordinates to an elliptical radius.
 
         If the coordinates have not been transformed to the profile's geometry, this is performed automatically.
 
         Parameters
         ----------
         grid : TransformedGrid(ndarray)
-            The (x, y) coordinates in the reference frame of the elliptical profile.
-
-        Returns
-        -------
-        The elliptical radius at those coordinates
+            The (y, x) coordinates in the reference frame of the elliptical profile.
         """
         return np.sqrt(np.add(np.square(grid[:, 1]), np.square(np.divide(grid[:, 0], self.axis_ratio))))
 
     @transform_grid
     def grid_to_eccentric_radii(self, grid):
         """
-        Convert coordinates to an eccentric radius, which is (1.0/axis_ratio) * elliptical radius and used to define \
-        light profile half-light radii as circular radii.
+        Convert a grid of (y,x) coordinates to an eccentric radius, which is (1.0/axis_ratio) * elliptical radius and
+        used to define light profile half-light radii using circular radii.
 
         If the coordinates have not been transformed to the profile's geometry, this is performed automatically.
 
         Parameters
         ----------
-        grid
-
-        Returns
-        -------
-        The radius at those coordinates
+        grid : TransformedGrid(ndarray)
+            The (y, x) coordinates in the reference frame of the elliptical profile.
         """
         return np.multiply(np.sqrt(self.axis_ratio), self.grid_to_elliptical_radii(grid)).view(np.ndarray)
 
     def transform_grid_to_reference_frame(self, grid):
-        """Transform a grid of (x,y) coordinates to the reference frame of the profile, including a translation to \
+        """Transform a grid of (y,x) coordinates to the reference frame of the profile, including a translation to \
         its centre and a rotation to it orientation.
 
         Parameters
         ----------
         grid : ndarray
-            The (x, y) coordinates in the original reference frame of the observed _image.
+            The (y, x) coordinates in the original reference frame of the grid.
         """
         shifted_coordinates = np.subtract(grid, self.centre)
         radius = np.sqrt(np.sum(shifted_coordinates ** 2.0, 1))
@@ -297,13 +281,13 @@ class EllipticalProfile(SphericalProfile):
         return transformed.view(TransformedGrid)
 
     def transform_grid_from_reference_frame(self, grid):
-        """Transform a grid of (x,y) coordinates from the reference frame of the profile to the original observer \
+        """Transform a grid of (y,x) coordinates from the reference frame of the profile to the original observer \
         reference frame, including a rotation to its original orientation and a translation from the profile's centre.
 
         Parameters
         ----------
         grid : TransformedGrid(ndarray)
-            The (x, y) coordinates in the reference frame of the profile _image.
+            The (y, x) coordinates in the reference frame of the profile.
         """
         y = np.add(np.add(np.multiply(grid[:, 1], self.sin_phi), np.multiply(grid[:, 0], self.cos_phi)), self.centre[0])
         x = np.add(np.add(np.multiply(grid[:, 1], self.cos_phi), - np.multiply(grid[:, 0], self.sin_phi)), self.centre[1])
@@ -311,68 +295,3 @@ class EllipticalProfile(SphericalProfile):
 
     def eta_u(self, u, coordinates):
         return np.sqrt((u * ((coordinates[1] ** 2) + (coordinates[0] ** 2 / (1 - (1 - self.axis_ratio ** 2) * u)))))
-
-
-class EllipticalSersic(EllipticalProfile):
-
-    def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=0.1, effective_radius=0.6,
-                 sersic_index=4.0):
-        """ The elliptical Sersic profile's geometry, used for computing the effective radius and Sersic constant.
-
-        Parameters
-        ----------
-        centre: (float, float)
-            The image_grid of the centre of the profiles
-        axis_ratio : float
-            Ratio of light profiles ellipse's minor and major axes (b/a)
-        phi : float
-            Rotational angle of profiles ellipse counter-clockwise from positive x-axis
-        intensity : float
-            Overall intensity normalisation in the light profiles (electrons per second)
-        effective_radius : float
-            The circular radius containing half the light of this model_mapper
-        sersic_index : Int
-            The concentration of the light profiles
-        """
-        super(EllipticalSersic, self).__init__(centre, axis_ratio, phi)
-        self.intensity = intensity
-        self.effective_radius = effective_radius
-        self.sersic_index = sersic_index
-
-    @property
-    def elliptical_effective_radius(self):
-        """The effective_radius of a Sersic light profile is defined as the 'circular effective radius' - the \
-         radius within which a circular aperture contains half the profiles's total integrated light. For elliptical \
-        (i.e low axis ratio) systems, this won't robustly capture the light profile's elliptical shape.
-
-         The elliptical effective radius therefore instead describes the major-axis radius of the ellipse containing \
-         half the light, and may be more appropriate for highly flattened systems like disk galaxies."""
-        return self.effective_radius / np.sqrt(self.axis_ratio)
-
-    @property
-    def sersic_constant(self):
-        """
-
-        Returns
-        -------
-        sersic_constant: float
-            A parameter, derived from sersic_index, that ensures that effective_radius always contains 50% of the light.
-        """
-        return (2 * self.sersic_index) - (1. / 3.) + (4. / (405. * self.sersic_index)) + (
-                46. / (25515. * self.sersic_index ** 2)) + (131. / (1148175. * self.sersic_index ** 3)) - (
-                       2194697. / (30690717750. * self.sersic_index ** 4))
-
-    def intensity_at_radius(self, radius):
-        """
-
-        Parameters
-        ----------
-        radius : float
-            The distance from the centre of the profiles
-        Returns
-        -------
-        intensity : float
-            The intensity at that distance
-        """
-        return self.intensity * np.exp(
-            -self.sersic_constant * (((radius / self.effective_radius) ** (1. / self.sersic_index)) - 1))

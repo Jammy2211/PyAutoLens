@@ -73,7 +73,7 @@ from autolens.plotting import fitting_plotters
 # The default priors on all parameters can be found by navigating to the 'config/priors/default' folder, and inspecting
 # config files like light_profiles.ini. The convention is as follow:
 
-# [EllipticalSersic]          # These are the priors used for an EllipticalSersic profile.
+# [AbstractEllipticalSersic]          # These are the priors used for an AbstractEllipticalSersic profile.
 # intensity=u,0.0,1.0         # Its intensity uses a UniformPrior with lower_limit=0.0, upper_limit=1.0
 # effective_radius=u,0.0,2.0  # Its effective radius uses a UniformPrior with lower_limit=0.0, upper_limit=2.0
 # sersic_index=g,4.0,2.0      # Its Sersic index uses a GaussianPrior with mean=4.0 and sigma=2.0

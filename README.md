@@ -44,8 +44,8 @@ image = im.load_imaging_from_path(image_path=path + '/data/image.fits',
 # To setup our model galaxies, we use the 'galaxy_model' module and GalaxyModel class. 
 # A GalaxyModel represents a galaxy where the parameters of its associated profiles are 
 # variable and fitted for by the analysis.
-lens_galaxy_model = gp.GalaxyModel(light=lp.EllipticalSersic, mass=mp.EllipticalIsothermal)
-source_galaxy_model = gp.GalaxyModel(light=lp.EllipticalSersic)
+lens_galaxy_model = gp.GalaxyModel(light=lp.AbstractEllipticalSersic, mass=mp.EllipticalIsothermal)
+source_galaxy_model = gp.GalaxyModel(light=lp.AbstractEllipticalSersic)
 
 # To perform the analysis, we set up a phase using the 'phase' module (imported as 'ph').
 # A phase takes our galaxy models and fits their parameters using a non-linear search (in this case, MultiNest).
