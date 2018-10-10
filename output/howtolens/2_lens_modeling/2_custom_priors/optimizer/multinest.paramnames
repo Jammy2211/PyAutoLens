@@ -1,7 +1,0 @@
-source_galaxies_centre_0                          x_{\mathrm{l4}}
-source_galaxies_centre_1                          y_{\mathrm{l4}}
-source_galaxies_intensity                         I_{\mathrm{l4}}
-lens_galaxies_centre_0                            x_{\mathrm{m3}}
-lens_galaxies_centre_1                            y_{\mathrm{m3}}
-lens_galaxies_einstein_radius                     \theta_{\mathrm{m3}}
-source_galaxies_effective_radius                  R_{\mathrm{l4}}
