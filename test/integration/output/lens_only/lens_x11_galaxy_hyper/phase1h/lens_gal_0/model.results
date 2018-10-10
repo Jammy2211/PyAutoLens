@@ -1,0 +1,20 @@
+Most likely model, Likelihood = -554.7442415107428
+
+lens_galaxies_contribution_factor                 18.01015407431923
+lens_galaxies_noise_factor                        9.610197743651701
+lens_galaxies_noise_power                         1.7507114517004077
+
+Most probable model (3 sigma limits)
+
+lens_galaxies_contribution_factor                 29.47002501149563 (-1.6460699193561616, 62.88983958935133)
+lens_galaxies_noise_factor                        8.657369475298742 (5.3806218635350875, 11.236183609774596)
+lens_galaxies_noise_power                         1.5776307880930798 (1.2143046818062726, 1.9559666581067812)
+
+Most probable model (1 sigma limits)
+
+lens_galaxies_contribution_factor                 29.47002501149563 (16.122900358091442, 42.42655117304716)
+lens_galaxies_noise_factor                        8.657369475298742 (7.577470843192749, 10.034549150977993)
+lens_galaxies_noise_power                         1.5776307880930798 (1.450895219069233, 1.6993160257624063)
+
+Constants
+

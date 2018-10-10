@@ -1,0 +1,9 @@
+EllipticalSersic
+
+lens_galaxies_centre_0                  GaussianPrior, mean = 0.20268074671444583, sigma = 0.02
+lens_galaxies_centre_1                  GaussianPrior, mean = 0.19528212212547363, sigma = 0.02
+lens_galaxies_axis_ratio                GaussianPrior, mean = 0.6693437408437608, sigma = 0.1
+lens_galaxies_phi                       GaussianPrior, mean = 47.32458775912936, sigma = 10.0
+lens_galaxies_intensity                 GaussianPrior, mean = 0.9905185049715735, sigma = 0.1
+lens_galaxies_effective_radius          GaussianPrior, mean = 1.611021130525669, sigma = 1.0
+lens_galaxies_sersic_index              GaussianPrior, mean = 3.2893521715004295, sigma = 1.2
