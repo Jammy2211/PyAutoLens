@@ -82,23 +82,23 @@ def plot_deflections(galaxy, grid, output_path=None, output_filename='deflection
     plt.subplot(1, 2, 1)
 
     array_plotters.plot_array(
-        array=deflections_x, points=None, grid=None, as_subplot=True,
-        units='arcsec', kpc_per_arcsec=None,
-        xticks=deflections_x.xticks, yticks=deflections_x.yticks, xyticksize=16,
-        norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
-        figsize=None, aspect='auto', cmap='jet', cb_ticksize=16,
-        title='Galaxy Deflection angles (x)', titlesize=16, xlabelsize=16, ylabelsize=16,
-        output_path=output_path, output_filename=None, output_format=output_format)
-
-    plt.subplot(1, 2, 2)
-
-    array_plotters.plot_array(
         array=deflections_y, points=None, grid=None, as_subplot=True,
         units='arcsec', kpc_per_arcsec=None,
         xticks=deflections_y.xticks, yticks=deflections_y.yticks, xyticksize=16,
         norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
         figsize=None, aspect='auto', cmap='jet', cb_ticksize=16,
         title='Galaxy Deflection angles (y)', titlesize=16, xlabelsize=16, ylabelsize=16,
+        output_path=output_path, output_filename=None, output_format=output_format)
+
+    plt.subplot(1, 2, 2)
+
+    array_plotters.plot_array(
+        array=deflections_x, points=None, grid=None, as_subplot=True,
+        units='arcsec', kpc_per_arcsec=None,
+        xticks=deflections_x.xticks, yticks=deflections_x.yticks, xyticksize=16,
+        norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
+        figsize=None, aspect='auto', cmap='jet', cb_ticksize=16,
+        title='Galaxy Deflection angles (x)', titlesize=16, xlabelsize=16, ylabelsize=16,
         output_path=output_path, output_filename=None, output_format=output_format)
 
     array_plotters.output_subplot_array(output_path=output_path, output_filename=output_filename,
