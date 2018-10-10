@@ -1,0 +1,12 @@
+SphericalIsothermal
+
+lens_galaxies_centre_0                  UniformPrior, lower_limit = -0.1, upper_limit = 0.1
+lens_galaxies_centre_1                  UniformPrior, lower_limit = -0.1, upper_limit = 0.1
+lens_galaxies_einstein_radius           GaussianPrior, mean = 1.4, sigma = 0.2
+
+SphericalExponential
+
+source_galaxies_centre_0                GaussianPrior, mean = 0.0, sigma = 1.0
+source_galaxies_centre_1                GaussianPrior, mean = 0.0, sigma = 1.0
+source_galaxies_intensity               UniformPrior, lower_limit = 0.0, upper_limit = 1.0
+source_galaxies_effective_radius        UniformPrior, lower_limit = 0.0, upper_limit = 0.3
