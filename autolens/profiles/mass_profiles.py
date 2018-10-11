@@ -313,7 +313,10 @@ class EllipticalPowerLaw(EllipticalCoredPowerLaw):
         super(EllipticalPowerLaw, self).__init__(centre, axis_ratio, phi, einstein_radius, slope, 0.0)
 
     def surface_density_func(self, radius):
-        return self.einstein_radius_rescaled * radius ** (-(self.slope - 1))
+        if radius > 0.0:
+            return self.einstein_radius_rescaled * radius ** (-(self.slope - 1))
+        else:
+            return np.inf
 
     @staticmethod
     @jit_integrand
