@@ -121,6 +121,30 @@ def image_grid_2d_from_shape_and_pixel_scales(shape, pixel_scales):
 
 
 @numba.jit(nopython=True, cache=True)
+def image_grid_1d_from_shape_and_pixel_scales(shape, pixel_scales):
+    """
+    Computes the (x,y) arc second coordinates of every pixel in an _image of shape (rows, columns).
+
+    Coordinates are defined from the top-left corner, such that the first pixel at location [0, 0] has negative x \
+    and y values in arc seconds.
+    """
+
+    grid_1d = np.zeros((shape[0]*shape[1], 2))
+
+    y_cen = float(shape[0] - 1) / 2
+    x_cen = float(shape[1] - 1) / 2
+
+    i=0
+    for y in range(shape[0]):
+        for x in range(shape[1]):
+
+            grid_1d[i, 0] = -(y - y_cen) * pixel_scales[0]
+            grid_1d[i, 1] = (x - x_cen) * pixel_scales[1]
+            i += 1
+
+    return grid_1d
+
+@numba.jit(nopython=True, cache=True)
 def image_grid_1d_masked_from_mask_and_pixel_scales(mask, pixel_scales):
     """Compute a 1D grid of (x,y) coordinates, using the center of every unmasked pixel."""
 
@@ -137,7 +161,6 @@ def image_grid_1d_masked_from_mask_and_pixel_scales(mask, pixel_scales):
                 pixel_count += 1
 
     return image_grid
-
 
 @numba.jit(nopython=True, cache=True)
 def sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(mask, pixel_scales, sub_grid_size):
@@ -175,7 +198,6 @@ def sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(mask, pixel_scal
 
     return sub_grid
 
-
 @numba.jit(nopython=True, cache=True)
 def grid_pixels_1d_to_grid_arc_seconds_1d(grid_pixels, shape, pixel_scales):
     """ Converts a grid in coordinates of pixels to a grid in arc seconds.
@@ -204,7 +226,7 @@ def grid_pixels_1d_to_grid_arc_seconds_1d(grid_pixels, shape, pixel_scales):
     return grid_arc_seconds
 
 @numba.jit(nopython=True, cache=True)
-def grid_arc_seconds_1d_to_grid_pixels_1d(grid_arc_seconds, shape, pixel_scales):
+def grid_arc_seconds_1d_to_grid_pixel_centres_1d(grid_arc_seconds, shape, pixel_scales):
     """ Converts a grid in coordinates of pixels to a grid in arc seconds.
 
     The pixel coordinate origin is at the top left corner of an image, whilst the arc-second coordinate origin \
@@ -225,8 +247,10 @@ def grid_arc_seconds_1d_to_grid_pixels_1d(grid_arc_seconds, shape, pixel_scales)
 
     for i in range(grid_arc_seconds.shape[0]):
 
-            grid_pixels[i, 0] = int((-grid_arc_seconds[i,0] / pixel_scales[0])  + y_cen)
-            grid_pixels[i, 1] = int((grid_arc_seconds[i,1] / pixel_scales[1])  + x_cen)
+        print((-grid_arc_seconds[i,0] / pixel_scales[0])  + y_cen, (grid_arc_seconds[i,1] / pixel_scales[1])  + x_cen)
+
+        grid_pixels[i, 0] = int((-grid_arc_seconds[i,0] / pixel_scales[0])  + y_cen)
+        grid_pixels[i, 1] = int((grid_arc_seconds[i,1] / pixel_scales[1])  + x_cen)
 
     return grid_pixels
 
@@ -247,7 +271,6 @@ def grid_to_pixel_from_mask(mask):
                 pixel_count += 1
 
     return grid_to_pixel
-
 
 @numba.jit(nopython=True, cache=True)
 def sub_to_image_from_mask(mask, sub_grid_size):
@@ -272,7 +295,6 @@ def sub_to_image_from_mask(mask, sub_grid_size):
                 image_index += 1
 
     return sub_to_image
-
 
 @numba.jit(nopython=True, cache=True)
 def border_pixels_from_mask(mask):

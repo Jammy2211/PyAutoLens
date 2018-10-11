@@ -13,7 +13,7 @@ dirpath = os.path.dirname(dirpath)
 output_path = '{}/../output/positions'.format(dirpath)
 
 
-def test_positions_pipeline():
+def positions_pipeline():
 
     data_name = ''
     pipeline_name = "positions_phase"
@@ -38,4 +38,4 @@ def make_positions_pipeline(pipeline_name):
 
 
 if __name__ == "__main__":
-    test_positions_pipeline()
+    positions_pipeline()
