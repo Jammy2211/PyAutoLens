@@ -327,6 +327,7 @@ class NoiseMap(ScaledSquarePixelArray):
 
     @classmethod
     def from_weight_map(cls, pixel_scale, weight_map):
+        np.seterr(divide='ignore')
         noise_map = 1.0/np.sqrt(weight_map)
         noise_map[noise_map == np.inf] = 1.0e8
         return NoiseMap(array=noise_map, pixel_scale=pixel_scale)
