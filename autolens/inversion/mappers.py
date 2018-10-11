@@ -1,28 +1,30 @@
 import numba
 import numpy as np
 
+from autolens.imaging import imaging_util
+from autolens.imaging import scaled_array
 
 class Mapper(object):
 
     def __init__(self, pixels, grids, pixel_neighbors):
         """
-        Abstract base class representing the mapping between the pixels in an observed _image of a strong lens and \
+        Abstract base class representing the mapping between the pixels in an observed image of a strong lens and \
         the pixels of a pixelization.
 
-        1D arrays are used to represent these mappings, in particular between the different _image-grids (e.g. the \
-        _image and sub grids, see the *imaging.mask module*). The nomenclature here follows grid_to_grid, whereby the \
+        1D arrays are used to represent these mappings, in particular between the different image-grids (e.g. the \
+        image and sub grids, see the *imaging.mask module*). The nomenclature here follows grid_to_grid, whereby the \
         index of a value on one grid equals another. For howtolens:
 
-        - image_to_pixelization[2] = 1 tells us that the 3rd _image-pixel maps to the 2nd pixelization-pixel.
+        - image_to_pixelization[2] = 1 tells us that the 3rd image-pixel maps to the 2nd pixelization-pixel.
         - sub_to_pixelization[4] = 2 tells us that the 5th sub-pixel maps to the 3rd pixelization-pixel.
-        - pixelization_to_image[2] = 5 tells us that the 3rd pixelization-pixel maps to the 6th (masked) _image-pixel.
+        - pixelization_to_image[2] = 5 tells us that the 3rd pixelization-pixel maps to the 6th (masked) image-pixel.
 
         Parameters
         ----------
         pixels : int
             The number of pixels in the pixelization.
         grids: mask.ImagingGrids
-            A collection of grid describing the observed _image's pixel coordinates (includes an _image and sub grid).
+            A collection of grid describing the observed image's pixel coordinates (includes an image and sub grid).
         pixel_neighbors : [[]]
             A list of the neighbors of each pixel.
         """
@@ -32,16 +34,16 @@ class Mapper(object):
 
     @property
     def mapping_matrix(self):
-        """The mapping matrix is a matrix representing the mapping between every observed _image-pixel and \
+        """The mapping matrix is a matrix representing the mapping between every observed image-pixel and \
         pixelization pixel. Non-zero entries signify a mapping, whereas zeros signify no mapping.
 
-        For howtolens, if the observed _image has 5 pixels and the pixelization 3 pixels, with the following mappings:
+        For howtolens, if the observed image has 5 pixels and the pixelization 3 pixels, with the following mappings:
 
-        _image pixel 0 -> pixelization pixel 0
-        _image pixel 1 -> pixelization pixel 0
-        _image pixel 2 -> pixelization pixel 1
-        _image pixel 3 -> pixelization pixel 1
-        _image pixel 4 -> pixelization pixel 2
+        image pixel 0 -> pixelization pixel 0
+        image pixel 1 -> pixelization pixel 0
+        image pixel 2 -> pixelization pixel 1
+        image pixel 3 -> pixelization pixel 1
+        image pixel 4 -> pixelization pixel 2
 
         The mapping matrix (which is of dimensions image_pixels x source_pixels) would appear as follows:
 
@@ -51,23 +53,23 @@ class Mapper(object):
         [0, 1, 0] [3->1]
         [0, 0, 1] [4->2]
 
-        The mapping matrix is in fact built using the sub-grid of the observed _image, where each _image-pixel is \
+        The mapping matrix is in fact built using the sub-grid of the observed image, where each image-pixel is \
         divided into a regular grid of sub-pixels each of which are paired to pixels in the pixelization. The entires \
         in the mapping matrix now become fractional values dependent on the sub-grid size. For howtolens, for a 2x2 \
         sub-grid in each pixel (which means the fraction value is 1.0/(2.0^2) = 0.25, if we have the following mappings:
 
-        _image pixel 0 -> sub pixel 0 -> pixelization pixel 0
-        _image pixel 0 -> sub pixel 1 -> pixelization pixel 1
-        _image pixel 0 -> sub pixel 2 -> pixelization pixel 1
-        _image pixel 0 -> sub pixel 3 -> pixelization pixel 1
-        _image pixel 1 -> sub pixel 0 -> pixelization pixel 1
-        _image pixel 1 -> sub pixel 1 -> pixelization pixel 1
-        _image pixel 1 -> sub pixel 2 -> pixelization pixel 1
-        _image pixel 1 -> sub pixel 3 -> pixelization pixel 1
-        _image pixel 2 -> sub pixel 0 -> pixelization pixel 2
-        _image pixel 2 -> sub pixel 1 -> pixelization pixel 2
-        _image pixel 2 -> sub pixel 2 -> pixelization pixel 3
-        _image pixel 2 -> sub pixel 3 -> pixelization pixel 3
+        image pixel 0 -> sub pixel 0 -> pixelization pixel 0
+        image pixel 0 -> sub pixel 1 -> pixelization pixel 1
+        image pixel 0 -> sub pixel 2 -> pixelization pixel 1
+        image pixel 0 -> sub pixel 3 -> pixelization pixel 1
+        image pixel 1 -> sub pixel 0 -> pixelization pixel 1
+        image pixel 1 -> sub pixel 1 -> pixelization pixel 1
+        image pixel 1 -> sub pixel 2 -> pixelization pixel 1
+        image pixel 1 -> sub pixel 3 -> pixelization pixel 1
+        image pixel 2 -> sub pixel 0 -> pixelization pixel 2
+        image pixel 2 -> sub pixel 1 -> pixelization pixel 2
+        image pixel 2 -> sub pixel 2 -> pixelization pixel 3
+        image pixel 2 -> sub pixel 3 -> pixelization pixel 3
 
         The mapping matrix (which is still of dimensions image_pixels x source_pixels) would appear as follows:
 
@@ -86,15 +88,15 @@ class Mapper(object):
         Parameters
         -----------
         sub_to_pixelization : ndarray
-            The mappings between the observed _image's sub-pixels and pixelization's pixels.
+            The mappings between the observed image's sub-pixels and pixelization's pixels.
         pixels : int
             The number of pixels in the pixelization.
         image_pixels : int
-            The number of _image pixels in the observed _image.
+            The number of image pixels in the observed image.
         sub_to_image : ndarray
-            The mappings between the observed _image's sub-pixels and observed _image's pixels.
+            The mappings between the observed image's sub-pixels and observed image's pixels.
         sub_grid_fraction : float
-            The fractional area each sub-pixel takes up in an _image-pixel.
+            The fractional area each sub-pixel takes up in an image-pixel.
         """
         mapping_matrix = np.zeros((image_pixels, pixels))
 
@@ -111,7 +113,7 @@ class Mapper(object):
 class RectangularMapper(Mapper):
 
     def __init__(self, pixels, grids, pixel_neighbors, shape, geometry):
-        """Class representing the mappings between the pixels in an observed _image of a strong lens and \
+        """Class representing the mappings between the pixels in an observed image of a strong lens and \
         the pixels of a rectangular pixelization.
 
         The regular and uniform geometry of the rectangular grid is used to perform efficient pixel pairings.
@@ -121,7 +123,7 @@ class RectangularMapper(Mapper):
         pixels : int
             The number of pixels in the pixelization.
         grids: mask.ImagingGrids
-            A collection of grid describing the observed _image's pixel coordinates (includes an _image and sub grid).
+            A collection of grid describing the observed image's pixel coordinates (includes an image and sub grid).
         pixel_neighbors : [[]]
             A list of the neighbors of each pixel.
         shape : (int, int)
@@ -135,51 +137,52 @@ class RectangularMapper(Mapper):
 
     @property
     def image_to_pixelization(self):
-        """The mappings between a set of _image pixels and pixelization pixels."""
-        return self.grid_to_pixelization_from_grid_jit(self.grids.image,
-                                                       self.geometry.y_min, self.geometry.x_min,
-                                                       self.geometry.pixel_scales,
-                                                       self.shape).astype(dtype='int')
+        """The mappings between a set of image pixels and pixelization pixels."""
+        return self.grid_to_pixelization_from_grid_jit(self.grids.image, self.geometry.arc_second_minima,
+                                                       self.geometry.pixel_scales, self.shape).astype(dtype='int')
 
     @property
     def sub_to_pixelization(self):
         """The mappings between a set of sub-pixels and pixelization pixels"""
-        return self.grid_to_pixelization_from_grid_jit(self.grids.sub,
-                                                       self.geometry.y_min, self.geometry.x_min,
-                                                       self.geometry.pixel_scales,
-                                                       self.shape).astype(dtype='int')
+        return self.grid_to_pixelization_from_grid_jit(self.grids.sub, self.geometry.arc_second_minima,
+                                                       self.geometry.pixel_scales, self.shape).astype(dtype='int')
 
     @staticmethod
     @numba.jit(nopython=True)
-    def grid_to_pixelization_from_grid_jit(grid, y_min, x_min, pixel_scales, shape):
+    def grid_to_pixelization_from_grid_jit(grid, arc_second_minima, pixel_scales, shape):
 
         grid_to_pixelization = np.zeros(grid.shape[0])
 
         for i in range(grid.shape[0]):
-            y_pixel = shape[0] - np.floor((grid[i, 0] - y_min) / pixel_scales[0]) - 1
-            x_pixel = np.floor((grid[i, 1] - x_min) / pixel_scales[1])
+            y_pixel = shape[0] - np.floor((grid[i, 0] - arc_second_minima[0]) / pixel_scales[0]) - 1
+            x_pixel = np.floor((grid[i, 1] - arc_second_minima[1]) / pixel_scales[1])
 
             grid_to_pixelization[i] = y_pixel * (shape[1]) + x_pixel
 
         return grid_to_pixelization
+
+    def reconstructed_pixelization_from_solution_vector(self, solution_vector):
+        recon = imaging_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(array_1d=solution_vector,
+                                                                               shape=self.shape)
+        return scaled_array.ScaledRectangularPixelArray(array=recon, pixel_scales=self.geometry.pixel_scales)
 
 
 class VoronoiMapper(Mapper):
 
     def __init__(self, pixels, grids, pixel_neighbors, pixel_centers, voronoi, voronoi_to_pixelization,
                  image_to_voronoi):
-        """Class representing the mappings between the pixels in an observed _image of a strong lens and \
+        """Class representing the mappings between the pixels in an observed image of a strong lens and \
         the pixels of a Voronoi pixelization.
 
         The irregular and non-uniform geometry of the Voronoi grid means efficient pixel pairings requires knowledge \
-        of how many different grids mappers to one another (see *pair_image_and_pixel*).
+        of how many different grids mappers to one another (see *pairimage_and_pixel*).
 
         Parameters
         ----------
         pixels : int
             The number of pixels in the pixelization.
         grids: mask.ImagingGrids
-            A collection of grid describing the observed _image's pixel coordinates (includes an _image and sub grid).
+            A collection of grid describing the observed image's pixel coordinates (includes an image and sub grid).
         pixel_neighbors : [[]]
             A list of the neighbors of each pixel.
         shape : (int, int)
@@ -195,7 +198,7 @@ class VoronoiMapper(Mapper):
 
     @property
     def image_to_pixelization(self):
-        """The mappings between a set of _image pixels and pixelization pixels."""
+        """The mappings between a set of image pixels and pixelization pixels."""
 
         image_to_pixelization = np.zeros((self.grids.image.shape[0]), dtype=int)
 
@@ -208,12 +211,12 @@ class VoronoiMapper(Mapper):
 
     @property
     def sub_to_pixelization(self):
-        """ Compute the mappings between a set of sub-masked_image pixels and pixels, using the masked_image's traced \
+        """ Compute the mappings between a set of sub-maskedimage pixels and pixels, using the maskedimage's traced \
         pix-plane sub-grid and the pixel centers. This uses the pix-neighbors to perform a graph \
         search when pairing pixels, for efficiency.
 
         For the Voronoi pixelizations, a cluster set of 'cluster-pixels' are used to determine the pixelization. \
-        These provide the mappings between only a sub-set of sub-pixels / masked_image-pixels and pixels.
+        These provide the mappings between only a sub-set of sub-pixels / maskedimage-pixels and pixels.
 
         To determine the complete set of sub-pixel to pixel mappings, we must therefore pair every sub-pixel to \
         its nearest pixel (using the sub-pixel's pix-plane coordinate and pixel center). Using a full \
@@ -221,7 +224,7 @@ class VoronoiMapper(Mapper):
         is used to localize each nearest neighbor search.
 
         In this routine, some variables and function names refer to a 'cluster_pix_'. This term describes a \
-        pixel that we have paired to a sub_coordinate using the cluster_coordinate of an masked_image coordinate. \
+        pixel that we have paired to a sub_coordinate using the cluster_coordinate of an maskedimage coordinate. \
         Thus, it may not actually be that sub_coordinate's closest pixel (the routine will eventually
         determine this).
 
@@ -229,9 +232,9 @@ class VoronoiMapper(Mapper):
         ----------
 
         grids: mask.ImagingGrids
-            A collection of coordinates for the masked masked_image, subgrid and blurring grid
+            A collection of coordinates for the masked maskedimage, subgrid and blurring grid
         cluster_mask: mask.SparseMask
-            A mask describing the masked_image pixels that should be used in pixel clustering
+            A mask describing the maskedimage pixels that should be used in pixel clustering
         pixel_centers: [[float, float]]
             The coordinate of the center of every pixel.
         pixel_neighbors : [[]]
@@ -245,7 +248,7 @@ class VoronoiMapper(Mapper):
         ----------
         sub_to_pixelization : [int, int]
             The mapping_matrix between every sub-pixel and pixel. (e.g. if the fifth sub-pixel of the third \
-            masked_image-pixel maps to the 3rd pixel, sub_to_pixelization[2,4] = 2).
+            maskedimage-pixel maps to the 3rd pixel, sub_to_pixelization[2,4] = 2).
 
          """
 
@@ -259,12 +262,12 @@ class VoronoiMapper(Mapper):
         return sub_to_pixelization
 
     def pair_image_and_pixel(self, coordinate, nearest_cluster):
-        """ Compute the mappings between a set of sub-masked_image pixels and pixels, using the masked_image's traced \
+        """ Compute the mappings between a set of sub-maskedimage pixels and pixels, using the maskedimage's traced \
         pix-plane sub-grid and the pixel centers. This uses the pix-neighbors to perform a graph \
         search when pairing pixels, for efficiency.
 
         For the Voronoi pixelizations, a cluster set of 'cluster-pixels' are used to determine the pixelization. \
-        These provide the mappings between only a sub-set of sub-pixels / masked_image-pixels and pixels.
+        These provide the mappings between only a sub-set of sub-pixels / maskedimage-pixels and pixels.
 
         To determine the complete set of sub-pixel to pixel mappings, we must therefore pair every sub-pixel to \
         its nearest pixel (using the sub-pixel's pix-plane coordinate and pixel center). Using a full \
@@ -272,7 +275,7 @@ class VoronoiMapper(Mapper):
         is used to localize each nearest neighbor search.
 
         In this routine, some variables and function names refer to a 'cluster_pix_'. This term describes a \
-        pixel that we have paired to a sub_coordinate using the cluster_coordinate of an masked_image coordinate. \
+        pixel that we have paired to a sub_coordinate using the cluster_coordinate of an maskedimage coordinate. \
         Thus, it may not actually be that sub_coordinate's closest pixel (the routine will eventually
         determine this).
 

@@ -3,6 +3,7 @@ import scipy.spatial
 import sklearn.cluster
 
 from autolens import exc
+from autolens.imaging import scaled_array
 from autolens.imaging import mask
 from autolens.inversion import mappers
 
@@ -44,9 +45,9 @@ class Rectangular(Pixelization):
 
         super(Rectangular, self).__init__(self.shape[0] * self.shape[1])
 
-    class Geometry(object):
+    class Geometry(scaled_array.ArrayGeometry):
 
-        def __init__(self, y_min, y_max, x_min, x_max, pixel_scales):
+        def __init__(self, shape, pixel_scales):
             """The geometry of a rectangular grid
 
             Parameters
@@ -62,36 +63,31 @@ class Rectangular(Pixelization):
             pixel_scales : (float, float)
                 The pixel-to-arcsecond scale of a pixel in the y and x directions.
             """
-            self.x_min = x_min
-            self.x_max = x_max
-            self.y_min = y_min
-            self.y_max = y_max
+            self.shape = shape
             self.pixel_scales = pixel_scales
 
-        def arc_second_to_pixel_index_y(self, coordinate):
-            return np.floor((coordinate - self.y_min) / self.pixel_scales[0])
+        @property
+        def pixel_centres(self):
+            return self.grid_1d
 
-        def arc_second_to_pixel_index_x(self, coordinate):
-            return np.floor((coordinate - self.x_min) / self.pixel_scales[1])
-
-    def geometry_from_pixelization_sub_grid(self, pixelization_sub_grid, buffer=1e-8):
+    def geometry_from_grid(self, grid, buffer=1e-8):
         """Determine the geometry of the rectangular grid, by alligning it with the outer-most pixels on a grid \
         plus a small buffer.
 
         Parameters
         -----------
-        pixelization_sub_grid : [[float, float]]
+        grid : [[float, float]]
             The x and y pix grid (or sub-coordinates) which are to be matched with their pixels.
         buffer : float
             The size the grid-geometry is extended beyond the most exterior grid.
         """
-        y_min = np.min(pixelization_sub_grid[:, 0]) - buffer
-        y_max = np.max(pixelization_sub_grid[:, 0]) + buffer
-        x_min = np.min(pixelization_sub_grid[:, 1]) - buffer
-        x_max = np.max(pixelization_sub_grid[:, 1]) + buffer
+        y_min = np.min(grid[:, 0]) - buffer
+        y_max = np.max(grid[:, 0]) + buffer
+        x_min = np.min(grid[:, 1]) - buffer
+        x_max = np.max(grid[:, 1]) + buffer
         pixel_scales = ((y_max - y_min) / self.shape[0], (x_max - x_min) / self.shape[1])
 
-        return self.Geometry(y_min=y_min, y_max=y_max, x_min=x_min, x_max=x_max, pixel_scales=pixel_scales)
+        return self.Geometry(shape=self.shape, pixel_scales=pixel_scales)
 
     def neighbors_from_pixelization(self):
         """Compute the neighbors of every pixel as a list of the pixel index's each pixel shares a vertex with.
@@ -164,6 +160,25 @@ class Rectangular(Pixelization):
 
         return pixel_neighbors
 
+    def mapper_from_grids(self, grids):
+        """Setup the pixelization mapper of this rectangular pixelization as follows:
+
+        This first relocateds all grid-coordinates, such that any which tracer beyond its border (e.g. due to high \
+        levels of demagnification) are relocated to the border.
+
+        Parameters
+        ----------
+        grids: mask.ImagingGrids
+            A collection of grid describing the observed _image's pixel coordinates (includes an _image and sub grid).
+        borders : mask.ImagingGridBorders
+            The borders of the grids (defined by their _image-plane mask).
+        """
+        geometry = self.geometry_from_grid(grids.sub)
+        pixel_neighbors = self.neighbors_from_pixelization()
+        return mappers.RectangularMapper(pixels=self.pixels, grids=grids, pixel_neighbors=pixel_neighbors,
+                                         shape=self.shape, geometry=geometry)
+
+
     def mapper_from_grids_and_borders(self, grids, borders):
         """Setup the pixelization mapper of this rectangular pixelization as follows:
 
@@ -178,11 +193,10 @@ class Rectangular(Pixelization):
             The borders of the grids (defined by their _image-plane mask).
         """
         relocated_grids = borders.relocated_grids_from_grids(grids)
-        geometry = self.geometry_from_pixelization_sub_grid(relocated_grids.sub)
+        geometry = self.geometry_from_grid(relocated_grids.sub)
         pixel_neighbors = self.neighbors_from_pixelization()
-        return mappers.RectangularMapper(pixels=self.pixels, grids=relocated_grids,
-                                         pixel_neighbors=pixel_neighbors, shape=self.shape,
-                                         geometry=geometry)
+        return mappers.RectangularMapper(pixels=self.pixels, grids=relocated_grids, pixel_neighbors=pixel_neighbors,
+                                         shape=self.shape, geometry=geometry)
 
 
 class Voronoi(Pixelization):
@@ -242,6 +256,35 @@ class Cluster(Voronoi):
             The number of pixels in the pixelization.
         """
         super(Cluster, self).__init__(pixels)
+
+    def mapper_from_grids(self, grids, pixel_centers, image_to_voronoi):
+        """Setup the pixelization mapper of the cluster pixelization.
+
+        This first relocateds all grid-coordinates, such that any which tracer beyond its border (e.g. due to high \
+        levels of demagnification) are relocated to the border.
+
+        Parameters
+        ----------
+        grids: mask.ImagingGrids
+            A collection of grid describing the observed _image's pixel coordinates (includes an _image and sub grid).
+        borders : mask.ImagingGridBorders
+            The borders of the grids (defined by their _image-plane mask).
+        pixel_centers : ndarray
+            The center of each Voronoi pixel, computed from an traced _image-plane grid.
+        image_to_voronoi : ndarray
+            The mapping of each _image pixel to Voronoi pixels.
+        """
+
+        voronoi_to_pixelization = np.arange(0, self.pixels)
+        voronoi = self.voronoi_from_pixel_centers(pixel_centers)
+        pixel_neighbors = self.neighbors_from_pixelization(voronoi.ridge_points)
+
+        return mappers.VoronoiMapper(pixels=self.pixels, grids=grids,
+                                     pixel_neighbors=pixel_neighbors,
+                                     pixel_centers=pixel_centers, voronoi=voronoi,
+                                     voronoi_to_pixelization=voronoi_to_pixelization,
+                                     image_to_voronoi=image_to_voronoi)
+
 
     def mapper_from_grids_and_borders(self, grids, borders, pixel_centers, image_to_voronoi):
         """Setup the pixelization mapper of the cluster pixelization.

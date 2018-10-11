@@ -16,7 +16,7 @@ dirpath = os.path.dirname(dirpath)
 output_path = '{}/../output/lens_only'.format(dirpath)
 
 
-def test_pipeline():
+def pipeline():
     pipeline_name = "lens_x2_galaxy"
     data_name = '/lens_x2_galaxy'
 
@@ -66,4 +66,4 @@ def make_pipeline(pipeline_name):
 
 
 if __name__ == "__main__":
-    test_pipeline()
+    pipeline()
