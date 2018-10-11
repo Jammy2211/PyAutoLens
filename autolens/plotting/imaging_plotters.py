@@ -40,7 +40,7 @@ def plot_image(image,
         plt.subplot(2, 2, 1)
 
         if positions is not None:
-            positions = list(map(lambda pos: image.grid_arc_seconds_to_grid_pixels(grid_arc_seconds=pos), positions))
+            positions = list(map(lambda pos: image.grid_arc_seconds_to_grid_pixel_centres(grid_arc_seconds=pos), positions))
 
         array_plotters.plot_array(
             array=image, points=positions, grid=None, as_subplot=True,

@@ -21,18 +21,17 @@ def reset_paths(data_name, pipeline_name, output_path):
     except FileNotFoundError:
         pass
 
-    # try:
-    #     shutil.rmtree(output_path + pipeline_name)
-    # except FileNotFoundError:
-    #     pass
-
+    try:
+        shutil.rmtree(output_path + '/' + pipeline_name)
+    except FileNotFoundError:
+        pass
 
 def simulate_integration_image(data_name, pixel_scale, lens_galaxies, source_galaxies, target_signal_to_noise):
     output_path = "{}/data/".format(os.path.dirname(os.path.realpath(__file__))) + data_name + '/'
     psf_shape = (11, 11)
     image_shape = (150, 150)
 
-    psf = im.PSF.simulate_as_gaussian(shape=psf_shape, pixel_scale=pixel_scale, sigma=0.6)
+    psf = im.PSF.simulate_as_gaussian(shape=psf_shape, pixel_scale=pixel_scale, sigma=pixel_scale)
 
     image_grids = mask.ImagingGrids.grids_for_simulation(shape=image_shape, pixel_scale=pixel_scale,
                                                          sub_grid_size=1, psf_shape=psf_shape)

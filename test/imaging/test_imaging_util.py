@@ -138,6 +138,39 @@ class TestGrid2d:
                                      [[-1., -0.5], [-1., 0.5]]])).all()
 
 
+class TestGrid1d:
+
+    def test__array_3x3__sets_up_arcsecond_grid(self):
+
+        grid_2d = util.image_grid_1d_from_shape_and_pixel_scales(shape=(3, 3), pixel_scales=(2.0, 1.0))
+
+        assert (grid_2d == np.array([[2., -1.], [2., 0.], [2., 1.],
+                                     [0., -1.], [0., 0.], [0., 1.],
+                                     [-2., -1.], [-2., 0.], [-2., 1.]])).all()
+
+    def test__array_4x4_and_different_pixel_scale__sets_up_arcsecond_grid(self):
+
+        grid_2d = util.image_grid_1d_from_shape_and_pixel_scales(shape=(4, 4), pixel_scales=(0.5, 0.5))
+
+        assert (grid_2d == np.array([[0.75, -0.75], [0.75, -0.25], [0.75, 0.25], [0.75, 0.75],
+                                     [0.25, -0.75], [0.25, -0.25], [0.25, 0.25], [0.25, 0.75],
+                                     [-0.25, -0.75], [-0.25, -0.25], [-0.25, 0.25], [-0.25, 0.75],
+                                     [-0.75, -0.75], [-0.75, -0.25], [-0.75, 0.25], [-0.75, 0.75]])).all()
+
+    def test__array_2x3__sets_up_arcsecond_grid(self):
+        grid_2d = util.image_grid_1d_from_shape_and_pixel_scales(shape=(2, 3), pixel_scales=(1.0, 1.0))
+
+        assert (grid_2d == np.array([[0.5, -1.], [0.5, 0.], [0.5, 1.],
+                                     [-0.5, -1.], [-0.5, 0.], [-0.5, 1.]])).all()
+
+    def test__array_3x2__sets_up_arcsecond_grid(self):
+        grid_2d = util.image_grid_1d_from_shape_and_pixel_scales(shape=(3, 2), pixel_scales=(1.0, 1.0))
+
+        assert (grid_2d == np.array([[1., -0.5], [1., 0.5],
+                                     [0., -0.5], [0., 0.5],
+                                     [-1., -0.5], [-1., 0.5]])).all()
+
+
 class TestImageGridMasked(object):
 
     def test__setup_3x3_image_1_coordinate_in_mask(self):
@@ -339,6 +372,75 @@ class TestSubGridMasked(object):
 
 class TestGridPixelArcSecondConversion(object):
 
+    def test__1d_arc_second_grid_to_1d_pixel_centred_grid__coordinates_in_centres_of_pixels(self):
+
+        grid_arc_seconds = np.array([[1.0, -2.0], [1.0, 2.0],
+                                     [-1.0, -2.0], [-1.0, 2.0]])
+
+        grid_pixels = util.grid_arc_seconds_1d_to_grid_pixel_centres_1d(grid_arc_seconds=grid_arc_seconds, shape=(2, 2),
+                                                                        pixel_scales=(2.0, 4.0))
+
+        assert (grid_pixels == np.array([[0, 0], [0, 1],
+                                         [1, 0], [1, 1]])).all()
+
+
+        grid_arc_seconds = np.array([[3.0, -6.0], [3.0, 0.0], [3.0, 6.0],
+                                         [0.0, -6.0], [0.0, 0.0], [0.0, 6.0],
+                                         [-3.0, -6.0], [-3.0, 0.0], [-3.0, 6.0]])
+
+        grid_pixels = util.grid_arc_seconds_1d_to_grid_pixel_centres_1d(grid_arc_seconds=grid_arc_seconds, shape=(3, 3),
+                                                                        pixel_scales=(3.0, 6.0))
+
+        assert (grid_pixels == np.array([[0, 0], [0, 1], [0, 2],
+                                         [1, 0], [1, 1], [1, 2],
+                                         [2, 0], [2, 1], [2, 2]])).all()
+
+    def test__same_as_above_but_coordinates_are_top_left_of_each_pixel(self):
+
+        grid_arc_seconds = np.array([[1.99, -3.99], [1.99, 0.01],
+                                     [-0.01, -3.99], [-0.01, 0.01]])
+
+        grid_pixels = util.grid_arc_seconds_1d_to_grid_pixel_centres_1d(grid_arc_seconds=grid_arc_seconds, shape=(2, 2),
+                                                                        pixel_scales=(2.0, 4.0))
+
+        top
+
+        assert (grid_pixels == np.array([[0, 0], [0, 1],
+                                         [1, 0], [1, 1]])).all()
+
+        grid_arc_seconds = np.array([[4.49, -8.99], [4.49, -2.99], [4.49, 3.01],
+                                     [1.49, -8.99], [1.49, -2.99], [1.49, 3.01],
+                                     [-1.51, -8.99], [-1.51, -2.99], [-1.51, 3.01]])
+
+        grid_pixels = util.grid_arc_seconds_1d_to_grid_pixel_centres_1d(grid_arc_seconds=grid_arc_seconds, shape=(3, 3),
+                                                                        pixel_scales=(3.0, 6.0))
+
+        assert (grid_pixels == np.array([[0, 0], [0, 1], [0, 2],
+                                         [1, 0], [1, 1], [1, 2],
+                                         [2, 0], [2, 1], [2, 2]])).all()
+
+    def test__same_as_above_but_coordinates_are_bottom_right_of_each_pixel(self):
+
+        grid_arc_seconds = np.array([[0.01, -0.01], [0.01, 3.99],
+                                     [-1.99, -0.01], [-1.99, 3.99]])
+
+        grid_pixels = util.grid_arc_seconds_1d_to_grid_pixel_centres_1d(grid_arc_seconds=grid_arc_seconds, shape=(2, 2),
+                                                                        pixel_scales=(2.0, 4.0))
+
+        assert (grid_pixels == np.array([[0, 0], [0, 1],
+                                         [1, 0], [1, 1]])).all()
+
+        grid_arc_seconds = np.array([[1.51, -3.01], [1.51, 2.99], [1.51, 8.99],
+                                     [-1.49, -3.01], [-1.49, 2.99], [-1.49, 8.99],
+                                     [-4.49, -3.01], [-4.49, 2.99], [-4.49, 8.99]])
+
+        grid_pixels = util.grid_arc_seconds_1d_to_grid_pixel_centres_1d(grid_arc_seconds=grid_arc_seconds, shape=(3, 3),
+                                                                        pixel_scales=(3.0, 6.0))
+
+        assert (grid_pixels == np.array([[0, 0], [0, 1], [0, 2],
+                                         [1, 0], [1, 1], [1, 2],
+                                         [2, 0], [2, 1], [2, 2]])).all()
+
     def test__1d_pixel_grid_to_1d_arc_second_grid(self):
 
         grid_pixels = np.array([[0, 0], [0, 1],
@@ -361,28 +463,29 @@ class TestGridPixelArcSecondConversion(object):
                                               [0.0, -6.0], [0.0, 0.0], [0.0, 6.0],
                                               [-3.0, -6.0], [-3.0, 0.0], [-3.0, 6.0]])).all()
 
-    def test__1d_arc_second_grid_to_1d_pixel_grid(self):
 
-        grid_arc_seconds = np.array([[1.0, -2.0], [1.0, 2.0],
-                                     [-1.0, -2.0], [-1.0, 2.0]])
-
-        grid_pixels = util.grid_arc_seconds_1d_to_grid_pixels_1d(grid_arc_seconds=grid_arc_seconds, shape=(2,2),
-                                                                      pixel_scales=(2.0, 4.0))
-
-        assert (grid_pixels == np.array([[0, 0], [0, 1],
-                                         [1, 0], [1, 1]])).all()
-
-
-        grid_arc_seconds = np.array([[3.0, -6.0], [3.0, 0.0], [3.0, 6.0],
-                                         [0.0, -6.0], [0.0, 0.0], [0.0, 6.0],
-                                         [-3.0, -6.0], [-3.0, 0.0], [-3.0, 6.0]])
-
-        grid_pixels = util.grid_arc_seconds_1d_to_grid_pixels_1d(grid_arc_seconds=grid_arc_seconds, shape=(3,3),
-                                                                      pixel_scales=(3.0, 6.0))
-
-        assert (grid_pixels == np.array([[0, 0], [0, 1], [0, 2],
-                                         [1, 0], [1, 1], [1, 2],
-                                         [2, 0], [2, 1], [2, 2]])).all()
+    # def test__1d_arc_second_grid_to_1d_pixel_grid(self):
+    #
+    #     grid_arc_seconds = np.array([[2.0, -4.0]])
+    #
+    #     grid_pixels = util.grid_arc_seconds_1d_to_grid_pixels_1d(grid_arc_seconds=grid_arc_seconds, shape=(2, 2),
+    #                                                                     pixel_scales=(2.0, 4.0))
+    #
+    #     print(grid_pixels)
+    #
+    #     assert (grid_pixels == np.array([])).all()
+    #
+    #
+    #     grid_arc_seconds = np.array([[3.0, -6.0], [3.0, 0.0], [3.0, 6.0],
+    #                                      [0.0, -6.0], [0.0, 0.0], [0.0, 6.0],
+    #                                      [-3.0, -6.0], [-3.0, 0.0], [-3.0, 6.0]])
+    #
+    #     grid_pixels = util.grid_arc_seconds_1d_to_grid_pixels_1d(grid_arc_seconds=grid_arc_seconds, shape=(3, 3),
+    #                                                                     pixel_scales=(3.0, 6.0))
+    #
+    #     assert (grid_pixels == np.array([[0, 0], [0, 1], [0, 2],
+    #                                      [1, 0], [1, 1], [1, 2],
+    #                                      [2, 0], [2, 1], [2, 2]])).all()
 
 
 class TestGridToPixel(object):
