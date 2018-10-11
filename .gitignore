@@ -1,4 +1,4 @@
-test/integration/simulate_and_fit/data/
+
 *.ipynb
 .projprofile
 *.pyc
@@ -12,7 +12,6 @@ lib/
 .idea
 .env
 .pytest_cache
-test/integration/data/*
 MultiNest/
 data/kevin
 multinest
@@ -25,13 +24,6 @@ dist/
 PyAutoLens.egg-info
 autolens.egg-info/
 config.zip
-autolens-0.2.5
-autolens-0.2.5.tar.gz__pycache__
 __pycache__/
 test/autofit/test_fit/
 prof/
-test/integration/tests/simulate_and_fit/data/_image.fits
-test/test_files/non_linear/multinest/priors/phase/optimizer
-test/test_files/non_linear/multinest/samples/phase/optimizer
-test/test_files/non_linear/multinest/summary/multi_profile/phase/optimizer
-test/test_files/array/test.fits
