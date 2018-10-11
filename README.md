@@ -1,9 +1,15 @@
 # PyAutoLens
 
-PyAutoLens makes it simple to model strong gravitational lenses with complex light and mass profiles. It is based on the following papers:
+PyAutoLens makes it simple to model strong gravitational lenses. It is based on the following papers:
 
 https://arxiv.org/abs/1412.7436<br/>
 https://arxiv.org/abs/1708.07377
+
+## Contact
+
+Before using PyAutoLens, I recommend you contact us on our [SLACK channel](https://pyautolens.slack.com/). Here, I can give you the latest updates on installation, functionality and the best way to use PyAutoLens for your science case.
+
+Unfortunately, SLACK is invitation-only, so first send me an [email](https://github.com/Jammy2211) requesting an invite.
 
 ## Installation
 
@@ -62,9 +68,9 @@ fitting_plotters.plot_fitting(fit=results.fit)
 
 The example above shows the simplest analysis one can perform in PyAutoLens. PyAutoLens's advanced modeling features include:
 
-- **Pipelines** - build automated analysis runners out of phases to fit complex lens models to large samples of strong lenses.
+- **Pipelines** - build automated analysis pipelines to fit complex lens models to large samples of strong lenses.
 - **Inversions** - Reconstruct complex source galaxy morphologies on a variety of pixel-grids.
-- **Adaption** - Adapt the analysis to the features of the observed strong lens imaging.
+- **Adaption** - Adapt the lensing analysis to the features of the observed strong lens imaging.
 - **Multi-Plane** - Model multi-plane lenses, including systems with multiple lensed source galaxies.
 
 ## HowToLens
@@ -73,7 +79,8 @@ Detailed tutorials demonstrating how to use PyAutoLens can be found in the 'howt
 
 - **Introduction** - How to use PyAutolens, familiarizing you with the interface and project structure.
 - **Lens Modeling** - How to model strong lenses, including a primer on Bayesian non-linear analysis.
-- **Pipelines** - How to build runners, in particular how to tailor them to your own science case.
+- **Pipelines** - How to build pipelines and tailor them to your own science case.
+- **Inversions** - How to perform pixelized reconstructions of the source-galaxy.
 
 ## Support & Discussion
 
