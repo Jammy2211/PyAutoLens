@@ -96,6 +96,9 @@ class AbstractFit(object):
 
     def __init__(self, lensing_image, tracer, _model_image):
 
+        self.lensing_image = lensing_image
+        self.tracer = tracer
+
         self.is_hyper_fit = False
         self.total_planes = len(tracer.all_planes)
         self.total_inversions = len(tracer.mappers_of_planes)
@@ -154,29 +157,32 @@ class AbstractProfileFit(AbstractFit):
             An object describing the model
         """
 
+        self.unmasked_tracer = unmasked_tracer
+
         self.convolve_image = lensing_image.convolver_image.convolve_image
         _model_image = self.convolve_image(tracer._image_plane_image, tracer._image_plane_blurring_image)
 
         super(AbstractProfileFit, self).__init__(lensing_image, tracer, _model_image)
 
-        self._model_images_of_planes = list(map(lambda image_plane_image, image_plane_blurring_image:
-                                                self.convolve_image(image_plane_image, image_plane_blurring_image),
-                                                tracer._image_plane_images_of_planes,
-                                                tracer._image_plane_blurring_images_of_planes))
-
-        self._model_images_of_planes = list(map(lambda image: None if not image.any() else image,
-                                                self._model_images_of_planes))
-
-        self.unmasked_model_image = unmasked_model_image_from_lensing_image_and_tracer(lensing_image, unmasked_tracer)
-        self.unmasked_model_images_of_galaxies = \
-            unmasked_model_images_of_galaxies_from_lensing_image_and_tracer(lensing_image, unmasked_tracer)
-
-        self.plane_images = tracer.plane_images_of_planes(shape=plane_shape)
+        self.plane_images = self.tracer.plane_images_of_planes(shape=plane_shape)
 
     @property
     def model_images_of_planes(self):
-        return list(map(lambda image: self.scaled_array_from_array_1d(image) if image is not None else None,
-                        self._model_images_of_planes))
+
+        _model_images_of_planes = list(map(lambda image, blurring_image: self.convolve_image(image, blurring_image),
+                                           self.tracer._image_plane_images_of_planes,
+                                           self.tracer._image_plane_blurring_images_of_planes))
+
+        return list(map(lambda image : None if not image.any() else self.scaled_array_from_array_1d(image),
+                         _model_images_of_planes))
+
+    @property
+    def unmasked_model_profile_image(self):
+        return unmasked_model_image_from_lensing_image_and_tracer(self.lensing_image, self.unmasked_tracer)
+
+    @property
+    def unmasked_model_profile_images_of_galaxies(self):
+        return unmasked_model_images_of_galaxies_from_lensing_image_and_tracer(self.lensing_image, self.unmasked_tracer)
 
 
 class AbstractInversion(object):
@@ -199,7 +205,11 @@ class AbstractInversionFit(AbstractFit, AbstractInversion):
                                                                                   lensing_image.convolver_mapping_matrix,
                                                                                   self.mapper, self.regularization)
 
-        super(AbstractInversionFit, self).__init__(lensing_image, tracer, self.inversion.reconstructed_image)
+        super(AbstractInversionFit, self).__init__(lensing_image, tracer, self.inversion.reconstructed_data_vector)
+
+    @property
+    def model_images_of_planes(self):
+        return [None, self.scaled_array_from_array_1d(self._model_image)]
 
 
 class AbstractProfileInversionFit(AbstractFit, AbstractInversion):
@@ -216,7 +226,7 @@ class AbstractProfileInversionFit(AbstractFit, AbstractInversion):
                                                                                   lensing_image.convolver_mapping_matrix,
                                                                                   self.mapper, self.regularization)
 
-        self._inversion_model_image = self.inversion.reconstructed_image
+        self._inversion_model_image = self.inversion.reconstructed_data_vector
 
         _model_image = self._profile_model_image + self._inversion_model_image
 
@@ -233,6 +243,10 @@ class AbstractProfileInversionFit(AbstractFit, AbstractInversion):
     @property
     def inversion_model_image(self):
         return self.scaled_array_from_array_1d(self._inversion_model_image)
+
+    @property
+    def model_images_of_planes(self):
+        return [self.profile_model_image, self.inversion_model_image]
 
 
 class ProfileFit(AbstractProfileFit):
@@ -284,7 +298,7 @@ class InversionFit(AbstractInversionFit):
         inversion = inversions.inversion_from_mapper_regularization_and_data(lensing_image[:], lensing_image.noise_map,
                                                                              lensing_image.convolver_mapping_matrix,
                                                                              mapper, regularization)
-        _model_image = inversion.reconstructed_image
+        _model_image = inversion.reconstructed_data_vector
         _residuals = residuals_from_image_and_model(lensing_image[:], _model_image)
         _chi_squareds = chi_squareds_from_residuals_and_noise(_residuals, lensing_image.noise_map)
         chi_squared_term = chi_squared_term_from_chi_squareds(_chi_squareds)
@@ -321,7 +335,7 @@ class ProfileInversionFit(AbstractProfileInversionFit):
                                                                              lensing_image.noise_map,
                                                                              lensing_image.convolver_mapping_matrix,
                                                                              mapper, regularization)
-        _model_image = _profile_model_image + inversion.reconstructed_image
+        _model_image = _profile_model_image + inversion.reconstructed_data_vector
         _residuals = residuals_from_image_and_model(lensing_image[:], _model_image)
         _chi_squareds = chi_squareds_from_residuals_and_noise(_residuals, lensing_image.noise_map)
         chi_squared_term = chi_squared_term_from_chi_squareds(_chi_squareds)
@@ -450,7 +464,7 @@ class HyperInversionFit(AbstractInversionFit, AbstractHyperInversion):
             lensing_image[:], self._scaled_noise_map, lensing_image.convolver_mapping_matrix, self.mapper,
             self.regularization)
 
-        self._scaled_model_image = self.scaled_inversion.reconstructed_image
+        self._scaled_model_image = self.scaled_inversion.reconstructed_data_vector
         self._scaled_residuals = residuals_from_image_and_model(self._image, self._scaled_model_image)
         self._scaled_chi_squareds = chi_squareds_from_residuals_and_noise(self._scaled_residuals,
                                                                           self._scaled_noise_map)
@@ -469,7 +483,7 @@ class HyperInversionFit(AbstractInversionFit, AbstractHyperInversion):
         scaled_inversion = inversions.inversion_from_mapper_regularization_and_data(
             lensing_image[:], _scaled_noise_map, lensing_image.convolver_mapping_matrix, mapper, regularization)
 
-        _scaled_residuals = residuals_from_image_and_model(lensing_image[:], scaled_inversion.reconstructed_image)
+        _scaled_residuals = residuals_from_image_and_model(lensing_image[:], scaled_inversion.reconstructed_data_vector)
         _scaled_chi_squareds = chi_squareds_from_residuals_and_noise(_scaled_residuals, _scaled_noise_map)
         scaled_chi_squared_term = chi_squared_term_from_chi_squareds(_scaled_chi_squareds)
         scaled_noise_term = noise_term_from_noise_map(_scaled_noise_map)
@@ -503,7 +517,7 @@ class HyperProfileInversionFit(AbstractProfileInversionFit, AbstractHyperInversi
             self._profile_subtracted_image, self._scaled_noise_map, lensing_image.convolver_mapping_matrix,
             self.mapper, self.regularization)
 
-        self._scaled_model_image = self._profile_model_image + self.scaled_inversion.reconstructed_image
+        self._scaled_model_image = self._profile_model_image + self.scaled_inversion.reconstructed_data_vector
         self._scaled_residuals = residuals_from_image_and_model(self._image, self._scaled_model_image)
         self._scaled_chi_squareds = chi_squareds_from_residuals_and_noise(self._scaled_residuals,
                                                                           self._scaled_noise_map)
@@ -527,7 +541,7 @@ class HyperProfileInversionFit(AbstractProfileInversionFit, AbstractHyperInversi
             _profile_subtracted_image, _scaled_noise_map, lensing_image.convolver_mapping_matrix, mapper,
             regularization)
 
-        _scaled_model_image = _profile_model_image + scaled_inversion.reconstructed_image
+        _scaled_model_image = _profile_model_image + scaled_inversion.reconstructed_data_vector
         _scaled_residuals = residuals_from_image_and_model(lensing_image[:], _scaled_model_image)
         _scaled_chi_squareds = chi_squareds_from_residuals_and_noise(_scaled_residuals, _scaled_noise_map)
         scaled_chi_squared_term = chi_squared_term_from_chi_squareds(_scaled_chi_squareds)
