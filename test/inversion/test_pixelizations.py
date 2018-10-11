@@ -26,6 +26,7 @@ def make_three_pixels():
 
 
 class TestRectangular:
+
     class TestConstructor:
 
         def test__number_of_pixels_and_regularization_set_up_correctly(self):
@@ -34,23 +35,20 @@ class TestRectangular:
             assert pix.shape == (3, 3)
             assert pix.pixels == 9
 
-    class TestSetupGeometry:
+    class TestGeometry:
 
         def test__3x3_grid__buffer_is_small__grid_give_min_minus_1_max_1__sets_up_geometry_correctly(self):
+
             pix = pixelizations.Rectangular(shape=(3, 3))
 
             pixelization_grid = np.array([[1.0, -1.0], [1.0, 0.0], [1.0, 1.0],
                                           [0.0, -1.0], [0.0, 0.0], [0.0, 1.0],
                                           [-1.0, -1.0], [-1.0, 0.0], [-1.0, 1.0]])
 
-            geometry = pix.geometry_from_pixelization_sub_grid(pixelization_grid, buffer=1e-8)
+            geometry = pix.geometry_from_grid(pixelization_grid, buffer=1e-8)
 
-            assert geometry.y_min == -1.0 - 1e-8
-            assert geometry.y_max == 1.0 + 1e-8
-            assert geometry.x_min == -1.0 - 1e-8
-            assert geometry.x_max == 1.0 + 1e-8
-            assert geometry.pixel_scales == ((geometry.y_max - geometry.y_min) / 3,
-                                             (geometry.x_max - geometry.x_min) / 3)
+            assert geometry.shape == (3,3)
+            assert geometry.pixel_scales == pytest.approx((2./3., 2./3.), 1e-2)
 
         def test__3x3_grid__same_as_above_change_buffer(self):
             pix = pixelizations.Rectangular(shape=(3, 3))
@@ -59,14 +57,10 @@ class TestRectangular:
                                           [0.0, -1.0], [0.0, 0.0], [0.0, 1.0],
                                           [1.0, -1.0], [1.0, 0.0], [1.0, 1.0]])
 
-            geometry = pix.geometry_from_pixelization_sub_grid(pixelization_grid, buffer=1e-4)
+            geometry = pix.geometry_from_grid(pixelization_grid, buffer=1e-4)
 
-            assert geometry.y_min == -1.0 - 1e-4
-            assert geometry.y_max == 1.0 + 1e-4
-            assert geometry.x_min == -1.0 - 1e-4
-            assert geometry.x_max == 1.0 + 1e-4
-            assert geometry.pixel_scales == ((geometry.y_max - geometry.y_min) / 3,
-                                             (geometry.x_max - geometry.x_min) / 3)
+            assert geometry.shape == (3,3)
+            assert geometry.pixel_scales == pytest.approx((2./3., 2./3.), 1e-2)
 
         def test__5x4_grid__buffer_is_small(self):
 
@@ -76,28 +70,52 @@ class TestRectangular:
                                           [0.0, -1.0], [0.0, 0.0], [0.0, 1.0],
                                           [-1.0, -1.0], [-1.0, 0.0], [-1.0, 1.0]])
 
-            geometry = pix.geometry_from_pixelization_sub_grid(pixelization_grid, buffer=1e-8)
+            geometry = pix.geometry_from_grid(pixelization_grid, buffer=1e-8)
 
-            assert geometry.y_min == -1.0 - 1e-8
-            assert geometry.y_max == 1.0 + 1e-8
-            assert geometry.x_min == -1.0 - 1e-8
-            assert geometry.x_max == 1.0 + 1e-8
-            assert geometry.pixel_scales == ((geometry.x_max - geometry.x_min) / 5,
-                                             (geometry.y_max - geometry.y_min) / 4)
+            assert geometry.shape == (5,4)
+            assert geometry.pixel_scales == pytest.approx((2./5., 2./4.), 1e-2)
 
         def test__3x3_grid__larger_range_of_grid(self):
+
             pix = pixelizations.Rectangular(shape=(3, 3))
 
             pixelization_grid = np.array([[2.0, 1.0], [4.0, 3.0], [6.0, 5.0], [8.0, 7.0]])
 
-            geometry = pix.geometry_from_pixelization_sub_grid(pixelization_grid, buffer=1e-8)
+            geometry = pix.geometry_from_grid(pixelization_grid, buffer=1e-8)
 
-            assert geometry.y_min == 2.0 - 1e-8
-            assert geometry.y_max == 8.0 + 1e-8
-            assert geometry.x_min == 1.0 - 1e-8
-            assert geometry.x_max == 7.0 + 1e-8
-            assert geometry.pixel_scales[0] == pytest.approx((geometry.y_max - geometry.y_min) / 3, 1e-4)
-            assert geometry.pixel_scales[1] == pytest.approx((geometry.x_max - geometry.x_min) / 3, 1e-4)
+            assert geometry.shape == (3,3)
+            assert geometry.pixel_scales == pytest.approx((6./3., 6./3.), 1e-2)
+
+    class TestPixelCentres:
+
+        def test__3x3_grid__pixel_centres(self):
+
+            pix = pixelizations.Rectangular(shape=(3, 3))
+
+            pixelization_grid = np.array([[1.0, -1.0], [1.0, 0.0], [1.0, 1.0],
+                                          [0.0, -1.0], [0.0, 0.0], [0.0, 1.0],
+                                          [-1.0, -1.0], [-1.0, 0.0], [-1.0, 1.0]])
+
+            geometry = pix.geometry_from_grid(pixelization_grid, buffer=1e-8)
+
+            assert geometry.pixel_centres == pytest.approx(np.array([[2./3., -2./3.], [2./3., 0.0], [2./3., 2./3.],
+                                                                     [ 0.0, -2./3.], [ 0.0, 0.0], [ 0.0, 2./3.],
+                                                                     [-2./3., -2./3.], [-2./3., 0.0], [-2./3., 2./3.]]))
+
+        def test__4x3_grid__pixel_centres(self):
+
+            pix = pixelizations.Rectangular(shape=(4, 3))
+
+            pixelization_grid = np.array([[1.0, -1.0], [1.0, 0.0], [1.0, 1.0],
+                                          [0.0, -1.0], [0.0, 0.0], [0.0, 1.0],
+                                          [-1.0, -1.0], [-1.0, 0.0], [-1.0, 1.0]])
+
+            geometry = pix.geometry_from_grid(pixelization_grid, buffer=1e-8)
+
+            assert geometry.pixel_centres == pytest.approx(np.array([[0.75, -2./3.], [0.75, 0.0], [0.75, 2./3.],
+                                                                     [0.25, -2./3.], [0.25, 0.0], [0.25, 2./3.],
+                                                                     [-0.25, -2./3.], [-0.25, 0.0], [-0.25, 2./3.],
+                                                                     [-0.75, -2./3.], [-0.75, 0.0],[-0.75, 2./ 3.],]))
 
     class TestPixelNeighbors:
 

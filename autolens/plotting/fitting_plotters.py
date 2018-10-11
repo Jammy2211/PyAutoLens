@@ -259,38 +259,39 @@ def plot_fitting_lens_and_source_planes(fit, units='kpc', output_path=None, outp
 
     plt.subplot(2, 3, 3)
 
+    array_plotters.plot_array(
+        array=fit.model_images_of_planes[1], points=None, grid=None, as_subplot=True,
+        units=units, kpc_per_arcsec=fit.kpc_per_arcsec_proper[0],
+        xticks=fit.model_images_of_planes[1].xticks, yticks=fit.model_images_of_planes[1].yticks, xyticksize=16,
+        norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
+        figsize=None, aspect='auto', cmap='jet', cb_ticksize=16,
+        title='Source Model Image', titlesize=16, xlabelsize=16, ylabelsize=16,
+        output_path=output_path, output_filename=None, output_format=output_format)
+
+    plt.subplot(2, 3, 4)
+
     if fit.total_inversions == 0:
 
         array_plotters.plot_array(
-            array=fit.model_images_of_planes[1], points=None, grid=None, as_subplot=True,
-            units=units, kpc_per_arcsec=fit.kpc_per_arcsec_proper[0],
-            xticks=fit.model_images_of_planes[1].xticks, yticks=fit.model_images_of_planes[1].yticks, xyticksize=16,
+            array=fit.plane_images[1], grid=fit.plane_images[1].grid, points=None, as_subplot=True,
+            units=units, kpc_per_arcsec=fit.kpc_per_arcsec_proper[1],
+            xticks=fit.plane_images[1].xticks, yticks=fit.plane_images[1].yticks, xyticksize=16,
             norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
             figsize=None, aspect='auto', cmap='jet', cb_ticksize=16,
-            title='Source Model Image', titlesize=16, xlabelsize=16, ylabelsize=16,
+            title='Source-Plane Image', titlesize=16, xlabelsize=16, ylabelsize=16,
             output_path=output_path, output_filename=None, output_format=output_format)
 
     else:
 
         inversion_plotters.plot_reconstruction(mapper=fit.mapper, inversion=fit.inversion,
-            as_subplot=True,
+            points=None, grid=None, as_subplot=True,
             units=units, kpc_per_arcsec=fit.kpc_per_arcsec_proper[0],
-            xticks=fit.image.xticks, yticks=fit.image.yticks, xyticksize=16,
+            xyticksize=16,
             norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
             figsize=None, aspect='auto', cmap='jet', cb_ticksize=16,
-            title='Source Model Image', titlesize=16, xlabelsize=16, ylabelsize=16,
+            title='Source-Plane Image', titlesize=16, xlabelsize=16, ylabelsize=16,
             output_path=output_path, output_filename=None, output_format=output_format)
 
-    plt.subplot(2, 3, 4)
-
-    array_plotters.plot_array(
-        array=fit.plane_images[1], grid=fit.plane_images[1].grid, points=None, as_subplot=True,
-        units=units, kpc_per_arcsec=fit.kpc_per_arcsec_proper[1],
-        xticks=fit.plane_images[1].xticks, yticks=fit.plane_images[1].yticks, xyticksize=16,
-        norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
-        figsize=None, aspect='auto', cmap='jet', cb_ticksize=16,
-        title='Source-Plane Image', titlesize=16, xlabelsize=16, ylabelsize=16,
-        output_path=output_path, output_filename=None, output_format=output_format)
 
     plt.subplot(2, 3, 5)
 
