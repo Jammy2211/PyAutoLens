@@ -1,0 +1,40 @@
+INSTALLATION:
+
+pip install autolens
+
+
+KNOWN ISSUES:
+
+MultiNest:
+
+MultiNest is a library used for non-linear sampling. Its source code is written in Fortran, and this needs compiling and 
+linking to PyMultiNest. There have been issues on both Mac and Ubuntu in getting this set up and the best advise we can 
+give currently is to follow the instructions on the pymultinest installation page:
+
+http://johannesbuchner.github.io/PyMultiNest/install.html
+
+Mac users - If the instructions above don't work due to c / fortran compiler issues, 
+try the following instructions:
+
+http://astrobetter.com/wiki/MultiNest+Installation+Notes 
+
+If you are still having issues, please contact us on SLACK.
+
+We will address this issue in the short-term future, either by making a PyAutoLens conda install or 
+making PyMultiNest an optional module.
+
+NUMBA:
+
+If you get issues referring to the library 'numba' (typically when using functions from the image module), this is 
+because your pip has installed the incorrect version. To fix this:
+
+pip uninstall numba
+pip install numba==0.39.0
+
+GetDist:
+
+If you get issues referring to the library 'getdist', (typically after running a nonlinear search) this is 
+because your pip has installed the incorrect version. To fix this:
+
+pip uninstall getdist
+pip install getdist==0.2.8.4.2
