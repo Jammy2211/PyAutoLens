@@ -238,7 +238,7 @@ class PhasePositions(Phase):
         """
         analysis = self.make_analysis(positions=positions, pixel_scale=pixel_scale, previous_results=previous_results)
         result = self.optimizer.fit(analysis)
-        return self.__class__.Result(result.constant, result.likelihood, result.variable, analysis)
+        return self.__class__.Result(result.constant, result.likelihood, result.variable)
 
     def make_analysis(self, positions, pixel_scale, previous_results=None):
         """
@@ -527,8 +527,8 @@ class LensPlanePhase(PhaseImaging):
 
             super(LensPlanePhase.Result, self).__init__(constant, likelihood, variable, analysis)
 
-            self.unmasked_model_image = self.fit.unmasked_model_image
-            self.lens_galaxy_unmasked_model_images = self.fit.unmasked_model_images_of_galaxies
+            self.unmasked_model_image = self.fit.unmasked_model_profile_image
+            self.lens_galaxy_unmasked_model_images = self.fit.unmasked_model_profile_images_of_galaxies
             self.lens_subtracted_unmasked_image = analysis.lensing_image.image - self.unmasked_model_image
       #      fitting_plotters.plot_fitting_hyper_arrays(self.fit, output_path=analysis.output_image_path,
       #                                             output_format='png')
@@ -552,7 +552,7 @@ class LensPlaneHyperPhase(LensPlanePhase):
 
         def __init__(self, lensing_image, phase_name, previous_results=None):
             super(LensPlanePhase.Analysis, self).__init__(lensing_image, phase_name, previous_results)
-            self.hyper_model_image = self.map_to_1d(previous_results.last.unmasked_model_image)
+            self.hyper_model_image = self.map_to_1d(previous_results.last.unmasked_model_profile_image)
             self.hyper_galaxy_images = list(map(lambda galaxy_image: self.map_to_1d(galaxy_image),
                                                 previous_results.last.lens_galaxy_unmasked_model_images))
             self.hyper_minimum_values = len(self.hyper_galaxy_images) * [0.0]
@@ -651,7 +651,7 @@ class LensLightHyperOnlyPhase(LensPlaneHyperPhase, HyperOnly):
         def __init__(self, lensing_image, phase_name, previous_results=None, hyper_index=None):
             super(LensPlaneHyperPhase.Analysis, self).__init__(lensing_image, phase_name, previous_results)
 
-            self.hyper_model_image = self.map_to_1d(previous_results.last.unmasked_model_image)
+            self.hyper_model_image = self.map_to_1d(previous_results.last.unmasked_model_profile_image)
             self.hyper_galaxy_images = list(map(lambda galaxy_image: self.map_to_1d(galaxy_image),
                                                 previous_results.last.lens_galaxy_unmasked_model_images))
             self.hyper_galaxy_images = [self.hyper_galaxy_images[hyper_index]]
@@ -701,7 +701,8 @@ class LensSourcePlanePhase(PhaseImaging):
         def tracer_for_instance(self, instance):
             return ray_tracing.TracerImageSourcePlanes(lens_galaxies=instance.lens_galaxies,
                                                        source_galaxies=instance.source_galaxies,
-                                                       image_plane_grids=self.lensing_image.grids)
+                                                       image_plane_grids=self.lensing_image.grids,
+                                                       borders=self.lensing_image.borders)
 
         def unmasked_tracer_for_instance(self, instance):
             return ray_tracing.TracerImageSourcePlanes(lens_galaxies=instance.lens_galaxies,

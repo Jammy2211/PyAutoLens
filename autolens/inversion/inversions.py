@@ -79,15 +79,15 @@ def curvature_matrix_from_blurred_mapping_matrix_jit(blurred_mapping_matrix, noi
 
 
 @numba.jit(nopython=True, cache=True)
-def reconstructed_image_from_blurred_mapping_matrix_and_solution_vector(blurred_mapping_matrix, solution_vector):
+def reconstructed_data_vector_from_blurred_mapping_matrix_and_solution_vector(blurred_mapping_matrix, solution_vector):
     """ Map the reconstructed_image pix s_vector back to the masked_image-plane to compute the inversion's model-masked_image.
     """
-    reconstructed_image = np.zeros(blurred_mapping_matrix.shape[0])
+    reconstructed_data_vector = np.zeros(blurred_mapping_matrix.shape[0])
     for i in range(blurred_mapping_matrix.shape[0]):
         for j in range(solution_vector.shape[0]):
-            reconstructed_image[i] += solution_vector[j] * blurred_mapping_matrix[i, j]
+            reconstructed_data_vector[i] += solution_vector[j] * blurred_mapping_matrix[i, j]
 
-    return reconstructed_image
+    return reconstructed_data_vector
 
 
 class Inversion(object):
@@ -117,9 +117,9 @@ class Inversion(object):
         self.solution_vector = solution_vector
 
     @property
-    def reconstructed_image(self):
-        return reconstructed_image_from_blurred_mapping_matrix_and_solution_vector(self.blurred_mapping_matrix,
-                                                                                   self.solution_vector)
+    def reconstructed_data_vector(self):
+        return reconstructed_data_vector_from_blurred_mapping_matrix_and_solution_vector(self.blurred_mapping_matrix,
+                                                                                         self.solution_vector)
 
     @property
     def regularization_term(self):

@@ -259,7 +259,7 @@ class TestPixelization(object):
 
         arguments = {galaxy_prior.redshift.redshift: 2.0,
                      galaxy_prior.pixelization.pixels: 10,
-                     galaxy_prior.regularization.regularization_coefficients.regularization_coefficients_0: 5}
+                     galaxy_prior.regularization.coeffs_0: 5}
 
         galaxy = galaxy_prior.instance_for_arguments(arguments)
 
@@ -288,7 +288,7 @@ class TestRegularization(object):
 
         arguments = {galaxy_prior.redshift.redshift: 2.0,
                      galaxy_prior.pixelization.pixels: 10,
-                     galaxy_prior.regularization.regularization_coefficients.regularization_coefficients_0: 5}
+                     galaxy_prior.regularization.coeffs_0: 5}
 
         galaxy = galaxy_prior.instance_for_arguments(arguments)
 

@@ -1,9 +1,17 @@
 import numpy as np
 import pytest
 
+from autolens.imaging import imaging_util
 from autolens.inversion import mappers
 from autolens.inversion import pixelizations
 from test.mock.mock_mask import MockSubGridCoords, MockGridCollection
+
+
+class MockGeometry(object):
+
+    def __init__(self):
+
+        self.pixel_scales = (1.0, 1.0)
 
 
 def grid_to_pixel_pixels_via_nearest_neighbour(grid, pixel_centers):
@@ -136,7 +144,7 @@ class TestMappingMatrix:
              [0.1875, 0.1875, 0.1875, 0.1875, 0.125, 0.125]])).all()
 
 
-class TestRectangularPixMapper:
+class TestRectangularMapper:
 
     class TestImageAndSubToPixelization:
 
@@ -152,7 +160,7 @@ class TestRectangularPixMapper:
 
             pix = pixelizations.Rectangular(shape=(3, 3))
 
-            geometry = pix.geometry_from_pixelization_sub_grid(pixelization_sub_grid=pixelization_grid)
+            geometry = pix.geometry_from_grid(grid=pixelization_grid)
 
             grids = MockGridCollection(image=pixelization_grid,
                                        sub=MockSubGridCoords(pixelization_grid, sub_to_image=np.ones((1)),
@@ -176,7 +184,7 @@ class TestRectangularPixMapper:
 
             pix = pixelizations.Rectangular(shape=(3, 3))
 
-            geometry = pix.geometry_from_pixelization_sub_grid(pixelization_sub_grid=pixelization_grid)
+            geometry = pix.geometry_from_grid(grid=pixelization_grid)
 
             grids = MockGridCollection(image=pixelization_grid,
                                        sub=MockSubGridCoords(pixelization_grid, sub_to_image=np.ones((1)),
@@ -200,7 +208,7 @@ class TestRectangularPixMapper:
 
             pix = pixelizations.Rectangular(shape=(3, 3))
 
-            geometry = pix.geometry_from_pixelization_sub_grid(pixelization_sub_grid=pixelization_grid)
+            geometry = pix.geometry_from_grid(grid=pixelization_grid)
 
             grids = MockGridCollection(image=pixelization_grid,
                                        sub=MockSubGridCoords(pixelization_grid, sub_to_image=np.ones((1)),
@@ -234,7 +242,7 @@ class TestRectangularPixMapper:
 
             pix = pixelizations.Rectangular(shape=(4, 3))
 
-            geometry = pix.geometry_from_pixelization_sub_grid(pixelization_sub_grid=pixelization_grid)
+            geometry = pix.geometry_from_grid(grid=pixelization_grid)
 
             grids = MockGridCollection(image=pixelization_grid,
                                        sub=MockSubGridCoords(pixelization_grid, sub_to_image=np.ones((1)),
@@ -266,7 +274,7 @@ class TestRectangularPixMapper:
 
             pix = pixelizations.Rectangular(shape=(3, 4))
 
-            geometry = pix.geometry_from_pixelization_sub_grid(pixelization_sub_grid=pixelization_grid)
+            geometry = pix.geometry_from_grid(grid=pixelization_grid)
 
             grids = MockGridCollection(image=pixelization_grid,
                                        sub=MockSubGridCoords(pixelization_grid, sub_to_image=np.ones((1)),
@@ -288,7 +296,7 @@ class TestRectangularPixMapper:
 
             pix = pixelizations.Rectangular(shape=(3, 3))
 
-            geometry = pix.geometry_from_pixelization_sub_grid(pixelization_sub_grid=pixelization_grid)
+            geometry = pix.geometry_from_grid(grid=pixelization_grid)
 
             grids = MockGridCollection(image=pixelization_grid,
                                        sub=MockSubGridCoords(pixelization_grid, sub_to_image=np.ones((1)),
@@ -310,7 +318,7 @@ class TestRectangularPixMapper:
 
             pix = pixelizations.Rectangular(shape=(3, 3))
 
-            geometry = pix.geometry_from_pixelization_sub_grid(pixelization_sub_grid=pixelization_grid)
+            geometry = pix.geometry_from_grid(grid=pixelization_grid)
 
             grids = MockGridCollection(image=pixelization_grid,
                                        sub=MockSubGridCoords(pixelization_grid, sub_to_image=np.ones((1)),
@@ -333,7 +341,7 @@ class TestRectangularPixMapper:
 
             pix = pixelizations.Rectangular(shape=(4, 3))
 
-            geometry = pix.geometry_from_pixelization_sub_grid(pixelization_sub_grid=pixelization_grid)
+            geometry = pix.geometry_from_grid(grid=pixelization_grid)
 
             grids = MockGridCollection(image=pixelization_grid,
                                        sub=MockSubGridCoords(pixelization_grid, sub_to_image=np.ones((1)),
@@ -359,7 +367,7 @@ class TestRectangularPixMapper:
                                        sub=MockSubGridCoords(pixelization_grid, sub_to_image=np.ones((1)),
                                                              sub_grid_size=1))
 
-            geometry = pix.geometry_from_pixelization_sub_grid(pixelization_sub_grid=pixelization_grid)
+            geometry = pix.geometry_from_grid(grid=pixelization_grid)
 
             pix = mappers.RectangularMapper(pixels=9, shape=(3, 4), grids=grids, geometry=geometry,
                                             pixel_neighbors=None)
@@ -383,7 +391,7 @@ class TestRectangularPixMapper:
 
             pix = pixelizations.Rectangular(shape=(3, 3))
 
-            geometry = pix.geometry_from_pixelization_sub_grid(pixelization_sub_grid=pixelization_grid)
+            geometry = pix.geometry_from_grid(grid=pixelization_grid)
 
             grids = MockGridCollection(image=pixelization_grid,
                                        sub=MockSubGridCoords(pixelization_sub_grid, sub_to_image=np.ones((1)),
@@ -394,6 +402,50 @@ class TestRectangularPixMapper:
 
             assert (pix.image_to_pixelization == np.array([0, 4, 2, 4, 4, 4, 6, 4, 8])).all()
             assert (pix.sub_to_pixelization == np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])).all()
+
+    class TestReconstructedPixelization:
+
+        def test__3x3_pixelization__solution_vector_ascending(self):
+
+            pixelization_grid = np.array([[2.0, -1.0], [2.0, 0.0], [2.0, 1.0],
+                                          [0.0, -1.0], [0.0, 0.0], [0.0, 1.0],
+                                          [-2.0, -1.0], [-2.0, 0.0], [-2.0, 1.0]])
+
+            pix = pixelizations.Rectangular(shape=(3, 3))
+
+            geometry = pix.geometry_from_grid(grid=pixelization_grid)
+
+            pix = mappers.RectangularMapper(pixels=9, shape=(3, 3), grids=None, geometry=geometry,
+                                            pixel_neighbors=None)
+
+            recon_pix = pix.reconstructed_pixelization_from_solution_vector(solution_vector=np.array([1.0, 2.0, 3.0,
+                                                                                                      4.0, 5.0, 6.0,
+                                                                                                      7.0, 8.0, 9.0]))
+
+            assert (recon_pix == np.array([[1.0, 2.0, 3.0],
+                                           [4.0, 5.0, 6.0],
+                                           [7.0, 8.0, 9.0]])).all()
+            assert recon_pix.pixel_scales == pytest.approx((4./3., 2./3.), 1e-2)
+
+        def test__compare_to_imaging_util(self):
+
+            pix = mappers.RectangularMapper(pixels=9, shape=(4, 3), grids=None, geometry=MockGeometry(),
+                                            pixel_neighbors=None)
+            solution = np.array([1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 1.0, 2.0, 3.0])
+            recon_pix = pix.reconstructed_pixelization_from_solution_vector(solution_vector=solution)
+            recon_pix_util = imaging_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(array_1d=solution,
+                                                                                                    shape=(4,3))
+            assert (recon_pix == recon_pix_util).all()
+            assert recon_pix.shape == (4,3)
+
+            pix = mappers.RectangularMapper(pixels=9, shape=(3, 4), grids=None, geometry=MockGeometry(),
+                                            pixel_neighbors=None)
+            solution = np.array([1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 1.0, 2.0, 3.0])
+            recon_pix = pix.reconstructed_pixelization_from_solution_vector(solution_vector=solution)
+            recon_pix_util = imaging_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(array_1d=solution,
+                                                                                                    shape=(3,4))
+            assert (recon_pix == recon_pix_util).all()
+            assert recon_pix.shape == (3,4)
 
 
 class TestVoronoiPixMapper:
