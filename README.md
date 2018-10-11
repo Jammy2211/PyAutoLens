@@ -19,6 +19,8 @@ AutoLens requires [PyMultiNest](http://johannesbuchner.github.io/pymultinest-tut
 $ pip install autolens
 ```
 
+Known issues with the installation can be found in the file [INSTALL.notes](https://github.com/Jammy2211/PyAutoLens/blob/master/INSTALL.notes)
+
 ## Python Example
 
 With PyAutoLens, you can begin modeling a lens in just a couple of minutes. The example below demonstrates a simple analysis which fits a lens galaxy's light, mass and a source galaxy.
