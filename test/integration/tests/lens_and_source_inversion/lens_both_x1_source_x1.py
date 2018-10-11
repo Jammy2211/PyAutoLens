@@ -21,16 +21,17 @@ output_path = '{}/../output/lens_and_source_inversion'.format(dirpath)
 
 def pipeline():
 
-    pipeline_name = "lens_mass_x1_source_x1"
-    data_name = '/lens_mass_x1_source_x1'
+    pipeline_name = "lens_both_x1_source_x1"
+    data_name = '/lens_both_x1_source_x1'
 
     tools.reset_paths(data_name, pipeline_name, output_path)
 
+    lens_light = lp.SphericalDevVaucouleurs(centre=(0.0, 0.0), intensity=0.1, effective_radius=0.5)
     lens_mass = mp.EllipticalIsothermal(centre=(0.0, 0.0), axis_ratio=0.8, phi=80.0, einstein_radius=1.6)
     source_light = lp.EllipticalSersic(centre=(-1.0, 1.0), axis_ratio=0.6, phi=90.0, intensity=1.0,
                                        effective_radius=0.5, sersic_index=1.0)
 
-    lens_galaxy = galaxy.Galaxy(sie=lens_mass)
+    lens_galaxy = galaxy.Galaxy(dev=lens_light, sie=lens_mass)
     source_galaxy = galaxy.Galaxy(sersic=source_light)
 
     tools.simulate_integration_image(data_name=data_name, pixel_scale=0.2, lens_galaxies=[lens_galaxy],
@@ -55,7 +56,7 @@ def make_lens_x1_source_x1_inversion_pipeline(pipeline_name):
             self.source_galaxies[0].pixelization.shape_0 = 20.0
             self.source_galaxies[0].pixelization.shape_1 = 20.0
 
-    phase1 = SourcePix(lens_galaxies=[gm.GalaxyModel(sie=mp.EllipticalIsothermal)],
+    phase1 = SourcePix(lens_galaxies=[gm.GalaxyModel(dev=lp.SphericalDevVaucouleurs, sie=mp.EllipticalIsothermal)],
                        source_galaxies=[gm.GalaxyModel(pixelization=pix.Rectangular, regularization=reg.Constant)],
                        optimizer_class=nl.MultiNest, phase_name="{}/phase1".format(pipeline_name))
 

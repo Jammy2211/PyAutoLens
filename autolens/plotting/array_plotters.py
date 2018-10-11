@@ -60,8 +60,7 @@ def plot_image(array, as_subplot, figsize, aspect, cmap, norm_scale):
     if not as_subplot:
         plt.figure(figsize=figsize)
 
-    plt.imshow(array, aspect=aspect, cmap=cmap, norm=norm_scale, extent=(0, array.shape[1], 0,
-                                                                                    array.shape[0]))
+    plt.imshow(array, aspect=aspect, cmap=cmap, norm=norm_scale, extent=(0, array.shape[1], 0, array.shape[0]))
 
 
 def plot_points(points, pointsize):
@@ -116,7 +115,7 @@ def plot_grid(grid, pointsize):
     pass
 
 #   if grid is not None:
-#       plt.scatter(x=grid[:, 0], y=grid[:, 1], s=1)
+#       plt.scatter(x=grid[:, 1], y=grid[:, 0], s=1)
 
 
 def output_array(array, output_path, output_filename, output_format):

@@ -49,37 +49,37 @@ hst_up_reconstructed = hst_up_recon.from_reconstructor_and_data(hst_up.masked_im
 # ao_reconstructed = ao_recon.reconstruct_image(ao.masked_image, ao.masked_image.noise_map,
 #                                                   ao.masked_image.convolver_mapping_matrix)
 
-lsst_reconstructed.reconstructed_image()
-euclid_reconstructed.reconstructed_image()
-hst_reconstructed.reconstructed_image()
-hst_up_reconstructed.reconstructed_image()
+lsst_reconstructed.reconstructed_data_vector()
+euclid_reconstructed.reconstructed_data_vector()
+hst_reconstructed.reconstructed_data_vector()
+hst_up_reconstructed.reconstructed_data_vector()
 
 
 # ao_reconstructed.model_image_from_reconstruction_jit()
 
 @tools.tick_toc_x1
 def lsst_solution():
-    lsst_reconstructed.reconstructed_image()
+    lsst_reconstructed.reconstructed_data_vector()
 
 
 @tools.tick_toc_x1
 def euclid_solution():
-    euclid_reconstructed.reconstructed_image()
+    euclid_reconstructed.reconstructed_data_vector()
 
 
 @tools.tick_toc_x1
 def hst_solution():
-    hst_reconstructed.reconstructed_image()
+    hst_reconstructed.reconstructed_data_vector()
 
 
 @tools.tick_toc_x1
 def hst_up_solution():
-    hst_up_reconstructed.reconstructed_image()
+    hst_up_reconstructed.reconstructed_data_vector()
 
 
 @tools.tick_toc_x1
 def ao_solution():
-    ao_reconstructed.reconstructed_image()
+    ao_reconstructed.reconstructed_data_vector()
 
 
 if __name__ == "__main__":

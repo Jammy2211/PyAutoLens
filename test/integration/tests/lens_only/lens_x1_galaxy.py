@@ -14,6 +14,7 @@ output_path = '{}/../output/lens_only'.format(dirpath)
 
 
 def pipeline():
+
     pipeline_name = "lens_x1_galaxy"
     data_name = '/lens_x1_galaxy'
 

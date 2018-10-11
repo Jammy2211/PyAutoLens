@@ -114,8 +114,8 @@ class Rectangular(Pixelization):
         grid_to_pix = np.zeros(grid.shape[0], dtype='int')
 
         for index, pix_coordinate in enumerate(grid):
-            x_pixel = geometry.arc_second_to_pixel_index_x(pix_coordinate[0])
-            y_pixel = geometry.arc_second_to_pixel_index_y(pix_coordinate[1])
+            x_pixel = geometry.x_arc_seconds_to_pixels(pix_coordinate[0])
+            y_pixel = geometry.y_arc_seconds_to_pixels(pix_coordinate[1])
 
             grid_to_pix[index] = x_pixel * self.shape[1] + y_pixel
 

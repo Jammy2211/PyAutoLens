@@ -21,7 +21,7 @@ class TestRegularizationConstant:
 
             test_regularization_matrix = np.matmul(test_b_matrix.T, test_b_matrix) + 1e-8 * np.identity(3)
 
-            reg = regularization.Constant(regularization_coefficients=(1.0,))
+            reg = regularization.Constant(coeffs=(1.0,))
             regularization_matrix = reg.regularization_matrix_from_pixel_neighbors(pixel_neighbors)
 
             assert (regularization_matrix == test_regularization_matrix).all()
@@ -37,7 +37,7 @@ class TestRegularizationConstant:
 
             pixel_neighbors = np.array([[1, 3], [0, 2], [1, 3], [0, 2]])
 
-            reg = regularization.Constant(regularization_coefficients=(1.0,))
+            reg = regularization.Constant(coeffs=(1.0,))
             regularization_matrix = reg.regularization_matrix_from_pixel_neighbors(pixel_neighbors)
 
             assert (regularization_matrix == test_regularization_matrix).all()
@@ -53,7 +53,7 @@ class TestRegularizationConstant:
 
             test_regularization_matrix = np.matmul(test_b_matrix.T, test_b_matrix) + 1e-8 * np.identity(4)
 
-            reg = regularization.Constant(regularization_coefficients=(2.0,))
+            reg = regularization.Constant(coeffs=(2.0,))
             regularization_matrix = reg.regularization_matrix_from_pixel_neighbors(pixel_neighbors)
 
             assert (regularization_matrix == test_regularization_matrix).all()
@@ -89,7 +89,7 @@ class TestRegularizationConstant:
             test_regularization_matrix = test_regularization_matrix_0 + \
                                          test_regularization_matrix_1 + 1e-8 * np.identity(9)
 
-            reg = regularization.Constant(regularization_coefficients=(1.0,))
+            reg = regularization.Constant(coeffs=(1.0,))
             regularization_matrix = reg.regularization_matrix_from_pixel_neighbors(pixel_neighbors)
 
             assert (regularization_matrix == test_regularization_matrix).all()
@@ -146,7 +146,7 @@ class TestRegularizationWeighted:
     class TestRegularizationWeights(object):
 
         def test__pixel_signals_all_1s__coefficients_all_1s__weights_all_1s(self):
-            reg = regularization.Weighted(regularization_coefficients=(1.0, 1.0))
+            reg = regularization.Weighted(coeffs=(1.0, 1.0))
 
             pixel_signals = np.array([1.0, 1.0, 1.0])
 
@@ -155,7 +155,7 @@ class TestRegularizationWeighted:
             assert (weights == np.array([1.0, 1.0, 1.0])).all()
 
         def test__pixel_signals_vary__coefficents_all_1s__weights_still_all_1s(self):
-            reg = regularization.Weighted(regularization_coefficients=(1.0, 1.0))
+            reg = regularization.Weighted(coeffs=(1.0, 1.0))
 
             pixel_signals = np.array([0.25, 0.5, 0.75])
 
@@ -164,7 +164,7 @@ class TestRegularizationWeighted:
             assert (weights == np.array([1.0, 1.0, 1.0])).all()
 
         def test__pixel_signals_vary__coefficents_1_and_0__weights_are_pixel_signals_squared(self):
-            reg = regularization.Weighted(regularization_coefficients=(1.0, 0.0))
+            reg = regularization.Weighted(coeffs=(1.0, 0.0))
 
             pixel_signals = np.array([0.25, 0.5, 0.75])
 
@@ -173,7 +173,7 @@ class TestRegularizationWeighted:
             assert (weights == np.array([0.25 ** 2.0, 0.5 ** 2.0, 0.75 ** 2.0])).all()
 
         def test__pixel_signals_vary__coefficents_0_and_1__weights_are_1_minus_pixel_signals_squared(self):
-            reg = regularization.Weighted(regularization_coefficients=(0.0, 1.0))
+            reg = regularization.Weighted(coeffs=(0.0, 1.0))
 
             pixel_signals = np.array([0.25, 0.5, 0.75])
 

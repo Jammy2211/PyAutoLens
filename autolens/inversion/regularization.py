@@ -3,7 +3,7 @@ import numpy as np
 
 class Regularization(object):
 
-    def __init__(self, regularization_coefficients=(1.0,)):
+    def __init__(self, coeffs=(1.0,)):
         """ Abstract base class for a regularization-scheme, which is applied to a pixelization to enforce a \
         smooth-source solution and prevent over-fitting noise in the _image. This is achieved by computing a \
         'regularization term' - which is the sum of differences in reconstructed flux between every set of neighboring \
@@ -158,11 +158,11 @@ class Regularization(object):
         -----------
         shape : (int, int)
             The dimensions of the rectangular grid of pixels (x_pixels, y_pixel)
-        regularization_coefficients : (float,)
+        coeffs : (float,)
             The regularization_matrix coefficients used to smooth the pix reconstructed_image.            
             
         """
-        self.regularization_coefficients = regularization_coefficients
+        self.regularization_coefficients = coeffs
 
     def regularization_matrix_from_pixel_neighbors(self, pixel_neighbors):
         raise NotImplementedError("regularization_matrix_from_pixel_neighbors should be overridden")
@@ -170,9 +170,9 @@ class Regularization(object):
 
 class Constant(Regularization):
 
-    def __init__(self, regularization_coefficients=(1.0,)):
+    def __init__(self, coeffs=(1.0,)):
 
-        super(Constant, self).__init__(regularization_coefficients)
+        super(Constant, self).__init__(coeffs)
 
     def regularization_matrix_from_pixel_neighbors(self, pixel_neighbors):
         """From the pixel-neighbors, setup the regularization matrix using the constant regularization scheme.
@@ -200,9 +200,9 @@ class Constant(Regularization):
 
 class Weighted(Regularization):
 
-    def __init__(self, regularization_coefficients=(1.0, 1.0), signal_scale=1.0):
+    def __init__(self, coeffs=(1.0, 1.0), signal_scale=1.0):
 
-        super(Weighted, self).__init__(regularization_coefficients)
+        super(Weighted, self).__init__(coeffs)
         self.signal_scale = signal_scale
 
     def pixel_signals_from_images(self, pixels, image_to_pixelization, galaxy_image):

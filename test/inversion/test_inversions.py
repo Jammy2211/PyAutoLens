@@ -208,7 +208,7 @@ class TestReconstructedImage:
         # Image pixel 1 maps to 3 pixs pixxels -> value is 3.0
         # Image pixel 2 maps to 1 pixs pixxels -> value is 1.0
 
-        assert (re.reconstructed_image == np.array([4.0, 3.0, 1.0])).all()
+        assert (re.reconstructed_data_vector == np.array([4.0, 3.0, 1.0])).all()
 
     def test__solution_different_values__simple_blurred_mapping_matrix__correct_reconstructed_image(self):
         solution_vector = np.array([1.0, 2.0, 3.0, 4.0])
@@ -225,4 +225,4 @@ class TestReconstructedImage:
         # Image pixel 1 maps to 3 pixs pixxels -> value is 1.0 + 3.0 + 4.0
         # Image pixel 2 maps to 1 pixs pixxels -> value is 1.0
 
-        assert (re.reconstructed_image == np.array([10.0, 8.0, 1.0])).all()
+        assert (re.reconstructed_data_vector == np.array([10.0, 8.0, 1.0])).all()
