@@ -6,7 +6,7 @@ import itertools
 
 from astropy.io import fits
 
-def plot_array(array, points, grid, as_subplot,
+def plot_array2(array, mask, points, grid, as_subplot,
                units, kpc_per_arcsec,
                xticks, yticks, xyticksize,
                norm, norm_min, norm_max, linthresh, linscale,
@@ -14,17 +14,12 @@ def plot_array(array, points, grid, as_subplot,
                title, titlesize, xlabelsize, ylabelsize,
                output_path, output_filename, output_format):
 
-    norm_min, norm_max = get_normalization_min_max(array=array, norm_min=norm_min, norm_max=norm_max)
-    norm_scale = get_normalization_scale(norm=norm, norm_min=norm_min, norm_max=norm_max,
-                                         linthresh=linthresh, linscale=linscale)
-
-    plot_image(array=array, as_subplot=as_subplot, figsize=figsize, aspect=aspect, cmap=cmap, norm_scale=norm_scale)
-
     set_title(title=title, titlesize=titlesize)
     set_xy_labels_and_ticks(shape=array.shape, units=units, kpc_per_arcsec=kpc_per_arcsec, xticks=xticks, yticks=yticks,
                             xlabelsize=xlabelsize, ylabelsize=ylabelsize, xyticksize=xyticksize)
     set_colorbar(cb_ticksize=cb_ticksize)
     plot_points(points=points, pointsize=10)
+    plot_mask(mask)
     plot_grid(grid=grid, pointsize=10)
 
     if not as_subplot:
@@ -32,14 +27,25 @@ def plot_array(array, points, grid, as_subplot,
                           output_format=output_format)
         plt.close()
 
+def plot_array(array, as_subplot, figsize, aspect, cmap, norm, norm_max, norm_min, linthresh, linscale):
+
+    if not as_subplot:
+        plt.figure(figsize=figsize)
+
+    norm_min, norm_max = get_normalization_min_max(array=array, norm_min=norm_min, norm_max=norm_max)
+    norm_scale = get_normalization_scale(norm=norm, norm_min=norm_min, norm_max=norm_max,
+                                         linthresh=linthresh, linscale=linscale)
+
+    plt.imshow(array, aspect=aspect, cmap=cmap, norm=norm_scale)
+
 def get_normalization_min_max(array, norm_min, norm_max):
+
     if norm_min is None:
         norm_min = array.min()
     if norm_max is None:
         norm_max = array.max()
 
     return norm_min, norm_max
-
 
 def get_normalization_scale(norm, norm_min, norm_max, linthresh, linscale):
     if norm is 'linear':
@@ -54,26 +60,8 @@ def get_normalization_scale(norm, norm_min, norm_max, linthresh, linscale):
         raise exc.VisualizeException('The normalization (norm) supplied to the plotter is not a valid string (must be '
                                      'linear | log | symmetric_log')
 
-
-def plot_image(array, as_subplot, figsize, aspect, cmap, norm_scale):
-
-    if not as_subplot:
-        plt.figure(figsize=figsize)
-
-    plt.imshow(array, aspect=aspect, cmap=cmap, norm=norm_scale, extent=(0, array.shape[1], 0, array.shape[0]))
-
-
-def plot_points(points, pointsize):
-
-    if points is not None:
-        point_colors = itertools.cycle(["w", "c", "y", "r", "k", "b", "g", "m"])
-        for point_set in points:
-            plt.scatter(x=point_set[:,0], y=point_set[:,1], color=next(point_colors), s=10.0)
-
-
 def set_title(title, titlesize):
     plt.title(title, fontsize=titlesize)
-
 
 def set_xy_labels_and_ticks(shape, units, kpc_per_arcsec, xticks, yticks, xlabelsize, ylabelsize, xyticksize):
 
@@ -104,18 +92,32 @@ def set_xy_labels_and_ticks(shape, units, kpc_per_arcsec, xticks, yticks, xlabel
 
     plt.tick_params(labelsize=xyticksize)
 
-
 def set_colorbar(cb_ticksize):
     cb = plt.colorbar()
     cb.ax.tick_params(labelsize=cb_ticksize)
 
 
-def plot_grid(grid, pointsize):
+def plot_mask(mask):
 
-    pass
+    if mask is not None:
 
-#   if grid is not None:
-#       plt.scatter(x=grid[:, 1], y=grid[:, 0], s=1)
+        border_pixels = mask.grid_to_pixel[mask.border_pixels]
+
+        plt.scatter(y=border_pixels[:,0], x=border_pixels[:,1], s=20, c='k')
+
+
+def plot_points(points):
+
+    if points is not None:
+        point_colors = itertools.cycle(["w", "c", "y", "r", "k", "b", "g", "m"])
+        for point_set in points:
+            plt.scatter(y=point_set[:,0], x=point_set[:,1], color=next(point_colors), s=10.0)
+
+
+def plot_grid(grid):
+
+    if grid is not None:
+        plt.scatter(y=grid[:, 0], x=grid[:, 1], s=1)
 
 
 def output_array(array, output_path, output_filename, output_format):
