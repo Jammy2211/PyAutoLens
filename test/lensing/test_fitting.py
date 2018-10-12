@@ -247,9 +247,9 @@ class TestInversionEvidence:
         assert evidence == -0.5 * (3.0 + 6.0 + 9.0 - 10.0 + 30.0)
 
 
-class TestUnmaskedModelImages:
+class TestPaddedModelImages:
 
-    def test___3x3_unmasked_image__no_psf_blurring__produces_unmasked_image(self, galaxy_light):
+    def test___3x3_padded_image__no_psf_blurring__produces_padded_image(self, galaxy_light):
         psf = image.PSF(array=(np.array([[0.0, 0.0, 0.0],
                                          [0.0, 1.0, 0.0],
                                          [0.0, 0.0, 0.0]])), pixel_scale=1.0)
@@ -260,14 +260,14 @@ class TestUnmaskedModelImages:
                                        [True, True, True]]), pixel_scale=1.0)
         li = lensing_image.LensingImage(im, ma, sub_grid_size=1)
 
-        tracer = ray_tracing.TracerImagePlane(lens_galaxies=[galaxy_light], image_plane_grids=li.unmasked_grids)
-        unmasked_model_image = fitting.unmasked_model_image_from_lensing_image_and_tracer(li, tracer)
+        tracer = ray_tracing.TracerImagePlane(lens_galaxies=[galaxy_light], image_plane_grids=li.padded_grids)
+        padded_model_image = fitting.padded_model_image_from_lensing_image_and_tracer(li, tracer)
 
         manual_model_image = psf.convolve(tracer.image_plane_image_for_simulation)
 
-        assert (manual_model_image[1:4, 1:4] == unmasked_model_image).all()
+        assert (manual_model_image[1:4, 1:4] == padded_model_image).all()
 
-    def test___3x3_unmasked_image__asymetric_psf_blurring__produces_unmasked_image(self, galaxy_light):
+    def test___3x3_padded_image__asymetric_psf_blurring__produces_padded_image(self, galaxy_light):
         psf = image.PSF(array=(np.array([[0.0, 3.0, 0.0],
                                          [0.0, 1.0, 2.0],
                                          [0.0, 0.0, 0.0]])), pixel_scale=1.0)
@@ -278,14 +278,14 @@ class TestUnmaskedModelImages:
                                        [True, True, True]]), pixel_scale=1.0)
         li = lensing_image.LensingImage(im, ma, sub_grid_size=1)
 
-        tracer = ray_tracing.TracerImagePlane(lens_galaxies=[galaxy_light], image_plane_grids=li.unmasked_grids)
-        unmasked_model_image = fitting.unmasked_model_image_from_lensing_image_and_tracer(li, tracer)
+        tracer = ray_tracing.TracerImagePlane(lens_galaxies=[galaxy_light], image_plane_grids=li.padded_grids)
+        padded_model_image = fitting.padded_model_image_from_lensing_image_and_tracer(li, tracer)
 
         manual_model_image = psf.convolve(tracer.image_plane_image_for_simulation)
 
-        assert (manual_model_image[1:4, 1:4] == unmasked_model_image).all()
+        assert (manual_model_image[1:4, 1:4] == padded_model_image).all()
 
-    def test___of_galaxies__x1_galaxy__3x3_unmasked_image__no_psf_blurring(self, galaxy_light):
+    def test___of_galaxies__x1_galaxy__3x3_padded_image__no_psf_blurring(self, galaxy_light):
         psf = image.PSF(array=(np.array([[0.0, 0.0, 0.0],
                                          [0.0, 1.0, 0.0],
                                          [0.0, 0.0, 0.0]])), pixel_scale=1.0)
@@ -296,16 +296,16 @@ class TestUnmaskedModelImages:
                                        [True, True, True]]), pixel_scale=1.0)
         li = lensing_image.LensingImage(im, ma, sub_grid_size=1)
 
-        tracer = ray_tracing.TracerImagePlane(lens_galaxies=[galaxy_light], image_plane_grids=li.unmasked_grids)
-        unmasked_model_images = fitting.unmasked_model_images_of_galaxies_from_lensing_image_and_tracer(li, tracer)
+        tracer = ray_tracing.TracerImagePlane(lens_galaxies=[galaxy_light], image_plane_grids=li.padded_grids)
+        padded_model_images = fitting.padded_model_images_of_galaxies_from_lensing_image_and_tracer(li, tracer)
 
         manual_model_images = list(map(lambda image: tracer.image_plane.grids.image.map_to_2d_keep_padded(image),
                                        tracer._image_plane_images_of_galaxies))
         manual_model_images = list(map(lambda image: psf.convolve(image), manual_model_images))
 
-        assert (manual_model_images[0][1:4, 1:4] == unmasked_model_images[0]).all()
+        assert (manual_model_images[0][1:4, 1:4] == padded_model_images[0]).all()
 
-    def test___of_galaxies__x1_galaxy__3x3_unmasked_image__asymetric_psf_blurring(self, galaxy_light):
+    def test___of_galaxies__x1_galaxy__3x3_padded_image__asymetric_psf_blurring(self, galaxy_light):
         psf = image.PSF(array=(np.array([[0.0, 0.0, 0.0],
                                          [0.0, 1.0, 0.0],
                                          [0.0, 0.0, 0.0]])), pixel_scale=1.0)
@@ -316,16 +316,16 @@ class TestUnmaskedModelImages:
                                        [True, True, True]]), pixel_scale=1.0)
         li = lensing_image.LensingImage(im, ma, sub_grid_size=1)
 
-        tracer = ray_tracing.TracerImagePlane(lens_galaxies=[galaxy_light], image_plane_grids=li.unmasked_grids)
-        unmasked_model_images = fitting.unmasked_model_images_of_galaxies_from_lensing_image_and_tracer(li, tracer)
+        tracer = ray_tracing.TracerImagePlane(lens_galaxies=[galaxy_light], image_plane_grids=li.padded_grids)
+        padded_model_images = fitting.padded_model_images_of_galaxies_from_lensing_image_and_tracer(li, tracer)
 
         manual_model_images = list(map(lambda image: tracer.image_plane.grids.image.map_to_2d_keep_padded(image),
                                        tracer._image_plane_images_of_galaxies))
         manual_model_images = list(map(lambda image: psf.convolve(image), manual_model_images))
 
-        assert (manual_model_images[0][1:4, 1:4] == unmasked_model_images[0]).all()
+        assert (manual_model_images[0][1:4, 1:4] == padded_model_images[0]).all()
 
-    def test___of_galaxies__x2_galaxies__3x3_unmasked_image__asymetric_psf_blurring(self):
+    def test___of_galaxies__x2_galaxies__3x3_padded_image__asymetric_psf_blurring(self):
         psf = image.PSF(array=(np.array([[0.0, 0.0, 0.0],
                                          [0.0, 1.0, 0.0],
                                          [0.0, 0.0, 0.0]])), pixel_scale=1.0)
@@ -339,18 +339,18 @@ class TestUnmaskedModelImages:
         g0 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=0.1))
         g1 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=0.2))
 
-        tracer = ray_tracing.TracerImagePlane(lens_galaxies=[g0, g1], image_plane_grids=li.unmasked_grids)
-        unmasked_model_images = fitting.unmasked_model_images_of_galaxies_from_lensing_image_and_tracer(li, tracer)
+        tracer = ray_tracing.TracerImagePlane(lens_galaxies=[g0, g1], image_plane_grids=li.padded_grids)
+        padded_model_images = fitting.padded_model_images_of_galaxies_from_lensing_image_and_tracer(li, tracer)
 
         manual_model_images = list(map(lambda image: tracer.image_plane.grids.image.map_to_2d_keep_padded(image),
                                        tracer._image_plane_images_of_galaxies))
         manual_model_images = list(map(lambda image: psf.convolve(image), manual_model_images))
 
-        assert (manual_model_images[0][1:4, 1:4] == unmasked_model_images[0]).all()
-        assert (manual_model_images[1][1:4, 1:4] == unmasked_model_images[1]).all()
+        assert (manual_model_images[0][1:4, 1:4] == padded_model_images[0]).all()
+        assert (manual_model_images[1][1:4, 1:4] == padded_model_images[1]).all()
 
-        unmasked_model_image = fitting.unmasked_model_image_from_lensing_image_and_tracer(li, tracer)
-        assert (manual_model_images[0][1:4, 1:4] + manual_model_images[1][1:4, 1:4] == unmasked_model_image).all()
+        padded_model_image = fitting.padded_model_image_from_lensing_image_and_tracer(li, tracer)
+        assert (manual_model_images[0][1:4, 1:4] + manual_model_images[1][1:4, 1:4] == padded_model_image).all()
 
     def test___same_as_above_but_image_and_souce_plane(self):
 
@@ -370,21 +370,21 @@ class TestUnmaskedModelImages:
         g3 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=0.4))
 
         tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0, g1], source_galaxies=[g2, g3],
-                                                     image_plane_grids=li.unmasked_grids)
-        unmasked_model_images = fitting.unmasked_model_images_of_galaxies_from_lensing_image_and_tracer(li, tracer)
+                                                     image_plane_grids=li.padded_grids)
+        padded_model_images = fitting.padded_model_images_of_galaxies_from_lensing_image_and_tracer(li, tracer)
 
         manual_model_images = list(map(lambda image: tracer.image_plane.grids.image.map_to_2d_keep_padded(image),
                                        tracer._image_plane_images_of_galaxies))
         manual_model_images = list(map(lambda image: psf.convolve(image), manual_model_images))
 
-        assert (manual_model_images[0][1:4, 1:4] == unmasked_model_images[0]).all()
-        assert (manual_model_images[1][1:4, 1:4] == unmasked_model_images[1]).all()
-        assert (manual_model_images[2][1:4, 1:4] == unmasked_model_images[2]).all()
-        assert (manual_model_images[3][1:4, 1:4] == unmasked_model_images[3]).all()
+        assert (manual_model_images[0][1:4, 1:4] == padded_model_images[0]).all()
+        assert (manual_model_images[1][1:4, 1:4] == padded_model_images[1]).all()
+        assert (manual_model_images[2][1:4, 1:4] == padded_model_images[2]).all()
+        assert (manual_model_images[3][1:4, 1:4] == padded_model_images[3]).all()
 
-        unmasked_model_image = fitting.unmasked_model_image_from_lensing_image_and_tracer(li, tracer)
+        padded_model_image = fitting.padded_model_image_from_lensing_image_and_tracer(li, tracer)
         assert (manual_model_images[0][1:4, 1:4] + manual_model_images[1][1:4, 1:4] +
-                manual_model_images[2][1:4, 1:4] + manual_model_images[3][1:4, 1:4] == unmasked_model_image).all()
+                manual_model_images[2][1:4, 1:4] + manual_model_images[3][1:4, 1:4] == padded_model_image).all()
 
     def test__none_in__returns_none(self):
         psf = image.PSF(array=(np.array([[0.0, 0.0, 0.0],
@@ -397,8 +397,8 @@ class TestUnmaskedModelImages:
                                        [True, True, True]]), pixel_scale=1.0)
         li = lensing_image.LensingImage(im, ma, sub_grid_size=1)
 
-        assert fitting.unmasked_model_image_from_lensing_image_and_tracer(li, tracer=None) == None
-        assert fitting.unmasked_model_images_of_galaxies_from_lensing_image_and_tracer(li, tracer=None) == None
+        assert fitting.padded_model_image_from_lensing_image_and_tracer(li, tracer=None) == None
+        assert fitting.padded_model_images_of_galaxies_from_lensing_image_and_tracer(li, tracer=None) == None
 
 
 @pytest.fixture(name="no_galaxies", scope='function')
@@ -969,11 +969,11 @@ class TestProfileFit:
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g0],
                                                          image_plane_grids=li_manual.grids)
 
-            unmasked_tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g0],
-                                                                  image_plane_grids=li_manual.unmasked_grids)
+            padded_tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g0],
+                                                                  image_plane_grids=li_manual.padded_grids)
 
             fit = fitting.fit_lensing_image_with_tracer(lensing_image=li_manual, tracer=tracer,
-                                                        unmasked_tracer=unmasked_tracer)
+                                                        padded_tracer=padded_tracer)
 
             image_im = tracer._image_plane_image
             blurring_im = tracer._image_plane_blurring_image
@@ -996,14 +996,14 @@ class TestProfileFit:
                                                                                     tracer=tracer)
             assert fast_likelihood == pytest.approx(fit.likelihood)
 
-            unmasked_model_image = fitting.unmasked_model_image_from_lensing_image_and_tracer(li_manual,
-                                                                                              unmasked_tracer)
-            unmasked_model_image_of_galaxies = \
-                fitting.unmasked_model_images_of_galaxies_from_lensing_image_and_tracer(li_manual, unmasked_tracer)
+            padded_model_image = fitting.padded_model_image_from_lensing_image_and_tracer(li_manual,
+                                                                                              padded_tracer)
+            padded_model_image_of_galaxies = \
+                fitting.padded_model_images_of_galaxies_from_lensing_image_and_tracer(li_manual, padded_tracer)
 
-            assert (unmasked_model_image == fit.unmasked_model_profile_image).all()
-            assert (unmasked_model_image_of_galaxies[0] == fit.unmasked_model_profile_images_of_galaxies[0]).all()
-            assert (unmasked_model_image_of_galaxies[1] == fit.unmasked_model_profile_images_of_galaxies[1]).all()
+            assert (padded_model_image == fit.padded_model_profile_image).all()
+            assert (padded_model_image_of_galaxies[0] == fit.padded_model_profile_images_of_galaxies[0]).all()
+            assert (padded_model_image_of_galaxies[1] == fit.padded_model_profile_images_of_galaxies[1]).all()
 
 
 class TestHyperProfileFit:
@@ -1098,11 +1098,11 @@ class TestHyperProfileFit:
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g0],
                                                          image_plane_grids=li_manual.grids)
 
-            unmasked_tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g0],
-                                                                  image_plane_grids=li_manual.unmasked_grids)
+            padded_tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g0],
+                                                                  image_plane_grids=li_manual.padded_grids)
 
             fit = fitting.fit_lensing_image_with_tracer(lensing_image=li_manual, tracer=tracer,
-                                                        unmasked_tracer=unmasked_tracer,
+                                                        padded_tracer=padded_tracer,
                                                         hyper_model_image=hyper.hyper_model_image,
                                                         hyper_galaxy_images=hyper.hyper_galaxy_images,
                                                         hyper_minimum_values=hyper.hyper_minimum_values)
@@ -1155,14 +1155,14 @@ class TestHyperProfileFit:
 
             assert fast_scaled_likelihood == fit.scaled_likelihood
 
-            unmasked_model_image = fitting.unmasked_model_image_from_lensing_image_and_tracer(li_manual,
-                                                                                              unmasked_tracer)
-            unmasked_model_image_of_galaxies = \
-                fitting.unmasked_model_images_of_galaxies_from_lensing_image_and_tracer(li_manual, unmasked_tracer)
+            padded_model_image = fitting.padded_model_image_from_lensing_image_and_tracer(li_manual,
+                                                                                              padded_tracer)
+            padded_model_image_of_galaxies = \
+                fitting.padded_model_images_of_galaxies_from_lensing_image_and_tracer(li_manual, padded_tracer)
 
-            assert (unmasked_model_image == fit.unmasked_model_profile_image).all()
-            assert (unmasked_model_image_of_galaxies[0] == fit.unmasked_model_profile_images_of_galaxies[0]).all()
-            assert (unmasked_model_image_of_galaxies[1] == fit.unmasked_model_profile_images_of_galaxies[1]).all()
+            assert (padded_model_image == fit.padded_model_profile_image).all()
+            assert (padded_model_image_of_galaxies[0] == fit.padded_model_profile_images_of_galaxies[0]).all()
+            assert (padded_model_image_of_galaxies[1] == fit.padded_model_profile_images_of_galaxies[1]).all()
 
 
 class TestInversionFit:
