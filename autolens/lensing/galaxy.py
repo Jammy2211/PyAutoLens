@@ -133,23 +133,6 @@ class Galaxy(object):
         else:
             return np.zeros((grid.shape[0],))
 
-    def intensities_from_grid_individual(self, grid):
-        """
-        Compute the individual intensities of the galaxy's light profiles at a given set of image_grid.
-
-        See *light_profiles* module for details of how this is performed.
-
-        Parameters
-        ----------
-        grid : ndarray
-            The image_grid in image_grid space
-        Returns
-        -------
-        intensity : [float]
-            The summed values of intensity at the given image_grid
-        """
-        return list(map(lambda p: p.intensities_from_grid(grid), self.light_profiles))
-
     def luminosity_within_circle(self, radius):
         """
         Compute the total luminosity of the galaxy's light profiles within a circle of specified radius.
@@ -167,25 +150,6 @@ class Galaxy(object):
             The total combined luminosity within the specified circle.
         """
         return sum(map(lambda p: p.luminosity_within_circle(radius), self.light_profiles))
-
-    def luminosity_within_circle_individual(self, radius):
-        """
-        Compute the individual total luminosity of each light profile in the galaxy, within a circle of
-        specified radius.
-
-        See *light_profiles.luminosity_within_circle* for details of how this is performed.
-
-        Parameters
-        ----------
-        radius : float
-            The radius of the circle to compute the luminosity within.
-
-        Returns
-        -------
-        luminosity : [float]
-            The total combined luminosity within the specified circle.
-        """
-        return list(map(lambda p: p.luminosity_within_circle(radius), self.light_profiles))
 
     def luminosity_within_ellipse(self, major_axis):
         """
@@ -245,24 +209,6 @@ class Galaxy(object):
         else:
             return np.zeros((grid.shape[0],))
 
-    def surface_density_from_grid_individual(self, grid):
-        """
-
-        Compute the individual surface densities of the galaxy's mass profiles at a given set of image_grid.
-
-        See *mass_profiles* module for details of how this is performed.
-
-        Parameters
-        ----------
-        grid : (float, float)
-            The x and y image_grid of the image_grid
-
-        Returns
-        ----------
-        The summed values of surface density at the given image_grid.
-        """
-        return list(map(lambda p: p.surface_density_from_grid(grid), self.mass_profiles))
-
     def potential_from_grid(self, grid):
         """
         Compute the summed gravitational potential of the galaxy's mass profiles at a given set of image_grid.
@@ -283,45 +229,11 @@ class Galaxy(object):
         else:
             return np.zeros((grid.shape[0],))
 
-    def potential_from_grid_individual(self, grid):
-        """
-        Compute the individual gravitational potentials of the galaxy's mass profiles at a given set of image_grid.
-
-        See *mass_profiles* module for details of how this is performed.
-
-        Parameters
-        ----------
-        grid : Union(ndarray, (float, float))
-            The x and y image_grid of the image_grid
-
-        Returns
-        ----------
-        The summed values of gravitational potential at the given image_grid.
-        """
-        return list(map(lambda p: p.potential_from_grid(grid), self.mass_profiles))
-
     def deflections_from_grid(self, grid):
         if self.mass_profiles is not None and len(self.mass_profiles) > 0:
             return sum(map(lambda p: p.deflections_from_grid(grid), self.mass_profiles))
         else:
             return np.full((grid.shape[0], 2), 0.0)
-
-    def deflections_from_grid_individual(self, grid):
-        """
-        Compute the individual deflection angles of the galaxy's mass profiles at a given set of image_grid.
-
-        See *mass_profiles* module for details of how this is performed.
-
-        Parameters
-        ----------
-        grid : Union(np.ndarray, (float, float))
-            The x and y image_grid of the image_grid
-
-        Returns
-        ----------
-        The summed values of deflection angles at the given image_grid.
-        """
-        return np.asarray(list(map(lambda p: p.deflections_from_grid(grid), self.mass_profiles)))
 
     def dimensionless_mass_within_circles(self, radius):
         """
@@ -342,24 +254,6 @@ class Galaxy(object):
         """
         return sum(map(lambda p: p.dimensionless_mass_within_circle(radius), self.mass_profiles))
 
-    def dimensionless_mass_within_circles_individual(self, radius):
-        """
-        Compute the individual dimensionless mass of the galaxy's mass profiles within a circle of specified radius.
-
-        See *mass_profiles.dimensionless_mass_within_circles* for details of how this is performed.
-
-        Parameters
-        ----------
-        radius : float
-            The radius of the circle to compute the dimensionless mass within.
-
-        Returns
-        -------
-        dimensionless_mass : ndarray
-            The total dimensionless mass within the specified circle.
-        """
-        return np.asarray(list(map(lambda p: p.dimensionless_mass_within_circle(radius), self.mass_profiles)))
-
     def dimensionless_mass_within_ellipses(self, major_axis):
         """
         Compute the total dimensionless mass of the galaxy's mass profiles within an ellipse of specified major_axis.
@@ -378,25 +272,6 @@ class Galaxy(object):
             The total dimensionless mass within the specified circle.
         """
         return sum(map(lambda p: p.dimensionless_mass_within_ellipse(major_axis), self.mass_profiles))
-
-    def dimensionless_mass_within_ellipses_individual(self, major_axis):
-        """
-        Compute the individual dimensionless mass of the galaxy's mass profiles within an ellipse of specified 
-        major-axis.
-
-        See *mass_profiles.dimensionless_mass_within_circles* for details of how this is performed.
-
-        Parameters
-        ----------
-        major_axis : float
-            The major axis of the ellipse
-
-        Returns
-        -------
-        dimensionless_mass : ndarray
-            The total dimensionless mass within the specified circle.
-        """
-        return list(map(lambda p: p.dimensionless_mass_within_ellipse(major_axis), self.mass_profiles))
 
 
 # TODO : Should galaxy masked_image and minimum value be in the constructor (they aren't free parameters)?
