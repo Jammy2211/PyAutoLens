@@ -61,9 +61,8 @@ class LensingImage(im.Image):
                                                                                   sub_grid_size=sub_grid_size,
                                                                                   psf_shape=image_psf_shape)
 
-        self.unmasked_grids = msk.ImagingGrids.unmasked_grids_from_mask_sub_grid_size_and_psf_shape(mask=mask,
-                                                                                                    sub_grid_size=sub_grid_size,
-                                                                                                    psf_shape=image_psf_shape)
+        self.padded_grids = msk.ImagingGrids.padded_grids_from_mask_sub_grid_size_and_psf_shape(mask=mask,
+                                                        sub_grid_size=sub_grid_size, psf_shape=image_psf_shape)
 
         self.borders = msk.ImagingGridBorders.from_mask_and_sub_grid_size(mask=mask, sub_grid_size=sub_grid_size)
         self.positions = positions
