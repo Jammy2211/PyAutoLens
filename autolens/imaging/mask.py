@@ -335,14 +335,14 @@ class ImageGrid(np.ndarray):
         return obj
 
     @property
-    def unlensed_masked_grid(self):
-        return imaging_util.image_grid_1d_masked_from_mask_and_pixel_scales(mask=self.mask,
-                                                                            pixel_scales=self.mask.pixel_scales)
+    def unlensed_grid(self):
+        return ImageGrid(arr=imaging_util.image_grid_1d_masked_from_mask_and_pixel_scales(mask=self.mask,
+                         pixel_scales=self.mask.pixel_scales), mask=self.mask)
 
     @property
-    def unlensed_padded_grid(self):
-        return imaging_util.image_grid_1d_from_shape_and_pixel_scales(shape=self.mask.shape,
-                                                                      pixel_scales=self.mask.pixel_scales)
+    def unlensed_unmasked_grid(self):
+        return ImageGrid(arr=imaging_util.image_grid_1d_from_shape_and_pixel_scales(shape=self.mask.shape,
+                         pixel_scales=self.mask.pixel_scales), mask=self.mask)
 
     @classmethod
     def from_mask(cls, mask):
@@ -496,13 +496,15 @@ class SubGrid(ImageGrid):
 
     @property
     def unlensed_grid(self):
-        return imaging_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(mask=self.mask,
-                          pixel_scales=self.mask.pixel_scales, sub_grid_size=self.sub_grid_size)
+        return SubGrid(imaging_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(mask=self.mask,
+                          pixel_scales=self.mask.pixel_scales, sub_grid_size=self.sub_grid_size),
+                       self.mask, self.sub_grid_size)
 
     @property
-    def unlensed_padded_grid(self):
-        return imaging_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(
-            mask=np.full(self.mask.shape, False), pixel_scales=self.mask.pixel_scales, sub_grid_size=self.sub_grid_size)
+    def unlensed_unmasked_grid(self):
+        return SubGrid(imaging_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(
+            mask=np.full(self.mask.shape, False), pixel_scales=self.mask.pixel_scales, sub_grid_size=self.sub_grid_size),
+            mask=self.mask, sub_grid_size=self.sub_grid_size)
 
     @classmethod
     def from_mask_and_sub_grid_size(cls, mask, sub_grid_size=1):
