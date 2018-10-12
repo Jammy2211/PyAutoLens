@@ -435,8 +435,8 @@ class PhaseImaging(Phase):
             unmasked_tracer = self.unmasked_tracer_for_instance(instance)
             fit = self.fit_for_tracers(tracer=tracer, unmasked_tracer=unmasked_tracer)
 
-            imaging_plotters.plot_image(image=self.lensing_image.image, output_path=self.output_image_path,
-                                        output_format='png', ignore_config=False)
+            imaging_plotters.plot_image_subplot(image=self.lensing_image.image, output_path=self.output_image_path,
+                                                output_format='png', ignore_config=False)
 
             imaging_plotters.plot_image_individuals(image=self.lensing_image.image, output_path=self.output_image_path,
                                                     output_format='png')

@@ -86,7 +86,7 @@ path = '/home/jammy/PyCharm/Projects/AutoLens/howtolens/2_lens_modeling'
 image = im.load_imaging_from_path(image_path=path + '/data/1_non_linear_search_image.fits',
                                   noise_map_path=path+'/data/1_non_linear_search_noise_map.fits',
                                   psf_path=path + '/data/1_non_linear_search_psf.fits', pixel_scale=0.1)
-imaging_plotters.plot_image(image=image)
+imaging_plotters.plot_image_subplot(image=image)
 
 #  To change the priors on specific parameters, we create our galaxy model's and then use a custom-phase and its
 # 'pass_priors' function to overwrite priors on specific parameters.
