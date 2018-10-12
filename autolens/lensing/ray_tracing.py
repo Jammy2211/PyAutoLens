@@ -56,27 +56,15 @@ class AbstractTracer(object):
 
     @property
     def image_plane_image(self):
-        return sum(self.image_plane_images_of_planes)
-
-    @property
-    def image_plane_images_of_planes(self):
-        return list(map(lambda image: self.scaled_array_from_array_1d(image), self._image_plane_images_of_planes))
-
-    @property
-    def image_plane_images_of_galaxies(self):
-        return list(map(lambda image: self.scaled_array_from_array_1d(image), self._image_plane_images_of_galaxies))
+        return self.scaled_array_from_array_1d(self._image_plane_image)
 
     @property
     def image_plane_image_for_simulation(self):
-        if not self.has_padded_grids:
-            raise exc.RayTracingException(
-                'To retrieve an _image plane _image for the simulation, the grids in the tracer'
-                'must be padded grids')
-        return sum(map(lambda image: self.image_plane.grids.image.map_to_2d_keep_padded(image),
-                       self._image_plane_images_of_planes))
+        return sum([plane.image_plane_image_for_simulation for plane in self.all_planes])
 
-    def plane_images_of_planes(self, shape=(30, 30)):
-        return [plane.plane_image(shape) for plane in self.all_planes]
+    @property
+    def plane_images(self):
+        return [plane.plane_image for plane in self.all_planes]
 
     @property
     def image_grids_of_planes(self):
@@ -92,28 +80,36 @@ class AbstractTracer(object):
 
     @property
     def _image_plane_image(self):
-        return sum(self._image_plane_images_of_planes)
-
-    @property
-    def _image_plane_images_of_planes(self):
-        return [plane._image_plane_image for plane in self.all_planes]
-
-    @property
-    def _image_plane_images_of_galaxies(self):
-        return [galaxy_image for plane in self.all_planes for galaxy_image in plane._image_plane_images_of_galaxies]
+        return sum([plane._image_plane_image for plane in self.all_planes])
 
     @property
     def _image_plane_blurring_image(self):
-        return sum(self._image_plane_blurring_images_of_planes)
+        return sum([plane._image_plane_blurring_image for plane in self.all_planes])
+
+    # @property
+    # def _image_plane_blurring_images_of_planes(self):
+    #     return [plane._image_plane_blurring_image for plane in self.all_planes]
+    #
+    # @property
+    # def _image_plane_blurring_images_of_galaxies(self):
+    #     return [galaxy_blurring_image for plane in self.all_planes for galaxy_blurring_image
+    #             in plane._image_plane_blurring_images_of_galaxies]
 
     @property
-    def _image_plane_blurring_images_of_planes(self):
-        return [plane._image_plane_blurring_image for plane in self.all_planes]
+    def surface_density(self):
+        return sum([plane.surface_density for plane in self.all_planes])
 
     @property
-    def _image_plane_blurring_images_of_galaxies(self):
-        return [galaxy_blurring_image for plane in self.all_planes for galaxy_blurring_image
-                in plane._image_plane_blurring_images_of_galaxies]
+    def potential(self):
+        return sum([plane.potential for plane in self.all_planes])
+
+    @property
+    def deflections_y(self):
+        return sum([plane.deflections_y for plane in self.all_planes])
+
+    @property
+    def deflections_x(self):
+        return sum([plane.deflections_x for plane in self.all_planes])
 
 
 class TracerImagePlane(AbstractTracer):
@@ -200,42 +196,6 @@ class TracerImageSourcePlanes(AbstractTracer):
     @plane.cosmology_check
     def critical_density_arcsec(self):
         return self.critical_density_kpc * self.image_plane.kpc_per_arcsec_proper ** 2.0
-
-    @property
-    def surface_density(self):
-        return sum(self.surface_density_of_galaxies)
-
-    @property
-    def surface_density_of_galaxies(self):
-        return list(map(lambda surface_density: self.scaled_array_from_array_1d(surface_density),
-                        self.image_plane._surface_density_of_galaxies))
-
-    @property
-    def potential(self):
-        return sum(self.potential_of_galaxies)
-
-    @property
-    def potential_of_galaxies(self):
-        return list(map(lambda potential: self.scaled_array_from_array_1d(potential),
-                        self.image_plane._potential_of_galaxies))
-
-    @property
-    def deflections_y(self):
-        return sum(self.deflections_y_of_galaxies)
-
-    @property
-    def deflections_y_of_galaxies(self):
-        return list(map(lambda deflections: self.scaled_array_from_array_1d(deflections[:,0]),
-                        self.image_plane._deflections_of_galaxies))
-
-    @property
-    def deflections_x(self):
-        return sum(self.deflections_x_of_galaxies)
-
-    @property
-    def deflections_x_of_galaxies(self):
-        return list(map(lambda deflections: self.scaled_array_from_array_1d(deflections[:,1]),
-                        self.image_plane._deflections_of_galaxies))
 
     @property
     def source_plane_image(self):
@@ -371,8 +331,7 @@ class TracerMulti(AbstractTracerMulti):
             if plane_index > 0:
                 for previous_plane_index in range(plane_index):
 
-                    scaling_factor = self.scaling_factor_between_planes(i=previous_plane_index,
-                                                                        j=plane_index)
+                    scaling_factor = self.scaling_factor_between_planes(i=previous_plane_index, j=plane_index)
 
                     def scale(grid):
                         return np.multiply(scaling_factor, grid)
@@ -386,7 +345,27 @@ class TracerMulti(AbstractTracerMulti):
                         return np.subtract(grid, scaled_deflection)
 
                     if scaled_deflections is not None:
-                        new_grid = new_grid.map_function(subtract_scaled_deflections, scaled_deflections)
+
+                        if isinstance(image_plane_grids.image, msk.PaddedImageGrid):
+                            image_grid = msk.PaddedImageGrid(arr=image_plane_grids.image - scaled_deflections.image,
+                                                             mask=image_plane_grids.image.mask,
+                                                             image_shape=image_plane_grids.image.image_shape)
+                        elif isinstance(image_plane_grids.image, msk.ImageGrid):
+                            image_grid = msk.ImageGrid(arr=image_plane_grids.image - scaled_deflections.image,
+                                                       mask=image_plane_grids.image.mask)
+
+                        if isinstance(image_plane_grids.sub, msk.PaddedSubGrid):
+                            sub_grid = msk.PaddedSubGrid(image_plane_grids.sub - scaled_deflections.sub, image_plane_grids.sub.mask,
+                                                         image_plane_grids.sub.image_shape, image_plane_grids.sub.sub_grid_size)
+                        elif isinstance(image_plane_grids.sub, msk.SubGrid):
+                            sub_grid = msk.SubGrid(image_plane_grids.sub - scaled_deflections.sub, image_plane_grids.sub.mask,
+                                                   image_plane_grids.sub.sub_grid_size)
+
+                        blurring_grid = msk.ImageGrid(arr=image_plane_grids.blurring - scaled_deflections.blurring,
+                                                      mask=None)
+                        new_grid = msk.ImagingGrids(image=image_grid, sub=sub_grid, blurring=blurring_grid)
+                        
+                   #     new_grid = new_grid.map_function(subtract_scaled_deflections, scaled_deflections)
                     else:
                         new_grid = None
 
