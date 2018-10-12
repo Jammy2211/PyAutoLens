@@ -255,6 +255,14 @@ class TestTracerImageSourcePlanes(object):
             assert tracer.source_plane.grids.sub[3] == pytest.approx(np.array([-1.0, 0.0]), 1e-3)
             assert tracer.source_plane.grids.blurring[0] == pytest.approx(np.array([-1.0, 0.0]), 1e-3)
 
+        def test__grid_attributes_passed(self, imaging_grids, galaxy_non):
+
+            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[galaxy_non], source_galaxies=[galaxy_non],
+                                                         image_plane_grids=imaging_grids)
+
+            print(tracer.image_plane.grids.image.grid_to_pixel)
+            print(tracer.source_plane.grids.image.grid_to_pixel)
+
     class TestCosmology:
 
         def test__2_planes__z01_and_z1(self, imaging_grids):
