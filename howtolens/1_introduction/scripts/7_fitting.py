@@ -45,7 +45,7 @@ print(mask)
 # 4) The image's grids: so the tracer's image-plane image is generated on the same (masked) grid as the image-data.
 
 lensing_image = li.LensingImage(image=image, mask=mask)
-imaging_plotters.plot_image(lensing_image.image)
+imaging_plotters.plot_image_subplot(lensing_image.image)
 
 # By printing its attribute, we can see that it does indeed contain the image, mask, psf and so on
 print('Image:')

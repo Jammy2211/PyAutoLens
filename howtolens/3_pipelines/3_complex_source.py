@@ -28,7 +28,7 @@ image = im.load_imaging_from_path(image_path=path + '/data/3_complex_source_imag
                                   noise_map_path=path+'/data/3_complex_source_noise_map.fits',
                                   psf_path=path + '/data/3_complex_source_psf.fits', pixel_scale=0.05)
 
-imaging_plotters.plot_image(image=image)
+imaging_plotters.plot_image_subplot(image=image)
 
 # Yep, that's pretty complex. There are clearly more than 4 peaks of light - I wouldn't like to guess whether there is
 # one or two sources (or more). You'll also notice I omitted the lens galaxy's light for this system, this is to

@@ -1,14 +1,14 @@
 from matplotlib import pyplot as plt
 
 from autolens import conf
-from autolens.plotting import array_plotters
+from autolens.plotting import plotters
 
 def plot_intensities(light_profile, grid, output_path=None, output_filename='intensities', output_format='show'):
 
     intensities = light_profile.intensities_from_grid(grid=grid)
     intensities = grid.scaled_array_from_array_1d(intensities)
 
-    array_plotters.plot_array(
+    plotters.plot_array(
         array=intensities, points=None, grid=None, as_subplot=False,
         units='arcsec', kpc_per_arcsec=None,
         xticks=intensities.xticks, yticks=intensities.yticks, xyticksize=16,
@@ -22,7 +22,7 @@ def plot_surface_density(mass_profile, grid, output_path=None, output_filename='
     surface_density = mass_profile.surface_density_from_grid(grid=grid)
     surface_density = grid.scaled_array_from_array_1d(surface_density)
 
-    array_plotters.plot_array(
+    plotters.plot_array(
         array=surface_density, points=None, grid=None, as_subplot=False,
         units='arcsec', kpc_per_arcsec=None,
         xticks=surface_density.xticks, yticks=surface_density.yticks, xyticksize=16,
@@ -36,7 +36,7 @@ def plot_potential(mass_profile, grid, output_path=None, output_filename='potent
     potential = mass_profile.potential_from_grid(grid=grid)
     potential = grid.scaled_array_from_array_1d(potential)
 
-    array_plotters.plot_array(
+    plotters.plot_array(
         array=potential, points=None, grid=None, as_subplot=False,
         units='arcsec', kpc_per_arcsec=None,
         xticks=potential.xticks, yticks=potential.yticks, xyticksize=16,
@@ -56,7 +56,7 @@ def plot_deflections(mass_profile, grid, output_path=None, output_filename='defl
     plt.figure(figsize=(14, 6))
     plt.subplot(1, 2, 1)
 
-    array_plotters.plot_array(
+    plotters.plot_array(
         array=deflections_y, points=None, grid=None, as_subplot=True,
         units='arcsec', kpc_per_arcsec=None,
         xticks=deflections_y.xticks, yticks=deflections_y.yticks, xyticksize=16,
@@ -67,7 +67,7 @@ def plot_deflections(mass_profile, grid, output_path=None, output_filename='defl
 
     plt.subplot(1, 2, 2)
 
-    array_plotters.plot_array(
+    plotters.plot_array(
         array=deflections_x, points=None, grid=None, as_subplot=True,
         units='arcsec', kpc_per_arcsec=None,
         xticks=deflections_x.xticks, yticks=deflections_x.yticks, xyticksize=16,
@@ -76,6 +76,6 @@ def plot_deflections(mass_profile, grid, output_path=None, output_filename='defl
         title='Deflection angles (x)', titlesize=16, xlabelsize=16, ylabelsize=16,
         output_path=output_path, output_filename=None, output_format=output_format)
 
-    array_plotters.output_subplot_array(output_path=output_path, output_filename=output_filename,
-                                        output_format=output_format)
+    plotters.output_subplot_array(output_path=output_path, output_filename=output_filename,
+                                  output_format=output_format)
     plt.close()

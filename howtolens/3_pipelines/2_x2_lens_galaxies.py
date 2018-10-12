@@ -29,7 +29,7 @@ image = im.load_imaging_from_path(image_path=path + '/data/2_x2_lens_galaxies_im
                                   noise_map_path=path+'/data/2_x2_lens_galaxies_noise_map.fits',
                                   psf_path=path + '/data/2_x2_lens_galaxies_psf.fits', pixel_scale=0.05)
 
-imaging_plotters.plot_image(image=image)
+imaging_plotters.plot_image_subplot(image=image)
 
 # Okay, so looking at the image, we clearly see two blobs of light, corresponding to our two lens galaxies. We also
 # see the source's light is pretty complex - the arcs don't posses the rotational symmetry we're used to seeing
