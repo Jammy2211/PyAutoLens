@@ -199,7 +199,7 @@ def sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(mask, pixel_scal
     return sub_grid
 
 @numba.jit(nopython=True, cache=True)
-def grid_pixels_1d_to_grid_arc_seconds_1d(grid_pixels, shape, pixel_scales):
+def grid_arc_seconds_1d_to_grid_pixels_1d(grid_arc_seconds, shape, pixel_scales):
     """ Converts a grid in coordinates of pixels to a grid in arc seconds.
 
     The pixel coordinate origin is at the top left corner of an image, whilst the arc-second coordinate origin \
@@ -213,17 +213,17 @@ def grid_pixels_1d_to_grid_arc_seconds_1d(grid_pixels, shape, pixel_scales):
         The grid of (x,y) coordinates in units of pixels
     """
 
-    grid_arc_seconds = np.zeros((grid_pixels.shape[0], 2))
+    grid_pixels = np.zeros((grid_arc_seconds.shape[0], 2))
 
     y_cen = float(shape[0] - 1) / 2
     x_cen = float(shape[1] - 1) / 2
 
-    for i in range(grid_pixels.shape[0]):
+    for i in range(grid_arc_seconds.shape[0]):
 
-            grid_arc_seconds[i, 0] = -(pixel_scales[0] * (grid_pixels[i,0] - y_cen))
-            grid_arc_seconds[i, 1] =  (pixel_scales[1] * (grid_pixels[i,1] - x_cen))
+        grid_pixels[i, 0] =(-grid_arc_seconds[i,0] / pixel_scales[0])  + y_cen + 0.5
+        grid_pixels[i, 1] =(grid_arc_seconds[i,1] / pixel_scales[1])  + x_cen + 0.5
 
-    return grid_arc_seconds
+    return grid_pixels
 
 @numba.jit(nopython=True, cache=True)
 def grid_arc_seconds_1d_to_grid_pixel_centres_1d(grid_arc_seconds, shape, pixel_scales):
@@ -247,10 +247,8 @@ def grid_arc_seconds_1d_to_grid_pixel_centres_1d(grid_arc_seconds, shape, pixel_
 
     for i in range(grid_arc_seconds.shape[0]):
 
-        print((-grid_arc_seconds[i,0] / pixel_scales[0])  + y_cen, (grid_arc_seconds[i,1] / pixel_scales[1])  + x_cen)
-
-        grid_pixels[i, 0] = int((-grid_arc_seconds[i,0] / pixel_scales[0])  + y_cen)
-        grid_pixels[i, 1] = int((grid_arc_seconds[i,1] / pixel_scales[1])  + x_cen)
+        grid_pixels[i, 0] = int((-grid_arc_seconds[i,0] / pixel_scales[0])  + y_cen + 0.5)
+        grid_pixels[i, 1] = int((grid_arc_seconds[i,1] / pixel_scales[1])  + x_cen + 0.5)
 
     return grid_pixels
 
