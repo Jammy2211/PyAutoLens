@@ -210,11 +210,13 @@ class TestImageGrid:
         image_grid_util = imaging_util.image_grid_1d_masked_from_mask_and_pixel_scales(mask=msk,
                                                                                        pixel_scales=(2.0, 2.0))
 
-        assert image_grid.unlensed_masked_grid == pytest.approx(image_grid_util, 1e-4)
+        assert type(image_grid) == mask.ImageGrid
+        assert image_grid.unlensed_grid == pytest.approx(image_grid_util, 1e-4)
 
         image_grid_util = imaging_util.image_grid_1d_from_shape_and_pixel_scales(shape=(3,4), pixel_scales=(2.0, 2.0))
 
-        assert image_grid.unlensed_padded_grid == pytest.approx(image_grid_util, 1e-4)
+        assert type(image_grid) == mask.ImageGrid
+        assert image_grid.unlensed_unmasked_grid == pytest.approx(image_grid_util, 1e-4)
 
     def test__image_grid_from_shape_and_pixel_scale__compare_to_array_util(self):
         msk = np.array([[False, False, False, False],
@@ -295,26 +297,30 @@ class TestImageGrid:
 class TestSubGrid(object):
 
     def test_sub_grid(self, sub_grid):
+        assert type(sub_grid) == mask.SubGrid
         assert sub_grid.shape == (5, 2)
         assert sub_grid.pixel_scale == 1.0
         assert (sub_grid == np.array([[1, 0], [0, -1], [0, 0], [0, 1], [-1, 0]])).all()
 
     def test__image_grid_unlensed_grid_properties_compare_to_array_util(self, msk, sub_grid):
 
-        assert sub_grid.unlensed_masked_grid == \
+        assert type(sub_grid) == mask.SubGrid
+        assert sub_grid.unlensed_grid == \
                pytest.approx(np.array([[1, 0], [0, -1], [0, 0], [0, 1], [-1, 0]]), 1e-4)
 
         sub_grid_util = imaging_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(
             mask=np.full((3,3), False), pixel_scales=(1.0, 1.0), sub_grid_size=1)
 
-        assert sub_grid.unlensed_padded_grid == pytest.approx(sub_grid_util, 1e-4)
+        assert type(sub_grid) == mask.SubGrid
+        assert sub_grid.unlensed_unmasked_grid == pytest.approx(sub_grid_util, 1e-4)
 
         sub_grid = mask.SubGrid.from_mask_and_sub_grid_size(msk, sub_grid_size=2)
 
         sub_grid_util = imaging_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(
             mask=np.full((3, 3), False), pixel_scales = (1.0, 1.0), sub_grid_size = 2)
 
-        assert sub_grid.unlensed_padded_grid == pytest.approx(sub_grid_util, 1e-4)
+        assert type(sub_grid) == mask.SubGrid
+        assert sub_grid.unlensed_unmasked_grid == pytest.approx(sub_grid_util, 1e-4)
 
     def test_sub_to_pixel(self, sub_grid):
         assert (sub_grid.sub_to_image == np.array(range(5))).all()
