@@ -8,7 +8,7 @@ from autolens.lensing import ray_tracing
 minimum_value_profile = 0.1
 
 
-def fit_lensing_image_with_tracer(lensing_image, tracer, unmasked_tracer=None, hyper_model_image=None,
+def fit_lensing_image_with_tracer(lensing_image, tracer, padded_tracer=None, hyper_model_image=None,
                                   hyper_galaxy_images=None, hyper_minimum_values=None, plane_shape=(30, 30)):
     """Fit.
 
@@ -23,12 +23,12 @@ def fit_lensing_image_with_tracer(lensing_image, tracer, unmasked_tracer=None, h
     if tracer.has_light_profile and not tracer.has_pixelization:
 
         if not tracer.has_hyper_galaxy:
-            return ProfileFit(lensing_image=lensing_image, tracer=tracer, unmasked_tracer=unmasked_tracer,
+            return ProfileFit(lensing_image=lensing_image, tracer=tracer, padded_tracer=padded_tracer,
                               plane_shape=plane_shape)
         elif tracer.has_hyper_galaxy:
             return HyperProfileFit(lensing_image=lensing_image, tracer=tracer, hyper_model_image=hyper_model_image,
                                    hyper_galaxy_images=hyper_galaxy_images, hyper_minimum_values=hyper_minimum_values,
-                                   unmasked_tracer=unmasked_tracer, plane_shape=plane_shape)
+                                   padded_tracer=padded_tracer, plane_shape=plane_shape)
 
     elif not tracer.has_light_profile and tracer.has_pixelization:
 
@@ -41,12 +41,12 @@ def fit_lensing_image_with_tracer(lensing_image, tracer, unmasked_tracer=None, h
     elif tracer.has_light_profile and tracer.has_pixelization:
 
         if not tracer.has_hyper_galaxy:
-            return ProfileInversionFit(lensing_image=lensing_image, tracer=tracer, unmasked_tracer=unmasked_tracer)
+            return ProfileInversionFit(lensing_image=lensing_image, tracer=tracer, padded_tracer=padded_tracer)
         elif tracer.has_hyper_galaxy:
             return HyperProfileInversionFit(lensing_image=lensing_image, tracer=tracer,
                                             hyper_model_image=hyper_model_image,
                                             hyper_galaxy_images=hyper_galaxy_images,
-                                            hyper_minimum_values=hyper_minimum_values, unmasked_tracer=unmasked_tracer)
+                                            hyper_minimum_values=hyper_minimum_values, padded_tracer=padded_tracer)
 
     else:
 
@@ -145,7 +145,7 @@ class AbstractFit(object):
 
 class AbstractProfileFit(AbstractFit):
 
-    def __init__(self, lensing_image, tracer, unmasked_tracer, plane_shape):
+    def __init__(self, lensing_image, tracer, padded_tracer, plane_shape):
         """
         Class to evaluate the fit between a model described by a tracer and an actual lensing_image.
 
@@ -157,7 +157,7 @@ class AbstractProfileFit(AbstractFit):
             An object describing the model
         """
 
-        self.unmasked_tracer = unmasked_tracer
+        self.padded_tracer = padded_tracer
 
         self.convolve_image = lensing_image.convolver_image.convolve_image
         _model_image = self.convolve_image(tracer._image_plane_image, tracer._image_plane_blurring_image)
@@ -177,12 +177,12 @@ class AbstractProfileFit(AbstractFit):
                          _model_images_of_planes))
 
     @property
-    def unmasked_model_profile_image(self):
-        return unmasked_model_image_from_lensing_image_and_tracer(self.lensing_image, self.unmasked_tracer)
+    def padded_model_profile_image(self):
+        return padded_model_image_from_lensing_image_and_tracer(self.lensing_image, self.padded_tracer)
 
     @property
-    def unmasked_model_profile_images_of_galaxies(self):
-        return unmasked_model_images_of_galaxies_from_lensing_image_and_tracer(self.lensing_image, self.unmasked_tracer)
+    def padded_model_profile_images_of_galaxies(self):
+        return padded_model_images_of_galaxies_from_lensing_image_and_tracer(self.lensing_image, self.padded_tracer)
 
 
 class AbstractInversion(object):
@@ -214,7 +214,7 @@ class AbstractInversionFit(AbstractFit, AbstractInversion):
 
 class AbstractProfileInversionFit(AbstractFit, AbstractInversion):
 
-    def __init__(self, lensing_image, tracer, unmasked_tracer):
+    def __init__(self, lensing_image, tracer, padded_tracer):
         self.convolve_image = lensing_image.convolver_image.convolve_image
         self._profile_model_image = self.convolve_image(tracer._image_plane_image, tracer._image_plane_blurring_image)
         self._profile_subtracted_image = lensing_image[:] - self._profile_model_image
@@ -251,7 +251,7 @@ class AbstractProfileInversionFit(AbstractFit, AbstractInversion):
 
 class ProfileFit(AbstractProfileFit):
 
-    def __init__(self, lensing_image, tracer, unmasked_tracer=None, plane_shape=(30, 30)):
+    def __init__(self, lensing_image, tracer, padded_tracer=None, plane_shape=(30, 30)):
         """
         Class to evaluate the fit between a model described by a tracer and an actual lensing_image.
 
@@ -262,7 +262,7 @@ class ProfileFit(AbstractProfileFit):
         tracer: ray_tracing.AbstractTracer
             An object describing the model
         """
-        super(ProfileFit, self).__init__(lensing_image, tracer, unmasked_tracer, plane_shape)
+        super(ProfileFit, self).__init__(lensing_image, tracer, padded_tracer, plane_shape)
 
     @classmethod
     def fast_likelihood(cls, lensing_image, tracer):
@@ -310,7 +310,7 @@ class InversionFit(AbstractInversionFit):
 
 class ProfileInversionFit(AbstractProfileInversionFit):
 
-    def __init__(self, lensing_image, tracer, unmasked_tracer=None):
+    def __init__(self, lensing_image, tracer, padded_tracer=None):
         """
         Class to evaluate the fit between a model described by a tracer and an actual lensing_image.
 
@@ -322,7 +322,7 @@ class ProfileInversionFit(AbstractProfileInversionFit):
             An object describing the model
         """
 
-        super(ProfileInversionFit, self).__init__(lensing_image, tracer, unmasked_tracer)
+        super(ProfileInversionFit, self).__init__(lensing_image, tracer, padded_tracer)
 
     @classmethod
     def fast_evidence(cls, lensing_image, tracer):
@@ -401,7 +401,7 @@ class AbstractHyperInversion(AbstractHyper):
 class HyperProfileFit(AbstractProfileFit, AbstractHyper):
 
     def __init__(self, lensing_image, tracer, hyper_model_image, hyper_galaxy_images, hyper_minimum_values,
-                 unmasked_tracer=None, plane_shape=(30, 30)):
+                 padded_tracer=None, plane_shape=(30, 30)):
         """
         Class to evaluate the fit between a model described by a tracer and an actual lensing_image.
 
@@ -413,7 +413,7 @@ class HyperProfileFit(AbstractProfileFit, AbstractHyper):
             An object describing the model
         """
 
-        super(HyperProfileFit, self).__init__(lensing_image, tracer, unmasked_tracer, plane_shape)
+        super(HyperProfileFit, self).__init__(lensing_image, tracer, padded_tracer, plane_shape)
         self.contributions_and_scaled_noise_map_from_hyper_images(tracer, hyper_model_image,
                                                                   hyper_galaxy_images, hyper_minimum_values)
 
@@ -496,7 +496,7 @@ class HyperInversionFit(AbstractInversionFit, AbstractHyperInversion):
 class HyperProfileInversionFit(AbstractProfileInversionFit, AbstractHyperInversion):
 
     def __init__(self, lensing_image, tracer, hyper_model_image, hyper_galaxy_images, hyper_minimum_values,
-                 unmasked_tracer=None):
+                 padded_tracer=None):
         """
         Class to evaluate the fit between a model described by a tracer and an actual lensing_image.
 
@@ -508,7 +508,7 @@ class HyperProfileInversionFit(AbstractProfileInversionFit, AbstractHyperInversi
             An object describing the model
         """
 
-        super(HyperProfileInversionFit, self).__init__(lensing_image, tracer, unmasked_tracer)
+        super(HyperProfileInversionFit, self).__init__(lensing_image, tracer, padded_tracer)
 
         self.contributions_and_scaled_noise_map_from_hyper_images(tracer, hyper_model_image,
                                                                   hyper_galaxy_images, hyper_minimum_values)
@@ -722,21 +722,21 @@ def evidence_from_reconstruction_terms(chi_squared_term, regularization_term, lo
                    log_regularization_term + noise_term)
 
 
-def unmasked_model_image_from_lensing_image_and_tracer(lensing_image, tracer):
+def padded_model_image_from_lensing_image_and_tracer(lensing_image, tracer):
     if tracer is None:
         return None
     elif tracer is not None:
-        model_image_1d = lensing_image.unmasked_grids.image.convolve_array_1d_with_psf(tracer._image_plane_image,
+        model_image_1d = lensing_image.padded_grids.image.convolve_array_1d_with_psf(tracer._image_plane_image,
                                                                                        lensing_image.psf)
-        return lensing_image.unmasked_grids.image.scaled_array_from_array_1d(model_image_1d)
+        return lensing_image.padded_grids.image.scaled_array_from_array_1d(model_image_1d)
 
 
-def unmasked_model_images_of_galaxies_from_lensing_image_and_tracer(lensing_image, tracer):
+def padded_model_images_of_galaxies_from_lensing_image_and_tracer(lensing_image, tracer):
     if tracer is None:
         return None
     elif tracer is not None:
         model_galaxy_images_1d = list(map(lambda image:
-                                          lensing_image.unmasked_grids.image.convolve_array_1d_with_psf(image,
+                                          lensing_image.padded_grids.image.convolve_array_1d_with_psf(image,
                                                                                                         lensing_image.psf),
                                           tracer._image_plane_images_of_galaxies))
-        return list(map(lambda image: lensing_image.unmasked_grids.image.scaled_array_from_array_1d(image), model_galaxy_images_1d))
+        return list(map(lambda image: lensing_image.padded_grids.image.scaled_array_from_array_1d(image), model_galaxy_images_1d))
