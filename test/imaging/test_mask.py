@@ -133,7 +133,7 @@ class TestMask(object):
 
         msk = mask.Mask(msk, pixel_scale=3.0)
 
-        border_pixels = msk.border_pixel_indices
+        border_pixels = msk.border_pixels
 
         assert border_pixels == pytest.approx(border_pixels_util, 1e-4)
 
@@ -151,7 +151,7 @@ class TestMask(object):
 
         msk = mask.Mask(msk, pixel_scale=3.0)
 
-        border_sub_pixels = msk.border_sub_pixel_indices(sub_grid_size=2)
+        border_sub_pixels = msk.border_sub_pixels(sub_grid_size=2)
 
         assert border_sub_pixels == pytest.approx(border_sub_pixels_util, 1e-4)
 

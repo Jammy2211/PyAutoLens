@@ -154,13 +154,13 @@ class Mask(scaled_array.ScaledSquarePixelArray):
         return Mask(blurring_mask, self.pixel_scale)
 
     @property
-    def border_pixel_indices(self):
+    def border_pixels(self):
         """The indicies of the mask's border pixels, where a border pixel is a pixel inside the mask but on its edge \
         (next to at least one pixel with a *True* value).
         """
         return imaging_util.border_pixels_from_mask(self).astype('int')
 
-    def border_sub_pixel_indices(self, sub_grid_size):
+    def border_sub_pixels(self, sub_grid_size):
         """The indicies of the mask's border sub-pixels, where a border sub-pixel is the sub-pixel in a mask border \
         _image-pixel which is closest to the edge."""
         return imaging_util.border_sub_pixels_from_mask_pixel_scales_and_sub_grid_size(mask=self,
@@ -768,7 +768,7 @@ class ImageGridBorder(np.ndarray):
         centre : (float, float)
             The centre of the border, which can be shifted relative to its coordinates.
         """
-        return cls(mask.border_pixel_indices, polynomial_degree, centre)
+        return cls(mask.border_pixels, polynomial_degree, centre)
 
     @property
     def total_pixels(self):
@@ -882,4 +882,4 @@ class SubGridBorder(ImageGridBorder):
         centre : (float, float)
             The centre of the border, which can be shifted relative to its coordinates.
         """
-        return cls(mask.border_sub_pixel_indices(sub_grid_size), polynomial_degree, centre)
+        return cls(mask.border_sub_pixels(sub_grid_size), polynomial_degree, centre)

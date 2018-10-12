@@ -64,4 +64,4 @@ im.output_imaging_to_fits(image=image_simulated, image_path=path+'/data/3_comple
                                                  noise_map_path=path+'/data/3_complex_source_noise_map.fits',
                                                  psf_path=path+'/data/3_complex_source_psf.fits', overwrite=True)
 
-imaging_plotters.plot_image(image=image_simulated)
+imaging_plotters.plot_image_subplot(image=image_simulated)

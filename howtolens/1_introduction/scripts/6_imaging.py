@@ -48,7 +48,7 @@ image_simulated = im.PreparatoryImage.simulate(array=tracer.image_plane_image_fo
                                                exposure_time=300.0, psf=psf, background_sky_level=0.1, add_noise=True)
 
 # Lets plot the image - we can see the image has been blurred due to the telescope optics and noise has been added.
-imaging_plotters.plot_image(image=image_simulated)
+imaging_plotters.plot_image_subplot(image=image_simulated)
 
 # Finally, lets output these files to.fits files, we'll begin to analyze them in the next tutorial!
 # Unfortunately, in a Jupyter notebook you have to manually specify the path to PyAutoLens and this tutorial.
