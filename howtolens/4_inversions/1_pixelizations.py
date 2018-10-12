@@ -6,11 +6,8 @@ from autolens.imaging import mask
 from autolens.inversion import pixelizations as pix
 from autolens.plotting import mapper_plotters
 
-from astropy import cosmology
-
-# To begin, we'll learn about how we pixelize our source-plane. To do this, we'll need a lensed source-plane, so lets
-# quickly make one using all the tools we've learnt about up to now.
-
+# First, we'll learn about source-plane pixelizations. For this, we need a lensed source-plane grid, so lets
+# quickly make one - everything below should look familiar to you!
 image_plane_grids = mask.ImagingGrids.from_shape_and_pixel_scale(shape=(100, 100), pixel_scale=0.05,
                                                                  sub_grid_size=2)
 
@@ -20,30 +17,64 @@ source_galaxy = g.Galaxy(light=lp.EllipticalSersic(centre=(0.0, 0.0), axis_ratio
 tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
                                              image_plane_grids=image_plane_grids)
 
-# We'll use the source-plane grid with our pixelizations, afterall it's the source galaxy we want to reconstruct!
+# As we saw previously, the tracer's source-plane grid has been lensed by the lens galaxy. We'll use this source-plane
+# grid to set up our pixelizations, afterall it's the source galaxy we ultimately want to reconstruct!
 source_plane_grids = tracer.source_plane.grids
 
-# Now lets set up our pixelization, using a new module, 'pixelizations', which we've imported as 'pix'. As the name
-# suggests, there are multiple pixelizations available in PyAutoLens, but lets stick to a simple rectangular grid for
-# now. The 'shape' defines its (y,x) dimensions, as we're used to with other grids in PyAutoLens.
+# Now lets set up our pixelization, using a new module, 'pixelizations', which we've imported as 'pix'.
+# There are multiple pixelizations available in PyAutoLens, but for now we'll keep things simpe and use a rectangular
+# grid. As usual, the grid's 'shape' defines its (y,x) dimensions.
 rectangular = pix.Rectangular(shape=(20, 20))
 
-# The rectangular pixelizatiion is just a 20 x 20 grid of pixels. It knows nothing of our observed image, the
-# source-plane we intend to reconstruct the galaxy of or the arc-second coordinates of this plane. This information
-# comes when we turn our pixelization into a 'mapper', using the grid of pixels in the plane we want to reconstruct
-# the source. So lets make a 'mapper', by passing the pixelization our grid.
+# You can't do much with a pixelization by itself in PyAutoLens. Afterall, we've not yet passed it our grid, or the
+# image, or anything which tells it about the lens system we're modeling. This information comes when we set up a
+# pixelization-mapper (or 'mapper' for short). In this tutorial, we'll explore how the mapper uses the input
+# source-grid to setup our rectangular pixelization (the reason its called a mapper will be covered in the next tutorial!)
 mapper = rectangular.mapper_from_grids(grids=source_plane_grids)
-
-# By plotting our mapper, we can now see our pixelization, albeit its a fairly boring grid of rectangular pixels.
-# mapper_plotters.plot_rectangular_mapper(mapper=mapper)
-
-mapper_plotters.plot_rectangular_mapper(mapper=mapper, plot_grid=True)
 
 # This mapper is a 'RectangularMapper' - every pixelization generates it owns mapper.
 print(type(mapper))
 
-# The mapper contains lots of information about our pixelization, for example its geometry tells us its pixel centers
-# and arc-second shape
-print(mapper.geometry.pixel_centres)
-print()
+# By plotting our mapper, we now see our pixelization. Its a fairly boring grid of rectangular pixels.
+mapper_plotters.plot_rectangular_mapper(mapper=mapper)
+
+# The mapper contains lots of information about our pixelization, for example its geometry attribute tells us where the
+# pixel centers are located
+print('Rectangular Grid Pixel Centre 1:')
+print(mapper.geometry.pixel_centres[0])
+print('Rectangular Grid Pixel Centre 2:')
+print(mapper.geometry.pixel_centres[1])
+print('Rectangular Grid Pixel Centre 3:')
+print(mapper.geometry.pixel_centres[2])
+print('etc.')
+
+# Infact, we can plot these centre on our grid - to make it look slightly less boring!
+mapper_plotters.plot_rectangular_mapper(mapper=mapper, plot_centres=True)
+
+# The mapper also has the source-grid that we passed when we set it up. Lets check they're the same grids.
+print('Source Grid Pixel 1')
+print(source_plane_grids.image[0])
+print(mapper.grids.image[0])
+print('Source Grid Pixel 2')
+print(source_plane_grids.image[1])
+print(mapper.grids.image[1])
+print('etc.')
+
+# We can over-lay the grid on top. Its starting too look a bit less boring now!
+mapper_plotters.plot_rectangular_mapper(mapper=mapper, plot_centres=True, plot_grid=True)
+
+# Finally, the mapper and its geometry has lots more information about the pixelization, for example, the arc-second
+# size and dimensions.
 print(mapper.geometry.shape_arc_seconds)
+print(mapper.geometry.arc_second_maxima)
+print(mapper.geometry.arc_second_minima)
+
+# And with that, we're done. This was a relatively gentle introduction in the world of pixelizations, but one that
+# hopefully makes a lot of sense. Think about the following questions before moving on to the next tutorial:
+
+# 1) Look at how the source-grid coordinates map to source-pixelization pixels. Is the distribution of points to pixels
+#    even? Or do some pixels have a lot more grid-points inside of them? What might this means for our eventual source
+#    reconstruction?
+
+#  2) The rectangular pixelization's edges are perfectly aligned with the most exterior coordinates of the source-grid.
+#     This is intentional - why do you think this is?
