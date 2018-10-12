@@ -28,7 +28,7 @@ im.output_imaging_to_fits(image=image_simulated, image_path=path+'/data/1_non_li
                                                  psf_path=path+'/data/1_non_linear_search_psf.fits',
                           overwrite=True)
 
-imaging_plotters.plot_image(image=image_simulated)
+imaging_plotters.plot_image_subplot(image=image_simulated)
 
 # This is the simulated image we fit in the exercise '3_realism_and_complexity'
 
@@ -53,4 +53,4 @@ im.output_imaging_to_fits(image=image_simulated, image_path=path+'/data/3_realis
                                                  psf_path=path+'/data/3_realism_and_complexity_psf.fits',
                           overwrite=True)
 
-imaging_plotters.plot_image(image=image_simulated)
+imaging_plotters.plot_image_subplot(image=image_simulated)

@@ -40,7 +40,7 @@ image = im.load_imaging_from_path(image_path=path + '/data/3_realism_and_complex
                                   psf_path=path + '/data/3_realism_and_complexity_psf.fits', pixel_scale=0.1)
 
 # When we plot it, the lens light's is clealy visible in the centre of the image
-imaging_plotters.plot_image(image=image)
+imaging_plotters.plot_image_subplot(image=image)
 
 # Now lets fit it using a phase, noting that indeed the galaxy-model corresponds to the one above.
 
@@ -73,7 +73,7 @@ print(results.constant)
 # Create a lensing image to make the fit - the mask we used above was a 3" circle (we'll come back to this later)
 mask = ma.Mask.circular(shape=image.shape, pixel_scale=image.pixel_scale, radius_mask_arcsec=3.0)
 lensing_image = li.LensingImage(image=image, mask=mask)
-imaging_plotters.plot_image(lensing_image.image)
+imaging_plotters.plot_image_subplot(lensing_image.image)
 
 # Make the tracer we use to simulate the image
 lens_galaxy = g.Galaxy(light=lp.EllipticalSersic(centre=(0.0, 0.0), axis_ratio=0.9, phi=45.0, intensity=0.04,
