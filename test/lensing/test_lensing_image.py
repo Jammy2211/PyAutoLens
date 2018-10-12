@@ -54,23 +54,24 @@ class TestMaskedImage(object):
                                                           [1.5, -4.5], [1.5, 4.5], [-1.5, -4.5], [-1.5, 4.5],
                                                           [-4.5, -4.5], [-4.5, -1.5], [-4.5, 1.5], [-4.5, 4.5]])).all()
 
-    def test_unmasked_grids(self, lensing_image):
-        unmasked_image_util = imaging_util.image_grid_1d_masked_from_mask_and_pixel_scales(mask=np.full((6, 6), False),
+    def test_padded_grids(self, lensing_image):
+
+        padded_image_util = imaging_util.image_grid_1d_masked_from_mask_and_pixel_scales(mask=np.full((6, 6), False),
                           pixel_scales=lensing_image.image.pixel_scales)
 
-        unmasked_sub_util = imaging_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(
+        assert (lensing_image.padded_grids.image == padded_image_util).all()
+        assert lensing_image.padded_grids.image.image_shape == (4, 4)
+        assert lensing_image.padded_grids.image.padded_shape == (6, 6)
+
+        padded_sub_util = imaging_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(
             mask=np.full((6, 6), False), pixel_scales=lensing_image.image.pixel_scales,
             sub_grid_size=lensing_image.grids.sub.sub_grid_size)
 
-        assert (lensing_image.unmasked_grids.image == unmasked_image_util).all()
-        assert lensing_image.unmasked_grids.image.image_shape == (4, 4)
-        assert lensing_image.unmasked_grids.image.padded_shape == (6, 6)
+        assert lensing_image.padded_grids.sub == pytest.approx(padded_sub_util, 1e-4)
+        assert lensing_image.padded_grids.sub.image_shape == (4, 4)
+        assert lensing_image.padded_grids.sub.padded_shape == (6, 6)
 
-        assert (lensing_image.unmasked_grids.sub == unmasked_sub_util).all()
-        assert lensing_image.unmasked_grids.sub.image_shape == (4, 4)
-        assert lensing_image.unmasked_grids.sub.padded_shape == (6, 6)
-
-        assert (lensing_image.unmasked_grids.blurring == np.array([[0.0, 0.0]])).all()
+        assert (lensing_image.padded_grids.blurring == np.array([[0.0, 0.0]])).all()
 
     def test_borders(self, lensing_image):
         assert (lensing_image.borders.image == np.array([0, 1, 2, 3])).all()

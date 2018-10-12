@@ -1245,8 +1245,9 @@ class TestPlaneImage:
         # -1.6, -0.8, 0.0, 0.8, 1.6. The centre -1.6, -1.6 of the galaxy means its brighest pixel should be
         # index 0 of the 1D grid and (0,0) of the 2d plane _image.
 
-        imaging_grids.image = mask.ImageGrid(np.array([[-2.0, -2.0], [2.0, 2.0]]), pixel_scale=1.0, shape_2d=(5, 5),
-                                             grid_to_pixel=None)
+        msk = mask.Mask(array=np.full((5,5), False), pixel_scale=1.0)
+
+        imaging_grids.image = mask.ImageGrid(np.array([[-2.0, -2.0], [2.0, 2.0]]), mask=msk)
 
         g0 = g.Galaxy(light_profile=lp.EllipticalSersic(centre=(1.6, -1.6), intensity=1.0))
         plane = pl.Plane(galaxies=[g0], grids=imaging_grids)
