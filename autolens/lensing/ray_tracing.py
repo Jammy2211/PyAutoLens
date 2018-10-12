@@ -34,8 +34,8 @@ class AbstractTracer(object):
         return any(list(map(lambda plane : plane.has_regularization, self.all_planes)))
 
     @property
-    def has_unmasked_grids(self):
-        return isinstance(self.all_planes[0].grids.image, msk.ImageUnmaskedGrid)
+    def has_padded_grids(self):
+        return isinstance(self.all_planes[0].grids.image, msk.PaddedImageGrid)
 
     @property
     def has_hyper_galaxy(self):
@@ -68,10 +68,10 @@ class AbstractTracer(object):
 
     @property
     def image_plane_image_for_simulation(self):
-        if not self.has_unmasked_grids:
+        if not self.has_padded_grids:
             raise exc.RayTracingException(
                 'To retrieve an _image plane _image for the simulation, the grids in the tracer'
-                'must be unmasked grids')
+                'must be padded grids')
         return sum(map(lambda image: self.image_plane.grids.image.map_to_2d_keep_padded(image),
                        self._image_plane_images_of_planes))
 

@@ -215,7 +215,7 @@ class TestPhase(object):
     # def test_unmasked_model_image_for_instance(self, _image):
     #
     #     lens_galaxy = g.Galaxy(light_profile=lp.SphericalSersic(intensity=1.0))
-    #     image_padded_grid = msk.ImageUnmaskedGrid.unmasked_grid_from_shapes_and_pixel_scale(shape=_image.shape,
+    #     image_padded_grid = msk.PaddedImageGrid.unmasked_grid_from_shapes_and_pixel_scale(shape=_image.shape,
     #                                                                                         psf_shape=_image.psf.shape,
     #                                                                                         pixel_scale=_image.pixel_scale)
     #     image_1d = lens_galaxy.intensities_from_grid(image_padded_grid)
@@ -235,7 +235,7 @@ class TestPhase(object):
     #     g0= g.Galaxy(light_profile=lp.SphericalSersic(intensity=1.0))
     #     g1 = g.Galaxy(light_profile=lp.SphericalSersic(intensity=2.0))
     #
-    #     image_padded_grid = msk.ImageUnmaskedGrid.unmasked_grid_from_shapes_and_pixel_scale(shape=_image.shape,
+    #     image_padded_grid = msk.PaddedImageGrid.unmasked_grid_from_shapes_and_pixel_scale(shape=_image.shape,
     #                                                                                         psf_shape=_image.psf.shape,
     #                                                                                         pixel_scale=_image.pixel_scale)
     #
