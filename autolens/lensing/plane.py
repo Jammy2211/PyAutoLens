@@ -97,12 +97,30 @@ class Plane(object):
 
         self.cosmology = cosmology
 
+    # TODO : The map function isn't passing the class attributes correcty. We shouldbe able to refactor this
+    # TODO : doing it messy for now!
+
     def trace_to_next_plane(self):
         """Trace this plane's grids to the next plane, using its deflection angles."""
-        return self.grids.map_function(np.subtract, self.deflections)
 
-    def plane_image(self, shape=(30, 30)):
-        return plane_image_from_grid_and_galaxies(shape=shape, grid=self.grids.image, galaxies=self.galaxies)
+        if isinstance(self.grids.image, msk.PaddedImageGrid):
+            image_grid = msk.PaddedImageGrid(arr=self.grids.image - self.deflections.image, mask=self.grids.image.mask,
+                                             image_shape=self.grids.image.image_shape)
+        elif isinstance(self.grids.image, msk.ImageGrid):
+            image_grid = msk.ImageGrid(arr=self.grids.image - self.deflections.image, mask=self.grids.image.mask)
+
+
+        if isinstance(self.grids.sub, msk.PaddedSubGrid):
+            sub_grid = msk.PaddedSubGrid(self.grids.sub - self.deflections.sub, self.grids.sub.mask,
+                                           self.grids.sub.image_shape, self.grids.sub.sub_grid_size)
+        elif isinstance(self.grids.sub, msk.SubGrid):
+            sub_grid = msk.SubGrid(self.grids.sub - self.deflections.sub, self.grids.sub.mask,
+                                self.grids.sub.sub_grid_size)
+
+
+        blurring_grid = msk.ImageGrid(arr=self.grids.blurring - self.deflections.blurring, mask=None)
+        return msk.ImagingGrids(image=image_grid, sub=sub_grid, blurring=blurring_grid)
+    #    return self.grids.map_function(np.subtract, self.deflections)
 
     @property
     def galaxy_redshifts(self):
@@ -153,6 +171,10 @@ class Plane(object):
         return [galaxy.hyper_galaxy for galaxy in self.galaxies]
 
     @property
+    def has_padded_grids(self):
+        return isinstance(self.grids.image, msk.PaddedImageGrid)
+
+    @property
     def mapper(self):
 
         galaxies_with_pixelization = list(filter(lambda galaxy: galaxy.has_pixelization, self.galaxies))
@@ -178,44 +200,52 @@ class Plane(object):
             raise exc.PixelizationException('The number of galaxies with regularizations in one plane is above 1')
 
     @property
-    def _image_plane_image(self):
-        return sum(self._image_plane_images_of_galaxies)
+    def image_plane_image(self):
+        return self.grids.image.scaled_array_from_array_1d(self._image_plane_image)
 
     @property
-    def _image_plane_images_of_galaxies(self):
-        return [intensities_from_grid(self.grids.sub, [galaxy]) for galaxy in self.galaxies]
+    def image_plane_image_for_simulation(self):
+        if not self.has_padded_grids:
+            raise exc.RayTracingException(
+                'To retrieve an _image plane _image for the simulation, the grids in the tracer'
+                'must be padded grids')
+        return self.grids.image.map_to_2d_keep_padded(self._image_plane_image)
+
+    @property
+    def _image_plane_image(self):
+        return sum([intensities_from_grid(self.grids.sub, [galaxy]) for galaxy in self.galaxies])
 
     @property
     def _image_plane_blurring_image(self):
-        return sum(self._image_plane_blurring_images_of_galaxies)
+        return sum([intensities_from_grid(self.grids.blurring, [galaxy]) for galaxy in self.galaxies])
 
     @property
-    def _image_plane_blurring_images_of_galaxies(self):
-        return [intensities_from_grid(self.grids.blurring, [galaxy]) for galaxy in self.galaxies]
+    def plane_image(self):
+        return plane_image_from_grid_and_galaxies(shape=self.grids.image.mask.shape,
+                                                  grid=self.grids.image.unlensed_grid, galaxies=self.galaxies)
 
     @property
-    def _surface_density(self):
-        return sum(self._surface_density_of_galaxies)
+    def surface_density(self):
+        _surface_density = sum([surface_density_from_grid(self.grids.sub.unlensed_grid, [galaxy]) for galaxy in
+                                self.galaxies])
+        return self.grids.image.scaled_array_from_array_1d(_surface_density)
 
     @property
-    def _surface_density_of_galaxies(self):
-        return [surface_density_from_grid(self.grids.sub, [galaxy]) for galaxy in self.galaxies]
+    def potential(self):
+        _potential = sum([potential_from_grid(self.grids.sub.unlensed_grid, [galaxy]) for galaxy in self.galaxies])
+        return self.grids.image.scaled_array_from_array_1d(_potential)
 
     @property
-    def _potential(self):
-        return sum(self._potential_of_galaxies)
+    def deflections_y(self):
+        return self.grids.image.scaled_array_from_array_1d(self._deflections[:,0])
 
     @property
-    def _potential_of_galaxies(self):
-        return [potential_from_grid(self.grids.sub, [galaxy]) for galaxy in self.galaxies]
+    def deflections_x(self):
+        return self.grids.image.scaled_array_from_array_1d(self._deflections[:,1])
 
     @property
     def _deflections(self):
-        return sum(self._deflections_of_galaxies)
-
-    @property
-    def _deflections_of_galaxies(self):
-        return [deflections_from_grid(self.grids.sub, [galaxy]) for galaxy in self.galaxies]
+        return sum([deflections_from_grid(self.grids.sub.unlensed_grid, [galaxy]) for galaxy in self.galaxies])
 
 
 class PlanePositions(object):
