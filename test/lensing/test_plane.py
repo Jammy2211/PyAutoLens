@@ -481,6 +481,14 @@ class TestPlane(object):
             plane = pl.Plane(galaxies=[g.Galaxy(hyper_galaxy=g.HyperGalaxy()), g.Galaxy()], grids=imaging_grids)
             assert plane.has_hyper_galaxy == True
 
+        def test__padded_grid_in__tracer_has_padded_grid_proerty(self, imaging_grids, padded_grids, galaxy_light):
+
+            plane = pl.Plane(grids=imaging_grids, galaxies=[galaxy_light])
+            assert plane.has_padded_grids == False
+
+            plane = pl.Plane(grids=padded_grids, galaxies=[galaxy_light])
+            assert plane.has_padded_grids == True
+
         def test__extract_hyper_galaxies(self, imaging_grids):
 
             plane = pl.Plane(galaxies=[g.Galaxy()], grids=imaging_grids)
@@ -531,7 +539,7 @@ class TestPlane(object):
             assert (plane.image_plane_image ==
                     imaging_grids.image.scaled_array_from_array_1d(plane._image_plane_image)).all()
 
-        def test__same_as_above__use_multiple_galaxies(self, imaging_grids):
+        def test__image_plane_image_of_galaxies(self, imaging_grids):
             # Overwrite one value so intensity in each pixel is different
             imaging_grids.sub[5] = np.array([2.0, 2.0])
 
@@ -556,6 +564,11 @@ class TestPlane(object):
             assert (plane._image_plane_image[1] == lp0_image_pixel_1 + lp1_image_pixel_1).all()
             assert (plane.image_plane_image ==
                     imaging_grids.image.scaled_array_from_array_1d(plane._image_plane_image)).all()
+
+            assert (plane._image_plane_image_of_galaxies[0][0] == lp0_image_pixel_0)
+            assert (plane._image_plane_image_of_galaxies[0][1] == lp0_image_pixel_1)
+            assert (plane._image_plane_image_of_galaxies[1][0] == lp1_image_pixel_0)
+            assert (plane._image_plane_image_of_galaxies[1][1] == lp1_image_pixel_1)
 
         def test__image_from_plane__same_as_its_galaxy_image(self, imaging_grids, galaxy_light):
             
@@ -594,6 +607,9 @@ class TestPlane(object):
             assert (plane._image_plane_image == g0_image + g1_image).all()
             assert (plane.image_plane_image ==
                     imaging_grids.image.scaled_array_from_array_1d(plane._image_plane_image)).all()
+
+            assert (plane._image_plane_image_of_galaxies[0] == g0_image).all()
+            assert (plane._image_plane_image_of_galaxies[1] == g1_image).all()
 
         def test__same_as_above__galaxy_entered_3_times__diffferent_intensities_for_each(self, imaging_grids):
             g0 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=1.0))
@@ -645,7 +661,6 @@ class TestPlane(object):
             assert (plane.image_plane_image_for_simulation[2,1] == lp_image_pixel_9).all()
             assert (plane.image_plane_image_for_simulation[2,2] == lp_image_pixel_10).all()
             assert (plane.image_plane_image_for_simulation[2,3] == lp_image_pixel_11).all()
-
 
     class TestBlurringImage:
 
