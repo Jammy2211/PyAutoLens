@@ -286,6 +286,7 @@ class TestPaddedModelImages:
         assert (manual_model_image[1:4, 1:4] == padded_model_image).all()
 
     def test___of_galaxies__x1_galaxy__3x3_padded_image__no_psf_blurring(self, galaxy_light):
+
         psf = image.PSF(array=(np.array([[0.0, 0.0, 0.0],
                                          [0.0, 1.0, 0.0],
                                          [0.0, 0.0, 0.0]])), pixel_scale=1.0)
@@ -297,13 +298,13 @@ class TestPaddedModelImages:
         li = lensing_image.LensingImage(im, ma, sub_grid_size=1)
 
         tracer = ray_tracing.TracerImagePlane(lens_galaxies=[galaxy_light], image_plane_grids=li.padded_grids)
+
+        manual_model_image_0 = tracer.image_plane.grids.image.map_to_2d_keep_padded(tracer._image_plane_image)
+        manual_model_image_0 = psf.convolve(manual_model_image_0)
+
         padded_model_images = fitting.padded_model_images_of_galaxies_from_lensing_image_and_tracer(li, tracer)
 
-        manual_model_images = list(map(lambda image: tracer.image_plane.grids.image.map_to_2d_keep_padded(image),
-                                       tracer._image_plane_images_of_galaxies))
-        manual_model_images = list(map(lambda image: psf.convolve(image), manual_model_images))
-
-        assert (manual_model_images[0][1:4, 1:4] == padded_model_images[0]).all()
+        assert (manual_model_image_0[1:4, 1:4] == padded_model_images[0][0]).all()
 
     def test___of_galaxies__x1_galaxy__3x3_padded_image__asymetric_psf_blurring(self, galaxy_light):
         psf = image.PSF(array=(np.array([[0.0, 0.0, 0.0],
@@ -317,13 +318,13 @@ class TestPaddedModelImages:
         li = lensing_image.LensingImage(im, ma, sub_grid_size=1)
 
         tracer = ray_tracing.TracerImagePlane(lens_galaxies=[galaxy_light], image_plane_grids=li.padded_grids)
+
+        manual_model_image_0 = tracer.image_plane.grids.image.map_to_2d_keep_padded(tracer._image_plane_image)
+        manual_model_image_0 = psf.convolve(manual_model_image_0)
+
         padded_model_images = fitting.padded_model_images_of_galaxies_from_lensing_image_and_tracer(li, tracer)
 
-        manual_model_images = list(map(lambda image: tracer.image_plane.grids.image.map_to_2d_keep_padded(image),
-                                       tracer._image_plane_images_of_galaxies))
-        manual_model_images = list(map(lambda image: psf.convolve(image), manual_model_images))
-
-        assert (manual_model_images[0][1:4, 1:4] == padded_model_images[0]).all()
+        assert (manual_model_image_0[1:4, 1:4] == padded_model_images[0][0]).all()
 
     def test___of_galaxies__x2_galaxies__3x3_padded_image__asymetric_psf_blurring(self):
         psf = image.PSF(array=(np.array([[0.0, 0.0, 0.0],
@@ -342,15 +343,19 @@ class TestPaddedModelImages:
         tracer = ray_tracing.TracerImagePlane(lens_galaxies=[g0, g1], image_plane_grids=li.padded_grids)
         padded_model_images = fitting.padded_model_images_of_galaxies_from_lensing_image_and_tracer(li, tracer)
 
-        manual_model_images = list(map(lambda image: tracer.image_plane.grids.image.map_to_2d_keep_padded(image),
-                                       tracer._image_plane_images_of_galaxies))
-        manual_model_images = list(map(lambda image: psf.convolve(image), manual_model_images))
+        manual_model_image_0 = tracer.image_plane.grids.image.map_to_2d_keep_padded(
+            tracer.image_plane._image_plane_image_of_galaxies[0])
+        manual_model_image_0 = psf.convolve(manual_model_image_0)
 
-        assert (manual_model_images[0][1:4, 1:4] == padded_model_images[0]).all()
-        assert (manual_model_images[1][1:4, 1:4] == padded_model_images[1]).all()
+        manual_model_image_1 = tracer.image_plane.grids.image.map_to_2d_keep_padded(
+            tracer.image_plane._image_plane_image_of_galaxies[1])
+        manual_model_image_1 = psf.convolve(manual_model_image_1)
+
+        assert (manual_model_image_0[1:4, 1:4] == padded_model_images[0][0]).all()
+        assert (manual_model_image_1[1:4, 1:4] == padded_model_images[0][1]).all()
 
         padded_model_image = fitting.padded_model_image_from_lensing_image_and_tracer(li, tracer)
-        assert (manual_model_images[0][1:4, 1:4] + manual_model_images[1][1:4, 1:4] == padded_model_image).all()
+        assert (manual_model_image_0[1:4, 1:4] + manual_model_image_1[1:4, 1:4] == padded_model_image).all()
 
     def test___same_as_above_but_image_and_souce_plane(self):
 
@@ -371,22 +376,37 @@ class TestPaddedModelImages:
 
         tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0, g1], source_galaxies=[g2, g3],
                                                      image_plane_grids=li.padded_grids)
+
+        manual_model_image_0 = tracer.image_plane.grids.image.map_to_2d_keep_padded(
+            tracer.image_plane._image_plane_image_of_galaxies[0])
+        manual_model_image_0 = psf.convolve(manual_model_image_0)
+
+        manual_model_image_1 = tracer.image_plane.grids.image.map_to_2d_keep_padded(
+            tracer.image_plane._image_plane_image_of_galaxies[1])
+        manual_model_image_1 = psf.convolve(manual_model_image_1)
+
+
+        manual_model_image_2 = tracer.image_plane.grids.image.map_to_2d_keep_padded(
+            tracer.source_plane._image_plane_image_of_galaxies[0])
+        manual_model_image_2 = psf.convolve(manual_model_image_2)
+
+        manual_model_image_3 = tracer.image_plane.grids.image.map_to_2d_keep_padded(
+            tracer.source_plane._image_plane_image_of_galaxies[1])
+        manual_model_image_3 = psf.convolve(manual_model_image_3)
+
         padded_model_images = fitting.padded_model_images_of_galaxies_from_lensing_image_and_tracer(li, tracer)
 
-        manual_model_images = list(map(lambda image: tracer.image_plane.grids.image.map_to_2d_keep_padded(image),
-                                       tracer._image_plane_images_of_galaxies))
-        manual_model_images = list(map(lambda image: psf.convolve(image), manual_model_images))
-
-        assert (manual_model_images[0][1:4, 1:4] == padded_model_images[0]).all()
-        assert (manual_model_images[1][1:4, 1:4] == padded_model_images[1]).all()
-        assert (manual_model_images[2][1:4, 1:4] == padded_model_images[2]).all()
-        assert (manual_model_images[3][1:4, 1:4] == padded_model_images[3]).all()
+        assert (manual_model_image_0[1:4, 1:4] == padded_model_images[0][0]).all()
+        assert (manual_model_image_1[1:4, 1:4] == padded_model_images[0][1]).all()
+        assert (manual_model_image_2[1:4, 1:4] == padded_model_images[1][0]).all()
+        assert (manual_model_image_3[1:4, 1:4] == padded_model_images[1][1]).all()
 
         padded_model_image = fitting.padded_model_image_from_lensing_image_and_tracer(li, tracer)
-        assert (manual_model_images[0][1:4, 1:4] + manual_model_images[1][1:4, 1:4] +
-                manual_model_images[2][1:4, 1:4] + manual_model_images[3][1:4, 1:4] == padded_model_image).all()
+        assert (manual_model_image_0[1:4, 1:4] + manual_model_image_1[1:4, 1:4] +
+                manual_model_image_2[1:4, 1:4] + manual_model_image_3[1:4, 1:4] == padded_model_image).all()
 
     def test__none_in__returns_none(self):
+
         psf = image.PSF(array=(np.array([[0.0, 0.0, 0.0],
                                          [0.0, 1.0, 0.0],
                                          [0.0, 0.0, 0.0]])), pixel_scale=1.0)
@@ -491,24 +511,8 @@ class MockTracer(object):
         return self.image
 
     @property
-    def _image_plane_images_of_planes(self):
-        return [self.image]
-
-    @property
-    def _image_plane_images_of_galaxies(self):
-        return [self.image]
-
-    @property
     def _image_plane_blurring_image(self):
         return self.blurring_image
-
-    @property
-    def _image_plane_blurring_images_of_planes(self):
-        return [self.blurring_image]
-
-    @property
-    def _image_plane_blurring_images_of_galaxies(self):
-        return [self.blurring_image]
 
     @property
     def mappers_of_planes(self):
@@ -517,13 +521,6 @@ class MockTracer(object):
     @property
     def regularization_of_planes(self):
         return [MockMapper()]
-
-    @property
-    def image_grids_of_planes(self):
-        return None
-
-    def plane_images_of_planes(self, shape):
-        return None
 
     @property
     def hyper_galaxies(self):
@@ -661,11 +658,6 @@ class TestProfileFit:
                                                  [0.0, 9.0, 9.0, 0.0],
                                                  [0.0, 0.0, 0.0, 0.0]])).all()
 
-            assert (fit.model_images_of_planes[0] == np.array([[0.0, 0.0, 0.0, 0.0],
-                                                               [0.0, 9.0, 9.0, 0.0],
-                                                               [0.0, 9.0, 9.0, 0.0],
-                                                               [0.0, 0.0, 0.0, 0.0]])).all()
-
         def test__real_tracer__2x2_image__no_psf_blurring(self, li_no_blur, galaxy_light):
             tracer = ray_tracing.TracerImagePlane(lens_galaxies=[galaxy_light], image_plane_grids=li_no_blur.grids)
 
@@ -714,6 +706,7 @@ class TestProfileFit:
             assert tracer_blurred_image_manual_3 == pytest.approx(fit.model_image[2, 2], 1e-6)
 
         def test__model_images_of_planes__real_tracer__2x2_image__psf_is_non_symmetric_producing_l_shape(self):
+
             psf = image.PSF(array=(np.array([[0.0, 3.0, 0.0],
                                              [0.0, 2.0, 1.0],
                                              [0.0, 0.0, 0.0]])), pixel_scale=1.0)
@@ -733,13 +726,11 @@ class TestProfileFit:
 
             fit = fitting.ProfileFit(lensing_image=li, tracer=tracer)
 
-            model_lens_image = \
-                li.convolver_image.convolve_image(tracer._image_plane_images_of_galaxies[0],
-                                                  tracer._image_plane_blurring_images_of_galaxies[0])
+            model_lens_image = li.convolver_image.convolve_image(tracer.image_plane._image_plane_image,
+                                                                 tracer.image_plane._image_plane_blurring_image)
 
-            model_source_image = \
-                li.convolver_image.convolve_image(tracer._image_plane_images_of_galaxies[1],
-                                                  tracer._image_plane_blurring_images_of_galaxies[1])
+            model_source_image = li.convolver_image.convolve_image(tracer.source_plane._image_plane_image,
+                                                                   tracer.source_plane._image_plane_blurring_image)
 
             model_lens_image = li.grids.image.scaled_array_from_array_1d(model_lens_image)
             model_source_image = li.grids.image.scaled_array_from_array_1d(model_source_image)
@@ -748,6 +739,7 @@ class TestProfileFit:
             assert (fit.model_images_of_planes[1] == model_source_image).all()
 
         def test__same_as_above_but_multi_tracer(self):
+            
             psf = image.PSF(array=(np.array([[0.0, 3.0, 0.0],
                                              [0.0, 2.0, 1.0],
                                              [0.0, 0.0, 0.0]])), pixel_scale=1.0)
@@ -770,22 +762,22 @@ class TestProfileFit:
 
             fit = fitting.ProfileFit(lensing_image=li, tracer=tracer)
 
-            model_image_plane_0 = li.convolver_image.convolve_image(tracer._image_plane_images_of_galaxies[0],
-                                                                    tracer._image_plane_blurring_images_of_galaxies[0])
+            model_plane_image_0 = li.convolver_image.convolve_image(tracer.planes[0]._image_plane_image,
+                                                                 tracer.planes[0]._image_plane_blurring_image)
 
-            model_image_plane_1 = li.convolver_image.convolve_image(tracer._image_plane_images_of_galaxies[1],
-                                                                    tracer._image_plane_blurring_images_of_galaxies[1])
+            model_plane_image_1 = li.convolver_image.convolve_image(tracer.planes[1]._image_plane_image,
+                                                                 tracer.planes[1]._image_plane_blurring_image)
+            
+            model_plane_image_2 = li.convolver_image.convolve_image(tracer.planes[2]._image_plane_image,
+                                                                 tracer.planes[2]._image_plane_blurring_image)
 
-            model_image_plane_2 = li.convolver_image.convolve_image(tracer._image_plane_images_of_galaxies[2],
-                                                                    tracer._image_plane_blurring_images_of_galaxies[2])
+            model_plane_image_0 = li.grids.image.scaled_array_from_array_1d(model_plane_image_0)
+            model_plane_image_1 = li.grids.image.scaled_array_from_array_1d(model_plane_image_1)
+            model_plane_image_2 = li.grids.image.scaled_array_from_array_1d(model_plane_image_2)
 
-            model_image_plane_0 = li.grids.image.scaled_array_from_array_1d(model_image_plane_0)
-            model_image_plane_1 = li.grids.image.scaled_array_from_array_1d(model_image_plane_1)
-            model_image_plane_2 = li.grids.image.scaled_array_from_array_1d(model_image_plane_2)
-
-            assert (fit.model_images_of_planes[0] == model_image_plane_0).all()
-            assert (fit.model_images_of_planes[1] == model_image_plane_1).all()
-            assert (fit.model_images_of_planes[2] == model_image_plane_2).all()
+            assert (fit.model_images_of_planes[0] == model_plane_image_0).all()
+            assert (fit.model_images_of_planes[1] == model_plane_image_1).all()
+            assert (fit.model_images_of_planes[2] == model_plane_image_2).all()
 
         def test__model_images_of_planes__is_galaxy_has_no_light_profile__replace_with_none(self):
             psf = image.PSF(array=(np.array([[0.0, 3.0, 0.0],
@@ -834,33 +826,6 @@ class TestProfileFit:
 
             assert fit.model_images_of_planes[0] == None
             assert fit.model_images_of_planes[1] == None
-
-    class TestPlaneImagesGrids:
-
-        def test__plane_image_grids_is_correct(self, li_no_blur):
-            # The grid coordinates -2.0 -> 2.0 mean a plane of shape (5,5) has arc second coordinates running over
-            # -1.6, -0.8, 0.0, 0.8, 1.6. The centre -1.6, -1.6 of the galaxy means its brighest pixel should be
-            # index 0 of the 1D grid and (0,0) of the 2d plane _image.
-
-            grid = np.array([[-1.0, -1.0], [1.0, 1.0], [1.0, 1.0], [-1.0, -1.0]])
-            li_no_blur.grids.image[:, :] = grid
-
-            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g.Galaxy()], source_galaxies=[g.Galaxy()],
-                                                         image_plane_grids=li_no_blur.grids)
-            fit = fitting.ProfileFit(lensing_image=li_no_blur, tracer=tracer)
-
-            assert (fit.plane_images[0].grid == grid).all()
-            assert (fit.plane_images[1].grid == grid).all()
-
-            galaxy_sis = g.Galaxy(sis=mp.SphericalIsothermal(einstein_radius=1.0))
-            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[galaxy_sis], source_galaxies=[g.Galaxy()],
-                                                         image_plane_grids=li_no_blur.grids)
-            fit = fitting.ProfileFit(lensing_image=li_no_blur, tracer=tracer)
-
-            assert (fit.plane_images[0].grid == grid).all()
-            assert fit.plane_images[1].grid == pytest.approx(
-                np.array([[-1.0 + 0.707, -1.0 + 0.707], [1.0 - 0.707, 1.0 - 0.707],
-                          [1.0 - 0.707, 1.0 - 0.707], [-1.0 + 0.707, -1.0 + 0.707]]), 1e-2)
 
     class TestLikelihood:
 
@@ -965,6 +930,7 @@ class TestProfileFit:
     class TestCompareToManual:
 
         def test___manual_image_and_psf(self, li_manual):
+
             g0 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=1.0))
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g0],
                                                          image_plane_grids=li_manual.grids)
@@ -1002,8 +968,8 @@ class TestProfileFit:
                 fitting.padded_model_images_of_galaxies_from_lensing_image_and_tracer(li_manual, padded_tracer)
 
             assert (padded_model_image == fit.padded_model_profile_image).all()
-            assert (padded_model_image_of_galaxies[0] == fit.padded_model_profile_images_of_galaxies[0]).all()
-            assert (padded_model_image_of_galaxies[1] == fit.padded_model_profile_images_of_galaxies[1]).all()
+            assert (padded_model_image_of_galaxies[0][0] == fit.padded_model_profile_images_of_galaxies[0][0]).all()
+            assert (padded_model_image_of_galaxies[1][0] == fit.padded_model_profile_images_of_galaxies[1][0]).all()
 
 
 class TestHyperProfileFit:
@@ -1161,8 +1127,8 @@ class TestHyperProfileFit:
                 fitting.padded_model_images_of_galaxies_from_lensing_image_and_tracer(li_manual, padded_tracer)
 
             assert (padded_model_image == fit.padded_model_profile_image).all()
-            assert (padded_model_image_of_galaxies[0] == fit.padded_model_profile_images_of_galaxies[0]).all()
-            assert (padded_model_image_of_galaxies[1] == fit.padded_model_profile_images_of_galaxies[1]).all()
+            assert (padded_model_image_of_galaxies[0][0] == fit.padded_model_profile_images_of_galaxies[0][0]).all()
+            assert (padded_model_image_of_galaxies[1][0] == fit.padded_model_profile_images_of_galaxies[1][0]).all()
 
 
 class TestInversionFit:
