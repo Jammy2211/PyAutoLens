@@ -114,13 +114,13 @@ def test_mn_results():
 
 @pytest.fixture(name='mm_config')
 def test_mm_config():
-    path = "{}/../test_files/config/priors/default/".format(os.path.dirname(os.path.realpath(__file__)))
+    path = "{}/../test_files/configs/non_linear/priors/default/".format(os.path.dirname(os.path.realpath(__file__)))
     return conf.DefaultPriorConfig(path)
 
 
 @pytest.fixture(name='label_config')
 def test_labels_config():
-    path = "{}/../config/label.ini".format(os.path.dirname(os.path.realpath(__file__)))
+    path = "{}/../test_files/configs/non_linear/label.ini".format(os.path.dirname(os.path.realpath(__file__)))
     return conf.LabelConfig(path)
 
 
@@ -1150,14 +1150,14 @@ class MockAnalysis(object):
 def make_test_config():
     return conf.DefaultPriorConfig(
         config_folder_path="{}/../{}".format(os.path.dirname(os.path.realpath(__file__)),
-                                             "test_files/config/priors/default"))
+                                             "test_files/configs/non_linear/priors/default"))
 
 
 @pytest.fixture(name="width_config")
 def make_width_config():
     return conf.WidthConfig(
         config_folder_path="{}/../{}".format(os.path.dirname(os.path.realpath(__file__)),
-                                             "test_files/config/priors/width"))
+                                             "test_files/configs/non_linear/priors/width"))
 
 
 @pytest.fixture(name="downhill_simplex")
