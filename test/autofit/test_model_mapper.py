@@ -25,14 +25,14 @@ def make_uniform_half():
 def make_test_config():
     return conf.DefaultPriorConfig(
         config_folder_path="{}/../{}".format(os.path.dirname(os.path.realpath(__file__)),
-                                             "test_files/config/priors/default"))
+                                             "test_files/configs/model_mapper/priors/default"))
 
 
 @pytest.fixture(name="width_config")
 def make_width_config():
     return conf.WidthConfig(
         config_folder_path="{}/../{}".format(os.path.dirname(os.path.realpath(__file__)),
-                                             "test_files/config/priors/width"))
+                                             "test_files/configs/model_mapper/priors/width"))
 
 
 @pytest.fixture(name="initial_model")

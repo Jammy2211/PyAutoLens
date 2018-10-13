@@ -94,7 +94,7 @@ results = phase.run(image)
 print(results) # NOTE - this isn't working yet, need to sort out.
 
 # The best-fit solution (i.e. the highest likelihood) is stored in the 'results', which we can plot as per usual.
-fitting_plotters.plot_fitting(fit=results.fit)
+fitting_plotters.plot_fitting_subplot(fit=results.fit)
 
 # The fit looks good, and we've therefore found a model pretty close to the one we simulated the image with (you can
 # confirm this yourself if you want, by comparing the inferred parameters to those found in the simulations.py file).
