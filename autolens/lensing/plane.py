@@ -216,6 +216,10 @@ class Plane(object):
         return sum([intensities_from_grid(self.grids.sub, [galaxy]) for galaxy in self.galaxies])
 
     @property
+    def _image_plane_image_of_galaxies(self):
+        return list([intensities_from_grid(self.grids.sub, [galaxy]) for galaxy in self.galaxies])
+
+    @property
     def _image_plane_blurring_image(self):
         return sum([intensities_from_grid(self.grids.blurring, [galaxy]) for galaxy in self.galaxies])
 
