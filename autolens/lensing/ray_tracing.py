@@ -18,6 +18,10 @@ class AbstractTracer(object):
         raise NotImplementedError()
 
     @property
+    def total_planes(self):
+        return len(self.all_planes)
+
+    @property
     def redshifts(self):
         return [plane.redshift for plane in self.all_planes]
 

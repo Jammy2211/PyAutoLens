@@ -95,7 +95,7 @@ custom_prior_result = custom_prior_phase.run(image=image)
 
 # Check out the PDF in the 'output/howstolens/4_custom_priors/optimizer/chains/pdfs' folder - what degeneracies do you
 # notice between parameters?
-fitting_plotters.plot_fitting(fit=custom_prior_result.fit)
+fitting_plotters.plot_fitting_subplot(fit=custom_prior_result.fit)
 
 # Okay, so we've learnt that by tuning our priors to the lens we're fitting, we can increase our chance of inferring a
 # good lens model. Before moving onto the next approach, lets think about the advantages and disadvantages of prior
@@ -142,7 +142,7 @@ light_traces_mass_phase = LightTracesMassPhase(lens_galaxies=[gm.GalaxyModel(lig
                                       optimizer_class=nl.MultiNest, phase_name='howtolens/4_light_traces_mass')
 
 light_traces_mass_phase_result = custom_prior_phase.run(image=image)
-fitting_plotters.plot_fitting(fit=light_traces_mass_phase_result.fit)
+fitting_plotters.plot_fitting_subplot(fit=light_traces_mass_phase_result.fit)
 
 # The results look pretty good. Our source galaxy fits the data pretty well, and we've clearly inferred a model that
 # looks similar to the one above. However, inspection of the residuals shows that the fit wasn't quite as good as the
@@ -206,7 +206,7 @@ custom_non_linear_phase.optimizer.sampling_efficiency = 0.5
 custom_non_linear_result = custom_prior_phase.run(image=image)
 
 # Indeed, it does. Thus, we can always brute-force our way to a good lens model, if all else fails.
-fitting_plotters.plot_fitting(fit=custom_non_linear_result.fit)
+fitting_plotters.plot_fitting_subplot(fit=custom_non_linear_result.fit)
 
 # Finally, lets list the advantages and disadvantages of this approach:
 

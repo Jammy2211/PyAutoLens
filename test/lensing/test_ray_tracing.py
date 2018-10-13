@@ -67,6 +67,29 @@ def make_galaxy_mass_x2():
 
 class TestAbstractTracer(object):
 
+    def test__total_planes(self, imaging_grids):
+
+        tracer = ray_tracing.TracerImagePlane(lens_galaxies=[g.Galaxy()], image_plane_grids=imaging_grids)
+
+        assert tracer.total_planes == 1
+
+        tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g.Galaxy()], source_galaxies=[g.Galaxy()],
+                                                     image_plane_grids=imaging_grids)
+
+        assert tracer.total_planes == 2
+        
+        tracer = ray_tracing.TracerMulti(galaxies=[g.Galaxy(redshift=1.0), g.Galaxy(redshift=2.0),
+                                                   g.Galaxy(redshift=3.0)],
+                                         image_plane_grids=imaging_grids)
+
+        assert tracer.total_planes == 3
+
+        tracer = ray_tracing.TracerMulti(galaxies=[g.Galaxy(redshift=1.0), g.Galaxy(redshift=2.0),
+                                                   g.Galaxy(redshift=1.0)],
+                                         image_plane_grids=imaging_grids)
+
+        assert tracer.total_planes == 2
+
     def test_hyper_galaxies_list(self, imaging_grids):
 
         tracer = ray_tracing.TracerImageSourcePlanes([g.Galaxy(hyper_galaxy=g.HyperGalaxy())],
