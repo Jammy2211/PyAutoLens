@@ -41,8 +41,7 @@ def make_profile():
 @pytest.fixture(name='test_config')
 def make_test_config():
     return conf.DefaultPriorConfig(
-        config_folder_path="{}/../{}/priors/default".format(os.path.dirname(os.path.realpath(__file__)),
-                                                            "test_files/config"))
+        config_folder_path="{}/../test_files/configs/galaxy_model/priors/default".format(os.path.dirname(os.path.realpath(__file__))))
 
 
 @pytest.fixture(name="mapper")

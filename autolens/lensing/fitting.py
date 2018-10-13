@@ -99,12 +99,6 @@ class AbstractFit(object):
         self.lensing_image = lensing_image
         self.tracer = tracer
 
-        self.is_hyper_fit = False
-        self.total_planes = len(tracer.all_planes)
-        self.total_inversions = len(tracer.mappers_of_planes)
-
-        self.kpc_per_arcsec_proper = [plane.kpc_per_arcsec_proper for plane in tracer.all_planes]
-
         self.scaled_array_from_array_1d = lensing_image.grids.image.scaled_array_from_array_1d
         self.image = lensing_image.image
         self._image = lensing_image[:]
@@ -142,6 +136,9 @@ class AbstractFit(object):
     def chi_squareds(self):
         return self.scaled_array_from_array_1d(self._chi_squareds)
 
+    @property
+    def total_inversions(self):
+        return len(self.tracer.mappers_of_planes)
 
 class AbstractProfileFit(AbstractFit):
 

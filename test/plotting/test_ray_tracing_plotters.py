@@ -16,13 +16,13 @@ from autolens.lensing import ray_tracing
 
 @pytest.fixture(name='general_config')
 def test_general_config():
-    general_config_path = "{}/../config/".format(os.path.dirname(os.path.realpath(__file__)))
+    general_config_path = "{}/../test_files/configs/plotting/".format(os.path.dirname(os.path.realpath(__file__)))
     conf.instance.general = conf.NamedConfig(general_config_path + "general.ini")
 
 
-@pytest.fixture(name='galaxy_plotter_path')
-def test_galaxy_plotter_setup():
-    galaxy_plotter_path = "{}/../test_files/plotting/galaxy/".format(os.path.dirname(os.path.realpath(__file__)))
+@pytest.fixture(name='ray_tracing_plotter_path')
+def test_ray_tracing_plotter_setup():
+    galaxy_plotter_path = "{}/../test_files/plotting/ray_tracing/".format(os.path.dirname(os.path.realpath(__file__)))
 
     if os.path.exists(galaxy_plotter_path):
         shutil.rmtree(galaxy_plotter_path)
@@ -50,34 +50,54 @@ def test_tracer(galaxy_light, galaxy_mass, grids):
     return ray_tracing.TracerImageSourcePlanes(lens_galaxies=[galaxy_mass, galaxy_light], source_galaxies=[galaxy_light],
                                                image_plane_grids=grids)
 
-def
+def test__tracer_sub_plot_output_dependent_on_config(tracer, general_config, ray_tracing_plotter_path):
 
-def test__intensities_is_output(galaxy_light, grids, galaxy_plotter_path):
-    galaxy_plotters.plot_intensities(galaxy=galaxy_light, grid=grids.image,
-                                      output_path=galaxy_plotter_path, output_format='png')
-    assert os.path.isfile(path=galaxy_plotter_path + 'galaxy_intensities.png')
-    os.remove(path=galaxy_plotter_path + 'galaxy_intensities.png')
+    ray_tracing_plotters.plot_ray_tracing_subplot(tracer=tracer, output_path=ray_tracing_plotter_path, output_format='png')
 
-def test__individual_intensities_is_output(galaxy_light, grids, galaxy_plotter_path):
-    galaxy_plotters.plot_intensities_individual(galaxy=galaxy_light, grid=grids.image,
-                                      output_path=galaxy_plotter_path, output_format='png')
-    assert os.path.isfile(path=galaxy_plotter_path + 'galaxy_individual_intensities.png')
-    os.remove(path=galaxy_plotter_path + 'galaxy_individual_intensities.png')
+    assert os.path.isfile(path=ray_tracing_plotter_path+'tracer.png')
+    os.remove(path=ray_tracing_plotter_path+'tracer.png')
+    
+def test__tracer_individuals__depedent_on_config(tracer, general_config, ray_tracing_plotter_path):
 
-def test__surface_density_is_output(galaxy_mass, grids, galaxy_plotter_path):
-    galaxy_plotters.plot_surface_density(galaxy=galaxy_mass, grid=grids.image,
-                                          output_path=galaxy_plotter_path, output_format='png')
-    assert os.path.isfile(path=galaxy_plotter_path + 'galaxy_surface_density.png')
-    os.remove(path=galaxy_plotter_path + 'galaxy_surface_density.png')
+    ray_tracing_plotters.plot_ray_tracing_individual(tracer=tracer, output_path=ray_tracing_plotter_path, 
+                                                     output_format='png')
 
-def test__potential_is_output(galaxy_mass, grids, galaxy_plotter_path):
-    galaxy_plotters.plot_potential(galaxy=galaxy_mass, grid=grids.image,
-                                    output_path=galaxy_plotter_path, output_format='png')
-    assert os.path.isfile(path=galaxy_plotter_path + 'galaxy_potential.png')
-    os.remove(path=galaxy_plotter_path + 'galaxy_potential.png')
+    assert os.path.isfile(path=ray_tracing_plotter_path+'tracer_image_plane_image.png')
+    os.remove(path=ray_tracing_plotter_path+'tracer_image_plane_image.png')
+    
+    assert os.path.isfile(path=ray_tracing_plotter_path+'tracer_source_plane.png')
+    os.remove(path=ray_tracing_plotter_path+'tracer_source_plane.png')
 
-def test__deflections_is_output(galaxy_mass, grids, galaxy_plotter_path):
-    galaxy_plotters.plot_deflections(galaxy=galaxy_mass, grid=grids.image,
-                                      output_path=galaxy_plotter_path, output_format='png')
-    assert os.path.isfile(path=galaxy_plotter_path + 'galaxy_deflections.png')
-    os.remove(path=galaxy_plotter_path + 'galaxy_deflections.png')
+    assert not os.path.isfile(path=ray_tracing_plotter_path+'tracer_surface_density.png')
+
+    assert os.path.isfile(path=ray_tracing_plotter_path+'tracer_potential.png')
+    os.remove(path=ray_tracing_plotter_path+'tracer_potential.png')
+
+    assert not os.path.isfile(path=ray_tracing_plotter_path+'tracer_deflections_y.png')
+    assert not os.path.isfile(path=ray_tracing_plotter_path+'tracer_deflections_x.png')
+
+def test__image_plane_image_is_output(tracer, ray_tracing_plotter_path):
+    ray_tracing_plotters.plot_image_plane_image(tracer=tracer, output_path=ray_tracing_plotter_path, output_format='png')
+    assert os.path.isfile(path=ray_tracing_plotter_path + 'tracer_image_plane_image.png')
+    os.remove(path=ray_tracing_plotter_path + 'tracer_image_plane_image.png')
+
+def test__surface_density_is_output(tracer, ray_tracing_plotter_path):
+    ray_tracing_plotters.plot_surface_density(tracer=tracer, output_path=ray_tracing_plotter_path, output_format='png')
+    assert os.path.isfile(path=ray_tracing_plotter_path + 'tracer_surface_density.png')
+    os.remove(path=ray_tracing_plotter_path + 'tracer_surface_density.png')
+
+def test__potential_is_output(tracer, ray_tracing_plotter_path):
+    ray_tracing_plotters.plot_potential(tracer=tracer, output_path=ray_tracing_plotter_path, output_format='png')
+    assert os.path.isfile(path=ray_tracing_plotter_path + 'tracer_potential.png')
+    os.remove(path=ray_tracing_plotter_path + 'tracer_potential.png')
+
+def test__deflections_y_is_output(tracer, ray_tracing_plotter_path):
+    ray_tracing_plotters.plot_deflections_y(tracer=tracer, output_path=ray_tracing_plotter_path, output_format='png')
+    assert os.path.isfile(path=ray_tracing_plotter_path + 'tracer_deflections_y.png')
+    os.remove(path=ray_tracing_plotter_path + 'tracer_deflections_y.png')
+
+def test__deflections_x_is_output(tracer, ray_tracing_plotter_path):
+    ray_tracing_plotters.plot_deflections_x(tracer=tracer, output_path=ray_tracing_plotter_path, output_format='png')
+    assert os.path.isfile(path=ray_tracing_plotter_path + 'tracer_deflections_x.png')
+    os.remove(path=ray_tracing_plotter_path + 'tracer_deflections_x.png')
+

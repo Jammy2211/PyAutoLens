@@ -9,7 +9,7 @@ from autolens.profiles import light_profiles, mass_profiles
 class TestCase:
     def test_integration(self):
         config = conf.DefaultPriorConfig(
-            "{}/../{}".format(os.path.dirname(os.path.realpath(__file__)), "test_files/config/priors/default"))
+            "{}/../{}".format(os.path.dirname(os.path.realpath(__file__)), "test_files/configs/galaxy_model/priors/default"))
 
         # Create a mapper. This can be used to convert values output by a non linear optimiser into class instances.
         mapper = mm.ModelMapper()
