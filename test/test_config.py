@@ -20,7 +20,7 @@ class MockClass(object):
 
 @pytest.fixture(name="label_config")
 def make_label_config():
-    return conf.LabelConfig("{}/config/label.ini".format(directory))
+    return conf.LabelConfig("{}/test_files/configs/config/label.ini".format(directory))
 
 
 class TestLabel(object):

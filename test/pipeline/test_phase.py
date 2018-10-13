@@ -23,7 +23,7 @@ pytestmark = pytest.mark.filterwarnings(
 
 directory = path.dirname(path.realpath(__file__))
 
-general_conf = '{}/../test_files/config'.format(directory)
+general_conf = '{}/../test_files/configs/phase'.format(directory)
 conf.instance.general = conf.NamedConfig("{}/general.ini".format(general_conf))
 
 shape = (10, 10)

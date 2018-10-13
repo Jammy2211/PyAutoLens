@@ -60,7 +60,7 @@ phase = ph.LensSourcePlanePhase(lens_galaxies=[gm.GalaxyModel(light=lp.Elliptica
 results = phase.run(image)
 
 # And lets look at the image.
-fitting_plotters.plot_fitting(fit=results.fit)
+fitting_plotters.plot_fitting_subplot(fit=results.fit)
 
 # Uh-oh. That image didn't look very good, did it? If we compare our inferred parameters to the actual values (in the
 # simulations.py file) you'll see that we have, indeed, fitted the wrong model.
@@ -87,7 +87,7 @@ tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source
 
 # Now, lets fit the lensing image with the tracer and plot the fit. It looks a lot better than above, doesn't it?
 fit = fitting.fit_lensing_image_with_tracer(lensing_image=lensing_image, tracer=tracer)
-fitting_plotters.plot_fitting(fit=fit)
+fitting_plotters.plot_fitting_subplot(fit=fit)
 
 # Finally, just to be sure, lets compare the two likelihoods
 print('Likelihood of Non-linear Search:')
