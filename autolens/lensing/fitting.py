@@ -164,14 +164,12 @@ class AbstractProfileFit(AbstractFit):
 
         super(AbstractProfileFit, self).__init__(lensing_image, tracer, _model_image)
 
-        self.plane_images = self.tracer.plane_images_of_planes(shape=plane_shape)
-
     @property
     def model_images_of_planes(self):
 
-        _model_images_of_planes = list(map(lambda image, blurring_image: self.convolve_image(image, blurring_image),
-                                           self.tracer._image_plane_images_of_planes,
-                                           self.tracer._image_plane_blurring_images_of_planes))
+        _model_images_of_planes = list(map(lambda plane:
+                                  self.convolve_image(plane._image_plane_image, plane._image_plane_blurring_image),
+                                  self.tracer.all_planes))
 
         return list(map(lambda image : None if not image.any() else self.scaled_array_from_array_1d(image),
                          _model_images_of_planes))
@@ -199,7 +197,7 @@ class AbstractInversionFit(AbstractFit, AbstractInversion):
 
     def __init__(self, lensing_image, tracer):
         self.mapper = tracer.mappers_of_planes[0]
-        self.regularization = tracer.regularization_of_planes[0]
+        self.regularization = tracer.regularizations_of_planes[0]
         self.inversion = inversions.inversion_from_mapper_regularization_and_data(lensing_image[:],
                                                                                   lensing_image.noise_map,
                                                                                   lensing_image.convolver_mapping_matrix,
@@ -220,7 +218,7 @@ class AbstractProfileInversionFit(AbstractFit, AbstractInversion):
         self._profile_subtracted_image = lensing_image[:] - self._profile_model_image
 
         self.mapper = tracer.mappers_of_planes[0]
-        self.regularization = tracer.regularization_of_planes[0]
+        self.regularization = tracer.regularizations_of_planes[0]
         self.inversion = inversions.inversion_from_mapper_regularization_and_data(self._profile_subtracted_image,
                                                                                   lensing_image.noise_map,
                                                                                   lensing_image.convolver_mapping_matrix,
@@ -294,7 +292,7 @@ class InversionFit(AbstractInversionFit):
     @classmethod
     def fast_evidence(cls, lensing_image, tracer):
         mapper = tracer.mappers_of_planes[0]
-        regularization = tracer.regularization_of_planes[0]
+        regularization = tracer.regularizations_of_planes[0]
         inversion = inversions.inversion_from_mapper_regularization_and_data(lensing_image[:], lensing_image.noise_map,
                                                                              lensing_image.convolver_mapping_matrix,
                                                                              mapper, regularization)
@@ -330,7 +328,7 @@ class ProfileInversionFit(AbstractProfileInversionFit):
         _profile_model_image = convolve_image(tracer._image_plane_image, tracer._image_plane_blurring_image)
         _profile_subtracted_image = lensing_image[:] - _profile_model_image
         mapper = tracer.mappers_of_planes[0]
-        regularization = tracer.regularization_of_planes[0]
+        regularization = tracer.regularizations_of_planes[0]
         inversion = inversions.inversion_from_mapper_regularization_and_data(_profile_subtracted_image,
                                                                              lensing_image.noise_map,
                                                                              lensing_image.convolver_mapping_matrix,
@@ -478,7 +476,7 @@ class HyperInversionFit(AbstractInversionFit, AbstractHyperInversion):
                                                                                lensing_image.noise_map)
 
         mapper = tracer.mappers_of_planes[0]
-        regularization = tracer.regularization_of_planes[0]
+        regularization = tracer.regularizations_of_planes[0]
 
         scaled_inversion = inversions.inversion_from_mapper_regularization_and_data(
             lensing_image[:], _scaled_noise_map, lensing_image.convolver_mapping_matrix, mapper, regularization)
@@ -535,7 +533,7 @@ class HyperProfileInversionFit(AbstractProfileInversionFit, AbstractHyperInversi
         _profile_subtracted_image = lensing_image[:] - _profile_model_image
 
         mapper = tracer.mappers_of_planes[0]
-        regularization = tracer.regularization_of_planes[0]
+        regularization = tracer.regularizations_of_planes[0]
 
         scaled_inversion = inversions.inversion_from_mapper_regularization_and_data(
             _profile_subtracted_image, _scaled_noise_map, lensing_image.convolver_mapping_matrix, mapper,
@@ -731,12 +729,28 @@ def padded_model_image_from_lensing_image_and_tracer(lensing_image, tracer):
         return lensing_image.padded_grids.image.scaled_array_from_array_1d(model_image_1d)
 
 
+# TODO : The [plane_index][galaxy_index] data structure is going to be key to tracking galaxies / hyper galaxies in
+# TODO : Multi-plane ray tracing. I never felt it was easy to follow using list comprehensions from ray_tracing.
+# TODO : Can we make this neater?
+
+
 def padded_model_images_of_galaxies_from_lensing_image_and_tracer(lensing_image, tracer):
+
     if tracer is None:
         return None
     elif tracer is not None:
-        model_galaxy_images_1d = list(map(lambda image:
-                                          lensing_image.padded_grids.image.convolve_array_1d_with_psf(image,
-                                                                                                        lensing_image.psf),
-                                          tracer._image_plane_images_of_galaxies))
-        return list(map(lambda image: lensing_image.padded_grids.image.scaled_array_from_array_1d(image), model_galaxy_images_1d))
+
+        padded_model_images_of_galaxies = [[] for _ in range(len(tracer.all_planes))]
+
+        for plane_index, plane in enumerate(tracer.all_planes):
+            for galaxy_index in range(len(plane.galaxies)):
+                _galaxy_image_plane_image = plane._image_plane_image_of_galaxies[galaxy_index]
+                _blurred_galaxy_image_plane_image = \
+                    lensing_image.padded_grids.image.convolve_array_1d_with_psf(_galaxy_image_plane_image,
+                                                                                lensing_image.psf)
+                galaxy_model_image = \
+                    lensing_image.padded_grids.image.scaled_array_from_array_1d(_blurred_galaxy_image_plane_image)
+
+                padded_model_images_of_galaxies[plane_index].append(galaxy_model_image)
+
+        return padded_model_images_of_galaxies

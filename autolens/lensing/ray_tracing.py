@@ -63,19 +63,11 @@ class AbstractTracer(object):
         return sum([plane.image_plane_image_for_simulation for plane in self.all_planes])
 
     @property
-    def plane_images(self):
-        return [plane.plane_image for plane in self.all_planes]
-
-    @property
-    def image_grids_of_planes(self):
-        return [plane.grids.image for plane in self.all_planes]
-
-    @property
     def mappers_of_planes(self):
         return list(filter(None, [plane.mapper for plane in self.all_planes]))
 
     @property
-    def regularization_of_planes(self):
+    def regularizations_of_planes(self):
         return list(filter(None, [plane.regularization for plane in self.all_planes]))
 
     @property
@@ -346,22 +338,22 @@ class TracerMulti(AbstractTracerMulti):
 
                     if scaled_deflections is not None:
 
-                        if isinstance(image_plane_grids.image, msk.PaddedImageGrid):
-                            image_grid = msk.PaddedImageGrid(arr=image_plane_grids.image - scaled_deflections.image,
-                                                             mask=image_plane_grids.image.mask,
-                                                             image_shape=image_plane_grids.image.image_shape)
-                        elif isinstance(image_plane_grids.image, msk.ImageGrid):
-                            image_grid = msk.ImageGrid(arr=image_plane_grids.image - scaled_deflections.image,
-                                                       mask=image_plane_grids.image.mask)
+                        if isinstance(new_grid.image, msk.PaddedImageGrid):
+                            image_grid = msk.PaddedImageGrid(arr=new_grid.image - scaled_deflections.image,
+                                                             mask=new_grid.image.mask,
+                                                             image_shape=new_grid.image.image_shape)
+                        elif isinstance(new_grid.image, msk.ImageGrid):
+                            image_grid = msk.ImageGrid(arr=new_grid.image - scaled_deflections.image,
+                                                       mask=new_grid.image.mask)
 
-                        if isinstance(image_plane_grids.sub, msk.PaddedSubGrid):
-                            sub_grid = msk.PaddedSubGrid(image_plane_grids.sub - scaled_deflections.sub, image_plane_grids.sub.mask,
-                                                         image_plane_grids.sub.image_shape, image_plane_grids.sub.sub_grid_size)
-                        elif isinstance(image_plane_grids.sub, msk.SubGrid):
-                            sub_grid = msk.SubGrid(image_plane_grids.sub - scaled_deflections.sub, image_plane_grids.sub.mask,
-                                                   image_plane_grids.sub.sub_grid_size)
+                        if isinstance(new_grid.sub, msk.PaddedSubGrid):
+                            sub_grid = msk.PaddedSubGrid(new_grid.sub - scaled_deflections.sub, new_grid.sub.mask,
+                                                         new_grid.sub.image_shape, new_grid.sub.sub_grid_size)
+                        elif isinstance(new_grid.sub, msk.SubGrid):
+                            sub_grid = msk.SubGrid(new_grid.sub - scaled_deflections.sub, new_grid.sub.mask,
+                                                   new_grid.sub.sub_grid_size)
 
-                        blurring_grid = msk.ImageGrid(arr=image_plane_grids.blurring - scaled_deflections.blurring,
+                        blurring_grid = msk.ImageGrid(arr=new_grid.blurring - scaled_deflections.blurring,
                                                       mask=None)
                         new_grid = msk.ImagingGrids(image=image_grid, sub=sub_grid, blurring=blurring_grid)
                         
