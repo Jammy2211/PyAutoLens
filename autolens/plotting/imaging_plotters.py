@@ -2,6 +2,7 @@ from matplotlib import pyplot as plt
 
 from autolens import conf
 from autolens.plotting import plotters
+from autolens.plotting import plotter_tools
 
 
 def plot_image_subplot(image, mask=None, positions=None, units='arcsec', output_path=None, output_filename='images',
@@ -26,54 +27,56 @@ def plot_image_subplot(image, mask=None, positions=None, units='arcsec', output_
         in the python interpreter window.
     """
 
-    plot_image_as_subplot = conf.instance.general.get('output', 'plot_image_as_subplot', bool)
+    plot_image_as_subplot = conf.instance.general.get('output', 'plot_imaging_as_subplot', bool)
 
     if plot_image_as_subplot or ignore_config:
 
+        rows, columns, figsize = plotter_tools.get_subplot_rows_columns_figsize(number_subplots=4)
+
         plt.figure(figsize=figsize)
-        plt.subplot(2, 2, 1)
+        plt.subplot(rows, columns, 1)
 
-        plot_image(as_subplot=True,
-            image=image, mask=mask, positions=positions, grid=None, units=units, kpc_per_arcsec=None, xyticksize=16,
+        plot_image(image=image, mask=mask, positions=positions, grid=None, as_subplot=True,
+                   units=units, kpc_per_arcsec=None, xyticksize=16,
+                   norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
+                   figsize=None, aspect='auto', cmap='jet', cb_ticksize=16,
+                   titlesize=16, xlabelsize=16, ylabelsize=16,
+                   output_path=output_path, output_format=output_format)
+
+        plt.subplot(rows, columns, 2)
+
+        plot_noise_map(image=image, mask=mask, units=units, as_subplot=True,
+            kpc_per_arcsec=None, xyticksize=16,
             norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
             figsize=None, aspect='auto', cmap='jet', cb_ticksize=16,
             titlesize=16, xlabelsize=16, ylabelsize=16,
             output_path=output_path, output_format=output_format)
 
-        plt.subplot(2, 2, 2)
+        plt.subplot(rows, columns, 3)
 
-        plot_noise_map(as_subplot=True,
-            noise_map=image.noise_map, mask=mask, units=units, kpc_per_arcsec=None, xyticksize=16,
+        plot_psf(image=image, units='arcsec', as_subplot=True,
+            kpc_per_arcsec=None, xyticksize=16,
             norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
             figsize=None, aspect='auto', cmap='jet', cb_ticksize=16,
             titlesize=16, xlabelsize=16, ylabelsize=16,
             output_path=output_path, output_format=output_format)
 
-        plt.subplot(2, 2, 3)
+        plt.subplot(rows, columns, 4)
 
-        plot_psf(as_subplot=True,
-            psf=image.psf, units='arcsec', kpc_per_arcsec=None, xyticksize=16,
-            norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
-            figsize=None, aspect='auto', cmap='jet', cb_ticksize=16,
-            titlesize=16, xlabelsize=16, ylabelsize=16,
-            output_path=output_path, output_format=output_format)
-
-        plt.subplot(2, 2, 4)
-
-        plot_signal_to_noise_map(as_subplot=True, signal_to_noise_map=image.signal_to_noise_map, mask=mask,
+        plot_signal_to_noise_map(image=image, mask=mask, as_subplot=True,
             units=units, kpc_per_arcsec=None, xyticksize=16,
             norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
             figsize=None, aspect='auto', cmap='jet', cb_ticksize=16,
             titlesize=16, xlabelsize=16, ylabelsize=16,
             output_path=output_path, output_format=output_format)
 
-        plotters.output_subplot_array(output_path=output_path, output_filename=output_filename,
-                                      output_format=output_format)
+        plotter_tools.output_subplot_array(output_path=output_path, output_filename=output_filename,
+                                           output_format=output_format)
 
         plt.close()
 
 
-def plot_image_individuals(image, mask=None, positions=None, output_path=None, output_format='png'):
+def plot_image_individual(image, mask=None, positions=None, output_path=None, output_format='png'):
     """Plot the observed _image of an analysis, using the *Image* class object.
 
     The visualization and output type can be fully customized.
@@ -105,100 +108,66 @@ def plot_image_individuals(image, mask=None, positions=None, output_path=None, o
         plot_image(image=image, mask=mask, positions=positions, output_path=output_path, output_format=output_format)
 
     if plot_imaging_noise_map:
-        plot_noise_map(noise_map=image.noise_map, mask=mask, output_path=output_path, output_format=output_format)
+        plot_noise_map(image=image, mask=mask, output_path=output_path, output_format=output_format)
 
     if plot_imaging_psf:
-        plot_psf(psf=image.psf, output_path=output_path, output_format=output_format)
+        plot_psf(image=image, output_path=output_path, output_format=output_format)
 
     if plot_imaging_signal_to_noise_map:
-        plot_signal_to_noise_map(signal_to_noise_map=image.signal_to_noise_map, mask=mask, output_path=output_path,
-                                 output_format=output_format)
+        plot_signal_to_noise_map(image=image, mask=mask, output_path=output_path, output_format=output_format)
 
 
-def plot_image(image, mask=None, positions=None, grid=None,
+def plot_image(image, mask=None, positions=None, grid=None, as_subplot=False,
                units='arcsec', kpc_per_arcsec=None,
                xyticksize=40, norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
                figsize=(20, 15), aspect='auto', cmap='jet', cb_ticksize=20,
                title='Observed Image', titlesize=46, xlabelsize=36, ylabelsize=36,
-               output_path=None, output_format='show', output_filename='observed_image', as_subplot=False):
+               output_path=None, output_format='show', output_filename='observed_image'):
 
-    if positions is not None:
-        positions = list(map(lambda pos: image.grid_arc_seconds_to_grid_pixels(grid_arc_seconds=pos), positions))
+    plotters.plot_image(image, mask, positions, grid, as_subplot,
+                        units, kpc_per_arcsec, xyticksize, norm, norm_min,
+                        norm_max, linthresh, linscale, figsize, aspect, cmap, cb_ticksize, title,
+                        titlesize, xlabelsize, ylabelsize, output_path, output_format, output_filename)
 
-    plotters.plot_array(image, as_subplot, figsize, aspect, cmap, norm, norm_max, norm_min, linthresh, linscale)
-    plotters.set_title(title, titlesize)
-    plotters.set_xy_labels_and_ticks(image.shape, units, kpc_per_arcsec, image.xticks, image.yticks, xlabelsize,
-                                     ylabelsize, xyticksize)
-    plotters.set_colorbar(cb_ticksize)
-    plotters.plot_points(positions)
-    plotters.plot_mask(mask)
-    plotters.plot_grid(grid)
-    plotters.output_array(image, output_path, output_filename, output_format)
-    plt.close()
 
-def plot_noise_map(noise_map, mask=None,
+def plot_noise_map(image, mask=None, as_subplot=False,
                    units='arcsec', kpc_per_arcsec=None,
                    xyticksize=40, norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
                    figsize=(20, 15), aspect='auto', cmap='jet', cb_ticksize=20,
                    title='Noise-Map', titlesize=46, xlabelsize=36, ylabelsize=36,
-                   output_path=None, output_format='show', output_filename='noise_map', as_subplot=False):
+                   output_path=None, output_format='show', output_filename='noise_map'):
 
+    plotters.plot_noise_map(image.noise_map, mask, as_subplot,
+                            units, kpc_per_arcsec, xyticksize, norm, norm_min,
+                            norm_max, linthresh, linscale, figsize, aspect, cmap, cb_ticksize, title,
+                            titlesize, xlabelsize, ylabelsize, output_path, output_format, output_filename)
 
-    plotters.plot_array(noise_map, as_subplot, figsize, aspect, cmap, norm, norm_max, norm_min, linthresh, linscale)
-    plotters.set_title(title, titlesize)
-    plotters.set_xy_labels_and_ticks(noise_map.shape, units, kpc_per_arcsec, noise_map.xticks, noise_map.yticks,
-                                     xlabelsize, ylabelsize, xyticksize)
-    plotters.set_colorbar(cb_ticksize)
-    plotters.plot_mask(mask)
-    plotters.output_array(noise_map, output_path, output_filename, output_format)
-    plt.close()
-
-def plot_psf(psf,
+def plot_psf(image, as_subplot=False,
              units='arcsec', kpc_per_arcsec=None,
              xyticksize=40, norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
              figsize=(20, 15), aspect='auto', cmap='jet', cb_ticksize=20,
              title='PSF', titlesize=46, xlabelsize=36, ylabelsize=36,
-             output_path=None, output_format='show', output_filename='psf', as_subplot=False):
+             output_path=None, output_format='show', output_filename='psf'):
 
+    plotters.plot_psf(image.psf, as_subplot,
+                      units, kpc_per_arcsec, xyticksize, norm, norm_min,
+                      norm_max, linthresh, linscale, figsize, aspect, cmap, cb_ticksize, title,
+                      titlesize, xlabelsize, ylabelsize, output_path, output_format, output_filename)
 
-    plotters.plot_array(psf, as_subplot, figsize, aspect, cmap, norm, norm_max, norm_min, linthresh, linscale)
-    plotters.set_title(title, titlesize)
-    plotters.set_xy_labels_and_ticks(psf.shape, units, kpc_per_arcsec, psf.xticks, psf.yticks,
-                                     xlabelsize, ylabelsize, xyticksize)
-    plotters.set_colorbar(cb_ticksize)
-    plotters.output_array(psf, output_path, output_filename, output_format)
-    plt.close()
-
-def plot_signal_to_noise_map(signal_to_noise_map, mask=None,
+def plot_signal_to_noise_map(image, mask=None, as_subplot=False,
                              units='arcsec', kpc_per_arcsec=None,
                              xyticksize=40, norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
                              figsize=(20, 15), aspect='auto', cmap='jet', cb_ticksize=20,
                              title='Noise-Map', titlesize=46, xlabelsize=36, ylabelsize=36,
-                             output_path=None, output_format='show', output_filename='signal_to_noise_map',
-                             as_subplot=False):
+                             output_path=None, output_format='show', output_filename='signal_to_noise_map'):
 
+    plotters.plot_signal_to_noise_map(image.signal_to_noise_map, mask, as_subplot,
+                        units, kpc_per_arcsec, xyticksize, norm, norm_min,
+                        norm_max, linthresh, linscale, figsize, aspect, cmap, cb_ticksize, title,
+                        titlesize, xlabelsize, ylabelsize, output_path, output_format, output_filename)
 
-    plotters.plot_array(signal_to_noise_map, as_subplot, figsize, aspect, cmap, norm, norm_max, norm_min, linthresh,
-                        linscale)
-    plotters.set_title(title, titlesize)
-    plotters.set_xy_labels_and_ticks(signal_to_noise_map.shape, units, kpc_per_arcsec,
-                                     signal_to_noise_map.xticks, signal_to_noise_map.yticks,
-                                     xlabelsize, ylabelsize, xyticksize)
-    plotters.set_colorbar(cb_ticksize)
-    plotters.plot_mask(mask)
-    plotters.output_array(signal_to_noise_map, output_path, output_filename, output_format)
-    plt.close()
-
-def plot_grid(grid, xmin=None, xmax=None, ymin=None, ymax=None,
+def plot_grid(image, xmin=None, xmax=None, ymin=None, ymax=None,
               output_path=None, output_format='show', output_filename='grid'):
 
-    plt.figure()
-    plt.scatter(y=grid[:, 0], x=grid[:, 1], marker='.')
-    plotters.set_title(title='Grid', titlesize=36)
-    plt.ylabel('y (arcsec)', fontsize=18)
-    plt.xlabel('x (arcsec)', fontsize=18)
-    plt.tick_params(labelsize=20)
-    if xmin is not None and xmax is not None and ymin is not None and ymax is not None:
-        plt.axis([xmin, xmax, ymin, ymax])
-    plotters.output_array(None, output_path, output_filename, output_format)
-    plt.close()
+    plotters.plot_grid(grid=image.grid_1d, xmin=xmin, xmax=xmax, ymin=ymin, ymax=ymax, output_path=output_path,
+                       output_format=output_format, output_filename=output_filename)

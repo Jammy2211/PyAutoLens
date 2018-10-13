@@ -58,7 +58,7 @@ print(mass_profile_deflections[5049])
 print(mass_profile_deflections[5050])
 
 # And again, a profile plotter can plot these deflection angles in 2D.
-profile_plotters.plot_deflections(mass_profile=sis_mass_profile, grid=image_grids.image)
+profile_plotters.plot_mass_profile_deflections(mass_profile=sis_mass_profile, grid=image_grids.image)
 
 # Mass-profiles also have a surface-density and gravitational potential
 mass_profile_surface_density = sis_mass_profile.surface_density_from_grid(grid=image_grids.image)

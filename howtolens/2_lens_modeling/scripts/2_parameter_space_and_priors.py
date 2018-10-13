@@ -135,7 +135,7 @@ custom_phase = CustomPhase(lens_galaxies=[lens_galaxy_model], source_galaxies=[s
 
 results_custom = custom_phase.run(image)
 print(results_custom) # NOTE - this isn't working yet, need to sort out.
-fitting_plotters.plot_fitting(fit=results_custom.fit)
+fitting_plotters.plot_fitting_subplot(fit=results_custom.fit)
 
 # And, we're done. This tutorial had some pretty difficult concepts to wrap your head around. However, I can't
 # emphasize enough how important it is that you develop an intuition for non-linear searches and the notion of a
