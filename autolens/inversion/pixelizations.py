@@ -285,7 +285,6 @@ class Cluster(Voronoi):
                                      voronoi_to_pixelization=voronoi_to_pixelization,
                                      image_to_voronoi=image_to_voronoi)
 
-
     def mapper_from_grids_and_borders(self, grids, borders, pixel_centers, image_to_voronoi):
         """Setup the pixelization mapper of the cluster pixelization.
 
