@@ -14,7 +14,7 @@ from autolens.plotting import imaging_plotters
 
 @pytest.fixture(name='general_config')
 def test_general_config():
-    general_config_path = "{}/../config/".format(os.path.dirname(os.path.realpath(__file__)))
+    general_config_path = "{}/../test_files/configs/plotting/".format(os.path.dirname(os.path.realpath(__file__)))
     conf.instance.general = conf.NamedConfig(general_config_path+"general.ini")
 
 @pytest.fixture(name='imaging_plotter_path')
@@ -56,7 +56,7 @@ def test__image_sub_plot_output_dependent_on_config(image, general_config, imagi
 
 def test__image_individuals__output_dependent_on_config(image, general_config, imaging_plotter_path):
 
-    imaging_plotters.plot_image_individuals(image=image, output_path=imaging_plotter_path, output_format='png')
+    imaging_plotters.plot_image_individual(image=image, output_path=imaging_plotter_path, output_format='png')
 
     assert os.path.isfile(path=imaging_plotter_path+'observed_image.png')
     os.remove(path=imaging_plotter_path+'observed_image.png')
@@ -70,33 +70,32 @@ def test__image_individuals__output_dependent_on_config(image, general_config, i
 
 def test__image_is_output(image, positions, mask, imaging_plotter_path):
 
-    imaging_plotters.plot_image(image=image, positions=positions, mask=mask,
-                                output_path=imaging_plotter_path, output_format='png')
+    imaging_plotters.plot_image(image=image, positions=positions, mask=mask, output_path=imaging_plotter_path,
+                                output_format='png')
     assert os.path.isfile(path=imaging_plotter_path+'observed_image.png')
     os.remove(path=imaging_plotter_path+'observed_image.png')
 
 def test__noise_map_is_output(image, mask, imaging_plotter_path):
 
-    imaging_plotters.plot_noise_map(noise_map=image.noise_map, mask=mask,
-                                output_path=imaging_plotter_path, output_format='png')
+    imaging_plotters.plot_noise_map(image=image, mask=mask, output_path=imaging_plotter_path, output_format='png')
     assert os.path.isfile(path=imaging_plotter_path+'noise_map.png')
     os.remove(path=imaging_plotter_path+'noise_map.png')
 
 def test__psf_is_output(image, imaging_plotter_path):
 
-    imaging_plotters.plot_psf(psf=image.psf, output_path=imaging_plotter_path, output_format='png')
+    imaging_plotters.plot_psf(image=image, output_path=imaging_plotter_path, output_format='png')
     assert os.path.isfile(path=imaging_plotter_path+'psf.png')
     os.remove(path=imaging_plotter_path+'psf.png')
 
 def test__signal_to_noise_map_is_output(image, mask, imaging_plotter_path):
 
-    imaging_plotters.plot_signal_to_noise_map(signal_to_noise_map=image.signal_to_noise_map, mask=mask,
-                                output_path=imaging_plotter_path, output_format='png')
+    imaging_plotters.plot_signal_to_noise_map(image=image, mask=mask, output_path=imaging_plotter_path,
+                                              output_format='png')
     assert os.path.isfile(path=imaging_plotter_path+'signal_to_noise_map.png')
     os.remove(path=imaging_plotter_path+'signal_to_noise_map.png')
 
 def test_grid(image, imaging_plotter_path):
 
-    imaging_plotters.plot_grid(grid=image.grid_1d, output_path=imaging_plotter_path, output_format='png')
+    imaging_plotters.plot_grid(image=image, output_path=imaging_plotter_path, output_format='png')
     assert os.path.isfile(path=imaging_plotter_path+'grid.png')
     os.remove(path=imaging_plotter_path+'grid.png')

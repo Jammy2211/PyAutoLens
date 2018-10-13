@@ -1,141 +1,350 @@
-from autolens import exc
-import matplotlib.pyplot as plt
-import matplotlib.colors as colors
-import numpy as np
-import itertools
+from matplotlib import pyplot as plt
 
-from astropy.io import fits
+from autolens import conf
+from autolens.plotting import plotter_tools
 
-def plot_array2(array, mask, points, grid, as_subplot,
-               units, kpc_per_arcsec,
-               xticks, yticks, xyticksize,
-               norm, norm_min, norm_max, linthresh, linscale,
-               figsize, aspect, cmap, cb_ticksize,
-               title, titlesize, xlabelsize, ylabelsize,
-               output_path, output_filename, output_format):
+def plot_image(image, mask=None, positions=None, grid=None, as_subplot=False,
+               units='arcsec', kpc_per_arcsec=None,
+               xyticksize=40, norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
+               figsize=(20, 15), aspect='auto', cmap='jet', cb_ticksize=20,
+               title='Observed Image', titlesize=46, xlabelsize=36, ylabelsize=36,
+               output_path=None, output_format='show', output_filename='observed_image'):
 
-    set_title(title=title, titlesize=titlesize)
-    set_xy_labels_and_ticks(shape=array.shape, units=units, kpc_per_arcsec=kpc_per_arcsec, xticks=xticks, yticks=yticks,
-                            xlabelsize=xlabelsize, ylabelsize=ylabelsize, xyticksize=xyticksize)
-    set_colorbar(cb_ticksize=cb_ticksize)
-    plot_points(points=points, pointsize=10)
-    plot_mask(mask)
-    plot_grid(grid=grid, pointsize=10)
+    if positions is not None:
+        positions = list(map(lambda pos: image.grid_arc_seconds_to_grid_pixels(grid_arc_seconds=pos), positions))
 
-    if not as_subplot:
-        output_array(array=array, output_path=output_path, output_filename=output_filename,
-                          output_format=output_format)
-        plt.close()
+    plotter_tools.plot_array(image, as_subplot, figsize, aspect, cmap, norm, norm_max, norm_min, linthresh, linscale)
+    plotter_tools.set_title(title, titlesize)
+    plotter_tools.set_xy_labels_and_ticks(image.shape, units, kpc_per_arcsec, image.xticks, image.yticks, xlabelsize,
+                                          ylabelsize, xyticksize)
+    plotter_tools.set_colorbar(cb_ticksize)
+    plotter_tools.plot_points(positions)
+    plotter_tools.plot_mask(mask)
+    plotter_tools.plot_grid(grid)
+    plotter_tools.output_array(image, output_path, output_filename, output_format)
+    plt.close()
 
-def plot_array(array, as_subplot, figsize, aspect, cmap, norm, norm_max, norm_min, linthresh, linscale):
-
-    if not as_subplot:
-        plt.figure(figsize=figsize)
-
-    norm_min, norm_max = get_normalization_min_max(array=array, norm_min=norm_min, norm_max=norm_max)
-    norm_scale = get_normalization_scale(norm=norm, norm_min=norm_min, norm_max=norm_max,
-                                         linthresh=linthresh, linscale=linscale)
-
-    plt.imshow(array, aspect=aspect, cmap=cmap, norm=norm_scale)
-
-def get_normalization_min_max(array, norm_min, norm_max):
-
-    if norm_min is None:
-        norm_min = array.min()
-    if norm_max is None:
-        norm_max = array.max()
-
-    return norm_min, norm_max
-
-def get_normalization_scale(norm, norm_min, norm_max, linthresh, linscale):
-    if norm is 'linear':
-        return colors.Normalize(vmin=norm_min, vmax=norm_max)
-    elif norm is 'log':
-        if norm_min == 0.0:
-            norm_min = 1.e-4
-        return colors.LogNorm(vmin=norm_min, vmax=norm_max)
-    elif norm is 'symmetric_log':
-        return colors.SymLogNorm(linthresh=linthresh, linscale=linscale, vmin=norm_min, vmax=norm_max)
-    else:
-        raise exc.VisualizeException('The normalization (norm) supplied to the plotter is not a valid string (must be '
-                                     'linear | log | symmetric_log')
-
-def set_title(title, titlesize):
-    plt.title(title, fontsize=titlesize)
-
-def set_xy_labels_and_ticks(shape, units, kpc_per_arcsec, xticks, yticks, xlabelsize, ylabelsize, xyticksize):
-
-    if units is 'pixels':
-
-        plt.xticks(np.round((shape[0] * np.array([0.0, 0.33, 0.66, 0.99]))))
-        plt.yticks(np.round((shape[1] * np.array([0.0, 0.33, 0.66, 0.99]))))
-        plt.xlabel('x (pixels)', fontsize=xlabelsize)
-        plt.ylabel('y (pixels)', fontsize=ylabelsize)
-
-    elif units is 'arcsec' or kpc_per_arcsec is None:
-
-        plt.xticks(shape[0] * np.array([0.0, 0.33, 0.66, 0.99]), np.round(xticks, 1))
-        plt.yticks(shape[1] * np.array([0.0, 0.33, 0.66, 0.99]), np.round(yticks, 1))
-        plt.xlabel('x (arcsec)', fontsize=xlabelsize)
-        plt.ylabel('y (arcsec)', fontsize=ylabelsize)
-
-    elif units is 'kpc':
-
-        plt.xticks(shape[0] * np.array([0.0, 0.33, 0.66, 0.99]), np.round(kpc_per_arcsec * xticks, 1))
-        plt.yticks(shape[1] * np.array([0.0, 0.33, 0.66, 0.99]), np.round(kpc_per_arcsec * yticks, 1))
-        plt.xlabel('x (kpc)', fontsize=xlabelsize)
-        plt.ylabel('y (kpc)', fontsize=ylabelsize)
-
-    else:
-        raise exc.VisualizeException('The units supplied to the plotted are not a valid string (must be pixels | '
-                                     'arcsec | kpc)')
-
-    plt.tick_params(labelsize=xyticksize)
-
-def set_colorbar(cb_ticksize):
-    cb = plt.colorbar()
-    cb.ax.tick_params(labelsize=cb_ticksize)
+def plot_noise_map(noise_map, mask=None, as_subplot=False,
+                   units='arcsec', kpc_per_arcsec=None,
+                   xyticksize=40, norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
+                   figsize=(20, 15), aspect='auto', cmap='jet', cb_ticksize=20,
+                   title='Noise-Map', titlesize=46, xlabelsize=36, ylabelsize=36,
+                   output_path=None, output_format='show', output_filename='noise_map'):
 
 
-def plot_mask(mask):
+    plotter_tools.plot_array(noise_map, as_subplot, figsize, aspect, cmap, norm, norm_max, norm_min, linthresh, linscale)
+    plotter_tools.set_title(title, titlesize)
+    plotter_tools.set_xy_labels_and_ticks(noise_map.shape, units, kpc_per_arcsec, noise_map.xticks, noise_map.yticks,
+                                          xlabelsize, ylabelsize, xyticksize)
+    plotter_tools.set_colorbar(cb_ticksize)
+    plotter_tools.plot_mask(mask)
+    plotter_tools.output_array(noise_map, output_path, output_filename, output_format)
+    plt.close()
 
-    if mask is not None:
+def plot_psf(psf, as_subplot=False,
+             units='arcsec', kpc_per_arcsec=None,
+             xyticksize=40, norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
+             figsize=(20, 15), aspect='auto', cmap='jet', cb_ticksize=20,
+             title='PSF', titlesize=46, xlabelsize=36, ylabelsize=36,
+             output_path=None, output_format='show', output_filename='psf'):
 
-        border_pixels = mask.grid_to_pixel[mask.border_pixels]
+    plotter_tools.plot_array(psf, as_subplot, figsize, aspect, cmap, norm, norm_max, norm_min, linthresh, linscale)
+    plotter_tools.set_title(title, titlesize)
+    plotter_tools.set_xy_labels_and_ticks(psf.shape, units, kpc_per_arcsec, psf.xticks, psf.yticks,
+                                          xlabelsize, ylabelsize, xyticksize)
+    plotter_tools.set_colorbar(cb_ticksize)
+    plotter_tools.output_array(psf, output_path, output_filename, output_format)
+    plt.close()
 
-        plt.scatter(y=border_pixels[:,0], x=border_pixels[:,1], s=20, c='k')
-
-
-def plot_points(points):
-
-    if points is not None:
-        point_colors = itertools.cycle(["w", "c", "y", "r", "k", "b", "g", "m"])
-        for point_set in points:
-            plt.scatter(y=point_set[:,0], x=point_set[:,1], color=next(point_colors), s=10.0)
-
-
-def plot_grid(grid):
-
-    if grid is not None:
-        plt.scatter(y=grid[:, 0], x=grid[:, 1], s=1)
-
-
-def output_array(array, output_path, output_filename, output_format):
-    if output_format is 'show':
-        plt.show()
-    elif output_format is 'png':
-        plt.savefig(output_path + output_filename + '.png', bbox_inches='tight')
-    elif output_format is 'fits':
-        hdu = fits.PrimaryHDU()
-        hdu.data = array
-        hdu.writeto(output_path + output_filename + '.fits')
+def plot_signal_to_noise_map(signal_to_noise_map, mask=None, as_subplot=False,
+                             units='arcsec', kpc_per_arcsec=None,
+                             xyticksize=40, norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
+                             figsize=(20, 15), aspect='auto', cmap='jet', cb_ticksize=20,
+                             title='Noise-Map', titlesize=46, xlabelsize=36, ylabelsize=36,
+                             output_path=None, output_format='show', output_filename='signal_to_noise_map'):
 
 
-def output_subplot_array(output_path, output_filename, output_format):
+    plotter_tools.plot_array(signal_to_noise_map, as_subplot, figsize, aspect, cmap, norm, norm_max, norm_min, linthresh,
+                             linscale)
+    plotter_tools.set_title(title, titlesize)
+    plotter_tools.set_xy_labels_and_ticks(signal_to_noise_map.shape, units, kpc_per_arcsec,
+                                          signal_to_noise_map.xticks, signal_to_noise_map.yticks,
+                                          xlabelsize, ylabelsize, xyticksize)
+    plotter_tools.set_colorbar(cb_ticksize)
+    plotter_tools.plot_mask(mask)
+    plotter_tools.output_array(signal_to_noise_map, output_path, output_filename, output_format)
+    plt.close()
 
-    if output_format is 'show':
-        plt.show()
-    elif output_format is 'png':
-        plt.savefig(output_path + output_filename + '.png', bbox_inches='tight')
-    elif output_format is 'fits':
-        raise exc.VisualizeException('You cannot output a subplots with format .fits')
+def plot_grid(grid, xmin=None, xmax=None, ymin=None, ymax=None,
+              output_path=None, output_format='show', output_filename='grid'):
+
+    plt.figure()
+    plt.scatter(y=grid[:, 0], x=grid[:, 1], marker='.')
+    plotter_tools.set_title(title='Grid', titlesize=36)
+    plt.ylabel('y (arcsec)', fontsize=18)
+    plt.xlabel('x (arcsec)', fontsize=18)
+    plt.tick_params(labelsize=20)
+    if xmin is not None and xmax is not None and ymin is not None and ymax is not None:
+        plt.axis([xmin, xmax, ymin, ymax])
+    plotter_tools.output_array(None, output_path, output_filename, output_format)
+    plt.close()
+
+
+def plot_intensities(intensities, as_subplot=False,
+                     units='arcsec', kpc_per_arcsec=None,
+                     xyticksize=40, norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
+                     figsize=(20, 15), aspect='auto', cmap='jet', cb_ticksize=20,
+                     title='Intensities', titlesize=46, xlabelsize=36, ylabelsize=36,
+                     output_path=None, output_format='show', output_filename='intensities'):
+    plotter_tools.plot_array(intensities, as_subplot, figsize, aspect, cmap, norm, norm_max, norm_min, linthresh,
+                             linscale)
+    plotter_tools.set_title(title, titlesize)
+    plotter_tools.set_xy_labels_and_ticks(intensities.shape, units, kpc_per_arcsec, intensities.xticks,
+                                          intensities.yticks,
+                                          xlabelsize, ylabelsize, xyticksize)
+    plotter_tools.set_colorbar(cb_ticksize)
+    plotter_tools.output_array(intensities, output_path, output_filename, output_format)
+    plt.close()
+
+
+def plot_surface_density(surface_density, as_subplot=False,
+                         units='arcsec', kpc_per_arcsec=None,
+                         xyticksize=40, norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
+                         figsize=(20, 15), aspect='auto', cmap='jet', cb_ticksize=20,
+                         title='Surface Density', titlesize=46, xlabelsize=36, ylabelsize=36,
+                         output_path=None, output_format='show', output_filename='surface_density'):
+    plotter_tools.plot_array(surface_density, as_subplot, figsize, aspect, cmap, norm, norm_max, norm_min, linthresh,
+                             linscale)
+    plotter_tools.set_title(title, titlesize)
+    plotter_tools.set_xy_labels_and_ticks(surface_density.shape, units, kpc_per_arcsec, surface_density.xticks,
+                                          surface_density.yticks, xlabelsize, ylabelsize, xyticksize)
+    plotter_tools.set_colorbar(cb_ticksize)
+    plotter_tools.output_array(surface_density, output_path, output_filename, output_format)
+    plt.close()
+
+
+def plot_potential(potential, as_subplot=False,
+                   units='arcsec', kpc_per_arcsec=None,
+                   xyticksize=40, norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
+                   figsize=(20, 15), aspect='auto', cmap='jet', cb_ticksize=20,
+                   title='Potential', titlesize=46, xlabelsize=36, ylabelsize=36,
+                   output_path=None, output_format='show', output_filename='potential'):
+    plotter_tools.plot_array(potential, as_subplot, figsize, aspect, cmap, norm, norm_max, norm_min, linthresh,
+                             linscale)
+    plotter_tools.set_title(title, titlesize)
+    plotter_tools.set_xy_labels_and_ticks(potential.shape, units, kpc_per_arcsec, potential.xticks, potential.yticks,
+                                          xlabelsize, ylabelsize, xyticksize)
+    plotter_tools.set_colorbar(cb_ticksize)
+    plotter_tools.output_array(potential, output_path, output_filename, output_format)
+    plt.close()
+
+
+def plot_deflections_y(deflections_y, as_subplot=False,
+                       units='arcsec', kpc_per_arcsec=None,
+                       xyticksize=40, norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
+                       figsize=(20, 15), aspect='auto', cmap='jet', cb_ticksize=20,
+                       title='Deflections (y)', titlesize=46, xlabelsize=36, ylabelsize=36,
+                       output_path=None, output_format='show', output_filename='deflections_y'):
+    plotter_tools.plot_array(deflections_y, as_subplot, figsize, aspect, cmap, norm, norm_max, norm_min, linthresh,
+                             linscale)
+    plotter_tools.set_title(title, titlesize)
+    plotter_tools.set_xy_labels_and_ticks(deflections_y.shape, units, kpc_per_arcsec, deflections_y.xticks,
+                                          deflections_y.yticks,
+                                          xlabelsize, ylabelsize, xyticksize)
+    plotter_tools.set_colorbar(cb_ticksize)
+    plotter_tools.output_array(deflections_y, output_path, output_filename, output_format)
+    plt.close()
+
+
+def plot_deflections_x(deflections_x, as_subplot=False,
+                       units='arcsec', kpc_per_arcsec=None,
+                       xyticksize=40, norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
+                       figsize=(20, 15), aspect='auto', cmap='jet', cb_ticksize=20,
+                       title='Deflections (x)', titlesize=46, xlabelsize=36, ylabelsize=36,
+                       output_path=None, output_format='show', output_filename='deflections_x'):
+
+    plotter_tools.plot_array(deflections_x, as_subplot, figsize, aspect, cmap, norm, norm_max, norm_min, linthresh,
+                             linscale)
+    plotter_tools.set_title(title, titlesize)
+    plotter_tools.set_xy_labels_and_ticks(deflections_x.shape, units, kpc_per_arcsec, deflections_x.xticks,
+                                          deflections_x.yticks, xlabelsize, ylabelsize, xyticksize)
+    plotter_tools.set_colorbar(cb_ticksize)
+    plotter_tools.output_array(deflections_x, output_path, output_filename, output_format)
+    plt.close()
+
+
+def plot_image_plane_image(image_plane_image, mask=None, positions=None, grid=None, as_subplot=False,
+                           units='arcsec', kpc_per_arcsec=None,
+                           xyticksize=40, norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
+                           figsize=(20, 15), aspect='auto', cmap='jet', cb_ticksize=20,
+                           title='Image-Plane Image', titlesize=46, xlabelsize=36, ylabelsize=36,
+                           output_path=None, output_format='show', output_filename='plane_image_plane_image'):
+
+    if positions is not None:
+        positions = list(map(lambda pos: image_plane_image.grid_arc_seconds_to_grid_pixels(grid_arc_seconds=pos),
+                             positions))
+
+    plotter_tools.plot_array(image_plane_image, as_subplot, figsize, aspect, cmap, norm, norm_max, norm_min,
+                             linthresh, linscale)
+    plotter_tools.set_title(title, titlesize)
+    plotter_tools.set_xy_labels_and_ticks(image_plane_image.shape, units, kpc_per_arcsec, image_plane_image.xticks,
+                                          image_plane_image.yticks, xlabelsize, ylabelsize, xyticksize)
+    plotter_tools.set_colorbar(cb_ticksize)
+    plotter_tools.plot_points(positions)
+    plotter_tools.plot_mask(mask)
+    plotter_tools.plot_grid(grid)
+    plotter_tools.output_array(image_plane_image, output_path, output_filename, output_format)
+    plt.close()
+
+def plot_plane_image(plane_image, positions=None, plot_grid=False, as_subplot=False,
+                     units='arcsec', kpc_per_arcsec=None,
+                     xyticksize=40, norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
+                     figsize=(20, 15), aspect='auto', cmap='jet', cb_ticksize=20,
+                     title='Plane Image', titlesize=46, xlabelsize=36, ylabelsize=36,
+                     output_path=None, output_format='show', output_filename='plane_image'):
+
+    if positions is not None:
+        positions = list(map(lambda pos: plane_image.grid_arc_seconds_to_grid_pixels(grid_arc_seconds=pos),
+                             positions))
+
+    plotter_tools.plot_array(plane_image, as_subplot, figsize, aspect, cmap, norm, norm_max, norm_min,
+                             linthresh, linscale)
+    plotter_tools.set_title(title, titlesize)
+    plotter_tools.set_xy_labels_and_ticks(plane_image.shape, units, kpc_per_arcsec, plane_image.xticks, plane_image.yticks,
+                                          xlabelsize, ylabelsize, xyticksize)
+    plotter_tools.set_colorbar(cb_ticksize)
+    plotter_tools.plot_points(positions)
+    if plot_grid:
+        plotter_tools.plot_grid(plane_image.grid)
+    plotter_tools.output_array(plane_image, output_path, output_filename, output_format)
+    plt.close()
+
+def plot_model_image(model_image, as_subplot=False,
+                   units='arcsec', kpc_per_arcsec=None,
+                   xyticksize=40, norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
+                   figsize=(20, 15), aspect='auto', cmap='jet', cb_ticksize=20,
+                   title='Model Image', titlesize=46, xlabelsize=36, ylabelsize=36,
+                   output_path=None, output_format='show', output_filename='model_image'):
+
+    plotter_tools.plot_array(model_image, as_subplot, figsize, aspect, cmap, norm, norm_max, norm_min, linthresh,
+                             linscale)
+    plotter_tools.set_title(title, titlesize)
+    plotter_tools.set_xy_labels_and_ticks(model_image.shape, units, kpc_per_arcsec, model_image.xticks, 
+                                          model_image.yticks, xlabelsize, ylabelsize, xyticksize)
+    plotter_tools.set_colorbar(cb_ticksize)
+    plotter_tools.output_array(model_image, output_path, output_filename, output_format)
+    plt.close()
+
+def plot_residuals(residuals, as_subplot=False,
+                   units='arcsec', kpc_per_arcsec=None,
+                   xyticksize=40, norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
+                   figsize=(20, 15), aspect='auto', cmap='jet', cb_ticksize=20,
+                   title='Residuals', titlesize=46, xlabelsize=36, ylabelsize=36,
+                   output_path=None, output_format='show', output_filename='residuals'):
+
+    plotter_tools.plot_array(residuals, as_subplot, figsize, aspect, cmap, norm, norm_max, norm_min, linthresh,
+                             linscale)
+    plotter_tools.set_title(title, titlesize)
+    plotter_tools.set_xy_labels_and_ticks(residuals.shape, units, kpc_per_arcsec, residuals.xticks, residuals.yticks,
+                                          xlabelsize, ylabelsize, xyticksize)
+    plotter_tools.set_colorbar(cb_ticksize)
+    plotter_tools.output_array(residuals, output_path, output_filename, output_format)
+    plt.close()
+    
+def plot_chi_squareds(chi_squareds, as_subplot=False,
+                   units='arcsec', kpc_per_arcsec=None,
+                   xyticksize=40, norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
+                   figsize=(20, 15), aspect='auto', cmap='jet', cb_ticksize=20,
+                   title='Chi-Squareds', titlesize=46, xlabelsize=36, ylabelsize=36,
+                   output_path=None, output_format='show', output_filename='chi_squareds'):
+
+    plotter_tools.plot_array(chi_squareds, as_subplot, figsize, aspect, cmap, norm, norm_max, norm_min, linthresh,
+                             linscale)
+    plotter_tools.set_title(title, titlesize)
+    plotter_tools.set_xy_labels_and_ticks(chi_squareds.shape, units, kpc_per_arcsec, chi_squareds.xticks, 
+                                          chi_squareds.yticks, xlabelsize, ylabelsize, xyticksize)
+    plotter_tools.set_colorbar(cb_ticksize)
+    plotter_tools.output_array(chi_squareds, output_path, output_filename, output_format)
+    plt.close()
+
+def plot_contributions(contributions, as_subplot=False,
+                     units='arcsec', kpc_per_arcsec=None,
+                     xyticksize=40, norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
+                     figsize=(20, 15), aspect='auto', cmap='jet', cb_ticksize=20,
+                     title='Scaled Model Image', titlesize=46, xlabelsize=36, ylabelsize=36,
+                     output_path=None, output_format='show', output_filename='contributions'):
+
+    plotter_tools.plot_array(contributions, as_subplot, figsize, aspect, cmap, norm, norm_max, norm_min, linthresh,
+                             linscale)
+    plotter_tools.set_title(title, titlesize)
+    plotter_tools.set_xy_labels_and_ticks(contributions.shape, units, kpc_per_arcsec, contributions.xticks,
+                                          contributions.yticks, xlabelsize, ylabelsize, xyticksize)
+    plotter_tools.set_colorbar(cb_ticksize)
+    plotter_tools.output_array(contributions, output_path, output_filename, output_format)
+    plt.close()
+
+def plot_scaled_model_image(scaled_model_image, as_subplot=False,
+                     units='arcsec', kpc_per_arcsec=None,
+                     xyticksize=40, norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
+                     figsize=(20, 15), aspect='auto', cmap='jet', cb_ticksize=20,
+                     title='Scaled Model Image', titlesize=46, xlabelsize=36, ylabelsize=36,
+                     output_path=None, output_format='show', output_filename='scaled_model_image'):
+
+    plotter_tools.plot_array(scaled_model_image, as_subplot, figsize, aspect, cmap, norm, norm_max, norm_min, linthresh,
+                             linscale)
+    plotter_tools.set_title(title, titlesize)
+    plotter_tools.set_xy_labels_and_ticks(scaled_model_image.shape, units, kpc_per_arcsec, scaled_model_image.xticks,
+                                          scaled_model_image.yticks, xlabelsize, ylabelsize, xyticksize)
+    plotter_tools.set_colorbar(cb_ticksize)
+    plotter_tools.output_array(scaled_model_image, output_path, output_filename, output_format)
+    plt.close()
+
+
+def plot_scaled_residuals(scaled_residuals, as_subplot=False,
+                   units='arcsec', kpc_per_arcsec=None,
+                   xyticksize=40, norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
+                   figsize=(20, 15), aspect='auto', cmap='jet', cb_ticksize=20,
+                   title='Scaled Residuals', titlesize=46, xlabelsize=36, ylabelsize=36,
+                   output_path=None, output_format='show', output_filename='scaled_residuals'):
+
+    plotter_tools.plot_array(scaled_residuals, as_subplot, figsize, aspect, cmap, norm, norm_max, norm_min, linthresh,
+                             linscale)
+    plotter_tools.set_title(title, titlesize)
+    plotter_tools.set_xy_labels_and_ticks(scaled_residuals.shape, units, kpc_per_arcsec, scaled_residuals.xticks, 
+                                          scaled_residuals.yticks, xlabelsize, ylabelsize, xyticksize)
+    plotter_tools.set_colorbar(cb_ticksize)
+    plotter_tools.output_array(scaled_residuals, output_path, output_filename, output_format)
+    plt.close()
+
+
+def plot_scaled_chi_squareds(scaled_chi_squareds, as_subplot=False,
+                      units='arcsec', kpc_per_arcsec=None,
+                      xyticksize=40, norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
+                      figsize=(20, 15), aspect='auto', cmap='jet', cb_ticksize=20,
+                      title='Scaled Chi-Squareds', titlesize=46, xlabelsize=36, ylabelsize=36,
+                      output_path=None, output_format='show', output_filename='scaled_chi_squareds'):
+
+    plotter_tools.plot_array(scaled_chi_squareds, as_subplot, figsize, aspect, cmap, norm, norm_max, norm_min, linthresh,
+                             linscale)
+    plotter_tools.set_title(title, titlesize)
+    plotter_tools.set_xy_labels_and_ticks(scaled_chi_squareds.shape, units, kpc_per_arcsec, scaled_chi_squareds.xticks,
+                                          scaled_chi_squareds.yticks, xlabelsize, ylabelsize, xyticksize)
+    plotter_tools.set_colorbar(cb_ticksize)
+    plotter_tools.output_array(scaled_chi_squareds, output_path, output_filename, output_format)
+    plt.close()
+    
+def plot_scaled_noise_map(scaled_noise_map, as_subplot=False,
+                      units='arcsec', kpc_per_arcsec=None,
+                      xyticksize=40, norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
+                      figsize=(20, 15), aspect='auto', cmap='jet', cb_ticksize=20,
+                      title='Scaled Noise Map', titlesize=46, xlabelsize=36, ylabelsize=36,
+                      output_path=None, output_format='show', output_filename='scaled_noise_map'):
+
+    plotter_tools.plot_array(scaled_noise_map, as_subplot, figsize, aspect, cmap, norm, norm_max, norm_min, linthresh,
+                             linscale)
+    plotter_tools.set_title(title, titlesize)
+    plotter_tools.set_xy_labels_and_ticks(scaled_noise_map.shape, units, kpc_per_arcsec, scaled_noise_map.xticks,
+                                          scaled_noise_map.yticks, xlabelsize, ylabelsize, xyticksize)
+    plotter_tools.set_colorbar(cb_ticksize)
+    plotter_tools.output_array(scaled_noise_map, output_path, output_filename, output_format)
+    plt.close()
