@@ -100,7 +100,7 @@ class Plane(object):
     # TODO : The map function isn't passing the class attributes correcty. We shouldbe able to refactor this
     # TODO : doing it messy for now!
 
-    def trace_to_next_plane(self):
+    def trace_grids_to_next_plane(self):
         """Trace this plane's grids to the next plane, using its deflection angles."""
 
         if isinstance(self.grids.image, msk.PaddedImageGrid):

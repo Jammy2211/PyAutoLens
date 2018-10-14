@@ -1,8 +1,6 @@
 from autolens.profiles import mass_profiles
 from autolens.profiles import light_profiles
-from autolens.lensing import galaxy
 from autolens.imaging import mask
-from autolens.plotting import imaging_plotters
 from autolens.plotting import profile_plotters
 
 # In this example, we'll create a grid of Cartesian (y,x) coordinates and pass it to the 'light_profiles'
@@ -58,7 +56,8 @@ print(mass_profile_deflections[5049])
 print(mass_profile_deflections[5050])
 
 # And again, a profile plotter can plot these deflection angles in 2D.
-profile_plotters.plot_mass_profile_deflections(mass_profile=sis_mass_profile, grid=image_grids.image)
+profile_plotters.plot_deflections_y(mass_profile=sis_mass_profile, grid=image_grids.image)
+profile_plotters.plot_deflections_x(mass_profile=sis_mass_profile, grid=image_grids.image)
 
 # Mass-profiles also have a surface-density and gravitational potential
 mass_profile_surface_density = sis_mass_profile.surface_density_from_grid(grid=image_grids.image)
