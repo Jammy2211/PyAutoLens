@@ -26,3 +26,4 @@ config.zip
 __pycache__/
 test/autofit/test_fit/
 prof/
+config/

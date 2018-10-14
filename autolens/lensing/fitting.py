@@ -140,6 +140,7 @@ class AbstractFit(object):
     def total_inversions(self):
         return len(self.tracer.mappers_of_planes)
 
+
 class AbstractProfileFit(AbstractFit):
 
     def __init__(self, lensing_image, tracer, padded_tracer, plane_shape):
@@ -172,12 +173,12 @@ class AbstractProfileFit(AbstractFit):
                          _model_images_of_planes))
 
     @property
-    def padded_model_profile_image(self):
-        return padded_model_image_from_lensing_image_and_tracer(self.lensing_image, self.padded_tracer)
+    def unmasked_model_profile_image(self):
+        return unmasked_model_image_from_lensing_image_and_tracer(self.lensing_image, self.padded_tracer)
 
     @property
-    def padded_model_profile_images_of_galaxies(self):
-        return padded_model_images_of_galaxies_from_lensing_image_and_tracer(self.lensing_image, self.padded_tracer)
+    def unmasked_model_profile_images_of_galaxies(self):
+        return unmasked_model_images_of_galaxies_from_lensing_image_and_tracer(self.lensing_image, self.padded_tracer)
 
 
 class AbstractInversion(object):
@@ -717,7 +718,7 @@ def evidence_from_reconstruction_terms(chi_squared_term, regularization_term, lo
                    log_regularization_term + noise_term)
 
 
-def padded_model_image_from_lensing_image_and_tracer(lensing_image, tracer):
+def unmasked_model_image_from_lensing_image_and_tracer(lensing_image, tracer):
     if tracer is None:
         return None
     elif tracer is not None:
@@ -731,7 +732,7 @@ def padded_model_image_from_lensing_image_and_tracer(lensing_image, tracer):
 # TODO : Can we make this neater?
 
 
-def padded_model_images_of_galaxies_from_lensing_image_and_tracer(lensing_image, tracer):
+def unmasked_model_images_of_galaxies_from_lensing_image_and_tracer(lensing_image, tracer):
 
     if tracer is None:
         return None

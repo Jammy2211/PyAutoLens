@@ -261,7 +261,7 @@ class TestPaddedModelImages:
         li = lensing_image.LensingImage(im, ma, sub_grid_size=1)
 
         tracer = ray_tracing.TracerImagePlane(lens_galaxies=[galaxy_light], image_plane_grids=li.padded_grids)
-        padded_model_image = fitting.padded_model_image_from_lensing_image_and_tracer(li, tracer)
+        padded_model_image = fitting.unmasked_model_image_from_lensing_image_and_tracer(li, tracer)
 
         manual_model_image = psf.convolve(tracer.image_plane_image_for_simulation)
 
@@ -279,7 +279,7 @@ class TestPaddedModelImages:
         li = lensing_image.LensingImage(im, ma, sub_grid_size=1)
 
         tracer = ray_tracing.TracerImagePlane(lens_galaxies=[galaxy_light], image_plane_grids=li.padded_grids)
-        padded_model_image = fitting.padded_model_image_from_lensing_image_and_tracer(li, tracer)
+        padded_model_image = fitting.unmasked_model_image_from_lensing_image_and_tracer(li, tracer)
 
         manual_model_image = psf.convolve(tracer.image_plane_image_for_simulation)
 
@@ -302,7 +302,7 @@ class TestPaddedModelImages:
         manual_model_image_0 = tracer.image_plane.grids.image.map_to_2d_keep_padded(tracer._image_plane_image)
         manual_model_image_0 = psf.convolve(manual_model_image_0)
 
-        padded_model_images = fitting.padded_model_images_of_galaxies_from_lensing_image_and_tracer(li, tracer)
+        padded_model_images = fitting.unmasked_model_images_of_galaxies_from_lensing_image_and_tracer(li, tracer)
 
         assert (manual_model_image_0[1:4, 1:4] == padded_model_images[0][0]).all()
 
@@ -322,7 +322,7 @@ class TestPaddedModelImages:
         manual_model_image_0 = tracer.image_plane.grids.image.map_to_2d_keep_padded(tracer._image_plane_image)
         manual_model_image_0 = psf.convolve(manual_model_image_0)
 
-        padded_model_images = fitting.padded_model_images_of_galaxies_from_lensing_image_and_tracer(li, tracer)
+        padded_model_images = fitting.unmasked_model_images_of_galaxies_from_lensing_image_and_tracer(li, tracer)
 
         assert (manual_model_image_0[1:4, 1:4] == padded_model_images[0][0]).all()
 
@@ -341,7 +341,7 @@ class TestPaddedModelImages:
         g1 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=0.2))
 
         tracer = ray_tracing.TracerImagePlane(lens_galaxies=[g0, g1], image_plane_grids=li.padded_grids)
-        padded_model_images = fitting.padded_model_images_of_galaxies_from_lensing_image_and_tracer(li, tracer)
+        padded_model_images = fitting.unmasked_model_images_of_galaxies_from_lensing_image_and_tracer(li, tracer)
 
         manual_model_image_0 = tracer.image_plane.grids.image.map_to_2d_keep_padded(
             tracer.image_plane._image_plane_image_of_galaxies[0])
@@ -354,7 +354,7 @@ class TestPaddedModelImages:
         assert (manual_model_image_0[1:4, 1:4] == padded_model_images[0][0]).all()
         assert (manual_model_image_1[1:4, 1:4] == padded_model_images[0][1]).all()
 
-        padded_model_image = fitting.padded_model_image_from_lensing_image_and_tracer(li, tracer)
+        padded_model_image = fitting.unmasked_model_image_from_lensing_image_and_tracer(li, tracer)
         assert (manual_model_image_0[1:4, 1:4] + manual_model_image_1[1:4, 1:4] == padded_model_image).all()
 
     def test___same_as_above_but_image_and_souce_plane(self):
@@ -394,14 +394,14 @@ class TestPaddedModelImages:
             tracer.source_plane._image_plane_image_of_galaxies[1])
         manual_model_image_3 = psf.convolve(manual_model_image_3)
 
-        padded_model_images = fitting.padded_model_images_of_galaxies_from_lensing_image_and_tracer(li, tracer)
+        padded_model_images = fitting.unmasked_model_images_of_galaxies_from_lensing_image_and_tracer(li, tracer)
 
         assert (manual_model_image_0[1:4, 1:4] == padded_model_images[0][0]).all()
         assert (manual_model_image_1[1:4, 1:4] == padded_model_images[0][1]).all()
         assert (manual_model_image_2[1:4, 1:4] == padded_model_images[1][0]).all()
         assert (manual_model_image_3[1:4, 1:4] == padded_model_images[1][1]).all()
 
-        padded_model_image = fitting.padded_model_image_from_lensing_image_and_tracer(li, tracer)
+        padded_model_image = fitting.unmasked_model_image_from_lensing_image_and_tracer(li, tracer)
         assert (manual_model_image_0[1:4, 1:4] + manual_model_image_1[1:4, 1:4] +
                 manual_model_image_2[1:4, 1:4] + manual_model_image_3[1:4, 1:4] == padded_model_image).all()
 
@@ -417,8 +417,8 @@ class TestPaddedModelImages:
                                        [True, True, True]]), pixel_scale=1.0)
         li = lensing_image.LensingImage(im, ma, sub_grid_size=1)
 
-        assert fitting.padded_model_image_from_lensing_image_and_tracer(li, tracer=None) == None
-        assert fitting.padded_model_images_of_galaxies_from_lensing_image_and_tracer(li, tracer=None) == None
+        assert fitting.unmasked_model_image_from_lensing_image_and_tracer(li, tracer=None) == None
+        assert fitting.unmasked_model_images_of_galaxies_from_lensing_image_and_tracer(li, tracer=None) == None
 
 
 @pytest.fixture(name="no_galaxies", scope='function')
@@ -905,14 +905,14 @@ class TestProfileFit:
                                                                                     tracer=tracer)
             assert fast_likelihood == pytest.approx(fit.likelihood)
 
-            padded_model_image = fitting.padded_model_image_from_lensing_image_and_tracer(li_manual,
-                                                                                              padded_tracer)
+            padded_model_image = fitting.unmasked_model_image_from_lensing_image_and_tracer(li_manual,
+                                                                                            padded_tracer)
             padded_model_image_of_galaxies = \
-                fitting.padded_model_images_of_galaxies_from_lensing_image_and_tracer(li_manual, padded_tracer)
+                fitting.unmasked_model_images_of_galaxies_from_lensing_image_and_tracer(li_manual, padded_tracer)
 
-            assert (padded_model_image == fit.padded_model_profile_image).all()
-            assert (padded_model_image_of_galaxies[0][0] == fit.padded_model_profile_images_of_galaxies[0][0]).all()
-            assert (padded_model_image_of_galaxies[1][0] == fit.padded_model_profile_images_of_galaxies[1][0]).all()
+            assert (padded_model_image == fit.unmasked_model_profile_image).all()
+            assert (padded_model_image_of_galaxies[0][0] == fit.unmasked_model_profile_images_of_galaxies[0][0]).all()
+            assert (padded_model_image_of_galaxies[1][0] == fit.unmasked_model_profile_images_of_galaxies[1][0]).all()
 
 
 class TestHyperProfileFit:
@@ -1051,14 +1051,14 @@ class TestHyperProfileFit:
 
             assert fast_scaled_likelihood == fit.scaled_likelihood
 
-            padded_model_image = fitting.padded_model_image_from_lensing_image_and_tracer(li_manual,
-                                                                                              padded_tracer)
+            padded_model_image = fitting.unmasked_model_image_from_lensing_image_and_tracer(li_manual,
+                                                                                            padded_tracer)
             padded_model_image_of_galaxies = \
-                fitting.padded_model_images_of_galaxies_from_lensing_image_and_tracer(li_manual, padded_tracer)
+                fitting.unmasked_model_images_of_galaxies_from_lensing_image_and_tracer(li_manual, padded_tracer)
 
-            assert (padded_model_image == fit.padded_model_profile_image).all()
-            assert (padded_model_image_of_galaxies[0][0] == fit.padded_model_profile_images_of_galaxies[0][0]).all()
-            assert (padded_model_image_of_galaxies[1][0] == fit.padded_model_profile_images_of_galaxies[1][0]).all()
+            assert (padded_model_image == fit.unmasked_model_profile_image).all()
+            assert (padded_model_image_of_galaxies[0][0] == fit.unmasked_model_profile_images_of_galaxies[0][0]).all()
+            assert (padded_model_image_of_galaxies[1][0] == fit.unmasked_model_profile_images_of_galaxies[1][0]).all()
 
 
 class TestInversionFit:
