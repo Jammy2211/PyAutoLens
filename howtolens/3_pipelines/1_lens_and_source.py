@@ -149,14 +149,14 @@ def make_pipeline():
             # 2) It will use a GaussianPrior based on the previous results as its initialization (we'll cover how this
             #    Gaussian is setup later).
 
-            self.source_galaxies[0].light.centre_0 = phase_2_results.variable.source_galaxies.light.centre_0
-            self.source_galaxies[0].light.centre_1 = phase_2_results.variable.source_galaxies.light.centre_1
-            self.source_galaxies[0].light.axis_ratio = phase_2_results.variable.source_galaxies.light.axis_ratio
-            self.source_galaxies[0].light.phi = phase_2_results.variable.source_galaxies.light.phi
-            self.source_galaxies[0].light.intensity = phase_2_results.variable.source_galaxies.light.intensity
+            self.source_galaxies[0].light.centre_0 = phase_2_results.variable.source_galaxies[0].light.centre_0
+            self.source_galaxies[0].light.centre_1 = phase_2_results.variable.source_galaxies[0].light.centre_1
+            self.source_galaxies[0].light.axis_ratio = phase_2_results.variable.source_galaxies[0].light.axis_ratio
+            self.source_galaxies[0].light.phi = phase_2_results.variable.source_galaxies[0].light.phi
+            self.source_galaxies[0].light.intensity = phase_2_results.variable.source_galaxies[0].light.intensity
             self.source_galaxies[0].light.effective_radius = \
-                phase_2_results.variable.source_galaxies.light.effective_radius
-            self.source_galaxies[0].light.sersic_index = phase_2_results.variable.source_galaxies.light.sersic_index
+                phase_2_results.variable.source_galaxies[0].light.effective_radius
+            self.source_galaxies[0].light.sersic_index = phase_2_results.variable.source_galaxies[0].light.sersic_index
 
             # Listing every parameter like this is ugly, and would get unweildy if we had a lot of parameters. If,
             # like in the above example, you are making all parameters of a lens or source galaxy variable, you can
@@ -172,7 +172,7 @@ def make_pipeline():
     phase3 = LensSourcePhase(lens_galaxies=[gm.GalaxyModel(light=lp.EllipticalSersic,
                                                            mass=mp.EllipticalIsothermal)],
                               source_galaxies=[gm.GalaxyModel(light=lp.EllipticalSersic)],
-                              optimizer_class=nl.MultiNest, phase_name='ph3')
+                              optimizer_class=nl.MultiNest, phase_name='/phase_3_both')
 
     return pipeline.PipelineImaging(pipeline_name, phase1, phase2, phase3)
 
