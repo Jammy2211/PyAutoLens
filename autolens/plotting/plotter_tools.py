@@ -54,14 +54,14 @@ def set_xy_labels_and_ticks(shape, units, kpc_per_arcsec, xticks, yticks, xlabel
     elif units is 'arcsec' or kpc_per_arcsec is None:
 
         plt.xticks(shape[0] * np.array([0.0, 0.33, 0.66, 0.99]), np.round(xticks, 1))
-        plt.yticks(shape[1] * np.array([0.0, 0.33, 0.66, 0.99]), np.round(yticks, 1))
+        plt.yticks(shape[1] * np.array([0.0, 0.33, 0.66, 0.99]), np.round(-1.0*yticks, 1))
         plt.xlabel('x (arcsec)', fontsize=xlabelsize)
         plt.ylabel('y (arcsec)', fontsize=ylabelsize)
 
     elif units is 'kpc':
 
         plt.xticks(shape[0] * np.array([0.0, 0.33, 0.66, 0.99]), np.round(kpc_per_arcsec * xticks, 1))
-        plt.yticks(shape[1] * np.array([0.0, 0.33, 0.66, 0.99]), np.round(kpc_per_arcsec * yticks, 1))
+        plt.yticks(shape[1] * np.array([0.0, 0.33, 0.66, 0.99]), np.round(-1.0*kpc_per_arcsec * yticks, 1))
         plt.xlabel('x (kpc)', fontsize=xlabelsize)
         plt.ylabel('y (kpc)', fontsize=ylabelsize)
 
@@ -72,15 +72,20 @@ def set_xy_labels_and_ticks(shape, units, kpc_per_arcsec, xticks, yticks, xlabel
     plt.tick_params(labelsize=xyticksize)
 
 def set_colorbar(cb_ticksize):
-    cb = plt.colorbar()
+
+    from mpl_toolkits.axes_grid1 import make_axes_locatable
+    ax = plt.gca()
+    divider = make_axes_locatable(ax)
+    cax = divider.append_axes("right", size="5%", pad=0.05)
+    cb = plt.colorbar(cax=cax)
     cb.ax.tick_params(labelsize=cb_ticksize)
 
 def plot_mask(mask):
 
     if mask is not None:
 
+        plt.gca()
         border_pixels = mask.grid_to_pixel[mask.border_pixels]
-
         plt.scatter(y=border_pixels[:,0], x=border_pixels[:,1], s=20, c='k')
 
 def plot_points(points):
@@ -95,14 +100,19 @@ def plot_grid(grid):
     if grid is not None:
         plt.scatter(y=grid[:, 0], x=grid[:, 1], s=1)
 
+def plot_close(as_subplot):
+
+    if not as_subplot:
+        plt.close()
+
 def get_subplot_rows_columns_figsize(number_subplots):
 
     if number_subplots <= 2:
-        return 1, 2, (25, 20)
+        return 1, 2, (15, 6)
     elif number_subplots <= 4:
-        return 2, 2, (25, 20)
+        return 2, 2, (13, 10)
     elif number_subplots <= 6:
-        return 2,3, (20, 14)
+        return 2,3, (18, 12)
     elif number_subplots <= 9:
         return 3,3, (25, 20)
     elif number_subplots <= 12:
@@ -114,15 +124,18 @@ def get_subplot_rows_columns_figsize(number_subplots):
     else:
         return 6,6, (25, 20)
 
-def output_array(array, output_path, output_filename, output_format):
-    if output_format is 'show':
-        plt.show()
-    elif output_format is 'png':
-        plt.savefig(output_path + output_filename + '.png', bbox_inches='tight')
-    elif output_format is 'fits':
-        hdu = fits.PrimaryHDU()
-        hdu.data = array
-        hdu.writeto(output_path + output_filename + '.fits')
+def output_array(array, as_subplot, output_path, output_filename, output_format):
+
+    if not as_subplot:
+
+        if output_format is 'show':
+            plt.show()
+        elif output_format is 'png':
+            plt.savefig(output_path + output_filename + '.png', bbox_inches='tight')
+        elif output_format is 'fits':
+            hdu = fits.PrimaryHDU()
+            hdu.data = array
+            hdu.writeto(output_path + output_filename + '.fits')
 
 def output_subplot_array(output_path, output_filename, output_format):
 

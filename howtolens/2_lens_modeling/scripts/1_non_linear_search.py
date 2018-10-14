@@ -1,9 +1,8 @@
+from autolens import conf
 from autolens.autofit import non_linear
-from autolens.autofit import model_mapper
 from autolens.pipeline import phase as ph
 from autolens.lensing import galaxy_model as gm
 from autolens.imaging import image as im
-from autolens.imaging import mask
 from autolens.profiles import light_profiles as lp
 from autolens.profiles import mass_profiles as mp
 from autolens.plotting import imaging_plotters
@@ -50,15 +49,27 @@ from autolens.plotting import fitting_plotters
 # 3) Repeat this many times, using the likelihoods of previous fits (typically those with a high likelihood) to
 #    guide us to the lens models with the highest liikelihood.
 
-
-# So, lets get on with it! In the file 'simulations', we've simulated the image we'll fit in this example.
-# Don't look at this file yet - lets keep the lens model's input parameters unknown.
-
+# We'll use the path to howtolens multiple times, so make sure you set it up correctly!
 path = 'path/to/AutoLens/howtolens/2_lens_modeling'
 path = '/home/jammy/PyCharm/Projects/AutoLens/howtolens/2_lens_modeling'
-image = im.load_imaging_from_path(image_path=path + '/data/1_non_linear_search_image.fits',
-                                  noise_map_path=path+'/data/1_non_linear_search_noise_map.fits',
-                                  psf_path=path + '/data/1_non_linear_search_psf.fits', pixel_scale=0.1)
+
+# You're going to see a line like this in every tutorial this chapter. I recommend that for now you just ignore it.
+# A non-linear search can take a long time to run (minutes, hours, or days), and this isn't ideal if you want to
+# go through the tutorials without having to constant stop for long periods!
+
+# This line over-rides the configuration of the non-linear search such that it computes the solution really fast. To
+# do this, I've 'cheated' - I've computed the solution myself and then input it into the config. Nevertheless, it means
+# things will run fast for you, meaning you won't suffer long delays doin the tutorials.
+#
+# This will all become clear at the end of the chapter, so for now just bare in mind that we are taking a short-cut
+# to get our non-linear search to run fast!
+conf.instance = conf.Config(config_path=path+'/configs/1_non_linear_search', output_path=path+"/../output")
+
+# In the file 'simulations', we've simulated the image we'll fit in this example.
+# Don't look at this file yet - lets keep the lens model's input parameters unknown.
+image = im.load_imaging_from_path(image_path=path + '/data/1_non_linear_search/image.fits',
+                                  noise_map_path=path+'/data/1_non_linear_search/noise_map.fits',
+                                  psf_path=path + '/data/1_non_linear_search/psf.fits', pixel_scale=0.1)
 imaging_plotters.plot_image_subplot(image=image)
 
 # To setup a lens model, we use the 'galaxy_model' (imported as 'gm') module, to create 'GalaxyModel' objects.
@@ -79,19 +90,19 @@ source_galaxy_model = gm.GalaxyModel(light=lp.SphericalExponential)
 # example, we have a lens-plane and source-plane, so we use a LensSourcePlanePhase.
 phase = ph.LensSourcePlanePhase(lens_galaxies=[lens_galaxy_model], source_galaxies=[source_galaxy_model],
                                 optimizer_class=non_linear.MultiNest,
-                                phase_name='howtolens/2_lens_modeling/1_non_linear_search')
+                                phase_name='2_lens_modeling/1_non_linear_search')
 
 # To run the phase, we simply pass it the image data we want to fit, and the non-linear search begins! As the phase
 # runs, a logger will show you the parameters of the best-fit model.
 results = phase.run(image)
 
-# Whilst it is running (which should only take a few minutes), you should checkout the 'AutoLens/output/howtolens'
+# Whilst it is running (which should only take a few minutes), you should checkout the 'AutoLens/howtolens/output'
 # folder. This is where the results of the phase are written to your hard-disk (in the '1_non_linear_search'
 # folder). When its completed, images and output will also appear in this folder, meaning that you don't need to keep
 # running python code to see the results.
 
 # We can print the results to see the best-fit model parameters
-print(results) # NOTE - this isn't working yet, need to sort out.
+# print(results) # NOTE - this isn't working yet, need to sort out.
 
 # The best-fit solution (i.e. the highest likelihood) is stored in the 'results', which we can plot as per usual.
 fitting_plotters.plot_fitting_subplot(fit=results.fit)

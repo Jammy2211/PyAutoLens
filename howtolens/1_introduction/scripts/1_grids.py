@@ -1,5 +1,5 @@
 from autolens.imaging import mask
-from autolens.plotting import imaging_plotters
+from autolens.plotting import plotters
 
 # In this example, we'll create a grid of Cartesian (y,x) coordinates, representing the
 # arc second coordinate grid of an observed image.
@@ -30,7 +30,17 @@ print('etc.')
 print(image_grids.image.shape)
 
 # We can also plot the grid, albeit it's a fairly bland uniform grid of dots.
-imaging_plotters.plot_grid(grid=image_grids.image)
+plotters.plot_grid(grid=image_grids.image)
+
+# A quick aside - we've tried our hardest to make figures like the one above appear a good size / have no overlapping
+# labels. However, this depends somewhat on the display setting of your computer. If a figure doesn't look great,
+# You can customize its appearance using standard Matplotlib variables. For example, we can change the grid's appearance
+# above as follows:
+
+plotters.plot_grid(grid=image_grids.image, title='Custom Grid', xlabelsize=20, ylabelsize=20, xyticksize=20,
+                   pointsize=14, figsize=(8, 4))
+
+# You can customize every plotter in AutoLens in this way!
 
 # You might be wondering why the image_grids are using the attribute 'image' (e.g. image_grids.image).
 
