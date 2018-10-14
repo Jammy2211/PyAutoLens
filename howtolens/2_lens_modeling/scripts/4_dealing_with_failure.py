@@ -1,3 +1,4 @@
+from autolens import conf
 from autolens.autofit import non_linear as nl
 from autolens.autofit import model_mapper as mm
 from autolens.pipeline import phase as ph
@@ -11,6 +12,20 @@ from autolens.plotting import fitting_plotters
 # lens model which fitted our realistic data-set well. In this tutorial, we're going to right our past wrongs and infer
 # the correct model - not just once, but three times!
 
+# First, lets get the config / image loading out the way - we'll fit the same image as the previous tutorial.
+path = '/home/jammy/PyCharm/Projects/AutoLens/howtolens/2_lens_modeling'
+conf.instance = conf.Config(config_path=path+'/configs/3_realism_and_complexity', output_path=path+"/../output")
+image = im.load_imaging_from_path(image_path=path + '/data/3_realism_and_complexity/image.fits',
+                                  noise_map_path=path+'/data/3_realism_and_complexity/noise_map.fits',
+                                  psf_path=path + '/data/3_realism_and_complexity/psf.fits', pixel_scale=0.1)
+
+# Even with my custom config files - the non-linear searches will take a bit of time to run in this tutorial. Whilst you
+# are waiting, I would skip ahead to the cells ahead of the phase-run cells, and sit back and think about the comments,
+# there's a lot to take in in this tutorial so don't feel that you're in a rush!
+
+# Alternatively, set these running and come back in 10 minutes or so - MultiNest resumes from the existing results on
+# your hard-disk, so you can rerun things to get the results instantly!
+
 ### Approach 1 -  Prior Tuning ###
 
 # The first approach we're going to take is we're going to give our non-linear search a helping hand. Lets think about
@@ -22,17 +37,11 @@ from autolens.plotting import fitting_plotters
 # correct model. I've also let you know what we're changing the priors from (as are specified by the
 # 'config/priors/default' config files.)
 
-# Load the same image as the previous tutorial.
-path = '/home/jammy/PyCharm/Projects/AutoLens/howtolens/2_lens_modeling'
-image = im.load_imaging_from_path(image_path=path + '/data/3_realism_and_complexity_image.fits',
-                                  noise_map_path=path+'/data/3_realism_and_complexity_noise_map.fits',
-                                  psf_path=path + '/data/3_realism_and_complexity_psf.fits', pixel_scale=0.1)
-
 class CustomPriorPhase(ph.LensSourcePlanePhase):
 
     def pass_priors(self, previous_results):
 
-        # We've imported the 'model_mapper' moodule as 'mm' this time, to make the code more readable.
+        # We've imported the 'model_mapper' module as 'mm' this time, to make the code more readable.
 
         # By default, the prior on the x and y coordinates of a light / mass profile is a GaussianPrior with mean
         # 0.0" and sigma "1.0. However, visual inspection of our strong lens image tells us that its clearly around
@@ -81,13 +90,12 @@ class CustomPriorPhase(ph.LensSourcePlanePhase):
         # its very diffcult to come up with a good source prior when this is the case.
 
 # We can now create this custom phase and run it. Our non-linear search will start in a much higher likelihood region
-# of parameter space. (again, to save you time, I've precomputed the results of this phase, but feel free to run it
-# yourself).
+# of parameter space.
 custom_prior_phase = CustomPriorPhase(lens_galaxies=[gm.GalaxyModel(light=lp.EllipticalSersic,
                                                                     mass=mp.EllipticalIsothermal)],
                                       source_galaxies=[gm.GalaxyModel(light=lp.EllipticalExponential)],
                                       optimizer_class=nl.MultiNest,
-                                      phase_name='howtolens/2_lens_modeling/4_custom_priors')
+                                      phase_name='2_lens_modeling/4_custom_priors')
 custom_prior_result = custom_prior_phase.run(image=image)
 
 # Bam! We get a good model. The right model. A glorious model! We gave our non-linear search a helping hand, and it
@@ -139,9 +147,10 @@ class LightTracesMassPhase(ph.LensSourcePlanePhase):
 light_traces_mass_phase = LightTracesMassPhase(lens_galaxies=[gm.GalaxyModel(light=lp.EllipticalSersic,
                                                                     mass=mp.EllipticalIsothermal)],
                                       source_galaxies=[gm.GalaxyModel(light=lp.EllipticalExponential)],
-                                      optimizer_class=nl.MultiNest, phase_name='howtolens/4_light_traces_mass')
+                                      optimizer_class=nl.MultiNest,
+                                               phase_name='2_lens_modeling/4_light_traces_mass')
 
-light_traces_mass_phase_result = custom_prior_phase.run(image=image)
+light_traces_mass_phase_result = light_traces_mass_phase.run(image=image)
 fitting_plotters.plot_fitting_subplot(fit=light_traces_mass_phase_result.fit)
 
 # The results look pretty good. Our source galaxy fits the data pretty well, and we've clearly inferred a model that
@@ -179,7 +188,8 @@ fitting_plotters.plot_fitting_subplot(fit=light_traces_mass_phase_result.fit)
 custom_non_linear_phase = ph.LensSourcePlanePhase(lens_galaxies=[gm.GalaxyModel(light=lp.EllipticalSersic,
                                                                                 mass=mp.EllipticalIsothermal)],
                                       source_galaxies=[gm.GalaxyModel(light=lp.EllipticalExponential)],
-                                      optimizer_class=nl.MultiNest, phase_name='howtolens/4_custom_non_linear')
+                                      optimizer_class=nl.MultiNest,
+                                                  phase_name='2_lens_modeling/4_custom_non_linear')
 
 # The 'optimizer' below is MultiNest, the non-linear search we're using.
 
@@ -203,7 +213,7 @@ custom_non_linear_phase.optimizer.sampling_efficiency = 0.5
 
 # These are the two most important MultiNest parameters controlling how it navigates parameter space, so lets run this
 # phase and see if our more detailed inspection of parameter space finds the correct lens model.
-custom_non_linear_result = custom_prior_phase.run(image=image)
+custom_non_linear_result = custom_non_linear_phase.run(image=image)
 
 # Indeed, it does. Thus, we can always brute-force our way to a good lens model, if all else fails.
 fitting_plotters.plot_fitting_subplot(fit=custom_non_linear_result.fit)
@@ -215,7 +225,6 @@ fitting_plotters.plot_fitting_subplot(fit=custom_non_linear_result.fit)
 # Advantage - We didn't have to make our model less realistic.
 # Disadvantage - Its expensive. Very expensive. The run-time of this phase was over 6 hours. For more complex models
 #                we could be talking days or weeks (or, dare I say it, months).
-
 
 # So, there we have it, we can now fit strong lenses PyAutoLens. And if it fails, we know how to get it to work. I hope
 # you're feeling pretty smug. You might even be thinking 'why should I bother with the rest of these tutorials, if I
