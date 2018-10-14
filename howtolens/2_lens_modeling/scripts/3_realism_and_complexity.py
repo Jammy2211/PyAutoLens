@@ -1,3 +1,4 @@
+from autolens import conf
 from autolens.autofit import non_linear as nl
 from autolens.pipeline import phase as ph
 from autolens.lensing import galaxy_model as gm
@@ -31,13 +32,15 @@ from autolens.plotting import fitting_plotters
 # The goal of this, rather short, exercise, is to fit this 'realistic' model to a simulated image, where the lens's
 # light is visible and mass is elliptical. What could go wrong?
 
-
-# First, lets load a new simulated image..
+# Usual stuff here - loading a config for a fast run-time
 path = 'path/to/AutoLens/howtolens/1_introduction'
 path = '/home/jammy/PyCharm/Projects/AutoLens/howtolens/2_lens_modeling'
-image = im.load_imaging_from_path(image_path=path + '/data/3_realism_and_complexity_image.fits',
-                                  noise_map_path=path+'/data/3_realism_and_complexity_noise_map.fits',
-                                  psf_path=path + '/data/3_realism_and_complexity_psf.fits', pixel_scale=0.1)
+conf.instance = conf.Config(config_path=path+'/configs/3_realism_and_complexity', output_path=path+"/../output")
+
+# and load a new simulated image..
+image = im.load_imaging_from_path(image_path=path + '/data/3_realism_and_complexity/image.fits',
+                                  noise_map_path=path+'/data/3_realism_and_complexity/noise_map.fits',
+                                  psf_path=path + '/data/3_realism_and_complexity/psf.fits', pixel_scale=0.1)
 
 # When we plot it, the lens light's is clealy visible in the centre of the image
 imaging_plotters.plot_image_subplot(image=image)
@@ -55,8 +58,10 @@ phase = ph.LensSourcePlanePhase(lens_galaxies=[gm.GalaxyModel(light=lp.Elliptica
                                                               mass=mp.EllipticalIsothermal)],
                                 source_galaxies=[gm.GalaxyModel(light=lp.EllipticalExponential)],
                                 optimizer_class=nl.MultiNest,
-                                phase_name='howtolens/2_lens_modeling/3_realism_and_complexity')
-# Lets print the results
+                                phase_name='2_lens_modeling/3_realism_and_complexity')
+
+# Lets run the phase - note that, in Jupyter notebooks, all the MultiNest output is written to the cell. This might
+# get pretty long, but I wouldn't worry about it for now as we'll address this in the pipelines tutorial.
 results = phase.run(image)
 
 # And lets look at the image.

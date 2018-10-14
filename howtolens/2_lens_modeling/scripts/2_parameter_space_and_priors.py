@@ -1,3 +1,4 @@
+from autolens import conf
 from autolens.autofit import non_linear
 from autolens.autofit import model_mapper
 from autolens.pipeline import phase as ph
@@ -78,17 +79,19 @@ from autolens.plotting import fitting_plotters
 # effective_radius=u,0.0,2.0  # Its effective radius uses a UniformPrior with lower_limit=0.0, upper_limit=2.0
 # sersic_index=g,4.0,2.0      # Its Sersic index uses a GaussianPrior with mean=4.0 and sigma=2.0
 
-# Lets look at how we can customize the priors of a phase with PyAutoLens. First, lets set up our image, lens and
-# source galaxy models, using the same image as the previous tutorial.
-
+# Lets look at how we can customize the priors of a phase with PyAutoLens.
+# First, we'll setup the config-overrides, so the non-linear search runs fast. Again, just ignore this for now.
 path = 'path/to/AutoLens/howtolens/2_lens_modeling'
 path = '/home/jammy/PyCharm/Projects/AutoLens/howtolens/2_lens_modeling'
-image = im.load_imaging_from_path(image_path=path + '/data/1_non_linear_search_image.fits',
-                                  noise_map_path=path+'/data/1_non_linear_search_noise_map.fits',
-                                  psf_path=path + '/data/1_non_linear_search_psf.fits', pixel_scale=0.1)
+conf.instance = conf.Config(config_path=path+'/configs/2_parameter_space_and_priors', output_path=path+"/../output")
+
+# Lets also setup the image, lens and source galaxy models, using the same image as the previous tutorial.
+image = im.load_imaging_from_path(image_path=path + '/data/1_non_linear_search/image.fits',
+                                  noise_map_path=path+'/data/1_non_linear_search/noise_map.fits',
+                                  psf_path=path + '/data/1_non_linear_search/psf.fits', pixel_scale=0.1)
 imaging_plotters.plot_image_subplot(image=image)
 
-#  To change the priors on specific parameters, we create our galaxy model's and then use a custom-phase and its
+# To change the priors on specific parameters, we create our galaxy model's and then use a custom-phase and its
 # 'pass_priors' function to overwrite priors on specific parameters.
 
 lens_galaxy_model = gm.GalaxyModel(mass=mp.SphericalIsothermal)
@@ -131,7 +134,7 @@ class CustomPhase(ph.LensSourcePlanePhase):
 # file in the output of the non-linear search, you'll see that the priors have indeed been changed.
 custom_phase = CustomPhase(lens_galaxies=[lens_galaxy_model], source_galaxies=[source_galaxy_model],
                            optimizer_class=non_linear.MultiNest,
-                           phase_name='howtolens/2_lens_modeling/2_custom_priors')
+                           phase_name='2_lens_modeling/2_custom_priors')
 
 results_custom = custom_phase.run(image)
 print(results_custom) # NOTE - this isn't working yet, need to sort out.

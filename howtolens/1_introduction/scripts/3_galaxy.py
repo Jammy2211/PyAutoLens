@@ -64,7 +64,8 @@ print(galaxy_with_3_mass_profiles)
 # We can use a galaxy plotter to plot these deflection angles.
 # (The deflection angles of different mass-profiles simply add together, just like the
 # light-profiles did before)
-galaxy_plotters.plot_deflections(galaxy=galaxy_with_3_mass_profiles, grid=image_grids.image)
+galaxy_plotters.plot_deflections_y(galaxy=galaxy_with_3_mass_profiles, grid=image_grids.image)
+galaxy_plotters.plot_deflections_x(galaxy=galaxy_with_3_mass_profiles, grid=image_grids.image)
 
 # I wonder what 3 summed surface density maps or potential's look like...
 galaxy_plotters.plot_surface_density(galaxy=galaxy_with_3_mass_profiles, grid=image_grids.image)
@@ -98,6 +99,12 @@ galaxy_with_many_profiles = galaxy.Galaxy(light_1=light_profile_1, light_2=light
 galaxy_plotters.plot_intensities(galaxy=galaxy_with_many_profiles, grid=image_grids.image)
 galaxy_plotters.plot_surface_density(galaxy=galaxy_with_many_profiles, grid=image_grids.image)
 galaxy_plotters.plot_potential(galaxy=galaxy_with_many_profiles, grid=image_grids.image)
-galaxy_plotters.plot_deflections(galaxy=galaxy_with_many_profiles, grid=image_grids.image)
+galaxy_plotters.plot_deflections_y(galaxy=galaxy_with_many_profiles, grid=image_grids.image)
+galaxy_plotters.plot_deflections_x(galaxy=galaxy_with_many_profiles, grid=image_grids.image)
 
-# And we're done.
+# And we're done. Lets finished by just thinking about one question:
+
+# 1) We've learnt we can group profiles into galaxies, to essentially sum the contribution of each light profile to the
+#    galaxy image's intensity, or sum the contribution of each mass profile to the surface density, potential and
+#    deflection angles. In strong lensing, there are often multiple galaxies next to one another responsible for the
+#    lensing - how might we account for this?
