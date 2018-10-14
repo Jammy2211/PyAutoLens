@@ -1,3 +1,4 @@
+from autolens import conf
 from autolens.autofit import non_linear as nl
 from autolens.autofit import model_mapper as mm
 from autolens.pipeline import phase as ph
@@ -37,11 +38,12 @@ from autolens.plotting import fitting_plotters
 #    source-plane its is located and what its intensity and effective are.
 
 
-# As per usual, lets load the data - we'll use the same data as before, given that we're familiar with it now.
+# As per usual, lets load the configs and data.
 path = '/home/jammy/PyCharm/Projects/AutoLens/howtolens/2_lens_modeling'
-image = im.load_imaging_from_path(image_path=path + '/data/3_realism_and_complexity_image.fits',
-                                  noise_map_path=path+'/data/3_realism_and_complexity_noise_map.fits',
-                                  psf_path=path + '/data/3_realism_and_complexity_psf.fits', pixel_scale=0.1)
+conf.instance = conf.Config(config_path=path+'/configs/3_realism_and_complexity', output_path=path+"/../output")
+image = im.load_imaging_from_path(image_path=path + '/data/3_realism_and_complexity/image.fits',
+                                  noise_map_path=path+'/data/3_realism_and_complexity/noise_map.fits',
+                                  psf_path=path + '/data/3_realism_and_complexity/psf.fits', pixel_scale=0.1)
 
 # Lets use the same LightTracesMass Phase that we did previously, but we'll make it slightly less complex then before.
 
@@ -137,8 +139,7 @@ class CustomPriorPhase(ph.LensSourcePlanePhase):
 
 
 # Lets setup and run the phase. As expected, it gives us the correct lens model. However, it does so significantly
-# faster than we're used to - I'd actually recommend you run this phase yourself! (Although I have provided the model
-# for the eager amongst you).
+# faster than it would had we assumed broad priros on all the parameters.
 phase_2 = CustomPriorPhase(lens_galaxies=[gm.GalaxyModel(light=lp.EllipticalSersic, mass=mp.EllipticalIsothermal)],
                            source_galaxies=[gm.GalaxyModel(light=lp.EllipticalExponential)],
                            optimizer_class=nl.MultiNest, phase_name='howtolens/2_lens_modeling/5_linking_phase_2')

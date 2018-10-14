@@ -1,3 +1,4 @@
+from autolens import conf
 from autolens.pipeline import phase as ph
 from autolens.pipeline import pipeline
 from autolens.autofit import model_mapper as mm
@@ -22,11 +23,14 @@ from autolens.plotting import imaging_plotters
 # parameters and if there are. If there are 4 components, or multiple galaxies, we're quickly entering the somewhat
 # nasty regime of 20-30+ parameters in our non-linear search.
 
-# Lets have a look at our strong lens with a complex source
+# Lets quickly sort the output directory
 path = '/home/jammy/PyCharm/Projects/AutoLens/howtolens/3_pipelines'
-image = im.load_imaging_from_path(image_path=path + '/data/3_complex_source_image.fits',
-                                  noise_map_path=path+'/data/3_complex_source_noise_map.fits',
-                                  psf_path=path + '/data/3_complex_source_psf.fits', pixel_scale=0.05)
+conf.instance = conf.Config(config_path=conf.CONFIG_PATH, output_path=path+"/../output")
+
+# Lets have a look at our strong lens with a complex source
+image = im.load_imaging_from_path(image_path=path + '/data/3_complex_source/image.fits',
+                                  noise_map_path=path+'/data/3_complex_source/noise_map.fits',
+                                  psf_path=path + '/data/3_complex_source/psf.fits', pixel_scale=0.05)
 
 imaging_plotters.plot_image_subplot(image=image)
 
