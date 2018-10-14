@@ -46,8 +46,8 @@ imaging_plotters.plot_image_subplot(image=image)
 
 # So, with this in mind, lets build a pipeline composed as follows:
 
-# 1) Fit the lens galaxy light profile on the left of the image, at coordinates (-1.0, 0.0).
-# 2) Fit the lens galaxy light profile on the right of the image, at coordinates (1.0, 0.0).
+# 1) Fit the lens galaxy light profile on the left of the image, at coordinates (0.0, -1.0).
+# 2) Fit the lens galaxy light profile on the right of the image, at coordinates (0.0, 1.0).
 # 3) Use this lens-subtracted image to fit the source galaxy's light. The mass-profiles of the two lens galaxies can
 #    use the results of phases 1 and 2 to initialize its priors.
 # 4) Fit all relevent parameters simultaneously, using priors from phases 1, 2 and 3.
@@ -55,12 +55,12 @@ imaging_plotters.plot_image_subplot(image=image)
 # Begin with the make pipeline function
 def make_pipeline():
 
-    pipeline_name = 'howtolens/3_pipelines/2_x2_lens_galaxies'  # Give the pipeline a name.
+    pipeline_name = '3_pipelines/2_x2_lens_galaxies'  # Give the pipeline a name.
 
     # This galaxy is at (-1.0, 0.0), so we're going to use a small circular mask centred on its location to fit its
     # light profile. Its important that light from the other lens and source don't contaminate our fit.
     def mask_function(img):
-        return mask.Mask.circular(img.shape, pixel_scale=img.pixel_scale, radius_mask_arcsec=0.5, centre=(-1.0, 0.0))
+        return mask.Mask.circular(img.shape, pixel_scale=img.pixel_scale, radius_mask_arcsec=0.5, centre=(0.0, -1.0))
 
     class LeftLensPhase(ph.LensPlanePhase):
 
@@ -78,10 +78,10 @@ def make_pipeline():
                            optimizer_class=nl.MultiNest, mask_function=mask_function,
                            phase_name=pipeline_name+'/phase_1_left_lens_light')
 
-    # Now do the exact same with the lens galaxy on the right at (1.0, 0.0)
+    # Now do the exact same with the lens galaxy on the right at (0.0, 1.0)
 
     def mask_function(img):
-        return mask.Mask.circular(img.shape, pixel_scale=img.pixel_scale, radius_mask_arcsec=0.5, centre=(1.0, 0.0))
+        return mask.Mask.circular(img.shape, pixel_scale=img.pixel_scale, radius_mask_arcsec=0.5, centre=(0.0, 1.0))
 
     class RightLensPhase(ph.LensPlanePhase):
 
@@ -105,7 +105,8 @@ def make_pipeline():
         def modify_image(self, image, previous_results):
             phase_1_results = previous_results[0]
             phase_2_results = previous_results[1]
-            return image - phase_1_results.fit.unmasked_model_profile_image - phase_2_results.fit.unmasked_model_profile_image
+            return image - phase_1_results.fit.unmasked_model_profile_image - \
+                   phase_2_results.fit.unmasked_model_profile_image
 
         def pass_priors(self, previous_results):
 
@@ -118,12 +119,22 @@ def make_pipeline():
 
             # To link two results, such that the parameters are not 'variable' but are instead 'constant', we simply
             # use the 'constant' attribute of the previous results.
-            self.lens_galaxies[0].mass.centre_0 = phase_1_results.constant.lens_galaxies.light.centre_0
-            self.lens_galaxies[0].mass.centre_1 = phase_1_results.constant.lens_galaxies.light.centre_1
+
+            # NOTE - BUG IN CODE PREVENTS CONSTANT FROM BEING USED SO IVE COMMENTED THIS OUT TO VARIABLE FOR NOW.
+
+            # self.lens_galaxies[0].mass.centre_0 = phase_1_results.constant.lens_galaxies[0].light.centre.centre_0
+            # self.lens_galaxies[0].mass.centre_1 = phase_1_results.constant.lens_galaxies[0].light.centre.centre_1
+            #
+            # # (There are now both lens galaxes in the model, so our index runs 0 -> 1.)
+            # self.lens_galaxies[1].mass.centre_0 = phase_2_results.constant.lens_galaxies[0].light.centre.centre_0
+            # self.lens_galaxies[1].mass.centre_1 = phase_2_results.constant.lens_galaxies[0].light.centre.centre_1
+
+            self.lens_galaxies[0].mass.centre_0 = phase_1_results.variable.lens_galaxies[0].light.centre.centre_0
+            self.lens_galaxies[0].mass.centre_1 = phase_1_results.variable.lens_galaxies[0].light.centre.centre_1
 
             # (There are now both lens galaxes in the model, so our index runs 0 -> 1.)
-            self.lens_galaxies[1].mass.centre_0 = phase_2_results.constant.lens_galaxies.light.centre_0
-            self.lens_galaxies[1].mass.centre_1 = phase_2_results.constant.lens_galaxies.light.centre_1
+            self.lens_galaxies[1].mass.centre_0 = phase_2_results.variable.lens_galaxies[0].light.centre.centre_0
+            self.lens_galaxies[1].mass.centre_1 = phase_2_results.variable.lens_galaxies[0].light.centre.centre_1
 
     phase3 = LensSubtractedPhase(lens_galaxies=[gm.GalaxyModel(mass=mp.EllipticalIsothermal),
                                                 gm.GalaxyModel(mass=mp.EllipticalIsothermal)],

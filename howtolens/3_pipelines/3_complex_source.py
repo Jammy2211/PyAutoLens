@@ -40,7 +40,7 @@ imaging_plotters.plot_image_subplot(image=image)
 
 def make_pipeline():
 
-    pipeline_name = 'howtolens/3_pipelines/3_complex_source'
+    pipeline_name = '3_pipelines/3_complex_source'
 
     # To begin, we need to initialize the lens's mass model. We should be able to do this by using a simple source
     # model. It won't fit the complicated structure of the source, but it'll give us a robust estimate of the
