@@ -170,7 +170,7 @@ class TracerImageSourcePlanes(AbstractTracer):
         self.image_plane = plane.Plane(lens_galaxies, image_plane_grids, borders=borders, compute_deflections=True,
                                        cosmology=cosmology)
 
-        source_plane_grids = self.image_plane.trace_to_next_plane()
+        source_plane_grids = self.image_plane.trace_grids_to_next_plane()
 
         self.source_plane = plane.Plane(source_galaxies, source_plane_grids, borders=borders, compute_deflections=False,
                                         cosmology=cosmology)

@@ -1,3 +1,4 @@
+from autolens import conf
 from autolens.pipeline import phase as ph
 from autolens.pipeline import pipeline
 from autolens.autofit import model_mapper as mm
@@ -22,12 +23,15 @@ from autolens.plotting import imaging_plotters
 # the opposite - specific to the image we're modeling. Fitting multiple lens galaxies is really difficult and
 # writing a pipeline that we can generalize to many lenses isn't currently possible with PyAutoLens.
 
-# First, lets load and inspect the image. You'll notice that we've upped the pixel_scales to 0.05". The 0.1" we've been
-# using up to now isn't high enough resolution to fit a multi-galaxy lensing system very well.
+# Lets quickly sort the output directory
 path = '/home/jammy/PyCharm/Projects/AutoLens/howtolens/3_pipelines'
-image = im.load_imaging_from_path(image_path=path + '/data/2_x2_lens_galaxies_image.fits',
-                                  noise_map_path=path+'/data/2_x2_lens_galaxies_noise_map.fits',
-                                  psf_path=path + '/data/2_x2_lens_galaxies_psf.fits', pixel_scale=0.05)
+conf.instance = conf.Config(config_path=conf.CONFIG_PATH, output_path=path+"/../output")
+
+# Now, lets load and inspect the image. You'll notice that we've upped the pixel_scales to 0.05". The 0.1" we've been
+# using up to now isn't high enough resolution to fit a multi-galaxy lensing system very well.
+image = im.load_imaging_from_path(image_path=path + '/data/2_x2_lens_galaxies/image.fits',
+                                  noise_map_path=path+'/data/2_x2_lens_galaxies/noise_map.fits',
+                                  psf_path=path + '/data/2_x2_lens_galaxies/psf.fits', pixel_scale=0.05)
 
 imaging_plotters.plot_image_subplot(image=image)
 
@@ -63,8 +67,8 @@ def make_pipeline():
         def pass_priors(self, previous_results):
 
             # Lets restrict the prior's on the centres around the pixel we know the galaxy's light centre peaks.
-            self.lens_galaxies[0].light.centre_0 = mm.GaussianPrior(mean=-1.0, sigma=0.05)
-            self.lens_galaxies[0].light.centre_1 = mm.GaussianPrior(mean= 0.0, sigma=0.05)
+            self.lens_galaxies[0].light.centre_0 = mm.GaussianPrior(mean=0.0, sigma=0.05)
+            self.lens_galaxies[0].light.centre_1 = mm.GaussianPrior(mean=-1.0, sigma=0.05)
 
             # Given we are only fitting the very central region of the lens galaxy, we don't want to let a parameter 
             # like th Sersic index vary, which changes the light profile structure at large radii. Lets fix it to 4.0.
@@ -86,8 +90,8 @@ def make_pipeline():
             # Note that, there is only 1 galaxy in the phase when we set it up below. This means that in this phase
             # the right-hand lens galaxy is still indexed as 0.
 
-            self.lens_galaxies[0].light.centre_0 = mm.GaussianPrior(mean=1.0, sigma=0.05)
-            self.lens_galaxies[0].light.centre_1 = mm.GaussianPrior(mean=0.0, sigma=0.05)
+            self.lens_galaxies[0].light.centre_0 = mm.GaussianPrior(mean=0.0, sigma=0.05)
+            self.lens_galaxies[0].light.centre_1 = mm.GaussianPrior(mean=1.0, sigma=0.05)
             self.lens_galaxies[0].light.sersic_index = 4.0
             
     phase2 = RightLensPhase(lens_galaxies=[gm.GalaxyModel(light=lp.EllipticalSersic)],
