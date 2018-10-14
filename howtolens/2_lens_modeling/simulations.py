@@ -23,9 +23,9 @@ image_simulated = im.PreparatoryImage.simulate(array=tracer.image_plane_image_fo
                                                exposure_time=300.0, psf=psf, background_sky_level=0.1, add_noise=True)
 
 path = "{}".format(os.path.dirname(os.path.realpath(__file__))) # Setup path so we can output the simulated data.
-im.output_imaging_to_fits(image=image_simulated, image_path=path+'/data/1_non_linear_search_image.fits',
-                                                 noise_map_path=path+'/data/1_non_linear_search_noise_map.fits',
-                                                 psf_path=path+'/data/1_non_linear_search_psf.fits',
+im.output_imaging_to_fits(image=image_simulated, image_path=path+'/data/1_non_linear_search/image.fits',
+                                                 noise_map_path=path+'/data/1_non_linear_search/noise_map.fits',
+                                                 psf_path=path+'/data/1_non_linear_search/psf.fits',
                           overwrite=True)
 
 imaging_plotters.plot_image_subplot(image=image_simulated)
@@ -48,9 +48,9 @@ image_simulated = im.PreparatoryImage.simulate(array=tracer.image_plane_image_fo
                                                exposure_time=300.0, psf=psf, background_sky_level=0.1, add_noise=True)
 
 path = "{}".format(os.path.dirname(os.path.realpath(__file__))) # Setup path so we can output the simulated data.
-im.output_imaging_to_fits(image=image_simulated, image_path=path+'/data/3_realism_and_complexity_image.fits',
-                                                 noise_map_path=path+'/data/3_realism_and_complexity_noise_map.fits',
-                                                 psf_path=path+'/data/3_realism_and_complexity_psf.fits',
+im.output_imaging_to_fits(image=image_simulated, image_path=path+'/data/3_realism_and_complexity/image.fits',
+                                                 noise_map_path=path+'/data/3_realism_and_complexity/noise_map.fits',
+                                                 psf_path=path+'/data/3_realism_and_complexity/psf.fits',
                           overwrite=True)
 
 imaging_plotters.plot_image_subplot(image=image_simulated)

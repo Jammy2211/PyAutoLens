@@ -1,7 +1,5 @@
-import itertools
 import os
 import shutil
-from functools import wraps
 from astropy import cosmology as cosmo
 import pytest
 import numpy as np
