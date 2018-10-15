@@ -12,6 +12,7 @@ from autolens.profiles import light_profiles as lp
 from autolens.profiles import mass_profiles as mp
 from autolens.plotting import imaging_plotters
 from autolens.plotting import fitting_plotters
+from howtolens.simulations import lens_modeling as simulate
 
 # Up to now, we've fitted some fairly crude and unrealistic lens models. For example, we'e completely omitted the lens
 # galaxy's light, and its mass has been modeled as a sphere. Given most lens galaxies are literally called 'elliptical'
@@ -36,6 +37,9 @@ from autolens.plotting import fitting_plotters
 path = 'path/to/AutoLens/howtolens/1_introduction'
 path = '/home/jammy/PyCharm/Projects/AutoLens/howtolens/2_lens_modeling'
 conf.instance = conf.Config(config_path=path+'/configs/3_realism_and_complexity', output_path=path+"/../output")
+
+# Simulate the image - which is a new one for this tutorial.
+simulate.tutorial_3_image()
 
 # and load a new simulated image..
 image = im.load_imaging_from_path(image_path=path + '/data/3_realism_and_complexity/image.fits',

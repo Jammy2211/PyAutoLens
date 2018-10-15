@@ -7,6 +7,7 @@ from autolens.profiles import light_profiles as lp
 from autolens.profiles import mass_profiles as mp
 from autolens.plotting import imaging_plotters
 from autolens.plotting import fitting_plotters
+from howtolens.simulations import lens_modeling as simulate
 
 # In this example, we're going to take an image and find a lens model that provides a good fit to it and we're going
 # to do this without any knowledge of what the 'correct' lens model is.
@@ -65,8 +66,11 @@ path = '/home/jammy/PyCharm/Projects/AutoLens/howtolens/2_lens_modeling'
 # to get our non-linear search to run fast!
 conf.instance = conf.Config(config_path=path+'/configs/1_non_linear_search', output_path=path+"/../output")
 
-# In the file 'simulations', we've simulated the image we'll fit in this example.
-# Don't look at this file yet - lets keep the lens model's input parameters unknown.
+# In the file 'howtolens/simulations/lens_modeling', we've created functions to simulate the images we'll fit in this
+# chapter. Lets simulate the image for this tutorial - it'll output this to fits files for us to load.
+simulate.tutorial_1_image()
+
+# These are the fits file of the image the function above generated.
 image = im.load_imaging_from_path(image_path=path + '/data/1_non_linear_search/image.fits',
                                   noise_map_path=path+'/data/1_non_linear_search/noise_map.fits',
                                   psf_path=path + '/data/1_non_linear_search/psf.fits', pixel_scale=0.1)

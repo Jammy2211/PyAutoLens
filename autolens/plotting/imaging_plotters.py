@@ -1,8 +1,9 @@
 from matplotlib import pyplot as plt
 
 from autolens import conf
-from autolens.plotting import plotters
-from autolens.plotting import plotter_tools
+from autolens.plotting import tools
+from autolens.plotting import plot_array
+from autolens.plotting import tools_array
 
 
 def plot_image_subplot(image, mask=None, positions=None, units='arcsec', output_path=None, output_filename='images',
@@ -31,7 +32,7 @@ def plot_image_subplot(image, mask=None, positions=None, units='arcsec', output_
 
     if plot_image_as_subplot or ignore_config:
 
-        rows, columns, figsize = plotter_tools.get_subplot_rows_columns_figsize(number_subplots=4)
+        rows, columns, figsize = tools.get_subplot_rows_columns_figsize(number_subplots=4)
 
         plt.figure(figsize=figsize)
         plt.subplot(rows, columns, 1)
@@ -70,8 +71,8 @@ def plot_image_subplot(image, mask=None, positions=None, units='arcsec', output_
             titlesize=10, xlabelsize=10, ylabelsize=10,
             output_path=output_path, output_format=output_format)
 
-        plotter_tools.output_subplot_array(output_path=output_path, output_filename=output_filename,
-                                           output_format=output_format)
+        tools.output_subplot_array(output_path=output_path, output_filename=output_filename,
+                                         output_format=output_format)
 
         plt.close()
 
@@ -124,10 +125,10 @@ def plot_image(image, mask=None, positions=None, grid=None, as_subplot=False,
                title='Observed Image', titlesize=16, xlabelsize=16, ylabelsize=16,
                output_path=None, output_format='show', output_filename='observed_image'):
 
-    plotters.plot_image(image, mask, positions, grid, as_subplot,
-                        units, kpc_per_arcsec, xyticksize, norm, norm_min,
-                        norm_max, linthresh, linscale, figsize, aspect, cmap, cb_ticksize, title,
-                        titlesize, xlabelsize, ylabelsize, output_path, output_format, output_filename)
+    plot_array.plot_image(image, mask, positions, grid, as_subplot,
+                          units, kpc_per_arcsec, xyticksize, norm, norm_min,
+                          norm_max, linthresh, linscale, figsize, aspect, cmap, cb_ticksize, title,
+                          titlesize, xlabelsize, ylabelsize, output_path, output_format, output_filename)
 
 
 def plot_noise_map(image, mask=None, as_subplot=False,
@@ -137,10 +138,10 @@ def plot_noise_map(image, mask=None, as_subplot=False,
                    title='Noise-Map', titlesize=16, xlabelsize=16, ylabelsize=16,
                    output_path=None, output_format='show', output_filename='noise_map'):
 
-    plotters.plot_noise_map(image.noise_map, mask, as_subplot,
-                            units, kpc_per_arcsec, xyticksize, norm, norm_min,
-                            norm_max, linthresh, linscale, figsize, aspect, cmap, cb_ticksize, title,
-                            titlesize, xlabelsize, ylabelsize, output_path, output_format, output_filename)
+    plot_array.plot_noise_map(image.noise_map, mask, as_subplot,
+                              units, kpc_per_arcsec, xyticksize, norm, norm_min,
+                              norm_max, linthresh, linscale, figsize, aspect, cmap, cb_ticksize, title,
+                              titlesize, xlabelsize, ylabelsize, output_path, output_format, output_filename)
 
 def plot_psf(image, as_subplot=False,
              units='arcsec', kpc_per_arcsec=None,
@@ -149,10 +150,10 @@ def plot_psf(image, as_subplot=False,
              title='PSF', titlesize=16, xlabelsize=16, ylabelsize=16,
              output_path=None, output_format='show', output_filename='psf'):
 
-    plotters.plot_psf(image.psf, as_subplot,
-                      units, kpc_per_arcsec, xyticksize, norm, norm_min,
-                      norm_max, linthresh, linscale, figsize, aspect, cmap, cb_ticksize, title,
-                      titlesize, xlabelsize, ylabelsize, output_path, output_format, output_filename)
+    plot_array.plot_psf(image.psf, as_subplot,
+                        units, kpc_per_arcsec, xyticksize, norm, norm_min,
+                        norm_max, linthresh, linscale, figsize, aspect, cmap, cb_ticksize, title,
+                        titlesize, xlabelsize, ylabelsize, output_path, output_format, output_filename)
 
 def plot_signal_to_noise_map(image, mask=None, as_subplot=False,
                              units='arcsec', kpc_per_arcsec=None,
@@ -161,13 +162,19 @@ def plot_signal_to_noise_map(image, mask=None, as_subplot=False,
                              title='Noise-Map', titlesize=16, xlabelsize=16, ylabelsize=16,
                              output_path=None, output_format='show', output_filename='signal_to_noise_map'):
 
-    plotters.plot_signal_to_noise_map(image.signal_to_noise_map, mask, as_subplot,
-                        units, kpc_per_arcsec, xyticksize, norm, norm_min,
-                        norm_max, linthresh, linscale, figsize, aspect, cmap, cb_ticksize, title,
-                        titlesize, xlabelsize, ylabelsize, output_path, output_format, output_filename)
+    plot_array.plot_signal_to_noise_map(image.signal_to_noise_map, mask, as_subplot,
+                                        units, kpc_per_arcsec, xyticksize, norm, norm_min,
+                                        norm_max, linthresh, linscale, figsize, aspect, cmap, cb_ticksize, title,
+                                        titlesize, xlabelsize, ylabelsize, output_path, output_format, output_filename)
 
-def plot_grid(image, xmin=None, xmax=None, ymin=None, ymax=None,
-              output_path=None, output_format='show', output_filename='grid'):
-
-    plotters.plot_grid(grid=image.grid_1d, xmin=xmin, xmax=xmax, ymin=ymin, ymax=ymax, output_path=output_path,
-                       output_format=output_format, output_filename=output_filename)
+# def plot_grid(image, axis_limits=None,
+#               units='arcsec', kpc_per_arcsec=None,
+#               figsize=(12, 8), pointsize=3, xyticksize=16,
+#               title='Plane Grid', titlesize=16, xlabelsize=16, ylabelsize=16,
+#               output_path=None, output_format='show', output_filename='grid'):
+#
+#     plotters.plot_grid(grid=image.grid_1d, axis_limits=axis_limits,
+#                        units=units, kpc_per_arcsec=kpc_per_arcsec,
+#                        figsize=figsize, pointsize=pointsize, xyticksize=xyticksize,
+#                        title=title, titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize,
+#                        output_path=output_path, output_format=output_format, output_filename=output_filename)

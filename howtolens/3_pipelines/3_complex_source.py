@@ -12,6 +12,7 @@ from autolens.lensing import galaxy_model as gm
 from autolens.profiles import light_profiles as lp
 from autolens.profiles import mass_profiles as mp
 from autolens.plotting import imaging_plotters
+from howtolens.simulations import pipelines as simulation
 
 # So far, we've not paid much attention to the source galaxy's morphology. We've assumed its a single-component
 # exponential profile, which is a fairly crude assumption. A quick look at any image of a real galaxy reveals a wealth
@@ -26,6 +27,9 @@ from autolens.plotting import imaging_plotters
 # Lets quickly sort the output directory
 path = '/home/jammy/PyCharm/Projects/AutoLens/howtolens/3_pipelines'
 conf.instance = conf.Config(config_path=conf.CONFIG_PATH, output_path=path+"/../output")
+
+# Lets simulate the image we'll fit, which is another new image.
+simulation.pipeline_complex_source_image()
 
 # Lets have a look at our strong lens with a complex source
 image = im.load_imaging_from_path(image_path=path + '/data/3_complex_source/image.fits',

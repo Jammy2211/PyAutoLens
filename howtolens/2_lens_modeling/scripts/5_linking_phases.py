@@ -7,6 +7,7 @@ from autolens.imaging import image as im
 from autolens.profiles import light_profiles as lp
 from autolens.profiles import mass_profiles as mp
 from autolens.plotting import fitting_plotters
+from howtolens.simulations import lens_modeling as simulate
 
 # So, we've learnt that if our parameter space is too complex, our non-linear search might fail to find the global
 # maximum solution. However, we also learnt how to ensure this doesn't happen, by:
@@ -40,7 +41,8 @@ from autolens.plotting import fitting_plotters
 
 # As per usual, lets load the configs and data.
 path = '/home/jammy/PyCharm/Projects/AutoLens/howtolens/2_lens_modeling'
-conf.instance = conf.Config(config_path=path+'/configs/3_realism_and_complexity', output_path=path+"/../output")
+conf.instance = conf.Config(config_path=path+'/configs/5_linking_phases', output_path=path+"/../output")
+simulate.tutorial_3_image()
 image = im.load_imaging_from_path(image_path=path + '/data/3_realism_and_complexity/image.fits',
                                   noise_map_path=path+'/data/3_realism_and_complexity/noise_map.fits',
                                   psf_path=path + '/data/3_realism_and_complexity/psf.fits', pixel_scale=0.1)
@@ -86,7 +88,7 @@ class LightTracesMassPhase(ph.LensSourcePlanePhase):
 phase_1 = LightTracesMassPhase(lens_galaxies=[gm.GalaxyModel(light=lp.EllipticalSersic, mass=mp.EllipticalIsothermal,
                                                              align_axis_ratios=True, align_orientations=True)],
                                       source_galaxies=[gm.GalaxyModel(light=lp.EllipticalExponential)],
-                                      optimizer_class=nl.MultiNest, phase_name='howtolens/5_linking_phase_1')
+                                      optimizer_class=nl.MultiNest, phase_name='5_linking_phase_1')
 
 # Lets go one step further. Now we know our parameter space is less complex, maybe we can find the maximum likelihood
 # with fewer MultiNest live points and a faster sampling rate?
@@ -142,7 +144,7 @@ class CustomPriorPhase(ph.LensSourcePlanePhase):
 # faster than it would had we assumed broad priros on all the parameters.
 phase_2 = CustomPriorPhase(lens_galaxies=[gm.GalaxyModel(light=lp.EllipticalSersic, mass=mp.EllipticalIsothermal)],
                            source_galaxies=[gm.GalaxyModel(light=lp.EllipticalExponential)],
-                           optimizer_class=nl.MultiNest, phase_name='howtolens/2_lens_modeling/5_linking_phase_2')
+                           optimizer_class=nl.MultiNest, phase_name='2_lens_modeling/5_linking_phase_2')
 phase_2.optimizer.n_live_points = 30
 phase_2.optimizer.sampling_efficiency = 0.9
 phase_2_results = phase_2.run(image=image)

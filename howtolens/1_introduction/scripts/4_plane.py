@@ -85,8 +85,11 @@ source_plane = plane.Plane(galaxies=[source_galaxy], grids=source_plane_grids)
 plane_plotters.plot_plane_grid(plane=image_plane, title='Image-plane Grid')
 plane_plotters.plot_plane_grid(plane=source_plane, title='Source-plane Grid')
 
-# We can zoom in on the 'centre' of the source-plane (remembering the lens galaxy was centred at (0.1, 0.1)
-plane_plotters.plot_plane_grid(plane=source_plane, xmin=-0.1, xmax=0.1, ymin=-0.1, ymax=0.1, title='Source-plane Grid')
+# We can zoom in on the 'centre' of the source-plane using the axis limits, which are defined as [xmin, xmax, ymin,
+# ymax] (remembering the lens galaxy was centred at (0.1, 0.1)
+plane_plotters.plot_plane_grid(plane=source_plane, axis_limits=[-0.1, 0.1, -0.1, 0.1], title='Source-plane Grid')
+
+plane_plotters.plot_image_and_source_plane_subplot(image_plane=image_plane, source_plane=source_plane)
 
 # Clearly, the source-plane has a very different grid to the image-plane. It's not uniform, its not regular and well,
 # its not boring!
