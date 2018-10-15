@@ -114,20 +114,8 @@ def make_pipeline():
             phase_2_results = previous_results[1]
 
             # We're going to link the centres of the light profiles computed above to the centre of the lens galaxy
-            # mass-profiles in this phase. However, we're going to fix the centres of the mass profiles to those
-            # centres, to get things running fast.
-
-            # To link two results, such that the parameters are not 'variable' but are instead 'constant', we simply
-            # use the 'constant' attribute of the previous results.
-
-            # NOTE - BUG IN CODE PREVENTS CONSTANT FROM BEING USED SO IVE COMMENTED THIS OUT TO VARIABLE FOR NOW.
-
-            # self.lens_galaxies[0].mass.centre_0 = phase_1_results.constant.lens_galaxies[0].light.centre.centre_0
-            # self.lens_galaxies[0].mass.centre_1 = phase_1_results.constant.lens_galaxies[0].light.centre.centre_1
-            #
-            # # (There are now both lens galaxes in the model, so our index runs 0 -> 1.)
-            # self.lens_galaxies[1].mass.centre_0 = phase_2_results.constant.lens_galaxies[0].light.centre.centre_0
-            # self.lens_galaxies[1].mass.centre_1 = phase_2_results.constant.lens_galaxies[0].light.centre.centre_1
+            # mass-profiles in this phase. Because the centres of the mass profiles were fixed in phases 1 and 2,
+            # linking them using the 'variable' attribute ensures they stay constant.
 
             self.lens_galaxies[0].mass.centre_0 = phase_1_results.variable.lens_galaxies[0].light.centre.centre_0
             self.lens_galaxies[0].mass.centre_1 = phase_1_results.variable.lens_galaxies[0].light.centre.centre_1
