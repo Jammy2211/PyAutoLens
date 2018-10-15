@@ -4,12 +4,11 @@ import matplotlib.colors as colors
 import numpy as np
 import itertools
 
-from astropy.io import fits
+from autolens.plotting import tools
 
 def plot_array(array, as_subplot, figsize, aspect, cmap, norm, norm_max, norm_min, linthresh, linscale):
 
-    if not as_subplot:
-        plt.figure(figsize=figsize)
+    tools.setup_figure(figsize=figsize, as_subplot=as_subplot)
 
     norm_min, norm_max = get_normalization_min_max(array=array, norm_min=norm_min, norm_max=norm_max)
     norm_scale = get_normalization_scale(norm=norm, norm_min=norm_min, norm_max=norm_max,
@@ -39,10 +38,7 @@ def get_normalization_scale(norm, norm_min, norm_max, linthresh, linscale):
         raise exc.VisualizeException('The normalization (norm) supplied to the plotter is not a valid string (must be '
                                      'linear | log | symmetric_log')
 
-def set_title(title, titlesize):
-    plt.title(title, fontsize=titlesize)
-
-def set_xy_labels_and_ticks(shape, units, kpc_per_arcsec, xticks, yticks, xlabelsize, ylabelsize, xyticksize):
+def set_xy_labels_and_ticks_in_pixels(shape, units, kpc_per_arcsec, xticks, yticks, xlabelsize, ylabelsize, xyticksize):
 
     if units is 'pixels':
 
@@ -53,8 +49,8 @@ def set_xy_labels_and_ticks(shape, units, kpc_per_arcsec, xticks, yticks, xlabel
 
     elif units is 'arcsec' or kpc_per_arcsec is None:
 
-        plt.xticks(shape[0] * np.array([0.0, 0.33, 0.66, 0.99]), np.round(xticks, 1))
-        plt.yticks(shape[1] * np.array([0.0, 0.33, 0.66, 0.99]), np.round(-1.0*yticks, 1))
+        plt.yticks(shape[0] * np.array([0.0, 0.3333, 0.6666, 1.0]), np.round(-1.0*yticks, 1))
+        plt.xticks(shape[1] * np.array([0.0, 0.3333, 0.6666, 1.0]), np.round(xticks, 1))
         plt.xlabel('x (arcsec)', fontsize=xlabelsize)
         plt.ylabel('y (arcsec)', fontsize=ylabelsize)
 
@@ -99,49 +95,3 @@ def plot_grid(grid):
 
     if grid is not None:
         plt.scatter(y=grid[:, 0], x=grid[:, 1], s=1)
-
-def plot_close(as_subplot):
-
-    if not as_subplot:
-        plt.close()
-
-def get_subplot_rows_columns_figsize(number_subplots):
-
-    if number_subplots <= 2:
-        return 1, 2, (15, 6)
-    elif number_subplots <= 4:
-        return 2, 2, (13, 10)
-    elif number_subplots <= 6:
-        return 2,3, (18, 12)
-    elif number_subplots <= 9:
-        return 3,3, (25, 20)
-    elif number_subplots <= 12:
-        return 3,4, (25, 20)
-    elif number_subplots <= 16:
-        return 4,4, (25, 20)
-    elif number_subplots <= 20:
-        return 4,5, (25, 20)
-    else:
-        return 6,6, (25, 20)
-
-def output_array(array, as_subplot, output_path, output_filename, output_format):
-
-    if not as_subplot:
-
-        if output_format is 'show':
-            plt.show()
-        elif output_format is 'png':
-            plt.savefig(output_path + output_filename + '.png', bbox_inches='tight')
-        elif output_format is 'fits':
-            hdu = fits.PrimaryHDU()
-            hdu.data = array
-            hdu.writeto(output_path + output_filename + '.fits')
-
-def output_subplot_array(output_path, output_filename, output_format):
-
-    if output_format is 'show':
-        plt.show()
-    elif output_format is 'png':
-        plt.savefig(output_path + output_filename + '.png', bbox_inches='tight')
-    elif output_format is 'fits':
-        raise exc.VisualizeException('You cannot output a subplots with format .fits')

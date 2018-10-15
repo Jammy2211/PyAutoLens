@@ -7,6 +7,7 @@ from autolens.imaging import mask
 from autolens.lensing import galaxy_model as gm
 from autolens.profiles import light_profiles as lp
 from autolens.profiles import mass_profiles as mp
+from howtolens.simulations import pipelines as simulation
 
 # In chapter 2, we fitted a strong lens which included the contribution of light from the lens galaxy. We're going to
 # fit this lens again (I promise, this is the last time!). However, now we're approaching lens modeling with runners,
@@ -45,6 +46,15 @@ from autolens.profiles import mass_profiles as mp
 # to the AutoLens/howtolens/output directory, to keep everything tidy and in one place.
 path = '/home/jammy/PyCharm/Projects/AutoLens/howtolens/3_pipelines'
 conf.instance = conf.Config(config_path=conf.CONFIG_PATH, output_path=path+"/../output")
+
+# Now lets simulate hte image we'll fit, which as I said above, is the same image we saw in the previous chapter.
+simulation.pipeline_lens_and_soure_image()
+
+# Lets load the image before writing our pipeline.
+path = '/home/jammy/PyCharm/Projects/AutoLens/howtolens/3_pipelines'
+image = im.load_imaging_from_path(image_path=path + '/data/1_lens_and_source/image.fits',
+                                  noise_map_path=path+'/data/1_lens_and_source/noise_map.fits',
+                                  psf_path=path + '/data/1_lens_and_source/psf.fits', pixel_scale=0.1)
 
 # A pipeline is a one long python function (this is why Jupyter notebooks arn't ideal). When we run it, this function
 # 'makes' the pipeline, as you'll see in a moment.
@@ -175,12 +185,6 @@ def make_pipeline():
                               optimizer_class=nl.MultiNest, phase_name='/phase_3_both')
 
     return pipeline.PipelineImaging(pipeline_name, phase1, phase2, phase3)
-
-# This is the script which loads the image, makes the pipeline and runs it.
-path = '/home/jammy/PyCharm/Projects/AutoLens/howtolens/2_lens_modeling'
-image = im.load_imaging_from_path(image_path=path + '/data/3_realism_and_complexity/image.fits',
-                                  noise_map_path=path+'/data/3_realism_and_complexity/noise_map.fits',
-                                  psf_path=path + '/data/3_realism_and_complexity/psf.fits', pixel_scale=0.1)
 
 pipeline_lens_and_source = make_pipeline()
 pipeline_lens_and_source.run(image=image)

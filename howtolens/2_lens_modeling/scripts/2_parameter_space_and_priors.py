@@ -8,6 +8,7 @@ from autolens.profiles import light_profiles as lp
 from autolens.profiles import mass_profiles as mp
 from autolens.plotting import imaging_plotters
 from autolens.plotting import fitting_plotters
+from howtolens.simulations import lens_modeling as simulate
 
 # In the previous example, we used a non-linear search to infer the best-fit lens model to a strong lens image. In this
 # example, we'll get a deeper intuition of how a non-linear search works.
@@ -84,6 +85,9 @@ from autolens.plotting import fitting_plotters
 path = 'path/to/AutoLens/howtolens/2_lens_modeling'
 path = '/home/jammy/PyCharm/Projects/AutoLens/howtolens/2_lens_modeling'
 conf.instance = conf.Config(config_path=path+'/configs/2_parameter_space_and_priors', output_path=path+"/../output")
+
+# Simulate the image again - we'll use the same image as the previous tutorial.
+simulate.tutorial_1_image()
 
 # Lets also setup the image, lens and source galaxy models, using the same image as the previous tutorial.
 image = im.load_imaging_from_path(image_path=path + '/data/1_non_linear_search/image.fits',

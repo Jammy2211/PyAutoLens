@@ -409,6 +409,15 @@ class ImageGrid(np.ndarray):
 
         return self.mask.pixel_scale
 
+    @property
+    def yticks(self):
+        """Compute the yticks labels of this grid, used for plotting the y-axis ticks when visualizing an _image-grid"""
+        return np.linspace(np.min(self[:,0]), np.max(self[:,0]), 4)
+
+    @property
+    def xticks(self):
+        """Compute the xticks labels of this grid, used for plotting the x-axis ticks when visualizing an _image-grid"""
+        return np.linspace(np.min(self[:,1]), np.max(self[:,1]), 4)
 
 class SubGrid(ImageGrid):
     """Abstract class for a sub-grid of coordinates. On a sub-grid, each padded pixel is sub-gridded into a uniform \

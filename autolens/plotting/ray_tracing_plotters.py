@@ -1,8 +1,8 @@
 from matplotlib import pyplot as plt
 
 from autolens import conf
-from autolens.plotting import plotters
-from autolens.plotting import plotter_tools
+from autolens.plotting import tools
+from autolens.plotting import plot_array
 from autolens.plotting import plane_plotters
 
 def plot_ray_tracing_subplot(tracer, mask=None, positions=None, units='kpc', output_path=None,
@@ -27,7 +27,7 @@ def plot_ray_tracing_subplot(tracer, mask=None, positions=None, units='kpc', out
 
     if plot_ray_tracing_as_subplot or ignore_config is True:
 
-        rows, columns, figsize = plotter_tools.get_subplot_rows_columns_figsize(number_subplots=6)
+        rows, columns, figsize = tools.get_subplot_rows_columns_figsize(number_subplots=6)
         plt.figure(figsize=figsize)
         plt.subplot(rows, columns, 1)
 
@@ -84,8 +84,8 @@ def plot_ray_tracing_subplot(tracer, mask=None, positions=None, units='kpc', out
             title='Deflection Angles (x)', titlesize=10, xlabelsize=10, ylabelsize=10,
             output_path=output_path, output_filename='', output_format=output_format)
 
-        plotter_tools.output_subplot_array(output_path=output_path, output_filename=output_filename,
-                                           output_format=output_format)
+        tools.output_subplot_array(output_path=output_path, output_filename=output_filename,
+                                   output_format=output_format)
 
         plt.close()
 
@@ -147,13 +147,13 @@ def plot_image_plane_image(tracer, mask=None, positions=None, grid=None, as_subp
                            title='Tracer Image-Plane Image', titlesize=16, xlabelsize=16, ylabelsize=16,
                            output_path=None, output_format='show', output_filename='tracer_image_plane_image'):
 
-    plotters.plot_image_plane_image(image_plane_image=tracer.image_plane_image, mask=mask, positions=positions,
-                                    grid=grid, as_subplot=as_subplot,
-                              units=units, kpc_per_arcsec=kpc_per_arcsec, xyticksize=xyticksize,
-                              norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
-                              linscale=linscale, figsize=figsize, aspect=aspect, cmap=cmap, cb_ticksize=cb_ticksize,
-                              title=title, titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize,
-                              output_path=output_path, output_format=output_format, output_filename=output_filename)
+    plot_array.plot_image_plane_image(image_plane_image=tracer.image_plane_image, mask=mask, positions=positions,
+                                      grid=grid, as_subplot=as_subplot,
+                                      units=units, kpc_per_arcsec=kpc_per_arcsec, xyticksize=xyticksize,
+                                      norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
+                                      linscale=linscale, figsize=figsize, aspect=aspect, cmap=cmap, cb_ticksize=cb_ticksize,
+                                      title=title, titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize,
+                                      output_path=output_path, output_format=output_format, output_filename=output_filename)
 
 def plot_surface_density(tracer, as_subplot=False,
                          units='arcsec', kpc_per_arcsec=None,
@@ -162,12 +162,12 @@ def plot_surface_density(tracer, as_subplot=False,
                          title='Tracer Surface Density', titlesize=16, xlabelsize=16, ylabelsize=16,
                          output_path=None, output_format='show', output_filename='tracer_surface_density'):
 
-    plotters.plot_surface_density(surface_density=tracer.surface_density, as_subplot=as_subplot,
-                              units=units, kpc_per_arcsec=kpc_per_arcsec, xyticksize=xyticksize,
-                              norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
-                              linscale=linscale, figsize=figsize, aspect=aspect, cmap=cmap, cb_ticksize=cb_ticksize,
-                              title=title, titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize,
-                              output_path=output_path, output_format=output_format, output_filename=output_filename)
+    plot_array.plot_surface_density(surface_density=tracer.surface_density, as_subplot=as_subplot,
+                                    units=units, kpc_per_arcsec=kpc_per_arcsec, xyticksize=xyticksize,
+                                    norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
+                                    linscale=linscale, figsize=figsize, aspect=aspect, cmap=cmap, cb_ticksize=cb_ticksize,
+                                    title=title, titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize,
+                                    output_path=output_path, output_format=output_format, output_filename=output_filename)
 
 def plot_potential(tracer, as_subplot=False,
                    units='arcsec', kpc_per_arcsec=None,
@@ -176,7 +176,7 @@ def plot_potential(tracer, as_subplot=False,
                    title='Tracer Surface Density', titlesize=16, xlabelsize=16, ylabelsize=16,
                    output_path=None, output_format='show', output_filename='tracer_potential'):
 
-    plotters.plot_potential(potential=tracer.potential, as_subplot=as_subplot,
+    plot_array.plot_potential(potential=tracer.potential, as_subplot=as_subplot,
                               units=units, kpc_per_arcsec=kpc_per_arcsec, xyticksize=xyticksize,
                               norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
                               linscale=linscale, figsize=figsize, aspect=aspect, cmap=cmap, cb_ticksize=cb_ticksize,
@@ -190,12 +190,12 @@ def plot_deflections_y(tracer, as_subplot=False,
                        title='Tracer Surface Density', titlesize=16, xlabelsize=16, ylabelsize=16,
                        output_path=None, output_format='show', output_filename='tracer_deflections_y'):
 
-    plotters.plot_deflections_y(deflections_y=tracer.deflections_y, as_subplot=as_subplot,
-                              units=units, kpc_per_arcsec=kpc_per_arcsec, xyticksize=xyticksize,
-                              norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
-                              linscale=linscale, figsize=figsize, aspect=aspect, cmap=cmap, cb_ticksize=cb_ticksize,
-                              title=title, titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize,
-                              output_path=output_path, output_format=output_format, output_filename=output_filename)
+    plot_array.plot_deflections_y(deflections_y=tracer.deflections_y, as_subplot=as_subplot,
+                                  units=units, kpc_per_arcsec=kpc_per_arcsec, xyticksize=xyticksize,
+                                  norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
+                                  linscale=linscale, figsize=figsize, aspect=aspect, cmap=cmap, cb_ticksize=cb_ticksize,
+                                  title=title, titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize,
+                                  output_path=output_path, output_format=output_format, output_filename=output_filename)
 
 def plot_deflections_x(tracer, as_subplot=False,
                        units='arcsec', kpc_per_arcsec=None,
@@ -204,9 +204,9 @@ def plot_deflections_x(tracer, as_subplot=False,
                        title='Tracer Surface Density', titlesize=16, xlabelsize=16, ylabelsize=16,
                        output_path=None, output_format='show', output_filename='tracer_deflections_x'):
 
-    plotters.plot_deflections_x(deflections_x=tracer.deflections_x, as_subplot=as_subplot,
-                              units=units, kpc_per_arcsec=kpc_per_arcsec, xyticksize=xyticksize,
-                              norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
-                              linscale=linscale, figsize=figsize, aspect=aspect, cmap=cmap, cb_ticksize=cb_ticksize,
-                              title=title, titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize,
-                              output_path=output_path, output_format=output_format, output_filename=output_filename)
+    plot_array.plot_deflections_x(deflections_x=tracer.deflections_x, as_subplot=as_subplot,
+                                  units=units, kpc_per_arcsec=kpc_per_arcsec, xyticksize=xyticksize,
+                                  norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
+                                  linscale=linscale, figsize=figsize, aspect=aspect, cmap=cmap, cb_ticksize=cb_ticksize,
+                                  title=title, titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize,
+                                  output_path=output_path, output_format=output_format, output_filename=output_filename)
