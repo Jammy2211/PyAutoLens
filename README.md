@@ -72,8 +72,8 @@ The example above shows the simplest analysis one can perform in PyAutoLens. PyA
 
 - **Pipelines** - build automated analysis pipelines to fit complex lens models to large samples of strong lenses.
 - **Inversions** - Reconstruct complex source galaxy morphologies on a variety of pixel-grids.
-- **Adaption** - Adapt the lensing analysis to the features of the observed strong lens imaging.
-- **Multi-Plane** - Model multi-plane lenses, including systems with multiple lensed source galaxies.
+- **Adaption** - (October 2018) - Adapt the lensing analysis to the features of the observed strong lens imaging.
+- **Multi-Plane** - (November 2018) Model multi-plane lenses, including systems with multiple lensed source galaxies.
 
 ## HowToLens
 
