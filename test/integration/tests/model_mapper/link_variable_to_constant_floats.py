@@ -14,16 +14,18 @@ dirpath = os.path.dirname(os.path.realpath(__file__))
 dirpath = os.path.dirname(dirpath)
 output_path = '{}/../output/model_mapper'.format(dirpath)
 
+
 try:
     shutil.rmtree(output_path)
 except FileNotFoundError:
     pass
 
 
+
 def pipeline():
 
-    pipeline_name = "link_variable_with_constants_to_tuples"
-    data_name = '/link_variable_constants_to_tuples'
+    pipeline_name = "link_variable_to_constant_floats"
+    data_name = '/link_variable_to_constant_floats'
 
     tools.reset_paths(data_name, pipeline_name, output_path)
 
@@ -47,8 +49,8 @@ def make_pipeline(pipeline_name):
     class MMPhase(ph.LensPlanePhase):
 
         def pass_priors(self, previous_results):
-            self.lens_galaxies[0].sersic.centre_0 = 1.0
-            self.lens_galaxies[0].sersic.centre_1 = 2.0
+            self.lens_galaxies[0].sersic.axis_ratio = 0.2
+            self.lens_galaxies[0].sersic.phi = 90.0
 
     phase1 = MMPhase(lens_galaxies=[gm.GalaxyModel(sersic=lp.EllipticalSersic)],
                      optimizer_class=nl.MultiNest, phase_name="{}/phase1".format(pipeline_name))
@@ -59,7 +61,7 @@ def make_pipeline(pipeline_name):
     class MMPhase2(ph.LensPlanePhase):
 
         def pass_priors(self, previous_results):
-            self.lens_galaxies = previous_results[0].variable.lens_galaxies
+            self.lens_galaxies = previous_results[0].constant.lens_galaxies
 
     phase2 = MMPhase2(lens_galaxies=[gm.GalaxyModel(sersic=lp.EllipticalSersic)],
                       optimizer_class=nl.MultiNest, phase_name="{}/phase2".format(pipeline_name))
