@@ -7,7 +7,8 @@ from autolens.inversion import regularization
 from test.mock.mock_mask import MockSubGridCoords, MockGridCollection, MockBorderCollection
 
 
-class TestPixelizationMapperAndRegularizationFromPixelization:
+class TestMapperAndRegularizationFromPixelization:
+
     class TestRectangular:
 
         def test__5_simple_grid__no_sub_grid(self):
@@ -31,6 +32,49 @@ class TestPixelizationMapperAndRegularizationFromPixelization:
             pix = pixelizations.Rectangular(shape=(3, 3))
 
             pix_mapper = pix.mapper_from_grids_and_borders(grids, borders)
+
+            assert (pix_mapper.mapping_matrix == np.array([[1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+                                                           [0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+                                                           [0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0],
+                                                           [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0],
+                                                           [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0]])).all()
+            assert pix_mapper.shape == (3, 3)
+
+            reg = regularization.Constant(coeffs=(1.0,))
+            regularization_matrix = reg.regularization_matrix_from_pixel_neighbors(pix_mapper.pixel_neighbors)
+
+            assert (regularization_matrix ==
+                    np.array([[2.00000001, -1.0, 0.0, -1.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+                              [-1.0, 3.00000001, -1.0, 0.0, -1.0, 0.0, 0.0, 0.0, 0.0],
+                              [0.0, -1.0, 2.00000001, 0.0, 0.0, -1.0, 0.0, 0.0, 0.0],
+                              [-1.0, 0.0, 0.0, 3.00000001, -1.0, 0.0, -1.0, 0.0, 0.0],
+                              [0.0, -1.0, 0.0, -1.0, 4.00000001, -1.0, 0.0, -1.0, 0.0],
+                              [0.0, 0.0, -1.0, 0.0, -1.0, 3.00000001, 0.0, 0.0, -1.0],
+                              [0.0, 0.0, 0.0, -1.0, 0.0, 0.0, 2.00000001, -1.0, 0.0],
+                              [0.0, 0.0, 0.0, 0.0, -1.0, 0.0, -1.0, 3.00000001, -1.0],
+                              [0.0, 0.0, 0.0, 0.0, 0.0, -1.0, 0.0, -1.0, 2.00000001]])).all()
+
+        def test__same_as_above__mapper_from_grids(self):
+            # Source-plane comprises 5 grid, so 5 masked_image pixels traced to the pix-plane.
+            pixelization_grid = np.array([[1.0, -1.0], [1.0, 1.0], [0.0, 0.0], [-1.0, -1.0], [-1.0, 1.0]])
+            pixelization_border = msk.ImageGridBorder(arr=np.array([0, 1, 3, 4]))
+
+            pixelization_sub_grid = np.array([[1.0, -1.0], [1.0, 1.0], [0.0, 0.0], [-1.0, -1.0], [-1.0, 1.0]])
+            pixelization_sub_border = msk.SubGridBorder(arr=np.array([0, 1, 3, 4]), sub_grid_size=1)
+
+            sub_to_image = np.array([0, 1, 2, 3, 4])
+
+            grids = MockGridCollection(image=pixelization_grid,
+                                       sub=MockSubGridCoords(pixelization_sub_grid, sub_to_image, sub_grid_size=1))
+
+            borders = MockBorderCollection(image=pixelization_border, sub=pixelization_sub_border)
+
+            # There is no sub-grid, so our sub_grid are just the masked_image grid (note the NumPy weighted_data structure
+            # ensures this has no sub-gridding)
+
+            pix = pixelizations.Rectangular(shape=(3, 3))
+
+            pix_mapper = pix.mapper_from_grids(grids)
 
             assert (pix_mapper.mapping_matrix == np.array([[1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
                                                            [0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
