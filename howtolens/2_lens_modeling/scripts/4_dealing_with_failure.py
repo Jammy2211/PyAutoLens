@@ -7,14 +7,17 @@ from autolens.imaging import image as im
 from autolens.profiles import light_profiles as lp
 from autolens.profiles import mass_profiles as mp
 from autolens.plotting import fitting_plotters
+from howtolens.simulations import lens_modeling as simulate
 
 # We finished the last tutorial on sour note. Our non-linear search failed miserably, and we were unable to infer a
 # lens model which fitted our realistic data-set well. In this tutorial, we're going to right our past wrongs and infer
 # the correct model - not just once, but three times!
 
-# First, lets get the config / image loading out the way - we'll fit the same image as the previous tutorial.
+# First, lets get the config / simulation / image loading out the way - we'll fit the same image as the previous
+# tutorial.
 path = '/home/jammy/PyCharm/Projects/AutoLens/howtolens/2_lens_modeling'
-conf.instance = conf.Config(config_path=path+'/configs/3_realism_and_complexity', output_path=path+"/../output")
+conf.instance = conf.Config(config_path=path+'/configs/4_dealing_with_failure', output_path=path+"/../output")
+simulate.tutorial_3_image()
 image = im.load_imaging_from_path(image_path=path + '/data/3_realism_and_complexity/image.fits',
                                   noise_map_path=path+'/data/3_realism_and_complexity/noise_map.fits',
                                   psf_path=path + '/data/3_realism_and_complexity/psf.fits', pixel_scale=0.1)
@@ -80,9 +83,9 @@ class CustomPriorPhase(ph.LensSourcePlanePhase):
         # near 4. So lets change our Sersic index from a UniformPrior between 0.8 and 8.0 to reflect this
         self.lens_galaxies[0].light.sersic_index = mm.GaussianPrior(mean=4.0, sigma=1.0)
 
-        # Finally, the 'ring' that the lensed source forms clearly has a radius of about 1.0". This is its Einstein
+        # Finally, the 'ring' that the lensed source forms clearly has a radius of about 0.8". This is its Einstein
         # radius, so lets change the prior from a UniformPrior between 0.0" and 4.0".
-        self.lens_galaxies[0].mass.einstein_radius = mm.GaussianPrior(mean=1.0, sigma=0.2)
+        self.lens_galaxies[0].mass.einstein_radius = mm.GaussianPrior(mean=0.8, sigma=0.2)
 
         # In this exercise, I'm not going to change any priors on the source galaxy. Whilst lens modeling experts can
         # look at a strong lens and often tell you roughly where the source-galaxy is be located (in the source-plane),

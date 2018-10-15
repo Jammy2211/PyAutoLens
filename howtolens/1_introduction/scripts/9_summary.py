@@ -28,7 +28,7 @@ from autolens.plotting import ray_tracing_plotters
 # lens system. Lets get a 'fit' to a strong lens, by setting up an image, mask, tracer, etc.
 
 path = 'path/to/AutoLens/howtolens/1_introduction' # Unfortunately, in a Jupyter notebook you have to manually specify the path to PyAutoLens and this tutorial.
-# path = '/home/jammy/PyCharm/Projects/AutoLens/howtolens/1_introduction'
+path = '/home/jammy/PyCharm/Projects/AutoLens/howtolens/1_introduction'
 image = im.load_imaging_from_path(image_path=path + '/data/image.fits',
                                   noise_map_path=path+'/data/noise_map.fits',
                                   psf_path=path + '/data/psf.fits', pixel_scale=0.1)
