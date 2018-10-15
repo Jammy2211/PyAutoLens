@@ -56,8 +56,7 @@ print(tracer.source_plane.grids.image[2])
 # We can use the plane_plotter to plot these grids, like before.
 plane_plotters.plot_plane_grid(plane=tracer.image_plane, title='Image-plane Grid')
 plane_plotters.plot_plane_grid(plane=tracer.source_plane, title='Source-plane Grid')
-plane_plotters.plot_plane_grid(plane=tracer.source_plane, xmin=-0.1, xmax=0.3, ymin=-0.1, ymax=0.3,
-                               title='Source-plane Grid')
+plane_plotters.plot_plane_grid(plane=tracer.source_plane, axis_limits=[-0.1, 0.3, -0.1, 0.3], title='Source-plane Grid')
 
 # AutoLens has tools for plotting a tracer. This plots the following:
 # 1) The image-plane image, computed by tracing the source galaxy's light 'forwards' through the tracer.
