@@ -435,7 +435,7 @@ class EllipticalIsothermal(EllipticalPowerLaw):
             The grid of coordinates the deflection angles are computed on.
         """
 
-        np.seterr(divide='ignore')
+        np.seterr(all='ignore')
 
         try:
             factor = 2.0 * self.einstein_radius_rescaled * self.axis_ratio / np.sqrt(1 - self.axis_ratio ** 2)

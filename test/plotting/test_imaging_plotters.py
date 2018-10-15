@@ -93,9 +93,3 @@ def test__signal_to_noise_map_is_output(image, mask, imaging_plotter_path):
                                               output_format='png')
     assert os.path.isfile(path=imaging_plotter_path+'signal_to_noise_map.png')
     os.remove(path=imaging_plotter_path+'signal_to_noise_map.png')
-
-def test_grid(image, imaging_plotter_path):
-
-    imaging_plotters.plot_grid(image=image, output_path=imaging_plotter_path, output_format='png')
-    assert os.path.isfile(path=imaging_plotter_path+'grid.png')
-    os.remove(path=imaging_plotter_path+'grid.png')

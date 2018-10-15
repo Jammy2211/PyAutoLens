@@ -9,6 +9,7 @@ from autolens.lensing import galaxy_model as gm
 from autolens.profiles import light_profiles as lp
 from autolens.profiles import mass_profiles as mp
 from autolens.plotting import imaging_plotters
+from howtolens.simulations import pipelines as simulation
 
 # Up to now, all of the images that we fitted had only one lens galaxy. However we saw in chapter 1 that we can
 # create multiple galaxies which each contribute to the strong lensing. Multi-galaxy systems are challenging to
@@ -26,6 +27,9 @@ from autolens.plotting import imaging_plotters
 # Lets quickly sort the output directory
 path = '/home/jammy/PyCharm/Projects/AutoLens/howtolens/3_pipelines'
 conf.instance = conf.Config(config_path=conf.CONFIG_PATH, output_path=path+"/../output")
+
+# Lets simulate the image we'll fit, which is a new image, finally!
+simulation.pipeline_x2_lens_galaxies_image()
 
 # Now, lets load and inspect the image. You'll notice that we've upped the pixel_scales to 0.05". The 0.1" we've been
 # using up to now isn't high enough resolution to fit a multi-galaxy lensing system very well.
