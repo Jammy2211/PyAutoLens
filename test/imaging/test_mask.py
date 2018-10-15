@@ -293,6 +293,30 @@ class TestImageGrid:
         assert (scaled_array_2d.yticks == np.array([-4.5, -1.5, 1.5, 4.5])).all()
         assert scaled_array_2d.shape_arc_seconds == (9.0, 12.0)
 
+    class TestTicks:
+
+        def test__yticks(self):
+
+            sca = mask.ImageGrid(arr=np.array([[1.5, 1.0], [-1.5, -1.0]]), mask=None)
+            assert sca.yticks == pytest.approx(np.array([-1.5, -0.5, 0.5, 1.5]), 1e-3)
+
+            sca = mask.ImageGrid(arr=np.array([[3.0, 1.0], [-3.0, -1.0]]), mask=None)
+            assert sca.yticks == pytest.approx(np.array([-3.0, -1, 1.0, 3.0]), 1e-3)
+
+            sca = mask.ImageGrid(arr=np.array([[5.0, 3.5], [2.0, -1.0]]), mask=None)
+            assert sca.yticks == pytest.approx(np.array([2.0, 3.0, 4.0, 5.0]), 1e-3)
+
+        def test__xticks(self):
+            
+            sca = mask.ImageGrid(arr=np.array([[1.0, 1.5], [-1.0, -1.5]]), mask=None)
+            assert sca.xticks == pytest.approx(np.array([-1.5, -0.5, 0.5, 1.5]), 1e-3)
+
+            sca = mask.ImageGrid(arr=np.array([[1.0, 3.0], [-1.0, -3.0]]), mask=None)
+            assert sca.xticks == pytest.approx(np.array([-3.0, -1, 1.0, 3.0]), 1e-3)
+
+            sca = mask.ImageGrid(arr=np.array([[3.5, 2.0], [-1.0, 5.0]]), mask=None)
+            assert sca.xticks == pytest.approx(np.array([2.0, 3.0, 4.0, 5.0]), 1e-3)
+
 
 class TestSubGrid(object):
 

@@ -106,9 +106,33 @@ class Mapper(object):
         return mapping_matrix
 
     @property
+    def image_to_pixelization(self):
+        raise NotImplementedError("image_to_pixelization should be overridden")
+
+    @property
     def sub_to_pixelization(self):
         raise NotImplementedError("sub_to_pixelization should be overridden")
 
+    @property
+    def pixelization_to_image(self):
+
+        pixelization_to_image = [[] for _ in range(self.pixels)]
+
+        for image_pixel, pixelization_pixel in enumerate(self.image_to_pixelization):
+
+            pixelization_to_image[pixelization_pixel].append(image_pixel)
+
+        return pixelization_to_image
+
+    @property
+    def pixelization_to_sub(self):
+
+        pixelization_to_sub = [[] for _ in range(self.pixels)]
+
+        for image_pixel, pixelization_pixel in enumerate(self.sub_to_pixelization):
+            pixelization_to_sub[pixelization_pixel].append(image_pixel)
+
+        return pixelization_to_sub
 
 class RectangularMapper(Mapper):
 
