@@ -1,13 +1,14 @@
+from howtolens.simulations import lens_modeling as simulate
+
 from autolens import conf
 from autolens.autofit import non_linear
-from autolens.pipeline import phase as ph
-from autolens.lensing import galaxy_model as gm
 from autolens.imaging import image as im
+from autolens.lensing import galaxy_model as gm
+from autolens.pipeline import phase as ph
+from autolens.plotting import fitting_plotters
+from autolens.plotting import imaging_plotters
 from autolens.profiles import light_profiles as lp
 from autolens.profiles import mass_profiles as mp
-from autolens.plotting import imaging_plotters
-from autolens.plotting import fitting_plotters
-from howtolens.simulations import lens_modeling as simulate
 
 # In this example, we're going to take an image and find a lens model that provides a good fit to it and we're going
 # to do this without any knowledge of what the 'correct' lens model is.
@@ -51,8 +52,6 @@ from howtolens.simulations import lens_modeling as simulate
 #    guide us to the lens models with the highest liikelihood.
 
 # We'll use the path to howtolens multiple times, so make sure you set it up correctly!
-path = 'path/to/AutoLens/howtolens/2_lens_modeling'
-path = '/home/jammy/PyCharm/Projects/AutoLens/howtolens/2_lens_modeling'
 
 # You're going to see a line like this in every tutorial this chapter. I recommend that for now you just ignore it.
 # A non-linear search can take a long time to run (minutes, hours, or days), and this isn't ideal if you want to
@@ -64,16 +63,16 @@ path = '/home/jammy/PyCharm/Projects/AutoLens/howtolens/2_lens_modeling'
 #
 # This will all become clear at the end of the chapter, so for now just bare in mind that we are taking a short-cut
 # to get our non-linear search to run fast!
-conf.instance = conf.Config(config_path=path+'/configs/1_non_linear_search', output_path=path+"/../output")
+conf.instance = conf.Config(config_path='configs/1_non_linear_search', output_path="output")
 
 # In the file 'howtolens/simulations/lens_modeling', we've created functions to simulate the images we'll fit in this
 # chapter. Lets simulate the image for this tutorial - it'll output this to fits files for us to load.
 simulate.tutorial_1_image()
 
 # These are the fits file of the image the function above generated.
-image = im.load_imaging_from_path(image_path=path + '/data/1_non_linear_search/image.fits',
-                                  noise_map_path=path+'/data/1_non_linear_search/noise_map.fits',
-                                  psf_path=path + '/data/1_non_linear_search/psf.fits', pixel_scale=0.1)
+image = im.load_imaging_from_path(image_path='data/1_non_linear_search/image.fits',
+                                  noise_map_path='data/1_non_linear_search/noise_map.fits',
+                                  psf_path='data/1_non_linear_search/psf.fits', pixel_scale=0.1)
 imaging_plotters.plot_image_subplot(image=image)
 
 # To setup a lens model, we use the 'galaxy_model' (imported as 'gm') module, to create 'GalaxyModel' objects.
