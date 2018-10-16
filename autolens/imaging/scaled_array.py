@@ -239,7 +239,7 @@ class ScaledSquarePixelArray(ScaledArray):
         super(ScaledSquarePixelArray, self).__init__(array=array)
 
     def __array_finalize__(self, obj):
-        if isinstance(obj, ScaledSquarePixelArray):
+        if hasattr(obj, "pixel_scale"):
             self.pixel_scale = obj.pixel_scale
 
     @property
@@ -321,7 +321,7 @@ class ScaledRectangularPixelArray(ScaledArray):
         super(ScaledRectangularPixelArray, self).__init__(array=array)
 
     def __array_finalize__(self, obj):
-        if isinstance(obj, ScaledRectangularPixelArray):
+        if hasattr(obj, "pixel_scales"):
             self.pixel_scales = obj.pixel_scales
 
     @classmethod
