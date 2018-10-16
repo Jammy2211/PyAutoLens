@@ -7,7 +7,7 @@ from autolens.imaging import mask
 from autolens.inversion import pixelizations as pix
 from autolens.plotting import imaging_plotters
 from autolens.plotting import mapper_plotters
-from howtolens.simulations import inversions as simulate_image
+from workspace.howtolens.simulations import inversions as simulate_image
 
 # In the previous example, we used a mapper to make a rectangular pixelization using a lensed source-plane grid.
 # However, it isn't very clear why a mapper is called a mapper - up to now it hasn't done very much mapping at all!
@@ -15,7 +15,7 @@ from howtolens.simulations import inversions as simulate_image
 
 # To begin, lets simulate and load an image - it'll be clear why we're doing this in a moment!
 simulate_image.tutorial_2_image()
-path = '/home/jammy/PyCharm/Projects/AutoLens/howtolens/4_inversions'
+path = '/home/jammy/PyCharm/Projects/AutoLens/workspace/howtolens/4_inversions'
 image = im.load_imaging_from_path(image_path=path + '/data/2_mappers/image.fits',
                                   noise_map_path=path+'/data/2_mappers/noise_map.fits',
                                   psf_path=path + '/data/2_mappers/psf.fits', pixel_scale=0.05)
@@ -39,7 +39,7 @@ mapper = rectangular.mapper_from_grids(grids=tracer.source_plane.grids)
 
 # mapper_plotters.plot_rectangular_mapper(mapper=mapper, plot_grid=True, source_pixels=[69, 89, 109])
 mapper_plotters.plot_image_and_mapper(image=image, mapper=mapper, should_plot_grid=True, source_pixels=[[69, 89], [109]])
-mapper_plotters.plot_image_and_mapper(image=image, mapper=mapper, should_plot_grid=True, image_pixels=[[range(0, 100)]])
+# mapper_plotters.plot_image_and_mapper(image=image, mapper=mapper, should_plot_grid=True, image_pixels=[[range(0, 100)]])
 
 # print(image_plane_grids.image.grid_to_pixel)
 # print(tracer.image_plane.grids.image.grid_to_pixel)
