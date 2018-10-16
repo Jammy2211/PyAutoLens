@@ -21,9 +21,9 @@ class Image(ScaledSquarePixelArray):
             The scale of each pixel in arc seconds
         psf : PSF
             An array describing the PSF of the _image.
-        noise_map : ndarray
+        noise_map : Array
             An array describing the total noise_map in each _image pixel.
-        background_noise_map : ndarray
+        background_noise_map : Array
             An array describing the background noise_map in each _image pixel (used for hyper_image background noise_map
             scaling).
         """
@@ -89,9 +89,9 @@ class PreparatoryImage(Image):
             The scale of each pixel in arc seconds
         psf : PSF
             An array describing the PSF of the _image.
-        noise_map : ndarray
+        noise_map : Array
             An array describing the total noise_map in each _image pixel.
-        background_noise_map : ndarray
+        background_noise_map : Array
             An array describing the background noise_map in each _image pixel (used for hyper_image background noise_map
             scaling).
         poisson_noise_map : ndarray
@@ -143,7 +143,8 @@ class PreparatoryImage(Image):
         background_sky_map : ndarray
             The value of background sky in every _image pixel (electrons per second).
         add_noise: Bool
-            If True poisson noise_map is simulated and added to the _image, based on the total counts in each _image pixel
+            If True poisson noise_map is simulated and added to the _image, based on the total counts in each _image
+            pixel
         seed: int
             A seed for random noise_map generation
         """
@@ -204,8 +205,6 @@ class PreparatoryImage(Image):
             An array describing the PSF the simulated _image is blurred with.
         background_sky_map : ndarray
             The value of background sky in every _image pixel (electrons per second).
-        add_noise: Bool
-            If True poisson noise_map is simulated and added to the _image, based on the total counts in each _image pixel
         seed: int
             A seed for random noise_map generation
         """
@@ -219,6 +218,8 @@ class PreparatoryImage(Image):
             max_background_sky_map_counts = np.multiply(max_background_sky_map, max_effective_exposure_time)
         else:
             max_background_sky_map_counts = None
+
+        scale_factor = 1.
 
         if background_sky_map is None:
             scale_factor = target_signal_to_noise ** 2.0 / max_array_counts
@@ -287,14 +288,15 @@ class PreparatoryImage(Image):
 
     @property
     def estimated_noise_map_counts(self):
-        """ The estimated noise_map mappers of the _image (using its background noise_map mappers and _image values in counts) in counts.
+        """ The estimated noise_map mappers of the _image (using its background noise_map mappers and _image values
+        in counts) in counts.
         """
         return np.sqrt((np.abs(self.image_counts) + np.square(self.background_noise_map_counts)))
 
     @property
     def estimated_noise_map(self):
-        """ The estimated noise_map mappers of the _image (using its background noise_map mappers and _image values in counts) in \
-        electrons per second.
+        """ The estimated noise_map mappers of the _image (using its background noise_map mappers and _image values
+        in counts) in electrons per second.
         """
         return self.counts_to_electrons_per_second(self.estimated_noise_map_counts)
 
@@ -328,7 +330,7 @@ class NoiseMap(ScaledSquarePixelArray):
     @classmethod
     def from_weight_map(cls, pixel_scale, weight_map):
         np.seterr(divide='ignore')
-        noise_map = 1.0/np.sqrt(weight_map)
+        noise_map = 1.0 / np.sqrt(weight_map)
         noise_map[noise_map == np.inf] = 1.0e8
         return NoiseMap(array=noise_map, pixel_scale=pixel_scale)
 
@@ -371,6 +373,7 @@ class PSF(ScaledSquarePixelArray):
 
         Parameters
         ----------
+        pixel_scale
         file_path: String
             The path to the file containing the PSF
         hdu : int
@@ -392,6 +395,7 @@ class PSF(ScaledSquarePixelArray):
 
         Parameters
         ----------
+        pixel_scale
         file_path: String
             The path to the file containing the PSF
         hdu : int
@@ -469,11 +473,14 @@ def generate_poisson_noise(image, effective_exposure_map, seed=-1):
 
 def load_imaging_from_fits(image_path, noise_map_path, psf_path, pixel_scale, image_hdu=0, noise_map_hdu=0, psf_hdu=0,
                            image_shape=None, psf_shape=None, noise_map_is_weight_map=False):
+    data = ScaledSquarePixelArray.from_fits_with_pixel_scale(file_path=image_path, hdu=image_hdu,
+                                                             pixel_scale=pixel_scale)
 
-    data = ScaledSquarePixelArray.from_fits(file_path=image_path, hdu=image_hdu, pixel_scale=pixel_scale)
+    noise_map = None
 
     if not noise_map_is_weight_map:
-        noise_map = NoiseMap.from_fits(file_path=noise_map_path, hdu=noise_map_hdu, pixel_scale=pixel_scale)
+        noise_map = NoiseMap.from_fits_with_pixel_scale(file_path=noise_map_path, hdu=noise_map_hdu,
+                                                        pixel_scale=pixel_scale)
     elif noise_map_is_weight_map:
         weight_map = Array.from_fits(file_path=noise_map_path, hdu=noise_map_hdu)
         noise_map = NoiseMap.from_weight_map(weight_map=weight_map, pixel_scale=pixel_scale)
@@ -491,8 +498,8 @@ def load_imaging_from_fits(image_path, noise_map_path, psf_path, pixel_scale, im
 
 
 def load_imaging_from_path(image_path, noise_map_path, psf_path, pixel_scale, psf_trimmed_shape=None):
-    data = ScaledSquarePixelArray.from_fits(file_path=image_path, hdu=0, pixel_scale=pixel_scale)
-    noise = ScaledSquarePixelArray.from_fits(file_path=noise_map_path, hdu=0, pixel_scale=pixel_scale)
+    data = ScaledSquarePixelArray.from_fits_with_pixel_scale(file_path=image_path, hdu=0, pixel_scale=pixel_scale)
+    noise = ScaledSquarePixelArray.from_fits_with_pixel_scale(file_path=noise_map_path, hdu=0, pixel_scale=pixel_scale)
     psf = PSF.from_fits_with_scale(file_path=psf_path, hdu=0, pixel_scale=pixel_scale)
     if psf_trimmed_shape is not None:
         psf = psf.trim_around_centre(psf_trimmed_shape)
