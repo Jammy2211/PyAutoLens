@@ -1,8 +1,8 @@
 So, we've learnt how to build pipelines that model strong lenses and customize them to our science case.
 
-However, we ran into a pretty huge barrier when trying to fit complex sources. It required an unweildly number
+However, we ran into a pretty huge barrier when trying to fit complex sources. It required an unwieldy number
 of non-linear parameters, and even when we included them, the results were inaccurate anyway, non-linear parameter space
-was just too complex! We attempted to allieviate this by building a pipeline, but alas even this couldn't help us.
+was just too complex! We attempted to alleviate this by building a pipeline, but alas even this couldn't help us.
 
 In this chapter, we'll learn about inversions, model and reconstruct the source galaxy using a pixel grid. This grid
 has makes no assumptions about the source's morphology, breaking a number of simplifying assumptions that were inherent
