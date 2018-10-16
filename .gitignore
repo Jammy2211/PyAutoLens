@@ -26,4 +26,9 @@ config.zip
 __pycache__/
 test/autofit/test_fit/
 prof/
+config/*.pyc
 config/
+test/integration/data/const_float/
+test/integration/data/pair_floats/
+test/integration/tests/simulate_and_fit/data/
+test/output/
