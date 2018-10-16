@@ -89,7 +89,20 @@ plane_plotters.plot_plane_grid(plane=source_plane, title='Source-plane Grid')
 # ymax] (remembering the lens galaxy was centred at (0.1, 0.1)
 plane_plotters.plot_plane_grid(plane=source_plane, axis_limits=[-0.1, 0.1, -0.1, 0.1], title='Source-plane Grid')
 
-plane_plotters.plot_image_and_source_plane_subplot(image_plane=image_plane, source_plane=source_plane)
+# We can also plot both planes next to one another, and highlight specific points on the grids. This means we can see
+# how different image pixels map to the source-plane.
+# (We are inputting the pixel index's into 'points' - the first set of points go from 0 -> 50, which is the top row of
+# the image-grid running from the left - as we said it would!)
+plane_plotters.plot_image_and_source_plane_subplot(image_plane=image_plane, source_plane=source_plane,
+    points=[[range(0,50)], [range(500, 550)],
+            [1550, 1650, 1750, 1850, 1950, 2050],
+            [8450, 8350, 8250, 8150, 8050, 7950]])
+
+# You should notice:
+
+# - That the horizontal lines running across the image-plane are 'bent' into the source-plane, this is lensing!
+# - That the verticle green and black points opposite one another in the image-plane lensed into the same, central
+#   region of the source-plane. If a galaxy were located here, it'd be multiply imaged!
 
 # Clearly, the source-plane has a very different grid to the image-plane. It's not uniform, its not regular and well,
 # its not boring!

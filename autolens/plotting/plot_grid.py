@@ -1,12 +1,11 @@
 from matplotlib import pyplot as plt
 import numpy as np
-from astropy.io import fits
+import itertools
 
 from autolens import exc
 from autolens.plotting import tools
-from autolens.plotting import tools_array
 
-def plot_grid(grid, axis_limits=None, as_subplot=False,
+def plot_grid(grid, axis_limits=None, points=None, as_subplot=False,
               units='arcsec', kpc_per_arcsec=None,
               figsize=(12, 8), pointsize=5, xyticksize=16,
               title='Grid', titlesize=16, xlabelsize=16, ylabelsize=16,
@@ -17,8 +16,10 @@ def plot_grid(grid, axis_limits=None, as_subplot=False,
     tools.set_title(title=title, titlesize=titlesize)
     set_xy_labels_and_ticks_in_arcsec(units, kpc_per_arcsec,grid.xticks, grid.yticks, xlabelsize, ylabelsize,
                                       xyticksize)
-    if axis_limits is not None:
-        plt.axis(axis_limits)
+
+    set_axis_limits(axis_limits)
+    plot_points(grid, points)
+
     plt.tick_params(labelsize=xyticksize)
     tools.output_figure(None, as_subplot, output_path, output_filename, output_format)
     tools.close_figure(as_subplot=as_subplot)
@@ -44,3 +45,15 @@ def set_xy_labels_and_ticks_in_arcsec(units, kpc_per_arcsec, xticks, yticks, xla
                                      'arcsec | kpc)')
 
     plt.tick_params(labelsize=xyticksize)
+
+def set_axis_limits(axis_limits):
+
+    if axis_limits is not None:
+        plt.axis(axis_limits)
+
+def plot_points(grid, points):
+
+    if points is not None:
+        point_colors = itertools.cycle(["y", "r", "k", "g", "m"])
+        for point_set in points:
+            plt.scatter(y=grid[point_set, 0], x=grid[point_set, 1], s=8, color=next(point_colors))
