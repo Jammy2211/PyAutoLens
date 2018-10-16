@@ -1,13 +1,14 @@
+from howtolens.simulations import pipelines as simulation
+
 from autolens import conf
-from autolens.pipeline import phase
-from autolens.pipeline import pipeline
 from autolens.autofit import non_linear as nl
 from autolens.imaging import image as im
 from autolens.imaging import mask
 from autolens.lensing import galaxy_model as gm
+from autolens.pipeline import phase
+from autolens.pipeline import pipeline
 from autolens.profiles import light_profiles as lp
 from autolens.profiles import mass_profiles as mp
-from howtolens.simulations import pipelines as simulation
 
 # In chapter 2, we fitted a strong lens which included the contribution of light from the lens galaxy. We're going to
 # fit this lens again (I promise, this is the last time!). However, now we're approaching lens modeling with runners,
@@ -44,22 +45,21 @@ from howtolens.simulations import pipelines as simulation
 
 # First, we need to setup the config. No, I'm not preloading the results with this - I'm just changing the output
 # to the AutoLens/howtolens/output directory, to keep everything tidy and in one place.
-path = '/home/jammy/PyCharm/Projects/AutoLens/howtolens/3_pipelines'
-conf.instance = conf.Config(config_path=conf.CONFIG_PATH, output_path=path+"/../output")
+
+conf.instance = conf.Config(config_path=conf.CONFIG_PATH, output_path="../output")
 
 # Now lets simulate hte image we'll fit, which as I said above, is the same image we saw in the previous chapter.
 simulation.pipeline_lens_and_soure_image()
 
 # Lets load the image before writing our pipeline.
-path = '/home/jammy/PyCharm/Projects/AutoLens/howtolens/3_pipelines'
-image = im.load_imaging_from_path(image_path=path + '/data/1_lens_and_source/image.fits',
-                                  noise_map_path=path+'/data/1_lens_and_source/noise_map.fits',
-                                  psf_path=path + '/data/1_lens_and_source/psf.fits', pixel_scale=0.1)
+image = im.load_imaging_from_path(image_path='data/1_lens_and_source/image.fits',
+                                  noise_map_path='data/1_lens_and_source/noise_map.fits',
+                                  psf_path='data/1_lens_and_source/psf.fits', pixel_scale=0.1)
+
 
 # A pipeline is a one long python function (this is why Jupyter notebooks arn't ideal). When we run it, this function
 # 'makes' the pipeline, as you'll see in a moment.
 def make_pipeline():
-
     # To begin, we name our pipeline, which will specify the directory that it appears in the output folder.
     pipeline_name = '3_pipelines/1_lens_and_source'
 
@@ -90,11 +90,10 @@ def make_pipeline():
     # ensuring the anti-annular mask above is used).
     phase1 = phase.LensPlanePhase(lens_galaxies=[gm.GalaxyModel(light=lp.EllipticalSersic)],
                                   optimizer_class=nl.MultiNest, mask_function=mask_function,
-                                  phase_name=pipeline_name+'/phase_1_lens_light_only')
+                                  phase_name=pipeline_name + '/phase_1_lens_light_only')
 
     # At this point, you might want to look at the 'output/3_pipelines/1_lens_and_source/phase_1_lens_light_only'
     # output folder. There'll you'll find the model results and images, so you can be sure this phase runs as expected!
-
 
     # In phase 2, we fit the source galaxy's light. Thus, we want to make 2 changes from the previous phase
 
@@ -131,7 +130,7 @@ def make_pipeline():
     phase2 = LensSubtractedPhase(lens_galaxies=[gm.GalaxyModel(mass=mp.EllipticalIsothermal)],
                                  source_galaxies=[gm.GalaxyModel(light=lp.EllipticalSersic)],
                                  optimizer_class=nl.MultiNest, mask_function=mask_function,
-                                 phase_name=pipeline_name+'/phase_2_source_only')
+                                 phase_name=pipeline_name + '/phase_2_source_only')
 
     # Finally, in phase 3, we want to fit the lens and source simultaneously. Whilst we made a point of them not being
     # covariant above, there will be some level of covariance that will, at the very least, impact the errors we infer.
@@ -145,7 +144,6 @@ def make_pipeline():
     class LensSourcePhase(phase.LensSourcePlanePhase):
 
         def pass_priors(self, previous_results):
-
             # The previous results is a 'list' in python. The zeroth index entry of the list maps to the results of
             # phase 1, the first entry to phase 2, and so on.
 
@@ -181,14 +179,14 @@ def make_pipeline():
 
     phase3 = LensSourcePhase(lens_galaxies=[gm.GalaxyModel(light=lp.EllipticalSersic,
                                                            mass=mp.EllipticalIsothermal)],
-                              source_galaxies=[gm.GalaxyModel(light=lp.EllipticalSersic)],
-                              optimizer_class=nl.MultiNest, phase_name='/phase_3_both')
+                             source_galaxies=[gm.GalaxyModel(light=lp.EllipticalSersic)],
+                             optimizer_class=nl.MultiNest, phase_name='/phase_3_both')
 
     return pipeline.PipelineImaging(pipeline_name, phase1, phase2, phase3)
 
+
 pipeline_lens_and_source = make_pipeline()
 pipeline_lens_and_source.run(image=image)
-
 
 # And there we have it, a pipeline that breaks the analysis of the lens and source galaxy into a set of phases. This
 # approach is signifcantly faster than fitting everything at once. Instead of asking you questions at the end of
