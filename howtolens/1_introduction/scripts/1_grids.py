@@ -30,7 +30,7 @@ print('etc.')
 print(image_grids.image.shape)
 
 # We can also plot the grid, albeit it's a fairly bland uniform grid of dots.
-plot_grid.plot_grid(grid=image_grids.image)
+plot_grid.plot_grid(grid=image_grids.image, title='Fairly Bland Uniform Grid Of Dots')
 
 # A quick aside - we've tried our hardest to make figures like the one above appear a good size / have no overlapping
 # labels. However, this depends somewhat on the display setting of your computer. If a figure doesn't look great,
