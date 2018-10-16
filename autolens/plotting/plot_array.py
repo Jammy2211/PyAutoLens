@@ -19,10 +19,7 @@ def plot_image(image, mask=None, positions=None, grid=None, as_subplot=False,
                                                   xticks=image.xticks, yticks=image.yticks, xlabelsize=xlabelsize,
                                                   ylabelsize=ylabelsize, xyticksize=xyticksize)
 
-    # TODO : if you use set_colorbar and plt.scatter the scatter plot doesnt show...default to removing colorbar now
-
-    if mask is None:
-        tools_array.set_colorbar(cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad)
+    tools_array.set_colorbar(cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad)
     tools_array.plot_mask(mask)
     tools_array.plot_points(positions)
     tools_array.plot_grid(grid)

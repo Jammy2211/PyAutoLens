@@ -25,8 +25,8 @@ def plot_image_and_mapper(image, mapper, mask=None, positions=None, should_plot_
                                 output_path=output_path, output_format=output_format)
 
     point_colors = itertools.cycle(["y", "r", "k", "g", "m"])
-    plot_image_image_pixels(mapper, image_pixels, point_colors)
-    plot_image_source_pixels(mapper, source_pixels, point_colors)
+    plot_image_plane_image_pixels(mapper, image_pixels, point_colors)
+    plot_image_plane_source_pixels(mapper, source_pixels, point_colors)
 
     plt.subplot(rows, columns, 2)
 
@@ -42,6 +42,7 @@ def plot_mapper(mapper, should_plot_centres, should_plot_grid, image_pixels, sou
                 units, kpc_per_arcsec, figsize):
 
     if isinstance(mapper, mappers.RectangularMapper):
+
         plot_rectangular_mapper(mapper=mapper, should_plot_centres=should_plot_centres,
                                 should_plot_grid=should_plot_grid,
                                 image_pixels=image_pixels, source_pixels=source_pixels, as_subplot=as_subplot,
@@ -55,24 +56,18 @@ def plot_rectangular_mapper(mapper, should_plot_centres=False, should_plot_grid=
 
     plot_pixelization_lines(mapper=mapper)
 
+    tools.set_title('Source-plane Pixelization', titlesize=10)
     plot_grid.set_xy_labels_and_ticks_in_arcsec(units=units, kpc_per_arcsec=kpc_per_arcsec,
                                                 xticks=mapper.geometry.xticks, yticks=mapper.geometry.yticks,
-                                                xlabelsize=16, ylabelsize=16, xyticksize=16)
+                                                xlabelsize=10, ylabelsize=10, xyticksize=10)
 
     set_limits(mapper=mapper)
-
-    if should_plot_centres:
-        pixel_centres = mapper.geometry.grid_arc_seconds_to_grid_pixels(grid_arc_seconds=mapper.geometry.pixel_centres)
-        plt.scatter(y=pixel_centres[:,0], x=pixel_centres[:,1], s=3, c='r')
-
-    if should_plot_grid:
-        plot_grid.plot_grid(grid=mapper.grids.image, as_subplot=as_subplot,
-                            pointsize=5, xyticksize=10,
-                            title='Source-Plane Grid', titlesize=10, xlabelsize=10, ylabelsize=10)
+    plot_centres(should_plot_centres=should_plot_centres, mapper=mapper)
+    plot_plane_grid(should_plot_grid=should_plot_grid, mapper=mapper, as_subplot=as_subplot)
 
     point_colors = itertools.cycle(["y", "r", "k", "g", "m"])
-    plot_image_pixels(mapper=mapper, image_pixels=image_pixels, point_colors=point_colors)
-    plot_source_pixels(mapper=mapper, source_pixels=source_pixels, point_colors=point_colors)
+    plot_source_plane_image_pixels(mapper=mapper, image_pixels=image_pixels, point_colors=point_colors)
+    plot_source_plane_source_pixels(mapper=mapper, source_pixels=source_pixels, point_colors=point_colors)
 
     plt.show()
 
@@ -92,8 +87,18 @@ def set_limits(mapper):
     plt.ylim(mapper.geometry.arc_second_minima[0], mapper.geometry.arc_second_maxima[0])
     plt.xlim(mapper.geometry.arc_second_minima[0], mapper.geometry.arc_second_maxima[0])
 
+def plot_centres(should_plot_centres, mapper):
 
-def plot_image_image_pixels(mapper, image_pixels, point_colors):
+    if should_plot_centres:
+        pixel_centres = mapper.geometry.grid_arc_seconds_to_grid_pixels(grid_arc_seconds=mapper.geometry.pixel_centres)
+        plt.scatter(y=pixel_centres[:,0], x=pixel_centres[:,1], s=3, c='r')
+
+def plot_plane_grid(should_plot_grid, mapper, as_subplot):
+
+    if should_plot_grid:
+        plot_grid.plot_grid(grid=mapper.grids.image, as_subplot=as_subplot, pointsize=5, xyticksize=10)
+
+def plot_image_plane_image_pixels(mapper, image_pixels, point_colors):
 
     if image_pixels is not None:
         for image_pixel_set in image_pixels:
@@ -101,20 +106,18 @@ def plot_image_image_pixels(mapper, image_pixels, point_colors):
             image_pixel_set = mapper.grids.image.mask.grid_to_pixel[image_pixel_set]
             plt.scatter(y=image_pixel_set[:, 0], x=image_pixel_set[:, 1], color=color, s=10.0)
 
-
-def plot_image_source_pixels(mapper, source_pixels, point_colors):
+def plot_image_plane_source_pixels(mapper, source_pixels, point_colors):
 
     if source_pixels is not None:
 
         for source_pixel_set in source_pixels:
             color = next(point_colors)
             for source_pixel in source_pixel_set:
-                print(source_pixel)
                 image_pixel_set = mapper.pixelization_to_image[source_pixel]
                 image_pixel_set = mapper.grids.image.mask.grid_to_pixel[image_pixel_set]
                 plt.scatter(y=image_pixel_set[:, 0], x=image_pixel_set[:, 1], color=color, s=10.0)
 
-def plot_image_pixels(mapper, image_pixels, point_colors):
+def plot_source_plane_image_pixels(mapper, image_pixels, point_colors):
 
     if image_pixels is not None:
         for image_pixel_set in image_pixels:
@@ -122,9 +125,10 @@ def plot_image_pixels(mapper, image_pixels, point_colors):
             plt.scatter(y=mapper.grids.image[[image_pixel_set],0],
                         x=mapper.grids.image[[image_pixel_set],1], s=8, color=color)
 
-def plot_source_pixels(mapper, source_pixels, point_colors):
+def plot_source_plane_source_pixels(mapper, source_pixels, point_colors):
 
     if source_pixels is not None:
+
         for source_pixel_set in source_pixels:
             color = next(point_colors)
             for source_pixel in source_pixel_set:

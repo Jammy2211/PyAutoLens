@@ -15,7 +15,7 @@ from autolens.plotting import fitting_plotters
 
 # First, we load the image-data we simualted in the previous tutorial.
 path = 'path/to/AutoLens/howtolens/1_introduction' # Unfortunately, in a Jupyter notebook you have to manually specify the path to PyAutoLens and this tutorial.
-path = '/home/jammy/PyCharm/Projects/AutoLens/howtolens/1_introduction'
+path = '/home/jammy/PyCharm/Projects/AutoLens/workspace/howtolens/1_introduction'
 image = im.load_imaging_from_path(image_path=path + '/data/image.fits',
                                   noise_map_path=path+'/data/noise_map.fits',
                                   psf_path=path + '/data/psf.fits', pixel_scale=0.1)
@@ -30,6 +30,10 @@ image = im.load_imaging_from_path(image_path=path + '/data/image.fits',
 mask = ma.Mask.circular(shape=image.shape, pixel_scale=image.pixel_scale, radius_mask_arcsec=3.0)
 print(mask) # 1 = True, which means the pixel is masked. Edge pixels are indeed masked.
 print(mask[48:53, 48:53]) # Whereas central pixels are False and therefore unmasked.
+
+# We can use an imaging_plotter to compare the mask and the image - this is useful if we really want to 'tailor' a
+# mask to the lensed source's light (which in this example, we won't).
+imaging_plotters.plot_image(image=image, mask=mask)
 
 # Now we've loaded the image and created a mask, we use them to create a 'lensing image', which we'll perform using the
 # lensing_module (imported as 'li').
