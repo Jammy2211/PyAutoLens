@@ -7,7 +7,7 @@ https://arxiv.org/abs/1708.07377
 
 ## SLACK
 
-We're building a PyAutoLens community on SLACK, and I recommend you contact us on this [SLACK channel](https://pyautolens.slack.com/) before getting started with PyAutoLens. Here, I can introduce you to the community, give you the latest update on the software and discuss how best to use PyAutoLens for your science case.
+We're building a PyAutoLens community on SLACK, so you should contact us on our [SLACK channel](https://pyautolens.slack.com/) before getting started with PyAutoLens. Here, I can introduce you to the community, give you the latest update on the software and discuss how best to use PyAutoLens for your science case.
 
 Unfortunately, SLACK is invitation-only, so first send me an [email](https://github.com/Jammy2211) requesting an invite.
 
