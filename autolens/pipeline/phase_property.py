@@ -68,10 +68,9 @@ class ListWrapper(object):
     @DynamicAttrs
     """
 
-    def __init__(self, variable_items, constant_items, mappings):
+    def __init__(self, variable_items, constant_items):
         self.variable_items = variable_items
         self.constant_items = constant_items
-        self.mappings = mappings
 
     def __setitem__(self, i, value):
         original = self[i]
@@ -102,28 +101,36 @@ class ListWrapper(object):
         try:
             return self.__getattribute__(item)
         except AttributeError:
-            return self[list(self).index(self.mappings[item])]
+            for obj in self:
+                if obj.mapping_name == item:
+                    return obj
+
+    def __setattr__(self, key, value):
+        if key not in ("variable_items", "constant_items"):
+            print(key)
+            value.mapping_name = key
+            for index, obj in enumerate(self):
+                if obj.mapping_name == key:
+                    self[index] = value
+                    return
+        super().__setattr__(key, value)
 
 
 class PhasePropertyList(PhaseProperty):
-    def __init__(self, name):
-        super().__init__(name)
-        self.mappings = {}
-
     def fget(self, obj):
         return ListWrapper(getattr(obj.optimizer.variable, self.name),
-                           getattr(obj.optimizer.constant, self.name),
-                           self.mappings)
+                           getattr(obj.optimizer.constant, self.name))
 
     def fset(self, obj, value):
         if isinstance(value, dict):
-            self.mappings = value
+            dictionary = value
             value = []
-            for n, tup in enumerate(self.mappings.items()):
+            for n, tup in enumerate(dictionary.items()):
                 if inspect.isclass(tup[1]):
                     raise AssertionError(
                         "Classes must be wrapped in PriorModel instances to be used in PhasePropertyLists")
                 value.append(tup[1])
+                value[n].mapping_name = tup[0]
                 value[n].position = n
         else:
             for n in range(len(value)):

@@ -134,9 +134,20 @@ class TestPhasePropertyList(object):
 
 
 class TestPhasePropertyListAttributes(object):
-    def test_set_property(self, list_phase):
+    def test_set_list_as_dict(self, list_phase):
         galaxy_model = gp.GalaxyModel()
         list_phase.prop = dict(one=galaxy_model)
+
+        assert len(list_phase.prop) == 1
+        # noinspection PyUnresolvedReferences
+        assert list_phase.prop.one == galaxy_model
+
+    def test_override_property(self, list_phase):
+        galaxy_model = gp.GalaxyModel()
+
+        list_phase.prop = dict(one=gp.GalaxyModel())
+
+        list_phase.prop.one = galaxy_model
 
         assert len(list_phase.prop) == 1
         assert list_phase.prop.one == galaxy_model
