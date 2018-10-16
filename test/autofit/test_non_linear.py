@@ -10,10 +10,14 @@ from autolens.autofit import model_mapper
 from autolens.autofit import non_linear
 from autolens.profiles import light_profiles, mass_profiles
 
-pytestmark = pytest.mark.filterwarnings(
-    "ignore:Using a non-tuple sequence for multidimensional indexing is deprecated; use `arr[tuple(seq)]` instead of "
-    "`arr[seq]`. In the future this will be interpreted as an array index, `arr[np.array(seq)]`, which will result "
-    "either in an error or a different result.")
+pytestmark = pytest.mark.filterwarnings('ignore::FutureWarning')
+
+
+class TestParamNames(object):
+    def test_prior_prior_model_name_dict(self, mm_config):
+        mapper = model_mapper.ModelMapper(config=mm_config)
+        mapper.mock_one = [MockClassNLOx4, MockClassNLOx4]
+        print(mapper.prior_prior_model_name_dict)
 
 
 @pytest.fixture(name='nlo_setup_path')
