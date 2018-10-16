@@ -133,5 +133,40 @@ class TestPhasePropertyList(object):
         assert list_phase.variable.prop == [galaxy_prior_1]
 
 
+class TestPhasePropertyListAttributes(object):
+    def test_set_list_as_dict(self, list_phase):
+        galaxy_model = gp.GalaxyModel()
+        list_phase.prop = dict(one=galaxy_model)
+
+        assert len(list_phase.prop) == 1
+        # noinspection PyUnresolvedReferences
+        assert list_phase.prop.one == galaxy_model
+
+    def test_override_property(self, list_phase):
+        galaxy_model = gp.GalaxyModel()
+
+        list_phase.prop = dict(one=gp.GalaxyModel())
+
+        list_phase.prop.one = galaxy_model
+
+        assert len(list_phase.prop) == 1
+        assert list_phase.prop.one == galaxy_model
+
+    def test_named_list_items(self, list_phase):
+        galaxy_model = gp.GalaxyModel()
+        list_phase.prop = [galaxy_model]
+
+        # noinspection PyUnresolvedReferences
+        assert list_phase.prop.prop_0 == galaxy_model
+
+    def test_mix(self, list_phase):
+        objects = dict(one=gp.GalaxyModel(), two=g.Galaxy())
+
+        list_phase.prop = objects
+
+        assert list_phase.variable.prop == [objects["one"]]
+        assert list_phase.constant.prop == [objects["two"]]
+
+
 def assert_ordered(items):
     assert [n for n in range(len(items))] == [item.position for item in items]
