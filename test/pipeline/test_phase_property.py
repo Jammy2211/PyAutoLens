@@ -159,6 +159,14 @@ class TestPhasePropertyListAttributes(object):
         # noinspection PyUnresolvedReferences
         assert list_phase.prop.prop_0 == galaxy_model
 
+    def test_mix(self, list_phase):
+        objects = dict(one=gp.GalaxyModel(), two=g.Galaxy())
+
+        list_phase.prop = objects
+
+        assert list_phase.variable.prop == [objects["one"]]
+        assert list_phase.constant.prop == [objects["two"]]
+
 
 def assert_ordered(items):
     assert [n for n in range(len(items))] == [item.position for item in items]
