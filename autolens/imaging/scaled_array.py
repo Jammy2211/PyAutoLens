@@ -247,7 +247,7 @@ class ScaledSquarePixelArray(ScaledArray):
         return self.pixel_scale, self.pixel_scale
 
     @classmethod
-    def from_fits(cls, file_path, hdu, pixel_scale):
+    def from_fits_with_pixel_scale(cls, file_path, hdu, pixel_scale):
         """
         Loads the data from a .fits file.
 
@@ -335,7 +335,7 @@ class ScaledRectangularPixelArray(ScaledArray):
             The value with which the array should be filled
         shape: (int, int)
             The shape of the array
-        pixel_scale: float
+        pixel_scales: (float, float)
             The scale of a pixel in arc seconds
 
         Returns
@@ -347,7 +347,7 @@ class ScaledRectangularPixelArray(ScaledArray):
         return cls(array, pixel_scales)
 
     @classmethod
-    def from_fits(cls, file_path, hdu, pixel_scales):
+    def from_fits_with_pixel_scale(cls, file_path, hdu, pixel_scales):
         """
         Loads the data from a .fits file.
 
@@ -357,7 +357,7 @@ class ScaledRectangularPixelArray(ScaledArray):
             The full path of the fits file.
         hdu : int
             The HDU number in the fits file containing the _image data.
-        pixel_scale: float
+        pixel_scales: (float, float)
             The arc-second to pixel conversion factor of each pixel.
         """
         return cls(imaging_util.numpy_array_from_fits(file_path, hdu), pixel_scales)
