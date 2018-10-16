@@ -18,7 +18,7 @@ def pipeline():
     pipeline_name = "lens_mass_x1_source_x1"
     data_name = '/lens_mass_x1_source_x1'
 
-    tools.reset_paths(data_name, pipeline_name, output_path)
+    # tools.reset_paths(data_name, pipeline_name, output_path)
 
     lens_mass = mp.EllipticalIsothermal(centre=(0.01, 0.01), axis_ratio=0.8, phi=80.0, einstein_radius=1.6)
     source_light = lp.EllipticalSersic(centre=(-0.01, -0.01), axis_ratio=0.6, phi=90.0, intensity=1.0,
@@ -27,8 +27,11 @@ def pipeline():
     lens_galaxy = galaxy.Galaxy(sie=lens_mass)
     source_galaxy = galaxy.Galaxy(sersic=source_light)
 
-    tools.simulate_integration_image(data_name=data_name, pixel_scale=0.2, lens_galaxies=[lens_galaxy],
-                                     source_galaxies=[source_galaxy], target_signal_to_noise=30.0)
+    try:
+        tools.simulate_integration_image(data_name=data_name, pixel_scale=0.2, lens_galaxies=[lens_galaxy],
+                                         source_galaxies=[source_galaxy], target_signal_to_noise=30.0)
+    except OSError:
+        pass
 
     pipeline = make_pipeline(pipeline_name=pipeline_name)
     image = tools.load_image(data_name=data_name, pixel_scale=0.2)
