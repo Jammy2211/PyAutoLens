@@ -13,11 +13,41 @@ from autolens.profiles import light_profiles, mass_profiles
 pytestmark = pytest.mark.filterwarnings('ignore::FutureWarning')
 
 
+@pytest.fixture(name='mapper')
+def make_mapper(mm_config):
+    return model_mapper.ModelMapper(config=mm_config)
+
+
+@pytest.fixture(name="mock_list")
+def make_mock_list(mm_config):
+    return [model_mapper.PriorModel(MockClassNLOx4, config=mm_config),
+            model_mapper.PriorModel(MockClassNLOx4, config=mm_config)]
+
+
+# noinspection PyUnresolvedReferences
 class TestParamNames(object):
-    def test_prior_prior_model_name_dict(self, mm_config):
-        mapper = model_mapper.ModelMapper(config=mm_config)
-        mapper.mock_one = [MockClassNLOx4, MockClassNLOx4]
-        print(mapper.prior_prior_model_name_dict)
+    def test_label_prior_model_tuples(self, mapper, mock_list):
+        mapper.mock_list = mock_list
+
+        assert [tup.name for tup in mapper.mock_list.label_prior_model_tuples] == ['0', '1']
+
+    def test_label_prior_model_tuples_with_mapping_name(self, mapper, mm_config):
+        one = model_mapper.PriorModel(MockClassNLOx4, config=mm_config)
+        two = model_mapper.PriorModel(MockClassNLOx4, config=mm_config)
+
+        one.mapping_name = "one"
+        two.mapping_name = "two"
+
+        mapper.mock_list = [one, two]
+
+        assert [tup.name for tup in mapper.mock_list.label_prior_model_tuples] == ['one', 'two']
+
+    def test_prior_prior_model_name_dict(self, mapper, mock_list):
+        mapper.mock_list = mock_list
+        prior_prior_model_name_dict = mapper.prior_prior_model_name_dict
+        print(prior_prior_model_name_dict)
+
+        assert len({value for key, value in prior_prior_model_name_dict.items()}) == 2
 
 
 @pytest.fixture(name='nlo_setup_path')
