@@ -1,0 +1,10 @@
+./PyAutoLens/.git/
+./PyAutoLens/.gitignore
+./PyAutoLens/INSTALL.notes
+./PyAutoLens/LICENSE
+./PyAutoLens/MANIFEST.in
+./PyAutoLens/README.md
+./PyAutoLens/libraries.txt
+./PyAutoLens/requirements.txt
+./PyAutoLens/setup.cfg
+./PyAutoLens/setup.py
