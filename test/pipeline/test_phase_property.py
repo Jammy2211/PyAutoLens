@@ -152,6 +152,13 @@ class TestPhasePropertyListAttributes(object):
         assert len(list_phase.prop) == 1
         assert list_phase.prop.one == galaxy_model
 
+    def test_named_list_items(self, list_phase):
+        galaxy_model = gp.GalaxyModel()
+        list_phase.prop = [galaxy_model]
+
+        # noinspection PyUnresolvedReferences
+        assert list_phase.prop.prop_0 == galaxy_model
+
 
 def assert_ordered(items):
     assert [n for n in range(len(items))] == [item.position for item in items]

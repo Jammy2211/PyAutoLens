@@ -32,3 +32,4 @@ test/integration/data/const_float/
 test/integration/data/pair_floats/
 test/integration/tests/simulate_and_fit/data/
 test/output/
+test/test_files/plotting/
