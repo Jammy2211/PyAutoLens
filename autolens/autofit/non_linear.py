@@ -68,8 +68,10 @@ class NonLinearOptimizer(object):
 
         sym_path = "{}/{}/optimizer".format(conf.instance.output_path, name)
 
-        if not os.path.exists(sym_path):
+        try:
             os.makedirs("/".join(sym_path.split("/")[:-1]))
+        except FileExistsError:
+            pass
 
         self.path = link.make_linked_folder(sym_path)
 
