@@ -10,13 +10,13 @@ path = "{}/".format(os.path.dirname(os.path.realpath(__file__)))
 
 
 def load_data(name, pixel_scale, psf_shape):
-    im = scaled_array.ScaledSquarePixelArray.from_fits(file_path=path + 'data/' + name + '/masked_image', hdu=0,
-                                                       pixel_scale=pixel_scale)
-    noise = scaled_array.ScaledSquarePixelArray.from_fits(file_path=path + 'data/' + name + '/noise_map', hdu=0,
-                                                          pixel_scale=pixel_scale)
-    exposure_time = scaled_array.ScaledSquarePixelArray.from_fits(file_path=path + 'data/' + name + '/exposure_time',
-                                                                  hdu=0,
-                                                                  pixel_scale=pixel_scale)
+    im = scaled_array.ScaledSquarePixelArray.from_fits_with_pixel_scale(file_path=path + 'data/' + name + '/masked_image', hdu=0,
+                                                                        pixel_scale=pixel_scale)
+    noise = scaled_array.ScaledSquarePixelArray.from_fits_with_pixel_scale(file_path=path + 'data/' + name + '/noise_map', hdu=0,
+                                                                           pixel_scale=pixel_scale)
+    exposure_time = scaled_array.ScaledSquarePixelArray.from_fits_with_pixel_scale(file_path=path + 'data/' + name + '/exposure_time',
+                                                                                   hdu=0,
+                                                                                   pixel_scale=pixel_scale)
     psf = image.PSF.from_fits_with_scale(file_path=path + 'data/LSST/psf', hdu=0, pixel_scale=pixel_scale).trim_around_centre(psf_shape)
 
     return im, noise, exposure_time, psf
