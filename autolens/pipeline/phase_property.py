@@ -107,7 +107,6 @@ class ListWrapper(object):
 
     def __setattr__(self, key, value):
         if key not in ("variable_items", "constant_items"):
-            print(key)
             value.mapping_name = key
             for index, obj in enumerate(self):
                 if obj.mapping_name == key:
@@ -137,6 +136,7 @@ class PhasePropertyList(PhaseProperty):
                 if inspect.isclass(value[n]):
                     raise AssertionError(
                         "Classes must be wrapped in PriorModel instances to be used in PhasePropertyLists")
+                value[n].mapping_name = "{}_{}".format(self.name, n)
                 value[n].position = n
         setattr(obj.optimizer.variable, self.name, [item for item in value if is_prior(item)])
         setattr(obj.optimizer.constant, self.name, [item for item in value if not is_prior(item)])
