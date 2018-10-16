@@ -8,8 +8,8 @@ logging.basicConfig()
 logger = logging.getLogger(__name__)
 
 
+# noinspection PyUnresolvedReferences
 class ArrayGeometry(object):
-
     pixel_scales = None
 
     def y_pixels_to_arc_seconds(self, pixels):
@@ -30,11 +30,11 @@ class ArrayGeometry(object):
 
     @property
     def shape_arc_seconds(self):
-        return (float(self.y_pixels_to_arc_seconds(self.shape[0])), float(self.x_pixels_to_arc_seconds(self.shape[1])))
+        return float(self.y_pixels_to_arc_seconds(self.shape[0])), float(self.x_pixels_to_arc_seconds(self.shape[1]))
 
     @property
     def central_pixel_coordinates(self):
-        return (float(self.shape[0] - 1) / 2, float(self.shape[1] - 1) / 2)
+        return float(self.shape[0] - 1) / 2, float(self.shape[1] - 1) / 2
 
     def grid_arc_seconds_to_grid_pixels(self, grid_arc_seconds):
         """Convert a grid of (y,x) arc second coordinates to a grid of (y,x) pixel values. Pixel coordinates are
@@ -52,7 +52,7 @@ class ArrayGeometry(object):
             The grid of (y,x) coordinates in arc seconds.
         """
         return imaging_util.grid_arc_seconds_1d_to_grid_pixels_1d(grid_arc_seconds=grid_arc_seconds, shape=self.shape,
-                                                                         pixel_scales=self.pixel_scales)
+                                                                  pixel_scales=self.pixel_scales)
 
     def grid_arc_seconds_to_grid_pixel_centres(self, grid_arc_seconds):
         """Convert a grid of (y,x) arc second coordinates to a grid of (y,x) pixel values. Pixel coordinates are \
@@ -93,11 +93,11 @@ class ArrayGeometry(object):
 
     @property
     def arc_second_maxima(self):
-        return ((self.shape_arc_seconds[0])/2.0, (self.shape_arc_seconds[1])/2.0)
+        return (self.shape_arc_seconds[0]) / 2.0, (self.shape_arc_seconds[1]) / 2.0
 
     @property
     def arc_second_minima(self):
-        return (-(self.shape_arc_seconds[0])/2.0, -(self.shape_arc_seconds[1])/2.0)
+        return -(self.shape_arc_seconds[0]) / 2.0, -(self.shape_arc_seconds[1]) / 2.0
 
     @property
     def yticks(self):
@@ -165,11 +165,6 @@ class Array(np.ndarray):
 
     def trim_around_region(self, x0, x1, y0, y1):
         """Trim the array to a new shape.
-
-        Parameters
-        -----------
-        new_shape : (int, int)
-            The new two-dimensional shape of the array.
         """
         return self.new_with_array(imaging_util.trim_array_2d_around_region(self, x0, x1, y0, y1))
 
@@ -201,8 +196,6 @@ class Array(np.ndarray):
             The full path of the fits file.
         hdu : int
             The HDU number in the fits file containing the _image data.
-        pixel_scales: float
-            The arc-second to pixel conversion factor of each pixel.
         """
         return cls(imaging_util.numpy_array_from_fits(file_path, hdu))
 
@@ -216,8 +209,6 @@ class ScaledArray(Array, ArrayGeometry):
         ----------
         array: ndarray
             An array representing data (e.g. an _image, noise-mappers, etc.)
-        pixel_scales: (float, float)
-            The arc-second to pixel conversion factor of each pixel.
         """
         # noinspection PyArgumentList
         super(ScaledArray, self).__init__()
@@ -253,7 +244,7 @@ class ScaledSquarePixelArray(ScaledArray):
 
     @property
     def pixel_scales(self):
-        return (self.pixel_scale, self.pixel_scale)
+        return self.pixel_scale, self.pixel_scale
 
     @classmethod
     def from_fits(cls, file_path, hdu, pixel_scale):
@@ -378,7 +369,7 @@ class ScaledRectangularPixelArray(ScaledArray):
         flat_scaled_array: ScaledSquarePixelArray
             A copy of this array flattened to 1D
         """
-        return self.new_with_array(super(ScaledSquarePixelArray, self).flatten(order))
+        return self.new_with_array(super().flatten(order))
 
     def __eq__(self, other):
         super_result = super(ScaledRectangularPixelArray, self).__eq__(other)
