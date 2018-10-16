@@ -9,6 +9,23 @@ def is_prior(value):
 
 class PhaseProperty(object):
     def __init__(self, name):
+        """
+        A phase property is a named property of a phase in a pipeline. It implemented setters and getters that allow
+        it to associated values with the constant or variable object depending on the type of those values. Note that
+        this functionality may be better handled by the model mapper.
+
+        Parameters
+        ----------
+        name: str
+            The name of this property
+
+        Examples
+        --------
+        >>> class Phase:
+        >>>     my_property = PhaseProperty("my_property")
+        >>>     def __init__(self, my_property):
+        >>>         self.my_property = my_property
+        """
         self.name = name
 
     def fget(self, obj):
@@ -69,6 +86,15 @@ class ListWrapper(object):
     """
 
     def __init__(self, variable_items, constant_items):
+        """
+        A ListWrapper takes lists of variable and constants and behaves like a list. Items can be addressed by their
+        index in the list or by their name.
+
+        Parameters
+        ----------
+        variable_items
+        constant_items
+        """
         self.variable_items = variable_items
         self.constant_items = constant_items
 
@@ -116,6 +142,12 @@ class ListWrapper(object):
 
 
 class PhasePropertyList(PhaseProperty):
+    """
+    A phase property that wraps a list or dictionary. If wrapping a dictionary then named items can still be addressed
+    using indexes; if wrapping a list then items can still be addressed by names of the format name_index where name is
+    the name of this phase property.
+    """
+
     def fget(self, obj):
         return ListWrapper(getattr(obj.optimizer.variable, self.name),
                            getattr(obj.optimizer.constant, self.name))
