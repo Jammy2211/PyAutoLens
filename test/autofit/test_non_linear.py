@@ -45,7 +45,6 @@ class TestParamNames(object):
     def test_prior_prior_model_name_dict(self, mapper, mock_list):
         mapper.mock_list = mock_list
         prior_prior_model_name_dict = mapper.prior_prior_model_name_dict
-        print(prior_prior_model_name_dict)
 
         assert len({value for key, value in prior_prior_model_name_dict.items()}) == 2
 

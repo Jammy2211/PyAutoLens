@@ -296,9 +296,13 @@ class ModelMapper(AbstractModel):
         prior_prior_model_name_dict = {prior_tuple.prior: prior_model_tuple.name
                                        for prior_model_tuple in self.flat_prior_model_tuples
                                        for prior_tuple in prior_model_tuple.prior_model.prior_tuples}
-        return {prior_tuple.prior: prior_model_tuple.name
-                for prior_model_tuple in self.flat_prior_model_tuples
-                for prior_tuple in prior_model_tuple.prior_model.prior_tuples}
+        prior_list_prior_model_name_dict = {
+            prior_tuple.value: "{}_{}".format(list_prior_model_tuple.name, label_prior_model_tuple.name) for
+            list_prior_model_tuple in self.list_prior_model_tuples for label_prior_model_tuple in
+            list_prior_model_tuple.value.label_prior_model_tuples for prior_tuple in
+            label_prior_model_tuple.value.prior_tuples}
+        prior_prior_model_name_dict.update(prior_list_prior_model_name_dict)
+        return prior_prior_model_name_dict
 
     @property
     @cast_collection(PriorModelNameValue)
