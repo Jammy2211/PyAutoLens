@@ -167,6 +167,11 @@ class TestPhasePropertyListAttributes(object):
         assert list_phase.variable.prop == [objects["one"]]
         assert list_phase.constant.prop == [objects["two"]]
 
+        list_phase.prop.one = g.Galaxy()
+
+        assert len(list_phase.variable.prop) == 0
+        assert len(list_phase.constant.prop) == 2
+
 
 def assert_ordered(items):
     assert [n for n in range(len(items))] == [item.position for item in items]
