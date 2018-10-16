@@ -64,9 +64,14 @@ class PhaseProperty(object):
 
 
 class ListWrapper(object):
-    def __init__(self, variable_items, constant_items):
+    """
+    @DynamicAttrs
+    """
+
+    def __init__(self, variable_items, constant_items, mappings):
         self.variable_items = variable_items
         self.constant_items = constant_items
+        self.mappings = mappings
 
     def __setitem__(self, i, value):
         original = self[i]
@@ -93,16 +98,38 @@ class ListWrapper(object):
     def __len__(self):
         return len(self.items)
 
+    def __getattr__(self, item):
+        try:
+            return self.__getattribute__(item)
+        except AttributeError:
+            return self[list(self).index(self.mappings[item])]
+
 
 class PhasePropertyList(PhaseProperty):
+    def __init__(self, name):
+        super().__init__(name)
+        self.mappings = {}
+
     def fget(self, obj):
         return ListWrapper(getattr(obj.optimizer.variable, self.name),
-                           getattr(obj.optimizer.constant, self.name))
+                           getattr(obj.optimizer.constant, self.name),
+                           self.mappings)
 
     def fset(self, obj, value):
-        for n in range(len(value)):
-            if inspect.isclass(value[n]):
-                raise AssertionError("Classes must be wrapped in PriorModel instances to be used in PhasePropertyLists")
-            value[n].position = n
+        if isinstance(value, dict):
+            self.mappings = value
+            value = []
+            for n, tup in enumerate(self.mappings.items()):
+                if inspect.isclass(tup[1]):
+                    raise AssertionError(
+                        "Classes must be wrapped in PriorModel instances to be used in PhasePropertyLists")
+                value.append(tup[1])
+                value[n].position = n
+        else:
+            for n in range(len(value)):
+                if inspect.isclass(value[n]):
+                    raise AssertionError(
+                        "Classes must be wrapped in PriorModel instances to be used in PhasePropertyLists")
+                value[n].position = n
         setattr(obj.optimizer.variable, self.name, [item for item in value if is_prior(item)])
         setattr(obj.optimizer.constant, self.name, [item for item in value if not is_prior(item)])
