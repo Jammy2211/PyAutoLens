@@ -6,6 +6,11 @@ from autolens import exc
 from autolens.imaging import imaging_util
 from autolens.imaging.scaled_array import ScaledSquarePixelArray, Array
 
+import logging
+
+
+logger = logging.getLogger(__name__)
+
 
 class Image(ScaledSquarePixelArray):
 
@@ -35,9 +40,12 @@ class Image(ScaledSquarePixelArray):
     def __array_finalize__(self, obj):
         super(Image, self).__array_finalize__(obj)
         if isinstance(obj, Image):
-            self.psf = obj.psf
-            self.noise_map = obj.noise_map
-            self.background_noise_map = obj.background_noise_map
+            try:
+                self.psf = obj.psf
+                self.noise_map = obj.noise_map
+                self.background_noise_map = obj.background_noise_map
+            except AttributeError:
+                logger.debug("Original object in Image.__array_finalize__ missing one or more attributes")
 
     def trim_image_and_noise_around_centre(self, new_shape):
 
