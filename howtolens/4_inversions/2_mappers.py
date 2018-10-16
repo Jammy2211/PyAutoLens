@@ -38,7 +38,8 @@ rectangular = pix.Rectangular(shape=(10, 20))
 mapper = rectangular.mapper_from_grids(grids=tracer.source_plane.grids)
 
 # mapper_plotters.plot_rectangular_mapper(mapper=mapper, plot_grid=True, source_pixels=[69, 89, 109])
-mapper_plotters.plot_image_and_mapper(image=image, mapper=mapper, plot_grid=True, source_pixels=[69, 89, 109])
+mapper_plotters.plot_image_and_mapper(image=image, mapper=mapper, should_plot_grid=True, source_pixels=[[69, 89], [109]])
+mapper_plotters.plot_image_and_mapper(image=image, mapper=mapper, should_plot_grid=True, image_pixels=[[range(0, 100)]])
 
 # print(image_plane_grids.image.grid_to_pixel)
 # print(tracer.image_plane.grids.image.grid_to_pixel)

@@ -67,13 +67,9 @@ def set_xy_labels_and_ticks_in_pixels(shape, units, kpc_per_arcsec, xticks, ytic
 
     plt.tick_params(labelsize=xyticksize)
 
-def set_colorbar(cb_ticksize):
+def set_colorbar(cb_ticksize, cb_fraction, cb_pad):
 
-    from mpl_toolkits.axes_grid1 import make_axes_locatable
-    ax = plt.gca()
-    divider = make_axes_locatable(ax)
-    cax = divider.append_axes("right", size="5%", pad=0.05)
-    cb = plt.colorbar(cax=cax)
+    cb = plt.colorbar(fraction=cb_fraction, pad=cb_pad)
     cb.ax.tick_params(labelsize=cb_ticksize)
 
 def plot_mask(mask):
