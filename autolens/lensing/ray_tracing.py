@@ -5,13 +5,15 @@ from astropy import constants
 from astropy import cosmology as cosmo
 
 from autolens import exc
-from autolens.lensing import plane
 from autolens.imaging import mask as msk
+from autolens.lensing import plane as pl
 
 
 class AbstractTracer(object):
-
     image_plane_grids = None
+
+    def __init__(self, image_plane):
+        self.image_plane = image_plane
 
     @property
     def all_planes(self):
@@ -27,15 +29,15 @@ class AbstractTracer(object):
 
     @property
     def has_light_profile(self):
-        return any(list(map(lambda plane : plane.has_light_profile, self.all_planes)))
+        return any(list(map(lambda plane: plane.has_light_profile, self.all_planes)))
 
     @property
     def has_pixelization(self):
-        return any(list(map(lambda plane : plane.has_pixelization, self.all_planes)))
+        return any(list(map(lambda plane: plane.has_pixelization, self.all_planes)))
 
     @property
     def has_regularization(self):
-        return any(list(map(lambda plane : plane.has_regularization, self.all_planes)))
+        return any(list(map(lambda plane: plane.has_regularization, self.all_planes)))
 
     @property
     def has_padded_grids(self):
@@ -43,7 +45,7 @@ class AbstractTracer(object):
 
     @property
     def has_hyper_galaxy(self):
-        return any(list(map(lambda plane : plane.has_hyper_galaxy, self.all_planes)))
+        return any(list(map(lambda plane: plane.has_hyper_galaxy, self.all_planes)))
 
     @property
     def hyper_galaxies(self):
@@ -81,15 +83,6 @@ class AbstractTracer(object):
     @property
     def _image_plane_blurring_image(self):
         return sum([plane._image_plane_blurring_image for plane in self.all_planes])
-
-    # @property
-    # def _image_plane_blurring_images_of_planes(self):
-    #     return [plane._image_plane_blurring_image for plane in self.all_planes]
-    #
-    # @property
-    # def _image_plane_blurring_images_of_galaxies(self):
-    #     return [galaxy_blurring_image for plane in self.all_planes for galaxy_blurring_image
-    #             in plane._image_plane_blurring_images_of_galaxies]
 
     @property
     def surface_density(self):
@@ -136,8 +129,8 @@ class TracerImagePlane(AbstractTracer):
         if not lens_galaxies:
             raise exc.RayTracingException('No lens galaxies have been input into the Tracer')
 
-        self.image_plane = plane.Plane(lens_galaxies, image_plane_grids, borders=borders, compute_deflections=True,
-                                       cosmology=cosmology)
+        super().__init__(pl.Plane(lens_galaxies, image_plane_grids, borders=borders, compute_deflections=True,
+                                     cosmology=cosmology))
 
 
 class TracerImageSourcePlanes(AbstractTracer):
@@ -165,31 +158,31 @@ class TracerImageSourcePlanes(AbstractTracer):
         cosmology : astropy.cosmology.Planck15
             The cosmology of the ray-tracing calculation.
         """
+        super().__init__(pl.Plane(lens_galaxies, image_plane_grids, borders=borders, compute_deflections=True,
+                                     cosmology=cosmology))
 
         self.cosmology = cosmology
-        self.image_plane = plane.Plane(lens_galaxies, image_plane_grids, borders=borders, compute_deflections=True,
-                                       cosmology=cosmology)
 
         source_plane_grids = self.image_plane.trace_grids_to_next_plane()
 
-        self.source_plane = plane.Plane(source_galaxies, source_plane_grids, borders=borders, compute_deflections=False,
+        self.source_plane = pl.Plane(source_galaxies, source_plane_grids, borders=borders, compute_deflections=False,
                                         cosmology=cosmology)
 
     @property
-    @plane.cosmology_check
+    @pl.cosmology_check
     def angular_diameter_distance_from_image_to_source_plane(self):
         return self.cosmology.angular_diameter_distance_z1z2(self.image_plane.redshift,
                                                              self.source_plane.redshift).to('kpc').value
 
     @property
-    @plane.cosmology_check
+    @pl.cosmology_check
     def critical_density_kpc(self):
         return self.constant_kpc * self.source_plane.angular_diameter_distance_to_earth / \
                (self.angular_diameter_distance_from_image_to_source_plane *
                 self.image_plane.angular_diameter_distance_to_earth)
 
     @property
-    @plane.cosmology_check
+    @pl.cosmology_check
     def critical_density_arcsec(self):
         return self.critical_density_kpc * self.image_plane.kpc_per_arcsec_proper ** 2.0
 
@@ -210,9 +203,6 @@ class AbstractTracerMulti(AbstractTracer):
         ----------
         galaxies : [Galaxy]
             The list of galaxies in the ray-tracing calculation.
-        imaging_grids : mask.ImagingGrids
-            The _image-plane grids where ray-tracing calculation are performed, (this includes the
-            _image-grid, sub-grid, blurring-grid, etc.).
         cosmology : astropy.cosmology
             The cosmology of the ray-tracing calculation.
         """
@@ -243,7 +233,7 @@ class AbstractTracerMulti(AbstractTracer):
 
     @property
     def all_planes(self):
-        return [plane for plane in self.planes]
+        return [p for p in self.planes]
 
     @property
     def image_plane(self):
@@ -278,7 +268,8 @@ class AbstractTracerMulti(AbstractTracer):
 
     def critical_density_kpc_between_planes(self, i, j):
         return self.constant_kpc * self.angular_diameter_distance_of_plane_to_earth(j) / \
-               (self.angular_diameter_distance_between_planes(i, j) * self.angular_diameter_distance_of_plane_to_earth(i))
+               (self.angular_diameter_distance_between_planes(i, j) * self.angular_diameter_distance_of_plane_to_earth(
+                   i))
 
     def critical_density_arcsec_between_planes(self, i, j):
         return self.critical_density_kpc_between_planes(i, j) * self.kpc_per_arcsec_proper_of_plane(i) ** 2.0
@@ -360,15 +351,15 @@ class TracerMulti(AbstractTracerMulti):
                         blurring_grid = msk.ImageGrid(arr=new_grid.blurring - scaled_deflections.blurring,
                                                       mask=None)
                         new_grid = msk.ImagingGrids(image=image_grid, sub=sub_grid, blurring=blurring_grid)
-                        
-                   #     new_grid = new_grid.map_function(subtract_scaled_deflections, scaled_deflections)
+
+                    #     new_grid = new_grid.map_function(subtract_scaled_deflections, scaled_deflections)
                     else:
                         new_grid = None
 
-            self.planes.append(plane.Plane(galaxies=self.planes_galaxies[plane_index], grids=new_grid, borders=borders,
-                                     compute_deflections=compute_deflections, cosmology=cosmology))
+            self.planes.append(pl.Plane(galaxies=self.planes_galaxies[plane_index], grids=new_grid, borders=borders,
+                                           compute_deflections=compute_deflections, cosmology=cosmology))
 
-    
+
 class TracerImageSourcePlanesPositions(AbstractTracer):
 
     @property
@@ -394,15 +385,13 @@ class TracerImageSourcePlanesPositions(AbstractTracer):
         cosmology : astropy.cosmology.Planck15
             The cosmology of the ray-tracing calculation.
         """
+        super().__init__(pl.PlanePositions(lens_galaxies, positions, compute_deflections=True, cosmology=cosmology))
 
         self.cosmology = cosmology
 
-        self.image_plane = plane.PlanePositions(lens_galaxies, positions, compute_deflections=True,
-                                                cosmology=cosmology)
-
         source_plane_grids = self.image_plane.trace_to_next_plane()
 
-        self.source_plane = plane.PlanePositions(None, source_plane_grids, compute_deflections=False,
+        self.source_plane = pl.PlanePositions(None, source_plane_grids, compute_deflections=False,
                                                  cosmology=cosmology)
 
 
@@ -426,7 +415,7 @@ class TracerMultiPositions(AbstractTracerMulti):
         """
 
         if not galaxies:
-            raise exc.RayTracingException('No galaxies have been input into the Tracer (TracerImageSourceplane.Planes)')
+            raise exc.RayTracingException('No galaxies have been input into the Tracer (TracerImageSourcepl.Planes)')
 
         super(TracerMultiPositions, self).__init__(galaxies, cosmology)
 
@@ -445,7 +434,6 @@ class TracerMultiPositions(AbstractTracerMulti):
 
             if plane_index > 0:
                 for previous_plane_index in range(plane_index):
-
                     scaling_factor = self.scaling_factor_between_planes(i=previous_plane_index,
                                                                         j=plane_index)
 
@@ -456,5 +444,5 @@ class TracerMultiPositions(AbstractTracerMulti):
                     new_positions = list(map(lambda positions, deflections:
                                              np.subtract(positions, deflections), new_positions, scaled_deflections))
 
-            self.planes.append(plane.PlanePositions(galaxies=self.planes_galaxies[plane_index], positions=new_positions,
-                                              compute_deflections=compute_deflections))
+            self.planes.append(pl.PlanePositions(galaxies=self.planes_galaxies[plane_index], positions=new_positions,
+                                                    compute_deflections=compute_deflections))
