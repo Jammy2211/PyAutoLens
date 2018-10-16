@@ -82,17 +82,16 @@ from howtolens.simulations import lens_modeling as simulate
 
 # Lets look at how we can customize the priors of a phase with PyAutoLens.
 # First, we'll setup the config-overrides, so the non-linear search runs fast. Again, just ignore this for now.
-path = 'path/to/AutoLens/howtolens/2_lens_modeling'
-path = '/home/jammy/PyCharm/Projects/AutoLens/howtolens/2_lens_modeling'
-conf.instance = conf.Config(config_path=path+'/configs/2_parameter_space_and_priors', output_path=path+"/../output")
+
+conf.instance = conf.Config(config_path='configs/2_parameter_space_and_priors', output_path="../output")
 
 # Simulate the image again - we'll use the same image as the previous tutorial.
 simulate.tutorial_1_image()
 
 # Lets also setup the image, lens and source galaxy models, using the same image as the previous tutorial.
-image = im.load_imaging_from_path(image_path=path + '/data/1_non_linear_search/image.fits',
-                                  noise_map_path=path+'/data/1_non_linear_search/noise_map.fits',
-                                  psf_path=path + '/data/1_non_linear_search/psf.fits', pixel_scale=0.1)
+image = im.load_imaging_from_path(image_path='data/1_non_linear_search/image.fits',
+                                  noise_map_path='data/1_non_linear_search/noise_map.fits',
+                                  psf_path='data/1_non_linear_search/psf.fits', pixel_scale=0.1)
 imaging_plotters.plot_image_subplot(image=image)
 
 # To change the priors on specific parameters, we create our galaxy model's and then use a custom-phase and its
