@@ -130,7 +130,7 @@ class TracerImagePlane(AbstractTracer):
             raise exc.RayTracingException('No lens galaxies have been input into the Tracer')
 
         super().__init__(pl.Plane(lens_galaxies, image_plane_grids, borders=borders, compute_deflections=True,
-                                     cosmology=cosmology))
+                                  cosmology=cosmology))
 
 
 class TracerImageSourcePlanes(AbstractTracer):
@@ -159,14 +159,14 @@ class TracerImageSourcePlanes(AbstractTracer):
             The cosmology of the ray-tracing calculation.
         """
         super().__init__(pl.Plane(lens_galaxies, image_plane_grids, borders=borders, compute_deflections=True,
-                                     cosmology=cosmology))
+                                  cosmology=cosmology))
 
         self.cosmology = cosmology
 
         source_plane_grids = self.image_plane.trace_grids_to_next_plane()
 
         self.source_plane = pl.Plane(source_galaxies, source_plane_grids, borders=borders, compute_deflections=False,
-                                        cosmology=cosmology)
+                                     cosmology=cosmology)
 
     @property
     @pl.cosmology_check
@@ -328,9 +328,6 @@ class TracerMulti(AbstractTracerMulti):
                     else:
                         scaled_deflections = None
 
-                    def subtract_scaled_deflections(grid, scaled_deflection):
-                        return np.subtract(grid, scaled_deflection)
-
                     if scaled_deflections is not None:
 
                         if isinstance(new_grid.image, msk.PaddedImageGrid):
@@ -340,6 +337,9 @@ class TracerMulti(AbstractTracerMulti):
                         elif isinstance(new_grid.image, msk.ImageGrid):
                             image_grid = msk.ImageGrid(arr=new_grid.image - scaled_deflections.image,
                                                        mask=new_grid.image.mask)
+                        else:
+                            raise exc.RayTracingException(
+                                "new_grid.image must either be a PaddedImageGrid or ImageGrid")
 
                         if isinstance(new_grid.sub, msk.PaddedSubGrid):
                             sub_grid = msk.PaddedSubGrid(new_grid.sub - scaled_deflections.sub, new_grid.sub.mask,
@@ -347,17 +347,15 @@ class TracerMulti(AbstractTracerMulti):
                         elif isinstance(new_grid.sub, msk.SubGrid):
                             sub_grid = msk.SubGrid(new_grid.sub - scaled_deflections.sub, new_grid.sub.mask,
                                                    new_grid.sub.sub_grid_size)
+                        else:
+                            raise exc.RayTracingException("new_grid.sub must either be a SubGrid or PaddedSubGrid")
 
                         blurring_grid = msk.ImageGrid(arr=new_grid.blurring - scaled_deflections.blurring,
                                                       mask=None)
                         new_grid = msk.ImagingGrids(image=image_grid, sub=sub_grid, blurring=blurring_grid)
 
-                    #     new_grid = new_grid.map_function(subtract_scaled_deflections, scaled_deflections)
-                    else:
-                        new_grid = None
-
             self.planes.append(pl.Plane(galaxies=self.planes_galaxies[plane_index], grids=new_grid, borders=borders,
-                                           compute_deflections=compute_deflections, cosmology=cosmology))
+                                        compute_deflections=compute_deflections, cosmology=cosmology))
 
 
 class TracerImageSourcePlanesPositions(AbstractTracer):
@@ -392,7 +390,7 @@ class TracerImageSourcePlanesPositions(AbstractTracer):
         source_plane_grids = self.image_plane.trace_to_next_plane()
 
         self.source_plane = pl.PlanePositions(None, source_plane_grids, compute_deflections=False,
-                                                 cosmology=cosmology)
+                                              cosmology=cosmology)
 
 
 class TracerMultiPositions(AbstractTracerMulti):
@@ -445,4 +443,4 @@ class TracerMultiPositions(AbstractTracerMulti):
                                              np.subtract(positions, deflections), new_positions, scaled_deflections))
 
             self.planes.append(pl.PlanePositions(galaxies=self.planes_galaxies[plane_index], positions=new_positions,
-                                                    compute_deflections=compute_deflections))
+                                                 compute_deflections=compute_deflections))
