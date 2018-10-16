@@ -1,15 +1,16 @@
+from howtolens.simulations import pipelines as simulation
+
 from autolens import conf
-from autolens.pipeline import phase as ph
-from autolens.pipeline import pipeline
 from autolens.autofit import model_mapper as mm
 from autolens.autofit import non_linear as nl
 from autolens.imaging import image as im
 from autolens.imaging import mask
 from autolens.lensing import galaxy_model as gm
+from autolens.pipeline import phase as ph
+from autolens.pipeline import pipeline
+from autolens.plotting import imaging_plotters
 from autolens.profiles import light_profiles as lp
 from autolens.profiles import mass_profiles as mp
-from autolens.plotting import imaging_plotters
-from howtolens.simulations import pipelines as simulation
 
 # Up to now, all of the images that we fitted had only one lens galaxy. However we saw in chapter 1 that we can
 # create multiple galaxies which each contribute to the strong lensing. Multi-galaxy systems are challenging to
@@ -25,19 +26,19 @@ from howtolens.simulations import pipelines as simulation
 # writing a pipeline that we can generalize to many lenses isn't currently possible with PyAutoLens.
 
 # Lets quickly sort the output directory
-path = '/home/jammy/PyCharm/Projects/AutoLens/howtolens/3_pipelines'
-conf.instance = conf.Config(config_path=conf.CONFIG_PATH, output_path=path+"/../output")
+conf.instance = conf.Config(config_path=conf.CONFIG_PATH, output_path="../output")
 
 # Lets simulate the image we'll fit, which is a new image, finally!
 simulation.pipeline_x2_lens_galaxies_image()
 
 # Now, lets load and inspect the image. You'll notice that we've upped the pixel_scales to 0.05". The 0.1" we've been
 # using up to now isn't high enough resolution to fit a multi-galaxy lensing system very well.
-image = im.load_imaging_from_path(image_path=path + '/data/2_x2_lens_galaxies/image.fits',
-                                  noise_map_path=path+'/data/2_x2_lens_galaxies/noise_map.fits',
-                                  psf_path=path + '/data/2_x2_lens_galaxies/psf.fits', pixel_scale=0.05)
+image = im.load_imaging_from_path(image_path='data/2_x2_lens_galaxies/image.fits',
+                                  noise_map_path='data/2_x2_lens_galaxies/noise_map.fits',
+                                  psf_path='data/2_x2_lens_galaxies/psf.fits', pixel_scale=0.05)
 
 imaging_plotters.plot_image_subplot(image=image)
+
 
 # Okay, so looking at the image, we clearly see two blobs of light, corresponding to our two lens galaxies. We also
 # see the source's light is pretty complex - the arcs don't posses the rotational symmetry we're used to seeing
@@ -58,7 +59,6 @@ imaging_plotters.plot_image_subplot(image=image)
 
 # Begin with the make pipeline function
 def make_pipeline():
-
     pipeline_name = '3_pipelines/2_x2_lens_galaxies'  # Give the pipeline a name.
 
     # This galaxy is at (-1.0, 0.0), so we're going to use a small circular mask centred on its location to fit its
@@ -69,7 +69,6 @@ def make_pipeline():
     class LeftLensPhase(ph.LensPlanePhase):
 
         def pass_priors(self, previous_results):
-
             # Lets restrict the prior's on the centres around the pixel we know the galaxy's light centre peaks.
             self.lens_galaxies[0].light.centre_0 = mm.GaussianPrior(mean=0.0, sigma=0.05)
             self.lens_galaxies[0].light.centre_1 = mm.GaussianPrior(mean=-1.0, sigma=0.05)
@@ -80,7 +79,7 @@ def make_pipeline():
 
     phase1 = LeftLensPhase(lens_galaxies=[gm.GalaxyModel(light=lp.EllipticalSersic)],
                            optimizer_class=nl.MultiNest, mask_function=mask_function,
-                           phase_name=pipeline_name+'/phase_1_left_lens_light')
+                           phase_name=pipeline_name + '/phase_1_left_lens_light')
 
     # Now do the exact same with the lens galaxy on the right at (0.0, 1.0)
 
@@ -90,18 +89,16 @@ def make_pipeline():
     class RightLensPhase(ph.LensPlanePhase):
 
         def pass_priors(self, previous_results):
-
             # Note that, there is only 1 galaxy in the phase when we set it up below. This means that in this phase
             # the right-hand lens galaxy is still indexed as 0.
 
             self.lens_galaxies[0].light.centre_0 = mm.GaussianPrior(mean=0.0, sigma=0.05)
             self.lens_galaxies[0].light.centre_1 = mm.GaussianPrior(mean=1.0, sigma=0.05)
             self.lens_galaxies[0].light.sersic_index = 4.0
-            
+
     phase2 = RightLensPhase(lens_galaxies=[gm.GalaxyModel(light=lp.EllipticalSersic)],
                             optimizer_class=nl.MultiNest, mask_function=mask_function,
-                            phase_name=pipeline_name+'/phase_2_right_lens_light')
-
+                            phase_name=pipeline_name + '/phase_2_right_lens_light')
 
     # In the next phase, we fit the source of the lens subtracted image.
     class LensSubtractedPhase(ph.LensSourcePlanePhase):
@@ -113,7 +110,6 @@ def make_pipeline():
                    phase_2_results.fit.unmasked_model_profile_image
 
         def pass_priors(self, previous_results):
-
             phase_1_results = previous_results[0]
             phase_2_results = previous_results[1]
 
@@ -132,12 +128,11 @@ def make_pipeline():
                                                 gm.GalaxyModel(mass=mp.EllipticalIsothermal)],
                                  source_galaxies=[gm.GalaxyModel(light=lp.EllipticalExponential)],
                                  optimizer_class=nl.MultiNest,
-                                 phase_name=pipeline_name+'/phase_3_fit_sources')
+                                 phase_name=pipeline_name + '/phase_3_fit_sources')
 
     class FitAllPhase(ph.LensSourcePlanePhase):
 
         def pass_priors(self, previous_results):
-            
             phase_1_results = previous_results[0]
             phase_2_results = previous_results[1]
             phase_3_results = previous_results[2]
@@ -172,9 +167,9 @@ def make_pipeline():
                                                        mass=mp.EllipticalIsothermal),
                                         gm.GalaxyModel(light=lp.EllipticalSersic,
                                                        mass=mp.EllipticalIsothermal)],
-                                 source_galaxies=[gm.GalaxyModel(light=lp.EllipticalExponential)],
-                                 optimizer_class=nl.MultiNest,
-                                 phase_name=pipeline_name+'/phase_4_fit_all')
+                         source_galaxies=[gm.GalaxyModel(light=lp.EllipticalExponential)],
+                         optimizer_class=nl.MultiNest,
+                         phase_name=pipeline_name + '/phase_4_fit_all')
 
     return pipeline.PipelineImaging(pipeline_name, phase1, phase2, phase3, phase4)
 
