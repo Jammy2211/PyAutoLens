@@ -40,7 +40,8 @@ def plot_image_subplot(image, mask=None, positions=None, units='arcsec', output_
         plot_image(image=image, mask=mask, positions=positions, grid=None, as_subplot=True,
                    units=units, kpc_per_arcsec=None, xyticksize=16,
                    norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
-                   figsize=None, aspect='auto', cmap='jet', cb_ticksize=10,
+                   figsize=None, aspect='auto', cmap='jet',
+                   cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
                    titlesize=10, xlabelsize=10, ylabelsize=10,
                    output_path=output_path, output_format=output_format)
 
@@ -49,7 +50,8 @@ def plot_image_subplot(image, mask=None, positions=None, units='arcsec', output_
         plot_noise_map(image=image, mask=mask, units=units, as_subplot=True,
             kpc_per_arcsec=None, xyticksize=16,
             norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
-            figsize=None, aspect='auto', cmap='jet', cb_ticksize=10,
+            figsize=None, aspect='auto', cmap='jet',
+                       cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
             titlesize=10, xlabelsize=10, ylabelsize=10,
             output_path=output_path, output_format=output_format)
 
@@ -58,7 +60,8 @@ def plot_image_subplot(image, mask=None, positions=None, units='arcsec', output_
         plot_psf(image=image, units='arcsec', as_subplot=True,
             kpc_per_arcsec=None, xyticksize=16,
             norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
-            figsize=None, aspect='auto', cmap='jet', cb_ticksize=10,
+            figsize=None, aspect='auto', cmap='jet',
+                 cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
             titlesize=10, xlabelsize=10, ylabelsize=10,
             output_path=output_path, output_format=output_format)
 
@@ -67,7 +70,8 @@ def plot_image_subplot(image, mask=None, positions=None, units='arcsec', output_
         plot_signal_to_noise_map(image=image, mask=mask, as_subplot=True,
             units=units, kpc_per_arcsec=None, xyticksize=16,
             norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
-            figsize=None, aspect='auto', cmap='jet', cb_ticksize=10,
+            figsize=None, aspect='auto', cmap='jet',
+                                 cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
             titlesize=10, xlabelsize=10, ylabelsize=10,
             output_path=output_path, output_format=output_format)
 
@@ -121,51 +125,70 @@ def plot_image_individual(image, mask=None, positions=None, output_path=None, ou
 def plot_image(image, mask=None, positions=None, grid=None, as_subplot=False,
                units='arcsec', kpc_per_arcsec=None,
                xyticksize=16, norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
-               figsize=(7, 7), aspect='equal', cmap='jet', cb_ticksize=20,
+               figsize=(7, 7), aspect='equal', cmap='jet',
+               cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
                title='Observed Image', titlesize=16, xlabelsize=16, ylabelsize=16,
                output_path=None, output_format='show', output_filename='observed_image'):
 
-    plot_array.plot_image(image, mask, positions, grid, as_subplot,
-                          units, kpc_per_arcsec, xyticksize, norm, norm_min,
-                          norm_max, linthresh, linscale, figsize, aspect, cmap, cb_ticksize, title,
-                          titlesize, xlabelsize, ylabelsize, output_path, output_format, output_filename)
+    plot_array.plot_image(image=image, mask=mask, positions=positions, grid=grid, as_subplot=as_subplot,
+                          units=units, kpc_per_arcsec=kpc_per_arcsec, xyticksize=xyticksize,
+                          norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
+                          linscale=linscale, figsize=figsize, aspect=aspect, cmap=cmap,
+                          cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
+                          title=title, titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize,
+                          output_path=output_path, output_format=output_format, output_filename=output_filename)
 
 
 def plot_noise_map(image, mask=None, as_subplot=False,
                    units='arcsec', kpc_per_arcsec=None,
                    xyticksize=16, norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
-                   figsize=(7, 7), aspect='equal', cmap='jet', cb_ticksize=20,
+                   figsize=(7, 7), aspect='equal', cmap='jet',
+                   cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
                    title='Noise-Map', titlesize=16, xlabelsize=16, ylabelsize=16,
                    output_path=None, output_format='show', output_filename='noise_map'):
 
-    plot_array.plot_noise_map(image.noise_map, mask, as_subplot,
-                              units, kpc_per_arcsec, xyticksize, norm, norm_min,
-                              norm_max, linthresh, linscale, figsize, aspect, cmap, cb_ticksize, title,
-                              titlesize, xlabelsize, ylabelsize, output_path, output_format, output_filename)
+    plot_array.plot_noise_map(noise_map=image.noise_map, mask=mask, as_subplot=as_subplot,
+                              units=units, kpc_per_arcsec=kpc_per_arcsec, xyticksize=xyticksize,
+                              norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
+                              linscale=linscale, figsize=figsize, aspect=aspect, cmap=cmap,
+                              cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
+                              title=title, titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize,
+                              output_path=output_path, output_format=output_format, output_filename=output_filename)
+
 
 def plot_psf(image, as_subplot=False,
              units='arcsec', kpc_per_arcsec=None,
              xyticksize=16, norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
-             figsize=(7, 7), aspect='equal', cmap='jet', cb_ticksize=20,
+             figsize=(7, 7), aspect='equal', cmap='jet',
+             cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
              title='PSF', titlesize=16, xlabelsize=16, ylabelsize=16,
              output_path=None, output_format='show', output_filename='psf'):
 
-    plot_array.plot_psf(image.psf, as_subplot,
-                        units, kpc_per_arcsec, xyticksize, norm, norm_min,
-                        norm_max, linthresh, linscale, figsize, aspect, cmap, cb_ticksize, title,
-                        titlesize, xlabelsize, ylabelsize, output_path, output_format, output_filename)
+    plot_array.plot_psf(psf=image.psf, as_subplot=as_subplot,
+                        units=units, kpc_per_arcsec=kpc_per_arcsec, xyticksize=xyticksize,
+                        norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
+                        linscale=linscale, figsize=figsize, aspect=aspect, cmap=cmap,
+                        cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
+                        title=title, titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize,
+                        output_path=output_path, output_format=output_format, output_filename=output_filename)
+
 
 def plot_signal_to_noise_map(image, mask=None, as_subplot=False,
                              units='arcsec', kpc_per_arcsec=None,
                              xyticksize=16, norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
-                             figsize=(7, 7), aspect='equal', cmap='jet', cb_ticksize=20,
+                             figsize=(7, 7), aspect='equal', cmap='jet',
+                             cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
                              title='Noise-Map', titlesize=16, xlabelsize=16, ylabelsize=16,
                              output_path=None, output_format='show', output_filename='signal_to_noise_map'):
 
-    plot_array.plot_signal_to_noise_map(image.signal_to_noise_map, mask, as_subplot,
-                                        units, kpc_per_arcsec, xyticksize, norm, norm_min,
-                                        norm_max, linthresh, linscale, figsize, aspect, cmap, cb_ticksize, title,
-                                        titlesize, xlabelsize, ylabelsize, output_path, output_format, output_filename)
+    plot_array.plot_signal_to_noise_map(signal_to_noise_map=image.signal_to_noise_map, mask=mask, as_subplot=as_subplot,
+                                        units=units, kpc_per_arcsec=kpc_per_arcsec, xyticksize=xyticksize,
+                                        norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
+                                        linscale=linscale, figsize=figsize, aspect=aspect, cmap=cmap,
+                                        cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
+                                        title=title, titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize,
+                                        output_path=output_path, output_format=output_format,
+                                        output_filename=output_filename)
 
 # def plot_grid(image, axis_limits=None,
 #               units='arcsec', kpc_per_arcsec=None,
