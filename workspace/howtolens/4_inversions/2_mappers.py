@@ -1,13 +1,13 @@
+from howtolens.simulations import inversions as simulate_image
+
 from autolens.imaging import image as im
-from autolens.profiles import mass_profiles as mp
-from autolens.profiles import light_profiles as lp
-from autolens.lensing import galaxy as g
-from autolens.lensing import ray_tracing
 from autolens.imaging import mask
 from autolens.inversion import pixelizations as pix
-from autolens.plotting import imaging_plotters
+from autolens.lensing import galaxy as g
+from autolens.lensing import ray_tracing
 from autolens.plotting import mapper_plotters
-from howtolens.simulations import inversions as simulate_image
+from autolens.profiles import light_profiles as lp
+from autolens.profiles import mass_profiles as mp
 
 # In the previous example, we used a mapper to make a rectangular pixelization using a lensed source-plane grid.
 # However, it isn't very clear why a mapper is called a mapper - up to now it hasn't done very much mapping at all!
@@ -15,10 +15,9 @@ from howtolens.simulations import inversions as simulate_image
 
 # To begin, lets simulate and load an image - it'll be clear why we're doing this in a moment!
 simulate_image.tutorial_2_image()
-path = '/home/jammy/PyCharm/Projects/AutoLens/howtolens/4_inversions'
-image = im.load_imaging_from_path(image_path=path + '/data/2_mappers/image.fits',
-                                  noise_map_path=path+'/data/2_mappers/noise_map.fits',
-                                  psf_path=path + '/data/2_mappers/psf.fits', pixel_scale=0.05)
+image = im.load_imaging_from_path(image_path='data/2_mappers/image.fits',
+                                  noise_map_path='data/2_mappers/noise_map.fits',
+                                  psf_path='data/2_mappers/psf.fits', pixel_scale=0.05)
 # imaging_plotters.plot_image_subplot(image=image)
 
 # Lets begin by setting up our grids (using the image shape / pixel_scale).
