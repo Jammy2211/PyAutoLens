@@ -24,13 +24,9 @@ def plot_image_and_mapper(image, mapper, mask=None, positions=None, should_plot_
                                 titlesize=10, xlabelsize=10, ylabelsize=10,
                                 output_path=output_path, output_format=output_format)
 
-    point_colors = itertools.cycle(["w", "c", "y", "r", "k", "b", "g", "m"])
-    for source_pixel_set in source_pixels:
-        color = next(point_colors)
-        for source_pixel in source_pixel_set:
-            image_pixel = mapper.pixelization_to_image[source_pixel]
-            image_pixel_2d = mapper.grids.image.mask.grid_to_pixel[image_pixel]
-            plt.scatter(y=image_pixel_2d[0, 0], x=image_pixel_2d[0, 1], color=color, s=10.0)
+    point_colors = itertools.cycle(["y", "r", "k", "g", "m"])
+    plot_image_image_pixels(mapper, image_pixels, point_colors)
+    plot_image_source_pixels(mapper, source_pixels, point_colors)
 
     plt.subplot(rows, columns, 2)
 
@@ -95,6 +91,28 @@ def set_limits(mapper):
 
     plt.ylim(mapper.geometry.arc_second_minima[0], mapper.geometry.arc_second_maxima[0])
     plt.xlim(mapper.geometry.arc_second_minima[0], mapper.geometry.arc_second_maxima[0])
+
+
+def plot_image_image_pixels(mapper, image_pixels, point_colors):
+
+    if image_pixels is not None:
+        for image_pixel_set in image_pixels:
+            color = next(point_colors)
+            image_pixel_set = mapper.grids.image.mask.grid_to_pixel[image_pixel_set]
+            plt.scatter(y=image_pixel_set[:, 0], x=image_pixel_set[:, 1], color=color, s=10.0)
+
+
+def plot_image_source_pixels(mapper, source_pixels, point_colors):
+
+    if source_pixels is not None:
+
+        for source_pixel_set in source_pixels:
+            color = next(point_colors)
+            for source_pixel in source_pixel_set:
+                print(source_pixel)
+                image_pixel_set = mapper.pixelization_to_image[source_pixel]
+                image_pixel_set = mapper.grids.image.mask.grid_to_pixel[image_pixel_set]
+                plt.scatter(y=image_pixel_set[:, 0], x=image_pixel_set[:, 1], color=color, s=10.0)
 
 def plot_image_pixels(mapper, image_pixels, point_colors):
 
