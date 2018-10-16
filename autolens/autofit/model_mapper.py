@@ -33,6 +33,12 @@ class AttributeNameValue(object):
     def __hash__(self):
         return hash(self.tuple)
 
+    def __str__(self):
+        return "({}, {})".format(self.name, self.value)
+
+    def __repr__(self):
+        return "<{} {}>".format(self.__class__.__name__, str(self))
+
 
 class ConstantNameValue(AttributeNameValue):
     @property
@@ -287,9 +293,21 @@ class ModelMapper(AbstractModel):
             model name; if a prior is shared by two prior models then one of those prior model's names will be in this
             dictionary.
         """
-        return {prior_tuple.prior: prior_model_tuple.name
-                for prior_model_tuple in self.prior_model_tuples
-                for prior_tuple in prior_model_tuple.prior_model.prior_tuples}
+        prior_prior_model_name_dict = {prior_tuple.prior: prior_model_tuple.name
+                                       for prior_model_tuple in self.flat_prior_model_tuples
+                                       for prior_tuple in prior_model_tuple.prior_model.prior_tuples}
+        prior_list_prior_model_name_dict = {
+            prior_tuple.value: "{}_{}".format(list_prior_model_tuple.name, label_prior_model_tuple.name) for
+            list_prior_model_tuple in self.list_prior_model_tuples for label_prior_model_tuple in
+            list_prior_model_tuple.value.label_prior_model_tuples for prior_tuple in
+            label_prior_model_tuple.value.prior_tuples}
+        prior_prior_model_name_dict.update(prior_list_prior_model_name_dict)
+        return prior_prior_model_name_dict
+
+    @property
+    @cast_collection(PriorModelNameValue)
+    def list_prior_model_tuples(self):
+        return [tup for tup in self.prior_model_tuples if isinstance(tup.value, ListPriorModel)]
 
     @property
     def constant_prior_model_name_dict(self):
@@ -1110,6 +1128,12 @@ class ListPriorModel(list, AbstractPriorModel):
         """
         self.component_number = next(self._ids)
         super().__init__(prior_models)
+
+    @property
+    @cast_collection(PriorModelNameValue)
+    def label_prior_model_tuples(self):
+        return [(prior_model.mapping_name if hasattr(prior_model, "mapping_name") else str(i), prior_model) for
+                i, prior_model in enumerate(self)]
 
     def instance_for_arguments(self, arguments):
         """
