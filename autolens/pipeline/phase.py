@@ -192,6 +192,9 @@ class Phase(object):
         def log(cls, instance):
             raise NotImplementedError()
 
+        def visualize(self, *args, **kwargs):
+            raise NotImplementedError()
+
         def tracer_for_instance(self, instance):
             raise NotImplementedError()
 
@@ -226,10 +229,10 @@ class PhasePositions(Phase):
 
         Parameters
         ----------
+        pixel_scale
+        positions
         previous_results: ResultsCollection
             An object describing the results of the last phase or None if no phase has been executed
-        _image: img.Image
-            An lensing_image that has been masked
 
         Returns
         -------
@@ -247,8 +250,8 @@ class PhasePositions(Phase):
 
         Parameters
         ----------
-        _image: im.Image
-            An lensing_image that has been masked
+        pixel_scale
+        positions
         previous_results: ResultsCollection
             The result from the previous phase
 
@@ -529,8 +532,6 @@ class LensPlanePhase(PhaseImaging):
             self.padded_model_image = self.fit.unmasked_model_profile_image
             self.lens_galaxy_padded_model_images = self.fit.unmasked_model_profile_images_of_galaxies
             self.lens_subtracted_padded_image = analysis.lensing_image.image - self.padded_model_image
-      #      fitting_plotters.plot_fitting_hyper_arrays(self.fit, output_path=analysis.output_image_path,
-      #                                             output_format='png')
 
 
 class LensPlaneHyperPhase(LensPlanePhase):
@@ -616,7 +617,6 @@ class LensLightHyperOnlyPhase(LensPlaneHyperPhase, HyperOnly):
             phase.optimizer.sampling_efficiency = 0.8
             result = phase.run(image, previous_results)
             hyper_result.constant.lens_galaxies[i].hyper_galaxy = result.constant.lens_galaxies[i].hyper_galaxy
-        #    hyper_result.variable.lens_galaxies[i].hyper_galaxy = result.variable.lens_galaxies[0].hyper_galaxy
 
         return hyper_result
 
@@ -802,7 +802,7 @@ class LensSourcePlaneHyperPhase(LensSourcePlanePhase):
             """
             The result of a phase
             """
-            super(PhaseImaging.Result, self).__init__(constant, likelihood, variable, analysis)
+            super().__init__(constant, likelihood, variable, analysis)
 
 
 class LensMassAndSourceProfileHyperOnlyPhase(LensSourcePlaneHyperPhase, HyperOnly):
@@ -897,5 +897,5 @@ class MultiPlanePhase(PhaseImaging):
 
 
 def make_path_if_does_not_exist(path):
-    if os.path.exists(path) == False:
+    if not os.path.exists(path):
         os.makedirs(path)
