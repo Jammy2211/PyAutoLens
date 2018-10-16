@@ -78,7 +78,6 @@ class NonLinearOptimizer(object):
 
         self.label_config = label_config or conf.instance.label
 
-        dirpath = os.path.dirname(os.path.realpath(__file__))
         self.file_param_names = "{}/{}".format(self.opt_path, 'multinest.paramnames')
         self.file_model_info = "{}/{}".format(self.phase_path, 'model.info')
 
@@ -113,7 +112,6 @@ class NonLinearOptimizer(object):
             with open(self.file_model_info, 'w') as file:
                 file.write(self.variable.info)
             file.close()
-
 
     def fit(self, analysis):
         raise NotImplementedError("Fitness function must be overridden by non linear optimizers")
