@@ -1,6 +1,7 @@
 import logging
 import os
 import shutil
+import hashlib
 from os.path import expanduser
 
 SUB_PATH_LENGTH = 10
@@ -34,7 +35,7 @@ def path_for(path):
     """
     start = int(SUB_PATH_LENGTH / 2)
     end = SUB_PATH_LENGTH - start
-    encoded_string = str(hash(path))
+    encoded_string = str(hashlib.sha224(path.encode("utf-8")).hexdigest())
     return "{}/al_{}".format(autolens_dir, (encoded_string[:start] + encoded_string[-end:]).replace("-", ""))
 
 
