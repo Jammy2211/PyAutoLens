@@ -1,4 +1,4 @@
-from autolens.plotting import plot_array
+from autolens.plotting import tools_array
 
 def plot_intensities(light_profile, grid, as_subplot=False,
                      units='arcsec', kpc_per_arcsec=None,
@@ -11,13 +11,13 @@ def plot_intensities(light_profile, grid, as_subplot=False,
     intensities = light_profile.intensities_from_grid(grid=grid)
     intensities = grid.scaled_array_from_array_1d(intensities)
 
-    plot_array.plot_intensities(intensities=intensities, as_subplot=as_subplot,
-                                units=units, kpc_per_arcsec=kpc_per_arcsec, xyticksize=xyticksize,
-                                norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
-                                linscale=linscale, figsize=figsize, aspect=aspect, cmap=cmap,
-                                cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
-                                title=title, titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize,
-                                output_path=output_path, output_format=output_format, output_filename=output_filename)
+    tools_array.plot_array(array=intensities, as_subplot=as_subplot,
+                           units=units, kpc_per_arcsec=kpc_per_arcsec, xyticksize=xyticksize,
+                           norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
+                           linscale=linscale, figsize=figsize, aspect=aspect, cmap=cmap,
+                           cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
+                           title=title, titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize,
+                           output_path=output_path, output_format=output_format, output_filename=output_filename)
 
 def plot_surface_density(mass_profile, grid, as_subplot=False,
                          units='arcsec', kpc_per_arcsec=None,
@@ -29,7 +29,7 @@ def plot_surface_density(mass_profile, grid, as_subplot=False,
     surface_density = mass_profile.surface_density_from_grid(grid=grid)
     surface_density = grid.scaled_array_from_array_1d(surface_density)
 
-    plot_array.plot_surface_density(surface_density=surface_density, as_subplot=as_subplot,
+    tools_array.plot_array(array=surface_density, as_subplot=as_subplot,
                                     units=units, kpc_per_arcsec=kpc_per_arcsec, xyticksize=xyticksize,
                                     norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
                                     linscale=linscale, figsize=figsize, aspect=aspect, cmap=cmap,
@@ -48,7 +48,7 @@ def plot_potential(mass_profile, grid, as_subplot=False,
     potential = mass_profile.potential_from_grid(grid=grid)
     potential = grid.scaled_array_from_array_1d(potential)
 
-    plot_array.plot_potential(potential=potential, as_subplot=as_subplot,
+    tools_array.plot_array(array=potential, as_subplot=as_subplot,
                               units=units, kpc_per_arcsec=kpc_per_arcsec, xyticksize=xyticksize,
                               norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
                               linscale=linscale, figsize=figsize, aspect=aspect, cmap=cmap,
@@ -68,7 +68,7 @@ def plot_deflections_y(mass_profile, grid, as_subplot=False,
     deflections = mass_profile.deflections_from_grid(grid)
     deflections_y = grid.scaled_array_from_array_1d(deflections[:,0])
 
-    plot_array.plot_deflections_y(deflections_y=deflections_y, as_subplot=as_subplot,
+    tools_array.plot_array(array=deflections_y, as_subplot=as_subplot,
                                   units=units, kpc_per_arcsec=kpc_per_arcsec, xyticksize=xyticksize,
                                   norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
                                   linscale=linscale, figsize=figsize, aspect=aspect, cmap=cmap,
@@ -89,7 +89,7 @@ def plot_deflections_x(mass_profile, grid, as_subplot=False,
     deflections = mass_profile.deflections_from_grid(grid)
     deflections_x = grid.scaled_array_from_array_1d(deflections[:, 1])
 
-    plot_array.plot_deflections_x(deflections_x=deflections_x, as_subplot=as_subplot,
+    tools_array.plot_array(array=deflections_x, as_subplot=as_subplot,
                                   units=units, kpc_per_arcsec=kpc_per_arcsec, xyticksize=xyticksize,
                                   norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
                                   linscale=linscale, figsize=figsize, aspect=aspect, cmap=cmap,

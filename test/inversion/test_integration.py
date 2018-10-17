@@ -31,17 +31,17 @@ class TestMapperAndRegularizationFromPixelization:
 
             pix = pixelizations.Rectangular(shape=(3, 3))
 
-            pix_mapper = pix.mapper_from_grids_and_borders(grids, borders)
+            mapper = pix.mapper_from_grids_and_borders(grids, borders)
 
-            assert (pix_mapper.mapping_matrix == np.array([[1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+            assert (mapper.mapping_matrix == np.array([[1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
                                                            [0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
                                                            [0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0],
                                                            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0],
                                                            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0]])).all()
-            assert pix_mapper.shape == (3, 3)
+            assert mapper.shape == (3, 3)
 
             reg = regularization.Constant(coeffs=(1.0,))
-            regularization_matrix = reg.regularization_matrix_from_pixel_neighbors(pix_mapper.pixel_neighbors)
+            regularization_matrix = reg.regularization_matrix_from_pixel_neighbors(mapper.pixel_neighbors)
 
             assert (regularization_matrix ==
                     np.array([[2.00000001, -1.0, 0.0, -1.0, 0.0, 0.0, 0.0, 0.0, 0.0],
@@ -74,17 +74,17 @@ class TestMapperAndRegularizationFromPixelization:
 
             pix = pixelizations.Rectangular(shape=(3, 3))
 
-            pix_mapper = pix.mapper_from_grids(grids)
+            mapper = pix.mapper_from_grids(grids)
 
-            assert (pix_mapper.mapping_matrix == np.array([[1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+            assert (mapper.mapping_matrix == np.array([[1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
                                                            [0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
                                                            [0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0],
                                                            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0],
                                                            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0]])).all()
-            assert pix_mapper.shape == (3, 3)
+            assert mapper.shape == (3, 3)
 
             reg = regularization.Constant(coeffs=(1.0,))
-            regularization_matrix = reg.regularization_matrix_from_pixel_neighbors(pix_mapper.pixel_neighbors)
+            regularization_matrix = reg.regularization_matrix_from_pixel_neighbors(mapper.pixel_neighbors)
 
             assert (regularization_matrix ==
                     np.array([[2.00000001, -1.0, 0.0, -1.0, 0.0, 0.0, 0.0, 0.0, 0.0],
@@ -128,9 +128,9 @@ class TestMapperAndRegularizationFromPixelization:
 
             pix = pixelizations.Rectangular(shape=(3, 3))
 
-            pix_mapper = pix.mapper_from_grids_and_borders(grids, borders)
+            mapper = pix.mapper_from_grids_and_borders(grids, borders)
 
-            assert (pix_mapper.mapping_matrix == np.array([[1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+            assert (mapper.mapping_matrix == np.array([[1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
                                                            [1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
                                                            [1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
                                                            [0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
@@ -145,10 +145,10 @@ class TestMapperAndRegularizationFromPixelization:
                                                            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0],
                                                            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0],
                                                            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0]])).all()
-            assert pix_mapper.shape == (3, 3)
+            assert mapper.shape == (3, 3)
 
             reg = regularization.Constant(coeffs=(1.0,))
-            regularization_matrix = reg.regularization_matrix_from_pixel_neighbors(pix_mapper.pixel_neighbors)
+            regularization_matrix = reg.regularization_matrix_from_pixel_neighbors(mapper.pixel_neighbors)
 
             assert (regularization_matrix == np.array([[2.00000001, -1.0, 0.0, -1.0, 0.0, 0.0, 0.0, 0.0, 0.0],
                                                        [-1.0, 3.00000001, -1.0, 0.0, -1.0, 0.0, 0.0, 0.0, 0.0],
@@ -185,17 +185,17 @@ class TestMapperAndRegularizationFromPixelization:
 
             pix = pixelizations.Rectangular(shape=(3, 3))
 
-            pix_mapper = pix.mapper_from_grids_and_borders(grids, borders)
+            mapper = pix.mapper_from_grids_and_borders(grids, borders)
 
-            assert (pix_mapper.mapping_matrix == np.array([[0.75, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+            assert (mapper.mapping_matrix == np.array([[0.75, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
                                                            [0.0, 0.0, 0.75, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
                                                            [0.0, 0.0, 0.0, 0.0, 2.0, 0.0, 0.0, 0.0, 0.0],
                                                            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.75, 0.0, 0.0],
                                                            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.75]])).all()
-            assert pix_mapper.shape == (3, 3)
+            assert mapper.shape == (3, 3)
 
             reg = regularization.Constant(coeffs=(1.0,))
-            regularization_matrix = reg.regularization_matrix_from_pixel_neighbors(pix_mapper.pixel_neighbors)
+            regularization_matrix = reg.regularization_matrix_from_pixel_neighbors(mapper.pixel_neighbors)
 
             assert (regularization_matrix == np.array([[2.00000001, -1.0, 0.0, -1.0, 0.0, 0.0, 0.0, 0.0, 0.0],
                                                        [-1.0, 3.00000001, -1.0, 0.0, -1.0, 0.0, 0.0, 0.0, 0.0],
@@ -233,17 +233,17 @@ class TestMapperAndRegularizationFromPixelization:
 
             pix = pixelizations.Rectangular(shape=(3, 3))
 
-            pix_mapper = pix.mapper_from_grids_and_borders(grids, borders)
+            mapper = pix.mapper_from_grids_and_borders(grids, borders)
 
-            assert (pix_mapper.mapping_matrix == np.array([[0.75, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+            assert (mapper.mapping_matrix == np.array([[0.75, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
                                                            [0.0, 0.0, 0.75, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
                                                            [0.0, 0.0, 0.0, 0.0, 2.0, 0.0, 0.0, 0.0, 0.0],
                                                            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.75, 0.0, 0.0],
                                                            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.75]])).all()
-            assert pix_mapper.shape == (3, 3)
+            assert mapper.shape == (3, 3)
 
             reg = regularization.Constant(coeffs=(1.0,))
-            regularization_matrix = reg.regularization_matrix_from_pixel_neighbors(pix_mapper.pixel_neighbors)
+            regularization_matrix = reg.regularization_matrix_from_pixel_neighbors(mapper.pixel_neighbors)
 
             assert (regularization_matrix == np.array([[2.00000001, -1.0, 0.0, -1.0, 0.0, 0.0, 0.0, 0.0, 0.0],
                                                        [-1.0, 3.00000001, -1.0, 0.0, -1.0, 0.0, 0.0, 0.0, 0.0],
@@ -276,20 +276,20 @@ class TestMapperAndRegularizationFromPixelization:
 
             pix = pixelizations.Cluster(pixels=5)
 
-            pix_mapper = pix.mapper_from_grids_and_borders(grids=grids, borders=borders,
+            mapper = pix.mapper_from_grids_and_borders(grids=grids, borders=borders,
                                                            pixel_centers=pixel_centers,
                                                            image_to_voronoi=image_to_voronoi)
 
-            assert isinstance(pix_mapper, pm.VoronoiMapper)
+            assert isinstance(mapper, pm.VoronoiMapper)
 
-            assert (pix_mapper.mapping_matrix == np.array([[1.0, 0.0, 0.0, 0.0, 0.0],
+            assert (mapper.mapping_matrix == np.array([[1.0, 0.0, 0.0, 0.0, 0.0],
                                                            [0.0, 1.0, 0.0, 0.0, 0.0],
                                                            [0.0, 0.0, 1.0, 0.0, 0.0],
                                                            [0.0, 0.0, 0.0, 1.0, 0.0],
                                                            [0.0, 0.0, 0.0, 0.0, 1.0]])).all()
 
             reg = regularization.Constant(coeffs=(1.0,))
-            regularization_matrix = reg.regularization_matrix_from_pixel_neighbors(pix_mapper.pixel_neighbors)
+            regularization_matrix = reg.regularization_matrix_from_pixel_neighbors(mapper.pixel_neighbors)
 
             assert (regularization_matrix == np.array([[3.00000001, -1.0, -1.0, -1.0, 0.0],
                                                        [-1.0, 3.00000001, -1.0, 0.0, -1.0],
@@ -323,13 +323,13 @@ class TestMapperAndRegularizationFromPixelization:
 
             pix = pixelizations.Cluster(pixels=5)
 
-            pix_mapper = pix.mapper_from_grids_and_borders(grids=grids, borders=borders,
+            mapper = pix.mapper_from_grids_and_borders(grids=grids, borders=borders,
                                                            pixel_centers=pixel_centers,
                                                            image_to_voronoi=image_to_voronoi)
 
-            assert isinstance(pix_mapper, pm.VoronoiMapper)
+            assert isinstance(mapper, pm.VoronoiMapper)
 
-            assert (pix_mapper.mapping_matrix == np.array([[1.0, 0.0, 0.0, 0.0, 0.0],
+            assert (mapper.mapping_matrix == np.array([[1.0, 0.0, 0.0, 0.0, 0.0],
                                                            [1.0, 0.0, 0.0, 0.0, 0.0],
                                                            [1.0, 0.0, 0.0, 0.0, 0.0],
                                                            [0.0, 1.0, 0.0, 0.0, 0.0],
@@ -346,7 +346,7 @@ class TestMapperAndRegularizationFromPixelization:
                                                            [0.0, 0.0, 0.0, 0.0, 1.0]])).all()
 
             reg = regularization.Constant(coeffs=(1.0,))
-            regularization_matrix = reg.regularization_matrix_from_pixel_neighbors(pix_mapper.pixel_neighbors)
+            regularization_matrix = reg.regularization_matrix_from_pixel_neighbors(mapper.pixel_neighbors)
 
             assert (regularization_matrix == np.array([[3.00000001, -1.0, -1.0, -1.0, 0.0],
                                                        [-1.0, 3.00000001, -1.0, 0.0, -1.0],
@@ -354,7 +354,7 @@ class TestMapperAndRegularizationFromPixelization:
                                                        [-1.0, 0.0, -1.0, 3.00000001, -1.0],
                                                        [0.0, -1.0, -1.0, -1.0, 3.00000001]])).all()
 
-        def test__5_simple_grid__include_sub_grid__sets_up_correct_pix_mapper(self):
+        def test__5_simple_grid__include_sub_grid__sets_up_correct_mapper(self):
             pixelization_grid = np.array([[1.0, 1.0], [-1.0, 1.0], [0.0, 0.0], [1.0, -1.0], [-1.0, -1.0]])
             pixelization_sub_grid = np.array([[1.0, 1.0], [1.0, 1.0], [1.0, 1.0], [0.0, 0.0],
                                               [-1.0, 1.0], [-1.0, 1.0], [-1.0, 1.0], [0.0, 0.0],
@@ -377,20 +377,20 @@ class TestMapperAndRegularizationFromPixelization:
 
             pix = pixelizations.Cluster(pixels=5)
 
-            pix_mapper = pix.mapper_from_grids_and_borders(grids=grids, borders=borders,
+            mapper = pix.mapper_from_grids_and_borders(grids=grids, borders=borders,
                                                            pixel_centers=pixel_centers,
                                                            image_to_voronoi=image_to_voronoi)
 
-            assert isinstance(pix_mapper, pm.VoronoiMapper)
+            assert isinstance(mapper, pm.VoronoiMapper)
 
-            assert (pix_mapper.mapping_matrix == np.array([[0.75, 0.0, 0.25, 0.0, 0.0],
+            assert (mapper.mapping_matrix == np.array([[0.75, 0.0, 0.25, 0.0, 0.0],
                                                            [0.0, 0.75, 0.25, 0.0, 0.0],
                                                            [0.0, 0.0, 1.0, 0.0, 0.0],
                                                            [0.0, 0.0, 0.25, 0.75, 0.0],
                                                            [0.0, 0.0, 0.25, 0.0, 0.75]])).all()
 
             reg = regularization.Constant(coeffs=(1.0,))
-            regularization_matrix = reg.regularization_matrix_from_pixel_neighbors(pix_mapper.pixel_neighbors)
+            regularization_matrix = reg.regularization_matrix_from_pixel_neighbors(mapper.pixel_neighbors)
 
             assert (regularization_matrix == np.array([[3.00000001, -1.0, -1.0, -1.0, 0.0],
                                                        [-1.0, 3.00000001, -1.0, 0.0, -1.0],
@@ -422,20 +422,20 @@ class TestMapperAndRegularizationFromPixelization:
 
             pix = pixelizations.Cluster(pixels=5)
 
-            pix_mapper = pix.mapper_from_grids_and_borders(grids=grids, borders=borders,
+            mapper = pix.mapper_from_grids_and_borders(grids=grids, borders=borders,
                                                            pixel_centers=pixel_centers,
                                                            image_to_voronoi=image_to_voronoi)
 
-            assert isinstance(pix_mapper, pm.VoronoiMapper)
+            assert isinstance(mapper, pm.VoronoiMapper)
 
-            assert (pix_mapper.mapping_matrix == np.array([[0.75, 0.0, 0.25, 0.0, 0.0],
+            assert (mapper.mapping_matrix == np.array([[0.75, 0.0, 0.25, 0.0, 0.0],
                                                            [0.0, 0.75, 0.25, 0.0, 0.0],
                                                            [0.0, 0.0, 1.0, 0.0, 0.0],
                                                            [0.0, 0.0, 0.25, 0.75, 0.0],
                                                            [0.0, 0.0, 0.25, 0.0, 0.75]])).all()
 
             reg = regularization.Constant(coeffs=(1.0,))
-            regularization_matrix = reg.regularization_matrix_from_pixel_neighbors(pix_mapper.pixel_neighbors)
+            regularization_matrix = reg.regularization_matrix_from_pixel_neighbors(mapper.pixel_neighbors)
 
             assert (regularization_matrix == np.array([[3.00000001, -1.0, -1.0, -1.0, 0.0],
                                                        [-1.0, 3.00000001, -1.0, 0.0, -1.0],

@@ -2,7 +2,6 @@ from matplotlib import pyplot as plt
 
 from autolens import conf
 from autolens.plotting import tools
-from autolens.plotting import plot_array
 from autolens.plotting import tools_array
 
 
@@ -40,7 +39,7 @@ def plot_image_subplot(image, mask=None, positions=None, units='arcsec', output_
         plot_image(image=image, mask=mask, positions=positions, grid=None, as_subplot=True,
                    units=units, kpc_per_arcsec=None, xyticksize=16,
                    norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
-                   figsize=None, aspect='auto', cmap='jet',
+                   figsize=None, aspect='equal', cmap='jet',
                    cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
                    titlesize=10, xlabelsize=10, ylabelsize=10,
                    output_path=output_path, output_format=output_format)
@@ -50,7 +49,7 @@ def plot_image_subplot(image, mask=None, positions=None, units='arcsec', output_
         plot_noise_map(image=image, mask=mask, units=units, as_subplot=True,
             kpc_per_arcsec=None, xyticksize=16,
             norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
-            figsize=None, aspect='auto', cmap='jet',
+            figsize=None, aspect='equal', cmap='jet',
                        cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
             titlesize=10, xlabelsize=10, ylabelsize=10,
             output_path=output_path, output_format=output_format)
@@ -60,7 +59,7 @@ def plot_image_subplot(image, mask=None, positions=None, units='arcsec', output_
         plot_psf(image=image, units='arcsec', as_subplot=True,
             kpc_per_arcsec=None, xyticksize=16,
             norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
-            figsize=None, aspect='auto', cmap='jet',
+            figsize=None, aspect='equal', cmap='jet',
                  cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
             titlesize=10, xlabelsize=10, ylabelsize=10,
             output_path=output_path, output_format=output_format)
@@ -70,7 +69,7 @@ def plot_image_subplot(image, mask=None, positions=None, units='arcsec', output_
         plot_signal_to_noise_map(image=image, mask=mask, as_subplot=True,
             units=units, kpc_per_arcsec=None, xyticksize=16,
             norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
-            figsize=None, aspect='auto', cmap='jet',
+            figsize=None, aspect='equal', cmap='jet',
                                  cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
             titlesize=10, xlabelsize=10, ylabelsize=10,
             output_path=output_path, output_format=output_format)
@@ -130,7 +129,7 @@ def plot_image(image, mask=None, positions=None, grid=None, as_subplot=False,
                title='Observed Image', titlesize=16, xlabelsize=16, ylabelsize=16,
                output_path=None, output_format='show', output_filename='observed_image'):
 
-    plot_array.plot_image(image=image, mask=mask, positions=positions, grid=grid, as_subplot=as_subplot,
+    tools_array.plot_array(array=image, mask=mask, positions=positions, grid=grid, as_subplot=as_subplot,
                           units=units, kpc_per_arcsec=kpc_per_arcsec, xyticksize=xyticksize,
                           norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
                           linscale=linscale, figsize=figsize, aspect=aspect, cmap=cmap,
@@ -147,7 +146,7 @@ def plot_noise_map(image, mask=None, as_subplot=False,
                    title='Noise-Map', titlesize=16, xlabelsize=16, ylabelsize=16,
                    output_path=None, output_format='show', output_filename='noise_map'):
 
-    plot_array.plot_noise_map(noise_map=image.noise_map, mask=mask, as_subplot=as_subplot,
+    tools_array.plot_array(array=image.noise_map, mask=mask, as_subplot=as_subplot,
                               units=units, kpc_per_arcsec=kpc_per_arcsec, xyticksize=xyticksize,
                               norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
                               linscale=linscale, figsize=figsize, aspect=aspect, cmap=cmap,
@@ -164,7 +163,7 @@ def plot_psf(image, as_subplot=False,
              title='PSF', titlesize=16, xlabelsize=16, ylabelsize=16,
              output_path=None, output_format='show', output_filename='psf'):
 
-    plot_array.plot_psf(psf=image.psf, as_subplot=as_subplot,
+    tools_array.plot_array(array=image.psf, as_subplot=as_subplot,
                         units=units, kpc_per_arcsec=kpc_per_arcsec, xyticksize=xyticksize,
                         norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
                         linscale=linscale, figsize=figsize, aspect=aspect, cmap=cmap,
@@ -181,7 +180,7 @@ def plot_signal_to_noise_map(image, mask=None, as_subplot=False,
                              title='Noise-Map', titlesize=16, xlabelsize=16, ylabelsize=16,
                              output_path=None, output_format='show', output_filename='signal_to_noise_map'):
 
-    plot_array.plot_signal_to_noise_map(signal_to_noise_map=image.signal_to_noise_map, mask=mask, as_subplot=as_subplot,
+    tools_array.plot_array(array=image.signal_to_noise_map, mask=mask, as_subplot=as_subplot,
                                         units=units, kpc_per_arcsec=kpc_per_arcsec, xyticksize=xyticksize,
                                         norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
                                         linscale=linscale, figsize=figsize, aspect=aspect, cmap=cmap,

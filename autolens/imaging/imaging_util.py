@@ -253,6 +253,33 @@ def grid_arc_seconds_1d_to_grid_pixel_centres_1d(grid_arc_seconds, shape, pixel_
     return grid_pixels
 
 @numba.jit(nopython=True, cache=True)
+def grid_pixels_1d_to_grid_arc_seconds_1d(grid_pixels, shape, pixel_scales):
+    """ Converts a grid in coordinates of pixels to a grid in arc seconds.
+
+    The pixel coordinate origin is at the top left corner of an image, whilst the arc-second coordinate origin \
+    is at the centre start with negative x and y values from the top-left.
+
+    This means that the top-left pixel coordinates, [0, 0], will give negative arc second coordinates.
+
+    Parameters
+    ----------
+    grid_pixels : ndarray
+        The grid of (x,y) coordinates in units of pixels
+    """
+
+    grid_arc_seconds = np.zeros((grid_pixels.shape[0], 2))
+
+    y_cen = float(shape[0] - 1) / 2
+    x_cen = float(shape[1] - 1) / 2
+
+    for i in range(grid_arc_seconds.shape[0]):
+
+        grid_arc_seconds[i, 0] = -(grid_pixels[i,0] - y_cen - 0.5) * pixel_scales[0]
+        grid_arc_seconds[i, 1] = (grid_pixels[i,1] - x_cen - 0.5) * pixel_scales[1]
+
+    return grid_arc_seconds
+
+@numba.jit(nopython=True, cache=True)
 def grid_to_pixel_from_mask(mask):
     """Compute a 1D array that maps every unmasked pixel to its corresponding 2d pixel using its (x,y) pixel indexes.
 

@@ -1,7 +1,6 @@
 from matplotlib import pyplot as plt
 
 from autolens.plotting import tools
-from autolens.plotting import plot_array
 from autolens.plotting import tools_array
 from autolens.plotting import profile_plotters
 
@@ -16,7 +15,7 @@ def plot_intensities(galaxy, grid, as_subplot=False,
     intensities = galaxy.intensities_from_grid(grid=grid)
     intensities = grid.scaled_array_from_array_1d(intensities)
 
-    plot_array.plot_intensities(intensities=intensities, as_subplot=as_subplot,
+    tools_array.plot_array(array=intensities, as_subplot=as_subplot,
                                 units=units, kpc_per_arcsec=kpc_per_arcsec, xyticksize=xyticksize,
                                 norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
                                 linscale=linscale, figsize=figsize, aspect=aspect, cmap=cmap,
@@ -35,7 +34,7 @@ def plot_surface_density(galaxy, grid, as_subplot=False,
     surface_density = galaxy.surface_density_from_grid(grid=grid)
     surface_density = grid.scaled_array_from_array_1d(surface_density)
 
-    plot_array.plot_surface_density(surface_density=surface_density, as_subplot=as_subplot,
+    tools_array.plot_array(array=surface_density, as_subplot=as_subplot,
                                     units=units, kpc_per_arcsec=kpc_per_arcsec, xyticksize=xyticksize,
                                     norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
                                     linscale=linscale, figsize=figsize, aspect=aspect, cmap=cmap,
@@ -54,7 +53,7 @@ def plot_potential(galaxy, grid, as_subplot=False,
     potential = galaxy.potential_from_grid(grid=grid)
     potential = grid.scaled_array_from_array_1d(potential)
 
-    plot_array.plot_potential(potential=potential, as_subplot=as_subplot,
+    tools_array.plot_array(array=potential, as_subplot=as_subplot,
                               units=units, kpc_per_arcsec=kpc_per_arcsec, xyticksize=xyticksize,
                               norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
                               linscale=linscale, figsize=figsize, aspect=aspect, cmap=cmap,
@@ -73,7 +72,7 @@ def plot_deflections_y(galaxy, grid, as_subplot=False,
     deflections = galaxy.deflections_from_grid(grid)
     deflections_y = grid.scaled_array_from_array_1d(deflections[:,0])
 
-    plot_array.plot_deflections_y(deflections_y=deflections_y, as_subplot=as_subplot,
+    tools_array.plot_array(array=deflections_y, as_subplot=as_subplot,
                                   units=units, kpc_per_arcsec=kpc_per_arcsec, xyticksize=xyticksize,
                                   norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
                                   linscale=linscale, figsize=figsize, aspect=aspect, cmap=cmap,
@@ -92,7 +91,7 @@ def plot_deflections_x(galaxy, grid, as_subplot=False,
     deflections = galaxy.deflections_from_grid(grid)
     deflections_x = grid.scaled_array_from_array_1d(deflections[:,1])
 
-    plot_array.plot_deflections_x(deflections_x=deflections_x, as_subplot=as_subplot,
+    tools_array.plot_array(array=deflections_x, as_subplot=as_subplot,
                                   units=units, kpc_per_arcsec=kpc_per_arcsec, xyticksize=xyticksize,
                                   norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
                                   linscale=linscale, figsize=figsize, aspect=aspect, cmap=cmap,
