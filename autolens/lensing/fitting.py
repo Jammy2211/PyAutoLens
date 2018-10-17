@@ -196,10 +196,10 @@ class AbstractInversionFit(AbstractFit, AbstractInversion):
     def __init__(self, lensing_image, tracer):
         self.mapper = tracer.mappers_of_planes[0]
         self.regularization = tracer.regularizations_of_planes[0]
-        self.inversion = inversions.inversion_from_mapper_regularization_and_data(lensing_image[:],
-                                                                                  lensing_image.noise_map,
-                                                                                  lensing_image.convolver_mapping_matrix,
-                                                                                  self.mapper, self.regularization)
+        self.inversion = inversions.inversion_from_lensing_image_mapper_and_regularization(lensing_image,
+                                                                                           lensing_image.noise_map,
+                                                                                           lensing_image.convolver_mapping_matrix,
+                                                                                           self.mapper, self.regularization)
 
         super(AbstractInversionFit, self).__init__(lensing_image, tracer, self.inversion.reconstructed_data_vector)
 
@@ -217,10 +217,10 @@ class AbstractProfileInversionFit(AbstractFit, AbstractInversion):
 
         self.mapper = tracer.mappers_of_planes[0]
         self.regularization = tracer.regularizations_of_planes[0]
-        self.inversion = inversions.inversion_from_mapper_regularization_and_data(self._profile_subtracted_image,
-                                                                                  lensing_image.noise_map,
-                                                                                  lensing_image.convolver_mapping_matrix,
-                                                                                  self.mapper, self.regularization)
+        self.inversion = inversions.inversion_from_lensing_image_mapper_and_regularization(self._profile_subtracted_image,
+                                                                                           lensing_image.noise_map,
+                                                                                           lensing_image.convolver_mapping_matrix,
+                                                                                           self.mapper, self.regularization)
 
         self._inversion_model_image = self.inversion.reconstructed_data_vector
 
@@ -291,9 +291,9 @@ class InversionFit(AbstractInversionFit):
     def fast_evidence(cls, lensing_image, tracer):
         mapper = tracer.mappers_of_planes[0]
         regularization = tracer.regularizations_of_planes[0]
-        inversion = inversions.inversion_from_mapper_regularization_and_data(lensing_image[:], lensing_image.noise_map,
-                                                                             lensing_image.convolver_mapping_matrix,
-                                                                             mapper, regularization)
+        inversion = inversions.inversion_from_lensing_image_mapper_and_regularization(lensing_image[:], lensing_image.noise_map,
+                                                                                      lensing_image.convolver_mapping_matrix,
+                                                                                      mapper, regularization)
         _model_image = inversion.reconstructed_data_vector
         _residuals = residuals_from_image_and_model(lensing_image[:], _model_image)
         _chi_squareds = chi_squareds_from_residuals_and_noise(_residuals, lensing_image.noise_map)
@@ -327,10 +327,10 @@ class ProfileInversionFit(AbstractProfileInversionFit):
         _profile_subtracted_image = lensing_image[:] - _profile_model_image
         mapper = tracer.mappers_of_planes[0]
         regularization = tracer.regularizations_of_planes[0]
-        inversion = inversions.inversion_from_mapper_regularization_and_data(_profile_subtracted_image,
-                                                                             lensing_image.noise_map,
-                                                                             lensing_image.convolver_mapping_matrix,
-                                                                             mapper, regularization)
+        inversion = inversions.inversion_from_lensing_image_mapper_and_regularization(_profile_subtracted_image,
+                                                                                      lensing_image.noise_map,
+                                                                                      lensing_image.convolver_mapping_matrix,
+                                                                                      mapper, regularization)
         _model_image = _profile_model_image + inversion.reconstructed_data_vector
         _residuals = residuals_from_image_and_model(lensing_image[:], _model_image)
         _chi_squareds = chi_squareds_from_residuals_and_noise(_residuals, lensing_image.noise_map)
@@ -456,7 +456,7 @@ class HyperInversionFit(AbstractInversionFit, AbstractHyperInversion):
         self.contributions_and_scaled_noise_map_from_hyper_images(tracer, hyper_model_image,
                                                                   hyper_galaxy_images, hyper_minimum_values)
 
-        self.scaled_inversion = inversions.inversion_from_mapper_regularization_and_data(
+        self.scaled_inversion = inversions.inversion_from_lensing_image_mapper_and_regularization(
             lensing_image[:], self._scaled_noise_map, lensing_image.convolver_mapping_matrix, self.mapper,
             self.regularization)
 
@@ -476,7 +476,7 @@ class HyperInversionFit(AbstractInversionFit, AbstractHyperInversion):
         mapper = tracer.mappers_of_planes[0]
         regularization = tracer.regularizations_of_planes[0]
 
-        scaled_inversion = inversions.inversion_from_mapper_regularization_and_data(
+        scaled_inversion = inversions.inversion_from_lensing_image_mapper_and_regularization(
             lensing_image[:], _scaled_noise_map, lensing_image.convolver_mapping_matrix, mapper, regularization)
 
         _scaled_residuals = residuals_from_image_and_model(lensing_image[:], scaled_inversion.reconstructed_data_vector)
@@ -509,7 +509,7 @@ class HyperProfileInversionFit(AbstractProfileInversionFit, AbstractHyperInversi
         self.contributions_and_scaled_noise_map_from_hyper_images(tracer, hyper_model_image,
                                                                   hyper_galaxy_images, hyper_minimum_values)
 
-        self.scaled_inversion = inversions.inversion_from_mapper_regularization_and_data(
+        self.scaled_inversion = inversions.inversion_from_lensing_image_mapper_and_regularization(
             self._profile_subtracted_image, self._scaled_noise_map, lensing_image.convolver_mapping_matrix,
             self.mapper, self.regularization)
 
@@ -533,7 +533,7 @@ class HyperProfileInversionFit(AbstractProfileInversionFit, AbstractHyperInversi
         mapper = tracer.mappers_of_planes[0]
         regularization = tracer.regularizations_of_planes[0]
 
-        scaled_inversion = inversions.inversion_from_mapper_regularization_and_data(
+        scaled_inversion = inversions.inversion_from_lensing_image_mapper_and_regularization(
             _profile_subtracted_image, _scaled_noise_map, lensing_image.convolver_mapping_matrix, mapper,
             regularization)
 
