@@ -2,7 +2,7 @@ from matplotlib import pyplot as plt
 
 from autolens import conf
 from autolens.plotting import tools
-from autolens.plotting import plot_array
+from autolens.plotting import tools_array
 from autolens.plotting import plane_plotters
 
 def plot_ray_tracing_subplot(tracer, mask=None, positions=None, units='kpc', output_path=None,
@@ -152,7 +152,7 @@ def plot_image_plane_image(tracer, mask=None, positions=None, grid=None, as_subp
                            title='Tracer Image-Plane Image', titlesize=16, xlabelsize=16, ylabelsize=16,
                            output_path=None, output_format='show', output_filename='tracer_image_plane_image'):
 
-    plot_array.plot_image_plane_image(image_plane_image=tracer.image_plane_image, mask=mask, positions=positions,
+    tools_array.plot_array(array=tracer.image_plane_image, mask=mask, positions=positions,
                                       grid=grid, as_subplot=as_subplot,
                                       units=units, kpc_per_arcsec=kpc_per_arcsec, xyticksize=xyticksize,
                                       norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
@@ -169,7 +169,7 @@ def plot_surface_density(tracer, as_subplot=False,
                          title='Tracer Surface Density', titlesize=16, xlabelsize=16, ylabelsize=16,
                          output_path=None, output_format='show', output_filename='tracer_surface_density'):
 
-    plot_array.plot_surface_density(surface_density=tracer.surface_density, as_subplot=as_subplot,
+    tools_array.plot_array(array=tracer.surface_density, as_subplot=as_subplot,
                                     units=units, kpc_per_arcsec=kpc_per_arcsec, xyticksize=xyticksize,
                                     norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
                                     linscale=linscale, figsize=figsize, aspect=aspect, cmap=cmap,
@@ -185,7 +185,7 @@ def plot_potential(tracer, as_subplot=False,
                    title='Tracer Surface Density', titlesize=16, xlabelsize=16, ylabelsize=16,
                    output_path=None, output_format='show', output_filename='tracer_potential'):
 
-    plot_array.plot_potential(potential=tracer.potential, as_subplot=as_subplot,
+    tools_array.plot_array(array=tracer.potential, as_subplot=as_subplot,
                               units=units, kpc_per_arcsec=kpc_per_arcsec, xyticksize=xyticksize,
                               norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
                               linscale=linscale, figsize=figsize, aspect=aspect, cmap=cmap,
@@ -201,7 +201,7 @@ def plot_deflections_y(tracer, as_subplot=False,
                        title='Tracer Surface Density', titlesize=16, xlabelsize=16, ylabelsize=16,
                        output_path=None, output_format='show', output_filename='tracer_deflections_y'):
 
-    plot_array.plot_deflections_y(deflections_y=tracer.deflections_y, as_subplot=as_subplot,
+    tools_array.plot_array(array=tracer.deflections_y, as_subplot=as_subplot,
                                   units=units, kpc_per_arcsec=kpc_per_arcsec, xyticksize=xyticksize,
                                   norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
                                   linscale=linscale, figsize=figsize, aspect=aspect, cmap=cmap,
@@ -217,7 +217,7 @@ def plot_deflections_x(tracer, as_subplot=False,
                        title='Tracer Surface Density', titlesize=16, xlabelsize=16, ylabelsize=16,
                        output_path=None, output_format='show', output_filename='tracer_deflections_x'):
 
-    plot_array.plot_deflections_x(deflections_x=tracer.deflections_x, as_subplot=as_subplot,
+    tools_array.plot_array(array=tracer.deflections_x, as_subplot=as_subplot,
                                   units=units, kpc_per_arcsec=kpc_per_arcsec, xyticksize=xyticksize,
                                   norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
                                   linscale=linscale, figsize=figsize, aspect=aspect, cmap=cmap,
