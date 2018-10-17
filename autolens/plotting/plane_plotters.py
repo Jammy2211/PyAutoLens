@@ -1,8 +1,8 @@
 from matplotlib import pyplot as plt
 
 from autolens.plotting import tools
-from autolens.plotting import plot_array
-from autolens.plotting import plot_grid
+from autolens.plotting import tools_array
+from autolens.plotting import tools_grid
 
 def plot_image_plane_image(plane, mask=None, positions=None, grid=None, as_subplot=False,
                            units='arcsec', kpc_per_arcsec=None,
@@ -12,7 +12,7 @@ def plot_image_plane_image(plane, mask=None, positions=None, grid=None, as_subpl
                            title='Plane Image-Plane Image', titlesize=16, xlabelsize=16, ylabelsize=16,
                            output_path=None, output_format='show', output_filename='plane_image_plane_image'):
 
-    plot_array.plot_image_plane_image(image_plane_image=plane.image_plane_image, mask=mask, positions=positions,
+    tools_array.plot_array(array=plane.image_plane_image, mask=mask, positions=positions,
                                       grid=grid, as_subplot=as_subplot,
                                       units=units, kpc_per_arcsec=kpc_per_arcsec, xyticksize=xyticksize,
                                       norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
@@ -29,14 +29,19 @@ def plot_plane_image(plane, positions=None, plot_grid=False, as_subplot=False,
                      title='Plane Image', titlesize=16, xlabelsize=16, ylabelsize=16,
                      output_path=None, output_format='show', output_filename='plane_image'):
 
-    plot_array.plot_plane_image(plane_image=plane.plane_image, positions=positions, plot_grid=plot_grid,
-                                as_subplot=as_subplot,
-                                units=units, kpc_per_arcsec=kpc_per_arcsec, xyticksize=xyticksize,
-                                norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
-                                linscale=linscale, figsize=figsize, aspect=aspect, cmap=cmap,
-                                cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
-                                title=title, titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize,
-                                output_path=output_path, output_format=output_format, output_filename=output_filename)
+    if plot_grid:
+        grid = plane.plane_image.grid
+    else:
+        grid = None
+
+    tools_array.plot_array(array=plane.plane_image, positions=positions, grid=grid,
+                            as_subplot=as_subplot,
+                            units=units, kpc_per_arcsec=kpc_per_arcsec, xyticksize=xyticksize,
+                            norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
+                            linscale=linscale, figsize=figsize, aspect=aspect, cmap=cmap,
+                            cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
+                            title=title, titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize,
+                            output_path=output_path, output_format=output_format, output_filename=output_filename)
 
 def plot_surface_density(plane, as_subplot=False,
                          units='arcsec', kpc_per_arcsec=None,
@@ -46,7 +51,7 @@ def plot_surface_density(plane, as_subplot=False,
                          title='Plane Surface Density', titlesize=16, xlabelsize=16, ylabelsize=16,
                          output_path=None, output_format='show', output_filename='plane_surface_density'):
 
-    plot_array.plot_surface_density(surface_density=plane.surface_density, as_subplot=as_subplot,
+    tools_array.plot_array(array=plane.surface_density, as_subplot=as_subplot,
                                     units=units, kpc_per_arcsec=kpc_per_arcsec, xyticksize=xyticksize,
                                     norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
                                     linscale=linscale, figsize=figsize, aspect=aspect, cmap=cmap,
@@ -62,7 +67,7 @@ def plot_potential(plane, as_subplot=False,
                    title='Plane Potential', titlesize=16, xlabelsize=16, ylabelsize=16,
                    output_path=None, output_format='show', output_filename='plane_potential'):
 
-    plot_array.plot_potential(potential=plane.potential, as_subplot=as_subplot,
+    tools_array.plot_array(array=plane.potential, as_subplot=as_subplot,
                               units=units, kpc_per_arcsec=kpc_per_arcsec, xyticksize=xyticksize,
                               norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
                               linscale=linscale, figsize=figsize, aspect=aspect, cmap=cmap,
@@ -78,7 +83,7 @@ def plot_deflections_y(plane, as_subplot=False,
                        title='Plane Deflections (y)', titlesize=16, xlabelsize=16, ylabelsize=16,
                        output_path=None, output_format='show', output_filename='plane_deflections_y'):
 
-    plot_array.plot_deflections_y(deflections_y=plane.deflections_y, as_subplot=as_subplot,
+    tools_array.plot_array(array=plane.deflections_y, as_subplot=as_subplot,
                                   units=units, kpc_per_arcsec=kpc_per_arcsec, xyticksize=xyticksize,
                                   norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
                                   linscale=linscale, figsize=figsize, aspect=aspect, cmap=cmap,
@@ -94,7 +99,7 @@ def plot_deflections_x(plane, as_subplot=False,
                        title='Plane Deflections (x)', titlesize=16, xlabelsize=16, ylabelsize=16,
                        output_path=None, output_format='show', output_filename='plane_deflections_x'):
 
-    plot_array.plot_deflections_x(deflections_x=plane.deflections_x, as_subplot=as_subplot,
+    tools_array.plot_array(array=plane.deflections_x, as_subplot=as_subplot,
                                   units=units, kpc_per_arcsec=kpc_per_arcsec, xyticksize=xyticksize,
                                   norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
                                   linscale=linscale, figsize=figsize, aspect=aspect, cmap=cmap,
@@ -135,7 +140,7 @@ def plot_plane_grid(plane, axis_limits=None, points=None, as_subplot=False,
                     title='Plane Grid', titlesize=16, xlabelsize=16, ylabelsize=16,
                     output_path=None, output_format='show', output_filename='plane_grid'):
 
-    plot_grid.plot_grid(grid=plane.grids.image, points=points, axis_limits=axis_limits, as_subplot=as_subplot,
+    tools_grid.plot_grid(grid=plane.grids.image, points=points, axis_limits=axis_limits, as_subplot=as_subplot,
                          units=units, kpc_per_arcsec=kpc_per_arcsec,
                          figsize=figsize, pointsize=pointsize, xyticksize=xyticksize,
                          title=title, titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize,

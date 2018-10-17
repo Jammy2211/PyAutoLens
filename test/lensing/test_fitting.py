@@ -1186,10 +1186,10 @@ class TestInversionFit:
             fit = fitting.fit_lensing_image_with_tracer(lensing_image=li_manual, tracer=tracer)
 
             mapper = pix.mapper_from_grids_and_borders(li_manual.grids, li_manual.borders)
-            inversion = inversions.inversion_from_mapper_regularization_and_data(mapper=mapper, regularization=reg,
-                                                                                 image=li_manual,
-                                                                                 noise_map=li_manual.noise_map,
-                                                                                 convolver=li_manual.convolver_mapping_matrix)
+            inversion = inversions.inversion_from_lensing_image_mapper_and_regularization(mapper=mapper, regularization=reg,
+                                                                                          image=li_manual,
+                                                                                          noise_map=li_manual.noise_map,
+                                                                                          convolver=li_manual.convolver_mapping_matrix)
 
             residuals = fitting.residuals_from_image_and_model(li_manual, inversion.reconstructed_data_vector)
             chi_squareds = fitting.chi_squareds_from_residuals_and_noise(residuals, li_manual.noise_map)
@@ -1316,10 +1316,10 @@ class TestHyperInversionFit:
                 lensing_image=li_manual, tracer=tracer, hyper_model_image=hyper.hyper_model_image,
                 hyper_galaxy_images=hyper.hyper_galaxy_images, hyper_minimum_values=hyper.hyper_minimum_values)
 
-            inversion = inversions.inversion_from_mapper_regularization_and_data(mapper=mapper, regularization=reg,
-                                                                                 image=li_manual,
-                                                                                 noise_map=li_manual.noise_map,
-                                                                                 convolver=li_manual.convolver_mapping_matrix)
+            inversion = inversions.inversion_from_lensing_image_mapper_and_regularization(mapper=mapper, regularization=reg,
+                                                                                          image=li_manual,
+                                                                                          noise_map=li_manual.noise_map,
+                                                                                          convolver=li_manual.convolver_mapping_matrix)
 
             residuals = fitting.residuals_from_image_and_model(li_manual, inversion.reconstructed_data_vector)
             chi_squareds = fitting.chi_squareds_from_residuals_and_noise(residuals, li_manual.noise_map)
@@ -1349,11 +1349,11 @@ class TestHyperInversionFit:
                                                                                            hyper.hyper_galaxy],
                                                                                           li_manual.noise_map)
 
-            scaled_inversion = inversions.inversion_from_mapper_regularization_and_data(mapper=mapper,
-                                                                                        regularization=reg,
-                                                                                        image=li_manual,
-                                                                                        noise_map=scaled_noise_map,
-                                                                                        convolver=li_manual.convolver_mapping_matrix)
+            scaled_inversion = inversions.inversion_from_lensing_image_mapper_and_regularization(mapper=mapper,
+                                                                                                 regularization=reg,
+                                                                                                 image=li_manual,
+                                                                                                 noise_map=scaled_noise_map,
+                                                                                                 convolver=li_manual.convolver_mapping_matrix)
 
             scaled_model_image = scaled_inversion.reconstructed_data_vector
             scaled_residuals = fitting.residuals_from_image_and_model(li_manual, scaled_inversion.reconstructed_data_vector)
@@ -1428,10 +1428,10 @@ class TestProfileInversionFit:
                    pytest.approx(fit.profile_subtracted_image, 1e-4)
 
             mapper = pix.mapper_from_grids_and_borders(li_manual.grids, li_manual.borders)
-            inversion = inversions.inversion_from_mapper_regularization_and_data(mapper=mapper, regularization=reg,
-                                                                                 image=profile_subtracted_image,
-                                                                                 noise_map=li_manual.noise_map,
-                                                                                 convolver=li_manual.convolver_mapping_matrix)
+            inversion = inversions.inversion_from_lensing_image_mapper_and_regularization(mapper=mapper, regularization=reg,
+                                                                                          image=profile_subtracted_image,
+                                                                                          noise_map=li_manual.noise_map,
+                                                                                          convolver=li_manual.convolver_mapping_matrix)
 
             model_image = profile_model_image + inversion.reconstructed_data_vector
             residuals = fitting.residuals_from_image_and_model(li_manual, model_image)
@@ -1486,10 +1486,10 @@ class TestHyperProfileInversionFit:
                    pytest.approx(fit.profile_subtracted_image, 1e-4)
 
             mapper = pix.mapper_from_grids_and_borders(li_manual.grids, li_manual.borders)
-            inversion = inversions.inversion_from_mapper_regularization_and_data(mapper=mapper, regularization=reg,
-                                                                                 image=profile_subtracted_image,
-                                                                                 noise_map=li_manual.noise_map,
-                                                                                 convolver=li_manual.convolver_mapping_matrix)
+            inversion = inversions.inversion_from_lensing_image_mapper_and_regularization(mapper=mapper, regularization=reg,
+                                                                                          image=profile_subtracted_image,
+                                                                                          noise_map=li_manual.noise_map,
+                                                                                          convolver=li_manual.convolver_mapping_matrix)
 
             model_image = profile_model_image + inversion.reconstructed_data_vector
             residuals = fitting.residuals_from_image_and_model(li_manual, model_image)
@@ -1521,7 +1521,7 @@ class TestHyperProfileInversionFit:
                                                                                            hyper.hyper_galaxy],
                                                                                           li_manual.noise_map)
 
-            scaled_inversion = inversions.inversion_from_mapper_regularization_and_data(
+            scaled_inversion = inversions.inversion_from_lensing_image_mapper_and_regularization(
                 mapper=mapper, regularization=reg, image=profile_subtracted_image, noise_map=scaled_noise_map,
                 convolver=li_manual.convolver_mapping_matrix)
 

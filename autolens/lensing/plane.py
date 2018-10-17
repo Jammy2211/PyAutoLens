@@ -357,6 +357,7 @@ def deflections_from_grid_collection(grid_collection, galaxies):
 
 
 def plane_image_from_grid_and_galaxies(shape, grid, galaxies):
+
     y_min = np.amin(grid[:, 0])
     y_max = np.amax(grid[:, 0])
     x_min = np.amin(grid[:, 1])
