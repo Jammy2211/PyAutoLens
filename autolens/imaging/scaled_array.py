@@ -12,25 +12,9 @@ logger = logging.getLogger(__name__)
 class ArrayGeometry(object):
     pixel_scales = None
 
-    def y_pixels_to_arc_seconds(self, pixels):
-        """Converts coordinate values from pixels to arc seconds."""
-        return self.pixel_scales[0] * pixels
-
-    def x_pixels_to_arc_seconds(self, pixels):
-        """Converts coordinate values from pixels to arc seconds."""
-        return self.pixel_scales[1] * pixels
-
-    def y_arc_seconds_to_pixels(self, arc_seconds):
-        """Converts coordinate values from arc seconds to pixels."""
-        return arc_seconds / self.pixel_scales[0]
-
-    def x_arc_seconds_to_pixels(self, arc_seconds):
-        """Converts coordinate values from arc seconds to pixels."""
-        return arc_seconds / self.pixel_scales[1]
-
     @property
     def shape_arc_seconds(self):
-        return float(self.y_pixels_to_arc_seconds(self.shape[0])), float(self.x_pixels_to_arc_seconds(self.shape[1]))
+        return (float(self.pixel_scales[0] * self.shape[0]), float(self.pixel_scales[1] * self.shape[1]))
 
     @property
     def central_pixel_coordinates(self):
@@ -72,6 +56,24 @@ class ArrayGeometry(object):
         return imaging_util.grid_arc_seconds_1d_to_grid_pixel_centres_1d(grid_arc_seconds=grid_arc_seconds,
                                                                          shape=self.shape,
                                                                          pixel_scales=self.pixel_scales)
+
+    def grid_pixels_to_grid_arc_seconds(self, grid_pixels):
+        """Convert a grid of (y,x) arc second coordinates to a grid of (y,x) pixel values. Pixel coordinates are
+        returned as floats such that they include the decimal offset from each pixel's top-left corner.
+
+        The pixel coordinate origin is at the top left corner of the grid, such that the pixel [0,0] corresponds to \
+        higher y arc-second coordinate value and lowest x arc-second coordinate.
+
+        The arc-second coordinate origin is at the centre and will correspond to the dimensions of each image divided \
+        by two.
+
+        Parameters
+        ----------
+        grid_arc_seconds: ndarray
+            The grid of (y,x) coordinates in arc seconds.
+        """
+        return imaging_util.grid_pixels_1d_to_grid_arc_seconds_1d(grid_pixels=grid_pixels, shape=self.shape,
+                                                                  pixel_scales=self.pixel_scales)
 
     @property
     def grid_1d(self):
