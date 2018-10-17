@@ -3,7 +3,6 @@ from matplotlib import pyplot as plt
 from autolens import conf
 from autolens.plotting import tools
 from autolens.plotting import tools_array
-from autolens.plotting import plot_array
 from autolens.plotting import imaging_plotters
 from autolens.plotting import plane_plotters
 from autolens.plotting import inversion_plotters
@@ -486,7 +485,7 @@ def plot_model_image(fit, as_subplot=False,
                    title='Fit Model Image', titlesize=16, xlabelsize=16, ylabelsize=16,
                    output_path=None, output_format='show', output_filename='fit_model_image'):
 
-    plot_array.plot_model_image(model_image=fit.model_image, as_subplot=as_subplot,
+    tools_array.plot_array(array=fit.model_image, as_subplot=as_subplot,
                                 units=units, kpc_per_arcsec=kpc_per_arcsec, xyticksize=xyticksize,
                                 norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
                                 linscale=linscale, figsize=figsize, aspect=aspect, cmap=cmap,
@@ -501,7 +500,7 @@ def plot_model_image_of_plane(fit, plane_index, as_subplot=False,
                    title='Fit Model Image', titlesize=16, xlabelsize=16, ylabelsize=16,
                    output_path=None, output_format='show', output_filename='fit_model_image_of_plane'):
 
-    plot_array.plot_model_image(model_image=fit.model_images_of_planes[plane_index], as_subplot=as_subplot,
+    tools_array.plot_array(array=fit.model_images_of_planes[plane_index], as_subplot=as_subplot,
                                 units=units, kpc_per_arcsec=kpc_per_arcsec, xyticksize=xyticksize,
                                 norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
                                 linscale=linscale, figsize=figsize, aspect=aspect, cmap=cmap,
@@ -517,7 +516,7 @@ def plot_residuals(fit, as_subplot=False,
                    title='Fit Residuals', titlesize=16, xlabelsize=16, ylabelsize=16,
                    output_path=None, output_format='show', output_filename='fit_residuals'):
 
-    plot_array.plot_residuals(residuals=fit.residuals, as_subplot=as_subplot,
+    tools_array.plot_array(array=fit.residuals, as_subplot=as_subplot,
                               units=units, kpc_per_arcsec=kpc_per_arcsec, xyticksize=xyticksize,
                               norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
                               linscale=linscale, figsize=figsize, aspect=aspect, cmap=cmap,
@@ -533,7 +532,7 @@ def plot_chi_squareds(fit, as_subplot=False,
                    title='Fit Chi-Squareds', titlesize=16, xlabelsize=16, ylabelsize=16,
                    output_path=None, output_format='show', output_filename='fit_chi_squareds'):
 
-    plot_array.plot_chi_squareds(chi_squareds=fit.chi_squareds, as_subplot=as_subplot,
+    tools_array.plot_array(array=fit.chi_squareds, as_subplot=as_subplot,
                                  units=units, kpc_per_arcsec=kpc_per_arcsec, xyticksize=xyticksize,
                                  norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
                                  linscale=linscale, figsize=figsize, aspect=aspect, cmap=cmap,
@@ -554,7 +553,7 @@ def plot_contributions(fit, as_subplot=False,
     else:
         contributions = fit.contributions[0]
 
-    plot_array.plot_contributions(contributions=contributions, as_subplot=as_subplot,
+    tools_array.plot_array(array=contributions, as_subplot=as_subplot,
                                   units=units, kpc_per_arcsec=kpc_per_arcsec, xyticksize=xyticksize,
                                   norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
                                   linscale=linscale, figsize=figsize, aspect=aspect, cmap=cmap,
@@ -570,7 +569,7 @@ def plot_scaled_model_image(fit, as_subplot=False,
                    title='Fit Scaled Model Image', titlesize=16, xlabelsize=16, ylabelsize=16,
                    output_path=None, output_format='show', output_filename='fit_scaled_model_image'):
 
-    plot_array.plot_scaled_model_image(scaled_model_image=fit.scaled_model_image, as_subplot=as_subplot,
+    tools_array.plot_array(array=fit.scaled_model_image, as_subplot=as_subplot,
                                        units=units, kpc_per_arcsec=kpc_per_arcsec, xyticksize=xyticksize,
                                        norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
                                        linscale=linscale, figsize=figsize, aspect=aspect, cmap=cmap,
@@ -586,7 +585,7 @@ def plot_scaled_residuals(fit, as_subplot=False,
                    title='Fit Scaled Residuals', titlesize=16, xlabelsize=16, ylabelsize=16,
                    output_path=None, output_format='show', output_filename='fit_scaled_residuals'):
 
-    plot_array.plot_scaled_residuals(scaled_residuals=fit.scaled_residuals, as_subplot=as_subplot,
+    tools_array.plot_array(array=fit.scaled_residuals, as_subplot=as_subplot,
                                      units=units, kpc_per_arcsec=kpc_per_arcsec, xyticksize=xyticksize,
                                      norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
                                      linscale=linscale, figsize=figsize, aspect=aspect, cmap=cmap,
@@ -602,7 +601,7 @@ def plot_scaled_chi_squareds(fit, as_subplot=False,
                    title='Fit Scaled Chi-Squareds', titlesize=16, xlabelsize=16, ylabelsize=16,
                    output_path=None, output_format='show', output_filename='fit_scaled_chi_squareds'):
 
-    plot_array.plot_scaled_chi_squareds(scaled_chi_squareds=fit.scaled_chi_squareds, as_subplot=as_subplot,
+    tools_array.plot_array(array=fit.scaled_chi_squareds, as_subplot=as_subplot,
                                         units=units, kpc_per_arcsec=kpc_per_arcsec, xyticksize=xyticksize,
                                         norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
                                         linscale=linscale, figsize=figsize, aspect=aspect, cmap=cmap,
@@ -618,7 +617,7 @@ def plot_scaled_noise_map(fit, as_subplot=False,
                    title='Fit Scaled Noise Map', titlesize=16, xlabelsize=16, ylabelsize=16,
                    output_path=None, output_format='show', output_filename='fit_scaled_noise_map'):
 
-    plot_array.plot_scaled_noise_map(scaled_noise_map=fit.scaled_noise_map, as_subplot=as_subplot,
+    tools_array.plot_array(array=fit.scaled_noise_map, as_subplot=as_subplot,
                                      units=units, kpc_per_arcsec=kpc_per_arcsec, xyticksize=xyticksize,
                                      norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
                                      linscale=linscale, figsize=figsize, aspect=aspect, cmap=cmap,
