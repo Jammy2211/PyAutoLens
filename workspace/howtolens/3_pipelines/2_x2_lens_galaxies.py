@@ -1,5 +1,4 @@
-from howtolens.simulations import pipelines as simulation
-
+from howtolens.simulations import pipelines as simulate
 from autolens import conf
 from autolens.autofit import model_mapper as mm
 from autolens.autofit import non_linear as nl
@@ -11,6 +10,8 @@ from autolens.pipeline import pipeline
 from autolens.plotting import imaging_plotters
 from autolens.profiles import light_profiles as lp
 from autolens.profiles import mass_profiles as mp
+
+import os
 
 # Up to now, all of the images that we fitted had only one lens galaxy. However we saw in chapter 1 that we can
 # create multiple galaxies which each contribute to the strong lensing. Multi-galaxy systems are challenging to
@@ -25,11 +26,14 @@ from autolens.profiles import mass_profiles as mp
 # the opposite - specific to the image we're modeling. Fitting multiple lens galaxies is really difficult and
 # writing a pipeline that we can generalize to many lenses isn't currently possible with PyAutoLens.
 
+# First, lets get our path.
+path = '{}/'.format(os.path.dirname(os.path.realpath(__file__)))
+
 # Lets quickly sort the output directory
-conf.instance = conf.Config(config_path=conf.CONFIG_PATH, output_path="../output")
+conf.instance = conf.Config(config_path=conf.CONFIG_PATH, output_path="output")
 
 # Lets simulate the image we'll fit, which is a new image, finally!
-simulation.pipeline_x2_lens_galaxies_image()
+simulate.pipeline_x2_lens_galaxies_image()
 
 # Now, lets load and inspect the image. You'll notice that we've upped the pixel_scales to 0.05". The 0.1" we've been
 # using up to now isn't high enough resolution to fit a multi-galaxy lensing system very well.
@@ -69,15 +73,16 @@ def make_pipeline():
     class LeftLensPhase(ph.LensPlanePhase):
 
         def pass_priors(self, previous_results):
+
             # Lets restrict the prior's on the centres around the pixel we know the galaxy's light centre peaks.
-            self.lens_galaxies[0].light.centre_0 = mm.GaussianPrior(mean=0.0, sigma=0.05)
-            self.lens_galaxies[0].light.centre_1 = mm.GaussianPrior(mean=-1.0, sigma=0.05)
+            self.lens_galaxies.left_lens.light.centre_0 = mm.GaussianPrior(mean=0.0, sigma=0.05)
+            self.lens_galaxies.left_lens.light.centre_1 = mm.GaussianPrior(mean=-1.0, sigma=0.05)
 
             # Given we are only fitting the very central region of the lens galaxy, we don't want to let a parameter 
             # like th Sersic index vary, which changes the light profile structure at large radii. Lets fix it to 4.0.
-            self.lens_galaxies[0].light.sersic_index = 4.0
+            self.lens_galaxies.left_lens.light.sersic_index = 4.0
 
-    phase1 = LeftLensPhase(lens_galaxies=[gm.GalaxyModel(light=lp.EllipticalSersic)],
+    phase1 = LeftLensPhase(lens_galaxies=dict(lens_lens=gm.GalaxyModel(light=lp.EllipticalSersic)),
                            optimizer_class=nl.MultiNest, mask_function=mask_function,
                            phase_name=pipeline_name + '/phase_1_left_lens_light')
 
@@ -92,11 +97,11 @@ def make_pipeline():
             # Note that, there is only 1 galaxy in the phase when we set it up below. This means that in this phase
             # the right-hand lens galaxy is still indexed as 0.
 
-            self.lens_galaxies[0].light.centre_0 = mm.GaussianPrior(mean=0.0, sigma=0.05)
-            self.lens_galaxies[0].light.centre_1 = mm.GaussianPrior(mean=1.0, sigma=0.05)
-            self.lens_galaxies[0].light.sersic_index = 4.0
+            self.lens_galaxies.right_lens.light.centre_0 = mm.GaussianPrior(mean=0.0, sigma=0.05)
+            self.lens_galaxies.right_lens.light.centre_1 = mm.GaussianPrior(mean=1.0, sigma=0.05)
+            self.lens_galaxies.right_lens.light.sersic_index = 4.0
 
-    phase2 = RightLensPhase(lens_galaxies=[gm.GalaxyModel(light=lp.EllipticalSersic)],
+    phase2 = RightLensPhase(lens_galaxies=dict(right_lens=gm.GalaxyModel(light=lp.EllipticalSersic)),
                             optimizer_class=nl.MultiNest, mask_function=mask_function,
                             phase_name=pipeline_name + '/phase_2_right_lens_light')
 
@@ -110,6 +115,7 @@ def make_pipeline():
                    phase_2_results.fit.unmasked_model_profile_image
 
         def pass_priors(self, previous_results):
+
             phase_1_results = previous_results[0]
             phase_2_results = previous_results[1]
 
@@ -117,16 +123,19 @@ def make_pipeline():
             # mass-profiles in this phase. Because the centres of the mass profiles were fixed in phases 1 and 2,
             # linking them using the 'variable' attribute ensures they stay constant.
 
-            self.lens_galaxies[0].mass.centre_0 = phase_1_results.variable.lens_galaxies[0].light.centre.centre_0
-            self.lens_galaxies[0].mass.centre_1 = phase_1_results.variable.lens_galaxies[0].light.centre.centre_1
+            self.lens_galaxies.left_lens.mass.centre_0 = \
+                phase_1_results.variable.lens_galaxies.left_lens.light.centre.centre_0
+            self.lens_galaxies.left_lens.mass.centre_1 = \
+                phase_1_results.variable.lens_galaxies.left_lens.light.centre.centre_1
 
-            # (There are now both lens galaxes in the model, so our index runs 0 -> 1.)
-            self.lens_galaxies[1].mass.centre_0 = phase_2_results.variable.lens_galaxies[0].light.centre.centre_0
-            self.lens_galaxies[1].mass.centre_1 = phase_2_results.variable.lens_galaxies[0].light.centre.centre_1
+            self.lens_galaxies.right_lens.mass.centre_0 = \
+                phase_2_results.variable.lens_galaxies.right_lens.light.centre.centre_0
+            self.lens_galaxies.right_lens.mass.centre_1 = \
+                phase_2_results.variable.lens_galaxies.right_lens.light.centre.centre_1
 
-    phase3 = LensSubtractedPhase(lens_galaxies=[gm.GalaxyModel(mass=mp.EllipticalIsothermal),
-                                                gm.GalaxyModel(mass=mp.EllipticalIsothermal)],
-                                 source_galaxies=[gm.GalaxyModel(light=lp.EllipticalExponential)],
+    phase3 = LensSubtractedPhase(lens_galaxies=dict(left_lens=gm.GalaxyModel(mass=mp.EllipticalIsothermal),
+                                                    right_lens=gm.GalaxyModel(mass=mp.EllipticalIsothermal)),
+                                 source_galaxies=dict(source=gm.GalaxyModel(light=lp.EllipticalExponential)),
                                  optimizer_class=nl.MultiNest,
                                  phase_name=pipeline_name + '/phase_3_fit_sources')
 
@@ -138,36 +147,36 @@ def make_pipeline():
             phase_3_results = previous_results[2]
 
             # Because our results are split over multiple phases, we again need to use a GalaxyModel to set them up.
-            self.lens_galaxies[0] = gm.GalaxyModel(light=phase_1_results.variable.lens_galaxies[0].light,
-                                                   mass=phase_3_results.variable.lens_galaxies[0].mass)
+            self.lens_galaxies.left_lens = gm.GalaxyModel(light=phase_1_results.variable.lens_galaxies.left_lens.light,
+                                                          mass=phase_3_results.variable.lens_galaxies.left_lens.mass)
 
             # Its also important to keep track of the different lens galaxies indexes. Remember, the index spans values
             # based on what galaxies were in that particular phase. That means that in lens galaxy 0 in phase 2
             # and lens galaxy 1 in phase 3 are the same galaxy.
-            self.lens_galaxies[1] = gm.GalaxyModel(light=phase_2_results.variable.lens_galaxies[0].light,
-                                                   mass=phase_3_results.variable.lens_galaxies[1].mass)
+            self.lens_galaxies.right_lens = gm.GalaxyModel(light=phase_2_results.variable.lens_galaxies.right_lens.light,
+                                                           mass=phase_3_results.variable.lens_galaxies.right_lens.mass)
 
             # When we pass a a 'variable' galaxy from a previous phase, parameters fixed to constants remain constant.
             # Because centre_0 and centre_1 of the mass profile were fixed to constants in phase 3, they're still
             # constants after the line after. We need to therefore manually over-ride their priors.
 
-            self.lens_galaxies[0].mass.centre_0 = phase_3_results.variable.lens_galaxies[0].mass.centre_0
-            self.lens_galaxies[0].mass.centre_1 = phase_3_results.variable.lens_galaxies[0].mass.centre_1
-            self.lens_galaxies[1].mass.centre_0 = phase_3_results.variable.lens_galaxies[1].mass.centre_0
-            self.lens_galaxies[1].mass.centre_1 = phase_3_results.variable.lens_galaxies[1].mass.centre_1
+            self.lens_galaxies.left_lens.mass.centre_0 = phase_3_results.variable.lens_galaxies.left_lens.mass.centre_0
+            self.lens_galaxies.left_lens.mass.centre_1 = phase_3_results.variable.lens_galaxies.left_lens.mass.centre_1
+            self.lens_galaxies.right_lens.mass.centre_0 = phase_3_results.variable.lens_galaxies.right_lens.mass.centre_0
+            self.lens_galaxies.right_lens.mass.centre_1 = phase_3_results.variable.lens_galaxies.right_lens.mass.centre_1
 
             #  We also want the Sersc index to a free parameter now, so lets change it from a constant to a variable.
-            self.lens_galaxies[0].light.sersic_index = mm.GaussianPrior(mean=4.0, sigma=2.0)
-            self.lens_galaxies[1].light.sersic_index = mm.GaussianPrior(mean=4.0, sigma=2.0)
+            self.lens_galaxies.left_lens.light.sersic_index = mm.GaussianPrior(mean=4.0, sigma=2.0)
+            self.lens_galaxies.right_lens.light.sersic_index = mm.GaussianPrior(mean=4.0, sigma=2.0)
 
             # Things are much simpler for the source galaxies - just like them togerther!
             self.source_galaxies = phase_3_results.variable.source_galaxies
 
-    phase4 = FitAllPhase(lens_galaxies=[gm.GalaxyModel(light=lp.EllipticalSersic,
-                                                       mass=mp.EllipticalIsothermal),
-                                        gm.GalaxyModel(light=lp.EllipticalSersic,
-                                                       mass=mp.EllipticalIsothermal)],
-                         source_galaxies=[gm.GalaxyModel(light=lp.EllipticalExponential)],
+    phase4 = FitAllPhase(lens_galaxies=dict(left_lens=gm.GalaxyModel(light=lp.EllipticalSersic,
+                                                                      mass=mp.EllipticalIsothermal),
+                                            right_lens=gm.GalaxyModel(light=lp.EllipticalSersic,
+                                                                        mass=mp.EllipticalIsothermal)),
+                         source_galaxies=dict(source=gm.GalaxyModel(light=lp.EllipticalExponential)),
                          optimizer_class=nl.MultiNest,
                          phase_name=pipeline_name + '/phase_4_fit_all')
 
@@ -189,11 +198,8 @@ pipeline_x2_galaxies.run(image=image)
 #    way, but this is a lot less degenerate with the 'main' lens galaxy. This means we can often model the  satellite
 #    with much simpler profiles (e.g. spherical profiles). So yes, multi-galaxy systems can often be easier to model.
 
-# 2) It got pretty confusing passing all those priors towards the end of the pipeline there. How do I know I haven't
-#    messed up?
+# 2) It got pretty confusing passing all those priors towards the end of the pipeline there, didn't it?
 
-#    It does get confusing, I won't lie. The approach I take is, when I'm writing a pipeline, to run it, adding each
-#    phase as I add them. In the phase's output directory, you can look at the 'model.info' file to get a list of all
-#    the parameters and their priors. There, you can check for sure things are behaviour as you expect. Furthermore,
-#    as we learn the common ways for people to write runners in PyAutoLens, we'll introduce some syntactical sugar
-#    that makes things easier to follow.
+#    It does get confusing, I won't lie. This is why we made galaxies named objects - so that we could call them the
+#    'left_lens' and 'right_lens'. It still requires caution when writing the pipeline, but goes to show that if
+#    you name your galaxies sensibly you should be able to avoid errors, or spot them quickly when you make them.

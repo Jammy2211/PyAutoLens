@@ -1,5 +1,4 @@
-from howtolens.simulations import pipelines as simulation
-
+from howtolens.simulations import pipelines as simulate
 from autolens import conf
 from autolens.autofit import non_linear as nl
 from autolens.imaging import image as im
@@ -9,6 +8,8 @@ from autolens.pipeline import phase
 from autolens.pipeline import pipeline
 from autolens.profiles import light_profiles as lp
 from autolens.profiles import mass_profiles as mp
+
+import os
 
 # In chapter 2, we fitted a strong lens which included the contribution of light from the lens galaxy. We're going to
 # fit this lens again (I promise, this is the last time!). However, now we're approaching lens modeling with runners,
@@ -43,18 +44,21 @@ from autolens.profiles import mass_profiles as mp
 # Phase 2 - Fit the source galaxy's light, ignoring the lens.
 # Phase 3 - Fit both simultaneously, using these results to initialize our starting location in parameter space.
 
-# First, we need to setup the config. No, I'm not preloading the results with this - I'm just changing the output
+# First, lets get our path.
+path = '{}/'.format(os.path.dirname(os.path.realpath(__file__)))
+
+# Lets setup the config. No, I'm not preloading the results with this - I'm just changing the output
 # to the AutoLens/howtolens/output directory, to keep everything tidy and in one place.
 
-conf.instance = conf.Config(config_path=conf.CONFIG_PATH, output_path="../output")
+conf.instance = conf.Config(config_path=conf.CONFIG_PATH, output_path=path+"output")
 
 # Now lets simulate hte image we'll fit, which as I said above, is the same image we saw in the previous chapter.
-simulation.pipeline_lens_and_soure_image()
+simulate.pipeline_lens_and_soure_image()
 
 # Lets load the image before writing our pipeline.
-image = im.load_imaging_from_path(image_path='data/1_lens_and_source/image.fits',
-                                  noise_map_path='data/1_lens_and_source/noise_map.fits',
-                                  psf_path='data/1_lens_and_source/psf.fits', pixel_scale=0.1)
+image = im.load_imaging_from_path(image_path=path+'data/1_lens_and_source/image.fits',
+                                  noise_map_path=path+'data/1_lens_and_source/noise_map.fits',
+                                  psf_path=path+'data/1_lens_and_source/psf.fits', pixel_scale=0.1)
 
 
 # A pipeline is a one long python function (this is why Jupyter notebooks arn't ideal). When we run it, this function
@@ -88,7 +92,7 @@ def make_pipeline():
 
     # Create the phase, using the same notation we learnt before (but noting the mask function is passed to this phase,
     # ensuring the anti-annular mask above is used).
-    phase1 = phase.LensPlanePhase(lens_galaxies=[gm.GalaxyModel(light=lp.EllipticalSersic)],
+    phase1 = phase.LensPlanePhase(lens_galaxies=dict(lens=gm.GalaxyModel(light=lp.EllipticalSersic)),
                                   optimizer_class=nl.MultiNest, mask_function=mask_function,
                                   phase_name=pipeline_name + '/phase_1_lens_light_only')
 
@@ -127,8 +131,8 @@ def make_pipeline():
     # results of previous phases to setup new phases. We'll see this again in phase 3.
 
     # We setup phase 2 as per usual. Note that we don't need to pass the modify image function.
-    phase2 = LensSubtractedPhase(lens_galaxies=[gm.GalaxyModel(mass=mp.EllipticalIsothermal)],
-                                 source_galaxies=[gm.GalaxyModel(light=lp.EllipticalSersic)],
+    phase2 = LensSubtractedPhase(lens_galaxies=dict(lens=gm.GalaxyModel(mass=mp.EllipticalIsothermal)),
+                                 source_galaxies=dict(source=gm.GalaxyModel(light=lp.EllipticalSersic)),
                                  optimizer_class=nl.MultiNest, mask_function=mask_function,
                                  phase_name=pipeline_name + '/phase_2_source_only')
 
@@ -157,14 +161,14 @@ def make_pipeline():
             # 2) It will use a GaussianPrior based on the previous results as its initialization (we'll cover how this
             #    Gaussian is setup later).
 
-            self.source_galaxies[0].light.centre_0 = phase_2_results.variable.source_galaxies[0].light.centre_0
-            self.source_galaxies[0].light.centre_1 = phase_2_results.variable.source_galaxies[0].light.centre_1
-            self.source_galaxies[0].light.axis_ratio = phase_2_results.variable.source_galaxies[0].light.axis_ratio
-            self.source_galaxies[0].light.phi = phase_2_results.variable.source_galaxies[0].light.phi
-            self.source_galaxies[0].light.intensity = phase_2_results.variable.source_galaxies[0].light.intensity
-            self.source_galaxies[0].light.effective_radius = \
-                phase_2_results.variable.source_galaxies[0].light.effective_radius
-            self.source_galaxies[0].light.sersic_index = phase_2_results.variable.source_galaxies[0].light.sersic_index
+            self.source_galaxies.source.light.centre_0 = phase_2_results.variable.source_galaxies.source.light.centre_0
+            self.source_galaxies.source.light.centre_1 = phase_2_results.variable.source_galaxies.source.light.centre_1
+            self.source_galaxies.source.light.axis_ratio = phase_2_results.variable.source_galaxies.source.light.axis_ratio
+            self.source_galaxies.source.light.phi = phase_2_results.variable.source_galaxies.source.light.phi
+            self.source_galaxies.source.light.intensity = phase_2_results.variable.source_galaxies.source.light.intensity
+            self.source_galaxies.source.light.effective_radius = \
+                phase_2_results.variable.source_galaxies.source.light.effective_radius
+            self.source_galaxies.source.light.sersic_index = phase_2_results.variable.source_galaxies.source.light.sersic_index
 
             # Listing every parameter like this is ugly, and would get unweildy if we had a lot of parameters. If,
             # like in the above example, you are making all parameters of a lens or source galaxy variable, you can
@@ -174,13 +178,13 @@ def make_pipeline():
             # For the lens galaxies, we have a slightly weird circumstance where the light profiles requires the
             # results of phase 1 and the mass profile the results of phase 2. When passing these as a 'variable', we
             # can split them using a GalaxyModel (we could list every individual parameter, but that'd be pretty long).
-            self.lens_galaxies[0] = gm.GalaxyModel(light=phase_1_results.variable.lens_galaxies[0].light,
-                                                   mass=phase_2_results.variable.lens_galaxies[0].mass)
+            self.lens_galaxies.lens = gm.GalaxyModel(light=phase_1_results.variable.lens_galaxies.source.light,
+                                                   mass=phase_2_results.variable.lens_galaxies.source.mass)
 
-    phase3 = LensSourcePhase(lens_galaxies=[gm.GalaxyModel(light=lp.EllipticalSersic,
-                                                           mass=mp.EllipticalIsothermal)],
-                             source_galaxies=[gm.GalaxyModel(light=lp.EllipticalSersic)],
-                             optimizer_class=nl.MultiNest, phase_name='/phase_3_both')
+    phase3 = LensSourcePhase(lens_galaxies=dict(lens=gm.GalaxyModel(light=lp.EllipticalSersic,
+                                                                    mass=mp.EllipticalIsothermal)),
+                             source_galaxies=dict(source=gm.GalaxyModel(light=lp.EllipticalSersic)),
+                             optimizer_class=nl.MultiNest, phase_name=pipeline_name + '/phase_3_both')
 
     return pipeline.PipelineImaging(pipeline_name, phase1, phase2, phase3)
 
