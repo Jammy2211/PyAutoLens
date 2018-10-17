@@ -65,7 +65,7 @@ image = im.load_imaging_from_path(image_path=path+'data/1_lens_and_source/image.
 # 'makes' the pipeline, as you'll see in a moment.
 def make_pipeline():
     # To begin, we name our pipeline, which will specify the directory that it appears in the output folder.
-    pipeline_name = '3_pipelines/1_lens_and_source'
+    pipeline_name = '1_lens_and_source'
 
     # Its been a long time since we thought about masks - but in runners they're a pretty important. The bigger the
     # mask, the slower the run-time. In the early phases of most runners, we're not too bothered about fitting the
@@ -161,25 +161,25 @@ def make_pipeline():
             # 2) It will use a GaussianPrior based on the previous results as its initialization (we'll cover how this
             #    Gaussian is setup later).
 
-            self.source_galaxies.source.light.centre_0 = phase_2_results.variable.source_galaxies.source.light.centre_0
-            self.source_galaxies.source.light.centre_1 = phase_2_results.variable.source_galaxies.source.light.centre_1
-            self.source_galaxies.source.light.axis_ratio = phase_2_results.variable.source_galaxies.source.light.axis_ratio
-            self.source_galaxies.source.light.phi = phase_2_results.variable.source_galaxies.source.light.phi
-            self.source_galaxies.source.light.intensity = phase_2_results.variable.source_galaxies.source.light.intensity
+            self.source_galaxies.source.light.centre_0 = phase_2_results.variable.source_galaxies[0].light.centre_0
+            self.source_galaxies.source.light.centre_1 = phase_2_results.variable.source_galaxies[0].light.centre_1
+            self.source_galaxies.source.light.axis_ratio = phase_2_results.variable.source_galaxies[0].light.axis_ratio
+            self.source_galaxies.source.light.phi = phase_2_results.variable.source_galaxies[0].light.phi
+            self.source_galaxies.source.light.intensity = phase_2_results.variable.source_galaxies[0].light.intensity
             self.source_galaxies.source.light.effective_radius = \
-                phase_2_results.variable.source_galaxies.source.light.effective_radius
-            self.source_galaxies.source.light.sersic_index = phase_2_results.variable.source_galaxies.source.light.sersic_index
+                phase_2_results.variable.source_galaxies[0].light.effective_radius
+            self.source_galaxies.source.light.sersic_index = phase_2_results.variable.source_galaxies[0].light.sersic_index
 
             # Listing every parameter like this is ugly, and would get unweildy if we had a lot of parameters. If,
             # like in the above example, you are making all parameters of a lens or source galaxy variable, you can
             # simply set the source_galaxies equal to one another without specifying the light / mass profiles
-            self.source_galaxies = phase_2_results.variable.source_galaxies
+        #    self.source_galaxies = phase_2_results.variable.source_galaxies
 
             # For the lens galaxies, we have a slightly weird circumstance where the light profiles requires the
             # results of phase 1 and the mass profile the results of phase 2. When passing these as a 'variable', we
             # can split them using a GalaxyModel (we could list every individual parameter, but that'd be pretty long).
-            self.lens_galaxies.lens = gm.GalaxyModel(light=phase_1_results.variable.lens_galaxies.source.light,
-                                                   mass=phase_2_results.variable.lens_galaxies.source.mass)
+            self.lens_galaxies.lens = gm.GalaxyModel(light=phase_1_results.variable.lens_galaxies[0].light,
+                                                     mass=phase_2_results.variable.lens_galaxies[0].mass)
 
     phase3 = LensSourcePhase(lens_galaxies=dict(lens=gm.GalaxyModel(light=lp.EllipticalSersic,
                                                                     mass=mp.EllipticalIsothermal)),
