@@ -1,3 +1,4 @@
+from howtolens.simulations import lens_modeling as simulate
 from autolens import conf
 from autolens.autofit import non_linear
 from autolens.autofit import model_mapper
@@ -8,7 +9,8 @@ from autolens.profiles import light_profiles as lp
 from autolens.profiles import mass_profiles as mp
 from autolens.plotting import imaging_plotters
 from autolens.plotting import fitting_plotters
-from howtolens.simulations import lens_modeling as simulate
+
+import os
 
 # In the previous example, we used a non-linear search to infer the best-fit lens model to a strong lens image. In this
 # example, we'll get a deeper intuition of how a non-linear search works.
@@ -81,17 +83,20 @@ from howtolens.simulations import lens_modeling as simulate
 # sersic_index=g,4.0,2.0      # Its Sersic index uses a GaussianPrior with mean=4.0 and sigma=2.0
 
 # Lets look at how we can customize the priors of a phase with PyAutoLens.
-# First, we'll setup the config-overrides, so the non-linear search runs fast. Again, just ignore this for now.
 
-conf.instance = conf.Config(config_path='configs/2_parameter_space_and_priors', output_path="../output")
+#Setup the path for this run
+path = '{}/../'.format(os.path.dirname(os.path.realpath(__file__)))
+
+# First, we'll setup the config-overrides, so the non-linear search runs fast. Again, just ignore this for now.
+conf.instance = conf.Config(config_path=path+'configs/2_parameter_space_and_priors', output_path=path+"output")
 
 # Simulate the image again - we'll use the same image as the previous tutorial.
 simulate.tutorial_1_image()
 
 # Lets also setup the image, lens and source galaxy models, using the same image as the previous tutorial.
-image = im.load_imaging_from_path(image_path='data/1_non_linear_search/image.fits',
-                                  noise_map_path='data/1_non_linear_search/noise_map.fits',
-                                  psf_path='data/1_non_linear_search/psf.fits', pixel_scale=0.1)
+image = im.load_imaging_from_path(image_path=path+'data/1_non_linear_search/image.fits',
+                                  noise_map_path=path+'data/1_non_linear_search/noise_map.fits',
+                                  psf_path=path+'data/1_non_linear_search/psf.fits', pixel_scale=0.1)
 imaging_plotters.plot_image_subplot(image=image)
 
 # To change the priors on specific parameters, we create our galaxy model's and then use a custom-phase and its
@@ -111,22 +116,23 @@ class CustomPhase(ph.LensSourcePlanePhase):
         # (-0.1", 0.1"). For real lens modeling, this might be done by visually inspecting the centre of emission of
         # the lens galaxy's light.
 
-        self.lens_galaxies[0].mass.centre_0 = model_mapper.UniformPrior(lower_limit=-0.1, upper_limit=0.1)
-        self.lens_galaxies[0].mass.centre_1 = model_mapper.UniformPrior(lower_limit=-0.1, upper_limit=0.1)
+        # The term 'lens_galaxy' refers to the name of the galaxy that we give it below (scroll down cell [5].
+        # By naming galaxies in this way, we can easily keep track of how to pass their priors).
 
-        # The 0 index in 'lens_galaxies[0]' signifies it is the first lens galaxy in the list we input to create
-        # the custom phase below.
         # The word 'mass' corresponds to the word we used when setting up the GalaxyModel above.
 
+        self.lens_galaxies.lens_galaxy.mass.centre_0 = model_mapper.UniformPrior(lower_limit=-0.1, upper_limit=0.1)
+        self.lens_galaxies.lens_galaxy.mass.centre_1 = model_mapper.UniformPrior(lower_limit=-0.1, upper_limit=0.1)
 
         # Lets also change the prior on the lens galaxy's einstein radius, to a GaussianPrior centred on 1.4".
         # For real lens modeling, this might be done by visually estimating the radius the lens's arcs / ring appear.
 
-        self.lens_galaxies[0].mass.einstein_radius = model_mapper.GaussianPrior(mean=1.4, sigma=0.2)
+        self.lens_galaxies.lens_galaxy.mass.einstein_radius = model_mapper.GaussianPrior(mean=1.4, sigma=0.2)
 
         # We can also customize the source galaxy - lets say we believe it is compact and limit its effective radius
 
-        self.source_galaxies[0].light.effective_radius = model_mapper.UniformPrior(lower_limit=0.0, upper_limit=0.3)
+        self.source_galaxies.source_galaxy.light.effective_radius = \
+            model_mapper.UniformPrior(lower_limit=0.0, upper_limit=0.3)
 
 # (If the use of a python 'class' here, or some of the python code doesn't appear clear, don't worry about it. This
 # code is using a number of Python's object-oriented features. In general, I expect that'll you'll simply copy the code
@@ -135,9 +141,10 @@ class CustomPhase(ph.LensSourcePlanePhase):
 # We can now create this custom phase like we did a normal phase before. When we run the phase, the pass_prior function
 # will be called automatically and thus change the priors as we specified above. If you look at the 'model.info'
 # file in the output of the non-linear search, you'll see that the priors have indeed been changed.
-custom_phase = CustomPhase(lens_galaxies=[lens_galaxy_model], source_galaxies=[source_galaxy_model],
+custom_phase = CustomPhase(lens_galaxies=dict(lens_galaxy=lens_galaxy_model),
+                           source_galaxies=dict(source_galaxy=source_galaxy_model),
                            optimizer_class=non_linear.MultiNest,
-                           phase_name='2_lens_modeling/2_custom_priors')
+                           phase_name='2_custom_priors')
 
 results_custom = custom_phase.run(image)
 print(results_custom) # NOTE - this isn't working yet, need to sort out.

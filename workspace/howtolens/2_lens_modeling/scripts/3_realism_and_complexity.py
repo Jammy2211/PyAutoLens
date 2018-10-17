@@ -1,3 +1,4 @@
+from howtolens.simulations import lens_modeling as simulate
 from autolens import conf
 from autolens.autofit import non_linear as nl
 from autolens.pipeline import phase as ph
@@ -12,7 +13,8 @@ from autolens.profiles import light_profiles as lp
 from autolens.profiles import mass_profiles as mp
 from autolens.plotting import imaging_plotters
 from autolens.plotting import fitting_plotters
-from howtolens.simulations import lens_modeling as simulate
+
+import os
 
 # Up to now, we've fitted some fairly crude and unrealistic lens models. For example, we'e completely omitted the lens
 # galaxy's light, and its mass has been modeled as a sphere. Given most lens galaxies are literally called 'elliptical'
@@ -33,10 +35,11 @@ from howtolens.simulations import lens_modeling as simulate
 # The goal of this, rather short, exercise, is to fit this 'realistic' model to a simulated image, where the lens's
 # light is visible and mass is elliptical. What could go wrong?
 
-# Usual stuff here - loading a config for a fast run-time
-path = 'path/to/AutoLens/howtolens/1_introduction'
-path = '/home/jammy/PyCharm/Projects/AutoLens/howtolens/2_lens_modeling'
-conf.instance = conf.Config(config_path=path+'/configs/3_realism_and_complexity', output_path=path+"/../output")
+#Setup the path for this run
+path = '{}/../'.format(os.path.dirname(os.path.realpath(__file__)))
+
+# Setup the config to this tutorial, so the non-linear sea
+conf.instance = conf.Config(config_path=path+'/configs/3_realism_and_complexity', output_path=path+"output")
 
 # Simulate the image - which is a new one for this tutorial.
 simulate.tutorial_3_image()
@@ -58,11 +61,11 @@ imaging_plotters.plot_image_subplot(image=image)
 
 # Nevertheless, you could try running it yourself (maybe over your lunch break?). All you need to do is change the
 # phase_name below, maybe to something like 'howtolens/3_realism_and_complexity_rerun'
-phase = ph.LensSourcePlanePhase(lens_galaxies=[gm.GalaxyModel(light=lp.EllipticalSersic,
-                                                              mass=mp.EllipticalIsothermal)],
-                                source_galaxies=[gm.GalaxyModel(light=lp.EllipticalExponential)],
+phase = ph.LensSourcePlanePhase(lens_galaxies=dict(lens_galaxy=gm.GalaxyModel(light=lp.EllipticalSersic,
+                                                                              mass=mp.EllipticalIsothermal)),
+                                source_galaxies=dict(source_galaxy=gm.GalaxyModel(light=lp.EllipticalExponential)),
                                 optimizer_class=nl.MultiNest,
-                                phase_name='2_lens_modeling/3_realism_and_complexity')
+                                phase_name='3_realism_and_complexity')
 
 # Lets run the phase - note that, in Jupyter notebooks, all the MultiNest output is written to the cell. This might
 # get pretty long, but I wouldn't worry about it for now as we'll address this in the pipelines tutorial.

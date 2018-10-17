@@ -1,5 +1,4 @@
 from howtolens.simulations import lens_modeling as simulate
-
 from autolens import conf
 from autolens.autofit import non_linear
 from autolens.imaging import image as im
@@ -9,6 +8,8 @@ from autolens.plotting import fitting_plotters
 from autolens.plotting import imaging_plotters
 from autolens.profiles import light_profiles as lp
 from autolens.profiles import mass_profiles as mp
+
+import os
 
 # In this example, we're going to take an image and find a lens model that provides a good fit to it and we're going
 # to do this without any knowledge of what the 'correct' lens model is.
@@ -51,7 +52,8 @@ from autolens.profiles import mass_profiles as mp
 # 3) Repeat this many times, using the likelihoods of previous fits (typically those with a high likelihood) to
 #    guide us to the lens models with the highest liikelihood.
 
-# We'll use the path to howtolens multiple times, so make sure you set it up correctly!
+# We'll use the path to howtolens multiple times, so make sure you set it upt correctly!
+path = '{}/../'.format(os.path.dirname(os.path.realpath(__file__)))
 
 # You're going to see a line like this in every tutorial this chapter. I recommend that for now you just ignore it.
 # A non-linear search can take a long time to run (minutes, hours, or days), and this isn't ideal if you want to
@@ -63,16 +65,16 @@ from autolens.profiles import mass_profiles as mp
 #
 # This will all become clear at the end of the chapter, so for now just bare in mind that we are taking a short-cut
 # to get our non-linear search to run fast!
-conf.instance = conf.Config(config_path='configs/1_non_linear_search', output_path="output")
+conf.instance = conf.Config(config_path=path+'configs/1_non_linear_search', output_path=path+"output")
 
 # In the file 'howtolens/simulations/lens_modeling', we've created functions to simulate the images we'll fit in this
 # chapter. Lets simulate the image for this tutorial - it'll output this to fits files for us to load.
 simulate.tutorial_1_image()
 
 # These are the fits file of the image the function above generated.
-image = im.load_imaging_from_path(image_path='data/1_non_linear_search/image.fits',
-                                  noise_map_path='data/1_non_linear_search/noise_map.fits',
-                                  psf_path='data/1_non_linear_search/psf.fits', pixel_scale=0.1)
+image = im.load_imaging_from_path(image_path=path+'data/1_non_linear_search/image.fits',
+                                  noise_map_path=path+'data/1_non_linear_search/noise_map.fits',
+                                  psf_path=path+'data/1_non_linear_search/psf.fits', pixel_scale=0.1)
 imaging_plotters.plot_image_subplot(image=image)
 
 # To setup a lens model, we use the 'galaxy_model' (imported as 'gm') module, to create 'GalaxyModel' objects.
@@ -91,9 +93,16 @@ source_galaxy_model = gm.GalaxyModel(light=lp.SphericalExponential)
 
 # A phase takes our galaxy models and fits their parameters via a non-linear search (in this case, MultiNest). In this
 # example, we have a lens-plane and source-plane, so we use a LensSourcePlanePhase.
-phase = ph.LensSourcePlanePhase(lens_galaxies=[lens_galaxy_model], source_galaxies=[source_galaxy_model],
+
+# (Just like we could give profiles descriptive names, like 'light', 'bulge' and 'disk', we can do the exact same
+# thing with galaxies. This is very good practise - as once we start using complex lens models, you could potentially
+# have a lot of galaxies - and this is the best way to keep track of them!)
+
+# (also, just ignore the 'dict' - its necessary syntax but not something you
+phase = ph.LensSourcePlanePhase(lens_galaxies=dict(lens_galaxy=lens_galaxy_model),
+                                source_galaxies=dict(source_galaxy=source_galaxy_model),
                                 optimizer_class=non_linear.MultiNest,
-                                phase_name='2_lens_modeling/1_non_linear_search')
+                                phase_name='1_non_linear_search')
 
 # To run the phase, we simply pass it the image data we want to fit, and the non-linear search begins! As the phase
 # runs, a logger will show you the parameters of the best-fit model.
