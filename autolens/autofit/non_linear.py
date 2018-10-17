@@ -177,7 +177,7 @@ class NonLinearOptimizer(object):
         with open(self.file_param_names, 'w') as paramnames:
             for i in range(self.variable.prior_count):
                 line = paramnames_names[i]
-                line += ' ' * (50 - len(line)) + paramnames_labels[i]
+                line += ' ' * (70 - len(line)) + paramnames_labels[i]
                 paramnames.write(line + '\n')
 
 

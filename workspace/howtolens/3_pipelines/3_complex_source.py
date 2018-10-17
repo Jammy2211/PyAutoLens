@@ -1,5 +1,4 @@
-from howtolens.simulations import pipelines as simulation
-
+from howtolens.simulations import pipelines as simulate
 from autolens import conf
 from autolens.autofit import non_linear as nl
 from autolens.imaging import image as im
@@ -14,6 +13,8 @@ from autolens.plotting import imaging_plotters
 from autolens.profiles import light_profiles as lp
 from autolens.profiles import mass_profiles as mp
 
+import os
+
 # So far, we've not paid much attention to the source galaxy's morphology. We've assumed its a single-component
 # exponential profile, which is a fairly crude assumption. A quick look at any image of a real galaxy reveals a wealth
 # of different structures that could be present - bulges, disks, bars, star-forming knots and so on.
@@ -24,11 +25,14 @@ from autolens.profiles import mass_profiles as mp
 # parameters and if there are. If there are 4 components, or multiple galaxies, we're quickly entering the somewhat
 # nasty regime of 20-30+ parameters in our non-linear search.
 
+# First, lets get our path.
+path = '{}/'.format(os.path.dirname(os.path.realpath(__file__)))
+
 # Lets quickly sort the output directory
-conf.instance = conf.Config(config_path=conf.CONFIG_PATH, output_path="../output")
+conf.instance = conf.Config(config_path=conf.CONFIG_PATH, output_path="output")
 
 # Lets simulate the image we'll fit, which is another new image.
-simulation.pipeline_complex_source_image()
+simulate.pipeline_complex_source_image()
 
 # Lets have a look at our strong lens with a complex source
 image = im.load_imaging_from_path(image_path='data/3_complex_source/image.fits',
@@ -53,8 +57,8 @@ def make_pipeline():
     # can be confident MultiNest will fit without much issue, especially when the lens galaxy's light isn't included
     # such that the parameter space is just 12 parameters.
 
-    phase1 = ph.LensSourcePlanePhase(lens_galaxies=[gm.GalaxyModel(mass=mp.EllipticalIsothermal)],
-                                     source_galaxies=[gm.GalaxyModel(light=lp.EllipticalSersic)],
+    phase1 = ph.LensSourcePlanePhase(lens_galaxies=[dict(lens=gm.GalaxyModel(mass=mp.EllipticalIsothermal))],
+                                     source_galaxies=[dict(source=gm.GalaxyModel(light=lp.EllipticalSersic))],
                                      optimizer_class=nl.MultiNest, phase_name=pipeline_name + '/phase_1_simple_source')
 
     # Now lets add another source component, using the previous model as the initialization on the lens / source
@@ -63,15 +67,16 @@ def make_pipeline():
     class X2SourcePhase(ph.LensSourcePlanePhase):
 
         def pass_priors(self, previous_results):
+
             self.lens_galaxies = previous_results[0].variable.len_galaxies
-            self.source_galaxies[0] = previous_results[0].variable.source_galaxies[0]
+            self.source_galaxies.source.light_0 = previous_results[0].variable.source_galaxies.source.light_0
 
     # You'll notice I've stop writing 'phase_1_results = previous_results[0]' and so on - we know how
     # the previous results are structured now so lets not clutter our code!
 
-    phase2 = X2SourcePhase(lens_galaxies=[gm.GalaxyModel(mass=mp.EllipticalIsothermal)],
-                           source_galaxies=[gm.GalaxyModel(light_0=lp.EllipticalExponential,
-                                                           light_1=lp.EllipticalSersic)],
+    phase2 = X2SourcePhase(lens_galaxies=[dict(lens=gm.GalaxyModel(mass=mp.EllipticalIsothermal))],
+                           source_galaxies=[dict(source=gm.GalaxyModel(light_0=lp.EllipticalExponential,
+                                                                       light_1=lp.EllipticalSersic))],
                            optimizer_class=nl.MultiNest, phase_name=pipeline_name + '/phase_2_x2_source')
 
     # Now lets do the same again, but with 3 source galaxy components.
@@ -79,13 +84,15 @@ def make_pipeline():
     class X3SourcePhase(ph.LensSourcePlanePhase):
 
         def pass_priors(self, previous_results):
-            self.lens_galaxies = previous_results[1].variable.len_galaxies
-            self.source_galaxies[0] = previous_results[1].variable.source_galaxies[0]
-            self.source_galaxies[1] = previous_results[1].variable.source_galaxies[1]
 
-    phase3 = X3SourcePhase(lens_galaxies=[gm.GalaxyModel(mass=mp.EllipticalIsothermal)],
-                           source_galaxies=[gm.GalaxyModel(light_0=lp.EllipticalExponential,
-                                                           light_1=lp.EllipticalSersic)],
+            self.lens_galaxies = previous_results[1].variable.len_galaxies
+            self.source_galaxies.source.light_0 = previous_results[0].variable.source_galaxies.source.light_0
+            self.source_galaxies.source.light_1 = previous_results[0].variable.source_galaxies.source.light_1
+
+    phase3 = X3SourcePhase(lens_galaxies=[dict(lens=gm.GalaxyModel(mass=mp.EllipticalIsothermal))],
+                           source_galaxies=[dict(source=gm.GalaxyModel(light_0=lp.EllipticalExponential,
+                                                                       light_1=lp.EllipticalSersic),
+                                                                       light_2=lp.EllipticalSersic)],
                            optimizer_class=nl.MultiNest, phase_name=pipeline_name + '/phase_3_x3_source')
 
     # And one more for luck!
@@ -94,13 +101,15 @@ def make_pipeline():
 
         def pass_priors(self, previous_results):
             self.lens_galaxies = previous_results[2].variable.len_galaxies
-            self.source_galaxies[0] = previous_results[2].variable.source_galaxies[0]
-            self.source_galaxies[1] = previous_results[2].variable.source_galaxies[1]
-            self.source_galaxies[2] = previous_results[2].variable.source_galaxies[2]
+            self.source_galaxies.source.light_0 = previous_results[0].variable.source_galaxies.source.light_0
+            self.source_galaxies.source.light_1 = previous_results[0].variable.source_galaxies.source.light_1
+            self.source_galaxies.source.light_2 = previous_results[0].variable.source_galaxies.source.light_2
 
-    phase4 = X4SourcePhase(lens_galaxies=[gm.GalaxyModel(mass=mp.EllipticalIsothermal)],
-                           source_galaxies=[gm.GalaxyModel(light_0=lp.EllipticalExponential,
-                                                           light_1=lp.EllipticalSersic)],
+    phase4 = X4SourcePhase(lens_galaxies=[dict(lens=gm.GalaxyModel(mass=mp.EllipticalIsothermal))],
+                           source_galaxies=[dict(source=gm.GalaxyModel(light_0=lp.EllipticalExponential,
+                                                                       light_1=lp.EllipticalSersic,
+                                                                       light_2=lp.EllipticalSersic,
+                                                                       light_3=lp.EllipticalSersic))],
                            optimizer_class=nl.MultiNest, phase_name=pipeline_name + '/phase_4_x4_source')
 
     return pipeline.PipelineImaging(pipeline_name, phase1, phase2, phase3, phase4)
