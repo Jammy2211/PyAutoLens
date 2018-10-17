@@ -1,3 +1,4 @@
+from howtolens.simulations import lens_modeling as simulate
 from autolens import conf
 from autolens.autofit import non_linear as nl
 from autolens.autofit import model_mapper as mm
@@ -7,7 +8,8 @@ from autolens.imaging import image as im
 from autolens.profiles import light_profiles as lp
 from autolens.profiles import mass_profiles as mp
 from autolens.plotting import fitting_plotters
-from howtolens.simulations import lens_modeling as simulate
+
+import os
 
 # So, we've learnt that if our parameter space is too complex, our non-linear search might fail to find the global
 # maximum solution. However, we also learnt how to ensure this doesn't happen, by:
@@ -38,10 +40,10 @@ from howtolens.simulations import lens_modeling as simulate
 # 2) It should also give us a pretty good fit to the lensed source galaxy. This means we'll already know where in
 #    source-plane its is located and what its intensity and effective are.
 
+#Setup the path for this run
+path = '{}/../'.format(os.path.dirname(os.path.realpath(__file__)))
 
-# As per usual, lets load the configs and data.
-path = '/home/jammy/PyCharm/Projects/AutoLens/howtolens/2_lens_modeling'
-conf.instance = conf.Config(config_path=path+'/configs/5_linking_phases', output_path=path+"/../output")
+conf.instance = conf.Config(config_path=path+'/configs/5_linking_phases', output_path=path+"output")
 simulate.tutorial_3_image()
 image = im.load_imaging_from_path(image_path=path + '/data/3_realism_and_complexity/image.fits',
                                   noise_map_path=path+'/data/3_realism_and_complexity/noise_map.fits',
@@ -53,8 +55,6 @@ class LightTracesMassPhase(ph.LensSourcePlanePhase):
 
     def pass_priors(self, previous_results):
 
-        # The example below doesnt work - BUG with model mapper.
-
         # As we've eluded to before, one can look at an image and immediately identify the centre of the lens
         # galaxy. It's that bright blob of light surrounded by the lensed source galaxy! Given that we know we're going
         # to make the lens model more complex in the next phase, lets take a liberal approach to the lens centre and
@@ -62,14 +62,14 @@ class LightTracesMassPhase(ph.LensSourcePlanePhase):
 
         # You haven't actually seen a line like this one before. By setting a parameter to a number (and not a prior),
         # it is be removed rom non-linear parameter space and always fixed to that value. Pretty neat, huh?
-        self.lens_galaxies[0].light.centre_0 = 0.0
-        self.lens_galaxies[0].light.centre_1 = 0.0
-        self.lens_galaxies[0].mass.centre_0 = 0.0
-        self.lens_galaxies[0].mass.centre_1 = 0.0
+        self.lens_galaxies.lens.light.centre_0 = 0.0
+        self.lens_galaxies.lens.light.centre_1 = 0.0
+        self.lens_galaxies.lens.mass.centre_0 = 0.0
+        self.lens_galaxies.lens.mass.centre_1 = 0.0
 
         # Now, you might be thinking, doesn't this prevent our phase from generalizing to other strong lenses?
         # What if the centre of their lens galaxy isn't at (0.0", 0.0")?
-        #
+
         # Well, this is true if our data reduction centres the lens galaxy somewhere else. But we get to choose where
         # we centre it when we make the image. Therefore, I'd recommend you always centre the lens galaxy at the same
         # location, and (0.0", 0.0") seems the best choice!
@@ -77,7 +77,7 @@ class LightTracesMassPhase(ph.LensSourcePlanePhase):
         # We also discussed that the Sersic index of most lens galaxies is around 4. Lets be liberal and fix it to
         # 4 this time.
 
-        self.lens_galaxies[0].light.sersic_index = 4.0
+        self.lens_galaxies.lens.light.sersic_index = 4.0
 
 # Now lets create the phase. You'll notice two new inputs to the lens galaxy's model - 'align_axis_ratios' and
 # 'align_orientations'. These functions align the axis_ratio and phi values of all of the lens galaxy's profiles (in
@@ -85,10 +85,11 @@ class LightTracesMassPhase(ph.LensSourcePlanePhase):
 # but given that this is a fairly common thing to do GalaxyModel has these coninience methods to available.
 
 # There is also an 'align_centres' method, but because we are fixing all centres to floats we have ommitted it.
-phase_1 = LightTracesMassPhase(lens_galaxies=[gm.GalaxyModel(light=lp.EllipticalSersic, mass=mp.EllipticalIsothermal,
-                                                             align_axis_ratios=True, align_orientations=True)],
-                                      source_galaxies=[gm.GalaxyModel(light=lp.EllipticalExponential)],
-                                      optimizer_class=nl.MultiNest, phase_name='5_linking_phase_1')
+phase_1 = LightTracesMassPhase(lens_galaxies=dict(lens=gm.GalaxyModel(light=lp.EllipticalSersic,
+                                                                       mass=mp.EllipticalIsothermal,
+                                                   align_axis_ratios=True, align_orientations=True)),
+                                source_galaxies=dict(source=gm.GalaxyModel(light=lp.EllipticalExponential)),
+                                optimizer_class=nl.MultiNest, phase_name='5_linking_phase_1')
 
 # Lets go one step further. Now we know our parameter space is less complex, maybe we can find the maximum likelihood
 # with fewer MultiNest live points and a faster sampling rate?
@@ -118,33 +119,34 @@ class CustomPriorPhase(ph.LensSourcePlanePhase):
         # about the sigma values for now, I've chosen values that I know will ensure reasonable sampling, but we'll
         # cover this later.
 
-        self.lens_galaxies[0].light.centre_0 = mm.GaussianPrior(mean=0.0, sigma=0.1)
-        self.lens_galaxies[0].light.centre_1 = mm.GaussianPrior(mean=0.0, sigma=0.1)
-        self.lens_galaxies[0].light.axis_ratio = mm.GaussianPrior(mean=0.8, sigma=0.15)
-        self.lens_galaxies[0].light.phi = mm.GaussianPrior(mean=45.0, sigma=15.0)
-        self.lens_galaxies[0].light.intensity = mm.GaussianPrior(mean=0.02, sigma=0.01)
-        self.lens_galaxies[0].light.effective_radius = mm.GaussianPrior(mean=0.62, sigma=0.2)
-        self.lens_galaxies[0].light.sersic_index = mm.GaussianPrior(mean=4.0, sigma=2.0)
+        self.lens_galaxies.lens.light.centre_0 = mm.GaussianPrior(mean=0.0, sigma=0.1)
+        self.lens_galaxies.lens.light.centre_1 = mm.GaussianPrior(mean=0.0, sigma=0.1)
+        self.lens_galaxies.lens.light.axis_ratio = mm.GaussianPrior(mean=0.8, sigma=0.15)
+        self.lens_galaxies.lens.light.phi = mm.GaussianPrior(mean=45.0, sigma=15.0)
+        self.lens_galaxies.lens.light.intensity = mm.GaussianPrior(mean=0.02, sigma=0.01)
+        self.lens_galaxies.lens.light.effective_radius = mm.GaussianPrior(mean=0.62, sigma=0.2)
+        self.lens_galaxies.lens.light.sersic_index = mm.GaussianPrior(mean=4.0, sigma=2.0)
 
-        self.lens_galaxies[0].mass.centre_0 = mm.GaussianPrior(mean=0.0, sigma=0.1)
-        self.lens_galaxies[0].mass.centre_1 = mm.GaussianPrior(mean=0.0, sigma=0.1)
-        self.lens_galaxies[0].mass.axis_ratio = mm.GaussianPrior(mean=0.8, sigma=0.25)
-        self.lens_galaxies[0].mass.phi = mm.GaussianPrior(mean=45.0, sigma=30.0)
-        self.lens_galaxies[0].mass.einstein_radius = mm.GaussianPrior(mean=0.8, sigma=0.1)
+        self.lens_galaxies.lens.mass.centre_0 = mm.GaussianPrior(mean=0.0, sigma=0.1)
+        self.lens_galaxies.lens.mass.centre_1 = mm.GaussianPrior(mean=0.0, sigma=0.1)
+        self.lens_galaxies.lens.mass.axis_ratio = mm.GaussianPrior(mean=0.8, sigma=0.25)
+        self.lens_galaxies.lens.mass.phi = mm.GaussianPrior(mean=45.0, sigma=30.0)
+        self.lens_galaxies.lens.mass.einstein_radius = mm.GaussianPrior(mean=0.8, sigma=0.1)
 
-        self.source_galaxies[0].light.centre_0 = mm.GaussianPrior(mean=0.0, sigma=0.1)
-        self.source_galaxies[0].light.centre_0 = mm.GaussianPrior(mean=0.0, sigma=0.1)
-        self.source_galaxies[0].light.axis_ratio = mm.GaussianPrior(mean=0.8, sigma=0.1)
-        self.source_galaxies[0].light.phi = mm.GaussianPrior(mean=90.0, sigma=10.0)
-        self.source_galaxies[0].light.intensity = mm.GaussianPrior(mean=0.14, sigma=0.05)
-        self.source_galaxies[0].light.effective_radius = mm.GaussianPrior(mean=0.12, sigma=0.2)
+        self.source_galaxies.source.light.centre_0 = mm.GaussianPrior(mean=0.0, sigma=0.1)
+        self.source_galaxies.source.light.centre_0 = mm.GaussianPrior(mean=0.0, sigma=0.1)
+        self.source_galaxies.source.light.axis_ratio = mm.GaussianPrior(mean=0.8, sigma=0.1)
+        self.source_galaxies.source.light.phi = mm.GaussianPrior(mean=90.0, sigma=10.0)
+        self.source_galaxies.source.light.intensity = mm.GaussianPrior(mean=0.14, sigma=0.05)
+        self.source_galaxies.source.light.effective_radius = mm.GaussianPrior(mean=0.12, sigma=0.2)
 
 
 # Lets setup and run the phase. As expected, it gives us the correct lens model. However, it does so significantly
 # faster than it would had we assumed broad priros on all the parameters.
-phase_2 = CustomPriorPhase(lens_galaxies=[gm.GalaxyModel(light=lp.EllipticalSersic, mass=mp.EllipticalIsothermal)],
-                           source_galaxies=[gm.GalaxyModel(light=lp.EllipticalExponential)],
-                           optimizer_class=nl.MultiNest, phase_name='2_lens_modeling/5_linking_phase_2')
+phase_2 = CustomPriorPhase(lens_galaxies=dict(lens=gm.GalaxyModel(light=lp.EllipticalSersic,
+                                                                   mass=mp.EllipticalIsothermal)),
+                           source_galaxies=dict(source=gm.GalaxyModel(light=lp.EllipticalExponential)),
+                           optimizer_class=nl.MultiNest, phase_name='5_linking_phase_2')
 phase_2.optimizer.n_live_points = 30
 phase_2.optimizer.sampling_efficiency = 0.9
 phase_2_results = phase_2.run(image=image)
