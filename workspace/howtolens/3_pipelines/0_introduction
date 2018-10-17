@@ -25,3 +25,19 @@ You may find that you run a pipeline and then leave it for an hour or so before 
 non-linear search is going in the 'right direction'. Unfortunately, that's the nature of strong lens modeling. However,
 if you can build a general pipeline that works on a couple of lenses, you can probably apply that pipeline to 100
 lenses, so the automated lens modeling dream is still in our sights!
+
+
+
+-------------
+ WARNING BUG
+ ------------
+
+ Currently, the 'previous results' passed to each phase use an old syntax whereby lens_galaxies and source galaxies
+ were stored as lists. This means when we pass priors, there are lines like:
+
+self.lens_galaxies.left_lens.mass.centre_0 = phase_3_results.variable.lens_galaxies[0].mass.centre_0
+
+Where the right hand side doesn't use 'lens_galaxies.left_lens' but 'lens_galaxies[0]'. This will be fixed as soon
+as possible, but bare in mind that soon the correct syntax will be
+
+self.lens_galaxies.left_lens.mass.centre_0 = phase_3_results.variable.lens_galaxies.left_lens.mass.centre_0
