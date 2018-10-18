@@ -8,8 +8,12 @@ from autolens.plotting import plane_plotters
 from autolens.plotting import inversion_plotters
 
 
-def plot_fitting_subplot(fit, mask=None, positions=None, units='kpc', output_path=None,
-                         output_filename='fit', output_format='show', ignore_config=True):
+def plot_fitting_subplot(fit, mask=None, positions=None,
+                         units='arcsec', figsize=None, aspect='equal',
+                         cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
+                         cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
+                        titlesize=10, xlabelsize=10, ylabelsize=10, xyticksize=10,
+                         output_path=None, output_filename='fit', output_format='show', ignore_config=True):
 
     plot_fitting_as_subplot = conf.instance.general.get('output', 'plot_fitting_as_subplot', bool)
 
@@ -20,23 +24,54 @@ def plot_fitting_subplot(fit, mask=None, positions=None, units='kpc', output_pat
 
         if not fit.tracer.has_hyper_galaxy:
 
-            plot_fitting_subplot_lens_plane_only(fit, mask, positions, units, output_path, output_filename,
-                                                 output_format)
-
+            plot_fitting_subplot_lens_plane_only(fit=fit, mask=mask, positions=positions,
+                                                 units=units, figsize=figsize,
+                                                 aspect=aspect,
+                                                 cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max,
+                                                 linthresh=linthresh,
+                                                 linscale=linscale,
+                                                 cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
+                                                 titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize,
+                                                 xyticksize=xyticksize,
+                                                 output_path=output_path, output_filename=output_filename,
+                                                 output_format=output_format)
         elif fit.tracer.has_hyper_galaxy:
 
-            plot_fitting_subplot_hyper_lens_plane_only(fit, mask, positions, units, output_path, output_filename,
-                                                       output_format)
+            plot_fitting_subplot_hyper_lens_plane_only(fit=fit, mask=mask, positions=positions,
+                                                 units=units, figsize=figsize,
+                                                 aspect=aspect,
+                                                 cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max,
+                                                 linthresh=linthresh,
+                                                 linscale=linscale,
+                                                 cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
+                                                 titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize,
+                                                 xyticksize=xyticksize,
+                                                 output_path=output_path, output_filename=output_filename,
+                                                 output_format=output_format)
 
     elif fit.tracer.total_planes == 2:
 
         if not fit.tracer.has_hyper_galaxy:
             
-            plot_fitting_subplot_lens_and_source_planes(fit, mask, positions, units, output_path, output_filename,
-                                                        output_format)
+            plot_fitting_subplot_lens_and_source_planes(fit=fit, mask=mask, positions=positions,
+                                                 units=units, figsize=figsize,
+                                                 aspect=aspect,
+                                                 cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max,
+                                                 linthresh=linthresh,
+                                                 linscale=linscale,
+                                                 cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
+                                                 titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize,
+                                                 xyticksize=xyticksize,
+                                                 output_path=output_path, output_filename=output_filename,
+                                                 output_format=output_format)
 
-def plot_fitting_subplot_lens_plane_only(fit, mask=None, positions=None, units='kpc', output_path=None,
-                                         output_filename='fit', output_format='show'):
+def plot_fitting_subplot_lens_plane_only(fit, mask=None, positions=None,
+                                         units='arcsec', figsize=None, aspect='equal',
+                                         cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05,
+                                         linscale=0.01,
+                                         cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
+                                         titlesize=10, xlabelsize=10, ylabelsize=10, xyticksize=10,
+                                         output_path=None, output_filename='fit', output_format='show'):
     """Plot the model _image of an analysis, using the *Fitter* class object.
 
     The visualization and output type can be fully customized.
@@ -54,7 +89,10 @@ def plot_fitting_subplot_lens_plane_only(fit, mask=None, positions=None, units='
         in the python interpreter window.
     """
 
-    rows, columns, figsize = tools.get_subplot_rows_columns_figsize(number_subplots=4)
+    rows, columns, figsize_tool = tools.get_subplot_rows_columns_figsize(number_subplots=4)
+
+    if figsize is None:
+        figsize = figsize_tool
 
     plt.figure(figsize=figsize)
     plt.subplot(rows, columns, 1)
@@ -62,50 +100,56 @@ def plot_fitting_subplot_lens_plane_only(fit, mask=None, positions=None, units='
     kpc_per_arcsec = fit.tracer.image_plane.kpc_per_arcsec_proper
 
     imaging_plotters.plot_image(image=fit.image, mask=mask, positions=positions, grid=None, as_subplot=True,
-        units=units, kpc_per_arcsec=kpc_per_arcsec, xyticksize=10,
-        norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
-        figsize=None, aspect='equal', cmap='jet',
-                                cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
-        title='Observed Image', titlesize=10, xlabelsize=10, ylabelsize=10,
+                                units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
+                                cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
+                                linscale=linscale,
+                                cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
+                                titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize,
+                                xyticksize=xyticksize,
         output_path=output_path, output_filename='', output_format=output_format)
 
     plt.subplot(rows, columns, 2)
 
     plot_model_image(fit=fit, as_subplot=True,
-        units=units, kpc_per_arcsec=kpc_per_arcsec,
-        xyticksize=10, norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
-        figsize=None, aspect='equal', cmap='jet',
-                     cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
-        title='Model Image', titlesize=10, xlabelsize=10, ylabelsize=10,
+                     units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
+                     cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
+                     linscale=linscale,
+                     cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
+                     titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize, xyticksize=xyticksize,
         output_path=output_path, output_filename='', output_format=output_format)
 
     plt.subplot(rows, columns, 3)
 
     plot_residuals(fit=fit, as_subplot=True,
-        units=units, kpc_per_arcsec=kpc_per_arcsec,
-        xyticksize=10, norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
-        figsize=None, aspect='equal', cmap='jet',
-                   cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
-        title='Residuals', titlesize=10, xlabelsize=10, ylabelsize=10,
+                   units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
+                   cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
+                   linscale=linscale,
+                   cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
+                   titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize, xyticksize=xyticksize,
         output_path=output_path, output_filename='', output_format=output_format)
 
     plt.subplot(rows, columns, 4)
 
     plot_chi_squareds(fit=fit, as_subplot=True,
-        units=units, kpc_per_arcsec=kpc_per_arcsec,
-        xyticksize=10, norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
-        figsize=None, aspect='equal', cmap='jet',
-                      cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
-        title='Chi Squareds', titlesize=10, xlabelsize=10, ylabelsize=10,
-        output_path=output_path, output_filename='', output_format=output_format)
+                      units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
+                      cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
+                      linscale=linscale,
+                      cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
+                      titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize, xyticksize=xyticksize,
+                      output_path=output_path, output_filename='', output_format=output_format)
 
     tools.output_subplot_array(output_path=output_path, output_filename=output_filename,
                                      output_format=output_format)
 
     plt.close()
 
-def plot_fitting_subplot_hyper_lens_plane_only(fit, mask=None, positions=None, units='kpc', output_path=None,
-                                               output_filename='hyper_fit', output_format='show'):
+def plot_fitting_subplot_hyper_lens_plane_only(fit, mask=None, positions=None,
+                                               units='arcsec', figsize=None, aspect='equal',
+                                               cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05,
+                                               linscale=0.01,
+                                               cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
+                                               titlesize=10, xlabelsize=10, ylabelsize=10, xyticksize=10,
+                                               output_path=None, output_filename='hyper_fit', output_format='show'):
     """Plot the model _image of an analysis, using the *Fitter* class object.
 
     The visualization and output type can be fully customized.
@@ -123,7 +167,10 @@ def plot_fitting_subplot_hyper_lens_plane_only(fit, mask=None, positions=None, u
         in the python interpreter window.
     """
 
-    rows, columns, figsize = tools.get_subplot_rows_columns_figsize(number_subplots=9)
+    rows, columns, figsize_tool = tools.get_subplot_rows_columns_figsize(number_subplots=9)
+
+    if figsize is None:
+        figsize = figsize_tool
 
     plt.figure(figsize=figsize)
     plt.subplot(rows, columns, 1)
@@ -131,41 +178,40 @@ def plot_fitting_subplot_hyper_lens_plane_only(fit, mask=None, positions=None, u
     kpc_per_arcsec = fit.tracer.image_plane.kpc_per_arcsec_proper
 
     imaging_plotters.plot_image(image=fit.lensing_image.image, mask=mask, positions=positions, grid=None, as_subplot=True,
-        units=units, kpc_per_arcsec=kpc_per_arcsec, xyticksize=10,
-        norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
-        figsize=None, aspect='equal', cmap='jet',
-                                cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
-        title='Observed Image', titlesize=10, xlabelsize=10, ylabelsize=10,
+                                units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
+                                cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
+                                linscale=linscale,
+                                cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
+                                titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize,
+                                xyticksize=xyticksize,
         output_path=output_path, output_filename='', output_format=output_format)
 
     plt.subplot(rows, columns, 2)
 
     plot_model_image(fit=fit, as_subplot=True,
-        units=units, kpc_per_arcsec=kpc_per_arcsec,
-        xyticksize=10, norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
-        figsize=None, aspect='equal', cmap='jet',
-                     cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
-        title='Model Image', titlesize=10, xlabelsize=10, ylabelsize=10,
+                     units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
+                     cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
+                     cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
+                     titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize, xyticksize=xyticksize,
         output_path=output_path, output_filename='', output_format=output_format)
 
     plt.subplot(rows, columns, 3)
 
     plot_residuals(fit=fit, as_subplot=True,
-        units=units, kpc_per_arcsec=kpc_per_arcsec,
-        xyticksize=10, norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
-        figsize=None, aspect='equal', cmap='jet',
-                   cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
-        title='Residuals', titlesize=10, xlabelsize=10, ylabelsize=10,
+                   units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
+                   cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
+                   cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
+                   titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize, xyticksize=xyticksize,
         output_path=output_path, output_filename='', output_format=output_format)
 
     plt.subplot(rows, columns, 5)
 
     plot_chi_squareds(fit=fit, as_subplot=True,
-        units=units, kpc_per_arcsec=kpc_per_arcsec,
-        xyticksize=10, norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
-        figsize=None, aspect='equal', cmap='jet',
-                      cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
-        title='Chi Squareds', titlesize=10, xlabelsize=10, ylabelsize=10,
+                      units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
+                      cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
+                      linscale=linscale,
+                      cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
+                      titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize, xyticksize=xyticksize,
         output_path=output_path, output_filename='', output_format=output_format)
 
     tools.output_subplot_array(output_path=output_path, output_filename=output_filename,
@@ -174,41 +220,42 @@ def plot_fitting_subplot_hyper_lens_plane_only(fit, mask=None, positions=None, u
     plt.subplot(rows, columns, 4)
 
     plot_contributions(fit=fit, as_subplot=True,
-        units=units, kpc_per_arcsec=kpc_per_arcsec,
-        xyticksize=10, norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
-        figsize=None, aspect='equal', cmap='jet',
-                       cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
-        title='Contributions', titlesize=10, xlabelsize=10, ylabelsize=10,
+                       units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
+                       cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
+                       linscale=linscale,
+                       cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
+                       titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize, xyticksize=xyticksize,
         output_path=output_path, output_filename='', output_format=output_format)
 
     plt.subplot(rows, columns, 6)
 
     plot_scaled_chi_squareds(fit=fit, as_subplot=True,
-        units=units, kpc_per_arcsec=kpc_per_arcsec,
-        xyticksize=10, norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
-        figsize=None, aspect='equal', cmap='jet',
-                             cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
-        title='Chi Squareds', titlesize=10, xlabelsize=10, ylabelsize=10,
+                             units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
+                             cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
+                             linscale=linscale,
+                             cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
+                             titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize, xyticksize=xyticksize,
         output_path=output_path, output_filename='', output_format=output_format)
 
     plt.subplot(rows, columns, 8)
 
-    imaging_plotters.plot_noise_map(image=fit.lensing_image.image, mask=mask, units=units, as_subplot=True,
-                                    kpc_per_arcsec=None, xyticksize=10,
-                                    norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
-                                    figsize=None, aspect='equal', cmap='jet',
-                                    cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
-                                    titlesize=10, xlabelsize=10, ylabelsize=10,
+    imaging_plotters.plot_noise_map(image=fit.lensing_image.image, mask=mask, as_subplot=True,
+                                    units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
+                                    cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
+                                    linscale=linscale,
+                                    cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
+                                    titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize,
+                                    xyticksize=xyticksize,
                                     output_path=output_path, output_format=output_format)
 
     plt.subplot(rows, columns, 9)
 
     plot_scaled_noise_map(fit=fit, as_subplot=True,
-        units=units, kpc_per_arcsec=kpc_per_arcsec,
-        xyticksize=10, norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
-        figsize=None, aspect='equal', cmap='jet',
-                          cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
-        title='Chi Squareds', titlesize=10, xlabelsize=10, ylabelsize=10,
+                          units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
+                          cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
+                          linscale=linscale,
+                          cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
+                          titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize, xyticksize=xyticksize,
         output_path=output_path, output_filename='', output_format=output_format)
 
     tools.output_subplot_array(output_path=output_path, output_filename=output_filename,
@@ -216,8 +263,13 @@ def plot_fitting_subplot_hyper_lens_plane_only(fit, mask=None, positions=None, u
 
     plt.close()
 
-def plot_fitting_subplot_lens_and_source_planes(fit, mask=None, positions=None, units='kpc', output_path=None,
-                                                output_filename='fit', output_format='show'):
+def plot_fitting_subplot_lens_and_source_planes(fit, mask=None, positions=None,
+                                                units='arcsec', figsize=None, aspect='equal',
+                                                cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05,
+                                                linscale=0.01,
+                                                cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
+                                                titlesize=10, xlabelsize=10, ylabelsize=10, xyticksize=10,
+                                                output_path=None, output_filename='fit', output_format='show'):
     """Plot the model _image of an analysis, using the *Fitter* class object.
 
     The visualization and output type can be fully customized.
@@ -235,7 +287,10 @@ def plot_fitting_subplot_lens_and_source_planes(fit, mask=None, positions=None, 
         in the python interpreter window.
     """
 
-    rows, columns, figsize = tools.get_subplot_rows_columns_figsize(number_subplots=6)
+    rows, columns, figsize_tool = tools.get_subplot_rows_columns_figsize(number_subplots=6)
+
+    if figsize is None:
+        figsize = figsize_tool
 
     plt.figure(figsize=figsize)
     plt.subplot(rows, columns, 1)
@@ -243,11 +298,12 @@ def plot_fitting_subplot_lens_and_source_planes(fit, mask=None, positions=None, 
     kpc_per_arcsec = fit.tracer.image_plane.kpc_per_arcsec_proper
 
     imaging_plotters.plot_image(image=fit.image, mask=mask, positions=positions, grid=None, as_subplot=True,
-        units=units, kpc_per_arcsec=kpc_per_arcsec, xyticksize=10,
-        norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
-        figsize=None, aspect='equal', cmap='jet',
-                                cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
-        title='Observed Image', titlesize=10, xlabelsize=10, ylabelsize=10,
+                                units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
+                                cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
+                                linscale=linscale,
+                                cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
+                                titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize,
+                                xyticksize=xyticksize,
         output_path=output_path, output_filename='', output_format=output_format)
 
     if fit.tracer.image_plane.has_light_profile:
@@ -255,21 +311,22 @@ def plot_fitting_subplot_lens_and_source_planes(fit, mask=None, positions=None, 
         plt.subplot(rows, columns, 2)
 
         plot_model_image_of_plane(fit=fit, plane_index=0, as_subplot=True,
-                         units=units, kpc_per_arcsec=kpc_per_arcsec,
-                         xyticksize=10, norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
-                         figsize=None, aspect='equal', cmap='jet',
-                                  cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
-                         title='Lens Model Image', titlesize=10, xlabelsize=10, ylabelsize=10,
+                                  units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
+                                  cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
+                                  linscale=linscale,
+                                  cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
+                                  titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize,
+                                  xyticksize=xyticksize,
                          output_path=output_path, output_filename='', output_format=output_format)
 
     plt.subplot(rows, columns, 3)
 
     plot_model_image_of_plane(fit=fit, plane_index=1, as_subplot=True,
-                             units=units, kpc_per_arcsec=kpc_per_arcsec,
-                             xyticksize=10, norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
-                             figsize=None, aspect='equal', cmap='jet',
-                              cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
-                             title='Source Model Image', titlesize=10, xlabelsize=10, ylabelsize=10,
+                              units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
+                              cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
+                              linscale=linscale,
+                              cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
+                              titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize, xyticksize=xyticksize,
                              output_path=output_path, output_filename='', output_format=output_format)
 
     plt.subplot(2, 3, 4)
@@ -277,12 +334,13 @@ def plot_fitting_subplot_lens_and_source_planes(fit, mask=None, positions=None, 
     if fit.total_inversions == 0:
 
         plane_plotters.plot_plane_image(plane=fit.tracer.source_plane, as_subplot=True,
-            positions=None, plot_grid=False,
-            units=units, kpc_per_arcsec=fit.tracer.source_plane.kpc_per_arcsec_proper,
-            xyticksize=10, norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
-            figsize=None, aspect='equal', cmap='jet',
-                                        cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
-            title='Source-plane Image', titlesize=10, xlabelsize=10, ylabelsize=10,
+                                        positions=None, plot_grid=False,
+                                        units=units, figsize=figsize, aspect=aspect,
+                                        cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
+                                        linscale=linscale,
+                                        cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
+                                        titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize,
+                                        xyticksize=xyticksize,
             output_path=output_path, output_filename='', output_format=output_format)
 
     # else:
@@ -301,21 +359,20 @@ def plot_fitting_subplot_lens_and_source_planes(fit, mask=None, positions=None, 
     plt.subplot(rows, columns, 5)
 
     plot_residuals(fit=fit, as_subplot=True,
-        units=units, kpc_per_arcsec=kpc_per_arcsec,
-        xyticksize=10, norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
-        figsize=None, aspect='equal', cmap='jet',
-                   cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
-        title='Residuals', titlesize=10, xlabelsize=10, ylabelsize=10,
+                   units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
+                   cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
+                   cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
+                   titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize, xyticksize=xyticksize,
         output_path=output_path, output_filename='', output_format=output_format)
 
     plt.subplot(rows, columns, 6)
 
     plot_chi_squareds(fit=fit, as_subplot=True,
-        units=units, kpc_per_arcsec=kpc_per_arcsec,
-        xyticksize=10, norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
-        figsize=None, aspect='equal', cmap='jet',
-                      cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
-        title='Chi Squareds', titlesize=10, xlabelsize=10, ylabelsize=10,
+                      units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
+                      cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
+                      linscale=linscale,
+                      cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
+                      titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize, xyticksize=xyticksize,
         output_path=output_path, output_filename='', output_format=output_format)
 
     tools.output_subplot_array(output_path=output_path, output_filename=output_filename,
@@ -478,74 +535,74 @@ def plot_fitting_individuals_lens_and_source_planes(fit, mask=None, positions=No
         plot_chi_squareds(fit=fit, output_path=output_path, output_format=output_format)
 
 def plot_model_image(fit, as_subplot=False,
-                   units='arcsec', kpc_per_arcsec=None,
-                   xyticksize=16, norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
-                   figsize=(7, 7), aspect='equal', cmap='jet',
+                     units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
+                     cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
                      cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
-                   title='Fit Model Image', titlesize=16, xlabelsize=16, ylabelsize=16,
+                   title='Fit Model Image', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
                    output_path=None, output_format='show', output_filename='fit_model_image'):
 
     tools_array.plot_array(array=fit.model_image, as_subplot=as_subplot,
-                                units=units, kpc_per_arcsec=kpc_per_arcsec, xyticksize=xyticksize,
-                                norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
-                                linscale=linscale, figsize=figsize, aspect=aspect, cmap=cmap,
-                                cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
-                                title=title, titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize,
-                                output_path=output_path, output_format=output_format, output_filename=output_filename)
+                           units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
+                           cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max,
+                           linthresh=linthresh, linscale=linscale,
+                           cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
+                           title=title, titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize,
+                           xyticksize=xyticksize,
+                           output_path=output_path, output_format=output_format, output_filename=output_filename)
 
 def plot_model_image_of_plane(fit, plane_index, as_subplot=False,
-                   units='arcsec', kpc_per_arcsec=None,
-                   xyticksize=16, norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
-                   figsize=(7, 7), aspect='equal', cmap='jet', cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
-                   title='Fit Model Image', titlesize=16, xlabelsize=16, ylabelsize=16,
+                              units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
+                              cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
+                              cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
+                   title='Fit Model Image', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
                    output_path=None, output_format='show', output_filename='fit_model_image_of_plane'):
 
     tools_array.plot_array(array=fit.model_images_of_planes[plane_index], as_subplot=as_subplot,
-                                units=units, kpc_per_arcsec=kpc_per_arcsec, xyticksize=xyticksize,
-                                norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
-                                linscale=linscale, figsize=figsize, aspect=aspect, cmap=cmap,
-                                cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
-                                title=title, titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize,
-                                output_path=output_path, output_format=output_format, output_filename=output_filename)
+                           units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
+                           cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max,
+                           linthresh=linthresh, linscale=linscale,
+                           cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
+                           title=title, titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize,
+                           xyticksize=xyticksize,
+                           output_path=output_path, output_format=output_format, output_filename=output_filename)
 
 def plot_residuals(fit, as_subplot=False,
-                   units='arcsec', kpc_per_arcsec=None,
-                   xyticksize=16, norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
-                   figsize=(7, 7), aspect='equal', cmap='jet',
+                   units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
+                   cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
                    cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
-                   title='Fit Residuals', titlesize=16, xlabelsize=16, ylabelsize=16,
+                   title='Fit Residuals', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
                    output_path=None, output_format='show', output_filename='fit_residuals'):
 
     tools_array.plot_array(array=fit.residuals, as_subplot=as_subplot,
-                              units=units, kpc_per_arcsec=kpc_per_arcsec, xyticksize=xyticksize,
-                              norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
-                              linscale=linscale, figsize=figsize, aspect=aspect, cmap=cmap,
-                              cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
-                              title=title, titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize,
-                              output_path=output_path, output_format=output_format, output_filename=output_filename)
+                           units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
+                           cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max,
+                           linthresh=linthresh, linscale=linscale,
+                           cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
+                           title=title, titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize,
+                           xyticksize=xyticksize,
+                           output_path=output_path, output_format=output_format, output_filename=output_filename)
 
 def plot_chi_squareds(fit, as_subplot=False,
-                   units='arcsec', kpc_per_arcsec=None,
-                   xyticksize=16, norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
-                   figsize=(7, 7), aspect='equal', cmap='jet',
+                      units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
+                      cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
                       cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
-                   title='Fit Chi-Squareds', titlesize=16, xlabelsize=16, ylabelsize=16,
+                   title='Fit Chi-Squareds', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
                    output_path=None, output_format='show', output_filename='fit_chi_squareds'):
 
     tools_array.plot_array(array=fit.chi_squareds, as_subplot=as_subplot,
-                                 units=units, kpc_per_arcsec=kpc_per_arcsec, xyticksize=xyticksize,
-                                 norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
-                                 linscale=linscale, figsize=figsize, aspect=aspect, cmap=cmap,
-                                 cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
-                                 title=title, titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize,
-                                 output_path=output_path, output_format=output_format, output_filename=output_filename)
+                           units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
+                           cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max,
+                           linthresh=linthresh, linscale=linscale,
+                           cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
+                           title=title, titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize,
+                           xyticksize=xyticksize,
+                           output_path=output_path, output_format=output_format, output_filename=output_filename)
 
 def plot_contributions(fit, as_subplot=False,
-                   units='arcsec', kpc_per_arcsec=None,
-                   xyticksize=16, norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
-                   figsize=(7, 7), aspect='equal', cmap='jet',
+                       units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
+                       cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
                        cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
-                   title='Contributions', titlesize=16, xlabelsize=16, ylabelsize=16,
+                   title='Contributions', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
                    output_path=None, output_format='show', output_filename='fit_contributions'):
 
     if len(fit.contributions) > 1:
@@ -554,76 +611,77 @@ def plot_contributions(fit, as_subplot=False,
         contributions = fit.contributions[0]
 
     tools_array.plot_array(array=contributions, as_subplot=as_subplot,
-                                  units=units, kpc_per_arcsec=kpc_per_arcsec, xyticksize=xyticksize,
-                                  norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
-                                  linscale=linscale, figsize=figsize, aspect=aspect, cmap=cmap,
-                                  cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
-                                  title=title, titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize,
-                                  output_path=output_path, output_format=output_format, output_filename=output_filename)
+                           units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
+                           cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max,
+                           linthresh=linthresh, linscale=linscale,
+                           cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
+                           title=title, titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize,
+                           xyticksize=xyticksize,
+                           output_path=output_path, output_format=output_format, output_filename=output_filename)
 
 def plot_scaled_model_image(fit, as_subplot=False,
-                   units='arcsec', kpc_per_arcsec=None,
-                   xyticksize=16, norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
-                   figsize=(7, 7), aspect='equal', cmap='jet',
+                            units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
+                            cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
                             cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
-                   title='Fit Scaled Model Image', titlesize=16, xlabelsize=16, ylabelsize=16,
+                   title='Fit Scaled Model Image', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
                    output_path=None, output_format='show', output_filename='fit_scaled_model_image'):
 
     tools_array.plot_array(array=fit.scaled_model_image, as_subplot=as_subplot,
-                                       units=units, kpc_per_arcsec=kpc_per_arcsec, xyticksize=xyticksize,
-                                       norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
-                                       linscale=linscale, figsize=figsize, aspect=aspect, cmap=cmap,
-                                       cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
-                                       title=title, titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize,
-                                       output_path=output_path, output_format=output_format, output_filename=output_filename)
+                           units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
+                           cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max,
+                           linthresh=linthresh, linscale=linscale,
+                           cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
+                           title=title, titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize,
+                           xyticksize=xyticksize,
+                           output_path=output_path, output_format=output_format, output_filename=output_filename)
 
 def plot_scaled_residuals(fit, as_subplot=False,
-                   units='arcsec', kpc_per_arcsec=None,
-                   xyticksize=16, norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
-                   figsize=(7, 7), aspect='equal', cmap='jet',
+                          units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
+                          cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
                           cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
-                   title='Fit Scaled Residuals', titlesize=16, xlabelsize=16, ylabelsize=16,
+                   title='Fit Scaled Residuals', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
                    output_path=None, output_format='show', output_filename='fit_scaled_residuals'):
 
     tools_array.plot_array(array=fit.scaled_residuals, as_subplot=as_subplot,
-                                     units=units, kpc_per_arcsec=kpc_per_arcsec, xyticksize=xyticksize,
-                                     norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
-                                     linscale=linscale, figsize=figsize, aspect=aspect, cmap=cmap,
-                                     cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
-                                     title=title, titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize,
-                                     output_path=output_path, output_format=output_format, output_filename=output_filename)
+                           units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
+                           cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max,
+                           linthresh=linthresh, linscale=linscale,
+                           cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
+                           title=title, titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize,
+                           xyticksize=xyticksize,
+                           output_path=output_path, output_format=output_format, output_filename=output_filename)
 
 def plot_scaled_chi_squareds(fit, as_subplot=False,
-                   units='arcsec', kpc_per_arcsec=None,
-                   xyticksize=16, norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
-                   figsize=(7, 7), aspect='equal', cmap='jet',
+                             units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
+                             cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
                              cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
-                   title='Fit Scaled Chi-Squareds', titlesize=16, xlabelsize=16, ylabelsize=16,
+                   title='Fit Scaled Chi-Squareds', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
                    output_path=None, output_format='show', output_filename='fit_scaled_chi_squareds'):
 
     tools_array.plot_array(array=fit.scaled_chi_squareds, as_subplot=as_subplot,
-                                        units=units, kpc_per_arcsec=kpc_per_arcsec, xyticksize=xyticksize,
-                                        norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
-                                        linscale=linscale, figsize=figsize, aspect=aspect, cmap=cmap,
-                                        cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
-                                        title=title, titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize,
-                                        output_path=output_path, output_format=output_format, output_filename=output_filename)
+                           units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
+                           cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max,
+                           linthresh=linthresh, linscale=linscale,
+                           cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
+                           title=title, titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize,
+                           xyticksize=xyticksize,
+                           output_path=output_path, output_format=output_format, output_filename=output_filename)
 
 def plot_scaled_noise_map(fit, as_subplot=False,
-                   units='arcsec', kpc_per_arcsec=None,
-                   xyticksize=16, norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
-                   figsize=(7, 7), aspect='equal', cmap='jet',
+                          units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
+                          cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
                           cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
-                   title='Fit Scaled Noise Map', titlesize=16, xlabelsize=16, ylabelsize=16,
+                   title='Fit Scaled Noise Map', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
                    output_path=None, output_format='show', output_filename='fit_scaled_noise_map'):
 
     tools_array.plot_array(array=fit.scaled_noise_map, as_subplot=as_subplot,
-                                     units=units, kpc_per_arcsec=kpc_per_arcsec, xyticksize=xyticksize,
-                                     norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
-                                     linscale=linscale, figsize=figsize, aspect=aspect, cmap=cmap,
-                                     cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
-                                     title=title, titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize,
-                                     output_path=output_path, output_format=output_format, output_filename=output_filename)
+                           units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
+                           cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max,
+                           linthresh=linthresh, linscale=linscale,
+                           cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
+                           title=title, titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize,
+                           xyticksize=xyticksize,
+                           output_path=output_path, output_format=output_format, output_filename=output_filename)
 
 # def plot_fitting_hyper_arrays(fitting, output_path=None, output_format='show'):
 #
