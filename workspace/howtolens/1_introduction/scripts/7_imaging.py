@@ -52,7 +52,7 @@ imaging_plotters.plot_image_subplot(image=image_simulated)
 
 # Finally, lets output these files to.fits files, we'll begin to analyze them in the next tutorial!
 # Unfortunately, in a Jupyter notebook you have to manually specify the path to PyAutoLens and this tutorial.
-path = '/home/jammy/PyCharm/Projects/AutoLens/howtolens/1_introduction'
+path = '/home/jammy/PyCharm/Projects/AutoLens/workspace/howtolens/1_introduction'
 im.output_imaging_to_fits(image=image_simulated, image_path=path+'/data/image.fits',
                                                  noise_map_path=path+'/data/noise_map.fits',
                                                  psf_path=path+'/data/psf.fits',
