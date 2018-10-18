@@ -13,6 +13,7 @@ def plot_fitting_subplot(fit, mask=None, positions=None,
                          cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
                          cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
                         titlesize=10, xlabelsize=10, ylabelsize=10, xyticksize=10,
+                         mask_pointsize=10, position_pointsize=10.0, grid_pointsize=1,
                          output_path=None, output_filename='fit', output_format='show', ignore_config=True):
 
     plot_fitting_as_subplot = conf.instance.general.get('output', 'plot_fitting_as_subplot', bool)
@@ -33,6 +34,8 @@ def plot_fitting_subplot(fit, mask=None, positions=None,
                                                  cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
                                                  titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize,
                                                  xyticksize=xyticksize,
+                                                 mask_pointsize=mask_pointsize, position_pointsize=position_pointsize,
+                                                 grid_pointsize=grid_pointsize,
                                                  output_path=output_path, output_filename=output_filename,
                                                  output_format=output_format)
         elif fit.tracer.has_hyper_galaxy:
@@ -45,7 +48,9 @@ def plot_fitting_subplot(fit, mask=None, positions=None,
                                                  linscale=linscale,
                                                  cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
                                                  titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize,
-                                                 xyticksize=xyticksize,
+                                                   xyticksize=xyticksize,
+                                                   mask_pointsize=mask_pointsize, position_pointsize=position_pointsize,
+                                                       grid_pointsize=grid_pointsize,
                                                  output_path=output_path, output_filename=output_filename,
                                                  output_format=output_format)
 
@@ -62,6 +67,9 @@ def plot_fitting_subplot(fit, mask=None, positions=None,
                                                  cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
                                                  titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize,
                                                  xyticksize=xyticksize,
+                                                        mask_pointsize=mask_pointsize,
+                                                        position_pointsize=position_pointsize,
+                                                        grid_pointsize=grid_pointsize,
                                                  output_path=output_path, output_filename=output_filename,
                                                  output_format=output_format)
 
@@ -71,6 +79,7 @@ def plot_fitting_subplot_lens_plane_only(fit, mask=None, positions=None,
                                          linscale=0.01,
                                          cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
                                          titlesize=10, xlabelsize=10, ylabelsize=10, xyticksize=10,
+                                         mask_pointsize=10, position_pointsize=10.0, grid_pointsize=1,
                                          output_path=None, output_filename='fit', output_format='show'):
     """Plot the model _image of an analysis, using the *Fitter* class object.
 
@@ -106,6 +115,8 @@ def plot_fitting_subplot_lens_plane_only(fit, mask=None, positions=None,
                                 cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
                                 titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize,
                                 xyticksize=xyticksize,
+                                grid_pointsize=grid_pointsize, position_pointsize=position_pointsize,
+                                mask_pointsize=mask_pointsize,
         output_path=output_path, output_filename='', output_format=output_format)
 
     plt.subplot(rows, columns, 2)
@@ -149,6 +160,7 @@ def plot_fitting_subplot_hyper_lens_plane_only(fit, mask=None, positions=None,
                                                linscale=0.01,
                                                cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
                                                titlesize=10, xlabelsize=10, ylabelsize=10, xyticksize=10,
+                                               mask_pointsize=10, position_pointsize=10.0, grid_pointsize=1,
                                                output_path=None, output_filename='hyper_fit', output_format='show'):
     """Plot the model _image of an analysis, using the *Fitter* class object.
 
@@ -184,6 +196,8 @@ def plot_fitting_subplot_hyper_lens_plane_only(fit, mask=None, positions=None,
                                 cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
                                 titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize,
                                 xyticksize=xyticksize,
+                                grid_pointsize=grid_pointsize, position_pointsize=position_pointsize,
+                                mask_pointsize=mask_pointsize,
         output_path=output_path, output_filename='', output_format=output_format)
 
     plt.subplot(rows, columns, 2)
@@ -269,6 +283,7 @@ def plot_fitting_subplot_lens_and_source_planes(fit, mask=None, positions=None,
                                                 linscale=0.01,
                                                 cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
                                                 titlesize=10, xlabelsize=10, ylabelsize=10, xyticksize=10,
+                                                mask_pointsize=10, position_pointsize=10.0, grid_pointsize=1,
                                                 output_path=None, output_filename='fit', output_format='show'):
     """Plot the model _image of an analysis, using the *Fitter* class object.
 
@@ -304,7 +319,9 @@ def plot_fitting_subplot_lens_and_source_planes(fit, mask=None, positions=None,
                                 cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
                                 titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize,
                                 xyticksize=xyticksize,
-        output_path=output_path, output_filename='', output_format=output_format)
+                                grid_pointsize=grid_pointsize, position_pointsize=position_pointsize,
+                                mask_pointsize=mask_pointsize,
+                                output_path=output_path, output_filename='', output_format=output_format)
 
     if fit.tracer.image_plane.has_light_profile:
 
@@ -341,7 +358,8 @@ def plot_fitting_subplot_lens_and_source_planes(fit, mask=None, positions=None,
                                         cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
                                         titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize,
                                         xyticksize=xyticksize,
-            output_path=output_path, output_filename='', output_format=output_format)
+                                        grid_pointsize=grid_pointsize, position_pointsize=position_pointsize,
+                                        output_path=output_path, output_filename='', output_format=output_format)
 
     # else:
     #
@@ -381,28 +399,26 @@ def plot_fitting_subplot_lens_and_source_planes(fit, mask=None, positions=None,
     plt.close()
 
 
-def plot_fitting_individuals(fit, mask=None, positions=None, units='kpc', output_path=None, output_format='show'):
+def plot_fitting_individuals(fit, units='kpc', output_path=None, output_format='show'):
 
     if fit.tracer.total_planes == 1:
 
         if not fit.tracer.has_hyper_galaxy:
 
-            plot_fitting_individuals_lens_plane_only(fit, mask, positions, units, output_path, output_format)
+            plot_fitting_individuals_lens_plane_only(fit, units, output_path, output_format)
 
 
         elif fit.tracer.has_hyper_galaxy:
 
-                    plot_fitting_individuals_hyper_lens_plane_only(fit, mask, positions, units, output_path,
-                                                                   output_format)
+                    plot_fitting_individuals_hyper_lens_plane_only(fit, units, output_path, output_format)
 
     elif fit.tracer.total_planes == 2:
 
         if not fit.tracer.has_hyper_galaxy:
 
-            plot_fitting_individuals_lens_and_source_planes(fit, mask, positions, units, output_path, output_format)
+            plot_fitting_individuals_lens_and_source_planes(fit, units, output_path, output_format)
 
-def plot_fitting_individuals_lens_plane_only(fit, mask=None, positions=None, units='kpc', output_path=None,
-                                             output_format='show'):
+def plot_fitting_individuals_lens_plane_only(fit, units='kpc', output_path=None, output_format='show'):
     """Plot the model _image of an analysis, using the *Fitter* class object.
 
     The visualization and output type can be fully customized.
@@ -422,21 +438,25 @@ def plot_fitting_individuals_lens_plane_only(fit, mask=None, positions=None, uni
     plot_fitting_residuals = conf.instance.general.get('output', 'plot_fitting_residuals', bool)
     plot_fitting_chi_squareds = conf.instance.general.get('output', 'plot_fitting_chi_squareds', bool)
 
+    kpc_per_arcsec = fit.tracer.image_plane.kpc_per_arcsec_proper
+
     if plot_fitting_model_image:
 
-        plot_model_image(fit=fit, output_path=output_path, output_format=output_format)
+        plot_model_image(fit=fit, units=units, kpc_per_arcsec=kpc_per_arcsec,
+                         output_path=output_path, output_format=output_format)
 
     if plot_fitting_residuals:
 
-        plot_residuals(fit=fit, output_path=output_path, output_format=output_format)
+        plot_residuals(fit=fit, units=units, kpc_per_arcsec=kpc_per_arcsec,
+                       output_path=output_path, output_format=output_format)
 
     if plot_fitting_chi_squareds:
 
-        plot_chi_squareds(fit=fit, output_path=output_path, output_format=output_format)
+        plot_chi_squareds(fit=fit, units=units, kpc_per_arcsec=kpc_per_arcsec,
+                          output_path=output_path, output_format=output_format)
 
 
-def plot_fitting_individuals_hyper_lens_plane_only(fit, mask=None, positions=None,  units='kpc', output_path=None,
-                                                   output_format='show'):
+def plot_fitting_individuals_hyper_lens_plane_only(fit, units='kpc', output_path=None, output_format='show'):
     """Plot the model _image of an analysis, using the *Fitter* class object.
 
     The visualization and output type can be fully customized.
@@ -459,32 +479,39 @@ def plot_fitting_individuals_hyper_lens_plane_only(fit, mask=None, positions=Non
     plot_fitting_scaled_chi_squareds = conf.instance.general.get('output', 'plot_fitting_scaled_chi_squareds', bool)
     plot_fitting_scaled_noise_map = conf.instance.general.get('output', 'plot_fitting_scaled_noise_map', bool)
 
+    kpc_per_arcsec = fit.tracer.image_plane.kpc_per_arcsec_proper
+
     if plot_fitting_model_image:
 
-        plot_model_image(fit=fit, output_path=output_path, output_format=output_format)
+        plot_model_image(fit=fit, units=units, kpc_per_arcsec=kpc_per_arcsec,
+                         output_path=output_path, output_format=output_format)
 
     if plot_fitting_residuals:
 
-        plot_residuals(fit=fit, output_path=output_path, output_format=output_format)
+        plot_residuals(fit=fit, units=units, kpc_per_arcsec=kpc_per_arcsec,
+                       output_path=output_path, output_format=output_format)
 
     if plot_fitting_chi_squareds:
 
-        plot_chi_squareds(fit=fit, output_path=output_path, output_format=output_format)
+        plot_chi_squareds(fit=fit,units=units, kpc_per_arcsec=kpc_per_arcsec,
+                          output_path=output_path, output_format=output_format)
 
     if plot_fitting_contributions:
 
-        plot_contributions(fit=fit, output_path=output_path, output_format=output_format)
+        plot_contributions(fit=fit, units=units, kpc_per_arcsec=kpc_per_arcsec,
+                           output_path=output_path, output_format=output_format)
 
     if plot_fitting_scaled_noise_map:
 
-        plot_scaled_noise_map(fit=fit, output_path=output_path, output_format=output_format)
+        plot_scaled_noise_map(fit=fit, units=units, kpc_per_arcsec=kpc_per_arcsec,
+                              output_path=output_path, output_format=output_format)
 
     if plot_fitting_scaled_chi_squareds:
 
-        plot_scaled_chi_squareds(fit=fit, output_path=output_path, output_format=output_format)
+        plot_scaled_chi_squareds(fit=fit, units=units, kpc_per_arcsec=kpc_per_arcsec,
+                                 output_path=output_path, output_format=output_format)
 
-def plot_fitting_individuals_lens_and_source_planes(fit, mask=None, positions=None, units='kpc', output_path=None,
-                                                    output_format='show'):
+def plot_fitting_individuals_lens_and_source_planes(fit, units='kpc', output_path=None, output_format='show'):
     """Plot the model _image of an analysis, using the *Fitter* class object.
 
     The visualization and output type can be fully customized.
@@ -507,32 +534,41 @@ def plot_fitting_individuals_lens_and_source_planes(fit, mask=None, positions=No
     plot_fitting_residuals = conf.instance.general.get('output', 'plot_fitting_residuals', bool)
     plot_fitting_chi_squareds = conf.instance.general.get('output', 'plot_fitting_chi_squareds', bool)
 
+    kpc_per_arcsec = fit.tracer.image_plane.kpc_per_arcsec_proper
+
     if plot_fitting_model_image:
 
-        plot_model_image(fit=fit, output_path=output_path, output_format=output_format)
+        plot_model_image(fit=fit, units=units, kpc_per_arcsec=kpc_per_arcsec, output_path=output_path,
+                         output_format=output_format)
 
     if plot_fitting_lens_model_image:
 
-        plot_model_image_of_plane(fit=fit, plane_index=0, output_path=output_path,
-                                  output_filename='fit_lens_plane_model_image', output_format=output_format)
+        plot_model_image_of_plane(fit=fit, plane_index=0, units=units, kpc_per_arcsec=kpc_per_arcsec,
+                                  output_path=output_path, output_filename='fit_lens_plane_model_image',
+                                  output_format=output_format)
 
     if plot_fitting_source_model_image:
 
-        plot_model_image_of_plane(fit=fit, plane_index=1, output_path=output_path,
-                                  output_filename='fit_source_plane_model_image', output_format=output_format)
+        plot_model_image_of_plane(fit=fit, plane_index=1, units=units, kpc_per_arcsec=kpc_per_arcsec,
+                                  output_path=output_path, output_filename='fit_source_plane_model_image',
+                                  output_format=output_format)
 
     if plot_fitting_source_plane_image:
 
-        plane_plotters.plot_plane_image(plane=fit.tracer.source_plane, positions=None, plot_grid=False,
-            output_path=output_path, output_filename='fit_source_plane', output_format=output_format)
+        plane_plotters.plot_plane_image(plane=fit.tracer.source_plane, plot_grid=True,
+                                        units=units,
+                                        output_path=output_path, output_filename='fit_source_plane',
+                                        output_format=output_format)
 
     if plot_fitting_residuals:
 
-        plot_residuals(fit=fit, output_path=output_path, output_format=output_format)
+        plot_residuals(fit=fit, units=units, kpc_per_arcsec=kpc_per_arcsec,
+                       output_path=output_path, output_format=output_format)
 
     if plot_fitting_chi_squareds:
 
-        plot_chi_squareds(fit=fit, output_path=output_path, output_format=output_format)
+        plot_chi_squareds(fit=fit, units=units, kpc_per_arcsec=kpc_per_arcsec,
+                          output_path=output_path, output_format=output_format)
 
 def plot_model_image(fit, as_subplot=False,
                      units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',

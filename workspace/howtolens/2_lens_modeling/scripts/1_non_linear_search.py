@@ -1,4 +1,3 @@
-from howtolens.simulations import lens_modeling as simulate
 from autolens import conf
 from autolens.autofit import non_linear
 from autolens.imaging import image as im
@@ -67,14 +66,29 @@ path = '{}/../'.format(os.path.dirname(os.path.realpath(__file__)))
 # to get our non-linear search to run fast!
 conf.instance = conf.Config(config_path=path+'configs/1_non_linear_search', output_path=path+"output")
 
-# In the file 'howtolens/simulations/lens_modeling', we've created functions to simulate the images we'll fit in this
-# chapter. Lets simulate the image for this tutorial - it'll output this to fits files for us to load.
-simulate.tutorial_1_image()
+# This function simulates the image we'll fit in this tutorial.
+def simulate():
 
-# These are the fits file of the image the function above generated.
-image = im.load_imaging_from_path(image_path=path+'data/1_non_linear_search/image.fits',
-                                  noise_map_path=path+'data/1_non_linear_search/noise_map.fits',
-                                  psf_path=path+'data/1_non_linear_search/psf.fits', pixel_scale=0.1)
+    from autolens.imaging import mask
+    from autolens.lensing import galaxy as g
+    from autolens.lensing import ray_tracing
+
+    psf = im.PSF.simulate_as_gaussian(shape=(11, 11), sigma=0.1, pixel_scale=0.1)
+
+    image_plane_grids = mask.ImagingGrids.grids_for_simulation(shape=(130, 130), pixel_scale=0.1, psf_shape=(11, 11))
+
+    lens_galaxy = g.Galaxy(mass=mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=1.6))
+    source_galaxy = g.Galaxy(light=lp.SphericalExponential(centre=(0.0, 0.0), intensity=0.2, effective_radius=0.2))
+    tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
+                                                 image_plane_grids=image_plane_grids)
+
+    image_simulated = im.PreparatoryImage.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=0.1,
+                                           exposure_time=300.0, psf=psf, background_sky_level=0.1, add_noise=True)
+
+    return image_simulated
+
+# and this calls the function, setting us up with an image to model. Lets plot it
+image = simulate()
 imaging_plotters.plot_image_subplot(image=image)
 
 # To setup a lens model, we use the 'galaxy_model' (imported as 'gm') module, to create 'GalaxyModel' objects.
