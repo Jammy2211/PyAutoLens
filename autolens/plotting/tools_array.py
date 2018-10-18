@@ -7,11 +7,10 @@ import itertools
 from autolens.plotting import tools
 
 def plot_array(array, mask=None, positions=None, grid=None, as_subplot=False,
-               units='arcsec', kpc_per_arcsec=None,
-               xyticksize=16, norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
-               figsize=(7, 7), aspect='equal', cmap='jet', 
+               units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
+               cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
                cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
-               title='Array', titlesize=16, xlabelsize=16, ylabelsize=16,
+               title='Array', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
                output_path=None, output_format='show', output_filename='array'):
 
     plot_figure(array=array, as_subplot=as_subplot, units=units, kpc_per_arcsec=kpc_per_arcsec,
@@ -137,4 +136,4 @@ def plot_grid(grid_arc_seconds, array, units, kpc_per_arcsec):
     if grid_arc_seconds is not None:
         grid_units = convert_grid_units(grid_arc_seconds=grid_arc_seconds, array=array, units=units,
                                         kpc_per_arcsec=kpc_per_arcsec)
-        plt.scatter(y=grid_units[:, 0], x=grid_units[:, 1], s=1)
+        plt.scatter(y=grid_units[:, 0], x=grid_units[:, 1], s=1, c='k')
