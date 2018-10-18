@@ -82,5 +82,3 @@ def pipeline_complex_source_image():
     im.output_imaging_to_fits(image=image_simulated, image_path=path+'/data/3_complex_source/image.fits',
                                                      noise_map_path=path+'/data/3_complex_source/noise_map.fits',
                                                      psf_path=path+'/data/3_complex_source/psf.fits', overwrite=True)
-
-    #imaging_plotters.plot_image_subplot(image=image_simulated)

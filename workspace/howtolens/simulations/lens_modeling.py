@@ -27,8 +27,6 @@ def tutorial_1_image():
                                                      psf_path=path+'/data/1_non_linear_search/psf.fits',
                               overwrite=True)
 
-  #  imaging_plotters.plot_image_subplot(image=image_simulated)
-
 def tutorial_3_image():
 
     psf = im.PSF.simulate_as_gaussian(shape=(11, 11), sigma=0.05, pixel_scale=0.05)

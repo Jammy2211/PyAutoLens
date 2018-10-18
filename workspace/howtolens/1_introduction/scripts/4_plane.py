@@ -131,6 +131,10 @@ plane_plotters.plot_image_plane_image(plane=source_plane)
 # otherwise be possible!
 plane_plotters.plot_plane_image(plane=source_plane)
 
+# Plotting the grid over the plane image obscures its appearance, which isn't ideal. However, later in the tutorials,
+# you'll notice that this issue goes away.
+plane_plotters.plot_plane_image(plane=source_plane, plot_grid=True)
+
 # And, we're done. This is the first tutorial covering actual strong-lensing and I highly recommend you take a moment
 # to really mess about with the code above to see what sort of lensed images you can form. Pay attention to the
 # source-plane grid - its appearance can change quite a lot!
