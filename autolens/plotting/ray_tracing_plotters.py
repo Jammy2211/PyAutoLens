@@ -10,6 +10,7 @@ def plot_ray_tracing_subplot(tracer, mask=None, positions=None,
                              cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
                              cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
                             titlesize=10, xlabelsize=10, ylabelsize=10, xyticksize=10,
+                             mask_pointsize=10, position_pointsize=10.0, grid_pointsize=1.0,
                              output_path=None, output_filename='tracer', output_format='show', ignore_config=True):
     """Plot the observed _tracer of an analysis, using the *Image* class object.
 
@@ -39,12 +40,13 @@ def plot_ray_tracing_subplot(tracer, mask=None, positions=None,
         plt.figure(figsize=figsize)
         plt.subplot(rows, columns, 1)
 
-        plot_image_plane_image(tracer=tracer, mask=mask, positions=positions, grid=None, as_subplot=True,
+        plot_image_plane_image(tracer=tracer, mask=mask, positions=positions, as_subplot=True,
                                units=units, figsize=figsize, aspect=aspect,
                                cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
                                linscale=linscale,
                                cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
                                titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize, xyticksize=xyticksize,
+                               mask_pointsize=mask_pointsize, position_pointsize=position_pointsize,
                                output_path=output_path, output_filename='', output_format=output_format)
 
         plt.subplot(rows, columns, 2)
@@ -70,13 +72,13 @@ def plot_ray_tracing_subplot(tracer, mask=None, positions=None,
 
         plt.subplot(rows, columns, 4)
 
-        plane_plotters.plot_plane_image(plane=tracer.source_plane, as_subplot=True,
-            positions=None, plot_grid=False,
-            xyticksize=16, norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
-            figsize=None, aspect='equal', cmap='jet',
-                                        cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
-            titlesize=10, xlabelsize=10, ylabelsize=10,
-            output_path=output_path, output_filename='', output_format=output_format)
+        plane_plotters.plot_plane_image(plane=tracer.source_plane, as_subplot=True, positions=None, plot_grid=False,
+                                        cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
+                                        cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
+                                        titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize,
+                                        xyticksize=xyticksize,
+                                        grid_pointsize=grid_pointsize,
+                                        output_path=output_path, output_filename='', output_format=output_format)
 
         plt.subplot(rows, columns, 5)
 
@@ -156,11 +158,12 @@ def plot_ray_tracing_individual(tracer, output_path=None, output_format='show'):
         plot_deflections_x(tracer=tracer, output_path=output_path, output_format=output_format)
 
 
-def plot_image_plane_image(tracer, mask=None, positions=None, grid=None, as_subplot=False,
+def plot_image_plane_image(tracer, mask=None, positions=None, as_subplot=False,
                            units='arcsec', figsize=(7, 7), aspect='equal',
                            cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
                            cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
                            title='Tracer Image-Plane Image', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
+                           mask_pointsize=10, position_pointsize=10.0,
                            output_path=None, output_format='show', output_filename='tracer_image_plane_image'):
 
     tools_array.plot_array(array=tracer.image_plane_image, mask=mask, positions=positions, as_subplot=as_subplot,
@@ -170,6 +173,7 @@ def plot_image_plane_image(tracer, mask=None, positions=None, grid=None, as_subp
                            cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
                            title=title, titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize,
                            xyticksize=xyticksize,
+                           mask_pointsize=mask_pointsize, position_pointsize=position_pointsize,
                            output_path=output_path, output_format=output_format, output_filename=output_filename)
 
 def plot_surface_density(tracer, as_subplot=False,
