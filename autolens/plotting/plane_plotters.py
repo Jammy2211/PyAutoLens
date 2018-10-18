@@ -9,6 +9,7 @@ def plot_image_plane_image(plane, mask=None, positions=None, grid=None, as_subpl
                            cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
                            cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
                            title='Plane Image-Plane Image', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
+                           mask_pointsize=10, position_pointsize=10.0, grid_pointsize=1,
                            output_path=None, output_format='show', output_filename='plane_image_plane_image'):
 
     tools_array.plot_array(array=plane.image_plane_image, mask=mask, positions=positions, grid=grid,
@@ -19,6 +20,8 @@ def plot_image_plane_image(plane, mask=None, positions=None, grid=None, as_subpl
                            cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
                            title=title, titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize,
                            xyticksize=xyticksize,
+                           mask_pointsize=mask_pointsize, position_pointsize=position_pointsize,
+                           grid_pointsize=grid_pointsize,
                            output_path=output_path, output_format=output_format, output_filename=output_filename)
 
 def plot_plane_image(plane, positions=None, plot_grid=False, as_subplot=False,
@@ -26,6 +29,7 @@ def plot_plane_image(plane, positions=None, plot_grid=False, as_subplot=False,
                      cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
                      cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
                      title='Plane Image', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
+                     position_pointsize=10, grid_pointsize=1,
                      output_path=None, output_format='show', output_filename='plane_image'):
 
     if plot_grid:
@@ -40,6 +44,7 @@ def plot_plane_image(plane, positions=None, plot_grid=False, as_subplot=False,
                            cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
                            title=title, titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize,
                            xyticksize=xyticksize,
+                           position_pointsize=position_pointsize, grid_pointsize=grid_pointsize,
                            output_path=output_path, output_format=output_format, output_filename=output_filename)
 
 def plot_surface_density(plane, as_subplot=False,

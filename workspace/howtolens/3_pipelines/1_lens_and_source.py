@@ -1,4 +1,3 @@
-from howtolens.simulations import pipelines as simulate
 from autolens import conf
 from autolens.autofit import non_linear as nl
 from autolens.imaging import image as im
@@ -49,17 +48,28 @@ path = '{}/'.format(os.path.dirname(os.path.realpath(__file__)))
 
 # Lets setup the config. No, I'm not preloading the results with this - I'm just changing the output
 # to the AutoLens/howtolens/output directory, to keep everything tidy and in one place.
-
 conf.instance = conf.Config(config_path=conf.CONFIG_PATH, output_path=path+"output")
 
+def simulate():
+
+    from autolens.imaging import mask
+    from autolens.lensing import galaxy as g
+    from autolens.lensing import ray_tracing
+
+    psf = im.PSF.simulate_as_gaussian(shape=(11, 11), sigma=0.1, pixel_scale=0.1)
+
+    image_plane_grids = mask.ImagingGrids.grids_for_simulation(shape=(130, 130), pixel_scale=0.1, psf_shape=(11, 11))
+
+    lens_galaxy = g.Galaxy(mass=mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=1.6))
+    source_galaxy = g.Galaxy(light=lp.SphericalExponential(centre=(0.0, 0.0), intensity=0.2, effective_radius=0.2))
+    tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
+                                                 image_plane_grids=image_plane_grids)
+
+    return im.PreparatoryImage.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=0.1,
+                                        exposure_time=300.0, psf=psf, background_sky_level=0.1, add_noise=True)
+
 # Now lets simulate hte image we'll fit, which as I said above, is the same image we saw in the previous chapter.
-simulate.pipeline_lens_and_soure_image()
-
-# Lets load the image before writing our pipeline.
-image = im.load_imaging_from_path(image_path=path+'data/1_lens_and_source/image.fits',
-                                  noise_map_path=path+'data/1_lens_and_source/noise_map.fits',
-                                  psf_path=path+'data/1_lens_and_source/psf.fits', pixel_scale=0.1)
-
+image = simulate()
 
 # A pipeline is a one long python function (this is why Jupyter notebooks arn't ideal). When we run it, this function
 # 'makes' the pipeline, as you'll see in a moment.

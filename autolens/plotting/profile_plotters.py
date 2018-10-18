@@ -95,4 +95,4 @@ def plot_deflections_x(mass_profile, grid, as_subplot=False,
                            cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
                            title=title, titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize,
                            xyticksize=xyticksize,
-                          output_path=output_path, output_format=output_format, output_filename=output_filename)
+                       output_path=output_path, output_format=output_format, output_filename=output_filename)

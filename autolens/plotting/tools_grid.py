@@ -12,6 +12,7 @@ def plot_grid(grid, axis_limits=None, points=None, as_subplot=False,
               output_path=None, output_format='show', output_filename='grid'):
 
     tools.setup_figure(figsize=figsize, as_subplot=as_subplot)
+    grid = convert_grid_units(grid_arc_seconds=grid, units=units, kpc_per_arcsec=kpc_per_arcsec)
     plt.scatter(y=grid[:, 0], x=grid[:, 1], s=pointsize, marker='.')
     tools.set_title(title=title, titlesize=titlesize)
     set_xy_labels_and_ticks_in_arcsec(units, kpc_per_arcsec,grid.xticks, grid.yticks, xlabelsize, ylabelsize,
@@ -24,19 +25,22 @@ def plot_grid(grid, axis_limits=None, points=None, as_subplot=False,
     tools.output_figure(None, as_subplot, output_path, output_filename, output_format)
     tools.close_figure(as_subplot=as_subplot)
 
+def convert_grid_units(grid_arc_seconds, units, kpc_per_arcsec):
+
+    if units is 'arcsec' or kpc_per_arcsec is None:
+        return grid_arc_seconds
+    elif units is 'kpc':
+        return grid_arc_seconds * kpc_per_arcsec
+
 def set_xy_labels_and_ticks_in_arcsec(units, kpc_per_arcsec, xticks, yticks, xlabelsize, ylabelsize, xyticksize):
 
     if units is 'arcsec' or kpc_per_arcsec is None:
 
-        plt.yticks(np.round(yticks, 1))
-        plt.xticks(np.round(xticks, 1))
         plt.xlabel('x (arcsec)', fontsize=xlabelsize)
         plt.ylabel('y (arcsec)', fontsize=ylabelsize)
 
     elif units is 'kpc':
 
-        plt.xticks(np.round(kpc_per_arcsec * xticks, 1))
-        plt.yticks(np.round(kpc_per_arcsec * yticks, 1))
         plt.xlabel('x (kpc)', fontsize=xlabelsize)
         plt.ylabel('y (kpc)', fontsize=ylabelsize)
 
