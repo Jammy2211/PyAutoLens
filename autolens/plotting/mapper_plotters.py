@@ -6,7 +6,6 @@ from autolens.plotting import tools
 from autolens.inversion import mappers
 from autolens.plotting import tools_grid
 from autolens.plotting import imaging_plotters
-from autolens.plotting import tools_array
 
 def plot_image_and_mapper(image, mapper, mask=None, positions=None, should_plot_centres=False, should_plot_grid=True,
                           image_pixels=None, source_pixels=None,
@@ -38,33 +37,44 @@ def plot_image_and_mapper(image, mapper, mask=None, positions=None, should_plot_
     tools.output_subplot_array(output_path=output_path, output_filename=output_filename, output_format=output_format)
     plt.close()
 
-def plot_mapper(mapper, should_plot_centres, should_plot_grid, image_pixels, source_pixels, as_subplot,
-                units, kpc_per_arcsec, figsize):
+def plot_mapper(mapper, should_plot_centres=False, should_plot_grid=True,
+                            image_pixels=None, source_pixels=None, as_subplot=False,
+                            units='arcsec', kpc_per_arcsec=None,
+                            xyticksize=16, figsize=(7, 7),
+                            title='Mapper', titlesize=16, xlabelsize=16, ylabelsize=16,
+                            output_path=None, output_filename='mapper', output_format='show'):
 
     if isinstance(mapper, mappers.RectangularMapper):
 
         plot_rectangular_mapper(mapper=mapper, should_plot_centres=should_plot_centres,
                                 should_plot_grid=should_plot_grid,
                                 image_pixels=image_pixels, source_pixels=source_pixels, as_subplot=as_subplot,
-                                units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize)
+                                units=units, kpc_per_arcsec=kpc_per_arcsec,
+                                xyticksize=xyticksize, figsize=figsize,
+                                title=title, titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize,
+                                output_path=output_path, output_filename=output_filename, output_format=output_format)
 
 def plot_rectangular_mapper(mapper, should_plot_centres=False, should_plot_grid=True,
                             image_pixels=None, source_pixels=None, as_subplot=False,
-                            units='arcsec', kpc_per_arcsec=None, figsize=(20, 15),
+                            units='arcsec', kpc_per_arcsec=None,
+                            xyticksize=16, figsize=(7, 7),
+                            title='Rectangular Mapper', titlesize=16, xlabelsize=16, ylabelsize=16,
                             output_path=None, output_filename='rectangular_mapper', output_format='show'):
 
     tools.setup_figure(figsize=figsize, as_subplot=as_subplot)
 
     plot_pixelization_lines(mapper=mapper)
 
-    tools.set_title('Source-plane Pixelization', titlesize=10)
+    tools.set_title(title=title, titlesize=titlesize)
     tools_grid.set_xy_labels_and_ticks_in_arcsec(units=units, kpc_per_arcsec=kpc_per_arcsec,
                                                  xticks=mapper.geometry.xticks, yticks=mapper.geometry.yticks,
-                                                 xlabelsize=10, ylabelsize=10, xyticksize=10)
+                                                 xlabelsize=xlabelsize, ylabelsize=ylabelsize, xyticksize=xyticksize)
 
     set_limits(mapper=mapper)
     plot_centres(should_plot_centres=should_plot_centres, mapper=mapper)
-    plot_plane_grid(should_plot_grid=should_plot_grid, mapper=mapper, as_subplot=True)
+    plot_plane_grid(should_plot_grid=should_plot_grid, mapper=mapper, as_subplot=True, units=units,
+                    kpc_per_arcsec=kpc_per_arcsec, pointsize=10, xyticksize=xyticksize,
+                    title=title, titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize)
 
     point_colors = itertools.cycle(["y", "r", "k", "g", "m"])
     plot_source_plane_image_pixels(mapper=mapper, image_pixels=image_pixels, point_colors=point_colors)
@@ -95,10 +105,13 @@ def plot_centres(should_plot_centres, mapper):
         pixel_centres = mapper.geometry.grid_arc_seconds_to_grid_pixels(grid_arc_seconds=mapper.geometry.pixel_centres)
         plt.scatter(y=pixel_centres[:,0], x=pixel_centres[:,1], s=3, c='r')
 
-def plot_plane_grid(should_plot_grid, mapper, as_subplot):
+def plot_plane_grid(should_plot_grid, mapper, as_subplot, units, kpc_per_arcsec, pointsize, xyticksize, title,
+                    titlesize, xlabelsize, ylabelsize):
 
     if should_plot_grid:
-        tools_grid.plot_grid(grid=mapper.grids.image, as_subplot=as_subplot, pointsize=5, xyticksize=10)
+        tools_grid.plot_grid(grid=mapper.grids.image, as_subplot=as_subplot, units=units, kpc_per_arcsec=kpc_per_arcsec,
+                             pointsize=5, xyticksize=xyticksize, title=title, titlesize=titlesize,
+                             xlabelsize=xlabelsize, ylabelsize=ylabelsize)
 
 def plot_image_plane_image_pixels(mapper, image_pixels, point_colors):
 
