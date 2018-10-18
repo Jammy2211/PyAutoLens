@@ -78,31 +78,31 @@ def test__deflections_x_is_output(galaxy_mass, grids, galaxy_plotter_path):
     os.remove(path=galaxy_plotter_path + 'galaxy_deflections_x.png')
 
 def test__individual_intensities_is_output(galaxy_light, grids, galaxy_plotter_path):
-    galaxy_plotters.plot_intensities_individual(galaxy=galaxy_light, grid=grids.image,
-                                      output_path=galaxy_plotter_path, output_format='png')
+    galaxy_plotters.plot_intensities_subplot(galaxy=galaxy_light, grid=grids.image,
+                                             output_path=galaxy_plotter_path, output_format='png')
     assert os.path.isfile(path=galaxy_plotter_path + 'galaxy_individual_intensities.png')
     os.remove(path=galaxy_plotter_path + 'galaxy_individual_intensities.png')
 
 def test__individual_surface_density_is_output(galaxy_light, grids, galaxy_plotter_path):
-    galaxy_plotters.plot_surface_density_individual(galaxy=galaxy_light, grid=grids.image,
-                                      output_path=galaxy_plotter_path, output_format='png')
+    galaxy_plotters.plot_surface_density_subplot(galaxy=galaxy_light, grid=grids.image,
+                                                 output_path=galaxy_plotter_path, output_format='png')
     assert os.path.isfile(path=galaxy_plotter_path + 'galaxy_individual_surface_density.png')
     os.remove(path=galaxy_plotter_path + 'galaxy_individual_surface_density.png')
     
 def test__individual_potential_is_output(galaxy_light, grids, galaxy_plotter_path):
-    galaxy_plotters.plot_potential_individual(galaxy=galaxy_light, grid=grids.image,
-                                      output_path=galaxy_plotter_path, output_format='png')
+    galaxy_plotters.plot_potential_subplot(galaxy=galaxy_light, grid=grids.image,
+                                           output_path=galaxy_plotter_path, output_format='png')
     assert os.path.isfile(path=galaxy_plotter_path + 'galaxy_individual_potential.png')
     os.remove(path=galaxy_plotter_path + 'galaxy_individual_potential.png')
     
 def test__individual_deflections_y_is_output(galaxy_light, grids, galaxy_plotter_path):
-    galaxy_plotters.plot_deflections_y_individual(galaxy=galaxy_light, grid=grids.image,
-                                      output_path=galaxy_plotter_path, output_format='png')
+    galaxy_plotters.plot_deflections_y_subplot(galaxy=galaxy_light, grid=grids.image,
+                                               output_path=galaxy_plotter_path, output_format='png')
     assert os.path.isfile(path=galaxy_plotter_path + 'galaxy_individual_deflections_y.png')
     os.remove(path=galaxy_plotter_path + 'galaxy_individual_deflections_y.png')
     
 def test__individual_deflections_x_is_output(galaxy_light, grids, galaxy_plotter_path):
-    galaxy_plotters.plot_intensities_individual(galaxy=galaxy_light, grid=grids.image,
-                                      output_path=galaxy_plotter_path, output_format='png')
+    galaxy_plotters.plot_intensities_subplot(galaxy=galaxy_light, grid=grids.image,
+                                             output_path=galaxy_plotter_path, output_format='png')
     assert os.path.isfile(path=galaxy_plotter_path + 'galaxy_individual_intensities.png')
     os.remove(path=galaxy_plotter_path + 'galaxy_individual_intensities.png')
