@@ -16,6 +16,10 @@ from autolens.plotting import mapper_plotters
 
 def simulate():
 
+    from autolens.imaging import mask
+    from autolens.lensing import galaxy as g
+    from autolens.lensing import ray_tracing
+
     psf = im.PSF.simulate_as_gaussian(shape=(11, 11), sigma=0.05, pixel_scale=0.05)
 
     image_plane_grids = mask.ImagingGrids.grids_for_simulation(shape=(150, 150), pixel_scale=0.05, psf_shape=(11, 11))
