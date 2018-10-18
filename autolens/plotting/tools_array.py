@@ -11,6 +11,7 @@ def plot_array(array, mask=None, positions=None, grid=None, as_subplot=False,
                cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
                cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
                title='Array', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
+               mask_pointsize=10, position_pointsize=10.0, grid_pointsize=1,
                output_path=None, output_format='show', output_filename='array'):
 
     plot_figure(array=array, as_subplot=as_subplot, units=units, kpc_per_arcsec=kpc_per_arcsec,
@@ -21,9 +22,10 @@ def plot_array(array, mask=None, positions=None, grid=None, as_subplot=False,
                                xyticksize=xyticksize)
 
     set_colorbar(cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad)
-    plot_mask(mask=mask, units=units, kpc_per_arcsec=kpc_per_arcsec)
-    plot_points(points_arc_seconds=positions, array=array, units=units, kpc_per_arcsec=kpc_per_arcsec)
-    plot_grid(grid_arc_seconds=grid, array=array, units=units, kpc_per_arcsec=kpc_per_arcsec)
+    plot_mask(mask=mask, units=units, kpc_per_arcsec=kpc_per_arcsec, pointsize=mask_pointsize)
+    plot_points(points_arc_seconds=positions, array=array, units=units, kpc_per_arcsec=kpc_per_arcsec,
+                pointsize=position_pointsize)
+    plot_grid(grid_arc_seconds=grid, array=array, units=units, kpc_per_arcsec=kpc_per_arcsec, pointsize=grid_pointsize)
     tools.output_figure(array, as_subplot=as_subplot, output_path=output_path, output_filename=output_filename,
                         output_format=output_format)
     tools.close_figure(as_subplot=as_subplot)
@@ -110,7 +112,7 @@ def convert_grid_units(array, grid_arc_seconds, units, kpc_per_arcsec):
     elif units is 'kpc':
         return grid_arc_seconds * kpc_per_arcsec
 
-def plot_mask(mask, units, kpc_per_arcsec):
+def plot_mask(mask, units, kpc_per_arcsec, pointsize):
 
     if mask is not None:
 
@@ -120,20 +122,20 @@ def plot_mask(mask, units, kpc_per_arcsec):
         border_units = convert_grid_units(array=mask, grid_arc_seconds=border_arc_seconds, units=units,
                                           kpc_per_arcsec=kpc_per_arcsec)
 
-        plt.scatter(y=border_units[:,0], x=border_units[:,1], s=10, c='k')
+        plt.scatter(y=border_units[:,0], x=border_units[:,1], s=pointsize, c='k')
 
-def plot_points(points_arc_seconds, array, units, kpc_per_arcsec):
+def plot_points(points_arc_seconds, array, units, kpc_per_arcsec, pointsize):
 
     if points_arc_seconds is not None:
         point_colors = itertools.cycle(["w", "c", "y", "r", "k", "b", "g", "m"])
         for point_set_arc_seconds in points_arc_seconds:
             point_set_units = convert_grid_units(array=array, grid_arc_seconds=point_set_arc_seconds, units=units,
                                                  kpc_per_arcsec=kpc_per_arcsec)
-            plt.scatter(y=point_set_units[:,0], x=point_set_units[:,1], color=next(point_colors), s=10.0)
+            plt.scatter(y=point_set_units[:,0], x=point_set_units[:,1], color=next(point_colors), s=pointsize)
 
-def plot_grid(grid_arc_seconds, array, units, kpc_per_arcsec):
+def plot_grid(grid_arc_seconds, array, units, kpc_per_arcsec, pointsize):
 
     if grid_arc_seconds is not None:
         grid_units = convert_grid_units(grid_arc_seconds=grid_arc_seconds, array=array, units=units,
                                         kpc_per_arcsec=kpc_per_arcsec)
-        plt.scatter(y=grid_units[:, 0], x=grid_units[:, 1], s=1, c='k')
+        plt.scatter(y=grid_units[:, 0], x=grid_units[:, 1], s=pointsize, c='k')
