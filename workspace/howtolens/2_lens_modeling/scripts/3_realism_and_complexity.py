@@ -1,4 +1,3 @@
-from howtolens.simulations import lens_modeling as simulate
 from autolens import conf
 from autolens.autofit import non_linear as nl
 from autolens.pipeline import phase as ph
@@ -41,13 +40,32 @@ path = '{}/../'.format(os.path.dirname(os.path.realpath(__file__)))
 # Setup the config to this tutorial, so the non-linear sea
 conf.instance = conf.Config(config_path=path+'/configs/3_realism_and_complexity', output_path=path+"output")
 
-# Simulate the image - which is a new one for this tutorial.
-simulate.tutorial_3_image()
+# Another simulate image function, albeit it generates a new image
+def simulate():
 
-# and load a new simulated image..
-image = im.load_imaging_from_path(image_path=path + '/data/3_realism_and_complexity/image.fits',
-                                  noise_map_path=path+'/data/3_realism_and_complexity/noise_map.fits',
-                                  psf_path=path + '/data/3_realism_and_complexity/psf.fits', pixel_scale=0.1)
+    from autolens.imaging import mask
+    from autolens.lensing import galaxy as g
+    from autolens.lensing import ray_tracing
+
+    psf = im.PSF.simulate_as_gaussian(shape=(11, 11), sigma=0.05, pixel_scale=0.05)
+    image_plane_grids = mask.ImagingGrids.grids_for_simulation(shape=(130, 130), pixel_scale=0.1, psf_shape=(11, 11))
+
+    lens_galaxy = g.Galaxy(light=lp.EllipticalSersic(centre=(0.0, 0.0), axis_ratio=0.9, phi=45.0, intensity=0.04,
+                                                             effective_radius=0.5, sersic_index=3.5),
+                           mass=mp.EllipticalIsothermal(centre=(0.0, 0.0), axis_ratio=0.8, phi=45.0, einstein_radius=0.8))
+
+    source_galaxy = g.Galaxy(light=lp.EllipticalSersic(centre=(0.0, 0.0), axis_ratio=0.5, phi=90.0, intensity=0.03,
+                                                       effective_radius=0.3, sersic_index=3.0))
+    tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
+                                                 image_plane_grids=image_plane_grids)
+
+    image_simulated = im.PreparatoryImage.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=0.1,
+                                                   exposure_time=300.0, psf=psf, background_sky_level=0.1, add_noise=True)
+
+    return image_simulated
+
+# Simulate the image and set it up.
+image = simulate()
 
 # When we plot it, the lens light's is clealy visible in the centre of the image
 imaging_plotters.plot_image_subplot(image=image)
