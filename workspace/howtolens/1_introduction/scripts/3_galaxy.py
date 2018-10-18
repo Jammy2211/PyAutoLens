@@ -50,7 +50,7 @@ galaxy_with_3_light_profiles = galaxy.Galaxy(light_1=light_profile_1, light_2=li
 galaxy_plotters.plot_intensities(galaxy=galaxy_with_3_light_profiles, grid=image_grids.image)
 
 # We can also plot each individual light profile using the galaxy plotter 'individual' method
-galaxy_plotters.plot_intensities_individual(galaxy=galaxy_with_3_light_profiles, grid=image_grids.image)
+galaxy_plotters.plot_intensities_subplot(galaxy=galaxy_with_3_light_profiles, grid=image_grids.image)
 
 # We can play the exact same game with mass profiles. Lets create a galaxy with three
 # SIS mass profiles.

@@ -1,10 +1,7 @@
-import itertools
 import os
 import shutil
-from functools import wraps
 
 import pytest
-import numpy as np
 
 from autolens import conf
 from autolens.imaging import mask as msk
