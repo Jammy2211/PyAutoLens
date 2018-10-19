@@ -102,6 +102,7 @@ class TestLikelihood:
         assert likelihood == -0.5 * (chi_squared_term + noise_term)
 
     def test__same_as_above_but_different_noise_in_each_pixel(self):
+
         im = np.array([10.0, 10.0, 10.0, 10.0])
         noise = np.array([1.0, 2.0, 3.0, 4.0])
         model = np.array([11.0, 10.0, 9.0, 8.0])
@@ -119,7 +120,6 @@ class TestLikelihood:
             2 * np.pi * 16.0)
 
         assert likelihood == pytest.approx(-0.5 * (chi_squared_term + noise_term), 1e-4)
-
 
 class TestContributionsFromHypers:
 
@@ -240,12 +240,19 @@ class TestScaledNoiseFromContributions:
 class TestInversionEvidence:
 
     def test__simple_values(self):
+
+        likelihood_with_regularization_term = \
+            fitting.likelihood_with_regularization_from_chi_squared_regularization_and_noise_terms(chi_squared_term=3.0,
+                                                                                                   regularization_term=6.0,
+                                                                                                   noise_term=2.0)
+
+        assert likelihood_with_regularization_term == -0.5 * (3.0 + 6.0 + 2.0)
+
         evidence = fitting.evidence_from_reconstruction_terms(chi_squared_term=3.0, regularization_term=6.0,
                                                               log_covariance_regularization_term=9.0,
                                                               log_regularization_term=10.0, noise_term=30.0)
 
         assert evidence == -0.5 * (3.0 + 6.0 + 9.0 - 10.0 + 30.0)
-
 
 class TestPaddedModelImages:
 
@@ -853,11 +860,12 @@ class TestProfileFit:
                                              [0.0, 1.0, 0.0],
                                              [0.0, 0.0, 0.0]])), pixel_scale=1.0)
 
-            im = image.Image(5.0 * np.ones((3, 3)), pixel_scale=1.0, psf=psf, noise_map=np.ones((3, 3)))
+            im = image.Image(5.0 * np.ones((3, 4)), pixel_scale=1.0, psf=psf, noise_map=np.ones((3, 4)))
+            im[1,2]  = 4.0
 
-            ma = mask.Mask(array=np.array([[True, True, True],
-                                           [True, False, True],
-                                           [True, True, True]]), pixel_scale=1.0)
+            ma = mask.Mask(array=np.array([[True, True, True, True],
+                                           [True, False, False, True],
+                                           [True, True, True, True]]), pixel_scale=1.0)
 
             li = lensing_image.LensingImage(im, ma, sub_grid_size=1)
 
@@ -868,7 +876,9 @@ class TestProfileFit:
 
             fit = fitting.ProfileFit(lensing_image=li, tracer=tracer)
 
-            assert fit.likelihood == -0.5 * (16.0 + np.log(2 * np.pi * 1.0))
+            assert fit.chi_squared_term == 25.0
+            assert fit.reduced_chi_squared == 25.0 / 2.0
+            assert fit.likelihood == -0.5 * (25.0 + 2.0*np.log(2 * np.pi * 1.0))
 
     class TestCompareToManual:
 
@@ -1068,7 +1078,7 @@ class TestInversionFit:
         def test__logic_in_abstract_fit(self, li_no_blur):
 
             galaxy_pix = g.Galaxy(pixelization=pixelizations.Rectangular(shape=(3, 3)),
-                                  regularization=regularization.Constant(coeffs=(1.0,)))
+                                  regularization=regularization.Constant(coefficients=(1.0,)))
 
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g.Galaxy()], source_galaxies=[galaxy_pix],
                                                          image_plane_grids=li_no_blur.grids, borders=li_no_blur.borders)
@@ -1102,7 +1112,7 @@ class TestInversionFit:
             li = lensing_image.LensingImage(im, ma, sub_grid_size=2)
 
             galaxy_pix = g.Galaxy(pixelization=pixelizations.Rectangular(shape=(3, 3)),
-                                  regularization=regularization.Constant(coeffs=(1.0,)))
+                                  regularization=regularization.Constant(coefficients=(1.0,)))
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g.Galaxy()], source_galaxies=[galaxy_pix],
                                                          image_plane_grids=li.grids, borders=li.borders)
             fit = fitting.InversionFit(lensing_image=li, tracer=tracer)
@@ -1137,7 +1147,7 @@ class TestInversionFit:
             li = lensing_image.LensingImage(im, ma, sub_grid_size=2)
 
             galaxy_pix = g.Galaxy(pixelization=pixelizations.Rectangular(shape=(3, 3)),
-                                  regularization=regularization.Constant(coeffs=(1.0,)))
+                                  regularization=regularization.Constant(coefficients=(1.0,)))
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g.Galaxy()], source_galaxies=[galaxy_pix],
                                                          image_plane_grids=li.grids, borders=li.borders)
             fit = fitting.InversionFit(lensing_image=li, tracer=tracer)
@@ -1175,8 +1185,9 @@ class TestInversionFit:
     class TestCompareToManual:
 
         def test___manual_image_and_psf(self, li_manual):
+
             pix = pixelizations.Rectangular(shape=(3, 3))
-            reg = regularization.Constant(coeffs=(1.0,))
+            reg = regularization.Constant(coefficients=(1.0,))
 
             g0 = g.Galaxy(pixelization=pix, regularization=reg)
 
@@ -1201,7 +1212,15 @@ class TestInversionFit:
             assert li_manual.grids.image.scaled_array_from_array_1d(chi_squareds) == pytest.approx(fit.chi_squareds, 1e-4)
 
             chi_squared_term = fitting.chi_squared_term_from_chi_squareds(chi_squareds)
+
             noise_term = fitting.noise_term_from_noise_map(li_manual.noise_map)
+
+            likelihood_with_regularization = \
+                fitting.likelihood_with_regularization_from_chi_squared_regularization_and_noise_terms(chi_squared_term,
+                                                   inversion.regularization_term, noise_term)
+
+            assert likelihood_with_regularization == pytest.approx(fit.likelihood_with_regularization, 1e-2)
+
             evidence = fitting.evidence_from_reconstruction_terms(chi_squared_term, inversion.regularization_term,
                                                                   inversion.log_det_curvature_reg_matrix_term,
                                                                   inversion.log_det_regularization_matrix_term,
@@ -1215,6 +1234,7 @@ class TestInversionFit:
 
 
 class TestHyperInversionFit:
+
     class TestRectangularInversion:
 
         def test__image_all_1s__direct_image_to_source_mapping__perfect_fit_even_with_regularization(self):
@@ -1240,7 +1260,7 @@ class TestHyperInversionFit:
             hyper_galaxy = g.HyperGalaxy(contribution_factor=0.0, noise_factor=1.0, noise_power=1.0)
 
             galaxy_pix = g.Galaxy(pixelization=pixelizations.Rectangular(shape=(3, 3)),
-                                  regularization=regularization.Constant(coeffs=(1.0,)),
+                                  regularization=regularization.Constant(coefficients=(1.0,)),
                                   hyper_galaxy=hyper_galaxy)
 
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g.Galaxy()], source_galaxies=[galaxy_pix],
@@ -1285,7 +1305,7 @@ class TestHyperInversionFit:
 
         def test__logic_in_abstract_fit(self, li_no_blur, hyper):
             galaxy_pix = g.Galaxy(pixelization=pixelizations.Rectangular(shape=(3, 3)),
-                                  regularization=regularization.Constant(coeffs=(1.0,)))
+                                  regularization=regularization.Constant(coefficients=(1.0,)))
 
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g.Galaxy()], source_galaxies=[galaxy_pix],
                                                          image_plane_grids=li_no_blur.grids,
@@ -1301,9 +1321,10 @@ class TestHyperInversionFit:
     class TestCompareToManual:
 
         def test___manual_image_and_psf(self, li_manual, hyper):
+
             pix = pixelizations.Rectangular(shape=(3, 3))
             mapper = pix.mapper_from_grids_and_borders(li_manual.grids, li_manual.borders)
-            reg = regularization.Constant(coeffs=(1.0,))
+            reg = regularization.Constant(coefficients=(1.0,))
 
             hyp_galaxy = g.Galaxy(hyper_galaxy=hyper.hyper_galaxy)
             inv_galaxy = g.Galaxy(pixelization=pix, regularization=reg)
@@ -1332,6 +1353,13 @@ class TestHyperInversionFit:
 
             chi_squared_term = fitting.chi_squared_term_from_chi_squareds(chi_squareds)
             noise_term = fitting.noise_term_from_noise_map(li_manual.noise_map)
+
+            likelihood_with_regularization = \
+                fitting.likelihood_with_regularization_from_chi_squared_regularization_and_noise_terms(chi_squared_term,
+                                                   inversion.regularization_term, noise_term)
+
+            assert likelihood_with_regularization == pytest.approx(fit.likelihood_with_regularization, 1e-2)
+
             evidence = fitting.evidence_from_reconstruction_terms(chi_squared_term, inversion.regularization_term,
                                                                   inversion.log_det_curvature_reg_matrix_term,
                                                                   inversion.log_det_regularization_matrix_term,
@@ -1392,7 +1420,7 @@ class TestProfileInversionFit:
             galaxy_light = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=1.0))
 
             pix = pixelizations.Rectangular(shape=(3, 3))
-            reg = regularization.Constant(coeffs=(1.0,))
+            reg = regularization.Constant(coefficients=(1.0,))
             galaxy_pix = g.Galaxy(pixelization=pix, regularization=reg)
 
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[galaxy_light], source_galaxies=[galaxy_pix],
@@ -1410,7 +1438,7 @@ class TestProfileInversionFit:
             galaxy_light = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=1.0))
 
             pix = pixelizations.Rectangular(shape=(3, 3))
-            reg = regularization.Constant(coeffs=(1.0,))
+            reg = regularization.Constant(coefficients=(1.0,))
             galaxy_pix = g.Galaxy(pixelization=pix, regularization=reg)
 
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[galaxy_light], source_galaxies=[galaxy_pix],
@@ -1463,7 +1491,7 @@ class TestHyperProfileInversionFit:
 
         def test___manual_image_and_psf(self, li_manual, hyper):
             pix = pixelizations.Rectangular(shape=(3, 3))
-            reg = regularization.Constant(coeffs=(1.0,))
+            reg = regularization.Constant(coefficients=(1.0,))
 
             hyp_galaxy = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=1.0), hyper_galaxy=hyper.hyper_galaxy)
             inv_galaxy = g.Galaxy(pixelization=pix, regularization=reg)
