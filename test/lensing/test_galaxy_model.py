@@ -127,7 +127,7 @@ class TestMassAndLightProfiles(object):
         assert galaxy.mass_profiles[0].mass_to_light_ratio == 3.
 
 
-class TestGalaxyPrior:
+class TestGalaxyModel:
     def test_init_to_model_mapper(self, mapper, test_config):
         mapper.galaxy_1 = gp.GalaxyModel(variable_redshift=True, light_profile=light_profiles.EllipticalDevVaucouleurs,
                                          mass_profile=mass_profiles.EllipticalCoredIsothermal, config=test_config)
@@ -258,7 +258,7 @@ class TestPixelization(object):
 
         arguments = {galaxy_prior.redshift.redshift: 2.0,
                      galaxy_prior.pixelization.pixels: 10,
-                     galaxy_prior.regularization.coeffs_0: 5}
+                     galaxy_prior.regularization.coefficients_0: 5}
 
         galaxy = galaxy_prior.instance_for_arguments(arguments)
 
@@ -287,7 +287,7 @@ class TestRegularization(object):
 
         arguments = {galaxy_prior.redshift.redshift: 2.0,
                      galaxy_prior.pixelization.pixels: 10,
-                     galaxy_prior.regularization.coeffs_0: 5}
+                     galaxy_prior.regularization.coefficients_0: 5}
 
         galaxy = galaxy_prior.instance_for_arguments(arguments)
 
