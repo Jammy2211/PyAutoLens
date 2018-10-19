@@ -5,21 +5,23 @@ from autolens.profiles import light_profiles as lp
 from autolens.lensing import galaxy as g
 from autolens.lensing import ray_tracing
 from autolens.lensing import lensing_image as li
+from autolens.lensing import fitting
 from autolens.inversion import pixelizations as pix
 from autolens.inversion import regularization as reg
 from autolens.inversion import inversions as inv
 from autolens.plotting import imaging_plotters
 from autolens.plotting import mapper_plotters
 from autolens.plotting import inversion_plotters
+from autolens.plotting import fitting_plotters
 
-# We've covered mappers, which map source-pixels to an image, and visa versa. Now, we're look at how we can use a
-# mapper to reconstruct the source galaxy - I hope you're excited!
+# We've covered mappers, which, if I haven't emphasised it enough yet, map things. Now, we're going to look at how we
+# can use these mappers (which map things) to reconstruct the source galaxy - I hope you're excited!
 
 # Setup the path
 path = '/home/jammy/PyCharm/Projects/AutoLens/workspace/howtolens/4_inversions'
 
-# We'll simulate two lenses in this tutorial, one with a simple source and one with a complex source.
-
+# Lets simulate the same lens as before. The source is simple - which kind of defeats the point of using a pixel-grid
+# to reconstruct it, but we'll make things more complex later on!
 def simulate():
 
     from autolens.imaging import mask
@@ -40,62 +42,120 @@ def simulate():
     return im.PreparatoryImage.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=0.05,
                                         exposure_time=300.0, psf=psf, background_sky_level=0.1, add_noise=True)
 
-# Lets siulate the simple source, mask it, and use a plot to check the mask covers the lensed source.
+# Now, lets simulate the source, mask it, and use a plot to check the masking is appropriate.
 image = simulate()
 mask = ma.Mask.annular(shape=image.shape, pixel_scale=image.pixel_scale,
                        inner_radius_arcsec=1.0, outer_radius_arcsec=2.2)
 imaging_plotters.plot_image(image=image, mask=mask)
 
-# Now, lets set this image up as a lensing image, and setup a tracer using the input lens galaxy model (we don't need
+# Next, lets set this image up as a lensing image, and setup a tracer using the input lens galaxy model (we don't need
 # to provide the source's light profile, as we're using a mapper to reconstruct it).
 lensing_image = li.LensingImage(image=image, mask=mask, sub_grid_size=1)
 lens_galaxy = g.Galaxy(mass=mp.EllipticalIsothermal(centre=(0.0, 0.0), axis_ratio=0.8, phi=135.0, einstein_radius=1.6))
 tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[g.Galaxy()],
                                              image_plane_grids=lensing_image.grids)
 
-# Now, lets setup the pixelization and mapper we'll use to perform the reconstruction
+# We'll use another rectangular pixelization and mapper to perform the reconstruction
 rectangular = pix.Rectangular(shape=(25, 25))
 mapper = rectangular.mapper_from_grids(grids=tracer.source_plane.grids)
 mapper_plotters.plot_image_and_mapper(image=image, mapper=mapper)
 
-# We're now going to use our mapper to invert the image, using the 'inversions' module, which is imported as 'inv'.
-# We'll think about how this works in a second - but lets perform the inversion first, to see how it looks.
+# And now, finally, we're going to use our mapper to invert the image using the 'inversions' module, which is imported
+# as 'inv'. I'll explain how this works in a second - but lets just go ahead and perform the inversion first.
 # (Ignore the 'regularization' input below for now, we'll cover this in the next tutorial).
 inversion = inv.Inversion(image=lensing_image[:], noise_map=lensing_image.noise_map,
                           convolver=lensing_image.convolver_mapping_matrix, mapper=mapper,
-                          regularization=reg.Constant(coeffs=(1.0,)))
+                          regularization=reg.Constant(coefficients=(1.0,)))
 
 # Our inversion has a reconstructed image and pixeilzation, whcih we can plot using an inversion plotter
 inversion_plotters.plot_reconstructed_image(inversion=inversion)
 inversion_plotters.plot_reconstructed_pixelization(inversion=inversion, should_plot_grid=True)
 
-# We've successfully reconstructed, or, *inverted*, our source using the mapper's rectangular grid. Whilst this source
-# was simple (a blob of light in the centre of the source-plane), we'll look at the inversion of a complex source in a
-# moment. However, we've first got to ask, how does an inversion actually work?
+# And there we have it, we've successfully reconstructed, or, *inverted*, our source using the mapper's rectangular
+# grid. Whilst this source was simple (a blob of light in the centre of the source-plane), inversions come into their
+# own when fitting complex source morphologies. Infact, given we're having so much fun inverting things, lets simulate
+# a really complex source and invvert it!
 
-# Lets look again at the mappings between our mapper's source-pixels and the image
-mapper_plotters.plot_image_and_mapper(image=image, mapper=mapper, source_pixels=[[8], [12], [16]])
+def simulate_complex_source():
+
+    from autolens.imaging import mask
+    from autolens.lensing import galaxy as g
+    from autolens.lensing import ray_tracing
+
+    psf = im.PSF.simulate_as_gaussian(shape=(11, 11), sigma=0.05, pixel_scale=0.05)
+
+    image_plane_grids = mask.ImagingGrids.grids_for_simulation(shape=(180, 180), pixel_scale=0.05, psf_shape=(11, 11))
+
+    lens_galaxy = g.Galaxy(mass=mp.EllipticalIsothermal( centre=(0.0, 0.0), axis_ratio=0.8, phi=135.0,
+                                                         einstein_radius=1.6))
+    source_galaxy_0 = g.Galaxy(light=lp.EllipticalSersic(centre=(0.1, 0.1), axis_ratio=0.8, phi=90.0, intensity=0.2,
+                                                         effective_radius=1.0, sersic_index=1.5))
+    source_galaxy_1 = g.Galaxy(light=lp.EllipticalSersic(centre=(-0.25, 0.25), axis_ratio=0.7, phi=45.0, intensity=0.1,
+                                                         effective_radius=0.2, sersic_index=3.0))
+    source_galaxy_2 = g.Galaxy(light=lp.EllipticalSersic(centre=(0.45, -0.35), axis_ratio=0.6, phi=90.0, intensity=0.03,
+                                                         effective_radius=0.3, sersic_index=3.5))
+    source_galaxy_3 = g.Galaxy(light=lp.EllipticalSersic(centre=(-0.05, -0.0), axis_ratio=0.9, phi=140.0, intensity=0.03,
+                                                         effective_radius=0.1, sersic_index=4.0))
+    source_galaxy_4 = g.Galaxy(light=lp.EllipticalSersic(centre=(0.85, -0.85), axis_ratio=0.6, phi=90.0, intensity=0.03,
+                                                         effective_radius=0.3, sersic_index=3.5))
+    source_galaxy_5 = g.Galaxy(light=lp.EllipticalSersic(centre=(-0.75, -0.1), axis_ratio=0.9, phi=140.0, intensity=0.03,
+                                                         effective_radius=0.1, sersic_index=4.0))
+
+    tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy],
+                                                 source_galaxies=[source_galaxy_0, source_galaxy_1, source_galaxy_2,
+                                                                  source_galaxy_3, source_galaxy_4, source_galaxy_5],
+                                                 image_plane_grids=image_plane_grids)
+
+    return im.PreparatoryImage.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=0.05,
+                                       exposure_time=300.0, psf=psf, background_sky_level=0.1, add_noise=True)
+
+image = simulate_complex_source()
+mask = ma.Mask.annular(shape=image.shape, pixel_scale=image.pixel_scale,
+                       inner_radius_arcsec=0.8, outer_radius_arcsec=2.5)
+imaging_plotters.plot_image(image=image, mask=mask)
+
+lensing_image = li.LensingImage(image=image, mask=mask, sub_grid_size=1)
+tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[g.Galaxy()],
+                                             image_plane_grids=lensing_image.grids)
+mapper = rectangular.mapper_from_grids(grids=tracer.source_plane.grids)
+inversion = inv.Inversion(image=lensing_image[:], noise_map=lensing_image.noise_map,
+                          convolver=lensing_image.convolver_mapping_matrix, mapper=mapper,
+                          regularization=reg.Constant(coefficients=(1.0,)))
+
+# Lets inspect the complex source
+inversion_plotters.plot_reconstructed_image(inversion=inversion)
+inversion_plotters.plot_reconstructed_pixelization(inversion=inversion, should_plot_grid=True)
+
+# Pretty great, huh? If you ran the complex_source pipeline, you'll remember that getting a model image that looked
+# that good simply *was not possible*. With an inversion, we can do it with ease - and without a 30+ parameters!
+
+# Given that we're scientists, I guess we should think about how an inversion actually works. First, let me explain that
+# the explanation I give below is simplified, and I'll be avoiding the technical details of how an inversion actually
+# works. The truth is, to be good at lens modeling you don't need to understand the nitty-gritty of linear inversions,
+# you just need an instinct for how to use them as a tool to model lenses.
+
+# Nevertheless, I know a lot of you hate 'black-boxes', or have an interest in linear algrebra. If you're that way
+# inclined, then checkout the optional tutorial 'inversion_advanced.py' for a detailed, technical explanation of how
+# they work.
+
+# To begin, lets consider the mappings between our mapper's source-pixels and the image
+mapper_plotters.plot_image_and_mapper(image=image, mapper=mapper, source_pixels=[[18], [32], [46]])
 
 # These mappings are known before the inversion, which means pre-inversion we know two key pieces of information:
 
 # 1) The mappings between every source-pixel and a set of image-pixels.
 # 2) The flux values in every observed image-pixel, which are the values we want to fit successfully.
 
-# It turns out that these two pieces of information make it a linear problem to compute the set of source-pixel
-# fluxes that best-fit (e.g. maximize the likelihood) our observed image. This process is called a 'linear inversion',
-# and it guarantee that the image reconstructiono provides the best-fit solution to the iamge (e.g. the one that
-# maximizes the likelihood, or equivalent, minimizes the chi-squareds).
+# It turns out that with these two pieces of information we can linearly solve for the set of source-pixel fluxes that
+# best-fit (e.g. maximize the likelihood of) our observed image. Essentially, we set up the mapping between source and
+# image pixels as a large matrix, and solve for the source-pixel fluxes in an analogous fashion to how you would
+# solve a set of simultaneous linear equations. This process is called a 'linear inversion'.
 
-# At this point in the tutorial, I'm going to give you a choice. If you want to dive deeper into the world of linear
-# algrebra, you can go to the optional tutorial, 'advanced.py', to understand how this linear inversion works. However,
-# the technical details of an inversion works arn't paramount to being good at lens modeling, so don't feel that you
-# *need* to do this tutorial.
+# There are three more things about a linear inversion that are worth knowing:
 
-# Either way, there are three more things about a linear inversion that are worth knowing, before we finish:
-
-# 1) We've discussed the image sub-grid before, which splits each image-pixel into a sub-pixel. Well, if a sub-grid is
-#    being used, it is the mapping between every sub-pixel and source-pixel that is computed and used to perform the
-#    inversion. This prevents aliasing effects degrading the image reconstruction, and, as a rule of thumb, I would
+# 1) We've discussed the image sub-grid before, which splits each image-pixel into a sub-pixel. If a sub-grid is used,
+#    it is the mapping between every sub-pixel and source-pixel that is computed and used to perform the inversion.
+#    This prevents aliasing effects degrading the image reconstruction, and, as a rule of thumb, I would
 #    suggest you use sub-gridding of degree 2x2 or 4x4.
 
 # 2) When fitting image's using light profiles, we discussed how a 'model_image' was generated by blurring them with
@@ -104,14 +164,26 @@ mapper_plotters.plot_image_and_mapper(image=image, mapper=mapper, source_pixels=
 
 # 3) The inversion's solution is regularized. But wait, that's what we'll cover in the next tutorial!
 
-# Before we explore regularization, here are a few questions to get you thinking about it.
+# Finally, let me show you how easy it is to fit an image with an inversion using the fitting module. Instead of giving
+# the source galaxy a light profile, we give it a pixelization and regularization, and pass it to a tracer.
+source_galaxy = g.Galaxy(pixelization=pix.Rectangular(shape=(25, 25)), regularization=reg.Constant(coefficients=(1.0,)))
+tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
+                                             image_plane_grids=lensing_image.grids, borders=lensing_image.borders)
+
+
+# Then, like before, we call on the fitting module to perform the fit to the lensing image. Indeed, we see some pretty
+# good looking residuals - we're certainly fitting the lensed source accurately!
+fit = fitting.fit_lensing_image_with_tracer(lensing_image=lensing_image, tracer=tracer)
+fitting_plotters.plot_fitting_subplot(fit=fit)
+
+# And, we're done, here are a few questions to get you thinking about inversions:
 
 # 1) The inversion provides the best-fit to the observed image. Is there any problem with seeking the 'best-fit'? Is
 #    there a risk that we're going to fit other things in the image than just the lensed source galaxy? What happens
-#    if you reduce the regularization 'coeff' above to zero?
+#    if you reduce the regularization 'coefficient' above to zero?
 
 # 2) The exterior pixels in the rectangular grid have no image-pixels in them. However, they are still given a
-#    reconstructed flux. If this value isn't' coming from a mapping to an image-pixel, where could it be coming from?
+#    reconstructed flux. If this value isn't' coming from a mapping to an image-pixel, where is it be coming from?
 
 
 
