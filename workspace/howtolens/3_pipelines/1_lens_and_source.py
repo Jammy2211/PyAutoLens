@@ -7,6 +7,7 @@ from autolens.pipeline import phase
 from autolens.pipeline import pipeline
 from autolens.profiles import light_profiles as lp
 from autolens.profiles import mass_profiles as mp
+from autolens.plotting import imaging_plotters
 
 import os
 
@@ -70,6 +71,8 @@ def simulate():
 
 # Now lets simulate hte image we'll fit, which as I said above, is the same image we saw in the previous chapter.
 image = simulate()
+
+imaging_plotters.plot_image_subplot(image=image)
 
 # A pipeline is a one long python function (this is why Jupyter notebooks arn't ideal). When we run it, this function
 # 'makes' the pipeline, as you'll see in a moment.
