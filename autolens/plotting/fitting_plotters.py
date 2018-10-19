@@ -334,7 +334,7 @@ def plot_fitting_subplot_lens_and_source_planes(fit, mask=None, positions=None,
                                   cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
                                   titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize,
                                   xyticksize=xyticksize,
-                         output_path=output_path, output_filename='', output_format=output_format)
+                                  output_path=output_path, output_filename='', output_format=output_format)
 
     plt.subplot(rows, columns, 3)
 
@@ -346,7 +346,7 @@ def plot_fitting_subplot_lens_and_source_planes(fit, mask=None, positions=None,
                               titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize, xyticksize=xyticksize,
                              output_path=output_path, output_filename='', output_format=output_format)
 
-    plt.subplot(2, 3, 4)
+    plt.subplot(rows, columns, 4)
 
     if fit.total_inversions == 0:
 
@@ -361,17 +361,15 @@ def plot_fitting_subplot_lens_and_source_planes(fit, mask=None, positions=None,
                                         grid_pointsize=grid_pointsize, position_pointsize=position_pointsize,
                                         output_path=output_path, output_filename='', output_format=output_format)
 
-    # else:
-    #
-    #     inversion_plotters.plot_reconstruction(mapper=fit.mapper, inversion=fit.inversion,
-    #         points=None, grid=None, as_subplot=True,
-    #         units=units, kpc_per_arcsec=fit.kpc_per_arcsec_proper[0],
-    #         xyticksize=10,
-    #         norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
-    #         figsize=None, aspect='equal', cmap='jet',
-    # cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
-    #         title='Source-Plane Image', titlesize=10, xlabelsize=10, ylabelsize=10,
-    #         output_path=output_path, output_filename=None, output_format=output_format)
+    elif fit.total_inversions == 1:
+
+        inversion_plotters.plot_reconstructed_pixelization(inversion=fit.inversion, positions=None,
+            should_plot_grid=False, should_plot_centres=False, as_subplot=True,
+            units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
+            cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
+            cb_ticksize=cb_ticksize, cb_fraction=cb_fraction,cb_pad=cb_pad,
+            titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize, xyticksize=xyticksize,
+            output_path=output_path, output_filename=None, output_format=output_format)
 
 
     plt.subplot(rows, columns, 5)
