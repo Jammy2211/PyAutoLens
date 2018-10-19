@@ -113,6 +113,10 @@ class AbstractFit(object):
         return chi_squared_term_from_chi_squareds(self._chi_squareds)
 
     @property
+    def reduced_chi_squared(self):
+        return self.chi_squared_term / self.lensing_image.mask.pixels_in_mask
+
+    @property
     def noise_term(self):
         return noise_term_from_noise_map(self._noise_map)
 
@@ -182,6 +186,11 @@ class AbstractProfileFit(AbstractFit):
 
 
 class AbstractInversion(object):
+
+    @property
+    def likelihood_with_regularization(self):
+        return likelihood_with_regularization_from_chi_squared_regularization_and_noise_terms(self.chi_squared_term,
+                                                 self.inversion.regularization_term, self.noise_term)
 
     @property
     def evidence(self):
@@ -710,6 +719,11 @@ def scaled_noise_from_hyper_galaxies_and_contributions(contributions, hyper_gala
     scaled_noises = list(map(lambda hyper, contribution: hyper.scaled_noise_from_contributions(noise, contribution),
                              hyper_galaxies, contributions))
     return noise + sum(scaled_noises)
+
+
+def likelihood_with_regularization_from_chi_squared_regularization_and_noise_terms(chi_squared_term,
+                                                                                   regularization_term, noise_term):
+    return -0.5 * (chi_squared_term + regularization_term + noise_term)
 
 
 def evidence_from_reconstruction_terms(chi_squared_term, regularization_term, log_covariance_regularization_term,
