@@ -1,5 +1,4 @@
 from autolens.profiles import mass_profiles as mp
-from autolens.profiles import light_profiles as lp
 from autolens.lensing import galaxy as g
 from autolens.lensing import ray_tracing
 from autolens.imaging import mask
@@ -18,9 +17,9 @@ tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source
                                              image_plane_grids=image_plane_grids)
 
 # Next, lets set up a pixelization using the 'pixelizations' module, which we've imported as 'pix'.
-# There are multiple pixelizations available in PyAutoLens, but for now we'll keep it simple and use a uniforn
+# There are multiple pixelizations available in PyAutoLens, but for now we'll keep it simple and use a uniform
 # rectangular grid. As usual, the grid's 'shape' defines its (y,x) dimensions.
-rectangular = pix.Rectangular(shape=(5, 5))
+rectangular = pix.Rectangular(shape=(25, 25))
 
 # By itself, a pixelization doesn't tell us much. It has no grid of coordinates, no image, and nothing which tells it
 # about the lens we're fitting. This information comes when we use the pixelization to set up a 'mapper'.
@@ -68,7 +67,7 @@ print(mapper.geometry.arc_second_minima)
 
 # 1) Look at how the source-grid coordinates are distributed over the rectangular pixel-grid. Are these points
 #    distributed evenly over the rectangular grid's pixels? Do some pixels have a lot more grid-points inside of them?
-#    Do some pixels have n o grid-points in them?
+#    Do some pixels have no grid-points in them?
 
 #  2) The rectangular pixelization's edges are aligned with the most exterior coordinates of the source-grid. This is
 #     intentional - why do you think this is?

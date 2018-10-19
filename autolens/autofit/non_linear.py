@@ -180,7 +180,6 @@ class NonLinearOptimizer(object):
                 line += ' ' * (70 - len(line)) + paramnames_labels[i]
                 paramnames.write(line + '\n')
 
-
 class DownhillSimplex(NonLinearOptimizer):
 
     def __init__(self, include_hyper_image=False, model_mapper=None,
@@ -284,6 +283,7 @@ class MultiNest(NonLinearOptimizer):
     @property
     def pdf(self):
         import getdist
+        print(self.opt_path)
         return getdist.mcsamples.loadMCSamples(self.opt_path + '/multinest')
 
     def fit(self, analysis):
@@ -554,6 +554,10 @@ class MultiNest(NonLinearOptimizer):
 
                 most_likely = self.most_likely_from_summary()
 
+                if len(most_likely) != self.variable.prior_count:
+                    raise exc.MultiNestException('MultiNest and GetDist have counted a different number of parameters.'
+                                                 'See github issue https://github.com/Jammy2211/PyAutoLens/issues/49')
+
                 for i in range(self.variable.prior_count):
                     line = self.param_names[i]
                     line += ' ' * (50 - len(line)) + str(most_likely[i])
@@ -571,10 +575,8 @@ class MultiNest(NonLinearOptimizer):
                     results.write('\n')
 
                     for i in range(self.variable.prior_count):
-                        line = self.param_names[i]
-                        line += ' ' * (50 - len(line)) + str(most_probable[i]) + ' (' + str(
-                            lower_limit[i]) + ', ' + str(
-                            upper_limit[i]) + ')'
+                        line += ' ' * (70 - len(line)) + str(most_probable[i]) + ' (' + str(
+                            lower_limit[i]) + ', ' + str(upper_limit[i]) + ')'
                         results.write(line + '\n')
 
                     lower_limit = self.model_at_lower_sigma_limit(sigma_limit=1.0)
@@ -586,7 +588,7 @@ class MultiNest(NonLinearOptimizer):
 
                     for i in range(self.variable.prior_count):
                         line = self.param_names[i]
-                        line += ' ' * (50 - len(line)) + str(most_probable[i]) + ' (' + str(
+                        line += ' ' * (70 - len(line)) + str(most_probable[i]) + ' (' + str(
                             lower_limit[i]) + ', ' + str(
                             upper_limit[i]) + ')'
                         results.write(line + '\n')

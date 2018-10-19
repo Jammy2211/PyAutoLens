@@ -1,12 +1,13 @@
 So, we've learnt how to build pipelines that model strong lenses and customize them to our science case.
 
 However, we ran into a pretty huge barrier when trying to fit complex sources. It required an unwieldy number
-of non-linear parameters, and even when we included them, the results were inaccurate anyway, non-linear parameter space
-was just too complex! We attempted to alleviate this by building a pipeline, but alas even this couldn't help us.
+of non-linear parameters, and even when we included them, the results were rubbish. The non-linear parameter space
+was just too complex, and even a well crafted pipeline couldn't fix the problem :(
 
-In this chapter, we'll learn about inversions, model and reconstruct the source galaxy using a pixel grid. This grid
-has makes no assumptions about the source's morphology, breaking a number of simplifying assumptions that were inherent
-to our analytic light profiles (e.g. symmetry). Remarkably, pixels grid use just a couple of non-linear parameters,
-meaning the 30+ non-linear parameters we required to fit complex-sources are going to be simplified to just 3 or 4!
+In this chapter, we'll learn about pixelizations, mappers and inversions. These tools allow us to reconstruct the
+source galaxy's not with an analytic light profile, but instead a pixel-grid. In doing so, we make no assumption about
+the source's morphology, breaking the simpliying assumptions inherent to analytic light profiles (e.g. symmetry).
+Remarkably, pixels grid use just a couple of non-linear parameters, meaning the 30+ non-linear parameters we required
+to fit complex-sources before are going to be reduced to just 3 or 4!
 
 Sound good? I agree, so lets get on with it.
