@@ -109,23 +109,25 @@ def test_fit_hyper_lens_only(lensing_image, hyper):
 
 def test__fit_sub_plot_lens_only__output_dependent_on_config(fit_lens_only, general_config, fitting_plotter_path):
 
-    fitting_plotters.plot_fitting_subplot(fit=fit_lens_only, output_path=fitting_plotter_path, output_format='png')
+    fitting_plotters.plot_fitting_subplot(fit=fit_lens_only, should_plot_mask=True, output_path=fitting_plotter_path,
+                                          output_format='png')
     assert os.path.isfile(path=fitting_plotter_path + 'fit.png')
     os.remove(path=fitting_plotter_path + 'fit.png')
 
 def test__fit_sub_plot_hyper_lens_only__output_dependent_on_config(fit_hyper_lens_only, general_config,
                                                                    fitting_plotter_path):
 
-    fitting_plotters.plot_fitting_subplot(fit=fit_hyper_lens_only, output_path=fitting_plotter_path,
-                                          output_filename='hyper_fit', output_format='png')
+    fitting_plotters.plot_fitting_subplot(fit=fit_hyper_lens_only, should_plot_mask=True,
+                                          output_path=fitting_plotter_path, output_filename='hyper_fit',
+                                          output_format='png')
     assert os.path.isfile(path=fitting_plotter_path + 'hyper_fit.png')
     os.remove(path=fitting_plotter_path + 'hyper_fit.png')
 
 def test__fit_sub_plot_source_and_lens__output_dependent_on_config(fit_source_and_lens, general_config,
                                                                    fitting_plotter_path):
 
-    fitting_plotters.plot_fitting_subplot(fit=fit_source_and_lens, output_path=fitting_plotter_path,
-                                          output_format='png')
+    fitting_plotters.plot_fitting_subplot(fit=fit_source_and_lens, should_plot_mask=True,
+                                          output_path=fitting_plotter_path, output_format='png')
     assert os.path.isfile(path=fitting_plotter_path + 'fit.png')
     os.remove(path=fitting_plotter_path + 'fit.png')
 
