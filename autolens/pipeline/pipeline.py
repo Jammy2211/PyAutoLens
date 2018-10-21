@@ -38,7 +38,7 @@ class PipelineImaging(Pipeline):
     def __init__(self, pipeline_name, *phases):
         super(PipelineImaging, self).__init__(pipeline_name, *phases)
 
-    def run(self, image, default_mask_function=phase.default_mask_function):
+    def run(self, image):
 
         from autolens.pipeline import phase as ph
         results = []
