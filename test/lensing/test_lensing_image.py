@@ -6,7 +6,7 @@ from autolens.imaging import image as im
 from autolens.imaging import imaging_util
 from autolens.imaging import mask as msk
 from autolens.lensing import lensing_image as li
-
+from autolens.inversion import convolution as inversion_convolution
 
 @pytest.fixture(name='image')
 def make_image():
@@ -85,7 +85,7 @@ class TestMaskedImage(object):
 
     def test_convolvers(self, lensing_image):
         assert type(lensing_image.convolver_image) == convolution.ConvolverImage
-        assert type(lensing_image.convolver_mapping_matrix) == convolution.ConvolverMappingMatrix
+        assert type(lensing_image.convolver_mapping_matrix) == inversion_convolution.ConvolverMappingMatrix
 
     def test_subtract(self, lensing_image):
         subtracted_image = lensing_image - np.array([1, 0, 1, 0])

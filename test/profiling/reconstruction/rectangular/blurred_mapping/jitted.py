@@ -10,7 +10,7 @@ from profiles import mass_profiles
 class Reconstructor(object):
 
     def __init__(self, mapping, regularization, image_to_pix, sub_to_pix):
-        """The matrices and mappings used to linearly invert and fit a data-set.
+        """The matrices and mappings used to linearly invert and incorrect_fit a data-set.
 
         Parameters
         -----------

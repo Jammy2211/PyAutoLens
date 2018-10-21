@@ -15,7 +15,7 @@ def pass_priors(self, previous_results):
 #    A GaussianPrior is ideal, as the 1D pdf results we compute at the end of a phase are easily summarized as
 #    Gaussians.
 
-# 2) The GaussianPrior mean is the best-fit value of 'previous_results[0].variable.lens_galaxies.profile.parameter'.
+# 2) The GaussianPrior mean is the best-incorrect_fit value of 'previous_results[0].variable.lens_galaxies.profile.parameter'.
 #
 #    As you'd guess, this means our prior starts searching the region of non-linear parameter space that correspond to
 #    highest likelihood solutions in the previous phase.
@@ -38,7 +38,7 @@ def pass_priors(self, previous_results):
 
 
 # There's a couple  more thing we should think about. You might be worried that we're always at risk of not specifying
-# broad enough priors, and that we'll end up trimming out the best-fit solution to our lens model. This can happen -
+# broad enough priors, and that we'll end up trimming out the best-incorrect_fit solution to our lens model. This can happen -
 # balancing broadness and narrowness is a bit of an art form.
 
 # You may also be worried that our priors will impact our inferred errors. If our priors are narrow, the errors that
