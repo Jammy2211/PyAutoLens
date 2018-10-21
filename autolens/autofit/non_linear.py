@@ -283,7 +283,6 @@ class MultiNest(NonLinearOptimizer):
     @property
     def pdf(self):
         import getdist
-        print(self.opt_path)
         return getdist.mcsamples.loadMCSamples(self.opt_path + '/multinest')
 
     def fit(self, analysis):
