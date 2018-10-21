@@ -192,7 +192,11 @@ class Rectangular(Pixelization):
         borders : mask.ImagingGridBorders
             The borders of the grids (defined by their _image-plane mask).
         """
-        relocated_grids = borders.relocated_grids_from_grids(grids)
+        try:
+            relocated_grids = borders.relocated_grids_from_grids(grids)
+        except ValueError:
+            relocated_grids = grids
+
         geometry = self.geometry_from_grid(relocated_grids.sub)
         pixel_neighbors = self.neighbors_from_pixelization()
         return mappers.RectangularMapper(pixels=self.pixels, grids=relocated_grids, pixel_neighbors=pixel_neighbors,

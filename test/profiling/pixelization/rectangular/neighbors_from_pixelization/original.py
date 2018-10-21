@@ -8,7 +8,7 @@ class Pixelization(object):
     def __init__(self, pixels, regularization_coefficients=(1.0,), pix_signal_scale=1.0):
         """
         Abstract base class for a inversion, which discretizes a set of masked_image and sub grid grid into \
-        pixels. These pixels then fit a  data_vector-set using a linear inversion, where their regularization_matrix matrix
+        pixels. These pixels then incorrect_fit a  data_vector-set using a linear inversion, where their regularization_matrix matrix
         enforces smoothness between pixel values.
 
         A number of 1D and 2D arrays are used to represent mappings betwen masked_image, sub, pix, and cluster pixels. The \
