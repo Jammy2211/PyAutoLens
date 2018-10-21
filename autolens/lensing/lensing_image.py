@@ -3,6 +3,7 @@ import numpy as np
 from autolens.imaging import convolution
 from autolens.imaging import image as im
 from autolens.imaging import mask as msk
+from autolens.inversion import convolution as inversion_convolution
 
 
 class LensingImage(im.Image):
@@ -54,9 +55,8 @@ class LensingImage(im.Image):
         self.blurring_mask = mask.blurring_mask_for_psf_shape(image_psf_shape)
         self.convolver_image = convolution.ConvolverImage(self.mask,
                                                           self.blurring_mask, self.image.psf.trim_around_centre(image_psf_shape))
-        self.convolver_mapping_matrix = convolution.ConvolverMappingMatrix(self.mask,
-                                                                           self.image.psf.trim_around_centre(
-                                                                               mapping_matrix_psf_shape))
+        self.convolver_mapping_matrix = inversion_convolution.ConvolverMappingMatrix(self.mask,
+                                        self.image.psf.trim_around_centre(mapping_matrix_psf_shape))
         self.grids = msk.ImagingGrids.grids_from_mask_sub_grid_size_and_psf_shape(mask=mask,
                                                                                   sub_grid_size=sub_grid_size,
                                                                                   psf_shape=image_psf_shape)

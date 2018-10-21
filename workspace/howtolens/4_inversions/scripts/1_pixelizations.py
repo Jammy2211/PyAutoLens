@@ -6,10 +6,11 @@ from autolens.inversion import pixelizations as pix
 from autolens.plotting import mapper_plotters
 
 # We'll start by learning about pixelizations, which we typically apply to a source-plane (but could, if we wanted,
-# apply to an image-plane). Lets setup a lensed source-plane grid, using a lens galaxy and tracer.
+# apply to an image-plane).
+#
+# Lets setup a lensed source-plane grid, using a lens galaxy and tracer.
 image_plane_grids = mask.ImagingGrids.from_shape_and_pixel_scale(shape=(100, 100), pixel_scale=0.05,
                                                                  sub_grid_size=2)
-
 lens_galaxy = g.Galaxy(mass=mp.EllipticalIsothermal(centre=(0.0, 0.0), axis_ratio=0.8, phi=90.0, einstein_radius=1.6))
 
 # (Our source galaxy doesn't have a light profile from here on, as we're reconstructing its light using a pixelization).
@@ -29,7 +30,8 @@ mapper = rectangular.mapper_from_grids(grids=tracer.source_plane.grids)
 print(type(mapper))
 
 # By plotting our mapper, we now see our pixelization. Its a fairly boring grid of rectangular pixels.
-mapper_plotters.plot_rectangular_mapper(mapper=mapper, should_plot_grid=False)
+mapper_plotters.plot_rectangular_mapper(mapper=mapper, should_plot_grid=False,
+                                        title='Fairly Boring Grid of Rectangular Pixels')
 
 # However, the mapper does contain lots of interesting information about our pixelization, for example its geometry
 # attribute tells us where the pixel centers are located
