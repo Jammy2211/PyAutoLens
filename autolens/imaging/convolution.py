@@ -153,7 +153,7 @@ class Convolver(object):
     Whilst the scheme above accounts for all blurred light within the mask, it does not account for the fact that \
     pixels outside of the mask will also blur light into it. This effect is accounted for using blurring frames.
 
-    It is omitted for mapping_matrix matrix blurring, as a inversion does not fit data outside of the mask.
+    It is omitted for mapping_matrix matrix blurring, as a inversion does not incorrect_fit data outside of the mask.
 
     First, a blurring mask is computed from a mask, which describes all pixels which are close enough to the mask \
     to blur light into it for a given psf size. Following the howtolens above, the following blurring mask is \
@@ -385,55 +385,3 @@ class ConvolverImage(Convolver):
                 new_array[vector_index] += value * kernel
 
         return new_array
-
-
-class ConvolverMappingMatrix(Convolver):
-
-    def __init__(self, mask, psf):
-        """
-        Class to create number array and frames used to convolve a psf with a 1D vector of non-masked values.
-
-        Parameters
-        ----------
-        mask : Mask
-            An _image mask, where True eliminates data.
-        psf : _image.PSF or ndarray
-            An array representing a PSF.
-        """
-
-        super(ConvolverMappingMatrix, self).__init__(mask, psf)
-
-    def convolve_mapping_matrix(self, mapping_matrix):
-        """For a given inversion mapping matrix, convolver every pixel's mapped _image using this convolver.
-
-        Parameters
-        -----------
-        mapping_matrix : ndarray
-            The 2D mapping matix describing how every inversion pixel maps to an _image pixel.
-        """
-        return self.convolve_matrix_jit(mapping_matrix, self.image_frame_indexes,
-                                        self.image_frame_psfs, self.image_frame_lengths)
-
-    @staticmethod
-    @numba.jit(nopython=True, cache=True)
-    def convolve_matrix_jit(mapping_matrix, image_frame_indexes, image_frame_kernels, image_frame_lengths):
-
-        blurred_mapping_matrix = np.zeros(mapping_matrix.shape)
-
-        for pixel_index in range(mapping_matrix.shape[1]):
-            for image_index in range(mapping_matrix.shape[0]):
-
-                value = mapping_matrix[image_index, pixel_index]
-
-                if value > 0:
-
-                    frame_indexes = image_frame_indexes[image_index]
-                    frame_kernels = image_frame_kernels[image_index]
-                    frame_length = image_frame_lengths[image_index]
-
-                    for kernel_index in range(frame_length):
-                        vector_index = frame_indexes[kernel_index]
-                        kernel = frame_kernels[kernel_index]
-                        blurred_mapping_matrix[vector_index, pixel_index] += value * kernel
-
-        return blurred_mapping_matrix
