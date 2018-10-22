@@ -10,7 +10,7 @@ from autolens.profiles import light_profiles
 class FrameMakerOriginal(object):
     def __init__(self, mask):
         """
-        Class to create number data and frames used in 1D convolution
+        Class to create number array and frames used in 1D convolution
         Parameters
         ----------
         mask: Mask
@@ -32,7 +32,7 @@ class FrameMakerOriginal(object):
         """
         Parameters
         ----------
-            An data in which non-masked elements have been numbered 0, 1, 2,...N
+            An array in which non-masked elements have been numbered 0, 1, 2,...N
         kernel_shape: (int, int)
             The shape of the psf for which frames will be used
         Returns
@@ -141,10 +141,10 @@ class ConvolverOriginal(object):
         Parameters
         ----------
         blurring_frame_array: [ndarray]
-            An data of frames created by the frame maker. Maps positions in the psf to values in the 1D vector for
+            An array of frames created by the frame maker. Maps positions in the psf to values in the 1D vector for
             masked pixels.
         frame_array: [ndarray]
-            An data of frames created by the frame maker. A frame maps positions in the psf to values in the 1D
+            An array of frames created by the frame maker. A frame maps positions in the psf to values in the 1D
             vector.
         """
         self.frame_array = frame_array
@@ -155,7 +155,7 @@ class ConvolverOriginal(object):
         Parameters
         ----------
         kernel: ndarray
-            An data representing a psf
+            An array representing a psf
 
         Returns
         -------
@@ -180,11 +180,11 @@ class KernelConvolverOriginal(object):
         Parameters
         ----------
         blurring_array: [Float]
-            An data representing the mapping_matrix of a source pixel to a set of masked_image pixels within the blurring region.
+            An array representing the mapping_matrix of a source pixel to a set of masked_image pixels within the blurring region.
         sub_shape: (int, int)
             Defines a sub_grid-region of the psf for which the result should be calculated
         pixel_array: [float]
-            A 1D data
+            A 1D array
         Returns
         -------
         convolved_vector: [float]
@@ -259,9 +259,9 @@ class KernelConvolverOriginal(object):
         Parameters
         ----------
         blurring_array: [Float]
-            An data representing the mapping_matrix of a source pixel to a set of masked_image pixels within the blurring region.
-        data: [float]
-            An data representing the mapping_matrix of a source pixel to a set of masked_image pixels.
+            An array representing the mapping_matrix of a source pixel to a set of masked_image pixels within the blurring region.
+        array: [float]
+            An array representing the mapping_matrix of a source pixel to a set of masked_image pixels.
 
         Returns
         -------
@@ -281,9 +281,9 @@ class KernelConvolverOriginal(object):
         Parameters
         ----------
         blurring_array: [Float]
-            An data representing the mapping_matrix of a source pixel to a set of masked_image pixels within the blurring region.
-        data: [float]
-            An data representing the mapping_matrix of a source pixel to a set of masked_image pixels.
+            An array representing the mapping_matrix of a source pixel to a set of masked_image pixels within the blurring region.
+        array: [float]
+            An array representing the mapping_matrix of a source pixel to a set of masked_image pixels.
 
         Returns
         -------
@@ -321,23 +321,23 @@ class KernelConvolverOriginal(object):
 
     def convolution_for_value_frame_and_new_array(self, value, frame, new_array, sub_shape=None):
         """
-        Convolves a value with the psf and populates a new data according to the entries in the frame
+        Convolves a value with the psf and populates a new array according to the entries in the frame
 
         Parameters
         ----------
         value: float
             Some value
         frame: ndarray
-            An data describing which entries in the new data convolved values should be inserted into
+            An array describing which entries in the new array convolved values should be inserted into
         new_array: ndarray
-            An data into which convolved values are inserted
+            An array into which convolved values are inserted
         sub_shape: (int, int)
             The shape of a reduced sub_grid_size psf
 
         Returns
         -------
         new_array: ndarray
-            The data with values convolved into it
+            The array with values convolved into it
         """
 
         limits = None
