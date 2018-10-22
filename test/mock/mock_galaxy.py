@@ -1,5 +1,24 @@
 import numpy as np
 
+class MockGalaxy(object):
+
+    def __init__(self, value, shape=1):
+        self.value = value
+        self.shape = shape
+
+    def intensities_from_grid(self, grid):
+        return np.full(shape=self.shape, fill_value=self.value)
+
+    def surface_density_from_grid(self, grid):
+        return np.full(shape=self.shape, fill_value=self.value)
+
+    def potential_from_grid(self, grid):
+        return np.full(shape=self.shape, fill_value=self.value)
+
+    def deflections_from_grid(self, grid):
+        return np.full(shape=self.shape, fill_value=self.value)
+
+
 class MockHyperGalaxy(object):
 
     def __init__(self, contribution_factor=0.0, noise_factor=0.0, noise_power=1.0):
