@@ -11,7 +11,7 @@ from autolens.inversion import mappers
 class Pixelization(object):
 
     def __init__(self, pixels=100):
-        """ Abstract base class for a pixelization, which discretizes a set of coordinates (e.g. an _image-grid) into \
+        """ Abstract base class for a pixelization, which discretizes a set of coordinates (e.g. an _data-grid) into \
         pixels.
 
         Parameters
@@ -30,7 +30,7 @@ class Rectangular(Pixelization):
     def __init__(self, shape=(3, 3)):
         """A rectangular pixelization, where pixels are defined on a Cartesian and uniform grid of shape (rows, columns).
 
-        Like an _image, the indexing of the rectangular grid begins in the top-left corner and goes right and down.
+        Like an _data, the indexing of the rectangular grid begins in the top-left corner and goes right and down.
 
         Parameters
         -----------
@@ -169,9 +169,9 @@ class Rectangular(Pixelization):
         Parameters
         ----------
         grids: mask.ImagingGrids
-            A collection of grid describing the observed _image's pixel coordinates (includes an _image and sub grid).
+            A collection of grid describing the observed _data's pixel coordinates (includes an _data and sub grid).
         borders : mask.ImagingGridBorders
-            The borders of the grids (defined by their _image-plane mask).
+            The borders of the grids (defined by their _data-plane mask).
         """
         geometry = self.geometry_from_grid(grids.sub)
         pixel_neighbors = self.neighbors_from_pixelization()
@@ -188,9 +188,9 @@ class Rectangular(Pixelization):
         Parameters
         ----------
         grids: mask.ImagingGrids
-            A collection of grid describing the observed _image's pixel coordinates (includes an _image and sub grid).
+            A collection of grid describing the observed _data's pixel coordinates (includes an _data and sub grid).
         borders : mask.ImagingGridBorders
-            The borders of the grids (defined by their _image-plane mask).
+            The borders of the grids (defined by their _data-plane mask).
         """
         try:
             relocated_grids = borders.relocated_grids_from_grids(grids)
@@ -209,7 +209,7 @@ class Voronoi(Pixelization):
         """Abstract base class for a Voronoi pixelization, which represents pixels as an irregular grid of Voronoi \
          pixels which can form any shape, size or tesselation.
 
-         The traced _image-pixels are paired to Voronoi pixels as the nearest-neighbors of the Voronoi pixel-centers.
+         The traced _data-pixels are paired to Voronoi pixels as the nearest-neighbors of the Voronoi pixel-centers.
 
          Parameters
          ----------
@@ -252,7 +252,7 @@ class Cluster(Voronoi):
 
     def __init__(self, pixels):
         """A cluster pixelization, which represents pixels as a Voronoi grid (see Voronoi). For this pixelization, the \
-        pixel-centers are derived from a sparse-grid in the observed _image which are lensed to form the pixel centers.
+        pixel-centers are derived from a sparse-grid in the observed _data which are lensed to form the pixel centers.
 
         Parameters
         ----------
@@ -270,13 +270,13 @@ class Cluster(Voronoi):
         Parameters
         ----------
         grids: mask.ImagingGrids
-            A collection of grid describing the observed _image's pixel coordinates (includes an _image and sub grid).
+            A collection of grid describing the observed _data's pixel coordinates (includes an _data and sub grid).
         borders : mask.ImagingGridBorders
-            The borders of the grids (defined by their _image-plane mask).
+            The borders of the grids (defined by their _data-plane mask).
         pixel_centers : ndarray
-            The center of each Voronoi pixel, computed from an traced _image-plane grid.
+            The center of each Voronoi pixel, computed from an traced _data-plane grid.
         image_to_voronoi : ndarray
-            The mapping of each _image pixel to Voronoi pixels.
+            The mapping of each _data pixel to Voronoi pixels.
         """
 
         voronoi_to_pixelization = np.arange(0, self.pixels)
@@ -298,13 +298,13 @@ class Cluster(Voronoi):
         Parameters
         ----------
         grids: mask.ImagingGrids
-            A collection of grid describing the observed _image's pixel coordinates (includes an _image and sub grid).
+            A collection of grid describing the observed _data's pixel coordinates (includes an _data and sub grid).
         borders : mask.ImagingGridBorders
-            The borders of the grids (defined by their _image-plane mask).
+            The borders of the grids (defined by their _data-plane mask).
         pixel_centers : ndarray
-            The center of each Voronoi pixel, computed from an traced _image-plane grid.
+            The center of each Voronoi pixel, computed from an traced _data-plane grid.
         image_to_voronoi : ndarray
-            The mapping of each _image pixel to Voronoi pixels.
+            The mapping of each _data pixel to Voronoi pixels.
         """
 
         relocated_grids = borders.relocated_grids_from_grids(grids)

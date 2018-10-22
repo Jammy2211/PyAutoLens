@@ -773,7 +773,7 @@ class LensSourcePlaneHyperPhase(LensSourcePlanePhase):
         def __init__(self, lensing_image, phase_name, previous_results=None):
             super(LensSourcePlanePhase.Analysis, self).__init__(lensing_image, phase_name, previous_results)
 
-            self.hyper_model_image = self.map_to_1d(previous_results.last.model_image)
+            self.hyper_model_image = self.map_to_1d(previous_results.last.model_data)
             self.hyper_galaxy_images = list(map(lambda galaxy_image: self.map_to_1d(galaxy_image),
                                                 previous_results.last.source_galaxies_blurred_image_plane_images))
             self.hyper_minimum_values = len(self.hyper_galaxy_images) * [0.0]
@@ -878,7 +878,7 @@ class LensMassAndSourceProfileHyperOnlyPhase(LensSourcePlaneHyperPhase, HyperOnl
         def __init__(self, lensing_image, phase_name, previous_results=None, hyper_index=None):
             super(LensSourcePlaneHyperPhase.Analysis, self).__init__(lensing_image, phase_name, previous_results)
 
-            self.hyper_model_image = self.map_to_1d(previous_results.last.model_image)
+            self.hyper_model_image = self.map_to_1d(previous_results.last.model_data)
             self.hyper_galaxy_images = list(map(lambda galaxy_image: self.map_to_1d(galaxy_image),
                                                 previous_results.last.source_galaxies_blurred_image_plane_images))
             self.hyper_galaxy_images = [self.hyper_galaxy_images[hyper_index]]

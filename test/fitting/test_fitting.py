@@ -93,7 +93,7 @@ class TestResiduals:
         image = 10.0 * np.ones((2, 2))
         model = 10.0 * np.ones((2, 2))
 
-        residuals = fitting.residuals_from_image_and_model(image, model)
+        residuals = fitting.residuals_from_data_and_model(image, model)
 
         assert (residuals == np.zeros((2, 2))).all()
 
@@ -102,7 +102,7 @@ class TestResiduals:
         model = np.array([[11, 10],
                           [9, 8]])
 
-        residuals = fitting.residuals_from_image_and_model(image, model)
+        residuals = fitting.residuals_from_data_and_model(image, model)
 
         assert (residuals == np.array([[-1, 0],
                                        [1, 2]])).all()
@@ -115,7 +115,7 @@ class TestChiSquareds:
         noise = 4.0 * np.ones((2, 2))
         model = 10.0 * np.ones((2, 2))
 
-        residuals = fitting.residuals_from_image_and_model(image, model)
+        residuals = fitting.residuals_from_data_and_model(image, model)
         chi_squareds = fitting.chi_squareds_from_residuals_and_noise(residuals, noise)
 
         assert (chi_squareds == np.zeros((2, 2))).all()
@@ -126,7 +126,7 @@ class TestChiSquareds:
         model = np.array([[11, 10],
                           [9, 8]])
 
-        residuals = fitting.residuals_from_image_and_model(image, model)
+        residuals = fitting.residuals_from_data_and_model(image, model)
         chi_squareds = fitting.chi_squareds_from_residuals_and_noise(residuals, noise)
 
         assert (chi_squareds == (np.array([[1 / 4, 0],
@@ -140,7 +140,7 @@ class TestLikelihood:
         noise = np.array([2.0, 2.0, 2.0, 2.0])
         model = np.array([10.0, 10.0, 10.0, 10.0])
 
-        residuals = fitting.residuals_from_image_and_model(im, model)
+        residuals = fitting.residuals_from_data_and_model(im, model)
         chi_squareds = fitting.chi_squareds_from_residuals_and_noise(residuals, noise)
         chi_squared_term = fitting.chi_squared_term_from_chi_squareds(chi_squareds)
         noise_term = fitting.noise_term_from_noise_map(noise)
@@ -157,7 +157,7 @@ class TestLikelihood:
         noise = np.array([2.0, 2.0, 2.0, 2.0])
         model = np.array([11.0, 10.0, 9.0, 8.0])
 
-        residuals = fitting.residuals_from_image_and_model(im, model)
+        residuals = fitting.residuals_from_data_and_model(im, model)
         chi_squareds = fitting.chi_squareds_from_residuals_and_noise(residuals, noise)
         chi_squared_term = fitting.chi_squared_term_from_chi_squareds(chi_squareds)
         noise_term = fitting.noise_term_from_noise_map(noise)
@@ -178,7 +178,7 @@ class TestLikelihood:
         noise = np.array([1.0, 2.0, 3.0, 4.0])
         model = np.array([11.0, 10.0, 9.0, 8.0])
 
-        residuals = fitting.residuals_from_image_and_model(im, model)
+        residuals = fitting.residuals_from_data_and_model(im, model)
         chi_squareds = fitting.chi_squareds_from_residuals_and_noise(residuals, noise)
         chi_squared_term = fitting.chi_squared_term_from_chi_squareds(chi_squareds)
         noise_term = fitting.noise_term_from_noise_map(noise)

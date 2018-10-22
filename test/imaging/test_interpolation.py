@@ -793,23 +793,23 @@ class TestInterpolationDeflections(object):
     #
     #             # interp defls arn't ussed for bilinear interpolation weights
     #
-    #             interp_defls = np.array([[ 1.0,  1.0], [ 1.0, 1.0], [ 0.0, 0.0],
+    #             interp_defls = np.data([[ 1.0,  1.0], [ 1.0, 1.0], [ 0.0, 0.0],
     #                                      [ 1.0,  1.0], [ 1.0, 1.0], [ 0.0, 0.0],
     #                                      [ 0.0,  0.0], [ 0.0, 0.0], [ 0.0, 0.0]])
     #
-    #             interp_coords = np.array([[-1.0, -1.0], [-1.0, 0.0], [-1.0, 1.0],
+    #             interp_coords = np.data([[-1.0, -1.0], [-1.0, 0.0], [-1.0, 1.0],
     #                                       [ 0.0, -1.0], [ 0.0, 0.0], [ 0.0, 1.0],
     #                                       [ 1.0, -1.0], [ 1.0, 0.0], [ 1.0, 1.0]])
     #
     #             geometry = interpolation.InterpolationGeometry(y_min=-1.0, y_max=1.0, x_min=-1.0, x_max=1.0,
     #                                                            y_pixel_scale=1.0, x_pixel_scale=1.0)
-    #             scheme = interpolation.InterpolationScheme(shape=(3, 3), _image=interp_coords,
+    #             scheme = interpolation.InterpolationScheme(shape=(3, 3), _data=interp_coords,
     #                                                        image_pixel_scale=1.0)
     #
-    #             interp_defls = interpolation.InterpolationDeflections(array=interp_defls, grids=interp_coords,
+    #             interp_defls = interpolation.InterpolationDeflections(data=interp_defls, grids=interp_coords,
     #                                                                   geometry=geometry, scheme=scheme)
     #
-    #             interpolated = interp_defls.interpolate_values_from_grid(grid=np.array([[-0.499, -0.499]]))
+    #             interpolated = interp_defls.interpolate_values_from_grid(grid=np.data([[-0.499, -0.499]]))
     #
     #             assert interpolated[0,0] == 1.0
     #             assert interpolated[0,0] == 1.0
