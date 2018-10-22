@@ -17,7 +17,7 @@ def make():
     from autolens.pipeline import pipeline
     from autolens.autofit import non_linear as nl
     from autolens.imaging import mask
-    from autolens.lensing import galaxy_model as gp
+    from autolens.galaxy import galaxy_model as gp
     from autolens.profiles import light_profiles as lp
     from autolens.profiles import mass_profiles as mp
 

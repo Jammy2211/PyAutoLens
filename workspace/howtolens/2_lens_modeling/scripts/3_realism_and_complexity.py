@@ -1,12 +1,11 @@
 from autolens import conf
 from autolens.autofit import non_linear as nl
 from autolens.pipeline import phase as ph
-from autolens.lensing import galaxy_model as gm
 from autolens.imaging import image as im
 from autolens.imaging import mask as ma
 from autolens.lensing import ray_tracing
-from autolens.lensing import galaxy as g
-from autolens.lensing import fitting
+from autolens.galaxy import galaxy as g, galaxy_model as gm
+from autolens.lensing import lensing_fitting
 from autolens.lensing import lensing_image as li
 from autolens.profiles import light_profiles as lp
 from autolens.profiles import mass_profiles as mp
@@ -116,7 +115,7 @@ tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source
                                              image_plane_grids=lensing_image.grids)
 
 # Now, lets fit the lensing image with the tracer and plot the fit. It looks a lot better than above, doesn't it?
-fit = fitting.fit_lensing_image_with_tracer(lensing_image=lensing_image, tracer=tracer)
+fit = lensing_fitting.fit_lensing_image_with_tracer(lensing_image=lensing_image, tracer=tracer)
 fitting_plotters.plot_fitting_subplot(fit=fit)
 
 # Finally, just to be sure, lets compare the two likelihoods

@@ -1,6 +1,6 @@
 from autolens.profiles import mass_profiles as mp
 from autolens.profiles import light_profiles as lp
-from autolens.lensing import galaxy as g
+from autolens.galaxy import galaxy as g
 from autolens.lensing import ray_tracing
 from autolens.imaging import mask
 from autolens.plotting import plane_plotters

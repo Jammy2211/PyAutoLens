@@ -3,7 +3,7 @@ import pytest
 
 from autolens.imaging import interpolation
 from autolens.imaging import mask
-from autolens.lensing import galaxy
+from autolens.galaxy import galaxy
 from autolens.profiles import mass_profiles
 
 

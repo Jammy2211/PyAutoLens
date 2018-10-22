@@ -2,7 +2,7 @@ from autolens.imaging import image as im
 from autolens.imaging import mask as ma
 from autolens.profiles import mass_profiles as mp
 from autolens.profiles import light_profiles as lp
-from autolens.lensing import galaxy as g
+from autolens.galaxy import galaxy as g
 from autolens.lensing import ray_tracing
 from autolens.lensing import lensing_image as li
 from autolens.inversion import pixelizations as pix

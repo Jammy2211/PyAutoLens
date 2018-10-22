@@ -9,7 +9,7 @@ from autolens.imaging import image as im
 from autolens.imaging import mask as msk
 from autolens.profiles import light_profiles as lp
 from autolens.profiles import mass_profiles as mp
-from autolens.lensing import galaxy as g
+from autolens.galaxy import galaxy as g
 from autolens.inversion import pixelizations as pix
 from autolens.plotting import mapper_plotters
 
