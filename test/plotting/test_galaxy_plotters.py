@@ -1,17 +1,14 @@
-import itertools
 import os
 import shutil
-from functools import wraps
 
 import pytest
-import numpy as np
 
 from autolens import conf
 from autolens.imaging import mask as msk
 from autolens.plotting import galaxy_plotters
 from autolens.profiles import light_profiles as lp
 from autolens.profiles import mass_profiles as mp
-from autolens.lensing import galaxy as g
+from autolens.galaxy import galaxy as g
 
 
 @pytest.fixture(name='general_config')

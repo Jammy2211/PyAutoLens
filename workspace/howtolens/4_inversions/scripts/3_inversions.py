@@ -2,10 +2,10 @@ from autolens.imaging import image as im
 from autolens.imaging import mask as ma
 from autolens.profiles import mass_profiles as mp
 from autolens.profiles import light_profiles as lp
-from autolens.lensing import galaxy as g
+from autolens.galaxy import galaxy as g
 from autolens.lensing import ray_tracing
 from autolens.lensing import lensing_image as li
-from autolens.lensing import fitting
+from autolens.lensing import lensing_fitting
 from autolens.inversion import pixelizations as pix
 from autolens.inversion import regularization as reg
 from autolens.inversion import inversions as inv
@@ -178,7 +178,7 @@ tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source
 
 # Then, like before, we call on the fitting module to perform the fit to the lensing image. Indeed, we see
 # some pretty good looking residuals - we're certainly fitting the lensed source accurately!
-fit = fitting.fit_lensing_image_with_tracer(lensing_image=lensing_image, tracer=tracer)
+fit = lensing_fitting.fit_lensing_image_with_tracer(lensing_image=lensing_image, tracer=tracer)
 fitting_plotters.plot_fitting_subplot(fit=fit)
 
 # And, we're done, here are a few questions to get you thinking about inversions:

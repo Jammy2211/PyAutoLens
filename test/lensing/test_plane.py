@@ -7,11 +7,12 @@ from autolens.imaging import imaging_util
 from autolens.imaging import mask
 from autolens.inversion import pixelizations
 from autolens.inversion import regularization
-from autolens.lensing import galaxy as g
+from autolens.galaxy import galaxy as g
 from autolens.lensing import plane as pl
 from autolens.profiles import light_profiles as lp
 from autolens.profiles import mass_profiles as mp
-from test.mock.mock_lensing import MockRegularization, MockPixelization, MockBorders
+from test.mock.mock_inversion import MockRegularization, MockPixelization
+from test.mock.mock_imaging import MockBorders
 
 @pytest.fixture(name="imaging_grids")
 def make_imaging_grids():
