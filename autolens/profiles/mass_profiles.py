@@ -674,7 +674,7 @@ class EllipticalGeneralizedNFW(AbstractEllipticalGeneralizedNFW):
                 (1 + radius) ** (self.inner_slope - 3) + ((3 - self.inner_slope) * integral_y))
 
     @staticmethod
-    # TODO : Decorator needs to know that potential_integral is 1D array
+    # TODO : Decorator needs to know that potential_integral is 1D data
     #    @jit_integrand
     def potential_func(u, y, x, axis_ratio, minimum_log_eta, maximum_log_eta, tabulate_bins, potential_integral):
         eta_u = np.sqrt((u * ((x ** 2) + (y ** 2 / (1 - (1 - axis_ratio ** 2) * u)))))
@@ -686,7 +686,7 @@ class EllipticalGeneralizedNFW(AbstractEllipticalGeneralizedNFW):
         return eta_u * (phi / u) / (1.0 - (1.0 - axis_ratio ** 2) * u) ** 0.5
 
     @staticmethod
-    # TODO : Decorator needs to know that surface_density_integral is 1D array
+    # TODO : Decorator needs to know that surface_density_integral is 1D data
     #    @jit_integrand
     def deflection_func(u, y, x, npow, axis_ratio, minimum_log_eta, maximum_log_eta, tabulate_bins,
                         surface_density_integral):

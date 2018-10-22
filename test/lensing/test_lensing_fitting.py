@@ -359,10 +359,10 @@ class TestLensingProfileFit:
 
             fit = lensing_fitting.LensingProfileFit(lensing_image=li_blur, tracer=tracer)
 
-            assert (fit.model_image == np.array([[0.0, 0.0, 0.0, 0.0],
-                                                 [0.0, 9.0, 9.0, 0.0],
-                                                 [0.0, 9.0, 9.0, 0.0],
-                                                 [0.0, 0.0, 0.0, 0.0]])).all()
+            assert (fit.model_data == np.array([[0.0, 0.0, 0.0, 0.0],
+                                                [0.0, 9.0, 9.0, 0.0],
+                                                [0.0, 9.0, 9.0, 0.0],
+                                                [0.0, 0.0, 0.0, 0.0]])).all()
 
         def test__real_tracer__2x2_image__no_psf_blurring(self, li_no_blur, galaxy_light):
 
@@ -371,10 +371,10 @@ class TestLensingProfileFit:
             fit = lensing_fitting.LensingProfileFit(lensing_image=li_no_blur, tracer=tracer)
 
             tracer_image = tracer._image_plane_image
-            assert (tracer_image == fit._model_image).all()
+            assert (tracer_image == fit._model_data).all()
 
             tracer_image_2d = li_no_blur.grids.image.scaled_array_from_array_1d(tracer_image)
-            assert (tracer_image_2d == fit.model_image).all()
+            assert (tracer_image_2d == fit.model_data).all()
 
         def test__real_tracer__2x2_image__psf_is_non_symmetric_producing_l_shape(self, galaxy_light):
             psf = image.PSF(array=(np.array([[0.0, 3.0, 0.0],
@@ -402,15 +402,15 @@ class TestLensingProfileFit:
             tracer_blurred_image_manual_2 = 2.0 * central_values[2] + 3.0 * blurring_values[9] + blurring_values[6]
             tracer_blurred_image_manual_3 = 2.0 * central_values[3] + 3.0 * blurring_values[10] + central_values[2]
 
-            assert tracer_blurred_image_manual_0 == pytest.approx(fit._model_image[0], 1e-6)
-            assert tracer_blurred_image_manual_1 == pytest.approx(fit._model_image[1], 1e-6)
-            assert tracer_blurred_image_manual_2 == pytest.approx(fit._model_image[2], 1e-6)
-            assert tracer_blurred_image_manual_3 == pytest.approx(fit._model_image[3], 1e-6)
+            assert tracer_blurred_image_manual_0 == pytest.approx(fit._model_data[0], 1e-6)
+            assert tracer_blurred_image_manual_1 == pytest.approx(fit._model_data[1], 1e-6)
+            assert tracer_blurred_image_manual_2 == pytest.approx(fit._model_data[2], 1e-6)
+            assert tracer_blurred_image_manual_3 == pytest.approx(fit._model_data[3], 1e-6)
 
-            assert tracer_blurred_image_manual_0 == pytest.approx(fit.model_image[1, 1], 1e-6)
-            assert tracer_blurred_image_manual_1 == pytest.approx(fit.model_image[1, 2], 1e-6)
-            assert tracer_blurred_image_manual_2 == pytest.approx(fit.model_image[2, 1], 1e-6)
-            assert tracer_blurred_image_manual_3 == pytest.approx(fit.model_image[2, 2], 1e-6)
+            assert tracer_blurred_image_manual_0 == pytest.approx(fit.model_data[1, 1], 1e-6)
+            assert tracer_blurred_image_manual_1 == pytest.approx(fit.model_data[1, 2], 1e-6)
+            assert tracer_blurred_image_manual_2 == pytest.approx(fit.model_data[2, 1], 1e-6)
+            assert tracer_blurred_image_manual_3 == pytest.approx(fit.model_data[2, 2], 1e-6)
 
         def test__model_images_of_planes__real_tracer__2x2_image__psf_is_non_symmetric_producing_l_shape(self):
 
@@ -597,11 +597,11 @@ class TestLensingProfileFit:
             image_im = tracer._image_plane_image
             blurring_im = tracer._image_plane_blurring_image
             model_image = li_manual.convolver_image.convolve_image(image_im, blurring_im)
-            residuals = fitting.residuals_from_image_and_model(li_manual, model_image)
+            residuals = fitting.residuals_from_data_and_model(li_manual, model_image)
             chi_squareds = fitting.chi_squareds_from_residuals_and_noise(residuals, li_manual.noise_map)
 
             assert li_manual.grids.image.scaled_array_from_array_1d(li_manual.noise_map) == pytest.approx(fit.noise_map, 1e-4)
-            assert li_manual.grids.image.scaled_array_from_array_1d(model_image) == pytest.approx(fit.model_image, 1e-4)
+            assert li_manual.grids.image.scaled_array_from_array_1d(model_image) == pytest.approx(fit.model_data, 1e-4)
             assert li_manual.grids.image.scaled_array_from_array_1d(residuals) == pytest.approx(fit.residuals, 1e-4)
             assert li_manual.grids.image.scaled_array_from_array_1d(chi_squareds) == pytest.approx(fit.chi_squareds, 1e-4)
 
@@ -707,11 +707,11 @@ class TestHyperLensingProfileFit:
             image_im = tracer._image_plane_image
             blurring_im = tracer._image_plane_blurring_image
             model_image = li_hyper_manual.convolver_image.convolve_image(image_im, blurring_im)
-            residuals = fitting.residuals_from_image_and_model(li_hyper_manual, model_image)
+            residuals = fitting.residuals_from_data_and_model(li_hyper_manual, model_image)
             chi_squareds = fitting.chi_squareds_from_residuals_and_noise(residuals, li_hyper_manual.noise_map)
 
             assert li_hyper_manual.grids.image.scaled_array_from_array_1d(model_image) == \
-                   pytest.approx(fit.model_image, 1e-4)
+                   pytest.approx(fit.model_data, 1e-4)
             assert li_hyper_manual.grids.image.scaled_array_from_array_1d(residuals) == \
                    pytest.approx(fit.residuals, 1e-4)
             assert li_hyper_manual.grids.image.scaled_array_from_array_1d(li_hyper_manual.noise_map) == \
@@ -897,11 +897,11 @@ class TestInversionLensingFit:
                                                                                           noise_map=li_manual.noise_map,
                                                                                           convolver=li_manual.convolver_mapping_matrix)
 
-            residuals = fitting.residuals_from_image_and_model(li_manual, inversion.reconstructed_data_vector)
+            residuals = fitting.residuals_from_data_and_model(li_manual, inversion.reconstructed_data_vector)
             chi_squareds = fitting.chi_squareds_from_residuals_and_noise(residuals, li_manual.noise_map)
 
             assert li_manual.grids.image.scaled_array_from_array_1d(li_manual.noise_map) == pytest.approx(fit.noise_map, 1e-4)
-            assert li_manual.grids.image.scaled_array_from_array_1d(inversion.reconstructed_data_vector) == pytest.approx(fit.model_image,
+            assert li_manual.grids.image.scaled_array_from_array_1d(inversion.reconstructed_data_vector) == pytest.approx(fit.model_data,
                                                                                                                           1e-4)
             assert li_manual.grids.image.scaled_array_from_array_1d(residuals) == pytest.approx(fit.residuals, 1e-4)
             assert li_manual.grids.image.scaled_array_from_array_1d(chi_squareds) == pytest.approx(fit.chi_squareds, 1e-4)
@@ -1036,13 +1036,13 @@ class TestHyperLensingInversionFit:
                         image=li_hyper_manual, noise_map=li_hyper_manual.noise_map, 
                         convolver=li_hyper_manual.convolver_mapping_matrix)
 
-            residuals = fitting.residuals_from_image_and_model(li_hyper_manual, inversion.reconstructed_data_vector)
+            residuals = fitting.residuals_from_data_and_model(li_hyper_manual, inversion.reconstructed_data_vector)
             chi_squareds = fitting.chi_squareds_from_residuals_and_noise(residuals, li_hyper_manual.noise_map)
 
             assert li_hyper_manual.grids.image.scaled_array_from_array_1d(li_hyper_manual.noise_map) == \
                    pytest.approx(fit.noise_map, 1e-4)
             assert li_hyper_manual.grids.image.scaled_array_from_array_1d(inversion.reconstructed_data_vector) == \
-                   pytest.approx(fit.model_image, 1e-4)
+                   pytest.approx(fit.model_data, 1e-4)
             assert li_hyper_manual.grids.image.scaled_array_from_array_1d(residuals) == \
                    pytest.approx(fit.residuals, 1e-4)
             assert li_hyper_manual.grids.image.scaled_array_from_array_1d(chi_squareds) == \
@@ -1077,7 +1077,7 @@ class TestHyperLensingInversionFit:
                                convolver=li_hyper_manual.convolver_mapping_matrix)
 
             scaled_model_image = scaled_inversion.reconstructed_data_vector
-            scaled_residuals = fitting.residuals_from_image_and_model(li_hyper_manual, scaled_inversion.reconstructed_data_vector)
+            scaled_residuals = fitting.residuals_from_data_and_model(li_hyper_manual, scaled_inversion.reconstructed_data_vector)
             scaled_chi_squareds = fitting.chi_squareds_from_residuals_and_noise(scaled_residuals, scaled_noise_map)
 
             assert li_hyper_manual.grids.image.scaled_array_from_array_1d(contributions[0]) == \
@@ -1158,13 +1158,13 @@ class TestLensingProfileInversionFit:
                                                                                           convolver=li_manual.convolver_mapping_matrix)
 
             model_image = profile_model_image + inversion.reconstructed_data_vector
-            residuals = fitting.residuals_from_image_and_model(li_manual, model_image)
+            residuals = fitting.residuals_from_data_and_model(li_manual, model_image)
             chi_squareds = fitting.chi_squareds_from_residuals_and_noise(residuals, li_manual.noise_map)
 
             assert li_manual.grids.image.scaled_array_from_array_1d(li_manual.noise_map) == pytest.approx(fit.noise_map, 1e-4)
             assert li_manual.grids.image.scaled_array_from_array_1d(inversion.reconstructed_data_vector) == \
                    pytest.approx(fit.inversion_model_image, 1e-4)
-            assert li_manual.grids.image.scaled_array_from_array_1d(model_image) == pytest.approx(fit.model_image, 1e-4)
+            assert li_manual.grids.image.scaled_array_from_array_1d(model_image) == pytest.approx(fit.model_data, 1e-4)
             assert li_manual.grids.image.scaled_array_from_array_1d(residuals) == pytest.approx(fit.residuals, 1e-4)
             assert li_manual.grids.image.scaled_array_from_array_1d(chi_squareds) == pytest.approx(fit.chi_squareds, 1e-4)
 
@@ -1218,7 +1218,7 @@ class TestHyperLensingProfileInversionFit:
                         convolver=li_hyper_manual.convolver_mapping_matrix)
 
             model_image = profile_model_image + inversion.reconstructed_data_vector
-            residuals = fitting.residuals_from_image_and_model(li_hyper_manual, model_image)
+            residuals = fitting.residuals_from_data_and_model(li_hyper_manual, model_image)
             chi_squareds = fitting.chi_squareds_from_residuals_and_noise(residuals, li_hyper_manual.noise_map)
 
             assert li_hyper_manual.grids.image.scaled_array_from_array_1d(li_hyper_manual.noise_map) ==\
@@ -1226,7 +1226,7 @@ class TestHyperLensingProfileInversionFit:
             assert li_hyper_manual.grids.image.scaled_array_from_array_1d(inversion.reconstructed_data_vector) == \
                    pytest.approx(fit.inversion_model_image, 1e-4)
             assert li_hyper_manual.grids.image.scaled_array_from_array_1d(model_image) ==\
-                   pytest.approx(fit.model_image, 1e-4)
+                   pytest.approx(fit.model_data, 1e-4)
             assert li_hyper_manual.grids.image.scaled_array_from_array_1d(residuals) == \
                    pytest.approx(fit.residuals, 1e-4)
             assert li_hyper_manual.grids.image.scaled_array_from_array_1d(chi_squareds) ==\
@@ -1252,7 +1252,7 @@ class TestHyperLensingProfileInversionFit:
                 convolver=li_hyper_manual.convolver_mapping_matrix)
 
             scaled_model_image = profile_model_image + scaled_inversion.reconstructed_data_vector
-            scaled_residuals = fitting.residuals_from_image_and_model(li_hyper_manual, scaled_model_image)
+            scaled_residuals = fitting.residuals_from_data_and_model(li_hyper_manual, scaled_model_image)
             scaled_chi_squareds = fitting.chi_squareds_from_residuals_and_noise(scaled_residuals, scaled_noise_map)
 
             assert li_hyper_manual.grids.image.scaled_array_from_array_1d(contributions[0]) == \
