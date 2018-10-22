@@ -272,6 +272,8 @@ class EllipticalProfile(SphericalProfile):
         grid : ndarray
             The (y, x) coordinates in the original reference frame of the grid.
         """
+        if self.__class__.__name__.startswith("Spherical"):
+            return super().transform_grid_to_reference_frame(grid)
         shifted_coordinates = np.subtract(grid, self.centre)
         radius = np.sqrt(np.sum(shifted_coordinates ** 2.0, 1))
         theta_coordinate_to_profile = np.arctan2(shifted_coordinates[:, 0],
@@ -289,6 +291,9 @@ class EllipticalProfile(SphericalProfile):
         grid : TransformedGrid(ndarray)
             The (y, x) coordinates in the reference frame of the profile.
         """
+        if self.__class__.__name__.startswith("Spherical"):
+            return super().transform_grid_from_reference_frame(grid)
+
         y = np.add(np.add(np.multiply(grid[:, 1], self.sin_phi), np.multiply(grid[:, 0], self.cos_phi)), self.centre[0])
         x = np.add(np.add(np.multiply(grid[:, 1], self.cos_phi), - np.multiply(grid[:, 0], self.sin_phi)),
                    self.centre[1])
@@ -296,12 +301,3 @@ class EllipticalProfile(SphericalProfile):
 
     def eta_u(self, u, coordinates):
         return np.sqrt((u * ((coordinates[1] ** 2) + (coordinates[0] ** 2 / (1 - (1 - self.axis_ratio ** 2) * u)))))
-
-
-def with_spherical_transform(cls):
-    class WithSphericalTransform(cls):
-        pass
-
-    WithSphericalTransform.transform_grid_to_reference_frame = SphericalProfile.transform_grid_to_reference_frame
-    WithSphericalTransform.transform_grid_from_reference_frame = SphericalProfile.transform_grid_from_reference_frame
-    return WithSphericalTransform
