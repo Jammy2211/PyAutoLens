@@ -6,10 +6,10 @@ from autolens.imaging import mask as msk
 
 class GalaxyData(scaled_array.ScaledSquarePixelArray):
 
-    def __new__(cls, data, mask, noise_map, sub_grid_size=2):
-        return np.array(mask.map_2d_array_to_masked_1d_array(data)).view(cls)
+    def __new__(cls, array, mask, noise_map, sub_grid_size=2):
+        return np.array(mask.map_2d_array_to_masked_1d_array(array)).view(cls)
 
-    def __init__(self, data, noise_map, mask, sub_grid_size=2):
+    def __init__(self, array, noise_map, mask, sub_grid_size=2):
         """
         The lensing _data is the collection of data (images, noise-maps, PSF), a mask, grids, convolvers and other \
         utilities that are used for modeling and fitting an _data of a strong lens.
@@ -19,7 +19,7 @@ class GalaxyData(scaled_array.ScaledSquarePixelArray):
 
         Parameters
         ----------
-        data : scaled_array.ScaledSquarePixelArray
+        array : scaled_array.ScaledSquarePixelArray
             The original _data data in 2D.
         mask: msk.Mask
             The 2D mask that is applied to the _data.
@@ -30,9 +30,9 @@ class GalaxyData(scaled_array.ScaledSquarePixelArray):
             The shape of the PSF used for convolving model images generated using analytic light profiles. A smaller \
             shape will trim the PSF relative to the input _data PSF, giving a faster analysis run-time.
         """
-        super().__init__(array=data, pixel_scale=data.pixel_scale)
+        super().__init__(array=array, pixel_scale=array.pixel_scale)
 
-        self.data = data
+        self.array = array
         self.noise_map = mask.map_2d_array_to_masked_1d_array(array_2d=noise_map)
         self.mask = mask
         self.sub_grid_size = sub_grid_size
@@ -46,7 +46,7 @@ class GalaxyData(scaled_array.ScaledSquarePixelArray):
     def __array_finalize__(self, obj):
         super(GalaxyData, self).__array_finalize__(obj)
         if isinstance(obj, GalaxyData):
-            self.data = obj.data
+            self.array = obj.array
             self.mask = obj.mask
             self.sub_grid_size = obj.sub_grid_size
             self.grids = obj.grids

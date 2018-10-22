@@ -6,7 +6,7 @@ import pytest
 from autolens.imaging import imaging_util
 from autolens.imaging import scaled_array
 
-test_data_dir = "{}/../test_files/data/".format(os.path.dirname(os.path.realpath(__file__)))
+test_data_dir = "{}/../test_files/array/".format(os.path.dirname(os.path.realpath(__file__)))
 
 
 @pytest.fixture(name="array_grid")
@@ -423,7 +423,7 @@ class TestScaledSquarePixelArray:
     class TestConstructors(object):
 
         def test__constructor(self, array_grid):
-            # Does the data grid class correctly instantiate as an instance of ndarray?
+            # Does the array grid class correctly instantiate as an instance of ndarray?
             assert array_grid.shape == (5, 5)
             assert array_grid.pixel_scale == 0.5
             assert isinstance(array_grid, np.ndarray)

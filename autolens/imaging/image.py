@@ -16,20 +16,20 @@ class Image(ScaledSquarePixelArray):
 
     def __init__(self, array, pixel_scale, psf, noise_map, background_noise_map=None):
         """
-        A 2d data representing a real or simulated _data.
+        A 2d array representing a real or simulated _data.
 
         Parameters
         ----------
         array : ndarray
-            An data of the _data.
+            An array of the _data.
         pixel_scale : float
             The scale of each pixel in arc seconds
         psf : PSF
-            An data describing the PSF of the _data.
+            An array describing the PSF of the _data.
         noise_map : Array
-            An data describing the total noise_map in each _data pixel.
+            An array describing the total noise_map in each _data pixel.
         background_noise_map : Array
-            An data describing the background noise_map in each _data pixel (used for hyper_image background noise_map
+            An array describing the background noise_map in each _data pixel (used for hyper_image background noise_map
             scaling).
         """
         super(Image, self).__init__(array, pixel_scale)
@@ -86,29 +86,29 @@ class PreparatoryImage(Image):
     def __init__(self, array, pixel_scale, psf, noise_map=None, background_noise_map=None, poisson_noise_map=None,
                  exposure_time=None, effective_exposure_map=None):
         """
-        A 2d data representing an _data, including preparatory components which are not needed for the actual lens
+        A 2d array representing an _data, including preparatory components which are not needed for the actual lens
         analysis but help set up the noise_map, background sky, etc.
 
         Parameters
         ----------
         array : ndarray
-            An data of the _data.
+            An array of the _data.
         pixel_scale : float
             The scale of each pixel in arc seconds
         psf : PSF
-            An data describing the PSF of the _data.
+            An array describing the PSF of the _data.
         noise_map : Array
-            An data describing the total noise_map in each _data pixel.
+            An array describing the total noise_map in each _data pixel.
         background_noise_map : Array
-            An data describing the background noise_map in each _data pixel (used for hyper_image background noise_map
+            An array describing the background noise_map in each _data pixel (used for hyper_image background noise_map
             scaling).
         poisson_noise_map : ndarray
-            An data describing the poisson noise_map in each _data pixel (used for checking the _data units are
+            An array describing the poisson noise_map in each _data pixel (used for checking the _data units are
             sensible).
         exposure_time : float
             The overall exposure time of the _data.
         effective_exposure_map : ndarray
-            An data representing the effective exposure time of each pixel.
+            An array representing the effective exposure time of each pixel.
         """
         super(PreparatoryImage, self).__init__(array, pixel_scale, psf, noise_map, background_noise_map)
         self.poisson_noise_map = poisson_noise_map
@@ -145,9 +145,9 @@ class PreparatoryImage(Image):
         pixel_scale: float
             The scale of each pixel in arc seconds
         effective_exposure_map : ndarray
-            An data representing the effective exposure time of each pixel.
+            An array representing the effective exposure time of each pixel.
         psf: PSF
-            An data describing the PSF the simulated _data is blurred with.
+            An array describing the PSF the simulated _data is blurred with.
         background_sky_map : ndarray
             The value of background sky in every _data pixel (electrons per second).
         add_noise: Bool
@@ -208,9 +208,9 @@ class PreparatoryImage(Image):
         pixel_scale: float
             The scale of each pixel in arc seconds
         effective_exposure_map : ndarray
-            An data representing the effective exposure time of each pixel.
+            An array representing the effective exposure time of each pixel.
         psf: PSF
-            An data describing the PSF the simulated _data is blurred with.
+            An array describing the PSF the simulated _data is blurred with.
         background_sky_map : ndarray
             The value of background sky in every _data pixel (electrons per second).
         seed: int
@@ -264,23 +264,23 @@ class PreparatoryImage(Image):
 
     def electrons_per_second_to_counts(self, array):
         """
-        For an data (in electrons per second) and an exposure time mappers, return an data in units counts.
+        For an array (in electrons per second) and an exposure time mappers, return an array in units counts.
 
         Parameters
         ----------
         array : ndarray
-            The data the values are to be converted from electrons per seconds to counts.
+            The array the values are to be converted from electrons per seconds to counts.
         """
         return np.multiply(array, self.effective_exposure_map)
 
     def counts_to_electrons_per_second(self, array):
         """
-        For an data (in counts) and an exposure time mappers, convert the data to units electrons per second
+        For an array (in counts) and an exposure time mappers, convert the array to units electrons per second
 
         Parameters
         ----------
         array : ndarray
-            The data the values are to be converted from counts to electrons per second.
+            The array the values are to be converted from counts to electrons per second.
         """
         return np.divide(array, self.effective_exposure_map)
 
@@ -417,17 +417,17 @@ class PSF(ScaledSquarePixelArray):
 
     def convolve(self, array):
         """
-        Convolve an data with this PSF
+        Convolve an array with this PSF
 
         Parameters
         ----------
         array: ndarray
-            An data representing the _data the PSF is convolved with.
+            An array representing the _data the PSF is convolved with.
 
         Returns
         -------
         convolved_array: ndarray
-            An data representing the _data after convolution.
+            An array representing the _data after convolution.
 
         Raises
         ------
@@ -465,14 +465,14 @@ def generate_poisson_noise(image, effective_exposure_map, seed=-1):
     image : ndarray
         The 2D _data, whose values in counts are used to draw Poisson noise_map values.
     effective_exposure_map : Union(ndarray, int)
-        2D data of the exposure time in each pixel used to convert to / from counts and electrons per second.
+        2D array of the exposure time in each pixel used to convert to / from counts and electrons per second.
     seed : int
         The seed of the random number generator, used for the random noise_map maps.
 
     Returns
     -------
     poisson_noise_map: ndarray
-        An data describing simulated poisson noise_map
+        An array describing simulated poisson noise_map
     """
     setup_random_seed(seed)
     image_counts = np.multiply(image, effective_exposure_map)
