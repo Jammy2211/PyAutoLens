@@ -31,7 +31,7 @@ class TestSersic(object):
         assert (elliptical.intensities_from_grid(grid) == spherical.intensities_from_grid(grid)).all()
         assert (elliptical.surface_density_from_grid(grid) == spherical.surface_density_from_grid(grid)).all()
         # assert (elliptical.potential_from_grid(grid) == spherical.potential_from_grid(grid)).all()
-        assert (elliptical.deflections_from_grid(grid) == spherical.deflections_from_grid(grid)).all()
+        np.testing.assert_almost_equal(elliptical.deflections_from_grid(grid), spherical.deflections_from_grid(grid))
 
 
 class TestExponential(object):
@@ -56,7 +56,7 @@ class TestExponential(object):
         assert (elliptical.intensities_from_grid(grid) == spherical.intensities_from_grid(grid)).all()
         assert (elliptical.surface_density_from_grid(grid) == spherical.surface_density_from_grid(grid)).all()
         # assert elliptical.potential_from_grid(grid) == spherical.potential_from_grid(grid)
-        assert (elliptical.deflections_from_grid(grid) == spherical.deflections_from_grid(grid)).all()
+        np.testing.assert_almost_equal(elliptical.deflections_from_grid(grid), spherical.deflections_from_grid(grid))
 
 
 class TestDevVaucouleurs(object):
@@ -81,7 +81,7 @@ class TestDevVaucouleurs(object):
         assert (elliptical.intensities_from_grid(grid) == spherical.intensities_from_grid(grid)).all()
         assert (elliptical.surface_density_from_grid(grid) == spherical.surface_density_from_grid(grid)).all()
         # assert elliptical.potential_from_grid(grid) == spherical.potential_from_grid(grid)
-        assert (elliptical.deflections_from_grid(grid) == spherical.deflections_from_grid(grid)).all()
+        np.testing.assert_almost_equal(elliptical.deflections_from_grid(grid), spherical.deflections_from_grid(grid))
 
 
 class TestSersicRadialGradient(object):
@@ -109,4 +109,4 @@ class TestSersicRadialGradient(object):
         assert (elliptical.intensities_from_grid(grid) == spherical.intensities_from_grid(grid)).all()
         assert (elliptical.surface_density_from_grid(grid) == spherical.surface_density_from_grid(grid)).all()
         # assert elliptical.potential_from_grid(grid) == spherical.potential_from_grid(grid)
-        assert (elliptical.deflections_from_grid(grid) == spherical.deflections_from_grid(grid)).all()
+        np.testing.assert_almost_equal(elliptical.deflections_from_grid(grid), spherical.deflections_from_grid(grid))
