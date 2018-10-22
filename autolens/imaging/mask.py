@@ -338,6 +338,10 @@ class ImageGrid(np.ndarray):
         obj.mask = mask
         return obj
 
+    def __array_finalize__(self, obj):
+        if hasattr(obj, "mask"):
+            self.mask = obj.mask
+
     @property
     def unlensed_grid(self):
         return ImageGrid(arr=imaging_util.image_grid_1d_masked_from_mask_and_pixel_scales(mask=self.mask,
@@ -511,7 +515,6 @@ class SubGrid(ImageGrid):
         self.sub_grid_size = sub_grid_size
         self.sub_grid_length = int(sub_grid_size ** 2.0)
         self.sub_grid_fraction = 1.0 / self.sub_grid_length
-        self.mask = mask
 
     @property
     def unlensed_grid(self):
@@ -554,6 +557,7 @@ class SubGrid(ImageGrid):
         return SubGrid(sub_grid, mask, sub_grid_size)
 
     def __array_finalize__(self, obj):
+        super().__array_finalize__(obj)
         if isinstance(obj, SubGrid):
             self.sub_grid_size = obj.sub_grid_size
             self.sub_grid_length = obj.sub_grid_length
@@ -601,6 +605,11 @@ class PaddedImageGrid(ImageGrid):
         arr.mask = mask
         arr.image_shape = image_shape
         return arr
+
+    def __array_finalize__(self, obj):
+        super().__array_finalize__(obj)
+        if hasattr(obj, "image_shape"):
+            self.image_shape = obj.image_shape
 
     @classmethod
     def padded_grid_from_shapes_and_pixel_scale(self, shape, psf_shape, pixel_scale):
@@ -683,6 +692,7 @@ class PaddedSubGrid(SubGrid, PaddedImageGrid):
         opposed to just within the masked region.
         """
         super(PaddedSubGrid, self).__init__(arr, mask, sub_grid_size)
+        self.image_shape = image_shape
 
     @classmethod
     def padded_grid_from_mask_sub_grid_size_and_psf_shape(cls, mask, sub_grid_size, psf_shape):
@@ -712,11 +722,8 @@ class PaddedSubGrid(SubGrid, PaddedImageGrid):
                              sub_grid_size=sub_grid_size)
 
     def __array_finalize__(self, obj):
+        super().__array_finalize__(obj)
         if isinstance(obj, PaddedSubGrid):
-            self.sub_grid_size = obj.sub_grid_size
-            self.sub_grid_length = obj.sub_grid_length
-            self.sub_grid_fraction = obj.sub_grid_fraction
-            self.mask = obj.mask
             self.image_shape = obj.image_shape
 
 
