@@ -47,7 +47,7 @@ class NamedConfig(object):
         Returns
         -------
         prior_array: []
-            An data describing a prior
+            An array describing a prior
         """
         string_value = self.parser.get(section_name, attribute_name)
         if string_value == "None":
@@ -126,7 +126,7 @@ class AncestorConfig(object):
         Returns
         -------
         prior_array: []
-            An data describing this prior
+            An array describing this prior
         """
         for family_cls in family(cls):
             if self.has(family_cls.__module__, family_cls.__name__, attribute_name):
@@ -155,7 +155,7 @@ class AncestorConfig(object):
         Returns
         -------
         prior_array: []
-            An data describing a prior
+            An array describing a prior
         """
         self.read(module_name)
         return self.parser.get(class_name, attribute_name)
@@ -198,7 +198,7 @@ class DefaultPriorConfig(AncestorConfig):
         Returns
         -------
         prior_array: []
-            An data describing a prior
+            An array describing a prior
         """
         arr = super(DefaultPriorConfig, self).get(module_name, class_name, attribute_name).replace(" ", "").split(",")
         return [arr[0]] + list(map(float, arr[1:]))

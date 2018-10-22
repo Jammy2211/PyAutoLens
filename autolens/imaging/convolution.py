@@ -18,17 +18,17 @@ convolver_image = frame_maker.convolver_for_kernel_shape((3, 3), blurring_region
 
 Here the blurring region mask describes the region under the mask from which a given PSF psf may blur pixels. If the
 regular mask specifies True for a givena pixel and the blurring region mask False then that pixel will be blurred in
-using the blurring data.
+using the blurring array.
 
 A convolver_image can then be made for any given psf:
 
 kernel_convolver = convolver_image.convolver_for_kernel(psf)
 
-Which is applied to a reduced data and blurring data:
+Which is applied to a reduced array and blurring array:
 
-convolved_array = convolver_image.convolve_array(data, blurring_array)
+convolved_array = convolver_image.convolve_array(array, blurring_array)
 
-The data is pixels within the non-masked region, whilst the blurring data is pixels outside of the non-masked region
+The array is pixels within the non-masked region, whilst the blurring array is pixels outside of the non-masked region
 but inside of the blurring mask region.
 
 The convolver_image can also be applied for some sub_grid-shape of the psf:
@@ -39,7 +39,7 @@ Or applied to a whole mapping_matrix matrix:
 
 convolved_mapping_matrix = convolver_image.convolve_mapping_matrix(mapping_matrix)
 
-Where the mapping_matrix matrix is an data of dictionaries with each index of the data corresponding to a source pixel.
+Where the mapping_matrix matrix is an array of dictionaries with each index of the array corresponding to a source pixel.
 
 It is also possible to specify a blurring region mask:
 
@@ -65,7 +65,7 @@ class Convolver(object):
     [False, False, False],
     [True, False, True]]
 
-    A set of values in a corresponding 1d data of this _data might be represented as:
+    A set of values in a corresponding 1d array of this _data might be represented as:
 
     [2, 8, 2, 5, 7, 5, 3, 1, 4]
 
@@ -73,7 +73,7 @@ class Convolver(object):
 
     [8, 5, 7, 5, 1]
 
-    Setup is required to perform 2D real-space convolution on the masked _data data. This module finds the \
+    Setup is required to perform 2D real-space convolution on the masked _data array. This module finds the \
     relationship between the unmasked 2D _data data, masked _data data and psf, so that 2D real-space convolutions \
     can be efficiently applied to reduced 1D masked arrays.
 
@@ -144,7 +144,7 @@ class Convolver(object):
     image_frame_psfs = [0,1, 0.2, 0,3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
     image_frame_lengths = 9
 
-    Once we have set up all these quantities, the convolution routine simply uses them to convolve a 1D data of a
+    Once we have set up all these quantities, the convolution routine simply uses them to convolve a 1D array of a
     masked _data or the masked _data of a mapping_matrix in the inversion module.
 
     BLURRING FRAMES:
@@ -224,7 +224,7 @@ class Convolver(object):
         burring_mask : Mask
             A mask of pixels outside the mask but whose light blurs into it after convolution.
         psf : _data.PSF or ndarray
-            An data representing a PSF psf.
+            An array representing a PSF psf.
         """
 
         if psf.shape[0] % 2 == 0 or psf.shape[1] % 2 == 0:
@@ -314,7 +314,7 @@ class ConvolverImage(Convolver):
         blurring_mask : Mask
             A mask of pixels outside the mask but whose light blurs into it after PSF convolution.
         psf : _data.PSF or ndarray
-            An data representing a PSF.
+            An array representing a PSF.
         """
 
         if mask.shape != blurring_mask.shape:
@@ -340,14 +340,14 @@ class ConvolverImage(Convolver):
                     image_index += 1
 
     def convolve_image(self, image_array, blurring_array):
-        """For a given 1D _data data and blurring data, convolve the two using this convolver.
+        """For a given 1D _data array and blurring array, convolve the two using this convolver.
 
         Parameters
         -----------
         image_array : ndarray
-            1D data of the _data values which are to be blurred with the convolver's PSF.
+            1D array of the _data values which are to be blurred with the convolver's PSF.
         blurring_array : ndarray
-            1D data of the blurring _data values which blur into the _data-data after PSF convolution.
+            1D array of the blurring _data values which blur into the _data-array after PSF convolution.
         """
         return self.convolve_jit(image_array, self.image_frame_indexes, self.image_frame_psfs, self.image_frame_lengths,
                                  blurring_array, self.blurring_frame_indexes, self.blurring_frame_psfs,
