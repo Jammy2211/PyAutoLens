@@ -92,13 +92,27 @@ class Plane(object):
 
         self.cosmology = cosmology
 
+    # TODO : The map function isn't passing the class attributes correcty. We shouldbe able to refactor this
+    # TODO : doing it messy for now!
+
     def trace_grids_to_next_plane(self):
         """Trace this plane's grids to the next plane, using its deflection angles."""
 
-        def minus(grid, deflections):
-            return grid - deflections
+        if isinstance(self.grids.image, msk.PaddedImageGrid):
+            image_grid = msk.PaddedImageGrid(arr=self.grids.image - self.deflections.image, mask=self.grids.image.mask,
+                                             image_shape=self.grids.image.image_shape)
+        elif isinstance(self.grids.image, msk.ImageGrid):
+            image_grid = msk.ImageGrid(arr=self.grids.image - self.deflections.image, mask=self.grids.image.mask)
 
-        return self.grids.map_function(minus, self.deflections)
+        if isinstance(self.grids.sub, msk.PaddedSubGrid):
+            sub_grid = msk.PaddedSubGrid(self.grids.sub - self.deflections.sub, self.grids.sub.mask,
+                                         self.grids.sub.image_shape, self.grids.sub.sub_grid_size)
+        elif isinstance(self.grids.sub, msk.SubGrid):
+            sub_grid = msk.SubGrid(self.grids.sub - self.deflections.sub, self.grids.sub.mask,
+                                   self.grids.sub.sub_grid_size)
+
+        blurring_grid = msk.ImageGrid(arr=self.grids.blurring - self.deflections.blurring, mask=None)
+        return msk.ImagingGrids(image=image_grid, sub=sub_grid, blurring=blurring_grid)
 
     @property
     def galaxy_redshifts(self):
@@ -324,7 +338,7 @@ def potential_from_grid(grid, galaxies):
     return sum(map(lambda g: g.potential_from_grid(grid), galaxies))
 
 
-# TODO : There will be a much cleaner way to apply sub data to surface_density to the data wihtout the need for a
+# TODO : There will be a much cleaner way to apply sub data to surface_density to the array wihtout the need for a
 # transpose
 
 def deflections_from_grid(grid, galaxies):
