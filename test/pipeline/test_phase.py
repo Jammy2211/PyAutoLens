@@ -17,7 +17,7 @@ from autolens.profiles import mass_profiles as mp
 
 pytestmark = pytest.mark.filterwarnings(
     "ignore:Using a non-tuple sequence for multidimensional indexing is deprecated; use `arr[tuple(seq)]` instead of "
-    "`arr[seq]`. In the future this will be interpreted as an data index, `arr[np.data(seq)]`, which will result "
+    "`arr[seq]`. In the future this will be interpreted as an array index, `arr[np.array(seq)]`, which will result "
     "either in an error or a different result.")
 
 directory = path.dirname(path.realpath(__file__))
@@ -327,9 +327,9 @@ class TestResult(object):
     #     lensing = MockAnalysis(number_galaxies=2, value=1.0)
     #
     # result = ph.LensSourcePlanePhase.Result(constant=mm.ModelInstance(), likelihood=1,
-    # variable=mm.ModelMapper(), lensing=lensing) assert (result.image_plane_source_images[0] == np.data([
-    # 1.0])).all() assert (result.image_plane_source_images[1] == np.data([1.0])).all() assert (
-    # result._data == np.data([2.0])).all()
+    # variable=mm.ModelMapper(), lensing=lensing) assert (result.image_plane_source_images[0] == np.array([
+    # 1.0])).all() assert (result.image_plane_source_images[1] == np.array([1.0])).all() assert (
+    # result._data == np.array([2.0])).all()
 
     def test_results(self):
         results = ph.ResultsCollection([1, 2, 3])

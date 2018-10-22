@@ -19,8 +19,7 @@ def make_mask():
 
 @pytest.fixture(name="galaxy_data")
 def make_lensing_image(scaled_array, mask):
-    noise_map = sca.ScaledSquarePixelArray(array=2.0*np.ones((4, 4)), pixel_scale=3.0)
-    return gd.GalaxyData(data=scaled_array, noise_map=noise_map, mask=mask)
+    return gd.GalaxyData(array=scaled_array, noise_map=2.0*np.ones((4,4)), mask=mask)
 
 
 class TestGalaxyData(object):
@@ -28,10 +27,10 @@ class TestGalaxyData(object):
     def test_attributes(self, scaled_array, galaxy_data):
         assert scaled_array.pixel_scale == galaxy_data.pixel_scale
 
-    def test__scaled_array(self, galaxy_data):
-        assert galaxy_data == pytest.approx(np.ones(4), 1e-4)
-  #      assert galaxy_data.data == pytest.approx(np.ones((4, 4)), 1e-4)
-        assert galaxy_data.noise_map == pytest.approx(2.0*np.ones((4)), 1e-4)
+    def test__scaled_array_and_mapper(self, galaxy_data):
+        assert (galaxy_data == np.ones(4)).all()
+        assert (galaxy_data.array == np.ones((4,4))).all()
+        assert (galaxy_data.noise_map == 2.0*np.ones((4))).all()
         assert (galaxy_data.mask == np.array([[True, True, True, True],
                                               [True, False, False, True],
                                               [True, False, False, True],
@@ -51,23 +50,23 @@ class TestGalaxyData(object):
     def test_unmasked_grids(self, galaxy_data):
 
         padded_image_util = imaging_util.image_grid_1d_masked_from_mask_and_pixel_scales(mask=np.full((4, 4), False),
-                          pixel_scales=galaxy_data.pixel_scales)
+                          pixel_scales=galaxy_data.array.pixel_scales)
 
         assert (galaxy_data.unmasked_grids.image == padded_image_util).all()
         assert galaxy_data.unmasked_grids.image.image_shape == (4, 4)
         assert galaxy_data.unmasked_grids.image.padded_shape == (4, 4)
 
         padded_sub_util = imaging_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(
-            mask=np.full((4, 4), False), pixel_scales=galaxy_data.pixel_scales,
+            mask=np.full((4, 4), False), pixel_scales=galaxy_data.array.pixel_scales,
             sub_grid_size=galaxy_data.grids.sub.sub_grid_size)
 
         assert galaxy_data.unmasked_grids.sub == pytest.approx(padded_sub_util, 1e-4)
         assert galaxy_data.unmasked_grids.sub.image_shape == (4, 4)
         assert galaxy_data.unmasked_grids.sub.padded_shape == (4, 4)
 
-    # def test_subtract(self, galaxy_data):
-    #     subtracted_image = galaxy_data - np.array([1, 0, 1, 0])
-    #     assert isinstance(subtracted_image, gd.GalaxyData)
-    #     assert subtracted_image.pixel_scale == galaxy_data.pixel_scale
-    #
-    #     assert subtracted_image == np.array([0, 1, 0, 1])
+    def test_subtract(self, galaxy_data):
+        subtracted_image = galaxy_data - np.array([1, 0, 1, 0])
+        assert isinstance(subtracted_image, gd.GalaxyData)
+        assert subtracted_image.pixel_scale == galaxy_data.pixel_scale
+
+        assert subtracted_image == np.array([0, 1, 0, 1])
