@@ -63,11 +63,9 @@ class TestMask(object):
         assert (msk == msk_util).all()
 
     def test__mask_anti_annulus__compare_to_array_util(self):
+
         msk_util = imaging_util.mask_anti_annular_from_shape_pixel_scale_and_radii(shape=(9, 9), pixel_scale=1.2,
-                                                                                   inner_radius_arcsec=0.8,
-                                                                                   outer_radius_arcsec=2.2,
-                                                                                   outer_radius_2_arcsec=3.0,
-                                                                                   centre=(1.0, 1.0))
+                  inner_radius_arcsec=0.8, outer_radius_arcsec=2.2, outer_radius_2_arcsec=3.0, centre=(1.0, 1.0))
 
         msk = mask.Mask.anti_annular(shape=(9, 9), pixel_scale=1.2, inner_radius_arcsec=0.8,
                                      outer_radius_arcsec=2.2, outer_radius_2_arcsec=3.0, centre=(1.0, 1.0))
@@ -149,9 +147,7 @@ class TestMask(object):
                         [True, True, True, True, True, False, True]])
 
         border_sub_pixels_util = imaging_util.border_sub_pixels_from_mask_pixel_scales_and_sub_grid_size(mask=msk,
-                                                                                                         pixel_scales=(
-                                                                                                             3.0, 3.0),
-                                                                                                         sub_grid_size=2)
+                                 pixel_scales=(3.0, 3.0), sub_grid_size=2)
 
         msk = mask.Mask(msk, pixel_scale=3.0)
 
@@ -187,13 +183,13 @@ def make_imaging_grids(centre_mask):
 class TestImageGrid:
 
     def test__image_grid_from_mask__compare_to_array_util(self):
+
         msk = np.array([[True, True, False, False],
                         [True, False, True, True],
                         [True, True, False, False]])
         msk = mask.Mask(array=msk, pixel_scale=2.0)
 
-        image_grid_util = imaging_util.image_grid_1d_masked_from_mask_and_pixel_scales(mask=msk,
-                                                                                       pixel_scales=(2.0, 2.0))
+        image_grid_util = imaging_util.image_grid_1d_masked_from_mask_and_pixel_scales(mask=msk, pixel_scales=(2.0, 2.0))
 
         image_grid = mask.ImageGrid.from_mask(msk)
 
@@ -203,6 +199,7 @@ class TestImageGrid:
         assert (image_grid.mask.grid_to_pixel == msk.grid_to_pixel).all()
 
     def test__image_grid_unlensed_grid_properties_compare_to_array_util(self):
+
         msk = np.array([[True, True, False, False],
                         [True, False, True, True],
                         [True, True, False, False]])
@@ -216,7 +213,7 @@ class TestImageGrid:
         assert type(image_grid) == mask.ImageGrid
         assert image_grid.unlensed_grid == pytest.approx(image_grid_util, 1e-4)
 
-        image_grid_util = imaging_util.image_grid_1d_from_shape_and_pixel_scales(shape=(3, 4), pixel_scales=(2.0, 2.0))
+        image_grid_util = imaging_util.image_grid_1d_from_shape_and_pixel_scales(shape=(3,4), pixel_scales=(2.0, 2.0))
 
         assert type(image_grid) == mask.ImageGrid
         assert image_grid.unlensed_unmasked_grid == pytest.approx(image_grid_util, 1e-4)
@@ -227,8 +224,7 @@ class TestImageGrid:
                         [False, False, False, False]])
         msk = mask.Mask(array=msk, pixel_scale=2.0)
 
-        image_grid_util = imaging_util.image_grid_1d_masked_from_mask_and_pixel_scales(mask=msk,
-                                                                                       pixel_scales=(2.0, 2.0))
+        image_grid_util = imaging_util.image_grid_1d_masked_from_mask_and_pixel_scales(mask=msk, pixel_scales=(2.0, 2.0))
 
         image_grid = mask.ImageGrid.from_shape_and_pixel_scale(shape=(3, 4), pixel_scale=2.0)
 
@@ -279,6 +275,7 @@ class TestImageGrid:
         assert (array_2d_util == array_2d_grid).all()
 
     def test__scaled_array_from_array_1d__compare_to_util(self):
+
         msk = np.array([[True, True, False, False],
                         [True, False, True, True],
                         [True, True, False, False]])
@@ -299,6 +296,7 @@ class TestImageGrid:
     class TestTicks:
 
         def test__yticks(self):
+
             sca = mask.ImageGrid(arr=np.array([[1.5, 1.0], [-1.5, -1.0]]), mask=None)
             assert sca.yticks == pytest.approx(np.array([-1.5, -0.5, 0.5, 1.5]), 1e-3)
 
@@ -309,6 +307,7 @@ class TestImageGrid:
             assert sca.yticks == pytest.approx(np.array([2.0, 3.0, 4.0, 5.0]), 1e-3)
 
         def test__xticks(self):
+            
             sca = mask.ImageGrid(arr=np.array([[1.0, 1.5], [-1.0, -1.5]]), mask=None)
             assert sca.xticks == pytest.approx(np.array([-1.5, -0.5, 0.5, 1.5]), 1e-3)
 
@@ -328,12 +327,13 @@ class TestSubGrid(object):
         assert (sub_grid == np.array([[1, 0], [0, -1], [0, 0], [0, 1], [-1, 0]])).all()
 
     def test__image_grid_unlensed_grid_properties_compare_to_array_util(self, msk, sub_grid):
+
         assert type(sub_grid) == mask.SubGrid
         assert sub_grid.unlensed_grid == \
                pytest.approx(np.array([[1, 0], [0, -1], [0, 0], [0, 1], [-1, 0]]), 1e-4)
 
         sub_grid_util = imaging_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(
-            mask=np.full((3, 3), False), pixel_scales=(1.0, 1.0), sub_grid_size=1)
+            mask=np.full((3,3), False), pixel_scales=(1.0, 1.0), sub_grid_size=1)
 
         assert type(sub_grid) == mask.SubGrid
         assert sub_grid.unlensed_unmasked_grid == pytest.approx(sub_grid_util, 1e-4)
@@ -341,7 +341,7 @@ class TestSubGrid(object):
         sub_grid = mask.SubGrid.from_mask_and_sub_grid_size(msk, sub_grid_size=2)
 
         sub_grid_util = imaging_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(
-            mask=np.full((3, 3), False), pixel_scales=(1.0, 1.0), sub_grid_size=2)
+            mask=np.full((3, 3), False), pixel_scales = (1.0, 1.0), sub_grid_size = 2)
 
         assert type(sub_grid) == mask.SubGrid
         assert sub_grid.unlensed_unmasked_grid == pytest.approx(sub_grid_util, 1e-4)
@@ -355,9 +355,7 @@ class TestSubGrid(object):
                         [True, True, False]])
 
         sub_grid_util = imaging_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(mask=msk,
-                                                                                                 pixel_scales=(
-                                                                                                     3.0, 3.0),
-                                                                                                 sub_grid_size=2)
+                                                                 pixel_scales=(3.0, 3.0), sub_grid_size=2)
 
         msk = mask.Mask(msk, pixel_scale=3.0)
 
@@ -371,9 +369,7 @@ class TestSubGrid(object):
                         [False, False, False]])
 
         sub_grid_util = imaging_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(mask=msk,
-                                                                                                 pixel_scales=(
-                                                                                                     3.0, 3.0),
-                                                                                                 sub_grid_size=2)
+                                                                pixel_scales=(3.0, 3.0), sub_grid_size=2)
 
         sub_grid = mask.SubGrid.from_shape_pixel_scale_and_sub_grid_size(shape=(3, 3), pixel_scale=3.0, sub_grid_size=2)
 
@@ -418,8 +414,8 @@ class TestUnmaskedGrids:
 
         def test__3x3_array__psf_size_is_1x1__no_padding(self):
             image_padded_grid = mask.PaddedImageGrid.padded_grid_from_shapes_and_pixel_scale(shape=(3, 3),
-                                                                                             psf_shape=(1, 1),
-                                                                                             pixel_scale=1.0)
+                                                                                               psf_shape=(1, 1),
+                                                                                               pixel_scale=1.0)
 
             assert len(image_padded_grid) == 9
             assert image_padded_grid.pixel_scale == 1.0
@@ -428,8 +424,8 @@ class TestUnmaskedGrids:
 
         def test__3x3_image__5x5_psf_size__7x7_image_padded_grid_made(self):
             image_padded_grid = mask.PaddedImageGrid.padded_grid_from_shapes_and_pixel_scale(shape=(3, 3),
-                                                                                             psf_shape=(5, 5),
-                                                                                             pixel_scale=1.0)
+                                                                                               psf_shape=(5, 5),
+                                                                                               pixel_scale=1.0)
 
             assert len(image_padded_grid) == 49
             assert image_padded_grid.image_shape == (3, 3)
@@ -437,24 +433,24 @@ class TestUnmaskedGrids:
 
         def test__3x3_image__7x7_psf_size__9x9_image_padded_grid_made(self):
             image_padded_grid = mask.PaddedImageGrid.padded_grid_from_shapes_and_pixel_scale(shape=(3, 3),
-                                                                                             psf_shape=(7, 7),
-                                                                                             pixel_scale=1.0)
+                                                                                               psf_shape=(7, 7),
+                                                                                               pixel_scale=1.0)
             assert len(image_padded_grid) == 81
             assert image_padded_grid.image_shape == (3, 3)
             assert image_padded_grid.padded_shape == (9, 9)
 
         def test__4x3_image__3x3_psf_size__6x5_image_padded_grid_made(self):
             image_padded_grid = mask.PaddedImageGrid.padded_grid_from_shapes_and_pixel_scale(shape=(4, 3),
-                                                                                             psf_shape=(3, 3),
-                                                                                             pixel_scale=1.0)
+                                                                                               psf_shape=(3, 3),
+                                                                                               pixel_scale=1.0)
             assert len(image_padded_grid) == 30
             assert image_padded_grid.image_shape == (4, 3)
             assert image_padded_grid.padded_shape == (6, 5)
 
         def test__3x4_image__3x3_psf_size__5x6_image_padded_grid_made(self):
             image_padded_grid = mask.PaddedImageGrid.padded_grid_from_shapes_and_pixel_scale(shape=(3, 4),
-                                                                                             psf_shape=(3, 3),
-                                                                                             pixel_scale=1.0)
+                                                                                               psf_shape=(3, 3),
+                                                                                               pixel_scale=1.0)
 
             assert len(image_padded_grid) == 30
             assert image_padded_grid.image_shape == (3, 4)
@@ -462,17 +458,18 @@ class TestUnmaskedGrids:
 
         def test__4x4_image__3x3_psf_size__6x6_image_padded_grid_made(self):
             image_padded_grid = mask.PaddedImageGrid.padded_grid_from_shapes_and_pixel_scale(shape=(4, 4),
-                                                                                             psf_shape=(3, 3),
-                                                                                             pixel_scale=1.0)
+                                                                                               psf_shape=(3, 3),
+                                                                                               pixel_scale=1.0)
 
             assert len(image_padded_grid) == 36
             assert image_padded_grid.image_shape == (4, 4)
             assert image_padded_grid.padded_shape == (6, 6)
 
         def test__image_padded_grid_coordinates__match_grid_2d_after_padding(self):
+
             image_padded_grid = mask.PaddedImageGrid.padded_grid_from_shapes_and_pixel_scale(shape=(4, 4),
-                                                                                             psf_shape=(3, 3),
-                                                                                             pixel_scale=3.0)
+                                                                                               psf_shape=(3, 3),
+                                                                                               pixel_scale=3.0)
 
             image_padded_grid_util = imaging_util.image_grid_1d_masked_from_mask_and_pixel_scales(
                 mask=np.full((6, 6), False), pixel_scales=(3.0, 3.0))
@@ -481,8 +478,8 @@ class TestUnmaskedGrids:
             assert image_padded_grid.padded_shape == (6, 6)
 
             image_padded_grid = mask.PaddedImageGrid.padded_grid_from_shapes_and_pixel_scale(shape=(4, 5),
-                                                                                             psf_shape=(3, 3),
-                                                                                             pixel_scale=2.0)
+                                                                                               psf_shape=(3, 3),
+                                                                                               pixel_scale=2.0)
             image_padded_grid_util = imaging_util.image_grid_1d_masked_from_mask_and_pixel_scales(
                 mask=np.full((6, 7), False), pixel_scales=(2.0, 2.0))
             assert (image_padded_grid == image_padded_grid_util).all()
@@ -490,8 +487,8 @@ class TestUnmaskedGrids:
             assert image_padded_grid.padded_shape == (6, 7)
 
             image_padded_grid = mask.PaddedImageGrid.padded_grid_from_shapes_and_pixel_scale(shape=(5, 4),
-                                                                                             psf_shape=(3, 3),
-                                                                                             pixel_scale=1.0)
+                                                                                               psf_shape=(3, 3),
+                                                                                               pixel_scale=1.0)
             image_padded_grid_util = imaging_util.image_grid_1d_masked_from_mask_and_pixel_scales(
                 mask=np.full((7, 6), False), pixel_scales=(1.0, 1.0))
             assert (image_padded_grid == image_padded_grid_util).all()
@@ -499,8 +496,8 @@ class TestUnmaskedGrids:
             assert image_padded_grid.padded_shape == (7, 6)
 
             image_padded_grid = mask.PaddedImageGrid.padded_grid_from_shapes_and_pixel_scale(shape=(2, 5),
-                                                                                             psf_shape=(5, 5),
-                                                                                             pixel_scale=8.0)
+                                                                                               psf_shape=(5, 5),
+                                                                                               pixel_scale=8.0)
             image_padded_grid_util = imaging_util.image_grid_1d_masked_from_mask_and_pixel_scales(
                 mask=np.full((6, 9), False), pixel_scales=(8.0, 8.0))
             assert (image_padded_grid == image_padded_grid_util).all()
@@ -513,8 +510,8 @@ class TestUnmaskedGrids:
             msk = mask.Mask(array=np.full((3, 3), False), pixel_scale=1.0)
 
             sub_padded_grid = mask.PaddedSubGrid.padded_grid_from_mask_sub_grid_size_and_psf_shape(mask=msk,
-                                                                                                   sub_grid_size=3,
-                                                                                                   psf_shape=(1, 1))
+                                                                                                     sub_grid_size=3,
+                                                                                                     psf_shape=(1, 1))
 
             assert len(sub_padded_grid) == 9 * 3 ** 2
             assert sub_padded_grid.image_shape == (3, 3)
@@ -524,8 +521,8 @@ class TestUnmaskedGrids:
             msk = mask.Mask(array=np.full((3, 3), False), pixel_scale=1.0)
 
             sub_padded_grid = mask.PaddedSubGrid.padded_grid_from_mask_sub_grid_size_and_psf_shape(mask=msk,
-                                                                                                   sub_grid_size=2,
-                                                                                                   psf_shape=(5, 5))
+                                                                                                     sub_grid_size=2,
+                                                                                                     psf_shape=(5, 5))
 
             assert len(sub_padded_grid) == 49 * 2 ** 2
             assert sub_padded_grid.image_shape == (3, 3)
@@ -535,8 +532,8 @@ class TestUnmaskedGrids:
             msk = mask.Mask(array=np.full((4, 3), False), pixel_scale=1.0)
 
             sub_padded_grid = mask.PaddedSubGrid.padded_grid_from_mask_sub_grid_size_and_psf_shape(mask=msk,
-                                                                                                   sub_grid_size=2,
-                                                                                                   psf_shape=(3, 3))
+                                                                                                     sub_grid_size=2,
+                                                                                                     psf_shape=(3, 3))
 
             assert len(sub_padded_grid) == 30 * 2 ** 2
             assert sub_padded_grid.image_shape == (4, 3)
@@ -546,8 +543,8 @@ class TestUnmaskedGrids:
             msk = mask.Mask(array=np.full((3, 4), False), pixel_scale=1.0)
 
             sub_padded_grid = mask.PaddedSubGrid.padded_grid_from_mask_sub_grid_size_and_psf_shape(mask=msk,
-                                                                                                   sub_grid_size=2,
-                                                                                                   psf_shape=(3, 3))
+                                                                                                     sub_grid_size=2,
+                                                                                                     psf_shape=(3, 3))
 
             assert len(sub_padded_grid) == 30 * 2 ** 2
             assert sub_padded_grid.image_shape == (3, 4)
@@ -557,8 +554,8 @@ class TestUnmaskedGrids:
             msk = mask.Mask(array=np.full((4, 4), False), pixel_scale=1.0)
 
             sub_padded_grid = mask.PaddedSubGrid.padded_grid_from_mask_sub_grid_size_and_psf_shape(mask=msk,
-                                                                                                   sub_grid_size=4,
-                                                                                                   psf_shape=(3, 3))
+                                                                                                     sub_grid_size=4,
+                                                                                                     psf_shape=(3, 3))
 
             assert len(sub_padded_grid) == 36 * 4 ** 2
             assert sub_padded_grid.image_shape == (4, 4)
@@ -568,8 +565,8 @@ class TestUnmaskedGrids:
             msk = mask.Mask(array=np.full((4, 4), False), pixel_scale=3.0)
 
             sub_padded_grid = mask.PaddedSubGrid.padded_grid_from_mask_sub_grid_size_and_psf_shape(mask=msk,
-                                                                                                   sub_grid_size=3,
-                                                                                                   psf_shape=(3, 3))
+                                                                                                     sub_grid_size=3,
+                                                                                                     psf_shape=(3, 3))
 
             sub_padded_grid_util = imaging_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(
                 mask=np.full((6, 6), False), pixel_scales=(3.0, 3.0), sub_grid_size=3)
@@ -579,8 +576,8 @@ class TestUnmaskedGrids:
             msk = mask.Mask(array=np.full((4, 5), False), pixel_scale=2.0)
 
             sub_padded_grid = mask.PaddedSubGrid.padded_grid_from_mask_sub_grid_size_and_psf_shape(mask=msk,
-                                                                                                   sub_grid_size=1,
-                                                                                                   psf_shape=(3, 3))
+                                                                                                     sub_grid_size=1,
+                                                                                                     psf_shape=(3, 3))
 
             sub_padded_grid_util = imaging_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(
                 mask=np.full((6, 7), False), pixel_scales=(2.0, 2.0), sub_grid_size=1)
@@ -590,8 +587,8 @@ class TestUnmaskedGrids:
             msk = mask.Mask(array=np.full((5, 4), False), pixel_scale=2.0)
 
             sub_padded_grid = mask.PaddedSubGrid.padded_grid_from_mask_sub_grid_size_and_psf_shape(mask=msk,
-                                                                                                   sub_grid_size=2,
-                                                                                                   psf_shape=(3, 3))
+                                                                                                     sub_grid_size=2,
+                                                                                                     psf_shape=(3, 3))
 
             sub_padded_grid_util = imaging_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(
                 mask=np.full((7, 6), False), pixel_scales=(2.0, 2.0), sub_grid_size=2)
@@ -601,8 +598,8 @@ class TestUnmaskedGrids:
             msk = mask.Mask(array=np.full((2, 5), False), pixel_scale=8.0)
 
             sub_padded_grid = mask.PaddedSubGrid.padded_grid_from_mask_sub_grid_size_and_psf_shape(mask=msk,
-                                                                                                   sub_grid_size=4,
-                                                                                                   psf_shape=(5, 5))
+                                                                                                     sub_grid_size=4,
+                                                                                                     psf_shape=(5, 5))
 
             sub_padded_grid_util = imaging_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(
                 mask=np.full((6, 9), False), pixel_scales=(8.0, 8.0), sub_grid_size=4)
@@ -612,7 +609,8 @@ class TestUnmaskedGrids:
     class TestConvolve:
 
         def test__convolve_1d_mapper_array_with_psf_and_trim_to_original_size(self):
-            msk = mask.Mask(array=np.full((4, 4), False), pixel_scale=1.0)
+
+            msk = mask.Mask(array=np.full((4,4), False), pixel_scale=1.0)
 
             image_padded_grid = mask.PaddedImageGrid(arr=np.empty((0)), mask=msk, image_shape=(2, 2))
 
@@ -635,7 +633,8 @@ class TestUnmaskedGrids:
                                                   0.0, 1.0, 0.0, 0.0])).all()
 
         def test__same_as_above_but_different_quantities(self):
-            msk = mask.Mask(array=np.full((5, 4), False), pixel_scale=1.0)
+
+            msk = mask.Mask(array=np.full((5,4), False), pixel_scale=1.0)
 
             image_padded_grid = mask.PaddedImageGrid(arr=np.empty((0)), mask=msk, image_shape=(3, 2))
 
@@ -662,9 +661,11 @@ class TestUnmaskedGrids:
     class TestMapUnmaskedArrays:
 
         def test__map_to_2d_keep_padded__4x4_from_1d(self):
-            msk = mask.Mask(array=np.full((4, 4), False), pixel_scale=1.0)
+
+            msk = mask.Mask(array=np.full((4,4), False), pixel_scale=1.0)
 
             image_padded_grid = mask.PaddedImageGrid(arr=np.empty((0)), mask=msk, image_shape=(2, 2))
+
 
             array_1d = np.array([6.0, 7.0, 9.0, 10.0,
                                  1.0, 2.0, 3.0, 4.0,
@@ -678,7 +679,8 @@ class TestUnmaskedGrids:
                                           [1.0, 2.0, 3.0, 4.0]])).all()
 
         def test__map_to_2d_keep_padded__5x3_from_1d(self):
-            msk = mask.Mask(array=np.full((5, 3), False), pixel_scale=1.0)
+
+            msk = mask.Mask(array=np.full((5,3), False), pixel_scale=1.0)
 
             image_padded_grid = mask.PaddedImageGrid(arr=np.empty((0)), mask=msk, image_shape=(3, 1))
 
@@ -696,7 +698,8 @@ class TestUnmaskedGrids:
                                           [4.0, 5.0, 6.0]])).all()
 
         def test__map_to_2d_keep_padded__3x5__from_1d(self):
-            msk = mask.Mask(array=np.full((3, 5), False), pixel_scale=1.0)
+
+            msk = mask.Mask(array=np.full((3,5), False), pixel_scale=1.0)
 
             image_padded_grid = mask.PaddedImageGrid(arr=np.empty((0)), mask=msk, image_shape=(1, 3))
 
@@ -710,9 +713,11 @@ class TestUnmaskedGrids:
                                           [2.0, 3.0, 4.0, 5.0, 6.0]])).all()
 
         def test__map_to_2d_and_trim__4x4_to_2x2__from_1d(self):
-            msk = mask.Mask(array=np.full((4, 4), False), pixel_scale=1.0)
+
+            msk = mask.Mask(array=np.full((4,4), False), pixel_scale=1.0)
 
             image_padded_grid = mask.PaddedImageGrid(arr=np.empty((0)), mask=msk, image_shape=(2, 2))
+
 
             array_1d = np.array([1.0, 2.0, 3.0, 4.0,
                                  5.0, 6.0, 7.0, 8.0,
@@ -724,9 +729,10 @@ class TestUnmaskedGrids:
                                           [1.0, 2.0]])).all()
 
         def test__map_to_2d_and_trim__5x3_to_3x1__from_1d(self):
-            msk = mask.Mask(array=np.full((5, 3), False), pixel_scale=1.0)
+            msk = mask.Mask(array=np.full((5,3), False), pixel_scale=1.0)
 
             image_padded_grid = mask.PaddedImageGrid(arr=np.empty((0)), mask=msk, image_shape=(3, 1))
+
 
             array_1d = np.array([1.0, 2.0, 3.0,
                                  4.0, 5.0, 6.0,
@@ -740,9 +746,11 @@ class TestUnmaskedGrids:
                                           [2.0]])).all()
 
         def test__map_to_2d_and_trim__3x5_to_1x3__from_1d(self):
-            msk = mask.Mask(array=np.full((3, 5), False), pixel_scale=1.0)
+
+            msk = mask.Mask(array=np.full((3,5), False), pixel_scale=1.0)
 
             image_padded_grid = mask.PaddedImageGrid(arr=np.empty((0)), mask=msk, image_shape=(1, 3))
+
 
             array_1d = np.array([1.0, 2.0, 3.0, 4.0, 5.0,
                                  6.0, 7.0, 8.0, 9.0, 1.0,
@@ -784,13 +792,14 @@ class TestImagingGrids(object):
         assert (imaging_grids_mask.sub == imaging_grids_shape.sub).all()
 
     def test__padded_grids(self):
+
         msk = np.array([[False, False],
                         [False, False]])
 
         msk = mask.Mask(msk, pixel_scale=1.0)
 
         padded_grids = mask.ImagingGrids.padded_grids_from_mask_sub_grid_size_and_psf_shape(msk, sub_grid_size=2,
-                                                                                            psf_shape=(3, 3))
+                                                                                                psf_shape=(3, 3))
 
         image_padded_grid_util = imaging_util.image_grid_1d_masked_from_mask_and_pixel_scales(
             mask=np.full((4, 4), False),
@@ -812,7 +821,7 @@ class TestImagingGrids(object):
 
     def test__for_simulation(self):
         padded_grids = mask.ImagingGrids.grids_for_simulation(shape=(2, 2), pixel_scale=1.0, sub_grid_size=2,
-                                                              psf_shape=(3, 3))
+                                                                psf_shape=(3, 3))
 
         image_padded_grid_util = imaging_util.image_grid_1d_masked_from_mask_and_pixel_scales(
             mask=np.full((4, 4), False),
@@ -831,27 +840,6 @@ class TestImagingGrids(object):
         assert padded_grids.sub.padded_shape == (4, 4)
 
         assert (padded_grids.blurring == np.array([0.0, 0.0])).all()
-
-    def test_apply_function_retains_attributes(self, imaging_grids):
-        def add_one(coords):
-            return np.add(1, coords)
-
-        assert isinstance(imaging_grids.image, mask.ImageGrid)
-        assert imaging_grids.image.mask is not None
-
-        assert isinstance(imaging_grids.sub, mask.SubGrid)
-        assert imaging_grids.sub.mask is not None
-        assert imaging_grids.sub.sub_grid_size is not None
-        assert imaging_grids.sub.sub_grid_length is not None
-        assert imaging_grids.sub.sub_grid_fraction is not None
-
-        new_collection = imaging_grids.apply_function(add_one)
-
-        assert new_collection.image.mask is not None
-        assert new_collection.sub.mask is not None
-        assert new_collection.sub.sub_grid_size is not None
-        assert new_collection.sub.sub_grid_length is not None
-        assert new_collection.sub.sub_grid_fraction is not None
 
     def test__apply_function(self, imaging_grids):
         def add_one(coords):

@@ -393,15 +393,15 @@ class TestFrameLengths(object):
         convolver = convolution.ConvolverImage(mask=np.full((3, 3), False), blurring_mask=(np.full((3, 3), False)),
                                                psf=np.ones((3, 5)))
 
-        # convolver_image.image_frame_indexes[0] == np.data([0, 1, 2, 3, 4, 5])
-        # convolver_image.image_frame_indexes[1] == np.data([0, 1, 2, 3, 4, 5])
-        # convolver_image.image_frame_indexes[2] == np.data([0, 1, 2, 3, 4, 5])
-        # convolver_image.image_frame_indexes[3] == np.data([0, 1, 2, 3, 4, 5, 6, 7, 8])
-        # (convolver_image.image_frame_indexes[4] == np.data([0, 1, 2, 3, 4, 5, 6, 7, 8])
-        # convolver_image.image_frame_indexes[5] == np.data([0, 1, 2, 3, 4, 5, 6, 7, 8])
-        # convolver_image.image_frame_indexes[6] == np.data([3, 4, 5, 6, 7, 8])
-        # convolver_image.image_frame_indexes[7] == np.data([3, 4, 5, 6, 7, 8])
-        # convolver_image.image_frame_indexes[8] == np.data([3, 4, 5, 6, 7, 8])
+        # convolver_image.image_frame_indexes[0] == np.array([0, 1, 2, 3, 4, 5])
+        # convolver_image.image_frame_indexes[1] == np.array([0, 1, 2, 3, 4, 5])
+        # convolver_image.image_frame_indexes[2] == np.array([0, 1, 2, 3, 4, 5])
+        # convolver_image.image_frame_indexes[3] == np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])
+        # (convolver_image.image_frame_indexes[4] == np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])
+        # convolver_image.image_frame_indexes[5] == np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])
+        # convolver_image.image_frame_indexes[6] == np.array([3, 4, 5, 6, 7, 8])
+        # convolver_image.image_frame_indexes[7] == np.array([3, 4, 5, 6, 7, 8])
+        # convolver_image.image_frame_indexes[8] == np.array([3, 4, 5, 6, 7, 8])
 
         assert (convolver.image_frame_lengths == np.array([6, 6, 6, 9, 9, 9, 6, 6, 6])).all()
 
@@ -417,10 +417,10 @@ class TestFrameLengths(object):
                                                              [16.0, 17.0, 18.0, 19.0, 20.0],
                                                              [21.0, 22.0, 23.0, 24.0, 25.0]]))
 
-        # assert (convolver_image.blurring_frame_psfs[0] == np.data([14.0, 18.0, 19.0, 20.0, 24.0])).all()
-        # assert (convolver_image.blurring_frame_psfs[1] == np.data([12.0, 16.0, 17.0, 18.0, 22.0])).all()
-        # assert (convolver_image.blurring_frame_psfs[2] == np.data([4.0, 8.0, 9.0, 10.0, 14.0])).all()
-        # assert (convolver_image.blurring_frame_psfs[3] == np.data([2.0, 6.0, 7.0, 8.0, 12.0])).all()
+        # assert (convolver_image.blurring_frame_psfs[0] == np.array([14.0, 18.0, 19.0, 20.0, 24.0])).all()
+        # assert (convolver_image.blurring_frame_psfs[1] == np.array([12.0, 16.0, 17.0, 18.0, 22.0])).all()
+        # assert (convolver_image.blurring_frame_psfs[2] == np.array([4.0, 8.0, 9.0, 10.0, 14.0])).all()
+        # assert (convolver_image.blurring_frame_psfs[3] == np.array([2.0, 6.0, 7.0, 8.0, 12.0])).all()
 
         assert (convolver.blurring_frame_lengths == np.array([5, 5, 5, 5])).all()
 
@@ -473,7 +473,7 @@ def sim_grid_9x9():
 class TestCompareToFull2dConv:
 
     def test__compare_convolver_to_2d_convolution(self):
-        # Setup a blurred _data, using the PSF to perform the convolution in 2D, then mask it to make a 1d data.
+        # Setup a blurred _data, using the PSF to perform the convolution in 2D, then mask it to make a 1d array.
 
         im = np.arange(900).reshape(30, 30)
         psf = image.PSF(array=np.arange(49).reshape(7, 7), pixel_scale=1.0)
