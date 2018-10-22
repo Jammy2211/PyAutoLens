@@ -5,9 +5,9 @@ PyAutoLens makes it simple to model strong gravitational lenses. It is based on 
 https://arxiv.org/abs/1412.7436<br/>
 https://arxiv.org/abs/1708.07377
 
-## Contact
+## SLACK
 
-Before using PyAutoLens, I recommend you contact us on our [SLACK channel](https://pyautolens.slack.com/). Here, I can give you the latest updates on installation, functionality and the best way to use PyAutoLens for your science case.
+We're building a PyAutoLens community on SLACK, so you should contact us on our [SLACK channel](https://pyautolens.slack.com/) before getting started with PyAutoLens. Here, I can introduce you to the community, give you the latest update on the software and discuss how best to use PyAutoLens for your science case.
 
 Unfortunately, SLACK is invitation-only, so first send me an [email](https://github.com/Jammy2211) requesting an invite.
 
@@ -20,6 +20,28 @@ $ pip install autolens
 ```
 
 Known issues with the installation can be found in the file [INSTALL.notes](https://github.com/Jammy2211/PyAutoLens/blob/master/INSTALL.notes)
+
+## Installation with Docker
+
+An easy alternative is to install AutoLens using Docker. It makes installation easier by containerising the project.
+
+If you don't have Docker then you can install it by following the guide [here](https://docs.docker.com/install/).
+
+Once you have Docker installed you can download the AutoLens Docker project with the command:
+
+```
+docker pull linan7788626/docker-pyautolens
+```
+
+This command can also be used to update the project.
+
+The project can be run using:
+
+```
+docker run -it -e LOCAL_USER_ID=`id -u $USER` -h PyAutoLens -p 8888:8888 -p 6006:6006 -v $HOME/PyAutoLensWorkDir:/home/user/PyAutoLens/workspace linan7788626/docker-pyautolens
+```
+
+Once the project is running Docker will provide you with a URL. Copy and paste this URL into your browser, making sure you replace '(PyAutoLens or 127.0.0.1)' with '127.0.0.1'. This will bring up a Jupyter notebook including the 'howtolens' directory which is full of tutorials.
 
 ## Python Example
 
