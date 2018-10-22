@@ -839,9 +839,19 @@ class TestImagingGrids(object):
         assert isinstance(imaging_grids.image, mask.ImageGrid)
         assert imaging_grids.image.mask is not None
 
+        assert isinstance(imaging_grids.sub, mask.SubGrid)
+        assert imaging_grids.sub.mask is not None
+        assert imaging_grids.sub.sub_grid_size is not None
+        assert imaging_grids.sub.sub_grid_length is not None
+        assert imaging_grids.sub.sub_grid_fraction is not None
+
         new_collection = imaging_grids.apply_function(add_one)
 
         assert new_collection.image.mask is not None
+        assert new_collection.sub.mask is not None
+        assert new_collection.sub.sub_grid_size is not None
+        assert new_collection.sub.sub_grid_length is not None
+        assert new_collection.sub.sub_grid_fraction is not None
 
     def test__apply_function(self, imaging_grids):
         def add_one(coords):
