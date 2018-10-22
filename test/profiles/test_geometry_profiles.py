@@ -6,42 +6,6 @@ import pytest
 from autolens.profiles import geometry_profiles as gp
 
 
-class TestSphericalClassDecorator(object):
-    def test_decorator(self):
-        # noinspection PyMethodMayBeStatic
-        class Parent(object):
-            def return_something(self):
-                return "parent"
-
-        def return_for_parent(cls):
-            cls.return_something = Parent.return_something
-            return cls
-
-        @return_for_parent
-        class Child(object):
-            # noinspection PyMethodMayBeStatic
-            def return_something(self):
-                return "child"
-
-        assert Child().return_something() == "parent"
-
-    def test_elliptical_behaves_like_spherical(self):
-        spherical = gp.SphericalProfile()
-        elliptical = gp.EllipticalProfile(axis_ratio=2.)
-
-        grid = np.array([(1, 1)])
-
-        # noinspection PyUnresolvedReferences
-        assert (spherical.transform_grid_to_reference_frame(grid) != elliptical.transform_grid_to_reference_frame(
-            grid)).any()
-
-        elliptical_cls = gp.with_spherical_transform(gp.EllipticalProfile)
-        elliptical = elliptical_cls(axis_ratio=2.)
-
-        assert (spherical.transform_grid_to_reference_frame(grid) == elliptical.transform_grid_to_reference_frame(
-            grid)).all()
-
-
 class TestEllipticalProfile(object):
     class TestAnglesFromXAxis(object):
 
