@@ -43,7 +43,7 @@ def make_phase():
 @pytest.fixture(name='list_phase')
 def make_list_phase():
     class MyPhase(ph.Phase):
-        prop = phase_property.PhasePropertyList("prop")
+        prop = phase_property.PhasePropertyCollection("prop")
 
     return MyPhase(optimizer_class=NLO)
 
@@ -170,6 +170,15 @@ class TestPhasePropertyListAttributes(object):
 
         assert len(list_phase.variable.prop) == 0
         assert len(list_phase.constant.prop) == 2
+
+    def test_named_attributes_in_variable(self, list_phase):
+        galaxy_model = gp.GalaxyModel(variable_redshift=True)
+        list_phase.prop = dict(one=galaxy_model)
+
+        assert list_phase.variable.prior_count == 1
+        assert list_phase.variable.one == galaxy_model
+
+        
 
 
 def assert_ordered(items):
