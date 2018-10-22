@@ -178,7 +178,33 @@ class TestPhasePropertyListAttributes(object):
         assert list_phase.variable.prior_count == 1
         assert list_phase.variable.one == galaxy_model
 
-        
+        instance = list_phase.variable.instance_from_prior_medians()
+
+        assert instance.one is not None
+        assert len(instance.prop) == 1
+
+    def test_named_attributes_in_variable_override(self, list_phase):
+        galaxy_model = gp.GalaxyModel(variable_redshift=True)
+        list_phase.prop = dict(one=gp.GalaxyModel())
+
+        assert list_phase.variable.prior_count == 0
+
+        list_phase.prop.one = galaxy_model
+
+        assert list_phase.variable.prior_count == 1
+        assert list_phase.variable.one == galaxy_model
+
+        instance = list_phase.variable.instance_from_prior_medians()
+
+        assert instance.one is not None
+        assert len(instance.prop) == 1
+
+    def test_named_attributes_in_constant(self, list_phase):
+        galaxy = g.Galaxy()
+        list_phase.prop = dict(one=galaxy)
+
+        assert list_phase.variable.prior_count == 0
+        assert list_phase.constant.one == galaxy
 
 
 def assert_ordered(items):
