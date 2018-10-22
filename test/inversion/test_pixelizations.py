@@ -241,7 +241,7 @@ class TestVoronoi:
             pix = pixelizations.Voronoi(pixels=9)
             voronoi = pix.voronoi_from_pixel_centers(points)
 
-            # ridge points is a numpy data for speed, but convert to list for the comparisons below so we can use in
+            # ridge points is a numpy array for speed, but convert to list for the comparisons below so we can use in
             # to look for each list
 
             voronoi.vertices = list(map(lambda x: list(x), voronoi.vertices))
@@ -261,7 +261,7 @@ class TestVoronoi:
             pix = pixelizations.Voronoi(pixels=5)
             voronoi = pix.voronoi_from_pixel_centers(points)
 
-            # ridge points is a numpy data for speed, but convert to list for the comparisons below so we can use in
+            # ridge points is a numpy array for speed, but convert to list for the comparisons below so we can use in
             # to look for each list
 
             voronoi.ridge_points = list(map(lambda x: list(x), voronoi.ridge_points))
@@ -287,7 +287,7 @@ class TestVoronoi:
             pix = pixelizations.Voronoi(pixels=9)
             voronoi = pix.voronoi_from_pixel_centers(points)
 
-            # ridge points is a numpy data for speed, but convert to list for the comparisons below so we can use in
+            # ridge points is a numpy array for speed, but convert to list for the comparisons below so we can use in
             # to look for each list
 
             voronoi.ridge_points = list(map(lambda x: list(x), voronoi.ridge_points))
