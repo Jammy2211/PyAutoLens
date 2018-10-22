@@ -122,16 +122,16 @@ class Mask(scaled_array.ScaledSquarePixelArray):
 
     @property
     def grid_to_pixel(self):
-        """A 1D array of mappings between every padded pixel and its 2D pixel coordinates."""
+        """A 1D data of mappings between every padded pixel and its 2D pixel coordinates."""
         return imaging_util.grid_to_pixel_from_mask(self).astype('int')
 
     def map_2d_array_to_masked_1d_array(self, array_2d):
-        """For a 2D data-array (e.g. the _image, noise-mappers, etc.) mappers it to a masked 1D array of values usin this mask.
+        """For a 2D data-data (e.g. the _data, noise-mappers, etc.) mappers it to a masked 1D data of values usin this mask.
 
         Parameters
         ----------
         array_2d : ndarray | None | float
-            The data to be mapped to a masked 1D array.
+            The data to be mapped to a masked 1D data.
         """
         if array_2d is None or isinstance(array_2d, float):
             return array_2d
@@ -164,7 +164,7 @@ class Mask(scaled_array.ScaledSquarePixelArray):
 
     def border_sub_pixels(self, sub_grid_size):
         """The indicies of the mask's border sub-pixels, where a border sub-pixel is the sub-pixel in a mask border \
-        _image-pixel which is closest to the edge."""
+        _data-pixel which is closest to the edge."""
         return imaging_util.border_sub_pixels_from_mask_pixel_scales_and_sub_grid_size(mask=self,
                                                                                        pixel_scales=self.pixel_scales,
                                                                                        sub_grid_size=sub_grid_size).astype(
@@ -176,14 +176,14 @@ class ImagingGrids(object):
     def __init__(self, image, sub, blurring):
         """The grids containing the (x,y) arc-second coordinates of padded pixels in a mask. There are 3 grids:
 
-        The _image-grid - the (x,y) coordinate at the center of every padded pixel.
+        The _data-grid - the (x,y) coordinate at the center of every padded pixel.
         The sub-grid - the (x,y) coordinates of every sub-pixel in every padded pixel, each using a grid of size \
         sub_grid_size x sub_grid_size.
         The blurring-grid - the (x,y) coordinates of all blurring pixels, which are masked pixels whose light is \
         blurred into masked pixels during PSF convolution.
 
-        The grids are stored as 1D arrays, where each entry corresponds to an padded (sub-)pixel. The 1D array is \
-        ordered such pixels begin from the top-row of the masks 2D array and then downwards.
+        The grids are stored as 1D arrays, where each entry corresponds to an padded (sub-)pixel. The 1D data is \
+        ordered such pixels begin from the top-row of the masks 2D data and then downwards.
 
         Parameters
         -----------
@@ -250,7 +250,7 @@ class ImagingGrids(object):
 
     @classmethod
     def grids_for_simulation(cls, shape, pixel_scale, psf_shape, sub_grid_size=1):
-        """Setup a collection of imaging-grids for simulating an _image of a strong lens. 
+        """Setup a collection of imaging-grids for simulating an _data of a strong lens. 
         
         This routine uses padded-grids which ensure that the PSF blurring in the simulation routine \ 
         (*imaging.PrepatoryImage.simulate*) is not degraded due to edge effects.
@@ -294,13 +294,13 @@ class ImageGrid(np.ndarray):
     have a negative x and y-value in arc seconds. The mask pixel indexes are also counted from the top-left.
 
     An *ImageGrid* is a ndarray of shape [image_pixels, 2], where image_pixels is the total number of padded \
-    _image-pixels. The first element maps of the ndarray corresponds to the padded pixel index and second element the \
+    _data-pixels. The first element maps of the ndarray corresponds to the padded pixel index and second element the \
     x or y arc second coordinates. For howtolens:
 
     - image_grid[3,1] = the 4th padded pixel's y-coordinate.
     - image_grid[6,0] = the 5th padded pixel's x-coordinate.
 
-    Below is a visual illustration of an _image-grid, where a total of 10 pixels are padded and are included in the \
+    Below is a visual illustration of an _data-grid, where a total of 10 pixels are padded and are included in the \
     grid.
 
     |x|x|x|x|x|x|x|x|x|x|
@@ -352,7 +352,7 @@ class ImageGrid(np.ndarray):
 
     @classmethod
     def from_mask(cls, mask):
-        """Setup an *ImageGrid* of the regular _image-grid from a mask. The center of every padded pixel gives \
+        """Setup an *ImageGrid* of the regular _data-grid from a mask. The center of every padded pixel gives \
         the grid's (x,y) arc-second coordinates.
 
         Parameters
@@ -376,12 +376,12 @@ class ImageGrid(np.ndarray):
         return ImageGrid.from_mask(blurring_mask)
 
     def map_to_2d(self, array_1d):
-        """ Map a 1D array the same dimension as the grid to its original 2D array.
+        """ Map a 1D data the same dimension as the grid to its original 2D data.
 
         Parameters
         -----------
         array_1d : ndarray
-            The 1D array of masked data which is mapped to 2D.
+            The 1D data of masked data which is mapped to 2D.
         """
         return imaging_util.map_masked_1d_array_to_2d_array_from_array_1d_shape_and_one_to_two(array_1d,
                                                                                                self.mask.shape,
@@ -419,12 +419,12 @@ class ImageGrid(np.ndarray):
 
     @property
     def yticks(self):
-        """Compute the yticks labels of this grid, used for plotting the y-axis ticks when visualizing an _image-grid"""
+        """Compute the yticks labels of this grid, used for plotting the y-axis ticks when visualizing an _data-grid"""
         return np.linspace(np.min(self[:, 0]), np.max(self[:, 0]), 4)
 
     @property
     def xticks(self):
-        """Compute the xticks labels of this grid, used for plotting the x-axis ticks when visualizing an _image-grid"""
+        """Compute the xticks labels of this grid, used for plotting the x-axis ticks when visualizing an _data-grid"""
         return np.linspace(np.min(self[:, 1]), np.max(self[:, 1]), 4)
 
 
@@ -437,15 +437,15 @@ class SubGrid(ImageGrid):
     top-left.
 
     Sub-pixels follow the same convention as above, where the top-left sub-pixel has the lowest x and y-values in each \
-    _image-pixel. Sub-pixel indexes include all previous sub-pixels in all previous padded _image-pixels.
+    _data-pixel. Sub-pixel indexes include all previous sub-pixels in all previous padded _data-pixels.
 
-    A *SubGrid* is a NumPy array of shape [image_pixels*sub_grid_pixels**2, 2]. The first element of the ndarray \
+    A *SubGrid* is a NumPy data of shape [image_pixels*sub_grid_pixels**2, 2]. The first element of the ndarray \
     corresponds to the padded sub-pixel index, and second element the sub-pixel's (x,y) arc second coordinates. \
     For howtolens:
 
-    - sub_grid[9, 1] - using a 2x2 sub-grid, gives the 3rd _image-pixel's 2nd sub-pixel y-coordinate.
-    - sub_grid[9, 1] - using a 3x3 sub-grid, gives the 2nd _image-pixel's 1st sub-pixel y-coordinate.
-    - sub_grid[27, 0] - using a 3x3 sub-grid, gives the 4th _image-pixel's 1st sub-pixel x-coordinate.
+    - sub_grid[9, 1] - using a 2x2 sub-grid, gives the 3rd _data-pixel's 2nd sub-pixel y-coordinate.
+    - sub_grid[9, 1] - using a 3x3 sub-grid, gives the 2nd _data-pixel's 1st sub-pixel y-coordinate.
+    - sub_grid[27, 0] - using a 3x3 sub-grid, gives the 4th _data-pixel's 1st sub-pixel x-coordinate.
 
     Below is a visual illustration of a sub grid. Like the regular grid, the indexing of each sub-pixel goes from \
     the top-left corner. In contrast to the regular grid above, our illustration below restricts the mask to just
@@ -530,7 +530,7 @@ class SubGrid(ImageGrid):
 
     @classmethod
     def from_mask_and_sub_grid_size(cls, mask, sub_grid_size=1):
-        """Setup a *SubGrid* of the padded _image-pixels, using a mask and a specified sub-grid size. The center of \
+        """Setup a *SubGrid* of the padded _data-pixels, using a mask and a specified sub-grid size. The center of \
         every padded pixel's sub-pixels give the grid's (x,y) arc-second coordinates.
 
         Parameters
@@ -538,7 +538,7 @@ class SubGrid(ImageGrid):
         mask : Mask
             The mask whose padded pixels are used to setup the sub-pixel grids.
         sub_grid_size : int
-            The size (sub_grid_size x sub_grid_size) of each _image-pixels sub-grid.
+            The size (sub_grid_size x sub_grid_size) of each _data-pixels sub-grid.
         """
         sub_grid_masked = imaging_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(mask=mask,
                                                                                                    pixel_scales=mask.pixel_scales,
@@ -561,26 +561,26 @@ class SubGrid(ImageGrid):
             self.mask = obj.mask
 
     def sub_data_to_image(self, sub_array):
-        """For an input sub-gridded array, mappers it from the sub-grid to a 1D _image-grid by summing each set of
+        """For an input sub-gridded data, mappers it from the sub-grid to a 1D _data-grid by summing each set of
         each set of sub-pixels values and dividing by the total number of sub-pixels.
 
         Parameters
         -----------
         sub_array : ndarray
-            A 1D sub-gridded array of values (e.g. the intensities, surface-densities, potential) which is mapped to
-            a 1d _image-grid array.
+            A 1D sub-gridded data of values (e.g. the intensities, surface-densities, potential) which is mapped to
+            a 1d _data-grid data.
         """
         return np.multiply(self.sub_grid_fraction, sub_array.reshape(-1, self.sub_grid_length).sum(axis=1))
 
     @property
     @imaging_util.Memoizer()
     def sub_to_image(self):
-        """ Compute the mapping between every sub-pixel and its host padded _image-pixel.
+        """ Compute the mapping between every sub-pixel and its host padded _data-pixel.
 
         For howtolens:
 
-        - sub_to_pixel[8] = 2 -  The seventh sub-pixel is within the 3rd padded _image pixel.
-        - sub_to_pixel[20] = 4 -  The nineteenth sub-pixel is within the 5th padded _image pixel.
+        - sub_to_pixel[8] = 2 -  The seventh sub-pixel is within the 3rd padded _data pixel.
+        - sub_to_pixel[20] = 4 -  The nineteenth sub-pixel is within the 5th padded _data pixel.
         """
         return imaging_util.sub_to_image_from_mask(self.mask, self.sub_grid_size).astype('int')
 
@@ -594,7 +594,7 @@ class PaddedImageGrid(ImageGrid):
         - All pixels are used (as opposed to just padded pixels)
         - The mask is padded when computing the grid, such that additional pixels beyond its edge are included.
 
-        Padded-grids allow quantities like intensities to be computed on large 2D arrays spanning the entire _image, as
+        Padded-grids allow quantities like intensities to be computed on large 2D arrays spanning the entire _data, as
         opposed to just within the masked region.
         """
         arr = arr.view(cls)
@@ -604,7 +604,7 @@ class PaddedImageGrid(ImageGrid):
 
     @classmethod
     def padded_grid_from_shapes_and_pixel_scale(self, shape, psf_shape, pixel_scale):
-        """Setup an *PaddedImageGrid* of the regular _image-grid for an input _image-shape, psf-shape and pixel-scale.
+        """Setup an *PaddedImageGrid* of the regular _data-grid for an input _data-shape, psf-shape and pixel-scale.
 
         The center of every pixel is used to setup the grid's (x,y) arc-second coordinates, including padded-pixels
         which are beyond the input shape but will have light blurred into them given the psf-shape.
@@ -614,7 +614,7 @@ class PaddedImageGrid(ImageGrid):
         pixel_scale : float
             The scale of each pixel in arc seconds
         shape : (int, int)
-            The (x,y) shape of the padded-grid's 2D _image in units of pixels.
+            The (x,y) shape of the padded-grid's 2D _data in units of pixels.
         psf_shape : (int, int)
            The shape of the psf which defines the blurring region and therefore size of padding.
         """
@@ -625,14 +625,14 @@ class PaddedImageGrid(ImageGrid):
         return PaddedImageGrid(arr=padded_image_grid, mask=padded_mask, image_shape=shape)
 
     def convolve_array_1d_with_psf(self, padded_array_1d, psf):
-        """Convolve a 2d padded array of values (e.g. intensities beforoe PSF blurring) with a PSF, and then trim \
-        the convolved array to its original 2D shape.
+        """Convolve a 2d padded data of values (e.g. intensities beforoe PSF blurring) with a PSF, and then trim \
+        the convolved data to its original 2D shape.
 
         Parameters
         -----------
         psf
         padded_array_1d: ndarray
-            A 1D array of values which were computed using the *PaddedImageGrid*.
+            A 1D data of values which were computed using the *PaddedImageGrid*.
         """
         padded_array_2d = imaging_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(padded_array_1d,
                                                                                                  self.mask.shape)
@@ -642,12 +642,12 @@ class PaddedImageGrid(ImageGrid):
                                                                                                 False))
 
     def map_to_2d(self, padded_array_1d):
-        """ Map a padded 1D array of values to its origianl 2D array.
+        """ Map a padded 1D data of values to its origianl 2D data.
 
         Parameters
         -----------
         padded_array_1d : ndarray
-            A 1D array of values which were computed using the *PaddedImageGrid*.
+            A 1D data of values which were computed using the *PaddedImageGrid*.
         """
         padded_array_2d = self.map_to_2d_keep_padded(padded_array_1d)
         pad_size_0 = self.mask.shape[0] - self.image_shape[0]
@@ -656,12 +656,12 @@ class PaddedImageGrid(ImageGrid):
                 pad_size_1 // 2:self.mask.shape[1] - pad_size_1 // 2])
 
     def map_to_2d_keep_padded(self, padded_array_1d):
-        """ Map a padded 1D array of values to its padded 2D array.
+        """ Map a padded 1D data of values to its padded 2D data.
 
         Parameters
         -----------
         padded_array_1d : ndarray
-            A 1D array of values which were computed using the *PaddedImageGrid*.
+            A 1D data of values which were computed using the *PaddedImageGrid*.
         """
         return imaging_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(padded_array_1d, self.mask.shape)
 
@@ -679,7 +679,7 @@ class PaddedSubGrid(SubGrid, PaddedImageGrid):
         - All pixels are used (as opposed to just padded pixels)
         - The mask is padded when computing the grid, such that additional pixels beyond its edge are included.
 
-        Padded-grids allow quantities like intensities to be computed on large 2D arrays spanning the entire _image, as
+        Padded-grids allow quantities like intensities to be computed on large 2D arrays spanning the entire _data, as
         opposed to just within the masked region.
         """
         super(PaddedSubGrid, self).__init__(arr, mask, sub_grid_size)
@@ -696,7 +696,7 @@ class PaddedSubGrid(SubGrid, PaddedImageGrid):
         mask : Mask
             The mask whose padded pixels are used to setup the sub-pixel grids.
         sub_grid_size : int
-            The size (sub_grid_size x sub_grid_size) of each _image-pixels sub-grid.
+            The size (sub_grid_size x sub_grid_size) of each _data-pixels sub-grid.
         psf_shape : (int, int)
            The shape of the psf which defines the blurring region and therefore size of padding.
         """
@@ -726,7 +726,7 @@ class ImagingGridBorders(object):
         """The borders containing the pixel-index's of all padded pixels that are on the mask's border (e.g. \
         they are next to a *True* value in at least one of the surrounding 8 pixels). There are 2 borders:
 
-        The _image-border - The pixel-indexes of all padded pixels in an *ImageGrid* that are border-pixels.
+        The _data-border - The pixel-indexes of all padded pixels in an *ImageGrid* that are border-pixels.
         The sub-grid - The sub-pixel-indexes of all padded pixels in a *SubGrid* that are border-pixels.
 
         A polynomial is fitted to the (x,y) coordinates of each border's pixels. This allows us to relocate \
@@ -735,7 +735,7 @@ class ImagingGridBorders(object):
         Parameters
         -----------
         image : ImageGridBorder
-            The pixel-index's of all _image-pixels which are on the mask border.
+            The pixel-index's of all _data-pixels which are on the mask border.
         sub : SubGridBorder
             The sub-pixel-index's of all sub-pixels which are on the mask border.
         """
@@ -772,7 +772,7 @@ class ImagingGridBorders(object):
         Parameters
         -----------
         grids : ImagingGrids
-            The imaging-grids (_image, sub) which have their coordinates relocated.
+            The imaging-grids (_data, sub) which have their coordinates relocated.
         """
         return ImagingGrids(image=self.image.relocated_grid_from_grid(grids.image),
                             sub=self.sub.relocated_grid_from_grid(grids.sub),
@@ -782,7 +782,7 @@ class ImagingGridBorders(object):
 class ImageGridBorder(np.ndarray):
 
     def __new__(cls, arr, polynomial_degree=3, centre=(0.0, 0.0), *args, **kwargs):
-        """The borders of an _image-grid, containing the pixel-index's of all padded pixels that are on the \
+        """The borders of an _data-grid, containing the pixel-index's of all padded pixels that are on the \
         mask's border (e.g. they are next to a *True* value in at least one of the surrounding 8 pixels).
 
         A polynomial is fitted to the (x,y) coordinates of the border's pixels. This allows us to relocate \
@@ -791,7 +791,7 @@ class ImageGridBorder(np.ndarray):
         Parameters
         -----------
         arr : ndarray
-            A 1D array of the integer indexes of an *ImageGrid*'s border pixels.
+            A 1D data of the integer indexes of an *ImageGrid*'s border pixels.
         polynomial_degree : int
             The degree of the polynomial that is used to fit the border when relocating pixels outside the border to \
             its edge.
@@ -829,7 +829,7 @@ class ImageGridBorder(np.ndarray):
         Parameters
         ----------
         grid : ImageGrid
-            The (x, y) coordinates of each padded _image-pixel.
+            The (x, y) coordinates of each padded _data-pixel.
         """
 
         return np.sqrt(np.add(np.square(np.subtract(grid[:, 0], self.centre[0])),
@@ -843,7 +843,7 @@ class ImageGridBorder(np.ndarray):
         Parameters
         ----------
         grid : ImageGrid
-            The (x, y) coordinates of each padded _image-pixel.
+            The (x, y) coordinates of each padded _data-pixel.
         """
         shifted_grid = np.subtract(grid, self.centre)
         theta_from_x = np.degrees(np.arctan2(shifted_grid[:, 1], shifted_grid[:, 0]))
@@ -856,7 +856,7 @@ class ImageGridBorder(np.ndarray):
         Parameters
         ----------
         grid : ImageGrid
-            The (x, y) coordinates of each padded _image-pixel.
+            The (x, y) coordinates of each padded _data-pixel.
         """
 
         border_grid = grid[self]
@@ -872,7 +872,7 @@ class ImageGridBorder(np.ndarray):
         Parameters
         ----------
         grid : ImageGrid
-            The (x, y) coordinates of each padded _image-pixel.
+            The (x, y) coordinates of each padded _data-pixel.
         """
         grid_thetas = self.grid_to_thetas(grid)
         grid_radii = self.grid_to_radii(grid)
@@ -890,7 +890,7 @@ class ImageGridBorder(np.ndarray):
         Parameters
         -----------
         grid : ImageGrid
-            The (x, y) coordinates of each padded _image-pixel.
+            The (x, y) coordinates of each padded _data-pixel.
         """
         move_factors = self.move_factors_from_grid(grid)
         return np.multiply(grid, move_factors[:, None])

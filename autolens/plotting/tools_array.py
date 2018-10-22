@@ -12,7 +12,7 @@ def plot_array(array, mask=None, positions=None, grid=None, as_subplot=False,
                cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
                title='Array', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
                mask_pointsize=10, position_pointsize=10.0, grid_pointsize=1,
-               output_path=None, output_format='show', output_filename='array'):
+               output_path=None, output_format='show', output_filename='data'):
 
     plot_figure(array=array, as_subplot=as_subplot, units=units, kpc_per_arcsec=kpc_per_arcsec,
                 figsize=figsize, aspect=aspect, cmap=cmap, norm=norm,

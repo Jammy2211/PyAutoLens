@@ -33,6 +33,7 @@ class TestLensingImage(object):
         assert (image.background_noise_map == lensing_image.image.background_noise_map)
 
     def test__image_and_image_mapper(self, lensing_image):
+        assert (lensing_image == np.ones(4)).all()
         assert (lensing_image.image == np.ones((4, 4))).all()
         assert (lensing_image.image.noise_map == np.ones((4, 4))).all()
 

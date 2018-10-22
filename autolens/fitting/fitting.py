@@ -8,16 +8,15 @@ from autolens.lensing import ray_tracing
 
 class AbstractFit(object):
 
-    def __init__(self, fitting_image, _model_image, map_to_scaled_array):
+    def __init__(self, fitting_data, _model_data):
 
-        self.image = fitting_image.image
-        self.mask = fitting_image.mask
-        self._image = fitting_image[:]
-        self._noise_map = fitting_image.noise_map
-        self._model_image = _model_image
-        self._residuals = residuals_from_image_and_model(self._image, self._model_image)
+        self.mask = fitting_data.mask
+        self._data = fitting_data[:]
+        self._noise_map = fitting_data.noise_map
+        self._model_data = _model_data
+        self._residuals = residuals_from_data_and_model(self._data, self._model_data)
         self._chi_squareds = chi_squareds_from_residuals_and_noise(self._residuals, self._noise_map)
-        self.map_to_scaled_array = map_to_scaled_array
+        self.map_to_scaled_array = fitting_data.grids.image.scaled_array_from_array_1d
 
     @property
     def chi_squared_term(self):
@@ -40,10 +39,6 @@ class AbstractFit(object):
         return self.map_to_scaled_array(self._noise_map)
 
     @property
-    def model_image(self):
-        return self.map_to_scaled_array(self._model_image)
-
-    @property
     def residuals(self):
         return self.map_to_scaled_array(self._residuals)
 
@@ -52,18 +47,41 @@ class AbstractFit(object):
         return self.map_to_scaled_array(self._chi_squareds)
 
 
-class AbstractProfileFit(AbstractFit):
+class AbstractDataFit(AbstractFit):
+
+    def __init__(self, fitting_data, _model_data):
+
+        self.data = fitting_data.data
+        super(AbstractDataFit, self).__init__(fitting_data=fitting_data, _model_data=_model_data)
+
+    @property
+    def model_data(self):
+        return self.map_to_scaled_array(self._model_data)
+
+
+class AbstractImageFit(AbstractFit):
+
+    def __init__(self, fitting_image, _model_image):
+
+        self.image = fitting_image.image
+        super(AbstractImageFit, self).__init__(fitting_data=fitting_image, _model_data=_model_image)
+
+    @property
+    def model_image(self):
+        return self.map_to_scaled_array(self._model_data)
+
+
+class AbstractImageProfileFit(AbstractImageFit):
 
     def __init__(self, fitting_image, _image, _blurring_image):
 
         self.convolver_image = fitting_image.convolver_image
         _model_image = self.convolver_image.convolve_image(image_array=_image, blurring_array=_blurring_image)
 
-        super(AbstractProfileFit, self).__init__(fitting_image=fitting_image, _model_image=_model_image,
-                                            map_to_scaled_array=fitting_image.grids.image.scaled_array_from_array_1d)
+        super(AbstractImageProfileFit, self).__init__(fitting_image=fitting_image, _model_image=_model_image)
 
 
-class AbstractInversionFit(AbstractFit):
+class AbstractImageInversionFit(AbstractImageFit):
 
     def __init__(self, fitting_image, mapper, regularization):
 
@@ -71,9 +89,8 @@ class AbstractInversionFit(AbstractFit):
                         noise_map=fitting_image.noise_map, convolver=fitting_image.convolver_mapping_matrix,
                         mapper=mapper, regularization=regularization)
 
-        super(AbstractInversionFit, self).__init__(fitting_image=fitting_image,
-                                                   _model_image=self.inversion.reconstructed_data_vector,
-                map_to_scaled_array=fitting_image.grids.image.scaled_array_from_array_1d)
+        super(AbstractImageInversionFit, self).__init__(fitting_image=fitting_image,
+                                                        _model_image=self.inversion.reconstructed_data_vector)
 
     @property
     def likelihood_with_regularization(self):
@@ -88,7 +105,7 @@ class AbstractInversionFit(AbstractFit):
                                                   self.noise_term)
 
 
-class AbstractProfileInversionFit(AbstractFit):
+class AbstractImageProfileInversionFit(AbstractImageFit):
     
     def __init__(self, fitting_image, _image, _blurring_image, mapper, regularization):
         
@@ -105,9 +122,8 @@ class AbstractProfileInversionFit(AbstractFit):
         
         self._inversion_model_image = self.inversion.reconstructed_data_vector
 
-        super(AbstractProfileInversionFit, self).__init__(fitting_image=fitting_image,
-                _model_image=self._profile_model_image+self._inversion_model_image,
-                map_to_scaled_array=fitting_image.grids.image.scaled_array_from_array_1d)
+        super(AbstractImageProfileInversionFit, self).__init__(fitting_image=fitting_image,
+                                                               _model_image=self._profile_model_image + self._inversion_model_image)
 
     
     @property
@@ -164,19 +180,19 @@ class AbstractHyperFit(object):
         return list(map(lambda contributions: self.map_to_scaled_array(contributions), self._contributions))
 
 
-def residuals_from_image_and_model(image, model):
+def residuals_from_data_and_model(data, model):
     """Compute the residuals between an observed charge injection lensing_image and post-cti model lensing_image.
 
     Residuals = (Data - Model).
 
     Parameters
     -----------
-    image : ChInj.CIImage
+    data : ChInj.CIImage
         The observed charge injection lensing_image data.
     model : np.ndarray
         The model lensing_image.
     """
-    return np.subtract(image, model)
+    return np.subtract(data, model)
 
 def chi_squareds_from_residuals_and_noise(residuals, noise):
     """Computes a chi-squared lensing_image, by calculating the squared residuals between an observed charge injection \

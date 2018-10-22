@@ -100,7 +100,7 @@ fitting_plotters.plot_fitting_subplot(fit=fit)
 
 # We can print the fit's attributes - if we don't specify where we'll get all zeros, as the edges were masked:
 print('Model-Image Edge Pixels:')
-print(fit.model_image)
+print(fit.model_data)
 print('Residuals Edge Pixels:')
 print(fit.residuals)
 print('Chi-Squareds Edge Pixels:')
@@ -108,7 +108,7 @@ print(fit.chi_squareds)
 
 # Of course, the central unmasked pixels have non-zero values.
 print('Model-Image Central Pixels:')
-print(fit.model_image[48:53, 48:53])
+print(fit.model_data[48:53, 48:53])
 print('Residuals Central Pixels:')
 print(fit.residuals[48:53, 48:53])
 print('Chi-Squareds Central Pixels:')
