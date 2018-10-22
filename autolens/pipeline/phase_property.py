@@ -85,18 +85,18 @@ class ListWrapper(object):
     @DynamicAttrs
     """
 
-    def __init__(self, optimizer, name):
+    def __init__(self, variable_items, constant_items):
         """
         A ListWrapper takes lists of variable and constants and behaves like a list. Items can be addressed by their
         index in the list or by their name.
 
         Parameters
         ----------
-
+        variable_items
+        constant_items
         """
-        self.optimizer = optimizer
-        self.variable_items = getattr(optimizer.variable, name)
-        self.constant_items = getattr(optimizer.constant, name)
+        self.variable_items = variable_items
+        self.constant_items = constant_items
 
     def __setitem__(self, i, value):
         original = self[i]
@@ -132,9 +132,7 @@ class ListWrapper(object):
                     return obj
 
     def __setattr__(self, key, value):
-        if key not in ("variable_items", "constant_items", "optimizer"):
-            print(key)
-            setattr(self.optimizer.variable, key, value)
+        if key not in ("variable_items", "constant_items"):
             value.mapping_name = key
             for index, obj in enumerate(self):
                 if obj.mapping_name == key:
@@ -143,7 +141,7 @@ class ListWrapper(object):
         super().__setattr__(key, value)
 
 
-class PhasePropertyCollection(PhaseProperty):
+class PhasePropertyList(PhaseProperty):
     """
     A phase property that wraps a list or dictionary. If wrapping a dictionary then named items can still be addressed
     using indexes; if wrapping a list then items can still be addressed by names of the format name_index where name is
@@ -151,7 +149,8 @@ class PhasePropertyCollection(PhaseProperty):
     """
 
     def fget(self, obj):
-        return ListWrapper(obj.optimizer, self.name)
+        return ListWrapper(getattr(obj.optimizer.variable, self.name),
+                           getattr(obj.optimizer.constant, self.name))
 
     def fset(self, obj, value):
         if isinstance(value, dict):
@@ -164,10 +163,6 @@ class PhasePropertyCollection(PhaseProperty):
                 value.append(tup[1])
                 value[n].mapping_name = tup[0]
                 value[n].position = n
-                if is_prior(tup[1]):
-                    setattr(obj.optimizer.variable, tup[0], tup[1])
-                else:
-                    setattr(obj.optimizer.constant, tup[0], tup[1])
         else:
             for n in range(len(value)):
                 if inspect.isclass(value[n]):

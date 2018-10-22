@@ -89,7 +89,7 @@ class AbstractLensingFit(object):
         return len(self.tracer.mappers_of_planes)
 
 
-class LensingProfileFit(fitting.AbstractImageProfileFit, AbstractLensingFit):
+class LensingProfileFit(fitting.AbstractProfileFit, AbstractLensingFit):
 
     def __init__(self, lensing_image, tracer, padded_tracer=None):
         """
@@ -188,7 +188,7 @@ class HyperLensingProfileFit(LensingProfileFit, fitting.AbstractHyperFit):
         return fitting.likelihood_from_chi_squared_and_noise_terms(self.scaled_chi_squared_term, self.scaled_noise_term)
 
 
-class LensingInversionFit(fitting.AbstractImageInversionFit, AbstractLensingFit):
+class LensingInversionFit(fitting.AbstractInversionFit, AbstractLensingFit):
 
     def __init__(self, lensing_image, tracer):
         """
@@ -302,7 +302,7 @@ class HyperLensingInversionFit(LensingInversionFit, HyperLensingInversion):
                                                   scaled_noise_term)
 
 
-class LensingProfileInversionFit(fitting.AbstractImageProfileInversionFit, AbstractLensingFit):
+class LensingProfileInversionFit(fitting.AbstractProfileInversionFit, AbstractLensingFit):
 
     def __init__(self, lensing_image, tracer, padded_tracer=None):
         """
