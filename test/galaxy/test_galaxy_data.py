@@ -19,7 +19,7 @@ def make_mask():
 
 @pytest.fixture(name="galaxy_data")
 def make_lensing_image(scaled_array, mask):
-    return gd.GalaxyData(array=scaled_array, noise_map=2.0*np.ones((4,4)), mask=mask)
+    return gd.GalaxyData(data=scaled_array, noise_map=2.0 * np.ones((4, 4)), mask=mask)
 
 
 class TestGalaxyData(object):
