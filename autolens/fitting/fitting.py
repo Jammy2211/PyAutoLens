@@ -8,7 +8,7 @@ from autolens.lensing import ray_tracing
 
 class AbstractFit(object):
 
-    def __init__(self, fitting_data, _model_data, map_to_scaled_array):
+    def __init__(self, fitting_data, _model_data):
 
         self.mask = fitting_data.mask
         self._data = fitting_data[:]
@@ -16,7 +16,7 @@ class AbstractFit(object):
         self._model_data = _model_data
         self._residuals = residuals_from_data_and_model(self._data, self._model_data)
         self._chi_squareds = chi_squareds_from_residuals_and_noise(self._residuals, self._noise_map)
-        self.map_to_scaled_array = map_to_scaled_array
+        self.map_to_scaled_array = fitting_data.grids.image.scaled_array_from_array_1d
 
     @property
     def chi_squared_term(self):
@@ -51,13 +51,23 @@ class AbstractFit(object):
         return self.map_to_scaled_array(self._chi_squareds)
 
 
+class AbstractDataFit(AbstractFit):
+
+    def __init__(self, fitting_data, _model_data):
+
+        self.data = fitting_data.array
+        super(AbstractDataFit, self).__init__(fitting_data=fitting_data, _model_data=_model_data)
+
+    @property
+    def model_data(self):
+        return self.map_to_scaled_array(self._model_data)
+
 class AbstractImageFit(AbstractFit):
 
     def __init__(self, fitting_image, _model_image):
 
         self.image = fitting_image.image
-        super(AbstractImageFit, self).__init__(fitting_data=fitting_image, _model_data=_model_image,
-                                               map_to_scaled_array=fitting_image.grids.image.scaled_array_from_array_1d)
+        super(AbstractImageFit, self).__init__(fitting_data=fitting_image, _model_data=_model_image)
 
     @property
     def model_image(self):
