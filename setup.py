@@ -33,6 +33,7 @@ setup(
     version=__version__,
     description='Strong Gravitational Lensing for the masses',
     long_description=long_description,
+    long_description_content_type='text/markdown',
     url='https://github.com/Jammy2211/PyAutoLens',
     author='James Nightingale and Richard Hayes',
     author_email='james.w.nightingale@durham.ac.uk',
