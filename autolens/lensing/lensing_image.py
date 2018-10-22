@@ -14,29 +14,29 @@ class LensingImage(fitting_data.FittingImage):
     def __init__(self, image, mask, sub_grid_size=2, image_psf_shape=None, mapping_matrix_psf_shape=None,
                  positions=None):
         """
-        The lensing _image is the collection of data (images, noise-maps, PSF), a mask, grids, convolvers and other \
-        utilities that are used for modeling and fitting an _image of a strong lens.
+        The lensing _data is the collection of data (images, noise-maps, PSF), a mask, grids, convolvers and other \
+        utilities that are used for modeling and fitting an _data of a strong lens.
 
-        Whilst the _image data is initially loaded in 2D, for the lensing _image the masked-_image (and noise-maps) \
+        Whilst the _data data is initially loaded in 2D, for the lensing _data the masked-_data (and noise-maps) \
         are reduced to 1D arrays for faster calculations.
 
         Parameters
         ----------
         image: im.Image
-            The original _image data in 2D.
+            The original _data data in 2D.
         mask: msk.Mask
-            The 2D mask that is applied to the _image.
+            The 2D mask that is applied to the _data.
         sub_grid_size : int
-            The size of the sub-grid used for each lensing SubGrid. E.g. a value of 2 grids each _image-pixel on a 2x2 \
+            The size of the sub-grid used for each lensing SubGrid. E.g. a value of 2 grids each _data-pixel on a 2x2 \
             sub-grid.
         image_psf_shape : (int, int)
             The shape of the PSF used for convolving model images generated using analytic light profiles. A smaller \
-            shape will trim the PSF relative to the input _image PSF, giving a faster analysis run-time.
+            shape will trim the PSF relative to the input _data PSF, giving a faster analysis run-time.
         mapping_matrix_psf_shape : (int, int)
             The shape of the PSF used for convolving the inversion mapping matrix. A smaller \
-            shape will trim the PSF relative to the input _image PSF, giving a faster analysis run-time.
+            shape will trim the PSF relative to the input _data PSF, giving a faster analysis run-time.
         positions : [[]]
-            Lists of _image-pixel coordinates (arc-seconds) that mappers close to one another in the source-plane(s), used \
+            Lists of _data-pixel coordinates (arc-seconds) that mappers close to one another in the source-plane(s), used \
             to speed up the non-linear sampling.
         """
         super().__init__(image=image, mask=mask, sub_grid_size=sub_grid_size, image_psf_shape=image_psf_shape)
@@ -57,7 +57,9 @@ class LensingImage(fitting_data.FittingImage):
             self.blurring_mask = obj.blurring_mask
             self.convolver_image = obj.convolver_image
             self.convolver_mapping_matrix = obj.convolver_mapping_matrix
+            self.sub_grid_size = obj.sub_grid_size
             self.grids = obj.grids
+            self.padded_grids = obj.padded_grids
             self.borders = obj.borders
             self.positions = obj.positions
 
@@ -71,29 +73,29 @@ class LensingHyperImage(fitting_data.FittingHyperImage):
     def __init__(self, image, mask, hyper_model_image, hyper_galaxy_images, hyper_minimum_values, sub_grid_size=2,
                  image_psf_shape=None, mapping_matrix_psf_shape=None, positions=None):
         """
-        The lensing _image is the collection of data (images, noise-maps, PSF), a mask, grids, convolvers and other \
-        utilities that are used for modeling and fitting an _image of a strong lens.
+        The lensing _data is the collection of data (images, noise-maps, PSF), a mask, grids, convolvers and other \
+        utilities that are used for modeling and fitting an _data of a strong lens.
 
-        Whilst the _image data is initially loaded in 2D, for the lensing _image the masked-_image (and noise-maps) \
+        Whilst the _data data is initially loaded in 2D, for the lensing _data the masked-_data (and noise-maps) \
         are reduced to 1D arrays for faster calculations.
 
         Parameters
         ----------
         image: im.Image
-            The original _image data in 2D.
+            The original _data data in 2D.
         mask: msk.Mask
-            The 2D mask that is applied to the _image.
+            The 2D mask that is applied to the _data.
         sub_grid_size : int
-            The size of the sub-grid used for each lensing SubGrid. E.g. a value of 2 grids each _image-pixel on a 2x2 \
+            The size of the sub-grid used for each lensing SubGrid. E.g. a value of 2 grids each _data-pixel on a 2x2 \
             sub-grid.
         image_psf_shape : (int, int)
             The shape of the PSF used for convolving model images generated using analytic light profiles. A smaller \
-            shape will trim the PSF relative to the input _image PSF, giving a faster analysis run-time.
+            shape will trim the PSF relative to the input _data PSF, giving a faster analysis run-time.
         mapping_matrix_psf_shape : (int, int)
             The shape of the PSF used for convolving the inversion mapping matrix. A smaller \
-            shape will trim the PSF relative to the input _image PSF, giving a faster analysis run-time.
+            shape will trim the PSF relative to the input _data PSF, giving a faster analysis run-time.
         positions : [[]]
-            Lists of _image-pixel coordinates (arc-seconds) that mappers close to one another in the source-plane(s), used \
+            Lists of _data-pixel coordinates (arc-seconds) that mappers close to one another in the source-plane(s), used \
             to speed up the non-linear sampling.
         """
         super().__init__(image=image, mask=mask, hyper_model_image=hyper_model_image,
@@ -117,6 +119,8 @@ class LensingHyperImage(fitting_data.FittingHyperImage):
             self.convolver_image = obj.convolver_image
             self.convolver_mapping_matrix = obj.convolver_mapping_matrix
             self.grids = obj.grids
+            self.sub_grid_size = obj.sub_grid_size
+            self.padded_grids = obj.padded_grids
             self.borders = obj.borders
             self.positions = obj.positions
             self.hyper_model_image = obj.hyper_model_image

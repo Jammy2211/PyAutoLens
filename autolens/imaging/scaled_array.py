@@ -103,12 +103,12 @@ class ArrayGeometry(object):
 
     @property
     def yticks(self):
-        """Compute the yticks labels of this grid, used for plotting the y-axis ticks when visualizing an _image-grid"""
+        """Compute the yticks labels of this grid, used for plotting the y-axis ticks when visualizing an _data-grid"""
         return np.linspace(-self.shape_arc_seconds[0] / 2.0, self.shape_arc_seconds[0] / 2.0, 4)
 
     @property
     def xticks(self):
-        """Compute the xticks labels of this grid, used for plotting the x-axis ticks when visualizing an _image-grid"""
+        """Compute the xticks labels of this grid, used for plotting the x-axis ticks when visualizing an _data-grid"""
         return np.linspace(-self.shape_arc_seconds[1] / 2.0, self.shape_arc_seconds[1] / 2.0, 4)
 
 
@@ -146,27 +146,27 @@ class Array(np.ndarray):
                              'trims it - make the trimmed dimension larger.')
 
     def pad_around_centre(self, new_shape):
-        """Pad the array to a new shape.
+        """Pad the data to a new shape.
 
         Parameters
         -----------
         new_shape : (int, int)
-            The new two-dimensional shape of the array.
+            The new two-dimensional shape of the data.
         """
         return self.new_with_array(imaging_util.pad_array_2d_around_centre(self, new_shape))
 
     def trim_around_centre(self, new_shape):
-        """Trim the array to a new shape.
+        """Trim the data to a new shape.
 
         Parameters
         -----------
         new_shape : (int, int)
-            The new two-dimensional shape of the array.
+            The new two-dimensional shape of the data.
         """
         return self.new_with_array(imaging_util.trim_array_2d_around_centre(self, new_shape))
 
     def trim_around_region(self, x0, x1, y0, y1):
-        """Trim the array to a new shape.
+        """Trim the data to a new shape.
         """
         return self.new_with_array(imaging_util.trim_array_2d_around_region(self, x0, x1, y0, y1))
 
@@ -183,7 +183,7 @@ class Array(np.ndarray):
             A new instance of this class that shares all of this instances attributes with a new ndarray.
         """
         arguments = vars(self)
-        arguments.update({"array": array})
+        arguments.update({"data": array})
 
         return self.__class__(**arguments)
 
@@ -197,7 +197,7 @@ class Array(np.ndarray):
         file_path : str
             The full path of the fits file.
         hdu : int
-            The HDU number in the fits file containing the _image data.
+            The HDU number in the fits file containing the _data data.
         """
         return cls(imaging_util.numpy_array_from_fits(file_path, hdu))
 
@@ -210,7 +210,7 @@ class ScaledArray(Array, ArrayGeometry):
         Parameters
         ----------
         array: ndarray
-            An array representing data (e.g. an _image, noise-mappers, etc.)
+            An data representing data (e.g. an _data, noise-mappers, etc.)
         """
         # noinspection PyArgumentList
         super(ScaledArray, self).__init__()
@@ -223,7 +223,7 @@ class ScaledArray(Array, ArrayGeometry):
 
 class ScaledSquarePixelArray(ScaledArray):
     """
-    Class storing the grids for 2D pixel grids (e.g. _image, PSF, signal_to_noise_ratio).
+    Class storing the grids for 2D pixel grids (e.g. _data, PSF, signal_to_noise_ratio).
     """
 
     # noinspection PyUnusedLocal
@@ -232,7 +232,7 @@ class ScaledSquarePixelArray(ScaledArray):
         Parameters
         ----------
         array: ndarray
-            An array representing data (e.g. an _image, noise-mappers, etc.)
+            An data representing data (e.g. an _data, noise-mappers, etc.)
         pixel_scale: float
             The arc-second to pixel conversion factor of each pixel.
         """
@@ -258,7 +258,7 @@ class ScaledSquarePixelArray(ScaledArray):
         file_path : str
             The full path of the fits file.
         hdu : int
-            The HDU number in the fits file containing the _image data.
+            The HDU number in the fits file containing the _data data.
         pixel_scale: float
             The arc-second to pixel conversion factor of each pixel.
         """
@@ -272,16 +272,16 @@ class ScaledSquarePixelArray(ScaledArray):
         Parameters
         ----------
         value: float
-            The value with which the array should be filled
+            The value with which the data should be filled
         shape: (int, int)
-            The shape of the array
+            The shape of the data
         pixel_scale: float
             The scale of a pixel in arc seconds
 
         Returns
         -------
-        array: ScaledSquarePixelArray
-            An array filled with a single value
+        data: ScaledSquarePixelArray
+            An data filled with a single value
         """
         array = np.ones(shape) * value
         return cls(array, pixel_scale)
@@ -291,7 +291,7 @@ class ScaledSquarePixelArray(ScaledArray):
         Returns
         -------
         flat_scaled_array: ScaledSquarePixelArray
-            A copy of this array flattened to 1D
+            A copy of this data flattened to 1D
         """
         return self.new_with_array(super(ScaledSquarePixelArray, self).flatten(order))
 
@@ -305,7 +305,7 @@ class ScaledSquarePixelArray(ScaledArray):
 
 class ScaledRectangularPixelArray(ScaledArray):
     """
-    Class storing the grids for 2D pixel grids (e.g. _image, PSF, signal_to_noise_ratio).
+    Class storing the grids for 2D pixel grids (e.g. _data, PSF, signal_to_noise_ratio).
     """
 
     # noinspection PyUnusedLocal
@@ -314,7 +314,7 @@ class ScaledRectangularPixelArray(ScaledArray):
         Parameters
         ----------
         array: ndarray
-            An array representing data (e.g. an _image, noise-mappers, etc.)
+            An data representing data (e.g. an _data, noise-mappers, etc.)
         pixel_scales : (float, float)
             The arc-second to pixel conversion factor of each pixel.
         """
@@ -334,16 +334,16 @@ class ScaledRectangularPixelArray(ScaledArray):
         Parameters
         ----------
         value: float
-            The value with which the array should be filled
+            The value with which the data should be filled
         shape: (int, int)
-            The shape of the array
+            The shape of the data
         pixel_scales: (float, float)
             The scale of a pixel in arc seconds
 
         Returns
         -------
-        array: ScaledSquarePixelArray
-            An array filled with a single value
+        data: ScaledSquarePixelArray
+            An data filled with a single value
         """
         array = np.ones(shape) * value
         return cls(array, pixel_scales)
@@ -358,7 +358,7 @@ class ScaledRectangularPixelArray(ScaledArray):
         file_path : str
             The full path of the fits file.
         hdu : int
-            The HDU number in the fits file containing the _image data.
+            The HDU number in the fits file containing the _data data.
         pixel_scales: (float, float)
             The arc-second to pixel conversion factor of each pixel.
         """
@@ -369,7 +369,7 @@ class ScaledRectangularPixelArray(ScaledArray):
         Returns
         -------
         flat_scaled_array: ScaledSquarePixelArray
-            A copy of this array flattened to 1D
+            A copy of this data flattened to 1D
         """
         return self.new_with_array(super().flatten(order))
 
