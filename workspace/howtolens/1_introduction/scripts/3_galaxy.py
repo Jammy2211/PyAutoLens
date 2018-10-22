@@ -1,8 +1,7 @@
 from autolens.profiles import mass_profiles
 from autolens.profiles import light_profiles
-from autolens.lensing import galaxy
+from autolens.galaxy import galaxy
 from autolens.imaging import mask
-from autolens.plotting import profile_plotters
 from autolens.plotting import galaxy_plotters
 
 # In this example, we'll use 'mass_profiles' and 'light_profiles' modules introduced previously, along with the
@@ -90,8 +89,8 @@ mass_profile_4 = mass_profiles.EllipticalIsothermal(centre=(1.0, -1.0), axis_rat
 
 galaxy_with_many_profiles = galaxy.Galaxy(light_1=light_profile_1, light_2=light_profile_2,
                                           light_3=light_profile_3, light_4=light_profile_4,
-                                           mass_1=mass_profile_1, mass_2=mass_profile_2,
-                                           mass_3=mass_profile_3, mass_4=mass_profile_4)
+                                          mass_1=mass_profile_1, mass_2=mass_profile_2,
+                                          mass_3=mass_profile_3, mass_4=mass_profile_4)
 
 # Suffice to say, the galaxy's images, surface density, potential and deflections look pretty
 # interesting.

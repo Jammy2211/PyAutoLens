@@ -8,7 +8,7 @@ from autolens.imaging import mask as msk
 from autolens.plotting import ray_tracing_plotters
 from autolens.profiles import light_profiles as lp
 from autolens.profiles import mass_profiles as mp
-from autolens.lensing import galaxy as g
+from autolens.galaxy import galaxy as g
 from autolens.lensing import ray_tracing
 
 @pytest.fixture(name='general_config')

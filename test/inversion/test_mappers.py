@@ -4,7 +4,7 @@ import pytest
 from autolens.imaging import imaging_util
 from autolens.inversion import mappers
 from autolens.inversion import pixelizations
-from test.mock.mock_mask import MockSubGridCoords, MockGridCollection
+from test.mock.mock_imaging import MockSubGridCoords, MockGridCollection
 
 
 class MockGeometry(object):

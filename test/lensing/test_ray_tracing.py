@@ -3,16 +3,16 @@ import pytest
 from astropy import cosmology as cosmo
 
 from autolens import exc
-from autolens.imaging import imaging_util
 from autolens.imaging import mask
 from autolens.inversion import pixelizations
 from autolens.inversion import regularization
-from autolens.lensing import galaxy as g
+from autolens.galaxy import galaxy as g
 from autolens.lensing import plane as pl
 from autolens.lensing import ray_tracing
 from autolens.profiles import light_profiles as lp
 from autolens.profiles import mass_profiles as mp
-from test.mock.mock_lensing import MockRegularization, MockPixelization, MockBorders
+from test.mock.mock_inversion import MockRegularization, MockPixelization
+from test.mock.mock_imaging import MockBorders
 
 
 @pytest.fixture(name="imaging_grids")

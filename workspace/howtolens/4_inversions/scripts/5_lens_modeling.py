@@ -2,14 +2,14 @@ from autolens.imaging import image as im
 from autolens.imaging import mask as ma
 from autolens.profiles import mass_profiles as mp
 from autolens.profiles import light_profiles as lp
-from autolens.lensing import galaxy as g
+from autolens.galaxy import galaxy as g
 from autolens.lensing import ray_tracing
 from autolens.lensing import lensing_image as li
-from autolens.lensing import fitting
+from autolens.lensing import lensing_fitting
 from autolens.inversion import pixelizations as pix
 from autolens.inversion import regularization as reg
 from autolens.plotting import fitting_plotters
-from autolens.plotting import inversion_plotters
+
 
 # I think you'll agree, inversions are a very powerful tool for modeling strong lenses. Now that our source galaxies
 # comprise just a few parameters, we've got a much less complex non-linear parameter space to deal with. This allows us
@@ -51,7 +51,7 @@ def perform_fit_with_lens_and_source_galaxy(lens_galaxy, source_galaxy):
     lensing_image = li.LensingImage(image=image, mask=mask)
     tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
                                                  image_plane_grids=lensing_image.grids, borders=lensing_image.borders)
-    return fitting.fit_lensing_image_with_tracer(lensing_image=lensing_image, tracer=tracer)
+    return lensing_fitting.fit_lensing_image_with_tracer(lensing_image=lensing_image, tracer=tracer)
 
 
 # This lens galaxy has the wrong mass-model -  I've reduced its Einstein Radius from 1.6 to 0.8.
@@ -144,7 +144,7 @@ tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source
 
 # This fit subtracts the lens galaxy's light from the image and fits the resulting source-only image with the inversion.
 # When we plot the image, a new panel on the sub-plot appears showing the model image of the lens galaxy.
-fit = fitting.fit_lensing_image_with_tracer(lensing_image=lensing_image, tracer=tracer)
+fit = lensing_fitting.fit_lensing_image_with_tracer(lensing_image=lensing_image, tracer=tracer)
 fitting_plotters.plot_fitting_subplot(fit=fit)
 
 # Of course if the lens subtraction is rubbish, so is our fit, so we can be sure that our lens model wants to fit the
@@ -155,7 +155,7 @@ lens_galaxy = g.Galaxy(light=lp.SphericalSersic(centre=(0.0, 0.0), intensity=0.3
                                                     einstein_radius=1.6))
 tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
                                              image_plane_grids=lensing_image.grids, borders=lensing_image.borders)
-fit = fitting.fit_lensing_image_with_tracer(lensing_image=lensing_image, tracer=tracer)
+fit = lensing_fitting.fit_lensing_image_with_tracer(lensing_image=lensing_image, tracer=tracer)
 fitting_plotters.plot_fitting_subplot(fit=fit)
 
 # And with that, we're done. We've pretty much covered everything inversion related, so in the last tutorial I'll set

@@ -4,14 +4,8 @@ import pytest
 from autolens import exc
 from autolens.imaging import mask
 from autolens.inversion import inversions
+from test.mock.mock_inversion import MockConvolver
 
-class MockConvolver(object):
-
-    def __init__(self, matrix_shape):
-        self.shape = matrix_shape
-
-    def convolve_mapping_matrix(self, mapping_matrix):
-        return np.ones(self.shape)
 
 class MockMapper(object):
 
@@ -30,8 +24,6 @@ class MockRegularization(object):
         return np.array([[1.0, 0.0, 0.0],
                          [0.0, 1.0, 0.0],
                          [0.0, 0.0, 1.0]])
-
-
 
 class TestDataVectorFromData(object):
 
