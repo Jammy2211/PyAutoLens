@@ -2,8 +2,7 @@ import os
 
 from autolens.autofit import model_mapper as mm
 from autolens.autofit import non_linear as nl
-from autolens.lensing import galaxy
-from autolens.lensing import galaxy_model as gm
+from autolens.galaxy import galaxy, galaxy_model as gm
 from autolens.pipeline import phase as ph
 from autolens.profiles import light_profiles as lp
 from test.integration import tools

@@ -1,8 +1,7 @@
 import os
-import shutil
 
 from autolens.autofit import non_linear as nl
-from autolens.lensing import galaxy_model as gm
+from autolens.galaxy import galaxy_model as gm
 from autolens.pipeline import phase as ph
 from autolens.pipeline import pipeline as pl
 from autolens.profiles import mass_profiles as mp

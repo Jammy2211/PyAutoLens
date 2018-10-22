@@ -9,9 +9,8 @@ from autolens import exc
 from autolens.autofit import non_linear
 from autolens.imaging import image as im
 from autolens.imaging import mask as msk
-from autolens.lensing import fitting
-from autolens.lensing import galaxy as g
-from autolens.lensing import galaxy_model as gm
+from autolens.lensing import lensing_fitting
+from autolens.galaxy import galaxy as g, galaxy_model as gm
 from autolens.lensing import lensing_image as li
 from autolens.lensing import ray_tracing
 from autolens.pipeline.phase_property import PhasePropertyList
@@ -296,7 +295,7 @@ class PhasePositions(Phase):
                                                                 positions=self.positions)
 
         def fit_for_tracer(self, tracer):
-            return fitting.PositionFit(positions=tracer.source_plane.positions, noise=self.pixel_scale)
+            return lensing_fitting.PositionFit(positions=tracer.source_plane.positions, noise=self.pixel_scale)
 
         @classmethod
         def log(cls, instance):
@@ -452,12 +451,12 @@ class PhaseImaging(Phase):
             return fit
 
         def fast_likelihood_for_tracer(self, tracer):
-            return fitting.fast_likelihood_from_lensing_image_and_tracer(lensing_image=self.lensing_image,
-                                                                         tracer=tracer)
+            return lensing_fitting.fast_likelihood_from_lensing_image_and_tracer(lensing_image=self.lensing_image,
+                                                                                 tracer=tracer)
 
         def fit_for_tracers(self, tracer, padded_tracer):
-            return fitting.fit_lensing_image_with_tracer(lensing_image=self.lensing_image, tracer=tracer,
-                                                         padded_tracer=padded_tracer)
+            return lensing_fitting.fit_lensing_image_with_tracer(lensing_image=self.lensing_image, tracer=tracer,
+                                                                 padded_tracer=padded_tracer)
 
         def check_positions_trace_within_threshold(self, instance):
 
@@ -465,8 +464,8 @@ class PhaseImaging(Phase):
 
                 tracer = ray_tracing.TracerImageSourcePlanesPositions(lens_galaxies=instance.lens_galaxies,
                                                                       positions=self.lensing_image.positions)
-                fit = fitting.PositionFit(positions=tracer.source_plane.positions,
-                                          noise=self.lensing_image.image.pixel_scale)
+                fit = lensing_fitting.PositionFit(positions=tracer.source_plane.positions,
+                                                  noise=self.lensing_image.image.pixel_scale)
 
                 if not fit.maximum_separation_within_threshold(self.position_threshold):
                     raise exc.RayTracingException
@@ -560,18 +559,18 @@ class LensPlaneHyperPhase(LensPlanePhase):
         # TODO : Can we make a HyperPhase class that overwrites these for all HyperPhases?
 
         def fast_likelihood_for_tracer(self, tracer):
-            return fitting.fast_likelihood_from_lensing_image_and_tracer(lensing_image=self.lensing_image,
-                                                                         tracer=tracer,
-                                                                         hyper_model_image=self.hyper_model_image,
-                                                                         hyper_galaxy_images=self.hyper_galaxy_images,
-                                                                         hyper_minimum_values=self.hyper_minimum_values)
+            return lensing_fitting.fast_likelihood_from_lensing_image_and_tracer(lensing_image=self.lensing_image,
+                                                                                 tracer=tracer,
+                                                                                 hyper_model_image=self.hyper_model_image,
+                                                                                 hyper_galaxy_images=self.hyper_galaxy_images,
+                                                                                 hyper_minimum_values=self.hyper_minimum_values)
 
         def fit_for_tracers(self, tracer, padded_tracer):
-            return fitting.fit_lensing_image_with_tracer(lensing_image=self.lensing_image, tracer=tracer,
-                                                         padded_tracer=padded_tracer,
-                                                         hyper_model_image=self.hyper_model_image,
-                                                         hyper_galaxy_images=self.hyper_galaxy_images,
-                                                         hyper_minimum_values=self.hyper_minimum_values)
+            return lensing_fitting.fit_lensing_image_with_tracer(lensing_image=self.lensing_image, tracer=tracer,
+                                                                 padded_tracer=padded_tracer,
+                                                                 hyper_model_image=self.hyper_model_image,
+                                                                 hyper_galaxy_images=self.hyper_galaxy_images,
+                                                                 hyper_minimum_values=self.hyper_minimum_values)
 
         @classmethod
         def log(cls, instance):
@@ -780,15 +779,15 @@ class LensSourcePlaneHyperPhase(LensSourcePlanePhase):
             self.hyper_minimum_values = len(self.hyper_galaxy_images) * [0.0]
 
         def fast_likelihood_for_tracer(self, tracer):
-            return fitting.fast_likelihood_from_lensing_image_and_tracer(self.lensing_image, tracer,
-                                                                         self.hyper_model_image,
-                                                                         self.hyper_galaxy_images,
-                                                                         self.hyper_minimum_values)
+            return lensing_fitting.fast_likelihood_from_lensing_image_and_tracer(self.lensing_image, tracer,
+                                                                                 self.hyper_model_image,
+                                                                                 self.hyper_galaxy_images,
+                                                                                 self.hyper_minimum_values)
 
         def fit_for_tracer(self, tracer):
-            return fitting.fit_lensing_image_with_tracer(self.lensing_image, tracer,
-                                                         self.hyper_model_image, self.hyper_galaxy_images,
-                                                         self.hyper_minimum_values)
+            return lensing_fitting.fit_lensing_image_with_tracer(self.lensing_image, tracer,
+                                                                 self.hyper_model_image, self.hyper_galaxy_images,
+                                                                 self.hyper_minimum_values)
 
         @classmethod
         def log(cls, instance):

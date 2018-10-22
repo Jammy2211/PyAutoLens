@@ -1,13 +1,8 @@
-from autolens.lensing import galaxy as g
-from autolens.lensing import ray_tracing
-from autolens.imaging import image as im
 from autolens.imaging import mask
 from autolens.profiles import light_profiles as lp
 from autolens.profiles import mass_profiles as mp
-from autolens.plotting import imaging_plotters
 import numpy as np
 import pytest
-import os
 
 
 # Arc second coordinate grid is:

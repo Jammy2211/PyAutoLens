@@ -7,8 +7,7 @@ from autolens import exc
 from autolens.autofit import model_mapper as mm
 from autolens.inversion import pixelizations
 from autolens.inversion import regularization
-from autolens.lensing import galaxy as g
-from autolens.lensing import galaxy_model as gp
+from autolens.galaxy import galaxy as g, galaxy_model as gp
 from autolens.profiles import mass_profiles, light_profiles, light_and_mass_profiles
 
 

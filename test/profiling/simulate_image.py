@@ -10,7 +10,7 @@ from autolens.imaging import mask
 from autolens.profiles import light_profiles as lp
 from autolens.profiles import mass_profiles as mp
 from autolens.lensing import ray_tracing
-from autolens.lensing import galaxy
+from autolens.galaxy import galaxy
 from imaging import array_util
 
 path = "{}/".format(os.path.dirname(os.path.realpath(__file__)))
