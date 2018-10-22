@@ -43,16 +43,17 @@ RUN gpg --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys B42F6819007
     && chmod +x /usr/local/bin/gosu
 
 # Copy files
-ADD jupyter /home/user/.jupyter
-ADD PyAutoLens /home/user/PyAutoLens
-ADD entrypoint.sh /usr/local/bin/entrypoint.sh
+ADD dockerfiles/jupyter /home/user/.jupyter
+ADD autolens /home/user/autolens
+ADD workspace /home/user/workspace
+ADD dockerfiles/entrypoint.sh /usr/local/bin/entrypoint.sh
 
 # Setup ENV
 EXPOSE 6006
 EXPOSE 8888
 ENV LD_LIBRARY_PATH "$LD_LIBRARY_PATH:/usr/local/lib/"
-ENV PYTHONPATH "$PYTHONPATH:/home/user/PyAutoLens/"
-WORKDIR "/home/user/PyAutoLens/workspace"
+ENV PYTHONPATH "$PYTHONPATH:/home/user/"
+WORKDIR "/home/user/workspace"
 
 # Start up
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]

@@ -269,7 +269,6 @@ class TestPowerLaw(object):
         assert defls[0, 0] == pytest.approx(1.25995, 1e-3)
         assert defls[0, 1] == pytest.approx(-0.35096, 1e-3)
 
-
     def test__compare_to_cored_power_law(self):
         power_law = mp.EllipticalPowerLaw(centre=(0.0, 0.0), axis_ratio=0.5, phi=45.0, einstein_radius=1.0, slope=2.3)
         cored_power_law = mp.EllipticalCoredPowerLaw(centre=(0.0, 0.0), axis_ratio=0.5, phi=45.0,
@@ -387,12 +386,11 @@ class TestCoredIsothermal(object):
         assert defls[0, 0] == pytest.approx(0.95429, 1e-3)
         assert defls[0, 1] == pytest.approx(-0.52047, 1e-3)
 
-        cored_isothermal = mp.EllipticalCoredIsothermal(centre=(0.2,- 0.2), axis_ratio=0.6, phi=120.0,
+        cored_isothermal = mp.EllipticalCoredIsothermal(centre=(0.2, - 0.2), axis_ratio=0.6, phi=120.0,
                                                         einstein_radius=0.5, core_radius=0.5)
         defls = cored_isothermal.deflections_from_grid(grid=np.array([[0.1625, 0.1625]]))
         assert defls[0, 0] == pytest.approx(0.02097, 1e-3)
         assert defls[0, 1] == pytest.approx(0.20500, 1e-3)
-
 
     def test__compare_to_cored_power_law(self):
         power_law = mp.EllipticalCoredIsothermal(centre=(0.0, 0.0), axis_ratio=0.5, phi=45.0, einstein_radius=1.0,
@@ -454,7 +452,6 @@ class TestIsothermal(object):
         assert isothermal.surface_density_from_grid(grid=np.array([[0.0, 1.0]])) == pytest.approx(0.66666, 1e-3)
 
     def test__potential__correct_values(self):
-
         isothermal = mp.SphericalIsothermal(centre=(-0.7, 0.5), einstein_radius=1.3)
         assert isothermal.potential_from_grid(grid=np.array([[0.1875, 0.1625]])) == pytest.approx(1.23435, 1e-3)
 
@@ -462,7 +459,6 @@ class TestIsothermal(object):
         assert isothermal.potential_from_grid(grid=np.array([[0.1625, 0.1625]])) == pytest.approx(1.19268, 1e-3)
 
     def test__deflections__correct_values(self):
-
         isothermal = mp.SphericalIsothermal(centre=(-0.7, 0.5), einstein_radius=1.3)
         deflections = isothermal.deflections_from_grid(grid=np.array([[0.1875, 0.1625]]))
         assert deflections[0, 0] == pytest.approx(1.21510, 1e-4)
@@ -839,7 +835,7 @@ class TestSersic(object):
 
         assert (elliptical.surface_density_from_grid(grid) == spherical.surface_density_from_grid(grid)).all()
         # assert elliptical.potential_from_grid(grid) == spherical.potential_from_grid(grid)
-        assert (elliptical.deflections_from_grid(grid) == spherical.deflections_from_grid(grid)).all()
+        np.testing.assert_almost_equal(elliptical.deflections_from_grid(grid), spherical.deflections_from_grid(grid))
 
     def test__from_light_profile(self):
         light_exponential = lp.EllipticalExponential(centre=(-0.4, -0.2), axis_ratio=0.8, phi=110.0,
@@ -930,7 +926,7 @@ class TestExponential(object):
 
         assert (elliptical.surface_density_from_grid(grid) == spherical.surface_density_from_grid(grid)).all()
         # assert elliptical.potential_from_grid(grid) == spherical.potential_from_grid(grid)
-        assert (elliptical.deflections_from_grid(grid) == spherical.deflections_from_grid(grid)).all()
+        np.testing.assert_almost_equal(elliptical.deflections_from_grid(grid), spherical.deflections_from_grid(grid))
 
 
 class TestDevVaucouleurs(object):
@@ -1000,7 +996,8 @@ class TestDevVaucouleurs(object):
 
         assert (elliptical.surface_density_from_grid(grid) == spherical.surface_density_from_grid(grid)).all()
         # assert elliptical.potential_from_grid(grid) == spherical.potential_from_grid(grid)
-        assert (elliptical.deflections_from_grid(grid) == spherical.deflections_from_grid(grid)).all()
+
+        np.testing.assert_almost_equal(elliptical.deflections_from_grid(grid), spherical.deflections_from_grid(grid))
 
 
 class TestSersicMassRadialGradient(object):
@@ -1143,9 +1140,8 @@ class TestSersicMassRadialGradient(object):
 
 
 class TestExternalShear(object):
-    
+
     def test__surface_density_returns_zeros(self):
-        
         shear = mp.ExternalShear(magnitude=0.1, phi=45.0)
         surface_density = shear.surface_density_from_grid(grid=np.array([0.1]))
         assert (surface_density == np.array([0.0])).all()
@@ -1155,7 +1151,6 @@ class TestExternalShear(object):
         assert (surface_density == np.array([0.0, 0.0, 0.0])).all()
 
     def test__potential_returns_zeros(self):
-        
         shear = mp.ExternalShear(magnitude=0.1, phi=45.0)
         potential = shear.potential_from_grid(grid=np.array([0.1]))
         assert (potential == np.array([0.0])).all()
