@@ -338,7 +338,7 @@ def potential_from_grid(grid, galaxies):
     return sum(map(lambda g: g.potential_from_grid(grid), galaxies))
 
 
-# TODO : There will be a much cleaner way to apply sub data to surface_density to the array wihtout the need for a
+# TODO : There will be a much cleaner way to apply sub data to surface_density to the data wihtout the need for a
 # transpose
 
 def deflections_from_grid(grid, galaxies):
