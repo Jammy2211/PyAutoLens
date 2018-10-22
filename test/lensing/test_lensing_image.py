@@ -13,7 +13,6 @@ def make_image():
     psf = im.PSF(array=np.ones((3, 3)), pixel_scale=3.0, renormalize=False)
     return im.Image(np.ones((4, 4)), pixel_scale=3., psf=psf, noise_map=np.ones((4, 4)))
 
-
 @pytest.fixture(name="mask")
 def make_mask():
     return msk.Mask(np.array([[True, True, True, True],
@@ -21,13 +20,12 @@ def make_mask():
                               [True, False, False, True],
                               [True, True, True, True]]), pixel_scale=3.0)
 
-
 @pytest.fixture(name="lensing_image")
 def make_lensing_image(image, mask):
     return li.LensingImage(image=image, mask=mask)
 
 
-class TestMaskedImage(object):
+class TestLensingImage(object):
 
     def test_attributes(self, image, lensing_image):
         assert image.pixel_scale == lensing_image.pixel_scale
@@ -108,3 +106,22 @@ class TestMaskedImage(object):
         assert lensing_image.convolver_image.psf_shape == (5, 5)
         assert lensing_image.convolver_mapping_matrix.psf_shape == (3, 3)
         assert (lensing_image.positions[0] == np.array([[1.0, 1.0]])).all()
+
+
+@pytest.fixture(name="lensing_hyper_image")
+def make_lensing_hyper_image(image, mask):
+    return li.LensingHyperImage(image=image, mask=mask, hyper_model_image=np.ones(4),
+                                hyper_galaxy_images=[np.ones(4), np.ones(4)], hyper_minimum_values=[0.1, 0.2])
+
+
+class TestLensingHyperImage(object):
+
+    def test_attributes(self, image, lensing_hyper_image):
+
+        assert image.pixel_scale == lensing_hyper_image.pixel_scale
+        assert (image.psf == lensing_hyper_image.psf).all()
+        assert (image.background_noise_map == lensing_hyper_image.image.background_noise_map)
+        assert (lensing_hyper_image.hyper_model_image == np.ones(4)).all()
+        assert (lensing_hyper_image.hyper_galaxy_images[0] == np.ones(4)).all()
+        assert (lensing_hyper_image.hyper_galaxy_images[1] == np.ones(4)).all()
+        assert lensing_hyper_image.hyper_minimum_values == [0.1, 0.2]

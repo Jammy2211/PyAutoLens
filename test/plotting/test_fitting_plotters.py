@@ -12,9 +12,9 @@ from autolens.plotting import fitting_plotters
 from autolens.profiles import light_profiles as lp
 from autolens.profiles import mass_profiles as mp
 from autolens.lensing import lensing_image as li
-from autolens.lensing import galaxy as g
+from autolens.galaxy import galaxy as g
 from autolens.lensing import ray_tracing
-from autolens.lensing import fitting
+from autolens.lensing import lensing_fitting
 
 @pytest.fixture(name='general_config')
 def test_general_config():
@@ -66,20 +66,19 @@ def test_mask():
 
 @pytest.fixture(name='lensing_image')
 def test_lensing_image(image, mask):
-
     return li.LensingImage(image=image, mask=mask)
 
 @pytest.fixture(name='fit_lens_only')
 def test_fit_lens_only(lensing_image, galaxy_light):
     tracer = ray_tracing.TracerImagePlane(lens_galaxies=[galaxy_light], image_plane_grids=lensing_image.grids,
                                           cosmology=cosmo.Planck15)
-    return fitting.fit_lensing_image_with_tracer(lensing_image=lensing_image, tracer=tracer)
+    return lensing_fitting.fit_lensing_image_with_tracer(lensing_image=lensing_image, tracer=tracer)
 
 @pytest.fixture(name='fit_source_and_lens')
 def test_fit_source_and_lens(lensing_image, galaxy_light, galaxy_mass):
     tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[galaxy_mass], source_galaxies=[galaxy_light],
                                                image_plane_grids=lensing_image.grids, cosmology=cosmo.Planck15)
-    return fitting.fit_lensing_image_with_tracer(lensing_image=lensing_image, tracer=tracer)
+    return lensing_fitting.fit_lensing_image_with_tracer(lensing_image=lensing_image, tracer=tracer)
 
 @pytest.fixture(name='hyper')
 def make_hyper():
@@ -98,13 +97,18 @@ def make_hyper():
     hyper.hyper_galaxy = g.Galaxy(light=lp.EllipticalSersic(intensity=1.0), hyper_galaxy=hyper_galaxy)
     return hyper
 
+@pytest.fixture(name='lensing_hyper_image')
+def test_lensing_hyper_image(image, mask, hyper):
+
+    return li.LensingHyperImage(image=image, mask=mask, hyper_model_image=hyper.hyper_model_image,
+                                hyper_galaxy_images=hyper.hyper_galaxy_images,
+                                hyper_minimum_values=hyper.hyper_minimum_values)
+
 @pytest.fixture(name='fit_hyper_lens_only')
-def test_fit_hyper_lens_only(lensing_image, hyper):
-    tracer = ray_tracing.TracerImagePlane(lens_galaxies=[hyper.hyper_galaxy], image_plane_grids=lensing_image.grids)
-    return fitting.fit_lensing_image_with_tracer(lensing_image=lensing_image, tracer=tracer,
-                                                 hyper_model_image=hyper.hyper_model_image,
-                                                 hyper_galaxy_images=hyper.hyper_galaxy_images,
-                                                 hyper_minimum_values=hyper.hyper_minimum_values)
+def test_fit_hyper_lens_only(lensing_hyper_image, hyper):
+    tracer = ray_tracing.TracerImagePlane(lens_galaxies=[hyper.hyper_galaxy],
+                                          image_plane_grids=lensing_hyper_image.grids)
+    return lensing_fitting.fit_lensing_image_with_tracer(lensing_image=lensing_hyper_image, tracer=tracer)
 
 
 def test__fit_sub_plot_lens_only__output_dependent_on_config(fit_lens_only, general_config, fitting_plotter_path):
