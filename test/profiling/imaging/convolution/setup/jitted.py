@@ -12,7 +12,7 @@ class Convolver(object):
 
     def __init__(self, mask, blurring_mask, kernel):
         """
-        Class to create number data and frames used to convolve_image a psf with a 1D vector of non-masked values.
+        Class to create number array and frames used to convolve_image a psf with a 1D vector of non-masked values.
 
         Parameters
         ----------
@@ -21,15 +21,15 @@ class Convolver(object):
         mask : Mask
             A mask of pixels outside the mask but whose light blurs into it after convolution.
         kernel : masked_image.PSF or ndarray
-            An data representing a PSF psf.
+            An array representing a PSF psf.
 
         Attributes
         ----------
         blurring_frame_indexes: [ndarray]
-            An data of frames created by the frame maker. Maps positions in the psf to values in the 1D vector for
+            An array of frames created by the frame maker. Maps positions in the psf to values in the 1D vector for
             masked pixels.
         image_frame_indexes: [ndarray]
-            An data of frames created by the frame maker. A frame maps positions in the psf to values in the 1D
+            An array of frames created by the frame maker. A frame maps positions in the psf to values in the 1D
             vector.
         """
 
