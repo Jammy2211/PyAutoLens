@@ -99,7 +99,7 @@ def plot_fitting_subplot_lens_plane_only(fit, should_plot_mask=True, positions=N
     """
 
     rows, columns, figsize_tool = tools.get_subplot_rows_columns_figsize(number_subplots=4)
-    
+
     mask = get_mask(fit=fit, should_plot_mask=should_plot_mask)
     
     if figsize is None:

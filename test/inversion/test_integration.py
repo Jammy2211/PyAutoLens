@@ -4,7 +4,7 @@ from autolens.imaging import mask as msk
 from autolens.inversion import mappers as pm
 from autolens.inversion import pixelizations
 from autolens.inversion import regularization
-from test.mock.mock_mask import MockSubGridCoords, MockGridCollection, MockBorderCollection
+from test.mock.mock_imaging import MockSubGridCoords, MockGridCollection, MockBorderCollection
 
 
 class TestMapperAndRegularizationFromPixelization:

@@ -2,7 +2,7 @@ import os
 
 from autolens import conf
 from autolens.autofit import model_mapper as mm
-from autolens.lensing import galaxy_model as gp
+from autolens.galaxy import galaxy_model as gp
 from autolens.profiles import light_profiles, mass_profiles
 
 

@@ -2,10 +2,10 @@ from autolens.imaging import image as im
 from autolens.imaging import mask as ma
 from autolens.profiles import mass_profiles as mp
 from autolens.profiles import light_profiles as lp
-from autolens.lensing import galaxy as g
+from autolens.galaxy import galaxy as g
 from autolens.lensing import ray_tracing
 from autolens.lensing import lensing_image as li
-from autolens.lensing import fitting
+from autolens.lensing import lensing_fitting
 from autolens.inversion import pixelizations as pix
 from autolens.inversion import regularization as reg
 from autolens.plotting import fitting_plotters
@@ -54,7 +54,7 @@ def perform_fit_with_source_galaxy(source_galaxy):
         mass=mp.EllipticalIsothermal(centre=(0.0, 0.0), axis_ratio=0.8, phi=135.0, einstein_radius=1.6))
     tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
                                                  image_plane_grids=lensing_image.grids, borders=lensing_image.borders)
-    return fitting.fit_lensing_image_with_tracer(lensing_image=lensing_image, tracer=tracer)
+    return lensing_fitting.fit_lensing_image_with_tracer(lensing_image=lensing_image, tracer=tracer)
 
 # Okay, so lets look at our fit from the previous tutorial in more detail. We'll use a higher resolution 40 x 40 grid.
 source_galaxy = g.Galaxy(pixelization=pix.Rectangular(shape=(40, 40)), regularization=reg.Constant(coefficients=(1.0,)))

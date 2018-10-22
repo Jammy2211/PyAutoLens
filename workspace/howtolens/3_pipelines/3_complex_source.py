@@ -2,8 +2,7 @@ from autolens import conf
 from autolens.autofit import non_linear as nl
 from autolens.imaging import image as im
 from autolens.imaging import mask
-from autolens.lensing import galaxy as g
-from autolens.lensing import galaxy_model as gm
+from autolens.galaxy import galaxy as g, galaxy_model as gm
 from autolens.lensing import lensing_image as li
 from autolens.lensing import ray_tracing
 from autolens.pipeline import phase as ph
