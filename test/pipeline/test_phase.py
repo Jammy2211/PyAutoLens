@@ -17,7 +17,7 @@ from autolens.profiles import mass_profiles as mp
 
 pytestmark = pytest.mark.filterwarnings(
     "ignore:Using a non-tuple sequence for multidimensional indexing is deprecated; use `arr[tuple(seq)]` instead of "
-    "`arr[seq]`. In the future this will be interpreted as an array index, `arr[np.array(seq)]`, which will result "
+    "`arr[seq]`. In the future this will be interpreted as an data index, `arr[np.data(seq)]`, which will result "
     "either in an error or a different result.")
 
 directory = path.dirname(path.realpath(__file__))
@@ -211,43 +211,43 @@ class TestPhase(object):
 
     # TODO : Need to test using results
 
-    # def test_unmasked_model_image_for_instance(self, _image):
+    # def test_unmasked_model_image_for_instance(self, _data):
     #
     #     lens_galaxy = g.Galaxy(light_profile=lp.SphericalSersic(intensity=1.0))
-    #     image_padded_grid = msk.PaddedImageGrid.unmasked_grid_from_shapes_and_pixel_scale(shape=_image.shape,
-    #                                                                                         psf_shape=_image.psf.shape,
-    #                                                                                         pixel_scale=_image.pixel_scale)
+    #     image_padded_grid = msk.PaddedImageGrid.unmasked_grid_from_shapes_and_pixel_scale(shape=_data.shape,
+    #                                                                                         psf_shape=_data.psf.shape,
+    #                                                                                         pixel_scale=_data.pixel_scale)
     #     image_1d = lens_galaxy.intensities_from_grid(image_padded_grid)
-    #     blurred_image_1d = image_padded_grid.convolve_array_1d_with_psf(image_1d, _image.psf)
+    #     blurred_image_1d = image_padded_grid.convolve_array_1d_with_psf(image_1d, _data.psf)
     #     blurred_image = image_padded_grid.scaled_array_from_array_1d(blurred_image_1d)
     #
     #     phase = ph.LensPlanePhase(lens_galaxies=[lens_galaxy])
-    #     analysis = phase.make_analysis(_image)
+    #     analysis = phase.make_analysis(_data)
     #     instance = phase.constant
     #     unmasked_tracer = analysis.unmasked_tracer_for_instance(instance)
     #     unmasked_model_image = analysis.unmasked_model_image_for_tracer(unmasked_tracer)
     #
     #     assert blurred_image == pytest.approx(unmasked_model_image, 1e-4)
     #
-    # def test_unmasked_model_images_of_galaxies_for_instance(self, _image):
+    # def test_unmasked_model_images_of_galaxies_for_instance(self, _data):
     #
     #     g0= g.Galaxy(light_profile=lp.SphericalSersic(intensity=1.0))
     #     g1 = g.Galaxy(light_profile=lp.SphericalSersic(intensity=2.0))
     #
-    #     image_padded_grid = msk.PaddedImageGrid.unmasked_grid_from_shapes_and_pixel_scale(shape=_image.shape,
-    #                                                                                         psf_shape=_image.psf.shape,
-    #                                                                                         pixel_scale=_image.pixel_scale)
+    #     image_padded_grid = msk.PaddedImageGrid.unmasked_grid_from_shapes_and_pixel_scale(shape=_data.shape,
+    #                                                                                         psf_shape=_data.psf.shape,
+    #                                                                                         pixel_scale=_data.pixel_scale)
     #
     #     g0_image_1d = g0.intensities_from_grid(image_padded_grid)
-    #     g0_blurred_image_1d = image_padded_grid.convolve_array_1d_with_psf(g0_image_1d, _image.psf)
+    #     g0_blurred_image_1d = image_padded_grid.convolve_array_1d_with_psf(g0_image_1d, _data.psf)
     #     g0_blurred_image = image_padded_grid.scaled_array_from_array_1d(g0_blurred_image_1d)
     #
     #     g1_image_1d = g1.intensities_from_grid(image_padded_grid)
-    #     g1_blurred_image_1d = image_padded_grid.convolve_array_1d_with_psf(g1_image_1d, _image.psf)
+    #     g1_blurred_image_1d = image_padded_grid.convolve_array_1d_with_psf(g1_image_1d, _data.psf)
     #     g1_blurred_image = image_padded_grid.scaled_array_from_array_1d(g1_blurred_image_1d)
     #
     #     phase = ph.LensPlanePhase(lens_galaxies=[g0, g1])
-    #     analysis = phase.make_analysis(_image)
+    #     analysis = phase.make_analysis(_data)
     #     instance = phase.constant
     #     unmasked_tracer = analysis.unmasked_tracer_for_instance(instance)
     #     unmasked_model_images = analysis.unmasked_model_images_of_galaxies_for_tracer(unmasked_tracer)
@@ -327,9 +327,9 @@ class TestResult(object):
     #     lensing = MockAnalysis(number_galaxies=2, value=1.0)
     #
     # result = ph.LensSourcePlanePhase.Result(constant=mm.ModelInstance(), likelihood=1,
-    # variable=mm.ModelMapper(), lensing=lensing) assert (result.image_plane_source_images[0] == np.array([
-    # 1.0])).all() assert (result.image_plane_source_images[1] == np.array([1.0])).all() assert (
-    # result._image == np.array([2.0])).all()
+    # variable=mm.ModelMapper(), lensing=lensing) assert (result.image_plane_source_images[0] == np.data([
+    # 1.0])).all() assert (result.image_plane_source_images[1] == np.data([1.0])).all() assert (
+    # result._data == np.data([2.0])).all()
 
     def test_results(self):
         results = ph.ResultsCollection([1, 2, 3])
