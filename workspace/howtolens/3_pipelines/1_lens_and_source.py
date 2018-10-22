@@ -2,7 +2,7 @@ from autolens import conf
 from autolens.autofit import non_linear as nl
 from autolens.imaging import image as im
 from autolens.imaging import mask
-from autolens.lensing import galaxy_model as gm
+from autolens.galaxy import galaxy_model as gm
 from autolens.pipeline import phase
 from autolens.pipeline import pipeline
 from autolens.profiles import light_profiles as lp
@@ -54,7 +54,7 @@ conf.instance = conf.Config(config_path=conf.CONFIG_PATH, output_path=path+"outp
 def simulate():
 
     from autolens.imaging import mask
-    from autolens.lensing import galaxy as g
+    from autolens.galaxy import galaxy as g
     from autolens.lensing import ray_tracing
 
     psf = im.PSF.simulate_as_gaussian(shape=(11, 11), sigma=0.1, pixel_scale=0.1)

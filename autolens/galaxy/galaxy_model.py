@@ -3,7 +3,7 @@ import inspect
 from autolens import exc
 from autolens.autofit import model_mapper
 from autolens.autofit.model_mapper import PriorNameValue, ConstantNameValue, cast_collection
-from autolens.lensing import galaxy
+from autolens.galaxy import galaxy
 from autolens.profiles import light_profiles, mass_profiles
 
 
