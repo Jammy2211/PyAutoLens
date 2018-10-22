@@ -73,7 +73,7 @@ class Convolver(object):
     image_frame_psfs = [0,1, 0.2, 0,3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
     image_frame_lengths = 6
 
-    Once we have set up all these quantities, the convolution routine simply uses them to convolve_image a 1D array of masked_image
+    Once we have set up all these quantities, the convolution routine simply uses them to convolve_image a 1D data of masked_image
     data / a mapping_matrix matrix masked_image.
 
     BLURRING FRAMES:
@@ -259,7 +259,7 @@ class ConvolverImage(Convolver):
         burring_mask : Mask
             A mask of pixels outside the mask but whose light blurs into it after convolution.
         kernel : masked_image.PSF or ndarray
-            An array representing a PSF psf.
+            An data representing a PSF psf.
         """
 
         if kernel.shape[0] % 2 == 0 or kernel.shape[1] % 2 == 0:
@@ -305,11 +305,11 @@ class ConvolverImage(Convolver):
         Parameters
         ----------
         blurring_array: [Float]
-            An array representing the mapping_matrix of a source pixel to a set of masked_image pixels within the blurring region.
+            An data representing the mapping_matrix of a source pixel to a set of masked_image pixels within the blurring region.
         sub_shape: (int, int)
             Defines a sub_grid-region of the psf for which the result should be calculated
         image_array: [float]
-            A 1D array
+            A 1D data
         Returns
         -------
         convolved_vector: [float]

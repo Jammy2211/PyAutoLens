@@ -25,7 +25,7 @@ print('(y,x) image-pixel 101:')
 print(image_grids.image[100])
 print('etc.')
 
-# (PyAutoLens actually flattens the NumPy array to 1D to save memory, however it consists of all
+# (PyAutoLens actually flattens the NumPy data to 1D to save memory, however it consists of all
 # 10000 pixel coordinates on our 2D grid)
 print(image_grids.image.shape)
 
