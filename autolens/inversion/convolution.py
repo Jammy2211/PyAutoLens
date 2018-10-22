@@ -7,14 +7,14 @@ class ConvolverMappingMatrix(convolution.Convolver):
 
     def __init__(self, mask, psf):
         """
-        Class to create number array and frames used to convolve a psf with a 1D vector of non-masked values.
+        Class to create number data and frames used to convolve a psf with a 1D vector of non-masked values.
 
         Parameters
         ----------
         mask : Mask
-            An _image mask, where True eliminates data.
-        psf : _image.PSF or ndarray
-            An array representing a PSF.
+            An _data mask, where True eliminates data.
+        psf : _data.PSF or ndarray
+            An data representing a PSF.
         """
 
         super(ConvolverMappingMatrix, self).__init__(mask, psf)
@@ -88,7 +88,7 @@ class ConvolverMappingMatrix(convolution.Convolver):
         Parameters
         -----------
         mapping_matrix : ndarray
-            The 2D mapping matix describing how every inversion pixel maps to an _image pixel.
+            The 2D mapping matix describing how every inversion pixel maps to an _data pixel.
         """
         return self.convolve_matrix_jit(mapping_matrix, self.image_frame_indexes,
                                         self.image_frame_psfs, self.image_frame_lengths)
