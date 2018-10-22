@@ -32,7 +32,7 @@ conf.instance = conf.Config(config_path=conf.CONFIG_PATH, output_path=path+"outp
 def simulate():
 
     from autolens.imaging import mask
-    from autolens.lensing import galaxy as g
+    from autolens.galaxy import galaxy as g
     from autolens.lensing import ray_tracing
 
     psf = im.PSF.simulate_as_gaussian(shape=(11, 11), sigma=0.05, pixel_scale=0.05)
@@ -91,7 +91,7 @@ def make_pipeline():
         def pass_priors(self, previous_results):
 
             self.lens_galaxies = previous_results[0].variable.lens_galaxies
-            self.source_galaxies.source.light_0 = previous_results[0].variable.source_galaxies[0].light_0
+            self.source_galaxies.source.light_0 = previous_results[0].variable.source.light_0
 
     # You'll notice I've stop writing 'phase_1_results = previous_results[0]' and so on - we know how
     # the previous results are structured now so lets not clutter our code!
@@ -108,8 +108,8 @@ def make_pipeline():
         def pass_priors(self, previous_results):
 
             self.lens_galaxies = previous_results[1].variable.lens_galaxies
-            self.source_galaxies.source.light_0 = previous_results[1].variable.source_galaxies[0].light_0
-            self.source_galaxies.source.light_1 = previous_results[1].variable.source_galaxies[0].light_1
+            self.source_galaxies.source.light_0 = previous_results[1].variable.source.light_0
+            self.source_galaxies.source.light_1 = previous_results[1].variable.source.light_1
 
     phase3 = X3SourcePhase(lens_galaxies=dict(lens=gm.GalaxyModel(mass=mp.EllipticalIsothermal)),
                            source_galaxies=dict(source=gm.GalaxyModel(light_0=lp.EllipticalExponential,
@@ -124,9 +124,9 @@ def make_pipeline():
         def pass_priors(self, previous_results):
 
             self.lens_galaxies = previous_results[2].variable.lens_galaxies
-            self.source_galaxies.source.light_0 = previous_results[2].variable.source_galaxies[0].light_0
-            self.source_galaxies.source.light_1 = previous_results[2].variable.source_galaxies[0].light_1
-            self.source_galaxies.source.light_2 = previous_results[2].variable.source_galaxies[0].light_2
+            self.source_galaxies.source.light_0 = previous_results[2].variable.source.light_0
+            self.source_galaxies.source.light_1 = previous_results[2].variable.source.light_1
+            self.source_galaxies.source.light_2 = previous_results[2].variable.source.light_2
 
     phase4 = X4SourcePhase(lens_galaxies=dict(lens=gm.GalaxyModel(mass=mp.EllipticalIsothermal)),
                            source_galaxies=dict(source=gm.GalaxyModel(light_0=lp.EllipticalExponential,
