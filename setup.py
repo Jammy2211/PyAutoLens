@@ -7,7 +7,7 @@ from setuptools import Command, find_packages, setup
 from autolens import __version__
 
 this_dir = abspath(dirname(__file__))
-with open(join(this_dir, 'README.md'), encoding='utf-8') as file:
+with open(join(this_dir, 'README.html'), encoding='utf-8') as file:
     long_description = file.read()
 
 
