@@ -12,7 +12,7 @@ from autolens.inversion import inversions as inv
 from autolens.plotting import imaging_plotters
 from autolens.plotting import mapper_plotters
 from autolens.plotting import inversion_plotters
-from autolens.plotting import fitting_plotters
+from autolens.plotting import lensing_fitting_plotters
 
 # We've covered mappers, which, if I haven't emphasised it enough yet, map things. Now, we're going to look at how we
 # can use these mappers (which map things) to reconstruct the source galaxy - I hope you're excited!
@@ -179,7 +179,7 @@ tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source
 # Then, like before, we call on the fitting module to perform the fit to the lensing image. Indeed, we see
 # some pretty good looking residuals - we're certainly fitting the lensed source accurately!
 fit = lensing_fitting.fit_lensing_image_with_tracer(lensing_image=lensing_image, tracer=tracer)
-fitting_plotters.plot_fitting_subplot(fit=fit)
+lensing_fitting_plotters.plot_fitting_subplot(fit=fit)
 
 # And, we're done, here are a few questions to get you thinking about inversions:
 

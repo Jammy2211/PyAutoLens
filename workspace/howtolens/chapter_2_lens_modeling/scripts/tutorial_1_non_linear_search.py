@@ -3,7 +3,7 @@ from autolens.autofit import non_linear
 from autolens.imaging import image as im
 from autolens.galaxy import galaxy_model as gm
 from autolens.pipeline import phase as ph
-from autolens.plotting import fitting_plotters
+from autolens.plotting import lensing_fitting_plotters
 from autolens.plotting import imaging_plotters
 from autolens.profiles import light_profiles as lp
 from autolens.profiles import mass_profiles as mp
@@ -131,7 +131,7 @@ results = phase.run(image)
 # print(results) # NOTE - this isn't working yet, need to sort out.
 
 # The best-fit solution (i.e. the highest likelihood) is stored in the 'results', which we can plot as per usual.
-fitting_plotters.plot_fitting_subplot(fit=results.fit)
+lensing_fitting_plotters.plot_fitting_subplot(fit=results.fit)
 
 # The fit looks good, and we've therefore found a model pretty close to the one we simulated the image with (you can
 # confirm this yourself if you want, by comparing the inferred parameters to those found in the simulations.py file).
