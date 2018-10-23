@@ -217,8 +217,8 @@ class TestGenerateModelInfo(object):
 
         assert model_info == """MockClassMM
 
-mock_class_one                          UniformPrior, lower_limit = 0.0, upper_limit = 1.0
-mock_class_two                          UniformPrior, lower_limit = 0.0, upper_limit = 1.0
+mock_class_one                                              UniformPrior, lower_limit = 0.0, upper_limit = 1.0
+mock_class_two                                              UniformPrior, lower_limit = 0.0, upper_limit = 1.0
 """
 
     def test_with_constant(self, test_config):
@@ -231,8 +231,8 @@ mock_class_two                          UniformPrior, lower_limit = 0.0, upper_l
 
         assert model_info == """MockClassMM
 
-mock_class_one                          UniformPrior, lower_limit = 0.0, upper_limit = 1.0
-mock_class_two                          Constant, value = 1
+mock_class_one                                              UniformPrior, lower_limit = 0.0, upper_limit = 1.0
+mock_class_two                                              Constant, value = 1
 """
 
 

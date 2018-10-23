@@ -24,7 +24,7 @@ from autolens.plotting import fitting_plotters
 def simulate():
 
     from autolens.imaging import mask
-    from autolens.lensing import galaxy as g
+    from autolens.galaxy import galaxy as g
     from autolens.lensing import ray_tracing
 
     psf = im.PSF.simulate_as_gaussian(shape=(11, 11), sigma=0.05, pixel_scale=0.05)
@@ -104,7 +104,7 @@ print(correct_fit.evidence)
 def simulate_lens_with_light_profile():
 
     from autolens.imaging import mask
-    from autolens.lensing import galaxy as g
+    from autolens.galaxy import galaxy as g
     from autolens.lensing import ray_tracing
 
     psf = im.PSF.simulate_as_gaussian(shape=(11, 11), sigma=0.05, pixel_scale=0.05)
