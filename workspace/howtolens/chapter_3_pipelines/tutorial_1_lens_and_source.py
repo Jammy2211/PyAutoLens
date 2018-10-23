@@ -70,9 +70,14 @@ def simulate():
                                         exposure_time=300.0, psf=psf, background_sky_level=0.1, add_noise=True)
 
 # Now lets simulate hte image we'll fit, which as I said above, is the same image we saw in the previous chapter.
-image = simulate()
+# image = simulate()
 
-imaging_plotters.plot_image_subplot(image=image)
+_path_="/home/jammy/PyCharm/Projects/AutoLens/data/aris"
+image=im.load_imaging_from_fits(image_path=_path_+'/image_no_lens.fits',noise_map_path=_path_+'/noise_map.fits',
+   psf_path=_path_+'/psf.fits',pixel_scale=0.04,image_shape=(151,151),psf_shape=(21,21))
+
+imaging_plotters.plot_image_subplot(image=image, output_path='/home/jammy/', output_filename='lol',
+                                    output_format='png')
 
 # A pipeline is a one long python function (this is why Jupyter notebooks arn't ideal). When we run it, this function
 # 'makes' the pipeline, as you'll see in a moment.
@@ -101,7 +106,7 @@ def make_pipeline():
     # actually use on phases by themselves like in the previous chapter).
     def mask_function(img):
         return mask.Mask.anti_annular(img.shape, pixel_scale=img.pixel_scale, inner_radius_arcsec=0.5,
-                                      outer_radius_arcsec=1.6, outer_radius_2_arcsec=3.0)
+                                      outer_radius_arcsec=1.6, outer_radius_2_arcsec=2.0)
 
     # Create the phase, using the same notation we learnt before (but noting the mask function is passed to this phase,
     # ensuring the anti-annular mask above is used).
