@@ -53,6 +53,18 @@ class GalaxyData(scaled_array.ScaledSquarePixelArray):
             self.unmasked_grids = obj.unmasked_grids
 
 
+class GalaxyDataIntensities(GalaxyData):
+
+    def __init__(self, array, noise_map, mask, sub_grid_size=2):
+
+        super().__init__(array=array, noise_map=noise_map, mask=mask, sub_grid_size=sub_grid_size)
+
+    def profile_quantity_from_galaxy_and_sub_grid(self, galaxy, sub_grid):
+
+        intensities = galaxy.intensities_from_grid(grid=sub_grid)
+        return sub_grid.sub_data_to_image(sub_array=intensities)
+
+
 class GalaxyDataSurfaceDensity(GalaxyData):
 
     def __init__(self, array, noise_map, mask, sub_grid_size=2):
@@ -63,3 +75,40 @@ class GalaxyDataSurfaceDensity(GalaxyData):
 
         surface_density = galaxy.surface_density_from_grid(grid=sub_grid)
         return sub_grid.sub_data_to_image(sub_array=surface_density)
+
+
+class GalaxyDataPotential(GalaxyData):
+
+    def __init__(self, array, noise_map, mask, sub_grid_size=2):
+
+        super().__init__(array=array, noise_map=noise_map, mask=mask, sub_grid_size=sub_grid_size)
+
+    def profile_quantity_from_galaxy_and_sub_grid(self, galaxy, sub_grid):
+
+        potential = galaxy.potential_from_grid(grid=sub_grid)
+        return sub_grid.sub_data_to_image(sub_array=potential)
+
+
+class GalaxyDataDeflectionsY(GalaxyData):
+
+    def __init__(self, array, noise_map, mask, sub_grid_size=2):
+
+        super().__init__(array=array, noise_map=noise_map, mask=mask, sub_grid_size=sub_grid_size)
+
+    def profile_quantity_from_galaxy_and_sub_grid(self, galaxy, sub_grid):
+
+        deflections = galaxy.deflections_from_grid(grid=sub_grid)
+        return np.asarray([sub_grid.sub_data_to_image(deflections[:, 0]),
+                           sub_grid.sub_data_to_image(deflections[:, 1])]).T
+
+class GalaxyDataDeflectionsX(GalaxyData):
+
+    def __init__(self, array, noise_map, mask, sub_grid_size=2):
+
+        super().__init__(array=array, noise_map=noise_map, mask=mask, sub_grid_size=sub_grid_size)
+
+    def profile_quantity_from_galaxy_and_sub_grid(self, galaxy, sub_grid):
+
+        deflections = galaxy.deflections_from_grid(grid=sub_grid)
+        return np.asarray([sub_grid.sub_data_to_image(deflections[:, 0]),
+                           sub_grid.sub_data_to_image(deflections[:, 1])]).T

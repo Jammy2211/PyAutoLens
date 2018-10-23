@@ -16,7 +16,7 @@ class MockGalaxy(object):
         return np.full(shape=self.shape, fill_value=self.value)
 
     def deflections_from_grid(self, grid):
-        return np.full(shape=self.shape, fill_value=self.value)
+        return np.full(shape=(self.shape, 2), fill_value=self.value)
 
 
 class MockHyperGalaxy(object):
