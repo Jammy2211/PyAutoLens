@@ -51,3 +51,15 @@ class GalaxyData(scaled_array.ScaledSquarePixelArray):
             self.sub_grid_size = obj.sub_grid_size
             self.grids = obj.grids
             self.unmasked_grids = obj.unmasked_grids
+
+
+class GalaxyDataSurfaceDensity(GalaxyData):
+
+    def __init__(self, array, noise_map, mask, sub_grid_size=2):
+
+        super().__init__(array=array, noise_map=noise_map, mask=mask, sub_grid_size=sub_grid_size)
+
+    def profile_quantity_from_galaxy_and_sub_grid(self, galaxy, sub_grid):
+
+        surface_density = galaxy.surface_density_from_grid(grid=sub_grid)
+        return sub_grid.sub_data_to_image(sub_array=surface_density)
