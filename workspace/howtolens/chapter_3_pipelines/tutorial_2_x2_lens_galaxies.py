@@ -142,14 +142,14 @@ def make_pipeline():
             # linking them using the 'variable' attribute ensures they stay constant.
 
             self.lens_galaxies.left_lens.mass.centre_0 = \
-                phase_1_results.variable.left_lens.light.centre.centre_0
+                phase_1_results.variable.left_lens.light.centre_0
             self.lens_galaxies.left_lens.mass.centre_1 = \
-                phase_1_results.variable.left_lens.light.centre.centre_1
+                phase_1_results.variable.left_lens.light.centre_1
 
             self.lens_galaxies.right_lens.mass.centre_0 = \
-                phase_2_results.variable.right_lens.light.centre.centre_0
+                phase_2_results.variable.right_lens.light.centre_0
             self.lens_galaxies.right_lens.mass.centre_1 = \
-                phase_2_results.variable.right_lens.light.centre.centre_1
+                phase_2_results.variable.right_lens.light.centre_1
 
     phase3 = LensSubtractedPhase(lens_galaxies=dict(left_lens=gm.GalaxyModel(mass=mp.EllipticalIsothermal),
                                                     right_lens=gm.GalaxyModel(mass=mp.EllipticalIsothermal)),
