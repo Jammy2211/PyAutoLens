@@ -570,17 +570,21 @@ class ModelMapper(AbstractModel):
 
         for prior_model_name, prior_model in self.flat_prior_model_tuples:
 
-            info.append(prior_model.cls.__name__ + '\n')
+            # TODO : clean this up
 
-            prior_model_iterator = prior_model.prior_tuples + prior_model.constant_tuples
+            if 'lens_galaxies' not in prior_model_name and 'source_galaxies' not in prior_model_name:
 
-            for i, attribute_tuple in enumerate(prior_model_iterator):
-                attribute = attribute_tuple[1]
+                info.append(prior_model.cls.__name__ + '\n')
 
-                line = prior_model_name + '_' + attribute_tuple.name
-                info.append(line + ' ' * (40 - len(line)) + attribute.info)
+                prior_model_iterator = prior_model.prior_tuples + prior_model.constant_tuples
 
-            info.append('')
+                for i, attribute_tuple in enumerate(prior_model_iterator):
+                    attribute = attribute_tuple[1]
+
+                    line = prior_model_name + '_' + attribute_tuple.name
+                    info.append(line + ' ' * (60 - len(line)) + attribute.info)
+
+                info.append('')
 
         return '\n'.join(info)
 
