@@ -180,6 +180,7 @@ class NonLinearOptimizer(object):
                 line += ' ' * (70 - len(line)) + paramnames_labels[i]
                 paramnames.write(line + '\n')
 
+
 class DownhillSimplex(NonLinearOptimizer):
 
     def __init__(self, include_hyper_image=False, model_mapper=None,
@@ -559,7 +560,7 @@ class MultiNest(NonLinearOptimizer):
 
                 for i in range(self.variable.prior_count):
                     line = self.param_names[i]
-                    line += ' ' * (50 - len(line)) + str(most_likely[i])
+                    line += ' ' * (60 - len(line)) + str(most_likely[i])
                     results.write(line + '\n')
 
                 if during_analysis is False:
@@ -569,13 +570,17 @@ class MultiNest(NonLinearOptimizer):
                     lower_limit = self.model_at_lower_sigma_limit(sigma_limit=3.0)
                     upper_limit = self.model_at_upper_sigma_limit(sigma_limit=3.0)
 
+                    print(lower_limit)
+                    print(upper_limit)
+
                     results.write('\n')
                     results.write('Most probable model (3 sigma limits)' + '\n')
                     results.write('\n')
 
                     for i in range(self.variable.prior_count):
-                        line += ' ' * (70 - len(line)) + str(most_probable[i]) + ' (' + str(
-                            lower_limit[i]) + ', ' + str(upper_limit[i]) + ')'
+                        line = self.param_names[i]
+                        line += ' ' * (60 - len(line)) + str(most_probable[i]) + ' (' + str(lower_limit[i]) + ', ' + \
+                                str(upper_limit[i]) + ')'
                         results.write(line + '\n')
 
                     lower_limit = self.model_at_lower_sigma_limit(sigma_limit=1.0)
@@ -587,9 +592,8 @@ class MultiNest(NonLinearOptimizer):
 
                     for i in range(self.variable.prior_count):
                         line = self.param_names[i]
-                        line += ' ' * (70 - len(line)) + str(most_probable[i]) + ' (' + str(
-                            lower_limit[i]) + ', ' + str(
-                            upper_limit[i]) + ')'
+                        line += ' ' * (60 - len(line)) + str(most_probable[i]) + ' (' + str(lower_limit[i]) + ', ' + \
+                                str(upper_limit[i]) + ')'
                         results.write(line + '\n')
 
                 results.write('\n')
@@ -601,4 +605,4 @@ class MultiNest(NonLinearOptimizer):
 
                 for i in range(self.variable.constant_count):
                     line = constant_names[i]
-                    line += ' ' * (50 - len(line)) + str(constants[i][1].value)
+                    line += ' ' * (60 - len(line)) + str(constants[i][1].value)
