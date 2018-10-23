@@ -13,7 +13,7 @@ def plot_grid(grid, axis_limits=None, points=None, as_subplot=False,
 
     tools.setup_figure(figsize=figsize, as_subplot=as_subplot)
     grid = convert_grid_units(grid_arc_seconds=grid, units=units, kpc_per_arcsec=kpc_per_arcsec)
-    plt.scatter(y=grid[:, 0], x=grid[:, 1], s=pointsize, marker='.')
+    plt.scatter(y=np.asarray(grid[:, 0]), x=np.asarray(grid[:, 1]), s=pointsize, marker='.')
     tools.set_title(title=title, titlesize=titlesize)
     set_xy_labels_and_ticks_in_arcsec(units, kpc_per_arcsec,grid.xticks, grid.yticks, xlabelsize, ylabelsize,
                                       xyticksize)
@@ -60,4 +60,5 @@ def plot_points(grid, points):
     if points is not None:
         point_colors = itertools.cycle(["y", "r", "k", "g", "m"])
         for point_set in points:
-            plt.scatter(y=grid[point_set, 0], x=grid[point_set, 1], s=8, color=next(point_colors))
+            plt.scatter(y=np.asarray(grid[point_set, 0]),
+                        x=np.asarray(grid[point_set, 1]), s=8, color=next(point_colors))
