@@ -14,7 +14,7 @@ def fit_lensing_image_with_tracer(lensing_image, tracer, padded_tracer=None):
 
     Parameters
     -----------
-    lensing_image : li.LensingImage
+    lensing_image : li.LensingImage or li.LensingHyperImage
         Lensing _data
     tracer : ray_tracing.AbstractTracer
         tracer
