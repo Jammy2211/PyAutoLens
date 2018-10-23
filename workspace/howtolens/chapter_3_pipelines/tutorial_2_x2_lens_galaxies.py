@@ -43,10 +43,12 @@ def simulate():
 
     lens_galaxy_0 = g.Galaxy(light=lp.EllipticalSersic(centre=(0.0, -1.0), axis_ratio=0.8, phi=55.0, intensity=0.1,
                                                        effective_radius=0.8, sersic_index=2.5),
-                             mass=mp.EllipticalIsothermal( centre=(1.0, 0.0), axis_ratio=0.7, phi=45.0, einstein_radius=1.0))
+                             mass=mp.EllipticalIsothermal(centre=(1.0, 0.0), axis_ratio=0.7, phi=45.0,
+                                                          einstein_radius=1.0))
     lens_galaxy_1 = g.Galaxy(light=lp.EllipticalSersic(centre=(0.0, 1.0), axis_ratio=0.8, phi=100.0, intensity=0.1,
                                                        effective_radius=0.6, sersic_index=3.0),
-                             mass=mp.EllipticalIsothermal(centre=(-1.0, 0.0), axis_ratio=0.8, phi=90.0, einstein_radius=0.8))
+                             mass=mp.EllipticalIsothermal(centre=(-1.0, 0.0), axis_ratio=0.8, phi=90.0,
+                                                          einstein_radius=0.8))
     source_galaxy = g.Galaxy(light=lp.SphericalExponential(centre=(0.05, 0.15), intensity=0.2, effective_radius=0.5))
     tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy_0, lens_galaxy_1],
                                                  source_galaxies=[source_galaxy], image_plane_grids=image_plane_grids)
