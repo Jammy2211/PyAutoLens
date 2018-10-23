@@ -16,6 +16,7 @@ chown -R user:user $HOME
 mv -n /home/user/workspace_temp/config /home/user/workspace
 mv -n /home/user/workspace_temp/data /home/user/workspace
 mv -n /home/user/workspace_temp/howtolens /home/user/workspace
+rm -rf /home/user/workspace_temp
 
 # login user
 exec /usr/local/bin/gosu user "$@"
