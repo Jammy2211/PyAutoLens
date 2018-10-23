@@ -6,9 +6,9 @@ from autolens.imaging import mask
 from autolens.galaxy import galaxy_model as gm
 from autolens.pipeline import phase as ph
 from autolens.pipeline import pipeline
-from autolens.plotting import imaging_plotters
 from autolens.profiles import light_profiles as lp
 from autolens.profiles import mass_profiles as mp
+from autolens.plotting import imaging_plotters
 
 import os
 

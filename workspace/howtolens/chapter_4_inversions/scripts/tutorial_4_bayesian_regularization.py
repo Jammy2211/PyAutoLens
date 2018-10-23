@@ -8,7 +8,7 @@ from autolens.lensing import lensing_image as li
 from autolens.lensing import lensing_fitting
 from autolens.inversion import pixelizations as pix
 from autolens.inversion import regularization as reg
-from autolens.plotting import fitting_plotters
+from autolens.plotting import lensing_fitting_plotters
 from autolens.plotting import inversion_plotters
 
 # So, we've seen that we can use an inversion to reconstruct an image. Furthermore, this reconstruction provides
@@ -59,14 +59,14 @@ def perform_fit_with_source_galaxy(source_galaxy):
 # Okay, so lets look at our fit from the previous tutorial in more detail. We'll use a higher resolution 40 x 40 grid.
 source_galaxy = g.Galaxy(pixelization=pix.Rectangular(shape=(40, 40)), regularization=reg.Constant(coefficients=(1.0,)))
 fit = perform_fit_with_source_galaxy(source_galaxy=source_galaxy)
-fitting_plotters.plot_fitting_subplot(fit=fit)
+lensing_fitting_plotters.plot_fitting_subplot(fit=fit)
 
 # It still looks pretty good! However, this is because I sneakily chose a regularization coefficient that gives a
 # good looking solution, without telling you. If we reduce this regularization coefficient to zero, our source
 # reconstruction goes extremely weird.
 source_galaxy = g.Galaxy(pixelization=pix.Rectangular(shape=(40, 40)), regularization=reg.Constant(coefficients=(0.0,)))
 no_regularization_fit = perform_fit_with_source_galaxy(source_galaxy=source_galaxy)
-fitting_plotters.plot_fitting_subplot(fit=no_regularization_fit)
+lensing_fitting_plotters.plot_fitting_subplot(fit=no_regularization_fit)
 
 # So, whats happening here, and why does removing regularization do this to our source reconstruction? When our
 # inversion  reconstructs a source, it doesn't *just* compute the set of fluxes that best-fit the image. It is also
@@ -96,7 +96,7 @@ inversion_plotters.plot_reconstructed_pixelization(inversion=no_regularization_f
 source_galaxy = g.Galaxy(pixelization=pix.Rectangular(shape=(40, 40)),
                          regularization=reg.Constant(coefficients=(100.0,)))
 high_regularization_fit = perform_fit_with_source_galaxy(source_galaxy=source_galaxy)
-fitting_plotters.plot_fitting_subplot(fit=high_regularization_fit)
+lensing_fitting_plotters.plot_fitting_subplot(fit=high_regularization_fit)
 
 # So there we have it, we now understand regularization and its purpose. But there is one nagging question that remains,
 # how do I choose the regularization coefficient? We can't use our likelihood, as decreasing the regularization
@@ -163,7 +163,7 @@ print('Previous Bayesian Evidence:')
 print(10395.370224426646)
 print('New Bayesian Evidence:')
 print(fit.evidence)
-fitting_plotters.plot_fitting_subplot(fit=fit)
+lensing_fitting_plotters.plot_fitting_subplot(fit=fit)
 
 # 2) Can you think of any other ways we might increase the evidence even further? If not - don't worry about - but
 #    you'll learn that PyAutoLens actually adapts its source reconstructions to the properties of the image that it is
