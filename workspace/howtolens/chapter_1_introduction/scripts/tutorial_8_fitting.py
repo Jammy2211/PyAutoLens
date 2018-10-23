@@ -15,7 +15,7 @@ from autolens.plotting import fitting_plotters
 
 # First, we load the image-data we simualted in the previous tutorial.
 path = 'path/to/AutoLens/howtolens/1_introduction' # Unfortunately, in a Jupyter notebook you have to manually specify the path to PyAutoLens and this tutorial.
-path = '/home/jammy/PyCharm/Projects/AutoLens/workspace/howtolens/1_introduction'
+path = '/home/jammy/PyCharm/Projects/AutoLens/workspace/howtolens/chapter_1_introduction'
 image = im.load_imaging_from_path(image_path=path + '/data/image.fits',
                                   noise_map_path=path+'/data/noise_map.fits',
                                   psf_path=path + '/data/psf.fits', pixel_scale=0.1)
