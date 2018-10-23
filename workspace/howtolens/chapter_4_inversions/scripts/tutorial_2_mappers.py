@@ -83,7 +83,7 @@ mask = ma.Mask.annular(shape=image.shape, pixel_scale=image.pixel_scale, inner_r
                        outer_radius_arcsec=2.2)
 
 # Lets quickly confirm the annuli radii capture the source's light
-imaging_plotters.plot_image(image=image, mask=mask)
+#imaging_plotters.plot_image(image=image, mask=mask)
 
 # As usual, we setup our image and mask up as a lensing image and create a tracer using its (now masked) grids.
 lensing_image = li.LensingImage(image=image, mask=mask)
