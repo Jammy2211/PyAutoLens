@@ -10,7 +10,7 @@ from autolens.lensing import lensing_image as li
 from autolens.profiles import light_profiles as lp
 from autolens.profiles import mass_profiles as mp
 from autolens.plotting import imaging_plotters
-from autolens.plotting import fitting_plotters
+from autolens.plotting import lensing_fitting_plotters
 
 import os
 
@@ -43,7 +43,7 @@ conf.instance = conf.Config(config_path=path+'/configs/3_realism_and_complexity'
 def simulate():
 
     from autolens.imaging import mask
-    from autolens.lensing import galaxy as g
+    from autolens.galaxy import galaxy as g
     from autolens.lensing import ray_tracing
 
     psf = im.PSF.simulate_as_gaussian(shape=(11, 11), sigma=0.05, pixel_scale=0.05)
@@ -89,7 +89,7 @@ phase = ph.LensSourcePlanePhase(lens_galaxies=dict(lens_galaxy=gm.GalaxyModel(li
 results = phase.run(image)
 
 # And lets look at the image.
-fitting_plotters.plot_fitting_subplot(fit=results.fit)
+lensing_fitting_plotters.plot_fitting_subplot(fit=results.fit)
 
 # Uh-oh. That image didn't look very good, did it? If we compare our inferred parameters to the actual values (in the
 # simulations.py file) you'll see that we have, indeed, fitted the wrong model.
@@ -116,7 +116,7 @@ tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source
 
 # Now, lets fit the lensing image with the tracer and plot the fit. It looks a lot better than above, doesn't it?
 fit = lensing_fitting.fit_lensing_image_with_tracer(lensing_image=lensing_image, tracer=tracer)
-fitting_plotters.plot_fitting_subplot(fit=fit)
+lensing_fitting_plotters.plot_fitting_subplot(fit=fit)
 
 # Finally, just to be sure, lets compare the two likelihoods
 print('Likelihood of Non-linear Search:')
