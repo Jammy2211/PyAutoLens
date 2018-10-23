@@ -8,7 +8,7 @@ from autolens.profiles import light_profiles as lp
 from autolens.profiles import mass_profiles as mp
 from autolens.plotting import imaging_plotters
 from autolens.plotting import ray_tracing_plotters
-from autolens.plotting import fitting_plotters
+from autolens.plotting import lensing_fitting_plotters
 
 # In this example, we'll fit the image we simulated in the previous exercise. We'll do this using model images generated
 # via a tracer, and by compairing to the simulated image we'll get diagostics about the quality of the fit.
@@ -96,7 +96,7 @@ ray_tracing_plotters.plot_image_plane_image(tracer=tracer)
 #    to the data was (higher likelihood = better fit).
 
 fit = lensing_fitting.fit_lensing_image_with_tracer(lensing_image=lensing_image, tracer=tracer)
-fitting_plotters.plot_fitting_subplot(fit=fit)
+lensing_fitting_plotters.plot_fitting_subplot(fit=fit)
 
 # We can print the fit's attributes - if we don't specify where we'll get all zeros, as the edges were masked:
 print('Model-Image Edge Pixels:')
@@ -134,7 +134,7 @@ source_galaxy = g.Galaxy(light=lp.EllipticalSersic(centre=(0.1, 0.1), axis_ratio
 tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
                                              image_plane_grids=lensing_image.grids)
 fit = lensing_fitting.fit_lensing_image_with_tracer(lensing_image=lensing_image, tracer=tracer)
-fitting_plotters.plot_fitting_subplot(fit=fit)
+lensing_fitting_plotters.plot_fitting_subplot(fit=fit)
 
 # We now observe residuals to appear at the locations the source galaxy was observed, which
 # corresponds to an increase in our chi-squareds (which determines our goodness-of-fit).
@@ -153,7 +153,7 @@ source_galaxy = g.Galaxy(light=lp.EllipticalSersic(centre=(0.1, 0.1), axis_ratio
 tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
                                              image_plane_grids=lensing_image.grids)
 fit = lensing_fitting.fit_lensing_image_with_tracer(lensing_image=lensing_image, tracer=tracer)
-fitting_plotters.plot_fitting_subplot(fit=fit)
+lensing_fitting_plotters.plot_fitting_subplot(fit=fit)
 
 # Clearly, the model provides a terrible fit, and this tracer is not a plausible representation of
 # the image-data  (of course, we already knew that, given that we simulated it!)
