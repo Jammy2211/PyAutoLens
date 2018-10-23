@@ -8,7 +8,7 @@ from autolens import conf
 from autolens.imaging import scaled_array
 from autolens.imaging import image as im
 from autolens.imaging import mask as msk
-from autolens.plotting import fitting_plotters
+from autolens.plotting import lensing_fitting_plotters
 from autolens.profiles import light_profiles as lp
 from autolens.profiles import mass_profiles as mp
 from autolens.lensing import lensing_image as li
@@ -113,31 +113,31 @@ def test_fit_hyper_lens_only(lensing_hyper_image, hyper):
 
 def test__fit_sub_plot_lens_only__output_dependent_on_config(fit_lens_only, general_config, fitting_plotter_path):
 
-    fitting_plotters.plot_fitting_subplot(fit=fit_lens_only, should_plot_mask=True, output_path=fitting_plotter_path,
-                                          output_format='png')
+    lensing_fitting_plotters.plot_fitting_subplot(fit=fit_lens_only, should_plot_mask=True, output_path=fitting_plotter_path,
+                                                  output_format='png')
     assert os.path.isfile(path=fitting_plotter_path + 'fit.png')
     os.remove(path=fitting_plotter_path + 'fit.png')
 
 def test__fit_sub_plot_hyper_lens_only__output_dependent_on_config(fit_hyper_lens_only, general_config,
                                                                    fitting_plotter_path):
 
-    fitting_plotters.plot_fitting_subplot(fit=fit_hyper_lens_only, should_plot_mask=True,
-                                          output_path=fitting_plotter_path, output_filename='hyper_fit',
-                                          output_format='png')
+    lensing_fitting_plotters.plot_fitting_subplot(fit=fit_hyper_lens_only, should_plot_mask=True,
+                                                  output_path=fitting_plotter_path, output_filename='hyper_fit',
+                                                  output_format='png')
     assert os.path.isfile(path=fitting_plotter_path + 'hyper_fit.png')
     os.remove(path=fitting_plotter_path + 'hyper_fit.png')
 
 def test__fit_sub_plot_source_and_lens__output_dependent_on_config(fit_source_and_lens, general_config,
                                                                    fitting_plotter_path):
 
-    fitting_plotters.plot_fitting_subplot(fit=fit_source_and_lens, should_plot_mask=True,
-                                          output_path=fitting_plotter_path, output_format='png')
+    lensing_fitting_plotters.plot_fitting_subplot(fit=fit_source_and_lens, should_plot_mask=True,
+                                                  output_path=fitting_plotter_path, output_format='png')
     assert os.path.isfile(path=fitting_plotter_path + 'fit.png')
     os.remove(path=fitting_plotter_path + 'fit.png')
 
 def test__fit_individuals__lens_only__depedent_on_config(fit_lens_only, general_config, fitting_plotter_path):
 
-    fitting_plotters.plot_fitting_individuals(fit=fit_lens_only, output_path=fitting_plotter_path, output_format='png')
+    lensing_fitting_plotters.plot_fitting_individuals(fit=fit_lens_only, output_path=fitting_plotter_path, output_format='png')
 
     assert os.path.isfile(path=fitting_plotter_path + 'fit_model_image.png')
     os.remove(path=fitting_plotter_path + 'fit_model_image.png')
@@ -150,8 +150,8 @@ def test__fit_individuals__lens_only__depedent_on_config(fit_lens_only, general_
 def test__fit_individuals__hyper_lens_only__depedent_on_config(fit_hyper_lens_only, general_config,
                                                                fitting_plotter_path):
 
-    fitting_plotters.plot_fitting_individuals(fit=fit_hyper_lens_only, output_path=fitting_plotter_path,
-                                              output_format='png')
+    lensing_fitting_plotters.plot_fitting_individuals(fit=fit_hyper_lens_only, output_path=fitting_plotter_path,
+                                                      output_format='png')
 
     assert os.path.isfile(path=fitting_plotter_path + 'fit_model_image.png')
     os.remove(path=fitting_plotter_path + 'fit_model_image.png')
@@ -169,8 +169,8 @@ def test__fit_individuals__hyper_lens_only__depedent_on_config(fit_hyper_lens_on
 def test__fit_individuals__source_and_lens__depedent_on_config(fit_source_and_lens, general_config,
                                                                fitting_plotter_path):
 
-    fitting_plotters.plot_fitting_individuals(fit=fit_source_and_lens, output_path=fitting_plotter_path,
-                                              output_format='png')
+    lensing_fitting_plotters.plot_fitting_individuals(fit=fit_source_and_lens, output_path=fitting_plotter_path,
+                                                      output_format='png')
 
     assert os.path.isfile(path=fitting_plotter_path + 'fit_model_image.png')
     os.remove(path=fitting_plotter_path + 'fit_model_image.png')
@@ -188,31 +188,31 @@ def test__fit_individuals__source_and_lens__depedent_on_config(fit_source_and_le
 
 def test__model_image_is_output(fit_lens_only, fitting_plotter_path):
 
-    fitting_plotters.plot_model_image(fit=fit_lens_only, output_path=fitting_plotter_path, output_format='png')
+    lensing_fitting_plotters.plot_model_image(fit=fit_lens_only, output_path=fitting_plotter_path, output_format='png')
     assert os.path.isfile(path=fitting_plotter_path + 'fit_model_image.png')
     os.remove(path=fitting_plotter_path + 'fit_model_image.png')
 
 def test__residuals_is_output(fit_lens_only, fitting_plotter_path):
 
-    fitting_plotters.plot_residuals(fit=fit_lens_only, output_path=fitting_plotter_path, output_format='png')
+    lensing_fitting_plotters.plot_residuals(fit=fit_lens_only, output_path=fitting_plotter_path, output_format='png')
     assert os.path.isfile(path=fitting_plotter_path + 'fit_residuals.png')
     os.remove(path=fitting_plotter_path + 'fit_residuals.png')
     
 def test__chi_squareds_is_output(fit_lens_only, fitting_plotter_path):
 
-    fitting_plotters.plot_chi_squareds(fit=fit_lens_only, output_path=fitting_plotter_path, output_format='png')
+    lensing_fitting_plotters.plot_chi_squareds(fit=fit_lens_only, output_path=fitting_plotter_path, output_format='png')
     assert os.path.isfile(path=fitting_plotter_path + 'fit_chi_squareds.png')
     os.remove(path=fitting_plotter_path + 'fit_chi_squareds.png')
 
 def test__scaled_chi_squareds_is_output(fit_hyper_lens_only, fitting_plotter_path):
 
-    fitting_plotters.plot_scaled_chi_squareds(fit=fit_hyper_lens_only, output_path=fitting_plotter_path, 
-                                              output_format='png')
+    lensing_fitting_plotters.plot_scaled_chi_squareds(fit=fit_hyper_lens_only, output_path=fitting_plotter_path,
+                                                      output_format='png')
     assert os.path.isfile(path=fitting_plotter_path + 'fit_scaled_chi_squareds.png')
     os.remove(path=fitting_plotter_path + 'fit_scaled_chi_squareds.png')
     
 def test__scaled_noise_map_is_output(fit_hyper_lens_only, fitting_plotter_path):
 
-    fitting_plotters.plot_scaled_noise_map(fit=fit_hyper_lens_only, output_path=fitting_plotter_path, output_format='png')
+    lensing_fitting_plotters.plot_scaled_noise_map(fit=fit_hyper_lens_only, output_path=fitting_plotter_path, output_format='png')
     assert os.path.isfile(path=fitting_plotter_path + 'fit_scaled_noise_map.png')
     os.remove(path=fitting_plotter_path + 'fit_scaled_noise_map.png')
