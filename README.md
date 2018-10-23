@@ -30,7 +30,7 @@ If you don't have Docker then you can install it by following the guide [here](h
 Once you have Docker installed you can download the AutoLens Docker project with the command:
 
 ```
-docker pull linan7788626/docker-pyautolens
+docker pull rhayes777/autolens
 ```
 
 This command can also be used to update the project.
@@ -38,10 +38,12 @@ This command can also be used to update the project.
 The project can be run using:
 
 ```
-docker run -it -e LOCAL_USER_ID=`id -u $USER` -h PyAutoLens -p 8888:8888 -p 6006:6006 -v $HOME/PyAutoLensWorkDir:/home/user/PyAutoLens/workspace linan7788626/docker-pyautolens
+docker run -it -e LOCAL_USER_ID=`id -u $USER` -h autolens -p 8888:8888 -p 6006:6006 -v $HOME/autolens_workspace:/home/user/workspace rhayes777/autolens
 ```
 
 Once the project is running Docker will provide you with a URL. Copy and paste this URL into your browser, making sure you replace '(PyAutoLens or 127.0.0.1)' with '127.0.0.1'. This will bring up a Jupyter notebook including the 'howtolens' directory which is full of tutorials.
+
+Any changes you make inside the Docker workspace will be saved in the autolens_workspace in your home directory.
 
 ## Python Example
 
