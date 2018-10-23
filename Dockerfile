@@ -45,7 +45,7 @@ RUN gpg --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys B42F6819007
 # Copy files
 ADD dockerfiles/jupyter /home/user/.jupyter
 ADD autolens /home/user/autolens
-ADD workspace /home/user/workspace
+ADD workspace /home/user/workspace_temp
 ADD dockerfiles/entrypoint.sh /usr/local/bin/entrypoint.sh
 
 # Setup ENV
@@ -58,4 +58,3 @@ WORKDIR "/home/user/workspace"
 # Start up
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 CMD ["jupyter-notebook", "--ip=0.0.0.0"]
-#CMD ["/bin/bash"]
