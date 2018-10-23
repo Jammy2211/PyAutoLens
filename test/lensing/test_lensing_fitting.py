@@ -600,10 +600,14 @@ class TestLensingProfileFit:
             residuals = fitting.residuals_from_data_and_model(li_manual, model_image)
             chi_squareds = fitting.chi_squareds_from_residuals_and_noise(residuals, li_manual.noise_map)
 
-            assert li_manual.grids.image.scaled_array_from_array_1d(li_manual.noise_map) == pytest.approx(fit.noise_map, 1e-4)
-            assert li_manual.grids.image.scaled_array_from_array_1d(model_image) == pytest.approx(fit.model_data, 1e-4)
-            assert li_manual.grids.image.scaled_array_from_array_1d(residuals) == pytest.approx(fit.residuals, 1e-4)
-            assert li_manual.grids.image.scaled_array_from_array_1d(chi_squareds) == pytest.approx(fit.chi_squareds, 1e-4)
+            assert li_manual.grids.image.scaled_array_from_array_1d(li_manual.noise_map) == \
+                   pytest.approx(fit.noise_map, 1e-4)
+            assert li_manual.grids.image.scaled_array_from_array_1d(model_image) == \
+                   pytest.approx(fit.model_data, 1e-4)
+            assert li_manual.grids.image.scaled_array_from_array_1d(residuals) == \
+                   pytest.approx(fit.residuals, 1e-4)
+            assert li_manual.grids.image.scaled_array_from_array_1d(chi_squareds) == \
+                   pytest.approx(fit.chi_squareds, 1e-4)
 
             chi_squared_term = fitting.chi_squared_term_from_chi_squareds(chi_squareds)
             noise_term = fitting.noise_term_from_noise_map(li_manual.noise_map)
