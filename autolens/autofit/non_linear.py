@@ -570,6 +570,9 @@ class MultiNest(NonLinearOptimizer):
                     lower_limit = self.model_at_lower_sigma_limit(sigma_limit=3.0)
                     upper_limit = self.model_at_upper_sigma_limit(sigma_limit=3.0)
 
+                    print(lower_limit)
+                    print(upper_limit)
+
                     results.write('\n')
                     results.write('Most probable model (3 sigma limits)' + '\n')
                     results.write('\n')

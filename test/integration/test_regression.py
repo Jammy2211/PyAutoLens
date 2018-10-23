@@ -34,7 +34,7 @@ class TestPhaseModelMapper(object):
             def pass_priors(self, previous_results):
                 self.lens_galaxies[0].sersic.intensity = self.lens_galaxies[0].sersic.axis_ratio
 
-        phase = MMPhase(lens_galaxies=[gm.GalaxyModel(sersic=lp.EllipticalSersic)],
+        phase = MMPhase(lens_galaxies=dict(lens=gm.GalaxyModel(sersic=lp.EllipticalSersic)),
                         optimizer_class=nl.MultiNest, phase_name="{}/phase1".format(pipeline_name))
 
         initial_total_priors = phase.variable.prior_count
@@ -42,15 +42,15 @@ class TestPhaseModelMapper(object):
 
         assert phase.lens_galaxies[0].sersic.intensity == phase.lens_galaxies[0].sersic.axis_ratio
         assert initial_total_priors - 1 == phase.variable.prior_count
-        assert len(phase.variable.flat_prior_model_tuples) == 1
+        assert len(phase.variable.flat_prior_model_tuples) == 2
 
         lines = list(
             filter(lambda line: "axis_ratio" in line or "intensity" in line, phase.variable.info.split("\n")))
 
 
         assert len(lines) == 2
-        assert "lens_galaxies_axis_ratio                UniformPrior, lower_limit = 0.2, upper_limit = 1.0" in lines
-        assert "lens_galaxies_intensity                 UniformPrior, lower_limit = 0.2, upper_limit = 1.0" in lines
+        assert "lens_axis_ratio                                             UniformPrior, lower_limit = 0.2, upper_limit = 1.0" in lines
+        assert "lens_intensity                                              UniformPrior, lower_limit = 0.2, upper_limit = 1.0" in lines
 
     def test_constants_work(self):
         pipeline_name = "const_float"
