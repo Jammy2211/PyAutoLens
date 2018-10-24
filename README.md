@@ -52,7 +52,7 @@ With PyAutoLens, you can begin modeling a lens in just a couple of minutes. The 
 ```python
 from autolens.pipeline import phase as ph
 from autolens.autofit import non_linear as nl
-from autolens.lensing import galaxy_prior as gp
+from autolens.lensing import galaxy_model as gm
 from autolens.imaging import image as im
 from autolens.profiles import light_profiles as lp
 from autolens.profiles import mass_profiles as mp
@@ -76,8 +76,8 @@ image = im.load_imaging_from_path(image_path=path + '/data/image.fits',
 # To setup our model galaxies, we use the 'galaxy_model' module and GalaxyModel class. 
 # A GalaxyModel represents a galaxy where the parameters of its associated profiles are 
 # variable and fitted for by the analysis.
-lens_galaxy_model = gp.GalaxyModel(light=lp.AbstractEllipticalSersic, mass=mp.EllipticalIsothermal)
-source_galaxy_model = gp.GalaxyModel(light=lp.AbstractEllipticalSersic)
+lens_galaxy_model = gm.GalaxyModel(light=lp.AbstractEllipticalSersic, mass=mp.EllipticalIsothermal)
+source_galaxy_model = gm.GalaxyModel(light=lp.AbstractEllipticalSersic)
 
 # To perform the analysis, we set up a phase using the 'phase' module (imported as 'ph').
 # A phase takes our galaxy models and fits their parameters using a non-linear search (in this case, MultiNest).
@@ -96,8 +96,8 @@ The example above shows the simplest analysis one can perform in PyAutoLens. PyA
 
 - **Pipelines** - build automated analysis pipelines to fit complex lens models to large samples of strong lenses.
 - **Inversions** - Reconstruct complex source galaxy morphologies on a variety of pixel-grids.
-- **Adaption** - (October 2018) - Adapt the lensing analysis to the features of the observed strong lens imaging.
-- **Multi-Plane** - (November 2018) Model multi-plane lenses, including systems with multiple lensed source galaxies.
+- **Adaption** - (November 2018) - Adapt the lensing analysis to the features of the observed strong lens imaging.
+- **Multi-Plane** - (December 2018) Model multi-plane lenses, including systems with multiple lensed source galaxies.
 
 ## HowToLens
 
