@@ -12,7 +12,7 @@ def plot_image_plane_image(plane, mask=None, positions=None, grid=None, as_subpl
                            mask_pointsize=10, position_pointsize=10.0, grid_pointsize=1,
                            output_path=None, output_format='show', output_filename='plane_image_plane_image'):
 
-    tools_array.plot_array(array=plane.image_plane_image, mask=mask, positions=positions, grid=grid,
+    tools_array.plot_array(array=plane.image_plane_images, mask=mask, positions=positions, grid=grid,
                            as_subplot=as_subplot,
                            units=units, kpc_per_arcsec=plane.kpc_per_arcsec_proper, figsize=figsize, aspect=aspect,
                            cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max,
@@ -37,7 +37,7 @@ def plot_plane_image(plane, positions=None, plot_grid=False, as_subplot=False,
     else:
         grid = None
 
-    tools_array.plot_array(array=plane.plane_image, positions=positions, grid=grid, as_subplot=as_subplot,
+    tools_array.plot_array(array=plane.plane_images, positions=positions, grid=grid, as_subplot=as_subplot,
                            units=units, kpc_per_arcsec=plane.kpc_per_arcsec_proper, figsize=figsize, aspect=aspect,
                            cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max,
                            linthresh=linthresh, linscale=linscale,

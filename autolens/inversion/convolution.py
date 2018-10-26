@@ -12,26 +12,26 @@ class ConvolverMappingMatrix(convolution.Convolver):
         Parameters
         ----------
         mask : Mask
-            An _data mask, where True eliminates data.
-        psf : _data.PSF or ndarray
+            An _datas masks, where True eliminates datas.
+        psf : _datas.PSF or ndarray
             An array representing a PSF.
         """
 
         super(ConvolverMappingMatrix, self).__init__(mask, psf)
 
     def convolve_mapping_matrix(self, mapping_matrix):
-        """For a given inversion mapping matrix, convolve every pixel's mapped image with the PSF kernel.
+        """For a given inversion mapping matrix, convolve every pixel's mapped images with the PSF kernel.
 
         A mapping matrix provides non-zero entries in all elements which map two pixels to one another
         (see *inversions.mappers*).
 
-        For example, lets take an image which is masked using a 'cross' of 5 pixels:
+        For example, lets take an images which is masked using a 'cross' of 5 pixels:
 
         [[ True, False,  True]],
         [[False, False, False]],
         [[ True, False,  True]]
 
-        As example mapping matrix of this cross is as follows (5 image pixels x 3 source pixels):
+        As example mapping matrix of this cross is as follows (5 images pixels x 3 source pixels):
 
         [1, 0, 0] [0->0]
         [1, 0, 0] [1->0]
@@ -39,8 +39,8 @@ class ConvolverMappingMatrix(convolution.Convolver):
         [0, 1, 0] [3->1]
         [0, 0, 1] [4->2]
 
-        For each source-pixel, we can create an image of its unit-surface brightnesses by mapping the non-zero
-        entries back to mask. For example, doing this for source pixel 1 gives:
+        For each source-pixel, we can create an images of its unit-surface brightnesses by mapping the non-zero
+        entries back to masks. For example, doing this for source pixel 1 gives:
 
         [[0.0, 1.0, 0.0]],
         [[1.0, 0.0, 0.0]]
@@ -52,7 +52,7 @@ class ConvolverMappingMatrix(convolution.Convolver):
         [[0.0, 1.0, 1.0]]
         [[0.0, 0.0, 0.0]]
 
-        We then convolve each of these images with our PSF kernel, in 2 dimensions, like we would a normal image. For
+        We then convolve each of these images with our PSF kernel, in 2 dimensions, like we would a normal images. For
         example, using the kernel below:
 
         kernel:
@@ -88,7 +88,7 @@ class ConvolverMappingMatrix(convolution.Convolver):
         Parameters
         -----------
         mapping_matrix : ndarray
-            The 2D mapping matix describing how every inversion pixel maps to an _data pixel.
+            The 2D mapping matix describing how every inversion pixel maps to an _datas pixel.
         """
         return self.convolve_matrix_jit(mapping_matrix, self.image_frame_indexes,
                                         self.image_frame_psfs, self.image_frame_lengths)

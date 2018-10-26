@@ -18,7 +18,7 @@ from autolens.plotting import lensing_fitting_plotters
 # However, inversions arn't perfect, especially when we use to them model lenses. These arn't huge issues, and they're
 # easy to deal with, but its worth me explaining them now, so they don't trip you up when you start using inversions!
 
-# So, what happens if we fit an image using an inversion and the wrong lens model? lets simulate an image and find out.
+# So, what happens if we fit an images using an inversion and the wrong lens model? lets simulate an images and find out.
 
 # The usual simulate function.
 def simulate():
@@ -39,7 +39,7 @@ def simulate():
     tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
                                                  image_plane_grids=image_plane_grids)
 
-    return im.PreparatoryImage.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=0.05,
+    return im.PreparatoryImage.simulate(array=tracer.image_plane_images_for_simulation, pixel_scale=0.05,
                                         exposure_time=300.0, psf=psf, background_sky_level=0.1, add_noise=True)
 
 # And the same fitting function as the last tutorial
@@ -54,21 +54,21 @@ def perform_fit_with_lens_and_source_galaxy(lens_galaxy, source_galaxy):
     return lensing_fitting.fit_lensing_image_with_tracer(lensing_image=lensing_image, tracer=tracer)
 
 
-# This lens galaxy has the wrong mass-model -  I've reduced its Einstein Radius from 1.6 to 0.8.
+# This lens model_galaxy has the wrong mass-model -  I've reduced its Einstein Radius from 1.6 to 0.8.
 lens_galaxy = g.Galaxy(mass=mp.EllipticalIsothermal(centre=(0.0, 0.0), axis_ratio=0.8, phi=135.0, einstein_radius=0.8))
 source_galaxy = g.Galaxy(pixelization=pix.Rectangular(shape=(40, 40)), regularization=reg.Constant(coefficients=(1.0,)))
 fit = perform_fit_with_lens_and_source_galaxy(lens_galaxy=lens_galaxy, source_galaxy=source_galaxy)
 lensing_fitting_plotters.plot_fitting_subplot(fit=fit)
 
-# What happened!? This incorrect mass-model provides a really good_fit to the image! The residuals and chi-squared map
+# What happened!? This incorrect mass-model provides a really good_fit to the images! The residuals and chi-squared map
 # are as good as the ones we saw in the last tutorial.
 #
 # How can an incorrect lens model provide such a fit? Well, as I'm sure you noticed, the source has been reconstructed
-# as a demagnified version of the image. Clearly, this isn't a physical solution or a solution that we want our
+# as a demagnified version of the images. Clearly, this isn't a physical solution or a solution that we want our
 # non-linear search to find, but for inversions these solutions nevertheless exist.
 
 # This isn't necessarily problematic for lens modeling. Afterall, the source reconstruction above is extremely complex,
-# in that it requires a lot of pixels to fit the image accurately. Indeed, its Bayesian evidence is much lower than the
+# in that it requires a lot of pixels to fit the images accurately. Indeed, its Bayesian evidence is much lower than the
 # correct solution.
 lens_galaxy = g.Galaxy(mass=mp.EllipticalIsothermal(centre=(0.0, 0.0), axis_ratio=0.8, phi=135.0,
                                                     einstein_radius=1.6))
@@ -76,9 +76,9 @@ source_galaxy = g.Galaxy(pixelization=pix.Rectangular(shape=(40, 40)), regulariz
 correct_fit = perform_fit_with_lens_and_source_galaxy(lens_galaxy=lens_galaxy, source_galaxy=source_galaxy)
 lensing_fitting_plotters.plot_fitting_subplot(fit=correct_fit)
 print('Bayesian Evidence of Incorrect Fit:')
-print(fit.evidence)
+print(fit.evidences)
 print('Bayesian Evidence of Correct Fit:')
-print(correct_fit.evidence)
+print(correct_fit.evidences)
 
 # Indeed, its evidence *is* lower. However, the difference in evidence isn't *that large*. This is going to
 # be a problem for our non-linear search, as its suddenly going to see *a lot* of solutions with really high
@@ -88,7 +88,7 @@ print(correct_fit.evidence)
 
 # There is no simple fix for this. The reality is, when we use an inversion, these solutions exist. This is infact why
 # pipelines were initially conceived - as they offer a simple solutiion to this problem. We can simply build a pipeline
-# that begins by modeling the source galaxy as a light profile, 'initializing' our lens mass model. Then, when we
+# that begins by modeling the source model_galaxy as a light profile, 'initializing' our lens mass model. Then, when we
 # switch to an inversion in the next phase, our mass model starts in the correct regions of parameter space and doesn't
 # doesn't get lost sampling these incorrect solutions.
 #
@@ -98,8 +98,8 @@ print(correct_fit.evidence)
 
 
 # Okay, so we've covered incorrect solutions, lets end by noting that we can model profiles and inversions at the same
-# time. We do this when we want to simultaneously fit and subtract the light of a lens galaxy and reconstruct its lensed
-# source using an inversion. To do this, all we have to do is give the lens galaxy a light profile.
+# time. We do this when we want to simultaneously fit and subtract the light of a lens model_galaxy and reconstruct its lensed
+# source using an inversion. To do this, all we have to do is give the lens model_galaxy a light profile.
 
 def simulate_lens_with_light_profile():
 
@@ -121,15 +121,15 @@ def simulate_lens_with_light_profile():
     tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
                                                  image_plane_grids=image_plane_grids)
 
-    return im.PreparatoryImage.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=0.05,
+    return im.PreparatoryImage.simulate(array=tracer.image_plane_images_for_simulation, pixel_scale=0.05,
                                         exposure_time=300.0, psf=psf, background_sky_level=0.1, add_noise=True)
 
-# When fitting such an image, we now want to include the lens's light in the analysis. thus, we should update our
-# mask to be circular, and include the central regions of the image.
+# When fitting such an images, we now want to include the lens's light in the analysis. thus, we should update our
+# masks to be circular, and include the central regions of the images.
 image = simulate_lens_with_light_profile()
 mask = ma.Mask.circular(shape=image.shape, pixel_scale=image.pixel_scale, radius_mask_arcsec=2.5)
 
-# As I said above, performing this fit is the same as usual, we just give the lens galaxy a light profile:
+# As I said above, performing this fit is the same as usual, we just give the lens model_galaxy a light profile:
 lens_galaxy = g.Galaxy(light=lp.SphericalSersic(centre=(0.0, 0.0), intensity=0.2, effective_radius=0.8,
                                                     sersic_index=4.0),
                        mass=mp.EllipticalIsothermal(centre=(0.0, 0.0), axis_ratio=0.8, phi=135.0,
@@ -142,13 +142,13 @@ lensing_image = li.LensingImage(image=image, mask=mask)
 tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
                                              image_plane_grids=lensing_image.grids, borders=lensing_image.borders)
 
-# This fit subtracts the lens galaxy's light from the image and fits the resulting source-only image with the inversion.
-# When we plot the image, a new panel on the sub-plot appears showing the model image of the lens galaxy.
+# This fit subtracts the lens model_galaxy's light from the images and fits the resulting source-only images with the inversion.
+# When we plot the images, a new panel on the sub-plot appears showing the model images of the lens model_galaxy.
 fit = lensing_fitting.fit_lensing_image_with_tracer(lensing_image=lensing_image, tracer=tracer)
 lensing_fitting_plotters.plot_fitting_subplot(fit=fit)
 
 # Of course if the lens subtraction is rubbish, so is our fit, so we can be sure that our lens model wants to fit the
-# lens galaxy's light accurately!
+# lens model_galaxy's light accurately!
 lens_galaxy = g.Galaxy(light=lp.SphericalSersic(centre=(0.0, 0.0), intensity=0.3, effective_radius=0.8,
                                                     sersic_index=4.0),
                        mass=mp.EllipticalIsothermal(centre=(0.0, 0.0), axis_ratio=0.8, phi=135.0,
@@ -170,7 +170,7 @@ lensing_fitting_plotters.plot_fitting_subplot(fit=fit)
 #   much lower Bayesian evidence values than is actually possible. Thus, once we've covered adaption, these issues will
 #   have completely been resolved!
 
-# - When the lens galaxy's light is subtracted perfectly, it leaves no residuals. However, if it isn't subtracted
+# - When the lens model_galaxy's light is subtracted perfectly, it leaves no residuals. However, if it isn't subtracted
 #   perfectly, it does leave residuals, and these residuals will be fitted by the inversion. If the residual are
 #   significant, this is going to really mess-up our source reconstruction and can lead to some pretty nasty
 #   systematics. In the next chapter, we'll learn how our adaptive analysis can prevent this residual fitting.

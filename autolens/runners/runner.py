@@ -10,7 +10,7 @@ conf.instance.output_path = os.path.expanduser("~/")
 
 def load_image(data_name, pixel_scale, image_hdu, noise_hdu, psf_hdu, psf_trimmed_shape=None,
                effective_exposure_time=None):
-    data_dir = "{}/../data/{}".format(dirpath, data_name)
+    data_dir = "{}/../datas/{}".format(dirpath, data_name)
 
     data = scaled_array.ScaledSquarePixelArray.from_fits_with_pixel_scale(file_path=data_dir, hdu=image_hdu, pixel_scale=pixel_scale)
     data = data.trim_around_centre((301, 301))

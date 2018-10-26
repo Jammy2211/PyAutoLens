@@ -17,9 +17,9 @@ class Convolver(object):
         Parameters
         ----------
         mask : Mask
-            A mask where True eliminates data.
+            A masks where True eliminates datas.
         mask : Mask
-            A mask of pixels outside the mask but whose light blurs into it after convolution.
+            A masks of pixels outside the masks but whose light blurs into it after convolution.
         kernel : masked_image.PSF or ndarray
             An array representing a PSF psf.
 
@@ -36,7 +36,7 @@ class Convolver(object):
         if kernel.shape[0] % 2 == 0 or kernel.shape[1] % 2 == 0:
             raise exc.KernelException("Kernel must be odd")
         if mask.shape != blurring_mask.shape:
-            raise exc.KernelException("Mask and Blurring mask must be same shape to generate Convolver")
+            raise exc.KernelException("Mask and Blurring masks must be same shape to generate Convolver")
 
         self.mask = mask
         self.kernel = kernel
@@ -126,7 +126,7 @@ sersic = light_profiles.EllipticalSersic(centre=(0.0, 0.0), axis_ratio=0.8, phi=
 lsst = profiling_data.setup_class(name='LSST', pixel_scale=0.2, sub_grid_size=sub_grid_size, psf_shape=psf_shape)
 
 lsst_convolver = Convolver(mask=lsst.mask, blurring_mask=lsst.masked_image.blurring_mask,
-                           kernel=lsst._image_plane_image.psf.trim_around_centre(psf_shape))
+                           kernel=lsst._image_plane_images.psf.trim_around_centre(psf_shape))
 
 assert lsst.masked_image.convolver.frame_array[0] == pytest.approx(lsst_convolver.frame_array[0], 1e-2)
 assert lsst.masked_image.convolver.frame_array[1] == pytest.approx(lsst_convolver.frame_array[1], 1e-2)
@@ -148,30 +148,30 @@ hst_up = profiling_data.setup_class(name='HSTup', pixel_scale=0.03, sub_grid_siz
 @tools.tick_toc_x1
 def lsst_solution():
     Convolver(mask=lsst.mask, blurring_mask=lsst.masked_image.blurring_mask,
-              kernel=lsst._image_plane_image.psf.trim_around_centre(psf_shape))
+              kernel=lsst._image_plane_images.psf.trim_around_centre(psf_shape))
 
 
 @tools.tick_toc_x1
 def euclid_solution():
     Convolver(mask=euclid.mask, blurring_mask=euclid.masked_image.blurring_mask,
-              kernel=euclid._image_plane_image.psf.trim_around_centre(psf_shape))
+              kernel=euclid._image_plane_images.psf.trim_around_centre(psf_shape))
 
 
 @tools.tick_toc_x1
 def hst_solution():
     Convolver(mask=hst.mask, blurring_mask=hst.masked_image.blurring_mask,
-              kernel=hst._image_plane_image.psf.trim_around_centre(psf_shape))
+              kernel=hst._image_plane_images.psf.trim_around_centre(psf_shape))
 
 
 @tools.tick_toc_x1
 def hst_up_solution():
     Convolver(mask=hst_up.mask, blurring_mask=hst_up.masked_image.blurring_mask,
-              kernel=hst_up._image_plane_image.psf.trim_around_centre(psf_shape))
+              kernel=hst_up._image_plane_images.psf.trim_around_centre(psf_shape))
 
 
 @tools.tick_toc_x1
 def ao_solution():
-    Convolver(mask=ao.mask, blurring_mask=ao.blurring_mask, kernel=ao._image_plane_image.psf.trim_around_centre(psf_shape))
+    Convolver(mask=ao.mask, blurring_mask=ao.blurring_mask, kernel=ao._image_plane_images.psf.trim_around_centre(psf_shape))
 
 
 if __name__ == "__main__":

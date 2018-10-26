@@ -11,7 +11,7 @@ from autolens.plotting import lensing_fitting_plotters
 
 import os
 
-# In the previous example, we used a non-linear search to infer the best-fit lens model to a strong lens image. In this
+# In the previous example, we used a non-linear search to infer the best-fit lens model to a strong lens images. In this
 # example, we'll get a deeper intuition of how a non-linear search works.
 
 # First, I want to develop the idea of a 'parameter space'. Lets think of a function, like the simple function below:
@@ -54,8 +54,8 @@ import os
 
 # The remaning figures, which look like contour-maps, show the maximum likelihood regions in 2D between every parameter
 # pair. We often see that two parameters are 'degenerate', whereby increasing one and decreasing the other leads to a
-# similar likelihood value. The 2D PDF between the source galaxy's light-profile's intensity (I_l4) and effective
-# radius (R_l4) shows a degeneracy. This makes sense - making the source galaxy brighter and smaller is similar to
+# similar likelihood value. The 2D PDF between the source model_galaxy's light-profile's intensity (I_l4) and effective
+# radius (R_l4) shows a degeneracy. This makes sense - making the source model_galaxy brighter and smaller is similar to
 # making it fainter and bigger!
 
 # So, how does PyAutoLens know where to look in parameter space? A parameter, say, the Einstein Radius, could in
@@ -89,7 +89,7 @@ path = '{}/../'.format(os.path.dirname(os.path.realpath(__file__)))
 # First, we'll setup the config-overrides, so the non-linear search runs fast. Again, just ignore this for now.
 conf.instance = conf.Config(config_path=path+'configs/2_parameter_space_and_priors', output_path=path+"output")
 
-# This function simulates the image we'll fit in this tutorial - which is identical to the previous tutorial.
+# This function simulates the images we'll fit in this tutorial - which is identical to the previous tutorial.
 def simulate():
 
     from autolens.imaging import mask
@@ -105,16 +105,16 @@ def simulate():
     tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
                                                  image_plane_grids=image_plane_grids)
 
-    image_simulated = im.PreparatoryImage.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=0.1,
-                                           exposure_time=300.0, psf=psf, background_sky_level=0.1, add_noise=True)
+    image_simulated = im.PreparatoryImage.simulate(array=tracer.image_plane_images_for_simulation, pixel_scale=0.1,
+                                                   exposure_time=300.0, psf=psf, background_sky_level=0.1, add_noise=True)
 
     return image_simulated
 
-# Again, lets setup the simulated image
+# Again, lets setup the simulated images
 image = simulate()
 imaging_plotters.plot_image_subplot(image=image)
 
-# To change the priors on specific parameters, we create our galaxy model's and then use a custom-phase and its
+# To change the priors on specific parameters, we create our model_galaxy model's and then use a custom-phase and its
 # 'pass_priors' function to overwrite priors on specific parameters.
 
 lens_galaxy_model = gm.GalaxyModel(mass=mp.SphericalIsothermal)
@@ -127,11 +127,11 @@ class CustomPhase(ph.LensSourcePlanePhase):
         # To change priors, we use the 'model_mapper' module. This is what links our GalaxyModel's to the non-linear
         # search. Thus, it tells PyAutoLens where to search non-linear parameter space.
 
-        # These two lines change the centre of the lens galaxy's mass-profile to UniformPriors around the coordinates
+        # These two lines change the centre of the lens model_galaxy's mass-profile to UniformPriors around the coordinates
         # (-0.1", 0.1"). For real lens modeling, this might be done by visually inspecting the centre of emission of
-        # the lens galaxy's light.
+        # the lens model_galaxy's light.
 
-        # The term 'lens_galaxy' refers to the name of the galaxy that we give it below (scroll down cell [5].
+        # The term 'lens_galaxy' refers to the name of the model_galaxy that we give it below (scroll down cell [5].
         # By naming galaxies in this way, we can easily keep track of how to pass their priors).
 
         # The word 'mass' corresponds to the word we used when setting up the GalaxyModel above.
@@ -139,12 +139,12 @@ class CustomPhase(ph.LensSourcePlanePhase):
         self.lens_galaxies.lens_galaxy.mass.centre_0 = model_mapper.UniformPrior(lower_limit=-0.1, upper_limit=0.1)
         self.lens_galaxies.lens_galaxy.mass.centre_1 = model_mapper.UniformPrior(lower_limit=-0.1, upper_limit=0.1)
 
-        # Lets also change the prior on the lens galaxy's einstein radius, to a GaussianPrior centred on 1.4".
+        # Lets also change the prior on the lens model_galaxy's einstein radius, to a GaussianPrior centred on 1.4".
         # For real lens modeling, this might be done by visually estimating the radius the lens's arcs / ring appear.
 
         self.lens_galaxies.lens_galaxy.mass.einstein_radius = model_mapper.GaussianPrior(mean=1.4, sigma=0.2)
 
-        # We can also customize the source galaxy - lets say we believe it is compact and limit its effective radius
+        # We can also customize the source model_galaxy - lets say we believe it is compact and limit its effective radius
 
         self.source_galaxies.source_galaxy.light.effective_radius = \
             model_mapper.UniformPrior(lower_limit=0.0, upper_limit=0.3)

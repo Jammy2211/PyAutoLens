@@ -48,7 +48,7 @@ def output_subplot_array(output_path, output_filename, output_format):
     elif output_format is 'png':
         plt.savefig(output_path + output_filename + '.png', bbox_inches='tight')
     elif output_format is 'fits':
-        raise exc.VisualizeException('You cannot output a subplots with format .fits')
+        raise exc.PlottingException('You cannot output a subplots with format .fits')
 
 
 def close_figure(as_subplot):

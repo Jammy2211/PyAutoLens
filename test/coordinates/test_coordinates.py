@@ -140,7 +140,7 @@ def test__deflection_angles():
 
 # def test__move_source_galaxy_around_source_plane__peak_follows_source_direction():
 #
-#     image_grid = mask.ImageGrid.from_shape_and_pixel_scale(shape=(5, 5), pixel_scales=1.0)
+#     image_grid = masks.ImageGrid.from_shape_and_pixel_scale(shape=(5, 5), pixel_scales=1.0)
 #     sis = mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=1.0)
 #     sersic = lp.SphericalSersic(centre=(1.0, 0.0))
 #
@@ -153,13 +153,13 @@ def test__deflection_angles():
 #     source_image = sersic.intensities_from_grid(grid=source_grid)
 #     print(source_image.argmax())
 #
-#     imaging_grids = mask.ImagingGrids.from_shape_and_pixel_scale(shape=(5, 5), pixel_scales=1.0)
+#     imaging_grids = masks.ImagingGrids.from_shape_and_pixel_scale(shape=(5, 5), pixel_scales=1.0)
 #     lens_galaxy = g.Galaxy(mass=sis)
 #     source_galaxy = g.Galaxy(light=sersic)
 #     tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
 #                                                  image_plane_grids=imaging_grids)
 #
 #     print(source_grid)
-#     print(tracer.source_plane.grids.image)
-#     print(np.subtract(source_grid, tracer.source_plane.grids.image))
+#     print(tracer.source_plane.grids.images)
+#     print(np.subtract(source_grid, tracer.source_plane.grids.images))
 #     print(tracer.image_plane_image)

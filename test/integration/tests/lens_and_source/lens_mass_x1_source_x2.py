@@ -20,7 +20,7 @@ def test_lens_x1_src_x1_profile_pipeline():
     data_name = '/lens_x1_source_x2'
 
     try:
-        shutil.rmtree(dirpath + '/data' + data_name)
+        shutil.rmtree(dirpath + '/datas' + data_name)
     except FileNotFoundError:
         pass
 

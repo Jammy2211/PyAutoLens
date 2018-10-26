@@ -307,7 +307,7 @@ class RectangularRegWeight(Pixelization, RegularizationWeighted):
         """
         relocated_grids = borders.relocated_grids_from_grids(grids)
         geometry = self.geometry_from_pix_sub_grid(relocated_grids.sub)
-        image_to_pix = self.grid_to_pix_from_grid_jitted(relocated_grids._image_plane_image, geometry)
+        image_to_pix = self.grid_to_pix_from_grid_jitted(relocated_grids._image_plane_images, geometry)
         return image_to_pix
 
 

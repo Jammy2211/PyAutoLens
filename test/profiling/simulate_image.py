@@ -14,7 +14,7 @@ from autolens.galaxy import galaxy
 from imaging import array_util
 
 path = "{}/".format(os.path.dirname(os.path.realpath(__file__)))
-output_path = "{}/../profiling/data/".format(os.path.dirname(os.path.realpath(__file__)))
+output_path = "{}/../profiling/datas/".format(os.path.dirname(os.path.realpath(__file__)))
 
 psf_size = (51, 51)
 
@@ -33,7 +33,7 @@ pixel_scale = 0.03
 lens_name = 'AO/'
 pixel_scale = 0.01
 
-psf = image.PSF.from_fits_with_scale(file_path=path + '../profiling/data/psf', hdu=3, pixel_scale=pixel_scale)
+psf = image.PSF.from_fits_with_scale(file_path=path + '../profiling/datas/psf', hdu=3, pixel_scale=pixel_scale)
 psf = psf.trim_around_centre(psf_size)
 ma = mask.Mask.padded_mask_unmasked_psf_edges(shape_arc_seconds=(15.0, 15.0), pixel_scale=pixel_scale,
                                               pad_size=psf_size)
@@ -41,7 +41,7 @@ ma = mask.Mask.padded_mask_unmasked_psf_edges(shape_arc_seconds=(15.0, 15.0), pi
 image_plane_grids = mask.GridCollection.grids_from_mask_sub_grid_size_and_psf_shape(mask=ma, sub_grid_size=4,
                                                                                     psf_shape=psf_size)
 
-### Setup the ray tracing model, and use to generate the 2D galaxy image_coords ###
+### Setup the ray tracing model, and use to generate the 2D model_galaxy image_coords ###
 
 sersic = lp.EllipticalSersic(centre=(0.0, 0.0), axis_ratio=0.8, phi=90.0, intensity=0.5, effective_radius=1.3,
                              sersic_index=3.0)
