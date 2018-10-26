@@ -24,6 +24,10 @@ class AbstractTracer(object):
         return len(self.all_planes)
 
     @property
+    def total_images(self):
+        return len(self.image_plane.grids)
+
+    @property
     def redshifts(self):
         return [plane.redshift for plane in self.all_planes]
 
@@ -57,16 +61,18 @@ class AbstractTracer(object):
         return constants.c.to('kpc / s').value ** 2.0 / (4 * math.pi * constants.G.to('kpc3 / M_sun s2').value)
 
     @property
-    def scaled_array_from_array_1d(self):
-        return self.image_plane.grids.image.scaled_array_from_array_1d
+    def image_plane_images(self):
+        return list(map(lambda _image_plane_image, grid : grid.image.scaled_array_from_array_1d(_image_plane_image),
+                        self._image_plane_images, self.image_plane.grids))
 
     @property
-    def image_plane_image(self):
-        return self.scaled_array_from_array_1d(self._image_plane_image)
+    def image_plane_images_for_simulation(self):
+        return[sum(image_plane_image_of_plane_for_simulation[i] for image_plane_image_of_plane_for_simulation in
+                   self.image_plane_images_of_planes_for_simulation) for i in range(self.total_images)]
 
     @property
-    def image_plane_image_for_simulation(self):
-        return sum([plane.image_plane_image_for_simulation for plane in self.all_planes])
+    def image_plane_images_of_planes_for_simulation(self):
+        return [plane.image_plane_images_for_simulation for plane in self.all_planes]
 
     @property
     def mappers_of_planes(self):
@@ -77,12 +83,36 @@ class AbstractTracer(object):
         return list(filter(None, [plane.regularization for plane in self.all_planes]))
 
     @property
-    def _image_plane_image(self):
-        return sum([plane._image_plane_image for plane in self.all_planes])
+    def _image_plane_images(self):
+        return list(map(lambda _image_plane_images_of_planes : sum(_image_plane_images_of_planes),
+                        self._image_plane_images_of_planes))
+
+    # TODO : It makes the high level code a lot more intuitive if the indexing of images of planes goes 
+    # TODO : [image_index][plane_index]. Is there a neat dictionary comprehension to do this rather than the loop below?
 
     @property
-    def _image_plane_blurring_image(self):
-        return sum([plane._image_plane_blurring_image for plane in self.all_planes])
+    def _image_plane_images_of_planes(self):
+        _image_plane_images = [plane._image_plane_images for plane in self.all_planes]
+        _image_plane_images_of_planes = [[] for _ in range(self.total_images)]
+        for image_index in range(self.total_images):
+            for plane_index in range(self.total_planes):
+                _image_plane_images_of_planes[image_index].append(_image_plane_images[plane_index][image_index])
+        return _image_plane_images_of_planes
+
+    @property
+    def _image_plane_blurring_images(self):
+        return list(map(lambda _image_plane_blurring_images_of_planes : sum(_image_plane_blurring_images_of_planes),
+                        self._image_plane_blurring_images_of_planes))
+
+    @property
+    def _image_plane_blurring_images_of_planes(self):
+        _image_plane_blurring_images = [plane._image_plane_blurring_images for plane in self.all_planes]
+        _image_plane_blurring_images_of_planes = [[] for _ in range(self.total_images)]
+        for image_index in range(self.total_images):
+            for plane_index in range(self.total_planes):
+                _image_plane_blurring_images_of_planes[image_index].append(_image_plane_blurring_images[plane_index][image_index])
+        return _image_plane_blurring_images_of_planes
+
 
     @property
     def surface_density(self):
@@ -108,8 +138,8 @@ class TracerImagePlane(AbstractTracer):
         return [self.image_plane]
 
     def __init__(self, lens_galaxies, image_plane_grids, borders=None, cosmology=None):
-        """Ray-tracer for a lensing system with just one plane, the _data-plane. Because there is 1 plane, there are \
-        no ray-tracing calculations and the class is used purely for fitting _data-plane galaxies with light \
+        """Ray-tracer for a lensing system with just one plane, the _datas-plane. Because there is 1 plane, there are \
+        no ray-tracing calculations and the class is used purely for fitting _datas-plane galaxies with light \
         profiles.
         
         By default, this has no associated cosmology and galaxy quantities (e.g. effective radii) are in \
@@ -119,9 +149,9 @@ class TracerImagePlane(AbstractTracer):
         Parameters
         ----------
         lens_galaxies : [Galaxy]
-            The list of lens galaxies in the _data-plane.
-        image_plane_grids : mask.ImagingGrids
-            The _data-plane grids where tracer calculation are performed, (this includes the _data-grid, sub-grid, \
+            The list of lens galaxies in the _datas-plane.
+        image_plane_grids : masks.ImagingGrids
+            The _datas-plane grids where tracer calculation are performed, (this includes the _datas-grid, sub-grid, \
             blurring-grid, etc.).
         cosmology : astropy.cosmology.Planck15
             The cosmology of the ray-tracing calculation.
@@ -140,7 +170,7 @@ class TracerImageSourcePlanes(AbstractTracer):
         return [self.image_plane, self.source_plane]
 
     def __init__(self, lens_galaxies, source_galaxies, image_plane_grids, borders=None, cosmology=None):
-        """Ray-tracer for a lensing system with two planes, an _data-plane and source-plane.
+        """Ray-tracer for a lensing system with two planes, an _datas-plane and source-plane.
 
         By default, this has no associated cosmology, thus all calculations are performed in arc seconds and galaxies \
         do not need input redshifts. If a cosmology is supplied, the plane's angular diameter distances, \ 
@@ -149,11 +179,11 @@ class TracerImageSourcePlanes(AbstractTracer):
         Parameters
         ----------
         lens_galaxies : [Galaxy]
-            The list of galaxies in the _data-plane.
+            The list of galaxies in the _datas-plane.
         source_galaxies : [Galaxy]
             The list of galaxies in the source-plane.
-        image_plane_grids : mask.ImagingGrids
-            The _data-plane grids where ray-tracing calculation are performed, (this includes the _data-grid, \
+        image_plane_grids : masks.ImagingGrids
+            The _datas-plane grids where ray-tracing calculation are performed, (this includes the _datas-grid, \
             sub-grid, blurring-grid, etc.).
         cosmology : astropy.cosmology.Planck15
             The cosmology of the ray-tracing calculation.
@@ -194,7 +224,7 @@ class TracerImageSourcePlanes(AbstractTracer):
 class AbstractTracerMulti(AbstractTracer):
 
     def __init__(self, galaxies, cosmology):
-        """The ray-tracing calculations, defined by a lensing system with just one _data-plane and source-plane.
+        """The ray-tracing calculations, defined by a lensing system with just one _datas-plane and source-plane.
 
         This has no associated cosmology, thus all calculations are performed in arc seconds and galaxies do not need
         known redshift measurements.
@@ -293,9 +323,9 @@ class TracerMulti(AbstractTracerMulti):
         ----------
         galaxies : [Galaxy]
             The list of galaxies in the ray-tracing calculation.
-        image_plane_grids : mask.ImagingGrids
-            The _data-plane grids where ray-tracing calculation are performed, (this includes the
-            _data-grid, sub-grid, blurring-grid, etc.).
+        image_plane_grids : masks.ImagingGrids
+            The _datas-plane grids where ray-tracing calculation are performed, (this includes the
+            _datas-grid, sub-grid, blurring-grid, etc.).
         cosmology : astropy.cosmology
             The cosmology of the ray-tracing calculation.
         """
@@ -313,7 +343,7 @@ class TracerMulti(AbstractTracerMulti):
             else:
                 raise exc.RayTracingException('A galaxy was not correctly allocated its previous / next redshifts')
 
-            new_grid = image_plane_grids
+            new_grids = image_plane_grids
 
             if plane_index > 0:
                 for previous_plane_index in range(plane_index):
@@ -324,37 +354,20 @@ class TracerMulti(AbstractTracerMulti):
                         return np.multiply(scaling_factor, grid)
 
                     if self.planes[previous_plane_index].deflections is not None:
-                        scaled_deflections = self.planes[previous_plane_index].deflections.apply_function(scale)
+                        scaled_deflections = list(map(lambda deflections : deflections.apply_function(scale),
+                                                      self.planes[previous_plane_index].deflections))
                     else:
                         scaled_deflections = None
 
                     if scaled_deflections is not None:
 
-                        if isinstance(new_grid.image, msk.PaddedImageGrid):
-                            image_grid = msk.PaddedImageGrid(arr=new_grid.image - scaled_deflections.image,
-                                                             mask=new_grid.image.mask,
-                                                             image_shape=new_grid.image.image_shape)
-                        elif isinstance(new_grid.image, msk.ImageGrid):
-                            image_grid = msk.ImageGrid(arr=new_grid.image - scaled_deflections.image,
-                                                       mask=new_grid.image.mask)
-                        else:
-                            raise exc.RayTracingException(
-                                "new_grid.image must either be a PaddedImageGrid or ImageGrid")
+                        def minus(grid, deflections):
+                            return grid - deflections
 
-                        if isinstance(new_grid.sub, msk.PaddedSubGrid):
-                            sub_grid = msk.PaddedSubGrid(new_grid.sub - scaled_deflections.sub, new_grid.sub.mask,
-                                                         new_grid.sub.image_shape, new_grid.sub.sub_grid_size)
-                        elif isinstance(new_grid.sub, msk.SubGrid):
-                            sub_grid = msk.SubGrid(new_grid.sub - scaled_deflections.sub, new_grid.sub.mask,
-                                                   new_grid.sub.sub_grid_size)
-                        else:
-                            raise exc.RayTracingException("new_grid.sub must either be a SubGrid or PaddedSubGrid")
+                        new_grids = list(map(lambda grid, deflections: grid.map_function(minus, deflections),
+                                 new_grids, scaled_deflections))
 
-                        blurring_grid = msk.ImageGrid(arr=new_grid.blurring - scaled_deflections.blurring,
-                                                      mask=None)
-                        new_grid = msk.ImagingGrids(image=image_grid, sub=sub_grid, blurring=blurring_grid)
-
-            self.planes.append(pl.Plane(galaxies=self.planes_galaxies[plane_index], grids=new_grid, borders=borders,
+            self.planes.append(pl.Plane(galaxies=self.planes_galaxies[plane_index], grids=new_grids, borders=borders,
                                         compute_deflections=compute_deflections, cosmology=cosmology))
 
 
@@ -365,7 +378,7 @@ class TracerImageSourcePlanesPositions(AbstractTracer):
         return [self.image_plane, self.source_plane]
 
     def __init__(self, lens_galaxies, positions, cosmology=None):
-        """Positional ray-tracer for a lensing system with two planes, an _data-plane and source-plane (source-plane \
+        """Positional ray-tracer for a lensing system with two planes, an _datas-plane and source-plane (source-plane \
         galaxies are not input for the positional ray-tracer, as it is only the proximity that positions trace to \
         within one another that needs to be computed).
 
@@ -376,9 +389,9 @@ class TracerImageSourcePlanesPositions(AbstractTracer):
         Parameters
         ----------
         lens_galaxies : [Galaxy]
-            The list of lens galaxies in the _data-plane.
+            The list of lens galaxies in the _datas-plane.
         positions : [[[]]]
-            The (x,y) arc-second coordinates of _data-plane pixels which (are expected to) mappers to the same location(s) \
+            The (x,y) arc-second coordinates of _datas-plane pixels which (are expected to) mappers to the same location(s) \
             in the source-plane.
         cosmology : astropy.cosmology.Planck15
             The cosmology of the ray-tracing calculation.
@@ -406,7 +419,7 @@ class TracerMultiPositions(AbstractTracerMulti):
         galaxies : [Galaxy]
             The list of galaxies in the ray-tracing calculation.
         positions : [[[]]]
-            The (x,y) arc-second coordinates of _data-plane pixels which (are expected to) mappers to the same location(s) \
+            The (x,y) arc-second coordinates of _datas-plane pixels which (are expected to) mappers to the same location(s) \
             in the final source-plane.
         cosmology : astropy.cosmology
             The cosmology of the ray-tracing calculation.

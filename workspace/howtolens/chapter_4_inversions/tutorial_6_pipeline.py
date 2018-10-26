@@ -49,10 +49,10 @@ def simulate():
                                                                   source_galaxy_2, source_galaxy_3],
                                                  image_plane_grids=image_plane_grids)
 
-    return im.PreparatoryImage.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=0.05,
-                                       exposure_time=300.0, psf=psf, background_sky_level=0.1, add_noise=True)
+    return im.PreparatoryImage.simulate(array=tracer.image_plane_images_for_simulation, pixel_scale=0.05,
+                                        exposure_time=300.0, psf=psf, background_sky_level=0.1, add_noise=True)
 
-# Lets simulate the image we'll fit, which is the same complex source as the 3_pipelines.py tutorial.
+# Lets simulate the images we'll fit, which is the same complex source as the 3_pipelines.py tutorial.
 image = simulate()
 imaging_plotters.plot_image_subplot(image=image)
 
@@ -79,7 +79,7 @@ def make_pipeline():
             self.source_galaxies.source.shape_1 = mm.UniformPrior(lower_limit=20.0, upper_limit=40.0)
 
             # We know the regularization coefficient is going to be around 1.0 from the last tutorial, but lets use a
-            # large prior range just to make sure we cover solutions for any image.
+            # large prior range just to make sure we cover solutions for any images.
             self.source_galaxies.source.coefficients_0 = mm.UniformPrior(lower_limit=0.0, upper_limit=100.0)
 
     phase2 = InversionPhase(lens_galaxies=dict(lens=gm.GalaxyModel(mass=mp.EllipticalIsothermal)),

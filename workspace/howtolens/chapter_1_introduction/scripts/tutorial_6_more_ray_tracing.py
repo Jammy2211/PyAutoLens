@@ -20,17 +20,17 @@ from astropy import cosmology
 # higher resolution grid then before and set the sub grid size to 4x4 per pixel!
 image_plane_grids = mask.ImagingGrids.from_shape_and_pixel_scale(shape=(200, 200), pixel_scale=0.025, sub_grid_size=4)
 print(image_plane_grids.image.shape)
-print(image_plane_grids.sub.shape) # Every image-pixel is sub-gridded by 4x4, so the sub-grid has x16 more coordinates.
+print(image_plane_grids.sub.shape) # Every images-pixel is sub-gridded by 4x4, so the sub-grid has x16 more coordinates.
 
-# Next, lets setup a lens galaxy. In the previous tutorial, we set up each profile one line at a time. This made
-# code long and cumbersome to read. This time we'll setup easy galaxy using one block of code.
+# Next, lets setup a lens model_galaxy. In the previous tutorial, we set up each profile one line at a time. This made
+# code long and cumbersome to read. This time we'll setup easy model_galaxy using one block of code.
 
 # To help us, we've imported the 'light_profiles' and 'mass_profiles' modules as 'lp' and 'mp', and the
-# 'galaxy' module as 'g'.
+# 'model_galaxy' module as 'g'.
 
-# We'll also give the lens galaxy some attributes we didn't in the last tutorial:
+# We'll also give the lens model_galaxy some attributes we didn't in the last tutorial:
 
-# 1) A light-profile, meaning its light will appear in the image-plane image.
+# 1) A light-profile, meaning its light will appear in the images-plane images.
 # 2) An external shear, which accounts for the deflection of light due to line-of-sight structures.
 # 3) A redshift, which the tracer will use to convert arc second coordinates to kpc.
 lens_galaxy = g.Galaxy(light=lp.SphericalSersic(centre=(0.0, 0.0), intensity=2.0, effective_radius=0.5,
@@ -40,14 +40,14 @@ lens_galaxy = g.Galaxy(light=lp.SphericalSersic(centre=(0.0, 0.0), intensity=2.0
                        redshift=0.5)
 print(lens_galaxy)
 
-# Lets also create a small satellite galaxy nearby the lens galaxy and at the same redshift.
+# Lets also create a small satellite model_galaxy nearby the lens model_galaxy and at the same redshift.
 lens_satellite = g.Galaxy(light=lp.SphericalDevVaucouleurs(centre=(1.0, 0.0), intensity=2.0, effective_radius=0.2),
                           mass=mp.SphericalIsothermal(centre=(1.0, 0.0), einstein_radius=0.4),
                           redshift=0.5)
 print(lens_satellite)
 
 
-# Lets have a quick look at the appearance of our lens galaxy and its satellite
+# Lets have a quick look at the appearance of our lens model_galaxy and its satellite
 galaxy_plotters.plot_intensities(galaxy=lens_galaxy, grid=image_plane_grids.image, title='Lens Galaxy')
 galaxy_plotters.plot_intensities(galaxy=lens_satellite, grid=image_plane_grids.image, title='Lens Satellite')
 
@@ -80,11 +80,11 @@ galaxy_plotters.plot_intensities(galaxy=source_galaxy_1, grid=image_plane_grids.
 
 # Now lets pass these our 4 galaxies to ray_tracing, which means the following will occur:
 
-# 1) Using every mass-profile in each lens galaxy, the deflection angles are computed.
+# 1) Using every mass-profile in each lens model_galaxy, the deflection angles are computed.
 # 2) These deflection angles are summed, such that the deflection of light due to every mass-profile and both
-# the lens galaxy and its satellite is computed.
-# 3) These deflection angles are used to trace every image-grid and sub-grid coordinate to a source-plane coordinate.
-# 4) The light of all source galaxies is ray-traced back forward to form our image-plane image.
+# the lens model_galaxy and its satellite is computed.
+# 3) These deflection angles are used to trace every images-grid and sub-grid coordinate to a source-plane coordinate.
+# 4) The light of all source galaxies is ray-traced back forward to form our images-plane images.
 
 # Note that we've also supplied the tracer below with a Planck15 cosmology.
 tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy, lens_satellite],
@@ -94,7 +94,7 @@ tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy, lens_sa
 # As we did previous, we can inspect each grid.
 plane_plotters.plot_plane_grid(plane=tracer.image_plane, title='Image-plane Grid')
 plane_plotters.plot_plane_grid(plane=tracer.source_plane, title='Source-plane Grid')
-# We can zoom in on the 'centre' of the source-plane (thistime, the lens galaxy was centred at (0.0, 0.0)
+# We can zoom in on the 'centre' of the source-plane (thistime, the lens model_galaxy was centred at (0.0, 0.0)
 plane_plotters.plot_plane_grid(plane=tracer.source_plane, axis_limits=[-0.2, 0.2, -0.2, 0.2], title='Source-plane Grid')
 
 # Lets plot the lensing quantities again. Note that, because we supplied our galaxies with redshifts and our tracer
@@ -103,7 +103,7 @@ plane_plotters.plot_plane_grid(plane=tracer.source_plane, axis_limits=[-0.2, 0.2
 ray_tracing_plotters.plot_ray_tracing_subplot(tracer=tracer)
 
 # In the previous example, we saw that the tracer had attributes we plotted (e.g. surface density, potential, etc.)
-# Now we've input a cosmology and galaxy redshifts, the tracer has attributes associated with its cosmology.
+# Now we've input a cosmology and model_galaxy redshifts, the tracer has attributes associated with its cosmology.
 print('Image-plane arcsec-per-kpc:')
 print(tracer.image_plane.arcsec_per_kpc_proper)
 print('Image-plane kpc-per-arcsec:')
@@ -125,7 +125,7 @@ print(tracer.critical_density_kpc)
 
 # And with that, we've completed tutorial 6. Try the following:
 
-# 1) By changing the lens and source galaxy redshifts, does the image-plane image of the tracer change at all?
+# 1) By changing the lens and source model_galaxy redshifts, does the images-plane images of the tracer change at all?
 
 # 2) What happens to the cosmological quantities as you change these redshifts? Do you remember enough of your
 #    cosmology lectures to predict how quantities like the angular diameter distance change as a function of redshift?

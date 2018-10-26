@@ -14,7 +14,7 @@ class FrameMakerOriginal(object):
         Parameters
         ----------
         mask: Mask
-                A mask where True eliminates data_vector
+                A masks where True eliminates data_vector
         """
         self.mask = mask
 
@@ -59,7 +59,7 @@ class FrameMakerOriginal(object):
         kernel_shape: (int, int)
             The shape of the psf
         blurring_region_mask: Mask
-            A mask describing the boundary of the region from which values may be convoluted
+            A masks describing the boundary of the region from which values may be convoluted
 
         Returns
         -------
@@ -70,7 +70,7 @@ class FrameMakerOriginal(object):
         if kernel_shape[0] % 2 == 0 or kernel_shape[1] % 2 == 0:
             raise exc.KernelException("Kernel must be odd")
         if blurring_region_mask is not None and self.mask.shape != blurring_region_mask.shape:
-            raise AssertionError("mask and blurring_region_mask must have the same shape")
+            raise AssertionError("masks and blurring_region_mask must have the same shape")
 
         frame_array = []
         for x in range(self.mask.shape[0]):
@@ -116,7 +116,7 @@ class FrameMakerOriginal(object):
         Parameters
         ----------
         blurring_region_mask: Mask
-            A mask describing the blurring region. If False then that pixel is included int he blurring region.
+            A masks describing the blurring region. If False then that pixel is included int he blurring region.
         kernel_shape: (int, int)
             The shape of the psf
         Returns
@@ -407,22 +407,22 @@ sersic = light_profiles.EllipticalSersic(centre=(0.0, 0.0), axis_ratio=0.8, phi=
                                          effective_radius=0.8, sersic_index=4.0)
 
 lsst = profiling_data.setup_class(name='LSST', pixel_scale=0.2, sub_grid_size=sub_grid_size, psf_shape=psf_shape)
-lsst_kernel_convolver = KernelConvolverOriginal(kernel=lsst._image_plane_image.psf.trim_around_centre(psf_shape),
+lsst_kernel_convolver = KernelConvolverOriginal(kernel=lsst._image_plane_images.psf.trim_around_centre(psf_shape),
                                                 frame_array=lsst.masked_image.convolver.frame_array,
                                                 blurring_frame_array=lsst.masked_image.convolver.blurring_frame_array)
 
 euclid = profiling_data.setup_class(name='Euclid', pixel_scale=0.1, sub_grid_size=sub_grid_size, psf_shape=psf_shape)
-euclid_kernel_convolver = KernelConvolverOriginal(kernel=euclid._image_plane_image.psf.trim_around_centre(psf_shape),
+euclid_kernel_convolver = KernelConvolverOriginal(kernel=euclid._image_plane_images.psf.trim_around_centre(psf_shape),
                                                   frame_array=euclid.masked_image.convolver.frame_array,
                                                   blurring_frame_array=euclid.masked_image.convolver.blurring_frame_array)
 
 hst = profiling_data.setup_class(name='HST', pixel_scale=0.05, sub_grid_size=sub_grid_size, psf_shape=psf_shape)
-hst_kernel_convolver = KernelConvolverOriginal(kernel=hst._image_plane_image.psf.trim_around_centre(psf_shape),
+hst_kernel_convolver = KernelConvolverOriginal(kernel=hst._image_plane_images.psf.trim_around_centre(psf_shape),
                                                frame_array=hst.masked_image.convolver.frame_array,
                                                blurring_frame_array=hst.masked_image.convolver.blurring_frame_array)
 
 hst_up = profiling_data.setup_class(name='HSTup', pixel_scale=0.03, sub_grid_size=sub_grid_size, psf_shape=psf_shape)
-hst_up_kernel_convolver = KernelConvolverOriginal(kernel=hst_up._image_plane_image.psf.trim_around_centre(psf_shape),
+hst_up_kernel_convolver = KernelConvolverOriginal(kernel=hst_up._image_plane_images.psf.trim_around_centre(psf_shape),
                                                   frame_array=hst_up.masked_image.convolver.frame_array,
                                                   blurring_frame_array=hst_up.masked_image.convolver.blurring_frame_array)
 
@@ -431,13 +431,13 @@ hst_up_kernel_convolver = KernelConvolverOriginal(kernel=hst_up._image_plane_ima
 #                                                  image_frame_indexes=ao.masked_image.convolver_image.image_frame_indexes,
 #                                                  blurring_frame_indexes=ao.masked_image.convolver_image.blurring_frame_indexes)
 
-lsst_image = sersic.intensities_from_grid(grid=lsst.grids._image_plane_image)
+lsst_image = sersic.intensities_from_grid(grid=lsst.grids._image_plane_images)
 lsst_blurring_image = sersic.intensities_from_grid(grid=lsst.grids.blurring)
-euclid_image = sersic.intensities_from_grid(grid=euclid.grids._image_plane_image)
+euclid_image = sersic.intensities_from_grid(grid=euclid.grids._image_plane_images)
 euclid_blurring_image = sersic.intensities_from_grid(grid=euclid.grids.blurring)
-hst_image = sersic.intensities_from_grid(grid=hst.grids._image_plane_image)
+hst_image = sersic.intensities_from_grid(grid=hst.grids._image_plane_images)
 hst_blurring_image = sersic.intensities_from_grid(grid=hst.grids.blurring)
-hst_up_image = sersic.intensities_from_grid(grid=hst_up.grids._image_plane_image)
+hst_up_image = sersic.intensities_from_grid(grid=hst_up.grids._image_plane_images)
 hst_up_blurring_image = sersic.intensities_from_grid(grid=hst_up.grids.blurring)
 
 

@@ -1,4 +1,4 @@
-This is the first profiling of convolution on an _image_plane_image - it is slower than expected and being refactored, see
+This is the first profiling of convolution on an _image_plane_images - it is slower than expected and being refactored, see
 https://github.com/Jammy2211/PyAutoLens/issues/30. .
 
 ORIGINAL:

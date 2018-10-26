@@ -12,24 +12,24 @@ class FittingImage(im.Image):
 
     def __init__(self, image, mask, sub_grid_size=2, image_psf_shape=None):
         """
-        The lensing _data is the collection of data (images, noise-maps, PSF), a mask, grids, convolvers and other \
-        utilities that are used for modeling and fitting an _data of a strong lens.
+        The lensing _datas is the collection of datas (images, noise-maps, PSF), a masks, grids, convolvers and other \
+        utilities that are used for modeling and fitting an _datas of a strong lens.
 
-        Whilst the _data data is initially loaded in 2D, for the lensing _data the masked-_data (and noise-maps) \
+        Whilst the _datas datas is initially loaded in 2D, for the lensing _datas the masked-_datas (and noise-maps) \
         are reduced to 1D arrays for faster calculations.
 
         Parameters
         ----------
         image: im.Image
-            The original _data data in 2D.
+            The original _datas datas in 2D.
         mask: msk.Mask
-            The 2D mask that is applied to the _data.
+            The 2D masks that is applied to the _datas.
         sub_grid_size : int
-            The size of the sub-grid used for each lensing SubGrid. E.g. a value of 2 grids each _data-pixel on a 2x2 \
+            The size of the sub-grid used for each lensing SubGrid. E.g. a value of 2 grids each _datas-pixel on a 2x2 \
             sub-grid.
         image_psf_shape : (int, int)
             The shape of the PSF used for convolving model images generated using analytic light profiles. A smaller \
-            shape will trim the PSF relative to the input _data PSF, giving a faster analysis run-time.
+            shape will trim the PSF relative to the input _datas PSF, giving a faster analysis run-time.
         """
         super().__init__(array=image, pixel_scale=image.pixel_scale,
                          noise_map=mask.map_2d_array_to_masked_1d_array(image.noise_map), psf=image.psf,
@@ -75,24 +75,24 @@ class FittingHyperImage(FittingImage):
     def __init__(self, image, mask, hyper_model_image, hyper_galaxy_images, hyper_minimum_values, sub_grid_size=2,
                  image_psf_shape=None):
         """
-        The lensing _data is the collection of data (images, noise-maps, PSF), a mask, grids, convolvers and other \
-        utilities that are used for modeling and fitting an _data of a strong lens.
+        The lensing _datas is the collection of datas (images, noise-maps, PSF), a masks, grids, convolvers and other \
+        utilities that are used for modeling and fitting an _datas of a strong lens.
 
-        Whilst the _data data is initially loaded in 2D, for the lensing _data the masked-_data (and noise-maps) \
+        Whilst the _datas datas is initially loaded in 2D, for the lensing _datas the masked-_datas (and noise-maps) \
         are reduced to 1D arrays for faster calculations.
 
         Parameters
         ----------
         image: im.Image
-            The original _data data in 2D.
+            The original _datas datas in 2D.
         mask: msk.Mask
-            The 2D mask that is applied to the _data.
+            The 2D masks that is applied to the _datas.
         sub_grid_size : int
-            The size of the sub-grid used for each lensing SubGrid. E.g. a value of 2 grids each _data-pixel on a 2x2 \
+            The size of the sub-grid used for each lensing SubGrid. E.g. a value of 2 grids each _datas-pixel on a 2x2 \
             sub-grid.
         image_psf_shape : (int, int)
             The shape of the PSF used for convolving model images generated using analytic light profiles. A smaller \
-            shape will trim the PSF relative to the input _data PSF, giving a faster analysis run-time.
+            shape will trim the PSF relative to the input _datas PSF, giving a faster analysis run-time.
         """
 
         super(FittingHyperImage, self).__init__(image=image, mask=mask, sub_grid_size=sub_grid_size,
