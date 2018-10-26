@@ -45,7 +45,7 @@ def set_xy_labels_and_ticks_in_arcsec(units, kpc_per_arcsec, xticks, yticks, xla
         plt.ylabel('y (kpc)', fontsize=ylabelsize)
 
     else:
-        raise exc.VisualizeException('The units supplied to the plotted are not a valid string (must be pixels | '
+        raise exc.PlottingException('The units supplied to the plotted are not a valid string (must be pixels | '
                                      'arcsec | kpc)')
 
     plt.tick_params(labelsize=xyticksize)

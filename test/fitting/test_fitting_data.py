@@ -33,10 +33,10 @@ class TestFittingImage(object):
 
     def test__image_and_image_mapper(self, fitting_image):
         assert (fitting_image.image == np.ones((4, 4))).all()
-        assert (fitting_image.image.noise_map == np.ones((4, 4))).all()
+        assert (fitting_image.image.noise_maps == np.ones((4, 4))).all()
 
     def test_masking(self, fitting_image):
-        assert fitting_image.noise_map.shape == (4,)
+        assert fitting_image.noise_maps.shape == (4,)
 
     def test_grids(self, fitting_image):
         assert fitting_image.grids.image.shape == (4, 2)

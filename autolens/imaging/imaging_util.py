@@ -63,7 +63,7 @@ class Memoizer(object):
 
 @numba.jit(nopython=True, cache=True)
 def total_image_pixels_from_mask(mask):
-    """Compute the total number of unmasked _data pixels in a mask."""
+    """Compute the total number of unmasked _datas pixels in a masks."""
 
     total_image_pixels = 0
 
@@ -77,13 +77,13 @@ def total_image_pixels_from_mask(mask):
 
 @numba.jit(nopython=True, cache=True)
 def total_sub_pixels_from_mask_and_sub_grid_size(mask, sub_grid_size):
-    """Compute the total number of sub-pixels in unmasked _data pixels in a mask."""
+    """Compute the total number of sub-pixels in unmasked _datas pixels in a masks."""
     return total_image_pixels_from_mask(mask) * sub_grid_size ** 2
 
 
 @numba.jit(nopython=True, cache=True)
 def total_border_pixels_from_mask(mask):
-    """Compute the total number of border-pixels in a mask."""
+    """Compute the total number of border-pixels in a masks."""
 
     border_pixel_total = 0
 
@@ -100,7 +100,7 @@ def total_border_pixels_from_mask(mask):
 @numba.jit(nopython=True, cache=True)
 def image_grid_2d_from_shape_and_pixel_scales(shape, pixel_scales):
     """
-    Computes the (x,y) arc second coordinates of every pixel in an _data of shape (rows, columns).
+    Computes the (x,y) arc second coordinates of every pixel in an _datas of shape (rows, columns).
 
     Coordinates are defined from the top-left corner, such that the first pixel at location [0, 0] has negative x \
     and y values in arc seconds.
@@ -123,7 +123,7 @@ def image_grid_2d_from_shape_and_pixel_scales(shape, pixel_scales):
 @numba.jit(nopython=True, cache=True)
 def image_grid_1d_from_shape_and_pixel_scales(shape, pixel_scales):
     """
-    Computes the (x,y) arc second coordinates of every pixel in an _data of shape (rows, columns).
+    Computes the (x,y) arc second coordinates of every pixel in an _datas of shape (rows, columns).
 
     Coordinates are defined from the top-left corner, such that the first pixel at location [0, 0] has negative x \
     and y values in arc seconds.
@@ -202,7 +202,7 @@ def sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(mask, pixel_scal
 def grid_arc_seconds_1d_to_grid_pixels_1d(grid_arc_seconds, shape, pixel_scales):
     """ Converts a grid in coordinates of pixels to a grid in arc seconds.
 
-    The pixel coordinate origin is at the top left corner of an image, whilst the arc-second coordinate origin \
+    The pixel coordinate origin is at the top left corner of an images, whilst the arc-second coordinate origin \
     is at the centre start with negative x and y values from the top-left.
 
     This means that the top-left pixel coordinates, [0, 0], will give negative arc second coordinates.
@@ -229,7 +229,7 @@ def grid_arc_seconds_1d_to_grid_pixels_1d(grid_arc_seconds, shape, pixel_scales)
 def grid_arc_seconds_1d_to_grid_pixel_centres_1d(grid_arc_seconds, shape, pixel_scales):
     """ Converts a grid in coordinates of pixels to a grid in arc seconds.
 
-    The pixel coordinate origin is at the top left corner of an image, whilst the arc-second coordinate origin \
+    The pixel coordinate origin is at the top left corner of an images, whilst the arc-second coordinate origin \
     is at the centre start with negative x and y values from the top-left.
 
     This means that the top-left pixel coordinates, [0, 0], will give negative arc second coordinates.
@@ -256,7 +256,7 @@ def grid_arc_seconds_1d_to_grid_pixel_centres_1d(grid_arc_seconds, shape, pixel_
 def grid_pixels_1d_to_grid_arc_seconds_1d(grid_pixels, shape, pixel_scales):
     """ Converts a grid in coordinates of pixels to a grid in arc seconds.
 
-    The pixel coordinate origin is at the top left corner of an image, whilst the arc-second coordinate origin \
+    The pixel coordinate origin is at the top left corner of an images, whilst the arc-second coordinate origin \
     is at the centre start with negative x and y values from the top-left.
 
     This means that the top-left pixel coordinates, [0, 0], will give negative arc second coordinates.
@@ -299,9 +299,9 @@ def grid_to_pixel_from_mask(mask):
 
 @numba.jit(nopython=True, cache=True)
 def sub_to_image_from_mask(mask, sub_grid_size):
-    """Compute a 1D array that maps every unmasked pixel's sub-pixel to its corresponding 1d _data-pixel.
+    """Compute a 1D array that maps every unmasked pixel's sub-pixel to its corresponding 1d _datas-pixel.
 
-    For howtolens, if sub-pixel 8 is in _data-pixel 1, sub_to_image[7] = 1."""
+    For howtolens, if sub-pixel 8 is in _datas-pixel 1, sub_to_image[7] = 1."""
 
     total_sub_pixels = total_sub_pixels_from_mask_and_sub_grid_size(mask, sub_grid_size)
 
@@ -323,8 +323,8 @@ def sub_to_image_from_mask(mask, sub_grid_size):
 
 @numba.jit(nopython=True, cache=True)
 def border_pixels_from_mask(mask):
-    """Compute a 1D array listing all border pixel indexes in the mask. A border pixel is a pixel which is not fully \
-    surrounding by False mask values i.e. it is on an edge."""
+    """Compute a 1D array listing all border pixel indexes in the masks. A border pixel is a pixel which is not fully \
+    surrounding by False masks values i.e. it is on an edge."""
 
     border_pixel_total = total_border_pixels_from_mask(mask)
 
@@ -347,8 +347,8 @@ def border_pixels_from_mask(mask):
 
 @numba.jit(nopython=True, cache=True)
 def border_sub_pixels_from_mask_pixel_scales_and_sub_grid_size(mask, pixel_scales, sub_grid_size):
-    """Compute a 1D array listing all sub-pixel border pixel indexes in the mask. A border sub-pixel is a sub-pixel \
-    whose _data pixel is not fully surrounded by False mask values and it is closest to the edge."""
+    """Compute a 1D array listing all sub-pixel border pixel indexes in the masks. A border sub-pixel is a sub-pixel \
+    whose _datas pixel is not fully surrounded by False masks values and it is closest to the edge."""
     border_pixel_total = total_border_pixels_from_mask(mask)
     border_sub_pixels = np.zeros(border_pixel_total)
 
@@ -395,7 +395,7 @@ def border_sub_pixels_from_mask_pixel_scales_and_sub_grid_size(mask, pixel_scale
 
 @numba.jit(nopython=True, cache=True)
 def mask_circular_from_shape_pixel_scale_and_radius(shape, pixel_scale, radius_arcsec, centre=(0.0, 0.0)):
-    """Compute a circular mask from an input mask radius and _data shape."""
+    """Compute a circular masks from an input masks radius and _datas shape."""
 
     mask = np.full(shape, True)
 
@@ -419,7 +419,7 @@ def mask_circular_from_shape_pixel_scale_and_radius(shape, pixel_scale, radius_a
 @numba.jit(nopython=True, cache=True)
 def mask_annular_from_shape_pixel_scale_and_radii(shape, pixel_scale, inner_radius_arcsec, outer_radius_arcsec,
                                                   centre=(0.0, 0.0)):
-    """Compute an annular mask from an input inner and outer mask radius and _data shape."""
+    """Compute an annular masks from an input inner and outer masks radius and _datas shape."""
 
     mask = np.full(shape, True)
 
@@ -442,7 +442,7 @@ def mask_annular_from_shape_pixel_scale_and_radii(shape, pixel_scale, inner_radi
 @numba.jit(nopython=True, cache=True)
 def mask_anti_annular_from_shape_pixel_scale_and_radii(shape, pixel_scale, inner_radius_arcsec, outer_radius_arcsec,
                                                        outer_radius_2_arcsec, centre=(0.0, 0.0)):
-    """Compute an annular mask from an input inner and outer mask radius and _data shape."""
+    """Compute an annular masks from an input inner and outer masks radius and _datas shape."""
 
     mask = np.full(shape, True)
 
@@ -464,9 +464,9 @@ def mask_anti_annular_from_shape_pixel_scale_and_radii(shape, pixel_scale, inner
 
 @numba.jit(nopython=True, cache=True)
 def mask_blurring_from_mask_and_psf_shape(mask, psf_shape):
-    """Compute a blurring mask from an input mask and psf shape.
+    """Compute a blurring masks from an input masks and psf shape.
 
-    The blurring mask corresponds to all pixels which are outside of the mask but will have a fraction of their \
+    The blurring masks corresponds to all pixels which are outside of the masks but will have a fraction of their \
     light blur into the masked region due to PSF convolution."""
 
     blurring_mask = np.full(mask.shape, True)
@@ -481,7 +481,7 @@ def mask_blurring_from_mask_and_psf_shape(mask, psf_shape):
                                 blurring_mask[y + y1, x + x1] = False
                         else:
                             raise exc.MaskException(
-                                "setup_blurring_mask extends beyond the sub_grid_size of the mask - pad the "
+                                "setup_blurring_mask extends beyond the sub_grid_size of the masks - pad the "
                                 "masked_image before masking")
 
     return blurring_mask
@@ -489,7 +489,7 @@ def mask_blurring_from_mask_and_psf_shape(mask, psf_shape):
 
 @numba.jit(nopython=True, cache=True)
 def map_2d_array_to_masked_1d_array_from_array_2d_and_mask(mask, array_2d):
-    """For a given 2D array and mask, mappers all unmasked pixels to a 1D array."""
+    """For a given 2D array and masks, mappers all unmasked pixels to a 1D array."""
 
     total_image_pixels = total_image_pixels_from_mask(mask)
 

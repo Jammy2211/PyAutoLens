@@ -21,7 +21,7 @@ def test_lens_x1_src_x1_profile_hyper_pipeline():
     data_name = '/lens_x1_source_x1_hyper'
 
     try:
-        shutil.rmtree(dirpath + '/data' + data_name)
+        shutil.rmtree(dirpath + '/datas' + data_name)
     except FileNotFoundError:
         pass
 
