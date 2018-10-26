@@ -28,13 +28,13 @@ def test__simulate_lensed_source_and_fit__no_psf_blurring__chi_squared_is_0__noi
     tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
                                                  image_plane_grids=imaging_grids)
 
-    image_simulated = im.PreparatoryImage.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=0.2,
+    image_simulated = im.PreparatoryImage.simulate(array=tracer.image_plane_images_for_simulation, pixel_scale=0.2,
                                                    exposure_time=300.0, psf=psf, background_sky_level=None,
                                                    add_noise=False)
-    image_simulated.noise_map = np.ones(image_simulated.shape)
+    image_simulated.noise_maps = np.ones(image_simulated.shape)
 
-    path = "{}/data".format(
-        os.path.dirname(os.path.realpath(__file__)))  # Setup path so we can output the simulated data.
+    path = "{}/datas".format(
+        os.path.dirname(os.path.realpath(__file__)))  # Setup path so we can output the simulated datas.
 
     try:
         shutil.rmtree(path)
@@ -44,11 +44,11 @@ def test__simulate_lensed_source_and_fit__no_psf_blurring__chi_squared_is_0__noi
     if os.path.exists(path) == False:
         os.makedirs(path)
 
-    imaging_util.numpy_array_to_fits(array=image_simulated, path=path + '/_data.fits')
-    imaging_util.numpy_array_to_fits(array=image_simulated.noise_map, path=path + '/noise_map.fits')
+    imaging_util.numpy_array_to_fits(array=image_simulated, path=path + '/_datas.fits')
+    imaging_util.numpy_array_to_fits(array=image_simulated.noise_maps, path=path + '/noise_map.fits')
     imaging_util.numpy_array_to_fits(array=psf, path=path + '/psf.fits')
 
-    image = im.load_imaging_from_path(image_path=path + '/_data.fits',
+    image = im.load_imaging_from_path(image_path=path + '/_datas.fits',
                                       noise_map_path=path + '/noise_map.fits',
                                       psf_path=path + '/psf.fits', pixel_scale=0.2)
 
@@ -59,7 +59,7 @@ def test__simulate_lensed_source_and_fit__no_psf_blurring__chi_squared_is_0__noi
     tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
                                                  image_plane_grids=lensing_image.grids)
 
-    fitter = lensing_fitting.LensingProfileFit(lensing_image=lensing_image, tracer=tracer)
+    fitter = lensing_fitting.LensingProfileFit(lensing_images=lensing_image, tracer=tracer)
 
     assert fitter.chi_squared_term == 0.0
 
@@ -75,13 +75,13 @@ def test__simulate_lensed_source_and_fit__include_psf_blurring__chi_squared_is_0
     tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
                                                  image_plane_grids=imaging_grids)
 
-    image_simulated = im.PreparatoryImage.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=0.2,
+    image_simulated = im.PreparatoryImage.simulate(array=tracer.image_plane_images_for_simulation, pixel_scale=0.2,
                                                    exposure_time=300.0, psf=psf, background_sky_level=None,
                                                    add_noise=False)
-    image_simulated.noise_map = np.ones(image_simulated.shape)
+    image_simulated.noise_maps = np.ones(image_simulated.shape)
 
-    path = "{}/data".format(
-        os.path.dirname(os.path.realpath(__file__)))  # Setup path so we can output the simulated data.
+    path = "{}/datas".format(
+        os.path.dirname(os.path.realpath(__file__)))  # Setup path so we can output the simulated datas.
 
     try:
         shutil.rmtree(path)
@@ -91,11 +91,11 @@ def test__simulate_lensed_source_and_fit__include_psf_blurring__chi_squared_is_0
     if os.path.exists(path) == False:
         os.makedirs(path)
 
-    imaging_util.numpy_array_to_fits(array=image_simulated, path=path + '/_data.fits')
-    imaging_util.numpy_array_to_fits(array=image_simulated.noise_map, path=path + '/noise_map.fits')
+    imaging_util.numpy_array_to_fits(array=image_simulated, path=path + '/_datas.fits')
+    imaging_util.numpy_array_to_fits(array=image_simulated.noise_maps, path=path + '/noise_map.fits')
     imaging_util.numpy_array_to_fits(array=psf, path=path + '/psf.fits')
 
-    image = im.load_imaging_from_path(image_path=path + '/_data.fits',
+    image = im.load_imaging_from_path(image_path=path + '/_datas.fits',
                                       noise_map_path=path + '/noise_map.fits',
                                       psf_path=path + '/psf.fits', pixel_scale=0.2)
 
@@ -106,6 +106,6 @@ def test__simulate_lensed_source_and_fit__include_psf_blurring__chi_squared_is_0
     tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
                                                  image_plane_grids=lensing_image.grids)
 
-    fitter = lensing_fitting.LensingProfileFit(lensing_image=lensing_image, tracer=tracer)
+    fitter = lensing_fitting.LensingProfileFit(lensing_images=lensing_image, tracer=tracer)
 
     assert fitter.chi_squared_term == pytest.approx(0.0, 1e-4)

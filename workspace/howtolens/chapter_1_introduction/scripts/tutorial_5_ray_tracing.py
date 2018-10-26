@@ -6,7 +6,7 @@ from autolens.imaging import mask
 from autolens.plotting import plane_plotters
 from autolens.plotting import ray_tracing_plotters
 
-# In the previous example, we used light-profiles, mass-profiles, galaxies and planes to create an image-plane +
+# In the previous example, we used light-profiles, mass-profiles, galaxies and planes to create an images-plane +
 # source-plane strong lens system. However, this took a lot of lines of code to do, so in this example we'll use the
 # 'ray-tracing module to do it a lot faster!
 
@@ -14,35 +14,35 @@ from autolens.plotting import ray_tracing_plotters
 image_plane_grids = mask.ImagingGrids.from_shape_and_pixel_scale(shape=(100, 100), pixel_scale=0.05,
                                                                  sub_grid_size=2)
 
-# Unlike the previous tutorial, we'll offset our lens galaxy slightly from the source, to get a slightly ray-tracing
+# Unlike the previous tutorial, we'll offset our lens model_galaxy slightly from the source, to get a slightly ray-tracing
 # paths.
 sis_mass_profile = mass_profiles.SphericalIsothermal(centre=(0.1, 0.1), einstein_radius=1.6)
 lens_galaxy = galaxy.Galaxy(mass=sis_mass_profile)
 print(lens_galaxy)
 
-# We'll also make our source galaxy ellipctical and increase its Sersic index.
+# We'll also make our source model_galaxy ellipctical and increase its Sersic index.
 sersic_light_profile = light_profiles.EllipticalSersic(centre=(0.0, 0.0), axis_ratio=0.8, phi=45.0,
                                                        intensity=1.0, effective_radius=1.0, sersic_index=2.5)
 source_galaxy = galaxy.Galaxy(light=sersic_light_profile)
 print(source_galaxy)
 
-# Finally, we can use a 'tracer', the lens galaxy and the source galaxy to ray-trace our grids. When we pass our
+# Finally, we can use a 'tracer', the lens model_galaxy and the source model_galaxy to ray-trace our grids. When we pass our
 # galaxies and grids into the Tracer below, the following happens:
 
-# 1) Using the lens-galaxy's mass-profile, the deflection angle of every image-plane grid coordinate is computed.
-# 2) These deflection angles are used to trace every image-plane coordinate to a source-plane coordinate.
+# 1) Using the lens-model_galaxy's mass-profile, the deflection angle of every images-plane grid coordinate is computed.
+# 2) These deflection angles are used to trace every images-plane coordinate to a source-plane coordinate.
 # 3) This creates a source-plane grid of lensed coordinates.
 
 # This is what we did using Plane's in the preious chapter, but its a lot less lines of code!
 tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
                                              image_plane_grids=image_plane_grids)
 
-# The tracer is composed of an image-plane and source-plane, just like in the previous example!
-print('Image-pixel 1 image-plane coordinate')
+# The tracer is composed of an images-plane and source-plane, just like in the previous example!
+print('Image-pixel 1 images-plane coordinate')
 print(tracer.image_plane.grids.image[0])
-print('Image-pixel 2 image-plane coordinate')
+print('Image-pixel 2 images-plane coordinate')
 print(tracer.image_plane.grids.image[1])
-print('Image-pixel 3 image-plane coordinate')
+print('Image-pixel 3 images-plane coordinate')
 print(tracer.image_plane.grids.image[2])
 
 # And the source-plane's grid has been deflected.
@@ -59,15 +59,15 @@ plane_plotters.plot_plane_grid(plane=tracer.source_plane, title='Source-plane Gr
 plane_plotters.plot_plane_grid(plane=tracer.source_plane, axis_limits=[-0.1, 0.3, -0.1, 0.3], title='Source-plane Grid')
 
 # AutoLens has tools for plotting a tracer. This plots the following:
-# 1) The image-plane image, computed by tracing the source galaxy's light 'forwards' through the tracer.
-# 2) The source-plane image, showing the source galaxy's true appearance (i.e. if it were not lensed).
-# 3) The image-plane surface density, computed using the lens galaxy's mass profile.
-# 4) The image-plane gravitational potential, computed using the lens galaxy's mass profile.
-# 5) The image-plane deflection angles, computed using the lens galaxy's mass profile.
+# 1) The images-plane images, computed by tracing the source model_galaxy's light 'forwards' through the tracer.
+# 2) The source-plane images, showing the source model_galaxy's true appearance (i.e. if it were not lensed).
+# 3) The images-plane surface density, computed using the lens model_galaxy's mass profile.
+# 4) The images-plane gravitational potential, computed using the lens model_galaxy's mass profile.
+# 5) The images-plane deflection angles, computed using the lens model_galaxy's mass profile.
 ray_tracing_plotters.plot_ray_tracing_subplot(tracer=tracer)
 
 # These attributes can be assessed by print statements (Which you might notice have been converted to 2D NumPy arrays
-# which are the same dimensions as our input image!).
+# which are the same dimensions as our input images!).
 print('Image-Pixel 1 - Tracer - Surface Density:')
 print(tracer.surface_density[0,0])
 print('Image-Pixel 2 - Tracer - Surface Density:')
@@ -77,7 +77,7 @@ print(tracer.surface_density[0,2])
 print('Image-Pixel 101 - Tracer - Surface Density:')
 print(tracer.surface_density[1,0])
 
-# Of course, these surface densities are identical to the image-plane surface densities, as it's only the lens galaxy
+# Of course, these surface densities are identical to the images-plane surface densities, as it's only the lens model_galaxy
 # that contributes to the overall mass of the system.
 print('Image-Pixel 1 - Image-Plane - Surface Density:')
 print(tracer.image_plane.surface_density[0,0])
@@ -88,7 +88,7 @@ print(tracer.image_plane.surface_density[0,2])
 print('Image-Pixel 101 - Image-Plane - Surface Density:')
 print(tracer.image_plane.surface_density[1,0])
 
-# I've left the rest below commented to avoid too much printing, but you can inspect their data if you please!
+# I've left the rest below commented to avoid too much printing, but you can inspect their datas if you please!
 # print('Potential:')
 # print(tracer.potential)
 # print(tracer.image_plane.potential)
@@ -112,16 +112,16 @@ ray_tracing_plotters.plot_surface_density(tracer=tracer)
 #ray_tracing_plotters.plot_deflections_x(tracer=tracer)
 # ray_tracing_plotters.plot_image_plane_image(tracer=tracer)
 
-# Before we finish, the attentive amongst you might be wondering 'why do both the image-plane and tracer have the
+# Before we finish, the attentive amongst you might be wondering 'why do both the images-plane and tracer have the
 # attributes surface density / potential / deflection angles, when, by definition, the two are identical'. Think about
-# it - only mass profiles contribute to these quantities, and only the image-plane should have galaxies with
+# it - only mass profiles contribute to these quantities, and only the images-plane should have galaxies with
 # mass profiles! There are two reasons:
 
 # 1) Convinience - You could always write 'tracer.image_plane.surface_density' and
 #                  'plane_plotters.surface_density(plane=tracer.image_plane). However, code appears neater if you can
 #                   just write 'tracer.surface_density' and 'ray_tracing_plotters.plot_surface_density(tracer=tracer).
 
-# 2) Multi-plane lensing - For now, we're focused on the image-plane + source-plane lensing configuration. However,
+# 2) Multi-plane lensing - For now, we're focused on the images-plane + source-plane lensing configuration. However,
 #                          there are strong lens system where there are more than 2 planes! In these instances, the
 #                          surface density, potential and deflections of each plane is different to that of the tracer.
 #                          This is way beyond the scope of this chapter, but be reassured that what you're learning now
@@ -129,8 +129,8 @@ ray_tracing_plotters.plot_surface_density(tracer=tracer)
 
 # And with that, we're done. You've performed your first actual lensing with PyAutoLens!
 
-# 1) Change the lens galaxy's einstein radius - what happens to the tracer's image-plane image?
-# 2) Change the source galaxy's effective radius - how does the image-plane image's appearance change?
+# 1) Change the lens model_galaxy's einstein radius - what happens to the tracer's images-plane images?
+# 2) Change the source model_galaxy's effective radius - how does the images-plane images's appearance change?
 # 3) Experiment with different light-profiles and mass-profiles. In particular, change the SphericalIsothermal
 #    mass-profile to an EllipticalIsothermal mass-profile and set its axis_ratio parameter to 0.8. What
 #    happens to the number of source images?

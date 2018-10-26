@@ -4,7 +4,7 @@ import numpy as np
 from autolens import exc
 
 
-# TODO : Unit test this properly, using a cleverly made mock data-set
+# TODO : Unit test this properly, using a cleverly made mock datas-set
 
 def inversion_from_lensing_image_mapper_and_regularization(image, noise_map, convolver, mapper, regularization):
     return Inversion(image=image, noise_map=noise_map, convolver=convolver, mapper=mapper,
@@ -13,25 +13,25 @@ def inversion_from_lensing_image_mapper_and_regularization(image, noise_map, con
 class Inversion(object):
 
     def __init__(self, image, noise_map, convolver, mapper, regularization):
-        """The matrices, mappings which have been used to linearly invert and fit a data-set.
+        """The matrices, mappings which have been used to linearly invert and fit a datas-set.
 
         Parameters
         -----------
         image : ndarray
-            Flattened 1D array of the image the inversion fits.
+            Flattened 1D array of the images the inversion fits.
         noise_map : ndarray
             Flattened 1D array of the noise-map used by the inversion.
         convolver : imaging.convolution.Convolver
             The convolver used to blur the mapping matrix with the PSF.
         mapper : inversion.mappers.Mapper
-            The mapping between the image and pixelization.
+            The mapping between the images and pixelization.
         regularization : inversion.regularization.Regularization
             The regularization scheme applied to the pixeliztion for the inversion
 
         Attributes
         -----------
         blurred_mapping_matrix : ndarray | None
-            The matrix representing the mapping_matrix between reconstructed_image-pixels and data-pixels, including a \
+            The matrix representing the mapping_matrix between reconstructed_image-pixels and datas-pixels, including a \
             blurring operation (f).
         regularization_matrix : ndarray | None
             The matrix defining how the reconstructed_image's pixels are regularized with one another (H).
@@ -40,7 +40,7 @@ class Inversion(object):
         curvature_reg_matrix : ndarray | None
             The curvature_matrix + regularizationo matrix.
         reconstructed_image : ndarray | None
-            The vector containing the reconstructed fit of the data.
+            The vector containing the reconstructed fit of the datas.
         """
 
         self.mapper = mapper

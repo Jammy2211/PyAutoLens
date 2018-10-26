@@ -81,10 +81,10 @@ class Pipeline(Base):
         Returns
         -------
         is_using_hdu: bool
-            True iff --data option is set. --data is the path to a file with multiple data layers accessible by setting
+            True iff --datas option is set. --datas is the path to a file with multiple datas layers accessible by setting
             hdus.
         """
-        return self.options["--data"] is not None
+        return self.options["--datas"] is not None
 
     @property
     def image_hdu(self):
@@ -92,9 +92,9 @@ class Pipeline(Base):
         Returns
         -------
         str: image_hdu
-            The hdu of the image data in the data file
+            The hdu of the images datas in the datas file
         """
-        return int(self.options["--image-hdu"])
+        return int(self.options["--images-hdu"])
 
     @property
     def noise_hdu(self):
@@ -102,7 +102,7 @@ class Pipeline(Base):
         Returns
         -------
         str: noise_hdu
-            The hdu of the noise data in the data file
+            The hdu of the noise datas in the datas file
         """
         return int(self.options["--noise-hdu"])
 
@@ -112,7 +112,7 @@ class Pipeline(Base):
         Returns
         -------
         str: psf_hdu
-            The hdu of the psf data in the data file
+            The hdu of the psf datas in the datas file
         """
         return int(self.options["--psf-hdu"])
 
@@ -120,30 +120,30 @@ class Pipeline(Base):
     @prepend_working_directory
     def image_path(self):
         """
-        Get the relative or absolute path to the input _data. If the path does not begin with '/' then the current
+        Get the relative or absolute path to the input _datas. If the path does not begin with '/' then the current
         working directory will be prepended.
 
         Returns
         -------
         str: path
-            The path to the image
+            The path to the images
         """
-        return self.options['--image']
+        return self.options['--images']
 
     @property
     @prepend_working_directory
     def data_path(self):
         """
-        Get the relative or absolute path to the input data. Input data includes _data, noise and psf with different
+        Get the relative or absolute path to the input datas. Input datas includes _datas, noise and psf with different
         hdu values input by the user. If the path does not begin with '/' then the current working directory will be
         prepended.
 
         Returns
         -------
         str: path
-            The path to the data
+            The path to the datas
         """
-        return self.options['--data']
+        return self.options['--datas']
 
     @property
     @prepend_working_directory

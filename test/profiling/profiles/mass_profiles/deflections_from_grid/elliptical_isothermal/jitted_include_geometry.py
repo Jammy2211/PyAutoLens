@@ -43,7 +43,7 @@ class EllipticalIsothermal(geometry_profiles.EllipticalProfile):
 
         Parameters
         ----------
-        grid : mask.ImageGrid
+        grid : masks.ImageGrid
             The grid of coordinates the deflection angles are computed on.
         """
 

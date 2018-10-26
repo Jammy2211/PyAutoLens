@@ -5,16 +5,16 @@ class Regularization(object):
 
     def __init__(self, coefficients=(1.0,)):
         """ Abstract base class for a regularization-scheme, which is applied to a pixelization to enforce a \
-        smooth-source solution and prevent over-fitting noise in the _data. This is achieved by computing a \
+        smooth-source solution and prevent over-fitting noise in the _datas. This is achieved by computing a \
         'regularization term' - which is the sum of differences in reconstructed flux between every set of neighboring \
         pixels. This regularization term is added to the solution's chi-squared as a penalty term. This effects \
         a pixelization in the following ways:
 
         1) The regularization matrix (see below) is added to the curvature matrix used by the reconstructor to \
-        linearly invert and fit the _data data. Thus, it changes the pixelization in a linear manner, ensuring that \
+        linearly invert and fit the _datas datas. Thus, it changes the pixelization in a linear manner, ensuring that \
         the minimum chi-squared solution is achieved accounting for the penalty term.
 
-        2) The likelihood of the pixelization's fit to the data changes from L = -0.5 *(chi^2 + _noise_term) to \
+        2) The likelihood of the pixelization's fit to the datas changes from L = -0.5 *(chi^2 + _noise_term) to \
         L = -0.5 (chi^2 + regularization_coefficient * regularization_term + _noise_term). The regularization \
         coefficient is a 'hyper-parameter' which determines how strongly we enforce our smoothing of the pixelization.
 
@@ -206,16 +206,16 @@ class Weighted(Regularization):
         self.signal_scale = signal_scale
 
     def pixel_signals_from_images(self, pixels, image_to_pixelization, galaxy_image):
-        """Compute the (scaled) signal in each pixel, where the signal is the sum of its _data-pixel fluxes. \
+        """Compute the (scaled) signal in each pixel, where the signal is the sum of its _datas-pixel fluxes. \
         These pixel-signals are used to compute the effective regularization weight of each pixel.
 
         The pixel signals are scaled in the following ways:
 
-        1) Divided by the number of _data-pixels in the pixel, to ensure all pixels have the same \
+        1) Divided by the number of _datas-pixels in the pixel, to ensure all pixels have the same \
         'relative' signal (i.e. a pixel with 10 images-pixels doesn't have x2 the signal of one with 5).
 
         2) Divided by the maximum pixel-signal, so that all signals vary between 0 and 1. This ensures that the \
-        regularizations weights are defined identically for any _data units or signal-to-noise ratio.
+        regularizations weights are defined identically for any _datas units or signal-to-noise ratio.
 
         3) Raised to the power of the hyper-parameter *signal_scale*, so the method can control the relative \
         contribution regularization in different regions of pixelization.

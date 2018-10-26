@@ -11,7 +11,7 @@ from autolens.plotting import imaging_plotters
 
 import os
 
-# In chapter 2, we fitted a strong lens which included the contribution of light from the lens galaxy. We're going to
+# In chapter 2, we fitted a strong lens which included the contribution of light from the lens model_galaxy. We're going to
 # fit this lens again (I promise, this is the last time!). However, now we're approaching lens modeling with runners,
 # we can perform a completely different (and significantly faster) analysis.
 
@@ -28,20 +28,20 @@ import os
 # This isn't surprising. You can produce similar looking galaxies by trading out intensity for size, and you can
 # produce similar mass distributions by compensating for a loss in lens mass by making it a bit less elliptical.
 
-# What do you notice about the contours between the lens galaxy's light-profile and its mass-profile / the source
-# galaxy's light profile? Look again.
+# What do you notice about the contours between the lens model_galaxy's light-profile and its mass-profile / the source
+# model_galaxy's light profile? Look again.
 
 # That's right - they're not degenerate. The covariance between these sets of parameters is minimal. Again, this makes
 # sense - why would fitting the lens's light (which is an elliptical blob of light) be degenerate with fitting the
 # source's light (which is a ring of light)? They look nothing like one another!
 
 # So, as a newly trained lens modeler, what does the lack of covariance between these parameters make you think?
-# Hopefully, you're thinking, why would I even both fitting the lens and source galaxy simultaneously? Certainly not
+# Hopefully, you're thinking, why would I even both fitting the lens and source model_galaxy simultaneously? Certainly not
 # at the beginning of an analysis, when we just want to find the right regions of non-linear parameter space. This is
 # what we're going to do in this tutorial, using a pipeline composed of a modest 3 phases:
 
-# Phase 1 - Fit the lens galaxy's light, ignoring the source.
-# Phase 2 - Fit the source galaxy's light, ignoring the lens.
+# Phase 1 - Fit the lens model_galaxy's light, ignoring the source.
+# Phase 2 - Fit the source model_galaxy's light, ignoring the lens.
 # Phase 3 - Fit both simultaneously, using these results to initialize our starting location in parameter space.
 
 # First, lets get our path.
@@ -66,13 +66,13 @@ def simulate():
     tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
                                                  image_plane_grids=image_plane_grids)
 
-    return im.PreparatoryImage.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=0.1,
+    return im.PreparatoryImage.simulate(array=tracer.image_plane_images_for_simulation, pixel_scale=0.1,
                                         exposure_time=300.0, psf=psf, background_sky_level=0.1, add_noise=True)
 
-# Now lets simulate hte image we'll fit, which as I said above, is the same image we saw in the previous chapter.
-# image = simulate()
+# Now lets simulate hte images we'll fit, which as I said above, is the same images we saw in the previous chapter.
+# images = simulate()
 
-_path_="/home/jammy/PyCharm/Projects/AutoLens/data/aris"
+_path_="/home/jammy/PyCharm/Projects/AutoLens/datas/aris"
 image=im.load_imaging_from_fits(image_path=_path_+'/image_no_lens.fits',noise_map_path=_path_+'/noise_map.fits',
    psf_path=_path_+'/psf.fits',pixel_scale=0.04,image_shape=(151,151),psf_shape=(21,21))
 
@@ -86,30 +86,30 @@ def make_pipeline():
     pipeline_name = '1_lens_and_source'
 
     # Its been a long time since we thought about masks - but in runners they're a pretty important. The bigger the
-    # mask, the slower the run-time. In the early phases of most runners, we're not too bothered about fitting the
-    # image perfectly and aggresive masking (removing lots of image-pixels) is a good way to get things running fast.
+    # masks, the slower the run-time. In the early phases of most runners, we're not too bothered about fitting the
+    # images perfectly and aggresive masking (removing lots of images-pixels) is a good way to get things running fast.
 
-    # In this phase, we're only interested in fitting the lens's light, so we'll mask out the source-galaxy entirely.
+    # In this phase, we're only interested in fitting the lens's light, so we'll masks out the source-model_galaxy entirely.
     # This'll give us a nice speed up and ensure the source's light doesn't impact our light-profile fit (albeit,
     # given the lack of covariance above, it wouldn't be disastrous either way).
 
-    # We want a mask that is shaped like the source-galaxy. The shape of the source is an 'annulus' (e.g. a ring),
-    # so we're going to use an annular mask. For example, if an annulus is specified between an inner radius of 0.5"
+    # We want a masks that is shaped like the source-model_galaxy. The shape of the source is an 'annulus' (e.g. a ring),
+    # so we're going to use an annular masks. For example, if an annulus is specified between an inner radius of 0.5"
     # and outer radius of 2.0", all pixels in two rings between 0.5" and 2.0" are included in the analysis.
 
-    # But wait, we actually want the opposite of this. We want a mask where the pixels between 0.5" and 2.0" are not
+    # But wait, we actually want the opposite of this. We want a masks where the pixels between 0.5" and 2.0" are not
     # included! They're the pixels the source is actually located. Therefore, we're going to use an 'anti-annular
-    # mask', where the inner and outer radii are the regions we omit from the analysis. This means we need to specify
-    # a third rung of the mask, even further out, such that data at the exterior edges of the image is also masked.
+    # masks', where the inner and outer radii are the regions we omit from the analysis. This means we need to specify
+    # a third rung of the masks, even further out, such that datas at the exterior edges of the images is also masked.
 
-    # We can change a mask using the 'mask_function' which basically returns the new mask we want to use (you can
+    # We can change a masks using the 'mask_function' which basically returns the new masks we want to use (you can
     # actually use on phases by themselves like in the previous chapter).
     def mask_function(img):
         return mask.Mask.anti_annular(img.shape, pixel_scale=img.pixel_scale, inner_radius_arcsec=0.5,
                                       outer_radius_arcsec=1.6, outer_radius_2_arcsec=2.0)
 
-    # Create the phase, using the same notation we learnt before (but noting the mask function is passed to this phase,
-    # ensuring the anti-annular mask above is used).
+    # Create the phase, using the same notation we learnt before (but noting the masks function is passed to this phase,
+    # ensuring the anti-annular masks above is used).
     phase1 = phase.LensPlanePhase(lens_galaxies=dict(lens=gm.GalaxyModel(light=lp.EllipticalSersic)),
                                   optimizer_class=nl.MultiNest, mask_function=mask_function,
                                   phase_name=pipeline_name + '/phase_1_lens_light_only')
@@ -117,38 +117,38 @@ def make_pipeline():
     # At this point, you might want to look at the 'output/3_pipelines/1_lens_and_source/phase_1_lens_light_only'
     # output folder. There'll you'll find the model results and images, so you can be sure this phase runs as expected!
 
-    # In phase 2, we fit the source galaxy's light. Thus, we want to make 2 changes from the previous phase
+    # In phase 2, we fit the source model_galaxy's light. Thus, we want to make 2 changes from the previous phase
 
-    # 1) We want to fit the lens subtracted image calculated in phase 1, instead of the observed image.
-    # 2) We want to mask the central regions of this image, where there are residuals due to the lens light subtraction.
+    # 1) We want to fit the lens subtracted images calculated in phase 1, instead of the observed images.
+    # 2) We want to masks the central regions of this images, where there are residuals due to the lens light subtraction.
 
-    # We can use the mask function again, to modify the mask to an annulus. We'll use the same ring radii as before,
+    # We can use the masks function again, to modify the masks to an annulus. We'll use the same ring radii as before,
     # but this isn't necessary.
     def mask_function(img):
         return mask.Mask.annular(img.shape, pixel_scale=img.pixel_scale, inner_radius_arcsec=0.5,
                                  outer_radius_arcsec=3.)
 
-    # To modify an image, we call a new function, 'modify image'. This function behaves like the pass-priors functions
+    # To modify an images, we call a new function, 'modify images'. This function behaves like the pass-priors functions
     # before, whereby we create a python 'class' in a Phase to set it up.  This ensures it has access to the pipeline's
     # 'previous_results' (which you may have noticed was in the the pass_priors functions as well, but we ignored it
     # thus far).
 
-    # To setup the modified image, we take the observed image data ('image') and subtract-off the model image from the
-    # previous phase, which, if you're keeping track, is an image of the lens galaxy. However, if we just used the
+    # To setup the modified images, we take the observed images datas ('images') and subtract-off the model images from the
+    # previous phase, which, if you're keeping track, is an images of the lens model_galaxy. However, if we just used the
     # 'model_image' in the fit, this would only include pixels that were masked. We want to subtract the lens off the
-    # entire image - fortunately, PyAutoLens automatically generates a 'unmasked_model_image' as well!
+    # entire images - fortunately, PyAutoLens automatically generates a 'unmasked_model_image' as well!
 
     class LensSubtractedPhase(phase.LensSourcePlanePhase):
 
         def modify_image(self, image, previous_results):
             phase_1_results = previous_results[0]
-            return image - phase_1_results.fit.unmasked_model_profile_image
+            return image - phase_1_results.fit.unmasked_model_profile_images
 
     # The function above demonstrates the most important thing about runners - that every phase has access to the
     # results of all previous phases. This means we can feed information through the pipeline and therefore use the
     # results of previous phases to setup new phases. We'll see this again in phase 3.
 
-    # We setup phase 2 as per usual. Note that we don't need to pass the modify image function.
+    # We setup phase 2 as per usual. Note that we don't need to pass the modify images function.
     phase2 = LensSubtractedPhase(lens_galaxies=dict(lens=gm.GalaxyModel(mass=mp.EllipticalIsothermal)),
                                  source_galaxies=dict(source=gm.GalaxyModel(light=lp.EllipticalSersic)),
                                  optimizer_class=nl.MultiNest, mask_function=mask_function,
@@ -189,7 +189,7 @@ def make_pipeline():
             self.source_galaxies.source.light.sersic_index = phase_2_results.variable.source.light.sersic_index
 
             # Listing every parameter like this is ugly, and would get unweildy if we had a lot of parameters. If,
-            # like in the above example, you are making all parameters of a lens or source galaxy variable, you can
+            # like in the above example, you are making all parameters of a lens or source model_galaxy variable, you can
             # simply set the source_galaxies equal to one another without specifying the light / mass profiles
         #    self.source_galaxies = phase_2_results.variable.source_galaxies
 
@@ -210,7 +210,7 @@ def make_pipeline():
 pipeline_lens_and_source = make_pipeline()
 pipeline_lens_and_source.run(image=image)
 
-# And there we have it, a pipeline that breaks the analysis of the lens and source galaxy into a set of phases. This
+# And there we have it, a pipeline that breaks the analysis of the lens and source model_galaxy into a set of phases. This
 # approach is signifcantly faster than fitting everything at once. Instead of asking you questions at the end of
 # this chapter's tutorials, I'm gonna give Q&A's - this'll hopefully get you thinking about how we should approach
 # pipeline writing.
@@ -218,13 +218,13 @@ pipeline_lens_and_source.run(image=image)
 # 1) Can this pipeline really be generalized to any lens? Surely the radii of the masks in phase 1 and 2 depend on the
 #    lens and source galaxies?
 #
-#    Whilst this is true, we've chosen values of mask radii above that are 'excessive' that mask out a lot more of the
-#    image than just the source (which, in terms of run-time, is desirable). Thus, provided you know the Einstein
-#    radius distribution of your lens sample, you can choose mask radii that will mask out every source in your sample
-#    adequately (and even if some of the source is still there, who cares? The fit to the lens galaxy will be okay).
+#    Whilst this is true, we've chosen values of masks radii above that are 'excessive' that masks out a lot more of the
+#    images than just the source (which, in terms of run-time, is desirable). Thus, provided you know the Einstein
+#    radius distribution of your lens sample, you can choose masks radii that will masks out every source in your sample
+#    adequately (and even if some of the source is still there, who cares? The fit to the lens model_galaxy will be okay).
 
-# 2) What if my source galaxy isn't a ring of light? Surely my Annulus mask won't match it?
+# 2) What if my source model_galaxy isn't a ring of light? Surely my Annulus masks won't match it?
 #
-#    Just use the annulus anyway! Yeah, you'll mask out lots of image pixels with no source light, but remember, at
-#    the beginning of the pipeline, *we don't care*. In phase 3, we'll use a large circular mask and do the fit
+#    Just use the annulus anyway! Yeah, you'll masks out lots of images pixels with no source light, but remember, at
+#    the beginning of the pipeline, *we don't care*. In phase 3, we'll use a large circular masks and do the fit
 #    properly.

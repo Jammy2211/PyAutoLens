@@ -8,12 +8,12 @@ from autolens.imaging import mask as msk
 from autolens.lensing import lensing_image as li
 from autolens.inversion import convolution as inversion_convolution
 
-@pytest.fixture(name='image')
+@pytest.fixture(name='images')
 def make_image():
     psf = im.PSF(array=np.ones((3, 3)), pixel_scale=3.0, renormalize=False)
     return im.Image(np.ones((4, 4)), pixel_scale=3., psf=psf, noise_map=np.ones((4, 4)))
 
-@pytest.fixture(name="mask")
+@pytest.fixture(name="masks")
 def make_mask():
     return msk.Mask(np.array([[True, True, True, True],
                               [True, False, False, True],
@@ -35,10 +35,10 @@ class TestLensingImage(object):
     def test__image_and_image_mapper(self, lensing_image):
         assert (lensing_image == np.ones(4)).all()
         assert (lensing_image.image == np.ones((4, 4))).all()
-        assert (lensing_image.image.noise_map == np.ones((4, 4))).all()
+        assert (lensing_image.image.noise_maps == np.ones((4, 4))).all()
 
     def test_masking(self, lensing_image):
-        assert lensing_image.noise_map.shape == (4,)
+        assert lensing_image.noise_maps.shape == (4,)
 
     def test_grids(self, lensing_image):
         assert lensing_image.grids.image.shape == (4, 2)

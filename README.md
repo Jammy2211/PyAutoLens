@@ -64,7 +64,7 @@ path = "{}".format(os.path.dirname(os.path.realpath(__file__)))
 
 # Now, load the image, noise-map and PSF from the 'data' folder.
 image = im.load_imaging_from_path(image_path=path + '/data/image.fits',
-                                  noise_map_path=path + '/data/noise_map.fits',
+                                  noise_map_path=path + '/data/noise_maps.fits',
                                   psf_path=path + '/data/psf.fits', pixel_scale=0.1)
 
 # We're going to model our lens galaxy using a light profile (an elliptical Sersic) and mass profile

@@ -1,9 +1,12 @@
+from test.mock.mock_inversion import MockMapper
+from test.mock.mock_galaxy import MockHyperGalaxy
+
 class MockTracer(object):
 
-    def __init__(self, image, blurring_image, has_light_profile, has_pixelization, has_hyper_galaxy,
+    def __init__(self, images, blurring_images, has_light_profile, has_pixelization, has_hyper_galaxy,
                  has_grid_mappers=False):
-        self.image = image
-        self.blurring_image = blurring_image
+        self.images = images
+        self.blurring_images = blurring_images
         self.has_light_profile = has_light_profile
         self.has_pixelization = has_pixelization
         self.has_hyper_galaxy = has_hyper_galaxy
@@ -14,12 +17,12 @@ class MockTracer(object):
         return []
 
     @property
-    def _image_plane_image(self):
-        return self.image
+    def _image_plane_images(self):
+        return self.images
 
     @property
-    def _image_plane_blurring_image(self):
-        return self.blurring_image
+    def _image_plane_blurring_images(self):
+        return self.blurring_images
 
     @property
     def mappers_of_planes(self):
