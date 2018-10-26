@@ -6,14 +6,14 @@ from autolens.inversion import pixelizations as pix
 from autolens.plotting import mapper_plotters
 
 # We'll start by learning about pixelizations, which we typically apply to a source-plane (but could, if we wanted,
-# apply to an image-plane).
+# apply to an images-plane).
 #
-# Lets setup a lensed source-plane grid, using a lens galaxy and tracer.
+# Lets setup a lensed source-plane grid, using a lens model_galaxy and tracer.
 image_plane_grids = mask.ImagingGrids.from_shape_and_pixel_scale(shape=(100, 100), pixel_scale=0.05,
                                                                  sub_grid_size=2)
 lens_galaxy = g.Galaxy(mass=mp.EllipticalIsothermal(centre=(0.0, 0.0), axis_ratio=0.8, phi=90.0, einstein_radius=1.6))
 
-# (Our source galaxy doesn't have a light profile from here on, as we're reconstructing its light using a pixelization).
+# (Our source model_galaxy doesn't have a light profile from here on, as we're reconstructing its light using a pixelization).
 tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[g.Galaxy()],
                                              image_plane_grids=image_plane_grids)
 
@@ -22,7 +22,7 @@ tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source
 # rectangular grid. As usual, the grid's 'shape' defines its (y,x) dimensions.
 rectangular = pix.Rectangular(shape=(25, 25))
 
-# By itself, a pixelization doesn't tell us much. It has no grid of coordinates, no image, and nothing which tells it
+# By itself, a pixelization doesn't tell us much. It has no grid of coordinates, no images, and nothing which tells it
 # about the lens we're fitting. This information comes when we use the pixelization to set up a 'mapper'.
 mapper = rectangular.mapper_from_grids(grids=tracer.source_plane.grids)
 

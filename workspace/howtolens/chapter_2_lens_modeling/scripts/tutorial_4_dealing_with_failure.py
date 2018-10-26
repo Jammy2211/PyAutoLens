@@ -12,10 +12,10 @@ import os
 
 
 # We finished the last tutorial on sour note. Our non-linear search failed miserably, and we were unable to infer a
-# lens model which fitted our realistic data-set well. In this tutorial, we're going to right our past wrongs and infer
+# lens model which fitted our realistic datas-set well. In this tutorial, we're going to right our past wrongs and infer
 # the correct model - not just once, but three times!
 
-# First, lets get the config / simulation / image loading out the way - we'll fit the same image as the previous
+# First, lets get the config / simulation / images loading out the way - we'll fit the same images as the previous
 # tutorial.
 
 #Setup the path for this run
@@ -30,7 +30,7 @@ conf.instance = conf.Config(config_path=path+'/configs/4_dealing_with_failure', 
 # Alternatively, set these running and come back in 10 minutes or so - MultiNest resumes from the existing results on
 # your hard-disk, so you can rerun things to get the results instantly!
 
-# Another simulate image function, for the same image again.
+# Another simulate images function, for the same images again.
 def simulate():
 
     from autolens.imaging import mask
@@ -49,12 +49,12 @@ def simulate():
     tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
                                                  image_plane_grids=image_plane_grids)
 
-    image_simulated = im.PreparatoryImage.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=0.1,
+    image_simulated = im.PreparatoryImage.simulate(array=tracer.image_plane_images_for_simulation, pixel_scale=0.1,
                                                    exposure_time=300.0, psf=psf, background_sky_level=0.1, add_noise=True)
 
     return image_simulated
 
-# Simulate the image and set it up.
+# Simulate the images and set it up.
 image = simulate()
 
 ### Approach 1 -  Prior Tuning ###
@@ -73,10 +73,10 @@ class CustomPriorPhase(ph.LensSourcePlanePhase):
     def pass_priors(self, previous_results):
 
         # We've imported the 'model_mapper' module as 'mm' this time, to make the code more readable. We've also
-        # called our lens galaxy 'lens' this time, for shorter more readable code.
+        # called our lens model_galaxy 'lens' this time, for shorter more readable code.
 
         # By default, the prior on the x and y coordinates of a light / mass profile is a GaussianPrior with mean
-        # 0.0" and sigma "1.0. However, visual inspection of our strong lens image tells us that its clearly around
+        # 0.0" and sigma "1.0. However, visual inspection of our strong lens images tells us that its clearly around
         # x = 0.0" and y = 0.0", so lets reduce where non-linear search looks for these parameters.
 
         self.lens_galaxies.lens.light.centre_0 = mm.UniformPrior(lower_limit=-0.05, upper_limit=0.05)
@@ -84,16 +84,16 @@ class CustomPriorPhase(ph.LensSourcePlanePhase):
         self.lens_galaxies.lens.mass.centre_0 = mm.UniformPrior(lower_limit=-0.05, upper_limit=0.05)
         self.lens_galaxies.lens.mass.centre_1 = mm.UniformPrior(lower_limit=-0.05, upper_limit=0.05)
 
-        # By default, the axis-ratio (ellipticity) of our lens galaxy's light pofile is a UniformPrior between 0.2 and
-        # 1.0. However, by looking at the image it looks fairly circular, so lets use a GaussianPrior nearer 1.0.
+        # By default, the axis-ratio (ellipticity) of our lens model_galaxy's light pofile is a UniformPrior between 0.2 and
+        # 1.0. However, by looking at the images it looks fairly circular, so lets use a GaussianPrior nearer 1.0.
         self.lens_galaxies.lens.light.axis_ratio = mm.GaussianPrior(mean=0.8, sigma=0.15)
 
         # We'll also assume that the light profile's axis_ratio informs us of the mass-profile's axis_ratio, but
         # because this may not strictly be true (because of dark matter) we'll use a wider prior.
         self.lens_galaxies.lens.mass.axis_ratio = mm.GaussianPrior(mean=0.8, sigma=0.25)
 
-        # By default, the orientation of the galaxy's light profile, phi, uses a UniformPrior between 0.0 and
-        # 180.0 degrees. However, if you look really close at the image (and maybe adjust the color-map of the plot),
+        # By default, the orientation of the model_galaxy's light profile, phi, uses a UniformPrior between 0.0 and
+        # 180.0 degrees. However, if you look really close at the images (and maybe adjust the color-map of the plot),
         # you'll be able to notice that it is elliptical and that it is oriented around 45.0 degrees counter-clockwise
         # from the x-axis. Lets update our prior
         self.lens_galaxies.lens.light.phi = mm.GaussianPrior(mean=45.0, sigma=15.0)
@@ -103,12 +103,12 @@ class CustomPriorPhase(ph.LensSourcePlanePhase):
 
         # The effective radius of a light profile is its 'half-light' radius, the radius at which 50% of its
         # total luminosity is internal to the circle or ellipse defined within that radius. AutoLens assumes a
-        # UniformPrior on this quantity between 0.0" and 4.0", but inspection of the image (again, using a colormap
+        # UniformPrior on this quantity between 0.0" and 4.0", but inspection of the images (again, using a colormap
         # scaling) shows the lens's light doesn't extend anywhere near 4.0", so lets reduce it.
         self.lens_galaxies.lens.light.effective_radius = mm.GaussianPrior(mean=0.5, sigma=0.8)
 
-        # Typically, we have some knowledge of what morphology our lens galaxy is. Infact, most strong lenses are
-        # massive ellipticals, and anyone who studies galaxy morphology will tell you these galaxies have a Sersic index
+        # Typically, we have some knowledge of what morphology our lens model_galaxy is. Infact, most strong lenses are
+        # massive ellipticals, and anyone who studies model_galaxy morphology will tell you these galaxies have a Sersic index
         # near 4. So lets change our Sersic index from a UniformPrior between 0.8 and 8.0 to reflect this
         self.lens_galaxies.lens.light.sersic_index = mm.GaussianPrior(mean=4.0, sigma=1.0)
 
@@ -116,8 +116,8 @@ class CustomPriorPhase(ph.LensSourcePlanePhase):
         # radius, so lets change the prior from a UniformPrior between 0.0" and 4.0".
         self.lens_galaxies.lens.mass.einstein_radius = mm.GaussianPrior(mean=0.8, sigma=0.2)
 
-        # In this exercise, I'm not going to change any priors on the source galaxy. Whilst lens modeling experts can
-        # look at a strong lens and often tell you roughly where the source-galaxy is be located (in the source-plane),
+        # In this exercise, I'm not going to change any priors on the source model_galaxy. Whilst lens modeling experts can
+        # look at a strong lens and often tell you roughly where the source-model_galaxy is be located (in the source-plane),
         # it is something of art form. Furthermore, the source's morphology can be pretty complex and it can become
         # its very diffcult to come up with a good source prior when this is the case.
 
@@ -185,17 +185,17 @@ light_traces_mass_phase = LightTracesMassPhase(lens_galaxies=dict(lens=gm.Galaxy
 light_traces_mass_phase_result = light_traces_mass_phase.run(image=image)
 lensing_fitting_plotters.plot_fitting_subplot(fit=light_traces_mass_phase_result.fit)
 
-# The results look pretty good. Our source galaxy fits the data pretty well, and we've clearly inferred a model that
+# The results look pretty good. Our source model_galaxy fits the datas pretty well, and we've clearly inferred a model that
 # looks similar to the one above. However, inspection of the residuals shows that the fit wasn't quite as good as the
 # custom-phase above.
 
-# It turns out that when I simulated this image, light didn't perfectly trace mass. The light-profile's axis-ratio was
+# It turns out that when I simulated this images, light didn't perfectly trace mass. The light-profile's axis-ratio was
 # 0.9, whereas the mass-profiles was 0.8. The quality of the fit has suffered as a result, and the likelihood we've
 # inferred is lower.
 #
 # Herein lies the pitfalls of making assumptions in science - they may make your model less realistic and your results
 # worse! Nevertheless, our lens model is clearly much better than it was in the previous tutorial, so making
-# assumptions isn't a bad idea if you're struggling to fit the data t all.
+# assumptions isn't a bad idea if you're struggling to fit the datas t all.
 
 # Again, lets consider the advantages and disadvantages of this approach:
 

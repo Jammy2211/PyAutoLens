@@ -6,30 +6,31 @@ from autolens.imaging import mask as msk
 
 class GalaxyData(scaled_array.ScaledSquarePixelArray):
 
-    def __new__(cls, array, mask, noise_map, sub_grid_size=2):
+    def __new__(cls, array, noise_map, mask, sub_grid_size=2):
         return np.array(mask.map_2d_array_to_masked_1d_array(array)).view(cls)
 
     def __init__(self, array, noise_map, mask, sub_grid_size=2):
         """
-        The lensing _data is the collection of data (images, noise-maps, PSF), a mask, grids, convolvers and other \
-        utilities that are used for modeling and fitting an _data of a strong lens.
+        The lensing _datas is the collection of datas (images, noise-maps, PSF), a masks, grids, convolvers and other \
+        utilities that are used for modeling and fitting an _datas of a strong lens.
 
-        Whilst the _data data is initially loaded in 2D, for the lensing _data the masked-_data (and noise-maps) \
+        Whilst the _datas datas is initially loaded in 2D, for the lensing _datas the masked-_datas (and noise-maps) \
         are reduced to 1D arrays for faster calculations.
 
         Parameters
         ----------
         array : scaled_array.ScaledSquarePixelArray
-            The original _data data in 2D.
+            The original _datas datas in 2D.
         mask: msk.Mask
-            The 2D mask that is applied to the _data.
+            The 2D masks that is applied to the _datas.
         sub_grid_size : int
-            The size of the sub-grid used for each lensing SubGrid. E.g. a value of 2 grids each _data-pixel on a 2x2 \
+            The size of the sub-grid used for each lensing SubGrid. E.g. a value of 2 grids each _datas-pixel on a 2x2 \
             sub-grid.
         image_psf_shape : (int, int)
             The shape of the PSF used for convolving model images generated using analytic light profiles. A smaller \
-            shape will trim the PSF relative to the input _data PSF, giving a faster analysis run-time.
+            shape will trim the PSF relative to the input _datas PSF, giving a faster analysis run-time.
         """
+
         super().__init__(array=array, pixel_scale=array.pixel_scale)
 
         self.array = array
@@ -51,6 +52,9 @@ class GalaxyData(scaled_array.ScaledSquarePixelArray):
             self.sub_grid_size = obj.sub_grid_size
             self.grids = obj.grids
             self.unmasked_grids = obj.unmasked_grids
+
+    def profile_quantity_from_galaxy_and_sub_grid(self, galaxy, sub_grid):
+        raise NotImplementedError
 
 
 class GalaxyDataIntensities(GalaxyData):
@@ -100,6 +104,7 @@ class GalaxyDataDeflectionsY(GalaxyData):
         deflections = galaxy.deflections_from_grid(grid=sub_grid)
         return np.asarray([sub_grid.sub_data_to_image(deflections[:, 0]),
                            sub_grid.sub_data_to_image(deflections[:, 1])]).T
+
 
 class GalaxyDataDeflectionsX(GalaxyData):
 

@@ -74,17 +74,17 @@ class Convolver(object):
     image_frame_lengths = 6
 
     Once we have set up all these quantities, the convolution routine simply uses them to convolve_image a 1D array of masked_image
-    data / a mapping_matrix matrix masked_image.
+    datas / a mapping_matrix matrix masked_image.
 
     BLURRING FRAMES:
     --------------
 
-    Whilst the scheme above accounts for all blurred light within the mask, it does not account for the fact that
-    pixels outside of the mask will also blur light into it. For galaxy light profiles, this effect is accounted for \
+    Whilst the scheme above accounts for all blurred light within the masks, it does not account for the fact that
+    pixels outside of the masks will also blur light into it. For model_galaxy light profiles, this effect is accounted for \
     using blurring frames, however it is omitted for mapping_matrix matrix images.
 
-    First, a blurring mask is computed from a mask, which describes all pixels which are close enough to the mask \
-    to blur light into it for a given psf size. Following the howtolens above, the following blurring mask is \
+    First, a blurring masks is computed from a masks, which describes all pixels which are close enough to the masks \
+    to blur light into it for a given psf size. Following the howtolens above, the following blurring masks is \
     computed:
 
     |x|x|x|x|x|x|x|x|x|x|
@@ -118,7 +118,7 @@ class Convolver(object):
     blurring_frame_length - The number of masked_image-pixels it will blur light into (because unmasked pixels are excluded)
 
     Note, therefore, that the blurring frame does not perform any blurring which blurs light into other blurring pixels.
-    It only performs computations which add light inside of the mask, which is the most computationally efficient method.
+    It only performs computations which add light inside of the masks, which is the most computationally efficient method.
 
     For pixel 0 above, when we overlap the 3x3 psf above only 1 unmasked masked_image pixels overlap the psf, such that:
 
@@ -255,9 +255,9 @@ class ConvolverImage(Convolver):
         Parameters
         ----------
         mask : Mask
-            A mask where True eliminates data.
+            A masks where True eliminates datas.
         burring_mask : Mask
-            A mask of pixels outside the mask but whose light blurs into it after convolution.
+            A masks of pixels outside the masks but whose light blurs into it after convolution.
         kernel : masked_image.PSF or ndarray
             An array representing a PSF psf.
         """
@@ -265,7 +265,7 @@ class ConvolverImage(Convolver):
         if kernel.shape[0] % 2 == 0 or kernel.shape[1] % 2 == 0:
             raise exc.KernelException("Kernel must be odd")
         if mask.shape != blurring_mask.shape:
-            raise exc.KernelException("Mask and Blurring mask must be same shape to generate Convolver")
+            raise exc.KernelException("Mask and Blurring masks must be same shape to generate Convolver")
 
         self.mask = mask
         self.blurring_mask = blurring_mask
@@ -357,15 +357,15 @@ hst = profiling_data.setup_class(name='HST', pixel_scale=0.05, sub_grid_size=sub
 hst_up = profiling_data.setup_class(name='HSTup', pixel_scale=0.03, sub_grid_size=sub_grid_size, psf_shape=psf_shape)
 ao = profiling_data.setup_class(name='AO', pixel_scale=0.01, sub_grid_size=sub_grid_size, psf_shape=psf_shape)
 
-lsst_image = sersic.intensities_from_grid(grid=lsst.grids._image_plane_image)
+lsst_image = sersic.intensities_from_grid(grid=lsst.grids._image_plane_images)
 lsst_blurring_image = sersic.intensities_from_grid(grid=lsst.grids.blurring)
-euclid_image = sersic.intensities_from_grid(grid=euclid.grids._image_plane_image)
+euclid_image = sersic.intensities_from_grid(grid=euclid.grids._image_plane_images)
 euclid_blurring_image = sersic.intensities_from_grid(grid=euclid.grids.blurring)
-hst_image = sersic.intensities_from_grid(grid=hst.grids._image_plane_image)
+hst_image = sersic.intensities_from_grid(grid=hst.grids._image_plane_images)
 hst_blurring_image = sersic.intensities_from_grid(grid=hst.grids.blurring)
-hst_up_image = sersic.intensities_from_grid(grid=hst_up.grids._image_plane_image)
+hst_up_image = sersic.intensities_from_grid(grid=hst_up.grids._image_plane_images)
 hst_up_blurring_image = sersic.intensities_from_grid(grid=hst_up.grids.blurring)
-ao_image = sersic.intensities_from_grid(grid=ao.grids._image_plane_image)
+ao_image = sersic.intensities_from_grid(grid=ao.grids._image_plane_images)
 ao_blurring_image = sersic.intensities_from_grid(grid=ao.grids.blurring)
 
 
