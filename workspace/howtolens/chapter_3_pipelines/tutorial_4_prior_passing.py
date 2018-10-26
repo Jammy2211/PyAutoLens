@@ -30,7 +30,7 @@ def pass_priors(self, previous_results):
 
 #    Unfortunately, this doesn't always work. Lens modeling is prone to an effect called 'over-fitting' where we
 #    underestimate the errors on our lens model parameters. This is especially true when we take the shortcuts we're
-#    used to in early phases - aggresive masking, reduced data, simplified lens models.
+#    used to in early phases - aggresive masking, reduced datas, simplified lens models.
 
 #    Therefore, the priors/widths file is our fallback. If the error on a parameter is suspiciously small, we instead
 #    use the value specified in the widths file. These values are chosen based on our experience as being a good
@@ -48,5 +48,5 @@ def pass_priors(self, previous_results):
 # In light of this, I recommend that a pipeline's final phase is a phase where we take a hit on run-time, and choose
 # settings that more thoroughly sample non-linear parameter space. This includes larger values of sigma on each
 # GaussianPrior, and upping the MultiNest live points / reducing its sampling efficiency. In truth, the degree to which
-# this matters depends on your lens model complexity, data-quality and science case, so it's something you should
+# this matters depends on your lens model complexity, datas-quality and science case, so it's something you should
 # learn how to do yourself.

@@ -72,7 +72,7 @@ def get_normalization_scale(norm, norm_min, norm_max, linthresh, linscale):
     elif norm is 'symmetric_log':
         return colors.SymLogNorm(linthresh=linthresh, linscale=linscale, vmin=norm_min, vmax=norm_max)
     else:
-        raise exc.VisualizeException('The normalization (norm) supplied to the plotter is not a valid string (must be '
+        raise exc.PlottingException('The normalization (norm) supplied to the plotter is not a valid string (must be '
                                      'linear | log | symmetric_log')
 
 def set_xy_labels_and_ticksize(units, kpc_per_arcsec, xlabelsize, ylabelsize, xyticksize):
@@ -93,7 +93,7 @@ def set_xy_labels_and_ticksize(units, kpc_per_arcsec, xlabelsize, ylabelsize, xy
         plt.ylabel('y (kpc)', fontsize=ylabelsize)
 
     else:
-        raise exc.VisualizeException('The units supplied to the plotted are not a valid string (must be pixels | '
+        raise exc.PlottingException('The units supplied to the plotted are not a valid string (must be pixels | '
                                      'arcsec | kpc)')
 
     plt.tick_params(labelsize=xyticksize)

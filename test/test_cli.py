@@ -9,8 +9,8 @@ class TestCLI(object):
     #
     #     result = subprocess.check_output(
     #         "python {0}/../autolens pipeline test "
-    #         "--data={0}/../data/slacs03_all/slacs_1_post.fits "
-    #         "--image-hdu=1 "
+    #         "--datas={0}/../datas/slacs03_all/slacs_1_post.fits "
+    #         "--images-hdu=1 "
     #         "--noise-hdu=2 "
     #         "--psf-hdu=3 "
     #         "--pixel-scale=0.05".format(directory),
@@ -21,11 +21,11 @@ class TestCLI(object):
     def test_cli_files(self):
         directory = path.dirname(path.realpath(__file__))
 
-        data_directory = "{}/integration/data/lens_x2_galaxy".format(directory)
+        data_directory = "{}/integration/datas/lens_x2_galaxy".format(directory)
 
         result = subprocess.check_output(
             "python {0}/../autolens pipeline test "
-            "--image={1}/image.fits "
+            "--images={1}/images.fits "
             "--noise={1}/noise_map.fits "
             "--psf={1}/psf.fits "
             "--pixel-scale=0.05".format(directory, data_directory),

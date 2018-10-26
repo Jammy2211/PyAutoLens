@@ -34,5 +34,5 @@ class FittingException(Exception):
     pass
 
 
-class VisualizeException(Exception):
+class PlottingException(Exception):
     pass

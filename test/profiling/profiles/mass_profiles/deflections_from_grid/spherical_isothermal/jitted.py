@@ -40,7 +40,7 @@ class SphericalIsothermal(geometry_profiles.SphericalProfile):
 
         Parameters
         ----------
-        grid : mask.ImageGrid
+        grid : masks.ImageGrid
             The grid of coordinates the deflection angles are computed on.
         """
         return np.full(grid.shape[0], 2.0 * self.einstein_radius_rescaled)
@@ -51,7 +51,7 @@ class SphericalIsothermal(geometry_profiles.SphericalProfile):
 
         Parameters
         ----------
-        grid : mask.ImageGrid
+        grid : masks.ImageGrid
             The grid of coordinates the deflection angles are computed on.
         """
         return self.deflections_from_grid_jit(grid, self.einstein_radius_rescaled)

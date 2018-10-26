@@ -12,7 +12,7 @@ Source Pixels = 363
 source_sub_grid_size = 4
 
 Time to set up galaxy contributions                                     =   2.999000000045271E-003
-Time to set up scaled noise_map map                                         =   2.999999999985903E-003
+Time to set up scaled noise_maps map                                         =   2.999999999985903E-003
 Time to set up weighted regularization                                  =   2.000000000009550E-003
 
 Time to reconstruct lens light profile (x1 Sersic, including geometry)  =   0.110982999999976
@@ -42,7 +42,7 @@ Source Pixels = 1135
 source_sub_grid_size = 4
 
 Time to set up galaxy contributions                                     =   1.299699999992754E-002
-Time to set up scaled noise_map map                                         =   5.999000000088017E-003
+Time to set up scaled noise_maps map                                         =   5.999000000088017E-003
 Time to set up weighted regularization                                  =   6.998999999950684E-003
 
 Time to reconstruct lens light profile (x1 Sersic, including geometry)  =  0.153977000000054

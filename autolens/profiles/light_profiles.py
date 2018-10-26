@@ -219,7 +219,7 @@ class EllipticalSersic(AbstractEllipticalSersic, EllipticalLP):
 
     def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=0.1, effective_radius=0.6,
                  sersic_index=4.0):
-        """ The elliptical Sersic profile, used for fitting a galaxy's light.
+        """ The elliptical Sersic profile, used for fitting a model_galaxy's light.
 
         Parameters
         ----------
@@ -271,7 +271,7 @@ class EllipticalSersic(AbstractEllipticalSersic, EllipticalLP):
 class SphericalSersic(EllipticalSersic):
 
     def __init__(self, centre=(0.0, 0.0), intensity=0.1, effective_radius=0.6, sersic_index=4.0):
-        """ The spherical Sersic profile, used for fitting a galaxy's light.
+        """ The spherical Sersic profile, used for fitting a model_galaxy's light.
 
         Parameters
         ----------
@@ -290,7 +290,7 @@ class SphericalSersic(EllipticalSersic):
 class EllipticalExponential(EllipticalSersic):
 
     def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=0.1, effective_radius=0.6):
-        """ The elliptical exponential profile, used for fitting a galaxy's light.
+        """ The elliptical exponential profile, used for fitting a model_galaxy's light.
 
         This is a subset of the elliptical Sersic profile, specific to the case that sersic_index = 1.0.
 
@@ -313,7 +313,7 @@ class EllipticalExponential(EllipticalSersic):
 class SphericalExponential(EllipticalExponential):
 
     def __init__(self, centre=(0.0, 0.0), intensity=0.1, effective_radius=0.6):
-        """ The spherical exponential profile, used for fitting a galaxy's light.
+        """ The spherical exponential profile, used for fitting a model_galaxy's light.
 
         This is a subset of the elliptical Sersic profile, specific to the case that sersic_index = 1.0.
 
@@ -332,7 +332,7 @@ class SphericalExponential(EllipticalExponential):
 class EllipticalDevVaucouleurs(EllipticalSersic):
 
     def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=0.1, effective_radius=0.6):
-        """ The elliptical Dev Vaucouleurs profile, used for fitting a galaxy's light.
+        """ The elliptical Dev Vaucouleurs profile, used for fitting a model_galaxy's light.
 
         This is a subset of the elliptical Sersic profile, specific to the case that sersic_index = 4.0.
 
@@ -355,7 +355,7 @@ class EllipticalDevVaucouleurs(EllipticalSersic):
 class SphericalDevVaucouleurs(EllipticalDevVaucouleurs):
 
     def __init__(self, centre=(0.0, 0.0), intensity=0.1, effective_radius=0.6):
-        """ The spherical Dev Vaucouleurs profile, used for fitting a galaxy's light.
+        """ The spherical Dev Vaucouleurs profile, used for fitting a model_galaxy's light.
 
         This is a subset of the elliptical Sersic profile, specific to the case that sersic_index = 1.0.
 
@@ -375,7 +375,7 @@ class EllipticalCoreSersic(EllipticalSersic):
 
     def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=0.1, effective_radius=0.6,
                  sersic_index=4.0, radius_break=0.01, intensity_break=0.05, gamma=0.25, alpha=3.0):
-        """ The elliptical cored-Sersic profile, used for fitting a galaxy's light.
+        """ The elliptical cored-Sersic profile, used for fitting a model_galaxy's light.
 
         Parameters
         ----------
@@ -436,7 +436,7 @@ class SphericalCoreSersic(EllipticalCoreSersic):
 
     def __init__(self, centre=(0.0, 0.0), intensity=0.1, effective_radius=0.6,
                  sersic_index=4.0, radius_break=0.01, intensity_break=0.05, gamma=0.25, alpha=3.0):
-        """ The elliptical cored-Sersic profile, used for fitting a galaxy's light.
+        """ The elliptical cored-Sersic profile, used for fitting a model_galaxy's light.
 
         Parameters
         ----------

@@ -29,23 +29,28 @@ class TestGalaxyFit:
             g0 = MockGalaxy(value=1.0)
 
             g_data = galaxy_data.GalaxyDataIntensities(array=array, noise_map=noise_map, mask=mask, sub_grid_size=1)
-            fit = galaxy_fitting.GalaxyFit(galaxy_data=g_data, galaxy=g0)
+            fit = galaxy_fitting.GalaxyFit(galaxy_data=g_data, model_galaxy=g0)
+            assert fit.model_galaxy == g0
             assert fit.likelihood == -0.5 * np.log(2 * np.pi * 1.0)
 
             g_data = galaxy_data.GalaxyDataSurfaceDensity(array=array, noise_map=noise_map, mask=mask, sub_grid_size=1)
-            fit = galaxy_fitting.GalaxyFit(galaxy_data=g_data, galaxy=g0)
+            fit = galaxy_fitting.GalaxyFit(galaxy_data=g_data, model_galaxy=g0)
+            assert fit.model_galaxy == g0
             assert fit.likelihood == -0.5 * np.log(2 * np.pi * 1.0)
 
             g_data = galaxy_data.GalaxyDataPotential(array=array, noise_map=noise_map, mask=mask, sub_grid_size=1)
-            fit = galaxy_fitting.GalaxyFit(galaxy_data=g_data, galaxy=g0)
+            fit = galaxy_fitting.GalaxyFit(galaxy_data=g_data, model_galaxy=g0)
+            assert fit.model_galaxy == g0
             assert fit.likelihood == -0.5 * np.log(2 * np.pi * 1.0)
 
             g_data = galaxy_data.GalaxyDataDeflectionsY(array=array, noise_map=noise_map, mask=mask, sub_grid_size=1)
-            fit = galaxy_fitting.GalaxyFit(galaxy_data=g_data, galaxy=g0)
+            fit = galaxy_fitting.GalaxyFit(galaxy_data=g_data, model_galaxy=g0)
+            assert fit.model_galaxy == g0
             assert fit.likelihood == -0.5 * np.log(2 * np.pi * 1.0)
 
             g_data = galaxy_data.GalaxyDataDeflectionsX(array=array, noise_map=noise_map, mask=mask, sub_grid_size=1)
-            fit = galaxy_fitting.GalaxyFit(galaxy_data=g_data, galaxy=g0)
+            fit = galaxy_fitting.GalaxyFit(galaxy_data=g_data, model_galaxy=g0)
+            assert fit.model_galaxy == g0
             assert fit.likelihood == -0.5 * np.log(2 * np.pi * 1.0)
 
         def test__1x2_image__noise_not_1__all_terms_correct(self):
@@ -63,30 +68,35 @@ class TestGalaxyFit:
 
             g_data = galaxy_data.GalaxyDataIntensities(array=array, noise_map=noise_map, mask=mask, sub_grid_size=1)
             fit = galaxy_fitting.fit_galaxy_data_with_galaxy(galaxy_data=g_data, galaxy=g0)
+            assert fit.model_galaxy == g0
             assert fit.chi_squared_term == (25.0 / 4.0)
             assert fit.reduced_chi_squared == (25.0 / 4.0) / 2.0
             assert fit.likelihood == -0.5 * ((25.0 / 4.0) + 2.0*np.log(2 * np.pi * 2.0**2))
 
             g_data = galaxy_data.GalaxyDataSurfaceDensity(array=array, noise_map=noise_map, mask=mask, sub_grid_size=1)
             fit = galaxy_fitting.fit_galaxy_data_with_galaxy(galaxy_data=g_data, galaxy=g0)
+            assert fit.model_galaxy == g0
             assert fit.chi_squared_term == (25.0 / 4.0)
             assert fit.reduced_chi_squared == (25.0 / 4.0) / 2.0
             assert fit.likelihood == -0.5 * ((25.0 / 4.0) + 2.0*np.log(2 * np.pi * 2.0**2))
 
             g_data = galaxy_data.GalaxyDataPotential(array=array, noise_map=noise_map, mask=mask, sub_grid_size=1)
             fit = galaxy_fitting.fit_galaxy_data_with_galaxy(galaxy_data=g_data, galaxy=g0)
+            assert fit.model_galaxy == g0
             assert fit.chi_squared_term == (25.0 / 4.0)
             assert fit.reduced_chi_squared == (25.0 / 4.0) / 2.0
             assert fit.likelihood == -0.5 * ((25.0 / 4.0) + 2.0*np.log(2 * np.pi * 2.0**2))
 
             g_data = galaxy_data.GalaxyDataDeflectionsY(array=array, noise_map=noise_map, mask=mask, sub_grid_size=1)
             fit = galaxy_fitting.fit_galaxy_data_with_galaxy(galaxy_data=g_data, galaxy=g0)
+            assert fit.model_galaxy == g0
             assert fit.chi_squared_term == (25.0 / 4.0)
             assert fit.reduced_chi_squared == (25.0 / 4.0) / 2.0
             assert fit.likelihood == -0.5 * ((25.0 / 4.0) + 2.0*np.log(2 * np.pi * 2.0**2))
 
             g_data = galaxy_data.GalaxyDataDeflectionsX(array=array, noise_map=noise_map, mask=mask, sub_grid_size=1)
             fit = galaxy_fitting.fit_galaxy_data_with_galaxy(galaxy_data=g_data, galaxy=g0)
+            assert fit.model_galaxy == g0
             assert fit.chi_squared_term == (25.0 / 4.0)
             assert fit.reduced_chi_squared == (25.0 / 4.0) / 2.0
             assert fit.likelihood == -0.5 * ((25.0 / 4.0) + 2.0*np.log(2 * np.pi * 2.0**2))
@@ -126,7 +136,7 @@ class TestGalaxyFit:
             assert galaxy_fitting.fast_likelihood_from_galaxy_data_and_galaxy(galaxy_data=g_data, galaxy=g0) == \
                    2.0 * -0.5 * (25.0 / 4.0 + 2.0*np.log(2 * np.pi * 2.0**2))
             assert galaxy_fitting.GalaxyFitDeflectionsY.fast_likelihood(galaxy_data_y=g_data, galaxy_data_x=g_data,
-                                                                        galaxy=g0) == \
+                                                                        model_galaxy=g0) == \
                    2.0 * -0.5 * (25.0 / 4.0 + 2.0*np.log(2 * np.pi * 2.0**2))
 
     class TestCompareToManual:
@@ -145,27 +155,29 @@ class TestGalaxyFit:
                                             [True, True, True, True, True]]), pixel_scale=1.0)
             noise_map = 2.0 * np.ones((5, 5))
 
-            g_data = galaxy_data.GalaxyDataIntensities(array=im, mask=mask, noise_map=noise_map, sub_grid_size=2)
             galaxy = g.Galaxy(light=lp.SphericalSersic(centre=(1.0, 2.0), intensity=1.0))
+            g_data = galaxy_data.GalaxyDataIntensities(array=im, mask=mask, noise_map=noise_map, sub_grid_size=2)
             fit = galaxy_fitting.fit_galaxy_data_with_galaxy(galaxy_data=g_data, galaxy=galaxy)
+
+            assert fit.model_galaxy == galaxy
 
             model_data = galaxy.intensities_from_grid(grid=g_data.grids.sub)
             model_data = g_data.grids.sub.sub_data_to_image(sub_array=model_data)
-            residuals = fitting.residuals_from_data_and_model(g_data[:], model_data)
-            chi_squareds = fitting.chi_squareds_from_residuals_and_noise(residuals, g_data.noise_map)
+            residuals = fitting.residuals_from_datas_and_model_datas(g_data[:], model_data)
+            chi_squareds = fitting.chi_squareds_from_residuals_and_noise_maps(residuals, g_data.noise_map)
 
             assert g_data.grids.image.scaled_array_from_array_1d(g_data.noise_map) == \
-                   pytest.approx(fit.noise_map, 1e-4)
+                   pytest.approx(fit.noise_maps, 1e-4)
             assert g_data.grids.image.scaled_array_from_array_1d(model_data) == \
-                   pytest.approx(fit.model_data, 1e-4)
+                   pytest.approx(fit.model_datas, 1e-4)
             assert g_data.grids.image.scaled_array_from_array_1d(residuals) == \
                    pytest.approx(fit.residuals, 1e-4)
             assert g_data.grids.image.scaled_array_from_array_1d(chi_squareds) == \
                    pytest.approx(fit.chi_squareds, 1e-4)
 
-            chi_squared_term = fitting.chi_squared_term_from_chi_squareds(chi_squareds)
-            noise_term = fitting.noise_term_from_noise_map(g_data.noise_map)
-            likelihood = fitting.likelihood_from_chi_squared_and_noise_terms(chi_squared_term, noise_term)
+            chi_squared_term = fitting.chi_squared_terms_from_chi_squareds(chi_squareds)
+            noise_term = fitting.noise_terms_from_noise_maps(g_data.noise_map)
+            likelihood = fitting.likelihoods_from_chi_squareds_and_noise_terms(chi_squared_term, noise_term)
 
             assert likelihood == pytest.approx(fit.likelihood, 1e-4)
 
@@ -187,27 +199,29 @@ class TestGalaxyFit:
                                            [True, True, True, True, True]]), pixel_scale=1.0)
             noise_map = 2.0*np.ones((5,5))
 
-            g_data = galaxy_data.GalaxyDataSurfaceDensity(array=im, mask=mask, noise_map=noise_map, sub_grid_size=2)
             galaxy = g.Galaxy(mass=mp.SphericalIsothermal(centre=(1.0, 2.0), einstein_radius=1.0))
+            g_data = galaxy_data.GalaxyDataSurfaceDensity(array=im, mask=mask, noise_map=noise_map, sub_grid_size=2)
             fit = galaxy_fitting.fit_galaxy_data_with_galaxy(galaxy_data=g_data, galaxy=galaxy)
+
+            assert fit.model_galaxy == galaxy
 
             model_data = galaxy.surface_density_from_grid(grid=g_data.grids.sub)
             model_data = g_data.grids.sub.sub_data_to_image(sub_array=model_data)
-            residuals = fitting.residuals_from_data_and_model(g_data[:], model_data)
-            chi_squareds = fitting.chi_squareds_from_residuals_and_noise(residuals, g_data.noise_map)
+            residuals = fitting.residuals_from_datas_and_model_datas(g_data[:], model_data)
+            chi_squareds = fitting.chi_squareds_from_residuals_and_noise_maps(residuals, g_data.noise_map)
 
             assert g_data.grids.image.scaled_array_from_array_1d(g_data.noise_map) == \
-                   pytest.approx(fit.noise_map, 1e-4)
+                   pytest.approx(fit.noise_maps, 1e-4)
             assert g_data.grids.image.scaled_array_from_array_1d(model_data) == \
-                   pytest.approx(fit.model_data, 1e-4)
+                   pytest.approx(fit.model_datas, 1e-4)
             assert g_data.grids.image.scaled_array_from_array_1d(residuals) == \
                    pytest.approx(fit.residuals, 1e-4)
             assert g_data.grids.image.scaled_array_from_array_1d(chi_squareds) == \
                    pytest.approx(fit.chi_squareds, 1e-4)
             
-            chi_squared_term = fitting.chi_squared_term_from_chi_squareds(chi_squareds)
-            noise_term = fitting.noise_term_from_noise_map(g_data.noise_map)
-            likelihood = fitting.likelihood_from_chi_squared_and_noise_terms(chi_squared_term, noise_term)
+            chi_squared_term = fitting.chi_squared_terms_from_chi_squareds(chi_squareds)
+            noise_term = fitting.noise_terms_from_noise_maps(g_data.noise_map)
+            likelihood = fitting.likelihoods_from_chi_squareds_and_noise_terms(chi_squared_term, noise_term)
 
             assert likelihood == pytest.approx(fit.likelihood, 1e-4)
 
@@ -229,27 +243,29 @@ class TestGalaxyFit:
                                             [True, True, True, True, True]]), pixel_scale=1.0)
             noise_map = 2.0 * np.ones((5, 5))
 
-            g_data = galaxy_data.GalaxyDataPotential(array=im, mask=mask, noise_map=noise_map, sub_grid_size=2)
             galaxy = g.Galaxy(mass=mp.SphericalIsothermal(centre=(1.0, 2.0), einstein_radius=1.0))
+            g_data = galaxy_data.GalaxyDataPotential(array=im, mask=mask, noise_map=noise_map, sub_grid_size=2)
             fit = galaxy_fitting.fit_galaxy_data_with_galaxy(galaxy_data=g_data, galaxy=galaxy)
+
+            assert fit.model_galaxy == galaxy
 
             model_data = galaxy.potential_from_grid(grid=g_data.grids.sub)
             model_data = g_data.grids.sub.sub_data_to_image(sub_array=model_data)
-            residuals = fitting.residuals_from_data_and_model(g_data[:], model_data)
-            chi_squareds = fitting.chi_squareds_from_residuals_and_noise(residuals, g_data.noise_map)
+            residuals = fitting.residuals_from_datas_and_model_datas(g_data[:], model_data)
+            chi_squareds = fitting.chi_squareds_from_residuals_and_noise_maps(residuals, g_data.noise_map)
 
             assert g_data.grids.image.scaled_array_from_array_1d(g_data.noise_map) == \
-                   pytest.approx(fit.noise_map, 1e-4)
+                   pytest.approx(fit.noise_maps, 1e-4)
             assert g_data.grids.image.scaled_array_from_array_1d(model_data) == \
-                   pytest.approx(fit.model_data, 1e-4)
+                   pytest.approx(fit.model_datas, 1e-4)
             assert g_data.grids.image.scaled_array_from_array_1d(residuals) == \
                    pytest.approx(fit.residuals, 1e-4)
             assert g_data.grids.image.scaled_array_from_array_1d(chi_squareds) == \
                    pytest.approx(fit.chi_squareds, 1e-4)
 
-            chi_squared_term = fitting.chi_squared_term_from_chi_squareds(chi_squareds)
-            noise_term = fitting.noise_term_from_noise_map(g_data.noise_map)
-            likelihood = fitting.likelihood_from_chi_squared_and_noise_terms(chi_squared_term, noise_term)
+            chi_squared_term = fitting.chi_squared_terms_from_chi_squareds(chi_squareds)
+            noise_term = fitting.noise_terms_from_noise_maps(g_data.noise_map)
+            likelihood = fitting.likelihoods_from_chi_squareds_and_noise_terms(chi_squared_term, noise_term)
 
             assert likelihood == pytest.approx(fit.likelihood, 1e-4)
 
@@ -278,55 +294,59 @@ class TestGalaxyFit:
                                             [True, True, True, True, True]]), pixel_scale=1.0)
             noise_map = 2.0 * np.ones((5, 5))
 
-            g_data_y = galaxy_data.GalaxyDataDeflectionsY(array=im_y, mask=mask, noise_map=noise_map, sub_grid_size=2)
             galaxy = g.Galaxy(mass=mp.SphericalIsothermal(centre=(1.0, 2.0), einstein_radius=1.0))
-            fit_y = galaxy_fitting.GalaxyFitDeflectionsY(galaxy_data=g_data_y, galaxy=galaxy)
+            g_data_y = galaxy_data.GalaxyDataDeflectionsY(array=im_y, mask=mask, noise_map=noise_map, sub_grid_size=2)
+            fit_y = galaxy_fitting.GalaxyFitDeflectionsY(galaxy_data=g_data_y, model_galaxy=galaxy)
+
+            assert fit_y.model_galaxy == galaxy
 
             model_data = galaxy.deflections_from_grid(grid=g_data_y.grids.sub)
             model_data_y = g_data_y.grids.sub.sub_data_to_image(sub_array=model_data[:,0])
-            residuals = fitting.residuals_from_data_and_model(g_data_y[:], model_data_y)
-            chi_squareds = fitting.chi_squareds_from_residuals_and_noise(residuals, g_data_y.noise_map)
+            residuals = fitting.residuals_from_datas_and_model_datas(g_data_y[:], model_data_y)
+            chi_squareds = fitting.chi_squareds_from_residuals_and_noise_maps(residuals, g_data_y.noise_map)
 
             assert g_data_y.grids.image.scaled_array_from_array_1d(g_data_y.noise_map) == \
-                   pytest.approx(fit_y.noise_map, 1e-4)
+                   pytest.approx(fit_y.noise_maps, 1e-4)
             assert g_data_y.grids.image.scaled_array_from_array_1d(model_data_y) == \
-                   pytest.approx(fit_y.model_data, 1e-4)
+                   pytest.approx(fit_y.model_datas, 1e-4)
             assert g_data_y.grids.image.scaled_array_from_array_1d(residuals) == \
                    pytest.approx(fit_y.residuals, 1e-4)
             assert g_data_y.grids.image.scaled_array_from_array_1d(chi_squareds) == \
                    pytest.approx(fit_y.chi_squareds, 1e-4)
 
-            chi_squared_term = fitting.chi_squared_term_from_chi_squareds(chi_squareds)
-            noise_term = fitting.noise_term_from_noise_map(g_data_y.noise_map)
-            likelihood_y = fitting.likelihood_from_chi_squared_and_noise_terms(chi_squared_term, noise_term)
+            chi_squared_term = fitting.chi_squared_terms_from_chi_squareds(chi_squareds)
+            noise_term = fitting.noise_terms_from_noise_maps(g_data_y.noise_map)
+            likelihood_y = fitting.likelihoods_from_chi_squareds_and_noise_terms(chi_squared_term, noise_term)
 
             assert likelihood_y == pytest.approx(fit_y.likelihood, 1e-4)
 
-            g_data_x = galaxy_data.GalaxyDataDeflectionsX(array=im_x, mask=mask, noise_map=noise_map, sub_grid_size=2)
             galaxy = g.Galaxy(mass=mp.SphericalIsothermal(centre=(1.0, 2.0), einstein_radius=1.0))
-            fit_x = galaxy_fitting.GalaxyFitDeflectionsX(galaxy_data=g_data_x, galaxy=galaxy)
+            g_data_x = galaxy_data.GalaxyDataDeflectionsX(array=im_x, mask=mask, noise_map=noise_map, sub_grid_size=2)
+            fit_x = galaxy_fitting.GalaxyFitDeflectionsX(galaxy_data=g_data_x, model_galaxy=galaxy)
+
+            assert fit_x.model_galaxy == galaxy
 
             model_data = galaxy.deflections_from_grid(grid=g_data_x.grids.sub)
             model_data_x = g_data_x.grids.sub.sub_data_to_image(sub_array=model_data[:,1])
-            residuals = fitting.residuals_from_data_and_model(g_data_x[:], model_data_x)
-            chi_squareds = fitting.chi_squareds_from_residuals_and_noise(residuals, g_data_x.noise_map)
+            residuals = fitting.residuals_from_datas_and_model_datas(g_data_x[:], model_data_x)
+            chi_squareds = fitting.chi_squareds_from_residuals_and_noise_maps(residuals, g_data_x.noise_map)
 
             assert g_data_x.grids.image.scaled_array_from_array_1d(g_data_x.noise_map) == \
-                   pytest.approx(fit_x.noise_map, 1e-4)
+                   pytest.approx(fit_x.noise_maps, 1e-4)
             assert g_data_x.grids.image.scaled_array_from_array_1d(model_data_x) == \
-                   pytest.approx(fit_x.model_data, 1e-4)
+                   pytest.approx(fit_x.model_datas, 1e-4)
             assert g_data_x.grids.image.scaled_array_from_array_1d(residuals) == \
                    pytest.approx(fit_x.residuals, 1e-4)
             assert g_data_x.grids.image.scaled_array_from_array_1d(chi_squareds) == \
                    pytest.approx(fit_x.chi_squareds, 1e-4)
 
-            chi_squared_term = fitting.chi_squared_term_from_chi_squareds(chi_squareds)
-            noise_term = fitting.noise_term_from_noise_map(g_data_x.noise_map)
-            likelihood_x = fitting.likelihood_from_chi_squared_and_noise_terms(chi_squared_term, noise_term)
+            chi_squared_term = fitting.chi_squared_terms_from_chi_squareds(chi_squareds)
+            noise_term = fitting.noise_terms_from_noise_maps(g_data_x.noise_map)
+            likelihood_x = fitting.likelihoods_from_chi_squareds_and_noise_terms(chi_squared_term, noise_term)
 
             assert likelihood_x == pytest.approx(fit_x.likelihood, 1e-4)
 
             fast_likelihood = galaxy_fitting.GalaxyFitDeflectionsY.fast_likelihood(galaxy_data_y=g_data_y,
-                                                                                   galaxy_data_x=g_data_x, galaxy=galaxy)
+                                                                                   galaxy_data_x=g_data_x, model_galaxy=galaxy)
 
             assert fast_likelihood == pytest.approx(likelihood_y + likelihood_x)

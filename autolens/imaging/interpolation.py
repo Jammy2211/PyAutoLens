@@ -172,14 +172,14 @@ class InterpolationScheme(object):
 
     @classmethod
     def from_mask(cls, mask, shape):
-        """Determine the interpolation scheme from an masked_image-mask. This uses the x / y_pixel bounds of the mask to setup the \
-        grid 'over' the mask, padded by the pixel-scale to ensure edge pixels have their deflection angles interpolated \
+        """Determine the interpolation scheme from an masked_image-masks. This uses the x / y_pixel bounds of the masks to setup the \
+        grid 'over' the masks, padded by the pixel-scale to ensure edge pixels have their deflection angles interpolated \
         correctly.
 
         Parameters
         -----------
         mask: msk.Mask
-            The mask the interpolation scheme is generated based on.
+            The masks the interpolation scheme is generated based on.
         shape : (int, int)
             The shape of the interpolation schemes interpolation-grid.
         """
