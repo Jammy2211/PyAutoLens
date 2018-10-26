@@ -121,7 +121,7 @@ class Rectangular(Pixelization):
 
         return grid_to_pix
 
-    # TODO : RectangularRegWeight doesnt need sparse mask, but equivalent functions elsewhere do. Change to *kwrgs?
+    # TODO : RectangularRegWeight doesnt need sparse masks, but equivalent functions elsewhere do. Change to *kwrgs?
 
 
 sub_grid_size = 4

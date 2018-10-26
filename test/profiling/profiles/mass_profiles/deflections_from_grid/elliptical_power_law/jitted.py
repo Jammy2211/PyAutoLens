@@ -46,7 +46,7 @@ class EllipticalPowerLaw(mass_profiles.EllipticalMassProfile, mass_profiles.Mass
 
         Parameters
         ----------
-        grid : mask.ImageGrid
+        grid : masks.ImageGrid
             The grid of coordinates the deflection angles are computed on.
         """
 
@@ -75,7 +75,7 @@ class EllipticalPowerLaw(mass_profiles.EllipticalMassProfile, mass_profiles.Mass
 
         Parameters
         ----------
-        grid : mask.ImageGrid
+        grid : masks.ImageGrid
             The grid of coordinates the deflection angles are computed on.
         """
 

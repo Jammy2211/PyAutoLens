@@ -12,6 +12,7 @@ from test.integration import tools
 
 dirpath = os.path.dirname(os.path.realpath(__file__))
 dirpath = os.path.dirname(dirpath)
+data_path = '{}/../datas/galaxy_fit'.format(dirpath)
 output_path = '{}/../output/galaxy_fit'.format(dirpath)
 
 def simulate_surface_density(data_name, pixel_scale, galaxy):
@@ -27,7 +28,7 @@ def simulate_surface_density(data_name, pixel_scale, galaxy):
     if os.path.exists(output_path) == False:
         os.makedirs(output_path)
 
-    imaging_util.numpy_array_to_fits(surface_density, path=output_path + data_name + '.fits')
+    imaging_util.numpy_array_to_fits(surface_density, path=data_path + data_name +'.fits', overwrite=True)
 
 def setup_and_run_phase():
 
@@ -42,16 +43,11 @@ def setup_and_run_phase():
 
     simulate_surface_density(data_name=data_name, pixel_scale=pixel_scale, galaxy=galaxy)
 
-    try:
-        simulate_surface_density(data_name=data_name, pixel_scale=0.2, galaxy=galaxy)
-    except OSError:
-        pass
-
     array_surface_density = \
-        scaled_array.ScaledSquarePixelArray.from_fits_with_pixel_scale(file_path=output_path + data_name + '.fits',
+        scaled_array.ScaledSquarePixelArray.from_fits_with_pixel_scale(file_path=data_path + data_name + '.fits',
                                                                        hdu=0, pixel_scale=pixel_scale)
 
-    phase = ph.GalaxyFitPhase(dict(galaxy=gm.GalaxyModel(light=mp.EllipticalIsothermal)),
+    phase = ph.GalaxyFitSurfaceDensityPhase(dict(galaxy=gm.GalaxyModel(light=mp.EllipticalIsothermal)),
                               phase_name='surface_density')
 
     result = phase.run(array=array_surface_density, noise_map=np.ones(array_surface_density.shape))

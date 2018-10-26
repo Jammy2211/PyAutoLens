@@ -19,7 +19,7 @@ def test_general_config():
 
 @pytest.fixture(name='galaxy_plotter_path')
 def test_galaxy_plotter_setup():
-    galaxy_plotter_path = "{}/../test_files/plotting/galaxy/".format(os.path.dirname(os.path.realpath(__file__)))
+    galaxy_plotter_path = "{}/../test_files/plotting/model_galaxy/".format(os.path.dirname(os.path.realpath(__file__)))
 
     if os.path.exists(galaxy_plotter_path):
         shutil.rmtree(galaxy_plotter_path)

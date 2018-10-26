@@ -13,10 +13,10 @@ from autolens.profiles import mass_profiles as mp
 
 import os
 
-# So far, we've not paid much attention to the source galaxy's morphology. We've assumed its a single-component
-# exponential profile, which is a fairly crude assumption. A quick look at any image of a real galaxy reveals a wealth
+# So far, we've not paid much attention to the source model_galaxy's morphology. We've assumed its a single-component
+# exponential profile, which is a fairly crude assumption. A quick look at any images of a real model_galaxy reveals a wealth
 # of different structures that could be present - bulges, disks, bars, star-forming knots and so on.
-# Furthermore, there could be more than one source-galaxy!
+# Furthermore, there could be more than one source-model_galaxy!
 
 # In this example, we'll explore how far we can get trying to incorrect_fit a complex source using a pipeline. Fitting complex
 # source's is an exercise in diminishing returns. Each component we add to our source model brings with it an extra 5-7,
@@ -55,18 +55,18 @@ def simulate():
                                                                   source_galaxy_2, source_galaxy_3],
                                                  image_plane_grids=image_plane_grids)
 
-    return im.PreparatoryImage.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=0.05,
-                                       exposure_time=300.0, psf=psf, background_sky_level=0.1, add_noise=True)
+    return im.PreparatoryImage.simulate(array=tracer.image_plane_images_for_simulation, pixel_scale=0.05,
+                                        exposure_time=300.0, psf=psf, background_sky_level=0.1, add_noise=True)
 
-# Lets simulate the image we'll incorrect_fit, which is another new image.
+# Lets simulate the images we'll incorrect_fit, which is another new images.
 image = simulate()
 
 imaging_plotters.plot_image_subplot(image=image)
 
 
 # Yep, that's pretty complex. There are clearly more than 4 peaks of light - I wouldn't like to guess whether there is
-# one or two sources (or more). You'll also notice I omitted the lens galaxy's light for this system, this is to
-# keep the number of parameters down and the phases running fast, but we wouldn't get such a luxury in a real galaxy.
+# one or two sources (or more). You'll also notice I omitted the lens model_galaxy's light for this system, this is to
+# keep the number of parameters down and the phases running fast, but we wouldn't get such a luxury in a real model_galaxy.
 
 def make_pipeline():
     pipeline_name = '3_complex_source'
@@ -76,7 +76,7 @@ def make_pipeline():
     # einstein radius and the other lens-mass parameters.
 
     # This should run fine without any prior-passes. In general, a thick, giant ring of source light is something we
-    # can be confident MultiNest will incorrect_fit without much issue, especially when the lens galaxy's light isn't included
+    # can be confident MultiNest will incorrect_fit without much issue, especially when the lens model_galaxy's light isn't included
     # such that the parameter space is just 12 parameters.
 
     phase1 = ph.LensSourcePlanePhase(lens_galaxies=dict(lens=gm.GalaxyModel(mass=mp.EllipticalIsothermal)),
@@ -84,7 +84,7 @@ def make_pipeline():
                                      optimizer_class=nl.MultiNest, phase_name=pipeline_name + '/phase_1_simple_source')
 
     # Now lets add another source component, using the previous model as the initialization on the lens / source
-    # parameters. We'll vary the parameters of the lens mass model and first source galaxy component during the incorrect_fit.
+    # parameters. We'll vary the parameters of the lens mass model and first source model_galaxy component during the incorrect_fit.
 
     class X2SourcePhase(ph.LensSourcePlanePhase):
 
@@ -101,7 +101,7 @@ def make_pipeline():
                                                                        light_1=lp.EllipticalSersic)),
                            optimizer_class=nl.MultiNest, phase_name=pipeline_name + '/phase_2_x2_source')
 
-    # Now lets do the same again, but with 3 source galaxy components.
+    # Now lets do the same again, but with 3 source model_galaxy components.
 
     class X3SourcePhase(ph.LensSourcePlanePhase):
 

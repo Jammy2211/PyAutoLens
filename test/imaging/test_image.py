@@ -177,16 +177,16 @@ class TestPrepatoryImage:
                                                       [0.0, 1.05, 0.0],
                                                       [0.0, 0.0, 0.0]]), 1e-2)
 
-            # Because of the image value is 1.05, the estimated Poisson noise_map is:
+            # Because of the images value is 1.05, the estimated Poisson noise_map is:
             # sqrt((1.05 * 20))/20 = 0.2291
 
             assert sim_img.poisson_noise_map == pytest.approx(np.array([[0.0, 0.0, 0.0],
                                                                         [0.0, 0.2291, 0.0],
                                                                         [0.0, 0.0, 0.0]]), 1e-2)
 
-            assert sim_img.noise_map == pytest.approx(np.array([[0.0, 0.0, 0.0],
-                                                                [0.0, 0.2291, 0.0],
-                                                                [0.0, 0.0, 0.0]]), 1e-2)
+            assert sim_img.noise_maps == pytest.approx(np.array([[0.0, 0.0, 0.0],
+                                                                 [0.0, 0.2291, 0.0],
+                                                                 [0.0, 0.0, 0.0]]), 1e-2)
 
         def test__setup_with__psf_blurring_and_poisson_noise_on__poisson_noise_added_to_blurred_image(self):
             img = np.array([[0.0, 0.0, 0.0, 0.0, 0.0],
@@ -769,10 +769,10 @@ class TestImage(object):
             assert im.pixel_scale == 1.0
             assert (im.psf == np.zeros((3,3))).all()
 
-            assert (im.noise_map == np.array([[1.0, 1.0, 1.0, 1.0],
-                                              [1.0, 1.0, 1.0, 1.0],
-                                              [1.0, 1.0, 2.0, 1.0],
-                                              [1.0, 1.0, 1.0, 1.0]])).all()
+            assert (im.noise_maps == np.array([[1.0, 1.0, 1.0, 1.0],
+                                               [1.0, 1.0, 1.0, 1.0],
+                                               [1.0, 1.0, 2.0, 1.0],
+                                               [1.0, 1.0, 1.0, 1.0]])).all()
 
             assert im.background_noise_map == None
 
@@ -799,10 +799,10 @@ class TestImage(object):
             assert im.pixel_scale == 1.0
             assert (im.psf == np.zeros((3,3))).all()
 
-            assert (im.noise_map == np.array([[1.0, 1.0, 1.0, 1.0],
-                                              [1.0, 1.0, 1.0, 1.0],
-                                              [1.0, 1.0, 2.0, 1.0],
-                                              [1.0, 1.0, 1.0, 1.0]])).all()
+            assert (im.noise_maps == np.array([[1.0, 1.0, 1.0, 1.0],
+                                               [1.0, 1.0, 1.0, 1.0],
+                                               [1.0, 1.0, 2.0, 1.0],
+                                               [1.0, 1.0, 1.0, 1.0]])).all()
 
             assert (im.background_noise_map == np.array([[1.0, 1.0, 1.0, 1.0],
                                                          [1.0, 2.0, 1.0, 1.0],
@@ -829,10 +829,10 @@ class TestImage(object):
             assert im.pixel_scale == 1.0
             assert (im.psf == np.zeros((3,3))).all()
 
-            assert (im.noise_map == np.array([[1.0, 1.0, 1.0, 1.0],
-                                              [1.0, 1.0, 1.0, 1.0],
-                                              [1.0, 1.0, 2.0, 1.0],
-                                              [1.0, 1.0, 1.0, 1.0]])).all()
+            assert (im.noise_maps == np.array([[1.0, 1.0, 1.0, 1.0],
+                                               [1.0, 1.0, 1.0, 1.0],
+                                               [1.0, 1.0, 2.0, 1.0],
+                                               [1.0, 1.0, 1.0, 1.0]])).all()
 
             assert im.background_noise_map == None
 
@@ -859,10 +859,10 @@ class TestImage(object):
             assert im.pixel_scale == 1.0
             assert (im.psf == np.zeros((3,3))).all()
 
-            assert (im.noise_map == np.array([[1.0, 1.0, 1.0, 1.0],
-                                              [1.0, 1.0, 1.0, 1.0],
-                                              [1.0, 1.0, 2.0, 1.0],
-                                              [1.0, 1.0, 1.0, 1.0]])).all()
+            assert (im.noise_maps == np.array([[1.0, 1.0, 1.0, 1.0],
+                                               [1.0, 1.0, 1.0, 1.0],
+                                               [1.0, 1.0, 2.0, 1.0],
+                                               [1.0, 1.0, 1.0, 1.0]])).all()
 
             assert (im.background_noise_map == np.array([[1.0, 1.0, 1.0, 1.0],
                                                          [1.0, 2.0, 1.0, 1.0],
@@ -1116,7 +1116,7 @@ class TestLoadImagingFromFits(object):
                                           psf_path=test_data_dir + '3x3_ones.fits', pixel_scale=0.1)
 
         assert (im == np.ones((3,3))).all()
-        assert (im.noise_map == np.ones((3,3))).all()
+        assert (im.noise_maps == np.ones((3, 3))).all()
         assert (im.psf == np.ones((3,3))).all()
         assert (im.pixel_scale == 0.1)
 
@@ -1134,7 +1134,7 @@ class TestLoadImagingFromFits(object):
                                  [0.0, 0.0, 0.0, 0.0, 0.0]])
 
         assert (im == padded_array).all()
-        assert (im.noise_map == padded_array).all()
+        assert (im.noise_maps == padded_array).all()
 
         psf_padded_array = np.array([[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
                                      [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
@@ -1157,7 +1157,7 @@ class TestLoadImagingFromFits(object):
         padded_array = np.array([[1.0]])
 
         assert (im == padded_array).all()
-        assert (im.noise_map == padded_array).all()
+        assert (im.noise_maps == padded_array).all()
 
         psf_padded_array = np.array([[1.0]])
 
