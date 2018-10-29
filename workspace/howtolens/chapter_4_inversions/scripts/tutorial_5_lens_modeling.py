@@ -13,12 +13,12 @@ from autolens.plotting import lensing_fitting_plotters
 
 # I think you'll agree, inversions are a very powerful tool for modeling strong lenses. Now that our source galaxies
 # comprise just a few parameters, we've got a much less complex non-linear parameter space to deal with. This allows us
-# to fit more complex mass models, and thus ask ever more interesting scientific questions!
+# to fit_normal more complex mass models, and thus ask ever more interesting scientific questions!
 
 # However, inversions arn't perfect, especially when we use to them model lenses. These arn't huge issues, and they're
 # easy to deal with, but its worth me explaining them now, so they don't trip you up when you start using inversions!
 
-# So, what happens if we fit an image using an inversion and the wrong lens model? lets simulate an image and find out.
+# So, what happens if we fit_normal an image using an inversion and the wrong lens model? lets simulate an image and find out.
 
 # The usual simulate function.
 def simulate():
@@ -63,12 +63,12 @@ lensing_fitting_plotters.plot_fitting_subplot(fit=fit)
 # What happened!? This incorrect mass-model provides a really good_fit to the image! The residuals and chi-squared map
 # are as good as the ones we saw in the last tutorial.
 #
-# How can an incorrect lens model provide such a fit? Well, as I'm sure you noticed, the source has been reconstructed
+# How can an incorrect lens model provide such a fit_normal? Well, as I'm sure you noticed, the source has been reconstructed
 # as a demagnified version of the image. Clearly, this isn't a physical solution or a solution that we want our
 # non-linear search to find, but for inversions these solutions nevertheless exist.
 
 # This isn't necessarily problematic for lens modeling. Afterall, the source reconstruction above is extremely complex,
-# in that it requires a lot of pixels to fit the image accurately. Indeed, its Bayesian evidence is much lower than the
+# in that it requires a lot of pixels to fit_normal the image accurately. Indeed, its Bayesian evidence is much lower than the
 # correct solution.
 lens_galaxy = g.Galaxy(mass=mp.EllipticalIsothermal(centre=(0.0, 0.0), axis_ratio=0.8, phi=135.0,
                                                     einstein_radius=1.6))
@@ -98,7 +98,7 @@ print(correct_fit.evidences)
 
 
 # Okay, so we've covered incorrect solutions, lets end by noting that we can model profiles and inversions at the same
-# time. We do this when we want to simultaneously fit and subtract the light of a lens model_galaxy and reconstruct its lensed
+# time. We do this when we want to simultaneously fit_normal and subtract the light of a lens model_galaxy and reconstruct its lensed
 # source using an inversion. To do this, all we have to do is give the lens model_galaxy a light profile.
 
 def simulate_lens_with_light_profile():
@@ -129,25 +129,25 @@ def simulate_lens_with_light_profile():
 image = simulate_lens_with_light_profile()
 mask = ma.Mask.circular(shape=image.shape, pixel_scale=image.pixel_scale, radius_mask_arcsec=2.5)
 
-# As I said above, performing this fit is the same as usual, we just give the lens model_galaxy a light profile:
+# As I said above, performing this fit_normal is the same as usual, we just give the lens model_galaxy a light profile:
 lens_galaxy = g.Galaxy(light=lp.SphericalSersic(centre=(0.0, 0.0), intensity=0.2, effective_radius=0.8,
                                                     sersic_index=4.0),
                        mass=mp.EllipticalIsothermal(centre=(0.0, 0.0), axis_ratio=0.8, phi=135.0,
                                                     einstein_radius=1.6))
 
-# These are just all the other things we do when setting up a fit.
+# These are just all the other things we do when setting up a fit_normal.
 source_galaxy = g.Galaxy(pixelization=pix.Rectangular(shape=(40, 40)), regularization=reg.Constant(coefficients=(1.0,)))
 
 lensing_image = li.LensingImage(image=image, mask=mask)
 tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
                                              image_plane_grids=[lensing_image.grids], borders=[lensing_image.borders])
 
-# This fit subtracts the lens model_galaxy's light from the image and fits the resulting source-only image with the inversion.
+# This fit_normal subtracts the lens model_galaxy's light from the image and fits the resulting source-only image with the inversion.
 # When we plot the image, a new panel on the sub-plot appears showing the model image of the lens model_galaxy.
 fit = lensing_fitting.fit_lensing_image_with_tracer(lensing_image=lensing_image, tracer=tracer)
 lensing_fitting_plotters.plot_fitting_subplot(fit=fit)
 
-# Of course if the lens subtraction is rubbish, so is our fit, so we can be sure that our lens model wants to fit the
+# Of course if the lens subtraction is rubbish, so is our fit_normal, so we can be sure that our lens model wants to fit_normal the
 # lens model_galaxy's light accurately!
 lens_galaxy = g.Galaxy(light=lp.SphericalSersic(centre=(0.0, 0.0), intensity=0.3, effective_radius=0.8,
                                                     sersic_index=4.0),

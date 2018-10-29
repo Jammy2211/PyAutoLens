@@ -13,7 +13,7 @@ def inversion_from_lensing_image_mapper_and_regularization(image, noise_map, con
 class Inversion(object):
 
     def __init__(self, image, noise_map, convolver, mapper, regularization):
-        """The matrices, mappings which have been used to linearly invert and fit a datas-set.
+        """The matrices, mappings which have been used to linearly invert and fit_normal a datas-set.
 
         Parameters
         -----------
@@ -40,7 +40,7 @@ class Inversion(object):
         curvature_reg_matrix : ndarray | None
             The curvature_matrix + regularizationo matrix.
         reconstructed_image : ndarray | None
-            The vector containing the reconstructed fit of the datas.
+            The vector containing the reconstructed fit_normal of the datas.
         """
 
         self.mapper = mapper
