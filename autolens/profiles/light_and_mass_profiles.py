@@ -22,7 +22,7 @@ class SphericalSersic(EllipticalSersic):
     def __init__(self, centre=(0.0, 0.0), intensity=0.1, effective_radius=0.6, sersic_index=4.0,
                  mass_to_light_ratio=1.0):
         """
-        The SphericalSersic mass profile, the mass profiles of the light profiles that are used to fit and
+        The SphericalSersic mass profile, the mass profiles of the light profiles that are used to fit_normal and
         subtract the lens model_galaxy's light.
 
         Parameters
@@ -45,7 +45,7 @@ class EllipticalExponential(EllipticalSersic):
     def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=0.1, effective_radius=0.6,
                  mass_to_light_ratio=1.0):
         """
-        The EllipticalExponential mass profile, the mass profiles of the light profiles that are used to fit and
+        The EllipticalExponential mass profile, the mass profiles of the light profiles that are used to fit_normal and
         subtract the lens model_galaxy's light.
 
         Parameters
@@ -71,7 +71,7 @@ class SphericalExponential(EllipticalExponential):
 
     def __init__(self, centre=(0.0, 0.0), intensity=0.1, effective_radius=0.6, mass_to_light_ratio=1.0):
         """
-        The SphericalExponential mass profile, the mass profiles of the light profiles that are used to fit and
+        The SphericalExponential mass profile, the mass profiles of the light profiles that are used to fit_normal and
         subtract the lens model_galaxy's light.
 
         Parameters
@@ -93,7 +93,7 @@ class EllipticalDevVaucouleurs(EllipticalSersic):
     def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=0.1, effective_radius=0.6,
                  mass_to_light_ratio=1.0):
         """
-        The EllipticalDevVaucouleurs mass profile, the mass profiles of the light profiles that are used to fit and
+        The EllipticalDevVaucouleurs mass profile, the mass profiles of the light profiles that are used to fit_normal and
         subtract the lens model_galaxy's light.
 
         Parameters
@@ -120,7 +120,7 @@ class SphericalDevVaucouleurs(EllipticalDevVaucouleurs):
 
     def __init__(self, centre=(0.0, 0.0), intensity=0.1, effective_radius=0.6, mass_to_light_ratio=1.0):
         """
-        The SphericalDevVaucouleurs mass profile, the mass profiles of the light profiles that are used to fit and
+        The SphericalDevVaucouleurs mass profile, the mass profiles of the light profiles that are used to fit_normal and
         subtract the lens model_galaxy's light.
 
         Parameters

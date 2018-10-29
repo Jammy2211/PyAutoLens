@@ -12,13 +12,13 @@ from autolens.plotting import imaging_plotters
 import os
 
 # In chapter 2, we fitted a strong lens which included the contribution of light from the lens model_galaxy. We're going to
-# fit this lens again (I promise, this is the last time!). However, now we're approaching lens modeling with runners,
+# fit_normal this lens again (I promise, this is the last time!). However, now we're approaching lens modeling with runners,
 # we can perform a completely different (and significantly faster) analysis.
 
 # Load up the PDFs from the previous tutorial -
 # 'output/howtolens/2_lens_modeling/5_linking_phase_2/image/pdf_triangle.png'.
 
-# This is a big triangle. As we fit models using more and more parameters, its only going to get bigger!
+# This is a big triangle. As we fit_normal models using more and more parameters, its only going to get bigger!
 
 # As usual, you should notice some clear degeneracies between:
 
@@ -69,7 +69,7 @@ def simulate():
     return im.PreparatoryImage.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=0.1,
                                         exposure_time=300.0, psf=psf, background_sky_level=0.1, add_noise=True)
 
-# Now lets simulate hte image we'll fit, which as I said above, is the same image we saw in the previous chapter.
+# Now lets simulate hte image we'll fit_normal, which as I said above, is the same image we saw in the previous chapter.
 image = simulate()
 
 # A pipeline is a one long python function (this is why Jupyter notebooks arn't ideal). When we run it, this function
@@ -83,7 +83,7 @@ def make_pipeline():
     # image perfectly and aggresive masking (removing lots of image-pixels) is a good way to get things running fast.
 
     # In this phase, we're only interested in fitting the lens's light, so we'll masks out the source-model_galaxy entirely.
-    # This'll give us a nice speed up and ensure the source's light doesn't impact our light-profile fit (albeit,
+    # This'll give us a nice speed up and ensure the source's light doesn't impact our light-profile fit_normal (albeit,
     # given the lack of covariance above, it wouldn't be disastrous either way).
 
     # We want a masks that is shaped like the source-model_galaxy. The shape of the source is an 'annulus' (e.g. a ring),
@@ -110,9 +110,9 @@ def make_pipeline():
     # At this point, you might want to look at the 'output/3_pipelines/1_lens_and_source/phase_1_lens_light_only'
     # output folder. There'll you'll find the model results and image, so you can be sure this phase runs as expected!
 
-    # In phase 2, we fit the source model_galaxy's light. Thus, we want to make 2 changes from the previous phase
+    # In phase 2, we fit_normal the source model_galaxy's light. Thus, we want to make 2 changes from the previous phase
 
-    # 1) We want to fit the lens subtracted image calculated in phase 1, instead of the observed image.
+    # 1) We want to fit_normal the lens subtracted image calculated in phase 1, instead of the observed image.
     # 2) We want to masks the central regions of this image, where there are residuals due to the lens light subtraction.
 
     # We can use the masks function again, to modify the masks to an annulus. We'll use the same ring radii as before,
@@ -128,7 +128,7 @@ def make_pipeline():
 
     # To setup the modified image, we take the observed image datas ('image') and subtract-off the model image from the
     # previous phase, which, if you're keeping track, is an image of the lens model_galaxy. However, if we just used the
-    # 'model_image' in the fit, this would only include pixels that were masked. We want to subtract the lens off the
+    # 'model_image' in the fit_normal, this would only include pixels that were masked. We want to subtract the lens off the
     # entire image - fortunately, PyAutoLens automatically generates a 'unmasked_model_image' as well!
 
     class LensSubtractedPhase(phase.LensSourcePlanePhase):
@@ -147,9 +147,9 @@ def make_pipeline():
                                  optimizer_class=nl.MultiNest, mask_function=mask_function,
                                  phase_name=pipeline_name + '/phase_2_source_only')
 
-    # Finally, in phase 3, we want to fit the lens and source simultaneously. Whilst we made a point of them not being
+    # Finally, in phase 3, we want to fit_normal the lens and source simultaneously. Whilst we made a point of them not being
     # covariant above, there will be some level of covariance that will, at the very least, impact the errors we infer.
-    # Furthermore, if we did go on to fit a more complex model (say, a decomposed light and dark matter model - yeah,
+    # Furthermore, if we did go on to fit_normal a more complex model (say, a decomposed light and dark matter model - yeah,
     # you can do that in PyAutoLens!), setting up a phase in this way would be crucial.
 
     # We'll use the 'pass_priors' function that we are know and love now. However, we're going to use the
@@ -214,10 +214,10 @@ pipeline_lens_and_source.run(image=image)
 #    Whilst this is true, we've chosen values of masks radii above that are 'excessive' that masks out a lot more of the
 #    image than just the source (which, in terms of run-time, is desirable). Thus, provided you know the Einstein
 #    radius distribution of your lens sample, you can choose masks radii that will masks out every source in your sample
-#    adequately (and even if some of the source is still there, who cares? The fit to the lens model_galaxy will be okay).
+#    adequately (and even if some of the source is still there, who cares? The fit_normal to the lens model_galaxy will be okay).
 
 # 2) What if my source model_galaxy isn't a ring of light? Surely my Annulus masks won't match it?
 #
 #    Just use the annulus anyway! Yeah, you'll masks out lots of image pixels with no source light, but remember, at
-#    the beginning of the pipeline, *we don't care*. In phase 3, we'll use a large circular masks and do the fit
+#    the beginning of the pipeline, *we don't care*. In phase 3, we'll use a large circular masks and do the fit_normal
 #    properly.

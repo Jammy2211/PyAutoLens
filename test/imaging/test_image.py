@@ -20,12 +20,12 @@ class TestPrepatoryImage:
                               [7.0, 8.0, 9.0]])
 
             psf = image.PSF(array=3.0 * np.ones((3, 3)), pixel_scale=1.0)
-            noise = 5.0 * np.ones((3, 3))
+            noise_map = 5.0 * np.ones((3, 3))
 
-            im = image.PreparatoryImage(array=array, pixel_scale=0.1, noise_map=noise, psf=psf,
+            im = image.PreparatoryImage(array=array, pixel_scale=0.1, noise_map=noise_map, psf=psf,
                                         background_noise_map=7.0 * np.ones((3, 3)),
                                         poisson_noise_map=9.0 * np.ones((3, 3)),
-                                        exposure_time=100.0, effective_exposure_map=11.0 * np.ones((3, 3)))
+                                        effective_exposure_map=11.0 * np.ones((3, 3)))
 
             assert im == pytest.approx(np.array([[1.0, 2.0, 3.0],
                                                  [4.0, 5.0, 6.0],
@@ -35,7 +35,6 @@ class TestPrepatoryImage:
             assert (im.background_noise_map == 7.0 * np.ones((3, 3))).all()
             assert (im.poisson_noise_map == 9.0 * np.ones((3, 3))).all()
             assert (im.effective_exposure_map == 11.0 * np.ones((3, 3))).all()
-            assert (im.exposure_time == 100.0)
 
     class TestSimulateImage(object):
 
@@ -730,22 +729,27 @@ class TestImage(object):
     class TestConstructor:
 
         def test__setup_image__correct_attributes(self):
+
             array = np.array([[1.0, 2.0, 3.0],
                               [4.0, 5.0, 6.0],
                               [7.0, 8.0, 9.0]])
 
             psf = image.PSF(array=3.0 * np.ones((3, 3)), pixel_scale=1.0)
-            noise = 5.0 * np.ones((3, 3))
+            noise_map = 5.0 * np.ones((3, 3))
 
-            im = image.Image(array=array, pixel_scale=0.1, noise_map=noise, psf=psf)
+            im = image.PreparatoryImage(array=array, pixel_scale=0.1, noise_map=noise_map, psf=psf,
+                                        background_noise_map=7.0 * np.ones((3, 3)),
+                                        poisson_noise_map=9.0 * np.ones((3, 3)),
+                                        effective_exposure_map=11.0 * np.ones((3, 3)))
 
             assert im == pytest.approx(np.array([[1.0, 2.0, 3.0],
                                                  [4.0, 5.0, 6.0],
                                                  [7.0, 8.0, 9.0]]), 1e-2)
             assert (im.psf == 3.0 * np.ones((3, 3))).all()
             assert (im.noise_map == 5.0 * np.ones((3, 3))).all()
-            assert (im.background_noise_map == None)
-
+            assert (im.background_noise_map == 7.0 * np.ones((3, 3))).all()
+            assert (im.poisson_noise_map == 9.0 * np.ones((3, 3))).all()
+            assert (im.effective_exposure_map == 11.0 * np.ones((3, 3))).all()
 
     class TestTrimming:
 
