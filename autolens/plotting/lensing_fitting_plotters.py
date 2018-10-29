@@ -112,7 +112,7 @@ def plot_fitting_subplot_lens_plane_only(fit, should_plot_mask=True, positions=N
 
     kpc_per_arcsec = fit.tracer.image_plane.kpc_per_arcsec_proper
 
-    imaging_plotters.plot_image(image=fit.image, mask=mask, positions=positions, grid=None,
+    imaging_plotters.plot_image(image=fit.images[0], mask=mask, positions=positions, grid=None,
                                 as_subplot=True,
                                 units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
                                 cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
@@ -126,7 +126,7 @@ def plot_fitting_subplot_lens_plane_only(fit, should_plot_mask=True, positions=N
 
     plt.subplot(rows, columns, 2)
 
-    fitting_plotters.plot_model_image(fit=fit, mask=mask, as_subplot=True,
+    fitting_plotters.plot_model_image(fit=fit, image_index=0, mask=mask, as_subplot=True,
                      units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
                      cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
                      linscale=linscale,
@@ -136,7 +136,7 @@ def plot_fitting_subplot_lens_plane_only(fit, should_plot_mask=True, positions=N
 
     plt.subplot(rows, columns, 3)
 
-    fitting_plotters.plot_residuals(fit=fit, mask=mask, as_subplot=True,
+    fitting_plotters.plot_residuals(fit=fit, image_index=0, mask=mask, as_subplot=True,
                    units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
                    cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
                    linscale=linscale,
@@ -146,7 +146,7 @@ def plot_fitting_subplot_lens_plane_only(fit, should_plot_mask=True, positions=N
 
     plt.subplot(rows, columns, 4)
 
-    fitting_plotters.plot_chi_squareds(fit=fit, mask=mask, as_subplot=True,
+    fitting_plotters.plot_chi_squareds(fit=fit, image_index=0, mask=mask, as_subplot=True,
                       units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
                       cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
                       linscale=linscale,
@@ -197,7 +197,7 @@ def plot_fitting_subplot_hyper_lens_plane_only(fit, should_plot_mask=True, posit
 
     kpc_per_arcsec = fit.tracer.image_plane.kpc_per_arcsec_proper
 
-    imaging_plotters.plot_image(image=fit.image, mask=mask, positions=positions, grid=None,
+    imaging_plotters.plot_image(image=fit.images[0], mask=mask, positions=positions, grid=None,
                                 as_subplot=True,
                                 units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
                                 cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
@@ -211,7 +211,7 @@ def plot_fitting_subplot_hyper_lens_plane_only(fit, should_plot_mask=True, posit
 
     plt.subplot(rows, columns, 2)
 
-    fitting_plotters.plot_model_image(fit=fit, mask=mask, as_subplot=True,
+    fitting_plotters.plot_model_image(fit=fit, image_index=0, mask=mask, as_subplot=True,
                      units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
                      cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
                      cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
@@ -220,7 +220,7 @@ def plot_fitting_subplot_hyper_lens_plane_only(fit, should_plot_mask=True, posit
 
     plt.subplot(rows, columns, 3)
 
-    fitting_plotters.plot_residuals(fit=fit, mask=mask, as_subplot=True,
+    fitting_plotters.plot_residuals(fit=fit, image_index=0, mask=mask, as_subplot=True,
                    units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
                    cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
                    cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
@@ -229,7 +229,7 @@ def plot_fitting_subplot_hyper_lens_plane_only(fit, should_plot_mask=True, posit
 
     plt.subplot(rows, columns, 5)
 
-    fitting_plotters.plot_chi_squareds(fit=fit, mask=mask, as_subplot=True,
+    fitting_plotters.plot_chi_squareds(fit=fit, image_index=0, mask=mask, as_subplot=True,
                       units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
                       cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
                       linscale=linscale,
@@ -242,7 +242,7 @@ def plot_fitting_subplot_hyper_lens_plane_only(fit, should_plot_mask=True, posit
 
     plt.subplot(rows, columns, 4)
 
-    fitting_plotters.plot_contributions(fit=fit, mask=mask, as_subplot=True,
+    fitting_plotters.plot_contributions(fit=fit, image_index=0, mask=mask, as_subplot=True,
                        units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
                        cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
                        linscale=linscale,
@@ -252,7 +252,7 @@ def plot_fitting_subplot_hyper_lens_plane_only(fit, should_plot_mask=True, posit
 
     plt.subplot(rows, columns, 6)
 
-    fitting_plotters.plot_scaled_chi_squareds(fit=fit, mask=mask, as_subplot=True,
+    fitting_plotters.plot_scaled_chi_squareds(fit=fit, image_index=0, mask=mask, as_subplot=True,
                              units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
                              cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
                              linscale=linscale,
@@ -262,7 +262,7 @@ def plot_fitting_subplot_hyper_lens_plane_only(fit, should_plot_mask=True, posit
 
     plt.subplot(rows, columns, 8)
 
-    imaging_plotters.plot_noise_map(image=fit.image, mask=mask, as_subplot=True,
+    imaging_plotters.plot_noise_map(image=fit.images[0], mask=mask, as_subplot=True,
                                     units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
                                     cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
                                     linscale=linscale,
@@ -273,7 +273,7 @@ def plot_fitting_subplot_hyper_lens_plane_only(fit, should_plot_mask=True, posit
 
     plt.subplot(rows, columns, 9)
 
-    fitting_plotters.plot_scaled_noise_map(fit=fit, mask=mask, as_subplot=True,
+    fitting_plotters.plot_scaled_noise_map(fit=fit, image_index=0, mask=mask, as_subplot=True,
                           units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
                           cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
                           linscale=linscale,
@@ -324,7 +324,7 @@ def plot_fitting_subplot_lens_and_source_planes(fit, should_plot_mask=True, posi
 
     kpc_per_arcsec = fit.tracer.image_plane.kpc_per_arcsec_proper
 
-    imaging_plotters.plot_image(image=fit.image, mask=mask, positions=positions, grid=None, as_subplot=True,
+    imaging_plotters.plot_image(image=fit.images[0], mask=mask, positions=positions, grid=None, as_subplot=True,
                                 units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
                                 cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
                                 linscale=linscale,
@@ -336,9 +336,10 @@ def plot_fitting_subplot_lens_and_source_planes(fit, should_plot_mask=True, posi
                                 output_path=output_path, output_filename='', output_format=output_format)
 
     if fit.tracer.image_plane.has_light_profile:
+
         plt.subplot(rows, columns, 2)
 
-        fitting_plotters.plot_model_image_of_plane(fit=fit, plane_index=0, mask=mask, as_subplot=True,
+        fitting_plotters.plot_model_image_of_plane(fit=fit, image_index=0, plane_index=0, mask=mask, as_subplot=True,
                                   units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
                                   cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
                                   linscale=linscale,
@@ -349,7 +350,7 @@ def plot_fitting_subplot_lens_and_source_planes(fit, should_plot_mask=True, posi
 
     plt.subplot(rows, columns, 3)
 
-    fitting_plotters.plot_model_image_of_plane(fit=fit, plane_index=1, mask=mask, as_subplot=True,
+    fitting_plotters.plot_model_image_of_plane(fit=fit, image_index=0, plane_index=1, mask=mask, as_subplot=True,
                               units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
                               cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
                               linscale=linscale,
@@ -361,7 +362,7 @@ def plot_fitting_subplot_lens_and_source_planes(fit, should_plot_mask=True, posi
 
     if fit.total_inversions == 0:
 
-        plane_plotters.plot_plane_image(plane=fit.tracer.source_plane, as_subplot=True,
+        plane_plotters.plot_plane_image(plane=fit.tracer.source_plane, image_index=0, as_subplot=True,
                                         positions=None, plot_grid=False,
                                         units=units, figsize=figsize, aspect=aspect,
                                         cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
@@ -390,7 +391,7 @@ def plot_fitting_subplot_lens_and_source_planes(fit, should_plot_mask=True, posi
 
     plt.subplot(rows, columns, 5)
 
-    fitting_plotters.plot_residuals(fit=fit, mask=mask, as_subplot=True,
+    fitting_plotters.plot_residuals(fit=fit, image_index=0, mask=mask, as_subplot=True,
                    units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
                    cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
                    cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
@@ -399,7 +400,7 @@ def plot_fitting_subplot_lens_and_source_planes(fit, should_plot_mask=True, posi
 
     plt.subplot(rows, columns, 6)
 
-    fitting_plotters.plot_chi_squareds(fit=fit, mask=mask, as_subplot=True,
+    fitting_plotters.plot_chi_squareds(fit=fit, image_index=0, mask=mask, as_subplot=True,
                       units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
                       cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
                       linscale=linscale,
@@ -502,28 +503,29 @@ def plot_fitting_individuals_hyper_lens_plane_only(fit, units='kpc', output_path
     kpc_per_arcsec = fit.tracer.image_plane.kpc_per_arcsec_proper
 
     if plot_lensing_fitting_model_image:
-        fitting_plotters.plot_model_image(fit=fit, mask=mask, units=units, kpc_per_arcsec=kpc_per_arcsec,
+        fitting_plotters.plot_model_image(fit=fit, image_index=0, mask=mask, units=units, kpc_per_arcsec=kpc_per_arcsec,
                          output_path=output_path, output_format=output_format)
 
     if plot_lensing_fitting_residuals:
-        fitting_plotters.plot_residuals(fit=fit, mask=mask, units=units, kpc_per_arcsec=kpc_per_arcsec,
+        fitting_plotters.plot_residuals(fit=fit, image_index=0, mask=mask, units=units, kpc_per_arcsec=kpc_per_arcsec,
                        output_path=output_path, output_format=output_format)
 
     if plot_lensing_fitting_chi_squareds:
-        fitting_plotters.plot_chi_squareds(fit=fit, mask=mask, units=units, kpc_per_arcsec=kpc_per_arcsec,
+        fitting_plotters.plot_chi_squareds(fit=fit, image_index=0, mask=mask, units=units, kpc_per_arcsec=kpc_per_arcsec,
                           output_path=output_path, output_format=output_format)
 
     if plot_lensing_fitting_contributions:
-        fitting_plotters.plot_contributions(fit=fit, mask=mask, units=units, kpc_per_arcsec=kpc_per_arcsec,
+        fitting_plotters.plot_contributions(fit=fit, image_index=0, mask=mask, units=units, kpc_per_arcsec=kpc_per_arcsec,
                            output_path=output_path, output_format=output_format)
 
     if plot_lensing_fitting_scaled_noise_map:
-        fitting_plotters.plot_scaled_noise_map(fit=fit, mask=mask, units=units, kpc_per_arcsec=kpc_per_arcsec,
+        fitting_plotters.plot_scaled_noise_map(fit=fit, image_index=0, mask=mask, units=units, kpc_per_arcsec=kpc_per_arcsec,
                               output_path=output_path, output_format=output_format)
 
     if plot_lensing_fitting_scaled_chi_squareds:
-        fitting_plotters.plot_scaled_chi_squareds(fit=fit, mask=mask, units=units, kpc_per_arcsec=kpc_per_arcsec,
-                                 output_path=output_path, output_format=output_format)
+        fitting_plotters.plot_scaled_chi_squareds(fit=fit, image_index=0, mask=mask, units=units,
+                                                  kpc_per_arcsec=kpc_per_arcsec, output_path=output_path,
+                                                  output_format=output_format)
 
 
 def plot_fitting_individuals_lens_and_source_planes(fit, units='kpc', output_path=None, output_format='show'):
@@ -558,29 +560,31 @@ def plot_fitting_individuals_lens_and_source_planes(fit, units='kpc', output_pat
     kpc_per_arcsec = fit.tracer.image_plane.kpc_per_arcsec_proper
 
     if plot_lensing_fitting_model_image:
-        fitting_plotters.plot_model_image(fit=fit, units=units, mask=mask, kpc_per_arcsec=kpc_per_arcsec, output_path=output_path,
-                         output_format=output_format)
+        fitting_plotters.plot_model_image(fit=fit, image_index=0, units=units, mask=mask, kpc_per_arcsec=kpc_per_arcsec,
+                                          output_path=output_path, output_format=output_format)
 
     if plot_lensing_fitting_lens_model_image:
-        fitting_plotters.plot_model_image_of_plane(fit=fit, plane_index=0, mask=mask, units=units, kpc_per_arcsec=kpc_per_arcsec,
+        fitting_plotters.plot_model_image_of_plane(fit=fit, image_index=0, plane_index=0, mask=mask, units=units,
+                                                   kpc_per_arcsec=kpc_per_arcsec,
                                   output_path=output_path, output_filename='fit_lens_plane_model_image',
                                   output_format=output_format)
 
     if plot_lensing_fitting_source_model_image:
-        fitting_plotters.plot_model_image_of_plane(fit=fit, plane_index=1, mask=mask, units=units, kpc_per_arcsec=kpc_per_arcsec,
+        fitting_plotters.plot_model_image_of_plane(fit=fit, image_index=0, plane_index=1, mask=mask, units=units,
+                                                   kpc_per_arcsec=kpc_per_arcsec,
                                   output_path=output_path, output_filename='fit_source_plane_model_image',
                                   output_format=output_format)
 
     if plot_lensing_fitting_source_plane_image:
-        plane_plotters.plot_plane_image(plane=fit.tracer.source_plane, plot_grid=True,
+        plane_plotters.plot_plane_image(plane=fit.tracer.source_plane, image_index=0, plot_grid=True,
                                         units=units,
                                         output_path=output_path, output_filename='fit_source_plane',
                                         output_format=output_format)
 
     if plot_lensing_fitting_residuals:
-        fitting_plotters.plot_residuals(fit=fit, mask=mask, units=units, kpc_per_arcsec=kpc_per_arcsec,
+        fitting_plotters.plot_residuals(fit=fit, image_index=0, mask=mask, units=units, kpc_per_arcsec=kpc_per_arcsec,
                        output_path=output_path, output_format=output_format)
 
     if plot_lensing_fitting_chi_squareds:
-        fitting_plotters.plot_chi_squareds(fit=fit, mask=mask, units=units, kpc_per_arcsec=kpc_per_arcsec,
+        fitting_plotters.plot_chi_squareds(fit=fit, image_index=0, mask=mask, units=units, kpc_per_arcsec=kpc_per_arcsec,
                           output_path=output_path, output_format=output_format)

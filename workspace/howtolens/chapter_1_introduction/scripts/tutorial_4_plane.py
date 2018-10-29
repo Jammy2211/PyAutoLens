@@ -31,22 +31,22 @@ from autolens.plotting import plane_plotters
 
 # As an observer, we don't see the source's true appearance (e.g. a round blob of light). Instead, we only observe
 # its light after it is deflected and lensed by the foreground model_galaxy's mass. In this exercise, we'll make a source
-# model_galaxy images whose light has been deflected by a lens model_galaxy.
+# model_galaxy image whose light has been deflected by a lens model_galaxy.
 
 # In the schematic above, we used the terms 'Image-Plane' and 'Source-Plane'. In lensing speak, a 'plane' is a
 # collection of galaxies at the same redshift (that is, parallel to one another down our line-of-sight). Therefore:
 
-# - If two or more lens galaxies are at the same redshift in the images-plane, they deflection light in the same way.
+# - If two or more lens galaxies are at the same redshift in the image-plane, they deflection light in the same way.
 #   This means we can sum their surface-densities, potentials and deflection angles.
 
 # - If two or more source galaxies are at the same redshift in the source-plane, their light is ray-tracing in the
-#   same way. Therefore, when determining their lensed images, we can sum the lensed images of each model_galaxy.
+#   same way. Therefore, when determining their lensed image, we can sum the lensed image of each model_galaxy.
 
 # So, lets do it - lets use the 'plane' module in AutoLens to create a strong lensing system like the one pictured
 # above. For simplicity, we'll assume 1 lens model_galaxy and 1 source model_galaxy.
 
-# We still need a grid - our grid is effectively the coordinates we 'trace' from the images-plane to the source-plane
-# in the lensing configuration above. Our grid is no longer just ouor 'image_grid', but our images-plane grid, so
+# We still need a grid - our grid is effectively the coordinates we 'trace' from the image-plane to the source-plane
+# in the lensing configuration above. Our grid is no longer just ouor 'image_grid', but our image-plane grid, so
 # lets name as such.
 image_plane_grids = mask.ImagingGrids.from_shape_and_pixel_scale(shape=(100, 100), pixel_scale=0.05,
                                                                  sub_grid_size=2)
@@ -58,19 +58,19 @@ lens_galaxy = galaxy.Galaxy(mass=mass_profile)
 light_profile = light_profiles.SphericalSersic(centre=(0.0, 0.0), intensity=1.0, effective_radius=1.0, sersic_index=1.0)
 source_galaxy = galaxy.Galaxy(light=light_profile)
 
-# Lets setup our images plane. This plane takes the lens model_galaxy we made above and the grid of images-plane coordinates.
-image_plane = plane.Plane(galaxies=[lens_galaxy], grids=image_plane_grids)
+# Lets setup our image plane. This plane takes the lens model_galaxy we made above and the grid of image-plane coordinates.
+image_plane = plane.Plane(galaxies=[lens_galaxy], grids=[image_plane_grids])
 
 # Up to now, we've kept our light-profiles / mass-profiles / model_galaxy's and grids separate, and passed the grid to these
 # objects to compute quantities (e.g. light_profile.intensities_from_grid(grid=grid)). Plane's combine the two,
 # meaning that when we plot a plane's quantities we no longer have to pass the grid.
-# Lets have a quick look at our images-plane's deflection angles.
+# Lets have a quick look at our image-plane's deflection angles.
 plane_plotters.plot_deflections_y(plane=image_plane)
 plane_plotters.plot_deflections_x(plane=image_plane)
 
 # Throughout this chapter, so plotted a lot of deflection angles. However, if you arn't familiar with strong lensing,
 # you probably weren't entirely sure what they were for. The deflection angles tell us how light is 'lensed' by a
-# lens model_galaxy. By taking the images-plane coordinates and deflection angles, we can subtract the two to determine
+# lens model_galaxy. By taking the image-plane coordinates and deflection angles, we can subtract the two to determine
 # our source-plane's lensed coordinates, e.g.
 
 # source_plane_grids = image_plane_grids - image_plane_deflection_angles
@@ -90,9 +90,9 @@ plane_plotters.plot_plane_grid(plane=source_plane, title='Source-plane Grid')
 plane_plotters.plot_plane_grid(plane=source_plane, axis_limits=[-0.1, 0.1, -0.1, 0.1], title='Source-plane Grid')
 
 # We can also plot both planes next to one another, and highlight specific points on the grids. This means we can see
-# how different images pixels map to the source-plane.
+# how different image pixels map to the source-plane.
 # (We are inputting the pixel index's into 'points' - the first set of points go from 0 -> 50, which is the top row of
-# the images-grid running from the left - as we said it would!)
+# the image-grid running from the left - as we said it would!)
 plane_plotters.plot_image_and_source_plane_subplot(image_plane=image_plane, source_plane=source_plane,
     points=[[range(0,50)], [range(500, 550)],
             [1550, 1650, 1750, 1850, 1950, 2050],
@@ -100,14 +100,14 @@ plane_plotters.plot_image_and_source_plane_subplot(image_plane=image_plane, sour
 
 # You should notice:
 
-# - That the horizontal lines running across the images-plane are 'bent' into the source-plane, this is lensing!
-# - That the verticle green and black points opposite one another in the images-plane lensed into the same, central
+# - That the horizontal lines running across the image-plane are 'bent' into the source-plane, this is lensing!
+# - That the verticle green and black points opposite one another in the image-plane lensed into the same, central
 #   region of the source-plane. If a model_galaxy were located here, it'd be multiply imaged!
 
-# Clearly, the source-plane has a very different grid to the images-plane. It's not uniform, its not regular and well,
+# Clearly, the source-plane has a very different grid to the image-plane. It's not uniform, its not regular and well,
 # its not boring!
 
-# We can now ask the question - 'what does our source-model_galaxy look like in the images-plane'? That is, to us, the
+# We can now ask the question - 'what does our source-model_galaxy look like in the image-plane'? That is, to us, the
 # observer on Earth, how do we see the source-model_galaxy (after it is lensed). To do this, we simply imaging the source
 # model_galaxy's light 'mapping back' from the lensed source-plane grid above.
 plane_plotters.plot_image_plane_image(plane=source_plane)
@@ -131,26 +131,26 @@ plane_plotters.plot_image_plane_image(plane=source_plane)
 # otherwise be possible!
 plane_plotters.plot_plane_image(plane=source_plane)
 
-# Plotting the grid over the plane images obscures its appearance, which isn't ideal. However, later in the tutorials,
+# Plotting the grid over the plane image obscures its appearance, which isn't ideal. However, later in the tutorials,
 # you'll notice that this issue goes away.
 plane_plotters.plot_plane_image(plane=source_plane, plot_grid=True)
 
 # And, we're done. This is the first tutorial covering actual strong-lensing and I highly recommend you take a moment
-# to really mess about with the code above to see what sort of lensed images you can form. Pay attention to the
+# to really mess about with the code above to see what sort of lensed image you can form. Pay attention to the
 # source-plane grid - its appearance can change quite a lot!
 #
 # In particular, try:
 
-# 1) Change the lens model_galaxy's einstein radius - what happens to the source-plane's images-plane images?
+# 1) Change the lens model_galaxy's einstein radius - what happens to the source-plane's image-plane image?
 
 # 2) Change the SphericalIsothermal mass-profile to an EllipticalIsothermal mass-profile and set its axis_ratio to 0.8.
-#    What happens to the number of source images?
+#    What happens to the number of source image?
 
 # 3) In most strong lenses, the lens model_galaxy's light outshines that of the background source model_galaxy. By adding a light-
 #    profile to the lens model_galaxy, make its light appear, and see if you can get it to make the source hard to see.
 
-# 4) As discussed at the beginning, planes can be composed of multiple galaxies. Make an the images-plane with two
-#    galaxies and see how multi-model_galaxy lensing leads to crazy source images-plane images. Also try making a source-plane
+# 4) As discussed at the beginning, planes can be composed of multiple galaxies. Make an the image-plane with two
+#    galaxies and see how multi-model_galaxy lensing leads to crazy source image-plane image. Also try making a source-plane
 #    with two galaxies!
 
 # Finally, if you are a newcomer to strong lensing, it might be worth reading briefly about some strong lensing theory.
@@ -160,4 +160,4 @@ plane_plotters.plot_plane_image(plane=source_plane, plot_grid=True)
 
 # - What a caustic is.
 
-# - What determines the images multiplicity of the lensed source.
+# - What determines the image multiplicity of the lensed source.
