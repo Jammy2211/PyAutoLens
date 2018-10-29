@@ -45,7 +45,7 @@ mask = ma.Mask.annular(shape=image.shape, pixel_scale=image.pixel_scale,
                        inner_radius_arcsec=1.0, outer_radius_arcsec=2.2)
 imaging_plotters.plot_image(image=image, mask=mask)
 
-# Next, lets set this image up as a lensing image, and setup a tracer using the input lens model_galaxy model (we don't need
+# Next, lets set this image up as a lensing image, and setup a tracer_without_subhalo using the input lens model_galaxy model (we don't need
 # to provide the source's light profile, as we're using a mapper to reconstruct it).
 lensing_image = li.LensingImage(image=image, mask=mask, sub_grid_size=1)
 lens_galaxy = g.Galaxy(mass=mp.EllipticalIsothermal(centre=(0.0, 0.0), axis_ratio=0.8, phi=135.0, einstein_radius=1.6))
@@ -106,7 +106,7 @@ def simulate_complex_source():
     return im.PreparatoryImage.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=0.05,
                                         exposure_time=300.0, psf=psf, background_sky_level=0.1, add_noise=True)
 
-# This code is doing all the the same as above (setup the image, galaxies, tracer, mapper, ec.),
+# This code is doing all the the same as above (setup the image, galaxies, tracer_without_subhalo, mapper, ec.),
 # but I have made the masks slightly larger for this source.
 image = simulate_complex_source()
 mask = ma.Mask.annular(shape=image.shape, pixel_scale=image.pixel_scale,
@@ -149,10 +149,10 @@ mapper_plotters.plot_image_and_mapper(image=image, mapper=mapper, mask=mask,
 # These mappings are known before the inversion, which means pre-inversion we know two key pieces of information:
 
 # 1) The mappings between every source-pixel and a set of image-pixels.
-# 2) The flux values in every observed image-pixel, which are the values we want to fit successfully.
+# 2) The flux values in every observed image-pixel, which are the values we want to fit_normal successfully.
 
 # It turns out that with these two pieces of information we can linearly solve for the set of source-pixel fluxes that
-# best-fit (e.g. maximize the likelihood of) our observed image. Essentially, we set up the mapping between source and
+# best-fit_normal (e.g. maximize the likelihood of) our observed image. Essentially, we set up the mapping between source and
 # image pixels as a large matrix, and solve for the source-pixel fluxes in an analogous fashion to how you would
 # solve a set of simultaneous linear equations. This process is called a 'linear inversion'.
 
@@ -170,21 +170,21 @@ mapper_plotters.plot_image_and_mapper(image=image, mapper=mapper, mask=mask,
 # 3) The inversion's solution is regularized. But wait, that's what we'll cover in the next tutorial!
 
 
-# Finally, let me show you how easy it is to fit an image with an inversion using the fitting module. Instead of giving
-# the source model_galaxy a light profile, we give it a pixelization and regularization, and pass it to a tracer.
+# Finally, let me show you how easy it is to fit_normal an image with an inversion using the fitting module. Instead of giving
+# the source model_galaxy a light profile, we give it a pixelization and regularization, and pass it to a tracer_without_subhalo.
 source_galaxy = g.Galaxy(pixelization=pix.Rectangular(shape=(25, 25)), regularization=reg.Constant(coefficients=(1.0,)))
 tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
                                              image_plane_grids=[lensing_image.grids], borders=[lensing_image.borders])
 
-# Then, like before, we call on the fitting module to perform the fit to the lensing image. Indeed, we see
+# Then, like before, we call on the fitting module to perform the fit_normal to the lensing image. Indeed, we see
 # some pretty good looking residuals - we're certainly fitting the lensed source accurately!
 fit = lensing_fitting.fit_lensing_image_with_tracer(lensing_image=lensing_image, tracer=tracer)
 lensing_fitting_plotters.plot_fitting_subplot(fit=fit)
 
 # And, we're done, here are a few questions to get you thinking about inversions:
 
-# 1) The inversion provides the best-fit solution to the observed image. Is there a problem with seeking the 'best-fit'?
-#    Is there a risk that we're going to fit other things in the image than just the lensed source model_galaxy? What happens
+# 1) The inversion provides the best-fit_normal solution to the observed image. Is there a problem with seeking the 'best-fit_normal'?
+#    Is there a risk that we're going to fit_normal other things in the image than just the lensed source model_galaxy? What happens
 #    if you reduce the regularization 'coefficient' above to zero?
 
 # 2) The exterior pixels in the rectangular grid have no image-pixels in them. However, they are still given a

@@ -760,7 +760,7 @@ class ImagingGridBorders(object):
         sub_grid_size : int
             The size of a sub-pixels sub-grid (sub_grid_size x sub_grid_size).
         polynomial_degree : int
-            The degree of the polynomial that is used to fit the border when relocating pixels outside the border to \
+            The degree of the polynomial that is used to fit_normal the border when relocating pixels outside the border to \
             its edge.
         centre : (float, float)
             The centre of the border, which can be shifted relative to its coordinates.
@@ -800,7 +800,7 @@ class ImageGridBorder(np.ndarray):
         arr : ndarray
             A 1D array of the integer indexes of an *ImageGrid*'s border pixels.
         polynomial_degree : int
-            The degree of the polynomial that is used to fit the border when relocating pixels outside the border to \
+            The degree of the polynomial that is used to fit_normal the border when relocating pixels outside the border to \
             its edge.
         centre : (float, float)
             The centre of the border, which can be shifted relative to its coordinates.
@@ -819,7 +819,7 @@ class ImageGridBorder(np.ndarray):
         mask : Mask
             The masks the padded border pixel index's are computed from.
         polynomial_degree : int
-            The degree of the polynomial that is used to fit the border when relocating pixels outside the border to \
+            The degree of the polynomial that is used to fit_normal the border when relocating pixels outside the border to \
             its edge.
         centre : (float, float)
             The centre of the border, which can be shifted relative to its coordinates.
@@ -934,7 +934,7 @@ class SubGridBorder(ImageGridBorder):
         sub_grid_size : int
             The size of a sub-pixels sub-grid (sub_grid_size x sub_grid_size).
         polynomial_degree : int
-            The degree of the polynomial that is used to fit the border when relocating pixels outside the border to \
+            The degree of the polynomial that is used to fit_normal the border when relocating pixels outside the border to \
             its edge.
         centre : (float, float)
             The centre of the border, which can be shifted relative to its coordinates.

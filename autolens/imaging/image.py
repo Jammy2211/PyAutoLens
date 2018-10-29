@@ -14,28 +14,32 @@ logger = logging.getLogger(__name__)
 
 class Image(ScaledSquarePixelArray):
 
-    def __init__(self, array, pixel_scale, psf, noise_map, background_noise_map=None):
+    def __init__(self, array, pixel_scale, psf, noise_map, background_noise_map=None, poisson_noise_map=None,
+                 effective_exposure_map=None, background_sky_map=None):
         """
-        A 2d array representing a real or simulated _datas.
+        A 2d array representing a real or simulated data.
 
         Parameters
         ----------
         array : ndarray
-            An array of the _datas.
+            An array of the data.
         pixel_scale : float
             The scale of each pixel in arc seconds
         psf : PSF
-            An array describing the PSF of the _datas.
+            An array describing the PSF of the data.
         noise_map : Array
-            An array describing the total noise_map in each _datas pixel.
+            An array describing the total noise_map in each data pixel.
         background_noise_map : Array
-            An array describing the background noise_map in each _datas pixel (used for hyper_image background noise_map
+            An array describing the background noise_map in each data pixel (used for hyper_image background noise_map
             scaling).
         """
         super(Image, self).__init__(array, pixel_scale)
         self.psf = psf
         self.noise_map = noise_map
+        self.effective_exposure_map = effective_exposure_map
+        self.background_sky_map = background_sky_map
         self.background_noise_map = background_noise_map
+        self.poisson_noise_map = poisson_noise_map
 
     def __array_finalize__(self, obj):
         super(Image, self).__array_finalize__(obj)
@@ -43,7 +47,10 @@ class Image(ScaledSquarePixelArray):
             try:
                 self.psf = obj.psf
                 self.noise_map = obj.noise_map
+                self.effective_exposure_map = obj.effective_exposure_map
+                self.background_sky_map = obj.background_sky_map
                 self.background_noise_map = obj.background_noise_map
+                self.poisson_noise_map = obj.poisson_noise_map
             except AttributeError:
                 logger.debug("Original object in Image.__array_finalize__ missing one or more attributes")
 
@@ -70,50 +77,51 @@ class Image(ScaledSquarePixelArray):
 
     @property
     def signal_to_noise_map(self):
-        """The estimated signal-to-noise_map mappers of the _datas."""
+        """The estimated signal-to-noise_map mappers of the data."""
         signal_to_noise_map = np.divide(self, self.noise_map)
         signal_to_noise_map[signal_to_noise_map < 0] = 0
         return signal_to_noise_map
 
     @property
     def signal_to_noise_max(self):
-        """The maximum value of signal-to-noise_map in an _datas pixel in the _datas's signal-to-noise_map mappers"""
+        """The maximum value of signal-to-noise_map in an data pixel in the data's signal-to-noise_map mappers"""
         return np.max(self.signal_to_noise_map)
 
 
 class PreparatoryImage(Image):
 
     def __init__(self, array, pixel_scale, psf, noise_map=None, background_noise_map=None, poisson_noise_map=None,
-                 exposure_time=None, effective_exposure_map=None):
+                 effective_exposure_map=None, background_sky_map=None):
         """
-        A 2d array representing an _datas, including preparatory components which are not needed for the actual lens
+        A 2d array representing an data, including preparatory components which are not needed for the actual lens
         analysis but help set up the noise_map, background sky, etc.
 
         Parameters
         ----------
         array : ndarray
-            An array of the _datas.
+            An array of the data.
         pixel_scale : float
             The scale of each pixel in arc seconds
         psf : PSF
-            An array describing the PSF of the _datas.
+            An array describing the PSF of the data.
         noise_map : Array
-            An array describing the total noise_map in each _datas pixel.
+            An array describing the total noise_map in each data pixel.
         background_noise_map : Array
-            An array describing the background noise_map in each _datas pixel (used for hyper_image background noise_map
+            An array describing the background noise_map in each data pixel (used for hyper_image background noise_map
             scaling).
         poisson_noise_map : ndarray
-            An array describing the poisson noise_map in each _datas pixel (used for checking the _datas units are
+            An array describing the poisson noise_map in each data pixel (used for checking the data units are
             sensible).
         exposure_time : float
-            The overall exposure time of the _datas.
+            The overall exposure time of the data.
         effective_exposure_map : ndarray
             An array representing the effective exposure time of each pixel.
         """
-        super(PreparatoryImage, self).__init__(array, pixel_scale, psf, noise_map, background_noise_map)
-        self.poisson_noise_map = poisson_noise_map
-        self.exposure_time = exposure_time
-        self.effective_exposure_map = effective_exposure_map
+        super(PreparatoryImage, self).__init__(array=array, pixel_scale=pixel_scale, psf=psf, noise_map=noise_map,
+                                               background_noise_map=background_noise_map,
+                                               poisson_noise_map=poisson_noise_map,
+                                               effective_exposure_map=effective_exposure_map,
+                                               background_sky_map=background_sky_map)
 
     @classmethod
     def simulate(cls, array, pixel_scale, exposure_time, psf=None, background_sky_level=None,
@@ -136,22 +144,22 @@ class PreparatoryImage(Image):
     def simulate_variable_arrays(cls, array, pixel_scale, effective_exposure_map, psf=None, background_sky_map=None,
                                  add_noise=True, seed=-1):
         """
-        Create a realistic simulated _datas by applying effects to a plain simulated _datas.
+        Create a realistic simulated data by applying effects to a plain simulated data.
 
         Parameters
         ----------
         array: ndarray
-            The _datas before simulating (e.g. the lens and source galaxies before optics blurring and CCD read-out).
+            The data before simulating (e.g. the lens and source galaxies before optics blurring and CCD read-out).
         pixel_scale: float
             The scale of each pixel in arc seconds
         effective_exposure_map : ndarray
             An array representing the effective exposure time of each pixel.
         psf: PSF
-            An array describing the PSF the simulated _datas is blurred with.
+            An array describing the PSF the simulated data is blurred with.
         background_sky_map : ndarray
-            The value of background sky in every _datas pixel (electrons per second).
+            The value of background sky in every data pixel (electrons per second).
         add_noise: Bool
-            If True poisson noise_map is simulated and added to the _datas, based on the total counts in each _datas
+            If True poisson noise_map is simulated and added to the data, based on the total counts in each data
             pixel
         seed: int
             A seed for random noise_map generation
@@ -190,29 +198,29 @@ class PreparatoryImage(Image):
         array_counts = np.multiply(array, effective_exposure_map)
         poisson_noise_map = np.divide(np.sqrt(np.abs(array_counts)), effective_exposure_map)
 
-        return PreparatoryImage(array, pixel_scale=pixel_scale, noise_map=noise_map, psf=psf,
+        return PreparatoryImage(array, pixel_scale=pixel_scale, psf=psf, noise_map=noise_map,
                                 background_noise_map=background_noise_map, poisson_noise_map=poisson_noise_map,
-                                effective_exposure_map=effective_exposure_map)
+                                effective_exposure_map=effective_exposure_map, background_sky_map=background_sky_map)
 
     @classmethod
     def simulate_to_target_signal_to_noise(cls, array, pixel_scale, target_signal_to_noise, effective_exposure_map,
                                            psf=None, background_sky_map=None, seed=-1):
         """
-        Create a realistic simulated _datas by applying effects to a plain simulated _datas.
+        Create a realistic simulated data by applying effects to a plain simulated data.
 
         Parameters
         ----------
         target_signal_to_noise
         array: ndarray
-            The _datas before simulating (e.g. the lens and source galaxies before optics blurring and CCD read-out).
+            The data before simulating (e.g. the lens and source galaxies before optics blurring and CCD read-out).
         pixel_scale: float
             The scale of each pixel in arc seconds
         effective_exposure_map : ndarray
             An array representing the effective exposure time of each pixel.
         psf: PSF
-            An array describing the PSF the simulated _datas is blurred with.
+            An array describing the PSF the simulated data is blurred with.
         background_sky_map : ndarray
-            The value of background sky in every _datas pixel (electrons per second).
+            The value of background sky in every data pixel (electrons per second).
         seed: int
             A seed for random noise_map generation
         """
@@ -250,6 +258,7 @@ class PreparatoryImage(Image):
             self.background_noise_map = obj.background_noise_map
             self.poisson_noise_map = obj.poisson_noise_map
             self.effective_exposure_map = obj.effective_exposure_map
+            self.background_sky_map = obj.background_sky_map
 
     @staticmethod
     def trim_psf_edges(array, psf):
@@ -286,7 +295,7 @@ class PreparatoryImage(Image):
 
     @property
     def image_counts(self):
-        """The _datas in units of counts."""
+        """The data in units of counts."""
         return self.electrons_per_second_to_counts(self)
 
     @property
@@ -296,20 +305,20 @@ class PreparatoryImage(Image):
 
     @property
     def estimated_noise_map_counts(self):
-        """ The estimated noise_map mappers of the _datas (using its background noise_map mappers and _datas values
+        """ The estimated noise_map mappers of the data (using its background noise_map mappers and data values
         in counts) in counts.
         """
         return np.sqrt((np.abs(self.image_counts) + np.square(self.background_noise_map_counts)))
 
     @property
     def estimated_noise_map(self):
-        """ The estimated noise_map mappers of the _datas (using its background noise_map mappers and _datas values
+        """ The estimated noise_map mappers of the data (using its background noise_map mappers and data values
         in counts) in electrons per second.
         """
         return self.counts_to_electrons_per_second(self.estimated_noise_map_counts)
 
     def background_noise_from_edges(self, no_edges):
-        """Estimate the background signal_to_noise_ratio by binning data_to_image located at the edge(s) of an _datas
+        """Estimate the background signal_to_noise_ratio by binning data_to_image located at the edge(s) of an data
         into a histogram and fitting a Gaussian profiles to this histogram. The standard deviation (sigma) of this
         Gaussian gives a signal_to_noise_ratio estimate.
 
@@ -422,12 +431,12 @@ class PSF(ScaledSquarePixelArray):
         Parameters
         ----------
         array: ndarray
-            An array representing the _datas the PSF is convolved with.
+            An array representing the data the PSF is convolved with.
 
         Returns
         -------
         convolved_array: ndarray
-            An array representing the _datas after convolution.
+            An array representing the data after convolution.
 
         Raises
         ------
@@ -456,14 +465,14 @@ def setup_random_seed(seed):
 
 def generate_poisson_noise(image, effective_exposure_map, seed=-1):
     """
-    Generate a two-dimensional poisson noise_map-mappers from an _datas.
+    Generate a two-dimensional poisson noise_map-mappers from an data.
 
-    Values are computed from a Poisson distribution using the _datas's input values in units of counts.
+    Values are computed from a Poisson distribution using the data's input values in units of counts.
 
     Parameters
     ----------
     image : ndarray
-        The 2D _datas, whose values in counts are used to draw Poisson noise_map values.
+        The 2D data, whose values in counts are used to draw Poisson noise_map values.
     effective_exposure_map : Union(ndarray, int)
         2D array of the exposure time in each pixel used to convert to / from counts and electrons per second.
     seed : int

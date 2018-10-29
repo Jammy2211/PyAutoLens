@@ -22,7 +22,7 @@ import os
 # analysis to a different strong lens. The less complex we make our model, the less realistic it is. And if we rely too
 # much on searching parameter space for longer, we could end up with phase's that take days, weeks or months to run.
 
-# In this exercise, we're going to combine these 3 approaches, so that we can fit complex and realistic lens
+# In this exercise, we're going to combine these 3 approaches, so that we can fit_normal complex and realistic lens
 # models in a way that that can be generalized to many different strong lenses. To do this, we'll run 2 phases, and
 # link the lens model inferred in the first phase to the priors of the second phase's lens model.
 
@@ -37,7 +37,7 @@ import os
 # 1) The first phase should give us a pretty good idea of the lens model_galaxy's light and mass profiles, for example its
 #    intensity, effective radius and einstein radius.
 
-# 2) It should also give us a pretty good fit to the lensed source model_galaxy. This means we'll already know where in
+# 2) It should also give us a pretty good fit_normal to the lensed source model_galaxy. This means we'll already know where in
 #    source-plane its is located and what its intensity and effective are.
 
 #Setup the path for this run
@@ -124,7 +124,7 @@ phase_1.optimizer.sampling_efficiency = 0.9
 # 11 parameters. (The results are still preloaded for you, but feel free to run it yourself, its fairly quick).
 phase_1_results = phase_1.run(image=image)
 
-# And indeed, we get a reasonably good model and fit to the datas - in a much shorter space of time!
+# And indeed, we get a reasonably good model and fit_normal to the datas - in a much shorter space of time!
 lensing_fitting_plotters.plot_fitting_subplot(fit=phase_1_results.fit)
 
 # Now all we need to do is look at the results of phase 1 and tune our priors in phase 2 to those results. Lets
@@ -178,7 +178,7 @@ phase_2_results = phase_2.run(image=image)
 # Look at that, the right lens model, again!
 lensing_fitting_plotters.plot_fitting_subplot(fit=phase_2_results.fit)
 
-# Our choice to link two phases together was a huge success. We managed to fit a complex and realistic model,
+# Our choice to link two phases together was a huge success. We managed to fit_normal a complex and realistic model,
 # but were able to begin by making simplifying assumptions that eased our search of non-linear parameter space. We
 # could apply phase 1 to pretty much any strong lens, and therefore get ourselves a decent lens model with which to
 # tune phase 2's priors.
@@ -189,7 +189,7 @@ lensing_fitting_plotters.plot_fitting_subplot(fit=phase_2_results.fit)
 
 # Well, let me reassure you, that PyAutoLens has you covered. In the next set of tutorials, we'll cover 'runners'. As
 # you might of guessed, a pipeline comprises a set of phases that are linked together. This allows us to start with a
-# simple, easy-to-fit lens model, and gradually makes it more complex. Crucially, as the pipeline runs, we 'feed' the
+# simple, easy-to-fit_normal lens model, and gradually makes it more complex. Crucially, as the pipeline runs, we 'feed' the
 # results of previous phases through the pipeline, allowing us to tune our priors automatically, in a way that can be
 # applied generically to any strong lens.
 

@@ -33,7 +33,10 @@ class FittingImage(im.Image):
         """
         super().__init__(array=image, pixel_scale=image.pixel_scale,
                          noise_map=mask.map_2d_array_to_masked_1d_array(image.noise_map), psf=image.psf,
-                         background_noise_map=image.background_noise_map)
+                         background_noise_map=mask.map_2d_array_to_masked_1d_array(image.background_noise_map),
+                         poisson_noise_map=mask.map_2d_array_to_masked_1d_array(image.poisson_noise_map),
+                         effective_exposure_map=mask.map_2d_array_to_masked_1d_array(image.effective_exposure_map),
+                         background_sky_map=mask.map_2d_array_to_masked_1d_array(image.background_sky_map))
 
         self.image = image
         self.mask = mask
