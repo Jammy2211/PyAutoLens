@@ -15,7 +15,7 @@ import os
 # lens model which fitted our realistic datas-set well. In this tutorial, we're going to right our past wrongs and infer
 # the correct model - not just once, but three times!
 
-# First, lets get the config / simulation / image loading out the way - we'll fit the same image as the previous
+# First, lets get the config / simulation / image loading out the way - we'll fit_normal the same image as the previous
 # tutorial.
 
 #Setup the path for this run
@@ -61,7 +61,7 @@ image = simulate()
 
 # The first approach we're going to take is we're going to give our non-linear search a helping hand. Lets think about
 # our priors - what they're doing is telling the non-linear search where to look in parameter space. If we tell it to
-# look in the right place (that is, *tune* our priors), it'll probaly find the best-fit lens model.
+# look in the right place (that is, *tune* our priors), it'll probaly find the best-fit_normal lens model.
 
 # We've already seen that we can fully customize priors in AutoLens, so lets do it. I've set up a custom phase
 # below, and specified a new set of priors that'll give the non-linear search a much better chance at inferring the
@@ -145,7 +145,7 @@ lensing_fitting_plotters.plot_fitting_subplot(fit=custom_prior_result.fit)
 # Advantage - The phase took less time to run, because the non-linear search explored less of parameter space.
 # Disadvantage - If we specified one prior incorrectly, the non-linear search would have began and therefore ended at
 #                an incorrect solution.
-# Disadvantage - Our phase was tailored to this specific strong lens. If we want to fit a large sample of lenses, we'd
+# Disadvantage - Our phase was tailored to this specific strong lens. If we want to fit_normal a large sample of lenses, we'd
 #                have to write a custom phase for every single one - this would take up a lot of our time!
 
 ### Approach 2 -  Reducing Complexity ###
@@ -186,22 +186,22 @@ light_traces_mass_phase_result = light_traces_mass_phase.run(image=image)
 lensing_fitting_plotters.plot_fitting_subplot(fit=light_traces_mass_phase_result.fit)
 
 # The results look pretty good. Our source model_galaxy fits the datas pretty well, and we've clearly inferred a model that
-# looks similar to the one above. However, inspection of the residuals shows that the fit wasn't quite as good as the
+# looks similar to the one above. However, inspection of the residuals shows that the fit_normal wasn't quite as good as the
 # custom-phase above.
 
 # It turns out that when I simulated this image, light didn't perfectly trace mass. The light-profile's axis-ratio was
-# 0.9, whereas the mass-profiles was 0.8. The quality of the fit has suffered as a result, and the likelihood we've
+# 0.9, whereas the mass-profiles was 0.8. The quality of the fit_normal has suffered as a result, and the likelihood we've
 # inferred is lower.
 #
 # Herein lies the pitfalls of making assumptions in science - they may make your model less realistic and your results
 # worse! Nevertheless, our lens model is clearly much better than it was in the previous tutorial, so making
-# assumptions isn't a bad idea if you're struggling to fit the datas t all.
+# assumptions isn't a bad idea if you're struggling to fit_normal the datas t all.
 
 # Again, lets consider the advantages and disadvantages of this approach:
 
 # Advantage - By reducing parameter space's complexity, we inferred the global maximum likelihood.
 # Advantage - The phase is not specific to one lens - we could run it on many strong lens image.
-# Disadvantage - Our model was less realistic, and our fit suffered as a result.
+# Disadvantage - Our model was less realistic, and our fit_normal suffered as a result.
 
 
 ### Approach 3 -  Look Harder ###
@@ -258,9 +258,9 @@ lensing_fitting_plotters.plot_fitting_subplot(fit=custom_non_linear_result.fit)
 # Disadvantage - Its expensive. Very expensive. The run-time of this phase was over 6 hours. For more complex models
 #                we could be talking days or weeks (or, dare I say it, months).
 
-# So, there we have it, we can now fit strong lenses PyAutoLens. And if it fails, we know how to get it to work. I hope
+# So, there we have it, we can now fit_normal strong lenses PyAutoLens. And if it fails, we know how to get it to work. I hope
 # you're feeling pretty smug. You might even be thinking 'why should I bother with the rest of these tutorials, if I
-# can fit strong a lens already'.
+# can fit_normal strong a lens already'.
 
 # Well, my friend,  I want you to think about the last disadvantage listed above. If modeling a single lens could
 # really take as long as a month, are you really willing to spend your valuable time waiting for this? I'm not, which

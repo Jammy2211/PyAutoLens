@@ -12,20 +12,20 @@ from autolens.plotting import galaxy_plotters
 from autolens.plotting import plane_plotters
 from autolens.plotting import ray_tracing_plotters
 
-# In this chapter, you've learnt how create and fit strong lenses with PyAutoLens. In particular, you've learnt:
+# In this chapter, you've learnt how create and fit_normal strong lenses with PyAutoLens. In particular, you've learnt:
 
 # 1) PyAutoLens uses Cartesian grids of (y,x) coordinates to perform ray-tracing.
 # 2) These grids are combined with light and mass profiles to compute image, surface-densities, potentials and
 #    deflection angles.
 # 3) Profiles are combined to make galaxies.
 # 4) Collections of galaxies (at the same redshift) form a plane.
-# 5) A tracer can make an image-plane + source-plane strong lens system.
-# 6) The Universe's cosmology can be input into this tracer to convert units to physical values.
-# 7) The tracer's image-plane image can be used to simulate strong lens imaging observed on a real telescope.
+# 5) A tracer_without_subhalo can make an image-plane + source-plane strong lens system.
+# 6) The Universe's cosmology can be input into this tracer_without_subhalo to convert units to physical values.
+# 7) The tracer_without_subhalo's image-plane image can be used to simulate strong lens imaging observed on a real telescope.
 # 8) That this image can be fitted, so to as quantify how well a model strong lens system represents the observed image.
 
 # In this summary, we'll consider how flexible the tools PyAutoLens gives you are to study every aspect of a strong
-# lens system. Lets get a 'fit' to a strong lens, by setting up an image, masks, tracer, etc.
+# lens system. Lets get a 'fit_normal' to a strong lens, by setting up an image, masks, tracer_without_subhalo, etc.
 
 path = 'path/to/AutoLens/howtolens/chapter_1_introduction' # Unfortunately, in a Jupyter notebook you have to manually specify the path to PyAutoLens and this tutorial.
 path = '/home/jammy/PyCharm/Projects/AutoLens/workspace/howtolens/chapter_1_introduction'
@@ -43,7 +43,7 @@ tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source
                                              image_plane_grids=[lensing_image.grids])
 fit = lensing_fitting.fit_lensing_image_with_tracer(lensing_image=lensing_image, tracer=tracer)
 
-# The fit contains our tracer, which contains our planes, which contain our grids and galaxies, which contain our
+# The fit_normal contains our tracer_without_subhalo, which contains our planes, which contain our grids and galaxies, which contain our
 # profiles:
 print(fit)
 print(fit.tracer)
@@ -55,7 +55,7 @@ print(fit.tracer.image_plane.galaxies[0].mass)
 print(fit.tracer.source_plane.galaxies[0].bulge)
 print(fit.tracer.source_plane.galaxies[0].disk)
 
-# Using the plotters we've used throughout this chapter, we can visualize any aspect of a fit we're interested
+# Using the plotters we've used throughout this chapter, we can visualize any aspect of a fit_normal we're interested
 # in. For example, if we want to plot the image of the source model_galaxy mass profile, we can do this in a variety of
 # different ways
 ray_tracing_plotters.plot_image_plane_image(tracer=fit.tracer)
@@ -64,16 +64,16 @@ galaxy_plotters.plot_intensities(galaxy=fit.tracer.source_plane.galaxies[0], gri
 
 # Now, its not often you'd want to write all that code just to plot the image of the source model_galaxy!
 
-# However, as our fit and ray-tracing becomes more complex, it is useful to know how to decompose their different
+# However, as our fit_normal and ray-tracing becomes more complex, it is useful to know how to decompose their different
 # attributes to extract different things about them. For example, we made our source-model_galaxy above with two light
 # profiles, a 'bulge' and 'disk. We can plot the image-plane image of each component individually, if we know how to
-# break-up the different components of the fit and tracer.
+# break-up the different components of the fit_normal and tracer_without_subhalo.
 profile_plotters.plot_intensities(light_profile=fit.tracer.source_plane.galaxies[0].bulge,
                                   grid=fit.tracer.source_plane.grids[0].image, title='Bulge Image-Plane Image')
 profile_plotters.plot_intensities(light_profile=fit.tracer.source_plane.galaxies[0].disk,
                                   grid=fit.tracer.source_plane.grids[0].image, title='Disk Image-Plane Image')
 
-# The fit also has the lensing image, so we can plot the image using the fit too, if we so desire
+# The fit_normal also has the lensing image, so we can plot the image using the fit_normal too, if we so desire
 imaging_plotters.plot_image_subplot(image=lensing_image.image)
 
 # And, we're done, not just with the tutorial, but the chapter!
@@ -82,7 +82,7 @@ imaging_plotters.plot_image_subplot(image=lensing_image.image)
 # and certaintly don't want to think about code! However, the point is, with PyAutoLens, you don't need to!
 
 # Think about it - throughout this chapter, we never talk about anything like it was code. We didn't refer to
-# 'variables', 'parameters' and 'functions' did we? Instead, we talked about 'galaxies', 'planes' and a 'tracer'. These
+# 'variables', 'parameters' and 'functions' did we? Instead, we talked about 'galaxies', 'planes' and a 'tracer_without_subhalo'. These
 # are the things that, as scientists, we use to visualize a strong lens system.
 
 # Software that abstracts the underlying code in this way follows what is called an 'object-oriented design', and it is
@@ -97,5 +97,5 @@ imaging_plotters.plot_image_subplot(image=lensing_image.image)
 # what you haven't learnt is how to 'model' a real strong gravitational lens.
 
 # In the real world, we've no idea what the 'correct' set of light and mass profile parameters are that will give a
-# good fit to a lens. Lens modeling is the process of finding the lens model which provides the best-fit, and that will
+# good fit_normal to a lens. Lens modeling is the process of finding the lens model which provides the best-fit_normal, and that will
 # be the focus of our next set of tutorials.

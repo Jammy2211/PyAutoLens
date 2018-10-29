@@ -11,10 +11,10 @@ class Regularization(object):
         a pixelization in the following ways:
 
         1) The regularization matrix (see below) is added to the curvature matrix used by the reconstructor to \
-        linearly invert and fit the _datas datas. Thus, it changes the pixelization in a linear manner, ensuring that \
+        linearly invert and fit_normal the _datas datas. Thus, it changes the pixelization in a linear manner, ensuring that \
         the minimum chi-squared solution is achieved accounting for the penalty term.
 
-        2) The likelihood of the pixelization's fit to the datas changes from L = -0.5 *(chi^2 + _noise_term) to \
+        2) The likelihood of the pixelization's fit_normal to the datas changes from L = -0.5 *(chi^2 + _noise_term) to \
         L = -0.5 (chi^2 + regularization_coefficient * regularization_term + _noise_term). The regularization \
         coefficient is a 'hyper-parameter' which determines how strongly we enforce our smoothing of the pixelization.
 
