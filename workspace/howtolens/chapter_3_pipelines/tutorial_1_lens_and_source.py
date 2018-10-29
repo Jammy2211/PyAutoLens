@@ -16,7 +16,7 @@ import os
 # we can perform a completely different (and significantly faster) analysis.
 
 # Load up the PDFs from the previous tutorial -
-# 'output/howtolens/2_lens_modeling/5_linking_phase_2/images/pdf_triangle.png'.
+# 'output/howtolens/2_lens_modeling/5_linking_phase_2/image/pdf_triangle.png'.
 
 # This is a big triangle. As we fit models using more and more parameters, its only going to get bigger!
 
@@ -64,20 +64,13 @@ def simulate():
     lens_galaxy = g.Galaxy(mass=mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=1.6))
     source_galaxy = g.Galaxy(light=lp.SphericalExponential(centre=(0.0, 0.0), intensity=0.2, effective_radius=0.2))
     tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
-                                                 image_plane_grids=image_plane_grids)
+                                                 image_plane_grids=[image_plane_grids])
 
-    return im.PreparatoryImage.simulate(array=tracer.image_plane_images_for_simulation, pixel_scale=0.1,
+    return im.PreparatoryImage.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=0.1,
                                         exposure_time=300.0, psf=psf, background_sky_level=0.1, add_noise=True)
 
-# Now lets simulate hte images we'll fit, which as I said above, is the same images we saw in the previous chapter.
-# images = simulate()
-
-_path_="/home/jammy/PyCharm/Projects/AutoLens/datas/aris"
-image=im.load_imaging_from_fits(image_path=_path_+'/image_no_lens.fits',noise_map_path=_path_+'/noise_map.fits',
-   psf_path=_path_+'/psf.fits',pixel_scale=0.04,image_shape=(151,151),psf_shape=(21,21))
-
-imaging_plotters.plot_image_subplot(image=image, output_path='/home/jammy/', output_filename='lol',
-                                    output_format='png')
+# Now lets simulate hte image we'll fit, which as I said above, is the same image we saw in the previous chapter.
+image = simulate()
 
 # A pipeline is a one long python function (this is why Jupyter notebooks arn't ideal). When we run it, this function
 # 'makes' the pipeline, as you'll see in a moment.
@@ -87,7 +80,7 @@ def make_pipeline():
 
     # Its been a long time since we thought about masks - but in runners they're a pretty important. The bigger the
     # masks, the slower the run-time. In the early phases of most runners, we're not too bothered about fitting the
-    # images perfectly and aggresive masking (removing lots of images-pixels) is a good way to get things running fast.
+    # image perfectly and aggresive masking (removing lots of image-pixels) is a good way to get things running fast.
 
     # In this phase, we're only interested in fitting the lens's light, so we'll masks out the source-model_galaxy entirely.
     # This'll give us a nice speed up and ensure the source's light doesn't impact our light-profile fit (albeit,
@@ -100,7 +93,7 @@ def make_pipeline():
     # But wait, we actually want the opposite of this. We want a masks where the pixels between 0.5" and 2.0" are not
     # included! They're the pixels the source is actually located. Therefore, we're going to use an 'anti-annular
     # masks', where the inner and outer radii are the regions we omit from the analysis. This means we need to specify
-    # a third rung of the masks, even further out, such that datas at the exterior edges of the images is also masked.
+    # a third rung of the masks, even further out, such that datas at the exterior edges of the image is also masked.
 
     # We can change a masks using the 'mask_function' which basically returns the new masks we want to use (you can
     # actually use on phases by themselves like in the previous chapter).
@@ -115,12 +108,12 @@ def make_pipeline():
                                   phase_name=pipeline_name + '/phase_1_lens_light_only')
 
     # At this point, you might want to look at the 'output/3_pipelines/1_lens_and_source/phase_1_lens_light_only'
-    # output folder. There'll you'll find the model results and images, so you can be sure this phase runs as expected!
+    # output folder. There'll you'll find the model results and image, so you can be sure this phase runs as expected!
 
     # In phase 2, we fit the source model_galaxy's light. Thus, we want to make 2 changes from the previous phase
 
-    # 1) We want to fit the lens subtracted images calculated in phase 1, instead of the observed images.
-    # 2) We want to masks the central regions of this images, where there are residuals due to the lens light subtraction.
+    # 1) We want to fit the lens subtracted image calculated in phase 1, instead of the observed image.
+    # 2) We want to masks the central regions of this image, where there are residuals due to the lens light subtraction.
 
     # We can use the masks function again, to modify the masks to an annulus. We'll use the same ring radii as before,
     # but this isn't necessary.
@@ -128,27 +121,27 @@ def make_pipeline():
         return mask.Mask.annular(img.shape, pixel_scale=img.pixel_scale, inner_radius_arcsec=0.5,
                                  outer_radius_arcsec=3.)
 
-    # To modify an images, we call a new function, 'modify images'. This function behaves like the pass-priors functions
+    # To modify an image, we call a new function, 'modify image'. This function behaves like the pass-priors functions
     # before, whereby we create a python 'class' in a Phase to set it up.  This ensures it has access to the pipeline's
     # 'previous_results' (which you may have noticed was in the the pass_priors functions as well, but we ignored it
     # thus far).
 
-    # To setup the modified images, we take the observed images datas ('images') and subtract-off the model images from the
-    # previous phase, which, if you're keeping track, is an images of the lens model_galaxy. However, if we just used the
+    # To setup the modified image, we take the observed image datas ('image') and subtract-off the model image from the
+    # previous phase, which, if you're keeping track, is an image of the lens model_galaxy. However, if we just used the
     # 'model_image' in the fit, this would only include pixels that were masked. We want to subtract the lens off the
-    # entire images - fortunately, PyAutoLens automatically generates a 'unmasked_model_image' as well!
+    # entire image - fortunately, PyAutoLens automatically generates a 'unmasked_model_image' as well!
 
     class LensSubtractedPhase(phase.LensSourcePlanePhase):
 
         def modify_image(self, image, previous_results):
             phase_1_results = previous_results[0]
-            return image - phase_1_results.fit.unmasked_model_profile_images
+            return image - phase_1_results.fit.unmasked_model_profile_image
 
     # The function above demonstrates the most important thing about runners - that every phase has access to the
     # results of all previous phases. This means we can feed information through the pipeline and therefore use the
     # results of previous phases to setup new phases. We'll see this again in phase 3.
 
-    # We setup phase 2 as per usual. Note that we don't need to pass the modify images function.
+    # We setup phase 2 as per usual. Note that we don't need to pass the modify image function.
     phase2 = LensSubtractedPhase(lens_galaxies=dict(lens=gm.GalaxyModel(mass=mp.EllipticalIsothermal)),
                                  source_galaxies=dict(source=gm.GalaxyModel(light=lp.EllipticalSersic)),
                                  optimizer_class=nl.MultiNest, mask_function=mask_function,
@@ -219,12 +212,12 @@ pipeline_lens_and_source.run(image=image)
 #    lens and source galaxies?
 #
 #    Whilst this is true, we've chosen values of masks radii above that are 'excessive' that masks out a lot more of the
-#    images than just the source (which, in terms of run-time, is desirable). Thus, provided you know the Einstein
+#    image than just the source (which, in terms of run-time, is desirable). Thus, provided you know the Einstein
 #    radius distribution of your lens sample, you can choose masks radii that will masks out every source in your sample
 #    adequately (and even if some of the source is still there, who cares? The fit to the lens model_galaxy will be okay).
 
 # 2) What if my source model_galaxy isn't a ring of light? Surely my Annulus masks won't match it?
 #
-#    Just use the annulus anyway! Yeah, you'll masks out lots of images pixels with no source light, but remember, at
+#    Just use the annulus anyway! Yeah, you'll masks out lots of image pixels with no source light, but remember, at
 #    the beginning of the pipeline, *we don't care*. In phase 3, we'll use a large circular masks and do the fit
 #    properly.

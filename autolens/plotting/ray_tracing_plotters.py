@@ -158,7 +158,7 @@ def plot_ray_tracing_individual(tracer, output_path=None, output_format='show'):
         plot_deflections_x(tracer=tracer, output_path=output_path, output_format=output_format)
 
 
-def plot_image_plane_image(tracer, mask=None, positions=None, as_subplot=False,
+def plot_image_plane_image(tracer, image_index=0, mask=None, positions=None, as_subplot=False,
                            units='arcsec', figsize=(7, 7), aspect='equal',
                            cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
                            cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
@@ -166,8 +166,10 @@ def plot_image_plane_image(tracer, mask=None, positions=None, as_subplot=False,
                            mask_pointsize=10, position_pointsize=10.0,
                            output_path=None, output_format='show', output_filename='tracer_image_plane_image'):
 
-    tools_array.plot_array(array=tracer.image_plane_images, mask=mask, positions=positions, as_subplot=as_subplot,
-                           units=units, kpc_per_arcsec=tracer.image_plane.kpc_per_arcsec_proper, figsize=figsize, aspect=aspect,
+    tools_array.plot_array(array=tracer.image_plane_images[image_index], mask=mask, positions=positions,
+                           as_subplot=as_subplot,
+                           units=units, kpc_per_arcsec=tracer.image_plane.kpc_per_arcsec_proper, figsize=figsize,
+                           aspect=aspect,
                            cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max,
                            linthresh=linthresh, linscale=linscale,
                            cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,

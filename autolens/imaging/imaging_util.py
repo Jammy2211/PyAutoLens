@@ -202,7 +202,7 @@ def sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(mask, pixel_scal
 def grid_arc_seconds_1d_to_grid_pixels_1d(grid_arc_seconds, shape, pixel_scales):
     """ Converts a grid in coordinates of pixels to a grid in arc seconds.
 
-    The pixel coordinate origin is at the top left corner of an images, whilst the arc-second coordinate origin \
+    The pixel coordinate origin is at the top left corner of an image, whilst the arc-second coordinate origin \
     is at the centre start with negative x and y values from the top-left.
 
     This means that the top-left pixel coordinates, [0, 0], will give negative arc second coordinates.
@@ -229,7 +229,7 @@ def grid_arc_seconds_1d_to_grid_pixels_1d(grid_arc_seconds, shape, pixel_scales)
 def grid_arc_seconds_1d_to_grid_pixel_centres_1d(grid_arc_seconds, shape, pixel_scales):
     """ Converts a grid in coordinates of pixels to a grid in arc seconds.
 
-    The pixel coordinate origin is at the top left corner of an images, whilst the arc-second coordinate origin \
+    The pixel coordinate origin is at the top left corner of an image, whilst the arc-second coordinate origin \
     is at the centre start with negative x and y values from the top-left.
 
     This means that the top-left pixel coordinates, [0, 0], will give negative arc second coordinates.
@@ -256,7 +256,7 @@ def grid_arc_seconds_1d_to_grid_pixel_centres_1d(grid_arc_seconds, shape, pixel_
 def grid_pixels_1d_to_grid_arc_seconds_1d(grid_pixels, shape, pixel_scales):
     """ Converts a grid in coordinates of pixels to a grid in arc seconds.
 
-    The pixel coordinate origin is at the top left corner of an images, whilst the arc-second coordinate origin \
+    The pixel coordinate origin is at the top left corner of an image, whilst the arc-second coordinate origin \
     is at the centre start with negative x and y values from the top-left.
 
     This means that the top-left pixel coordinates, [0, 0], will give negative arc second coordinates.
