@@ -19,8 +19,8 @@ import os
 # galaxies, we should probably model their mass as elliptical. In this example, we'll start using a more realistic
 # lens model.
 
-# In my experience, the simplest lens model (e.g. that has the fewest parameters) that one can fit to a real strong
-# lens and still get a reasonable fit is as follows:
+# In my experience, the simplest lens model (e.g. that has the fewest parameters) that one can fit_normal to a real strong
+# lens and still get a reasonable fit_normal is as follows:
 
 # 1) An elliptical Sersic light-profile for the lens model_galaxy's light.
 # 2) A singular isothermal ellipsoid (SIE) mass-profile for the lens model_galaxy's mass.
@@ -28,9 +28,9 @@ import os
 # over-simplification, but lets worry about that later).
 
 # This has a total of 18 non-linear parameters, which is over double the number of parameters we've fitted up to now.
-# In future exercises, we'll fit even more complex models, with some 20-30+ non-linear parameters.
+# In future exercises, we'll fit_normal even more complex models, with some 20-30+ non-linear parameters.
 
-# The goal of this, rather short, exercise, is to fit this 'realistic' model to a simulated image, where the lens's
+# The goal of this, rather short, exercise, is to fit_normal this 'realistic' model to a simulated image, where the lens's
 # light is visible and mass is elliptical. What could go wrong?
 
 #Setup the path for this run
@@ -69,7 +69,7 @@ image = simulate()
 # When we plot it, the lens light's is clealy visible in the centre of the image
 imaging_plotters.plot_image_subplot(image=image)
 
-# Now lets fit it using a phase, noting that indeed the model_galaxy-model corresponds to the one above.
+# Now lets fit_normal it using a phase, noting that indeed the model_galaxy-model corresponds to the one above.
 
 # Because we now have 18 non-linear parameters. the non-linear search takes a lot longer to run. On my laptop, this
 # phase took around an hour, which is a bit too long for you to wait if you want to go through these tutorials quickly.
@@ -99,12 +99,12 @@ print(results.constant)
 # likelihood than the correct solution? Lets make absolutely sure it doesnt: (you've seen all this code below before,
 # but I've put a few comments to remind you of whats happening)
 
-# Create a lensing image to make the fit - the masks we used above was a 3" circle (we'll come back to this later)
+# Create a lensing image to make the fit_normal - the masks we used above was a 3" circle (we'll come back to this later)
 mask = ma.Mask.circular(shape=image.shape, pixel_scale=image.pixel_scale, radius_mask_arcsec=3.0)
 lensing_image = li.LensingImage(image=image, mask=mask)
 imaging_plotters.plot_image_subplot(lensing_image.image)
 
-# Make the tracer we use to simulate the image
+# Make the tracer_without_subhalo we use to simulate the image
 lens_galaxy = g.Galaxy(light=lp.EllipticalSersic(centre=(0.0, 0.0), axis_ratio=0.9, phi=45.0, intensity=0.04,
                                                          effective_radius=0.5, sersic_index=3.5),
                        mass=mp.EllipticalIsothermal(centre=(0.0, 0.0), axis_ratio=0.8, phi=45.0, einstein_radius=0.8))
@@ -114,7 +114,7 @@ source_galaxy = g.Galaxy(light=lp.EllipticalSersic(centre=(0.0, 0.0), axis_ratio
 tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
                                              image_plane_grids=lensing_image.grids)
 
-# Now, lets fit the lensing image with the tracer and plot the fit. It looks a lot better than above, doesn't it?
+# Now, lets fit_normal the lensing image with the tracer_without_subhalo and plot the fit_normal. It looks a lot better than above, doesn't it?
 fit = lensing_fitting.fit_lensing_image_with_tracer(lensing_image=lensing_image, tracer=tracer)
 lensing_fitting_plotters.plot_fitting_subplot(fit=fit)
 

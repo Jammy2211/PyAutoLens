@@ -13,7 +13,7 @@ from astropy import cosmology
 # new concepts:
 
 # 1) Short-hand notation for setting up profiles and galaxies, to make code cleaner and easier to read.
-# 2) That a tracer can be given any number of galaxies.
+# 2) That a tracer_without_subhalo can be given any number of galaxies.
 # 3) That by specifying redshifts and a cosmology, our results are converted to physical units of kiloparsecs (kpc).
 
 # To begin, lets setup the grids we 'll ray-trace using. Lets do something crazy, and use a
@@ -32,7 +32,7 @@ print(image_plane_grids.sub.shape) # Every image-pixel is sub-gridded by 4x4, so
 
 # 1) A light-profile, meaning its light will appear in the image-plane image.
 # 2) An external shear, which accounts for the deflection of light due to line-of-sight structures.
-# 3) A redshift, which the tracer will use to convert arc second coordinates to kpc.
+# 3) A redshift, which the tracer_without_subhalo will use to convert arc second coordinates to kpc.
 lens_galaxy = g.Galaxy(light=lp.SphericalSersic(centre=(0.0, 0.0), intensity=2.0, effective_radius=0.5,
                                                 sersic_index=2.5),
                        mass=mp.EllipticalIsothermal(centre=(0.0, 0.0), axis_ratio=0.8, phi=90.0, einstein_radius=1.6),
@@ -86,7 +86,7 @@ galaxy_plotters.plot_intensities(galaxy=source_galaxy_1, grid=image_plane_grids.
 # 3) These deflection angles are used to trace every image-grid and sub-grid coordinate to a source-plane coordinate.
 # 4) The light of all source galaxies is ray-traced back forward to form our image-plane image.
 
-# Note that we've also supplied the tracer below with a Planck15 cosmology.
+# Note that we've also supplied the tracer_without_subhalo below with a Planck15 cosmology.
 tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy, lens_satellite],
                                              source_galaxies=[source_galaxy_0, source_galaxy_1],
                                              image_plane_grids=[image_plane_grids], cosmology=cosmology.Planck15)
@@ -97,13 +97,13 @@ plane_plotters.plot_plane_grid(plane=tracer.source_plane, title='Source-plane Gr
 # We can zoom in on the 'centre' of the source-plane (thistime, the lens model_galaxy was centred at (0.0, 0.0)
 plane_plotters.plot_plane_grid(plane=tracer.source_plane, axis_limits=[-0.2, 0.2, -0.2, 0.2], title='Source-plane Grid')
 
-# Lets plot the lensing quantities again. Note that, because we supplied our galaxies with redshifts and our tracer
+# Lets plot the lensing quantities again. Note that, because we supplied our galaxies with redshifts and our tracer_without_subhalo
 # with a cosmology, our units have been conerted to kiloparsecs!
 # (This line can take a bit of time to run)
 ray_tracing_plotters.plot_ray_tracing_subplot(tracer=tracer)
 
-# In the previous example, we saw that the tracer had attributes we plotted (e.g. surface density, potential, etc.)
-# Now we've input a cosmology and model_galaxy redshifts, the tracer has attributes associated with its cosmology.
+# In the previous example, we saw that the tracer_without_subhalo had attributes we plotted (e.g. surface density, potential, etc.)
+# Now we've input a cosmology and model_galaxy redshifts, the tracer_without_subhalo has attributes associated with its cosmology.
 print('Image-plane arcsec-per-kpc:')
 print(tracer.image_plane.arcsec_per_kpc_proper)
 print('Image-plane kpc-per-arcsec:')
@@ -125,10 +125,10 @@ print(tracer.critical_density_kpc)
 
 # And with that, we've completed tutorial 6. Try the following:
 
-# 1) By changing the lens and source model_galaxy redshifts, does the image-plane image of the tracer change at all?
+# 1) By changing the lens and source model_galaxy redshifts, does the image-plane image of the tracer_without_subhalo change at all?
 
 # 2) What happens to the cosmological quantities as you change these redshifts? Do you remember enough of your
 #    cosmology lectures to predict how quantities like the angular diameter distance change as a function of redshift?
 
-# 3) The tracer has a small delay in being computed, whereas other tracers were almost instant. What do you think is
+# 3) The tracer_without_subhalo has a small delay in being computed, whereas other tracers were almost instant. What do you think is
 #    the cause of this slow-down?

@@ -68,7 +68,7 @@ class Phase(object):
 
     def __init__(self, optimizer_class=non_linear.MultiNest, phase_name=None):
         """
-        A phase in an lensing pipeline. Uses the set non_linear optimizer to try to fit models and image passed to it.
+        A phase in an lensing pipeline. Uses the set non_linear optimizer to try to fit_normal models and image passed to it.
 
         Parameters
         ----------
@@ -180,8 +180,8 @@ class Phase(object):
 
             Returns
             -------
-            fit: fitting.Fit
-                How fit the model is and the model
+            fit_normal: fitting.Fit
+                How fit_normal the model is and the model
             """
             if self.should_log:
                 self.log(instance)
@@ -240,7 +240,7 @@ class PhasePositions(Phase):
         Returns
         -------
         result: non_linear.Result
-            A result object comprising the best fit model and other datas.
+            A result object comprising the best fit_normal model and other datas.
         """
         analysis = self.make_analysis(positions=positions, pixel_scale=pixel_scale, previous_results=previous_results)
         result = self.optimizer.fit(analysis)
@@ -261,7 +261,7 @@ class PhasePositions(Phase):
         Returns
         -------
         lensing: Analysis
-            An lensing object that the non-linear optimizer calls to determine the fit of a set of values
+            An lensing object that the non-linear optimizer calls to determine the fit_normal of a set of values
         """
         self.pass_priors(previous_results)
         analysis = self.__class__.Analysis(positions=positions, pixel_scale=pixel_scale, phase_name=self.phase_name,
@@ -278,7 +278,7 @@ class PhasePositions(Phase):
 
         def fit(self, instance):
             """
-            Determine the fit of a lens galaxy and source galaxy to the lensing_image in this lensing.
+            Determine the fit_normal of a lens galaxy and source galaxy to the lensing_image in this lensing.
 
             Parameters
             ----------
@@ -287,8 +287,8 @@ class PhasePositions(Phase):
 
             Returns
             -------
-            fit: Fit
-                A fractional value indicating how well this model fit and the model lensing_image itself
+            fit_normal: Fit
+                A fractional value indicating how well this model fit_normal and the model lensing_image itself
             """
             tracer = self.tracer_for_instance(instance)
             fit = self.fit_for_tracer(tracer)
@@ -320,7 +320,7 @@ class PhaseImaging(Phase):
     def __init__(self, optimizer_class=non_linear.MultiNest, sub_grid_size=1, image_psf_shape=None,
                  pixelization_psf_shape=None, positions=None, mask_function=default_mask_function, phase_name=None):
         """
-        A phase in an lensing pipeline. Uses the set non_linear optimizer to try to fit models and image passed to it.
+        A phase in an lensing pipeline. Uses the set non_linear optimizer to try to fit_normal models and image passed to it.
 
         Parameters
         ----------
@@ -373,7 +373,7 @@ class PhaseImaging(Phase):
         Returns
         -------
         result: non_linear.Result
-            A result object comprising the best fit model and other datas.
+            A result object comprising the best fit_normal model and other datas.
         """
         analysis = self.make_analysis(image=image, previous_results=previous_results)
         result = self.optimizer.fit(analysis)
@@ -396,7 +396,7 @@ class PhaseImaging(Phase):
         Returns
         -------
         lensing: Analysis
-            An lensing object that the non-linear optimizer calls to determine the fit of a set of values
+            An lensing object that the non-linear optimizer calls to determine the fit_normal of a set of values
         """
         mask = self.mask_function(image)
         image = self.modify_image(image, previous_results)
@@ -418,7 +418,7 @@ class PhaseImaging(Phase):
 
         def fit(self, instance):
             """
-            Determine the fit of a lens galaxy and source galaxy to the lensing_image in this lensing.
+            Determine the fit_normal of a lens galaxy and source galaxy to the lensing_image in this lensing.
 
             Parameters
             ----------
@@ -427,8 +427,8 @@ class PhaseImaging(Phase):
 
             Returns
             -------
-            fit: Fit
-                A fractional value indicating how well this model fit and the model lensing_image itself
+            fit_normal: Fit
+                A fractional value indicating how well this model fit_normal and the model lensing_image itself
             """
             self.try_output(instance)
             self.check_positions_trace_within_threshold(instance)
@@ -638,7 +638,7 @@ class LensLightHyperOnlyPhase(LensPlaneHyperPhase, HyperOnly):
         Returns
         -------
         lensing: Analysis
-            An lensing object that the non-linear optimizer calls to determine the fit of a set of values
+            An lensing object that the non-linear optimizer calls to determine the fit_normal of a set of values
         """
         mask = self.mask_function(image)
         image = self.modify_image(image, previous_results)
@@ -726,14 +726,14 @@ class LensSourcePlanePhase(PhaseImaging):
 
             super(LensSourcePlanePhase.Result, self).__init__(constant, likelihood, variable, analysis)
 
-            # self.padded_model_image = self.fit.padded_model_image
+            # self.padded_model_image = self.fit_normal.padded_model_image
 
-            # self.lens_galaxy_padded_model_images = self.fit.padded_model_images_of_galaxies[0]
+            # self.lens_galaxy_padded_model_images = self.fit_normal.padded_model_images_of_galaxies[0]
             # self.lens_subtracted_padded_image = analysis.lensing_image.image - self.padded_model_image
             #
             # # TODO : Need to split lens and source galaxy model image somehow
-            # self.padded_model_image = self.fit.padded_model_image
-            # self.source_galaxy_padded_model_images = self.fit.padded_model_images_of_galaxies_for_tracer
+            # self.padded_model_image = self.fit_normal.padded_model_image
+            # self.source_galaxy_padded_model_images = self.fit_normal.padded_model_images_of_galaxies_for_tracer
             # array_plotters.plot_model_image(self.padded_model_image, output_filename='padded_model_image',
             #                                 output_path=analysis.output_image_path, output_format='png')
 
@@ -867,7 +867,7 @@ class LensMassAndSourceProfileHyperOnlyPhase(LensSourcePlaneHyperPhase, HyperOnl
         Returns
         -------
         lensing: Analysis
-            An lensing object that the non-linear optimizer calls to determine the fit of a set of values
+            An lensing object that the non-linear optimizer calls to determine the fit_normal of a set of values
         """
         mask = self.mask_function(image)
         image = self.modify_image(image, previous_results)
@@ -906,7 +906,7 @@ class GalaxyFitPhase(Phase):
     def __init__(self, galaxy=None, optimizer_class=non_linear.MultiNest, sub_grid_size=1,
                  mask_function=default_mask_function, phase_name=None):
         """
-        A phase in an lensing pipeline. Uses the set non_linear optimizer to try to fit models and image passed to it.
+        A phase in an lensing pipeline. Uses the set non_linear optimizer to try to fit_normal models and image passed to it.
 
         Parameters
         ----------
@@ -935,7 +935,7 @@ class GalaxyFitPhase(Phase):
         Returns
         -------
         result: non_linear.Result
-            A result object comprising the best fit model and other datas.
+            A result object comprising the best fit_normal model and other datas.
         """
         analysis = self.make_analysis(array=array, noise_map=noise_map, previous_results=previous_results)
         result = self.optimizer.fit(analysis)
@@ -956,7 +956,7 @@ class GalaxyFitPhase(Phase):
 
         def fit(self, instance):
             """
-            Determine the fit of a lens galaxy and source galaxy to the lensing_image in this lensing.
+            Determine the fit_normal of a lens galaxy and source galaxy to the lensing_image in this lensing.
 
             Parameters
             ----------
@@ -965,8 +965,8 @@ class GalaxyFitPhase(Phase):
 
             Returns
             -------
-            fit: Fit
-                A fractional value indicating how well this model fit and the model lensing_image itself
+            fit_normal: Fit
+                A fractional value indicating how well this model fit_normal and the model lensing_image itself
             """
             self.try_output(instance)
             return self.fast_likelihood_for_instance(instance)
@@ -990,7 +990,7 @@ class GalaxyFitPhase(Phase):
         @classmethod
         def log(cls, instance):
             logger.debug(
-                "\nRunning galaxy fit for... \n\nGalaxy::\n{}\n\n".format(instance.galaxy))
+                "\nRunning galaxy fit_normal for... \n\nGalaxy::\n{}\n\n".format(instance.galaxy))
 
 
     class Result(Phase.Result):
@@ -1020,7 +1020,7 @@ class GalaxyFitIntensitiesPhase(GalaxyFitPhase):
         Returns
         -------
         lensing: Analysis
-            An lensing object that the non-linear optimizer calls to determine the fit of a set of values
+            An lensing object that the non-linear optimizer calls to determine the fit_normal of a set of values
         """
         mask = self.mask_function(array)
         galaxy_datas = gd.GalaxyDataIntensities(array=array, noise_map=noise_map, mask=mask,
@@ -1048,7 +1048,7 @@ class GalaxyFitSurfaceDensityPhase(GalaxyFitPhase):
         Returns
         -------
         lensing: Analysis
-            An lensing object that the non-linear optimizer calls to determine the fit of a set of values
+            An lensing object that the non-linear optimizer calls to determine the fit_normal of a set of values
         """
         mask = self.mask_function(array)
         galaxy_data = gd.GalaxyDataSurfaceDensity(array=array, noise_map=noise_map, mask=mask,
@@ -1076,7 +1076,7 @@ class GalaxyFitPotentialPhase(GalaxyFitPhase):
         Returns
         -------
         lensing: Analysis
-            An lensing object that the non-linear optimizer calls to determine the fit of a set of values
+            An lensing object that the non-linear optimizer calls to determine the fit_normal of a set of values
         """
         mask = self.mask_function(array)
         galaxy_data = gd.GalaxyDataPotential(array=array, noise_map=noise_map, mask=mask,
@@ -1094,7 +1094,7 @@ class GalaxyFitDeflectionsPhase(Phase):
     def __init__(self, galaxy=None, optimizer_class=non_linear.MultiNest, sub_grid_size=1,
                  mask_function=default_mask_function, phase_name=None):
         """
-        A phase in an lensing pipeline. Uses the set non_linear optimizer to try to fit models and image passed to it.
+        A phase in an lensing pipeline. Uses the set non_linear optimizer to try to fit_normal models and image passed to it.
 
         Parameters
         ----------
@@ -1123,7 +1123,7 @@ class GalaxyFitDeflectionsPhase(Phase):
         Returns
         -------
         result: non_linear.Result
-            A result object comprising the best fit model and other datas.
+            A result object comprising the best fit_normal model and other datas.
         """
         analysis = self.make_analysis(array_y=array_y, array_x=array_x, noise_map=noise_map,
                                       previous_results=previous_results)
@@ -1147,7 +1147,7 @@ class GalaxyFitDeflectionsPhase(Phase):
         Returns
         -------
         lensing: Analysis
-            An lensing object that the non-linear optimizer calls to determine the fit of a set of values
+            An lensing object that the non-linear optimizer calls to determine the fit_normal of a set of values
         """
         mask = self.mask_function(array_y)
         galaxy_data_y = gd.GalaxyDataDeflectionsY(array=array_y, noise_map=noise_map, mask=mask,
@@ -1170,7 +1170,7 @@ class GalaxyFitDeflectionsPhase(Phase):
 
         def fit(self, instance):
             """
-            Determine the fit of a lens galaxy and source galaxy to the lensing_image in this lensing.
+            Determine the fit_normal of a lens galaxy and source galaxy to the lensing_image in this lensing.
 
             Parameters
             ----------
@@ -1179,8 +1179,8 @@ class GalaxyFitDeflectionsPhase(Phase):
 
             Returns
             -------
-            fit: Fit
-                A fractional value indicating how well this model fit and the model lensing_image itself
+            fit_normal: Fit
+                A fractional value indicating how well this model fit_normal and the model lensing_image itself
             """
             self.try_output(instance)
             return self.fast_likelihood_for_instance(instance)
@@ -1206,7 +1206,7 @@ class GalaxyFitDeflectionsPhase(Phase):
         @classmethod
         def log(cls, instance):
             logger.debug(
-                "\nRunning galaxy fit for... \n\nGalaxy::\n{}\n\n".format(instance.galaxy))
+                "\nRunning galaxy fit_normal for... \n\nGalaxy::\n{}\n\n".format(instance.galaxy))
 
 
     class Result(Phase.Result):
