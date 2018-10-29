@@ -15,7 +15,7 @@ import os
 # lens model which fitted our realistic datas-set well. In this tutorial, we're going to right our past wrongs and infer
 # the correct model - not just once, but three times!
 
-# First, lets get the config / simulation / images loading out the way - we'll fit the same images as the previous
+# First, lets get the config / simulation / image loading out the way - we'll fit the same image as the previous
 # tutorial.
 
 #Setup the path for this run
@@ -30,7 +30,7 @@ conf.instance = conf.Config(config_path=path+'/configs/4_dealing_with_failure', 
 # Alternatively, set these running and come back in 10 minutes or so - MultiNest resumes from the existing results on
 # your hard-disk, so you can rerun things to get the results instantly!
 
-# Another simulate images function, for the same images again.
+# Another simulate image function, for the same image again.
 def simulate():
 
     from autolens.imaging import mask
@@ -47,14 +47,14 @@ def simulate():
     source_galaxy = g.Galaxy(light=lp.EllipticalSersic(centre=(0.0, 0.0), axis_ratio=0.5, phi=90.0, intensity=0.03,
                                                        effective_radius=0.3, sersic_index=3.0))
     tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
-                                                 image_plane_grids=image_plane_grids)
+                                                 image_plane_grids=[image_plane_grids])
 
-    image_simulated = im.PreparatoryImage.simulate(array=tracer.image_plane_images_for_simulation, pixel_scale=0.1,
+    image_simulated = im.PreparatoryImage.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=0.1,
                                                    exposure_time=300.0, psf=psf, background_sky_level=0.1, add_noise=True)
 
     return image_simulated
 
-# Simulate the images and set it up.
+# Simulate the image and set it up.
 image = simulate()
 
 ### Approach 1 -  Prior Tuning ###
@@ -76,7 +76,7 @@ class CustomPriorPhase(ph.LensSourcePlanePhase):
         # called our lens model_galaxy 'lens' this time, for shorter more readable code.
 
         # By default, the prior on the x and y coordinates of a light / mass profile is a GaussianPrior with mean
-        # 0.0" and sigma "1.0. However, visual inspection of our strong lens images tells us that its clearly around
+        # 0.0" and sigma "1.0. However, visual inspection of our strong lens image tells us that its clearly around
         # x = 0.0" and y = 0.0", so lets reduce where non-linear search looks for these parameters.
 
         self.lens_galaxies.lens.light.centre_0 = mm.UniformPrior(lower_limit=-0.05, upper_limit=0.05)
@@ -85,7 +85,7 @@ class CustomPriorPhase(ph.LensSourcePlanePhase):
         self.lens_galaxies.lens.mass.centre_1 = mm.UniformPrior(lower_limit=-0.05, upper_limit=0.05)
 
         # By default, the axis-ratio (ellipticity) of our lens model_galaxy's light pofile is a UniformPrior between 0.2 and
-        # 1.0. However, by looking at the images it looks fairly circular, so lets use a GaussianPrior nearer 1.0.
+        # 1.0. However, by looking at the image it looks fairly circular, so lets use a GaussianPrior nearer 1.0.
         self.lens_galaxies.lens.light.axis_ratio = mm.GaussianPrior(mean=0.8, sigma=0.15)
 
         # We'll also assume that the light profile's axis_ratio informs us of the mass-profile's axis_ratio, but
@@ -93,7 +93,7 @@ class CustomPriorPhase(ph.LensSourcePlanePhase):
         self.lens_galaxies.lens.mass.axis_ratio = mm.GaussianPrior(mean=0.8, sigma=0.25)
 
         # By default, the orientation of the model_galaxy's light profile, phi, uses a UniformPrior between 0.0 and
-        # 180.0 degrees. However, if you look really close at the images (and maybe adjust the color-map of the plot),
+        # 180.0 degrees. However, if you look really close at the image (and maybe adjust the color-map of the plot),
         # you'll be able to notice that it is elliptical and that it is oriented around 45.0 degrees counter-clockwise
         # from the x-axis. Lets update our prior
         self.lens_galaxies.lens.light.phi = mm.GaussianPrior(mean=45.0, sigma=15.0)
@@ -103,7 +103,7 @@ class CustomPriorPhase(ph.LensSourcePlanePhase):
 
         # The effective radius of a light profile is its 'half-light' radius, the radius at which 50% of its
         # total luminosity is internal to the circle or ellipse defined within that radius. AutoLens assumes a
-        # UniformPrior on this quantity between 0.0" and 4.0", but inspection of the images (again, using a colormap
+        # UniformPrior on this quantity between 0.0" and 4.0", but inspection of the image (again, using a colormap
         # scaling) shows the lens's light doesn't extend anywhere near 4.0", so lets reduce it.
         self.lens_galaxies.lens.light.effective_radius = mm.GaussianPrior(mean=0.5, sigma=0.8)
 
@@ -189,7 +189,7 @@ lensing_fitting_plotters.plot_fitting_subplot(fit=light_traces_mass_phase_result
 # looks similar to the one above. However, inspection of the residuals shows that the fit wasn't quite as good as the
 # custom-phase above.
 
-# It turns out that when I simulated this images, light didn't perfectly trace mass. The light-profile's axis-ratio was
+# It turns out that when I simulated this image, light didn't perfectly trace mass. The light-profile's axis-ratio was
 # 0.9, whereas the mass-profiles was 0.8. The quality of the fit has suffered as a result, and the likelihood we've
 # inferred is lower.
 #
@@ -200,7 +200,7 @@ lensing_fitting_plotters.plot_fitting_subplot(fit=light_traces_mass_phase_result
 # Again, lets consider the advantages and disadvantages of this approach:
 
 # Advantage - By reducing parameter space's complexity, we inferred the global maximum likelihood.
-# Advantage - The phase is not specific to one lens - we could run it on many strong lens images.
+# Advantage - The phase is not specific to one lens - we could run it on many strong lens image.
 # Disadvantage - Our model was less realistic, and our fit suffered as a result.
 
 

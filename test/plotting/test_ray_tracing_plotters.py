@@ -45,7 +45,7 @@ def test_grids():
 @pytest.fixture(name='tracer')
 def test_tracer(galaxy_light, galaxy_mass, grids):
     return ray_tracing.TracerImageSourcePlanes(lens_galaxies=[galaxy_mass, galaxy_light], source_galaxies=[galaxy_light],
-                                               image_plane_grids=grids)
+                                               image_plane_grids=[grids])
 
 def test__tracer_sub_plot_output_dependent_on_config(tracer, general_config, ray_tracing_plotter_path):
 

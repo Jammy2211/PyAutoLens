@@ -603,8 +603,8 @@ class TestPlane(object):
 
             plane = pl.Plane(galaxies=[galaxy_light], grids=[imaging_grids])
 
-            assert (plane._image_plane_images[0] == lp_image_pixel_0).all()
-            assert (plane._image_plane_images[1] == lp_image_pixel_1).all()
+            assert (plane._image_plane_images[0][0] == lp_image_pixel_0).all()
+            assert (plane._image_plane_images[0][1] == lp_image_pixel_1).all()
             assert (plane.image_plane_images[0] ==
                     imaging_grids.image.scaled_array_from_array_1d(plane._image_plane_images[0])).all()
 
@@ -682,7 +682,8 @@ class TestPlane(object):
             assert (plane._image_plane_images_of_galaxies[0][0] == g0_image).all()
             assert (plane._image_plane_images_of_galaxies[0][1] == g1_image).all()
 
-        def test__same_as_above__use_multiple_grids__get_multiplpe_images(self, imaging_grids, imaging_grids_1):
+        def test__same_as_above__use_multiple_grids__get_multiple_images(self, imaging_grids, imaging_grids_1):
+
             # Overwrite one value so intensity in each pixel is different
             imaging_grids.sub[5] = np.array([2.0, 2.0])
 
@@ -710,6 +711,8 @@ class TestPlane(object):
 
             assert (plane._image_plane_images_of_galaxies[1][0] == g0_image_grid_1).all()
             assert (plane._image_plane_images_of_galaxies[1][1] == g1_image_grid_1).all()
+
+            assert (plane.image_plane_image == plane.image_plane_images[0]).all()
 
         def test__padded_grids_in__image_plane_image_is_padded(self, padded_grids, galaxy_light):
             
@@ -746,6 +749,8 @@ class TestPlane(object):
             assert (plane.image_plane_images_for_simulation[0][2, 1] == lp_image_pixel_9).all()
             assert (plane.image_plane_images_for_simulation[0][2, 2] == lp_image_pixel_10).all()
             assert (plane.image_plane_images_for_simulation[0][2, 3] == lp_image_pixel_11).all()
+
+            assert (plane.image_plane_image_for_simulation == plane.image_plane_images_for_simulation[0]).all()
 
     class TestBlurringImage:
 
@@ -956,7 +961,6 @@ class TestPlane(object):
 
             assert (plane.surface_density[1, 1] == mp_image_pixel_0).all()
             assert (plane.surface_density[1, 2] == mp_image_pixel_1).all()
-
 
     class TestPotential:
 
@@ -1239,14 +1243,14 @@ class TestPlane(object):
         def test__no_galaxies_with_pixelizations_in_plane__returns_none(self, imaging_grids):
             galaxy_no_pix = g.Galaxy()
 
-            plane = pl.Plane(galaxies=[galaxy_no_pix], grids=[imaging_grids], borders=MockBorders())
+            plane = pl.Plane(galaxies=[galaxy_no_pix], grids=[imaging_grids], borders=[MockBorders()])
 
             assert plane.mapper is None
 
         def test__1_galaxy_in_plane__it_has_pixelization__returns_mapper(self, imaging_grids):
             galaxy_pix = g.Galaxy(pixelization=MockPixelization(value=1), regularization=MockRegularization(value=0))
 
-            plane = pl.Plane(galaxies=[galaxy_pix], grids=[imaging_grids], borders=MockBorders())
+            plane = pl.Plane(galaxies=[galaxy_pix], grids=[imaging_grids], borders=[MockBorders()])
 
             assert plane.mapper == 1
 
@@ -1254,7 +1258,7 @@ class TestPlane(object):
             galaxy_pix = g.Galaxy(pixelization=MockPixelization(value=1), regularization=MockRegularization(value=0))
             galaxy_no_pix = g.Galaxy()
 
-            plane = pl.Plane(galaxies=[galaxy_no_pix, galaxy_pix], grids=[imaging_grids], borders=MockBorders())
+            plane = pl.Plane(galaxies=[galaxy_no_pix, galaxy_pix], grids=[imaging_grids], borders=[MockBorders()])
 
             assert plane.mapper == 1
 
@@ -1262,7 +1266,7 @@ class TestPlane(object):
             galaxy_pix_0 = g.Galaxy(pixelization=MockPixelization(value=1), regularization=MockRegularization(value=0))
             galaxy_pix_1 = g.Galaxy(pixelization=MockPixelization(value=2), regularization=MockRegularization(value=0))
 
-            plane = pl.Plane(galaxies=[galaxy_pix_0, galaxy_pix_1], grids=[imaging_grids], borders=MockBorders())
+            plane = pl.Plane(galaxies=[galaxy_pix_0, galaxy_pix_1], grids=[imaging_grids], borders=[MockBorders()])
 
             with pytest.raises(exc.PixelizationException):
                 plane.mapper

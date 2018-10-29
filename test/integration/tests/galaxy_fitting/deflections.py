@@ -12,7 +12,7 @@ from test.integration import tools
 
 dirpath = os.path.dirname(os.path.realpath(__file__))
 dirpath = os.path.dirname(dirpath)
-data_path = '{}/../datas/galaxy_fit'.format(dirpath)
+data_path = '{}/../data/galaxy_fit'.format(dirpath)
 output_path = '{}/../output/galaxy_fit'.format(dirpath)
 
 def simulate_deflections(data_name_y, data_name_x, pixel_scale, galaxy):
@@ -48,18 +48,18 @@ def setup_and_run_phase():
 
     simulate_deflections(data_name_y=data_name_y, data_name_x=data_name_x, pixel_scale=pixel_scale, galaxy=galaxy)
 
-    array_deflections_y = \
+    array_y = \
         scaled_array.ScaledSquarePixelArray.from_fits_with_pixel_scale(file_path=data_path + data_name_y + '.fits',
                                                                        hdu=0, pixel_scale=pixel_scale)
 
-    array_deflections_x = \
+    array_x = \
         scaled_array.ScaledSquarePixelArray.from_fits_with_pixel_scale(file_path=data_path + data_name_x + '.fits',
                                                                        hdu=0, pixel_scale=pixel_scale)
 
-    phase = ph.GalaxyFitSurfaceDensityPhase(dict(galaxy=gm.GalaxyModel(light=mp.EllipticalIsothermal)),
-                              phase_name='deflections')
+    phase = ph.GalaxyFitDeflectionsPhase(dict(galaxy=gm.GalaxyModel(light=mp.EllipticalIsothermal)),
+                                               phase_name='deflections')
 
-    result = phase.run(array=array_deflections, noise_map=np.ones(array_deflections.shape))
+    result = phase.run(array_y=array_y, array_x=array_x, noise_map=np.ones(array_y.shape))
     print(result)
 
 

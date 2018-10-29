@@ -87,7 +87,7 @@ class AbstractTracer(object):
         return list(map(lambda _image_plane_images_of_planes : sum(_image_plane_images_of_planes),
                         self._image_plane_images_of_planes))
 
-    # TODO : It makes the high level code a lot more intuitive if the indexing of images of planes goes 
+    # TODO : It makes the high level code a lot more intuitive if the indexing of image of planes goes
     # TODO : [image_index][plane_index]. Is there a neat dictionary comprehension to do this rather than the loop below?
 
     @property
@@ -129,6 +129,14 @@ class AbstractTracer(object):
     @property
     def deflections_x(self):
         return sum([plane.deflections_x for plane in self.all_planes])
+
+    @property
+    def image_plane_image(self):
+        return self.image_plane_images[0]
+
+    @property
+    def image_plane_image_for_simulation(self):
+        return self.image_plane_images_for_simulation[0]
 
 
 class TracerImagePlane(AbstractTracer):

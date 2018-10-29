@@ -2,7 +2,7 @@ from matplotlib import pyplot as plt
 
 from autolens.plotting import tools_array
 
-def plot_model_image(fit, mask=None, positions=None, as_subplot=False,
+def plot_model_image(fit, image_index=0, mask=None, positions=None, as_subplot=False,
                      units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
                      cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
                      cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
@@ -10,7 +10,7 @@ def plot_model_image(fit, mask=None, positions=None, as_subplot=False,
                      mask_pointsize=10, position_pointsize=10.0,
                      output_path=None, output_format='show', output_filename='fit_model_image'):
 
-    tools_array.plot_array(array=fit.model_datas, mask=mask, positions=positions, as_subplot=as_subplot,
+    tools_array.plot_array(array=fit.model_datas[image_index], mask=mask, positions=positions, as_subplot=as_subplot,
                            units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
                            cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max,
                            linthresh=linthresh, linscale=linscale,
@@ -21,7 +21,7 @@ def plot_model_image(fit, mask=None, positions=None, as_subplot=False,
                            output_path=output_path, output_format=output_format, output_filename=output_filename)
 
 
-def plot_model_image_of_plane(fit, plane_index, mask=None, positions=None, as_subplot=False,
+def plot_model_image_of_plane(fit, image_index=0, plane_index=0, mask=None, positions=None, as_subplot=False,
                               units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
                               cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
                               cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
@@ -29,7 +29,7 @@ def plot_model_image_of_plane(fit, plane_index, mask=None, positions=None, as_su
                               mask_pointsize=10, position_pointsize=10.0,
                               output_path=None, output_format='show', output_filename='fit_model_image_of_plane'):
 
-    tools_array.plot_array(array=fit.model_images_of_planes[plane_index], mask=mask, positions=positions,
+    tools_array.plot_array(array=fit.model_images_of_planes[image_index][plane_index], mask=mask, positions=positions,
                            as_subplot=as_subplot,
                            units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
                            cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max,
@@ -41,7 +41,7 @@ def plot_model_image_of_plane(fit, plane_index, mask=None, positions=None, as_su
                            output_path=output_path, output_format=output_format, output_filename=output_filename)
 
 
-def plot_residuals(fit, mask=None, positions=None, as_subplot=False,
+def plot_residuals(fit, image_index=0, mask=None, positions=None, as_subplot=False,
                    units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
                    cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
                    cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
@@ -49,7 +49,7 @@ def plot_residuals(fit, mask=None, positions=None, as_subplot=False,
                    mask_pointsize=10, position_pointsize=10.0,
                    output_path=None, output_format='show', output_filename='fit_residuals'):
 
-    tools_array.plot_array(array=fit.residuals, mask=mask, positions=positions, as_subplot=as_subplot,
+    tools_array.plot_array(array=fit.residuals[image_index], mask=mask, positions=positions, as_subplot=as_subplot,
                            units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
                            cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max,
                            linthresh=linthresh, linscale=linscale,
@@ -60,7 +60,7 @@ def plot_residuals(fit, mask=None, positions=None, as_subplot=False,
                            output_path=output_path, output_format=output_format, output_filename=output_filename)
 
 
-def plot_chi_squareds(fit, mask=None, positions=None, as_subplot=False,
+def plot_chi_squareds(fit, image_index=0, mask=None, positions=None, as_subplot=False,
                       units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
                       cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
                       cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
@@ -68,7 +68,7 @@ def plot_chi_squareds(fit, mask=None, positions=None, as_subplot=False,
                       mask_pointsize=10, position_pointsize=10.0,
                       output_path=None, output_format='show', output_filename='fit_chi_squareds'):
 
-    tools_array.plot_array(array=fit.chi_squareds, mask=mask, positions=positions, as_subplot=as_subplot,
+    tools_array.plot_array(array=fit.chi_squareds[image_index], mask=mask, positions=positions, as_subplot=as_subplot,
                            units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
                            cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max,
                            linthresh=linthresh, linscale=linscale,
@@ -79,7 +79,7 @@ def plot_chi_squareds(fit, mask=None, positions=None, as_subplot=False,
                            output_path=output_path, output_format=output_format, output_filename=output_filename)
 
 
-def plot_contributions(fit, mask=None, positions=None, as_subplot=False,
+def plot_contributions(fit, image_index=0, mask=None, positions=None, as_subplot=False,
                        units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
                        cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
                        cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
@@ -87,10 +87,10 @@ def plot_contributions(fit, mask=None, positions=None, as_subplot=False,
                        mask_pointsize=10, position_pointsize=10.0,
                        output_path=None, output_format='show', output_filename='fit_contributions'):
 
-    if len(fit.contributions) > 1:
-        contributions = sum(fit.contributions)
+    if len(fit.contributions[image_index]) > 1:
+        contributions = sum(fit.contributions[image_index])
     else:
-        contributions = fit.contributions[0]
+        contributions = fit.contributions[image_index][0]
 
     tools_array.plot_array(array=contributions, mask=mask, positions=positions, as_subplot=as_subplot,
                            units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
@@ -103,7 +103,7 @@ def plot_contributions(fit, mask=None, positions=None, as_subplot=False,
                            output_path=output_path, output_format=output_format, output_filename=output_filename)
 
 
-def plot_scaled_model_image(fit, mask=None, positions=None, as_subplot=False,
+def plot_scaled_model_image(fit, image_index=0, mask=None, positions=None, as_subplot=False,
                             units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
                             cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
                             cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
@@ -111,7 +111,7 @@ def plot_scaled_model_image(fit, mask=None, positions=None, as_subplot=False,
                             mask_pointsize=10, position_pointsize=10.0,
                             output_path=None, output_format='show', output_filename='fit_scaled_model_image'):
 
-    tools_array.plot_array(array=fit.scaled_model_image, mask=mask, positions=positions, as_subplot=as_subplot,
+    tools_array.plot_array(array=fit.scaled_model_images[image_index], mask=mask, positions=positions, as_subplot=as_subplot,
                            units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
                            cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max,
                            linthresh=linthresh, linscale=linscale,
@@ -122,7 +122,7 @@ def plot_scaled_model_image(fit, mask=None, positions=None, as_subplot=False,
                            output_path=output_path, output_format=output_format, output_filename=output_filename)
 
 
-def plot_scaled_residuals(fit, mask=None, positions=None, as_subplot=False,
+def plot_scaled_residuals(fit, image_index=0, mask=None, positions=None, as_subplot=False,
                           units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
                           cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
                           cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
@@ -130,7 +130,7 @@ def plot_scaled_residuals(fit, mask=None, positions=None, as_subplot=False,
                           mask_pointsize=10, position_pointsize=10.0,
                           output_path=None, output_format='show', output_filename='fit_scaled_residuals'):
 
-    tools_array.plot_array(array=fit.scaled_residuals, mask=mask, positions=positions, as_subplot=as_subplot,
+    tools_array.plot_array(array=fit.scaled_residuals[image_index], mask=mask, positions=positions, as_subplot=as_subplot,
                            units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
                            cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max,
                            linthresh=linthresh, linscale=linscale,
@@ -141,7 +141,7 @@ def plot_scaled_residuals(fit, mask=None, positions=None, as_subplot=False,
                            output_path=output_path, output_format=output_format, output_filename=output_filename)
 
 
-def plot_scaled_chi_squareds(fit, mask=None, positions=None, as_subplot=False,
+def plot_scaled_chi_squareds(fit, image_index=0, mask=None, positions=None, as_subplot=False,
                              units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
                              cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
                              cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
@@ -149,7 +149,7 @@ def plot_scaled_chi_squareds(fit, mask=None, positions=None, as_subplot=False,
                              mask_pointsize=10, position_pointsize=10.0,
                              output_path=None, output_format='show', output_filename='fit_scaled_chi_squareds'):
 
-    tools_array.plot_array(array=fit.scaled_chi_squareds, mask=mask, positions=positions, as_subplot=as_subplot,
+    tools_array.plot_array(array=fit.scaled_chi_squareds[image_index], mask=mask, positions=positions, as_subplot=as_subplot,
                            units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
                            cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max,
                            linthresh=linthresh, linscale=linscale,
@@ -160,7 +160,7 @@ def plot_scaled_chi_squareds(fit, mask=None, positions=None, as_subplot=False,
                            output_path=output_path, output_format=output_format, output_filename=output_filename)
 
 
-def plot_scaled_noise_map(fit, mask=None, positions=None, as_subplot=False,
+def plot_scaled_noise_map(fit, image_index=0, mask=None, positions=None, as_subplot=False,
                           units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
                           cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
                           cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
@@ -168,7 +168,7 @@ def plot_scaled_noise_map(fit, mask=None, positions=None, as_subplot=False,
                           mask_pointsize=10, position_pointsize=10.0,
                           output_path=None, output_format='show', output_filename='fit_scaled_noise_map'):
 
-    tools_array.plot_array(array=fit.scaled_noise_maps, mask=mask, positions=positions, as_subplot=as_subplot,
+    tools_array.plot_array(array=fit.scaled_noise_maps[image_index], mask=mask, positions=positions, as_subplot=as_subplot,
                            units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
                            cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max,
                            linthresh=linthresh, linscale=linscale,
@@ -196,6 +196,6 @@ def plot_scaled_noise_map(fit, mask=None, positions=None, as_subplot=False,
 def get_mask(fit, should_plot_mask):
 
     if should_plot_mask:
-        return fit.mask
+        return fit.masks[0]
     else:
         return None

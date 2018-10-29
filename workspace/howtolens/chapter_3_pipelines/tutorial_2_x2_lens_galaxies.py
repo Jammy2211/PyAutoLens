@@ -12,7 +12,7 @@ from autolens.plotting import imaging_plotters
 
 import os
 
-# Up to now, all of the images that we fitted had only one lens model_galaxy. However we saw in chapter 1 that we can
+# Up to now, all of the image that we fitted had only one lens model_galaxy. However we saw in chapter 1 that we can
 # create multiple galaxies which each contribute to the strong lensing. Multi-model_galaxy systems are challenging to
 # model, because you're adding an extra 5-10 parameters to the non-linear search and, more problematically, the
 # degeneracies between the mass-profiles of two galaxies can be severe.
@@ -22,7 +22,7 @@ import os
 # first, before fitting them simultaneously.
 
 # Up to now, I've put a focus on runners being generalizeable. The pipeline we write in this example is going to be
-# the opposite - specific to the images we're modeling. Fitting multiple lens galaxies is really difficult and
+# the opposite - specific to the image we're modeling. Fitting multiple lens galaxies is really difficult and
 # writing a pipeline that we can generalize to many lenses isn't currently possible with PyAutoLens.
 
 # First, lets get our path.
@@ -51,18 +51,18 @@ def simulate():
                                                           einstein_radius=0.8))
     source_galaxy = g.Galaxy(light=lp.SphericalExponential(centre=(0.05, 0.15), intensity=0.2, effective_radius=0.5))
     tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy_0, lens_galaxy_1],
-                                                 source_galaxies=[source_galaxy], image_plane_grids=image_plane_grids)
+                                                 source_galaxies=[source_galaxy], image_plane_grids=[image_plane_grids])
 
-    return im.PreparatoryImage.simulate(array=tracer.image_plane_images_for_simulation, pixel_scale=0.05,
+    return im.PreparatoryImage.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=0.05,
                                         exposure_time=300.0, psf=psf, background_sky_level=0.1, add_noise=True)
 
-# Lets simulate the images we'll fit, which is a new images, finally!
+# Lets simulate the image we'll fit, which is a new image, finally!
 image = simulate()
 
 imaging_plotters.plot_image_subplot(image=image)
 
 
-# Okay, so looking at the images, we clearly see two blobs of light, corresponding to our two lens galaxies. We also
+# Okay, so looking at the image, we clearly see two blobs of light, corresponding to our two lens galaxies. We also
 # see the source's light is pretty complex - the arcs don't posses the rotational symmetry we're used to seeing
 # up to now. Multi-model_galaxy ray-tracing is just a lot more complicated, which means so is modeling them!
 
@@ -73,9 +73,9 @@ imaging_plotters.plot_image_subplot(image=image)
 
 # So, with this in mind, lets build a pipeline composed as follows:
 
-# 1) Fit the lens model_galaxy light profile on the left of the images, at coordinates (0.0, -1.0).
-# 2) Fit the lens model_galaxy light profile on the right of the images, at coordinates (0.0, 1.0).
-# 3) Use this lens-subtracted images to fit the source model_galaxy's light. The mass-profiles of the two lens galaxies can
+# 1) Fit the lens model_galaxy light profile on the left of the image, at coordinates (0.0, -1.0).
+# 2) Fit the lens model_galaxy light profile on the right of the image, at coordinates (0.0, 1.0).
+# 3) Use this lens-subtracted image to fit the source model_galaxy's light. The mass-profiles of the two lens galaxies can
 #    use the results of phases 1 and 2 to initialize its priors.
 # 4) Fit all relevent parameters simultaneously, using priors from phases 1, 2 and 3.
 
@@ -123,14 +123,14 @@ def make_pipeline():
                             optimizer_class=nl.MultiNest, mask_function=mask_function,
                             phase_name=pipeline_name + '/phase_2_right_lens_light')
 
-    # In the next phase, we fit the source of the lens subtracted images.
+    # In the next phase, we fit the source of the lens subtracted image.
     class LensSubtractedPhase(ph.LensSourcePlanePhase):
 
         def modify_image(self, image, previous_results):
             phase_1_results = previous_results[0]
             phase_2_results = previous_results[1]
-            return image - phase_1_results.fit.unmasked_model_profile_images - \
-                   phase_2_results.fit.unmasked_model_profile_images
+            return image - phase_1_results.fit.unmasked_model_profile_image - \
+                   phase_2_results.fit.unmasked_model_profile_image
 
         def pass_priors(self, previous_results):
 
