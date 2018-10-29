@@ -27,7 +27,7 @@ class ArrayGeometry(object):
         The pixel coordinate origin is at the top left corner of the grid, such that the pixel [0,0] corresponds to \
         higher y arc-second coordinate value and lowest x arc-second coordinate.
 
-        The arc-second coordinate origin is at the centre and will correspond to the dimensions of each images divided \
+        The arc-second coordinate origin is at the centre and will correspond to the dimensions of each image divided \
         by two.
 
         Parameters
@@ -45,7 +45,7 @@ class ArrayGeometry(object):
         The pixel coordinate origin is at the top left corner of the grid, such that the pixel [0,0] corresponds to \
         higher y arc-second coordinate value and lowest x arc-second coordinate.
 
-        The arc-second coordinate origin is at the centre and will correspond to the dimensions of each images divided \
+        The arc-second coordinate origin is at the centre and will correspond to the dimensions of each image divided \
         by two.
 
         Parameters
@@ -64,7 +64,7 @@ class ArrayGeometry(object):
         The pixel coordinate origin is at the top left corner of the grid, such that the pixel [0,0] corresponds to \
         higher y arc-second coordinate value and lowest x arc-second coordinate.
 
-        The arc-second coordinate origin is at the centre and will correspond to the dimensions of each images divided \
+        The arc-second coordinate origin is at the centre and will correspond to the dimensions of each image divided \
         by two.
 
         Parameters
@@ -142,7 +142,7 @@ class Array(np.ndarray):
         elif new_shape[0] > self.shape[0] and new_shape[1] > self.shape[1]:
             return self.pad_around_centre(new_shape=new_shape)
         else:
-            raise ValueError('resize_around_centre - one dimensions of the new_shape pads the images, whereas the other'
+            raise ValueError('resize_around_centre - one dimensions of the new_shape pads the image, whereas the other'
                              'trims it - make the trimmed dimension larger.')
 
     def pad_around_centre(self, new_shape):

@@ -516,5 +516,5 @@ def load_imaging_from_path(image_path, noise_map_path, psf_path, pixel_scale, ps
 
 def output_imaging_to_fits(image, image_path, noise_map_path, psf_path, overwrite=False):
     imaging_util.numpy_array_to_fits(array=image, path=image_path, overwrite=overwrite)
-    imaging_util.numpy_array_to_fits(array=image.noise_maps, path=noise_map_path, overwrite=overwrite)
+    imaging_util.numpy_array_to_fits(array=image.noise_map, path=noise_map_path, overwrite=overwrite)
     imaging_util.numpy_array_to_fits(array=image.psf, path=psf_path, overwrite=overwrite)

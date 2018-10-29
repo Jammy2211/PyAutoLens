@@ -537,7 +537,7 @@ class TestScaledNoiseFromContributions:
         contributions = [np.array([1.0, 1.0, 0.5]), np.array([0.25, 0.25, 0.25])]
         hyper_galaxies = [g.HyperGalaxy(contribution_factor=1.0, noise_factor=1.0, noise_power=2.0),
                           g.HyperGalaxy(contribution_factor=1.0, noise_factor=2.0, noise_power=1.0)]
-        scaled_noises = fitting.scaled_noises_from_fitting_hyper_images_hyper_galaxies_and_contributions(
+        scaled_noises = fitting.scaled_noises_from_fitting_hyper_images_contributions_and_hyper_galaxies(
             fitting_hyper_images=[fitting_hyper_image], contributions=[contributions], hyper_galaxies=hyper_galaxies)
 
         assert (scaled_noises[0] == np.array([2.5, 2.5, 1.75])).all()
@@ -553,7 +553,7 @@ class TestScaledNoiseFromContributions:
         contributions_1 = [np.array([1.0, 1.0, 0.5]), np.array([0.25, 0.25, 0.25])]
         hyper_galaxies = [g.HyperGalaxy(contribution_factor=1.0, noise_factor=1.0, noise_power=2.0),
                           g.HyperGalaxy(contribution_factor=1.0, noise_factor=2.0, noise_power=1.0)]
-        scaled_noises = fitting.scaled_noises_from_fitting_hyper_images_hyper_galaxies_and_contributions(
+        scaled_noises = fitting.scaled_noises_from_fitting_hyper_images_contributions_and_hyper_galaxies(
             fitting_hyper_images=[fitting_hyper_image_0, fitting_hyper_image_1],
             contributions=[contributions_0, contributions_1], hyper_galaxies=hyper_galaxies)
 

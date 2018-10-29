@@ -26,7 +26,7 @@ def test_imaging_plotter_setup():
 
     return imaging_plotter_path
 
-@pytest.fixture(name='images')
+@pytest.fixture(name='image')
 def test_image():
 
     image = scaled_array.ScaledSquarePixelArray(array=np.ones((3,3)), pixel_scale=1.0)
@@ -40,7 +40,7 @@ def test_positions():
     positions = [[[0.1, 0.1], [0.2, 0.2]], [[0.3, 0.3]]]
     return list(map(lambda position_set: np.asarray(position_set), positions))
 
-@pytest.fixture(name='masks')
+@pytest.fixture(name='mask')
 def test_mask():
     return msk.Mask.circular(shape=((3,3)), pixel_scale=0.1, radius_mask_arcsec=0.1)
 
@@ -49,8 +49,8 @@ def test__image_sub_plot_output_dependent_on_config(image, general_config, imagi
 
     imaging_plotters.plot_image_subplot(image=image, output_path=imaging_plotter_path, output_format='png')
 
-    assert os.path.isfile(path=imaging_plotter_path+'images.png')
-    os.remove(path=imaging_plotter_path+'images.png')
+    assert os.path.isfile(path=imaging_plotter_path+'image.png')
+    os.remove(path=imaging_plotter_path+'image.png')
 
 def test__image_individuals__output_dependent_on_config(image, general_config, imaging_plotter_path):
 

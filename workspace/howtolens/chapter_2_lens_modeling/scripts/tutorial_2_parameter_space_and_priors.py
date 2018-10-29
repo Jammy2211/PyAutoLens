@@ -11,7 +11,7 @@ from autolens.plotting import lensing_fitting_plotters
 
 import os
 
-# In the previous example, we used a non-linear search to infer the best-fit lens model to a strong lens images. In this
+# In the previous example, we used a non-linear search to infer the best-fit lens model to a strong lens image. In this
 # example, we'll get a deeper intuition of how a non-linear search works.
 
 # First, I want to develop the idea of a 'parameter space'. Lets think of a function, like the simple function below:
@@ -89,7 +89,7 @@ path = '{}/../'.format(os.path.dirname(os.path.realpath(__file__)))
 # First, we'll setup the config-overrides, so the non-linear search runs fast. Again, just ignore this for now.
 conf.instance = conf.Config(config_path=path+'configs/2_parameter_space_and_priors', output_path=path+"output")
 
-# This function simulates the images we'll fit in this tutorial - which is identical to the previous tutorial.
+# This function simulates the image we'll fit in this tutorial - which is identical to the previous tutorial.
 def simulate():
 
     from autolens.imaging import mask
@@ -103,14 +103,14 @@ def simulate():
     lens_galaxy = g.Galaxy(mass=mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=1.6))
     source_galaxy = g.Galaxy(light=lp.SphericalExponential(centre=(0.0, 0.0), intensity=0.2, effective_radius=0.2))
     tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
-                                                 image_plane_grids=image_plane_grids)
+                                                 image_plane_grids=[image_plane_grids])
 
-    image_simulated = im.PreparatoryImage.simulate(array=tracer.image_plane_images_for_simulation, pixel_scale=0.1,
+    image_simulated = im.PreparatoryImage.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=0.1,
                                                    exposure_time=300.0, psf=psf, background_sky_level=0.1, add_noise=True)
 
     return image_simulated
 
-# Again, lets setup the simulated images
+# Again, lets setup the simulated image
 image = simulate()
 imaging_plotters.plot_image_subplot(image=image)
 

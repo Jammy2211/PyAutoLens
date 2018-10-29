@@ -45,7 +45,7 @@ path = '{}/../'.format(os.path.dirname(os.path.realpath(__file__)))
 
 conf.instance = conf.Config(config_path=path+'/configs/5_linking_phases', output_path=path+"output")
 
-# Another simulate images function, for the same images again.
+# Another simulate image function, for the same image again.
 def simulate():
 
     from autolens.imaging import mask
@@ -62,14 +62,14 @@ def simulate():
     source_galaxy = g.Galaxy(light=lp.EllipticalSersic(centre=(0.0, 0.0), axis_ratio=0.5, phi=90.0, intensity=0.03,
                                                        effective_radius=0.3, sersic_index=3.0))
     tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
-                                                 image_plane_grids=image_plane_grids)
+                                                 image_plane_grids=[image_plane_grids])
 
-    image_simulated = im.PreparatoryImage.simulate(array=tracer.image_plane_images_for_simulation, pixel_scale=0.1,
+    image_simulated = im.PreparatoryImage.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=0.1,
                                                    exposure_time=300.0, psf=psf, background_sky_level=0.1, add_noise=True)
 
     return image_simulated
 
-# Simulate the images and set it up.
+# Simulate the image and set it up.
 image = simulate()
 imaging_plotters.plot_image_subplot(image=image)
 
@@ -79,7 +79,7 @@ class LightTracesMassPhase(ph.LensSourcePlanePhase):
 
     def pass_priors(self, previous_results):
 
-        # As we've eluded to before, one can look at an images and immediately identify the centre of the lens
+        # As we've eluded to before, one can look at an image and immediately identify the centre of the lens
         # model_galaxy. It's that bright blob of light surrounded by the lensed source model_galaxy! Given that we know we're going
         # to make the lens model more complex in the next phase, lets take a liberal approach to the lens centre and
         # fix it to (x,y) = (0.0", 0.0").
@@ -95,7 +95,7 @@ class LightTracesMassPhase(ph.LensSourcePlanePhase):
         # What if the centre of their lens model_galaxy isn't at (0.0", 0.0")?
 
         # Well, this is true if our datas reduction centres the lens model_galaxy somewhere else. But we get to choose where
-        # we centre it when we make the images. Therefore, I'd recommend you always centre the lens model_galaxy at the same
+        # we centre it when we make the image. Therefore, I'd recommend you always centre the lens model_galaxy at the same
         # location, and (0.0", 0.0") seems the best choice!
 
         # We also discussed that the Sersic index of most lens galaxies is around 4. Lets be liberal and fix it to
@@ -184,7 +184,7 @@ lensing_fitting_plotters.plot_fitting_subplot(fit=phase_2_results.fit)
 # tune phase 2's priors.
 
 # You're probably thinking though, that there is one huge, giant, glaring flaw in all of this that I've not mentioned.
-# Phase 2 can't be generalized to another lens - it's priors are tuned to the images we fitted. If we had a lot of
+# Phase 2 can't be generalized to another lens - it's priors are tuned to the image we fitted. If we had a lot of
 # lenses, we'd have to write a new phase_2 for every single one. This isn't ideal, is it?
 
 # Well, let me reassure you, that PyAutoLens has you covered. In the next set of tutorials, we'll cover 'runners'. As

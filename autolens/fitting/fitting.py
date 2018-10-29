@@ -90,7 +90,7 @@ class AbstractDataFit(AbstractFit):
 
     def __init__(self, fitting_datas, _model_datas):
 
-        self.datas = fitting_datas.array
+        self.datas = list(map(lambda fit_data : fit_data.array, fitting_datas))
         super(AbstractDataFit, self).__init__(fitting_datas=fitting_datas, _model_datas=_model_datas)
 
 
@@ -112,16 +112,18 @@ class AbstractImageFit(AbstractFit):
 
 class AbstractHyperFit(object):
 
-    def __init__(self, fitting_hyper_image, hyper_galaxies):
+    def __init__(self, fitting_hyper_images, hyper_galaxies):
 
         self.is_hyper_fit = True
-        self._contributions = contributions_from_hyper_images_and_galaxies(fitting_hyper_image.hyper_model_image,
-                              fitting_hyper_image.hyper_galaxy_images, hyper_galaxies,
-                              fitting_hyper_image.hyper_minimum_values)
+        self._contributions = \
+            contributions_from_fitting_hyper_images_and_hyper_galaxies(fitting_hyper_images=fitting_hyper_images,
+                                                                       hyper_galaxies=hyper_galaxies)
 
-        self._scaled_noise_maps = scaled_noise_from_hyper_galaxies_and_contributions(self._contributions,
-                                                                                     hyper_galaxies,
-                                                                                     fitting_hyper_image.noise_maps)
+
+        self._scaled_noise_maps =\
+            scaled_noises_from_fitting_hyper_images_contributions_and_hyper_galaxies(
+                fitting_hyper_images=fitting_hyper_images, contributions=self._contributions,
+                hyper_galaxies=hyper_galaxies)
 
     @property
     def scaled_chi_squared_terms(self):
@@ -143,7 +145,12 @@ class AbstractHyperFit(object):
 
     @property
     def contributions(self):
-        return map_arrays_to_scaled_arrays(_arrays=self._contributions, map_to_scaled_arrays=self.map_to_scaled_arrays)
+        contributions = [[] for _ in range(len(self._contributions))]
+        for image_index in range(len(contributions)):
+            contributions[image_index] = list(map(lambda _contributions :
+                                                  self.map_to_scaled_arrays[image_index](_contributions),
+                                                  self._contributions[image_index]))
+        return contributions
 
     @property
     def scaled_noise_map(self):
@@ -153,11 +160,12 @@ class AbstractHyperFit(object):
     def scaled_chi_squared(self):
         return self.scaled_chi_squareds[0]
 
+
 class AbstractHyperImageFit(AbstractImageFit, AbstractHyperFit):
 
     def __init__(self, fitting_hyper_images, _model_images, hyper_galaxies):
 
-       AbstractHyperFit.__init__(self=self, fitting_hyper_image=fitting_hyper_images, hyper_galaxies=hyper_galaxies)
+       AbstractHyperFit.__init__(self=self, fitting_hyper_images=fitting_hyper_images, hyper_galaxies=hyper_galaxies)
        super(AbstractHyperImageFit, self).__init__(fitting_images=fitting_hyper_images, _model_images=_model_images)
        self._scaled_chi_squareds = chi_squareds_from_residuals_and_noise_maps(self._residuals, self._scaled_noise_maps)
 
@@ -183,7 +191,7 @@ class AbstractInversionFit(AbstractImageFit):
         mapper=mapper, regularization=regularization)
 
         super(AbstractInversionFit, self).__init__(fitting_images=fitting_images,
-                                                   _model_images=self.inversion.reconstructed_data_vector)
+                                                   _model_images=[self.inversion.reconstructed_data_vector])
 
     @property
     def likelihoods_with_regularization(self):
@@ -275,6 +283,9 @@ class AbstractProfileInversionFit(AbstractImageFit):
 def map_arrays_to_scaled_arrays(_arrays, map_to_scaled_arrays):
     return list(map(lambda _array, map_to_scaled_array, : map_to_scaled_array(_array), _arrays, map_to_scaled_arrays))
 
+def map_contributions_to_scaled_arrays(_contributions, map_to_scaled_array):
+    return list(map(lambda _contribution : map_to_scaled_array(_contribution), _contributions))
+
 def blur_images_including_blurring_regions(images, blurring_images, convolvers):
     """For a given lensing_image and blurring region, convert them to 2D and blur with the PSF, then return as
     the 1D DataGrid.
@@ -308,7 +319,7 @@ def residuals_from_datas_and_model_datas(datas, model_datas):
 
 def chi_squareds_from_residuals_and_noise_maps(residuals, noise_maps):
     """Computes a chi-squared lensing_image, by calculating the squared residuals between an observed charge injection \
-    images and post-cti hyper_model_image lensing_image and dividing by the variance (noises**2.0) in each pixel.
+    image and post-cti hyper_model_image lensing_image and dividing by the variance (noises**2.0) in each pixel.
 
     Chi_Sq = ((Residuals) / (Noise)) ** 2.0 = ((Data - Model)**2.0)/(Variances)
 
@@ -424,7 +435,7 @@ def contributions_from_hyper_images_and_galaxies(hyper_model_image, hyper_galaxy
                     hyper.contributions_from_hyper_images(hyper_model_image, galaxy_image, minimum_value),
                     hyper_galaxies, hyper_galaxy_images, minimum_values))
 
-def scaled_noises_from_fitting_hyper_images_hyper_galaxies_and_contributions(fitting_hyper_images, contributions,
+def scaled_noises_from_fitting_hyper_images_contributions_and_hyper_galaxies(fitting_hyper_images, contributions,
                                                                              hyper_galaxies):
     return list(map(lambda hyp, contribution :
                     scaled_noise_from_hyper_galaxies_and_contributions(contributions=contribution,

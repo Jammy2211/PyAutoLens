@@ -11,7 +11,7 @@ def plot_image_subplot(image, mask=None, positions=None,
                        cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
                        titlesize=10, xlabelsize=10, ylabelsize=10, xyticksize=10,
                        mask_pointsize=10, position_pointsize=10.0, grid_pointsize=1,
-                       output_path=None, output_filename='images', output_format='show', ignore_config=True):
+                       output_path=None, output_filename='image', output_format='show', ignore_config=True):
     """Plot the observed _datas of an analysis, using the *Image* class object.
 
     The visualization and output type can be fully customized.
@@ -156,7 +156,7 @@ def plot_noise_map(image, mask=None, as_subplot=False,
                    mask_pointsize=10,
                    output_path=None, output_format='show', output_filename='noise_map'):
 
-    tools_array.plot_array(array=image.noise_maps, mask=mask, as_subplot=as_subplot,
+    tools_array.plot_array(array=image.noise_map, mask=mask, as_subplot=as_subplot,
                            units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
                            cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max,
                            linthresh=linthresh, linscale=linscale,
