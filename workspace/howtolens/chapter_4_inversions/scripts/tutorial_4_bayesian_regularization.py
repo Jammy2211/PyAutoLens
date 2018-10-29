@@ -11,7 +11,7 @@ from autolens.inversion import regularization as reg
 from autolens.plotting import lensing_fitting_plotters
 from autolens.plotting import inversion_plotters
 
-# So, we've seen that we can use an inversion to reconstruct an images. Furthermore, this reconstruction provides
+# So, we've seen that we can use an inversion to reconstruct an image. Furthermore, this reconstruction provides
 # us with the 'best-fit' solution. And, indeed, when we inspect the fit with the fitting module, we see residuals
 # indicative of a good fit.
 
@@ -37,9 +37,9 @@ def simulate():
 
     tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy],
                                                  source_galaxies=[source_galaxy_0],
-                                                 image_plane_grids=image_plane_grids)
+                                                 image_plane_grids=[image_plane_grids])
 
-    return im.PreparatoryImage.simulate(array=tracer.image_plane_images_for_simulation, pixel_scale=0.05,
+    return im.PreparatoryImage.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=0.05,
                                         exposure_time=300.0, psf=psf, background_sky_level=0.1, add_noise=True)
 
 # We're going to perform a lot of fits using an inversion this tutorial. This would create a lot of code, so to keep
@@ -53,7 +53,7 @@ def perform_fit_with_source_galaxy(source_galaxy):
     lens_galaxy = g.Galaxy(
         mass=mp.EllipticalIsothermal(centre=(0.0, 0.0), axis_ratio=0.8, phi=135.0, einstein_radius=1.6))
     tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
-                                                 image_plane_grids=lensing_image.grids, borders=lensing_image.borders)
+                                                 image_plane_grids=[lensing_image.grids], borders=[lensing_image.borders])
     return lensing_fitting.fit_lensing_image_with_tracer(lensing_image=lensing_image, tracer=tracer)
 
 # Okay, so lets look at our fit from the previous tutorial in more detail. We'll use a higher resolution 40 x 40 grid.
@@ -69,7 +69,7 @@ no_regularization_fit = perform_fit_with_source_galaxy(source_galaxy=source_gala
 lensing_fitting_plotters.plot_fitting_subplot(fit=no_regularization_fit)
 
 # So, whats happening here, and why does removing regularization do this to our source reconstruction? When our
-# inversion  reconstructs a source, it doesn't *just* compute the set of fluxes that best-fit the images. It is also
+# inversion  reconstructs a source, it doesn't *just* compute the set of fluxes that best-fit the image. It is also
 # 'regularized', whereby we go to every pixel on our rectangular grid and compare its reconstructed flux with its
 # neighboring pixels. If the difference in flux is large, we penalize this solution, reducing its likelihood. You can
 #  think of this as us  smoothing' our solution.
@@ -80,7 +80,7 @@ lensing_fitting_plotters.plot_fitting_subplot(fit=no_regularization_fit)
 # omitted.
 
 # Why do we need to regularize our solution? Well, we just saw why - if we don't apply this smoothing, we 'over-fit'
-# the images. More specifically, we over-fit the noise in the images - which is what the the large flux values located
+# the image. More specifically, we over-fit the noise in the image - which is what the the large flux values located
 # at the exteriors of the source reconstruction are doing. Think about it - if your sole aim is to maximize the
 # likelihood, the best way to do this is to fit *everything* accurately, including the noise.
 
@@ -90,9 +90,9 @@ inversion_plotters.plot_reconstructed_pixelization(inversion=no_regularization_f
                                                    norm_max=1.0, norm_min=-1.0)
 
 # Over-fitting is why regularization is necessary - solutions like this would completely ruin our attempts to model a
-# strong lens. By smoothing our source reconstruction, we ensure it doesn't fit the noise in the images. If we set a
+# strong lens. By smoothing our source reconstruction, we ensure it doesn't fit the noise in the image. If we set a
 # really high regularization coefficient, we can completely remove over-fitting, at the expense of also fitting the
-# images less accurately.
+# image less accurately.
 source_galaxy = g.Galaxy(pixelization=pix.Rectangular(shape=(40, 40)),
                          regularization=reg.Constant(coefficients=(100.0,)))
 high_regularization_fit = perform_fit_with_source_galaxy(source_galaxy=source_galaxy)
@@ -113,7 +113,7 @@ print(high_regularization_fit.likelihoods_with_regularization)
 
 # - First, it requires that the residuals of the fit are consistent with Gaussian noise (which is the noise expected
 #   in CCD imaging). If this Gaussian pattern is not visible in the residuals, it tells us that the noise must have been
-#   over-fitted. Thus, the Bayesian evidence decreases. Obviously, if the images is poorly fitted, the residuals don't
+#   over-fitted. Thus, the Bayesian evidence decreases. Obviously, if the image is poorly fitted, the residuals don't
 #   be Gaussian either, but the poor fit will lead to a decrease in Bayesian evidence decreases all the same!
 
 # - This leaves us with a large number of solutions which all fit the datas equally well (e.g., to the noise level). To
@@ -122,7 +122,7 @@ print(high_regularization_fit.likelihoods_with_regularization)
 #   fit, the Bayesian evidence decreases. It penalizes solutions which are complex, which, in a Bayesian sense, are less
 #   probable (you may want to look up 'Occam's Razor').
 
-# If a really complex source reconstruction is paramount to fitting the images accurately, than that is probably the
+# If a really complex source reconstruction is paramount to fitting the image accurately, than that is probably the
 # correct solution. However, the Bayesian evidence ensures we only invoke this more complex solution when the datas
 # necessitates it.
 
@@ -141,7 +141,7 @@ print(high_regularization_fit.evidences)
 
 # The linear part of the linear inversion solves for the 'best-fit' solution. For a given regularizaton coefficient,
 # this includes the regularization pattern. That is, we linearly reconstruct the combination of source-pixel fluxes
-# that best-fit the images *including* the penalty term due to comparing neighboring source-pixel fluxes.
+# that best-fit the image *including* the penalty term due to comparing neighboring source-pixel fluxes.
 
 # However, determining the regularization coefficient that maximizes the Bayesian evidence remains a non-linear
 # problem, and it thus becomes a part of our non-linear search. The Bayesian evidence also depends on the source
@@ -151,7 +151,7 @@ print(high_regularization_fit.evidences)
 # Here are a few questions for you to think about.
 
 # 1) We maximize the evidence by using simpler source reconstructions. Therefore, decreasing the pixel-grid size should
-#    provide a higher evidence, provided it still has enough resolution to fit the images well (and provided that the
+#    provide a higher evidence, provided it still has enough resolution to fit the image well (and provided that the
 #    regularization coefficient is still an appropriate value). Can you increase the evidence from the value above by
 #    changing these parameters - I've set you up with a code to do so below.
 
@@ -166,5 +166,5 @@ print(fit.evidences)
 lensing_fitting_plotters.plot_fitting_subplot(fit=fit)
 
 # 2) Can you think of any other ways we might increase the evidence even further? If not - don't worry about - but
-#    you'll learn that PyAutoLens actually adapts its source reconstructions to the properties of the images that it is
+#    you'll learn that PyAutoLens actually adapts its source reconstructions to the properties of the image that it is
 #    fitting, so as to objectively maximize the evidence!

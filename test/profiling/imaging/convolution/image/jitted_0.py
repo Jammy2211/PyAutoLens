@@ -160,7 +160,7 @@ class ConvolverOriginal(object):
         Returns
         -------
         convolver_image: KernelConvolver
-            An object used to convolve_image images
+            An object used to convolve_image image
         """
         return KernelConvolver(kernel, self.frame_array, self.blurring_frame_array)
 

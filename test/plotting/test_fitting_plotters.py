@@ -31,7 +31,7 @@ def test_fitting_plotter_setup():
 
     return galaxy_plotter_path
 
-@pytest.fixture(name='images')
+@pytest.fixture(name='image')
 def test_image():
 
     image = scaled_array.ScaledSquarePixelArray(array=np.ones((3,3)), pixel_scale=1.0)
@@ -40,7 +40,7 @@ def test_image():
 
     return im.Image(array=image, pixel_scale=1.0, noise_map=noise_map, psf=psf)
 
-@pytest.fixture(name='masks')
+@pytest.fixture(name='mask')
 def test_mask():
     return msk.Mask.circular(shape=((3, 3)), pixel_scale=0.1, radius_mask_arcsec=0.1)
 
@@ -51,7 +51,7 @@ def test_fitting_image(image, mask):
 
 @pytest.fixture(name='fit')
 def test_fit(fitting_image):
-    return fitting.AbstractImageFit(fitting_image=fitting_image, _model_images=np.ones(5))
+    return fitting.AbstractImageFit(fitting_images=[fitting_image], _model_images=[np.ones(5)])
 
 @pytest.fixture(name='hyper')
 def make_hyper():
@@ -80,7 +80,7 @@ def test_fitting_hyper_image(image, mask, hyper):
 
 @pytest.fixture(name='fit_hyper')
 def test_fit_hyper(fitting_hyper_image, hyper):
-    return fitting.AbstractHyperImageFit(fitting_hyper_images=fitting_hyper_image, _model_images=np.ones(5),
+    return fitting.AbstractHyperImageFit(fitting_hyper_images=[fitting_hyper_image], _model_images=[np.ones(5)],
                                          hyper_galaxies=[hyper.hyper_galaxy.hyper_galaxy])
 
 

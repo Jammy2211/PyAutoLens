@@ -83,7 +83,7 @@ class Convolver(object):
 
     Whilst the scheme above accounts for all blurred light within the masks, it does not account for the fact that
     pixels outside of the masks will also blur light into it. For model_galaxy light profiles, this effect is accounted for \
-    using blurring frames, however it is omitted for mapping_matrix matrix images.
+    using blurring frames, however it is omitted for mapping_matrix matrix image.
 
     First, a blurring masks is computed from a masks, which describes all pixels which are close enough to the masks \
     to blur light into it for a given psf size. Following the howtolens above, the following blurring masks is \

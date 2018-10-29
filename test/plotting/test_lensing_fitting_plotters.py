@@ -46,7 +46,7 @@ def test_galaxy_mass():
 def test_grids():
     return msk.ImagingGrids.from_shape_and_pixel_scale(shape=(100, 100), pixel_scale=0.05, sub_grid_size=2)
 
-@pytest.fixture(name='images')
+@pytest.fixture(name='image')
 def test_image():
 
     image = scaled_array.ScaledSquarePixelArray(array=np.ones((3,3)), pixel_scale=1.0)
@@ -60,7 +60,7 @@ def test_positions():
     positions = [[[0.1, 0.1], [0.2, 0.2]], [[0.3, 0.3]]]
     return list(map(lambda position_set: np.asarray(position_set), positions))
 
-@pytest.fixture(name='masks')
+@pytest.fixture(name='mask')
 def test_mask():
     return msk.Mask.circular(shape=((3,3)), pixel_scale=0.1, radius_mask_arcsec=0.1)
 
@@ -70,14 +70,14 @@ def test_lensing_image(image, mask):
 
 @pytest.fixture(name='fit_lens_only')
 def test_fit_lens_only(lensing_image, galaxy_light):
-    tracer = ray_tracing.TracerImagePlane(lens_galaxies=[galaxy_light], image_plane_grids=lensing_image.grids,
+    tracer = ray_tracing.TracerImagePlane(lens_galaxies=[galaxy_light], image_plane_grids=[lensing_image.grids],
                                           cosmology=cosmo.Planck15)
     return lensing_fitting.fit_lensing_image_with_tracer(lensing_image=lensing_image, tracer=tracer)
 
 @pytest.fixture(name='fit_source_and_lens')
 def test_fit_source_and_lens(lensing_image, galaxy_light, galaxy_mass):
     tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[galaxy_mass], source_galaxies=[galaxy_light],
-                                               image_plane_grids=lensing_image.grids, cosmology=cosmo.Planck15)
+                                               image_plane_grids=[lensing_image.grids], cosmology=cosmo.Planck15)
     return lensing_fitting.fit_lensing_image_with_tracer(lensing_image=lensing_image, tracer=tracer)
 
 @pytest.fixture(name='hyper')
@@ -107,7 +107,7 @@ def test_lensing_hyper_image(image, mask, hyper):
 @pytest.fixture(name='fit_hyper_lens_only')
 def test_fit_hyper_lens_only(lensing_hyper_image, hyper):
     tracer = ray_tracing.TracerImagePlane(lens_galaxies=[hyper.hyper_galaxy],
-                                          image_plane_grids=lensing_hyper_image.grids)
+                                          image_plane_grids=[lensing_hyper_image.grids])
     return lensing_fitting.fit_lensing_image_with_tracer(lensing_image=lensing_hyper_image, tracer=tracer)
 
 

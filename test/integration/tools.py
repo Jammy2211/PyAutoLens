@@ -17,7 +17,7 @@ def reset_paths(data_name, pipeline_name, output_path):
     conf.instance.output_path = output_path
 
     try:
-        shutil.rmtree(dirpath + '/datas' + data_name)
+        shutil.rmtree(dirpath + '/data' + data_name)
     except FileNotFoundError:
         pass
 
@@ -27,7 +27,7 @@ def reset_paths(data_name, pipeline_name, output_path):
         pass
 
 def simulate_integration_image(data_name, pixel_scale, lens_galaxies, source_galaxies, target_signal_to_noise):
-    output_path = "{}/datas/".format(os.path.dirname(os.path.realpath(__file__))) + data_name + '/'
+    output_path = "{}/data/".format(os.path.dirname(os.path.realpath(__file__))) + data_name + '/'
     psf_shape = (11, 11)
     image_shape = (150, 150)
 
@@ -40,16 +40,16 @@ def simulate_integration_image(data_name, pixel_scale, lens_galaxies, source_gal
 
     if not source_galaxies:
 
-        tracer = ray_tracing.TracerImagePlane(lens_galaxies=lens_galaxies, image_plane_grids=image_grids)
+        tracer = ray_tracing.TracerImagePlane(lens_galaxies=lens_galaxies, image_plane_grids=[image_grids])
 
     elif source_galaxies:
 
         tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=lens_galaxies, source_galaxies=source_galaxies,
-                                                     image_plane_grids=image_grids)
+                                                     image_plane_grids=[image_grids])
 
     ### Setup as a simulated image_coords and output as a fits for an lensing ###
 
-    sim_image = im.PreparatoryImage.simulate_to_target_signal_to_noise(array=tracer.image_plane_images_for_simulation,
+    sim_image = im.PreparatoryImage.simulate_to_target_signal_to_noise(array=tracer.image_plane_images_for_simulation[0],
                                                                        pixel_scale=pixel_scale,
                                                                        target_signal_to_noise=target_signal_to_noise,
                                                                        effective_exposure_map=np.ones(image_shape),
@@ -59,16 +59,16 @@ def simulate_integration_image(data_name, pixel_scale, lens_galaxies, source_gal
     if os.path.exists(output_path) == False:
         os.makedirs(output_path)
 
-    imaging_util.numpy_array_to_fits(sim_image, path=output_path + 'images.fits')
-    imaging_util.numpy_array_to_fits(sim_image.noise_maps, path=output_path + 'noise_map.fits')
+    imaging_util.numpy_array_to_fits(sim_image, path=output_path + 'image.fits')
+    imaging_util.numpy_array_to_fits(sim_image.noise_map, path=output_path + 'noise_map.fits')
     imaging_util.numpy_array_to_fits(psf, path=output_path + '/psf.fits')
     imaging_util.numpy_array_to_fits(sim_image.effective_exposure_map, path=output_path + 'exposure_map.fits')
 
 
 def load_image(data_name, pixel_scale):
-    data_dir = "{}/datas/{}".format(dirpath, data_name)
+    data_dir = "{}/data/{}".format(dirpath, data_name)
 
-    data = scaled_array.ScaledSquarePixelArray.from_fits_with_pixel_scale(file_path=data_dir + '/images.fits', hdu=0,
+    data = scaled_array.ScaledSquarePixelArray.from_fits_with_pixel_scale(file_path=data_dir + '/image.fits', hdu=0,
                                                                           pixel_scale=pixel_scale)
     noise = scaled_array.ScaledSquarePixelArray.from_fits_with_pixel_scale(file_path=data_dir + '/noise_map.fits', hdu=0,
                                                                            pixel_scale=pixel_scale)

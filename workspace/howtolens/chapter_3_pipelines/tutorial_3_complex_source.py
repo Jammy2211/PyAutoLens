@@ -14,7 +14,7 @@ from autolens.profiles import mass_profiles as mp
 import os
 
 # So far, we've not paid much attention to the source model_galaxy's morphology. We've assumed its a single-component
-# exponential profile, which is a fairly crude assumption. A quick look at any images of a real model_galaxy reveals a wealth
+# exponential profile, which is a fairly crude assumption. A quick look at any image of a real model_galaxy reveals a wealth
 # of different structures that could be present - bulges, disks, bars, star-forming knots and so on.
 # Furthermore, there could be more than one source-model_galaxy!
 
@@ -53,12 +53,12 @@ def simulate():
     tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy],
                                                  source_galaxies=[source_galaxy_0, source_galaxy_1,
                                                                   source_galaxy_2, source_galaxy_3],
-                                                 image_plane_grids=image_plane_grids)
+                                                 image_plane_grids=[image_plane_grids])
 
-    return im.PreparatoryImage.simulate(array=tracer.image_plane_images_for_simulation, pixel_scale=0.05,
+    return im.PreparatoryImage.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=0.05,
                                         exposure_time=300.0, psf=psf, background_sky_level=0.1, add_noise=True)
 
-# Lets simulate the images we'll incorrect_fit, which is another new images.
+# Lets simulate the image we'll incorrect_fit, which is another new image.
 image = simulate()
 
 imaging_plotters.plot_image_subplot(image=image)

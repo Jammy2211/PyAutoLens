@@ -496,6 +496,8 @@ class TestTracerImageSourcePlanes(object):
             assert image_plane_image_2d.shape == (3, 4)
             assert (image_plane_image_2d == tracer.image_plane_images[1]).all()
 
+            assert (tracer.image_plane_image == tracer.image_plane_images[0]).all()
+
         def test__padded_2d_image_from_plane__mapped_correctly(self, padded_grids, galaxy_light, galaxy_mass):
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[galaxy_light, galaxy_mass],
                                                          source_galaxies=[galaxy_light],
@@ -518,6 +520,8 @@ class TestTracerImageSourcePlanes(object):
 
             assert image_plane_image_2d.shape == (3, 4)
             assert (image_plane_image_2d == tracer.image_plane_images_for_simulation[0]).all()
+
+            assert (tracer.image_plane_image_for_simulation == tracer.image_plane_images_for_simulation[0]).all()
 
     class TestImagePlaneBlurringImages:
 
@@ -741,7 +745,7 @@ class TestTracerImageSourcePlanes(object):
             galaxy_no_pix = g.Galaxy()
 
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[galaxy_no_pix], source_galaxies=[galaxy_no_pix],
-                                                         image_plane_grids=[imaging_grids], borders=MockBorders())
+                                                         image_plane_grids=[imaging_grids], borders=[MockBorders()])
 
             assert tracer.mappers_of_planes == []
 
@@ -750,7 +754,7 @@ class TestTracerImageSourcePlanes(object):
             galaxy_no_pix = g.Galaxy()
 
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[galaxy_no_pix], source_galaxies=[galaxy_pix],
-                                                         image_plane_grids=[imaging_grids], borders=MockBorders())
+                                                         image_plane_grids=[imaging_grids], borders=[MockBorders()])
 
             assert tracer.mappers_of_planes[0] == 1
 
@@ -759,7 +763,7 @@ class TestTracerImageSourcePlanes(object):
             galaxy_pix_1 = g.Galaxy(pixelization=MockPixelization(value=2), regularization=MockRegularization(value=4))
 
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[galaxy_pix_0], source_galaxies=[galaxy_pix_1],
-                                                         image_plane_grids=[imaging_grids], borders=MockBorders())
+                                                         image_plane_grids=[imaging_grids], borders=[MockBorders()])
 
             assert tracer.mappers_of_planes[0] == 1
             assert tracer.mappers_of_planes[1] == 2
@@ -1353,7 +1357,7 @@ class TestMultiTracer(object):
 
             assert (image_plane_blurring_image_1 == tracer._image_plane_blurring_images[1]).all()
 
-    class TestPixelizationMappers:
+    class TestMappers:
 
         def test__3_galaxies__non_have_pixelization__returns_none_x3(self, imaging_grids):
             sis = mp.SphericalIsothermal(einstein_radius=1.0)
@@ -1363,7 +1367,7 @@ class TestMultiTracer(object):
             g2 = g.Galaxy(redshift=2.0, mass_profile=sis)
 
             tracer = ray_tracing.TracerMulti(galaxies=[g0, g1, g2], image_plane_grids=[imaging_grids],
-                                             borders=MockBorders(), cosmology=cosmo.Planck15)
+                                             borders=[MockBorders()], cosmology=cosmo.Planck15)
 
             assert tracer.mappers_of_planes == []
 
@@ -1376,7 +1380,7 @@ class TestMultiTracer(object):
             g2 = g.Galaxy(redshift=2.0, mass_profile=sis)
 
             tracer = ray_tracing.TracerMulti(galaxies=[g0, g1, g2], image_plane_grids=[imaging_grids],
-                                             borders=MockBorders(), cosmology=cosmo.Planck15)
+                                             borders=[MockBorders()], cosmology=cosmo.Planck15)
 
             assert tracer.mappers_of_planes[0] == 1
 
@@ -1391,7 +1395,7 @@ class TestMultiTracer(object):
                           regularization=MockRegularization(value=0), mass_profile=sis)
 
             tracer = ray_tracing.TracerMulti(galaxies=[g0, g1, g2], image_plane_grids=[imaging_grids],
-                                             borders=MockBorders(), cosmology=cosmo.Planck15)
+                                             borders=[MockBorders()], cosmology=cosmo.Planck15)
 
             assert tracer.mappers_of_planes == [0.5, 1, 2]
 

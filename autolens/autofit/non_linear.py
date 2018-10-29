@@ -525,7 +525,7 @@ class MultiNest(NonLinearOptimizer):
 
             for param_name in self.param_names:
                 pdf_plot.plot_1d(roots=self.pdf, param=param_name)
-                pdf_plot.export(fname=self.phase_path + 'images/pdf_' + param_name + '_1D.png')
+                pdf_plot.export(fname=self.phase_path + 'image/pdf_' + param_name + '_1D.png')
 
         plt.close()
 
@@ -535,7 +535,7 @@ class MultiNest(NonLinearOptimizer):
 
             try:
                 pdf_plot.triangle_plot(roots=self.pdf)
-                pdf_plot.export(fname=self.phase_path + 'images/pdf_triangle.png')
+                pdf_plot.export(fname=self.phase_path + 'image/pdf_triangle.png')
             except np.linalg.LinAlgError:
                 pass
 

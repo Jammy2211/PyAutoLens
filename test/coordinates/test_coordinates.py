@@ -160,6 +160,6 @@ def test__deflection_angles():
 #                                                  image_plane_grids=imaging_grids)
 #
 #     print(source_grid)
-#     print(tracer.source_plane.grids.images)
-#     print(np.subtract(source_grid, tracer.source_plane.grids.images))
+#     print(tracer.source_plane.grids.image)
+#     print(np.subtract(source_grid, tracer.source_plane.grids.image))
 #     print(tracer.image_plane_image)
