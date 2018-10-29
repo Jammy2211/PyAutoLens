@@ -30,7 +30,7 @@ def plot_single_subplot(fit, should_plot_mask=True, positions=None,
     plt.figure(figsize=figsize)
     plt.subplot(rows, columns, 1)
 
-    plot_galaxy_data_array(galaxy_data=fit.galaxy_data, mask=mask, positions=positions, as_subplot=True,
+    plot_galaxy_data_array(galaxy_data=fit.galaxy_datas[0], mask=mask, positions=positions, as_subplot=True,
                            units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
                            cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
                            linscale=linscale,
@@ -84,7 +84,7 @@ def plot_single_subplot(fit, should_plot_mask=True, positions=None,
     plt.close()
 
 
-def plot_deflections_subplot(fit_y, fit_x, should_plot_mask=True, positions=None,
+def plot_deflections_subplot(fit, should_plot_mask=True, positions=None,
                         units='arcsec', kpc_per_arcsec=None, figsize=None, aspect='equal',
                         cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
                         cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
@@ -99,7 +99,7 @@ def plot_deflections_subplot(fit_y, fit_x, should_plot_mask=True, positions=None
 
     rows, columns, figsize_tool = tools.get_subplot_rows_columns_figsize(number_subplots=8)
 
-    mask = fitting_plotters.get_mask(fit=fit_y, should_plot_mask=should_plot_mask)
+    mask = fitting_plotters.get_mask(fit=fit, should_plot_mask=should_plot_mask)
 
     if figsize is None:
         figsize = figsize_tool
@@ -107,7 +107,7 @@ def plot_deflections_subplot(fit_y, fit_x, should_plot_mask=True, positions=None
     plt.figure(figsize=figsize)
     plt.subplot(rows, columns, 1)
 
-    plot_galaxy_data_array(galaxy_data=fit_y.galaxy_data, mask=mask, positions=positions, as_subplot=True,
+    plot_galaxy_data_array(galaxy_data=fit.galaxy_datas[0], mask=mask, positions=positions, as_subplot=True,
                            units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
                            cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
                            linscale=linscale,
@@ -121,7 +121,8 @@ def plot_deflections_subplot(fit_y, fit_x, should_plot_mask=True, positions=None
 
     plt.subplot(rows, columns, 2)
 
-    fitting_plotters.plot_model_image(fit=fit_y, mask=mask, positions=positions, as_subplot=True,
+    fitting_plotters.plot_model_image(fit=fit, image_index=0, mask=mask, positions=positions,
+                                      as_subplot=True,
                                       units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
                                       cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
                                       linscale=linscale,
@@ -132,7 +133,7 @@ def plot_deflections_subplot(fit_y, fit_x, should_plot_mask=True, positions=None
                                       output_path=output_path, output_filename='', output_format=output_format)
     plt.subplot(rows, columns, 3)
 
-    fitting_plotters.plot_residuals(fit=fit_y, mask=mask, as_subplot=True,
+    fitting_plotters.plot_residuals(fit=fit, image_index=0, mask=mask, as_subplot=True,
                                     units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
                                     cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
                                     linscale=linscale,
@@ -144,7 +145,7 @@ def plot_deflections_subplot(fit_y, fit_x, should_plot_mask=True, positions=None
 
     plt.subplot(rows, columns, 4)
 
-    fitting_plotters.plot_chi_squareds(fit=fit_y, mask=mask, as_subplot=True,
+    fitting_plotters.plot_chi_squareds(fit=fit, image_index=0, mask=mask, as_subplot=True,
                                        units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
                                        cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
                                        linscale=linscale,
@@ -156,7 +157,7 @@ def plot_deflections_subplot(fit_y, fit_x, should_plot_mask=True, positions=None
 
     plt.subplot(rows, columns, 5)
 
-    plot_galaxy_data_array(galaxy_data=fit_x.galaxy_data, mask=mask, positions=positions, as_subplot=True,
+    plot_galaxy_data_array(galaxy_data=fit.galaxy_datas[1], mask=mask, positions=positions, as_subplot=True,
                            units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
                            cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
                            linscale=linscale,
@@ -170,7 +171,7 @@ def plot_deflections_subplot(fit_y, fit_x, should_plot_mask=True, positions=None
 
     plt.subplot(rows, columns, 6)
 
-    fitting_plotters.plot_model_image(fit=fit_x, mask=mask, positions=positions, as_subplot=True,
+    fitting_plotters.plot_model_image(fit=fit, image_index=1, mask=mask, positions=positions, as_subplot=True,
                                       units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
                                       cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
                                       linscale=linscale,
@@ -181,7 +182,7 @@ def plot_deflections_subplot(fit_y, fit_x, should_plot_mask=True, positions=None
                                       output_path=output_path, output_filename='', output_format=output_format)
     plt.subplot(rows, columns, 7)
 
-    fitting_plotters.plot_residuals(fit=fit_x, mask=mask, as_subplot=True,
+    fitting_plotters.plot_residuals(fit=fit, image_index=1, mask=mask, as_subplot=True,
                                     units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
                                     cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
                                     linscale=linscale,
@@ -193,7 +194,7 @@ def plot_deflections_subplot(fit_y, fit_x, should_plot_mask=True, positions=None
 
     plt.subplot(rows, columns, 8)
 
-    fitting_plotters.plot_chi_squareds(fit=fit_x, mask=mask, as_subplot=True,
+    fitting_plotters.plot_chi_squareds(fit=fit, image_index=1, mask=mask, as_subplot=True,
                                        units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
                                        cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
                                        linscale=linscale,

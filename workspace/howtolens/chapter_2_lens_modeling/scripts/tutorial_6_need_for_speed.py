@@ -1,6 +1,6 @@
 # We can now model strong lenses. We can balance complexity and realism to ensure that we infer a good lens model. And
 # we can do this to make the analysis run faster. However, we always need to be wary of run-time. If we don't craft
-# our phases carefully, we could spend days, or longer, modeling just one images. In this exercise, we'll get thinking
+# our phases carefully, we could spend days, or longer, modeling just one image. In this exercise, we'll get thinking
 # about what determines the length of time an AutoLens analysis takes, and how one might speed it up.
 
 ### Searching Non-linear Parameter Space ###
@@ -15,7 +15,7 @@
 ### Algorithmic Optimization ###
 
 # Every operation AutoLens performs to fit a lens takes time. Every light profile intensity. Every mass profile
-# deflection angle. Convolving a model-images with a PSF can take a huge amount of time. As anyone who's written code
+# deflection angle. Convolving a model-image with a PSF can take a huge amount of time. As anyone who's written code
 # before knows, the better the algorithm is written, the fast it'll run.
 
 # I often get asked, given that PyAutoLens is written in Python, isn't it really slow? Afterall, Python is notoriously
@@ -35,23 +35,23 @@
 
 ### Data Quantity ###
 
-# The final factor driving run-speed is the shear quantity of datas that we're modeling. For every images-pixel that we
+# The final factor driving run-speed is the shear quantity of datas that we're modeling. For every image-pixel that we
 # fit, we have to compute the light-profile intensities, the mass-profile deflection angles and convolve it with
 # the telescope's PSF. The larger that PSF is, the more convolution operations we have to perform too.
 
-# In the previous exercises, we used images with a pixel scale of 0.1". I sneakily chose this value cause its fairly
-# low resolution. Most Hubble images have a pixel scale of 0.05", which is four times the number of pixels! Some
+# In the previous exercises, we used image with a pixel scale of 0.1". I sneakily chose this value cause its fairly
+# low resolution. Most Hubble image have a pixel scale of 0.05", which is four times the number of pixels! Some
 # telescopes observe at scales of 0.03" or, dare I say it, 0.01", at these resolutions we things will run really slow,
 # if we don't think carefully about run speed beforehand.
 
-# Of course, there are ways that we can reduce the number of images-pixels we fit. That's what masking does. If we masks
-# out more of the images, we'll fit fewer pixels and AutoLens will run faster. Alternatively, we could 'bin-up' the
-# images, converting it from say a 0.03" images to a 0.06" images. We lose information, but the code runs
+# Of course, there are ways that we can reduce the number of image-pixels we fit. That's what masking does. If we masks
+# out more of the image, we'll fit fewer pixels and AutoLens will run faster. Alternatively, we could 'bin-up' the
+# image, converting it from say a 0.03" image to a 0.06" image. We lose information, but the code runs
 # faster. We could trim our PSF to a smaller size, at the risk of modeling our telescope optics worse.
 
 # If you want the best, most perfect lens model possible, aggressively masking and cutting the datas in this way is a
 # bad idea. However, if your analysis is composed of multiple phases, and in the early phases you just want a
-# reasonable lens model which fits the datas reasonably well, why bother fitting all the images datas?
+# reasonable lens model which fits the datas reasonably well, why bother fitting all the image datas?
 # You can do that in the last phase, right?
 
 # Herein lies the beauty behind runners. Not only can we tune their navigation of non-linear parameter space, we can
@@ -70,6 +70,6 @@
 # 2) There are 2 lens galaxies responsible for lensing the background source. That means, there are twice as many
 #    lens model_galaxy parameters. Can you setup phases that fit each model_galaxy individiually, before fitting them jointly?
 
-#  3) The source model_galaxy is really complex. Infact, in your strong lens images you count 12 distinct multiple images,
+#  3) The source model_galaxy is really complex. Infact, in your strong lens image you count 12 distinct multiple image,
 #     meaning that there are at least three distinct source's of light in the source plane. This is a potentially
 #     very complex non-linear parameter space, so how might you break down the analysis?

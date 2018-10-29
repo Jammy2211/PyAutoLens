@@ -212,7 +212,7 @@ class Weighted(Regularization):
         The pixel signals are scaled in the following ways:
 
         1) Divided by the number of _datas-pixels in the pixel, to ensure all pixels have the same \
-        'relative' signal (i.e. a pixel with 10 images-pixels doesn't have x2 the signal of one with 5).
+        'relative' signal (i.e. a pixel with 10 image-pixels doesn't have x2 the signal of one with 5).
 
         2) Divided by the maximum pixel-signal, so that all signals vary between 0 and 1. This ensures that the \
         regularizations weights are defined identically for any _datas units or signal-to-noise ratio.

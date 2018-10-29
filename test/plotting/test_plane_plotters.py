@@ -24,7 +24,7 @@ def test_positions():
     positions = [[[0.1, 0.1], [0.2, 0.2]], [[0.3, 0.3]]]
     return list(map(lambda position_set: np.asarray(position_set), positions))
 
-@pytest.fixture(name='masks')
+@pytest.fixture(name='mask')
 def test_mask():
     return msk.Mask.circular(shape=((3,3)), pixel_scale=0.1, radius_mask_arcsec=0.1)
 
@@ -56,7 +56,7 @@ def test_grids():
 
 @pytest.fixture(name='plane')
 def test_plane(galaxy_light, grids):
-    return pl.Plane(galaxies=[galaxy_light], grids=grids)
+    return pl.Plane(galaxies=[galaxy_light], grids=[grids])
 
 
 

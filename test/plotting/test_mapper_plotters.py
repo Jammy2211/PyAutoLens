@@ -32,7 +32,7 @@ def test_mapper_plotter_setup():
 
     return galaxy_plotter_path
 
-@pytest.fixture(name='images')
+@pytest.fixture(name='image')
 def test_image():
 
     image = scaled_array.ScaledSquarePixelArray(array=np.ones((3,3)), pixel_scale=1.0)

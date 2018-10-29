@@ -165,7 +165,7 @@ class Plane(object):
             return None
         if len(galaxies_with_pixelization) == 1:
             pixelization = galaxies_with_pixelization[0].pixelization
-            return pixelization.mapper_from_grids_and_borders(self.grids, self.borders)
+            return pixelization.mapper_from_grids_and_borders(self.grids[0], self.borders[0])
         elif len(galaxies_with_pixelization) > 1:
             raise exc.PixelizationException('The number of galaxies with pixelizations in one plane is above 1')
 
@@ -194,6 +194,14 @@ class Plane(object):
                 'must be padded grids')
         return list(map(lambda _image_plane_image, grid : grid.image.map_to_2d_keep_padded(_image_plane_image),
                         self._image_plane_images, self.grids))
+
+    @property
+    def image_plane_image(self):
+        return self.image_plane_images[0]
+
+    @property
+    def image_plane_image_for_simulation(self):
+        return self.image_plane_images_for_simulation[0]
 
     @property
     def _image_plane_images(self):

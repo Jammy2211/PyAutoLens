@@ -12,7 +12,7 @@ from autolens.plotting import mapper_plotters
 # In the previous example, we used a mapper to make a rectangular pixelization. However, it wasn't clear what a mapper
 # was actually mapping. Infact, it didn't do much mapping at all! Therefore, in this tutorial, we'll cover mapping.
 
-# To begin, lets simulate and load an images - it'll be clear why we're doing this in a moment.
+# To begin, lets simulate and load an image - it'll be clear why we're doing this in a moment.
 def simulate():
 
     from autolens.imaging import mask
@@ -28,52 +28,52 @@ def simulate():
     source_galaxy = g.Galaxy(light=lp.EllipticalSersic(centre=(0.0, 0.0), axis_ratio=0.7, phi=135.0, intensity=0.2,
                                                        effective_radius=0.2, sersic_index=2.5))
     tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
-                                                 image_plane_grids=image_plane_grids)
+                                                 image_plane_grids=[image_plane_grids])
 
-    return im.PreparatoryImage.simulate(array=tracer.image_plane_images_for_simulation, pixel_scale=0.05,
+    return im.PreparatoryImage.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=0.05,
                                         exposure_time=300.0, psf=psf, background_sky_level=0.1, add_noise=True)
 
 image = simulate()
 imaging_plotters.plot_image_subplot(image=image)
 
-# Lets begin by setting up our grids (using the images we loaded above).
+# Lets begin by setting up our grids (using the image we loaded above).
 image_plane_grids = ma.ImagingGrids.from_shape_and_pixel_scale(shape=image.shape, pixel_scale=image.pixel_scale,
                                                                sub_grid_size=2)
 
-# Our tracer will use the same lens model_galaxy and source model_galaxy that we used to simulate the images (although, becuase
+# Our tracer will use the same lens model_galaxy and source model_galaxy that we used to simulate the image (although, becuase
 # we're modeling the source with a pixel-grid, we don't need to supply its light profile).
 lens_galaxy = g.Galaxy(mass=mp.EllipticalIsothermal(centre=(0.0, 0.0), axis_ratio=0.8, phi=45.0,
                                                     einstein_radius=1.6))
 tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[g.Galaxy()],
-                                             image_plane_grids=image_plane_grids)
+                                             image_plane_grids=[image_plane_grids])
 
 # Finally, lets setup our pixelization and mapper, like we did before, using the tracer's source-plane grid.
 rectangular = pix.Rectangular(shape=(25, 25))
-mapper = rectangular.mapper_from_grids(grids=tracer.source_plane.grids)
+mapper = rectangular.mapper_from_grids(grids=tracer.source_plane.grids[0])
 
-# Again, we're going to plot our mapper, but we're also going to plot the images which was used to generate the grid we
+# Again, we're going to plot our mapper, but we're also going to plot the image which was used to generate the grid we
 # mapped to the source-plane.
 mapper_plotters.plot_image_and_mapper(image=image, mapper=mapper)
 
-# The pixels in the images map to the pixels in the source-plane, and visa-versa. Lets highlight a set of images-pixels
-# in both the images and source-plane.
+# The pixels in the image map to the pixels in the source-plane, and visa-versa. Lets highlight a set of image-pixels
+# in both the image and source-plane.
 mapper_plotters.plot_image_and_mapper(image=image, mapper=mapper, image_pixels=[[range(0, 100)], [range(900, 1000)]])
 
 # That's nice, and we can see the mappings, but it isn't really what we want to know, is it? We really want to go the
-# other way, and see how our source-pixels map to the images. This is where mappers come into their own, as they let us
-# map all the points in a given source-pixel back to the images. Lets map source pixel 313, the central
-# source-pixel, to the images.
+# other way, and see how our source-pixels map to the image. This is where mappers come into their own, as they let us
+# map all the points in a given source-pixel back to the image. Lets map source pixel 313, the central
+# source-pixel, to the image.
 mapper_plotters.plot_image_and_mapper(image=image, mapper=mapper, source_pixels=[[312]])
 
 # And there we have it - multiple imaging in all its glory. Try changing the source-pixel indexes of the line below.
-# This will give you a feel for how different regions of the source-plane map to the images.
+# This will give you a feel for how different regions of the source-plane map to the image.
 mapper_plotters.plot_image_and_mapper(image=image, mapper=mapper, source_pixels=[[312, 318], [412]])
 
 # Okay, so I think we can agree, mappers map things! More specifically, they map our source-plane pixelization to an
-# observed images of a strong lens.
+# observed image of a strong lens.
 #
-# Finally, lets do the same as above, but using a masked images. By applying a masks, the mapper will only map
-# images-pixels inside the masks. This removes the (many) images pixels at the edge of the images, where the source clearly
+# Finally, lets do the same as above, but using a masked image. By applying a masks, the mapper will only map
+# image-pixels inside the masks. This removes the (many) image pixels at the edge of the image, where the source clearly
 # isn't present and which pad-out the size of the source-plane. Lets just have a quick look at these edges pixels:
 mapper_plotters.plot_image_and_mapper(image=image, mapper=mapper, source_pixels=[[0, 1, 2, 3, 4, 5, 6, 7],
                                                                                  [620, 621, 622, 623]])
@@ -83,16 +83,16 @@ mask = ma.Mask.annular(shape=image.shape, pixel_scale=image.pixel_scale, inner_r
                        outer_radius_arcsec=2.2)
 
 # Lets quickly confirm the annuli radii capture the source's light
-#imaging_plotters.plot_image(images=images, masks=masks)
+#imaging_plotters.plot_image(image=image, masks=masks)
 
-# As usual, we setup our images and masks up as a lensing images and create a tracer using its (now masked) grids.
+# As usual, we setup our image and masks up as a lensing image and create a tracer using its (now masked) grids.
 lensing_image = li.LensingImage(image=image, mask=mask)
 tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[g.Galaxy()],
-                                             image_plane_grids=lensing_image.grids)
+                                             image_plane_grids=[lensing_image.grids])
 
 # Finally, we use the tracer's (masked) source-plane grid to setup a new mapper (using the same rectangular 25 x 25
 # pixelization as before).
-mapper = rectangular.mapper_from_grids(grids=tracer.source_plane.grids)
+mapper = rectangular.mapper_from_grids(grids=tracer.source_plane.grids[0])
 
 # Lets have another look
 mapper_plotters.plot_image_and_mapper(image=image, mask=mask, mapper=mapper)
@@ -103,7 +103,7 @@ mapper_plotters.plot_image_and_mapper(image=image, mask=mask, mapper=mapper)
 # imaged regime to doubly-imaged regime, and we can actually show this now using our mapper now.
 mapper_plotters.plot_image_and_mapper(image=image, mask=mask, mapper=mapper, source_pixels=[[312], [314], [316], [318]])
 
-# Great - tutorial 2 down! We've learnt about mappers, which map things, and we used them to understand how the images
+# Great - tutorial 2 down! We've learnt about mappers, which map things, and we used them to understand how the image
 # and source plane map to one another. Your exercises are:
 
 # 1) Change the einstein radius of the lens model_galaxy in small increments (e.g. einstein radius 1.6" -> 1.55").
@@ -113,6 +113,6 @@ mapper_plotters.plot_image_and_mapper(image=image, mask=mask, mapper=mapper, sou
 # 2) Incrementally increase the axis ratio of the lens's mass profile to 1.0. What happens to quadruple imaging?
 
 # 3) Now, finally, think - how is all of this going to help us actually model lenses? We've said we're going to
-#    reconstruct our source model_galaxy's on the pixel-grid. So, how does knowing how each pixel maps to the images
+#    reconstruct our source model_galaxy's on the pixel-grid. So, how does knowing how each pixel maps to the image
 #    actually help us? If you've not got any bright ideas, then worry not - that exactly what we're going to cover
 #    in the next tutorial.
