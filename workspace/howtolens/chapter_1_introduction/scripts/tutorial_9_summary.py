@@ -15,23 +15,23 @@ from autolens.plotting import ray_tracing_plotters
 # In this chapter, you've learnt how create and fit strong lenses with PyAutoLens. In particular, you've learnt:
 
 # 1) PyAutoLens uses Cartesian grids of (y,x) coordinates to perform ray-tracing.
-# 2) These grids are combined with light and mass profiles to compute images, surface-densities, potentials and
+# 2) These grids are combined with light and mass profiles to compute image, surface-densities, potentials and
 #    deflection angles.
 # 3) Profiles are combined to make galaxies.
 # 4) Collections of galaxies (at the same redshift) form a plane.
-# 5) A tracer can make an images-plane + source-plane strong lens system.
+# 5) A tracer can make an image-plane + source-plane strong lens system.
 # 6) The Universe's cosmology can be input into this tracer to convert units to physical values.
-# 7) The tracer's images-plane images can be used to simulate strong lens imaging observed on a real telescope.
-# 8) That this images can be fitted, so to as quantify how well a model strong lens system represents the observed images.
+# 7) The tracer's image-plane image can be used to simulate strong lens imaging observed on a real telescope.
+# 8) That this image can be fitted, so to as quantify how well a model strong lens system represents the observed image.
 
 # In this summary, we'll consider how flexible the tools PyAutoLens gives you are to study every aspect of a strong
-# lens system. Lets get a 'fit' to a strong lens, by setting up an images, masks, tracer, etc.
+# lens system. Lets get a 'fit' to a strong lens, by setting up an image, masks, tracer, etc.
 
-path = 'path/to/AutoLens/howtolens/1_introduction' # Unfortunately, in a Jupyter notebook you have to manually specify the path to PyAutoLens and this tutorial.
-path = '/home/jammy/PyCharm/Projects/AutoLens/howtolens/1_introduction'
-image = im.load_imaging_from_path(image_path=path + '/datas/images.fits',
-                                  noise_map_path=path+'/datas/noise_map.fits',
-                                  psf_path=path + '/datas/psf.fits', pixel_scale=0.1)
+path = 'path/to/AutoLens/howtolens/chapter_1_introduction' # Unfortunately, in a Jupyter notebook you have to manually specify the path to PyAutoLens and this tutorial.
+path = '/home/jammy/PyCharm/Projects/AutoLens/workspace/howtolens/chapter_1_introduction'
+image = im.load_imaging_from_path(image_path=path + '/data/image.fits',
+                                  noise_map_path=path+'/data/noise_map.fits',
+                                  psf_path=path + '/data/psf.fits', pixel_scale=0.1)
 mask = ma.Mask.circular(shape=image.shape, pixel_scale=image.pixel_scale, radius_mask_arcsec=3.0)
 lensing_image = li.LensingImage(image=image, mask=mask)
 lens_galaxy = g.Galaxy(mass=mp.EllipticalIsothermal(centre=(0.0, 0.0), einstein_radius=1.6, axis_ratio=0.7, phi=45.0))
@@ -40,7 +40,7 @@ source_galaxy = g.Galaxy(bulge=lp.EllipticalSersic(centre=(0.1, 0.1), axis_ratio
                          disk=lp.EllipticalSersic(centre=(0.1, 0.1), axis_ratio=0.8, phi=45.0,
                                                   intensity=1.0, effective_radius=1.0, sersic_index=1.0))
 tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
-                                             image_plane_grids=lensing_image.grids)
+                                             image_plane_grids=[lensing_image.grids])
 fit = lensing_fitting.fit_lensing_image_with_tracer(lensing_image=lensing_image, tracer=tracer)
 
 # The fit contains our tracer, which contains our planes, which contain our grids and galaxies, which contain our
@@ -56,24 +56,24 @@ print(fit.tracer.source_plane.galaxies[0].bulge)
 print(fit.tracer.source_plane.galaxies[0].disk)
 
 # Using the plotters we've used throughout this chapter, we can visualize any aspect of a fit we're interested
-# in. For example, if we want to plot the images of the source model_galaxy mass profile, we can do this in a variety of
+# in. For example, if we want to plot the image of the source model_galaxy mass profile, we can do this in a variety of
 # different ways
 ray_tracing_plotters.plot_image_plane_image(tracer=fit.tracer)
 plane_plotters.plot_image_plane_image(plane=fit.tracer.source_plane)
-galaxy_plotters.plot_intensities(galaxy=fit.tracer.source_plane.galaxies[0], grid=fit.tracer.source_plane.grids.image)
+galaxy_plotters.plot_intensities(galaxy=fit.tracer.source_plane.galaxies[0], grid=fit.tracer.source_plane.grids[0].image)
 
-# Now, its not often you'd want to write all that code just to plot the images of the source model_galaxy!
+# Now, its not often you'd want to write all that code just to plot the image of the source model_galaxy!
 
 # However, as our fit and ray-tracing becomes more complex, it is useful to know how to decompose their different
 # attributes to extract different things about them. For example, we made our source-model_galaxy above with two light
-# profiles, a 'bulge' and 'disk. We can plot the images-plane images of each component individually, if we know how to
+# profiles, a 'bulge' and 'disk. We can plot the image-plane image of each component individually, if we know how to
 # break-up the different components of the fit and tracer.
 profile_plotters.plot_intensities(light_profile=fit.tracer.source_plane.galaxies[0].bulge,
-                                  grid=fit.tracer.source_plane.grids.image, title='Bulge Image-Plane Image')
+                                  grid=fit.tracer.source_plane.grids[0].image, title='Bulge Image-Plane Image')
 profile_plotters.plot_intensities(light_profile=fit.tracer.source_plane.galaxies[0].disk,
-                                  grid=fit.tracer.source_plane.grids.image, title='Disk Image-Plane Image')
+                                  grid=fit.tracer.source_plane.grids[0].image, title='Disk Image-Plane Image')
 
-# The fit also has the lensing images, so we can plot the images using the fit too, if we so desire
+# The fit also has the lensing image, so we can plot the image using the fit too, if we so desire
 imaging_plotters.plot_image_subplot(image=lensing_image.image)
 
 # And, we're done, not just with the tutorial, but the chapter!

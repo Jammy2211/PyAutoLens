@@ -11,7 +11,7 @@ class GalaxyData(scaled_array.ScaledSquarePixelArray):
 
     def __init__(self, array, noise_map, mask, sub_grid_size=2):
         """
-        The lensing _datas is the collection of datas (images, noise-maps, PSF), a masks, grids, convolvers and other \
+        The lensing _datas is the collection of datas (image, noise-maps, PSF), a masks, grids, convolvers and other \
         utilities that are used for modeling and fitting an _datas of a strong lens.
 
         Whilst the _datas datas is initially loaded in 2D, for the lensing _datas the masked-_datas (and noise-maps) \
@@ -27,7 +27,7 @@ class GalaxyData(scaled_array.ScaledSquarePixelArray):
             The size of the sub-grid used for each lensing SubGrid. E.g. a value of 2 grids each _datas-pixel on a 2x2 \
             sub-grid.
         image_psf_shape : (int, int)
-            The shape of the PSF used for convolving model images generated using analytic light profiles. A smaller \
+            The shape of the PSF used for convolving model image generated using analytic light profiles. A smaller \
             shape will trim the PSF relative to the input _datas PSF, giving a faster analysis run-time.
         """
 

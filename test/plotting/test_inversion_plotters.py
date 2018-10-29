@@ -5,7 +5,7 @@
 #
 # from autolens import conf
 # from autolens.imaging import scaled_array
-# from autolens.imaging import images as im
+# from autolens.imaging import image as im
 # from autolens.imaging import masks as msk
 # from autolens.profiles import light_profiles as lp
 # from autolens.profiles import mass_profiles as mp
@@ -34,14 +34,14 @@
 #
 #     return galaxy_plotter_path
 #
-# @pytest.fixture(name='images')
+# @pytest.fixture(name='image')
 # def test_image():
 #
-#     images = scaled_array.ScaledSquarePixelArray(array=np.ones((3,3)), pixel_scale=1.0)
+#     image = scaled_array.ScaledSquarePixelArray(array=np.ones((3,3)), pixel_scale=1.0)
 #     noise_map = im.NoiseMap(array=2.0*np.ones((3,3)), pixel_scale=1.0)
 #     psf = im.PSF(array=3.0*np.ones((3,3)), pixel_scale=1.0)
 #
-#     return im.Image(array=images, pixel_scale=1.0, noise_map=noise_map, psf=psf)
+#     return im.Image(array=image, pixel_scale=1.0, noise_map=noise_map, psf=psf)
 #
 # @pytest.fixture(name='galaxy_light')
 # def test_galaxy_light():

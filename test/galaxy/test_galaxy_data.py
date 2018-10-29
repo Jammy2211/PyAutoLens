@@ -6,7 +6,6 @@ from autolens.imaging import imaging_util
 from autolens.imaging import mask as msk
 from autolens.galaxy import galaxy as g
 from autolens.galaxy import galaxy_data as gd
-from autolens.profiles import light_profiles as lp
 from autolens.profiles import mass_profiles as mp
 from test.mock.mock_galaxy import MockGalaxy
 
@@ -14,7 +13,7 @@ from test.mock.mock_galaxy import MockGalaxy
 def make_scaled_array():
     return sca.ScaledSquarePixelArray(array=np.ones((4, 4)), pixel_scale=3.0)
 
-@pytest.fixture(name="masks")
+@pytest.fixture(name="mask")
 def make_mask():
     return msk.Mask(np.array([[True, True, True, True],
                               [True, False, False, True],
@@ -34,7 +33,7 @@ class TestGalaxyData(object):
     def test__scaled_array_and_mapper(self, galaxy_data):
         assert (galaxy_data == np.ones(4)).all()
         assert (galaxy_data.array == np.ones((4,4))).all()
-        assert (galaxy_data.noise_maps == 2.0 * np.ones((4))).all()
+        assert (galaxy_data.noise_map == 2.0 * np.ones((4))).all()
         assert (galaxy_data.mask == np.array([[True, True, True, True],
                                               [True, False, False, True],
                                               [True, False, False, True],
