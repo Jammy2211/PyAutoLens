@@ -328,14 +328,14 @@ def chi_squareds_from_residuals_and_noise_maps(residuals, noise_maps):
     Parameters
     -----------
     residuals : [np.ndarray]
-        The residuals of the model fit to the data
+        The residuals of the model fit_normal to the data
     noise_maps : [np.ndarray]
         The noises in the lensing_image.
     """
     return list(map(lambda residual, noise_map : np.square((np.divide(residual, noise_map))), residuals, noise_maps))
 
 def chi_squared_terms_from_chi_squareds(chi_squareds):
-    """Compute the chi-squared of a model lensing_image's fit to the data_vector, by taking the difference between the
+    """Compute the chi-squared of a model lensing_image's fit_normal to the data_vector, by taking the difference between the
     observed lensing_image and model ray-tracing lensing_image, dividing by the noise_map in each pixel and squaring:
 
     [Chi_Squared] = sum(([Data - Model] / [Noise]) ** 2.0)
@@ -359,7 +359,7 @@ def noise_terms_from_noise_maps(noise_maps):
     return list(map(lambda noise_map : np.sum(np.log(2 * np.pi * noise_map ** 2.0)), noise_maps))
 
 def likelihoods_from_chi_squareds_and_noise_terms(chi_squared_terms, noise_terms):
-    """Compute the likelihood of a model lensing_image's fit to the data_vector, by taking the difference between the
+    """Compute the likelihood of a model lensing_image's fit_normal to the data_vector, by taking the difference between the
     observed lensing_image and model ray-tracing lensing_image. The likelihood consists of two terms:
 
     Chi-squared term - The residuals (model - data_vector) of every pixel divided by the noise_map in each pixel, all
@@ -424,9 +424,9 @@ def contributions_from_hyper_images_and_galaxies(hyper_model_image, hyper_galaxy
     -----------
     minimum_values
     hyper_model_image : ndarray
-        The best-fit model lensing_image to the data_vector, from a previous phase of the pipeline
+        The best-fit_normal model lensing_image to the data_vector, from a previous phase of the pipeline
     hyper_galaxy_images : [ndarray]
-        The best-fit model lensing_image of each hyper-galaxy, which can tell us how much flux each pixel contributes to.
+        The best-fit_normal model lensing_image of each hyper-galaxy, which can tell us how much flux each pixel contributes to.
     hyper_galaxies : [galaxy.HyperGalaxy]
         Each hyper-galaxy which is used to determine its contributions.
     """

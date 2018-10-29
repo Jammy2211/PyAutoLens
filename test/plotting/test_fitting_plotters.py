@@ -49,7 +49,7 @@ def test_fitting_image(image, mask):
     return fitting_data.FittingImage(image=image, mask=mask)
 
 
-@pytest.fixture(name='fit')
+@pytest.fixture(name='fit_normal')
 def test_fit(fitting_image):
     return fitting.AbstractImageFit(fitting_images=[fitting_image], _model_images=[np.ones(5)])
 

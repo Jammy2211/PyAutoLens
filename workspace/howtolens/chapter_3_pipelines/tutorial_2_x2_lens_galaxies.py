@@ -18,7 +18,7 @@ import os
 # degeneracies between the mass-profiles of two galaxies can be severe.
 
 # However, we can nevertheless break the analysis down using a pipeline and give ourselves a shot at getting a good
-# lens model. The approach we're going to take is that we're going to fit as much about each individual lens model_galaxy
+# lens model. The approach we're going to take is that we're going to fit_normal as much about each individual lens model_galaxy
 # first, before fitting them simultaneously.
 
 # Up to now, I've put a focus on runners being generalizeable. The pipeline we write in this example is going to be
@@ -56,7 +56,7 @@ def simulate():
     return im.PreparatoryImage.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=0.05,
                                         exposure_time=300.0, psf=psf, background_sky_level=0.1, add_noise=True)
 
-# Lets simulate the image we'll fit, which is a new image, finally!
+# Lets simulate the image we'll fit_normal, which is a new image, finally!
 image = simulate()
 
 imaging_plotters.plot_image_subplot(image=image)
@@ -75,7 +75,7 @@ imaging_plotters.plot_image_subplot(image=image)
 
 # 1) Fit the lens model_galaxy light profile on the left of the image, at coordinates (0.0, -1.0).
 # 2) Fit the lens model_galaxy light profile on the right of the image, at coordinates (0.0, 1.0).
-# 3) Use this lens-subtracted image to fit the source model_galaxy's light. The mass-profiles of the two lens galaxies can
+# 3) Use this lens-subtracted image to fit_normal the source model_galaxy's light. The mass-profiles of the two lens galaxies can
 #    use the results of phases 1 and 2 to initialize its priors.
 # 4) Fit all relevent parameters simultaneously, using priors from phases 1, 2 and 3.
 
@@ -83,8 +83,8 @@ imaging_plotters.plot_image_subplot(image=image)
 def make_pipeline():
     pipeline_name = '2_x2_lens_galaxies'  # Give the pipeline a name.
 
-    # This model_galaxy is at (-1.0, 0.0), so we're going to use a small circular masks centred on its location to fit its
-    # light profile. Its important that light from the other lens and source don't contaminate our fit.
+    # This model_galaxy is at (-1.0, 0.0), so we're going to use a small circular masks centred on its location to fit_normal its
+    # light profile. Its important that light from the other lens and source don't contaminate our fit_normal.
     def mask_function(img):
         return mask.Mask.circular(img.shape, pixel_scale=img.pixel_scale, radius_mask_arcsec=0.5, centre=(0.0, -1.0))
 
@@ -123,7 +123,7 @@ def make_pipeline():
                             optimizer_class=nl.MultiNest, mask_function=mask_function,
                             phase_name=pipeline_name + '/phase_2_right_lens_light')
 
-    # In the next phase, we fit the source of the lens subtracted image.
+    # In the next phase, we fit_normal the source of the lens subtracted image.
     class LensSubtractedPhase(ph.LensSourcePlanePhase):
 
         def modify_image(self, image, previous_results):

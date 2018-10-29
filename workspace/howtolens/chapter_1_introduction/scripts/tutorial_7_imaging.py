@@ -8,7 +8,7 @@ from autolens.plotting import ray_tracing_plotters
 from autolens.plotting import imaging_plotters
 
 # In this example, we'll use the 'imaging' module (imported as 'im') to 'simulate' an image of a strong lens made
-# using a tracer. By simulate, we mean that it will appear as if we had observed it using a real telescope,
+# using a tracer_without_subhalo. By simulate, we mean that it will appear as if we had observed it using a real telescope,
 # with this example making an image representative of Hubble Space Telescope imaging.
 
 # To simulate an image, we need to model the telescope's optics. We'll do this by convolving the image with a
@@ -21,14 +21,14 @@ image_plane_grids = mask.ImagingGrids.grids_for_simulation(shape=(100, 100), pix
 print(image_plane_grids.image.image_shape)
 print(image_plane_grids.image.padded_shape)
 
-# Now, lets setup our lens model_galaxy, source model_galaxy and tracer.
+# Now, lets setup our lens model_galaxy, source model_galaxy and tracer_without_subhalo.
 lens_galaxy = g.Galaxy(mass=mp.EllipticalIsothermal(centre=(0.0, 0.0), einstein_radius=1.6, axis_ratio=0.7, phi=45.0))
 source_galaxy = g.Galaxy(light=lp.EllipticalSersic(centre=(0.1, 0.1), axis_ratio=0.8, phi=45.0,
                                                         intensity=1.0, effective_radius=1.0, sersic_index=2.5))
 tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
                                              image_plane_grids=[image_plane_grids])
 
-# Lets look at the tracer's image-plane image - this is the image we'll be simulating.
+# Lets look at the tracer_without_subhalo's image-plane image - this is the image we'll be simulating.
 ray_tracing_plotters.plot_image_plane_image(tracer=tracer)
 
 # To simulate the image, we don't use the image-plane image plotted above. Instead, we use an  image-plane image
@@ -37,7 +37,7 @@ ray_tracing_plotters.plot_image_plane_image(tracer=tracer)
 print(tracer.image_plane_image.shape)
 print(tracer.image_plane_image_for_simulation.shape)
 
-# Now, to simulate the image, we pass the tracer's image-plane image to the imaging module's simulate function. This
+# Now, to simulate the image, we pass the tracer_without_subhalo's image-plane image to the imaging module's simulate function. This
 # adds the following effects:
 
 # 1) Telescope optics: Using the Point Spread Function above.

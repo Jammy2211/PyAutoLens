@@ -10,8 +10,8 @@ from autolens.plotting import imaging_plotters
 from autolens.plotting import ray_tracing_plotters
 from autolens.plotting import lensing_fitting_plotters
 
-# In this example, we'll fit the image we simulated in the previous exercise. We'll do this using model image generated
-# via a tracer, and by compairing to the simulated image we'll get diagostics about the quality of the fit.
+# In this example, we'll fit_normal the image we simulated in the previous exercise. We'll do this using model image generated
+# via a tracer_without_subhalo, and by compairing to the simulated image we'll get diagostics about the quality of the fit_normal.
 
 # First, we load the image-datas we simualted in the previous tutorial.
 path = 'path/to/AutoLens/howtolens/1_introduction' # Unfortunately, in a Jupyter notebook you have to manually specify the path to PyAutoLens and this tutorial.
@@ -20,7 +20,7 @@ image = im.load_imaging_from_path(image_path=path + '/data/image.fits',
                                   noise_map_path=path+'/data/noise_map.fits',
                                   psf_path=path + '/data/psf.fits', pixel_scale=0.1)
 
-# To fit an image, we first specify a masks. A masks describes the sections of the image that we fit.
+# To fit_normal an image, we first specify a masks. A masks describes the sections of the image that we fit_normal.
 
 # Typically, we want to masks out regions of the image where the lens and source galaxies are not visible, for example
 # at the edges where the signal is entirely background sky and noise.
@@ -38,16 +38,16 @@ imaging_plotters.plot_image(image=image, mask=mask)
 # Now we've loaded the image and created a masks, we use them to create a 'lensing image', which we'll perform using the
 # lensing_module (imported as 'li').
 
-# A lensing image is a 'package' of all parts of the the image datas we need in order to fit it:
+# A lensing image is a 'package' of all parts of the the image datas we need in order to fit_normal it:
 
 # 1) The image.
 
-# 2) The PSF: so that when we compare a tracer's image-plane image to the image datas we can include blurring due to
+# 2) The PSF: so that when we compare a tracer_without_subhalo's image-plane image to the image datas we can include blurring due to
 #    the telescope optics.
 
-# 3) The noise-map: so our goodness-of-fit measure accounts for noise in the observations.
+# 3) The noise-map: so our goodness-of-fit_normal measure accounts for noise in the observations.
 
-# 4) The image's grids: so the tracer's image-plane image is generated on the same (masked) grid as the image-datas.
+# 4) The image's grids: so the tracer_without_subhalo's image-plane image is generated on the same (masked) grid as the image-datas.
 
 lensing_image = li.LensingImage(image=image, mask=mask)
 imaging_plotters.plot_image_subplot(lensing_image.image)
@@ -70,10 +70,10 @@ print(lensing_image.shape)
 print(lensing_image.noise_map.shape)
 print(lensing_image.grids.image.shape)
 
-# To fit an image, we need to create an image-plane image using a tracer.
-# Lets use the same tracer we simulated the image with (thus, our fit should be 'perfect').
+# To fit_normal an image, we need to create an image-plane image using a tracer_without_subhalo.
+# Lets use the same tracer_without_subhalo we simulated the image with (thus, our fit_normal should be 'perfect').
 
-# Its worth noting that below, we use the lensing_image's grids to setup the tracer. This ensures that our image-plane
+# Its worth noting that below, we use the lensing_image's grids to setup the tracer_without_subhalo. This ensures that our image-plane
 # image will be the same resolution and alignment as our image-datas, as well as being masked appropriately.
 
 lens_galaxy = g.Galaxy(mass=mp.EllipticalIsothermal(centre=(0.0, 0.0), einstein_radius=1.6, axis_ratio=0.7, phi=45.0))
@@ -83,22 +83,22 @@ tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source
                                              image_plane_grids=[lensing_image.grids])
 ray_tracing_plotters.plot_image_plane_image(tracer=tracer)
 
-# To fit the image, we pass the lensing image and tracer to the fitting module. This performs the following:
+# To fit_normal the image, we pass the lensing image and tracer_without_subhalo to the fitting module. This performs the following:
 
-# 1) Blurs the tracer's image-plane image with the lensing-image's PSF, ensuring that the telescope optics are
-#    accounted for by the fit. This creates the fit's 'model_image'.
+# 1) Blurs the tracer_without_subhalo's image-plane image with the lensing-image's PSF, ensuring that the telescope optics are
+#    accounted for by the fit_normal. This creates the fit_normal's 'model_image'.
 
-# 2) Computes the difference between this model_image and the observed image-datas, creating the fit's 'residuals'.
+# 2) Computes the difference between this model_image and the observed image-datas, creating the fit_normal's 'residuals'.
 
 # 3) Divides the residuals by the noise-map and squaring each value, creating the fits 'chi-squareds'.
 
-# 4) Sums up these chi-squared values and converts them to a 'likelihood', which quantities how good the tracer's fit
-#    to the datas was (higher likelihood = better fit).
+# 4) Sums up these chi-squared values and converts them to a 'likelihood', which quantities how good the tracer_without_subhalo's fit_normal
+#    to the datas was (higher likelihood = better fit_normal).
 
 fit = lensing_fitting.fit_lensing_image_with_tracer(lensing_image=lensing_image, tracer=tracer)
 lensing_fitting_plotters.plot_fitting_subplot(fit=fit)
 
-# We can print the fit's attributes - if we don't specify where we'll get all zeros, as the edges were masked:
+# We can print the fit_normal's attributes - if we don't specify where we'll get all zeros, as the edges were masked:
 print('Model-Image Edge Pixels:')
 print(fit.model_data)
 print('Residuals Edge Pixels:')
@@ -119,13 +119,13 @@ print(fit.chi_squared[48:53, 48:53])
 print('Likelihood:')
 print(fit.likelihood)
 
-# We used the same tracer to create and fit the image. Therefore, our fit to the image was excellent.
+# We used the same tracer_without_subhalo to create and fit_normal the image. Therefore, our fit_normal to the image was excellent.
 # For example, by inspecting the residuals and chi-squareds, one can see no signs of the source model_galaxy's light present
 # and we only see the noise that we simulated the image with.
 
 # This solution should translate to one of the highest-likelihood solutions possible.
 
-# Lets change the tracer, so that it's near the correct solution, but slightly off.
+# Lets change the tracer_without_subhalo, so that it's near the correct solution, but slightly off.
 # All we're going to do is slightly offset the lens model_galaxy, by 0.005"
 
 lens_galaxy = g.Galaxy(mass=mp.EllipticalIsothermal(centre=(0.005, 0.005), einstein_radius=1.6, axis_ratio=0.7, phi=45.0))
@@ -137,16 +137,16 @@ fit = lensing_fitting.fit_lensing_image_with_tracer(lensing_image=lensing_image,
 lensing_fitting_plotters.plot_fitting_subplot(fit=fit)
 
 # We now observe residuals to appear at the locations the source model_galaxy was observed, which
-# corresponds to an increase in our chi-squareds (which determines our goodness-of-fit).
+# corresponds to an increase in our chi-squareds (which determines our goodness-of-fit_normal).
 
 # Lets compare the likelihood to the value we computed above (which was 11697.24):
 print('Previous Likelihood:')
 print(11697.24)
 print('New Likelihood:')
 print(fit.likelihood)
-# It decreases! This model was a worse fit to the datas.
+# It decreases! This model was a worse fit_normal to the datas.
 
-# Lets change the tracer, one more time, to a solution that is nowhere near the correct one.
+# Lets change the tracer_without_subhalo, one more time, to a solution that is nowhere near the correct one.
 lens_galaxy = g.Galaxy(mass=mp.EllipticalIsothermal(centre=(0.005, 0.005), einstein_radius=1.3, axis_ratio=0.8, phi=45.0))
 source_galaxy = g.Galaxy(light=lp.EllipticalSersic(centre=(0.1, 0.1), axis_ratio=0.7, phi=65.0,
                                                         intensity=1.0, effective_radius=0.4, sersic_index=3.5))
@@ -155,7 +155,7 @@ tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source
 fit = lensing_fitting.fit_lensing_image_with_tracer(lensing_image=lensing_image, tracer=tracer)
 lensing_fitting_plotters.plot_fitting_subplot(fit=fit)
 
-# Clearly, the model provides a terrible fit, and this tracer is not a plausible representation of
+# Clearly, the model provides a terrible fit_normal, and this tracer_without_subhalo is not a plausible representation of
 # the image-datas  (of course, we already knew that, given that we simulated it!)
 
 # The likelihood drops dramatically, as expected.
