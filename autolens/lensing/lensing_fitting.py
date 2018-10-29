@@ -43,7 +43,7 @@ def fit_multiple_lensing_images_with_tracer(lensing_images, tracer, padded_trace
 
     else:
 
-        raise exc.FittingException('The fit routine did not call a Fit class - check the '
+        raise exc.FittingException('The fit_normal routine did not call a Fit class - check the '
                                    'properties of the tracer')
 
 
@@ -110,7 +110,7 @@ def fit_lensing_image_with_tracer(lensing_image, tracer, padded_tracer=None):
 
     else:
 
-        raise exc.FittingException('The fit routine did not call a Fit class - check the '
+        raise exc.FittingException('The fit_normal routine did not call a Fit class - check the '
                                    'properties of the tracer')
 
 
@@ -159,7 +159,7 @@ class LensingProfileFit(fitting.AbstractProfileFit, AbstractLensingFit):
 
     def __init__(self, lensing_images, tracer, padded_tracer=None):
         """
-        Class to evaluate the fit between a model described by a tracer and an actual lensing_image.
+        Class to evaluate the fit_normal between a model described by a tracer and an actual lensing_image.
 
         Parameters
         ----------
@@ -246,7 +246,7 @@ class HyperLensingProfileFit(LensingProfileFit, fitting.AbstractHyperFit):
 
     def __init__(self, lensing_hyper_images, tracer, padded_tracer=None):
         """
-        Class to evaluate the fit between a model described by a tracer and an actual lensing_image.
+        Class to evaluate the fit_normal between a model described by a tracer and an actual lensing_image.
 
         Parameters
         ----------
@@ -308,7 +308,7 @@ class LensingInversionFit(fitting.AbstractInversionFit, AbstractLensingFit):
 
     def __init__(self, lensing_images, tracer):
         """
-        Class to evaluate the fit between a model described by a tracer and an actual lensing_image.
+        Class to evaluate the fit_normal between a model described by a tracer and an actual lensing_image.
 
         Parameters
         ----------
@@ -397,7 +397,7 @@ class HyperLensingInversionFit(LensingInversionFit, HyperLensingInversion):
 
     def __init__(self, lensing_hyper_images, tracer):
         """
-        Class to evaluate the fit between a model described by a tracer and an actual lensing_image.
+        Class to evaluate the fit_normal between a model described by a tracer and an actual lensing_image.
 
         Parameters
         ----------
@@ -464,7 +464,7 @@ class LensingProfileInversionFit(fitting.AbstractProfileInversionFit, AbstractLe
 
     def __init__(self, lensing_images, tracer, padded_tracer=None):
         """
-        Class to evaluate the fit between a model described by a tracer and an actual lensing_image.
+        Class to evaluate the fit_normal between a model described by a tracer and an actual lensing_image.
 
         Parameters
         ----------
@@ -529,7 +529,7 @@ class HyperLensingProfileInversionFit(LensingProfileInversionFit, HyperLensingIn
 
     def __init__(self, lensing_hyper_images, tracer, padded_tracer=None):
         """
-        Class to evaluate the fit between a model described by a tracer and an actual lensing_image.
+        Class to evaluate the fit_normal between a model described by a tracer and an actual lensing_image.
 
         Parameters
         ----------

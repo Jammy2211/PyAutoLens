@@ -28,9 +28,9 @@ class Result(object):
         Parameters
         ----------
         constant: mm.ModelInstance
-            An instance object comprising the class instances that gave the optimal fit
+            An instance object comprising the class instances that gave the optimal fit_normal
         likelihood: float
-            A value indicating the likelihood given by the optimal fit
+            A value indicating the likelihood given by the optimal fit_normal
         variable: mm.ModelMapper
             An object comprising priors determined by this stage of the lensing
         """
