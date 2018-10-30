@@ -130,6 +130,7 @@ class ListWrapper(object):
             for obj in self:
                 if obj.mapping_name == item:
                     return obj
+        raise AttributeError()
 
     def __setattr__(self, key, value):
         if key not in ("variable_items", "constant_items", "optimizer"):
