@@ -30,7 +30,7 @@ If you don't have Docker then you can install it by following the guide [here](h
 Once you have Docker installed you can download the AutoLens Docker project with the command:
 
 ```
-docker pull linan7788626/docker-pyautolens
+docker pull rhayes777/autolens
 ```
 
 This command can also be used to update the project.
@@ -38,10 +38,12 @@ This command can also be used to update the project.
 The project can be run using:
 
 ```
-docker run -it -e LOCAL_USER_ID=`id -u $USER` -h PyAutoLens -p 8888:8888 -p 6006:6006 -v $HOME/PyAutoLensWorkDir:/home/user/PyAutoLens/workspace linan7788626/docker-pyautolens
+docker run -it -e LOCAL_USER_ID=`id -u $USER` -h autolens -p 8888:8888 -p 6006:6006 -v $HOME/autolens_workspace:/home/user/workspace rhayes777/autolens
 ```
 
 Once the project is running Docker will provide you with a URL. Copy and paste this URL into your browser, making sure you replace '(PyAutoLens or 127.0.0.1)' with '127.0.0.1'. This will bring up a Jupyter notebook including the 'howtolens' directory which is full of tutorials.
+
+Any changes you make inside the Docker workspace will be saved in the autolens_workspace in your home directory.
 
 ## Python Example
 
@@ -50,7 +52,7 @@ With PyAutoLens, you can begin modeling a lens in just a couple of minutes. The 
 ```python
 from autolens.pipeline import phase as ph
 from autolens.autofit import non_linear as nl
-from autolens.lensing import galaxy_prior as gp
+from autolens.lensing import galaxy_model as gm
 from autolens.imaging import image as im
 from autolens.profiles import light_profiles as lp
 from autolens.profiles import mass_profiles as mp
@@ -74,8 +76,8 @@ image = im.load_imaging_from_path(image_path=path + '/data/image.fits',
 # To setup our model galaxies, we use the 'galaxy_model' module and GalaxyModel class. 
 # A GalaxyModel represents a galaxy where the parameters of its associated profiles are 
 # variable and fitted for by the analysis.
-lens_galaxy_model = gp.GalaxyModel(light=lp.AbstractEllipticalSersic, mass=mp.EllipticalIsothermal)
-source_galaxy_model = gp.GalaxyModel(light=lp.AbstractEllipticalSersic)
+lens_galaxy_model = gm.GalaxyModel(light=lp.AbstractEllipticalSersic, mass=mp.EllipticalIsothermal)
+source_galaxy_model = gm.GalaxyModel(light=lp.AbstractEllipticalSersic)
 
 # To perform the analysis, we set up a phase using the 'phase' module (imported as 'ph').
 # A phase takes our galaxy models and fits their parameters using a non-linear search (in this case, MultiNest).
@@ -94,8 +96,8 @@ The example above shows the simplest analysis one can perform in PyAutoLens. PyA
 
 - **Pipelines** - build automated analysis pipelines to fit complex lens models to large samples of strong lenses.
 - **Inversions** - Reconstruct complex source galaxy morphologies on a variety of pixel-grids.
-- **Adaption** - (October 2018) - Adapt the lensing analysis to the features of the observed strong lens imaging.
-- **Multi-Plane** - (November 2018) Model multi-plane lenses, including systems with multiple lensed source galaxies.
+- **Adaption** - (November 2018) - Adapt the lensing analysis to the features of the observed strong lens imaging.
+- **Multi-Plane** - (December 2018) Model multi-plane lenses, including systems with multiple lensed source galaxies.
 
 ## HowToLens
 
