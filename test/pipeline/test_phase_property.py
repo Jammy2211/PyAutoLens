@@ -132,7 +132,7 @@ class TestPhasePropertyList(object):
         assert list_phase.variable.prop == [galaxy_prior_1]
 
 
-class TestPhasePropertyListAttributes(object):
+class TestPhasePropertyCollectionAttributes(object):
     def test_set_list_as_dict(self, list_phase):
         galaxy_model = gp.GalaxyModel()
         list_phase.prop = dict(one=galaxy_model)
@@ -205,6 +205,24 @@ class TestPhasePropertyListAttributes(object):
 
         assert list_phase.variable.prior_count == 0
         assert list_phase.constant.one == galaxy
+
+    def test_singular_model_info(self, list_phase):
+        galaxy_model = gp.GalaxyModel(variable_redshift=True)
+        list_phase.prop = dict(one=galaxy_model)
+
+        assert len(list_phase.variable.flat_prior_model_tuples) == 1
+        assert len(list_phase.variable.info.split('\n')) == 4
+
+    def test_shared_priors(self, list_phase):
+        list_phase.prop = dict(one=gp.GalaxyModel(variable_redshift=True),
+                               two=gp.GalaxyModel(variable_redshift=True))
+
+        assert list_phase.variable.prior_count == 2
+
+        # noinspection PyUnresolvedReferences
+        list_phase.prop.one.redshift = list_phase.prop.two.redshift
+
+        assert list_phase.variable.prior_count == 1
 
 
 def assert_ordered(items):
