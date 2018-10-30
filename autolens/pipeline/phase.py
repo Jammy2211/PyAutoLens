@@ -117,12 +117,20 @@ class Phase(object):
 
     def update_galaxy_models_with_mapper(self, mapper):
         for tup in mapper.prior_model_tuples:
-            print(tup)
             for phase_property_collection in self.phase_property_collections:
-                print(phase_property_collection)
                 if hasattr(phase_property_collection, tup[0]):
-                    print("setattr")
                     setattr(phase_property_collection, tup[0], tup[1])
+
+    def fit_priors(self, instance, fitting_function):
+        tuples = self.match_instance_to_models(instance)
+        for t in tuples:
+            name = t[0]
+            galaxy = t[1]
+            galaxy_model = t[2]
+            new_galaxy_model = fitting_function(galaxy, galaxy_model)
+            for phase_property_collection in self.phase_property_collections:
+                if hasattr(phase_property_collection, name):
+                    setattr(phase_property_collection, name, new_galaxy_model)
 
     @property
     def phase_property_collections(self):
