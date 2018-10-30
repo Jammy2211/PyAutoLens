@@ -115,6 +115,14 @@ class Phase(object):
         galaxy_dict = dict(instance.name_instance_tuples_for_class(g.Galaxy))
         return [(key, galaxy_dict[key], value) for key, value in self.galaxy_model_tuples if key in galaxy_dict]
 
+    def update_galaxy_models_with_mapper(self, mapper):
+        for tup in mapper.prior_model_tuples:
+            setattr(self.variable, tup.name, tup.prior_model)
+
+    @property
+    def phase_property_collections(self):
+        return []
+
     @property
     def path(self):
         return self.optimizer.path
@@ -235,6 +243,10 @@ class Phase(object):
 
 class PhasePositions(Phase):
     lens_galaxies = PhasePropertyCollection("lens_galaxies")
+
+    @property
+    def phase_property_collections(self):
+        return [self.lens_galaxies]
 
     def __init__(self, lens_galaxies=None, optimizer_class=non_linear.MultiNest, phase_name=None):
         super().__init__(optimizer_class, phase_name)
@@ -514,6 +526,10 @@ class LensPlanePhase(PhaseImaging):
 
     lens_galaxies = PhasePropertyCollection("lens_galaxies")
 
+    @property
+    def phase_property_collections(self):
+        return [self.lens_galaxies]
+
     def __init__(self, lens_galaxies=None, optimizer_class=non_linear.MultiNest, sub_grid_size=1, image_psf_shape=None,
                  mask_function=default_mask_function, phase_name="lens_only_phase"):
         super(LensPlanePhase, self).__init__(optimizer_class=optimizer_class, sub_grid_size=sub_grid_size,
@@ -684,6 +700,10 @@ class LensSourcePlanePhase(PhaseImaging):
     lens_galaxies = PhasePropertyCollection("lens_galaxies")
     source_galaxies = PhasePropertyCollection("source_galaxies")
 
+    @property
+    def phase_property_collections(self):
+        return [self.lens_galaxies, self.source_galaxies]
+
     def __init__(self, lens_galaxies=None, source_galaxies=None, optimizer_class=non_linear.MultiNest,
                  sub_grid_size=1, image_psf_shape=None, mask_function=default_mask_function,
                  positions=None, phase_name="source_lens_phase"):
@@ -761,6 +781,10 @@ class LensSourcePlaneHyperPhase(LensSourcePlanePhase):
 
     lens_galaxies = PhasePropertyCollection("lens_galaxies")
     source_galaxies = PhasePropertyCollection("source_galaxies")
+
+    @property
+    def phase_property_collections(self):
+        return [self.lens_galaxies, self.source_galaxies]
 
     def __init__(self, lens_galaxies=None, source_galaxies=None, optimizer_class=non_linear.MultiNest,
                  sub_grid_size=1, positions=None, image_psf_shape=None, mask_function=default_mask_function,
