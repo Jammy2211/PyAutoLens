@@ -135,10 +135,11 @@ class TestAutomaticPriorPassing(object):
         assert phase.match_instance_to_models(instance) == [("galaxy_one", galaxy, galaxy_model)]
 
     def test_update_galaxy_model_with_instance(self, phase):
-        galaxy = g.Galaxy(redshift=10)
+        galaxy = gm.GalaxyModel()
         mapper = mm.ModelMapper()
-        mapper.redshift = mm.UniformPrior(8.5, 11.5)
+
         mapper.galaxy_one = galaxy
+        mapper.galaxy_one.redshift = mm.UniformPrior(8.5, 11.5)
 
         galaxy_model = gm.GalaxyModel(variable_redshift=True)
 
