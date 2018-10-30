@@ -6,6 +6,7 @@ from autolens.galaxy import galaxy, galaxy_model as gm
 from autolens.pipeline import phase as ph
 from autolens.pipeline import pipeline as pl
 from autolens.profiles import light_profiles as lp
+from autolens.profiles import mass_profiles as mp
 from test.integration import tools
 
 dirpath = os.path.dirname(os.path.realpath(__file__))
@@ -44,9 +45,10 @@ def make_pipeline(pipeline_name):
     class MMPhase(ph.LensPlanePhase):
 
         def pass_priors(self, previous_results):
-            self.lens_galaxies[0].sersic.intensity = self.lens_galaxies[0].sersic.axis_ratio
+            self.lens_galaxies.lens.light.intensity = self.lens_galaxies.lens.mass.einstein_radius
 
-    phase1 = MMPhase(lens_galaxies=[gm.GalaxyModel(sersic=lp.EllipticalSersic)],
+    phase1 = MMPhase(lens_galaxies=dict(lens=gm.GalaxyModel(light=lp.EllipticalSersic,
+                                                            mass=mp.SphericalIsothermal)),
                      optimizer_class=nl.MultiNest, phase_name="{}/phase1".format(pipeline_name))
 
     phase1.optimizer.n_live_points = 20
