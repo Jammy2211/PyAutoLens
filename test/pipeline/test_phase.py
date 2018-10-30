@@ -134,12 +134,12 @@ class TestAutomaticPriorPassing(object):
 
         assert phase.match_instance_to_models(instance) == [("galaxy_one", galaxy, galaxy_model)]
 
+    # noinspection PyUnresolvedReferences
     def test_update_galaxy_model_with_instance(self, phase):
-        galaxy = gm.GalaxyModel()
+        new_galaxy_model = gm.GalaxyModel(variable_redshift=True)
         mapper = mm.ModelMapper()
 
-        mapper.galaxy_one = galaxy
-        mapper.galaxy_one.redshift = mm.UniformPrior(8.5, 11.5)
+        mapper.galaxy_one = new_galaxy_model
 
         galaxy_model = gm.GalaxyModel(variable_redshift=True)
 
@@ -151,8 +151,13 @@ class TestAutomaticPriorPassing(object):
 
         phase.update_galaxy_models_with_mapper(mapper)
 
-        assert phase.lens_galaxies[0].redshift.redshift.mean == 10
+        assert phase.variable.galaxy_one == new_galaxy_model
 
+        assert phase.lens_galaxies.galaxy_one == new_galaxy_model
+        assert phase.lens_galaxies[0] == new_galaxy_model
+
+        assert phase.lens_galaxies.galaxy_one != galaxy_model
+    
     def test_phase_property_collections(self, phase):
         assert phase.phase_property_collections == [phase.lens_galaxies, phase.source_galaxies]
 
