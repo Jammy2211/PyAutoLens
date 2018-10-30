@@ -42,7 +42,7 @@ class TestPhaseModelMapper(object):
 
         assert phase.lens_galaxies[0].sersic.intensity == phase.lens_galaxies[0].sersic.axis_ratio
         assert initial_total_priors - 1 == phase.variable.prior_count
-        assert len(phase.variable.flat_prior_model_tuples) == 2
+        assert len(phase.variable.flat_prior_model_tuples) == 1
 
         lines = list(
             filter(lambda line: "axis_ratio" in line or "intensity" in line, phase.variable.info.split("\n")))
