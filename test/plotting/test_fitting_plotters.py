@@ -1,18 +1,19 @@
 import os
 import shutil
-from astropy import cosmology as cosmo
-import pytest
+
 import numpy as np
+import pytest
 
 from autolens import conf
-from autolens.imaging import scaled_array
-from autolens.imaging import image as im
-from autolens.imaging import mask as msk
-from autolens.plotting import fitting_plotters
-from autolens.profiles import light_profiles as lp
-from autolens.galaxy import galaxy as g
 from autolens.fitting import fitting
 from autolens.fitting import fitting_data
+from autolens.galaxy import galaxy as g
+from autolens.imaging import image as im
+from autolens.imaging import mask as msk
+from autolens.imaging import scaled_array
+from autolens.plotting import fitting_plotters
+from autolens.profiles import light_profiles as lp
+
 
 @pytest.fixture(name='general_config')
 def test_general_config():
@@ -31,18 +32,20 @@ def test_fitting_plotter_setup():
 
     return galaxy_plotter_path
 
+
 @pytest.fixture(name='image')
 def test_image():
-
-    image = scaled_array.ScaledSquarePixelArray(array=np.ones((3,3)), pixel_scale=1.0)
-    noise_map = im.NoiseMap(array=2.0*np.ones((3,3)), pixel_scale=1.0)
-    psf = im.PSF(array=3.0*np.ones((1,1)), pixel_scale=1.0)
+    image = scaled_array.ScaledSquarePixelArray(array=np.ones((3, 3)), pixel_scale=1.0)
+    noise_map = im.NoiseMap(array=2.0 * np.ones((3, 3)), pixel_scale=1.0)
+    psf = im.PSF(array=3.0 * np.ones((1, 1)), pixel_scale=1.0)
 
     return im.Image(array=image, pixel_scale=1.0, noise_map=noise_map, psf=psf)
+
 
 @pytest.fixture(name='mask')
 def test_mask():
     return msk.Mask.circular(shape=((3, 3)), pixel_scale=0.1, radius_mask_arcsec=0.1)
+
 
 @pytest.fixture(name='fitting_image')
 def test_fitting_image(image, mask):
@@ -52,6 +55,7 @@ def test_fitting_image(image, mask):
 @pytest.fixture(name='fit_normal')
 def test_fit(fitting_image):
     return fitting.AbstractImageFit(fitting_images=[fitting_image], _model_images=[np.ones(5)])
+
 
 @pytest.fixture(name='hyper')
 def make_hyper():
@@ -84,33 +88,33 @@ def test_fit_hyper(fitting_hyper_image, hyper):
                                          hyper_galaxies=[hyper.hyper_galaxy.hyper_galaxy])
 
 
-def test__model_image_is_output(fit, fitting_plotter_path):
-    fitting_plotters.plot_model_image(fit=fit, output_path=fitting_plotter_path, output_format='png')
+def test__model_image_is_output(fit_normal, fitting_plotter_path):
+    fitting_plotters.plot_model_image(fit=fit_normal, output_path=fitting_plotter_path, output_format='png')
     assert os.path.isfile(path=fitting_plotter_path + 'fit_model_image.png')
     os.remove(path=fitting_plotter_path + 'fit_model_image.png')
 
 
-def test__residuals_is_output(fit, fitting_plotter_path):
-    fitting_plotters.plot_residuals(fit=fit, output_path=fitting_plotter_path, output_format='png')
+def test__residuals_is_output(fit_normal, fitting_plotter_path):
+    fitting_plotters.plot_residuals(fit=fit_normal, output_path=fitting_plotter_path, output_format='png')
     assert os.path.isfile(path=fitting_plotter_path + 'fit_residuals.png')
     os.remove(path=fitting_plotter_path + 'fit_residuals.png')
 
 
-def test__chi_squareds_is_output(fit, fitting_plotter_path):
-    fitting_plotters.plot_chi_squareds(fit=fit, output_path=fitting_plotter_path, output_format='png')
+def test__chi_squareds_is_output(fit_normal, fitting_plotter_path):
+    fitting_plotters.plot_chi_squareds(fit=fit_normal, output_path=fitting_plotter_path, output_format='png')
     assert os.path.isfile(path=fitting_plotter_path + 'fit_chi_squareds.png')
     os.remove(path=fitting_plotter_path + 'fit_chi_squareds.png')
 
 
 def test__scaled_chi_squareds_is_output(fit_hyper, fitting_plotter_path):
     fitting_plotters.plot_scaled_chi_squareds(fit=fit_hyper, output_path=fitting_plotter_path,
-                                                      output_format='png')
+                                              output_format='png')
     assert os.path.isfile(path=fitting_plotter_path + 'fit_scaled_chi_squareds.png')
     os.remove(path=fitting_plotter_path + 'fit_scaled_chi_squareds.png')
 
 
 def test__scaled_noise_map_is_output(fit_hyper, fitting_plotter_path):
     fitting_plotters.plot_scaled_noise_map(fit=fit_hyper, output_path=fitting_plotter_path,
-                                                   output_format='png')
+                                           output_format='png')
     assert os.path.isfile(path=fitting_plotter_path + 'fit_scaled_noise_map.png')
     os.remove(path=fitting_plotter_path + 'fit_scaled_noise_map.png')
