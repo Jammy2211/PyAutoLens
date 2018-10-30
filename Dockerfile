@@ -1,5 +1,5 @@
 FROM ubuntu:18.04
-LABEL maintainer="Nan Li <linan7788626@gmail.com>"
+LABEL authors="Nan Li <linan7788626@gmail.com>, Richard Hayes <richard@rghsoftware.co.uk>"
 
 # Install packages with apt-get
 RUN apt-get update \
