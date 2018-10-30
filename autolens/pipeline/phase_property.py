@@ -134,7 +134,6 @@ class ListWrapper(object):
 
     def __setattr__(self, key, value):
         if key not in ("variable_items", "constant_items", "optimizer"):
-            print(key)
             setattr(self.optimizer.variable, key, value)
             value.mapping_name = key
             for index, obj in enumerate(self):
