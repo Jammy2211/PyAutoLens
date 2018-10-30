@@ -145,10 +145,6 @@ class TestAutomaticPriorPassing(object):
 
         phase.lens_galaxies = dict(galaxy_one=galaxy_model)
 
-        assert phase.lens_galaxies[0].redshift.redshift.mean == 1.5
-        assert phase.lens_galaxies[0].redshift.redshift.lower_limit == 0
-        assert phase.lens_galaxies[0].redshift.redshift.upper_limit == 3
-
         phase.update_galaxy_models_with_mapper(mapper)
 
         assert phase.variable.galaxy_one == new_galaxy_model
@@ -157,9 +153,30 @@ class TestAutomaticPriorPassing(object):
         assert phase.lens_galaxies[0] == new_galaxy_model
 
         assert phase.lens_galaxies.galaxy_one != galaxy_model
-    
+
     def test_phase_property_collections(self, phase):
         assert phase.phase_property_collections == [phase.lens_galaxies, phase.source_galaxies]
+
+    # noinspection PyUnresolvedReferences
+    def test_fit_priors(self, phase, galaxy_model, galaxy):
+        argument_tuples = []
+
+        new_galaxy_model = gm.GalaxyModel()
+
+        def fitting_function(best_fit_galaxy, initial_galaxy_model):
+            argument_tuples.append((best_fit_galaxy, initial_galaxy_model))
+            return new_galaxy_model
+
+        phase.lens_galaxies = dict(galaxy_one=galaxy_model)
+        assert phase.lens_galaxies.galaxy_one is not None
+
+        instance = mm.ModelInstance()
+        instance.galaxy_one = galaxy
+
+        phase.fit_priors(instance, fitting_function)
+
+        assert phase.lens_galaxies.galaxy_one == new_galaxy_model
+        assert argument_tuples == [(galaxy, galaxy_model)]
 
 
 def clean_images():
