@@ -34,20 +34,16 @@ class MockAnalysis(object):
         self.number_galaxies = number_galaxies
         self.value = value
 
-    # def tracer_for_instance(self, instance):
-    #     from autolens.lensing import ray_tracing
-    #     return ray_tracing.Tracer(lens_galaxies=[], source_galaxies=[], image_plane_grids=)
-
     # noinspection PyUnusedLocal
     def galaxy_images_for_model(self, model):
         return self.number_galaxies * [np.array([self.value])]
 
 
 class MockResults(object):
-    def __init__(self, model_image, galaxy_images=()):
+    def __init__(self, model_image=None, galaxy_images=(), constant=None):
         self.model_image = model_image
         self.galaxy_images = galaxy_images
-        self.constant = mm.ModelInstance()
+        self.constant = constant or mm.ModelInstance()
         self.variable = mm.ModelMapper()
 
 
@@ -188,6 +184,45 @@ class TestAutomaticPriorPassing(object):
         instance_2.galaxy = galaxy_2
 
         assert (instance_1 + instance_2).galaxy == galaxy_2
+
+    # noinspection PyUnresolvedReferences
+    def test_fit_priors_with_results(self, phase):
+        argument_tuples = []
+
+        galaxy_model_one = gm.GalaxyModel()
+        galaxy_model_two = gm.GalaxyModel()
+
+        new_galaxy_model_one = gm.GalaxyModel()
+        new_galaxy_model_two = gm.GalaxyModel()
+
+        new_galaxy_models = {galaxy_model_one: new_galaxy_model_one, galaxy_model_two: new_galaxy_model_two}
+
+        def fitting_function(best_fit_galaxy, initial_galaxy_model):
+            argument_tuples.append((best_fit_galaxy, initial_galaxy_model))
+            return new_galaxy_models[initial_galaxy_model]
+
+        phase.lens_galaxies = dict(galaxy_one=galaxy_model_one, galaxy_two=galaxy_model_two)
+
+        instance_one = mm.ModelInstance()
+        galaxy_one = g.Galaxy()
+        instance_one.galaxy_one = galaxy_one
+        instance_one.galaxy_two = g.Galaxy()
+        results_one = MockResults(constant=instance_one)
+
+        instance_two = mm.ModelInstance()
+        galaxy_two = g.Galaxy()
+        instance_two.galaxy_two = galaxy_two
+        results_two = MockResults(constant=instance_two)
+
+        assert phase.lens_galaxies.galaxy_one == galaxy_model_one
+        assert phase.lens_galaxies.galaxy_two == galaxy_model_two
+
+        phase.fit_priors_with_results([results_one, results_two], fitting_function)
+
+        assert phase.lens_galaxies.galaxy_one == new_galaxy_model_one
+        assert phase.lens_galaxies.galaxy_two == new_galaxy_model_two
+        assert argument_tuples == [(galaxy_one, galaxy_model_one),
+                                   (galaxy_two, galaxy_model_two)]
 
 
 def clean_images():
