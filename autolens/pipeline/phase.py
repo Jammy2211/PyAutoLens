@@ -933,10 +933,10 @@ class GalaxyFitPhase(Phase):
 
         Parameters
         ----------
+        noise_map
+        array
         previous_results: ResultsCollection
             An object describing the results of the last phase or None if no phase has been executed
-        image: img.Image
-            An lensing_image that has been masked
 
         Returns
         -------
@@ -1016,8 +1016,8 @@ class GalaxyFitIntensitiesPhase(GalaxyFitPhase):
 
         Parameters
         ----------
-        image: im.Image
-            An lensing_image that has been masked
+        array
+        noise_map
         previous_results: ResultsCollection
             The result from the previous phase
 
