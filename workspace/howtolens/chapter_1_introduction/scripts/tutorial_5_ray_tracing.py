@@ -107,10 +107,10 @@ print(tracer.image_plane.surface_density[1,0])
 # You can also plot the above attributes on individual figures, using appropriate ray-tracing plotter (I've left most
 # commented out again for convinience)
 ray_tracing_plotters.plot_surface_density(tracer=tracer)
-# ray_tracing_plotters.plot_potential(tracer=tracer)
-# ray_tracing_plotters.plot_deflections_y(tracer=tracer)
-#ray_tracing_plotters.plot_deflections_x(tracer=tracer)
-# ray_tracing_plotters.plot_image_plane_image(tracer=tracer)
+# ray_tracing_plotters.plot_potential(tracer_normal=tracer_normal)
+# ray_tracing_plotters.plot_deflections_y(tracer_normal=tracer_normal)
+#ray_tracing_plotters.plot_deflections_x(tracer_normal=tracer_normal)
+# ray_tracing_plotters.plot_image_plane_image(tracer_normal=tracer_normal)
 
 # Before we finish, the attentive amongst you might be wondering 'why do both the image-plane and tracer_without_subhalo have the
 # attributes surface density / potential / deflection angles, when, by definition, the two are identical'. Think about
@@ -119,7 +119,7 @@ ray_tracing_plotters.plot_surface_density(tracer=tracer)
 
 # 1) Convinience - You could always write 'tracer_without_subhalo.image_plane.surface_density' and
 #                  'plane_plotters.surface_density(plane=tracer_without_subhalo.image_plane). However, code appears neater if you can
-#                   just write 'tracer.surface_density' and 'ray_tracing_plotters.plot_surface_density(tracer=tracer).
+#                   just write 'tracer_normal.surface_density' and 'ray_tracing_plotters.plot_surface_density(tracer_normal=tracer_normal).
 
 # 2) Multi-plane lensing - For now, we're focused on the image-plane + source-plane lensing configuration. However,
 #                          there are strong lens system where there are more than 2 planes! In these instances, the

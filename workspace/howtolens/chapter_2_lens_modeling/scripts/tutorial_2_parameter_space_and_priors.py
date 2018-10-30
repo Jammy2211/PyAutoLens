@@ -38,7 +38,7 @@ import os
 # We can write our likelihood function as follows (using x_mp, y_mp, I_lp etc. as short-hand notation for the
 # mass-profile and light-profile parameters):
 
-# f(x_mp, y_mp, R_mp, x_lp, y_lp, I_lp, R_lp) = a likelihood from AutoLens's tracer / fitting modules
+# f(x_mp, y_mp, R_mp, x_lp, y_lp, I_lp, R_lp) = a likelihood from AutoLens's tracer_normal / fitting modules
 
 # The point is, like we did for the simple functions above, we again have a parameter space! It can't be written down
 # analytically and its undoubtedly very complex and non-linear. Fortunately, we've already learnt how to search it, and

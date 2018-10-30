@@ -166,13 +166,13 @@ class LightTracesMassPhase(ph.LensSourcePlanePhase):
         # In the pass priors function, we can 'pair' any two parameters by setting them equal to one another. This
         # removes the parameter on the left-hand side of the pairing from the lens model, such that is always assumes
         # the same value as the parameter on the right-hand side.
-        self.lens_galaxies.lens.mass_centre_0 = self.lens_galaxies.lens.light.centre_0
+        self.lens_galaxies.lens.mass.centre_0 = self.lens_galaxies.lens.light.centre_0
 
         # Now, the mass-profile's x coordinate will only use the x coordinate of the light profile. Lets do this with
         # the remaining geometric parameters of the light and mass profiles
-        self.lens_galaxies.lens.mass_centre_1 = self.lens_galaxies.lens.light.centre_1
-        self.lens_galaxies.lens.mass_axis_ratio = self.lens_galaxies.lens.light.axis_ratio
-        self.lens_galaxies.lens.mass_phi = self.lens_galaxies.lens.light.phi
+        self.lens_galaxies.lens.mass.centre_1 = self.lens_galaxies.lens.light.centre_1
+        self.lens_galaxies.lens.mass.axis_ratio = self.lens_galaxies.lens.light.axis_ratio
+        self.lens_galaxies.lens.mass.phi = self.lens_galaxies.lens.light.phi
 
 # Again, we create this phase and run it. The non-linear search has a less complex parameter space to seach, and thus
 # more chance finding its highest likelihood regions. (again, the results have been precomputed for your convience).

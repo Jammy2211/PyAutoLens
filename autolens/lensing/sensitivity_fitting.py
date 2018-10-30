@@ -10,17 +10,17 @@ from autolens.lensing import ray_tracing
 
 class AbstractSensitivityFit(object):
 
-    def __init__(self, tracer, tracer_sensitivity):
+    def __init__(self, tracer_normal, tracer_sensitive):
 
-        self.tracer = tracer
-        self.tracer_sensitivity = tracer_sensitivity
+        self.tracer_normal = tracer_normal
+        self.tracer_sensitive = tracer_sensitive
 
 
 class SensitivityProfileFit(AbstractSensitivityFit):
 
-    def __init__(self, lensing_images, tracer_normal, tracer_sensitivity, add_noise=True, noise_seed=-1):
+    def __init__(self, lensing_images, tracer_normal, tracer_sensitive, add_noise=True, noise_seed=-1):
         """
-        Class to evaluate the fit between a model described by a tracer and an actual lensing_image.
+        Class to evaluate the fit between a model described by a tracer_normal and an actual lensing_image.
 
         Parameters
         ----------
@@ -29,23 +29,23 @@ class SensitivityProfileFit(AbstractSensitivityFit):
         tracer_normal: ray_tracing.AbstractTracer
             An object describing the model
         """
-        AbstractSensitivityFit.__init__(self=self, tracer=tracer_normal,
-                                        tracer_sensitivity=tracer_sensitivity)
+        AbstractSensitivityFit.__init__(self=self, tracer_normal=tracer_normal,
+                                        tracer_sensitive=tracer_sensitive)
 
-        self.sensitivity_images = sensitivity_images_from_lensing_images_and_tracer_sensitvity(
-            lensing_images=lensing_images, tracer_sensitivity=tracer_sensitivity, add_noise=add_noise,
+        self.sensitivity_images = sensitivity_images_from_lensing_images_and_tracer_sensitive(
+            lensing_images=lensing_images, tracer_sensitive=tracer_sensitive, add_noise=add_noise,
             noise_seed=noise_seed)
         
         self.fit_normal = fitting.AbstractProfileFit(fitting_images=self.sensitivity_images,
                                                      _images=tracer_normal._image_plane_images,
                                                      _blurring_images=tracer_normal._image_plane_blurring_images)
         
-        self.fit_sensitivity = fitting.AbstractProfileFit(fitting_images=self.sensitivity_images,
-                                                _images=tracer_sensitivity._image_plane_images,
-                                                _blurring_images=tracer_sensitivity._image_plane_blurring_images)
+        self.fit_sensitive = fitting.AbstractProfileFit(fitting_images=self.sensitivity_images,
+                                                        _images=tracer_sensitive._image_plane_images,
+                                                        _blurring_images=tracer_sensitive._image_plane_blurring_images)
 
     @classmethod
-    def fast_likelihood(cls, lensing_images, tracer_normal, tracer_sensitivity, add_noise=True, noise_seed=-1):
+    def fast_likelihood(cls, lensing_images, tracer_normal, tracer_sensitive, add_noise=True, noise_seed=-1):
         """
         Fast calculation of likelihood
 
@@ -57,8 +57,8 @@ class SensitivityProfileFit(AbstractSensitivityFit):
             An object describing the model
         """
 
-        sensitivity_images = sensitivity_images_from_lensing_images_and_tracer_sensitvity(lensing_images=lensing_images,
-                             tracer_sensitivity=tracer_sensitivity, add_noise=add_noise, noise_seed=noise_seed)
+        sensitivity_images = sensitivity_images_from_lensing_images_and_tracer_sensitive(lensing_images=lensing_images,
+                                                                                         tracer_sensitive=tracer_sensitive, add_noise=add_noise, noise_seed=noise_seed)
 
         convolvers = list(map(lambda lensing_image : lensing_image.convolver_image, lensing_images))
         _noise_maps = list(map(lambda lensing_image : lensing_image.noise_map, lensing_images))
@@ -78,38 +78,38 @@ class SensitivityProfileFit(AbstractSensitivityFit):
         likelihoods_normal = fitting.likelihoods_from_chi_squareds_and_noise_terms(chi_squared_terms=chi_squared_terms_normal, 
                                                                                    noise_terms=noise_terms_normal)
         
-        _model_images_sensitivity = fitting.blur_images_including_blurring_regions(
-            images=tracer_sensitivity._image_plane_images, 
-            blurring_images=tracer_sensitivity._image_plane_blurring_images, 
+        _model_images_sensitive = fitting.blur_images_including_blurring_regions(
+            images=tracer_sensitive._image_plane_images, 
+            blurring_images=tracer_sensitive._image_plane_blurring_images, 
             convolvers=convolvers)
         
-        _residuals_sensitivity = fitting.residuals_from_datas_and_model_datas(datas=sensitivity_images, 
-                                                                         model_datas=_model_images_sensitivity),
-        _chi_squareds_sensitivity = fitting.chi_squareds_from_residuals_and_noise_maps(residuals=_residuals_sensitivity, 
+        _residuals_sensitive = fitting.residuals_from_datas_and_model_datas(datas=sensitivity_images, 
+                                                                         model_datas=_model_images_sensitive),
+        _chi_squareds_sensitive = fitting.chi_squareds_from_residuals_and_noise_maps(residuals=_residuals_sensitive, 
                                                                                   noise_maps=_noise_maps),
-        chi_squared_terms_sensitivity = fitting.chi_squared_terms_from_chi_squareds(chi_squareds=_chi_squareds_sensitivity)
-        noise_terms_sensitivity = fitting.noise_terms_from_noise_maps(noise_maps=_noise_maps)
+        chi_squared_terms_sensitive = fitting.chi_squared_terms_from_chi_squareds(chi_squareds=_chi_squareds_sensitive)
+        noise_terms_sensitive = fitting.noise_terms_from_noise_maps(noise_maps=_noise_maps)
         
-        likelihoods_sensitivity = fitting.likelihoods_from_chi_squareds_and_noise_terms(chi_squared_terms=chi_squared_terms_sensitivity, 
-                                                                                   noise_terms=noise_terms_sensitivity)
+        likelihoods_sensitive = fitting.likelihoods_from_chi_squareds_and_noise_terms(chi_squared_terms=chi_squared_terms_sensitive, 
+                                                                                   noise_terms=noise_terms_sensitive)
         
-        return sum(likelihoods_sensitivity) - sum(likelihoods_normal)
+        return sum(likelihoods_sensitive) - sum(likelihoods_normal)
 
     @property
     def likelihood(self):
-        return self.fit_sensitivity.likelihood - self.fit_normal.likelihood
+        return self.fit_sensitive.likelihood - self.fit_normal.likelihood
 
 
-def sensitivity_images_from_lensing_images_and_tracer_sensitvity(lensing_images, tracer_sensitivity, noise_seed=-1,
-                                                                 add_noise=True):
+def sensitivity_images_from_lensing_images_and_tracer_sensitive(lensing_images, tracer_sensitive, noise_seed=-1,
+                                                                add_noise=True):
 
     convolvers_image = list(map(lambda fit_image: fit_image.convolver_image, lensing_images))
     map_to_scaled_arrays = list(map(lambda fit_data: fit_data.grids.image.scaled_array_from_array_1d,
                                     lensing_images))
 
-    _mock_arrays = fitting.blur_images_including_blurring_regions(images=tracer_sensitivity._image_plane_images,
-                                                blurring_images=tracer_sensitivity._image_plane_blurring_images,
-                                                convolvers=convolvers_image)
+    _mock_arrays = fitting.blur_images_including_blurring_regions(images=tracer_sensitive._image_plane_images,
+                                                                  blurring_images=tracer_sensitive._image_plane_blurring_images,
+                                                                  convolvers=convolvers_image)
 
     if add_noise:
         _mock_arrays = add_poisson_noise_to_mock_arrays(_mock_arrays=_mock_arrays, lensing_images=lensing_images,
