@@ -8,7 +8,7 @@ from autolens.plotting import mapper_plotters
 # We'll start by learning about pixelizations, which we typically apply to a source-plane (but could, if we wanted,
 # apply to an image-plane).
 #
-# Lets setup a lensed source-plane grid, using a lens model_galaxy and tracer.
+# Lets setup a lensed source-plane grid, using a lens model_galaxy and tracer_normal.
 image_plane_grids = mask.ImagingGrids.from_shape_and_pixel_scale(shape=(100, 100), pixel_scale=0.05,
                                                                  sub_grid_size=2)
 lens_galaxy = g.Galaxy(mass=mp.EllipticalIsothermal(centre=(0.0, 0.0), axis_ratio=0.8, phi=90.0, einstein_radius=1.6))
