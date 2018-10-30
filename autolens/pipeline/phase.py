@@ -130,7 +130,16 @@ class Phase(object):
             new_galaxy_model = fitting_function(galaxy, galaxy_model)
             for phase_property_collection in self.phase_property_collections:
                 if hasattr(phase_property_collection, name):
+                    print("{} = {}".format(name, new_galaxy_model))
                     setattr(phase_property_collection, name, new_galaxy_model)
+
+    def fit_priors_with_results(self, results, fitting_function):
+        if len(results) > 0:
+            instances = [r.constant for r in results]
+            instance = instances[0]
+            for next_instance in instances[1:]:
+                instance += next_instance
+            self.fit_priors(instance, fitting_function)
 
     @property
     def phase_property_collections(self):
