@@ -178,6 +178,17 @@ class TestAutomaticPriorPassing(object):
         assert phase.lens_galaxies.galaxy_one == new_galaxy_model
         assert argument_tuples == [(galaxy, galaxy_model)]
 
+    def test_model_instance_sum_priority(self):
+        instance_1 = mm.ModelInstance()
+        galaxy_1 = g.Galaxy()
+        instance_1.galaxy = galaxy_1
+
+        instance_2 = mm.ModelInstance()
+        galaxy_2 = g.Galaxy()
+        instance_2.galaxy = galaxy_2
+
+        assert (instance_1 + instance_2).galaxy == galaxy_2
+
 
 def clean_images():
     try:
