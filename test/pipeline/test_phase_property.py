@@ -224,6 +224,14 @@ class TestPhasePropertyCollectionAttributes(object):
 
         assert list_phase.variable.prior_count == 1
 
+    def test_hasattr(self, list_phase):
+        list_phase.prop = dict()
+
+        assert not hasattr(list_phase.prop, "one")
+        list_phase.prop = dict(one=gp.GalaxyModel(variable_redshift=True))
+
+        assert hasattr(list_phase.prop, "one")
+
 
 def assert_ordered(items):
     assert [n for n in range(len(items))] == [item.position for item in items]

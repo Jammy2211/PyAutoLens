@@ -117,7 +117,12 @@ class Phase(object):
 
     def update_galaxy_models_with_mapper(self, mapper):
         for tup in mapper.prior_model_tuples:
-            setattr(self.variable, tup.name, tup.prior_model)
+            print(tup)
+            for phase_property_collection in self.phase_property_collections:
+                print(phase_property_collection)
+                if hasattr(phase_property_collection, tup[0]):
+                    print("setattr")
+                    setattr(phase_property_collection, tup[0], tup[1])
 
     @property
     def phase_property_collections(self):
