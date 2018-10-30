@@ -7,19 +7,19 @@ from astropy import cosmology as cosmo
 from autolens import conf
 from autolens import exc
 from autolens.autofit import non_linear
+from autolens.galaxy import galaxy as g
+from autolens.galaxy import galaxy_data as gd
+from autolens.galaxy import galaxy_fitting
+from autolens.galaxy import galaxy_model as gm
 from autolens.imaging import image as im
 from autolens.imaging import mask as msk
 from autolens.lensing import lensing_fitting
-from autolens.galaxy import galaxy as g
-from autolens.galaxy import galaxy_model as gm
-from autolens.galaxy import galaxy_data as gd
-from autolens.galaxy import galaxy_fitting
 from autolens.lensing import lensing_image as li
 from autolens.lensing import ray_tracing
 from autolens.pipeline.phase_property import PhasePropertyCollection
-from autolens.plotting import lensing_fitting_plotters
 from autolens.plotting import galaxy_fitting_plotters
 from autolens.plotting import imaging_plotters
+from autolens.plotting import lensing_fitting_plotters
 
 logger = logging.getLogger(__name__)
 logger.level = logging.DEBUG
@@ -447,10 +447,12 @@ class PhaseImaging(Phase):
             imaging_plotters.plot_image_individual(image=self.lensing_image.image, output_path=self.output_image_path,
                                                    output_format='png')
 
-            lensing_fitting_plotters.plot_fitting_subplot(fit=fit, output_path=self.output_image_path, output_format='png',
+            lensing_fitting_plotters.plot_fitting_subplot(fit=fit, output_path=self.output_image_path,
+                                                          output_format='png',
                                                           ignore_config=False)
 
-            lensing_fitting_plotters.plot_fitting_individuals(fit=fit, output_path=self.output_image_path, output_format='png')
+            lensing_fitting_plotters.plot_fitting_individuals(fit=fit, output_path=self.output_image_path,
+                                                              output_format='png')
 
             return fit
 
@@ -900,7 +902,6 @@ class MultiPlanePhase(PhaseImaging):
 
 
 class GalaxyFitPhase(Phase):
-
     galaxy = PhasePropertyCollection("galaxy")
 
     def __init__(self, galaxy=None, optimizer_class=non_linear.MultiNest, sub_grid_size=1,
@@ -949,7 +950,6 @@ class GalaxyFitPhase(Phase):
     class Analysis(Phase.Analysis):
 
         def __init__(self, galaxy_data, phase_name, previous_results=None):
-
             super(GalaxyFitPhase.Analysis, self).__init__(phase_name, previous_results)
 
             self.galaxy_data = galaxy_data
@@ -972,11 +972,10 @@ class GalaxyFitPhase(Phase):
             return self.fast_likelihood_for_instance(instance)
 
         def visualize(self, instance, suffix, during_analysis):
-
             fit = self.fit_for_instance(instance)
 
             galaxy_fitting_plotters.plot_single_subplot(fit=fit, output_path=self.output_image_path,
-                                                         output_format='png', ignore_config=False)
+                                                        output_format='png', ignore_config=False)
 
             return fit
 
@@ -985,13 +984,13 @@ class GalaxyFitPhase(Phase):
                                                                               galaxy=instance.galaxy[0])
 
         def fit_for_instance(self, instance):
-            return galaxy_fitting.fit_galaxy_data_with_galaxy(galaxy_datas=[self.galaxy_data], galaxy=instance.galaxy[0])
+            return galaxy_fitting.fit_galaxy_data_with_galaxy(galaxy_datas=[self.galaxy_data],
+                                                              galaxy=instance.galaxy[0])
 
         @classmethod
         def log(cls, instance):
             logger.debug(
                 "\nRunning galaxy fit_normal for... \n\nGalaxy::\n{}\n\n".format(instance.galaxy))
-
 
     class Result(Phase.Result):
 
@@ -1024,7 +1023,7 @@ class GalaxyFitIntensitiesPhase(GalaxyFitPhase):
         """
         mask = self.mask_function(array)
         galaxy_datas = gd.GalaxyDataIntensities(array=array, noise_map=noise_map, mask=mask,
-                                               sub_grid_size=self.sub_grid_size)
+                                                sub_grid_size=self.sub_grid_size)
         self.pass_priors(previous_results)
         analysis = self.__class__.Analysis(galaxy_data=galaxy_datas, phase_name=self.phase_name,
                                            previous_results=previous_results)
@@ -1080,7 +1079,7 @@ class GalaxyFitPotentialPhase(GalaxyFitPhase):
         """
         mask = self.mask_function(array)
         galaxy_data = gd.GalaxyDataPotential(array=array, noise_map=noise_map, mask=mask,
-                                                  sub_grid_size=self.sub_grid_size)
+                                             sub_grid_size=self.sub_grid_size)
         self.pass_priors(previous_results)
         analysis = self.__class__.Analysis(galaxy_data=galaxy_data, phase_name=self.phase_name,
                                            previous_results=previous_results)
@@ -1088,7 +1087,6 @@ class GalaxyFitPotentialPhase(GalaxyFitPhase):
 
 
 class GalaxyFitDeflectionsPhase(Phase):
-
     galaxy = PhasePropertyCollection("galaxy")
 
     def __init__(self, galaxy=None, optimizer_class=non_linear.MultiNest, sub_grid_size=1,
@@ -1162,7 +1160,6 @@ class GalaxyFitDeflectionsPhase(Phase):
     class Analysis(Phase.Analysis):
 
         def __init__(self, galaxy_data_y, galaxy_data_x, phase_name, previous_results=None):
-
             super(GalaxyFitDeflectionsPhase.Analysis, self).__init__(phase_name, previous_results)
 
             self.galaxy_data_y = galaxy_data_y
@@ -1186,7 +1183,6 @@ class GalaxyFitDeflectionsPhase(Phase):
             return self.fast_likelihood_for_instance(instance)
 
         def visualize(self, instance, suffix, during_analysis):
-
             fit = self.fit_for_instance(instance)
 
             galaxy_fitting_plotters.plot_deflections_subplot(fit=fit, output_path=self.output_image_path,
@@ -1208,7 +1204,6 @@ class GalaxyFitDeflectionsPhase(Phase):
             logger.debug(
                 "\nRunning galaxy fit_normal for... \n\nGalaxy::\n{}\n\n".format(instance.galaxy))
 
-
     class Result(Phase.Result):
 
         def __init__(self, constant, likelihood, variable, analysis):
@@ -1217,6 +1212,7 @@ class GalaxyFitDeflectionsPhase(Phase):
             """
             super(GalaxyFitDeflectionsPhase.Result, self).__init__(constant, likelihood, variable)
             self.fit = analysis.fit_for_instance(instance=constant)
+
 
 def make_path_if_does_not_exist(path):
     if not os.path.exists(path):
