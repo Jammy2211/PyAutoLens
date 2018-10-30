@@ -614,6 +614,9 @@ class ModelInstance(AbstractModel):
                 instance in
                 source if isinstance(instance, cls)]
 
+    def name_instance_tuples_for_class(self, cls):
+        return [item for item in self.__dict__.items() if isinstance(item[1], cls)]
+
 
 class Attribute(object):
     _ids = itertools.count()
