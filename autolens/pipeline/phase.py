@@ -107,6 +107,11 @@ class Phase(object):
         return self.optimizer.variable
 
     @property
+    def galaxy_model_tuples(self):
+        return [tup for tup in self.optimizer.variable.prior_model_tuples if
+                isinstance(tup.prior_model, gm.GalaxyModel)]
+
+    @property
     def path(self):
         return self.optimizer.path
 
