@@ -132,7 +132,7 @@ class TestPhasePropertyList(object):
         assert list_phase.variable.prop == [galaxy_prior_1]
 
 
-class TestPhasePropertyListAttributes(object):
+class TestPhasePropertyCollectionAttributes(object):
     def test_set_list_as_dict(self, list_phase):
         galaxy_model = gp.GalaxyModel()
         list_phase.prop = dict(one=galaxy_model)
