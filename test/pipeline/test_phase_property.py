@@ -206,6 +206,13 @@ class TestPhasePropertyListAttributes(object):
         assert list_phase.variable.prior_count == 0
         assert list_phase.constant.one == galaxy
 
+    def test_singular_model_info(self, list_phase):
+        galaxy_model = gp.GalaxyModel(variable_redshift=True)
+        list_phase.prop = dict(one=galaxy_model)
+
+        assert len(list_phase.variable.flat_prior_model_tuples) == 1
+        assert len(list_phase.variable.info.split('\n')) == 4
+
 
 def assert_ordered(items):
     assert [n for n in range(len(items))] == [item.position for item in items]
