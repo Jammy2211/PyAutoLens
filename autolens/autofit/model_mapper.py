@@ -203,11 +203,19 @@ class ModelMapper(AbstractModel):
             A list of tuples with the names of prior models and associated prior models. Names are fully qualified by
             all objects in which they are embedded.
         """
-        return [("{}".format(prior_model_name), flat_prior_model) for
-                prior_model_name, prior_model in
-                self.prior_model_tuples for
-                flat_prior_model_name, flat_prior_model in
-                prior_model.flat_prior_model_tuples]
+        all_flat_prior_model_tuples = [("{}".format(prior_model_name), flat_prior_model) for
+                                       prior_model_name, prior_model in
+                                       self.prior_model_tuples for
+                                       flat_prior_model_name, flat_prior_model in
+                                       prior_model.flat_prior_model_tuples]
+        filtered_flat_prior_model_tuples = []
+
+        # Prior models can be members of lists and attributes of the prior model simultaneously. This line prevents
+        #  duplication.
+        for flat_prior_model_tuple in all_flat_prior_model_tuples:
+            if flat_prior_model_tuple[1] not in [item[1] for item in filtered_flat_prior_model_tuples]:
+                filtered_flat_prior_model_tuples.append(flat_prior_model_tuple)
+        return filtered_flat_prior_model_tuples
 
     @property
     @cast_collection(PriorNameValue)
