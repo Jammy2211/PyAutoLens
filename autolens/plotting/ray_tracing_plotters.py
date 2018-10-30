@@ -11,14 +11,14 @@ def plot_ray_tracing_subplot(tracer, mask=None, positions=None,
                              cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
                             titlesize=10, xlabelsize=10, ylabelsize=10, xyticksize=10,
                              mask_pointsize=10, position_pointsize=10.0, grid_pointsize=1.0,
-                             output_path=None, output_filename='tracer', output_format='show', ignore_config=True):
+                             output_path=None, output_filename='tracer_normal', output_format='show', ignore_config=True):
     """Plot the observed _tracer of an analysis, using the *Image* class object.
 
     The visualization and output type can be fully customized.
 
     Parameters
     -----------
-    tracer : autolens.imaging.tracer.Image
+    tracer : autolens.imaging.tracer_normal.Image
         Class containing the _tracer, noise-mappers and PSF that are to be plotted.
         The font size of the figure ylabel.
     output_path : str
@@ -114,7 +114,7 @@ def plot_ray_tracing_individual(tracer, output_path=None, output_format='show'):
 
     Parameters
     -----------
-    tracer : autolens.imaging.tracer.Image
+    tracer : autolens.imaging.tracer_normal.Image
         Class containing the _tracer, noise-mappers and PSF that are to be plotted.
         The font size of the figure ylabel.
     output_path : str

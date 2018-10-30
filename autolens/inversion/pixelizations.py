@@ -163,7 +163,7 @@ class Rectangular(Pixelization):
     def mapper_from_grids(self, grids):
         """Setup the pixelization mapper of this rectangular pixelization as follows:
 
-        This first relocateds all grid-coordinates, such that any which tracer beyond its border (e.g. due to high \
+        This first relocateds all grid-coordinates, such that any which tracer_normal beyond its border (e.g. due to high \
         levels of demagnification) are relocated to the border.
 
         Parameters
@@ -182,7 +182,7 @@ class Rectangular(Pixelization):
     def mapper_from_grids_and_borders(self, grids, borders):
         """Setup the pixelization mapper of this rectangular pixelization as follows:
 
-        This first relocateds all grid-coordinates, such that any which tracer beyond its border (e.g. due to high \
+        This first relocateds all grid-coordinates, such that any which tracer_normal beyond its border (e.g. due to high \
         levels of demagnification) are relocated to the border.
 
         Parameters
@@ -264,7 +264,7 @@ class Cluster(Voronoi):
     def mapper_from_grids(self, grids, pixel_centers, image_to_voronoi):
         """Setup the pixelization mapper of the cluster pixelization.
 
-        This first relocateds all grid-coordinates, such that any which tracer beyond its border (e.g. due to high \
+        This first relocateds all grid-coordinates, such that any which tracer_normal beyond its border (e.g. due to high \
         levels of demagnification) are relocated to the border.
 
         Parameters
@@ -292,7 +292,7 @@ class Cluster(Voronoi):
     def mapper_from_grids_and_borders(self, grids, borders, pixel_centers, image_to_voronoi):
         """Setup the pixelization mapper of the cluster pixelization.
 
-        This first relocateds all grid-coordinates, such that any which tracer beyond its border (e.g. due to high \
+        This first relocateds all grid-coordinates, such that any which tracer_normal beyond its border (e.g. due to high \
         levels of demagnification) are relocated to the border.
 
         Parameters
