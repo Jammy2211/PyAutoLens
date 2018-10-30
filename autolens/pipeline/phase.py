@@ -10,6 +10,7 @@ from autolens.autofit import non_linear
 from autolens.imaging import image as im
 from autolens.imaging import mask as msk
 from autolens.lensing import lensing_fitting
+from autolens.lensing import sensitivity_fitting
 from autolens.galaxy import galaxy as g
 from autolens.galaxy import galaxy_model as gm
 from autolens.galaxy import galaxy_data as gd
@@ -20,6 +21,7 @@ from autolens.pipeline.phase_property import PhasePropertyCollection
 from autolens.plotting import lensing_fitting_plotters
 from autolens.plotting import galaxy_fitting_plotters
 from autolens.plotting import imaging_plotters
+from autolens.plotting import sensitivity_fitting_plotters
 
 logger = logging.getLogger(__name__)
 logger.level = logging.DEBUG
@@ -1217,6 +1219,126 @@ class GalaxyFitDeflectionsPhase(Phase):
             """
             super(GalaxyFitDeflectionsPhase.Result, self).__init__(constant, likelihood, variable)
             self.fit = analysis.fit_for_instance(instance=constant)
+
+
+class SensitivityPhase(PhaseImaging):
+
+    lens_galaxies = PhasePropertyCollection("lens_galaxies")
+    source_galaxies = PhasePropertyCollection("source_galaxies")
+    sensitive_galaxies = PhasePropertyCollection("sensitive_galaxies")
+
+    def __init__(self, lens_galaxies=None, source_galaxies=None, sensitive_galaxies=None,
+                 optimizer_class=non_linear.MultiNest, sub_grid_size=1,
+                 mask_function=default_mask_function, phase_name=None):
+        """
+        A phase in an lensing pipeline. Uses the set non_linear optimizer to try to fit_normal models and image passed to it.
+
+        Parameters
+        ----------
+        optimizer_class: class
+            The class of a non_linear optimizer
+        sub_grid_size: int
+            The side length of the subgrid
+        """
+
+        super(SensitivityPhase, self).__init__(optimizer_class=optimizer_class, sub_grid_size=sub_grid_size,
+                                               mask_function=mask_function, phase_name=phase_name)
+
+        self.lens_galaxies = lens_galaxies or []
+        self.source_galaxies = source_galaxies or []
+        self.sensitive_galaxies = sensitive_galaxies or []
+
+    class Analysis(PhaseImaging.Analysis):
+
+        def __init__(self, lensing_image, phase_name, previous_results=None):
+            self.lensing_image = lensing_image
+            super(PhaseImaging.Analysis, self).__init__(phase_name, previous_results)
+
+        def fit(self, instance):
+            """
+            Determine the fit_normal of a lens galaxy and source galaxy to the lensing_image in this lensing.
+
+            Parameters
+            ----------
+            instance
+                A model instance with attributes
+
+            Returns
+            -------
+            fit_normal: Fit
+                A fractional value indicating how well this model fit_normal and the model lensing_image itself
+            """
+            self.try_output(instance)
+            tracer_normal = self.tracer_normal_for_instance(instance)
+            tracer_sensitive = self.tracer_sensitive_for_instance(instance)
+            return self.fast_likelihood_for_tracers(tracer_normal=tracer_normal, tracer_sensitive=tracer_sensitive)
+
+        def visualize(self, instance, suffix, during_analysis):
+
+            tracer_normal = self.tracer_normal_for_instance(instance)
+            tracer_sensitive = self.tracer_sensitive_for_instance(instance)
+            fit = self.fit_for_tracers(tracer_normal=tracer_normal, tracer_sensitive=tracer_sensitive)
+
+            imaging_plotters.plot_image_subplot(image=self.lensing_image.image, output_path=self.output_image_path,
+                                                output_format='png', ignore_config=False)
+
+            imaging_plotters.plot_image_individual(image=self.lensing_image.image, output_path=self.output_image_path,
+                                                   output_format='png')
+
+            sensitivity_fitting_plotters.plot_fitting_subplot(fit=fit, output_path=self.output_image_path,
+                                                              output_format='png')
+
+            return fit
+
+        def tracer_normal_for_instance(self, instance):
+            return ray_tracing.TracerImageSourcePlanes(lens_galaxies=instance.lens_galaxies,
+                                                       source_galaxies=instance.source_galaxies,
+                                                       image_plane_grids=[self.lensing_image.grids],
+                                                       borders=[self.lensing_image.borders])
+
+        def tracer_sensitive_for_instance(self, instance):
+            return ray_tracing.TracerImageSourcePlanes(lens_galaxies=instance.lens_galaxies + instance.sensitive_galaxies,
+                                                       source_galaxies=instance.source_galaxies,
+                                                       image_plane_grids=[self.lensing_image.grids],
+                                                       borders=[self.lensing_image.borders])
+
+        def fast_likelihood_for_tracers(self, tracer_normal, tracer_sensitive):
+            return sensitivity_fitting.SensitivityProfileFit.fast_likelihood(lensing_images=[self.lensing_image],
+                                                                             tracer_normal=tracer_normal,
+                                                                             tracer_sensitive=tracer_sensitive)
+
+        def fit_for_tracers(self, tracer_normal, tracer_sensitive):
+            return sensitivity_fitting.SensitivityProfileFit(lensing_images=[self.lensing_image],
+                                                             tracer_normal=tracer_normal,
+                                                             tracer_sensitive=tracer_sensitive)
+
+
+        @classmethod
+        def log(cls, instance):
+            logger.debug(
+                "\nRunning lens/source lensing for... \n\nLens Galaxy:\n{}\n\nSource Galaxy:\n{}\n\n".format(
+                    instance.lens_galaxies, instance.source_galaxies))
+
+    class Result(PhaseImaging.Result):
+
+        def __init__(self, constant, likelihood, variable, analysis):
+            """
+            The result of a phase
+            """
+
+            super(LensSourcePlanePhase.Result, self).__init__(constant, likelihood, variable, analysis)
+
+            # self.padded_model_image = self.fit_normal.padded_model_image
+
+            # self.lens_galaxy_padded_model_images = self.fit_normal.padded_model_images_of_galaxies[0]
+            # self.lens_subtracted_padded_image = analysis.lensing_image.image - self.padded_model_image
+            #
+            # # TODO : Need to split lens and source galaxy model image somehow
+            # self.padded_model_image = self.fit_normal.padded_model_image
+            # self.source_galaxy_padded_model_images = self.fit_normal.padded_model_images_of_galaxies_for_tracer
+            # array_plotters.plot_model_image(self.padded_model_image, output_filename='padded_model_image',
+            #                                 output_path=analysis.output_image_path, output_format='png')
+
 
 def make_path_if_does_not_exist(path):
     if not os.path.exists(path):

@@ -42,7 +42,7 @@ def test_galaxy_mass():
 def test_grids():
     return msk.ImagingGrids.from_shape_and_pixel_scale(shape=(100, 100), pixel_scale=0.05, sub_grid_size=2)
 
-@pytest.fixture(name='tracer')
+@pytest.fixture(name='tracer_normal')
 def test_tracer(galaxy_light, galaxy_mass, grids):
     return ray_tracing.TracerImageSourcePlanes(lens_galaxies=[galaxy_mass, galaxy_light], source_galaxies=[galaxy_light],
                                                image_plane_grids=[grids])
@@ -51,8 +51,8 @@ def test__tracer_sub_plot_output_dependent_on_config(tracer, general_config, ray
 
     ray_tracing_plotters.plot_ray_tracing_subplot(tracer=tracer, output_path=ray_tracing_plotter_path, output_format='png')
 
-    assert os.path.isfile(path=ray_tracing_plotter_path+'tracer.png')
-    os.remove(path=ray_tracing_plotter_path+'tracer.png')
+    assert os.path.isfile(path=ray_tracing_plotter_path+'tracer_normal.png')
+    os.remove(path=ray_tracing_plotter_path+'tracer_normal.png')
     
 def test__tracer_individuals__depedent_on_config(tracer, general_config, ray_tracing_plotter_path):
 
