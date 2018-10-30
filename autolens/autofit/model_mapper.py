@@ -28,7 +28,11 @@ class AttributeNameValue(object):
         return self.tuple[item]
 
     def __eq__(self, other):
-        return self.tuple == other.tuple
+        if isinstance(other, AttributeNameValue):
+            return self.tuple == other.tuple
+        if isinstance(other, tuple):
+            return self.tuple == other
+        return False
 
     def __hash__(self):
         return hash(self.tuple)
