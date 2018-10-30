@@ -68,7 +68,7 @@ class HyperOnly(object):
 
 class Phase(object):
 
-    def __init__(self, optimizer_class=non_linear.MultiNest, phase_name=None):
+    def __init__(self, optimizer_class=non_linear.MultiNest, phase_name=None, auto_link_priors=False):
         """
         A phase in an lensing pipeline. Uses the set non_linear optimizer to try to fit_normal models and image passed to it.
 
@@ -81,6 +81,7 @@ class Phase(object):
         """
         self.optimizer = optimizer_class(name=phase_name)
         self.phase_name = phase_name
+        self.auto_link_priors = auto_link_priors
 
     @property
     def constant(self):
@@ -108,20 +109,46 @@ class Phase(object):
 
     @property
     def galaxy_model_tuples(self):
+        """
+        Returns
+        -------
+        galaxy_model_tuples: [(String, GalaxyModel)]
+            A list of tuples containing galaxy model names and instances.
+        """
         return [tup for tup in self.optimizer.variable.prior_model_tuples if
                 isinstance(tup.prior_model, gm.GalaxyModel)]
 
     def match_instance_to_models(self, instance):
+        """
+        Matches named galaxies associated with the instance to named galaxies associated with this phase.
+
+        Parameters
+        ----------
+        instance: ModelInstance
+            An instance with named galaxy attributes.
+
+        Returns
+        -------
+        tuples: [(String, Galaxy, GalaxyModel)]
+            A list of tuples associating galaxy instances from the model instance object with galaxy models in this
+            phase.
+        """
         galaxy_dict = dict(instance.name_instance_tuples_for_class(g.Galaxy))
         return [(key, galaxy_dict[key], value) for key, value in self.galaxy_model_tuples if key in galaxy_dict]
 
-    def update_galaxy_models_with_mapper(self, mapper):
-        for tup in mapper.prior_model_tuples:
-            for phase_property_collection in self.phase_property_collections:
-                if hasattr(phase_property_collection, tup[0]):
-                    setattr(phase_property_collection, tup[0], tup[1])
-
     def fit_priors(self, instance, fitting_function):
+        """
+        Update the priors in this phase by fitting each galaxy model to a galaxy with the same name from a previous
+        phase if such a galaxy exists.
+
+        Parameters
+        ----------
+        instance: ModelInstance
+            An object with named galaxy attributes
+        fitting_function: (Galaxy, GalaxyModel) -> GalaxyModel
+            A function that takes a galaxy and a galaxy model and returns a GalaxyModel produced by combining a best fit
+            between the original galaxy and galaxy model with prior widths given by the configuration.
+        """
         tuples = self.match_instance_to_models(instance)
         for t in tuples:
             name = t[0]
@@ -133,7 +160,21 @@ class Phase(object):
                     setattr(phase_property_collection, name, new_galaxy_model)
 
     def fit_priors_with_results(self, results, fitting_function):
-        if len(results) > 0:
+        """
+        Update the priors in this phase by fitting each galaxy model to a galaxy with the same name from a previous
+        phase if such a galaxy exists.
+
+        Results later in the list take precedence, with the last instance of any galaxies that share a name being kept.
+
+        Parameters
+        ----------
+        results: [Results]
+            A list of results from previous phases.
+        fitting_function: (Galaxy, GalaxyModel) -> GalaxyModel
+            A function that takes a galaxy and a galaxy model and returns a GalaxyModel produced by combining a best fit
+            between the original galaxy and galaxy model with prior widths given by the configuration.
+        """
+        if results is not None and len(results) > 0:
             instances = [r.constant for r in results]
             instance = instances[0]
             for next_instance in instances[1:]:
@@ -142,6 +183,13 @@ class Phase(object):
 
     @property
     def phase_property_collections(self):
+        """
+        Returns
+        -------
+        phase_property_collections: [PhasePropertyCollection]
+            A list of phase property collections associated with this phase. This is used in automated prior passing and
+            should be overridden for any phase that contains its own PhasePropertyCollections.
+        """
         return []
 
     @property
