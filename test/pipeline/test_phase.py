@@ -123,9 +123,16 @@ def make_results_collection(results):
 
 
 class TestAutomaticPriorPassing(object):
-    def test_galaxy_model_tuples(self, phase, galaxy_model):
-        phase.lens_galaxies = dict(galaxy_model=galaxy_model)
-        assert phase.galaxy_model_tuples == [("galaxy_model", galaxy_model)]
+    def test_galaxy_model_dict(self, phase, galaxy_model):
+        phase.lens_galaxies = dict(galaxy_one=galaxy_model)
+        assert phase.galaxy_model_dict == {"galaxy_one": galaxy_model}
+
+    def test_match_galaxy_models_by_name(self, phase, galaxy_model, galaxy):
+        phase.lens_galaxies = dict(galaxy_one=galaxy_model)
+        instance = mm.ModelInstance()
+        instance.galaxy_one = galaxy
+
+        assert phase.match_instance_to_models(instance) == [("galaxy_one", galaxy, galaxy_model)]
 
 
 def clean_images():
