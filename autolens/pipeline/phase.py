@@ -171,7 +171,10 @@ class Phase(object):
 
         def try_output(self, instance):
             """
-            Determine the fitness of a particular model
+            Log and plot instance data, if the logging and plotting conditions are met respectively.
+
+            A track is kept of the number of attempts to plot or log and plotting or logging is only performed after a
+            configurable number of attempts. This prevents vast quantities of data being output.
 
             Parameters
             ----------
