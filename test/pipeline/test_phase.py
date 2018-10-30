@@ -125,7 +125,7 @@ def make_results_collection(results):
 class TestAutomaticPriorPassing(object):
     def test_galaxy_model_dict(self, phase, galaxy_model):
         phase.lens_galaxies = dict(galaxy_one=galaxy_model)
-        assert phase.galaxy_model_dict == {"galaxy_one": galaxy_model}
+        assert phase.galaxy_model_tuples == [("galaxy_one", galaxy_model)]
 
     def test_match_galaxy_models_by_name(self, phase, galaxy_model, galaxy):
         phase.lens_galaxies = dict(galaxy_one=galaxy_model)
