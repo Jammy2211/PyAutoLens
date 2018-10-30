@@ -7,9 +7,9 @@ import pytest
 from autolens import conf
 from autolens.autofit import model_mapper as mm
 from autolens.autofit import non_linear
+from autolens.galaxy import galaxy as g, galaxy_model as gm
 from autolens.imaging import image as img
 from autolens.imaging import mask as msk
-from autolens.galaxy import galaxy as g, galaxy_model as gm
 from autolens.lensing import lensing_image as li
 from autolens.pipeline import phase as ph
 from autolens.profiles import light_profiles as lp
@@ -120,6 +120,12 @@ def make_results():
 @pytest.fixture(name="results_collection")
 def make_results_collection(results):
     return ph.ResultsCollection([results])
+
+
+class TestAutomaticPriorPassing(object):
+    def test_galaxy_model_tuples(self, phase, galaxy_model):
+        phase.lens_galaxies = dict(galaxy_model=galaxy_model)
+        assert phase.galaxy_model_tuples == [("galaxy_model", galaxy_model)]
 
 
 def clean_images():
