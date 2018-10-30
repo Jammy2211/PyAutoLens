@@ -46,7 +46,7 @@ def cosmology_check(func):
 class Plane(object):
 
     def __init__(self, galaxies, grids, borders=None, compute_deflections=True, cosmology=None):
-        """A plane represents a set of galaxies at a given redshift in a ray-tracer and a the grid of _datas-plane \
+        """A plane represents a set of galaxies at a given redshift in a ray-tracer_normal and a the grid of _datas-plane \
         or lensed coordinates.
 
         From a plane, the _datas's of its galaxies can be computed (in both the _datas-plane and source-plane). The \
@@ -190,7 +190,7 @@ class Plane(object):
     def image_plane_images_for_simulation(self):
         if not self.has_padded_grids:
             raise exc.RayTracingException(
-                'To retrieve an _datas plane _datas for the simulation, the grids in the tracer'
+                'To retrieve an _datas plane _datas for the simulation, the grids in the tracer_normal'
                 'must be padded grids')
         return list(map(lambda _image_plane_image, grid : grid.image.map_to_2d_keep_padded(_image_plane_image),
                         self._image_plane_images, self.grids))
@@ -250,7 +250,7 @@ class Plane(object):
 class PlanePositions(object):
 
     def __init__(self, galaxies, positions, compute_deflections=True, cosmology=None):
-        """A plane represents a set of galaxies at a given redshift in a ray-tracer and the positions of _datas-plane \
+        """A plane represents a set of galaxies at a given redshift in a ray-tracer_normal and the positions of _datas-plane \
         coordinates which mappers close to one another in the source-plane.
 
         Parameters

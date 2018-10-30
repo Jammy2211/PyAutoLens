@@ -76,8 +76,8 @@ class TestMockImageWithSubhalo:
                             blurring_images=[np.array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0])],
                             has_light_profile=True, has_hyper_galaxy=False, has_pixelization=False)
 
-        sensitivity_images = sensitivity_fitting.sensitivity_images_from_lensing_images_and_tracer_sensitvity(
-            lensing_images=[li_blur], tracer_sensitivity=tracer_sensitivity, add_noise=False)
+        sensitivity_images = sensitivity_fitting.sensitivity_images_from_lensing_images_and_tracer_sensitive(
+            lensing_images=[li_blur], tracer_sensitive=tracer_sensitivity, add_noise=False)
 
         assert (sensitivity_images[0] == np.array([9.0, 9.0, 9.0, 9.0])).all()
 
@@ -105,8 +105,8 @@ class TestMockImageWithSubhalo:
 
         tracer_sensitivity = ray_tracing.TracerImagePlane(lens_galaxies=[galaxy_light], image_plane_grids=[li.grids])
 
-        sensitivity_images = sensitivity_fitting.sensitivity_images_from_lensing_images_and_tracer_sensitvity(
-            lensing_images=[li], tracer_sensitivity=tracer_sensitivity, add_noise=False)
+        sensitivity_images = sensitivity_fitting.sensitivity_images_from_lensing_images_and_tracer_sensitive(
+            lensing_images=[li], tracer_sensitive=tracer_sensitivity, add_noise=False)
 
         # Manually compute result of convolution, which is each central value *2.0 plus its 2 appropriate neighbors
 
@@ -157,10 +157,10 @@ class TestSensitivityProfileFit:
                                                      image_plane_grids=[li_blur.grids])
 
         fit = sensitivity_fitting.SensitivityProfileFit(lensing_images=[li_blur], tracer_normal=tracer,
-                                                        tracer_sensitivity=tracer, add_noise=False, noise_seed=1)
+                                                        tracer_sensitive=tracer, add_noise=False, noise_seed=1)
 
-        sensitivity_images = sensitivity_fitting.sensitivity_images_from_lensing_images_and_tracer_sensitvity(
-            lensing_images=[li_blur], tracer_sensitivity=tracer, add_noise=False, noise_seed=1)
+        sensitivity_images = sensitivity_fitting.sensitivity_images_from_lensing_images_and_tracer_sensitive(
+            lensing_images=[li_blur], tracer_sensitive=tracer, add_noise=False, noise_seed=1)
 
         assert (fit.sensitivity_images[0] == sensitivity_images[0]).all()
 
@@ -170,21 +170,21 @@ class TestSensitivityProfileFit:
         assert (fit.fit_normal._residuals[0] == np.zeros(4)).all()
         assert (fit.fit_normal._chi_squareds[0] == np.zeros(4)).all()
 
-        assert (fit.fit_sensitivity._datas[0] == sensitivity_images[0]).all()
-        assert (fit.fit_sensitivity._noise_maps[0] == sensitivity_images[0].noise_map).all()
-        assert (fit.fit_sensitivity._datas[0] == sensitivity_images[0]).all()
-        assert (fit.fit_sensitivity._residuals[0] == np.zeros(4)).all()
-        assert (fit.fit_sensitivity._chi_squareds[0] == np.zeros(4)).all()
+        assert (fit.fit_sensitive._datas[0] == sensitivity_images[0]).all()
+        assert (fit.fit_sensitive._noise_maps[0] == sensitivity_images[0].noise_map).all()
+        assert (fit.fit_sensitive._datas[0] == sensitivity_images[0]).all()
+        assert (fit.fit_sensitive._residuals[0] == np.zeros(4)).all()
+        assert (fit.fit_sensitive._chi_squareds[0] == np.zeros(4)).all()
 
         noise_term = sum(fitting.noise_terms_from_noise_maps(noise_maps=[sensitivity_images[0].noise_map]))
         assert fit.fit_normal.likelihood == -0.5 * noise_term
-        assert fit.fit_sensitivity.likelihood == -0.5 * noise_term
+        assert fit.fit_sensitive.likelihood == -0.5 * noise_term
 
         assert fit.likelihood == 0.0
 
         fast_likelihood = sensitivity_fitting.SensitivityProfileFit.fast_likelihood(lensing_images=[li_blur],
                                                                                     tracer_normal=tracer,
-                                                                                    tracer_sensitivity=tracer,
+                                                                                    tracer_sensitive=tracer,
                                                                                     add_noise=False, noise_seed=1)
 
         assert fit.likelihood == fast_likelihood
@@ -198,10 +198,10 @@ class TestSensitivityProfileFit:
                                                      image_plane_grids=[li_blur.grids])
 
         fit = sensitivity_fitting.SensitivityProfileFit(lensing_images=[li_blur], tracer_normal=tracer,
-                                                        tracer_sensitivity=tracer, add_noise=True, noise_seed=1)
+                                                        tracer_sensitive=tracer, add_noise=True, noise_seed=1)
 
-        sensitivity_images = sensitivity_fitting.sensitivity_images_from_lensing_images_and_tracer_sensitvity(
-            lensing_images=[li_blur], tracer_sensitivity=tracer, add_noise=True, noise_seed=1)
+        sensitivity_images = sensitivity_fitting.sensitivity_images_from_lensing_images_and_tracer_sensitive(
+            lensing_images=[li_blur], tracer_sensitive=tracer, add_noise=True, noise_seed=1)
 
         assert (fit.sensitivity_images[0] == sensitivity_images[0]).all()
 
@@ -226,35 +226,35 @@ class TestSensitivityProfileFit:
         assert (fit.fit_normal._chi_squareds[0] == _chi_squareds).all()
 
 
-        assert (fit.fit_sensitivity._datas[0] == sensitivity_images[0]).all()
-        assert (fit.fit_sensitivity._noise_maps[0] == sensitivity_images[0].noise_map).all()
+        assert (fit.fit_sensitive._datas[0] == sensitivity_images[0]).all()
+        assert (fit.fit_sensitive._noise_maps[0] == sensitivity_images[0].noise_map).all()
 
         _model_datas = fitting.blur_images_including_blurring_regions(images=tracer._image_plane_images,
                                                                     blurring_images=tracer._image_plane_blurring_images,
                                                                     convolvers=[li_blur.convolver_image])
 
-        assert (fit.fit_sensitivity._model_datas[0] == _model_datas[0]).all()
+        assert (fit.fit_sensitive._model_datas[0] == _model_datas[0]).all()
 
         _residuals = fitting.residuals_from_datas_and_model_datas(datas=sensitivity_images,
                                                                   model_datas=_model_datas)
 
-        assert (fit.fit_sensitivity._residuals[0] == _residuals[0]).all()
+        assert (fit.fit_sensitive._residuals[0] == _residuals[0]).all()
 
         _chi_squareds = fitting.chi_squareds_from_residuals_and_noise_maps(residuals=_residuals,
                                                                            noise_maps=[li_blur.noise_map])
 
-        assert (fit.fit_sensitivity._chi_squareds[0] == _chi_squareds).all()
+        assert (fit.fit_sensitive._chi_squareds[0] == _chi_squareds).all()
 
         chi_squared_term = sum(fitting.chi_squared_terms_from_chi_squareds(chi_squareds=_chi_squareds))
         noise_term = sum(fitting.noise_terms_from_noise_maps(noise_maps=[sensitivity_images[0].noise_map]))
         assert fit.fit_normal.likelihood == -0.5 * (chi_squared_term + noise_term)
-        assert fit.fit_sensitivity.likelihood ==  -0.5 * (chi_squared_term + noise_term)
+        assert fit.fit_sensitive.likelihood == -0.5 * (chi_squared_term + noise_term)
 
         assert fit.likelihood == 0.0
 
         fast_likelihood = sensitivity_fitting.SensitivityProfileFit.fast_likelihood(lensing_images=[li_blur],
                                                                                     tracer_normal=tracer,
-                                                  tracer_sensitivity=tracer, add_noise=True, noise_seed=1)
+                                                                                    tracer_sensitive=tracer, add_noise=True, noise_seed=1)
 
         assert fit.likelihood == fast_likelihood
 
@@ -271,10 +271,10 @@ class TestSensitivityProfileFit:
                                                      image_plane_grids=[li_blur.grids])
 
         fit = sensitivity_fitting.SensitivityProfileFit(lensing_images=[li_blur], tracer_normal=tracer,
-                                                        tracer_sensitivity=tracer_sensitivity, add_noise=False)
+                                                        tracer_sensitive=tracer_sensitivity, add_noise=False)
 
-        sensitivity_images = sensitivity_fitting.sensitivity_images_from_lensing_images_and_tracer_sensitvity(
-            lensing_images=[li_blur], tracer_sensitivity=tracer_sensitivity, add_noise=False)
+        sensitivity_images = sensitivity_fitting.sensitivity_images_from_lensing_images_and_tracer_sensitive(
+            lensing_images=[li_blur], tracer_sensitive=tracer_sensitivity, add_noise=False)
 
         assert (fit.sensitivity_images[0] == sensitivity_images[0]).all()
 
@@ -297,21 +297,21 @@ class TestSensitivityProfileFit:
 
         assert (fit.fit_normal._chi_squareds[0] == _chi_squareds).all()
 
-        assert (fit.fit_sensitivity._datas[0] == sensitivity_images[0]).all()
-        assert (fit.fit_sensitivity._noise_maps[0] == sensitivity_images[0].noise_map).all()
-        assert (fit.fit_sensitivity._model_datas[0] == sensitivity_images[0]).all()
-        assert (fit.fit_sensitivity._residuals[0] == np.zeros(4)).all()
-        assert (fit.fit_sensitivity._chi_squareds[0] == np.zeros(4)).all()
+        assert (fit.fit_sensitive._datas[0] == sensitivity_images[0]).all()
+        assert (fit.fit_sensitive._noise_maps[0] == sensitivity_images[0].noise_map).all()
+        assert (fit.fit_sensitive._model_datas[0] == sensitivity_images[0]).all()
+        assert (fit.fit_sensitive._residuals[0] == np.zeros(4)).all()
+        assert (fit.fit_sensitive._chi_squareds[0] == np.zeros(4)).all()
 
         chi_squared_term = sum(fitting.chi_squared_terms_from_chi_squareds(chi_squareds=_chi_squareds))
         noise_term = sum(fitting.noise_terms_from_noise_maps(noise_maps=[sensitivity_images[0].noise_map]))
         assert fit.fit_normal.likelihood == -0.5 * (chi_squared_term + noise_term)
-        assert fit.fit_sensitivity.likelihood == -0.5 * noise_term
+        assert fit.fit_sensitive.likelihood == -0.5 * noise_term
 
         assert fit.likelihood == 0.5 * chi_squared_term
 
         fast_likelihood = sensitivity_fitting.SensitivityProfileFit.fast_likelihood(lensing_images=[li_blur],
                                                                                     tracer_normal=tracer,
-                                                            tracer_sensitivity=tracer_sensitivity, add_noise=False)
+                                                                                    tracer_sensitive=tracer_sensitivity, add_noise=False)
 
         assert fit.likelihood == fast_likelihood
