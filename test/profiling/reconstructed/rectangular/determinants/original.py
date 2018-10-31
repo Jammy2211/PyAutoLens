@@ -48,7 +48,7 @@ hst_up_reconstructed = hst_up_recon.from_reconstructor_and_data(hst_up.masked_im
                                                                 hst_up.masked_image.convolver_mapping_matrix)
 
 
-# ao_reconstructed = ao_recon.reconstruct_image(ao.masked_image, ao.masked_image.noise_map,
+# ao_reconstructed = ao_recon.reconstruct_image(ao.masked_image, ao.masked_image.noise_map_,
 #                                                   ao.masked_image.convolver_mapping_matrix)
 
 @tools.tick_toc_x1

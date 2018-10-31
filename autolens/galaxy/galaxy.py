@@ -280,16 +280,16 @@ class HyperGalaxy(object):
     _ids = count()
 
     def __init__(self, contribution_factor=0.0, noise_factor=0.0, noise_power=1.0):
-        """Class for scaling the noise_map in the different galaxies of an masked_image (e.g. the lens, source).
+        """Class for scaling the noise_map_ in the different galaxies of an masked_image (e.g. the lens, source).
 
         Parameters
         -----------
         contribution_factor : float
             Factor that adjusts how much of the galaxy's light is attributed to the contribution mappers.
         noise_factor : float
-            Factor by which the noise_map is increased in the regions of the galaxy's contribution mappers.
+            Factor by which the noise_map_ is increased in the regions of the galaxy's contribution mappers.
         noise_power : float
-            The power to which the contribution mappers is raised when scaling the noise_map.
+            The power to which the contribution mappers is raised when scaling the noise_map_.
         """
         self.contribution_factor = contribution_factor
         self.noise_factor = noise_factor
@@ -321,14 +321,14 @@ class HyperGalaxy(object):
         return contributions
 
     def scaled_noise_from_contributions(self, noise, contributions):
-        """Compute a scaled galaxy noise_map mappers from a baseline nosie mappers.
+        """Compute a scaled galaxy noise_map_ mappers from a baseline nosie mappers.
 
-        This uses the galaxy contribution mappers with their noise_map scaling hyper-parameters.
+        This uses the galaxy contribution mappers with their noise_map_ scaling hyper-parameters.
 
         Parameters
         -----------
         noise : ndarray
-            The noise_map before scaling (this may already have the background scaled in HyperImage)
+            The noise_map_ before scaling (this may already have the background scaled in HyperImage)
         contributions : ndarray
             The galaxy contribution mappers.
         """

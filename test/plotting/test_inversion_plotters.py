@@ -38,10 +38,10 @@
 # def test_image():
 #
 #     image = scaled_array.ScaledSquarePixelArray(array=np.ones((3,3)), pixel_scale=1.0)
-#     noise_map = im.NoiseMap(array=2.0*np.ones((3,3)), pixel_scale=1.0)
+#     noise_map_ = im.NoiseMap(array=2.0*np.ones((3,3)), pixel_scale=1.0)
 #     psf = im.PSF(array=3.0*np.ones((3,3)), pixel_scale=1.0)
 #
-#     return im.Image(array=image, pixel_scale=1.0, noise_map=noise_map, psf=psf)
+#     return im.Image(array=image, pixel_scale=1.0, noise_map_=noise_map_, psf=psf)
 #
 # @pytest.fixture(name='galaxy_light')
 # def test_galaxy_light():
