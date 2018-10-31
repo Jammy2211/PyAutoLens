@@ -31,25 +31,25 @@ class TestFittingImage(object):
     def test_attributes(self, image, fitting_image):
         assert image.pixel_scale == fitting_image.pixel_scale
         assert (image.psf == fitting_image.psf).all()
-        assert (image.background_noise_map == fitting_image.image.background_noise_map).all()
-        assert (image.poisson_noise_map == fitting_image.image.poisson_noise_map).all()
-        assert image.effective_exposure_map == fitting_image.image.effective_exposure_map
-        assert (image.background_sky_map == fitting_image.image.background_sky_map).all()
+        assert (image.background_noise_map == fitting_image.background_noise_map).all()
+        assert (image.poisson_noise_map == fitting_image.poisson_noise_map).all()
+        assert image.effective_exposure_map == fitting_image.effective_exposure_map
+        assert (image.background_sky_map == fitting_image.background_sky_map).all()
 
     def test__image_and_image_mapper(self, fitting_image):
         assert (fitting_image.image == np.ones((4, 4))).all()
-        assert (fitting_image.image.noise_map == np.ones((4, 4))).all()
-        assert (fitting_image.image.background_noise_map == 2.0*np.ones((4,4))).all()
-        assert (fitting_image.image.poisson_noise_map == 3.0*np.ones((4,4))).all()
-        assert fitting_image.image.effective_exposure_map == None
-        assert (fitting_image.image.background_sky_map == 5.0*np.ones((4,4))).all()
+        assert (fitting_image.noise_map == np.ones((4, 4))).all()
+        assert (fitting_image.background_noise_map == 2.0*np.ones((4,4))).all()
+        assert (fitting_image.poisson_noise_map == 3.0*np.ones((4,4))).all()
+        assert fitting_image.effective_exposure_map == None
+        assert (fitting_image.background_sky_map == 5.0*np.ones((4,4))).all()
 
     def test_masking(self, fitting_image):
-        assert (fitting_image.noise_map == np.ones(4)).all()
-        assert (fitting_image.background_noise_map == 2.0*np.ones(4)).all()
-        assert (fitting_image.poisson_noise_map == 3.0*np.ones(4)).all()
-        assert fitting_image.effective_exposure_map == None
-        assert (fitting_image.background_sky_map == 5.0*np.ones(4)).all()
+        assert (fitting_image.noise_map_ == np.ones(4)).all()
+        assert (fitting_image.background_noise_map_ == 2.0*np.ones(4)).all()
+        assert (fitting_image.poisson_noise_map_ == 3.0*np.ones(4)).all()
+        assert fitting_image.effective_exposure_map_ == None
+        assert (fitting_image.background_sky_map_ == 5.0*np.ones(4)).all()
 
     def test_grids(self, fitting_image):
         assert fitting_image.grids.image.shape == (4, 2)
@@ -128,7 +128,7 @@ class TestFittingHyperImage(object):
     def test_attributes(self, image, fitting_hyper_image):
         assert image.pixel_scale == fitting_hyper_image.pixel_scale
         assert (image.psf == fitting_hyper_image.psf).all()
-        assert (image.background_noise_map == fitting_hyper_image.image.background_noise_map).all()
+        assert (image.background_noise_map == fitting_hyper_image.background_noise_map).all()
         assert (fitting_hyper_image.hyper_model_image == np.ones(4)).all()
         assert (fitting_hyper_image.hyper_galaxy_images[0] == np.ones(4)).all()
         assert (fitting_hyper_image.hyper_galaxy_images[1] == np.ones(4)).all()

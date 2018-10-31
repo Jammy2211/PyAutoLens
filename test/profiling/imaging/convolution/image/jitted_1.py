@@ -397,18 +397,18 @@ hst = profiling_data.setup_class(name='HST', pixel_scale=0.05, sub_grid_size=sub
 hst_up = profiling_data.setup_class(name='HSTup', pixel_scale=0.03, sub_grid_size=sub_grid_size, psf_shape=psf_shape)
 ao = profiling_data.setup_class(name='AO', pixel_scale=0.01, sub_grid_size=sub_grid_size, psf_shape=psf_shape)
 
-lsst_image = sersic.intensities_from_grid(grid=lsst.grids._image_plane_images)
+lsst_image = sersic.intensities_from_grid(grid=lsst.grids.image_plane_images_)
 lsst_blurring_image = sersic.intensities_from_grid(grid=lsst.grids.blurring)
 assert lsst.masked_image.convolver_image.convolve_image(lsst_image, lsst_blurring_image) == \
        pytest.approx(lsst.masked_image.convolver_image.convolve_image(lsst_image, lsst_blurring_image), 1e-4)
 
-euclid_image = sersic.intensities_from_grid(grid=euclid.grids._image_plane_images)
+euclid_image = sersic.intensities_from_grid(grid=euclid.grids.image_plane_images_)
 euclid_blurring_image = sersic.intensities_from_grid(grid=euclid.grids.blurring)
-hst_image = sersic.intensities_from_grid(grid=hst.grids._image_plane_images)
+hst_image = sersic.intensities_from_grid(grid=hst.grids.image_plane_images_)
 hst_blurring_image = sersic.intensities_from_grid(grid=hst.grids.blurring)
-hst_up_image = sersic.intensities_from_grid(grid=hst_up.grids._image_plane_images)
+hst_up_image = sersic.intensities_from_grid(grid=hst_up.grids.image_plane_images_)
 hst_up_blurring_image = sersic.intensities_from_grid(grid=hst_up.grids.blurring)
-ao_image = sersic.intensities_from_grid(grid=ao.grids._image_plane_images)
+ao_image = sersic.intensities_from_grid(grid=ao.grids.image_plane_images_)
 ao_blurring_image = sersic.intensities_from_grid(grid=ao.grids.blurring)
 
 euclid.masked_image.convolver_image.convolve_image(image_array=euclid_image,

@@ -37,7 +37,7 @@ def plot_fitting_subplot(fit, should_plot_mask=True, positions=None,
 
     kpc_per_arcsec = fit.tracer_normal.image_plane.kpc_per_arcsec_proper
 
-    imaging_plotters.plot_image(image=fit.sensitivity_images[0].image, mask=mask, positions=positions, grid=None,
+    imaging_plotters.plot_image(image=fit.fit_normal.images[0], mask=mask, positions=positions, grid=None,
                                 as_subplot=True,
                                 units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
                                 cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
@@ -81,7 +81,7 @@ def plot_fitting_subplot(fit, should_plot_mask=True, positions=None,
     
     plt.subplot(rows, columns, 7)
 
-    fitting_plotters.plot_model_image(fit=fit.fit_sensitivity, image_index=0, mask=mask, as_subplot=True,
+    fitting_plotters.plot_model_image(fit=fit.fit_sensitive, image_index=0, mask=mask, as_subplot=True,
                      units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
                      cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
                      linscale=linscale,
@@ -91,7 +91,7 @@ def plot_fitting_subplot(fit, should_plot_mask=True, positions=None,
 
     plt.subplot(rows, columns, 8)
 
-    fitting_plotters.plot_residuals(fit=fit.fit_sensitivity, image_index=0, mask=mask, as_subplot=True,
+    fitting_plotters.plot_residuals(fit=fit.fit_sensitive, image_index=0, mask=mask, as_subplot=True,
                    units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
                    cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
                    linscale=linscale,
@@ -101,7 +101,7 @@ def plot_fitting_subplot(fit, should_plot_mask=True, positions=None,
 
     plt.subplot(rows, columns, 9)
 
-    fitting_plotters.plot_chi_squareds(fit=fit.fit_sensitivity, image_index=0, mask=mask, as_subplot=True,
+    fitting_plotters.plot_chi_squareds(fit=fit.fit_sensitive, image_index=0, mask=mask, as_subplot=True,
                       units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
                       cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
                       linscale=linscale,
