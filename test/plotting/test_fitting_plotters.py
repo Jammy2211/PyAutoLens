@@ -54,7 +54,7 @@ def test_fitting_image(image, mask):
 
 @pytest.fixture(name='fit_normal')
 def test_fit(fitting_image):
-    return fitting.AbstractImageFit(fitting_images=[fitting_image], _model_images=[np.ones(5)])
+    return fitting.AbstractImageFit(fitting_images=[fitting_image], model_images_=[np.ones(5)])
 
 
 @pytest.fixture(name='hyper')
@@ -84,7 +84,7 @@ def test_fitting_hyper_image(image, mask, hyper):
 
 @pytest.fixture(name='fit_hyper')
 def test_fit_hyper(fitting_hyper_image, hyper):
-    return fitting.AbstractHyperImageFit(fitting_hyper_images=[fitting_hyper_image], _model_images=[np.ones(5)],
+    return fitting.AbstractHyperImageFit(fitting_hyper_images=[fitting_hyper_image], model_images_=[np.ones(5)],
                                          hyper_galaxies=[hyper.hyper_galaxy.hyper_galaxy])
 
 

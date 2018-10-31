@@ -59,7 +59,7 @@ def test__image_individuals__output_dependent_on_config(image, general_config, i
     assert os.path.isfile(path=imaging_plotter_path+'observed_image.png')
     os.remove(path=imaging_plotter_path+'observed_image.png')
 
-    assert not os.path.isfile(path=imaging_plotter_path+'noise_map.png')
+    assert not os.path.isfile(path=imaging_plotter_path+'noise_map_.png')
 
     assert os.path.isfile(path=imaging_plotter_path+'psf.png')
     os.remove(path=imaging_plotter_path+'psf.png')
@@ -76,8 +76,8 @@ def test__image_is_output(image, positions, mask, imaging_plotter_path):
 def test__noise_map_is_output(image, mask, imaging_plotter_path):
 
     imaging_plotters.plot_noise_map(image=image, mask=mask, output_path=imaging_plotter_path, output_format='png')
-    assert os.path.isfile(path=imaging_plotter_path+'noise_map.png')
-    os.remove(path=imaging_plotter_path+'noise_map.png')
+    assert os.path.isfile(path=imaging_plotter_path+'noise_map_.png')
+    os.remove(path=imaging_plotter_path+'noise_map_.png')
 
 def test__psf_is_output(image, imaging_plotter_path):
 

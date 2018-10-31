@@ -120,7 +120,7 @@ class Pipeline(Base):
     @prepend_working_directory
     def image_path(self):
         """
-        Get the relative or absolute path to the input _datas. If the path does not begin with '/' then the current
+        Get the relative or absolute path to the input datas_. If the path does not begin with '/' then the current
         working directory will be prepended.
 
         Returns
@@ -134,7 +134,7 @@ class Pipeline(Base):
     @prepend_working_directory
     def data_path(self):
         """
-        Get the relative or absolute path to the input datas. Input datas includes _datas, noise and psf with different
+        Get the relative or absolute path to the input datas. Input datas includes datas_, noise and psf with different
         hdu values input by the user. If the path does not begin with '/' then the current working directory will be
         prepended.
 

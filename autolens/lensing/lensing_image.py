@@ -14,29 +14,29 @@ class LensingImage(fitting_data.FittingImage):
     def __init__(self, image, mask, sub_grid_size=2, image_psf_shape=None, mapping_matrix_psf_shape=None,
                  positions=None):
         """
-        The lensing _datas is the collection of datas (image, noise-maps, PSF), a masks, grids, convolvers and other \
-        utilities that are used for modeling and fitting an _datas of a strong lens.
+        The lensing datas_ is the collection of datas (image, noise-maps, PSF), a masks, grids, convolvers and other \
+        utilities that are used for modeling and fitting an datas_ of a strong lens.
 
-        Whilst the _datas datas is initially loaded in 2D, for the lensing _datas the masked-_datas (and noise-maps) \
+        Whilst the datas_ datas is initially loaded in 2D, for the lensing datas_ the masked-datas_ (and noise-maps) \
         are reduced to 1D arrays for faster calculations.
 
         Parameters
         ----------
         image: im.Image
-            The original _datas datas in 2D.
+            The original datas_ datas in 2D.
         mask: msk.Mask
-            The 2D masks that is applied to the _datas.
+            The 2D masks that is applied to the datas_.
         sub_grid_size : int
-            The size of the sub-grid used for each lensing SubGrid. E.g. a value of 2 grids each _datas-pixel on a 2x2 \
+            The size of the sub-grid used for each lensing SubGrid. E.g. a value of 2 grids each datas_-pixel on a 2x2 \
             sub-grid.
         image_psf_shape : (int, int)
             The shape of the PSF used for convolving model image generated using analytic light profiles. A smaller \
-            shape will trim the PSF relative to the input _datas PSF, giving a faster analysis run-time.
+            shape will trim the PSF relative to the input datas_ PSF, giving a faster analysis run-time.
         mapping_matrix_psf_shape : (int, int)
             The shape of the PSF used for convolving the inversion mapping matrix. A smaller \
-            shape will trim the PSF relative to the input _datas PSF, giving a faster analysis run-time.
+            shape will trim the PSF relative to the input datas_ PSF, giving a faster analysis run-time.
         positions : [[]]
-            Lists of _datas-pixel coordinates (arc-seconds) that mappers close to one another in the source-plane(s), used \
+            Lists of datas_-pixel coordinates (arc-seconds) that mappers close to one another in the source-plane(s), used \
             to speed up the non-linear sampling.
         """
         super().__init__(image=image, mask=mask, sub_grid_size=sub_grid_size, image_psf_shape=image_psf_shape)
@@ -73,29 +73,29 @@ class LensingHyperImage(fitting_data.FittingHyperImage):
     def __init__(self, image, mask, hyper_model_image, hyper_galaxy_images, hyper_minimum_values, sub_grid_size=2,
                  image_psf_shape=None, mapping_matrix_psf_shape=None, positions=None):
         """
-        The lensing _datas is the collection of datas (image, noise-maps, PSF), a masks, grids, convolvers and other \
-        utilities that are used for modeling and fitting an _datas of a strong lens.
+        The lensing datas_ is the collection of datas (image, noise-maps, PSF), a masks, grids, convolvers and other \
+        utilities that are used for modeling and fitting an datas_ of a strong lens.
 
-        Whilst the _datas datas is initially loaded in 2D, for the lensing _datas the masked-_datas (and noise-maps) \
+        Whilst the datas_ datas is initially loaded in 2D, for the lensing datas_ the masked-datas_ (and noise-maps) \
         are reduced to 1D arrays for faster calculations.
 
         Parameters
         ----------
         image: im.Image
-            The original _datas datas in 2D.
+            The original datas_ datas in 2D.
         mask: msk.Mask
-            The 2D masks that is applied to the _datas.
+            The 2D masks that is applied to the datas_.
         sub_grid_size : int
-            The size of the sub-grid used for each lensing SubGrid. E.g. a value of 2 grids each _datas-pixel on a 2x2 \
+            The size of the sub-grid used for each lensing SubGrid. E.g. a value of 2 grids each datas_-pixel on a 2x2 \
             sub-grid.
         image_psf_shape : (int, int)
             The shape of the PSF used for convolving model image generated using analytic light profiles. A smaller \
-            shape will trim the PSF relative to the input _datas PSF, giving a faster analysis run-time.
+            shape will trim the PSF relative to the input datas_ PSF, giving a faster analysis run-time.
         mapping_matrix_psf_shape : (int, int)
             The shape of the PSF used for convolving the inversion mapping matrix. A smaller \
-            shape will trim the PSF relative to the input _datas PSF, giving a faster analysis run-time.
+            shape will trim the PSF relative to the input datas_ PSF, giving a faster analysis run-time.
         positions : [[]]
-            Lists of _datas-pixel coordinates (arc-seconds) that mappers close to one another in the source-plane(s), used \
+            Lists of datas_-pixel coordinates (arc-seconds) that mappers close to one another in the source-plane(s), used \
             to speed up the non-linear sampling.
         """
         super().__init__(image=image, mask=mask, hyper_model_image=hyper_model_image,
@@ -126,3 +126,63 @@ class LensingHyperImage(fitting_data.FittingHyperImage):
             self.hyper_model_image = obj.hyper_model_image
             self.hyper_galaxy_images = obj.hyper_galaxy_images
             self.hyper_minimum_values = obj.hyper_minimum_values
+
+
+class SensitivityImage(LensingImage):
+
+    def __new__(cls, image, mask, mock_image, sub_grid_size=2, image_psf_shape=None, mapping_matrix_psf_shape=None,
+                add_noise=True, noise_seed=-1):
+        return np.array(mask.map_2d_array_to_masked_1d_array(image)).view(cls)
+
+    def __init__(self, image, mask, mock_image, sub_grid_size=2, image_psf_shape=None, mapping_matrix_psf_shape=None,
+                 add_noise=True, noise_seed=-1):
+        """
+        The lensing datas_ is the collection of datas (image, noise-maps, PSF), a masks, grids, convolvers and other \
+        utilities that are used for modeling and fitting an datas_ of a strong lens.
+
+        Whilst the datas_ datas is initially loaded in 2D, for the lensing datas_ the masked-datas_ (and noise-maps) \
+        are reduced to 1D arrays for faster calculations.
+
+        Parameters
+        ----------
+        image: im.Image
+            The original datas_ datas in 2D.
+        mask: msk.Mask
+            The 2D masks that is applied to the datas_.
+        sub_grid_size : int
+            The size of the sub-grid used for each lensing SubGrid. E.g. a value of 2 grids each datas_-pixel on a 2x2 \
+            sub-grid.
+        image_psf_shape : (int, int)
+            The shape of the PSF used for convolving model image generated using analytic light profiles. A smaller \
+            shape will trim the PSF relative to the input datas_ PSF, giving a faster analysis run-time.
+        mapping_matrix_psf_shape : (int, int)
+            The shape of the PSF used for convolving the inversion mapping matrix. A smaller \
+            shape will trim the PSF relative to the input datas_ PSF, giving a faster analysis run-time.
+        positions : [[]]
+            Lists of datas_-pixel coordinates (arc-seconds) that mappers close to one another in the source-plane(s), used \
+            to speed up the non-linear sampling.
+        """
+        super().__init__(image=image, mask=mask, sub_grid_size=sub_grid_size, image_psf_shape=image_psf_shape,
+                         mapping_matrix_psf_shape=mapping_matrix_psf_shape)
+
+        if add_noise:
+            mock_image = add_poisson_noise_to_mock_images(mock_images=[mock_image], sensitivity_images=[self],
+                                                          seed=noise_seed)[0]
+
+        self.image[:,:] = mock_image
+        self[:] = mask.map_2d_array_to_masked_1d_array(mock_image)
+
+def add_poisson_noise_to_mock_images(mock_images, sensitivity_images, seed=-1):
+
+    mock_images_with_sky = list(map(lambda mock_image, lensing_image:
+                                     mock_image + lensing_image.background_sky_map,
+                                     mock_images, sensitivity_images))
+
+    mock_images_with_sky_and_noise = list(map(lambda mock_image_with_sky, lensing_image :
+                                              mock_image_with_sky + im.generate_poisson_noise(image=mock_image_with_sky,
+                                               effective_exposure_map=lensing_image.effective_exposure_map, seed=seed),
+                                               mock_images_with_sky, sensitivity_images))
+
+    return list(map(lambda mock_image_with_sky_and_noise, lensing_image:
+                           mock_image_with_sky_and_noise - lensing_image.background_sky_map,
+                           mock_images_with_sky_and_noise, sensitivity_images))

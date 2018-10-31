@@ -11,28 +11,29 @@ class GalaxyData(scaled_array.ScaledSquarePixelArray):
 
     def __init__(self, array, noise_map, mask, sub_grid_size=2):
         """
-        The lensing _datas is the collection of datas (image, noise-maps, PSF), a masks, grids, convolvers and other \
-        utilities that are used for modeling and fitting an _datas of a strong lens.
+        The lensing datas_ is the collection of datas (image, noise-maps, PSF), a masks, grids, convolvers and other \
+        utilities that are used for modeling and fitting an datas_ of a strong lens.
 
-        Whilst the _datas datas is initially loaded in 2D, for the lensing _datas the masked-_datas (and noise-maps) \
+        Whilst the datas_ datas is initially loaded in 2D, for the lensing datas_ the masked-datas_ (and noise-maps) \
         are reduced to 1D arrays for faster calculations.
 
         Parameters
         ----------
         array : scaled_array.ScaledSquarePixelArray
-            The original _datas datas in 2D.
+            The original datas_ datas in 2D.
         mask: msk.Mask
-            The 2D masks that is applied to the _datas.
+            The 2D masks that is applied to the datas_.
         sub_grid_size : int
-            The size of the sub-grid used for each lensing SubGrid. E.g. a value of 2 grids each _datas-pixel on a 2x2 \
+            The size of the sub-grid used for each lensing SubGrid. E.g. a value of 2 grids each datas_-pixel on a 2x2 \
             sub-grid.
         """
 
         super().__init__(array=array, pixel_scale=array.pixel_scale)
 
         self.array = array
-        self.noise_map = mask.map_2d_array_to_masked_1d_array(array_2d=noise_map)
         self.mask = mask
+        self.noise_map = noise_map
+        self.noise_map_ = mask.map_2d_array_to_masked_1d_array(array_2d=noise_map)
         self.sub_grid_size = sub_grid_size
 
         self.grids = msk.ImagingGrids.grids_from_mask_sub_grid_size_and_psf_shape(mask=mask,
@@ -40,15 +41,14 @@ class GalaxyData(scaled_array.ScaledSquarePixelArray):
                                                                                   psf_shape=(1, 1))
 
         self.unmasked_grids = msk.ImagingGrids.padded_grids_from_mask_sub_grid_size_and_psf_shape(
-            mask=mask,
-            sub_grid_size=sub_grid_size,
-            psf_shape=(1, 1))
+            mask=mask, sub_grid_size=sub_grid_size, psf_shape=(1, 1))
 
     def __array_finalize__(self, obj):
         super(GalaxyData, self).__array_finalize__(obj)
         if isinstance(obj, GalaxyData):
             self.array = obj.array
             self.mask = obj.mask
+            self.noise_map_ = obj.noise_map_
             self.sub_grid_size = obj.sub_grid_size
             self.grids = obj.grids
             self.unmasked_grids = obj.unmasked_grids

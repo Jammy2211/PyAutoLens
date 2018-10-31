@@ -803,7 +803,7 @@ class TestInterpolationDeflections(object):
     #
     #             geometry = interpolation.InterpolationGeometry(y_min=-1.0, y_max=1.0, x_min=-1.0, x_max=1.0,
     #                                                            y_pixel_scale=1.0, x_pixel_scale=1.0)
-    #             scheme = interpolation.InterpolationScheme(shape=(3, 3), _datas=interp_coords,
+    #             scheme = interpolation.InterpolationScheme(shape=(3, 3), datas_=interp_coords,
     #                                                        image_pixel_scale=1.0)
     #
     #             interp_defls = interpolation.InterpolationDeflections(array=interp_defls, grids=interp_coords,
