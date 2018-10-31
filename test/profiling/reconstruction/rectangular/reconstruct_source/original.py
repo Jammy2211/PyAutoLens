@@ -155,7 +155,7 @@ hst_covariance_matrix = hst_recon.covariance_matrix_from_blurred_mapping_jitted(
                                                                                 hst.masked_image.background_noise)
 hst_up_covariance_matrix = hst_up_recon.covariance_matrix_from_blurred_mapping_jitted(hst_up_blurred_mapping,
                                                                                       hst_up.masked_image.background_noise)
-# ao_recon.covariance_matrix_from_blurred_mapping_jit(ao_blurred_mapping, ao.masked_image.noise_map)
+# ao_recon.covariance_matrix_from_blurred_mapping_jit(ao_blurred_mapping, ao.masked_image.noise_map_)
 
 lsst_cov_reg = lsst_covariance_matrix + lsst_recon.regularization
 euclid_cov_reg = euclid_covariance_matrix + euclid_recon.regularization

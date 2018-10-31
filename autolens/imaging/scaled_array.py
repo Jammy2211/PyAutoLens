@@ -103,12 +103,12 @@ class ArrayGeometry(object):
 
     @property
     def yticks(self):
-        """Compute the yticks labels of this grid, used for plotting the y-axis ticks when visualizing an _datas-grid"""
+        """Compute the yticks labels of this grid, used for plotting the y-axis ticks when visualizing an datas_-grid"""
         return np.linspace(-self.shape_arc_seconds[0] / 2.0, self.shape_arc_seconds[0] / 2.0, 4)
 
     @property
     def xticks(self):
-        """Compute the xticks labels of this grid, used for plotting the x-axis ticks when visualizing an _datas-grid"""
+        """Compute the xticks labels of this grid, used for plotting the x-axis ticks when visualizing an datas_-grid"""
         return np.linspace(-self.shape_arc_seconds[1] / 2.0, self.shape_arc_seconds[1] / 2.0, 4)
 
 
@@ -197,7 +197,7 @@ class Array(np.ndarray):
         file_path : str
             The full path of the fits file.
         hdu : int
-            The HDU number in the fits file containing the _datas datas.
+            The HDU number in the fits file containing the datas_ datas.
         """
         return cls(imaging_util.numpy_array_from_fits(file_path, hdu))
 
@@ -210,7 +210,7 @@ class ScaledArray(Array, ArrayGeometry):
         Parameters
         ----------
         array: ndarray
-            An array representing datas (e.g. an _datas, noise-mappers, etc.)
+            An array representing datas (e.g. an datas_, noise-mappers, etc.)
         """
         # noinspection PyArgumentList
         super(ScaledArray, self).__init__()
@@ -223,7 +223,7 @@ class ScaledArray(Array, ArrayGeometry):
 
 class ScaledSquarePixelArray(ScaledArray):
     """
-    Class storing the grids for 2D pixel grids (e.g. _datas, PSF, signal_to_noise_ratio).
+    Class storing the grids for 2D pixel grids (e.g. datas_, PSF, signal_to_noise_ratio).
     """
 
     # noinspection PyUnusedLocal
@@ -232,7 +232,7 @@ class ScaledSquarePixelArray(ScaledArray):
         Parameters
         ----------
         array: ndarray
-            An array representing datas (e.g. an _datas, noise-mappers, etc.)
+            An array representing datas (e.g. an datas_, noise-mappers, etc.)
         pixel_scale: float
             The arc-second to pixel conversion factor of each pixel.
         """
@@ -258,7 +258,7 @@ class ScaledSquarePixelArray(ScaledArray):
         file_path : str
             The full path of the fits file.
         hdu : int
-            The HDU number in the fits file containing the _datas datas.
+            The HDU number in the fits file containing the datas_ datas.
         pixel_scale: float
             The arc-second to pixel conversion factor of each pixel.
         """
@@ -305,7 +305,7 @@ class ScaledSquarePixelArray(ScaledArray):
 
 class ScaledRectangularPixelArray(ScaledArray):
     """
-    Class storing the grids for 2D pixel grids (e.g. _datas, PSF, signal_to_noise_ratio).
+    Class storing the grids for 2D pixel grids (e.g. datas_, PSF, signal_to_noise_ratio).
     """
 
     # noinspection PyUnusedLocal
@@ -314,7 +314,7 @@ class ScaledRectangularPixelArray(ScaledArray):
         Parameters
         ----------
         array: ndarray
-            An array representing datas (e.g. an _datas, noise-mappers, etc.)
+            An array representing datas (e.g. an datas_, noise-mappers, etc.)
         pixel_scales : (float, float)
             The arc-second to pixel conversion factor of each pixel.
         """
@@ -358,7 +358,7 @@ class ScaledRectangularPixelArray(ScaledArray):
         file_path : str
             The full path of the fits file.
         hdu : int
-            The HDU number in the fits file containing the _datas datas.
+            The HDU number in the fits file containing the datas_ datas.
         pixel_scales: (float, float)
             The arc-second to pixel conversion factor of each pixel.
         """

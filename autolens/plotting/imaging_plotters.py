@@ -12,7 +12,7 @@ def plot_image_subplot(image, mask=None, positions=None,
                        titlesize=10, xlabelsize=10, ylabelsize=10, xyticksize=10,
                        mask_pointsize=10, position_pointsize=10.0, grid_pointsize=1,
                        output_path=None, output_filename='image', output_format='show', ignore_config=True):
-    """Plot the observed _datas of an analysis, using the *Image* class object.
+    """Plot the observed datas_ of an analysis, using the *Image* class object.
 
     The visualization and output type can be fully customized.
 
@@ -24,11 +24,11 @@ def plot_image_subplot(image, mask=None, positions=None,
     units
     positions
     image : autolens.imaging.image.Image
-        Class containing the _datas, noise-mappers and PSF that are to be plotted.
+        Class containing the datas_, noise-mappers and PSF that are to be plotted.
     output_path : str
-        The path where the _datas is output if the output_type is a file format (e.g. png, fits)
+        The path where the datas_ is output if the output_type is a file format (e.g. png, fits)
     output_format : str
-        How the _datas is output. File formats (e.g. png, fits) output the _datas to harddisk. 'show' displays the _datas \
+        How the datas_ is output. File formats (e.g. png, fits) output the datas_ to harddisk. 'show' displays the datas_ \
         in the python interpreter window.
     """
 
@@ -88,7 +88,7 @@ def plot_image_subplot(image, mask=None, positions=None,
 
 
 def plot_image_individual(image, mask=None, positions=None, output_path=None, output_format='png'):
-    """Plot the observed _datas of an analysis, using the *Image* class object.
+    """Plot the observed datas_ of an analysis, using the *Image* class object.
 
     The visualization and output type can be fully customized.
 
@@ -102,11 +102,11 @@ def plot_image_individual(image, mask=None, positions=None, output_path=None, ou
     plot_image
     positions
     image : autolens.imaging.image.Image
-        Class containing the _datas, noise-mappers and PSF that are to be plotted.
+        Class containing the datas_, noise-mappers and PSF that are to be plotted.
     output_path : str
-        The path where the _datas is output if the output_type is a file format (e.g. png, fits)
+        The path where the datas_ is output if the output_type is a file format (e.g. png, fits)
     output_format : str
-        How the _datas is output. File formats (e.g. png, fits) output the _datas to harddisk. 'show' displays the _datas \
+        How the datas_ is output. File formats (e.g. png, fits) output the datas_ to harddisk. 'show' displays the datas_ \
         in the python interpreter window.
     """
 
@@ -154,7 +154,7 @@ def plot_noise_map(image, mask=None, as_subplot=False,
                    cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
                    title='Noise-Map', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
                    mask_pointsize=10,
-                   output_path=None, output_format='show', output_filename='noise_map'):
+                   output_path=None, output_format='show', output_filename='noise_map_'):
 
     tools_array.plot_array(array=image.noise_map, mask=mask, as_subplot=as_subplot,
                            units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,

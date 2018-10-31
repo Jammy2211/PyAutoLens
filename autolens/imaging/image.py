@@ -28,9 +28,9 @@ class Image(ScaledSquarePixelArray):
         psf : PSF
             An array describing the PSF of the data.
         noise_map : Array
-            An array describing the total noise_map in each data pixel.
+            An array describing the total noise_map_ in each data pixel.
         background_noise_map : Array
-            An array describing the background noise_map in each data pixel (used for hyper_image background noise_map
+            An array describing the background noise_map_ in each data pixel (used for hyper_image background noise_map_
             scaling).
         """
         super(Image, self).__init__(array, pixel_scale)
@@ -77,14 +77,14 @@ class Image(ScaledSquarePixelArray):
 
     @property
     def signal_to_noise_map(self):
-        """The estimated signal-to-noise_map mappers of the data."""
+        """The estimated signal-to-noise_map_ mappers of the data."""
         signal_to_noise_map = np.divide(self, self.noise_map)
         signal_to_noise_map[signal_to_noise_map < 0] = 0
         return signal_to_noise_map
 
     @property
     def signal_to_noise_max(self):
-        """The maximum value of signal-to-noise_map in an data pixel in the data's signal-to-noise_map mappers"""
+        """The maximum value of signal-to-noise_map_ in an data pixel in the data's signal-to-noise_map_ mappers"""
         return np.max(self.signal_to_noise_map)
 
 
@@ -94,7 +94,7 @@ class PreparatoryImage(Image):
                  effective_exposure_map=None, background_sky_map=None):
         """
         A 2d array representing an data, including preparatory components which are not needed for the actual lens
-        analysis but help set up the noise_map, background sky, etc.
+        analysis but help set up the noise_map_, background sky, etc.
 
         Parameters
         ----------
@@ -105,12 +105,12 @@ class PreparatoryImage(Image):
         psf : PSF
             An array describing the PSF of the data.
         noise_map : Array
-            An array describing the total noise_map in each data pixel.
+            An array describing the total noise_map_ in each data pixel.
         background_noise_map : Array
-            An array describing the background noise_map in each data pixel (used for hyper_image background noise_map
+            An array describing the background noise_map_ in each data pixel (used for hyper_image background noise_map_
             scaling).
         poisson_noise_map : ndarray
-            An array describing the poisson noise_map in each data pixel (used for checking the data units are
+            An array describing the poisson noise_map_ in each data pixel (used for checking the data units are
             sensible).
         exposure_time : float
             The overall exposure time of the data.
@@ -159,10 +159,10 @@ class PreparatoryImage(Image):
         background_sky_map : ndarray
             The value of background sky in every data pixel (electrons per second).
         add_noise: Bool
-            If True poisson noise_map is simulated and added to the data, based on the total counts in each data
+            If True poisson noise_map_ is simulated and added to the data, based on the total counts in each data
             pixel
         seed: int
-            A seed for random noise_map generation
+            A seed for random noise_map_ generation
         """
 
         if background_sky_map is not None:
@@ -222,7 +222,7 @@ class PreparatoryImage(Image):
         background_sky_map : ndarray
             The value of background sky in every data pixel (electrons per second).
         seed: int
-            A seed for random noise_map generation
+            A seed for random noise_map_ generation
         """
 
         max_index = np.unravel_index(array.argmax(), array.shape)
@@ -300,19 +300,19 @@ class PreparatoryImage(Image):
 
     @property
     def background_noise_map_counts(self):
-        """ The background noise_map mappers in units of counts."""
+        """ The background noise_map_ mappers in units of counts."""
         return self.electrons_per_second_to_counts(self.background_noise_map)
 
     @property
     def estimated_noise_map_counts(self):
-        """ The estimated noise_map mappers of the data (using its background noise_map mappers and data values
+        """ The estimated noise_map_ mappers of the data (using its background noise_map_ mappers and data values
         in counts) in counts.
         """
         return np.sqrt((np.abs(self.image_counts) + np.square(self.background_noise_map_counts)))
 
     @property
     def estimated_noise_map(self):
-        """ The estimated noise_map mappers of the data (using its background noise_map mappers and data values
+        """ The estimated noise_map_ mappers of the data (using its background noise_map_ mappers and data values
         in counts) in electrons per second.
         """
         return self.counts_to_electrons_per_second(self.estimated_noise_map_counts)
@@ -465,23 +465,23 @@ def setup_random_seed(seed):
 
 def generate_poisson_noise(image, effective_exposure_map, seed=-1):
     """
-    Generate a two-dimensional poisson noise_map-mappers from an data.
+    Generate a two-dimensional poisson noise_map_-mappers from an data.
 
     Values are computed from a Poisson distribution using the data's input values in units of counts.
 
     Parameters
     ----------
     image : ndarray
-        The 2D data, whose values in counts are used to draw Poisson noise_map values.
+        The 2D data, whose values in counts are used to draw Poisson noise_map_ values.
     effective_exposure_map : Union(ndarray, int)
         2D array of the exposure time in each pixel used to convert to / from counts and electrons per second.
     seed : int
-        The seed of the random number generator, used for the random noise_map maps.
+        The seed of the random number generator, used for the random noise_map_ maps.
 
     Returns
     -------
     poisson_noise_map: ndarray
-        An array describing simulated poisson noise_map
+        An array describing simulated poisson noise_map_
     """
     setup_random_seed(seed)
     image_counts = np.multiply(image, effective_exposure_map)
