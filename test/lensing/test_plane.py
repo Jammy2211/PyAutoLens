@@ -584,10 +584,10 @@ class TestPlane(object):
 
             plane = pl.Plane(galaxies=[galaxy_light], grids=[imaging_grids])
 
-            assert (plane._image_plane_images[0][0] == lp_image_pixel_0).all()
-            assert (plane._image_plane_images[0][1] == lp_image_pixel_1).all()
+            assert (plane.image_plane_images_[0][0] == lp_image_pixel_0).all()
+            assert (plane.image_plane_images_[0][1] == lp_image_pixel_1).all()
             assert (plane.image_plane_images[0] ==
-                    imaging_grids.image.scaled_array_from_array_1d(plane._image_plane_images[0])).all()
+                    imaging_grids.image.scaled_array_from_array_1d(plane.image_plane_images_[0])).all()
 
         def test__same_as_above__use_multiple_sets_of_coordinates(self, imaging_grids, galaxy_light):
             # Overwrite one value so intensity in each pixel is different
@@ -603,10 +603,10 @@ class TestPlane(object):
 
             plane = pl.Plane(galaxies=[galaxy_light], grids=[imaging_grids])
 
-            assert (plane._image_plane_images[0][0] == lp_image_pixel_0).all()
-            assert (plane._image_plane_images[0][1] == lp_image_pixel_1).all()
+            assert (plane.image_plane_images_[0][0] == lp_image_pixel_0).all()
+            assert (plane.image_plane_images_[0][1] == lp_image_pixel_1).all()
             assert (plane.image_plane_images[0] ==
-                    imaging_grids.image.scaled_array_from_array_1d(plane._image_plane_images[0])).all()
+                    imaging_grids.image.scaled_array_from_array_1d(plane.image_plane_images_[0])).all()
 
         def test__image_plane_image_of_galaxies(self, imaging_grids):
 
@@ -630,15 +630,15 @@ class TestPlane(object):
 
             plane = pl.Plane(galaxies=[g0, g1], grids=[imaging_grids])
 
-            assert (plane._image_plane_images[0][0] == lp0_image_pixel_0 + lp1_image_pixel_0).all()
-            assert (plane._image_plane_images[0][1] == lp0_image_pixel_1 + lp1_image_pixel_1).all()
+            assert (plane.image_plane_images_[0][0] == lp0_image_pixel_0 + lp1_image_pixel_0).all()
+            assert (plane.image_plane_images_[0][1] == lp0_image_pixel_1 + lp1_image_pixel_1).all()
             assert (plane.image_plane_images[0] ==
-                    imaging_grids.image.scaled_array_from_array_1d(plane._image_plane_images[0])).all()
+                    imaging_grids.image.scaled_array_from_array_1d(plane.image_plane_images_[0])).all()
 
-            assert (plane._image_plane_images_of_galaxies[0][0][0] == lp0_image_pixel_0)
-            assert (plane._image_plane_images_of_galaxies[0][0][1] == lp0_image_pixel_1)
-            assert (plane._image_plane_images_of_galaxies[0][1][0] == lp1_image_pixel_0)
-            assert (plane._image_plane_images_of_galaxies[0][1][1] == lp1_image_pixel_1)
+            assert (plane.image_plane_images_of_galaxies_[0][0][0] == lp0_image_pixel_0)
+            assert (plane.image_plane_images_of_galaxies_[0][0][1] == lp0_image_pixel_1)
+            assert (plane.image_plane_images_of_galaxies_[0][1][0] == lp1_image_pixel_0)
+            assert (plane.image_plane_images_of_galaxies_[0][1][1] == lp1_image_pixel_1)
 
         def test__image_from_plane__same_as_its_galaxy_image(self, imaging_grids, galaxy_light):
             
@@ -646,9 +646,9 @@ class TestPlane(object):
 
             plane = pl.Plane(galaxies=[galaxy_light], grids=[imaging_grids])
 
-            assert (plane._image_plane_images[0] == galaxy_image).all()
+            assert (plane.image_plane_images_[0] == galaxy_image).all()
             assert (plane.image_plane_images[0] ==
-                    imaging_grids.image.scaled_array_from_array_1d(plane._image_plane_images[0])).all()
+                    imaging_grids.image.scaled_array_from_array_1d(plane.image_plane_images_[0])).all()
 
         def test__same_as_above_galaxies__use_multiple_sets_of_coordinates(self, imaging_grids, galaxy_light):
             # Overwrite one value so intensity in each pixel is different
@@ -658,9 +658,9 @@ class TestPlane(object):
 
             plane = pl.Plane(galaxies=[galaxy_light], grids=[imaging_grids])
 
-            assert (plane._image_plane_images[0] == galaxy_image).all()
+            assert (plane.image_plane_images_[0] == galaxy_image).all()
             assert (plane.image_plane_images[0] ==
-                    imaging_grids.image.scaled_array_from_array_1d(plane._image_plane_images[0])).all()
+                    imaging_grids.image.scaled_array_from_array_1d(plane.image_plane_images_[0])).all()
 
         def test__same_as_above_galaxies___use_multiple_galaxies(self, imaging_grids):
 
@@ -675,12 +675,12 @@ class TestPlane(object):
 
             plane = pl.Plane(galaxies=[g0, g1], grids=[imaging_grids])
 
-            assert (plane._image_plane_images[0] == g0_image + g1_image).all()
+            assert (plane.image_plane_images_[0] == g0_image + g1_image).all()
             assert (plane.image_plane_images[0] ==
-                    imaging_grids.image.scaled_array_from_array_1d(plane._image_plane_images[0])).all()
+                    imaging_grids.image.scaled_array_from_array_1d(plane.image_plane_images_[0])).all()
 
-            assert (plane._image_plane_images_of_galaxies[0][0] == g0_image).all()
-            assert (plane._image_plane_images_of_galaxies[0][1] == g1_image).all()
+            assert (plane.image_plane_images_of_galaxies_[0][0] == g0_image).all()
+            assert (plane.image_plane_images_of_galaxies_[0][1] == g1_image).all()
 
         def test__same_as_above__use_multiple_grids__get_multiple_images(self, imaging_grids, imaging_grids_1):
 
@@ -695,22 +695,22 @@ class TestPlane(object):
             g0_image_grid_0 = pl.intensities_from_grid(imaging_grids.sub, galaxies=[g0])
             g1_image_grid_0 = pl.intensities_from_grid(imaging_grids.sub, galaxies=[g1])
 
-            assert (plane._image_plane_images[0] == g0_image_grid_0 + g1_image_grid_0).all()
+            assert (plane.image_plane_images_[0] == g0_image_grid_0 + g1_image_grid_0).all()
             assert (plane.image_plane_images[0] ==
-                    imaging_grids.image.scaled_array_from_array_1d(plane._image_plane_images[0])).all()
+                    imaging_grids.image.scaled_array_from_array_1d(plane.image_plane_images_[0])).all()
 
-            assert (plane._image_plane_images_of_galaxies[0][0] == g0_image_grid_0).all()
-            assert (plane._image_plane_images_of_galaxies[0][1] == g1_image_grid_0).all()
+            assert (plane.image_plane_images_of_galaxies_[0][0] == g0_image_grid_0).all()
+            assert (plane.image_plane_images_of_galaxies_[0][1] == g1_image_grid_0).all()
 
             g0_image_grid_1 = pl.intensities_from_grid(imaging_grids_1.sub, galaxies=[g0])
             g1_image_grid_1 = pl.intensities_from_grid(imaging_grids_1.sub, galaxies=[g1])
 
-            assert (plane._image_plane_images[1] == g0_image_grid_1 + g1_image_grid_1).all()
+            assert (plane.image_plane_images_[1] == g0_image_grid_1 + g1_image_grid_1).all()
             assert (plane.image_plane_images[1] ==
-                    imaging_grids.image.scaled_array_from_array_1d(plane._image_plane_images[1])).all()
+                    imaging_grids.image.scaled_array_from_array_1d(plane.image_plane_images_[1])).all()
 
-            assert (plane._image_plane_images_of_galaxies[1][0] == g0_image_grid_1).all()
-            assert (plane._image_plane_images_of_galaxies[1][1] == g1_image_grid_1).all()
+            assert (plane.image_plane_images_of_galaxies_[1][0] == g0_image_grid_1).all()
+            assert (plane.image_plane_images_of_galaxies_[1][1] == g1_image_grid_1).all()
 
             assert (plane.image_plane_image == plane.image_plane_images[0]).all()
 
@@ -762,7 +762,7 @@ class TestPlane(object):
 
             plane = pl.Plane(galaxies=[galaxy_light], grids=[imaging_grids])
 
-            assert (plane._image_plane_blurring_images[0] == lp_blurring_image).all()
+            assert (plane.image_plane_blurring_images_[0] == lp_blurring_image).all()
 
         def test__same_as_above__use_multiple_sets_of_coordinates(self, imaging_grids, galaxy_light):
 
@@ -775,7 +775,7 @@ class TestPlane(object):
 
             plane = pl.Plane(galaxies=[galaxy_light], grids=[imaging_grids])
 
-            assert (plane._image_plane_blurring_images[0] == lp_blurring_image).all()
+            assert (plane.image_plane_blurring_images_[0] == lp_blurring_image).all()
 
         def test__same_as_above__use_multiple_galaxies(self, imaging_grids):
             # Overwrite one value so intensity in each pixel is different
@@ -792,14 +792,14 @@ class TestPlane(object):
 
             plane = pl.Plane(galaxies=[g0, g1], grids=[imaging_grids])
 
-            assert (plane._image_plane_blurring_images[0] == lp0_blurring_image + lp1_blurring_image).all()
+            assert (plane.image_plane_blurring_images_[0] == lp0_blurring_image + lp1_blurring_image).all()
 
         def test__image_from_plane__same_as_its_galaxy_image(self, imaging_grids, galaxy_light):
             galaxy_image = pl.intensities_from_grid(imaging_grids.blurring, galaxies=[galaxy_light])
 
             plane = pl.Plane(galaxies=[galaxy_light], grids=[imaging_grids])
 
-            assert (plane._image_plane_blurring_images[0] == galaxy_image).all()
+            assert (plane.image_plane_blurring_images_[0] == galaxy_image).all()
 
         def test__same_as_above_galaxies__use_multiple_sets_of_coordinates(self, imaging_grids, galaxy_light):
             # Overwrite one value so intensity in each pixel is different
@@ -809,7 +809,7 @@ class TestPlane(object):
 
             plane = pl.Plane(galaxies=[galaxy_light], grids=[imaging_grids])
 
-            assert (plane._image_plane_blurring_images[0] == galaxy_image).all()
+            assert (plane.image_plane_blurring_images_[0] == galaxy_image).all()
 
         def test__same_as_above_galaxies___use_multiple_galaxies(self, imaging_grids):
 
@@ -824,7 +824,7 @@ class TestPlane(object):
 
             plane = pl.Plane(galaxies=[g0, g1], grids=[imaging_grids])
 
-            assert (plane._image_plane_blurring_images[0] == g0_image + g1_image).all()
+            assert (plane.image_plane_blurring_images_[0] == g0_image + g1_image).all()
 
         def test__same_as_above__use_multple_grids__get_multiple_images(self, imaging_grids, imaging_grids_1):
 
@@ -840,14 +840,14 @@ class TestPlane(object):
 
             plane = pl.Plane(galaxies=[g0, g1], grids=[imaging_grids, imaging_grids_1])
 
-            assert (plane._image_plane_blurring_images[0] == g0_image_grid_0 + g1_image_grid_0).all()
+            assert (plane.image_plane_blurring_images_[0] == g0_image_grid_0 + g1_image_grid_0).all()
 
             g0_image_grid_1 = pl.intensities_from_grid(imaging_grids_1.blurring, galaxies=[g0])
             g1_image_grid_1 = pl.intensities_from_grid(imaging_grids_1.blurring, galaxies=[g1])
 
             plane = pl.Plane(galaxies=[g0, g1], grids=[imaging_grids, imaging_grids_1])
 
-            assert (plane._image_plane_blurring_images[1] == g0_image_grid_1 + g1_image_grid_1).all()
+            assert (plane.image_plane_blurring_images_[1] == g0_image_grid_1 + g1_image_grid_1).all()
 
     class TestSurfaceDensity:
 
@@ -1093,14 +1093,14 @@ class TestPlane(object):
 
             plane = pl.Plane(galaxies=[galaxy_mass], grids=[imaging_grids])
 
-            assert (plane._deflections[0 ,0] == mp_image_pixel_0x).all()
-            assert (plane._deflections[0 ,1] == mp_image_pixel_0y).all()
-            assert (plane._deflections[1 ,0] == mp_image_pixel_1x).all()
-            assert (plane._deflections[1 ,1] == mp_image_pixel_1y).all()
+            assert (plane.deflections_[0 , 0] == mp_image_pixel_0x).all()
+            assert (plane.deflections_[0 , 1] == mp_image_pixel_0y).all()
+            assert (plane.deflections_[1 , 0] == mp_image_pixel_1x).all()
+            assert (plane.deflections_[1 , 1] == mp_image_pixel_1y).all()
             assert (plane.deflections_y ==
-                    imaging_grids.image.scaled_array_from_array_1d(plane._deflections[:,0])).all()
+                    imaging_grids.image.scaled_array_from_array_1d(plane.deflections_[:, 0])).all()
             assert (plane.deflections_x ==
-                    imaging_grids.image.scaled_array_from_array_1d(plane._deflections[:,1])).all()
+                    imaging_grids.image.scaled_array_from_array_1d(plane.deflections_[:, 1])).all()
 
         def test__same_as_above__use_multiple_sets_of_coordinates(self, imaging_grids, galaxy_mass):
             # Overwrite one value so intensity in each pixel is different
@@ -1118,14 +1118,14 @@ class TestPlane(object):
 
             plane = pl.Plane(galaxies=[galaxy_mass], grids=[imaging_grids])
 
-            assert (plane._deflections[0 ,0] == mp_image_pixel_0x).all()
-            assert (plane._deflections[0 ,1] == mp_image_pixel_0y).all()
-            assert (plane._deflections[1 ,0] == mp_image_pixel_1x).all()
-            assert (plane._deflections[1 ,1] == mp_image_pixel_1y).all()
+            assert (plane.deflections_[0 , 0] == mp_image_pixel_0x).all()
+            assert (plane.deflections_[0 , 1] == mp_image_pixel_0y).all()
+            assert (plane.deflections_[1 , 0] == mp_image_pixel_1x).all()
+            assert (plane.deflections_[1 , 1] == mp_image_pixel_1y).all()
             assert (plane.deflections_y ==
-                    imaging_grids.image.scaled_array_from_array_1d(plane._deflections[:,0])).all()
+                    imaging_grids.image.scaled_array_from_array_1d(plane.deflections_[:, 0])).all()
             assert (plane.deflections_x ==
-                    imaging_grids.image.scaled_array_from_array_1d(plane._deflections[:,1])).all()
+                    imaging_grids.image.scaled_array_from_array_1d(plane.deflections_[:, 1])).all()
 
         def test__same_as_above__use_multiple_galaxies(self, imaging_grids):
             # Overwrite one value so intensity in each pixel is different
@@ -1161,14 +1161,14 @@ class TestPlane(object):
 
             plane = pl.Plane(galaxies=[g0, g1], grids=[imaging_grids])
 
-            assert (plane._deflections[0 ,0] == mp0_image_pixel_0x + mp1_image_pixel_0x).all()
-            assert (plane._deflections[1 ,0] == mp0_image_pixel_1x + mp1_image_pixel_1x).all()
-            assert (plane._deflections[0 ,1] == mp0_image_pixel_0y + mp1_image_pixel_0y).all()
-            assert (plane._deflections[1 ,1] == mp0_image_pixel_1y + mp1_image_pixel_1y).all()
+            assert (plane.deflections_[0 , 0] == mp0_image_pixel_0x + mp1_image_pixel_0x).all()
+            assert (plane.deflections_[1 , 0] == mp0_image_pixel_1x + mp1_image_pixel_1x).all()
+            assert (plane.deflections_[0 , 1] == mp0_image_pixel_0y + mp1_image_pixel_0y).all()
+            assert (plane.deflections_[1 , 1] == mp0_image_pixel_1y + mp1_image_pixel_1y).all()
             assert (plane.deflections_y ==
-                    imaging_grids.image.scaled_array_from_array_1d(plane._deflections[:,0])).all()
+                    imaging_grids.image.scaled_array_from_array_1d(plane.deflections_[:, 0])).all()
             assert (plane.deflections_x ==
-                    imaging_grids.image.scaled_array_from_array_1d(plane._deflections[:,1])).all()
+                    imaging_grids.image.scaled_array_from_array_1d(plane.deflections_[:, 1])).all()
 
         def test__deflections__same_as_its_galaxy(self, imaging_grids, galaxy_mass):
 
@@ -1176,11 +1176,11 @@ class TestPlane(object):
 
             plane = pl.Plane(galaxies=[galaxy_mass], grids=[imaging_grids])
 
-            assert (plane._deflections == galaxy_deflections).all()
+            assert (plane.deflections_ == galaxy_deflections).all()
             assert (plane.deflections_y ==
-                    imaging_grids.image.scaled_array_from_array_1d(plane._deflections[:,0])).all()
+                    imaging_grids.image.scaled_array_from_array_1d(plane.deflections_[:, 0])).all()
             assert (plane.deflections_x ==
-                    imaging_grids.image.scaled_array_from_array_1d(plane._deflections[:,1])).all()
+                    imaging_grids.image.scaled_array_from_array_1d(plane.deflections_[:, 1])).all()
 
         def test__same_as_above_galaxies__use_multiple_sets_of_coordinates(self, imaging_grids, galaxy_mass):
             # Overwrite one value so intensity in each pixel is different
@@ -1190,11 +1190,11 @@ class TestPlane(object):
 
             plane = pl.Plane(galaxies=[galaxy_mass], grids=[imaging_grids])
 
-            assert (plane._deflections == galaxy_deflections).all()
+            assert (plane.deflections_ == galaxy_deflections).all()
             assert (plane.deflections_y ==
-                    imaging_grids.image.scaled_array_from_array_1d(plane._deflections[:,0])).all()
+                    imaging_grids.image.scaled_array_from_array_1d(plane.deflections_[:, 0])).all()
             assert (plane.deflections_x ==
-                    imaging_grids.image.scaled_array_from_array_1d(plane._deflections[:,1])).all()
+                    imaging_grids.image.scaled_array_from_array_1d(plane.deflections_[:, 1])).all()
 
         def test__same_as_above_galaxies___use_multiple_galaxies(self, imaging_grids):
             # Overwrite one value so intensity in each pixel is different
@@ -1208,11 +1208,11 @@ class TestPlane(object):
 
             plane = pl.Plane(galaxies=[g0, g1], grids=[imaging_grids])
 
-            assert (plane._deflections == g0_deflections + g1_deflections).all()
+            assert (plane.deflections_ == g0_deflections + g1_deflections).all()
             assert (plane.deflections_y ==
-                    imaging_grids.image.scaled_array_from_array_1d(plane._deflections[:,0])).all()
+                    imaging_grids.image.scaled_array_from_array_1d(plane.deflections_[:, 0])).all()
             assert (plane.deflections_x ==
-                    imaging_grids.image.scaled_array_from_array_1d(plane._deflections[:,1])).all()
+                    imaging_grids.image.scaled_array_from_array_1d(plane.deflections_[:, 1])).all()
 
         def test__multiple_imaging_grids__x1_deflections__uses_imaging_grid_0(self, imaging_grids, imaging_grids_1,
                                                                                   galaxy_mass):
@@ -1229,14 +1229,14 @@ class TestPlane(object):
 
             plane = pl.Plane(galaxies=[galaxy_mass], grids=[imaging_grids, imaging_grids_1])
 
-            assert (plane._deflections[0 ,0] == mp_image_pixel_0x).all()
-            assert (plane._deflections[0 ,1] == mp_image_pixel_0y).all()
-            assert (plane._deflections[1 ,0] == mp_image_pixel_1x).all()
-            assert (plane._deflections[1 ,1] == mp_image_pixel_1y).all()
+            assert (plane.deflections_[0 , 0] == mp_image_pixel_0x).all()
+            assert (plane.deflections_[0 , 1] == mp_image_pixel_0y).all()
+            assert (plane.deflections_[1 , 0] == mp_image_pixel_1x).all()
+            assert (plane.deflections_[1 , 1] == mp_image_pixel_1y).all()
             assert (plane.deflections_y ==
-                    imaging_grids.image.scaled_array_from_array_1d(plane._deflections[:,0])).all()
+                    imaging_grids.image.scaled_array_from_array_1d(plane.deflections_[:, 0])).all()
             assert (plane.deflections_x ==
-                    imaging_grids.image.scaled_array_from_array_1d(plane._deflections[:,1])).all()
+                    imaging_grids.image.scaled_array_from_array_1d(plane.deflections_[:, 1])).all()
 
     class TestPixeizationMapper:
 
@@ -1392,7 +1392,7 @@ class TestPlaneImage:
     def test__ensure_index_of_plane_image_has_negative_arcseconds_at_start(self, imaging_grids):
         # The grid coordinates -2.0 -> 2.0 mean a plane of shape (5,5) has arc second coordinates running over
         # -1.6, -0.8, 0.0, 0.8, 1.6. The centre -1.6, -1.6 of the model_galaxy means its brighest pixel should be
-        # index 0 of the 1D grid and (0,0) of the 2d plane _datas.
+        # index 0 of the 1D grid and (0,0) of the 2d plane datas_.
 
         msk = mask.Mask(array=np.full((5,5), False), pixel_scale=1.0)
 

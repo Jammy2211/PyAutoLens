@@ -294,43 +294,43 @@ class TestPhase(object):
 
     # TODO : Need to test using results
 
-    # def test_unmasked_model_image_for_instance(self, _datas):
+    # def test_unmasked_model_image_for_instance(self, datas_):
     #
     #     lens_galaxy = g.Galaxy(light_profile=lp.SphericalSersic(intensity=1.0))
-    #     image_padded_grid = msk.PaddedImageGrid.unmasked_grid_from_shapes_and_pixel_scale(shape=_datas.shape,
-    #                                                                                         psf_shape=_datas.psf.shape,
-    #                                                                                         pixel_scale=_datas.pixel_scale)
+    #     image_padded_grid = msk.PaddedImageGrid.unmasked_grid_from_shapes_and_pixel_scale(shape=datas_.shape,
+    #                                                                                         psf_shape=datas_.psf.shape,
+    #                                                                                         pixel_scale=datas_.pixel_scale)
     #     image_1d = lens_galaxy.intensities_from_grid(image_padded_grid)
-    #     blurred_image_1d = image_padded_grid.convolve_array_1d_with_psf(image_1d, _datas.psf)
+    #     blurred_image_1d = image_padded_grid.convolve_array_1d_with_psf(image_1d, datas_.psf)
     #     blurred_image = image_padded_grid.scaled_array_from_array_1d(blurred_image_1d)
     #
     #     phase = ph.LensPlanePhase(lens_galaxies=[lens_galaxy])
-    #     analysis = phase.make_analysis(_datas)
+    #     analysis = phase.make_analysis(datas_)
     #     instance = phase.constant
     #     unmasked_tracer = analysis.unmasked_tracer_for_instance(instance)
     #     unmasked_model_image = analysis.unmasked_model_image_for_tracer(unmasked_tracer)
     #
     #     assert blurred_image == pytest.approx(unmasked_model_image, 1e-4)
     #
-    # def test_unmasked_model_images_of_galaxies_for_instance(self, _datas):
+    # def test_unmasked_model_images_of_galaxies_for_instance(self, datas_):
     #
     #     g0= g.Galaxy(light_profile=lp.SphericalSersic(intensity=1.0))
     #     g1 = g.Galaxy(light_profile=lp.SphericalSersic(intensity=2.0))
     #
-    #     image_padded_grid = msk.PaddedImageGrid.unmasked_grid_from_shapes_and_pixel_scale(shape=_datas.shape,
-    #                                                                                         psf_shape=_datas.psf.shape,
-    #                                                                                         pixel_scale=_datas.pixel_scale)
+    #     image_padded_grid = msk.PaddedImageGrid.unmasked_grid_from_shapes_and_pixel_scale(shape=datas_.shape,
+    #                                                                                         psf_shape=datas_.psf.shape,
+    #                                                                                         pixel_scale=datas_.pixel_scale)
     #
     #     g0_image_1d = g0.intensities_from_grid(image_padded_grid)
-    #     g0_blurred_image_1d = image_padded_grid.convolve_array_1d_with_psf(g0_image_1d, _datas.psf)
+    #     g0_blurred_image_1d = image_padded_grid.convolve_array_1d_with_psf(g0_image_1d, datas_.psf)
     #     g0_blurred_image = image_padded_grid.scaled_array_from_array_1d(g0_blurred_image_1d)
     #
     #     g1_image_1d = g1.intensities_from_grid(image_padded_grid)
-    #     g1_blurred_image_1d = image_padded_grid.convolve_array_1d_with_psf(g1_image_1d, _datas.psf)
+    #     g1_blurred_image_1d = image_padded_grid.convolve_array_1d_with_psf(g1_image_1d, datas_.psf)
     #     g1_blurred_image = image_padded_grid.scaled_array_from_array_1d(g1_blurred_image_1d)
     #
     #     phase = ph.LensPlanePhase(lens_galaxies=[g0, g1])
-    #     analysis = phase.make_analysis(_datas)
+    #     analysis = phase.make_analysis(datas_)
     #     instance = phase.constant
     #     unmasked_tracer = analysis.unmasked_tracer_for_instance(instance)
     #     unmasked_model_images = analysis.unmasked_model_images_of_galaxies_for_tracer(unmasked_tracer)
@@ -412,7 +412,7 @@ class TestResult(object):
     # result = ph.LensSourcePlanePhase.Result(constant=mm.ModelInstance(), likelihood=1,
     # variable=mm.ModelMapper(), lensing=lensing) assert (result.image_plane_source_images[0] == np.array([
     # 1.0])).all() assert (result.image_plane_source_images[1] == np.array([1.0])).all() assert (
-    # result._datas == np.array([2.0])).all()
+    # result.datas_ == np.array([2.0])).all()
 
     def test_results(self):
         results = ph.ResultsCollection([1, 2, 3])

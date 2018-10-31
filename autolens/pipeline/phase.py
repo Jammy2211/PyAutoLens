@@ -1417,12 +1417,12 @@ class SensitivityPhase(PhaseImaging):
                 borders=[self.lensing_image.borders])
 
         def fast_likelihood_for_tracers(self, tracer_normal, tracer_sensitive):
-            return sensitivity_fitting.SensitivityProfileFit.fast_likelihood(lensing_images=[self.lensing_image],
+            return sensitivity_fitting.SensitivityProfileFit.fast_likelihood(sensitivity_images=[self.lensing_image],
                                                                              tracer_normal=tracer_normal,
                                                                              tracer_sensitive=tracer_sensitive)
 
         def fit_for_tracers(self, tracer_normal, tracer_sensitive):
-            return sensitivity_fitting.SensitivityProfileFit(lensing_images=[self.lensing_image],
+            return sensitivity_fitting.SensitivityProfileFit(sensitivity_images=[self.lensing_image],
                                                              tracer_normal=tracer_normal,
                                                              tracer_sensitive=tracer_sensitive)
 

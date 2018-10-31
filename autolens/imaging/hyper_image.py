@@ -1,37 +1,37 @@
 class HyperImage(object):
 
     def __init__(self, background_sky_scale=0.0, background_noise_scale=0.0):
-        """Class for scaling the background sky and noise_map of an _datas.
+        """Class for scaling the background sky and noise_map_ of an datas_.
 
         Parameters
         -----------
         background_sky_scale : float
             The value by which the background scale is increased or decreased (electrons per second).
         background_noise_scale : float
-            The factor by which the background noise_map is increased.
+            The factor by which the background noise_map_ is increased.
         """
         self.background_sky_scale = background_sky_scale
         self.background_noise_scale = background_noise_scale
 
     def sky_scaled_image_from_image(self, image):
-        """Compute a new _datas with the background sky level scaled. This can simply multiple by a constant factor \
-        (assuming a uniform background sky) because the _datas is in units electrons per second.
+        """Compute a new datas_ with the background sky level scaled. This can simply multiple by a constant factor \
+        (assuming a uniform background sky) because the datas_ is in units electrons per second.
 
         Parameters
         -----------
         image : ndarray
-            The _datas before scaling (electrons per second).
+            The datas_ before scaling (electrons per second).
         """
         return image + self.background_sky_scale
 
     def scaled_noise_from_background_noise(self, noise, background_noise):
-        """Compute a scaled noise_map mappers from the background noise_map mappers.
+        """Compute a scaled noise_map_ mappers from the background noise_map_ mappers.
 
         Parameters
         -----------
         noise : ndarray
-            The noise_map before scaling (electrons per second).
+            The noise_map_ before scaling (electrons per second).
         background_noise : ndarray
-            The background noise_map values (electrons per second).
+            The background noise_map_ values (electrons per second).
         """
         return noise + (self.background_noise_scale * background_noise)

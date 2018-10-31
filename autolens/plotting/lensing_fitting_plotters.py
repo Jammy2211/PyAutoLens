@@ -83,20 +83,20 @@ def plot_fitting_subplot_lens_plane_only(fit, should_plot_mask=True, positions=N
                                          titlesize=10, xlabelsize=10, ylabelsize=10, xyticksize=10,
                                          mask_pointsize=10, position_pointsize=10.0, grid_pointsize=1,
                                          output_path=None, output_filename='lensing_fit', output_format='show'):
-    """Plot the model _datas of an analysis, using the *Fitter* class object.
+    """Plot the model datas_ of an analysis, using the *Fitter* class object.
 
     The visualization and output type can be fully customized.
 
     Parameters
     -----------
     fit : autolens.lensing.fittingting.Fitter
-        Class containing fitting between the model _datas and observed lensing _datas (including residuals, chi_squareds etc.)
+        Class containing fitting between the model datas_ and observed lensing datas_ (including residuals, chi_squareds etc.)
     output_path : str
-        The path where the _datas is output if the output_type is a file format (e.g. png, fittings)
+        The path where the datas_ is output if the output_type is a file format (e.g. png, fittings)
     output_filename : str
         The name of the file that is output, if the output_type is a file format (e.g. png, fittings)
     output_format : str
-        How the _datas is output. File formats (e.g. png, fittings) output the _datas to harddisk. 'show' displays the _datas \
+        How the datas_ is output. File formats (e.g. png, fittings) output the datas_ to harddisk. 'show' displays the datas_ \
         in the python interpreter window.
     """
 
@@ -168,20 +168,20 @@ def plot_fitting_subplot_hyper_lens_plane_only(fit, should_plot_mask=True, posit
                                                titlesize=10, xlabelsize=10, ylabelsize=10, xyticksize=10,
                                                mask_pointsize=10, position_pointsize=10.0, grid_pointsize=1,
                                                output_path=None, output_filename='lensing_hyper_fit', output_format='show'):
-    """Plot the model _datas of an analysis, using the *Fitter* class object.
+    """Plot the model datas_ of an analysis, using the *Fitter* class object.
 
     The visualization and output type can be fully customized.
 
     Parameters
     -----------
     fit : autolens.lensing.fittingting.Fitter
-        Class containing fitting between the model _datas and observed lensing _datas (including residuals, chi_squareds etc.)
+        Class containing fitting between the model datas_ and observed lensing datas_ (including residuals, chi_squareds etc.)
     output_path : str
-        The path where the _datas is output if the output_type is a file format (e.g. png, fittings)
+        The path where the datas_ is output if the output_type is a file format (e.g. png, fittings)
     output_filename : str
         The name of the file that is output, if the output_type is a file format (e.g. png, fittings)
     output_format : str
-        How the _datas is output. File formats (e.g. png, fittings) output the _datas to harddisk. 'show' displays the _datas \
+        How the datas_ is output. File formats (e.g. png, fittings) output the datas_ to harddisk. 'show' displays the datas_ \
         in the python interpreter window.
     """
 
@@ -295,20 +295,20 @@ def plot_fitting_subplot_lens_and_source_planes(fit, should_plot_mask=True, posi
                                                 titlesize=10, xlabelsize=10, ylabelsize=10, xyticksize=10,
                                                 mask_pointsize=10, position_pointsize=10.0, grid_pointsize=1,
                                                 output_path=None, output_filename='lensing_fit', output_format='show'):
-    """Plot the model _datas of an analysis, using the *Fitter* class object.
+    """Plot the model datas_ of an analysis, using the *Fitter* class object.
 
     The visualization and output type can be fully customized.
 
     Parameters
     -----------
     fit : autolens.lensing.fittingting.Fitter
-        Class containing fitting between the model _datas and observed lensing _datas (including residuals, chi_squareds etc.)
+        Class containing fitting between the model datas_ and observed lensing datas_ (including residuals, chi_squareds etc.)
     output_path : str
-        The path where the _datas is output if the output_type is a file format (e.g. png, fittings)
+        The path where the datas_ is output if the output_type is a file format (e.g. png, fittings)
     output_filename : str
         The name of the file that is output, if the output_type is a file format (e.g. png, fittings)
     output_format : str
-        How the _datas is output. File formats (e.g. png, fittings) output the _datas to harddisk. 'show' displays the _datas \
+        How the datas_ is output. File formats (e.g. png, fittings) output the datas_ to harddisk. 'show' displays the datas_ \
         in the python interpreter window.
     """
 
@@ -433,18 +433,18 @@ def plot_fitting_individuals(fit, units='kpc', output_path=None, output_format='
 
 
 def plot_fitting_individuals_lens_plane_only(fit, units='kpc', output_path=None, output_format='show'):
-    """Plot the model _datas of an analysis, using the *Fitter* class object.
+    """Plot the model datas_ of an analysis, using the *Fitter* class object.
 
     The visualization and output type can be fully customized.
 
     Parameters
     -----------
     fit : autolens.lensing.fittingting.Fitter
-        Class containing fitting between the model _datas and observed lensing _datas (including residuals, chi_squareds etc.)
+        Class containing fitting between the model datas_ and observed lensing datas_ (including residuals, chi_squareds etc.)
     output_path : str
-        The path where the _datas is output if the output_type is a file format (e.g. png, fittings)
+        The path where the datas_ is output if the output_type is a file format (e.g. png, fittings)
     output_format : str
-        How the _datas is output. File formats (e.g. png, fittings) output the _datas to harddisk. 'show' displays the _datas \
+        How the datas_ is output. File formats (e.g. png, fittings) output the datas_ to harddisk. 'show' displays the datas_ \
         in the python interpreter window.
     """
 
@@ -470,18 +470,18 @@ def plot_fitting_individuals_lens_plane_only(fit, units='kpc', output_path=None,
 
 
 def plot_fitting_individuals_hyper_lens_plane_only(fit, units='kpc', output_path=None, output_format='show'):
-    """Plot the model _datas of an analysis, using the *Fitter* class object.
+    """Plot the model datas_ of an analysis, using the *Fitter* class object.
 
     The visualization and output type can be fully customized.
 
     Parameters
     -----------
     fit : autolens.lensing.fittingting.Fitter
-        Class containing fitting between the model _datas and observed lensing _datas (including residuals, chi_squareds etc.)
+        Class containing fitting between the model datas_ and observed lensing datas_ (including residuals, chi_squareds etc.)
     output_path : str
-        The path where the _datas is output if the output_type is a file format (e.g. png, fittings)
+        The path where the datas_ is output if the output_type is a file format (e.g. png, fittings)
     output_format : str
-        How the _datas is output. File formats (e.g. png, fittings) output the _datas to harddisk. 'show' displays the _datas \
+        How the datas_ is output. File formats (e.g. png, fittings) output the datas_ to harddisk. 'show' displays the datas_ \
         in the python interpreter window.
     """
 
@@ -529,18 +529,18 @@ def plot_fitting_individuals_hyper_lens_plane_only(fit, units='kpc', output_path
 
 
 def plot_fitting_individuals_lens_and_source_planes(fit, units='kpc', output_path=None, output_format='show'):
-    """Plot the model _datas of an analysis, using the *Fitter* class object.
+    """Plot the model datas_ of an analysis, using the *Fitter* class object.
 
     The visualization and output type can be fully customized.
 
     Parameters
     -----------
     fit : autolens.lensing.fittingting.Fitter
-        Class containing fitting between the model _datas and observed lensing _datas (including residuals, chi_squareds etc.)
+        Class containing fitting between the model datas_ and observed lensing datas_ (including residuals, chi_squareds etc.)
     output_path : str
-        The path where the _datas is output if the output_type is a file format (e.g. png, fittings)
+        The path where the datas_ is output if the output_type is a file format (e.g. png, fittings)
     output_format : str
-        How the _datas is output. File formats (e.g. png, fittings) output the _datas to harddisk. 'show' displays the _datas \
+        How the datas_ is output. File formats (e.g. png, fittings) output the datas_ to harddisk. 'show' displays the datas_ \
         in the python interpreter window.
     """
 

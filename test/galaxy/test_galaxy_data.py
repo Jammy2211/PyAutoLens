@@ -33,7 +33,7 @@ class TestGalaxyData(object):
     def test__scaled_array_and_mapper(self, galaxy_data):
         assert (galaxy_data == np.ones(4)).all()
         assert (galaxy_data.array == np.ones((4,4))).all()
-        assert (galaxy_data.noise_map == 2.0 * np.ones((4))).all()
+        assert (galaxy_data.noise_map == 2.0 * np.ones((4,4))).all()
         assert (galaxy_data.mask == np.array([[True, True, True, True],
                                               [True, False, False, True],
                                               [True, False, False, True],
@@ -83,7 +83,7 @@ class TestGalaxyData(object):
 
         assert (galaxy_data[:] == np.ones(4)).all()
         assert (galaxy_data.array == np.ones((4,4))).all()
-        assert (galaxy_data.noise_map == 2.0*np.ones((4))).all()
+        assert (galaxy_data.noise_map_ == 2.0 * np.ones((4))).all()
         assert (galaxy_data.mask == np.array([[True, True, True, True],
                                               [True, False, False, True],
                                               [True, False, False, True],
@@ -114,7 +114,7 @@ class TestGalaxyData(object):
         assert scaled_array.pixel_scale == galaxy_data.pixel_scale
         assert (galaxy_data == np.ones(4)).all()
         assert (galaxy_data.array == np.ones((4,4))).all()
-        assert (galaxy_data.noise_map == 2.0*np.ones((4))).all()
+        assert (galaxy_data.noise_map_ == 2.0 * np.ones((4))).all()
         assert (galaxy_data.mask == np.array([[True, True, True, True],
                                               [True, False, False, True],
                                               [True, False, False, True],
@@ -143,7 +143,7 @@ class TestGalaxyData(object):
         assert scaled_array.pixel_scale == galaxy_data.pixel_scale
         assert (galaxy_data == np.ones(4)).all()
         assert (galaxy_data.array == np.ones((4,4))).all()
-        assert (galaxy_data.noise_map == 2.0*np.ones((4))).all()
+        assert (galaxy_data.noise_map_ == 2.0 * np.ones((4))).all()
         assert (galaxy_data.mask == np.array([[True, True, True, True],
                                               [True, False, False, True],
                                               [True, False, False, True],
@@ -176,7 +176,7 @@ class TestGalaxyData(object):
         assert scaled_array.pixel_scale == galaxy_data.pixel_scale
         assert (galaxy_data == np.ones(4)).all()
         assert (galaxy_data.array == np.ones((4,4))).all()
-        assert (galaxy_data.noise_map == 2.0*np.ones((4))).all()
+        assert (galaxy_data.noise_map_ == 2.0 * np.ones((4))).all()
         assert (galaxy_data.mask == np.array([[True, True, True, True],
                                               [True, False, False, True],
                                               [True, False, False, True],
@@ -212,7 +212,7 @@ class TestGalaxyData(object):
         assert scaled_array.pixel_scale == galaxy_data.pixel_scale
         assert (galaxy_data == np.ones(4)).all()
         assert (galaxy_data.array == np.ones((4,4))).all()
-        assert (galaxy_data.noise_map == 2.0*np.ones((4))).all()
+        assert (galaxy_data.noise_map_ == 2.0 * np.ones((4))).all()
         assert (galaxy_data.mask == np.array([[True, True, True, True],
                                               [True, False, False, True],
                                               [True, False, False, True],

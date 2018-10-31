@@ -74,7 +74,7 @@ def test_fit(lensing_image):
                                                              source_galaxies=[source_galaxy],
                                                              image_plane_grids=[lensing_image.grids],
                                                              cosmology=cosmo.Planck15)
-    return sensitivity_fitting.SensitivityProfileFit(lensing_images=[lensing_image], tracer_normal=tracer_normal,
+    return sensitivity_fitting.SensitivityProfileFit(sensitivity_images=[lensing_image], tracer_normal=tracer_normal,
                                                      tracer_sensitive=tracer_sensitivity)
 
 
