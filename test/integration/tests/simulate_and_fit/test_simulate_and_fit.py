@@ -46,11 +46,11 @@ def test__simulate_lensed_source_and_fit__no_psf_blurring__chi_squared_is_0__noi
         os.makedirs(path)
 
     imaging_util.numpy_array_to_fits(array=image_simulated, path=path + '/data.fits')
-    imaging_util.numpy_array_to_fits(array=image_simulated.noise_map, path=path + '/noise_map.fits')
+    imaging_util.numpy_array_to_fits(array=image_simulated.noise_map, path=path + '/noise_map_.fits')
     imaging_util.numpy_array_to_fits(array=psf, path=path + '/psf.fits')
 
     image = im.load_imaging_from_path(image_path=path + '/data.fits',
-                                      noise_map_path=path + '/noise_map.fits',
+                                      noise_map_path=path + '/noise_map_.fits',
                                       psf_path=path + '/psf.fits', pixel_scale=0.2)
 
     mask = msk.Mask.circular(shape=image.shape, pixel_scale=0.2, radius_mask_arcsec=0.8)
@@ -94,11 +94,11 @@ def test__simulate_lensed_source_and_fit__include_psf_blurring__chi_squared_is_0
         os.makedirs(path)
 
     imaging_util.numpy_array_to_fits(array=image_simulated, path=path + '/data.fits')
-    imaging_util.numpy_array_to_fits(array=image_simulated.noise_map, path=path + '/noise_map.fits')
+    imaging_util.numpy_array_to_fits(array=image_simulated.noise_map, path=path + '/noise_map_.fits')
     imaging_util.numpy_array_to_fits(array=psf, path=path + '/psf.fits')
 
     image = im.load_imaging_from_path(image_path=path + '/data.fits',
-                                      noise_map_path=path + '/noise_map.fits',
+                                      noise_map_path=path + '/noise_map_.fits',
                                       psf_path=path + '/psf.fits', pixel_scale=0.2)
 
     mask = msk.Mask.circular(shape=image.shape, pixel_scale=0.2, radius_mask_arcsec=0.8)
