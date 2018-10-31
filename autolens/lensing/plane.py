@@ -12,7 +12,7 @@ from autolens.imaging import scaled_array
 def cosmology_check(func):
     """
     Wrap the function in a function that, if the grid is a sub-grid (grids.SubGrid), rebins the computed values to  the
-    _datas-grid by taking the mean of each set of sub-gridded values.
+    datas_-grid by taking the mean of each set of sub-gridded values.
 
     Parameters
     ----------
@@ -46,10 +46,10 @@ def cosmology_check(func):
 class Plane(object):
 
     def __init__(self, galaxies, grids, borders=None, compute_deflections=True, cosmology=None):
-        """A plane represents a set of galaxies at a given redshift in a ray-tracer_normal and a the grid of _datas-plane \
+        """A plane represents a set of galaxies at a given redshift in a ray-tracer_normal and a the grid of datas_-plane \
         or lensed coordinates.
 
-        From a plane, the _datas's of its galaxies can be computed (in both the _datas-plane and source-plane). The \
+        From a plane, the datas_'s of its galaxies can be computed (in both the datas_-plane and source-plane). The \
         surface-density, potential and deflection angles of the galaxies can also be computed.
 
         Parameters
@@ -184,16 +184,16 @@ class Plane(object):
     @property
     def image_plane_images(self):
         return list(map(lambda _image_plane_image, grid :
-                        grid.image.scaled_array_from_array_1d(_image_plane_image), self._image_plane_images, self.grids))
+                        grid.image.scaled_array_from_array_1d(_image_plane_image), self.image_plane_images_, self.grids))
 
     @property
     def image_plane_images_for_simulation(self):
         if not self.has_padded_grids:
             raise exc.RayTracingException(
-                'To retrieve an _datas plane _datas for the simulation, the grids in the tracer_normal'
+                'To retrieve an datas_ plane datas_ for the simulation, the grids in the tracer_normal'
                 'must be padded grids')
         return list(map(lambda _image_plane_image, grid : grid.image.map_to_2d_keep_padded(_image_plane_image),
-                        self._image_plane_images, self.grids))
+                        self.image_plane_images_, self.grids))
 
     @property
     def image_plane_image(self):
@@ -204,17 +204,17 @@ class Plane(object):
         return self.image_plane_images_for_simulation[0]
 
     @property
-    def _image_plane_images(self):
+    def image_plane_images_(self):
         return list(map(lambda grid :
                sum([intensities_from_grid(grid.sub, [galaxy]) for galaxy in self.galaxies]), self.grids))
 
     @property
-    def _image_plane_images_of_galaxies(self):
+    def image_plane_images_of_galaxies_(self):
         return list(map(lambda grid : [intensities_from_grid(grid.sub, [galaxy]) for galaxy in self.galaxies],
                         self.grids))
 
     @property
-    def _image_plane_blurring_images(self):
+    def image_plane_blurring_images_(self):
         return list(map(lambda grid :
                sum([intensities_from_grid(grid.blurring, [galaxy]) for galaxy in self.galaxies]), self.grids))
 
@@ -236,21 +236,21 @@ class Plane(object):
 
     @property
     def deflections_y(self):
-        return self.grids[0].image.scaled_array_from_array_1d(self._deflections[:, 0])
+        return self.grids[0].image.scaled_array_from_array_1d(self.deflections_[:, 0])
 
     @property
     def deflections_x(self):
-        return self.grids[0].image.scaled_array_from_array_1d(self._deflections[:, 1])
+        return self.grids[0].image.scaled_array_from_array_1d(self.deflections_[:, 1])
 
     @property
-    def _deflections(self):
+    def deflections_(self):
         return sum([deflections_from_grid(self.grids[0].sub.unlensed_grid, [galaxy]) for galaxy in self.galaxies])
 
 
 class PlanePositions(object):
 
     def __init__(self, galaxies, positions, compute_deflections=True, cosmology=None):
-        """A plane represents a set of galaxies at a given redshift in a ray-tracer_normal and the positions of _datas-plane \
+        """A plane represents a set of galaxies at a given redshift in a ray-tracer_normal and the positions of datas_-plane \
         coordinates which mappers close to one another in the source-plane.
 
         Parameters
@@ -258,7 +258,7 @@ class PlanePositions(object):
         galaxies : [Galaxy]
             The list of lens galaxies in this plane.
         positions : [[[]]]
-            The (x,y) arc-second coordinates of _datas-plane pixels which (are expected to) mappers to the same
+            The (x,y) arc-second coordinates of datas_-plane pixels which (are expected to) mappers to the same
             location(s) in the final source-plane.
         compute_deflections : bool
             If true, the deflection-angles of this plane's coordinates are calculated use its galaxy's mass-profiles.
@@ -292,7 +292,7 @@ class PlaneImage(scaled_array.ScaledRectangularPixelArray):
 def sub_to_image_grid(func):
     """
     Wrap the function in a function that, if the grid is a sub-grid (grids.SubGrid), rebins the computed values to
-    the _datas-grid by taking the mean of each set of sub-gridded values.
+    the datas_-grid by taking the mean of each set of sub-gridded values.
 
     Parameters
     ----------

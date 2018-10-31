@@ -12,8 +12,8 @@ class ConvolverMappingMatrix(convolution.Convolver):
         Parameters
         ----------
         mask : Mask
-            An _datas masks, where True eliminates datas.
-        psf : _datas.PSF or ndarray
+            An datas_ masks, where True eliminates datas.
+        psf : datas_.PSF or ndarray
             An array representing a PSF.
         """
 
@@ -88,7 +88,7 @@ class ConvolverMappingMatrix(convolution.Convolver):
         Parameters
         -----------
         mapping_matrix : ndarray
-            The 2D mapping matix describing how every inversion pixel maps to an _datas pixel.
+            The 2D mapping matix describing how every inversion pixel maps to an datas_ pixel.
         """
         return self.convolve_matrix_jit(mapping_matrix, self.image_frame_indexes,
                                         self.image_frame_psfs, self.image_frame_lengths)

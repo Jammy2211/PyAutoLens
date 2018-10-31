@@ -26,7 +26,7 @@ class TestCLI(object):
         result = subprocess.check_output(
             "python {0}/../autolens pipeline test "
             "--image={1}/image.fits "
-            "--noise={1}/noise_map.fits "
+            "--noise={1}/noise_map_.fits "
             "--psf={1}/psf.fits "
             "--pixel-scale=0.05".format(directory, data_directory),
             shell=True)

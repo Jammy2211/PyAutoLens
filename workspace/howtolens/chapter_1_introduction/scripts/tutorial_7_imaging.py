@@ -54,7 +54,7 @@ imaging_plotters.plot_image_subplot(image=image_simulated)
 # Unfortunately, in a Jupyter notebook you have to manually specify the path to PyAutoLens and this tutorial.
 path = '/home/jammy/PyCharm/Projects/AutoLens/workspace/howtolens/chapter_1_introduction'
 im.output_imaging_to_fits(image=image_simulated, image_path=path+'/data/image.fits',
-                                                 noise_map_path=path+'/data/noise_map.fits',
+                                                 noise_map_path=path+'/data/noise_map_.fits',
                                                  psf_path=path+'/data/psf.fits',
                           overwrite=True)
 

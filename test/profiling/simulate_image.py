@@ -69,6 +69,6 @@ if os.path.exists(output_path + lens_name) == False:
     os.makedirs(output_path + lens_name)
 
 array_util.numpy_array_to_fits(sim_image, file_path=output_path + lens_name + 'masked_image')
-array_util.numpy_array_to_fits(np.ones(sim_image.shape), file_path=output_path + lens_name + 'noise_map')
+array_util.numpy_array_to_fits(np.ones(sim_image.shape), file_path=output_path + lens_name + 'noise_map_')
 array_util.numpy_array_to_fits(np.ones(sim_image.shape), file_path=output_path + lens_name + 'exposure_time')
 array_util.numpy_array_to_fits(psf, file_path=output_path + lens_name + '/psf')

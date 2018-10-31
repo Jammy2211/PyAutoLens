@@ -134,7 +134,7 @@ hst_recon.covariance_matrix_from_blurred_mapping_jitted(hst_blurred_mapping, hst
 hst_up_recon.covariance_matrix_from_blurred_mapping_jitted(hst_up_blurred_mapping, hst_up.masked_image.background_noise)
 
 
-# ao_recon.covariance_matrix_from_blurred_mapping_jit(ao_blurred_mapping, ao.masked_image.noise_map)
+# ao_recon.covariance_matrix_from_blurred_mapping_jit(ao_blurred_mapping, ao.masked_image.noise_map_)
 
 @tools.tick_toc_x1
 def lsst_solution():

@@ -17,11 +17,11 @@ class MockTracer(object):
         return []
 
     @property
-    def _image_plane_images(self):
+    def image_plane_images_(self):
         return self.images
 
     @property
-    def _image_plane_blurring_images(self):
+    def image_plane_blurring_images_(self):
         return self.blurring_images
 
     @property
