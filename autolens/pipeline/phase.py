@@ -572,7 +572,7 @@ class PhaseImaging(Phase):
                                                   noise=self.lensing_image.image.pixel_scale)
 
                 if not fit.maximum_separation_within_threshold(self.position_threshold):
-                    raise exc.RayTracingException
+                    return exc.RayTracingException
 
         def map_to_1d(self, data):
             """Convinience method"""
@@ -1337,6 +1337,7 @@ class GalaxyFitDeflectionsPhase(Phase):
 
 
 class SensitivityPhase(PhaseImaging):
+
     lens_galaxies = PhasePropertyCollection("lens_galaxies")
     source_galaxies = PhasePropertyCollection("source_galaxies")
     sensitive_galaxies = PhasePropertyCollection("sensitive_galaxies")
@@ -1365,7 +1366,7 @@ class SensitivityPhase(PhaseImaging):
     class Analysis(PhaseImaging.Analysis):
 
         def __init__(self, lensing_image, phase_name, previous_results=None):
-            self.lensing_image = lensing_image
+            self.sensitivity_image = lensing_image
             super(PhaseImaging.Analysis, self).__init__(phase_name, previous_results)
 
         def fit(self, instance):
@@ -1392,10 +1393,10 @@ class SensitivityPhase(PhaseImaging):
             tracer_sensitive = self.tracer_sensitive_for_instance(instance)
             fit = self.fit_for_tracers(tracer_normal=tracer_normal, tracer_sensitive=tracer_sensitive)
 
-            imaging_plotters.plot_image_subplot(image=self.lensing_image.image, output_path=self.output_image_path,
+            imaging_plotters.plot_image_subplot(image=self.sensitivity_image.image, output_path=self.output_image_path,
                                                 output_format='png', ignore_config=False)
 
-            imaging_plotters.plot_image_individual(image=self.lensing_image.image, output_path=self.output_image_path,
+            imaging_plotters.plot_image_individual(image=self.sensitivity_image.image, output_path=self.output_image_path,
                                                    output_format='png')
 
             sensitivity_fitting_plotters.plot_fitting_subplot(fit=fit, output_path=self.output_image_path,
@@ -1406,52 +1407,40 @@ class SensitivityPhase(PhaseImaging):
         def tracer_normal_for_instance(self, instance):
             return ray_tracing.TracerImageSourcePlanes(lens_galaxies=instance.lens_galaxies,
                                                        source_galaxies=instance.source_galaxies,
-                                                       image_plane_grids=[self.lensing_image.grids],
-                                                       borders=[self.lensing_image.borders])
+                                                       image_plane_grids=[self.sensitivity_image.grids],
+                                                       borders=[self.sensitivity_image.borders])
 
         def tracer_sensitive_for_instance(self, instance):
             return ray_tracing.TracerImageSourcePlanes(
                 lens_galaxies=instance.lens_galaxies + instance.sensitive_galaxies,
                 source_galaxies=instance.source_galaxies,
-                image_plane_grids=[self.lensing_image.grids],
-                borders=[self.lensing_image.borders])
+                image_plane_grids=[self.sensitivity_image.grids],
+                borders=[self.sensitivity_image.borders])
 
         def fast_likelihood_for_tracers(self, tracer_normal, tracer_sensitive):
-            return sensitivity_fitting.SensitivityProfileFit.fast_likelihood(sensitivity_images=[self.lensing_image],
+            return sensitivity_fitting.SensitivityProfileFit.fast_likelihood(sensitivity_images=[self.sensitivity_image],
                                                                              tracer_normal=tracer_normal,
                                                                              tracer_sensitive=tracer_sensitive)
 
         def fit_for_tracers(self, tracer_normal, tracer_sensitive):
-            return sensitivity_fitting.SensitivityProfileFit(sensitivity_images=[self.lensing_image],
+            return sensitivity_fitting.SensitivityProfileFit(sensitivity_images=[self.sensitivity_image],
                                                              tracer_normal=tracer_normal,
                                                              tracer_sensitive=tracer_sensitive)
 
         @classmethod
         def log(cls, instance):
             logger.debug(
-                "\nRunning lens/source lensing for... \n\nLens Galaxy:\n{}\n\nSource Galaxy:\n{}\n\n".format(
-                    instance.lens_galaxies, instance.source_galaxies))
+                "\nRunning lens/source lensing for... \n\nLens Galaxy:\n{}\n\nSource Galaxy:\n{}\n\n Sensitive Galaxy\n{}\n\n"
+                "".format(instance.lens_galaxies, instance.source_galaxies, instance.sensitive_galaxies))
 
-    class Result(PhaseImaging.Result):
+    class Result(Phase.Result):
 
         def __init__(self, constant, likelihood, variable, analysis):
             """
             The result of a phase
             """
 
-            super(LensSourcePlanePhase.Result, self).__init__(constant, likelihood, variable, analysis)
-
-            # self.padded_model_image = self.fit_normal.padded_model_image
-
-            # self.lens_galaxy_padded_model_images = self.fit_normal.padded_model_images_of_galaxies[0]
-            # self.lens_subtracted_padded_image = analysis.lensing_image.image - self.padded_model_image
-            #
-            # # TODO : Need to split lens and source galaxy model image somehow
-            # self.padded_model_image = self.fit_normal.padded_model_image
-            # self.source_galaxy_padded_model_images = self.fit_normal.padded_model_images_of_galaxies_for_tracer
-            # array_plotters.plot_model_image(self.padded_model_image, output_filename='padded_model_image',
-            #                                 output_path=analysis.output_image_path, output_format='png')
-
+            super(SensitivityPhase.Result, self).__init__(constant, likelihood, variable)
 
 def make_path_if_does_not_exist(path):
     if not os.path.exists(path):
