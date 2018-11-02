@@ -9,10 +9,62 @@ from autolens.lensing import ray_tracing
 class AbstractFit(object):
 
     def __init__(self, fitting_datas, model_datas_):
+        """Abstract base class of a fit to a dataset.
 
-        self.masks = list(map(lambda fit_data : fit_data.mask, fitting_datas))
+        All fitting quantities (datas, model_datas, residuals, etc.) are stored a lists, where the different entries of
+        the list correspond to different data-sets. To signify this, all quantities are pluralized. However, if a non-
+        plural term is used (e.g. residual) the residuals of the first image are returned. This makes the interface
+        for fitting single data-sets (the most common use-case) more intuitive.
+
+        A fit is performed using masked data which has been mapped to 1D arrays, even if the data is originally a 2D
+        image. The 1D representation of a data is followed by an underscore. For example, model_datas gives the 2D
+        images of the data, whereas model_datas_ gives the 1D data representation.
+
+        Parameters
+        -----------
+        fitting_datas : [fitting_data.FittingImage]
+            The fitting images that are fitted.
+        model_datas_ : [ndarray]
+            The model datas the fitting images are fitted with.
+
+        Attributes
+        -----------
+        datas : [scaled_array.ScaledSquarePixelArray]
+            The data that is fitted.
+        noise_maps : [scaled_array.ScaledSquarePixelArray]
+            The noise-maps used to fit the data.
+        masks : [image.Mask]
+            The masks which define the regions of the data that are fitted.
+        model_datas : [scaled_array.ScaledSquarePixelArray]
+            The model dataset used to fit the data
+        map_to_scaled_arrays : [func]
+            Functions which map the masked 1D arrays of the data, model_data, residuals, etc. to their 2D data
+            representation (if an image)
+        residuals : [scaled_array.ScaledSquarePixelArray]
+            The residuals of the fit (data - model_data).
+        chi_squareds : [scaled_array.ScaledSquarePixelArray]
+            The chi-sqaureds of the fit ((data - model_data) / noise_map ) **2.0
+        chi_squared_terms : [float]
+            The summed chi-squared of every data-point in a fit.
+        chi_squareds_term : float
+            The summed chi_squared_terms for all datasets.
+        reduced_chi_squared_terms : [float]
+            The reduced chi_squared of the fit to every data-set (chi_squared / number of data points).
+        reduced_chi_squared_term : [float]
+            The summed reduced chi_squared of the fit between data and model for all datasets.
+        noise_terms : [float]
+            The normalization term of a likelihood function assuming Gaussian noise in every data-point.
+        noise_term : float
+            The sum of all noise_terms for all datasets.
+        likelihoods : [float]
+            The likelihood of every fit between data and model -0.5 * (chi_squared_term + noise_term)
+        likelihood : float
+            The summed likelihood of the fit between data and model for all datasets.
+        """
+
         self.datas_ = list(map(lambda fit_data : fit_data[:], fitting_datas))
         self.noise_maps_ = list(map(lambda fit_data : fit_data.noise_map_, fitting_datas))
+        self.masks = list(map(lambda fit_data : fit_data.mask, fitting_datas))
         self.map_to_scaled_arrays = list(map(lambda fit_data: fit_data.grids.image.scaled_array_from_array_1d,
                                              fitting_datas))
 
@@ -89,6 +141,14 @@ class AbstractFit(object):
 class AbstractDataFit(AbstractFit):
 
     def __init__(self, fitting_datas, model_datas_):
+        """Abstract Base class of a fit between data-set and model, see *AbstractFit*.
+
+        Parameters
+        -----------
+        fitting_datas : [fitting_data.FittingImage]
+            The fitting images that are fitted.
+        model_datas_ : [ndarray]
+            The model datas the fitting images are fitted with."""
 
         self.datas = list(map(lambda fit_data : fit_data.array, fitting_datas))
         super(AbstractDataFit, self).__init__(fitting_datas=fitting_datas, model_datas_=model_datas_)
@@ -97,6 +157,18 @@ class AbstractDataFit(AbstractFit):
 class AbstractImageFit(AbstractFit):
 
     def __init__(self, fitting_images, model_images_):
+        """Abstract Base class of a fit between data-set and model, see *AbstractFit*.
+
+        This class is used to add the terms 'images' and 'model_images' to the attributes of a fit. However, they
+        function identical to datas and model_datas, and this is done onoly for the user interface.
+
+        Parameters
+        -----------
+        fitting_images : [fitting_data.FittingImage]
+            The fitting images that are fitted.
+        model_datas_ : [ndarray]
+            The model images the fitting images are fitted with.
+        """
 
         self.images = list(map(lambda fit_image : fit_image.image, fitting_images))
         super(AbstractImageFit, self).__init__(fitting_datas=fitting_images, model_datas_=model_images_)
@@ -113,6 +185,46 @@ class AbstractImageFit(AbstractFit):
 class AbstractHyperFit(object):
 
     def __init__(self, fitting_hyper_images, hyper_galaxies):
+        """Abstract base class of a hyper-fit.
+
+        A hyper-fit is a fit which performs a fit as described in the *AbstractFit*, but also includes a set of
+        parameters which allow the noise-map of the data-set to be scaled. This is done to prevent over-fitting
+        small regions of a data-set with high chi-squared values and therefore provide a global fit to the overall
+        data-set.
+
+        This is performed using an existing model of the data-set to compute a contributions image, which a set of
+        hyper-parameters then use to increase the noise in localized regions of the data-set.
+
+        Parameters
+        -----------
+        fitting_hyper_images : [fitting_data.FittingHyperImage]
+            The fitting images that are fitted, which include the hyper-images used for scaling the noise-map.
+        hyper_galaxies : [galaxy.Galaxy]
+            The hyper-galaxies which represent the model components used to scale the noise, which correspnd to
+            individual galaxies in the image.
+
+        Attributes
+        -----------
+        contributions : [[scaled_array.ScaledSquarePixelArray]]
+            The contribution map of every image, where there is an individual contribution map for each hyper-galaxy in
+            the model.
+        scaled_noise_maps : [scaled_array.ScaledSquarePixelArray]
+            The scaled noise maps of the image, computed after using the hyper-galaxies.
+        scaled_chi_squared_terms : [float]
+            The summed scaled chi-squared of every data-point in a fit.
+        scaled_chi_squareds_term : float
+            The sum of all scaled_chi_squared_terms for all images.
+        scaled_noise_terms : [float]
+            The normalization term of a likelihood function assuming Gaussian noise in every data-point, using the
+            scaled noise-map.
+        scaled_noise_term : float
+            The sum of all scaled_noise_terms for all images.
+        scaled_likelihoods : [float]
+            The likelihood of every fit between data and model using the scaled noise-map's fit \
+            -0.5 * (scaled_chi_squared_term + scaled_noise_term)
+        scaled_likelihood : float
+            The summed scaled likelihood of the fit between data and model for all images.
+        """
 
         self.is_hyper_fit = True
         self.contributions_ = \
@@ -164,7 +276,8 @@ class AbstractHyperFit(object):
 class AbstractHyperImageFit(AbstractImageFit, AbstractHyperFit):
 
     def __init__(self, fitting_hyper_images, model_images_, hyper_galaxies):
-
+       """Abstract base class for an image data-set which includes hyper noise-scaling. Seee *AbstractFit* and
+       *AbstractHyperFit* for more details."""
        AbstractHyperFit.__init__(self=self, fitting_hyper_images=fitting_hyper_images, hyper_galaxies=hyper_galaxies)
        super(AbstractHyperImageFit, self).__init__(fitting_images=fitting_hyper_images, model_images_=model_images_)
        self.scaled_chi_squareds_ = chi_squareds_from_residuals_and_noise_maps(self.residuals_, self.scaled_noise_maps_)
@@ -173,6 +286,20 @@ class AbstractHyperImageFit(AbstractImageFit, AbstractHyperFit):
 class AbstractProfileFit(AbstractImageFit):
 
     def __init__(self, fitting_images, images_, blurring_images_):
+        """Abstract base class for a fit to an image using a light-profile.
+
+        This includes the blurring of the light-profile model image with the instrumental PSF.
+
+        Parameters
+        -----------
+        fitting_images : [fitting_data.FittingImage]
+            The fitting images that are fitted.
+        images_ : [ndarray]
+            The masked 1D representation of the light profile model images before PSF blurring.
+        blurring_images_ : [ndarray]
+            The 1D representation of the light profile model images blurring region, which corresponds to all pixels \
+            which are not inside the mask but close enough that their light will be blurred into it via PSF convolution.
+        """
 
         self.convolvers_image = list(map(lambda fit_image : fit_image.convolver_image, fitting_images))
 
@@ -185,6 +312,33 @@ class AbstractProfileFit(AbstractImageFit):
 class AbstractInversionFit(AbstractImageFit):
 
     def __init__(self, fitting_images, mapper, regularization):
+        """Abstract base class for a fit to an image which uses a linear inversion.
+
+        This includes passing the image / noise_map / PSF and inversion objects to the inversons module to perform \
+        the inversion.
+
+        Parameters
+        -----------
+        fitting_images : [fitting_data.FittingImage]
+            The fitting images that are fitted.
+        mapper : inversion.mapper.Mapper
+            Class storing the mappings between observed image-pixels and inversion's pixelization pixels.
+        regularization : inversion.regularization.Regularization
+            Class storing the regularization scheme of the inversion's pixelization.
+
+        Attributes
+        -----------
+        likelihoods_with_regularization : [float]
+            The likelihood of each fit to the image, including jsut 3 terms, the chi-squared term, regularization
+            penalty factor and noise normalization term.
+        likelihood_with_regularization : float
+            The sum of all likelihoods_with_regularization for all images.
+        evidences : [float]
+            The Bayesian evidence of each fit to the image. The Bayesian evidence is described in Suyu et al. 2006 and
+            the howtolens inversion tutorial chapter_4_inversions/tutorial_4_bayesian_regularization.
+        evidence : float
+            The sum of evidence values for all images.
+        """
 
         self.inversion = inversions.inversion_from_lensing_image_mapper_and_regularization(image=fitting_images[0][:],
         noise_map=fitting_images[0].noise_map_, convolver=fitting_images[0].convolver_mapping_matrix,

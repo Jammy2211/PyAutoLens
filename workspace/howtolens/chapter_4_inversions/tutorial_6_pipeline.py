@@ -74,13 +74,13 @@ def make_pipeline():
 
         def pass_priors(self, previous_results):
 
-            self.lens_galaxies = previous_results[0].variable.lens_galaxies
-            self.source_galaxies.source.shape_0 = mm.UniformPrior(lower_limit=20.0, upper_limit=40.0)
-            self.source_galaxies.source.shape_1 = mm.UniformPrior(lower_limit=20.0, upper_limit=40.0)
+            self.lens_galaxies.lens = previous_results[0].variable.lens
+            self.source_galaxies.source.pixelization.shape_0 = mm.UniformPrior(lower_limit=20.0, upper_limit=40.0)
+            self.source_galaxies.source.pixelization.shape_1 = mm.UniformPrior(lower_limit=20.0, upper_limit=40.0)
 
             # We know the regularization coefficient is going to be around 1.0 from the last tutorial, but lets use a
             # large prior range just to make sure we cover solutions for any image.
-            self.source_galaxies.source.coefficients_0 = mm.UniformPrior(lower_limit=0.0, upper_limit=100.0)
+            self.source_galaxies.source.regularization.coefficients_0 = mm.UniformPrior(lower_limit=0.0, upper_limit=100.0)
 
     phase2 = InversionPhase(lens_galaxies=dict(lens=gm.GalaxyModel(mass=mp.EllipticalIsothermal)),
                            source_galaxies=dict(source=gm.GalaxyModel(pixelization=pix.Rectangular,
