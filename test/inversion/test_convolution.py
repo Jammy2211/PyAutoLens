@@ -1,9 +1,6 @@
 import numpy as np
 import pytest
 
-from autolens import exc
-from autolens.imaging import image
-from autolens.imaging import mask
 from autolens.inversion import convolution
 
 class TestConvolveMappingMatrix(object):
