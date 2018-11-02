@@ -254,4 +254,4 @@ class Config(object):
         self.output_path = output_path
 
 
-instance = Config("{}/config".format(CONFIG_DIR), "{}/../output".format(directory))
+instance = Config("{}/config".format(CONFIG_DIR), "{}/../workspace/output/".format(directory))
