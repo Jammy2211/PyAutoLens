@@ -36,10 +36,10 @@ class Image(ScaledSquarePixelArray):
         super(Image, self).__init__(array, pixel_scale)
         self.psf = psf
         self.noise_map = noise_map
-        self.effective_exposure_map = effective_exposure_map
-        self.background_sky_map = background_sky_map
         self.background_noise_map = background_noise_map
         self.poisson_noise_map = poisson_noise_map
+        self.effective_exposure_map = effective_exposure_map
+        self.background_sky_map = background_sky_map
 
     def __array_finalize__(self, obj):
         super(Image, self).__array_finalize__(obj)
@@ -62,7 +62,9 @@ class Image(ScaledSquarePixelArray):
             background_noise_map = None
 
         return Image(array=self.trim_around_centre(new_shape), pixel_scale=self.pixel_scale, psf=self.psf,
-                     noise_map=self.noise_map.trim_around_centre(new_shape), background_noise_map=background_noise_map)
+                     noise_map=self.noise_map.trim_around_centre(new_shape), background_noise_map=background_noise_map,
+                     poisson_noise_map=self.poisson_noise_map, effective_exposure_map=self.effective_exposure_map,
+                     background_sky_map=self.background_sky_map)
 
     def trim_image_and_noise_around_region(self, x0, x1, y0, y1):
 
@@ -74,6 +76,19 @@ class Image(ScaledSquarePixelArray):
         return Image(array=self.trim_around_region(x0, x1, y0, y1), pixel_scale=self.pixel_scale, psf=self.psf,
                      noise_map=self.noise_map.trim_around_region(x0, x1, y0, y1),
                      background_noise_map=background_noise_map)
+
+    def image_with_poisson_noise_added(self, seed=-1):
+
+        image_with_sky = self + self.background_sky_map
+
+        image_with_sky_and_noise = image_with_sky + generate_poisson_noise(image=image_with_sky,
+                                   effective_exposure_map=self.effective_exposure_map, seed=seed)
+
+        image_with_noise = image_with_sky_and_noise - self.background_sky_map
+
+        return Image(array=image_with_noise, pixel_scale=self.pixel_scale, psf=self.psf,
+                     noise_map=self.noise_map, background_noise_map=self.background_noise_map,
+                     poisson_noise_map=self.poisson_noise_map, )
 
     @property
     def signal_to_noise_map(self):
