@@ -873,6 +873,25 @@ class TestImage(object):
                                                          [1.0, 1.0, 1.0, 1.0],
                                                          [1.0, 1.0, 1.0, 1.0]])).all()
 
+    class TestImageWithPoissonNoiseAdded:
+
+        def test__mock_image_all_1s__poisson_noise_is_added_correct(self):
+
+            psf = image.PSF(array=np.ones((3, 3)), pixel_scale=3.0, renormalize=False)
+            im = image.Image(np.ones((4, 4)), pixel_scale=3., psf=psf, noise_map=np.ones((4, 4)),
+                            effective_exposure_map=3.0 * np.ones((4, 4)), background_sky_map=4.0 * np.ones((4, 4)))
+
+            mock_image = np.ones((4, 4))
+            mock_image_with_sky = mock_image + 4.0 * np.ones((4, 4))
+            mock_image_with_sky_and_noise = mock_image_with_sky + image.generate_poisson_noise(image=mock_image_with_sky,
+                                                                                            effective_exposure_map=3.0 * np.ones(
+                                                                                                (4, 4)), seed=1)
+
+            mock_image_with_noise = mock_image_with_sky_and_noise - 4.0 * np.ones((4, 4))
+
+            im_with_noise = im.image_with_poisson_noise_added(seed=1)
+
+            assert (im_with_noise == mock_image_with_noise).all()
 
 class TestNoiseMap(object):
 
