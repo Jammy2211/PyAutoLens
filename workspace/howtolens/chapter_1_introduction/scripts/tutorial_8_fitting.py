@@ -73,7 +73,7 @@ print(lensing_image.grids.image.shape)
 # To fit_normal an image, we need to create an image-plane image using a tracer_without_subhalo.
 # Lets use the same tracer_without_subhalo we simulated the image with (thus, our fit_normal should be 'perfect').
 
-# Its worth noting that below, we use the lensing_image's grids to setup the tracer_without_subhalo. This ensures that our image-plane
+# Its worth noting that below, we use the sensitivity_image's grids to setup the tracer_without_subhalo. This ensures that our image-plane
 # image will be the same resolution and alignment as our image-datas, as well as being masked appropriately.
 
 lens_galaxy = g.Galaxy(mass=mp.EllipticalIsothermal(centre=(0.0, 0.0), einstein_radius=1.6, axis_ratio=0.7, phi=45.0))
