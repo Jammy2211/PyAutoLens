@@ -127,6 +127,7 @@ def plot_mask(mask, units, kpc_per_arcsec, pointsize):
 def plot_points(points_arc_seconds, array, units, kpc_per_arcsec, pointsize):
 
     if points_arc_seconds is not None:
+        points_arc_seconds = list(map(lambda position_set: np.asarray(position_set), points_arc_seconds))
         point_colors = itertools.cycle(["w", "c", "y", "r", "k", "b", "g", "m"])
         for point_set_arc_seconds in points_arc_seconds:
             point_set_units = convert_grid_units(array=array, grid_arc_seconds=point_set_arc_seconds, units=units,

@@ -20,12 +20,12 @@ class SensitivityProfileFit(AbstractSensitivityFit):
 
     def __init__(self, sensitivity_images, tracer_normal, tracer_sensitive):
         """
-        Class to evaluate the fit between a model described by a tracer_normal and an actual lensing_image.
+        Class to evaluate the fit between a model described by a tracer_normal and an actual sensitivity_image.
 
         Parameters
         ----------
         sensitivity_images: [li.LensingImage]
-            An lensing_image that has been masked for efficiency
+            An sensitivity_image that has been masked for efficiency
         tracer_normal: ray_tracing.AbstractTracer
             An object describing the model
         """
@@ -47,7 +47,7 @@ class SensitivityProfileFit(AbstractSensitivityFit):
         Parameters
         ----------
         sensitivity_images: [li.LensingImage]
-            An lensing_image that has been masked for efficiency
+            An sensitivity_image that has been masked for efficiency
         tracer_normal: ray_tracing.AbstractTracer
             An object describing the model
         """
@@ -84,8 +84,8 @@ class SensitivityProfileFit(AbstractSensitivityFit):
         likelihoods_sensitive = fitting.likelihoods_from_chi_squareds_and_noise_terms(chi_squared_terms=chi_squared_terms_sensitive, 
                                                                                    noise_terms=noise_terms_sensitive)
 
-        return sum(likelihoods_normal) - sum(likelihoods_sensitive)
+        return sum(likelihoods_sensitive) - sum(likelihoods_normal)
 
     @property
     def likelihood(self):
-        return self.fit_normal.likelihood - self.fit_sensitive.likelihood
+        return self.fit_sensitive.likelihood - self.fit_normal.likelihood
