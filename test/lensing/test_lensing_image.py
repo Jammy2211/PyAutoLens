@@ -13,7 +13,7 @@ def make_image():
     psf = im.PSF(array=np.ones((3, 3)), pixel_scale=3.0, renormalize=False)
     return im.Image(np.ones((4, 4)), pixel_scale=3., psf=psf, noise_map=np.ones((4, 4)),
                     background_noise_map=2.0*np.ones((4,4)), poisson_noise_map=3.0*np.ones((4,4)),
-                    effective_exposure_map=6.0*np.ones((4,4)), background_sky_map=5.0*np.ones((4,4)))
+                    exposure_time_map=6.0 * np.ones((4, 4)), background_sky_map=5.0 * np.ones((4, 4)))
 
 @pytest.fixture(name="mask")
 def make_mask():
@@ -34,7 +34,7 @@ class TestLensingImage(object):
         assert (image.psf == lensing_image.psf).all()
         assert (image.background_noise_map == lensing_image.background_noise_map).all()
         assert (image.poisson_noise_map == lensing_image.poisson_noise_map).all()
-        assert (image.effective_exposure_map == lensing_image.effective_exposure_map).all()
+        assert (image.exposure_time_map == lensing_image.exposure_time_map).all()
         assert (image.background_sky_map == lensing_image.background_sky_map).all()
 
     def test__image_and_image_mapper(self, lensing_image):
@@ -42,14 +42,14 @@ class TestLensingImage(object):
         assert (lensing_image.noise_map == np.ones((4, 4))).all()
         assert (lensing_image.background_noise_map == 2.0*np.ones((4,4))).all()
         assert (lensing_image.poisson_noise_map == 3.0*np.ones((4,4))).all()
-        assert (lensing_image.effective_exposure_map == 6.0*np.ones((4,4))).all()
+        assert (lensing_image.exposure_time_map == 6.0*np.ones((4,4))).all()
         assert (lensing_image.background_sky_map == 5.0*np.ones((4,4))).all()
 
     def test_masking(self, lensing_image):
         assert (lensing_image.noise_map_ == np.ones(4)).all()
         assert (lensing_image.background_noise_map_ == 2.0*np.ones(4)).all()
         assert (lensing_image.poisson_noise_map_ == 3.0*np.ones(4)).all()
-        assert (lensing_image.effective_exposure_map_ == 6.0*np.ones(4)).all()
+        assert (lensing_image.exposure_time_map_ == 6.0*np.ones(4)).all()
         assert (lensing_image.background_sky_map_ == 5.0*np.ones(4)).all()
 
     def test_grids(self, lensing_image):
@@ -144,12 +144,12 @@ class TestLensingHyperImage(object):
         assert (lensing_hyper_image.noise_map == np.ones((4, 4))).all()
         assert (lensing_hyper_image.background_noise_map == 2.0*np.ones((4,4))).all()
         assert (lensing_hyper_image.poisson_noise_map == 3.0*np.ones((4,4))).all()
-        assert (lensing_hyper_image.effective_exposure_map == 6.0*np.ones((4,4))).all()
+        assert (lensing_hyper_image.exposure_time_map == 6.0*np.ones((4,4))).all()
         assert (lensing_hyper_image.background_sky_map == 5.0*np.ones((4,4))).all()
 
     def test_masking(self, lensing_hyper_image):
         assert (lensing_hyper_image.noise_map_ == np.ones(4)).all()
         assert (lensing_hyper_image.background_noise_map_ == 2.0*np.ones(4)).all()
         assert (lensing_hyper_image.poisson_noise_map_ == 3.0*np.ones(4)).all()
-        assert (lensing_hyper_image.effective_exposure_map_ == 6.0*np.ones(4)).all()
+        assert (lensing_hyper_image.exposure_time_map_ == 6.0*np.ones(4)).all()
         assert (lensing_hyper_image.background_sky_map_ == 5.0*np.ones(4)).all()
