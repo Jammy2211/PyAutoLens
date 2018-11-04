@@ -49,12 +49,12 @@ def simulate_integration_image(data_name, pixel_scale, lens_galaxies, source_gal
 
     ### Setup as a simulated image_coords and output as a fits for an lensing ###
 
-    sim_image = im.PreparatoryImage.simulate_to_target_signal_to_noise(array=tracer.image_plane_images_for_simulation[0],
-                                                                       pixel_scale=pixel_scale,
-                                                                       target_signal_to_noise=target_signal_to_noise,
-                                                                       effective_exposure_map=np.ones(image_shape),
-                                                                       background_sky_map=10.0 * np.ones(image_shape),
-                                                                       psf=psf, seed=1)
+    sim_image = im.Image.simulate_to_target_signal_to_noise(array=tracer.image_plane_images_for_simulation[0],
+                                                            pixel_scale=pixel_scale,
+                                                            target_signal_to_noise=target_signal_to_noise,
+                                                            exposure_time_map=np.ones(image_shape),
+                                                            background_sky_map=10.0 * np.ones(image_shape),
+                                                            psf=psf, seed=1)
 
     if os.path.exists(output_path) == False:
         os.makedirs(output_path)
@@ -62,7 +62,7 @@ def simulate_integration_image(data_name, pixel_scale, lens_galaxies, source_gal
     imaging_util.numpy_array_to_fits(sim_image, path=output_path + 'image.fits')
     imaging_util.numpy_array_to_fits(sim_image.noise_map, path=output_path + 'noise_map_.fits')
     imaging_util.numpy_array_to_fits(psf, path=output_path + '/psf.fits')
-    imaging_util.numpy_array_to_fits(sim_image.effective_exposure_map, path=output_path + 'exposure_map.fits')
+    imaging_util.numpy_array_to_fits(sim_image.exposure_time_map, path=output_path + 'exposure_map.fits')
 
 
 def load_image(data_name, pixel_scale):

@@ -172,6 +172,51 @@ class TestArrayGeometry:
 
     class TestConversion:
 
+        def test__arc_second_coordinates_to_pixel_coordinates__arc_seconds_are_pixel_centres(self):
+
+            sca = scaled_array.ScaledSquarePixelArray(array=np.zeros((2, 2)), pixel_scale=2.0)
+
+            assert sca.arc_second_coordinates_to_pixel_coordinates(arc_second_coordinates=(1.0, -1.0)) == (0, 0)
+            assert sca.arc_second_coordinates_to_pixel_coordinates(arc_second_coordinates=(1.0, 1.0)) == (0, 1)
+            assert sca.arc_second_coordinates_to_pixel_coordinates(arc_second_coordinates=(-1.0, -1.0)) == (1, 0)
+            assert sca.arc_second_coordinates_to_pixel_coordinates(arc_second_coordinates=(-1.0, 1.0)) == (1, 1)
+
+            sca = scaled_array.ScaledSquarePixelArray(array=np.zeros((3, 3)), pixel_scale=3.0)
+
+            assert sca.arc_second_coordinates_to_pixel_coordinates(arc_second_coordinates=(3.0, -3.0)) == (0, 0)
+            assert sca.arc_second_coordinates_to_pixel_coordinates(arc_second_coordinates=(3.0, 0.0)) == (0, 1)
+            assert sca.arc_second_coordinates_to_pixel_coordinates(arc_second_coordinates=(3.0, 3.0)) == (0, 2)
+            assert sca.arc_second_coordinates_to_pixel_coordinates(arc_second_coordinates=(0.0, -3.0)) == (1, 0)
+            assert sca.arc_second_coordinates_to_pixel_coordinates(arc_second_coordinates=(0.0, 0.0)) == (1, 1)
+            assert sca.arc_second_coordinates_to_pixel_coordinates(arc_second_coordinates=(0.0, 3.0)) == (1, 2)
+            assert sca.arc_second_coordinates_to_pixel_coordinates(arc_second_coordinates=(-3.0, -3.0)) == (2, 0)
+            assert sca.arc_second_coordinates_to_pixel_coordinates(arc_second_coordinates=(-3.0, 0.0)) == (2, 1)
+            assert sca.arc_second_coordinates_to_pixel_coordinates(arc_second_coordinates=(-3.0, 3.0)) == (2, 2)
+
+        def test__arc_second_coordinates_to_pixel_coordinates__arc_seconds_are_pixel_corners(self):
+
+            sca = scaled_array.ScaledSquarePixelArray(array=np.zeros((2, 2)), pixel_scale=2.0)
+
+            assert sca.arc_second_coordinates_to_pixel_coordinates(arc_second_coordinates=(1.99, -1.99)) == (0, 0)
+            assert sca.arc_second_coordinates_to_pixel_coordinates(arc_second_coordinates=(1.99, -0.01)) == (0, 0)
+            assert sca.arc_second_coordinates_to_pixel_coordinates(arc_second_coordinates=(0.01, -1.99)) == (0, 0)
+            assert sca.arc_second_coordinates_to_pixel_coordinates(arc_second_coordinates=(0.01, -0.01)) == (0, 0)
+
+            assert sca.arc_second_coordinates_to_pixel_coordinates(arc_second_coordinates=(2.01, 0.01)) == (0, 1)
+            assert sca.arc_second_coordinates_to_pixel_coordinates(arc_second_coordinates=(2.01, 1.99)) == (0, 1)
+            assert sca.arc_second_coordinates_to_pixel_coordinates(arc_second_coordinates=(0.01, 0.01)) == (0, 1)
+            assert sca.arc_second_coordinates_to_pixel_coordinates(arc_second_coordinates=(0.01, 1.99)) == (0, 1)
+
+            assert sca.arc_second_coordinates_to_pixel_coordinates(arc_second_coordinates=(-0.01, -1.99)) == (1, 0)
+            assert sca.arc_second_coordinates_to_pixel_coordinates(arc_second_coordinates=(-0.01, -0.01)) == (1, 0)
+            assert sca.arc_second_coordinates_to_pixel_coordinates(arc_second_coordinates=(-1.99, -1.99)) == (1, 0)
+            assert sca.arc_second_coordinates_to_pixel_coordinates(arc_second_coordinates=(-1.99, -0.01)) == (1, 0)
+
+            assert sca.arc_second_coordinates_to_pixel_coordinates(arc_second_coordinates=(-0.01, 0.01)) == (1, 1)
+            assert sca.arc_second_coordinates_to_pixel_coordinates(arc_second_coordinates=(-0.01, 1.99)) == (1, 1)
+            assert sca.arc_second_coordinates_to_pixel_coordinates(arc_second_coordinates=(-1.99, 0.01)) == (1, 1)
+            assert sca.arc_second_coordinates_to_pixel_coordinates(arc_second_coordinates=(-1.99, 1.99)) == (1, 1)
+
         def test__square_pixel_grid__1d_arc_second_grid_to_1d_pixel_centred_grid__same_as_imaging_util(self):
             grid_arc_seconds = np.array([[1.0, -2.0], [1.0, 2.0],
                                          [-1.0, -2.0], [-1.0, 2.0]])
@@ -323,100 +368,62 @@ class TestArray:
 
     class TestResizing:
 
-        def test__pad_around_centre__compare_to_imaging_util(self):
+        def test__pad__compare_to_imaging_util(self):
+
             array = np.ones((5, 5))
             array[2, 2] = 2.0
 
             array = scaled_array.ScaledSquarePixelArray(array, pixel_scale=1.0)
 
-            modified = array.pad_around_centre(new_shape=(7, 7))
+            modified = array.resized_scaled_array_from_array(new_shape=(7, 7), new_centre_pixels=(1, 1))
 
-            modified_util = imaging_util.pad_array_2d_around_centre(array_2d=array, new_shape=(7, 7))
+            modified_util = imaging_util.resize_array_2d(array_2d=array, new_shape=(7, 7), new_centre=(1,1))
 
             assert type(modified) == scaled_array.ScaledSquarePixelArray
             assert (modified == modified_util).all()
             assert modified.pixel_scale == 1.0
 
-        def test__trim_around_centre__compare_to_imaging_util(self):
+        def test__trim__compare_to_imaging_util(self):
+
             array = np.ones((5, 5))
             array[2, 2] = 2.0
 
             array = scaled_array.ScaledSquarePixelArray(array, pixel_scale=1.0)
 
-            modified = array.trim_around_centre(new_shape=(3, 3))
+            modified = array.resized_scaled_array_from_array(new_shape=(3, 3), new_centre_pixels=(4, 4))
 
-            modified_util = imaging_util.trim_array_2d_around_centre(array_2d=array, new_shape=(3, 3))
-
-            assert type(modified) == scaled_array.ScaledSquarePixelArray
-            assert (modified == modified_util).all()
-            assert modified.pixel_scale == 1.0
-
-        def test__trim_around_region__compare_to_imaging_util(self):
-            array = np.ones((6, 6))
-            array[4, 4] = 2.0
-
-            array = scaled_array.ScaledSquarePixelArray(array, pixel_scale=1.0)
-
-            modified = array.trim_around_region(y0=3, y1=6, x0=3, x1=6)
-
-            modified_util = imaging_util.trim_array_2d_around_region(array_2d=array, y0=3, y1=6, x0=3, x1=6)
+            modified_util = imaging_util.resize_array_2d(array_2d=array, new_shape=(3, 3), new_centre=(4,4))
 
             assert type(modified) == scaled_array.ScaledSquarePixelArray
             assert (modified == modified_util).all()
             assert modified.pixel_scale == 1.0
 
-        def test__resize_image_around_centre__smaller_shape_trims_image(self):
+        def test__new_centre_is_in_arc_seconds(self):
+
             array = np.ones((5, 5))
             array[2, 2] = 2.0
 
-            array = scaled_array.ScaledSquarePixelArray(array, pixel_scale=1.0)
+            array = scaled_array.ScaledSquarePixelArray(array, pixel_scale=3.0)
 
-            modified = array.resize_around_centre(new_shape=(3, 3))
-
-            modified_util = imaging_util.trim_array_2d_around_centre(array_2d=array, new_shape=(3, 3))
-
-            assert type(modified) == scaled_array.ScaledSquarePixelArray
+            modified = array.resized_scaled_array_from_array(new_shape=(3, 3), new_centre_arc_seconds=(6.0, 6.0))
+            modified_util = imaging_util.resize_array_2d(array_2d=array, new_shape=(3, 3), new_centre=(0,4))
             assert (modified == modified_util).all()
-            assert modified.pixel_scale == 1.0
 
-        def test__resize_image_around_centre__large_shape_pads_image(self):
-            array = np.ones((5, 5))
-            array[2, 2] = 2.0
-
-            array = scaled_array.ScaledSquarePixelArray(array, pixel_scale=1.0)
-
-            modified = array.resize_around_centre(new_shape=(7, 7))
-
-            modified_util = imaging_util.pad_array_2d_around_centre(array_2d=array, new_shape=(7, 7))
-
-            assert type(modified) == scaled_array.ScaledSquarePixelArray
+            modified = array.resized_scaled_array_from_array(new_shape=(3, 3), new_centre_arc_seconds=(7.49, 4.51))
+            modified_util = imaging_util.resize_array_2d(array_2d=array, new_shape=(3, 3), new_centre=(0,4))
             assert (modified == modified_util).all()
-            assert modified.pixel_scale == 1.0
 
-        def test__works_for_rectangular_array(self):
-            array = np.ones((5, 5))
-            array[2, 2] = 2.0
-
-            array = scaled_array.ScaledRectangularPixelArray(array, pixel_scales=(1.0, 2.0))
-
-            modified = array.resize_around_centre(new_shape=(3, 3))
-
-            modified_util = imaging_util.trim_array_2d_around_centre(array_2d=array, new_shape=(3, 3))
-
-            assert type(modified) == scaled_array.ScaledRectangularPixelArray
+            modified = array.resized_scaled_array_from_array(new_shape=(3, 3), new_centre_arc_seconds=(7.49, 7.49))
+            modified_util = imaging_util.resize_array_2d(array_2d=array, new_shape=(3, 3), new_centre=(0,4))
             assert (modified == modified_util).all()
-            assert modified.pixel_scales == (1.0, 2.0)
 
-        def test__raises_error_if_one_dimension_trims_one_pads(self):
-            array = np.ones((5, 5))
-            array = scaled_array.ScaledSquarePixelArray(array, pixel_scale=1.0)
+            modified = array.resized_scaled_array_from_array(new_shape=(3, 3), new_centre_arc_seconds=(4.51, 4.51))
+            modified_util = imaging_util.resize_array_2d(array_2d=array, new_shape=(3, 3), new_centre=(0,4))
+            assert (modified == modified_util).all()
 
-            with pytest.raises(ValueError):
-                array.resize_around_centre(new_shape=(3, 6))
-
-            with pytest.raises(ValueError):
-                array.resize_around_centre(new_shape=(6, 3))
-
+            modified = array.resized_scaled_array_from_array(new_shape=(3, 3), new_centre_arc_seconds=(4.51, 7.49))
+            modified_util = imaging_util.resize_array_2d(array_2d=array, new_shape=(3, 3), new_centre=(0,4))
+            assert (modified == modified_util).all()
 
 class TestScaledSquarePixelArray:
 

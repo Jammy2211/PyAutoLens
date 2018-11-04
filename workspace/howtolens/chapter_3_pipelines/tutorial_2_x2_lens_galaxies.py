@@ -53,7 +53,7 @@ def simulate():
     tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy_0, lens_galaxy_1],
                                                  source_galaxies=[source_galaxy], image_plane_grids=[image_plane_grids])
 
-    return im.PreparatoryImage.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=0.05,
+    return im.Image.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=0.05,
                                         exposure_time=300.0, psf=psf, background_sky_level=0.1, add_noise=True)
 
 # Lets simulate the image we'll fit_normal, which is a new image, finally!
