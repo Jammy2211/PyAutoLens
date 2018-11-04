@@ -287,7 +287,7 @@ def plot_fitting_subplot_hyper_lens_plane_only(fit, should_plot_mask=True, posit
     plt.close()
 
 
-def plot_fitting_subplot_lens_and_source_planes(fit, should_plot_mask=True, positions=None,
+def plot_fitting_subplot_lens_and_source_planes(fit, should_plot_mask=True, should_plot_source_grid=False, positions=None,
                                                 units='arcsec', figsize=None, aspect='equal',
                                                 cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05,
                                                 linscale=0.01,
@@ -363,7 +363,7 @@ def plot_fitting_subplot_lens_and_source_planes(fit, should_plot_mask=True, posi
     if fit.total_inversions == 0:
 
         plane_plotters.plot_plane_image(plane=fit.tracer.source_plane, image_index=0, as_subplot=True,
-                                        positions=None, plot_grid=False,
+                                        positions=None, plot_grid=should_plot_source_grid,
                                         units=units, figsize=figsize, aspect=aspect,
                                         cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
                                         linscale=linscale,
@@ -576,10 +576,20 @@ def plot_fitting_individuals_lens_and_source_planes(fit, units='kpc', output_pat
                                   output_format=output_format)
 
     if plot_lensing_fitting_source_plane_image:
-        plane_plotters.plot_plane_image(plane=fit.tracer.source_plane, image_index=0, plot_grid=True,
-                                        units=units,
-                                        output_path=output_path, output_filename='fit_source_plane',
-                                        output_format=output_format)
+
+        if fit.total_inversions == 0:
+
+           plane_plotters.plot_plane_image(plane=fit.tracer.source_plane, image_index=0, plot_grid=True,
+                                           units=units, figsize=(20, 20),
+                                           output_path=output_path, output_filename='fit_source_plane',
+                                           output_format=output_format)
+
+        elif fit.total_inversions == 1:
+
+            inversion_plotters.plot_reconstructed_pixelization(inversion=fit.inversion, should_plot_grid=True,
+                                                               units=units, figsize=(20, 20),
+                                                               output_path=output_path, output_filename='fit_source_plane',
+                                                               output_format=output_format)
 
     if plot_lensing_fitting_residuals:
         fitting_plotters.plot_residuals(fit=fit, image_index=0, mask=mask, units=units, kpc_per_arcsec=kpc_per_arcsec,

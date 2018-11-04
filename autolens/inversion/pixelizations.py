@@ -178,7 +178,6 @@ class Rectangular(Pixelization):
         return mappers.RectangularMapper(pixels=self.pixels, grids=grids, pixel_neighbors=pixel_neighbors,
                                          shape=self.shape, geometry=geometry)
 
-
     def mapper_from_grids_and_borders(self, grids, borders):
         """Setup the pixelization mapper of this rectangular pixelization as follows:
 

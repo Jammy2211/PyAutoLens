@@ -11,12 +11,14 @@ def plot_array(array, mask=None, positions=None, grid=None, as_subplot=False,
                cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
                cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
                title='Array', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
-               mask_pointsize=10, position_pointsize=10.0, grid_pointsize=1,
+               mask_pointsize=10, position_pointsize=30, grid_pointsize=1,
+               xticks_manual=None, yticks_manual=None,
                output_path=None, output_format='show', output_filename='array'):
 
     plot_figure(array=array, as_subplot=as_subplot, units=units, kpc_per_arcsec=kpc_per_arcsec,
                 figsize=figsize, aspect=aspect, cmap=cmap, norm=norm,
-                norm_max=norm_max, norm_min=norm_min, linthresh=linthresh, linscale=linscale)
+                norm_max=norm_max, norm_min=norm_min, linthresh=linthresh, linscale=linscale,
+                xticks_manual=xticks_manual, yticks_manual=yticks_manual)
     tools.set_title(title=title, titlesize=titlesize)
     set_xy_labels_and_ticksize(units=units, kpc_per_arcsec=kpc_per_arcsec, xlabelsize=xlabelsize, ylabelsize=ylabelsize,
                                xyticksize=xyticksize)
@@ -31,7 +33,7 @@ def plot_array(array, mask=None, positions=None, grid=None, as_subplot=False,
     tools.close_figure(as_subplot=as_subplot)
 
 def plot_figure(array, as_subplot, units, kpc_per_arcsec, figsize, aspect, cmap, norm, norm_max, norm_min,
-                linthresh, linscale):
+                linthresh, linscale, xticks_manual, yticks_manual):
 
     tools.setup_figure(figsize=figsize, as_subplot=as_subplot)
 
@@ -39,11 +41,15 @@ def plot_figure(array, as_subplot, units, kpc_per_arcsec, figsize, aspect, cmap,
     norm_scale = get_normalization_scale(norm=norm, norm_min=norm_min, norm_max=norm_max,
                                          linthresh=linthresh, linscale=linscale)
 
-    extent = get_extent(array=array, units=units, kpc_per_arcsec=kpc_per_arcsec)
+    extent = get_extent(array=array, units=units, kpc_per_arcsec=kpc_per_arcsec,
+                        xticks_manual=xticks_manual, yticks_manual=yticks_manual)
 
     plt.imshow(array, aspect=aspect, cmap=cmap, norm=norm_scale, extent=extent)
 
-def get_extent(array, units, kpc_per_arcsec):
+def get_extent(array, units, kpc_per_arcsec, xticks_manual, yticks_manual):
+
+    if xticks_manual is not None and yticks_manual is not None:
+        return [xticks_manual[0], xticks_manual[3], yticks_manual[0], yticks_manual[3]]
 
     if units is 'pixels':
         return [0, array.shape[1], 0, array.shape[0]]
@@ -128,7 +134,7 @@ def plot_points(points_arc_seconds, array, units, kpc_per_arcsec, pointsize):
 
     if points_arc_seconds is not None:
         points_arc_seconds = list(map(lambda position_set: np.asarray(position_set), points_arc_seconds))
-        point_colors = itertools.cycle(["w", "c", "y", "r", "k", "b", "g", "m"])
+        point_colors = itertools.cycle(["m", "y", "r", "w", "c", "b", "g", "k"])
         for point_set_arc_seconds in points_arc_seconds:
             point_set_units = convert_grid_units(array=array, grid_arc_seconds=point_set_arc_seconds, units=units,
                                                  kpc_per_arcsec=kpc_per_arcsec)
@@ -139,4 +145,5 @@ def plot_grid(grid_arc_seconds, array, units, kpc_per_arcsec, pointsize):
     if grid_arc_seconds is not None:
         grid_units = convert_grid_units(grid_arc_seconds=grid_arc_seconds, array=array, units=units,
                                         kpc_per_arcsec=kpc_per_arcsec)
-        plt.scatter(y=grid_units[:, 0], x=grid_units[:, 1], s=pointsize, c='k')
+
+        plt.scatter(y=np.asarray(grid_units[:, 0]), x=np.asarray(grid_units[:, 1]), s=pointsize, c='k')

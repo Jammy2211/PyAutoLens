@@ -1,3 +1,7 @@
+class ImagingException(Exception):
+    pass
+
+
 class KernelException(Exception):
     pass
 
