@@ -29,8 +29,8 @@ from autolens.plotting import ray_tracing_plotters
 
 path = 'path/to/AutoLens/howtolens/chapter_1_introduction' # Unfortunately, in a Jupyter notebook you have to manually specify the path to PyAutoLens and this tutorial.
 path = '/home/jammy/PyCharm/Projects/AutoLens/workspace/howtolens/chapter_1_introduction'
-image = im.load_imaging_from_path(image_path=path + '/data/image.fits',
-                                  noise_map_path=path+'/data/noise_map_.fits',
+image = im.load_imaging_from_fits(image_path=path + '/data/image.fits',
+                                  noise_map_path=path+'/data/noise_map.fits',
                                   psf_path=path + '/data/psf.fits', pixel_scale=0.1)
 mask = ma.Mask.circular(shape=image.shape, pixel_scale=image.pixel_scale, radius_mask_arcsec=3.0)
 lensing_image = li.LensingImage(image=image, mask=mask)
