@@ -165,7 +165,10 @@ class Plane(object):
             return None
         if len(galaxies_with_pixelization) == 1:
             pixelization = galaxies_with_pixelization[0].pixelization
-            return pixelization.mapper_from_grids_and_borders(self.grids[0], self.borders[0])
+            if self.borders is not None:
+                return pixelization.mapper_from_grids_and_borders(self.grids[0], self.borders[0])
+            elif self.borders is None:
+                return pixelization.mapper_from_grids(self.grids[0])
         elif len(galaxies_with_pixelization) > 1:
             raise exc.PixelizationException('The number of galaxies with pixelizations in one plane is above 1')
 
@@ -245,6 +248,16 @@ class Plane(object):
     @property
     def deflections_(self):
         return sum([deflections_from_grid(self.grids[0].sub.unlensed_grid, [galaxy]) for galaxy in self.galaxies])
+
+    @property
+    def yticks(self):
+        """Compute the yticks labels of this grid, used for plotting the y-axis ticks when visualizing an datas_-grid"""
+        return np.linspace(np.amin(self.grids[0].image[:,0]), np.amax(self.grids[0].image[:,0]), 4)
+
+    @property
+    def xticks(self):
+        """Compute the xticks labels of this grid, used for plotting the x-axis ticks when visualizing an datas_-grid"""
+        return np.linspace(np.amin(self.grids[0].image[:,1]), np.amax(self.grids[0].image[:,1]), 4)
 
 
 class PlanePositions(object):

@@ -407,22 +407,22 @@ sersic = light_profiles.EllipticalSersic(centre=(0.0, 0.0), axis_ratio=0.8, phi=
                                          effective_radius=0.8, sersic_index=4.0)
 
 lsst = profiling_data.setup_class(name='LSST', pixel_scale=0.2, sub_grid_size=sub_grid_size, psf_shape=psf_shape)
-lsst_kernel_convolver = KernelConvolverOriginal(kernel=lsst.image_plane_images_.psf.trim_around_centre(psf_shape),
+lsst_kernel_convolver = KernelConvolverOriginal(kernel=lsst.image_plane_images_.psf.resized_scaled_array_from_array(psf_shape),
                                                 frame_array=lsst.masked_image.convolver.frame_array,
                                                 blurring_frame_array=lsst.masked_image.convolver.blurring_frame_array)
 
 euclid = profiling_data.setup_class(name='Euclid', pixel_scale=0.1, sub_grid_size=sub_grid_size, psf_shape=psf_shape)
-euclid_kernel_convolver = KernelConvolverOriginal(kernel=euclid.image_plane_images_.psf.trim_around_centre(psf_shape),
+euclid_kernel_convolver = KernelConvolverOriginal(kernel=euclid.image_plane_images_.psf.resized_scaled_array_from_array(psf_shape),
                                                   frame_array=euclid.masked_image.convolver.frame_array,
                                                   blurring_frame_array=euclid.masked_image.convolver.blurring_frame_array)
 
 hst = profiling_data.setup_class(name='HST', pixel_scale=0.05, sub_grid_size=sub_grid_size, psf_shape=psf_shape)
-hst_kernel_convolver = KernelConvolverOriginal(kernel=hst.image_plane_images_.psf.trim_around_centre(psf_shape),
+hst_kernel_convolver = KernelConvolverOriginal(kernel=hst.image_plane_images_.psf.resized_scaled_array_from_array(psf_shape),
                                                frame_array=hst.masked_image.convolver.frame_array,
                                                blurring_frame_array=hst.masked_image.convolver.blurring_frame_array)
 
 hst_up = profiling_data.setup_class(name='HSTup', pixel_scale=0.03, sub_grid_size=sub_grid_size, psf_shape=psf_shape)
-hst_up_kernel_convolver = KernelConvolverOriginal(kernel=hst_up.image_plane_images_.psf.trim_around_centre(psf_shape),
+hst_up_kernel_convolver = KernelConvolverOriginal(kernel=hst_up.image_plane_images_.psf.resized_scaled_array_from_array(psf_shape),
                                                   frame_array=hst_up.masked_image.convolver.frame_array,
                                                   blurring_frame_array=hst_up.masked_image.convolver.blurring_frame_array)
 

@@ -9,6 +9,10 @@ class MockPixelization(object):
     def mapper_from_grids_and_borders(self, grids, borders):
         return self.value
 
+    # noinspection PyUnusedLocal,PyShadowingNames
+    def mapper_from_grids(self, grids):
+        return self.value
+
 class MockRegularization(object):
 
     def __init__(self, value):

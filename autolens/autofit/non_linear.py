@@ -536,7 +536,10 @@ class MultiNest(NonLinearOptimizer):
             try:
                 pdf_plot.triangle_plot(roots=self.pdf)
                 pdf_plot.export(fname=self.phase_path + 'image/pdf_triangle.png')
-            except np.linalg.LinAlgError:
+            except:
+                print('The PDF triangle of this non-linear search could not be plotted. This is most likely due to a '
+                      'lack of smoothness in the sampling of parameter space. Sampler further by decreasing the '
+                      'parameter evidence_tolerance.')
                 pass
 
         plt.close()

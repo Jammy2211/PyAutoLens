@@ -221,7 +221,7 @@ def grid_arc_seconds_1d_to_grid_pixels_1d(grid_arc_seconds, shape, pixel_scales)
     for i in range(grid_arc_seconds.shape[0]):
 
         grid_pixels[i, 0] =(-grid_arc_seconds[i,0] / pixel_scales[0])  + y_cen + 0.5
-        grid_pixels[i, 1] =(grid_arc_seconds[i,1] / pixel_scales[1])  + x_cen + 0.5
+        grid_pixels[i, 1] = (grid_arc_seconds[i,1] / pixel_scales[1])  + x_cen + 0.5
 
     return grid_pixels
 
@@ -531,8 +531,8 @@ def map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(array_1d, shape):
 
     return array_2d
 
-
-def pad_array_2d_around_centre(array_2d, new_shape):
+@numba.jit(nopython=True, cache=True)
+def resize_array_2d(array_2d, new_shape, new_centre=(-1, -1)):
     """
     Trim the data_vector array to a new sub_grid_size around its central pixel.
 
@@ -546,95 +546,47 @@ def pad_array_2d_around_centre(array_2d, new_shape):
         The (x,y) new pixel dimension of the trimmed data_vector-array.
     """
 
-    if new_shape[0] < array_2d.shape[0]:
-        raise ValueError(
-            'grids.Grid2d.pad_data - You have specified a new x_size smaller than the input 2d array')
-    elif new_shape[1] < array_2d.shape[1]:
-        raise ValueError(
-            'grids.Grid2d.pad_data - You have specified a new y_size bigger than the input 2d array')
+    y_is_even = int(array_2d.shape[0]) % 2 == 0
+    x_is_even = int(array_2d.shape[1]) % 2 == 0
 
-    if array_2d.shape[0] % 2 == 0 and not new_shape[0] % 2 == 0:
-        raise ValueError('You cannot pad an array from even shape to odd shape - change new_shape to even')
+    if new_centre is (-1, -1):
 
-    if array_2d.shape[1] % 2 == 0 and not new_shape[1] % 2 == 0:
-        raise ValueError('You cannot pad an array from even shape to odd shape - change new_shape to even')
+        if y_is_even:
+            y_centre = int(array_2d.shape[0]/2)
+        elif not y_is_even:
+            y_centre = int(array_2d.shape[0]/2)
 
-    if not array_2d.shape[0] % 2 == 0 and new_shape[0] % 2 == 0:
-        raise ValueError('You cannot pad an array from odd shape to even shape - change new_shape to odd')
+        if x_is_even:
+            x_centre = int(array_2d.shape[1] / 2)
+        elif not x_is_even:
+            x_centre = int(array_2d.shape[1] / 2)
 
-    if not array_2d.shape[1] % 2 == 0 and new_shape[1] % 2 == 0:
-        raise ValueError('You cannot pad an array from odd shape to even shape - change new_shape to odd')
+        new_centre = (y_centre, x_centre)
 
-    y_pad = int((new_shape[0] - array_2d.shape[0]) / 2)
-    x_pad = int((new_shape[1] - array_2d.shape[1]) / 2)
+    resized_array = np.zeros(shape=new_shape)
 
-    return np.pad(array=array_2d, pad_width=(y_pad, x_pad), mode='constant')
+    if y_is_even:
+        ymin = new_centre[0] - int(new_shape[0]/2)
+        ymax = new_centre[0] + int((new_shape[0]/2)) + 1
+    elif not y_is_even:
+        ymin = new_centre[0] - int(new_shape[0]/2)
+        ymax = new_centre[0] + int((new_shape[0]/2)) + 1
 
+    if x_is_even:
+        xmin = new_centre[1] - int(new_shape[1] / 2)
+        xmax = new_centre[1] + int((new_shape[1] / 2)) + 1
+    elif not x_is_even:
+        xmin = new_centre[1] - int(new_shape[1] / 2)
+        xmax = new_centre[1] + int((new_shape[1] / 2)) + 1
 
-def trim_array_2d_around_centre(array_2d, new_shape):
-    """
-    Trim the data_vector array to a new sub_grid_size around its central pixel.
+    for y_resized, y in enumerate(range(ymin, ymax)):
+        for x_resized, x in enumerate(range(xmin, xmax)):
+            if y >= 0 and y < array_2d.shape[0] and x >= 0 and x < array_2d.shape[1]:
+                resized_array[y_resized, x_resized] = array_2d[y,x]
+            else:
+                resized_array[y_resized, x_resized] = 0
 
-    NOTE: The centre of the array cannot be shifted. Therefore, even arrays must be trimmed to even arrays \
-    (e.g. 8x8 -> 4x4) and odd to odd (e.g. 5x5 -> 3x3).
-
-    Parameters
-    ----------
-    array_2d
-    new_shape : (int, int)
-        The (x,y) new pixel dimension of the trimmed data_vector-array.
-    """
-
-    if new_shape[0] > array_2d.shape[0]:
-        raise ValueError(
-            'grids.Grid2d.trim_data - You have specified a new x_size bigger than the data_vector array')
-    elif new_shape[1] > array_2d.shape[1]:
-        raise ValueError(
-            'grids.Grid2d.trim_data - You have specified a new y_size bigger than the data_vector array')
-
-    if array_2d.shape[0] % 2 == 0 and not new_shape[0] % 2 == 0:
-        raise ValueError('You cannot trim an array from even shape to odd shape - change new_shape to even')
-
-    if array_2d.shape[1] % 2 == 0 and not new_shape[1] % 2 == 0:
-        raise ValueError('You cannot trim an array from even shape to odd shape - change new_shape to even')
-
-    if not array_2d.shape[0] % 2 == 0 and new_shape[0] % 2 == 0:
-        raise ValueError('You cannot trim an array from odd shape to even shape - change new_shape to odd')
-
-    if not array_2d.shape[1] % 2 == 0 and new_shape[1] % 2 == 0:
-        raise ValueError('You cannot trim an array from odd shape to even shape - change new_shape to odd')
-
-    y_trim = int((array_2d.shape[0] - new_shape[0]) / 2)
-    x_trim = int((array_2d.shape[1] - new_shape[1]) / 2)
-
-    array = array_2d[y_trim:array_2d.shape[0] - y_trim, x_trim:array_2d.shape[1] - x_trim]
-
-    return array
-
-
-def trim_array_2d_around_region(array_2d, y0, y1, x0, x1):
-    """
-    Trim the data_vector array to a new sub_grid_size around its central pixel.
-
-    NOTE: The centre of the array cannot be shifted. Therefore, even arrays must be trimmed to even arrays \
-    (e.g. 8x8 -> 4x4) and odd to odd (e.g. 5x5 -> 3x3).
-
-    Parameters
-    ----------
-    array_2d
-    new_shape : (int, int)
-        The (x,y) new pixel dimension of the trimmed data_vector-array.
-    """
-
-    if y1 > array_2d.shape[1]:
-        raise ValueError(
-            'grids.Grid2d.trim_data - You have specified a new y_size bigger than the data_vector array')
-    elif x1 > array_2d.shape[0]:
-        raise ValueError(
-            'grids.Grid2d.trim_data - You have specified a new x_size bigger than the data_vector array')
-
-    return array_2d[y0:y1, x0:x1]
-
+    return resized_array
 
 def numpy_array_to_fits(array, path, overwrite=False):
 

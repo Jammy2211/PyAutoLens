@@ -2,6 +2,7 @@ import logging
 
 import numpy as np
 
+from autolens import exc
 from autolens.imaging import imaging_util
 
 logging.basicConfig()
@@ -19,6 +20,10 @@ class ArrayGeometry(object):
     @property
     def central_pixel_coordinates(self):
         return float(self.shape[0] - 1) / 2, float(self.shape[1] - 1) / 2
+
+    def arc_second_coordinates_to_pixel_coordinates(self, arc_second_coordinates):
+        return (int((-arc_second_coordinates[0] / self.pixel_scales[0]) + self.central_pixel_coordinates[0] + 0.5),
+                int((arc_second_coordinates[1] / self.pixel_scales[1]) + self.central_pixel_coordinates[1] + 0.5))
 
     def grid_arc_seconds_to_grid_pixels(self, grid_arc_seconds):
         """Convert a grid of (y,x) arc second coordinates to a grid of (y,x) pixel values. Pixel coordinates are
@@ -135,40 +140,6 @@ class Array(np.ndarray):
             setattr(self, key, value)
         super(Array, self).__setstate__(state[0:-1])
 
-    def resize_around_centre(self, new_shape):
-
-        if new_shape[0] < self.shape[0] and new_shape[1] < self.shape[1]:
-            return self.trim_around_centre(new_shape=new_shape)
-        elif new_shape[0] > self.shape[0] and new_shape[1] > self.shape[1]:
-            return self.pad_around_centre(new_shape=new_shape)
-        else:
-            raise ValueError('resize_around_centre - one dimensions of the new_shape pads the image, whereas the other'
-                             'trims it - make the trimmed dimension larger.')
-
-    def pad_around_centre(self, new_shape):
-        """Pad the array to a new shape.
-
-        Parameters
-        -----------
-        new_shape : (int, int)
-            The new two-dimensional shape of the array.
-        """
-        return self.new_with_array(imaging_util.pad_array_2d_around_centre(self, new_shape))
-
-    def trim_around_centre(self, new_shape):
-        """Trim the array to a new shape.
-
-        Parameters
-        -----------
-        new_shape : (int, int)
-            The new two-dimensional shape of the array.
-        """
-        return self.new_with_array(imaging_util.trim_array_2d_around_centre(self, new_shape))
-
-    def trim_around_region(self, x0, x1, y0, y1):
-        """Trim the array to a new shape.
-        """
-        return self.new_with_array(imaging_util.trim_array_2d_around_region(self, x0, x1, y0, y1))
 
     def new_with_array(self, array):
         """
@@ -301,6 +272,28 @@ class ScaledSquarePixelArray(ScaledArray):
             return super_result.all()
         except AttributeError:
             return super_result
+
+    def resized_scaled_array_from_array(self, new_shape, new_centre_pixels=None, new_centre_arc_seconds=None):
+        """resized the array to a new shape and at a new centre.
+
+        Parameters
+        -----------
+        new_shape : (int, int)
+            The new two-dimensional shape of the array.
+        """
+        if new_centre_pixels is None and new_centre_arc_seconds is None:
+            new_centre = (-1, -1)  # In Numba, the input centre must be the same data type as the centre, thus we cannot
+            # pass 'None' and instead use the tuple (-1, -1).
+        elif new_centre_pixels is not None and new_centre_arc_seconds is None:
+            new_centre = new_centre_pixels
+        elif new_centre_pixels is None and new_centre_arc_seconds is not None:
+            new_centre = self.arc_second_coordinates_to_pixel_coordinates(arc_second_coordinates=new_centre_arc_seconds)
+        else:
+            raise exc.ImagingException('You have supplied two centres (pixels and arc-seconds) to the resize scaled'
+                                       'array function')
+
+        return self.new_with_array(imaging_util.resize_array_2d(array_2d=self, new_shape=new_shape,
+                                                                new_centre=new_centre))
 
 
 class ScaledRectangularPixelArray(ScaledArray):

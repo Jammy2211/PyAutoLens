@@ -44,7 +44,7 @@ print(tracer.image_plane_image_for_simulation.shape)
 # 2) The Background Sky: Although the image that is returned is automatically background sky subtracted.
 # 3) Poisson noise: Due to the background sky, lens model_galaxy and source model_galaxy Poisson photon counts.
 
-image_simulated = im.PreparatoryImage.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=0.1,
+image_simulated = im.Image.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=0.1,
                                                exposure_time=300.0, psf=psf, background_sky_level=0.1, add_noise=True)
 
 # Lets plot the image - we can see the image has been blurred due to the telescope optics and noise has been added.
@@ -54,7 +54,7 @@ imaging_plotters.plot_image_subplot(image=image_simulated)
 # Unfortunately, in a Jupyter notebook you have to manually specify the path to PyAutoLens and this tutorial.
 path = '/home/jammy/PyCharm/Projects/AutoLens/workspace/howtolens/chapter_1_introduction'
 im.output_imaging_to_fits(image=image_simulated, image_path=path+'/data/image.fits',
-                                                 noise_map_path=path+'/data/noise_map_.fits',
+                                                 noise_map_path=path+'/data/noise_map.fits',
                                                  psf_path=path+'/data/psf.fits',
                           overwrite=True)
 

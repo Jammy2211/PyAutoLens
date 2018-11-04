@@ -10,7 +10,7 @@ def plot_image_subplot(image, mask=None, positions=None,
                        cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
                        cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
                        titlesize=10, xlabelsize=10, ylabelsize=10, xyticksize=10,
-                       mask_pointsize=10, position_pointsize=10.0, grid_pointsize=1,
+                       mask_pointsize=10, position_pointsize=30, grid_pointsize=1,
                        output_path=None, output_filename='image', output_format='show', ignore_config=True):
     """Plot the observed datas_ of an analysis, using the *Image* class object.
 
@@ -49,6 +49,7 @@ def plot_image_subplot(image, mask=None, positions=None,
                    cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
                    cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
                    titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize, xyticksize=xyticksize,
+                   mask_pointsize=mask_pointsize, position_pointsize=position_pointsize, grid_pointsize=grid_pointsize,
                    output_path=output_path, output_format=output_format)
 
         plt.subplot(rows, columns, 2)
@@ -59,6 +60,7 @@ def plot_image_subplot(image, mask=None, positions=None,
                        linscale=linscale,
                        cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
                        titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize, xyticksize=xyticksize,
+                       mask_pointsize=mask_pointsize,
                        output_path=output_path, output_format=output_format)
 
         plt.subplot(rows, columns, 3)
@@ -79,6 +81,7 @@ def plot_image_subplot(image, mask=None, positions=None,
                                  cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
                                  titlesize=titlesize, xlabelsize=xlabelsize,
                                  ylabelsize=ylabelsize, xyticksize=xyticksize,
+                                 mask_pointsize=mask_pointsize,
                                  output_path=output_path, output_format=output_format)
 
         tools.output_subplot_array(output_path=output_path, output_filename=output_filename,
@@ -133,7 +136,7 @@ def plot_image(image, mask=None, positions=None, grid=None, as_subplot=False,
                cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
                cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
                title='Observed Image', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
-               mask_pointsize=10, position_pointsize=10.0, grid_pointsize=1,
+               mask_pointsize=10, position_pointsize=30, grid_pointsize=1,
                output_path=None, output_format='show', output_filename='observed_image'):
 
     tools_array.plot_array(array=image, mask=mask, positions=positions, grid=grid, as_subplot=as_subplot,
