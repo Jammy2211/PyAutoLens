@@ -45,7 +45,7 @@ class LensingImage(fitting_data.FittingImage):
             mapping_matrix_psf_shape = self.image.psf.shape
 
         self.convolver_mapping_matrix = inversion_convolution.ConvolverMappingMatrix(self.mask,
-                                        self.image.psf.trim_around_centre(mapping_matrix_psf_shape))
+                                                                                     self.image.psf.resized_scaled_array_from_array(mapping_matrix_psf_shape))
 
         self.positions = positions
 
@@ -54,6 +54,11 @@ class LensingImage(fitting_data.FittingImage):
         if isinstance(obj, LensingImage):
             self.image = obj.image
             self.mask = obj.mask
+            self.noise_map_ = obj.noise_map_
+            self.background_noise_map_ = obj.background_noise_map_
+            self.poisson_noise_map_ = obj.poisson_noise_map_
+            self.exposure_time_map_ = obj.exposure_time_map_
+            self.background_sky_map_ = obj.background_sky_map_
             self.blurring_mask = obj.blurring_mask
             self.convolver_image = obj.convolver_image
             self.convolver_mapping_matrix = obj.convolver_mapping_matrix
@@ -106,7 +111,7 @@ class LensingHyperImage(fitting_data.FittingHyperImage):
             mapping_matrix_psf_shape = self.image.psf.shape
 
         self.convolver_mapping_matrix = inversion_convolution.ConvolverMappingMatrix(self.mask,
-                                        self.image.psf.trim_around_centre(mapping_matrix_psf_shape))
+                                                                                     self.image.psf.resized_scaled_array_from_array(mapping_matrix_psf_shape))
 
         self.positions = positions
 

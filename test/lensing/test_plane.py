@@ -1238,7 +1238,7 @@ class TestPlane(object):
             assert (plane.deflections_x ==
                     imaging_grids.image.scaled_array_from_array_1d(plane.deflections_[:, 1])).all()
 
-    class TestPixeizationMapper:
+    class TestMapper:
 
         def test__no_galaxies_with_pixelizations_in_plane__returns_none(self, imaging_grids):
             galaxy_no_pix = g.Galaxy()
@@ -1259,6 +1259,15 @@ class TestPlane(object):
             galaxy_no_pix = g.Galaxy()
 
             plane = pl.Plane(galaxies=[galaxy_no_pix, galaxy_pix], grids=[imaging_grids], borders=[MockBorders()])
+
+            assert plane.mapper == 1
+
+        def test__plane_has_no_border__still_returns_mapper(self, imaging_grids):
+
+            galaxy_pix = g.Galaxy(pixelization=MockPixelization(value=1), regularization=MockRegularization(value=0))
+            galaxy_no_pix = g.Galaxy()
+
+            plane = pl.Plane(galaxies=[galaxy_no_pix, galaxy_pix], grids=[imaging_grids])
 
             assert plane.mapper == 1
 
