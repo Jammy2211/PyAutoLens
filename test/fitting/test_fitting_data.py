@@ -13,7 +13,7 @@ def make_image():
     psf = im.PSF(array=np.ones((3, 3)), pixel_scale=3.0, renormalize=False)
     return im.Image(np.ones((4, 4)), pixel_scale=3., psf=psf, noise_map=np.ones((4, 4)),
                     background_noise_map=2.0*np.ones((4,4)), poisson_noise_map=3.0*np.ones((4,4)),
-                    effective_exposure_map=None, background_sky_map=5.0*np.ones((4,4)))
+                    exposure_time_map=None, background_sky_map=5.0 * np.ones((4, 4)))
 
 @pytest.fixture(name="mask")
 def make_mask():
@@ -33,7 +33,7 @@ class TestFittingImage(object):
         assert (image.psf == fitting_image.psf).all()
         assert (image.background_noise_map == fitting_image.background_noise_map).all()
         assert (image.poisson_noise_map == fitting_image.poisson_noise_map).all()
-        assert image.effective_exposure_map == fitting_image.effective_exposure_map
+        assert image.exposure_time_map == fitting_image.exposure_time_map
         assert (image.background_sky_map == fitting_image.background_sky_map).all()
 
     def test__image_and_image_mapper(self, fitting_image):
@@ -41,14 +41,14 @@ class TestFittingImage(object):
         assert (fitting_image.noise_map == np.ones((4, 4))).all()
         assert (fitting_image.background_noise_map == 2.0*np.ones((4,4))).all()
         assert (fitting_image.poisson_noise_map == 3.0*np.ones((4,4))).all()
-        assert fitting_image.effective_exposure_map == None
+        assert fitting_image.exposure_time_map == None
         assert (fitting_image.background_sky_map == 5.0*np.ones((4,4))).all()
 
     def test_masking(self, fitting_image):
         assert (fitting_image.noise_map_ == np.ones(4)).all()
         assert (fitting_image.background_noise_map_ == 2.0*np.ones(4)).all()
         assert (fitting_image.poisson_noise_map_ == 3.0*np.ones(4)).all()
-        assert fitting_image.effective_exposure_map_ == None
+        assert fitting_image.exposure_time_map_ == None
         assert (fitting_image.background_sky_map_ == 5.0*np.ones(4)).all()
 
     def test_grids(self, fitting_image):

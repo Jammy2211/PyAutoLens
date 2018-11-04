@@ -44,7 +44,7 @@ def test_image():
     noise_map = im.NoiseMap(array=2.0*np.ones((3,3)), pixel_scale=1.0)
     psf = im.PSF(array=3.0*np.ones((1,1)), pixel_scale=1.0)
 
-    return im.Image(array=image, pixel_scale=1.0, noise_map=noise_map, psf=psf, effective_exposure_map=2.0*np.ones((3,3)),
+    return im.Image(array=image, pixel_scale=1.0, noise_map=noise_map, psf=psf, exposure_time_map=2.0 * np.ones((3, 3)),
                     background_sky_map=3.0*np.ones((3,3)))
 
 @pytest.fixture(name='positions')
