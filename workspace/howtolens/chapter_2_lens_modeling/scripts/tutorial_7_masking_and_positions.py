@@ -9,10 +9,10 @@ from autolens.galaxy import galaxy as g
 from autolens.pipeline import phase as ph
 from autolens.plotting import imaging_plotters
 
-# Now that we've learnt all the tools that we need to model strongs, I'm going to quickly cover how you should choose
-# your mask and show you a neat trick to improve the speed and accuracy of your non-linear search. I'll show you how to
-# set up phases using these tools, but we'll omit actually running the phases this time - you've spent long enough
-# waiting for non-linear searches to run (of course, you can run them yourself if you're really keen)!
+# Now that we've learnt all the tools that we need to model strong lenses, I'm going to quickly cover how you should
+# choose your mask and show you a neat trick to improve the speed and accuracy of your non-linear search. We'll skip
+# running non-linear searches this tutorial - you've spent long enough waiting for non-linear searches to run
+# (of course, you can run them yourself if you're really keen)!
 
 # Lets simulate the simple image we've used throughout this chapter again.
 def simulate():
@@ -38,10 +38,10 @@ def simulate():
 image = simulate()
 imaging_plotters.plot_image_subplot(image=image)
 
-# When it comes to determining an appropriate mask for this image, the best way approach is to set up a mask using the
-# mask module and pass it to an imaging plotter. You can then check visually if the mask is an appropriate size or not.
-# Below, we clearly choose an inner radius that cuts into our lensed source galaxy.
-mask = msk.Mask.annular(shape=image.shape, pixel_scale=image.pixel_scale, inner_radius_arcsec=1.0,
+# When it comes to determining an appropriate mask for this image, the best approach is to set up a mask using the mask
+# module and pass it to an imaging plotter. You can then check visually if the mask is an appropriate size or not.
+# Below, we choose an inner radius that cuts into our lensed source galaxy - clearly this isn't a good mask.
+mask = msk.Mask.annular(shape=image.shape, pixel_scale=image.pixel_scale, inner_radius_arcsec=1.4,
                         outer_radius_arcsec=2.4)
 imaging_plotters.plot_image_subplot(image=image, mask=mask)
 
@@ -69,7 +69,7 @@ phase_with_custom_mask = ph.LensSourcePlanePhase(lens_galaxies=dict(lens_galaxy=
 # bigger masks would *always* be better, for two reasons:
 
 # 1) The lensed source galaxy may have very faint emission that when you look at the plot above you don't notice.
-#    Overly aggressive masking risks you masking out some of that light - information which would better constrain your
+#    Overly aggressive masking risks you masking out some of that light - data which would better constrain your
 #    lens model!
 
 # 2) When you fit a an image with a model image, the fit is performed only within the masked region. Outside of the
@@ -79,8 +79,8 @@ phase_with_custom_mask = ph.LensSourcePlanePhase(lens_galaxies=dict(lens_galaxy=
 
 # As you use PyAutoLens more, you will get a feel for how fast an analysis will run given a certain image resolution,
 # lets model complexity, non-linear search priors / settings, etc. As you develop this intuition, I would recommend you
-# always aim to make masks as big as possible, within the context of what feels to you like a reasonable run-speed.
-# Aggresive masking will get your code running fast - but it could lead you to infer an incorrect lens model!
+# always aim to use masks as big as possible, but still gives what you feel is a reasonable run-speed. Aggresive masking
+# will get your code running fast - but it could lead you to infer an incorrect lens model!
 
 # If you are fitting the foreground lens galaxy's light, you pretty much have no choice but to use a large circular
 # mask that will probably encompass the entire source-galaxy anyway.
