@@ -582,9 +582,11 @@ def resize_array_2d(array_2d, new_shape, new_centre=(-1, -1)):
     for y_resized, y in enumerate(range(ymin, ymax)):
         for x_resized, x in enumerate(range(xmin, xmax)):
             if y >= 0 and y < array_2d.shape[0] and x >= 0 and x < array_2d.shape[1]:
-                resized_array[y_resized, x_resized] = array_2d[y,x]
+                if y_resized >= 0 and y_resized < new_shape[0] and x_resized >= 0 and x_resized < new_shape[1]:
+                    resized_array[y_resized, x_resized] = array_2d[y,x]
             else:
-                resized_array[y_resized, x_resized] = 0
+                if y_resized >=0 and y_resized < new_shape[0] and x_resized >= 0 and x_resized < new_shape[1]:
+                    resized_array[y_resized, x_resized] = 0
 
     return resized_array
 
