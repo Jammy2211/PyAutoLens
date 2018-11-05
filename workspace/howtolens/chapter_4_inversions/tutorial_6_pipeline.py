@@ -80,7 +80,8 @@ def make_pipeline():
 
             # We know the regularization coefficient is going to be around 1.0 from the last tutorial, but lets use a
             # large prior range just to make sure we cover solutions for any image.
-            self.source_galaxies.source.regularization.coefficients_0 = mm.UniformPrior(lower_limit=0.0, upper_limit=100.0)
+            self.source_galaxies.source.regularization.coefficients_0 = mm.UniformPrior(lower_limit=0.0,
+                                                                                        upper_limit=100.0)
 
     phase2 = InversionPhase(lens_galaxies=dict(lens=gm.GalaxyModel(mass=mp.EllipticalIsothermal)),
                            source_galaxies=dict(source=gm.GalaxyModel(pixelization=pix.Rectangular,
