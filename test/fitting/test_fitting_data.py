@@ -87,12 +87,6 @@ class TestFittingImage(object):
         assert (fitting_image.borders.image == np.array([0, 1, 2, 3])).all()
         assert (fitting_image.borders.sub == np.array([0, 5, 10, 15])).all()
 
-    def test_blurring_mask(self, fitting_image):
-        assert (fitting_image.blurring_mask == np.array([[False, False, False, False],
-                                                         [False, True, True, False],
-                                                         [False, True, True, False],
-                                                         [False, False, False, False]])).all()
-
     def test_convolver(self, fitting_image):
         assert type(fitting_image.convolver_image) == convolution.ConvolverImage
 
