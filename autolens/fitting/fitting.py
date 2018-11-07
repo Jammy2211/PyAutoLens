@@ -11,8 +11,8 @@ class AbstractFit(object):
     def __init__(self, fitting_datas, model_datas_):
         """Abstract base class of a fit to a dataset.
 
-        All fitting quantities (datas, model_datas, residuals, etc.) are stored a lists, where the different entries of
-        the list correspond to different data-sets. To signify this, all quantities are pluralized. However, if a non-
+        All fitting quantities (datas, model_datas, residuals, etc.) are stored as lists, where the different entries
+        of the list correspond to different data-sets. To signify this, all quantities are pluralized. However, if a non-
         plural term is used (e.g. residual) the residuals of the first image are returned. This makes the interface
         for fitting single data-sets (the most common use-case) more intuitive.
 
@@ -200,7 +200,7 @@ class AbstractHyperFit(object):
         fitting_hyper_images : [fitting_data.FittingHyperImage]
             The fitting images that are fitted, which include the hyper-images used for scaling the noise-map.
         hyper_galaxies : [galaxy.Galaxy]
-            The hyper-galaxies which represent the model components used to scale the noise, which correspnd to
+            The hyper-galaxies which represent the model components used to scale the noise, which correspond to
             individual galaxies in the image.
 
         Attributes
@@ -434,113 +434,163 @@ class AbstractProfileInversionFit(AbstractImageFit):
 
 
 def map_arrays_to_scaled_arrays(arrays_, map_to_scaled_arrays):
+    """Map a list of masked 1D arrays (followed by an underscore _) to their masked 2D image, using their
+    *map_to_scaled_array* functions.
+
+    Parameters
+    -----------
+    arrays_ : [ndarray]
+        List of the arrays (e.g. datas_, model_images_, residuals_) which are mapped to 2D.
+    map_to_scaled_arrays : [func]
+        A list of functions which map each image from 1D to 2D, using their mask.
+    """
     return list(map(lambda _array, map_to_scaled_array, : map_to_scaled_array(_array), arrays_, map_to_scaled_arrays))
 
 def map_contributions_to_scaled_arrays(contributions_, map_to_scaled_array):
+    """Map a list of masked 1D contribution maps to their masked 2D images, using each images *map_to_scaled_array*
+    function.
+
+    The reason this is separate from the *map_arrays_to_scaled_arrays* function is that each image has a list of
+    contribution maps (one for each galaxy). Thus, this function breaks down the mapping of each map and returns the
+    2D images in the same data structure (2 lists with indexes [image_index][contribution_map_index].
+
+    Parameters
+    -----------
+    contributions_ : [[ndarray]]
+        Lists of the contribution maps which are mapped to 2D.
+    map_to_scaled_arrays : [func]
+        A list of functions which map each image from 1D to 2D, using their mask.
+    """
     return list(map(lambda _contribution : map_to_scaled_array(_contribution), contributions_))
 
 def blur_images_including_blurring_regions(images_, blurring_images_, convolvers):
-    """For a given lensing_image and blurring region, convert them to 2D and blur with the PSF, then return as
-    the 1D DataGrid.
+    """For a list of 1D masked images and 1D blurrings images (the image regions outside the mask whose light blurs
+    into the mask after PSF convolution), use both to computed the blurred image within the mask via PSF convolution.
+
+     The convolution uses each image's convolver (*See imaging.convolution*).
 
     Parameters
     ----------
-    image : ndarray
-        The lensing_image data_vector using the GridData 1D representation.
-    blurring_image : ndarray
-        The blurring region data_vector, using the GridData 1D representation.
-    convolver : auto_lens.inversion.frame_convolution.KernelConvolver
-        The 2D Point Spread Function (PSF).
+    image_ : [ndarray]
+        List of the 1D masked images which are blurred.
+    blurring_image : [ndarray]
+        List of the 1D masked blurring images which are blurred.
+    convolver : [imaging.convolution.Convolver]
+        List of the convolvers which perform the convolution and have built into the the PSF kernel.
     """
     return list(map(lambda image_, blurring_image_, convolver :
                     convolver.convolve_image(image_array=image_, blurring_array=blurring_image_),
                     images_, blurring_images_, convolvers))
 
 def residuals_from_datas_and_model_datas(datas_, model_datas_):
-    """Compute the residuals between an observed charge injection lensing_image and post-cti model_datas_ lensing_image.
+    """Compute the residuals between a list of 1D masked observed datas and model datas, where:
 
-    Residuals = (Data - Model).
+    Residuals = (Data - Model_Data).
+
+    For strong lens imaging, this subtracts the model lens image from the observed image within the mask.
 
     Parameters
     -----------
     datas_ : [np.ndarray]
-        The observed charge injection lensing_image datas.
+        List of the 1D masked observed data-sets.
     model_datas_ : [np.ndarray]
-        The model_datas_ lensing_image.
+        List of the 1D masked model data-sets.
     """
     return list(map(lambda data_, model_data_ : np.subtract(data_, model_data_), datas_, model_datas_))
 
 def chi_squareds_from_residuals_and_noise_maps(residuals_, noise_maps_):
-    """Computes a chi-squared lensing_image, by calculating the squared residuals between an observed charge injection \
-    image and post-cti hyper_model_image lensing_image and dividing by the variance (noises**2.0) in each pixel.
+    """Computes the chi-squared images between a list of 1D masked residuals and noise-maps, where:
 
-    Chi_Sq = ((Residuals) / (Noise)) ** 2.0 = ((Data - Model)**2.0)/(Variances)
-
-    This gives the residuals, which are divided by the variance of each pixel and squared to give their chi sq.
+    Chi_Squared = ((Residuals) / (Noise)) ** 2.0 = ((Data - Model)**2.0)/(Variances)
 
     Parameters
     -----------
     residuals_ : [np.ndarray]
-        The residuals of the model fit_normal to the data_
+        List of the 1D masked residuals of the model-datas fit to the observed data.
     noise_maps_ : [np.ndarray]
-        The noises in the lensing_image.
+        List of the 1D masked noise-maps of the observed datas.
     """
     return list(map(lambda residual_, noise_map_ : np.square((np.divide(residual_, noise_map_))),
                     residuals_, noise_maps_))
 
 def chi_squared_terms_from_chi_squareds(chi_squareds_):
-    """Compute the chi-squared of a model lensing_image's fit_normal to the data_vector, by taking the difference between the
-    observed lensing_image and model ray-tracing lensing_image, dividing by the noise_map_ in each pixel and squaring:
-
-    [Chi_Squared] = sum(([Data - Model] / [Noise]) ** 2.0)
+    """Compute the chi-squared terms of each model's data-set's fit to an observed data-set, by summing the 1D masked
+    chi-squared values of the fit.
 
     Parameters
     ----------
-    chi_squareds_
+    chi_squareds_ : [np.ndarray]
+        List of the 1D masked chi-squareds values of the model-datas fit to the observed data.
     """
     return list(map(lambda chi_squared_ : np.sum(chi_squared_), chi_squareds_))
 
 def noise_terms_from_noise_maps(noise_maps_):
-    """Compute the noise_map_ normalization term of an lensing_image, which is computed by summing the noise_map_ in every pixel:
+    """Compute the noise-map normalization terms of a list of masked 1D noise-maps, summing the noise vale in every
+    pixel as:
 
     [Noise_Term] = sum(log(2*pi*[Noise]**2.0))
 
     Parameters
     ----------
     noise_maps_ : [np.ndarray]
-        The noise_map_ in each pixel.
+        List of masked 1D noise-maps.
     """
     return list(map(lambda noise_map_ : np.sum(np.log(2 * np.pi * noise_map_ ** 2.0)), noise_maps_))
 
 def likelihoods_from_chi_squareds_and_noise_terms(chi_squared_terms, noise_terms):
-    """Compute the likelihood of a model lensing_image's fit_normal to the data_vector, by taking the difference between the
-    observed lensing_image and model ray-tracing lensing_image. The likelihood consists of two terms:
+    """Compute the likelihood of each masked 1D model-datas fit to the data, where:
 
-    Chi-squared term - The residuals (model - data_vector) of every pixel divided by the noise_map_ in each pixel, all
-    squared.
-    [Chi_Squared_Term] = sum(([Residuals] / [Noise]) ** 2.0)
-
-    The overall normalization of the noise_map_ is also included, by summing the log noise_map_ value in each pixel:
-    [Noise_Term] = sum(log(2*pi*[Noise]**2.0))
-
-    These are summed and multiplied by -0.5 to give the likelihood:
-
-    Likelihood = -0.5*[Chi_Squared_Term + Noise_Term]
+    Likelihood = -0.5*[Chi_Squared_Term + Noise_Term] (see functions above for these definitions)
 
     Parameters
     ----------
+    chi_squared_terms : [float]
+        List of the chi-squared terms for each model-datas fit to the observed data.
+    noise_terms : [float]
+        List of the normalization noise-terms for each observed data's noise-map.
     """
     return list(map(lambda chi_squared_term, noise_term : -0.5 * (chi_squared_term + noise_term),
                     chi_squared_terms, noise_terms))
 
 def likelihoods_with_regularization_from_chi_squared_regularization_and_noise_terms(chi_squared_terms,
                                                                                     regularization_terms, noise_terms):
+    """Compute the likelihood of each masked 1D model-datas fit to the data, including the regularization term which
+    comes from an inversion:
+
+    Likelihood = -0.5*[Chi_Squared_Term + Regularization_Term + Noise_Term] (see functions above for these definitions)
+
+    Parameters
+    ----------
+    chi_squared_terms : [float]
+        List of the chi-squared terms for each model-datas fit to the observed data.
+    regularization_terms : [float]
+        List of the regularization terms of the inversion, which is the sum of the difference between reconstructed \
+        flux of every pixel multiplied by the regularization coefficient.
+    noise_terms : [float]
+        List of the normalization noise-terms for each observed data's noise-map.
+    """
     return list(map(lambda chi_squared_term, regularization_term, noise_term :
                     -0.5 * (chi_squared_term + regularization_term + noise_term),
                     chi_squared_terms, regularization_terms, noise_terms))
 
 def evidences_from_reconstruction_terms(chi_squared_terms, regularization_terms, log_covariance_regularization_terms,
                                         log_regularization_terms, noise_terms):
+    """Compute the evidence of each masked 1D model-datas fit to the data, where an evidence includes a number of
+    terms which quantify the complexity of an inversion's reconstruction (see the *inversion* module):
+
+    Likelihood = -0.5*[Chi_Squared_Term + Regularization_Term + Log(Covariance_Regularization_Term) -
+                       Log(Regularization_Matrix_Term) + Noise_Term]
+
+    Parameters
+    ----------
+    chi_squared_terms : [float]
+        List of the chi-squared terms for each model-datas fit to the observed data.
+    regularization_terms : [float]
+        List of the regularization terms of the inversion, which is the sum of the difference between reconstructed \
+        flux of every pixel multiplied by the regularization coefficient.
+    noise_terms : [float]
+        List of the normalization noise-terms for each observed data's noise-map.
+    """
     return list(map(lambda chi_squared_term, regularization_term, log_covariance_regularization_term,
                            log_regularization_term, noise_term :
                     -0.5 * (chi_squared_term + regularization_term + log_covariance_regularization_term -
@@ -548,21 +598,55 @@ def evidences_from_reconstruction_terms(chi_squared_terms, regularization_terms,
                     chi_squared_terms, regularization_terms, log_covariance_regularization_terms,
                     log_regularization_terms, noise_terms))
 
-def unmasked_model_images_from_fitting_images(fitting_images, unmasked_images_):
+def unmasked_blurred_images_from_fitting_images(fitting_images, unmasked_images_):
+    """For a list of fitting images, compute an unmasked blurred images from a list of unmasked unblurred images.
+    Unmasked images are used for plotting the results of a model outside a masked region.
 
+    This relies on using a fitting image's padded_grid, which is grid of coordinates which extends over the entire
+    image as opposed to just the masked region.
+
+    Parameters
+    ----------
+    fitting_images_ : [fitting.fitting_data.FittingImage]
+        List of the fitting images.
+    unmasked_images_ : [ndarray]
+        List of the 1D unmasked images which are blurred.
+    """
     return list(map(lambda fitting_image, _unmasked_image :
                     unmasked_model_image_from_fitting_image(fitting_image, _unmasked_image),
                     fitting_images, unmasked_images_))
 
 def unmasked_model_image_from_fitting_image(fitting_image, unmasked_image_):
+    """For a fitting image, compute an unmasked blurred image from an unmasked unblurred image. Unmasked
+    images are used for plotting the results of a model outside a masked region.
 
+    This relies on using a fitting image's padded_grid, which is grid of coordinates which extends over the entire
+    image as opposed to just the masked region.
+
+    Parameters
+    ----------
+    fitting_image_ : fitting.fitting_data.FittingImage
+        A fitting_image, whose padded grid is used for PSF convolution.
+    unmasked_images_ : [ndarray]
+        The 1D unmasked images which are blurred.
+    """
     _model_image = fitting_image.padded_grids.image.convolve_array_1d_with_psf(unmasked_image_,
                                                                                fitting_image.psf)
 
     return fitting_image.padded_grids.image.scaled_array_from_array_1d(_model_image)
 
 def contributions_from_fitting_hyper_images_and_hyper_galaxies(fitting_hyper_images, hyper_galaxies):
+    """For a list of fitting hyper-images (which includes the hyper model image and hyper galaxy images) and model
+    hyper-galaxies, compute their contribution maps, which are used to compute a scaled-noise map.
 
+    Parameters
+    ----------
+    fitting_hyper_images : [fitting.fitting_data.FittingHyperImage]
+        List of the fitting hyper-images.
+    hyper_galaxies : [galaxy.Galaxy]
+        The hyper-galaxies which represent the model components used to scale the noise, which correspond to
+        individual galaxies in the image.
+    """
     return list(map(lambda hyp :
                     contributions_from_hyper_images_and_galaxies(hyper_model_image=hyp.hyper_model_image,
                                                                  hyper_galaxy_images=hyp.hyper_galaxy_images,
@@ -571,18 +655,25 @@ def contributions_from_fitting_hyper_images_and_hyper_galaxies(fitting_hyper_ima
                 fitting_hyper_images))
 
 def contributions_from_hyper_images_and_galaxies(hyper_model_image, hyper_galaxy_images, hyper_galaxies, minimum_values):
-    """Use the model lensing_image and galaxy lensing_image (computed in the previous phase of the pipeline) to determine the
-    contributions of each hyper galaxy.
+    """For a fitting hyper-image, hyper model image, list of hyper galaxy images and model hyper-galaxies, compute
+    their contribution maps, which are used to compute a scaled-noise map. All quantities are masked 1D arrays.
+
+    The reason this is separate from the *contributions_from_fitting_hyper_images_and_hyper_galaxies* function is that
+    each hyper image has a list of hyper galaxy images and associated hyper galaxies (one for each galaxy). Thus,
+    this function breaks down the calculation of each 1D masked contribution map and returns them in the same data
+    structure (2 lists with indexes [image_index][contribution_map_index].
 
     Parameters
-    -----------
-    minimum_values
+    ----------
     hyper_model_image : ndarray
-        The best-fit_normal model lensing_image to the data_vector, from a previous phase of the pipeline
+        The best-fit model image to the data (e.g. from a previous analysis phase).
     hyper_galaxy_images : [ndarray]
-        The best-fit_normal model lensing_image of each hyper-galaxy, which can tell us how much flux each pixel contributes to.
-    hyper_galaxies : [galaxy.HyperGalaxy]
-        Each hyper-galaxy which is used to determine its contributions.
+        The best-fit model image of each hyper-galaxy to the data (e.g. from a previous analysis phase).
+    hyper_galaxies : [galaxy.Galaxy]
+        The hyper-galaxies which represent the model components used to scale the noise, which correspond to
+        individual galaxies in the image.
+    minimum_values : [float]
+        The minimum value of each hyper-images contribution map, which ensure zero's don't impact the scaled noise-map.
     """
     # noinspection PyArgumentList
     return list(map(lambda hyper, galaxy_image, minimum_value:
@@ -591,6 +682,22 @@ def contributions_from_hyper_images_and_galaxies(hyper_model_image, hyper_galaxy
 
 def scaled_noises_from_fitting_hyper_images_contributions_and_hyper_galaxies(fitting_hyper_images, contributions_,
                                                                              hyper_galaxies):
+    """For a list of fitting hyper-images (which includes the hyper model image and hyper galaxy images),
+     contribution maps and model hyper-galaxies, compute their scaled noise-maps.
+
+     This is performed by using each hyper-galaxy's *noise_factor* and *noise_power* parameter in conjunction with the
+     unscaled noise-map and contribution map.
+
+    Parameters
+    ----------
+    fitting_hyper_images : [fitting.fitting_data.FittingHyperImage]
+        List of the fitting hyper-images.
+    contributions_ : [[ndarray]]
+        List of each image's list of 1D masked contribution maps (e.g. one for each hyper-galaxy)
+    hyper_galaxies : [galaxy.Galaxy]
+        The hyper-galaxies which represent the model components used to scale the noise, which correspond to
+        individual galaxies in the image.
+    """
     return list(map(lambda hyp, contribution_ :
                     scaled_noise_from_hyper_galaxies_and_contributions(contributions_=contribution_,
                                                                        hyper_galaxies=hyper_galaxies,
@@ -598,14 +705,20 @@ def scaled_noises_from_fitting_hyper_images_contributions_and_hyper_galaxies(fit
                     fitting_hyper_images, contributions_))
 
 def scaled_noise_from_hyper_galaxies_and_contributions(contributions_, hyper_galaxies, noise_map_):
-    """Use the contributions of each hyper galaxy to compute the scaled noise_map_.
+    """For a contribution map and noise-map, use the model hyper galaxies to computed a scaled noise-map.
+
     Parameters
     -----------
-    noise_map_
-    hyper_galaxies
-    contributions_ : [ndarray]
-        The contribution_ of flux of each galaxy in each pixel (computed from galaxy.HyperGalaxy)
+    contributions_ : ndarray
+        The image's list of 1D masked contribution maps (e.g. one for each hyper-galaxy)
+    hyper_galaxies : [galaxy.Galaxy]
+        The hyper-galaxies which represent the model components used to scale the noise, which correspond to
+        individual galaxies in the image.
+    noise_map : imaging.NoiseMap or ndarray
+        An array describing the RMS standard deviation error in each pixel, preferably in units of electrons per
+        second.
     """
-    scaled_noises_ = list(map(lambda hyper, contribution_: hyper.scaled_noise_from_contributions(noise_map_, contribution_),
-                             hyper_galaxies, contributions_))
+    scaled_noises_ = list(map(lambda hyper, contribution_:
+                              hyper.scaled_noise_from_contributions(noise_map_, contribution_),
+                              hyper_galaxies, contributions_))
     return noise_map_ + sum(scaled_noises_)

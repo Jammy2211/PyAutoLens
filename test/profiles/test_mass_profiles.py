@@ -1210,6 +1210,18 @@ class TestMassIntegral(object):
 
         assert dimensionless_mass_total == pytest.approx(dimensionless_mass_integral, 0.02)
 
+    def test__mass_within_circle__conversion_factor_multiplies(self):
+
+        sis = mp.SphericalIsothermal(einstein_radius=2.0)
+        integral_radius = 2.0
+        mass_integral = sis.mass_within_circle(radius=integral_radius, conversion_factor=2.0)
+        assert 2.0 * math.pi * sis.einstein_radius * integral_radius == pytest.approx(mass_integral, 1e-3)
+
+        sis = mp.SphericalIsothermal(einstein_radius=2.0)
+        integral_radius = 4.0
+        mass_integral = sis.mass_within_circle(radius=integral_radius, conversion_factor=8.0)
+        assert 8.0 * math.pi * sis.einstein_radius * integral_radius == pytest.approx(mass_integral, 1e-3)
+
     def test__within_ellipse__singular_isothermal_sphere__compare_circle_and_ellipse(self):
 
         sis = mp.SphericalIsothermal(einstein_radius=2.0)
@@ -1245,7 +1257,38 @@ class TestMassIntegral(object):
                 if eta < integral_radius:
                     dimensionless_mass_tot += sie.surface_density_func(eta) * area
 
-        intensity_integral = sie.dimensionless_mass_within_ellipse(major_axis=integral_radius)
+        dimensionless_mass_integral = sie.dimensionless_mass_within_ellipse(major_axis=integral_radius)
 
         # Large errors required due to cusp at center of SIE - can get to errors of 0.01 for a 400 x 400 grid.
-        assert dimensionless_mass_tot == pytest.approx(intensity_integral, 0.1)
+        assert dimensionless_mass_tot == pytest.approx(dimensionless_mass_integral, 0.1)
+
+    def test__mass_within_ellipse__compare_to_grid__uses_conversion_factor(self):
+
+        sie = mp.EllipticalIsothermal(einstein_radius=2.0, axis_ratio=0.5, phi=0.0)
+
+        integral_radius = 0.5
+        dimensionless_mass_tot = 0.0
+
+        xs = np.linspace(-1.0, 1.0, 40)
+        ys = np.linspace(-1.0, 1.0, 40)
+
+        edge = xs[1] - xs[0]
+        area = edge ** 2
+
+        for x in xs:
+            for y in ys:
+
+                eta = sie.grid_to_elliptical_radii(np.array([[x, y]]))
+
+                if eta < integral_radius:
+                    dimensionless_mass_tot += sie.surface_density_func(eta) * area
+
+        mass_integral = sie.mass_within_ellipse(major_axis=integral_radius, conversion_factor=2.0)
+
+        # Large errors required due to cusp at center of SIE - can get to errors of 0.01 for a 400 x 400 grid.
+        assert dimensionless_mass_tot == pytest.approx(0.5 * mass_integral, 0.1)
+
+        mass_integral = sie.mass_within_ellipse(major_axis=integral_radius, conversion_factor=8.0)
+
+        # Large errors required due to cusp at center of SIE - can get to errors of 0.01 for a 400 x 400 grid.
+        assert dimensionless_mass_tot == pytest.approx(0.125 * mass_integral, 0.1)
