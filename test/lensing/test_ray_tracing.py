@@ -797,6 +797,111 @@ class TestTracerImageSourcePlanes(object):
             assert tracer.regularizations_of_planes[0].value == 3
             assert tracer.regularizations_of_planes[1].value == 4
 
+    class TestGalaxyMasses:
+
+        def test__masses_with_circle__1_galaxy__consistent_with_galaxy_mass(self, imaging_grids):
+
+            g0 = g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=1.0), redshift=1.0)
+
+            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g.Galaxy(redshift=2.0)],
+                                                         image_plane_grids=[imaging_grids], cosmology=cosmo.Planck15)
+
+            g0_mass = g0.mass_within_circle(radius=1.0, conversion_factor=tracer.critical_density_arcsec)
+
+            assert tracer.masses_of_image_plane_galaxies_within_circles(radius=1.0)[0] == g0_mass
+
+            g0 = g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=1.0), redshift=1.0)
+
+            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g.Galaxy(redshift=2.0)],
+                                                         image_plane_grids=[imaging_grids], cosmology=cosmo.Planck15)
+
+            g0_mass = g0.mass_within_circle(radius=2.0, conversion_factor=tracer.critical_density_arcsec)
+
+            assert tracer.masses_of_image_plane_galaxies_within_circles(radius=2.0)[0] == g0_mass
+
+        def test__masses_with_circle__2_galaxies__consistent_with_galaxy_masses(self, imaging_grids):
+
+            g0 = g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=1.0), redshift=1.0)
+            g1 = g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=2.0), redshift=1.0)
+
+            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0, g1], source_galaxies=[g.Galaxy(redshift=2.0)],
+                                                         image_plane_grids=[imaging_grids], cosmology=cosmo.Planck15)
+
+            g0_mass = g0.mass_within_circle(radius=1.0, conversion_factor=tracer.critical_density_arcsec)
+            g1_mass = g1.mass_within_circle(radius=1.0, conversion_factor=tracer.critical_density_arcsec)
+
+            assert tracer.masses_of_image_plane_galaxies_within_circles(radius=1.0)[0] == g0_mass
+            assert tracer.masses_of_image_plane_galaxies_within_circles(radius=1.0)[1] == g1_mass
+
+            g0 = g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=3.0), redshift=1.5)
+            g1 = g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=4.0), redshift=1.5)
+
+            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0, g1], source_galaxies=[g.Galaxy(redshift=2.0)],
+                                                         image_plane_grids=[imaging_grids], cosmology=cosmo.Planck15)
+
+            g0_mass = g0.mass_within_circle(radius=2.0, conversion_factor=tracer.critical_density_arcsec)
+            g1_mass = g1.mass_within_circle(radius=2.0, conversion_factor=tracer.critical_density_arcsec)
+
+            assert tracer.masses_of_image_plane_galaxies_within_circles(radius=2.0)[0] == g0_mass
+            assert tracer.masses_of_image_plane_galaxies_within_circles(radius=2.0)[1] == g1_mass
+
+        def test__masses_with_ellipse__1_galaxy__consistent_with_galaxy_mass(self, imaging_grids):
+
+            g0 = g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=1.0), redshift=1.0)
+
+            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g.Galaxy(redshift=2.0)],
+                                                         image_plane_grids=[imaging_grids], cosmology=cosmo.Planck15)
+
+            g0_mass = g0.mass_within_ellipse(major_axis=1.0, conversion_factor=tracer.critical_density_arcsec)
+
+            assert tracer.masses_of_image_plane_galaxies_within_ellipses(major_axis=1.0)[0] == g0_mass
+
+            g0 = g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=1.0), redshift=1.0)
+
+            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g.Galaxy(redshift=2.0)],
+                                                         image_plane_grids=[imaging_grids], cosmology=cosmo.Planck15)
+
+            g0_mass = g0.mass_within_ellipse(major_axis=2.0, conversion_factor=tracer.critical_density_arcsec)
+
+            assert tracer.masses_of_image_plane_galaxies_within_ellipses(major_axis=2.0)[0] == g0_mass
+
+        def test__masses_with_ellipse__2_galaxies__consistent_with_galaxy_masses(self, imaging_grids):
+
+            g0 = g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=1.0), redshift=1.0)
+            g1 = g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=2.0), redshift=1.0)
+
+            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0, g1], source_galaxies=[g.Galaxy(redshift=2.0)],
+                                                         image_plane_grids=[imaging_grids], cosmology=cosmo.Planck15)
+
+            g0_mass = g0.mass_within_ellipse(major_axis=1.0, conversion_factor=tracer.critical_density_arcsec)
+            g1_mass = g1.mass_within_ellipse(major_axis=1.0, conversion_factor=tracer.critical_density_arcsec)
+
+            assert tracer.masses_of_image_plane_galaxies_within_ellipses(major_axis=1.0)[0] == g0_mass
+            assert tracer.masses_of_image_plane_galaxies_within_ellipses(major_axis=1.0)[1] == g1_mass
+
+            g0 = g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=3.0), redshift=1.5)
+            g1 = g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=4.0), redshift=1.5)
+
+            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0, g1], source_galaxies=[g.Galaxy(redshift=2.0)],
+                                                         image_plane_grids=[imaging_grids], cosmology=cosmo.Planck15)
+
+            g0_mass = g0.mass_within_ellipse(major_axis=2.0, conversion_factor=tracer.critical_density_arcsec)
+            g1_mass = g1.mass_within_ellipse(major_axis=2.0, conversion_factor=tracer.critical_density_arcsec)
+
+            assert tracer.masses_of_image_plane_galaxies_within_ellipses(major_axis=2.0)[0] == g0_mass
+            assert tracer.masses_of_image_plane_galaxies_within_ellipses(major_axis=2.0)[1] == g1_mass
+
+        def test__circle_and_ellipse__no_cosmology_returns_none(self, imaging_grids):
+
+            g0 = g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=1.0), redshift=1.0)
+
+            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g.Galaxy(redshift=2.0)],
+                                                         image_plane_grids=[imaging_grids])
+
+            assert tracer.masses_of_image_plane_galaxies_within_circles(radius=1.0) == None
+            assert tracer.masses_of_image_plane_galaxies_within_ellipses(major_axis=1.0) == None
+
+
 
 class TestMultiTracer(object):
 
