@@ -228,6 +228,56 @@ class TracerImageSourcePlanes(AbstractTracer):
     def source_plane_image(self):
         return self.plane_images_of_planes(shape=(50, 50))
 
+    def masses_of_image_plane_galaxies_within_circles(self, radius):
+        """
+        Compute the total mass of all galaxies in the image-plane within a circle of specified radius, using the plane's
+        critical surface density to convert this to physical units.
+
+        For a single galaxy, inputting the Einstein Radius should provide an accurate measurement of the Einstein mass.
+        Use of other radii may be subject to systematic offsets, because lensing does not directly measure the mass of
+        a galaxy beyond the Einstein radius.
+
+        For multiple galaxies, the Einstein mass of the entire image-plane is evenly divided across its galaxies. This
+        could be highly inaccurate and users are recommended to cross-check mass estimates using different radii.
+
+        See *galaxy.dimensionless_mass_within_circle* and *mass_profiles.dimensionless_mass_within_circle* for details
+        of how this is performed.
+
+        Parameters
+        ----------
+        radius : float
+            The radius of the circle to compute the dimensionless mass within.
+        """
+        if self.cosmology is not None:
+            return self.image_plane.masses_of_galaxies_within_circles(radius=radius,
+                                                                      conversion_factor=self.critical_density_arcsec)
+        else:
+            return None
+
+    def masses_of_image_plane_galaxies_within_ellipses(self, major_axis):
+        """
+        Compute the total mass of all galaxies in this plane within a ellipse of specified major-axis.
+
+        For a single galaxy, inputting the Einstein Radius should provide an accurate measurement of the Einstein mass.
+        Use of other radii may be subject to systematic offsets, because lensing does not directly measure the mass of
+        a galaxy beyond the Einstein radius.
+
+        For multiple galaxies, the Einstein mass of the entire image-plane is evenly divided across its galaxies. This
+        could be highly inaccurate and users are recommended to cross-check mass estimates using different radii.
+
+        See *galaxy.dimensionless_mass_within_ellipse* and *mass_profiles.dimensionless_mass_within_ellipse* for details
+        of how this is performed.
+
+        Parameters
+        ----------
+        major_axis : float
+            The major-axis of the ellipse to compute the dimensionless mass within.
+        """
+        if self.cosmology is not None:
+            return self.image_plane.masses_of_galaxies_within_ellipses(major_axis=major_axis,
+                                                                       conversion_factor=self.critical_density_arcsec)
+        else:
+            return None
 
 class AbstractTracerMulti(AbstractTracer):
 
