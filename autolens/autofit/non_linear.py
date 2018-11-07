@@ -291,10 +291,10 @@ class MultiNest(NonLinearOptimizer):
 
         class Fitness(object):
 
-            def __init__(self, instance_from_physical_vector, _constant, output_results):
+            def __init__(self, instance_from_physical_vector, constant, output_results):
                 self.result = None
                 self.instance_from_physical_vector = instance_from_physical_vector
-                self.constant = _constant
+                self.constant = constant
                 self.max_likelihood = -np.inf
                 self.output_results = output_results
                 self.accepted_samples = 0
@@ -487,6 +487,11 @@ class MultiNest(NonLinearOptimizer):
         """
         return list(map(lambda param: param[0], self.model_at_sigma_limit(sigma_limit)))
 
+    def model_errors_at_sigma_limit(self, sigma_limit):
+        uppers = self.model_at_upper_sigma_limit(sigma_limit=sigma_limit)
+        lowers = self.model_at_lower_sigma_limit(sigma_limit=sigma_limit)
+        return list(map(lambda upper, lower : upper - lower, uppers, lowers))
+
     def weighted_sample_instance_from_weighted_samples(self, index):
         """Setup a model instance of a weighted sample, including its weight and likelihood.
 
@@ -572,9 +577,6 @@ class MultiNest(NonLinearOptimizer):
 
                     lower_limit = self.model_at_lower_sigma_limit(sigma_limit=3.0)
                     upper_limit = self.model_at_upper_sigma_limit(sigma_limit=3.0)
-
-                    print(lower_limit)
-                    print(upper_limit)
 
                     results.write('\n')
                     results.write('Most probable model (3 sigma limits)' + '\n')

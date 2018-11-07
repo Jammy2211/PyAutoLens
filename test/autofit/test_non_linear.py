@@ -884,6 +884,28 @@ class TestMultiNest(object):
             assert mn.model_at_upper_sigma_limit(sigma_limit=1.0) == pytest.approx([1.07, 2.07, 3.07, 4.07], 1e-2)
             assert mn.model_at_lower_sigma_limit(sigma_limit=1.0) == pytest.approx([0.93, 1.93, 2.93, 3.93], 1e-2)
 
+    class TestModelErrors(object):
+
+        def test__1_species__errors_1d_vectors_via_weighted_samples__1d_vectors_are_correct(self, mm_config,
+                                                                                            mn_samples_path):
+            conf.instance.output_path = mn_samples_path + '/1_class'
+
+            mapper = model_mapper.ModelMapper(config=mm_config, mock_class=MockClassNLOx4)
+            mn = non_linear.MultiNest(model_mapper=mapper)
+            create_weighted_samples_4_parameters(path=mn.opt_path)
+
+            assert mn.model_errors_at_sigma_limit(sigma_limit=3.0) == pytest.approx([1.12 - 0.88, 2.12 - 1.88,
+                                                                                     3.12 - 2.88, 4.12 - 3.88], 1e-2)
+
+        def test__1_species__change_limit_to_1_sigma(self, mm_config, mn_samples_path):
+            conf.instance.output_path = mn_samples_path + '/1_class'
+
+            mapper = model_mapper.ModelMapper(config=mm_config, mock_class=MockClassNLOx4)
+            mn = non_linear.MultiNest(model_mapper=mapper)
+            create_weighted_samples_4_parameters(path=mn.opt_path)
+
+            assert mn.model_errors_at_sigma_limit(sigma_limit=1.0) == pytest.approx([1.07 - 0.93, 2.07 - 1.93,
+                                                                                     3.07 - 2.93, 4.07 - 3.93], 1e-1)
 
 # class TestConfig(object):
 #     def test_multinest_default(self):
@@ -1168,6 +1190,17 @@ class TestRealClasses(object):
         assert mn.model_at_lower_sigma_limit(sigma_limit=3.0) == pytest.approx([0.88, 1.88, 2.88, 3.88],
                                                                                1e-2)
 
+    def test__1_profile__errors_1d_vectors_via_weighted_samples__1d_vectors_are_correct(self, mm_config,
+                                                                                        mn_samples_path):
+        conf.instance.output_path = mn_samples_path
+        mapper = model_mapper.ModelMapper(config=mm_config, mass_profile=mass_profiles.SphericalNFW)
+        mn = non_linear.MultiNest(model_mapper=mapper)
+
+        create_weighted_samples_4_parameters(path=mn.opt_path)
+
+        assert mn.model_errors_at_sigma_limit(sigma_limit=3.0) == pytest.approx([1.12 - 0.88, 2.12 - 1.88,
+                                                                                3.12 - 2.88, 4.12 - 3.88],
+                                                                               1e-2)
 
 class MockAnalysis(object):
     def __init__(self):

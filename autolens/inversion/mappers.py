@@ -81,7 +81,7 @@ class Mapper(object):
                                                        self.grids.sub.sub_to_image, self.grids.sub.sub_grid_fraction)
 
     @staticmethod
-    @numba.jit(nopython=True)
+    @numba.jit(nopython=True, cache=True)
     def mapping_matrix_from_sub_to_pix_jit(sub_to_pixelization, pixels, image_pixels, sub_to_image, sub_grid_fraction):
         """Computes the mapping matrix, by iterating over the known mappings between the sub-grid and pixelization.
 
@@ -172,7 +172,7 @@ class RectangularMapper(Mapper):
                                                        self.geometry.pixel_scales, self.shape).astype(dtype='int')
 
     @staticmethod
-    @numba.jit(nopython=True)
+    @numba.jit(nopython=True, cache=True)
     def grid_to_pixelization_from_grid_jit(grid, arc_second_minima, pixel_scales, shape):
 
         grid_to_pixelization = np.zeros(grid.shape[0])
