@@ -273,6 +273,20 @@ class Plane(object):
         """
         return list(map(lambda galaxy : galaxy.dimensionless_mass_within_circle(radius), self.galaxies))
 
+    def dimensionless_masses_of_galaxies_within_ellipses(self, major_axis):
+        """
+        Compute the total dimensionless mass of all galaxies in this plane within a ellipse of specified major-axis.
+
+        See *galaxy.dimensionless_mass_within_ellipse* and *mass_profiles.dimensionless_mass_within_ellipse* for details
+        of how this is performed.
+
+        Parameters
+        ----------
+        major_axis : float
+            The major-axis of the ellipse to compute the dimensionless mass within.
+        """
+        return list(map(lambda galaxy : galaxy.dimensionless_mass_within_ellipse(major_axis), self.galaxies))
+
     def masses_of_galaxies_within_circles(self, radius, conversion_factor):
         """
         Compute the total mass of all galaxies in this plane within a circle of specified radius.
@@ -286,6 +300,21 @@ class Plane(object):
             The radius of the circle to compute the dimensionless mass within.
         """
         return list(map(lambda galaxy : galaxy.mass_within_circle(radius, conversion_factor),
+                        self.galaxies))
+
+    def masses_of_galaxies_within_ellipses(self, major_axis, conversion_factor):
+        """
+        Compute the total mass of all galaxies in this plane within a ellipse of specified major-axis.
+
+        See *galaxy.dimensionless_mass_within_ellipse* and *mass_profiles.dimensionless_mass_within_ellipse* for details
+        of how this is performed.
+
+        Parameters
+        ----------
+        major_axis : float
+            The major-axis of the ellipse to compute the dimensionless mass within.
+        """
+        return list(map(lambda galaxy : galaxy.mass_within_ellipse(major_axis, conversion_factor),
                         self.galaxies))
 
 class PlanePositions(object):

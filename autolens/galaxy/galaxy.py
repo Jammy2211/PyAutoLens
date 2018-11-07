@@ -259,7 +259,7 @@ class Galaxy(object):
         Parameters
         ----------
         major_axis : float
-            The major axis of the ellipse
+            The major axis of the ellipse.
         """
         return sum(map(lambda p: p.dimensionless_mass_within_ellipse(major_axis), self.mass_profiles))
 
