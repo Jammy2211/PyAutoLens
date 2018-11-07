@@ -223,8 +223,8 @@ class LensingProfileFit(fitting.AbstractProfileFit, AbstractLensingFit):
         if self.padded_tracer is None:
             return None
         elif self.padded_tracer is not None:
-            return fitting.unmasked_model_images_from_fitting_images(fitting_images=self.datas_,
-                                                                     unmasked_images_=self.padded_tracer.image_plane_images_)
+            return fitting.unmasked_blurred_images_from_fitting_images(fitting_images=self.datas_,
+                                                                       unmasked_images_=self.padded_tracer.image_plane_images_)
 
     @property
     def unmasked_model_profile_images_of_galaxies(self):

@@ -310,8 +310,8 @@ class TestPaddedModelImages:
 
         fitting_image = fit_data.FittingImage(image, mask, sub_grid_size=1)
 
-        padded_model_image = fitting.unmasked_model_images_from_fitting_images(fitting_images=[fitting_image],
-                                                                               unmasked_images_=[np.ones(25)])
+        padded_model_image = fitting.unmasked_blurred_images_from_fitting_images(fitting_images=[fitting_image],
+                                                                                 unmasked_images_=[np.ones(25)])
 
         assert (padded_model_image[0] == np.ones((3,3))).all()
 
@@ -328,8 +328,8 @@ class TestPaddedModelImages:
 
         fitting_image = fit_data.FittingImage(image, mask, sub_grid_size=1)
 
-        padded_model_image = fitting.unmasked_model_images_from_fitting_images(fitting_images=[fitting_image],
-                                                                               unmasked_images_=[np.ones(25)])
+        padded_model_image = fitting.unmasked_blurred_images_from_fitting_images(fitting_images=[fitting_image],
+                                                                                 unmasked_images_=[np.ones(25)])
 
         assert (padded_model_image == 3.0*np.ones((3, 3))).all()
 
@@ -349,8 +349,8 @@ class TestPaddedModelImages:
         _unmasked_image = np.zeros(25)
         _unmasked_image[12] = 1.0
 
-        padded_model_image = fitting.unmasked_model_images_from_fitting_images(fitting_images=[fitting_image],
-                                                                               unmasked_images_=[_unmasked_image])
+        padded_model_image = fitting.unmasked_blurred_images_from_fitting_images(fitting_images=[fitting_image],
+                                                                                 unmasked_images_=[_unmasked_image])
 
         assert (padded_model_image == np.array([[0.0, 3.0, 0.0],
                                                 [0.0, 1.0, 2.0],
