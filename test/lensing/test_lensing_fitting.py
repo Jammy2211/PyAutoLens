@@ -667,7 +667,8 @@ class TestLensingProfileFit:
             fit = lensing_fitting.LensingProfileFit(lensing_images=[li], tracer=tracer)
             assert fit.likelihood == -0.5 * np.log(2 * np.pi * 1.0)
 
-        def test__1x1_image__tracing_fits_data_with_chi_sq_5(self):
+        def test__1x2_image__tracing_fits_data_with_chi_sq_5(self):
+
             psf = image.PSF(array=(np.array([[0.0, 0.0, 0.0],
                                              [0.0, 1.0, 0.0],
                                              [0.0, 0.0, 0.0]])), pixel_scale=1.0)
@@ -683,7 +684,7 @@ class TestLensingProfileFit:
 
             # Setup as a ray trace instance, using a light profile for the lens
 
-            g0 = g.Galaxy(light_profile=MockLightProfile(value=1.0))
+            g0 = g.Galaxy(light_profile=MockLightProfile(value=1.0, size=2))
             tracer = ray_tracing.TracerImagePlane(lens_galaxies=[g0], image_plane_grids=[li.grids])
 
             fit = lensing_fitting.LensingProfileFit(lensing_images=[li], tracer=tracer)
@@ -749,8 +750,8 @@ class TestLensingProfileFit:
                                                                                             tracer=tracer)
             assert fast_likelihood == pytest.approx(fit.likelihood)
 
-            padded_model_image = fitting.unmasked_model_images_from_fitting_images(fitting_images=[li_manual],
-                                                                                   unmasked_images_=padded_tracer.image_plane_images_)
+            padded_model_image = fitting.unmasked_blurred_images_from_fitting_images(fitting_images=[li_manual],
+                                                                                     unmasked_images_=padded_tracer.image_plane_images_)
 
             assert (padded_model_image == fit.unmasked_model_profile_image).all()
 
@@ -817,8 +818,8 @@ class TestLensingProfileFit:
                 lensing_images=[li_manual, li_manual_1], tracer=tracer)
             assert fast_likelihood == pytest.approx(fit.likelihood)
 
-            padded_model_images = fitting.unmasked_model_images_from_fitting_images(fitting_images=[li_manual, li_manual_1],
-                                                                                    unmasked_images_=padded_tracer.image_plane_images_)
+            padded_model_images = fitting.unmasked_blurred_images_from_fitting_images(fitting_images=[li_manual, li_manual_1],
+                                                                                      unmasked_images_=padded_tracer.image_plane_images_)
 
             assert (padded_model_images[0] == fit.unmasked_model_profile_images[0]).all()
             assert (padded_model_images[1] == fit.unmasked_model_profile_images[1]).all()
@@ -998,8 +999,8 @@ class TestHyperLensingProfileFit:
 
             assert fast_scaled_likelihood == fit.scaled_likelihood
 
-            padded_model_image = fitting.unmasked_model_images_from_fitting_images(fitting_images=[li_hyper_manual],
-                                                                                   unmasked_images_=padded_tracer.image_plane_images_)
+            padded_model_image = fitting.unmasked_blurred_images_from_fitting_images(fitting_images=[li_hyper_manual],
+                                                                                     unmasked_images_=padded_tracer.image_plane_images_)
 
             assert (padded_model_image == fit.unmasked_model_profile_images[0]).all()
 
@@ -1108,7 +1109,7 @@ class TestHyperLensingProfileFit:
 
             assert fast_scaled_likelihood == pytest.approx(fit.scaled_likelihood, 1e-2)
 
-            padded_model_images = fitting.unmasked_model_images_from_fitting_images(
+            padded_model_images = fitting.unmasked_blurred_images_from_fitting_images(
                 fitting_images=[li_hyper_manual, li_hyper_manual_1], unmasked_images_=padded_tracer.image_plane_images_)
 
             assert (padded_model_images[0] == fit.unmasked_model_profile_images[0]).all()

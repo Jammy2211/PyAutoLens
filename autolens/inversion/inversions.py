@@ -135,19 +135,20 @@ def curvature_matrix_from_blurred_mapping_matrix(blurred_mapping_matrix, noise_m
 
 @numba.jit(nopython=True, cache=True)
 def curvature_matrix_from_blurred_mapping_matrix_jit(blurred_mapping_matrix, noise_map, flist, iflist):
+
     curvature_matrix = np.zeros((blurred_mapping_matrix.shape[1], blurred_mapping_matrix.shape[1]))
 
     for image_index in range(blurred_mapping_matrix.shape[0]):
         index = 0
         for pixel_index in range(blurred_mapping_matrix.shape[1]):
             if blurred_mapping_matrix[image_index, pixel_index] > 0.0:
-                index += 1
                 flist[index] = blurred_mapping_matrix[image_index, pixel_index] / noise_map[image_index]
                 iflist[index] = pixel_index
+                index += 1
 
         if index > 0:
-            for i1 in range(index + 1):
-                for j1 in range(index + 1):
+            for i1 in range(index):
+                for j1 in range(index):
                     ix = iflist[i1]
                     iy = iflist[j1]
                     curvature_matrix[ix, iy] += flist[i1] * flist[j1]
