@@ -59,7 +59,6 @@ class LensingImage(fitting_data.FittingImage):
             self.poisson_noise_map_ = obj.poisson_noise_map_
             self.exposure_time_map_ = obj.exposure_time_map_
             self.background_sky_map_ = obj.background_sky_map_
-            self.blurring_mask = obj.blurring_mask
             self.convolver_image = obj.convolver_image
             self.convolver_mapping_matrix = obj.convolver_mapping_matrix
             self.sub_grid_size = obj.sub_grid_size
@@ -120,7 +119,6 @@ class LensingHyperImage(fitting_data.FittingHyperImage):
         if isinstance(obj, LensingHyperImage):
             self.image = obj.image
             self.mask = obj.mask
-            self.blurring_mask = obj.blurring_mask
             self.convolver_image = obj.convolver_image
             self.convolver_mapping_matrix = obj.convolver_mapping_matrix
             self.grids = obj.grids

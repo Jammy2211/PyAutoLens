@@ -11,25 +11,73 @@ class FittingImage(im.Image):
         return np.array(mask.map_2d_array_to_masked_1d_array(image)).view(cls)
 
     def __init__(self, image, mask, sub_grid_size=2, image_psf_shape=None):
-        """
-        The lensing datas_ is the collection of datas (image, noise-maps, PSF), a masks, grids, convolvers and other \
-        utilities that are used for modeling and fitting an datas_ of a strong lens.
+        """A fitting image is the collection of data components (e.g. the image, noise-maps, PSF, etc.) which are used \
+        to fit a generate a model image of the fitting image and fit it to its observed image.
 
-        Whilst the datas_ datas is initially loaded in 2D, for the lensing datas_ the masked-datas_ (and noise-maps) \
-        are reduced to 1D arrays for faster calculations.
+        The fitting image is masked, by converting all relevent data-components to masked 1D arrays (which are \
+        syntacically followed by an underscore, e.g. noise_map_). 1D arrays are converted back to 2D masked arrays
+        after the fit, using the mask's *scaled_array_from_1d_array* function.
+
+        A fitting image also includes a number of attributes which are used to performt the fit, including (y,x) \
+        grids of coordinates, convolvers and other utilities.
 
         Parameters
         ----------
-        image: im.Image
-            The original datas_ datas in 2D.
+        image : im.Image
+            The 2D observed image and other observed quantities (noise-map, PSF, exposure-time map, etc.)
         mask: msk.Mask
-            The 2D masks that is applied to the datas_.
+            The 2D mask that is applied to image data.
         sub_grid_size : int
-            The size of the sub-grid used for each lensing SubGrid. E.g. a value of 2 grids each datas_-pixel on a 2x2 \
-            sub-grid.
+            The size of the sub-grid used for computing the SubGrid (see imaging.mask.SubGrid).
         image_psf_shape : (int, int)
             The shape of the PSF used for convolving model image generated using analytic light profiles. A smaller \
-            shape will trim the PSF relative to the input datas_ PSF, giving a faster analysis run-time.
+            shape will trim the PSF relative to the input image PSF, giving a faster analysis run-time.
+
+        Attributes
+        ----------
+        image : ScaledSquarePixelArray
+            The 2D observed image data (not an instance of im.Image, so does not include the other data attributes,
+            which are explicitly made as new attributes of the fitting image).
+        image_ : ndarray
+            The masked 1D array of the image.
+        noise_map : NoiseMap
+            An array describing the RMS standard deviation error in each pixel, preferably in units of electrons per
+            second.
+        noise_map_ : ndarray
+            The masked 1D array of the noise-map
+        background_noise_map : NoiseMap or None
+            An array describing the RMS standard deviation error in each pixel due to the background sky noise,
+            preferably in units of electrons per second.
+        background_noise_map_ : ndarray or None
+            The masked 1D array of the background noise-map
+        poisson_noise_map : NoiseMap or None
+            An array describing the RMS standard deviation error in each pixel due to the Poisson counts of the source,
+            preferably in units of electrons per second.
+        poisson_noise_map_ : ndarray or None
+            The masked 1D array of the poisson noise-map.
+        exposure_time_map : ScaledSquarePixelArray
+            An array describing the effective exposure time in each image pixel.
+        exposure_time_map_ : ndarray or None
+            The masked 1D array of the exposure time-map.
+        background_sky_map : ScaledSquarePixelArray
+            An array describing the background sky.
+        background_sky_map_ : ndarray or None
+            The masked 1D array of the background sky map.
+        sub_grid_size : int
+            The size of the sub-grid used for computing the SubGrid (see imaging.mask.SubGrid).
+        image_psf_shape : (int, int)
+            The shape of the PSF used for convolving model image generated using analytic light profiles. A smaller \
+            shape will trim the PSF relative to the input image PSF, giving a faster analysis run-time.
+        convolver_image : imaging.convolution.ConvolverImage
+            A convolver which convoles a 1D masked image (using the input mask) with the 2D PSF kernel.
+        grids : imaging.mask.ImagingGrids
+            Grids of (y,x) Cartesian coordinates which map over the masked 1D observed image's pixels (includes an \
+            image-grid, sub-grid, etc.)
+        padded_grids : imaging.mask.ImagingGrids
+            Grids of padded (y,x) Cartesian coordinates which map over the every observed image's pixel in 1D and a \
+            padded regioon to include edge's for accurate PSF convolution (includes an image-grid, sub-grid, etc.)
+        borders  imaging.mask.ImagingGridsBorders
+            The borders of the image-grid and sub-grid (see *ImagingGridsBorders* for their use).
         """
         super().__init__(array=image, pixel_scale=image.pixel_scale, noise_map=image.noise_map, psf=image.psf,
                          background_noise_map=image.background_noise_map, poisson_noise_map=image.poisson_noise_map,
@@ -48,9 +96,8 @@ class FittingImage(im.Image):
         if image_psf_shape is None:
             image_psf_shape = self.psf.shape
 
-        self.blurring_mask = mask.blurring_mask_for_psf_shape(image_psf_shape)
-        self.convolver_image = convolution.ConvolverImage(self.mask,
-                                                          self.blurring_mask, self.psf.resized_scaled_array_from_array(image_psf_shape))
+        self.convolver_image = convolution.ConvolverImage(self.mask, mask.blurring_mask_for_psf_shape(image_psf_shape),
+                                                          self.psf.resized_scaled_array_from_array(image_psf_shape))
 
         self.grids = msk.ImagingGrids.grids_from_mask_sub_grid_size_and_psf_shape(mask=mask,
                                                                                   sub_grid_size=sub_grid_size,
@@ -70,7 +117,6 @@ class FittingImage(im.Image):
             self.exposure_time_map_ = obj.exposure_time_map_
             self.background_sky_map_ = obj.background_sky_map_
             self.mask = obj.mask
-            self.blurring_mask = obj.blurring_mask
             self.convolver_image = obj.convolver_image
             self.grids = obj.grids
             self.borders = obj.borders
@@ -121,7 +167,6 @@ class FittingHyperImage(FittingImage):
             self.exposure_time_map_ = obj.exposure_time_map_
             self.background_sky_map_ = obj.background_sky_map_
             self.mask = obj.mask
-            self.blurring_mask = obj.blurring_mask
             self.convolver_image = obj.convolver_image
             self.grids = obj.grids
             self.borders = obj.borders
