@@ -368,6 +368,7 @@ class ConvolverImage(Convolver):
             value = image_array[image_index]
 
             for kernel_index in range(frame_length):
+
                 vector_index = frame_indexes[kernel_index]
                 kernel = frame_kernels[kernel_index]
                 new_array[vector_index] += value * kernel

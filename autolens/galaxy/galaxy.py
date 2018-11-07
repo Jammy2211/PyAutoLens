@@ -235,26 +235,21 @@ class Galaxy(object):
         else:
             return np.full((grid.shape[0], 2), 0.0)
 
-    def dimensionless_mass_within_circles(self, radius):
+    def dimensionless_mass_within_circle(self, radius):
         """
         Compute the total dimensionless mass of the galaxy's mass profiles within a circle of specified radius.
 
-        See *mass_profiles.dimensionless_mass_within_circles* for details of how this is performed.
+        See *mass_profiles.dimensionless_mass_within_circle* for details of how this is performed.
 
 
         Parameters
         ----------
         radius : float
             The radius of the circle to compute the dimensionless mass within.
-
-        Returns
-        -------
-        dimensionless_mass : float
-            The total dimensionless mass within the specified circle.
         """
         return sum(map(lambda p: p.dimensionless_mass_within_circle(radius), self.mass_profiles))
 
-    def dimensionless_mass_within_ellipses(self, major_axis):
+    def dimensionless_mass_within_ellipse(self, major_axis):
         """
         Compute the total dimensionless mass of the galaxy's mass profiles within an ellipse of specified major_axis.
 
@@ -265,16 +260,41 @@ class Galaxy(object):
         ----------
         major_axis : float
             The major axis of the ellipse
-
-        Returns
-        -------
-        dimensionless_mass : float
-            The total dimensionless mass within the specified circle.
         """
         return sum(map(lambda p: p.dimensionless_mass_within_ellipse(major_axis), self.mass_profiles))
 
+    def mass_within_circle(self, radius, conversion_factor):
+        """
+        Compute the total mass of the galaxy's mass profiles within a circle of specified radius.
 
-# TODO : Should galaxy masked_image and minimum value be in the constructor (they aren't free parameters)?
+        See *mass_profiles.mass_within_circle* for details of how this is performed.
+
+
+        Parameters
+        ----------
+        radius : float
+            The radius of the circle to compute the dimensionless mass within.
+        conversion_factor : float
+            The factor the dimensionless mass is multiplied by to convert it to a physical mass.
+        """
+        return sum(map(lambda p: p.mass_within_circle(radius, conversion_factor), self.mass_profiles))
+
+    def mass_within_ellipse(self, major_axis, conversion_factor):
+        """
+        Compute the total mass of the galaxy's mass profiles within an ellipse of specified major_axis.
+
+        See *mass_profiles.mass_within_ellipses* for details of how this is performed.
+
+
+        Parameters
+        ----------
+        major_axis : float
+            The major axis of the ellipse
+        conversion_factor : float
+            The factor the dimensionless mass is multiplied by to convert it to a physical mass.
+        """
+        return sum(map(lambda p: p.mass_within_ellipse(major_axis, conversion_factor), self.mass_profiles))
+
 
 class HyperGalaxy(object):
     _ids = count()

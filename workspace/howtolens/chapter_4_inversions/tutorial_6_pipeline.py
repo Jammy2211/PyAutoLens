@@ -64,7 +64,7 @@ def make_pipeline():
     # structur of the lensed source and provide a good mass model.
 
     phase1 = ph.LensSourcePlanePhase(lens_galaxies=dict(lens=gm.GalaxyModel(mass=mp.EllipticalIsothermal)),
-                                     source_galaxies=dict(source=gm.GalaxyModel(light_0=lp.EllipticalSersic)),
+                                     source_galaxies=dict(source=gm.GalaxyModel(light=lp.EllipticalSersic)),
                                      optimizer_class=nl.MultiNest, phase_name=pipeline_name + '/phase_1_initialize')
 
     # Now, in phase 2, lets pass the lens mass model to phase 2, and use it to fit the source with an inversion.

@@ -259,6 +259,34 @@ class Plane(object):
         """Compute the xticks labels of this grid, used for plotting the x-axis ticks when visualizing an datas_-grid"""
         return np.linspace(np.amin(self.grids[0].image[:,1]), np.amax(self.grids[0].image[:,1]), 4)
 
+    def dimensionless_masses_of_galaxies_within_circles(self, radius):
+        """
+        Compute the total dimensionless mass of all galaxies in this plane within a circle of specified radius.
+
+        See *galaxy.dimensionless_mass_within_circle* and *mass_profiles.dimensionless_mass_within_circle* for details
+        of how this is performed.
+
+        Parameters
+        ----------
+        radius : float
+            The radius of the circle to compute the dimensionless mass within.
+        """
+        return list(map(lambda galaxy : galaxy.dimensionless_mass_within_circle(radius), self.galaxies))
+
+    def masses_of_galaxies_within_circles(self, radius, conversion_factor):
+        """
+        Compute the total mass of all galaxies in this plane within a circle of specified radius.
+
+        See *galaxy.dimensionless_mass_within_circle* and *mass_profiles.dimensionless_mass_within_circle* for details
+        of how this is performed.
+
+        Parameters
+        ----------
+        radius : float
+            The radius of the circle to compute the dimensionless mass within.
+        """
+        return list(map(lambda galaxy : galaxy.mass_within_circle(radius, conversion_factor),
+                        self.galaxies))
 
 class PlanePositions(object):
 
