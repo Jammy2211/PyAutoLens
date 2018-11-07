@@ -29,7 +29,7 @@ class Image(ScaledSquarePixelArray):
             An array describing the PSF kernel of the data.
         noise_map : NoiseMap
             An array describing the RMS standard deviation error in each pixel, preferably in units of electrons per
-            second..
+            second.
         background_noise_map : NoiseMap
             An array describing the RMS standard deviation error in each pixel due to the background sky noise,
             preferably in units of electrons per second.

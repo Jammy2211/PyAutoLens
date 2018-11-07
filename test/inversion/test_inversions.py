@@ -79,6 +79,7 @@ class TestDataVectorFromData(object):
 class TestCurvatureMatrixFromBlurred(object):
 
     def test__simple_blurred_mapping_matrix(self):
+
         blurred_mapping_matrix = np.array([[1.0, 1.0, 0.0],
                                            [1.0, 0.0, 0.0],
                                            [0.0, 1.0, 0.0],

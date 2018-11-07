@@ -371,18 +371,18 @@ class TestMassProfiles(object):
             assert deflection_angles[0, 0] == gal_deflection_angles[0, 0]
             assert deflection_angles[0, 1] == gal_deflection_angles[0, 1]
 
-    class TestDimensionlessMassWithinCircle:
+    class TestMassWithin:
 
-        def test__one_profile_gal__integral_is_same_as_individual_profile(self, sie_0, gal_sie_x1):
+        def test__within_circle__one_profile_gal__integral_is_same_as_individual_profile(self, sie_0, gal_sie_x1):
             integral_radius = 5.5
 
             mass_integral = sie_0.dimensionless_mass_within_circle(radius=integral_radius)
 
-            gal_mass_integral = gal_sie_x1.dimensionless_mass_within_circles(radius=integral_radius)
+            gal_mass_integral = gal_sie_x1.dimensionless_mass_within_circle(radius=integral_radius)
 
             assert mass_integral == gal_mass_integral
 
-        def test__two_profile_gal__integral_is_sum_of_individual_profiles(self):
+        def test__within_circle__two_profile_gal__integral_is_sum_of_individual_profiles(self):
             sie_0 = mp.EllipticalIsothermal(axis_ratio=0.8, phi=10.0, einstein_radius=1.0)
             sie_1 = mp.EllipticalIsothermal(axis_ratio=0.6, phi=30.0, einstein_radius=1.2)
 
@@ -397,30 +397,50 @@ class TestMassProfiles(object):
                                mass_profile_2=mp.EllipticalIsothermal(axis_ratio=0.6, phi=30.0,
                                                                       einstein_radius=1.2))
 
-            gal_mass_integral = gal_sie.dimensionless_mass_within_circles(radius=integral_radius)
+            gal_mass_integral = gal_sie.dimensionless_mass_within_circle(radius=integral_radius)
 
             assert mass_integral == gal_mass_integral
 
-    class TestDimensionlessMassWithinEllipse:
+        def test__same_as_above_but_physical_mass__uses_conversion_factor(self, sie_0, gal_sie_x1):
 
-        def test__one_profile_gal__integral_is_same_as_individual_profile(self, sie_0, gal_sie_x1):
+            integral_radius = 5.5
+
+            mass_integral = sie_0.mass_within_circle(radius=integral_radius, conversion_factor=2.0)
+
+            gal_mass_integral = gal_sie_x1.mass_within_circle(radius=integral_radius, conversion_factor=2.0)
+
+            assert mass_integral == gal_mass_integral
+
+        def test__within_ellipse__one_profile_gal__integral_is_same_as_individual_profile(self, sie_0, gal_sie_x1):
             integral_radius = 0.5
 
             dimensionless_mass_integral = sie_0.dimensionless_mass_within_ellipse(major_axis=integral_radius)
 
-            gal_dimensionless_mass_integral = gal_sie_x1.dimensionless_mass_within_ellipses(
+            gal_dimensionless_mass_integral = gal_sie_x1.dimensionless_mass_within_ellipse(
                 major_axis=integral_radius)
 
             assert dimensionless_mass_integral == gal_dimensionless_mass_integral
 
-        def test__two_profile_gal__integral_is_sum_of_individual_profiles(self, sie_0, sie_1, gal_sie_x2):
+        def test__within_eliipse__two_profile_gal__integral_is_sum_of_individual_profiles(self, sie_0, sie_1,
+                                                                                          gal_sie_x2):
             integral_radius = 5.5
 
             dimensionless_mass_integral = sie_0.dimensionless_mass_within_ellipse(major_axis=integral_radius)
             dimensionless_mass_integral += sie_1.dimensionless_mass_within_ellipse(major_axis=integral_radius)
 
-            gal_dimensionless_mass_integral = gal_sie_x2.dimensionless_mass_within_ellipses(
+            gal_dimensionless_mass_integral = gal_sie_x2.dimensionless_mass_within_ellipse(
                 major_axis=integral_radius)
+
+            assert dimensionless_mass_integral == gal_dimensionless_mass_integral
+
+        def test__same_as_above_ellipse_but_physical_mass__uses_conversion_factor(self, sie_0, gal_sie_x1):
+            integral_radius = 0.5
+
+            dimensionless_mass_integral = sie_0.mass_within_ellipse(major_axis=integral_radius,
+                                                                    conversion_factor=2.0)
+
+            gal_dimensionless_mass_integral = gal_sie_x1.mass_within_ellipse(major_axis=integral_radius,
+                                                                             conversion_factor=2.0)
 
             assert dimensionless_mass_integral == gal_dimensionless_mass_integral
 
