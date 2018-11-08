@@ -563,6 +563,8 @@ def resize_array_2d(array_2d, new_shape, new_centre=(-1, -1)):
 
         new_centre = (y_centre, x_centre)
 
+    print(new_centre)
+
     resized_array = np.zeros(shape=new_shape)
 
     if y_is_even:
@@ -578,6 +580,8 @@ def resize_array_2d(array_2d, new_shape, new_centre=(-1, -1)):
     elif not x_is_even:
         xmin = new_centre[1] - int(new_shape[1] / 2)
         xmax = new_centre[1] + int((new_shape[1] / 2)) + 1
+
+    print(ymin, ymax, xmin, xmax)
 
     for y_resized, y in enumerate(range(ymin, ymax)):
         for x_resized, x in enumerate(range(xmin, xmax)):
