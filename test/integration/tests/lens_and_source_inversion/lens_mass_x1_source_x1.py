@@ -1,9 +1,9 @@
 import os
 
 from autolens.autofit import non_linear as nl
+from autolens.galaxy import galaxy, galaxy_model as gm
 from autolens.inversion import pixelizations as pix
 from autolens.inversion import regularization as reg
-from autolens.galaxy import galaxy, galaxy_model as gm
 from autolens.pipeline import phase as ph
 from autolens.pipeline import pipeline as pl
 from autolens.profiles import light_profiles as lp
@@ -16,7 +16,6 @@ output_path = '{}/../output/lens_and_source_inversion'.format(dirpath)
 
 
 def pipeline():
-
     pipeline_name = "lens_mass_x1_source_x1"
     data_name = '/lens_mass_x1_source_x1'
 
@@ -39,12 +38,11 @@ def pipeline():
     for result in results:
         print(result)
 
-def make_lens_x1_source_x1_inversion_pipeline(pipeline_name):
 
+def make_lens_x1_source_x1_inversion_pipeline(pipeline_name):
     class SourcePix(ph.LensSourcePlanePhase):
 
         def pass_priors(self, previous_results):
-
             self.lens_galaxies[0].sie.centre.centre_0 = 0.0
             self.lens_galaxies[0].sie.centre.centre_1 = 0.0
             self.lens_galaxies[0].sie.einstein_radius = 1.6

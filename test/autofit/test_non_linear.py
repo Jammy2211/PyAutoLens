@@ -907,6 +907,7 @@ class TestMultiNest(object):
             assert mn.model_errors_at_sigma_limit(sigma_limit=1.0) == pytest.approx([1.07 - 0.93, 2.07 - 1.93,
                                                                                      3.07 - 2.93, 4.07 - 3.93], 1e-1)
 
+
 # class TestConfig(object):
 #     def test_multinest_default(self):
 #         multinest = non_linear.MultiNest()
@@ -1199,17 +1200,22 @@ class TestRealClasses(object):
         create_weighted_samples_4_parameters(path=mn.opt_path)
 
         assert mn.model_errors_at_sigma_limit(sigma_limit=3.0) == pytest.approx([1.12 - 0.88, 2.12 - 1.88,
-                                                                                3.12 - 2.88, 4.12 - 3.88],
-                                                                               1e-2)
+                                                                                 3.12 - 2.88, 4.12 - 3.88],
+                                                                                1e-2)
+
 
 class MockAnalysis(object):
     def __init__(self):
         self.kwargs = None
         self.instance = None
+        self.visualise_instance = None
 
     def fit(self, instance):
         self.instance = instance
         return 1.
+
+    def try_visualise(self, instance):
+        self.visualise_instance = instance
 
 
 @pytest.fixture(name='test_config')

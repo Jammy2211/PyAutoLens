@@ -2,7 +2,6 @@ import logging
 import os
 
 import numpy as np
-from astropy import cosmology as cosmo
 
 from autolens import conf
 from autolens import exc
@@ -62,11 +61,11 @@ class IntervalCounter(object):
 
 class HyperOnly(object):
 
-    def hyper_run(self, image, previous_results=None):
+    def hyper_run(self, image, previous_results=None, mask=None):
         raise NotImplementedError()
 
 
-class Phase(object):
+class AbstractPhase(object):
 
     def __init__(self, optimizer_class=non_linear.MultiNest, phase_name=None, auto_link_priors=False):
         """
@@ -229,7 +228,13 @@ class Phase(object):
 
             self.previous_results = previous_results
             self.phase_name = phase_name
+            self.phase_output_path = "{}/{}".format(conf.instance.output_path, self.phase_name)
             log_interval = conf.instance.general.get('output', 'log_interval', int)
+            log_file = conf.instance.general.get('output', 'log_file', str)
+            if not len(log_file.replace(" ", "")) == 0:
+                log_path = "{}/{}".format(self.phase_output_path, log_file)
+                logger.handlers = [logging.FileHandler(log_path)]
+                logger.propagate = False
 
             self.__should_log = IntervalCounter(log_interval)
 
@@ -238,7 +243,7 @@ class Phase(object):
             self.__should_visualise = IntervalCounter(visualise_interval)
             self.position_threshold = conf.instance.general.get('positions', 'position_threshold', float)
             self.plot_count = 0
-            self.output_image_path = "{}/".format(conf.instance.output_path) + '/' + self.phase_name + '/image/'
+            self.output_image_path = "{}/image/".format(self.phase_output_path)
             make_path_if_does_not_exist(path=self.output_image_path)
 
         @property
@@ -257,7 +262,7 @@ class Phase(object):
         def fit(self, instance):
             raise NotImplementedError()
 
-        def try_output(self, instance):
+        def try_log(self, instance):
             """
             Log and plot instance data, if the logging and plotting conditions are met respectively.
 
@@ -276,6 +281,8 @@ class Phase(object):
             """
             if self.should_log:
                 self.log(instance)
+
+        def try_visualise(self, instance):
             if self.should_visualise:
                 self.plot_count += 1
                 logger.info("Saving visualisations {}".format(self.plot_count))
@@ -310,7 +317,12 @@ class Phase(object):
             super(Phase.Result, self).__init__(constant, likelihood, variable)
 
 
-class PhasePositions(Phase):
+class Phase(AbstractPhase):
+    def run(self, image, previous_results=None, mask=None):
+        raise NotImplementedError()
+
+
+class PhasePositions(AbstractPhase):
     lens_galaxies = PhasePropertyCollection("lens_galaxies")
 
     @property
@@ -457,12 +469,14 @@ class PhaseImaging(Phase):
         """
         return image
 
-    def run(self, image, previous_results=None):
+    def run(self, image, previous_results=None, mask=None):
         """
         Run this phase.
 
         Parameters
         ----------
+        mask: Mask
+            The default mask passed in by the pipeline
         previous_results: ResultsCollection
             An object describing the results of the last phase or None if no phase has been executed
         image: img.Image
@@ -473,19 +487,21 @@ class PhaseImaging(Phase):
         result: non_linear.Result
             A result object comprising the best fit_normal model and other datas.
         """
-        analysis = self.make_analysis(image=image, previous_results=previous_results)
+        analysis = self.make_analysis(image=image, previous_results=previous_results, mask=mask)
         result = self.optimizer.fit(analysis)
         analysis.visualize(instance=result.constant, suffix=None, during_analysis=False)
 
         return self.__class__.Result(result.constant, result.likelihood, result.variable, analysis)
 
-    def make_analysis(self, image, previous_results=None):
+    def make_analysis(self, image, previous_results=None, mask=None):
         """
         Create an lensing object. Also calls the prior passing and lensing_image modifying functions to allow child
         classes to change the behaviour of the phase.
 
         Parameters
         ----------
+        mask: Mask
+            The default mask passed in by the pipeline
         image: im.Image
             An lensing_image that has been masked
         previous_results: ResultsCollection
@@ -496,7 +512,7 @@ class PhaseImaging(Phase):
         lensing: Analysis
             An lensing object that the non-linear optimizer calls to determine the fit_normal of a set of values
         """
-        mask = self.mask_function(image)
+        mask = mask or self.mask_function(image)
         image = self.modify_image(image, previous_results)
         lensing_image = li.LensingImage(image=image, mask=mask, sub_grid_size=self.sub_grid_size,
                                         image_psf_shape=self.image_psf_shape, positions=self.positions)
@@ -528,7 +544,7 @@ class PhaseImaging(Phase):
             fit_normal: Fit
                 A fractional value indicating how well this model fit_normal and the model lensing_image itself
             """
-            self.try_output(instance)
+            self.try_log(instance)
             self.check_positions_trace_within_threshold(instance)
             tracer = self.tracer_for_instance(instance)
             return self.fast_likelihood_for_tracer(tracer)
@@ -673,17 +689,11 @@ class LensPlaneHyperPhase(LensPlanePhase):
         def fast_likelihood_for_tracer(self, tracer):
             return lensing_fitting.fast_likelihood_from_lensing_image_and_tracer(
                 lensing_image=self.lensing_image,
-                tracer=tracer,
-                hyper_model_image=self.hyper_model_image,
-                hyper_galaxy_images=self.hyper_galaxy_images,
-                hyper_minimum_values=self.hyper_minimum_values)
+                tracer=tracer)
 
         def fit_for_tracers(self, tracer, padded_tracer):
             return lensing_fitting.fit_lensing_image_with_tracer(lensing_image=self.lensing_image, tracer=tracer,
-                                                                 padded_tracer=padded_tracer,
-                                                                 hyper_model_image=self.hyper_model_image,
-                                                                 hyper_galaxy_images=self.hyper_galaxy_images,
-                                                                 hyper_minimum_values=self.hyper_minimum_values)
+                                                                 padded_tracer=padded_tracer)
 
         @classmethod
         def log(cls, instance):
@@ -709,11 +719,12 @@ class LensLightHyperOnlyPhase(LensPlaneHyperPhase, HyperOnly):
 
         self.hyper_index = hyper_index
 
-    def hyper_run(self, image, previous_results=None):
+    def hyper_run(self, image, previous_results=None, mask=None):
         class LensGalaxyHyperPhase(LensLightHyperOnlyPhase):
 
             def pass_priors(self, previous_results):
                 use_hyper_galaxy = len(previous_results[-1].constant.lens_galaxies) * [None]
+                # noinspection PyTypeChecker
                 use_hyper_galaxy[self.hyper_index] = g.HyperGalaxy
 
                 self.lens_galaxies = list(map(lambda lens_galaxy, use_hyper:
@@ -729,18 +740,20 @@ class LensLightHyperOnlyPhase(LensPlaneHyperPhase, HyperOnly):
 
             phase.optimizer.n_live_points = 20
             phase.optimizer.sampling_efficiency = 0.8
-            result = phase.run(image, previous_results)
+            result = phase.run(image, previous_results, mask)
             hyper_result.constant.lens_galaxies[i].hyper_galaxy = result.constant.lens_galaxies[i].hyper_galaxy
 
         return hyper_result
 
-    def make_analysis(self, image, previous_results=None):
+    def make_analysis(self, image, previous_results=None, mask=None):
         """
         Create an lensing object. Also calls the prior passing and lensing_image modifying functions to allow child
         classes to change the behaviour of the phase.
 
         Parameters
         ----------
+        mask: Mask
+            The default mask passed in by the pipeline
         image: im.Image
             An lensing_image that has been masked
         previous_results: ResultsCollection
@@ -751,7 +764,7 @@ class LensLightHyperOnlyPhase(LensPlaneHyperPhase, HyperOnly):
         lensing: Analysis
             An lensing object that the non-linear optimizer calls to determine the fit_normal of a set of values
         """
-        mask = self.mask_function(image)
+        mask = mask or self.mask_function(image)
         image = self.modify_image(image, previous_results)
         lensing_image = li.LensingImage(image, mask, sub_grid_size=self.sub_grid_size)
         self.pass_priors(previous_results)
@@ -905,15 +918,11 @@ class LensSourcePlaneHyperPhase(LensSourcePlanePhase):
             self.hyper_minimum_values = len(self.hyper_galaxy_images) * [0.0]
 
         def fast_likelihood_for_tracer(self, tracer):
-            return lensing_fitting.fast_likelihood_from_lensing_image_and_tracer(self.lensing_image, tracer,
-                                                                                 self.hyper_model_image,
-                                                                                 self.hyper_galaxy_images,
-                                                                                 self.hyper_minimum_values)
+            return lensing_fitting.fast_likelihood_from_lensing_image_and_tracer(self.lensing_image, tracer)
 
         def fit_for_tracer(self, tracer):
             return lensing_fitting.fit_lensing_image_with_tracer(self.lensing_image, tracer,
-                                                                 self.hyper_model_image, self.hyper_galaxy_images,
-                                                                 self.hyper_minimum_values)
+                                                                 self.hyper_model_image)
 
         @classmethod
         def log(cls, instance):
@@ -950,10 +959,11 @@ class LensMassAndSourceProfileHyperOnlyPhase(LensSourcePlaneHyperPhase, HyperOnl
                                                                      auto_link_priors=auto_link_priors)
         self.hyper_index = hyper_index
 
-    def hyper_run(self, image, previous_results=None):
+    def hyper_run(self, image, previous_results=None, mask=None):
         class SourceGalaxyHyperPhase(LensMassAndSourceProfileHyperOnlyPhase):
             def pass_priors(self, previous_results):
                 use_hyper_galaxy = len(previous_results[-1].constant.source_galaxies) * [None]
+                # noinspection PyTypeChecker
                 use_hyper_galaxy[self.hyper_index] = g.HyperGalaxy
 
                 self.lens_galaxies = previous_results[-1].variable.lens_galaxies
@@ -971,18 +981,20 @@ class LensMassAndSourceProfileHyperOnlyPhase(LensSourcePlaneHyperPhase, HyperOnl
 
             phase.optimizer.n_live_points = 20
             phase.optimizer.sampling_efficiency = 0.8
-            result = phase.run(image, previous_results)
+            result = phase.run(image, previous_results, mask)
             overall_result.constant.source_galaxies[i].hyper_galaxy = result.constant.source_galaxies[i].hyper_galaxy
 
         return overall_result
 
-    def make_analysis(self, image, previous_results=None):
+    def make_analysis(self, image, previous_results=None, mask=None):
         """
         Create an lensing object. Also calls the prior passing and lensing_image modifying functions to allow child
         classes to change the behaviour of the phase.
 
         Parameters
         ----------
+        mask: Mask
+            The default mask passed in by the pipeline
         image: im.Image
             An lensing_image that has been masked
         previous_results: ResultsCollection
@@ -993,7 +1005,7 @@ class LensMassAndSourceProfileHyperOnlyPhase(LensSourcePlaneHyperPhase, HyperOnl
         lensing: Analysis
             An lensing object that the non-linear optimizer calls to determine the fit_normal of a set of values
         """
-        mask = self.mask_function(image)
+        mask = mask or self.mask_function(image)
         image = self.modify_image(image, previous_results)
         lensing_image = li.LensingImage(image, mask, sub_grid_size=self.sub_grid_size)
         self.pass_priors(previous_results)
@@ -1013,17 +1025,7 @@ class LensMassAndSourceProfileHyperOnlyPhase(LensSourcePlaneHyperPhase, HyperOnl
             self.hyper_minimum_values = len(self.hyper_galaxy_images) * [0.0]
 
 
-class MultiPlanePhase(PhaseImaging):
-
-    def __init__(self, galaxies=None, optimizer_class=non_linear.MultiNest,
-                 sub_grid_size=1, image_psf_shape=None, mask_function=default_mask_function,
-                 positions=None, phase_name="source_lens_phase", cosmology=cosmo.LambdaCDM):
-        super(MultiPlanePhase, self).__init__()
-
-        pass
-
-
-class GalaxyFitPhase(Phase):
+class GalaxyFitPhase(AbstractPhase):
     galaxy = PhasePropertyCollection("galaxy")
 
     def __init__(self, galaxy=None, optimizer_class=non_linear.MultiNest, sub_grid_size=1,
@@ -1044,12 +1046,14 @@ class GalaxyFitPhase(Phase):
         self.sub_grid_size = sub_grid_size
         self.mask_function = mask_function
 
-    def run(self, array, noise_map, previous_results=None):
+    def run(self, array, noise_map, previous_results=None, mask=None):
         """
         Run this phase.
 
         Parameters
         ----------
+        mask: Mask
+            The default mask passed in by the pipeline
         noise_map
         array
         previous_results: ResultsCollection
@@ -1060,13 +1064,13 @@ class GalaxyFitPhase(Phase):
         result: non_linear.Result
             A result object comprising the best fit_normal model and other datas.
         """
-        analysis = self.make_analysis(array=array, noise_map=noise_map, previous_results=previous_results)
+        analysis = self.make_analysis(array=array, noise_map=noise_map, previous_results=previous_results, mask=mask)
         result = self.optimizer.fit(analysis)
         analysis.visualize(instance=result.constant, suffix=None, during_analysis=False)
 
         return self.__class__.Result(result.constant, result.likelihood, result.variable, analysis)
 
-    def make_analysis(self, array, noise_map, previous_results=None):
+    def make_analysis(self, array, noise_map, previous_results=None, mask=None):
         return NotImplementedError
 
     class Analysis(Phase.Analysis):
@@ -1090,7 +1094,7 @@ class GalaxyFitPhase(Phase):
             fit_normal: Fit
                 A fractional value indicating how well this model fit_normal and the model lensing_image itself
             """
-            self.try_output(instance)
+            self.try_log(instance)
             return self.fast_likelihood_for_instance(instance)
 
         def visualize(self, instance, suffix, during_analysis):
@@ -1126,13 +1130,15 @@ class GalaxyFitPhase(Phase):
 
 class GalaxyFitIntensitiesPhase(GalaxyFitPhase):
 
-    def make_analysis(self, array, noise_map, previous_results=None):
+    def make_analysis(self, array, noise_map, previous_results=None, mask=None):
         """
         Create an lensing object. Also calls the prior passing and lensing_image modifying functions to allow child
         classes to change the behaviour of the phase.
 
         Parameters
         ----------
+        mask: Mask
+            The default mask passed in by the pipeline
         array
         noise_map
         previous_results: ResultsCollection
@@ -1143,7 +1149,7 @@ class GalaxyFitIntensitiesPhase(GalaxyFitPhase):
         lensing: Analysis
             An lensing object that the non-linear optimizer calls to determine the fit_normal of a set of values
         """
-        mask = self.mask_function(array)
+        mask = mask or self.mask_function(array)
         galaxy_datas = gd.GalaxyDataIntensities(array=array, noise_map=noise_map, mask=mask,
                                                 sub_grid_size=self.sub_grid_size)
         self.pass_priors(previous_results)
@@ -1154,13 +1160,15 @@ class GalaxyFitIntensitiesPhase(GalaxyFitPhase):
 
 class GalaxyFitSurfaceDensityPhase(GalaxyFitPhase):
 
-    def make_analysis(self, array, noise_map, previous_results=None):
+    def make_analysis(self, array, noise_map, previous_results=None, mask=None):
         """
         Create an lensing object. Also calls the prior passing and lensing_image modifying functions to allow child
         classes to change the behaviour of the phase.
 
         Parameters
         ----------
+        mask: Mask
+            The default mask passed in by the pipeline
         image: im.Image
             An lensing_image that has been masked
         previous_results: ResultsCollection
@@ -1171,7 +1179,7 @@ class GalaxyFitSurfaceDensityPhase(GalaxyFitPhase):
         lensing: Analysis
             An lensing object that the non-linear optimizer calls to determine the fit_normal of a set of values
         """
-        mask = self.mask_function(array)
+        mask = mask or self.mask_function(array)
         galaxy_data = gd.GalaxyDataSurfaceDensity(array=array, noise_map=noise_map, mask=mask,
                                                   sub_grid_size=self.sub_grid_size)
         self.pass_priors(previous_results)
@@ -1182,13 +1190,15 @@ class GalaxyFitSurfaceDensityPhase(GalaxyFitPhase):
 
 class GalaxyFitPotentialPhase(GalaxyFitPhase):
 
-    def make_analysis(self, array, noise_map, previous_results=None):
+    def make_analysis(self, array, noise_map, previous_results=None, mask=None):
         """
         Create an lensing object. Also calls the prior passing and lensing_image modifying functions to allow child
         classes to change the behaviour of the phase.
 
         Parameters
         ----------
+        mask: Mask
+            The default mask passed in by the pipeline
         image: im.Image
             An lensing_image that has been masked
         previous_results: ResultsCollection
@@ -1199,7 +1209,7 @@ class GalaxyFitPotentialPhase(GalaxyFitPhase):
         lensing: Analysis
             An lensing object that the non-linear optimizer calls to determine the fit_normal of a set of values
         """
-        mask = self.mask_function(array)
+        mask = mask or self.mask_function(array)
         galaxy_data = gd.GalaxyDataPotential(array=array, noise_map=noise_map, mask=mask,
                                              sub_grid_size=self.sub_grid_size)
         self.pass_priors(previous_results)
@@ -1208,7 +1218,7 @@ class GalaxyFitPotentialPhase(GalaxyFitPhase):
         return analysis
 
 
-class GalaxyFitDeflectionsPhase(Phase):
+class GalaxyFitDeflectionsPhase(AbstractPhase):
     galaxy = PhasePropertyCollection("galaxy")
 
     def __init__(self, galaxy=None, optimizer_class=non_linear.MultiNest, sub_grid_size=1,
@@ -1229,12 +1239,14 @@ class GalaxyFitDeflectionsPhase(Phase):
         self.sub_grid_size = sub_grid_size
         self.mask_function = mask_function
 
-    def run(self, array_y, array_x, noise_map, previous_results=None):
+    def run(self, array_y, array_x, noise_map, previous_results=None, mask=None):
         """
         Run this phase.
 
         Parameters
         ----------
+        mask: Mask
+            The default mask passed in by the pipeline
         previous_results: ResultsCollection
             An object describing the results of the last phase or None if no phase has been executed
         image: img.Image
@@ -1246,19 +1258,21 @@ class GalaxyFitDeflectionsPhase(Phase):
             A result object comprising the best fit_normal model and other datas.
         """
         analysis = self.make_analysis(array_y=array_y, array_x=array_x, noise_map=noise_map,
-                                      previous_results=previous_results)
+                                      previous_results=previous_results, mask=mask)
         result = self.optimizer.fit(analysis)
         analysis.visualize(instance=result.constant, suffix=None, during_analysis=False)
 
         return self.__class__.Result(result.constant, result.likelihood, result.variable, analysis)
 
-    def make_analysis(self, array_y, array_x, noise_map, previous_results=None):
+    def make_analysis(self, array_y, array_x, noise_map, previous_results=None, mask=None):
         """
         Create an lensing object. Also calls the prior passing and lensing_image modifying functions to allow child
         classes to change the behaviour of the phase.
 
         Parameters
         ----------
+        mask: Mask
+            The default mask passed in by the pipeline
         image: im.Image
             An lensing_image that has been masked
         previous_results: ResultsCollection
@@ -1269,7 +1283,7 @@ class GalaxyFitDeflectionsPhase(Phase):
         lensing: Analysis
             An lensing object that the non-linear optimizer calls to determine the fit_normal of a set of values
         """
-        mask = self.mask_function(array_y)
+        mask = mask or self.mask_function(array_y)
         galaxy_data_y = gd.GalaxyDataDeflectionsY(array=array_y, noise_map=noise_map, mask=mask,
                                                   sub_grid_size=self.sub_grid_size)
         galaxy_data_x = gd.GalaxyDataDeflectionsX(array=array_x, noise_map=noise_map, mask=mask,
@@ -1301,7 +1315,7 @@ class GalaxyFitDeflectionsPhase(Phase):
             fit_normal: Fit
                 A fractional value indicating how well this model fit_normal and the model lensing_image itself
             """
-            self.try_output(instance)
+            self.try_log(instance)
             return self.fast_likelihood_for_instance(instance)
 
         def visualize(self, instance, suffix, during_analysis):
@@ -1337,7 +1351,6 @@ class GalaxyFitDeflectionsPhase(Phase):
 
 
 class SensitivityPhase(PhaseImaging):
-
     lens_galaxies = PhasePropertyCollection("lens_galaxies")
     source_galaxies = PhasePropertyCollection("source_galaxies")
     sensitive_galaxies = PhasePropertyCollection("sensitive_galaxies")
@@ -1383,7 +1396,7 @@ class SensitivityPhase(PhaseImaging):
             fit_normal: Fit
                 A fractional value indicating how well this model fit_normal and the model lensing_image itself
             """
-            self.try_output(instance)
+            self.try_log(instance)
             tracer_normal = self.tracer_normal_for_instance(instance)
             tracer_sensitive = self.tracer_sensitive_for_instance(instance)
             return self.fast_likelihood_for_tracers(tracer_normal=tracer_normal, tracer_sensitive=tracer_sensitive)
@@ -1396,7 +1409,8 @@ class SensitivityPhase(PhaseImaging):
             imaging_plotters.plot_image_subplot(image=self.sensitivity_image.image, output_path=self.output_image_path,
                                                 output_format='png', ignore_config=False)
 
-            imaging_plotters.plot_image_individual(image=self.sensitivity_image.image, output_path=self.output_image_path,
+            imaging_plotters.plot_image_individual(image=self.sensitivity_image.image,
+                                                   output_path=self.output_image_path,
                                                    output_format='png')
 
             sensitivity_fitting_plotters.plot_fitting_subplot(fit=fit, output_path=self.output_image_path,
@@ -1418,9 +1432,10 @@ class SensitivityPhase(PhaseImaging):
                 borders=[self.sensitivity_image.borders])
 
         def fast_likelihood_for_tracers(self, tracer_normal, tracer_sensitive):
-            return sensitivity_fitting.SensitivityProfileFit.fast_likelihood(sensitivity_images=[self.sensitivity_image],
-                                                                             tracer_normal=tracer_normal,
-                                                                             tracer_sensitive=tracer_sensitive)
+            return sensitivity_fitting.SensitivityProfileFit.fast_likelihood(
+                sensitivity_images=[self.sensitivity_image],
+                tracer_normal=tracer_normal,
+                tracer_sensitive=tracer_sensitive)
 
         def fit_for_tracers(self, tracer_normal, tracer_sensitive):
             return sensitivity_fitting.SensitivityProfileFit(sensitivity_images=[self.sensitivity_image],
@@ -1441,6 +1456,7 @@ class SensitivityPhase(PhaseImaging):
             """
 
             super(SensitivityPhase.Result, self).__init__(constant, likelihood, variable)
+
 
 def make_path_if_does_not_exist(path):
     if not os.path.exists(path):
