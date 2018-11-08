@@ -226,7 +226,7 @@ class DownhillSimplex(NonLinearOptimizer):
                     self.max_likelihood = likelihood
                     self.result = Result(instance, likelihood)
 
-                analysis.try_visualise(self.result)
+                analysis.try_visualise(self.result.constant)
 
                 # Return Chi squared
                 return -2 * likelihood
@@ -334,7 +334,7 @@ class MultiNest(NonLinearOptimizer):
                     self.max_likelihood = likelihood
                     self.result = Result(instance, likelihood)
 
-                analysis.try_visualise(self.result)
+                analysis.try_visualise(self.result.constant)
 
                 return likelihood
 
