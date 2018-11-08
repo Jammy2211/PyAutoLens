@@ -1,15 +1,7 @@
 import configparser
 import os
-import shutil
 
 from autolens import exc
-
-directory = os.path.dirname(os.path.realpath(__file__))
-
-CONFIG_DIR = '{}'.format(directory)
-CONFIG_PATH = '{}/config'.format(CONFIG_DIR)
-
-CONFIG_URL = 'https://drive.google.com/uc?authuser=0&id=1IZE4biWzuxyudDtNr4skyM0PiBHiJhBN&export=download'
 
 
 def family(current_class):
@@ -225,26 +217,8 @@ class WidthConfig(AncestorConfig):
         return float(super(WidthConfig, self).get(module_name, class_name, attribute_name))
 
 
-def is_config(config_path=CONFIG_PATH):
-    return os.path.isdir(config_path)
-
-
-def copy_default(config_path):
-    shutil.copytree("{}/config".format(directory), config_path)
-
-
-def remove_config(config_path=CONFIG_PATH):
-    print("Removing config...")
-    try:
-        shutil.rmtree(config_path)
-    except FileNotFoundError:
-        pass
-
-
 class Config(object):
     def __init__(self, config_path, output_path):
-        if not is_config(config_path):
-            copy_default(config_path)
         self.config_path = config_path
         self.prior_default = DefaultPriorConfig("{}/priors/default".format(config_path))
         self.prior_width = WidthConfig("{}/priors/width".format(config_path))
@@ -254,4 +228,29 @@ class Config(object):
         self.output_path = output_path
 
 
-instance = Config("{}/config".format(CONFIG_DIR), "{}/../workspace/output/".format(directory))
+def is_config_in(folder):
+    return os.path.isdir("{}/config".format(folder))
+
+
+"""
+Search for default configuration and put output in the same folder as config.
+
+The search is performed in this order:
+1) workspace. This is assumed to be in the same directory as autolens in the Docker container
+2) current working directory. This is to allow for installation and use with pip where users would expect the
+   configuration in their current directory to be used.
+3) autolens. This is a backup for when no configuration is found. In this case it is still assumed a workspace directory
+   exists in the same directory as autolens.
+"""
+
+
+autolens_directory = os.path.dirname(os.path.realpath(__file__))
+workspace_directory = "{}/../workspace".format(autolens_directory)
+current_directory = os.getcwd()
+
+if is_config_in(workspace_directory):
+    instance = Config("{}/config".format(workspace_directory), "{}/output/".format(workspace_directory))
+elif is_config_in(current_directory):
+    instance = Config("{}/config".format(current_directory), "{}/output/".format(current_directory))
+else:
+    instance = Config("{}/config".format(autolens_directory), "{}/../workspace/output/".format(autolens_directory))

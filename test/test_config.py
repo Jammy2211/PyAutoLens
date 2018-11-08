@@ -9,11 +9,6 @@ from autolens.profiles import light_profiles
 directory = path.dirname(path.realpath(__file__))
 
 
-class TestCase(object):
-    def test_is_config(self):
-        assert conf.is_config()
-
-
 class MockClass(object):
     pass
 
