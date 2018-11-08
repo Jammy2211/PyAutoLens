@@ -38,3 +38,4 @@ test/integration/data/
 test/integration/tests/simulate_and_fit/datas/
 output
 test/integration/datas/
+search.py
