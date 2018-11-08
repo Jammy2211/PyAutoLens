@@ -17,17 +17,36 @@ class MockAnalysis(object):
         return self.number_galaxies * [np.full(self.shape, self.value)]
 
 
+class MockMask(object):
+    pass
+
+
 class DummyPhaseImaging(object):
     def __init__(self):
         self.masked_image = None
         self.positions = None
         self.previous_results = None
         self.phase_name = "dummy_phase"
+        self.mask = None
 
-    def run(self, masked_image, previous_results):
+    def run(self, masked_image, previous_results, mask=None):
+        print(mask)
         self.masked_image = masked_image
         self.previous_results = previous_results
+        self.mask = mask
         return non_linear.Result(model_mapper.ModelInstance(), 1)
+
+
+class TestPassMask(object):
+    def test_pass_mask(self):
+        mask = MockMask()
+        phase_1 = DummyPhaseImaging()
+        phase_2 = DummyPhaseImaging()
+        pipeline = pl.PipelineImaging("", phase_1, phase_2)
+        pipeline.run(None, mask)
+
+        assert phase_1.mask is mask
+        assert phase_2.mask is mask
 
 
 class TestPipelineImaging(object):
