@@ -198,7 +198,7 @@ def plot_potential(tracer, as_subplot=False,
                    units='arcsec', figsize=(7, 7), aspect='equal',
                    cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
                    cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
-                   title='Tracer Surface Density', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
+                   title='Tracer Potential', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
                    output_path=None, output_format='show', output_filename='tracer_potential'):
 
     tools_array.plot_array(array=tracer.potential, as_subplot=as_subplot,
@@ -214,7 +214,7 @@ def plot_deflections_y(tracer, as_subplot=False,
                        units='arcsec', figsize=(7, 7), aspect='equal',
                        cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
                        cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
-                       title='Tracer Surface Density', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
+                       title='Tracer Deflections (y)', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
                        output_path=None, output_format='show', output_filename='tracer_deflections_y'):
 
     tools_array.plot_array(array=tracer.deflections_y, as_subplot=as_subplot,
@@ -230,7 +230,7 @@ def plot_deflections_x(tracer, as_subplot=False,
                        units='arcsec', figsize=(7, 7), aspect='equal',
                        cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
                        cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
-                       title='Tracer Surface Density', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
+                       title='Tracer Deflections (x)', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
                        output_path=None, output_format='show', output_filename='tracer_deflections_x'):
 
     tools_array.plot_array(array=tracer.deflections_x, as_subplot=as_subplot,

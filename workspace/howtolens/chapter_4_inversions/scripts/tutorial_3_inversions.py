@@ -60,7 +60,7 @@ mapper_plotters.plot_image_and_mapper(image=image, mask=mask, mapper=mapper)
 # And now, finally, we're going to use our mapper to invert the image using the 'inversions' module, which is imported
 # as 'inv'. I'll explain how this works in a second - but lets just go ahead and perform the inversion first.
 # (Ignore the 'regularization' input below for now, we'll cover this in the next tutorial).
-inversion = inv.Inversion(image=lensing_image[:], noise_map=lensing_image.noise_map,
+inversion = inv.Inversion(image=lensing_image[:], noise_map=lensing_image.noise_map_,
                           convolver=lensing_image.convolver_mapping_matrix, mapper=mapper,
                           regularization=reg.Constant(coefficients=(1.0,)))
 
@@ -117,7 +117,7 @@ lensing_image = li.LensingImage(image=image, mask=mask, sub_grid_size=1)
 tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[g.Galaxy()],
                                              image_plane_grids=[lensing_image.grids])
 mapper = rectangular.mapper_from_grids(grids=tracer.source_plane.grids[0])
-inversion = inv.Inversion(image=lensing_image[:], noise_map=lensing_image.noise_map,
+inversion = inv.Inversion(image=lensing_image[:], noise_map=lensing_image.noise_map_,
                           convolver=lensing_image.convolver_mapping_matrix, mapper=mapper,
                           regularization=reg.Constant(coefficients=(1.0,)))
 
