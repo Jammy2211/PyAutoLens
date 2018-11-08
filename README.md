@@ -35,7 +35,7 @@ Once the project is running Docker will provide you with a URL. Copy and paste t
 
 Any changes you make inside the Docker workspace will be saved in the autolens_workspace in your home directory.
 
-## Installation
+## Installation with pip
 
 Installation is also available via pip, however there are a number of dependencies that can be installation difficult, see the file [INSTALL.notes](https://github.com/Jammy2211/PyAutoLens/blob/master/INSTALL.notes)
 
