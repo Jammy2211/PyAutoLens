@@ -21,8 +21,6 @@ $ pip install autolens
 
 Known issues with the installation can be found in the file [INSTALL.notes](https://github.com/Jammy2211/PyAutoLens/blob/master/INSTALL.notes)
 
-A workspace with configuration, examples and tutorials can be downloaded [here](https://drive.google.com/open?id=1QOwXBy2CFmdngN35tjQ4AsoiEHKWpoHR).
-
 
 ## Installation with Docker
 
@@ -47,6 +45,12 @@ docker run -it -e LOCAL_USER_ID=`id -u $USER` -h autolens -p 8888:8888 -p 6006:6
 Once the project is running Docker will provide you with a URL. Copy and paste this URL into your browser, making sure you replace '(PyAutoLens or 127.0.0.1)' with '127.0.0.1'. This will bring up a Jupyter notebook including the 'howtolens' directory which is full of tutorials.
 
 Any changes you make inside the Docker workspace will be saved in the autolens_workspace in your home directory.
+
+## Workspace
+
+If you install AutoLens with Docker a workspace will be generated for you in the home directory the first time you run the image. This contains configuration, examples and tutorials. After the first time you run docker the workspace will persist any changes you make and won't be updated again.
+
+If you installed AutoLens with pip or want to get access to the latest workspace then you can download it from [here](https://drive.google.com/open?id=1QOwXBy2CFmdngN35tjQ4AsoiEHKWpoHR).
 
 ## Python Example
 
