@@ -428,7 +428,7 @@ class TestLuminosityIntegral(object):
 
         intensity_integral = sersic.luminosity_within_ellipse(major_axis=integral_radius)
 
-        assert luminosity_tot == pytest.approx(intensity_integral, 0.02)
+        assert luminosity_tot[0] == pytest.approx(intensity_integral, 0.02)
 
 
 class TestGrids(object):

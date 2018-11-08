@@ -222,7 +222,6 @@ class DownhillSimplex(NonLinearOptimizer):
                     likelihood = -np.inf
 
                 if likelihood > self.max_likelihood:
-
                     self.max_likelihood = likelihood
                     self.result = Result(instance, likelihood)
 
@@ -308,6 +307,10 @@ class MultiNest(NonLinearOptimizer):
                 self.max_likelihood = -np.inf
                 self.output_results = output_results
                 self.accepted_samples = 0
+                self.number_of_accepted_samples_between_output = conf.instance.general.get(
+                    "output",
+                    "number_of_accepted_samples_between_output",
+                    int)
 
             def __call__(self, cube, ndim, nparams, lnew):
 
@@ -323,11 +326,9 @@ class MultiNest(NonLinearOptimizer):
 
                 if likelihood > self.max_likelihood:
 
-                    # TODO : make the 10 below a config file param e.g. output_results_every_accepted_samples
-
                     self.accepted_samples += 1
 
-                    if self.accepted_samples == 10:
+                    if self.accepted_samples == self.number_of_accepted_samples_between_output:
                         self.accepted_samples = 0
                         self.output_results(during_analysis=True)
 
@@ -502,7 +503,7 @@ class MultiNest(NonLinearOptimizer):
     def model_errors_at_sigma_limit(self, sigma_limit):
         uppers = self.model_at_upper_sigma_limit(sigma_limit=sigma_limit)
         lowers = self.model_at_lower_sigma_limit(sigma_limit=sigma_limit)
-        return list(map(lambda upper, lower : upper - lower, uppers, lowers))
+        return list(map(lambda upper, lower: upper - lower, uppers, lowers))
 
     def weighted_sample_instance_from_weighted_samples(self, index):
         """Setup a model instance of a weighted sample, including its weight and likelihood.
