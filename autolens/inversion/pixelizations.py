@@ -3,8 +3,8 @@ import scipy.spatial
 import sklearn.cluster
 
 from autolens import exc
-from autolens.imaging import scaled_array
 from autolens.imaging import mask
+from autolens.imaging import scaled_array
 from autolens.inversion import mappers
 
 
@@ -23,6 +23,12 @@ class Pixelization(object):
 
     def mapper_from_grids_and_borders(self, grids, borders):
         raise NotImplementedError("pixelization_mapper_from_grids_and_borders should be overridden")
+
+    def __str__(self):
+        return "\n".join(["{}: {}".format(k, v) for k, v in self.__dict__.items()])
+
+    def __repr__(self):
+        return "{}\n{}".format(self.__class__.__name__, str(self))
 
 
 class Rectangular(Pixelization):

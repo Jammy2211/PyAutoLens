@@ -118,9 +118,9 @@ class Galaxy(object):
     def __repr__(self):
         string = "Redshift: {}".format(self.redshift)
         if self.pixelization:
-            string += str(self.pixelization)
+            string += "\nPixelization:\n{}".format(str(self.pixelization))
         if self.hyper_galaxy:
-            string += str(self.hyper_galaxy)
+            string += "\nHyper Galaxy:\n{}".format(str(self.hyper_galaxy))
         if self.light_profiles:
             string += "\nLight Profiles:\n{}".format("\n".join(map(str, self.light_profiles)))
         if self.mass_profiles:
