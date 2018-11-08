@@ -38,16 +38,16 @@ class PipelineImaging(Pipeline):
     def __init__(self, pipeline_name, *phases):
         super(PipelineImaging, self).__init__(pipeline_name, *phases)
 
-    def run(self, image):
+    def run(self, image, mask=None):
 
         from autolens.pipeline import phase as ph
         results = []
         for i, phase in enumerate(self.phases):
             logger.info("Running Phase {} (Number {})".format(phase.phase_name, i))
-            if not isinstance(phase, ph.HyperOnly):
-                results.append(phase.run(image, ph.ResultsCollection(results)))
-            elif isinstance(phase, ph.HyperOnly):
-                results[-1].hyper = phase.hyper_run(image, ph.ResultsCollection(results))
+            if isinstance(phase, ph.HyperOnly):
+                results[-1].hyper = phase.hyper_run(image, ph.ResultsCollection(results), mask)
+            else:
+                results.append(phase.run(image, ph.ResultsCollection(results), mask))
         return results
 
 

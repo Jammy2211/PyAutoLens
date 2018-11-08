@@ -209,14 +209,24 @@ class DownhillSimplex(NonLinearOptimizer):
                 self.result = None
                 self.instance_from_physical_vector = instance_from_physical_vector
                 self.constant = constant
+                self.max_likelihood = -np.inf
 
             def __call__(self, vector):
                 instance = self.instance_from_physical_vector(vector)
 
                 instance += self.constant
 
-                likelihood = analysis.fit(instance)
-                self.result = Result(instance, likelihood)
+                try:
+                    likelihood = analysis.fit(instance)
+                except exc.InversionException or exc.RayTracingException:
+                    likelihood = -np.inf
+
+                if likelihood > self.max_likelihood:
+
+                    self.max_likelihood = likelihood
+                    self.result = Result(instance, likelihood)
+
+                analysis.try_visualise(self.result.constant)
 
                 # Return Chi squared
                 return -2 * likelihood
@@ -323,6 +333,8 @@ class MultiNest(NonLinearOptimizer):
 
                     self.max_likelihood = likelihood
                     self.result = Result(instance, likelihood)
+
+                analysis.try_visualise(self.result.constant)
 
                 return likelihood
 
