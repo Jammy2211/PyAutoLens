@@ -21,6 +21,9 @@ $ pip install autolens
 
 Known issues with the installation can be found in the file [INSTALL.notes](https://github.com/Jammy2211/PyAutoLens/blob/master/INSTALL.notes)
 
+A workspace with configuration, examples and tutorials can be downloaded [here](https://drive.google.com/open?id=1QOwXBy2CFmdngN35tjQ4AsoiEHKWpoHR).
+
+
 ## Installation with Docker
 
 An easy alternative is to install AutoLens using Docker. It makes installation easier by containerising the project.

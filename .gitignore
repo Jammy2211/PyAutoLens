@@ -1,6 +1,4 @@
 *.ipynb
-mass_model_catalogue.pdf
-long_paper.pdf
 .projprofile
 *.pyc
 pip-selfcheck.json
@@ -41,3 +39,5 @@ test/integration/tests/simulate_and_fit/datas/
 output
 test/integration/datas/
 search.py
+workspace.zip
+bfg-1.13.0.jar
