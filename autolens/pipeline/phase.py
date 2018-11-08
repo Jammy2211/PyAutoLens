@@ -326,7 +326,7 @@ class PhasePositions(AbstractPhase):
         super().__init__(optimizer_class, phase_name, auto_link_priors=auto_link_priors)
         self.lens_galaxies = lens_galaxies
 
-    def run(self, positions, pixel_scale, previous_results=None, mask=None):
+    def run(self, positions, pixel_scale, previous_results=None):
         """
         Run this phase.
 
@@ -681,17 +681,11 @@ class LensPlaneHyperPhase(LensPlanePhase):
         def fast_likelihood_for_tracer(self, tracer):
             return lensing_fitting.fast_likelihood_from_lensing_image_and_tracer(
                 lensing_image=self.lensing_image,
-                tracer=tracer,
-                hyper_model_image=self.hyper_model_image,
-                hyper_galaxy_images=self.hyper_galaxy_images,
-                hyper_minimum_values=self.hyper_minimum_values)
+                tracer=tracer)
 
         def fit_for_tracers(self, tracer, padded_tracer):
             return lensing_fitting.fit_lensing_image_with_tracer(lensing_image=self.lensing_image, tracer=tracer,
-                                                                 padded_tracer=padded_tracer,
-                                                                 hyper_model_image=self.hyper_model_image,
-                                                                 hyper_galaxy_images=self.hyper_galaxy_images,
-                                                                 hyper_minimum_values=self.hyper_minimum_values)
+                                                                 padded_tracer=padded_tracer)
 
         @classmethod
         def log(cls, instance):
@@ -722,6 +716,7 @@ class LensLightHyperOnlyPhase(LensPlaneHyperPhase, HyperOnly):
 
             def pass_priors(self, previous_results):
                 use_hyper_galaxy = len(previous_results[-1].constant.lens_galaxies) * [None]
+                # noinspection PyTypeChecker
                 use_hyper_galaxy[self.hyper_index] = g.HyperGalaxy
 
                 self.lens_galaxies = list(map(lambda lens_galaxy, use_hyper:
@@ -915,15 +910,11 @@ class LensSourcePlaneHyperPhase(LensSourcePlanePhase):
             self.hyper_minimum_values = len(self.hyper_galaxy_images) * [0.0]
 
         def fast_likelihood_for_tracer(self, tracer):
-            return lensing_fitting.fast_likelihood_from_lensing_image_and_tracer(self.lensing_image, tracer,
-                                                                                 self.hyper_model_image,
-                                                                                 self.hyper_galaxy_images,
-                                                                                 self.hyper_minimum_values)
+            return lensing_fitting.fast_likelihood_from_lensing_image_and_tracer(self.lensing_image, tracer)
 
         def fit_for_tracer(self, tracer):
             return lensing_fitting.fit_lensing_image_with_tracer(self.lensing_image, tracer,
-                                                                 self.hyper_model_image, self.hyper_galaxy_images,
-                                                                 self.hyper_minimum_values)
+                                                                 self.hyper_model_image)
 
         @classmethod
         def log(cls, instance):
@@ -960,10 +951,11 @@ class LensMassAndSourceProfileHyperOnlyPhase(LensSourcePlaneHyperPhase, HyperOnl
                                                                      auto_link_priors=auto_link_priors)
         self.hyper_index = hyper_index
 
-    def hyper_run(self, image, previous_results=None):
+    def hyper_run(self, image, previous_results=None, mask=None):
         class SourceGalaxyHyperPhase(LensMassAndSourceProfileHyperOnlyPhase):
             def pass_priors(self, previous_results):
                 use_hyper_galaxy = len(previous_results[-1].constant.source_galaxies) * [None]
+                # noinspection PyTypeChecker
                 use_hyper_galaxy[self.hyper_index] = g.HyperGalaxy
 
                 self.lens_galaxies = previous_results[-1].variable.lens_galaxies
@@ -981,7 +973,7 @@ class LensMassAndSourceProfileHyperOnlyPhase(LensSourcePlaneHyperPhase, HyperOnl
 
             phase.optimizer.n_live_points = 20
             phase.optimizer.sampling_efficiency = 0.8
-            result = phase.run(image, previous_results)
+            result = phase.run(image, previous_results, mask)
             overall_result.constant.source_galaxies[i].hyper_galaxy = result.constant.source_galaxies[i].hyper_galaxy
 
         return overall_result
@@ -1025,7 +1017,7 @@ class LensMassAndSourceProfileHyperOnlyPhase(LensSourcePlaneHyperPhase, HyperOnl
             self.hyper_minimum_values = len(self.hyper_galaxy_images) * [0.0]
 
 
-class GalaxyFitPhase(Phase):
+class GalaxyFitPhase(AbstractPhase):
     galaxy = PhasePropertyCollection("galaxy")
 
     def __init__(self, galaxy=None, optimizer_class=non_linear.MultiNest, sub_grid_size=1,
@@ -1218,7 +1210,7 @@ class GalaxyFitPotentialPhase(GalaxyFitPhase):
         return analysis
 
 
-class GalaxyFitDeflectionsPhase(Phase):
+class GalaxyFitDeflectionsPhase(AbstractPhase):
     galaxy = PhasePropertyCollection("galaxy")
 
     def __init__(self, galaxy=None, optimizer_class=non_linear.MultiNest, sub_grid_size=1,
