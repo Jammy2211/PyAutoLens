@@ -11,20 +11,9 @@ We're building a PyAutoLens community on Slack, so you should contact us on our 
 
 Unfortunately, Slack is invitation-only, so first send me an [email](https://github.com/Jammy2211) requesting an invite.
 
-## Installation
-
-AutoLens requires [PyMultiNest](http://johannesbuchner.github.io/pymultinest-tutorial/install.html) and [Numba](https://github.com/numba/numba).
-
-```
-$ pip install autolens
-```
-
-Known issues with the installation can be found in the file [INSTALL.notes](https://github.com/Jammy2211/PyAutoLens/blob/master/INSTALL.notes)
-
-
 ## Installation with Docker
 
-An easy alternative is to install AutoLens using Docker. It makes installation easier by containerising the project.
+We recommend you install AutoLens using Docker. It makes installation easier by containerising the project.
 
 If you don't have Docker then you can install it by following the guide [here](https://docs.docker.com/install/).
 
@@ -46,11 +35,47 @@ Once the project is running Docker will provide you with a URL. Copy and paste t
 
 Any changes you make inside the Docker workspace will be saved in the autolens_workspace in your home directory.
 
+## Installation
+
+Installation is also available via pip, however there are a number of dependencies that can be installation difficult, see the file [INSTALL.notes](https://github.com/Jammy2211/PyAutoLens/blob/master/INSTALL.notes)
+
+AutoLens requires [PyMultiNest](http://johannesbuchner.github.io/pymultinest-tutorial/install.html) and [Numba](https://github.com/numba/numba).
+
+```
+$ pip install autolens
+```
+
 ## Workspace
 
 If you install AutoLens with Docker a workspace will be generated for you in the home directory the first time you run the image. This contains configuration, examples and tutorials. After the first time you run docker the workspace will persist any changes you make and won't be updated again.
 
 If you installed AutoLens with pip or want to get access to the latest workspace then you can download it from [here](https://drive.google.com/open?id=1QOwXBy2CFmdngN35tjQ4AsoiEHKWpoHR).
+
+## Features
+
+PyAutoLens's advanced modeling features include:
+
+- **Pipelines** - build automated analysis pipelines to fit complex lens models to large samples of strong lenses.
+- **Inversions** - Reconstruct complex source galaxy morphologies on a variety of pixel-grids.
+- **Adaption** - (November 2018) - Adapt the lensing analysis to the features of the observed strong lens imaging.
+- **Multi-Plane** - (December 2018) Model multi-plane lenses, including systems with multiple lensed source galaxies.
+
+## HowToLens
+
+Detailed tutorials demonstrating how to use PyAutoLens can be found in the 'workspace/howtolens' folder:
+
+- **Introduction** - How to use PyAutolens, familiarizing you with the interface and project structure.
+- **Lens Modeling** - How to model strong lenses, including a primer on Bayesian non-linear analysis.
+- **Pipelines** - How to build pipelines and tailor them to your own science case.
+- **Inversions** - How to perform pixelized reconstructions of the source-galaxy.
+
+## Support & Discussion
+
+If you're having difficulty with installation, lens modeling, or just want a chat, feel free to message us on our [Slack channel](https://pyautolens.slack.com/).
+
+## Contributing
+
+If you have any suggestions or would like to contribute please get in touch.
 
 ## Python Example
 
@@ -97,28 +122,3 @@ print(results)
 fitting_plotters.plot_fitting_subplot(fit=results.fit)
 
 ```
-## Advanced Lens Modeling
-
-The example above shows the simplest analysis one can perform in PyAutoLens. PyAutoLens's advanced modeling features include:
-
-- **Pipelines** - build automated analysis pipelines to fit complex lens models to large samples of strong lenses.
-- **Inversions** - Reconstruct complex source galaxy morphologies on a variety of pixel-grids.
-- **Adaption** - (November 2018) - Adapt the lensing analysis to the features of the observed strong lens imaging.
-- **Multi-Plane** - (December 2018) Model multi-plane lenses, including systems with multiple lensed source galaxies.
-
-## HowToLens
-
-Detailed tutorials demonstrating how to use PyAutoLens can be found in the 'howtolens' folder:
-
-- **Introduction** - How to use PyAutolens, familiarizing you with the interface and project structure.
-- **Lens Modeling** - How to model strong lenses, including a primer on Bayesian non-linear analysis.
-- **Pipelines** - How to build pipelines and tailor them to your own science case.
-- **Inversions** - How to perform pixelized reconstructions of the source-galaxy.
-
-## Support & Discussion
-
-If you're having difficulty with installation, lens modeling, or just want a chat, feel free to message us on our [Slack channel](https://pyautolens.slack.com/).
-
-## Contributing
-
-If you have any suggestions or would like to contribute please get in touch.
