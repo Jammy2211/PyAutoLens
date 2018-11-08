@@ -243,14 +243,16 @@ The search is performed in this order:
    exists in the same directory as autolens.
 """
 
-
 autolens_directory = os.path.dirname(os.path.realpath(__file__))
 workspace_directory = "{}/../workspace".format(autolens_directory)
 current_directory = os.getcwd()
 
 if is_config_in(workspace_directory):
-    instance = Config("{}/config".format(workspace_directory), "{}/output/".format(workspace_directory))
+    CONFIG_PATH = "{}/config".format(workspace_directory)
+    instance = Config(CONFIG_PATH, "{}/output/".format(workspace_directory))
 elif is_config_in(current_directory):
-    instance = Config("{}/config".format(current_directory), "{}/output/".format(current_directory))
+    CONFIG_PATH = "{}/config".format(current_directory)
+    instance = Config(CONFIG_PATH, "{}/output/".format(current_directory))
 else:
-    instance = Config("{}/config".format(autolens_directory), "{}/../workspace/output/".format(autolens_directory))
+    CONFIG_PATH = "{}/config".format(autolens_directory)
+    instance = Config(CONFIG_PATH, "{}/../workspace/output/".format(autolens_directory))
