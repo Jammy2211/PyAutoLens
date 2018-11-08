@@ -233,7 +233,8 @@ class AbstractPhase(object):
             log_file = conf.instance.general.get('output', 'log_file', str)
             if not len(log_file.replace(" ", "")) == 0:
                 log_path = "{}/{}".format(self.phase_output_path, log_file)
-                logger.addHandler(logging.FileHandler(log_path))
+                logger.handlers = [logging.FileHandler(log_path)]
+                logger.propagate = False
 
             self.__should_log = IntervalCounter(log_interval)
 
