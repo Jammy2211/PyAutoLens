@@ -64,7 +64,7 @@ PyAutoLens's advanced modeling features include:
 
 Detailed tutorials demonstrating how to use PyAutoLens can be found in the 'workspace/howtolens' folder:
 
-- **Introduction** - How to use PyAutolens, familiarizing you with the interface and project structure.
+- **Introduction** - An introduction to strong gravitational lensing and PyAutolens, familiarizing you with the interface and project structure.
 - **Lens Modeling** - How to model strong lenses, including a primer on Bayesian non-linear analysis.
 - **Pipelines** - How to build pipelines and tailor them to your own science case.
 - **Inversions** - How to perform pixelized reconstructions of the source-galaxy.
