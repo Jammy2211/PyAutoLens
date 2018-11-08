@@ -256,7 +256,7 @@ class AbstractPhase(object):
         def fit(self, instance):
             raise NotImplementedError()
 
-        def try_output(self, instance):
+        def try_log(self, instance):
             """
             Log and plot instance data, if the logging and plotting conditions are met respectively.
 
@@ -275,6 +275,8 @@ class AbstractPhase(object):
             """
             if self.should_log:
                 self.log(instance)
+
+        def try_visualise(self, instance):
             if self.should_visualise:
                 self.plot_count += 1
                 logger.info("Saving visualisations {}".format(self.plot_count))
@@ -536,7 +538,7 @@ class PhaseImaging(Phase):
             fit_normal: Fit
                 A fractional value indicating how well this model fit_normal and the model lensing_image itself
             """
-            self.try_output(instance)
+            self.try_log(instance)
             self.check_positions_trace_within_threshold(instance)
             tracer = self.tracer_for_instance(instance)
             return self.fast_likelihood_for_tracer(tracer)
@@ -1086,7 +1088,7 @@ class GalaxyFitPhase(AbstractPhase):
             fit_normal: Fit
                 A fractional value indicating how well this model fit_normal and the model lensing_image itself
             """
-            self.try_output(instance)
+            self.try_log(instance)
             return self.fast_likelihood_for_instance(instance)
 
         def visualize(self, instance, suffix, during_analysis):
@@ -1307,7 +1309,7 @@ class GalaxyFitDeflectionsPhase(AbstractPhase):
             fit_normal: Fit
                 A fractional value indicating how well this model fit_normal and the model lensing_image itself
             """
-            self.try_output(instance)
+            self.try_log(instance)
             return self.fast_likelihood_for_instance(instance)
 
         def visualize(self, instance, suffix, during_analysis):
@@ -1388,7 +1390,7 @@ class SensitivityPhase(PhaseImaging):
             fit_normal: Fit
                 A fractional value indicating how well this model fit_normal and the model lensing_image itself
             """
-            self.try_output(instance)
+            self.try_log(instance)
             tracer_normal = self.tracer_normal_for_instance(instance)
             tracer_sensitive = self.tracer_sensitive_for_instance(instance)
             return self.fast_likelihood_for_tracers(tracer_normal=tracer_normal, tracer_sensitive=tracer_sensitive)
