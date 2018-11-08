@@ -228,7 +228,12 @@ class AbstractPhase(object):
 
             self.previous_results = previous_results
             self.phase_name = phase_name
+            self.phase_output_path = "{}/{}".format(conf.instance.output_path, self.phase_name)
             log_interval = conf.instance.general.get('output', 'log_interval', int)
+            log_file = conf.instance.general.get('output', 'log_file', str)
+            if not len(log_file.replace(" ", "")) == 0:
+                log_path = "{}/{}".format(self.phase_output_path, log_file)
+                logger.addHandler(logging.FileHandler(log_path))
 
             self.__should_log = IntervalCounter(log_interval)
 
@@ -237,7 +242,7 @@ class AbstractPhase(object):
             self.__should_visualise = IntervalCounter(visualise_interval)
             self.position_threshold = conf.instance.general.get('positions', 'position_threshold', float)
             self.plot_count = 0
-            self.output_image_path = "{}/".format(conf.instance.output_path) + '/' + self.phase_name + '/image/'
+            self.output_image_path = "{}/image/".format(self.phase_output_path)
             make_path_if_does_not_exist(path=self.output_image_path)
 
         @property
