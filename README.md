@@ -5,11 +5,11 @@ PyAutoLens makes it simple to model strong gravitational lenses. It is based on 
 https://arxiv.org/abs/1412.7436<br/>
 https://arxiv.org/abs/1708.07377
 
-## SLACK
+## Slack
 
-We're building a PyAutoLens community on SLACK, so you should contact us on our [SLACK channel](https://pyautolens.slack.com/) before getting started with PyAutoLens. Here, I can introduce you to the community, give you the latest update on the software and discuss how best to use PyAutoLens for your science case.
+We're building a PyAutoLens community on Slack, so you should contact us on our [Slack channel](https://pyautolens.slack.com/) before getting started with PyAutoLens. Here, I can introduce you to the community, give you the latest update on the software and discuss how best to use PyAutoLens for your science case.
 
-Unfortunately, SLACK is invitation-only, so first send me an [email](https://github.com/Jammy2211) requesting an invite.
+Unfortunately, Slack is invitation-only, so first send me an [email](https://github.com/Jammy2211) requesting an invite.
 
 ## Installation
 
@@ -117,7 +117,7 @@ Detailed tutorials demonstrating how to use PyAutoLens can be found in the 'howt
 
 ## Support & Discussion
 
-If you're having difficulty with installation, lens modeling, or just want a chat, feel free to message us on our [SLACK channel](https://pyautolens.slack.com/).
+If you're having difficulty with installation, lens modeling, or just want a chat, feel free to message us on our [Slack channel](https://pyautolens.slack.com/).
 
 ## Contributing
 
