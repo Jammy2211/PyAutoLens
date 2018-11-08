@@ -586,7 +586,7 @@ def resize_array_2d(array_2d, new_shape, new_centre=(-1, -1)):
                     resized_array[y_resized, x_resized] = array_2d[y,x]
             else:
                 if y_resized >=0 and y_resized < new_shape[0] and x_resized >= 0 and x_resized < new_shape[1]:
-                    resized_array[y_resized, x_resized] = 0
+                    resized_array[y_resized, x_resized] = 0.0
 
     return resized_array
 

@@ -62,11 +62,11 @@ def simulate_image_large_stamp():
 
     image_plane_grids = mask.ImagingGrids.grids_for_simulation(shape=(500, 500), pixel_scale=0.1, psf_shape=(21, 21))
 
-    lens_galaxy = g.Galaxy(light=lp.SphericalSersic(centre=(1.0, 1.0), intensity=0.3, effective_radius=1.0,
+    lens_galaxy = g.Galaxy(light=lp.SphericalSersic(centre=(0.0, 0.0), intensity=0.3, effective_radius=1.0,
                                                     sersic_index=2.0),
-                           mass=mp.SphericalIsothermal(centre=(1.0, 1.0), einstein_radius=1.2))
+                           mass=mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=1.2))
 
-    source_galaxy = g.Galaxy(light=lp.SphericalSersic(centre=(1.0, 1.0), intensity=0.2, effective_radius=1.0,
+    source_galaxy = g.Galaxy(light=lp.SphericalSersic(centre=(0.0, 0.0), intensity=0.2, effective_radius=1.0,
                                                       sersic_index=1.5))
 
     tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
@@ -98,7 +98,6 @@ def simulate_image_small_stamp():
     return im.Image.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=0.1,
                                         exposure_time=300.0, psf=psf, background_sky_level=0.1, add_noise=True)
 
-
 def simulate_image_offset_centre():
 
     from autolens.imaging import mask
@@ -122,8 +121,55 @@ def simulate_image_offset_centre():
     return im.Image.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=0.1,
                                         exposure_time=300.0, psf=psf, background_sky_level=0.1, add_noise=True)
 
+def simulate_image_with_large_psf():
+
+    from autolens.imaging import mask
+    from autolens.galaxy import galaxy as g
+    from autolens.lensing import ray_tracing
+
+    psf = im.PSF.simulate_as_gaussian(shape=(101, 101), sigma=0.05, pixel_scale=0.1)
+
+    image_plane_grids = mask.ImagingGrids.grids_for_simulation(shape=(100, 100), pixel_scale=0.1, psf_shape=(101, 101))
+
+    lens_galaxy = g.Galaxy(light=lp.SphericalSersic(centre=(0.0, 0.0), intensity=0.3, effective_radius=1.0,
+                                                    sersic_index=2.0),
+                           mass=mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=1.2))
+
+    source_galaxy = g.Galaxy(light=lp.SphericalSersic(centre=(0.0, 0.0), intensity=0.2, effective_radius=1.0,
+                                                      sersic_index=1.5))
+
+    tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
+                                                 image_plane_grids=[image_plane_grids])
+
+    return im.Image.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=0.1,
+                                        exposure_time=300.0, psf=psf, background_sky_level=0.1, add_noise=True)
+
 path = '{}/'.format(os.path.dirname(os.path.realpath(__file__)))
 
+def simulate_image_with_offset_centre_psf():
+
+    from autolens.imaging import mask
+    from autolens.galaxy import galaxy as g
+    from autolens.lensing import ray_tracing
+
+    psf = im.PSF.simulate_as_gaussian(shape=(21, 21), sigma=0.05, pixel_scale=0.1, centre=(0.1, 0.1))
+
+    image_plane_grids = mask.ImagingGrids.grids_for_simulation(shape=(100, 100), pixel_scale=0.1, psf_shape=(21, 21))
+
+    lens_galaxy = g.Galaxy(light=lp.SphericalSersic(centre=(0.0, 0.0), intensity=0.3, effective_radius=1.0,
+                                                    sersic_index=2.0),
+                           mass=mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=1.2))
+
+    source_galaxy = g.Galaxy(light=lp.SphericalSersic(centre=(0.0, 0.0), intensity=0.2, effective_radius=1.0,
+                                                      sersic_index=1.5))
+
+    tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
+                                                 image_plane_grids=[image_plane_grids])
+
+    return im.Image.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=0.1,
+                                        exposure_time=300.0, psf=psf, background_sky_level=0.1, add_noise=True)
+
+path = '{}/'.format(os.path.dirname(os.path.realpath(__file__)))
 
 
 def simulate_all_images(plot_images=False):
@@ -164,6 +210,18 @@ def simulate_all_images(plot_images=False):
     im.output_imaging_to_fits(image=image_offset_centre, image_path=path + '/data/image_offset_centre/image.fits',
                               noise_map_path=path + '/data/image_offset_centre/noise_map.fits',
                               psf_path=path + '/data/image_offset_centre/psf.fits', overwrite=True)
+
+    image_with_large_psf = simulate_image_with_large_psf()
+    im.output_imaging_to_fits(image=image_with_large_psf, image_path=path + '/data/image_with_large_psf/image.fits',
+                              noise_map_path=path + '/data/image_with_large_psf/noise_map.fits',
+                              psf_path=path + '/data/image_with_large_psf/psf.fits', overwrite=True)
+
+    image_with_off_centre_psf = simulate_image_with_offset_centre_psf()
+    im.output_imaging_to_fits(image=image_with_off_centre_psf,
+                              image_path=path + '/data/image_with_off_centre_psf/image.fits',
+                              noise_map_path=path + '/data/image_with_off_centre_psf/noise_map.fits',
+                              psf_path=path + '/data/image_with_off_centre_psf/psf.fits', overwrite=True)
+
 
     if plot_images:
         imaging_plotters.plot_image_subplot(image=image)
