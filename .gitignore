@@ -37,3 +37,4 @@ test/integration/data/lens_mass_x1_source_x1/
 test/integration/data/
 test/integration/tests/simulate_and_fit/datas/
 output
+test/integration/datas/
