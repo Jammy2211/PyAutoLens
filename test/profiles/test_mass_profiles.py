@@ -1063,7 +1063,7 @@ class TestSersicMassRadialGradient(object):
                                                    sersic_index=2.0, mass_to_light_ratio=1.0,
                                                    mass_to_light_gradient=1.0)
         assert sersic.surface_density_from_grid(grid=np.array([[1.0, 0.0]])) == pytest.approx(
-            2.836879 * 5.38066670129, 1e-2)
+            2.836879 * 5.38066670129, abs=2e-01)
 
     def test__deflections_correct_values(self):
         sersic = mp.EllipticalSersicRadialGradient(centre=(-0.4, -0.2), axis_ratio=0.8, phi=110.0, intensity=5.0,
