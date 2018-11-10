@@ -1107,11 +1107,11 @@ class GalaxyFitPhase(AbstractPhase):
 
         def fast_likelihood_for_instance(self, instance):
             return galaxy_fitting.fast_likelihood_from_galaxy_data_and_galaxy(galaxy_datas=[self.galaxy_data],
-                                                                              galaxy=instance.galaxy[0])
+                                                                              model_galaxy=instance.galaxy[0])
 
         def fit_for_instance(self, instance):
             return galaxy_fitting.fit_galaxy_data_with_galaxy(galaxy_datas=[self.galaxy_data],
-                                                              galaxy=instance.galaxy[0])
+                                                              model_galaxy=instance.galaxy[0])
 
         @classmethod
         def log(cls, instance):
@@ -1329,11 +1329,11 @@ class GalaxyFitDeflectionsPhase(AbstractPhase):
         def fast_likelihood_for_instance(self, instance):
             return galaxy_fitting.fast_likelihood_from_galaxy_data_and_galaxy(galaxy_datas=[self.galaxy_data_y,
                                                                                             self.galaxy_data_x],
-                                                                              galaxy=instance.galaxy[0])
+                                                                              model_galaxy=instance.galaxy[0])
 
         def fit_for_instance(self, instance):
             return galaxy_fitting.fit_galaxy_data_with_galaxy(galaxy_datas=[self.galaxy_data_y, self.galaxy_data_x],
-                                                              galaxy=instance.galaxy[0])
+                                                              model_galaxy=instance.galaxy[0])
 
         @classmethod
         def log(cls, instance):
