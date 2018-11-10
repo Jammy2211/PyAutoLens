@@ -99,34 +99,34 @@ class TestNumbering(object):
 class TestFrameExtraction(object):
 
     def test_trivial_frame_at_coords(self, simple_convolver):
-        frame, psf_frame = simple_convolver.frame_at_coords_jit(coords=(1, 1), mask=np.full((3, 3), False),
-                                                                mask_index_array=simple_convolver.mask_index_array,
-                                                                psf=simple_convolver.psf)
+        frame, psf_frame = simple_convolver.frame_at_coordinates_jit(coordinates=(1, 1), mask=np.full((3, 3), False),
+                                                                     mask_index_array=simple_convolver.mask_index_array,
+                                                                     psf=simple_convolver.psf)
 
         assert (frame == np.array([i for i in range(9)])).all()
 
     def test_corner_frame(self, simple_convolver):
         corner_frame = np.array([0, 1, 3, 4, -1, -1, -1, -1, -1])
 
-        frame, psf_frame = simple_convolver.frame_at_coords_jit(coords=(0, 0), mask=np.full((3, 3), False),
-                                                                mask_index_array=simple_convolver.mask_index_array,
-                                                                psf=simple_convolver.psf)
+        frame, psf_frame = simple_convolver.frame_at_coordinates_jit(coordinates=(0, 0), mask=np.full((3, 3), False),
+                                                                     mask_index_array=simple_convolver.mask_index_array,
+                                                                     psf=simple_convolver.psf)
 
         assert (frame == corner_frame).all()
 
     def test_trivial_psf_frame_at_coords(self, simple_convolver):
-        frame, psf_frame = simple_convolver.frame_at_coords_jit(coords=(1, 1), mask=np.full((3, 3), False),
-                                                                mask_index_array=simple_convolver.mask_index_array,
-                                                                psf=simple_convolver.psf)
+        frame, psf_frame = simple_convolver.frame_at_coordinates_jit(coordinates=(1, 1), mask=np.full((3, 3), False),
+                                                                     mask_index_array=simple_convolver.mask_index_array,
+                                                                     psf=simple_convolver.psf)
 
         assert (psf_frame == np.array([[1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0]])).all()
 
     def test_corner_psf_frame(self, simple_convolver):
         corner_frame = [0, 1, 3, 4]
 
-        frame, psf_frame = simple_convolver.frame_at_coords_jit(coords=(0, 0), mask=np.full((3, 3), False),
-                                                                mask_index_array=simple_convolver.mask_index_array,
-                                                                psf=simple_convolver.psf)
+        frame, psf_frame = simple_convolver.frame_at_coordinates_jit(coordinates=(0, 0), mask=np.full((3, 3), False),
+                                                                     mask_index_array=simple_convolver.mask_index_array,
+                                                                     psf=simple_convolver.psf)
 
         assert (psf_frame == np.array([5.0, 6.0, 8.0, 9.0, -1, -1, -1, -1, -1])).all()
 
@@ -143,23 +143,23 @@ class TestFrameExtraction(object):
                                                              [16.0, 17.0, 18.0, 19.0, 20.0],
                                                              [21.0, 22.0, 23.0, 24.0, 25.0]]))
 
-        frame, psf_frame = convolver.frame_at_coords_jit(coords=(0, 0), mask=np.full((3, 3), False),
-                                                         mask_index_array=convolver.mask_index_array,
-                                                         psf=convolver.psf)
+        frame, psf_frame = convolver.frame_at_coordinates_jit(coordinates=(0, 0), mask=np.full((3, 3), False),
+                                                              mask_index_array=convolver.mask_index_array,
+                                                              psf=convolver.psf)
 
         assert (psf_frame == np.array([13.0, 14.0, 15.0, 18.0, 19.0, 20.0, 23.0, 24.0, 25.0, -1., -1., -1., -1., -1.,
                                        -1., -1., -1., -1., -1., -1., -1., -1., -1., -1., -1.])).all()
 
-        frame, psf_frame = convolver.frame_at_coords_jit(coords=(1, 0), mask=np.full((3, 3), False),
-                                                         mask_index_array=convolver.mask_index_array,
-                                                         psf=convolver.psf)
+        frame, psf_frame = convolver.frame_at_coordinates_jit(coordinates=(1, 0), mask=np.full((3, 3), False),
+                                                              mask_index_array=convolver.mask_index_array,
+                                                              psf=convolver.psf)
 
         assert (psf_frame == np.array([8.0, 9.0, 10.0, 13.0, 14.0, 15.0, 18.0, 19.0, 20.0, -1., -1., -1., -1., -1.,
                                        -1., -1., -1., -1., -1., -1., -1., -1., -1., -1., -1])).all()
 
-        frame, psf_frame = convolver.frame_at_coords_jit(coords=(1, 1), mask=np.full((3, 3), False),
-                                                         mask_index_array=convolver.mask_index_array,
-                                                         psf=convolver.psf)
+        frame, psf_frame = convolver.frame_at_coordinates_jit(coordinates=(1, 1), mask=np.full((3, 3), False),
+                                                              mask_index_array=convolver.mask_index_array,
+                                                              psf=convolver.psf)
 
         assert (psf_frame == np.array([7.0, 8.0, 9.0, 12.0, 13.0, 14.0, 17.0, 18.0, 19.0, -1., -1., -1., -1., -1.,
                                        -1., -1., -1., -1., -1., -1., -1., -1., -1., -1., -1])).all()
