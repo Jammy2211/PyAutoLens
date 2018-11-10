@@ -15,8 +15,8 @@ output_path = '{}/../output/model_mapper'.format(dirpath)
 
 def pipeline():
 
-    pipeline_name = "link_variable"
-    data_name = '/link_variable'
+    pipeline_name = "link_importance_sampling_off"
+    data_name = '/link_importance_sampling_off'
 
     tools.reset_paths(data_name, pipeline_name, output_path)
 
@@ -45,6 +45,7 @@ def make_pipeline(pipeline_name):
 
     phase1.optimizer.n_live_points = 20
     phase1.optimizer.sampling_efficiency = 0.8
+    phase1.optimizer.importance_nested_sampling = False
 
     class MMPhase2(ph.LensPlanePhase):
 
@@ -56,6 +57,7 @@ def make_pipeline(pipeline_name):
 
     phase2.optimizer.n_live_points = 20
     phase2.optimizer.sampling_efficiency = 0.8
+    phase2.optimizer.importance_nested_sampling = False
 
     return pl.PipelineImaging(pipeline_name, phase1, phase2)
 

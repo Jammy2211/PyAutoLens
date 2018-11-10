@@ -130,27 +130,25 @@ class FittingHyperImage(FittingImage):
 
     def __init__(self, image, mask, hyper_model_image, hyper_galaxy_images, hyper_minimum_values, sub_grid_size=2,
                  image_psf_shape=None):
-        """
-        The lensing datas_ is the collection of datas (image, noise-maps, PSF), a masks, grids, convolvers and other \
-        utilities that are used for modeling and fitting an datas_ of a strong lens.
+        """A fitting hyper image is a fitting_image (see *FittingImage) which additionally includes a set of \
+        'hyper_data'. This hyper-data is the best-fit model images of the observed data from a previous analysis, \
+        and it is used to scale the noise in the image, so as to avoid over-fitting localized regions of the image \
+        where the model does not provide a good fit.
 
-        Whilst the datas_ datas is initially loaded in 2D, for the lensing datas_ the masked-datas_ (and noise-maps) \
-        are reduced to 1D arrays for faster calculations.
+        Look at the *FittingImage* docstring for all parameters / attributes not specific to a hyper image.
 
         Parameters
         ----------
-        image: im.Image
-            The original datas_ datas in 2D.
-        mask: msk.Mask
-            The 2D masks that is applied to the datas_.
-        sub_grid_size : int
-            The size of the sub-grid used for each lensing SubGrid. E.g. a value of 2 grids each datas_-pixel on a 2x2 \
-            sub-grid.
-        image_psf_shape : (int, int)
-            The shape of the PSF used for convolving model image generated using analytic light profiles. A smaller \
-            shape will trim the PSF relative to the input datas_ PSF, giving a faster analysis run-time.
-        """
+        hyper_model_images : [ndarray]
+            List of the masked 1D array best-fit model image's to each observed image in a previous analysis.
+        hyper_galaxy_images : [[ndarray]]
+            List of the masked 1D array best-fit model image's of every galaxy to each observed image in a previous \
+            analysis.
 
+        Attributes
+        ----------
+
+        """
         super(FittingHyperImage, self).__init__(image=image, mask=mask, sub_grid_size=sub_grid_size,
                                                 image_psf_shape=image_psf_shape)
 
