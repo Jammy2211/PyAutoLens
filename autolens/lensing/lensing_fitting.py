@@ -9,14 +9,18 @@ from autolens.lensing import ray_tracing
 minimum_value_profile = 0.1
 
 def fit_multiple_lensing_images_with_tracer(lensing_images, tracer, padded_tracer=None):
-    """Fit.
+    """Fit a list of lensing images with a model tracer, automatically determining the type of fit based on the \
+    properties of the galaxies in the tracer.
 
     Parameters
     -----------
-    lensing_image : li.LensingImage or li.LensingHyperImage
-        Lensing datas_
+    lensing_image : [li.LensingImage] or [li.LensingHyperImage]
+        List of the lensing-images that are to be fitted.
     tracer : ray_tracing.AbstractTracer
-        tracer_normal
+        The tracer, which describes the ray-tracing of the strong lensing configuration.
+    padded_tracer : ray_tracing.AbstractTracer
+        A tracer with an identical strong lensing configuration to the tracer above, but using the lensing image's \
+        padded grids such that unmasked model-images can be computed.
     """
 
     if tracer.has_light_profile and not tracer.has_pixelization:
@@ -48,6 +52,18 @@ def fit_multiple_lensing_images_with_tracer(lensing_images, tracer, padded_trace
 
 
 def fast_likelihood_from_multiple_lensing_images_and_tracer(lensing_images, tracer):
+    """Fit a list of lensing images with a model tracer, automatically determining the type of fit based on the \
+    properties of the galaxies in the tracer.
+
+    The likelihood is computed in the fastest, least memory-intensive, way possible, for efficient non-linear sampling.
+
+    Parameters
+    -----------
+    lensing_image : [li.LensingImage] or [li.LensingHyperImage]
+        List of the lensing-images that are to be fitted.
+    tracer : ray_tracing.AbstractTracer
+        The tracer, which describes the ray-tracing of the strong lensing configuration.
+    """
     if tracer.has_light_profile and not tracer.has_pixelization:
 
         if not tracer.has_hyper_galaxy:
@@ -76,14 +92,18 @@ def fast_likelihood_from_multiple_lensing_images_and_tracer(lensing_images, trac
 
 
 def fit_lensing_image_with_tracer(lensing_image, tracer, padded_tracer=None):
-    """Fit.
+    """Fit a lensing image with a model tracer, automatically determining the type of fit based on the \
+    properties of the galaxies in the tracer.
 
     Parameters
     -----------
     lensing_image : li.LensingImage or li.LensingHyperImage
-        Lensing datas_
+        List of the lensing-images that are to be fitted.
     tracer : ray_tracing.AbstractTracer
-        tracer_normal
+        The tracer, which describes the ray-tracing of the strong lensing configuration.
+    padded_tracer : ray_tracing.AbstractTracer
+        A tracer with an identical strong lensing configuration to the tracer above, but using the lensing image's \
+        padded grids such that unmasked model-images can be computed.
     """
 
     if tracer.has_light_profile and not tracer.has_pixelization:
@@ -115,6 +135,21 @@ def fit_lensing_image_with_tracer(lensing_image, tracer, padded_tracer=None):
 
 
 def fast_likelihood_from_lensing_image_and_tracer(lensing_image, tracer):
+    """Fit a lensing image with a model tracer, automatically determining the type of fit based on the properties of \
+     the galaxies in the tracer.
+
+    The likelihood is computed in the fastest, least memory-intensive, way possible, for efficient non-linear sampling.
+
+    Parameters
+    -----------
+    lensing_image : [li.LensingImage] or [li.LensingHyperImage]
+        List of the lensing-images that are to be fitted.
+    tracer : ray_tracing.AbstractTracer
+        The tracer, which describes the ray-tracing of the strong lensing configuration.
+    padded_tracer : ray_tracing.AbstractTracer
+        A tracer with an identical strong lensing configuration to the tracer above, but using the lensing image's \
+        padded grids such that unmasked model-images can be computed.
+    """
     if tracer.has_light_profile and not tracer.has_pixelization:
 
         if not tracer.has_hyper_galaxy:
@@ -163,10 +198,13 @@ class LensingProfileFit(fitting.AbstractProfileFit, AbstractLensingFit):
 
         Parameters
         ----------
-        lensing_images: [li.LensingImage]
-            An lensing_image that has been masked for efficiency
-        tracer: ray_tracing.AbstractTracer
-            An object describing the model
+        lensing_images : [li.LensingImage]
+            List of the lensing-images that are to be fitted.
+        tracer : ray_tracing.AbstractTracer
+            The tracer, which describes the ray-tracing of the strong lensing configuration.
+        padded_tracer : ray_tracing.AbstractTracer
+            A tracer with an identical strong lensing configuration to the tracer above, but using the lensing image's \
+            padded grids such that unmasked model-images can be computed.
         """
         AbstractLensingFit.__init__(self=self, tracer=tracer, padded_tracer=padded_tracer)
         super(LensingProfileFit, self).__init__(fitting_images=lensing_images, images_=tracer.image_plane_images_,
@@ -174,16 +212,8 @@ class LensingProfileFit(fitting.AbstractProfileFit, AbstractLensingFit):
 
     @classmethod
     def fast_likelihood(cls, lensing_images, tracer):
-        """
-        Fast calculation of likelihood
-
-        Parameters
-        ----------
-        lensing_images: [li.LensingImage]
-            An lensing_image that has been masked for efficiency
-        tracer: ray_tracing.AbstractTracer
-            An object describing the model
-        """
+        """Perform the fit of this class as described above, but storing no results as class instances, thereby \
+        minimizing memory use and maximizing run-speed."""
         convolvers = list(map(lambda lensing_image : lensing_image.convolver_image, lensing_images))
         noise_maps_ = list(map(lambda lensing_image : lensing_image.noise_map_, lensing_images))
         model_images_ = fitting.blur_images_including_blurring_regions(images_=tracer.image_plane_images_,
@@ -250,10 +280,13 @@ class HyperLensingProfileFit(LensingProfileFit, fitting.AbstractHyperFit):
 
         Parameters
         ----------
-        lensing_hyper_images: [li.LensingHyperImage]
-            An lensing_image that has been masked for efficiency
-        tracer: ray_tracing.AbstractTracer
-            An object describing the model
+        lensing_hyper_images : [li.LensingHyperImage]
+            List of the lensing hyper images that are to be fitted.
+        tracer : ray_tracing.AbstractTracer
+            The tracer, which describes the ray-tracing of the strong lensing configuration.
+        padded_tracer : ray_tracing.AbstractTracer
+            A tracer with an identical strong lensing configuration to the tracer above, but using the lensing image's \
+            padded grids such that unmasked model-images can be computed.
         """
 
         fitting.AbstractHyperFit.__init__(self=self, fitting_hyper_images=lensing_hyper_images,
@@ -265,16 +298,8 @@ class HyperLensingProfileFit(LensingProfileFit, fitting.AbstractHyperFit):
 
     @classmethod
     def fast_scaled_likelihood(cls, lensing_hyper_images, tracer):
-        """
-        Fast calculation of scaled likelihood
-
-        Parameters
-        ----------
-        lensing_images: [li.LensingHyperImage]
-            An lensing_image that has been masked for efficiency
-        tracer: ray_tracing.AbstractTracer
-            An object describing the model
-        """
+        """Perform the fit of this class as described above, but storing no results as class instances, thereby \
+        minimizing memory use and maximizing run-speed."""
 
         contributions_ = fitting.contributions_from_fitting_hyper_images_and_hyper_galaxies(
             fitting_hyper_images=lensing_hyper_images, hyper_galaxies=tracer.hyper_galaxies)
@@ -312,10 +337,10 @@ class LensingInversionFit(fitting.AbstractInversionFit, AbstractLensingFit):
 
         Parameters
         ----------
-        lensing_images: [li.LensingImage]
-            An lensing_image that has been masked for efficiency
-        tracer: ray_tracing.AbstractTracer
-            An object describing the model
+        lensing_images : [li.LensingImage]
+            List of the lensing-images that are to be fitted.
+        tracer : ray_tracing.AbstractTracer
+            The tracer, which describes the ray-tracing of the strong lensing configuration.
         """
 
         AbstractLensingFit.__init__(self=self, tracer=tracer)
@@ -328,16 +353,8 @@ class LensingInversionFit(fitting.AbstractInversionFit, AbstractLensingFit):
 
     @classmethod
     def fast_evidence(cls, lensing_images, tracer):
-        """
-        Fast calculation of evidence.
-
-        Parameters
-        ----------
-        lensing_images: [li.LensingImage]
-            An lensing_image that has been masked for efficiency
-        tracer: ray_tracing.AbstractTracer
-            An object describing the model
-        """
+        """Perform the fit of this class as described above, but storing no results as class instances, thereby \
+        minimizing memory use and maximizing run-speed."""
 
         noise_maps_ = list(map(lambda lensing_image : lensing_image.noise_map_, lensing_images))
 
@@ -401,10 +418,10 @@ class HyperLensingInversionFit(LensingInversionFit, HyperLensingInversion):
 
         Parameters
         ----------
-        lensing_hyper_images: [li.LensingHyperImage]
-            An lensing_image that has been masked for efficiency
-        tracer: ray_tracing.AbstractTracer
-            An object describing the model
+        lensing_hyper_images : [li.LensingHyperImage]
+            List of the lensing hyper images that are to be fitted.
+        tracer : ray_tracing.AbstractTracer
+            The tracer, which describes the ray-tracing of the strong lensing configuration.
         """
 
         fitting.AbstractHyperFit.__init__(self=self, fitting_hyper_images=lensing_hyper_images,
@@ -422,16 +439,8 @@ class HyperLensingInversionFit(LensingInversionFit, HyperLensingInversion):
 
     @classmethod
     def fast_scaled_evidence(cls, lensing_hyper_images, tracer):
-        """
-        Fast calculation of scaled evidence.
-
-        Parameters
-        ----------
-        lensing_images: [li.LensingHyperImage]
-            An lensing_image that has been masked for efficiency
-        tracer: ray_tracing.AbstractTracer
-            An object describing the model
-        """
+        """Perform the fit of this class as described above, but storing no results as class instances, thereby \
+        minimizing memory use and maximizing run-speed."""
 
         contributions_ = fitting.contributions_from_fitting_hyper_images_and_hyper_galaxies(
             fitting_hyper_images=lensing_hyper_images, hyper_galaxies=tracer.hyper_galaxies)
@@ -468,10 +477,13 @@ class LensingProfileInversionFit(fitting.AbstractProfileInversionFit, AbstractLe
 
         Parameters
         ----------
-        lensing_images: [li.LensingImage]
-            An lensing_image that has been masked for efficiency
-        tracer: ray_tracing.AbstractTracer
-            An object describing the model
+        lensing_images : [li.LensingHyperImage]
+            List of the lensing-images that are to be fitted.
+        tracer : ray_tracing.AbstractTracer
+            The tracer, which describes the ray-tracing of the strong lensing configuration.
+        padded_tracer : ray_tracing.AbstractTracer
+            A tracer with an identical strong lensing configuration to the tracer above, but using the lensing image's \
+            padded grids such that unmasked model-images can be computed.
         """
 
         mapper = tracer.mappers_of_planes[0]
@@ -484,16 +496,8 @@ class LensingProfileInversionFit(fitting.AbstractProfileInversionFit, AbstractLe
 
     @classmethod
     def fast_evidence(cls, lensing_images, tracer):
-        """
-        Fast calculation of evidence
-
-        Parameters
-        ----------
-        lensing_images: [li.LensingImage]
-            An lensing_image that has been masked for efficiency
-        tracer: ray_tracing.AbstractTracer
-            An object describing the model
-        """
+        """Perform the fit of this class as described above, but storing no results as class instances, thereby \
+        minimizing memory use and maximizing run-speed."""
         convolvers_image = list(map(lambda lensing_image : lensing_image.convolver_image, lensing_images))
         convolvers_mapping_matrix = list(map(lambda lensing_image : lensing_image.convolver_mapping_matrix,
                                              lensing_images))
@@ -533,10 +537,13 @@ class HyperLensingProfileInversionFit(LensingProfileInversionFit, HyperLensingIn
 
         Parameters
         ----------
-        lensing_hyper_images: [li.LensingHyperImage]
-            An lensing_image that has been masked for efficiency
-        tracer: ray_tracing.AbstractTracer
-            An object describing the model
+        lensing_hyper_images : [li.LensingHyperImage]
+            List of the lensing hyper images that are to be fitted.
+        tracer : ray_tracing.AbstractTracer
+            The tracer, which describes the ray-tracing of the strong lensing configuration.
+        padded_tracer : ray_tracing.AbstractTracer
+            A tracer with an identical strong lensing configuration to the tracer above, but using the lensing image's \
+            padded grids such that unmasked model-images can be computed.
         """
 
         fitting.AbstractHyperFit.__init__(self=self, fitting_hyper_images=lensing_hyper_images,
@@ -557,17 +564,8 @@ class HyperLensingProfileInversionFit(LensingProfileInversionFit, HyperLensingIn
 
     @classmethod
     def fast_scaled_evidence(cls, lensing_hyper_images, tracer):
-        """
-        Fast calculation of likelihood
-
-        Parameters
-        ----------
-        lensing_images: [li.LensingHyperImage]
-            An lensing_image that has been masked for efficiency
-        tracer: ray_tracing.AbstractTracer
-            An object describing the model
-        """
-
+        """Perform the fit of this class as described above, but storing no results as class instances, thereby \
+        minimizing memory use and maximizing run-speed."""
         contributions_ = fitting.contributions_from_fitting_hyper_images_and_hyper_galaxies(
             fitting_hyper_images=lensing_hyper_images, hyper_galaxies=tracer.hyper_galaxies)
 
