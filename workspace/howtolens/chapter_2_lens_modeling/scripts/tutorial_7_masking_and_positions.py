@@ -1,5 +1,6 @@
 import os
 
+from autolens import conf
 from autolens.autofit import non_linear
 from autolens.imaging import image as im
 from autolens.imaging import mask as msk
@@ -13,6 +14,10 @@ from autolens.plotting import imaging_plotters
 # choose your mask and show you a neat trick to improve the speed and accuracy of your non-linear search. We'll skip
 # running non-linear searches this tutorial - you've spent long enough waiting for non-linear searches to run
 # (of course, you can run them yourself if you're really keen)!
+
+# This path isn't really necessary, but it stops the tutorial polluting your workspace/output folder.
+path = '{}/../'.format(os.path.dirname(os.path.realpath(__file__)))
+conf.instance = conf.Config(config_path=conf.CONFIG_PATH, output_path=path+"output")
 
 # Lets simulate the simple image we've used throughout this chapter again.
 def simulate():
@@ -60,7 +65,7 @@ phase_with_custom_mask = ph.LensSourcePlanePhase(lens_galaxies=dict(lens_galaxy=
                                 source_galaxies=dict(source_galaxy=g.Galaxy()),
                                 optimizer_class=non_linear.MultiNest,
                                 mask_function=mask_function, # <---- here we pass the mask function
-                                phase_name='1_non_linear_search')
+                                phase_name='7_non_linear_search')
 
 # So, our mask encompasses the lensed source galaxy. However, is this really the right sized mask? Do we actually want
 # a bigger mask? a smaller mask?
@@ -107,7 +112,7 @@ phase_with_positions = ph.LensSourcePlanePhase(lens_galaxies=dict(lens_galaxy=g.
                                                 source_galaxies=dict(source_galaxy=g.Galaxy()),
                                                 optimizer_class=non_linear.MultiNest,
                                                 positions=[[[1.6, 0.0], [0.0, 1.6], [-1.6, 0.0], [0.0, -1.6]]],
-                                                phase_name='1_positions')
+                                                phase_name='7_positions')
 
 # You may observe multiple source-galaxies each with their own set of multiple-images. If you have a means by
 # which to pair different positions to the same source galaxies (for example, spectroscopic data), you can set up

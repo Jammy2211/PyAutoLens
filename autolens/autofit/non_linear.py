@@ -389,12 +389,8 @@ class MultiNest(NonLinearOptimizer):
     def open_summary_file(self):
 
         summary = open(self.file_summary)
-
-        expected_parameters = (len(summary.readline()) - 113) / 112
-
-        if expected_parameters != self.variable.prior_count:
-            raise exc.MultiNestException(
-                'The file_summary file has a different number of parameters than the input model')
+        summary.seek(1)
+        expected_parameters = (len(summary.readline()) - 56) / 112
 
         return summary
 
@@ -402,7 +398,7 @@ class MultiNest(NonLinearOptimizer):
 
         summary = self.open_summary_file()
 
-        summary.seek(0)
+        summary.seek(1)
         summary.read(2 + offset * self.variable.prior_count)
         vector = []
         for param in range(number_entries):
