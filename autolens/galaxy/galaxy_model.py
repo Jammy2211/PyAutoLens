@@ -17,7 +17,7 @@ def is_light_profile_class(cls):
     Returns
     -------
     bool: is_light_profile_class
-        True iff cls is a class that inherits from light profile
+        True if cls is a class that inherits from light profile
     """
     return inspect.isclass(cls) and issubclass(cls, light_profiles.LightProfile)
 
@@ -32,7 +32,7 @@ def is_mass_profile_class(cls):
     Returns
     -------
     bool: is_mass_profile_class
-        True iff cls is a class that inherits from mass profile
+        True if cls is a class that inherits from mass profile
     """
     return inspect.isclass(cls) and issubclass(cls, mass_profiles.MassProfile)
 
@@ -47,7 +47,7 @@ def is_profile_class(cls):
     Returns
     -------
     bool: is_mass_profile_class
-        True iff cls is a class that inherits from mass profile or light profile
+        True if cls is a class that inherits from light profile or mass profile
     """
     return is_light_profile_class(cls) or is_mass_profile_class(cls)
 
@@ -62,32 +62,41 @@ class GalaxyModel(model_mapper.AbstractPriorModel):
         return [flat_prior_model for prior_model in self.prior_models for flat_prior_model in
                 prior_model.flat_prior_model_tuples]
 
-    def __init__(self,
-                 align_centres=False,
-                 align_axis_ratios=False,
-                 align_orientations=False,
-                 redshift=None,
-                 variable_redshift=False,
-                 pixelization=None,
-                 regularization=None,
-                 hyper_galaxy=None,
-                 config=None,
+    def __init__(self, align_centres=False, align_axis_ratios=False, align_orientations=False, redshift=None,
+                 variable_redshift=False, pixelization=None, regularization=None, hyper_galaxy=None, config=None,
                  **kwargs):
-        """
-        Class to produce Galaxy instances from sets of profile classes using the model mapper
+        """Class to produce Galaxy instances from sets of profile classes and other model-fitting attributes (e.g. \
+         pixelizations, regularization schemes, hyper-galaxyes) using the model mapper.
 
         Parameters
         ----------
         light_profile_classes: [LightProfile]
-            The classes for which light profile instances are generated for this galaxy
+            The *LightProfile* classes for which model light profile instances are generated for this galaxy model.
         mass_profile_classes: [MassProfile]
-            The classes for which light profile instances are generated for this galaxy
-        align_centres: Bool
-            If True the same prior will be used for all the profiles centres such that any generated profiles always
-            have the same centre
-        align_orientations: Bool
-            If True the same prior will be used for all the profiles orientations such that any generated profiles
-            always have the same orientation
+            The *MassProfile* classes for which model mass profile instances are generated for this galaxy model.
+        align_centres : bool
+            If *True*, the same prior will be used for all the profiles centres, such that all light and / or mass \
+            profiles always share the same centre.
+        align_axis_ratios : bool
+            If *True*, the same prior will be used for all the profiles axis-ratio, such that all light and / or mass \
+            profiles always share the same axis-ratio.
+        align_orientations : bool
+            If *True*, the same prior will be used for all the profiles rotation angles phi, such that all light \
+            and / or mass profiles always share the same orientation.
+        redshift : float
+            The redshift of this model galaxy.
+        variable_redshift : bool
+            If *True*, the galaxy redshift will be treated as a free-parameter that is fitted for by the non-linear \
+            search.
+        pixelization : Pixelization
+            The pixelization used to reconstruct the galaxy light and fit the observed image if using an inversion.
+        regularization : Regularization
+            The regularization-scheme used to regularization reconstruct the galaxy light when fitting the observed \
+            image if using an inversion.
+        hyper_galaxy : HyperGalaxy
+            A model hyper-galaxy used for scaling the observed image's noise.
+        config : conf
+            Change config file used to set all model-galaxy priors.
         """
 
         self.align_centres = align_centres
