@@ -8,6 +8,50 @@ from autolens.imaging import scaled_array
 from autolens.inversion import mappers
 
 
+class PixelizationGrid(object):
+
+    def __init__(self, shape=(3, 3)):
+        self.shape = shape
+
+    def coordinate_grid_within_annulus(self, inner_radius, outer_radius, centre=(0., 0.)):
+
+        y_pixel_scale = 2.0 * outer_radius / self.shape[0]
+        x_pixel_scale = 2.0 * outer_radius / self.shape[1]
+
+        central_pixel = float(self.shape[0] - 1) / 2, float(self.shape[1] - 1) / 2
+
+        pixel_count = 0
+
+        for y in range(self.shape[0]):
+            for x in range(self.shape[1]):
+
+                y_arcsec = ((y - central_pixel[1]) * y_pixel_scale) - centre[0]
+                x_arcsec = ((x - central_pixel[0]) * x_pixel_scale) - centre[1]
+                radius_arcsec = np.sqrt(x_arcsec ** 2 + y_arcsec ** 2)
+
+                if radius_arcsec < outer_radius or radius_arcsec > inner_radius:
+                    pixel_count += 1
+
+        coordinates_array = np.zeros((pixel_count, 2))
+
+        pixel_count = 0
+
+        for y in range(self.shape[0]):
+            for x in range(self.shape[1]):
+
+                y_arcsec = -((y - central_pixel[0]) * y_pixel_scale) - centre[0]
+                x_arcsec = ((x - central_pixel[1]) * x_pixel_scale) - centre[1]
+                radius_arcsec = np.sqrt(x_arcsec ** 2 + y_arcsec ** 2)
+
+                if radius_arcsec < outer_radius or radius_arcsec > inner_radius:
+                    coordinates_array[pixel_count, 0] = y_arcsec
+                    coordinates_array[pixel_count, 1] = x_arcsec
+
+                    pixel_count += 1
+
+        return coordinates_array
+
+
 class Pixelization(object):
 
     def __init__(self, pixels=100):
@@ -357,47 +401,3 @@ class Amorphous(Voronoi):
         kmeans = sklearn.cluster.KMeans(self.pixels)
         km = kmeans.fit(cluster_grid)
         return km.cluster_centers_, km.labels_
-
-
-class PixelizationGrid(object):
-
-    def __init__(self, shape=(3, 3)):
-        self.shape = shape
-
-    def coordinate_grid_within_annulus(self, inner_radius, outer_radius, centre=(0., 0.)):
-
-        y_pixel_scale = 2.0 * outer_radius / self.shape[0]
-        x_pixel_scale = 2.0 * outer_radius / self.shape[1]
-
-        central_pixel = float(self.shape[0] - 1) / 2, float(self.shape[1] - 1) / 2
-
-        pixel_count = 0
-
-        for y in range(self.shape[0]):
-            for x in range(self.shape[1]):
-
-                y_arcsec = ((y - central_pixel[1]) * y_pixel_scale) - centre[0]
-                x_arcsec = ((x - central_pixel[0]) * x_pixel_scale) - centre[1]
-                radius_arcsec = np.sqrt(x_arcsec ** 2 + y_arcsec ** 2)
-
-                if radius_arcsec < outer_radius or radius_arcsec > inner_radius:
-                    pixel_count += 1
-
-        coordinates_array = np.zeros((pixel_count, 2))
-
-        pixel_count = 0
-
-        for y in range(self.shape[0]):
-            for x in range(self.shape[1]):
-
-                y_arcsec = -((y - central_pixel[0]) * y_pixel_scale) - centre[0]
-                x_arcsec = ((x - central_pixel[1]) * x_pixel_scale) - centre[1]
-                radius_arcsec = np.sqrt(x_arcsec ** 2 + y_arcsec ** 2)
-
-                if radius_arcsec < outer_radius or radius_arcsec > inner_radius:
-                    coordinates_array[pixel_count, 0] = y_arcsec
-                    coordinates_array[pixel_count, 1] = x_arcsec
-
-                    pixel_count += 1
-
-        return coordinates_array
