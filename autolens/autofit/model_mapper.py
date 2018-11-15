@@ -995,7 +995,7 @@ class PriorModel(AbstractPriorModel):
         """
         constructor_args = inspect.getfullargspec(cls).args
         attribute_tuples = self.attribute_tuples
-        new_model = PriorModel(cls, self.config)
+        new_model = PriorModel(cls, self.config, self.limit_config)
         for attribute_tuple in attribute_tuples:
             name = attribute_tuple.name
             if name in constructor_args or (
