@@ -3,10 +3,10 @@ import os
 import pytest
 
 from autolens import conf
+from autolens import exc
 from autolens.autofit import model_mapper
 from autolens.galaxy import galaxy as g, galaxy, galaxy_model
 from autolens.profiles import geometry_profiles, light_profiles, mass_profiles
-from autolens import exc
 
 data_path = "{}/../".format(os.path.dirname(os.path.realpath(__file__)))
 
@@ -61,6 +61,18 @@ class TestPriorLimits(object):
         prior.assert_within_limits(0)
         prior.assert_within_limits(0.5)
 
+    def test_uniform_prior(self):
+        prior = model_mapper.UniformPrior(0, 1)
+
+        with pytest.raises(exc.PriorLimitException):
+            prior.assert_within_limits(-1)
+
+        with pytest.raises(exc.PriorLimitException):
+            prior.assert_within_limits(1.1)
+
+        prior.assert_within_limits(0.)
+        prior.assert_within_limits(0.5)
+        prior.assert_within_limits(1.)
 
 
 class TestPriorLinking(object):

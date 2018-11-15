@@ -668,6 +668,19 @@ prior_number = 0
 class Prior(Attribute):
     """An object used to mappers a unit value to an attribute value for a specific class attribute"""
 
+    def __init__(self, lower_limit, upper_limit):
+        if lower_limit == upper_limit:
+            raise exc.PriorException("Priors cannot have equal lower and upper limits")
+        super().__init__()
+        self.lower_limit = lower_limit
+        self.upper_limit = upper_limit
+
+    def assert_within_limits(self, value):
+        if not (self.lower_limit <= value <= self.upper_limit):
+            raise exc.PriorLimitException(
+                "The physical value {} for a prior was not within its limits {}, {}".format(value, self.lower_limit,
+                                                                                            self.upper_limit))
+
     def value_for(self, unit):
         raise NotImplementedError()
 
@@ -697,11 +710,7 @@ class UniformPrior(Prior):
         upper_limit: Float
             The highest value this prior can return
         """
-        if lower_limit == upper_limit:
-            raise exc.PriorException("Uniform priors cannot have equal lower and upper limits")
-        self.upper_limit = upper_limit
-        super(UniformPrior, self).__init__()
-        self.lower_limit = lower_limit
+        super(UniformPrior, self).__init__(lower_limit, upper_limit)
 
     def value_for(self, unit):
         """
@@ -737,17 +746,11 @@ class GaussianPrior(Prior):
     """A prior with a gaussian distribution"""
 
     def __init__(self, mean, sigma, lower_limit=-math.inf, upper_limit=math.inf):
-        super(GaussianPrior, self).__init__()
+        super(GaussianPrior, self).__init__(lower_limit, upper_limit)
         self.mean = mean
         self.sigma = sigma
         self.lower_limit = lower_limit
         self.upper_limit = upper_limit
-
-    def assert_within_limits(self, value):
-        if not (self.lower_limit <= value <= self.upper_limit):
-            raise exc.PriorLimitException(
-                "The physical value {} for a prior was not within its limits {}, {}".format(value, self.lower_limit,
-                                                                                            self.upper_limit))
 
     def value_for(self, unit):
         """
