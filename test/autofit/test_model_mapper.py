@@ -597,9 +597,9 @@ class TestConfigFunctions:
                                           limit_config=limit_config,
                                           geometry_profile=geometry_profiles.GeometryProfile)
 
-        model_map = mapper.instance_from_physical_vector([10., 50.])
+        model_map = mapper.instance_from_physical_vector([1., 0.5])
 
-        assert model_map.geometry_profile.centre == (10., 50.0)
+        assert model_map.geometry_profile.centre == (1., 0.5)
 
     def test_inheritance(self, test_config, limit_config):
         mapper = model_mapper.ModelMapper(test_config,
@@ -622,7 +622,7 @@ class TestConfigFunctions:
                                           exponential_light_profile=light_profiles.EllipticalExponential)
 
         model_map = mapper.instance_from_unit_vector(
-            [1 for _ in range(len(mapper.prior_tuples_ordered_by_id))])
+            [0.5 for _ in range(len(mapper.prior_tuples_ordered_by_id))])
 
         assert isinstance(model_map.elliptical_profile_1, geometry_profiles.EllipticalProfile)
         assert isinstance(model_map.elliptical_profile_2, geometry_profiles.EllipticalProfile)
@@ -919,12 +919,12 @@ class TestArguments(object):
         mapper.one = model_mapper.PriorModel(MockClassMM, test_config)
         mapper.two = model_mapper.PriorModel(MockClassMM, test_config)
 
-        instance = mapper.instance_from_physical_vector([1, 2, 3, 4])
+        instance = mapper.instance_from_physical_vector([0.1, 0.2, 0.3, 0.4])
 
-        assert instance.one.one == 1
-        assert instance.one.two == 2
-        assert instance.two.one == 3
-        assert instance.two.two == 4
+        assert instance.one.one == 0.1
+        assert instance.one.two == 0.2
+        assert instance.two.one == 0.3
+        assert instance.two.two == 0.4
 
 
 class TestIndependentPriorModel(object):
@@ -937,10 +937,10 @@ class TestIndependentPriorModel(object):
 
         assert len(mapper.prior_model_tuples) == 1
 
-        instance = mapper.instance_from_physical_vector([1, 2])
+        instance = mapper.instance_from_physical_vector([0.1, 0.2])
 
-        assert instance.prior_model.one == 1
-        assert instance.prior_model.two == 2
+        assert instance.prior_model.one == 0.1
+        assert instance.prior_model.two == 0.2
 
 
 @pytest.fixture(name="list_prior_model")
@@ -955,14 +955,14 @@ class TestListPriorModel(object):
         mapper = model_mapper.ModelMapper(MockConfig())
         mapper.list = list_prior_model
 
-        instance = mapper.instance_from_physical_vector([1, 2, 3, 4])
+        instance = mapper.instance_from_physical_vector([0.1, 0.2, 0.3, 0.4])
 
         assert isinstance(instance.list, list)
         assert len(instance.list) == 2
-        assert instance.list[0].one == 1
-        assert instance.list[0].two == 2
-        assert instance.list[1].one == 3
-        assert instance.list[1].two == 4
+        assert instance.list[0].one == 0.1
+        assert instance.list[0].two == 0.2
+        assert instance.list[1].one == 0.3
+        assert instance.list[1].two == 0.4
 
     def test_prior_results_for_gaussian_tuples(self, list_prior_model, width_config):
         mapper = model_mapper.ModelMapper(MockConfig(), width_config)
@@ -1027,10 +1027,10 @@ class TestConstant(object):
         mapper = model_mapper.ModelMapper()
         mapper.mock_class = mock_with_constant
 
-        instance = mapper.instance_for_arguments({mock_with_constant.two: 5})
+        instance = mapper.instance_for_arguments({mock_with_constant.two: 0.5})
 
         assert instance.mock_class.one == 3
-        assert instance.mock_class.two == 5
+        assert instance.mock_class.two == 0.5
 
     def test_constant_in_config(self):
         mapper = model_mapper.ModelMapper()
@@ -1040,10 +1040,10 @@ class TestConstant(object):
 
         mapper.mock_class = mock_with_constant
 
-        instance = mapper.instance_for_arguments({mock_with_constant.two: 5})
+        instance = mapper.instance_for_arguments({mock_with_constant.two: 0.5})
 
         assert instance.mock_class.one == 3
-        assert instance.mock_class.two == 5
+        assert instance.mock_class.two == 0.5
 
     def test_constant_exchange(self, mock_with_constant, width_config):
         mapper = model_mapper.ModelMapper(width_config=width_config)
