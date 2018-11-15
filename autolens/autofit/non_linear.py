@@ -43,6 +43,18 @@ class Result(object):
             "\n".join(["{}: {}".format(key, value) for key, value in self.__dict__.items()]))
 
 
+class IntervalCounter(object):
+    def __init__(self, interval):
+        self.count = 0
+        self.interval = interval
+
+    def __call__(self):
+        if self.interval == -1:
+            return False
+        self.count += 1
+        return self.count % self.interval == 0
+
+
 class NonLinearOptimizer(object):
 
     def __init__(self, include_hyper_image=False, model_mapper=None, name=None, label_config=None, **classes):
@@ -58,7 +70,6 @@ class NonLinearOptimizer(object):
         obj_name : str
             Unique identifier of the data_vector being analysed (e.g. the analysis_path of the data_vector set)
         """
-
         self.named_config = conf.instance.non_linear
 
         name = name or "phase"
@@ -188,6 +199,11 @@ class AbstractFitness(object):
         self.constant = constant
         self.max_likelihood = -np.inf
         self.analysis = analysis
+        visualise_interval = conf.instance.general.get('output', 'visualise_interval', int)
+        log_interval = conf.instance.general.get('output', 'log_interval', int)
+
+        self.should_log = IntervalCounter(log_interval)
+        self.should_visualise = IntervalCounter(visualise_interval)
 
     def fit_instance(self, instance):
         instance += self.constant
@@ -201,7 +217,10 @@ class AbstractFitness(object):
             self.max_likelihood = likelihood
             self.result = Result(instance, likelihood)
 
-        self.analysis.try_visualise(self.result.constant)
+        if self.should_visualise():
+            self.analysis.visualize(instance)
+        if self.should_log():
+            self.analysis.log(instance)
 
         return likelihood
 
@@ -245,6 +264,8 @@ class DownhillSimplex(NonLinearOptimizer):
 
         # Create a set of Gaussian priors from this result and associate them with the result object.
         res.variable = self.variable.mapper_from_gaussian_means(output)
+
+        analysis.visualize(instance=self.constant, suffix=None, during_analysis=False)
 
         return res
 
@@ -306,6 +327,7 @@ class MultiNest(NonLinearOptimizer):
 
         class Fitness(AbstractFitness):
 
+            # noinspection PyShadowingNames
             def __init__(self, instance_from_physical_vector, constant, output_results):
                 super().__init__(analysis, instance_from_physical_vector, constant)
                 self.output_results = output_results
@@ -374,13 +396,14 @@ class MultiNest(NonLinearOptimizer):
         variable = self.variable.mapper_from_gaussian_tuples(
             tuples=self.gaussian_priors_at_sigma_limit(self.sigma_limit))
 
+        analysis.visualize(instance=constant, suffix=None, during_analysis=False)
+
         return Result(constant=constant, likelihood=self.max_likelihood_from_summary(), variable=variable)
 
     def open_summary_file(self):
 
         summary = open(self.file_summary)
         summary.seek(1)
-        expected_parameters = (len(summary.readline()) - 56) / 112
 
         return summary
 
@@ -540,11 +563,11 @@ class MultiNest(NonLinearOptimizer):
             try:
                 pdf_plot.triangle_plot(roots=self.pdf)
                 pdf_plot.export(fname=self.phase_path + 'image/pdf_triangle.png')
-            except:
+            except Exception as e:
+                print(type(e))
                 print('The PDF triangle of this non-linear search could not be plotted. This is most likely due to a '
                       'lack of smoothness in the sampling of parameter space. Sampler further by decreasing the '
                       'parameter evidence_tolerance.')
-                pass
 
         plt.close()
 
