@@ -279,6 +279,7 @@ class TracerImageSourcePlanes(AbstractTracer):
         else:
             return None
 
+
 class AbstractTracerMulti(AbstractTracer):
 
     def __init__(self, galaxies, cosmology):
