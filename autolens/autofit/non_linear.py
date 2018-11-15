@@ -218,7 +218,7 @@ class DownhillSimplex(NonLinearOptimizer):
 
                 try:
                     likelihood = analysis.fit(instance)
-                except exc.InversionException or exc.RayTracingException:
+                except exc.InversionException or exc.RayTracingException or exc.PriorLimitException:
                     likelihood = -np.inf
 
                 if likelihood > self.max_likelihood:

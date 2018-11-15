@@ -736,10 +736,18 @@ class UniformPrior(Prior):
 class GaussianPrior(Prior):
     """A prior with a gaussian distribution"""
 
-    def __init__(self, mean, sigma):
+    def __init__(self, mean, sigma, lower_limit=-math.inf, upper_limit=-math.inf):
         super(GaussianPrior, self).__init__()
         self.mean = mean
         self.sigma = sigma
+        self.lower_limit = lower_limit
+        self.upper_limit = upper_limit
+
+    def assert_within_limits(self, value):
+        if not (self.lower_limit <= value <= self.upper_limit):
+            raise exc.PriorLimitException(
+                "The physical value {} for a prior was not within its limits {}, {}".format(value, self.lower_limit,
+                                                                                            self.upper_limit))
 
     def value_for(self, unit):
         """

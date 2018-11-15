@@ -6,6 +6,7 @@ from autolens import conf
 from autolens.autofit import model_mapper
 from autolens.galaxy import galaxy as g, galaxy, galaxy_model
 from autolens.profiles import geometry_profiles, light_profiles, mass_profiles
+from autolens import exc
 
 data_path = "{}/../".format(os.path.dirname(os.path.realpath(__file__)))
 
@@ -37,6 +38,20 @@ def make_width_config():
 @pytest.fixture(name="initial_model")
 def make_initial_model(test_config):
     return model_mapper.PriorModel(MockClassMM, test_config)
+
+
+class TestPriorLimits(object):
+    def test_in_or_out(self):
+        prior = model_mapper.GaussianPrior(0, 1, 0, 1)
+        with pytest.raises(exc.PriorLimitException):
+            prior.assert_within_limits(-1)
+
+        with pytest.raises(exc.PriorLimitException):
+            prior.assert_within_limits(1.1)
+
+        prior.assert_within_limits(0.)
+        prior.assert_within_limits(0.5)
+        prior.assert_within_limits(1.)
 
 
 class TestPriorLinking(object):
