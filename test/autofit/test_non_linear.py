@@ -14,14 +14,14 @@ pytestmark = pytest.mark.filterwarnings('ignore::FutureWarning')
 
 
 @pytest.fixture(name='mapper')
-def make_mapper(mm_config):
-    return model_mapper.ModelMapper(config=mm_config)
+def make_mapper(mm_config, limit_config):
+    return model_mapper.ModelMapper(config=mm_config, limit_config=limit_config)
 
 
 @pytest.fixture(name="mock_list")
-def make_mock_list(mm_config):
-    return [model_mapper.PriorModel(MockClassNLOx4, config=mm_config),
-            model_mapper.PriorModel(MockClassNLOx4, config=mm_config)]
+def make_mock_list(mm_config, limit_config):
+    return [model_mapper.PriorModel(MockClassNLOx4, config=mm_config, limit_config=limit_config),
+            model_mapper.PriorModel(MockClassNLOx4, config=mm_config, limit_config=limit_config)]
 
 
 # noinspection PyUnresolvedReferences
@@ -31,9 +31,9 @@ class TestParamNames(object):
 
         assert [tup.name for tup in mapper.mock_list.label_prior_model_tuples] == ['0', '1']
 
-    def test_label_prior_model_tuples_with_mapping_name(self, mapper, mm_config):
-        one = model_mapper.PriorModel(MockClassNLOx4, config=mm_config)
-        two = model_mapper.PriorModel(MockClassNLOx4, config=mm_config)
+    def test_label_prior_model_tuples_with_mapping_name(self, mapper, mm_config, limit_config):
+        one = model_mapper.PriorModel(MockClassNLOx4, config=mm_config, limit_config=limit_config)
+        two = model_mapper.PriorModel(MockClassNLOx4, config=mm_config, limit_config=limit_config)
 
         one.mapping_name = "one"
         two.mapping_name = "two"
@@ -147,8 +147,14 @@ def test_mn_results():
 
 @pytest.fixture(name='mm_config')
 def test_mm_config():
-    path = "{}/../test_files/configs/non_linear/priors/default/".format(os.path.dirname(os.path.realpath(__file__)))
+    path = "{}/../test_files/configs/non_linear/priors/default".format(os.path.dirname(os.path.realpath(__file__)))
     return conf.DefaultPriorConfig(path)
+
+
+@pytest.fixture(name='limit_config')
+def test_limit_config():
+    path = "{}/../test_files/configs/non_linear/priors/limit".format(os.path.dirname(os.path.realpath(__file__)))
+    return conf.LimitConfig(path)
 
 
 @pytest.fixture(name='label_config')
@@ -1065,10 +1071,13 @@ class TestRealClasses(object):
     #     assert model_info_str[30] == r'kappa_s: UniformPrior, lower_limit = 0.0, upper_limit = 2.0' + '\n'
     #     assert model_info_str[31] == r'scale_radius: UniformPrior, lower_limit = 0.0, upper_limit = 2.0' + '\n'
 
-    def test__read_multinest_most_probable_via_summary__multiple_profiles(self, mm_config, mn_summary_path):
+    def test__read_multinest_most_probable_via_summary__multiple_profiles(self, mm_config,
+                                                                          limit_config,
+                                                                          mn_summary_path):
         conf.instance.output_path = mn_summary_path + '/multi_profile'
 
-        mapper = model_mapper.ModelMapper(config=mm_config, light_profile=light_profiles.EllipticalExponential,
+        mapper = model_mapper.ModelMapper(config=mm_config, limit_config=limit_config,
+                                          light_profile=light_profiles.EllipticalExponential,
                                           mass_profile=mass_profiles.SphericalNFW)
         mn = non_linear.MultiNest(model_mapper=mapper)
 
@@ -1077,10 +1086,12 @@ class TestRealClasses(object):
 
         assert most_probable == [1.0, 2.0, 3.0, 4.0, -5.0, -6.0, -7.0, -8.0, 9.0, 10.0]
 
-    def test__setup_most_probable_model_instance_via_multinest_summary(self, mm_config, mn_summary_path):
+    def test__setup_most_probable_model_instance_via_multinest_summary(self, mm_config, limit_config, mn_summary_path):
         conf.instance.output_path = mn_summary_path + '/multi_profile'
 
-        mapper = model_mapper.ModelMapper(config=mm_config, light_profile=light_profiles.EllipticalExponential,
+        mapper = model_mapper.ModelMapper(config=mm_config,
+                                          limit_config=limit_config,
+                                          light_profile=light_profiles.EllipticalExponential,
                                           mass_profile=mass_profiles.SphericalNFW)
         mn = non_linear.MultiNest(model_mapper=mapper)
         create_summary_10_parameters(path=mn.opt_path)
@@ -1089,10 +1100,12 @@ class TestRealClasses(object):
 
         assert most_likely == [21.0, 22.0, 23.0, 24.0, 25.0, -26.0, -27.0, 28.0, 29.0, 30.0]
 
-    def test__read_multinest_most_likely_via_summary__multiple_profiles(self, mm_config, mn_summary_path):
+    def test__read_multinest_most_likely_via_summary__multiple_profiles(self, mm_config, limit_config, mn_summary_path):
         conf.instance.output_path = mn_summary_path + '/multi_profile'
 
-        mapper = model_mapper.ModelMapper(config=mm_config, light_profile=light_profiles.EllipticalExponential,
+        mapper = model_mapper.ModelMapper(config=mm_config,
+                                          limit_config=limit_config,
+                                          light_profile=light_profiles.EllipticalExponential,
                                           mass_profile=mass_profiles.SphericalNFW)
         mn = non_linear.MultiNest(model_mapper=mapper)
         create_summary_10_parameters(path=mn.opt_path)
@@ -1103,8 +1116,11 @@ class TestRealClasses(object):
         assert max_likelihood == 0.02
         assert max_log_likelihood == 9999999.9
 
-    def test__setup_most_likely_model_instance_via_multinest_summary(self, mm_config, mn_summary_path):
-        mapper = model_mapper.ModelMapper(config=mm_config, light_profile=light_profiles.EllipticalExponential,
+    def test__setup_most_likely_model_instance_via_multinest_summary(self, mm_config,
+                                                                     limit_config,
+                                                                     mn_summary_path):
+        mapper = model_mapper.ModelMapper(config=mm_config, limit_config=limit_config,
+                                          light_profile=light_profiles.EllipticalExponential,
                                           mass_profile=mass_profiles.SphericalNFW)
         mn = non_linear.MultiNest(model_mapper=mapper)
         conf.instance.output_path = mn_summary_path + '/multi_profile'
@@ -1155,10 +1171,13 @@ class TestRealClasses(object):
         assert gaussian_priors[3][1] == pytest.approx(0.22, 1e-2)
 
     def test__multiple_profiles__setup_fifth_weighted_sample_model__include_weight_and_likelihood(self, mm_config,
+                                                                                                  limit_config,
                                                                                                   mn_samples_path):
         conf.instance.output_path = mn_samples_path
 
-        mapper = model_mapper.ModelMapper(config=mm_config, light_profile=light_profiles.EllipticalExponential,
+        mapper = model_mapper.ModelMapper(config=mm_config,
+                                          limit_config=limit_config,
+                                          light_profile=light_profiles.EllipticalExponential,
                                           mass_profile=mass_profiles.SphericalNFW)
         mn = non_linear.MultiNest(model_mapper=mapper)
         create_weighted_samples_10_parameters(mn.opt_path)
@@ -1322,9 +1341,10 @@ class TestFitting(object):
 
 
 @pytest.fixture(name='label_optimizer')
-def make_label_optimizer(mm_config, label_config):
+def make_label_optimizer(mm_config, limit_config, label_config):
     optimizer = non_linear.NonLinearOptimizer()
     optimizer.variable.config = mm_config
+    optimizer.variable.limit_config = limit_config
     optimizer.label_config = label_config
     return optimizer
 
