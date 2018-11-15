@@ -6,7 +6,7 @@ from autolens.imaging import scaled_array
 
 class Mapper(object):
 
-    def __init__(self, pixels, grids, pixel_neighbors):
+    def __init__(self, pixels, grids, borders, pixel_neighbors):
         """
         Abstract base class representing the mapping between the pixels in an observed image of a strong lens and \
         the pixels of a pixelization.
@@ -30,6 +30,7 @@ class Mapper(object):
         """
         self.pixels = pixels
         self.grids = grids
+        self.borders = borders
         self.pixel_neighbors = pixel_neighbors
 
     @property
@@ -139,7 +140,7 @@ class Mapper(object):
 
 class RectangularMapper(Mapper):
 
-    def __init__(self, pixels, grids, pixel_neighbors, shape, geometry):
+    def __init__(self, pixels, grids, borders, pixel_neighbors, shape, geometry):
         """Class representing the mappings between the pixels in an observed image of a strong lens and \
         the pixels of a rectangular pixelization.
 
@@ -160,7 +161,7 @@ class RectangularMapper(Mapper):
         """
         self.shape = shape
         self.geometry = geometry
-        super(RectangularMapper, self).__init__(pixels, grids, pixel_neighbors)
+        super(RectangularMapper, self).__init__(pixels, grids, borders, pixel_neighbors)
 
     @property
     def image_to_pixelization(self):
@@ -180,7 +181,7 @@ class RectangularMapper(Mapper):
 
 class VoronoiMapper(Mapper):
 
-    def __init__(self, pixels, grids, pixel_neighbors, pixel_centers, voronoi, voronoi_to_pixelization,
+    def __init__(self, pixels, grids, borders, pixel_neighbors, pixel_centers, voronoi, voronoi_to_pixelization,
                  image_to_voronoi):
         """Class representing the mappings between the pixels in an observed image of a strong lens and \
         the pixels of a Voronoi pixelization.
@@ -205,7 +206,7 @@ class VoronoiMapper(Mapper):
         self.voronoi = voronoi
         self.voronoi_to_pixelization = voronoi_to_pixelization
         self.image_to_voronoi = image_to_voronoi
-        super(VoronoiMapper, self).__init__(pixels, grids, pixel_neighbors)
+        super(VoronoiMapper, self).__init__(pixels, grids, borders, pixel_neighbors)
 
     @property
     def image_to_pixelization(self):

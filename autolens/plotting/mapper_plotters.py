@@ -9,6 +9,7 @@ from autolens.plotting import tools_array
 from autolens.plotting import imaging_plotters
 
 def plot_image_and_mapper(image, mapper, mask=None, positions=None, should_plot_centres=False, should_plot_grid=True,
+                          should_plot_border=True,
                           image_pixels=None, source_pixels=None,
                           units='arcsec', kpc_per_arcsec=None,
                           output_path=None, output_filename='image_and_mapper', output_format='show'):
@@ -34,6 +35,7 @@ def plot_image_and_mapper(image, mapper, mask=None, positions=None, should_plot_
     plt.subplot(rows, columns, 2)
 
     plot_mapper(mapper=mapper, should_plot_centres=should_plot_centres, should_plot_grid=should_plot_grid,
+                should_plot_border=should_plot_border,
                 image_pixels=image_pixels, source_pixels=source_pixels,
                 as_subplot=True,
                 units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=None)
@@ -41,7 +43,7 @@ def plot_image_and_mapper(image, mapper, mask=None, positions=None, should_plot_
     tools.output_subplot_array(output_path=output_path, output_filename=output_filename, output_format=output_format)
     plt.close()
 
-def plot_mapper(mapper, should_plot_centres=False, should_plot_grid=True,
+def plot_mapper(mapper, should_plot_centres=False, should_plot_grid=True, should_plot_border=True,
                 image_pixels=None, source_pixels=None, as_subplot=False,
                 units='arcsec', kpc_per_arcsec=None,
                 xyticksize=16, figsize=(7, 7),
@@ -51,14 +53,14 @@ def plot_mapper(mapper, should_plot_centres=False, should_plot_grid=True,
     if isinstance(mapper, mappers.RectangularMapper):
 
         plot_rectangular_mapper(mapper=mapper, should_plot_centres=should_plot_centres,
-                                should_plot_grid=should_plot_grid,
+                                should_plot_grid=should_plot_grid, should_plot_border=should_plot_border,
                                 image_pixels=image_pixels, source_pixels=source_pixels, as_subplot=as_subplot,
                                 units=units, kpc_per_arcsec=kpc_per_arcsec,
                                 xyticksize=xyticksize, figsize=figsize,
                                 title=title, titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize,
                                 output_path=output_path, output_filename=output_filename, output_format=output_format)
 
-def plot_rectangular_mapper(mapper, should_plot_centres=False, should_plot_grid=True,
+def plot_rectangular_mapper(mapper, should_plot_centres=False, should_plot_grid=True, should_plot_border=True,
                             image_pixels=None, source_pixels=None, as_subplot=False,
                             units='arcsec', kpc_per_arcsec=None,
                             xyticksize=16, figsize=(7, 7),
@@ -80,6 +82,10 @@ def plot_rectangular_mapper(mapper, should_plot_centres=False, should_plot_grid=
     plot_plane_grid(should_plot_grid=should_plot_grid, mapper=mapper, as_subplot=True, units=units,
                     kpc_per_arcsec=kpc_per_arcsec, pointsize=10, xyticksize=xyticksize,
                     title=title, titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize)
+
+    plot_border(should_plot_border=should_plot_border, mapper=mapper, as_subplot=True, units=units,
+                kpc_per_arcsec=kpc_per_arcsec, pointsize=10, xyticksize=xyticksize,
+                title=title, titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize)
 
     mapper_grid = convert_grid(grid=mapper.grids.image, units=units, kpc_per_arcsec=kpc_per_arcsec)
 
@@ -148,8 +154,19 @@ def plot_plane_grid(should_plot_grid, mapper, as_subplot, units, kpc_per_arcsec,
     if should_plot_grid:
 
         tools_grid.plot_grid(grid=mapper.grids.image, as_subplot=as_subplot, units=units, kpc_per_arcsec=kpc_per_arcsec,
-                             pointsize=5, xyticksize=xyticksize, title=title, titlesize=titlesize,
+                             pointsize=pointsize, xyticksize=xyticksize, title=title, titlesize=titlesize,
                              xlabelsize=xlabelsize, ylabelsize=ylabelsize)
+
+def plot_border(should_plot_border, mapper, as_subplot, units, kpc_per_arcsec, pointsize, xyticksize, title,
+                titlesize, xlabelsize, ylabelsize):
+
+    if should_plot_border:
+
+        border_grid = mapper.grids.image[mapper.borders.image]
+
+        tools_grid.plot_grid(grid=border_grid, as_subplot=as_subplot, units=units, kpc_per_arcsec=kpc_per_arcsec,
+                             pointsize=pointsize, pointcolor='y', xyticksize=xyticksize, title=title,
+                             titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize)
 
 def plot_image_plane_image_pixels(grid, image_pixels, point_colors):
 

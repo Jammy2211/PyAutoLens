@@ -155,7 +155,7 @@ lensing_fitting_plotters.plot_fitting_subplot(fit=custom_prior_result.fit)
 # to reduce the number of lens model parameters and therefore dimensionality of non-linear parameter space?
 
 # Well, we're scientists, so we can *always* make assumptions. Below, I'm going to create a phase that assumes that
-# light-traces-mass. That is, that our light-profile's centre, axis_ratio and orientation are perfectly
+# light-traces-mass. That is, that our light-profile's origin, axis_ratio and orientation are perfectly
 # aligned with its mass. This may, or may not, be a reasonable assumption, but it'll remove 4 parameters from the lens
 # model (the mass-profiles x, y, axis_ratio and phi), so its worth trying!
 

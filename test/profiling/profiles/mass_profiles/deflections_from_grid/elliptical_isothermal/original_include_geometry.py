@@ -15,7 +15,7 @@ class EllipticalIsothermal(geometry_profiles.EllipticalProfile):
         Parameters
         ----------
         centre: (float, float)
-            The image_grid of the centre of the profiles
+            The image_grid of the origin of the profiles
         axis_ratio : float
             Elliptical mass profile's minor-to-major axis ratio (b/a)
         phi : float

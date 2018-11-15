@@ -15,7 +15,7 @@ class MockPriorModel:
     def __init__(self, name, cls):
         self.name = name
         self.cls = cls
-        self.centre = "centre for {}".format(name)
+        self.centre = "origin for {}".format(name)
         self.phi = "phi for {}".format(name)
 
 

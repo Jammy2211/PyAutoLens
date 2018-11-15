@@ -95,7 +95,7 @@ def total_border_pixels_from_mask(mask):
     return border_pixel_total
 
 @numba.jit(nopython=True, cache=True)
-def image_grid_2d_from_shape_pixel_scales_and_centre(shape, pixel_scales, centre=(0.0, 0.0)):
+def image_grid_2d_from_shape_pixel_scales_and_origin(shape, pixel_scales, origin=(0.0, 0.0)):
     """
     Computes the (y,x) arc second coordinates of every pixel in an datas_ of shape (rows, columns).
 
@@ -105,8 +105,8 @@ def image_grid_2d_from_shape_pixel_scales_and_centre(shape, pixel_scales, centre
 
     grid_2d = np.zeros((shape[0], shape[1], 2))
 
-    y_cen = float(shape[0] - 1) / 2 - (centre[0] / pixel_scales[0])
-    x_cen = float(shape[1] - 1) / 2 + (centre[1] / pixel_scales[1])
+    y_cen = float(shape[0] - 1) / 2 - (origin[0] / pixel_scales[0])
+    x_cen = float(shape[1] - 1) / 2 + (origin[1] / pixel_scales[1])
 
     for y in range(shape[0]):
         for x in range(shape[1]):
@@ -117,7 +117,7 @@ def image_grid_2d_from_shape_pixel_scales_and_centre(shape, pixel_scales, centre
     return grid_2d
 
 @numba.jit(nopython=True, cache=True)
-def image_grid_1d_from_shape_pixel_scales_and_centre(shape, pixel_scales, centre=(0.0, 0.0)):
+def image_grid_1d_from_shape_pixel_scales_and_origin(shape, pixel_scales, origin=(0.0, 0.0)):
     """
     Computes the (y,x) arc second coordinates of every pixel in an datas_ of shape (rows, columns).
 
@@ -127,8 +127,8 @@ def image_grid_1d_from_shape_pixel_scales_and_centre(shape, pixel_scales, centre
 
     grid_1d = np.zeros((shape[0]*shape[1], 2))
 
-    y_cen = float(shape[0] - 1) / 2 - (centre[0] / pixel_scales[0])
-    x_cen = float(shape[1] - 1) / 2 + (centre[1] / pixel_scales[1])
+    y_cen = float(shape[0] - 1) / 2 - (origin[0] / pixel_scales[0])
+    x_cen = float(shape[1] - 1) / 2 + (origin[1] / pixel_scales[1])
 
     i=0
     for y in range(shape[0]):
@@ -141,10 +141,10 @@ def image_grid_1d_from_shape_pixel_scales_and_centre(shape, pixel_scales, centre
     return grid_1d
 
 @numba.jit(nopython=True, cache=True)
-def image_grid_1d_masked_from_mask_and_pixel_scales(mask, pixel_scales, centre=(0.0, 0.0)):
+def image_grid_1d_masked_from_mask_pixel_scales_and_origin(mask, pixel_scales, origin=(0.0, 0.0)):
     """Compute a 1D grid of (y,x) coordinates, using the center of every unmasked pixel."""
 
-    grid_2d = image_grid_2d_from_shape_pixel_scales_and_centre(mask.shape, pixel_scales, centre)
+    grid_2d = image_grid_2d_from_shape_pixel_scales_and_origin(mask.shape, pixel_scales, origin)
 
     total_image_pixels = total_image_pixels_from_mask(mask)
     image_grid = np.zeros(shape=(total_image_pixels, 2))
@@ -159,15 +159,15 @@ def image_grid_1d_masked_from_mask_and_pixel_scales(mask, pixel_scales, centre=(
     return image_grid
 
 @numba.jit(nopython=True, cache=True)
-def sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(mask, pixel_scales, sub_grid_size, centre=(0.0, 0.0)):
+def sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(mask, pixel_scales, sub_grid_size, origin=(0.0, 0.0)):
     """Compute a 1D grid of (y,x) sub-pixel coordinates, using the sub-pixel centers of every unmasked pixel."""
 
     total_sub_pixels = total_sub_pixels_from_mask_and_sub_grid_size(mask, sub_grid_size)
 
     sub_grid = np.zeros(shape=(total_sub_pixels, 2))
 
-    y_cen = float(mask.shape[0] - 1) / 2 - (centre[0] / pixel_scales[0])
-    x_cen = float(mask.shape[1] - 1) / 2 + (centre[1] / pixel_scales[1])
+    y_cen = float(mask.shape[0] - 1) / 2 - (origin[0] / pixel_scales[0])
+    x_cen = float(mask.shape[1] - 1) / 2 + (origin[1] / pixel_scales[1])
 
     sub_index = 0
 
@@ -195,14 +195,14 @@ def sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(mask, pixel_scal
     return sub_grid
 
 @numba.jit(nopython=True, cache=True)
-def grid_arc_seconds_1d_to_grid_pixels_1d(grid_arc_seconds, shape, pixel_scales, centre=(0.0, 0.0)):
+def grid_arc_seconds_1d_to_grid_pixels_1d(grid_arc_seconds, shape, pixel_scales, origin=(0.0, 0.0)):
     """ Convert a grid of (y,x) arc second coordinates to a grid of (y,x) pixel values. Pixel coordinates are
     returned as floats such that they include the decimal offset from each pixel's top-left corner.
 
     The pixel coordinate origin is at the top left corner of the grid, such that the pixel [0,0] corresponds to \
     higher y arc-second coordinate value and lowest x arc-second coordinate.
 
-    The arc-second coordinate origin is defined by the class attribute centre, and coordinates are shifted to this \
+    The arc-second coordinate origin is defined by the class attribute origin, and coordinates are shifted to this \
     origin before computing their 1D grid pixel indexes.
 
     Parameters
@@ -213,14 +213,14 @@ def grid_arc_seconds_1d_to_grid_pixels_1d(grid_arc_seconds, shape, pixel_scales,
         The (y,x) shape of the 2D grid the arc-second coordinates are converted to pixel indexes for.
     pixel_scales : (float, float)
         The (y,x) pixel scales of the 2D grid's array / pixels.
-    centre : (float, flloat)
-        The (y,x) centre of the 2D grid, which the arc-second grid is shifted too.
+    origin : (float, flloat)
+        The (y,x) origin of the 2D grid, which the arc-second grid is shifted too.
     """
 
     grid_pixels = np.zeros((grid_arc_seconds.shape[0], 2))
 
-    y_cen = float(shape[0] - 1) / 2 + (centre[0] / pixel_scales[0])
-    x_cen = float(shape[1] - 1) / 2 - (centre[1] / pixel_scales[1])
+    y_cen = float(shape[0] - 1) / 2 + (origin[0] / pixel_scales[0])
+    x_cen = float(shape[1] - 1) / 2 - (origin[1] / pixel_scales[1])
 
     for i in range(grid_arc_seconds.shape[0]):
 
@@ -230,14 +230,14 @@ def grid_arc_seconds_1d_to_grid_pixels_1d(grid_arc_seconds, shape, pixel_scales,
     return grid_pixels
 
 @numba.jit(nopython=True, cache=True)
-def grid_arc_seconds_1d_to_grid_pixel_centres_1d(grid_arc_seconds, shape, pixel_scales, centre=(0.0, 0.0)):
+def grid_arc_seconds_1d_to_grid_pixel_centres_1d(grid_arc_seconds, shape, pixel_scales, origin=(0.0, 0.0)):
     """ Convert a grid of (y,x) arc second coordinates to a grid of (y,x) pixel values. Pixel coordinates are \
     returned as integers such that they map directly to the pixel they are contained within.
 
     The pixel coordinate origin is at the top left corner of the grid, such that the pixel [0,0] corresponds to \
     higher y arc-second coordinate value and lowest x arc-second coordinate.
 
-    The arc-second coordinate origin is defined by the class attribute centre, and coordinates are shifted to this \
+    The arc-second coordinate origin is defined by the class attribute origin, and coordinates are shifted to this \
     origin before computing their 1D grid pixel indexes.
 
     Parameters
@@ -248,14 +248,14 @@ def grid_arc_seconds_1d_to_grid_pixel_centres_1d(grid_arc_seconds, shape, pixel_
         The (y,x) shape of the 2D grid the arc-second coordinates are converted to pixel indexes for.
     pixel_scales : (float, float)
         The (y,x) pixel scales of the 2D grid's array / pixels.
-    centre : (float, flloat)
-        The (y,x) centre of the 2D grid, which the arc-second grid is shifted too.
+    origin : (float, flloat)
+        The (y,x) origin of the 2D grid, which the arc-second grid is shifted too.
     """
 
     grid_pixels = np.zeros((grid_arc_seconds.shape[0], 2))
 
-    y_cen = float(shape[0] - 1) / 2 + (centre[0] / pixel_scales[0])
-    x_cen = float(shape[1] - 1) / 2 - (centre[1] / pixel_scales[1])
+    y_cen = float(shape[0] - 1) / 2 + (origin[0] / pixel_scales[0])
+    x_cen = float(shape[1] - 1) / 2 - (origin[1] / pixel_scales[1])
 
     for i in range(grid_arc_seconds.shape[0]):
 
@@ -265,7 +265,7 @@ def grid_arc_seconds_1d_to_grid_pixel_centres_1d(grid_arc_seconds, shape, pixel_
     return grid_pixels
 
 @numba.jit(nopython=True, cache=True)
-def grid_arc_seconds_1d_to_grid_pixel_indexes_1d(grid_arc_seconds, shape, pixel_scales, centre=(0.0, 0.0)):
+def grid_arc_seconds_1d_to_grid_pixel_indexes_1d(grid_arc_seconds, shape, pixel_scales, origin=(0.0, 0.0)):
     """ Convert a grid of (y,x) arc second coordinates to a grid of (y,x) pixel 1D indexes. Pixel coordinates are \
     returned as integers such that they are the pixel from the top-left of the 2D grid going rights and then \
     downwards.
@@ -276,7 +276,7 @@ def grid_arc_seconds_1d_to_grid_pixel_indexes_1d(grid_arc_seconds, shape, pixel_
     The fifth pixel on the top row, whose 2D index is [0,5], corresponds to 1D index 4.
     The first pixel on the second row, whose 2D index is [0,1], has 1D index 10 if a row has 10 pixels.
 
-    The arc-second coordinate origin is defined by the class attribute centre, and coordinates are shifted to this \
+    The arc-second coordinate origin is defined by the class attribute origin, and coordinates are shifted to this \
     origin before computing their 1D grid pixel indexes.
 
     Parameters
@@ -287,12 +287,12 @@ def grid_arc_seconds_1d_to_grid_pixel_indexes_1d(grid_arc_seconds, shape, pixel_
         The (y,x) shape of the 2D grid the arc-second coordinates are converted to pixel indexes for.
     pixel_scales : (float, float)
         The (y,x) pixel scales of the 2D grid's array / pixels.
-    centre : (float, flloat)
-        The (y,x) centre of the 2D grid, which the arc-second grid is shifted too.
+    origin : (float, flloat)
+        The (y,x) origin of the 2D grid, which the arc-second grid is shifted too.
     """
 
     grid_pixels = grid_arc_seconds_1d_to_grid_pixel_centres_1d(grid_arc_seconds=grid_arc_seconds, shape=shape,
-                                                               pixel_scales=pixel_scales, centre=centre)
+                                                               pixel_scales=pixel_scales, origin=origin)
 
     grid_pixel_indexes = np.zeros(grid_pixels.shape[0])
 
@@ -303,13 +303,13 @@ def grid_arc_seconds_1d_to_grid_pixel_indexes_1d(grid_arc_seconds, shape, pixel_
     return grid_pixel_indexes
 
 @numba.jit(nopython=True, cache=True)
-def grid_pixels_1d_to_grid_arc_seconds_1d(grid_pixels, shape, pixel_scales, centre=(0.0, 0.0)):
+def grid_pixels_1d_to_grid_arc_seconds_1d(grid_pixels, shape, pixel_scales, origin=(0.0, 0.0)):
     """ Convert a grid of (y,x) pixel coordinates to a grid of (y,x) arc second values.
 
     The pixel coordinate origin is at the top left corner of the grid, such that the pixel [0,0] corresponds to \
     higher y arc-second coordinate value and lowest x arc-second coordinate.
 
-    The arc-second coordinate origin is defined by the class attribute centre, and coordinates are shifted to this \
+    The arc-second coordinate origin is defined by the class attribute origin, and coordinates are shifted to this \
     origin before computing their 1D grid pixel indexes.
 
     Parameters
@@ -320,14 +320,14 @@ def grid_pixels_1d_to_grid_arc_seconds_1d(grid_pixels, shape, pixel_scales, cent
         The (y,x) shape of the 2D grid the arc-second coordinates are converted to pixel indexes for.
     pixel_scales : (float, float)
         The (y,x) pixel scales of the 2D grid's array / pixels.
-    centre : (float, flloat)
-        The (y,x) centre of the 2D grid, which the arc-second grid is shifted too.
+    origin : (float, flloat)
+        The (y,x) origin of the 2D grid, which the arc-second grid is shifted too.
     """
 
     grid_arc_seconds = np.zeros((grid_pixels.shape[0], 2))
 
-    y_cen = float(shape[0] - 1) / 2 + (centre[0] / pixel_scales[0])
-    x_cen = float(shape[1] - 1) / 2 - (centre[1] / pixel_scales[1])
+    y_cen = float(shape[0] - 1) / 2 + (origin[0] / pixel_scales[0])
+    x_cen = float(shape[1] - 1) / 2 - (origin[1] / pixel_scales[1])
 
     for i in range(grid_arc_seconds.shape[0]):
 
@@ -581,11 +581,11 @@ def map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(array_1d, shape):
     return array_2d
 
 @numba.jit(nopython=True, cache=True)
-def resize_array_2d(array_2d, new_shape, new_centre=(-1, -1)):
+def resize_array_2d(array_2d, new_shape, origin=(-1, -1)):
     """
     Trim the data_vector array to a new sub_grid_size around its central pixel.
 
-    NOTE: The centre of the array cannot be shifted. Therefore, even arrays must be trimmed to even arrays \
+    NOTE: The origin of the array cannot be shifted. Therefore, even arrays must be trimmed to even arrays \
     (e.g. 8x8 -> 4x4) and odd to odd (e.g. 5x5 -> 3x3).
 
     Parameters
@@ -598,7 +598,7 @@ def resize_array_2d(array_2d, new_shape, new_centre=(-1, -1)):
     y_is_even = int(array_2d.shape[0]) % 2 == 0
     x_is_even = int(array_2d.shape[1]) % 2 == 0
 
-    if new_centre is (-1, -1):
+    if origin is (-1, -1):
 
         if y_is_even:
             y_centre = int(array_2d.shape[0]/2)
@@ -610,23 +610,23 @@ def resize_array_2d(array_2d, new_shape, new_centre=(-1, -1)):
         elif not x_is_even:
             x_centre = int(array_2d.shape[1] / 2)
 
-        new_centre = (y_centre, x_centre)
+        origin = (y_centre, x_centre)
 
     resized_array = np.zeros(shape=new_shape)
 
     if y_is_even:
-        ymin = new_centre[0] - int(new_shape[0]/2)
-        ymax = new_centre[0] + int((new_shape[0]/2)) + 1
+        ymin = origin[0] - int(new_shape[0] / 2)
+        ymax = origin[0] + int((new_shape[0] / 2)) + 1
     elif not y_is_even:
-        ymin = new_centre[0] - int(new_shape[0]/2)
-        ymax = new_centre[0] + int((new_shape[0]/2)) + 1
+        ymin = origin[0] - int(new_shape[0] / 2)
+        ymax = origin[0] + int((new_shape[0] / 2)) + 1
 
     if x_is_even:
-        xmin = new_centre[1] - int(new_shape[1] / 2)
-        xmax = new_centre[1] + int((new_shape[1] / 2)) + 1
+        xmin = origin[1] - int(new_shape[1] / 2)
+        xmax = origin[1] + int((new_shape[1] / 2)) + 1
     elif not x_is_even:
-        xmin = new_centre[1] - int(new_shape[1] / 2)
-        xmax = new_centre[1] + int((new_shape[1] / 2)) + 1
+        xmin = origin[1] - int(new_shape[1] / 2)
+        xmax = origin[1] + int((new_shape[1] / 2)) + 1
 
     for y_resized, y in enumerate(range(ymin, ymax)):
         for x_resized, x in enumerate(range(xmin, xmax)):

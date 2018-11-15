@@ -17,7 +17,7 @@ class SphericalPowerLaw(geometry_profiles.SphericalProfile):
         Parameters
         ----------
         centre: (float, float)
-            The image_grid of the centre of the profiles
+            The image_grid of the origin of the profiles
         einstein_radius : float
             Einstein radius of power-law mass profiles
         """

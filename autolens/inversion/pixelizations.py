@@ -10,7 +10,7 @@ from autolens.inversion import mappers
 
 class PixelizationImageGrid(scaled_array.ArrayGeometry):
 
-    def __init__(self, image_grid_shape, pixel_scales, image_grid, centre=(0.0, 0.0)):
+    def __init__(self, image_grid_shape, pixel_scales, image_grid, origin=(0.0, 0.0)):
         """Abstract class which handles the uniform image-grid whose pixel centers are used to form an adaptive grid's \
         pixelization pixel-centers.
 
@@ -28,7 +28,7 @@ class PixelizationImageGrid(scaled_array.ArrayGeometry):
         self.total_pixels = int(self.shape[0] * self.shape[1])
         self.pixel_scales = pixel_scales
         self.image_grid = image_grid
-        self.centre = centre
+        self.origin = origin
         self.grid_image_pixel_centers = self.image_grid.mask.grid_arc_seconds_to_grid_pixel_centres(self.grid_1d)
 
         self.total_masked_pixels = self.total_masked_pixels_jit(mask=self.image_grid.mask,
@@ -124,7 +124,7 @@ class Rectangular(Pixelization):
 
     class Geometry(scaled_array.ArrayGeometry):
 
-        def __init__(self, shape, pixel_scales, centre):
+        def __init__(self, shape, pixel_scales, origin):
             """The geometry of a rectangular grid
 
             Parameters
@@ -136,7 +136,7 @@ class Rectangular(Pixelization):
             """
             self.shape = shape
             self.pixel_scales = pixel_scales
-            self.centre = centre
+            self.origin = origin
 
         @property
         def pixel_centres(self):
@@ -158,8 +158,8 @@ class Rectangular(Pixelization):
         x_min = np.min(grid[:, 1]) - buffer
         x_max = np.max(grid[:, 1]) + buffer
         pixel_scales = (float((y_max - y_min) / self.shape[0]), float((x_max - x_min) / self.shape[1]))
-        centre = ((y_max + y_min) / 2.0, (x_max + x_min) / 2.0)
-        return self.Geometry(shape=self.shape, pixel_scales=pixel_scales, centre=centre)
+        origin = ((y_max + y_min) / 2.0, (x_max + x_min) / 2.0)
+        return self.Geometry(shape=self.shape, pixel_scales=pixel_scales, origin=origin)
 
     def neighbors_from_pixelization(self):
         """Compute the neighbors of every pixel as a list of the pixel index's each pixel shares a vertex with.
@@ -247,7 +247,7 @@ class Rectangular(Pixelization):
         """
         geometry = self.geometry_from_grid(grids.sub)
         pixel_neighbors = self.neighbors_from_pixelization()
-        return mappers.RectangularMapper(pixels=self.pixels, grids=grids, pixel_neighbors=pixel_neighbors,
+        return mappers.RectangularMapper(pixels=self.pixels, grids=grids, borders=None, pixel_neighbors=pixel_neighbors,
                                          shape=self.shape, geometry=geometry)
 
     def mapper_from_grids_and_borders(self, grids, borders):
@@ -270,8 +270,8 @@ class Rectangular(Pixelization):
 
         geometry = self.geometry_from_grid(relocated_grids.sub)
         pixel_neighbors = self.neighbors_from_pixelization()
-        return mappers.RectangularMapper(pixels=self.pixels, grids=relocated_grids, pixel_neighbors=pixel_neighbors,
-                                         shape=self.shape, geometry=geometry)
+        return mappers.RectangularMapper(pixels=self.pixels, grids=relocated_grids, borders=borders,
+                                         pixel_neighbors=pixel_neighbors, shape=self.shape, geometry=geometry)
 
 
 class AdaptiveImageGrid(object):
@@ -367,7 +367,7 @@ class Cluster(Voronoi, AdaptiveImageGrid):
         voronoi = self.voronoi_from_pixel_centers(pixel_centers)
         pixel_neighbors = self.neighbors_from_pixelization(voronoi.ridge_points)
 
-        return mappers.VoronoiMapper(pixels=self.pixels, grids=grids,
+        return mappers.VoronoiMapper(pixels=self.pixels, grids=grids, borders=None,
                                      pixel_neighbors=pixel_neighbors,
                                      pixel_centers=pixel_centers, voronoi=voronoi,
                                      voronoi_to_pixelization=voronoi_to_pixelization,
@@ -396,7 +396,7 @@ class Cluster(Voronoi, AdaptiveImageGrid):
         voronoi = self.voronoi_from_pixel_centers(pixel_centers)
         pixel_neighbors = self.neighbors_from_pixelization(voronoi.ridge_points)
 
-        return mappers.VoronoiMapper(pixels=self.pixels, grids=relocated_grids,
+        return mappers.VoronoiMapper(pixels=self.pixels, grids=relocated_grids, borders=borders,
                                      pixel_neighbors=pixel_neighbors,
                                      pixel_centers=pixel_centers, voronoi=voronoi,
                                      voronoi_to_pixelization=voronoi_to_pixelization,

@@ -43,7 +43,7 @@ print('Rectangular Grid Pixel Centre 3:')
 print(mapper.geometry.pixel_centres[2])
 print('etc.')
 
-# Infact, we can plot these centre on our grid - to make it look slightly less boring!
+# Infact, we can plot these origin on our grid - to make it look slightly less boring!
 mapper_plotters.plot_rectangular_mapper(mapper=mapper, should_plot_grid=False, should_plot_centres=True)
 
 # The mapper also has the (source-plane) grid that we passed when we set it up. Lets check they're the same grids.

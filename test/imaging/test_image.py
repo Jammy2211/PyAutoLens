@@ -37,6 +37,7 @@ class TestImage:
             assert (im.background_noise_map == 7.0 * np.ones((3, 3))).all()
             assert (im.poisson_noise_map == 9.0 * np.ones((3, 3))).all()
             assert (im.exposure_time_map == 11.0 * np.ones((3, 3))).all()
+            assert im.origin == (0.0, 0.0)
 
     class TestSimulateImage(object):
 
@@ -55,6 +56,7 @@ class TestImage:
             assert (sim_img == np.array([[0.0, 0.0, 0.0],
                                          [0.0, 1.0, 0.0],
                                          [0.0, 0.0, 0.0]])).all()
+            assert sim_img.origin == (0.0, 0.0)
 
         def test__setup_with_background_sky_on__noise_off__no_noise_in_image(self):
             img = np.array([[0.0, 0.0, 0.0],
@@ -295,6 +297,7 @@ class TestImage:
 
             assert sim_poisson_img.shape == (2, 2)
             assert (sim_poisson_img == np.zeros((2, 2))).all()
+
 
         def test__input_img_includes_10s__exposure_time_is_1s__gives_noise_values_near_1_to_5(self):
             img = np.array([[10., 0.],
@@ -775,6 +778,7 @@ class TestImage:
 
             assert im.pixel_scale == 1.0
             assert (im.psf == np.zeros((3,3))).all()
+            assert im.origin == (0.0, 0.0)
 
         def test__resize_psf(self):
 
@@ -787,6 +791,7 @@ class TestImage:
             assert (im == np.ones((6,6))).all()
             assert im.pixel_scale == 1.0
             assert (im.psf == np.zeros((1,1))).all()
+            assert im.origin == (0.0, 0.0)
 
         def test__input_new_centre_pixels__arrays_use_new_centre__psf_does_not(self):
 
@@ -831,6 +836,7 @@ class TestImage:
 
             assert im.pixel_scale == 1.0
             assert (im.psf == np.zeros((3,3))).all()
+            assert im.origin == (0.0, 0.0)
 
         def test__input_new_centre_arc_seconds__arrays_use_new_centre__psf_does_not(self):
 
@@ -875,6 +881,7 @@ class TestImage:
 
             assert im.pixel_scale == 1.0
             assert (im.psf == np.zeros((3,3))).all()
+            assert im.origin == (0.0, 0.0)
 
         def test__input_both_centres__raises_error(self):
 
@@ -908,6 +915,7 @@ class TestImage:
             assert (im.background_noise_map == 6.0*np.ones((3,3))).all()
             assert im.poisson_noise_map == None
             assert (im.background_sky_map == 12.0*np.ones((3,3))).all()
+            assert im.origin == (0.0, 0.0)
 
     class TestNewImageWithPoissonNoiseAdded:
 
@@ -943,6 +951,7 @@ class TestNoiseMap(object):
 
             assert (noise_map == np.array([[1.0, 0.5, 0.25],
                                            [1.0, 0.5, 0.25]])).all()
+            assert noise_map.origin == (0.0, 0.0)
 
         def test__weight_map_no_zeros__zeros_set_to_10000000(self):
 
@@ -953,6 +962,7 @@ class TestNoiseMap(object):
 
             assert (noise_map == np.array([[1.0, 0.5, 1.0e8],
                                            [1.0, 0.5, 0.25]])).all()
+            assert noise_map.origin == (0.0, 0.0)
 
 
 class TestPSF(object):
@@ -964,6 +974,7 @@ class TestPSF(object):
             assert psf.shape == (3, 3)
             assert psf.pixel_scale == 1.0
             assert (psf == np.ones((3, 3))).all()
+            assert psf.origin == (0.0, 0.0)
 
         def test__init__input_psf_4x3__all_attributes_correct_including_data_inheritance(self):
             psf = image.PSF(array=np.ones((4, 3)), pixel_scale=1.0, renormalize=False)
@@ -971,18 +982,21 @@ class TestPSF(object):
             assert (psf == np.ones((4, 3))).all()
             assert psf.pixel_scale == 1.0
             assert psf.shape == (4, 3)
+            assert psf.origin == (0.0, 0.0)
 
         def test__from_fits__input_psf_3x3__all_attributes_correct_including_data_inheritance(self):
             psf = image.PSF.from_fits_with_scale(file_path=test_data_dir + '3x3_ones.fits', hdu=0, pixel_scale=1.0)
 
             assert (psf == np.ones((3, 3))).all()
             assert psf.pixel_scale == 1.0
+            assert psf.origin == (0.0, 0.0)
 
         def test__from_fits__input_psf_4x3__all_attributes_correct_including_data_inheritance(self):
             psf = image.PSF.from_fits_with_scale(file_path=test_data_dir + '4x3_ones.fits', hdu=0, pixel_scale=1.0)
 
             assert (psf == np.ones((4, 3))).all()
             assert psf.pixel_scale == 1.0
+            assert psf.origin == (0.0, 0.0)
 
     class TestRenormalize(object):
 
@@ -1152,8 +1166,8 @@ class TestPSF(object):
         def test__identical_to_gaussian_light_profile(self):
             from autolens.profiles import light_profiles as lp
 
-            grid = imaging_util.image_grid_1d_masked_from_mask_and_pixel_scales(mask=np.full((3, 3), False),
-                                                                                pixel_scales=(1.0, 1.0))
+            grid = imaging_util.image_grid_1d_masked_from_mask_pixel_scales_and_origin(mask=np.full((3, 3), False),
+                                                                                       pixel_scales=(1.0, 1.0))
 
             gaussian = lp.EllipticalGaussian(centre=(0.1, 0.1), axis_ratio=0.9, phi=45.0, intensity=1.0, sigma=1.0)
             profile_gaussian_1d = gaussian.intensities_from_grid(grid)
