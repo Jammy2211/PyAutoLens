@@ -1108,6 +1108,8 @@ class PriorModel(AbstractPriorModel):
         -------
             An instance of the class
         """
+        for prior, value in arguments.items():
+            prior.assert_within_limits(value)
         model_arguments = {t.name: arguments[t.prior] for t in self.direct_prior_tuples}
         constant_arguments = {t.name: t.constant.value for t in self.direct_constant_tuples}
         for tuple_prior in self.tuple_prior_tuples:

@@ -99,6 +99,18 @@ class TestPriorLimits(object):
         assert prior_tuples[1].prior.lower_limit == 0
         assert prior_tuples[1].prior.upper_limit == 2
 
+    def test_out_of_limits(self, test_config, limit_config):
+        mm = model_mapper.ModelMapper(test_config, limit_config=limit_config)
+        mm.mock_class_gaussian = MockClassGaussian
+
+        assert mm.instance_from_physical_vector([1, 2]) is not None
+
+        with pytest.raises(exc.PriorLimitException):
+            mm.instance_from_physical_vector(([1, 3]))
+
+        with pytest.raises(exc.PriorLimitException):
+            mm.instance_from_physical_vector(([-1, 2]))
+
 
 class TestPriorLinking(object):
     def test_same_class(self, initial_model):
