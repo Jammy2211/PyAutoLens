@@ -336,11 +336,16 @@ class ImageGrid(np.ndarray):
     def __new__(cls, arr, mask, *args, **kwargs):
         obj = arr.view(cls)
         obj.mask = mask
+#        obj.masked_shape_arcsec = (np.amax(arr[:,0]) - np.amin(arr[:,0]), np.amax(arr[:,1]) - np.amin(arr[:,1]))
         return obj
 
     def __array_finalize__(self, obj):
         if hasattr(obj, "mask"):
             self.mask = obj.mask
+
+    @property
+    def masked_shape_arcsec(self):
+        return (np.amax(self[:,0]) - np.amin(self[:,0]), np.amax(self[:,1]) - np.amin(self[:,1]))
 
     @property
     def unlensed_grid(self):
@@ -350,8 +355,8 @@ class ImageGrid(np.ndarray):
 
     @property
     def unlensed_unmasked_grid(self):
-        return ImageGrid(arr=imaging_util.image_grid_1d_from_shape_and_pixel_scales(shape=self.mask.shape,
-                                                                                    pixel_scales=self.mask.pixel_scales),
+        return ImageGrid(arr=imaging_util.image_grid_1d_from_shape_pixel_scales_and_centre(shape=self.mask.shape,
+                                                                                           pixel_scales=self.mask.pixel_scales),
                          mask=self.mask)
 
     @classmethod
@@ -392,7 +397,8 @@ class ImageGrid(np.ndarray):
                                                                                                self.mask.grid_to_pixel)
 
     def scaled_array_from_array_1d(self, array_1d):
-        return scaled_array.ScaledSquarePixelArray(array=self.map_to_2d(array_1d), pixel_scale=self.mask.pixel_scale)
+        return scaled_array.ScaledSquarePixelArray(array=self.map_to_2d(array_1d), pixel_scale=self.mask.pixel_scale,
+                                                   centre=self.mask.centre)
 
     def __reduce__(self):
         # Get the parent's __reduce__ tuple

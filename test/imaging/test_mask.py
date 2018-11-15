@@ -216,7 +216,7 @@ class TestImageGrid:
         assert type(image_grid) == mask.ImageGrid
         assert image_grid.unlensed_grid == pytest.approx(image_grid_util, 1e-4)
 
-        image_grid_util = imaging_util.image_grid_1d_from_shape_and_pixel_scales(shape=(3, 4), pixel_scales=(2.0, 2.0))
+        image_grid_util = imaging_util.image_grid_1d_from_shape_pixel_scales_and_centre(shape=(3, 4), pixel_scales=(2.0, 2.0))
 
         assert type(image_grid) == mask.ImageGrid
         assert image_grid.unlensed_unmasked_grid == pytest.approx(image_grid_util, 1e-4)
@@ -272,11 +272,13 @@ class TestImageGrid:
         array_2d_util = imaging_util.map_masked_1d_array_to_2d_array_from_array_1d_shape_and_one_to_two(
             array_1d=array_1d, shape=(3, 4), one_to_two=one_to_two)
 
-        msk = mask.Mask(array=msk, pixel_scale=2.0)
+        msk = mask.Mask(array=msk, pixel_scale=2.0, centre=(1.0, 1.0))
         image_grid = mask.ImageGrid.from_mask(msk)
         array_2d_grid = image_grid.scaled_array_from_array_1d(array_1d)
 
         assert (array_2d_util == array_2d_grid).all()
+        assert array_2d_grid.pixel_scale == 2.0
+        assert array_2d_grid.centre == (1.0, 1.0)
 
     def test__scaled_array_from_array_1d__compare_to_util(self):
         msk = np.array([[True, True, False, False],
@@ -295,39 +297,57 @@ class TestImageGrid:
         assert (scaled_array_2d.xticks == np.array([-6.0, -2.0, 2.0, 6.0])).all()
         assert (scaled_array_2d.yticks == np.array([-4.5, -1.5, 1.5, 4.5])).all()
         assert scaled_array_2d.shape_arc_seconds == (9.0, 12.0)
+        assert scaled_array_2d.pixel_scale == 3.0
+        assert scaled_array_2d.centre == (0.0, 0.0)
 
-    class TestTicks:
+    def test__yticks(self):
 
-        def test__yticks(self):
-            sca = mask.ImageGrid(arr=np.array([[1.5, 1.0], [-1.5, -1.0]]), mask=None)
-            assert sca.yticks == pytest.approx(np.array([-1.5, -0.5, 0.5, 1.5]), 1e-3)
+        sca = mask.ImageGrid(arr=np.array([[1.5, 1.0], [-1.5, -1.0]]), mask=None)
+        assert sca.yticks == pytest.approx(np.array([-1.5, -0.5, 0.5, 1.5]), 1e-3)
 
-            sca = mask.ImageGrid(arr=np.array([[3.0, 1.0], [-3.0, -1.0]]), mask=None)
-            assert sca.yticks == pytest.approx(np.array([-3.0, -1, 1.0, 3.0]), 1e-3)
+        sca = mask.ImageGrid(arr=np.array([[3.0, 1.0], [-3.0, -1.0]]), mask=None)
+        assert sca.yticks == pytest.approx(np.array([-3.0, -1, 1.0, 3.0]), 1e-3)
 
-            sca = mask.ImageGrid(arr=np.array([[5.0, 3.5], [2.0, -1.0]]), mask=None)
-            assert sca.yticks == pytest.approx(np.array([2.0, 3.0, 4.0, 5.0]), 1e-3)
+        sca = mask.ImageGrid(arr=np.array([[5.0, 3.5], [2.0, -1.0]]), mask=None)
+        assert sca.yticks == pytest.approx(np.array([2.0, 3.0, 4.0, 5.0]), 1e-3)
 
-        def test__xticks(self):
-            sca = mask.ImageGrid(arr=np.array([[1.0, 1.5], [-1.0, -1.5]]), mask=None)
-            assert sca.xticks == pytest.approx(np.array([-1.5, -0.5, 0.5, 1.5]), 1e-3)
+    def test__xticks(self):
 
-            sca = mask.ImageGrid(arr=np.array([[1.0, 3.0], [-1.0, -3.0]]), mask=None)
-            assert sca.xticks == pytest.approx(np.array([-3.0, -1, 1.0, 3.0]), 1e-3)
+        sca = mask.ImageGrid(arr=np.array([[1.0, 1.5], [-1.0, -1.5]]), mask=None)
+        assert sca.xticks == pytest.approx(np.array([-1.5, -0.5, 0.5, 1.5]), 1e-3)
 
-            sca = mask.ImageGrid(arr=np.array([[3.5, 2.0], [-1.0, 5.0]]), mask=None)
-            assert sca.xticks == pytest.approx(np.array([2.0, 3.0, 4.0, 5.0]), 1e-3)
+        sca = mask.ImageGrid(arr=np.array([[1.0, 3.0], [-1.0, -3.0]]), mask=None)
+        assert sca.xticks == pytest.approx(np.array([-3.0, -1, 1.0, 3.0]), 1e-3)
+
+        sca = mask.ImageGrid(arr=np.array([[3.5, 2.0], [-1.0, 5.0]]), mask=None)
+        assert sca.xticks == pytest.approx(np.array([2.0, 3.0, 4.0, 5.0]), 1e-3)
+
+    def test__masked_shape_arcsec(self):
+
+        sca = mask.ImageGrid(arr=np.array([[1.5, 1.0], [-1.5, -1.0]]), mask=None)
+        assert sca.masked_shape_arcsec == (3.0, 2.0)
+
+        sca = mask.ImageGrid(arr=np.array([[1.5, 1.0], [-1.5, -1.0], [0.1, 0.1]]), mask=None)
+        assert sca.masked_shape_arcsec == (3.0, 2.0)
+
+        sca = mask.ImageGrid(arr=np.array([[1.5, 1.0], [-1.5, -1.0], [3.0, 3.0]]), mask=None)
+        assert sca.masked_shape_arcsec == (4.5, 4.0)
+
+        sca = mask.ImageGrid(arr=np.array([[1.5, 1.0], [-1.5, -1.0], [3.0, 3.0], [7.0, -5.0]]), mask=None)
+        assert sca.masked_shape_arcsec == (8.5, 8.0)
 
 
 class TestSubGrid(object):
 
     def test_sub_grid(self, sub_grid):
+
         assert type(sub_grid) == mask.SubGrid
         assert sub_grid.shape == (5, 2)
         assert sub_grid.pixel_scale == 1.0
         assert (sub_grid == np.array([[1, 0], [0, -1], [0, 0], [0, 1], [-1, 0]])).all()
 
     def test__image_grid_unlensed_grid_properties_compare_to_array_util(self, msk, sub_grid):
+
         assert type(sub_grid) == mask.SubGrid
         assert sub_grid.unlensed_grid == \
                pytest.approx(np.array([[1, 0], [0, -1], [0, 0], [0, 1], [-1, 0]]), 1e-4)
@@ -389,16 +409,20 @@ class TestSubGrid(object):
             array_1d=array_1d,
             shape=(3, 4), one_to_two=one_to_two)
 
-        msk = mask.Mask(array=msk, pixel_scale=2.0)
+        msk = mask.Mask(array=msk, pixel_scale=2.0, centre=(1.0, 1.0))
         image_grid = mask.SubGrid.from_mask_and_sub_grid_size(msk, sub_grid_size=2)
         array_2d_grid = image_grid.scaled_array_from_array_1d(array_1d)
 
         assert (array_2d_util == array_2d_grid).all()
+        assert array_2d_grid.pixel_scale == 2.0
+        assert array_2d_grid.centre == (1.0, 1.0)
 
     def test_sub_data_to_image(self, sub_grid):
+
         assert (sub_grid.sub_data_to_image(np.array(range(5))) == np.array(range(5))).all()
 
     def test_sub_to_image__compare_to_array_util(self):
+
         msk = np.array([[True, False, True],
                         [False, False, False],
                         [True, False, False]])

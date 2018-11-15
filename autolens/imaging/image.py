@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 class Image(ScaledSquarePixelArray):
 
     def __init__(self, array, pixel_scale, psf, noise_map=None, background_noise_map=None, poisson_noise_map=None,
-                 exposure_time_map=None, background_sky_map=None):
+                 exposure_time_map=None, background_sky_map=None, centre=(0.0, 0.0)):
         """
         A 2d array representing a real or simulated data.
 
@@ -41,13 +41,14 @@ class Image(ScaledSquarePixelArray):
         background_sky_map : ScaledSquarePixelArray
             An array describing the background sky.
         """
-        super(Image, self).__init__(array, pixel_scale)
+        super(Image, self).__init__(array=array, pixel_scale=pixel_scale, centre=centre)
         self.psf = psf
         self.noise_map = noise_map
         self.background_noise_map = background_noise_map
         self.poisson_noise_map = poisson_noise_map
         self.exposure_time_map = exposure_time_map
         self.background_sky_map = background_sky_map
+        self.centre = centre
 
     @classmethod
     def simulate(cls, array, pixel_scale, exposure_time, psf=None, background_sky_level=None,
@@ -350,6 +351,7 @@ class Image(ScaledSquarePixelArray):
                 self.poisson_noise_map = obj.poisson_noise_map
                 self.exposure_time_map = obj.exposure_time_map
                 self.background_sky_map = obj.background_sky_map
+                self.centre = obj.centre
             except AttributeError:
                 logger.debug("Original object in Image.__array_finalize__ missing one or more attributes")
 
@@ -357,17 +359,17 @@ class Image(ScaledSquarePixelArray):
 class NoiseMap(ScaledSquarePixelArray):
 
     @classmethod
-    def from_weight_map(cls, pixel_scale, weight_map):
+    def from_weight_map(cls, pixel_scale, weight_map, centre=(0.0, 0.0)):
         np.seterr(divide='ignore')
         noise_map = 1.0 / np.sqrt(weight_map)
         noise_map[noise_map == np.inf] = 1.0e8
-        return NoiseMap(array=noise_map, pixel_scale=pixel_scale)
+        return NoiseMap(array=noise_map, pixel_scale=pixel_scale, centre=centre)
 
 
 class PSF(ScaledSquarePixelArray):
 
     # noinspection PyUnusedLocal
-    def __init__(self, array, pixel_scale, renormalize=False):
+    def __init__(self, array, pixel_scale, renormalize=False, centre=(0.0, 0.0)):
         """
         Class storing a 2D Point Spread Function (PSF), including its blurring kernel.
 
@@ -380,7 +382,7 @@ class PSF(ScaledSquarePixelArray):
         """
 
         # noinspection PyArgumentList
-        super().__init__(array=array, pixel_scale=pixel_scale)
+        super().__init__(array=array, pixel_scale=pixel_scale, centre=centre)
         if renormalize:
             self.renormalize()
 
