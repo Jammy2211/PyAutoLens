@@ -69,7 +69,7 @@ inversion_plotters.plot_reconstructed_image(inversion=inversion)
 inversion_plotters.plot_reconstructed_pixelization(inversion=inversion, should_plot_grid=True)
 
 # And there we have it, we've successfully reconstructed, or, *inverted*, our source using the mapper's rectangular
-# grid. Whilst this source was simple (a blob of light in the centre of the source-plane), inversions come into their
+# grid. Whilst this source was simple (a blob of light in the origin of the source-plane), inversions come into their
 # own when fitting sources with complex morphologies. Infact, given we're having so much fun inverting things, lets
 # simulate a really complex source and invert it!
 

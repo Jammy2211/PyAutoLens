@@ -440,9 +440,9 @@ def plane_image_from_grid_and_galaxies(shape, grid, galaxies):
     y_pixel_scale = ((y_max - y_min) / shape[0])
     x_pixel_scale = ((x_max - x_min) / shape[1])
 
-    uniform_grid = imaging_util.image_grid_1d_masked_from_mask_and_pixel_scales(mask=np.full(shape=shape,
-                                                                                             fill_value=False),
-                                                                    pixel_scales=(y_pixel_scale, x_pixel_scale))
+    uniform_grid = imaging_util.image_grid_1d_masked_from_mask_pixel_scales_and_origin(mask=np.full(shape=shape,
+                                                                                                    fill_value=False),
+                                                                                       pixel_scales=(y_pixel_scale, x_pixel_scale))
 
     image_1d = sum([intensities_from_grid(uniform_grid, [galaxy]) for galaxy in galaxies])
 

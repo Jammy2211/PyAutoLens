@@ -16,7 +16,7 @@ class EllipticalSersic(light_profiles.EllipticalLightProfile):
         Parameters
         ----------
         centre: (float, float)
-            The image_grid of the centre of the profiles
+            The image_grid of the origin of the profiles
         axis_ratio : float
             Ratio of light profiles ellipse's minor and major axes (b/a)
         phi : float

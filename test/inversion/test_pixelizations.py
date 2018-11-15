@@ -36,6 +36,8 @@ class TestPixelizationImageGrid:
 
         image_grid = mask.ImageGrid.from_mask(mask=ma)
 
+        print(image_grid.mask.origin)
+
         pix = pixelizations.PixelizationImageGrid(image_grid_shape=(2, 2), pixel_scales=(1.0, 0.5),
                                                   image_grid=image_grid)
 

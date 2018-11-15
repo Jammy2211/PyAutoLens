@@ -70,7 +70,7 @@ class GeometryProfile(object):
 
         Examples
         ----------
-        p = profiles.Profile(centre=(1, 1))
+        p = profiles.Profile(origin=(1, 1))
         elliptical_profile = profiles.EllipticalProfile.from_profile(p, axis_ratio=1, phi=2)
 
         elliptical_profile = profiles.EllipticalProfile(1, 2)
@@ -102,7 +102,7 @@ class SphericalProfile(GeometryProfile):
         Parameters
         ----------
         centre: (float, float)
-            The (y,x) coordinates of the centre of the profile.
+            The (y,x) coordinates of the origin of the profile.
         """
         super(SphericalProfile, self).__init__(centre)
 
@@ -111,7 +111,7 @@ class SphericalProfile(GeometryProfile):
         """
         Convert coordinates to a circular radius.
 
-        If the coordinates have not been transformed to the profile's centre, this is performed automatically.
+        If the coordinates have not been transformed to the profile's origin, this is performed automatically.
 
         Parameters
         ----------
@@ -148,7 +148,7 @@ class SphericalProfile(GeometryProfile):
 
     def transform_grid_to_reference_frame(self, grid):
         """Transform a grid of (y,x) coordinates to the reference frame of the profile, including a translation to \
-        its centre.
+        its origin.
 
         Parameters
         ----------
@@ -160,7 +160,7 @@ class SphericalProfile(GeometryProfile):
 
     def transform_grid_from_reference_frame(self, grid):
         """Transform a grid of (y,x) coordinates from the reference frame of the profile to the original observer \
-        reference frame, including a translation from the profile's centre.
+        reference frame, including a translation from the profile's origin.
 
         Parameters
         ----------
@@ -179,7 +179,7 @@ class EllipticalProfile(SphericalProfile):
         Parameters
         ----------
         centre: (float, float)
-            The (y,x) coordinates of the centre of the profiles
+            The (y,x) coordinates of the origin of the profiles
         axis_ratio : float
             Ratio of profiles ellipse's minor and major axes (b/a)
         phi : float
@@ -220,7 +220,7 @@ class EllipticalProfile(SphericalProfile):
 
     def rotate_grid_from_profile(self, grid_elliptical):
         """ Rotate a grid of elliptical (y,x) coordinates from the reference frame of the profile back to the
-        unrotated coordinate grid reference frame (coordinates are not shifted back to their original centre).
+        unrotated coordinate grid reference frame (coordinates are not shifted back to their original origin).
 
         This routine is used after computing deflection angles in the reference frame of the profile, so that the
         deflections can be re-rotated to the frame of the original coordinates before performing ray-tracing.
@@ -265,7 +265,7 @@ class EllipticalProfile(SphericalProfile):
 
     def transform_grid_to_reference_frame(self, grid):
         """Transform a grid of (y,x) coordinates to the reference frame of the profile, including a translation to \
-        its centre and a rotation to it orientation.
+        its origin and a rotation to it orientation.
 
         Parameters
         ----------
@@ -284,7 +284,7 @@ class EllipticalProfile(SphericalProfile):
 
     def transform_grid_from_reference_frame(self, grid):
         """Transform a grid of (y,x) coordinates from the reference frame of the profile to the original observer \
-        reference frame, including a rotation to its original orientation and a translation from the profile's centre.
+        reference frame, including a rotation to its original orientation and a translation from the profile's origin.
 
         Parameters
         ----------

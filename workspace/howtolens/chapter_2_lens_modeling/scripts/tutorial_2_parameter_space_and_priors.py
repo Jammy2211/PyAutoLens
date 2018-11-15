@@ -127,8 +127,8 @@ class CustomPhase(ph.LensSourcePlanePhase):
         # To change priors, we use the 'model_mapper' module. This is what links our GalaxyModel's to the non-linear
         # search. Thus, it tells PyAutoLens where to search non-linear parameter space.
 
-        # These two lines change the centre of the lens model_galaxy's mass-profile to UniformPriors around the coordinates
-        # (-0.1", 0.1"). For real lens modeling, this might be done by visually inspecting the centre of emission of
+        # These two lines change the origin of the lens model_galaxy's mass-profile to UniformPriors around the coordinates
+        # (-0.1", 0.1"). For real lens modeling, this might be done by visually inspecting the origin of emission of
         # the lens model_galaxy's light.
 
         # The term 'lens_galaxy' refers to the name of the model_galaxy that we give it below (scroll down cell [5].
