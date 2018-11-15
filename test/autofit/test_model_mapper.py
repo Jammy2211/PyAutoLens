@@ -385,7 +385,8 @@ class TestModelingMapper(object):
         assert mapper.mock_class.one.upper_limit == 2.
 
     def test_config_prior_type(self):
-        mapper = model_mapper.ModelMapper(MockConfig({"MockClassMM": {"one": ["g", 1., 2.]}}))
+        mapper = model_mapper.ModelMapper(MockConfig({"MockClassMM": {"one": ["g", 1., 2.]}}),
+                                          limit_config=MockConfig({"MockClassMM": {"one": [1., 2.]}}))
 
         mapper.mock_class = MockClassMM
 
@@ -570,34 +571,38 @@ class TestConfigFunctions:
         assert ['u', 0, 1.0] == config.get("geometry_profiles", "GeometryProfile", "centre_0")
         assert ['u', 0, 1.0] == config.get("geometry_profiles", "GeometryProfile", "centre_1")
 
-    def test_model_from_unit_vector(self, test_config):
+    def test_model_from_unit_vector(self, test_config, limit_config):
         mapper = model_mapper.ModelMapper(test_config,
+                                          limit_config=limit_config,
                                           geometry_profile=geometry_profiles.GeometryProfile)
 
         model_map = mapper.instance_from_unit_vector([1., 1.])
 
         assert model_map.geometry_profile.centre == (1., 1.0)
 
-    def test_model_from_physical_vector(self, test_config):
+    def test_model_from_physical_vector(self, test_config, limit_config):
         mapper = model_mapper.ModelMapper(test_config,
+                                          limit_config=limit_config,
                                           geometry_profile=geometry_profiles.GeometryProfile)
 
         model_map = mapper.instance_from_physical_vector([10., 50.])
 
         assert model_map.geometry_profile.centre == (10., 50.0)
 
-    def test_inheritance(self, test_config):
+    def test_inheritance(self, test_config, limit_config):
         mapper = model_mapper.ModelMapper(test_config,
+                                          limit_config=limit_config,
                                           geometry_profile=geometry_profiles.EllipticalProfile)
 
         model_map = mapper.instance_from_unit_vector([1., 1., 1., 1.])
 
         assert model_map.geometry_profile.centre == (1.0, 1.0)
 
-    def test_true_config(self, test_config):
+    def test_true_config(self, test_config, limit_config):
         config = test_config
 
         mapper = model_mapper.ModelMapper(config=config,
+                                          limit_config=limit_config,
                                           sersic_light_profile=light_profiles.EllipticalSersic,
                                           elliptical_profile_1=geometry_profiles.EllipticalProfile,
                                           elliptical_profile_2=geometry_profiles.EllipticalProfile,
