@@ -53,6 +53,15 @@ class TestPriorLimits(object):
         prior.assert_within_limits(0.5)
         prior.assert_within_limits(1.)
 
+    def test_no_limits(self):
+        prior = model_mapper.GaussianPrior(0, 1)
+
+        prior.assert_within_limits(100)
+        prior.assert_within_limits(-100)
+        prior.assert_within_limits(0)
+        prior.assert_within_limits(0.5)
+
+
 
 class TestPriorLinking(object):
     def test_same_class(self, initial_model):

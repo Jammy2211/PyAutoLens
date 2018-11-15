@@ -736,7 +736,7 @@ class UniformPrior(Prior):
 class GaussianPrior(Prior):
     """A prior with a gaussian distribution"""
 
-    def __init__(self, mean, sigma, lower_limit=-math.inf, upper_limit=-math.inf):
+    def __init__(self, mean, sigma, lower_limit=-math.inf, upper_limit=math.inf):
         super(GaussianPrior, self).__init__()
         self.mean = mean
         self.sigma = sigma
