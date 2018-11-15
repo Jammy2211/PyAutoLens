@@ -66,7 +66,7 @@ def simulate():
 # Simulate the image and set it up.
 image = simulate()
 
-# When we plot it, the lens light's is clealy visible in the centre of the image
+# When we plot it, the lens light's is clealy visible in the origin of the image
 imaging_plotters.plot_image_subplot(image=image)
 
 # Now lets fit_normal it using a phase, noting that indeed the model_galaxy-model corresponds to the one above.

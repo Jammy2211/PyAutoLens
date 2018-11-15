@@ -6,7 +6,7 @@ import itertools
 
 from autolens.plotting import tools
 
-def plot_array(array, mask=None, positions=None, grid=None, as_subplot=False,
+def plot_array(array, origin=None, mask=None, positions=None, grid=None, as_subplot=False,
                units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
                cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
                cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
@@ -24,6 +24,7 @@ def plot_array(array, mask=None, positions=None, grid=None, as_subplot=False,
                                xyticksize=xyticksize)
 
     set_colorbar(cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad)
+    plot_origin(array=array, origin=origin, units=units, kpc_per_arcsec=kpc_per_arcsec)
     plot_mask(mask=mask, units=units, kpc_per_arcsec=kpc_per_arcsec, pointsize=mask_pointsize)
     plot_points(points_arc_seconds=positions, array=array, units=units, kpc_per_arcsec=kpc_per_arcsec,
                 pointsize=position_pointsize)
@@ -117,6 +118,15 @@ def convert_grid_units(array, grid_arc_seconds, units, kpc_per_arcsec):
         return grid_arc_seconds
     elif units is 'kpc':
         return grid_arc_seconds * kpc_per_arcsec
+
+def plot_origin(array, origin, units, kpc_per_arcsec):
+
+    if origin is not None:
+
+        origin_grid = np.asarray(origin)
+        origin_units = convert_grid_units(array=array, grid_arc_seconds=origin_grid, units=units,
+                                          kpc_per_arcsec=kpc_per_arcsec)
+        plt.scatter(y=origin_units[0], x=origin_units[1], s=80, c='k', marker='x')
 
 def plot_mask(mask, units, kpc_per_arcsec, pointsize):
 

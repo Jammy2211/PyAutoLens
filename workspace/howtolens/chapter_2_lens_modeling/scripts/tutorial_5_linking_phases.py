@@ -79,9 +79,9 @@ class LightTracesMassPhase(ph.LensSourcePlanePhase):
 
     def pass_priors(self, previous_results):
 
-        # As we've eluded to before, one can look at an image and immediately identify the centre of the lens
+        # As we've eluded to before, one can look at an image and immediately identify the origin of the lens
         # model_galaxy. It's that bright blob of light surrounded by the lensed source model_galaxy! Given that we know we're going
-        # to make the lens model more complex in the next phase, lets take a liberal approach to the lens centre and
+        # to make the lens model more complex in the next phase, lets take a liberal approach to the lens origin and
         # fix it to (x,y) = (0.0", 0.0").
 
         # You haven't actually seen a line like this one before. By setting a parameter to a number (and not a prior),
@@ -92,10 +92,10 @@ class LightTracesMassPhase(ph.LensSourcePlanePhase):
         self.lens_galaxies.lens.mass.centre_1 = 0.0
 
         # Now, you might be thinking, doesn't this prevent our phase from generalizing to other strong lenses?
-        # What if the centre of their lens model_galaxy isn't at (0.0", 0.0")?
+        # What if the origin of their lens model_galaxy isn't at (0.0", 0.0")?
 
         # Well, this is true if our datas reduction centres the lens model_galaxy somewhere else. But we get to choose where
-        # we centre it when we make the image. Therefore, I'd recommend you always centre the lens model_galaxy at the same
+        # we origin it when we make the image. Therefore, I'd recommend you always origin the lens model_galaxy at the same
         # location, and (0.0", 0.0") seems the best choice!
 
         # We also discussed that the Sersic index of most lens galaxies is around 4. Lets be liberal and fix it to

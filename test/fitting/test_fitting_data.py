@@ -66,8 +66,8 @@ class TestFittingImage(object):
 
     def test_padded_grids(self, fitting_image):
 
-        padded_image_util = imaging_util.image_grid_1d_masked_from_mask_and_pixel_scales(mask=np.full((6, 6), False),
-                          pixel_scales=fitting_image.image.pixel_scales)
+        padded_image_util = imaging_util.image_grid_1d_masked_from_mask_pixel_scales_and_origin(mask=np.full((6, 6), False),
+                                                                                                pixel_scales=fitting_image.image.pixel_scales)
 
         assert (fitting_image.padded_grids.image == padded_image_util).all()
         assert fitting_image.padded_grids.image.image_shape == (4, 4)

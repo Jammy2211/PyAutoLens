@@ -28,7 +28,7 @@ class SphericalSersic(EllipticalSersic):
         Parameters
         ----------
         centre: (float, float)
-            The image_grid of the centre of the profiles
+            The image_grid of the origin of the profiles
         intensity : float
             Overall flux intensity normalisation in the light profiles (electrons per second)
         effective_radius : float
@@ -51,7 +51,7 @@ class EllipticalExponential(EllipticalSersic):
         Parameters
         ----------
         centre: (float, float)
-            The image_grid of the centre of the profiles
+            The image_grid of the origin of the profiles
         axis_ratio : float
             Ratio of profiles ellipse's minor and major axes (b/a)
         phi : float
@@ -77,7 +77,7 @@ class SphericalExponential(EllipticalExponential):
         Parameters
         ----------
         centre: (float, float)
-            The image_grid of the centre of the profiles
+            The image_grid of the origin of the profiles
         intensity : float
             Overall flux intensity normalisation in the light profiles (electrons per second)
         effective_radius : float
@@ -99,7 +99,7 @@ class EllipticalDevVaucouleurs(EllipticalSersic):
         Parameters
         ----------
         centre: (float, float)
-            The image_grid of the centre of the profiles
+            The image_grid of the origin of the profiles
         axis_ratio : float
             Ratio of profiles ellipse's minor and major axes (b/a)
         phi : float
@@ -126,7 +126,7 @@ class SphericalDevVaucouleurs(EllipticalDevVaucouleurs):
         Parameters
         ----------
         centre: (float, float)
-            The image_grid of the centre of the profiles
+            The image_grid of the origin of the profiles
         intensity : float
             Overall flux intensity normalisation in the light profiles (electrons per second)
         effective_radius : float
@@ -148,7 +148,7 @@ class EllipticalSersicRadialGradient(light_profiles.EllipticalSersic,
         Parameters
         ----------
         centre: (float, float)
-            The centre of the profiles
+            The origin of the profiles
         axis_ratio : float
             Ratio of profiles ellipse's minor and major axes (b/a)
         phi : float
@@ -182,7 +182,7 @@ class SphericalSersicRadialGradient(EllipticalSersicRadialGradient):
         Parameters
         ----------
         centre: (float, float)
-            The centre of the profiles
+            The origin of the profiles
         intensity : float
             Overall flux intensity normalisation in the light profiles (electrons per second)
         effective_radius : float

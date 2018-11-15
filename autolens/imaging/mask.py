@@ -33,7 +33,7 @@ class Mask(scaled_array.ScaledSquarePixelArray):
         pixel_scale: float
             The arc-second to pixel conversion factor of each pixel.
         """
-        return cls(np.full(tuple(map(lambda d: int(d), shape)), False, dtype='bool'), pixel_scale)
+        return cls(np.full(tuple(map(lambda d: int(d), shape)), False, dtype='bool'), pixel_scale, origin=(0.0, 0.0))
 
     @classmethod
     def masked_for_shape_and_pixel_scale(cls, shape, pixel_scale):
@@ -47,7 +47,7 @@ class Mask(scaled_array.ScaledSquarePixelArray):
         pixel_scale: float
             The arc-second to pixel conversion factor of each pixel.
         """
-        return cls(np.full(tuple(map(lambda d: int(d), shape)), True, dtype='bool'), pixel_scale)
+        return cls(np.full(tuple(map(lambda d: int(d), shape)), True, dtype='bool'), pixel_scale, origin=(0.0, 0.0))
 
     @classmethod
     def circular(cls, shape, pixel_scale, radius_mask_arcsec, centre=(0., 0.)):
@@ -63,11 +63,11 @@ class Mask(scaled_array.ScaledSquarePixelArray):
         radius_mask_arcsec : float
             The radius of the circular masks in arc seconds.
         centre: (float, float)
-            The centre of the masks.
+            The origin of the masks.
         """
         mask = imaging_util.mask_circular_from_shape_pixel_scale_and_radius(shape, pixel_scale, radius_mask_arcsec,
                                                                             centre)
-        return cls(mask.astype('bool'), pixel_scale)
+        return cls(mask.astype('bool'), pixel_scale, origin=(0.0, 0.0))
 
     @classmethod
     def annular(cls, shape, pixel_scale, inner_radius_arcsec, outer_radius_arcsec, centre=(0., 0.)):
@@ -85,15 +85,15 @@ class Mask(scaled_array.ScaledSquarePixelArray):
         outer_radius_arcsec : float
             The outer radius of the annulus masks in arc seconds.
         centre: (float, float)
-            The centre of the masks.
+            The origin of the masks.
         """
         mask = imaging_util.mask_annular_from_shape_pixel_scale_and_radii(shape, pixel_scale, inner_radius_arcsec,
                                                                           outer_radius_arcsec, centre)
-        return cls(mask.astype('bool'), pixel_scale)
+        return cls(mask.astype('bool'), pixel_scale, origin=(0.0, 0.0))
 
     @classmethod
     def anti_annular(cls, shape, pixel_scale, inner_radius_arcsec, outer_radius_arcsec, outer_radius_2_arcsec,
-                     centre=(0., 0.)):
+                     origin=(0., 0.)):
         """
         Setup the masks as an annulus, using a specified inner and outer radius in arc seconds.
 
@@ -108,12 +108,12 @@ class Mask(scaled_array.ScaledSquarePixelArray):
         outer_radius_arcsec : float
             The outer radius of the annulus masks in arc seconds.
         outer_radius_2_arcsec
-        centre: (float, float)
-            The centre of the masks.
+        origin: (float, float)
+            The origin of the masks.
         """
         mask = imaging_util.mask_anti_annular_from_shape_pixel_scale_and_radii(shape, pixel_scale, inner_radius_arcsec,
                                                                                outer_radius_arcsec,
-                                                                               outer_radius_2_arcsec, centre)
+                                                                               outer_radius_2_arcsec, origin)
         return cls(mask, pixel_scale)
 
     @property
@@ -188,11 +188,11 @@ class ImagingGrids(object):
         Parameters
         -----------
         image : ImageGrid
-            The grid of (x,y) arc-second coordinates at the centre of every padded pixel.
+            The grid of (x,y) arc-second coordinates at the origin of every padded pixel.
         sub : SubGrid
-            The grid of (x,y) arc-second coordinates at the centre of every padded pixel's sub-pixels.
+            The grid of (x,y) arc-second coordinates at the origin of every padded pixel's sub-pixels.
         blurring : ImageGrid | ndarray | None
-            The grid of (x,y) arc-second coordinates at the centre of every blurring-masks pixel.
+            The grid of (x,y) arc-second coordinates at the origin of every blurring-masks pixel.
         """
         self.image = image
         self.sub = sub
@@ -288,7 +288,7 @@ class ImagingGrids(object):
 
 class ImageGrid(np.ndarray):
     """Abstract class for a regular grid of coordinates, where each padded pixel's (x,y) arc-second coordinates \
-    are represented by the value at the centre of the pixel.
+    are represented by the value at the origin of the pixel.
 
     Coordinates are defined from the top-left corner, such that pixels in the top-left corner of a masks (e.g. [0,0]) \
     have a negative x and y-value in arc seconds. The masks pixel indexes are also counted from the top-left.
@@ -336,6 +336,7 @@ class ImageGrid(np.ndarray):
     def __new__(cls, arr, mask, *args, **kwargs):
         obj = arr.view(cls)
         obj.mask = mask
+#        obj.masked_shape_arcsec = (np.amax(arr[:,0]) - np.amin(arr[:,0]), np.amax(arr[:,1]) - np.amin(arr[:,1]))
         return obj
 
     def __array_finalize__(self, obj):
@@ -343,15 +344,19 @@ class ImageGrid(np.ndarray):
             self.mask = obj.mask
 
     @property
+    def masked_shape_arcsec(self):
+        return (np.amax(self[:,0]) - np.amin(self[:,0]), np.amax(self[:,1]) - np.amin(self[:,1]))
+
+    @property
     def unlensed_grid(self):
-        return ImageGrid(arr=imaging_util.image_grid_1d_masked_from_mask_and_pixel_scales(mask=self.mask,
-                                                                                          pixel_scales=self.mask.pixel_scales),
+        return ImageGrid(arr=imaging_util.image_grid_1d_masked_from_mask_pixel_scales_and_origin(mask=self.mask,
+                                                                                                 pixel_scales=self.mask.pixel_scales),
                          mask=self.mask)
 
     @property
     def unlensed_unmasked_grid(self):
-        return ImageGrid(arr=imaging_util.image_grid_1d_from_shape_and_pixel_scales(shape=self.mask.shape,
-                                                                                    pixel_scales=self.mask.pixel_scales),
+        return ImageGrid(arr=imaging_util.image_grid_1d_from_shape_pixel_scales_and_origin(shape=self.mask.shape,
+                                                                                           pixel_scales=self.mask.pixel_scales),
                          mask=self.mask)
 
     @classmethod
@@ -363,13 +368,13 @@ class ImageGrid(np.ndarray):
         -----------
         mask : Mask
             The masks whose padded pixels are used to setup the sub-pixel grids."""
-        array = imaging_util.image_grid_1d_masked_from_mask_and_pixel_scales(mask=mask, pixel_scales=mask.pixel_scales)
+        array = imaging_util.image_grid_1d_masked_from_mask_pixel_scales_and_origin(mask=mask, pixel_scales=mask.pixel_scales)
         return cls(array, mask)
 
     @classmethod
     def from_shape_and_pixel_scale(cls, shape, pixel_scale):
         mask = Mask.padded_for_shape_and_pixel_scale(shape=shape, pixel_scale=pixel_scale)
-        array = imaging_util.image_grid_1d_masked_from_mask_and_pixel_scales(mask=mask, pixel_scales=mask.pixel_scales)
+        array = imaging_util.image_grid_1d_masked_from_mask_pixel_scales_and_origin(mask=mask, pixel_scales=mask.pixel_scales)
         return cls(array, mask)
 
     @classmethod
@@ -392,7 +397,8 @@ class ImageGrid(np.ndarray):
                                                                                                self.mask.grid_to_pixel)
 
     def scaled_array_from_array_1d(self, array_1d):
-        return scaled_array.ScaledSquarePixelArray(array=self.map_to_2d(array_1d), pixel_scale=self.mask.pixel_scale)
+        return scaled_array.ScaledSquarePixelArray(array=self.map_to_2d(array_1d), pixel_scale=self.mask.pixel_scale,
+                                                   origin=self.mask.origin)
 
     def __reduce__(self):
         # Get the parent's __reduce__ tuple
@@ -628,7 +634,7 @@ class PaddedImageGrid(ImageGrid):
            The shape of the psf which defines the blurring region and therefore size of padding.
         """
         padded_shape = (shape[0] + psf_shape[0] - 1, shape[1] + psf_shape[1] - 1)
-        padded_image_grid = imaging_util.image_grid_1d_masked_from_mask_and_pixel_scales(
+        padded_image_grid = imaging_util.image_grid_1d_masked_from_mask_pixel_scales_and_origin(
             mask=np.full(padded_shape, False), pixel_scales=(pixel_scale, pixel_scale))
         padded_mask = Mask.padded_for_shape_and_pixel_scale(shape=padded_shape, pixel_scale=pixel_scale)
         return PaddedImageGrid(arr=padded_image_grid, mask=padded_mask, image_shape=shape)
@@ -763,7 +769,7 @@ class ImagingGridBorders(object):
             The degree of the polynomial that is used to fit_normal the border when relocating pixels outside the border to \
             its edge.
         centre : (float, float)
-            The centre of the border, which can be shifted relative to its coordinates.
+            The origin of the border, which can be shifted relative to its coordinates.
         """
         image_border = ImageGridBorder.from_mask(mask, polynomial_degree, centre)
         sub_border = SubGridBorder.from_mask(mask, sub_grid_size, polynomial_degree, centre)
@@ -788,7 +794,7 @@ class ImagingGridBorders(object):
 
 class ImageGridBorder(np.ndarray):
 
-    def __new__(cls, arr, polynomial_degree=3, centre=(0.0, 0.0), *args, **kwargs):
+    def __new__(cls, arr, polynomial_degree=8, centre=(0.0, 0.0), *args, **kwargs):
         """The borders of an datas_-grid, containing the pixel-index's of all padded pixels that are on the \
         masks's border (e.g. they are next to a *True* value in at least one of the surrounding 8 pixels).
 
@@ -803,7 +809,7 @@ class ImageGridBorder(np.ndarray):
             The degree of the polynomial that is used to fit_normal the border when relocating pixels outside the border to \
             its edge.
         centre : (float, float)
-            The centre of the border, which can be shifted relative to its coordinates.
+            The origin of the border, which can be shifted relative to its coordinates.
         """
         border = arr.view(cls)
         border.polynomial_degree = polynomial_degree
@@ -811,7 +817,7 @@ class ImageGridBorder(np.ndarray):
         return border
 
     @classmethod
-    def from_mask(cls, mask, polynomial_degree=3, centre=(0.0, 0.0)):
+    def from_mask(cls, mask, polynomial_degree=8, centre=(0.0, 0.0)):
         """Setup the *ImageGridBorder* from a masks.
 
         Parameters
@@ -822,7 +828,7 @@ class ImageGridBorder(np.ndarray):
             The degree of the polynomial that is used to fit_normal the border when relocating pixels outside the border to \
             its edge.
         centre : (float, float)
-            The centre of the border, which can be shifted relative to its coordinates.
+            The origin of the border, which can be shifted relative to its coordinates.
         """
         return cls(mask.border_pixels, polynomial_degree, centre)
 
@@ -831,7 +837,7 @@ class ImageGridBorder(np.ndarray):
         return self.shape[0]
 
     def grid_to_radii(self, grid):
-        """ Convert a grid of (x,y) arc-second coordinates to their circular radii values, based on the grid's centre.
+        """ Convert a grid of (x,y) arc-second coordinates to their circular radii values, based on the grid's origin.
 
         Parameters
         ----------
@@ -873,7 +879,7 @@ class ImageGridBorder(np.ndarray):
     def move_factors_from_grid(self, grid):
         """ Compute the move-factor of every (x,y) arc-second coordinate on the *ImageGrid*.
 
-        A move-factor defines how far a coordinate must be moved towards the border's centre in order to lie on it. \
+        A move-factor defines how far a coordinate must be moved towards the border's origin in order to lie on it. \
         If a pixel is already within the border, the move-factor 1.0 (i.e. no movement).
 
         Parameters
@@ -924,7 +930,7 @@ class ImageGridBorder(np.ndarray):
 class SubGridBorder(ImageGridBorder):
 
     @classmethod
-    def from_mask(cls, mask, sub_grid_size, polynomial_degree=3, centre=(0.0, 0.0)):
+    def from_mask(cls, mask, sub_grid_size, polynomial_degree=8, centre=(0.0, 0.0)):
         """Setup the *SubGridBorder* from a masks.
 
         Parameters
@@ -937,6 +943,6 @@ class SubGridBorder(ImageGridBorder):
             The degree of the polynomial that is used to fit_normal the border when relocating pixels outside the border to \
             its edge.
         centre : (float, float)
-            The centre of the border, which can be shifted relative to its coordinates.
+            The origin of the border, which can be shifted relative to its coordinates.
         """
         return cls(mask.border_sub_pixels(sub_grid_size), polynomial_degree, centre)
