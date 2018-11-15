@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+echo "__version__ = "`git branch | grep \* | cut -d ' ' -f2 | cut -d '/' -f2` > autolens/__init__.py
+
 python setup.py sdist bdist_wheel
 twine upload dist/* --skip-existing --username $PYPI_USERNAME --password $PYPI_PASSWORD
 
