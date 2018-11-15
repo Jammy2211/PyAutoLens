@@ -47,6 +47,8 @@ ADD dockerfiles/jupyter /home/user/.jupyter
 ADD autolens /home/user/autolens
 ADD workspace /home/user/workspace_temp
 ADD dockerfiles/entrypoint.sh /usr/local/bin/entrypoint.sh
+ADD dockerfiles/bashrc /home/user/.bashrc
+ENV SHELL "/bin/bash"
 
 # Setup ENV
 EXPOSE 6006

@@ -5,9 +5,9 @@ import pytest
 from autolens import conf
 from autolens import exc
 from autolens.autofit import model_mapper as mm
+from autolens.galaxy import galaxy as g, galaxy_model as gp
 from autolens.inversion import pixelizations
 from autolens.inversion import regularization
-from autolens.galaxy import galaxy as g, galaxy_model as gp
 from autolens.profiles import mass_profiles, light_profiles, light_and_mass_profiles
 
 
@@ -40,7 +40,15 @@ def make_profile():
 @pytest.fixture(name='test_config')
 def make_test_config():
     return conf.DefaultPriorConfig(
-        config_folder_path="{}/../test_files/configs/galaxy_model/priors/default".format(os.path.dirname(os.path.realpath(__file__))))
+        config_folder_path="{}/../test_files/configs/galaxy_model/priors/default".format(
+            os.path.dirname(os.path.realpath(__file__))))
+
+
+@pytest.fixture(name='limit_config')
+def make_limit_config():
+    return conf.DefaultPriorConfig(
+        config_folder_path="{}/../test_files/configs/galaxy_model/priors/limit".format(
+            os.path.dirname(os.path.realpath(__file__))))
 
 
 @pytest.fixture(name="mapper")
@@ -65,10 +73,10 @@ def make_galaxy_prior(mapper, test_config):
 
 
 class TestLinkedModelForClasses(object):
-    def test_one_to_one(self, test_config):
+    def test_one_to_one(self, test_config, limit_config):
         initial_model = gp.GalaxyModel(light_profile=light_profiles.EllipticalDevVaucouleurs,
                                        mass_profile=mass_profiles.EllipticalCoredIsothermal,
-                                       config=test_config)
+                                       config=test_config, limit_config=limit_config)
 
         new_model = initial_model.linked_model_for_classes(light_profile=light_profiles.EllipticalDevVaucouleurs,
                                                            mass_profile=mass_profiles.EllipticalCoredIsothermal)
@@ -104,10 +112,10 @@ class TestMassAndLightProfiles(object):
         arguments = {
             galaxy_prior.profile.centre.centre_0: 1.0,
             galaxy_prior.profile.centre.centre_1: 2.0,
-            galaxy_prior.profile.axis_ratio: 4.0,
+            galaxy_prior.profile.axis_ratio: 0.4,
             galaxy_prior.profile.phi: 5.0,
-            galaxy_prior.profile.intensity: 6.0,
-            galaxy_prior.profile.effective_radius: 7.0,
+            galaxy_prior.profile.intensity: 0.6,
+            galaxy_prior.profile.effective_radius: 0.7,
             galaxy_prior.profile.sersic_index: 8.0,
             galaxy_prior.profile.mass_to_light_ratio: 3.0
         }
@@ -118,58 +126,63 @@ class TestMassAndLightProfiles(object):
         assert isinstance(galaxy.light_profiles[0], light_and_mass_profiles.EllipticalSersic)
 
         assert galaxy.mass_profiles[0].centre == (1., 2.)
-        assert galaxy.mass_profiles[0].axis_ratio == 4.
+        assert galaxy.mass_profiles[0].axis_ratio == 0.4
         assert galaxy.mass_profiles[0].phi == 5.
-        assert galaxy.mass_profiles[0].intensity == 6.
-        assert galaxy.mass_profiles[0].effective_radius == 7.
+        assert galaxy.mass_profiles[0].intensity == 0.6
+        assert galaxy.mass_profiles[0].effective_radius == 0.7
         assert galaxy.mass_profiles[0].sersic_index == 8.
         assert galaxy.mass_profiles[0].mass_to_light_ratio == 3.
 
 
 class TestGalaxyModel:
-    def test_init_to_model_mapper(self, mapper, test_config):
+    def test_init_to_model_mapper(self, mapper, test_config, limit_config):
         mapper.galaxy_1 = gp.GalaxyModel(variable_redshift=True, light_profile=light_profiles.EllipticalDevVaucouleurs,
-                                         mass_profile=mass_profiles.EllipticalCoredIsothermal, config=test_config)
+                                         mass_profile=mass_profiles.EllipticalCoredIsothermal, config=test_config,
+                                         limit_config=limit_config)
         assert len(mapper.prior_tuples_ordered_by_id) == 13
 
-    def test_multiple_galaxies(self, mapper, test_config):
+    def test_multiple_galaxies(self, mapper, test_config, limit_config):
         mapper.galaxy_1 = gp.GalaxyModel(variable_redshift=True, light_profile=light_profiles.EllipticalDevVaucouleurs,
-                                         mass_profile=mass_profiles.EllipticalCoredIsothermal, config=test_config)
+                                         mass_profile=mass_profiles.EllipticalCoredIsothermal, config=test_config,
+                                         limit_config=limit_config)
         mapper.galaxy_2 = gp.GalaxyModel(variable_redshift=True, light_profile=light_profiles.EllipticalDevVaucouleurs,
-                                         mass_profile=mass_profiles.EllipticalCoredIsothermal, config=test_config)
+                                         mass_profile=mass_profiles.EllipticalCoredIsothermal, config=test_config,
+                                         limit_config=limit_config)
         assert len(mapper.prior_model_tuples) == 2
 
-    def test_align_centres(self, galaxy_prior, test_config):
+    def test_align_centres(self, galaxy_prior, test_config, limit_config):
         prior_models = galaxy_prior.prior_models
 
         assert prior_models[0].centre != prior_models[1].centre
 
         galaxy_prior = gp.GalaxyModel(variable_redshift=True, light_profile=light_profiles.EllipticalDevVaucouleurs,
                                       mass_profile=mass_profiles.EllipticalCoredIsothermal,
-                                      align_centres=True, config=test_config)
+                                      align_centres=True, config=test_config, limit_config=limit_config)
 
         prior_models = galaxy_prior.prior_models
 
         assert prior_models[0].centre == prior_models[1].centre
 
-    def test_align_axis_ratios(self, galaxy_prior, test_config):
+    def test_align_axis_ratios(self, galaxy_prior, test_config, limit_config):
         prior_models = galaxy_prior.prior_models
 
         assert prior_models[0].axis_ratio != prior_models[1].axis_ratio
 
         prior_models = gp.GalaxyModel(variable_redshift=True, light_profile=light_profiles.EllipticalDevVaucouleurs,
                                       mass_profile=mass_profiles.EllipticalCoredIsothermal,
-                                      align_axis_ratios=True, config=test_config).prior_models
+                                      align_axis_ratios=True, config=test_config,
+                                      limit_config=limit_config).prior_models
         assert prior_models[0].axis_ratio == prior_models[1].axis_ratio
 
-    def test_align_phis(self, galaxy_prior, test_config):
+    def test_align_phis(self, galaxy_prior, test_config, limit_config):
         prior_models = galaxy_prior.prior_models
 
         assert prior_models[0].phi != prior_models[1].phi
 
         prior_models = gp.GalaxyModel(variable_redshift=True, light_profile=light_profiles.EllipticalDevVaucouleurs,
                                       mass_profile=mass_profiles.EllipticalCoredIsothermal,
-                                      align_orientations=True, config=test_config).prior_models
+                                      align_orientations=True, config=test_config,
+                                      limit_config=limit_config).prior_models
         assert prior_models[0].phi == prior_models[1].phi
 
 
@@ -212,11 +225,11 @@ class TestResultForArguments:
                      galaxy_prior.mass_profile.centre.centre_0: 1.0,
                      galaxy_prior.mass_profile.centre.centre_1: 2.0,
                      galaxy_prior.mass_profile.einstein_radius: 3.0,
-                     galaxy_prior.light_profile.axis_ratio: 4.0,
+                     galaxy_prior.light_profile.axis_ratio: 0.4,
                      galaxy_prior.light_profile.phi: 5.0,
-                     galaxy_prior.light_profile.intensity: 6.0,
-                     galaxy_prior.light_profile.effective_radius: 7.0,
-                     galaxy_prior.light_profile.sersic_index: 8.0}
+                     galaxy_prior.light_profile.intensity: 0.6,
+                     galaxy_prior.light_profile.effective_radius: 0.7,
+                     galaxy_prior.light_profile.sersic_index: 2}
 
         galaxy = galaxy_prior.instance_for_arguments(arguments)
 
@@ -256,12 +269,12 @@ class TestPixelization(object):
                                       regularization=regularization.Constant, config=test_config)
 
         arguments = {galaxy_prior.redshift.redshift: 2.0,
-                     galaxy_prior.pixelization.pixels: 10,
-                     galaxy_prior.regularization.coefficients_0: 5}
+                     galaxy_prior.pixelization.pixels: 0.1,
+                     galaxy_prior.regularization.coefficients_0: 0.5}
 
         galaxy = galaxy_prior.instance_for_arguments(arguments)
 
-        assert galaxy.pixelization.pixels == 10
+        assert galaxy.pixelization.pixels == 0.1
 
     def test_fixed_pixelization(self, test_config):
         galaxy_prior = gp.GalaxyModel(variable_redshift=True, pixelization=pixelizations.Voronoi(),
@@ -285,12 +298,12 @@ class TestRegularization(object):
                                       regularization=regularization.Constant, config=test_config)
 
         arguments = {galaxy_prior.redshift.redshift: 2.0,
-                     galaxy_prior.pixelization.pixels: 10,
-                     galaxy_prior.regularization.coefficients_0: 5}
+                     galaxy_prior.pixelization.pixels: 1,
+                     galaxy_prior.regularization.coefficients_0: 0.5}
 
         galaxy = galaxy_prior.instance_for_arguments(arguments)
 
-        assert galaxy.regularization.regularization_coefficients == (5,)
+        assert galaxy.regularization.regularization_coefficients == (0.5,)
 
     def test_fixed_regularization(self, test_config):
         galaxy_prior = gp.GalaxyModel(variable_redshift=True, pixelization=pixelizations.Voronoi(),
@@ -311,16 +324,16 @@ class TestHyperGalaxy(object):
     def test_hyper_galaxy(self, test_config):
         galaxy_prior = gp.GalaxyModel(variable_redshift=True, hyper_galaxy=g.HyperGalaxy, config=test_config)
 
-        arguments = {galaxy_prior.redshift.redshift: 2.0,
+        arguments = {galaxy_prior.redshift.redshift: 0.2,
                      galaxy_prior.hyper_galaxy.contribution_factor: 1,
                      galaxy_prior.hyper_galaxy.noise_factor: 2,
-                     galaxy_prior.hyper_galaxy.noise_power: 3}
+                     galaxy_prior.hyper_galaxy.noise_power: 1.5}
 
         galaxy = galaxy_prior.instance_for_arguments(arguments)
 
         assert galaxy.hyper_galaxy.contribution_factor == 1
         assert galaxy.hyper_galaxy.noise_factor == 2
-        assert galaxy.hyper_galaxy.noise_power == 3
+        assert galaxy.hyper_galaxy.noise_power == 1.5
 
     def test_fixed_hyper_galaxy(self, test_config):
         galaxy_prior = gp.GalaxyModel(variable_redshift=True, hyper_galaxy=g.HyperGalaxy(), config=test_config)
@@ -370,12 +383,12 @@ class TestFixedProfiles(object):
                                       light_profile=light_profiles.EllipticalSersic(),
                                       variable_light=light_profiles.EllipticalSersic)
 
-        arguments = {galaxy_prior.redshift.redshift: 2.0,
-                     galaxy_prior.variable_light.axis_ratio: 4.0,
-                     galaxy_prior.variable_light.phi: 5.0,
-                     galaxy_prior.variable_light.intensity: 6.0,
-                     galaxy_prior.variable_light.effective_radius: 7.0,
-                     galaxy_prior.variable_light.sersic_index: 8.0,
+        arguments = {galaxy_prior.redshift.redshift: 0.2,
+                     galaxy_prior.variable_light.axis_ratio: 0.4,
+                     galaxy_prior.variable_light.phi: 0.5,
+                     galaxy_prior.variable_light.intensity: 0.6,
+                     galaxy_prior.variable_light.effective_radius: 0.7,
+                     galaxy_prior.variable_light.sersic_index: 0.8,
                      galaxy_prior.variable_light.centre.centre_0: 0,
                      galaxy_prior.variable_light.centre.centre_1: 0}
 
