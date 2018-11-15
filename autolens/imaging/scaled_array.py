@@ -130,21 +130,22 @@ class ArrayGeometry(object):
 
     @property
     def arc_second_maxima(self):
-        return (self.shape_arc_seconds[0] / 2.0, self.shape_arc_seconds[1] / 2.0)
+        return ((self.shape_arc_seconds[0] / 2.0) + self.origin[0], (self.shape_arc_seconds[1] / 2.0) + self.origin[1])
 
     @property
     def arc_second_minima(self):
-        return (-(self.shape_arc_seconds[0] / 2.0), -(self.shape_arc_seconds[1] / 2.0))
+        return ((-(self.shape_arc_seconds[0] / 2.0)) + self.origin[0],
+                (-(self.shape_arc_seconds[1] / 2.0)) + self.origin[1])
 
     @property
     def yticks(self):
         """Compute the yticks labels of this grid, used for plotting the y-axis ticks when visualizing an datas_-grid"""
-        return np.linspace(-self.shape_arc_seconds[0] / 2.0, self.shape_arc_seconds[0] / 2.0, 4)
+        return np.linspace(self.arc_second_minima[0], self.arc_second_maxima[0], 4)
 
     @property
     def xticks(self):
         """Compute the xticks labels of this grid, used for plotting the x-axis ticks when visualizing an datas_-grid"""
-        return np.linspace(-self.shape_arc_seconds[1] / 2.0, self.shape_arc_seconds[1] / 2.0, 4)
+        return np.linspace(self.arc_second_minima[1], self.arc_second_maxima[1], 4)
 
 
 class Array(np.ndarray):
@@ -247,6 +248,8 @@ class ScaledSquarePixelArray(ScaledArray):
     def __array_finalize__(self, obj):
         if hasattr(obj, "pixel_scale"):
             self.pixel_scale = obj.pixel_scale
+        if hasattr(obj, 'origin'):
+            self.origin = obj.origin
 
     @property
     def pixel_scales(self):
@@ -354,6 +357,8 @@ class ScaledRectangularPixelArray(ScaledArray):
     def __array_finalize__(self, obj):
         if hasattr(obj, "pixel_scales"):
             self.pixel_scales = obj.pixel_scales
+        if hasattr(obj, 'origin'):
+            self.origin = obj.origin
 
     @classmethod
     def single_value(cls, value, shape, pixel_scales, origin=(0.0, 0.0)):

@@ -19,7 +19,7 @@ def plot_reconstructed_image(inversion, mask=None, positions=None, grid=None, as
                            xyticksize=xyticksize,
                            output_path=output_path, output_format=output_format, output_filename=output_filename)
 
-def plot_reconstructed_pixelization(inversion, positions=None, should_plot_centres=False,
+def plot_reconstructed_pixelization(inversion, plot_origin=True, positions=None, should_plot_centres=False,
                                     should_plot_grid=False, image_pixels=None, source_pixels=None, as_subplot=False,
                                     units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
                                     cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05,
@@ -34,7 +34,10 @@ def plot_reconstructed_pixelization(inversion, positions=None, should_plot_centr
     reconstructed_pixelization = \
         inversion.mapper.reconstructed_pixelization_from_solution_vector(inversion.solution_vector)
 
-    tools_array.plot_array(array=reconstructed_pixelization, positions=positions, as_subplot=True,
+    origin = get_origin(image=reconstructed_pixelization, plot_origin=plot_origin)
+
+    tools_array.plot_array(array=reconstructed_pixelization, origin=origin,
+                           positions=positions, as_subplot=True,
                            units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
                            cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max,
                            linthresh=linthresh, linscale=linscale,
@@ -54,3 +57,10 @@ def plot_reconstructed_pixelization(inversion, positions=None, should_plot_centr
     tools.output_figure(array=reconstructed_pixelization, as_subplot=as_subplot, output_path=output_path,
                         output_filename=output_filename, output_format=output_format)
     tools.close_figure(as_subplot=as_subplot)
+
+def get_origin(image, plot_origin):
+
+    if plot_origin:
+        return image.origin
+    else:
+        return None

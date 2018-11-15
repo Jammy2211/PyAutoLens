@@ -14,6 +14,7 @@ class MockGeometry(object):
         self.x_max = x_max
         self.y_pixel_scale = y_pixel_scale
         self.x_pixel_scale = x_pixel_scale
+        self.origin = (0.0, 0.0)
 
 
 @pytest.fixture(name="five_pixels")

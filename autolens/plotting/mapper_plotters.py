@@ -84,7 +84,7 @@ def plot_rectangular_mapper(mapper, should_plot_centres=False, should_plot_grid=
                     title=title, titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize)
 
     plot_border(should_plot_border=should_plot_border, mapper=mapper, as_subplot=True, units=units,
-                kpc_per_arcsec=kpc_per_arcsec, pointsize=10, xyticksize=xyticksize,
+                kpc_per_arcsec=kpc_per_arcsec, pointsize=30, xyticksize=xyticksize,
                 title=title, titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize)
 
     mapper_grid = convert_grid(grid=mapper.grids.image, units=units, kpc_per_arcsec=kpc_per_arcsec)
@@ -122,17 +122,17 @@ def set_axis_limits(mapper, units, kpc_per_arcsec):
 
     if units is 'arcsec' or kpc_per_arcsec is None:
 
-        tools_grid.set_axis_limits(axis_limits=[mapper.geometry.arc_second_minima[1],
-                                                mapper.geometry.arc_second_maxima[1],
-                                                mapper.geometry.arc_second_minima[0],
-                                                mapper.geometry.arc_second_maxima[0]])
+        tools_grid.set_axis_limits(axis_limits=np.asarray([mapper.geometry.arc_second_minima[1],
+                                                           mapper.geometry.arc_second_maxima[1],
+                                                           mapper.geometry.arc_second_minima[0],
+                                                           mapper.geometry.arc_second_maxima[0]]))
 
     elif units is 'kpc':
 
-        tools_grid.set_axis_limits(axis_limits=[mapper.geometry.arc_second_minima[1]*kpc_per_arcsec,
-                                                mapper.geometry.arc_second_maxima[1]*kpc_per_arcsec,
-                                                mapper.geometry.arc_second_minima[0]*kpc_per_arcsec,
-                                                mapper.geometry.arc_second_maxima[0]*kpc_per_arcsec])
+        tools_grid.set_axis_limits(axis_limits=np.asarray([mapper.geometry.arc_second_minima[1]*kpc_per_arcsec,
+                                                           mapper.geometry.arc_second_maxima[1]*kpc_per_arcsec,
+                                                           mapper.geometry.arc_second_minima[0]*kpc_per_arcsec,
+                                                           mapper.geometry.arc_second_maxima[0]*kpc_per_arcsec]))
 
 def plot_centres(should_plot_centres, mapper, units, kpc_per_arcsec):
 

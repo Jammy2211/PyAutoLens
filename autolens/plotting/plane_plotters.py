@@ -4,6 +4,8 @@ from autolens.plotting import tools
 from autolens.plotting import tools_array
 from autolens.plotting import tools_grid
 
+import numpy as np
+
 def plot_image_plane_image(plane, image_index=0, mask=None, positions=None, grid=None, as_subplot=False,
                            units='arcsec', figsize=(7, 7), aspect='equal',
                            cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
@@ -24,7 +26,7 @@ def plot_image_plane_image(plane, image_index=0, mask=None, positions=None, grid
                            grid_pointsize=grid_pointsize,
                            output_path=output_path, output_format=output_format, output_filename=output_filename)
 
-def plot_plane_image(plane, image_index=0, positions=None, plot_grid=False, as_subplot=False,
+def plot_plane_image(plane, image_index=0, plot_origin=True, positions=None, plot_grid=True, as_subplot=False,
                      units='arcsec', figsize=(7, 7), aspect='equal',
                      cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
                      cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
@@ -37,7 +39,13 @@ def plot_plane_image(plane, image_index=0, positions=None, plot_grid=False, as_s
     else:
         grid = None
 
-    tools_array.plot_array(array=plane.plane_images[image_index], positions=positions, grid=grid, as_subplot=as_subplot,
+    if plot_origin:
+        origin = plane.plane_images[image_index].origin
+    else:
+        origin = None
+
+    tools_array.plot_array(array=plane.plane_images[image_index], origin=origin, positions=positions, grid=grid,
+                           as_subplot=as_subplot,
                            units=units, kpc_per_arcsec=plane.kpc_per_arcsec_proper, figsize=figsize, aspect=aspect,
                            cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max,
                            linthresh=linthresh, linscale=linscale,
@@ -46,6 +54,10 @@ def plot_plane_image(plane, image_index=0, positions=None, plot_grid=False, as_s
                            xyticksize=xyticksize,
                            position_pointsize=position_pointsize, grid_pointsize=grid_pointsize,
                            output_path=output_path, output_format=output_format, output_filename=output_filename)
+
+    geometry = plane.plane_images[image_index]
+
+    set_axis_limits(geometry=geometry, units=units, kpc_per_arcsec=None)
 
 def plot_surface_density(plane, as_subplot=False,
                          units='arcsec', figsize=(7, 7), aspect='equal',
@@ -149,3 +161,20 @@ def plot_plane_grid(plane, axis_limits=None, points=None, as_subplot=False,
                          figsize=figsize, pointsize=pointsize, xyticksize=xyticksize,
                          title=title, titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize,
                          output_path=output_path, output_format=output_format, output_filename=output_filename)
+
+
+def set_axis_limits(geometry, units, kpc_per_arcsec):
+
+    if units is 'arcsec' or kpc_per_arcsec is None:
+
+        tools_grid.set_axis_limits(axis_limits=np.asarray([geometry.arc_second_minima[1],
+                                                           geometry.arc_second_maxima[1],
+                                                           geometry.arc_second_minima[0],
+                                                           geometry.arc_second_maxima[0]]))
+
+    elif units is 'kpc':
+
+        tools_grid.set_axis_limits(axis_limits=np.asarray([geometry.arc_second_minima[1]*kpc_per_arcsec,
+                                                           geometry.arc_second_maxima[1]*kpc_per_arcsec,
+                                                           geometry.arc_second_minima[0]*kpc_per_arcsec,
+                                                           geometry.arc_second_maxima[0]*kpc_per_arcsec]))

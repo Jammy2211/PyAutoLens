@@ -6,12 +6,12 @@ import itertools
 
 from autolens.plotting import tools
 
-def plot_array(array, origin=None, mask=None, positions=None, grid=None, as_subplot=False,
+def plot_array(array, origin=None, mask=None, should_plot_border=False, positions=None, grid=None, as_subplot=False,
                units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
                cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
                cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
                title='Array', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
-               mask_pointsize=10, position_pointsize=30, grid_pointsize=1,
+               mask_pointsize=10, border_pointsize=10, position_pointsize=30, grid_pointsize=1,
                xticks_manual=None, yticks_manual=None,
                output_path=None, output_format='show', output_filename='array'):
 
@@ -19,6 +19,7 @@ def plot_array(array, origin=None, mask=None, positions=None, grid=None, as_subp
                 figsize=figsize, aspect=aspect, cmap=cmap, norm=norm,
                 norm_max=norm_max, norm_min=norm_min, linthresh=linthresh, linscale=linscale,
                 xticks_manual=xticks_manual, yticks_manual=yticks_manual)
+
     tools.set_title(title=title, titlesize=titlesize)
     set_xy_labels_and_ticksize(units=units, kpc_per_arcsec=kpc_per_arcsec, xlabelsize=xlabelsize, ylabelsize=ylabelsize,
                                xyticksize=xyticksize)
@@ -26,6 +27,8 @@ def plot_array(array, origin=None, mask=None, positions=None, grid=None, as_subp
     set_colorbar(cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad)
     plot_origin(array=array, origin=origin, units=units, kpc_per_arcsec=kpc_per_arcsec)
     plot_mask(mask=mask, units=units, kpc_per_arcsec=kpc_per_arcsec, pointsize=mask_pointsize)
+    plot_border(mask=mask, should_plot_border=should_plot_border, units=units, kpc_per_arcsec=kpc_per_arcsec,
+                pointsize=border_pointsize)
     plot_points(points_arc_seconds=positions, array=array, units=units, kpc_per_arcsec=kpc_per_arcsec,
                 pointsize=position_pointsize)
     plot_grid(grid_arc_seconds=grid, array=array, units=units, kpc_per_arcsec=kpc_per_arcsec, pointsize=grid_pointsize)
@@ -50,15 +53,17 @@ def plot_figure(array, as_subplot, units, kpc_per_arcsec, figsize, aspect, cmap,
 def get_extent(array, units, kpc_per_arcsec, xticks_manual, yticks_manual):
 
     if xticks_manual is not None and yticks_manual is not None:
-        return [xticks_manual[0], xticks_manual[3], yticks_manual[0], yticks_manual[3]]
+        return np.asarray([xticks_manual[0], xticks_manual[3], yticks_manual[0], yticks_manual[3]])
 
     if units is 'pixels':
-        return [0, array.shape[1], 0, array.shape[0]]
+        return np.asarray([0, array.shape[1], 0, array.shape[0]])
     elif units is 'arcsec' or kpc_per_arcsec is None:
-        return [array.xticks[0], array.xticks[3], array.yticks[0], array.yticks[3]]
+        return np.asarray([array.arc_second_minima[1], array.arc_second_maxima[1],
+                array.arc_second_minima[0], array.arc_second_maxima[0]])
     elif units is 'kpc':
         return list(map(lambda tick : tick*kpc_per_arcsec,
-                        [array.xticks[0], array.xticks[3], array.yticks[0], array.yticks[3]]))
+                        np.asarray([array.arc_second_minima[1], array.arc_second_maxima[1],
+                                    array.arc_second_minima[0], array.arc_second_maxima[0]])))
 
 def get_normalization_min_max(array, norm_min, norm_max):
 
@@ -139,6 +144,18 @@ def plot_mask(mask, units, kpc_per_arcsec, pointsize):
                                           kpc_per_arcsec=kpc_per_arcsec)
 
         plt.scatter(y=border_units[:,0], x=border_units[:,1], s=pointsize, c='k')
+
+def plot_border(mask, should_plot_border, units, kpc_per_arcsec, pointsize):
+
+    if should_plot_border and mask is not None:
+
+        plt.gca()
+        border_pixels = mask.grid_to_pixel[mask.border_pixels]
+        border_arc_seconds = mask.grid_pixels_to_grid_arc_seconds(grid_pixels=border_pixels)
+        border_units = convert_grid_units(array=mask, grid_arc_seconds=border_arc_seconds, units=units,
+                                          kpc_per_arcsec=kpc_per_arcsec)
+
+        plt.scatter(y=border_units[:,0], x=border_units[:,1], s=pointsize, c='y')
 
 def plot_points(points_arc_seconds, array, units, kpc_per_arcsec, pointsize):
 
