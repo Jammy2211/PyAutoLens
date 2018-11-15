@@ -1229,7 +1229,7 @@ class MockAnalysis(object):
         self.instance = instance
         return 1.
 
-    def try_visualise(self, instance):
+    def visualize(self, instance, *args, **kwargs):
         self.visualise_instance = instance
 
 
