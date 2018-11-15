@@ -137,22 +137,22 @@ class TestGrid2d:
                                      [[0., -0.5], [0., 0.5]],
                                      [[-1., -0.5], [-1., 0.5]]])).all()
 
-    def test__array_3x3___input_centre__shifts_grid_by_centre(self):
+    def test__array_3x3___input_origin__shifts_grid_by_origin(self):
 
         grid_2d = util.image_grid_2d_from_shape_pixel_scales_and_origin(shape=(3, 3), pixel_scales=(2.0, 1.0),
                                                                         origin=(1.0, 1.0))
 
-        assert (grid_2d == np.array([[[1., -2.], [1., -1.], [1., 0.]],
-                                     [[-1., -2.], [-1., -1.], [-1., 0.]],
-                                     [[-3., -2.], [-3., -1.], [-3., 0.]]])).all()
+        assert (grid_2d == np.array([[[3., 0.], [3., 1.], [3., 2.]],
+                                     [[1.,  0.], [1., 1.], [1., 2.]],
+                                     [[-1., 0.], [-1., 1.], [-1., 2.]]])).all()
 
-    def test__array_3x2__different_centre(self):
+    def test__array_3x2__different_origin(self):
         grid_2d = util.image_grid_2d_from_shape_pixel_scales_and_origin(shape=(3, 2), pixel_scales=(1.0, 1.0),
                                                                         origin=(3.0, -2.0))
 
-        assert (grid_2d == np.array([[[-2., 1.5], [-2., 2.5]],
-                                     [[-3., 1.5], [-3., 2.5]],
-                                     [[-4., 1.5], [-4., 2.5]]])).all()
+        assert (grid_2d == np.array([[[4., -2.5], [4., -1.5]],
+                                     [[3., -2.5], [3., -1.5]],
+                                     [[2., -2.5], [2., -1.5]]])).all()
 
 
 class TestGrid1d:
@@ -187,23 +187,23 @@ class TestGrid1d:
                                      [0., -0.5], [0., 0.5],
                                      [-1., -0.5], [-1., 0.5]])).all()
 
-    def test__array_3x3__input_centre__shifts_grid_by_centre(self):
+    def test__array_3x3__input_origin__shifts_grid_by_origin(self):
 
         grid_2d = util.image_grid_1d_from_shape_pixel_scales_and_origin(shape=(3, 3), pixel_scales=(2.0, 1.0),
                                                                         origin=(1.0, 1.0))
 
-        assert (grid_2d == np.array([[1., -2.], [1., -1.], [1., 0.],
-                                     [-1., -2.], [-1., -1.], [-1., 0.],
-                                     [-3., 0-2], [-3., -1.], [-3., 0.]])).all()
+        assert (grid_2d == np.array([[3., 0.], [3., 1.], [3., 2.],
+                                     [1., 0.], [1., 1.], [1., 2.],
+                                     [-1., 0.], [-1., 1.], [-1., 2.]])).all()
 
-    def test__array_3x2__different_centre(self):
+    def test__array_3x2__different_origin(self):
 
         grid_2d = util.image_grid_1d_from_shape_pixel_scales_and_origin(shape=(3, 2), pixel_scales=(1.0, 1.0),
                                                                         origin=(3.0, -2.0))
 
-        assert (grid_2d == np.array([[-2., 1.5], [-2., 2.5],
-                                     [-3., 1.5], [-3., 2.5],
-                                     [-4., 1.5], [-4., 2.5]])).all()
+        assert (grid_2d == np.array([[4., -2.5], [4., -1.5],
+                                     [3., -2.5], [3., -1.5],
+                                     [2., -2.5], [2., -1.5]])).all()
 
 
 class TestImageGridMasked(object):
@@ -253,7 +253,7 @@ class TestImageGridMasked(object):
                                        [0., -4.5], [0., -1.5], [0., 1.5],
                                                     [-3., -1.5],           [-3., 4.5]])).all()
 
-    def test__setup_3x3_image__five_coordinates_in_mask__include_nonzero_centre(self):
+    def test__setup_3x3_image__five_coordinates_in_mask__include_nonzero_origin(self):
         mask = np.array([[True, False, True],
                          [False, False, False],
                          [True, False, True]])
@@ -261,11 +261,11 @@ class TestImageGridMasked(object):
         image_grid = util.image_grid_1d_masked_from_mask_pixel_scales_and_origin(mask=mask, pixel_scales=(6.0, 3.0),
                                                                                  origin=(1.0, 1.0))
 
-        assert image_grid == pytest.approx(np.array([           [5., -1.],
-                                                    [-1., -4.], [-1., -1.], [-1., 2.],
-                                                               [-7., -1.]]), 1e-4)
+        assert image_grid == pytest.approx(np.array([           [7., 1.],
+                                                    [1., -2.], [1., 1.], [1., 4.],
+                                                               [-5., 1.]]), 1e-4)
 
-    def test__setup_3x4_image__six_grid__include_nonzero_centre(self):
+    def test__setup_3x4_image__six_grid__include_nonzero_origin(self):
         
         mask = np.array([[True, False, True, True],
                          [False, False, False, True],
@@ -274,9 +274,9 @@ class TestImageGridMasked(object):
         image_grid = util.image_grid_1d_masked_from_mask_pixel_scales_and_origin(mask=mask, pixel_scales=(3.0, 3.0),
                                                                                  origin=(1.0, 2.0))
 
-        assert image_grid == pytest.approx(np.array([             [2., -3.5],
-                                                      [-1., -6.5], [-1., -3.5], [-1., -0.5],
-                                                                  [-4., -3.5],           [-4., 2.5]]), 1e-4)
+        assert image_grid == pytest.approx(np.array([             [4., 0.5],
+                                                      [1., -2.5], [1., 0.5], [1., 3.5],
+                                                                  [-2., 0.5],           [-2., 6.5]]), 1e-4)
 
 
 class TestSubGridMasked(object):
@@ -430,7 +430,7 @@ class TestSubGridMasked(object):
                                       [-2.5, -5.], [-2.5, -4.], [-3.5, -5.], [-3.5, -4.],
                                       [-2.5, 1.], [-2.5, 2.], [-3.5, 1.], [-3.5, 2.]])).all()
 
-    def test__3x3_mask_with_one_pixel__2x2_sub_grid__include_nonzero_centre(self):
+    def test__3x3_mask_with_one_pixel__2x2_sub_grid__include_nonzero_origin(self):
         
         mask = np.array([[True, True, True],
                          [True, False, True],
@@ -439,16 +439,16 @@ class TestSubGridMasked(object):
         sub_grid = util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(mask=mask, pixel_scales=(3.0, 6.0),
                                                                                     sub_grid_size=2, origin=(1.0, 1.0))
 
-        assert sub_grid[0:4] == pytest.approx(np.array([[-0.5, -2.0], [-0.5, 0.0],
-                                                        [-1.5, -2.0], [-1.5, 0.0]]), 1e-4)
+        assert sub_grid[0:4] == pytest.approx(np.array([[1.5, 0.0], [1.5, 2.0],
+                                                        [0.5, 0.0], [0.5, 2.0]]), 1e-4)
 
-    def test__3x3_mask_with_one_row__3x3_sub_grid__include_nonzero_centre(self):
+    def test__3x3_mask_with_one_row__3x3_sub_grid__include_nonzero_origin(self):
         mask = np.array([[True, True, False],
                          [True, False, True],
                          [True, True, False]])
 
         sub_grid = util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(mask=mask, pixel_scales=(2.0, 2.0),
-                                                                                    sub_grid_size=3, origin=(-1.0, 1.0))
+                                                                                    sub_grid_size=3, origin=(1.0, -1.0))
 
         assert sub_grid == pytest.approx(np.array([[3.5, 0.5], [3.5, 1.], [3.5, 1.5],
                                                    [3., 0.5], [3., 1.], [3., 1.5],
@@ -463,7 +463,7 @@ class TestSubGridMasked(object):
 
 class TestGridPixelArcSecondConversion(object):
 
-    def test__1d_arc_second_grid_to_1d_pixel_grid__coordinates_in_centres_of_pixels(self):
+    def test__1d_arc_second_grid_to_1d_pixel_grid__coordinates_in_origins_of_pixels(self):
 
         grid_arc_seconds = np.array([[1.0, -2.0], [1.0, 2.0],
                                      [-1.0, -2.0], [-1.0, 2.0]])
@@ -529,7 +529,7 @@ class TestGridPixelArcSecondConversion(object):
                                          [2, 1], [2, 2], [2, 3],
                                          [3, 1], [3, 2], [3, 3]])).all()
 
-    def test__same_as_above___arcsec_to_pixel__but_nonzero_centre(self):
+    def test__same_as_above___arcsec_to_pixel__but_nonzero_origin(self):
 
         # -1.0 from all entries for a origin of (-1.0, -1.0)
         grid_arc_seconds = np.array([[-1.0, -1.0], [-1.0, 3.0],
@@ -553,7 +553,7 @@ class TestGridPixelArcSecondConversion(object):
                                          [2, 1], [2, 2], [2, 3],
                                          [3, 1], [3, 2], [3, 3]])).all()
 
-    def test__1d_arc_second_grid_to_1d_pixel_centred_grid__coordinates_in_centres_of_pixels(self):
+    def test__1d_arc_second_grid_to_1d_pixel_origind_grid__coordinates_in_origins_of_pixels(self):
 
         grid_arc_seconds = np.array([[1.0, -2.0], [1.0, 2.0],
                                      [-1.0, -2.0], [-1.0, 2.0]])
@@ -619,7 +619,7 @@ class TestGridPixelArcSecondConversion(object):
                                          [1, 0], [1, 1], [1, 2],
                                          [2, 0], [2, 1], [2, 2]])).all()
 
-    def test__same_as_above__arcsec_to_pixel_centre__but_nonzero_centre(self):
+    def test__same_as_above__arcsec_to_pixel_origin__but_nonzero_origin(self):
 
         # +1.0 for all entries for a origin of (1.0, 1.0)
         grid_arc_seconds = np.array([[2.0, -1.0], [2.0, 3.0],
@@ -643,7 +643,7 @@ class TestGridPixelArcSecondConversion(object):
                                          [1, 0], [1, 1], [1, 2],
                                          [2, 0], [2, 1], [2, 2]])).all()
 
-    def test__1d_arc_second_grid_to_1d_pixel_1d_index_grid__coordinates_in_centres_of_pixels(self):
+    def test__1d_arc_second_grid_to_1d_pixel_1d_index_grid__coordinates_in_origins_of_pixels(self):
 
         grid_arc_seconds = np.array([[1.0, -2.0], [1.0, 2.0],
                                      [-1.0, -2.0], [-1.0, 2.0]])
@@ -701,7 +701,7 @@ class TestGridPixelArcSecondConversion(object):
 
         assert (grid_pixels == np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])).all()
 
-    def test__same_as_above__1d_index__arcsec_to_pixel_centre__but_nonzero_centre(self):
+    def test__same_as_above__1d_index__arcsec_to_pixel_origin__but_nonzero_origin(self):
 
         # +1.0 for all entries for a origin of (1.0, 1.0)
         grid_arc_seconds = np.array([[2.0, -1.0], [2.0, 3.0],
@@ -722,7 +722,7 @@ class TestGridPixelArcSecondConversion(object):
 
         assert (grid_pixels == np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])).all()
 
-    def test__1d_pixel_centre_grid_to_1d_arc_second_grid__coordinates_in_centres_of_pixels(self):
+    def test__1d_pixel_origin_grid_to_1d_arc_second_grid__coordinates_in_origins_of_pixels(self):
 
         grid_pixels = np.array([[0.5, 0.5], [0.5, 1.5],
                                  [1.5, 0.5], [1.5, 1.5]])
@@ -790,7 +790,7 @@ class TestGridPixelArcSecondConversion(object):
                                      [-1.5, -3.0], [-1.5, 3.0], [-1.5, 9.0],
                                      [-4.5, -3.0], [-4.5, 3.0], [-4.5, 9.0]])).all()
 
-    def test__same_as_above__pixel_to_arcsec__nonzero_centre(self):
+    def test__same_as_above__pixel_to_arcsec__nonzero_origin(self):
 
         grid_pixels = np.array([[0.5, 0.5], [0.5, 1.5],
                                  [1.5, 0.5], [1.5, 1.5]])
@@ -1156,7 +1156,7 @@ class TestMaskCircular(object):
                                   [False, False, False, False],
                                   [False, False, False, False]])).all()
 
-    def test__centre_shift__simple_shift_downwards(self):
+    def test__origin_shift__simple_shift_downwards(self):
         mask = util.mask_circular_from_shape_pixel_scale_and_radius(shape=(3, 3), pixel_scale=3.0,
                                                                     radius_arcsec=0.5, centre=(-3, 0))
 
@@ -1165,7 +1165,7 @@ class TestMaskCircular(object):
                                   [True, True, True],
                                   [True, False, True]])).all()
 
-    def test__centre_shift__simple_shift_right(self):
+    def test__origin_shift__simple_shift_right(self):
         mask = util.mask_circular_from_shape_pixel_scale_and_radius(shape=(3, 3), pixel_scale=3.0,
                                                                     radius_arcsec=0.5, centre=(0.0, 3.0))
 
@@ -1174,7 +1174,7 @@ class TestMaskCircular(object):
                                   [True, True, False],
                                   [True, True, True]])).all()
 
-    def test__centre_shift__diagonal_shift(self):
+    def test__origin_shift__diagonal_shift(self):
         mask = util.mask_circular_from_shape_pixel_scale_and_radius(shape=(3, 3), pixel_scale=3.0,
                                                                     radius_arcsec=0.5, centre=(3, 3))
 
@@ -1237,7 +1237,7 @@ class TestMaskAnnular(object):
                                   [True, True, True, True],
                                   [False, True, True, False]])).all()
 
-    def test__centre_shift__simple_shift_upwards(self):
+    def test__origin_shift__simple_shift_upwards(self):
         mask = util.mask_annular_from_shape_pixel_scale_and_radii(shape=(3, 3), pixel_scale=3.0,
                                                                   inner_radius_arcsec=0.5,
                                                                   outer_radius_arcsec=9.0, centre=(3.0, 0.0))
@@ -1247,7 +1247,7 @@ class TestMaskAnnular(object):
                                   [False, False, False],
                                   [False, False, False]])).all()
 
-    def test__centre_shift__simple_shift_forward(self):
+    def test__origin_shift__simple_shift_forward(self):
         mask = util.mask_annular_from_shape_pixel_scale_and_radii(shape=(3, 3), pixel_scale=3.0,
                                                                   inner_radius_arcsec=0.5,
                                                                   outer_radius_arcsec=9.0, centre=(0.0, 3.0))
@@ -1257,7 +1257,7 @@ class TestMaskAnnular(object):
                                   [False, False, True],
                                   [False, False, False]])).all()
 
-    def test__centre_shift__diagonal_shift(self):
+    def test__origin_shift__diagonal_shift(self):
         mask = util.mask_annular_from_shape_pixel_scale_and_radii(shape=(3, 3), pixel_scale=3.0,
                                                                   inner_radius_arcsec=0.5,
                                                                   outer_radius_arcsec=9.0, centre=(-3.0, 3.0))
@@ -1320,7 +1320,7 @@ class TestMaskAntiAnnular(object):
                                   [True, False, False, False, False, False, True],
                                   [True,  True,  True,  True,  True,  True, True]])).all()
 
-    def test__centre_shift__diagonal_shift(self):
+    def test__origin_shift__diagonal_shift(self):
 
         mask = util.mask_anti_annular_from_shape_pixel_scale_and_radii(shape=(7, 7), pixel_scale=3.0,
                                                                        inner_radius_arcsec=1.5, outer_radius_arcsec=4.5,
@@ -1800,7 +1800,7 @@ class TestResize:
         assert (modified == np.array([[1.0, 2.0, 1.0],
                                       [1.0, 2.0, 1.0]])).all()
 
-    def test__trim_with_new_centre_as_input(self):
+    def test__trim_with_new_origin_as_input(self):
 
         array = np.ones((7, 7))
         array[4, 4] = 2.0
@@ -1906,7 +1906,7 @@ class TestResize:
                                       [0.0, 1.0, 2.0, 1.0, 0.0],
                                       [0.0, 0.0, 0.0, 0.0, 0.0],])).all()
 
-    def test__pad__with_input_new_centre(self):
+    def test__pad__with_input_new_origin(self):
 
         array = np.ones((3, 3))
         array[2, 2] = 2.0

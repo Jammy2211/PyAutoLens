@@ -354,10 +354,9 @@ class PlanePositions(object):
 
 class PlaneImage(scaled_array.ScaledRectangularPixelArray):
 
-    def __init__(self, array, pixel_scales, grid):
+    def __init__(self, array, pixel_scales, grid, origin=(0.0, 0.0)):
         self.grid = grid
-        self.pixel_scales = pixel_scales
-        super(PlaneImage, self).__init__(array=array, pixel_scales=pixel_scales)
+        super(PlaneImage, self).__init__(array=array, pixel_scales=pixel_scales, origin=origin)
 
 
 def sub_to_image_grid(func):
@@ -432,23 +431,24 @@ def deflections_from_grid_collection(grid_collection, galaxies):
 
 def plane_image_from_grid_and_galaxies(shape, grid, galaxies):
 
-    y_min = np.amin(grid[:, 0])
-    y_max = np.amax(grid[:, 0])
-    x_min = np.amin(grid[:, 1])
-    x_max = np.amax(grid[:, 1])
+    y_min = np.min(grid[:, 0])
+    y_max = np.max(grid[:, 0])
+    x_min = np.min(grid[:, 1])
+    x_max = np.max(grid[:, 1])
 
-    y_pixel_scale = ((y_max - y_min) / shape[0])
-    x_pixel_scale = ((x_max - x_min) / shape[1])
+    pixel_scales = (float((y_max - y_min) / shape[0]), float((x_max - x_min) / shape[1]))
+    origin = ((y_max + y_min) / 2.0, (x_max + x_min) / 2.0)
 
     uniform_grid = imaging_util.image_grid_1d_masked_from_mask_pixel_scales_and_origin(mask=np.full(shape=shape,
                                                                                                     fill_value=False),
-                                                                                       pixel_scales=(y_pixel_scale, x_pixel_scale))
+                                                                                       pixel_scales=pixel_scales,
+                                                                                       origin=origin)
 
     image_1d = sum([intensities_from_grid(uniform_grid, [galaxy]) for galaxy in galaxies])
 
     image_2d = imaging_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(array_1d=image_1d, shape=shape)
 
-    return PlaneImage(array=image_2d, pixel_scales=(y_pixel_scale, x_pixel_scale), grid=grid)
+    return PlaneImage(array=image_2d, pixel_scales=pixel_scales, grid=grid, origin=origin)
 
 
 def traced_collection_for_deflections(grids, deflections):

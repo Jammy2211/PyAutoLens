@@ -12,6 +12,7 @@ class MockGeometry(object):
     def __init__(self):
 
         self.pixel_scales = (1.0, 1.0)
+        self.origin = (0.0, 0.0)
 
 
 def grid_to_pixel_pixels_via_nearest_neighbour(grid, pixel_centers):
@@ -497,6 +498,7 @@ class TestRectangularMapper:
                                            [4.0, 5.0, 6.0],
                                            [7.0, 8.0, 9.0]])).all()
             assert recon_pix.pixel_scales == pytest.approx((4./3., 2./3.), 1e-2)
+            assert recon_pix.origin == (0.0, 0.0)
 
         def test__compare_to_imaging_util(self):
 
