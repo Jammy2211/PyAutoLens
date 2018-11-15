@@ -1486,12 +1486,14 @@ class TestPlaneImage:
 
     def test__3x3_grid__extracts_max_min_coordinates__ignores_other_coordinates_more_central(self, imaging_grids):
 
+        imaging_grids.image[1] = np.array([2.0, 2.0])
+
         galaxy = g.Galaxy(light=lp.EllipticalSersic(intensity=1.0))
 
         plane = pl.Plane(galaxies=[galaxy], grids=[imaging_grids], compute_deflections=False)
 
         plane_image_from_func = pl.plane_image_from_grid_and_galaxies(shape=(3, 4),
-                                                                      grid=imaging_grids.image.unlensed_grid,
+                                                                      grid=imaging_grids.image,
                                                                       galaxies=[galaxy])
 
         assert (plane_image_from_func == plane.plane_images[0]).all()

@@ -24,7 +24,7 @@ class TestArrayGeometry:
 
     class TestArrayAndTuples:
 
-        def test__square_pixel_array__input_data_grid_3x3(self):
+        def test__square_pixel_array__input_data_grid_3x3__centre_is_origin(self):
 
             data_grid = scaled_array.ScaledSquarePixelArray(array=np.ones((3, 3)), pixel_scale=1.0)
 
@@ -36,7 +36,7 @@ class TestArrayGeometry:
             assert data_grid.arc_second_minima == (-1.5, -1.5)
             assert (data_grid == np.ones((3, 3))).all()
 
-        def test__square_pixel_array__input_data_grid_rectangular(self):
+        def test__square_pixel_array__input_data_grid_rectangular__centre_is_origin(self):
 
             data_grid = scaled_array.ScaledSquarePixelArray(array=np.ones((4, 3)), pixel_scale=0.1)
 
@@ -57,6 +57,20 @@ class TestArrayGeometry:
             assert data_grid.shape_arc_seconds == pytest.approx((0.3, 0.4))
             assert data_grid.arc_second_maxima == pytest.approx((0.15, 0.2), 1e-4)
             assert data_grid.arc_second_minima == pytest.approx((-0.15, -0.2), 1e-4)
+
+        def test__square_pixel_array__input_data_grid_3x3__centre_is_y1_x2(self):
+
+            data_grid = scaled_array.ScaledSquarePixelArray(array=np.ones((3, 3)), pixel_scale=1.0, centre=(1.0, 2.0))
+
+            assert data_grid.pixel_scale == 1.0
+            assert data_grid.shape == (3, 3)
+            assert data_grid.central_pixel_coordinates == (1.0, 1.0)
+            assert data_grid.shape_arc_seconds == pytest.approx((3.0, 3.0))
+            assert (data_grid == np.ones((3, 3))).all()
+
+            assert data_grid.centre == (1.0, 2.0)
+            assert data_grid.arc_second_maxima == (1.5, 1.5)
+            assert data_grid.arc_second_minima == (-1.5, -1.5)
 
         def test__rectangular_pixel_grid__input_data_grid_3x3(self):
 
@@ -92,6 +106,21 @@ class TestArrayGeometry:
             assert data_grid.arc_second_maxima == pytest.approx((0.15, 0.4), 1e-4)
             assert data_grid.arc_second_minima == pytest.approx((-0.15, -0.4), 1e-4)
 
+        def test__rectangular_pixel_array__input_data_grid_3x3__centre_is_yminus1_xminuss2(self):
+
+            data_grid = scaled_array.ScaledRectangularPixelArray(array=np.ones((3, 3)), pixel_scales=(2.0, 1.0),
+                                                                 centre=(-1.0, -2.0))
+
+            assert data_grid == pytest.approx(np.ones((3, 3)), 1e-4)
+            assert data_grid.pixel_scales == (2.0, 1.0)
+            assert data_grid.shape == (3, 3)
+            assert data_grid.central_pixel_coordinates == (1.0, 1.0)
+            assert data_grid.shape_arc_seconds == pytest.approx((6.0, 3.0))
+
+            assert data_grid.centre == (-1.0, -2.0)
+            assert data_grid.arc_second_maxima == pytest.approx((3.0, 1.5), 1e-4)
+            assert data_grid.arc_second_minima == pytest.approx((-3.0, -1.5), 1e-4)
+
 
     class TestCentralPixel:
 
@@ -103,7 +132,7 @@ class TestArrayGeometry:
             grid = scaled_array.ScaledSquarePixelArray(np.zeros((4, 4)), pixel_scale=0.1)
             assert grid.central_pixel_coordinates == (1.5, 1.5)
 
-            grid = scaled_array.ScaledSquarePixelArray(np.zeros((5, 3)), pixel_scale=0.1)
+            grid = scaled_array.ScaledSquarePixelArray(np.zeros((5, 3)), pixel_scale=0.1, centre=(1.0, 2.0))
             assert grid.central_pixel_coordinates == (2.0, 1.0)
 
         def test__rectangular_pixel_grid(self):
@@ -114,7 +143,7 @@ class TestArrayGeometry:
             grid = scaled_array.ScaledRectangularPixelArray(np.zeros((4, 4)), pixel_scales=(2.0, 1.0))
             assert grid.central_pixel_coordinates == (1.5, 1.5)
 
-            grid = scaled_array.ScaledRectangularPixelArray(np.zeros((5, 3)), pixel_scales=(2.0, 1.0))
+            grid = scaled_array.ScaledRectangularPixelArray(np.zeros((5, 3)), pixel_scales=(2.0, 1.0), centre=(1.0, 2.0))
             assert grid.central_pixel_coordinates == (2, 1)
 
 
@@ -122,8 +151,8 @@ class TestArrayGeometry:
 
         def test__square_pixel_grid__grid_2d__compare_to_array_util(self):
 
-            grid_2d_util = imaging_util.image_grid_2d_from_shape_and_pixel_scales(shape=(4, 7),
-                                                                                  pixel_scales=(0.56, 0.56))
+            grid_2d_util = imaging_util.image_grid_2d_from_shape_pixel_scales_and_centre(shape=(4, 7),
+                                                                                         pixel_scales=(0.56, 0.56))
 
             sca = scaled_array.ScaledSquarePixelArray(array=np.zeros((4, 7)), pixel_scale=0.56)
 
@@ -138,16 +167,34 @@ class TestArrayGeometry:
 
         def test__square_pixel_grid__grid_1d__compare_to_array_util(self):
 
-            grid_1d_util = imaging_util.image_grid_1d_from_shape_and_pixel_scales(shape=(4, 7),
-                                                                                  pixel_scales=(0.56, 0.56))
+            grid_1d_util = imaging_util.image_grid_1d_from_shape_pixel_scales_and_centre(shape=(4, 7),
+                                                                                         pixel_scales=(0.56, 0.56))
 
             sca = scaled_array.ScaledSquarePixelArray(array=np.zeros((4, 7)), pixel_scale=0.56)
 
             assert sca.grid_1d == pytest.approx(grid_1d_util, 1e-4)
 
+        def test__square_pixel_grid__nonzero_centres__compure_to_array_util(self):
+
+            grid_2d_util = imaging_util.image_grid_2d_from_shape_pixel_scales_and_centre(shape=(4, 7),
+                                                                                         pixel_scales=(0.56, 0.56),
+                                                                                         centre=(1.0, 3.0))
+
+            sca = scaled_array.ScaledSquarePixelArray(array=np.zeros((4, 7)), pixel_scale=0.56, centre=(1.0, 3.0))
+
+            assert sca.grid_2d == pytest.approx(grid_2d_util, 1e-4)
+
+            grid_1d_util = imaging_util.image_grid_1d_from_shape_pixel_scales_and_centre(shape=(4, 7),
+                                                                                         pixel_scales=(0.56, 0.56),
+                                                                                         centre=(-1.0, -4.0))
+
+            sca = scaled_array.ScaledSquarePixelArray(array=np.zeros((4, 7)), pixel_scale=0.56, centre=(-1.0, -4.0))
+
+            assert sca.grid_1d == pytest.approx(grid_1d_util, 1e-4)
+
         def test__rectangular_pixel_grid__grid_2d__compare_to_array_util(self):
-            grid_2d_util = imaging_util.image_grid_2d_from_shape_and_pixel_scales(shape=(4, 7),
-                                                                                  pixel_scales=(0.8, 0.56))
+            grid_2d_util = imaging_util.image_grid_2d_from_shape_pixel_scales_and_centre(shape=(4, 7),
+                                                                                         pixel_scales=(0.8, 0.56))
 
             sca = scaled_array.ScaledRectangularPixelArray(array=np.zeros((4, 7)), pixel_scales=(0.8, 0.56))
 
@@ -162,10 +209,30 @@ class TestArrayGeometry:
 
         def test__rectangular_pixel_grid__grid_1d__compare_to_array_util(self):
 
-            grid_1d_util = imaging_util.image_grid_1d_from_shape_and_pixel_scales(shape=(4, 7),
-                                                                                  pixel_scales=(0.8, 0.56))
+            grid_1d_util = imaging_util.image_grid_1d_from_shape_pixel_scales_and_centre(shape=(4, 7),
+                                                                                         pixel_scales=(0.8, 0.56))
 
             sca = scaled_array.ScaledRectangularPixelArray(array=np.zeros((4, 7)), pixel_scales=(0.8, 0.56))
+
+            assert sca.grid_1d == pytest.approx(grid_1d_util, 1e-4)
+
+        def test__rectangular_pixel_grid__nonzero_centres__compure_to_array_util(self):
+
+            grid_2d_util = imaging_util.image_grid_2d_from_shape_pixel_scales_and_centre(shape=(4, 7),
+                                                                                         pixel_scales=(0.8, 0.56),
+                                                                                         centre=(1.0, 2.0))
+
+            sca = scaled_array.ScaledRectangularPixelArray(array=np.zeros((4, 7)), pixel_scales=(0.8, 0.56),
+                                                           centre=(1.0, 2.0))
+
+            assert sca.grid_2d == pytest.approx(grid_2d_util, 1e-4)
+
+            grid_1d_util = imaging_util.image_grid_1d_from_shape_pixel_scales_and_centre(shape=(4, 7),
+                                                                                         pixel_scales=(0.8, 0.56),
+                                                                                         centre=(-1.0, -4.0))
+
+            sca = scaled_array.ScaledRectangularPixelArray(array=np.zeros((4, 7)), pixel_scales=(0.8, 0.56),
+                                                           centre=(-1.0, -4.0))
 
             assert sca.grid_1d == pytest.approx(grid_1d_util, 1e-4)
 
@@ -217,40 +284,88 @@ class TestArrayGeometry:
             assert sca.arc_second_coordinates_to_pixel_coordinates(arc_second_coordinates=(-1.99, 0.01)) == (1, 1)
             assert sca.arc_second_coordinates_to_pixel_coordinates(arc_second_coordinates=(-1.99, 1.99)) == (1, 1)
 
-        def test__square_pixel_grid__1d_arc_second_grid_to_1d_pixel_centred_grid__same_as_imaging_util(self):
-            grid_arc_seconds = np.array([[1.0, -2.0], [1.0, 2.0],
-                                         [-1.0, -2.0], [-1.0, 2.0]])
+        def test__arc_second_coordinates_to_pixel_coordinates__arc_seconds_are_pixel_centres__nonzero_centre(self):
 
-            grid_arc_seconds_util = imaging_util.grid_arc_seconds_1d_to_grid_pixel_centres_1d(
+            sca = scaled_array.ScaledSquarePixelArray(array=np.zeros((2, 2)), pixel_scale=2.0, centre=(1.0, 1.0))
+
+            assert sca.arc_second_coordinates_to_pixel_coordinates(arc_second_coordinates=(2.0, 0.0)) == (0, 0)
+            assert sca.arc_second_coordinates_to_pixel_coordinates(arc_second_coordinates=(2.0, 2.0)) == (0, 1)
+            assert sca.arc_second_coordinates_to_pixel_coordinates(arc_second_coordinates=(0.0, 0.0)) == (1, 0)
+            assert sca.arc_second_coordinates_to_pixel_coordinates(arc_second_coordinates=(0.0, 2.0)) == (1, 1)
+
+            sca = scaled_array.ScaledSquarePixelArray(array=np.zeros((3, 3)), pixel_scale=3.0, centre=(3.0, 3.0))
+
+            assert sca.arc_second_coordinates_to_pixel_coordinates(arc_second_coordinates=(6.0, 0.0)) == (0, 0)
+            assert sca.arc_second_coordinates_to_pixel_coordinates(arc_second_coordinates=(6.0, 3.0)) == (0, 1)
+            assert sca.arc_second_coordinates_to_pixel_coordinates(arc_second_coordinates=(6.0, 6.0)) == (0, 2)
+            assert sca.arc_second_coordinates_to_pixel_coordinates(arc_second_coordinates=(3.0, 0.0)) == (1, 0)
+            assert sca.arc_second_coordinates_to_pixel_coordinates(arc_second_coordinates=(3.0, 3.0)) == (1, 1)
+            assert sca.arc_second_coordinates_to_pixel_coordinates(arc_second_coordinates=(3.0, 6.0)) == (1, 2)
+            assert sca.arc_second_coordinates_to_pixel_coordinates(arc_second_coordinates=(0.0, 0.0)) == (2, 0)
+            assert sca.arc_second_coordinates_to_pixel_coordinates(arc_second_coordinates=(0.0, 3.0)) == (2, 1)
+            assert sca.arc_second_coordinates_to_pixel_coordinates(arc_second_coordinates=(0.0, 6.0)) == (2, 2)
+
+        def test__arc_second_coordinates_to_pixel_coordinates__arc_seconds_are_pixel_corners__nonzero_centre(self):
+
+            sca = scaled_array.ScaledSquarePixelArray(array=np.zeros((2, 2)), pixel_scale=2.0, centre=(1.0, 1.0))
+
+            assert sca.arc_second_coordinates_to_pixel_coordinates(arc_second_coordinates=(2.99, -0.99)) == (0, 0)
+            assert sca.arc_second_coordinates_to_pixel_coordinates(arc_second_coordinates=(2.99, 0.99)) == (0, 0)
+            assert sca.arc_second_coordinates_to_pixel_coordinates(arc_second_coordinates=(1.01, -0.99)) == (0, 0)
+            assert sca.arc_second_coordinates_to_pixel_coordinates(arc_second_coordinates=(1.01, 0.99)) == (0, 0)
+
+            assert sca.arc_second_coordinates_to_pixel_coordinates(arc_second_coordinates=(3.01, 1.01)) == (0, 1)
+            assert sca.arc_second_coordinates_to_pixel_coordinates(arc_second_coordinates=(3.01, 2.99)) == (0, 1)
+            assert sca.arc_second_coordinates_to_pixel_coordinates(arc_second_coordinates=(1.01, 1.01)) == (0, 1)
+            assert sca.arc_second_coordinates_to_pixel_coordinates(arc_second_coordinates=(1.01, 2.99)) == (0, 1)
+
+            assert sca.arc_second_coordinates_to_pixel_coordinates(arc_second_coordinates=(0.99, -0.99)) == (1, 0)
+            assert sca.arc_second_coordinates_to_pixel_coordinates(arc_second_coordinates=(0.99, 0.99)) == (1, 0)
+            assert sca.arc_second_coordinates_to_pixel_coordinates(arc_second_coordinates=(-0.99, -0.99)) == (1, 0)
+            assert sca.arc_second_coordinates_to_pixel_coordinates(arc_second_coordinates=(-0.99, 0.99)) == (1, 0)
+
+            assert sca.arc_second_coordinates_to_pixel_coordinates(arc_second_coordinates=(0.99, 1.01)) == (1, 1)
+            assert sca.arc_second_coordinates_to_pixel_coordinates(arc_second_coordinates=(0.99, 2.99)) == (1, 1)
+            assert sca.arc_second_coordinates_to_pixel_coordinates(arc_second_coordinates=(-0.99, 1.01)) == (1, 1)
+            assert sca.arc_second_coordinates_to_pixel_coordinates(arc_second_coordinates=(-0.99, 2.99)) == (1, 1)
+
+        def test__square_pixel_grid__1d_arc_second_grid_to_1d_pixel_centred_grid__same_as_imaging_util(self):
+
+            grid_arc_seconds = np.array([[0.5, -0.5], [0.5, 0.5],
+                                         [-0.5, -0.5], [-0.5, 0.5]])
+
+            grid_pixels_util = imaging_util.grid_arc_seconds_1d_to_grid_pixel_centres_1d(
                 grid_arc_seconds=grid_arc_seconds,
                 shape=(2, 2),
                 pixel_scales=(2.0, 2.0))
 
             sca = scaled_array.ScaledSquarePixelArray(array=np.zeros((2, 2)), pixel_scale=2.0)
 
-            grid_arc_seconds = sca.grid_arc_seconds_to_grid_pixel_centres(grid_arc_seconds=grid_arc_seconds)
+            grid_pixels = sca.grid_arc_seconds_to_grid_pixel_centres(grid_arc_seconds=grid_arc_seconds)
 
-            assert (grid_arc_seconds == grid_arc_seconds_util).all()
+            assert (grid_pixels == grid_pixels_util).all()
 
-        def test__square_pixel_grid__1d_arc_second_grid_to_1d_pixel_grid__same_as_imaging_util(self):
+        def test__square_pixel_grid__1d_arc_second_grid_to_1d_pixel_indexes_grid__same_as_imaging_util(self):
 
-            grid_arc_seconds = np.array([[1.0, -2.0], [1.0, 2.0],
-                                         [-1.0, -2.0], [-1.0, 2.0]])
+            grid_arc_seconds = np.array([[1.0, -1.0], [1.0, 1.0],
+                                         [-1.0, -1.0], [-1.0, 1.0]])
 
-            grid_arc_seconds_util = imaging_util.grid_arc_seconds_1d_to_grid_pixels_1d(
-                grid_arc_seconds=grid_arc_seconds, shape=(2, 2), pixel_scales=(2.0, 2.0))
+            grid_pixel_indexes_util = imaging_util.grid_arc_seconds_1d_to_grid_pixel_indexes_1d(
+                grid_arc_seconds=grid_arc_seconds,
+                shape=(2, 2),
+                pixel_scales=(2.0, 2.0))
 
             sca = scaled_array.ScaledSquarePixelArray(array=np.zeros((2, 2)), pixel_scale=2.0)
 
-            grid_arc_seconds = sca.grid_arc_seconds_to_grid_pixels(grid_arc_seconds=grid_arc_seconds)
+            grid_pixel_indexes = sca.grid_arc_seconds_to_grid_pixel_indexes(grid_arc_seconds=grid_arc_seconds)
 
-            assert (grid_arc_seconds == grid_arc_seconds_util).all()
+            assert (grid_pixel_indexes == grid_pixel_indexes_util).all()
 
         def test__rectangular_pixel_grid__1d_arc_second_grid_to_1d_pixel_centred_grid__same_as_imaging_util(self):
             grid_arc_seconds = np.array([[1.0, -2.0], [1.0, 2.0],
                                          [-1.0, -2.0], [-1.0, 2.0]])
 
-            grid_arc_seconds_util = imaging_util.grid_arc_seconds_1d_to_grid_pixel_centres_1d(
+            grid_pixels_util = imaging_util.grid_arc_seconds_1d_to_grid_pixel_centres_1d(
                 grid_arc_seconds=grid_arc_seconds,
                 shape=(2, 2),
                 pixel_scales=(7.0, 2.0))
@@ -258,24 +373,40 @@ class TestArrayGeometry:
             sca = scaled_array.ScaledRectangularPixelArray(array=np.zeros((2, 2)),
                                                            pixel_scales=(7.0, 2.0))
 
-            grid_arc_seconds = sca.grid_arc_seconds_to_grid_pixel_centres(grid_arc_seconds=grid_arc_seconds)
+            grid_pixels = sca.grid_arc_seconds_to_grid_pixel_centres(grid_arc_seconds=grid_arc_seconds)
 
-            assert (grid_arc_seconds == grid_arc_seconds_util).all()
+            assert (grid_pixels == grid_pixels_util).all()
+
+        def test__rectangular_pixel_grid__1d_arc_second_grid_to_1d_pixel_indexes_grid__same_as_imaging_util(self):
+            grid_arc_seconds = np.array([[1.0, -2.0], [1.0, 2.0],
+                                         [-1.0, -2.0], [-1.0, 2.0]])
+
+            grid_pixels_util = imaging_util.grid_arc_seconds_1d_to_grid_pixel_indexes_1d(
+                grid_arc_seconds=grid_arc_seconds,
+                shape=(2, 2),
+                pixel_scales=(2.0, 4.0))
+
+            sca = scaled_array.ScaledRectangularPixelArray(array=np.zeros((2, 2)),
+                                                           pixel_scales=(2.0, 4.0))
+
+            grid_pixels = sca.grid_arc_seconds_to_grid_pixel_indexes(grid_arc_seconds=grid_arc_seconds)
+
+            assert (grid_pixels == grid_pixels_util).all()
 
         def test__rectangular_pixel_grid__1d_arc_second_grid_to_1d_pixel_grid__same_as_imaging_util(self):
 
             grid_arc_seconds = np.array([[1.0, -2.0], [1.0, 2.0],
                                          [-1.0, -2.0], [-1.0, 2.0]])
 
-            grid_arc_seconds_util = imaging_util.grid_arc_seconds_1d_to_grid_pixels_1d(
-                grid_arc_seconds=grid_arc_seconds, shape=(2, 2), pixel_scales=(7.0, 2.0))
+            grid_pixels_util = imaging_util.grid_arc_seconds_1d_to_grid_pixels_1d(
+                grid_arc_seconds=grid_arc_seconds, shape=(2, 2), pixel_scales=(2.0, 4.0))
 
             sca = scaled_array.ScaledRectangularPixelArray(array=np.zeros((2, 2)),
-                                                           pixel_scales=(7.0, 2.0))
+                                                           pixel_scales=(2.0, 4.0))
 
-            grid_arc_seconds = sca.grid_arc_seconds_to_grid_pixels(grid_arc_seconds=grid_arc_seconds)
+            grid_pixels = sca.grid_arc_seconds_to_grid_pixels(grid_arc_seconds=grid_arc_seconds)
 
-            assert (grid_arc_seconds == grid_arc_seconds_util).all()
+            assert (grid_pixels == grid_pixels_util).all()
 
         def test__square_pixel_grid__1d_pixel_grid_to_1d_pixel_centred_grid__same_as_imaging_util(self):
 
@@ -307,6 +438,69 @@ class TestArrayGeometry:
 
             assert (grid_pixels == grid_pixels_util).all()
 
+        def test__square_pixel_grid__grids_with_nonzero_centres__same_as_imaging_util(self):
+
+            grid_arc_seconds = np.array([[1.0, -2.0], [1.0, 2.0],
+                                         [-1.0, -2.0], [-1.0, 2.0]])
+
+            sca = scaled_array.ScaledSquarePixelArray(array=np.zeros((2, 2)), pixel_scale=2.0, centre=(1.0, 2.0))
+
+            grid_pixels_util = imaging_util.grid_arc_seconds_1d_to_grid_pixels_1d(
+                grid_arc_seconds=grid_arc_seconds, shape=(2, 2), pixel_scales=(2.0, 2.0), centre=(1.0, 2.0))
+            grid_pixels = sca.grid_arc_seconds_to_grid_pixels(grid_arc_seconds=grid_arc_seconds)
+            assert (grid_pixels == grid_pixels_util).all()
+
+            grid_pixels_util = imaging_util.grid_arc_seconds_1d_to_grid_pixel_indexes_1d(
+                grid_arc_seconds=grid_arc_seconds, shape=(2, 2), pixel_scales=(2.0, 2.0), centre=(1.0, 2.0))
+            grid_pixels = sca.grid_arc_seconds_to_grid_pixel_indexes(grid_arc_seconds=grid_arc_seconds)
+            assert grid_pixels == pytest.approx(grid_pixels_util, 1e-4)
+
+            grid_pixels_util = imaging_util.grid_arc_seconds_1d_to_grid_pixel_centres_1d(
+                grid_arc_seconds=grid_arc_seconds, shape=(2, 2), pixel_scales=(2.0, 2.0), centre=(1.0, 2.0))
+            grid_pixels = sca.grid_arc_seconds_to_grid_pixel_centres(grid_arc_seconds=grid_arc_seconds)
+            assert grid_pixels == pytest.approx(grid_pixels_util, 1e-4)
+
+            grid_pixels = np.array([[0, 0], [0, 1],
+                                    [1, 0], [1, 1]])
+
+            grid_arc_seconds_util = imaging_util.grid_pixels_1d_to_grid_arc_seconds_1d( grid_pixels=grid_pixels,
+                shape=(2, 2), pixel_scales=(2.0, 2.0), centre=(1.0, 2.0))
+
+            grid_arc_seconds = sca.grid_pixels_to_grid_arc_seconds(grid_pixels=grid_pixels)
+
+            assert (grid_arc_seconds == grid_arc_seconds_util).all()
+
+        def test__rectangular_pixel_grid__grids_with_nonzero_centres__same_as_imaging_util(self):
+
+            grid_arc_seconds = np.array([[1.0, -2.0], [1.0, 2.0],
+                                         [-1.0, -2.0], [-1.0, 2.0]])
+
+            sca = scaled_array.ScaledRectangularPixelArray(array=np.zeros((2, 2)), pixel_scales=(2.0,1.0), centre=(1.0, 2.0))
+
+            grid_pixels_util = imaging_util.grid_arc_seconds_1d_to_grid_pixels_1d(
+                grid_arc_seconds=grid_arc_seconds, shape=(2, 2), pixel_scales=(2.0, 1.0), centre=(1.0, 2.0))
+            grid_pixels = sca.grid_arc_seconds_to_grid_pixels(grid_arc_seconds=grid_arc_seconds)
+            assert (grid_pixels == grid_pixels_util).all()
+
+            grid_pixels_util = imaging_util.grid_arc_seconds_1d_to_grid_pixel_indexes_1d(
+                grid_arc_seconds=grid_arc_seconds, shape=(2, 2), pixel_scales=(2.0, 1.0), centre=(1.0, 2.0))
+            grid_pixels = sca.grid_arc_seconds_to_grid_pixel_indexes(grid_arc_seconds=grid_arc_seconds)
+            assert (grid_pixels == grid_pixels_util).all()
+
+            grid_pixels_util = imaging_util.grid_arc_seconds_1d_to_grid_pixel_centres_1d(
+                grid_arc_seconds=grid_arc_seconds, shape=(2, 2), pixel_scales=(2.0, 1.0), centre=(1.0, 2.0))
+            grid_pixels = sca.grid_arc_seconds_to_grid_pixel_centres(grid_arc_seconds=grid_arc_seconds)
+            assert grid_pixels == pytest.approx(grid_pixels_util, 1e-4)
+
+            grid_pixels = np.array([[0, 0], [0, 1],
+                                    [1, 0], [1, 1]])
+
+            grid_arc_seconds_util = imaging_util.grid_pixels_1d_to_grid_arc_seconds_1d( grid_pixels=grid_pixels,
+                shape=(2, 2), pixel_scales=(2.0, 1.0), centre=(1.0, 2.0))
+
+            grid_arc_seconds = sca.grid_pixels_to_grid_arc_seconds(grid_pixels=grid_pixels)
+
+            assert (grid_arc_seconds == grid_arc_seconds_util).all()
 
     class TestTicks:
 
@@ -424,6 +618,7 @@ class TestArray:
             modified = array.resized_scaled_array_from_array(new_shape=(3, 3), new_centre_arc_seconds=(4.51, 7.49))
             modified_util = imaging_util.resize_array_2d(array_2d=array, new_shape=(3, 3), new_centre=(0,4))
             assert (modified == modified_util).all()
+
 
 class TestScaledSquarePixelArray:
 
