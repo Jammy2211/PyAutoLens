@@ -64,6 +64,7 @@ class GalaxyModel(model_mapper.AbstractPriorModel):
 
     def __init__(self, align_centres=False, align_axis_ratios=False, align_orientations=False, redshift=None,
                  variable_redshift=False, pixelization=None, regularization=None, hyper_galaxy=None, config=None,
+                 limit_config=None,
                  **kwargs):
         """Class to produce Galaxy instances from sets of profile classes and other model-fitting attributes (e.g. \
          pixelizations, regularization schemes, hyper-galaxyes) using the model mapper.
@@ -95,8 +96,10 @@ class GalaxyModel(model_mapper.AbstractPriorModel):
             image if using an inversion.
         hyper_galaxy : HyperGalaxy
             A model hyper-galaxy used for scaling the observed image's noise.
-        config : conf
+        config : conf.DefaultConfig
             Change config file used to set all model-galaxy priors.
+        limit_config: conf.LimitConfig
+            Change config file used to assert limits on possible values for attributes
         """
 
         self.align_centres = align_centres
@@ -107,7 +110,7 @@ class GalaxyModel(model_mapper.AbstractPriorModel):
 
         for name, cls in kwargs.items():
             if is_mass_profile_class(cls) or is_light_profile_class(cls):
-                model = model_mapper.PriorModel(cls, config)
+                model = model_mapper.PriorModel(cls, config, limit_config=limit_config)
                 profile_models.append(model)
                 setattr(self, name, model)
             else:
@@ -134,21 +137,25 @@ class GalaxyModel(model_mapper.AbstractPriorModel):
                 redshift.redshift if isinstance(redshift, galaxy.Redshift) else redshift)
         else:
             self.redshift = model_mapper.PriorModel(galaxy.Redshift,
-                                                    config) if variable_redshift else model_mapper.Constant(1)
+                                                    config,
+                                                    limit_config=limit_config) if variable_redshift else model_mapper.Constant(
+                1)
 
         if pixelization is not None and regularization is None:
             raise exc.PriorException('If the galaxy prior has a pixelization, it must also have a regularization.')
         if pixelization is None and regularization is not None:
             raise exc.PriorException('If the galaxy prior has a regularization, it must also have a pixelization.')
 
-        self.pixelization = model_mapper.PriorModel(pixelization, config) if inspect.isclass(
+        self.pixelization = model_mapper.PriorModel(pixelization, config, limit_config=limit_config) if inspect.isclass(
             pixelization) else pixelization
-        self.regularization = model_mapper.PriorModel(regularization, config) if inspect.isclass(
+        self.regularization = model_mapper.PriorModel(regularization, config,
+                                                      limit_config=limit_config) if inspect.isclass(
             regularization) else regularization
 
-        self.hyper_galaxy = model_mapper.PriorModel(hyper_galaxy, config) if inspect.isclass(
+        self.hyper_galaxy = model_mapper.PriorModel(hyper_galaxy, config, limit_config=limit_config) if inspect.isclass(
             hyper_galaxy) else hyper_galaxy
         self.config = config
+        self.limit_config = limit_config
 
     def __setattr__(self, key, value):
         if key == "redshift" \
@@ -321,7 +328,8 @@ class GalaxyModel(model_mapper.AbstractPriorModel):
             A model with some or all priors replaced.
         """
         new_model = GalaxyModel(align_centres=self.align_centres, align_axis_ratios=self.align_axis_ratios,
-                                align_orientations=self.align_orientations, config=self.config)
+                                align_orientations=self.align_orientations, config=self.config,
+                                limit_config=self.limit_config)
 
         for key, value in filter(lambda t: isinstance(t[1], model_mapper.PriorModel), self.__dict__.items()):
             setattr(new_model, key, value.gaussian_prior_model_for_arguments(arguments))
