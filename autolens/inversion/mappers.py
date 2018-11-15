@@ -98,9 +98,11 @@ class Mapper(object):
         sub_grid_fraction : float
             The fractional area each sub-pixel takes up in an image-pixel.
         """
+
         mapping_matrix = np.zeros((image_pixels, pixels))
 
         for sub_index in range(sub_to_image.shape[0]):
+
             mapping_matrix[sub_to_image[sub_index], sub_to_pixelization[sub_index]] += sub_grid_fraction
 
         return mapping_matrix
@@ -134,6 +136,7 @@ class Mapper(object):
 
         return pixelization_to_sub
 
+
 class RectangularMapper(Mapper):
 
     def __init__(self, pixels, grids, pixel_neighbors, shape, geometry):
@@ -162,28 +165,12 @@ class RectangularMapper(Mapper):
     @property
     def image_to_pixelization(self):
         """The mappings between a set of image pixels and pixelization pixels."""
-        return self.grid_to_pixelization_from_grid_jit(self.grids.image, self.geometry.arc_second_minima,
-                                                       self.geometry.pixel_scales, self.shape).astype(dtype='int')
+        return self.geometry.grid_arc_seconds_to_grid_pixel_indexes(grid_arc_seconds=self.grids.image)
 
     @property
     def sub_to_pixelization(self):
         """The mappings between a set of sub-pixels and pixelization pixels"""
-        return self.grid_to_pixelization_from_grid_jit(self.grids.sub, self.geometry.arc_second_minima,
-                                                       self.geometry.pixel_scales, self.shape).astype(dtype='int')
-
-    @staticmethod
-    @numba.jit(nopython=True, cache=True)
-    def grid_to_pixelization_from_grid_jit(grid, arc_second_minima, pixel_scales, shape):
-
-        grid_to_pixelization = np.zeros(grid.shape[0])
-
-        for i in range(grid.shape[0]):
-            y_pixel = shape[0] - np.floor((grid[i, 0] - arc_second_minima[0]) / pixel_scales[0]) - 1
-            x_pixel = np.floor((grid[i, 1] - arc_second_minima[1]) / pixel_scales[1])
-
-            grid_to_pixelization[i] = y_pixel * (shape[1]) + x_pixel
-
-        return grid_to_pixelization
+        return self.geometry.grid_arc_seconds_to_grid_pixel_indexes(grid_arc_seconds=self.grids.sub)
 
     def reconstructed_pixelization_from_solution_vector(self, solution_vector):
         recon = imaging_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(array_1d=solution_vector,

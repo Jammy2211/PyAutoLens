@@ -1,6 +1,7 @@
 import numpy as np
 import pytest
 
+from autolens.imaging import mask
 from autolens.inversion import pixelizations
 
 
@@ -23,6 +24,78 @@ def make_five_pixels():
 @pytest.fixture(name="three_pixels")
 def make_three_pixels():
     return np.array([[0, 0], [0, 1], [1, 0]])
+
+
+class TestPixelizationImageGrid:
+
+    def test__inherites_from_scaled_array_geometry__can_compute_2d_grid(self):
+
+        ma = mask.Mask(array=np.array([[True, False, True],
+                                       [False, False, False],
+                                       [True, False, True]]), pixel_scale=1.0)
+
+        image_grid = mask.ImageGrid.from_mask(mask=ma)
+
+        pix = pixelizations.PixelizationImageGrid(image_grid_shape=(2, 2), pixel_scales=(1.0, 0.5),
+                                                  image_grid=image_grid)
+
+        assert (pix.grid_1d == np.array([[0.5, -0.25], [0.5, 0.25], [-0.5, -0.25], [-0.5, 0.25]])).all()
+
+    class TestMaskedPixelizationGrid:
+
+        def test__pixelization_grid_overlaps_mask_perfectly__masked_pixels_in_masked_pixelization_grid(self):
+
+            ma = mask.Mask(array=np.array([[True, False, True],
+                                           [False, False, False],
+                                           [True, False, True]]), pixel_scale=1.0)
+
+            image_grid = mask.ImageGrid.from_mask(mask=ma)
+
+            pix_grid = pixelizations.PixelizationImageGrid(image_grid_shape=(3,3), pixel_scales=(1.0, 1.0),
+                                                           image_grid=image_grid)
+
+            assert pix_grid.total_masked_pixels == 5
+            assert (pix_grid.pixels_in_mask == np.array([1, 3, 4, 5, 7])).all()
+            assert (pix_grid.masked_pixelization_grid == np.array([[1.0, 0.0], [0.0, -1.0], [0.0, 0.0], [0.0, 1.0],
+                                                                  [-1.0, 0.0]])).all()
+
+        def test__same_as_above_but_4x3_grid_and_mask(self):
+
+            ma = mask.Mask(array=np.array([[True, False, True],
+                                           [False, False, False],
+                                           [False, False, False],
+                                           [True, False, True]]), pixel_scale=1.0)
+
+            image_grid = mask.ImageGrid.from_mask(mask=ma)
+
+            pix_grid = pixelizations.PixelizationImageGrid(image_grid_shape=(4,3), pixel_scales=(1.0, 1.0),
+                                                           image_grid=image_grid)
+
+            assert pix_grid.total_masked_pixels == 8
+            assert (pix_grid.pixels_in_mask == np.array([1, 3, 4, 5, 6, 7, 8, 10])).all()
+            assert (pix_grid.masked_pixelization_grid == np.array([              [ 1.5, 0.0],
+                                                                   [ 0.5, -1.0], [ 0.5, 0.0], [ 0.5, 1.0],
+                                                                   [-0.5, -1.0], [-0.5, 0.0], [-0.5, 1.0],
+                                                                                 [-1.5, 0.0]])).all()
+
+        def test__same_as_above_but_3x4_grid_and_mask(self):
+
+            ma = mask.Mask(array=np.array([[True, False, True],
+                                           [False, False, False],
+                                           [False, False, False],
+                                           [True, False, True]]), pixel_scale=1.0)
+
+            image_grid = mask.ImageGrid.from_mask(mask=ma)
+
+            pix_grid = pixelizations.PixelizationImageGrid(image_grid_shape=(4,3), pixel_scales=(1.0, 1.0),
+                                                           image_grid=image_grid)
+
+            assert pix_grid.total_masked_pixels == 8
+            assert (pix_grid.pixels_in_mask == np.array([1, 3, 4, 5, 6, 7, 8, 10])).all()
+            assert (pix_grid.masked_pixelization_grid == np.array([              [ 1.5, 0.0],
+                                                                   [ 0.5, -1.0], [ 0.5, 0.0], [ 0.5, 1.0],
+                                                                   [-0.5, -1.0], [-0.5, 0.0], [-0.5, 1.0],
+                                                                                 [-1.5, 0.0]])).all()
 
 
 class TestRectangular:
@@ -211,7 +284,28 @@ class TestRectangular:
             assert pixel_neighbors[15] == [11, 14]
 
 
+class TestAdaptiveImageGrid:
+
+    def test__pixelization_image_grid_from_image_grid__sets_up_with_correct_shape_and_pixel_scales(self):
+
+        ma = mask.Mask(array=np.array([[False, False, False],
+                                       [False, False, False],
+                                       [False, False, False]]), pixel_scale=1.0)
+
+        image_grid = mask.ImageGrid.from_mask(mask=ma)
+
+        adaptive_image_grid = pixelizations.AdaptiveImageGrid(image_grid_shape=(3,3))
+
+        pix_grid = adaptive_image_grid.pixelization_image_grid_from_image_grid(image_grid=image_grid)
+
+        assert pix_grid.shape == (3,3)
+        assert pix_grid.pixel_scales == ((2.0/3.0), (2.0/3.0))
+
+        assert pix_grid.image_grid == pytest.approx(image_grid, 1e-4)
+
+
 class TestVoronoi:
+
     class TestVoronoiGrid:
 
         def test__points_in_x_cross_shape__sets_up_diamond_voronoi_vertices(self):
@@ -350,6 +444,7 @@ class TestVoronoi:
 
 
 class TestAmorphous:
+
     class TestKMeans:
 
         def test__simple_points__sets_up_two_clusters(self):
@@ -357,7 +452,7 @@ class TestAmorphous:
             cluster_grid = np.array([[1.99, 0.99], [2.0, 1.0], [2.01, 1.01],
                                      [0.99, 1.99], [1.0, 2.0], [1.01, 2.01]])
 
-            pix = pixelizations.Amorphous(pixels=2)
+            pix = pixelizations.Amorphous(image_grid_shape=(1,2))
 
             pixel_centers, pix_to_image = pix.kmeans_cluster(cluster_grid)
 
@@ -372,7 +467,7 @@ class TestAmorphous:
                                      [0.99, 0.99], [1.0, 1.0], [1.01, 1.01],
                                      [-0.99, 1.99], [-1.0, 2.0], [-1.01, 2.01]])
 
-            pix = pixelizations.Amorphous(pixels=3)
+            pix = pixelizations.Amorphous(image_grid_shape=(1,3))
 
             pixel_centers, pix_to_image = pix.kmeans_cluster(cluster_grid)
 
@@ -395,7 +490,7 @@ class TestAmorphous:
                                      [1.99, 1.99], [2.0, 2.0], [2.01, 2.01],
                                      [1.99, 1.99], [2.0, 2.0], [2.01, 2.01]])
 
-            pix = pixelizations.Amorphous(pixels=3)
+            pix = pixelizations.Amorphous(image_grid_shape=(1,3))
 
             pixel_centers, pix_to_image = pix.kmeans_cluster(cluster_grid)
 
@@ -410,42 +505,3 @@ class TestAmorphous:
             assert list(pix_to_image).count(2) == 3 or 6 or 12
 
             assert list(pix_to_image).count(0) != list(pix_to_image).count(1) != list(pix_to_image).count(2)
-
-
-class TestPixelizationGrid:
-    class TestCoordinateGridWithinAnnulus:
-
-        def test__shape_3x3__circle_radius_15__all_9_pixels_in_grid_with_correct_coordinates(self):
-            pixelization_grid = pixelizations.PixelizationGrid(shape=(3, 3))
-
-            coordinate_grid = pixelization_grid.coordinate_grid_within_annulus(inner_radius=0.0, outer_radius=1.5)
-
-            assert (coordinate_grid == np.array([[1.0, -1.0], [1.0, 0.0], [1.0, 1.0],
-                                                 [0.0, -1.0], [0.0, 0.0], [0.0, 1.0],
-                                                 [-1.0, -1.0], [-1.0, 0.0], [-1.0, 1.0]])).all()
-
-        def test__shape_3x3__circle_radius_3__all_9_pixels_in_grid_with_correct_coordinates(self):
-            pixelization_grid = pixelizations.PixelizationGrid(shape=(3, 3))
-
-            coordinate_grid = pixelization_grid.coordinate_grid_within_annulus(inner_radius=0.0, outer_radius=3)
-
-            assert (coordinate_grid == np.array([[2.0, -2.0], [2.0, 0.0], [2.0, 2.0],
-                                                 [0.0, -2.0], [0.0, 0.0], [0.0, 2.0],
-                                                 [-2.0, -2.0], [-2.0, 0.0], [-2.0, 2.0]])).all()
-
-        def test__shape_3x2__circle_radius_15__all_6_pixels_in_grid_with_correct_coordinates(self):
-            pixelization_grid = pixelizations.PixelizationGrid(shape=(3, 2))
-
-            coordinate_grid = pixelization_grid.coordinate_grid_within_annulus(inner_radius=0.0, outer_radius=1.5)
-
-            assert (coordinate_grid == np.array([[1.0, -0.75], [1.0, 0.75],
-                                                 [0.0, -0.75], [0.0, 0.75],
-                                                 [-1.0, -0.75], [-1.0, 0.75]])).all()
-
-        def test__shape_2x3__circle_radius_15__all_6_pixels_in_grid_with_correct_coordinates(self):
-            pixelization_grid = pixelizations.PixelizationGrid(shape=(2, 3))
-
-            coordinate_grid = pixelization_grid.coordinate_grid_within_annulus(inner_radius=0.0, outer_radius=1.5)
-
-            assert (coordinate_grid == np.array([[0.75, -1.0], [0.75, 0.0], [0.75, 1.0],
-                                                 [-0.75, -1.0], [-0.75, 0.0], [-0.75, 1.0]])).all()

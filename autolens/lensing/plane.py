@@ -87,9 +87,9 @@ class Plane(object):
                 return sum(map(lambda galaxy: galaxy.deflections_from_grid(grid), galaxies))
 
             self.deflections = list(map(lambda grid : grid.apply_function(calculate_deflections), self.grids))
+
         else:
             self.deflections = None
-
         self.cosmology = cosmology
 
     def trace_grids_to_next_plane(self):
@@ -224,7 +224,7 @@ class Plane(object):
     @property
     def plane_images(self):
         return list(map(lambda grid : plane_image_from_grid_and_galaxies(shape=grid.image.mask.shape,
-                                      grid=grid.image.unlensed_grid, galaxies=self.galaxies), self.grids))
+                                      grid=grid.image, galaxies=self.galaxies), self.grids))
 
     @property
     def surface_density(self):
@@ -316,6 +316,7 @@ class Plane(object):
         """
         return list(map(lambda galaxy : galaxy.mass_within_ellipse(major_axis, conversion_factor),
                         self.galaxies))
+
 
 class PlanePositions(object):
 
@@ -430,6 +431,7 @@ def deflections_from_grid_collection(grid_collection, galaxies):
 
 
 def plane_image_from_grid_and_galaxies(shape, grid, galaxies):
+
     y_min = np.amin(grid[:, 0])
     y_max = np.amax(grid[:, 0])
     x_min = np.amin(grid[:, 1])
@@ -440,8 +442,7 @@ def plane_image_from_grid_and_galaxies(shape, grid, galaxies):
 
     uniform_grid = imaging_util.image_grid_1d_masked_from_mask_and_pixel_scales(mask=np.full(shape=shape,
                                                                                              fill_value=False),
-                                                                                pixel_scales=(
-                                                                                    y_pixel_scale, x_pixel_scale))
+                                                                    pixel_scales=(y_pixel_scale, x_pixel_scale))
 
     image_1d = sum([intensities_from_grid(uniform_grid, [galaxy]) for galaxy in galaxies])
 
