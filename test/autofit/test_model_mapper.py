@@ -2,6 +2,8 @@ import os
 
 import pytest
 
+import math
+
 from autolens import conf
 from autolens import exc
 from autolens.autofit import model_mapper
@@ -48,6 +50,12 @@ def make_initial_model(test_config):
 
 
 class MockClassGaussian(object):
+    def __init__(self, one, two):
+        self.one = one
+        self.two = two
+
+
+class MockClassInf(object):
     def __init__(self, one, two):
         self.one = one
         self.two = two
@@ -110,6 +118,26 @@ class TestPriorLimits(object):
 
         with pytest.raises(exc.PriorLimitException):
             mm.instance_from_physical_vector(([-1, 2]))
+
+    def test_inf(self, test_config, limit_config):
+        mm = model_mapper.ModelMapper(test_config, limit_config=limit_config)
+        mm.mock_class_inf = MockClassInf
+
+        prior_tuples = mm.prior_tuples_ordered_by_id
+
+        assert prior_tuples[0].prior.lower_limit == -math.inf
+        assert prior_tuples[0].prior.upper_limit == 0
+
+        assert prior_tuples[1].prior.lower_limit == 0
+        assert prior_tuples[1].prior.upper_limit == math.inf
+
+        assert mm.instance_from_physical_vector([-10000, 10000]) is not None
+
+        with pytest.raises(exc.PriorLimitException):
+            mm.instance_from_physical_vector(([1, 0]))
+
+        with pytest.raises(exc.PriorLimitException):
+            mm.instance_from_physical_vector(([0, -1]))
 
 
 class TestPriorLinking(object):
