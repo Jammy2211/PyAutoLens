@@ -41,6 +41,10 @@ def test_image():
 
     return im.Image(array=image, pixel_scale=1.0, noise_map=noise_map, psf=psf)
 
+@pytest.fixture(name='mask')
+def test_mask():
+    return msk.Mask.circular(shape=((3,3)), pixel_scale=0.1, radius_mask_arcsec=0.1)
+
 @pytest.fixture(name='galaxy_light')
 def test_galaxy_light():
     return g.Galaxy(light=lp.EllipticalSersic(intensity=1.0))
@@ -54,13 +58,17 @@ def test_galaxy_mass():
 def test_grids():
     return msk.ImagingGrids.from_shape_and_pixel_scale(shape=(100, 100), pixel_scale=0.05, sub_grid_size=2)
 
+@pytest.fixture(name='borders')
+def test_borders(mask):
+    return msk.ImagingGridBorders.from_mask_and_sub_grid_size(mask=mask, sub_grid_size=1)
+
 @pytest.fixture(name='rectangular_pixelization')
 def test_rectangular_pixelization():
     return pix.Rectangular(shape=(25, 25))
 
 @pytest.fixture(name='rectangular_mapper')
-def test_rectangular_mapper(rectangular_pixelization, grids):
-    return rectangular_pixelization.mapper_from_grids(grids=grids)
+def test_rectangular_mapper(rectangular_pixelization, grids, borders):
+    return rectangular_pixelization.mapper_from_grids_and_borders(grids=grids, borders=borders)
 
 def test__image_and_rectangular_mapper_is_output(image, rectangular_mapper, mapper_plotter_path):
 

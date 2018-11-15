@@ -86,7 +86,7 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
         Parameters
         ----------
         centre: (float, float)
-            The centre of the profile
+            The origin of the profile
         axis_ratio : float
             Ellipse's minor-to-major axis ratio (b/a)
         phi : float
@@ -176,7 +176,7 @@ class EllipticalCoredPowerLaw(EllipticalMassProfile, MassProfile):
         Parameters
         ----------
         centre: (float, float)
-            The image_grid of the centre of the profiles
+            The image_grid of the origin of the profiles
         axis_ratio : float
             Elliptical mass profile's minor-to-major axis ratio (b/a)
         phi : float
@@ -294,7 +294,7 @@ class SphericalCoredPowerLaw(EllipticalCoredPowerLaw):
         Parameters
         ----------
         centre: (float, float)
-            The image_grid of the centre of the profiles
+            The image_grid of the origin of the profiles
         einstein_radius : float
             Einstein radius of power-law mass profiles
         slope : float
@@ -330,7 +330,7 @@ class EllipticalPowerLaw(EllipticalCoredPowerLaw):
         Parameters
         ----------
         centre: (float, float)
-            The (x,y) coordinates of the centre of the profile.
+            The (x,y) coordinates of the origin of the profile.
         axis_ratio : float
             Elliptical mass profile's minor-to-major axis ratio (b/a)
         phi : float
@@ -372,7 +372,7 @@ class SphericalPowerLaw(EllipticalPowerLaw):
         Parameters
         ----------
         centre: (float, float)
-            The (x,y) coordinates of the centre of the profile.
+            The (x,y) coordinates of the origin of the profile.
         einstein_radius : float
             Einstein radius of power-law mass profiles
         slope : float
@@ -399,7 +399,7 @@ class EllipticalCoredIsothermal(EllipticalCoredPowerLaw):
         Parameters
         ----------
         centre: (float, float)
-            The image_grid of the centre of the profiles
+            The image_grid of the origin of the profiles
         axis_ratio : float
             Elliptical mass profile's minor-to-major axis ratio (b/a)
         phi : float
@@ -424,7 +424,7 @@ class SphericalCoredIsothermal(SphericalCoredPowerLaw):
         Parameters
         ----------
         centre: (float, float)
-            The image_grid of the centre of the profiles
+            The image_grid of the origin of the profiles
         einstein_radius : float
             Einstein radius of power-law mass profiles
         core_radius : float
@@ -444,7 +444,7 @@ class EllipticalIsothermal(EllipticalPowerLaw):
         Parameters
         ----------
         centre: (float, float)
-            The image_grid of the centre of the profiles
+            The image_grid of the origin of the profiles
         axis_ratio : float
             Elliptical mass profile's minor-to-major axis ratio (b/a)
         phi : float
@@ -491,7 +491,7 @@ class SphericalIsothermal(EllipticalIsothermal):
         Parameters
         ----------
         centre: (float, float)
-            The image_grid of the centre of the profiles
+            The image_grid of the origin of the profiles
         einstein_radius : float
             Einstein radius of power-law mass profiles
         """
@@ -535,7 +535,7 @@ class AbstractEllipticalGeneralizedNFW(geometry_profiles.EllipticalProfile, Mass
         Parameters
         ----------
         centre: (float, float)
-            The image_grid of the centre of the profiles
+            The image_grid of the origin of the profiles
         axis_ratio : float
             Ratio of profiles ellipse's minor and major axes (b/a)
         phi : float
@@ -741,7 +741,7 @@ class SphericalGeneralizedNFW(EllipticalGeneralizedNFW):
         Parameters
         ----------
         centre: (float, float)
-            The image_grid of the centre of the profiles
+            The image_grid of the origin of the profiles
         kappa_s : float
             The overall normalization of the dark matter halo
         inner_slope : float
@@ -792,7 +792,7 @@ class EllipticalNFW(AbstractEllipticalGeneralizedNFW):
         Parameters
         ----------
         centre: (float, float)
-            The image_grid of the centre of the profiles
+            The image_grid of the origin of the profiles
         axis_ratio : float
             Ratio of profiles ellipse's minor and major axes (b/a)
         phi : float
@@ -907,7 +907,7 @@ class SphericalNFW(EllipticalNFW):
         Parameters
         ----------
         centre: (float, float)
-            The image_grid of the centre of the profiles
+            The image_grid of the origin of the profiles
         kappa_s : float
             The overall normalization of the dark matter halo
         scale_radius : float
@@ -976,7 +976,7 @@ class AbstractEllipticalSersic(light_profiles.AbstractEllipticalSersic, Elliptic
         Parameters
         ----------
         centre: (float, float)
-            The image_grid of the centre of the profiles
+            The image_grid of the origin of the profiles
         axis_ratio : float
             Ratio of profiles ellipse's minor and major axes (b/a)
         phi : float
@@ -1065,7 +1065,7 @@ class SphericalSersic(EllipticalSersic):
         Parameters
         ----------
         centre: (float, float)
-            The image_grid of the centre of the profiles
+            The image_grid of the origin of the profiles
         intensity : float
             Overall flux intensity normalisation in the light profiles (electrons per second)
         effective_radius : float
@@ -1090,7 +1090,7 @@ class EllipticalExponential(EllipticalSersic):
         Parameters
         ----------
         centre: (float, float)
-            The image_grid of the centre of the profiles
+            The image_grid of the origin of the profiles
         axis_ratio : float
             Ratio of profiles ellipse's minor and major axes (b/a)
         phi : float
@@ -1121,7 +1121,7 @@ class SphericalExponential(EllipticalExponential):
         Parameters
         ----------
         centre: (float, float)
-            The image_grid of the centre of the profiles
+            The image_grid of the origin of the profiles
         intensity : float
             Overall flux intensity normalisation in the light profiles (electrons per second)
         effective_radius : float
@@ -1143,7 +1143,7 @@ class EllipticalDevVaucouleurs(EllipticalSersic):
         Parameters
         ----------
         centre: (float, float)
-            The image_grid of the centre of the profiles
+            The image_grid of the origin of the profiles
         axis_ratio : float
             Ratio of profiles ellipse's minor and major axes (b/a)
         phi : float
@@ -1174,7 +1174,7 @@ class SphericalDevVaucouleurs(EllipticalDevVaucouleurs):
         Parameters
         ----------
         centre: (float, float)
-            The image_grid of the centre of the profiles
+            The image_grid of the origin of the profiles
         intensity : float
             Overall flux intensity normalisation in the light profiles (electrons per second)
         effective_radius : float
@@ -1196,7 +1196,7 @@ class EllipticalSersicRadialGradient(AbstractEllipticalSersic):
         Parameters
         ----------
         centre: (float, float)
-            The centre of the profiles
+            The origin of the profiles
         axis_ratio : float
             Ratio of profiles ellipse's minor and major axes (b/a)
         phi : float
@@ -1288,7 +1288,7 @@ class SphericalSersicRadialGradient(EllipticalSersicRadialGradient):
         Parameters
         ----------
         centre: (float, float)
-            The centre of the profiles
+            The origin of the profiles
         intensity : float
             Overall flux intensity normalisation in the light profiles (electrons per second)
         effective_radius : float
