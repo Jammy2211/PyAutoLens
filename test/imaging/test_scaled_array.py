@@ -36,17 +36,17 @@ class TestArrayGeometry:
             assert data_grid.arc_second_minima == (-1.5, -1.5)
             assert (data_grid == np.ones((3, 3))).all()
 
-        def test__square_pixel_array__input_data_grid_rectangular__centre_is_origin(self):
+        def test__square_pixel_array__input_data_grid_rectangular__change_origin(self):
 
-            data_grid = scaled_array.ScaledSquarePixelArray(array=np.ones((4, 3)), pixel_scale=0.1)
+            data_grid = scaled_array.ScaledSquarePixelArray(array=np.ones((4, 3)), pixel_scale=0.1, origin=(1.0, 1.0))
 
             assert (data_grid == np.ones((4, 3))).all()
             assert data_grid.pixel_scale == 0.1
             assert data_grid.shape == (4, 3)
             assert data_grid.central_pixel_coordinates == (1.5, 1.0)
             assert data_grid.shape_arc_seconds == pytest.approx((0.4, 0.3))
-            assert data_grid.arc_second_maxima == pytest.approx((0.2, 0.15), 1e-4)
-            assert data_grid.arc_second_minima == pytest.approx((-0.2, -0.15), 1e-4)
+            assert data_grid.arc_second_maxima == pytest.approx((1.2, 1.15), 1e-4)
+            assert data_grid.arc_second_minima == pytest.approx((0.8, 0.85), 1e-4)
 
             data_grid = scaled_array.ScaledSquarePixelArray(array=np.ones((3, 4)), pixel_scale=0.1)
 
@@ -57,20 +57,6 @@ class TestArrayGeometry:
             assert data_grid.shape_arc_seconds == pytest.approx((0.3, 0.4))
             assert data_grid.arc_second_maxima == pytest.approx((0.15, 0.2), 1e-4)
             assert data_grid.arc_second_minima == pytest.approx((-0.15, -0.2), 1e-4)
-
-        def test__square_pixel_array__input_data_grid_3x3__centre_is_y1_x2(self):
-
-            data_grid = scaled_array.ScaledSquarePixelArray(array=np.ones((3, 3)), pixel_scale=1.0, origin=(1.0, 2.0))
-
-            assert data_grid.pixel_scale == 1.0
-            assert data_grid.shape == (3, 3)
-            assert data_grid.central_pixel_coordinates == (1.0, 1.0)
-            assert data_grid.shape_arc_seconds == pytest.approx((3.0, 3.0))
-            assert (data_grid == np.ones((3, 3))).all()
-
-            assert data_grid.origin == (1.0, 2.0)
-            assert data_grid.arc_second_maxima == (1.5, 1.5)
-            assert data_grid.arc_second_minima == (-1.5, -1.5)
 
         def test__rectangular_pixel_grid__input_data_grid_3x3(self):
 
@@ -118,8 +104,8 @@ class TestArrayGeometry:
             assert data_grid.shape_arc_seconds == pytest.approx((6.0, 3.0))
 
             assert data_grid.origin == (-1.0, -2.0)
-            assert data_grid.arc_second_maxima == pytest.approx((3.0, 1.5), 1e-4)
-            assert data_grid.arc_second_minima == pytest.approx((-3.0, -1.5), 1e-4)
+            assert data_grid.arc_second_maxima == pytest.approx((2.0, -0.5), 1e-4)
+            assert data_grid.arc_second_minima == pytest.approx((-4.0, -3.5), 1e-4)
 
 
     class TestCentralPixel:
