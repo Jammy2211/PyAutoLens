@@ -218,7 +218,7 @@ class LimitConfig(AncestorConfig):
             if a nonlinear search produces a value outside of that range.
         """
         arr = super(LimitConfig, self).get(module_name, class_name, attribute_name).replace(" ", "").split(",")
-        return tuple(arr[:2])
+        return tuple(map(float, arr[:2]))
 
 
 class WidthConfig(AncestorConfig):
