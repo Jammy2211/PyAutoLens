@@ -1,6 +1,8 @@
-from autolens import exc
 import matplotlib.pyplot as plt
 from astropy.io import fits
+
+from autolens import exc
+
 
 def get_subplot_rows_columns_figsize(number_subplots):
     if number_subplots <= 2:
@@ -20,16 +22,17 @@ def get_subplot_rows_columns_figsize(number_subplots):
     else:
         return 6, 6, (25, 20)
 
-def setup_figure(figsize, as_subplot):
 
+def setup_figure(figsize, as_subplot):
     if not as_subplot:
         plt.figure(figsize=figsize)
+
 
 def set_title(title, titlesize):
     plt.title(title, fontsize=titlesize)
 
-def output_figure(array, as_subplot, output_path, output_filename, output_format):
 
+def output_figure(array, as_subplot, output_path, output_filename, output_format):
     if not as_subplot:
 
         if output_format is 'show':
@@ -41,8 +44,8 @@ def output_figure(array, as_subplot, output_path, output_filename, output_format
             hdu.data = array
             hdu.writeto(output_path + output_filename + '.fits')
 
-def output_subplot_array(output_path, output_filename, output_format):
 
+def output_subplot_array(output_path, output_filename, output_format):
     if output_format is 'show':
         plt.show()
     elif output_format is 'png':
@@ -52,6 +55,5 @@ def output_subplot_array(output_path, output_filename, output_format):
 
 
 def close_figure(as_subplot):
-
     if not as_subplot:
         plt.close()
