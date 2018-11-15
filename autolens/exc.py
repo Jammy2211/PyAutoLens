@@ -40,3 +40,7 @@ class FittingException(Exception):
 
 class PlottingException(Exception):
     pass
+
+
+class PriorLimitException(PriorException):
+    pass
