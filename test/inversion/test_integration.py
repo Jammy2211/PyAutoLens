@@ -274,7 +274,7 @@ class TestMapperAndRegularizationFromPixelization:
 
             pixel_centers = pixelization_grid
 
-            pix = pixelizations.Cluster(pixels=5)
+            pix = pixelizations.Cluster(image_grid_shape=(5,1))
 
             mapper = pix.mapper_from_grids_and_borders(grids=grids, borders=borders,
                                                            pixel_centers=pixel_centers,
@@ -321,7 +321,7 @@ class TestMapperAndRegularizationFromPixelization:
             pixel_centers = np.array([[1.0, 1.0], [-1.0, 1.0], [0.0, 0.0], [1.0, -1.0], [-1.0, -1.0]])
             image_to_voronoi = np.array([0, 0, 0, 1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4])
 
-            pix = pixelizations.Cluster(pixels=5)
+            pix = pixelizations.Cluster(image_grid_shape=(5,1))
 
             mapper = pix.mapper_from_grids_and_borders(grids=grids, borders=borders,
                                                            pixel_centers=pixel_centers,
@@ -375,7 +375,7 @@ class TestMapperAndRegularizationFromPixelization:
             pixel_centers = pixelization_grid
             image_to_voronoi = np.array([0, 1, 2, 3, 4])
 
-            pix = pixelizations.Cluster(pixels=5)
+            pix = pixelizations.Cluster(image_grid_shape=(5,1))
 
             mapper = pix.mapper_from_grids_and_borders(grids=grids, borders=borders,
                                                            pixel_centers=pixel_centers,
@@ -420,7 +420,7 @@ class TestMapperAndRegularizationFromPixelization:
             pixel_centers = pixelization_grid
             image_to_voronoi = np.array([0, 1, 2, 3, 4])
 
-            pix = pixelizations.Cluster(pixels=5)
+            pix = pixelizations.Cluster(image_grid_shape=(5,1))
 
             mapper = pix.mapper_from_grids_and_borders(grids=grids, borders=borders,
                                                            pixel_centers=pixel_centers,
