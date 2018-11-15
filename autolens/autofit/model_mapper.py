@@ -1244,7 +1244,7 @@ def is_tuple_like_attribute_name(attribute_name):
 
 def tuple_name(attribute_name):
     """
-    Extract the name of a tuple attribute from the name of one of its components, e.g. centre_0 -> centre
+    Extract the name of a tuple attribute from the name of one of its components, e.g. centre_0 -> origin
 
     Parameters
     ----------

@@ -141,8 +141,8 @@ def test__deflection_angles():
 # def test__move_source_galaxy_around_source_plane__peak_follows_source_direction():
 #
 #     image_grid = masks.ImageGrid.from_shape_and_pixel_scale(shape=(5, 5), pixel_scales=1.0)
-#     sis = mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=1.0)
-#     sersic = lp.SphericalSersic(centre=(1.0, 0.0))
+#     sis = mp.SphericalIsothermal(origin=(0.0, 0.0), einstein_radius=1.0)
+#     sersic = lp.SphericalSersic(origin=(1.0, 0.0))
 #
 #     deflections = sis.deflections_from_grid(grid=image_grid)
 #     source_grid = np.subtract(image_grid, deflections)

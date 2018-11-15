@@ -85,7 +85,7 @@ source_plane = plane.Plane(galaxies=[source_galaxy], grids=source_plane_grids)
 plane_plotters.plot_plane_grid(plane=image_plane, title='Image-plane Grid')
 plane_plotters.plot_plane_grid(plane=source_plane, title='Source-plane Grid')
 
-# We can zoom in on the 'centre' of the source-plane using the axis limits, which are defined as [xmin, xmax, ymin,
+# We can zoom in on the 'origin' of the source-plane using the axis limits, which are defined as [xmin, xmax, ymin,
 # ymax] (remembering the lens model_galaxy was centred at (0.1, 0.1)
 plane_plotters.plot_plane_grid(plane=source_plane, axis_limits=[-0.1, 0.1, -0.1, 0.1], title='Source-plane Grid')
 

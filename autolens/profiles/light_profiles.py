@@ -14,7 +14,7 @@ class LightProfile(object):
         Parameters
         ----------
         grid_radii : float
-            The radial distance from the centre of the profiles for each coordinate on the grid.
+            The radial distance from the origin of the profiles for each coordinate on the grid.
         """
         raise NotImplementedError("intensity_at_radius should be overridden")
 
@@ -51,7 +51,7 @@ class EllipticalLP(geometry_profiles.EllipticalProfile, LightProfile):
         Parameters
         ----------
         centre: (float, float)
-            The (y,x) coordinates of the centre of the profiles
+            The (y,x) coordinates of the origin of the profiles
         axis_ratio : float
             Ratio of light profiles ellipse's minor and major axes (b/a)
         phi : float
@@ -62,7 +62,7 @@ class EllipticalLP(geometry_profiles.EllipticalProfile, LightProfile):
     def luminosity_within_circle(self, radius):
         """
         Compute the light profiles's total luminosity within a circle of specified radius. This is performed via \
-        numerical integration and is centred on the light profile's centre.
+        numerical integration and is centred on the light profile's origin.
 
         Parameters
         ----------
@@ -99,7 +99,7 @@ class EllipticalGaussian(EllipticalLP):
         Parameters
         ----------
         centre: (float, float)
-            The (y,x) centre of the light profile.
+            The (y,x) origin of the light profile.
         axis_ratio : float
             Ratio of light profiles ellipse's minor and major axes (b/a).
         phi : float
@@ -120,7 +120,7 @@ class EllipticalGaussian(EllipticalLP):
         Parameters
         ----------
         grid_radii : float
-            The radial distance from the centre of the profiles for each coordinate on the grid.
+            The radial distance from the origin of the profiles for each coordinate on the grid.
         """
         return np.multiply(np.divide(self.intensity, self.sigma * np.sqrt(2.0 * np.pi)),
                            np.exp(-0.5 * np.square(np.divide(grid_radii, self.sigma))))
@@ -148,7 +148,7 @@ class SphericalGaussian(EllipticalGaussian):
         Parameters
         ----------
         centre: (float, float)
-            The (y,x) centre of the light profile.
+            The (y,x) origin of the light profile.
         intensity : float
             Overall intensity normalisation of the light profiles (electrons per second).
         sigma : float
@@ -167,7 +167,7 @@ class AbstractEllipticalSersic(geometry_profiles.EllipticalProfile):
         Parameters
         ----------
         centre: (float, float)
-            The (y,x) coordinates of the centre of the profiles
+            The (y,x) coordinates of the origin of the profiles
         axis_ratio : float
             Ratio of light profiles ellipse's minor and major axes (b/a)
         phi : float
@@ -209,7 +209,7 @@ class AbstractEllipticalSersic(geometry_profiles.EllipticalProfile):
         Parameters
         ----------
         radius : float
-            The distance from the centre of the profiles
+            The distance from the origin of the profiles
         """
         return self.intensity * np.exp(
             -self.sersic_constant * (((radius / self.effective_radius) ** (1. / self.sersic_index)) - 1))
@@ -224,7 +224,7 @@ class EllipticalSersic(AbstractEllipticalSersic, EllipticalLP):
         Parameters
         ----------
         centre: (float, float)
-            The (y,x) centre of the light profile.
+            The (y,x) origin of the light profile.
         axis_ratio : float
             Ratio of light profiles ellipse's minor and major axes (b/a).
         phi : float
@@ -246,7 +246,7 @@ class EllipticalSersic(AbstractEllipticalSersic, EllipticalLP):
         Parameters
         ----------
         grid_radii : float
-            The radial distance from the centre of the profiles for each coordinate on the grid.
+            The radial distance from the origin of the profiles for each coordinate on the grid.
         """
         np.seterr(all='ignore')
         return np.multiply(self.intensity, np.exp(
@@ -276,7 +276,7 @@ class SphericalSersic(EllipticalSersic):
         Parameters
         ----------
         centre: (float, float)
-            The (y,x) centre of the light profile.
+            The (y,x) origin of the light profile.
         intensity : float
             Overall intensity normalisation of the light profiles (electrons per second).
         effective_radius : float
@@ -297,7 +297,7 @@ class EllipticalExponential(EllipticalSersic):
         Parameters
         ----------
         centre: (float, float)
-            The (y,x) centre of the light profile.
+            The (y,x) origin of the light profile.
         axis_ratio : float
             Ratio of light profiles ellipse's minor and major axes (b/a).
         phi : float
@@ -320,7 +320,7 @@ class SphericalExponential(EllipticalExponential):
         Parameters
         ----------
         centre: (float, float)
-            The (y,x) centre of the light profile.
+            The (y,x) origin of the light profile.
         intensity : float
             Overall intensity normalisation of the light profiles (electrons per second).
         effective_radius : float
@@ -339,7 +339,7 @@ class EllipticalDevVaucouleurs(EllipticalSersic):
         Parameters
         ----------
         centre: (float, float)
-            The (y,x) centre of the light profile.
+            The (y,x) origin of the light profile.
         axis_ratio : float
             Ratio of light profiles ellipse's minor and major axes (b/a).
         phi : float
@@ -362,7 +362,7 @@ class SphericalDevVaucouleurs(EllipticalDevVaucouleurs):
         Parameters
         ----------
         centre: (float, float)
-            The (y,x) centre of the light profile.
+            The (y,x) origin of the light profile.
         intensity : float
             Overall intensity normalisation of the light profiles (electrons per second).
         effective_radius : float
@@ -380,7 +380,7 @@ class EllipticalCoreSersic(EllipticalSersic):
         Parameters
         ----------
         centre: (float, float)
-            The (y,x) centre of the light profile.
+            The (y,x) origin of the light profile.
         axis_ratio : float
             Ratio of light profiles ellipse's minor and major axes (b/a).
         phi : float
@@ -421,7 +421,7 @@ class EllipticalCoreSersic(EllipticalSersic):
         Parameters
         ----------
         grid_radii : float
-            The radial distance from the centre of the profiles for each coordinate on the grid.
+            The radial distance from the origin of the profiles for each coordinate on the grid.
         """
         return np.multiply(np.multiply(self.intensity_prime, np.power(
             np.add(1, np.power(np.divide(self.radius_break, grid_radii), self.alpha)), (self.gamma / self.alpha))),
@@ -441,7 +441,7 @@ class SphericalCoreSersic(EllipticalCoreSersic):
         Parameters
         ----------
         centre: (float, float)
-            The (y,x) centre of the light profile.
+            The (y,x) origin of the light profile.
         intensity : float
             Overall intensity normalisation of the light profiles (electrons per second).
         effective_radius : float

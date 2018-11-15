@@ -7,7 +7,7 @@ from autolens.plotting import tools
 
 def plot_grid(grid, axis_limits=None, points=None, as_subplot=False,
               units='arcsec', kpc_per_arcsec=None,
-              figsize=(12, 8), pointsize=5, xyticksize=16,
+              figsize=(12, 8), pointsize=5, pointcolor='k', xyticksize=16,
               title='Grid', titlesize=16, xlabelsize=16, ylabelsize=16,
               output_path=None, output_format='show', output_filename='grid'):
 
@@ -19,7 +19,7 @@ def plot_grid(grid, axis_limits=None, points=None, as_subplot=False,
                                       xyticksize)
 
     set_axis_limits(axis_limits)
-    plot_points(grid, points)
+    plot_points(grid, points, pointcolor)
 
     plt.tick_params(labelsize=xyticksize)
     tools.output_figure(None, as_subplot, output_path, output_filename, output_format)
@@ -55,10 +55,19 @@ def set_axis_limits(axis_limits):
     if axis_limits is not None:
         plt.axis(axis_limits)
 
-def plot_points(grid, points):
+def plot_points(grid, points, pointcolor):
 
     if points is not None:
-        point_colors = itertools.cycle(["y", "r", "k", "g", "m"])
-        for point_set in points:
-            plt.scatter(y=np.asarray(grid[point_set, 0]),
-                        x=np.asarray(grid[point_set, 1]), s=8, color=next(point_colors))
+
+        if pointcolor is None:
+
+            point_colors = itertools.cycle(["y", "r", "k", "g", "m"])
+            for point_set in points:
+                plt.scatter(y=np.asarray(grid[point_set, 0]),
+                            x=np.asarray(grid[point_set, 1]), s=8, color=next(point_colors))
+
+        else:
+
+            for point_set in points:
+                plt.scatter(y=np.asarray(grid[point_set, 0]),
+                            x=np.asarray(grid[point_set, 1]), s=8, color=pointcolor)
