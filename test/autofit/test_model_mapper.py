@@ -28,6 +28,13 @@ def make_test_config():
                                              "test_files/configs/model_mapper/priors/default"))
 
 
+@pytest.fixture(name='limit_config')
+def make_limit_config():
+    return conf.LimitConfig(
+        config_folder_path="{}/../{}".format(os.path.dirname(os.path.realpath(__file__)),
+                                             "test_files/configs/model_mapper/priors/limit"))
+
+
 @pytest.fixture(name="width_config")
 def make_width_config():
     return conf.WidthConfig(
@@ -38,6 +45,12 @@ def make_width_config():
 @pytest.fixture(name="initial_model")
 def make_initial_model(test_config):
     return model_mapper.PriorModel(MockClassMM, test_config)
+
+
+class MockClassGaussian(object):
+    def __init__(self, one, two):
+        self.one = one
+        self.two = two
 
 
 class TestPriorLimits(object):
@@ -73,6 +86,18 @@ class TestPriorLimits(object):
         prior.assert_within_limits(0.)
         prior.assert_within_limits(0.5)
         prior.assert_within_limits(1.)
+
+    def test_prior_creation(self, test_config, limit_config):
+        mm = model_mapper.ModelMapper(test_config, limit_config=limit_config)
+        mm.mock_class_gaussian = MockClassGaussian
+
+        prior_tuples = mm.prior_tuples_ordered_by_id
+
+        assert prior_tuples[0].prior.lower_limit == 0
+        assert prior_tuples[0].prior.upper_limit == 1
+
+        assert prior_tuples[1].prior.lower_limit == 0
+        assert prior_tuples[1].prior.upper_limit == 2
 
 
 class TestPriorLinking(object):
