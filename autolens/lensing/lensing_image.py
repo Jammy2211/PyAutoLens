@@ -45,9 +45,10 @@ class LensingImage(fitting_data.FittingImage):
             mapping_matrix_psf_shape = self.image.psf.shape
 
         self.convolver_mapping_matrix = inversion_convolution.ConvolverMappingMatrix(self.mask,
-                                                                                     self.image.psf.resized_scaled_array_from_array(mapping_matrix_psf_shape))
+                      self.image.psf.resized_scaled_array_from_array(mapping_matrix_psf_shape))
 
         self.positions = positions
+
 
     def __array_finalize__(self, obj):
         super(LensingImage, self).__array_finalize__(obj)

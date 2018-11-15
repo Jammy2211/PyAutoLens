@@ -98,7 +98,7 @@ mapper = rectangular.mapper_from_grids(grids=tracer.source_plane.grids[0])
 mapper_plotters.plot_image_and_mapper(image=image, mask=mask, mapper=mapper)
 
 # Woah! Look how much closer we are to the source-plane (The axis sizes have decreased from ~ -2.5" -> 2.5" to
-# ~ -0.6" to 0.6"). We can now really see the diamond of points in the centre of the source-plane (for those who have
+# ~ -0.6" to 0.6"). We can now really see the diamond of points in the origin of the source-plane (for those who have
 # been reading up, this diamond is called the 'caustic'). This diamond defines when lensing moves from the quadruply
 # imaged regime to doubly-imaged regime, and we can actually show this now using our mapper now.
 mapper_plotters.plot_image_and_mapper(image=image, mask=mask, mapper=mapper, source_pixels=[[312], [314], [316], [318]])
@@ -108,7 +108,7 @@ mapper_plotters.plot_image_and_mapper(image=image, mask=mask, mapper=mapper, sou
 
 # 1) Change the einstein radius of the lens model_galaxy in small increments (e.g. einstein radius 1.6" -> 1.55").
 #    As the radius deviates from 1.6" (the input value of the simulated lens), what do you notice about where the
-#    points map from the centre of the source-plane (where the source-model_galaxy is simulated, e.g. (0.0", 0.0"))?
+#    points map from the origin of the source-plane (where the source-model_galaxy is simulated, e.g. (0.0", 0.0"))?
 
 # 2) Incrementally increase the axis ratio of the lens's mass profile to 1.0. What happens to quadruple imaging?
 

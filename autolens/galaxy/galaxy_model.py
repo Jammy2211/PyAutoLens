@@ -76,7 +76,7 @@ class GalaxyModel(model_mapper.AbstractPriorModel):
             The *MassProfile* classes for which model mass profile instances are generated for this galaxy model.
         align_centres : bool
             If *True*, the same prior will be used for all the profiles centres, such that all light and / or mass \
-            profiles always share the same centre.
+            profiles always share the same origin.
         align_axis_ratios : bool
             If *True*, the same prior will be used for all the profiles axis-ratio, such that all light and / or mass \
             profiles always share the same axis-ratio.

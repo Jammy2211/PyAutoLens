@@ -53,8 +53,8 @@ class TestGalaxyData(object):
 
     def test__padded_grids(self, galaxy_data):
 
-        padded_image_util = imaging_util.image_grid_1d_masked_from_mask_and_pixel_scales(mask=np.full((4, 4), False),
-                          pixel_scales=galaxy_data.array.pixel_scales)
+        padded_image_util = imaging_util.image_grid_1d_masked_from_mask_pixel_scales_and_origin(mask=np.full((4, 4), False),
+                                                                                                pixel_scales=galaxy_data.array.pixel_scales)
 
         assert (galaxy_data.padded_grids.image == padded_image_util).all()
         assert galaxy_data.padded_grids.image.image_shape == (4, 4)

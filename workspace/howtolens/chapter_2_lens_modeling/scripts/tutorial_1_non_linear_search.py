@@ -16,7 +16,7 @@ import os
 # So, what do I mean by a 'lens model'? The lens model is the combination of light profiles and mass profiles we use to
 # represent lens model_galaxy, source model_galaxy and therefore create a tracer_without_subhalo. Thus, to begin, we have to choose the
 # parametrization of our lens model. We don't need to specify the values of its light and mass profiles (e.g. the
-# centre, einstein_radius, etc.) - only the profiles are. In this example, we'll use the following lens model:
+# origin, einstein_radius, etc.) - only the profiles are. In this example, we'll use the following lens model:
 
 # 1) A spherical Isothermal Sphere (SIS) for the lens model_galaxy's mass.
 # 2) A spherical exponential light profile for the source model_galaxy's light.

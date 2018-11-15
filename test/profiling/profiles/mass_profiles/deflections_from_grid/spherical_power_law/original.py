@@ -14,7 +14,7 @@ class SphericalPowerLaw(geometry_profiles.SphericalProfile):
         Parameters
         ----------
         centre: (float, float)
-            The (x,y) coordinates of the centre of the profile.
+            The (x,y) coordinates of the origin of the profile.
         einstein_radius : float
             Einstein radius of power-law mass profiles
         slope : float

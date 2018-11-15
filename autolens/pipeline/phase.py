@@ -555,11 +555,14 @@ class PhaseImaging(Phase):
             padded_tracer = self.padded_tracer_for_instance(instance)
             fit = self.fit_for_tracers(tracer=tracer, padded_tracer=padded_tracer)
 
-            imaging_plotters.plot_image_subplot(image=self.lensing_image.image, output_path=self.output_image_path,
+            imaging_plotters.plot_image_subplot(image=self.lensing_image.image, mask=self.lensing_image.mask,
+                                                positions=self.lensing_image.positions,
+                                                output_path=self.output_image_path,
                                                 output_format='png', ignore_config=False)
 
-            imaging_plotters.plot_image_individual(image=self.lensing_image.image, output_path=self.output_image_path,
-                                                   output_format='png')
+            imaging_plotters.plot_image_individual(image=self.lensing_image.image, mask=self.lensing_image.mask,
+                                                   positions=self.lensing_image.positions,
+                                                   output_path=self.output_image_path, output_format='png')
 
             lensing_fitting_plotters.plot_fitting_subplot(fit=fit, output_path=self.output_image_path,
                                                           output_format='png',
@@ -1406,10 +1409,13 @@ class SensitivityPhase(PhaseImaging):
             tracer_sensitive = self.tracer_sensitive_for_instance(instance)
             fit = self.fit_for_tracers(tracer_normal=tracer_normal, tracer_sensitive=tracer_sensitive)
 
-            imaging_plotters.plot_image_subplot(image=self.sensitivity_image.image, output_path=self.output_image_path,
-                                                output_format='png', ignore_config=False)
+            imaging_plotters.plot_image_subplot(image=self.sensitivity_image.image, mask=self.lensing_image.mask,
+                                                positions=self.lensing_image.positions,
+                                                output_path=self.output_image_path, output_format='png',
+                                                ignore_config=False)
 
-            imaging_plotters.plot_image_individual(image=self.sensitivity_image.image,
+            imaging_plotters.plot_image_individual(image=self.sensitivity_image.image, mask=self.lensing_image.mask,
+                                                   positions=self.lensing_image.positions,
                                                    output_path=self.output_image_path,
                                                    output_format='png')
 

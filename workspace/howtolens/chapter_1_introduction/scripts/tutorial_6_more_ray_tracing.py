@@ -94,7 +94,7 @@ tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy, lens_sa
 # As we did previous, we can inspect each grid.
 plane_plotters.plot_plane_grid(plane=tracer.image_plane, title='Image-plane Grid')
 plane_plotters.plot_plane_grid(plane=tracer.source_plane, title='Source-plane Grid')
-# We can zoom in on the 'centre' of the source-plane (thistime, the lens model_galaxy was centred at (0.0, 0.0)
+# We can zoom in on the 'origin' of the source-plane (thistime, the lens model_galaxy was centred at (0.0, 0.0)
 plane_plotters.plot_plane_grid(plane=tracer.source_plane, axis_limits=[-0.2, 0.2, -0.2, 0.2], title='Source-plane Grid')
 
 # Lets plot the lensing quantities again. Note that, because we supplied our galaxies with redshifts and our tracer_without_subhalo
