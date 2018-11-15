@@ -97,7 +97,7 @@ class ModelMapper(AbstractModel):
         @DynamicAttrs
     """
 
-    def __init__(self, config=None, width_config=None, **classes):
+    def __init__(self, config=None, width_config=None, limit_config=None, **classes):
         """
         Parameters
         ----------
@@ -158,6 +158,7 @@ class ModelMapper(AbstractModel):
 
         self.config = (config or conf.instance.prior_default)
         self.width_config = (width_config or conf.instance.prior_width)
+        self.limit_config = (limit_config or conf.instance.limit_config)
 
         for name, cls in classes.items():
             self.__setattr__(name, cls)
@@ -166,7 +167,7 @@ class ModelMapper(AbstractModel):
         if isinstance(value, list) and len(value) > 0 and isinstance(value[0], AbstractPriorModel):
             value = ListPriorModel(value)
         elif inspect.isclass(value):
-            value = PriorModel(value, config=self.config)
+            value = PriorModel(value, config=self.config, limit_config=self.limit_config)
         super(ModelMapper, self).__setattr__(key, value)
 
     @property
@@ -888,7 +889,7 @@ class PriorModel(AbstractPriorModel):
     def flat_prior_model_tuples(self):
         return [("", self)]
 
-    def __init__(self, cls, config=None):
+    def __init__(self, cls, config=None, limit_config=None):
         """
         Parameters
         ----------
@@ -899,6 +900,7 @@ class PriorModel(AbstractPriorModel):
         self.cls = cls
         self.config = (config or conf.instance.prior_default)
         self.width_config = conf.instance.prior_width
+        self.limit_config = (limit_config or conf.instance.limit_config)
 
         self.component_number = next(self._ids)
 
@@ -959,7 +961,8 @@ class PriorModel(AbstractPriorModel):
         if config_arr[0] == "u":
             return UniformPrior(config_arr[1], config_arr[2])
         elif config_arr[0] == "g":
-            return GaussianPrior(config_arr[1], config_arr[2])
+            limits = self.limit_config.get_for_nearest_ancestor(cls, attribute_name)
+            return GaussianPrior(config_arr[1], config_arr[2], *limits)
         elif config_arr[0] == "c":
             return Constant(config_arr[1])
         raise exc.PriorException(
