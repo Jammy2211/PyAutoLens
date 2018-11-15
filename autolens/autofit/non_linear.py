@@ -181,6 +181,31 @@ class NonLinearOptimizer(object):
                 paramnames.write(line + '\n')
 
 
+class AbstractFitness(object):
+    def __init__(self, analysis, instance_from_physical_vector, constant):
+        self.result = None
+        self.instance_from_physical_vector = instance_from_physical_vector
+        self.constant = constant
+        self.max_likelihood = -np.inf
+        self.analysis = analysis
+
+    def fit_instance(self, instance):
+        instance += self.constant
+
+        try:
+            likelihood = self.analysis.fit(instance)
+        except exc.InversionException or exc.RayTracingException or exc.PriorLimitException:
+            likelihood = -np.inf
+
+        if likelihood > self.max_likelihood:
+            self.max_likelihood = likelihood
+            self.result = Result(instance, likelihood)
+
+        self.analysis.try_visualise(self.result.constant)
+
+        return likelihood
+
+
 class DownhillSimplex(NonLinearOptimizer):
 
     def __init__(self, include_hyper_image=False, model_mapper=None,
@@ -204,31 +229,12 @@ class DownhillSimplex(NonLinearOptimizer):
     def fit(self, analysis):
         initial_vector = self.variable.physical_values_from_prior_medians
 
-        class Fitness(object):
+        class Fitness(AbstractFitness):
             def __init__(self, instance_from_physical_vector, constant):
-                self.result = None
-                self.instance_from_physical_vector = instance_from_physical_vector
-                self.constant = constant
-                self.max_likelihood = -np.inf
+                super().__init__(analysis, instance_from_physical_vector, constant)
 
             def __call__(self, vector):
-                instance = self.instance_from_physical_vector(vector)
-
-                instance += self.constant
-
-                try:
-                    likelihood = analysis.fit(instance)
-                except exc.InversionException or exc.RayTracingException or exc.PriorLimitException:
-                    likelihood = -np.inf
-
-                if likelihood > self.max_likelihood:
-                    self.max_likelihood = likelihood
-                    self.result = Result(instance, likelihood)
-
-                analysis.try_visualise(self.result.constant)
-
-                # Return Chi squared
-                return -2 * likelihood
+                return -2 * super().fit_instance(self.instance_from_physical_vector(vector))
 
         fitness_function = Fitness(self.variable.instance_from_physical_vector, self.constant)
 
@@ -298,13 +304,10 @@ class MultiNest(NonLinearOptimizer):
     def fit(self, analysis):
         self.save_model_info()
 
-        class Fitness(object):
+        class Fitness(AbstractFitness):
 
             def __init__(self, instance_from_physical_vector, constant, output_results):
-                self.result = None
-                self.instance_from_physical_vector = instance_from_physical_vector
-                self.constant = constant
-                self.max_likelihood = -np.inf
+                super().__init__(analysis, instance_from_physical_vector, constant)
                 self.output_results = output_results
                 self.accepted_samples = 0
                 self.number_of_accepted_samples_between_output = conf.instance.general.get(
@@ -313,16 +316,8 @@ class MultiNest(NonLinearOptimizer):
                     int)
 
             def __call__(self, cube, ndim, nparams, lnew):
-
                 instance = self.instance_from_physical_vector(cube)
-                instance += self.constant
-
-                try:
-                    likelihood = analysis.fit(instance)
-                except exc.InversionException or exc.RayTracingException:
-                    likelihood = -np.inf
-
-                # TODO: Use multinest to provide best model
+                likelihood = self.fit_instance(instance)
 
                 if likelihood > self.max_likelihood:
 
@@ -331,11 +326,6 @@ class MultiNest(NonLinearOptimizer):
                     if self.accepted_samples == self.number_of_accepted_samples_between_output:
                         self.accepted_samples = 0
                         self.output_results(during_analysis=True)
-
-                    self.max_likelihood = likelihood
-                    self.result = Result(instance, likelihood)
-
-                analysis.try_visualise(self.result.constant)
 
                 return likelihood
 
