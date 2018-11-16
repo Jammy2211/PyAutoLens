@@ -5,7 +5,7 @@ import numpy as np
 import pytest
 
 from autolens.imaging import image as im
-from autolens.imaging import imaging_util
+from autolens.imaging.util import array_util
 from autolens.imaging import mask as msk
 from autolens.lensing import lensing_fitting
 from autolens.galaxy import galaxy as g
@@ -45,9 +45,9 @@ def test__simulate_lensed_source_and_fit__no_psf_blurring__chi_squared_is_0__noi
     if os.path.exists(path) == False:
         os.makedirs(path)
 
-    imaging_util.numpy_array_to_fits(array=image_simulated, path=path + '/data.fits')
-    imaging_util.numpy_array_to_fits(array=image_simulated.noise_map, path=path + '/noise_map_.fits')
-    imaging_util.numpy_array_to_fits(array=psf, path=path + '/psf.fits')
+    array_util.numpy_array_to_fits(array=image_simulated, path=path + '/data.fits')
+    array_util.numpy_array_to_fits(array=image_simulated.noise_map, path=path + '/noise_map_.fits')
+    array_util.numpy_array_to_fits(array=psf, path=path + '/psf.fits')
 
     image = im.load_imaging_from_fits(image_path=path + '/data.fits',
                                       noise_map_path=path + '/noise_map_.fits',
@@ -93,9 +93,9 @@ def test__simulate_lensed_source_and_fit__include_psf_blurring__chi_squared_is_0
     if os.path.exists(path) == False:
         os.makedirs(path)
 
-    imaging_util.numpy_array_to_fits(array=image_simulated, path=path + '/data.fits')
-    imaging_util.numpy_array_to_fits(array=image_simulated.noise_map, path=path + '/noise_map_.fits')
-    imaging_util.numpy_array_to_fits(array=psf, path=path + '/psf.fits')
+    array_util.numpy_array_to_fits(array=image_simulated, path=path + '/data.fits')
+    array_util.numpy_array_to_fits(array=image_simulated.noise_map, path=path + '/noise_map_.fits')
+    array_util.numpy_array_to_fits(array=psf, path=path + '/psf.fits')
 
     image = im.load_imaging_from_fits(image_path=path + '/data.fits',
                                       noise_map_path=path + '/noise_map_.fits',

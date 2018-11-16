@@ -4,7 +4,7 @@ import numpy as np
 from astropy import constants
 
 from autolens import exc
-from autolens.imaging import imaging_util
+from autolens.imaging.util import grid_util, mapping_util
 from autolens.imaging import mask as msk
 from autolens.imaging import scaled_array
 
@@ -439,14 +439,14 @@ def plane_image_from_grid_and_galaxies(shape, grid, galaxies):
     pixel_scales = (float((y_max - y_min) / shape[0]), float((x_max - x_min) / shape[1]))
     origin = ((y_max + y_min) / 2.0, (x_max + x_min) / 2.0)
 
-    uniform_grid = imaging_util.image_grid_1d_masked_from_mask_pixel_scales_and_origin(mask=np.full(shape=shape,
-                                                                                                    fill_value=False),
-                                                                                       pixel_scales=pixel_scales,
-                                                                                       origin=origin)
+    uniform_grid = grid_util.image_grid_1d_masked_from_mask_pixel_scales_and_origin(mask=np.full(shape=shape,
+                                                                                                 fill_value=False),
+                                                                                    pixel_scales=pixel_scales,
+                                                                                    origin=origin)
 
     image_1d = sum([intensities_from_grid(uniform_grid, [galaxy]) for galaxy in galaxies])
 
-    image_2d = imaging_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(array_1d=image_1d, shape=shape)
+    image_2d = mapping_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(array_1d=image_1d, shape=shape)
 
     return PlaneImage(array=image_2d, pixel_scales=pixel_scales, grid=grid, origin=origin)
 

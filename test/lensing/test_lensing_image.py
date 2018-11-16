@@ -3,7 +3,7 @@ import pytest
 
 from autolens.imaging import convolution
 from autolens.imaging import image as im
-from autolens.imaging import imaging_util
+from autolens.imaging.util import grid_util
 from autolens.imaging import mask as msk
 from autolens.lensing import lensing_image as li
 from autolens.inversion import convolution as inversion_convolution
@@ -67,14 +67,14 @@ class TestLensingImage(object):
 
     def test_padded_grids(self, lensing_image):
 
-        padded_image_util = imaging_util.image_grid_1d_masked_from_mask_pixel_scales_and_origin(mask=np.full((6, 6), False),
-                                                                                                pixel_scales=lensing_image.image.pixel_scales)
+        padded_image_util = grid_util.image_grid_1d_masked_from_mask_pixel_scales_and_origin(mask=np.full((6, 6), False),
+                                                                                             pixel_scales=lensing_image.image.pixel_scales)
 
         assert (lensing_image.padded_grids.image == padded_image_util).all()
         assert lensing_image.padded_grids.image.image_shape == (4, 4)
         assert lensing_image.padded_grids.image.padded_shape == (6, 6)
 
-        padded_sub_util = imaging_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(
+        padded_sub_util = grid_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(
             mask=np.full((6, 6), False), pixel_scales=lensing_image.image.pixel_scales,
             sub_grid_size=lensing_image.grids.sub.sub_grid_size)
 

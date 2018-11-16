@@ -1,7 +1,7 @@
 import numba
 import numpy as np
 
-from autolens.imaging import imaging_util
+from autolens.imaging.util import mapping_util
 from autolens.imaging import scaled_array
 
 class Mapper(object):
@@ -174,8 +174,8 @@ class RectangularMapper(Mapper):
         return self.geometry.grid_arc_seconds_to_grid_pixel_indexes(grid_arc_seconds=self.grids.sub)
 
     def reconstructed_pixelization_from_solution_vector(self, solution_vector):
-        recon = imaging_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(array_1d=solution_vector,
-                                                                               shape=self.shape)
+        recon = mapping_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(array_1d=solution_vector,
+                                                                                    shape=self.shape)
         return scaled_array.ScaledRectangularPixelArray(array=recon, pixel_scales=self.geometry.pixel_scales,
                                                         origin=self.geometry.origin)
 
