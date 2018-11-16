@@ -986,7 +986,7 @@ class LensMassAndSourceProfileHyperOnlyPhase(LensSourcePlaneHyperPhase, HyperOnl
 class GalaxyFitPhase(AbstractPhase):
     galaxy = PhasePropertyCollection("galaxy")
 
-    def __init__(self, galaxy=None, optimizer_class=non_linear.MultiNest, sub_grid_size=1,
+    def __init__(self, galaxy_data_class, galaxy=None, optimizer_class=non_linear.MultiNest, sub_grid_size=1,
                  mask_function=default_mask_function, phase_name=None):
         """
         A phase in an lensing pipeline. Uses the set non_linear optimizer to try to fit_normal models and image
@@ -994,6 +994,7 @@ class GalaxyFitPhase(AbstractPhase):
 
         Parameters
         ----------
+        galaxy_data_class: class<gd.GalaxyData>
         optimizer_class: class
             The class of a non_linear optimizer
         sub_grid_size: int
@@ -1001,6 +1002,7 @@ class GalaxyFitPhase(AbstractPhase):
         """
 
         super(GalaxyFitPhase, self).__init__(optimizer_class, phase_name)
+        self.galaxy_data_class = galaxy_data_class
         self.galaxy = galaxy
         self.sub_grid_size = sub_grid_size
         self.mask_function = mask_function
@@ -1029,7 +1031,31 @@ class GalaxyFitPhase(AbstractPhase):
         return self.__class__.Result(result.constant, result.likelihood, result.variable, analysis)
 
     def make_analysis(self, array, noise_map, previous_results=None, mask=None):
-        raise NotImplementedError()
+        """
+        Create an lensing object. Also calls the prior passing and lensing_image modifying functions to allow child
+        classes to change the behaviour of the phase.
+
+        Parameters
+        ----------
+        mask: Mask
+            The default mask passed in by the pipeline
+        array
+        noise_map
+        previous_results: ResultsCollection
+            The result from the previous phase
+
+        Returns
+        -------
+        lensing: Analysis
+            An lensing object that the non-linear optimizer calls to determine the fit_normal of a set of values
+        """
+        mask = mask or self.mask_function(array)
+        galaxy_datas = self.galaxy_data_class(array=array, noise_map=noise_map, mask=mask,
+                                              sub_grid_size=self.sub_grid_size)
+        self.pass_priors(previous_results)
+        analysis = self.__class__.Analysis(galaxy_data=galaxy_datas, phase_name=self.phase_name,
+                                           previous_results=previous_results)
+        return analysis
 
     # noinspection PyAbstractClass
     class Analysis(Phase.Analysis):
@@ -1088,93 +1114,21 @@ class GalaxyFitPhase(AbstractPhase):
 
 
 class GalaxyFitIntensitiesPhase(GalaxyFitPhase):
-
-    def make_analysis(self, array, noise_map, previous_results=None, mask=None):
-        """
-        Create an lensing object. Also calls the prior passing and lensing_image modifying functions to allow child
-        classes to change the behaviour of the phase.
-
-        Parameters
-        ----------
-        mask: Mask
-            The default mask passed in by the pipeline
-        array
-        noise_map
-        previous_results: ResultsCollection
-            The result from the previous phase
-
-        Returns
-        -------
-        lensing: Analysis
-            An lensing object that the non-linear optimizer calls to determine the fit_normal of a set of values
-        """
-        mask = mask or self.mask_function(array)
-        galaxy_datas = gd.GalaxyDataIntensities(array=array, noise_map=noise_map, mask=mask,
-                                                sub_grid_size=self.sub_grid_size)
-        self.pass_priors(previous_results)
-        analysis = self.__class__.Analysis(galaxy_data=galaxy_datas, phase_name=self.phase_name,
-                                           previous_results=previous_results)
-        return analysis
+    def __init__(self, galaxy=None, optimizer_class=non_linear.MultiNest, sub_grid_size=1,
+                 mask_function=default_mask_function, phase_name=None):
+        super().__init__(gd.GalaxyDataIntensities, galaxy, optimizer_class, sub_grid_size, mask_function, phase_name)
 
 
 class GalaxyFitSurfaceDensityPhase(GalaxyFitPhase):
-
-    def make_analysis(self, array, noise_map, previous_results=None, mask=None):
-        """
-        Create an lensing object. Also calls the prior passing and lensing_image modifying functions to allow child
-        classes to change the behaviour of the phase.
-
-        Parameters
-        ----------
-        noise_map
-        array
-        mask: Mask
-            The default mask passed in by the pipeline
-        previous_results: ResultsCollection
-            The result from the previous phase
-
-        Returns
-        -------
-        lensing: Analysis
-            An lensing object that the non-linear optimizer calls to determine the fit_normal of a set of values
-        """
-        mask = mask or self.mask_function(array)
-        galaxy_data = gd.GalaxyDataSurfaceDensity(array=array, noise_map=noise_map, mask=mask,
-                                                  sub_grid_size=self.sub_grid_size)
-        self.pass_priors(previous_results)
-        analysis = self.__class__.Analysis(galaxy_data=galaxy_data, phase_name=self.phase_name,
-                                           previous_results=previous_results)
-        return analysis
+    def __init__(self, galaxy=None, optimizer_class=non_linear.MultiNest, sub_grid_size=1,
+                 mask_function=default_mask_function, phase_name=None):
+        super().__init__(gd.GalaxyDataSurfaceDensity, galaxy, optimizer_class, sub_grid_size, mask_function, phase_name)
 
 
 class GalaxyFitPotentialPhase(GalaxyFitPhase):
-
-    def make_analysis(self, array, noise_map, previous_results=None, mask=None):
-        """
-        Create an lensing object. Also calls the prior passing and lensing_image modifying functions to allow child
-        classes to change the behaviour of the phase.
-
-        Parameters
-        ----------
-        noise_map
-        array
-        mask: Mask
-            The default mask passed in by the pipeline
-        previous_results: ResultsCollection
-            The result from the previous phase
-
-        Returns
-        -------
-        lensing: Analysis
-            An lensing object that the non-linear optimizer calls to determine the fit_normal of a set of values
-        """
-        mask = mask or self.mask_function(array)
-        galaxy_data = gd.GalaxyDataPotential(array=array, noise_map=noise_map, mask=mask,
-                                             sub_grid_size=self.sub_grid_size)
-        self.pass_priors(previous_results)
-        analysis = self.__class__.Analysis(galaxy_data=galaxy_data, phase_name=self.phase_name,
-                                           previous_results=previous_results)
-        return analysis
+    def __init__(self, galaxy=None, optimizer_class=non_linear.MultiNest, sub_grid_size=1,
+                 mask_function=default_mask_function, phase_name=None):
+        super().__init__(gd.GalaxyDataPotential, galaxy, optimizer_class, sub_grid_size, mask_function, phase_name)
 
 
 class GalaxyFitDeflectionsPhase(AbstractPhase):
