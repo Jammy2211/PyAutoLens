@@ -3,7 +3,7 @@ import numpy as np
 
 from autolens.galaxy import galaxy as g
 from autolens.galaxy import galaxy_model as gm
-from autolens.imaging import imaging_util
+from autolens.imaging.util import grid_util
 from autolens.imaging import scaled_array
 from autolens.imaging import mask
 from autolens.pipeline import phase as ph
@@ -22,13 +22,13 @@ def simulate_potential(data_name, pixel_scale, galaxy):
     grids = mask.ImagingGrids.from_shape_and_pixel_scale(shape=image_shape, pixel_scale=pixel_scale)
 
     potential = galaxy.potential_from_grid(grid=grids.image)
-    potential = imaging_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(array_1d=potential,
-                                                                                             shape=image_shape)
+    potential = grid_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(array_1d=potential,
+                                                                                    shape=image_shape)
 
     if os.path.exists(output_path) == False:
         os.makedirs(output_path)
 
-    imaging_util.numpy_array_to_fits(potential, path=data_path + data_name +'.fits', overwrite=True)
+    grid_util.numpy_array_to_fits(potential, path=data_path + data_name + '.fits', overwrite=True)
 
 def setup_and_run_phase():
 

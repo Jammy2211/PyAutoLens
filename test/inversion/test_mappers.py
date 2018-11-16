@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from autolens.imaging import imaging_util
+from autolens.imaging.util import mapping_util
 from autolens.inversion import mappers
 from autolens.inversion import pixelizations
 from test.mock.mock_imaging import MockSubGridCoords, MockGridCollection
@@ -506,8 +506,8 @@ class TestRectangularMapper:
                                             pixel_neighbors=None)
             solution = np.array([1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 1.0, 2.0, 3.0])
             recon_pix = pix.reconstructed_pixelization_from_solution_vector(solution_vector=solution)
-            recon_pix_util = imaging_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(array_1d=solution,
-                                                                                                    shape=(4,3))
+            recon_pix_util = mapping_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(array_1d=solution,
+                                                                                                 shape=(4,3))
             assert (recon_pix == recon_pix_util).all()
             assert recon_pix.shape == (4,3)
 
@@ -515,8 +515,8 @@ class TestRectangularMapper:
                                             pixel_neighbors=None)
             solution = np.array([1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 1.0, 2.0, 3.0])
             recon_pix = pix.reconstructed_pixelization_from_solution_vector(solution_vector=solution)
-            recon_pix_util = imaging_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(array_1d=solution,
-                                                                                                    shape=(3,4))
+            recon_pix_util = mapping_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(array_1d=solution,
+                                                                                                 shape=(3,4))
             assert (recon_pix == recon_pix_util).all()
             assert recon_pix.shape == (3,4)
 
