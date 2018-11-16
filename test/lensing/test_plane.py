@@ -3,7 +3,7 @@ import pytest
 from astropy import cosmology as cosmo
 
 from autolens import exc
-from autolens.imaging import imaging_util
+from autolens.imaging.util import mapping_util
 from autolens.imaging import mask
 from autolens.inversion import pixelizations
 from autolens.inversion import regularization
@@ -1426,7 +1426,7 @@ class TestPlaneImageFromGrid:
                                                                            [0.0, -1.0], [0.0, 0.0], [0.0, 1.0],
                                                                            [1.0, -1.0], [1.0, 0.0], [1.0, 1.0]]))
 
-        plane_image_galaxy = imaging_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(
+        plane_image_galaxy = mapping_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(
             array_1d=plane_image_galaxy, shape=(3,3))
 
         assert (plane_image == plane_image_galaxy).all()
@@ -1443,7 +1443,7 @@ class TestPlaneImageFromGrid:
                                                                            [0.0, -1.0], [0.0, 0.0], [0.0, 1.0],
                                                                            [1.0, -1.0], [1.0, 0.0], [1.0, 1.0]]))
 
-        plane_image_galaxy = imaging_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(
+        plane_image_galaxy = mapping_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(
             array_1d=plane_image_galaxy, shape=(3,3))
 
         assert (plane_image == plane_image_galaxy).all()
@@ -1459,7 +1459,7 @@ class TestPlaneImageFromGrid:
         plane_image_galaxy = galaxy.intensities_from_grid(grid=np.array([[-0.75, -1.0], [-0.75, 0.0], [-0.75, 1.0],
                                                                           [0.75, -1.0], [0.75, 0.0], [0.75, 1.0]]))
 
-        plane_image_galaxy = imaging_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(
+        plane_image_galaxy = mapping_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(
             array_1d=plane_image_galaxy, shape=(2,3))
 
         assert (plane_image == plane_image_galaxy).all()
@@ -1476,7 +1476,7 @@ class TestPlaneImageFromGrid:
                                                                           [0.0, -0.75], [0.0, 0.75],
                                                                           [1.0, -0.75], [1.0, 0.75]]))
 
-        plane_image_galaxy = imaging_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(
+        plane_image_galaxy = mapping_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(
             array_1d=plane_image_galaxy, shape=(3,2))
 
         assert (plane_image == plane_image_galaxy).all()

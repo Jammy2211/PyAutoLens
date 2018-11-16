@@ -3,7 +3,7 @@ import scipy.signal
 from scipy.stats import norm
 
 from autolens import exc
-from autolens.imaging import imaging_util
+from autolens.imaging.util import array_util, grid_util, mapping_util
 from autolens.imaging.scaled_array import ScaledSquarePixelArray, Array
 
 import logging
@@ -393,11 +393,11 @@ class PSF(ScaledSquarePixelArray):
         """Simulate the PSF as an elliptical Gaussian profile."""
         from autolens.profiles.light_profiles import EllipticalGaussian
         gaussian = EllipticalGaussian(centre=centre, axis_ratio=axis_ratio, phi=phi, intensity=1.0, sigma=sigma)
-        grid_1d = imaging_util.image_grid_1d_masked_from_mask_pixel_scales_and_origin(mask=np.full(shape, False),
-                                                                                      pixel_scales=(pixel_scale, pixel_scale))
+        grid_1d = grid_util.image_grid_1d_masked_from_mask_pixel_scales_and_origin(mask=np.full(shape, False),
+                                                                                   pixel_scales=(pixel_scale, pixel_scale))
         gaussian_1d = gaussian.intensities_from_grid(grid=grid_1d)
-        gaussian_2d = imaging_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(array_1d=gaussian_1d,
-                                                                                             shape=shape)
+        gaussian_2d = mapping_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(array_1d=gaussian_1d,
+                                                                                          shape=shape)
         return PSF(array=gaussian_2d, pixel_scale=pixel_scale, renormalize=True)
 
     @classmethod
@@ -434,7 +434,7 @@ class PSF(ScaledSquarePixelArray):
         hdu : int
             The HDU the PSF is stored in the .fits file.
         """
-        return cls(array=imaging_util.numpy_array_from_fits(file_path, hdu), pixel_scale=pixel_scale)
+        return cls(array=array_util.numpy_array_from_fits(file_path, hdu), pixel_scale=pixel_scale)
 
     def renormalize(self):
         """Renormalize the PSF such that its data_vector values sum to unity."""
@@ -588,24 +588,24 @@ def load_background_sky_map(path, hdu, pixel_scale):
 def output_imaging_to_fits(image, image_path, psf_path, noise_map_path=None, background_noise_map_path=None,
                            poisson_noise_map_path=None, exposure_time_map_path=None, background_sky_map_path=None,
                            overwrite=False):
-    imaging_util.numpy_array_to_fits(array=image, path=image_path, overwrite=overwrite)
-    imaging_util.numpy_array_to_fits(array=image.psf, path=psf_path, overwrite=overwrite)
+    array_util.numpy_array_to_fits(array=image, path=image_path, overwrite=overwrite)
+    array_util.numpy_array_to_fits(array=image.psf, path=psf_path, overwrite=overwrite)
 
     if image.noise_map is not None and noise_map_path is not None:
-        imaging_util.numpy_array_to_fits(array=image.noise_map, path=noise_map_path, overwrite=overwrite)
+        array_util.numpy_array_to_fits(array=image.noise_map, path=noise_map_path, overwrite=overwrite)
 
     if image.background_noise_map is not None and background_noise_map_path is not None:
-        imaging_util.numpy_array_to_fits(array=image.background_noise_map, path=background_noise_map_path,
-                                         overwrite=overwrite)
+        array_util.numpy_array_to_fits(array=image.background_noise_map, path=background_noise_map_path,
+                                      overwrite=overwrite)
 
     if image.poisson_noise_map is not None and poisson_noise_map_path is not None:
-        imaging_util.numpy_array_to_fits(array=image.poisson_noise_map, path=poisson_noise_map_path,
-                                         overwrite=overwrite)
+        array_util.numpy_array_to_fits(array=image.poisson_noise_map, path=poisson_noise_map_path,
+                                      overwrite=overwrite)
 
     if image.exposure_time_map is not None and exposure_time_map_path is not None:
-        imaging_util.numpy_array_to_fits(array=image.exposure_time_map, path=exposure_time_map_path,
-                                         overwrite=overwrite)
+        array_util.numpy_array_to_fits(array=image.exposure_time_map, path=exposure_time_map_path,
+                                      overwrite=overwrite)
 
     if image.background_sky_map is not None and background_sky_map_path is not None:
-        imaging_util.numpy_array_to_fits(array=image.background_sky_map, path=background_sky_map_path,
-                                         overwrite=overwrite)
+        array_util.numpy_array_to_fits(array=image.background_sky_map, path=background_sky_map_path,
+                                      overwrite=overwrite)

@@ -3,7 +3,7 @@ import numpy as np
 
 from autolens.galaxy import galaxy as g
 from autolens.galaxy import galaxy_model as gm
-from autolens.imaging import imaging_util
+from autolens.imaging.util import grid_util
 from autolens.imaging import scaled_array
 from autolens.imaging import mask
 from autolens.pipeline import phase as ph
@@ -22,16 +22,16 @@ def simulate_deflections(data_name_y, data_name_x, pixel_scale, galaxy):
     grids = mask.ImagingGrids.from_shape_and_pixel_scale(shape=image_shape, pixel_scale=pixel_scale)
 
     deflections = galaxy.deflections_from_grid(grid=grids.image)
-    deflections_y = imaging_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(array_1d=deflections[:,0],
-                                                                                             shape=image_shape)
-    deflections_x = imaging_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(array_1d=deflections[:,1],
-                                                                                             shape=image_shape)
+    deflections_y = grid_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(array_1d=deflections[:, 0],
+                                                                                        shape=image_shape)
+    deflections_x = grid_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(array_1d=deflections[:, 1],
+                                                                                        shape=image_shape)
 
     if os.path.exists(output_path) == False:
         os.makedirs(output_path)
 
-    imaging_util.numpy_array_to_fits(deflections_y, path=data_path + data_name_y +'.fits', overwrite=True)
-    imaging_util.numpy_array_to_fits(deflections_x, path=data_path + data_name_x +'.fits', overwrite=True)
+    grid_util.numpy_array_to_fits(deflections_y, path=data_path + data_name_y + '.fits', overwrite=True)
+    grid_util.numpy_array_to_fits(deflections_x, path=data_path + data_name_x + '.fits', overwrite=True)
 
 def setup_and_run_phase():
 

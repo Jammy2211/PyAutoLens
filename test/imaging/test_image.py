@@ -7,7 +7,7 @@ import pytest
 from autolens import exc
 from autolens.imaging import scaled_array
 from autolens.imaging import image
-from autolens.imaging import imaging_util
+from autolens.imaging.util import grid_util, mapping_util
 
 test_data_dir = "{}/../test_files/array/".format(os.path.dirname(os.path.realpath(__file__)))
 
@@ -1166,12 +1166,12 @@ class TestPSF(object):
         def test__identical_to_gaussian_light_profile(self):
             from autolens.profiles import light_profiles as lp
 
-            grid = imaging_util.image_grid_1d_masked_from_mask_pixel_scales_and_origin(mask=np.full((3, 3), False),
-                                                                                       pixel_scales=(1.0, 1.0))
+            grid = grid_util.image_grid_1d_masked_from_mask_pixel_scales_and_origin(mask=np.full((3, 3), False),
+                                                                                    pixel_scales=(1.0, 1.0))
 
             gaussian = lp.EllipticalGaussian(centre=(0.1, 0.1), axis_ratio=0.9, phi=45.0, intensity=1.0, sigma=1.0)
             profile_gaussian_1d = gaussian.intensities_from_grid(grid)
-            profile_gaussian_2d = imaging_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(
+            profile_gaussian_2d = mapping_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(
                 array_1d=profile_gaussian_1d, shape=(3, 3))
             profile_psf = image.PSF(array=profile_gaussian_2d, pixel_scale=1.0, renormalize=True)
 

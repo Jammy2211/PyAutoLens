@@ -3,7 +3,7 @@ import logging
 import numpy as np
 
 from autolens import exc
-from autolens.imaging import imaging_util
+from autolens.imaging.util import array_util, mapping_util, mask_util, grid_util
 from autolens.imaging import scaled_array
 
 logging.basicConfig()
@@ -65,8 +65,8 @@ class Mask(scaled_array.ScaledSquarePixelArray):
         centre: (float, float)
             The origin of the masks.
         """
-        mask = imaging_util.mask_circular_from_shape_pixel_scale_and_radius(shape, pixel_scale, radius_mask_arcsec,
-                                                                            centre)
+        mask = mask_util.mask_circular_from_shape_pixel_scale_and_radius(shape, pixel_scale, radius_mask_arcsec,
+                                                                         centre)
         return cls(mask.astype('bool'), pixel_scale, origin=(0.0, 0.0))
 
     @classmethod
@@ -87,8 +87,8 @@ class Mask(scaled_array.ScaledSquarePixelArray):
         centre: (float, float)
             The origin of the masks.
         """
-        mask = imaging_util.mask_annular_from_shape_pixel_scale_and_radii(shape, pixel_scale, inner_radius_arcsec,
-                                                                          outer_radius_arcsec, centre)
+        mask = mask_util.mask_annular_from_shape_pixel_scale_and_radii(shape, pixel_scale, inner_radius_arcsec,
+                                                                       outer_radius_arcsec, centre)
         return cls(mask.astype('bool'), pixel_scale, origin=(0.0, 0.0))
 
     @classmethod
@@ -111,9 +111,9 @@ class Mask(scaled_array.ScaledSquarePixelArray):
         origin: (float, float)
             The origin of the masks.
         """
-        mask = imaging_util.mask_anti_annular_from_shape_pixel_scale_and_radii(shape, pixel_scale, inner_radius_arcsec,
-                                                                               outer_radius_arcsec,
-                                                                               outer_radius_2_arcsec, origin)
+        mask = mask_util.mask_anti_annular_from_shape_pixel_scale_and_radii(shape, pixel_scale, inner_radius_arcsec,
+                                                                            outer_radius_arcsec,
+                                                                            outer_radius_2_arcsec, origin)
         return cls(mask, pixel_scale)
 
     @property
@@ -121,9 +121,9 @@ class Mask(scaled_array.ScaledSquarePixelArray):
         return int(np.size(self) - np.sum(self))
 
     @property
-    def grid_to_pixel(self):
-        """A 1D array of mappings between every padded pixel and its 2D pixel coordinates."""
-        return imaging_util.grid_to_pixel_from_mask(self).astype('int')
+    def masked_grid_index_to_pixel(self):
+        """A 1D array of mappings between every masked pixel and its 2D pixel coordinates."""
+        return mask_util.masked_grid_1d_index_to_2d_pixel_index_from_mask(self).astype('int')
 
     def map_2d_array_to_masked_1d_array(self, array_2d):
         """For a 2D datas-array (e.g. the datas_, noise-mappers, etc.) mappers it to a masked 1D array of values usin this masks.
@@ -135,9 +135,9 @@ class Mask(scaled_array.ScaledSquarePixelArray):
         """
         if array_2d is None or isinstance(array_2d, float):
             return array_2d
-        return imaging_util.map_2d_array_to_masked_1d_array_from_array_2d_and_mask(self, array_2d)
+        return mapping_util.map_2d_array_to_masked_1d_array_from_array_2d_and_mask(self, array_2d)
 
-    @imaging_util.Memoizer()
+    @array_util.Memoizer()
     def blurring_mask_for_psf_shape(self, psf_shape):
         """Compute the blurring masks, which represents all masked pixels whose light will be blurred into padded \
         pixels via PSF convolution.
@@ -151,23 +151,23 @@ class Mask(scaled_array.ScaledSquarePixelArray):
         if psf_shape[0] % 2 == 0 or psf_shape[1] % 2 == 0:
             raise exc.MaskException("psf_size of exterior region must be odd")
 
-        blurring_mask = imaging_util.mask_blurring_from_mask_and_psf_shape(self, psf_shape)
+        blurring_mask = mask_util.mask_blurring_from_mask_and_psf_shape(self, psf_shape)
 
         return Mask(blurring_mask, self.pixel_scale)
 
     @property
-    def border_pixels(self):
+    def edge_pixels(self):
         """The indicies of the masks's border pixels, where a border pixel is a pixel inside the masks but on its edge \
         (next to at least one pixel with a *True* value).
         """
-        return imaging_util.border_pixels_from_mask(self).astype('int')
+        return mask_util.edge_pixels_from_mask(self).astype('int')
 
-    def border_sub_pixels(self, sub_grid_size):
+    def edge_sub_pixels(self, sub_grid_size):
         """The indicies of the masks's border sub-pixels, where a border sub-pixel is the sub-pixel in a masks border \
         datas_-pixel which is closest to the edge."""
-        return imaging_util.border_sub_pixels_from_mask_pixel_scales_and_sub_grid_size(mask=self,
-                                                                                       pixel_scales=self.pixel_scales,
-                                                                                       sub_grid_size=sub_grid_size).astype(
+        return mask_util.edge_sub_pixels_from_mask_pixel_scales_and_sub_grid_size(mask=self,
+                                                                                  pixel_scales=self.pixel_scales,
+                                                                                  sub_grid_size=sub_grid_size).astype(
             'int')
 
 
@@ -349,14 +349,14 @@ class ImageGrid(np.ndarray):
 
     @property
     def unlensed_grid(self):
-        return ImageGrid(arr=imaging_util.image_grid_1d_masked_from_mask_pixel_scales_and_origin(mask=self.mask,
-                                                                                                 pixel_scales=self.mask.pixel_scales),
+        return ImageGrid(arr=grid_util.image_grid_1d_masked_from_mask_pixel_scales_and_origin(mask=self.mask,
+                                                                                              pixel_scales=self.mask.pixel_scales),
                          mask=self.mask)
 
     @property
     def unlensed_unmasked_grid(self):
-        return ImageGrid(arr=imaging_util.image_grid_1d_from_shape_pixel_scales_and_origin(shape=self.mask.shape,
-                                                                                           pixel_scales=self.mask.pixel_scales),
+        return ImageGrid(arr=grid_util.image_grid_1d_from_shape_pixel_scales_and_origin(shape=self.mask.shape,
+                                                                                        pixel_scales=self.mask.pixel_scales),
                          mask=self.mask)
 
     @classmethod
@@ -368,13 +368,13 @@ class ImageGrid(np.ndarray):
         -----------
         mask : Mask
             The masks whose padded pixels are used to setup the sub-pixel grids."""
-        array = imaging_util.image_grid_1d_masked_from_mask_pixel_scales_and_origin(mask=mask, pixel_scales=mask.pixel_scales)
+        array = grid_util.image_grid_1d_masked_from_mask_pixel_scales_and_origin(mask=mask, pixel_scales=mask.pixel_scales)
         return cls(array, mask)
 
     @classmethod
     def from_shape_and_pixel_scale(cls, shape, pixel_scale):
         mask = Mask.padded_for_shape_and_pixel_scale(shape=shape, pixel_scale=pixel_scale)
-        array = imaging_util.image_grid_1d_masked_from_mask_pixel_scales_and_origin(mask=mask, pixel_scales=mask.pixel_scales)
+        array = grid_util.image_grid_1d_masked_from_mask_pixel_scales_and_origin(mask=mask, pixel_scales=mask.pixel_scales)
         return cls(array, mask)
 
     @classmethod
@@ -392,9 +392,9 @@ class ImageGrid(np.ndarray):
         array_1d : ndarray
             The 1D array of masked datas which is mapped to 2D.
         """
-        return imaging_util.map_masked_1d_array_to_2d_array_from_array_1d_shape_and_one_to_two(array_1d,
-                                                                                               self.mask.shape,
-                                                                                               self.mask.grid_to_pixel)
+        return mapping_util.map_masked_1d_array_to_2d_array_from_array_1d_shape_and_one_to_two(array_1d,
+                                                                                            self.mask.shape,
+                                                                                            self.mask.masked_grid_index_to_pixel)
 
     def scaled_array_from_array_1d(self, array_1d):
         return scaled_array.ScaledSquarePixelArray(array=self.map_to_2d(array_1d), pixel_scale=self.mask.pixel_scale,
@@ -524,7 +524,7 @@ class SubGrid(ImageGrid):
 
     @property
     def unlensed_grid(self):
-        return SubGrid(imaging_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(
+        return SubGrid(grid_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(
             mask=self.mask,
             pixel_scales=self.mask.pixel_scales,
             sub_grid_size=self.sub_grid_size),
@@ -532,7 +532,7 @@ class SubGrid(ImageGrid):
 
     @property
     def unlensed_unmasked_grid(self):
-        return SubGrid(imaging_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(
+        return SubGrid(grid_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(
             mask=np.full(self.mask.shape, False), pixel_scales=self.mask.pixel_scales,
             sub_grid_size=self.sub_grid_size),
             mask=self.mask, sub_grid_size=self.sub_grid_size)
@@ -549,17 +549,17 @@ class SubGrid(ImageGrid):
         sub_grid_size : int
             The size (sub_grid_size x sub_grid_size) of each datas_-pixels sub-grid.
         """
-        sub_grid_masked = imaging_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(mask=mask,
-                                                                                                   pixel_scales=mask.pixel_scales,
-                                                                                                   sub_grid_size=sub_grid_size)
+        sub_grid_masked = grid_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(mask=mask,
+                                                                                                pixel_scales=mask.pixel_scales,
+                                                                                                sub_grid_size=sub_grid_size)
         return SubGrid(sub_grid_masked, mask, sub_grid_size)
 
     @classmethod
     def from_shape_pixel_scale_and_sub_grid_size(cls, shape, pixel_scale, sub_grid_size):
         mask = Mask.padded_for_shape_and_pixel_scale(shape=shape, pixel_scale=pixel_scale)
-        sub_grid = imaging_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(mask=mask,
-                                                                                            pixel_scales=mask.pixel_scales,
-                                                                                            sub_grid_size=sub_grid_size)
+        sub_grid = grid_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(mask=mask,
+                                                                                         pixel_scales=mask.pixel_scales,
+                                                                                         sub_grid_size=sub_grid_size)
         return SubGrid(sub_grid, mask, sub_grid_size)
 
     def __array_finalize__(self, obj):
@@ -583,7 +583,7 @@ class SubGrid(ImageGrid):
         return np.multiply(self.sub_grid_fraction, sub_array.reshape(-1, self.sub_grid_length).sum(axis=1))
 
     @property
-    @imaging_util.Memoizer()
+    @array_util.Memoizer()
     def sub_to_image(self):
         """ Compute the mapping between every sub-pixel and its host padded datas_-pixel.
 
@@ -592,7 +592,7 @@ class SubGrid(ImageGrid):
         - sub_to_pixel[8] = 2 -  The seventh sub-pixel is within the 3rd padded datas_ pixel.
         - sub_to_pixel[20] = 4 -  The nineteenth sub-pixel is within the 5th padded datas_ pixel.
         """
-        return imaging_util.sub_to_image_from_mask(self.mask, self.sub_grid_size).astype('int')
+        return mapping_util.sub_to_image_from_mask(self.mask, self.sub_grid_size).astype('int')
 
 
 class PaddedImageGrid(ImageGrid):
@@ -634,7 +634,7 @@ class PaddedImageGrid(ImageGrid):
            The shape of the psf which defines the blurring region and therefore size of padding.
         """
         padded_shape = (shape[0] + psf_shape[0] - 1, shape[1] + psf_shape[1] - 1)
-        padded_image_grid = imaging_util.image_grid_1d_masked_from_mask_pixel_scales_and_origin(
+        padded_image_grid = grid_util.image_grid_1d_masked_from_mask_pixel_scales_and_origin(
             mask=np.full(padded_shape, False), pixel_scales=(pixel_scale, pixel_scale))
         padded_mask = Mask.padded_for_shape_and_pixel_scale(shape=padded_shape, pixel_scale=pixel_scale)
         return PaddedImageGrid(arr=padded_image_grid, mask=padded_mask, image_shape=shape)
@@ -649,11 +649,11 @@ class PaddedImageGrid(ImageGrid):
         padded_array_1d: ndarray
             A 1D array of values which were computed using the *PaddedImageGrid*.
         """
-        padded_array_2d = imaging_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(padded_array_1d,
-                                                                                                 self.mask.shape)
+        padded_array_2d = mapping_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(padded_array_1d,
+                                                                                              self.mask.shape)
         blurred_padded_array_2d = psf.convolve(padded_array_2d)
-        return imaging_util.map_2d_array_to_masked_1d_array_from_array_2d_and_mask(array_2d=blurred_padded_array_2d,
-                                                                                   mask=np.full(self.mask.shape,
+        return mapping_util.map_2d_array_to_masked_1d_array_from_array_2d_and_mask(array_2d=blurred_padded_array_2d,
+                                                                                mask=np.full(self.mask.shape,
                                                                                                 False))
 
     def map_to_2d(self, padded_array_1d):
@@ -678,7 +678,7 @@ class PaddedImageGrid(ImageGrid):
         padded_array_1d : ndarray
             A 1D array of values which were computed using the *PaddedImageGrid*.
         """
-        return imaging_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(padded_array_1d, self.mask.shape)
+        return mapping_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(padded_array_1d, self.mask.shape)
 
     @property
     def padded_shape(self):
@@ -719,7 +719,7 @@ class PaddedSubGrid(SubGrid, PaddedImageGrid):
 
         padded_shape = (mask.shape[0] + psf_shape[0] - 1, mask.shape[1] + psf_shape[1] - 1)
 
-        padded_sub_grid = imaging_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(
+        padded_sub_grid = grid_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(
             mask=np.full(padded_shape, False), pixel_scales=mask.pixel_scales, sub_grid_size=sub_grid_size)
 
         padded_mask = Mask.padded_for_shape_and_pixel_scale(shape=padded_shape, pixel_scale=mask.pixel_scale)
@@ -830,7 +830,7 @@ class ImageGridBorder(np.ndarray):
         centre : (float, float)
             The origin of the border, which can be shifted relative to its coordinates.
         """
-        return cls(mask.border_pixels, polynomial_degree, centre)
+        return cls(mask.edge_pixels, polynomial_degree, centre)
 
     @property
     def total_pixels(self):
@@ -945,4 +945,4 @@ class SubGridBorder(ImageGridBorder):
         centre : (float, float)
             The origin of the border, which can be shifted relative to its coordinates.
         """
-        return cls(mask.border_sub_pixels(sub_grid_size), polynomial_degree, centre)
+        return cls(mask.edge_sub_pixels(sub_grid_size), polynomial_degree, centre)

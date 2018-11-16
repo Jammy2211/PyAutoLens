@@ -2,7 +2,7 @@ import numpy as np
 import pytest
 
 from autolens.imaging import scaled_array as sca
-from autolens.imaging import imaging_util
+from autolens.imaging.util import grid_util
 from autolens.imaging import mask as msk
 from autolens.galaxy import galaxy as g
 from autolens.galaxy import galaxy_data as gd
@@ -53,14 +53,14 @@ class TestGalaxyData(object):
 
     def test__padded_grids(self, galaxy_data):
 
-        padded_image_util = imaging_util.image_grid_1d_masked_from_mask_pixel_scales_and_origin(mask=np.full((4, 4), False),
-                                                                                                pixel_scales=galaxy_data.array.pixel_scales)
+        padded_image_util = grid_util.image_grid_1d_masked_from_mask_pixel_scales_and_origin(mask=np.full((4, 4), False),
+                                                                                             pixel_scales=galaxy_data.array.pixel_scales)
 
         assert (galaxy_data.padded_grids.image == padded_image_util).all()
         assert galaxy_data.padded_grids.image.image_shape == (4, 4)
         assert galaxy_data.padded_grids.image.padded_shape == (4, 4)
 
-        padded_sub_util = imaging_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(
+        padded_sub_util = grid_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(
             mask=np.full((4, 4), False), pixel_scales=galaxy_data.array.pixel_scales,
             sub_grid_size=galaxy_data.grids.sub.sub_grid_size)
 
