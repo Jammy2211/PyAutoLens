@@ -745,7 +745,7 @@ class TestTracerImageSourcePlanes(object):
             galaxy_no_pix = g.Galaxy()
 
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[galaxy_no_pix], source_galaxies=[galaxy_no_pix],
-                                                         image_plane_grids=[imaging_grids], borders=[MockBorders()])
+                                                         image_plane_grids=[imaging_grids], border=[MockBorders()])
 
             assert tracer.mappers_of_planes == []
 
@@ -754,7 +754,7 @@ class TestTracerImageSourcePlanes(object):
             galaxy_no_pix = g.Galaxy()
 
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[galaxy_no_pix], source_galaxies=[galaxy_pix],
-                                                         image_plane_grids=[imaging_grids], borders=[MockBorders()])
+                                                         image_plane_grids=[imaging_grids], border=[MockBorders()])
 
             assert tracer.mappers_of_planes[0] == 1
 
@@ -763,7 +763,7 @@ class TestTracerImageSourcePlanes(object):
             galaxy_pix_1 = g.Galaxy(pixelization=MockPixelization(value=2), regularization=MockRegularization(value=4))
 
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[galaxy_pix_0], source_galaxies=[galaxy_pix_1],
-                                                         image_plane_grids=[imaging_grids], borders=[MockBorders()])
+                                                         image_plane_grids=[imaging_grids], border=[MockBorders()])
 
             assert tracer.mappers_of_planes[0] == 1
             assert tracer.mappers_of_planes[1] == 2
@@ -774,7 +774,7 @@ class TestTracerImageSourcePlanes(object):
             galaxy_no_reg = g.Galaxy()
 
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[galaxy_no_reg], source_galaxies=[galaxy_no_reg],
-                                                         image_plane_grids=[imaging_grids], borders=MockBorders())
+                                                         image_plane_grids=[imaging_grids], border=MockBorders())
 
             assert tracer.regularizations_of_planes == []
 
@@ -783,7 +783,7 @@ class TestTracerImageSourcePlanes(object):
             galaxy_no_reg = g.Galaxy()
 
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[galaxy_no_reg], source_galaxies=[galaxy_reg],
-                                                         image_plane_grids=[imaging_grids], borders=MockBorders())
+                                                         image_plane_grids=[imaging_grids], border=MockBorders())
 
             assert tracer.regularizations_of_planes[0].value == 0
 
@@ -792,7 +792,7 @@ class TestTracerImageSourcePlanes(object):
             galaxy_reg_1 = g.Galaxy(pixelization=MockPixelization(value=2), regularization=MockRegularization(value=4))
 
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[galaxy_reg_0], source_galaxies=[galaxy_reg_1],
-                                                         image_plane_grids=[imaging_grids], borders=MockBorders())
+                                                         image_plane_grids=[imaging_grids], border=MockBorders())
 
             assert tracer.regularizations_of_planes[0].value == 3
             assert tracer.regularizations_of_planes[1].value == 4
@@ -1472,7 +1472,7 @@ class TestMultiTracer(object):
             g2 = g.Galaxy(redshift=2.0, mass_profile=sis)
 
             tracer = ray_tracing.TracerMulti(galaxies=[g0, g1, g2], image_plane_grids=[imaging_grids],
-                                             borders=[MockBorders()], cosmology=cosmo.Planck15)
+                                             border=[MockBorders()], cosmology=cosmo.Planck15)
 
             assert tracer.mappers_of_planes == []
 
@@ -1485,7 +1485,7 @@ class TestMultiTracer(object):
             g2 = g.Galaxy(redshift=2.0, mass_profile=sis)
 
             tracer = ray_tracing.TracerMulti(galaxies=[g0, g1, g2], image_plane_grids=[imaging_grids],
-                                             borders=[MockBorders()], cosmology=cosmo.Planck15)
+                                             border=[MockBorders()], cosmology=cosmo.Planck15)
 
             assert tracer.mappers_of_planes[0] == 1
 
@@ -1500,7 +1500,7 @@ class TestMultiTracer(object):
                           regularization=MockRegularization(value=0), mass_profile=sis)
 
             tracer = ray_tracing.TracerMulti(galaxies=[g0, g1, g2], image_plane_grids=[imaging_grids],
-                                             borders=[MockBorders()], cosmology=cosmo.Planck15)
+                                             border=[MockBorders()], cosmology=cosmo.Planck15)
 
             assert tracer.mappers_of_planes == [0.5, 1, 2]
 
@@ -1514,7 +1514,7 @@ class TestMultiTracer(object):
             g2 = g.Galaxy(redshift=2.0, mass_profile=sis)
 
             tracer = ray_tracing.TracerMulti(galaxies=[g0, g1, g2], image_plane_grids=[imaging_grids],
-                                             borders=MockBorders(), cosmology=cosmo.Planck15)
+                                             border=MockBorders(), cosmology=cosmo.Planck15)
 
             assert tracer.regularizations_of_planes == []
 
@@ -1527,7 +1527,7 @@ class TestMultiTracer(object):
             g2 = g.Galaxy(redshift=2.0, mass_profile=sis)
 
             tracer = ray_tracing.TracerMulti(galaxies=[g0, g1, g2], image_plane_grids=[imaging_grids],
-                                             borders=MockBorders(), cosmology=cosmo.Planck15)
+                                             border=MockBorders(), cosmology=cosmo.Planck15)
 
             assert tracer.regularizations_of_planes[0].value == 0
 
@@ -1542,7 +1542,7 @@ class TestMultiTracer(object):
                           regularization=MockRegularization(value=2), mass_profile=sis)
 
             tracer = ray_tracing.TracerMulti(galaxies=[g0, g1, g2], image_plane_grids=[imaging_grids],
-                                             borders=MockBorders(), cosmology=cosmo.Planck15)
+                                             border=MockBorders(), cosmology=cosmo.Planck15)
 
             assert tracer.regularizations_of_planes[0].value == 0
             assert tracer.regularizations_of_planes[1].value == 1

@@ -791,7 +791,7 @@ class LensSourcePlanePhase(PhaseImaging):
             return ray_tracing.TracerImageSourcePlanes(lens_galaxies=instance.lens_galaxies,
                                                        source_galaxies=instance.source_galaxies,
                                                        image_plane_grids=[self.lensing_image.grids],
-                                                       borders=[self.lensing_image.borders])
+                                                       border=self.lensing_image.border)
 
         def padded_tracer_for_instance(self, instance):
             return ray_tracing.TracerImageSourcePlanes(lens_galaxies=instance.lens_galaxies,
@@ -1342,14 +1342,14 @@ class SensitivityPhase(PhaseImaging):
             return ray_tracing.TracerImageSourcePlanes(lens_galaxies=instance.lens_galaxies,
                                                        source_galaxies=instance.source_galaxies,
                                                        image_plane_grids=[self.sensitivity_image.grids],
-                                                       borders=[self.sensitivity_image.borders])
+                                                       border=self.sensitivity_image.border)
 
         def tracer_sensitive_for_instance(self, instance):
             return ray_tracing.TracerImageSourcePlanes(
                 lens_galaxies=instance.lens_galaxies + instance.sensitive_galaxies,
                 source_galaxies=instance.source_galaxies,
                 image_plane_grids=[self.sensitivity_image.grids],
-                borders=[self.sensitivity_image.borders])
+                border=self.sensitivity_image.border)
 
         def fast_likelihood_for_tracers(self, tracer_normal, tracer_sensitive):
             return sensitivity_fitting.SensitivityProfileFit.fast_likelihood(

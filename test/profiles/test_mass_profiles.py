@@ -232,6 +232,7 @@ class TestPowerLaw(object):
         assert power_law.potential_from_grid(grid=np.array([[0.1625, 0.1625]])) == pytest.approx(0.96723, 1e-3)
 
     def test__deflections__correct_values(self):
+
         power_law = mp.SphericalPowerLaw(centre=(0.2, 0.2), einstein_radius=1.0, slope=2.0)
         defls = power_law.deflections_from_grid(grid=np.array([[0.1875, 0.1625]]))
         assert defls[0, 0] == pytest.approx(-0.31622, 1e-3)

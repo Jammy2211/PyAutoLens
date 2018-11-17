@@ -34,7 +34,7 @@ lsst_recon = lsst_tracer.reconstructors(lsst.borders, cluster_mask=None)
 euclid_recon = euclid_tracer.reconstructors(euclid.borders, cluster_mask=None)
 hst_recon = hst_tracer.reconstructors(hst.borders, cluster_mask=None)
 hst_up_recon = hst_up_tracer.reconstructors(hst_up.borders, cluster_mask=None)
-# ao_recon = ao_tracer.reconstructors_from_source_plane(ao.borders, cluster_mask=None)
+# ao_recon = ao_tracer.reconstructors_from_source_plane(ao.border, cluster_mask=None)
 
 lsst_reconstructed = lsst_recon.from_reconstructor_and_data(lsst.masked_image, lsst.masked_image.background_noise,
                                                             lsst.masked_image.convolver_mapping_matrix)

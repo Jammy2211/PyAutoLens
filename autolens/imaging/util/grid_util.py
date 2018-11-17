@@ -8,6 +8,14 @@ from astropy.io import fits
 from autolens.imaging.util import mask_util
 
 @numba.jit(nopython=True, cache=True)
+def centres_from_shape_pixel_scales_and_origin(shape, pixel_scales, origin):
+
+    y_cen = float(shape[0] - 1) / 2 + (origin[0] / pixel_scales[0])
+    x_cen = float(shape[1] - 1) / 2 - (origin[1] / pixel_scales[1])
+
+    return y_cen, x_cen
+
+@numba.jit(nopython=True, cache=True)
 def image_grid_2d_from_shape_pixel_scales_and_origin(shape, pixel_scales, origin=(0.0, 0.0)):
     """
     Computes the (y,x) arc second coordinates of every pixel in an datas_ of shape (rows, columns).
@@ -18,8 +26,7 @@ def image_grid_2d_from_shape_pixel_scales_and_origin(shape, pixel_scales, origin
 
     grid_2d = np.zeros((shape[0], shape[1], 2))
 
-    y_cen = float(shape[0] - 1) / 2 + (origin[0] / pixel_scales[0])
-    x_cen = float(shape[1] - 1) / 2 - (origin[1] / pixel_scales[1])
+    y_cen, x_cen = centres_from_shape_pixel_scales_and_origin(shape=shape, pixel_scales=pixel_scales, origin=origin)
 
     for y in range(shape[0]):
         for x in range(shape[1]):
@@ -40,8 +47,7 @@ def image_grid_1d_from_shape_pixel_scales_and_origin(shape, pixel_scales, origin
 
     grid_1d = np.zeros((shape[0]*shape[1], 2))
 
-    y_cen = float(shape[0] - 1) / 2 + (origin[0] / pixel_scales[0])
-    x_cen = float(shape[1] - 1) / 2 - (origin[1] / pixel_scales[1])
+    y_cen, x_cen = centres_from_shape_pixel_scales_and_origin(shape=shape, pixel_scales=pixel_scales, origin=origin)
 
     i=0
     for y in range(shape[0]):
@@ -79,8 +85,7 @@ def sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(mask, pixel_scal
 
     sub_grid = np.zeros(shape=(total_sub_pixels, 2))
 
-    y_cen = float(mask.shape[0] - 1) / 2 + (origin[0] / pixel_scales[0])
-    x_cen = float(mask.shape[1] - 1) / 2 - (origin[1] / pixel_scales[1])
+    y_cen, x_cen = centres_from_shape_pixel_scales_and_origin(shape=mask.shape, pixel_scales=pixel_scales, origin=origin)
 
     sub_index = 0
 
@@ -132,8 +137,7 @@ def grid_arc_seconds_1d_to_grid_pixels_1d(grid_arc_seconds, shape, pixel_scales,
 
     grid_pixels = np.zeros((grid_arc_seconds.shape[0], 2))
 
-    y_cen = float(shape[0] - 1) / 2 + (origin[0] / pixel_scales[0])
-    x_cen = float(shape[1] - 1) / 2 - (origin[1] / pixel_scales[1])
+    y_cen, x_cen = centres_from_shape_pixel_scales_and_origin(shape=shape, pixel_scales=pixel_scales, origin=origin)
 
     for i in range(grid_arc_seconds.shape[0]):
 
@@ -167,8 +171,7 @@ def grid_arc_seconds_1d_to_grid_pixel_centres_1d(grid_arc_seconds, shape, pixel_
 
     grid_pixels = np.zeros((grid_arc_seconds.shape[0], 2))
 
-    y_cen = float(shape[0] - 1) / 2 + (origin[0] / pixel_scales[0])
-    x_cen = float(shape[1] - 1) / 2 - (origin[1] / pixel_scales[1])
+    y_cen, x_cen = centres_from_shape_pixel_scales_and_origin(shape=shape, pixel_scales=pixel_scales, origin=origin)
 
     for i in range(grid_arc_seconds.shape[0]):
 
@@ -239,8 +242,7 @@ def grid_pixels_1d_to_grid_arc_seconds_1d(grid_pixels, shape, pixel_scales, orig
 
     grid_arc_seconds = np.zeros((grid_pixels.shape[0], 2))
 
-    y_cen = float(shape[0] - 1) / 2 + (origin[0] / pixel_scales[0])
-    x_cen = float(shape[1] - 1) / 2 - (origin[1] / pixel_scales[1])
+    y_cen, x_cen = centres_from_shape_pixel_scales_and_origin(shape=shape, pixel_scales=pixel_scales, origin=origin)
 
     for i in range(grid_arc_seconds.shape[0]):
 

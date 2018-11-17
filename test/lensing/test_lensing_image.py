@@ -84,9 +84,8 @@ class TestLensingImage(object):
 
         assert (lensing_image.padded_grids.blurring == np.array([[0.0, 0.0]])).all()
 
-    def test_borders(self, lensing_image):
-        assert (lensing_image.borders.image == np.array([0, 1, 2, 3])).all()
-        assert (lensing_image.borders.sub == np.array([0, 5, 10, 15])).all()
+    def test_border(self, lensing_image):
+        assert (lensing_image.border == np.array([0, 1, 2, 3])).all()
 
     def test_convolvers(self, lensing_image):
         assert type(lensing_image.convolver_image) == convolution.ConvolverImage

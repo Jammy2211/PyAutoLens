@@ -1,0 +1,86 @@
+non_linear.ini
+
+[MultiNest]
+
+n_live_points:
+
+This is the total number of live points used by MultiNest to sample non-linear parameter space. More points provides a
+more thorough sampling of parameter space, at the expense of taking longer to run. The number of live points required
+for accurate sampling depends on the complexity of your parameter space, nevertheless I provide some rough guidelines
+below.
+
+Recommended values:
+
+for ~5 non-linear parameters -> 20-40 live points
+for ~10 non-linear parameters -> 30-50 live points
+for ~20 non-linear parameters -> 50-100 live points
+for 25+ non-linear parameters -> 75+ live points
+
+
+sampling_efficiency:
+
+The sampling efficiency controls the ratio of accepted to total samples a MultiNest search targets. A higher efficiency
+will converge on the high likelihood regions of parameter space faster, at the risk of missing the global maxima
+solution.
+
+*Recommended Values*
+
+Use 0.8, and reduce to 0.6, 0.4, 0.2 if the inferred solution does not look accurate or you are uncertain if it is the
+global maxima.
+
+
+evidence_tolerance:
+
+The evidence tolerance is MultiNest's stopping criteria - the higher the evidence tolerance, the sooner MultiNest will
+stop running. A higher tolerance will provide more accurate errors, but take longer to run.
+
+*Recommended values*
+
+For the early phases of a pipeline, where you are not interested in precise parameter errors / PDF's, use values of
+1000-10000 to ensure the non-linear search terminates early. For the final phase, use 0.8, to ensure errors and PDF's
+are precisely estimated.
+
+
+const_efficiency_mode
+
+The sampling efficiency determines the acceptance rate that MultiNest targets. However, if MultiNest is struggling to
+map out parameter-space accurately, it will it fall to a lower acceptance rate. Constant efficiency mode forces
+MultiNest to maintain the acceptance rate, but aggresively converging on the regions of parameter space that have known
+high likelihoods.
+
+This can dramatically reduce run-times, but increases the risk of missing the global maximum likelihood solution.
+
+*Recommend values*
+
+There are two circumstances where I find turning this mode on can lead to fast results without missing the global
+maximum solution:
+
+1) When the dimensionality of parameter space is < ~7 parameters.
+2) When the priors on the majority of model parameters are initialized using Gaussian priors centred on an accurate
+   model from a previous phase.
+
+In general, I would keep this mode switched off, unless you have a lot of images you want to aggressively get running
+faster.
+
+importance_nested_sampling:
+
+Importance nested sampling mode uses information from the rejected points to improve the non-linear search accuracy.
+
+*Recommended values*
+
+In my experience, there is no down-side to keeping turned on, so I would keep it set to True.
+
+
+MAKING MULTINEST RUN FAST:
+
+A very effective strategy for making phases run fast is combining a low sampling efficiency (e.g. 0.2) with constant
+efficiency mode being True. This can make MutiNest sampling run ~x100 faster, however it does risk you finding a local,
+maximan, not global maxima, in parameter space. Thus, it is crucial to ensure you either:
+
+1) Have a low dimensionality problem which is easy to sample (5-10 parameters, e.g. a lens light only / sourcr+mass
+   only phase).
+2) Initialize the majority of parameter prior's robustly, either as manual priors on using the results of previous
+   phases.have
+
+I strongly recommend you experiment with constant efficiency sampling mode and get an intuition for how to effectively
+use it to get super-fast non-linear sampling.
