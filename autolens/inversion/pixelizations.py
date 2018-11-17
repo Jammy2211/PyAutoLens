@@ -157,7 +157,6 @@ class Rectangular(Pixelization):
         y_max = np.max(grid[:, 0]) + buffer
         x_min = np.min(grid[:, 1]) - buffer
         x_max = np.max(grid[:, 1]) + buffer
-        print(y_min, y_max, x_min, x_max)
         pixel_scales = (float((y_max - y_min) / self.shape[0]), float((x_max - x_min) / self.shape[1]))
         origin = ((y_max + y_min) / 2.0, (x_max + x_min) / 2.0)
         return self.Geometry(shape=self.shape, pixel_scales=pixel_scales, origin=origin)

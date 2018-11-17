@@ -152,7 +152,9 @@ def plot_plane_grid(should_plot_grid, mapper, as_subplot, units, kpc_per_arcsec,
 
     if should_plot_grid:
 
-        tools_grid.plot_grid(grid=mapper.grids.image, as_subplot=as_subplot, units=units, kpc_per_arcsec=kpc_per_arcsec,
+        grid_units = convert_grid(grid=mapper.grids.image, units=units, kpc_per_arcsec=kpc_per_arcsec)
+
+        tools_grid.plot_grid(grid=grid_units, as_subplot=as_subplot, units=units, kpc_per_arcsec=kpc_per_arcsec,
                              pointsize=pointsize, xyticksize=xyticksize, title=title, titlesize=titlesize,
                              xlabelsize=xlabelsize, ylabelsize=ylabelsize)
 
@@ -161,9 +163,10 @@ def plot_border(should_plot_border, mapper, as_subplot, units, kpc_per_arcsec, p
 
     if should_plot_border:
 
-        border_grid = mapper.grids.image[mapper.border]
+        border_arc_seconds = mapper.grids.image[mapper.border]
+        border_units = convert_grid(grid=border_arc_seconds, units=units, kpc_per_arcsec=kpc_per_arcsec)
 
-        tools_grid.plot_grid(grid=border_grid, as_subplot=as_subplot, units=units, kpc_per_arcsec=kpc_per_arcsec,
+        tools_grid.plot_grid(grid=border_units, as_subplot=as_subplot, units=units, kpc_per_arcsec=kpc_per_arcsec,
                              pointsize=pointsize, pointcolor='y', xyticksize=xyticksize, title=title,
                              titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize)
 

@@ -1084,3 +1084,21 @@ class TestImageGridBorder(object):
             assert relocated_grids.sub[9] == pytest.approx(np.array([-1.0 + 0.7071, -1.0 - 0.7071]), 1e-3)
             assert relocated_grids.sub[10] == pytest.approx(np.array([-1.0 - 0.7071, -1.0 + 0.7071]), 1e-3)
             assert relocated_grids.sub[11] == pytest.approx(np.array([-1.0 - 0.7071, -1.0 - 0.7071]), 1e-3)
+
+        def test__point_is_inside_border_but_further_than_minimum_border_point_radii__does_not_relocate(self):
+
+            grid = np.array([[1.0, 0.0], [0.0, 1.0], [-1.0, 0.0], [0.0, -0.9],
+                             [0.7071, 0.7071], [0.7071, -0.7071],
+                             [-0.7071, 0.7071], [-0.7071, -0.7071],
+                             [0.02, 0.95]])
+
+            grids = mask.ImagingGrids(image=grid, sub=grid, blurring=None)
+
+            border_pixels = np.array([0, 1, 2, 3, 4, 5, 6, 7])
+
+            border = mask.ImageGridBorder(border_pixels)
+
+            relocated_grids = border.relocated_grids_from_grids(grids)
+
+            assert relocated_grids.image[8] == pytest.approx(np.array([0.02, 0.95]), 1e-4)
+            assert relocated_grids.sub[8] == pytest.approx(np.array([0.02, 0.95]), 1e-4)
