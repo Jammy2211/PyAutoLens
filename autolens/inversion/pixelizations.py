@@ -157,6 +157,7 @@ class Rectangular(Pixelization):
         y_max = np.max(grid[:, 0]) + buffer
         x_min = np.min(grid[:, 1]) - buffer
         x_max = np.max(grid[:, 1]) + buffer
+        print(y_min, y_max, x_min, x_max)
         pixel_scales = (float((y_max - y_min) / self.shape[0]), float((x_max - x_min) / self.shape[1]))
         origin = ((y_max + y_min) / 2.0, (x_max + x_min) / 2.0)
         return self.Geometry(shape=self.shape, pixel_scales=pixel_scales, origin=origin)
@@ -232,24 +233,6 @@ class Rectangular(Pixelization):
 
         return pixel_neighbors
 
-    def mapper_from_grids(self, grids):
-        """Setup the pixelization mapper of this rectangular pixelization as follows:
-
-        This first relocateds all grid-coordinates, such that any which tracer_normal beyond its border (e.g. due to high \
-        levels of demagnification) are relocated to the border.
-
-        Parameters
-        ----------
-        grids: mask.ImagingGrids
-            A collection of grid describing the observed datas_'s pixel coordinates (includes an datas_ and sub grid).
-        border : mask.ImagingGridBorders
-            The border of the grids (defined by their datas_-plane masks).
-        """
-        geometry = self.geometry_from_grid(grids.sub)
-        pixel_neighbors = self.neighbors_from_pixelization()
-        return mappers.RectangularMapper(pixels=self.pixels, grids=grids, border=None, pixel_neighbors=pixel_neighbors,
-                                         shape=self.shape, geometry=geometry)
-
     def mapper_from_grids_and_border(self, grids, border):
         """Setup the pixelization mapper of this rectangular pixelization as follows:
 
@@ -263,9 +246,10 @@ class Rectangular(Pixelization):
         border : mask.ImagingGridBorders
             The border of the grids (defined by their datas_-plane masks).
         """
-        try:
+
+        if border is not None:
             relocated_grids = border.relocated_grids_from_grids(grids)
-        except ValueError:
+        else:
             relocated_grids = grids
 
         geometry = self.geometry_from_grid(relocated_grids.sub)
@@ -345,34 +329,6 @@ class Cluster(Voronoi, AdaptiveImageGrid):
         AdaptiveImageGrid.__init__(self=self, image_grid_shape=image_grid_shape)
         super(Cluster, self).__init__(pixels=image_grid_shape[0] * image_grid_shape[1])
 
-    def mapper_from_grids(self, grids, pixel_centers, image_to_voronoi):
-        """Setup the pixelization mapper of the cluster pixelization.
-
-        This first relocateds all grid-coordinates, such that any which tracer_normal beyond its border (e.g. due to high \
-        levels of demagnification) are relocated to the border.
-
-        Parameters
-        ----------
-        grids: mask.ImagingGrids
-            A collection of grid describing the observed datas_'s pixel coordinates (includes an datas_ and sub grid).
-        border : mask.ImagingGridBorders
-            The border of the grids (defined by their datas_-plane masks).
-        pixel_centers : ndarray
-            The center of each Voronoi pixel, computed from an traced datas_-plane grid.
-        image_to_voronoi : ndarray
-            The mapping of each datas_ pixel to Voronoi pixels.
-        """
-
-        voronoi_to_pixelization = np.arange(0, self.pixels)
-        voronoi = self.voronoi_from_pixel_centers(pixel_centers)
-        pixel_neighbors = self.neighbors_from_pixelization(voronoi.ridge_points)
-
-        return mappers.VoronoiMapper(pixels=self.pixels, grids=grids, border=None,
-                                     pixel_neighbors=pixel_neighbors,
-                                     pixel_centers=pixel_centers, voronoi=voronoi,
-                                     voronoi_to_pixelization=voronoi_to_pixelization,
-                                     image_to_voronoi=image_to_voronoi)
-
     def mapper_from_grids_and_border(self, grids, border, pixel_centers, image_to_voronoi):
         """Setup the pixelization mapper of the cluster pixelization.
 
@@ -391,7 +347,11 @@ class Cluster(Voronoi, AdaptiveImageGrid):
             The mapping of each datas_ pixel to Voronoi pixels.
         """
 
-        relocated_grids = border.relocated_grids_from_grids(grids)
+        if border is not None:
+            relocated_grids = border.relocated_grids_from_grids(grids)
+        else:
+            relocated_grids = grids
+
         voronoi_to_pixelization = np.arange(0, self.pixels)
         voronoi = self.voronoi_from_pixel_centers(pixel_centers)
         pixel_neighbors = self.neighbors_from_pixelization(voronoi.ridge_points)
