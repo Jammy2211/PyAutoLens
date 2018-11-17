@@ -915,11 +915,12 @@ class TestImagingGrids(object):
                                                                [-1., 1.]]))).all()
 
 
-class TestIGridBorder(object):
+class TestImageGridBorder(object):
 
     class TestFromMask:
 
         def test__simple_mask_border_pixel_is_pixel(self):
+
             msk = np.array([[True, True, True, True, True, True, True],
                             [True, True, True, True, True, True, True],
                             [True, True, True, True, True, True, True],
@@ -934,115 +935,6 @@ class TestIGridBorder(object):
 
             assert (border == np.array([0, 1])).all()
 
-    class TestThetasAndRadii:
-
-        def test__four_grid_in_circle__all_in_border__correct_radii_and_thetas(self):
-            grid = np.array([[1.0, 0.0], [0.0, 1.0], [-1.0, 0.0], [0.0, -1.0]])
-
-            border = mask.ImageGridBorder(arr=np.arange(4), polynomial_degree=3)
-            radii = border.grid_to_radii(grid)
-            thetas = border.grid_to_thetas(grid)
-
-            assert (radii == np.array([1.0, 1.0, 1.0, 1.0])).all()
-            assert (thetas == np.array([0.0, 90.0, 180.0, 270.0])).all()
-
-        def test__other_thetas_radii(self):
-            grid = np.array([[2.0, 0.0], [2.0, 2.0], [-1.0, -1.0], [0.0, -3.0]])
-
-            border = mask.ImageGridBorder(arr=np.arange(4), polynomial_degree=3)
-            radii = border.grid_to_radii(grid)
-            thetas = border.grid_to_thetas(grid)
-
-            assert (radii == np.array([2.0, 2.0 * np.sqrt(2), np.sqrt(2.0), 3.0])).all()
-            assert (thetas == np.array([0.0, 45.0, 225.0, 270.0])).all()
-
-        def test__border_centre_offset__grid_same_r_and_theta_shifted(self):
-            grid = np.array([[2.0, 1.0], [1.0, 2.0], [0.0, 1.0], [1.0, 0.0]])
-
-            border = mask.ImageGridBorder(arr=np.arange(4), polynomial_degree=3, centre=(1.0, 1.0))
-            radii = border.grid_to_radii(grid)
-            thetas = border.grid_to_thetas(grid)
-
-            assert (radii == np.array([1.0, 1.0, 1.0, 1.0])).all()
-            assert (thetas == np.array([0.0, 90.0, 180.0, 270.0])).all()
-
-    class TestBorderPolynomialFit(object):
-
-        def test__four_grid_in_circle__thetas_at_radius_are_each_grid_radius(self):
-            grid = np.array([[1.0, 0.0], [0.0, 1.0], [-1.0, 0.0], [0.0, -1.0]])
-
-            border = mask.ImageGridBorder(arr=np.arange(4), polynomial_degree=3)
-            poly = border.polynomial_fit_to_border(grid)
-
-            assert np.polyval(poly, 0.0) == pytest.approx(1.0, 1e-3)
-            assert np.polyval(poly, 90.0) == pytest.approx(1.0, 1e-3)
-            assert np.polyval(poly, 180.0) == pytest.approx(1.0, 1e-3)
-            assert np.polyval(poly, 270.0) == pytest.approx(1.0, 1e-3)
-
-        def test__eight_grid_in_circle__thetas_at_each_grid_are_the_radius(self):
-            grid = np.array([[1.0, 0.0], [0.5 * np.sqrt(2), 0.5 * np.sqrt(2)],
-                             [0.0, 1.0], [-0.5 * np.sqrt(2), 0.5 * np.sqrt(2)],
-                             [-1.0, 0.0], [-0.5 * np.sqrt(2), -0.5 * np.sqrt(2)],
-                             [0.0, -1.0], [0.5 * np.sqrt(2), -0.5 * np.sqrt(2)]])
-
-            border = mask.ImageGridBorder(arr=
-                                          np.arange(8), polynomial_degree=3)
-            poly = border.polynomial_fit_to_border(grid)
-
-            assert np.polyval(poly, 0.0) == pytest.approx(1.0, 1e-3)
-            assert np.polyval(poly, 45.0) == pytest.approx(1.0, 1e-3)
-            assert np.polyval(poly, 90.0) == pytest.approx(1.0, 1e-3)
-            assert np.polyval(poly, 135.0) == pytest.approx(1.0, 1e-3)
-            assert np.polyval(poly, 180.0) == pytest.approx(1.0, 1e-3)
-            assert np.polyval(poly, 225.0) == pytest.approx(1.0, 1e-3)
-            assert np.polyval(poly, 270.0) == pytest.approx(1.0, 1e-3)
-            assert np.polyval(poly, 315.0) == pytest.approx(1.0, 1e-3)
-
-    class TestMoveFactors(object):
-
-        def test__inside_border__move_factor_is_1(self):
-            grid = np.array([[1.0, 0.0], [0.0, 1.0], [-1.0, 0.0], [0.0, -1.0]])
-
-            border = mask.ImageGridBorder(arr=np.arange(4), polynomial_degree=3)
-            move_factors = border.move_factors_from_grid(grid)
-
-            assert move_factors[0] == pytest.approx(1.0, 1e-4)
-            assert move_factors[1] == pytest.approx(1.0, 1e-4)
-            assert move_factors[2] == pytest.approx(1.0, 1e-4)
-            assert move_factors[3] == pytest.approx(1.0, 1e-4)
-
-        def test__outside_border_double_its_radius__move_factor_is_05(self):
-            grid = np.array([[1.0, 0.0], [0.0, 1.0], [-1.0, 0.0], [0.0, -1.0],
-                             [2.0, 0.0], [0.0, 2.0], [-2.0, 0.0], [0.0, -2.0]])
-
-            border = mask.ImageGridBorder(arr=np.arange(4), polynomial_degree=3)
-            move_factors = border.move_factors_from_grid(grid)
-
-            assert move_factors[0] == pytest.approx(1.0, 1e-4)
-            assert move_factors[1] == pytest.approx(1.0, 1e-4)
-            assert move_factors[2] == pytest.approx(1.0, 1e-4)
-            assert move_factors[3] == pytest.approx(1.0, 1e-4)
-            assert move_factors[4] == pytest.approx(0.5, 1e-4)
-            assert move_factors[5] == pytest.approx(0.5, 1e-4)
-            assert move_factors[6] == pytest.approx(0.5, 1e-4)
-            assert move_factors[7] == pytest.approx(0.5, 1e-4)
-
-        def test__outside_border_as_above__but_shift_for_source_plane_centre(self):
-            grid = np.array([[2.0, 1.0], [1.0, 2.0], [0.0, 1.0], [1.0, 0.0],
-                             [3.0, 1.0], [1.0, 3.0], [1.0, 3.0], [3.0, 1.0]])
-
-            border = mask.ImageGridBorder(arr=np.arange(4), polynomial_degree=3, centre=(1.0, 1.0))
-            move_factors = border.move_factors_from_grid(grid)
-
-            assert move_factors[0] == pytest.approx(1.0, 1e-4)
-            assert move_factors[1] == pytest.approx(1.0, 1e-4)
-            assert move_factors[2] == pytest.approx(1.0, 1e-4)
-            assert move_factors[3] == pytest.approx(1.0, 1e-4)
-            assert move_factors[4] == pytest.approx(0.5, 1e-4)
-            assert move_factors[5] == pytest.approx(0.5, 1e-4)
-            assert move_factors[6] == pytest.approx(0.5, 1e-4)
-            assert move_factors[7] == pytest.approx(0.5, 1e-4)
-
     class TestRelocateCoordinates(object):
 
         def test__inside_border_no_relocations(self):
@@ -1053,47 +945,142 @@ class TestIGridBorder(object):
             grid.append(np.array([-0.2, -0.3]))
             grid.append(np.array([0.5, 0.4]))
             grid.append(np.array([0.7, -0.1]))
-            grid = np.asarray(grid)
+            image_grid = np.asarray(grid)
+            sub_grid = np.asarray(grid)
+            sub_grid[35,0] = 0.5
+            sub_grid[35,1] = 0.3
+            grids = mask.ImagingGrids(image=image_grid, sub=sub_grid, blurring=None)
 
-            border = mask.ImageGridBorder(arr=np.arange(32), polynomial_degree=3)
-            relocated_grid = border.relocated_grid_from_grid(grid)
+            border = mask.ImageGridBorder(arr=np.arange(32))
+            relocated_grids = border.relocated_grids_from_grids(grids)
 
-            assert relocated_grid[0:32] == pytest.approx(np.asarray(grid_circle)[0:32], 1e-3)
-            assert relocated_grid[32] == pytest.approx(np.array([0.1, 0.0]), 1e-3)
-            assert relocated_grid[33] == pytest.approx(np.array([-0.2, -0.3]), 1e-3)
-            assert relocated_grid[34] == pytest.approx(np.array([0.5, 0.4]), 1e-3)
-            assert relocated_grid[35] == pytest.approx(np.array([0.7, -0.1]), 1e-3)
+            assert relocated_grids.image[0:32] == pytest.approx(np.asarray(grid_circle)[0:32], 1e-3)
+            assert relocated_grids.image[32] == pytest.approx(np.array([0.1, 0.0]), 1e-3)
+            assert relocated_grids.image[33] == pytest.approx(np.array([-0.2, -0.3]), 1e-3)
+            assert relocated_grids.image[34] == pytest.approx(np.array([0.5, 0.4]), 1e-3)
+            assert relocated_grids.image[35] == pytest.approx(np.array([0.7, -0.1]), 1e-3)
 
-        def test__outside_border_simple_cases__relocates_to_source_border(self):
-            thetas = np.linspace(0.0, 2.0 * np.pi, 32)
-            grid_circle = list(map(lambda x: (np.cos(x), np.sin(x)), thetas))
-            grid = grid_circle
-            grid.append(np.array([2.5, 0.0]))
-            grid.append(np.array([0.0, 3.0]))
-            grid.append(np.array([-2.5, 0.0]))
-            grid.append(np.array([-5.0, 5.0]))
-            grid = np.asarray(grid)
+            assert relocated_grids.sub[0:32] == pytest.approx(np.asarray(grid_circle)[0:32], 1e-3)
+            assert relocated_grids.sub[32] == pytest.approx(np.array([0.1, 0.0]), 1e-3)
+            assert relocated_grids.sub[33] == pytest.approx(np.array([-0.2, -0.3]), 1e-3)
+            assert relocated_grids.sub[34] == pytest.approx(np.array([0.5, 0.4]), 1e-3)
+            assert relocated_grids.sub[35] == pytest.approx(np.array([0.5, 0.3]), 1e-3)
 
-            border = mask.ImageGridBorder(arr=np.arange(32), polynomial_degree=3)
-            relocated_grid = border.relocated_grid_from_grid(grid)
+        def test__8_points_with_border_as_circle__points_go_to_circle_edge(self):
 
-            assert relocated_grid[0:32] == pytest.approx(np.asarray(grid_circle)[0:32], 1e-3)
-            assert relocated_grid[32] == pytest.approx(np.array([1.0, 0.0]), 1e-3)
-            assert relocated_grid[33] == pytest.approx(np.array([0.0, 1.0]), 1e-3)
-            assert relocated_grid[34] == pytest.approx(np.array([-1.0, 0.0]), 1e-3)
-            assert relocated_grid[35] == pytest.approx(np.array([-0.707, 0.707]), 1e-3)
+            grid = np.array([[1.0, 0.0], [0.0, 1.0], [-1.0, 0.0], [0.0,-1.0],
+                             [0.7071, 0.7071], [0.7071, -0.7071],
+                             [-0.7071, 0.7071], [-0.7071, -0.7071],
+                             [10., 10.], [10., -10.], [-10., 10], [-10., -10.]])
+            grids = mask.ImagingGrids(image=grid, sub=grid, blurring=None)
+            
+            border_pixels = np.array([0, 1, 2, 3, 4, 5, 6, 7])
 
-        def test__6_grid_total__2_outside_border__different_border__relocate_to_source_border(self):
-            grid = np.array([[1.0, 0.0], [20., 20.], [0.0, 1.0], [-1.0, 0.0], [0.0, -1.0], [1.0, 1.0]])
-            border_pixels = np.array([0, 2, 3, 4])
+            border = mask.ImageGridBorder(border_pixels)
 
-            border = mask.ImageGridBorder(border_pixels, polynomial_degree=3)
+            relocated_grids = border.relocated_grids_from_grids(grids)
 
-            relocated_grid = border.relocated_grid_from_grid(grid)
+            assert relocated_grids.image[0] == pytest.approx(grid[0], 1e-3)
+            assert relocated_grids.image[1] == pytest.approx(grid[1], 1e-3)
+            assert relocated_grids.image[2] == pytest.approx(grid[2], 1e-3)
+            assert relocated_grids.image[3] == pytest.approx(grid[3], 1e-3)
+            assert relocated_grids.image[4] == pytest.approx(grid[4], 1e-3)
+            assert relocated_grids.image[5] == pytest.approx(grid[5], 1e-3)
+            assert relocated_grids.image[6] == pytest.approx(grid[6], 1e-3)
+            assert relocated_grids.image[7] == pytest.approx(grid[7], 1e-3)
+            assert relocated_grids.image[8] == pytest.approx(np.array([0.7071, 0.7071]), 1e-3)
+            assert relocated_grids.image[9] == pytest.approx(np.array([0.7071, -0.7071]), 1e-3)
+            assert relocated_grids.image[10] == pytest.approx(np.array([-0.7071, 0.7071]), 1e-3)
+            assert relocated_grids.image[11] == pytest.approx(np.array([-0.7071, -0.7071]), 1e-3)
+            
+            assert relocated_grids.sub[0] == pytest.approx(grid[0], 1e-3)
+            assert relocated_grids.sub[1] == pytest.approx(grid[1], 1e-3)
+            assert relocated_grids.sub[2] == pytest.approx(grid[2], 1e-3)
+            assert relocated_grids.sub[3] == pytest.approx(grid[3], 1e-3)
+            assert relocated_grids.sub[4] == pytest.approx(grid[4], 1e-3)
+            assert relocated_grids.sub[5] == pytest.approx(grid[5], 1e-3)
+            assert relocated_grids.sub[6] == pytest.approx(grid[6], 1e-3)
+            assert relocated_grids.sub[7] == pytest.approx(grid[7], 1e-3)
+            assert relocated_grids.sub[8] == pytest.approx(np.array([0.7071, 0.7071]), 1e-3)
+            assert relocated_grids.sub[9] == pytest.approx(np.array([0.7071, -0.7071]), 1e-3)
+            assert relocated_grids.sub[10] == pytest.approx(np.array([-0.7071, 0.7071]), 1e-3)
+            assert relocated_grids.sub[11] == pytest.approx(np.array([-0.7071, -0.7071]), 1e-3)
 
-            assert relocated_grid[0] == pytest.approx(grid[0], 1e-3)
-            assert relocated_grid[1] == pytest.approx(np.array([0.7071, 0.7071]), 1e-3)
-            assert relocated_grid[2] == pytest.approx(grid[2], 1e-3)
-            assert relocated_grid[3] == pytest.approx(grid[3], 1e-3)
-            assert relocated_grid[4] == pytest.approx(grid[4], 1e-3)
-            assert relocated_grid[5] == pytest.approx(np.array([0.7071, 0.7071]), 1e-3)
+        def test__same_as_above_but_ensure_positive_origin_moves_points(self):
+
+            grid = np.array([[2.0, 1.0], [1.0, 2.0], [0.0, 1.0], [1.0, 0.0],
+                             [1.0 + 0.7071, 1.0 + 0.7071], [1.0 + 0.7071, 1.0 - 0.7071],
+                             [1.0 - 0.7071, 1.0 + 0.7071], [1.0 - 0.7071, 1.0 - 0.7071],
+                             [11., 11.], [11., -9.], [-9., 11], [-9., -9.]])
+            grids = mask.ImagingGrids(image=grid, sub=grid, blurring=None)
+            
+            border_pixels = np.array([0, 1, 2, 3, 4, 5, 6, 7])
+
+            border = mask.ImageGridBorder(border_pixels)
+
+            relocated_grids = border.relocated_grids_from_grids(grids)
+
+            assert relocated_grids.image[0] == pytest.approx(grid[0], 1e-3)
+            assert relocated_grids.image[1] == pytest.approx(grid[1], 1e-3)
+            assert relocated_grids.image[2] == pytest.approx(grid[2], 1e-3)
+            assert relocated_grids.image[3] == pytest.approx(grid[3], 1e-3)
+            assert relocated_grids.image[4] == pytest.approx(grid[4], 1e-3)
+            assert relocated_grids.image[5] == pytest.approx(grid[5], 1e-3)
+            assert relocated_grids.image[6] == pytest.approx(grid[6], 1e-3)
+            assert relocated_grids.image[7] == pytest.approx(grid[7], 1e-3)
+            assert relocated_grids.image[8] == pytest.approx(np.array([1.0 + 0.7071, 1.0 + 0.7071]), 1e-3)
+            assert relocated_grids.image[9] == pytest.approx(np.array([1.0 + 0.7071, 1.0 - 0.7071]), 1e-3)
+            assert relocated_grids.image[10] == pytest.approx(np.array([1.0 - 0.7071, 1.0 + 0.7071]), 1e-3)
+            assert relocated_grids.image[11] == pytest.approx(np.array([1.0 - 0.7071, 1.0 - 0.7071]), 1e-3)
+
+            assert relocated_grids.sub[0] == pytest.approx(grid[0], 1e-3)
+            assert relocated_grids.sub[1] == pytest.approx(grid[1], 1e-3)
+            assert relocated_grids.sub[2] == pytest.approx(grid[2], 1e-3)
+            assert relocated_grids.sub[3] == pytest.approx(grid[3], 1e-3)
+            assert relocated_grids.sub[4] == pytest.approx(grid[4], 1e-3)
+            assert relocated_grids.sub[5] == pytest.approx(grid[5], 1e-3)
+            assert relocated_grids.sub[6] == pytest.approx(grid[6], 1e-3)
+            assert relocated_grids.sub[7] == pytest.approx(grid[7], 1e-3)
+            assert relocated_grids.sub[8] == pytest.approx(np.array([1.0 + 0.7071, 1.0 + 0.7071]), 1e-3)
+            assert relocated_grids.sub[9] == pytest.approx(np.array([1.0 + 0.7071, 1.0 - 0.7071]), 1e-3)
+            assert relocated_grids.sub[10] == pytest.approx(np.array([1.0 - 0.7071, 1.0 + 0.7071]), 1e-3)
+            assert relocated_grids.sub[11] == pytest.approx(np.array([1.0 - 0.7071, 1.0 - 0.7071]), 1e-3)
+
+        def test__same_as_above_but_ensure_negative_origin_moves_points(self):
+
+            grid = np.array([[0.0, -1.0], [-1.0, 0.0], [-2.0, -1.0], [-1.0,-2.0],
+                             [-1.0 + 0.7071, -1.0 + 0.7071], [-1.0 + 0.7071, -1.0 - 0.7071],
+                             [-1.0 - 0.7071, -1.0 + 0.7071], [-1.0 - 0.7071, -1.0 - 0.7071],
+                             [9., 9.], [9., -11.], [-11., 9], [-11., -11.]])
+            grids = mask.ImagingGrids(image=grid, sub=grid, blurring=None)
+            border_pixels = np.array([0, 1, 2, 3, 4, 5, 6, 7])
+
+            border = mask.ImageGridBorder(border_pixels)
+
+            relocated_grids = border.relocated_grids_from_grids(grids)
+
+            assert relocated_grids.image[0] == pytest.approx(grid[0], 1e-3)
+            assert relocated_grids.image[1] == pytest.approx(grid[1], 1e-3)
+            assert relocated_grids.image[2] == pytest.approx(grid[2], 1e-3)
+            assert relocated_grids.image[3] == pytest.approx(grid[3], 1e-3)
+            assert relocated_grids.image[4] == pytest.approx(grid[4], 1e-3)
+            assert relocated_grids.image[5] == pytest.approx(grid[5], 1e-3)
+            assert relocated_grids.image[6] == pytest.approx(grid[6], 1e-3)
+            assert relocated_grids.image[7] == pytest.approx(grid[7], 1e-3)
+            assert relocated_grids.image[8] == pytest.approx(np.array([-1.0 + 0.7071, -1.0 + 0.7071]), 1e-3)
+            assert relocated_grids.image[9] == pytest.approx(np.array([-1.0 + 0.7071, -1.0 - 0.7071]), 1e-3)
+            assert relocated_grids.image[10] == pytest.approx(np.array([-1.0 - 0.7071, -1.0 + 0.7071]), 1e-3)
+            assert relocated_grids.image[11] == pytest.approx(np.array([-1.0 - 0.7071, -1.0 - 0.7071]), 1e-3)
+
+            assert relocated_grids.sub[0] == pytest.approx(grid[0], 1e-3)
+            assert relocated_grids.sub[1] == pytest.approx(grid[1], 1e-3)
+            assert relocated_grids.sub[2] == pytest.approx(grid[2], 1e-3)
+            assert relocated_grids.sub[3] == pytest.approx(grid[3], 1e-3)
+            assert relocated_grids.sub[4] == pytest.approx(grid[4], 1e-3)
+            assert relocated_grids.sub[5] == pytest.approx(grid[5], 1e-3)
+            assert relocated_grids.sub[6] == pytest.approx(grid[6], 1e-3)
+            assert relocated_grids.sub[7] == pytest.approx(grid[7], 1e-3)
+            assert relocated_grids.sub[8] == pytest.approx(np.array([-1.0 + 0.7071, -1.0 + 0.7071]), 1e-3)
+            assert relocated_grids.sub[9] == pytest.approx(np.array([-1.0 + 0.7071, -1.0 - 0.7071]), 1e-3)
+            assert relocated_grids.sub[10] == pytest.approx(np.array([-1.0 - 0.7071, -1.0 + 0.7071]), 1e-3)
+            assert relocated_grids.sub[11] == pytest.approx(np.array([-1.0 - 0.7071, -1.0 - 0.7071]), 1e-3)

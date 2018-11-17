@@ -25,47 +25,7 @@ class TestRectangular:
 
         pix = pixelizations.Rectangular(shape=(3, 3))
 
-        mapper = pix.mapper_from_grids(grids)
-
-        assert (mapper.mapping_matrix == np.array([[1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-                                                       [0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-                                                       [0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0],
-                                                       [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0],
-                                                       [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0]])).all()
-        assert mapper.shape == (3, 3)
-
-        reg = regularization.Constant(coefficients=(1.0,))
-        regularization_matrix = reg.regularization_matrix_from_pixel_neighbors(mapper.pixel_neighbors)
-
-        assert (regularization_matrix ==
-                np.array([[2.00000001, -1.0, 0.0, -1.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-                          [-1.0, 3.00000001, -1.0, 0.0, -1.0, 0.0, 0.0, 0.0, 0.0],
-                          [0.0, -1.0, 2.00000001, 0.0, 0.0, -1.0, 0.0, 0.0, 0.0],
-                          [-1.0, 0.0, 0.0, 3.00000001, -1.0, 0.0, -1.0, 0.0, 0.0],
-                          [0.0, -1.0, 0.0, -1.0, 4.00000001, -1.0, 0.0, -1.0, 0.0],
-                          [0.0, 0.0, -1.0, 0.0, -1.0, 3.00000001, 0.0, 0.0, -1.0],
-                          [0.0, 0.0, 0.0, -1.0, 0.0, 0.0, 2.00000001, -1.0, 0.0],
-                          [0.0, 0.0, 0.0, 0.0, -1.0, 0.0, -1.0, 3.00000001, -1.0],
-                          [0.0, 0.0, 0.0, 0.0, 0.0, -1.0, 0.0, -1.0, 2.00000001]])).all()
-
-    def test__same_as_above__mapper_from_grids(self):
-        # Source-plane comprises 5 grid, so 5 masked_image pixels traced to the pix-plane.
-        pixelization_grid = np.array([[1.0, -1.0], [1.0, 1.0], [0.0, 0.0], [-1.0, -1.0], [-1.0, 1.0]])
-        pixelization_border = msk.ImageGridBorder(arr=np.array([0, 1, 3, 4]))
-
-        pixelization_sub_grid = np.array([[1.0, -1.0], [1.0, 1.0], [0.0, 0.0], [-1.0, -1.0], [-1.0, 1.0]])
-
-        sub_to_image = np.array([0, 1, 2, 3, 4])
-
-        grids = MockGridCollection(image=pixelization_grid,
-                                   sub=MockSubGrid(pixelization_sub_grid, sub_to_image, sub_grid_size=1))
-
-        # There is no sub-grid, so our sub_grid are just the masked_image grid (note the NumPy weighted_data structure
-        # ensures this has no sub-gridding)
-
-        pix = pixelizations.Rectangular(shape=(3, 3))
-
-        mapper = pix.mapper_from_grids(grids)
+        mapper = pix.mapper_from_grids_and_border(grids=grids, border=None)
 
         assert (mapper.mapping_matrix == np.array([[1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
                                                        [0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
@@ -97,8 +57,6 @@ class TestRectangular:
                                       [-0.9, -0.9], [-1.0, -1.0], [-1.1, -1.1],
                                       [-0.9, 0.9], [-1.0, 1.0], [-1.1, 1.1]])
 
-        pixelization_border = msk.ImageGridBorder(arr=np.array([2, 5, 11, 14]))
-
         # There is no sub-grid, so our sub_grid are just the masked_image grid (note the NumPy weighted_data structure
         # ensures this has no sub-gridding)
         pixelization_sub_grid = np.array([[0.9, -0.9], [1.0, -1.0], [1.1, -1.1],
@@ -115,7 +73,7 @@ class TestRectangular:
 
         pix = pixelizations.Rectangular(shape=(3, 3))
 
-        mapper = pix.mapper_from_grids(grids)
+        mapper = pix.mapper_from_grids_and_border(grids=grids, border=None)
 
         assert (mapper.mapping_matrix == np.array([[1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
                                                        [1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
@@ -168,7 +126,7 @@ class TestRectangular:
 
         pix = pixelizations.Rectangular(shape=(3, 3))
 
-        mapper = pix.mapper_from_grids(grids)
+        mapper = pix.mapper_from_grids_and_border(grids=grids, border=None)
 
         assert (mapper.mapping_matrix == np.array([[0.75, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
                                                        [0.0, 0.0, 0.75, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
@@ -190,51 +148,42 @@ class TestRectangular:
                                                    [0.0, 0.0, 0.0, 0.0, -1.0, 0.0, -1.0, 3.00000001, -1.0],
                                                    [0.0, 0.0, 0.0, 0.0, 0.0, -1.0, 0.0, -1.0, 2.00000001]])).all()
 
-    # def test__same_as_above_but_grid_requires_border_relocation(self):
-    #     
-    #     # Source-plane comprises 5 grid, so 5 masked_image pixels traced to the pix-plane.
-    #     pixelization_grid = np.array([[1.0, -1.0], [1.0, 1.0], [0.0, 0.0], [-1.0, -1.0], [-1.0, 1.0]])
-    #     # Assume a 2x2 sub-grid, so each of our 5 masked_image-pixels are split into 4.
-    #     # The grid below is unphysical in that the (0.0, 0.0) terms on the end of each sub-grid probably couldn't
-    #     # happen for a real lensing calculation. This is to make a mapping_matrix matrix which explicitly tests the
-    #     # sub-grid.
-    #     pixelization_sub_grid = np.array([[1.0, -1.0], [2.0, -2.0], [2.0, -2.0], [0.0, 0.0],
-    #                                       [1.0, 1.0], [2.0, 2.0], [2.0, 2.0], [0.0, 0.0],
-    #                                       [0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0],
-    #                                       [-1.0, -1.0], [-2.0, -2.0], [-2.0, -2.0], [0.0, 0.0],
-    #                                       [-1.0, 1.0], [-2.0, 2.0], [-2.0, 2.0], [0.0, 0.0]])
-    # 
-    #     border = msk.ImageGridBorder(arr=np.array([0, 1, 3, 4]))
-    # 
-    #     sub_to_image = np.array([0, 0, 0, 2, 1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 3, 2, 4, 4, 4, 2])
-    # 
-    #     grids = ms(image=pixelization_grid,
-    #                                sub=MockSubGrid(pixelization_sub_grid, sub_to_image,
-    #                                                sub_grid_size=2))
-    # 
-    #     pix = pixelizations.Rectangular(shape=(3, 3))
-    # 
-    #     mapper = pix.mapper_from_grids_and_border(grids, border)
-    # 
-    #     assert (mapper.mapping_matrix == np.array([[0.75, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-    #                                                    [0.0, 0.0, 0.75, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-    #                                                    [0.0, 0.0, 0.0, 0.0, 2.0, 0.0, 0.0, 0.0, 0.0],
-    #                                                    [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.75, 0.0, 0.0],
-    #                                                    [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.75]])).all()
-    #     assert mapper.shape == (3, 3)
-    # 
-    #     reg = regularization.Constant(coefficients=(1.0,))
-    #     regularization_matrix = reg.regularization_matrix_from_pixel_neighbors(mapper.pixel_neighbors)
-    # 
-    #     assert (regularization_matrix == np.array([[2.00000001, -1.0, 0.0, -1.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-    #                                                [-1.0, 3.00000001, -1.0, 0.0, -1.0, 0.0, 0.0, 0.0, 0.0],
-    #                                                [0.0, -1.0, 2.00000001, 0.0, 0.0, -1.0, 0.0, 0.0, 0.0],
-    #                                                [-1.0, 0.0, 0.0, 3.00000001, -1.0, 0.0, -1.0, 0.0, 0.0],
-    #                                                [0.0, -1.0, 0.0, -1.0, 4.00000001, -1.0, 0.0, -1.0, 0.0],
-    #                                                [0.0, 0.0, -1.0, 0.0, -1.0, 3.00000001, 0.0, 0.0, -1.0],
-    #                                                [0.0, 0.0, 0.0, -1.0, 0.0, 0.0, 2.00000001, -1.0, 0.0],
-    #                                                [0.0, 0.0, 0.0, 0.0, -1.0, 0.0, -1.0, 3.00000001, -1.0],
-    #                                                [0.0, 0.0, 0.0, 0.0, 0.0, -1.0, 0.0, -1.0, 2.00000001]])).all()
+    def test__grid__requires_border_relocation(self):
+
+        pixelization_grid = np.array([[1.0, -1.0], [1.0, 1.0], [0.0, 0.0], [-1.0, -1.0], [-1.0, 1.0]])
+        pixelization_sub_grid = np.array([[2.0, 2.0], [2.0, 2.0], [2.0, 2.0], [2.0, 2.0], [-2.0, -2.0]])
+
+        border = msk.ImageGridBorder(arr=np.array([0, 1, 3, 4]))
+
+        sub_to_image = np.array([0, 1, 2, 3, 4])
+
+        grids = MockGridCollection(image=pixelization_grid,
+                                   sub=MockSubGrid(pixelization_sub_grid, sub_to_image,
+                                                   sub_grid_size=1))
+
+        pix = pixelizations.Rectangular(shape=(3, 3))
+
+        mapper = pix.mapper_from_grids_and_border(grids, border)
+
+        assert (mapper.mapping_matrix == np.array([[0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+                                                   [0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+                                                   [0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+                                                   [0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+                                                   [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0]])).all()
+        assert mapper.shape == (3, 3)
+
+        reg = regularization.Constant(coefficients=(1.0,))
+        regularization_matrix = reg.regularization_matrix_from_pixel_neighbors(mapper.pixel_neighbors)
+
+        assert (regularization_matrix == np.array([[2.00000001, -1.0, 0.0, -1.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+                                                   [-1.0, 3.00000001, -1.0, 0.0, -1.0, 0.0, 0.0, 0.0, 0.0],
+                                                   [0.0, -1.0, 2.00000001, 0.0, 0.0, -1.0, 0.0, 0.0, 0.0],
+                                                   [-1.0, 0.0, 0.0, 3.00000001, -1.0, 0.0, -1.0, 0.0, 0.0],
+                                                   [0.0, -1.0, 0.0, -1.0, 4.00000001, -1.0, 0.0, -1.0, 0.0],
+                                                   [0.0, 0.0, -1.0, 0.0, -1.0, 3.00000001, 0.0, 0.0, -1.0],
+                                                   [0.0, 0.0, 0.0, -1.0, 0.0, 0.0, 2.00000001, -1.0, 0.0],
+                                                   [0.0, 0.0, 0.0, 0.0, -1.0, 0.0, -1.0, 3.00000001, -1.0],
+                                                   [0.0, 0.0, 0.0, 0.0, 0.0, -1.0, 0.0, -1.0, 2.00000001]])).all()
 
 
 class TestCluster:
@@ -254,7 +203,8 @@ class TestCluster:
 
         pix = pixelizations.Cluster(image_grid_shape=(5,1))
 
-        mapper = pix.mapper_from_grids(grids=grids, pixel_centers=pixel_centers, image_to_voronoi=image_to_voronoi)
+        mapper = pix.mapper_from_grids_and_border(grids=grids, border=None, pixel_centers=pixel_centers,
+                                                  image_to_voronoi=image_to_voronoi)
 
         assert isinstance(mapper, pm.VoronoiMapper)
 
@@ -295,7 +245,8 @@ class TestCluster:
 
         pix = pixelizations.Cluster(image_grid_shape=(5,1))
 
-        mapper = pix.mapper_from_grids(grids=grids, pixel_centers=pixel_centers, image_to_voronoi=image_to_voronoi)
+        mapper = pix.mapper_from_grids_and_border(grids=grids, border=None, pixel_centers=pixel_centers,
+                                                  image_to_voronoi=image_to_voronoi)
 
         assert isinstance(mapper, pm.VoronoiMapper)
 
@@ -342,7 +293,8 @@ class TestCluster:
 
         pix = pixelizations.Cluster(image_grid_shape=(5,1))
 
-        mapper = pix.mapper_from_grids(grids=grids, pixel_centers=pixel_centers, image_to_voronoi=image_to_voronoi)
+        mapper = pix.mapper_from_grids_and_border(grids=grids, border=None, pixel_centers=pixel_centers,
+                                                  image_to_voronoi=image_to_voronoi)
 
         assert isinstance(mapper, pm.VoronoiMapper)
 
@@ -361,48 +313,42 @@ class TestCluster:
                                                    [-1.0, 0.0, -1.0, 3.00000001, -1.0],
                                                    [0.0, -1.0, -1.0, -1.0, 3.00000001]])).all()
 
-    # def test__same_as_above_but_grid_requires_border_relocation(self):
-    #
-    #     pixelization_grid = np.array([[1.0, 1.0], [-1.0, 1.0], [0.0, 0.0], [1.0, -1.0], [-1.0, -1.0]])
-    #     pixelization_sub_grid = np.array([[1.0, 1.0], [2.0, 2.0], [2.0, 2.0], [0.0, 0.0],
-    #                                       [-1.0, 1.0], [-2.0, 2.0], [-2.0, 2.0], [0.0, 0.0],
-    #                                       [0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0],
-    #                                       [1.0, -1.0], [2.0, -2.0], [2.0, -2.0], [0.0, 0.0],
-    #                                       [-1.0, -1.0], [-2.0, -2.0], [-2.0, -2.0], [0.0, 0.0]])
-    #
-    #     pixelization_border = msk.ImageGridBorder(arr=np.array([0, 1, 3, 4]))
-    #     pixelization_sub_border = msk.SubGridBorder(arr=np.array([0, 4, 12, 16]))
-    #
-    #     sub_to_image = np.array([0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4])
-    #
-    #     grids = MockGridCollection(image=pixelization_grid,
-    #                                sub=MockSubGrid(pixelization_sub_grid, sub_to_image,
-    #                                                sub_grid_size=2))
-    #
-    #     border = msk.ImageGridBorder(arr=pixelization_border, sub=pixelization_sub_border)
-    #
-    #     pixel_centers = pixelization_grid
-    #     image_to_voronoi = np.array([0, 1, 2, 3, 4])
-    #
-    #     pix = pixelizations.Cluster(image_grid_shape=(5,1))
-    #
-    #     mapper = pix.mapper_from_grids_and_border(grids=grids, border=border,
-    #                                               pixel_centers=pixel_centers,
-    #                                               image_to_voronoi=image_to_voronoi)
-    #
-    #     assert isinstance(mapper, pm.VoronoiMapper)
-    #
-    #     assert (mapper.mapping_matrix == np.array([[0.75, 0.0, 0.25, 0.0, 0.0],
-    #                                                    [0.0, 0.75, 0.25, 0.0, 0.0],
-    #                                                    [0.0, 0.0, 1.0, 0.0, 0.0],
-    #                                                    [0.0, 0.0, 0.25, 0.75, 0.0],
-    #                                                    [0.0, 0.0, 0.25, 0.0, 0.75]])).all()
-    #
-    #     reg = regularization.Constant(coefficients=(1.0,))
-    #     regularization_matrix = reg.regularization_matrix_from_pixel_neighbors(mapper.pixel_neighbors)
-    #
-    #     assert (regularization_matrix == np.array([[3.00000001, -1.0, -1.0, -1.0, 0.0],
-    #                                                [-1.0, 3.00000001, -1.0, 0.0, -1.0],
-    #                                                [-1.0, -1.0, 4.00000001, -1.0, -1.0],
-    #                                                [-1.0, 0.0, -1.0, 3.00000001, -1.0],
-    #                                                [0.0, -1.0, -1.0, -1.0, 3.00000001]])).all()
+    def test__same_as_above_but_grid_requires_border_relocation(self):
+
+        pixelization_grid = np.array([[1.0, -1.0], [1.0, 1.0], [0.0, 0.0], [-1.0, -1.0], [-1.0, 1.0]])
+        pixelization_sub_grid = np.array([[2.0, 2.0], [2.0, 2.0], [2.0, 2.0], [2.0, 2.0], [-2.0, -2.0]])
+
+        border = msk.ImageGridBorder(arr=np.array([0, 1, 3, 4]))
+
+        sub_to_image = np.array([0, 1, 2, 3, 4])
+
+        grids = MockGridCollection(image=pixelization_grid,
+                                   sub=MockSubGrid(pixelization_sub_grid, sub_to_image,
+                                                   sub_grid_size=1))
+
+        pixel_centers = pixelization_grid
+        image_to_voronoi = np.array([0, 1, 2, 3, 4])
+
+        pix = pixelizations.Cluster(image_grid_shape=(5,1))
+
+        mapper = pix.mapper_from_grids_and_border(grids=grids, border=border,
+                                                  pixel_centers=pixel_centers,
+                                                  image_to_voronoi=image_to_voronoi)
+
+
+        assert isinstance(mapper, pm.VoronoiMapper)
+
+        assert (mapper.mapping_matrix == np.array([[0.0, 1.0, 0.0, 0.0, 0.0],
+                                                   [0.0, 1.0, 0.0, 0.0, 0.0],
+                                                   [0.0, 1.0, 0.0, 0.0, 0.0],
+                                                   [0.0, 1.0, 0.0, 0.0, 0.0],
+                                                   [0.0, 0.0, 0.0, 1.0, 0.0]])).all()
+
+        reg = regularization.Constant(coefficients=(1.0,))
+        regularization_matrix = reg.regularization_matrix_from_pixel_neighbors(mapper.pixel_neighbors)
+
+        assert (regularization_matrix == np.array([[3.00000001, -1.0, -1.0, -1.0, 0.0],
+                                                   [-1.0, 3.00000001, -1.0, 0.0, -1.0],
+                                                   [-1.0, -1.0, 4.00000001, -1.0, -1.0],
+                                                   [-1.0, 0.0, -1.0, 3.00000001, -1.0],
+                                                   [0.0, -1.0, -1.0, -1.0, 3.00000001]])).all()
