@@ -174,7 +174,7 @@ mapper_plotters.plot_image_and_mapper(image=image, mapper=mapper, mask=mask,
 # the source model_galaxy a light profile, we give it a pixelization and regularization, and pass it to a tracer_without_subhalo.
 source_galaxy = g.Galaxy(pixelization=pix.Rectangular(shape=(25, 25)), regularization=reg.Constant(coefficients=(1.0,)))
 tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
-                                             image_plane_grids=[lensing_image.grids], borders=[lensing_image.borders])
+                                             image_plane_grids=[lensing_image.grids], border=[lensing_image.border])
 
 # Then, like before, we call on the fitting module to perform the fit_normal to the lensing image. Indeed, we see
 # some pretty good looking residuals - we're certainly fitting the lensed source accurately!

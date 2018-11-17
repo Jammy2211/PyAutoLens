@@ -53,7 +53,7 @@ def perform_fit_with_source_galaxy(source_galaxy):
     lens_galaxy = g.Galaxy(
         mass=mp.EllipticalIsothermal(centre=(0.0, 0.0), axis_ratio=0.8, phi=135.0, einstein_radius=1.6))
     tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
-                                                 image_plane_grids=[lensing_image.grids], borders=[lensing_image.borders])
+                                                 image_plane_grids=[lensing_image.grids], border=[lensing_image.border])
     return lensing_fitting.fit_lensing_image_with_tracer(lensing_image=lensing_image, tracer=tracer)
 
 # Okay, so lets look at our fit_normal from the previous tutorial in more detail. We'll use a higher resolution 40 x 40 grid.

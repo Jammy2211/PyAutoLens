@@ -76,8 +76,8 @@ class FittingImage(im.Image):
         padded_grids : imaging.mask.ImagingGrids
             Grids of padded (y,x) Cartesian coordinates which map over the every observed image's pixel in 1D and a \
             padded regioon to include edge's for accurate PSF convolution (includes an image-grid, sub-grid, etc.)
-        borders  imaging.mask.ImagingGridsBorders
-            The borders of the image-grid and sub-grid (see *ImagingGridsBorders* for their use).
+        border  imaging.mask.ImagingGridsBorders
+            The border of the image-grid and sub-grid (see *ImagingGridsBorders* for their use).
         """
         super().__init__(array=image, pixel_scale=image.pixel_scale, noise_map=image.noise_map, psf=image.psf,
                          background_noise_map=image.background_noise_map, poisson_noise_map=image.poisson_noise_map,
@@ -106,7 +106,7 @@ class FittingImage(im.Image):
         self.padded_grids = msk.ImagingGrids.padded_grids_from_mask_sub_grid_size_and_psf_shape(mask=mask,
                                                         sub_grid_size=sub_grid_size, psf_shape=image_psf_shape)
 
-        self.borders = msk.ImagingGridBorders.from_mask_and_sub_grid_size(mask=mask, sub_grid_size=sub_grid_size)
+        self.border = msk.ImageGridBorder.from_mask(mask=mask)
 
     def __array_finalize__(self, obj):
         super(FittingImage, self).__array_finalize__(obj)
@@ -119,7 +119,7 @@ class FittingImage(im.Image):
             self.mask = obj.mask
             self.convolver_image = obj.convolver_image
             self.grids = obj.grids
-            self.borders = obj.borders
+            self.border = obj.border
 
 
 class FittingHyperImage(FittingImage):
@@ -167,7 +167,7 @@ class FittingHyperImage(FittingImage):
             self.mask = obj.mask
             self.convolver_image = obj.convolver_image
             self.grids = obj.grids
-            self.borders = obj.borders
+            self.border = obj.border
             self.hyper_model_image = obj.hyper_model_image
             self.hyper_galaxy_images = obj.hyper_galaxy_images
             self.hyper_minimum_values = obj.hyper_minimum_values

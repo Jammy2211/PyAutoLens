@@ -56,17 +56,16 @@ class Memoizer(object):
 
 @numba.jit(nopython=True, cache=True)
 def resize_array_2d(array_2d, new_shape, origin=(-1, -1)):
-    """
-    Trim the data_vector array to a new sub_grid_size around its central pixel.
-
-    NOTE: The origin of the array cannot be shifted. Therefore, even arrays must be trimmed to even arrays \
-    (e.g. 8x8 -> 4x4) and odd to odd (e.g. 5x5 -> 3x3).
+    """Resize an array to a new size around its a central pixel defined by the array's origin..
 
     Parameters
     ----------
-    array_2d
+    array_2d : ndarray
+        The 2D array that is to be resized.
     new_shape : (int, int)
-        The (y,x) new pixel dimension of the trimmed data_vector-array.
+        The (y,x) new pixel dimension of the trimmed array-array.
+    origin : (int, int)
+        The new centre of the resized array
     """
 
     y_is_even = int(array_2d.shape[0]) % 2 == 0

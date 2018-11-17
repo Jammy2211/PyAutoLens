@@ -139,22 +139,21 @@ class TestMask(object):
 
         assert msk.edge_pixels == pytest.approx(edge_pixels_util, 1e-4)
 
-    def test__edge_sub_pixels__compare_to_array_util(self):
+    def test__border_image_pixels__compare_to_array_util(self):
 
-        msk = np.array([[True, True, True, True, True, True, True],
-                        [True, True, True, True, True, True, True],
-                        [True, True, False, False, False, True, True],
-                        [True, True, False, False, False, True, True],
-                        [True, True, False, False, False, True, True],
-                        [True, True, True, True, False, False, True],
-                        [True, True, True, True, True, False, True]])
+        msk = np.array([[False, False, False, False, False, False, False, True],
+                         [False,  True,  True,  True,  True,  True, False, True],
+                         [False,  True, False, False, False,  True, False, True],
+                         [False,  True, False,  True, False,  True, False, True],
+                         [False,  True, False, False, False,  True, False, True],
+                         [False,  True,  True,  True,  True,  True, False, True],
+                         [False, False, False, False, False, False, False, True]])
 
-        edge_sub_pixels_util = mask_util.edge_sub_pixels_from_mask_pixel_scales_and_sub_grid_size(mask=msk,
-                                                                                                  pixel_scales=(3.0, 3.0), sub_grid_size=2)
+        border_pixels_util = mask_util.border_pixels_from_mask(msk)
 
         msk = mask.Mask(msk, pixel_scale=3.0)
 
-        assert msk.edge_sub_pixels(sub_grid_size=2) == pytest.approx(edge_sub_pixels_util, 1e-4)
+        assert msk.border_pixels == pytest.approx(border_pixels_util, 1e-4)
 
 
 @pytest.fixture(name="msk")
@@ -916,84 +915,8 @@ class TestImagingGrids(object):
                                                                [-1., 1.]]))).all()
 
 
-class TestImagingBorders(object):
-    class TestSetup:
-
-        def test__simple_setup_using_constructor(self):
-            image_border = mask.ImageGridBorder(arr=np.array([1, 2, 5]), polynomial_degree=4, centre=(1.0, 1.0))
-            sub_border = mask.SubGridBorder(arr=np.array([1, 2, 3]), polynomial_degree=2, centre=(0.0, 1.0))
-
-            border_collection = mask.ImagingGridBorders(image=image_border, sub=sub_border)
-
-            assert (border_collection.image == np.array([1, 2, 5])).all()
-            assert border_collection.image.polynomial_degree == 4
-            assert border_collection.image.centre == (1.0, 1.0)
-
-            assert (border_collection.sub == np.array([1, 2, 3])).all()
-            assert border_collection.sub.polynomial_degree == 2
-            assert border_collection.sub.centre == (0.0, 1.0)
-
-        def test__setup_from_mask(self):
-            msk = np.array([[True, True, True, True, True, True, True],
-                            [True, True, True, True, True, True, True],
-                            [True, True, True, True, True, True, True],
-                            [True, True, True, False, False, True, True],
-                            [True, True, True, True, True, True, True],
-                            [True, True, True, True, True, True, True],
-                            [True, True, True, True, True, True, True]])
-
-            msk = mask.Mask(msk, pixel_scale=3.0)
-
-            border_collection = mask.ImagingGridBorders.from_mask_and_sub_grid_size(mask=msk, sub_grid_size=2)
-
-            assert (border_collection.image == np.array([0, 1])).all()
-            assert (border_collection.sub == np.array([0, 5])).all()
-
-    class TestRelocatedGridsFromGrids:
-
-        def test__simple_case__new_grids_have_relocates(self):
-            thetas = np.linspace(0.0, 2.0 * np.pi, 32)
-            image_grid_circle = list(map(lambda x: (np.cos(x), np.sin(x)), thetas))
-            image_grid = image_grid_circle
-            image_grid.append(np.array([0.1, 0.0]))
-            image_grid.append(np.array([-0.2, -0.3]))
-            image_grid.append(np.array([0.5, 0.4]))
-            image_grid.append(np.array([0.7, -0.1]))
-            image_grid = np.asarray(image_grid)
-
-            image_border = mask.ImageGridBorder(arr=np.arange(32), polynomial_degree=3)
-
-            thetas = np.linspace(0.0, 2.0 * np.pi, 32)
-            sub_grid_circle = list(map(lambda x: (np.cos(x), np.sin(x)), thetas))
-            sub_grid = sub_grid_circle
-            sub_grid.append(np.array([2.5, 0.0]))
-            sub_grid.append(np.array([0.0, 3.0]))
-            sub_grid.append(np.array([-2.5, 0.0]))
-            sub_grid.append(np.array([-5.0, 5.0]))
-            sub_grid = np.asarray(sub_grid)
-
-            sub_border = mask.SubGridBorder(arr=np.arange(32), polynomial_degree=3)
-
-            borders = mask.ImagingGridBorders(image=image_border, sub=sub_border)
-
-            grids = mask.ImagingGrids(image=image_grid, sub=sub_grid, blurring=None)
-
-            relocated_grids = borders.relocated_grids_from_grids(grids)
-
-            assert relocated_grids.image[0:32] == pytest.approx(np.asarray(image_grid_circle)[0:32], 1e-3)
-            assert relocated_grids.image[32] == pytest.approx(np.array([0.1, 0.0]), 1e-3)
-            assert relocated_grids.image[33] == pytest.approx(np.array([-0.2, -0.3]), 1e-3)
-            assert relocated_grids.image[34] == pytest.approx(np.array([0.5, 0.4]), 1e-3)
-            assert relocated_grids.image[35] == pytest.approx(np.array([0.7, -0.1]), 1e-3)
-
-            assert relocated_grids.sub[0:32] == pytest.approx(np.asarray(sub_grid_circle)[0:32], 1e-3)
-            assert relocated_grids.sub[32] == pytest.approx(np.array([1.0, 0.0]), 1e-3)
-            assert relocated_grids.sub[33] == pytest.approx(np.array([0.0, 1.0]), 1e-3)
-            assert relocated_grids.sub[34] == pytest.approx(np.array([-1.0, 0.0]), 1e-3)
-            assert relocated_grids.sub[35] == pytest.approx(np.array([-0.707, 0.707]), 1e-3)
-
-
 class TestIGridBorder(object):
+
     class TestFromMask:
 
         def test__simple_mask_border_pixel_is_pixel(self):
@@ -1174,20 +1097,3 @@ class TestIGridBorder(object):
             assert relocated_grid[3] == pytest.approx(grid[3], 1e-3)
             assert relocated_grid[4] == pytest.approx(grid[4], 1e-3)
             assert relocated_grid[5] == pytest.approx(np.array([0.7071, 0.7071]), 1e-3)
-
-    class TestSubGridBorder(object):
-
-        def test__simple_mask_border_pixel_is_pixel(self):
-            msk = np.array([[True, True, True, True, True, True, True],
-                            [True, True, True, True, True, True, True],
-                            [True, True, True, True, True, True, True],
-                            [True, True, True, False, False, True, True],
-                            [True, True, True, True, True, True, True],
-                            [True, True, True, True, True, True, True],
-                            [True, True, True, True, True, True, True]])
-
-            msk = mask.Mask(msk, pixel_scale=3.0)
-
-            border = mask.SubGridBorder.from_mask(msk, sub_grid_size=2)
-
-            assert (border == np.array([0, 5])).all()

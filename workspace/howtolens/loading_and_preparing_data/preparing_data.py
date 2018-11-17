@@ -88,7 +88,7 @@ image_large_stamp_trimmed = im.load_imaging_from_fits(image_path=path+'data/imag
                                                       resized_image_shape=(101, 101))
 imaging_plotters.plot_image_subplot(image=image_large_stamp_trimmed)
 
-# 3) Postage stamp size - On the other hand, the postage stamp must have enough padding in the borders that our mask can
+# 3) Postage stamp size - On the other hand, the postage stamp must have enough padding in the border that our mask can
 #    include all pixels with signal in. In fact, it isn't just the mask that must be contained within the postage stamp,
 #    but also the mask's 'blurring region' - which corresponds to all unmasked image pixels where light will blur into
 #    the mask after PSF convolution. Thus, we may need to pad an image to include this region.

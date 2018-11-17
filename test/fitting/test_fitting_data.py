@@ -83,9 +83,8 @@ class TestFittingImage(object):
 
         assert (fitting_image.padded_grids.blurring == np.array([[0.0, 0.0]])).all()
 
-    def test_borders(self, fitting_image):
-        assert (fitting_image.borders.image == np.array([0, 1, 2, 3])).all()
-        assert (fitting_image.borders.sub == np.array([0, 5, 10, 15])).all()
+    def test_border(self, fitting_image):
+        assert (fitting_image.border == np.array([0, 1, 2, 3])).all()
 
     def test_convolver(self, fitting_image):
         assert type(fitting_image.convolver_image) == convolution.ConvolverImage

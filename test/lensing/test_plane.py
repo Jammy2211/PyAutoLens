@@ -1243,14 +1243,14 @@ class TestPlane(object):
         def test__no_galaxies_with_pixelizations_in_plane__returns_none(self, imaging_grids):
             galaxy_no_pix = g.Galaxy()
 
-            plane = pl.Plane(galaxies=[galaxy_no_pix], grids=[imaging_grids], borders=[MockBorders()])
+            plane = pl.Plane(galaxies=[galaxy_no_pix], grids=[imaging_grids], border=[MockBorders()])
 
             assert plane.mapper is None
 
         def test__1_galaxy_in_plane__it_has_pixelization__returns_mapper(self, imaging_grids):
             galaxy_pix = g.Galaxy(pixelization=MockPixelization(value=1), regularization=MockRegularization(value=0))
 
-            plane = pl.Plane(galaxies=[galaxy_pix], grids=[imaging_grids], borders=[MockBorders()])
+            plane = pl.Plane(galaxies=[galaxy_pix], grids=[imaging_grids], border=[MockBorders()])
 
             assert plane.mapper == 1
 
@@ -1258,7 +1258,7 @@ class TestPlane(object):
             galaxy_pix = g.Galaxy(pixelization=MockPixelization(value=1), regularization=MockRegularization(value=0))
             galaxy_no_pix = g.Galaxy()
 
-            plane = pl.Plane(galaxies=[galaxy_no_pix, galaxy_pix], grids=[imaging_grids], borders=[MockBorders()])
+            plane = pl.Plane(galaxies=[galaxy_no_pix, galaxy_pix], grids=[imaging_grids], border=[MockBorders()])
 
             assert plane.mapper == 1
 
@@ -1275,7 +1275,7 @@ class TestPlane(object):
             galaxy_pix_0 = g.Galaxy(pixelization=MockPixelization(value=1), regularization=MockRegularization(value=0))
             galaxy_pix_1 = g.Galaxy(pixelization=MockPixelization(value=2), regularization=MockRegularization(value=0))
 
-            plane = pl.Plane(galaxies=[galaxy_pix_0, galaxy_pix_1], grids=[imaging_grids], borders=[MockBorders()])
+            plane = pl.Plane(galaxies=[galaxy_pix_0, galaxy_pix_1], grids=[imaging_grids], border=[MockBorders()])
 
             with pytest.raises(exc.PixelizationException):
                 plane.mapper
@@ -1285,14 +1285,14 @@ class TestPlane(object):
         def test__no_galaxies_with_pixelizations_in_plane__returns_none(self, imaging_grids):
             galaxy_no_pix = g.Galaxy()
 
-            plane = pl.Plane(galaxies=[galaxy_no_pix], grids=[imaging_grids], borders=MockBorders())
+            plane = pl.Plane(galaxies=[galaxy_no_pix], grids=[imaging_grids], border=MockBorders())
 
             assert plane.regularization is None
 
         def test__1_galaxy_in_plane__it_has_pixelization__returns_mapper(self, imaging_grids):
             galaxy_pix = g.Galaxy(pixelization=MockPixelization(value=1), regularization=MockRegularization(value=0))
 
-            plane = pl.Plane(galaxies=[galaxy_pix], grids=[imaging_grids], borders=MockBorders())
+            plane = pl.Plane(galaxies=[galaxy_pix], grids=[imaging_grids], border=MockBorders())
 
             assert plane.regularization.value == 0
 
@@ -1300,7 +1300,7 @@ class TestPlane(object):
             galaxy_pix = g.Galaxy(pixelization=MockPixelization(value=1), regularization=MockRegularization(value=0))
             galaxy_no_pix = g.Galaxy()
 
-            plane = pl.Plane(galaxies=[galaxy_no_pix, galaxy_pix], grids=[imaging_grids], borders=MockBorders())
+            plane = pl.Plane(galaxies=[galaxy_no_pix, galaxy_pix], grids=[imaging_grids], border=MockBorders())
 
             assert plane.regularization.value == 0
 
@@ -1308,7 +1308,7 @@ class TestPlane(object):
             galaxy_pix_0 = g.Galaxy(pixelization=MockPixelization(value=1), regularization=MockRegularization(value=0))
             galaxy_pix_1 = g.Galaxy(pixelization=MockPixelization(value=2), regularization=MockRegularization(value=0))
 
-            plane = pl.Plane(galaxies=[galaxy_pix_0, galaxy_pix_1], grids=[imaging_grids], borders=MockBorders())
+            plane = pl.Plane(galaxies=[galaxy_pix_0, galaxy_pix_1], grids=[imaging_grids], border=MockBorders())
 
             with pytest.raises(exc.PixelizationException):
                 plane.regularization

@@ -1143,7 +1143,7 @@ class TestInversionLensingFit:
 
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g.Galaxy()], source_galaxies=[galaxy_pix],
                                                          image_plane_grids=[li_no_blur.grids],
-                                                         borders=[li_no_blur.borders])
+                                                         border=li_no_blur.border)
 
             fit = lensing_fitting.LensingInversionFit(lensing_images=[li_no_blur], tracer=tracer)
 
@@ -1176,7 +1176,7 @@ class TestInversionLensingFit:
             galaxy_pix = g.Galaxy(pixelization=pixelizations.Rectangular(shape=(3, 3)),
                                   regularization=regularization.Constant(coefficients=(1.0,)))
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g.Galaxy()], source_galaxies=[galaxy_pix],
-                                                         image_plane_grids=[li.grids], borders=[li.borders])
+                                                         image_plane_grids=[li.grids], border=li.border)
             fit = lensing_fitting.LensingInversionFit(lensing_images=[li], tracer=tracer)
 
             assert fit.model_images_of_planes[0][0] == None
@@ -1211,7 +1211,7 @@ class TestInversionLensingFit:
             galaxy_pix = g.Galaxy(pixelization=pixelizations.Rectangular(shape=(3, 3)),
                                   regularization=regularization.Constant(coefficients=(1.0,)))
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g.Galaxy()], source_galaxies=[galaxy_pix],
-                                                         image_plane_grids=[li.grids], borders=[li.borders])
+                                                         image_plane_grids=[li.grids], border=li.border)
             fit = lensing_fitting.LensingInversionFit(lensing_images=[li], tracer=tracer)
 
             cov_matrix = np.array([[1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
@@ -1255,11 +1255,11 @@ class TestInversionLensingFit:
 
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g.Galaxy()], source_galaxies=[g0],
                                                          image_plane_grids=[li_manual.grids],
-                                                         borders=[li_manual.borders])
+                                                         border=li_manual.border)
 
             fit = lensing_fitting.fit_lensing_image_with_tracer(lensing_image=li_manual, tracer=tracer)
 
-            mapper = pix.mapper_from_grids_and_borders(li_manual.grids, li_manual.borders)
+            mapper = pix.mapper_from_grids_and_border(li_manual.grids, li_manual.border)
             inversion = inversions.inversion_from_lensing_image_mapper_and_regularization(mapper=mapper, regularization=reg,
                         image=li_manual, noise_map=li_manual.noise_map_,
                         convolver=li_manual.convolver_mapping_matrix)
@@ -1333,7 +1333,7 @@ class TestHyperLensingInversionFit:
                                   hyper_galaxy=hyper_galaxy)
 
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g.Galaxy()], source_galaxies=[galaxy_pix],
-                                                         image_plane_grids=[li.grids], borders=[li.borders])
+                                                         image_plane_grids=[li.grids], border=li.border)
 
             fit = lensing_fitting.HyperLensingInversionFit(lensing_hyper_images=[li], tracer=tracer)
 
@@ -1377,7 +1377,7 @@ class TestHyperLensingInversionFit:
 
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g.Galaxy()], source_galaxies=[galaxy_pix],
                                                          image_plane_grids=[li_hyper_no_blur.grids],
-                                                         borders=[li_hyper_no_blur.borders])
+                                                         border=li_hyper_no_blur.border)
 
             fit = lensing_fitting.HyperLensingInversionFit(lensing_hyper_images=[li_hyper_no_blur], tracer=tracer)
 
@@ -1388,7 +1388,7 @@ class TestHyperLensingInversionFit:
         def test___manual_image_and_psf(self, li_hyper_manual):
 
             pix = pixelizations.Rectangular(shape=(3, 3))
-            mapper = pix.mapper_from_grids_and_borders(li_hyper_manual.grids, li_hyper_manual.borders)
+            mapper = pix.mapper_from_grids_and_border(li_hyper_manual.grids, li_hyper_manual.border)
             reg = regularization.Constant(coefficients=(1.0,))
 
             hyper_galaxy = g.HyperGalaxy(contribution_factor=4.0, noise_factor=2.0, noise_power=3.0)
@@ -1398,7 +1398,7 @@ class TestHyperLensingInversionFit:
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[hyp_galaxy, hyp_galaxy],
                                                          source_galaxies=[inv_galaxy],
                                                          image_plane_grids=[li_hyper_manual.grids],
-                                                         borders=[li_hyper_manual.borders])
+                                                         border=li_hyper_manual.border)
 
             fit = lensing_fitting.fit_lensing_image_with_tracer(lensing_image=li_hyper_manual, tracer=tracer)
 
@@ -1492,7 +1492,7 @@ class TestLensingProfileInversionFit:
 
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[galaxy_light], source_galaxies=[galaxy_pix],
                                                          image_plane_grids=[li_manual.grids],
-                                                         borders=[li_manual.borders])
+                                                         border=li_manual.border)
 
             fit = lensing_fitting.fit_lensing_image_with_tracer(lensing_image=li_manual, tracer=tracer)
 
@@ -1511,7 +1511,7 @@ class TestLensingProfileInversionFit:
 
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[galaxy_light], source_galaxies=[galaxy_pix],
                                                          image_plane_grids=[li_manual.grids],
-                                                         borders=[li_manual.borders])
+                                                         border=li_manual.border)
 
             fit = lensing_fitting.fit_lensing_image_with_tracer(lensing_image=li_manual, tracer=tracer)
 
@@ -1526,7 +1526,7 @@ class TestLensingProfileInversionFit:
             assert li_manual.grids.image.scaled_array_from_array_1d(profile_subtracted_images[0]) == \
                    pytest.approx(fit.profile_subtracted_image, 1e-4)
 
-            mapper = pix.mapper_from_grids_and_borders(li_manual.grids, li_manual.borders)
+            mapper = pix.mapper_from_grids_and_border(li_manual.grids, li_manual.border)
             inversion = inversions.inversion_from_lensing_image_mapper_and_regularization(mapper=mapper, regularization=reg,
                                                                                           image=profile_subtracted_images[0],
                                                                                           noise_map=li_manual.noise_map_,
@@ -1579,7 +1579,7 @@ class TestHyperLensingProfileInversionFit:
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[hyp_galaxy, hyp_galaxy],
                                                          source_galaxies=[inv_galaxy],
                                                          image_plane_grids=[li_hyper_manual.grids],
-                                                         borders=[li_hyper_manual.borders])
+                                                         border=li_hyper_manual.border)
 
             fit = lensing_fitting.fit_lensing_image_with_tracer(lensing_image=li_hyper_manual, tracer=tracer)
 
@@ -1594,7 +1594,7 @@ class TestHyperLensingProfileInversionFit:
             assert li_hyper_manual.grids.image.scaled_array_from_array_1d(profile_subtracted_images[0]) == \
                    pytest.approx(fit.profile_subtracted_image, 1e-4)
 
-            mapper = pix.mapper_from_grids_and_borders(li_hyper_manual.grids, li_hyper_manual.borders)
+            mapper = pix.mapper_from_grids_and_border(li_hyper_manual.grids, li_hyper_manual.border)
             inversion = inversions.inversion_from_lensing_image_mapper_and_regularization(mapper=mapper, regularization=reg,
                         image=profile_subtracted_images[0], noise_map=li_hyper_manual.noise_map_,
                         convolver=li_hyper_manual.convolver_mapping_matrix)

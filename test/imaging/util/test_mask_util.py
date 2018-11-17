@@ -293,7 +293,7 @@ class TestMaskAntiAnnular(object):
 
         mask = mask_util.mask_anti_annular_from_shape_pixel_scale_and_radii(shape=(7, 7), pixel_scale=3.0,
                                                                        inner_radius_arcsec=1.5, outer_radius_arcsec=4.5,
-                                                                       outer_radius_2_arcsec=8.7, centre=(3.0, -3.0))
+                                                                       outer_radius_2_arcsec=8.7, centre=(-3.0, 3.0))
 
         assert (mask == np.array([[True,  True,  True,  True,  True,  True,  True],
                                   [True,  True,  True,  True,  True,  True,  True],
@@ -725,9 +725,38 @@ class TestEdgePixels(object):
         assert (edge_pixels == np.array([0, 1, 2, 3, 4, 5, 9, 10, 14, 15, 19, 20, 21, 22, 23, 24])).all()
 
 
-class TestSubEdgePixels(object):
+class TestBorderPixels(object):
 
-    def test__7x7_mask__2x2_sub_grid__nine_central_pixels__is_edge(self):
+    def test__7x7_mask_one_central_pixel__border_is_central_pixel(self):
+
+        mask = np.array([[True, True, True, True, True, True, True],
+                         [True, True, True, True, True, True, True],
+                         [True, True, True, True, True, True, True],
+                         [True, True, True, True, False, True, True],
+                         [True, True, True, True, True, True, True],
+                         [True, True, True, True, True, True, True],
+                         [True, True, True, True, True, True, True]])
+
+        border_pixels = mask_util.border_pixels_from_mask(mask)
+
+        assert (border_pixels == np.array([0])).all()
+
+    def test__7x7_mask_three_pixel__border_pixels_all_of_them_is_central_pixel(self):
+
+        mask = np.array([[True, True, True, True, True, True, True],
+                         [True, True, True, True, True, True, True],
+                         [True, False, False, True, True, True, True],
+                         [True, True, True, True, False, True, True],
+                         [True, True, True, True, True, True, True],
+                         [True, True, True, True, True, True, True],
+                         [True, True, True, True, True, True, True]])
+
+        border_pixels = mask_util.border_pixels_from_mask(mask)
+
+        assert (border_pixels == np.array([0, 1, 2])).all()
+
+    def test__7x7_mask_nine_central_pixels__central_pixel_is_not_border_pixel(self):
+
         mask = np.array([[True, True, True, True, True, True, True],
                          [True, True, True, True, True, True, True],
                          [True, True, False, False, False, True, True],
@@ -736,66 +765,81 @@ class TestSubEdgePixels(object):
                          [True, True, True, True, True, True, True],
                          [True, True, True, True, True, True, True]])
 
-        edge_sub_pixels = mask_util.edge_sub_pixels_from_mask_pixel_scales_and_sub_grid_size(mask=mask,
-                                                                                             pixel_scales=(3.0, 3.0),
-                                                                                             sub_grid_size=2)
+        border_pixels = mask_util.border_pixels_from_mask(mask)
 
-        assert (edge_sub_pixels == np.array([0, 4, 9, 12, 21, 26, 30, 35])).all()
+        print(border_pixels)
 
-    def test__7x7_mask__4x4_sub_grid_nine_central_pixels__is_edge(self):
-        mask = np.array([[True, True, True, True, True, True, True],
-                         [True, True, True, True, True, True, True],
-                         [True, True, False, False, False, True, True],
-                         [True, True, False, False, False, True, True],
-                         [True, True, False, False, False, True, True],
-                         [True, True, True, True, True, True, True],
-                         [True, True, True, True, True, True, True]])
+        assert (border_pixels == np.array([0, 1, 2, 3, 5, 6, 7, 8])).all()
 
-        edge_sub_pixels = mask_util.edge_sub_pixels_from_mask_pixel_scales_and_sub_grid_size(mask=mask,
-                                                                                             pixel_scales=(3.0, 3.0),
-                                                                                             sub_grid_size=4)
+    def test__7x7_annulus_mask__inner_pixels_excluded(self):
 
-        assert (edge_sub_pixels == np.array([0, 16, 35, 48, 83, 108, 124, 143])).all()
+        mask = np.array([[False, False, False, False, False, False, False],
+                         [False,  True,  True,  True,  True,  True, False],
+                         [False,  True, False, False, False,  True, False],
+                         [False,  True, False,  True, False,  True, False],
+                         [False,  True, False, False, False,  True, False],
+                         [False,  True,  True,  True,  True,  True, False],
+                         [False, False, False, False, False, False, False]])
 
-    def test__7x7_mask_rectangle_of_fifteen_central_pixels__is_edge(self):
-        mask = np.array([[True, True, True, True, True, True, True],
-                         [True, True, False, False, False, True, True],
-                         [True, True, False, False, False, True, True],
-                         [True, True, False, False, False, True, True],
-                         [True, True, False, False, False, True, True],
-                         [True, True, False, False, False, True, True],
-                         [True, True, True, True, True, True, True]])
+        border_pixels = mask_util.border_pixels_from_mask(mask)
 
-        edge_sub_pixels = mask_util.edge_sub_pixels_from_mask_pixel_scales_and_sub_grid_size(mask=mask,
-                                                                                             pixel_scales=(3.0, 3.0),
-                                                                                             sub_grid_size=2)
-        assert (edge_sub_pixels == np.array([0, 4, 9, 12, 21, 24, 33, 38, 47, 50, 54, 59])).all()
+        assert (border_pixels == np.array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 13, 14, 17, 18, 22, 23, 24, 25,
+                                           26, 27, 28, 29, 30, 31])).all()
 
-    def test__8x7_mask_add_edge_pixels__also_in_edge(self):
-        mask = np.array([[True, True, True, True, True, True, True],
-                         [True, True, True, False, True, True, True],
-                         [True, True, False, False, False, True, True],
-                         [True, True, False, False, False, True, True],
-                         [True, False, False, False, False, False, True],
-                         [True, True, False, False, False, True, True],
-                         [True, True, False, False, False, True, True],
-                         [True, True, True, True, True, True, True]])
+    def test__same_as_above_but_8x7_annulus_mask__true_values_at_top_or_bottom(self):
 
-        edge_sub_pixels = mask_util.edge_sub_pixels_from_mask_pixel_scales_and_sub_grid_size(mask=mask,
-                                                                                             pixel_scales=(3.0, 3.0),
-                                                                                             sub_grid_size=2)
-        assert (edge_sub_pixels == np.array([0, 4, 8, 13, 16, 25, 30, 34, 43, 47, 50, 59, 62, 66, 71])).all()
+        mask = np.array([[False, False, False, False, False, False, False],
+                         [False,  True,  True,  True,  True,  True, False],
+                         [False,  True, False, False, False,  True, False],
+                         [False,  True, False,  True, False,  True, False],
+                         [False,  True, False, False, False,  True, False],
+                         [False,  True,  True,  True,  True,  True, False],
+                         [False, False, False, False, False, False, False],
+                         [ True,  True,  True,  True,  True,  True,  True]])
 
-    def test__7x8_mask_add_edge_pixels__also_in_edge(self):
-        mask = np.array([[True, True, True, True, True, True, True, True],
-                         [True, True, True, False, True, True, True, True],
-                         [True, True, False, False, False, True, True, True],
-                         [True, True, False, False, False, True, True, True],
-                         [True, False, False, False, False, False, True, True],
-                         [True, True, False, False, False, True, True, True],
-                         [True, True, True, True, True, True, True, True]])
+        border_pixels = mask_util.border_pixels_from_mask(mask)
 
-        edge_sub_pixels = mask_util.edge_sub_pixels_from_mask_pixel_scales_and_sub_grid_size(mask=mask,
-                                                                                             pixel_scales=(3.0, 3.0),
-                                                                                             sub_grid_size=2)
-        assert (edge_sub_pixels == np.array([0, 4, 8, 13, 16, 25, 30, 34, 43, 47, 50, 54, 59])).all()
+        assert (border_pixels == np.array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 13, 14, 17, 18, 22, 23, 24, 25,
+                                           26, 27, 28, 29, 30, 31])).all()
+
+        mask = np.array([[ True,  True,  True,  True,  True,  True,  True],
+                         [False, False, False, False, False, False, False],
+                         [False,  True,  True,  True,  True,  True, False],
+                         [False,  True, False, False, False,  True, False],
+                         [False,  True, False,  True, False,  True, False],
+                         [False,  True, False, False, False,  True, False],
+                         [False,  True,  True,  True,  True,  True, False],
+                         [False, False, False, False, False, False, False]])
+
+        border_pixels = mask_util.border_pixels_from_mask(mask)
+
+        assert (border_pixels == np.array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 13, 14, 17, 18, 22, 23, 24, 25,
+                                           26, 27, 28, 29, 30, 31])).all()
+
+    def test__same_as_above_but_7x8_annulus_mask__true_values_at_right_or_left(self):
+
+        mask = np.array([[False, False, False, False, False, False, False, True],
+                         [False,  True,  True,  True,  True,  True, False, True],
+                         [False,  True, False, False, False,  True, False, True],
+                         [False,  True, False,  True, False,  True, False, True],
+                         [False,  True, False, False, False,  True, False, True],
+                         [False,  True,  True,  True,  True,  True, False, True],
+                         [False, False, False, False, False, False, False, True]])
+
+        border_pixels = mask_util.border_pixels_from_mask(mask)
+
+        assert (border_pixels == np.array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 13, 14, 17, 18, 22, 23, 24, 25,
+                                           26, 27, 28, 29, 30, 31])).all()
+
+        mask = np.array([[True, False, False, False, False, False, False, False],
+                         [True, False,  True,  True,  True,  True,  True, False],
+                         [True, False,  True, False, False, False,  True, False],
+                         [True, False,  True, False,  True, False,  True, False],
+                         [True, False,  True, False, False, False,  True, False],
+                         [True, False,  True,  True,  True,  True,  True, False],
+                         [True, False, False, False, False, False, False, False]])
+
+        border_pixels = mask_util.border_pixels_from_mask(mask)
+
+        assert (border_pixels == np.array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 13, 14, 17, 18, 22, 23, 24, 25,
+                                           26, 27, 28, 29, 30, 31])).all()

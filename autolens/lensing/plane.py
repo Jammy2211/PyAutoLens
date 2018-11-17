@@ -45,7 +45,7 @@ def cosmology_check(func):
 
 class Plane(object):
 
-    def __init__(self, galaxies, grids, borders=None, compute_deflections=True, cosmology=None):
+    def __init__(self, galaxies, grids, border=None, compute_deflections=True, cosmology=None):
         """A plane represents a set of galaxies at a given redshift in a ray-tracer_normal and a the grid of datas_-plane \
         or lensed coordinates.
 
@@ -56,8 +56,11 @@ class Plane(object):
         -----------
         galaxies : [Galaxy]
             The list of lens galaxies in this plane.
-        grids : masks.ImagingGrids
+        grids : mask.ImagingGrids
             The grids of (x,y) arc-second coordinates of this plane.
+        border : mask.ImageGridBorder
+            The border of the image-grid, which is used to relocate demagnified traced image-pixel to the \
+            source-plane border.
         compute_deflections : bool
             If true, the deflection-angles of this plane's coordinates are calculated use its galaxy's mass-profiles.
         """
@@ -79,7 +82,7 @@ class Plane(object):
                                               'does not have a redshift.')
 
         self.grids = grids
-        self.borders = borders
+        self.border = border
 
         if compute_deflections:
 
@@ -165,9 +168,9 @@ class Plane(object):
             return None
         if len(galaxies_with_pixelization) == 1:
             pixelization = galaxies_with_pixelization[0].pixelization
-            if self.borders is not None:
-                return pixelization.mapper_from_grids_and_borders(self.grids[0], self.borders[0])
-            elif self.borders is None:
+            if self.border is not None:
+                return pixelization.mapper_from_grids_and_border(self.grids[0], self.border)
+            elif self.border is None:
                 return pixelization.mapper_from_grids(self.grids[0])
         elif len(galaxies_with_pixelization) > 1:
             raise exc.PixelizationException('The number of galaxies with pixelizations in one plane is above 1')

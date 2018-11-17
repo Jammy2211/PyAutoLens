@@ -140,7 +140,7 @@ class Mapper(object):
 
 class RectangularMapper(Mapper):
 
-    def __init__(self, pixels, grids, borders, pixel_neighbors, shape, geometry):
+    def __init__(self, pixels, grids, border, pixel_neighbors, shape, geometry):
         """Class representing the mappings between the pixels in an observed image of a strong lens and \
         the pixels of a rectangular pixelization.
 
@@ -161,7 +161,7 @@ class RectangularMapper(Mapper):
         """
         self.shape = shape
         self.geometry = geometry
-        super(RectangularMapper, self).__init__(pixels, grids, borders, pixel_neighbors)
+        super(RectangularMapper, self).__init__(pixels, grids, border, pixel_neighbors)
 
     @property
     def image_to_pixelization(self):
