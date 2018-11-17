@@ -138,12 +138,12 @@ def plot_mask(mask, units, kpc_per_arcsec, pointsize):
     if mask is not None:
 
         plt.gca()
-        border_pixels = mask.masked_grid_index_to_pixel[mask.edge_pixels]
-        border_arc_seconds = mask.grid_pixels_to_grid_arc_seconds(grid_pixels=border_pixels)
-        border_units = convert_grid_units(array=mask, grid_arc_seconds=border_arc_seconds, units=units,
+        edge_pixels = mask.masked_grid_index_to_pixel[mask.edge_pixels]
+        edge_arc_seconds = mask.grid_pixels_to_grid_arc_seconds(grid_pixels=edge_pixels)
+        edge_units = convert_grid_units(array=mask, grid_arc_seconds=edge_arc_seconds, units=units,
                                           kpc_per_arcsec=kpc_per_arcsec)
 
-        plt.scatter(y=border_units[:,0], x=border_units[:,1], s=pointsize, c='k')
+        plt.scatter(y=edge_units[:,0], x=edge_units[:,1], s=pointsize, c='k')
 
 def plot_border(mask, should_plot_border, units, kpc_per_arcsec, pointsize):
 
