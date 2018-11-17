@@ -5,7 +5,6 @@ import itertools
 from autolens.plotting import tools
 from autolens.inversion import mappers
 from autolens.plotting import tools_grid
-from autolens.plotting import tools_array
 from autolens.plotting import imaging_plotters
 
 def plot_image_and_mapper(image, mapper, mask=None, positions=None, should_plot_centres=False, should_plot_grid=True,
@@ -162,7 +161,7 @@ def plot_border(should_plot_border, mapper, as_subplot, units, kpc_per_arcsec, p
 
     if should_plot_border:
 
-        border_grid = mapper.grids.image[mapper.borders.image]
+        border_grid = mapper.grids.image[mapper.border]
 
         tools_grid.plot_grid(grid=border_grid, as_subplot=as_subplot, units=units, kpc_per_arcsec=kpc_per_arcsec,
                              pointsize=pointsize, pointcolor='y', xyticksize=xyticksize, title=title,

@@ -367,7 +367,7 @@ class Cluster(Voronoi, AdaptiveImageGrid):
         voronoi = self.voronoi_from_pixel_centers(pixel_centers)
         pixel_neighbors = self.neighbors_from_pixelization(voronoi.ridge_points)
 
-        return mappers.VoronoiMapper(pixels=self.pixels, grids=grids, borders=None,
+        return mappers.VoronoiMapper(pixels=self.pixels, grids=grids, border=None,
                                      pixel_neighbors=pixel_neighbors,
                                      pixel_centers=pixel_centers, voronoi=voronoi,
                                      voronoi_to_pixelization=voronoi_to_pixelization,
@@ -396,7 +396,7 @@ class Cluster(Voronoi, AdaptiveImageGrid):
         voronoi = self.voronoi_from_pixel_centers(pixel_centers)
         pixel_neighbors = self.neighbors_from_pixelization(voronoi.ridge_points)
 
-        return mappers.VoronoiMapper(pixels=self.pixels, grids=relocated_grids, borders=border,
+        return mappers.VoronoiMapper(pixels=self.pixels, grids=relocated_grids, border=border,
                                      pixel_neighbors=pixel_neighbors,
                                      pixel_centers=pixel_centers, voronoi=voronoi,
                                      voronoi_to_pixelization=voronoi_to_pixelization,
