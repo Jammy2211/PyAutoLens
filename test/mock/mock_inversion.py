@@ -6,7 +6,7 @@ class MockPixelization(object):
         self.value = value
 
     # noinspection PyUnusedLocal,PyShadowingNames
-    def mapper_from_grids_and_borders(self, grids, borders):
+    def mapper_from_grids_and_border(self, grids, border):
         return self.value
 
     # noinspection PyUnusedLocal,PyShadowingNames

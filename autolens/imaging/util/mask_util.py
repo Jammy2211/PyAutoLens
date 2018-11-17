@@ -4,10 +4,19 @@ import numpy as np
 from astropy.io import fits
 
 from autolens import exc
+from autolens.imaging.util import mapping_util
+
+@numba.jit(nopython=True, cache=True)
+def mask_centres_from_shape_pixel_scale_and_centre(shape, pixel_scale, centre):
+
+    y_cen = (float(shape[0] - 1) / 2) - (centre[0] / pixel_scale)
+    x_cen = (float(shape[1] - 1) / 2) + (centre[1] / pixel_scale)
+
+    return y_cen, x_cen
 
 @numba.jit(nopython=True, cache=True)
 def total_image_pixels_from_mask(mask):
-    """Compute the total number of unmasked datas_ pixels in a masks."""
+    """Compute the total number of unmasked image pixels in a masks."""
 
     total_image_pixels = 0
 
@@ -20,102 +29,16 @@ def total_image_pixels_from_mask(mask):
 
 @numba.jit(nopython=True, cache=True)
 def total_sub_pixels_from_mask_and_sub_grid_size(mask, sub_grid_size):
-    """Compute the total number of sub-pixels in unmasked datas_ pixels in a masks."""
+    """Compute the total number of sub-pixels in unmasked image pixels in a masks."""
     return total_image_pixels_from_mask(mask) * sub_grid_size ** 2
 
 @numba.jit(nopython=True, cache=True)
-def total_edge_pixels_from_mask(mask):
-    """Compute the total number of border-pixels in a masks."""
-
-    border_pixel_total = 0
-
-    for y in range(mask.shape[0]):
-        for x in range(mask.shape[1]):
-            if not mask[y, x]:
-                if mask[y + 1, x] or mask[y - 1, x] or mask[y, x + 1] or mask[y, x - 1] or \
-                        mask[y + 1, x + 1] or mask[y + 1, x - 1] or mask[y - 1, x + 1] or mask[y - 1, x - 1]:
-                    border_pixel_total += 1
-
-    return border_pixel_total
-
-@numba.jit(nopython=True, cache=True)
-def edge_pixels_from_mask(mask):
-    """Compute a 1D array listing all border pixel indexes in the masks. A border pixel is a pixel which is not fully \
-    surrounding by False masks values i.e. it is on an edge."""
-
-    border_pixel_total = total_edge_pixels_from_mask(mask)
-
-    border_pixels = np.zeros(border_pixel_total)
-    border_index = 0
-    image_index = 0
-
-    for y in range(mask.shape[0]):
-        for x in range(mask.shape[1]):
-            if not mask[y, x]:
-                if mask[y + 1, x] or mask[y - 1, x] or mask[y, x + 1] or mask[y, x - 1] or \
-                        mask[y + 1, x + 1] or mask[y + 1, x - 1] or mask[y - 1, x + 1] or mask[y - 1, x - 1]:
-                    border_pixels[border_index] = image_index
-                    border_index += 1
-
-                image_index += 1
-
-    return border_pixels
-
-@numba.jit(nopython=True, cache=True)
-def edge_sub_pixels_from_mask_pixel_scales_and_sub_grid_size(mask, pixel_scales, sub_grid_size):
-    """Compute a 1D array listing all sub-pixel border pixel indexes in the masks. A border sub-pixel is a sub-pixel \
-    whose datas_ pixel is not fully surrounded by False masks values and it is closest to the edge."""
-    border_pixel_total = total_edge_pixels_from_mask(mask)
-    border_sub_pixels = np.zeros(border_pixel_total)
-
-    image_index = 0
-
-    y_cen = float(mask.shape[0] - 1) / 2
-    x_cen = float(mask.shape[1] - 1) / 2
-
-    y_sub_half = pixel_scales[0] / 2
-    y_sub_step = pixel_scales[0] / (sub_grid_size + 1)
-
-    x_sub_half = pixel_scales[1] / 2
-    x_sub_step = pixel_scales[1] / (sub_grid_size + 1)
-
-    border_index = 0
-
-    for y in range(mask.shape[0]):
-        for x in range(mask.shape[1]):
-            if not mask[y, x]:
-                if mask[y + 1, x] or mask[y - 1, x] or mask[y, x + 1] or mask[y, x - 1] or \
-                        mask[y + 1, x + 1] or mask[y + 1, x - 1] or mask[y - 1, x + 1] or mask[y - 1, x - 1]:
-
-                    y_arcsec = (y - y_cen) * pixel_scales[0]
-                    x_arcsec = (x - x_cen) * pixel_scales[1]
-
-                    sub_grid = np.zeros((sub_grid_size ** 2, 2))
-                    sub_index = 0
-
-                    for y1 in range(sub_grid_size):
-                        for x1 in range(sub_grid_size):
-                            sub_grid[sub_index, 0] = y_arcsec - y_sub_half + (y1 + 1) * y_sub_step
-                            sub_grid[sub_index, 1] = x_arcsec - x_sub_half + (x1 + 1) * x_sub_step
-                            sub_index += 1
-
-                    sub_grid_radii = np.add(np.square(sub_grid[:, 0]), np.square(sub_grid[:, 1]))
-                    border_sub_index = image_index * (sub_grid_size ** 2) + np.argmax(sub_grid_radii)
-                    border_sub_pixels[border_index] = border_sub_index
-                    border_index += 1
-
-                image_index += 1
-
-    return border_sub_pixels
-
-@numba.jit(nopython=True, cache=True)
 def mask_circular_from_shape_pixel_scale_and_radius(shape, pixel_scale, radius_arcsec, centre=(0.0, 0.0)):
-    """Compute a circular masks from an input masks radius and datas_ shape."""
+    """Compute a circular masks from an input masks radius and image shape."""
 
     mask = np.full(shape, True)
 
-    y_cen = (float(mask.shape[0] - 1) / 2) - (centre[0] / pixel_scale)
-    x_cen = (float(mask.shape[1] - 1) / 2) + (centre[1] / pixel_scale)
+    y_cen, x_cen = mask_centres_from_shape_pixel_scale_and_centre(shape=mask.shape, pixel_scale=pixel_scale, centre=centre)
 
     for y in range(mask.shape[0]):
         for x in range(mask.shape[1]):
@@ -133,12 +56,11 @@ def mask_circular_from_shape_pixel_scale_and_radius(shape, pixel_scale, radius_a
 @numba.jit(nopython=True, cache=True)
 def mask_annular_from_shape_pixel_scale_and_radii(shape, pixel_scale, inner_radius_arcsec, outer_radius_arcsec,
                                                   centre=(0.0, 0.0)):
-    """Compute an annular masks from an input inner and outer masks radius and datas_ shape."""
+    """Compute an annular masks from an input inner and outer masks radius and image shape."""
 
     mask = np.full(shape, True)
 
-    y_cen = (float(mask.shape[0] - 1) / 2) - (centre[0] / pixel_scale)
-    x_cen = (float(mask.shape[1] - 1) / 2) + (centre[1] / pixel_scale)
+    y_cen, x_cen = mask_centres_from_shape_pixel_scale_and_centre(shape=mask.shape, pixel_scale=pixel_scale, centre=centre)
 
     for y in range(mask.shape[0]):
         for x in range(mask.shape[1]):
@@ -152,15 +74,16 @@ def mask_annular_from_shape_pixel_scale_and_radii(shape, pixel_scale, inner_radi
                 mask[y, x] = False
 
     return mask
+
 @numba.jit(nopython=True, cache=True)
 def mask_anti_annular_from_shape_pixel_scale_and_radii(shape, pixel_scale, inner_radius_arcsec, outer_radius_arcsec,
                                                        outer_radius_2_arcsec, centre=(0.0, 0.0)):
-    """Compute an annular masks from an input inner and outer masks radius and datas_ shape."""
+    """Compute an annular masks from an input inner and outer masks radius and image shape."""
 
     mask = np.full(shape, True)
 
-    y_cen = (float(mask.shape[1] - 1) / 2) - (centre[1] / pixel_scale)
-    x_cen = (float(mask.shape[0] - 1) / 2) + (centre[0] / pixel_scale)
+    y_cen, x_cen = mask_centres_from_shape_pixel_scale_and_centre(shape=mask.shape, pixel_scale=pixel_scale,
+                                                                  centre=centre)
 
     for y in range(mask.shape[0]):
         for x in range(mask.shape[1]):
@@ -216,3 +139,98 @@ def masked_grid_1d_index_to_2d_pixel_index_from_mask(mask):
                 pixel_count += 1
 
     return grid_to_pixel
+
+@numba.jit(nopython=True, cache=True)
+def total_edge_pixels_from_mask(mask):
+    """Compute the total number of border-pixels in a masks."""
+
+    border_pixel_total = 0
+
+    for y in range(mask.shape[0]):
+        for x in range(mask.shape[1]):
+            if not mask[y, x]:
+                if mask[y + 1, x] or mask[y - 1, x] or mask[y, x + 1] or mask[y, x - 1] or \
+                        mask[y + 1, x + 1] or mask[y + 1, x - 1] or mask[y - 1, x + 1] or mask[y - 1, x - 1]:
+                    border_pixel_total += 1
+
+    return border_pixel_total
+
+@numba.jit(nopython=True, cache=True)
+def edge_pixels_from_mask(mask):
+    """Compute a 1D array listing all edge pixel indexes in the masks. An edge pixel is a pixel which is not fully \
+    surrounding by False masks values i.e. it is on an edge."""
+
+    edge_pixel_total = total_edge_pixels_from_mask(mask)
+
+    edge_pixels = np.zeros(edge_pixel_total)
+    edge_index = 0
+    image_index = 0
+
+    for y in range(mask.shape[0]):
+        for x in range(mask.shape[1]):
+            if not mask[y, x]:
+                if mask[y + 1, x] or mask[y - 1, x] or mask[y, x + 1] or mask[y, x - 1] or \
+                        mask[y + 1, x + 1] or mask[y + 1, x - 1] or mask[y - 1, x + 1] or mask[y - 1, x - 1]:
+                    edge_pixels[edge_index] = image_index
+                    edge_index += 1
+
+                image_index += 1
+
+    return edge_pixels
+
+@numba.jit(nopython=True, cache=True)
+def check_if_border_pixel(mask, edge_pixel_1d, masked_grid_index_to_pixel):
+
+    edge_pixel_index = int(edge_pixel_1d)
+
+    y = int(masked_grid_index_to_pixel[edge_pixel_index, 0])
+    x = int(masked_grid_index_to_pixel[edge_pixel_index, 1])
+
+    if np.sum(mask[0:y, x]) == y or \
+            np.sum(mask[y, x:mask.shape[1]]) == mask.shape[1] - x - 1 or \
+            np.sum(mask[y:mask.shape[0], x]) == mask.shape[0] - y - 1 or \
+            np.sum(mask[y, 0:x]) == x:
+        return True
+    else:
+        return False
+
+@numba.jit(nopython=True, cache=True)
+def total_border_pixels_from_mask_and_edge_pixels(mask, edge_pixels, masked_grid_index_to_pixel):
+    """Compute the total number of border-pixels in a masks."""
+
+    border_pixel_total = 0
+
+    for i in range(edge_pixels.shape[0]):
+
+        if check_if_border_pixel(mask, edge_pixels[i], masked_grid_index_to_pixel):
+            border_pixel_total += 1
+
+    return border_pixel_total
+
+@numba.jit(nopython=True, cache=True)
+def border_pixels_from_mask(mask):
+    """Compute a 1D array listing all border pixel indexes in the masks. A border pixel is a pixel which:
+
+     1) is not fully surrounding by False masks values.
+     2) Can reach the edge of the array without hitting a masked pixel in one of four directions (upwards, downwards,
+     left, right).
+
+     The border pixels are thus pixels which are on the exterior edge of the mask. For example, the inner ring of edge \
+     pixels in an annular mask are edge pixels but not border pixels."""
+
+    edge_pixels = edge_pixels_from_mask(mask)
+    masked_grid_index_to_pixel = masked_grid_1d_index_to_2d_pixel_index_from_mask(mask)
+
+    border_pixel_total = total_border_pixels_from_mask_and_edge_pixels(mask, edge_pixels, masked_grid_index_to_pixel)
+
+    border_pixels = np.zeros(border_pixel_total)
+
+    border_pixel_index = 0
+
+    for edge_pixel_index in range(edge_pixels.shape[0]):
+
+        if check_if_border_pixel(mask, edge_pixels[edge_pixel_index], masked_grid_index_to_pixel):
+            border_pixels[border_pixel_index] = edge_pixels[edge_pixel_index]
+            border_pixel_index += 1
+
+    return border_pixels

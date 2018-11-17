@@ -9,6 +9,90 @@ from autolens.imaging.util import mapping_util
 test_data_dir = "{}/../test_files/array/".format(os.path.dirname(os.path.realpath(__file__)))
 
 
+class TestMap1dIndexesTo2dIndex(object):
+
+    def test__9_1d_indexes_from_0_to_8__map_to_shape_3x3(self):
+
+        indexes_1d = np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])
+
+        indexes_2d = mapping_util.map_1d_indexes_to_2d_indexes_for_shape(indexes_1d=indexes_1d, shape=(3,3))
+
+        assert (indexes_2d == np.array([[0,0], [0,1], [0,2],
+                                        [1,0], [1,1], [1,2],
+                                        [2,0], [2,1], [2,2]])).all()
+
+    def test__6_1d_indexes_from_0_to_5__map_to_shape_2x3(self):
+
+        indexes_1d = np.array([0, 1, 2, 3, 4, 5])
+
+        indexes_2d = mapping_util.map_1d_indexes_to_2d_indexes_for_shape(indexes_1d=indexes_1d, shape=(2,3))
+
+        assert (indexes_2d == np.array([[0,0], [0,1], [0,2],
+                                        [1,0], [1,1], [1,2]])).all()
+
+    def test__6_1d_indexes_from_0_to_5__map_to_shape_3x2(self):
+
+        indexes_1d = np.array([0, 1, 2, 3, 4, 5])
+
+        indexes_2d = mapping_util.map_1d_indexes_to_2d_indexes_for_shape(indexes_1d=indexes_1d, shape=(3,2))
+
+        assert (indexes_2d == np.array([[0,0], [0,1],
+                                        [1,0], [1,1],
+                                        [2,0], [2,1]])).all()
+
+    def test__9_1d_indexes_from_0_to_8_different_order__map_to_shape_3x3(self):
+
+        indexes_1d = np.array([1, 4, 7, 8, 0, 2, 3, 5, 6])
+
+        indexes_2d = mapping_util.map_1d_indexes_to_2d_indexes_for_shape(indexes_1d=indexes_1d, shape=(3,3))
+
+        assert (indexes_2d == np.array([[0,1], [1,1], [2,1],
+                                        [2,2], [0,0], [0,2],
+                                        [1,0], [1,2], [2,0]])).all()
+
+class TestMap2dIndexesTo1dIndex(object):
+
+    def test__9_2d_indexes_from_0_0_to_2_2__map_to_shape_3x3(self):
+
+        indexes_2d = np.array([[0,0], [0,1], [0,2],
+                               [1,0], [1,1], [1,2],
+                               [2,0], [2,1], [2,2]])
+
+        indexes_1d = mapping_util.map_2d_indexes_to_1d_indexes_for_shape(indexes_2d=indexes_2d, shape=(3,3))
+
+        assert (indexes_1d == np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])).all()
+
+    def test__6_1d_indexes_from_0_0_to_1_2__map_to_shape_2x3(self):
+
+        indexes_2d =np.array([[0,0], [0,1], [0,2],
+                              [1,0], [1,1], [1,2]])
+
+        indexes_1d = mapping_util.map_2d_indexes_to_1d_indexes_for_shape(indexes_2d=indexes_2d, shape=(2,3))
+
+        assert (indexes_1d == np.array([0, 1, 2, 3, 4, 5])).all()
+
+    def test__6_1d_indexes_from_0_0_to_2_1__map_to_shape_3x2(self):
+
+        indexes_2d =np.array([[0,0], [0,1],
+                              [1,0], [1,1],
+                              [2,0], [2,1]])
+
+
+        indexes_1d = mapping_util.map_2d_indexes_to_1d_indexes_for_shape(indexes_2d=indexes_2d, shape=(3,2))
+
+        assert (indexes_1d == np.array([0, 1, 2, 3, 4, 5])).all()
+
+    def test__9_1d_indexes_from_0_0_to_2_2_different_order__map_to_shape_3x3(self):
+
+        indexes_2d = np.array([[0,1], [1,1], [2,1],
+                               [2,2], [0,0], [0,2],
+                               [1,0], [1,2], [2,0]])
+
+
+        indexes_1d = mapping_util.map_2d_indexes_to_1d_indexes_for_shape(indexes_2d=indexes_2d, shape=(3,3))
+
+        assert (indexes_1d == np.array([1, 4, 7, 8, 0, 2, 3, 5, 6])).all()
+
 class TestSubToImage(object):
 
     def test__3x3_mask_with_1_pixel__2x2_sub_grid__correct_sub_to_image(self):

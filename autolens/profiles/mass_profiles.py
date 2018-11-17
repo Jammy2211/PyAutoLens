@@ -13,6 +13,7 @@ from autolens.profiles import light_profiles
 
 
 def jit_integrand(integrand_function):
+
     jitted_function = numba.jit(integrand_function, nopython=True, cache=True)
     no_args = len(inspect.getfullargspec(integrand_function).args)
 
@@ -166,6 +167,7 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
             The factor the dimensionless mass is multiplied by to convert it to a physical mass.
         """
         return conversion_factor*self.dimensionless_mass_within_ellipse(major_axis=major_axis)
+
 
 class EllipticalCoredPowerLaw(EllipticalMassProfile, MassProfile):
 
