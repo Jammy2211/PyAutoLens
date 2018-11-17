@@ -59,16 +59,16 @@ def test_grids():
     return msk.ImagingGrids.from_shape_and_pixel_scale(shape=(100, 100), pixel_scale=0.05, sub_grid_size=2)
 
 @pytest.fixture(name='border')
-def test_borders(mask):
-    return msk.ImagingGridBorders.from_mask(mask=mask, sub_grid_size=1)
+def test_border(mask):
+    return msk.ImageGridBorder.from_mask(mask=mask)
 
 @pytest.fixture(name='rectangular_pixelization')
 def test_rectangular_pixelization():
     return pix.Rectangular(shape=(25, 25))
 
 @pytest.fixture(name='rectangular_mapper')
-def test_rectangular_mapper(rectangular_pixelization, grids, borders):
-    return rectangular_pixelization.mapper_from_grids_and_border(grids=grids, border=borders)
+def test_rectangular_mapper(rectangular_pixelization, grids, border):
+    return rectangular_pixelization.mapper_from_grids_and_border(grids=grids, border=border)
 
 def test__image_and_rectangular_mapper_is_output(image, rectangular_mapper, mapper_plotter_path):
 

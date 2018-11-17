@@ -51,7 +51,7 @@ class TestMappingMatrix:
         grids = MockGridCollection(image=three_pixels, sub=MockSubGrid(three_pixels, sub_to_image,
                                                                        sub_grid_size=1))
 
-        pix = mappers.Mapper(pixels=6, grids=grids, borders=None, pixel_neighbors=None)
+        pix = mappers.Mapper(pixels=6, grids=grids, border=None, pixel_neighbors=None)
 
         mapping_matrix = pix.mapping_matrix_from_sub_to_pix_jit(sub_to_pixelization, pix.pixels,
                                                                 pix.grids.image.shape[0], pix.grids.sub.sub_to_image,
@@ -68,7 +68,7 @@ class TestMappingMatrix:
         grids = MockGridCollection(image=five_pixels, sub=MockSubGrid(five_pixels, sub_to_image,
                                                                       sub_grid_size=1))
 
-        pix = mappers.Mapper(pixels=8, grids=grids, borders=None, pixel_neighbors=None)
+        pix = mappers.Mapper(pixels=8, grids=grids, border=None, pixel_neighbors=None)
 
         mapping_matrix = pix.mapping_matrix_from_sub_to_pix_jit(sub_to_pixelization, pix.pixels,
                                                                 pix.grids.image.shape[0], pix.grids.sub.sub_to_image,
@@ -88,7 +88,7 @@ class TestMappingMatrix:
         grids = MockGridCollection(image=five_pixels, sub=MockSubGrid(five_pixels, sub_to_image,
                                                                       sub_grid_size=2))
 
-        pix = mappers.Mapper(pixels=8, grids=grids, borders=None, pixel_neighbors=None)
+        pix = mappers.Mapper(pixels=8, grids=grids, border=None, pixel_neighbors=None)
 
         mapping_matrix = pix.mapping_matrix_from_sub_to_pix_jit(sub_to_pixelization, pix.pixels,
                                                                 pix.grids.image.shape[0], pix.grids.sub.sub_to_image,
@@ -108,7 +108,7 @@ class TestMappingMatrix:
         grids = MockGridCollection(image=five_pixels, sub=MockSubGrid(five_pixels, sub_to_image,
                                                                       sub_grid_size=2))
 
-        pix = mappers.Mapper(pixels=8, grids=grids, borders=None, pixel_neighbors=None)
+        pix = mappers.Mapper(pixels=8, grids=grids, border=None, pixel_neighbors=None)
 
         mapping_matrix = pix.mapping_matrix_from_sub_to_pix_jit(sub_to_pixelization, pix.pixels,
                                                                 pix.grids.image.shape[0], pix.grids.sub.sub_to_image,
@@ -133,7 +133,7 @@ class TestMappingMatrix:
         grids = MockGridCollection(image=three_pixels, sub=MockSubGrid(three_pixels, sub_to_image,
                                                                        sub_grid_size=4))
 
-        pix = mappers.Mapper(pixels=6, grids=grids, borders=None, pixel_neighbors=None)
+        pix = mappers.Mapper(pixels=6, grids=grids, border=None, pixel_neighbors=None)
 
         mapping_matrix = pix.mapping_matrix_from_sub_to_pix_jit(sub_to_pixelization, pix.pixels,
                                                                 pix.grids.image.shape[0], pix.grids.sub.sub_to_image,
@@ -632,7 +632,7 @@ class TestVoronoiPixMapper:
             voronoi_to_pixelization = np.array([0, 1, 2, 3])
             image_to_voronoi = np.array([0, 0, 1, 0, 0, 1, 2, 2, 3])
 
-            mapper = mappers.VoronoiMapper(pixels=6, grids=grids, borders=None, pixel_neighbors=pixel_neighbors,
+            mapper = mappers.VoronoiMapper(pixels=6, grids=grids, border=None, pixel_neighbors=pixel_neighbors,
                                            pixel_centers=pixel_centers, voronoi=voronoi,
                                            voronoi_to_pixelization=voronoi_to_pixelization,
                                            image_to_voronoi=image_to_voronoi)
@@ -665,7 +665,7 @@ class TestVoronoiPixMapper:
             voronoi_to_pixelization = np.array([0, 1, 2, 3])
             image_to_voronoi = np.array([0, 0, 1, 0, 0, 1, 2, 2, 3])
 
-            mapper = mappers.VoronoiMapper(pixels=6, grids=grids, borders=None, pixel_neighbors=pixel_neighbors,
+            mapper = mappers.VoronoiMapper(pixels=6, grids=grids, border=None, pixel_neighbors=pixel_neighbors,
                                            pixel_centers=pixel_centers, voronoi=voronoi,
                                            voronoi_to_pixelization=voronoi_to_pixelization,
                                            image_to_voronoi=image_to_voronoi)
