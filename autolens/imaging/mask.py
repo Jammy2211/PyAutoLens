@@ -810,7 +810,8 @@ class ImageGridBorder(np.ndarray):
                                                 np.square(grid[pixel_index, 1] - border_grid[:, 1]))
 
                 move_factor = border_grid_radii[closest_pixel_index] / grid_radii[pixel_index]
-                grid[pixel_index, :] = move_factor*(grid[pixel_index, :] - border_origin[:]) + border_origin[:]
+                if move_factor < 1.0:
+                    grid[pixel_index, :] = move_factor*(grid[pixel_index, :] - border_origin[:]) + border_origin[:]
 
         return grid
 
