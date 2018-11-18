@@ -391,7 +391,7 @@ class PSF(ScaledSquarePixelArray):
     @classmethod
     def simulate_as_gaussian(cls, shape, pixel_scale, sigma, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0):
         """Simulate the PSF as an elliptical Gaussian profile."""
-        from autolens.profiles.light_profiles import EllipticalGaussian
+        from autolens.model.profiles.light_profiles import EllipticalGaussian
         gaussian = EllipticalGaussian(centre=centre, axis_ratio=axis_ratio, phi=phi, intensity=1.0, sigma=sigma)
         grid_1d = grid_util.image_grid_1d_masked_from_mask_pixel_scales_and_origin(mask=np.full(shape, False),
                                                                                    pixel_scales=(pixel_scale, pixel_scale))

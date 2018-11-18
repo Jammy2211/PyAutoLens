@@ -7,8 +7,9 @@ import math
 from autolens import conf
 from autolens import exc
 from autolens.autofit import model_mapper
-from autolens.galaxy import galaxy as g, galaxy, galaxy_model
-from autolens.profiles import geometry_profiles, light_profiles, mass_profiles
+from autolens.model.galaxy import galaxy as g
+from autolens.model.galaxy import galaxy, galaxy_model
+from autolens.model.profiles import geometry_profiles, light_profiles, mass_profiles
 
 data_path = "{}/../".format(os.path.dirname(os.path.realpath(__file__)))
 

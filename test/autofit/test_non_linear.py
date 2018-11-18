@@ -8,7 +8,7 @@ import pytest
 from autolens import conf
 from autolens.autofit import model_mapper
 from autolens.autofit import non_linear
-from autolens.profiles import light_profiles, mass_profiles
+from autolens.model.profiles import light_profiles, mass_profiles
 
 pytestmark = pytest.mark.filterwarnings('ignore::FutureWarning')
 

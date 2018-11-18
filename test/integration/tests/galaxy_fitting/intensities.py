@@ -1,13 +1,12 @@
 import os
 import numpy as np
 
-from autolens.galaxy import galaxy as g
-from autolens.galaxy import galaxy_model as gm
+from autolens.model.galaxy import galaxy as g, galaxy_model as gm
 from autolens.imaging.util import grid_util
 from autolens.imaging import scaled_array
 from autolens.imaging import mask
 from autolens.pipeline import phase as ph
-from autolens.profiles import light_profiles as lp
+from autolens.model.profiles import light_profiles as lp
 from test.integration import tools
 
 dirpath = os.path.dirname(os.path.realpath(__file__))

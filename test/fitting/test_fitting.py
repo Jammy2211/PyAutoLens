@@ -5,7 +5,7 @@ from autolens.imaging import image as im
 from autolens.imaging import mask as msk
 from autolens.fitting import fitting
 from autolens.fitting import fitting_data as fit_data
-from autolens.galaxy import galaxy as g
+from autolens.model.galaxy import galaxy as g
 from autolens.lensing import lensing_image
 from test.mock.mock_galaxy import MockHyperGalaxy
 

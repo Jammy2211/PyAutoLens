@@ -429,12 +429,12 @@ def deflections_from_grid_collection(grid_collection, galaxies):
     return grid_collection.apply_function(lambda grid: deflections_from_sub_grid(grid, galaxies))
 
 
-def plane_image_from_grid_and_galaxies(shape, grid, galaxies):
+def plane_image_from_grid_and_galaxies(shape, grid, galaxies, buffer=1.0e-2):
 
-    y_min = np.min(grid[:, 0])
-    y_max = np.max(grid[:, 0])
-    x_min = np.min(grid[:, 1])
-    x_max = np.max(grid[:, 1])
+    y_min = np.min(grid[:, 0]) - buffer
+    y_max = np.max(grid[:, 0]) + buffer
+    x_min = np.min(grid[:, 1]) - buffer
+    x_max = np.max(grid[:, 1]) + buffer
 
     pixel_scales = (float((y_max - y_min) / shape[0]), float((x_max - x_min) / shape[1]))
     origin = ((y_max + y_min) / 2.0, (x_max + x_min) / 2.0)
@@ -447,6 +447,8 @@ def plane_image_from_grid_and_galaxies(shape, grid, galaxies):
     image_1d = sum([intensities_from_grid(uniform_grid, [galaxy]) for galaxy in galaxies])
 
     image_2d = mapping_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(array_1d=image_1d, shape=shape)
+
+    im = PlaneImage(array=image_2d, pixel_scales=pixel_scales, grid=grid, origin=origin)
 
     return PlaneImage(array=image_2d, pixel_scales=pixel_scales, grid=grid, origin=origin)
 

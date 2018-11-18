@@ -6,11 +6,10 @@ from autolens import exc
 from autolens.imaging import mask
 from autolens.inversion import pixelizations
 from autolens.inversion import regularization
-from autolens.galaxy import galaxy as g
+from autolens.model.galaxy import galaxy as g
 from autolens.lensing import plane as pl
 from autolens.lensing import ray_tracing
-from autolens.profiles import light_profiles as lp
-from autolens.profiles import mass_profiles as mp
+from autolens.model.profiles import light_profiles as lp, mass_profiles as mp
 from test.mock.mock_inversion import MockRegularization, MockPixelization
 from test.mock.mock_imaging import MockBorders
 

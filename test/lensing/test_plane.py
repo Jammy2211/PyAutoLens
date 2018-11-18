@@ -7,10 +7,9 @@ from autolens.imaging.util import mapping_util
 from autolens.imaging import mask
 from autolens.inversion import pixelizations
 from autolens.inversion import regularization
-from autolens.galaxy import galaxy as g
+from autolens.model.galaxy import galaxy as g
 from autolens.lensing import plane as pl
-from autolens.profiles import light_profiles as lp
-from autolens.profiles import mass_profiles as mp
+from autolens.model.profiles import light_profiles as lp, mass_profiles as mp
 from test.mock.mock_inversion import MockRegularization, MockPixelization
 from test.mock.mock_imaging import MockBorders
 
@@ -1420,7 +1419,7 @@ class TestPlaneImageFromGrid:
 
         grid = np.array([[-1.5, -1.5], [1.5, 1.5]])
 
-        plane_image = pl.plane_image_from_grid_and_galaxies(shape=(3, 3), grid=grid, galaxies=[galaxy])
+        plane_image = pl.plane_image_from_grid_and_galaxies(shape=(3, 3), grid=grid, galaxies=[galaxy], buffer=0.0)
 
         plane_image_galaxy = galaxy.intensities_from_grid(grid=np.array([[-1.0, -1.0], [-1.0, 0.0], [-1.0, 1.0],
                                                                            [0.0, -1.0], [0.0, 0.0], [0.0, 1.0],
@@ -1437,7 +1436,7 @@ class TestPlaneImageFromGrid:
 
         grid = np.array([[-1.5, -1.5], [1.5, 1.5], [0.1, -0.1], [-1.0, 0.6], [1.4, -1.3], [1.5, 1.5]])
 
-        plane_image = pl.plane_image_from_grid_and_galaxies(shape=(3, 3), grid=grid, galaxies=[galaxy])
+        plane_image = pl.plane_image_from_grid_and_galaxies(shape=(3, 3), grid=grid, galaxies=[galaxy], buffer=0.0)
 
         plane_image_galaxy = galaxy.intensities_from_grid(grid=np.array([[-1.0, -1.0], [-1.0, 0.0], [-1.0, 1.0],
                                                                            [0.0, -1.0], [0.0, 0.0], [0.0, 1.0],
@@ -1454,7 +1453,7 @@ class TestPlaneImageFromGrid:
 
         grid = np.array([[-1.5, -1.5], [1.5, 1.5]])
 
-        plane_image = pl.plane_image_from_grid_and_galaxies(shape=(2, 3), grid=grid, galaxies=[galaxy])
+        plane_image = pl.plane_image_from_grid_and_galaxies(shape=(2, 3), grid=grid, galaxies=[galaxy], buffer=0.0)
 
         plane_image_galaxy = galaxy.intensities_from_grid(grid=np.array([[-0.75, -1.0], [-0.75, 0.0], [-0.75, 1.0],
                                                                           [0.75, -1.0], [0.75, 0.0], [0.75, 1.0]]))
@@ -1470,7 +1469,7 @@ class TestPlaneImageFromGrid:
 
         grid = np.array([[-1.5, -1.5], [1.5, 1.5]])
 
-        plane_image = pl.plane_image_from_grid_and_galaxies(shape=(3, 2), grid=grid, galaxies=[galaxy])
+        plane_image = pl.plane_image_from_grid_and_galaxies(shape=(3, 2), grid=grid, galaxies=[galaxy], buffer=0.0)
 
         plane_image_galaxy = galaxy.intensities_from_grid(grid=np.array([[-1.0, -0.75], [-1.0, 0.75],
                                                                           [0.0, -0.75], [0.0, 0.75],
@@ -1481,6 +1480,23 @@ class TestPlaneImageFromGrid:
 
         assert (plane_image == plane_image_galaxy).all()
 
+    def test__3x3_grid__buffer_aligns_two_grids(self):
+
+        galaxy = g.Galaxy(light=lp.EllipticalSersic(intensity=1.0))
+
+        grid_without_buffer = np.array([[-1.48, -1.48], [1.48, 1.48]])
+
+        plane_image = pl.plane_image_from_grid_and_galaxies(shape=(3, 3), grid=grid_without_buffer, galaxies=[galaxy],
+                                                            buffer=0.02)
+
+        plane_image_galaxy = galaxy.intensities_from_grid(grid=np.array([[-1.0, -1.0], [-1.0, 0.0], [-1.0, 1.0],
+                                                                           [0.0, -1.0], [0.0, 0.0], [0.0, 1.0],
+                                                                           [1.0, -1.0], [1.0, 0.0], [1.0, 1.0]]))
+
+        plane_image_galaxy = mapping_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(
+            array_1d=plane_image_galaxy, shape=(3,3))
+
+        assert (plane_image == plane_image_galaxy).all()
 
 class TestPlaneImage:
 
