@@ -8,6 +8,7 @@ from autolens.lensing import lensing_image as li
 from autolens.lensing import lensing_fitting
 from autolens.inversion import pixelizations as pix
 from autolens.inversion import regularization as reg
+from autolens.plotting import imaging_plotters
 from autolens.plotting import lensing_fitting_plotters
 from autolens.plotting import inversion_plotters
 
@@ -44,6 +45,8 @@ def simulate():
 
 # We're going to perform a lot of fits using an inversion this tutorial. This would create a lot of code, so to keep
 # things tidy, I've setup this function which handles it all for us.
+# (You may notice we include a border in the tracer, instead of setting it to None - just ignore this for now, as we'll
+# be covering borders in the next tutorial)
 def perform_fit_with_source_galaxy(source_galaxy):
 
     image = simulate()
@@ -53,7 +56,7 @@ def perform_fit_with_source_galaxy(source_galaxy):
     lens_galaxy = g.Galaxy(
         mass=mp.EllipticalIsothermal(centre=(0.0, 0.0), axis_ratio=0.8, phi=135.0, einstein_radius=1.6))
     tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
-                                                 image_plane_grids=[lensing_image.grids], border=[lensing_image.border])
+                                                 image_plane_grids=[lensing_image.grids], border=lensing_image.border)
     return lensing_fitting.fit_lensing_image_with_tracer(lensing_image=lensing_image, tracer=tracer)
 
 # Okay, so lets look at our fit_normal from the previous tutorial in more detail. We'll use a higher resolution 40 x 40 grid.

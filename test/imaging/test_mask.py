@@ -919,21 +919,22 @@ class TestImageGridBorder(object):
 
     class TestFromMask:
 
-        def test__simple_mask_border_pixel_is_pixel(self):
+        def test__simple_mask_border_pixels_is_border(self):
 
-            msk = np.array([[True, True, True, True, True, True, True],
-                            [True, True, True, True, True, True, True],
-                            [True, True, True, True, True, True, True],
-                            [True, True, True, False, False, True, True],
-                            [True, True, True, True, True, True, True],
-                            [True, True, True, True, True, True, True],
-                            [True, True, True, True, True, True, True]])
+            msk = np.array([[False, False, False, False, False, False, False, True],
+                             [False, True, True, True, True, True, False, True],
+                             [False, True, False, False, False, True, False, True],
+                             [False, True, False, True, False, True, False, True],
+                             [False, True, False, False, False, True, False, True],
+                             [False, True, True, True, True, True, False, True],
+                             [False, False, False, False, False, False, False, True]])
 
             msk = mask.Mask(msk, pixel_scale=3.0)
 
             border = mask.ImageGridBorder.from_mask(msk)
 
-            assert (border == np.array([0, 1])).all()
+            assert (border == np.array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 13, 14, 17, 18, 22, 23, 24, 25,
+                                           26, 27, 28, 29, 30, 31])).all()
 
     class TestRelocateCoordinates(object):
 

@@ -5,7 +5,7 @@ from autolens.plotting import tools
 from autolens.plotting import tools_array
 
 
-def plot_image_subplot(image, plot_origin=True, mask=None, should_plot_border=True, positions=None,
+def plot_image_subplot(image, plot_origin=True, mask=None, should_plot_border=False, positions=None,
                        units='arcsec', kpc_per_arcsec=None, figsize=None, aspect='equal',
                        cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
                        cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,

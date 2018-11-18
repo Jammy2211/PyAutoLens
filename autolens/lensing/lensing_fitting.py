@@ -345,11 +345,11 @@ class LensingInversionFit(fitting.AbstractInversionFit, AbstractLensingFit):
 
         AbstractLensingFit.__init__(self=self, tracer=tracer)
 
-        mapper = tracer.mappers_of_planes[0]
-        regularization = tracer.regularizations_of_planes[0]
+        self.mapper = tracer.mappers_of_planes[0]
+        self.regularization = tracer.regularizations_of_planes[0]
 
-        super(LensingInversionFit, self).__init__(fitting_images=lensing_images, mapper=mapper,
-                                                  regularization=regularization)
+        super(LensingInversionFit, self).__init__(fitting_images=lensing_images, mapper=self.mapper,
+                                                  regularization=self.regularization)
 
     @classmethod
     def fast_evidence(cls, lensing_images, tracer):
@@ -486,13 +486,13 @@ class LensingProfileInversionFit(fitting.AbstractProfileInversionFit, AbstractLe
             padded grids such that unmasked model-images can be computed.
         """
 
-        mapper = tracer.mappers_of_planes[0]
-        regularization = tracer.regularizations_of_planes[0]
+        self.mapper = tracer.mappers_of_planes[0]
+        self.regularization = tracer.regularizations_of_planes[0]
 
         AbstractLensingFit.__init__(self=self, tracer=tracer, padded_tracer=padded_tracer)
         super(LensingProfileInversionFit, self).__init__(fitting_images=lensing_images, images_=tracer.image_plane_images_,
                                                          blurring_images_=tracer.image_plane_blurring_images_,
-                                                         mapper=mapper, regularization=regularization)
+                                                         mapper=self.mapper, regularization=self.regularization)
 
     @classmethod
     def fast_evidence(cls, lensing_images, tracer):
