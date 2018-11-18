@@ -131,7 +131,8 @@ class ArrayGeometry(object):
 
     @property
     def arc_second_maxima(self):
-        return ((self.shape_arc_seconds[0] / 2.0) + self.origin[0], (self.shape_arc_seconds[1] / 2.0) + self.origin[1])
+        return ((self.shape_arc_seconds[0] / 2.0) + self.origin[0],
+                (self.shape_arc_seconds[1] / 2.0) + self.origin[1])
 
     @property
     def arc_second_minima(self):

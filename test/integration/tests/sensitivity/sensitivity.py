@@ -2,11 +2,10 @@ import os
 
 from autolens.autofit import non_linear as nl
 from autolens.autofit import model_mapper as mm
-from autolens.galaxy import galaxy, galaxy_model as gm
+from autolens.model.galaxy import galaxy, galaxy_model as gm
 from autolens.pipeline import phase as ph
 from autolens.pipeline import pipeline as pl
-from autolens.profiles import light_profiles as lp
-from autolens.profiles import mass_profiles as mp
+from autolens.model.profiles import light_profiles as lp, mass_profiles as mp
 from test.integration import tools
 
 dirpath = os.path.dirname(os.path.realpath(__file__))
@@ -23,7 +22,7 @@ def pipeline():
     lens_galaxy = galaxy.Galaxy(mass=mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=1.6),
                                 subhalo=mp.SphericalIsothermal(centre=(1.0, 1.0), einstein_radius=0.0))
     source_galaxy = galaxy.Galaxy(light=lp.SphericalSersic(centre=(0.0, 0.0), intensity=1.0, effective_radius=0.5,
-                                                            sersic_index=1.0))
+                                                           sersic_index=1.0))
 
     try:
         tools.simulate_integration_image(data_name=data_name, pixel_scale=0.05, lens_galaxies=[lens_galaxy],

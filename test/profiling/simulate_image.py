@@ -7,10 +7,9 @@ import matplotlib.pyplot as plt
 
 from autolens.imaging import image
 from autolens.imaging import mask
-from autolens.profiles import light_profiles as lp
-from autolens.profiles import mass_profiles as mp
+from autolens.model.profiles import light_profiles as lp, mass_profiles as mp
 from autolens.lensing import ray_tracing
-from autolens.galaxy import galaxy
+from autolens.model.galaxy import galaxy
 from imaging import array_util
 
 path = "{}/".format(os.path.dirname(os.path.realpath(__file__)))

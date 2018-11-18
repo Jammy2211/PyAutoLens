@@ -1,6 +1,5 @@
 from autolens.imaging import mask
-from autolens.profiles import light_profiles as lp
-from autolens.profiles import mass_profiles as mp
+from autolens.model.profiles import light_profiles as lp, mass_profiles as mp
 import numpy as np
 import pytest
 

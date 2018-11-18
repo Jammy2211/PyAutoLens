@@ -1,16 +1,16 @@
 from autolens.imaging import image as im
 from autolens.imaging import mask as ma
-from autolens.profiles import mass_profiles as mp
-from autolens.profiles import light_profiles as lp
-from autolens.galaxy import galaxy as g
+from autolens.model.profiles import light_profiles as lp
+from autolens.model.profiles import mass_profiles as mp
+from autolens.model.galaxy import galaxy as g
 from autolens.lensing import ray_tracing
 from autolens.lensing import lensing_image as li
 from autolens.lensing import lensing_fitting
 from autolens.inversion import pixelizations as pix
 from autolens.inversion import regularization as reg
-from autolens.plotting import imaging_plotters
-from autolens.plotting import lensing_fitting_plotters
-from autolens.plotting import inversion_plotters
+from autolens.lensing.plotters import lensing_fitting_plotters
+from autolens.inversion.plotters import inversion_plotters
+
 
 # So, we've seen that we can use an inversion to reconstruct an image. Furthermore, this reconstruction provides
 # us with the 'best-fit_normal' solution. And, indeed, when we inspect the fit_normal with the fitting module, we see residuals
@@ -24,7 +24,7 @@ from autolens.plotting import inversion_plotters
 def simulate():
 
     from autolens.imaging import mask
-    from autolens.galaxy import galaxy as g
+    from autolens.model.galaxy import galaxy as g
     from autolens.lensing import ray_tracing
 
     psf = im.PSF.simulate_as_gaussian(shape=(11, 11), sigma=0.05, pixel_scale=0.05)

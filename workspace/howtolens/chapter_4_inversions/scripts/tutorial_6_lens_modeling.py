@@ -1,14 +1,14 @@
 from autolens.imaging import image as im
 from autolens.imaging import mask as ma
-from autolens.profiles import mass_profiles as mp
-from autolens.profiles import light_profiles as lp
-from autolens.galaxy import galaxy as g
+from autolens.model.profiles import light_profiles as lp
+from autolens.model.profiles import mass_profiles as mp
+from autolens.model.galaxy import galaxy as g
 from autolens.lensing import ray_tracing
 from autolens.lensing import lensing_image as li
 from autolens.lensing import lensing_fitting
 from autolens.inversion import pixelizations as pix
 from autolens.inversion import regularization as reg
-from autolens.plotting import lensing_fitting_plotters
+from autolens.lensing.plotters import lensing_fitting_plotters
 
 
 # I think you'll agree, inversions are a very powerful tool for modeling strong lenses. Now that our source galaxies
@@ -24,7 +24,7 @@ from autolens.plotting import lensing_fitting_plotters
 def simulate():
 
     from autolens.imaging import mask
-    from autolens.galaxy import galaxy as g
+    from autolens.model.galaxy import galaxy as g
     from autolens.lensing import ray_tracing
 
     psf = im.PSF.simulate_as_gaussian(shape=(11, 11), sigma=0.05, pixel_scale=0.05)
@@ -104,7 +104,7 @@ print(correct_fit.evidences)
 def simulate_lens_with_light_profile():
 
     from autolens.imaging import mask
-    from autolens.galaxy import galaxy as g
+    from autolens.model.galaxy import galaxy as g
     from autolens.lensing import ray_tracing
 
     psf = im.PSF.simulate_as_gaussian(shape=(11, 11), sigma=0.05, pixel_scale=0.05)

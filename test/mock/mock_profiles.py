@@ -1,4 +1,4 @@
-from autolens.profiles import light_profiles as lp
+from autolens.model.profiles import light_profiles as lp
 
 import numpy as np
 

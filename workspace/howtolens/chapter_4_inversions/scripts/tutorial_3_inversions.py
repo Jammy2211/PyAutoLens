@@ -1,18 +1,18 @@
 from autolens.imaging import image as im
 from autolens.imaging import mask as ma
-from autolens.profiles import mass_profiles as mp
-from autolens.profiles import light_profiles as lp
-from autolens.galaxy import galaxy as g
+from autolens.model.profiles import light_profiles as lp
+from autolens.model.profiles import mass_profiles as mp
+from autolens.model.galaxy import galaxy as g
 from autolens.lensing import ray_tracing
 from autolens.lensing import lensing_image as li
 from autolens.lensing import lensing_fitting
 from autolens.inversion import pixelizations as pix
 from autolens.inversion import regularization as reg
 from autolens.inversion import inversions as inv
-from autolens.plotting import imaging_plotters
-from autolens.plotting import mapper_plotters
-from autolens.plotting import inversion_plotters
-from autolens.plotting import lensing_fitting_plotters
+from autolens.imaging.plotters import imaging_plotters
+from autolens.inversion.plotters import inversion_plotters, mapper_plotters
+from autolens.lensing.plotters import lensing_fitting_plotters
+
 
 # We've covered mappers, which, if I haven't emphasised it enough yet, map things. Now, we're going to look at how we
 # can use these mappers (which map things) to reconstruct the source model_galaxy - I hope you're excited!
@@ -22,7 +22,7 @@ from autolens.plotting import lensing_fitting_plotters
 def simulate():
 
     from autolens.imaging import mask
-    from autolens.galaxy import galaxy as g
+    from autolens.model.galaxy import galaxy as g
     from autolens.lensing import ray_tracing
 
     psf = im.PSF.simulate_as_gaussian(shape=(11, 11), sigma=0.05, pixel_scale=0.05)
@@ -76,7 +76,7 @@ inversion_plotters.plot_reconstructed_pixelization(inversion=inversion, should_p
 def simulate_complex_source():
 
     from autolens.imaging import mask
-    from autolens.galaxy import galaxy as g
+    from autolens.model.galaxy import galaxy as g
     from autolens.lensing import ray_tracing
 
     psf = im.PSF.simulate_as_gaussian(shape=(11, 11), sigma=0.05, pixel_scale=0.05)

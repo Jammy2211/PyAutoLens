@@ -3,7 +3,7 @@ import time
 import pytest
 from profiling import profiling_data
 
-from autolens.profiles import light_profiles
+from autolens.model.profiles import light_profiles
 
 subgrid_size = 2
 

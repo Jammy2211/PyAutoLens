@@ -1,7 +1,7 @@
-from autolens.profiles import mass_profiles
-from autolens.profiles import light_profiles
+from autolens.model.profiles import light_profiles
+from autolens.model.profiles import mass_profiles
 from autolens.imaging import mask
-from autolens.plotting import profile_plotters
+from autolens.model.profiles.plotters import profile_plotters
 
 # In this example, we'll create a grid of Cartesian (y,x) coordinates and pass it to the 'light_profiles'
 # module to create image on this grid and the 'mass_profiles' module to create deflection-angle maps on this grid.

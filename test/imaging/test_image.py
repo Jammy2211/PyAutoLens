@@ -1164,7 +1164,8 @@ class TestPSF(object):
     class TestSimulateAsGaussian(object):
 
         def test__identical_to_gaussian_light_profile(self):
-            from autolens.profiles import light_profiles as lp
+
+            from autolens.model.profiles import light_profiles as lp
 
             grid = grid_util.image_grid_1d_masked_from_mask_pixel_scales_and_origin(mask=np.full((3, 3), False),
                                                                                     pixel_scales=(1.0, 1.0))

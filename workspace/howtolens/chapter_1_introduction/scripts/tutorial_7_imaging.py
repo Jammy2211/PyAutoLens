@@ -1,11 +1,11 @@
 from autolens.imaging import image as im
 from autolens.imaging import mask
 from autolens.lensing import ray_tracing
-from autolens.galaxy import galaxy as g
-from autolens.profiles import light_profiles as lp
-from autolens.profiles import mass_profiles as mp
-from autolens.plotting import ray_tracing_plotters
-from autolens.plotting import imaging_plotters
+from autolens.model.galaxy import galaxy as g
+from autolens.model.profiles import light_profiles as lp
+from autolens.model.profiles import mass_profiles as mp
+from autolens.lensing.plotters import ray_tracing_plotters
+from autolens.imaging.plotters import imaging_plotters
 
 # In this example, we'll use the 'imaging' module (imported as 'im') to 'simulate' an image of a strong lens made
 # using a tracer_without_subhalo. By simulate, we mean that it will appear as if we had observed it using a real telescope,

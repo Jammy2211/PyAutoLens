@@ -4,7 +4,7 @@ import pytest
 from profiling import profiling_data
 from profiling import tools
 
-from autolens.profiles import light_profiles
+from autolens.model.profiles import light_profiles
 
 
 class FrameMakerOriginal(object):

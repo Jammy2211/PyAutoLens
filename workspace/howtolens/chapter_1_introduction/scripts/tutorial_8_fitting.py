@@ -2,13 +2,13 @@ from autolens.imaging import image as im
 from autolens.imaging import mask as ma
 from autolens.lensing import lensing_fitting
 from autolens.lensing import ray_tracing
-from autolens.galaxy import galaxy as g
+from autolens.model.galaxy import galaxy as g
 from autolens.lensing import lensing_image as li
-from autolens.profiles import light_profiles as lp
-from autolens.profiles import mass_profiles as mp
-from autolens.plotting import imaging_plotters
-from autolens.plotting import ray_tracing_plotters
-from autolens.plotting import lensing_fitting_plotters
+from autolens.model.profiles import light_profiles as lp
+from autolens.model.profiles import mass_profiles as mp
+from autolens.imaging.plotters import imaging_plotters
+from autolens.lensing.plotters import ray_tracing_plotters
+from autolens.lensing.plotters import lensing_fitting_plotters
 
 # In this example, we'll fit_normal the image we simulated in the previous exercise. We'll do this using model image generated
 # via a tracer_without_subhalo, and by compairing to the simulated image we'll get diagostics about the quality of the fit_normal.
