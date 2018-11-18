@@ -19,6 +19,17 @@ logger = logging.getLogger(__name__)
 SIMPLEX_TUPLE_WIDTH = 0.1
 
 
+class Analysis(object):
+    def fit(self, instance):
+        raise NotImplementedError()
+
+    def visualise(self, instance):
+        raise NotImplementedError()
+
+    def log(self, instance):
+        raise NotImplementedError()
+
+
 class Result(object):
 
     def __init__(self, constant, likelihood, variable=None):
