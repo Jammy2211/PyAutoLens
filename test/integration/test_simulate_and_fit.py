@@ -8,11 +8,10 @@ from autolens.imaging import image as im
 from autolens.imaging.util import array_util
 from autolens.imaging import mask as msk
 from autolens.lensing import lensing_fitting
-from autolens.galaxy import galaxy as g
+from autolens.model.galaxy import galaxy as g
 from autolens.lensing import lensing_image as li
 from autolens.lensing import ray_tracing
-from autolens.profiles import light_profiles as lp
-from autolens.profiles import mass_profiles as mp
+from autolens.model.profiles import light_profiles as lp, mass_profiles as mp
 
 
 def test__simulate_lensed_source_and_fit__no_psf_blurring__chi_squared_is_0__noise_term_correct():

@@ -6,10 +6,7 @@ import numpy as np
 from autolens import conf
 from autolens import exc
 from autolens.autofit import non_linear
-from autolens.galaxy import galaxy as g
-from autolens.galaxy import galaxy_data as gd
-from autolens.galaxy import galaxy_fitting
-from autolens.galaxy import galaxy_model as gm
+from autolens.model.galaxy import galaxy as g, galaxy_model as gm, galaxy_fitting, galaxy_data as gd
 from autolens.imaging import image as im
 from autolens.imaging import mask as msk
 from autolens.lensing import lensing_fitting
@@ -17,10 +14,9 @@ from autolens.lensing import lensing_image as li
 from autolens.lensing import ray_tracing
 from autolens.lensing import sensitivity_fitting
 from autolens.pipeline.phase_property import PhasePropertyCollection
-from autolens.plotting import galaxy_fitting_plotters
-from autolens.plotting import imaging_plotters
-from autolens.plotting import lensing_fitting_plotters
-from autolens.plotting import sensitivity_fitting_plotters
+from autolens.model.galaxy.plotters import galaxy_fitting_plotters
+from autolens.imaging.plotters import imaging_plotters
+from autolens.lensing.plotters import sensitivity_fitting_plotters, lensing_fitting_plotters
 
 logger = logging.getLogger(__name__)
 logger.level = logging.DEBUG

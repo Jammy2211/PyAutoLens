@@ -1,11 +1,10 @@
 import os
 
-from autolens import conf
 from autolens.autofit import non_linear as nl
-from autolens.galaxy import galaxy, galaxy_model as gm
+from autolens.model.galaxy import galaxy, galaxy_model as gm
 from autolens.pipeline import phase as ph
 from autolens.pipeline import pipeline as pl
-from autolens.profiles import light_profiles as lp
+from autolens.model.profiles import light_profiles as lp
 from test.integration import tools
 
 dirpath = os.path.dirname(os.path.realpath(__file__))

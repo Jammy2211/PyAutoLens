@@ -16,9 +16,9 @@ def make():
     from autolens.pipeline import phase
     from autolens.pipeline import pipeline
     from autolens.autofit import non_linear as nl
-    from autolens.galaxy import galaxy_model as gp
-    from autolens.profiles import light_profiles as lp
-    from autolens.profiles import mass_profiles as mp
+    from autolens.model.galaxy import galaxy_model as gp
+    from autolens.model.profiles import light_profiles as lp
+    from autolens.model.profiles import mass_profiles as mp
 
     phase1 = phase.LensSourcePlanePhase(lens_galaxies=[gp.GalaxyModel(light=lp.EllipticalSersic,
                                                                       mass=mp.EllipticalIsothermal)],

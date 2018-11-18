@@ -4,11 +4,11 @@ from autolens import conf
 from autolens.autofit import non_linear
 from autolens.imaging import image as im
 from autolens.imaging import mask as msk
-from autolens.profiles import light_profiles as lp
-from autolens.profiles import mass_profiles as mp
-from autolens.galaxy import galaxy as g
+from autolens.model.profiles import light_profiles as lp
+from autolens.model.profiles import mass_profiles as mp
+from autolens.model.galaxy import galaxy as g
 from autolens.pipeline import phase as ph
-from autolens.plotting import imaging_plotters
+from autolens.imaging.plotters import imaging_plotters
 
 # Now that we've learnt all the tools that we need to model strong lenses, I'm going to quickly cover how you should
 # choose your mask and show you a neat trick to improve the speed and accuracy of your non-linear search. We'll skip
@@ -23,7 +23,7 @@ conf.instance = conf.Config(config_path=conf.CONFIG_PATH, output_path=path+"outp
 def simulate():
 
     from autolens.imaging import mask
-    from autolens.galaxy import galaxy as g
+    from autolens.model.galaxy import galaxy as g
     from autolens.lensing import ray_tracing
 
     psf = im.PSF.simulate_as_gaussian(shape=(11, 11), sigma=0.1, pixel_scale=0.1)
@@ -122,7 +122,7 @@ phase_with_positions = ph.LensSourcePlanePhase(lens_galaxies=dict(lens_galaxy=g.
 def simulate_two_source_galaxies():
 
     from autolens.imaging import mask
-    from autolens.galaxy import galaxy as g
+    from autolens.model.galaxy import galaxy as g
     from autolens.lensing import ray_tracing
 
     psf = im.PSF.simulate_as_gaussian(shape=(11, 11), sigma=0.1, pixel_scale=0.1)

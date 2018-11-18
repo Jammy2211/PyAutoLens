@@ -3,7 +3,7 @@ import os
 from autolens.imaging import image as im
 from autolens.imaging import mask as ma
 from autolens.lensing import lensing_image as li
-from autolens.plotting import imaging_plotters
+from autolens.imaging.plotters import imaging_plotters
 from workspace.howtolens.loading_and_preparing_data import simulate_data
 
 # To model data with PyAutoLens, you first need to ensure it is in a format suitable for lens modeling. This tutorial

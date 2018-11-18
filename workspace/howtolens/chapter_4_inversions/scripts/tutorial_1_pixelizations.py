@@ -1,9 +1,9 @@
-from autolens.profiles import mass_profiles as mp
-from autolens.galaxy import galaxy as g
+from autolens.model.profiles import mass_profiles as mp
+from autolens.model.galaxy import galaxy as g
 from autolens.lensing import ray_tracing
 from autolens.imaging import mask
 from autolens.inversion import pixelizations as pix
-from autolens.plotting import mapper_plotters
+from autolens.inversion.plotters import mapper_plotters
 
 # We'll start by learning about pixelizations, which we typically apply to a source-plane (but could, if we wanted,
 # apply to an image-plane).

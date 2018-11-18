@@ -3,10 +3,10 @@ from pathlib import Path
 
 from autolens.autofit import non_linear as nl
 from autolens.imaging import mask as msk
-from autolens.galaxy import galaxy, galaxy_model as gm
+from autolens.model.galaxy import galaxy, galaxy_model as gm
 from autolens.pipeline import phase as ph
 from autolens.pipeline import pipeline as pl
-from autolens.profiles import light_profiles as lp
+from autolens.model.profiles import light_profiles as lp
 from test.integration import tools
 
 home = str(Path.home())
