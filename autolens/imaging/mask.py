@@ -769,7 +769,7 @@ class ImageGridBorder(np.ndarray):
         centre : (float, float)
             The origin of the border, which can be shifted relative to its coordinates.
         """
-        return cls(mask.edge_pixels)
+        return cls(mask.border_pixels)
 
     def relocated_grids_from_grids(self, grids):
         """Determine a set of relocated grids from an input set of grids, by relocating their pixels based on the \

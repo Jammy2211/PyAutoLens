@@ -7,8 +7,8 @@ from autolens.inversion import mappers
 from autolens.plotting import tools_grid
 from autolens.plotting import imaging_plotters
 
-def plot_image_and_mapper(image, mapper, mask=None, positions=None, should_plot_centres=False, should_plot_grid=True,
-                          should_plot_border=True,
+def plot_image_and_mapper(image, mapper, mask=None, positions=None, should_plot_centres=False, should_plot_grid=False,
+                          should_plot_border=False,
                           image_pixels=None, source_pixels=None,
                           units='arcsec', kpc_per_arcsec=None,
                           output_path=None, output_filename='image_and_mapper', output_format='show'):
@@ -42,7 +42,7 @@ def plot_image_and_mapper(image, mapper, mask=None, positions=None, should_plot_
     tools.output_subplot_array(output_path=output_path, output_filename=output_filename, output_format=output_format)
     plt.close()
 
-def plot_mapper(mapper, should_plot_centres=False, should_plot_grid=True, should_plot_border=True,
+def plot_mapper(mapper, should_plot_centres=False, should_plot_grid=False, should_plot_border=False,
                 image_pixels=None, source_pixels=None, as_subplot=False,
                 units='arcsec', kpc_per_arcsec=None,
                 xyticksize=16, figsize=(7, 7),
@@ -59,7 +59,7 @@ def plot_mapper(mapper, should_plot_centres=False, should_plot_grid=True, should
                                 title=title, titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize,
                                 output_path=output_path, output_filename=output_filename, output_format=output_format)
 
-def plot_rectangular_mapper(mapper, should_plot_centres=False, should_plot_grid=True, should_plot_border=True,
+def plot_rectangular_mapper(mapper, should_plot_centres=False, should_plot_grid=False, should_plot_border=False,
                             image_pixels=None, source_pixels=None, as_subplot=False,
                             units='arcsec', kpc_per_arcsec=None,
                             xyticksize=16, figsize=(7, 7),
@@ -176,7 +176,8 @@ def plot_image_plane_image_pixels(grid, image_pixels, point_colors):
 
         for image_pixel_set in image_pixels:
             color = next(point_colors)
-            plt.scatter(y=grid[image_pixel_set, 0], x=grid[image_pixel_set, 1], color=color, s=10.0)
+            plt.scatter(y=np.asarray(grid[image_pixel_set, 0]),
+                        x=np.asarray(grid[image_pixel_set, 1]), color=color, s=10.0)
 
 def plot_image_plane_source_pixels(grid, mapper, source_pixels, point_colors):
 
@@ -194,7 +195,8 @@ def plot_source_plane_image_pixels(grid, image_pixels, point_colors):
 
         for image_pixel_set in image_pixels:
             color = next(point_colors)
-            plt.scatter(y=grid[[image_pixel_set],0], x=grid[[image_pixel_set],1], s=8, color=color)
+            plt.scatter(y=np.asarray(grid[[image_pixel_set],0]),
+                        x=np.asarray(grid[[image_pixel_set],1]), s=8, color=color)
 
 def plot_source_plane_source_pixels(grid, mapper, source_pixels, point_colors):
 
