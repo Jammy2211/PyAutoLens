@@ -11,7 +11,7 @@ def plot_array(array, origin=None, mask=None, should_plot_border=False, position
                cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
                cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
                title='Array', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
-               mask_pointsize=10, border_pointsize=10, position_pointsize=30, grid_pointsize=1,
+               mask_pointsize=10, border_pointsize=2, position_pointsize=30, grid_pointsize=1,
                xticks_manual=None, yticks_manual=None,
                output_path=None, output_format='show', output_filename='array'):
 
@@ -150,7 +150,7 @@ def plot_border(mask, should_plot_border, units, kpc_per_arcsec, pointsize):
     if should_plot_border and mask is not None:
 
         plt.gca()
-        border_pixels = mask.masked_grid_index_to_pixel[mask.edge_pixels]
+        border_pixels = mask.masked_grid_index_to_pixel[mask.border_pixels]
         border_arc_seconds = mask.grid_pixels_to_grid_arc_seconds(grid_pixels=border_pixels)
         border_units = convert_grid_units(array=mask, grid_arc_seconds=border_arc_seconds, units=units,
                                           kpc_per_arcsec=kpc_per_arcsec)

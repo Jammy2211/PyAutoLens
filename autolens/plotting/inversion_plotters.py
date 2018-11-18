@@ -20,7 +20,8 @@ def plot_reconstructed_image(inversion, mask=None, positions=None, grid=None, as
                            output_path=output_path, output_format=output_format, output_filename=output_filename)
 
 def plot_reconstructed_pixelization(inversion, plot_origin=True, positions=None, should_plot_centres=False,
-                                    should_plot_grid=False, image_pixels=None, source_pixels=None, as_subplot=False,
+                                    should_plot_grid=False, should_plot_border=False, image_pixels=None,
+                                    source_pixels=None, as_subplot=False,
                                     units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
                                     cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05,
                                     linscale=0.01,
@@ -47,7 +48,7 @@ def plot_reconstructed_pixelization(inversion, plot_origin=True, positions=None,
                            output_filename=output_filename)
 
     mapper_plotters.plot_rectangular_mapper(mapper=inversion.mapper, should_plot_centres=should_plot_centres,
-                                            should_plot_grid=should_plot_grid,
+                                            should_plot_grid=should_plot_grid, should_plot_border=should_plot_border,
                                             image_pixels=image_pixels, source_pixels=source_pixels,
                                             as_subplot=True,
                                             units=units, kpc_per_arcsec=kpc_per_arcsec,

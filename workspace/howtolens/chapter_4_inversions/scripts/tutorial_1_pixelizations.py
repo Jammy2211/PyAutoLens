@@ -15,7 +15,7 @@ lens_galaxy = g.Galaxy(mass=mp.EllipticalIsothermal(centre=(0.0, 0.0), axis_rati
 
 # (Our source model_galaxy doesn't have a light profile from here on, as we're reconstructing its light using a pixelization).
 tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[g.Galaxy()],
-                                             image_plane_grids=image_plane_grids)
+                                             image_plane_grids=[image_plane_grids])
 
 # Next, lets set up a pixelization using the 'pixelizations' module, which we've imported as 'pix'.
 # There are multiple pixelizations available in PyAutoLens, but for now we'll keep it simple and use a uniform
@@ -24,7 +24,8 @@ rectangular = pix.Rectangular(shape=(25, 25))
 
 # By itself, a pixelization doesn't tell us much. It has no grid of coordinates, no image, and nothing which tells it
 # about the lens we're fitting. This information comes when we use the pixelization to set up a 'mapper'.
-mapper = rectangular.mapper_from_grids(grids=tracer.source_plane.grids)
+# (The 'border=None' will be covered in tutorial 5, so just ignore it for now!)
+mapper = rectangular.mapper_from_grids_and_border(grids=tracer.source_plane.grids[0], border=None)
 
 # This mapper is a 'RectangularMapper' - every pixelization generates it owns mapper.
 print(type(mapper))
@@ -48,10 +49,10 @@ mapper_plotters.plot_rectangular_mapper(mapper=mapper, should_plot_grid=False, s
 
 # The mapper also has the (source-plane) grid that we passed when we set it up. Lets check they're the same grids.
 print('Source Grid Pixel 1')
-print(tracer.source_plane.grids.image[0])
+print(tracer.source_plane.grids[0].image[0])
 print(mapper.grids.image[0])
 print('Source Grid Pixel 2')
-print(tracer.source_plane.grids.image[1])
+print(tracer.source_plane.grids[0].image[1])
 print(mapper.grids.image[1])
 print('etc.')
 
