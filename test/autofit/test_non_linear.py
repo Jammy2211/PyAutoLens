@@ -907,7 +907,6 @@ class TestMultiNest(object):
             assert mn.model_errors_at_sigma_limit(sigma_limit=1.0) == pytest.approx([1.07 - 0.93, 2.07 - 1.93,
                                                                                      3.07 - 2.93, 4.07 - 3.93], 1e-1)
 
-
 # class TestConfig(object):
 #     def test_multinest_default(self):
 #         multinest = non_linear.MultiNest()

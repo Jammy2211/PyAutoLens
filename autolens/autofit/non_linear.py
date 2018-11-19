@@ -221,7 +221,7 @@ class AbstractFitness(object):
 
         try:
             likelihood = self.analysis.fit(instance)
-        except exc.InversionException or exc.RayTracingException or exc.PriorLimitException:
+        except exc.InversionException or exc.RayTracingException:
             likelihood = -np.inf
 
         if likelihood > self.max_likelihood:
@@ -349,7 +349,12 @@ class MultiNest(NonLinearOptimizer):
                     int)
 
             def __call__(self, cube, ndim, nparams, lnew):
-                instance = self.instance_from_physical_vector(cube)
+
+                try:
+                    instance = self.instance_from_physical_vector(cube)
+                except exc.PriorLimitException:
+                    return -np.inf
+
                 likelihood = self.fit_instance(instance)
 
                 if likelihood > self.max_likelihood:
