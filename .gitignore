@@ -6,6 +6,7 @@ pip-selfcheck.json
 bin/
 include/
 lib/
+data/
 .ipynb_checkpoints
 .cache
 .idea
