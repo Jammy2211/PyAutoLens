@@ -13,7 +13,6 @@ from autolens.imaging.plotters import imaging_plotters
 from autolens.inversion.plotters import inversion_plotters, mapper_plotters
 from autolens.lensing.plotters import lensing_fitting_plotters
 
-
 # We've covered mappers, which, if I haven't emphasised it enough yet, map things. Now, we're going to look at how we
 # can use these mappers (which map things) to reconstruct the source model_galaxy - I hope you're excited!
 
@@ -55,7 +54,7 @@ tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source
 # We'll use another rectangular pixelization and mapper to perform the reconstruction
 rectangular = pix.Rectangular(shape=(25, 25))
 mapper = rectangular.mapper_from_grids_and_border(grids=tracer.source_plane.grids[0], border=None)
-mapper_plotters.plot_image_and_mapper(image=image, mask=mask, mapper=mapper)
+mapper_plotters.plot_image_and_mapper(image=image, mask=mask, mapper=mapper, should_plot_grid=True)
 
 # And now, finally, we're going to use our mapper to invert the image using the 'inversions' module, which is imported
 # as 'inv'. I'll explain how this works in a second - but lets just go ahead and perform the inversion first.

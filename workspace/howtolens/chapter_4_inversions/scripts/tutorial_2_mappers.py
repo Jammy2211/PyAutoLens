@@ -9,7 +9,6 @@ from autolens.inversion import pixelizations as pix
 from autolens.imaging.plotters import imaging_plotters
 from autolens.inversion.plotters import mapper_plotters
 
-
 # In the previous example, we used a mapper to make a rectangular pixelization. However, it wasn't clear what a mapper
 # was actually mapping. Infact, it didn't do much mapping at all! Therefore, in this tutorial, we'll cover mapping.
 
@@ -54,21 +53,24 @@ mapper = rectangular.mapper_from_grids_and_border(grids=tracer.source_plane.grid
 
 # Again, we're going to plot our mapper, but we're also going to plot the image which was used to generate the grid we
 # mapped to the source-plane.
-mapper_plotters.plot_image_and_mapper(image=image, mapper=mapper)
+mapper_plotters.plot_image_and_mapper(image=image, mapper=mapper, should_plot_grid=True)
 
 # The pixels in the image map to the pixels in the source-plane, and visa-versa. Lets highlight a set of image-pixels
 # in both the image and source-plane.
-mapper_plotters.plot_image_and_mapper(image=image, mapper=mapper, image_pixels=[[range(0, 100)], [range(900, 1000)]])
+mapper_plotters.plot_image_and_mapper(image=image, mapper=mapper, should_plot_grid=True,
+                                      image_pixels=[[range(0, 100)], [range(900, 1000)]])
 
 # That's nice, and we can see the mappings, but it isn't really what we want to know, is it? We really want to go the
 # other way, and see how our source-pixels map to the image. This is where mappers come into their own, as they let us
 # map all the points in a given source-pixel back to the image. Lets map source pixel 313, the central
 # source-pixel, to the image.
-mapper_plotters.plot_image_and_mapper(image=image, mapper=mapper, source_pixels=[[312]])
+mapper_plotters.plot_image_and_mapper(image=image, mapper=mapper, should_plot_grid=True,
+                                      source_pixels=[[312]])
 
 # And there we have it - multiple imaging in all its glory. Try changing the source-pixel indexes of the line below.
 # This will give you a feel for how different regions of the source-plane map to the image.
-mapper_plotters.plot_image_and_mapper(image=image, mapper=mapper, source_pixels=[[312, 318], [412]])
+mapper_plotters.plot_image_and_mapper(image=image, mapper=mapper, should_plot_grid=True,
+                                      source_pixels=[[312, 318], [412]])
 
 # Okay, so I think we can agree, mappers map things! More specifically, they map our source-plane pixelization to an
 # observed image of a strong lens.
@@ -76,8 +78,8 @@ mapper_plotters.plot_image_and_mapper(image=image, mapper=mapper, source_pixels=
 # Finally, lets do the same as above, but using a masked image. By applying a masks, the mapper will only map
 # image-pixels inside the masks. This removes the (many) image pixels at the edge of the image, where the source clearly
 # isn't present and which pad-out the size of the source-plane. Lets just have a quick look at these edges pixels:
-mapper_plotters.plot_image_and_mapper(image=image, mapper=mapper, source_pixels=[[0, 1, 2, 3, 4, 5, 6, 7],
-                                                                                 [620, 621, 622, 623]])
+mapper_plotters.plot_image_and_mapper(image=image, mapper=mapper, should_plot_grid=True,
+                                      source_pixels=[[0, 1, 2, 3, 4, 5, 6, 7], [620, 621, 622, 623]])
 
 # Lets use an annular masks, which will capture the ring-like shape of the lensed source model_galaxy.
 mask = ma.Mask.annular(shape=image.shape, pixel_scale=image.pixel_scale, inner_radius_arcsec=1.0,
@@ -96,13 +98,14 @@ tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source
 mapper = rectangular.mapper_from_grids_and_border(grids=tracer.source_plane.grids[0], border=None)
 
 # Lets have another look
-mapper_plotters.plot_image_and_mapper(image=image, mask=mask, mapper=mapper)
+mapper_plotters.plot_image_and_mapper(image=image, mask=mask, mapper=mapper, should_plot_grid=True)
 
 # Woah! Look how much closer we are to the source-plane (The axis sizes have decreased from ~ -2.5" -> 2.5" to
 # ~ -0.6" to 0.6"). We can now really see the diamond of points in the origin of the source-plane (for those who have
 # been reading up, this diamond is called the 'caustic'). This diamond defines when lensing moves from the quadruply
 # imaged regime to doubly-imaged regime, and we can actually show this now using our mapper now.
-mapper_plotters.plot_image_and_mapper(image=image, mask=mask, mapper=mapper, source_pixels=[[312], [314], [316], [318]])
+mapper_plotters.plot_image_and_mapper(image=image, mask=mask, mapper=mapper, should_plot_grid=True,
+                                      source_pixels=[[312], [314], [316], [318]])
 
 # Great - tutorial 2 down! We've learnt about mappers, which map things, and we used them to understand how the image
 # and source plane map to one another. Your exercises are:
