@@ -5,8 +5,8 @@ import numpy as np
 import pytest
 
 from autolens import conf
-from autolens.autofit import model_mapper as mm
-from autolens.autofit import non_linear
+from autofit.core import model_mapper as mm
+from autofit.core import non_linear
 from autolens.model.galaxy import galaxy as g, galaxy_model as gm
 from autolens.imaging import image as img
 from autolens.imaging import mask as msk

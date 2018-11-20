@@ -2,7 +2,7 @@ import os
 import shutil
 
 from autolens import conf
-from autolens.autofit import non_linear as nl
+from autofit.core import non_linear as nl
 from autolens.model.galaxy import galaxy, galaxy_model as gm
 from autolens.pipeline import phase as ph
 from autolens.pipeline import pipeline as pl

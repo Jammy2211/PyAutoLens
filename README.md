@@ -83,7 +83,7 @@ With PyAutoLens, you can begin modeling a lens in just a couple of minutes. The 
 
 ```python
 from autolens.pipeline import phase as ph
-from autolens.autofit import non_linear as nl
+from autofit.core import non_linear as nl
 from autolens.lensing import galaxy_model as gm
 from autolens.imaging import image as im
 from autolens.profiles import light_profiles as lp

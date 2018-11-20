@@ -1,5 +1,5 @@
 from autolens import conf
-from autolens.autofit import non_linear as nl
+from autofit.core import non_linear as nl
 from autolens.pipeline import phase as ph
 from autolens.imaging import image as im
 from autolens.imaging import mask as ma
