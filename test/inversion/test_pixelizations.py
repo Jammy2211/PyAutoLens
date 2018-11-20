@@ -2,6 +2,7 @@ import numpy as np
 import pytest
 
 from autolens.imaging import mask
+from autolens.inversion.util import pixelization_util
 from autolens.inversion import pixelizations
 
 
@@ -27,96 +28,124 @@ def make_three_pixels():
     return np.array([[0, 0], [0, 1], [1, 0]])
 
 
-# class TestPixelizationGrid:
-#
-#     class TestPixelizationGrid:
-#
-#         def test__inherites_from_scaled_array_geometry__can_compute_2d_grid(self):
-#
-#             ma = mask.Mask(array=np.array([[True, False, True],
-#                                            [False, False, False],
-#                                            [True, False, True]]), pixel_scale=1.0)
-#
-#             image_grid = mask.ImageGrid.from_mask(mask=ma)
-#
-#             pix = pixelizations.PixelizationGrid(pix_grid_shape=(2, 2), pixel_scales=(1.0, 0.5),
-#                                                  image_grid=image_grid)
-#
-#             assert (pix.grid_1d == np.array([[0.5, -0.25], [0.5, 0.25], [-0.5, -0.25], [-0.5, 0.25]])).all()
-#
-#         def test__pixelization_grid_overlaps_mask_perfectly__masked_pixels_in_masked_pixelization_grid(self):
-#
-#             ma = mask.Mask(array=np.array([[True, False, True],
-#                                            [False, False, False],
-#                                            [True, False, True]]), pixel_scale=1.0)
-#
-#             image_grid = mask.ImageGrid.from_mask(mask=ma)
-#
-#             pix_grid = pixelizations.PixelizationGrid(pix_grid_shape=(3, 3), pixel_scales=(1.0, 1.0),
-#                                                       image_grid=image_grid)
-#
-#             assert pix_grid.total_masked_pixels == 5
-#             assert (pix_grid.pix_to_full_pix == np.array([1, 3, 4, 5, 7])).all()
-#             assert (pix_grid.pix_grid == np.array([[1.0, 0.0], [0.0, -1.0], [0.0, 0.0], [0.0, 1.0],
-#                                                    [-1.0, 0.0]])).all()
-#
-#         def test__same_as_above_but_4x3_grid_and_mask(self):
-#
-#             ma = mask.Mask(array=np.array([[True, False, True],
-#                                            [False, False, False],
-#                                            [False, False, False],
-#                                            [True, False, True]]), pixel_scale=1.0)
-#
-#             image_grid = mask.ImageGrid.from_mask(mask=ma)
-#
-#             pix_grid = pixelizations.PixelizationGrid(pix_grid_shape=(4, 3), pixel_scales=(1.0, 1.0),
-#                                                       image_grid=image_grid)
-#
-#             assert pix_grid.total_masked_pixels == 8
-#             assert (pix_grid.pix_to_full_pix == np.array([1, 3, 4, 5, 6, 7, 8, 10])).all()
-#             assert (pix_grid.pix_grid == np.array([[1.5, 0.0],
-#                                                    [ 0.5, -1.0], [ 0.5, 0.0], [ 0.5, 1.0],
-#                                                    [-0.5, -1.0], [-0.5, 0.0], [-0.5, 1.0],
-#                                                    [-1.5, 0.0]])).all()
-#
-#         def test__same_as_above_but_3x4_grid_and_mask(self):
-#
-#             ma = mask.Mask(array=np.array([[True, False, True],
-#                                            [False, False, False],
-#                                            [False, False, False],
-#                                            [True, False, True]]), pixel_scale=1.0)
-#
-#             image_grid = mask.ImageGrid.from_mask(mask=ma)
-#
-#             pix_grid = pixelizations.PixelizationGrid(pix_grid_shape=(4, 3), pixel_scales=(1.0, 1.0),
-#                                                       image_grid=image_grid)
-#
-#             assert pix_grid.total_masked_pixels == 8
-#             assert (pix_grid.pix_to_full_pix == np.array([1, 3, 4, 5, 6, 7, 8, 10])).all()
-#             assert (pix_grid.pix_grid == np.array([[1.5, 0.0],
-#                                                    [ 0.5, -1.0], [ 0.5, 0.0], [ 0.5, 1.0],
-#                                                    [-0.5, -1.0], [-0.5, 0.0], [-0.5, 1.0],
-#                                                    [-1.5, 0.0]])).all()
-#
-#
-# class TestAdaptiveImageGrid:
-#
-#     def test__pixelization_image_grid_from_image_grid__sets_up_with_correct_shape_and_pixel_scales(self):
-#
-#         ma = mask.Mask(array=np.array([[False, False, False],
-#                                        [False, False, False],
-#                                        [False, False, False]]), pixel_scale=1.0)
-#
-#         image_grid = mask.ImageGrid.from_mask(mask=ma)
-#
-#         adaptive_image_grid = pixelizations.AdaptiveGrid(pix_grid_shape=(3, 3))
-#
-#         pix_grid = adaptive_image_grid.pix_grid_from_image_grid(image_grid=image_grid)
-#
-#         assert pix_grid.shape == (3,3)
-#         assert pix_grid.pixel_scales == ((2.0/3.0), (2.0/3.0))
-#
-#         assert pix_grid.image_grid == pytest.approx(image_grid, 1e-4)
+class TestPixelizationGrid:
+
+    def test__properties_consistent_with_pixelization_util(self):
+
+        ma = mask.Mask(array=np.array([[True, False, True],
+                                       [False, False, False],
+                                       [True, False, True]]), pixel_scale=0.5)
+
+        image_grid = mask.ImageGrid.from_mask(mask=ma)
+
+        pix_grid = pixelizations.PixelizationGrid(pix_grid_shape=(10, 10), pixel_scales=(0.16, 0.16),
+                                                  image_grid=image_grid)
+
+        full_pix_grid_pixel_centres = image_grid.mask.grid_arc_seconds_to_grid_pixel_centres(pix_grid.full_pix_grid)
+        total_pix_pixels = pixelization_util.total_pix_pixels_from_mask(mask=ma,
+                                                                full_pix_grid_pixel_centres=full_pix_grid_pixel_centres)
+
+        image_to_full_pix_util = pix_grid.grid_arc_seconds_to_grid_pixel_indexes(grid_arc_seconds=image_grid)
+
+        pix_to_full_pix_util = pixelization_util.pix_to_full_pix_from_mask_and_pixel_centres(
+            total_pix_pixels=total_pix_pixels, mask=ma, full_pix_grid_pixel_centres=full_pix_grid_pixel_centres).astype('int')
+
+        full_pix_to_pix_util = pixelization_util.full_pix_to_pix_from_mask_and_pixel_centres(mask=ma,
+                                             full_pix_grid_pixel_centres=full_pix_grid_pixel_centres).astype('int')
+
+        image_to_pix_util = pixelization_util.image_to_pix_from_pix_mappings(image_to_full_pix=image_to_full_pix_util,
+                                                                             full_pix_to_pix=full_pix_to_pix_util)
+
+        pix_grid_util = pixelization_util.pix_grid_from_full_pix_grid(full_pix_grid=pix_grid.grid_1d,
+                                                                      pix_to_full_pix=pix_to_full_pix_util)
+
+        assert pix_grid.total_pix_pixels == total_pix_pixels
+        assert (pix_grid.pix_to_full_pix == pix_to_full_pix_util).all()
+        assert (pix_grid.full_pix_to_pix == full_pix_to_pix_util).all()
+        assert (pix_grid.image_to_full_pix == image_to_full_pix_util).all()
+        assert (pix_grid.image_to_pix == image_to_pix_util).all()
+        assert (pix_grid.pix_grid == pix_grid_util).all()
+
+    def test__pixelization_grid_overlaps_mask_perfectly__masked_pixels_in_masked_pixelization_grid(self):
+
+            ma = mask.Mask(array=np.array([[True, False, True],
+                                           [False, False, False],
+                                           [True, False, True]]), pixel_scale=1.0)
+
+            image_grid = mask.ImageGrid.from_mask(mask=ma)
+
+            pix_grid = pixelizations.PixelizationGrid(pix_grid_shape=(3, 3), pixel_scales=(1.0, 1.0),
+                                                      image_grid=image_grid)
+
+            assert pix_grid.total_pix_pixels == 5
+            assert (pix_grid.pix_to_full_pix == np.array([1, 3, 4, 5, 7])).all()
+            assert (pix_grid.full_pix_to_pix == np.array([0, 0, 1, 1, 2, 3, 4, 4, 5])).all()
+            assert (pix_grid.image_to_full_pix == np.array([1, 3, 4, 5, 7])).all()
+            assert (pix_grid.image_to_pix == np.array([0, 1, 2, 3, 4])).all()
+            assert (pix_grid.pix_grid == np.array([[1.0, 0.0], [0.0, -1.0], [0.0, 0.0], [0.0, 1.0],
+                                                   [-1.0, 0.0]])).all()
+
+    def test__same_as_above_but_4x3_grid_and_mask(self):
+
+            ma = mask.Mask(array=np.array([[True, False, True],
+                                           [False, False, False],
+                                           [False, False, False],
+                                           [True, False, True]]), pixel_scale=1.0)
+
+            image_grid = mask.ImageGrid.from_mask(mask=ma)
+
+            pix_grid = pixelizations.PixelizationGrid(pix_grid_shape=(4, 3), pixel_scales=(1.0, 1.0),
+                                                      image_grid=image_grid)
+
+            assert pix_grid.total_pix_pixels == 8
+            assert (pix_grid.pix_to_full_pix == np.array([1, 3, 4, 5, 6, 7, 8, 10])).all()
+            assert (pix_grid.full_pix_to_pix == np.array([0, 0, 1, 1, 2, 3, 4, 5, 6, 7, 7, 8])).all()
+            assert (pix_grid.image_to_full_pix == np.array([1, 3, 4, 5, 6, 7, 8, 10])).all()
+            assert (pix_grid.image_to_pix == np.array([0, 1, 2, 3, 4, 5, 6, 7])).all()
+            assert (pix_grid.pix_grid == np.array([[1.5, 0.0],
+                                                   [ 0.5, -1.0], [ 0.5, 0.0], [ 0.5, 1.0],
+                                                   [-0.5, -1.0], [-0.5, 0.0], [-0.5, 1.0],
+                                                   [-1.5, 0.0]])).all()
+
+    def test__same_as_above_but_3x4_grid_and_mask(self):
+
+            ma = mask.Mask(array=np.array([[True,  False,  True,  True],
+                                           [False, False, False, False],
+                                           [True,  False,  True,  True]]), pixel_scale=1.0)
+
+            image_grid = mask.ImageGrid.from_mask(mask=ma)
+
+            pix_grid = pixelizations.PixelizationGrid(pix_grid_shape=(3, 4), pixel_scales=(1.0, 1.0),
+                                                      image_grid=image_grid)
+
+            assert pix_grid.total_pix_pixels == 6
+            assert (pix_grid.pix_to_full_pix == np.array([1, 4, 5, 6, 7, 9])).all()
+            assert (pix_grid.full_pix_to_pix == np.array([0, 0, 1, 1, 1, 2, 3, 4, 5, 5, 6, 6])).all()
+            assert (pix_grid.image_to_full_pix == np.array([1, 4, 5, 6, 7, 9])).all()
+            assert (pix_grid.image_to_pix == np.array([0, 1, 2, 3, 4, 5])).all()
+            assert (pix_grid.pix_grid == np.array([             [1.0, -0.5],
+                                                   [0.0, -1.5], [0.0, -0.5], [0.0, 0.5], [0.0, 1.5],
+                                                               [-1.0, -0.5]])).all()
+
+
+class TestAdaptiveImageGrid:
+
+    def test__pixelization_image_grid_from_image_grid__sets_up_with_correct_shape_and_pixel_scales(self):
+
+        ma = mask.Mask(array=np.array([[False, False, False],
+                                       [False, False, False],
+                                       [False, False, False]]), pixel_scale=1.0)
+
+        image_grid = mask.ImageGrid.from_mask(mask=ma)
+
+        adaptive_image_grid = pixelizations.AdaptiveGrid(pix_grid_shape=(3, 3))
+
+        pix_grid = adaptive_image_grid.pix_grid_from_image_grid(image_grid=image_grid)
+
+        assert pix_grid.shape == (3,3)
+        assert pix_grid.pixel_scales == ((2.0/3.0), (2.0/3.0))
+
+        assert pix_grid.image_grid == pytest.approx(image_grid, 1e-4)
 
 
 class TestRectangular:
