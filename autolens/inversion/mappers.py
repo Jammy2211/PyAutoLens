@@ -165,12 +165,12 @@ class RectangularMapper(Mapper):
 
     @property
     def image_to_pix(self):
-        """The mappings between a set of image pixels and pixelization pixels."""
+        """The 1D index mappings between the image pixels and rectangular pixelization pixels."""
         return self.geometry.grid_arc_seconds_to_grid_pixel_indexes(grid_arc_seconds=self.grids.image)
 
     @property
     def sub_to_pix(self):
-        """The mappings between a set of sub-pixels and pixelization pixels"""
+        """The 1D index mappings between the sub-pixels and rectangular pixelization pixels"""
         return self.geometry.grid_arc_seconds_to_grid_pixel_indexes(grid_arc_seconds=self.grids.sub)
 
     def reconstructed_pixelization_from_solution_vector(self, solution_vector):
@@ -211,7 +211,7 @@ class VoronoiMapper(Mapper):
 
     @property
     def image_to_pix(self):
-        """The mappings between a set of image pixels and pixelization pixels."""
+        """The 1D index mappings between the image pixels and Voronoi pixelization pixels."""
 
         image_to_pix = np.zeros((self.grids.image.shape[0]), dtype=int)
 
@@ -224,7 +224,9 @@ class VoronoiMapper(Mapper):
 
     @property
     def sub_to_pix(self):
-        """ Compute the mappings between a set of sub-maskedimage pixels and pixels, using the maskedimage's traced \
+        """  The 1D index mappings between the sub pixels and Voronoi pixelization pixels.
+        
+        To compute these mappings, a set of sub-maskedimage pixels and pixels, using the maskedimage's traced \
         pix-plane sub-grid and the pixel centers. This uses the pix-neighbors to perform a graph \
         search when pairing pixels, for efficiency.
 

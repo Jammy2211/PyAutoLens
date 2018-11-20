@@ -1,8 +1,8 @@
 import numba
 import numpy as np
 
-@numba.jit(nopython=True, cache=True)
-def total_masked_pixels(mask, full_pix_grid_pixel_centres):
+# @numba.jit(nopython=True, cache=True)
+def total_pix_pixels_from_mask(mask, full_pix_grid_pixel_centres):
     """Given the full (i.e. without removing pixels which are outside the image-mask) pixelization grid's pixel centers
     and the image-mask, compute the total number of pixels which are within the image-mask and thus used by the
     pixelization grid.
@@ -15,26 +15,26 @@ def total_masked_pixels(mask, full_pix_grid_pixel_centres):
         The centres of the unmasked pixelization grid pixels.
     """
 
-    total_masked_pixels = 0
+    total_pix_pixels = 0
 
-    for all_pixel_index in range(full_pix_grid_pixel_centres.shape[0]):
+    for full_pixel_index in range(full_pix_grid_pixel_centres.shape[0]):
 
-        y = full_pix_grid_pixel_centres[all_pixel_index, 0]
-        x = full_pix_grid_pixel_centres[all_pixel_index, 1]
+        y = full_pix_grid_pixel_centres[full_pixel_index, 0]
+        x = full_pix_grid_pixel_centres[full_pixel_index, 1]
 
         if not mask[y,x]:
-            total_masked_pixels += 1
+            total_pix_pixels += 1
 
-    return total_masked_pixels
+    return total_pix_pixels
 
-@numba.jit(nopython=True, cache=True)
-def pix_to_full_pix(total_masked_pixels, mask, full_pix_grid_pixel_centres):
+# @numba.jit(nopython=True, cache=True)
+def pix_to_full_pix_from_mask_and_pixel_centres(total_pix_pixels, mask, full_pix_grid_pixel_centres):
     """Determine the mapping between every masked pixelization-grid pixel and pixelization-grid pixel. This is
     performed by checking whether each pixelization-grid pixel is within the image-mask, and mapping the indexes.
 
     Parameters
     -----------
-    total_masked_pixels : int
+    total_pix_pixels : int
         The total number of pixels in the pixelization grid which fall within the image-mask.
     mask : imaging.mask.Mask
         The image-mask within which pixelization pixels must be inside
@@ -42,7 +42,7 @@ def pix_to_full_pix(total_masked_pixels, mask, full_pix_grid_pixel_centres):
         The centres of the unmasked pixelization grid pixels.
     """
 
-    pix_to_full_pix = np.zeros(total_masked_pixels)
+    pix_to_full_pix = np.zeros(total_pix_pixels)
 
     pixel_index = 0
 
@@ -58,8 +58,8 @@ def pix_to_full_pix(total_masked_pixels, mask, full_pix_grid_pixel_centres):
 
     return pix_to_full_pix
 
-@numba.jit(nopython=True, cache=True)
-def full_pix_to_pix(mask, full_pix_grid_pixel_centres):
+# @numba.jit(nopython=True, cache=True)
+def full_pix_to_pix_from_mask_and_pixel_centres(mask, full_pix_grid_pixel_centres):
     """Determine the mapping between every pixelization-grid pixel and masked pixelization-grid pixel. This is
     performed by checking whether each pixelization-grid pixel is within the image-mask, and mapping the indexes.
 
@@ -69,7 +69,7 @@ def full_pix_to_pix(mask, full_pix_grid_pixel_centres):
 
     Parameters
     -----------
-    total_masked_pixels : int
+    total_pix_pixels : int
         The total number of pixels in the pixelization grid which fall within the image-mask.
     mask : imaging.mask.Mask
         The image-mask within which pixelization pixels must be inside
@@ -95,16 +95,47 @@ def full_pix_to_pix(mask, full_pix_grid_pixel_centres):
 
     return full_pix_to_pix
 
-@numba.jit(nopython=True, cache=True)
-def pix_grid_from_(total_masked_pixels, pixelization_grid, pix_to_unmasked_pix):
+# @numba.jit(nopython=True, cache=True)
+def image_to_pix_from_pix_mappings(image_to_full_pix, full_pix_to_pix):
+    """Using the mapping between the image-grid and unmasked pixelization grid, compute the mapping between each image
+    pixel and the masked pixelization grid.
 
-    pix_grid = np.zeros((total_masked_pixels, 2))
+    Parameters
+    -----------
+    image_to_full_pix : ndarray
+        The index mapping between every image-pixel and masked pixelization pixel.
+    full_pix_to_pix : ndarray
+        The index mapping between every masked pixelization pixel and unmasked pixelization pixel.
+    """
+    total_image_pixels = image_to_full_pix.shape[0]
 
-    masked_pixel_index = 0
-    for pixel_index in pix_to_unmasked_pix:
-        pix_grid[masked_pixel_index, :] = pixelization_grid[pixel_index, :]
-        masked_pixel_index += 1
+    image_to_pix = np.zeros(total_image_pixels)
+
+    for image_index in range(total_image_pixels):
+
+        image_to_pix[image_index] = full_pix_to_pix[image_to_full_pix[image_index]]
+
+    return image_to_pix
+
+# @numba.jit(nopython=True, cache=True)
+def pix_grid_from_full_pix_grid(full_pix_grid, pix_to_full_pix):
+    """Use the central arc-second coordinate of every unmasked pixelization grid's pixels and mapping between each
+    pixelization pixel and unmasked pixelization pixel to compute the central arc-second coordinate of every masked
+    pixelization grid pixel.
+
+    Parameters
+    -----------
+    full_pix_grid : ndarray
+        The (y,x) arc-second centre of every unmasked pixelization grid pixel.
+    pix_to_full_pix : ndarray
+        The index mapping between every pixelization pixel and masked pixelization pixel.
+    """
+    total_pix_pixels = pix_to_full_pix.shape[0]
+
+    pix_grid = np.zeros((total_pix_pixels, 2))
+
+    for pixel_index in range(total_pix_pixels):
+
+        pix_grid[pixel_index, :] = full_pix_grid[pix_to_full_pix[pixel_index], :]
 
     return pix_grid
-
-# def image_to_pix(mask, ):
