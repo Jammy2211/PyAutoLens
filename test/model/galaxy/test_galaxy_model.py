@@ -256,48 +256,52 @@ class TestResultForArguments:
 
 class TestPixelization(object):
 
-    def test_pixelization(self, ):
-        galaxy_prior = gp.GalaxyModel(variable_redshift=True, pixelization=pixelizations.Voronoi,
+    def test_pixelization(self):
+        galaxy_prior = gp.GalaxyModel(variable_redshift=True, pixelization=pixelizations.Rectangular,
                                       regularization=regularization.Constant)
 
         arguments = {galaxy_prior.redshift.redshift: 2.0,
-                     galaxy_prior.pixelization.pixels: 0.1,
+                     galaxy_prior.pixelization.shape_0 : 14.0,
+                     galaxy_prior.pixelization.shape_1: 13.0,
                      galaxy_prior.regularization.coefficients_0: 0.5}
 
         galaxy = galaxy_prior.instance_for_arguments(arguments)
 
-        assert galaxy.pixelization.pixels == 0.1
+        assert galaxy.pixelization.shape[0] == 14
+        assert galaxy.pixelization.shape[1] == 13
 
-    def test_fixed_pixelization(self, ):
-        galaxy_prior = gp.GalaxyModel(variable_redshift=True, pixelization=pixelizations.Voronoi(),
+    def test_fixed_pixelization(self):
+        galaxy_prior = gp.GalaxyModel(variable_redshift=True, pixelization=pixelizations.Rectangular(),
                                       regularization=regularization.Constant())
 
         arguments = {galaxy_prior.redshift.redshift: 2.0}
 
         galaxy = galaxy_prior.instance_for_arguments(arguments)
 
-        assert galaxy.pixelization.pixels == 100
+        assert galaxy.pixelization.shape[0] == 3
+        assert galaxy.pixelization.shape[1] == 3
 
-    def test__if_no_pixelization_raises_error(self, ):
+    def test__if_no_pixelization_raises_error(self):
         with pytest.raises(exc.PriorException):
             gp.GalaxyModel(variable_redshift=True, pixelization=pixelizations.Voronoi)
 
 
 class TestRegularization(object):
 
-    def test_regularization(self, ):
-        galaxy_prior = gp.GalaxyModel(variable_redshift=True, pixelization=pixelizations.Voronoi,
+    def test_regularization(self):
+        galaxy_prior = gp.GalaxyModel(variable_redshift=True, pixelization=pixelizations.Rectangular,
                                       regularization=regularization.Constant)
 
         arguments = {galaxy_prior.redshift.redshift: 2.0,
-                     galaxy_prior.pixelization.pixels: 1,
+                     galaxy_prior.pixelization.shape_0 : 14.0,
+                     galaxy_prior.pixelization.shape_1: 13.0,
                      galaxy_prior.regularization.coefficients_0: 0.5}
 
         galaxy = galaxy_prior.instance_for_arguments(arguments)
 
         assert galaxy.regularization.regularization_coefficients == (0.5,)
 
-    def test_fixed_regularization(self, ):
+    def test_fixed_regularization(self):
         galaxy_prior = gp.GalaxyModel(variable_redshift=True, pixelization=pixelizations.Voronoi(),
                                       regularization=regularization.Constant())
 
@@ -307,7 +311,7 @@ class TestRegularization(object):
 
         assert galaxy.regularization.regularization_coefficients == (1.,)
 
-    def test__if_no_pixelization_raises_error(self, ):
+    def test__if_no_pixelization_raises_error(self):
         with pytest.raises(exc.PriorException):
             gp.GalaxyModel(variable_redshift=True, regularization=regularization.Constant)
 

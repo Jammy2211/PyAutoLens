@@ -1,4 +1,4 @@
-from autolens.autofit import non_linear as nl
+from autofit.core import non_linear as nl
 from autolens.imaging import image as im
 from autolens.imaging import mask
 from autolens.model.galaxy import galaxy as g, galaxy_model as gm
