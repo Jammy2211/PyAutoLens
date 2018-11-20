@@ -270,11 +270,18 @@ class ImagingGrids(object):
                                                                       sub_grid_size=sub_grid_size,
                                                                       psf_shape=psf_shape)
 
+    def imaging_grids_with_pix_grid(self, pix):
+        return ImagingGrids(image=self.image, sub=self.sub, blurring=self.blurring, pix=pix)
+
     def apply_function(self, func):
-        if self.blurring is not None:
-            return ImagingGrids(func(self.image), func(self.sub), func(self.blurring))
+        if self.blurring is not None and self.pix is not None:
+            return ImagingGrids(func(self.image), func(self.sub), func(self.blurring), func(self.pix))
+        elif self.blurring is None and self.pix is not None:
+            return ImagingGrids(func(self.image), func(self.sub), self.blurring, func(self.pix))
+        elif self.blurring is not None and self.pix is None:
+            return ImagingGrids(func(self.image), func(self.sub), func(self.blurring), self.pix)
         else:
-            return ImagingGrids(func(self.image), func(self.sub), self.blurring)
+            return ImagingGrids(func(self.image), func(self.sub), self.blurring, self.pix)
 
     def map_function(self, func, *arg_lists):
         return ImagingGrids(*[func(*args) for args in zip(self, *arg_lists)])
@@ -284,7 +291,7 @@ class ImagingGrids(object):
         return self.sub.shape[0]
 
     def __getitem__(self, item):
-        return [self.image, self.sub, self.blurring][item]
+        return [self.image, self.sub, self.blurring, self.pix][item]
 
 
 class ImageGrid(np.ndarray):
