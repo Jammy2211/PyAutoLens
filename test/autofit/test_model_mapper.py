@@ -2,10 +2,14 @@ import os
 
 import pytest
 
+import math
+
 from autolens import conf
+from autolens import exc
 from autolens.autofit import model_mapper
-from autolens.galaxy import galaxy as g, galaxy, galaxy_model
-from autolens.profiles import geometry_profiles, light_profiles, mass_profiles
+from autolens.model.galaxy import galaxy as g
+from autolens.model.galaxy import galaxy, galaxy_model
+from autolens.model.profiles import geometry_profiles, light_profiles, mass_profiles
 
 data_path = "{}/../".format(os.path.dirname(os.path.realpath(__file__)))
 
@@ -27,6 +31,13 @@ def make_test_config():
                                              "test_files/configs/model_mapper/priors/default"))
 
 
+@pytest.fixture(name='limit_config')
+def make_limit_config():
+    return conf.LimitConfig(
+        config_folder_path="{}/../{}".format(os.path.dirname(os.path.realpath(__file__)),
+                                             "test_files/configs/model_mapper/priors/limit"))
+
+
 @pytest.fixture(name="width_config")
 def make_width_config():
     return conf.WidthConfig(
@@ -37,6 +48,97 @@ def make_width_config():
 @pytest.fixture(name="initial_model")
 def make_initial_model(test_config):
     return model_mapper.PriorModel(MockClassMM, test_config)
+
+
+class MockClassGaussian(object):
+    def __init__(self, one, two):
+        self.one = one
+        self.two = two
+
+
+class MockClassInf(object):
+    def __init__(self, one, two):
+        self.one = one
+        self.two = two
+
+
+class TestPriorLimits(object):
+    def test_in_or_out(self):
+        prior = model_mapper.GaussianPrior(0, 1, 0, 1)
+        with pytest.raises(exc.PriorLimitException):
+            prior.assert_within_limits(-1)
+
+        with pytest.raises(exc.PriorLimitException):
+            prior.assert_within_limits(1.1)
+
+        prior.assert_within_limits(0.)
+        prior.assert_within_limits(0.5)
+        prior.assert_within_limits(1.)
+
+    def test_no_limits(self):
+        prior = model_mapper.GaussianPrior(0, 1)
+
+        prior.assert_within_limits(100)
+        prior.assert_within_limits(-100)
+        prior.assert_within_limits(0)
+        prior.assert_within_limits(0.5)
+
+    def test_uniform_prior(self):
+        prior = model_mapper.UniformPrior(0, 1)
+
+        with pytest.raises(exc.PriorLimitException):
+            prior.assert_within_limits(-1)
+
+        with pytest.raises(exc.PriorLimitException):
+            prior.assert_within_limits(1.1)
+
+        prior.assert_within_limits(0.)
+        prior.assert_within_limits(0.5)
+        prior.assert_within_limits(1.)
+
+    def test_prior_creation(self, test_config, limit_config):
+        mm = model_mapper.ModelMapper(test_config, limit_config=limit_config)
+        mm.mock_class_gaussian = MockClassGaussian
+
+        prior_tuples = mm.prior_tuples_ordered_by_id
+
+        assert prior_tuples[0].prior.lower_limit == 0
+        assert prior_tuples[0].prior.upper_limit == 1
+
+        assert prior_tuples[1].prior.lower_limit == 0
+        assert prior_tuples[1].prior.upper_limit == 2
+
+    def test_out_of_limits(self, test_config, limit_config):
+        mm = model_mapper.ModelMapper(test_config, limit_config=limit_config)
+        mm.mock_class_gaussian = MockClassGaussian
+
+        assert mm.instance_from_physical_vector([1, 2]) is not None
+
+        with pytest.raises(exc.PriorLimitException):
+            mm.instance_from_physical_vector(([1, 3]))
+
+        with pytest.raises(exc.PriorLimitException):
+            mm.instance_from_physical_vector(([-1, 2]))
+
+    def test_inf(self, test_config, limit_config):
+        mm = model_mapper.ModelMapper(test_config, limit_config=limit_config)
+        mm.mock_class_inf = MockClassInf
+
+        prior_tuples = mm.prior_tuples_ordered_by_id
+
+        assert prior_tuples[0].prior.lower_limit == -math.inf
+        assert prior_tuples[0].prior.upper_limit == 0
+
+        assert prior_tuples[1].prior.lower_limit == 0
+        assert prior_tuples[1].prior.upper_limit == math.inf
+
+        assert mm.instance_from_physical_vector([-10000, 10000]) is not None
+
+        with pytest.raises(exc.PriorLimitException):
+            mm.instance_from_physical_vector(([1, 0]))
+
+        with pytest.raises(exc.PriorLimitException):
+            mm.instance_from_physical_vector(([0, -1]))
 
 
 class TestPriorLinking(object):
@@ -324,7 +426,8 @@ class TestModelingMapper(object):
         assert mapper.mock_class.one.upper_limit == 2.
 
     def test_config_prior_type(self):
-        mapper = model_mapper.ModelMapper(MockConfig({"MockClassMM": {"one": ["g", 1., 2.]}}))
+        mapper = model_mapper.ModelMapper(MockConfig({"MockClassMM": {"one": ["g", 1., 2.]}}),
+                                          limit_config=MockConfig({"MockClassMM": {"one": [1., 2.]}}))
 
         mapper.mock_class = MockClassMM
 
@@ -509,34 +612,38 @@ class TestConfigFunctions:
         assert ['u', 0, 1.0] == config.get("geometry_profiles", "GeometryProfile", "centre_0")
         assert ['u', 0, 1.0] == config.get("geometry_profiles", "GeometryProfile", "centre_1")
 
-    def test_model_from_unit_vector(self, test_config):
+    def test_model_from_unit_vector(self, test_config, limit_config):
         mapper = model_mapper.ModelMapper(test_config,
+                                          limit_config=limit_config,
                                           geometry_profile=geometry_profiles.GeometryProfile)
 
         model_map = mapper.instance_from_unit_vector([1., 1.])
 
         assert model_map.geometry_profile.centre == (1., 1.0)
 
-    def test_model_from_physical_vector(self, test_config):
+    def test_model_from_physical_vector(self, test_config, limit_config):
         mapper = model_mapper.ModelMapper(test_config,
+                                          limit_config=limit_config,
                                           geometry_profile=geometry_profiles.GeometryProfile)
 
-        model_map = mapper.instance_from_physical_vector([10., 50.])
+        model_map = mapper.instance_from_physical_vector([1., 0.5])
 
-        assert model_map.geometry_profile.centre == (10., 50.0)
+        assert model_map.geometry_profile.centre == (1., 0.5)
 
-    def test_inheritance(self, test_config):
+    def test_inheritance(self, test_config, limit_config):
         mapper = model_mapper.ModelMapper(test_config,
+                                          limit_config=limit_config,
                                           geometry_profile=geometry_profiles.EllipticalProfile)
 
         model_map = mapper.instance_from_unit_vector([1., 1., 1., 1.])
 
         assert model_map.geometry_profile.centre == (1.0, 1.0)
 
-    def test_true_config(self, test_config):
+    def test_true_config(self, test_config, limit_config):
         config = test_config
 
         mapper = model_mapper.ModelMapper(config=config,
+                                          limit_config=limit_config,
                                           sersic_light_profile=light_profiles.EllipticalSersic,
                                           elliptical_profile_1=geometry_profiles.EllipticalProfile,
                                           elliptical_profile_2=geometry_profiles.EllipticalProfile,
@@ -544,7 +651,7 @@ class TestConfigFunctions:
                                           exponential_light_profile=light_profiles.EllipticalExponential)
 
         model_map = mapper.instance_from_unit_vector(
-            [1 for _ in range(len(mapper.prior_tuples_ordered_by_id))])
+            [0.5 for _ in range(len(mapper.prior_tuples_ordered_by_id))])
 
         assert isinstance(model_map.elliptical_profile_1, geometry_profiles.EllipticalProfile)
         assert isinstance(model_map.elliptical_profile_2, geometry_profiles.EllipticalProfile)
@@ -841,12 +948,12 @@ class TestArguments(object):
         mapper.one = model_mapper.PriorModel(MockClassMM, test_config)
         mapper.two = model_mapper.PriorModel(MockClassMM, test_config)
 
-        instance = mapper.instance_from_physical_vector([1, 2, 3, 4])
+        instance = mapper.instance_from_physical_vector([0.1, 0.2, 0.3, 0.4])
 
-        assert instance.one.one == 1
-        assert instance.one.two == 2
-        assert instance.two.one == 3
-        assert instance.two.two == 4
+        assert instance.one.one == 0.1
+        assert instance.one.two == 0.2
+        assert instance.two.one == 0.3
+        assert instance.two.two == 0.4
 
 
 class TestIndependentPriorModel(object):
@@ -859,10 +966,10 @@ class TestIndependentPriorModel(object):
 
         assert len(mapper.prior_model_tuples) == 1
 
-        instance = mapper.instance_from_physical_vector([1, 2])
+        instance = mapper.instance_from_physical_vector([0.1, 0.2])
 
-        assert instance.prior_model.one == 1
-        assert instance.prior_model.two == 2
+        assert instance.prior_model.one == 0.1
+        assert instance.prior_model.two == 0.2
 
 
 @pytest.fixture(name="list_prior_model")
@@ -877,14 +984,14 @@ class TestListPriorModel(object):
         mapper = model_mapper.ModelMapper(MockConfig())
         mapper.list = list_prior_model
 
-        instance = mapper.instance_from_physical_vector([1, 2, 3, 4])
+        instance = mapper.instance_from_physical_vector([0.1, 0.2, 0.3, 0.4])
 
         assert isinstance(instance.list, list)
         assert len(instance.list) == 2
-        assert instance.list[0].one == 1
-        assert instance.list[0].two == 2
-        assert instance.list[1].one == 3
-        assert instance.list[1].two == 4
+        assert instance.list[0].one == 0.1
+        assert instance.list[0].two == 0.2
+        assert instance.list[1].one == 0.3
+        assert instance.list[1].two == 0.4
 
     def test_prior_results_for_gaussian_tuples(self, list_prior_model, width_config):
         mapper = model_mapper.ModelMapper(MockConfig(), width_config)
@@ -949,10 +1056,10 @@ class TestConstant(object):
         mapper = model_mapper.ModelMapper()
         mapper.mock_class = mock_with_constant
 
-        instance = mapper.instance_for_arguments({mock_with_constant.two: 5})
+        instance = mapper.instance_for_arguments({mock_with_constant.two: 0.5})
 
         assert instance.mock_class.one == 3
-        assert instance.mock_class.two == 5
+        assert instance.mock_class.two == 0.5
 
     def test_constant_in_config(self):
         mapper = model_mapper.ModelMapper()
@@ -962,10 +1069,10 @@ class TestConstant(object):
 
         mapper.mock_class = mock_with_constant
 
-        instance = mapper.instance_for_arguments({mock_with_constant.two: 5})
+        instance = mapper.instance_for_arguments({mock_with_constant.two: 0.5})
 
         assert instance.mock_class.one == 3
-        assert instance.mock_class.two == 5
+        assert instance.mock_class.two == 0.5
 
     def test_constant_exchange(self, mock_with_constant, width_config):
         mapper = model_mapper.ModelMapper(width_config=width_config)

@@ -45,9 +45,10 @@ class LensingImage(fitting_data.FittingImage):
             mapping_matrix_psf_shape = self.image.psf.shape
 
         self.convolver_mapping_matrix = inversion_convolution.ConvolverMappingMatrix(self.mask,
-                                                                                     self.image.psf.resized_scaled_array_from_array(mapping_matrix_psf_shape))
+                      self.image.psf.resized_scaled_array_from_array(mapping_matrix_psf_shape))
 
         self.positions = positions
+
 
     def __array_finalize__(self, obj):
         super(LensingImage, self).__array_finalize__(obj)
@@ -64,7 +65,7 @@ class LensingImage(fitting_data.FittingImage):
             self.sub_grid_size = obj.sub_grid_size
             self.grids = obj.grids
             self.padded_grids = obj.padded_grids
-            self.borders = obj.borders
+            self.border = obj.border
             self.positions = obj.positions
 
 
@@ -110,7 +111,7 @@ class LensingHyperImage(fitting_data.FittingHyperImage):
             mapping_matrix_psf_shape = self.image.psf.shape
 
         self.convolver_mapping_matrix = inversion_convolution.ConvolverMappingMatrix(self.mask,
-                                                                                     self.image.psf.resized_scaled_array_from_array(mapping_matrix_psf_shape))
+                      self.image.psf.resized_scaled_array_from_array(mapping_matrix_psf_shape))
 
         self.positions = positions
 
@@ -124,7 +125,7 @@ class LensingHyperImage(fitting_data.FittingHyperImage):
             self.grids = obj.grids
             self.sub_grid_size = obj.sub_grid_size
             self.padded_grids = obj.padded_grids
-            self.borders = obj.borders
+            self.border = obj.border
             self.positions = obj.positions
             self.hyper_model_image = obj.hyper_model_image
             self.hyper_galaxy_images = obj.hyper_galaxy_images

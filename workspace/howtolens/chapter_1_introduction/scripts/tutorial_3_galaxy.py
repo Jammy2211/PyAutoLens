@@ -1,8 +1,8 @@
-from autolens.profiles import mass_profiles
-from autolens.profiles import light_profiles
-from autolens.galaxy import galaxy
+from autolens.model.profiles import light_profiles
+from autolens.model.profiles import mass_profiles
+from autolens.model.galaxy import galaxy
 from autolens.imaging import mask
-from autolens.plotting import galaxy_plotters
+from autolens.model.galaxy.plotters import galaxy_plotters
 
 # In this example, we'll use 'mass_profiles' and 'light_profiles' modules introduced previously, along with the
 # 'model_galaxy' modules to create Galaxy objects in PyAutoLens. We'll see that:
@@ -37,9 +37,9 @@ galaxy_plotters.plot_intensities(galaxy=galaxy_with_light_profile, grid=image_gr
 
 # The neat thing about galaxies, is we can pass them multiple profiles. Lets create a
 # model_galaxy with three light profiles.
-light_profile_1 = light_profiles.SphericalSersic(centre=(0.0,  0.0), intensity=1.0, effective_radius=1.0,
+light_profile_1 = light_profiles.SphericalSersic(centre=(0.0, 0.0), intensity=1.0, effective_radius=1.0,
                                                  sersic_index=2.5)
-light_profile_2 = light_profiles.SphericalSersic(centre=(1.0,  1.0), intensity=1.0, effective_radius=2.0,
+light_profile_2 = light_profiles.SphericalSersic(centre=(1.0, 1.0), intensity=1.0, effective_radius=2.0,
                                                  sersic_index=3.0)
 light_profile_3 = light_profiles.SphericalSersic(centre=(1.0, -1.0), intensity=1.0, effective_radius=2.0,
                                                  sersic_index=2.0)
@@ -53,8 +53,8 @@ galaxy_plotters.plot_intensities_subplot(galaxy=galaxy_with_3_light_profiles, gr
 
 # We can play the exact same game with mass profiles. Lets create a model_galaxy with three
 # SIS mass profiles.
-mass_profile_1 = mass_profiles.SphericalIsothermal(centre=(0.0,  0.0), einstein_radius=1.0)
-mass_profile_2 = mass_profiles.SphericalIsothermal(centre=(1.0,  1.0), einstein_radius=1.0)
+mass_profile_1 = mass_profiles.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=1.0)
+mass_profile_2 = mass_profiles.SphericalIsothermal(centre=(1.0, 1.0), einstein_radius=1.0)
 mass_profile_3 = mass_profiles.SphericalIsothermal(centre=(1.0, -1.0), einstein_radius=1.0)
 galaxy_with_3_mass_profiles = galaxy.Galaxy(mass_1=mass_profile_1, mass_2=mass_profile_2, mass_3=mass_profile_3)
 # We can print a model_galaxy to confirm it possesses the sis mass-profiles above.
@@ -85,7 +85,7 @@ mass_profile_1 = mass_profiles.SphericalIsothermal(centre=(0.0, 0.0), einstein_r
 mass_profile_2 = mass_profiles.SphericalIsothermal(centre=(1.0, 1.0), einstein_radius=2.0)
 mass_profile_3 = mass_profiles.SphericalIsothermal(centre=(2.0, 2.0), einstein_radius=3.0)
 mass_profile_4 = mass_profiles.EllipticalIsothermal(centre=(1.0, -1.0), axis_ratio=0.5, phi=45.0,
-                                                   einstein_radius=2.0)
+                                                    einstein_radius=2.0)
 
 galaxy_with_many_profiles = galaxy.Galaxy(light_1=light_profile_1, light_2=light_profile_2,
                                           light_3=light_profile_3, light_4=light_profile_4,

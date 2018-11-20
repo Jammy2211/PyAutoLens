@@ -6,6 +6,7 @@ pip-selfcheck.json
 bin/
 include/
 lib/
+data/
 .ipynb_checkpoints
 .cache
 .idea
@@ -27,7 +28,6 @@ __pycache__/
 test/autofit/test_fit/
 prof/
 config/*.pyc
-config/
 test/integration/data/const_float/
 test/integration/data/pair_floats/
 test/integration/tests/simulate_and_fit/data/

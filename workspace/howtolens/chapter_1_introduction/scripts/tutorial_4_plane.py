@@ -1,9 +1,9 @@
-from autolens.profiles import mass_profiles
-from autolens.profiles import light_profiles
-from autolens.galaxy import galaxy
+from autolens.model.profiles import light_profiles
+from autolens.model.profiles import mass_profiles
+from autolens.model.galaxy import galaxy
 from autolens.lensing import plane
 from autolens.imaging import mask
-from autolens.plotting import plane_plotters
+from autolens.lensing.plotters import plane_plotters
 
 # Now we've learnt how to make galaxies out of light and mass profiles, we'll now use galaxies to make a
 # strong-gravitational lens. For the newcomers to lensing, a strong gravitation lens is a system where two (or more)
@@ -53,7 +53,7 @@ image_plane_grids = mask.ImagingGrids.from_shape_and_pixel_scale(shape=(100, 100
 
 # Whereas before we called our model_galaxy's things like 'galaxy_with_light_profile', lets now refer to them by their role
 # in lensing, e.g. 'lens_galaxy' and 'source_galaxy'.
-mass_profile = mass_profiles.SphericalIsothermal(centre=(0.0,  0.0), einstein_radius=1.6)
+mass_profile = mass_profiles.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=1.6)
 lens_galaxy = galaxy.Galaxy(mass=mass_profile)
 light_profile = light_profiles.SphericalSersic(centre=(0.0, 0.0), intensity=1.0, effective_radius=1.0, sersic_index=1.0)
 source_galaxy = galaxy.Galaxy(light=light_profile)
@@ -85,7 +85,7 @@ source_plane = plane.Plane(galaxies=[source_galaxy], grids=source_plane_grids)
 plane_plotters.plot_plane_grid(plane=image_plane, title='Image-plane Grid')
 plane_plotters.plot_plane_grid(plane=source_plane, title='Source-plane Grid')
 
-# We can zoom in on the 'centre' of the source-plane using the axis limits, which are defined as [xmin, xmax, ymin,
+# We can zoom in on the 'origin' of the source-plane using the axis limits, which are defined as [xmin, xmax, ymin,
 # ymax] (remembering the lens model_galaxy was centred at (0.1, 0.1)
 plane_plotters.plot_plane_grid(plane=source_plane, axis_limits=[-0.1, 0.1, -0.1, 0.1], title='Source-plane Grid')
 
@@ -94,7 +94,7 @@ plane_plotters.plot_plane_grid(plane=source_plane, axis_limits=[-0.1, 0.1, -0.1,
 # (We are inputting the pixel index's into 'points' - the first set of points go from 0 -> 50, which is the top row of
 # the image-grid running from the left - as we said it would!)
 plane_plotters.plot_image_and_source_plane_subplot(image_plane=image_plane, source_plane=source_plane,
-    points=[[range(0,50)], [range(500, 550)],
+                                                   points=[[range(0,50)], [range(500, 550)],
             [1550, 1650, 1750, 1850, 1950, 2050],
             [8450, 8350, 8250, 8150, 8050, 7950]])
 

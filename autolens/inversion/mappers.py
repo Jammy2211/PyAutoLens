@@ -1,12 +1,12 @@
 import numba
 import numpy as np
 
-from autolens.imaging import imaging_util
+from autolens.imaging.util import mapping_util
 from autolens.imaging import scaled_array
 
 class Mapper(object):
 
-    def __init__(self, pixels, grids, pixel_neighbors):
+    def __init__(self, pixels, grids, border, pixel_neighbors):
         """
         Abstract base class representing the mapping between the pixels in an observed image of a strong lens and \
         the pixels of a pixelization.
@@ -30,6 +30,7 @@ class Mapper(object):
         """
         self.pixels = pixels
         self.grids = grids
+        self.border = border
         self.pixel_neighbors = pixel_neighbors
 
     @property
@@ -77,17 +78,17 @@ class Mapper(object):
         [ 0.0,  1.0, 0.0, 0.0] [All sub-pixels mappers to pixel 1]
         [ 0.0,  0.0, 0.5, 0.5] [2 sub-pixels mappers to pixel 2, 2 mappers to pixel 3]
         """
-        return self.mapping_matrix_from_sub_to_pix_jit(self.sub_to_pixelization, self.pixels, self.grids.image.shape[0],
+        return self.mapping_matrix_from_sub_to_pix_jit(self.sub_to_pix, self.pixels, self.grids.image.shape[0],
                                                        self.grids.sub.sub_to_image, self.grids.sub.sub_grid_fraction)
 
     @staticmethod
     @numba.jit(nopython=True, cache=True)
-    def mapping_matrix_from_sub_to_pix_jit(sub_to_pixelization, pixels, image_pixels, sub_to_image, sub_grid_fraction):
+    def mapping_matrix_from_sub_to_pix_jit(sub_to_pix, pixels, image_pixels, sub_to_image, sub_grid_fraction):
         """Computes the mapping matrix, by iterating over the known mappings between the sub-grid and pixelization.
 
         Parameters
         -----------
-        sub_to_pixelization : ndarray
+        sub_to_pix : ndarray
             The mappings between the observed image's sub-pixels and pixelization's pixels.
         pixels : int
             The number of pixels in the pixelization.
@@ -98,45 +99,48 @@ class Mapper(object):
         sub_grid_fraction : float
             The fractional area each sub-pixel takes up in an image-pixel.
         """
+
         mapping_matrix = np.zeros((image_pixels, pixels))
 
         for sub_index in range(sub_to_image.shape[0]):
-            mapping_matrix[sub_to_image[sub_index], sub_to_pixelization[sub_index]] += sub_grid_fraction
+
+            mapping_matrix[sub_to_image[sub_index], sub_to_pix[sub_index]] += sub_grid_fraction
 
         return mapping_matrix
 
     @property
-    def image_to_pixelization(self):
+    def image_to_pix(self):
         raise NotImplementedError("image_to_pixelization should be overridden")
 
     @property
-    def sub_to_pixelization(self):
+    def sub_to_pix(self):
         raise NotImplementedError("sub_to_pixelization should be overridden")
 
     @property
-    def pixelization_to_image(self):
+    def pix_to_image(self):
 
-        pixelization_to_image = [[] for _ in range(self.pixels)]
+        pix_to_image = [[] for _ in range(self.pixels)]
 
-        for image_pixel, pixelization_pixel in enumerate(self.image_to_pixelization):
+        for image_pixel, pix_pixel in enumerate(self.image_to_pix):
 
-            pixelization_to_image[pixelization_pixel].append(image_pixel)
+            pix_to_image[pix_pixel].append(image_pixel)
 
-        return pixelization_to_image
+        return pix_to_image
 
     @property
-    def pixelization_to_sub(self):
+    def pix_to_sub(self):
 
-        pixelization_to_sub = [[] for _ in range(self.pixels)]
+        pix_to_sub = [[] for _ in range(self.pixels)]
 
-        for image_pixel, pixelization_pixel in enumerate(self.sub_to_pixelization):
-            pixelization_to_sub[pixelization_pixel].append(image_pixel)
+        for image_pixel, pix_pixel in enumerate(self.sub_to_pix):
+            pix_to_sub[pix_pixel].append(image_pixel)
 
-        return pixelization_to_sub
+        return pix_to_sub
+
 
 class RectangularMapper(Mapper):
 
-    def __init__(self, pixels, grids, pixel_neighbors, shape, geometry):
+    def __init__(self, pixels, grids, border, pixel_neighbors, shape, geometry):
         """Class representing the mappings between the pixels in an observed image of a strong lens and \
         the pixels of a rectangular pixelization.
 
@@ -157,43 +161,28 @@ class RectangularMapper(Mapper):
         """
         self.shape = shape
         self.geometry = geometry
-        super(RectangularMapper, self).__init__(pixels, grids, pixel_neighbors)
+        super(RectangularMapper, self).__init__(pixels, grids, border, pixel_neighbors)
 
     @property
-    def image_to_pixelization(self):
+    def image_to_pix(self):
         """The mappings between a set of image pixels and pixelization pixels."""
-        return self.grid_to_pixelization_from_grid_jit(self.grids.image, self.geometry.arc_second_minima,
-                                                       self.geometry.pixel_scales, self.shape).astype(dtype='int')
+        return self.geometry.grid_arc_seconds_to_grid_pixel_indexes(grid_arc_seconds=self.grids.image)
 
     @property
-    def sub_to_pixelization(self):
+    def sub_to_pix(self):
         """The mappings between a set of sub-pixels and pixelization pixels"""
-        return self.grid_to_pixelization_from_grid_jit(self.grids.sub, self.geometry.arc_second_minima,
-                                                       self.geometry.pixel_scales, self.shape).astype(dtype='int')
-
-    @staticmethod
-    @numba.jit(nopython=True, cache=True)
-    def grid_to_pixelization_from_grid_jit(grid, arc_second_minima, pixel_scales, shape):
-
-        grid_to_pixelization = np.zeros(grid.shape[0])
-
-        for i in range(grid.shape[0]):
-            y_pixel = shape[0] - np.floor((grid[i, 0] - arc_second_minima[0]) / pixel_scales[0]) - 1
-            x_pixel = np.floor((grid[i, 1] - arc_second_minima[1]) / pixel_scales[1])
-
-            grid_to_pixelization[i] = y_pixel * (shape[1]) + x_pixel
-
-        return grid_to_pixelization
+        return self.geometry.grid_arc_seconds_to_grid_pixel_indexes(grid_arc_seconds=self.grids.sub)
 
     def reconstructed_pixelization_from_solution_vector(self, solution_vector):
-        recon = imaging_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(array_1d=solution_vector,
-                                                                               shape=self.shape)
-        return scaled_array.ScaledRectangularPixelArray(array=recon, pixel_scales=self.geometry.pixel_scales)
+        recon = mapping_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(array_1d=solution_vector,
+                                                                                    shape=self.shape)
+        return scaled_array.ScaledRectangularPixelArray(array=recon, pixel_scales=self.geometry.pixel_scales,
+                                                        origin=self.geometry.origin)
 
 
 class VoronoiMapper(Mapper):
 
-    def __init__(self, pixels, grids, pixel_neighbors, pixel_centers, voronoi, voronoi_to_pixelization,
+    def __init__(self, pixels, grids, border, pixel_neighbors, pixel_centers, voronoi, voronoi_to_pix,
                  image_to_voronoi):
         """Class representing the mappings between the pixels in an observed image of a strong lens and \
         the pixels of a Voronoi pixelization.
@@ -216,25 +205,25 @@ class VoronoiMapper(Mapper):
         """
         self.pixel_centers = pixel_centers
         self.voronoi = voronoi
-        self.voronoi_to_pixelization = voronoi_to_pixelization
+        self.voronoi_to_pix = voronoi_to_pix
         self.image_to_voronoi = image_to_voronoi
-        super(VoronoiMapper, self).__init__(pixels, grids, pixel_neighbors)
+        super(VoronoiMapper, self).__init__(pixels, grids, border, pixel_neighbors)
 
     @property
-    def image_to_pixelization(self):
+    def image_to_pix(self):
         """The mappings between a set of image pixels and pixelization pixels."""
 
-        image_to_pixelization = np.zeros((self.grids.image.shape[0]), dtype=int)
+        image_to_pix = np.zeros((self.grids.image.shape[0]), dtype=int)
 
         for image_index, pixel_coordinate in enumerate(self.grids.image):
             nearest_cluster = self.image_to_voronoi[image_index]
 
-            image_to_pixelization[image_index] = self.pair_image_and_pixel(pixel_coordinate, nearest_cluster)
+            image_to_pix[image_index] = self.pair_image_and_pixel(pixel_coordinate, nearest_cluster)
 
-        return image_to_pixelization
+        return image_to_pix
 
     @property
-    def sub_to_pixelization(self):
+    def sub_to_pix(self):
         """ Compute the mappings between a set of sub-maskedimage pixels and pixels, using the maskedimage's traced \
         pix-plane sub-grid and the pixel centers. This uses the pix-neighbors to perform a graph \
         search when pairing pixels, for efficiency.
@@ -276,14 +265,14 @@ class VoronoiMapper(Mapper):
 
          """
 
-        sub_to_pixelization = np.zeros((self.grids.sub.total_pixels,), dtype=int)
+        sub_to_pix = np.zeros((self.grids.sub.total_pixels,), dtype=int)
 
         for sub_index, sub_coordinate in enumerate(self.grids.sub):
             nearest_cluster = self.image_to_voronoi[self.grids.sub.sub_to_image[sub_index]]
 
-            sub_to_pixelization[sub_index] = self.pair_image_and_pixel(sub_coordinate, nearest_cluster)
+            sub_to_pix[sub_index] = self.pair_image_and_pixel(sub_coordinate, nearest_cluster)
 
-        return sub_to_pixelization
+        return sub_to_pix
 
     def pair_image_and_pixel(self, coordinate, nearest_cluster):
         """ Compute the mappings between a set of sub-maskedimage pixels and pixels, using the maskedimage's traced \
@@ -319,7 +308,7 @@ class VoronoiMapper(Mapper):
             the 3rd cluster_pixel, cluster_to_pix[4] = 2).
          """
 
-        nearest_pixel = self.voronoi_to_pixelization[nearest_cluster]
+        nearest_pixel = self.voronoi_to_pix[nearest_cluster]
 
         while True:
 

@@ -15,7 +15,7 @@ class SphericalProfile(geometry_profiles.Profile):
         Parameters
         ----------
         centre: (float, float)
-            The coordinates of the centre of the profiles
+            The coordinates of the origin of the profiles
         axis_ratio : float
             Ratio of profiles ellipse's minor and major axes (b/a)
         phi : float

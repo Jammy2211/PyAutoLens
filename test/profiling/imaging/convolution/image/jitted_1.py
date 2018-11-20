@@ -5,7 +5,7 @@ from profiling import profiling_data
 from profiling import tools
 
 from autolens import exc
-from autolens.profiles import light_profiles
+from autolens.model.profiles import light_profiles
 
 
 class Convolver(object):

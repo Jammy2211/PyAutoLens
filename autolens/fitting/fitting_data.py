@@ -76,8 +76,8 @@ class FittingImage(im.Image):
         padded_grids : imaging.mask.ImagingGrids
             Grids of padded (y,x) Cartesian coordinates which map over the every observed image's pixel in 1D and a \
             padded regioon to include edge's for accurate PSF convolution (includes an image-grid, sub-grid, etc.)
-        borders  imaging.mask.ImagingGridsBorders
-            The borders of the image-grid and sub-grid (see *ImagingGridsBorders* for their use).
+        border  imaging.mask.ImagingGridsBorders
+            The border of the image-grid and sub-grid (see *ImagingGridsBorders* for their use).
         """
         super().__init__(array=image, pixel_scale=image.pixel_scale, noise_map=image.noise_map, psf=image.psf,
                          background_noise_map=image.background_noise_map, poisson_noise_map=image.poisson_noise_map,
@@ -106,7 +106,7 @@ class FittingImage(im.Image):
         self.padded_grids = msk.ImagingGrids.padded_grids_from_mask_sub_grid_size_and_psf_shape(mask=mask,
                                                         sub_grid_size=sub_grid_size, psf_shape=image_psf_shape)
 
-        self.borders = msk.ImagingGridBorders.from_mask_and_sub_grid_size(mask=mask, sub_grid_size=sub_grid_size)
+        self.border = msk.ImageGridBorder.from_mask(mask=mask)
 
     def __array_finalize__(self, obj):
         super(FittingImage, self).__array_finalize__(obj)
@@ -119,7 +119,7 @@ class FittingImage(im.Image):
             self.mask = obj.mask
             self.convolver_image = obj.convolver_image
             self.grids = obj.grids
-            self.borders = obj.borders
+            self.border = obj.border
 
 
 class FittingHyperImage(FittingImage):
@@ -130,27 +130,25 @@ class FittingHyperImage(FittingImage):
 
     def __init__(self, image, mask, hyper_model_image, hyper_galaxy_images, hyper_minimum_values, sub_grid_size=2,
                  image_psf_shape=None):
-        """
-        The lensing datas_ is the collection of datas (image, noise-maps, PSF), a masks, grids, convolvers and other \
-        utilities that are used for modeling and fitting an datas_ of a strong lens.
+        """A fitting hyper image is a fitting_image (see *FittingImage) which additionally includes a set of \
+        'hyper_data'. This hyper-data is the best-fit model images of the observed data from a previous analysis, \
+        and it is used to scale the noise in the image, so as to avoid over-fitting localized regions of the image \
+        where the model does not provide a good fit.
 
-        Whilst the datas_ datas is initially loaded in 2D, for the lensing datas_ the masked-datas_ (and noise-maps) \
-        are reduced to 1D arrays for faster calculations.
+        Look at the *FittingImage* docstring for all parameters / attributes not specific to a hyper image.
 
         Parameters
         ----------
-        image: im.Image
-            The original datas_ datas in 2D.
-        mask: msk.Mask
-            The 2D masks that is applied to the datas_.
-        sub_grid_size : int
-            The size of the sub-grid used for each lensing SubGrid. E.g. a value of 2 grids each datas_-pixel on a 2x2 \
-            sub-grid.
-        image_psf_shape : (int, int)
-            The shape of the PSF used for convolving model image generated using analytic light profiles. A smaller \
-            shape will trim the PSF relative to the input datas_ PSF, giving a faster analysis run-time.
-        """
+        hyper_model_images : [ndarray]
+            List of the masked 1D array best-fit model image's to each observed image in a previous analysis.
+        hyper_galaxy_images : [[ndarray]]
+            List of the masked 1D array best-fit model image's of every galaxy to each observed image in a previous \
+            analysis.
 
+        Attributes
+        ----------
+
+        """
         super(FittingHyperImage, self).__init__(image=image, mask=mask, sub_grid_size=sub_grid_size,
                                                 image_psf_shape=image_psf_shape)
 
@@ -169,7 +167,7 @@ class FittingHyperImage(FittingImage):
             self.mask = obj.mask
             self.convolver_image = obj.convolver_image
             self.grids = obj.grids
-            self.borders = obj.borders
+            self.border = obj.border
             self.hyper_model_image = obj.hyper_model_image
             self.hyper_galaxy_images = obj.hyper_galaxy_images
             self.hyper_minimum_values = obj.hyper_minimum_values

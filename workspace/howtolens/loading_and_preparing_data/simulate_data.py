@@ -2,14 +2,14 @@ from astropy.io import fits
 import os
 
 from autolens.imaging import image as im
-from autolens.plotting import imaging_plotters
-from autolens.profiles import light_profiles as lp
-from autolens.profiles import mass_profiles as mp
+from autolens.imaging.plotters import imaging_plotters
+from autolens.model.profiles import light_profiles as lp, mass_profiles as mp
+
 
 def simulate_image():
 
     from autolens.imaging import mask
-    from autolens.galaxy import galaxy as g
+    from autolens.model.galaxy import galaxy as g
     from autolens.lensing import ray_tracing
 
     psf = im.PSF.simulate_as_gaussian(shape=(21, 21), sigma=0.05, pixel_scale=0.1)
@@ -32,7 +32,7 @@ def simulate_image():
 def simulate_image_in_counts():
 
     from autolens.imaging import mask
-    from autolens.galaxy import galaxy as g
+    from autolens.model.galaxy import galaxy as g
     from autolens.lensing import ray_tracing
 
     psf = im.PSF.simulate_as_gaussian(shape=(21, 21), sigma=0.05, pixel_scale=0.1)
@@ -55,7 +55,7 @@ def simulate_image_in_counts():
 def simulate_image_large_stamp():
 
     from autolens.imaging import mask
-    from autolens.galaxy import galaxy as g
+    from autolens.model.galaxy import galaxy as g
     from autolens.lensing import ray_tracing
 
     psf = im.PSF.simulate_as_gaussian(shape=(21, 21), sigma=0.05, pixel_scale=0.1)
@@ -78,7 +78,7 @@ def simulate_image_large_stamp():
 def simulate_image_small_stamp():
 
     from autolens.imaging import mask
-    from autolens.galaxy import galaxy as g
+    from autolens.model.galaxy import galaxy as g
     from autolens.lensing import ray_tracing
 
     psf = im.PSF.simulate_as_gaussian(shape=(21, 21), sigma=0.05, pixel_scale=0.1)
@@ -101,7 +101,7 @@ def simulate_image_small_stamp():
 def simulate_image_offset_centre():
 
     from autolens.imaging import mask
-    from autolens.galaxy import galaxy as g
+    from autolens.model.galaxy import galaxy as g
     from autolens.lensing import ray_tracing
 
     psf = im.PSF.simulate_as_gaussian(shape=(21, 21), sigma=0.05, pixel_scale=0.1)
@@ -124,7 +124,7 @@ def simulate_image_offset_centre():
 def simulate_image_with_large_psf():
 
     from autolens.imaging import mask
-    from autolens.galaxy import galaxy as g
+    from autolens.model.galaxy import galaxy as g
     from autolens.lensing import ray_tracing
 
     psf = im.PSF.simulate_as_gaussian(shape=(101, 101), sigma=0.05, pixel_scale=0.1)
@@ -149,7 +149,7 @@ path = '{}/'.format(os.path.dirname(os.path.realpath(__file__)))
 def simulate_image_with_offset_centre_psf():
 
     from autolens.imaging import mask
-    from autolens.galaxy import galaxy as g
+    from autolens.model.galaxy import galaxy as g
     from autolens.lensing import ray_tracing
 
     psf = im.PSF.simulate_as_gaussian(shape=(21, 21), sigma=0.05, pixel_scale=0.1, centre=(0.1, 0.1))

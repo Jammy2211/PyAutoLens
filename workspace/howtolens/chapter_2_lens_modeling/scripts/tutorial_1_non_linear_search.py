@@ -1,12 +1,12 @@
 from autolens import conf
 from autolens.autofit import non_linear
 from autolens.imaging import image as im
-from autolens.galaxy import galaxy_model as gm
+from autolens.model.galaxy import galaxy_model as gm
 from autolens.pipeline import phase as ph
-from autolens.plotting import lensing_fitting_plotters
-from autolens.plotting import imaging_plotters
-from autolens.profiles import light_profiles as lp
-from autolens.profiles import mass_profiles as mp
+from autolens.lensing.plotters import lensing_fitting_plotters
+from autolens.imaging.plotters import imaging_plotters
+from autolens.model.profiles import light_profiles as lp
+from autolens.model.profiles import mass_profiles as mp
 
 import os
 
@@ -16,7 +16,7 @@ import os
 # So, what do I mean by a 'lens model'? The lens model is the combination of light profiles and mass profiles we use to
 # represent lens model_galaxy, source model_galaxy and therefore create a tracer_without_subhalo. Thus, to begin, we have to choose the
 # parametrization of our lens model. We don't need to specify the values of its light and mass profiles (e.g. the
-# centre, einstein_radius, etc.) - only the profiles are. In this example, we'll use the following lens model:
+# origin, einstein_radius, etc.) - only the profiles are. In this example, we'll use the following lens model:
 
 # 1) A spherical Isothermal Sphere (SIS) for the lens model_galaxy's mass.
 # 2) A spherical exponential light profile for the source model_galaxy's light.
@@ -70,7 +70,7 @@ conf.instance = conf.Config(config_path=path+'configs/1_non_linear_search', outp
 def simulate():
 
     from autolens.imaging import mask
-    from autolens.galaxy import galaxy as g
+    from autolens.model.galaxy import galaxy as g
     from autolens.lensing import ray_tracing
 
     psf = im.PSF.simulate_as_gaussian(shape=(11, 11), sigma=0.1, pixel_scale=0.1)

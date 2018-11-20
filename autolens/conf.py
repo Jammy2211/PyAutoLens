@@ -196,6 +196,31 @@ class DefaultPriorConfig(AncestorConfig):
         return [arr[0]] + list(map(float, arr[1:]))
 
 
+class LimitConfig(AncestorConfig):
+    """Parses prior config"""
+
+    def get(self, module_name, class_name, attribute_name):
+        """
+
+        Parameters
+        ----------
+        module_name: String
+            The analysis_path of the module
+        class_name: String
+            The analysis_path of the class
+        attribute_name: String
+            The analysis_path of the attribute
+
+        Returns
+        -------
+        prior_limits: ()
+            A tuple containing the limits of the range of values an attribute can take with an exception being thrown
+            if a nonlinear search produces a value outside of that range.
+        """
+        arr = super(LimitConfig, self).get(module_name, class_name, attribute_name).replace(" ", "").split(",")
+        return tuple(map(float, arr[:2]))
+
+
 class WidthConfig(AncestorConfig):
     def get(self, module_name, class_name, attribute_name):
         """
@@ -222,6 +247,7 @@ class Config(object):
         self.config_path = config_path
         self.prior_default = DefaultPriorConfig("{}/priors/default".format(config_path))
         self.prior_width = WidthConfig("{}/priors/width".format(config_path))
+        self.limit_config = LimitConfig("{}/priors/limit".format(config_path))
         self.non_linear = NamedConfig("{}/non_linear.ini".format(config_path))
         self.label = LabelConfig("{}/label.ini".format(config_path))
         self.general = NamedConfig("{}/general.ini".format(config_path))

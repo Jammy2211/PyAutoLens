@@ -3,21 +3,12 @@ import pytest
 
 from autolens.imaging import image
 from autolens.imaging import mask as mask
-from autolens.inversion import inversions
-from autolens.inversion import pixelizations
-from autolens.inversion import regularization
-from autolens.lensing import lensing_fitting
-from autolens.galaxy import galaxy as g
+from autolens.model.galaxy import galaxy as g
 from autolens.fitting import fitting
 from autolens.lensing import lensing_image
 from autolens.lensing import sensitivity_fitting
-from autolens.lensing import plane as pl
 from autolens.lensing import ray_tracing
-from autolens.profiles import light_profiles as lp
-from autolens.profiles import mass_profiles as mp
-from test.mock.mock_profiles import MockLightProfile
-from test.mock.mock_galaxy import MockHyperGalaxy
-from test.mock.mock_lensing import MockTracer
+from autolens.model.profiles import light_profiles as lp, mass_profiles as mp
 
 
 @pytest.fixture(name="sersic")

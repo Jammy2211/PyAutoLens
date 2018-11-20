@@ -19,6 +19,17 @@ logger = logging.getLogger(__name__)
 SIMPLEX_TUPLE_WIDTH = 0.1
 
 
+class Analysis(object):
+    def fit(self, instance):
+        raise NotImplementedError()
+
+    def visualise(self, instance):
+        raise NotImplementedError()
+
+    def log(self, instance):
+        raise NotImplementedError()
+
+
 class Result(object):
 
     def __init__(self, constant, likelihood, variable=None):
@@ -43,6 +54,18 @@ class Result(object):
             "\n".join(["{}: {}".format(key, value) for key, value in self.__dict__.items()]))
 
 
+class IntervalCounter(object):
+    def __init__(self, interval):
+        self.count = 0
+        self.interval = interval
+
+    def __call__(self):
+        if self.interval == -1:
+            return False
+        self.count += 1
+        return self.count % self.interval == 0
+
+
 class NonLinearOptimizer(object):
 
     def __init__(self, include_hyper_image=False, model_mapper=None, name=None, label_config=None, **classes):
@@ -58,7 +81,6 @@ class NonLinearOptimizer(object):
         obj_name : str
             Unique identifier of the data_vector being analysed (e.g. the analysis_path of the data_vector set)
         """
-
         self.named_config = conf.instance.non_linear
 
         name = name or "phase"
@@ -181,6 +203,39 @@ class NonLinearOptimizer(object):
                 paramnames.write(line + '\n')
 
 
+class AbstractFitness(object):
+    def __init__(self, analysis, instance_from_physical_vector, constant):
+        self.result = None
+        self.instance_from_physical_vector = instance_from_physical_vector
+        self.constant = constant
+        self.max_likelihood = -np.inf
+        self.analysis = analysis
+        visualise_interval = conf.instance.general.get('output', 'visualise_interval', int)
+        log_interval = conf.instance.general.get('output', 'log_interval', int)
+
+        self.should_log = IntervalCounter(log_interval)
+        self.should_visualise = IntervalCounter(visualise_interval)
+
+    def fit_instance(self, instance):
+        instance += self.constant
+
+        try:
+            likelihood = self.analysis.fit(instance)
+        except exc.InversionException or exc.RayTracingException:
+            likelihood = -np.inf
+
+        if likelihood > self.max_likelihood:
+            self.max_likelihood = likelihood
+            self.result = Result(instance, likelihood)
+
+        if self.should_visualise():
+            self.analysis.visualize(instance, suffix=None, during_analysis=True)
+        if self.should_log():
+            self.analysis.log(instance)
+
+        return likelihood
+
+
 class DownhillSimplex(NonLinearOptimizer):
 
     def __init__(self, include_hyper_image=False, model_mapper=None,
@@ -204,31 +259,12 @@ class DownhillSimplex(NonLinearOptimizer):
     def fit(self, analysis):
         initial_vector = self.variable.physical_values_from_prior_medians
 
-        class Fitness(object):
+        class Fitness(AbstractFitness):
             def __init__(self, instance_from_physical_vector, constant):
-                self.result = None
-                self.instance_from_physical_vector = instance_from_physical_vector
-                self.constant = constant
-                self.max_likelihood = -np.inf
+                super().__init__(analysis, instance_from_physical_vector, constant)
 
             def __call__(self, vector):
-                instance = self.instance_from_physical_vector(vector)
-
-                instance += self.constant
-
-                try:
-                    likelihood = analysis.fit(instance)
-                except exc.InversionException or exc.RayTracingException:
-                    likelihood = -np.inf
-
-                if likelihood > self.max_likelihood:
-                    self.max_likelihood = likelihood
-                    self.result = Result(instance, likelihood)
-
-                analysis.try_visualise(self.result.constant)
-
-                # Return Chi squared
-                return -2 * likelihood
+                return -2 * super().fit_instance(self.instance_from_physical_vector(vector))
 
         fitness_function = Fitness(self.variable.instance_from_physical_vector, self.constant)
 
@@ -239,6 +275,8 @@ class DownhillSimplex(NonLinearOptimizer):
 
         # Create a set of Gaussian priors from this result and associate them with the result object.
         res.variable = self.variable.mapper_from_gaussian_means(output)
+
+        analysis.visualize(instance=self.constant, suffix=None, during_analysis=False)
 
         return res
 
@@ -298,13 +336,11 @@ class MultiNest(NonLinearOptimizer):
     def fit(self, analysis):
         self.save_model_info()
 
-        class Fitness(object):
+        class Fitness(AbstractFitness):
 
+            # noinspection PyShadowingNames
             def __init__(self, instance_from_physical_vector, constant, output_results):
-                self.result = None
-                self.instance_from_physical_vector = instance_from_physical_vector
-                self.constant = constant
-                self.max_likelihood = -np.inf
+                super().__init__(analysis, instance_from_physical_vector, constant)
                 self.output_results = output_results
                 self.accepted_samples = 0
                 self.number_of_accepted_samples_between_output = conf.instance.general.get(
@@ -314,15 +350,12 @@ class MultiNest(NonLinearOptimizer):
 
             def __call__(self, cube, ndim, nparams, lnew):
 
-                instance = self.instance_from_physical_vector(cube)
-                instance += self.constant
-
                 try:
-                    likelihood = analysis.fit(instance)
-                except exc.InversionException or exc.RayTracingException:
-                    likelihood = -np.inf
+                    instance = self.instance_from_physical_vector(cube)
+                except exc.PriorLimitException:
+                    return -np.inf
 
-                # TODO: Use multinest to provide best model
+                likelihood = self.fit_instance(instance)
 
                 if likelihood > self.max_likelihood:
 
@@ -331,11 +364,6 @@ class MultiNest(NonLinearOptimizer):
                     if self.accepted_samples == self.number_of_accepted_samples_between_output:
                         self.accepted_samples = 0
                         self.output_results(during_analysis=True)
-
-                    self.max_likelihood = likelihood
-                    self.result = Result(instance, likelihood)
-
-                analysis.try_visualise(self.result.constant)
 
                 return likelihood
 
@@ -384,17 +412,14 @@ class MultiNest(NonLinearOptimizer):
         variable = self.variable.mapper_from_gaussian_tuples(
             tuples=self.gaussian_priors_at_sigma_limit(self.sigma_limit))
 
+        analysis.visualize(instance=constant, suffix=None, during_analysis=False)
+
         return Result(constant=constant, likelihood=self.max_likelihood_from_summary(), variable=variable)
 
     def open_summary_file(self):
 
         summary = open(self.file_summary)
-
-        expected_parameters = (len(summary.readline()) - 113) / 112
-
-        if expected_parameters != self.variable.prior_count:
-            raise exc.MultiNestException(
-                'The file_summary file has a different number of parameters than the input model')
+        summary.seek(1)
 
         return summary
 
@@ -402,7 +427,7 @@ class MultiNest(NonLinearOptimizer):
 
         summary = self.open_summary_file()
 
-        summary.seek(0)
+        summary.seek(1)
         summary.read(2 + offset * self.variable.prior_count)
         vector = []
         for param in range(number_entries):
@@ -554,11 +579,11 @@ class MultiNest(NonLinearOptimizer):
             try:
                 pdf_plot.triangle_plot(roots=self.pdf)
                 pdf_plot.export(fname=self.phase_path + 'image/pdf_triangle.png')
-            except:
+            except Exception as e:
+                print(type(e))
                 print('The PDF triangle of this non-linear search could not be plotted. This is most likely due to a '
                       'lack of smoothness in the sampling of parameter space. Sampler further by decreasing the '
                       'parameter evidence_tolerance.')
-                pass
 
         plt.close()
 

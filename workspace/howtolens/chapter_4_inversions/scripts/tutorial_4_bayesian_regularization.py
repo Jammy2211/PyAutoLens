@@ -1,15 +1,16 @@
 from autolens.imaging import image as im
 from autolens.imaging import mask as ma
-from autolens.profiles import mass_profiles as mp
-from autolens.profiles import light_profiles as lp
-from autolens.galaxy import galaxy as g
+from autolens.model.profiles import light_profiles as lp
+from autolens.model.profiles import mass_profiles as mp
+from autolens.model.galaxy import galaxy as g
 from autolens.lensing import ray_tracing
 from autolens.lensing import lensing_image as li
 from autolens.lensing import lensing_fitting
 from autolens.inversion import pixelizations as pix
 from autolens.inversion import regularization as reg
-from autolens.plotting import lensing_fitting_plotters
-from autolens.plotting import inversion_plotters
+from autolens.lensing.plotters import lensing_fitting_plotters
+from autolens.inversion.plotters import inversion_plotters
+
 
 # So, we've seen that we can use an inversion to reconstruct an image. Furthermore, this reconstruction provides
 # us with the 'best-fit_normal' solution. And, indeed, when we inspect the fit_normal with the fitting module, we see residuals
@@ -23,7 +24,7 @@ from autolens.plotting import inversion_plotters
 def simulate():
 
     from autolens.imaging import mask
-    from autolens.galaxy import galaxy as g
+    from autolens.model.galaxy import galaxy as g
     from autolens.lensing import ray_tracing
 
     psf = im.PSF.simulate_as_gaussian(shape=(11, 11), sigma=0.05, pixel_scale=0.05)
@@ -44,6 +45,8 @@ def simulate():
 
 # We're going to perform a lot of fits using an inversion this tutorial. This would create a lot of code, so to keep
 # things tidy, I've setup this function which handles it all for us.
+# (You may notice we include a border in the tracer, instead of setting it to None - just ignore this for now, as we'll
+# be covering borders in the next tutorial)
 def perform_fit_with_source_galaxy(source_galaxy):
 
     image = simulate()
@@ -53,7 +56,7 @@ def perform_fit_with_source_galaxy(source_galaxy):
     lens_galaxy = g.Galaxy(
         mass=mp.EllipticalIsothermal(centre=(0.0, 0.0), axis_ratio=0.8, phi=135.0, einstein_radius=1.6))
     tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
-                                                 image_plane_grids=[lensing_image.grids], borders=[lensing_image.borders])
+                                                 image_plane_grids=[lensing_image.grids], border=lensing_image.border)
     return lensing_fitting.fit_lensing_image_with_tracer(lensing_image=lensing_image, tracer=tracer)
 
 # Okay, so lets look at our fit_normal from the previous tutorial in more detail. We'll use a higher resolution 40 x 40 grid.

@@ -4,13 +4,13 @@ from autolens.pipeline import phase as ph
 from autolens.imaging import image as im
 from autolens.imaging import mask as ma
 from autolens.lensing import ray_tracing
-from autolens.galaxy import galaxy as g, galaxy_model as gm
+from autolens.model.galaxy import galaxy as g, galaxy_model as gm
 from autolens.lensing import lensing_fitting
 from autolens.lensing import lensing_image as li
-from autolens.profiles import light_profiles as lp
-from autolens.profiles import mass_profiles as mp
-from autolens.plotting import imaging_plotters
-from autolens.plotting import lensing_fitting_plotters
+from autolens.model.profiles import light_profiles as lp
+from autolens.model.profiles import mass_profiles as mp
+from autolens.imaging.plotters import imaging_plotters
+from autolens.lensing.plotters import lensing_fitting_plotters
 
 import os
 
@@ -43,7 +43,7 @@ conf.instance = conf.Config(config_path=path+'/configs/3_realism_and_complexity'
 def simulate():
 
     from autolens.imaging import mask
-    from autolens.galaxy import galaxy as g
+    from autolens.model.galaxy import galaxy as g
     from autolens.lensing import ray_tracing
 
     psf = im.PSF.simulate_as_gaussian(shape=(11, 11), sigma=0.05, pixel_scale=0.05)
@@ -66,7 +66,7 @@ def simulate():
 # Simulate the image and set it up.
 image = simulate()
 
-# When we plot it, the lens light's is clealy visible in the centre of the image
+# When we plot it, the lens light's is clealy visible in the origin of the image
 imaging_plotters.plot_image_subplot(image=image)
 
 # Now lets fit_normal it using a phase, noting that indeed the model_galaxy-model corresponds to the one above.
@@ -112,7 +112,7 @@ lens_galaxy = g.Galaxy(light=lp.EllipticalSersic(centre=(0.0, 0.0), axis_ratio=0
 source_galaxy = g.Galaxy(light=lp.EllipticalSersic(centre=(0.0, 0.0), axis_ratio=0.5, phi=90.0, intensity=0.03,
                                                    effective_radius=0.3, sersic_index=3.0))
 tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
-                                             image_plane_grids=lensing_image.grids)
+                                             image_plane_grids=[lensing_image.grids])
 
 # Now, lets fit_normal the lensing image with the tracer_without_subhalo and plot the fit_normal. It looks a lot better than above, doesn't it?
 fit = lensing_fitting.fit_lensing_image_with_tracer(lensing_image=lensing_image, tracer=tracer)

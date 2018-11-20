@@ -2,15 +2,15 @@ from autolens.imaging import image as im
 from autolens.imaging import mask as ma
 from autolens.lensing import lensing_fitting
 from autolens.lensing import ray_tracing
-from autolens.galaxy import galaxy as g
+from autolens.model.galaxy import galaxy as g
 from autolens.lensing import lensing_image as li
-from autolens.profiles import light_profiles as lp
-from autolens.profiles import mass_profiles as mp
-from autolens.plotting import imaging_plotters
-from autolens.plotting import profile_plotters
-from autolens.plotting import galaxy_plotters
-from autolens.plotting import plane_plotters
-from autolens.plotting import ray_tracing_plotters
+from autolens.model.profiles import light_profiles as lp
+from autolens.model.profiles import mass_profiles as mp
+from autolens.imaging.plotters import imaging_plotters
+from autolens.model.profiles.plotters import profile_plotters
+from autolens.model.galaxy.plotters import galaxy_plotters
+from autolens.lensing.plotters import plane_plotters
+from autolens.lensing.plotters import ray_tracing_plotters
 
 # In this chapter, you've learnt how create and fit_normal strong lenses with PyAutoLens. In particular, you've learnt:
 
@@ -46,14 +46,23 @@ fit = lensing_fitting.fit_lensing_image_with_tracer(lensing_image=lensing_image,
 # The fit_normal contains our tracer_without_subhalo, which contains our planes, which contain our grids and galaxies, which contain our
 # profiles:
 print(fit)
+print()
 print(fit.tracer)
+print()
 print(fit.tracer.image_plane)
+print()
 print(fit.tracer.source_plane)
+print()
 print(fit.tracer.image_plane.galaxies[0])
+print()
 print(fit.tracer.source_plane.galaxies[0])
+print()
 print(fit.tracer.image_plane.galaxies[0].mass)
+print()
 print(fit.tracer.source_plane.galaxies[0].bulge)
+print()
 print(fit.tracer.source_plane.galaxies[0].disk)
+print()
 
 # Using the plotters we've used throughout this chapter, we can visualize any aspect of a fit_normal we're interested
 # in. For example, if we want to plot the image of the source model_galaxy mass profile, we can do this in a variety of
