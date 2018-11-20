@@ -5,7 +5,7 @@ import numpy as np
 
 from autolens import conf
 from autolens import exc
-from autolens.autofit import non_linear
+from autofit.core import non_linear
 from autolens.model.galaxy import galaxy as g, galaxy_model as gm, galaxy_fitting, galaxy_data as gd
 from autolens.imaging import image as im
 from autolens.imaging import mask as msk

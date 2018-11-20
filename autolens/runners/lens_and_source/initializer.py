@@ -15,7 +15,7 @@ pipeline_name = 'initializer'
 def make():
     from autolens.pipeline import phase
     from autolens.pipeline import pipeline
-    from autolens.autofit import non_linear as nl
+    from autofit.core import non_linear as nl
     from autolens.imaging import mask
     from autolens.model.galaxy import galaxy_model as gp
     from autolens.model.profiles import light_profiles as lp

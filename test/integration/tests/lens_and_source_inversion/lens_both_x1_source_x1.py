@@ -1,6 +1,6 @@
 import os
 
-from autolens.autofit import non_linear as nl
+from autofit.core import non_linear as nl
 from autolens.inversion import pixelizations as pix
 from autolens.inversion import regularization as reg
 from autolens.model.galaxy import galaxy, galaxy_model as gm
