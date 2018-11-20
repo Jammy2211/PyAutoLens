@@ -1,10 +1,18 @@
-import pytest
+import os
 
+import pytest
+from autofit import conf
 from autofit.core import model_mapper as mm
 from autofit.core import non_linear
+
 from autolens.model.galaxy import galaxy as g, galaxy_model as gp
 from autolens.pipeline import phase as ph
 from autolens.pipeline import phase_property
+
+directory = os.path.dirname(os.path.realpath(__file__))
+
+conf.instance = conf.Config("{}/../../workspace/config".format(directory),
+                            "{}/../../workspace/output/".format(directory))
 
 
 class NLO(non_linear.NonLinearOptimizer):
