@@ -1,4 +1,3 @@
-from autolens import conf
 from autolens.autofit import model_mapper as mm
 from autolens.autofit import non_linear as nl
 from autolens.imaging import image as im
@@ -9,8 +8,6 @@ from autolens.pipeline import pipeline
 from autolens.model.profiles import light_profiles as lp
 from autolens.model.profiles import mass_profiles as mp
 from autolens.imaging.plotters import imaging_plotters
-
-import os
 
 # Up to now, all of the image that we fitted had only one lens model_galaxy. However we saw in chapter 1 that we can
 # create multiple galaxies which each contribute to the strong lensing. Multi-model_galaxy systems are challenging to
@@ -27,9 +24,6 @@ import os
 
 # First, lets get our path.
 path = '{}/'.format(os.path.dirname(os.path.realpath(__file__)))
-
-# Lets quickly sort the output directory
-conf.instance = conf.Config(config_path=conf.CONFIG_PATH, output_path=path+"output")
 
 def simulate():
 
@@ -81,7 +75,7 @@ imaging_plotters.plot_image_subplot(image=image)
 
 # Begin with the make pipeline function
 def make_pipeline():
-    pipeline_name = '2_x2_lens_galaxies'  # Give the pipeline a name.
+    pipeline_name = 'howtolens_c3_t2_x2_lens_galaxies'  # Give the pipeline a name.
 
     # This model_galaxy is at (-1.0, 0.0), so we're going to use a small circular masks centred on its location to fit_normal its
     # light profile. Its important that light from the other lens and source don't contaminate our fit_normal.
