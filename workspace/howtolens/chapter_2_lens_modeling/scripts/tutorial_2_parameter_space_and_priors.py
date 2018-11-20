@@ -1,4 +1,4 @@
-from autolens import conf
+from autofit import conf
 from autofit.core import non_linear
 from autofit.core import model_mapper
 from autolens.pipeline import phase as ph

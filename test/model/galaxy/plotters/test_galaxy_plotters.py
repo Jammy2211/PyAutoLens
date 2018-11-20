@@ -3,7 +3,7 @@ import shutil
 
 import pytest
 
-from autolens import conf
+from autofit import conf
 from autolens.imaging import mask as msk
 from autolens.model.galaxy.plotters import galaxy_plotters
 from autolens.model.profiles import light_profiles as lp, mass_profiles as mp
