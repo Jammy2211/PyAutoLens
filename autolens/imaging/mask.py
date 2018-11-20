@@ -197,7 +197,10 @@ class ImagingGrids(object):
         self.image = image
         self.sub = sub
         self.blurring = blurring
-        self.pix = pix
+        if pix is None:
+            self.pix = np.array([[0.0, 0.0]])
+        else:
+            self.pix = pix
 
     @classmethod
     def grids_from_mask_sub_grid_size_and_psf_shape(cls, mask, sub_grid_size, psf_shape):

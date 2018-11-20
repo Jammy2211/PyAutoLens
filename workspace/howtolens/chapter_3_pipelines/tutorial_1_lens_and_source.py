@@ -1,3 +1,4 @@
+from autofit import conf
 from autofit.core import non_linear as nl
 from autolens.imaging import image as im
 from autolens.imaging import mask
@@ -6,6 +7,8 @@ from autolens.pipeline import phase
 from autolens.pipeline import pipeline
 from autolens.model.profiles import light_profiles as lp
 from autolens.model.profiles import mass_profiles as mp
+
+import os
 
 # In chapter 2, we fitted a strong lens which included the contribution of light from the lens model_galaxy. We're going to
 # fit_normal this lens again (I promise, this is the last time!). However, now we're approaching lens modeling with runners,
@@ -40,12 +43,14 @@ from autolens.model.profiles import mass_profiles as mp
 # Phase 2 - Fit the source model_galaxy's light, ignoring the lens.
 # Phase 3 - Fit both simultaneously, using these results to initialize our starting location in parameter space.
 
-# First, lets get our path.
-path = '{}/'.format(os.path.dirname(os.path.realpath(__file__)))
-
 # From here on, we'll use the configs in 'workspace/config', which are the default configs used
-# by all pipelines (e.g. not just this tutorial, but when you model your own images and lenses!). Thus, I'm not
-# preloading the configs with results to speed up the pipelines with this.
+# by all pipelines (e.g. not just this tutorial, but when you model your own images and lenses!).
+
+
+# To set these up without docker, you need to uncomment and run the command below. If you are using Docker, you don't
+# need to do anything so leave this uncommented!
+# path = '{}/../../'.format(os.path.dirname(os.path.realpath(__file__)))
+# conf.instance = conf.Config(config_path=path+'config', output_path=path+'output')
 
 # We'll also put the output in 'workspace/output', which is where output goes for a normal analysis.
 

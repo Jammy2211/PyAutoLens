@@ -1498,6 +1498,7 @@ class TestPlaneImageFromGrid:
 
         assert (plane_image == plane_image_galaxy).all()
 
+
 class TestPlaneImage:
 
     def test__3x3_grid__extracts_max_min_coordinates__ignores_other_coordinates_more_central(self, imaging_grids):

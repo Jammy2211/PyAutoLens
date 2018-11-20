@@ -1,3 +1,4 @@
+from autofit import conf
 from autofit.core import non_linear as nl
 from autofit.core import model_mapper as mm
 from autolens.imaging import image as im
@@ -8,6 +9,8 @@ from autolens.pipeline import pipeline
 from autolens.model.profiles import light_profiles as lp
 from autolens.model.profiles import mass_profiles as mp
 from autolens.imaging.plotters import imaging_plotters
+
+import os
 
 # Up to now, all of the image that we fitted had only one lens model_galaxy. However we saw in chapter 1 that we can
 # create multiple galaxies which each contribute to the strong lensing. Multi-model_galaxy systems are challenging to
@@ -22,8 +25,10 @@ from autolens.imaging.plotters import imaging_plotters
 # the opposite - specific to the image we're modeling. Fitting multiple lens galaxies is really difficult and
 # writing a pipeline that we can generalize to many lenses isn't currently possible with PyAutoLens.
 
-# First, lets get our path.
-path = '{}/'.format(os.path.dirname(os.path.realpath(__file__)))
+# To setup the config and output paths without docker, you need to uncomment and run the command below. If you are
+# using Docker, you don't need to do anything so leave this uncommented!
+# path = '{}/../../'.format(os.path.dirname(os.path.realpath(__file__)))
+# conf.instance = conf.Config(config_path=path+'config', output_path=path+'output')
 
 def simulate():
 
