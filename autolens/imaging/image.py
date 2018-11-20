@@ -3,7 +3,7 @@ import scipy.signal
 from scipy.stats import norm
 
 from autolens import exc
-from autolens.imaging import imaging_util
+from autolens.imaging.util import array_util, grid_util, mapping_util
 from autolens.imaging.scaled_array import ScaledSquarePixelArray, Array
 
 import logging
@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 class Image(ScaledSquarePixelArray):
 
     def __init__(self, array, pixel_scale, psf, noise_map=None, background_noise_map=None, poisson_noise_map=None,
-                 exposure_time_map=None, background_sky_map=None):
+                 exposure_time_map=None, background_sky_map=None, **kwargs):
         """
         A 2d array representing a real or simulated data.
 
@@ -41,13 +41,14 @@ class Image(ScaledSquarePixelArray):
         background_sky_map : ScaledSquarePixelArray
             An array describing the background sky.
         """
-        super(Image, self).__init__(array, pixel_scale)
+        super(Image, self).__init__(array=array, pixel_scale=pixel_scale)
         self.psf = psf
         self.noise_map = noise_map
         self.background_noise_map = background_noise_map
         self.poisson_noise_map = poisson_noise_map
         self.exposure_time_map = exposure_time_map
         self.background_sky_map = background_sky_map
+        self.origin = (0.0, 0.0)
 
     @classmethod
     def simulate(cls, array, pixel_scale, exposure_time, psf=None, background_sky_level=None,
@@ -123,6 +124,8 @@ class Image(ScaledSquarePixelArray):
 
         array_counts = np.multiply(array, exposure_time_map)
         poisson_noise_map = np.divide(np.sqrt(np.abs(array_counts)), exposure_time_map)
+
+        noise_map = NoiseMap(array=noise_map, pixel_scale=pixel_scale)
 
         return Image(array, pixel_scale=pixel_scale, psf=psf, noise_map=noise_map,
                      background_noise_map=background_noise_map, poisson_noise_map=poisson_noise_map,
@@ -224,13 +227,13 @@ class Image(ScaledSquarePixelArray):
         image_with_sky = self + self.background_sky_map
 
         image_with_sky_and_noise = image_with_sky + generate_poisson_noise(image=image_with_sky,
-                                                                           exposure_time_map=self.exposure_time_map, seed=seed)
+                                            exposure_time_map=self.exposure_time_map, seed=seed)
 
         image_with_noise = image_with_sky_and_noise - self.background_sky_map
 
         return Image(array=image_with_noise, pixel_scale=self.pixel_scale, psf=self.psf,
                      noise_map=self.noise_map, background_noise_map=self.background_noise_map,
-                     poisson_noise_map=self.poisson_noise_map, )
+                     poisson_noise_map=self.poisson_noise_map)
 
     def new_image_converted_from_counts(self):
 
@@ -350,6 +353,7 @@ class Image(ScaledSquarePixelArray):
                 self.poisson_noise_map = obj.poisson_noise_map
                 self.exposure_time_map = obj.exposure_time_map
                 self.background_sky_map = obj.background_sky_map
+                self.origin = obj.origin
             except AttributeError:
                 logger.debug("Original object in Image.__array_finalize__ missing one or more attributes")
 
@@ -367,7 +371,7 @@ class NoiseMap(ScaledSquarePixelArray):
 class PSF(ScaledSquarePixelArray):
 
     # noinspection PyUnusedLocal
-    def __init__(self, array, pixel_scale, renormalize=False):
+    def __init__(self, array, pixel_scale, renormalize=False, **kwargs):
         """
         Class storing a 2D Point Spread Function (PSF), including its blurring kernel.
 
@@ -387,13 +391,13 @@ class PSF(ScaledSquarePixelArray):
     @classmethod
     def simulate_as_gaussian(cls, shape, pixel_scale, sigma, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0):
         """Simulate the PSF as an elliptical Gaussian profile."""
-        from autolens.profiles.light_profiles import EllipticalGaussian
+        from autolens.model.profiles.light_profiles import EllipticalGaussian
         gaussian = EllipticalGaussian(centre=centre, axis_ratio=axis_ratio, phi=phi, intensity=1.0, sigma=sigma)
-        grid_1d = imaging_util.image_grid_1d_masked_from_mask_and_pixel_scales(mask=np.full(shape, False),
-                                                                               pixel_scales=(pixel_scale, pixel_scale))
+        grid_1d = grid_util.image_grid_1d_masked_from_mask_pixel_scales_and_origin(mask=np.full(shape, False),
+                                                                                   pixel_scales=(pixel_scale, pixel_scale))
         gaussian_1d = gaussian.intensities_from_grid(grid=grid_1d)
-        gaussian_2d = imaging_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(array_1d=gaussian_1d,
-                                                                                             shape=shape)
+        gaussian_2d = mapping_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(array_1d=gaussian_1d,
+                                                                                          shape=shape)
         return PSF(array=gaussian_2d, pixel_scale=pixel_scale, renormalize=True)
 
     @classmethod
@@ -430,7 +434,7 @@ class PSF(ScaledSquarePixelArray):
         hdu : int
             The HDU the PSF is stored in the .fits file.
         """
-        return cls(array=imaging_util.numpy_array_from_fits(file_path, hdu), pixel_scale=pixel_scale)
+        return cls(array=array_util.numpy_array_from_fits(file_path, hdu), pixel_scale=pixel_scale)
 
     def renormalize(self):
         """Renormalize the PSF such that its data_vector values sum to unity."""
@@ -505,8 +509,8 @@ def load_imaging_from_fits(image_path, pixel_scale, noise_map_path=None, psf_pat
                            background_noise_map_path=None, poisson_noise_map_path=None, background_sky_map_path=None,
                            image_hdu=0, noise_map_hdu=0, psf_hdu=0, exposure_time_map_hdu=0,
                            background_noise_map_hdu=0, poisson_noise_map_hdu=0, background_sky_map_hdu=0,
-                           resized_image_shape=None, resized_image_centre_pixels=None,
-                           resized_image_centre_arc_seconds=None, resized_psf_shape=None,
+                           resized_image_shape=None, resized_image_origin_pixels=None,
+                           resized_image_origin_arc_seconds=None, resized_psf_shape=None,
                            renormalize_psf=False, convert_noise_map_from_weight_map=False,
                            convert_arrays_from_counts=False):
 
@@ -537,8 +541,8 @@ def load_imaging_from_fits(image_path, pixel_scale, noise_map_path=None, psf_pat
 
     if resized_image_shape is not None:
         image = image.new_image_with_resized_arrays(new_shape=resized_image_shape,
-                                                    new_centre_pixels=resized_image_centre_pixels,
-                                                    new_centre_arc_seconds=resized_image_centre_arc_seconds)
+                                                    new_centre_pixels=resized_image_origin_pixels,
+                                                    new_centre_arc_seconds=resized_image_origin_arc_seconds)
 
     if resized_psf_shape is not None:
         image = image.new_image_with_resized_psf(new_shape=resized_psf_shape)
@@ -584,24 +588,24 @@ def load_background_sky_map(path, hdu, pixel_scale):
 def output_imaging_to_fits(image, image_path, psf_path, noise_map_path=None, background_noise_map_path=None,
                            poisson_noise_map_path=None, exposure_time_map_path=None, background_sky_map_path=None,
                            overwrite=False):
-    imaging_util.numpy_array_to_fits(array=image, path=image_path, overwrite=overwrite)
-    imaging_util.numpy_array_to_fits(array=image.psf, path=psf_path, overwrite=overwrite)
+    array_util.numpy_array_to_fits(array=image, path=image_path, overwrite=overwrite)
+    array_util.numpy_array_to_fits(array=image.psf, path=psf_path, overwrite=overwrite)
 
     if image.noise_map is not None and noise_map_path is not None:
-        imaging_util.numpy_array_to_fits(array=image.noise_map, path=noise_map_path, overwrite=overwrite)
+        array_util.numpy_array_to_fits(array=image.noise_map, path=noise_map_path, overwrite=overwrite)
 
     if image.background_noise_map is not None and background_noise_map_path is not None:
-        imaging_util.numpy_array_to_fits(array=image.background_noise_map, path=background_noise_map_path,
-                                         overwrite=overwrite)
+        array_util.numpy_array_to_fits(array=image.background_noise_map, path=background_noise_map_path,
+                                      overwrite=overwrite)
 
     if image.poisson_noise_map is not None and poisson_noise_map_path is not None:
-        imaging_util.numpy_array_to_fits(array=image.poisson_noise_map, path=poisson_noise_map_path,
-                                         overwrite=overwrite)
+        array_util.numpy_array_to_fits(array=image.poisson_noise_map, path=poisson_noise_map_path,
+                                      overwrite=overwrite)
 
     if image.exposure_time_map is not None and exposure_time_map_path is not None:
-        imaging_util.numpy_array_to_fits(array=image.exposure_time_map, path=exposure_time_map_path,
-                                         overwrite=overwrite)
+        array_util.numpy_array_to_fits(array=image.exposure_time_map, path=exposure_time_map_path,
+                                      overwrite=overwrite)
 
     if image.background_sky_map is not None and background_sky_map_path is not None:
-        imaging_util.numpy_array_to_fits(array=image.background_sky_map, path=background_sky_map_path,
-                                         overwrite=overwrite)
+        array_util.numpy_array_to_fits(array=image.background_sky_map, path=background_sky_map_path,
+                                      overwrite=overwrite)

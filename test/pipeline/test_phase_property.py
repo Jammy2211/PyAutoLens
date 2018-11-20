@@ -2,7 +2,7 @@ import pytest
 
 from autolens.autofit import model_mapper as mm
 from autolens.autofit import non_linear
-from autolens.galaxy import galaxy as g, galaxy_model as gp
+from autolens.model.galaxy import galaxy as g, galaxy_model as gp
 from autolens.pipeline import phase as ph
 from autolens.pipeline import phase_property
 

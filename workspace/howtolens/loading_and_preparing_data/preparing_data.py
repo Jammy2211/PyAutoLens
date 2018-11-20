@@ -3,7 +3,7 @@ import os
 from autolens.imaging import image as im
 from autolens.imaging import mask as ma
 from autolens.lensing import lensing_image as li
-from autolens.plotting import imaging_plotters
+from autolens.imaging.plotters import imaging_plotters
 from workspace.howtolens.loading_and_preparing_data import simulate_data
 
 # To model data with PyAutoLens, you first need to ensure it is in a format suitable for lens modeling. This tutorial
@@ -88,7 +88,7 @@ image_large_stamp_trimmed = im.load_imaging_from_fits(image_path=path+'data/imag
                                                       resized_image_shape=(101, 101))
 imaging_plotters.plot_image_subplot(image=image_large_stamp_trimmed)
 
-# 3) Postage stamp size - On the other hand, the postage stamp must have enough padding in the borders that our mask can
+# 3) Postage stamp size - On the other hand, the postage stamp must have enough padding in the border that our mask can
 #    include all pixels with signal in. In fact, it isn't just the mask that must be contained within the postage stamp,
 #    but also the mask's 'blurring region' - which corresponds to all unmasked image pixels where light will blur into
 #    the mask after PSF convolution. Thus, we may need to pad an image to include this region.
@@ -121,10 +121,10 @@ lensing_image = li.LensingImage(image=image_small_stamp_padded, mask=mask)
 ########## IVE INCLUDED THE TEXT FOR 5 BELOW SO YOU CAN BE AWARE OF CENTERING, BUT THE BUILT IN FUNCTIONALITY FOR #####
 ########## RECENTERING CURRENTLY DOES NOT WORK :( ###########
 
-# 5) Lens Galaxy Centering - The image should place the lens galaxy in the centre of the image, as opposed to a
-#    corner. This ensures the centre of the lens galaxy's light and mass profiles will be near the origin (0.0", 0.0"),
-#    as wel as the centre of the mask, which is a more intuitive coordinate system. The priors on the light
-#    profiles and mass profile also assume a centre of (0.0", 0.0"), as well as the default mask centre.
+# 5) Lens Galaxy Centering - The image should place the lens galaxy in the origin of the image, as opposed to a
+#    corner. This ensures the origin of the lens galaxy's light and mass profiles will be near the origin (0.0", 0.0"),
+#    as wel as the origin of the mask, which is a more intuitive coordinate system. The priors on the light
+#    profiles and mass profile also assume a origin of (0.0", 0.0"), as well as the default mask origin.
 
 # Lets look at an off-center image - clearly both the lens galaxy and Einstein ring are offset in the positive y and x d
 # directions.
@@ -133,7 +133,7 @@ lensing_image = li.LensingImage(image=image_small_stamp_padded, mask=mask)
 #                                   psf_path=path+'data/image_offset_centre/psf.fits')
 # imaging_plotters.plot_image_subplot(image=image_offset_centre)
 
-# We can address this by using supplying a new centre for the image, in pixels. We also supply the resized shape, to
+# We can address this by using supplying a new origin for the image, in pixels. We also supply the resized shape, to
 # instruct the code whether it should trim the image or pad the edges that now arise due to recentering.
 # image_recentred_pixels = im.load_imaging_from_fits(image_path=path+'data/image_small_stamp/image.fits', pixel_scale=0.1,
 #                                             noise_map_path=path+'data/image_small_stamp/noise_map.fits',

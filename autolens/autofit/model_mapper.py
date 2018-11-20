@@ -97,7 +97,7 @@ class ModelMapper(AbstractModel):
         @DynamicAttrs
     """
 
-    def __init__(self, config=None, width_config=None, **classes):
+    def __init__(self, config=None, width_config=None, limit_config=None, **classes):
         """
         Parameters
         ----------
@@ -158,6 +158,7 @@ class ModelMapper(AbstractModel):
 
         self.config = (config or conf.instance.prior_default)
         self.width_config = (width_config or conf.instance.prior_width)
+        self.limit_config = (limit_config or conf.instance.limit_config)
 
         for name, cls in classes.items():
             self.__setattr__(name, cls)
@@ -166,7 +167,7 @@ class ModelMapper(AbstractModel):
         if isinstance(value, list) and len(value) > 0 and isinstance(value[0], AbstractPriorModel):
             value = ListPriorModel(value)
         elif inspect.isclass(value):
-            value = PriorModel(value, config=self.config)
+            value = PriorModel(value, config=self.config, limit_config=self.limit_config)
         super(ModelMapper, self).__setattr__(key, value)
 
     @property
@@ -668,6 +669,19 @@ prior_number = 0
 class Prior(Attribute):
     """An object used to mappers a unit value to an attribute value for a specific class attribute"""
 
+    def __init__(self, lower_limit, upper_limit):
+        if lower_limit == upper_limit:
+            raise exc.PriorException("Priors cannot have equal lower and upper limits")
+        super().__init__()
+        self.lower_limit = lower_limit
+        self.upper_limit = upper_limit
+
+    def assert_within_limits(self, value):
+        if not (self.lower_limit <= value <= self.upper_limit):
+            raise exc.PriorLimitException(
+                "The physical value {} for a prior was not within its limits {}, {}".format(value, self.lower_limit,
+                                                                                            self.upper_limit))
+
     def value_for(self, unit):
         raise NotImplementedError()
 
@@ -697,11 +711,7 @@ class UniformPrior(Prior):
         upper_limit: Float
             The highest value this prior can return
         """
-        if lower_limit == upper_limit:
-            raise exc.PriorException("Uniform priors cannot have equal lower and upper limits")
-        self.upper_limit = upper_limit
-        super(UniformPrior, self).__init__()
-        self.lower_limit = lower_limit
+        super(UniformPrior, self).__init__(lower_limit, upper_limit)
 
     def value_for(self, unit):
         """
@@ -736,10 +746,12 @@ class UniformPrior(Prior):
 class GaussianPrior(Prior):
     """A prior with a gaussian distribution"""
 
-    def __init__(self, mean, sigma):
-        super(GaussianPrior, self).__init__()
+    def __init__(self, mean, sigma, lower_limit=-math.inf, upper_limit=math.inf):
+        super(GaussianPrior, self).__init__(lower_limit, upper_limit)
         self.mean = mean
         self.sigma = sigma
+        self.lower_limit = lower_limit
+        self.upper_limit = upper_limit
 
     def value_for(self, unit):
         """
@@ -877,7 +889,7 @@ class PriorModel(AbstractPriorModel):
     def flat_prior_model_tuples(self):
         return [("", self)]
 
-    def __init__(self, cls, config=None):
+    def __init__(self, cls, config=None, limit_config=None):
         """
         Parameters
         ----------
@@ -888,6 +900,7 @@ class PriorModel(AbstractPriorModel):
         self.cls = cls
         self.config = (config or conf.instance.prior_default)
         self.width_config = conf.instance.prior_width
+        self.limit_config = (limit_config or conf.instance.limit_config)
 
         self.component_number = next(self._ids)
 
@@ -948,7 +961,8 @@ class PriorModel(AbstractPriorModel):
         if config_arr[0] == "u":
             return UniformPrior(config_arr[1], config_arr[2])
         elif config_arr[0] == "g":
-            return GaussianPrior(config_arr[1], config_arr[2])
+            limits = self.limit_config.get_for_nearest_ancestor(cls, attribute_name)
+            return GaussianPrior(config_arr[1], config_arr[2], *limits)
         elif config_arr[0] == "c":
             return Constant(config_arr[1])
         raise exc.PriorException(
@@ -981,7 +995,7 @@ class PriorModel(AbstractPriorModel):
         """
         constructor_args = inspect.getfullargspec(cls).args
         attribute_tuples = self.attribute_tuples
-        new_model = PriorModel(cls, self.config)
+        new_model = PriorModel(cls, self.config, self.limit_config)
         for attribute_tuple in attribute_tuples:
             name = attribute_tuple.name
             if name in constructor_args or (
@@ -999,8 +1013,8 @@ class PriorModel(AbstractPriorModel):
         if key != "component_number":
             try:
                 if "_" in key:
-                    tuple_name = key.split("_")[0]
-                    tuple_prior = [v for k, v in self.tuple_prior_tuples if tuple_name == k][0]
+                    name = key.split("_")[0]
+                    tuple_prior = [v for k, v in self.tuple_prior_tuples if name == k][0]
                     setattr(tuple_prior, key, value)
                     return
             except IndexError:
@@ -1094,6 +1108,8 @@ class PriorModel(AbstractPriorModel):
         -------
             An instance of the class
         """
+        for prior, value in arguments.items():
+            prior.assert_within_limits(value)
         model_arguments = {t.name: arguments[t.prior] for t in self.direct_prior_tuples}
         constant_arguments = {t.name: t.constant.value for t in self.direct_constant_tuples}
         for tuple_prior in self.tuple_prior_tuples:
@@ -1228,7 +1244,7 @@ def is_tuple_like_attribute_name(attribute_name):
 
 def tuple_name(attribute_name):
     """
-    Extract the name of a tuple attribute from the name of one of its components, e.g. centre_0 -> centre
+    Extract the name of a tuple attribute from the name of one of its components, e.g. centre_0 -> origin
 
     Parameters
     ----------

@@ -1,11 +1,10 @@
 import os
 
-from autolens import conf
 from autolens.autofit import non_linear as nl
-from autolens.galaxy import galaxy, galaxy_model as gm
+from autolens.model.galaxy import galaxy, galaxy_model as gm
 from autolens.pipeline import phase as ph
 from autolens.pipeline import pipeline as pl
-from autolens.profiles import light_profiles as lp
+from autolens.model.profiles import light_profiles as lp
 from test.integration import tools
 
 dirpath = os.path.dirname(os.path.realpath(__file__))
@@ -14,7 +13,7 @@ output_path = '{}/../output/model_mapper'.format(dirpath)
 
 
 def pipeline():
-    conf.instance = conf.Config(config_path=output_path + '/config', output_path=output_path)
+
     pipeline_name = "link_variable"
     data_name = '/link_variable'
 

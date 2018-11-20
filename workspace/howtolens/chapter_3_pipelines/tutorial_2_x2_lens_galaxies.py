@@ -3,12 +3,12 @@ from autolens.autofit import model_mapper as mm
 from autolens.autofit import non_linear as nl
 from autolens.imaging import image as im
 from autolens.imaging import mask
-from autolens.galaxy import galaxy_model as gm
+from autolens.model.galaxy import galaxy_model as gm
 from autolens.pipeline import phase as ph
 from autolens.pipeline import pipeline
-from autolens.profiles import light_profiles as lp
-from autolens.profiles import mass_profiles as mp
-from autolens.plotting import imaging_plotters
+from autolens.model.profiles import light_profiles as lp
+from autolens.model.profiles import mass_profiles as mp
+from autolens.imaging.plotters import imaging_plotters
 
 import os
 
@@ -34,7 +34,7 @@ conf.instance = conf.Config(config_path=conf.CONFIG_PATH, output_path=path+"outp
 def simulate():
 
     from autolens.imaging import mask
-    from autolens.galaxy import galaxy as g
+    from autolens.model.galaxy import galaxy as g
     from autolens.lensing import ray_tracing
 
     psf = im.PSF.simulate_as_gaussian(shape=(11, 11), sigma=0.05, pixel_scale=0.05)
@@ -92,7 +92,7 @@ def make_pipeline():
 
         def pass_priors(self, previous_results):
 
-            # Lets restrict the prior's on the centres around the pixel we know the model_galaxy's light centre peaks.
+            # Lets restrict the prior's on the centres around the pixel we know the model_galaxy's light origin peaks.
             self.lens_galaxies.left_lens.light.centre_0 = mm.GaussianPrior(mean=0.0, sigma=0.05)
             self.lens_galaxies.left_lens.light.centre_1 = mm.GaussianPrior(mean=-1.0, sigma=0.05)
 
@@ -137,7 +137,7 @@ def make_pipeline():
             phase_1_results = previous_results[0]
             phase_2_results = previous_results[1]
 
-            # We're going to link the centres of the light profiles computed above to the centre of the lens model_galaxy
+            # We're going to link the centres of the light profiles computed above to the origin of the lens model_galaxy
             # mass-profiles in this phase. Because the centres of the mass profiles were fixed in phases 1 and 2,
             # linking them using the 'variable' attribute ensures they stay constant.
 

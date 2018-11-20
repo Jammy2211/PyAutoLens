@@ -2,11 +2,12 @@ from autolens import conf
 from autolens.autofit import non_linear as nl
 from autolens.autofit import model_mapper as mm
 from autolens.pipeline import phase as ph
-from autolens.galaxy import galaxy_model as gm
+from autolens.model.galaxy import galaxy_model as gm
 from autolens.imaging import image as im
-from autolens.profiles import light_profiles as lp
-from autolens.profiles import mass_profiles as mp
-from autolens.plotting import lensing_fitting_plotters
+from autolens.model.profiles import light_profiles as lp
+from autolens.model.profiles import mass_profiles as mp
+from autolens.imaging.plotters import imaging_plotters
+from autolens.lensing.plotters import lensing_fitting_plotters
 
 import os
 
@@ -34,7 +35,7 @@ conf.instance = conf.Config(config_path=path+'/configs/4_dealing_with_failure', 
 def simulate():
 
     from autolens.imaging import mask
-    from autolens.galaxy import galaxy as g
+    from autolens.model.galaxy import galaxy as g
     from autolens.lensing import ray_tracing
 
     psf = im.PSF.simulate_as_gaussian(shape=(11, 11), sigma=0.05, pixel_scale=0.05)
@@ -155,7 +156,7 @@ lensing_fitting_plotters.plot_fitting_subplot(fit=custom_prior_result.fit)
 # to reduce the number of lens model parameters and therefore dimensionality of non-linear parameter space?
 
 # Well, we're scientists, so we can *always* make assumptions. Below, I'm going to create a phase that assumes that
-# light-traces-mass. That is, that our light-profile's centre, axis_ratio and orientation are perfectly
+# light-traces-mass. That is, that our light-profile's origin, axis_ratio and orientation are perfectly
 # aligned with its mass. This may, or may not, be a reasonable assumption, but it'll remove 4 parameters from the lens
 # model (the mass-profiles x, y, axis_ratio and phi), so its worth trying!
 

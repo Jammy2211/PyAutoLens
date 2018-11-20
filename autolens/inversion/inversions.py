@@ -45,6 +45,7 @@ class Inversion(object):
 
         self.mapper = mapper
         self.regularization = regularization
+
         self.blurred_mapping_matrix = convolver.convolve_mapping_matrix(mapping_matrix=mapper.mapping_matrix)
         self.data_vector = \
             data_vector_from_blurred_mapping_matrix_and_data(blurred_mapping_matrix=self.blurred_mapping_matrix,

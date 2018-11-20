@@ -6,10 +6,7 @@ import numpy as np
 from autolens import conf
 from autolens import exc
 from autolens.autofit import non_linear
-from autolens.galaxy import galaxy as g
-from autolens.galaxy import galaxy_data as gd
-from autolens.galaxy import galaxy_fitting
-from autolens.galaxy import galaxy_model as gm
+from autolens.model.galaxy import galaxy as g, galaxy_model as gm, galaxy_fitting, galaxy_data as gd
 from autolens.imaging import image as im
 from autolens.imaging import mask as msk
 from autolens.lensing import lensing_fitting
@@ -17,10 +14,9 @@ from autolens.lensing import lensing_image as li
 from autolens.lensing import ray_tracing
 from autolens.lensing import sensitivity_fitting
 from autolens.pipeline.phase_property import PhasePropertyCollection
-from autolens.plotting import galaxy_fitting_plotters
-from autolens.plotting import imaging_plotters
-from autolens.plotting import lensing_fitting_plotters
-from autolens.plotting import sensitivity_fitting_plotters
+from autolens.model.galaxy.plotters import galaxy_fitting_plotters
+from autolens.imaging.plotters import imaging_plotters
+from autolens.lensing.plotters import sensitivity_fitting_plotters, lensing_fitting_plotters
 
 logger = logging.getLogger(__name__)
 logger.level = logging.DEBUG
@@ -47,18 +43,6 @@ class ResultsCollection(list):
         return None
 
 
-class IntervalCounter(object):
-    def __init__(self, interval):
-        self.count = 0
-        self.interval = interval
-
-    def __call__(self):
-        if self.interval == -1:
-            return False
-        self.count += 1
-        return self.count % self.interval == 0
-
-
 class HyperOnly(object):
 
     def hyper_run(self, image, previous_results=None, mask=None):
@@ -69,7 +53,8 @@ class AbstractPhase(object):
 
     def __init__(self, optimizer_class=non_linear.MultiNest, phase_name=None, auto_link_priors=False):
         """
-        A phase in an lensing pipeline. Uses the set non_linear optimizer to try to fit_normal models and image passed to it.
+        A phase in an lensing pipeline. Uses the set non_linear optimizer to try to fit_normal models and image
+        passed to it.
 
         Parameters
         ----------
@@ -229,30 +214,17 @@ class AbstractPhase(object):
             self.previous_results = previous_results
             self.phase_name = phase_name
             self.phase_output_path = "{}/{}".format(conf.instance.output_path, self.phase_name)
-            log_interval = conf.instance.general.get('output', 'log_interval', int)
+
             log_file = conf.instance.general.get('output', 'log_file', str)
             if not len(log_file.replace(" ", "")) == 0:
                 log_path = "{}/{}".format(self.phase_output_path, log_file)
                 logger.handlers = [logging.FileHandler(log_path)]
                 logger.propagate = False
 
-            self.__should_log = IntervalCounter(log_interval)
-
-            visualise_interval = conf.instance.general.get('output', 'visualise_interval', int)
-
-            self.__should_visualise = IntervalCounter(visualise_interval)
             self.position_threshold = conf.instance.general.get('positions', 'position_threshold', float)
             self.plot_count = 0
             self.output_image_path = "{}/image/".format(self.phase_output_path)
             make_path_if_does_not_exist(path=self.output_image_path)
-
-        @property
-        def should_log(self):
-            return self.__should_log()
-
-        @property
-        def should_visualise(self):
-            return self.__should_visualise()
 
         @property
         def last_results(self):
@@ -261,33 +233,6 @@ class AbstractPhase(object):
 
         def fit(self, instance):
             raise NotImplementedError()
-
-        def try_log(self, instance):
-            """
-            Log and plot instance data, if the logging and plotting conditions are met respectively.
-
-            A track is kept of the number of attempts to plot or log and plotting or logging is only performed after a
-            configurable number of attempts. This prevents vast quantities of data being output.
-
-            Parameters
-            ----------
-            instance
-                A model instance
-
-            Returns
-            -------
-            fit_normal: fitting.Fit
-                How fit_normal the model is and the model
-            """
-            if self.should_log:
-                self.log(instance)
-
-        def try_visualise(self, instance):
-            if self.should_visualise:
-                self.plot_count += 1
-                logger.info("Saving visualisations {}".format(self.plot_count))
-                self.visualize(instance, suffix=None, during_analysis=True)
-            return None
 
         @classmethod
         def log(cls, instance):
@@ -376,6 +321,7 @@ class PhasePositions(AbstractPhase):
                                            previous_results=previous_results)
         return analysis
 
+    # noinspection PyAbstractClass
     class Analysis(Phase.Analysis):
 
         def __init__(self, positions, pixel_scale, phase_name, previous_results=None):
@@ -430,7 +376,9 @@ class PhaseImaging(Phase):
                  auto_link_priors=False):
 
         """
-        A phase in an lensing pipeline. Uses the set non_linear optimizer to try to fit_normal models and image passed to it.
+
+        A phase in an lensing pipeline. Uses the set non_linear optimizer to try to fit_normal models and image
+        passed to it.
 
         Parameters
         ----------
@@ -522,6 +470,7 @@ class PhaseImaging(Phase):
                                            previous_results=previous_results)
         return analysis
 
+    # noinspection PyAbstractClass
     class Analysis(Phase.Analysis):
 
         def __init__(self, lensing_image, phase_name, previous_results=None):
@@ -544,22 +493,25 @@ class PhaseImaging(Phase):
             fit_normal: Fit
                 A fractional value indicating how well this model fit_normal and the model lensing_image itself
             """
-            self.try_log(instance)
             self.check_positions_trace_within_threshold(instance)
             tracer = self.tracer_for_instance(instance)
             return self.fast_likelihood_for_tracer(tracer)
 
         def visualize(self, instance, suffix, during_analysis):
+            self.plot_count += 1
 
             tracer = self.tracer_for_instance(instance)
             padded_tracer = self.padded_tracer_for_instance(instance)
             fit = self.fit_for_tracers(tracer=tracer, padded_tracer=padded_tracer)
 
-            imaging_plotters.plot_image_subplot(image=self.lensing_image.image, output_path=self.output_image_path,
+            imaging_plotters.plot_image_subplot(image=self.lensing_image.image, mask=self.lensing_image.mask,
+                                                positions=self.lensing_image.positions,
+                                                output_path=self.output_image_path,
                                                 output_format='png', ignore_config=False)
 
-            imaging_plotters.plot_image_individual(image=self.lensing_image.image, output_path=self.output_image_path,
-                                                   output_format='png')
+            imaging_plotters.plot_image_individual(image=self.lensing_image.image, mask=self.lensing_image.mask,
+                                                   positions=self.lensing_image.positions,
+                                                   output_path=self.output_image_path, output_format='png')
 
             lensing_fitting_plotters.plot_fitting_subplot(fit=fit, output_path=self.output_image_path,
                                                           output_format='png',
@@ -722,6 +674,7 @@ class LensLightHyperOnlyPhase(LensPlaneHyperPhase, HyperOnly):
     def hyper_run(self, image, previous_results=None, mask=None):
         class LensGalaxyHyperPhase(LensLightHyperOnlyPhase):
 
+            # noinspection PyShadowingNames
             def pass_priors(self, previous_results):
                 use_hyper_galaxy = len(previous_results[-1].constant.lens_galaxies) * [None]
                 # noinspection PyTypeChecker
@@ -834,7 +787,7 @@ class LensSourcePlanePhase(PhaseImaging):
             return ray_tracing.TracerImageSourcePlanes(lens_galaxies=instance.lens_galaxies,
                                                        source_galaxies=instance.source_galaxies,
                                                        image_plane_grids=[self.lensing_image.grids],
-                                                       borders=[self.lensing_image.borders])
+                                                       border=self.lensing_image.border)
 
         def padded_tracer_for_instance(self, instance):
             return ray_tracing.TracerImageSourcePlanes(lens_galaxies=instance.lens_galaxies,
@@ -961,6 +914,7 @@ class LensMassAndSourceProfileHyperOnlyPhase(LensSourcePlaneHyperPhase, HyperOnl
 
     def hyper_run(self, image, previous_results=None, mask=None):
         class SourceGalaxyHyperPhase(LensMassAndSourceProfileHyperOnlyPhase):
+            # noinspection PyShadowingNames
             def pass_priors(self, previous_results):
                 use_hyper_galaxy = len(previous_results[-1].constant.source_galaxies) * [None]
                 # noinspection PyTypeChecker
@@ -1028,13 +982,15 @@ class LensMassAndSourceProfileHyperOnlyPhase(LensSourcePlaneHyperPhase, HyperOnl
 class GalaxyFitPhase(AbstractPhase):
     galaxy = PhasePropertyCollection("galaxy")
 
-    def __init__(self, galaxy=None, optimizer_class=non_linear.MultiNest, sub_grid_size=1,
+    def __init__(self, galaxy_data_class, galaxy=None, optimizer_class=non_linear.MultiNest, sub_grid_size=1,
                  mask_function=default_mask_function, phase_name=None):
         """
-        A phase in an lensing pipeline. Uses the set non_linear optimizer to try to fit_normal models and image passed to it.
+        A phase in an lensing pipeline. Uses the set non_linear optimizer to try to fit_normal models and image
+        passed to it.
 
         Parameters
         ----------
+        galaxy_data_class: class<gd.GalaxyData>
         optimizer_class: class
             The class of a non_linear optimizer
         sub_grid_size: int
@@ -1042,6 +998,7 @@ class GalaxyFitPhase(AbstractPhase):
         """
 
         super(GalaxyFitPhase, self).__init__(optimizer_class, phase_name)
+        self.galaxy_data_class = galaxy_data_class
         self.galaxy = galaxy
         self.sub_grid_size = sub_grid_size
         self.mask_function = mask_function
@@ -1066,69 +1023,8 @@ class GalaxyFitPhase(AbstractPhase):
         """
         analysis = self.make_analysis(array=array, noise_map=noise_map, previous_results=previous_results, mask=mask)
         result = self.optimizer.fit(analysis)
-        analysis.visualize(instance=result.constant, suffix=None, during_analysis=False)
 
         return self.__class__.Result(result.constant, result.likelihood, result.variable, analysis)
-
-    def make_analysis(self, array, noise_map, previous_results=None, mask=None):
-        return NotImplementedError
-
-    class Analysis(Phase.Analysis):
-
-        def __init__(self, galaxy_data, phase_name, previous_results=None):
-            super(GalaxyFitPhase.Analysis, self).__init__(phase_name, previous_results)
-
-            self.galaxy_data = galaxy_data
-
-        def fit(self, instance):
-            """
-            Determine the fit_normal of a lens galaxy and source galaxy to the lensing_image in this lensing.
-
-            Parameters
-            ----------
-            instance
-                A model instance with attributes
-
-            Returns
-            -------
-            fit_normal: Fit
-                A fractional value indicating how well this model fit_normal and the model lensing_image itself
-            """
-            self.try_log(instance)
-            return self.fast_likelihood_for_instance(instance)
-
-        def visualize(self, instance, suffix, during_analysis):
-            fit = self.fit_for_instance(instance)
-
-            galaxy_fitting_plotters.plot_single_subplot(fit=fit, output_path=self.output_image_path,
-                                                        output_format='png', ignore_config=False)
-
-            return fit
-
-        def fast_likelihood_for_instance(self, instance):
-            return galaxy_fitting.fast_likelihood_from_galaxy_data_and_galaxy(galaxy_datas=[self.galaxy_data],
-                                                                              galaxy=instance.galaxy[0])
-
-        def fit_for_instance(self, instance):
-            return galaxy_fitting.fit_galaxy_data_with_galaxy(galaxy_datas=[self.galaxy_data],
-                                                              galaxy=instance.galaxy[0])
-
-        @classmethod
-        def log(cls, instance):
-            logger.debug(
-                "\nRunning galaxy fit_normal for... \n\nGalaxy::\n{}\n\n".format(instance.galaxy))
-
-    class Result(Phase.Result):
-
-        def __init__(self, constant, likelihood, variable, analysis):
-            """
-            The result of a phase
-            """
-            super(GalaxyFitPhase.Result, self).__init__(constant, likelihood, variable)
-            self.fit = analysis.fit_for_instance(instance=constant)
-
-
-class GalaxyFitIntensitiesPhase(GalaxyFitPhase):
 
     def make_analysis(self, array, noise_map, previous_results=None, mask=None):
         """
@@ -1150,72 +1046,85 @@ class GalaxyFitIntensitiesPhase(GalaxyFitPhase):
             An lensing object that the non-linear optimizer calls to determine the fit_normal of a set of values
         """
         mask = mask or self.mask_function(array)
-        galaxy_datas = gd.GalaxyDataIntensities(array=array, noise_map=noise_map, mask=mask,
-                                                sub_grid_size=self.sub_grid_size)
+        galaxy_datas = self.galaxy_data_class(array=array, noise_map=noise_map, mask=mask,
+                                              sub_grid_size=self.sub_grid_size)
         self.pass_priors(previous_results)
         analysis = self.__class__.Analysis(galaxy_data=galaxy_datas, phase_name=self.phase_name,
                                            previous_results=previous_results)
         return analysis
 
+    # noinspection PyAbstractClass
+    class Analysis(Phase.Analysis):
+
+        def __init__(self, galaxy_data, phase_name, previous_results=None):
+            super(GalaxyFitPhase.Analysis, self).__init__(phase_name, previous_results)
+
+            self.galaxy_data = galaxy_data
+
+        def fit(self, instance):
+            """
+            Determine the fit_normal of a lens galaxy and source galaxy to the lensing_image in this lensing.
+
+            Parameters
+            ----------
+            instance
+                A model instance with attributes
+
+            Returns
+            -------
+            fit_normal: Fit
+                A fractional value indicating how well this model fit_normal and the model lensing_image itself
+            """
+            return self.fast_likelihood_for_instance(instance)
+
+        def visualize(self, instance, suffix, during_analysis):
+            self.plot_count += 1
+            fit = self.fit_for_instance(instance)
+
+            galaxy_fitting_plotters.plot_single_subplot(fit=fit, output_path=self.output_image_path,
+                                                        output_format='png', ignore_config=False)
+
+            return fit
+
+        def fast_likelihood_for_instance(self, instance):
+            return galaxy_fitting.fast_likelihood_from_galaxy_data_and_galaxy(galaxy_datas=[self.galaxy_data],
+                                                                              model_galaxy=instance.galaxy[0])
+
+        def fit_for_instance(self, instance):
+            return galaxy_fitting.fit_galaxy_data_with_galaxy(galaxy_datas=[self.galaxy_data],
+                                                              model_galaxy=instance.galaxy[0])
+
+        @classmethod
+        def log(cls, instance):
+            logger.debug(
+                "\nRunning galaxy fit_normal for... \n\nGalaxy::\n{}\n\n".format(instance.galaxy))
+
+    class Result(Phase.Result):
+
+        def __init__(self, constant, likelihood, variable, analysis):
+            """
+            The result of a phase
+            """
+            super(GalaxyFitPhase.Result, self).__init__(constant, likelihood, variable)
+            self.fit = analysis.fit_for_instance(instance=constant)
+
+
+class GalaxyFitIntensitiesPhase(GalaxyFitPhase):
+    def __init__(self, galaxy=None, optimizer_class=non_linear.MultiNest, sub_grid_size=1,
+                 mask_function=default_mask_function, phase_name=None):
+        super().__init__(gd.GalaxyDataIntensities, galaxy, optimizer_class, sub_grid_size, mask_function, phase_name)
+
 
 class GalaxyFitSurfaceDensityPhase(GalaxyFitPhase):
-
-    def make_analysis(self, array, noise_map, previous_results=None, mask=None):
-        """
-        Create an lensing object. Also calls the prior passing and lensing_image modifying functions to allow child
-        classes to change the behaviour of the phase.
-
-        Parameters
-        ----------
-        mask: Mask
-            The default mask passed in by the pipeline
-        image: im.Image
-            An lensing_image that has been masked
-        previous_results: ResultsCollection
-            The result from the previous phase
-
-        Returns
-        -------
-        lensing: Analysis
-            An lensing object that the non-linear optimizer calls to determine the fit_normal of a set of values
-        """
-        mask = mask or self.mask_function(array)
-        galaxy_data = gd.GalaxyDataSurfaceDensity(array=array, noise_map=noise_map, mask=mask,
-                                                  sub_grid_size=self.sub_grid_size)
-        self.pass_priors(previous_results)
-        analysis = self.__class__.Analysis(galaxy_data=galaxy_data, phase_name=self.phase_name,
-                                           previous_results=previous_results)
-        return analysis
+    def __init__(self, galaxy=None, optimizer_class=non_linear.MultiNest, sub_grid_size=1,
+                 mask_function=default_mask_function, phase_name=None):
+        super().__init__(gd.GalaxyDataSurfaceDensity, galaxy, optimizer_class, sub_grid_size, mask_function, phase_name)
 
 
 class GalaxyFitPotentialPhase(GalaxyFitPhase):
-
-    def make_analysis(self, array, noise_map, previous_results=None, mask=None):
-        """
-        Create an lensing object. Also calls the prior passing and lensing_image modifying functions to allow child
-        classes to change the behaviour of the phase.
-
-        Parameters
-        ----------
-        mask: Mask
-            The default mask passed in by the pipeline
-        image: im.Image
-            An lensing_image that has been masked
-        previous_results: ResultsCollection
-            The result from the previous phase
-
-        Returns
-        -------
-        lensing: Analysis
-            An lensing object that the non-linear optimizer calls to determine the fit_normal of a set of values
-        """
-        mask = mask or self.mask_function(array)
-        galaxy_data = gd.GalaxyDataPotential(array=array, noise_map=noise_map, mask=mask,
-                                             sub_grid_size=self.sub_grid_size)
-        self.pass_priors(previous_results)
-        analysis = self.__class__.Analysis(galaxy_data=galaxy_data, phase_name=self.phase_name,
-                                           previous_results=previous_results)
-        return analysis
+    def __init__(self, galaxy=None, optimizer_class=non_linear.MultiNest, sub_grid_size=1,
+                 mask_function=default_mask_function, phase_name=None):
+        super().__init__(gd.GalaxyDataPotential, galaxy, optimizer_class, sub_grid_size, mask_function, phase_name)
 
 
 class GalaxyFitDeflectionsPhase(AbstractPhase):
@@ -1224,7 +1133,8 @@ class GalaxyFitDeflectionsPhase(AbstractPhase):
     def __init__(self, galaxy=None, optimizer_class=non_linear.MultiNest, sub_grid_size=1,
                  mask_function=default_mask_function, phase_name=None):
         """
-        A phase in an lensing pipeline. Uses the set non_linear optimizer to try to fit_normal models and image passed to it.
+        A phase in an lensing pipeline. Uses the set non_linear optimizer to try to fit_normal models and image
+        passed to it.
 
         Parameters
         ----------
@@ -1245,12 +1155,13 @@ class GalaxyFitDeflectionsPhase(AbstractPhase):
 
         Parameters
         ----------
+        noise_map
+        array_x
+        array_y
         mask: Mask
             The default mask passed in by the pipeline
         previous_results: ResultsCollection
             An object describing the results of the last phase or None if no phase has been executed
-        image: img.Image
-            An lensing_image that has been masked
 
         Returns
         -------
@@ -1271,10 +1182,11 @@ class GalaxyFitDeflectionsPhase(AbstractPhase):
 
         Parameters
         ----------
+        noise_map
+        array_x
+        array_y
         mask: Mask
             The default mask passed in by the pipeline
-        image: im.Image
-            An lensing_image that has been masked
         previous_results: ResultsCollection
             The result from the previous phase
 
@@ -1293,6 +1205,7 @@ class GalaxyFitDeflectionsPhase(AbstractPhase):
                                            phase_name=self.phase_name, previous_results=previous_results)
         return analysis
 
+    # noinspection PyAbstractClass
     class Analysis(Phase.Analysis):
 
         def __init__(self, galaxy_data_y, galaxy_data_x, phase_name, previous_results=None):
@@ -1315,7 +1228,6 @@ class GalaxyFitDeflectionsPhase(AbstractPhase):
             fit_normal: Fit
                 A fractional value indicating how well this model fit_normal and the model lensing_image itself
             """
-            self.try_log(instance)
             return self.fast_likelihood_for_instance(instance)
 
         def visualize(self, instance, suffix, during_analysis):
@@ -1329,11 +1241,11 @@ class GalaxyFitDeflectionsPhase(AbstractPhase):
         def fast_likelihood_for_instance(self, instance):
             return galaxy_fitting.fast_likelihood_from_galaxy_data_and_galaxy(galaxy_datas=[self.galaxy_data_y,
                                                                                             self.galaxy_data_x],
-                                                                              galaxy=instance.galaxy[0])
+                                                                              model_galaxy=instance.galaxy[0])
 
         def fit_for_instance(self, instance):
             return galaxy_fitting.fit_galaxy_data_with_galaxy(galaxy_datas=[self.galaxy_data_y, self.galaxy_data_x],
-                                                              galaxy=instance.galaxy[0])
+                                                              model_galaxy=instance.galaxy[0])
 
         @classmethod
         def log(cls, instance):
@@ -1359,7 +1271,8 @@ class SensitivityPhase(PhaseImaging):
                  optimizer_class=non_linear.MultiNest, sub_grid_size=1,
                  mask_function=default_mask_function, phase_name=None):
         """
-        A phase in an lensing pipeline. Uses the set non_linear optimizer to try to fit_normal models and image passed to it.
+        A phase in an lensing pipeline. Uses the set non_linear optimizer to try to fit_normal models and image
+        passed to it.
 
         Parameters
         ----------
@@ -1376,6 +1289,7 @@ class SensitivityPhase(PhaseImaging):
         self.source_galaxies = source_galaxies or []
         self.sensitive_galaxies = sensitive_galaxies or []
 
+    # noinspection PyAbstractClass
     class Analysis(PhaseImaging.Analysis):
 
         def __init__(self, lensing_image, phase_name, previous_results=None):
@@ -1396,7 +1310,6 @@ class SensitivityPhase(PhaseImaging):
             fit_normal: Fit
                 A fractional value indicating how well this model fit_normal and the model lensing_image itself
             """
-            self.try_log(instance)
             tracer_normal = self.tracer_normal_for_instance(instance)
             tracer_sensitive = self.tracer_sensitive_for_instance(instance)
             return self.fast_likelihood_for_tracers(tracer_normal=tracer_normal, tracer_sensitive=tracer_sensitive)
@@ -1406,10 +1319,13 @@ class SensitivityPhase(PhaseImaging):
             tracer_sensitive = self.tracer_sensitive_for_instance(instance)
             fit = self.fit_for_tracers(tracer_normal=tracer_normal, tracer_sensitive=tracer_sensitive)
 
-            imaging_plotters.plot_image_subplot(image=self.sensitivity_image.image, output_path=self.output_image_path,
-                                                output_format='png', ignore_config=False)
+            imaging_plotters.plot_image_subplot(image=self.sensitivity_image.image, mask=self.lensing_image.mask,
+                                                positions=self.lensing_image.positions,
+                                                output_path=self.output_image_path, output_format='png',
+                                                ignore_config=False)
 
-            imaging_plotters.plot_image_individual(image=self.sensitivity_image.image,
+            imaging_plotters.plot_image_individual(image=self.sensitivity_image.image, mask=self.lensing_image.mask,
+                                                   positions=self.lensing_image.positions,
                                                    output_path=self.output_image_path,
                                                    output_format='png')
 
@@ -1422,14 +1338,14 @@ class SensitivityPhase(PhaseImaging):
             return ray_tracing.TracerImageSourcePlanes(lens_galaxies=instance.lens_galaxies,
                                                        source_galaxies=instance.source_galaxies,
                                                        image_plane_grids=[self.sensitivity_image.grids],
-                                                       borders=[self.sensitivity_image.borders])
+                                                       border=self.sensitivity_image.border)
 
         def tracer_sensitive_for_instance(self, instance):
             return ray_tracing.TracerImageSourcePlanes(
                 lens_galaxies=instance.lens_galaxies + instance.sensitive_galaxies,
                 source_galaxies=instance.source_galaxies,
                 image_plane_grids=[self.sensitivity_image.grids],
-                borders=[self.sensitivity_image.borders])
+                border=self.sensitivity_image.border)
 
         def fast_likelihood_for_tracers(self, tracer_normal, tracer_sensitive):
             return sensitivity_fitting.SensitivityProfileFit.fast_likelihood(
@@ -1445,12 +1361,13 @@ class SensitivityPhase(PhaseImaging):
         @classmethod
         def log(cls, instance):
             logger.debug(
-                "\nRunning lens/source lensing for... \n\nLens Galaxy:\n{}\n\nSource Galaxy:\n{}\n\n Sensitive Galaxy\n{}\n\n"
+                "\nRunning lens/source lensing for... \n\nLens Galaxy:\n{}\n\nSource Galaxy:\n{}\n\n Sensitive "
+                "Galaxy\n{}\n\n "
                 "".format(instance.lens_galaxies, instance.source_galaxies, instance.sensitive_galaxies))
 
     class Result(Phase.Result):
 
-        def __init__(self, constant, likelihood, variable, analysis):
+        def __init__(self, constant, likelihood, variable):
             """
             The result of a phase
             """
