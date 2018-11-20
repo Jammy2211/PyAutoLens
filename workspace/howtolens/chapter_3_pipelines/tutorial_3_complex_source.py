@@ -1,3 +1,4 @@
+from autofit import conf
 from autofit.core import non_linear as nl
 from autolens.imaging import image as im
 from autolens.imaging import mask
@@ -10,6 +11,8 @@ from autolens.imaging.plotters import imaging_plotters
 from autolens.model.profiles import light_profiles as lp
 from autolens.model.profiles import mass_profiles as mp
 
+import os
+
 # So far, we've not paid much attention to the source model_galaxy's morphology. We've assumed its a single-component
 # exponential profile, which is a fairly crude assumption. A quick look at any image of a real model_galaxy reveals a wealth
 # of different structures that could be present - bulges, disks, bars, star-forming knots and so on.
@@ -19,6 +22,11 @@ from autolens.model.profiles import mass_profiles as mp
 # source's is an exercise in diminishing returns. Each component we add to our source model brings with it an extra 5-7,
 # parameters and if there are. If there are 4 components, or multiple galaxies, we're quickly entering the somewhat
 # nasty regime of 20-30+ parameters in our non-linear search.
+
+# To setup the config and output paths without docker, you need to uncomment and run the command below. If you are
+# using Docker, you don't need to do anything so leave this uncommented!
+# path = '{}/../../'.format(os.path.dirname(os.path.realpath(__file__)))
+# conf.instance = conf.Config(config_path=path+'config', output_path=path+'output')
 
 def simulate():
 
