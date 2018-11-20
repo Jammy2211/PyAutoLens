@@ -1,13 +1,18 @@
 import os
 
+from autofit import conf
 from autofit.core import model_mapper as mm
 from autofit.core import non_linear as nl
+
 from autolens.model.galaxy import galaxy, galaxy_model as gm
-from autolens.pipeline import phase as ph
 from autolens.model.profiles import light_profiles as lp
+from autolens.pipeline import phase as ph
 from test.integration import tools
 
 dirpath = os.path.dirname(os.path.realpath(__file__))
+conf.instance = conf.Config("{}/../../workspace/config".format(dirpath),
+                            "{}/../../workspace/output/".format(dirpath))
+
 dirpath = os.path.dirname(dirpath)
 output_path = '{}/output'.format(dirpath)
 
@@ -46,7 +51,6 @@ class TestPhaseModelMapper(object):
 
         lines = list(
             filter(lambda line: "axis_ratio" in line or "intensity" in line, phase.variable.info.split("\n")))
-
 
         assert len(lines) == 2
         assert "lens_axis_ratio                                             UniformPrior, lower_limit = 0.2, upper_limit = 1.0" in lines
