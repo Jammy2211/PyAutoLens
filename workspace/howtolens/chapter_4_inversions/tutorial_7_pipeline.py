@@ -1,4 +1,3 @@
-from autolens import conf
 from autolens.autofit import non_linear as nl
 from autolens.autofit import model_mapper as mm
 from autolens.imaging import image as im
@@ -10,17 +9,9 @@ from autolens.pipeline import pipeline
 from autolens.imaging.plotters import imaging_plotters
 from autolens.model.profiles import light_profiles as lp, mass_profiles as mp
 
-import os
-
 # Let's go back to our complex source pipeline, but this time, as you've probably guessed, fit it with an inversion.
 # As we discussed in the previous tutorial, we'll begin by modeling the source with a light profile, to initialize the
 # mass model, and then switch over to an inversion.
-
-# First, lets get our path.
-path = '{}/'.format(os.path.dirname(os.path.realpath(__file__)))
-
-# Lets quickly sort the output directory
-conf.instance = conf.Config(config_path=conf.CONFIG_PATH, output_path=path+"output")
 
 def simulate():
 
@@ -57,7 +48,7 @@ imaging_plotters.plot_image_subplot(image=image)
 
 def make_pipeline():
 
-    pipeline_name = '6_inversion'
+    pipeline_name = 'howtolens_c4_t7_6_inversion'
 
     # This is te same phase 1 as the complex_source pipeline, which we saw will give a good fit to the overall
     # structur of the lensed source and provide a good mass model.

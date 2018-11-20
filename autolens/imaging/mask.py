@@ -81,7 +81,7 @@ class Mask(scaled_array.ScaledSquarePixelArray):
             The (y,x) shape of the masks in units of pixels.
         pixel_scale: float
             The arc-second to pixel conversion factor of each pixel.
-        outer_radius_arcsec : float
+        inner_radius_arcsec : float
             The inner radius of the annulus masks in arc seconds.
         outer_radius_arcsec : float
             The outer radius of the annulus masks in arc seconds.
