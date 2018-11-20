@@ -10,7 +10,8 @@ from autolens.inversion import pixelizations as pix
 from autolens.inversion import regularization as reg
 from autolens.imaging.plotters import imaging_plotters
 from autolens.lensing.plotters import ray_tracing_plotters
-from autolens.inversion.plotters import inversion_plotters, mapper_plotters
+from autolens.inversion.plotters import mapper_plotters
+from autolens.inversion.plotters import inversion_plotters
 
 
 # Up to now, all our mappers have had their border input as 'None', and you may be wondering what inputting a border
