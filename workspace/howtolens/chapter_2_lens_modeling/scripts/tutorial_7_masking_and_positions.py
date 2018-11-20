@@ -1,5 +1,5 @@
 from autolens import conf
-from autolens.autofit import non_linear
+from autofit.core import non_linear
 from autolens.imaging import image as im
 from autolens.imaging import mask as msk
 from autolens.model.profiles import light_profiles as lp

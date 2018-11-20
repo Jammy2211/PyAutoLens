@@ -1,8 +1,8 @@
 import inspect
 
 from autolens import exc
-from autolens.autofit import model_mapper
-from autolens.autofit.model_mapper import PriorNameValue, ConstantNameValue, cast_collection
+from autofit.core import model_mapper
+from autofit.core.model_mapper import PriorNameValue, ConstantNameValue, cast_collection
 from autolens.model.galaxy import galaxy
 from autolens.model.profiles import light_profiles, mass_profiles
 
