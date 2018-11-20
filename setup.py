@@ -64,7 +64,8 @@ setup(
                       'scikit-learn',
                       'numba',
                       'matplotlib',
-                      'colorama'
+                      'colorama',
+		      'autofit'
                       ],
     extras_require={
         'test': ['coverage', 'pytest', 'pytest-cov'],

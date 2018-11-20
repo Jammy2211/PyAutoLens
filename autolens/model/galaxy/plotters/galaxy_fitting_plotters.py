@@ -1,7 +1,7 @@
 from matplotlib import pyplot as plt
 
 from autolens import exc
-from autolens import conf
+from autofit import conf
 from autolens.model.galaxy import galaxy_data as gd
 from autolens.plotters import plotter_util
 from autolens.fitting.plotters import fitting_plotters

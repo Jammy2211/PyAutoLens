@@ -3,7 +3,7 @@
 #
 # import pytest
 #
-# from autolens import conf
+# from autofit import conf
 # from autolens.imaging import scaled_array
 # from autolens.imaging import image as im
 # from autolens.imaging import masks as msk

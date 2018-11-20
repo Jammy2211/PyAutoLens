@@ -4,7 +4,7 @@ import shutil
 import numpy as np
 import pytest
 
-from autolens import conf
+from autofit import conf
 from autolens.fitting import fitting
 from autolens.fitting import fitting_data
 from autolens.model.galaxy import galaxy as g

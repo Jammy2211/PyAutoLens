@@ -1,7 +1,7 @@
 import os
 from pathlib import Path
 
-from autolens.autofit import non_linear as nl
+from autofit.core import non_linear as nl
 from autolens.imaging import mask as msk
 from autolens.model.galaxy import galaxy, galaxy_model as gm
 from autolens.pipeline import phase as ph

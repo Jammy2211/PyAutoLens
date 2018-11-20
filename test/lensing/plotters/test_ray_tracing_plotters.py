@@ -3,7 +3,7 @@ import shutil
 
 import pytest
 
-from autolens import conf
+from autofit import conf
 from autolens.model.galaxy import galaxy as g
 from autolens.imaging import mask as msk
 from autolens.lensing import ray_tracing
