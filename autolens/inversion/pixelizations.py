@@ -8,6 +8,7 @@ from autolens.imaging import scaled_array
 from autolens.inversion.util import pixelization_util
 from autolens.inversion import mappers
 
+
 class PixelizationGrid(scaled_array.ArrayGeometry):
 
     def __init__(self, pix_grid_shape, pixel_scales, image_grid):
@@ -26,25 +27,44 @@ class PixelizationGrid(scaled_array.ArrayGeometry):
         """
 
         self.shape = pix_grid_shape
+        self.origin = (0.0, 0.0)
         self.total_pixels = int(self.shape[0] * self.shape[1])
         self.pixel_scales = pixel_scales
+
         self.image_grid = image_grid
-        self.origin = (0.0, 0.0)
+        self.full_pix_grid = self.grid_1d
+        self.full_pix_grid_pixel_centres = image_grid.mask.grid_arc_seconds_to_grid_pixel_centres(self.full_pix_grid)
 
-        self.full_pix_grid_pixel_centres = self.image_grid.mask.grid_arc_seconds_to_grid_pixel_centres(self.grid_1d)
+    @property
+    def total_pix_pixels(self):
+        return pixelization_util.total_pix_pixels_from_mask(mask=self.image_grid.mask,
+                                     full_pix_grid_pixel_centres=self.full_pix_grid_pixel_centres)
 
-        self.total_masked_pixels = pixelization_util.total_masked_pixels(mask=self.image_grid.mask,
-                                                                         full_pix_grid_pixel_centres=self.full_pix_grid_pixel_centres)
+    @property
+    def full_pix_to_pix(self):
+        """The 1D index mappings between the unmasked pixelization-grid and masked pixelization grid."""
+        return pixelization_util.full_pix_to_pix_from_mask_and_pixel_centres(mask=self.image_grid.mask,
+                                         full_pix_grid_pixel_centres=self.full_pix_grid_pixel_centres).astype('int')
 
-        self.pix_to_full_pix = pixelization_util.pix_to_full_pix(total_masked_pixels=self.total_masked_pixels,
-                                                                 mask=self.image_grid.mask,
-                                                                 full_pix_grid_pixel_centres=self.full_pix_grid_pixel_centres).astype('int')
+    @property
+    def pix_to_full_pix(self):
+        """The 1D index mappings between the masked pixelization-grid and unmasked pixelization grid."""
+        return pixelization_util.pix_to_full_pix_from_mask_and_pixel_centres(total_pix_pixels=self.total_pix_pixels,
+              mask=self.image_grid.mask, full_pix_grid_pixel_centres=self.full_pix_grid_pixel_centres).astype('int')
 
-        self.pix_grid = pixelization_util.pix_grid_from__(total_masked_pixels=self.total_masked_pixels,
-                                                          pixelization_grid=self.grid_1d,
-                                                          pix_to_unmasked_pix=self.pix_to_full_pix)
+    @property
+    def image_to_full_pix(self):
+        return self.grid_arc_seconds_to_grid_pixel_indexes(grid_arc_seconds=self.image_grid)
 
-        self.image_to_pix = self.image_to_masked_pixelization_jit()
+    @property
+    def image_to_pix(self):
+        return pixelization_util.image_to_pix_from_pix_mappings(image_to_full_pix=self.image_to_full_pix,
+                                                                full_pix_to_pix=self.full_pix_to_pix).astype('int')
+
+    @property
+    def pix_grid(self):
+        return pixelization_util.pix_grid_from_full_pix_grid(full_pix_grid=self.full_pix_grid,
+                                                                      pix_to_full_pix=self.pix_to_full_pix)
 
 
 class Pixelization(object):
