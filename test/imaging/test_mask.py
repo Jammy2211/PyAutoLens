@@ -788,8 +788,10 @@ class TestImagingGrids(object):
                                                     [-1., -1.],
                                                     [-1., 0.],
                                                     [-1., 1.]])).all()
+        assert imaging_grids.pix == None
 
     def test__from_shape_and_pixel_scale(self):
+
         ma = mask.Mask(np.array([[False, False, False],
                                  [False, False, False],
                                  [False, False, False]]), pixel_scale=2.0)
@@ -802,6 +804,7 @@ class TestImagingGrids(object):
 
         assert (imaging_grids_mask.image == imaging_grids_shape.image).all()
         assert (imaging_grids_mask.sub == imaging_grids_shape.sub).all()
+        assert imaging_grids_mask.pix == None
 
     def test__padded_grids(self):
         msk = np.array([[False, False],
@@ -830,6 +833,8 @@ class TestImagingGrids(object):
 
         assert (padded_grids.blurring == np.array([0.0, 0.0])).all()
 
+        assert padded_grids.pix == None
+
     def test__for_simulation(self):
         padded_grids = mask.ImagingGrids.grids_for_simulation(shape=(2, 2), pixel_scale=1.0, sub_grid_size=2,
                                                               psf_shape=(3, 3))
@@ -852,7 +857,12 @@ class TestImagingGrids(object):
 
         assert (padded_grids.blurring == np.array([0.0, 0.0])).all()
 
+        assert padded_grids.pix == None
+
     def test_apply_function_retains_attributes(self, imaging_grids):
+
+        imaging_grids.pix = imaging_grids.image
+
         def add_one(coords):
             return np.add(1, coords)
 
