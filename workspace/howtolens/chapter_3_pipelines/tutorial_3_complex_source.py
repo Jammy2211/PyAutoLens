@@ -1,4 +1,3 @@
-from autolens import conf
 from autolens.autofit import non_linear as nl
 from autolens.imaging import image as im
 from autolens.imaging import mask
@@ -11,8 +10,6 @@ from autolens.imaging.plotters import imaging_plotters
 from autolens.model.profiles import light_profiles as lp
 from autolens.model.profiles import mass_profiles as mp
 
-import os
-
 # So far, we've not paid much attention to the source model_galaxy's morphology. We've assumed its a single-component
 # exponential profile, which is a fairly crude assumption. A quick look at any image of a real model_galaxy reveals a wealth
 # of different structures that could be present - bulges, disks, bars, star-forming knots and so on.
@@ -22,12 +19,6 @@ import os
 # source's is an exercise in diminishing returns. Each component we add to our source model brings with it an extra 5-7,
 # parameters and if there are. If there are 4 components, or multiple galaxies, we're quickly entering the somewhat
 # nasty regime of 20-30+ parameters in our non-linear search.
-
-# First, lets get our path.
-path = '{}/'.format(os.path.dirname(os.path.realpath(__file__)))
-
-# Lets quickly sort the output directory
-conf.instance = conf.Config(config_path=conf.CONFIG_PATH, output_path=path+"output")
 
 def simulate():
 
@@ -69,7 +60,7 @@ imaging_plotters.plot_image_subplot(image=image)
 # keep the number of parameters down and the phases running fast, but we wouldn't get such a luxury in a real model_galaxy.
 
 def make_pipeline():
-    pipeline_name = '3_complex_source'
+    pipeline_name = 'howtolens_c3_t3_complex_source'
 
     # To begin, we need to initialize the lens's mass model. We should be able to do this by using a simple source
     # model. It won't incorrect_fit the complicated structure of the source, but it'll give us a robust estimate of the

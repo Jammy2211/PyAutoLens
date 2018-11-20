@@ -1,4 +1,3 @@
-from autolens import conf
 from autolens.autofit import non_linear as nl
 from autolens.imaging import image as im
 from autolens.imaging import mask
@@ -7,8 +6,6 @@ from autolens.pipeline import phase
 from autolens.pipeline import pipeline
 from autolens.model.profiles import light_profiles as lp
 from autolens.model.profiles import mass_profiles as mp
-
-import os
 
 # In chapter 2, we fitted a strong lens which included the contribution of light from the lens model_galaxy. We're going to
 # fit_normal this lens again (I promise, this is the last time!). However, now we're approaching lens modeling with runners,
@@ -46,9 +43,13 @@ import os
 # First, lets get our path.
 path = '{}/'.format(os.path.dirname(os.path.realpath(__file__)))
 
-# Lets setup the config. No, I'm not preloading the results with this - I'm just changing the output
-# to the AutoLens/howtolens/output directory, to keep everything tidy and in one place.
-conf.instance = conf.Config(config_path=conf.CONFIG_PATH, output_path=path+"output")
+# From here on, we'll use the configs in 'workspace/config', which are the default configs used
+# by all pipelines (e.g. not just this tutorial, but when you model your own images and lenses!). Thus, I'm not
+# preloading the configs with results to speed up the pipelines with this.
+
+# We'll also put the output in 'workspace/output', which is where output goes for a normal analysis.
+
+# This is true of all tutorials from now on, to get you used to using the code for modeling real images.
 
 def simulate():
 
@@ -77,8 +78,9 @@ image = simulate()
 # A pipeline is a one long python function (this is why Jupyter notebooks arn't ideal). When we run it, this function
 # 'makes' the pipeline, as you'll see in a moment.
 def make_pipeline():
+
     # To begin, we name our pipeline, which will specify the directory that it appears in the output folder.
-    pipeline_name = '1_lens_and_source'
+    pipeline_name = 'howtolens_c3_t1_lens_and_source'
 
     # Its been a long time since we thought about masks - but in runners they're a pretty important. The bigger the
     # masks, the slower the run-time. In the early phases of most runners, we're not too bothered about fitting the
