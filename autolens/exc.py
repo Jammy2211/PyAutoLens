@@ -6,14 +6,6 @@ class KernelException(Exception):
     pass
 
 
-class PriorException(Exception):
-    pass
-
-
-class MultiNestException(Exception):
-    pass
-
-
 class MaskException(Exception):
     pass
 
@@ -39,8 +31,4 @@ class FittingException(Exception):
 
 
 class PlottingException(Exception):
-    pass
-
-
-class PriorLimitException(PriorException):
     pass
