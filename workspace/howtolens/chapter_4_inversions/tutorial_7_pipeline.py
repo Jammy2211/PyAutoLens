@@ -1,3 +1,4 @@
+from autofit import conf
 from autofit.core import non_linear as nl
 from autofit.core import model_mapper as mm
 from autolens.imaging import image as im
@@ -9,9 +10,16 @@ from autolens.pipeline import pipeline
 from autolens.imaging.plotters import imaging_plotters
 from autolens.model.profiles import light_profiles as lp, mass_profiles as mp
 
+import os
+
 # Let's go back to our complex source pipeline, but this time, as you've probably guessed, fit it with an inversion.
 # As we discussed in the previous tutorial, we'll begin by modeling the source with a light profile, to initialize the
 # mass model, and then switch over to an inversion.
+
+# To setup the config and output paths without docker, you need to uncomment and run the command below. If you are
+# using Docker, you don't need to do anything so leave this uncommented!
+# path = '{}/../../'.format(os.path.dirname(os.path.realpath(__file__)))
+# conf.instance = conf.Config(config_path=path+'config', output_path=path+'output')
 
 def simulate():
 
