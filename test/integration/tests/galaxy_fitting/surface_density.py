@@ -1,13 +1,12 @@
 import os
 import numpy as np
 
-from autolens.galaxy import galaxy as g
-from autolens.galaxy import galaxy_model as gm
-from autolens.imaging import imaging_util
+from autolens.model.galaxy import galaxy as g, galaxy_model as gm
+from autolens.imaging.util import grid_util
 from autolens.imaging import scaled_array
 from autolens.imaging import mask
 from autolens.pipeline import phase as ph
-from autolens.profiles import mass_profiles as mp
+from autolens.model.profiles import mass_profiles as mp
 from test.integration import tools
 
 dirpath = os.path.dirname(os.path.realpath(__file__))
@@ -22,13 +21,13 @@ def simulate_surface_density(data_name, pixel_scale, galaxy):
     grids = mask.ImagingGrids.from_shape_and_pixel_scale(shape=image_shape, pixel_scale=pixel_scale)
 
     surface_density = galaxy.surface_density_from_grid(grid=grids.image)
-    surface_density = imaging_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(array_1d=surface_density,
-                                                                                             shape=image_shape)
+    surface_density = grid_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(array_1d=surface_density,
+                                                                                          shape=image_shape)
 
     if os.path.exists(output_path) == False:
         os.makedirs(output_path)
 
-    imaging_util.numpy_array_to_fits(surface_density, path=data_path + data_name +'.fits', overwrite=True)
+    grid_util.numpy_array_to_fits(surface_density, path=data_path + data_name + '.fits', overwrite=True)
 
 def setup_and_run_phase():
 

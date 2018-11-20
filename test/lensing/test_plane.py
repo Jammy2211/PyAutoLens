@@ -3,14 +3,13 @@ import pytest
 from astropy import cosmology as cosmo
 
 from autolens import exc
-from autolens.imaging import imaging_util
+from autolens.imaging.util import mapping_util
 from autolens.imaging import mask
 from autolens.inversion import pixelizations
 from autolens.inversion import regularization
-from autolens.galaxy import galaxy as g
+from autolens.model.galaxy import galaxy as g
 from autolens.lensing import plane as pl
-from autolens.profiles import light_profiles as lp
-from autolens.profiles import mass_profiles as mp
+from autolens.model.profiles import light_profiles as lp, mass_profiles as mp
 from test.mock.mock_inversion import MockRegularization, MockPixelization
 from test.mock.mock_imaging import MockBorders
 
@@ -1243,14 +1242,14 @@ class TestPlane(object):
         def test__no_galaxies_with_pixelizations_in_plane__returns_none(self, imaging_grids):
             galaxy_no_pix = g.Galaxy()
 
-            plane = pl.Plane(galaxies=[galaxy_no_pix], grids=[imaging_grids], borders=[MockBorders()])
+            plane = pl.Plane(galaxies=[galaxy_no_pix], grids=[imaging_grids], border=[MockBorders()])
 
             assert plane.mapper is None
 
         def test__1_galaxy_in_plane__it_has_pixelization__returns_mapper(self, imaging_grids):
             galaxy_pix = g.Galaxy(pixelization=MockPixelization(value=1), regularization=MockRegularization(value=0))
 
-            plane = pl.Plane(galaxies=[galaxy_pix], grids=[imaging_grids], borders=[MockBorders()])
+            plane = pl.Plane(galaxies=[galaxy_pix], grids=[imaging_grids], border=[MockBorders()])
 
             assert plane.mapper == 1
 
@@ -1258,7 +1257,7 @@ class TestPlane(object):
             galaxy_pix = g.Galaxy(pixelization=MockPixelization(value=1), regularization=MockRegularization(value=0))
             galaxy_no_pix = g.Galaxy()
 
-            plane = pl.Plane(galaxies=[galaxy_no_pix, galaxy_pix], grids=[imaging_grids], borders=[MockBorders()])
+            plane = pl.Plane(galaxies=[galaxy_no_pix, galaxy_pix], grids=[imaging_grids], border=[MockBorders()])
 
             assert plane.mapper == 1
 
@@ -1275,7 +1274,7 @@ class TestPlane(object):
             galaxy_pix_0 = g.Galaxy(pixelization=MockPixelization(value=1), regularization=MockRegularization(value=0))
             galaxy_pix_1 = g.Galaxy(pixelization=MockPixelization(value=2), regularization=MockRegularization(value=0))
 
-            plane = pl.Plane(galaxies=[galaxy_pix_0, galaxy_pix_1], grids=[imaging_grids], borders=[MockBorders()])
+            plane = pl.Plane(galaxies=[galaxy_pix_0, galaxy_pix_1], grids=[imaging_grids], border=[MockBorders()])
 
             with pytest.raises(exc.PixelizationException):
                 plane.mapper
@@ -1285,14 +1284,14 @@ class TestPlane(object):
         def test__no_galaxies_with_pixelizations_in_plane__returns_none(self, imaging_grids):
             galaxy_no_pix = g.Galaxy()
 
-            plane = pl.Plane(galaxies=[galaxy_no_pix], grids=[imaging_grids], borders=MockBorders())
+            plane = pl.Plane(galaxies=[galaxy_no_pix], grids=[imaging_grids], border=MockBorders())
 
             assert plane.regularization is None
 
         def test__1_galaxy_in_plane__it_has_pixelization__returns_mapper(self, imaging_grids):
             galaxy_pix = g.Galaxy(pixelization=MockPixelization(value=1), regularization=MockRegularization(value=0))
 
-            plane = pl.Plane(galaxies=[galaxy_pix], grids=[imaging_grids], borders=MockBorders())
+            plane = pl.Plane(galaxies=[galaxy_pix], grids=[imaging_grids], border=MockBorders())
 
             assert plane.regularization.value == 0
 
@@ -1300,7 +1299,7 @@ class TestPlane(object):
             galaxy_pix = g.Galaxy(pixelization=MockPixelization(value=1), regularization=MockRegularization(value=0))
             galaxy_no_pix = g.Galaxy()
 
-            plane = pl.Plane(galaxies=[galaxy_no_pix, galaxy_pix], grids=[imaging_grids], borders=MockBorders())
+            plane = pl.Plane(galaxies=[galaxy_no_pix, galaxy_pix], grids=[imaging_grids], border=MockBorders())
 
             assert plane.regularization.value == 0
 
@@ -1308,7 +1307,7 @@ class TestPlane(object):
             galaxy_pix_0 = g.Galaxy(pixelization=MockPixelization(value=1), regularization=MockRegularization(value=0))
             galaxy_pix_1 = g.Galaxy(pixelization=MockPixelization(value=2), regularization=MockRegularization(value=0))
 
-            plane = pl.Plane(galaxies=[galaxy_pix_0, galaxy_pix_1], grids=[imaging_grids], borders=MockBorders())
+            plane = pl.Plane(galaxies=[galaxy_pix_0, galaxy_pix_1], grids=[imaging_grids], border=MockBorders())
 
             with pytest.raises(exc.PixelizationException):
                 plane.regularization
@@ -1420,13 +1419,13 @@ class TestPlaneImageFromGrid:
 
         grid = np.array([[-1.5, -1.5], [1.5, 1.5]])
 
-        plane_image = pl.plane_image_from_grid_and_galaxies(shape=(3, 3), grid=grid, galaxies=[galaxy])
+        plane_image = pl.plane_image_from_grid_and_galaxies(shape=(3, 3), grid=grid, galaxies=[galaxy], buffer=0.0)
 
         plane_image_galaxy = galaxy.intensities_from_grid(grid=np.array([[-1.0, -1.0], [-1.0, 0.0], [-1.0, 1.0],
                                                                            [0.0, -1.0], [0.0, 0.0], [0.0, 1.0],
                                                                            [1.0, -1.0], [1.0, 0.0], [1.0, 1.0]]))
 
-        plane_image_galaxy = imaging_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(
+        plane_image_galaxy = mapping_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(
             array_1d=plane_image_galaxy, shape=(3,3))
 
         assert (plane_image == plane_image_galaxy).all()
@@ -1437,13 +1436,13 @@ class TestPlaneImageFromGrid:
 
         grid = np.array([[-1.5, -1.5], [1.5, 1.5], [0.1, -0.1], [-1.0, 0.6], [1.4, -1.3], [1.5, 1.5]])
 
-        plane_image = pl.plane_image_from_grid_and_galaxies(shape=(3, 3), grid=grid, galaxies=[galaxy])
+        plane_image = pl.plane_image_from_grid_and_galaxies(shape=(3, 3), grid=grid, galaxies=[galaxy], buffer=0.0)
 
         plane_image_galaxy = galaxy.intensities_from_grid(grid=np.array([[-1.0, -1.0], [-1.0, 0.0], [-1.0, 1.0],
                                                                            [0.0, -1.0], [0.0, 0.0], [0.0, 1.0],
                                                                            [1.0, -1.0], [1.0, 0.0], [1.0, 1.0]]))
 
-        plane_image_galaxy = imaging_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(
+        plane_image_galaxy = mapping_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(
             array_1d=plane_image_galaxy, shape=(3,3))
 
         assert (plane_image == plane_image_galaxy).all()
@@ -1454,12 +1453,12 @@ class TestPlaneImageFromGrid:
 
         grid = np.array([[-1.5, -1.5], [1.5, 1.5]])
 
-        plane_image = pl.plane_image_from_grid_and_galaxies(shape=(2, 3), grid=grid, galaxies=[galaxy])
+        plane_image = pl.plane_image_from_grid_and_galaxies(shape=(2, 3), grid=grid, galaxies=[galaxy], buffer=0.0)
 
         plane_image_galaxy = galaxy.intensities_from_grid(grid=np.array([[-0.75, -1.0], [-0.75, 0.0], [-0.75, 1.0],
                                                                           [0.75, -1.0], [0.75, 0.0], [0.75, 1.0]]))
 
-        plane_image_galaxy = imaging_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(
+        plane_image_galaxy = mapping_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(
             array_1d=plane_image_galaxy, shape=(2,3))
 
         assert (plane_image == plane_image_galaxy).all()
@@ -1470,35 +1469,54 @@ class TestPlaneImageFromGrid:
 
         grid = np.array([[-1.5, -1.5], [1.5, 1.5]])
 
-        plane_image = pl.plane_image_from_grid_and_galaxies(shape=(3, 2), grid=grid, galaxies=[galaxy])
+        plane_image = pl.plane_image_from_grid_and_galaxies(shape=(3, 2), grid=grid, galaxies=[galaxy], buffer=0.0)
 
         plane_image_galaxy = galaxy.intensities_from_grid(grid=np.array([[-1.0, -0.75], [-1.0, 0.75],
                                                                           [0.0, -0.75], [0.0, 0.75],
                                                                           [1.0, -0.75], [1.0, 0.75]]))
 
-        plane_image_galaxy = imaging_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(
+        plane_image_galaxy = mapping_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(
             array_1d=plane_image_galaxy, shape=(3,2))
 
         assert (plane_image == plane_image_galaxy).all()
 
+    def test__3x3_grid__buffer_aligns_two_grids(self):
+
+        galaxy = g.Galaxy(light=lp.EllipticalSersic(intensity=1.0))
+
+        grid_without_buffer = np.array([[-1.48, -1.48], [1.48, 1.48]])
+
+        plane_image = pl.plane_image_from_grid_and_galaxies(shape=(3, 3), grid=grid_without_buffer, galaxies=[galaxy],
+                                                            buffer=0.02)
+
+        plane_image_galaxy = galaxy.intensities_from_grid(grid=np.array([[-1.0, -1.0], [-1.0, 0.0], [-1.0, 1.0],
+                                                                           [0.0, -1.0], [0.0, 0.0], [0.0, 1.0],
+                                                                           [1.0, -1.0], [1.0, 0.0], [1.0, 1.0]]))
+
+        plane_image_galaxy = mapping_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(
+            array_1d=plane_image_galaxy, shape=(3,3))
+
+        assert (plane_image == plane_image_galaxy).all()
 
 class TestPlaneImage:
 
     def test__3x3_grid__extracts_max_min_coordinates__ignores_other_coordinates_more_central(self, imaging_grids):
+
+        imaging_grids.image[1] = np.array([2.0, 2.0])
 
         galaxy = g.Galaxy(light=lp.EllipticalSersic(intensity=1.0))
 
         plane = pl.Plane(galaxies=[galaxy], grids=[imaging_grids], compute_deflections=False)
 
         plane_image_from_func = pl.plane_image_from_grid_and_galaxies(shape=(3, 4),
-                                                                      grid=imaging_grids.image.unlensed_grid,
+                                                                      grid=imaging_grids.image,
                                                                       galaxies=[galaxy])
 
         assert (plane_image_from_func == plane.plane_images[0]).all()
 
     def test__ensure_index_of_plane_image_has_negative_arcseconds_at_start(self, imaging_grids):
         # The grid coordinates -2.0 -> 2.0 mean a plane of shape (5,5) has arc second coordinates running over
-        # -1.6, -0.8, 0.0, 0.8, 1.6. The centre -1.6, -1.6 of the model_galaxy means its brighest pixel should be
+        # -1.6, -0.8, 0.0, 0.8, 1.6. The origin -1.6, -1.6 of the model_galaxy means its brighest pixel should be
         # index 0 of the 1D grid and (0,0) of the 2d plane datas_.
 
         msk = mask.Mask(array=np.full((5,5), False), pixel_scale=1.0)

@@ -93,7 +93,7 @@ class SubGridBorder(ImageGridBorder):
 
     @classmethod
     def from_mask(cls, mask, sub_grid_size, polynomial_degree=3, centre=(0.0, 0.0)):
-        return cls(mask.border_sub_pixels(sub_grid_size), polynomial_degree, centre)
+        return cls(mask.edge_sub_pixels(sub_grid_size), polynomial_degree, centre)
 
 
 sub_grid_size = 4

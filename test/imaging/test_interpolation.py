@@ -3,8 +3,8 @@ import pytest
 
 from autolens.imaging import interpolation
 from autolens.imaging import mask
-from autolens.galaxy import galaxy
-from autolens.profiles import mass_profiles
+from autolens.model.galaxy import galaxy
+from autolens.model.profiles import mass_profiles
 
 
 @pytest.fixture(name='scheme')

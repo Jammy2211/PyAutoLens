@@ -4,7 +4,7 @@ import numpy as np
 from astropy import constants
 
 from autolens import exc
-from autolens.imaging import imaging_util
+from autolens.imaging.util import grid_util, mapping_util
 from autolens.imaging import mask as msk
 from autolens.imaging import scaled_array
 
@@ -45,7 +45,7 @@ def cosmology_check(func):
 
 class Plane(object):
 
-    def __init__(self, galaxies, grids, borders=None, compute_deflections=True, cosmology=None):
+    def __init__(self, galaxies, grids, border=None, compute_deflections=True, cosmology=None):
         """A plane represents a set of galaxies at a given redshift in a ray-tracer_normal and a the grid of datas_-plane \
         or lensed coordinates.
 
@@ -56,8 +56,11 @@ class Plane(object):
         -----------
         galaxies : [Galaxy]
             The list of lens galaxies in this plane.
-        grids : masks.ImagingGrids
+        grids : mask.ImagingGrids
             The grids of (x,y) arc-second coordinates of this plane.
+        border : mask.ImageGridBorder
+            The border of the image-grid, which is used to relocate demagnified traced image-pixel to the \
+            source-plane border.
         compute_deflections : bool
             If true, the deflection-angles of this plane's coordinates are calculated use its galaxy's mass-profiles.
         """
@@ -79,7 +82,7 @@ class Plane(object):
                                               'does not have a redshift.')
 
         self.grids = grids
-        self.borders = borders
+        self.border = border
 
         if compute_deflections:
 
@@ -87,9 +90,9 @@ class Plane(object):
                 return sum(map(lambda galaxy: galaxy.deflections_from_grid(grid), galaxies))
 
             self.deflections = list(map(lambda grid : grid.apply_function(calculate_deflections), self.grids))
+
         else:
             self.deflections = None
-
         self.cosmology = cosmology
 
     def trace_grids_to_next_plane(self):
@@ -165,10 +168,7 @@ class Plane(object):
             return None
         if len(galaxies_with_pixelization) == 1:
             pixelization = galaxies_with_pixelization[0].pixelization
-            if self.borders is not None:
-                return pixelization.mapper_from_grids_and_borders(self.grids[0], self.borders[0])
-            elif self.borders is None:
-                return pixelization.mapper_from_grids(self.grids[0])
+            return pixelization.mapper_from_grids_and_border(self.grids[0], self.border)
         elif len(galaxies_with_pixelization) > 1:
             raise exc.PixelizationException('The number of galaxies with pixelizations in one plane is above 1')
 
@@ -224,7 +224,7 @@ class Plane(object):
     @property
     def plane_images(self):
         return list(map(lambda grid : plane_image_from_grid_and_galaxies(shape=grid.image.mask.shape,
-                                      grid=grid.image.unlensed_grid, galaxies=self.galaxies), self.grids))
+                                      grid=grid.image, galaxies=self.galaxies), self.grids))
 
     @property
     def surface_density(self):
@@ -317,6 +317,7 @@ class Plane(object):
         return list(map(lambda galaxy : galaxy.mass_within_ellipse(major_axis, conversion_factor),
                         self.galaxies))
 
+
 class PlanePositions(object):
 
     def __init__(self, galaxies, positions, compute_deflections=True, cosmology=None):
@@ -353,10 +354,9 @@ class PlanePositions(object):
 
 class PlaneImage(scaled_array.ScaledRectangularPixelArray):
 
-    def __init__(self, array, pixel_scales, grid):
+    def __init__(self, array, pixel_scales, grid, origin=(0.0, 0.0)):
         self.grid = grid
-        self.pixel_scales = pixel_scales
-        super(PlaneImage, self).__init__(array=array, pixel_scales=pixel_scales)
+        super(PlaneImage, self).__init__(array=array, pixel_scales=pixel_scales, origin=origin)
 
 
 def sub_to_image_grid(func):
@@ -429,25 +429,28 @@ def deflections_from_grid_collection(grid_collection, galaxies):
     return grid_collection.apply_function(lambda grid: deflections_from_sub_grid(grid, galaxies))
 
 
-def plane_image_from_grid_and_galaxies(shape, grid, galaxies):
-    y_min = np.amin(grid[:, 0])
-    y_max = np.amax(grid[:, 0])
-    x_min = np.amin(grid[:, 1])
-    x_max = np.amax(grid[:, 1])
+def plane_image_from_grid_and_galaxies(shape, grid, galaxies, buffer=1.0e-2):
 
-    y_pixel_scale = ((y_max - y_min) / shape[0])
-    x_pixel_scale = ((x_max - x_min) / shape[1])
+    y_min = np.min(grid[:, 0]) - buffer
+    y_max = np.max(grid[:, 0]) + buffer
+    x_min = np.min(grid[:, 1]) - buffer
+    x_max = np.max(grid[:, 1]) + buffer
 
-    uniform_grid = imaging_util.image_grid_1d_masked_from_mask_and_pixel_scales(mask=np.full(shape=shape,
-                                                                                             fill_value=False),
-                                                                                pixel_scales=(
-                                                                                    y_pixel_scale, x_pixel_scale))
+    pixel_scales = (float((y_max - y_min) / shape[0]), float((x_max - x_min) / shape[1]))
+    origin = ((y_max + y_min) / 2.0, (x_max + x_min) / 2.0)
+
+    uniform_grid = grid_util.image_grid_1d_masked_from_mask_pixel_scales_and_origin(mask=np.full(shape=shape,
+                                                                                                 fill_value=False),
+                                                                                    pixel_scales=pixel_scales,
+                                                                                    origin=origin)
 
     image_1d = sum([intensities_from_grid(uniform_grid, [galaxy]) for galaxy in galaxies])
 
-    image_2d = imaging_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(array_1d=image_1d, shape=shape)
+    image_2d = mapping_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(array_1d=image_1d, shape=shape)
 
-    return PlaneImage(array=image_2d, pixel_scales=(y_pixel_scale, x_pixel_scale), grid=grid)
+    im = PlaneImage(array=image_2d, pixel_scales=pixel_scales, grid=grid, origin=origin)
+
+    return PlaneImage(array=image_2d, pixel_scales=pixel_scales, grid=grid, origin=origin)
 
 
 def traced_collection_for_deflections(grids, deflections):

@@ -2,12 +2,12 @@ from autolens import conf
 from autolens.autofit import non_linear
 from autolens.autofit import model_mapper
 from autolens.pipeline import phase as ph
-from autolens.galaxy import galaxy_model as gm
+from autolens.model.galaxy import galaxy_model as gm
 from autolens.imaging import image as im
-from autolens.profiles import light_profiles as lp
-from autolens.profiles import mass_profiles as mp
-from autolens.plotting import imaging_plotters
-from autolens.plotting import lensing_fitting_plotters
+from autolens.model.profiles import light_profiles as lp
+from autolens.model.profiles import mass_profiles as mp
+from autolens.imaging.plotters import imaging_plotters
+from autolens.lensing.plotters import lensing_fitting_plotters
 
 import os
 
@@ -93,7 +93,7 @@ conf.instance = conf.Config(config_path=path+'configs/2_parameter_space_and_prio
 def simulate():
 
     from autolens.imaging import mask
-    from autolens.galaxy import galaxy as g
+    from autolens.model.galaxy import galaxy as g
     from autolens.lensing import ray_tracing
 
     psf = im.PSF.simulate_as_gaussian(shape=(11, 11), sigma=0.1, pixel_scale=0.1)
@@ -127,8 +127,8 @@ class CustomPhase(ph.LensSourcePlanePhase):
         # To change priors, we use the 'model_mapper' module. This is what links our GalaxyModel's to the non-linear
         # search. Thus, it tells PyAutoLens where to search non-linear parameter space.
 
-        # These two lines change the centre of the lens model_galaxy's mass-profile to UniformPriors around the coordinates
-        # (-0.1", 0.1"). For real lens modeling, this might be done by visually inspecting the centre of emission of
+        # These two lines change the origin of the lens model_galaxy's mass-profile to UniformPriors around the coordinates
+        # (-0.1", 0.1"). For real lens modeling, this might be done by visually inspecting the origin of emission of
         # the lens model_galaxy's light.
 
         # The term 'lens_galaxy' refers to the name of the model_galaxy that we give it below (scroll down cell [5].

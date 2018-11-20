@@ -15,7 +15,7 @@ class EllipticalPowerLaw(mass_profiles.EllipticalMassProfile, mass_profiles.Mass
         Parameters
         ----------
         centre: (float, float)
-            The (x,y) coordinates of the centre of the profile.
+            The (x,y) coordinates of the origin of the profile.
         axis_ratio : float
             Elliptical mass profile's minor-to-major axis ratio (b/a)
         phi : float

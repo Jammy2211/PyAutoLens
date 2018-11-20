@@ -1,10 +1,10 @@
-from autolens.profiles import mass_profiles
-from autolens.profiles import light_profiles
-from autolens.galaxy import galaxy
+from autolens.model.profiles import light_profiles
+from autolens.model.profiles import mass_profiles
+from autolens.model.galaxy import galaxy
 from autolens.lensing import ray_tracing
 from autolens.imaging import mask
-from autolens.plotting import plane_plotters
-from autolens.plotting import ray_tracing_plotters
+from autolens.lensing.plotters import plane_plotters
+from autolens.lensing.plotters import ray_tracing_plotters
 
 # In the previous example, we used light-profiles, mass-profiles, galaxies and planes to create an image-plane +
 # source-plane strong lens system. However, this took a lot of lines of code to do, so in this example we'll use the

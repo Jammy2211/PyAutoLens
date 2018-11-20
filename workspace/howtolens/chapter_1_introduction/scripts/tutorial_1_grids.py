@@ -1,5 +1,5 @@
 from autolens.imaging import mask
-from autolens.plotting import tools_grid
+from autolens.plotters import grid_plotters
 
 # In this example, we'll create a grid of Cartesian (y,x) coordinates, representing the
 # arc second coordinate grid of an observed image.
@@ -7,7 +7,7 @@ from autolens.plotting import tools_grid
 # In AutoLens, a grid is a set of two-dimensional (y,x) coordinates (in arc-seconds) that are deflected
 # and traced by a strong lensing system.
 
-# This coordinate grid is aligned with the image we analyze, thus each coordinate maps to the centre of
+# This coordinate grid is aligned with the image we analyze, thus each coordinate maps to the origin of
 # each image-pixel. Lets make a grid using a 100 x 100 pixel image, with a pixel scale (arcsecond-to-pixel
 # conversion factor) of 0.05", giving us a a 5" x 5" grid.
 image_grids = mask.ImagingGrids.from_shape_and_pixel_scale(shape=(10, 100), pixel_scale=0.05,
@@ -30,14 +30,14 @@ print('etc.')
 print(image_grids.image.shape)
 
 # We can also plot the grid, albeit it's a fairly bland uniform grid of dots.
-tools_grid.plot_grid(grid=image_grids.image, title='Fairly Bland Uniform Grid Of Dots')
+grid_plotters.plot_grid(grid=image_grids.image, title='Fairly Bland Uniform Grid Of Dots')
 
 # A quick aside - we've tried our hardest to make figures like the one above appear a good size / have no overlapping
 # labels. However, this depends somewhat on the display setting of your computer. If a figure doesn't look great,
 # You can customize its appearance using standard Matplotlib variables. For example, we can change the grid's appearance
 # above as follows:
 
-tools_grid.plot_grid(grid=image_grids.image, title='Custom Grid', xlabelsize=20, ylabelsize=20, xyticksize=20,
+grid_plotters.plot_grid(grid=image_grids.image, title='Custom Grid', xlabelsize=20, ylabelsize=20, xyticksize=20,
                      pointsize=14, figsize=(8, 4))
 
 # You can customize every plotter in AutoLens in this way!
@@ -45,7 +45,7 @@ tools_grid.plot_grid(grid=image_grids.image, title='Custom Grid', xlabelsize=20,
 # You might be wondering why the image_grids are using the attribute 'image' (e.g. image_grids.image).
 
 # This is because it consists of multiple grids. The 'image' grid is the grid where each (y,x) coordinate is located at
-# the centre of each image pixel.
+# the origin of each image pixel.
 
 # There is also a sub-grid, which splits each image-pixel into a (sub_grid_size x sub_grid_size) pixel. This is
 # used for evaluating light and mass profiles at a higher resolution and thus more accurately.

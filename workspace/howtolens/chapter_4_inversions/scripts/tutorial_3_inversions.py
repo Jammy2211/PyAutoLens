@@ -1,18 +1,17 @@
 from autolens.imaging import image as im
 from autolens.imaging import mask as ma
-from autolens.profiles import mass_profiles as mp
-from autolens.profiles import light_profiles as lp
-from autolens.galaxy import galaxy as g
+from autolens.model.profiles import light_profiles as lp
+from autolens.model.profiles import mass_profiles as mp
+from autolens.model.galaxy import galaxy as g
 from autolens.lensing import ray_tracing
 from autolens.lensing import lensing_image as li
 from autolens.lensing import lensing_fitting
 from autolens.inversion import pixelizations as pix
 from autolens.inversion import regularization as reg
 from autolens.inversion import inversions as inv
-from autolens.plotting import imaging_plotters
-from autolens.plotting import mapper_plotters
-from autolens.plotting import inversion_plotters
-from autolens.plotting import lensing_fitting_plotters
+from autolens.imaging.plotters import imaging_plotters
+from autolens.inversion.plotters import inversion_plotters, mapper_plotters
+from autolens.lensing.plotters import lensing_fitting_plotters
 
 # We've covered mappers, which, if I haven't emphasised it enough yet, map things. Now, we're going to look at how we
 # can use these mappers (which map things) to reconstruct the source model_galaxy - I hope you're excited!
@@ -22,7 +21,7 @@ from autolens.plotting import lensing_fitting_plotters
 def simulate():
 
     from autolens.imaging import mask
-    from autolens.galaxy import galaxy as g
+    from autolens.model.galaxy import galaxy as g
     from autolens.lensing import ray_tracing
 
     psf = im.PSF.simulate_as_gaussian(shape=(11, 11), sigma=0.05, pixel_scale=0.05)
@@ -54,8 +53,8 @@ tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source
 
 # We'll use another rectangular pixelization and mapper to perform the reconstruction
 rectangular = pix.Rectangular(shape=(25, 25))
-mapper = rectangular.mapper_from_grids(grids=tracer.source_plane.grids[0])
-mapper_plotters.plot_image_and_mapper(image=image, mask=mask, mapper=mapper)
+mapper = rectangular.mapper_from_grids_and_border(grids=tracer.source_plane.grids[0], border=None)
+mapper_plotters.plot_image_and_mapper(image=image, mask=mask, mapper=mapper, should_plot_grid=True)
 
 # And now, finally, we're going to use our mapper to invert the image using the 'inversions' module, which is imported
 # as 'inv'. I'll explain how this works in a second - but lets just go ahead and perform the inversion first.
@@ -69,14 +68,14 @@ inversion_plotters.plot_reconstructed_image(inversion=inversion)
 inversion_plotters.plot_reconstructed_pixelization(inversion=inversion, should_plot_grid=True)
 
 # And there we have it, we've successfully reconstructed, or, *inverted*, our source using the mapper's rectangular
-# grid. Whilst this source was simple (a blob of light in the centre of the source-plane), inversions come into their
+# grid. Whilst this source was simple (a blob of light in the origin of the source-plane), inversions come into their
 # own when fitting sources with complex morphologies. Infact, given we're having so much fun inverting things, lets
 # simulate a really complex source and invert it!
 
 def simulate_complex_source():
 
     from autolens.imaging import mask
-    from autolens.galaxy import galaxy as g
+    from autolens.model.galaxy import galaxy as g
     from autolens.lensing import ray_tracing
 
     psf = im.PSF.simulate_as_gaussian(shape=(11, 11), sigma=0.05, pixel_scale=0.05)
@@ -116,7 +115,7 @@ imaging_plotters.plot_image(image=image, mask=mask)
 lensing_image = li.LensingImage(image=image, mask=mask, sub_grid_size=1)
 tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[g.Galaxy()],
                                              image_plane_grids=[lensing_image.grids])
-mapper = rectangular.mapper_from_grids(grids=tracer.source_plane.grids[0])
+mapper = rectangular.mapper_from_grids_and_border(grids=tracer.source_plane.grids[0], border=None)
 inversion = inv.Inversion(image=lensing_image[:], noise_map=lensing_image.noise_map_,
                           convolver=lensing_image.convolver_mapping_matrix, mapper=mapper,
                           regularization=reg.Constant(coefficients=(1.0,)))
@@ -174,7 +173,7 @@ mapper_plotters.plot_image_and_mapper(image=image, mapper=mapper, mask=mask,
 # the source model_galaxy a light profile, we give it a pixelization and regularization, and pass it to a tracer_without_subhalo.
 source_galaxy = g.Galaxy(pixelization=pix.Rectangular(shape=(25, 25)), regularization=reg.Constant(coefficients=(1.0,)))
 tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
-                                             image_plane_grids=[lensing_image.grids], borders=[lensing_image.borders])
+                                             image_plane_grids=[lensing_image.grids], border=None)
 
 # Then, like before, we call on the fitting module to perform the fit_normal to the lensing image. Indeed, we see
 # some pretty good looking residuals - we're certainly fitting the lensed source accurately!
