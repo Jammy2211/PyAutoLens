@@ -16,7 +16,7 @@ echo "__version__ = '"`git branch | grep \* | cut -d ' ' -f2 | cut -d '/' -f2`"'
 
 git add autolens/__init__.py
 
-unset -e
+set +e
 git commit -m "Incremented version number"
 set -e
 
