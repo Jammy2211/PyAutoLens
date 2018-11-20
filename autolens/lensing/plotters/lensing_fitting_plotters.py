@@ -1,6 +1,6 @@
 from matplotlib import pyplot as plt
 
-from autolens import conf
+from autofit import conf
 from autolens.plotters import plotter_util
 from autolens.imaging.plotters import imaging_plotters
 from autolens.lensing.plotters import plane_plotters

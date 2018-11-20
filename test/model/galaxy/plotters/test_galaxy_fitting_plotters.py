@@ -3,7 +3,7 @@ import shutil
 import pytest
 import numpy as np
 
-from autolens import conf
+from autofit import conf
 from autolens.imaging import scaled_array
 from autolens.imaging import mask as msk
 from autolens.model.profiles import light_profiles as lp, mass_profiles as mp

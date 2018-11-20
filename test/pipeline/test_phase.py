@@ -4,7 +4,7 @@ from os import path
 import numpy as np
 import pytest
 
-from autolens import conf
+from autofit import conf
 from autofit.core import model_mapper as mm
 from autofit.core import non_linear
 from autolens.model.galaxy import galaxy as g, galaxy_model as gm

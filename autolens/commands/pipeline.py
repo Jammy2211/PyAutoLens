@@ -1,6 +1,6 @@
 import colorama
 
-from autolens import conf
+from autofit import conf
 from autolens import runners
 from autolens.commands.base import Base, prepend_working_directory
 
