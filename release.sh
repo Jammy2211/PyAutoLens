@@ -15,7 +15,10 @@ fi
 echo "__version__ = '"`git branch | grep \* | cut -d ' ' -f2 | cut -d '/' -f2`"'" > autolens/__init__.py
 
 git add autolens/__init__.py
+
+unset -e
 git commit -m "Incremented version number"
+set -e
 
 python setup.py sdist bdist_wheel
 twine upload dist/* --skip-existing --username $PYPI_USERNAME --password $PYPI_PASSWORD
@@ -24,4 +27,4 @@ docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
 docker build -t rhayes777/autolens .
 docker push rhayes777/autofit:latest
 
-git flow release finish '0.1.0'
+git flow release finish
