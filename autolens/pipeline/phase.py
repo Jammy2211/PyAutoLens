@@ -3,7 +3,7 @@ import os
 
 import numpy as np
 
-from autolens import conf
+from autofit import conf
 from autolens import exc
 from autofit.core import non_linear
 from autolens.model.galaxy import galaxy as g, galaxy_model as gm, galaxy_fitting, galaxy_data as gd

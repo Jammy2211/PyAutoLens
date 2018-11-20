@@ -1,4 +1,4 @@
-from autolens import conf
+from autofit import conf
 from autofit.core import non_linear
 from autolens.imaging import image as im
 from autolens.model.galaxy import galaxy_model as gm

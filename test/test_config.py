@@ -3,7 +3,7 @@ from os import path
 import pytest
 from autofit import exc
 
-from autolens import conf
+from autofit import conf
 from autolens.model.profiles import light_profiles
 
 directory = path.dirname(path.realpath(__file__))
