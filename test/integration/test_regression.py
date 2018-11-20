@@ -53,14 +53,16 @@ class TestPhaseModelMapper(object):
             filter(lambda line: "axis_ratio" in line or "intensity" in line, phase.variable.info.split("\n")))
 
         assert len(lines) == 2
-        assert "lens_axis_ratio                                             UniformPrior, lower_limit = 0.2, upper_limit = 1.0" in lines
-        assert "lens_intensity                                              UniformPrior, lower_limit = 0.2, upper_limit = 1.0" in lines
+        assert "lens_axis_ratio                                             UniformPrior, lower_limit = 0.2, " \
+               "upper_limit = 1.0" in lines
+        assert "lens_intensity                                              UniformPrior, lower_limit = 0.2, " \
+               "upper_limit = 1.0" in lines
 
     def test_constants_work(self):
-        pipeline_name = "const_float"
+        name = "const_float"
         data_name = '/const_float'
 
-        tools.reset_paths(data_name, pipeline_name, output_path)
+        tools.reset_paths(data_name, name, output_path)
 
         sersic = lp.EllipticalSersic(centre=(0.0, 0.0), axis_ratio=0.8, phi=90.0, intensity=1.0, effective_radius=1.3,
                                      sersic_index=3.0)
@@ -81,7 +83,7 @@ class TestPhaseModelMapper(object):
                 self.lens_galaxies[0].sersic.sersic_index = 3.0
 
         phase = MMPhase(lens_galaxies=[gm.GalaxyModel(sersic=lp.EllipticalSersic)],
-                        optimizer_class=nl.MultiNest, phase_name="{}/phase1".format(pipeline_name))
+                        optimizer_class=nl.MultiNest, phase_name="{}/phase1".format(name))
 
         phase.optimizer.n_live_points = 20
         phase.optimizer.sampling_efficiency = 0.8
