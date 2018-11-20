@@ -883,7 +883,13 @@ class TestImagingGrids(object):
         assert new_collection.sub.sub_grid_length is not None
         assert new_collection.sub.sub_grid_fraction is not None
 
+        assert isinstance(imaging_grids.pix, mask.ImageGrid)
+        assert imaging_grids.pix.mask is not None
+
     def test__apply_function(self, imaging_grids):
+
+        imaging_grids.pix = imaging_grids.image
+
         def add_one(coords):
             return np.add(1, coords)
 
@@ -902,12 +908,16 @@ class TestImagingGrids(object):
                                                                [-1., -1.],
                                                                [-1., 0.],
                                                                [-1., 1.]]))).all()
+        assert (new_collection.pix == np.add(1, np.array([[0., 0.]]))).all()
 
     def test__map_function(self, imaging_grids):
+
+        imaging_grids.pix = imaging_grids.image
+
         def add_number(coords, number):
             return np.add(coords, number)
 
-        new_collection = imaging_grids.map_function(add_number, [1, 2, 3])
+        new_collection = imaging_grids.map_function(add_number, [1, 2, 3, 1])
 
         assert isinstance(new_collection, mask.ImagingGrids)
         assert (new_collection.image == np.add(1, np.array([[0., 0.]]))).all()
@@ -923,6 +933,28 @@ class TestImagingGrids(object):
                                                                [-1., -1.],
                                                                [-1., 0.],
                                                                [-1., 1.]]))).all()
+
+        print(new_collection.pix)
+        assert (new_collection.pix == np.add(1, np.array([[0., 0.]]))).all()
+
+    def test__imaging_grids_with_pix_grid(self, imaging_grids):
+
+        imaging_grids = imaging_grids.imaging_grids_with_pix_grid(pix=np.array([[5.0, 5.0]]))
+
+        assert (imaging_grids.image == np.array([[0., 0.]])).all()
+        np.testing.assert_almost_equal(imaging_grids.sub, np.array([[0.16666667, -0.16666667],
+                                                                    [0.16666667, 0.16666667],
+                                                                    [-0.16666667, -0.16666667],
+                                                                    [-0.16666667, 0.16666667]]))
+        assert (imaging_grids.blurring == np.array([[1., -1.],
+                                                    [1., 0.],
+                                                    [1., 1.],
+                                                    [0., -1.],
+                                                    [0., 1.],
+                                                    [-1., -1.],
+                                                    [-1., 0.],
+                                                    [-1., 1.]])).all()
+        assert (imaging_grids.pix == np.array([[5.0, 5.0]])).all()
 
 
 class TestImageGridBorder(object):
