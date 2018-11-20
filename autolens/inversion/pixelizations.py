@@ -5,12 +5,12 @@ import sklearn.cluster
 from autolens import exc
 from autolens.imaging import mask
 from autolens.imaging import scaled_array
+from autolens.inversion.util import pixelization_util
 from autolens.inversion import mappers
 
+class PixelizationGrid(scaled_array.ArrayGeometry):
 
-class PixelizationImageGrid(scaled_array.ArrayGeometry):
-
-    def __init__(self, image_grid_shape, pixel_scales, image_grid, origin=(0.0, 0.0)):
+    def __init__(self, pix_grid_shape, pixel_scales, image_grid):
         """Abstract class which handles the uniform image-grid whose pixel centers are used to form an adaptive grid's \
         pixelization pixel-centers.
 
@@ -19,64 +19,32 @@ class PixelizationImageGrid(scaled_array.ArrayGeometry):
 
         Parameters
         ----------
-        image_grid_shape : (int, int)
+        pix_grid_shape : (int, int)
             The shape of the image-grid whose centres form the centres of pixelization pixels.
         pixel_scales : (float, float)
             The pixel-to-arcsecond scale of a pixel in the y and x directions.
         """
-        self.shape = image_grid_shape
+
+        self.shape = pix_grid_shape
         self.total_pixels = int(self.shape[0] * self.shape[1])
         self.pixel_scales = pixel_scales
         self.image_grid = image_grid
-        self.origin = origin
-        self.grid_image_pixel_centers = self.image_grid.mask.grid_arc_seconds_to_grid_pixel_centres(self.grid_1d)
+        self.origin = (0.0, 0.0)
 
-        self.total_masked_pixels = self.total_masked_pixels_jit(mask=self.image_grid.mask,
-                                                                grid_image_pixel_centers=self.grid_image_pixel_centers)
+        self.full_pix_grid_pixel_centres = self.image_grid.mask.grid_arc_seconds_to_grid_pixel_centres(self.grid_1d)
 
-        self.pixels_in_mask = self.pixels_in_mask_jit(total_masked_pixels=self.total_masked_pixels,
-                mask=self.image_grid.mask, grid_image_pixel_centers=self.grid_image_pixel_centers).astype('int')
+        self.total_masked_pixels = pixelization_util.total_masked_pixels(mask=self.image_grid.mask,
+                                                                         full_pix_grid_pixel_centres=self.full_pix_grid_pixel_centres)
 
-        self.masked_pixelization_grid = self.masked_pixelization_grid_jit(total_masked_pixels=self.total_masked_pixels,
-                                                                         pixelization_grid=self.grid_1d,
-                                                                         pixels_in_mask=self.pixels_in_mask)
+        self.pix_to_full_pix = pixelization_util.pix_to_full_pix(total_masked_pixels=self.total_masked_pixels,
+                                                                 mask=self.image_grid.mask,
+                                                                 full_pix_grid_pixel_centres=self.full_pix_grid_pixel_centres).astype('int')
 
-    @staticmethod
-    def total_masked_pixels_jit(mask, grid_image_pixel_centers):
+        self.pix_grid = pixelization_util.pix_grid_from__(total_masked_pixels=self.total_masked_pixels,
+                                                          pixelization_grid=self.grid_1d,
+                                                          pix_to_unmasked_pix=self.pix_to_full_pix)
 
-        total_masked_pixels = 0
-        for (y,x) in grid_image_pixel_centers:
-            if mask[y,x] == 0:
-                total_masked_pixels += 1
-
-        return total_masked_pixels
-
-    @staticmethod
-    def pixels_in_mask_jit(total_masked_pixels, mask, grid_image_pixel_centers):
-
-        pixels_in_mask = np.zeros(total_masked_pixels)
-
-        pixel_index = 0
-        masked_pixel_index = 0
-        for (y,x) in grid_image_pixel_centers:
-            if mask[y, x] == 0:
-                pixels_in_mask[masked_pixel_index] = pixel_index
-                masked_pixel_index += 1
-            pixel_index += 1
-
-        return pixels_in_mask
-
-    @staticmethod
-    def masked_pixelization_grid_jit(total_masked_pixels, pixelization_grid, pixels_in_mask):
-
-        masked_pixelization_grid = np.zeros((total_masked_pixels, 2))
-
-        masked_pixel_index = 0
-        for pixel_index in pixels_in_mask:
-            masked_pixelization_grid[masked_pixel_index, :] = pixelization_grid[pixel_index, :]
-            masked_pixel_index += 1
-
-        return masked_pixelization_grid
+        self.image_to_pix = self.image_to_masked_pixelization_jit()
 
 
 class Pixelization(object):
@@ -257,16 +225,17 @@ class Rectangular(Pixelization):
                                          pixel_neighbors=pixel_neighbors, shape=self.shape, geometry=geometry)
 
 
-class AdaptiveImageGrid(object):
+class AdaptiveGrid(object):
 
-    def __init__(self, image_grid_shape):
-        self.image_grid_shape = image_grid_shape
+    def __init__(self, pix_grid_shape):
 
-    def pixelization_image_grid_from_image_grid(self, image_grid):
-        pixel_scales = (image_grid.masked_shape_arcsec[0] / self.image_grid_shape[0],
-                        image_grid.masked_shape_arcsec[1] / self.image_grid_shape[1])
-        return PixelizationImageGrid(image_grid_shape=self.image_grid_shape, pixel_scales=pixel_scales,
-                                     image_grid=image_grid)
+        self.pix_grid_shape = pix_grid_shape
+
+    def pix_grid_from_image_grid(self, image_grid):
+        pixel_scales = (image_grid.masked_shape_arcsec[0] / self.pix_grid_shape[0],
+                        image_grid.masked_shape_arcsec[1] / self.pix_grid_shape[1])
+        return PixelizationGrid(pix_grid_shape=self.pix_grid_shape, pixel_scales=pixel_scales,
+                                image_grid=image_grid)
 
 
 class Voronoi(Pixelization):
@@ -314,19 +283,19 @@ class Voronoi(Pixelization):
         return pixel_neighbors
 
 
-class Cluster(Voronoi, AdaptiveImageGrid):
+class Cluster(Voronoi, AdaptiveGrid):
 
-    def __init__(self, image_grid_shape):
+    def __init__(self, pix_grid_shape):
         """A cluster pixelization, which represents pixels as a Voronoi grid (see Voronoi). For this pixelization, the \
         pixel-centers are derived from a sparse-grid in the observed datas_ which are lensed to form the pixel centers.
 
         Parameters
         ----------
-        image_grid_shape : (int, int)
+        pix_grid_shape : (int, int)
             The shape of the image-grid whose centres form the centres of pixelization pixels.
         """
-        AdaptiveImageGrid.__init__(self=self, image_grid_shape=image_grid_shape)
-        super(Cluster, self).__init__(pixels=image_grid_shape[0] * image_grid_shape[1])
+        AdaptiveGrid.__init__(self=self, pix_grid_shape=pix_grid_shape)
+        super(Cluster, self).__init__(pixels=pix_grid_shape[0] * pix_grid_shape[1])
 
     def mapper_from_grids_and_border(self, grids, border, pixel_centers, image_to_voronoi):
         """Setup the pixelization mapper of the cluster pixelization.
@@ -358,7 +327,7 @@ class Cluster(Voronoi, AdaptiveImageGrid):
         return mappers.VoronoiMapper(pixels=self.pixels, grids=relocated_grids, border=border,
                                      pixel_neighbors=pixel_neighbors,
                                      pixel_centers=pixel_centers, voronoi=voronoi,
-                                     voronoi_to_pixelization=voronoi_to_pixelization,
+                                     voronoi_to_pix=voronoi_to_pixelization,
                                      image_to_voronoi=image_to_voronoi)
 
 
