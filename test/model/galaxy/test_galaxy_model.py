@@ -46,7 +46,7 @@ def make_test_config():
 
 @pytest.fixture(name='limit_config')
 def make_limit_config():
-    return conf.DefaultPriorConfig(
+    return conf.LimitConfig(
         config_folder_path="{}/../../test_files/configs/galaxy_model/priors/limit".format(
             os.path.dirname(os.path.realpath(__file__))))
 
