@@ -31,7 +31,7 @@ Help:
 """
 
 from inspect import getmembers, isclass
-from autolens import conf
+from autofit import conf
 
 from docopt import docopt
 import os

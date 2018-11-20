@@ -3,16 +3,16 @@ from os import path
 
 import numpy as np
 import pytest
+from autofit import conf
+from autofit.core import model_mapper as mm
+from autofit.core import non_linear
 
-from autolens import conf
-from autolens.autofit import model_mapper as mm
-from autolens.autofit import non_linear
-from autolens.model.galaxy import galaxy as g, galaxy_model as gm
 from autolens.imaging import image as img
 from autolens.imaging import mask as msk
 from autolens.lensing import lensing_image as li
-from autolens.pipeline import phase as ph
+from autolens.model.galaxy import galaxy as g, galaxy_model as gm
 from autolens.model.profiles import light_profiles as lp, mass_profiles as mp
+from autolens.pipeline import phase as ph
 
 pytestmark = pytest.mark.filterwarnings(
     "ignore:Using a non-tuple sequence for multidimensional indexing is deprecated; use `arr[tuple(seq)]` instead of "
@@ -21,8 +21,12 @@ pytestmark = pytest.mark.filterwarnings(
 
 directory = path.dirname(path.realpath(__file__))
 
-general_conf = '{}/../test_files/configs/phase'.format(directory)
-conf.instance.general = conf.NamedConfig("{}/general.ini".format(general_conf))
+
+@pytest.fixture(scope="session", autouse=True)
+def do_something():
+    conf.instance = conf.Config(
+        '{}/../test_files/configs/phase'.format(directory))
+
 
 shape = (10, 10)
 
@@ -347,7 +351,7 @@ class TestPhase(object):
 
         instance = phase.optimizer.variable.instance_from_physical_vector(
             [0.2, 0.21, 0.22, 0.23, 0.24, 0.25, 0.8, 0.1, 0.2, 0.3,
-             0.4, 0.9, 0.6, 0.7, 0.8])
+             0.4, 0.9, 0.5, 0.7, 0.8])
 
         assert instance.lens_galaxies[0].sersic.centre[0] == 0.2
         assert instance.lens_galaxies[0].sis.centre[0] == 0.1
@@ -355,7 +359,7 @@ class TestPhase(object):
         assert instance.lens_galaxies[0].sis.einstein_radius == 0.3
         assert instance.lens_galaxies[0].redshift == 0.4
         assert instance.lens_galaxies[1].sis.centre[0] == 0.9
-        assert instance.lens_galaxies[1].sis.centre[1] == 0.6
+        assert instance.lens_galaxies[1].sis.centre[1] == 0.5
         assert instance.lens_galaxies[1].sis.einstein_radius == 0.7
         assert instance.lens_galaxies[1].redshift == 0.8
 
@@ -374,8 +378,9 @@ class TestPhase(object):
         # noinspection PyTypeChecker
         phase.pass_models(None)
 
-        instance = phase.optimizer.variable.instance_from_physical_vector([0.01, 0.02, 0.23, 0.04, 0.05, 0.06, 0.87, 0.1, 0.2,
-                                                                           0.4, 0.5, 0.6, 0.7, 0.8])
+        instance = phase.optimizer.variable.instance_from_physical_vector(
+            [0.01, 0.02, 0.23, 0.04, 0.05, 0.06, 0.87, 0.1, 0.2,
+             0.4, 0.5, 0.5, 0.7, 0.8])
         instance += phase.optimizer.constant
 
         assert instance.lens_galaxies[0].sersic.centre[0] == 0.01
@@ -384,7 +389,7 @@ class TestPhase(object):
         assert instance.lens_galaxies[0].sis.einstein_radius == 10.0
         assert instance.lens_galaxies[0].redshift == 0.4
         assert instance.lens_galaxies[1].sis.centre[0] == 0.5
-        assert instance.lens_galaxies[1].sis.centre[1] == 0.6
+        assert instance.lens_galaxies[1].sis.centre[1] == 0.5
         assert instance.lens_galaxies[1].sis.einstein_radius == 0.7
         assert instance.lens_galaxies[1].redshift == 0.8
 

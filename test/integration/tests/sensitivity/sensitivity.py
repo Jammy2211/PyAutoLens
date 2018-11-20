@@ -1,7 +1,7 @@
 import os
 
-from autolens.autofit import non_linear as nl
-from autolens.autofit import model_mapper as mm
+from autofit.core import non_linear as nl
+from autofit.core import model_mapper as mm
 from autolens.model.galaxy import galaxy, galaxy_model as gm
 from autolens.pipeline import phase as ph
 from autolens.pipeline import pipeline as pl

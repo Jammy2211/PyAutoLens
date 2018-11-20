@@ -1,6 +1,6 @@
-from autolens import conf
-from autolens.autofit import non_linear as nl
-from autolens.autofit import model_mapper as mm
+from autofit import conf
+from autofit.core import non_linear as nl
+from autofit.core import model_mapper as mm
 from autolens.pipeline import phase as ph
 from autolens.model.galaxy import galaxy_model as gm
 from autolens.imaging import image as im
