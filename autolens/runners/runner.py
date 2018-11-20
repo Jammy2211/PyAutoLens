@@ -1,7 +1,7 @@
 from runners.lens_and_source import initializer
 from autolens.imaging import scaled_array
 from autolens.imaging import image
-from autolens import conf
+from autofit import conf
 import os
 
 dirpath = os.path.dirname(os.path.realpath(__file__))

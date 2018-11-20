@@ -3,7 +3,7 @@ import shutil
 
 import numpy as np
 
-from autolens import conf
+from autofit import conf
 from autolens.imaging import image as im
 from autolens.imaging.util import array_util
 from autolens.imaging import mask
