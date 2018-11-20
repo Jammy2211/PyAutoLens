@@ -173,7 +173,7 @@ class Mask(scaled_array.ScaledSquarePixelArray):
 
 class ImagingGrids(object):
 
-    def __init__(self, image, sub, blurring):
+    def __init__(self, image, sub, blurring, pix=None):
         """The grids containing the (y,x) arc-second coordinates of padded pixels in a masks. There are 3 grids:
 
         The image - the (y,x) coordinate at the center of every padded pixel.
@@ -197,6 +197,7 @@ class ImagingGrids(object):
         self.image = image
         self.sub = sub
         self.blurring = blurring
+        self.pix = pix
 
     @classmethod
     def grids_from_mask_sub_grid_size_and_psf_shape(cls, mask, sub_grid_size, psf_shape):
