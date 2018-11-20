@@ -895,6 +895,8 @@ class PriorModel(AbstractPriorModel):
         ----------
         cls: class
             The class associated with this instance
+        config: DefaultPriorConfig | None
+        limit_config: conf.LimitConfig | None
         """
 
         self.cls = cls
