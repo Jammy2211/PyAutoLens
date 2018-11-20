@@ -380,7 +380,7 @@ class TestPhase(object):
 
         instance = phase.optimizer.variable.instance_from_physical_vector(
             [0.01, 0.02, 0.23, 0.04, 0.05, 0.06, 0.87, 0.1, 0.2,
-             0.4, 0.5, 0.6, 0.7, 0.8])
+             0.4, 0.5, 0.5, 0.7, 0.8])
         instance += phase.optimizer.constant
 
         assert instance.lens_galaxies[0].sersic.centre[0] == 0.01
@@ -389,7 +389,7 @@ class TestPhase(object):
         assert instance.lens_galaxies[0].sis.einstein_radius == 10.0
         assert instance.lens_galaxies[0].redshift == 0.4
         assert instance.lens_galaxies[1].sis.centre[0] == 0.5
-        assert instance.lens_galaxies[1].sis.centre[1] == 0.6
+        assert instance.lens_galaxies[1].sis.centre[1] == 0.5
         assert instance.lens_galaxies[1].sis.einstein_radius == 0.7
         assert instance.lens_galaxies[1].redshift == 0.8
 
