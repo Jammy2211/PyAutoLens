@@ -138,7 +138,7 @@ class TestAdaptiveImageGrid:
 
         image_grid = mask.ImageGrid.from_mask(mask=ma)
 
-        adaptive_image_grid = pixelizations.AdaptiveGrid(pix_grid_shape=(3, 3))
+        adaptive_image_grid = pixelizations.ImagePlanePixelization(pix_grid_shape=(3, 3))
 
         pix_grid = adaptive_image_grid.pix_grid_from_image_grid(image_grid=image_grid)
 
@@ -345,7 +345,7 @@ class TestVoronoi:
                                [0.0, 0.0],
                                [-1.0, -1.0], [1.0, -1.0]])
 
-            pix = pixelizations.Voronoi(pixels=5)
+            pix = pixelizations.Voronoi()
             voronoi = pix.voronoi_from_pixel_centers(points)
 
             voronoi.vertices = list(map(lambda x: list(x), voronoi.vertices))
@@ -362,7 +362,7 @@ class TestVoronoi:
                                [1.0, 0.0], [1.0, 1.0], [1.0, 2.0],
                                [0.0, 0.0], [0.0, 1.0], [0.0, 2.0]])
 
-            pix = pixelizations.Voronoi(pixels=9)
+            pix = pixelizations.Voronoi()
             voronoi = pix.voronoi_from_pixel_centers(points)
 
             # ridge points is a numpy array for speed, but convert to list for the comparisons below so we can use in
@@ -382,7 +382,7 @@ class TestVoronoi:
                                       [0.0, 0.0],
                                [-1.0, -1.0], [-1.0, 1.0]])
 
-            pix = pixelizations.Voronoi(pixels=5)
+            pix = pixelizations.Voronoi()
             voronoi = pix.voronoi_from_pixel_centers(points)
 
             # ridge points is a numpy array for speed, but convert to list for the comparisons below so we can use in
@@ -408,7 +408,7 @@ class TestVoronoi:
                                [1.0, 0.0], [1.0, 1.0], [1.0, 2.0],
                                [0.0, 0.0], [0.0, 1.0], [0.0, 2.0]])
 
-            pix = pixelizations.Voronoi(pixels=9)
+            pix = pixelizations.Voronoi()
             voronoi = pix.voronoi_from_pixel_centers(points)
 
             # ridge points is a numpy array for speed, but convert to list for the comparisons below so we can use in
@@ -441,9 +441,9 @@ class TestVoronoi:
                                      [0.0, 0.0],
                                [-1.0, -1.0], [-1.0, 1.0]])
 
-            pix = pixelizations.Voronoi(pixels=5)
+            pix = pixelizations.Voronoi()
             voronoi = pix.voronoi_from_pixel_centers(points)
-            neighbors = pix.neighbors_from_pixelization(voronoi.ridge_points)
+            neighbors = pix.neighbors_from_pixelization(pixels=5, ridge_points=voronoi.ridge_points)
 
             assert set(neighbors[0]) == {2, 1, 3}
             assert set(neighbors[1]) == {2, 0, 4}
@@ -458,9 +458,9 @@ class TestVoronoi:
                                [1.0, 0.0], [1.0, 1.0], [1.0, 2.0],
                                [0.0, 0.0], [0.0, 1.0], [0.0, 2.0]])
 
-            pix = pixelizations.Voronoi(pixels=9)
+            pix = pixelizations.Voronoi()
             voronoi = pix.voronoi_from_pixel_centers(points)
-            neighbors = pix.neighbors_from_pixelization(voronoi.ridge_points)
+            neighbors = pix.neighbors_from_pixelization(pixels=9, ridge_points=voronoi.ridge_points)
 
             assert set(neighbors[0]) == {1, 3}
             assert set(neighbors[1]) == {0, 2, 4}
@@ -484,7 +484,7 @@ class TestAmorphous:
 
             pix = pixelizations.Amorphous(image_grid_shape=(1,2))
 
-            pixel_centers, pix_to_image = pix.kmeans_cluster(cluster_grid)
+            pixel_centers, pix_to_image = pix.kmeans_cluster(pixels=2, cluster_grid=cluster_grid)
 
             assert [2.0, 2.0] in pixel_centers
             assert [1.0, 1.0] in pixel_centers
@@ -499,7 +499,7 @@ class TestAmorphous:
 
             pix = pixelizations.Amorphous(image_grid_shape=(1,3))
 
-            pixel_centers, pix_to_image = pix.kmeans_cluster(cluster_grid)
+            pixel_centers, pix_to_image = pix.kmeans_cluster(pixels=3, cluster_grid=cluster_grid)
 
             assert [2.0, 2.0] in pixel_centers
             assert [1.0, 1.0] in pixel_centers
@@ -510,6 +510,7 @@ class TestAmorphous:
             assert list(pix_to_image).count(2) == 3
 
         def test__simple_points__sets_up_three_clusters_more_points_in_third_cluster(self):
+
             cluster_grid = np.array([[-0.99, -0.99], [-1.0, -1.0], [-1.01, -1.01],
 
                                      [0.99, 0.99], [1.0, 1.0], [1.01, 1.01],
@@ -522,7 +523,7 @@ class TestAmorphous:
 
             pix = pixelizations.Amorphous(image_grid_shape=(1,3))
 
-            pixel_centers, pix_to_image = pix.kmeans_cluster(cluster_grid)
+            pixel_centers, pix_to_image = pix.kmeans_cluster(pixels=3, cluster_grid=cluster_grid)
 
             pixel_centers = list(map(lambda x: pytest.approx(list(x), 1e-3), pixel_centers))
 

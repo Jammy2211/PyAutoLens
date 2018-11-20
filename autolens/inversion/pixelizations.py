@@ -67,18 +67,25 @@ class PixelizationGrid(scaled_array.ArrayGeometry):
                                                                       pix_to_full_pix=self.pix_to_full_pix)
 
 
+class ImagePlanePixelization(object):
+
+    def __init__(self, pix_grid_shape):
+
+        self.pix_grid_shape = pix_grid_shape
+
+    def pix_grid_from_image_grid(self, image_grid):
+        pixel_scales = (image_grid.masked_shape_arcsec[0] / self.pix_grid_shape[0],
+                        image_grid.masked_shape_arcsec[1] / self.pix_grid_shape[1])
+        return PixelizationGrid(pix_grid_shape=self.pix_grid_shape, pixel_scales=pixel_scales,
+                                image_grid=image_grid)
+
+
 class Pixelization(object):
 
-    def __init__(self, pixels=100):
+    def __init__(self):
         """ Abstract base class for a pixelization, which discretizes a set of coordinates (e.g. an datas_-grid) into \
         pixels.
-
-        Parameters
-        ----------
-        pixels : int
-            The number of pixels in the pixelization.
         """
-        self.pixels = pixels
 
     def mapper_from_grids_and_border(self, grids, border):
         raise NotImplementedError("pixelization_mapper_from_grids_and_borders should be overridden")
@@ -107,8 +114,8 @@ class Rectangular(Pixelization):
             raise exc.PixelizationException('The rectangular pixelization must be at least dimensions 3x3')
 
         self.shape = (int(shape[0]), int(shape[1]))
-
-        super(Rectangular, self).__init__(self.shape[0] * self.shape[1])
+        self.pixels = self.shape[0] * self.shape[1]
+        super(Rectangular, self).__init__()
 
     class Geometry(scaled_array.ArrayGeometry):
 
@@ -245,22 +252,9 @@ class Rectangular(Pixelization):
                                          pixel_neighbors=pixel_neighbors, shape=self.shape, geometry=geometry)
 
 
-class AdaptiveGrid(object):
-
-    def __init__(self, pix_grid_shape):
-
-        self.pix_grid_shape = pix_grid_shape
-
-    def pix_grid_from_image_grid(self, image_grid):
-        pixel_scales = (image_grid.masked_shape_arcsec[0] / self.pix_grid_shape[0],
-                        image_grid.masked_shape_arcsec[1] / self.pix_grid_shape[1])
-        return PixelizationGrid(pix_grid_shape=self.pix_grid_shape, pixel_scales=pixel_scales,
-                                image_grid=image_grid)
-
-
 class Voronoi(Pixelization):
 
-    def __init__(self, pixels=100):
+    def __init__(self):
         """Abstract base class for a Voronoi pixelization, which represents pixels as an irregular grid of Voronoi \
          pixels which can form any shape, size or tesselation.
 
@@ -271,7 +265,7 @@ class Voronoi(Pixelization):
          pixels : int
              The number of pixels in the pixelization.
          """
-        super(Voronoi, self).__init__(pixels)
+        super(Voronoi, self).__init__()
 
     @staticmethod
     def voronoi_from_pixel_centers(pixel_centers):
@@ -284,7 +278,7 @@ class Voronoi(Pixelization):
         """
         return scipy.spatial.Voronoi(pixel_centers, qhull_options='Qbb Qc Qx Qm')
 
-    def neighbors_from_pixelization(self, ridge_points):
+    def neighbors_from_pixelization(self, pixels, ridge_points):
         """Compute the neighbors of every pixel as a list of the pixel index's each pixel shares a vertex with.
 
         The ridge points of the Voronoi grid are used to derive this.
@@ -294,7 +288,7 @@ class Voronoi(Pixelization):
         ridge_points : scipy.spatial.Voronoi.ridge_points
             Each Voronoi-ridge (two indexes representing a pixel mapping_matrix).
         """
-        pixel_neighbors = [[] for _ in range(self.pixels)]
+        pixel_neighbors = [[] for _ in range(pixels)]
 
         for pair in reversed(ridge_points):
             pixel_neighbors[pair[0]].append(pair[1])
@@ -303,7 +297,7 @@ class Voronoi(Pixelization):
         return pixel_neighbors
 
 
-class Cluster(Voronoi, AdaptiveGrid):
+class Cluster(Voronoi, ImagePlanePixelization):
 
     def __init__(self, pix_grid_shape):
         """A cluster pixelization, which represents pixels as a Voronoi grid (see Voronoi). For this pixelization, the \
@@ -314,8 +308,8 @@ class Cluster(Voronoi, AdaptiveGrid):
         pix_grid_shape : (int, int)
             The shape of the image-grid whose centres form the centres of pixelization pixels.
         """
-        AdaptiveGrid.__init__(self=self, pix_grid_shape=pix_grid_shape)
-        super(Cluster, self).__init__(pixels=pix_grid_shape[0] * pix_grid_shape[1])
+        ImagePlanePixelization.__init__(self=self, pix_grid_shape=pix_grid_shape)
+        super(Cluster, self).__init__()
 
     def mapper_from_grids_and_border(self, grids, border, pixel_centers, image_to_voronoi):
         """Setup the pixelization mapper of the cluster pixelization.
@@ -335,16 +329,18 @@ class Cluster(Voronoi, AdaptiveGrid):
             The mapping of each datas_ pixel to Voronoi pixels.
         """
 
+        pixels = pixel_centers.shape[0]
+
         if border is not None:
             relocated_grids = border.relocated_grids_from_grids(grids)
         else:
             relocated_grids = grids
 
-        voronoi_to_pixelization = np.arange(0, self.pixels)
+        voronoi_to_pixelization = np.arange(0, pixels)
         voronoi = self.voronoi_from_pixel_centers(pixel_centers)
-        pixel_neighbors = self.neighbors_from_pixelization(voronoi.ridge_points)
+        pixel_neighbors = self.neighbors_from_pixelization(pixels=pixels, ridge_points=voronoi.ridge_points)
 
-        return mappers.VoronoiMapper(pixels=self.pixels, grids=relocated_grids, border=border,
+        return mappers.VoronoiMapper(pixels=pixels, grids=relocated_grids, border=border,
                                      pixel_neighbors=pixel_neighbors,
                                      pixel_centers=pixel_centers, voronoi=voronoi,
                                      voronoi_to_pix=voronoi_to_pixelization,
@@ -368,9 +364,9 @@ class Amorphous(Voronoi):
         image_grid_shape : (int, int)
             The shape of the image-grid whose centres form the centres of pixelization pixels.
         """
-        super(Amorphous, self).__init__(pixels=image_grid_shape[0] * image_grid_shape[1])
+        super(Amorphous, self).__init__()
 
-    def kmeans_cluster(self, cluster_grid):
+    def kmeans_cluster(self, pixels, cluster_grid):
         """Perform k-means clustering on the cluster_grid to compute the k-means clusters which represent \
         pixels.
 
@@ -379,6 +375,6 @@ class Amorphous(Voronoi):
         cluster_grid : ndarray
             The x and y cluster-grid which are used to derive the k-means pixelization.
         """
-        kmeans = sklearn.cluster.KMeans(self.pixels)
+        kmeans = sklearn.cluster.KMeans(pixels)
         km = kmeans.fit(cluster_grid)
         return km.cluster_centers_, km.labels_
