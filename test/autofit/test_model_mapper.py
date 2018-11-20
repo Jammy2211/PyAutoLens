@@ -1,14 +1,13 @@
+import math
 import os
 
 import pytest
 
-import math
-
 from autolens import conf
 from autolens import exc
 from autolens.autofit import model_mapper
-from autolens.model.galaxy import galaxy as g
 from autolens.model.galaxy import galaxy, galaxy_model
+from autolens.model.galaxy import galaxy as g
 from autolens.model.profiles import geometry_profiles, light_profiles, mass_profiles
 
 data_path = "{}/../".format(os.path.dirname(os.path.realpath(__file__)))
@@ -63,6 +62,12 @@ class MockClassInf(object):
 
 
 class TestPriorLimits(object):
+    def test_out_of_order_prior_limits(self):
+        with pytest.raises(exc.PriorException):
+            model_mapper.UniformPrior(1., 0)
+        with pytest.raises(exc.PriorException):
+            model_mapper.GaussianPrior(0, 1, 1, 0)
+
     def test_in_or_out(self):
         prior = model_mapper.GaussianPrior(0, 1, 0, 1)
         with pytest.raises(exc.PriorLimitException):
