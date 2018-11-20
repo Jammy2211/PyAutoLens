@@ -1,5 +1,3 @@
-import os
-
 from autolens import conf
 from autolens.autofit import non_linear
 from autolens.imaging import image as im
@@ -9,6 +7,8 @@ from autolens.model.profiles import mass_profiles as mp
 from autolens.model.galaxy import galaxy as g
 from autolens.pipeline import phase as ph
 from autolens.imaging.plotters import imaging_plotters
+
+import os
 
 # Now that we've learnt all the tools that we need to model strong lenses, I'm going to quickly cover how you should
 # choose your mask and show you a neat trick to improve the speed and accuracy of your non-linear search. We'll skip
