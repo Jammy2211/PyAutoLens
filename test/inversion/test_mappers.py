@@ -626,9 +626,9 @@ class TestVoronoiPixMapper:
             grids = MockGridCollection(image=pixelization_grid, sub=MockSubGrid(np.array([]), sub_to_image,
                                                                                 sub_grid_size=1))
 
-            pix = pixelizations.Voronoi(pixels=6)
+            pix = pixelizations.Voronoi()
             voronoi = pix.voronoi_from_pixel_centers(pixel_centers)
-            pixel_neighbors = pix.neighbors_from_pixelization(voronoi.ridge_points)
+            pixel_neighbors = pix.neighbors_from_pixelization(pixels=6, ridge_points=voronoi.ridge_points)
             voronoi_to_pixelization = np.array([0, 1, 2, 3])
             image_to_voronoi = np.array([0, 0, 1, 0, 0, 1, 2, 2, 3])
 
@@ -642,6 +642,7 @@ class TestVoronoiPixMapper:
     class TestSubToPixelization:
 
         def test__sub_to_pixelization_of_mapper_matches_nearest_neighbor_calculation(self):
+
             pixel_centers = np.array([[0.1, 0.1], [1.1, 0.1], [2.1, 0.1],
                                       [0.1, 1.1], [1.1, 1.1], [2.1, 1.1]])
 
@@ -659,9 +660,9 @@ class TestVoronoiPixMapper:
             grids = MockGridCollection(image=np.array([]), sub=MockSubGrid(pixelization_sub_grid, sub_to_image,
                                                                            sub_grid_size=1))
 
-            pix = pixelizations.Voronoi(pixels=6)
+            pix = pixelizations.Voronoi()
             voronoi = pix.voronoi_from_pixel_centers(pixel_centers)
-            pixel_neighbors = pix.neighbors_from_pixelization(voronoi.ridge_points)
+            pixel_neighbors = pix.neighbors_from_pixelization(pixels=6, ridge_points=voronoi.ridge_points)
             voronoi_to_pixelization = np.array([0, 1, 2, 3])
             image_to_voronoi = np.array([0, 0, 1, 0, 0, 1, 2, 2, 3])
 
