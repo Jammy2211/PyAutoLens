@@ -12,7 +12,7 @@ then
 	exit 1
 fi
 
-echo "__version__ = '"`git branch | grep \* | cut -d ' ' -f2 | cut -d '/' -f2`"'" > $PACKAGE_NAME/__init__.py
+echo "__version__ = '"$VERSION"'" > $PACKAGE_NAME/__init__.py
 
 git add $PACKAGE_NAME/__init__.py
 
@@ -27,4 +27,4 @@ docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
 docker build -t rhayes777/$PACKAGE_NAME .
 docker push rhayes777/$PACKAGE_NAME:latest
 
-git flow release finish
+git flow release finish $VERSION
