@@ -670,8 +670,8 @@ class Prior(Attribute):
     """An object used to mappers a unit value to an attribute value for a specific class attribute"""
 
     def __init__(self, lower_limit, upper_limit):
-        if lower_limit == upper_limit:
-            raise exc.PriorException("Priors cannot have equal lower and upper limits")
+        if lower_limit >= upper_limit:
+            raise exc.PriorException("The upper limit of a prior must be greater than its lower limit")
         super().__init__()
         self.lower_limit = lower_limit
         self.upper_limit = upper_limit
