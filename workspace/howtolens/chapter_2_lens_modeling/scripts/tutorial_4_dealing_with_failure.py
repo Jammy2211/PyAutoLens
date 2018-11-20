@@ -6,6 +6,7 @@ from autolens.model.galaxy import galaxy_model as gm
 from autolens.imaging import image as im
 from autolens.model.profiles import light_profiles as lp
 from autolens.model.profiles import mass_profiles as mp
+from autolens.imaging.plotters import imaging_plotters
 from autolens.lensing.plotters import lensing_fitting_plotters
 
 import os
