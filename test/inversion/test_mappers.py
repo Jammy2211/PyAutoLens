@@ -629,13 +629,11 @@ class TestVoronoiPixMapper:
             pix = pixelizations.Voronoi()
             voronoi = pix.voronoi_from_pixel_centers(pixel_centers)
             pixel_neighbors = pix.neighbors_from_pixelization(pixels=6, ridge_points=voronoi.ridge_points)
-            voronoi_to_pixelization = np.array([0, 1, 2, 3])
-            image_to_voronoi = np.array([0, 0, 1, 0, 0, 1, 2, 2, 3])
+            image_to_nearest_image_pix = np.array([0, 0, 1, 0, 0, 1, 2, 2, 3])
 
             mapper = mappers.VoronoiMapper(pixels=6, grids=grids, border=None, pixel_neighbors=pixel_neighbors,
                                            pixel_centers=pixel_centers, voronoi=voronoi,
-                                           voronoi_to_pix=voronoi_to_pixelization,
-                                           image_to_voronoi=image_to_voronoi)
+                                           image_to_nearest_image_pix=image_to_nearest_image_pix)
 
             assert (mapper.image_to_pix == image_to_pixelization_nearest_neighbour).all()
 
@@ -663,12 +661,10 @@ class TestVoronoiPixMapper:
             pix = pixelizations.Voronoi()
             voronoi = pix.voronoi_from_pixel_centers(pixel_centers)
             pixel_neighbors = pix.neighbors_from_pixelization(pixels=6, ridge_points=voronoi.ridge_points)
-            voronoi_to_pixelization = np.array([0, 1, 2, 3])
-            image_to_voronoi = np.array([0, 0, 1, 0, 0, 1, 2, 2, 3])
+            image_to_nearest_image_pix = np.array([0, 0, 1, 0, 0, 1, 2, 2, 3])
 
             mapper = mappers.VoronoiMapper(pixels=6, grids=grids, border=None, pixel_neighbors=pixel_neighbors,
                                            pixel_centers=pixel_centers, voronoi=voronoi,
-                                           voronoi_to_pix=voronoi_to_pixelization,
-                                           image_to_voronoi=image_to_voronoi)
+                                           image_to_nearest_image_pix=image_to_nearest_image_pix)
 
             assert (mapper.sub_to_pix == sub_to_pixelization_nearest_neighbour).all()
