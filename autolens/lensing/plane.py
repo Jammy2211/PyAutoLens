@@ -259,39 +259,50 @@ class Plane(object):
         """Compute the xticks labels of this grid, used for plotting the x-axis ticks when visualizing an datas_-grid"""
         return np.linspace(np.amin(self.grids[0].image[:,1]), np.amax(self.grids[0].image[:,1]), 4)
 
-    def dimensionless_masses_of_galaxies_within_circles(self, radius):
+    def luminosities_of_galaxies_within_circles(self, radius, conversion_factor=1.0):
         """
-        Compute the total dimensionless mass of all galaxies in this plane within a circle of specified radius.
+        Compute the total luminosity of all galaxies in this plane within a circle of specified radius.
 
-        See *galaxy.dimensionless_mass_within_circle* and *mass_profiles.dimensionless_mass_within_circle* for details
+        The value returned by this integral is dimensionless, and a conversion factor can be specified to convert it \
+        to a physical value (e.g. the photometric zeropoint).
+
+        See *galaxy.light_within_circle* and *light_profiles.light_within_circle* for details
         of how this is performed.
 
         Parameters
         ----------
         radius : float
-            The radius of the circle to compute the dimensionless mass within.
+            The radius of the circle to compute the dimensionless luminosity within.
         """
-        return list(map(lambda galaxy : galaxy.dimensionless_mass_within_circle(radius), self.galaxies))
+        return list(map(lambda galaxy : galaxy.luminosity_within_circle(radius, conversion_factor),
+                        self.galaxies))
 
-    def dimensionless_masses_of_galaxies_within_ellipses(self, major_axis):
+    def luminosities_of_galaxies_within_ellipses(self, major_axis, conversion_factor=1.0):
         """
-        Compute the total dimensionless mass of all galaxies in this plane within a ellipse of specified major-axis.
+        Compute the total luminosity of all galaxies in this plane within a ellipse of specified major-axis.
 
-        See *galaxy.dimensionless_mass_within_ellipse* and *mass_profiles.dimensionless_mass_within_ellipse* for details
+        The value returned by this integral is dimensionless, and a conversion factor can be specified to convert it \
+        to a physical value (e.g. the photometric zeropoint).
+
+        See *galaxy.light_within_ellipse* and *light_profiles.light_within_ellipse* for details
         of how this is performed.
 
         Parameters
         ----------
         major_axis : float
-            The major-axis of the ellipse to compute the dimensionless mass within.
+            The major-axis of the ellipse to compute the dimensionless luminosity within.
         """
-        return list(map(lambda galaxy : galaxy.dimensionless_mass_within_ellipse(major_axis), self.galaxies))
+        return list(map(lambda galaxy : galaxy.luminosity_within_ellipse(major_axis, conversion_factor),
+                        self.galaxies))
 
-    def masses_of_galaxies_within_circles(self, radius, conversion_factor):
+    def masses_of_galaxies_within_circles(self, radius, conversion_factor=1.0):
         """
         Compute the total mass of all galaxies in this plane within a circle of specified radius.
 
-        See *galaxy.dimensionless_mass_within_circle* and *mass_profiles.dimensionless_mass_within_circle* for details
+        The value returned by this integral is dimensionless, and a conversion factor can be specified to convert it \
+        to a physical value (e.g. the critical surface mass density).
+
+        See *galaxy.mass_within_circle* and *mass_profiles.mass_within_circle* for details
         of how this is performed.
 
         Parameters
@@ -302,11 +313,14 @@ class Plane(object):
         return list(map(lambda galaxy : galaxy.mass_within_circle(radius, conversion_factor),
                         self.galaxies))
 
-    def masses_of_galaxies_within_ellipses(self, major_axis, conversion_factor):
+    def masses_of_galaxies_within_ellipses(self, major_axis, conversion_factor=1.0):
         """
         Compute the total mass of all galaxies in this plane within a ellipse of specified major-axis.
 
-        See *galaxy.dimensionless_mass_within_ellipse* and *mass_profiles.dimensionless_mass_within_ellipse* for details
+        The value returned by this integral is dimensionless, and a conversion factor can be specified to convert it \
+        to a physical value (e.g. the critical surface mass density).
+
+        See *galaxy.mass_within_ellipse* and *mass_profiles.mass_within_ellipse* for details
         of how this is performed.
 
         Parameters

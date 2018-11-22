@@ -1312,17 +1312,111 @@ class TestPlane(object):
             with pytest.raises(exc.PixelizationException):
                 plane.regularization
 
+    class TestLuminosities:
+
+        def test__within_circle__no_conversion_factor__same_as_galaxy_dimensionless_luminosities(self, imaging_grids):
+            g0 = g.Galaxy(luminosity=lp.SphericalSersic(intensity=1.0))
+            g1 = g.Galaxy(luminosity=lp.SphericalSersic(intensity=2.0))
+
+            g0_luminosity = g0.luminosity_within_circle(radius=1.0)
+            g1_luminosity = g1.luminosity_within_circle(radius=1.0)
+            plane = pl.Plane(galaxies=[g0, g1], grids=[imaging_grids])
+            plane_luminosities = plane.luminosities_of_galaxies_within_circles(radius=1.0)
+
+            assert plane_luminosities[0] == g0_luminosity
+            assert plane_luminosities[1] == g1_luminosity
+
+            g0 = g.Galaxy(luminosity=lp.SphericalSersic(intensity=3.0))
+            g1 = g.Galaxy(luminosity=lp.SphericalSersic(intensity=4.0))
+
+            g0_luminosity = g0.luminosity_within_circle(radius=2.0)
+            g1_luminosity = g1.luminosity_within_circle(radius=2.0)
+            plane = pl.Plane(galaxies=[g0, g1], grids=[imaging_grids])
+            plane_luminosities = plane.luminosities_of_galaxies_within_circles(radius=2.0)
+
+            assert plane_luminosities[0] == g0_luminosity
+            assert plane_luminosities[1] == g1_luminosity
+
+        def test__luminosity_within_circle__same_as_galaxy_luminosities(self, imaging_grids):
+            g0 = g.Galaxy(luminosity=lp.SphericalSersic(intensity=1.0))
+            g1 = g.Galaxy(luminosity=lp.SphericalSersic(intensity=2.0))
+
+            g0_luminosity = g0.luminosity_within_circle(radius=1.0, conversion_factor=3.0)
+            g1_luminosity = g1.luminosity_within_circle(radius=1.0, conversion_factor=3.0)
+            plane = pl.Plane(galaxies=[g0, g1], grids=[imaging_grids])
+            plane_luminosities = plane.luminosities_of_galaxies_within_circles(radius=1.0, conversion_factor=3.0)
+
+            assert plane_luminosities[0] == g0_luminosity
+            assert plane_luminosities[1] == g1_luminosity
+
+            g0 = g.Galaxy(luminosity=lp.SphericalSersic(intensity=3.0))
+            g1 = g.Galaxy(luminosity=lp.SphericalSersic(intensity=4.0))
+
+            g0_luminosity = g0.luminosity_within_circle(radius=2.0, conversion_factor=6.0)
+            g1_luminosity = g1.luminosity_within_circle(radius=2.0, conversion_factor=6.0)
+            plane = pl.Plane(galaxies=[g0, g1], grids=[imaging_grids])
+            plane_luminosities = plane.luminosities_of_galaxies_within_circles(radius=2.0, conversion_factor=6.0)
+
+            assert plane_luminosities[0] == g0_luminosity
+            assert plane_luminosities[1] == g1_luminosity
+
+        def test__within_ellipse__no_conversion_factor__same_as_galaxy_dimensionless_luminosities(self, imaging_grids):
+            g0 = g.Galaxy(luminosity=lp.SphericalSersic(intensity=1.0))
+            g1 = g.Galaxy(luminosity=lp.SphericalSersic(intensity=2.0))
+
+            g0_luminosity = g0.luminosity_within_ellipse(major_axis=0.8)
+            g1_luminosity = g1.luminosity_within_ellipse(major_axis=0.8)
+            plane = pl.Plane(galaxies=[g0, g1], grids=[imaging_grids])
+            plane_luminosities = plane.luminosities_of_galaxies_within_ellipses(major_axis=0.8)
+
+            assert plane_luminosities[0] == g0_luminosity
+            assert plane_luminosities[1] == g1_luminosity
+
+            g0 = g.Galaxy(luminosity=lp.SphericalSersic(intensity=3.0))
+            g1 = g.Galaxy(luminosity=lp.SphericalSersic(intensity=4.0))
+
+            g0_luminosity = g0.luminosity_within_ellipse(major_axis=0.6)
+            g1_luminosity = g1.luminosity_within_ellipse(major_axis=0.6)
+            plane = pl.Plane(galaxies=[g0, g1], grids=[imaging_grids])
+            plane_luminosities = plane.luminosities_of_galaxies_within_ellipses(major_axis=0.6)
+
+            assert plane_luminosities[0] == g0_luminosity
+            assert plane_luminosities[1] == g1_luminosity
+
+        def test__luminosity_within_ellipse__same_as_galaxy_luminosities(self, imaging_grids):
+            g0 = g.Galaxy(luminosity=lp.SphericalSersic(intensity=1.0))
+            g1 = g.Galaxy(luminosity=lp.SphericalSersic(intensity=2.0))
+
+            g0_luminosity = g0.luminosity_within_ellipse(major_axis=0.8, conversion_factor=3.0)
+            g1_luminosity = g1.luminosity_within_ellipse(major_axis=0.8, conversion_factor=3.0)
+            plane = pl.Plane(galaxies=[g0, g1], grids=[imaging_grids])
+            plane_luminosities = plane.luminosities_of_galaxies_within_ellipses(major_axis=0.8, conversion_factor=3.0)
+
+            assert plane_luminosities[0] == g0_luminosity
+            assert plane_luminosities[1] == g1_luminosity
+
+            g0 = g.Galaxy(luminosity=lp.SphericalSersic(intensity=3.0))
+            g1 = g.Galaxy(luminosity=lp.SphericalSersic(intensity=4.0))
+
+            g0_luminosity = g0.luminosity_within_ellipse(major_axis=0.6, conversion_factor=6.0)
+            g1_luminosity = g1.luminosity_within_ellipse(major_axis=0.6, conversion_factor=6.0)
+            plane = pl.Plane(galaxies=[g0, g1], grids=[imaging_grids])
+            plane_luminosities = plane.luminosities_of_galaxies_within_ellipses(major_axis=0.6, conversion_factor=6.0)
+
+            assert plane_luminosities[0] == g0_luminosity
+            assert plane_luminosities[1] == g1_luminosity
+
     class TestMasses:
 
-        def test__dimensionless_mass_within_circle__same_as_galaxy_dimensionless_masses(self, imaging_grids):
+        def test__within_circle__no_conversion_factor__same_as_galaxy_dimensionless_masses(self, imaging_grids):
 
             g0 = g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=1.0))
             g1 = g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=2.0))
 
-            g0_mass = g0.dimensionless_mass_within_circle(radius=1.0)
-            g1_mass = g1.dimensionless_mass_within_circle(radius=1.0)
+            g0_mass = g0.mass_within_circle(radius=1.0)
+            g1_mass = g1.mass_within_circle(radius=1.0)
             plane = pl.Plane(galaxies=[g0, g1], grids=[imaging_grids])
-            plane_masses = plane.dimensionless_masses_of_galaxies_within_circles(radius=1.0)
+            plane_masses = plane.masses_of_galaxies_within_circles(radius=1.0)
 
             assert plane_masses[0] == g0_mass
             assert plane_masses[1] == g1_mass
@@ -1330,10 +1424,10 @@ class TestPlane(object):
             g0 = g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=3.0))
             g1 = g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=4.0))
 
-            g0_mass = g0.dimensionless_mass_within_circle(radius=2.0)
-            g1_mass = g1.dimensionless_mass_within_circle(radius=2.0)
+            g0_mass = g0.mass_within_circle(radius=2.0)
+            g1_mass = g1.mass_within_circle(radius=2.0)
             plane = pl.Plane(galaxies=[g0, g1], grids=[imaging_grids])
-            plane_masses = plane.dimensionless_masses_of_galaxies_within_circles(radius=2.0)
+            plane_masses = plane.masses_of_galaxies_within_circles(radius=2.0)
 
             assert plane_masses[0] == g0_mass
             assert plane_masses[1] == g1_mass
@@ -1362,15 +1456,15 @@ class TestPlane(object):
             assert plane_masses[0] == g0_mass
             assert plane_masses[1] == g1_mass
             
-        def test__dimensionless_mass_within_ellipse__same_as_galaxy_dimensionless_masses(self, imaging_grids):
+        def test__within_ellipse__no_conversion_factor__same_as_galaxy_dimensionless_masses(self, imaging_grids):
 
             g0 = g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=1.0))
             g1 = g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=2.0))
 
-            g0_mass = g0.dimensionless_mass_within_ellipse(major_axis=0.8)
-            g1_mass = g1.dimensionless_mass_within_ellipse(major_axis=0.8)
+            g0_mass = g0.mass_within_ellipse(major_axis=0.8)
+            g1_mass = g1.mass_within_ellipse(major_axis=0.8)
             plane = pl.Plane(galaxies=[g0, g1], grids=[imaging_grids])
-            plane_masses = plane.dimensionless_masses_of_galaxies_within_ellipses(major_axis=0.8)
+            plane_masses = plane.masses_of_galaxies_within_ellipses(major_axis=0.8)
 
             assert plane_masses[0] == g0_mass
             assert plane_masses[1] == g1_mass
@@ -1378,10 +1472,10 @@ class TestPlane(object):
             g0 = g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=3.0))
             g1 = g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=4.0))
 
-            g0_mass = g0.dimensionless_mass_within_ellipse(major_axis=0.6)
-            g1_mass = g1.dimensionless_mass_within_ellipse(major_axis=0.6)
+            g0_mass = g0.mass_within_ellipse(major_axis=0.6)
+            g1_mass = g1.mass_within_ellipse(major_axis=0.6)
             plane = pl.Plane(galaxies=[g0, g1], grids=[imaging_grids])
-            plane_masses = plane.dimensionless_masses_of_galaxies_within_ellipses(major_axis=0.6)
+            plane_masses = plane.masses_of_galaxies_within_ellipses(major_axis=0.6)
 
             assert plane_masses[0] == g0_mass
             assert plane_masses[1] == g1_mass

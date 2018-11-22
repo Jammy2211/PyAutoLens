@@ -127,9 +127,12 @@ class Galaxy(object):
         else:
             return np.zeros((grid.shape[0],))
 
-    def luminosity_within_circle(self, radius):
+    def luminosity_within_circle(self, radius, conversion_factor=1.0):
         """
         Compute the total luminosity of the galaxy's light profiles within a circle of specified radius.
+
+        The value returned by this integral is dimensionless, and a conversion factor can be specified to convert it \
+        to a physical value (e.g. the photometric zeropoint).
 
         See *light_profiles.luminosity_within_circle* for details of how this is performed.
 
@@ -139,14 +142,17 @@ class Galaxy(object):
             The radius of the circle to compute the luminosity within.
         """
         if self.has_light_profile:
-            return sum(map(lambda p: p.luminosity_within_circle(radius), self.light_profiles))
+            return sum(map(lambda p: p.luminosity_within_circle(radius, conversion_factor), self.light_profiles))
         else:
             return None
 
-    def luminosity_within_ellipse(self, major_axis):
+    def luminosity_within_ellipse(self, major_axis, conversion_factor=1.0):
         """Compute the total luminosity of the galaxy's light profiles, within an ellipse of specified major axis. This 
         is performed via integration of each light profile and is centred, oriented and aligned with each light
         model's individual geometry.
+
+        The value returned by this integral is dimensionless, and a conversion factor can be specified to convert it \
+        to a physical value (e.g. the photometric zeropoint).
 
         See *light_profiles.luminosity_within_ellipse* for details of how this is performed.
 
@@ -156,7 +162,7 @@ class Galaxy(object):
             The major-axis of the ellipse to compute the luminosity within.
         """
         if self.has_light_profile:
-            return sum(map(lambda p: p.luminosity_within_ellipse(major_axis), self.light_profiles))
+            return sum(map(lambda p: p.luminosity_within_ellipse(major_axis, conversion_factor), self.light_profiles))
         else:
             return None
 
@@ -216,41 +222,11 @@ class Galaxy(object):
         else:
             return np.full((grid.shape[0], 2), 0.0)
 
-    def dimensionless_mass_within_circle(self, radius):
-        """Compute the total dimensionless mass of the galaxy's mass profiles within a circle of specified radius.
-
-        See *profiles.mass_profiles.dimensionless_mass_within_circle* for details of how this is performed.
-
-
-        Parameters
-        ----------
-        radius : float
-            The radius of the circle to compute the dimensionless mass within.
-        """
-        if self.has_mass_profile:
-            return sum(map(lambda p: p.dimensionless_mass_within_circle(radius), self.mass_profiles))
-        else:
-            return None
-
-    def dimensionless_mass_within_ellipse(self, major_axis):
-        """
-        Compute the total dimensionless mass of the galaxy's mass profiles within an ellipse of specified major_axis.
-
-        See *profiles.mass_profiles.dimensionless_mass_within_ellipses* for details of how this is performed.
-
-
-        Parameters
-        ----------
-        major_axis : float
-            The major axis of the ellipse.
-        """
-        if self.has_mass_profile:
-            return sum(map(lambda p: p.dimensionless_mass_within_ellipse(major_axis), self.mass_profiles))
-        else:
-            return None
-
-    def mass_within_circle(self, radius, conversion_factor):
+    def mass_within_circle(self, radius, conversion_factor=1.0):
         """Compute the total mass of the galaxy's mass profiles within a circle of specified radius.
+
+        The value returned by this integral is dimensionless, and a conversion factor can be specified to convert it \
+        to a physical value (e.g. the critical surface mass density).
 
         See *profiles.mass_profiles.mass_within_circle* for details of how this is performed.
 
@@ -266,8 +242,11 @@ class Galaxy(object):
         else:
             return None
 
-    def mass_within_ellipse(self, major_axis, conversion_factor):
+    def mass_within_ellipse(self, major_axis, conversion_factor=1.0):
         """Compute the total mass of the galaxy's mass profiles within an ellipse of specified major_axis.
+
+        The value returned by this integral is dimensionless, and a conversion factor can be specified to convert it \
+        to a physical value (e.g. the critical surface mass density).
 
         See *profiles.mass_profiles.mass_within_ellipses* for details of how this is performed.
 

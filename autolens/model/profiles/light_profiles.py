@@ -59,29 +59,35 @@ class EllipticalLP(geometry_profiles.EllipticalProfile, LightProfile):
         """
         super(EllipticalLP, self).__init__(centre, axis_ratio, phi)
 
-    def luminosity_within_circle(self, radius):
+    def luminosity_within_circle(self, radius, conversion_factor=1.0):
         """
         Compute the light profiles's total luminosity within a circle of specified radius. This is performed via \
         numerical integration and is centred on the light profile's origin.
+
+        The value returned by this integral is dimensionless, and a conversion factor can be specified to convert it \
+        to a physical value (e.g. the photometric zeropoint).
 
         Parameters
         ----------
         radius : float
             The radius of the circle to compute the luminosity within.
         """
-        return quad(self.luminosity_integral, a=0.0, b=radius, args=(1.0,))[0]
+        return conversion_factor*quad(self.luminosity_integral, a=0.0, b=radius, args=(1.0,))[0]
 
-    def luminosity_within_ellipse(self, major_axis):
+    def luminosity_within_ellipse(self, major_axis, conversion_factor=1.0):
         """
         Compute the light profiles's total luminosity within an ellipse of specified major axis. This is performed via\
         numerical integration and is centred and oriented withthe ellipitical light profile.
+
+        The value returned by this integral is dimensionless, and a conversion factor can be specified to convert it \
+        to a physical value (e.g. the photometric zeropoint).
 
         Parameters
         ----------
         major_axis: float
             The major-axis of the ellipse to compute the luminosity within.
         """
-        return quad(self.luminosity_integral, a=0.0, b=major_axis, args=(self.axis_ratio,))[0]
+        return conversion_factor*quad(self.luminosity_integral, a=0.0, b=major_axis, args=(self.axis_ratio,))[0]
 
     def luminosity_integral(self, x, axis_ratio):
         """Routine to integrate the luminosity of an elliptical light profile.
