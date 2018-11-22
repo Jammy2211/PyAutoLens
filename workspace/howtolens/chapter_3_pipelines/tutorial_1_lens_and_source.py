@@ -49,8 +49,8 @@ import os
 
 # To set these up without docker, you need to uncomment and run the command below. If you are using Docker, you don't
 # need to do anything so leave this uncommented!
-# path = '{}/../../'.format(os.path.dirname(os.path.realpath(__file__)))
-# conf.instance = conf.Config(config_path=path+'config', output_path=path+'output')
+path = '{}/../../'.format(os.path.dirname(os.path.realpath(__file__)))
+conf.instance = conf.Config(config_path=path+'config', output_path=path+'output')
 
 # We'll also put the output in 'workspace/output', which is where output goes for a normal analysis.
 

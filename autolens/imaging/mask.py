@@ -188,11 +188,14 @@ class ImagingGrids(object):
         Parameters
         -----------
         image : ImageGrid
-            The grid of (y,x) arc-second coordinates at the origin of every padded pixel.
+            The grid of (y,x) arc-second coordinates at the centre of every image pixel.
         sub : SubGrid
-            The grid of (y,x) arc-second coordinates at the origin of every padded pixel's sub-pixels.
+            The grid of (y,x) arc-second coordinates at the ccentre of every image pixel's sub-pixels.
         blurring : ImageGrid | ndarray | None
             The grid of (y,x) arc-second coordinates at the origin of every blurring-masks pixel.
+        pix : ImageGrid | ndarray | None
+            The grid of (y,x) arc-second coordinates of every image-plane pixelization grid used for adaptive source \
+            -plane pixelizations.
         """
         self.image = image
         self.sub = sub
@@ -347,7 +350,6 @@ class ImageGrid(np.ndarray):
     def __new__(cls, arr, mask, *args, **kwargs):
         obj = arr.view(cls)
         obj.mask = mask
-#        obj.masked_shape_arcsec = (np.amax(arr[:,0]) - np.amin(arr[:,0]), np.amax(arr[:,1]) - np.amin(arr[:,1]))
         return obj
 
     def __array_finalize__(self, obj):
