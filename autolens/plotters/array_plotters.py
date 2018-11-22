@@ -91,11 +91,6 @@ def set_axis_limits(array, units, kpc_per_arcsec):
 
     if units is 'arcsec' or kpc_per_arcsec is None:
 
-        print(np.asarray([array.arc_second_minima[1],
-                                         array.arc_second_maxima[1],
-                                         array.arc_second_minima[0],
-                                         array.arc_second_maxima[0]]))
-
         plt.axis(axis_limits=np.asarray([array.arc_second_minima[1],
                                          array.arc_second_maxima[1],
                                          array.arc_second_minima[0],

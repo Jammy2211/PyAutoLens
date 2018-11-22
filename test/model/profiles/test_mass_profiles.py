@@ -1173,19 +1173,19 @@ class TestExternalShear(object):
 
 class TestMassIntegral(object):
 
-    def test__within_circle__singular_isothermal_sphere__compare_to_analytic1(self):
+    def test__within_circle__no_conversion_factor__singular_isothermal_sphere__compare_to_analytic(self):
 
         sis = mp.SphericalIsothermal(einstein_radius=2.0)
         integral_radius = 2.0
-        dimensionless_mass_integral = sis.dimensionless_mass_within_circle(radius=integral_radius)
+        dimensionless_mass_integral = sis.mass_within_circle(radius=integral_radius)
         assert math.pi * sis.einstein_radius * integral_radius == pytest.approx(dimensionless_mass_integral, 1e-3)
 
         sis = mp.SphericalIsothermal(einstein_radius=4.0)
         integral_radius = 4.0
-        dimensionless_mass_integral = sis.dimensionless_mass_within_circle(radius=integral_radius)
+        dimensionless_mass_integral = sis.mass_within_circle(radius=integral_radius)
         assert math.pi * sis.einstein_radius * integral_radius == pytest.approx(dimensionless_mass_integral, 1e-3)
 
-    def test__within_circle__singular_isothermal__compare_to_grid(self):
+    def test__within_circle__no_conversion_factor__singular_isothermal__compare_to_grid(self):
 
         sis = mp.SphericalIsothermal(einstein_radius=2.0)
 
@@ -1206,7 +1206,7 @@ class TestMassIntegral(object):
                 if eta < integral_radius:
                     dimensionless_mass_total += sis.surface_density_func(eta) * area
 
-        dimensionless_mass_integral = sis.dimensionless_mass_within_circle(radius=integral_radius)
+        dimensionless_mass_integral = sis.mass_within_circle(radius=integral_radius)
 
         assert dimensionless_mass_total == pytest.approx(dimensionless_mass_integral, 0.02)
 
@@ -1222,21 +1222,21 @@ class TestMassIntegral(object):
         mass_integral = sis.mass_within_circle(radius=integral_radius, conversion_factor=8.0)
         assert 8.0 * math.pi * sis.einstein_radius * integral_radius == pytest.approx(mass_integral, 1e-3)
 
-    def test__within_ellipse__singular_isothermal_sphere__compare_circle_and_ellipse(self):
+    def test__within_ellipse__no_conversion_factor__singular_isothermal_sphere__compare_circle_and_ellipse(self):
 
         sis = mp.SphericalIsothermal(einstein_radius=2.0)
         integral_radius = 2.0
-        dimensionless_mass_integral_circle = sis.dimensionless_mass_within_circle(radius=integral_radius)
-        dimensionless_mass_integral_ellipse = sis.dimensionless_mass_within_ellipse(major_axis=integral_radius)
+        dimensionless_mass_integral_circle = sis.mass_within_circle(radius=integral_radius)
+        dimensionless_mass_integral_ellipse = sis.mass_within_ellipse(major_axis=integral_radius)
         assert dimensionless_mass_integral_circle == dimensionless_mass_integral_ellipse
 
         sie = mp.EllipticalIsothermal(einstein_radius=2.0, axis_ratio=0.5, phi=0.0)
         integral_radius = 2.0
-        dimensionless_mass_integral_circle = sie.dimensionless_mass_within_circle(radius=integral_radius)
-        dimensionless_mass_integral_ellipse = sie.dimensionless_mass_within_ellipse(major_axis=integral_radius)
+        dimensionless_mass_integral_circle = sie.mass_within_circle(radius=integral_radius)
+        dimensionless_mass_integral_ellipse = sie.mass_within_ellipse(major_axis=integral_radius)
         assert dimensionless_mass_integral_circle == dimensionless_mass_integral_ellipse * 2.0
 
-    def test__within_ellipse__singular_isothermal_ellipsoid__compare_to_grid(self):
+    def test__within_ellipse__no_conversion_factor__singular_isothermal_ellipsoid__compare_to_grid(self):
 
         sie = mp.EllipticalIsothermal(einstein_radius=2.0, axis_ratio=0.5, phi=0.0)
 
@@ -1257,7 +1257,7 @@ class TestMassIntegral(object):
                 if eta < integral_radius:
                     dimensionless_mass_tot += sie.surface_density_func(eta) * area
 
-        dimensionless_mass_integral = sie.dimensionless_mass_within_ellipse(major_axis=integral_radius)
+        dimensionless_mass_integral = sie.mass_within_ellipse(major_axis=integral_radius)
 
         # Large errors required due to cusp at center of SIE - can get to errors of 0.01 for a 400 x 400 grid.
         assert dimensionless_mass_tot == pytest.approx(dimensionless_mass_integral, 0.1)
