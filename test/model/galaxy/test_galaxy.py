@@ -101,7 +101,7 @@ class TestLightProfiles(object):
 
             assert intensity_integral == gal_intensity_integral
 
-        def test__circle__three_profile_gal__integral_is_sum_of_individual_profiles(self):
+        def test__same_as_above__include_conversion_factor(self):
             sersic_1 = lp.EllipticalSersic(axis_ratio=1.0, phi=0.0, intensity=3.0,
                                            effective_radius=2.0,
                                            sersic_index=1.0)
@@ -110,15 +110,10 @@ class TestLightProfiles(object):
                                            effective_radius=3.0,
                                            sersic_index=2.0)
 
-            sersic_3 = lp.EllipticalSersic(axis_ratio=0.8, phi=50.0, intensity=2.0,
-                                           effective_radius=3.0,
-                                           sersic_index=2.0)
-
             integral_radius = 5.5
 
-            intensity_integral = sersic_1.luminosity_within_circle(radius=integral_radius)
-            intensity_integral += sersic_2.luminosity_within_circle(radius=integral_radius)
-            intensity_integral += sersic_3.luminosity_within_circle(radius=integral_radius)
+            intensity_integral = sersic_1.luminosity_within_circle(radius=integral_radius, conversion_factor=2.0)
+            intensity_integral += sersic_2.luminosity_within_circle(radius=integral_radius, conversion_factor=2.0)
 
             gal_sersic = g.Galaxy(redshift=0.5,
                                   light_profile_1=lp.EllipticalSersic(
@@ -132,16 +127,11 @@ class TestLightProfiles(object):
                                       phi=0.0,
                                       intensity=7.0,
                                       effective_radius=3.0,
-                                      sersic_index=2.0),
-                                  light_profile_3=lp.EllipticalSersic(
-                                      axis_ratio=0.8,
-                                      phi=50.0,
-                                      intensity=2.0,
-                                      effective_radius=3.0,
                                       sersic_index=2.0))
 
             gal_intensity_integral = gal_sersic.luminosity_within_circle(radius=integral_radius)
-
+            assert intensity_integral == 2.0*gal_intensity_integral
+            gal_intensity_integral = gal_sersic.luminosity_within_circle(radius=integral_radius, conversion_factor=2.0)
             assert intensity_integral == gal_intensity_integral
 
         def test__ellipse__one_profile_gal__integral_is_same_as_individual_profile(self):
@@ -196,8 +186,7 @@ class TestLightProfiles(object):
             gal_intensity_integral = gal_sersic.luminosity_within_ellipse(major_axis=integral_radius)
 
             assert intensity_integral == gal_intensity_integral
-
-        def test__ellipse__three_profile_gal__integral_is_sum_of_individual_profiles(self):
+        def test__ellipse__same_as_above__include_conversion_factor(self):
             sersic_1 = lp.EllipticalSersic(axis_ratio=1.0, phi=0.0, intensity=3.0,
                                            effective_radius=2.0,
                                            sersic_index=1.0)
@@ -206,15 +195,10 @@ class TestLightProfiles(object):
                                            effective_radius=3.0,
                                            sersic_index=2.0)
 
-            sersic_3 = lp.EllipticalSersic(axis_ratio=0.8, phi=50.0, intensity=2.0,
-                                           effective_radius=3.0,
-                                           sersic_index=2.0)
-
             integral_radius = 5.5
 
-            intensity_integral = sersic_1.luminosity_within_ellipse(major_axis=integral_radius)
-            intensity_integral += sersic_2.luminosity_within_ellipse(major_axis=integral_radius)
-            intensity_integral += sersic_3.luminosity_within_ellipse(major_axis=integral_radius)
+            intensity_integral = sersic_1.luminosity_within_ellipse(major_axis=integral_radius, conversion_factor=2.0)
+            intensity_integral += sersic_2.luminosity_within_ellipse(major_axis=integral_radius, conversion_factor=2.0)
 
             gal_sersic = g.Galaxy(redshift=0.5,
                                   light_profile_1=lp.EllipticalSersic(
@@ -228,16 +212,12 @@ class TestLightProfiles(object):
                                       phi=0.0,
                                       intensity=7.0,
                                       effective_radius=3.0,
-                                      sersic_index=2.0),
-                                  light_profile_3=lp.EllipticalSersic(
-                                      axis_ratio=0.8,
-                                      phi=50.0,
-                                      intensity=2.0,
-                                      effective_radius=3.0,
                                       sersic_index=2.0))
 
             gal_intensity_integral = gal_sersic.luminosity_within_ellipse(major_axis=integral_radius)
-
+            assert intensity_integral == 2.0*gal_intensity_integral
+            gal_intensity_integral = gal_sersic.luminosity_within_ellipse(major_axis=integral_radius,
+                                                                          conversion_factor=2.0)
             assert intensity_integral == gal_intensity_integral
 
         def test__no_light_profile__returns_none(self):
@@ -377,23 +357,24 @@ class TestMassProfiles(object):
 
     class TestMassWithin:
 
-        def test__within_circle__one_profile_gal__integral_is_same_as_individual_profile(self, sie_0, gal_sie_x1):
+        def test__within_circle__no_conversion_factor__one_profile_gal__integral_is_same_as_individual_profile(self, sie_0, gal_sie_x1):
             integral_radius = 5.5
 
-            mass_integral = sie_0.dimensionless_mass_within_circle(radius=integral_radius)
+            mass_integral = sie_0.mass_within_circle(radius=integral_radius)
 
-            gal_mass_integral = gal_sie_x1.dimensionless_mass_within_circle(radius=integral_radius)
+            gal_mass_integral = gal_sie_x1.mass_within_circle(radius=integral_radius)
 
             assert mass_integral == gal_mass_integral
 
-        def test__within_circle__two_profile_gal__integral_is_sum_of_individual_profiles(self):
+        def test__within_circle__no_conversion_factor__two_profile_gal__integral_is_sum_of_individual_profiles(self):
+
             sie_0 = mp.EllipticalIsothermal(axis_ratio=0.8, phi=10.0, einstein_radius=1.0)
             sie_1 = mp.EllipticalIsothermal(axis_ratio=0.6, phi=30.0, einstein_radius=1.2)
 
             integral_radius = 5.5
 
-            mass_integral = sie_0.dimensionless_mass_within_circle(radius=integral_radius)
-            mass_integral += sie_1.dimensionless_mass_within_circle(radius=integral_radius)
+            mass_integral = sie_0.mass_within_circle(radius=integral_radius)
+            mass_integral += sie_1.mass_within_circle(radius=integral_radius)
 
             gal_sie = g.Galaxy(redshift=0.5,
                                mass_profile_1=mp.EllipticalIsothermal(axis_ratio=0.8, phi=10.0,
@@ -401,7 +382,7 @@ class TestMassProfiles(object):
                                mass_profile_2=mp.EllipticalIsothermal(axis_ratio=0.6, phi=30.0,
                                                                       einstein_radius=1.2))
 
-            gal_mass_integral = gal_sie.dimensionless_mass_within_circle(radius=integral_radius)
+            gal_mass_integral = gal_sie.mass_within_circle(radius=integral_radius)
 
             assert mass_integral == gal_mass_integral
 
@@ -415,24 +396,24 @@ class TestMassProfiles(object):
 
             assert mass_integral == gal_mass_integral
 
-        def test__within_ellipse__one_profile_gal__integral_is_same_as_individual_profile(self, sie_0, gal_sie_x1):
+        def test__within_ellipse__no_conversion_factor__one_profile_gal__integral_is_same_as_individual_profile(self, sie_0, gal_sie_x1):
             integral_radius = 0.5
 
-            dimensionless_mass_integral = sie_0.dimensionless_mass_within_ellipse(major_axis=integral_radius)
+            dimensionless_mass_integral = sie_0.mass_within_ellipse(major_axis=integral_radius)
 
-            gal_dimensionless_mass_integral = gal_sie_x1.dimensionless_mass_within_ellipse(
+            gal_dimensionless_mass_integral = gal_sie_x1.mass_within_ellipse(
                 major_axis=integral_radius)
 
             assert dimensionless_mass_integral == gal_dimensionless_mass_integral
 
-        def test__within_eliipse__two_profile_gal__integral_is_sum_of_individual_profiles(self, sie_0, sie_1,
+        def test__within_eliipse__no_conversion_factor__two_profile_gal__integral_is_sum_of_individual_profiles(self, sie_0, sie_1,
                                                                                           gal_sie_x2):
             integral_radius = 5.5
 
-            dimensionless_mass_integral = sie_0.dimensionless_mass_within_ellipse(major_axis=integral_radius)
-            dimensionless_mass_integral += sie_1.dimensionless_mass_within_ellipse(major_axis=integral_radius)
+            dimensionless_mass_integral = sie_0.mass_within_ellipse(major_axis=integral_radius)
+            dimensionless_mass_integral += sie_1.mass_within_ellipse(major_axis=integral_radius)
 
-            gal_dimensionless_mass_integral = gal_sie_x2.dimensionless_mass_within_ellipse(
+            gal_dimensionless_mass_integral = gal_sie_x2.mass_within_ellipse(
                 major_axis=integral_radius)
 
             assert dimensionless_mass_integral == gal_dimensionless_mass_integral
@@ -452,8 +433,6 @@ class TestMassProfiles(object):
 
             gal = g.Galaxy(redshift=0.5, light=lp.SphericalSersic())
 
-            assert gal.dimensionless_mass_within_circle(radius=1.0) == None
-            assert gal.dimensionless_mass_within_ellipse(major_axis=1.0) == None
             assert gal.mass_within_circle(radius=1.0, conversion_factor=1.0) == None
             assert gal.mass_within_ellipse(major_axis=1.0, conversion_factor=1.0) == None
 

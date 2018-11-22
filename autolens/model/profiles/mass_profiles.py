@@ -60,7 +60,7 @@ def jit_integrand(integrand_function):
 class MassProfile(object):
 
     def surface_density_func(self, eta):
-        raise NotImplementedError("surface_density_at_radius should be overridden")
+        raise NotImplementedError("surface_density_func should be overridden")
 
     def surface_density_from_grid(self, grid):
         pass
@@ -73,7 +73,10 @@ class MassProfile(object):
     def deflections_from_grid(self, grid):
         raise NotImplementedError("deflections_from_grid should be overridden")
 
-    def dimensionless_mass_within_ellipse(self, major_axis):
+    def mass_within_circle(self, radius, conversion_factor):
+        raise NotImplementedError()
+
+    def mass_within_ellipse(self, major_axis, conversion_factor):
         raise NotImplementedError()
 
 
@@ -97,76 +100,46 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
         self.axis_ratio = axis_ratio
         self.phi = phi
 
-    def dimensionless_mass_within_circle(self, radius):
-        """ Compute the mass profiles's total dimensionless mass within a circle of specified radius. This is \ 
-        performed via integration of the surface density profiles and is centred on the mass profile.
+    def mass_within_circle(self, radius, conversion_factor=1.0):
+        """ Compute the mass profiles's total mass within a circle of specified radius. This is performed via \
+        integration of the surface density profiles and is centred on the mass profile.
+
+        The value returned by this integral is dimensionless, and a conversion factor can be specified to convert it \
+        to a physical value (e.g. the critical surface mass density).
 
         Parameters
         ----------
         radius : float
             The radius of the circle to compute the dimensionless mass within.
-
-        Returns
-        -------
-        dimensionless_mass : float
-            The total dimensionless mass within the specified circle.
+        conversion_factor : float
+            The factor the dimensionless mass is multiplied by to convert it to a physical mass.
         """
-        return quad(self.dimensionless_mass_integral, a=0.0, b=radius, args=(1.0,))[0]
+        return conversion_factor*quad(self.mass_integral, a=0.0, b=radius, args=(1.0,))[0]
 
-    def dimensionless_mass_within_ellipse(self, major_axis):
+    def mass_within_ellipse(self, major_axis, conversion_factor=1.0):
         """ Compute the mass profiles's total dimensionless mass within an ellipse of specified radius. This is \
         performed via integration of the surface density profiles and is centred and rotationally aligned with the \
         mass profile.
+
+        The value returned by this integral is dimensionless, and a conversion factor can be specified to convert it \
+        to a physical value (e.g. the critical surface mass density).
 
         Parameters
         ----------
         major_axis : float
             The major-axis radius of the ellipse.
-
-        Returns
-        -------
-        dimensionless_mass : float
-            The total dimensionless mass within the specified circle.
+        conversion_factor : float
+            The factor the dimensionless mass is multiplied by to convert it to a physical mass.
         """
-        return quad(self.dimensionless_mass_integral, a=0.0, b=major_axis, args=(self.axis_ratio,))[0]
+        return conversion_factor*quad(self.mass_integral, a=0.0, b=major_axis, args=(self.axis_ratio,))[0]
 
-    def dimensionless_mass_integral(self, x, axis_ratio):
+    def mass_integral(self, x, axis_ratio):
         """Routine to integrate an elliptical light profiles - set axis ratio to 1 to compute the luminosity within a \
         circle"""
         r = x * axis_ratio
         return 2 * np.pi * r * self.surface_density_func(x)
 
-    def mass_within_circle(self, radius, conversion_factor):
-        """ Compute the mass profiles's total mass within a circle of specified radius. This is performed via
-        integration of the surface density profiles and is centred on the mass profile.
-
-        The result is multiplied by a conversion factor to compute the physical mass of the system. For strong lensing,
-        this factor is the critical surface mass density.
-
-        Parameters
-        ----------
-        radius : float
-            The radius of the circle to compute the dimensionless mass within.
-        conversion_factor : float
-            The factor the dimensionless mass is multiplied by to convert it to a physical mass.
-        """
-        return conversion_factor*self.dimensionless_mass_within_circle(radius=radius)
-
-    def mass_within_ellipse(self, major_axis, conversion_factor):
-        """ Compute the mass profiles's total mass within an ellipse of specified radius. This is performed via
-        integration of the surface density profiles and is centred and rotationally aligned with the mass profile.
-
-        The result is multiplied by a conversion factor to compute the physical mass of the system. For strong lensing,
-        this factor is the critical surface mass density.
-
-        Parameters
-        ----------
-        major_axis : float
-            The major-axis radius of the ellipse.
-        conversion_factor : float
-            The factor the dimensionless mass is multiplied by to convert it to a physical mass.
-        """
-        return conversion_factor*self.dimensionless_mass_within_ellipse(major_axis=major_axis)
+ #   def density_as_function_of_radius_circular_annuli(self):
 
 
 class EllipticalCoredPowerLaw(EllipticalMassProfile, MassProfile):

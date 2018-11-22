@@ -901,7 +901,6 @@ class TestTracerImageSourcePlanes(object):
             assert tracer.masses_of_image_plane_galaxies_within_ellipses(major_axis=1.0) == None
 
 
-
 class TestMultiTracer(object):
 
     class TestGalaxyOrder:

@@ -404,6 +404,26 @@ class TestLuminosityIntegral(object):
 
         assert luminosity_tot == pytest.approx(intensity_integral, 0.02)
 
+    def test__within_circle__multiplies_by_conversion_factor(self):
+
+        sersic = lp.SphericalSersic(intensity=3.0, effective_radius=2.0, sersic_index=1.0)
+
+        integral_radius = 5.5
+
+        # Use gamma function for analytic computation of the intensity within a radius=0.5
+
+        x = sersic.sersic_constant * (integral_radius / sersic.effective_radius) ** (1.0 / sersic.sersic_index)
+
+        intensity_analytic = sersic.intensity * sersic.effective_radius ** 2 * 2 * math.pi * sersic.sersic_index * (
+                math.e ** sersic.sersic_constant / (
+                sersic.sersic_constant ** (2 * sersic.sersic_index))) * scipy.special.gamma(
+            2 * sersic.sersic_index) * scipy.special.gammainc(
+            2 * sersic.sersic_index, x)
+
+        intensity_integral = sersic.luminosity_within_circle(radius=integral_radius, conversion_factor=3.0)
+
+        assert 3.0*intensity_analytic == pytest.approx(intensity_integral, 1e-3)
+
     def test__within_ellipse__elliptical_sersic_2__compare_to_grid(self):
 
         sersic = lp.EllipticalSersic(axis_ratio=0.5, phi=90.0, intensity=3.0, effective_radius=2.0,
@@ -430,6 +450,31 @@ class TestLuminosityIntegral(object):
 
         assert luminosity_tot[0] == pytest.approx(intensity_integral, 0.02)
 
+    def test__same_as_above__check_multipleis_by_conversion_factor(self):
+
+        sersic = lp.EllipticalSersic(axis_ratio=0.5, phi=90.0, intensity=3.0, effective_radius=2.0,
+                                     sersic_index=2.0)
+
+        integral_radius = 0.5
+        luminosity_tot = 0.0
+
+        xs = np.linspace(-1.8, 1.8, 80)
+        ys = np.linspace(-1.8, 1.8, 80)
+
+        edge = xs[1] - xs[0]
+        area = edge ** 2
+
+        for x in xs:
+            for y in ys:
+
+                eta = sersic.grid_to_elliptical_radii(np.array([[x, y]]))
+
+                if eta < integral_radius:
+                    luminosity_tot += sersic.intensities_from_grid_radii(eta) * area
+
+        intensity_integral = sersic.luminosity_within_ellipse(major_axis=integral_radius, conversion_factor=3.0)
+
+        assert 3.0*luminosity_tot[0] == pytest.approx(intensity_integral, 0.02)
 
 class TestGrids(object):
 
