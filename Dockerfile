@@ -29,11 +29,13 @@ RUN pip3 --no-cache-dir install \
 			astropy \
 			scikit-learn \
 			jupyter \
-			matplotlib \
+			matplotlib==2.2.0 \
 			colorama \
 			docopt \
 			getdist==0.2.8.4.2 \
 			autofit
+
+RUN pip3 --no-cache-dir install autolens
 
 # Set up permissions.
 RUN gpg --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys B42F6819007F00F88E364FD4036A9C25BF357DD4 \
@@ -45,7 +47,6 @@ RUN gpg --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys B42F6819007
 
 # Copy files
 ADD dockerfiles/jupyter /home/user/.jupyter
-ADD autolens /home/user/autolens
 ADD workspace /home/user/workspace_temp
 ADD dockerfiles/entrypoint.sh /usr/local/bin/entrypoint.sh
 ADD dockerfiles/bashrc /home/user/.bashrc
