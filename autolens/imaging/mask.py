@@ -276,7 +276,8 @@ class ImagingGrids(object):
                                                                       sub_grid_size=sub_grid_size,
                                                                       psf_shape=psf_shape)
 
-    def imaging_grids_with_pix_grid(self, pix):
+    def imaging_grids_with_pix_grid(self, pix_grid, image_to_nearest_image_pix):
+        pix = PixGrid(arr=pix_grid, image_to_nearest_image_pix=image_to_nearest_image_pix)
         return ImagingGrids(image=self.image, sub=self.sub, blurring=self.blurring, pix=pix)
 
     def apply_function(self, func):
@@ -607,6 +608,17 @@ class SubGrid(ImageGrid):
         """
         return mapping_util.sub_to_image_from_mask(self.mask, self.sub_grid_size).astype('int')
 
+
+class PixGrid(np.ndarray):
+
+    def __new__(cls, arr, image_to_nearest_image_pix, *args, **kwargs):
+        obj = arr.view(cls)
+        obj.image_to_nearest_image_pix = image_to_nearest_image_pix
+        return obj
+
+    def __array_finalize__(self, obj):
+        if hasattr(obj, "image_to_nearest_image_pix"):
+            self.image_to_nearest_image_pix = obj.image_to_nearest_image_pix
 
 class PaddedImageGrid(ImageGrid):
 
