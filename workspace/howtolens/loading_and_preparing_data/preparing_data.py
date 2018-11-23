@@ -54,19 +54,19 @@ imaging_plotters.plot_image_subplot(image=image_in_counts)
 # If your image is in counts, you can convert it to electrons per second by supplying the function above with an
 # exposure time and using the 'convert_arrays_from_counts' boolean flag.
 image_converted_to_eps = im.load_imaging_from_fits(image_path=path+'data/image_in_counts/image.fits', pixel_scale=0.1,
-                                  noise_map_path=path+'data/image_in_counts/noise_map.fits',
-                                  psf_path=path+'data/image_in_counts/psf.fits',
-                                  exposure_time=1000.0, convert_arrays_from_counts=True)
+                                                   noise_map_path=path+'data/image_in_counts/noise_map.fits',
+                                                   psf_path=path+'data/image_in_counts/psf.fits',
+                                                   exposure_time=1000.0, convert_from_counts=True)
 imaging_plotters.plot_image_subplot(image=image_converted_to_eps)
 
 # The effective exposure time in each pixel may vary. This occurs when data is reduced in a specific way, called
 # 'dithering' and 'drizzling'. If you have access to an effective exposure-time map, you can use this to convert
 # the image to electrons per second instead.
 image_converted_to_eps = im.load_imaging_from_fits(image_path=path+'data/image_in_counts/image.fits', pixel_scale=0.1,
-                                  noise_map_path=path+'data/image_in_counts/noise_map.fits',
-                                  psf_path=path+'data/image_in_counts/psf.fits',
-                                  exposure_time_map_path=path+'data/image_in_counts/exposure_time_map.fits',
-                                  convert_arrays_from_counts=True)
+                                                   noise_map_path=path+'data/image_in_counts/noise_map.fits',
+                                                   psf_path=path+'data/image_in_counts/psf.fits',
+                                                   exposure_time_map_path=path+'data/image_in_counts/exposure_time_map.fits',
+                                                   convert_from_counts=True)
 imaging_plotters.plot_image_subplot(image=image_converted_to_eps)
 
 # 2) Postage stamp size - The bigger the postage stamp cut-out of the image, the more memory it requires to store it.
@@ -155,7 +155,7 @@ image_noise_from_wht = im.load_imaging_from_fits(image_path=path+'data/image_lar
                                                  pixel_scale=0.1,
                                                  noise_map_path=path+'data/image_large_stamp/noise_map.fits',
                                                  psf_path=path+'data/image_large_stamp/psf.fits',
-                                                 convert_noise_map_from_weight_map=True)
+                                                 convert_noise_maps_from_weight_map=True)
 
 # (I don't currently have an example image in WHT for this tutorial, but the function above will work. Above, it
 # actually converts an accurate noise-map to an inverse WHT map!
