@@ -188,11 +188,14 @@ class ImagingGrids(object):
         Parameters
         -----------
         image : ImageGrid
-            The grid of (y,x) arc-second coordinates at the origin of every padded pixel.
+            The grid of (y,x) arc-second coordinates at the centre of every image pixel.
         sub : SubGrid
-            The grid of (y,x) arc-second coordinates at the origin of every padded pixel's sub-pixels.
+            The grid of (y,x) arc-second coordinates at the ccentre of every image pixel's sub-pixels.
         blurring : ImageGrid | ndarray | None
             The grid of (y,x) arc-second coordinates at the origin of every blurring-masks pixel.
+        pix : ImageGrid | ndarray | None
+            The grid of (y,x) arc-second coordinates of every image-plane pixelization grid used for adaptive source \
+            -plane pixelizations.
         """
         self.image = image
         self.sub = sub
@@ -273,7 +276,8 @@ class ImagingGrids(object):
                                                                       sub_grid_size=sub_grid_size,
                                                                       psf_shape=psf_shape)
 
-    def imaging_grids_with_pix_grid(self, pix):
+    def imaging_grids_with_pix_grid(self, pix_grid, image_to_nearest_image_pix):
+        pix = PixGrid(arr=pix_grid, image_to_nearest_image_pix=image_to_nearest_image_pix)
         return ImagingGrids(image=self.image, sub=self.sub, blurring=self.blurring, pix=pix)
 
     def apply_function(self, func):
@@ -347,7 +351,6 @@ class ImageGrid(np.ndarray):
     def __new__(cls, arr, mask, *args, **kwargs):
         obj = arr.view(cls)
         obj.mask = mask
-#        obj.masked_shape_arcsec = (np.amax(arr[:,0]) - np.amin(arr[:,0]), np.amax(arr[:,1]) - np.amin(arr[:,1]))
         return obj
 
     def __array_finalize__(self, obj):
@@ -605,6 +608,17 @@ class SubGrid(ImageGrid):
         """
         return mapping_util.sub_to_image_from_mask(self.mask, self.sub_grid_size).astype('int')
 
+
+class PixGrid(np.ndarray):
+
+    def __new__(cls, arr, image_to_nearest_image_pix, *args, **kwargs):
+        obj = arr.view(cls)
+        obj.image_to_nearest_image_pix = image_to_nearest_image_pix
+        return obj
+
+    def __array_finalize__(self, obj):
+        if hasattr(obj, "image_to_nearest_image_pix"):
+            self.image_to_nearest_image_pix = obj.image_to_nearest_image_pix
 
 class PaddedImageGrid(ImageGrid):
 

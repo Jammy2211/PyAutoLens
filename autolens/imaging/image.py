@@ -362,10 +362,69 @@ class NoiseMap(ScaledSquarePixelArray):
 
     @classmethod
     def from_weight_map(cls, pixel_scale, weight_map):
+        """Setup the noise-map from a weight map, which is a form of noise-map that comes via HST data-reduction and \
+        the software package MultiDrizzle.
+
+        The variance in each pixel is computed as:
+
+        Variance = 1.0 / sqrt(weight_map).
+
+        The weight map may contain zeros, in which cause the variances are converted to large values to omit them from \
+        the analysis.
+
+        Parameters
+        -----------
+        pixel_scale : float
+            The size of each pixel in arc seconds.
+        weight_map : ndarray
+            The weight-value of each pixel which is converted to a variance.
+        """
         np.seterr(divide='ignore')
         noise_map = 1.0 / np.sqrt(weight_map)
         noise_map[noise_map == np.inf] = 1.0e8
         return NoiseMap(array=noise_map, pixel_scale=pixel_scale)
+
+    @classmethod
+    def from_inverse_noise_map(cls, pixel_scale, inverse_noise_map):
+        """Setup the noise-map from an root-mean square standard deviation map, which is a form of noise-map that \
+        comes via HST data-reduction and the software package MultiDrizzle.
+
+        The variance in each pixel is computed as:
+
+        Variance = 1.0 / inverse_std_map.
+
+        The weight map may contain zeros, in which cause the variances are converted to large values to omit them from \
+        the analysis.
+
+        Parameters
+        -----------
+        pixel_scale : float
+            The size of each pixel in arc seconds.
+        inverse_noise_map : ndarray
+            The inverse noise value of each pixel which is converted to a variance.
+        """
+        noise_map = 1.0 / inverse_noise_map
+        return NoiseMap(array=noise_map, pixel_scale=pixel_scale)
+
+    @classmethod
+    def from_image_and_background_noise_map(cls, pixel_scale, image, background_noise_map, exposure_time_map,
+                                            convert_from_counts=False):
+        if not convert_from_counts:
+            return NoiseMap(array=np.sqrt(np.abs((background_noise_map*exposure_time_map)**2.0 +
+                                          image*exposure_time_map)) / exposure_time_map,
+                            pixel_scale=pixel_scale)
+        elif convert_from_counts:
+            return NoiseMap(array=np.sqrt(np.abs(background_noise_map**2.0 + image)), pixel_scale=pixel_scale)
+
+
+class PoissonNoiseMap(NoiseMap):
+
+    @classmethod
+    def from_image_and_exposure_time_map(cls, pixel_scale, image, exposure_time_map, convert_from_counts=False):
+        if not convert_from_counts:
+            return PoissonNoiseMap(array=np.sqrt(image*exposure_time_map), pixel_scale=pixel_scale)
+        elif convert_from_counts:
+            return PoissonNoiseMap(array=np.sqrt(image), pixel_scale=pixel_scale)
 
 
 class PSF(ScaledSquarePixelArray):
@@ -464,6 +523,14 @@ class PSF(ScaledSquarePixelArray):
         return scipy.signal.convolve2d(array, self, mode='same')
 
 
+class ExposureTimeMap(ScaledSquarePixelArray):
+
+    @classmethod
+    def from_exposure_time_and_background_noise_map(cls, pixel_scale, exposure_time, background_noise_map):
+        relative_background_noise_map = background_noise_map / np.max(background_noise_map)
+        return ExposureTimeMap(array=np.abs(exposure_time * (relative_background_noise_map)), pixel_scale=pixel_scale)
+
+
 def setup_random_seed(seed):
     """Setup the random seed. If the input seed is -1, the code will use a random seed for every run. If it is \
     positive, that seed is used for all runs, thereby giving reproducible results.
@@ -504,35 +571,141 @@ def generate_poisson_noise(image, exposure_time_map, seed=-1):
     return image - np.divide(np.random.poisson(image_counts, image.shape), exposure_time_map)
 
 
-def load_imaging_from_fits(image_path, pixel_scale, noise_map_path=None, psf_path=None,
-                           exposure_time=None, exposure_time_map_path=None,
-                           background_noise_map_path=None, poisson_noise_map_path=None, background_sky_map_path=None,
-                           image_hdu=0, noise_map_hdu=0, psf_hdu=0, exposure_time_map_hdu=0,
-                           background_noise_map_hdu=0, poisson_noise_map_hdu=0, background_sky_map_hdu=0,
+def load_imaging_from_fits(image_path, pixel_scale, image_hdu=0,
                            resized_image_shape=None, resized_image_origin_pixels=None,
-                           resized_image_origin_arc_seconds=None, resized_psf_shape=None,
-                           renormalize_psf=False, convert_noise_map_from_weight_map=False,
-                           convert_arrays_from_counts=False):
+                           resized_image_origin_arc_seconds=None,
+                           psf_path=None, psf_hdu=0, resized_psf_shape=None, renormalize_psf=False,
+                           noise_map_path=None, noise_map_hdu=0,
+                           noise_map_from_image_and_background_noise_map=False,
+                           convert_noise_map_from_weight_map=False,
+                           convert_noise_map_from_inverse_noise_map=False,
+                           background_noise_map_path=None, background_noise_map_hdu=0,
+                           convert_background_noise_map_from_weight_map=False,
+                           convert_background_noise_map_from_inverse_noise_map=False,
+                           poisson_noise_map_path=None, poisson_noise_map_hdu=0,
+                           poisson_noise_map_from_image=False,
+                           convert_poisson_noise_map_from_weight_map=False,
+                           convert_poisson_noise_map_from_inverse_noise_map=False,
+                           exposure_time_map_path=None, exposure_time_map_hdu=0,
+                           exposure_time_map_from_single_value=None,
+                           exposure_time_map_from_background_noise_map=False,
+                           background_sky_map_path=None, background_sky_map_hdu=0,
+                           convert_from_counts=False):
+    """Factory for loading the imaging data from a .fits file, as well as computing other properties like the noise-map,
+    exposure-time map, etc. from the existing data.
 
-    image = load_image(path=image_path, hdu=image_hdu, pixel_scale=pixel_scale)
+    This factory also includes a number of routines for converting images from other units (e.g. counts) to electrons \
+    per second.
 
-    noise_map = load_noise_map(path=noise_map_path, hdu=noise_map_hdu, pixel_scale=pixel_scale,
-                               convert_noise_map_from_weight_map=convert_noise_map_from_weight_map)
+    Parameters
+    ----------
+    image_path : str
+        The path and filename of the .fits data containing the image.
+    pixel_scale : float
+        The size of each pixel in arc seconds.
+    image_hdu : int
+        The hdu the image is contained in the .fits file that *image_path* points too.
+    resized_image_shape : (int, int) | None
+        If input, the image (and arrays that are image sized, e.g. the noise-maps) are resized to these dimensions.
+    resized_image_origin_pixels : (int, int) | None
+        If the image is resized, this defines a new origin in pixels around which recentering occurs.
+    resized_image_origin_arc_seconds : (float, float) | None
+        If the image is resized, this defines a new origin in arc-seconds around which recentering occurs.
+    psf_path : str
+        The path and filename of the .fits data containing the PSF.
+    psf_hdu : int
+        The hdu the psf is contained in the .fits file that *psf_path* points too.
+    resized_psf_shape : (int, int) | None
+        If input, the psf is resized to these dimensions.
+    renormalize_psf : bool
+        If True, the PSF is renoralized such that all elements sum to 1.0.
+    noise_map_path : str
+        The path and filename of the .fits data containing the noise-map.
+    noise_map_hdu : int
+        The hdu the noise-map is contained in the .fits file that *noise_map_path* points too.
+    noise_map_from_image_and_background_noise_map : bool
+        If True, the noise-map is computed from the observed image and background noise-map \
+        (see NoiseMap.from_image_and_background_noise_map).
+    convert_noise_map_from_weight_map : bool
+        If True, the noise-map loaded from the .fits file is converted from a weight-map to a noise-map (see \
+        *NoiseMap.from_weight_map).
+    convert_noise_map_from_inverse_noise_map : bool
+        If True, the noise-map loaded from the .fits file is converted from an inverse noise-map to a noise-map (see \
+        *NoiseMap.from_inverse_noise_map).
+    background_noise_map_path : str
+        The path and filename of the .fits data containing the background noise-map.
+    background_noise_map_hdu : int
+        The hdu the background noise-map is contained in the .fits file that *background_noise_map_path* points too.
+    convert_background_noise_map_from_weight_map : bool
+        If True, the bacground noise-map loaded from the .fits file is converted from a weight-map to a noise-map (see \
+        *NoiseMap.from_weight_map).
+    convert_background_noise_map_from_inverse_noise_map : bool
+        If True, the background noise-map loaded from the .fits file is converted from an inverse noise-map to a \
+        noise-map (see *NoiseMap.from_inverse_noise_map).
+    poisson_noise_map_path : str
+        The path and filename of the .fits data containing the Poisson noise-map.
+    poisson_noise_map_hdu : int
+        The hdu the Poisson noise-map is contained in the .fits file that *poisson_noise_map_path* points too.
+    poisson_noise_map_from_image : bool
+        If True, the Poisson noise-map is estimated using the image-data.
+    convert_poisson_noise_map_from_weight_map : bool
+        If True, the Poisson noise-map loaded from the .fits file is converted from a weight-map to a noise-map (see \
+        *NoiseMap.from_weight_map).
+    convert_poisson_noise_map_from_inverse_noise_map : bool
+        If True, the Poisson noise-map loaded from the .fits file is converted from an inverse noise-map to a \
+        noise-map (see *NoiseMap.from_inverse_noise_map).
+    exposure_time_map_path : str
+        The path and filename of the .fits data containing the exposure time map.
+    exposure_time_map_hdu : int
+        The hdu the exposure time map is contained in the .fits file that *exposure_time_map_path* points too.
+    exposure_time_map_from_single_value : float
+        The exposure time of the image, which computes the exposure-time map as a single value \
+        (see *ExposureTimeMap.from_single_value*).
+    exposure_time_map_from_background_noise_map : bool
+        If True, the exposure-time map is computed from the background noise map \
+        (see *ExposureTimeMap.from_background_noise_map*)
+    backgrond_sky_map_path : str
+        The path and filename of the .fits data containing the backgrond sky map.
+    backgrond_sky_map_hdu : int
+        The hdu the backgrond sky map is contained in the .fits file that *backgrond_sky_map_path* points too.
+    """
 
-    background_noise_map = load_noise_map(path=background_noise_map_path, hdu=background_noise_map_hdu,
-                                          pixel_scale=pixel_scale,
-                                          convert_noise_map_from_weight_map=convert_noise_map_from_weight_map)
+    image = load_image(image_path=image_path, image_hdu=image_hdu, pixel_scale=pixel_scale)
 
-    poisson_noise_map = load_noise_map(path=poisson_noise_map_path, hdu=poisson_noise_map_hdu,
-                                       pixel_scale=pixel_scale,
-                                       convert_noise_map_from_weight_map=convert_noise_map_from_weight_map)
+    background_noise_map = load_background_noise_map(background_noise_map_path=background_noise_map_path,
+             background_noise_map_hdu=background_noise_map_hdu,
+             pixel_scale=pixel_scale,
+             convert_background_noise_map_from_weight_map=convert_background_noise_map_from_weight_map,
+             convert_background_noise_map_from_inverse_noise_map=convert_background_noise_map_from_inverse_noise_map)
 
-    psf = load_psf(path=psf_path, hdu=psf_hdu, pixel_scale=pixel_scale, renormalize=renormalize_psf)
+    exposure_time_map = load_exposure_time_map(exposure_time_map_path=exposure_time_map_path,
+                           exposure_time_map_hdu=exposure_time_map_hdu,
+                           pixel_scale=pixel_scale, shape=image.shape,
+                           exposure_time=exposure_time_map_from_single_value,
+                           exposure_time_map_from_background_noise_map=exposure_time_map_from_background_noise_map,
+                           background_noise_map=background_noise_map)
 
-    exposure_time_map = load_exposure_time_map(path=exposure_time_map_path, hdu=exposure_time_map_hdu,
-                                               pixel_scale=pixel_scale, shape=image.shape, exposure_time=exposure_time)
+    poisson_noise_map = load_poisson_noise_map(poisson_noise_map_path=poisson_noise_map_path,
+                   poisson_noise_map_hdu=poisson_noise_map_hdu,
+                   pixel_scale=pixel_scale,
+                   convert_poisson_noise_map_from_weight_map=convert_poisson_noise_map_from_weight_map,
+                   convert_poisson_noise_map_from_inverse_noise_map=convert_poisson_noise_map_from_inverse_noise_map,
+                   image=image, exposure_time_map=exposure_time_map,
+                   poisson_noise_map_from_image=poisson_noise_map_from_image,
+                   convert_from_counts=convert_from_counts)
 
-    background_sky_map = load_background_sky_map(path=background_sky_map_path, hdu=background_sky_map_hdu, 
+    noise_map = load_noise_map(noise_map_path=noise_map_path, noise_map_hdu=noise_map_hdu, pixel_scale=pixel_scale,
+                       image=image, background_noise_map=background_noise_map,
+                       exposure_time_map=exposure_time_map,
+                       convert_noise_map_from_weight_map=convert_noise_map_from_weight_map,
+                       convert_noise_map_from_inverse_noise_map=convert_noise_map_from_inverse_noise_map,
+                       noise_map_from_image_and_background_noise_map=noise_map_from_image_and_background_noise_map,
+                       convert_from_counts=convert_from_counts)
+
+    psf = load_psf(psf_path=psf_path, psf_hdu=psf_hdu, pixel_scale=pixel_scale, renormalize=renormalize_psf)
+
+    background_sky_map = load_background_sky_map(background_sky_map_path=background_sky_map_path,
+                                                 background_sky_map_hdu=background_sky_map_hdu,
                                                  pixel_scale=pixel_scale)
 
     image = Image(array=image, pixel_scale=pixel_scale, psf=psf, noise_map=noise_map,
@@ -547,43 +720,263 @@ def load_imaging_from_fits(image_path, pixel_scale, noise_map_path=None, psf_pat
     if resized_psf_shape is not None:
         image = image.new_image_with_resized_psf(new_shape=resized_psf_shape)
 
-    if convert_arrays_from_counts:
+    if convert_from_counts:
         image = image.new_image_converted_from_counts()
 
     return image
 
-def load_image(path, hdu, pixel_scale):
-    return ScaledSquarePixelArray.from_fits_with_pixel_scale(file_path=path, hdu=hdu, pixel_scale=pixel_scale)
+def load_image(image_path, image_hdu, pixel_scale):
+    """Factory for loading the image from a .fits file
 
-def load_noise_map(path, hdu, pixel_scale, convert_noise_map_from_weight_map):
+    Parameters
+    ----------
+    image_path : str
+        The image_path and filename of the .fits data containing the image.
+    image_hdu : int
+        The image_hdu the image is contained in the .fits file that *image_path* points too
+    pixel_scale : float
+        The size of each pixel in arc seconds..
+    """
+    return ScaledSquarePixelArray.from_fits_with_pixel_scale(file_path=image_path, hdu=image_hdu, pixel_scale=pixel_scale)
 
-    if path is None:
-        return None
-    elif not convert_noise_map_from_weight_map:
-        return NoiseMap.from_fits_with_pixel_scale(file_path=path, hdu=hdu, pixel_scale=pixel_scale)
-    elif convert_noise_map_from_weight_map:
-        weight_map = Array.from_fits(file_path=path, hdu=hdu)
+def load_noise_map(noise_map_path, noise_map_hdu, pixel_scale, image, background_noise_map, exposure_time_map,
+                   convert_noise_map_from_weight_map, convert_noise_map_from_inverse_noise_map,
+                   noise_map_from_image_and_background_noise_map, convert_from_counts):
+    """Factory for loading the noise-map from a .fits file.
+
+    This factory also includes a number of routines for converting the noise-map from from other units (e.g. \
+    a weight map) or computing the noise-map from other images (e.g. the imaging data and background noise-map).
+
+    Parameters
+    ----------
+    noise_map_path : str
+        The path and filename of the .fits data containing the noise-map.
+    noise_map_hdu : int
+        The hdu the noise-map is contained in the .fits file that *noise_map_path* points too.
+    pixel_scale : float
+        The size of each pixel in arc seconds.
+    image : ndarray
+        The image-data, which the noise-map can be calculated using.
+    background_noise_map : ndarray
+        The background noise-map, which the noise-map can be calculated using.
+    exposure_time_map : ndarray
+        The exposure-time map, which the noise-map can be calculated using.
+    convert_noise_map_from_weight_map : bool
+        If True, the noise-map loaded from the .fits file is converted from a weight-map to a noise-map (see \
+        *NoiseMap.from_weight_map).
+    convert_noise_map_from_inverse_noise_map : bool
+        If True, the noise-map loaded from the .fits file is converted from an inverse noise-map to a noise-map (see \
+        *NoiseMap.from_inverse_noise_map).
+    background_noise_map_path : str
+        The path and filename of the .fits data containing the background noise-map.
+    background_noise_map_hdu : int
+        The hdu the background noise-map is contained in the .fits file that *background_noise_map_path* points too.
+    convert_background_noise_map_from_weight_map : bool
+        If True, the bacground noise-map loaded from the .fits file is converted from a weight-map to a noise-map (see \
+        *NoiseMap.from_weight_map).
+    convert_background_noise_map_from_inverse_noise_map : bool
+        If True, the background noise-map loaded from the .fits file is converted from an inverse noise-map to a \
+        noise-map (see *NoiseMap.from_inverse_noise_map).
+    noise_map_from_image_and_background_noise_map : bool
+        If True, the noise-map is computed from the observed image and background noise-map \
+        (see NoiseMap.from_image_and_background_noise_map).
+    """
+    noise_map_options = sum([convert_noise_map_from_weight_map,
+                             convert_noise_map_from_inverse_noise_map,
+                             noise_map_from_image_and_background_noise_map])
+
+    if noise_map_options > 1:
+        raise exc.ImagingException('You have specified more than one method to load the noise map, e.g.:'
+                                   'convert_noise_map_from_weight_map | '
+                                   'convert_noise_map_from_inverse_noise_map |'
+                                   'noise_map_from_image_and_background_noise_map')
+
+
+    if noise_map_options == 0 and noise_map_path is not None:
+        return NoiseMap.from_fits_with_pixel_scale(file_path=noise_map_path, hdu=noise_map_hdu, pixel_scale=pixel_scale)
+    elif convert_noise_map_from_weight_map and noise_map_path is not None:
+        weight_map = Array.from_fits(file_path=noise_map_path, hdu=noise_map_hdu)
         return NoiseMap.from_weight_map(weight_map=weight_map, pixel_scale=pixel_scale)
+    elif convert_noise_map_from_inverse_noise_map and noise_map_path is not None:
+        inverse_noise_map = Array.from_fits(file_path=noise_map_path, hdu=noise_map_hdu)
+        return NoiseMap.from_inverse_noise_map(inverse_noise_map=inverse_noise_map, pixel_scale=pixel_scale)
+    elif noise_map_from_image_and_background_noise_map:
+        return NoiseMap.from_image_and_background_noise_map(pixel_scale=pixel_scale, image=image,
+                                                            background_noise_map=background_noise_map,
+                                                            exposure_time_map=exposure_time_map,
+                                                            convert_from_counts=convert_from_counts)
+    else:
+        raise exc.ImagingException('A noise map was not loaded, specify a noise_map_path of option to compute a noise map.')
 
-def load_psf(path, hdu, pixel_scale, renormalize=False):
+def load_background_noise_map(background_noise_map_path, background_noise_map_hdu, pixel_scale,
+                              convert_background_noise_map_from_weight_map,
+                              convert_background_noise_map_from_inverse_noise_map):
+    """Factory for loading the background noise-map from a .fits file.
+
+    This factory also includes a number of routines for converting the background noise-map from from other units (e.g. \
+    a weight map).
+
+    Parameters
+    ----------
+    background_noise_map_path : str
+        The path and filename of the .fits data containing the background noise-map.
+    background_noise_map_hdu : int
+        The hdu the background noise-map is contained in the .fits file that *background_noise_map_path* points too.
+    pixel_scale : float
+        The size of each pixel in arc seconds.
+    convert_background_noise_map_from_weight_map : bool
+        If True, the bacground noise-map loaded from the .fits file is converted from a weight-map to a noise-map (see \
+        *NoiseMap.from_weight_map).
+    convert_background_noise_map_from_inverse_noise_map : bool
+        If True, the background noise-map loaded from the .fits file is converted from an inverse noise-map to a \
+        noise-map (see *NoiseMap.from_inverse_noise_map).
+    """
+    background_noise_map_options = sum([convert_background_noise_map_from_weight_map,
+                                        convert_background_noise_map_from_inverse_noise_map])
+
+    if background_noise_map_options == 0 and background_noise_map_path is not None:
+        return NoiseMap.from_fits_with_pixel_scale(file_path=background_noise_map_path, hdu=background_noise_map_hdu, pixel_scale=pixel_scale)
+    elif convert_background_noise_map_from_weight_map and background_noise_map_path is not None:
+        weight_map = Array.from_fits(file_path=background_noise_map_path, hdu=background_noise_map_hdu)
+        return NoiseMap.from_weight_map(weight_map=weight_map, pixel_scale=pixel_scale)
+    elif convert_background_noise_map_from_inverse_noise_map and background_noise_map_path is not None:
+        inverse_noise_map = Array.from_fits(file_path=background_noise_map_path, hdu=background_noise_map_hdu)
+        return NoiseMap.from_inverse_noise_map(inverse_noise_map=inverse_noise_map, pixel_scale=pixel_scale)
+    else:
+        return None
+
+def load_poisson_noise_map(poisson_noise_map_path, poisson_noise_map_hdu, pixel_scale,
+                           convert_poisson_noise_map_from_weight_map,
+                           convert_poisson_noise_map_from_inverse_noise_map,
+                           poisson_noise_map_from_image,
+                           image, exposure_time_map, convert_from_counts):
+    """Factory for loading the Poisson noise-map from a .fits file.
+
+    This factory also includes a number of routines for converting the Poisson noise-map from from other units (e.g. \
+    a weight map) or computing the Poisson noise from other images (e.g. the imaging data).
+
+    Parameters
+    ----------
+    poisson_noise_map_path : str
+        The path and filename of the .fits data containing the Poisson noise-map.
+    poisson_noise_map_hdu : int
+        The hdu the Poisson noise-map is contained in the .fits file that *poisson_noise_map_path* points too.
+    pixel_scale : float
+        The size of each pixel in arc seconds.
+    convert_poisson_noise_map_from_weight_map : bool
+        If True, the Poisson noise-map loaded from the .fits file is converted from a weight-map to a noise-map (see \
+        *NoiseMap.from_weight_map).
+    convert_poisson_noise_map_from_inverse_noise_map : bool
+        If True, the Poisson noise-map loaded from the .fits file is converted from an inverse noise-map to a \
+        noise-map (see *NoiseMap.from_inverse_noise_map).
+    poisson_noise_map_from_image : bool
+        If True, the Poisson noise-map is estimated using the image-data.
+    image : ndarray
+        The image-data, which the Poisson noise-map can be calculated using.
+    background_noise_map : ndarray
+        The background noise-map, which the Poisson noise-map can be calculated using.
+    exposure_time_map : ndarray
+        The exposure-time map, which the Poisson noise-map can be calculated using.
+    """
+    poisson_noise_map_options = sum([convert_poisson_noise_map_from_weight_map,
+                                     convert_poisson_noise_map_from_inverse_noise_map,
+                                     poisson_noise_map_from_image])
+
+    if poisson_noise_map_options == 0 and poisson_noise_map_path is not None:
+        return PoissonNoiseMap.from_fits_with_pixel_scale(file_path=poisson_noise_map_path, hdu=poisson_noise_map_hdu, pixel_scale=pixel_scale)
+    elif poisson_noise_map_from_image:
+        return PoissonNoiseMap.from_image_and_exposure_time_map(pixel_scale=pixel_scale, image=image,
+                                                                exposure_time_map=exposure_time_map,
+                                                                convert_from_counts=convert_from_counts)
+    elif convert_poisson_noise_map_from_weight_map and poisson_noise_map_path is not None:
+        weight_map = Array.from_fits(file_path=poisson_noise_map_path, hdu=poisson_noise_map_hdu)
+        return PoissonNoiseMap.from_weight_map(weight_map=weight_map, pixel_scale=pixel_scale)
+    elif convert_poisson_noise_map_from_inverse_noise_map and poisson_noise_map_path is not None:
+        inverse_noise_map = Array.from_fits(file_path=poisson_noise_map_path, hdu=poisson_noise_map_hdu)
+        return PoissonNoiseMap.from_inverse_noise_map(inverse_noise_map=inverse_noise_map, pixel_scale=pixel_scale)
+    else:
+        return None
+
+def load_psf(psf_path, psf_hdu, pixel_scale, renormalize=False):
+    """Factory for loading the psf from a .fits file.
+
+    Parameters
+    ----------
+    psf_path : str
+        The path and filename of the .fits data containing the PSF.
+    psf_hdu : int
+        The hdu the psf is contained in the .fits file that *psf_path* points too.
+    pixel_scale : float
+        The size of each pixel in arc seconds.
+    renormalize : bool
+        If True, the PSF is renoralized such that all elements sum to 1.0.
+    """
     if renormalize:
-        return PSF.from_fits_renormalized(file_path=path, hdu=hdu, pixel_scale=pixel_scale)
+        return PSF.from_fits_renormalized(file_path=psf_path, hdu=psf_hdu, pixel_scale=pixel_scale)
     if not renormalize:
-        return PSF.from_fits_with_scale(file_path=path, hdu=hdu, pixel_scale=pixel_scale)
+        return PSF.from_fits_with_scale(file_path=psf_path, hdu=psf_hdu, pixel_scale=pixel_scale)
 
-def load_exposure_time_map(path, hdu, pixel_scale, shape, exposure_time):
+def load_exposure_time_map(exposure_time_map_path, exposure_time_map_hdu, pixel_scale, shape, exposure_time,
+                           exposure_time_map_from_background_noise_map, background_noise_map):
+    """Factory for loading the exposure time map from a .fits file.
 
-    if exposure_time is not None and path is None:
-        return ScaledSquarePixelArray.single_value(value=exposure_time, pixel_scale=pixel_scale, shape=shape)
-    elif exposure_time is None and path is not None:
-        return ScaledSquarePixelArray.from_fits_with_pixel_scale(file_path=path, hdu=hdu, pixel_scale=pixel_scale)
-    elif exposure_time is not None and path is not None:
-        raise exc.ImagingException('You have supplied both a path to an exposure time map and an exposure time. Only'
+    This factory also includes a number of routines for computing the exposure-time map from other images \
+    (e.g. the background noise-map).
+
+    Parameters
+    ----------
+    exposure_time_map_path : str
+        The path and filename of the .fits data containing the exposure time map.
+    exposure_time_map_hdu : int
+        The hdu the exposure time map is contained in the .fits file that *exposure_time_map_path* points too.
+    pixel_scale : float
+        The size of each pixel in arc seconds.
+    shape : (int, int)
+        The shape of the image-data, required if a single value is used to calculate the exposure time map.
+    exposure_time : float
+        The exposure-time used to compute the expsure-time map if only a single value is used.
+    exposure_time_map_from_background_noise_map : bool
+        If True, the exposure-time map is computed from the background noise map \
+        (see *ExposureTimeMap.from_background_noise_map*)
+    background_noise_map : ndarray
+        The background noise-map, which the Poisson noise-map can be calculated using.
+    """
+    exposure_time_map_options = sum([exposure_time_map_from_background_noise_map])
+
+    if exposure_time is not None and exposure_time_map_path is not None:
+        raise exc.ImagingException('You have supplied both a exposure_time_map_path to an exposure time map and an exposure time. Only'
                                    'one quantity should be supplied.')
 
-def load_background_sky_map(path, hdu, pixel_scale):
-    if path is not None:
-        return ScaledSquarePixelArray.from_fits_with_pixel_scale(file_path=path, hdu=hdu, pixel_scale=pixel_scale)
+    if exposure_time_map_options == 0:
+
+        if exposure_time is not None and exposure_time_map_path is None:
+            return ExposureTimeMap.single_value(value=exposure_time, pixel_scale=pixel_scale, shape=shape)
+        elif exposure_time is None and exposure_time_map_path is not None:
+            return ExposureTimeMap.from_fits_with_pixel_scale(file_path=exposure_time_map_path, hdu=exposure_time_map_hdu, pixel_scale=pixel_scale)
+
+    else:
+
+        if exposure_time_map_from_background_noise_map:
+            return ExposureTimeMap.from_exposure_time_and_background_noise_map(pixel_scale=pixel_scale,
+                   exposure_time=exposure_time, background_noise_map=background_noise_map)
+
+def load_background_sky_map(background_sky_map_path, background_sky_map_hdu, pixel_scale):
+    """Factory for loading the background sky from a .fits file.
+
+    Parameters
+    ----------
+    backgrond_sky_map_path : str
+        The path and filename of the .fits data containing the backgrond sky map.
+    backgrond_sky_map_hdu : int
+        The hdu the backgrond sky map is contained in the .fits file that *backgrond_sky_map_path* points too.
+    image_path : str
+        The path and filename of the .fits data containing the image.
+    """
+    if background_sky_map_path is not None:
+        return ScaledSquarePixelArray.from_fits_with_pixel_scale(file_path=background_sky_map_path,
+                                                                 hdu=background_sky_map_hdu, pixel_scale=pixel_scale)
+    else:
+        return None
 
 def output_imaging_to_fits(image, image_path, psf_path, noise_map_path=None, background_noise_map_path=None,
                            poisson_noise_map_path=None, exposure_time_map_path=None, background_sky_map_path=None,
