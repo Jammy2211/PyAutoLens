@@ -23,8 +23,8 @@ set -e
 python setup.py sdist bdist_wheel
 twine upload dist/* --skip-existing --username $PYPI_USERNAME --password $PYPI_PASSWORD
 
-docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
-docker build -t autolens/$PACKAGE_NAME .
-docker push autolens/$PACKAGE_NAME:latest
+sudo docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+sudo docker build -t autolens/$PACKAGE_NAME .
+sudo docker push autolens/$PACKAGE_NAME:latest
 
 git flow release finish $VERSION

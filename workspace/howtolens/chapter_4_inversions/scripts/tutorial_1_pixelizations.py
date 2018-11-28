@@ -1,7 +1,7 @@
 from autolens.model.profiles import mass_profiles as mp
 from autolens.model.galaxy import galaxy as g
 from autolens.lensing import ray_tracing
-from autolens.imaging import mask
+from autolens.imaging import grids
 from autolens.inversion import pixelizations as pix
 from autolens.inversion.plotters import mapper_plotters
 
@@ -9,7 +9,7 @@ from autolens.inversion.plotters import mapper_plotters
 # apply to an image-plane).
 #
 # Lets setup a lensed source-plane grid, using a lens model_galaxy and tracer_normal.
-image_plane_grids = mask.ImagingGrids.from_shape_and_pixel_scale(shape=(100, 100), pixel_scale=0.05,
+image_plane_grids = grids.ImagingGrids.from_shape_and_pixel_scale(shape=(100, 100), pixel_scale=0.05,
                                                                  sub_grid_size=2)
 lens_galaxy = g.Galaxy(mass=mp.EllipticalIsothermal(centre=(0.0, 0.0), axis_ratio=0.8, phi=90.0, einstein_radius=1.6))
 
