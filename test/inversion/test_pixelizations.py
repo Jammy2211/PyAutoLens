@@ -2,6 +2,7 @@ import numpy as np
 import pytest
 
 from autolens.imaging import mask
+from autolens.imaging import grids
 from autolens.inversion.util import pixelization_util
 from autolens.inversion import pixelizations
 
@@ -28,7 +29,7 @@ def make_three_pixels():
     return np.array([[0, 0], [0, 1], [1, 0]])
 
 
-class TestPixelizationGrid:
+class TestImagePlanePixelizationGrid:
 
     def test__properties_consistent_with_pixelization_util(self):
 
@@ -36,7 +37,7 @@ class TestPixelizationGrid:
                                        [False, False, False],
                                        [True, False, True]]), pixel_scale=0.5)
 
-        image_grid = mask.ImageGrid.from_mask(mask=ma)
+        image_grid = grids.ImageGrid.from_mask(mask=ma)
 
         pix_grid = pixelizations.ImagePlanePixelizationGrid(pix_grid_shape=(10, 10), pixel_scales=(0.16, 0.16),
                                                             image_grid=image_grid)
@@ -72,7 +73,7 @@ class TestPixelizationGrid:
                                            [False, False, False],
                                            [True, False, True]]), pixel_scale=1.0)
 
-            image_grid = mask.ImageGrid.from_mask(mask=ma)
+            image_grid = grids.ImageGrid.from_mask(mask=ma)
 
             pix_grid = pixelizations.ImagePlanePixelizationGrid(pix_grid_shape=(3, 3), pixel_scales=(1.0, 1.0),
                                                                 image_grid=image_grid)
@@ -92,7 +93,7 @@ class TestPixelizationGrid:
                                            [False, False, False],
                                            [True, False, True]]), pixel_scale=1.0)
 
-            image_grid = mask.ImageGrid.from_mask(mask=ma)
+            image_grid = grids.ImageGrid.from_mask(mask=ma)
 
             pix_grid = pixelizations.ImagePlanePixelizationGrid(pix_grid_shape=(4, 3), pixel_scales=(1.0, 1.0),
                                                                 image_grid=image_grid)
@@ -113,7 +114,7 @@ class TestPixelizationGrid:
                                            [False, False, False, False],
                                            [True,  False,  True,  True]]), pixel_scale=1.0)
 
-            image_grid = mask.ImageGrid.from_mask(mask=ma)
+            image_grid = grids.ImageGrid.from_mask(mask=ma)
 
             pix_grid = pixelizations.ImagePlanePixelizationGrid(pix_grid_shape=(3, 4), pixel_scales=(1.0, 1.0),
                                                                 image_grid=image_grid)
@@ -136,7 +137,7 @@ class TestImagePlanePixelization:
                                        [False, False, False],
                                        [False, False, False]]), pixel_scale=1.0)
 
-        image_grid = mask.ImageGrid.from_mask(mask=ma)
+        image_grid = grids.ImageGrid.from_mask(mask=ma)
 
         adaptive_image_grid = pixelizations.ImagePlanePixelization(pix_grid_shape=(3, 3))
 
@@ -161,7 +162,7 @@ class TestImagePlanePixelization:
                                        [False, False, False],
                                        [True, False, True]]), pixel_scale=1.0)
 
-        image_grid = mask.ImageGrid.from_mask(mask=ma)
+        image_grid = grids.ImageGrid.from_mask(mask=ma)
 
         adaptive_image_grid = pixelizations.ImagePlanePixelization(pix_grid_shape=(4, 3))
 
@@ -183,7 +184,7 @@ class TestImagePlanePixelization:
                                        [False, False, False, False],
                                        [True, False, True, True]]), pixel_scale=1.0)
 
-        image_grid = mask.ImageGrid.from_mask(mask=ma)
+        image_grid = grids.ImageGrid.from_mask(mask=ma)
 
         adaptive_image_grid = pixelizations.ImagePlanePixelization(pix_grid_shape=(3, 4))
 
@@ -197,7 +198,6 @@ class TestImagePlanePixelization:
         assert (pix_grid.pix_grid == np.array([[1.0, -0.5],
                                                [0.0, -1.5], [0.0, -0.5], [0.0, 0.5], [0.0, 1.5],
                                                [-1.0, -0.5]])).all()
-
 
 
 class TestRectangular:

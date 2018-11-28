@@ -1,7 +1,7 @@
 from autolens.model.profiles import light_profiles
 from autolens.model.profiles import mass_profiles
 from autolens.model.galaxy import galaxy
-from autolens.imaging import mask
+from autolens.imaging import grids
 from autolens.model.galaxy.plotters import galaxy_plotters
 
 # In this example, we'll use 'mass_profiles' and 'light_profiles' modules introduced previously, along with the
@@ -11,7 +11,7 @@ from autolens.model.galaxy.plotters import galaxy_plotters
 # 2) Galaxies can take multiple mass-profiles which each contribute to a deflection angle map.
 
 # Lets use an identical grid to the previous example.
-image_grids = mask.ImagingGrids.from_shape_and_pixel_scale(shape=(100, 100), pixel_scale=0.05,
+image_grids = grids.ImagingGrids.from_shape_and_pixel_scale(shape=(100, 100), pixel_scale=0.05,
                                                                  sub_grid_size=2)
 
 # We make our source model_galaxy in the same way, passing it the same Sersic light profile again.

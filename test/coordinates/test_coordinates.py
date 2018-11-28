@@ -1,4 +1,5 @@
 from autolens.imaging import mask
+from autolens.imaging import grids
 from autolens.model.profiles import light_profiles as lp, mass_profiles as mp
 import numpy as np
 import pytest
@@ -15,7 +16,7 @@ import pytest
 
 def test__centre_light_profile_on_grid_coordinate__peak_flux_is_correct_index():
 
-    image_grid = mask.ImageGrid.from_shape_and_pixel_scale(shape=(5, 5), pixel_scale=1.0)
+    image_grid = grids.ImageGrid.from_shape_and_pixel_scale(shape=(5, 5), pixel_scale=1.0)
 
     sersic = lp.SphericalSersic(centre=(2.0, -2.0))
     image_1d = sersic.intensities_from_grid(grid=image_grid)
@@ -47,7 +48,7 @@ def test__centre_light_profile_on_grid_coordinate__peak_flux_is_correct_index():
 
 def test__centre_mass_profile_on_grid_coordinate__peak_density_is_correct_index():
 
-    image_grid = mask.ImageGrid.from_shape_and_pixel_scale(shape=(5, 5), pixel_scale=1.0)
+    image_grid = grids.ImageGrid.from_shape_and_pixel_scale(shape=(5, 5), pixel_scale=1.0)
 
     sis = mp.SphericalIsothermal(centre=(2.0, -2.0))
     density_1d = sis.surface_density_from_grid(grid=image_grid)
@@ -79,43 +80,43 @@ def test__centre_mass_profile_on_grid_coordinate__peak_density_is_correct_index(
 
 def test__same_as_above__but_grid_is_padded_to_7x7_for_simulation():
 
-    grids = mask.ImagingGrids.grids_for_simulation(shape=(5, 5), pixel_scale=1.0, psf_shape=(3,3))
+    imaging_grids = grids.ImagingGrids.grids_for_simulation(shape=(5, 5), pixel_scale=1.0, psf_shape=(3,3))
 
     sersic = lp.SphericalSersic(centre=(2.0, -2.0))
-    image_1d = sersic.intensities_from_grid(grid=grids.image)
+    image_1d = sersic.intensities_from_grid(grid=imaging_grids.image)
     assert image_1d.argmax() == 8
-    image_2d = grids.image.map_to_2d(padded_array_1d=image_1d)
+    image_2d = imaging_grids.image.map_to_2d(padded_array_1d=image_1d)
     assert np.unravel_index(image_2d.argmax(), image_2d.shape) == (0, 0)
-    image_2d = grids.image.map_to_2d_keep_padded(padded_array_1d=image_1d)
+    image_2d = imaging_grids.image.map_to_2d_keep_padded(padded_array_1d=image_1d)
     assert np.unravel_index(image_2d.argmax(), image_2d.shape) == (1, 1)
 
     sersic = lp.SphericalSersic(centre=(2.0, 2.0))
-    image_1d = sersic.intensities_from_grid(grid=grids.image)
+    image_1d = sersic.intensities_from_grid(grid=imaging_grids.image)
     assert image_1d.argmax() == 12
-    image_2d = grids.image.map_to_2d(padded_array_1d=image_1d)
+    image_2d = imaging_grids.image.map_to_2d(padded_array_1d=image_1d)
     assert np.unravel_index(image_2d.argmax(), image_2d.shape) == (0, 4)
-    image_2d = grids.image.map_to_2d_keep_padded(padded_array_1d=image_1d)
+    image_2d = imaging_grids.image.map_to_2d_keep_padded(padded_array_1d=image_1d)
     assert np.unravel_index(image_2d.argmax(), image_2d.shape) == (1, 5)
 
     sersic = lp.SphericalSersic(centre=(-2.0, -2.0))
-    image_1d = sersic.intensities_from_grid(grid=grids.image)
+    image_1d = sersic.intensities_from_grid(grid=imaging_grids.image)
     assert image_1d.argmax() == 36
-    image_2d = grids.image.map_to_2d(padded_array_1d=image_1d)
+    image_2d = imaging_grids.image.map_to_2d(padded_array_1d=image_1d)
     assert np.unravel_index(image_2d.argmax(), image_2d.shape) == (4, 0)
-    image_2d = grids.image.map_to_2d_keep_padded(padded_array_1d=image_1d)
+    image_2d = imaging_grids.image.map_to_2d_keep_padded(padded_array_1d=image_1d)
     assert np.unravel_index(image_2d.argmax(), image_2d.shape) == (5, 1)
 
     sersic = lp.SphericalSersic(centre=(-2.0, 2.0))
-    image_1d = sersic.intensities_from_grid(grid=grids.image)
+    image_1d = sersic.intensities_from_grid(grid=imaging_grids.image)
     assert image_1d.argmax() == 40
-    image_2d = grids.image.map_to_2d(padded_array_1d=image_1d)
+    image_2d = imaging_grids.image.map_to_2d(padded_array_1d=image_1d)
     assert np.unravel_index(image_2d.argmax(), image_2d.shape) == (4, 4)
-    image_2d = grids.image.map_to_2d_keep_padded(padded_array_1d=image_1d)
+    image_2d = imaging_grids.image.map_to_2d_keep_padded(padded_array_1d=image_1d)
     assert np.unravel_index(image_2d.argmax(), image_2d.shape) == (5, 5)
 
 def test__deflection_angles():
 
-    image_grid = mask.ImageGrid.from_shape_and_pixel_scale(shape=(5, 5), pixel_scale=1.0)
+    image_grid = grids.ImageGrid.from_shape_and_pixel_scale(shape=(5, 5), pixel_scale=1.0)
 
     sis = mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=1.0)
     deflections_1d = sis.deflections_from_grid(grid=image_grid)

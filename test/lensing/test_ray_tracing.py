@@ -4,6 +4,7 @@ from astropy import cosmology as cosmo
 
 from autolens import exc
 from autolens.imaging import mask
+from autolens.imaging import grids
 from autolens.inversion import pixelizations
 from autolens.inversion import regularization
 from autolens.model.galaxy import galaxy as g
@@ -20,7 +21,7 @@ def make_imaging_grids():
                              [True, False, False, True],
                              [True, True, True, True]]), pixel_scale=6.0)
 
-    imaging_grids = mask.ImagingGrids.grids_from_mask_sub_grid_size_and_psf_shape(mask=ma, sub_grid_size=2,
+    imaging_grids = grids.ImagingGrids.grids_from_mask_sub_grid_size_and_psf_shape(mask=ma, sub_grid_size=2,
                                                                                   psf_shape=(3, 3))
 
     # Manually overwrite a set of cooridnates to make tests of grids and defledctions straightforward
@@ -42,7 +43,7 @@ def make_imaging_grids_1():
                              [True, False, False, True],
                              [True, True, True, True]]), pixel_scale=12.0)
 
-    imaging_grids = mask.ImagingGrids.grids_from_mask_sub_grid_size_and_psf_shape(mask=ma, sub_grid_size=2,
+    imaging_grids = grids.ImagingGrids.grids_from_mask_sub_grid_size_and_psf_shape(mask=ma, sub_grid_size=2,
                                                                                   psf_shape=(3, 3))
 
     # Manually overwrite a set of cooridnates to make tests of grids and defledctions straightforward
@@ -61,7 +62,7 @@ def make_imaging_grids_1():
 @pytest.fixture(name="padded_grids")
 def make_padded_grids():
     ma = mask.Mask(np.array([[True, False]]), pixel_scale=3.0)
-    return mask.ImagingGrids.padded_grids_from_mask_sub_grid_size_and_psf_shape(ma, 2, (3, 3))
+    return grids.ImagingGrids.padded_grids_from_mask_sub_grid_size_and_psf_shape(ma, 2, (3, 3))
 
 
 @pytest.fixture(name='galaxy_non', scope='function')

@@ -2,7 +2,7 @@ import numpy as np
 
 from autolens.imaging import convolution
 from autolens.imaging import image as im
-from autolens.imaging import mask as msk
+from autolens.imaging import grids
 
 
 class FittingImage(im.Image):
@@ -99,14 +99,14 @@ class FittingImage(im.Image):
         self.convolver_image = convolution.ConvolverImage(self.mask, mask.blurring_mask_for_psf_shape(image_psf_shape),
                                                           self.psf.resized_scaled_array_from_array(image_psf_shape))
 
-        self.grids = msk.ImagingGrids.grids_from_mask_sub_grid_size_and_psf_shape(mask=mask,
+        self.grids = grids.ImagingGrids.grids_from_mask_sub_grid_size_and_psf_shape(mask=mask,
                                                                                   sub_grid_size=sub_grid_size,
                                                                                   psf_shape=image_psf_shape)
 
-        self.padded_grids = msk.ImagingGrids.padded_grids_from_mask_sub_grid_size_and_psf_shape(mask=mask,
+        self.padded_grids = grids.ImagingGrids.padded_grids_from_mask_sub_grid_size_and_psf_shape(mask=mask,
                                                         sub_grid_size=sub_grid_size, psf_shape=image_psf_shape)
 
-        self.border = msk.ImageGridBorder.from_mask(mask=mask)
+        self.border = grids.ImageGridBorder.from_mask(mask=mask)
 
     def __array_finalize__(self, obj):
         super(FittingImage, self).__array_finalize__(obj)

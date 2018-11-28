@@ -1,6 +1,7 @@
 import numpy as np
 
 from autolens.imaging import mask as msk
+from autolens.imaging import grids
 from autolens.inversion import mappers as pm
 from autolens.inversion import pixelizations
 from autolens.inversion import regularization
@@ -16,7 +17,7 @@ class TestRectangular:
 
         sub_to_image = np.array([0, 1, 2, 3, 4])
 
-        grids = MockGridCollection(image=pixelization_grid,
+        imaging_grids = MockGridCollection(image=pixelization_grid,
                                    sub=MockSubGrid(sub_grid=pixelization_sub_grid,
                                                    sub_to_image=sub_to_image, sub_grid_size=1))
 
@@ -25,7 +26,7 @@ class TestRectangular:
 
         pix = pixelizations.Rectangular(shape=(3, 3))
 
-        mapper = pix.mapper_from_grids_and_border(grids=grids, border=None)
+        mapper = pix.mapper_from_grids_and_border(grids=imaging_grids, border=None)
 
         assert (mapper.mapping_matrix == np.array([[1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
                                                        [0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
@@ -67,13 +68,13 @@ class TestRectangular:
 
         sub_to_image = np.array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14])
 
-        grids = MockGridCollection(image=pixelization_grid,
+        imaging_grids = MockGridCollection(image=pixelization_grid,
                                    sub=MockSubGrid(pixelization_sub_grid, sub_to_image,
                                                    sub_grid_size=1))
 
         pix = pixelizations.Rectangular(shape=(3, 3))
 
-        mapper = pix.mapper_from_grids_and_border(grids=grids, border=None)
+        mapper = pix.mapper_from_grids_and_border(grids=imaging_grids, border=None)
 
         assert (mapper.mapping_matrix == np.array([[1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
                                                        [1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
@@ -120,12 +121,12 @@ class TestRectangular:
 
         sub_to_image = np.array([0, 0, 0, 2, 1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 3, 2, 4, 4, 4, 2])
 
-        grids = MockGridCollection(image=pixelization_grid,
+        imaging_grids = MockGridCollection(image=pixelization_grid,
                                    sub=MockSubGrid(pixelization_sub_grid, sub_to_image, sub_grid_size=2))
 
         pix = pixelizations.Rectangular(shape=(3, 3))
 
-        mapper = pix.mapper_from_grids_and_border(grids=grids, border=None)
+        mapper = pix.mapper_from_grids_and_border(grids=imaging_grids, border=None)
 
         assert (mapper.mapping_matrix == np.array([[0.75, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
                                                        [0.0, 0.0, 0.75, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
@@ -152,17 +153,17 @@ class TestRectangular:
         pixelization_grid = np.array([[1.0, -1.0], [1.0, 1.0], [0.0, 0.0], [-1.0, -1.0], [-1.0, 1.0]])
         pixelization_sub_grid = np.array([[2.0, 2.0], [2.0, 2.0], [2.0, 2.0], [2.0, 2.0], [-2.0, -2.0]])
 
-        border = msk.ImageGridBorder(arr=np.array([0, 1, 3, 4]))
+        border = grids.ImageGridBorder(arr=np.array([0, 1, 3, 4]))
 
         sub_to_image = np.array([0, 1, 2, 3, 4])
 
-        grids = MockGridCollection(image=pixelization_grid,
+        imaging_grids = MockGridCollection(image=pixelization_grid,
                                    sub=MockSubGrid(pixelization_sub_grid, sub_to_image,
                                                    sub_grid_size=1))
 
         pix = pixelizations.Rectangular(shape=(3, 3))
 
-        mapper = pix.mapper_from_grids_and_border(grids, border)
+        mapper = pix.mapper_from_grids_and_border(imaging_grids, border)
 
         assert (mapper.mapping_matrix == np.array([[0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
                                                    [0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
@@ -201,15 +202,15 @@ class TestImagePlanePixelization:
                                    [-1.0, -1.0], [-1.0, 0.0], [-1.0, 1.0]])
         sub_to_image = np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])
 
-        image_grid = msk.ImageGrid(arr=image_grid, mask=mask)
+        image_grid = grids.ImageGrid(arr=image_grid, mask=mask)
         image_sub_grid = MockSubGrid(image_sub_grid, sub_to_image, sub_grid_size=1)
 
         pix = pixelizations.AdaptiveMagnification(pix_grid_shape=(3, 3))
         image_plane_pix = pix.image_plane_pix_grid_from_image_grid(image_grid=image_grid)
 
-        grids = MockGridCollection(image=image_grid, sub=image_sub_grid, pix=image_plane_pix.pix_grid)
+        imaging_grids = MockGridCollection(image=image_grid, sub=image_sub_grid, pix=image_plane_pix.pix_grid)
 
-        mapper = pix.mapper_from_grids_and_border(grids=grids, border=None,
+        mapper = pix.mapper_from_grids_and_border(grids=imaging_grids, border=None,
                                                   image_to_nearest_image_pix=image_plane_pix.image_to_pix)
 
         assert isinstance(mapper, pm.VoronoiMapper)
@@ -252,15 +253,15 @@ class TestImagePlanePixelization:
                                                 [-1.0, 0.0]])
         sub_to_image = np.array([0, 1, 2, 3, 4])
 
-        image_grid = msk.ImageGrid(arr=image_grid, mask=mask)
+        image_grid = grids.ImageGrid(arr=image_grid, mask=mask)
         image_sub_grid = MockSubGrid(image_sub_grid, sub_to_image, sub_grid_size=1)
 
         pix = pixelizations.AdaptiveMagnification(pix_grid_shape=(3, 3))
         image_plane_pix = pix.image_plane_pix_grid_from_image_grid(image_grid=image_grid)
 
-        grids = MockGridCollection(image=image_grid, sub=image_sub_grid, pix=image_plane_pix.pix_grid)
+        imaging_grids = MockGridCollection(image=image_grid, sub=image_sub_grid, pix=image_plane_pix.pix_grid)
 
-        mapper = pix.mapper_from_grids_and_border(grids=grids, border=None,
+        mapper = pix.mapper_from_grids_and_border(grids=imaging_grids, border=None,
                                                   image_to_nearest_image_pix=image_plane_pix.image_to_pix)
 
         assert isinstance(mapper, pm.VoronoiMapper)
@@ -298,15 +299,15 @@ class TestImagePlanePixelization:
 
         sub_to_image = np.array([0, 0, 0, 2, 1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 3, 2, 4, 4, 4, 2])
 
-        image_grid = msk.ImageGrid(arr=image_grid, mask=mask)
+        image_grid = grids.ImageGrid(arr=image_grid, mask=mask)
         image_sub_grid = MockSubGrid(image_sub_grid, sub_to_image, sub_grid_size=2)
 
         pix = pixelizations.AdaptiveMagnification(pix_grid_shape=(3, 3))
         image_plane_pix = pix.image_plane_pix_grid_from_image_grid(image_grid=image_grid)
 
-        grids = MockGridCollection(image=image_grid, sub=image_sub_grid, pix=image_plane_pix.pix_grid)
+        imaging_grids = MockGridCollection(image=image_grid, sub=image_sub_grid, pix=image_plane_pix.pix_grid)
 
-        mapper = pix.mapper_from_grids_and_border(grids=grids, border=None,
+        mapper = pix.mapper_from_grids_and_border(grids=imaging_grids, border=None,
                                                   image_to_nearest_image_pix=image_plane_pix.image_to_pix)
 
         assert isinstance(mapper, pm.VoronoiMapper)
@@ -326,6 +327,7 @@ class TestImagePlanePixelization:
                                                    [-1.0, 0.0, -1.0, 3.00000001, -1.0],
                                                    [0.0, -1.0, -1.0, -1.0, 3.00000001]])).all()
 
+
 class TestAdaptiveMagnification:
 
     def test__5_simple_grid__no_sub_grid(self):
@@ -335,7 +337,7 @@ class TestAdaptiveMagnification:
 
         sub_to_image = np.array([0, 1, 2, 3, 4])
 
-        grids = MockGridCollection(image=pixelization_grid,
+        imaging_grids = MockGridCollection(image=pixelization_grid,
                                    sub=MockSubGrid(pixelization_sub_grid, sub_to_image, sub_grid_size=1),
                                    pix=pixelization_grid)
 
@@ -343,7 +345,7 @@ class TestAdaptiveMagnification:
 
         pix = pixelizations.AdaptiveMagnification(pix_grid_shape=(5, 1))
 
-        mapper = pix.mapper_from_grids_and_border(grids=grids, border=None, image_to_nearest_image_pix=image_to_pix)
+        mapper = pix.mapper_from_grids_and_border(grids=imaging_grids, border=None, image_to_nearest_image_pix=image_to_pix)
 
         assert isinstance(mapper, pm.VoronoiMapper)
 
@@ -377,7 +379,7 @@ class TestAdaptiveMagnification:
         pixel_centers = np.array([[1.0, 1.0], [-1.0, 1.0], [0.0, 0.0], [1.0, -1.0], [-1.0, -1.0]])
 
         sub_to_image = np.array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14])
-        grids = MockGridCollection(image=pixelization_grid,
+        imaging_grids = MockGridCollection(image=pixelization_grid,
                                    sub=MockSubGrid(pixelization_sub_grid, sub_to_image, sub_grid_size=1),
                                    pix=pixel_centers)
 
@@ -385,7 +387,7 @@ class TestAdaptiveMagnification:
 
         pix = pixelizations.AdaptiveMagnification(pix_grid_shape=(5, 1))
 
-        mapper = pix.mapper_from_grids_and_border(grids=grids, border=None, image_to_nearest_image_pix=image_to_pix)
+        mapper = pix.mapper_from_grids_and_border(grids=imaging_grids, border=None, image_to_nearest_image_pix=image_to_pix)
 
         assert isinstance(mapper, pm.VoronoiMapper)
 
@@ -426,7 +428,7 @@ class TestAdaptiveMagnification:
 
         pixel_centers = pixelization_grid
 
-        grids = MockGridCollection(image=pixelization_grid,
+        imaging_grids = MockGridCollection(image=pixelization_grid,
                                    sub=MockSubGrid(pixelization_sub_grid, sub_to_image,
                                                    sub_grid_size=2),
                                    pix=pixel_centers)
@@ -435,7 +437,7 @@ class TestAdaptiveMagnification:
 
         pix = pixelizations.AdaptiveMagnification(pix_grid_shape=(5, 1))
 
-        mapper = pix.mapper_from_grids_and_border(grids=grids, border=None, image_to_nearest_image_pix=image_to_pix)
+        mapper = pix.mapper_from_grids_and_border(grids=imaging_grids, border=None, image_to_nearest_image_pix=image_to_pix)
 
         assert isinstance(mapper, pm.VoronoiMapper)
 
@@ -459,13 +461,13 @@ class TestAdaptiveMagnification:
         pixelization_grid = np.array([[1.0, -1.0], [1.0, 1.0], [0.0, 0.0], [-1.0, -1.0], [-1.0, 1.0]])
         pixelization_sub_grid = np.array([[2.0, 2.0], [2.0, 2.0], [2.0, 2.0], [2.0, 2.0], [-2.0, -2.0]])
 
-        border = msk.ImageGridBorder(arr=np.array([0, 1, 3, 4]))
+        border = grids.ImageGridBorder(arr=np.array([0, 1, 3, 4]))
 
         sub_to_image = np.array([0, 1, 2, 3, 4])
 
         pixel_centers = pixelization_grid
 
-        grids = MockGridCollection(image=pixelization_grid,
+        imaging_grids = MockGridCollection(image=pixelization_grid,
                                    sub=MockSubGrid(pixelization_sub_grid, sub_to_image, sub_grid_size=1),
                                    pix=pixel_centers)
 
@@ -473,7 +475,7 @@ class TestAdaptiveMagnification:
 
         pix = pixelizations.AdaptiveMagnification(pix_grid_shape=(5, 1))
 
-        mapper = pix.mapper_from_grids_and_border(grids=grids, border=border, image_to_nearest_image_pix=image_to_pix)
+        mapper = pix.mapper_from_grids_and_border(grids=imaging_grids, border=border, image_to_nearest_image_pix=image_to_pix)
 
 
         assert isinstance(mapper, pm.VoronoiMapper)

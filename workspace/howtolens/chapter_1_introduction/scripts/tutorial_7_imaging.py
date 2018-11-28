@@ -1,5 +1,5 @@
 from autolens.imaging import image as im
-from autolens.imaging import mask
+from autolens.imaging import grids
 from autolens.lensing import ray_tracing
 from autolens.model.galaxy import galaxy as g
 from autolens.model.profiles import light_profiles as lp
@@ -17,7 +17,7 @@ psf = im.PSF.simulate_as_gaussian(shape=(11, 11), pixel_scale=0.1, sigma=0.1)
 
 # To simulate an image, we use a special type of grid. This pads the grids 2D dimensions relative to the PSF-shape,
 # to ensure that the edge's of our simulated image are not degraded.
-image_plane_grids = mask.ImagingGrids.grids_for_simulation(shape=(100, 100), pixel_scale=0.1, psf_shape=psf.shape)
+image_plane_grids = grids.ImagingGrids.grids_for_simulation(shape=(100, 100), pixel_scale=0.1, psf_shape=psf.shape)
 print(image_plane_grids.image.image_shape)
 print(image_plane_grids.image.padded_shape)
 

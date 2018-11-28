@@ -9,6 +9,7 @@ from autofit.core import non_linear
 
 from autolens.imaging import image as img
 from autolens.imaging import mask as msk
+from autolens.imaging import grids
 from autolens.lensing import lensing_image as li
 from autolens.model.galaxy import galaxy as g, galaxy_model as gm
 from autolens.model.profiles import light_profiles as lp, mass_profiles as mp
@@ -76,7 +77,7 @@ class NLO(non_linear.NonLinearOptimizer):
 
 @pytest.fixture(name="grids")
 def make_grids(lensing_image):
-    return msk.ImagingGrids.grids_from_mask_sub_grid_size_and_psf_shape(
+    return grids.ImagingGrids.grids_from_mask_sub_grid_size_and_psf_shape(
         lensing_image.mask, 1, lensing_image.psf.shape)
 
 

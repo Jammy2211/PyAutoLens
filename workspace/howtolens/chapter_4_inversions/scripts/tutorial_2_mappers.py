@@ -1,5 +1,6 @@
 from autolens.imaging import image as im
 from autolens.imaging import mask as ma
+from autolens.imaging import grids
 from autolens.model.profiles import light_profiles as lp
 from autolens.model.profiles import mass_profiles as mp
 from autolens.model.galaxy import galaxy as g
@@ -15,13 +16,13 @@ from autolens.inversion.plotters import mapper_plotters
 # To begin, lets simulate and load an image - it'll be clear why we're doing this in a moment.
 def simulate():
 
-    from autolens.imaging import mask
+    from autolens.imaging import grids
     from autolens.model.galaxy import galaxy as g
     from autolens.lensing import ray_tracing
 
     psf = im.PSF.simulate_as_gaussian(shape=(11, 11), sigma=0.05, pixel_scale=0.05)
 
-    image_plane_grids = mask.ImagingGrids.grids_for_simulation(shape=(150, 150), pixel_scale=0.05, psf_shape=(11, 11))
+    image_plane_grids = grids.ImagingGrids.grids_for_simulation(shape=(150, 150), pixel_scale=0.05, psf_shape=(11, 11))
 
     lens_galaxy = g.Galaxy(mass=mp.EllipticalIsothermal(centre=(0.0, 0.0), axis_ratio=0.8, phi=45.0,
                                                         einstein_radius=1.6))
@@ -37,7 +38,7 @@ image = simulate()
 imaging_plotters.plot_image_subplot(image=image)
 
 # Lets begin by setting up our grids (using the image we loaded above).
-image_plane_grids = ma.ImagingGrids.from_shape_and_pixel_scale(shape=image.shape, pixel_scale=image.pixel_scale,
+image_plane_grids = grids.ImagingGrids.from_shape_and_pixel_scale(shape=image.shape, pixel_scale=image.pixel_scale,
                                                                sub_grid_size=2)
 
 # Our tracer will use the same lens model_galaxy and source model_galaxy that we used to simulate the image (although, becuase
