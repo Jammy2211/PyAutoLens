@@ -4,7 +4,7 @@ import shutil
 import pytest
 
 from autofit import conf
-from autolens.imaging import mask as msk
+from autolens.imaging import grids
 from autolens.model.profiles.plotters import profile_plotters
 from autolens.model.profiles import light_profiles as lp, mass_profiles as mp
 
@@ -36,7 +36,7 @@ def test_mass_profile():
 
 @pytest.fixture(name='grids')
 def test_grids():
-    return msk.ImagingGrids.from_shape_and_pixel_scale(shape=(100, 100), pixel_scale=0.05, sub_grid_size=2)
+    return grids.ImagingGrids.from_shape_and_pixel_scale(shape=(100, 100), pixel_scale=0.05, sub_grid_size=2)
 
 
 def test__intensities_is_output(light_profile, grids, profile_plotter_path):

@@ -6,7 +6,7 @@ import numpy as np
 from autofit import conf
 from autolens.imaging import image as im
 from autolens.imaging.util import array_util
-from autolens.imaging import mask
+from autolens.imaging import grids
 from autolens.imaging import scaled_array
 from autolens.lensing import ray_tracing
 
@@ -33,7 +33,7 @@ def simulate_integration_image(data_name, pixel_scale, lens_galaxies, source_gal
 
     psf = im.PSF.simulate_as_gaussian(shape=psf_shape, pixel_scale=pixel_scale, sigma=pixel_scale)
 
-    image_grids = mask.ImagingGrids.grids_for_simulation(shape=image_shape, pixel_scale=pixel_scale,
+    image_grids = grids.ImagingGrids.grids_for_simulation(shape=image_shape, pixel_scale=pixel_scale,
                                                          sub_grid_size=1, psf_shape=psf_shape)
 
     image_shape = image_grids.image.padded_shape
