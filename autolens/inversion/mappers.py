@@ -182,8 +182,7 @@ class RectangularMapper(Mapper):
 
 class VoronoiMapper(Mapper):
 
-    def __init__(self, pixels, grids, border, pixel_neighbors, pixel_centers, voronoi, voronoi_to_pix,
-                 image_to_voronoi):
+    def __init__(self, pixels, grids, border, pixel_neighbors, pixel_centers, voronoi, image_to_nearest_image_pix):
         """Class representing the mappings between the pixels in an observed image of a strong lens and \
         the pixels of a Voronoi pixelization.
 
@@ -205,8 +204,7 @@ class VoronoiMapper(Mapper):
         """
         self.pixel_centers = pixel_centers
         self.voronoi = voronoi
-        self.voronoi_to_pix = voronoi_to_pix
-        self.image_to_voronoi = image_to_voronoi
+        self.image_to_nearest_image_pix = image_to_nearest_image_pix
         super(VoronoiMapper, self).__init__(pixels, grids, border, pixel_neighbors)
 
     @property
@@ -216,9 +214,10 @@ class VoronoiMapper(Mapper):
         image_to_pix = np.zeros((self.grids.image.shape[0]), dtype=int)
 
         for image_index, pixel_coordinate in enumerate(self.grids.image):
-            nearest_cluster = self.image_to_voronoi[image_index]
 
-            image_to_pix[image_index] = self.pair_image_and_pixel(pixel_coordinate, nearest_cluster)
+            nearest_pixel = self.image_to_nearest_image_pix[image_index]
+
+            image_to_pix[image_index] = self.pair_image_and_pixel(pixel_coordinate, nearest_pixel)
 
         return image_to_pix
 
@@ -270,13 +269,14 @@ class VoronoiMapper(Mapper):
         sub_to_pix = np.zeros((self.grids.sub.total_pixels,), dtype=int)
 
         for sub_index, sub_coordinate in enumerate(self.grids.sub):
-            nearest_cluster = self.image_to_voronoi[self.grids.sub.sub_to_image[sub_index]]
 
-            sub_to_pix[sub_index] = self.pair_image_and_pixel(sub_coordinate, nearest_cluster)
+            nearest_pixel = self.image_to_nearest_image_pix[self.grids.sub.sub_to_image[sub_index]]
+
+            sub_to_pix[sub_index] = self.pair_image_and_pixel(sub_coordinate, nearest_pixel)
 
         return sub_to_pix
 
-    def pair_image_and_pixel(self, coordinate, nearest_cluster):
+    def pair_image_and_pixel(self, coordinate, nearest_pixel):
         """ Compute the mappings between a set of sub-maskedimage pixels and pixels, using the maskedimage's traced \
         pix-plane sub-grid and the pixel centers. This uses the pix-neighbors to perform a graph \
         search when pairing pixels, for efficiency.
@@ -298,7 +298,7 @@ class VoronoiMapper(Mapper):
         ----------
         coordinate : [float, float]
             The x and y pix sub-grid grid which are to be matched with their closest pixels.
-        nearest_cluster : int
+        nearest_pixel : int
             The nearest pixel defined on the cluster-pixel grid.
         pixel_centers: [[float, float]]
             The coordinate of the center of every pixel.
@@ -309,8 +309,6 @@ class VoronoiMapper(Mapper):
             The mapping_matrix between every cluster-pixel and pixel (e.g. if the fifth pixel maps to \
             the 3rd cluster_pixel, cluster_to_pix[4] = 2).
          """
-
-        nearest_pixel = self.voronoi_to_pix[nearest_cluster]
 
         while True:
 

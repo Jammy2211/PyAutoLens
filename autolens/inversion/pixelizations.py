@@ -9,7 +9,7 @@ from autolens.inversion.util import pixelization_util
 from autolens.inversion import mappers
 
 
-class PixelizationGrid(scaled_array.ArrayGeometry):
+class ImagePlanePixelizationGrid(scaled_array.ArrayGeometry):
 
     def __init__(self, pix_grid_shape, pixel_scales, image_grid):
         """Abstract class which handles the uniform image-grid whose pixel centers are used to form an adaptive grid's \
@@ -73,11 +73,12 @@ class ImagePlanePixelization(object):
 
         self.pix_grid_shape = pix_grid_shape
 
-    def pix_grid_from_image_grid(self, image_grid):
-        pixel_scales = (image_grid.masked_shape_arcsec[0] / self.pix_grid_shape[0],
-                        image_grid.masked_shape_arcsec[1] / self.pix_grid_shape[1])
-        return PixelizationGrid(pix_grid_shape=self.pix_grid_shape, pixel_scales=pixel_scales,
-                                image_grid=image_grid)
+    def image_plane_pix_grid_from_image_grid(self, image_grid):
+        image_pixel_scale = image_grid.mask.pixel_scale
+        pixel_scales = ((image_grid.masked_shape_arcsec[0] + image_pixel_scale) / self.pix_grid_shape[0],
+                        (image_grid.masked_shape_arcsec[1] + image_pixel_scale) / self.pix_grid_shape[1])
+        return ImagePlanePixelizationGrid(pix_grid_shape=self.pix_grid_shape, pixel_scales=pixel_scales,
+                                          image_grid=image_grid)
 
 
 class Pixelization(object):
@@ -297,7 +298,7 @@ class Voronoi(Pixelization):
         return pixel_neighbors
 
 
-class Cluster(Voronoi, ImagePlanePixelization):
+class AdaptiveMagnification(Voronoi, ImagePlanePixelization):
 
     def __init__(self, pix_grid_shape):
         """A cluster pixelization, which represents pixels as a Voronoi grid (see Voronoi). For this pixelization, the \
@@ -309,9 +310,9 @@ class Cluster(Voronoi, ImagePlanePixelization):
             The shape of the image-grid whose centres form the centres of pixelization pixels.
         """
         ImagePlanePixelization.__init__(self=self, pix_grid_shape=pix_grid_shape)
-        super(Cluster, self).__init__()
+        super(AdaptiveMagnification, self).__init__()
 
-    def mapper_from_grids_and_border(self, grids, border, pixel_centers, image_to_voronoi):
+    def mapper_from_grids_and_border(self, grids, border, image_to_nearest_image_pix):
         """Setup the pixelization mapper of the cluster pixelization.
 
         This first relocateds all grid-coordinates, such that any which tracer_normal beyond its border (e.g. due to high \
@@ -325,10 +326,11 @@ class Cluster(Voronoi, ImagePlanePixelization):
             The border of the grids (defined by their datas_-plane masks).
         pixel_centers : ndarray
             The center of each Voronoi pixel, computed from an traced datas_-plane grid.
-        image_to_voronoi : ndarray
+        image_to_nearest_image_pix : ndarray
             The mapping of each datas_ pixel to Voronoi pixels.
         """
 
+        pixel_centers = grids.pix
         pixels = pixel_centers.shape[0]
 
         if border is not None:
@@ -336,15 +338,13 @@ class Cluster(Voronoi, ImagePlanePixelization):
         else:
             relocated_grids = grids
 
-        voronoi_to_pixelization = np.arange(0, pixels)
         voronoi = self.voronoi_from_pixel_centers(pixel_centers)
         pixel_neighbors = self.neighbors_from_pixelization(pixels=pixels, ridge_points=voronoi.ridge_points)
 
         return mappers.VoronoiMapper(pixels=pixels, grids=relocated_grids, border=border,
                                      pixel_neighbors=pixel_neighbors,
                                      pixel_centers=pixel_centers, voronoi=voronoi,
-                                     voronoi_to_pix=voronoi_to_pixelization,
-                                     image_to_voronoi=image_to_voronoi)
+                                     image_to_nearest_image_pix=image_to_nearest_image_pix)
 
 
 class Amorphous(Voronoi):

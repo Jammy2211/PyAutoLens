@@ -433,6 +433,18 @@ class TestSubGrid(object):
         assert (sub_grid.sub_to_image == sub_to_image_util).all()
 
 
+class TestPixImageGrid:
+
+    def test_pix_image_grid__attributes(self):
+
+        pix_image_grid = mask.PixGrid(arr=np.array([[1.0, 1.0], [2.0, 2.0]]),
+                                      image_to_nearest_image_pix=np.array([0, 1]))
+
+        assert type(pix_image_grid) == mask.PixGrid
+        assert (pix_image_grid == np.array([[1.0, 1.0], [2.0, 2.0]])).all()
+        assert (pix_image_grid.image_to_nearest_image_pix == np.array([0, 1])).all()
+
+
 class TestUnmaskedGrids:
     class TestPaddedImageGridFromShapes:
 
@@ -859,7 +871,7 @@ class TestImagingGrids(object):
 
         assert (padded_grids.pix == np.array([[0.0, 0.0]])).all()
 
-    def test_apply_function_retains_attributes(self, imaging_grids):
+    def test__apply_function_retains_attributes(self, imaging_grids):
 
         imaging_grids.pix = imaging_grids.image
 
@@ -939,7 +951,8 @@ class TestImagingGrids(object):
 
     def test__imaging_grids_with_pix_grid(self, imaging_grids):
 
-        imaging_grids = imaging_grids.imaging_grids_with_pix_grid(pix=np.array([[5.0, 5.0]]))
+        imaging_grids = imaging_grids.imaging_grids_with_pix_grid(pix_grid=np.array([[5.0, 5.0], [6.0, 7.0]]),
+                                                                  image_to_nearest_image_pix=np.array([0, 1]))
 
         assert (imaging_grids.image == np.array([[0., 0.]])).all()
         np.testing.assert_almost_equal(imaging_grids.sub, np.array([[0.16666667, -0.16666667],
@@ -954,7 +967,8 @@ class TestImagingGrids(object):
                                                     [-1., -1.],
                                                     [-1., 0.],
                                                     [-1., 1.]])).all()
-        assert (imaging_grids.pix == np.array([[5.0, 5.0]])).all()
+        assert (imaging_grids.pix == np.array([[5.0, 5.0], [6.0, 7.0]])).all()
+        assert (imaging_grids.pix.image_to_nearest_image_pix == np.array([0, 1])).all()
 
 
 class TestImageGridBorder(object):
