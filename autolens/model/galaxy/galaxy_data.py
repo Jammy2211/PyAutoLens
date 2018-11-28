@@ -1,6 +1,7 @@
 import numpy as np
 
 from autolens.imaging import mask as msk
+from autolens.imaging import grids
 from autolens.imaging import scaled_array
 
 
@@ -52,11 +53,11 @@ class GalaxyData(scaled_array.ScaledSquarePixelArray):
         self.noise_map_ = mask.map_2d_array_to_masked_1d_array(array_2d=noise_map)
         self.sub_grid_size = sub_grid_size
 
-        self.grids = msk.ImagingGrids.grids_from_mask_sub_grid_size_and_psf_shape(mask=mask,
+        self.grids = grids.ImagingGrids.grids_from_mask_sub_grid_size_and_psf_shape(mask=mask,
                                                                                   sub_grid_size=sub_grid_size,
                                                                                   psf_shape=(1, 1))
 
-        self.padded_grids = msk.ImagingGrids.padded_grids_from_mask_sub_grid_size_and_psf_shape(
+        self.padded_grids = grids.ImagingGrids.padded_grids_from_mask_sub_grid_size_and_psf_shape(
             mask=mask, sub_grid_size=sub_grid_size, psf_shape=(1, 1))
 
     def __array_finalize__(self, obj):

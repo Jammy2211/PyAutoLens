@@ -7,6 +7,7 @@ from autofit import conf
 from autolens.imaging import scaled_array
 from autolens.imaging import image as im
 from autolens.imaging import mask as msk
+from autolens.imaging import grids
 from autolens.model.profiles import light_profiles as lp, mass_profiles as mp
 from autolens.model.galaxy import galaxy as g
 from autolens.inversion import pixelizations as pix
@@ -55,11 +56,11 @@ def test_galaxy_mass():
 
 @pytest.fixture(name='grids')
 def test_grids():
-    return msk.ImagingGrids.from_shape_and_pixel_scale(shape=(100, 100), pixel_scale=0.05, sub_grid_size=2)
+    return grids.ImagingGrids.from_shape_and_pixel_scale(shape=(100, 100), pixel_scale=0.05, sub_grid_size=2)
 
 @pytest.fixture(name='border')
 def test_border(mask):
-    return msk.ImageGridBorder.from_mask(mask=mask)
+    return grids.ImageGridBorder.from_mask(mask=mask)
 
 @pytest.fixture(name='rectangular_pixelization')
 def test_rectangular_pixelization():

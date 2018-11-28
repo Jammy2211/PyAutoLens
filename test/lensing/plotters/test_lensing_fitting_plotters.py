@@ -8,6 +8,7 @@ from autofit import conf
 from autolens.imaging import scaled_array
 from autolens.imaging import image as im
 from autolens.imaging import mask as msk
+from autolens.imaging import grids
 from autolens.lensing.plotters import lensing_fitting_plotters
 from autolens.model.profiles import light_profiles as lp, mass_profiles as mp
 from autolens.lensing import lensing_image as li
@@ -43,7 +44,7 @@ def test_galaxy_mass():
 
 @pytest.fixture(name='grids')
 def test_grids():
-    return msk.ImagingGrids.from_shape_and_pixel_scale(shape=(100, 100), pixel_scale=0.05, sub_grid_size=2)
+    return grids.ImagingGrids.from_shape_and_pixel_scale(shape=(100, 100), pixel_scale=0.05, sub_grid_size=2)
 
 @pytest.fixture(name='image')
 def test_image():
