@@ -25,8 +25,8 @@ import os
 
 # To setup the config and output paths without docker, you need to uncomment and run the command below. If you are
 # using Docker, you don't need to do anything so leave this uncommented!
-# path = '{}/../../'.format(os.path.dirname(os.path.realpath(__file__)))
-# conf.instance = conf.Config(config_path=path+'config', output_path=path+'output')
+path = '{}/../../'.format(os.path.dirname(os.path.realpath(__file__)))
+conf.instance = conf.Config(config_path=path+'config', output_path=path+'output')
 
 def simulate():
 
@@ -89,7 +89,7 @@ def make_pipeline():
 
         def pass_priors(self, previous_results):
 
-            self.lens_galaxies = previous_results[0].variable.lens_galaxies
+            self.lens_galaxies.lens = previous_results[0].variable.lens
             self.source_galaxies.source.light_0 = previous_results[0].variable.source.light_0
 
     # You'll notice I've stop writing 'phase_1_results = previous_results[0]' and so on - we know how
@@ -106,7 +106,7 @@ def make_pipeline():
 
         def pass_priors(self, previous_results):
 
-            self.lens_galaxies = previous_results[1].variable.lens_galaxies
+            self.lens_galaxies.lens = previous_results[1].variable.lens
             self.source_galaxies.source.light_0 = previous_results[1].variable.source.light_0
             self.source_galaxies.source.light_1 = previous_results[1].variable.source.light_1
 
@@ -122,7 +122,7 @@ def make_pipeline():
 
         def pass_priors(self, previous_results):
 
-            self.lens_galaxies = previous_results[2].variable.lens_galaxies
+            self.lens_galaxies.lens = previous_results[2].variable.lens
             self.source_galaxies.source.light_0 = previous_results[2].variable.source.light_0
             self.source_galaxies.source.light_1 = previous_results[2].variable.source.light_1
             self.source_galaxies.source.light_2 = previous_results[2].variable.source.light_2
