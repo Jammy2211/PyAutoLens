@@ -2,7 +2,7 @@ from autolens.model.profiles import light_profiles
 from autolens.model.profiles import mass_profiles
 from autolens.model.galaxy import galaxy
 from autolens.lensing import plane
-from autolens.imaging import mask
+from autolens.imaging import grids
 from autolens.lensing.plotters import plane_plotters
 
 # Now we've learnt how to make galaxies out of light and mass profiles, we'll now use galaxies to make a
@@ -48,7 +48,7 @@ from autolens.lensing.plotters import plane_plotters
 # We still need a grid - our grid is effectively the coordinates we 'trace' from the image-plane to the source-plane
 # in the lensing configuration above. Our grid is no longer just ouor 'image_grid', but our image-plane grid, so
 # lets name as such.
-image_plane_grids = mask.ImagingGrids.from_shape_and_pixel_scale(shape=(100, 100), pixel_scale=0.05,
+image_plane_grids = grids.ImagingGrids.from_shape_and_pixel_scale(shape=(100, 100), pixel_scale=0.05,
                                                                  sub_grid_size=2)
 
 # Whereas before we called our model_galaxy's things like 'galaxy_with_light_profile', lets now refer to them by their role

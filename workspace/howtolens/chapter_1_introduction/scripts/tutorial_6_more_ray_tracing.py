@@ -2,7 +2,7 @@ from autolens.model.profiles import light_profiles as lp
 from autolens.model.profiles import mass_profiles as mp
 from autolens.model.galaxy import galaxy as g
 from autolens.lensing import ray_tracing
-from autolens.imaging import mask
+from autolens.imaging import grids
 from autolens.model.galaxy.plotters import galaxy_plotters
 from autolens.lensing.plotters import plane_plotters
 from autolens.lensing.plotters import ray_tracing_plotters
@@ -18,7 +18,7 @@ from astropy import cosmology
 
 # To begin, lets setup the grids we 'll ray-trace using. Lets do something crazy, and use a
 # higher resolution grid then before and set the sub grid size to 4x4 per pixel!
-image_plane_grids = mask.ImagingGrids.from_shape_and_pixel_scale(shape=(200, 200), pixel_scale=0.025, sub_grid_size=4)
+image_plane_grids = grids.ImagingGrids.from_shape_and_pixel_scale(shape=(200, 200), pixel_scale=0.025, sub_grid_size=4)
 print(image_plane_grids.image.shape)
 print(image_plane_grids.sub.shape) # Every image-pixel is sub-gridded by 4x4, so the sub-grid has x16 more coordinates.
 

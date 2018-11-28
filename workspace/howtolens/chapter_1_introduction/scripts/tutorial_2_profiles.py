@@ -1,6 +1,6 @@
 from autolens.model.profiles import light_profiles
 from autolens.model.profiles import mass_profiles
-from autolens.imaging import mask
+from autolens.imaging import grids
 from autolens.model.profiles.plotters import profile_plotters
 
 # In this example, we'll create a grid of Cartesian (y,x) coordinates and pass it to the 'light_profiles'
@@ -8,7 +8,7 @@ from autolens.model.profiles.plotters import profile_plotters
 
 # Lets use the a same resolution grid as the previous tutorial but make it 100 x 100 (if you skipped that 
 # tutorial, I recommend you go back to it!)
-image_grids = mask.ImagingGrids.from_shape_and_pixel_scale(shape=(100, 100), pixel_scale=0.05,
+image_grids = grids.ImagingGrids.from_shape_and_pixel_scale(shape=(100, 100), pixel_scale=0.05,
                                                                  sub_grid_size=2)
 
 # Next, lets create a light profile using the 'light_profiles' module. We'll use a Sersic function,

@@ -5,7 +5,7 @@ from astropy import constants
 
 from autolens import exc
 from autolens.imaging.util import grid_util, mapping_util
-from autolens.imaging import mask as msk
+from autolens.imaging import grids
 from autolens.imaging import scaled_array
 
 
@@ -157,7 +157,7 @@ class Plane(object):
 
     @property
     def has_padded_grids(self):
-        return any(list(map(lambda grid : isinstance(grid.image, msk.PaddedImageGrid), self.grids)))
+        return any(list(map(lambda grid : isinstance(grid.image, grids.PaddedImageGrid), self.grids)))
 
     @property
     def mapper(self):
@@ -402,7 +402,7 @@ def sub_to_image_grid(func):
 
         result = func(grid, galaxies, *args, *kwargs)
 
-        if isinstance(grid, msk.SubGrid):
+        if isinstance(grid, grids.SubGrid):
             return grid.sub_data_to_image(result)
         else:
             return result
@@ -430,7 +430,7 @@ def potential_from_grid(grid, galaxies):
 
 def deflections_from_grid(grid, galaxies):
     deflections = sum(map(lambda galaxy: galaxy.deflections_from_grid(grid), galaxies))
-    if isinstance(grid, msk.SubGrid):
+    if isinstance(grid, grids.SubGrid):
         return np.asarray([grid.sub_data_to_image(deflections[:, 0]), grid.sub_data_to_image(deflections[:, 1])]).T
     return sum(map(lambda galaxy: galaxy.deflections_from_grid(grid), galaxies))
 

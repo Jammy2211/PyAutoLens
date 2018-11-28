@@ -3,6 +3,7 @@ import pytest
 
 from autolens import exc
 from autolens.imaging import mask
+from autolens.imaging import grids
 from autolens.inversion import inversions
 from test.mock.mock_inversion import MockConvolver
 
@@ -233,11 +234,11 @@ class TestReconstructedDataVectorAndImage:
                                         [False, False, False],
                                         [True, True, True]]), pixel_scale=1.0)
 
-        grids = mask.ImagingGrids.grids_from_mask_sub_grid_size_and_psf_shape(mask=msk, sub_grid_size=1,
+        imaging_grids = grids.ImagingGrids.grids_from_mask_sub_grid_size_and_psf_shape(mask=msk, sub_grid_size=1,
                                                                               psf_shape=(1,1))
 
         inv = inversions.Inversion(image=np.ones(9), noise_map=np.ones(9), convolver=MockConvolver(matrix_shape),
-                                   mapper=MockMapper(matrix_shape, grids),
+                                   mapper=MockMapper(matrix_shape, imaging_grids),
                                    regularization=MockRegularization(matrix_shape))
 
         inv.solution_vector = np.array([1.0, 1.0, 1.0, 1.0])
@@ -262,11 +263,11 @@ class TestReconstructedDataVectorAndImage:
                                         [False, False, False],
                                         [True, True, True]]), pixel_scale=1.0)
 
-        grids = mask.ImagingGrids.grids_from_mask_sub_grid_size_and_psf_shape(mask=msk, sub_grid_size=1,
+        imaging_grids = grids.ImagingGrids.grids_from_mask_sub_grid_size_and_psf_shape(mask=msk, sub_grid_size=1,
                                                                               psf_shape=(1,1))
 
         inv = inversions.Inversion(image=np.ones(9), noise_map=np.ones(9), convolver=MockConvolver(matrix_shape),
-                                   mapper=MockMapper(matrix_shape, grids), regularization=MockRegularization(matrix_shape))
+                                   mapper=MockMapper(matrix_shape, imaging_grids), regularization=MockRegularization(matrix_shape))
 
         inv.solution_vector = np.array([1.0, 2.0, 3.0, 4.0])
 
