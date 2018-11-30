@@ -299,6 +299,107 @@ class TestPixImageGrid:
         assert (pix_image_grid.image_to_nearest_image_pix == np.array([0, 1])).all()
 
 
+class TestImagePlanePixelizationGrid:
+
+    def test__properties_consistent_with_mapping_util(self):
+
+        ma = mask.Mask(array=np.array([[True, False, True],
+                                       [False, False, False],
+                                       [True, False, True]]), pixel_scale=0.5)
+
+        image_grid = grids.ImageGrid.from_mask(mask=ma)
+
+        pix_grid = grids.SparseToImageGrid(unmasked_sparse_grid_shape=(10, 10), pixel_scales=(0.16, 0.16),
+                                           image_grid=image_grid)
+
+        full_pix_grid_pixel_centres = image_grid.mask.grid_arc_seconds_to_grid_pixel_centres(pix_grid.unmasked_sparse_grid)
+        total_pix_pixels = mask_util.total_sparse_pixels_from_mask(mask=ma,
+                                                                   unmasked_sparse_grid_pixel_centres=full_pix_grid_pixel_centres)
+
+        image_to_full_pix_util = pix_grid.grid_arc_seconds_to_grid_pixel_indexes(grid_arc_seconds=image_grid)
+
+        pix_to_full_pix_util = mapping_util.sparse_to_unmasked_sparse_from_mask_and_pixel_centres(
+            total_sparse_pixels=total_pix_pixels, mask=ma, unmasked_sparse_grid_pixel_centres=full_pix_grid_pixel_centres).astype('int')
+
+        full_pix_to_pix_util = mapping_util.unmasked_sparse_to_sparse_from_mask_and_pixel_centres(mask=ma,
+                                                                                                  unmasked_sparse_grid_pixel_centres=full_pix_grid_pixel_centres).astype('int')
+
+        image_to_pix_util = mapping_util.image_to_sparse_from_sparse_mappings(
+            image_to_unmasked_sparse=image_to_full_pix_util,
+            unmasked_sparse_to_sparse=full_pix_to_pix_util)
+
+        pix_grid_util = mapping_util.sparse_grid_from_unmasked_sparse_grid(unmasked_sparse_grid=pix_grid.grid_1d,
+                                                                           sparse_to_unmasked_sparse=pix_to_full_pix_util)
+
+        assert pix_grid.total_sparse_pixels == total_pix_pixels
+        assert (pix_grid.sparse_to_unmasked_sparse == pix_to_full_pix_util).all()
+        assert (pix_grid.unmasked_sparse_to_sparse == full_pix_to_pix_util).all()
+        assert (pix_grid.image_to_unmasked_sparse == image_to_full_pix_util).all()
+        assert (pix_grid.image_to_sparse == image_to_pix_util).all()
+        assert (pix_grid.sparse_grid == pix_grid_util).all()
+
+    def test__pixelization_grid_overlaps_mask_perfectly__masked_pixels_in_masked_pixelization_grid(self):
+
+            ma = mask.Mask(array=np.array([[True, False, True],
+                                           [False, False, False],
+                                           [True, False, True]]), pixel_scale=1.0)
+
+            image_grid = grids.ImageGrid.from_mask(mask=ma)
+
+            pix_grid = grids.SparseToImageGrid(unmasked_sparse_grid_shape=(3, 3), pixel_scales=(1.0, 1.0),
+                                               image_grid=image_grid)
+
+            assert pix_grid.total_sparse_pixels == 5
+            assert (pix_grid.sparse_to_unmasked_sparse == np.array([1, 3, 4, 5, 7])).all()
+            assert (pix_grid.unmasked_sparse_to_sparse == np.array([0, 0, 1, 1, 2, 3, 4, 4, 5])).all()
+            assert (pix_grid.image_to_unmasked_sparse == np.array([1, 3, 4, 5, 7])).all()
+            assert (pix_grid.image_to_sparse == np.array([0, 1, 2, 3, 4])).all()
+            assert (pix_grid.sparse_grid == np.array([[1.0, 0.0], [0.0, -1.0], [0.0, 0.0], [0.0, 1.0],
+                                                      [-1.0, 0.0]])).all()
+
+    def test__same_as_above_but_4x3_grid_and_mask(self):
+
+            ma = mask.Mask(array=np.array([[True, False, True],
+                                           [False, False, False],
+                                           [False, False, False],
+                                           [True, False, True]]), pixel_scale=1.0)
+
+            image_grid = grids.ImageGrid.from_mask(mask=ma)
+
+            pix_grid = grids.SparseToImageGrid(unmasked_sparse_grid_shape=(4, 3), pixel_scales=(1.0, 1.0),
+                                               image_grid=image_grid)
+
+            assert pix_grid.total_sparse_pixels == 8
+            assert (pix_grid.sparse_to_unmasked_sparse == np.array([1, 3, 4, 5, 6, 7, 8, 10])).all()
+            assert (pix_grid.unmasked_sparse_to_sparse == np.array([0, 0, 1, 1, 2, 3, 4, 5, 6, 7, 7, 8])).all()
+            assert (pix_grid.image_to_unmasked_sparse == np.array([1, 3, 4, 5, 6, 7, 8, 10])).all()
+            assert (pix_grid.image_to_sparse == np.array([0, 1, 2, 3, 4, 5, 6, 7])).all()
+            assert (pix_grid.sparse_grid == np.array([[1.5, 0.0],
+                                                      [ 0.5, -1.0], [ 0.5, 0.0], [ 0.5, 1.0],
+                                                      [-0.5, -1.0], [-0.5, 0.0], [-0.5, 1.0],
+                                                      [-1.5, 0.0]])).all()
+
+    def test__same_as_above_but_3x4_grid_and_mask(self):
+
+            ma = mask.Mask(array=np.array([[True,  False,  True,  True],
+                                           [False, False, False, False],
+                                           [True,  False,  True,  True]]), pixel_scale=1.0)
+
+            image_grid = grids.ImageGrid.from_mask(mask=ma)
+
+            pix_grid = grids.SparseToImageGrid(unmasked_sparse_grid_shape=(3, 4), pixel_scales=(1.0, 1.0),
+                                               image_grid=image_grid)
+
+            assert pix_grid.total_sparse_pixels == 6
+            assert (pix_grid.sparse_to_unmasked_sparse == np.array([1, 4, 5, 6, 7, 9])).all()
+            assert (pix_grid.unmasked_sparse_to_sparse == np.array([0, 0, 1, 1, 1, 2, 3, 4, 5, 5, 6, 6])).all()
+            assert (pix_grid.image_to_unmasked_sparse == np.array([1, 4, 5, 6, 7, 9])).all()
+            assert (pix_grid.image_to_sparse == np.array([0, 1, 2, 3, 4, 5])).all()
+            assert (pix_grid.sparse_grid == np.array([[1.0, -0.5],
+                                                      [0.0, -1.5], [0.0, -0.5], [0.0, 0.5], [0.0, 1.5],
+                                                      [-1.0, -0.5]])).all()
+
+
 class TestUnmaskedGrids:
     class TestPaddedImageGridFromShapes:
 

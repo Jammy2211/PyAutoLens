@@ -208,10 +208,10 @@ class TestImagePlanePixelization:
         pix = pixelizations.AdaptiveMagnification(pix_grid_shape=(3, 3))
         image_plane_pix = pix.image_plane_pix_grid_from_image_grid(image_grid=image_grid)
 
-        imaging_grids = MockGridCollection(image=image_grid, sub=image_sub_grid, pix=image_plane_pix.pix_grid)
+        imaging_grids = MockGridCollection(image=image_grid, sub=image_sub_grid, pix=image_plane_pix.sparse_grid)
 
         mapper = pix.mapper_from_grids_and_border(grids=imaging_grids, border=None,
-                                                  image_to_nearest_image_pix=image_plane_pix.image_to_pix)
+                                                  image_to_nearest_image_pix=image_plane_pix.image_to_sparse)
 
         assert isinstance(mapper, pm.VoronoiMapper)
 
@@ -259,10 +259,10 @@ class TestImagePlanePixelization:
         pix = pixelizations.AdaptiveMagnification(pix_grid_shape=(3, 3))
         image_plane_pix = pix.image_plane_pix_grid_from_image_grid(image_grid=image_grid)
 
-        imaging_grids = MockGridCollection(image=image_grid, sub=image_sub_grid, pix=image_plane_pix.pix_grid)
+        imaging_grids = MockGridCollection(image=image_grid, sub=image_sub_grid, pix=image_plane_pix.sparse_grid)
 
         mapper = pix.mapper_from_grids_and_border(grids=imaging_grids, border=None,
-                                                  image_to_nearest_image_pix=image_plane_pix.image_to_pix)
+                                                  image_to_nearest_image_pix=image_plane_pix.image_to_sparse)
 
         assert isinstance(mapper, pm.VoronoiMapper)
 
@@ -305,10 +305,10 @@ class TestImagePlanePixelization:
         pix = pixelizations.AdaptiveMagnification(pix_grid_shape=(3, 3))
         image_plane_pix = pix.image_plane_pix_grid_from_image_grid(image_grid=image_grid)
 
-        imaging_grids = MockGridCollection(image=image_grid, sub=image_sub_grid, pix=image_plane_pix.pix_grid)
+        imaging_grids = MockGridCollection(image=image_grid, sub=image_sub_grid, pix=image_plane_pix.sparse_grid)
 
         mapper = pix.mapper_from_grids_and_border(grids=imaging_grids, border=None,
-                                                  image_to_nearest_image_pix=image_plane_pix.image_to_pix)
+                                                  image_to_nearest_image_pix=image_plane_pix.image_to_sparse)
 
         assert isinstance(mapper, pm.VoronoiMapper)
 

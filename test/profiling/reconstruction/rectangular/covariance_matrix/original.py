@@ -76,13 +76,13 @@ hst_recon = hst_tracer.reconstructors(hst.borders, cluster_mask=None)
 hst_up_recon = hst_up_tracer.reconstructors(hst_up.borders, cluster_mask=None)
 # ao_recon = ao_tracer.reconstructors_from_source_plane(ao.border, cluster_mask=None)
 
-lsst_recon = Reconstructor(lsst_recon.mapping, lsst_recon.regularization, lsst_recon.image_to_pix,
+lsst_recon = Reconstructor(lsst_recon.mapping, lsst_recon.regularization, lsst_recon.image_to_sparse,
                            lsst_recon.sub_to_pix)
-euclid_recon = Reconstructor(euclid_recon.mapping, euclid_recon.regularization, euclid_recon.image_to_pix,
+euclid_recon = Reconstructor(euclid_recon.mapping, euclid_recon.regularization, euclid_recon.image_to_sparse,
                              euclid_recon.sub_to_pix)
-hst_recon = Reconstructor(hst_recon.mapping, hst_recon.regularization, hst_recon.image_to_pix,
+hst_recon = Reconstructor(hst_recon.mapping, hst_recon.regularization, hst_recon.image_to_sparse,
                           hst_recon.sub_to_pix)
-hst_up_recon = Reconstructor(hst_up_recon.mapping, hst_up_recon.regularization, hst_up_recon.image_to_pix,
+hst_up_recon = Reconstructor(hst_up_recon.mapping, hst_up_recon.regularization, hst_up_recon.image_to_sparse,
                              hst_up_recon.sub_to_pix)
 # ao_recon = Reconstructor(ao_recon.mapping_matrix, ao_recon.regularization_matrix, ao_recon.image_to_pixelization,
 #                            ao_recon.sub_to_pixelization)
