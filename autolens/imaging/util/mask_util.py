@@ -33,6 +33,32 @@ def total_sub_pixels_from_mask_and_sub_grid_size(mask, sub_grid_size):
     return total_image_pixels_from_mask(mask) * sub_grid_size ** 2
 
 @numba.jit(nopython=True, cache=True)
+def total_sparse_pixels_from_mask(mask, unmasked_sparse_grid_pixel_centres):
+    """Given the full (i.e. without removing pixels which are outside the image-mask) pixelization grid's pixel centers
+    and the image-mask, compute the total number of pixels which are within the image-mask and thus used by the
+    pixelization grid.
+
+    Parameters
+    -----------
+    mask : imaging.mask.Mask
+        The image-mask within which pixelization pixels must be inside
+    unmasked_sparse_grid_pixel_centres : ndarray
+        The centres of the unmasked pixelization grid pixels.
+    """
+
+    total_pix_pixels = 0
+
+    for full_pixel_index in range(unmasked_sparse_grid_pixel_centres.shape[0]):
+
+        y = unmasked_sparse_grid_pixel_centres[full_pixel_index, 0]
+        x = unmasked_sparse_grid_pixel_centres[full_pixel_index, 1]
+
+        if not mask[y,x]:
+            total_pix_pixels += 1
+
+    return total_pix_pixels
+
+@numba.jit(nopython=True, cache=True)
 def mask_circular_from_shape_pixel_scale_and_radius(shape, pixel_scale, radius_arcsec, centre=(0.0, 0.0)):
     """Compute a circular masks from an input masks radius and image shape."""
 
