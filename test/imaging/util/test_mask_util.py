@@ -4,6 +4,7 @@ import numpy as np
 import pytest
 
 from autolens import exc
+from autolens.imaging import mask
 from autolens.imaging.util import mask_util
 
 test_data_dir = "{}/../test_files/array/".format(os.path.dirname(os.path.realpath(__file__)))
@@ -34,6 +35,89 @@ class TestTotalPixels:
                          [True, True, True, True, True]])
 
         assert mask_util.total_edge_pixels_from_mask(mask) == 8
+
+    class TestTotalSparsePixels:
+    
+        def test__mask_full_false__full_pixelization_grid_pixels_in_mask(self):
+    
+            ma = mask.Mask(array=np.array([[False, False, False],
+                                           [False, False, False],
+                                           [False, False, False]]), pixel_scale=1.0)
+    
+            full_pix_grid_pixel_centres = np.array([[0 ,0], [0 ,1], [0 ,2], [1 ,0]])
+    
+            total_masked_pixels = mask_util.total_sparse_pixels_from_mask(mask=ma,
+                                            unmasked_sparse_grid_pixel_centres=full_pix_grid_pixel_centres)
+    
+            assert total_masked_pixels == 4
+    
+            full_pix_grid_pixel_centres = np.array([[0 ,0], [0 ,1], [0 ,2], [1 ,0], [1 ,1], [2 ,1]])
+    
+            total_masked_pixels = mask_util.total_sparse_pixels_from_mask(mask=ma,
+                                             unmasked_sparse_grid_pixel_centres=full_pix_grid_pixel_centres)
+    
+            assert total_masked_pixels == 6
+    
+        def test__mask_is_cross__only_pixelization_grid_pixels_in_mask_are_counted(self):
+    
+            ma = mask.Mask(array=np.array([[True,  False, True],
+                                           [False, False, False],
+                                           [True,  False, True]]), pixel_scale=1.0)
+    
+            full_pix_grid_pixel_centres = np.array([[0 ,0], [0 ,1], [0 ,2], [1 ,0]])
+    
+            total_masked_pixels = mask_util.total_sparse_pixels_from_mask(mask=ma,
+                                             unmasked_sparse_grid_pixel_centres=full_pix_grid_pixel_centres)
+    
+            assert total_masked_pixels == 2
+    
+            full_pix_grid_pixel_centres = np.array([[0 ,0], [0 ,1], [0 ,2], [1 ,0], [1 ,1], [2 ,1]])
+    
+            total_masked_pixels = mask_util.total_sparse_pixels_from_mask(mask=ma,
+                                             unmasked_sparse_grid_pixel_centres=full_pix_grid_pixel_centres)
+    
+            assert total_masked_pixels == 4
+    
+        def test__same_as_above_but_3x4_mask(self):
+    
+            ma = mask.Mask(array=np.array([[True,  True,  False, True],
+                                           [False, False, False, False],
+                                           [True,  True,  False, True]]), pixel_scale=1.0)
+    
+            full_pix_grid_pixel_centres = np.array([[0 ,0], [0 ,1], [0 ,2], [1 ,0]])
+    
+            total_masked_pixels = mask_util.total_sparse_pixels_from_mask(mask=ma,
+                                    unmasked_sparse_grid_pixel_centres=full_pix_grid_pixel_centres)
+    
+            assert total_masked_pixels == 2
+    
+            full_pix_grid_pixel_centres = np.array([[0 ,0], [0 ,1], [0 ,2], [1 ,0], [1 ,1], [1 ,2], [1 ,3], [2 ,2]])
+    
+            total_masked_pixels = mask_util.total_sparse_pixels_from_mask(mask=ma,
+                                    unmasked_sparse_grid_pixel_centres=full_pix_grid_pixel_centres)
+    
+            assert total_masked_pixels == 6
+    
+        def test__same_as_above_but_4x3_mask(self):
+    
+            ma = mask.Mask(array=np.array([[True,  False, True],
+                                           [True,  False, True],
+                                           [False, False, False],
+                                           [True,  False, True]]), pixel_scale=1.0)
+    
+            full_pix_grid_pixel_centres = np.array([[0 ,0], [0 ,1], [0 ,2], [1 ,1]])
+    
+            total_masked_pixels = mask_util.total_sparse_pixels_from_mask(mask=ma,
+                                     unmasked_sparse_grid_pixel_centres=full_pix_grid_pixel_centres)
+    
+            assert total_masked_pixels == 2
+    
+            full_pix_grid_pixel_centres = np.array([[0 ,0], [0 ,1], [0 ,2], [1 ,1], [2 ,0], [2 ,1], [2 ,2], [3 ,1]])
+    
+            total_masked_pixels = mask_util.total_sparse_pixels_from_mask(mask=ma,
+                                     unmasked_sparse_grid_pixel_centres=full_pix_grid_pixel_centres)
+    
+            assert total_masked_pixels == 6
 
 
 class TestMaskCircular(object):

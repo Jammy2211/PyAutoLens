@@ -2,7 +2,7 @@ import numpy as np
 import numba
 
 from autolens.imaging import mask as msk
-from autolens.imaging.util import array_util, mapping_util, grid_util
+from autolens.imaging.util import array_util, mapping_util, mask_util, grid_util
 from autolens.imaging import scaled_array
 
 
@@ -454,6 +454,72 @@ class PixGrid(np.ndarray):
     def __array_finalize__(self, obj):
         if hasattr(obj, "image_to_nearest_image_pix"):
             self.image_to_nearest_image_pix = obj.image_to_nearest_image_pix
+
+
+class SparseToImageGrid(scaled_array.ArrayGeometry):
+
+    def __init__(self, unmasked_sparse_grid_shape, pixel_scales, image_grid):
+        """Abstract class which represents a sparse grid overlaid over an image-grid. The image-grids mask is used to \
+         determine which sparse-grid pixels are in the mask, and thse pixels form the centers of the sparse grid.
+
+        This sparse grid is used to determine the pixel centers of an adaptive grid pixelization.
+
+        Parameters
+        ----------
+        unmasked_sparse_grid_shape : (int, int)
+            The shape of the unmasked sparse-grid whose centres form the centres of pixelization pixels.
+        pixel_scales : (float, float)
+            The pixel-to-arcsecond scale of a pixel in the y and x directions.
+        image_grid : ImageGrid
+            The image-grid the sparse grid is compared to.
+        """
+
+        self.shape = unmasked_sparse_grid_shape
+        self.origin = (0.0, 0.0)
+        self.total_unmasked_sparse_pixels = int(self.shape[0] * self.shape[1])
+        self.pixel_scales = pixel_scales
+
+        self.image_grid = image_grid
+        self.unmasked_sparse_grid = self.grid_1d
+        self.unmasked_sparse_grid_pixel_centres = \
+            image_grid.mask.grid_arc_seconds_to_grid_pixel_centres(self.unmasked_sparse_grid)
+
+    @property
+    def total_sparse_pixels(self):
+        """The total number of pixels in the sparse-grid, after accounting for pixels that are not part of the grid \
+        as they are outside of the image-grid's mask."""
+        return mask_util.total_sparse_pixels_from_mask(mask=self.image_grid.mask,
+                                                       unmasked_sparse_grid_pixel_centres=self.unmasked_sparse_grid_pixel_centres)
+
+    @property
+    def unmasked_sparse_to_sparse(self):
+        """The 1D index mappings between the unmasked sparse-grid and masked sparse grid."""
+        return mapping_util.unmasked_sparse_to_sparse_from_mask_and_pixel_centres(mask=self.image_grid.mask,
+                   unmasked_sparse_grid_pixel_centres=self.unmasked_sparse_grid_pixel_centres).astype('int')
+
+    @property
+    def sparse_to_unmasked_sparse(self):
+        """The 1D index mappings between the masked sparse-grid and unmasked sparse grid."""
+        return mapping_util.sparse_to_unmasked_sparse_from_mask_and_pixel_centres(
+            total_sparse_pixels=self.total_sparse_pixels, mask=self.image_grid.mask,
+            unmasked_sparse_grid_pixel_centres=self.unmasked_sparse_grid_pixel_centres).astype('int')
+
+    @property
+    def image_to_unmasked_sparse(self):
+        """The 1D index mapping between the image-grid and unmasked sparse-grid."""
+        return self.grid_arc_seconds_to_grid_pixel_indexes(grid_arc_seconds=self.image_grid)
+
+    @property
+    def image_to_sparse(self):
+        """The 1D index mappings between the image-grid and masked sparse-grid."""
+        return mapping_util.image_to_sparse_from_sparse_mappings(image_to_unmasked_sparse=self.image_to_unmasked_sparse,
+                                                 unmasked_sparse_to_sparse=self.unmasked_sparse_to_sparse).astype('int')
+
+    @property
+    def sparse_grid(self):
+        """The (y,x) arc-second coordinates of the masked sparse-grid."""
+        return mapping_util.sparse_grid_from_unmasked_sparse_grid(unmasked_sparse_grid=self.unmasked_sparse_grid,
+                                                        sparse_to_unmasked_sparse=self.sparse_to_unmasked_sparse)
 
 
 class PaddedImageGrid(ImageGrid):
