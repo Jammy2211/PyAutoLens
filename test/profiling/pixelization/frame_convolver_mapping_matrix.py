@@ -2,7 +2,7 @@ import sys
 
 sys.path.append("../../")
 import numpy as np
-from autolens.imaging import mask
+from autolens.data.array import mask
 from imaging import convolution
 import time
 import os

@@ -1,16 +1,16 @@
 from autofit import conf
 from autofit.core import non_linear
-from autolens.imaging import image as im
+from autolens.data.imaging import image as im
 from autolens.model.galaxy import galaxy_model as gm
 from autolens.pipeline import phase as ph
 from autolens.lensing.plotters import lensing_fitting_plotters
-from autolens.imaging.plotters import imaging_plotters
+from autolens.data.imaging.plotters import imaging_plotters
 from autolens.model.profiles import light_profiles as lp
 from autolens.model.profiles import mass_profiles as mp
 
 import os
 
-# In this example, we're going to take an image and find a lens model that provides a good fit_normal to it and we're going
+# In this example, we're going to take an regular and find a lens model that provides a good fit_normal to it and we're going
 # to do this without any knowledge of what the 'correct' lens model is.
 
 # So, what do I mean by a 'lens model'? The lens model is the combination of light profiles and mass profiles we use to
@@ -21,11 +21,11 @@ import os
 # 1) A spherical Isothermal Sphere (SIS) for the lens model_galaxy's mass.
 # 2) A spherical exponential light profile for the source model_galaxy's light.
 
-# I'll let you into a secret - this is the same lens model that I used to simulate the image we'll fit_normal (but I'm not
+# I'll let you into a secret - this is the same lens model that I used to simulate the regular we'll fit_normal (but I'm not
 # going to tell you the actual parameters I used!).
 
 # So, how do we infer these parameters? Well, we could randomly guess a lens model, corresponding to some
-# random set of parameters. We could use this lens model to create a tracer_without_subhalo and fit_normal the image-datas, and quantify how
+# random set of parameters. We could use this lens model to create a tracer_without_subhalo and fit_normal the regular-datas, and quantify how
 # good the fit_normal was using its likelihood (we inspected this in previous tutorial). If we kept guessing lens
 # models, eventually we'd find one that provides a good fit_normal (i.e. high likelihood) to the datas!
 
@@ -45,7 +45,7 @@ import os
 # 1) Randomly guess a lens model and use its light-profiles and mass-profiles to set up a lens model_galaxy, source model_galaxy
 #    and a tracer_without_subhalo.
 
-# 2) Pass this tracer_without_subhalo through the fitting module, generating a model image and comparing this model image to the
+# 2) Pass this tracer_without_subhalo through the fitting module, generating a model regular and comparing this model regular to the
 #    observed strong lens imaging datas. This means that we've computed a likelihood.
 
 # 3) Repeat this many times, using the likelihoods of previous fits (typically those with a high likelihood) to
@@ -66,16 +66,16 @@ path = '{}/../'.format(os.path.dirname(os.path.realpath(__file__)))
 # to get our non-linear search to run fast!
 conf.instance = conf.Config(config_path=path+'configs/1_non_linear_search', output_path=path+"output")
 
-# This function simulates the image we'll fit_normal in this tutorial.
+# This function simulates the regular we'll fit_normal in this tutorial.
 def simulate():
 
-    from autolens.imaging import grids
+    from autolens.data.array import grids
     from autolens.model.galaxy import galaxy as g
     from autolens.lensing import ray_tracing
 
     psf = im.PSF.simulate_as_gaussian(shape=(11, 11), sigma=0.1, pixel_scale=0.1)
 
-    image_plane_grids = grids.ImagingGrids.grids_for_simulation(shape=(130, 130), pixel_scale=0.1, psf_shape=(11, 11))
+    image_plane_grids = grids.DataGrids.grids_for_simulation(shape=(130, 130), pixel_scale=0.1, psf_shape=(11, 11))
 
     lens_galaxy = g.Galaxy(mass=mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=1.6))
     source_galaxy = g.Galaxy(light=lp.SphericalExponential(centre=(0.0, 0.0), intensity=0.2, effective_radius=0.2))
@@ -87,7 +87,7 @@ def simulate():
 
     return image_simulated
 
-# and this calls the function, setting us up with an image to model. Lets plot it
+# and this calls the function, setting us up with an regular to model. Lets plot it
 image = simulate()
 imaging_plotters.plot_image_subplot(image=image)
 
@@ -118,13 +118,13 @@ phase = ph.LensSourcePlanePhase(lens_galaxies=dict(lens_galaxy=lens_galaxy_model
                                 optimizer_class=non_linear.MultiNest,
                                 phase_name='1_non_linear_search')
 
-# To run the phase, we simply pass it the image datas we want to fit_normal, and the non-linear search begins! As the phase
+# To run the phase, we simply pass it the regular datas we want to fit_normal, and the non-linear search begins! As the phase
 # runs, a logger will show you the parameters of the best-fit_normal model.
 results = phase.run(image)
 
 # Whilst it is running (which should only take a few minutes), you should checkout the 'AutoLens/howtolens/output'
 # folder. This is where the results of the phase are written to your hard-disk (in the '1_non_linear_search'
-# folder). When its completed, image and output will also appear in this folder, meaning that you don't need to keep
+# folder). When its completed, regular and output will also appear in this folder, meaning that you don't need to keep
 # running python code to see the results.
 
 # We can print the results to see the best-fit_normal model parameters
@@ -133,7 +133,7 @@ results = phase.run(image)
 # The best-fit_normal solution (i.e. the highest likelihood) is stored in the 'results', which we can plot as per usual.
 lensing_fitting_plotters.plot_fitting_subplot(fit=results.fit)
 
-# The fit_normal looks good, and we've therefore found a model pretty close to the one we simulated the image with (you can
+# The fit_normal looks good, and we've therefore found a model pretty close to the one we simulated the regular with (you can
 # confirm this yourself if you want, by comparing the inferred parameters to those found in the simulations.py file).
 
 # And with that, we're done - you've successfully modeled your first strong lens with PyAutoLens! Before moving

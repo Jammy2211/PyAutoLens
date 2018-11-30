@@ -36,16 +36,16 @@ class ImageGridBorder(np.ndarray):
 
     def grid_to_thetas(self, grid):
         """
-        Compute the angle in degrees between the image_grid and plane positive x-axis, defined counter-clockwise.
+        Compute the angle in degrees between the regular_grid and plane positive x-axis, defined counter-clockwise.
 
         Parameters
         ----------
         grid : Union((float, float), ndarray)
-            The x and y image_grid of the plane.
+            The x and y regular_grid of the plane.
 
         Returns
         ----------
-        The angle between the image_grid and the x-axis.
+        The angle between the regular_grid and the x-axis.
         """
         shifted_grid = np.subtract(grid, self.centre)
         theta_from_x = np.degrees(np.arctan2(shifted_grid[:, 1], shifted_grid[:, 0]))
@@ -67,7 +67,7 @@ class ImageGridBorder(np.ndarray):
         Parameters
         ----------
         grid : ndarray
-            The x and y image_grid of the pixel to have its move-factor computed.
+            The x and y regular_grid of the pixel to have its move-factor computed.
         """
         grid_thetas = self.grid_to_thetas(grid)
         grid_radii = self.grid_to_radii(grid)

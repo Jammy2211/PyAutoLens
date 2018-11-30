@@ -1,9 +1,8 @@
 import numpy as np
 import pytest
 
-from autolens.fitting import fitting
-from autolens.imaging import scaled_array as sca
-from autolens.imaging import mask as msk
+from autolens.data.fitting import fitting
+from autolens.data.array import mask as msk, scaled_array as sca
 from autolens.model.galaxy import galaxy_data
 from autolens.model.galaxy import galaxy as g, galaxy_fitting
 from autolens.model.profiles import light_profiles as lp, mass_profiles as mp
@@ -152,17 +151,17 @@ class TestGalaxyFit:
             assert fit.model_galaxy == galaxy
 
             model_data = galaxy.intensities_from_grid(grid=g_data.grids.sub)
-            model_datas = [g_data.grids.sub.sub_data_to_image(sub_array=model_data)]
+            model_datas = [g_data.grids.sub.sub_data_to_regular_data(sub_array=model_data)]
             residuals = fitting.residuals_from_datas_and_model_datas([g_data[:]], model_datas)
             chi_squareds = fitting.chi_squareds_from_residuals_and_noise_maps(residuals, [g_data.noise_map_])
 
-            assert g_data.grids.image.scaled_array_from_array_1d(g_data.noise_map_) == \
+            assert g_data.grids.regular.scaled_array_from_array_1d(g_data.noise_map_) == \
                    pytest.approx(fit.noise_map, 1e-4)
-            assert g_data.grids.image.scaled_array_from_array_1d(model_datas[0]) == \
+            assert g_data.grids.regular.scaled_array_from_array_1d(model_datas[0]) == \
                    pytest.approx(fit.model_data, 1e-4)
-            assert g_data.grids.image.scaled_array_from_array_1d(residuals[0]) == \
+            assert g_data.grids.regular.scaled_array_from_array_1d(residuals[0]) == \
                    pytest.approx(fit.residual, 1e-4)
-            assert g_data.grids.image.scaled_array_from_array_1d(chi_squareds[0]) == \
+            assert g_data.grids.regular.scaled_array_from_array_1d(chi_squareds[0]) == \
                    pytest.approx(fit.chi_squared, 1e-4)
 
             chi_squared_terms = fitting.chi_squared_terms_from_chi_squareds(chi_squareds)
@@ -196,17 +195,17 @@ class TestGalaxyFit:
             assert fit.model_galaxy == galaxy
 
             model_data = galaxy.surface_density_from_grid(grid=g_data.grids.sub)
-            model_datas = [g_data.grids.sub.sub_data_to_image(sub_array=model_data)]
+            model_datas = [g_data.grids.sub.sub_data_to_regular_data(sub_array=model_data)]
             residuals = fitting.residuals_from_datas_and_model_datas([g_data[:]], model_datas)
             chi_squareds = fitting.chi_squareds_from_residuals_and_noise_maps(residuals, [g_data.noise_map_])
 
-            assert g_data.grids.image.scaled_array_from_array_1d(g_data.noise_map_) == \
+            assert g_data.grids.regular.scaled_array_from_array_1d(g_data.noise_map_) == \
                    pytest.approx(fit.noise_map, 1e-4)
-            assert g_data.grids.image.scaled_array_from_array_1d(model_datas[0]) == \
+            assert g_data.grids.regular.scaled_array_from_array_1d(model_datas[0]) == \
                    pytest.approx(fit.model_data, 1e-4)
-            assert g_data.grids.image.scaled_array_from_array_1d(residuals[0]) == \
+            assert g_data.grids.regular.scaled_array_from_array_1d(residuals[0]) == \
                    pytest.approx(fit.residual, 1e-4)
-            assert g_data.grids.image.scaled_array_from_array_1d(chi_squareds[0]) == \
+            assert g_data.grids.regular.scaled_array_from_array_1d(chi_squareds[0]) == \
                    pytest.approx(fit.chi_squared, 1e-4)
 
             chi_squared_terms = fitting.chi_squared_terms_from_chi_squareds(chi_squareds)
@@ -240,17 +239,17 @@ class TestGalaxyFit:
             assert fit.model_galaxy == galaxy
 
             model_data = galaxy.potential_from_grid(grid=g_data.grids.sub)
-            model_datas = [g_data.grids.sub.sub_data_to_image(sub_array=model_data)]
+            model_datas = [g_data.grids.sub.sub_data_to_regular_data(sub_array=model_data)]
             residuals = fitting.residuals_from_datas_and_model_datas([g_data[:]], model_datas)
             chi_squareds = fitting.chi_squareds_from_residuals_and_noise_maps(residuals, [g_data.noise_map_])
 
-            assert g_data.grids.image.scaled_array_from_array_1d(g_data.noise_map_) == \
+            assert g_data.grids.regular.scaled_array_from_array_1d(g_data.noise_map_) == \
                    pytest.approx(fit.noise_map, 1e-4)
-            assert g_data.grids.image.scaled_array_from_array_1d(model_datas[0]) == \
+            assert g_data.grids.regular.scaled_array_from_array_1d(model_datas[0]) == \
                    pytest.approx(fit.model_data, 1e-4)
-            assert g_data.grids.image.scaled_array_from_array_1d(residuals[0]) == \
+            assert g_data.grids.regular.scaled_array_from_array_1d(residuals[0]) == \
                    pytest.approx(fit.residual, 1e-4)
-            assert g_data.grids.image.scaled_array_from_array_1d(chi_squareds[0]) == \
+            assert g_data.grids.regular.scaled_array_from_array_1d(chi_squareds[0]) == \
                    pytest.approx(fit.chi_squared, 1e-4)
 
             chi_squared_terms = fitting.chi_squared_terms_from_chi_squareds(chi_squareds)
@@ -294,30 +293,30 @@ class TestGalaxyFit:
             assert fit.model_galaxy == galaxy
 
             model_data_y = galaxy.deflections_from_grid(grid=g_data_y.grids.sub)
-            model_data_y = g_data_y.grids.sub.sub_data_to_image(sub_array=model_data_y[:,0])
+            model_data_y = g_data_y.grids.sub.sub_data_to_regular_data(sub_array=model_data_y[:, 0])
             model_data_x = galaxy.deflections_from_grid(grid=g_data_y.grids.sub)
-            model_data_x = g_data_y.grids.sub.sub_data_to_image(sub_array=model_data_x[:,1])
+            model_data_x = g_data_y.grids.sub.sub_data_to_regular_data(sub_array=model_data_x[:, 1])
             model_datas = [model_data_y, model_data_x]
             residuals = fitting.residuals_from_datas_and_model_datas([g_data_y[:], g_data_x[:]], model_datas)
             chi_squareds = fitting.chi_squareds_from_residuals_and_noise_maps(residuals, [g_data_y.noise_map_,
                                                                                           g_data_x.noise_map_])
 
-            assert g_data_y.grids.image.scaled_array_from_array_1d(g_data_y.noise_map_) == \
+            assert g_data_y.grids.regular.scaled_array_from_array_1d(g_data_y.noise_map_) == \
                    pytest.approx(fit.noise_maps[0], 1e-4)
-            assert g_data_y.grids.image.scaled_array_from_array_1d(model_data_y) == \
+            assert g_data_y.grids.regular.scaled_array_from_array_1d(model_data_y) == \
                    pytest.approx(fit.model_datas[0], 1e-4)
-            assert g_data_y.grids.image.scaled_array_from_array_1d(residuals[0]) == \
+            assert g_data_y.grids.regular.scaled_array_from_array_1d(residuals[0]) == \
                    pytest.approx(fit.residuals[0], 1e-4)
-            assert g_data_y.grids.image.scaled_array_from_array_1d(chi_squareds[0]) == \
+            assert g_data_y.grids.regular.scaled_array_from_array_1d(chi_squareds[0]) == \
                    pytest.approx(fit.chi_squareds[0], 1e-4)
 
-            assert g_data_y.grids.image.scaled_array_from_array_1d(g_data_x.noise_map_) == \
+            assert g_data_y.grids.regular.scaled_array_from_array_1d(g_data_x.noise_map_) == \
                    pytest.approx(fit.noise_maps[1], 1e-4)
-            assert g_data_y.grids.image.scaled_array_from_array_1d(model_data_x) == \
+            assert g_data_y.grids.regular.scaled_array_from_array_1d(model_data_x) == \
                    pytest.approx(fit.model_datas[1], 1e-4)
-            assert g_data_y.grids.image.scaled_array_from_array_1d(residuals[1]) == \
+            assert g_data_y.grids.regular.scaled_array_from_array_1d(residuals[1]) == \
                    pytest.approx(fit.residuals[1], 1e-4)
-            assert g_data_y.grids.image.scaled_array_from_array_1d(chi_squareds[1]) == \
+            assert g_data_y.grids.regular.scaled_array_from_array_1d(chi_squareds[1]) == \
                    pytest.approx(fit.chi_squareds[1], 1e-4)
 
             chi_squared_terms = fitting.chi_squared_terms_from_chi_squareds(chi_squareds)

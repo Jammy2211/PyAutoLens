@@ -1,4 +1,4 @@
-from autolens.fitting import fitting
+from autolens.data.fitting import fitting
 from autolens.model.galaxy import galaxy_data as gd
 
 def fit_galaxy_data_with_galaxy(galaxy_datas, model_galaxy):

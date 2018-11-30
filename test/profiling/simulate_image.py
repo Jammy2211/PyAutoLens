@@ -5,8 +5,8 @@ import os
 import numpy as np
 import matplotlib.pyplot as plt
 
-from autolens.imaging import image
-from autolens.imaging import mask
+from autolens.data.imaging import image
+from autolens.data.array import mask
 from autolens.model.profiles import light_profiles as lp, mass_profiles as mp
 from autolens.lensing import ray_tracing
 from autolens.model.galaxy import galaxy

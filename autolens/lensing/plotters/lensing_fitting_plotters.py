@@ -1,11 +1,11 @@
 from matplotlib import pyplot as plt
 
 from autofit import conf
-from autolens.plotters import plotter_util
-from autolens.imaging.plotters import imaging_plotters
+from autolens.data.array.plotters import plotter_util
+from autolens.data.imaging.plotters import imaging_plotters
 from autolens.lensing.plotters import plane_plotters
-from autolens.inversion.plotters import inversion_plotters
-from autolens.fitting.plotters import fitting_plotters
+from autolens.model.inversion.plotters import inversion_plotters
+from autolens.data.fitting.plotters import fitting_plotters
 
 
 def plot_fitting_subplot(fit, should_plot_mask=True, positions=None,
@@ -155,7 +155,7 @@ def plot_fitting_subplot_lens_plane_only(fit, should_plot_mask=True, positions=N
                                        output_path=output_path, output_filename='', output_format=output_format)
 
     plotter_util.output_subplot_array(output_path=output_path, output_filename=output_filename,
-                               output_format=output_format)
+                                      output_format=output_format)
 
     plt.close()
 
@@ -238,7 +238,7 @@ def plot_fitting_subplot_hyper_lens_plane_only(fit, should_plot_mask=True, posit
                                        output_path=output_path, output_filename='', output_format=output_format)
 
     plotter_util.output_subplot_array(output_path=output_path, output_filename=output_filename,
-                               output_format=output_format)
+                                      output_format=output_format)
 
     plt.subplot(rows, columns, 4)
 
@@ -282,7 +282,7 @@ def plot_fitting_subplot_hyper_lens_plane_only(fit, should_plot_mask=True, posit
                                            output_path=output_path, output_filename='', output_format=output_format)
 
     plotter_util.output_subplot_array(output_path=output_path, output_filename=output_filename,
-                               output_format=output_format)
+                                      output_format=output_format)
 
     plt.close()
 
@@ -409,7 +409,7 @@ def plot_fitting_subplot_lens_and_source_planes(fit, should_plot_mask=True, shou
                                        output_path=output_path, output_filename='', output_format=output_format)
 
     plotter_util.output_subplot_array(output_path=output_path, output_filename=output_filename,
-                               output_format=output_format)
+                                      output_format=output_format)
 
     plt.close()
 

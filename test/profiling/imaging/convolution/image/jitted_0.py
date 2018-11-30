@@ -85,13 +85,13 @@ class FrameMakerOriginal(object):
         Parameters
         ----------
         coords: (int, int)
-            The image_grid of mask_index_array on which the frame should be centred
+            The regular_grid of mask_index_array on which the frame should be centred
         kernel_shape: (int, int)
             The shape of the psf for which this frame will be used
         Returns
         -------
         frame: ndarray
-            A subset of mask_index_array of shape psf_shape where elements with image_grid outside of image_frame_indexes have
+            A subset of mask_index_array of shape psf_shape where elements with regular_grid outside of image_frame_indexes have
             value -1
         """
         half_x = int(kernel_shape[0] / 2)
@@ -160,7 +160,7 @@ class ConvolverOriginal(object):
         Returns
         -------
         convolver_image: KernelConvolver
-            An object used to convolve_image image
+            An object used to convolve_image regular
         """
         return KernelConvolver(kernel, self.frame_array, self.blurring_frame_array)
 
@@ -266,7 +266,7 @@ class KernelConvolverOriginal(object):
         Returns
         -------
         convolved_array: [float]
-            A matrix representing the mapping_matrix of source data_to_image to image_grid data_to_image accounting for
+            A matrix representing the mapping_matrix of source data_to_image to regular_grid data_to_image accounting for
             convolution
         """
         blurred_mapping = np.zeros(mapping.shape)
@@ -288,7 +288,7 @@ class KernelConvolverOriginal(object):
         Returns
         -------
         convolved_array: [float]
-            A matrix representing the mapping_matrix of source data_to_image to image_grid data_to_image accounting for
+            A matrix representing the mapping_matrix of source data_to_image to regular_grid data_to_image accounting for
             convolution
         """
 

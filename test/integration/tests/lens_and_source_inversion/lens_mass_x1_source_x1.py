@@ -2,8 +2,7 @@ import os
 
 from autofit.core import non_linear as nl
 from autolens.model.galaxy import galaxy, galaxy_model as gm
-from autolens.inversion import pixelizations as pix
-from autolens.inversion import regularization as reg
+from autolens.model.inversion import pixelizations as pix, regularization as reg
 from autolens.pipeline import phase as ph
 from autolens.pipeline import pipeline as pl
 from autolens.model.profiles import light_profiles as lp, mass_profiles as mp

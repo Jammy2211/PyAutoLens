@@ -1,6 +1,6 @@
 import time
 
-from autolens.imaging import mask
+from autolens.data.array import mask
 
 repeats = 1
 

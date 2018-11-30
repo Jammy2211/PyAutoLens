@@ -1,9 +1,8 @@
 import os
 import pickle
 
-from autolens.imaging import image
-from autolens.imaging import mask
-from autolens.imaging import scaled_array
+from autolens.data.imaging import image
+from autolens.data.array import mask, scaled_array
 from autolens.lensing import lensing_image
 
 path = "{}/".format(os.path.dirname(os.path.realpath(__file__)))
