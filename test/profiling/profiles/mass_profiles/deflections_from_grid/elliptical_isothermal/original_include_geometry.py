@@ -15,7 +15,7 @@ class EllipticalIsothermal(geometry_profiles.EllipticalProfile):
         Parameters
         ----------
         centre: (float, float)
-            The image_grid of the origin of the profiles
+            The regular_grid of the origin of the profiles
         axis_ratio : float
             Elliptical mass profile's minor-to-major axis ratio (b/a)
         phi : float
@@ -41,7 +41,7 @@ class EllipticalIsothermal(geometry_profiles.EllipticalProfile):
 
         Parameters
         ----------
-        grid : masks.ImageGrid
+        grid : masks.RegularGrid
             The grid of coordinates the deflection angles are computed on.
         """
 

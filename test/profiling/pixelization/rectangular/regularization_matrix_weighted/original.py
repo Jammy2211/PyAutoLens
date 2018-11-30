@@ -22,7 +22,7 @@ class RegularizationWeighted(object):
         The pix signals are scaled in the following ways:
 
         1) Divided by the number of masked_image-pixels in the pixel, to ensure all pixels have the same \
-        'relative' signal (i.e. a pixel with 10 image-pixels doesn't have x2 the signal of one with 5).
+        'relative' signal (i.e. a pixel with 10 regular-pixels doesn't have x2 the signal of one with 5).
 
         2) Divided by the maximum pix-signal, so that all signals vary between 0 and 1. This ensures that the \
         regularizations weights they're used to compute are defined identically for all masked_image units / SNR's.

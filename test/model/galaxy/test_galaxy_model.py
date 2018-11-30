@@ -5,8 +5,7 @@ from autofit import conf
 from autofit import exc
 from autofit.core import model_mapper as mm
 
-from autolens.inversion import pixelizations
-from autolens.inversion import regularization
+from autolens.model.inversion import pixelizations, regularization
 from autolens.model.galaxy import galaxy as g, galaxy_model as gp
 from autolens.model.profiles import mass_profiles, light_profiles, light_and_mass_profiles
 

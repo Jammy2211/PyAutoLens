@@ -3,10 +3,10 @@ from autofit.core import non_linear as nl
 from autofit.core import model_mapper as mm
 from autolens.pipeline import phase as ph
 from autolens.model.galaxy import galaxy_model as gm
-from autolens.imaging import image as im
+from autolens.data.imaging import image as im
 from autolens.model.profiles import light_profiles as lp
 from autolens.model.profiles import mass_profiles as mp
-from autolens.imaging.plotters import imaging_plotters
+from autolens.data.imaging.plotters import imaging_plotters
 from autolens.lensing.plotters import lensing_fitting_plotters
 
 import os
@@ -45,15 +45,15 @@ path = '{}/../'.format(os.path.dirname(os.path.realpath(__file__)))
 
 conf.instance = conf.Config(config_path=path+'/configs/5_linking_phases', output_path=path+"output")
 
-# Another simulate image function, for the same image again.
+# Another simulate regular function, for the same regular again.
 def simulate():
 
-    from autolens.imaging import grids
+    from autolens.data.array import grids
     from autolens.model.galaxy import galaxy as g
     from autolens.lensing import ray_tracing
 
     psf = im.PSF.simulate_as_gaussian(shape=(11, 11), sigma=0.05, pixel_scale=0.05)
-    image_plane_grids = grids.ImagingGrids.grids_for_simulation(shape=(130, 130), pixel_scale=0.1, psf_shape=(11, 11))
+    image_plane_grids = grids.DataGrids.grids_for_simulation(shape=(130, 130), pixel_scale=0.1, psf_shape=(11, 11))
 
     lens_galaxy = g.Galaxy(light=lp.EllipticalSersic(centre=(0.0, 0.0), axis_ratio=0.9, phi=45.0, intensity=0.04,
                                                              effective_radius=0.5, sersic_index=3.5),
@@ -69,7 +69,7 @@ def simulate():
 
     return image_simulated
 
-# Simulate the image and set it up.
+# Simulate the regular and set it up.
 image = simulate()
 imaging_plotters.plot_image_subplot(image=image)
 
@@ -79,7 +79,7 @@ class LightTracesMassPhase(ph.LensSourcePlanePhase):
 
     def pass_priors(self, previous_results):
 
-        # As we've eluded to before, one can look at an image and immediately identify the origin of the lens
+        # As we've eluded to before, one can look at an regular and immediately identify the origin of the lens
         # model_galaxy. It's that bright blob of light surrounded by the lensed source model_galaxy! Given that we know we're going
         # to make the lens model more complex in the next phase, lets take a liberal approach to the lens origin and
         # fix it to (x,y) = (0.0", 0.0").
@@ -95,7 +95,7 @@ class LightTracesMassPhase(ph.LensSourcePlanePhase):
         # What if the origin of their lens model_galaxy isn't at (0.0", 0.0")?
 
         # Well, this is true if our datas reduction centres the lens model_galaxy somewhere else. But we get to choose where
-        # we origin it when we make the image. Therefore, I'd recommend you always origin the lens model_galaxy at the same
+        # we origin it when we make the regular. Therefore, I'd recommend you always origin the lens model_galaxy at the same
         # location, and (0.0", 0.0") seems the best choice!
 
         # We also discussed that the Sersic index of most lens galaxies is around 4. Lets be liberal and fix it to
@@ -184,7 +184,7 @@ lensing_fitting_plotters.plot_fitting_subplot(fit=phase_2_results.fit)
 # tune phase 2's priors.
 
 # You're probably thinking though, that there is one huge, giant, glaring flaw in all of this that I've not mentioned.
-# Phase 2 can't be generalized to another lens - it's priors are tuned to the image we fitted. If we had a lot of
+# Phase 2 can't be generalized to another lens - it's priors are tuned to the regular we fitted. If we had a lot of
 # lenses, we'd have to write a new phase_2 for every single one. This isn't ideal, is it?
 
 # Well, let me reassure you, that PyAutoLens has you covered. In the next set of tutorials, we'll cover 'runners'. As

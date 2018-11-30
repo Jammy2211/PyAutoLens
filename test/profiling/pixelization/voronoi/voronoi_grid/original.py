@@ -34,7 +34,7 @@ class Voronoi(object):
         Parameters
         ----------
         cluster_grid : ndarray
-            The x and y image_grid to derive the Voronoi grid_coords.
+            The x and y regular_grid to derive the Voronoi grid_coords.
         """
         return scipy.spatial.Voronoi(cluster_grid, qhull_options='Qbb Qc Qx Qm')
 

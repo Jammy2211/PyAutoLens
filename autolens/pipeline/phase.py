@@ -7,15 +7,15 @@ from autofit import conf
 from autolens import exc
 from autofit.core import non_linear
 from autolens.model.galaxy import galaxy as g, galaxy_model as gm, galaxy_fitting, galaxy_data as gd
-from autolens.imaging import image as im
-from autolens.imaging import mask as msk
+from autolens.data.imaging import image as im
+from autolens.data.array import mask as msk
 from autolens.lensing import lensing_fitting
 from autolens.lensing import lensing_image as li
 from autolens.lensing import ray_tracing
 from autolens.lensing import sensitivity_fitting
 from autolens.pipeline.phase_property import PhasePropertyCollection
 from autolens.model.galaxy.plotters import galaxy_fitting_plotters
-from autolens.imaging.plotters import imaging_plotters
+from autolens.data.imaging.plotters import imaging_plotters
 from autolens.lensing.plotters import sensitivity_fitting_plotters, lensing_fitting_plotters
 
 logger = logging.getLogger(__name__)
@@ -53,7 +53,7 @@ class AbstractPhase(object):
 
     def __init__(self, optimizer_class=non_linear.MultiNest, phase_name=None, auto_link_priors=False):
         """
-        A phase in an lensing pipeline. Uses the set non_linear optimizer to try to fit_normal models and image
+        A phase in an lensing pipeline. Uses the set non_linear optimizer to try to fit_normal models and regular
         passed to it.
 
         Parameters
@@ -223,7 +223,7 @@ class AbstractPhase(object):
 
             self.position_threshold = conf.instance.general.get('positions', 'position_threshold', float)
             self.plot_count = 0
-            self.output_image_path = "{}/image/".format(self.phase_output_path)
+            self.output_image_path = "{}/regular/".format(self.phase_output_path)
             make_path_if_does_not_exist(path=self.output_image_path)
 
         @property
@@ -377,7 +377,7 @@ class PhaseImaging(Phase):
 
         """
 
-        A phase in an lensing pipeline. Uses the set non_linear optimizer to try to fit_normal models and image
+        A phase in an lensing pipeline. Uses the set non_linear optimizer to try to fit_normal models and regular
         passed to it.
 
         Parameters
@@ -812,9 +812,9 @@ class LensSourcePlanePhase(PhaseImaging):
             # self.padded_model_image = self.fit_normal.padded_model_image
 
             # self.lens_galaxy_padded_model_images = self.fit_normal.padded_model_images_of_galaxies[0]
-            # self.lens_subtracted_padded_image = analysis.lensing_image.image - self.padded_model_image
+            # self.lens_subtracted_padded_image = analysis.lensing_image.regular - self.padded_model_image
             #
-            # # TODO : Need to split lens and source galaxy model image somehow
+            # # TODO : Need to split lens and source galaxy model regular somehow
             # self.padded_model_image = self.fit_normal.padded_model_image
             # self.source_galaxy_padded_model_images = self.fit_normal.padded_model_images_of_galaxies_for_tracer
             # array_plotters.plot_model_image(self.padded_model_image, output_filename='padded_model_image',
@@ -985,7 +985,7 @@ class GalaxyFitPhase(AbstractPhase):
     def __init__(self, galaxy_data_class, galaxy=None, optimizer_class=non_linear.MultiNest, sub_grid_size=1,
                  mask_function=default_mask_function, phase_name=None):
         """
-        A phase in an lensing pipeline. Uses the set non_linear optimizer to try to fit_normal models and image
+        A phase in an lensing pipeline. Uses the set non_linear optimizer to try to fit_normal models and regular
         passed to it.
 
         Parameters
@@ -1133,7 +1133,7 @@ class GalaxyFitDeflectionsPhase(AbstractPhase):
     def __init__(self, galaxy=None, optimizer_class=non_linear.MultiNest, sub_grid_size=1,
                  mask_function=default_mask_function, phase_name=None):
         """
-        A phase in an lensing pipeline. Uses the set non_linear optimizer to try to fit_normal models and image
+        A phase in an lensing pipeline. Uses the set non_linear optimizer to try to fit_normal models and regular
         passed to it.
 
         Parameters
@@ -1271,7 +1271,7 @@ class SensitivityPhase(PhaseImaging):
                  optimizer_class=non_linear.MultiNest, sub_grid_size=1,
                  mask_function=default_mask_function, phase_name=None):
         """
-        A phase in an lensing pipeline. Uses the set non_linear optimizer to try to fit_normal models and image
+        A phase in an lensing pipeline. Uses the set non_linear optimizer to try to fit_normal models and regular
         passed to it.
 
         Parameters

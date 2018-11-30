@@ -1,16 +1,16 @@
 from autolens.model.profiles import mass_profiles as mp
 from autolens.model.galaxy import galaxy as g
 from autolens.lensing import ray_tracing
-from autolens.imaging import grids
-from autolens.inversion import pixelizations as pix
-from autolens.inversion.plotters import mapper_plotters
+from autolens.data.array import grids
+from autolens.model.inversion import pixelizations as pix
+from autolens.model.inversion.plotters import mapper_plotters
 
 # We'll start by learning about pixelizations, which we typically apply to a source-plane (but could, if we wanted,
-# apply to an image-plane).
+# apply to an regular-plane).
 #
 # Lets setup a lensed source-plane grid, using a lens model_galaxy and tracer_normal.
-image_plane_grids = grids.ImagingGrids.from_shape_and_pixel_scale(shape=(100, 100), pixel_scale=0.05,
-                                                                 sub_grid_size=2)
+image_plane_grids = grids.DataGrids.from_shape_and_pixel_scale(shape=(100, 100), pixel_scale=0.05,
+                                                               sub_grid_size=2)
 lens_galaxy = g.Galaxy(mass=mp.EllipticalIsothermal(centre=(0.0, 0.0), axis_ratio=0.8, phi=90.0, einstein_radius=1.6))
 
 # (Our source model_galaxy doesn't have a light profile from here on, as we're reconstructing its light using a pixelization).
@@ -22,7 +22,7 @@ tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source
 # rectangular grid. As usual, the grid's 'shape' defines its (y,x) dimensions.
 rectangular = pix.Rectangular(shape=(25, 25))
 
-# By itself, a pixelization doesn't tell us much. It has no grid of coordinates, no image, and nothing which tells it
+# By itself, a pixelization doesn't tell us much. It has no grid of coordinates, no regular, and nothing which tells it
 # about the lens we're fitting. This information comes when we use the pixelization to set up a 'mapper'.
 # (The 'border=None' will be covered in tutorial 5, so just ignore it for now!)
 mapper = rectangular.mapper_from_grids_and_border(grids=tracer.source_plane.grids[0], border=None)
@@ -49,11 +49,11 @@ mapper_plotters.plot_rectangular_mapper(mapper=mapper, should_plot_grid=False, s
 
 # The mapper also has the (source-plane) grid that we passed when we set it up. Lets check they're the same grids.
 print('Source Grid Pixel 1')
-print(tracer.source_plane.grids[0].image[0])
-print(mapper.grids.image[0])
+print(tracer.source_plane.grids[0].regular[0])
+print(mapper.grids.regular[0])
 print('Source Grid Pixel 2')
-print(tracer.source_plane.grids[0].image[1])
-print(mapper.grids.image[1])
+print(tracer.source_plane.grids[0].regular[1])
+print(mapper.grids.regular[1])
 print('etc.')
 
 # We can over-lay the grid on top. Its starting too look a bit less boring now!

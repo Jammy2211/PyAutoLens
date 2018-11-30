@@ -5,7 +5,7 @@ from astropy import constants
 from astropy import cosmology as cosmo
 
 from autolens import exc
-from autolens.imaging import mask as msk
+from autolens.data.array import mask as msk
 from autolens.lensing import plane as pl
 
 
@@ -45,7 +45,7 @@ class AbstractTracer(object):
 
     @property
     def has_padded_grids(self):
-        return isinstance(self.all_planes[0].grids.image, msk.PaddedImageGrid)
+        return isinstance(self.all_planes[0].grids.regular, msk.PaddedImageGrid)
 
     @property
     def has_hyper_galaxy(self):
@@ -62,7 +62,7 @@ class AbstractTracer(object):
 
     @property
     def image_plane_images(self):
-        return list(map(lambda _image_plane_image, grid : grid.image.scaled_array_from_array_1d(_image_plane_image),
+        return list(map(lambda _image_plane_image, grid : grid.regular.scaled_array_from_array_1d(_image_plane_image),
                         self.image_plane_images_, self.image_plane.grids))
 
     @property
@@ -87,7 +87,7 @@ class AbstractTracer(object):
         return list(map(lambda _image_plane_images_of_planes : sum(_image_plane_images_of_planes),
                         self.image_plane_images_of_planes_))
 
-    # TODO : It makes the high level code a lot more intuitive if the indexing of image of planes goes
+    # TODO : It makes the high level code a lot more intuitive if the indexing of regular of planes goes
     # TODO : [image_index][plane_index]. Is there a neat dictionary comprehension to do this rather than the loop below?
 
     @property
@@ -157,11 +157,11 @@ class TracerImagePlane(AbstractTracer):
         ----------
         lens_galaxies : [Galaxy]
             The list of lens galaxies in the datas_-plane.
-        image_plane_grids : masks.ImagingGrids
+        image_plane_grids : masks.DataGrids
             The datas_-plane grids where tracer_normal calculation are performed, (this includes the datas_-grid, sub-grid, \
             blurring-grid, etc.).
-        border : mask.ImageGridBorder
-            The border of the image-grid, which is used to relocate demagnified traced image-pixel to the \
+        border : mask.RegularGridBorder
+            The border of the regular-grid, which is used to relocate demagnified traced regular-pixel to the \
             source-plane border.
         cosmology : astropy.cosmology.Planck15
             The cosmology of the ray-tracing calculation.
@@ -192,11 +192,11 @@ class TracerImageSourcePlanes(AbstractTracer):
             The list of galaxies in the datas_-plane.
         source_galaxies : [Galaxy]
             The list of galaxies in the source-plane.
-        image_plane_grids : masks.ImagingGrids
+        image_plane_grids : masks.DataGrids
             The datas_-plane grids where ray-tracing calculation are performed, (this includes the datas_-grid, \
             sub-grid, blurring-grid, etc.).
-        border : mask.ImageGridBorder
-            The border of the image-grid, which is used to relocate demagnified traced image-pixel to the \
+        border : mask.RegularGridBorder
+            The border of the regular-grid, which is used to relocate demagnified traced regular-pixel to the \
             source-plane border.
         cosmology : astropy.cosmology.Planck15
             The cosmology of the ray-tracing calculation.
@@ -235,14 +235,14 @@ class TracerImageSourcePlanes(AbstractTracer):
 
     def masses_of_image_plane_galaxies_within_circles(self, radius):
         """
-        Compute the total mass of all galaxies in the image-plane within a circle of specified radius, using the plane's
+        Compute the total mass of all galaxies in the regular-plane within a circle of specified radius, using the plane's
         critical surface density to convert this to physical units.
 
         For a single galaxy, inputting the Einstein Radius should provide an accurate measurement of the Einstein mass.
         Use of other radii may be subject to systematic offsets, because lensing does not directly measure the mass of
         a galaxy beyond the Einstein radius.
 
-        For multiple galaxies, the Einstein mass of the entire image-plane is evenly divided across its galaxies. This
+        For multiple galaxies, the Einstein mass of the entire regular-plane is evenly divided across its galaxies. This
         could be highly inaccurate and users are recommended to cross-check mass estimates using different radii.
 
         See *galaxy.dimensionless_mass_within_circle* and *mass_profiles.dimensionless_mass_within_circle* for details
@@ -267,7 +267,7 @@ class TracerImageSourcePlanes(AbstractTracer):
         Use of other radii may be subject to systematic offsets, because lensing does not directly measure the mass of
         a galaxy beyond the Einstein radius.
 
-        For multiple galaxies, the Einstein mass of the entire image-plane is evenly divided across its galaxies. This
+        For multiple galaxies, the Einstein mass of the entire regular-plane is evenly divided across its galaxies. This
         could be highly inaccurate and users are recommended to cross-check mass estimates using different radii.
 
         See *galaxy.dimensionless_mass_within_ellipse* and *mass_profiles.dimensionless_mass_within_ellipse* for details
@@ -387,11 +387,11 @@ class TracerMulti(AbstractTracerMulti):
         ----------
         galaxies : [Galaxy]
             The list of galaxies in the ray-tracing calculation.
-        image_plane_grids : masks.ImagingGrids
+        image_plane_grids : masks.DataGrids
             The datas_-plane grids where ray-tracing calculation are performed, (this includes the
             datas_-grid, sub-grid, blurring-grid, etc.).
-        border : mask.ImageGridBorder
-            The border of the image-grid, which is used to relocate demagnified traced image-pixel to the \
+        border : mask.RegularGridBorder
+            The border of the regular-grid, which is used to relocate demagnified traced regular-pixel to the \
             source-plane border.
         cosmology : astropy.cosmology
             The cosmology of the ray-tracing calculation.

@@ -3,15 +3,15 @@ from autofit.core import non_linear
 from autofit.core import model_mapper
 from autolens.pipeline import phase as ph
 from autolens.model.galaxy import galaxy_model as gm
-from autolens.imaging import image as im
+from autolens.data.imaging import image as im
 from autolens.model.profiles import light_profiles as lp
 from autolens.model.profiles import mass_profiles as mp
-from autolens.imaging.plotters import imaging_plotters
+from autolens.data.imaging.plotters import imaging_plotters
 from autolens.lensing.plotters import lensing_fitting_plotters
 
 import os
 
-# In the previous example, we used a non-linear search to infer the best-fit_normal lens model to a strong lens image. In this
+# In the previous example, we used a non-linear search to infer the best-fit_normal lens model to a strong lens regular. In this
 # example, we'll get a deeper intuition of how a non-linear search works.
 
 # First, I want to develop the idea of a 'parameter space'. Lets think of a function, like the simple function below:
@@ -89,16 +89,16 @@ path = '{}/../'.format(os.path.dirname(os.path.realpath(__file__)))
 # First, we'll setup the config-overrides, so the non-linear search runs fast. Again, just ignore this for now.
 conf.instance = conf.Config(config_path=path+'configs/2_parameter_space_and_priors', output_path=path+"output")
 
-# This function simulates the image we'll fit_normal in this tutorial - which is identical to the previous tutorial.
+# This function simulates the regular we'll fit_normal in this tutorial - which is identical to the previous tutorial.
 def simulate():
 
-    from autolens.imaging import grids
+    from autolens.data.array import grids
     from autolens.model.galaxy import galaxy as g
     from autolens.lensing import ray_tracing
 
     psf = im.PSF.simulate_as_gaussian(shape=(11, 11), sigma=0.1, pixel_scale=0.1)
 
-    image_plane_grids = grids.ImagingGrids.grids_for_simulation(shape=(130, 130), pixel_scale=0.1, psf_shape=(11, 11))
+    image_plane_grids = grids.DataGrids.grids_for_simulation(shape=(130, 130), pixel_scale=0.1, psf_shape=(11, 11))
 
     lens_galaxy = g.Galaxy(mass=mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=1.6))
     source_galaxy = g.Galaxy(light=lp.SphericalExponential(centre=(0.0, 0.0), intensity=0.2, effective_radius=0.2))
@@ -110,7 +110,7 @@ def simulate():
 
     return image_simulated
 
-# Again, lets setup the simulated image
+# Again, lets setup the simulated regular
 image = simulate()
 imaging_plotters.plot_image_subplot(image=image)
 

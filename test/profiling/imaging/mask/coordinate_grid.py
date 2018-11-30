@@ -1,6 +1,6 @@
 import time
 
-from autolens.imaging import mask
+from autolens.data.array import mask
 
 lsst_mask = mask.Mask.circular(shape=(10.0, 10.0), pixel_scale=0.2, radius_mask_arcsec=4.0)
 euclid_mask = mask.Mask.circular(shape=(10.0, 10.0), pixel_scale=0.1, radius_mask_arcsec=4.0)
