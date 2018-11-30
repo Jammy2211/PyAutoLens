@@ -35,14 +35,14 @@ class Galaxy(object):
         mass_profiles: [mp.MassProfile]
             A list of the galaxy's mass profiles.
         hyper_galaxy : HyperGalaxy
-            The hyper-parameters of the hyper-galaxy, if is used to scale the image's noise-map.
+            The hyper-parameters of the hyper-galaxy, if is used to scale the regular's noise-map.
             
         Attributes
         ----------
         pixelization : inversion.Pixelization
-            The pixelization of the galaxy used to reconstruct an observed image using an inversion.
+            The pixelization of the galaxy used to reconstruct an observed regular using an inversion.
         regularization : inversion.Regularization
-            The regularization of the pixel-grid used to reconstruct an observed image using an inversion.
+            The regularization of the pixel-grid used to reconstruct an observed regular using an inversion.
         """
         self.redshift = redshift
 
@@ -267,11 +267,11 @@ class HyperGalaxy(object):
     _ids = count()
 
     def __init__(self, contribution_factor=0.0, noise_factor=0.0, noise_power=1.0):
-        """ If a *Galaxy* is given a *HyperGalaxy* as an attribute, the noise-map in the regions of the image that the \
+        """ If a *Galaxy* is given a *HyperGalaxy* as an attribute, the noise-map in the regions of the regular that the \
         galaxy is located will be scaled, to prevent over-fitting of the galaxy. 
         
         This is performed by first computing the hyper-galalxy's 'contribution-map', which determines the fraction of \ 
-        flux in every pixel of the image that can be associated with this particular hyper-galaxy. This is computed \
+        flux in every pixel of the regular that can be associated with this particular hyper-galaxy. This is computed \
         using  hyper-data set (e.g. fitting.fitting_data.FittingHyperData), which includes  best-fit images of the \ 
         galaxy's light from a previous analysis phase. 
          
@@ -303,10 +303,10 @@ class HyperGalaxy(object):
         Parameters
         -----------
         hyper_model_image : ndarray
-            The best-fit model image to the observed image from a previous analysis phase. This provides the \
-            total light attributed to each image pixel by the model.
+            The best-fit model regular to the observed regular from a previous analysis phase. This provides the \
+            total light attributed to each regular pixel by the model.
         hyper_galaxy_image : ndarray
-            A model image of the galaxy (from light profiles or an inversion) from a previous analysis phase.
+            A model regular of the galaxy (from light profiles or an inversion) from a previous analysis phase.
         minimum_value : float
             The minimum contribution value a pixel must contain to not be rounded to 0.
         """

@@ -89,12 +89,12 @@ class GalaxyModel(model_mapper.AbstractPriorModel):
             If *True*, the galaxy redshift will be treated as a free-parameter that is fitted for by the non-linear \
             search.
         pixelization : Pixelization
-            The pixelization used to reconstruct the galaxy light and fit the observed image if using an inversion.
+            The pixelization used to reconstruct the galaxy light and fit the observed regular if using an inversion.
         regularization : Regularization
             The regularization-scheme used to regularization reconstruct the galaxy light when fitting the observed \
-            image if using an inversion.
+            regular if using an inversion.
         hyper_galaxy : HyperGalaxy
-            A model hyper-galaxy used for scaling the observed image's noise.
+            A model hyper-galaxy used for scaling the observed regular's noise.
         """
 
         self.align_centres = align_centres

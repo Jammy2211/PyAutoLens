@@ -7,9 +7,8 @@ from autofit import conf
 from autofit.core import model_mapper as mm
 from autofit.core import non_linear
 
-from autolens.imaging import image as img
-from autolens.imaging import mask as msk
-from autolens.imaging import grids
+from autolens.data.imaging import image as img
+from autolens.data.array import grids, mask as msk
 from autolens.lensing import lensing_image as li
 from autolens.model.galaxy import galaxy as g, galaxy_model as gm
 from autolens.model.profiles import light_profiles as lp, mass_profiles as mp
@@ -77,7 +76,7 @@ class NLO(non_linear.NonLinearOptimizer):
 
 @pytest.fixture(name="grids")
 def make_grids(lensing_image):
-    return grids.ImagingGrids.grids_from_mask_sub_grid_size_and_psf_shape(
+    return grids.DataGrids.grids_from_mask_sub_grid_size_and_psf_shape(
         lensing_image.mask, 1, lensing_image.psf.shape)
 
 
@@ -301,7 +300,7 @@ class TestPhase(object):
     # def test_unmasked_model_image_for_instance(self, datas_):
     #
     #     lens_galaxy = g.Galaxy(light_profile=lp.SphericalSersic(intensity=1.0))
-    #     image_padded_grid = msk.PaddedImageGrid.unmasked_grid_from_shapes_and_pixel_scale(shape=datas_.shape,
+    #     image_padded_grid = msk.PaddedRegularGrid.unmasked_grid_from_shapes_and_pixel_scale(shape=datas_.shape,
     #                                                                                         psf_shape=datas_.psf.shape,
     #                                                                                         pixel_scale=datas_.pixel_scale)
     #     image_1d = lens_galaxy.intensities_from_grid(image_padded_grid)
@@ -321,7 +320,7 @@ class TestPhase(object):
     #     g0= g.Galaxy(light_profile=lp.SphericalSersic(intensity=1.0))
     #     g1 = g.Galaxy(light_profile=lp.SphericalSersic(intensity=2.0))
     #
-    #     image_padded_grid = msk.PaddedImageGrid.unmasked_grid_from_shapes_and_pixel_scale(shape=datas_.shape,
+    #     image_padded_grid = msk.PaddedRegularGrid.unmasked_grid_from_shapes_and_pixel_scale(shape=datas_.shape,
     #                                                                                         psf_shape=datas_.psf.shape,
     #                                                                                         pixel_scale=datas_.pixel_scale)
     #

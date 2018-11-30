@@ -1,13 +1,12 @@
 from autofit import conf
 from autofit.core import non_linear as nl
 from autofit.core import model_mapper as mm
-from autolens.imaging import image as im
+from autolens.data.imaging import image as im
 from autolens.model.galaxy import galaxy_model as gm
-from autolens.inversion import pixelizations as pix
-from autolens.inversion import regularization as reg
+from autolens.model.inversion import pixelizations as pix, regularization as reg
 from autolens.pipeline import phase as ph
 from autolens.pipeline import pipeline
-from autolens.imaging.plotters import imaging_plotters
+from autolens.data.imaging.plotters import imaging_plotters
 from autolens.model.profiles import light_profiles as lp, mass_profiles as mp
 
 import os
@@ -23,13 +22,13 @@ conf.instance = conf.Config(config_path=path+'config', output_path=path+'output'
 
 def simulate():
 
-    from autolens.imaging import grids
+    from autolens.data.array import grids
     from autolens.model.galaxy import galaxy as g
     from autolens.lensing import ray_tracing
 
     psf = im.PSF.simulate_as_gaussian(shape=(11, 11), sigma=0.05, pixel_scale=0.05)
 
-    image_plane_grids = grids.ImagingGrids.grids_for_simulation(shape=(180, 180), pixel_scale=0.05, psf_shape=(11, 11))
+    image_plane_grids = grids.DataGrids.grids_for_simulation(shape=(180, 180), pixel_scale=0.05, psf_shape=(11, 11))
 
     lens_galaxy = g.Galaxy(mass=mp.EllipticalIsothermal( centre=(0.0, 0.0), axis_ratio=0.8, phi=135.0,
                                                          einstein_radius=1.6))
@@ -50,7 +49,7 @@ def simulate():
     return im.Image.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=0.05,
                                         exposure_time=300.0, psf=psf, background_sky_level=0.1, add_noise=True)
 
-# Lets simulate the image we'll fit, which is the same complex source as the 3_pipelines.py tutorial.
+# Lets simulate the regular we'll fit, which is the same complex source as the 3_pipelines.py tutorial.
 image = simulate()
 imaging_plotters.plot_image_subplot(image=image)
 
@@ -77,7 +76,7 @@ def make_pipeline():
             self.source_galaxies.source.pixelization.shape_1 = mm.UniformPrior(lower_limit=20.0, upper_limit=40.0)
 
             # We know the regularization coefficient is going to be around 1.0 from the last tutorial, but lets use a
-            # large prior range just to make sure we cover solutions for any image.
+            # large prior range just to make sure we cover solutions for any regular.
             self.source_galaxies.source.regularization.coefficients_0 = mm.UniformPrior(lower_limit=0.0,
                                                                                         upper_limit=100.0)
 

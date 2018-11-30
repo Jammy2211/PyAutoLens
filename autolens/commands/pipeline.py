@@ -66,7 +66,7 @@ class Pipeline(Base):
         print_pipelines()
 
     def run_pipeline(self, pl):
-        from autolens.imaging import image as im
+        from autolens.data.imaging import image as im
         if self.is_using_hdu:
             image = im.load_imaging_from_fits(self.data_path, self.image_hdu, self.noise_hdu, self.psf_hdu,
                                               self.pixel_scale)
@@ -92,9 +92,9 @@ class Pipeline(Base):
         Returns
         -------
         str: image_hdu
-            The hdu of the image datas in the datas file
+            The hdu of the regular datas in the datas file
         """
-        return int(self.options["--image-hdu"])
+        return int(self.options["--regular-hdu"])
 
     @property
     def noise_hdu(self):
@@ -126,9 +126,9 @@ class Pipeline(Base):
         Returns
         -------
         str: path
-            The path to the image
+            The path to the regular
         """
-        return self.options['--image']
+        return self.options['--regular']
 
     @property
     @prepend_working_directory

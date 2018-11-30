@@ -83,7 +83,7 @@ class Convolver(object):
 
     Whilst the scheme above accounts for all blurred light within the masks, it does not account for the fact that
     pixels outside of the masks will also blur light into it. For model_galaxy light profiles, this effect is accounted for \
-    using blurring frames, however it is omitted for mapping_matrix matrix image.
+    using blurring frames, however it is omitted for mapping_matrix matrix regular.
 
     First, a blurring masks is computed from a masks, which describes all pixels which are close enough to the masks \
     to blur light into it for a given psf size. Following the howtolens above, the following blurring masks is \
@@ -177,13 +177,13 @@ class Convolver(object):
         Parameters
         ----------
         coords: (int, int)
-            The image_grid of mask_index_array on which the frame should be centred
+            The regular_grid of mask_index_array on which the frame should be centred
         psf_shape: (int, int)
             The shape of the psf for which this frame will be used
         Returns
         -------
         frame: ndarray
-            A subset of mask_index_array of shape psf_shape where elements with image_grid outside of image_frame_indexes have
+            A subset of mask_index_array of shape psf_shape where elements with regular_grid outside of image_frame_indexes have
             value -1
         """
         half_x = int(self.kernel_shape[0] / 2)
@@ -213,13 +213,13 @@ class Convolver(object):
         Parameters
         ----------
         coords: (int, int)
-            The image_grid of mask_index_array on which the frame should be centred
+            The regular_grid of mask_index_array on which the frame should be centred
         psf_shape: (int, int)
             The shape of the psf for which this frame will be used
         Returns
         -------
         frame: ndarray
-            A subset of mask_index_array of shape psf_shape where elements with image_grid outside of image_frame_indexes have
+            A subset of mask_index_array of shape psf_shape where elements with regular_grid outside of image_frame_indexes have
             value -1
         """
 

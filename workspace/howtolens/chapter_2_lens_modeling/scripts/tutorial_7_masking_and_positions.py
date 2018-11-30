@@ -1,12 +1,12 @@
 from autofit import conf
 from autofit.core import non_linear
-from autolens.imaging import image as im
-from autolens.imaging import mask as msk
+from autolens.data.imaging import image as im
+from autolens.data.array import mask as msk
 from autolens.model.profiles import light_profiles as lp
 from autolens.model.profiles import mass_profiles as mp
 from autolens.model.galaxy import galaxy as g
 from autolens.pipeline import phase as ph
-from autolens.imaging.plotters import imaging_plotters
+from autolens.data.imaging.plotters import imaging_plotters
 
 import os
 
@@ -19,16 +19,16 @@ import os
 path = '{}/../'.format(os.path.dirname(os.path.realpath(__file__)))
 conf.instance = conf.Config(config_path=conf.CONFIG_PATH, output_path=path+"output")
 
-# Lets simulate the simple image we've used throughout this chapter again.
+# Lets simulate the simple regular we've used throughout this chapter again.
 def simulate():
 
-    from autolens.imaging import grids
+    from autolens.data.array import grids
     from autolens.model.galaxy import galaxy as g
     from autolens.lensing import ray_tracing
 
     psf = im.PSF.simulate_as_gaussian(shape=(11, 11), sigma=0.1, pixel_scale=0.1)
 
-    image_plane_grids = grids.ImagingGrids.grids_for_simulation(shape=(130, 130), pixel_scale=0.1, psf_shape=(11, 11))
+    image_plane_grids = grids.DataGrids.grids_for_simulation(shape=(130, 130), pixel_scale=0.1, psf_shape=(11, 11))
 
     lens_galaxy = g.Galaxy(mass=mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=1.6))
     source_galaxy = g.Galaxy(light=lp.SphericalExponential(centre=(0.0, 0.0), intensity=0.2, effective_radius=0.2))
@@ -43,7 +43,7 @@ def simulate():
 image = simulate()
 imaging_plotters.plot_image_subplot(image=image)
 
-# When it comes to determining an appropriate mask for this image, the best approach is to set up a mask using the mask
+# When it comes to determining an appropriate mask for this regular, the best approach is to set up a mask using the mask
 # module and pass it to an imaging plotter. You can then check visually if the mask is an appropriate size or not.
 # Below, we choose an inner radius that cuts into our lensed source galaxy - clearly this isn't a good mask.
 mask = msk.Mask.annular(shape=image.shape, pixel_scale=image.pixel_scale, inner_radius_arcsec=1.4,
@@ -77,12 +77,12 @@ phase_with_custom_mask = ph.LensSourcePlanePhase(lens_galaxies=dict(lens_galaxy=
 #    Overly aggressive masking risks you masking out some of that light - data which would better constrain your
 #    lens model!
 
-# 2) When you fit a an image with a model image, the fit is performed only within the masked region. Outside of the
-#    masked region it is possible that the model image produces some source-galaxy light in a region of the image where
+# 2) When you fit a an regular with a model regular, the fit is performed only within the masked region. Outside of the
+#    masked region it is possible that the model regular produces some source-galaxy light in a region of the regular where
 #    it isn't actually observed. If this region is masked, the poor fit in this region won't reduce the model's
 #    likelihood.
 
-# As you use PyAutoLens more, you will get a feel for how fast an analysis will run given a certain image resolution,
+# As you use PyAutoLens more, you will get a feel for how fast an analysis will run given a certain regular resolution,
 # lets model complexity, non-linear search priors / settings, etc. As you develop this intuition, I would recommend you
 # always aim to use masks as big as possible, but still gives what you feel is a reasonable run-speed. Aggresive masking
 # will get your code running fast - but it could lead you to infer an incorrect lens model!
@@ -91,7 +91,7 @@ phase_with_custom_mask = ph.LensSourcePlanePhase(lens_galaxies=dict(lens_galaxy=
 # mask that will probably encompass the entire source-galaxy anyway.
 
 
-# We can also manually specify a set of image-pixels which correspond to the multiple images of the source-galaxy(s).
+# We can also manually specify a set of regular-pixels which correspond to the multiple images of the source-galaxy(s).
 # During the analysis, PyAutoLens will first check that these pixels trace within a specified arc-second threshold of
 # one another (which is controlled by the 'position_threshold' parameter of the 'general.ini' config file). This
 # provides two benefits:
@@ -102,8 +102,8 @@ phase_with_custom_mask = ph.LensSourcePlanePhase(lens_galaxies=dict(lens_galaxy=
 # 2) By removing these solutions, a global-maximum solution may be reached instead of a local-maxima. This is because
 #    removing the incorrect mass models makes the non-linear parameter space less complex.
 
-# We can easily check the image-positions are accurate by plotting them using our imaging_plotter (they are the magenta
-# dots on the image).
+# We can easily check the regular-positions are accurate by plotting them using our imaging_plotter (they are the magenta
+# dots on the regular).
 imaging_plotters.plot_image_subplot(image=image, positions=[[[1.6, 0.0], [0.0, 1.6], [-1.6, 0.0], [0.0, -1.6]]])
 
 # We can then pass these positions to our phase such that every iteration of the non-linear search checks they trace
@@ -121,13 +121,13 @@ phase_with_positions = ph.LensSourcePlanePhase(lens_galaxies=dict(lens_galaxy=g.
 
 def simulate_two_source_galaxies():
 
-    from autolens.imaging import grids
+    from autolens.data.array import grids
     from autolens.model.galaxy import galaxy as g
     from autolens.lensing import ray_tracing
 
     psf = im.PSF.simulate_as_gaussian(shape=(11, 11), sigma=0.1, pixel_scale=0.1)
 
-    image_plane_grids = grids.ImagingGrids.grids_for_simulation(shape=(130, 130), pixel_scale=0.1, psf_shape=(11, 11))
+    image_plane_grids = grids.DataGrids.grids_for_simulation(shape=(130, 130), pixel_scale=0.1, psf_shape=(11, 11))
 
     lens_galaxy = g.Galaxy(mass=mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=1.6))
     source_galaxy_0 = g.Galaxy(light=lp.SphericalExponential(centre=(1.0, 0.0), intensity=0.2, effective_radius=0.2))

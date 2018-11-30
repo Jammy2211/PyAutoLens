@@ -5,7 +5,7 @@ import pytest
 
 from autofit import conf
 from autolens.model.galaxy import galaxy as g
-from autolens.imaging import grids
+from autolens.data.array import grids
 from autolens.lensing import ray_tracing
 from autolens.lensing.plotters import ray_tracing_plotters
 from autolens.model.profiles import light_profiles as lp, mass_profiles as mp
@@ -41,7 +41,7 @@ def test_galaxy_mass():
 
 @pytest.fixture(name='grids')
 def test_grids():
-    return grids.ImagingGrids.from_shape_and_pixel_scale(shape=(100, 100), pixel_scale=0.05, sub_grid_size=2)
+    return grids.DataGrids.from_shape_and_pixel_scale(shape=(100, 100), pixel_scale=0.05, sub_grid_size=2)
 
 
 @pytest.fixture(name='tracer')

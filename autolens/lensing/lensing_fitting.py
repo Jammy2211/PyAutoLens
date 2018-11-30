@@ -1,8 +1,8 @@
 import numpy as np
 
 from autolens import exc
-from autolens.inversion import inversions
-from autolens.fitting import fitting
+from autolens.model.inversion import inversions
+from autolens.data.fitting import fitting
 from autolens.lensing import lensing_image as li
 from autolens.lensing import ray_tracing
 
@@ -19,7 +19,7 @@ def fit_multiple_lensing_images_with_tracer(lensing_images, tracer, padded_trace
     tracer : ray_tracing.AbstractTracer
         The tracer, which describes the ray-tracing of the strong lensing configuration.
     padded_tracer : ray_tracing.AbstractTracer
-        A tracer with an identical strong lensing configuration to the tracer above, but using the lensing image's \
+        A tracer with an identical strong lensing configuration to the tracer above, but using the lensing regular's \
         padded grids such that unmasked model-images can be computed.
     """
 
@@ -92,7 +92,7 @@ def fast_likelihood_from_multiple_lensing_images_and_tracer(lensing_images, trac
 
 
 def fit_lensing_image_with_tracer(lensing_image, tracer, padded_tracer=None):
-    """Fit a lensing image with a model tracer, automatically determining the type of fit based on the \
+    """Fit a lensing regular with a model tracer, automatically determining the type of fit based on the \
     properties of the galaxies in the tracer.
 
     Parameters
@@ -102,7 +102,7 @@ def fit_lensing_image_with_tracer(lensing_image, tracer, padded_tracer=None):
     tracer : ray_tracing.AbstractTracer
         The tracer, which describes the ray-tracing of the strong lensing configuration.
     padded_tracer : ray_tracing.AbstractTracer
-        A tracer with an identical strong lensing configuration to the tracer above, but using the lensing image's \
+        A tracer with an identical strong lensing configuration to the tracer above, but using the lensing regular's \
         padded grids such that unmasked model-images can be computed.
     """
 
@@ -135,7 +135,7 @@ def fit_lensing_image_with_tracer(lensing_image, tracer, padded_tracer=None):
 
 
 def fast_likelihood_from_lensing_image_and_tracer(lensing_image, tracer):
-    """Fit a lensing image with a model tracer, automatically determining the type of fit based on the properties of \
+    """Fit a lensing regular with a model tracer, automatically determining the type of fit based on the properties of \
      the galaxies in the tracer.
 
     The likelihood is computed in the fastest, least memory-intensive, way possible, for efficient non-linear sampling.
@@ -147,7 +147,7 @@ def fast_likelihood_from_lensing_image_and_tracer(lensing_image, tracer):
     tracer : ray_tracing.AbstractTracer
         The tracer, which describes the ray-tracing of the strong lensing configuration.
     padded_tracer : ray_tracing.AbstractTracer
-        A tracer with an identical strong lensing configuration to the tracer above, but using the lensing image's \
+        A tracer with an identical strong lensing configuration to the tracer above, but using the lensing regular's \
         padded grids such that unmasked model-images can be computed.
     """
     if tracer.has_light_profile and not tracer.has_pixelization:
@@ -203,7 +203,7 @@ class LensingProfileFit(fitting.AbstractProfileFit, AbstractLensingFit):
         tracer : ray_tracing.AbstractTracer
             The tracer, which describes the ray-tracing of the strong lensing configuration.
         padded_tracer : ray_tracing.AbstractTracer
-            A tracer with an identical strong lensing configuration to the tracer above, but using the lensing image's \
+            A tracer with an identical strong lensing configuration to the tracer above, but using the lensing regular's \
             padded grids such that unmasked model-images can be computed.
         """
         AbstractLensingFit.__init__(self=self, tracer=tracer, padded_tracer=padded_tracer)
@@ -217,7 +217,7 @@ class LensingProfileFit(fitting.AbstractProfileFit, AbstractLensingFit):
         convolvers = list(map(lambda lensing_image : lensing_image.convolver_image, lensing_images))
         noise_maps_ = list(map(lambda lensing_image : lensing_image.noise_map_, lensing_images))
         model_images_ = fitting.blur_images_including_blurring_regions(images_=tracer.image_plane_images_,
-                               blurring_images_=tracer.image_plane_blurring_images_, convolvers=convolvers)
+                                                                       blurring_images_=tracer.image_plane_blurring_images_, convolvers=convolvers)
         residuals_ = fitting.residuals_from_datas_and_model_datas(datas_=lensing_images, model_datas_=model_images_),
         chi_squareds_ = fitting.chi_squareds_from_residuals_and_noise_maps(residuals_=residuals_, noise_maps_=noise_maps_),
         chi_squared_terms = fitting.chi_squared_terms_from_chi_squareds(chi_squareds_=chi_squareds_)
@@ -285,7 +285,7 @@ class HyperLensingProfileFit(LensingProfileFit, fitting.AbstractHyperFit):
         tracer : ray_tracing.AbstractTracer
             The tracer, which describes the ray-tracing of the strong lensing configuration.
         padded_tracer : ray_tracing.AbstractTracer
-            A tracer with an identical strong lensing configuration to the tracer above, but using the lensing image's \
+            A tracer with an identical strong lensing configuration to the tracer above, but using the lensing regular's \
             padded grids such that unmasked model-images can be computed.
         """
 
@@ -369,8 +369,8 @@ class LensingInversionFit(fitting.AbstractInversionFit, AbstractLensingFit):
         chi_squared_terms = fitting.chi_squared_terms_from_chi_squareds(chi_squareds_=chi_squareds_)
         noise_terms = fitting.noise_terms_from_noise_maps(noise_maps_=noise_maps_)
         return sum(fitting.evidences_from_reconstruction_terms(chi_squared_terms, [inversion.regularization_term],
-                                                           [inversion.log_det_curvature_reg_matrix_term],
-                                                           [inversion.log_det_regularization_matrix_term], noise_terms))
+                                                               [inversion.log_det_curvature_reg_matrix_term],
+                                                               [inversion.log_det_regularization_matrix_term], noise_terms))
 
     @property
     def model_images_of_planes(self):
@@ -463,10 +463,10 @@ class HyperLensingInversionFit(LensingInversionFit, HyperLensingInversion):
         scaled_chi_squared_terms = fitting.chi_squared_terms_from_chi_squareds(scaled_chi_squareds_)
         scaled_noise_terms = fitting.noise_terms_from_noise_maps(scaled_noise_maps_)
         return sum(fitting.evidences_from_reconstruction_terms(scaled_chi_squared_terms,
-                                                           [scaled_inversion.regularization_term],
-                                                           [scaled_inversion.log_det_curvature_reg_matrix_term],
-                                                           [scaled_inversion.log_det_regularization_matrix_term],
-                                                           scaled_noise_terms))
+                                                               [scaled_inversion.regularization_term],
+                                                               [scaled_inversion.log_det_curvature_reg_matrix_term],
+                                                               [scaled_inversion.log_det_regularization_matrix_term],
+                                                               scaled_noise_terms))
 
 
 class LensingProfileInversionFit(fitting.AbstractProfileInversionFit, AbstractLensingFit):
@@ -482,7 +482,7 @@ class LensingProfileInversionFit(fitting.AbstractProfileInversionFit, AbstractLe
         tracer : ray_tracing.AbstractTracer
             The tracer, which describes the ray-tracing of the strong lensing configuration.
         padded_tracer : ray_tracing.AbstractTracer
-            A tracer with an identical strong lensing configuration to the tracer above, but using the lensing image's \
+            A tracer with an identical strong lensing configuration to the tracer above, but using the lensing regular's \
             padded grids such that unmasked model-images can be computed.
         """
 
@@ -505,7 +505,7 @@ class LensingProfileInversionFit(fitting.AbstractProfileInversionFit, AbstractLe
         noise_maps_ = list(map(lambda lensing_image : lensing_image.noise_map_, lensing_images))
 
         profile_model_images_ = fitting.blur_images_including_blurring_regions(images_=tracer.image_plane_images_,
-                                blurring_images_=tracer.image_plane_blurring_images_, convolvers=convolvers_image)
+                                                                               blurring_images_=tracer.image_plane_blurring_images_, convolvers=convolvers_image)
 
         profile_subtracted_images_ = list(map(lambda lensing_image, profile_model_image_ :
                                               lensing_image[:] - profile_model_image_,
@@ -514,15 +514,15 @@ class LensingProfileInversionFit(fitting.AbstractProfileInversionFit, AbstractLe
         mapper = tracer.mappers_of_planes[0]
         regularization = tracer.regularizations_of_planes[0]
         inversion = inversions.inversion_from_lensing_image_mapper_and_regularization(profile_subtracted_images_[0],
-                    noise_maps_[0], convolvers_mapping_matrix[0], mapper, regularization)
+                                                                                      noise_maps_[0], convolvers_mapping_matrix[0], mapper, regularization)
         model_images_ = [profile_model_images_[0] + inversion.reconstructed_data_vector]
         residuals_ = fitting.residuals_from_datas_and_model_datas(lensing_images[:], model_images_)
         chi_squareds_ = fitting.chi_squareds_from_residuals_and_noise_maps(residuals_, noise_maps_)
         chi_squared_terms = fitting.chi_squared_terms_from_chi_squareds(chi_squareds_)
         noise_terms = fitting.noise_terms_from_noise_maps(noise_maps_)
         return sum(fitting.evidences_from_reconstruction_terms(chi_squared_terms, [inversion.regularization_term],
-                                                           [inversion.log_det_curvature_reg_matrix_term],
-                                                           [inversion.log_det_regularization_matrix_term], noise_terms))
+                                                               [inversion.log_det_curvature_reg_matrix_term],
+                                                               [inversion.log_det_regularization_matrix_term], noise_terms))
 
     @property
     def model_images_of_planes(self):
@@ -542,7 +542,7 @@ class HyperLensingProfileInversionFit(LensingProfileInversionFit, HyperLensingIn
         tracer : ray_tracing.AbstractTracer
             The tracer, which describes the ray-tracing of the strong lensing configuration.
         padded_tracer : ray_tracing.AbstractTracer
-            A tracer with an identical strong lensing configuration to the tracer above, but using the lensing image's \
+            A tracer with an identical strong lensing configuration to the tracer above, but using the lensing regular's \
             padded grids such that unmasked model-images can be computed.
         """
 
@@ -578,7 +578,7 @@ class HyperLensingProfileInversionFit(LensingProfileInversionFit, HyperLensingIn
                                              lensing_hyper_images))
 
         profile_model_images_ = fitting.blur_images_including_blurring_regions(images_=tracer.image_plane_images_,
-                                blurring_images_=tracer.image_plane_blurring_images_, convolvers=convolvers_image)
+                                                                               blurring_images_=tracer.image_plane_blurring_images_, convolvers=convolvers_image)
 
         profile_subtracted_images_ = list(map(lambda lensing_image, profile_model_image_ :
                                               lensing_image[:] - profile_model_image_,
@@ -600,10 +600,10 @@ class HyperLensingProfileInversionFit(LensingProfileInversionFit, HyperLensingIn
         scaled_chi_squared_terms = fitting.chi_squared_terms_from_chi_squareds(scaled_chi_squareds_)
         scaled_noise_terms = fitting.noise_terms_from_noise_maps(scaled_noise_maps_)
         return sum(fitting.evidences_from_reconstruction_terms(scaled_chi_squared_terms,
-                                                           [scaled_inversion.regularization_term],
-                                                           [scaled_inversion.log_det_curvature_reg_matrix_term],
-                                                           [scaled_inversion.log_det_regularization_matrix_term],
-                                                           scaled_noise_terms))
+                                                               [scaled_inversion.regularization_term],
+                                                               [scaled_inversion.log_det_curvature_reg_matrix_term],
+                                                               [scaled_inversion.log_det_regularization_matrix_term],
+                                                               scaled_noise_terms))
 
 
 class PositionFit:

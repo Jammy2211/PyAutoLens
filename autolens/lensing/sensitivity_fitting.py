@@ -1,11 +1,4 @@
-import numpy as np
-
-from autolens import exc
-from autolens.imaging import image as im
-from autolens.inversion import inversions
-from autolens.fitting import fitting
-from autolens.fitting import fitting_data
-from autolens.lensing import lensing_image as li
+from autolens.data.fitting import fitting
 from autolens.lensing import ray_tracing
 
 class AbstractSensitivityFit(object):
@@ -56,7 +49,7 @@ class SensitivityProfileFit(AbstractSensitivityFit):
         noise_maps_ = list(map(lambda lensing_image : lensing_image.noise_map_, sensitivity_images))
         
         model_images_normal_ = fitting.blur_images_including_blurring_regions(images_=tracer_normal.image_plane_images_,
-                                     blurring_images_=tracer_normal.image_plane_blurring_images_, convolvers=convolvers)
+                                                                              blurring_images_=tracer_normal.image_plane_blurring_images_, convolvers=convolvers)
         
         residuals_normal_ = fitting.residuals_from_datas_and_model_datas(datas_=sensitivity_images,
                                                                          model_datas_=model_images_normal_)
@@ -67,7 +60,7 @@ class SensitivityProfileFit(AbstractSensitivityFit):
         chi_squared_terms_normal = fitting.chi_squared_terms_from_chi_squareds(chi_squareds_=chi_squareds_normal_)
         
         noise_terms_normal = fitting.noise_terms_from_noise_maps(noise_maps_=noise_maps_)
-        likelihoods_normal = fitting.likelihoods_from_chi_squareds_and_noise_terms(chi_squared_terms=chi_squared_terms_normal, 
+        likelihoods_normal = fitting.likelihoods_from_chi_squareds_and_noise_terms(chi_squared_terms=chi_squared_terms_normal,
                                                                                    noise_terms=noise_terms_normal)
         
         model_images_sensitive_ = fitting.blur_images_including_blurring_regions(
@@ -81,8 +74,8 @@ class SensitivityProfileFit(AbstractSensitivityFit):
         chi_squared_terms_sensitive = fitting.chi_squared_terms_from_chi_squareds(chi_squareds_=chi_squareds_sensitive_)
         noise_terms_sensitive = fitting.noise_terms_from_noise_maps(noise_maps_=noise_maps_)
         
-        likelihoods_sensitive = fitting.likelihoods_from_chi_squareds_and_noise_terms(chi_squared_terms=chi_squared_terms_sensitive, 
-                                                                                   noise_terms=noise_terms_sensitive)
+        likelihoods_sensitive = fitting.likelihoods_from_chi_squareds_and_noise_terms(chi_squared_terms=chi_squared_terms_sensitive,
+                                                                                      noise_terms=noise_terms_sensitive)
 
         return sum(likelihoods_sensitive) - sum(likelihoods_normal)
 

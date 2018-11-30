@@ -1,8 +1,8 @@
 from matplotlib import pyplot as plt
 
-from autolens.plotters import plotter_util
-from autolens.imaging.plotters import imaging_plotters
-from autolens.fitting.plotters import fitting_plotters
+from autolens.data.array.plotters import plotter_util
+from autolens.data.imaging.plotters import imaging_plotters
+from autolens.data.fitting.plotters import fitting_plotters
 
 
 def plot_fitting_subplot(fit, should_plot_mask=True, positions=None,
@@ -108,6 +108,6 @@ def plot_fitting_subplot(fit, should_plot_mask=True, positions=None,
                                        output_path=output_path, output_filename='', output_format=output_format)
 
     plotter_util.output_subplot_array(output_path=output_path, output_filename=output_filename,
-                               output_format=output_format)
+                                      output_format=output_format)
 
     plt.close()
