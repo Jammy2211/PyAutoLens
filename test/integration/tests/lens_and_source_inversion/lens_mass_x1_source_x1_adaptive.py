@@ -1,5 +1,6 @@
 import os
 
+from autofit import conf
 from autofit.core import non_linear as nl
 from autolens.model.galaxy import galaxy, galaxy_model as gm
 from autolens.model.inversion import pixelizations as pix, regularization as reg
@@ -12,10 +13,13 @@ dirpath = os.path.dirname(os.path.realpath(__file__))
 dirpath = os.path.dirname(dirpath)
 output_path = '{}/../output/lens_and_source_inversion'.format(dirpath)
 
+path = '{}/../../'.format(os.path.dirname(os.path.realpath(__file__)))
+conf.instance = conf.Config(config_path=path+'config', output_path=path+'output')
 
 def pipeline():
-    pipeline_name = "lens_mass_x1_source_x1"
-    data_name = '/lens_mass_x1_source_x1'
+
+    pipeline_name = "lens_mass_x1_source_x1_adaptive"
+    data_name = '/lens_mass_x1_source_x1_adaptive'
 
     tools.reset_paths(data_name, pipeline_name, output_path)
 
@@ -48,7 +52,8 @@ def make_lens_x1_source_x1_inversion_pipeline(pipeline_name):
             self.source_galaxies[0].pixelization.shape_1 = 20.0
 
     phase1 = SourcePix(lens_galaxies=[gm.GalaxyModel(sie=mp.EllipticalIsothermal)],
-                       source_galaxies=[gm.GalaxyModel(pixelization=pix.Rectangular, regularization=reg.Constant)],
+                       source_galaxies=[gm.GalaxyModel(pixelization=pix.AdaptiveMagnification,
+                                                       regularization=reg.Constant)],
                        optimizer_class=nl.MultiNest, phase_name="{}/phase1".format(pipeline_name))
 
     phase1.optimizer.n_live_points = 60
