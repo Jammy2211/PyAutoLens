@@ -21,11 +21,14 @@ class MockSubGrid(np.ndarray):
 
 class MockGridCollection(object):
 
-    def __init__(self, regular, sub, blurring=None, pix=None):
+    def __init__(self, regular, sub, blurring=None, pix=None, regular_to_nearest_regular_pix=None):
         self.regular = grids.RegularGrid(regular, mask=None)
         self.sub = sub
         self.blurring = grids.RegularGrid(blurring, mask=None) if blurring is not None else None
-        self.pix = grids.RegularGrid(pix, mask=None) if pix is not None else None
+        self.pix = grids.PixGrid(pix, regular_to_nearest_regular_pix=regular_to_nearest_regular_pix,
+                                 mask=None) if pix is not None else None
+
+
 
 class MockBorders(object):
 

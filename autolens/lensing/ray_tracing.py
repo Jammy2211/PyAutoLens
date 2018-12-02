@@ -157,7 +157,7 @@ class TracerImagePlane(AbstractTracer):
         ----------
         lens_galaxies : [Galaxy]
             The list of lens galaxies in the datas_-plane.
-        image_plane_grids : masks.DataGrids
+        image_plane_grids : grids.DataGrids
             The datas_-plane grids where tracer_normal calculation are performed, (this includes the datas_-grid, sub-grid, \
             blurring-grid, etc.).
         border : mask.RegularGridBorder
@@ -192,7 +192,7 @@ class TracerImageSourcePlanes(AbstractTracer):
             The list of galaxies in the datas_-plane.
         source_galaxies : [Galaxy]
             The list of galaxies in the source-plane.
-        image_plane_grids : masks.DataGrids
+        image_plane_grids : grids.DataGrids
             The datas_-plane grids where ray-tracing calculation are performed, (this includes the datas_-grid, \
             sub-grid, blurring-grid, etc.).
         border : mask.RegularGridBorder
@@ -387,7 +387,7 @@ class TracerMulti(AbstractTracerMulti):
         ----------
         galaxies : [Galaxy]
             The list of galaxies in the ray-tracing calculation.
-        image_plane_grids : masks.DataGrids
+        image_plane_grids : grids.DataGrids
             The datas_-plane grids where ray-tracing calculation are performed, (this includes the
             datas_-grid, sub-grid, blurring-grid, etc.).
         border : mask.RegularGridBorder
