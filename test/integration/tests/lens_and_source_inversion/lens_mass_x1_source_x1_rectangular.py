@@ -23,7 +23,7 @@ def pipeline():
     tools.reset_paths(data_name, pipeline_name, output_path)
 
     lens_mass = mp.EllipticalIsothermal(centre=(0.0, 0.0), axis_ratio=0.8, phi=80.0, einstein_radius=1.6)
-    source_light = lp.EllipticalSersic(centre=(-1.0, 1.0), axis_ratio=0.6, phi=90.0, intensity=1.0,
+    source_light = lp.EllipticalSersic(centre=(0.0, 0.0), axis_ratio=0.6, phi=90.0, intensity=1.0,
                                        effective_radius=0.5, sersic_index=1.0)
 
     lens_galaxy = galaxy.Galaxy(sie=lens_mass)
