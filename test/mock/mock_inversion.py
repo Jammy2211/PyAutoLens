@@ -1,5 +1,14 @@
 import numpy as np
 
+class MockGeometry(object):
+
+    def __init__(self, pixel_centres=None, pixel_neighbors=None):
+
+        self.pixel_scales = (1.0, 1.0)
+        self.origin = (0.0, 0.0)
+        self.pixel_centres = pixel_centres
+        self.pixel_neighbors = pixel_neighbors
+
 class MockPixelization(object):
 
     def __init__(self, value):
@@ -23,6 +32,7 @@ class MockMapper(object):
     def __init__(self):
         self.mapping_matrix = np.ones((1, 1))
         self.regularization_matrix = np.ones((1, 1))
+        self.geometry = MockGeometry()
 
 class MockConvolver(object):
 

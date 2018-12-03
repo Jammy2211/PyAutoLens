@@ -224,7 +224,7 @@ class AbstractPhase(object):
 
             self.position_threshold = conf.instance.general.get('positions', 'position_threshold', float)
             self.plot_count = 0
-            self.output_image_path = "{}/images/".format(self.phase_output_path)
+            self.output_image_path = "{}/image/".format(self.phase_output_path)
             make_path_if_does_not_exist(path=self.output_image_path)
 
         @property
