@@ -1,7 +1,7 @@
 import numba
 import numpy as np
 
-@numba.jit(nopython=True, cache=True)
+@numba.jit(nopython=True, parallel=True)
 def data_vector_from_blurred_mapping_matrix_and_data(blurred_mapping_matrix, image, noise_map):
     """ Compute the curvature_matrix matrix directly - used to integration_old test that our curvature_matrix matrix generator approach
     truly works."""
@@ -22,7 +22,7 @@ def curvature_matrix_from_blurred_mapping_matrix(blurred_mapping_matrix, noise_m
     iflist = np.zeros(blurred_mapping_matrix.shape[0], dtype='int')
     return curvature_matrix_from_blurred_mapping_matrix_jit(blurred_mapping_matrix, noise_map, flist, iflist)
 
-@numba.jit(nopython=True, cache=True)
+@numba.jit(nopython=True, parallel=True)
 def curvature_matrix_from_blurred_mapping_matrix_jit(blurred_mapping_matrix, noise_map, flist, iflist):
 
     curvature_matrix = np.zeros((blurred_mapping_matrix.shape[1], blurred_mapping_matrix.shape[1]))
@@ -48,7 +48,7 @@ def curvature_matrix_from_blurred_mapping_matrix_jit(blurred_mapping_matrix, noi
 
     return curvature_matrix
 
-@numba.jit(nopython=True, cache=True)
+@numba.jit(nopython=True, parallel=True)
 def reconstructed_data_vector_from_blurred_mapping_matrix_and_solution_vector(blurred_mapping_matrix, solution_vector):
     """ Map the reconstructed_image pix s_vector back to the masked_image-plane to compute the inversion's model-masked_image.
     """
