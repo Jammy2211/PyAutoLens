@@ -20,10 +20,10 @@ def reset_paths(data_name, pipeline_name, output_path):
     except FileNotFoundError:
         pass
 
-    # try:
-    #     shutil.rmtree(output_path + '/' + pipeline_name)
-    # except FileNotFoundError:
-    #     pass
+    try:
+        shutil.rmtree(output_path + '/' + pipeline_name)
+    except FileNotFoundError:
+        pass
 
 def simulate_integration_image(data_name, pixel_scale, lens_galaxies, source_galaxies, target_signal_to_noise):
     output_path = "{}/data/".format(os.path.dirname(os.path.realpath(__file__))) + data_name + '/'

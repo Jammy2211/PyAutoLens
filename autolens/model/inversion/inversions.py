@@ -1,8 +1,7 @@
-import numba
 import numpy as np
 
 from autolens import exc
-
+from autolens.model.inversion.util import inversion_util
 
 # TODO : Unit test this properly, using a cleverly made mock datas-set
 
@@ -45,16 +44,17 @@ class Inversion(object):
 
         self.mapper = mapper
         self.regularization = regularization
-
         self.blurred_mapping_matrix = convolver.convolve_mapping_matrix(mapping_matrix=mapper.mapping_matrix)
-        self.data_vector = \
-            data_vector_from_blurred_mapping_matrix_and_data(blurred_mapping_matrix=self.blurred_mapping_matrix,
-                                                             image=image, noise_map=noise_map)
-        self.curvature_matrix = \
-            curvature_matrix_from_blurred_mapping_matrix(blurred_mapping_matrix=self.blurred_mapping_matrix,
-                                                         noise_map=noise_map)
+
+        self.data_vector = inversion_util.data_vector_from_blurred_mapping_matrix_and_data(
+                blurred_mapping_matrix=self.blurred_mapping_matrix, image=image, noise_map=noise_map)
+
+        self.curvature_matrix = inversion_util.curvature_matrix_from_blurred_mapping_matrix(
+                blurred_mapping_matrix=self.blurred_mapping_matrix, noise_map=noise_map)
+
         self.regularization_matrix = \
-            regularization.regularization_matrix_from_pixel_neighbors(pixel_neighbors=mapper.geometry.pixel_neighbors)
+            regularization.regularization_matrix_from_pixel_neighbors(pixel_neighbors=mapper.geometry.pixel_neighbors,
+                                                            pixel_neighbors_size=mapper.geometry.pixel_neighbors_size)
         self.curvature_reg_matrix = np.add(self.curvature_matrix, self.regularization_matrix)
         self.solution_vector = np.linalg.solve(self.curvature_reg_matrix, self.data_vector)
 
@@ -64,8 +64,8 @@ class Inversion(object):
 
     @property
     def reconstructed_data_vector(self):
-        return reconstructed_data_vector_from_blurred_mapping_matrix_and_solution_vector(self.blurred_mapping_matrix,
-                                                                                         self.solution_vector)
+        return inversion_util.reconstructed_data_vector_from_blurred_mapping_matrix_and_solution_vector(
+            self.blurred_mapping_matrix, self.solution_vector)
 
     @property
     def regularization_term(self):
@@ -109,65 +109,3 @@ class Inversion(object):
             return 2.0 * np.sum(np.log(np.diag(np.linalg.cholesky(matrix))))
         except np.linalg.LinAlgError:
             raise exc.InversionException()
-
-
-@numba.jit(nopython=True, cache=True)
-def data_vector_from_blurred_mapping_matrix_and_data(blurred_mapping_matrix, image, noise_map):
-    """ Compute the curvature_matrix matrix directly - used to integration_old test that our curvature_matrix matrix generator approach
-    truly works."""
-
-    mapping_shape = blurred_mapping_matrix.shape
-
-    data_vector = np.zeros(mapping_shape[1])
-
-    for image_index in range(mapping_shape[0]):
-        for pix_index in range(mapping_shape[1]):
-            data_vector[pix_index] += image[image_index] * \
-                                      blurred_mapping_matrix[image_index, pix_index] / (noise_map[image_index] ** 2.0)
-
-    return data_vector
-
-
-def curvature_matrix_from_blurred_mapping_matrix(blurred_mapping_matrix, noise_map):
-    flist = np.zeros(blurred_mapping_matrix.shape[0])
-    iflist = np.zeros(blurred_mapping_matrix.shape[0], dtype='int')
-    return curvature_matrix_from_blurred_mapping_matrix_jit(blurred_mapping_matrix, noise_map, flist, iflist)
-
-
-@numba.jit(nopython=True, cache=True)
-def curvature_matrix_from_blurred_mapping_matrix_jit(blurred_mapping_matrix, noise_map, flist, iflist):
-
-    curvature_matrix = np.zeros((blurred_mapping_matrix.shape[1], blurred_mapping_matrix.shape[1]))
-
-    for image_index in range(blurred_mapping_matrix.shape[0]):
-        index = 0
-        for pixel_index in range(blurred_mapping_matrix.shape[1]):
-            if blurred_mapping_matrix[image_index, pixel_index] > 0.0:
-                flist[index] = blurred_mapping_matrix[image_index, pixel_index] / noise_map[image_index]
-                iflist[index] = pixel_index
-                index += 1
-
-        if index > 0:
-            for i1 in range(index):
-                for j1 in range(index):
-                    ix = iflist[i1]
-                    iy = iflist[j1]
-                    curvature_matrix[ix, iy] += flist[i1] * flist[j1]
-
-    for i in range(blurred_mapping_matrix.shape[1]):
-        for j in range(blurred_mapping_matrix.shape[1]):
-            curvature_matrix[i, j] = curvature_matrix[j, i]
-
-    return curvature_matrix
-
-
-@numba.jit(nopython=True, cache=True)
-def reconstructed_data_vector_from_blurred_mapping_matrix_and_solution_vector(blurred_mapping_matrix, solution_vector):
-    """ Map the reconstructed_image pix s_vector back to the masked_image-plane to compute the inversion's model-masked_image.
-    """
-    reconstructed_data_vector = np.zeros(blurred_mapping_matrix.shape[0])
-    for i in range(blurred_mapping_matrix.shape[0]):
-        for j in range(solution_vector.shape[0]):
-            reconstructed_data_vector[i] += solution_vector[j] * blurred_mapping_matrix[i, j]
-
-    return reconstructed_data_vector

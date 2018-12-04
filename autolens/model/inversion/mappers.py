@@ -3,7 +3,7 @@ import numpy as np
 
 from autolens.data.array.util import mapping_util
 from autolens.data.array import scaled_array
-
+from autolens.model.inversion.util import mapper_util
 
 class Mapper(object):
 
@@ -76,35 +76,8 @@ class Mapper(object):
         [ 0.0,  1.0, 0.0, 0.0] [All sub-pixels mappers to pixel 1]
         [ 0.0,  0.0, 0.5, 0.5] [2 sub-pixels mappers to pixel 2, 2 mappers to pixel 3]
         """
-        return self.mapping_matrix_from_sub_to_pix_jit(self.sub_to_pix, self.pixels, self.grids.regular.shape[0],
+        return mapper_util.mapping_matrix_from_sub_to_pix(self.sub_to_pix, self.pixels, self.grids.regular.shape[0],
                                                        self.grids.sub.sub_to_regular, self.grids.sub.sub_grid_fraction)
-
-    @staticmethod
-    @numba.jit(nopython=True, cache=True)
-    def mapping_matrix_from_sub_to_pix_jit(sub_to_pix, pixels, image_pixels, sub_to_image, sub_grid_fraction):
-        """Computes the mapping matrix, by iterating over the known mappings between the sub-grid and pixelization.
-
-        Parameters
-        -----------
-        sub_to_pix : ndarray
-            The mappings between the observed regular's sub-pixels and pixelization's pixels.
-        pixels : int
-            The number of pixels in the pixelization.
-        image_pixels : int
-            The number of regular pixels in the observed regular.
-        sub_to_image : ndarray
-            The mappings between the observed regular's sub-pixels and observed regular's pixels.
-        sub_grid_fraction : float
-            The fractional area each sub-pixel takes up in an regular-pixel.
-        """
-
-        mapping_matrix = np.zeros((image_pixels, pixels))
-
-        for sub_index in range(sub_to_image.shape[0]):
-
-            mapping_matrix[sub_to_image[sub_index], sub_to_pix[sub_index]] += sub_grid_fraction
-
-        return mapping_matrix
 
     @property
     def regular_to_pix(self):
@@ -203,16 +176,11 @@ class VoronoiMapper(Mapper):
     @property
     def regular_to_pix(self):
         """The 1D index mappings between the regular pixels and Voronoi pixelization pixels."""
-
-        regular_to_pix = np.zeros((self.grids.regular.shape[0]), dtype=int)
-
-        for regular_index, pixel_coordinate in enumerate(self.grids.regular):
-
-            nearest_pixel = self.grids.pix.regular_to_nearest_regular_pix[regular_index]
-
-            regular_to_pix[regular_index] = self.pair_regular_pixel_and_pixel(pixel_coordinate, nearest_pixel)
-
-        return regular_to_pix
+        return mapper_util.voronoi_regular_to_pix_from_grids_and_geometry(regular_grid=self.grids.regular,
+                                       regular_to_nearest_regular_pix=self.grids.pix.regular_to_nearest_regular_pix,
+                                       pixel_centres=self.geometry.pixel_centres,
+                                       pixel_neighbors=self.geometry.pixel_neighbors,
+                                       pixel_neighbors_size=self.geometry.pixel_neighbors_size).astype('int')
 
     @property
     def sub_to_pix(self):
@@ -235,93 +203,9 @@ class VoronoiMapper(Mapper):
         Thus, it may not actually be that sub_coordinate's closest pixel (the routine will eventually
         determine this).
          """
-
-        sub_to_pix = np.zeros((self.grids.sub.total_pixels,), dtype=int)
-
-        for sub_index, sub_coordinate in enumerate(self.grids.sub):
-
-            nearest_pixel = self.grids.pix.regular_to_nearest_regular_pix[self.grids.sub.sub_to_regular[sub_index]]
-
-            sub_to_pix[sub_index] = self.pair_regular_pixel_and_pixel(sub_coordinate, nearest_pixel)
-
-        return sub_to_pix
-
-    def pair_regular_pixel_and_pixel(self, coordinate, nearest_pixel):
-        """ Compute the mappings between a set of sub-maskedimage pixels and pixels, using the maskedimage's traced \
-        pix-plane sub-grid and the pixel centers. This uses the pix-neighbors to perform a graph \
-        search when pairing pixels, for efficiency.
-
-        For the Voronoi pixelizations, a cluster set of 'cluster-pixels' are used to determine the pixelization. \
-        These provide the mappings between only a sub-set of sub-pixels / maskedimage-pixels and pixels.
-
-        To determine the complete set of sub-pixel to pixel mappings, we must therefore pair every sub-pixel to \
-        its nearest pixel (using the sub-pixel's pix-plane coordinate and pixel center). Using a full \
-        nearest neighbor search to do this is slow, thus the pixel neighbors (derived via the Voronoi grid) \
-        is used to localize each nearest neighbor search.
-
-        In this routine, some variables and function names refer to a 'cluster_pix_'. This term describes a \
-        pixel that we have paired to a sub_coordinate using the cluster_coordinate of an maskedimage coordinate. \
-        Thus, it may not actually be that sub_coordinate's closest pixel (the routine will eventually
-        determine this).
-
-        Parameters
-        ----------
-        coordinate : [float, float]
-            The x and y pix sub-grid grid which are to be matched with their closest pixels.
-        nearest_pixel : int
-            The nearest pixel defined on the cluster-pixel grid.
-        cluster_to_pixelization : [int]
-            The mapping_matrix between every cluster-pixel and pixel (e.g. if the fifth pixel maps to \
-            the 3rd cluster_pixel, cluster_to_pix[4] = 2).
-         """
-
-        while True:
-
-            pixel_to_cluster_distance = self.distance_to_nearest_cluster_pixel(coordinate, nearest_pixel)
-
-            neighboring_pixel_index, sub_to_neighboring_pixel_distance = \
-                self.nearest_neighboring_pixel_and_distance(coordinate, self.geometry.pixel_neighbors[nearest_pixel])
-
-            if pixel_to_cluster_distance < sub_to_neighboring_pixel_distance:
-                return nearest_pixel
-            else:
-                nearest_pixel = neighboring_pixel_index
-
-    def distance_to_nearest_cluster_pixel(self, coordinate, nearest_pixel):
-        nearest_cluster_pixel_center = self.geometry.pixel_centres[nearest_pixel]
-        return self.compute_squared_separation(coordinate, nearest_cluster_pixel_center)
-
-    def nearest_neighboring_pixel_and_distance(self, coordinate, pixel_neighbors):
-        """For a given pix_pixel, we look over all its adjacent neighbors and find the neighbor whose distance is closest to
-        our input coordinates.
-
-        Parameters
-        ----------
-        coordinate : (float, float)
-            The x and y coordinate to be matched with the neighboring set of pix_pixels.
-        pixel_neighbors : []
-            The neighboring pix_pixels of the cluster_grid pix_pixel the coordinate is currently matched with
-
-        Returns
-        ----------
-        pix_neighbors_index : int
-            The index in pix_pixel_centers of the closest pix_pixel neighbor.
-        separation_from_neighbor : float
-            The separation between the input coordinate and closest pix_pixel neighbor
-
-        """
-
-        separation_from_neighbor = list(map(lambda neighbors:
-                                            self.compute_squared_separation(coordinate,
-                                                                            self.geometry.pixel_centres[neighbors]),
-                                            pixel_neighbors))
-
-        closest_separation_index = min(range(len(separation_from_neighbor)),
-                                       key=separation_from_neighbor.__getitem__)
-
-        return pixel_neighbors[closest_separation_index], separation_from_neighbor[closest_separation_index]
-
-    @staticmethod
-    def compute_squared_separation(coordinate1, coordinate2):
-        """Computes the squared separation of two regular_grid (no square root for efficiency)"""
-        return (coordinate1[0] - coordinate2[0]) ** 2 + (coordinate1[1] - coordinate2[1]) ** 2
+        return mapper_util.voronoi_sub_to_pix_from_grids_and_geometry(sub_grid=self.grids.sub,
+                                   regular_to_nearest_regular_pix=self.grids.pix.regular_to_nearest_regular_pix,
+                                   sub_to_regular=self.grids.sub.sub_to_regular,
+                                   pixel_centres=self.geometry.pixel_centres,
+                                   pixel_neighbors=self.geometry.pixel_neighbors,
+                                   pixel_neighbors_size=self.geometry.pixel_neighbors_size).astype('int')
