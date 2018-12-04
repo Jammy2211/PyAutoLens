@@ -226,7 +226,6 @@ class Voronoi(Pixelization):
                                                                                 ridge_points=np.asarray(ridge_points))
 
 
-
 class AdaptiveMagnification(Voronoi, ImagePlanePixelization):
 
     def __init__(self, shape=(3, 3)):

@@ -95,7 +95,7 @@ class ConvolverMappingMatrix(convolution.Convolver):
                                         self.image_frame_psfs, self.image_frame_lengths)
 
     @staticmethod
-    @numba.jit(nopython=True, cache=True)
+    @numba.jit(nopython=True, parallel=True)
     def convolve_matrix_jit(mapping_matrix, image_frame_indexes, image_frame_kernels, image_frame_lengths):
 
         blurred_mapping_matrix = np.zeros(mapping_matrix.shape)
