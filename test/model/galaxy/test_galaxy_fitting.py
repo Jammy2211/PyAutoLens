@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from autolens.data.fitting import fitting
+from autolens.data.fitting.util import fitting_util
 from autolens.data.array import mask as msk, scaled_array as sca
 from autolens.model.galaxy import galaxy_data
 from autolens.model.galaxy import galaxy as g, galaxy_fitting
@@ -152,8 +152,8 @@ class TestGalaxyFit:
 
             model_data = galaxy.intensities_from_grid(grid=g_data.grids.sub)
             model_datas = [g_data.grids.sub.sub_data_to_regular_data(sub_array=model_data)]
-            residuals = fitting.residuals_from_datas_and_model_datas([g_data[:]], model_datas)
-            chi_squareds = fitting.chi_squareds_from_residuals_and_noise_maps(residuals, [g_data.noise_map_])
+            residuals = fitting_util.residuals_from_datas_and_model_datas([g_data[:]], model_datas)
+            chi_squareds = fitting_util.chi_squareds_from_residuals_and_noise_maps(residuals, [g_data.noise_map_])
 
             assert g_data.grids.regular.scaled_array_from_array_1d(g_data.noise_map_) == \
                    pytest.approx(fit.noise_map, 1e-4)
@@ -164,9 +164,9 @@ class TestGalaxyFit:
             assert g_data.grids.regular.scaled_array_from_array_1d(chi_squareds[0]) == \
                    pytest.approx(fit.chi_squared, 1e-4)
 
-            chi_squared_terms = fitting.chi_squared_terms_from_chi_squareds(chi_squareds)
-            noise_terms = fitting.noise_terms_from_noise_maps([g_data.noise_map_])
-            likelihoods = fitting.likelihoods_from_chi_squareds_and_noise_terms(chi_squared_terms, noise_terms)
+            chi_squared_terms = fitting_util.chi_squared_terms_from_chi_squareds(chi_squareds)
+            noise_terms = fitting_util.noise_terms_from_noise_maps([g_data.noise_map_])
+            likelihoods = fitting_util.likelihoods_from_chi_squareds_and_noise_terms(chi_squared_terms, noise_terms)
 
             assert likelihoods[0] == pytest.approx(fit.likelihood, 1e-4)
 
@@ -196,8 +196,8 @@ class TestGalaxyFit:
 
             model_data = galaxy.surface_density_from_grid(grid=g_data.grids.sub)
             model_datas = [g_data.grids.sub.sub_data_to_regular_data(sub_array=model_data)]
-            residuals = fitting.residuals_from_datas_and_model_datas([g_data[:]], model_datas)
-            chi_squareds = fitting.chi_squareds_from_residuals_and_noise_maps(residuals, [g_data.noise_map_])
+            residuals = fitting_util.residuals_from_datas_and_model_datas([g_data[:]], model_datas)
+            chi_squareds = fitting_util.chi_squareds_from_residuals_and_noise_maps(residuals, [g_data.noise_map_])
 
             assert g_data.grids.regular.scaled_array_from_array_1d(g_data.noise_map_) == \
                    pytest.approx(fit.noise_map, 1e-4)
@@ -208,9 +208,9 @@ class TestGalaxyFit:
             assert g_data.grids.regular.scaled_array_from_array_1d(chi_squareds[0]) == \
                    pytest.approx(fit.chi_squared, 1e-4)
 
-            chi_squared_terms = fitting.chi_squared_terms_from_chi_squareds(chi_squareds)
-            noise_terms = fitting.noise_terms_from_noise_maps([g_data.noise_map_])
-            likelihoods = fitting.likelihoods_from_chi_squareds_and_noise_terms(chi_squared_terms, noise_terms)
+            chi_squared_terms = fitting_util.chi_squared_terms_from_chi_squareds(chi_squareds)
+            noise_terms = fitting_util.noise_terms_from_noise_maps([g_data.noise_map_])
+            likelihoods = fitting_util.likelihoods_from_chi_squareds_and_noise_terms(chi_squared_terms, noise_terms)
 
             assert likelihoods[0] == pytest.approx(fit.likelihood, 1e-4)
 
@@ -240,8 +240,8 @@ class TestGalaxyFit:
 
             model_data = galaxy.potential_from_grid(grid=g_data.grids.sub)
             model_datas = [g_data.grids.sub.sub_data_to_regular_data(sub_array=model_data)]
-            residuals = fitting.residuals_from_datas_and_model_datas([g_data[:]], model_datas)
-            chi_squareds = fitting.chi_squareds_from_residuals_and_noise_maps(residuals, [g_data.noise_map_])
+            residuals = fitting_util.residuals_from_datas_and_model_datas([g_data[:]], model_datas)
+            chi_squareds = fitting_util.chi_squareds_from_residuals_and_noise_maps(residuals, [g_data.noise_map_])
 
             assert g_data.grids.regular.scaled_array_from_array_1d(g_data.noise_map_) == \
                    pytest.approx(fit.noise_map, 1e-4)
@@ -252,9 +252,9 @@ class TestGalaxyFit:
             assert g_data.grids.regular.scaled_array_from_array_1d(chi_squareds[0]) == \
                    pytest.approx(fit.chi_squared, 1e-4)
 
-            chi_squared_terms = fitting.chi_squared_terms_from_chi_squareds(chi_squareds)
-            noise_terms = fitting.noise_terms_from_noise_maps([g_data.noise_map_])
-            likelihoods = fitting.likelihoods_from_chi_squareds_and_noise_terms(chi_squared_terms, noise_terms)
+            chi_squared_terms = fitting_util.chi_squared_terms_from_chi_squareds(chi_squareds)
+            noise_terms = fitting_util.noise_terms_from_noise_maps([g_data.noise_map_])
+            likelihoods = fitting_util.likelihoods_from_chi_squareds_and_noise_terms(chi_squared_terms, noise_terms)
 
             assert likelihoods[0] == pytest.approx(fit.likelihood, 1e-4)
 
@@ -297,8 +297,8 @@ class TestGalaxyFit:
             model_data_x = galaxy.deflections_from_grid(grid=g_data_y.grids.sub)
             model_data_x = g_data_y.grids.sub.sub_data_to_regular_data(sub_array=model_data_x[:, 1])
             model_datas = [model_data_y, model_data_x]
-            residuals = fitting.residuals_from_datas_and_model_datas([g_data_y[:], g_data_x[:]], model_datas)
-            chi_squareds = fitting.chi_squareds_from_residuals_and_noise_maps(residuals, [g_data_y.noise_map_,
+            residuals = fitting_util.residuals_from_datas_and_model_datas([g_data_y[:], g_data_x[:]], model_datas)
+            chi_squareds = fitting_util.chi_squareds_from_residuals_and_noise_maps(residuals, [g_data_y.noise_map_,
                                                                                           g_data_x.noise_map_])
 
             assert g_data_y.grids.regular.scaled_array_from_array_1d(g_data_y.noise_map_) == \
@@ -319,9 +319,9 @@ class TestGalaxyFit:
             assert g_data_y.grids.regular.scaled_array_from_array_1d(chi_squareds[1]) == \
                    pytest.approx(fit.chi_squareds[1], 1e-4)
 
-            chi_squared_terms = fitting.chi_squared_terms_from_chi_squareds(chi_squareds)
-            noise_terms = fitting.noise_terms_from_noise_maps([g_data_y.noise_map_, g_data_x.noise_map_])
-            likelihoods = fitting.likelihoods_from_chi_squareds_and_noise_terms(chi_squared_terms, noise_terms)
+            chi_squared_terms = fitting_util.chi_squared_terms_from_chi_squareds(chi_squareds)
+            noise_terms = fitting_util.noise_terms_from_noise_maps([g_data_y.noise_map_, g_data_x.noise_map_])
+            likelihoods = fitting_util.likelihoods_from_chi_squareds_and_noise_terms(chi_squared_terms, noise_terms)
 
             assert likelihoods[0] == pytest.approx(fit.likelihoods[0], 1e-4)
             assert likelihoods[1] == pytest.approx(fit.likelihoods[1], 1e-4)

@@ -7,6 +7,7 @@ from autolens.model.inversion import inversions, pixelizations, regularization
 from autolens.lensing import lensing_fitting
 from autolens.model.galaxy import galaxy as g
 from autolens.data.fitting import fitting
+from autolens.data.fitting.util import fitting_util
 from autolens.lensing import lensing_image
 from autolens.lensing import plane as pl
 from autolens.lensing import ray_tracing
@@ -722,10 +723,10 @@ class TestLensingProfileFit:
 
             image_im = tracer.image_plane_images_
             blurring_im = tracer.image_plane_blurring_images_
-            model_images = fitting.blur_images_including_blurring_regions(images_=image_im, blurring_images_=blurring_im,
+            model_images = fitting_util.blur_images_including_blurring_regions(images_=image_im, blurring_images_=blurring_im,
                                                                           convolvers=[li_manual.convolver_image])
-            residuals = fitting.residuals_from_datas_and_model_datas(datas_=[li_manual], model_datas_=model_images)
-            chi_squareds = fitting.chi_squareds_from_residuals_and_noise_maps(residuals_=residuals,
+            residuals = fitting_util.residuals_from_datas_and_model_datas(datas_=[li_manual], model_datas_=model_images)
+            chi_squareds = fitting_util.chi_squareds_from_residuals_and_noise_maps(residuals_=residuals,
                                                                               noise_maps_=[li_manual.noise_map_])
 
             assert li_manual.grids.regular.scaled_array_from_array_1d(li_manual.noise_map_) == \
@@ -737,9 +738,9 @@ class TestLensingProfileFit:
             assert li_manual.grids.regular.scaled_array_from_array_1d(chi_squareds[0]) == \
                    pytest.approx(fit.chi_squared, 1e-4)
 
-            chi_squared_terms = fitting.chi_squared_terms_from_chi_squareds(chi_squareds_=chi_squareds)
-            noise_terms = fitting.noise_terms_from_noise_maps(noise_maps_=[li_manual.noise_map_])
-            likelihoods = fitting.likelihoods_from_chi_squareds_and_noise_terms(chi_squared_terms=chi_squared_terms,
+            chi_squared_terms = fitting_util.chi_squared_terms_from_chi_squareds(chi_squareds_=chi_squareds)
+            noise_terms = fitting_util.noise_terms_from_noise_maps(noise_maps_=[li_manual.noise_map_])
+            likelihoods = fitting_util.likelihoods_from_chi_squareds_and_noise_terms(chi_squared_terms=chi_squared_terms,
                                                                                 noise_terms=noise_terms)
 
             assert likelihoods[0] == pytest.approx(fit.likelihood, 1e-4)
@@ -748,7 +749,7 @@ class TestLensingProfileFit:
                                                                                             tracer=tracer)
             assert fast_likelihood == pytest.approx(fit.likelihood)
 
-            padded_model_image = fitting.unmasked_blurred_images_from_fitting_images(fitting_images=[li_manual],
+            padded_model_image = fitting_util.unmasked_blurred_images_from_fitting_images(fitting_images=[li_manual],
                                                                                      unmasked_images_=padded_tracer.image_plane_images_)
 
             assert (padded_model_image == fit.unmasked_model_profile_image).all()
@@ -776,12 +777,12 @@ class TestLensingProfileFit:
 
             image_im = tracer.image_plane_images_
             blurring_im = tracer.image_plane_blurring_images_
-            model_images = fitting.blur_images_including_blurring_regions(images_=image_im, blurring_images_=blurring_im,
+            model_images = fitting_util.blur_images_including_blurring_regions(images_=image_im, blurring_images_=blurring_im,
                                                                           convolvers=[li_manual.convolver_image,
                                                                                      li_manual_1.convolver_image])
-            residuals = fitting.residuals_from_datas_and_model_datas(datas_=[li_manual, li_manual_1],
+            residuals = fitting_util.residuals_from_datas_and_model_datas(datas_=[li_manual, li_manual_1],
                                                                      model_datas_=model_images)
-            chi_squareds = fitting.chi_squareds_from_residuals_and_noise_maps(residuals_=residuals,
+            chi_squareds = fitting_util.chi_squareds_from_residuals_and_noise_maps(residuals_=residuals,
                                                                               noise_maps_=[li_manual.noise_map_,
                                                                                            li_manual_1.noise_map_])
 
@@ -803,9 +804,9 @@ class TestLensingProfileFit:
             assert li_manual_1.grids.regular.scaled_array_from_array_1d(chi_squareds[1]) == \
                    pytest.approx(fit.chi_squareds[1], 1e-4)
 
-            chi_squared_terms = fitting.chi_squared_terms_from_chi_squareds(chi_squareds_=chi_squareds)
-            noise_terms = fitting.noise_terms_from_noise_maps(noise_maps_=[li_manual.noise_map_, li_manual_1.noise_map_])
-            likelihoods = fitting.likelihoods_from_chi_squareds_and_noise_terms(chi_squared_terms=chi_squared_terms,
+            chi_squared_terms = fitting_util.chi_squared_terms_from_chi_squareds(chi_squareds_=chi_squareds)
+            noise_terms = fitting_util.noise_terms_from_noise_maps(noise_maps_=[li_manual.noise_map_, li_manual_1.noise_map_])
+            likelihoods = fitting_util.likelihoods_from_chi_squareds_and_noise_terms(chi_squared_terms=chi_squared_terms,
                                                                                 noise_terms=noise_terms)
 
             assert likelihoods[0] == pytest.approx(fit.likelihoods[0], 1e-4)
@@ -816,7 +817,7 @@ class TestLensingProfileFit:
                 lensing_images=[li_manual, li_manual_1], tracer=tracer)
             assert fast_likelihood == pytest.approx(fit.likelihood)
 
-            padded_model_images = fitting.unmasked_blurred_images_from_fitting_images(fitting_images=[li_manual, li_manual_1],
+            padded_model_images = fitting_util.unmasked_blurred_images_from_fitting_images(fitting_images=[li_manual, li_manual_1],
                                                                                       unmasked_images_=padded_tracer.image_plane_images_)
 
             assert (padded_model_images[0] == fit.unmasked_model_profile_images[0]).all()
@@ -945,10 +946,10 @@ class TestHyperLensingProfileFit:
 
             image_im = tracer.image_plane_images_
             blurring_im = tracer.image_plane_blurring_images_
-            model_images = fitting.blur_images_including_blurring_regions(images_=image_im, blurring_images_=blurring_im,
+            model_images = fitting_util.blur_images_including_blurring_regions(images_=image_im, blurring_images_=blurring_im,
                                                                           convolvers=[li_hyper_manual.convolver_image])
-            residuals = fitting.residuals_from_datas_and_model_datas(datas_=[li_hyper_manual], model_datas_=model_images)
-            chi_squareds = fitting.chi_squareds_from_residuals_and_noise_maps(residuals_=residuals,
+            residuals = fitting_util.residuals_from_datas_and_model_datas(datas_=[li_hyper_manual], model_datas_=model_images)
+            chi_squareds = fitting_util.chi_squareds_from_residuals_and_noise_maps(residuals_=residuals,
                                                                               noise_maps_=[li_hyper_manual.noise_map_])
 
             assert li_hyper_manual.grids.regular.scaled_array_from_array_1d(li_hyper_manual.noise_map_) == \
@@ -960,21 +961,21 @@ class TestHyperLensingProfileFit:
             assert li_hyper_manual.grids.regular.scaled_array_from_array_1d(chi_squareds[0]) == \
                    pytest.approx(fit.chi_squared, 1e-4)
 
-            chi_squared_terms = fitting.chi_squared_terms_from_chi_squareds(chi_squareds_=chi_squareds)
-            noise_terms = fitting.noise_terms_from_noise_maps(noise_maps_=li_hyper_manual.noise_map_)
-            likelihoods = fitting.likelihoods_from_chi_squareds_and_noise_terms(chi_squared_terms=chi_squared_terms,
+            chi_squared_terms = fitting_util.chi_squared_terms_from_chi_squareds(chi_squareds_=chi_squareds)
+            noise_terms = fitting_util.noise_terms_from_noise_maps(noise_maps_=li_hyper_manual.noise_map_)
+            likelihoods = fitting_util.likelihoods_from_chi_squareds_and_noise_terms(chi_squared_terms=chi_squared_terms,
                                                                                 noise_terms=noise_terms)
 
             assert likelihoods[0] == pytest.approx(fit.likelihood, 1e-4)
 
-            contributions = fitting.contributions_from_hyper_images_and_galaxies(li_hyper_manual.hyper_model_image,
+            contributions = fitting_util.contributions_from_hyper_images_and_galaxies(li_hyper_manual.hyper_model_image,
                                                                                  li_hyper_manual.hyper_galaxy_images, [hyper_galaxy, hyper_galaxy],
                                                                                  li_hyper_manual.hyper_minimum_values)
 
-            scaled_noise_maps = fitting.scaled_noises_from_fitting_hyper_images_contributions_and_hyper_galaxies(
+            scaled_noise_maps = fitting_util.scaled_noises_from_fitting_hyper_images_contributions_and_hyper_galaxies(
                 fitting_hyper_images=[li_hyper_manual], contributions_=[contributions], hyper_galaxies=[hyper_galaxy,
                                                                                                         hyper_galaxy])
-            scaled_chi_squareds = fitting.chi_squareds_from_residuals_and_noise_maps(residuals, scaled_noise_maps)
+            scaled_chi_squareds = fitting_util.chi_squareds_from_residuals_and_noise_maps(residuals, scaled_noise_maps)
 
             assert li_hyper_manual.grids.regular.scaled_array_from_array_1d(contributions[0]) == \
                    pytest.approx(fit.contributions[0][0], 1e-4)
@@ -985,9 +986,9 @@ class TestHyperLensingProfileFit:
             assert li_hyper_manual.grids.regular.scaled_array_from_array_1d(scaled_chi_squareds[0]) == \
                    pytest.approx(fit.scaled_chi_squared, 1e-4)
 
-            scaled_chi_squared_terms= fitting.chi_squared_terms_from_chi_squareds(chi_squareds_=scaled_chi_squareds)
-            scaled_noise_terms = fitting.noise_terms_from_noise_maps(noise_maps_=scaled_noise_maps)
-            scaled_likelihoods = fitting.likelihoods_from_chi_squareds_and_noise_terms(
+            scaled_chi_squared_terms= fitting_util.chi_squared_terms_from_chi_squareds(chi_squareds_=scaled_chi_squareds)
+            scaled_noise_terms = fitting_util.noise_terms_from_noise_maps(noise_maps_=scaled_noise_maps)
+            scaled_likelihoods = fitting_util.likelihoods_from_chi_squareds_and_noise_terms(
                 chi_squared_terms=scaled_chi_squared_terms, noise_terms=scaled_noise_terms)
 
             assert scaled_likelihoods[0] == pytest.approx(fit.scaled_likelihood, 1e-4)
@@ -997,7 +998,7 @@ class TestHyperLensingProfileFit:
 
             assert fast_scaled_likelihood == fit.scaled_likelihood
 
-            padded_model_image = fitting.unmasked_blurred_images_from_fitting_images(fitting_images=[li_hyper_manual],
+            padded_model_image = fitting_util.unmasked_blurred_images_from_fitting_images(fitting_images=[li_hyper_manual],
                                                                                      unmasked_images_=padded_tracer.image_plane_images_)
 
             assert (padded_model_image == fit.unmasked_model_profile_images[0]).all()
@@ -1028,12 +1029,12 @@ class TestHyperLensingProfileFit:
 
             image_im = tracer.image_plane_images_
             blurring_im = tracer.image_plane_blurring_images_
-            model_images = fitting.blur_images_including_blurring_regions(images_=image_im, blurring_images_=blurring_im,
+            model_images = fitting_util.blur_images_including_blurring_regions(images_=image_im, blurring_images_=blurring_im,
                                                                           convolvers=[li_hyper_manual.convolver_image,
                                                                                      li_hyper_manual_1.convolver_image])
-            residuals = fitting.residuals_from_datas_and_model_datas(datas_=[li_hyper_manual, li_hyper_manual_1],
+            residuals = fitting_util.residuals_from_datas_and_model_datas(datas_=[li_hyper_manual, li_hyper_manual_1],
                                                                      model_datas_=model_images)
-            chi_squareds = fitting.chi_squareds_from_residuals_and_noise_maps(residuals_=residuals,
+            chi_squareds = fitting_util.chi_squareds_from_residuals_and_noise_maps(residuals_=residuals,
                                                                               noise_maps_=[li_hyper_manual.noise_map_,
                                                                                            li_hyper_manual_1.noise_map_])
 
@@ -1055,25 +1056,25 @@ class TestHyperLensingProfileFit:
             assert li_hyper_manual_1.grids.regular.scaled_array_from_array_1d(chi_squareds[1]) == \
                    pytest.approx(fit.chi_squareds[1], 1e-4)
 
-            chi_squared_terms = fitting.chi_squared_terms_from_chi_squareds(chi_squareds_=chi_squareds)
-            noise_terms = fitting.noise_terms_from_noise_maps(noise_maps_=[li_hyper_manual.noise_map_,
+            chi_squared_terms = fitting_util.chi_squared_terms_from_chi_squareds(chi_squareds_=chi_squareds)
+            noise_terms = fitting_util.noise_terms_from_noise_maps(noise_maps_=[li_hyper_manual.noise_map_,
                                                                            li_hyper_manual_1.noise_map_])
-            likelihoods = fitting.likelihoods_from_chi_squareds_and_noise_terms(chi_squared_terms=chi_squared_terms,
+            likelihoods = fitting_util.likelihoods_from_chi_squareds_and_noise_terms(chi_squared_terms=chi_squared_terms,
                                                                                 noise_terms=noise_terms)
 
             assert likelihoods[0] == pytest.approx(fit.likelihoods[0], 1e-4)
             assert likelihoods[1] == pytest.approx(fit.likelihoods[1], 1e-4)
             assert likelihoods[0] + likelihoods[1] == pytest.approx(fit.likelihood, 1e-4)
 
-            contributions = fitting.contributions_from_fitting_hyper_images_and_hyper_galaxies(
+            contributions = fitting_util.contributions_from_fitting_hyper_images_and_hyper_galaxies(
                 fitting_hyper_images=[li_hyper_manual, li_hyper_manual_1],
                 hyper_galaxies=[hyper_galaxy, hyper_galaxy])
 
-            scaled_noise_maps = fitting.scaled_noises_from_fitting_hyper_images_contributions_and_hyper_galaxies(
+            scaled_noise_maps = fitting_util.scaled_noises_from_fitting_hyper_images_contributions_and_hyper_galaxies(
                 fitting_hyper_images=[li_hyper_manual, li_hyper_manual_1], 
                 contributions_=contributions, hyper_galaxies=[hyper_galaxy, hyper_galaxy])
 
-            scaled_chi_squareds = fitting.chi_squareds_from_residuals_and_noise_maps(residuals, scaled_noise_maps)
+            scaled_chi_squareds = fitting_util.chi_squareds_from_residuals_and_noise_maps(residuals, scaled_noise_maps)
 
             assert li_hyper_manual.grids.regular.scaled_array_from_array_1d(contributions[0][0]) == \
                    pytest.approx(fit.contributions[0][0], 1e-4)
@@ -1093,9 +1094,9 @@ class TestHyperLensingProfileFit:
             assert li_hyper_manual_1.grids.regular.scaled_array_from_array_1d(scaled_chi_squareds[1]) == \
                    pytest.approx(fit.scaled_chi_squareds[1], 1e-4)
 
-            scaled_chi_squared_terms= fitting.chi_squared_terms_from_chi_squareds(chi_squareds_=scaled_chi_squareds)
-            scaled_noise_terms = fitting.noise_terms_from_noise_maps(noise_maps_=scaled_noise_maps)
-            scaled_likelihoods = fitting.likelihoods_from_chi_squareds_and_noise_terms(
+            scaled_chi_squared_terms= fitting_util.chi_squared_terms_from_chi_squareds(chi_squareds_=scaled_chi_squareds)
+            scaled_noise_terms = fitting_util.noise_terms_from_noise_maps(noise_maps_=scaled_noise_maps)
+            scaled_likelihoods = fitting_util.likelihoods_from_chi_squareds_and_noise_terms(
                 chi_squared_terms=scaled_chi_squared_terms, noise_terms=scaled_noise_terms)
 
             assert scaled_likelihoods[0] == pytest.approx(fit.scaled_likelihoods[0], 1e-4)
@@ -1107,7 +1108,7 @@ class TestHyperLensingProfileFit:
 
             assert fast_scaled_likelihood == pytest.approx(fit.scaled_likelihood, 1e-2)
 
-            padded_model_images = fitting.unmasked_blurred_images_from_fitting_images(
+            padded_model_images = fitting_util.unmasked_blurred_images_from_fitting_images(
                 fitting_images=[li_hyper_manual, li_hyper_manual_1], unmasked_images_=padded_tracer.image_plane_images_)
 
             assert (padded_model_images[0] == fit.unmasked_model_profile_images[0]).all()
@@ -1262,9 +1263,9 @@ class TestInversionLensingFit:
                                                                                           image=li_manual, noise_map=li_manual.noise_map_,
                                                                                           convolver=li_manual.convolver_mapping_matrix)
 
-            residuals = fitting.residuals_from_datas_and_model_datas(datas_=[li_manual],
+            residuals = fitting_util.residuals_from_datas_and_model_datas(datas_=[li_manual],
                                                                      model_datas_=[inversion.reconstructed_data_vector])
-            chi_squareds = fitting.chi_squareds_from_residuals_and_noise_maps(residuals_=residuals,
+            chi_squareds = fitting_util.chi_squareds_from_residuals_and_noise_maps(residuals_=residuals,
                                                                               noise_maps_=[li_manual.noise_map_])
 
             assert li_manual.grids.regular.scaled_array_from_array_1d(li_manual.noise_map_) == \
@@ -1276,15 +1277,15 @@ class TestInversionLensingFit:
             assert li_manual.grids.regular.scaled_array_from_array_1d(chi_squareds[0]) == \
                    pytest.approx(fit.chi_squared, 1e-4)
 
-            chi_squared_terms = fitting.chi_squared_terms_from_chi_squareds(chi_squareds_=chi_squareds)
-            noise_terms = fitting.noise_terms_from_noise_maps(noise_maps_=[li_manual.noise_map_])
+            chi_squared_terms = fitting_util.chi_squared_terms_from_chi_squareds(chi_squareds_=chi_squareds)
+            noise_terms = fitting_util.noise_terms_from_noise_maps(noise_maps_=[li_manual.noise_map_])
             likelihoods_with_regularization = \
-                fitting.likelihoods_with_regularization_from_chi_squared_regularization_and_noise_terms(
+                fitting_util.likelihoods_with_regularization_from_chi_squared_regularization_and_noise_terms(
                     chi_squared_terms, [inversion.regularization_term], noise_terms)
 
             assert likelihoods_with_regularization[0] == pytest.approx(fit.likelihoods_with_regularization[0], 1e-4)
 
-            evidences = fitting.evidences_from_reconstruction_terms(chi_squared_terms, [inversion.regularization_term],
+            evidences = fitting_util.evidences_from_reconstruction_terms(chi_squared_terms, [inversion.regularization_term],
                                                                     [inversion.log_det_curvature_reg_matrix_term],
                                                                     [inversion.log_det_regularization_matrix_term],
                                                                     noise_terms)
@@ -1404,9 +1405,9 @@ class TestHyperLensingInversionFit:
                                                                                           regularization=reg, image=li_hyper_manual, noise_map=li_hyper_manual.noise_map_,
                                                                                           convolver=li_hyper_manual.convolver_mapping_matrix)
 
-            residuals = fitting.residuals_from_datas_and_model_datas([li_hyper_manual],
+            residuals = fitting_util.residuals_from_datas_and_model_datas([li_hyper_manual],
                                                                      [inversion.reconstructed_data_vector])
-            chi_squareds = fitting.chi_squareds_from_residuals_and_noise_maps(residuals, [li_hyper_manual.noise_map_])
+            chi_squareds = fitting_util.chi_squareds_from_residuals_and_noise_maps(residuals, [li_hyper_manual.noise_map_])
 
             assert li_hyper_manual.grids.regular.scaled_array_from_array_1d(li_hyper_manual.noise_map_) == \
                    pytest.approx(fit.noise_maps[0], 1e-4)
@@ -1417,27 +1418,27 @@ class TestHyperLensingInversionFit:
             assert li_hyper_manual.grids.regular.scaled_array_from_array_1d(chi_squareds[0]) == \
                    pytest.approx(fit.chi_squareds[0], 1e-4)
 
-            chi_squared_terms = fitting.chi_squared_terms_from_chi_squareds(chi_squareds_=chi_squareds)
-            noise_terms = fitting.noise_terms_from_noise_maps(noise_maps_=[li_hyper_manual.noise_map_])
+            chi_squared_terms = fitting_util.chi_squared_terms_from_chi_squareds(chi_squareds_=chi_squareds)
+            noise_terms = fitting_util.noise_terms_from_noise_maps(noise_maps_=[li_hyper_manual.noise_map_])
 
             likelihoods_with_regularization = \
-                fitting.likelihoods_with_regularization_from_chi_squared_regularization_and_noise_terms(chi_squared_terms,
+                fitting_util.likelihoods_with_regularization_from_chi_squared_regularization_and_noise_terms(chi_squared_terms,
                                                                                                         [inversion.regularization_term], noise_terms)
 
             assert likelihoods_with_regularization[0] == pytest.approx(fit.likelihoods_with_regularization[0], 1e-2)
 
-            evidences = fitting.evidences_from_reconstruction_terms(chi_squared_terms, [inversion.regularization_term],
+            evidences = fitting_util.evidences_from_reconstruction_terms(chi_squared_terms, [inversion.regularization_term],
                                                                     [inversion.log_det_curvature_reg_matrix_term],
                                                                     [inversion.log_det_regularization_matrix_term],
                                                                     noise_terms)
 
             assert evidences[0] == fit.evidences[0]
 
-            contributions = fitting.contributions_from_hyper_images_and_galaxies(li_hyper_manual.hyper_model_image,
+            contributions = fitting_util.contributions_from_hyper_images_and_galaxies(li_hyper_manual.hyper_model_image,
                                                                                  li_hyper_manual.hyper_galaxy_images, [hyper_galaxy, hyper_galaxy],
                                                                                  li_hyper_manual.hyper_minimum_values)
 
-            scaled_noise_maps = fitting.scaled_noises_from_fitting_hyper_images_contributions_and_hyper_galaxies(
+            scaled_noise_maps = fitting_util.scaled_noises_from_fitting_hyper_images_contributions_and_hyper_galaxies(
                 fitting_hyper_images=[li_hyper_manual], contributions_=[contributions], hyper_galaxies=[hyper_galaxy,
                                                                                                         hyper_galaxy])
 
@@ -1445,10 +1446,10 @@ class TestHyperLensingInversionFit:
                                                                                                  regularization=reg, image=li_hyper_manual, noise_map=scaled_noise_maps[0],
                                                                                                  convolver=li_hyper_manual.convolver_mapping_matrix)
 
-            scaled_residuals = fitting.residuals_from_datas_and_model_datas(datas_=[li_hyper_manual],
+            scaled_residuals = fitting_util.residuals_from_datas_and_model_datas(datas_=[li_hyper_manual],
                                                                             model_datas_=[scaled_inversion.reconstructed_data_vector])
 
-            scaled_chi_squareds = fitting.chi_squareds_from_residuals_and_noise_maps(scaled_residuals,
+            scaled_chi_squareds = fitting_util.chi_squareds_from_residuals_and_noise_maps(scaled_residuals,
                                                                                      scaled_noise_maps)
 
             assert li_hyper_manual.grids.regular.scaled_array_from_array_1d(contributions[0]) == \
@@ -1462,10 +1463,10 @@ class TestHyperLensingInversionFit:
             assert li_hyper_manual.grids.regular.scaled_array_from_array_1d(scaled_chi_squareds[0]) == \
                    pytest.approx(fit.scaled_chi_squared, 1e-4)
 
-            scaled_chi_squared_terms= fitting.chi_squared_terms_from_chi_squareds(chi_squareds_=scaled_chi_squareds)
-            scaled_noise_terms = fitting.noise_terms_from_noise_maps(noise_maps_=scaled_noise_maps)
+            scaled_chi_squared_terms= fitting_util.chi_squared_terms_from_chi_squareds(chi_squareds_=scaled_chi_squareds)
+            scaled_noise_terms = fitting_util.noise_terms_from_noise_maps(noise_maps_=scaled_noise_maps)
 
-            scaled_evidences = fitting.evidences_from_reconstruction_terms(scaled_chi_squared_terms,
+            scaled_evidences = fitting_util.evidences_from_reconstruction_terms(scaled_chi_squared_terms,
                                                                            [scaled_inversion.regularization_term], [scaled_inversion.log_det_curvature_reg_matrix_term],
                                                                            [scaled_inversion.log_det_regularization_matrix_term], scaled_noise_terms)
             assert scaled_evidences[0] == fit.scaled_evidences[0]
@@ -1515,7 +1516,7 @@ class TestLensingProfileInversionFit:
 
             image_im = tracer.image_plane_images_
             blurring_im = tracer.image_plane_blurring_images_
-            profile_model_images = fitting.blur_images_including_blurring_regions(images_=image_im,
+            profile_model_images = fitting_util.blur_images_including_blurring_regions(images_=image_im,
                                                                                   blurring_images_=blurring_im, convolvers=[li_manual.convolver_image])
             profile_subtracted_images = [li_manual[:] - profile_model_images[0]]
 
@@ -1531,8 +1532,8 @@ class TestLensingProfileInversionFit:
                                                                                           convolver=li_manual.convolver_mapping_matrix)
 
             model_images = [profile_model_images[0] + inversion.reconstructed_data_vector]
-            residuals = fitting.residuals_from_datas_and_model_datas(datas_=[li_manual], model_datas_=model_images)
-            chi_squareds = fitting.chi_squareds_from_residuals_and_noise_maps(residuals_=residuals,
+            residuals = fitting_util.residuals_from_datas_and_model_datas(datas_=[li_manual], model_datas_=model_images)
+            chi_squareds = fitting_util.chi_squareds_from_residuals_and_noise_maps(residuals_=residuals,
                                                                               noise_maps_=[li_manual.noise_map_])
 
             assert li_manual.grids.regular.scaled_array_from_array_1d(li_manual.noise_map_) == \
@@ -1546,9 +1547,9 @@ class TestLensingProfileInversionFit:
             assert li_manual.grids.regular.scaled_array_from_array_1d(chi_squareds[0]) == \
                    pytest.approx(fit.chi_squared, 1e-4)
 
-            chi_squared_terms = fitting.chi_squared_terms_from_chi_squareds(chi_squareds_=chi_squareds)
-            noise_terms = fitting.noise_terms_from_noise_maps(noise_maps_=[li_manual.noise_map_])
-            evidences = fitting.evidences_from_reconstruction_terms(chi_squared_terms,
+            chi_squared_terms = fitting_util.chi_squared_terms_from_chi_squareds(chi_squareds_=chi_squareds)
+            noise_terms = fitting_util.noise_terms_from_noise_maps(noise_maps_=[li_manual.noise_map_])
+            evidences = fitting_util.evidences_from_reconstruction_terms(chi_squared_terms,
                                                                     [inversion.regularization_term],
                                                                     [inversion.log_det_curvature_reg_matrix_term],
                                                                     [inversion.log_det_regularization_matrix_term],
@@ -1583,7 +1584,7 @@ class TestHyperLensingProfileInversionFit:
 
             image_im = tracer.image_plane_images_
             blurring_im = tracer.image_plane_blurring_images_
-            profile_model_images = fitting.blur_images_including_blurring_regions(images_=image_im,
+            profile_model_images = fitting_util.blur_images_including_blurring_regions(images_=image_im,
                                                                                   blurring_images_=blurring_im, convolvers=[li_hyper_manual.convolver_image])
             profile_subtracted_images = [li_hyper_manual[:] - profile_model_images[0]]
 
@@ -1598,8 +1599,8 @@ class TestHyperLensingProfileInversionFit:
                                                                                           convolver=li_hyper_manual.convolver_mapping_matrix)
 
             model_images = [profile_model_images[0] + inversion.reconstructed_data_vector]
-            residuals = fitting.residuals_from_datas_and_model_datas([li_hyper_manual], model_images)
-            chi_squareds = fitting.chi_squareds_from_residuals_and_noise_maps(residuals, [li_hyper_manual.noise_map_])
+            residuals = fitting_util.residuals_from_datas_and_model_datas([li_hyper_manual], model_images)
+            chi_squareds = fitting_util.chi_squareds_from_residuals_and_noise_maps(residuals, [li_hyper_manual.noise_map_])
 
             assert li_hyper_manual.grids.regular.scaled_array_from_array_1d(li_hyper_manual.noise_map_) == \
                    pytest.approx(fit.noise_map, 1e-4)
@@ -1612,20 +1613,20 @@ class TestHyperLensingProfileInversionFit:
             assert li_hyper_manual.grids.regular.scaled_array_from_array_1d(chi_squareds[0]) ==\
                    pytest.approx(fit.chi_squared, 1e-4)
 
-            chi_squared_terms = fitting.chi_squared_terms_from_chi_squareds(chi_squareds)
-            noise_terms = fitting.noise_terms_from_noise_maps([li_hyper_manual.noise_map_])
-            evidences = fitting.evidences_from_reconstruction_terms(chi_squared_terms, [inversion.regularization_term],
+            chi_squared_terms = fitting_util.chi_squared_terms_from_chi_squareds(chi_squareds)
+            noise_terms = fitting_util.noise_terms_from_noise_maps([li_hyper_manual.noise_map_])
+            evidences = fitting_util.evidences_from_reconstruction_terms(chi_squared_terms, [inversion.regularization_term],
                                                                     [inversion.log_det_curvature_reg_matrix_term],
                                                                     [inversion.log_det_regularization_matrix_term],
                                                                     noise_terms)
 
             assert evidences[0] == fit.evidences[0]
 
-            contributions = fitting.contributions_from_hyper_images_and_galaxies(li_hyper_manual.hyper_model_image,
+            contributions = fitting_util.contributions_from_hyper_images_and_galaxies(li_hyper_manual.hyper_model_image,
                                                                                  li_hyper_manual.hyper_galaxy_images, [hyper_galaxy, hyper_galaxy],
                                                                                  li_hyper_manual.hyper_minimum_values)
 
-            scaled_noise_maps = fitting.scaled_noises_from_fitting_hyper_images_contributions_and_hyper_galaxies(
+            scaled_noise_maps = fitting_util.scaled_noises_from_fitting_hyper_images_contributions_and_hyper_galaxies(
                 fitting_hyper_images=[li_hyper_manual], contributions_=[contributions], hyper_galaxies=[hyper_galaxy,
                                                                                                         hyper_galaxy])
 
@@ -1635,10 +1636,10 @@ class TestHyperLensingProfileInversionFit:
 
             scaled_model_images = [profile_model_images[0] + scaled_inversion.reconstructed_data_vector]
 
-            scaled_residuals = fitting.residuals_from_datas_and_model_datas(datas_=[li_hyper_manual],
+            scaled_residuals = fitting_util.residuals_from_datas_and_model_datas(datas_=[li_hyper_manual],
                                                                             model_datas_=scaled_model_images)
 
-            scaled_chi_squareds = fitting.chi_squareds_from_residuals_and_noise_maps(scaled_residuals,
+            scaled_chi_squareds = fitting_util.chi_squareds_from_residuals_and_noise_maps(scaled_residuals,
                                                                                      scaled_noise_maps)
 
             assert li_hyper_manual.grids.regular.scaled_array_from_array_1d(contributions[0]) == \
@@ -1654,9 +1655,9 @@ class TestHyperLensingProfileInversionFit:
             assert li_hyper_manual.grids.regular.scaled_array_from_array_1d(scaled_chi_squareds[0]) == \
                    pytest.approx(fit.scaled_chi_squared, 1e-4)
 
-            scaled_chi_squared_terms = fitting.chi_squared_terms_from_chi_squareds(scaled_chi_squareds)
-            scaled_noise_terms = fitting.noise_terms_from_noise_maps(scaled_noise_maps)
-            scaled_evidence = fitting.evidences_from_reconstruction_terms(
+            scaled_chi_squared_terms = fitting_util.chi_squared_terms_from_chi_squareds(scaled_chi_squareds)
+            scaled_noise_terms = fitting_util.noise_terms_from_noise_maps(scaled_noise_maps)
+            scaled_evidence = fitting_util.evidences_from_reconstruction_terms(
                 scaled_chi_squared_terms, [scaled_inversion.regularization_term],
                 [scaled_inversion.log_det_curvature_reg_matrix_term],
                 [scaled_inversion.log_det_regularization_matrix_term],
