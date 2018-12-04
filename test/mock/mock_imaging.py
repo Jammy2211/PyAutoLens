@@ -26,7 +26,7 @@ class MockGridCollection(object):
         self.sub = sub
         self.blurring = grids.RegularGrid(blurring, mask=None) if blurring is not None else None
         self.pix = grids.PixGrid(pix, regular_to_nearest_regular_pix=regular_to_nearest_regular_pix,
-                                 mask=None) if pix is not None else None
+                                 mask=None) if pix is not None else np.array([[0.0, 0.0]])
 
 
 

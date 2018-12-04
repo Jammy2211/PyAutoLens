@@ -1,10 +1,13 @@
 import numpy as np
 import pytest
+import scipy.spatial
 
 from autolens.data.array import grids, mask
 from autolens.model.inversion import pixelizations
+from autolens.model.inversion.util import pixelization_util
 from autolens.model.inversion import regularization
 from autolens.model.galaxy import galaxy as g
+
 
 class TestImagePlanePixelization:
 
@@ -160,6 +163,17 @@ class TestRectangular:
 
             assert geometry.shape == (3,3)
             assert geometry.pixel_scales == pytest.approx((2./3., 2./3.), 1e-2)
+            assert (geometry.pixel_neighbors[0] == [1, 3, -1, -1]).all()
+            assert (geometry.pixel_neighbors[1] == [0, 2, 4, -1]).all()
+            assert (geometry.pixel_neighbors[2] == [1, 5, -1, -1]).all()
+            assert (geometry.pixel_neighbors[3] == [0, 4, 6, -1]).all()
+            assert (geometry.pixel_neighbors[4] == [1, 3, 5, 7]).all()
+            assert (geometry.pixel_neighbors[5] == [2, 4, 8, -1]).all()
+            assert (geometry.pixel_neighbors[6] == [3, 7, -1, -1]).all()
+            assert (geometry.pixel_neighbors[7] == [4, 6, 8, -1]).all()
+            assert (geometry.pixel_neighbors[8] == [5, 7, -1, -1]).all()
+
+            assert (geometry.pixel_neighbors_size == np.array([2, 3, 2, 3, 4, 3, 2, 3, 2])).all()
 
         def test__3x3_grid__same_as_above_change_buffer(self):
             pix = pixelizations.Rectangular(shape=(3, 3))
@@ -230,96 +244,20 @@ class TestRectangular:
 
     class TestPixelNeighbors:
 
-        def test__compute_pixel_neighbors__3x3_grid(self):
-            # |0|1|2|
-            # |3|4|5|
-            # |6|7|8|
-
-            pix = pixelizations.Rectangular(shape=(3, 3))
-
-            pixel_neighbors = pix.neighbors_from_pixelization()
-
-            assert pixel_neighbors[0] == [1, 3]
-            assert pixel_neighbors[1] == [0, 2, 4]
-            assert pixel_neighbors[2] == [1, 5]
-            assert pixel_neighbors[3] == [0, 4, 6]
-            assert pixel_neighbors[4] == [1, 3, 5, 7]
-            assert pixel_neighbors[5] == [2, 4, 8]
-            assert pixel_neighbors[6] == [3, 7]
-            assert pixel_neighbors[7] == [4, 6, 8]
-            assert pixel_neighbors[8] == [5, 7]
-
-        def test__compute_pixel_neighbors__3x4_grid(self):
-            # |0|1| 2| 3|
-            # |4|5| 6| 7|
-            # |8|9|10|11|
-
-            pix = pixelizations.Rectangular(shape=(3, 4))
-
-            pixel_neighbors = pix.neighbors_from_pixelization()
-
-            assert pixel_neighbors[0] == [1, 4]
-            assert pixel_neighbors[1] == [0, 2, 5]
-            assert pixel_neighbors[2] == [1, 3, 6]
-            assert pixel_neighbors[3] == [2, 7]
-            assert pixel_neighbors[4] == [0, 5, 8]
-            assert pixel_neighbors[5] == [1, 4, 6, 9]
-            assert pixel_neighbors[6] == [2, 5, 7, 10]
-            assert pixel_neighbors[7] == [3, 6, 11]
-            assert pixel_neighbors[8] == [4, 9]
-            assert pixel_neighbors[9] == [5, 8, 10]
-            assert pixel_neighbors[10] == [6, 9, 11]
-            assert pixel_neighbors[11] == [7, 10]
-
-        def test__compute_pixel_neighbors__4x3_grid(self):
-            # |0| 1| 2|
-            # |3| 4| 5|
-            # |6| 7| 8|
-            # |9|10|11|
-
-            pix = pixelizations.Rectangular(shape=(4, 3))
-
-            pixel_neighbors = pix.neighbors_from_pixelization()
-
-            assert pixel_neighbors[0] == [1, 3]
-            assert pixel_neighbors[1] == [0, 2, 4]
-            assert pixel_neighbors[2] == [1, 5]
-            assert pixel_neighbors[3] == [0, 4, 6]
-            assert pixel_neighbors[4] == [1, 3, 5, 7]
-            assert pixel_neighbors[5] == [2, 4, 8]
-            assert pixel_neighbors[6] == [3, 7, 9]
-            assert pixel_neighbors[7] == [4, 6, 8, 10]
-            assert pixel_neighbors[8] == [5, 7, 11]
-            assert pixel_neighbors[9] == [6, 10]
-            assert pixel_neighbors[10] == [7, 9, 11]
-            assert pixel_neighbors[11] == [8, 10]
-
-        def test__compute_pixel_neighbors__4x4_grid(self):
+        def test__compare_to_pixelization_util(self):
             # |0 | 1| 2| 3|
             # |4 | 5| 6| 7|
             # |8 | 9|10|11|
             # |12|13|14|15|
 
-            pix = pixelizations.Rectangular(shape=(4, 4))
+            pix = pixelizations.Rectangular(shape=(7, 5))
 
-            pixel_neighbors = pix.neighbors_from_pixelization()
+            pixel_neighbors, pixel_neighbors_size = pix.neighbors_from_pixelization()
+            pixel_neighbors_util, pixel_neighbors_size_util = \
+                pixelization_util.rectangular_neighbors_from_shape(shape=(7, 5))
 
-            assert pixel_neighbors[0] == [1, 4]
-            assert pixel_neighbors[1] == [0, 2, 5]
-            assert pixel_neighbors[2] == [1, 3, 6]
-            assert pixel_neighbors[3] == [2, 7]
-            assert pixel_neighbors[4] == [0, 5, 8]
-            assert pixel_neighbors[5] == [1, 4, 6, 9]
-            assert pixel_neighbors[6] == [2, 5, 7, 10]
-            assert pixel_neighbors[7] == [3, 6, 11]
-            assert pixel_neighbors[8] == [4, 9, 12]
-            assert pixel_neighbors[9] == [5, 8, 10, 13]
-            assert pixel_neighbors[10] == [6, 9, 11, 14]
-            assert pixel_neighbors[11] == [7, 10, 15]
-            assert pixel_neighbors[12] == [8, 13]
-            assert pixel_neighbors[13] == [9, 12, 14]
-            assert pixel_neighbors[14] == [10, 13, 15]
-            assert pixel_neighbors[15] == [11, 14]
+            assert (pixel_neighbors == pixel_neighbors_util).all()
+            assert (pixel_neighbors_size == pixel_neighbors_size_util).all()
 
 
 class TestVoronoi:
@@ -422,43 +360,25 @@ class TestVoronoi:
 
     class TestNeighbors:
 
-        def test__points_in_x_cross_shape__neighbors_of_each_pixel_correct(self):
-            # 5 points in the shape of the face of a 5 on a die - makes a diamond Voronoi diagram
-
-            points = np.array([[1.0, -1.0], [1.0, 1.0],
-                                     [0.0, 0.0],
-                               [-1.0, -1.0], [-1.0, 1.0]])
-
-            pix = pixelizations.Voronoi()
-            voronoi = pix.voronoi_from_pixel_centers(points)
-            neighbors = pix.neighbors_from_pixelization(pixels=5, ridge_points=voronoi.ridge_points)
-
-            assert set(neighbors[0]) == {2, 1, 3}
-            assert set(neighbors[1]) == {2, 0, 4}
-            assert set(neighbors[2]) == {0, 1, 3, 4}
-            assert set(neighbors[3]) == {2, 0, 4}
-            assert set(neighbors[4]) == {2, 1, 3}
-
-        def test__9_points_in_square___neighbors_of_each_pixel_correct(self):
+        def test__compare_to_pixelization_util(self):
             # 9 points in a square - makes a square (this is the example int he scipy documentaiton page)
 
-            points = np.array([[2.0, 0.0], [2.0, 1.0], [2.0, 2.0],
-                               [1.0, 0.0], [1.0, 1.0], [1.0, 2.0],
-                               [0.0, 0.0], [0.0, 1.0], [0.0, 2.0]])
+            points = np.array([[3.0, 0.0], [2.0, 1.0], [2.0, 2.0],
+                               [8.0, 3.0], [1.0, 3.0], [1.0, 9.0],
+                               [6.0, 31.0], [0.0, 2.0], [3.0, 5.0]])
 
             pix = pixelizations.Voronoi()
             voronoi = pix.voronoi_from_pixel_centers(points)
-            neighbors = pix.neighbors_from_pixelization(pixels=9, ridge_points=voronoi.ridge_points)
+            pixel_neighbors, pixel_neighbors_size = pix.neighbors_from_pixelization(pixels=9,
+                                                                                    ridge_points=voronoi.ridge_points)
 
-            assert set(neighbors[0]) == {1, 3}
-            assert set(neighbors[1]) == {0, 2, 4}
-            assert set(neighbors[2]) == {1, 5}
-            assert set(neighbors[3]) == {0, 4, 6}
-            assert set(neighbors[4]) == {1, 3, 5, 7}
-            assert set(neighbors[5]) == {2, 4, 8}
-            assert set(neighbors[6]) == {3, 7}
-            assert set(neighbors[7]) == {4, 6, 8}
-            assert set(neighbors[8]) == {5, 7}
+            voronoi = scipy.spatial.Voronoi(points, qhull_options='Qbb Qc Qx Qm')
+            pixel_neighbors_util, pixel_neighbors_size_util = \
+                pixelization_util.voronoi_neighbors_from_pixels_and_ridge_points(pixels=9,
+                                              ridge_points=np.array(voronoi.ridge_points))
+
+            assert (pixel_neighbors == pixel_neighbors_util).all()
+            assert (pixel_neighbors_size == pixel_neighbors_size_util).all()
 
 
 class TestAdaptiveMagnification:

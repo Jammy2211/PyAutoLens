@@ -98,7 +98,7 @@ def plot_rectangular_mapper(mapper, should_plot_centres=False, should_plot_grid=
                                output_format=output_format)
     plotter_util.close_figure(as_subplot=as_subplot)
 
-def plot_voronoi_mapper(mapper, solution_vector, should_plot_centres=True, should_plot_grid=False, should_plot_border=False,
+def plot_voronoi_mapper(mapper, solution_vector, should_plot_centres=True, should_plot_grid=True, should_plot_border=False,
                         image_pixels=None, source_pixels=None, as_subplot=False,
                         units='arcsec', kpc_per_arcsec=None,
                         xyticksize=16, figsize=(7, 7),
@@ -109,17 +109,16 @@ def plot_voronoi_mapper(mapper, solution_vector, should_plot_centres=True, shoul
 
     set_axis_limits(mapper=mapper, units=units, kpc_per_arcsec=kpc_per_arcsec)
 
- #   voronoi = Voronoi()
- #   voronoi_plot_2d(voronoi)
-
-    vor = Voronoi(mapper.pixel_centres)
+    vor = Voronoi(mapper.geometry.pixel_centres)
     regions_SP, vertices_SP = voronoi_finite_polygons_2d(vor)
+
+    color_values = solution_vector[:] / np.max(solution_vector)
+    clbar = plt.get_cmap('jet')
 
     for region, index in zip(regions_SP, range(mapper.pixels)):
         polygon = vertices_SP[region]
-        value = solution_vector[index]
-        col = value
-        plt.fill(*zip(*polygon), alpha=1.0, lw=0.0)
+        col = clbar(color_values[index])
+        plt.fill(*zip(*polygon), alpha=0.7, facecolor=col, lw=0.0)
 
     plotter_util.set_title(title=title, titlesize=titlesize)
     grid_plotters.set_xy_labels_and_ticks_in_arcsec(units=units, kpc_per_arcsec=kpc_per_arcsec,
