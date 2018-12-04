@@ -711,7 +711,8 @@ class RegularGridBorder(np.ndarray):
         border_grid = grids.regular[self]
         return DataGrids(regular=self.relocated_grid_from_grid_jit(grid=grids.regular, border_grid=border_grid),
                          sub=self.relocated_grid_from_grid_jit(grid=grids.sub, border_grid=border_grid),
-                         blurring=None, pix=grids.pix)
+                         blurring=None,
+                         pix=self.relocated_grid_from_grid_jit(grid=grids.pix, border_grid=border_grid))
 
     @staticmethod
     @numba.jit(nopython=True, cache=True)

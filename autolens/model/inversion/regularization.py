@@ -1,5 +1,6 @@
 import numpy as np
 
+from autolens.model.inversion.util import regularization_util
 
 class Regularization(object):
 
@@ -15,10 +16,10 @@ class Regularization(object):
         the minimum chi-squared solution is achieved accounting for the penalty term.
 
         2) The likelihood of the pixelization's fit_normal to the datas changes from L = -0.5 *(chi^2 + _noise_term) to \
-        L = -0.5 (chi^2 + regularization_coefficient * regularization_term + _noise_term). The regularization \
+        L = -0.5 (chi^2 + coefficients * regularization_term + _noise_term). The regularization \
         coefficient is a 'hyper-parameter' which determines how strongly we enforce our smoothing of the pixelization.
 
-        The value of the regularization_coefficient(s) is set using the Bayesian framework of (Suyu 2006) and this \
+        The value of the coefficients(s) is set using the Bayesian framework of (Suyu 2006) and this \
         is described further in the (*inversion.Inversion* class).
 
         The regularization matrix, H, is calculated by defining a set of B matrices which describe how the \
@@ -162,9 +163,9 @@ class Regularization(object):
             The regularization_matrix coefficients used to smooth the pix reconstructed_image.            
             
         """
-        self.regularization_coefficients = coefficients
+        self.coefficients = coefficients
 
-    def regularization_matrix_from_pixel_neighbors(self, pixel_neighbors):
+    def regularization_matrix_from_pixel_neighbors(self, pixel_neighbors, pixel_neighbors_size):
         raise NotImplementedError("regularization_matrix_from_pixel_neighbors should be overridden")
 
 
@@ -174,28 +175,9 @@ class Constant(Regularization):
 
         super(Constant, self).__init__(coefficients)
 
-    def regularization_matrix_from_pixel_neighbors(self, pixel_neighbors):
-        """From the pixel-neighbors, setup the regularization matrix using the constant regularization scheme.
-
-        Parameters
-        ----------
-        pixel_neighbors : [[]]
-            A list of the neighbors of each pixel.
-        """
-
-        pixels = len(pixel_neighbors)
-
-        regularization_matrix = np.zeros(shape=(pixels, pixels))
-
-        regularization_coefficient = self.regularization_coefficients[0] ** 2.0
-
-        for i in range(pixels):
-            regularization_matrix[i, i] += 1e-8
-            for j in pixel_neighbors[i]:
-                regularization_matrix[i, i] += regularization_coefficient
-                regularization_matrix[i, j] -= regularization_coefficient
-
-        return regularization_matrix
+    def regularization_matrix_from_pixel_neighbors(self, pixel_neighbors, pixel_neighbors_size):
+        return regularization_util.constant_regularization_matrix_from_pixel_neighbors(coefficients=self.coefficients,
+               pixel_neighbors=pixel_neighbors, pixel_neighbors_size=pixel_neighbors_size)
 
 
 class Weighted(Regularization):
@@ -205,69 +187,16 @@ class Weighted(Regularization):
         super(Weighted, self).__init__(coefficients)
         self.signal_scale = signal_scale
 
-    def pixel_signals_from_images(self, pixels, image_to_pixelization, galaxy_image):
-        """Compute the (scaled) signal in each pixel, where the signal is the sum of its datas_-pixel fluxes. \
-        These pixel-signals are used to compute the effective regularization weight of each pixel.
-
-        The pixel signals are scaled in the following ways:
-
-        1) Divided by the number of datas_-pixels in the pixel, to ensure all pixels have the same \
-        'relative' signal (i.e. a pixel with 10 regular-pixels doesn't have x2 the signal of one with 5).
-
-        2) Divided by the maximum pixel-signal, so that all signals vary between 0 and 1. This ensures that the \
-        regularizations weights are defined identically for any datas_ units or signal-to-noise ratio.
-
-        3) Raised to the power of the hyper-parameter *signal_scale*, so the method can control the relative \
-        contribution regularization in different regions of pixelization.
-        """
-
-        pixel_signals = np.zeros((pixels,))
-        pixel_sizes = np.zeros((pixels,))
-
-        for image_index in range(galaxy_image.shape[0]):
-            pixel_signals[image_to_pixelization[image_index]] += galaxy_image[image_index]
-            pixel_sizes[image_to_pixelization[image_index]] += 1
-
-        pixel_signals /= pixel_sizes
-        pixel_signals /= max(pixel_signals)
-
-        return pixel_signals ** self.signal_scale
+    def pixel_signals_from_images(self, pixels, regular_to_pix, galaxy_image):
+        return regularization_util.weighted_pixel_signals_from_images(pixels=pixels, signal_scale=self.signal_scale,
+                                                                      regular_to_pix=regular_to_pix,
+                                                                      galaxy_image=galaxy_image)
 
     def regularization_weights_from_pixel_signals(self, pixel_signals):
-        """Compute the regularization weights, which are the effective regularization coefficient of every \
-        pixel. They are computed using the (scaled) pixel-signal of each pixel.
+        return regularization_util.weighted_regularization_weights_from_pixel_signals(coefficients=self.coefficients,
+                                                                                      pixel_signals=pixel_signals)
 
-        Two regularization coefficients are used, corresponding to the:
-
-        1) (pixel_signals) - pixels with a high pixel-signal (i.e. where the signal is located in the pixelization).
-        2) (1.0 - pixel_signals) - pixels with a low pixel-signal (i.e. where the signal is not located in the \
-         pixelization).
-        """
-        return (self.regularization_coefficients[0] * pixel_signals +
-                self.regularization_coefficients[1] * (1.0 - pixel_signals)) ** 2.0
-
-    def regularization_matrix_from_pixel_neighbors(self, regularization_weights, pixel_neighbors):
-        """ From the pixel-neighbors, setup the regularization matrix using the weighted regularization scheme.
-
-        Parameters
-        ----------
-        regularization_weights : list(float)
-            The regularization_matrix weight of each pixel
-        pixel_neighbors : [[]]
-            A list of the neighbors of each pixel.
-        """
-
-        pixels = len(regularization_weights)
-
-        regularization_matrix = np.zeros(shape=(pixels, pixels))
-
-        regularization_weight = regularization_weights ** 2.0
-
-        for i in range(pixels):
-            for j in pixel_neighbors[i]:
-                regularization_matrix[i, i] += regularization_weight[j]
-                regularization_matrix[j, j] += regularization_weight[j]
-                regularization_matrix[i, j] -= regularization_weight[j]
-                regularization_matrix[j, i] -= regularization_weight[j]
-
-        return regularization_matrix
+    def regularization_matrix_from_pixel_neighbors(self, regularization_weights, pixel_neighbors, pixel_neighbors_size):
+        return regularization_util.weighted_regularization_matrix_from_pixel_neighbors(
+            regularization_weights=regularization_weights, pixel_neighbors=pixel_neighbors,
+                                                 pixel_neighbors_size=pixel_neighbors_size)

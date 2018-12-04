@@ -4,6 +4,7 @@ import pytest
 from autolens.data.array.util import mapping_util
 from autolens.model.inversion import mappers
 from autolens.model.inversion import pixelizations
+from autolens.model.inversion.util import mapper_util
 from test.mock.mock_imaging import MockSubGrid, MockGridCollection
 from test.mock.mock_inversion import MockGeometry
 
@@ -33,109 +34,6 @@ def make_three_pixels():
 @pytest.fixture(name="five_pixels")
 def make_five_pixels():
     return np.array([[0, 0], [0, 1], [1, 0], [1, 1], [1, 2]])
-
-
-class TestMappingMatrix:
-
-    def test__3_image_pixels__6_pixel_pixels__sub_grid_1x1(self, three_pixels):
-        sub_to_pixelization = np.array([0, 1, 2])
-        sub_to_regular = np.array([0, 1, 2])
-
-        grids = MockGridCollection(regular=three_pixels, sub=MockSubGrid(three_pixels, sub_to_regular,
-                                                                         sub_grid_size=1))
-
-        pix = mappers.Mapper(pixels=6, grids=grids, border=None)
-
-        mapping_matrix = pix.mapping_matrix_from_sub_to_pix_jit(sub_to_pixelization, pix.pixels,
-                                                                pix.grids.regular.shape[0], pix.grids.sub.sub_to_regular,
-                                                                pix.grids.sub.sub_grid_fraction)
-
-        assert (mapping_matrix == np.array([[1, 0, 0, 0, 0, 0],  # Image pixel 0 maps to pix pixel 0.
-                                            [0, 1, 0, 0, 0, 0],  # Image pixel 1 maps to pix pixel 1.
-                                            [0, 0, 1, 0, 0, 0]])).all()  # Image pixel 2 maps to pix pixel 2
-
-    def test__5_image_pixels__8_pixel_pixels__sub_grid_1x1(self, five_pixels):
-        sub_to_pixelization = np.array([0, 1, 2, 7, 6])
-        sub_to_regular = np.array([0, 1, 2, 3, 4])
-
-        grids = MockGridCollection(regular=five_pixels, sub=MockSubGrid(five_pixels, sub_to_regular,
-                                                                        sub_grid_size=1))
-
-        pix = mappers.Mapper(pixels=8, grids=grids, border=None)
-
-        mapping_matrix = pix.mapping_matrix_from_sub_to_pix_jit(sub_to_pixelization, pix.pixels,
-                                                                pix.grids.regular.shape[0], pix.grids.sub.sub_to_regular,
-                                                                pix.grids.sub.sub_grid_fraction)
-
-        assert (mapping_matrix == np.array(
-            [[1, 0, 0, 0, 0, 0, 0, 0],  # Image image_to_pixel 0 and 3 mappers to pix pixel 0.
-             [0, 1, 0, 0, 0, 0, 0, 0],  # Image image_to_pixel 1 and 4 mappers to pix pixel 1.
-             [0, 0, 1, 0, 0, 0, 0, 0],
-             [0, 0, 0, 0, 0, 0, 0, 1],
-             [0, 0, 0, 0, 0, 0, 1, 0]])).all()  # Image image_to_pixel 2 and 5 mappers to pix pixel 2
-
-    def test__5_image_pixels__8_pixel_pixels__sub_grid_2x2__no_overlapping_pixels(self, five_pixels):
-        sub_to_pixelization = np.array([0, 1, 2, 3, 1, 2, 3, 4, 2, 3, 4, 5, 7, 0, 1, 3, 6, 7, 4, 2])
-        sub_to_regular = np.array([0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4])
-
-        grids = MockGridCollection(regular=five_pixels, sub=MockSubGrid(five_pixels, sub_to_regular,
-                                                                        sub_grid_size=2))
-
-        pix = mappers.Mapper(pixels=8, grids=grids, border=None)
-
-        mapping_matrix = pix.mapping_matrix_from_sub_to_pix_jit(sub_to_pixelization, pix.pixels,
-                                                                pix.grids.regular.shape[0], pix.grids.sub.sub_to_regular,
-                                                                pix.grids.sub.sub_grid_fraction)
-
-        assert (mapping_matrix == np.array(
-            [[0.25, 0.25, 0.25, 0.25, 0, 0, 0, 0],
-             [0, 0.25, 0.25, 0.25, 0.25, 0, 0, 0],
-             [0, 0, 0.25, 0.25, 0.25, 0.25, 0, 0],
-             [0.25, 0.25, 0, 0.25, 0, 0, 0, 0.25],
-             [0, 0, 0.25, 0, 0.25, 0, 0.25, 0.25]])).all()
-
-    def test__5_image_pixels__8_pixel_pixels__sub_grid_2x2__include_overlapping_pixels(self, five_pixels):
-        sub_to_pixelization = np.array([0, 0, 0, 1, 1, 1, 0, 0, 2, 3, 4, 5, 7, 0, 1, 3, 6, 7, 4, 2])
-        sub_to_regular = np.array([0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4])
-
-        grids = MockGridCollection(regular=five_pixels, sub=MockSubGrid(five_pixels, sub_to_regular,
-                                                                        sub_grid_size=2))
-
-        pix = mappers.Mapper(pixels=8, grids=grids, border=None)
-
-        mapping_matrix = pix.mapping_matrix_from_sub_to_pix_jit(sub_to_pixelization, pix.pixels,
-                                                                pix.grids.regular.shape[0], pix.grids.sub.sub_to_regular,
-                                                                pix.grids.sub.sub_grid_fraction)
-
-        assert (mapping_matrix == np.array(
-            [[0.75, 0.25, 0, 0, 0, 0, 0, 0],
-             [0.5, 0.5, 0, 0, 0, 0, 0, 0],
-             [0, 0, 0.25, 0.25, 0.25, 0.25, 0, 0],
-             [0.25, 0.25, 0, 0.25, 0, 0, 0, 0.25],
-             [0, 0, 0.25, 0, 0.25, 0, 0.25, 0.25]])).all()
-
-    def test__3_image_pixels__6_pixel_pixels__sub_grid_4x4(self, three_pixels):
-        sub_to_pixelization = np.array([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1,
-                                        2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-                                        0, 1, 2, 3, 4, 5, 0, 1, 2, 3, 4, 5, 0, 1, 2, 3])
-
-        sub_to_regular = np.array([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                                 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-                                 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2])
-
-        grids = MockGridCollection(regular=three_pixels, sub=MockSubGrid(three_pixels, sub_to_regular,
-                                                                         sub_grid_size=4))
-
-        pix = mappers.Mapper(pixels=6, grids=grids, border=None)
-
-        mapping_matrix = pix.mapping_matrix_from_sub_to_pix_jit(sub_to_pixelization, pix.pixels,
-                                                                pix.grids.regular.shape[0], pix.grids.sub.sub_to_regular,
-                                                                pix.grids.sub.sub_grid_fraction)
-
-        assert (mapping_matrix == np.array(
-            [[0.75, 0.25, 0, 0, 0, 0],
-             [0, 0, 1.0, 0, 0, 0],
-             [0.1875, 0.1875, 0.1875, 0.1875, 0.125, 0.125]])).all()
 
 
 class TestRectangularMapper:
@@ -499,7 +397,7 @@ class TestRectangularMapper:
             assert recon_pix.shape == (3,4)
 
 
-class TestVoronoiPixMapper:
+class TestVoronoiMapper:
 
     class TestImageToPixelizationViaNearestNeighborsForTesting:
 
@@ -550,44 +448,44 @@ class TestVoronoiPixMapper:
             pixel_centers = np.array([[1.0, 1.0], [-1.0, 1.0], [-1.0, -1.0], [1.0, -1.0]])
             sub_grid = np.array([[1.1, 1.1], [-1.1, 1.1], [-1.1, -1.1], [1.1, -1.1]])
 
-            sub_to_pixelization = grid_to_pixel_pixels_via_nearest_neighbour(sub_grid, pixel_centers)
+            sub_to_pix = grid_to_pixel_pixels_via_nearest_neighbour(sub_grid, pixel_centers)
 
-            assert sub_to_pixelization[0] == 0
-            assert sub_to_pixelization[1] == 1
-            assert sub_to_pixelization[2] == 2
-            assert sub_to_pixelization[3] == 3
+            assert sub_to_pix[0] == 0
+            assert sub_to_pix[1] == 1
+            assert sub_to_pix[2] == 2
+            assert sub_to_pix[3] == 3
 
         def test__grid_to_pixel_pixels_via_nearest_neighbour___case2__correct_pairs(self):
             pixel_centers = np.array([[1.0, 1.0], [-1.0, 1.0], [-1.0, -1.0], [1.0, -1.0]])
             sub_grid = np.array([[1.1, 1.1], [-1.1, 1.1], [-1.1, -1.1], [1.1, -1.1],
                                  [0.9, -0.9], [-0.9, -0.9], [-0.9, 0.9], [0.9, 0.9]])
 
-            sub_to_pixelization = grid_to_pixel_pixels_via_nearest_neighbour(sub_grid, pixel_centers)
+            sub_to_pix = grid_to_pixel_pixels_via_nearest_neighbour(sub_grid, pixel_centers)
 
-            assert sub_to_pixelization[0] == 0
-            assert sub_to_pixelization[1] == 1
-            assert sub_to_pixelization[2] == 2
-            assert sub_to_pixelization[3] == 3
-            assert sub_to_pixelization[4] == 3
-            assert sub_to_pixelization[5] == 2
-            assert sub_to_pixelization[6] == 1
-            assert sub_to_pixelization[7] == 0
+            assert sub_to_pix[0] == 0
+            assert sub_to_pix[1] == 1
+            assert sub_to_pix[2] == 2
+            assert sub_to_pix[3] == 3
+            assert sub_to_pix[4] == 3
+            assert sub_to_pix[5] == 2
+            assert sub_to_pix[6] == 1
+            assert sub_to_pix[7] == 0
 
         def test__grid_to_pixel_pixels_via_nearest_neighbour___case3__correct_pairs(self):
             pixel_centers = np.array([[1.0, 1.0], [-1.0, 1.0], [-1.0, -1.0], [1.0, -1.0], [0.0, 0.0], [2.0, 2.0]])
             sub_grid = np.array([[0.1, 0.1], [-0.1, -0.1], [0.49, 0.49],
                                  [0.51, 0.51], [1.01, 1.01], [1.51, 1.51]])
 
-            sub_to_pixelization = grid_to_pixel_pixels_via_nearest_neighbour(sub_grid, pixel_centers)
+            sub_to_pix = grid_to_pixel_pixels_via_nearest_neighbour(sub_grid, pixel_centers)
 
-            assert sub_to_pixelization[0] == 4
-            assert sub_to_pixelization[1] == 4
-            assert sub_to_pixelization[2] == 4
-            assert sub_to_pixelization[3] == 0
-            assert sub_to_pixelization[4] == 0
-            assert sub_to_pixelization[5] == 5
+            assert sub_to_pix[0] == 4
+            assert sub_to_pix[1] == 4
+            assert sub_to_pix[2] == 4
+            assert sub_to_pix[3] == 0
+            assert sub_to_pix[4] == 0
+            assert sub_to_pix[5] == 5
 
-    class TestImageToPixelization:
+    class TestRegularToPixelization:
 
         def test__image_to_pixelization_of_mapper_matches_nearest_neighbor_calculation(self):
 
@@ -609,16 +507,18 @@ class TestVoronoiPixMapper:
 
             pix = pixelizations.Voronoi()
             voronoi = pix.voronoi_from_pixel_centers(pixel_centers)
-            pixel_neighbors = pix.neighbors_from_pixelization(pixels=6, ridge_points=voronoi.ridge_points)
+            pixel_neighbors, pixel_neighbors_size = pix.neighbors_from_pixelization(pixels=6,
+                                                                                    ridge_points=voronoi.ridge_points)
 
             mapper = mappers.VoronoiMapper(pixels=6, grids=grids, border=None, voronoi=voronoi,
-                         geometry=MockGeometry(pixel_centres=pixel_centers, pixel_neighbors=pixel_neighbors))
+                         geometry=MockGeometry(pixel_centres=pixel_centers, pixel_neighbors=pixel_neighbors,
+                                               pixel_neighbors_size=pixel_neighbors_size))
 
             assert (mapper.regular_to_pix == regular_to_pixelization_nearest_neighbour).all()
 
     class TestSubToPixelization:
 
-        def test__sub_to_pixelization_of_mapper_matches_nearest_neighbor_calculation(self):
+        def test__sub_to_pix_of_mapper_matches_nearest_neighbor_calculation(self):
 
             pixel_centers = np.array([[0.1, 0.1], [1.1, 0.1], [2.1, 0.1],
                                       [0.1, 1.1], [1.1, 1.1], [2.1, 1.1]])
@@ -630,7 +530,7 @@ class TestVoronoiPixMapper:
                                               [1.05, 1.15], [1.15, 1.15], [1.05, 1.05], [1.15, 1.05],
                                               [2.05, 1.15], [2.15, 1.15], [2.05, 1.05], [2.15, 1.05]])
 
-            sub_to_pixelization_nearest_neighbour = grid_to_pixel_pixels_via_nearest_neighbour(pixelization_sub_grid,
+            sub_to_pix_nearest_neighbour = grid_to_pixel_pixels_via_nearest_neighbour(pixelization_sub_grid,
                                                                                                pixel_centers)
 
             sub_to_regular = np.array([0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5])
@@ -642,10 +542,12 @@ class TestVoronoiPixMapper:
 
             pix = pixelizations.Voronoi()
             voronoi = pix.voronoi_from_pixel_centers(pixel_centers)
-            pixel_neighbors = pix.neighbors_from_pixelization(pixels=6, ridge_points=voronoi.ridge_points)
+            pixel_neighbors, pixel_neighbors_size = pix.neighbors_from_pixelization(pixels=6,
+                                                                                    ridge_points=voronoi.ridge_points)
 
             mapper = mappers.VoronoiMapper(pixels=6, grids=grids, border=None, voronoi=voronoi,
-                    geometry=MockGeometry(pixel_centres=pixel_centers, pixel_neighbors=pixel_neighbors))
+                    geometry=MockGeometry(pixel_centres=pixel_centers, pixel_neighbors=pixel_neighbors,
+                                          pixel_neighbors_size=pixel_neighbors_size))
 
-            assert (mapper.sub_to_pix == sub_to_pixelization_nearest_neighbour).all()
+            assert (mapper.sub_to_pix == sub_to_pix_nearest_neighbour).all()
 

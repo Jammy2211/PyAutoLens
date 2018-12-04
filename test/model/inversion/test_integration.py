@@ -11,13 +11,13 @@ class TestRectangular:
 
     def test__5_simple_grid__no_sub_grid(self):
         # Source-plane comprises 5 grid, so 5 masked_image pixels traced to the pix-plane.
-        pixelization_grid = np.array([[1.0, -1.0], [1.0, 1.0], [0.0, 0.0], [-1.0, -1.0], [-1.0, 1.0]])
-        pixelization_sub_grid = np.array([[1.0, -1.0], [1.0, 1.0], [0.0, 0.0], [-1.0, -1.0], [-1.0, 1.0]])
+        regular_grid = np.array([[1.0, -1.0], [1.0, 1.0], [0.0, 0.0], [-1.0, -1.0], [-1.0, 1.0]])
+        sub_grid = np.array([[1.0, -1.0], [1.0, 1.0], [0.0, 0.0], [-1.0, -1.0], [-1.0, 1.0]])
 
         sub_to_regular = np.array([0, 1, 2, 3, 4])
 
-        data_grids = MockGridCollection(regular=pixelization_grid,
-                                           sub=MockSubGrid(sub_grid=pixelization_sub_grid,
+        data_grids = MockGridCollection(regular=regular_grid,
+                                           sub=MockSubGrid(sub_grid=sub_grid,
                                                            sub_to_regular=sub_to_regular, sub_grid_size=1))
 
         # There is no sub-grid, so our sub_grid are just the masked_image grid (note the NumPy weighted_data structure
@@ -38,7 +38,8 @@ class TestRectangular:
         assert mapper.shape == (3, 3)
 
         reg = regularization.Constant(coefficients=(1.0,))
-        regularization_matrix = reg.regularization_matrix_from_pixel_neighbors(mapper.geometry.pixel_neighbors)
+        regularization_matrix = reg.regularization_matrix_from_pixel_neighbors(mapper.geometry.pixel_neighbors,
+                                                                               mapper.geometry.pixel_neighbors_size)
 
         assert (regularization_matrix ==
                 np.array([[2.00000001, -1.0, 0.0, -1.0, 0.0, 0.0, 0.0, 0.0, 0.0],
@@ -54,7 +55,7 @@ class TestRectangular:
     def test__15_grid__no_sub_grid(self):
         # Source-plane comprises 15 grid, so 15 masked_image pixels traced to the pix-plane.
 
-        pixelization_grid = np.array([[0.9, -0.9], [1.0, -1.0], [1.1, -1.1],
+        regular_grid = np.array([[0.9, -0.9], [1.0, -1.0], [1.1, -1.1],
                                       [0.9, 0.9], [1.0, 1.0], [1.1, 1.1],
                                       [0.01, 0.01], [0.0, 0.0], [0.01, 0.01],
                                       [-0.9, -0.9], [-1.0, -1.0], [-1.1, -1.1],
@@ -62,7 +63,7 @@ class TestRectangular:
 
         # There is no sub-grid, so our sub_grid are just the masked_image grid (note the NumPy weighted_data structure
         # ensures this has no sub-gridding)
-        pixelization_sub_grid = np.array([[0.9, -0.9], [1.0, -1.0], [1.1, -1.1],
+        sub_grid = np.array([[0.9, -0.9], [1.0, -1.0], [1.1, -1.1],
                                           [0.9, 0.9], [1.0, 1.0], [1.1, 1.1],
                                           [-0.01, 0.01], [0.0, 0.0], [0.01, 0.01],
                                           [-0.9, -0.9], [-1.0, -1.0], [-1.1, -1.1],
@@ -70,8 +71,8 @@ class TestRectangular:
 
         sub_to_regular = np.array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14])
 
-        data_grids = MockGridCollection(regular=pixelization_grid,
-                                           sub=MockSubGrid(pixelization_sub_grid, sub_to_regular,
+        data_grids = MockGridCollection(regular=regular_grid,
+                                           sub=MockSubGrid(sub_grid, sub_to_regular,
                                                    sub_grid_size=1))
 
         pix = pixelizations.Rectangular(shape=(3, 3))
@@ -99,7 +100,8 @@ class TestRectangular:
         assert mapper.shape == (3, 3)
 
         reg = regularization.Constant(coefficients=(1.0,))
-        regularization_matrix = reg.regularization_matrix_from_pixel_neighbors(mapper.geometry.pixel_neighbors)
+        regularization_matrix = reg.regularization_matrix_from_pixel_neighbors(mapper.geometry.pixel_neighbors,
+                                                                               mapper.geometry.pixel_neighbors_size)
 
         assert (regularization_matrix == np.array([[2.00000001, -1.0, 0.0, -1.0, 0.0, 0.0, 0.0, 0.0, 0.0],
                                                    [-1.0, 3.00000001, -1.0, 0.0, -1.0, 0.0, 0.0, 0.0, 0.0],
@@ -113,12 +115,12 @@ class TestRectangular:
 
     def test__5_simple_grid__include_sub_grid(self):
         # Source-plane comprises 5 grid, so 5 masked_image pixels traced to the pix-plane.
-        pixelization_grid = np.array([[1.0, -1.0], [1.0, 1.0], [0.0, 0.0], [-1.0, -1.0], [-1.0, 1.0]])
+        regular_grid = np.array([[1.0, -1.0], [1.0, 1.0], [0.0, 0.0], [-1.0, -1.0], [-1.0, 1.0]])
         # Assume a 2x2 sub-grid, so each of our 5 masked_image-pixels are split into 4.
         # The grid below is unphysical in that the (0.0, 0.0) terms on the end of each sub-grid probably couldn't
         # happen for a real lensing calculation. This is to make a mapping_matrix matrix which explicitly tests the
         # sub-grid.
-        pixelization_sub_grid = np.array([[1.0, -1.0], [1.0, -1.0], [1.0, -1.0], [0.0, 0.0],
+        sub_grid = np.array([[1.0, -1.0], [1.0, -1.0], [1.0, -1.0], [0.0, 0.0],
                                           [1.0, 1.0], [1.0, 1.0], [1.0, 1.0], [0.0, 0.0],
                                           [0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0],
                                           [-1.0, -1.0], [-1.0, -1.0], [-1.0, -1.0], [0.0, 0.0],
@@ -126,8 +128,8 @@ class TestRectangular:
 
         sub_to_regular = np.array([0, 0, 0, 2, 1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 3, 2, 4, 4, 4, 2])
 
-        data_grids = MockGridCollection(regular=pixelization_grid,
-                                           sub=MockSubGrid(pixelization_sub_grid, sub_to_regular, sub_grid_size=2))
+        data_grids = MockGridCollection(regular=regular_grid,
+                                           sub=MockSubGrid(sub_grid, sub_to_regular, sub_grid_size=2))
 
         pix = pixelizations.Rectangular(shape=(3, 3))
 
@@ -144,7 +146,8 @@ class TestRectangular:
         assert mapper.shape == (3, 3)
 
         reg = regularization.Constant(coefficients=(1.0,))
-        regularization_matrix = reg.regularization_matrix_from_pixel_neighbors(mapper.geometry.pixel_neighbors)
+        regularization_matrix = reg.regularization_matrix_from_pixel_neighbors(mapper.geometry.pixel_neighbors,
+                                                                               mapper.geometry.pixel_neighbors_size)
 
         assert (regularization_matrix == np.array([[2.00000001, -1.0, 0.0, -1.0, 0.0, 0.0, 0.0, 0.0, 0.0],
                                                    [-1.0, 3.00000001, -1.0, 0.0, -1.0, 0.0, 0.0, 0.0, 0.0],
@@ -158,15 +161,15 @@ class TestRectangular:
 
     def test__grid__requires_border_relocation(self):
 
-        pixelization_grid = np.array([[1.0, -1.0], [1.0, 1.0], [0.0, 0.0], [-1.0, -1.0], [-1.0, 1.0]])
-        pixelization_sub_grid = np.array([[2.0, 2.0], [2.0, 2.0], [2.0, 2.0], [2.0, 2.0], [-2.0, -2.0]])
+        regular_grid = np.array([[1.0, -1.0], [1.0, 1.0], [0.0, 0.0], [-1.0, -1.0], [-1.0, 1.0]])
+        sub_grid = np.array([[2.0, 2.0], [2.0, 2.0], [2.0, 2.0], [2.0, 2.0], [-2.0, -2.0]])
 
         border = grids.RegularGridBorder(arr=np.array([0, 1, 3, 4]))
 
         sub_to_regular = np.array([0, 1, 2, 3, 4])
 
-        data_grids = MockGridCollection(regular=pixelization_grid,
-                                           sub=MockSubGrid(pixelization_sub_grid, sub_to_regular,
+        data_grids = MockGridCollection(regular=regular_grid,
+                                           sub=MockSubGrid(sub_grid, sub_to_regular,
                                                    sub_grid_size=1))
 
         pix = pixelizations.Rectangular(shape=(3, 3))
@@ -184,7 +187,8 @@ class TestRectangular:
         assert mapper.shape == (3, 3)
 
         reg = regularization.Constant(coefficients=(1.0,))
-        regularization_matrix = reg.regularization_matrix_from_pixel_neighbors(mapper.geometry.pixel_neighbors)
+        regularization_matrix = reg.regularization_matrix_from_pixel_neighbors(mapper.geometry.pixel_neighbors,
+                                                                               mapper.geometry.pixel_neighbors_size)
 
         assert (regularization_matrix == np.array([[2.00000001, -1.0, 0.0, -1.0, 0.0, 0.0, 0.0, 0.0, 0.0],
                                                    [-1.0, 3.00000001, -1.0, 0.0, -1.0, 0.0, 0.0, 0.0, 0.0],
@@ -199,9 +203,9 @@ class TestRectangular:
 
 class TestImagePlanePixelization:
 
-    def test__3x3_simple_grid__create_using_image_grid(self):
+    def test__3x3_simple_grid__create_using_regular_grid(self):
 
-        image_grid = np.array([[1.0, - 1.0], [1.0, 0.0], [1.0, 1.0],
+        regular_grid = np.array([[1.0, - 1.0], [1.0, 0.0], [1.0, 1.0],
                                [0.0, -1.0], [0.0, 0.0], [0.0, 1.0],
                                [-1.0, -1.0], [-1.0, 0.0], [-1.0, 1.0]])
 
@@ -209,18 +213,18 @@ class TestImagePlanePixelization:
                                         [False, False, False],
                                         [False, False, False]]), pixel_scale=1.0)
 
-        image_sub_grid = np.array([[1.0, - 1.0], [1.0, 0.0], [1.0, 1.0],
-                                   [0.0, -1.0], [0.0, 0.0], [0.0, 1.0],
-                                   [-1.0, -1.0], [-1.0, 0.0], [-1.0, 1.0]])
+        sub_grid = np.array([[1.0, - 1.0], [1.0, 0.0], [1.0, 1.0],
+                             [0.0, -1.0], [0.0, 0.0], [0.0, 1.0],
+                             [-1.0, -1.0], [-1.0, 0.0], [-1.0, 1.0]])
         sub_to_regular = np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])
 
-        image_grid = grids.RegularGrid(arr=image_grid, mask=mask)
-        image_sub_grid = MockSubGrid(image_sub_grid, sub_to_regular, sub_grid_size=1)
+        regular_grid = grids.RegularGrid(arr=regular_grid, mask=mask)
+        sub_grid = MockSubGrid(sub_grid, sub_to_regular, sub_grid_size=1)
 
         pix = pixelizations.AdaptiveMagnification(shape=(3, 3))
-        image_plane_pix = pix.image_plane_pix_grid_from_regular_grid(regular_grid=image_grid)
+        image_plane_pix = pix.image_plane_pix_grid_from_regular_grid(regular_grid=regular_grid)
 
-        data_grids = MockGridCollection(regular=image_grid, sub=image_sub_grid, pix=image_plane_pix.sparse_grid,
+        data_grids = MockGridCollection(regular=regular_grid, sub=sub_grid, pix=image_plane_pix.sparse_grid,
                                            regular_to_nearest_regular_pix=image_plane_pix.regular_to_sparse)
 
         mapper = pix.mapper_from_grids_and_border(grids=data_grids, border=None)
@@ -242,7 +246,8 @@ class TestImagePlanePixelization:
                                                    [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0]])).all()
 
         reg = regularization.Constant(coefficients=(1.0,))
-        regularization_matrix = reg.regularization_matrix_from_pixel_neighbors(mapper.geometry.pixel_neighbors)
+        regularization_matrix = reg.regularization_matrix_from_pixel_neighbors(mapper.geometry.pixel_neighbors,
+                                                                               mapper.geometry.pixel_neighbors_size)
 
         assert (regularization_matrix == np.array([[2.00000001, -1.0, 0.0, -1.0, 0.0, 0.0, 0.0, 0.0, 0.0],
                                                    [-1.0, 3.00000001, -1.0, 0.0, -1.0, 0.0, 0.0, 0.0, 0.0],
@@ -254,9 +259,9 @@ class TestImagePlanePixelization:
                                                    [0.0, 0.0, 0.0, 0.0, -1.0, 0.0, -1.0, 3.00000001, -1.0],
                                                    [0.0, 0.0, 0.0, 0.0, 0.0, -1.0, 0.0, -1.0, 2.00000001]])).all()
 
-    def test__3x3_simple_grid__include_mask__create_using_image_grid(self):
+    def test__3x3_simple_grid__include_mask__create_using_regular_grid(self):
 
-        image_grid = np.array([             [1.0, 0.0],
+        regular_grid = np.array([             [1.0, 0.0],
                                [0.0, -1.0], [0.0, 0.0], [0.0, 1.0],
                                             [-1.0, 0.0]] )
 
@@ -264,18 +269,18 @@ class TestImagePlanePixelization:
                                         [False, False, False],
                                         [True, False, True]]), pixel_scale=1.0)
 
-        image_sub_grid = np.array([              [1.0, 0.0],
+        sub_grid = np.array([              [1.0, 0.0],
                                    [0.0, -1.0], [0.0, 0.0], [0.0, 1.0],
                                                 [-1.0, 0.0]])
         sub_to_regular = np.array([0, 1, 2, 3, 4])
 
-        image_grid = grids.RegularGrid(arr=image_grid, mask=mask)
-        image_sub_grid = MockSubGrid(image_sub_grid, sub_to_regular, sub_grid_size=1)
+        regular_grid = grids.RegularGrid(arr=regular_grid, mask=mask)
+        sub_grid = MockSubGrid(sub_grid, sub_to_regular, sub_grid_size=1)
 
         pix = pixelizations.AdaptiveMagnification(shape=(3, 3))
-        image_plane_pix = pix.image_plane_pix_grid_from_regular_grid(regular_grid=image_grid)
+        image_plane_pix = pix.image_plane_pix_grid_from_regular_grid(regular_grid=regular_grid)
 
-        data_grids = MockGridCollection(regular=image_grid, sub=image_sub_grid, pix=image_plane_pix.sparse_grid,
+        data_grids = MockGridCollection(regular=regular_grid, sub=sub_grid, pix=image_plane_pix.sparse_grid,
                                            regular_to_nearest_regular_pix=image_plane_pix.regular_to_sparse)
 
         mapper = pix.mapper_from_grids_and_border(grids=data_grids, border=None)
@@ -293,7 +298,8 @@ class TestImagePlanePixelization:
                                                    [0.0, 0.0, 0.0, 0.0, 1.0]])).all()
 
         reg = regularization.Constant(coefficients=(1.0,))
-        regularization_matrix = reg.regularization_matrix_from_pixel_neighbors(mapper.geometry.pixel_neighbors)
+        regularization_matrix = reg.regularization_matrix_from_pixel_neighbors(mapper.geometry.pixel_neighbors,
+                                                                               mapper.geometry.pixel_neighbors_size)
 
         assert (regularization_matrix == np.array([[3.00000001, -1.0, -1.0, -1.0, 0.0],
                                                    [-1.0, 3.00000001, -1.0, 0.0, -1.0],
@@ -301,9 +307,9 @@ class TestImagePlanePixelization:
                                                    [-1.0, 0.0, -1.0, 3.00000001, -1.0],
                                                    [0.0, -1.0, -1.0, -1.0, 3.00000001]])).all()
 
-    def test__3x3_simple_grid__include_mask_and_sub_grid__create_using_image_grid(self):
+    def test__3x3_simple_grid__include_mask_and_sub_grid__create_using_regular_grid(self):
 
-        image_grid = np.array([             [1.0, 0.0],
+        regular_grid = np.array([             [1.0, 0.0],
                                [0.0, -1.0], [0.0, 0.0], [0.0, 1.0],
                                             [-1.0, 0.0]] )
 
@@ -311,7 +317,7 @@ class TestImagePlanePixelization:
                                         [False, False, False],
                                         [True, False, True]]), pixel_scale=1.0)
 
-        image_sub_grid = np.array([[1.01, 0.0], [1.01, 0.0], [1.01, 0.0], [0.01, 0.0],
+        sub_grid = np.array([[1.01, 0.0], [1.01, 0.0], [1.01, 0.0], [0.01, 0.0],
                                   [0.0, -1.0], [0.0, -1.0], [0.0, -1.0], [0.01, 0.0],
                                   [0.01, 0.0], [0.01, 0.0], [0.01, 0.0], [0.01, 0.0],
                                   [0.0, 1.01], [0.0, 1.01], [0.0, 1.01], [0.01, 0.0],
@@ -319,13 +325,13 @@ class TestImagePlanePixelization:
 
         sub_to_regular = np.array([0, 0, 0, 2, 1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 3, 2, 4, 4, 4, 2])
 
-        image_grid = grids.RegularGrid(arr=image_grid, mask=mask)
-        image_sub_grid = MockSubGrid(image_sub_grid, sub_to_regular, sub_grid_size=2)
+        regular_grid = grids.RegularGrid(arr=regular_grid, mask=mask)
+        sub_grid = MockSubGrid(sub_grid, sub_to_regular, sub_grid_size=2)
 
         pix = pixelizations.AdaptiveMagnification(shape=(3, 3))
-        image_plane_pix = pix.image_plane_pix_grid_from_regular_grid(regular_grid=image_grid)
+        image_plane_pix = pix.image_plane_pix_grid_from_regular_grid(regular_grid=regular_grid)
 
-        data_grids = MockGridCollection(regular=image_grid, sub=image_sub_grid, pix=image_plane_pix.sparse_grid,
+        data_grids = MockGridCollection(regular=regular_grid, sub=sub_grid, pix=image_plane_pix.sparse_grid,
                                            regular_to_nearest_regular_pix=image_plane_pix.regular_to_sparse)
 
         mapper = pix.mapper_from_grids_and_border(grids=data_grids, border=None)
@@ -343,7 +349,8 @@ class TestImagePlanePixelization:
                                                    [0.0, 0.0, 0.0, 0.0, 0.75]])).all()
 
         reg = regularization.Constant(coefficients=(1.0,))
-        regularization_matrix = reg.regularization_matrix_from_pixel_neighbors(mapper.geometry.pixel_neighbors)
+        regularization_matrix = reg.regularization_matrix_from_pixel_neighbors(mapper.geometry.pixel_neighbors,
+                                                                               mapper.geometry.pixel_neighbors_size)
 
         assert (regularization_matrix == np.array([[3.00000001, -1.0, -1.0, -1.0, 0.0],
                                                    [-1.0, 3.00000001, -1.0, 0.0, -1.0],
@@ -356,16 +363,16 @@ class TestAdaptiveMagnification:
 
     def test__5_simple_grid__no_sub_grid(self):
 
-        pixelization_grid = np.array([[1.0, 1.0], [-1.0, 1.0], [0.0, 0.0], [1.0, -1.0], [-1.0, -1.0]])
-        pixelization_sub_grid = np.array([[1.0, 1.0], [-1.0, 1.0], [0.0, 0.0], [1.0, -1.0], [-1.0, -1.0]])
+        regular_grid = np.array([[1.0, 1.0], [-1.0, 1.0], [0.0, 0.0], [1.0, -1.0], [-1.0, -1.0]])
+        sub_grid = np.array([[1.0, 1.0], [-1.0, 1.0], [0.0, 0.0], [1.0, -1.0], [-1.0, -1.0]])
 
         sub_to_regular = np.array([0, 1, 2, 3, 4])
 
         regular_to_sparse = np.array([0, 1, 2, 3, 4])
 
-        data_grids = MockGridCollection(regular=pixelization_grid,
-                                           sub=MockSubGrid(pixelization_sub_grid, sub_to_regular, sub_grid_size=1),
-                                           pix=pixelization_grid,
+        data_grids = MockGridCollection(regular=regular_grid,
+                                           sub=MockSubGrid(sub_grid, sub_to_regular, sub_grid_size=1),
+                                           pix=regular_grid,
                                            regular_to_nearest_regular_pix=regular_to_sparse)
 
         pix = pixelizations.AdaptiveMagnification(shape=(5, 1))
@@ -373,7 +380,7 @@ class TestAdaptiveMagnification:
         mapper = pix.mapper_from_grids_and_border(grids=data_grids, border=None)
 
         assert mapper.geometry.shape_arc_seconds == pytest.approx((2.0, 2.0), 1.0e-4)
-        assert (mapper.geometry.pixel_centres == pixelization_grid).all()
+        assert (mapper.geometry.pixel_centres == regular_grid).all()
         assert mapper.geometry.origin == (0.0, 0.0)
 
         assert isinstance(mapper, pm.VoronoiMapper)
@@ -385,7 +392,8 @@ class TestAdaptiveMagnification:
                                                        [0.0, 0.0, 0.0, 0.0, 1.0]])).all()
 
         reg = regularization.Constant(coefficients=(1.0,))
-        regularization_matrix = reg.regularization_matrix_from_pixel_neighbors(mapper.geometry.pixel_neighbors)
+        regularization_matrix = reg.regularization_matrix_from_pixel_neighbors(mapper.geometry.pixel_neighbors,
+                                                                               mapper.geometry.pixel_neighbors_size)
 
         assert (regularization_matrix == np.array([[3.00000001, -1.0, -1.0, -1.0, 0.0],
                                                    [-1.0, 3.00000001, -1.0, 0.0, -1.0],
@@ -395,13 +403,13 @@ class TestAdaptiveMagnification:
 
     def test__15_grid__no_sub_grid(self):
 
-        pixelization_grid = np.array([[0.9, 0.9], [1.0, 1.0], [1.1, 1.1],
+        regular_grid = np.array([[0.9, 0.9], [1.0, 1.0], [1.1, 1.1],
                                       [-0.9, 0.9], [-1.0, 1.0], [-1.1, 1.1],
                                       [-0.01, 0.01], [0.0, 0.0], [0.01, 0.01],
                                       [0.9, -0.9], [1.0, -1.0], [1.1, -1.1],
                                       [-0.9, -0.9], [-1.0, -1.0], [-1.1, -1.1]])
 
-        pixelization_sub_grid = np.array([[0.9, 0.9], [1.0, 1.0], [1.1, 1.1],
+        sub_grid = np.array([[0.9, 0.9], [1.0, 1.0], [1.1, 1.1],
                                           [-0.9, 0.9], [-1.0, 1.0], [-1.1, 1.1],
                                           [-0.01, 0.01], [0.0, 0.0], [0.01, 0.01],
                                           [0.9, -0.9], [1.0, -1.0], [1.1, -1.1],
@@ -412,8 +420,8 @@ class TestAdaptiveMagnification:
         sub_to_regular = np.array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14])
         regular_to_sparse = np.array([0, 0, 0, 1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 4])
 
-        data_grids = MockGridCollection(regular=pixelization_grid,
-                                           sub=MockSubGrid(pixelization_sub_grid, sub_to_regular, sub_grid_size=1),
+        data_grids = MockGridCollection(regular=regular_grid,
+                                           sub=MockSubGrid(sub_grid, sub_to_regular, sub_grid_size=1),
                                            pix=pixel_centers, regular_to_nearest_regular_pix=regular_to_sparse)
 
         pix = pixelizations.AdaptiveMagnification(shape=(5, 1))
@@ -443,7 +451,8 @@ class TestAdaptiveMagnification:
                                                        [0.0, 0.0, 0.0, 0.0, 1.0]])).all()
 
         reg = regularization.Constant(coefficients=(1.0,))
-        regularization_matrix = reg.regularization_matrix_from_pixel_neighbors(mapper.geometry.pixel_neighbors)
+        regularization_matrix = reg.regularization_matrix_from_pixel_neighbors(mapper.geometry.pixel_neighbors,
+                                                                               mapper.geometry.pixel_neighbors_size)
 
         assert (regularization_matrix == np.array([[3.00000001, -1.0, -1.0, -1.0, 0.0],
                                                    [-1.0, 3.00000001, -1.0, 0.0, -1.0],
@@ -453,9 +462,9 @@ class TestAdaptiveMagnification:
 
     def test__5_simple_grid__include_sub_grid__sets_up_correct_mapper(self):
 
-        pixelization_grid = np.array([[1.0, 1.0], [-1.0, 1.0], [0.0, 0.0], [1.0, -1.0], [-1.0, -1.0]])
+        regular_grid = np.array([[1.0, 1.0], [-1.0, 1.0], [0.0, 0.0], [1.0, -1.0], [-1.0, -1.0]])
 
-        pixelization_sub_grid = np.array([[1.0, 1.0], [1.0, 1.0], [1.0, 1.0], [0.0, 0.0],
+        sub_grid = np.array([[1.0, 1.0], [1.0, 1.0], [1.0, 1.0], [0.0, 0.0],
                                           [-1.0, 1.0], [-1.0, 1.0], [-1.0, 1.0], [0.0, 0.0],
                                           [0.0, 0.0], [0.0, 0.0], [0.0, 0.0], [0.0, 0.0],
                                           [1.0, -1.0], [1.0, -1.0], [1.0, -1.0], [0.0, 0.0],
@@ -463,12 +472,12 @@ class TestAdaptiveMagnification:
 
         sub_to_regular = np.array([0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4])
 
-        pixel_centers = pixelization_grid
+        pixel_centers = regular_grid
 
         regular_to_sparse = np.array([0, 1, 2, 3, 4])
 
-        data_grids = MockGridCollection(regular=pixelization_grid,
-                                           sub=MockSubGrid(pixelization_sub_grid, sub_to_regular,
+        data_grids = MockGridCollection(regular=regular_grid,
+                                           sub=MockSubGrid(sub_grid, sub_to_regular,
                                                    sub_grid_size=2),
                                            pix=pixel_centers,
                                            regular_to_nearest_regular_pix=regular_to_sparse)
@@ -490,7 +499,8 @@ class TestAdaptiveMagnification:
                                                        [0.0, 0.0, 0.25, 0.0, 0.75]])).all()
 
         reg = regularization.Constant(coefficients=(1.0,))
-        regularization_matrix = reg.regularization_matrix_from_pixel_neighbors(mapper.geometry.pixel_neighbors)
+        regularization_matrix = reg.regularization_matrix_from_pixel_neighbors(mapper.geometry.pixel_neighbors,
+                                                                               mapper.geometry.pixel_neighbors_size)
 
         assert (regularization_matrix == np.array([[3.00000001, -1.0, -1.0, -1.0, 0.0],
                                                    [-1.0, 3.00000001, -1.0, 0.0, -1.0],
@@ -500,8 +510,10 @@ class TestAdaptiveMagnification:
 
     def test__same_as_above_but_grid_requires_border_relocation(self):
 
-        pixelization_grid = np.array([[1.0, -1.0], [1.0, 1.0], [0.0, 0.0], [-1.0, -1.0], [-1.0, 1.0]])
-        pixelization_sub_grid = np.array([[2.0, 2.0], [2.0, 2.0], [2.0, 2.0], [2.0, 2.0], [-2.0, -2.0]])
+        regular_grid = np.array([[1.0, -1.0], [1.0, 1.0], [0.0, 0.0], [-1.0, -1.0], [-1.0, 1.0]])
+        sub_grid = np.array([[2.0, 2.0], [2.0, 2.0], [2.0, 2.0], [2.0, 2.0], [-2.0, -2.0]])
+        # These will all be relocated to the regular grid edge.
+        pix_grid = np.array([[1.1, -1.1], [1.1, 1.1], [0.0, 0.0], [-1.1, -1.1], [-1.1, 1.1]])
 
         border = grids.RegularGridBorder(arr=np.array([0, 1, 3, 4]))
 
@@ -509,16 +521,16 @@ class TestAdaptiveMagnification:
 
         regular_to_sparse = np.array([0, 1, 2, 3, 4])
 
-        data_grids = MockGridCollection(regular=pixelization_grid,
-                                           sub=MockSubGrid(pixelization_sub_grid, sub_to_regular, sub_grid_size=1),
-                                           pix=pixelization_grid, regular_to_nearest_regular_pix=regular_to_sparse)
+        data_grids = MockGridCollection(regular=regular_grid,
+                                           sub=MockSubGrid(sub_grid, sub_to_regular, sub_grid_size=1),
+                                           pix=pix_grid, regular_to_nearest_regular_pix=regular_to_sparse)
 
         pix = pixelizations.AdaptiveMagnification(shape=(5, 1))
 
         mapper = pix.mapper_from_grids_and_border(grids=data_grids, border=border)
 
         assert mapper.geometry.shape_arc_seconds == pytest.approx((2.0, 2.0), 1.0e-4)
-        assert (mapper.geometry.pixel_centres == pixelization_grid).all()
+        assert mapper.geometry.pixel_centres == pytest.approx(regular_grid, 1e-4)
         assert mapper.geometry.origin == (0.0, 0.0)
 
         assert isinstance(mapper, pm.VoronoiMapper)
@@ -530,7 +542,8 @@ class TestAdaptiveMagnification:
                                                    [0.0, 0.0, 0.0, 1.0, 0.0]])).all()
 
         reg = regularization.Constant(coefficients=(1.0,))
-        regularization_matrix = reg.regularization_matrix_from_pixel_neighbors(mapper.geometry.pixel_neighbors)
+        regularization_matrix = reg.regularization_matrix_from_pixel_neighbors(mapper.geometry.pixel_neighbors,
+                                                                               mapper.geometry.pixel_neighbors_size)
 
         assert (regularization_matrix == np.array([[3.00000001, -1.0, -1.0, -1.0, 0.0],
                                                    [-1.0, 3.00000001, -1.0, 0.0, -1.0],

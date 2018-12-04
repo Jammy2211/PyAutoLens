@@ -298,7 +298,7 @@ class TestRegularization(object):
 
         galaxy = galaxy_prior.instance_for_arguments(arguments)
 
-        assert galaxy.regularization.regularization_coefficients == (0.5,)
+        assert galaxy.regularization.coefficients == (0.5,)
 
     def test_fixed_regularization(self):
         galaxy_prior = gp.GalaxyModel(variable_redshift=True, pixelization=pixelizations.Voronoi(),
@@ -308,7 +308,7 @@ class TestRegularization(object):
 
         galaxy = galaxy_prior.instance_for_arguments(arguments)
 
-        assert galaxy.regularization.regularization_coefficients == (1.,)
+        assert galaxy.regularization.coefficients == (1.,)
 
     def test__if_no_pixelization_raises_error(self):
         with pytest.raises(exc.PriorException):
