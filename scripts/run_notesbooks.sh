@@ -1,12 +1,15 @@
 #!/usr/bin/env bash
 
+echo "" > error.log
+
 for notebook in `find . -name *pynb`  
 do 
 	dir=$(dirname ${notebook})
 	filename=$(basename ${notebook})
-	echo "Converting $filename"
-	jupyter nbconvert --to script $notebook --output temp 
-	echo "Running $filename"
-	python $dir/temp.py 2> >(tee -a error.log >&2) 
-	rm $dir/temp.py
+	name="${filename%.*}"
+	echo "Converting $name"
+	jupyter nbconvert --to script $notebook --output $name
+	echo "Running $name"
+	python $dir/$name.py 2> >(tee -a error.log >&2) 
+	rm $dir/$name.py
 done
