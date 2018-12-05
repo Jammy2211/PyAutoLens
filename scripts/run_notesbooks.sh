@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 
-echo "" > error.log
+error_log=notebook_error.log
+
+echo "" > $error_log
 
 for notebook in `find workspace/howtolens -name *pynb | sort`  
 do 
@@ -10,6 +12,6 @@ do
 	echo "Converting $name"
 	jupyter nbconvert --to script $notebook --output $name
 	echo "Running $name"
-	python $dir/$name.py 2> >(tee -a error.log >&2) 
+	python $dir/$name.py 2> >(tee -a $error_log >&2) 
 	rm $dir/$name.py
 done
