@@ -2,7 +2,7 @@
 
 echo "" > error.log
 
-for notebook in `find . -name *pynb`  
+for notebook in `find workspace/howtolens -name *pynb | sort`  
 do 
 	dir=$(dirname ${notebook})
 	filename=$(basename ${notebook})
