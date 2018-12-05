@@ -461,6 +461,25 @@ class PSF(ScaledSquarePixelArray):
         return PSF(array=gaussian_2d, pixel_scale=pixel_scale, renormalize=True)
 
     @classmethod
+    def simulate_as_gaussian_via_alma_fits_header_parameters(cls, shape, pixel_scale, y_stddev, x_stddev, theta,
+                                                             centre=(0.0, 0.0)):
+
+        from autolens.model.profiles.light_profiles import EllipticalGaussian
+        from astropy import units
+
+        x_stddev = x_stddev * (units.deg).to(units.arcsec) / pixel_scale / (2.0 * np.sqrt(2.0 * np.log(2.0)))
+        y_stddev = y_stddev * (units.deg).to(units.arcsec) / pixel_scale / (2.0 * np.sqrt(2.0 * np.log(2.0)))
+
+        gaussian = EllipticalGaussian(centre=centre, axis_ratio=1.0, phi=theta, intensity=1.0, sigma=y_stddev)
+
+        grid_1d = grid_util.regular_grid_1d_masked_from_mask_pixel_scales_and_origin(mask=np.full(shape, False),
+                                                                                     pixel_scales=(pixel_scale, pixel_scale))
+        gaussian_1d = gaussian.intensities_from_grid(grid=grid_1d)
+        gaussian_2d = mapping_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(array_1d=gaussian_1d,
+                                                                                             shape=shape)
+        return PSF(array=gaussian_2d, pixel_scale=pixel_scale, renormalize=True)
+
+    @classmethod
     def from_fits_renormalized(cls, file_path, hdu, pixel_scale):
         """Loads a PSF from fits and renormalizes it
 

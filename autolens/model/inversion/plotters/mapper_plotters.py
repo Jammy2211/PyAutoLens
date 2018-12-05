@@ -18,7 +18,7 @@ def plot_image_and_mapper(image, mapper, mask=None, positions=None, should_plot_
     plt.figure(figsize=figsize)
     plt.subplot(rows, columns, 1)
 
-    imaging_plotters.plot_image(image=image, mask=mask, positions=positions, grid=None, as_subplot=True,
+    imaging_plotters.plot_image(image=image, mask=mask, positions=positions, image_plane_pix_grid=None, as_subplot=True,
                                 units=units, kpc_per_arcsec=None, xyticksize=16,
                                 norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
                                 figsize=None, aspect='equal', cmap='jet', cb_ticksize=10,

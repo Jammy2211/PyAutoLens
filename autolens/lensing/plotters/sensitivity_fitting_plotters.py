@@ -35,7 +35,7 @@ def plot_fitting_subplot(fit, should_plot_mask=True, positions=None,
 
     kpc_per_arcsec = fit.tracer_normal.image_plane.kpc_per_arcsec_proper
 
-    imaging_plotters.plot_image(image=fit.fit_normal.images[0], mask=mask, positions=positions, grid=None,
+    imaging_plotters.plot_image(image=fit.fit_normal.images[0], mask=mask, positions=positions, image_plane_pix_grid=None,
                                 as_subplot=True,
                                 units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
                                 cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,

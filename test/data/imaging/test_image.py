@@ -1144,6 +1144,7 @@ class TestPoissonNoiseMap(object):
 
 
 class TestPSF(object):
+
     class TestConstructors(object):
 
         def test__init__input_psf_3x3__all_attributes_correct_including_data_inheritance(self):
@@ -1359,6 +1360,43 @@ class TestPSF(object):
 
             assert profile_psf == pytest.approx(imaging_psf, 1e-4)
 
+    class TestSimulateAsAlmaGaussian(object):
+
+        def test__identical_to_astropy_gaussian_model__circular_no_rotation(self):
+
+            from astropy.modeling import functional_models
+            from astropy import units
+
+            pixel_scale = 0.1
+            y_stddev = 2.0e-5
+            x_stddev = 2.0e-5
+
+            x_stddev = x_stddev * (units.deg).to(units.arcsec) / pixel_scale / (2.0 * np.sqrt(2.0 * np.log(2.0)))
+            y_stddev = y_stddev * (units.deg).to(units.arcsec) / pixel_scale / (2.0 * np.sqrt(2.0 * np.log(2.0)))
+
+            print(x_stddev)
+            print(y_stddev)
+
+            shape = (3, 3)
+            y_mean = 1.0
+            x_mean = 1.0
+            print(y_mean, x_mean)
+
+            theta = 0.0
+
+            gaussian_astropy = functional_models.Gaussian2D(amplitude=1.0, x_mean=x_mean, y_mean=y_mean,
+                                                            x_stddev=x_stddev, y_stddev=y_stddev, theta=theta)
+
+            y, x = np.mgrid[0:shape[1], 0:shape[0]]
+            psf_astropy = gaussian_astropy(x, y)
+            psf_astropy /= np.sum(psf_astropy)
+
+            print(psf_astropy)
+
+            gaussian = image.PSF.simulate_as_gaussian_via_alma_fits_header_parameters(shape=shape, pixel_scale=0.1,
+                        y_stddev=y_stddev, x_stddev=x_stddev, theta=theta)
+
+            print(gaussian)
 
 class TestExposureTimeMap(object):
 
