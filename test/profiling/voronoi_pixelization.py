@@ -5,6 +5,7 @@ import time
 
 from autolens.data.array import mask as ma
 from autolens.data.imaging import image as im
+from autolens.data.imaging.plotters import imaging_plotters
 from autolens.model.profiles import light_profiles as lp, mass_profiles as mp
 from autolens.data.array import grids
 from autolens.model.galaxy import galaxy as g

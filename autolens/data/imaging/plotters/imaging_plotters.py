@@ -5,6 +5,7 @@ from autolens.data.array.plotters import plotter_util, array_plotters
 
 
 def plot_image_subplot(image, plot_origin=True, mask=None, should_plot_border=False, positions=None,
+                       image_plane_pix_grid=None,
                        units='arcsec', kpc_per_arcsec=None, figsize=None, aspect='equal',
                        cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
                        cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
@@ -44,7 +45,7 @@ def plot_image_subplot(image, plot_origin=True, mask=None, should_plot_border=Fa
         plt.subplot(rows, columns, 1)
 
         plot_image(image=image, plot_origin=plot_origin, mask=mask, should_plot_border=should_plot_border,
-                   positions=positions, grid=None, as_subplot=True,
+                   positions=positions, image_plane_pix_grid=image_plane_pix_grid, as_subplot=True,
                    units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
                    cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
                    cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
@@ -134,7 +135,8 @@ def plot_image_individual(image, plot_origin=True, mask=None, positions=None, ou
                                  output_format=output_format)
 
 
-def plot_image(image, plot_origin=True, mask=None, should_plot_border=False, positions=None, grid=None, as_subplot=False,
+def plot_image(image, plot_origin=True, mask=None, should_plot_border=False, positions=None,
+               image_plane_pix_grid=None, as_subplot=False,
                units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
                cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
                cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
@@ -145,7 +147,7 @@ def plot_image(image, plot_origin=True, mask=None, should_plot_border=False, pos
     origin = get_origin(image=image, plot_origin=plot_origin)
 
     array_plotters.plot_array(array=image, origin=origin, mask=mask, should_plot_border=should_plot_border,
-                              positions=positions, grid=grid, as_subplot=as_subplot,
+                              positions=positions, grid=image_plane_pix_grid, as_subplot=as_subplot,
                               units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
                               cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max,
                               linthresh=linthresh, linscale=linscale,

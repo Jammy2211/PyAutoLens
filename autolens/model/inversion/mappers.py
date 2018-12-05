@@ -133,6 +133,10 @@ class RectangularMapper(Mapper):
         super(RectangularMapper, self).__init__(pixels, grids, border)
 
     @property
+    def is_image_plane_pixelization(self):
+        return False
+
+    @property
     def regular_to_pix(self):
         """The 1D index mappings between the regular pixels and rectangular pixelization pixels."""
         return self.geometry.grid_arc_seconds_to_grid_pixel_indexes(grid_arc_seconds=self.grids.regular)
@@ -172,6 +176,10 @@ class VoronoiMapper(Mapper):
         self.voronoi = voronoi
         self.geometry = geometry
         super(VoronoiMapper, self).__init__(pixels, grids, border)
+
+    @property
+    def is_image_plane_pixelization(self):
+        return True
 
     @property
     def regular_to_pix(self):

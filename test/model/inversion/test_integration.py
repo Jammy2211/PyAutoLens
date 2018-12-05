@@ -27,6 +27,7 @@ class TestRectangular:
 
         mapper = pix.mapper_from_grids_and_border(grids=data_grids, border=None)
 
+        assert mapper.is_image_plane_pixelization == False
         assert mapper.geometry.shape_arc_seconds == pytest.approx((2.0, 2.0), 1.0e-4)
         assert mapper.geometry.origin == pytest.approx((0.0, 0.0), 1.0e-4)
 
@@ -79,6 +80,7 @@ class TestRectangular:
 
         mapper = pix.mapper_from_grids_and_border(grids=data_grids, border=None)
 
+        assert mapper.is_image_plane_pixelization == False
         assert mapper.geometry.shape_arc_seconds == pytest.approx((2.2, 2.2), 1.0e-4)
         assert mapper.geometry.origin == pytest.approx((0.0, 0.0), 1.0e-4)
 
@@ -135,6 +137,7 @@ class TestRectangular:
 
         mapper = pix.mapper_from_grids_and_border(grids=data_grids, border=None)
 
+        assert mapper.is_image_plane_pixelization == False
         assert mapper.geometry.shape_arc_seconds == pytest.approx((2.0, 2.0), 1.0e-4)
         assert mapper.geometry.origin == pytest.approx((0.0, 0.0), 1.0e-4)
 
@@ -176,6 +179,7 @@ class TestRectangular:
 
         mapper = pix.mapper_from_grids_and_border(data_grids, border)
 
+        assert mapper.is_image_plane_pixelization == False
         assert mapper.geometry.shape_arc_seconds == pytest.approx((2.0, 2.0), 1.0e-4)
         assert mapper.geometry.origin == pytest.approx((0.0, 0.0), 1.0e-4)
 
@@ -229,6 +233,7 @@ class TestImagePlanePixelization:
 
         mapper = pix.mapper_from_grids_and_border(grids=data_grids, border=None)
 
+        assert mapper.is_image_plane_pixelization == True
         assert mapper.geometry.shape_arc_seconds == pytest.approx((2.0, 2.0), 1.0e-4)
         assert (mapper.geometry.pixel_centres == image_plane_pix.sparse_grid).all()
         assert mapper.geometry.origin == pytest.approx((0.0, 0.0), 1.0e-4)
@@ -285,6 +290,7 @@ class TestImagePlanePixelization:
 
         mapper = pix.mapper_from_grids_and_border(grids=data_grids, border=None)
 
+        assert mapper.is_image_plane_pixelization == True
         assert mapper.geometry.shape_arc_seconds == pytest.approx((2.0, 2.0), 1.0e-4)
         assert (mapper.geometry.pixel_centres == image_plane_pix.sparse_grid).all()
         assert mapper.geometry.origin == pytest.approx((0.0, 0.0), 1.0e-4)
@@ -336,6 +342,7 @@ class TestImagePlanePixelization:
 
         mapper = pix.mapper_from_grids_and_border(grids=data_grids, border=None)
 
+        assert mapper.is_image_plane_pixelization == True
         assert mapper.geometry.shape_arc_seconds == pytest.approx((2.02, 2.01), 1.0e-4)
         assert (mapper.geometry.pixel_centres == image_plane_pix.sparse_grid).all()
         assert mapper.geometry.origin == pytest.approx((0.0, 0.005), 1.0e-4)
@@ -379,6 +386,7 @@ class TestAdaptiveMagnification:
 
         mapper = pix.mapper_from_grids_and_border(grids=data_grids, border=None)
 
+        assert mapper.is_image_plane_pixelization == True
         assert mapper.geometry.shape_arc_seconds == pytest.approx((2.0, 2.0), 1.0e-4)
         assert (mapper.geometry.pixel_centres == regular_grid).all()
         assert mapper.geometry.origin == (0.0, 0.0)
@@ -428,6 +436,7 @@ class TestAdaptiveMagnification:
 
         mapper = pix.mapper_from_grids_and_border(grids=data_grids, border=None)
 
+        assert mapper.is_image_plane_pixelization == True
         assert mapper.geometry.shape_arc_seconds == pytest.approx((2.2, 2.2), 1.0e-4)
         assert (mapper.geometry.pixel_centres == pixel_centers).all()
         assert mapper.geometry.origin == (0.0, 0.0)
@@ -486,6 +495,7 @@ class TestAdaptiveMagnification:
 
         mapper = pix.mapper_from_grids_and_border(grids=data_grids, border=None)
 
+        assert mapper.is_image_plane_pixelization == True
         assert mapper.geometry.shape_arc_seconds == pytest.approx((2.0, 2.0), 1.0e-4)
         assert (mapper.geometry.pixel_centres == pixel_centers).all()
         assert mapper.geometry.origin == (0.0, 0.0)
@@ -529,6 +539,7 @@ class TestAdaptiveMagnification:
 
         mapper = pix.mapper_from_grids_and_border(grids=data_grids, border=border)
 
+        assert mapper.is_image_plane_pixelization == True
         assert mapper.geometry.shape_arc_seconds == pytest.approx((2.0, 2.0), 1.0e-4)
         assert mapper.geometry.pixel_centres == pytest.approx(regular_grid, 1e-4)
         assert mapper.geometry.origin == (0.0, 0.0)
