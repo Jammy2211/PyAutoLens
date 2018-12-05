@@ -75,6 +75,16 @@ class TestMask(object):
 
         assert (msk == msk_util).all()
 
+    def test__mask_elliptical__compare_to_array_util(self):
+
+        msk_util = mask_util.mask_elliptical_from_shape_pixel_scale_and_radius(shape=(8, 5), pixel_scale=2.7,
+                        major_axis_radius_arcsec=5.7, axis_ratio=0.4, phi=40.0, centre=(1.0, 1.0))
+
+        msk = mask.Mask.elliptical(shape=(8, 5), pixel_scale=2.7,
+                        major_axis_radius_arcsec=5.7, axis_ratio=0.4, phi=40.0, centre=(1.0, 1.0))
+
+        assert (msk == msk_util).all()
+
     def test__grid_to_pixel__compare_to_array_utill(self):
         msk = np.array([[True, True, True],
                         [True, False, False],

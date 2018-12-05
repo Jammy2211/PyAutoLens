@@ -123,6 +123,36 @@ def mask_anti_annular_from_shape_pixel_scale_and_radii(shape, pixel_scale, inner
     return mask
 
 @numba.jit(nopython=True, cache=True)
+def mask_elliptical_from_shape_pixel_scale_and_radius(shape, pixel_scale, major_axis_radius_arcsec, axis_ratio, phi,
+                                                      centre=(0.0, 0.0)):
+    """Compute a circular masks from an input masks radius and regular shape."""
+
+    mask = np.full(shape, True)
+
+    y_cen, x_cen = mask_centres_from_shape_pixel_scale_and_centre(shape=mask.shape, pixel_scale=pixel_scale,
+                                                                  centre=centre)
+
+    for y in range(mask.shape[0]):
+        for x in range(mask.shape[1]):
+
+            y_arcsec = (y - y_cen) * pixel_scale
+            x_arcsec = (x - x_cen) * pixel_scale
+
+            r_arcsec = np.sqrt(x_arcsec ** 2 + y_arcsec ** 2)
+
+            theta_rotated = np.arctan2(y_arcsec, x_arcsec) + np.radians(phi)
+
+            y_arcsec_elliptical = r_arcsec * np.sin(theta_rotated)
+            x_arcsec_elliptical = r_arcsec * np.cos(theta_rotated)
+
+            r_arcsec_elliptical = np.sqrt(x_arcsec_elliptical**2.0 + (y_arcsec_elliptical/axis_ratio)**2.0)
+
+            if r_arcsec_elliptical <= major_axis_radius_arcsec:
+                mask[y, x] = False
+
+    return mask
+
+@numba.jit(nopython=True, cache=True)
 def mask_blurring_from_mask_and_psf_shape(mask, psf_shape):
     """Compute a blurring masks from an input masks and psf shape.
 
