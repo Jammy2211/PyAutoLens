@@ -61,9 +61,14 @@ def make_pipeline(pipeline_name):
     class MMPhase(ph.LensPlanePhase):
 
         def pass_priors(self, previous_results):
+            print(self.lens_galaxies.lens.sersic.intensity.lower_limit)
+            print(self.lens_galaxies.lens.sersic.intensity.upper_limit)
+            self.lens_galaxies.lens.sersic.intensity = previous_results[0].variable.lens.sersic.intensity
+            print(self.lens_galaxies.lens.sersic.intensity.lower_limit)
+            print(self.lens_galaxies.lens.sersic.intensity.upper_limit)
             self.lens_galaxies.lens = previous_results[0].variable.lens
-            print(self.lens_galaxies.lens.light.intensity.lower_limit)
-            print(self.lens_galaxies.lens.light_intensity.upper_limit)
+            print(self.lens_galaxies.lens.sersic.intensity.lower_limit)
+            print(self.lens_galaxies.lens.sersic.intensity.upper_limit)
             stop
 
     phase2 = MMPhase(lens_galaxies=dict(lens=gm.GalaxyModel(sersic=lp.EllipticalSersic)),
