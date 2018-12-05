@@ -23,13 +23,13 @@ class DataGrids(object):
         Parameters
         -----------
         regular : RegularGrid
-            The grid of (y,x) arc-second coordinates at the centre of every regular pixel.
+            The grid of (y,x) arc-second coordinates at the centre of every data value (e.g. image-pixels).
         sub : SubGrid
-            The grid of (y,x) arc-second coordinates at the ccentre of every regular pixel's sub-pixels.
+            The grid of (y,x) arc-second coordinates at the centre of every regular pixel's sub-pixels.
         blurring : RegularGrid | ndarray | None
-            The grid of (y,x) arc-second coordinates at the origin of every blurring-masks pixel.
+            The grid of (y,x) arc-second coordinates at the centre of every blurring-mask pixel.
         pix : RegularGrid | ndarray | None
-            The grid of (y,x) arc-second coordinates of every regular-plane pixelization grid used for adaptive source \
+            The grid of (y,x) arc-second coordinates of every image-plane pixelization grid used for adaptive source \
             -plane pixelizations.
         """
         self.regular = regular
