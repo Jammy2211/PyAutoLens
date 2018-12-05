@@ -20,7 +20,7 @@ class RayTracingException(exc.FitException):
     pass
 
 
-class PixelizationException(Exception):
+class PixelizationException(exc.FitException):
     pass
 
 
