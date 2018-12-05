@@ -116,6 +116,27 @@ class Mask(scaled_array.ScaledSquarePixelArray):
                                                                             outer_radius_2_arcsec, origin)
         return cls(mask, pixel_scale)
 
+    @classmethod
+    def elliptical(cls, shape, pixel_scale, major_axis_radius_arcsec, axis_ratio, phi, centre=(0., 0.)):
+        """
+        Setup the masks as a ellipse, using a specified arc second major axis, axis-ratio and rotation angle phi \
+        defined counter-clockwise from the positive x-axis.
+
+        Parameters
+        ----------
+        shape: (int, int)
+            The (y,x) shape of the masks in units of pixels.
+        pixel_scale: float
+            The arc-second to pixel conversion factor of each pixel.
+        radius_mask_arcsec : float
+            The radius of the circular masks in arc seconds.
+        centre: (float, float)
+            The origin of the masks.
+        """
+        mask = mask_util.mask_elliptical_from_shape_pixel_scale_and_radius(shape, pixel_scale, major_axis_radius_arcsec,
+                                                                          axis_ratio, phi, centre)
+        return cls(mask.astype('bool'), pixel_scale, origin=(0.0, 0.0))
+
     @property
     def pixels_in_mask(self):
         return int(np.size(self) - np.sum(self))
