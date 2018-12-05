@@ -1390,7 +1390,8 @@ class TestLoadImagingFromFits(object):
 
         im = image.load_imaging_from_fits(image_path=test_data_dir + '3x3_ones.fits', pixel_scale=0.1,
                                           psf_path=test_data_dir + '3x3_twos.fits',
-                                          noise_map_path=test_data_dir + '3x3_threes.fits')
+                                          noise_map_path=test_data_dir + '3x3_threes.fits',
+                                          renormalize_psf=False)
 
         assert (im == np.ones((3,3))).all()
         assert (im.psf == 2.0*np.ones((3,3))).all()
@@ -1412,7 +1413,8 @@ class TestLoadImagingFromFits(object):
                                           background_noise_map_path=test_data_dir + '3x3_fours.fits',
                                           poisson_noise_map_path=test_data_dir + '3x3_fives.fits',
                                           exposure_time_map_path=test_data_dir + '3x3_sixes.fits',
-                                          background_sky_map_path=test_data_dir + '3x3_sevens.fits')
+                                          background_sky_map_path=test_data_dir + '3x3_sevens.fits',
+                                          renormalize_psf=False)
 
         assert (im == np.ones((3,3))).all()
         assert (im.psf == 2.0*np.ones((3,3))).all()
@@ -1443,7 +1445,8 @@ class TestLoadImagingFromFits(object):
                                           exposure_time_map_path=test_data_dir + '3x3_multiple_hdu.fits',
                                           exposure_time_map_hdu=5,
                                           background_sky_map_path = test_data_dir + '3x3_multiple_hdu.fits',
-                                          background_sky_map_hdu=6)
+                                          background_sky_map_hdu=6,
+                                          renormalize_psf=False)
 
 
         assert (im == np.ones((3,3))).all()
@@ -1467,7 +1470,8 @@ class TestLoadImagingFromFits(object):
         im = image.load_imaging_from_fits(image_path=test_data_dir + '3x3_ones.fits',
                                           noise_map_path=test_data_dir + '3x3_ones.fits',
                                           psf_path=test_data_dir + '3x3_ones.fits', pixel_scale=0.1,
-                                          exposure_time_map_from_single_value=3.0)
+                                          exposure_time_map_from_single_value=3.0,
+                                          renormalize_psf=False)
 
         assert (im.exposure_time_map == 3.0*np.ones((3,3))).all()
 
@@ -1477,7 +1481,9 @@ class TestLoadImagingFromFits(object):
                                           psf_path=test_data_dir + '3x3_twos.fits',
                                           noise_map_path=test_data_dir + '3x3_threes.fits',
                                           background_noise_map_path=test_data_dir + '3x3_fours.fits',
-                                          exposure_time_map_from_single_value=3.0, exposure_time_map_from_background_noise_map=True)
+                                          exposure_time_map_from_single_value=3.0,
+                                          exposure_time_map_from_background_noise_map=True,
+                                          renormalize_psf=False)
 
         assert (im.exposure_time_map == 3.0*np.ones((3,3))).all()
 
@@ -1485,7 +1491,9 @@ class TestLoadImagingFromFits(object):
                                           psf_path=test_data_dir + '3x3_twos.fits',
                                           noise_map_path=test_data_dir + '3x3_threes.fits',
                                           background_noise_map_path=test_data_dir + '3x3_fours.fits',
-                                          exposure_time_map_from_single_value=6.0, exposure_time_map_from_background_noise_map=True)
+                                          exposure_time_map_from_single_value=6.0,
+                                          exposure_time_map_from_background_noise_map=True,
+                                          renormalize_psf=False)
 
         assert (im.exposure_time_map == 6.0*np.ones((3,3))).all()
 
@@ -1498,7 +1506,8 @@ class TestLoadImagingFromFits(object):
                                           poisson_noise_map_path=test_data_dir + '3x3_fives.fits',
                                           exposure_time_map_path=test_data_dir + '3x3_sixes.fits',
                                           background_sky_map_path=test_data_dir + '3x3_sevens.fits',
-                                          resized_image_shape=(5,5), resized_psf_shape=(7,7))
+                                          resized_image_shape=(5,5), resized_psf_shape=(7,7),
+                                          renormalize_psf=False)
 
         padded_array = np.array([[0.0, 0.0, 0.0, 0.0, 0.0],
                                  [0.0, 1.0, 1.0, 1.0, 0.0],
@@ -1534,7 +1543,8 @@ class TestLoadImagingFromFits(object):
                                           psf_path=test_data_dir + '3x3_twos.fits',
                                           noise_map_path=test_data_dir + '3x3_threes.fits',
                                           exposure_time_map_from_single_value=3.0, pixel_scale=0.1,
-                                          resized_image_shape=(5, 5), resized_psf_shape=(7, 7))
+                                          resized_image_shape=(5, 5), resized_psf_shape=(7, 7),
+                                          renormalize_psf=False)
 
         exposure_padded_array = np.array([[0.0, 0.0, 0.0, 0.0, 0.0],
                                  [0.0, 3.0, 3.0, 3.0, 0.0],
@@ -1554,7 +1564,8 @@ class TestLoadImagingFromFits(object):
                                           poisson_noise_map_path=test_data_dir + '3x3_fives.fits',
                                           exposure_time_map_path=test_data_dir + '3x3_sixes.fits',
                                           background_sky_map_path=test_data_dir + '3x3_sevens.fits',
-                                          resized_image_shape=(1,1), resized_psf_shape=(1,1))
+                                          resized_image_shape=(1,1), resized_psf_shape=(1,1),
+                                          renormalize_psf=False)
 
         trimmed_array = np.array([[1.0]])
 
@@ -1583,7 +1594,8 @@ class TestLoadImagingFromFits(object):
                                           poisson_noise_map_path=test_data_dir + '3x3_fives.fits',
                                           exposure_time_map_path=test_data_dir + '3x3_sixes.fits',
                                           background_sky_map_path=test_data_dir + '3x3_sevens.fits',
-                                          convert_noise_map_from_weight_map=True)
+                                          convert_noise_map_from_weight_map=True,
+                                          renormalize_psf=False)
 
         noise_map_converted = image.NoiseMap.from_weight_map(weight_map=3.0 * np.ones((3, 3)), pixel_scale=0.1)
 
@@ -1612,7 +1624,8 @@ class TestLoadImagingFromFits(object):
                                           poisson_noise_map_path=test_data_dir + '3x3_fives.fits',
                                           exposure_time_map_path=test_data_dir + '3x3_sixes.fits',
                                           background_sky_map_path=test_data_dir + '3x3_sevens.fits',
-                                          convert_noise_map_from_inverse_noise_map=True)
+                                          convert_noise_map_from_inverse_noise_map=True,
+                                          renormalize_psf=False)
 
         noise_map_converted = image.NoiseMap.from_inverse_noise_map(inverse_noise_map=3.0 * np.ones((3, 3)),
                                                                     pixel_scale=0.1)
@@ -1641,7 +1654,8 @@ class TestLoadImagingFromFits(object):
                                           background_noise_map_path=test_data_dir + '3x3_fours.fits',
                                           poisson_noise_map_path=test_data_dir + '3x3_fives.fits',
                                           exposure_time_map_path=test_data_dir + '3x3_sixes.fits',
-                                          background_sky_map_path=test_data_dir + '3x3_sevens.fits')
+                                          background_sky_map_path=test_data_dir + '3x3_sevens.fits',
+                                          renormalize_psf=False)
 
         noise_map_converted = image.NoiseMap.from_image_and_background_noise_map(pixel_scale=0.1, image=im,
                                                                                  background_noise_map=im.background_noise_map,
@@ -1673,12 +1687,12 @@ class TestLoadImagingFromFits(object):
                                           poisson_noise_map_path=test_data_dir + '3x3_fives.fits',
                                           exposure_time_map_path=test_data_dir + '3x3_sixes.fits',
                                           background_sky_map_path=test_data_dir + '3x3_sevens.fits',
-                                          convert_from_counts=True)
+                                          convert_from_counts=True,
+                                          renormalize_psf=False)
 
         noise_map_converted = image.NoiseMap.from_image_and_background_noise_map(pixel_scale=0.1,
-                                                                                 image=im*im.exposure_time_map,
-                                                                                 background_noise_map=im.background_noise_map*im.exposure_time_map,
-                                                                                 exposure_time_map=im.exposure_time_map, convert_from_counts=True)
+                image=im*im.exposure_time_map, background_noise_map=im.background_noise_map*im.exposure_time_map,
+                                 exposure_time_map=im.exposure_time_map, convert_from_counts=True)
 
         noise_map_converted = noise_map_converted / 6.0
 
@@ -1708,6 +1722,7 @@ class TestLoadImagingFromFits(object):
                                           poisson_noise_map_path=test_data_dir + '3x3_fives.fits',
                                           exposure_time_map_path=test_data_dir + '3x3_sixes.fits',
                                           background_sky_map_path=test_data_dir + '3x3_sevens.fits',
+                                          renormalize_psf=False,
                                           convert_from_counts=True)
 
         assert (im == np.ones((3,3)) / 6.0).all()
@@ -1735,6 +1750,7 @@ class TestLoadImagingFromFits(object):
                                           poisson_noise_map_path=test_data_dir + '3x3_fives.fits',
                                           exposure_time_map_path=test_data_dir + '3x3_sixes.fits',
                                           background_sky_map_path=test_data_dir + '3x3_sevens.fits',
+                                          renormalize_psf=False,
                                           convert_background_noise_map_from_weight_map=True)
 
         background_noise_map_converted = image.NoiseMap.from_weight_map(weight_map=4.0 * np.ones((3, 3)), pixel_scale=0.1)
@@ -1764,6 +1780,7 @@ class TestLoadImagingFromFits(object):
                                           poisson_noise_map_path=test_data_dir + '3x3_fives.fits',
                                           exposure_time_map_path=test_data_dir + '3x3_sixes.fits',
                                           background_sky_map_path=test_data_dir + '3x3_sevens.fits',
+                                          renormalize_psf=False,
                                           convert_background_noise_map_from_inverse_noise_map=True)
 
         background_noise_map_converted = image.NoiseMap.from_inverse_noise_map(inverse_noise_map=4.0 * np.ones((3, 3)),
@@ -1794,6 +1811,7 @@ class TestLoadImagingFromFits(object):
                                           poisson_noise_map_path=test_data_dir + '3x3_fives.fits',
                                           exposure_time_map_path=test_data_dir + '3x3_sixes.fits',
                                           background_sky_map_path=test_data_dir + '3x3_sevens.fits',
+                                          renormalize_psf=False,
                                           poisson_noise_map_from_image=True)
 
         poisson_noise_map_converted = image.PoissonNoiseMap.from_image_and_exposure_time_map(pixel_scale=0.1,
@@ -1825,10 +1843,11 @@ class TestLoadImagingFromFits(object):
                                           poisson_noise_map_path=test_data_dir + '3x3_fives.fits',
                                           exposure_time_map_path=test_data_dir + '3x3_sixes.fits',
                                           background_sky_map_path=test_data_dir + '3x3_sevens.fits',
+                                          renormalize_psf=False,
                                           poisson_noise_map_from_image=True, convert_from_counts=True)
 
         poisson_noise_map_counts = image.PoissonNoiseMap.from_image_and_exposure_time_map(pixel_scale=0.1,
-                                                                                          image=np.ones((3,3)), exposure_time_map=im.exposure_time_map, convert_from_counts=True)
+                   image=np.ones((3,3)), exposure_time_map=im.exposure_time_map, convert_from_counts=True)
 
         poisson_noise_map_converted = poisson_noise_map_counts / 6.0
 
@@ -1858,6 +1877,7 @@ class TestLoadImagingFromFits(object):
                                           poisson_noise_map_path=test_data_dir + '3x3_fives.fits',
                                           exposure_time_map_path=test_data_dir + '3x3_sixes.fits',
                                           background_sky_map_path=test_data_dir + '3x3_sevens.fits',
+                                          renormalize_psf=False,
                                           convert_poisson_noise_map_from_weight_map=True)
 
         poisson_noise_map_converted = image.NoiseMap.from_weight_map(weight_map=5.0 * np.ones((3, 3)), pixel_scale=0.1)
@@ -1887,6 +1907,7 @@ class TestLoadImagingFromFits(object):
                                           poisson_noise_map_path=test_data_dir + '3x3_fives.fits',
                                           exposure_time_map_path=test_data_dir + '3x3_sixes.fits',
                                           background_sky_map_path=test_data_dir + '3x3_sevens.fits',
+                                          renormalize_psf=False,
                                           convert_poisson_noise_map_from_inverse_noise_map=True)
 
         poisson_noise_map_converted = image.NoiseMap.from_inverse_noise_map(inverse_noise_map=5.0 * np.ones((3, 3)),
@@ -1983,7 +2004,8 @@ class TestOutputImagingToFits(object):
                                           background_noise_map_path=test_data_dir + '3x3_fours.fits',
                                           poisson_noise_map_path=test_data_dir + '3x3_fives.fits',
                                           exposure_time_map_path=test_data_dir + '3x3_sixes.fits',
-                                          background_sky_map_path=test_data_dir + '3x3_sevens.fits')
+                                          background_sky_map_path=test_data_dir + '3x3_sevens.fits',
+                                          renormalize_psf=False)
 
         output_data_dir = "{}/../test_files/array/output_test/".format(os.path.dirname(os.path.realpath(__file__)))
         if os.path.exists(output_data_dir):
@@ -2006,7 +2028,8 @@ class TestOutputImagingToFits(object):
                                           background_noise_map_path=output_data_dir + 'background_noise_map.fits',
                                           poisson_noise_map_path=output_data_dir + 'poisson_noise_map.fits',
                                           exposure_time_map_path=output_data_dir + 'exposure_time_map.fits',
-                                          background_sky_map_path=output_data_dir + 'background_sky_map.fits')
+                                          background_sky_map_path=output_data_dir + 'background_sky_map.fits',
+                                          renormalize_psf=False)
 
         assert (im == np.ones((3,3))).all()
         assert (im.psf == 2.0*np.ones((3,3))).all()
