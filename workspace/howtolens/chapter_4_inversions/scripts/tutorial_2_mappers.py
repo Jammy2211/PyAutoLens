@@ -83,8 +83,8 @@ mapper_plotters.plot_image_and_mapper(image=image, mapper=mapper, should_plot_gr
                                       source_pixels=[[0, 1, 2, 3, 4, 5, 6, 7], [620, 621, 622, 623]])
 
 # Lets use an annular masks, which will capture the ring-like shape of the lensed source model_galaxy.
-mask = ma.Mask.annular(shape=image.shape, pixel_scale=image.pixel_scale, inner_radius_arcsec=1.0,
-                       outer_radius_arcsec=2.2)
+mask = ma.Mask.circular_annular(shape=image.shape, pixel_scale=image.pixel_scale, inner_radius_arcsec=1.0,
+                                outer_radius_arcsec=2.2)
 
 # Lets quickly confirm the annuli radii capture the source's light
 #imaging_plotters.plot_image(regular=regular, masks=masks)
