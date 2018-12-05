@@ -70,28 +70,11 @@ class GalaxyData(scaled_array.ScaledSquarePixelArray):
             self.padded_grids = obj.padded_grids
 
     def profile_quantity_from_galaxy_and_sub_grid(self, galaxy, sub_grid):
-        raise NotImplementedError
+        raise NotImplementedError()
 
 
 class GalaxyDataIntensities(GalaxyData):
-
-    def __init__(self, array, noise_map, mask, sub_grid_size=2):
-        """ A galaxy-data collection for fitting two galaxies based on their light-profile intensities.
-
-        see *GalaxyData* for a full description of this class.
-
-        Parameters
-        ----------
-        array : scaled_array.ScaledSquarePixelArray
-            An array of the intensities of the galaxy that is being fitted.
-        noise_map : scaled_array.ScaledSquarePixelArray
-            The noise-map used for computing the likelihood of each fit. This can be chosen arbritarily.
-        mask: msk.Mask
-            The 2D mask that is applied to regular data.
-        sub_grid_size : int
-            The size of the sub-grid used for computing the SubGrid (see imaging.mask.SubGrid).
-        """
-        super().__init__(array=array, noise_map=noise_map, mask=mask, sub_grid_size=sub_grid_size)
+    """ A galaxy-data collection for fitting two galaxies based on their light-profile intensities."""
 
     def profile_quantity_from_galaxy_and_sub_grid(self, galaxy, sub_grid):
         """Generic function so that this galaxy-data type computes the correct profile quantity for the fitting.
@@ -102,24 +85,7 @@ class GalaxyDataIntensities(GalaxyData):
 
 
 class GalaxyDataSurfaceDensity(GalaxyData):
-
-    def __init__(self, array, noise_map, mask, sub_grid_size=2):
-        """ A galaxy-data collection for fitting two galaxies based on their mass-profile surface densities.
-
-        see *GalaxyData* for a full description of this class.
-
-        Parameters
-        ----------
-        array : scaled_array.ScaledSquarePixelArray
-            An array of the surface density of the galaxy that is being fitted.
-        noise_map : scaled_array.ScaledSquarePixelArray
-            The noise-map used for computing the likelihood of each fit. This can be chosen arbritarily.
-        mask: msk.Mask
-            The 2D mask that is applied to regular data.
-        sub_grid_size : int
-            The size of the sub-grid used for computing the SubGrid (see imaging.mask.SubGrid).
-        """
-        super().__init__(array=array, noise_map=noise_map, mask=mask, sub_grid_size=sub_grid_size)
+    """ A galaxy-data collection for fitting two galaxies based on their mass-profile surface densities."""
 
     def profile_quantity_from_galaxy_and_sub_grid(self, galaxy, sub_grid):
         """Generic function so that this galaxy-data type computes the correct profile quantity for the fitting.
@@ -130,24 +96,7 @@ class GalaxyDataSurfaceDensity(GalaxyData):
 
 
 class GalaxyDataPotential(GalaxyData):
-
-    def __init__(self, array, noise_map, mask, sub_grid_size=2):
-        """ A galaxy-data collection for fitting two galaxies based on their mass-profile potentials.
-
-        see *GalaxyData* for a full description of this class.
-
-        Parameters
-        ----------
-        array : scaled_array.ScaledSquarePixelArray
-            An array of the potential of the galaxy that is being fitted.
-        noise_map : scaled_array.ScaledSquarePixelArray
-            The noise-map used for computing the likelihood of each fit. This can be chosen arbritarily.
-        mask: msk.Mask
-            The 2D mask that is applied to regular data.
-        sub_grid_size : int
-            The size of the sub-grid used for computing the SubGrid (see imaging.mask.SubGrid).
-        """
-        super().__init__(array=array, noise_map=noise_map, mask=mask, sub_grid_size=sub_grid_size)
+    """ A galaxy-data collection for fitting two galaxies based on their mass-profile potentials."""
 
     def profile_quantity_from_galaxy_and_sub_grid(self, galaxy, sub_grid):
         """Generic function so that this galaxy-data type computes the correct profile quantity for the fitting.
@@ -158,24 +107,7 @@ class GalaxyDataPotential(GalaxyData):
 
 
 class GalaxyDataDeflectionsY(GalaxyData):
-
-    def __init__(self, array, noise_map, mask, sub_grid_size=2):
-        """ A galaxy-data collection for fitting two galaxies based on their mass-profile (y) deflection angles.
-
-        see *GalaxyData* for a full description of this class.
-
-        Parameters
-        ----------
-        array : scaled_array.ScaledSquarePixelArray
-            An array of the (y) deflection angles of the galaxy that is being fitted.
-        noise_map : scaled_array.ScaledSquarePixelArray
-            The noise-map used for computing the likelihood of each fit. This can be chosen arbritarily.
-        mask: msk.Mask
-            The 2D mask that is applied to regular data.
-        sub_grid_size : int
-            The size of the sub-grid used for computing the SubGrid (see imaging.mask.SubGrid).
-        """
-        super().__init__(array=array, noise_map=noise_map, mask=mask, sub_grid_size=sub_grid_size)
+    """ A galaxy-data collection for fitting two galaxies based on their mass-profile (y) deflection angles."""
 
     def profile_quantity_from_galaxy_and_sub_grid(self, galaxy, sub_grid):
         """Generic function so that this galaxy-data type computes the correct profile quantity for the fitting.
@@ -187,24 +119,7 @@ class GalaxyDataDeflectionsY(GalaxyData):
 
 
 class GalaxyDataDeflectionsX(GalaxyData):
-
-    def __init__(self, array, noise_map, mask, sub_grid_size=2):
-        """ A galaxy-data collection for fitting two galaxies based on their mass-profile (x) deflection angles.
-
-        see *GalaxyData* for a full description of this class.
-
-        Parameters
-        ----------
-        array : scaled_array.ScaledSquarePixelArray
-            An array of the (x) deflection angles of the galaxy that is being fitted.
-        noise_map : scaled_array.ScaledSquarePixelArray
-            The noise-map used for computing the likelihood of each fit. This can be chosen arbritarily.
-        mask: msk.Mask
-            The 2D mask that is applied to regular data.
-        sub_grid_size : int
-            The size of the sub-grid used for computing the SubGrid (see imaging.mask.SubGrid).
-        """
-        super().__init__(array=array, noise_map=noise_map, mask=mask, sub_grid_size=sub_grid_size)
+    """ A galaxy-data collection for fitting two galaxies based on their mass-profile (x) deflection angles."""
 
     def profile_quantity_from_galaxy_and_sub_grid(self, galaxy, sub_grid):
         """Generic function so that this galaxy-data type computes the correct profile quantity for the fitting.
