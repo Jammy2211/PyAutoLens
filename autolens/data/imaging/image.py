@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 class Image(ScaledSquarePixelArray):
 
     def __init__(self, array, pixel_scale, psf, noise_map=None, background_noise_map=None, poisson_noise_map=None,
-                 exposure_time_map=None, background_sky_map=None, **kwargs):
+                 exposure_time_map=None, background_sky_map=None, gain=None, **kwargs):
         """
         A 2d array representing a real or simulated data.
 
@@ -52,10 +52,11 @@ class Image(ScaledSquarePixelArray):
         self.poisson_noise_map = poisson_noise_map
         self.exposure_time_map = exposure_time_map
         self.background_sky_map = background_sky_map
+        self.gain = gain
         self.origin = (0.0, 0.0)
 
     @classmethod
-    def simulate(cls, array, pixel_scale, exposure_time, psf=None, background_sky_level=None,
+    def simulate(cls, array, pixel_scale, exposure_time, gain, psf=None, background_sky_level=None,
                  add_noise=False, seed=-1):
 
         exposure_time_map = ScaledSquarePixelArray.single_value(value=exposure_time, shape=array.shape,
@@ -67,12 +68,12 @@ class Image(ScaledSquarePixelArray):
             background_sky_map = None
 
         return cls.simulate_variable_arrays(array=array, pixel_scale=pixel_scale,
-                                            exposure_time_map=exposure_time_map, psf=psf,
+                                            exposure_time_map=exposure_time_map, gain=gain, psf=psf,
                                             background_sky_map=background_sky_map,
                                             add_noise=add_noise, seed=seed)
 
     @classmethod
-    def simulate_variable_arrays(cls, array, pixel_scale, exposure_time_map, psf=None, background_sky_map=None,
+    def simulate_variable_arrays(cls, array, pixel_scale, exposure_time_map, gain, psf=None, background_sky_map=None,
                                  add_noise=True, seed=-1):
         """
         Create a realistic simulated data by applying effects to a plain simulated data.
@@ -107,9 +108,9 @@ class Image(ScaledSquarePixelArray):
                 background_sky_map = cls.trim_psf_edges(background_sky_map, psf)
 
         if add_noise is True:
-            array += generate_poisson_noise(array, exposure_time_map, seed)
-            array_counts = np.multiply(array, exposure_time_map)
-            noise_map = np.divide(np.sqrt(array_counts), exposure_time_map)
+            array += generate_poisson_noise(array, exposure_time_map, gain, seed)
+            array_counts = np.multiply(array, exposure_time_map/gain)
+            noise_map = np.divide(np.sqrt(array_counts), exposure_time_map*gain)
         else:
             noise_map = None
 
@@ -411,23 +412,24 @@ class NoiseMap(ScaledSquarePixelArray):
         return NoiseMap(array=noise_map, pixel_scale=pixel_scale)
 
     @classmethod
-    def from_image_and_background_noise_map(cls, pixel_scale, image, background_noise_map, exposure_time_map,
-                                            convert_from_counts=False):
-        if not convert_from_counts:
-            return NoiseMap(array=np.sqrt(np.abs((background_noise_map*exposure_time_map)**2.0 +
-                                          image*exposure_time_map)) / exposure_time_map,
+    def from_image_and_background_noise_map(cls, pixel_scale, image, background_noise_map, exposure_time_map, gain,
+                                            convert_from_adus=False):
+        if not convert_from_adus:
+            return NoiseMap(array=np.sqrt(np.abs(((background_noise_map/gain)*exposure_time_map)**2.0 +
+                                                 (image/gain)*exposure_time_map)) / (exposure_time_map*gain),
                             pixel_scale=pixel_scale)
-        elif convert_from_counts:
+        elif convert_from_adus:
             return NoiseMap(array=np.sqrt(np.abs(background_noise_map**2.0 + image)), pixel_scale=pixel_scale)
 
 
 class PoissonNoiseMap(NoiseMap):
 
     @classmethod
-    def from_image_and_exposure_time_map(cls, pixel_scale, image, exposure_time_map, convert_from_counts=False):
-        if not convert_from_counts:
-            return PoissonNoiseMap(array=np.sqrt(image*exposure_time_map), pixel_scale=pixel_scale)
-        elif convert_from_counts:
+    def from_image_and_exposure_time_map(cls, pixel_scale, image, exposure_time_map, gain, convert_from_adus=False):
+        if not convert_from_adus:
+            return PoissonNoiseMap(array=np.sqrt((image/gain)*exposure_time_map) / (exposure_time_map*gain),
+                                   pixel_scale=pixel_scale)
+        elif convert_from_adus:
             return PoissonNoiseMap(array=np.sqrt(image), pixel_scale=pixel_scale)
 
 
@@ -568,7 +570,7 @@ def setup_random_seed(seed):
     np.random.seed(seed)
 
 
-def generate_poisson_noise(image, exposure_time_map, seed=-1):
+def generate_poisson_noise(image, exposure_time_map, gain, seed=-1):
     """
     Generate a two-dimensional poisson noise_map-mappers from an data.
 
@@ -589,8 +591,8 @@ def generate_poisson_noise(image, exposure_time_map, seed=-1):
         An array describing simulated poisson noise_map
     """
     setup_random_seed(seed)
-    image_counts = np.multiply(image, exposure_time_map)
-    return image - np.divide(np.random.poisson(image_counts, image.shape), exposure_time_map)
+    image_counts = np.multiply(image/gain, exposure_time_map)
+    return image - np.divide(np.random.poisson(image_counts, image.shape), exposure_time_map*gain)
 
 
 def load_imaging_from_fits(image_path, pixel_scale, image_hdu=0,
@@ -612,7 +614,7 @@ def load_imaging_from_fits(image_path, pixel_scale, image_hdu=0,
                            exposure_time_map_from_single_value=None,
                            exposure_time_map_from_background_noise_map=False,
                            background_sky_map_path=None, background_sky_map_hdu=0,
-                           convert_from_counts=False):
+                           gain=None, convert_from_adus=False):
     """Factory for loading the imaging data from a .fits file, as well as computing other properties like the noise-map,
     exposure-time map, etc. from the existing data.
 
@@ -708,21 +710,21 @@ def load_imaging_from_fits(image_path, pixel_scale, image_hdu=0,
                            background_noise_map=background_noise_map)
 
     poisson_noise_map = load_poisson_noise_map(poisson_noise_map_path=poisson_noise_map_path,
-                   poisson_noise_map_hdu=poisson_noise_map_hdu,
-                   pixel_scale=pixel_scale,
-                   convert_poisson_noise_map_from_weight_map=convert_poisson_noise_map_from_weight_map,
-                   convert_poisson_noise_map_from_inverse_noise_map=convert_poisson_noise_map_from_inverse_noise_map,
-                   image=image, exposure_time_map=exposure_time_map,
-                   poisson_noise_map_from_image=poisson_noise_map_from_image,
-                   convert_from_counts=convert_from_counts)
+                                               poisson_noise_map_hdu=poisson_noise_map_hdu,
+                                               pixel_scale=pixel_scale,
+                                               convert_poisson_noise_map_from_weight_map=convert_poisson_noise_map_from_weight_map,
+                                               convert_poisson_noise_map_from_inverse_noise_map=convert_poisson_noise_map_from_inverse_noise_map,
+                                               image=image, exposure_time_map=exposure_time_map, gain=gain,
+                                               poisson_noise_map_from_image=poisson_noise_map_from_image,
+                                               convert_from_adus=convert_from_adus)
 
     noise_map = load_noise_map(noise_map_path=noise_map_path, noise_map_hdu=noise_map_hdu, pixel_scale=pixel_scale,
-                       image=image, background_noise_map=background_noise_map,
-                       exposure_time_map=exposure_time_map,
-                       convert_noise_map_from_weight_map=convert_noise_map_from_weight_map,
-                       convert_noise_map_from_inverse_noise_map=convert_noise_map_from_inverse_noise_map,
-                       noise_map_from_image_and_background_noise_map=noise_map_from_image_and_background_noise_map,
-                       convert_from_counts=convert_from_counts)
+                               image=image, background_noise_map=background_noise_map,
+                               exposure_time_map=exposure_time_map,
+                               convert_noise_map_from_weight_map=convert_noise_map_from_weight_map,
+                               convert_noise_map_from_inverse_noise_map=convert_noise_map_from_inverse_noise_map,
+                               noise_map_from_image_and_background_noise_map=noise_map_from_image_and_background_noise_map,
+                               gain=gain, convert_from_adus=convert_from_adus)
 
     psf = load_psf(psf_path=psf_path, psf_hdu=psf_hdu, pixel_scale=pixel_scale, renormalize=renormalize_psf)
 
@@ -732,7 +734,7 @@ def load_imaging_from_fits(image_path, pixel_scale, image_hdu=0,
 
     image = Image(array=image, pixel_scale=pixel_scale, psf=psf, noise_map=noise_map,
                   background_noise_map=background_noise_map, poisson_noise_map=poisson_noise_map,
-                  exposure_time_map=exposure_time_map, background_sky_map=background_sky_map)
+                  exposure_time_map=exposure_time_map, background_sky_map=background_sky_map, gain=gain)
 
     if resized_image_shape is not None:
         image = image.new_image_with_resized_arrays(new_shape=resized_image_shape,
@@ -742,7 +744,7 @@ def load_imaging_from_fits(image_path, pixel_scale, image_hdu=0,
     if resized_psf_shape is not None:
         image = image.new_image_with_resized_psf(new_shape=resized_psf_shape)
 
-    if convert_from_counts:
+    if convert_from_adus:
         image = image.new_image_converted_from_counts()
 
     return image
@@ -763,7 +765,7 @@ def load_image(image_path, image_hdu, pixel_scale):
 
 def load_noise_map(noise_map_path, noise_map_hdu, pixel_scale, image, background_noise_map, exposure_time_map,
                    convert_noise_map_from_weight_map, convert_noise_map_from_inverse_noise_map,
-                   noise_map_from_image_and_background_noise_map, convert_from_counts):
+                   noise_map_from_image_and_background_noise_map, gain, convert_from_adus):
     """Factory for loading the noise-map from a .fits file.
 
     This factory also includes a number of routines for converting the noise-map from from other units (e.g. \
@@ -823,12 +825,25 @@ def load_noise_map(noise_map_path, noise_map_hdu, pixel_scale, image, background
         inverse_noise_map = Array.from_fits(file_path=noise_map_path, hdu=noise_map_hdu)
         return NoiseMap.from_inverse_noise_map(inverse_noise_map=inverse_noise_map, pixel_scale=pixel_scale)
     elif noise_map_from_image_and_background_noise_map:
+
+        if background_noise_map is None:
+            raise exc.ImagingException('Cannot compute the noise-map from the image and background noise map if a '
+                                       'background noise map is not supplied.')
+
+        if not convert_from_adus and exposure_time_map is None:
+            raise exc.ImagingException('Cannot compute the noise-map from the image and background noise map if an '
+                                       'exposure-time (or exposure time map) is not supplied to convert to adus')
+
+        if not convert_from_adus and gain is None:
+            raise exc.ImagingException('Cannot compute the noise-map from the image and background noise map if a'
+                                       'gain is not supplied to convert to adus')
+
         return NoiseMap.from_image_and_background_noise_map(pixel_scale=pixel_scale, image=image,
                                                             background_noise_map=background_noise_map,
                                                             exposure_time_map=exposure_time_map,
-                                                            convert_from_counts=convert_from_counts)
+                                                            gain=gain, convert_from_adus=convert_from_adus)
     else:
-        raise exc.ImagingException('A noise map was not loaded, specify a noise_map_path of option to compute a noise map.')
+        raise exc.ImagingException('A noise map was not loaded, specify a noise_map_path or option to compute a noise map.')
 
 def load_background_noise_map(background_noise_map_path, background_noise_map_hdu, pixel_scale,
                               convert_background_noise_map_from_weight_map,
@@ -871,7 +886,7 @@ def load_poisson_noise_map(poisson_noise_map_path, poisson_noise_map_hdu, pixel_
                            convert_poisson_noise_map_from_weight_map,
                            convert_poisson_noise_map_from_inverse_noise_map,
                            poisson_noise_map_from_image,
-                           image, exposure_time_map, convert_from_counts):
+                           image, exposure_time_map, gain, convert_from_adus):
     """Factory for loading the Poisson noise-map from a .fits file.
 
     This factory also includes a number of routines for converting the Poisson noise-map from from other units (e.g. \
@@ -907,9 +922,18 @@ def load_poisson_noise_map(poisson_noise_map_path, poisson_noise_map_hdu, pixel_
     if poisson_noise_map_options == 0 and poisson_noise_map_path is not None:
         return PoissonNoiseMap.from_fits_with_pixel_scale(file_path=poisson_noise_map_path, hdu=poisson_noise_map_hdu, pixel_scale=pixel_scale)
     elif poisson_noise_map_from_image:
+
+        if not convert_from_adus and exposure_time_map is None:
+            raise exc.ImagingException('Cannot compute the Poisson noise-map from the image if an '
+                                       'exposure-time (or exposure time map) is not supplied to convert to adus')
+
+        if not convert_from_adus and gain is None:
+            raise exc.ImagingException('Cannot compute the Poisson noise-map from the image if a'
+                                       'gain is not supplied to convert to adus')
+
         return PoissonNoiseMap.from_image_and_exposure_time_map(pixel_scale=pixel_scale, image=image,
-                                                                exposure_time_map=exposure_time_map,
-                                                                convert_from_counts=convert_from_counts)
+                                                                exposure_time_map=exposure_time_map, gain=gain,
+                                                                convert_from_adus=convert_from_adus)
     elif convert_poisson_noise_map_from_weight_map and poisson_noise_map_path is not None:
         weight_map = Array.from_fits(file_path=poisson_noise_map_path, hdu=poisson_noise_map_hdu)
         return PoissonNoiseMap.from_weight_map(weight_map=weight_map, pixel_scale=pixel_scale)
