@@ -575,7 +575,7 @@ def generate_poisson_noise(image, exposure_time_map, seed=-1):
 def load_imaging_from_fits(image_path, pixel_scale, image_hdu=0,
                            resized_image_shape=None, resized_image_origin_pixels=None,
                            resized_image_origin_arc_seconds=None,
-                           psf_path=None, psf_hdu=0, resized_psf_shape=None, renormalize_psf=False,
+                           psf_path=None, psf_hdu=0, resized_psf_shape=None, renormalize_psf=True,
                            noise_map_path=None, noise_map_hdu=0,
                            noise_map_from_image_and_background_noise_map=False,
                            convert_noise_map_from_weight_map=False,
