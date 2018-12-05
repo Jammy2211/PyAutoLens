@@ -1,4 +1,4 @@
-from autolens.runners.lens_and_source import initializer
+
 
 
 class PipelineTuple(object):
@@ -26,10 +26,8 @@ def add(module):
     """
     pipeline_dict[module.pipeline_name] = PipelineTuple(module)
 
-
 #  Add pipeline modules here.
-add(initializer)
-
+# add(initializer)
 
 class TestPipeline(object):
     # noinspection PyMethodMayBeStatic

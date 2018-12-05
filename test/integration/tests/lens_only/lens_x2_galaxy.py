@@ -2,7 +2,7 @@ import os
 from pathlib import Path
 
 from autofit.core import non_linear as nl
-from autolens.imaging import mask as msk
+from autolens.data.array import mask as msk
 from autolens.model.galaxy import galaxy, galaxy_model as gm
 from autolens.pipeline import phase as ph
 from autolens.pipeline import pipeline as pl
@@ -51,7 +51,7 @@ def make_pipeline(pipeline_name):
             self.lens_galaxies[1].sersic.centre_1 = 1.0
 
     def modify_mask_function(img):
-        return msk.Mask.circular(shape=img.shape, pixel_scale=img.pixel_scale, radius_mask_arcsec=5.)
+        return msk.Mask.circular(shape=img.shape, pixel_scale=img.pixel_scale, radius_arcsec=5.)
 
     phase1 = LensPlanex2GalPhase(lens_galaxies=[gm.GalaxyModel(sersic=lp.EllipticalSersic),
                                                 gm.GalaxyModel(sersic=lp.EllipticalSersic)],

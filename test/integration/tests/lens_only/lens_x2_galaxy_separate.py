@@ -1,7 +1,7 @@
 import os
 
 from autofit.core import non_linear as nl
-from autolens.imaging import mask as msk
+from autolens.data.array import mask as msk
 from autolens.model.galaxy import galaxy, galaxy_model as gm
 from autolens.pipeline import phase as ph
 from autolens.pipeline import pipeline as pl
@@ -41,7 +41,7 @@ def test_pipeline():
 
 def make_pipeline(pipeline_name):
     def modify_mask_function(img):
-        return msk.Mask.circular(shape=img.shape, pixel_scale=img.pixel_scale, radius_mask_arcsec=5.)
+        return msk.Mask.circular(shape=img.shape, pixel_scale=img.pixel_scale, radius_arcsec=5.)
 
     class LensPlaneGalaxy0Phase(ph.LensPlanePhase):
         def pass_priors(self, previous_results):

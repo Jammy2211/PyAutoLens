@@ -1,9 +1,9 @@
 import numpy as np
 
-from autolens.imaging import image as im
-from autolens.imaging import mask as msk
-from autolens.fitting import fitting_data
-from autolens.inversion import convolution as inversion_convolution
+from autolens.data.imaging import image as im
+from autolens.data.array import mask as msk
+from autolens.data.fitting import fitting_data
+from autolens.model.inversion import convolution as inversion_convolution
 
 
 class LensingImage(fitting_data.FittingImage):
@@ -14,7 +14,7 @@ class LensingImage(fitting_data.FittingImage):
     def __init__(self, image, mask, sub_grid_size=2, image_psf_shape=None, mapping_matrix_psf_shape=None,
                  positions=None):
         """
-        The lensing datas_ is the collection of datas (image, noise-maps, PSF), a masks, grids, convolvers and other \
+        The lensing datas_ is the collection of datas (regular, noise-maps, PSF), a masks, grids, convolvers and other \
         utilities that are used for modeling and fitting an datas_ of a strong lens.
 
         Whilst the datas_ datas is initially loaded in 2D, for the lensing datas_ the masked-datas_ (and noise-maps) \
@@ -30,7 +30,7 @@ class LensingImage(fitting_data.FittingImage):
             The size of the sub-grid used for each lensing SubGrid. E.g. a value of 2 grids each datas_-pixel on a 2x2 \
             sub-grid.
         image_psf_shape : (int, int)
-            The shape of the PSF used for convolving model image generated using analytic light profiles. A smaller \
+            The shape of the PSF used for convolving model regular generated using analytic light profiles. A smaller \
             shape will trim the PSF relative to the input datas_ PSF, giving a faster analysis run-time.
         mapping_matrix_psf_shape : (int, int)
             The shape of the PSF used for convolving the inversion mapping matrix. A smaller \
@@ -78,7 +78,7 @@ class LensingHyperImage(fitting_data.FittingHyperImage):
     def __init__(self, image, mask, hyper_model_image, hyper_galaxy_images, hyper_minimum_values, sub_grid_size=2,
                  image_psf_shape=None, mapping_matrix_psf_shape=None, positions=None):
         """
-        The lensing datas_ is the collection of datas (image, noise-maps, PSF), a masks, grids, convolvers and other \
+        The lensing datas_ is the collection of datas (regular, noise-maps, PSF), a masks, grids, convolvers and other \
         utilities that are used for modeling and fitting an datas_ of a strong lens.
 
         Whilst the datas_ datas is initially loaded in 2D, for the lensing datas_ the masked-datas_ (and noise-maps) \
@@ -94,7 +94,7 @@ class LensingHyperImage(fitting_data.FittingHyperImage):
             The size of the sub-grid used for each lensing SubGrid. E.g. a value of 2 grids each datas_-pixel on a 2x2 \
             sub-grid.
         image_psf_shape : (int, int)
-            The shape of the PSF used for convolving model image generated using analytic light profiles. A smaller \
+            The shape of the PSF used for convolving model regular generated using analytic light profiles. A smaller \
             shape will trim the PSF relative to the input datas_ PSF, giving a faster analysis run-time.
         mapping_matrix_psf_shape : (int, int)
             The shape of the PSF used for convolving the inversion mapping matrix. A smaller \

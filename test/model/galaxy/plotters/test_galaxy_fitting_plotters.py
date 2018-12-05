@@ -4,8 +4,8 @@ import pytest
 import numpy as np
 
 from autofit import conf
-from autolens.imaging import scaled_array
-from autolens.imaging import mask as msk
+from autolens.data.array import scaled_array
+from autolens.data.array import mask as msk
 from autolens.model.profiles import light_profiles as lp, mass_profiles as mp
 from autolens.model.galaxy import galaxy as g, galaxy_fitting, galaxy_data as gd
 from autolens.model.galaxy.plotters import galaxy_fitting_plotters
@@ -38,7 +38,7 @@ def test_array():
 
 @pytest.fixture(name='mask')
 def test_mask():
-    return msk.Mask.circular(shape=((3,3)), pixel_scale=0.1, radius_mask_arcsec=0.1)
+    return msk.Mask.circular(shape=((3,3)), pixel_scale=0.1, radius_arcsec=0.1)
 
 @pytest.fixture(name='galaxy_data_intensities')
 def test_galaxy_data_intensities(array, mask):

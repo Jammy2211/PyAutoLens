@@ -5,7 +5,7 @@ import pytest
 import numpy as np
 
 from autofit import conf
-from autolens.imaging import mask as msk
+from autolens.data.array import grids, mask as msk
 from autolens.lensing.plotters import plane_plotters
 from autolens.model.profiles import light_profiles as lp, mass_profiles as mp
 from autolens.model.galaxy import galaxy as g
@@ -25,7 +25,7 @@ def test_positions():
 
 @pytest.fixture(name='mask')
 def test_mask():
-    return msk.Mask.circular(shape=((3,3)), pixel_scale=0.1, radius_mask_arcsec=0.1)
+    return msk.Mask.circular(shape=((3,3)), pixel_scale=0.1, radius_arcsec=0.1)
 
 @pytest.fixture(name='plane_plotter_path')
 def test_plane_plotter_setup():
@@ -51,7 +51,7 @@ def test_galaxy_mass():
 
 @pytest.fixture(name='grids')
 def test_grids():
-    return msk.ImagingGrids.from_shape_and_pixel_scale(shape=(100, 100), pixel_scale=0.05, sub_grid_size=2)
+    return grids.DataGrids.from_shape_and_pixel_scale(shape=(100, 100), pixel_scale=0.05, sub_grid_size=2)
 
 @pytest.fixture(name='plane')
 def test_plane(galaxy_light, grids):

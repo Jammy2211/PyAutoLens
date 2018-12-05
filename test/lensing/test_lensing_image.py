@@ -1,12 +1,12 @@
 import numpy as np
 import pytest
 
-from autolens.imaging import convolution
-from autolens.imaging import image as im
-from autolens.imaging.util import grid_util
-from autolens.imaging import mask as msk
+from autolens.data.imaging import image as im, convolution
+from autolens.data.array.util import grid_util
+from autolens.data.array import mask as msk
 from autolens.lensing import lensing_image as li
-from autolens.inversion import convolution as inversion_convolution
+from autolens.model.inversion import convolution as inversion_convolution
+
 
 @pytest.fixture(name='image')
 def make_image():
@@ -53,9 +53,9 @@ class TestLensingImage(object):
         assert (lensing_image.background_sky_map_ == 5.0*np.ones(4)).all()
 
     def test_grids(self, lensing_image):
-        assert lensing_image.grids.image.shape == (4, 2)
+        assert lensing_image.grids.regular.shape == (4, 2)
 
-        assert (lensing_image.grids.image == np.array([[1.5, -1.5], [1.5, 1.5],
+        assert (lensing_image.grids.regular == np.array([[1.5, -1.5], [1.5, 1.5],
                                                        [-1.5, -1.5], [-1.5, 1.5]])).all()
         assert (lensing_image.grids.sub == np.array([[2.0, -2.0], [2.0, -1.0], [1.0, -2.0], [1.0, -1.0],
                                                      [2.0, 1.0], [2.0, 2.0], [1.0, 1.0], [1.0, 2.0],
@@ -67,12 +67,12 @@ class TestLensingImage(object):
 
     def test_padded_grids(self, lensing_image):
 
-        padded_image_util = grid_util.image_grid_1d_masked_from_mask_pixel_scales_and_origin(mask=np.full((6, 6), False),
-                                                                                             pixel_scales=lensing_image.image.pixel_scales)
+        padded_image_util = grid_util.regular_grid_1d_masked_from_mask_pixel_scales_and_origin(mask=np.full((6, 6), False),
+                                                                                               pixel_scales=lensing_image.image.pixel_scales)
 
-        assert (lensing_image.padded_grids.image == padded_image_util).all()
-        assert lensing_image.padded_grids.image.image_shape == (4, 4)
-        assert lensing_image.padded_grids.image.padded_shape == (6, 6)
+        assert (lensing_image.padded_grids.regular == padded_image_util).all()
+        assert lensing_image.padded_grids.regular.image_shape == (4, 4)
+        assert lensing_image.padded_grids.regular.padded_shape == (6, 6)
 
         padded_sub_util = grid_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(
             mask=np.full((6, 6), False), pixel_scales=lensing_image.image.pixel_scales,

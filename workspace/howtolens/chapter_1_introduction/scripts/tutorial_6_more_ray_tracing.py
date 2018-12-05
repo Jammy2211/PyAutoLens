@@ -2,7 +2,7 @@ from autolens.model.profiles import light_profiles as lp
 from autolens.model.profiles import mass_profiles as mp
 from autolens.model.galaxy import galaxy as g
 from autolens.lensing import ray_tracing
-from autolens.imaging import mask
+from autolens.data.array import grids
 from autolens.model.galaxy.plotters import galaxy_plotters
 from autolens.lensing.plotters import plane_plotters
 from autolens.lensing.plotters import ray_tracing_plotters
@@ -18,19 +18,19 @@ from astropy import cosmology
 
 # To begin, lets setup the grids we 'll ray-trace using. Lets do something crazy, and use a
 # higher resolution grid then before and set the sub grid size to 4x4 per pixel!
-image_plane_grids = mask.ImagingGrids.from_shape_and_pixel_scale(shape=(200, 200), pixel_scale=0.025, sub_grid_size=4)
-print(image_plane_grids.image.shape)
-print(image_plane_grids.sub.shape) # Every image-pixel is sub-gridded by 4x4, so the sub-grid has x16 more coordinates.
+image_plane_grids = grids.DataGrids.from_shape_and_pixel_scale(shape=(200, 200), pixel_scale=0.025, sub_grid_size=4)
+print(image_plane_grids.regular.shape)
+print(image_plane_grids.sub.shape) # Every regular-pixel is sub-gridded by 4x4, so the sub-grid has x16 more coordinates.
 
-# Next, lets setup a lens model_galaxy. In the previous tutorial, we set up each profile one line at a time. This made
-# code long and cumbersome to read. This time we'll setup easy model_galaxy using one block of code.
+# Next, lets setup a lens gaalxy. In the previous tutorial, we set up each profile one line at a time. This made
+# code long and cumbersome to read. This time we'll setup easy gaalxy using one block of code.
 
 # To help us, we've imported the 'light_profiles' and 'mass_profiles' modules as 'lp' and 'mp', and the
-# 'model_galaxy' module as 'g'.
+# 'gaalxy' module as 'g'.
 
-# We'll also give the lens model_galaxy some attributes we didn't in the last tutorial:
+# We'll also give the lens gaalxy some attributes we didn't in the last tutorial:
 
-# 1) A light-profile, meaning its light will appear in the image-plane image.
+# 1) A light-profile, meaning its light will appear in the regular-plane regular.
 # 2) An external shear, which accounts for the deflection of light due to line-of-sight structures.
 # 3) A redshift, which the tracer_without_subhalo will use to convert arc second coordinates to kpc.
 lens_galaxy = g.Galaxy(light=lp.SphericalSersic(centre=(0.0, 0.0), intensity=2.0, effective_radius=0.5,
@@ -40,25 +40,25 @@ lens_galaxy = g.Galaxy(light=lp.SphericalSersic(centre=(0.0, 0.0), intensity=2.0
                        redshift=0.5)
 print(lens_galaxy)
 
-# Lets also create a small satellite model_galaxy nearby the lens model_galaxy and at the same redshift.
+# Lets also create a small satellite gaalxy nearby the lens gaalxy and at the same redshift.
 lens_satellite = g.Galaxy(light=lp.SphericalDevVaucouleurs(centre=(1.0, 0.0), intensity=2.0, effective_radius=0.2),
                           mass=mp.SphericalIsothermal(centre=(1.0, 0.0), einstein_radius=0.4),
                           redshift=0.5)
 print(lens_satellite)
 
 
-# Lets have a quick look at the appearance of our lens model_galaxy and its satellite
-galaxy_plotters.plot_intensities(galaxy=lens_galaxy, grid=image_plane_grids.image, title='Lens Galaxy')
-galaxy_plotters.plot_intensities(galaxy=lens_satellite, grid=image_plane_grids.image, title='Lens Satellite')
+# Lets have a quick look at the appearance of our lens galaxy and its satellite
+galaxy_plotters.plot_intensities(galaxy=lens_galaxy, grid=image_plane_grids.regular, title='Lens Galaxy')
+galaxy_plotters.plot_intensities(galaxy=lens_satellite, grid=image_plane_grids.regular, title='Lens Satellite')
 
 # And their deflection angles - note that the satellite doesn't contribute as much to light's deflection
-galaxy_plotters.plot_deflections_y(galaxy=lens_galaxy, grid=image_plane_grids.image,
+galaxy_plotters.plot_deflections_y(galaxy=lens_galaxy, grid=image_plane_grids.regular,
                                    title='Lens Galaxy Deflections (y)')
-galaxy_plotters.plot_deflections_y(galaxy=lens_satellite, grid=image_plane_grids.image,
+galaxy_plotters.plot_deflections_y(galaxy=lens_satellite, grid=image_plane_grids.regular,
                                    title='Lens Satellite Deflections (y)')
-galaxy_plotters.plot_deflections_x(galaxy=lens_galaxy, grid=image_plane_grids.image,
+galaxy_plotters.plot_deflections_x(galaxy=lens_galaxy, grid=image_plane_grids.regular,
                                    title='Lens Galalxy Deflections (x)')
-galaxy_plotters.plot_deflections_x(galaxy=lens_satellite, grid=image_plane_grids.image,
+galaxy_plotters.plot_deflections_x(galaxy=lens_satellite, grid=image_plane_grids.regular,
                                    title='Lens Satellite Deflections (x)')
 
 # Now, lets make two source galaxies. Lets not use the terms 'light' and 'mass' to setup the light and mass profiles.
@@ -75,16 +75,16 @@ print(source_galaxy_0)
 print(source_galaxy_1)
 
 # Lets look at our source galaxies (before lensing)
-galaxy_plotters.plot_intensities(galaxy=source_galaxy_0, grid=image_plane_grids.image, title='Source Galaxy 0')
-galaxy_plotters.plot_intensities(galaxy=source_galaxy_1, grid=image_plane_grids.image, title='Source Galaxy 1')
+galaxy_plotters.plot_intensities(galaxy=source_galaxy_0, grid=image_plane_grids.regular, title='Source Galaxy 0')
+galaxy_plotters.plot_intensities(galaxy=source_galaxy_1, grid=image_plane_grids.regular, title='Source Galaxy 1')
 
 # Now lets pass these our 4 galaxies to ray_tracing, which means the following will occur:
 
-# 1) Using every mass-profile in each lens model_galaxy, the deflection angles are computed.
+# 1) Using every mass-profile in each lens gaalxy, the deflection angles are computed.
 # 2) These deflection angles are summed, such that the deflection of light due to every mass-profile and both
-# the lens model_galaxy and its satellite is computed.
-# 3) These deflection angles are used to trace every image-grid and sub-grid coordinate to a source-plane coordinate.
-# 4) The light of all source galaxies is ray-traced back forward to form our image-plane image.
+# the lens gaalxy and its satellite is computed.
+# 3) These deflection angles are used to trace every regular-grid and sub-grid coordinate to a source-plane coordinate.
+# 4) The light of all source galaxies is ray-traced back forward to form our regular-plane regular.
 
 # Note that we've also supplied the tracer_without_subhalo below with a Planck15 cosmology.
 tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy, lens_satellite],
@@ -94,7 +94,7 @@ tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy, lens_sa
 # As we did previous, we can inspect each grid.
 plane_plotters.plot_plane_grid(plane=tracer.image_plane, title='Image-plane Grid')
 plane_plotters.plot_plane_grid(plane=tracer.source_plane, title='Source-plane Grid')
-# We can zoom in on the 'origin' of the source-plane (thistime, the lens model_galaxy was centred at (0.0, 0.0)
+# We can zoom in on the 'origin' of the source-plane (thistime, the lens gaalxy was centred at (0.0, 0.0)
 plane_plotters.plot_plane_grid(plane=tracer.source_plane, axis_limits=[-0.2, 0.2, -0.2, 0.2], title='Source-plane Grid')
 
 # Lets plot the lensing quantities again. Note that, because we supplied our galaxies with redshifts and our tracer_without_subhalo
@@ -103,7 +103,7 @@ plane_plotters.plot_plane_grid(plane=tracer.source_plane, axis_limits=[-0.2, 0.2
 ray_tracing_plotters.plot_ray_tracing_subplot(tracer=tracer)
 
 # In the previous example, we saw that the tracer_without_subhalo had attributes we plotted (e.g. surface density, potential, etc.)
-# Now we've input a cosmology and model_galaxy redshifts, the tracer_without_subhalo has attributes associated with its cosmology.
+# Now we've input a cosmology and gaalxy redshifts, the tracer_without_subhalo has attributes associated with its cosmology.
 print('Image-plane arcsec-per-kpc:')
 print(tracer.image_plane.arcsec_per_kpc_proper)
 print('Image-plane kpc-per-arcsec:')
@@ -125,7 +125,7 @@ print(tracer.critical_density_kpc)
 
 # And with that, we've completed tutorial 6. Try the following:
 
-# 1) By changing the lens and source model_galaxy redshifts, does the image-plane image of the tracer_without_subhalo change at all?
+# 1) By changing the lens and source gaalxy redshifts, does the regular-plane regular of the tracer_without_subhalo change at all?
 
 # 2) What happens to the cosmological quantities as you change these redshifts? Do you remember enough of your
 #    cosmology lectures to predict how quantities like the angular diameter distance change as a function of redshift?

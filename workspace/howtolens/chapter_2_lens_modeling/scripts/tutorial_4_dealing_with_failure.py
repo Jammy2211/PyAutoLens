@@ -3,10 +3,10 @@ from autofit.core import non_linear as nl
 from autofit.core import model_mapper as mm
 from autolens.pipeline import phase as ph
 from autolens.model.galaxy import galaxy_model as gm
-from autolens.imaging import image as im
+from autolens.data.imaging import image as im
+from autolens.data.imaging.plotters import imaging_plotters
 from autolens.model.profiles import light_profiles as lp
 from autolens.model.profiles import mass_profiles as mp
-from autolens.imaging.plotters import imaging_plotters
 from autolens.lensing.plotters import lensing_fitting_plotters
 
 import os
@@ -16,7 +16,7 @@ import os
 # lens model which fitted our realistic datas-set well. In this tutorial, we're going to right our past wrongs and infer
 # the correct model - not just once, but three times!
 
-# First, lets get the config / simulation / image loading out the way - we'll fit_normal the same image as the previous
+# First, lets get the config / simulation / regular loading out the way - we'll fit_normal the same regular as the previous
 # tutorial.
 
 #Setup the path for this run
@@ -31,15 +31,15 @@ conf.instance = conf.Config(config_path=path+'/configs/4_dealing_with_failure', 
 # Alternatively, set these running and come back in 10 minutes or so - MultiNest resumes from the existing results on
 # your hard-disk, so you can rerun things to get the results instantly!
 
-# Another simulate image function, for the same image again.
+# Another simulate regular function, for the same regular again.
 def simulate():
 
-    from autolens.imaging import mask
+    from autolens.data.array import grids
     from autolens.model.galaxy import galaxy as g
     from autolens.lensing import ray_tracing
 
     psf = im.PSF.simulate_as_gaussian(shape=(11, 11), sigma=0.05, pixel_scale=0.05)
-    image_plane_grids = mask.ImagingGrids.grids_for_simulation(shape=(130, 130), pixel_scale=0.1, psf_shape=(11, 11))
+    image_plane_grids = grids.DataGrids.grids_for_simulation(shape=(130, 130), pixel_scale=0.1, psf_shape=(11, 11))
 
     lens_galaxy = g.Galaxy(light=lp.EllipticalSersic(centre=(0.0, 0.0), axis_ratio=0.9, phi=45.0, intensity=0.04,
                                                              effective_radius=0.5, sersic_index=3.5),
@@ -55,8 +55,9 @@ def simulate():
 
     return image_simulated
 
-# Simulate the image and set it up.
+# Simulate the regular and set it up.
 image = simulate()
+imaging_plotters.plot_image_subplot(image=image)
 
 ### Approach 1 -  Prior Tuning ###
 
@@ -77,7 +78,7 @@ class CustomPriorPhase(ph.LensSourcePlanePhase):
         # called our lens model_galaxy 'lens' this time, for shorter more readable code.
 
         # By default, the prior on the x and y coordinates of a light / mass profile is a GaussianPrior with mean
-        # 0.0" and sigma "1.0. However, visual inspection of our strong lens image tells us that its clearly around
+        # 0.0" and sigma "1.0. However, visual inspection of our strong lens regular tells us that its clearly around
         # x = 0.0" and y = 0.0", so lets reduce where non-linear search looks for these parameters.
 
         self.lens_galaxies.lens.light.centre_0 = mm.UniformPrior(lower_limit=-0.05, upper_limit=0.05)
@@ -86,7 +87,7 @@ class CustomPriorPhase(ph.LensSourcePlanePhase):
         self.lens_galaxies.lens.mass.centre_1 = mm.UniformPrior(lower_limit=-0.05, upper_limit=0.05)
 
         # By default, the axis-ratio (ellipticity) of our lens model_galaxy's light pofile is a UniformPrior between 0.2 and
-        # 1.0. However, by looking at the image it looks fairly circular, so lets use a GaussianPrior nearer 1.0.
+        # 1.0. However, by looking at the regular it looks fairly circular, so lets use a GaussianPrior nearer 1.0.
         self.lens_galaxies.lens.light.axis_ratio = mm.GaussianPrior(mean=0.8, sigma=0.15)
 
         # We'll also assume that the light profile's axis_ratio informs us of the mass-profile's axis_ratio, but
@@ -94,7 +95,7 @@ class CustomPriorPhase(ph.LensSourcePlanePhase):
         self.lens_galaxies.lens.mass.axis_ratio = mm.GaussianPrior(mean=0.8, sigma=0.25)
 
         # By default, the orientation of the model_galaxy's light profile, phi, uses a UniformPrior between 0.0 and
-        # 180.0 degrees. However, if you look really close at the image (and maybe adjust the color-map of the plot),
+        # 180.0 degrees. However, if you look really close at the regular (and maybe adjust the color-map of the plot),
         # you'll be able to notice that it is elliptical and that it is oriented around 45.0 degrees counter-clockwise
         # from the x-axis. Lets update our prior
         self.lens_galaxies.lens.light.phi = mm.GaussianPrior(mean=45.0, sigma=15.0)
@@ -104,7 +105,7 @@ class CustomPriorPhase(ph.LensSourcePlanePhase):
 
         # The effective radius of a light profile is its 'half-light' radius, the radius at which 50% of its
         # total luminosity is internal to the circle or ellipse defined within that radius. AutoLens assumes a
-        # UniformPrior on this quantity between 0.0" and 4.0", but inspection of the image (again, using a colormap
+        # UniformPrior on this quantity between 0.0" and 4.0", but inspection of the regular (again, using a colormap
         # scaling) shows the lens's light doesn't extend anywhere near 4.0", so lets reduce it.
         self.lens_galaxies.lens.light.effective_radius = mm.GaussianPrior(mean=0.5, sigma=0.8)
 
@@ -190,7 +191,7 @@ lensing_fitting_plotters.plot_fitting_subplot(fit=light_traces_mass_phase_result
 # looks similar to the one above. However, inspection of the residuals shows that the fit_normal wasn't quite as good as the
 # custom-phase above.
 
-# It turns out that when I simulated this image, light didn't perfectly trace mass. The light-profile's axis-ratio was
+# It turns out that when I simulated this regular, light didn't perfectly trace mass. The light-profile's axis-ratio was
 # 0.9, whereas the mass-profiles was 0.8. The quality of the fit_normal has suffered as a result, and the likelihood we've
 # inferred is lower.
 #
@@ -201,7 +202,7 @@ lensing_fitting_plotters.plot_fitting_subplot(fit=light_traces_mass_phase_result
 # Again, lets consider the advantages and disadvantages of this approach:
 
 # Advantage - By reducing parameter space's complexity, we inferred the global maximum likelihood.
-# Advantage - The phase is not specific to one lens - we could run it on many strong lens image.
+# Advantage - The phase is not specific to one lens - we could run it on many strong lens regular.
 # Disadvantage - Our model was less realistic, and our fit_normal suffered as a result.
 
 
