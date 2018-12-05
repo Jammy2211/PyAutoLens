@@ -3,6 +3,9 @@ import shutil
 
 import numpy as np
 import pytest
+from astropy.modeling import functional_models
+from astropy import units
+from astropy.coordinates import Angle
 
 from autolens import exc
 from autolens.data.array import scaled_array
@@ -1364,39 +1367,137 @@ class TestPSF(object):
 
         def test__identical_to_astropy_gaussian_model__circular_no_rotation(self):
 
-            from astropy.modeling import functional_models
-            from astropy import units
-
             pixel_scale = 0.1
-            y_stddev = 2.0e-5
-            x_stddev = 2.0e-5
 
-            x_stddev = x_stddev * (units.deg).to(units.arcsec) / pixel_scale / (2.0 * np.sqrt(2.0 * np.log(2.0)))
-            y_stddev = y_stddev * (units.deg).to(units.arcsec) / pixel_scale / (2.0 * np.sqrt(2.0 * np.log(2.0)))
+            x_stddev = 2.0e-5 * (units.deg).to(units.arcsec) / pixel_scale / (2.0 * np.sqrt(2.0 * np.log(2.0)))
+            y_stddev = 2.0e-5 * (units.deg).to(units.arcsec) / pixel_scale / (2.0 * np.sqrt(2.0 * np.log(2.0)))
 
-            print(x_stddev)
-            print(y_stddev)
+            gaussian_astropy = functional_models.Gaussian2D(amplitude=1.0, x_mean=2.0, y_mean=2.0,
+                                                            x_stddev=x_stddev, y_stddev=y_stddev, theta=0.0)
 
-            shape = (3, 3)
-            y_mean = 1.0
-            x_mean = 1.0
-            print(y_mean, x_mean)
-
-            theta = 0.0
-
-            gaussian_astropy = functional_models.Gaussian2D(amplitude=1.0, x_mean=x_mean, y_mean=y_mean,
-                                                            x_stddev=x_stddev, y_stddev=y_stddev, theta=theta)
-
+            shape = (5, 5)
             y, x = np.mgrid[0:shape[1], 0:shape[0]]
             psf_astropy = gaussian_astropy(x, y)
             psf_astropy /= np.sum(psf_astropy)
 
-            print(psf_astropy)
+            psf = image.PSF.simulate_as_gaussian_via_alma_fits_header_parameters(shape=shape, pixel_scale=pixel_scale,
+                        y_stddev=2.0e-5, x_stddev=2.0e-5, theta=0.0)
 
-            gaussian = image.PSF.simulate_as_gaussian_via_alma_fits_header_parameters(shape=shape, pixel_scale=0.1,
-                        y_stddev=y_stddev, x_stddev=x_stddev, theta=theta)
+            assert psf_astropy == pytest.approx(psf, 1e-4)
 
-            print(gaussian)
+        def test__identical_to_astropy_gaussian_model__circular_no_rotation_different_pixel_scale(self):
+
+            pixel_scale = 0.02
+
+            x_stddev = 2.0e-5 * (units.deg).to(units.arcsec) / pixel_scale / (2.0 * np.sqrt(2.0 * np.log(2.0)))
+            y_stddev = 2.0e-5 * (units.deg).to(units.arcsec) / pixel_scale / (2.0 * np.sqrt(2.0 * np.log(2.0)))
+
+            gaussian_astropy = functional_models.Gaussian2D(amplitude=1.0, x_mean=2.0, y_mean=2.0,
+                                                            x_stddev=x_stddev, y_stddev=y_stddev, theta=0.0)
+
+            shape = (5, 5)
+            y, x = np.mgrid[0:shape[1], 0:shape[0]]
+            psf_astropy = gaussian_astropy(x, y)
+            psf_astropy /= np.sum(psf_astropy)
+
+            psf = image.PSF.simulate_as_gaussian_via_alma_fits_header_parameters(shape=shape, pixel_scale=pixel_scale,
+                        y_stddev=2.0e-5, x_stddev=2.0e-5, theta=0.0)
+
+            assert psf_astropy == pytest.approx(psf, 1e-4)
+
+        def test__identical_to_astropy_gaussian_model__include_ellipticity_from_x_and_y_stddev(self):
+
+            pixel_scale = 0.1
+
+            x_stddev = 1.0e-5 * (units.deg).to(units.arcsec) / pixel_scale / (2.0 * np.sqrt(2.0 * np.log(2.0)))
+            y_stddev = 2.0e-5 * (units.deg).to(units.arcsec) / pixel_scale / (2.0 * np.sqrt(2.0 * np.log(2.0)))
+
+            theta_deg=0.0
+            theta=Angle(theta_deg, 'deg').radian
+
+            gaussian_astropy = functional_models.Gaussian2D(amplitude=1.0, x_mean=2.0, y_mean=2.0,
+                                                            x_stddev=x_stddev, y_stddev=y_stddev, theta=theta)
+
+            shape = (5, 5)
+            y, x = np.mgrid[0:shape[1], 0:shape[0]]
+            psf_astropy = gaussian_astropy(x, y)
+            psf_astropy /= np.sum(psf_astropy)
+
+            psf = image.PSF.simulate_as_gaussian_via_alma_fits_header_parameters(shape=shape, pixel_scale=pixel_scale,
+                        y_stddev=2.0e-5, x_stddev=1.0e-5, theta=theta_deg)
+
+            assert psf_astropy == pytest.approx(psf, 1e-4)
+
+        def test__identical_to_astropy_gaussian_model__include_different_ellipticity_from_x_and_y_stddev(self):
+
+            pixel_scale = 0.1
+
+            x_stddev = 3.0e-5 * (units.deg).to(units.arcsec) / pixel_scale / (2.0 * np.sqrt(2.0 * np.log(2.0)))
+            y_stddev = 2.0e-5 * (units.deg).to(units.arcsec) / pixel_scale / (2.0 * np.sqrt(2.0 * np.log(2.0)))
+
+            theta_deg=0.0
+            theta=Angle(theta_deg, 'deg').radian
+
+            gaussian_astropy = functional_models.Gaussian2D(amplitude=1.0, x_mean=2.0, y_mean=2.0,
+                                                            x_stddev=x_stddev, y_stddev=y_stddev, theta=theta)
+
+            shape = (5, 5)
+            y, x = np.mgrid[0:shape[1], 0:shape[0]]
+            psf_astropy = gaussian_astropy(x, y)
+            psf_astropy /= np.sum(psf_astropy)
+
+            psf = image.PSF.simulate_as_gaussian_via_alma_fits_header_parameters(shape=shape, pixel_scale=pixel_scale,
+                        y_stddev=2.0e-5, x_stddev=3.0e-5, theta=theta_deg)
+
+            assert psf_astropy == pytest.approx(psf, 1e-4)
+
+        def test__identical_to_astropy_gaussian_model__include_rotation_angle_30(self):
+
+            pixel_scale = 0.1
+
+            x_stddev = 1.0e-5 * (units.deg).to(units.arcsec) / pixel_scale / (2.0 * np.sqrt(2.0 * np.log(2.0)))
+            y_stddev = 2.0e-5 * (units.deg).to(units.arcsec) / pixel_scale / (2.0 * np.sqrt(2.0 * np.log(2.0)))
+
+            theta_deg=30.0
+            theta=Angle(theta_deg, 'deg').radian
+
+            gaussian_astropy = functional_models.Gaussian2D(amplitude=1.0, x_mean=1.0, y_mean=1.0,
+                                                            x_stddev=x_stddev, y_stddev=y_stddev, theta=theta)
+
+            shape = (3, 3)
+            y, x = np.mgrid[0:shape[1], 0:shape[0]]
+            psf_astropy = gaussian_astropy(x, y)
+            psf_astropy /= np.sum(psf_astropy)
+
+            psf = image.PSF.simulate_as_gaussian_via_alma_fits_header_parameters(shape=shape, pixel_scale=pixel_scale,
+                        y_stddev=2.0e-5, x_stddev=1.0e-5, theta=theta_deg)
+
+            assert psf_astropy == pytest.approx(psf, 1e-4)
+
+        def test__identical_to_astropy_gaussian_model__include_rotation_angle_230(self):
+
+            pixel_scale = 0.1
+
+            x_stddev = 1.0e-5 * (units.deg).to(units.arcsec) / pixel_scale / (2.0 * np.sqrt(2.0 * np.log(2.0)))
+            y_stddev = 2.0e-5 * (units.deg).to(units.arcsec) / pixel_scale / (2.0 * np.sqrt(2.0 * np.log(2.0)))
+
+            theta_deg=230.0
+            theta=Angle(theta_deg, 'deg').radian
+
+            gaussian_astropy = functional_models.Gaussian2D(amplitude=1.0, x_mean=1.0, y_mean=1.0,
+                                                            x_stddev=x_stddev, y_stddev=y_stddev, theta=theta)
+
+            shape = (3, 3)
+            y, x = np.mgrid[0:shape[1], 0:shape[0]]
+            psf_astropy = gaussian_astropy(x, y)
+            psf_astropy /= np.sum(psf_astropy)
+
+            psf = image.PSF.simulate_as_gaussian_via_alma_fits_header_parameters(shape=shape, pixel_scale=pixel_scale,
+                        y_stddev=2.0e-5, x_stddev=1.0e-5, theta=theta_deg)
+
+            assert psf_astropy == pytest.approx(psf, 1e-4)
+
+
 
 class TestExposureTimeMap(object):
 

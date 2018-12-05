@@ -202,19 +202,12 @@ class TracerImageSourcePlanes(AbstractTracer):
             The cosmology of the ray-tracing calculation.
         """
 
-        print(lens_galaxies)
-
         super().__init__(pl.Plane(lens_galaxies, image_plane_grids, border=border, compute_deflections=True,
                                   cosmology=cosmology))
 
         self.cosmology = cosmology
 
         source_plane_grids = self.image_plane.trace_grids_to_next_plane()
-
-        if np.isnan(source_plane_grids[0].pix).any():
-            print(source_plane_grids[0].pix)
-            import sys
-            sys.exit()
 
         self.source_plane = pl.Plane(source_galaxies, source_plane_grids, border=border, compute_deflections=False,
                                      cosmology=cosmology)

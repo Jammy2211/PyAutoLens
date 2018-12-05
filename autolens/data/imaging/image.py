@@ -1,6 +1,9 @@
 import numpy as np
 import scipy.signal
 from scipy.stats import norm
+from autolens.model.profiles.light_profiles import EllipticalGaussian
+from astropy import units
+from astropy.coordinates import Angle
 
 from autolens import exc
 from autolens.data.array.util import grid_util
@@ -464,13 +467,12 @@ class PSF(ScaledSquarePixelArray):
     def simulate_as_gaussian_via_alma_fits_header_parameters(cls, shape, pixel_scale, y_stddev, x_stddev, theta,
                                                              centre=(0.0, 0.0)):
 
-        from autolens.model.profiles.light_profiles import EllipticalGaussian
-        from astropy import units
+        x_stddev = x_stddev * (units.deg).to(units.arcsec) / (2.0 * np.sqrt(2.0 * np.log(2.0)))
+        y_stddev = y_stddev * (units.deg).to(units.arcsec) / (2.0 * np.sqrt(2.0 * np.log(2.0)))
 
-        x_stddev = x_stddev * (units.deg).to(units.arcsec) / pixel_scale / (2.0 * np.sqrt(2.0 * np.log(2.0)))
-        y_stddev = y_stddev * (units.deg).to(units.arcsec) / pixel_scale / (2.0 * np.sqrt(2.0 * np.log(2.0)))
+        axis_ratio = x_stddev / y_stddev
 
-        gaussian = EllipticalGaussian(centre=centre, axis_ratio=1.0, phi=theta, intensity=1.0, sigma=y_stddev)
+        gaussian = EllipticalGaussian(centre=centre, axis_ratio=axis_ratio, phi=90.0-theta, intensity=1.0, sigma=y_stddev)
 
         grid_1d = grid_util.regular_grid_1d_masked_from_mask_pixel_scales_and_origin(mask=np.full(shape, False),
                                                                                      pixel_scales=(pixel_scale, pixel_scale))
