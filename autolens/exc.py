@@ -1,5 +1,6 @@
 from autofit import exc
 
+
 class ImagingException(Exception):
     pass
 
