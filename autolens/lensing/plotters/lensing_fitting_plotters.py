@@ -1,14 +1,14 @@
 from matplotlib import pyplot as plt
 
 from autofit import conf
-from autolens.plotters import plotter_util
-from autolens.imaging.plotters import imaging_plotters
+from autolens.data.array.plotters import plotter_util
+from autolens.data.imaging.plotters import imaging_plotters
 from autolens.lensing.plotters import plane_plotters
-from autolens.inversion.plotters import inversion_plotters
-from autolens.fitting.plotters import fitting_plotters
+from autolens.model.inversion.plotters import inversion_plotters
+from autolens.data.fitting.plotters import fitting_plotters
 
 
-def plot_fitting_subplot(fit, should_plot_mask=True, positions=None,
+def plot_fitting_subplot(fit, should_plot_mask=True, positions=None, should_plot_image_plane_pix=True,
                          units='arcsec', figsize=None, aspect='equal',
                          cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
                          cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
@@ -25,6 +25,7 @@ def plot_fitting_subplot(fit, should_plot_mask=True, positions=None,
         if not fit.tracer.has_hyper_galaxy:
 
             plot_fitting_subplot_lens_plane_only(fit=fit, should_plot_mask=should_plot_mask, positions=positions,
+                                                 should_plot_image_plane_pix=should_plot_image_plane_pix,
                                                  units=units, figsize=figsize,
                                                  aspect=aspect,
                                                  cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max,
@@ -40,6 +41,7 @@ def plot_fitting_subplot(fit, should_plot_mask=True, positions=None,
         elif fit.tracer.has_hyper_galaxy:
 
             plot_fitting_subplot_hyper_lens_plane_only(fit=fit, should_plot_mask=should_plot_mask, positions=positions,
+                                                       should_plot_image_plane_pix=should_plot_image_plane_pix,
                                                        units=units, figsize=figsize,
                                                        aspect=aspect,
                                                        cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max,
@@ -59,6 +61,7 @@ def plot_fitting_subplot(fit, should_plot_mask=True, positions=None,
 
         if not fit.tracer.has_hyper_galaxy:
             plot_fitting_subplot_lens_and_source_planes(fit=fit, should_plot_mask=should_plot_mask, positions=positions,
+                                                        should_plot_image_plane_pix=should_plot_image_plane_pix,
                                                         units=units, figsize=figsize,
                                                         aspect=aspect,
                                                         cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max,
@@ -75,7 +78,7 @@ def plot_fitting_subplot(fit, should_plot_mask=True, positions=None,
                                                         output_format=output_format)
 
 
-def plot_fitting_subplot_lens_plane_only(fit, should_plot_mask=True, positions=None,
+def plot_fitting_subplot_lens_plane_only(fit, should_plot_mask=True, positions=None, should_plot_image_plane_pix=True,
                                          units='arcsec', figsize=None, aspect='equal',
                                          cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05,
                                          linscale=0.01,
@@ -112,7 +115,10 @@ def plot_fitting_subplot_lens_plane_only(fit, should_plot_mask=True, positions=N
 
     kpc_per_arcsec = fit.tracer.image_plane.kpc_per_arcsec_proper
 
-    imaging_plotters.plot_image(image=fit.images[0], mask=mask, positions=positions, grid=None,
+    image_plane_pix_grid = get_image_plane_pix_grid(should_plot_image_plane_pix, fit)
+
+    imaging_plotters.plot_image(image=fit.images[0], mask=mask, positions=positions,
+                                image_plane_pix_grid=image_plane_pix_grid,
                                 as_subplot=True,
                                 units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
                                 cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
@@ -155,12 +161,13 @@ def plot_fitting_subplot_lens_plane_only(fit, should_plot_mask=True, positions=N
                                        output_path=output_path, output_filename='', output_format=output_format)
 
     plotter_util.output_subplot_array(output_path=output_path, output_filename=output_filename,
-                               output_format=output_format)
+                                      output_format=output_format)
 
     plt.close()
 
 
 def plot_fitting_subplot_hyper_lens_plane_only(fit, should_plot_mask=True, positions=None,
+                                               should_plot_image_plane_pix=True,
                                                units='arcsec', figsize=None, aspect='equal',
                                                cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05,
                                                linscale=0.01,
@@ -197,8 +204,10 @@ def plot_fitting_subplot_hyper_lens_plane_only(fit, should_plot_mask=True, posit
 
     kpc_per_arcsec = fit.tracer.image_plane.kpc_per_arcsec_proper
 
-    imaging_plotters.plot_image(image=fit.images[0], mask=mask, positions=positions, grid=None,
-                                as_subplot=True,
+    image_plane_pix_grid = get_image_plane_pix_grid(should_plot_image_plane_pix, fit)
+
+    imaging_plotters.plot_image(image=fit.images[0], mask=mask, positions=positions,
+                                image_plane_pix_grid=image_plane_pix_grid, as_subplot=True,
                                 units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
                                 cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
                                 linscale=linscale,
@@ -238,7 +247,7 @@ def plot_fitting_subplot_hyper_lens_plane_only(fit, should_plot_mask=True, posit
                                        output_path=output_path, output_filename='', output_format=output_format)
 
     plotter_util.output_subplot_array(output_path=output_path, output_filename=output_filename,
-                               output_format=output_format)
+                                      output_format=output_format)
 
     plt.subplot(rows, columns, 4)
 
@@ -282,12 +291,13 @@ def plot_fitting_subplot_hyper_lens_plane_only(fit, should_plot_mask=True, posit
                                            output_path=output_path, output_filename='', output_format=output_format)
 
     plotter_util.output_subplot_array(output_path=output_path, output_filename=output_filename,
-                               output_format=output_format)
+                                      output_format=output_format)
 
     plt.close()
 
 
 def plot_fitting_subplot_lens_and_source_planes(fit, should_plot_mask=True, should_plot_source_grid=False, positions=None,
+                                                should_plot_image_plane_pix=True,
                                                 units='arcsec', figsize=None, aspect='equal',
                                                 cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05,
                                                 linscale=0.01,
@@ -324,7 +334,10 @@ def plot_fitting_subplot_lens_and_source_planes(fit, should_plot_mask=True, shou
 
     kpc_per_arcsec = fit.tracer.image_plane.kpc_per_arcsec_proper
 
-    imaging_plotters.plot_image(image=fit.images[0], mask=mask, positions=positions, grid=None, as_subplot=True,
+    image_plane_pix_grid = get_image_plane_pix_grid(should_plot_image_plane_pix, fit)
+
+    imaging_plotters.plot_image(image=fit.images[0], mask=mask, positions=positions,
+                                image_plane_pix_grid=image_plane_pix_grid, as_subplot=True,
                                 units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
                                 cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
                                 linscale=linscale,
@@ -409,7 +422,7 @@ def plot_fitting_subplot_lens_and_source_planes(fit, should_plot_mask=True, shou
                                        output_path=output_path, output_filename='', output_format=output_format)
 
     plotter_util.output_subplot_array(output_path=output_path, output_filename=output_filename,
-                               output_format=output_format)
+                                      output_format=output_format)
 
     plt.close()
 
@@ -598,3 +611,10 @@ def plot_fitting_individuals_lens_and_source_planes(fit, units='kpc', output_pat
     if plot_lensing_fitting_chi_squareds:
         fitting_plotters.plot_chi_squareds(fit=fit, image_index=0, mask=mask, units=units, kpc_per_arcsec=kpc_per_arcsec,
                                            output_path=output_path, output_format=output_format)
+
+def get_image_plane_pix_grid(should_plot_image_plane_pix, fit):
+    if hasattr(fit, 'mapper'):
+        if should_plot_image_plane_pix and fit.mapper.is_image_plane_pixelization:
+            return fit.tracer.image_plane.grids[0].pix
+    else:
+        return None

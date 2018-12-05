@@ -4,10 +4,9 @@ import shutil
 import numpy as np
 
 from autofit import conf
-from autolens.imaging import image as im
-from autolens.imaging.util import array_util
-from autolens.imaging import mask
-from autolens.imaging import scaled_array
+from autolens.data.imaging import image as im
+from autolens.data.array.util import array_util
+from autolens.data.array import grids, scaled_array
 from autolens.lensing import ray_tracing
 
 dirpath = os.path.dirname(os.path.realpath(__file__))
@@ -33,10 +32,10 @@ def simulate_integration_image(data_name, pixel_scale, lens_galaxies, source_gal
 
     psf = im.PSF.simulate_as_gaussian(shape=psf_shape, pixel_scale=pixel_scale, sigma=pixel_scale)
 
-    image_grids = mask.ImagingGrids.grids_for_simulation(shape=image_shape, pixel_scale=pixel_scale,
-                                                         sub_grid_size=1, psf_shape=psf_shape)
+    image_grids = grids.DataGrids.grids_for_simulation(shape=image_shape, pixel_scale=pixel_scale,
+                                                       sub_grid_size=1, psf_shape=psf_shape)
 
-    image_shape = image_grids.image.padded_shape
+    image_shape = image_grids.regular.padded_shape
 
     if not source_galaxies:
 
@@ -59,7 +58,7 @@ def simulate_integration_image(data_name, pixel_scale, lens_galaxies, source_gal
     if os.path.exists(output_path) == False:
         os.makedirs(output_path)
 
-    array_util.numpy_array_to_fits(sim_image, path=output_path + 'image.fits')
+    array_util.numpy_array_to_fits(sim_image, path=output_path + 'regular.fits')
     array_util.numpy_array_to_fits(sim_image.noise_map, path=output_path + 'noise_map_.fits')
     array_util.numpy_array_to_fits(psf, path=output_path + '/psf.fits')
     array_util.numpy_array_to_fits(sim_image.exposure_time_map, path=output_path + 'exposure_map.fits')
@@ -68,7 +67,7 @@ def simulate_integration_image(data_name, pixel_scale, lens_galaxies, source_gal
 def load_image(data_name, pixel_scale):
     data_dir = "{}/data/{}".format(dirpath, data_name)
 
-    data = scaled_array.ScaledSquarePixelArray.from_fits_with_pixel_scale(file_path=data_dir + '/image.fits', hdu=0,
+    data = scaled_array.ScaledSquarePixelArray.from_fits_with_pixel_scale(file_path=data_dir + '/regular.fits', hdu=0,
                                                                           pixel_scale=pixel_scale)
     noise = scaled_array.ScaledSquarePixelArray.from_fits_with_pixel_scale(file_path=data_dir + '/noise_map_.fits', hdu=0,
                                                                            pixel_scale=pixel_scale)

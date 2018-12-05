@@ -1,6 +1,7 @@
 import os
 import shutil
 
+from autofit import conf
 from autofit.core import non_linear as nl
 from autolens.model.galaxy import galaxy, galaxy_model as gm
 from autolens.pipeline import phase as ph
@@ -11,15 +12,12 @@ from test.integration import tools
 dirpath = os.path.dirname(os.path.realpath(__file__))
 dirpath = os.path.dirname(dirpath)
 output_path = '{}/../output/model_mapper'.format(dirpath)
-config_path = output_path + 'config'
 
-try:
-    shutil.rmtree(output_path)
-except FileNotFoundError:
-    pass
-
+path = '{}/../../'.format(os.path.dirname(os.path.realpath(__file__)))
+conf.instance = conf.Config(config_path=path+'config', output_path=path+'output')
 
 def pipeline():
+
     pipeline_name = "set_constant_float"
     data_name = '/set_constant_float'
 

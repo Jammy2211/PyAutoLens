@@ -1,58 +1,58 @@
-from autolens.imaging import image as im
-from autolens.imaging import mask as ma
+from autolens.data.imaging import image as im
+from autolens.data.array import mask as ma
 from autolens.lensing import lensing_fitting
 from autolens.lensing import ray_tracing
 from autolens.model.galaxy import galaxy as g
 from autolens.lensing import lensing_image as li
 from autolens.model.profiles import light_profiles as lp
 from autolens.model.profiles import mass_profiles as mp
-from autolens.imaging.plotters import imaging_plotters
+from autolens.data.imaging.plotters import imaging_plotters
 from autolens.lensing.plotters import ray_tracing_plotters
 from autolens.lensing.plotters import lensing_fitting_plotters
 
-# In this example, we'll fit_normal the image we simulated in the previous exercise. We'll do this using model image generated
-# via a tracer_without_subhalo, and by compairing to the simulated image we'll get diagostics about the quality of the fit_normal.
+# In this example, we'll fit_normal the regular we simulated in the previous exercise. We'll do this using model regular generated
+# via a tracer_without_subhalo, and by compairing to the simulated regular we'll get diagostics about the quality of the fit_normal.
 
-# First, we load the image-datas we simualted in the previous tutorial.
+# First, we load the regular-datas we simualted in the previous tutorial.
 path = 'path/to/AutoLens/howtolens/1_introduction' # Unfortunately, in a Jupyter notebook you have to manually specify the path to PyAutoLens and this tutorial.
 path = '/home/jammy/PyCharm/Projects/AutoLens/workspace/howtolens/chapter_1_introduction'
-image = im.load_imaging_from_fits(image_path=path + '/data/image.fits',
+image = im.load_imaging_from_fits(image_path=path + '/data/regular.fits',
                                   noise_map_path=path+'/data/noise_map.fits',
                                   psf_path=path + '/data/psf.fits', pixel_scale=0.1)
 
-# To fit_normal an image, we first specify a masks. A masks describes the sections of the image that we fit_normal.
+# To fit_normal an regular, we first specify a masks. A masks describes the sections of the regular that we fit_normal.
 
-# Typically, we want to masks out regions of the image where the lens and source galaxies are not visible, for example
+# Typically, we want to masks out regions of the regular where the lens and source galaxies are not visible, for example
 # at the edges where the signal is entirely background sky and noise.
 
-# For the image we simulated, a 3" circular masks will do the job.
+# For the regular we simulated, a 3" circular masks will do the job.
 
-mask = ma.Mask.circular(shape=image.shape, pixel_scale=image.pixel_scale, radius_mask_arcsec=3.0)
+mask = ma.Mask.circular(shape=image.shape, pixel_scale=image.pixel_scale, radius_arcsec=3.0)
 print(mask) # 1 = True, which means the pixel is masked. Edge pixels are indeed masked.
 print(mask[48:53, 48:53]) # Whereas central pixels are False and therefore unmasked.
 
-# We can use an imaging_plotter to compare the masks and the image - this is useful if we really want to 'tailor' a
+# We can use an imaging_plotter to compare the masks and the regular - this is useful if we really want to 'tailor' a
 # masks to the lensed source's light (which in this example, we won't).
 imaging_plotters.plot_image(image=image, mask=mask)
 
-# Now we've loaded the image and created a masks, we use them to create a 'lensing image', which we'll perform using the
+# Now we've loaded the regular and created a masks, we use them to create a 'lensing regular', which we'll perform using the
 # lensing_module (imported as 'li').
 
-# A lensing image is a 'package' of all parts of the the image datas we need in order to fit_normal it:
+# A lensing regular is a 'package' of all parts of the the regular datas we need in order to fit_normal it:
 
-# 1) The image.
+# 1) The regular.
 
-# 2) The PSF: so that when we compare a tracer_without_subhalo's image-plane image to the image datas we can include blurring due to
+# 2) The PSF: so that when we compare a tracer_without_subhalo's regular-plane regular to the regular datas we can include blurring due to
 #    the telescope optics.
 
 # 3) The noise-map: so our goodness-of-fit_normal measure accounts for noise in the observations.
 
-# 4) The image's grids: so the tracer_without_subhalo's image-plane image is generated on the same (masked) grid as the image-datas.
+# 4) The regular's grids: so the tracer_without_subhalo's regular-plane regular is generated on the same (masked) grid as the regular-datas.
 
 lensing_image = li.LensingImage(image=image, mask=mask)
 imaging_plotters.plot_image_subplot(lensing_image.image)
 
-# By printing its attribute, we can see that it does indeed contain the image, masks, psf and so on
+# By printing its attribute, we can see that it does indeed contain the regular, masks, psf and so on
 print('Image:')
 print(lensing_image.image)
 print('Noise-Map:')
@@ -62,19 +62,19 @@ print(lensing_image.image.psf)
 print('Mask')
 print(lensing_image.mask)
 print('Grid')
-print(lensing_image.grids.image)
+print(lensing_image.grids.regular)
 
 # The shapes of these grids reveals they are 1D and have been masked:
-print(lensing_image.image.shape) # This is the original 2D image
+print(lensing_image.image.shape) # This is the original 2D regular
 print(lensing_image.shape)
 print(lensing_image.noise_map.shape)
-print(lensing_image.grids.image.shape)
+print(lensing_image.grids.regular.shape)
 
-# To fit_normal an image, we need to create an image-plane image using a tracer_without_subhalo.
-# Lets use the same tracer_without_subhalo we simulated the image with (thus, our fit_normal should be 'perfect').
+# To fit_normal an regular, we need to create an regular-plane regular using a tracer_without_subhalo.
+# Lets use the same tracer_without_subhalo we simulated the regular with (thus, our fit_normal should be 'perfect').
 
-# Its worth noting that below, we use the sensitivity_image's grids to setup the tracer_without_subhalo. This ensures that our image-plane
-# image will be the same resolution and alignment as our image-datas, as well as being masked appropriately.
+# Its worth noting that below, we use the sensitivity_image's grids to setup the tracer_without_subhalo. This ensures that our regular-plane
+# regular will be the same resolution and alignment as our regular-datas, as well as being masked appropriately.
 
 lens_galaxy = g.Galaxy(mass=mp.EllipticalIsothermal(centre=(0.0, 0.0), einstein_radius=1.6, axis_ratio=0.7, phi=45.0))
 source_galaxy = g.Galaxy(light=lp.EllipticalSersic(centre=(0.1, 0.1), axis_ratio=0.8, phi=45.0,
@@ -83,12 +83,12 @@ tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source
                                              image_plane_grids=[lensing_image.grids])
 ray_tracing_plotters.plot_image_plane_image(tracer=tracer)
 
-# To fit_normal the image, we pass the lensing image and tracer_without_subhalo to the fitting module. This performs the following:
+# To fit_normal the regular, we pass the lensing regular and tracer_without_subhalo to the fitting module. This performs the following:
 
-# 1) Blurs the tracer_without_subhalo's image-plane image with the lensing-image's PSF, ensuring that the telescope optics are
+# 1) Blurs the tracer_without_subhalo's regular-plane regular with the lensing-regular's PSF, ensuring that the telescope optics are
 #    accounted for by the fit_normal. This creates the fit_normal's 'model_image'.
 
-# 2) Computes the difference between this model_image and the observed image-datas, creating the fit_normal's 'residuals'.
+# 2) Computes the difference between this model_image and the observed regular-datas, creating the fit_normal's 'residuals'.
 
 # 3) Divides the residuals by the noise-map and squaring each value, creating the fits 'chi-squareds'.
 
@@ -114,14 +114,14 @@ print(fit.residual[48:53, 48:53])
 print('Chi-Squareds Central Pixels:')
 print(fit.chi_squared[48:53, 48:53])
 
-# It also provides a likelihood, which is a single-figure estimate of how good the model image fitted the
-# simulated image (in unmasked pixels only!).
+# It also provides a likelihood, which is a single-figure estimate of how good the model regular fitted the
+# simulated regular (in unmasked pixels only!).
 print('Likelihood:')
 print(fit.likelihood)
 
-# We used the same tracer_without_subhalo to create and fit_normal the image. Therefore, our fit_normal to the image was excellent.
+# We used the same tracer_without_subhalo to create and fit_normal the regular. Therefore, our fit_normal to the regular was excellent.
 # For example, by inspecting the residuals and chi-squareds, one can see no signs of the source model_galaxy's light present
-# and we only see the noise that we simulated the image with.
+# and we only see the noise that we simulated the regular with.
 
 # This solution should translate to one of the highest-likelihood solutions possible.
 
@@ -156,7 +156,7 @@ fit = lensing_fitting.fit_lensing_image_with_tracer(lensing_image=lensing_image,
 lensing_fitting_plotters.plot_fitting_subplot(fit=fit)
 
 # Clearly, the model provides a terrible fit_normal, and this tracer_without_subhalo is not a plausible representation of
-# the image-datas  (of course, we already knew that, given that we simulated it!)
+# the regular-datas  (of course, we already knew that, given that we simulated it!)
 
 # The likelihood drops dramatically, as expected.
 print('Previous Likelihoods:')

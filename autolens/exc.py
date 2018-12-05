@@ -1,5 +1,6 @@
 from autofit import exc
 
+
 class ImagingException(Exception):
     pass
 
@@ -20,7 +21,7 @@ class RayTracingException(exc.FitException):
     pass
 
 
-class PixelizationException(Exception):
+class PixelizationException(exc.FitException):
     pass
 
 

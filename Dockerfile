@@ -35,8 +35,6 @@ RUN pip3 --no-cache-dir install \
 			getdist==0.2.8.4.2 \
 			autofit
 
-RUN pip3 --no-cache-dir install autolens
-
 # Set up permissions.
 RUN gpg --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys B42F6819007F00F88E364FD4036A9C25BF357DD4 \
 	&& curl -o /usr/local/bin/gosu -SL "https://github.com/tianon/gosu/releases/download/1.10/gosu-$(dpkg --print-architecture)" \
@@ -46,6 +44,7 @@ RUN gpg --keyserver hkp://p80.pool.sks-keyservers.net:80 --recv-keys B42F6819007
     && chmod +x /usr/local/bin/gosu
 
 # Copy files
+ADD autolens /home/user/autolens
 ADD dockerfiles/jupyter /home/user/.jupyter
 ADD workspace /home/user/workspace_temp
 ADD dockerfiles/entrypoint.sh /usr/local/bin/entrypoint.sh

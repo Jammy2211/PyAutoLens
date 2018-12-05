@@ -4,9 +4,9 @@ import numpy as np
 from astropy import constants
 
 from autolens import exc
-from autolens.imaging.util import grid_util, mapping_util
-from autolens.imaging import mask as msk
-from autolens.imaging import scaled_array
+from autolens.data.array.util import grid_util
+from autolens.data.array.util import mapping_util
+from autolens.data.array import grids, scaled_array
 
 
 def cosmology_check(func):
@@ -56,10 +56,10 @@ class Plane(object):
         -----------
         galaxies : [Galaxy]
             The list of lens galaxies in this plane.
-        grids : mask.ImagingGrids
+        grids : mask.DataGrids
             The grids of (x,y) arc-second coordinates of this plane.
-        border : mask.ImageGridBorder
-            The border of the image-grid, which is used to relocate demagnified traced image-pixel to the \
+        border : mask.RegularGridBorder
+            The border of the regular-grid, which is used to relocate demagnified traced regular-pixel to the \
             source-plane border.
         compute_deflections : bool
             If true, the deflection-angles of this plane's coordinates are calculated use its galaxy's mass-profiles.
@@ -157,7 +157,7 @@ class Plane(object):
 
     @property
     def has_padded_grids(self):
-        return any(list(map(lambda grid : isinstance(grid.image, msk.PaddedImageGrid), self.grids)))
+        return any(list(map(lambda grid : isinstance(grid.regular, grids.PaddedRegularGrid), self.grids)))
 
     @property
     def mapper(self):
@@ -187,7 +187,7 @@ class Plane(object):
     @property
     def image_plane_images(self):
         return list(map(lambda _image_plane_image, grid :
-                        grid.image.scaled_array_from_array_1d(_image_plane_image), self.image_plane_images_, self.grids))
+                        grid.regular.scaled_array_from_array_1d(_image_plane_image), self.image_plane_images_, self.grids))
 
     @property
     def image_plane_images_for_simulation(self):
@@ -195,7 +195,7 @@ class Plane(object):
             raise exc.RayTracingException(
                 'To retrieve an datas_ plane datas_ for the simulation, the grids in the tracer_normal'
                 'must be padded grids')
-        return list(map(lambda _image_plane_image, grid : grid.image.map_to_2d_keep_padded(_image_plane_image),
+        return list(map(lambda _image_plane_image, grid : grid.regular.map_to_2d_keep_padded(_image_plane_image),
                         self.image_plane_images_, self.grids))
 
     @property
@@ -223,27 +223,27 @@ class Plane(object):
 
     @property
     def plane_images(self):
-        return list(map(lambda grid : plane_image_from_grid_and_galaxies(shape=grid.image.mask.shape,
-                                      grid=grid.image, galaxies=self.galaxies), self.grids))
+        return list(map(lambda grid : plane_image_from_grid_and_galaxies(shape=grid.regular.mask.shape,
+                                      grid=grid.regular, galaxies=self.galaxies), self.grids))
 
     @property
     def surface_density(self):
         _surface_density = sum([surface_density_from_grid(self.grids[0].sub.unlensed_grid, [galaxy]) for galaxy in
                                 self.galaxies])
-        return self.grids[0].image.scaled_array_from_array_1d(_surface_density)
+        return self.grids[0].regular.scaled_array_from_array_1d(_surface_density)
 
     @property
     def potential(self):
         _potential = sum([potential_from_grid(self.grids[0].sub.unlensed_grid, [galaxy]) for galaxy in self.galaxies])
-        return self.grids[0].image.scaled_array_from_array_1d(_potential)
+        return self.grids[0].regular.scaled_array_from_array_1d(_potential)
 
     @property
     def deflections_y(self):
-        return self.grids[0].image.scaled_array_from_array_1d(self.deflections_[:, 0])
+        return self.grids[0].regular.scaled_array_from_array_1d(self.deflections_[:, 0])
 
     @property
     def deflections_x(self):
-        return self.grids[0].image.scaled_array_from_array_1d(self.deflections_[:, 1])
+        return self.grids[0].regular.scaled_array_from_array_1d(self.deflections_[:, 1])
 
     @property
     def deflections_(self):
@@ -252,12 +252,12 @@ class Plane(object):
     @property
     def yticks(self):
         """Compute the yticks labels of this grid, used for plotting the y-axis ticks when visualizing an datas_-grid"""
-        return np.linspace(np.amin(self.grids[0].image[:,0]), np.amax(self.grids[0].image[:,0]), 4)
+        return np.linspace(np.amin(self.grids[0].regular[:,0]), np.amax(self.grids[0].regular[:,0]), 4)
 
     @property
     def xticks(self):
         """Compute the xticks labels of this grid, used for plotting the x-axis ticks when visualizing an datas_-grid"""
-        return np.linspace(np.amin(self.grids[0].image[:,1]), np.amax(self.grids[0].image[:,1]), 4)
+        return np.linspace(np.amin(self.grids[0].regular[:,1]), np.amax(self.grids[0].regular[:,1]), 4)
 
     def luminosities_of_galaxies_within_circles(self, radius, conversion_factor=1.0):
         """
@@ -402,8 +402,8 @@ def sub_to_image_grid(func):
 
         result = func(grid, galaxies, *args, *kwargs)
 
-        if isinstance(grid, msk.SubGrid):
-            return grid.sub_data_to_image(result)
+        if isinstance(grid, grids.SubGrid):
+            return grid.sub_data_to_regular_data(result)
         else:
             return result
 
@@ -430,8 +430,8 @@ def potential_from_grid(grid, galaxies):
 
 def deflections_from_grid(grid, galaxies):
     deflections = sum(map(lambda galaxy: galaxy.deflections_from_grid(grid), galaxies))
-    if isinstance(grid, msk.SubGrid):
-        return np.asarray([grid.sub_data_to_image(deflections[:, 0]), grid.sub_data_to_image(deflections[:, 1])]).T
+    if isinstance(grid, grids.SubGrid):
+        return np.asarray([grid.sub_data_to_regular_data(deflections[:, 0]), grid.sub_data_to_regular_data(deflections[:, 1])]).T
     return sum(map(lambda galaxy: galaxy.deflections_from_grid(grid), galaxies))
 
 
@@ -453,10 +453,10 @@ def plane_image_from_grid_and_galaxies(shape, grid, galaxies, buffer=1.0e-2):
     pixel_scales = (float((y_max - y_min) / shape[0]), float((x_max - x_min) / shape[1]))
     origin = ((y_max + y_min) / 2.0, (x_max + x_min) / 2.0)
 
-    uniform_grid = grid_util.image_grid_1d_masked_from_mask_pixel_scales_and_origin(mask=np.full(shape=shape,
-                                                                                                 fill_value=False),
-                                                                                    pixel_scales=pixel_scales,
-                                                                                    origin=origin)
+    uniform_grid = grid_util.regular_grid_1d_masked_from_mask_pixel_scales_and_origin(mask=np.full(shape=shape,
+                                                                                                   fill_value=False),
+                                                                                      pixel_scales=pixel_scales,
+                                                                                      origin=origin)
 
     image_1d = sum([intensities_from_grid(uniform_grid, [galaxy]) for galaxy in galaxies])
 
