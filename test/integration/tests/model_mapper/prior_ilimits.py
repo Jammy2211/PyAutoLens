@@ -69,7 +69,6 @@ def make_pipeline(pipeline_name):
             self.lens_galaxies.lens = previous_results[0].variable.lens
             print(self.lens_galaxies.lens.sersic.intensity.lower_limit)
             print(self.lens_galaxies.lens.sersic.intensity.upper_limit)
-            stop
 
     phase2 = MMPhase(lens_galaxies=dict(lens=gm.GalaxyModel(sersic=lp.EllipticalSersic)),
                      optimizer_class=nl.MultiNest, phase_name="{}/phase2".format(pipeline_name))
