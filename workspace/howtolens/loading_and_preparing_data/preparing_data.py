@@ -56,7 +56,7 @@ imaging_plotters.plot_image_subplot(image=image_in_counts)
 image_converted_to_eps = im.load_imaging_from_fits(image_path=path+'data/image_in_counts/regular.fits', pixel_scale=0.1,
                                                    noise_map_path=path+'data/image_in_counts/noise_map.fits',
                                                    psf_path=path+'data/image_in_counts/psf.fits',
-                                                   exposure_time_map_from_single_value=1000.0, convert_from_counts=True)
+                                                   exposure_time_map_from_single_value=1000.0, convert_from_adus=True)
 imaging_plotters.plot_image_subplot(image=image_converted_to_eps)
 
 # The effective exposure time in each pixel may vary. This occurs when data is reduced in a specific way, called
@@ -66,7 +66,7 @@ image_converted_to_eps = im.load_imaging_from_fits(image_path=path+'data/image_i
                                                    noise_map_path=path+'data/image_in_counts/noise_map.fits',
                                                    psf_path=path+'data/image_in_counts/psf.fits',
                                                    exposure_time_map_path=path+'data/image_in_counts/exposure_time_map.fits',
-                                                   convert_from_counts=True)
+                                                   convert_from_adus=True)
 imaging_plotters.plot_image_subplot(image=image_converted_to_eps)
 
 # 2) Postage stamp size - The bigger the postage stamp cut-out of the regular, the more memory it requires to store it.
