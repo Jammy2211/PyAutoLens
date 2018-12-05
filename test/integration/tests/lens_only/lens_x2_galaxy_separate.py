@@ -41,7 +41,7 @@ def test_pipeline():
 
 def make_pipeline(pipeline_name):
     def modify_mask_function(img):
-        return msk.Mask.circular(shape=img.shape, pixel_scale=img.pixel_scale, radius_mask_arcsec=5.)
+        return msk.Mask.circular(shape=img.shape, pixel_scale=img.pixel_scale, radius_arcsec=5.)
 
     class LensPlaneGalaxy0Phase(ph.LensPlanePhase):
         def pass_priors(self, previous_results):

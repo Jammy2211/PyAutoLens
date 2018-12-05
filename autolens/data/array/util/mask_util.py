@@ -78,8 +78,8 @@ def mask_circular_from_shape_pixel_scale_and_radius(shape, pixel_scale, radius_a
     return mask
 
 @numba.jit(nopython=True, cache=True)
-def mask_annular_from_shape_pixel_scale_and_radii(shape, pixel_scale, inner_radius_arcsec, outer_radius_arcsec,
-                                                  centre=(0.0, 0.0)):
+def mask_circular_annular_from_shape_pixel_scale_and_radii(shape, pixel_scale, inner_radius_arcsec, outer_radius_arcsec,
+                                                           centre=(0.0, 0.0)):
     """Compute an annular masks from an input inner and outer masks radius and regular shape."""
 
     mask = np.full(shape, True)
@@ -100,8 +100,8 @@ def mask_annular_from_shape_pixel_scale_and_radii(shape, pixel_scale, inner_radi
     return mask
 
 @numba.jit(nopython=True, cache=True)
-def mask_anti_annular_from_shape_pixel_scale_and_radii(shape, pixel_scale, inner_radius_arcsec, outer_radius_arcsec,
-                                                       outer_radius_2_arcsec, centre=(0.0, 0.0)):
+def mask_circular_anti_annular_from_shape_pixel_scale_and_radii(shape, pixel_scale, inner_radius_arcsec, outer_radius_arcsec,
+                                                                outer_radius_2_arcsec, centre=(0.0, 0.0)):
     """Compute an annular masks from an input inner and outer masks radius and regular shape."""
 
     mask = np.full(shape, True)
@@ -123,6 +123,17 @@ def mask_anti_annular_from_shape_pixel_scale_and_radii(shape, pixel_scale, inner
     return mask
 
 @numba.jit(nopython=True, cache=True)
+def elliptical_radius_from_y_x_phi_and_axis_ratio(y_arcsec, x_arcsec, phi, axis_ratio):
+    r_arcsec = np.sqrt(x_arcsec ** 2 + y_arcsec ** 2)
+
+    theta_rotated = np.arctan2(y_arcsec, x_arcsec) + np.radians(phi)
+
+    y_arcsec_elliptical = r_arcsec * np.sin(theta_rotated)
+    x_arcsec_elliptical = r_arcsec * np.cos(theta_rotated)
+
+    return np.sqrt(x_arcsec_elliptical ** 2.0 + (y_arcsec_elliptical / axis_ratio) ** 2.0)
+
+@numba.jit(nopython=True, cache=True)
 def mask_elliptical_from_shape_pixel_scale_and_radius(shape, pixel_scale, major_axis_radius_arcsec, axis_ratio, phi,
                                                       centre=(0.0, 0.0)):
     """Compute a circular masks from an input masks radius and regular shape."""
@@ -138,16 +149,39 @@ def mask_elliptical_from_shape_pixel_scale_and_radius(shape, pixel_scale, major_
             y_arcsec = (y - y_cen) * pixel_scale
             x_arcsec = (x - x_cen) * pixel_scale
 
-            r_arcsec = np.sqrt(x_arcsec ** 2 + y_arcsec ** 2)
-
-            theta_rotated = np.arctan2(y_arcsec, x_arcsec) + np.radians(phi)
-
-            y_arcsec_elliptical = r_arcsec * np.sin(theta_rotated)
-            x_arcsec_elliptical = r_arcsec * np.cos(theta_rotated)
-
-            r_arcsec_elliptical = np.sqrt(x_arcsec_elliptical**2.0 + (y_arcsec_elliptical/axis_ratio)**2.0)
+            r_arcsec_elliptical = elliptical_radius_from_y_x_phi_and_axis_ratio(y_arcsec, x_arcsec, phi, axis_ratio)
 
             if r_arcsec_elliptical <= major_axis_radius_arcsec:
+                mask[y, x] = False
+
+    return mask
+
+@numba.jit(nopython=True, cache=True)
+def mask_elliptical_annular_from_shape_pixel_scale_and_radius(shape, pixel_scale,
+                                                              inner_major_axis_radius_arcsec, inner_axis_ratio, inner_phi,
+                                                              outer_major_axis_radius_arcsec, outer_axis_ratio, outer_phi,
+                                                      centre=(0.0, 0.0)):
+    """Compute a circular masks from an input masks radius and regular shape."""
+
+    mask = np.full(shape, True)
+
+    y_cen, x_cen = mask_centres_from_shape_pixel_scale_and_centre(shape=mask.shape, pixel_scale=pixel_scale,
+                                                                  centre=centre)
+
+    for y in range(mask.shape[0]):
+        for x in range(mask.shape[1]):
+
+            y_arcsec = (y - y_cen) * pixel_scale
+            x_arcsec = (x - x_cen) * pixel_scale
+
+            inner_r_arcsec_elliptical = elliptical_radius_from_y_x_phi_and_axis_ratio(y_arcsec, x_arcsec,
+                                                                                      inner_phi, inner_axis_ratio)
+
+            outer_r_arcsec_elliptical = elliptical_radius_from_y_x_phi_and_axis_ratio(y_arcsec, x_arcsec,
+                                                                                      outer_phi, outer_axis_ratio)
+
+            if inner_r_arcsec_elliptical >= inner_major_axis_radius_arcsec and \
+                outer_r_arcsec_elliptical <= outer_major_axis_radius_arcsec:
                 mask[y, x] = False
 
     return mask
