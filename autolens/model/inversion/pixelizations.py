@@ -8,7 +8,7 @@ from autolens.model.inversion import mappers
 from autolens.model.inversion.util import pixelization_util
 
 
-def setup_image_plane_pixelization_grid_from_galaxies_and_grids(galaxies, grids):
+def setup_image_plane_pixelization_grid_from_galaxies_and_grids(galaxies, data_grids):
     """An image-plane pixelization is one where its pixel centres are computed by tracing a sparse grid of pixels from \
     the data's regular grid to other planes (e.g. the source-plane).
 
@@ -26,16 +26,17 @@ def setup_image_plane_pixelization_grid_from_galaxies_and_grids(galaxies, grids)
         The collection of grids (regular, sub, etc.) which the image-plane pixelization grid (referred to as pix) \
         may be added to.
     """
-    for galaxy in galaxies:
-        if hasattr(galaxy, 'pixelization'):
-            if isinstance(galaxy.pixelization, ImagePlanePixelization):
+    if not isinstance(data_grids.regular, grids.PaddedRegularGrid):
+        for galaxy in galaxies:
+            if hasattr(galaxy, 'pixelization'):
+                if isinstance(galaxy.pixelization, ImagePlanePixelization):
 
-                image_plane_pix_grid = galaxy.pixelization.image_plane_pix_grid_from_regular_grid(
-                    regular_grid=grids.regular)
-                return grids.data_grids_with_pix_grid(pix_grid=image_plane_pix_grid.sparse_grid,
-                       regular_to_nearest_regular_pix=image_plane_pix_grid.regular_to_sparse)
+                    image_plane_pix_grid = galaxy.pixelization.image_plane_pix_grid_from_regular_grid(
+                        regular_grid=data_grids.regular)
+                    return data_grids.data_grids_with_pix_grid(pix_grid=image_plane_pix_grid.sparse_grid,
+                           regular_to_nearest_regular_pix=image_plane_pix_grid.regular_to_sparse)
 
-    return grids
+    return data_grids
 
 
 class ImagePlanePixelization(object):

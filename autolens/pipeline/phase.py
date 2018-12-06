@@ -769,12 +769,10 @@ class LensSourcePlanePhase(PhaseImaging):
             super(PhaseImaging.Analysis, self).__init__(phase_name, previous_results)
 
         def tracer_for_instance(self, instance):
-            image_plane_grids = pix.setup_image_plane_pixelization_grid_from_galaxies_and_grids(
-                galaxies=instance.source_galaxies, grids=self.lensing_image.grids)
 
             return ray_tracing.TracerImageSourcePlanes(lens_galaxies=instance.lens_galaxies,
                                                        source_galaxies=instance.source_galaxies,
-                                                       image_plane_grids=[image_plane_grids],
+                                                       image_plane_grids=[self.lensing_image.grids],
                                                        border=self.lensing_image.border)
 
         def padded_tracer_for_instance(self, instance):
