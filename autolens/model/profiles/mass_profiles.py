@@ -60,7 +60,7 @@ def jit_integrand(integrand_function):
 class MassProfile(object):
 
     def surface_density_func(self, eta):
-        raise NotImplementedError("surface_density_at_radius should be overridden")
+        raise NotImplementedError("surface_density_func should be overridden")
 
     def surface_density_from_grid(self, grid):
         pass
@@ -73,7 +73,10 @@ class MassProfile(object):
     def deflections_from_grid(self, grid):
         raise NotImplementedError("deflections_from_grid should be overridden")
 
-    def dimensionless_mass_within_ellipse(self, major_axis):
+    def mass_within_circle(self, radius, conversion_factor):
+        raise NotImplementedError()
+
+    def mass_within_ellipse(self, major_axis, conversion_factor):
         raise NotImplementedError()
 
 
@@ -97,76 +100,46 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
         self.axis_ratio = axis_ratio
         self.phi = phi
 
-    def dimensionless_mass_within_circle(self, radius):
-        """ Compute the mass profiles's total dimensionless mass within a circle of specified radius. This is \ 
-        performed via integration of the surface density profiles and is centred on the mass profile.
+    def mass_within_circle(self, radius, conversion_factor=1.0):
+        """ Compute the mass profiles's total mass within a circle of specified radius. This is performed via \
+        integration of the surface density profiles and is centred on the mass profile.
+
+        The value returned by this integral is dimensionless, and a conversion factor can be specified to convert it \
+        to a physical value (e.g. the critical surface mass density).
 
         Parameters
         ----------
         radius : float
             The radius of the circle to compute the dimensionless mass within.
-
-        Returns
-        -------
-        dimensionless_mass : float
-            The total dimensionless mass within the specified circle.
+        conversion_factor : float
+            The factor the dimensionless mass is multiplied by to convert it to a physical mass.
         """
-        return quad(self.dimensionless_mass_integral, a=0.0, b=radius, args=(1.0,))[0]
+        return conversion_factor*quad(self.mass_integral, a=0.0, b=radius, args=(1.0,))[0]
 
-    def dimensionless_mass_within_ellipse(self, major_axis):
+    def mass_within_ellipse(self, major_axis, conversion_factor=1.0):
         """ Compute the mass profiles's total dimensionless mass within an ellipse of specified radius. This is \
         performed via integration of the surface density profiles and is centred and rotationally aligned with the \
         mass profile.
+
+        The value returned by this integral is dimensionless, and a conversion factor can be specified to convert it \
+        to a physical value (e.g. the critical surface mass density).
 
         Parameters
         ----------
         major_axis : float
             The major-axis radius of the ellipse.
-
-        Returns
-        -------
-        dimensionless_mass : float
-            The total dimensionless mass within the specified circle.
+        conversion_factor : float
+            The factor the dimensionless mass is multiplied by to convert it to a physical mass.
         """
-        return quad(self.dimensionless_mass_integral, a=0.0, b=major_axis, args=(self.axis_ratio,))[0]
+        return conversion_factor*quad(self.mass_integral, a=0.0, b=major_axis, args=(self.axis_ratio,))[0]
 
-    def dimensionless_mass_integral(self, x, axis_ratio):
+    def mass_integral(self, x, axis_ratio):
         """Routine to integrate an elliptical light profiles - set axis ratio to 1 to compute the luminosity within a \
         circle"""
         r = x * axis_ratio
         return 2 * np.pi * r * self.surface_density_func(x)
 
-    def mass_within_circle(self, radius, conversion_factor):
-        """ Compute the mass profiles's total mass within a circle of specified radius. This is performed via
-        integration of the surface density profiles and is centred on the mass profile.
-
-        The result is multiplied by a conversion factor to compute the physical mass of the system. For strong lensing,
-        this factor is the critical surface mass density.
-
-        Parameters
-        ----------
-        radius : float
-            The radius of the circle to compute the dimensionless mass within.
-        conversion_factor : float
-            The factor the dimensionless mass is multiplied by to convert it to a physical mass.
-        """
-        return conversion_factor*self.dimensionless_mass_within_circle(radius=radius)
-
-    def mass_within_ellipse(self, major_axis, conversion_factor):
-        """ Compute the mass profiles's total mass within an ellipse of specified radius. This is performed via
-        integration of the surface density profiles and is centred and rotationally aligned with the mass profile.
-
-        The result is multiplied by a conversion factor to compute the physical mass of the system. For strong lensing,
-        this factor is the critical surface mass density.
-
-        Parameters
-        ----------
-        major_axis : float
-            The major-axis radius of the ellipse.
-        conversion_factor : float
-            The factor the dimensionless mass is multiplied by to convert it to a physical mass.
-        """
-        return conversion_factor*self.dimensionless_mass_within_ellipse(major_axis=major_axis)
+ #   def density_as_function_of_radius_circular_annuli(self):
 
 
 class EllipticalCoredPowerLaw(EllipticalMassProfile, MassProfile):
@@ -178,7 +151,7 @@ class EllipticalCoredPowerLaw(EllipticalMassProfile, MassProfile):
         Parameters
         ----------
         centre: (float, float)
-            The image_grid of the origin of the profiles
+            The regular_grid of the origin of the profiles
         axis_ratio : float
             Elliptical mass profile's minor-to-major axis ratio (b/a)
         phi : float
@@ -207,7 +180,7 @@ class EllipticalCoredPowerLaw(EllipticalMassProfile, MassProfile):
 
         Parameters
         ----------
-        grid : masks.ImageGrid
+        grid : masks.RegularGrid
             The grid of coordinates the surface density is computed on.
         """
 
@@ -227,7 +200,7 @@ class EllipticalCoredPowerLaw(EllipticalMassProfile, MassProfile):
 
         Parameters
         ----------
-        grid : masks.ImageGrid
+        grid : masks.RegularGrid
             The grid of coordinates the deflection angles are computed on.
         """
         potential_grid = np.zeros(grid.shape[0])
@@ -245,7 +218,7 @@ class EllipticalCoredPowerLaw(EllipticalMassProfile, MassProfile):
 
         Parameters
         ----------
-        grid : masks.ImageGrid
+        grid : masks.RegularGrid
             The grid of coordinates the deflection angles are computed on.
         """
 
@@ -296,7 +269,7 @@ class SphericalCoredPowerLaw(EllipticalCoredPowerLaw):
         Parameters
         ----------
         centre: (float, float)
-            The image_grid of the origin of the profiles
+            The regular_grid of the origin of the profiles
         einstein_radius : float
             Einstein radius of power-law mass profiles
         slope : float
@@ -313,7 +286,7 @@ class SphericalCoredPowerLaw(EllipticalCoredPowerLaw):
 
         Parameters
         ----------
-        grid : masks.ImageGrid
+        grid : masks.RegularGrid
             The grid of coordinates the deflection angles are computed on.
         """
         eta = self.grid_to_radius(grid)
@@ -401,7 +374,7 @@ class EllipticalCoredIsothermal(EllipticalCoredPowerLaw):
         Parameters
         ----------
         centre: (float, float)
-            The image_grid of the origin of the profiles
+            The regular_grid of the origin of the profiles
         axis_ratio : float
             Elliptical mass profile's minor-to-major axis ratio (b/a)
         phi : float
@@ -426,7 +399,7 @@ class SphericalCoredIsothermal(SphericalCoredPowerLaw):
         Parameters
         ----------
         centre: (float, float)
-            The image_grid of the origin of the profiles
+            The regular_grid of the origin of the profiles
         einstein_radius : float
             Einstein radius of power-law mass profiles
         core_radius : float
@@ -446,7 +419,7 @@ class EllipticalIsothermal(EllipticalPowerLaw):
         Parameters
         ----------
         centre: (float, float)
-            The image_grid of the origin of the profiles
+            The regular_grid of the origin of the profiles
         axis_ratio : float
             Elliptical mass profile's minor-to-major axis ratio (b/a)
         phi : float
@@ -464,7 +437,7 @@ class EllipticalIsothermal(EllipticalPowerLaw):
 
         Parameters
         ----------
-        grid : masks.ImageGrid
+        grid : masks.RegularGrid
             The grid of coordinates the deflection angles are computed on.
         """
 
@@ -493,7 +466,7 @@ class SphericalIsothermal(EllipticalIsothermal):
         Parameters
         ----------
         centre: (float, float)
-            The image_grid of the origin of the profiles
+            The regular_grid of the origin of the profiles
         einstein_radius : float
             Einstein radius of power-law mass profiles
         """
@@ -507,7 +480,7 @@ class SphericalIsothermal(EllipticalIsothermal):
 
         Parameters
         ----------
-        grid : masks.ImageGrid
+        grid : masks.RegularGrid
             The grid of coordinates the deflection angles are computed on.
         """
         eta = self.grid_to_elliptical_radii(grid)
@@ -520,7 +493,7 @@ class SphericalIsothermal(EllipticalIsothermal):
 
         Parameters
         ----------
-        grid : masks.ImageGrid
+        grid : masks.RegularGrid
             The grid of coordinates the deflection angles are computed on.
         """
         return self.grid_radius_to_cartesian(grid, np.full(grid.shape[0], 2.0 * self.einstein_radius_rescaled))
@@ -537,7 +510,7 @@ class AbstractEllipticalGeneralizedNFW(geometry_profiles.EllipticalProfile, Mass
         Parameters
         ----------
         centre: (float, float)
-            The image_grid of the origin of the profiles
+            The regular_grid of the origin of the profiles
         axis_ratio : float
             Ratio of profiles ellipse's minor and major axes (b/a)
         phi : float
@@ -562,7 +535,7 @@ class AbstractEllipticalGeneralizedNFW(geometry_profiles.EllipticalProfile, Mass
 
         Parameters
         -----------
-        grid : masks.ImageGrid
+        grid : masks.RegularGrid
             The grid of coordinates the potential / deflections are computed on.
         tabulate_bins : int
             The number of bins used to tabulate the integral over.
@@ -582,7 +555,7 @@ class AbstractEllipticalGeneralizedNFW(geometry_profiles.EllipticalProfile, Mass
 
         Parameters
         ----------
-        grid : masks.ImageGrid
+        grid : masks.RegularGrid
             The grid of coordinates the surface density is computed on.
         """
 
@@ -606,7 +579,7 @@ class EllipticalGeneralizedNFW(AbstractEllipticalGeneralizedNFW):
         Parameters
         ----------
         tabulate_bins
-        grid : masks.ImageGrid
+        grid : masks.RegularGrid
             The grid of coordinates the deflection angles are computed on.
         """
 
@@ -650,7 +623,7 @@ class EllipticalGeneralizedNFW(AbstractEllipticalGeneralizedNFW):
         Parameters
         ----------
         tabulate_bins
-        grid : masks.ImageGrid
+        grid : masks.RegularGrid
             The grid of coordinates the deflection angles are computed on.
         """
 
@@ -743,7 +716,7 @@ class SphericalGeneralizedNFW(EllipticalGeneralizedNFW):
         Parameters
         ----------
         centre: (float, float)
-            The image_grid of the origin of the profiles
+            The regular_grid of the origin of the profiles
         kappa_s : float
             The overall normalization of the dark matter halo
         inner_slope : float
@@ -761,7 +734,7 @@ class SphericalGeneralizedNFW(EllipticalGeneralizedNFW):
 
         Parameters
         ----------
-        grid : masks.ImageGrid
+        grid : masks.RegularGrid
             The grid of coordinates the deflection angles are computed on.
         """
 
@@ -794,7 +767,7 @@ class EllipticalNFW(AbstractEllipticalGeneralizedNFW):
         Parameters
         ----------
         centre: (float, float)
-            The image_grid of the origin of the profiles
+            The regular_grid of the origin of the profiles
         axis_ratio : float
             Ratio of profiles ellipse's minor and major axes (b/a)
         phi : float
@@ -823,7 +796,7 @@ class EllipticalNFW(AbstractEllipticalGeneralizedNFW):
 
         Parameters
         ----------
-        grid : masks.ImageGrid
+        grid : masks.RegularGrid
             The grid of coordinates the deflection angles are computed on.
         """
 
@@ -843,7 +816,7 @@ class EllipticalNFW(AbstractEllipticalGeneralizedNFW):
 
         Parameters
         ----------
-        grid : masks.ImageGrid
+        grid : masks.RegularGrid
             The grid of coordinates the deflection angles are computed on.
         """
 
@@ -909,7 +882,7 @@ class SphericalNFW(EllipticalNFW):
         Parameters
         ----------
         centre: (float, float)
-            The image_grid of the origin of the profiles
+            The regular_grid of the origin of the profiles
         kappa_s : float
             The overall normalization of the dark matter halo
         scale_radius : float
@@ -930,7 +903,7 @@ class SphericalNFW(EllipticalNFW):
 
         Parameters
         ----------
-        grid : masks.ImageGrid
+        grid : masks.RegularGrid
             The grid of coordinates the deflection angles are computed on.
         """
         eta = (1.0 / self.scale_radius) * self.grid_to_radius(grid)
@@ -943,7 +916,7 @@ class SphericalNFW(EllipticalNFW):
 
         Parameters
         ----------
-        grid : masks.ImageGrid
+        grid : masks.RegularGrid
             The grid of coordinates the deflection angles are computed on.
         """
         eta = np.multiply(1. / self.scale_radius, self.grid_to_radius(grid))
@@ -978,7 +951,7 @@ class AbstractEllipticalSersic(light_profiles.AbstractEllipticalSersic, Elliptic
         Parameters
         ----------
         centre: (float, float)
-            The image_grid of the origin of the profiles
+            The regular_grid of the origin of the profiles
         axis_ratio : float
             Ratio of profiles ellipse's minor and major axes (b/a)
         phi : float
@@ -1003,7 +976,7 @@ class AbstractEllipticalSersic(light_profiles.AbstractEllipticalSersic, Elliptic
 
         Parameters
         ----------
-        grid : masks.ImageGrid
+        grid : masks.RegularGrid
             The grid of coordinates the surface density is computed on.
         """
         return self.surface_density_func(self.grid_to_eccentric_radii(grid))
@@ -1030,7 +1003,7 @@ class EllipticalSersic(AbstractEllipticalSersic):
 
         Parameters
         ----------
-        grid : masks.ImageGrid
+        grid : masks.RegularGrid
             The grid of coordinates the deflection angles are computed on.
         """
 
@@ -1067,7 +1040,7 @@ class SphericalSersic(EllipticalSersic):
         Parameters
         ----------
         centre: (float, float)
-            The image_grid of the origin of the profiles
+            The regular_grid of the origin of the profiles
         intensity : float
             Overall flux intensity normalisation in the light profiles (electrons per second)
         effective_radius : float
@@ -1092,7 +1065,7 @@ class EllipticalExponential(EllipticalSersic):
         Parameters
         ----------
         centre: (float, float)
-            The image_grid of the origin of the profiles
+            The regular_grid of the origin of the profiles
         axis_ratio : float
             Ratio of profiles ellipse's minor and major axes (b/a)
         phi : float
@@ -1123,7 +1096,7 @@ class SphericalExponential(EllipticalExponential):
         Parameters
         ----------
         centre: (float, float)
-            The image_grid of the origin of the profiles
+            The regular_grid of the origin of the profiles
         intensity : float
             Overall flux intensity normalisation in the light profiles (electrons per second)
         effective_radius : float
@@ -1145,7 +1118,7 @@ class EllipticalDevVaucouleurs(EllipticalSersic):
         Parameters
         ----------
         centre: (float, float)
-            The image_grid of the origin of the profiles
+            The regular_grid of the origin of the profiles
         axis_ratio : float
             Ratio of profiles ellipse's minor and major axes (b/a)
         phi : float
@@ -1176,7 +1149,7 @@ class SphericalDevVaucouleurs(EllipticalDevVaucouleurs):
         Parameters
         ----------
         centre: (float, float)
-            The image_grid of the origin of the profiles
+            The regular_grid of the origin of the profiles
         intensity : float
             Overall flux intensity normalisation in the light profiles (electrons per second)
         effective_radius : float
@@ -1224,7 +1197,7 @@ class EllipticalSersicRadialGradient(AbstractEllipticalSersic):
 
         Parameters
         ----------
-        grid : masks.ImageGrid
+        grid : masks.RegularGrid
             The grid of coordinates the surface density is computed on.
         """
         return self.surface_density_func(self.grid_to_eccentric_radii(grid))
@@ -1236,7 +1209,7 @@ class EllipticalSersicRadialGradient(AbstractEllipticalSersic):
 
         Parameters
         ----------
-        grid : masks.ImageGrid
+        grid : masks.RegularGrid
             The grid of coordinates the deflection angles are computed on.
         """
 
@@ -1337,7 +1310,7 @@ class ExternalShear(geometry_profiles.EllipticalProfile, MassProfile):
 
         Parameters
         ----------
-        grid : masks.ImageGrid
+        grid : masks.RegularGrid
             The grid of coordinates the deflection angles are computed on.
         """
         deflection_y = -np.multiply(self.magnitude, grid[:, 0])

@@ -3,9 +3,9 @@ from matplotlib import pyplot as plt
 from autolens import exc
 from autofit import conf
 from autolens.model.galaxy import galaxy_data as gd
-from autolens.plotters import plotter_util
-from autolens.fitting.plotters import fitting_plotters
-from autolens.plotters import array_plotters
+from autolens.data.array.plotters import plotter_util, array_plotters
+from autolens.data.fitting.plotters import fitting_plotters
+
 
 def plot_single_subplot(fit, should_plot_mask=True, positions=None,
                         units='arcsec', kpc_per_arcsec=None, figsize=None, aspect='equal',
@@ -205,7 +205,7 @@ def plot_deflections_subplot(fit, should_plot_mask=True, positions=None,
                                        output_path=output_path, output_filename='', output_format=output_format)
 
     plotter_util.output_subplot_array(output_path=output_path, output_filename=output_filename,
-                               output_format=output_format)
+                                      output_format=output_format)
 
     plt.close()
 
@@ -267,12 +267,12 @@ def plot_galaxy_data_array(galaxy_data, mask=None, positions=None, as_subplot=Fa
         raise exc.PlottingException('The galaxy datas supplied to plot_galaxy_data_array is not a supported type')
 
     array_plotters.plot_array(array=galaxy_data.array, mask=mask, positions=positions, as_subplot=as_subplot,
-                           units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
-                           cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max,
-                           linthresh=linthresh, linscale=linscale,
-                           cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
-                           title=title, titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize,
-                           xyticksize=xyticksize,
-                           mask_pointsize=mask_pointsize, position_pointsize=position_pointsize,
-                           grid_pointsize=grid_pointsize,
-                           output_path=output_path, output_format=output_format, output_filename=output_filename)
+                              units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
+                              cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max,
+                              linthresh=linthresh, linscale=linscale,
+                              cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
+                              title=title, titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize,
+                              xyticksize=xyticksize,
+                              mask_pointsize=mask_pointsize, position_pointsize=position_pointsize,
+                              grid_pointsize=grid_pointsize,
+                              output_path=output_path, output_format=output_format, output_filename=output_filename)

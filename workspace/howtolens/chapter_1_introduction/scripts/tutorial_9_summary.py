@@ -1,12 +1,12 @@
-from autolens.imaging import image as im
-from autolens.imaging import mask as ma
+from autolens.data.imaging import image as im
+from autolens.data.array import mask as ma
 from autolens.lensing import lensing_fitting
 from autolens.lensing import ray_tracing
 from autolens.model.galaxy import galaxy as g
 from autolens.lensing import lensing_image as li
 from autolens.model.profiles import light_profiles as lp
 from autolens.model.profiles import mass_profiles as mp
-from autolens.imaging.plotters import imaging_plotters
+from autolens.data.imaging.plotters import imaging_plotters
 from autolens.model.profiles.plotters import profile_plotters
 from autolens.model.galaxy.plotters import galaxy_plotters
 from autolens.lensing.plotters import plane_plotters
@@ -15,21 +15,21 @@ from autolens.lensing.plotters import ray_tracing_plotters
 # In this chapter, you've learnt how create and fit_normal strong lenses with PyAutoLens. In particular, you've learnt:
 
 # 1) PyAutoLens uses Cartesian grids of (y,x) coordinates to perform ray-tracing.
-# 2) These grids are combined with light and mass profiles to compute image, surface-densities, potentials and
+# 2) These grids are combined with light and mass profiles to compute regular, surface-densities, potentials and
 #    deflection angles.
 # 3) Profiles are combined to make galaxies.
 # 4) Collections of galaxies (at the same redshift) form a plane.
-# 5) A tracer_without_subhalo can make an image-plane + source-plane strong lens system.
+# 5) A tracer_without_subhalo can make an regular-plane + source-plane strong lens system.
 # 6) The Universe's cosmology can be input into this tracer_without_subhalo to convert units to physical values.
-# 7) The tracer_without_subhalo's image-plane image can be used to simulate strong lens imaging observed on a real telescope.
-# 8) That this image can be fitted, so to as quantify how well a model strong lens system represents the observed image.
+# 7) The tracer_without_subhalo's regular-plane regular can be used to simulate strong lens imaging observed on a real telescope.
+# 8) That this regular can be fitted, so to as quantify how well a model strong lens system represents the observed regular.
 
 # In this summary, we'll consider how flexible the tools PyAutoLens gives you are to study every aspect of a strong
-# lens system. Lets get a 'fit_normal' to a strong lens, by setting up an image, masks, tracer_without_subhalo, etc.
+# lens system. Lets get a 'fit_normal' to a strong lens, by setting up an regular, masks, tracer_without_subhalo, etc.
 
 path = 'path/to/AutoLens/howtolens/chapter_1_introduction' # Unfortunately, in a Jupyter notebook you have to manually specify the path to PyAutoLens and this tutorial.
 path = '/home/jammy/PyCharm/Projects/AutoLens/workspace/howtolens/chapter_1_introduction'
-image = im.load_imaging_from_fits(image_path=path + '/data/image.fits',
+image = im.load_imaging_from_fits(image_path=path + '/data/regular.fits',
                                   noise_map_path=path+'/data/noise_map.fits',
                                   psf_path=path + '/data/psf.fits', pixel_scale=0.1)
 mask = ma.Mask.circular(shape=image.shape, pixel_scale=image.pixel_scale, radius_mask_arcsec=3.0)
@@ -65,24 +65,24 @@ print(fit.tracer.source_plane.galaxies[0].disk)
 print()
 
 # Using the plotters we've used throughout this chapter, we can visualize any aspect of a fit_normal we're interested
-# in. For example, if we want to plot the image of the source model_galaxy mass profile, we can do this in a variety of
+# in. For example, if we want to plot the regular of the source model_galaxy mass profile, we can do this in a variety of
 # different ways
 ray_tracing_plotters.plot_image_plane_image(tracer=fit.tracer)
 plane_plotters.plot_image_plane_image(plane=fit.tracer.source_plane)
-galaxy_plotters.plot_intensities(galaxy=fit.tracer.source_plane.galaxies[0], grid=fit.tracer.source_plane.grids[0].image)
+galaxy_plotters.plot_intensities(galaxy=fit.tracer.source_plane.galaxies[0], grid=fit.tracer.source_plane.grids[0].regular)
 
-# Now, its not often you'd want to write all that code just to plot the image of the source model_galaxy!
+# Now, its not often you'd want to write all that code just to plot the regular of the source model_galaxy!
 
 # However, as our fit_normal and ray-tracing becomes more complex, it is useful to know how to decompose their different
 # attributes to extract different things about them. For example, we made our source-model_galaxy above with two light
-# profiles, a 'bulge' and 'disk. We can plot the image-plane image of each component individually, if we know how to
+# profiles, a 'bulge' and 'disk. We can plot the regular-plane regular of each component individually, if we know how to
 # break-up the different components of the fit_normal and tracer_without_subhalo.
 profile_plotters.plot_intensities(light_profile=fit.tracer.source_plane.galaxies[0].bulge,
-                                  grid=fit.tracer.source_plane.grids[0].image, title='Bulge Image-Plane Image')
+                                  grid=fit.tracer.source_plane.grids[0].regular, title='Bulge Image-Plane Image')
 profile_plotters.plot_intensities(light_profile=fit.tracer.source_plane.galaxies[0].disk,
-                                  grid=fit.tracer.source_plane.grids[0].image, title='Disk Image-Plane Image')
+                                  grid=fit.tracer.source_plane.grids[0].regular, title='Disk Image-Plane Image')
 
-# The fit_normal also has the lensing image, so we can plot the image using the fit_normal too, if we so desire
+# The fit_normal also has the lensing regular, so we can plot the regular using the fit_normal too, if we so desire
 imaging_plotters.plot_image_subplot(image=lensing_image.image)
 
 # And, we're done, not just with the tutorial, but the chapter!
