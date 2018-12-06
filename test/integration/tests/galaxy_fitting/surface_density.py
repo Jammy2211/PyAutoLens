@@ -2,9 +2,8 @@ import os
 import numpy as np
 
 from autolens.model.galaxy import galaxy as g, galaxy_model as gm
-from autolens.imaging.util import grid_util
-from autolens.imaging import scaled_array
-from autolens.imaging import mask
+from autolens.data.array.util import grid_util
+from autolens.data.array import mask, scaled_array
 from autolens.pipeline import phase as ph
 from autolens.model.profiles import mass_profiles as mp
 from test.integration import tools

@@ -1,20 +1,20 @@
 from autofit import conf
 from autofit.core import non_linear as nl
-from autolens.imaging import image as im
-from autolens.imaging import mask
+from autolens.data.imaging import image as im
+from autolens.data.array import mask
 from autolens.model.galaxy import galaxy as g, galaxy_model as gm
 from autolens.lensing import lensing_image as li
 from autolens.lensing import ray_tracing
 from autolens.pipeline import phase as ph
 from autolens.pipeline import pipeline
-from autolens.imaging.plotters import imaging_plotters
+from autolens.data.imaging.plotters import imaging_plotters
 from autolens.model.profiles import light_profiles as lp
 from autolens.model.profiles import mass_profiles as mp
 
 import os
 
 # So far, we've not paid much attention to the source model_galaxy's morphology. We've assumed its a single-component
-# exponential profile, which is a fairly crude assumption. A quick look at any image of a real model_galaxy reveals a wealth
+# exponential profile, which is a fairly crude assumption. A quick look at any regular of a real model_galaxy reveals a wealth
 # of different structures that could be present - bulges, disks, bars, star-forming knots and so on.
 # Furthermore, there could be more than one source-model_galaxy!
 
@@ -25,18 +25,18 @@ import os
 
 # To setup the config and output paths without docker, you need to uncomment and run the command below. If you are
 # using Docker, you don't need to do anything so leave this uncommented!
-# path = '{}/../../'.format(os.path.dirname(os.path.realpath(__file__)))
-# conf.instance = conf.Config(config_path=path+'config', output_path=path+'output')
+path = '{}/../../'.format(os.path.dirname(os.path.realpath(__file__)))
+conf.instance = conf.Config(config_path=path+'config', output_path=path+'output')
 
 def simulate():
 
-    from autolens.imaging import mask
+    from autolens.data.array import grids
     from autolens.model.galaxy import galaxy as g
     from autolens.lensing import ray_tracing
 
     psf = im.PSF.simulate_as_gaussian(shape=(11, 11), sigma=0.05, pixel_scale=0.05)
 
-    image_plane_grids = mask.ImagingGrids.grids_for_simulation(shape=(180, 180), pixel_scale=0.05, psf_shape=(11, 11))
+    image_plane_grids = grids.DataGrids.grids_for_simulation(shape=(180, 180), pixel_scale=0.05, psf_shape=(11, 11))
 
     lens_galaxy = g.Galaxy(mass=mp.EllipticalIsothermal( centre=(0.0, 0.0), axis_ratio=0.8, phi=135.0,
                                                          einstein_radius=1.6))
@@ -57,7 +57,7 @@ def simulate():
     return im.Image.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=0.05,
                                         exposure_time=300.0, psf=psf, background_sky_level=0.1, add_noise=True)
 
-# Lets simulate the image we'll incorrect_fit, which is another new image.
+# Lets simulate the regular we'll incorrect_fit, which is another new regular.
 image = simulate()
 
 imaging_plotters.plot_image_subplot(image=image)
@@ -89,7 +89,7 @@ def make_pipeline():
 
         def pass_priors(self, previous_results):
 
-            self.lens_galaxies = previous_results[0].variable.lens_galaxies
+            self.lens_galaxies.lens = previous_results[0].variable.lens
             self.source_galaxies.source.light_0 = previous_results[0].variable.source.light_0
 
     # You'll notice I've stop writing 'phase_1_results = previous_results[0]' and so on - we know how
@@ -106,7 +106,7 @@ def make_pipeline():
 
         def pass_priors(self, previous_results):
 
-            self.lens_galaxies = previous_results[1].variable.lens_galaxies
+            self.lens_galaxies.lens = previous_results[1].variable.lens
             self.source_galaxies.source.light_0 = previous_results[1].variable.source.light_0
             self.source_galaxies.source.light_1 = previous_results[1].variable.source.light_1
 
@@ -122,7 +122,7 @@ def make_pipeline():
 
         def pass_priors(self, previous_results):
 
-            self.lens_galaxies = previous_results[2].variable.lens_galaxies
+            self.lens_galaxies.lens = previous_results[2].variable.lens
             self.source_galaxies.source.light_0 = previous_results[2].variable.source.light_0
             self.source_galaxies.source.light_1 = previous_results[2].variable.source.light_1
             self.source_galaxies.source.light_2 = previous_results[2].variable.source.light_2

@@ -1,9 +1,8 @@
 import numpy as np
 import pytest
 
-from autolens.imaging import scaled_array as sca
-from autolens.imaging.util import grid_util
-from autolens.imaging import mask as msk
+from autolens.data.array.util import grid_util
+from autolens.data.array import mask as msk, scaled_array as sca
 from autolens.model.galaxy import galaxy as g, galaxy_data as gd
 from autolens.model.profiles import mass_profiles as mp
 from test.mock.mock_galaxy import MockGalaxy
@@ -41,9 +40,9 @@ class TestGalaxyData(object):
 
     def test__grids(self, galaxy_data):
 
-        assert galaxy_data.grids.image.shape == (4, 2)
+        assert galaxy_data.grids.regular.shape == (4, 2)
 
-        assert (galaxy_data.grids.image == np.array([[1.5, -1.5], [1.5, 1.5],
+        assert (galaxy_data.grids.regular == np.array([[1.5, -1.5], [1.5, 1.5],
                                                        [-1.5, -1.5], [-1.5, 1.5]])).all()
         assert (galaxy_data.grids.sub == np.array([[2.0, -2.0], [2.0, -1.0], [1.0, -2.0], [1.0, -1.0],
                                                      [2.0, 1.0], [2.0, 2.0], [1.0, 1.0], [1.0, 2.0],
@@ -52,12 +51,12 @@ class TestGalaxyData(object):
 
     def test__padded_grids(self, galaxy_data):
 
-        padded_image_util = grid_util.image_grid_1d_masked_from_mask_pixel_scales_and_origin(mask=np.full((4, 4), False),
-                                                                                             pixel_scales=galaxy_data.array.pixel_scales)
+        padded_image_util = grid_util.regular_grid_1d_masked_from_mask_pixel_scales_and_origin(mask=np.full((4, 4), False),
+                                                                                               pixel_scales=galaxy_data.array.pixel_scales)
 
-        assert (galaxy_data.padded_grids.image == padded_image_util).all()
-        assert galaxy_data.padded_grids.image.image_shape == (4, 4)
-        assert galaxy_data.padded_grids.image.padded_shape == (4, 4)
+        assert (galaxy_data.padded_grids.regular == padded_image_util).all()
+        assert galaxy_data.padded_grids.regular.image_shape == (4, 4)
+        assert galaxy_data.padded_grids.regular.padded_shape == (4, 4)
 
         padded_sub_util = grid_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(
             mask=np.full((4, 4), False), pixel_scales=galaxy_data.array.pixel_scales,
@@ -99,7 +98,7 @@ class TestGalaxyData(object):
         galaxy = g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=1.0))
 
         intensities_gal = galaxy.intensities_from_grid(grid=galaxy_data.grids.sub)
-        intensities_gal = galaxy_data.grids.sub.sub_data_to_image(sub_array=intensities_gal)
+        intensities_gal = galaxy_data.grids.sub.sub_data_to_regular_data(sub_array=intensities_gal)
 
         intensities_gd = galaxy_data.profile_quantity_from_galaxy_and_sub_grid(galaxy=galaxy,
                                                                                sub_grid=galaxy_data.grids.sub)
@@ -128,7 +127,7 @@ class TestGalaxyData(object):
         assert (surface_density == np.array([1.0, 1.0, 1.0, 1.0])).all()
 
         surface_density_gal = galaxy.surface_density_from_grid(grid=galaxy_data.grids.sub)
-        surface_density_gal = galaxy_data.grids.sub.sub_data_to_image(sub_array=surface_density_gal)
+        surface_density_gal = galaxy_data.grids.sub.sub_data_to_regular_data(sub_array=surface_density_gal)
 
         surface_density_gd = galaxy_data.profile_quantity_from_galaxy_and_sub_grid(galaxy=galaxy,
                                                                                    sub_grid=galaxy_data.grids.sub)
@@ -159,7 +158,7 @@ class TestGalaxyData(object):
         galaxy = g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=1.0))
 
         potential_gal = galaxy.potential_from_grid(grid=galaxy_data.grids.sub)
-        potential_gal = galaxy_data.grids.sub.sub_data_to_image(sub_array=potential_gal)
+        potential_gal = galaxy_data.grids.sub.sub_data_to_regular_data(sub_array=potential_gal)
 
         potential_gd = galaxy_data.profile_quantity_from_galaxy_and_sub_grid(galaxy=galaxy,
                                                                                    sub_grid=galaxy_data.grids.sub)
@@ -193,8 +192,8 @@ class TestGalaxyData(object):
         galaxy = g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=1.0))
 
         deflections_gal = galaxy.deflections_from_grid(grid=galaxy_data.grids.sub)
-        deflections_gal = np.asarray([galaxy_data.grids.sub.sub_data_to_image(deflections_gal[:, 0]),
-                                      galaxy_data.grids.sub.sub_data_to_image(deflections_gal[:, 1])]).T
+        deflections_gal = np.asarray([galaxy_data.grids.sub.sub_data_to_regular_data(deflections_gal[:, 0]),
+                                      galaxy_data.grids.sub.sub_data_to_regular_data(deflections_gal[:, 1])]).T
 
         deflections_gd = galaxy_data.profile_quantity_from_galaxy_and_sub_grid(galaxy=galaxy,
                                                                                sub_grid=galaxy_data.grids.sub)
@@ -229,8 +228,8 @@ class TestGalaxyData(object):
         galaxy = g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=1.0))
 
         deflections_gal = galaxy.deflections_from_grid(grid=galaxy_data.grids.sub)
-        deflections_gal = np.asarray([galaxy_data.grids.sub.sub_data_to_image(deflections_gal[:, 0]),
-                                      galaxy_data.grids.sub.sub_data_to_image(deflections_gal[:, 1])]).T
+        deflections_gal = np.asarray([galaxy_data.grids.sub.sub_data_to_regular_data(deflections_gal[:, 0]),
+                                      galaxy_data.grids.sub.sub_data_to_regular_data(deflections_gal[:, 1])]).T
 
         deflections_gd = galaxy_data.profile_quantity_from_galaxy_and_sub_grid(galaxy=galaxy,
                                                                                sub_grid=galaxy_data.grids.sub)

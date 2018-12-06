@@ -5,8 +5,7 @@ from autofit import conf
 from autofit import exc
 from autofit.core import model_mapper as mm
 
-from autolens.inversion import pixelizations
-from autolens.inversion import regularization
+from autolens.model.inversion import pixelizations, regularization
 from autolens.model.galaxy import galaxy as g, galaxy_model as gp
 from autolens.model.profiles import mass_profiles, light_profiles, light_and_mass_profiles
 
@@ -299,7 +298,7 @@ class TestRegularization(object):
 
         galaxy = galaxy_prior.instance_for_arguments(arguments)
 
-        assert galaxy.regularization.regularization_coefficients == (0.5,)
+        assert galaxy.regularization.coefficients == (0.5,)
 
     def test_fixed_regularization(self):
         galaxy_prior = gp.GalaxyModel(variable_redshift=True, pixelization=pixelizations.Voronoi(),
@@ -309,7 +308,7 @@ class TestRegularization(object):
 
         galaxy = galaxy_prior.instance_for_arguments(arguments)
 
-        assert galaxy.regularization.regularization_coefficients == (1.,)
+        assert galaxy.regularization.coefficients == (1.,)
 
     def test__if_no_pixelization_raises_error(self):
         with pytest.raises(exc.PriorException):

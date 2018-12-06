@@ -1,3 +1,6 @@
+from autofit import exc
+
+
 class ImagingException(Exception):
     pass
 
@@ -14,15 +17,15 @@ class GalaxyException(Exception):
     pass
 
 
-class RayTracingException(Exception):
+class RayTracingException(exc.FitException):
     pass
 
 
-class PixelizationException(Exception):
+class PixelizationException(exc.FitException):
     pass
 
 
-class InversionException(Exception):
+class InversionException(exc.FitException):
     pass
 
 

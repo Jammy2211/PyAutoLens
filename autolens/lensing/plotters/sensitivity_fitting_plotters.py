@@ -1,8 +1,8 @@
 from matplotlib import pyplot as plt
 
-from autolens.plotters import plotter_util
-from autolens.imaging.plotters import imaging_plotters
-from autolens.fitting.plotters import fitting_plotters
+from autolens.data.array.plotters import plotter_util
+from autolens.data.imaging.plotters import imaging_plotters
+from autolens.data.fitting.plotters import fitting_plotters
 
 
 def plot_fitting_subplot(fit, should_plot_mask=True, positions=None,
@@ -35,7 +35,7 @@ def plot_fitting_subplot(fit, should_plot_mask=True, positions=None,
 
     kpc_per_arcsec = fit.tracer_normal.image_plane.kpc_per_arcsec_proper
 
-    imaging_plotters.plot_image(image=fit.fit_normal.images[0], mask=mask, positions=positions, grid=None,
+    imaging_plotters.plot_image(image=fit.fit_normal.images[0], mask=mask, positions=positions, image_plane_pix_grid=None,
                                 as_subplot=True,
                                 units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
                                 cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
@@ -108,6 +108,6 @@ def plot_fitting_subplot(fit, should_plot_mask=True, positions=None,
                                        output_path=output_path, output_filename='', output_format=output_format)
 
     plotter_util.output_subplot_array(output_path=output_path, output_filename=output_filename,
-                               output_format=output_format)
+                                      output_format=output_format)
 
     plt.close()
