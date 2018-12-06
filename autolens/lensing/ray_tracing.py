@@ -5,8 +5,9 @@ from astropy import constants
 from astropy import cosmology as cosmo
 
 from autolens import exc
-from autolens.data.array import mask as msk
+from autolens.data.array import grids
 from autolens.lensing import plane as pl
+from autolens.model.inversion import pixelizations as pix
 
 
 class AbstractTracer(object):
@@ -45,7 +46,7 @@ class AbstractTracer(object):
 
     @property
     def has_padded_grids(self):
-        return isinstance(self.all_planes[0].grids.regular, msk.PaddedImageGrid)
+        return isinstance(self.all_planes[0].grids.regular, grids.PaddedRegularGrid)
 
     @property
     def has_hyper_galaxy(self):
@@ -192,7 +193,7 @@ class TracerImageSourcePlanes(AbstractTracer):
             The list of galaxies in the datas_-plane.
         source_galaxies : [Galaxy]
             The list of galaxies in the source-plane.
-        image_plane_grids : grids.DataGrids
+        image_plane_grids : [grids.DataGrids]
             The datas_-plane grids where ray-tracing calculation are performed, (this includes the datas_-grid, \
             sub-grid, blurring-grid, etc.).
         border : mask.RegularGridBorder
@@ -201,6 +202,11 @@ class TracerImageSourcePlanes(AbstractTracer):
         cosmology : astropy.cosmology.Planck15
             The cosmology of the ray-tracing calculation.
         """
+
+        image_plane_grids = list(map(lambda data_grids :
+                        pix.setup_image_plane_pixelization_grid_from_galaxies_and_grids(galaxies=source_galaxies,
+                                                                                        data_grids=data_grids),
+                                     image_plane_grids))
 
         super().__init__(pl.Plane(lens_galaxies, image_plane_grids, border=border, compute_deflections=True,
                                   cosmology=cosmology))
@@ -388,7 +394,7 @@ class TracerMulti(AbstractTracerMulti):
         ----------
         galaxies : [Galaxy]
             The list of galaxies in the ray-tracing calculation.
-        image_plane_grids : grids.DataGrids
+        image_plane_grids : [grids.DataGrids]
             The datas_-plane grids where ray-tracing calculation are performed, (this includes the
             datas_-grid, sub-grid, blurring-grid, etc.).
         border : mask.RegularGridBorder
@@ -397,6 +403,11 @@ class TracerMulti(AbstractTracerMulti):
         cosmology : astropy.cosmology
             The cosmology of the ray-tracing calculation.
         """
+
+        image_plane_grids = list(map(lambda data_grids :
+                        pix.setup_image_plane_pixelization_grid_from_galaxies_and_grids(galaxies=galaxies,
+                                                                                        data_grids=data_grids),
+                                     image_plane_grids))
 
         super(TracerMulti, self).__init__(galaxies, cosmology)
 
