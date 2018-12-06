@@ -899,6 +899,90 @@ class TestTracerImageSourcePlanes(object):
             assert tracer.masses_of_image_plane_galaxies_within_circles(radius=1.0) == None
             assert tracer.masses_of_image_plane_galaxies_within_ellipses(major_axis=1.0) == None
 
+    class TestImagePlanePixGrid:
+
+        def test__galaxies_have_no_pixelization__no_pix_grid_added(self):
+
+            ma = mask.Mask(np.array([[False, False, False],
+                                     [False, False, False],
+                                     [False, False, False]]), pixel_scale=1.0)
+
+            data_grids = grids.DataGrids.grids_from_mask_sub_grid_size_and_psf_shape(mask=ma, sub_grid_size=1,
+                                                                                     psf_shape=(1, 1))
+
+            galaxy = g.Galaxy()
+
+            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[galaxy], source_galaxies=[galaxy],
+                                                         image_plane_grids=[data_grids])
+
+            assert (tracer.image_plane.grids[0].pix == np.array([[0.0, 0.0]])).all()
+            assert (tracer.source_plane.grids[0].pix == np.array([[0.0, 0.0]])).all()
+
+        def test__setup_pixelization__galaxies_have_other_pixelization__returns_normal_grids(self):
+
+            ma = mask.Mask(np.array([[False, False, False],
+                                     [False, False, False],
+                                     [False, False, False]]), pixel_scale=1.0)
+
+            data_grids = grids.DataGrids.grids_from_mask_sub_grid_size_and_psf_shape(mask=ma, sub_grid_size=1,
+                                                                                     psf_shape=(1, 1))
+
+            galaxy = g.Galaxy(pixelization=pixelizations.Rectangular(shape=(3, 3)),
+                              regularization=regularization.Constant())
+
+            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[galaxy], source_galaxies=[galaxy],
+                                                         image_plane_grids=[data_grids])
+
+            assert (tracer.image_plane.grids[0].pix == np.array([[0.0, 0.0]])).all()
+            assert (tracer.source_plane.grids[0].pix == np.array([[0.0, 0.0]])).all()
+
+        def test__setup_pixelization__galaxy_has_pixelization__but_grid_is_padded_grid__returns_normal_grids(self):
+
+            ma = mask.Mask(np.array([[False, False, False],
+                                     [False, False, False],
+                                     [False, True, False]]), pixel_scale=1.0)
+
+            data_grids = grids.DataGrids.padded_grids_from_mask_sub_grid_size_and_psf_shape(mask=ma, sub_grid_size=1,
+                                                                                            psf_shape=(1, 1))
+
+            galaxy = g.Galaxy(pixelization=pixelizations.AdaptiveMagnification(shape=(3, 3)),
+                              regularization=regularization.Constant())
+
+            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[galaxy], source_galaxies=[galaxy],
+                                                         image_plane_grids=[data_grids])
+
+            assert (tracer.image_plane.grids[0].pix == np.array([[0.0, 0.0]])).all()
+            assert (tracer.source_plane.grids[0].pix == np.array([[0.0, 0.0]])).all()
+
+        def test__setup_pixelization__galaxy_has_pixelization__returns_grids_with_pix_grid(self):
+            
+            ma = mask.Mask(np.array([[False, False, False],
+                                     [False, False, False],
+                                     [False, True, False]]), pixel_scale=1.0)
+
+            data_grids = grids.DataGrids.grids_from_mask_sub_grid_size_and_psf_shape(mask=ma, sub_grid_size=1,
+                                                                                     psf_shape=(1, 1))
+
+            galaxy = g.Galaxy(pixelization=pixelizations.AdaptiveMagnification(shape=(3, 3)),
+                              regularization=regularization.Constant())
+
+            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[galaxy], source_galaxies=[galaxy],
+                                                         image_plane_grids=[data_grids])
+
+            assert (tracer.image_plane.grids[0].regular == data_grids.regular).all()
+            assert (tracer.image_plane.grids[0].sub == data_grids.sub).all()
+            assert (tracer.image_plane.grids[0].blurring == data_grids.blurring).all()
+            assert (tracer.image_plane.grids[0].pix == np.array([[1.0, -1.0], [1.0, 0.0], [1.0, 1.0],
+                                                           [0.0, -1.0], [0.0, 0.0], [0.0, 1.0],
+                                                           [-1.0, -1.0], [-1.0, 1.0]])).all()
+
+            assert (tracer.source_plane.grids[0].regular == data_grids.regular).all()
+            assert (tracer.source_plane.grids[0].sub == data_grids.sub).all()
+            assert (tracer.source_plane.grids[0].blurring == data_grids.blurring).all()
+            assert (tracer.source_plane.grids[0].pix == np.array([[1.0, -1.0], [1.0, 0.0], [1.0, 1.0],
+                                                           [0.0, -1.0], [0.0, 0.0], [0.0, 1.0],
+                                                           [-1.0, -1.0], [-1.0, 1.0]])).all()
+
 
 class TestMultiTracer(object):
 
@@ -1545,6 +1629,86 @@ class TestMultiTracer(object):
             assert tracer.regularizations_of_planes[1].value == 1
             assert tracer.regularizations_of_planes[2].value == 2
 
+    class TestImagePlanePixGrid:
+
+        def test__galaxies_have_no_pixelization__no_pix_grid_added(self):
+
+            ma = mask.Mask(np.array([[False, False, False],
+                                     [False, False, False],
+                                     [False, False, False]]), pixel_scale=1.0)
+
+            data_grids = grids.DataGrids.grids_from_mask_sub_grid_size_and_psf_shape(mask=ma, sub_grid_size=1,
+                                                                                     psf_shape=(1, 1))
+
+            tracer = ray_tracing.TracerMulti(galaxies=[g.Galaxy(redshift=2.0), g.Galaxy(redshift=1.0)],
+                                             image_plane_grids=[data_grids])
+
+            assert (tracer.planes[0].grids[0].pix == np.array([[0.0, 0.0]])).all()
+            assert (tracer.planes[1].grids[0].pix == np.array([[0.0, 0.0]])).all()
+
+        def test__setup_pixelization__galaxies_have_other_pixelization__returns_normal_grids(self):
+
+            ma = mask.Mask(np.array([[False, False, False],
+                                     [False, False, False],
+                                     [False, False, False]]), pixel_scale=1.0)
+
+            data_grids = grids.DataGrids.grids_from_mask_sub_grid_size_and_psf_shape(mask=ma, sub_grid_size=1,
+                                                                                     psf_shape=(1, 1))
+
+            galaxy = g.Galaxy(pixelization=pixelizations.Rectangular(shape=(3, 3)),
+                              regularization=regularization.Constant(), redshift=2.0)
+
+            tracer = ray_tracing.TracerMulti(galaxies=[galaxy, g.Galaxy(redshift=1.0)],
+                                             image_plane_grids=[data_grids])
+
+            assert (tracer.planes[0].grids[0].pix == np.array([[0.0, 0.0]])).all()
+            assert (tracer.planes[1].grids[0].pix == np.array([[0.0, 0.0]])).all()
+
+        def test__setup_pixelization__galaxy_has_pixelization__but_grid_is_padded_grid__returns_normal_grids(self):
+            ma = mask.Mask(np.array([[False, False, False],
+                                     [False, False, False],
+                                     [False, True, False]]), pixel_scale=1.0)
+
+            data_grids = grids.DataGrids.padded_grids_from_mask_sub_grid_size_and_psf_shape(mask=ma, sub_grid_size=1,
+                                                                                            psf_shape=(1, 1))
+
+            galaxy = g.Galaxy(pixelization=pixelizations.AdaptiveMagnification(shape=(3, 3)),
+                              regularization=regularization.Constant(), redshift=2.0)
+
+            tracer = ray_tracing.TracerMulti(galaxies=[galaxy, g.Galaxy(redshift=1.0)],
+                                             image_plane_grids=[data_grids])
+
+            assert (tracer.planes[0].grids[0].pix == np.array([[0.0, 0.0]])).all()
+            assert (tracer.planes[1].grids[0].pix == np.array([[0.0, 0.0]])).all()
+
+        def test__setup_pixelization__galaxy_has_pixelization__returns_grids_with_pix_grid(self):
+
+            ma = mask.Mask(np.array([[False, False, False],
+                                     [False, False, False],
+                                     [False, True, False]]), pixel_scale=1.0)
+
+            data_grids = grids.DataGrids.grids_from_mask_sub_grid_size_and_psf_shape(mask=ma, sub_grid_size=1,
+                                                                                     psf_shape=(1, 1))
+
+            galaxy = g.Galaxy(pixelization=pixelizations.AdaptiveMagnification(shape=(3, 3)),
+                              regularization=regularization.Constant(), redshift=2.0)
+
+            tracer = ray_tracing.TracerMulti(galaxies=[galaxy, g.Galaxy(redshift=1.0)],
+                                             image_plane_grids=[data_grids])
+
+            assert (tracer.planes[0].grids[0].regular == data_grids.regular).all()
+            assert (tracer.planes[0].grids[0].sub == data_grids.sub).all()
+            assert (tracer.planes[0].grids[0].blurring == data_grids.blurring).all()
+            assert (tracer.planes[0].grids[0].pix == np.array([[1.0, -1.0], [1.0, 0.0], [1.0, 1.0],
+                                                                 [0.0, -1.0], [0.0, 0.0], [0.0, 1.0],
+                                                                 [-1.0, -1.0], [-1.0, 1.0]])).all()
+
+            assert (tracer.planes[1].grids[0].regular == data_grids.regular).all()
+            assert (tracer.planes[1].grids[0].sub == data_grids.sub).all()
+            assert (tracer.planes[1].grids[0].blurring == data_grids.blurring).all()
+            assert (tracer.planes[1].grids[0].pix == np.array([[1.0, -1.0], [1.0, 0.0], [1.0, 1.0],
+                                                                  [0.0, -1.0], [0.0, 0.0], [0.0, 1.0],
+                                                                  [-1.0, -1.0], [-1.0, 1.0]])).all()
 
 class TestBooleanProperties(object):
 
