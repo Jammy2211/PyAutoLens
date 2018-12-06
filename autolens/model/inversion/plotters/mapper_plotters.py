@@ -109,8 +109,7 @@ def plot_voronoi_mapper(mapper, solution_vector, should_plot_centres=True, shoul
 
     set_axis_limits(mapper=mapper, units=units, kpc_per_arcsec=kpc_per_arcsec)
 
-    vor = Voronoi(mapper.geometry.pixel_centres)
-    regions_SP, vertices_SP = voronoi_finite_polygons_2d(vor)
+    regions_SP, vertices_SP = voronoi_finite_polygons_2d(mapper.voronoi)
 
     color_values = solution_vector[:] / np.max(solution_vector)
     clbar = plt.get_cmap('jet')

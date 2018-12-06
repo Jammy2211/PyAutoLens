@@ -248,7 +248,8 @@ class Voronoi(Pixelization):
         pixel_centers : ndarray
             The x and y regular_grid to derive the Voronoi grid_coords.
         """
-        return scipy.spatial.Voronoi(pixel_centers, qhull_options='Qbb Qc Qx Qm')
+        return scipy.spatial.Voronoi(np.asarray([pixel_centers[:, 1], pixel_centers[:, 0]]).T,
+                                     qhull_options='Qbb Qc Qx Qm')
 
 
     def neighbors_from_pixelization(self, pixels, ridge_points):

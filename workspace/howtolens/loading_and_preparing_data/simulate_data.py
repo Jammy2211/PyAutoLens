@@ -175,9 +175,9 @@ path = '{}/'.format(os.path.dirname(os.path.realpath(__file__)))
 def simulate_all_images(plot_images=False):
 
     image = simulate_image()
-    im.output_imaging_to_fits(image=image, image_path=path + '/data/regular/regular.fits',
-                              noise_map_path=path + '/data/regular/noise_map.fits',
-                              psf_path=path + '/data/regular/psf.fits', overwrite=True)
+    im.output_imaging_to_fits(image=image, image_path=path + '/data/image/image.fits',
+                              noise_map_path=path + '/data/image/noise_map.fits',
+                              psf_path=path + '/data/image/psf.fits', overwrite=True)
 
     new_hdul = fits.HDUList()
     new_hdul.append(fits.ImageHDU(image))
@@ -185,40 +185,40 @@ def simulate_all_images(plot_images=False):
     new_hdul.append(fits.ImageHDU(image.psf))
     new_hdul.append(fits.ImageHDU(image.exposure_time_map))
 
-    if os.path.exists(path + 'data/regular/multiple_hdus.fits'):
-        os.remove(path+ 'data/regular/multiple_hdus.fits')
-    new_hdul.writeto(path + '/data/regular/multiple_hdus.fits')
+    if os.path.exists(path + 'data/image/multiple_hdus.fits'):
+        os.remove(path+ 'data/image/multiple_hdus.fits')
+    new_hdul.writeto(path + '/data/image/multiple_hdus.fits')
 
     image_in_counts = simulate_image_in_counts()
-    im.output_imaging_to_fits(image=image_in_counts, image_path=path + '/data/image_in_counts/regular.fits',
+    im.output_imaging_to_fits(image=image_in_counts, image_path=path + '/data/image_in_counts/image.fits',
                               noise_map_path=path + '/data/image_in_counts/noise_map.fits',
                               psf_path=path + '/data/image_in_counts/psf.fits',
                               exposure_time_map_path=path + '/data/image_in_counts/exposure_time_map.fits',
                               overwrite=True)
 
     image_large_stamp = simulate_image_large_stamp()
-    im.output_imaging_to_fits(image=image_large_stamp, image_path=path + '/data/image_large_stamp/regular.fits',
+    im.output_imaging_to_fits(image=image_large_stamp, image_path=path + '/data/image_large_stamp/image.fits',
                               noise_map_path=path + '/data/image_large_stamp/noise_map.fits',
                               psf_path=path + '/data/image_large_stamp/psf.fits', overwrite=True)
 
     image_small_stamp = simulate_image_small_stamp()
-    im.output_imaging_to_fits(image=image_small_stamp, image_path=path + '/data/image_small_stamp/regular.fits',
+    im.output_imaging_to_fits(image=image_small_stamp, image_path=path + '/data/image_small_stamp/image.fits',
                               noise_map_path=path + '/data/image_small_stamp/noise_map.fits',
                               psf_path=path + '/data/image_small_stamp/psf.fits', overwrite=True)
 
     image_offset_centre = simulate_image_offset_centre()
-    im.output_imaging_to_fits(image=image_offset_centre, image_path=path + '/data/image_offset_centre/regular.fits',
+    im.output_imaging_to_fits(image=image_offset_centre, image_path=path + '/data/image_offset_centre/image.fits',
                               noise_map_path=path + '/data/image_offset_centre/noise_map.fits',
                               psf_path=path + '/data/image_offset_centre/psf.fits', overwrite=True)
 
     image_with_large_psf = simulate_image_with_large_psf()
-    im.output_imaging_to_fits(image=image_with_large_psf, image_path=path + '/data/image_with_large_psf/regular.fits',
+    im.output_imaging_to_fits(image=image_with_large_psf, image_path=path + '/data/image_with_large_psf/image.fits',
                               noise_map_path=path + '/data/image_with_large_psf/noise_map.fits',
                               psf_path=path + '/data/image_with_large_psf/psf.fits', overwrite=True)
 
     image_with_off_centre_psf = simulate_image_with_offset_centre_psf()
     im.output_imaging_to_fits(image=image_with_off_centre_psf,
-                              image_path=path + '/data/image_with_off_centre_psf/regular.fits',
+                              image_path=path + '/data/image_with_off_centre_psf/image.fits',
                               noise_map_path=path + '/data/image_with_off_centre_psf/noise_map.fits',
                               psf_path=path + '/data/image_with_off_centre_psf/psf.fits', overwrite=True)
 
