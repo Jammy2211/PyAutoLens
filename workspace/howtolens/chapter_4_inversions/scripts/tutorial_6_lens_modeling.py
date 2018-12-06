@@ -44,8 +44,8 @@ def simulate():
 def perform_fit_with_lens_and_source_galaxy(lens_galaxy, source_galaxy):
 
     image = simulate()
-    mask = ma.Mask.annular(shape=image.shape, pixel_scale=image.pixel_scale, inner_radius_arcsec=0.5,
-                           outer_radius_arcsec=2.2)
+    mask = ma.Mask.circular_annular(shape=image.shape, pixel_scale=image.pixel_scale, inner_radius_arcsec=0.5,
+                                    outer_radius_arcsec=2.2)
     lensing_image = li.LensingImage(image=image, mask=mask)
     tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
                                                  image_plane_grids=[lensing_image.grids], border=[lensing_image.border])
@@ -125,7 +125,7 @@ def simulate_lens_with_light_profile():
 # When fitting such an regular, we now want to include the lens's light in the analysis. thus, we should update our
 # masks to be circular, and include the central regions of the regular.
 image = simulate_lens_with_light_profile()
-mask = ma.Mask.circular(shape=image.shape, pixel_scale=image.pixel_scale, radius_mask_arcsec=2.5)
+mask = ma.Mask.circular(shape=image.shape, pixel_scale=image.pixel_scale, radius_arcsec=2.5)
 
 # As I said above, performing this fit_normal is the same as usual, we just give the lens model_galaxy a light profile:
 lens_galaxy = g.Galaxy(light=lp.SphericalSersic(centre=(0.0, 0.0), intensity=0.2, effective_radius=0.8,

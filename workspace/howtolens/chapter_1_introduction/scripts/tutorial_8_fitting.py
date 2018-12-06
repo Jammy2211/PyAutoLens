@@ -27,7 +27,7 @@ image = im.load_imaging_from_fits(image_path=path + '/data/regular.fits',
 
 # For the regular we simulated, a 3" circular masks will do the job.
 
-mask = ma.Mask.circular(shape=image.shape, pixel_scale=image.pixel_scale, radius_mask_arcsec=3.0)
+mask = ma.Mask.circular(shape=image.shape, pixel_scale=image.pixel_scale, radius_arcsec=3.0)
 print(mask) # 1 = True, which means the pixel is masked. Edge pixels are indeed masked.
 print(mask[48:53, 48:53]) # Whereas central pixels are False and therefore unmasked.
 

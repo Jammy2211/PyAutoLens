@@ -51,7 +51,7 @@ def make_pipeline(pipeline_name):
             self.lens_galaxies[1].sersic.centre_1 = 1.0
 
     def modify_mask_function(img):
-        return msk.Mask.circular(shape=img.shape, pixel_scale=img.pixel_scale, radius_mask_arcsec=5.)
+        return msk.Mask.circular(shape=img.shape, pixel_scale=img.pixel_scale, radius_arcsec=5.)
 
     phase1 = LensPlanex2GalPhase(lens_galaxies=[gm.GalaxyModel(sersic=lp.EllipticalSersic),
                                                 gm.GalaxyModel(sersic=lp.EllipticalSersic)],

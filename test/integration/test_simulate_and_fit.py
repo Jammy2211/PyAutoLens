@@ -52,7 +52,7 @@ def test__simulate_lensed_source_and_fit__no_psf_blurring__chi_squared_is_0__noi
                                       noise_map_path=path + '/noise_map_.fits',
                                       psf_path=path + '/psf.fits', pixel_scale=0.2)
 
-    mask = msk.Mask.circular(shape=image.shape, pixel_scale=0.2, radius_mask_arcsec=0.8)
+    mask = msk.Mask.circular(shape=image.shape, pixel_scale=0.2, radius_arcsec=0.8)
 
     lensing_image = li.LensingImage(image=image, mask=mask, sub_grid_size=1)
 
@@ -100,7 +100,7 @@ def test__simulate_lensed_source_and_fit__include_psf_blurring__chi_squared_is_0
                                       noise_map_path=path + '/noise_map_.fits',
                                       psf_path=path + '/psf.fits', pixel_scale=0.2)
 
-    mask = msk.Mask.circular(shape=image.shape, pixel_scale=0.2, radius_mask_arcsec=0.8)
+    mask = msk.Mask.circular(shape=image.shape, pixel_scale=0.2, radius_arcsec=0.8)
 
     lensing_image = li.LensingImage(image=image, mask=mask, sub_grid_size=1)
 
