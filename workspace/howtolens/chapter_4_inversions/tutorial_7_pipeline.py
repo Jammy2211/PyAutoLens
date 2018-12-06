@@ -64,6 +64,9 @@ def make_pipeline():
                                      source_galaxies=dict(source=gm.GalaxyModel(light=lp.EllipticalSersic)),
                                      optimizer_class=nl.MultiNest, phase_name=pipeline_name + '/phase_1_initialize')
 
+    phase1.optimizer.sampling_efficiency = 0.3
+    phase1.optimizer.const_efficiency_mode = True
+
     # Now, in phase 2, lets pass the lens mass model to phase 2, and use it to fit the source with an inversion.
     # We can customize the inversion's priors like we do our light and mass profiles.
 
@@ -84,6 +87,9 @@ def make_pipeline():
                            source_galaxies=dict(source=gm.GalaxyModel(pixelization=pix.Rectangular,
                                                                       regularization=reg.Constant)),
                            optimizer_class=nl.MultiNest, phase_name=pipeline_name + '/phase_2_inversion')
+
+    phase2.optimizer.sampling_efficiency = 0.3
+    phase2.optimizer.const_efficiency_mode = True
 
     return pipeline.PipelineImaging(pipeline_name, phase1, phase2)
 
