@@ -44,14 +44,14 @@ imaging_plotters.plot_image_subplot(image=image)
 
 # So, what is a border? In the regular-plane, a border is the set of exterior pixels in a mask that are at, well, its
 # border. Lets plot the regular with a circular mask, and tell our imaging plotter to plot the border as well.
-mask_circular = ma.Mask.circular(shape=image.shape, pixel_scale=image.pixel_scale, radius_mask_arcsec=2.5)
+mask_circular = ma.Mask.circular(shape=image.shape, pixel_scale=image.pixel_scale, radius_arcsec=2.5)
 imaging_plotters.plot_image_subplot(image=image, mask=mask_circular, should_plot_border=True)
 
 # As you can see, for a circular mask, the border *is* the edge of our mask (the ring of black dots we're used to seeing
 # whenever we plot a mask). For an annular mask, not every pixel on the edge of the mask is necessarily a part of its
 # border!
-mask_annular = ma.Mask.annular(shape=image.shape, pixel_scale=image.pixel_scale, inner_radius_arcsec=0.8,
-                       outer_radius_arcsec=2.5)
+mask_annular = ma.Mask.circular_annular(shape=image.shape, pixel_scale=image.pixel_scale, inner_radius_arcsec=0.8,
+                                        outer_radius_arcsec=2.5)
 imaging_plotters.plot_image_subplot(image=image, mask=mask_annular, should_plot_border=True)
 
 # Indeed, a border is *only* the pixels at the exterior edge of our mask, which for the annular mask above means non of
@@ -119,7 +119,7 @@ ray_tracing_plotters.plot_deflections_x(tracer=fit.tracer)
 #    them, coming from pixels at large radii from the centre of the lens galaxy. Unfortunately, our circular mask
 #    masks them out, meaning they never make it to our source-plane and are omitted from the source reconstruction.
 #    Lets quickly use a larger circular mask to confirm that these pixels do exist, if we don't mask them.
-mask_circular_large = ma.Mask.circular(shape=image.shape, pixel_scale=image.pixel_scale, radius_mask_arcsec=4.0)
+mask_circular_large = ma.Mask.circular(shape=image.shape, pixel_scale=image.pixel_scale, radius_arcsec=4.0)
 fit = perform_fit_with_source_galaxy_mask_and_border(source_galaxy=source_galaxy, mask=mask_circular, use_border=False)
 inversion_plotters.plot_reconstructed_pixelization(inversion=fit.inversion, should_plot_grid=True)
 
@@ -174,7 +174,7 @@ def simulate_image_x2_lenses():
 
 # Lets simulate our 2 lens system, define a new circular mask and plot them.
 image = simulate_image_x2_lenses()
-mask_circular = ma.Mask.circular(shape=image.shape, pixel_scale=image.pixel_scale, radius_mask_arcsec=3.3)
+mask_circular = ma.Mask.circular(shape=image.shape, pixel_scale=image.pixel_scale, radius_arcsec=3.3)
 imaging_plotters.plot_image_subplot(image=image, mask=mask_circular, should_plot_border=True)
 
 # We need to redefine our perform fit function, to use the x2 lens galaxy model.
@@ -217,25 +217,25 @@ inversion_plotters.plot_reconstructed_pixelization(inversion=fit.inversion, shou
 # Before we end,I want to quickly highlight that care must be taken when choosing the size of your mask. If you don't
 # choose a big enough mask, the border won't be able to relocate all of the demanigified regular pixels to the border
 # edge.
-mask_circular = ma.Mask.circular(shape=image.shape, pixel_scale=image.pixel_scale, radius_mask_arcsec=2.5)
+mask_circular = ma.Mask.circular(shape=image.shape, pixel_scale=image.pixel_scale, radius_arcsec=2.5)
 fit = perform_fit_x2_lenses_with_source_galaxy_mask_and_border(source_galaxy=source_galaxy, mask=mask_circular,
                                                           use_border=True)
 inversion_plotters.plot_reconstructed_pixelization(inversion=fit.inversion, should_plot_grid=True,
                                                    should_plot_border=True)
 
-mask_circular = ma.Mask.circular(shape=image.shape, pixel_scale=image.pixel_scale, radius_mask_arcsec=2.7)
+mask_circular = ma.Mask.circular(shape=image.shape, pixel_scale=image.pixel_scale, radius_arcsec=2.7)
 fit = perform_fit_x2_lenses_with_source_galaxy_mask_and_border(source_galaxy=source_galaxy, mask=mask_circular,
                                                           use_border=True)
 inversion_plotters.plot_reconstructed_pixelization(inversion=fit.inversion, should_plot_grid=True,
                                                    should_plot_border=True)
 
-mask_circular = ma.Mask.circular(shape=image.shape, pixel_scale=image.pixel_scale, radius_mask_arcsec=2.9)
+mask_circular = ma.Mask.circular(shape=image.shape, pixel_scale=image.pixel_scale, radius_arcsec=2.9)
 fit = perform_fit_x2_lenses_with_source_galaxy_mask_and_border(source_galaxy=source_galaxy, mask=mask_circular,
                                                           use_border=True)
 inversion_plotters.plot_reconstructed_pixelization(inversion=fit.inversion, should_plot_grid=True,
                                                    should_plot_border=True)
 
-mask_circular = ma.Mask.circular(shape=image.shape, pixel_scale=image.pixel_scale, radius_mask_arcsec=3.1)
+mask_circular = ma.Mask.circular(shape=image.shape, pixel_scale=image.pixel_scale, radius_arcsec=3.1)
 fit = perform_fit_x2_lenses_with_source_galaxy_mask_and_border(source_galaxy=source_galaxy, mask=mask_circular,
                                                           use_border=True)
 inversion_plotters.plot_reconstructed_pixelization(inversion=fit.inversion, should_plot_grid=True,

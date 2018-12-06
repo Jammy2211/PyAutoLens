@@ -38,8 +38,8 @@ def simulate():
 
 # Now, lets simulate the source, masks it, and use a plot to check the masking is appropriate.
 image = simulate()
-mask = ma.Mask.annular(shape=image.shape, pixel_scale=image.pixel_scale,
-                       inner_radius_arcsec=1.0, outer_radius_arcsec=2.2)
+mask = ma.Mask.circular_annular(shape=image.shape, pixel_scale=image.pixel_scale,
+                                inner_radius_arcsec=1.0, outer_radius_arcsec=2.2)
 imaging_plotters.plot_image(image=image, mask=mask)
 
 # Next, lets set this regular up as a lensing regular, and setup a tracer_without_subhalo using the input lens model_galaxy model (we don't need
@@ -106,8 +106,8 @@ def simulate_complex_source():
 # This code is doing all the the same as above (setup the regular, galaxies, tracer_without_subhalo, mapper, ec.),
 # but I have made the masks slightly larger for this source.
 image = simulate_complex_source()
-mask = ma.Mask.annular(shape=image.shape, pixel_scale=image.pixel_scale,
-                       inner_radius_arcsec=0.1, outer_radius_arcsec=3.2)
+mask = ma.Mask.circular_annular(shape=image.shape, pixel_scale=image.pixel_scale,
+                                inner_radius_arcsec=0.1, outer_radius_arcsec=3.2)
 imaging_plotters.plot_image(image=image, mask=mask)
 
 lensing_image = li.LensingImage(image=image, mask=mask, sub_grid_size=1)

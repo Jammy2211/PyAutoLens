@@ -106,8 +106,8 @@ def make_pipeline():
     # We can change a masks using the 'mask_function' which basically returns the new masks we want to use (you can
     # actually use on phases by themselves like in the previous chapter).
     def mask_function(img):
-        return mask.Mask.anti_annular(img.shape, pixel_scale=img.pixel_scale, inner_radius_arcsec=0.5,
-                                      outer_radius_arcsec=1.6, outer_radius_2_arcsec=2.0)
+        return mask.Mask.circular_anti_annular(img.shape, pixel_scale=img.pixel_scale, inner_radius_arcsec=0.5,
+                                               outer_radius_arcsec=1.6, outer_radius_2_arcsec=2.0)
 
     # Create the phase, using the same notation we learnt before (but noting the masks function is passed to this phase,
     # ensuring the anti-annular masks above is used).
@@ -126,8 +126,8 @@ def make_pipeline():
     # We can use the masks function again, to modify the masks to an annulus. We'll use the same ring radii as before,
     # but this isn't necessary.
     def mask_function(img):
-        return mask.Mask.annular(img.shape, pixel_scale=img.pixel_scale, inner_radius_arcsec=0.5,
-                                 outer_radius_arcsec=3.)
+        return mask.Mask.circular_annular(img.shape, pixel_scale=img.pixel_scale, inner_radius_arcsec=0.5,
+                                          outer_radius_arcsec=3.)
 
     # To modify an regular, we call a new function, 'modify regular'. This function behaves like the pass-priors functions
     # before, whereby we create a python 'class' in a Phase to set it up.  This ensures it has access to the pipeline's

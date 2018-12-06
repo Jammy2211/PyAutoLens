@@ -48,30 +48,52 @@ class TestMask(object):
         msk_util = mask_util.mask_circular_from_shape_pixel_scale_and_radius(shape=(5, 4), pixel_scale=2.7,
                                                                              radius_arcsec=3.5, centre=(1.0, 1.0))
 
-        msk = mask.Mask.circular(shape=(5, 4), pixel_scale=2.7, radius_mask_arcsec=3.5, centre=(1.0, 1.0))
+        msk = mask.Mask.circular(shape=(5, 4), pixel_scale=2.7, radius_arcsec=3.5, centre=(1.0, 1.0))
 
         assert (msk == msk_util).all()
 
     def test__mask_annulus__compare_to_array_util(self):
-        msk_util = mask_util.mask_annular_from_shape_pixel_scale_and_radii(shape=(5, 4), pixel_scale=2.7,
-                                                                           inner_radius_arcsec=0.8,
-                                                                           outer_radius_arcsec=3.5,
-                                                                           centre=(1.0, 1.0))
+        msk_util = mask_util.mask_circular_annular_from_shape_pixel_scale_and_radii(shape=(5, 4), pixel_scale=2.7,
+                                                                                    inner_radius_arcsec=0.8,
+                                                                                    outer_radius_arcsec=3.5,
+                                                                                    centre=(1.0, 1.0))
 
-        msk = mask.Mask.annular(shape=(5, 4), pixel_scale=2.7, inner_radius_arcsec=0.8, outer_radius_arcsec=3.5,
-                                centre=(1.0, 1.0))
+        msk = mask.Mask.circular_annular(shape=(5, 4), pixel_scale=2.7, inner_radius_arcsec=0.8, outer_radius_arcsec=3.5,
+                                         centre=(1.0, 1.0))
 
         assert (msk == msk_util).all()
 
     def test__mask_anti_annulus__compare_to_array_util(self):
-        msk_util = mask_util.mask_anti_annular_from_shape_pixel_scale_and_radii(shape=(9, 9), pixel_scale=1.2,
-                                                                                inner_radius_arcsec=0.8,
-                                                                                outer_radius_arcsec=2.2,
-                                                                                outer_radius_2_arcsec=3.0,
-                                                                                centre=(1.0, 1.0))
+        msk_util = mask_util.mask_circular_anti_annular_from_shape_pixel_scale_and_radii(shape=(9, 9), pixel_scale=1.2,
+                                                                                         inner_radius_arcsec=0.8,
+                                                                                         outer_radius_arcsec=2.2,
+                                                                                         outer_radius_2_arcsec=3.0,
+                                                                                         centre=(1.0, 1.0))
 
-        msk = mask.Mask.anti_annular(shape=(9, 9), pixel_scale=1.2, inner_radius_arcsec=0.8,
-                                     outer_radius_arcsec=2.2, outer_radius_2_arcsec=3.0, origin=(1.0, 1.0))
+        msk = mask.Mask.circular_anti_annular(shape=(9, 9), pixel_scale=1.2, inner_radius_arcsec=0.8,
+                                              outer_radius_arcsec=2.2, outer_radius_2_arcsec=3.0, origin=(1.0, 1.0))
+
+        assert (msk == msk_util).all()
+
+    def test__mask_elliptical__compare_to_array_util(self):
+
+        msk_util = mask_util.mask_elliptical_from_shape_pixel_scale_and_radius(shape=(8, 5), pixel_scale=2.7,
+                        major_axis_radius_arcsec=5.7, axis_ratio=0.4, phi=40.0, centre=(1.0, 1.0))
+
+        msk = mask.Mask.elliptical(shape=(8, 5), pixel_scale=2.7,
+                        major_axis_radius_arcsec=5.7, axis_ratio=0.4, phi=40.0, centre=(1.0, 1.0))
+
+        assert (msk == msk_util).all()
+
+    def test__mask_elliptical_annular__compare_to_array_util(self):
+
+        msk_util = mask_util.mask_elliptical_annular_from_shape_pixel_scale_and_radius(shape=(8, 5), pixel_scale=2.7,
+                        inner_major_axis_radius_arcsec=2.1, inner_axis_ratio=0.6, inner_phi=20.0,
+                        outer_major_axis_radius_arcsec=5.7, outer_axis_ratio=0.4, outer_phi=40.0, centre=(1.0, 1.0))
+
+        msk = mask.Mask.elliptical_annular(shape=(8, 5), pixel_scale=2.7,
+                        inner_major_axis_radius_arcsec=2.1, inner_axis_ratio=0.6, inner_phi=20.0,
+                        outer_major_axis_radius_arcsec=5.7, outer_axis_ratio=0.4, outer_phi=40.0, centre=(1.0, 1.0))
 
         assert (msk == msk_util).all()
 
