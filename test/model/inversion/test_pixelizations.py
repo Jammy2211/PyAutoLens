@@ -282,6 +282,20 @@ class TestVoronoi:
 
     class TestVoronoiGrid:
 
+        def test__9_points___check_voronoi_swaps_axis_from_y_x__to_x_y(self):
+            # 9 points in a square - makes a square (this is the example int he scipy documentaiton page)
+
+            points = np.array([[2.0, 0.0], [2.0, 1.0], [2.0, 2.0],
+                               [1.0, 0.0], [1.0, 1.0], [1.0, 2.0],
+                               [0.0, 0.0], [0.0, 1.0], [0.0, 2.0]])
+
+            pix = pixelizations.Voronoi()
+            voronoi = pix.voronoi_from_pixel_centers(points)
+
+            assert (voronoi.points == np.array([[0.0, 2.0], [1.0, 2.0], [2.0, 2.0],
+                                                [0.0, 1.0], [1.0, 1.0], [2.0, 1.0],
+                                                [0.0, 0.0], [1.0, 0.0], [2.0, 0.0]])).all()
+
         def test__points_in_x_cross_shape__sets_up_diamond_voronoi_vertices(self):
             # 5 points in the shape of the face of a 5 on a die - makes a diamond Voronoi diagram
 
@@ -390,7 +404,7 @@ class TestVoronoi:
             pixel_neighbors, pixel_neighbors_size = pix.neighbors_from_pixelization(pixels=9,
                                                                                     ridge_points=voronoi.ridge_points)
 
-            voronoi = scipy.spatial.Voronoi(points, qhull_options='Qbb Qc Qx Qm')
+            voronoi = scipy.spatial.Voronoi(np.asarray([points[:, 1], points[:, 0]]).T, qhull_options='Qbb Qc Qx Qm')
             pixel_neighbors_util, pixel_neighbors_size_util = \
                 pixelization_util.voronoi_neighbors_from_pixels_and_ridge_points(pixels=9,
                                               ridge_points=np.array(voronoi.ridge_points))
