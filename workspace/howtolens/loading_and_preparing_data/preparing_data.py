@@ -103,7 +103,7 @@ imaging_plotters.plot_image_subplot(image=image_small_stamp)
 # If we apply a mask to this regular, we'll get an error when we try to use it to set up a lensing regular, because its
 # blurring region hits the regular edge.
 mask = ma.Mask.circular(shape=image_small_stamp.shape, pixel_scale=image_small_stamp.pixel_scale,
-                        radius_mask_arcsec=2.0)
+                        radius_arcsec=2.0)
 # lensing_image = li.LensingImage(regular=regular, mask=mask)
 
 # We can overcome this using the same input as before. However, now, the resized regular shape is bigger than the regular,
@@ -114,7 +114,7 @@ image_small_stamp_padded = im.load_imaging_from_fits(image_path=path+'data/image
                                                      psf_path=path+'data/image_small_stamp/psf.fits',
                                                      resized_image_shape=(140, 140))
 mask = ma.Mask.circular(shape=image_small_stamp_padded.shape, pixel_scale=image_small_stamp_padded.pixel_scale,
-                        radius_mask_arcsec=2.0)
+                        radius_arcsec=2.0)
 imaging_plotters.plot_image_subplot(image=image_small_stamp_padded, mask=mask)
 lensing_image = li.LensingImage(image=image_small_stamp_padded, mask=mask)
 

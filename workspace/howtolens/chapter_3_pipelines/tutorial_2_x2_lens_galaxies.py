@@ -83,7 +83,7 @@ def make_pipeline():
     # This model_galaxy is at (-1.0, 0.0), so we're going to use a small circular masks centred on its location to fit_normal its
     # light profile. Its important that light from the other lens and source don't contaminate our fit_normal.
     def mask_function(img):
-        return mask.Mask.circular(img.shape, pixel_scale=img.pixel_scale, radius_mask_arcsec=0.5, centre=(0.0, -1.0))
+        return mask.Mask.circular(img.shape, pixel_scale=img.pixel_scale, radius_arcsec=0.5, centre=(0.0, -1.0))
 
     class LeftLensPhase(ph.LensPlanePhase):
 
@@ -104,7 +104,7 @@ def make_pipeline():
     # Now do the exact same with the lens model_galaxy on the right at (0.0, 1.0)
 
     def mask_function(img):
-        return mask.Mask.circular(img.shape, pixel_scale=img.pixel_scale, radius_mask_arcsec=0.5, centre=(0.0, 1.0))
+        return mask.Mask.circular(img.shape, pixel_scale=img.pixel_scale, radius_arcsec=0.5, centre=(0.0, 1.0))
 
     class RightLensPhase(ph.LensPlanePhase):
 

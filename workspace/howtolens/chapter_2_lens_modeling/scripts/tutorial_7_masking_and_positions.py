@@ -46,20 +46,20 @@ imaging_plotters.plot_image_subplot(image=image)
 # When it comes to determining an appropriate mask for this regular, the best approach is to set up a mask using the mask
 # module and pass it to an imaging plotter. You can then check visually if the mask is an appropriate size or not.
 # Below, we choose an inner radius that cuts into our lensed source galaxy - clearly this isn't a good mask.
-mask = msk.Mask.annular(shape=image.shape, pixel_scale=image.pixel_scale, inner_radius_arcsec=1.4,
-                        outer_radius_arcsec=2.4)
+mask = msk.Mask.circular_annular(shape=image.shape, pixel_scale=image.pixel_scale, inner_radius_arcsec=1.4,
+                                 outer_radius_arcsec=2.4)
 imaging_plotters.plot_image_subplot(image=image, mask=mask)
 
 # So, lets decreasing the inner radius to correct for this
-mask = msk.Mask.annular(shape=image.shape, pixel_scale=image.pixel_scale, inner_radius_arcsec=0.6,
-                        outer_radius_arcsec=2.4)
+mask = msk.Mask.circular_annular(shape=image.shape, pixel_scale=image.pixel_scale, inner_radius_arcsec=0.6,
+                                 outer_radius_arcsec=2.4)
 imaging_plotters.plot_image_subplot(image=image, mask=mask)
 
 # When we run the phase, we don't pass it the mask as an array. Instead, we pass it the mask as a function. The reason
 # for this will become clear in the next chapter, but for now I would say you just accept this syntax.
 def mask_function():
-    return msk.Mask.annular(shape=image.shape, pixel_scale=image.pixel_scale, inner_radius_arcsec=0.6,
-                        outer_radius_arcsec=2.4)
+    return msk.Mask.circular_annular(shape=image.shape, pixel_scale=image.pixel_scale, inner_radius_arcsec=0.6,
+                                     outer_radius_arcsec=2.4)
 
 phase_with_custom_mask = ph.LensSourcePlanePhase(lens_galaxies=dict(lens_galaxy=g.Galaxy()),
                                 source_galaxies=dict(source_galaxy=g.Galaxy()),
