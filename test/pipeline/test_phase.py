@@ -106,7 +106,7 @@ def make_image():
 def make_lensing_image():
     image = img.Image(np.array(np.zeros(shape)), pixel_scale=1.0, psf=img.PSF(np.ones((3, 3)), pixel_scale=1.0),
                       noise_map=img.NoiseMap(np.ones(shape), pixel_scale=1.0))
-    mask = msk.Mask.circular(shape=shape, pixel_scale=1, radius_mask_arcsec=3.0)
+    mask = msk.Mask.circular(shape=shape, pixel_scale=1, radius_arcsec=3.0)
     return li.LensingImage(image, mask)
 
 

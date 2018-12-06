@@ -38,7 +38,7 @@ def test_array():
 
 @pytest.fixture(name='mask')
 def test_mask():
-    return msk.Mask.circular(shape=((3,3)), pixel_scale=0.1, radius_mask_arcsec=0.1)
+    return msk.Mask.circular(shape=((3,3)), pixel_scale=0.1, radius_arcsec=0.1)
 
 @pytest.fixture(name='galaxy_data_intensities')
 def test_galaxy_data_intensities(array, mask):
