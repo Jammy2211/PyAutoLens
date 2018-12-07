@@ -73,9 +73,8 @@ def plot_rectangular_mapper(mapper, should_plot_centres=False, should_plot_grid=
     plot_rectangular_pixelization_lines(mapper=mapper, units=units, kpc_per_arcsec=kpc_per_arcsec)
 
     plotter_util.set_title(title=title, titlesize=titlesize)
-    grid_plotters.set_xy_labels_and_ticks_in_arcsec(units=units, kpc_per_arcsec=kpc_per_arcsec,
-                                                    xticks=mapper.geometry.xticks, yticks=mapper.geometry.yticks,
-                                                    xlabelsize=xlabelsize, ylabelsize=ylabelsize, xyticksize=xyticksize)
+    grid_plotters.set_xy_labels(units=units, kpc_per_arcsec=kpc_per_arcsec,
+                                xlabelsize=xlabelsize, ylabelsize=ylabelsize, xyticksize=xyticksize)
 
     plot_centres(should_plot_centres=should_plot_centres, mapper=mapper, units=units, kpc_per_arcsec=kpc_per_arcsec)
 
@@ -120,10 +119,8 @@ def plot_voronoi_mapper(mapper, solution_vector, should_plot_centres=True, shoul
         plt.fill(*zip(*polygon), alpha=0.7, facecolor=col, lw=0.0)
 
     plotter_util.set_title(title=title, titlesize=titlesize)
-    grid_plotters.set_xy_labels_and_ticks_in_arcsec(units=units, kpc_per_arcsec=kpc_per_arcsec,
-                                                    xticks=mapper.grids.regular.xticks,
-                                                    yticks=mapper.grids.regular.yticks,
-                                                    xlabelsize=xlabelsize, ylabelsize=ylabelsize, xyticksize=xyticksize)
+    grid_plotters.set_xy_labels(units=units, kpc_per_arcsec=kpc_per_arcsec,
+                                xlabelsize=xlabelsize, ylabelsize=ylabelsize, xyticksize=xyticksize)
 
     plot_centres(should_plot_centres=should_plot_centres, mapper=mapper, units=units, kpc_per_arcsec=kpc_per_arcsec)
 

@@ -11,7 +11,17 @@ def plot_intensities(galaxy, grid, mask=None, positions=None, as_subplot=False,
                      title='Galaxy Intensities', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
                      mask_pointsize=10, position_pointsize=10.0, grid_pointsize=1,
                      output_path=None, output_format='show', output_filename='galaxy_intensities'):
+    """Plot the intensities (e.g. the image) of a galaxy, on a regular grid of (y,x) coordinates.
 
+    Set *autolens.data.array.plotters.array_plotters* for a description of all innput parameters not described below.
+
+    Parameters
+    -----------
+    galaxy : model.galaxy.galaxy.Galaxy
+        The galaxy whose intensities are plotted.
+    grid : ndarray or data.array.grids.RegularGrid
+        The (y,x) coordinates of the grid, in an array of shape (total_coordinates, 2)
+    """
     intensities = galaxy.intensities_from_grid(grid=grid)
     intensities = grid.scaled_array_from_array_1d(intensities)
 
@@ -33,7 +43,17 @@ def plot_surface_density(galaxy, grid, mask=None, positions=None, as_subplot=Fal
                          title='Galaxy Surface Density', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
                          mask_pointsize=10, position_pointsize=10.0, grid_pointsize=1,
                          output_path=None, output_format='show', output_filename='galaxy_surface_density'):
+    """Plot the surface density of a galaxy, on a regular grid of (y,x) coordinates.
 
+    Set *autolens.data.array.plotters.array_plotters* for a description of all innput parameters not described below.
+
+    Parameters
+    -----------
+    galaxy : model.galaxy.galaxy.Galaxy
+        The galaxy whose surface density is plotted.
+    grid : ndarray or data.array.grids.RegularGrid
+        The (y,x) coordinates of the grid, in an array of shape (total_coordinates, 2)
+    """
     surface_density = galaxy.surface_density_from_grid(grid=grid)
     surface_density = grid.scaled_array_from_array_1d(surface_density)
 
@@ -55,7 +75,17 @@ def plot_potential(galaxy, grid, mask=None, positions=None, as_subplot=False,
                    title='Galaxy Potential', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
                    mask_pointsize=10, position_pointsize=10.0, grid_pointsize=1,
                    output_path=None, output_format='show', output_filename='galaxy_potential'):
+    """Plot the potential of a galaxy, on a regular grid of (y,x) coordinates.
 
+     Set *autolens.data.array.plotters.array_plotters* for a description of all innput parameters not described below.
+
+     Parameters
+     -----------
+    galaxy : model.galaxy.galaxy.Galaxy
+         The galaxy whose potential is plotted.
+    grid : ndarray or data.array.grids.RegularGrid
+         The (y,x) coordinates of the grid, in an array of shape (total_coordinates, 2)
+     """
     potential = galaxy.potential_from_grid(grid=grid)
     potential = grid.scaled_array_from_array_1d(potential)
 
@@ -77,7 +107,17 @@ def plot_deflections_y(galaxy, grid, mask=None, positions=None, as_subplot=False
                        title='Galaxy Deflections (y)', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
                        mask_pointsize=10, position_pointsize=10.0, grid_pointsize=1,
                        output_path=None, output_format='show', output_filename='galaxy_deflections_y'):
+    """Plot the y component of the deflection angles of a galaxy, on a regular grid of (y,x) coordinates.
 
+    Set *autolens.data.array.plotters.array_plotters* for a description of all innput parameters not described below.
+
+    Parameters
+    -----------
+    galaxy : model.galaxy.galaxy.Galaxy
+        The galaxy whose y deflecton angles are plotted.
+    grid : ndarray or data.array.grids.RegularGrid
+        The (y,x) coordinates of the grid, in an array of shape (total_coordinates, 2)
+    """
     deflections = galaxy.deflections_from_grid(grid)
     deflections_y = grid.scaled_array_from_array_1d(deflections[:,0])
 
@@ -99,7 +139,17 @@ def plot_deflections_x(galaxy, grid, mask=None, positions=None, as_subplot=False
                        title='Galaxy Deflections (x)', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
                        mask_pointsize=10, position_pointsize=10.0, grid_pointsize=1,
                        output_path=None, output_format='show', output_filename='galaxy_deflections_x'):
+    """Plot the x component of the deflection angles of a galaxy, on a regular grid of (y,x) coordinates.
 
+     Set *autolens.data.array.plotters.array_plotters* for a description of all innput parameters not described below.
+
+     Parameters
+     -----------
+    galaxy : model.galaxy.galaxy.Galaxy
+         The galaxy whose x deflecton angles are plotted.
+     grid : ndarray or data.array.grids.RegularGrid
+         The (y,x) coordinates of the grid, in an array of shape (total_coordinates, 2)
+     """
     deflections = galaxy.deflections_from_grid(grid)
     deflections_x = grid.scaled_array_from_array_1d(deflections[:,1])
 

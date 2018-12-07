@@ -15,10 +15,86 @@ def plot_array(array, origin=None, mask=None, should_plot_border=False, position
                mask_pointsize=10, border_pointsize=2, position_pointsize=30, grid_pointsize=1,
                xticks_manual=None, yticks_manual=None,
                output_path=None, output_format='show', output_filename='array'):
+    """Plot an array of data as a figure.
+
+    Parameters
+    -----------
+    array : ndarray or data.array.scaled_array.ScaledArray
+        The 2D array of data which is plotted.
+    origin : (float, float).
+        The origin of the coordinate system of the data, which is plotted as an 'x' on the image if input.
+    mask : ndarray of data.array.mask.Mask
+        The mask applied to the data, the edge of which is plotted as a set of points over the plotted array.
+    should_plot_border : bool
+        If a mask is supplied, its border pixels (e.g. the exterior edge) is plotted if this is *True*.
+    positions : [[]]
+        Lists of (y,x) coordinates on the image which are plotted as colored dots, to highlight specific pixels.
+    grid : ndarray or data.array.grids.RegularGrid
+        A grid of (y,x) coordinates which may be plotted over the plotted array.
+    as_subplot : bool
+        Whether the array is plotted as part of a subplot, in which case the grid figure is not opened / closed.
+    units : str
+        The units of the y / x axis of the plots, in arc-seconds ('arcsec') or kiloparsecs ('kpc').
+    kpc_per_arcsec : float or None
+        The conversion factor between arc-seconds and kiloparsecs, required to plot the units in kpc.
+    figsize : (int, int)
+        The size of the figure in (rows, columns).
+    aspect : str
+        The aspect ratio of the image, specifically whether it is forced to be square ('equal') or adapts its size to \
+        the figure size ('auto').
+    cmap : str
+        The colormap the array is plotted using, which may be chosen from the standard matplotlib colormaps.
+    norm : str
+        The normalization of the colormap used to plot the image, specifically whether it is linear ('linear'), log \
+        ('log') or a symmetric log normalization ('symmetric_log').
+    norm_min : float or None
+        The minimum array value the colormap map spans (all values below this value are plotted the same color).
+    norm_max : float or None
+        The maximum array value the colormap map spans (all values above this value are plotted the same color).
+    linthresh : float
+        For the 'symmetric_log' colormap normalization ,this specifies the range of values within which the colormap \
+        is linear.
+    linscale : float
+        For the 'symmetric_log' colormap normalization, this allowws the linear range set by linthresh to be stretched \
+        relative to the logarithmic range.
+    cb_ticksize : int
+        The size of the tick labels on the colorbar.
+    cb_fraction : float
+        The fraction of the figure that the colorbar takes up, which resizes the colorbar relative to the figure.
+    cb_pad : float
+        Pads the color bar in the figure, which resizes the colorbar relative to the figure.
+    xlabelsize : int
+        The fontsize of the x axes label.
+    ylabelsize : int
+        The fontsize of the y axes label.
+    xyticksize : int
+        The font size of the x and y ticks on the figure axes.
+    mask_pointsize : int
+        The size of the points plotted to show the mask.
+    border_pointsize : int
+        The size of the points plotted to show the border.
+    positions_pointsize : int
+        The size of the points plotted to show the input positions.
+    grid_pointsize : int
+        The size of the points plotted to show the grid.
+    xticks_manual :  [] or None
+        If input, the xticks do not use the array's default xticks but instead overwrite them as these values.
+    yticks_manual :  [] or None
+        If input, the yticks do not use the array's default yticks but instead overwrite them as these values.
+    output_path : str
+        The path on the hard-disk where the figure is output.
+    output_filename : str
+        The filename of the figure that is output.
+    output_format : str
+        The format the figue is output:
+        'show' - display on computer screen.
+        'png' - output to hard-disk as a png.
+        'fits' - output to hard-disk as a fits file.'
+    """
 
     plot_figure(array=array, as_subplot=as_subplot, units=units, kpc_per_arcsec=kpc_per_arcsec,
                 figsize=figsize, aspect=aspect, cmap=cmap, norm=norm,
-                norm_max=norm_max, norm_min=norm_min, linthresh=linthresh, linscale=linscale,
+                norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
                 xticks_manual=xticks_manual, yticks_manual=yticks_manual)
 
     plotter_util.set_title(title=title, titlesize=titlesize)
@@ -37,8 +113,45 @@ def plot_array(array, origin=None, mask=None, should_plot_border=False, position
                                output_format=output_format)
     plotter_util.close_figure(as_subplot=as_subplot)
 
-def plot_figure(array, as_subplot, units, kpc_per_arcsec, figsize, aspect, cmap, norm, norm_max, norm_min,
+def plot_figure(array, as_subplot, units, kpc_per_arcsec, figsize, aspect, cmap, norm, norm_min, norm_max,
                 linthresh, linscale, xticks_manual, yticks_manual):
+    """Open a matplotlib figure and plot the array of data on it.
+
+    Parameters
+    -----------
+    array : ndarray or data.array.scaled_array.ScaledArray
+        The 2D array of data which is plotted.
+    as_subplot : bool
+        Whether the array is plotted as part of a subplot, in which case the grid figure is not opened / closed.
+    units : str
+        The units of the y / x axis of the plots, in arc-seconds ('arcsec') or kiloparsecs ('kpc').
+    kpc_per_arcsec : float or None
+        The conversion factor between arc-seconds and kiloparsecs, required to plot the units in kpc.
+    figsize : (int, int)
+        The size of the figure in (rows, columns).
+    aspect : str
+        The aspect ratio of the image, specifically whether it is forced to be square ('equal') or adapts its size to \
+        the figure size ('auto').
+    cmap : str
+        The colormap the array is plotted using, which may be chosen from the standard matplotlib colormaps.
+    norm : str
+        The normalization of the colormap used to plot the image, specifically whether it is linear ('linear'), log \
+        ('log') or a symmetric log normalization ('symmetric_log').
+    norm_min : float or None
+        The minimum array value the colormap map spans (all values below this value are plotted the same color).
+    norm_max : float or None
+        The maximum array value the colormap map spans (all values above this value are plotted the same color).
+    linthresh : float
+        For the 'symmetric_log' colormap normalization ,this specifies the range of values within which the colormap \
+        is linear.
+    linscale : float
+        For the 'symmetric_log' colormap normalization, this allowws the linear range set by linthresh to be stretched \
+        relative to the logarithmic range.
+    xticks_manual :  [] or None
+        If input, the xticks do not use the array's default xticks but instead overwrite them as these values.
+    yticks_manual :  [] or None
+        If input, the yticks do not use the array's default yticks but instead overwrite them as these values.
+    """
 
     plotter_util.setup_figure(figsize=figsize, as_subplot=as_subplot)
 
@@ -52,7 +165,23 @@ def plot_figure(array, as_subplot, units, kpc_per_arcsec, figsize, aspect, cmap,
     plt.imshow(array, aspect=aspect, cmap=cmap, norm=norm_scale, extent=extent)
 
 def get_extent(array, units, kpc_per_arcsec, xticks_manual, yticks_manual):
+    """Get the extent of the dimensions of the array in the units of the figure (e.g. arc-seconds or kpc).
 
+    This is used to set the extent of the array and thus the y / x axis limits.
+
+    Parameters
+    -----------
+    array : ndarray or data.array.scaled_array.ScaledArray
+        The 2D array of data which is plotted.
+    units : str
+        The units of the y / x axis of the plots, in arc-seconds ('arcsec') or kiloparsecs ('kpc').
+    kpc_per_arcsec : float
+        The conversion factor between arc-seconds and kiloparsecs, required to plot the units in kpc.
+    xticks_manual :  [] or None
+        If input, the xticks do not use the array's default xticks but instead overwrite them as these values.
+    yticks_manual :  [] or None
+        If input, the yticks do not use the array's default yticks but instead overwrite them as these values.
+    """
     if xticks_manual is not None and yticks_manual is not None:
         return np.asarray([xticks_manual[0], xticks_manual[3], yticks_manual[0], yticks_manual[3]])
 
@@ -67,7 +196,20 @@ def get_extent(array, units, kpc_per_arcsec, xticks_manual, yticks_manual):
                                     array.arc_second_minima[0], array.arc_second_maxima[0]])))
 
 def get_normalization_min_max(array, norm_min, norm_max):
+    """Get the minimum and maximum of the normalization of the array, which sets the lower and upper limits of the \
+    colormap.
 
+    If norm_min / norm_max are not supplied, the minimum / maximum values of the array of data are used.
+
+    Parameters
+    -----------
+    array : ndarray or data.array.scaled_array.ScaledArray
+        The 2D array of data which is plotted.
+    norm_min : float or None
+        The minimum array value the colormap map spans (all values below this value are plotted the same color).
+    norm_max : float or None
+        The maximum array value the colormap map spans (all values above this value are plotted the same color).
+    """
     if norm_min is None:
         norm_min = array.min()
     if norm_max is None:
@@ -76,6 +218,28 @@ def get_normalization_min_max(array, norm_min, norm_max):
     return norm_min, norm_max
 
 def get_normalization_scale(norm, norm_min, norm_max, linthresh, linscale):
+    """Get the normalization scale of the colormap. This will be scaled based on the input min / max normalization \
+    values.
+
+    For a 'symmetric_log' colormap, linthesh and linscale also change the colormap.
+
+    If norm_min / norm_max are not supplied, the minimum / maximum values of the array of data are used.
+
+    Parameters
+    -----------
+    array : ndarray or data.array.scaled_array.ScaledArray
+        The 2D array of data which is plotted.
+    norm_min : float or None
+        The minimum array value the colormap map spans (all values below this value are plotted the same color).
+    norm_max : float or None
+        The maximum array value the colormap map spans (all values above this value are plotted the same color).
+    linthresh : float
+        For the 'symmetric_log' colormap normalization ,this specifies the range of values within which the colormap \
+        is linear.
+    linscale : float
+        For the 'symmetric_log' colormap normalization, this allowws the linear range set by linthresh to be stretched \
+        relative to the logarithmic range.
+    """
     if norm is 'linear':
         return colors.Normalize(vmin=norm_min, vmax=norm_max)
     elif norm is 'log':
@@ -88,24 +252,25 @@ def get_normalization_scale(norm, norm_min, norm_max, linthresh, linscale):
         raise exc.PlottingException('The normalization (norm) supplied to the plotter is not a valid string (must be '
                                      'linear | log | symmetric_log')
 
-def set_axis_limits(array, units, kpc_per_arcsec):
-
-    if units is 'arcsec' or kpc_per_arcsec is None:
-
-        plt.axis(axis_limits=np.asarray([array.arc_second_minima[1],
-                                         array.arc_second_maxima[1],
-                                         array.arc_second_minima[0],
-                                         array.arc_second_maxima[0]]))
-
-    elif units is 'kpc':
-
-        plt.axis(axis_limits=np.asarray([array.arc_second_minima[1] * kpc_per_arcsec,
-                                         array.arc_second_maxima[1] * kpc_per_arcsec,
-                                         array.arc_second_minima[0] * kpc_per_arcsec,
-                                         array.arc_second_maxima[0] * kpc_per_arcsec]))
-
 def set_xy_labels_and_ticksize(units, kpc_per_arcsec, xlabelsize, ylabelsize, xyticksize):
+    """Set the x and y labels of the figure, and set the fontsize of those labels.
 
+    The x and y labels are always the distance scales, thus the labels are either arc-seconds or kpc and depend on the \
+    units the figure is plotted in.
+
+    Parameters
+    -----------
+    units : str
+        The units of the y / x axis of the plots, in arc-seconds ('arcsec') or kiloparsecs ('kpc').
+    kpc_per_arcsec : float
+        The conversion factor between arc-seconds and kiloparsecs, required to plot the units in kpc.
+    xlabelsize : int
+        The fontsize of the x axes label.
+    ylabelsize : int
+        The fontsize of the y axes label.
+    xyticksize : int
+        The font size of the x and y ticks on the figure axes.
+    """
     if units is 'pixels':
 
         plt.xlabel('x (pixels)', fontsize=xlabelsize)
@@ -128,12 +293,35 @@ def set_xy_labels_and_ticksize(units, kpc_per_arcsec, xlabelsize, ylabelsize, xy
     plt.tick_params(labelsize=xyticksize)
 
 def set_colorbar(cb_ticksize, cb_fraction, cb_pad):
+    """Setup the colorbar of the figure, specifically its ticksize and the size is appears relative to the figure.
 
-    cb = plt.colorbar(fraction=cb_fraction, pad=cb_pad, ticks=[-0.1, 0.1], format='%.1f')
+    Parameters
+    -----------
+    cb_ticksize : int
+        The size of the tick labels on the colorbar.
+    cb_fraction : float
+        The fraction of the figure that the colorbar takes up, which resizes the colorbar relative to the figure.
+    cb_pad : float
+        Pads the color bar in the figure, which resizes the colorbar relative to the figure.
+    """
+    cb = plt.colorbar(fraction=cb_fraction, pad=cb_pad)#, ticks=[-0.1, 0.1], format='%.1f')
     cb.ax.tick_params(labelsize=cb_ticksize+5)
 
 def convert_grid_units(array, grid_arc_seconds, units, kpc_per_arcsec):
+    """Convert the grid from its input units (arc-seconds) to the input unit (e.g. retain arc-seconds) or convert to \
+    another set of units (pixels or kilo parsecs).
 
+    Parameters
+    -----------
+    array : ndarray or data.array.scaled_array.ScaledArray
+        The 2D array of data which is plotted, the shape of which is used for converting the grid to units of pixels.
+    grid_arc_seconds : ndarray or data.array.grids.RegularGrid
+        The (y,x) coordinates of the grid in arc-seconds, in an array of shape (total_coordinates, 2).
+    units : str
+        The units of the y / x axis of the plots, in arc-seconds ('arcsec') or kiloparsecs ('kpc').
+    kpc_per_arcsec : float
+        The conversion factor between arc-seconds and kiloparsecs, required to plot the units in kpc.
+    """
     if units is 'pixels':
         return array.grid_arc_seconds_to_grid_pixels(grid_arc_seconds=grid_arc_seconds)
     elif units is 'arcsec' or kpc_per_arcsec is None:
@@ -142,7 +330,19 @@ def convert_grid_units(array, grid_arc_seconds, units, kpc_per_arcsec):
         return grid_arc_seconds * kpc_per_arcsec
 
 def plot_origin(array, origin, units, kpc_per_arcsec):
-
+    """Plot the (y,x) origin ofo the array's coordinates as a 'x'.
+    
+    Parameters
+    -----------
+    array : ndarray or data.array.scaled_array.ScaledArray
+        The 2D array of data which is plotted.
+    origin : (float, float).
+        The origin of the coordinate system of the data, which is plotted as an 'x' on the image if input.
+    units : str
+        The units of the y / x axis of the plots, in arc-seconds ('arcsec') or kiloparsecs ('kpc').
+    kpc_per_arcsec : float or None
+        The conversion factor between arc-seconds and kiloparsecs, required to plot the units in kpc.
+    """
     if origin is not None:
 
         origin_grid = np.asarray(origin)
@@ -151,7 +351,19 @@ def plot_origin(array, origin, units, kpc_per_arcsec):
         plt.scatter(y=origin_units[0], x=origin_units[1], s=80, c='k', marker='x')
 
 def plot_mask(mask, units, kpc_per_arcsec, pointsize):
+    """Plot the mask of the array on the figure.
 
+    Parameters
+    -----------
+    mask : ndarray of data.array.mask.Mask
+        The mask applied to the data, the edge of which is plotted as a set of points over the plotted array.
+    units : str
+        The units of the y / x axis of the plots, in arc-seconds ('arcsec') or kiloparsecs ('kpc').
+    kpc_per_arcsec : float or None
+        The conversion factor between arc-seconds and kiloparsecs, required to plot the units in kpc.
+    pointsize : int
+        The size of the points plotted to show the mask.
+    """
     if mask is not None:
 
         plt.gca()
@@ -163,7 +375,21 @@ def plot_mask(mask, units, kpc_per_arcsec, pointsize):
         plt.scatter(y=edge_units[:,0], x=edge_units[:,1], s=pointsize, c='k')
 
 def plot_border(mask, should_plot_border, units, kpc_per_arcsec, pointsize):
+    """Plot the border of the mask or the array on the figure.
 
+    Parameters
+    -----------t.
+    mask : ndarray of data.array.mask.Mask
+        The mask applied to the data, the edge of which is plotted as a set of points over the plotted array.
+    should_plot_border : bool
+        If a mask is supplied, its border pixels (e.g. the exterior edge) is plotted if this is *True*.
+    units : str
+        The units of the y / x axis of the plots, in arc-seconds ('arcsec') or kiloparsecs ('kpc').
+    kpc_per_arcsec : float or None
+        The conversion factor between arc-seconds and kiloparsecs, required to plot the units in kpc.
+    border_pointsize : int
+        The size of the points plotted to show the border.
+    """
     if should_plot_border and mask is not None:
 
         plt.gca()
@@ -175,7 +401,21 @@ def plot_border(mask, should_plot_border, units, kpc_per_arcsec, pointsize):
         plt.scatter(y=border_units[:,0], x=border_units[:,1], s=pointsize, c='y')
 
 def plot_points(points_arc_seconds, array, units, kpc_per_arcsec, pointsize):
+    """Plot a set of points over the array of data on the figure.
 
+    Parameters
+    -----------
+    positions : [[]]
+        Lists of (y,x) coordinates on the image which are plotted as colored dots, to highlight specific pixels.    
+    array : ndarray or data.array.scaled_array.ScaledArray
+        The 2D array of data which is plotted.
+    units : str
+        The units of the y / x axis of the plots, in arc-seconds ('arcsec') or kiloparsecs ('kpc').
+    kpc_per_arcsec : float or None
+        The conversion factor between arc-seconds and kiloparsecs, required to plot the units in kpc.
+    pointsize : int
+        The size of the points plotted to show the input positions.
+    """
     if points_arc_seconds is not None:
         points_arc_seconds = list(map(lambda position_set: np.asarray(position_set), points_arc_seconds))
         point_colors = itertools.cycle(["m", "y", "r", "w", "c", "b", "g", "k"])
@@ -185,7 +425,21 @@ def plot_points(points_arc_seconds, array, units, kpc_per_arcsec, pointsize):
             plt.scatter(y=point_set_units[:,0], x=point_set_units[:,1], color=next(point_colors), s=pointsize)
 
 def plot_grid(grid_arc_seconds, array, units, kpc_per_arcsec, pointsize):
+    """Plot a grid of points over the array of data on the figure.
 
+     Parameters
+     -----------.
+     grid_arc_seconds : ndarray or data.array.grids.RegularGrid
+         A grid of (y,x) coordinates in arc-seconds which may be plotted over the array.
+     array : ndarray or data.array.scaled_array.ScaledArray
+        The 2D array of data which is plotted.
+     units : str
+         The units of the y / x axis of the plots, in arc-seconds ('arcsec') or kiloparsecs ('kpc').
+     kpc_per_arcsec : float or None
+         The conversion factor between arc-seconds and kiloparsecs, required to plot the units in kpc.
+     grid_pointsize : int
+         The size of the points plotted to show the grid.
+     """
     if grid_arc_seconds is not None:
         grid_units = convert_grid_units(grid_arc_seconds=grid_arc_seconds, array=array, units=units,
                                         kpc_per_arcsec=kpc_per_arcsec)
