@@ -129,8 +129,8 @@ def set_xy_labels_and_ticksize(units, kpc_per_arcsec, xlabelsize, ylabelsize, xy
 
 def set_colorbar(cb_ticksize, cb_fraction, cb_pad):
 
-    cb = plt.colorbar(fraction=cb_fraction, pad=cb_pad)
-    cb.ax.tick_params(labelsize=cb_ticksize)
+    cb = plt.colorbar(fraction=cb_fraction, pad=cb_pad, ticks=[-0.1, 0.1], format='%.1f')
+    cb.ax.tick_params(labelsize=cb_ticksize+5)
 
 def convert_grid_units(array, grid_arc_seconds, units, kpc_per_arcsec):
 

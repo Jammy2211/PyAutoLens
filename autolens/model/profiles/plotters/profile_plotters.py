@@ -111,3 +111,11 @@ def plot_deflections_x(mass_profile, grid, mask=None, positions=None, as_subplot
                               mask_pointsize=mask_pointsize, position_pointsize=position_pointsize,
                               grid_pointsize=grid_pointsize,
                               output_path=output_path, output_format=output_format, output_filename=output_filename)
+
+
+def plot_1d_density_as_function_of_radius(mass_profile, minimum_radius=1.0e-4, maximum_radius=10.0, radii_bins=10):
+    radii_bin_size = (maximum_radius - minimum_radius) / (radii_bins - 1)
+    annuli_radii = np.linspace(start=minimum_radius - radii_bin_size / 2.0, stop=maximum_radius + radii_bin_size / 2.0,
+                               num=radii_bins + 1)
+    density_radii = np.linspace(start=minimum_radius, stop=maximum_radius, num=radii_bins)
+    pass

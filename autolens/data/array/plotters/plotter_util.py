@@ -5,6 +5,13 @@ from autolens import exc
 
 
 def get_subplot_rows_columns_figsize(number_subplots):
+    """Get the size of a sub plot in (rows, columns), based on the number of subplots that are going to be plotted.
+
+    Parameters
+    -----------
+    number_subplots : int
+        The number of subplots that are to be plotted in the figure.
+    """
     if number_subplots <= 2:
         return 1, 2, (18, 8)
     elif number_subplots <= 4:
@@ -24,6 +31,16 @@ def get_subplot_rows_columns_figsize(number_subplots):
 
 
 def setup_figure(figsize, as_subplot):
+    """Setup a figure for plotting an image.
+
+    Parameters
+    -----------
+    figsize : (int, int)
+        The size of the figure in (rows, columns).
+    as_subplot : bool
+        If the figure is a subplot, the setup_figure function is omitted to ensure that each subplot does not create a \
+        new figure.
+    """
     if not as_subplot:
         plt.figure(figsize=figsize)
 
