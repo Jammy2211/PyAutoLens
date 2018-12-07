@@ -1292,3 +1292,50 @@ class TestMassIntegral(object):
 
         # Large errors required due to cusp at center of SIE - can get to errors of 0.01 for a 400 x 400 grid.
         assert dimensionless_mass_tot == pytest.approx(0.125 * mass_integral, 0.1)
+
+
+class TestDensityBetweenAnnuli(object):
+
+    def test__circular_annuli__sis__analyic_density_agrees(self):
+
+        einstein_radius=1.0
+        sis = mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=einstein_radius)
+
+        inner_annuli_radius = 2.0
+        inner_mass = math.pi * einstein_radius * inner_annuli_radius
+        outer_annuli_radius = 3.0
+        outer_mass = math.pi * einstein_radius * outer_annuli_radius
+
+        density_between_annuli = sis.density_between_circular_annuli(inner_annuli_radius=inner_annuli_radius,
+                                                                     outer_annuli_radius=outer_annuli_radius)
+
+        annuli_area = (np.pi * outer_annuli_radius ** 2.0) - (np.pi * inner_annuli_radius **2.0)
+
+        assert (outer_mass - inner_mass) / annuli_area == pytest.approx(density_between_annuli, 1e-4)
+
+    def test__circular_annuli__nfw_profile__compare_to_manual_mass_integrals(self):
+
+        nfw = mp.EllipticalNFW(centre=(0.0, 0.0), axis_ratio=0.8, phi=45.0, kappa_s=1.0)
+
+        inner_mass = nfw.mass_within_circle(radius=1.0)
+        outer_mass = nfw.mass_within_circle(radius=2.0)
+
+        density_between_annuli = nfw.density_between_circular_annuli(inner_annuli_radius=1.0, outer_annuli_radius=2.0)
+
+        annuli_area = (np.pi * 2.0 ** 2.0) - (np.pi * 1.0 **2.0)
+
+        assert (outer_mass - inner_mass) / annuli_area == pytest.approx(density_between_annuli, 1e-4)
+
+    def test__same_as_above__include_conversion_factor(self):
+
+        nfw = mp.EllipticalNFW(centre=(0.0, 0.0), axis_ratio=0.8, phi=45.0, kappa_s=1.0)
+
+        inner_mass = nfw.mass_within_circle(radius=1.0)
+        outer_mass = nfw.mass_within_circle(radius=2.0)
+
+        density_between_annuli = nfw.density_between_circular_annuli(inner_annuli_radius=1.0, outer_annuli_radius=2.0,
+                                                                     conversion_factor=2.0)
+
+        annuli_area = (np.pi * 2.0 ** 2.0) - (np.pi * 1.0 ** 2.0)
+
+        assert 2.0*(outer_mass - inner_mass) / annuli_area == pytest.approx(density_between_annuli, 1e-4)

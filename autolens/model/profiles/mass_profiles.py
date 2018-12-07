@@ -139,7 +139,25 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
         r = x * axis_ratio
         return 2 * np.pi * r * self.surface_density_func(x)
 
- #   def density_as_function_of_radius_circular_annuli(self):
+    def density_between_circular_annuli(self, inner_annuli_radius, outer_annuli_radius, conversion_factor=1.0):
+        """Calculate the mass between two circular annuli and compute the density by dividing by the annuli surface
+        area.
+
+        The value returned by the mass integral is dimensionless, therefore the density between annuli is returned in \
+        units of inverse radius squared. A conversion factor can be specified to convert this to a physical value \
+        (e.g. the critical surface mass density).
+
+        Parameters
+        -----------
+        inner_annuli_radius : float
+            The radius of the inner annulus outside of which the density are estimated.
+        outer_annuli_radius : float
+            The radius of the outer annulus inside of which the density is estimated.
+        """
+        annuli_area = (np.pi * outer_annuli_radius ** 2.0) - (np.pi * inner_annuli_radius **2.0)
+        return (self.mass_within_circle(radius=outer_annuli_radius, conversion_factor=conversion_factor) -
+                self.mass_within_circle(radius=inner_annuli_radius, conversion_factor=conversion_factor)) \
+               / annuli_area
 
 
 class EllipticalCoredPowerLaw(EllipticalMassProfile, MassProfile):
@@ -249,7 +267,7 @@ class EllipticalCoredPowerLaw(EllipticalMassProfile, MassProfile):
     def potential_func(u, y, x, axis_ratio, slope, core_radius):
         eta = np.sqrt((u * ((x ** 2) + (y ** 2 / (1 - (1 - axis_ratio ** 2) * u)))))
         return (eta / u) * ((3.0 - slope) * eta) ** -1.0 * \
-               ((core_radius ** 2 + eta ** 2) ** ((3.0 - slope) / 2.0) -
+               ((core_radius ** 2.0 + eta ** 2.0) ** ((3.0 - slope) / 2.0) -
                 core_radius ** (3 - slope)) / ((1 - (1 - axis_ratio ** 2) * u) ** 0.5)
 
     @staticmethod
@@ -500,7 +518,7 @@ class SphericalIsothermal(EllipticalIsothermal):
 
 
 # noinspection PyAbstractClass
-class AbstractEllipticalGeneralizedNFW(geometry_profiles.EllipticalProfile, MassProfile):
+class AbstractEllipticalGeneralizedNFW(EllipticalMassProfile, MassProfile):
     epsrel = 1.49e-5
 
     def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, kappa_s=0.05, inner_slope=1.0, scale_radius=5.0):
