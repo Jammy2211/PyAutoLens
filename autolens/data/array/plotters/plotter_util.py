@@ -39,17 +39,45 @@ def setup_figure(figsize, as_subplot):
         The size of the figure in (rows, columns).
     as_subplot : bool
         If the figure is a subplot, the setup_figure function is omitted to ensure that each subplot does not create a \
-        new figure.
+        new figure and so that it can be output using the *output_subplot_array* function.
     """
     if not as_subplot:
         plt.figure(figsize=figsize)
 
 
 def set_title(title, titlesize):
+    """Set the title and title size of the figure.
+
+    Parameters
+    -----------
+    title : str
+        The text of the title.
+    titlesize : int
+        The size of of the title of the figure.
+    """
     plt.title(title, fontsize=titlesize)
 
 
 def output_figure(array, as_subplot, output_path, output_filename, output_format):
+    """Output the figure, either as an image on the screen or to the hard-disk as a .png or .fits file.
+
+    Parameters
+    -----------
+    array : ndarray
+        The 2D array of data to be output, required for outputting the data as a fits file.
+    as_subplot : bool
+        Whether the figure is part of subplot, in which case the figure is not output so that the entire subplot can \
+        be output instead using the *output_subplot_array* function.
+    output_path : str
+        The path on the hard-disk where the figure is output.
+    output_filename : str
+        The filename of the figure that is output.
+    output_format : str
+        The format the figue is output:
+        'show' - display on computer screen.
+        'png' - output to hard-disk as a png.
+        'fits' - output to hard-disk as a fits file.'
+    """
     if not as_subplot:
 
         if output_format is 'show':
@@ -63,6 +91,20 @@ def output_figure(array, as_subplot, output_path, output_filename, output_format
 
 
 def output_subplot_array(output_path, output_filename, output_format):
+    """Output a figure which consists of a set of subplot,, either as an image on the screen or to the hard-disk as a \
+    .png file.
+
+    Parameters
+    -----------
+    output_path : str
+        The path on the hard-disk where the figure is output.
+    output_filename : str
+        The filename of the figure that is output.
+    output_format : str
+        The format the figue is output:
+        'show' - display on computer screen.
+        'png' - output to hard-disk as a png.
+    """
     if output_format is 'show':
         plt.show()
     elif output_format is 'png':
@@ -72,5 +114,13 @@ def output_subplot_array(output_path, output_filename, output_format):
 
 
 def close_figure(as_subplot):
+    """After plotting and outputting a figure, close the matplotlib figure instance (omit if a subplot).
+
+    Parameters
+    -----------
+    as_subplot : bool
+        Whether the figure is part of subplot, in which case the figure is not closed so that the entire figure can \
+        be closed later after output.
+    """
     if not as_subplot:
         plt.close()
