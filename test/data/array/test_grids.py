@@ -400,6 +400,63 @@ class TestSparseToRegularGrid:
                                                       [0.0, -1.5], [0.0, -0.5], [0.0, 0.5], [0.0, 1.5],
                                                       [-1.0, -0.5]])).all()
 
+    def test__mask_with_offset_centre__changing_origin_of_sparse_to_regular_grid_ensures_same_pairings(self):
+
+            ma = mask.Mask(array=np.array([[True, True, True, False, True],
+                                           [True, True, False, False, False],
+                                           [True, True, True, False, True],
+                                           [True, True, True, True, True],
+                                           [True, True, True, True, True]]), pixel_scale=1.0, centre=(1.0, 1.0))
+
+            image_grid = grids.RegularGrid.from_mask(mask=ma)
+
+            # Without a change in origin, only the central 3 pixels are paired as the unmasked sparse grid overlaps
+            # the central (3x3) pixels only.
+
+            pix_grid = grids.SparseToRegularGrid(unmasked_sparse_grid_shape=(3, 3), pixel_scales=(1.0, 1.0),
+                                                 regular_grid=image_grid)
+
+            assert pix_grid.total_sparse_pixels == 3
+            assert (pix_grid.sparse_to_unmasked_sparse == np.array([1, 2, 5])).all()
+            assert (pix_grid.unmasked_sparse_to_sparse == np.array([0, 0, 1, 2, 2, 2, 2, 2, 2])).all()
+            assert (pix_grid.regular_to_unmasked_sparse == np.array([2, 1, 2, 3, 5])).all()
+            assert (pix_grid.regular_to_sparse == np.array([1, 0, 1, 2, 2])).all()
+            assert (pix_grid.sparse_grid == np.array([[1.0, 0.0], [1.0, 1.0], [0.0, 1.0]])).all()
+
+            pix_grid = grids.SparseToRegularGrid(unmasked_sparse_grid_shape=(3, 3), pixel_scales=(1.0, 1.0),
+                                                 regular_grid=image_grid, origin=(1.0, 1.0))
+
+            assert pix_grid.total_sparse_pixels == 5
+            assert (pix_grid.sparse_to_unmasked_sparse == np.array([1, 3, 4, 5, 7])).all()
+            assert (pix_grid.unmasked_sparse_to_sparse == np.array([0, 0, 1, 1, 2, 3, 4, 4, 4])).all()
+            assert (pix_grid.regular_to_unmasked_sparse == np.array([1, 3, 4, 5, 7])).all()
+            assert (pix_grid.regular_to_sparse == np.array([0, 1, 2, 3, 4])).all()
+            assert (pix_grid.sparse_grid == np.array([[2.0, 1.0], [1.0, 0.0], [1.0, 1.0], [1.0, 2.0],
+                                                      [0.0, 1.0]])).all()
+
+    def test__same_as_above_but_different_offset(self):
+
+            ma = mask.Mask(array=np.array([[True, True, True, True, True],
+                                           [True, True, True, False, True],
+                                           [True, True, False, False, False],
+                                           [True, True, True, False, True],
+                                           [True, True, True, True, True]]), pixel_scale=2.0)
+
+            image_grid = grids.RegularGrid.from_mask(mask=ma)
+
+            # Without a change in origin, only the central 3 pixels are paired as the unmasked sparse grid overlaps
+            # the central (3x3) pixels only.
+
+            pix_grid = grids.SparseToRegularGrid(unmasked_sparse_grid_shape=(3, 3), pixel_scales=(2.0, 2.0),
+                                                 regular_grid=image_grid, origin=(0.0, 2.0))
+
+            assert pix_grid.total_sparse_pixels == 5
+            assert (pix_grid.sparse_to_unmasked_sparse == np.array([1, 3, 4, 5, 7])).all()
+            assert (pix_grid.unmasked_sparse_to_sparse == np.array([0, 0, 1, 1, 2, 3, 4, 4, 4])).all()
+            assert (pix_grid.regular_to_unmasked_sparse == np.array([1, 3, 4, 5, 7])).all()
+            assert (pix_grid.regular_to_sparse == np.array([0, 1, 2, 3, 4])).all()
+            assert (pix_grid.sparse_grid == np.array([[2.0, 2.0], [0.0, 0.0], [0.0, 2.0], [0.0, 4.0],
+                                                      [-2.0, 2.0]])).all()
 
 class TestUnmaskedGrids:
     class TestPaddedImageGridFromShapes:
@@ -903,7 +960,6 @@ class TestDataGrids(object):
                                                                [-1., 0.],
                                                                [-1., 1.]]))).all()
 
-        print(new_collection.pix)
         assert (new_collection.pix == np.add(1, np.array([[0., 0.]]))).all()
 
     def test__data_grids_with_pix_grid(self, data_grids):

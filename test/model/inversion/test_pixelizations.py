@@ -79,6 +79,32 @@ class TestImagePlanePixelization:
                                                   [0.0, -1.5], [0.0, -0.5], [0.0, 0.5], [0.0, 1.5],
                                                   [-1.0, -0.5]])).all()
 
+    def test__pixelization_regular_grid_from_regular_grid__offset_mask__origin_shift_corrects(self):
+
+        ma = mask.Mask(array=np.array([[True, True, False, False, False],
+                                       [True, True, False, False, False],
+                                       [True, True, False, False, False],
+                                       [True,  True, True,  True,  True],
+                                       [True,  True, True,  True,  True]]), pixel_scale=1.0, centre=(1.0, 1.0))
+
+        regular_grid = grids.RegularGrid.from_mask(mask=ma)
+
+        adaptive_image_grid = pixelizations.ImagePlanePixelization(shape=(3, 3))
+
+        pix_grid = adaptive_image_grid.image_plane_pix_grid_from_regular_grid(regular_grid=regular_grid)
+
+        assert pix_grid.shape == (3, 3)
+        assert pix_grid.pixel_scales == (1.0, 1.0)
+        assert pix_grid.total_sparse_pixels == 9
+        assert (pix_grid.sparse_to_unmasked_sparse == np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])).all()
+        assert (pix_grid.unmasked_sparse_to_sparse == np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])).all()
+        assert (pix_grid.regular_to_unmasked_sparse == np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])).all()
+        assert (pix_grid.regular_to_sparse == np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])).all()
+        assert (pix_grid.sparse_grid == np.array([[2.0, 0.0], [2.0, 1.0], [2.0, 2.0],
+                                                  [1.0, 0.0], [1.0, 1.0], [1.0, 2.0],
+                                                  [0.0, 0.0], [0.0, 1.0], [0.0, 2.0]])).all()
+        assert pix_grid.regular_grid == pytest.approx(regular_grid, 1e-4)
+
     def test__setup_pixelization__galaxies_have_no_pixelization__returns_normal_grids(self):
 
         ma = mask.Mask(np.array([[False, False, False],

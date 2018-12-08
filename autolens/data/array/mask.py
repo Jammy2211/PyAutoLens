@@ -15,6 +15,22 @@ class Mask(scaled_array.ScaledSquarePixelArray):
     A masks represented by an ndarray where True is masked.
     """
 
+    # noinspection PyUnusedLocal
+    def __init__(self, array, pixel_scale, centre=(0.0, 0.0), origin=(0.0, 0.0)):
+        """
+        Parameters
+        ----------
+        array: ndarray
+            An array representing datas (e.g. an datas_, noise-mappers, etc.)
+        pixel_scale: float
+            The arc-second to pixel conversion factor of each pixel.
+        origin : (float, float)
+            The arc-second origin of the scaled array's coordinate system.
+        """
+        # noinspection PyArgumentList
+        self.centre = centre
+        super(Mask, self).__init__(array=array, pixel_scale=pixel_scale, origin=origin)
+
     def __getitem__(self, coords):
         try:
             return super(Mask, self).__getitem__(coords)
@@ -33,7 +49,7 @@ class Mask(scaled_array.ScaledSquarePixelArray):
         pixel_scale: float
             The arc-second to pixel conversion factor of each pixel.
         """
-        return cls(np.full(tuple(map(lambda d: int(d), shape)), False, dtype='bool'), pixel_scale, origin=(0.0, 0.0))
+        return cls(np.full(tuple(map(lambda d: int(d), shape)), False, dtype='bool'), pixel_scale)
 
     @classmethod
     def masked_for_shape_and_pixel_scale(cls, shape, pixel_scale):
@@ -47,7 +63,7 @@ class Mask(scaled_array.ScaledSquarePixelArray):
         pixel_scale: float
             The arc-second to pixel conversion factor of each pixel.
         """
-        return cls(np.full(tuple(map(lambda d: int(d), shape)), True, dtype='bool'), pixel_scale, origin=(0.0, 0.0))
+        return cls(np.full(tuple(map(lambda d: int(d), shape)), True, dtype='bool'), pixel_scale)
 
     @classmethod
     def circular(cls, shape, pixel_scale, radius_arcsec, centre=(0., 0.)):
@@ -67,7 +83,7 @@ class Mask(scaled_array.ScaledSquarePixelArray):
         """
         mask = mask_util.mask_circular_from_shape_pixel_scale_and_radius(shape, pixel_scale, radius_arcsec,
                                                                          centre)
-        return cls(mask.astype('bool'), pixel_scale, origin=(0.0, 0.0))
+        return cls(mask.astype('bool'), pixel_scale, centre=centre)
 
     @classmethod
     def circular_annular(cls, shape, pixel_scale, inner_radius_arcsec, outer_radius_arcsec, centre=(0., 0.)):
@@ -89,11 +105,11 @@ class Mask(scaled_array.ScaledSquarePixelArray):
         """
         mask = mask_util.mask_circular_annular_from_shape_pixel_scale_and_radii(shape, pixel_scale, inner_radius_arcsec,
                                                                                 outer_radius_arcsec, centre)
-        return cls(mask.astype('bool'), pixel_scale, origin=(0.0, 0.0))
+        return cls(array=mask.astype('bool'), pixel_scale=pixel_scale, centre=centre)
 
     @classmethod
     def circular_anti_annular(cls, shape, pixel_scale, inner_radius_arcsec, outer_radius_arcsec, outer_radius_2_arcsec,
-                              origin=(0., 0.)):
+                              centre=(0., 0.)):
         """
         Setup the masks as an annulus, using a specified inner and outer radius in arc seconds.
 
@@ -111,13 +127,13 @@ class Mask(scaled_array.ScaledSquarePixelArray):
         outer_radius_2_arcsec : float
             The radius (in arc seconds) of the second outer circle within which pixels are not masked and outside of \
             which they are.
-        origin: (float, float)
+        centre: (float, float)
             The origin of the masks.
         """
         mask = mask_util.mask_circular_anti_annular_from_shape_pixel_scale_and_radii(shape, pixel_scale, inner_radius_arcsec,
                                                                                      outer_radius_arcsec,
-                                                                                     outer_radius_2_arcsec, origin)
-        return cls(mask, pixel_scale)
+                                                                                     outer_radius_2_arcsec, centre)
+        return cls(array=mask.astype('bool'), pixel_scale=pixel_scale, centre=centre)
 
     @classmethod
     def elliptical(cls, shape, pixel_scale, major_axis_radius_arcsec, axis_ratio, phi, centre=(0., 0.)):
@@ -143,7 +159,7 @@ class Mask(scaled_array.ScaledSquarePixelArray):
         """
         mask = mask_util.mask_elliptical_from_shape_pixel_scale_and_radius(shape, pixel_scale, major_axis_radius_arcsec,
                                                                           axis_ratio, phi, centre)
-        return cls(mask.astype('bool'), pixel_scale, origin=(0.0, 0.0))
+        return cls(array=mask.astype('bool'), pixel_scale=pixel_scale, centre=centre)
 
     @classmethod
     def elliptical_annular(cls, shape, pixel_scale,inner_major_axis_radius_arcsec, inner_axis_ratio, inner_phi,
@@ -178,7 +194,7 @@ class Mask(scaled_array.ScaledSquarePixelArray):
         mask = mask_util.mask_elliptical_annular_from_shape_pixel_scale_and_radius(shape, pixel_scale,
                            inner_major_axis_radius_arcsec, inner_axis_ratio, inner_phi,
                            outer_major_axis_radius_arcsec, outer_axis_ratio, outer_phi, centre)
-        return cls(mask.astype('bool'), pixel_scale, origin=(0.0, 0.0))
+        return cls(array=mask.astype('bool'), pixel_scale=pixel_scale, centre=centre)
 
     @property
     def pixels_in_mask(self):

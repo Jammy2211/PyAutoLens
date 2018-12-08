@@ -458,9 +458,14 @@ class PixGrid(np.ndarray):
 
 class SparseToRegularGrid(scaled_array.RectangularArrayGeometry):
 
-    def __init__(self, unmasked_sparse_grid_shape, pixel_scales, regular_grid):
+    def __init__(self, unmasked_sparse_grid_shape, pixel_scales, regular_grid, origin=(0.0, 0.0)):
         """Abstract class which represents a sparse grid overlaid over a regular-grid. The regular-grids mask is used to \
-         determine which sparse-grid pixels are in the mask, and thse pixels form the centers of the sparse grid.
+         determine which sparse-grid pixels are in the mask, and these pixels form the centers of the sparse grid.
+
+        The origin of the unmasked sparse grid can be changed to allow off-center pairings with sparse-grid pixels, \
+        which is typically used when a mask with an offset centre is being used. However, the sparse grid itself \
+        remains at the origin (0.0, 0.0), such that its arc-second grid uses the same coordinate system as the \
+        other grids.
 
         This sparse grid is used to determine the pixel centers of an adaptive grid pixelization.
 
@@ -472,10 +477,13 @@ class SparseToRegularGrid(scaled_array.RectangularArrayGeometry):
             The pixel-to-arcsecond scale of a pixel in the y and x directions.
         regular_grid : RegularGrid
             The regular-grid the sparse grid is compared to.
+        origin : (float, float)
+            The centre of the image-plane pix grid, which matches the centre of the mask (note that the origin of the \
+            coordinate system stays at (0.0", 0.0").
         """
 
         self.shape = unmasked_sparse_grid_shape
-        self.origin = (0.0, 0.0)
+        self.origin = origin
         self.total_unmasked_sparse_pixels = int(self.shape[0] * self.shape[1])
         self.pixel_scales = pixel_scales
 
@@ -517,7 +525,7 @@ class SparseToRegularGrid(scaled_array.RectangularArrayGeometry):
     def sparse_grid(self):
         """The (y,x) arc-second coordinates of the masked sparse-grid."""
         return mapping_util.sparse_grid_from_unmasked_sparse_grid(unmasked_sparse_grid=self.unmasked_sparse_grid,
-                                                                  sparse_to_unmasked_sparse=self.sparse_to_unmasked_sparse)
+                                                        sparse_to_unmasked_sparse=self.sparse_to_unmasked_sparse)
 
 
 class PaddedRegularGrid(RegularGrid):

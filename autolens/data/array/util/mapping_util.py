@@ -206,6 +206,7 @@ def sparse_grid_from_unmasked_sparse_grid(unmasked_sparse_grid, sparse_to_unmask
 
     for pixel_index in range(total_pix_pixels):
 
-        pix_grid[pixel_index, :] = unmasked_sparse_grid[sparse_to_unmasked_sparse[pixel_index], :]
+        pix_grid[pixel_index, 0] = unmasked_sparse_grid[sparse_to_unmasked_sparse[pixel_index], 0]
+        pix_grid[pixel_index, 1] = unmasked_sparse_grid[sparse_to_unmasked_sparse[pixel_index], 1]
 
     return pix_grid

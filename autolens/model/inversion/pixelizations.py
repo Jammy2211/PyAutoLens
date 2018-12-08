@@ -71,7 +71,7 @@ class ImagePlanePixelization(object):
         pixel_scales = ((regular_grid.masked_shape_arcsec[0] + image_pixel_scale) / self.shape[0],
                         (regular_grid.masked_shape_arcsec[1] + image_pixel_scale) / self.shape[1])
         return grids.SparseToRegularGrid(unmasked_sparse_grid_shape=self.shape, pixel_scales=pixel_scales,
-                                         regular_grid=regular_grid)
+                                         regular_grid=regular_grid, origin=regular_grid.mask.centre)
 
 
 class Pixelization(object):
