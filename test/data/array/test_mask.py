@@ -34,6 +34,9 @@ class TestMask(object):
                                  [False, False, False, False, False],
                                  [False, False, False, False, False]])).all()
 
+        assert msk.origin == (0.0, 0.0)
+        assert msk.centre == (0.0, 0.0)
+
     def test__mask_masked__5x5__input__all_are_false(self):
         msk = mask.Mask.masked_for_shape_and_pixel_scale(shape=(5, 5), pixel_scale=1)
 
@@ -44,6 +47,9 @@ class TestMask(object):
                                  [True, True, True, True, True],
                                  [True, True, True, True, True]])).all()
 
+        assert msk.origin == (0.0, 0.0)
+        assert msk.centre == (0.0, 0.0)
+
     def test__mask_circular__compare_to_array_util(self):
         msk_util = mask_util.mask_circular_from_shape_pixel_scale_and_radius(shape=(5, 4), pixel_scale=2.7,
                                                                              radius_arcsec=3.5, centre=(1.0, 1.0))
@@ -51,6 +57,8 @@ class TestMask(object):
         msk = mask.Mask.circular(shape=(5, 4), pixel_scale=2.7, radius_arcsec=3.5, centre=(1.0, 1.0))
 
         assert (msk == msk_util).all()
+        assert msk.origin == (0.0, 0.0)
+        assert msk.centre == (1.0, 1.0)
 
     def test__mask_annulus__compare_to_array_util(self):
         msk_util = mask_util.mask_circular_annular_from_shape_pixel_scale_and_radii(shape=(5, 4), pixel_scale=2.7,
@@ -62,6 +70,8 @@ class TestMask(object):
                                          centre=(1.0, 1.0))
 
         assert (msk == msk_util).all()
+        assert msk.origin == (0.0, 0.0)
+        assert msk.centre == (1.0, 1.0)
 
     def test__mask_anti_annulus__compare_to_array_util(self):
         msk_util = mask_util.mask_circular_anti_annular_from_shape_pixel_scale_and_radii(shape=(9, 9), pixel_scale=1.2,
@@ -71,9 +81,11 @@ class TestMask(object):
                                                                                          centre=(1.0, 1.0))
 
         msk = mask.Mask.circular_anti_annular(shape=(9, 9), pixel_scale=1.2, inner_radius_arcsec=0.8,
-                                              outer_radius_arcsec=2.2, outer_radius_2_arcsec=3.0, origin=(1.0, 1.0))
+                                              outer_radius_arcsec=2.2, outer_radius_2_arcsec=3.0, centre=(1.0, 1.0))
 
         assert (msk == msk_util).all()
+        assert msk.origin == (0.0, 0.0)
+        assert msk.centre == (1.0, 1.0)
 
     def test__mask_elliptical__compare_to_array_util(self):
 
@@ -84,6 +96,8 @@ class TestMask(object):
                         major_axis_radius_arcsec=5.7, axis_ratio=0.4, phi=40.0, centre=(1.0, 1.0))
 
         assert (msk == msk_util).all()
+        assert msk.origin == (0.0, 0.0)
+        assert msk.centre == (1.0, 1.0)
 
     def test__mask_elliptical_annular__compare_to_array_util(self):
 
@@ -96,6 +110,8 @@ class TestMask(object):
                         outer_major_axis_radius_arcsec=5.7, outer_axis_ratio=0.4, outer_phi=40.0, centre=(1.0, 1.0))
 
         assert (msk == msk_util).all()
+        assert msk.origin == (0.0, 0.0)
+        assert msk.centre == (1.0, 1.0)
 
     def test__grid_to_pixel__compare_to_array_utill(self):
         msk = np.array([[True, True, True],
