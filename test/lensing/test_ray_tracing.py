@@ -110,6 +110,29 @@ class TestAbstractTracer(object):
 
         assert tracer.total_planes == 2
 
+    def test__all_planes_have_redshifts(self, data_grids):
+
+        tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g.Galaxy()], source_galaxies=[g.Galaxy()],
+                                                     image_plane_grids=[data_grids])
+
+        assert tracer.all_planes_have_redshifts == False
+
+        tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g.Galaxy(redshift=0.5)], source_galaxies=[g.Galaxy()],
+                                                     image_plane_grids=[data_grids])
+
+        assert tracer.all_planes_have_redshifts == False
+
+        tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g.Galaxy(redshift=0.5)],
+                                                     source_galaxies=[g.Galaxy(redshift=1.0)],
+                                                     image_plane_grids=[data_grids])
+
+        assert tracer.all_planes_have_redshifts == True
+
+        tracer = ray_tracing.TracerMulti(galaxies=[g.Galaxy(redshift=1.0), g.Galaxy(redshift=2.0),
+                                                   g.Galaxy(redshift=1.0)], image_plane_grids=[data_grids])
+
+        assert tracer.all_planes_have_redshifts == True
+
     def test_hyper_galaxies_list(self, data_grids):
 
         tracer = ray_tracing.TracerImageSourcePlanes([g.Galaxy(hyper_galaxy=g.HyperGalaxy())],
@@ -1709,6 +1732,7 @@ class TestMultiTracer(object):
             assert (tracer.planes[1].grids[0].pix == np.array([[1.0, -1.0], [1.0, 0.0], [1.0, 1.0],
                                                                   [0.0, -1.0], [0.0, 0.0], [0.0, 1.0],
                                                                   [-1.0, -1.0], [-1.0, 1.0]])).all()
+
 
 class TestBooleanProperties(object):
 

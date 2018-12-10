@@ -1,3 +1,4 @@
+from functools import wraps
 import math
 
 import numpy as np
@@ -9,8 +10,41 @@ from autolens.data.array import grids
 from autolens.lensing import plane as pl
 from autolens.model.inversion import pixelizations as pix
 
+def check_tracer_cosmology(func):
+    """
+    Wrap the function in a function that, if the grid is a sub-grid (grids.SubGrid), rebins the computed values to  the
+    datas_-grid by taking the mean of each set of sub-gridded values.
+
+    Parameters
+    ----------
+    func : (profiles, *args, **kwargs) -> Object
+        A function that requires transformed coordinates
+    """
+
+    @wraps(func)
+    def wrapper(self, *args, **kwargs):
+        """
+
+        Parameters
+        ----------
+        self
+        args
+        kwargs
+
+        Returns
+        -------
+            A value or coordinate in the same coordinate system as those passed in.
+        """
+
+        if self.cosmology is not None and self.all_planes_have_redshifts is True:
+            return func(self, *args, *kwargs)
+        else:
+            return None
+
+    return wrapper
 
 class AbstractTracer(object):
+
     image_plane_grids = None
 
     def __init__(self, image_plane):
@@ -31,6 +65,10 @@ class AbstractTracer(object):
     @property
     def redshifts(self):
         return [plane.redshift for plane in self.all_planes]
+
+    @property
+    def all_planes_have_redshifts(self):
+        return not None in self.redshifts
 
     @property
     def has_light_profile(self):
@@ -146,8 +184,8 @@ class TracerImagePlane(AbstractTracer):
         return [self.image_plane]
 
     def __init__(self, lens_galaxies, image_plane_grids, border=None, cosmology=None):
-        """Ray-tracer_normal for a lensing system with just one plane, the datas_-plane. Because there is 1 plane, there are \
-        no ray-tracing calculations and the class is used purely for fitting datas_-plane galaxies with light \
+        """Ray-tracer_normal for a lensing system with just one plane, the image-plane. Because there is 1 plane, there are \
+        no ray-tracing calculations and the class is used purely for fitting image-plane galaxies with light \
         profiles.
         
         By default, this has no associated cosmology and galaxy quantities (e.g. effective radii) are in \
@@ -157,9 +195,9 @@ class TracerImagePlane(AbstractTracer):
         Parameters
         ----------
         lens_galaxies : [Galaxy]
-            The list of lens galaxies in the datas_-plane.
-        image_plane_grids : grids.DataGrids
-            The datas_-plane grids where tracer_normal calculation are performed, (this includes the datas_-grid, sub-grid, \
+            The list of lens galaxies in the image-plane.
+        image_plane_grids : [grids.DataGrids]
+            The image-plane grids where tracer_normal calculation are performed, (this includes the datas_-grid, sub-grid, \
             blurring-grid, etc.).
         border : mask.RegularGridBorder
             The border of the regular-grid, which is used to relocate demagnified traced regular-pixel to the \
@@ -173,6 +211,8 @@ class TracerImagePlane(AbstractTracer):
         super().__init__(pl.Plane(lens_galaxies, image_plane_grids, border=border, compute_deflections=True,
                                   cosmology=cosmology))
 
+        self.cosmology = cosmology
+
 
 class TracerImageSourcePlanes(AbstractTracer):
 
@@ -181,7 +221,7 @@ class TracerImageSourcePlanes(AbstractTracer):
         return [self.image_plane, self.source_plane]
 
     def __init__(self, lens_galaxies, source_galaxies, image_plane_grids, border=None, cosmology=None):
-        """Ray-tracer_normal for a lensing system with two planes, an datas_-plane and source-plane.
+        """Ray-tracer_normal for a lensing system with two planes, an image-plane and source-plane.
 
         By default, this has no associated cosmology, thus all calculations are performed in arc seconds and galaxies \
         do not need input redshifts. If a cosmology is supplied, the plane's angular diameter distances, \ 
@@ -190,11 +230,11 @@ class TracerImageSourcePlanes(AbstractTracer):
         Parameters
         ----------
         lens_galaxies : [Galaxy]
-            The list of galaxies in the datas_-plane.
+            The list of galaxies in the image-plane.
         source_galaxies : [Galaxy]
             The list of galaxies in the source-plane.
         image_plane_grids : [grids.DataGrids]
-            The datas_-plane grids where ray-tracing calculation are performed, (this includes the datas_-grid, \
+            The image-plane grids where ray-tracing calculation are performed, (this includes the datas_-grid, \
             sub-grid, blurring-grid, etc.).
         border : mask.RegularGridBorder
             The border of the regular-grid, which is used to relocate demagnified traced regular-pixel to the \
@@ -219,20 +259,20 @@ class TracerImageSourcePlanes(AbstractTracer):
                                      cosmology=cosmology)
 
     @property
-    @pl.cosmology_check
+    @check_tracer_cosmology
     def angular_diameter_distance_from_image_to_source_plane(self):
         return self.cosmology.angular_diameter_distance_z1z2(self.image_plane.redshift,
                                                              self.source_plane.redshift).to('kpc').value
 
     @property
-    @pl.cosmology_check
+    @check_tracer_cosmology
     def critical_density_kpc(self):
         return self.constant_kpc * self.source_plane.angular_diameter_distance_to_earth / \
                (self.angular_diameter_distance_from_image_to_source_plane *
                 self.image_plane.angular_diameter_distance_to_earth)
 
     @property
-    @pl.cosmology_check
+    @check_tracer_cosmology
     def critical_density_arcsec(self):
         return self.critical_density_kpc * self.image_plane.kpc_per_arcsec_proper ** 2.0
 
@@ -295,7 +335,7 @@ class TracerImageSourcePlanes(AbstractTracer):
 class AbstractTracerMulti(AbstractTracer):
 
     def __init__(self, galaxies, cosmology):
-        """The ray-tracing calculations, defined by a lensing system with just one datas_-plane and source-plane.
+        """The ray-tracing calculations, defined by a lensing system with just one image-plane and source-plane.
 
         This has no associated cosmology, thus all calculations are performed in arc seconds and galaxies do not need
         known redshift measurements.
@@ -395,7 +435,7 @@ class TracerMulti(AbstractTracerMulti):
         galaxies : [Galaxy]
             The list of galaxies in the ray-tracing calculation.
         image_plane_grids : [grids.DataGrids]
-            The datas_-plane grids where ray-tracing calculation are performed, (this includes the
+            The image-plane grids where ray-tracing calculation are performed, (this includes the
             datas_-grid, sub-grid, blurring-grid, etc.).
         border : mask.RegularGridBorder
             The border of the regular-grid, which is used to relocate demagnified traced regular-pixel to the \
@@ -457,7 +497,7 @@ class TracerImageSourcePlanesPositions(AbstractTracer):
         return [self.image_plane, self.source_plane]
 
     def __init__(self, lens_galaxies, positions, cosmology=None):
-        """Positional ray-tracer_normal for a lensing system with two planes, an datas_-plane and source-plane (source-plane \
+        """Positional ray-tracer_normal for a lensing system with two planes, an image-plane and source-plane (source-plane \
         galaxies are not input for the positional ray-tracer_normal, as it is only the proximity that positions trace to \
         within one another that needs to be computed).
 
@@ -468,9 +508,9 @@ class TracerImageSourcePlanesPositions(AbstractTracer):
         Parameters
         ----------
         lens_galaxies : [Galaxy]
-            The list of lens galaxies in the datas_-plane.
+            The list of lens galaxies in the image-plane.
         positions : [[[]]]
-            The (x,y) arc-second coordinates of datas_-plane pixels which (are expected to) mappers to the same location(s) \
+            The (x,y) arc-second coordinates of image-plane pixels which (are expected to) mappers to the same location(s) \
             in the source-plane.
         cosmology : astropy.cosmology.Planck15
             The cosmology of the ray-tracing calculation.
@@ -498,7 +538,7 @@ class TracerMultiPositions(AbstractTracerMulti):
         galaxies : [Galaxy]
             The list of galaxies in the ray-tracing calculation.
         positions : [[[]]]
-            The (x,y) arc-second coordinates of datas_-plane pixels which (are expected to) mappers to the same location(s) \
+            The (x,y) arc-second coordinates of image-plane pixels which (are expected to) mappers to the same location(s) \
             in the final source-plane.
         cosmology : astropy.cosmology
             The cosmology of the ray-tracing calculation.

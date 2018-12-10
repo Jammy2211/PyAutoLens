@@ -453,13 +453,16 @@ class EllipticalIsothermal(EllipticalPowerLaw):
         """
         Calculate the deflection angles at a given set of gridded coordinates.
 
+        For coordinates (0.0, 0.0) the analytic calculation of the deflection angle gives a NaN. Therefore, \
+        coordinates at (0.0, 0.0) are shifted slightly to (1.0e-8, 1.0e-8).
+
         Parameters
         ----------
         grid : masks.RegularGrid
             The grid of coordinates the deflection angles are computed on.
         """
 
-        np.seterr(all='ignore')
+        grid[(grid[:,0] == 0.0) & (grid[:,1] == 0.0)] = np.array([1.0e-8, 1.0e-8])
 
         try:
             factor = 2.0 * self.einstein_radius_rescaled * self.axis_ratio / np.sqrt(1 - self.axis_ratio ** 2)
@@ -468,7 +471,6 @@ class EllipticalIsothermal(EllipticalPowerLaw):
 
             deflection_y = np.arctanh(np.divide(np.multiply(np.sqrt(1 - self.axis_ratio ** 2), grid[:, 0]), psi))
             deflection_x = np.arctan(np.divide(np.multiply(np.sqrt(1 - self.axis_ratio ** 2), grid[:, 1]), psi))
-
             return self.rotate_grid_from_profile(np.multiply(factor, np.vstack((deflection_y, deflection_x)).T))
         except ZeroDivisionError:
             return self.grid_radius_to_cartesian(grid, np.full(grid.shape[0], 2.0 * self.einstein_radius_rescaled))
