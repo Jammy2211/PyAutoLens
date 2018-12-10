@@ -344,5 +344,12 @@ class Redshift(object):
     def __init__(self, redshift):
         self.redshift = redshift
 
+    @property
+    def value(self):
+        try:
+            return self.redshift.value
+        except AttributeError:
+            return self.redshift
+
     def __str__(self):
         return str(self.redshift)
