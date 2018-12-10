@@ -1,6 +1,6 @@
 import os
 from os import path
-
+from astropy import cosmology as cosmo
 import numpy as np
 import pytest
 from autofit import conf
@@ -284,16 +284,54 @@ class TestPhase(object):
         analysis = phase.make_analysis(image)
         assert analysis.lensing_image != image
 
-    def test_tracer_for_instance(self, image):
+    def test__tracer_for_instance__includes_cosmology(self, image):
+
         lens_galaxy = g.Galaxy()
         source_galaxy = g.Galaxy()
-        phase = ph.LensSourcePlanePhase(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy])
+
+        phase = ph.LensPlanePhase(lens_galaxies=[lens_galaxy], cosmology=cosmo.FLRW)
         analysis = phase.make_analysis(image)
         instance = phase.constant
         tracer = analysis.tracer_for_instance(instance)
+        padded_tracer = analysis.padded_tracer_for_instance(instance)
+
+        assert tracer.image_plane.galaxies[0] == lens_galaxy
+        assert tracer.cosmology == cosmo.FLRW
+        assert padded_tracer.image_plane.galaxies[0] == lens_galaxy
+        assert padded_tracer.cosmology == cosmo.FLRW
+
+        phase = ph.LensSourcePlanePhase(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
+                                        cosmology=cosmo.FLRW)
+        analysis = phase.make_analysis(image)
+        instance = phase.constant
+        tracer = analysis.tracer_for_instance(instance)
+        padded_tracer = analysis.padded_tracer_for_instance(instance)
 
         assert tracer.image_plane.galaxies[0] == lens_galaxy
         assert tracer.source_plane.galaxies[0] == source_galaxy
+        assert tracer.cosmology == cosmo.FLRW
+        assert padded_tracer.image_plane.galaxies[0] == lens_galaxy
+        assert padded_tracer.source_plane.galaxies[0] == source_galaxy
+        assert padded_tracer.cosmology == cosmo.FLRW
+
+        galaxy_0 = g.Galaxy(redshift=0.1)
+        galaxy_1 = g.Galaxy(redshift=0.2)
+        galaxy_2 = g.Galaxy(redshift=0.3)
+
+        phase = ph.MultiPlanePhase(galaxies=[galaxy_0, galaxy_1, galaxy_2], cosmology=cosmo.WMAP7)
+        analysis = phase.make_analysis(image)
+        instance = phase.constant
+        tracer = analysis.tracer_for_instance(instance)
+        padded_tracer = analysis.padded_tracer_for_instance(instance)
+
+        assert tracer.planes[0].galaxies[0] == galaxy_0
+        assert tracer.planes[1].galaxies[0] == galaxy_1
+        assert tracer.planes[2].galaxies[0] == galaxy_2
+        assert tracer.cosmology == cosmo.WMAP7
+        assert padded_tracer.planes[0].galaxies[0] == galaxy_0
+        assert padded_tracer.planes[1].galaxies[0] == galaxy_1
+        assert padded_tracer.planes[2].galaxies[0] == galaxy_2
+        assert padded_tracer.cosmology == cosmo.WMAP7
 
     # TODO : Need to test using results
 

@@ -9,7 +9,7 @@ from autolens.data.array.util import mapping_util
 from autolens.data.array import grids, scaled_array
 
 
-def cosmology_check(func):
+def check_plane_cosmology(func):
     """
     Wrap the function in a function that, if the grid is a sub-grid (grids.SubGrid), rebins the computed values to  the
     datas_-grid by taking the mean of each set of sub-gridded values.
@@ -35,7 +35,7 @@ def cosmology_check(func):
             A value or coordinate in the same coordinate system as those passed in.
         """
 
-        if self.cosmology is not None:
+        if self.cosmology is not None and self.redshift is not None:
             return func(self, *args, *kwargs)
         else:
             return None
@@ -69,12 +69,6 @@ class Plane(object):
 
         if not galaxies:
             raise exc.RayTracingException('An empty list of galaxies was supplied to Plane')
-
-        if cosmology is not None:
-            if any([redshift is None for redshift in self.galaxy_redshifts]):
-                raise exc.RayTracingException('A cosmology has been supplied to ray-tracing, but a galaxy does not'
-                                              'have a redshift. Either do not supply a cosmology or give the galaxy'
-                                              'a redshift.')
 
         if any([redshift is not None for redshift in self.galaxy_redshifts]):
             if not all([galaxies[0].redshift == galaxy.redshift for galaxy in galaxies]):
@@ -121,17 +115,17 @@ class Plane(object):
         return constants.c.to('kpc / s').value ** 2.0 / (4 * math.pi * constants.G.to('kpc3 / M_sun s2').value)
 
     @property
-    @cosmology_check
+    @check_plane_cosmology
     def arcsec_per_kpc_proper(self):
         return self.cosmology.arcsec_per_kpc_proper(z=self.redshift).value
 
     @property
-    @cosmology_check
+    @check_plane_cosmology
     def kpc_per_arcsec_proper(self):
         return 1.0 / self.arcsec_per_kpc_proper
 
     @property
-    @cosmology_check
+    @check_plane_cosmology
     def angular_diameter_distance_to_earth(self):
         return self.cosmology.angular_diameter_distance(self.redshift).to('kpc').value
 
