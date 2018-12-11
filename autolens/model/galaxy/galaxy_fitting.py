@@ -75,7 +75,7 @@ class GalaxyFit(fitting.AbstractDataFit):
         chi_squareds_ = fitting_util.chi_squareds_from_residuals_and_noise_maps(residuals_, [galaxy_datas[0].noise_map_])
         chi_squared_terms = fitting_util.chi_squared_terms_from_chi_squareds(chi_squareds_)
         noise_terms = fitting_util.noise_terms_from_noise_maps([galaxy_datas[0].noise_map_])
-        return sum(fitting_util.likelihoods_from_chi_squareds_and_noise_terms(chi_squared_terms, noise_terms))
+        return sum(fitting_util.likelihoods_from_chi_squared_terms_and_noise_terms(chi_squared_terms, noise_terms))
 
 
 class GalaxyFitDeflections(fitting.AbstractDataFit):
@@ -112,4 +112,4 @@ class GalaxyFitDeflections(fitting.AbstractDataFit):
                                                                                         galaxy_datas[0].noise_map_])
         chi_squared_terms = fitting_util.chi_squared_terms_from_chi_squareds(chi_squareds_)
         noise_terms = fitting_util.noise_terms_from_noise_maps([galaxy_datas[0].noise_map_, galaxy_datas[0].noise_map_])
-        return sum(fitting_util.likelihoods_from_chi_squareds_and_noise_terms(chi_squared_terms, noise_terms))
+        return sum(fitting_util.likelihoods_from_chi_squared_terms_and_noise_terms(chi_squared_terms, noise_terms))

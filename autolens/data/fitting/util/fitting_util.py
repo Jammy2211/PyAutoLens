@@ -104,7 +104,7 @@ def noise_terms_from_noise_maps(noise_maps_):
     """
     return list(map(lambda noise_map_ : np.sum(np.log(2 * np.pi * noise_map_ ** 2.0)), noise_maps_))
 
-def likelihoods_from_chi_squareds_and_noise_terms(chi_squared_terms, noise_terms):
+def likelihoods_from_chi_squared_terms_and_noise_terms(chi_squared_terms, noise_terms):
     """Compute the likelihood of each masked 1D model-datas fit to the data, where:
 
     Likelihood = -0.5*[Chi_Squared_Term + Noise_Term] (see functions above for these definitions)
@@ -119,8 +119,9 @@ def likelihoods_from_chi_squareds_and_noise_terms(chi_squared_terms, noise_terms
     return list(map(lambda chi_squared_term, noise_term : -0.5 * (chi_squared_term + noise_term),
                     chi_squared_terms, noise_terms))
 
-def likelihoods_with_regularization_from_chi_squared_regularization_and_noise_terms(chi_squared_terms,
-                                                                                    regularization_terms, noise_terms):
+def likelihoods_with_regularization_from_chi_squared_terms_regularization_and_noise_terms(chi_squared_terms,
+                                                                                          regularization_terms,
+                                                                                          noise_terms):
     """Compute the likelihood of each masked 1D model-datas fit to the data, including the regularization term which
     comes from an inversion:
 
@@ -249,7 +250,7 @@ def contributions_from_hyper_images_and_galaxies(hyper_model_image, hyper_galaxy
 
 def scaled_noise_maps_from_fitting_hyper_images_contributions_and_hyper_galaxies(fitting_hyper_images, contributions_,
                                                                                  hyper_galaxies):
-    """For a list of fitting hyper-images (which includes the hyper model regular and hyper galaxy images),
+    """For a list of fitting hyper-images (which includes the hyper model image and hyper galaxy images),
      contribution maps and model hyper-galaxies, compute their scaled noise-maps.
 
      This is performed by using each hyper-galaxy's *noise_factor* and *noise_power* parameter in conjunction with the
@@ -265,14 +266,14 @@ def scaled_noise_maps_from_fitting_hyper_images_contributions_and_hyper_galaxies
         The hyper-galaxies which represent the model components used to scale the noise, which correspond to
         individual galaxies in the regular.
     """
-    return list(map(lambda hyp, contribution_ :
+    return list(map(lambda fitting_hyper_image, contribution_ :
                     scaled_noise_map_from_hyper_galaxies_and_contributions(contributions_=contribution_,
                                                                            hyper_galaxies=hyper_galaxies,
-                                                                           noise_map_=hyp.noise_map_),
+                                                                           noise_map_=fitting_hyper_image.noise_map_),
                     fitting_hyper_images, contributions_))
 
 def scaled_noise_map_from_hyper_galaxies_and_contributions(contributions_, hyper_galaxies, noise_map_):
-    """For a contribution map and noise-map, use the model hyper galaxies to computed a scaled noise-map.
+    """For a contribution map and noise-map, use the model hyper galaxies to compute a scaled noise-map.
 
     Parameters
     -----------
@@ -285,7 +286,7 @@ def scaled_noise_map_from_hyper_galaxies_and_contributions(contributions_, hyper
         An array describing the RMS standard deviation error in each pixel, preferably in units of electrons per
         second.
     """
-    scaled_noises_ = list(map(lambda hyper, contribution_:
+    scaled_noise_maps_ = list(map(lambda hyper, contribution_:
                               hyper.scaled_noise_from_contributions(noise_map_, contribution_),
                               hyper_galaxies, contributions_))
-    return noise_map_ + sum(scaled_noises_)
+    return noise_map_ + sum(scaled_noise_maps_)

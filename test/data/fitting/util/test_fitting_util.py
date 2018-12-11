@@ -160,8 +160,8 @@ class TestLikelihood:
         chi_squareds = fitting_util.chi_squareds_from_residuals_and_noise_maps(residuals_=residuals, noise_maps_=[noise_map])
         chi_squared_terms = fitting_util.chi_squared_terms_from_chi_squareds(chi_squareds_=chi_squareds)
         noise_terms = fitting_util.noise_terms_from_noise_maps(noise_maps_=[noise_map])
-        likelihoods = fitting_util.likelihoods_from_chi_squareds_and_noise_terms(chi_squared_terms=chi_squared_terms,
-                                                                            noise_terms=noise_terms)
+        likelihoods = fitting_util.likelihoods_from_chi_squared_terms_and_noise_terms(chi_squared_terms=chi_squared_terms,
+                                                                                      noise_terms=noise_terms)
 
         chi_squared_term = 0
         noise_term = np.log(2 * np.pi * 4.0) + np.log(2 * np.pi * 4.0) + np.log(2 * np.pi * 4.0) + np.log(
@@ -178,8 +178,8 @@ class TestLikelihood:
         chi_squareds = fitting_util.chi_squareds_from_residuals_and_noise_maps(residuals_=residuals, noise_maps_=[noise_map])
         chi_squared_terms = fitting_util.chi_squared_terms_from_chi_squareds(chi_squareds_=chi_squareds)
         noise_terms = fitting_util.noise_terms_from_noise_maps(noise_maps_=[noise_map])
-        likelihoods = fitting_util.likelihoods_from_chi_squareds_and_noise_terms(chi_squared_terms=chi_squared_terms,
-                                                                            noise_terms=noise_terms)
+        likelihoods = fitting_util.likelihoods_from_chi_squared_terms_and_noise_terms(chi_squared_terms=chi_squared_terms,
+                                                                                      noise_terms=noise_terms)
 
         # chi squared = 0.25, 0, 0.25, 1.0
         # likelihood = -0.5*(0.25+0+0.25+1.0)
@@ -199,8 +199,8 @@ class TestLikelihood:
         chi_squareds = fitting_util.chi_squareds_from_residuals_and_noise_maps(residuals_=residuals, noise_maps_=[noise_map])
         chi_squared_terms = fitting_util.chi_squared_terms_from_chi_squareds(chi_squareds_=chi_squareds)
         noise_terms = fitting_util.noise_terms_from_noise_maps(noise_maps_=[noise_map])
-        likelihoods = fitting_util.likelihoods_from_chi_squareds_and_noise_terms(chi_squared_terms=chi_squared_terms,
-                                                                            noise_terms=noise_terms)
+        likelihoods = fitting_util.likelihoods_from_chi_squared_terms_and_noise_terms(chi_squared_terms=chi_squared_terms,
+                                                                                      noise_terms=noise_terms)
 
         # chi squared = (1.0/1.0)**2, (0.0), (-1.0/3.0)**2.0, (2.0/4.0)**2.0
 
@@ -225,8 +225,8 @@ class TestLikelihood:
                                                                           noise_maps_=[noise_map_0, noise_map_1])
         chi_squared_terms = fitting_util.chi_squared_terms_from_chi_squareds(chi_squareds_=chi_squareds)
         noise_terms = fitting_util.noise_terms_from_noise_maps(noise_maps_=[noise_map_0, noise_map_1])
-        likelihoods = fitting_util.likelihoods_from_chi_squareds_and_noise_terms(chi_squared_terms=chi_squared_terms,
-                                                                            noise_terms=noise_terms)
+        likelihoods = fitting_util.likelihoods_from_chi_squared_terms_and_noise_terms(chi_squared_terms=chi_squared_terms,
+                                                                                      noise_terms=noise_terms)
 
         # chi squared = 0.25, 0, 0.25, 1.0
         # likelihood = -0.5*(0.25+0+0.25+1.0)
@@ -255,7 +255,7 @@ class TestInversionEvidence:
     def test__simple_values(self):
 
         likelihood_with_regularization_terms = \
-            fitting_util.likelihoods_with_regularization_from_chi_squared_regularization_and_noise_terms(
+            fitting_util.likelihoods_with_regularization_from_chi_squared_terms_regularization_and_noise_terms(
                 chi_squared_terms=[3.0], regularization_terms=[6.0], noise_terms=[2.0])
 
         assert likelihood_with_regularization_terms[0] == -0.5 * (3.0 + 6.0 + 2.0)
@@ -268,7 +268,7 @@ class TestInversionEvidence:
 
     def test__x2_images_simple_values(self):
         likelihood_with_regularization_terms = \
-            fitting_util.likelihoods_with_regularization_from_chi_squared_regularization_and_noise_terms(
+            fitting_util.likelihoods_with_regularization_from_chi_squared_terms_regularization_and_noise_terms(
                 chi_squared_terms=[3.0, 4.0], regularization_terms=[6.0, 7.0], noise_terms=[2.0, 3.0])
 
         assert likelihood_with_regularization_terms[0] == -0.5 * (3.0 + 6.0 + 2.0)

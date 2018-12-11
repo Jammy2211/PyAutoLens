@@ -98,7 +98,7 @@ class AbstractFit(object):
 
     @property
     def likelihoods(self):
-        return fitting_util.likelihoods_from_chi_squareds_and_noise_terms(self.chi_squared_terms, self.noise_terms)
+        return fitting_util.likelihoods_from_chi_squared_terms_and_noise_terms(self.chi_squared_terms, self.noise_terms)
 
     @property
     def likelihood(self):
@@ -348,8 +348,8 @@ class AbstractInversionFit(AbstractImageFit):
 
     @property
     def likelihoods_with_regularization(self):
-        return fitting_util.likelihoods_with_regularization_from_chi_squared_regularization_and_noise_terms(self.chi_squared_terms,
-               [self.inversion.regularization_term], self.noise_terms)
+        return fitting_util.likelihoods_with_regularization_from_chi_squared_terms_regularization_and_noise_terms(self.chi_squared_terms,
+                                                                                                                  [self.inversion.regularization_term], self.noise_terms)
 
     @property
     def likelihood_with_regularization(self):

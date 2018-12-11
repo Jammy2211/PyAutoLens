@@ -223,8 +223,8 @@ class LensingProfileFit(fitting.AbstractConvolutionFit, AbstractLensingFit):
         chi_squareds_ = fitting_util.chi_squareds_from_residuals_and_noise_maps(residuals_=residuals_, noise_maps_=noise_maps_),
         chi_squared_terms = fitting_util.chi_squared_terms_from_chi_squareds(chi_squareds_=chi_squareds_)
         noise_terms = fitting_util.noise_terms_from_noise_maps(noise_maps_=noise_maps_)
-        return sum(fitting_util.likelihoods_from_chi_squareds_and_noise_terms(chi_squared_terms=chi_squared_terms,
-                                                                         noise_terms=noise_terms))
+        return sum(fitting_util.likelihoods_from_chi_squared_terms_and_noise_terms(chi_squared_terms=chi_squared_terms,
+                                                                                   noise_terms=noise_terms))
 
     @property
     def model_images_of_planes(self):
@@ -318,12 +318,12 @@ class HyperLensingProfileFit(LensingProfileFit, fitting.AbstractHyperFit):
 
         scaled_chi_squared_terms = fitting_util.chi_squared_terms_from_chi_squareds(chi_squareds_=scaled_chi_squareds_)
         scaled_noise_terms = fitting_util.noise_terms_from_noise_maps(noise_maps_=scaled_noise_maps_)
-        return sum(fitting_util.likelihoods_from_chi_squareds_and_noise_terms(scaled_chi_squared_terms, scaled_noise_terms))
+        return sum(fitting_util.likelihoods_from_chi_squared_terms_and_noise_terms(scaled_chi_squared_terms, scaled_noise_terms))
 
     @property
     def scaled_likelihoods(self):
-        return fitting_util.likelihoods_from_chi_squareds_and_noise_terms(self.scaled_chi_squared_terms,
-                                                                     self.scaled_noise_terms)
+        return fitting_util.likelihoods_from_chi_squared_terms_and_noise_terms(self.scaled_chi_squared_terms,
+                                                                               self.scaled_noise_terms)
 
     @property
     def scaled_likelihood(self):

@@ -61,8 +61,8 @@ class SensitivityProfileFit(AbstractSensitivityFit):
         chi_squared_terms_normal = fitting_util.chi_squared_terms_from_chi_squareds(chi_squareds_=chi_squareds_normal_)
         
         noise_terms_normal = fitting_util.noise_terms_from_noise_maps(noise_maps_=noise_maps_)
-        likelihoods_normal = fitting_util.likelihoods_from_chi_squareds_and_noise_terms(chi_squared_terms=chi_squared_terms_normal,
-                                                                                   noise_terms=noise_terms_normal)
+        likelihoods_normal = fitting_util.likelihoods_from_chi_squared_terms_and_noise_terms(chi_squared_terms=chi_squared_terms_normal,
+                                                                                             noise_terms=noise_terms_normal)
         
         model_images_sensitive_ = fitting_util.blur_images_including_blurring_regions(
             images_=tracer_sensitive.image_plane_images_, blurring_images_=tracer_sensitive.image_plane_blurring_images_,
@@ -75,8 +75,8 @@ class SensitivityProfileFit(AbstractSensitivityFit):
         chi_squared_terms_sensitive = fitting_util.chi_squared_terms_from_chi_squareds(chi_squareds_=chi_squareds_sensitive_)
         noise_terms_sensitive = fitting_util.noise_terms_from_noise_maps(noise_maps_=noise_maps_)
         
-        likelihoods_sensitive = fitting_util.likelihoods_from_chi_squareds_and_noise_terms(chi_squared_terms=chi_squared_terms_sensitive,
-                                                                                      noise_terms=noise_terms_sensitive)
+        likelihoods_sensitive = fitting_util.likelihoods_from_chi_squared_terms_and_noise_terms(chi_squared_terms=chi_squared_terms_sensitive,
+                                                                                                noise_terms=noise_terms_sensitive)
 
         return sum(likelihoods_sensitive) - sum(likelihoods_normal)
 
