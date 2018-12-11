@@ -60,16 +60,19 @@ class AbstractFit(object):
             The summed likelihood of the fit between data and model for all datasets.
         """
 
-        self.datas_ = list(map(lambda fit_data : fit_data[:], fitting_datas))
-        self.noise_maps_ = list(map(lambda fit_data : fit_data.noise_map_, fitting_datas))
-        self.masks = list(map(lambda fit_data : fit_data.mask, fitting_datas))
         self.map_to_scaled_arrays = list(map(lambda fit_data: fit_data.grids.regular.scaled_array_from_array_1d,
                                              fitting_datas))
 
         self.model_datas_ = model_datas_
-        self.residuals_ = fitting_util.residual_from_data_and_model_data(data=self.datas_,
-                                                                         model_data=self.model_datas_)
-        self.chi_squareds_ = fitting_util.chi_squared_from_residual_and_noise_map(self.residuals_, self.noise_maps_)
+
+        self.residuals_ = list(map(lambda fit_data, model_data_ :
+                          fitting_util.residual_from_data_and_model_data(data=fit_data, model_data=model_data_),
+                          fitting_datas, model_datas_))
+
+        self.chi_squareds_ = list(map(lambda fit_data, residual_ :
+                             fitting_util.chi_squared_from_residual_and_noise_map(residual=residual_,
+                                                                                  noise_map=fit_data.noise_map_),
+                             fitting_datas, self.residuals_))
 
     @property
     def chi_squared_terms(self):
