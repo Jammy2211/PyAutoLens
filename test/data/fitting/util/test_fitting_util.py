@@ -56,130 +56,98 @@ def make_li_blur():
 class TestBlurImages:
 
     def test__2x2_image_all_1s__3x3__psf_central_1__no_blurring(self, fi_no_blur):
-        _blurring_image = np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
 
-        blurred_images = fitting_util.blur_images_including_blurring_regions(images_=[fi_no_blur[:]],
-                                                                        blurring_images_=[_blurring_image],
-                                                                        convolvers=[fi_no_blur.convolver_image])
-        assert (blurred_images[0] == np.array([1.0, 1.0, 1.0, 1.0])).all()
+        blurring_image_ = np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
+
+        blurred_image = fitting_util.blur_image_including_blurring_region(image_=fi_no_blur[:],
+                                                                           blurring_image_=blurring_image_,
+                                                                           convolver=fi_no_blur.convolver_image)
+        assert (blurred_image == np.array([1.0, 1.0, 1.0, 1.0])).all()
 
     def test__2x2_image_all_1s__3x3_psf_all_1s__image_blurs_to_4s(self, fi_blur):
-        _blurring_image = np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
 
-        blurred_images = fitting_util.blur_images_including_blurring_regions(images_=[fi_blur[:]],
-                                                                        blurring_images_=[_blurring_image],
-                                                                        convolvers=[fi_blur.convolver_image])
-        assert (blurred_images[0] == np.array([4.0, 4.0, 4.0, 4.0])).all()
+        blurring_image_ = np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
 
-    def test__2x2_image_all_1s__3x3_psf_all_1s__blurring_region__image_blurs_to_9s(self, fi_blur):
-        _blurring_image = np.array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0])
-
-        blurred_images = fitting_util.blur_images_including_blurring_regions(images_=[fi_blur[:], fi_blur[:]],
-                                                                        blurring_images_=[_blurring_image,
-                                                                                          _blurring_image],
-                                                                        convolvers=[fi_blur.convolver_image,
-                                                                                    fi_blur.convolver_image])
-
-        assert (blurred_images[0] == np.array([9.0, 9.0, 9.0, 9.0])).all()
-        assert (blurred_images[1] == np.array([9.0, 9.0, 9.0, 9.0])).all()
+        blurred_image = fitting_util.blur_image_including_blurring_region(image_=fi_blur[:],
+                                                                           blurring_image_=blurring_image_,
+                                                                           convolver=fi_blur.convolver_image)
+        assert (blurred_image == np.array([4.0, 4.0, 4.0, 4.0])).all()
 
 
 class TestResiduals:
 
     def test__model_mathces_data__residuals_all_0s(self):
+
         data = 10.0 * np.ones((2, 2))
         model_data = 10.0 * np.ones((2, 2))
 
-        residuals = fitting_util.residuals_from_datas_and_model_datas(datas_=[data], model_datas_=[model_data])
+        residuals = fitting_util.residual_from_data_and_model_data(data=data, model_data=model_data)
 
-        assert (residuals[0] == np.zeros((2, 2))).all()
-
-    def test__model_data_mismatch__x2_datas__residuals_non_0(self):
-        data_0 = 10.0 * np.ones((2, 2))
-        model_data_0 = np.array([[11, 10],
-                                 [9, 8]])
-
-        data_1 = 10.0 * np.ones((2, 2))
-        model_data_1 = np.array([[10, 10],
-                                 [9, 8]])
-
-        residuals = fitting_util.residuals_from_datas_and_model_datas(datas_=[data_0, data_1],
-                                                                 model_datas_=[model_data_0, model_data_1])
-
-        assert (residuals[0] == np.array([[-1, 0],
-                                          [1, 2]])).all()
-
-        assert (residuals[1] == np.array([[0, 0],
-                                          [1, 2]])).all()
+        assert (residuals == np.zeros((2, 2))).all()
 
 
 class TestChiSquareds:
 
     def test__model_mathces_data__chi_sq_all_0s(self):
+
         data = 10.0 * np.ones((2, 2))
         noise_map = 4.0 * np.ones((2, 2))
         model_data = 10.0 * np.ones((2, 2))
 
-        residuals = fitting_util.residuals_from_datas_and_model_datas(datas_=[data], model_datas_=[model_data])
-        chi_squareds = fitting_util.chi_squareds_from_residuals_and_noise_maps(residuals_=residuals, noise_maps_=[noise_map])
+        residuals = fitting_util.residual_from_data_and_model_data(data=data, model_data=model_data)
+        chi_squareds = fitting_util.chi_squared_from_residual_and_noise_map(residual=residuals, noise_map=noise_map)
 
-        assert (chi_squareds[0] == np.zeros((2, 2))).all()
+        assert (chi_squareds == np.zeros((2, 2))).all()
 
-    def test__model_data_mismatch__x2_images__chi_sq_non_0(self):
-        data_0 = 10.0 * np.ones((2, 2))
-        data_1 = 10.0 * np.ones((2, 2))
+    def test__model_data_mismatch__chi_sq_non_0(self):
 
-        noise_map_0 = 2.0 * np.ones((2, 2))
-        noise_map_1 = 2.0 * np.ones((2, 2))
+        data = 10.0 * np.ones((2, 2))
 
-        model_data_0 = np.array([[11, 10],
-                                 [9, 8]])
-        model_data_1 = np.array([[10, 10],
+        noise_map = 2.0 * np.ones((2, 2))
+
+        model_data = np.array([[11, 10],
                                  [9, 8]])
 
-        residuals = fitting_util.residuals_from_datas_and_model_datas(datas_=[data_0, data_1],
-                                                                 model_datas_=[model_data_0, model_data_1])
-        chi_squareds = fitting_util.chi_squareds_from_residuals_and_noise_maps(residuals,
-                                                                          noise_maps_=[noise_map_0, noise_map_1])
+        residual = fitting_util.residual_from_data_and_model_data(data=data, model_data=model_data)
+        chi_squared = fitting_util.chi_squared_from_residual_and_noise_map(residual=residual, noise_map=noise_map)
 
-        assert (chi_squareds[0] == (np.array([[1 / 4, 0],
-                                              [1 / 4, 1]]))).all()
-
-        assert (chi_squareds[1] == (np.array([[0, 0],
-                                              [1 / 4, 1]]))).all()
+        assert (chi_squared == (np.array([[1 / 4, 0],
+                                          [1 / 4, 1]]))).all()
 
 
 class TestLikelihood:
 
     def test__model_matches_data__noise_all_2s__lh_is_noise_term(self):
+
         data = np.array([10.0, 10.0, 10.0, 10.0])
         noise_map = np.array([2.0, 2.0, 2.0, 2.0])
         model_data = np.array([10.0, 10.0, 10.0, 10.0])
 
-        residuals = fitting_util.residuals_from_datas_and_model_datas(datas_=[data], model_datas_=[model_data])
-        chi_squareds = fitting_util.chi_squareds_from_residuals_and_noise_maps(residuals_=residuals, noise_maps_=[noise_map])
-        chi_squared_terms = fitting_util.chi_squared_terms_from_chi_squareds(chi_squareds_=chi_squareds)
-        noise_terms = fitting_util.noise_terms_from_noise_maps(noise_maps_=[noise_map])
-        likelihoods = fitting_util.likelihoods_from_chi_squared_terms_and_noise_terms(chi_squared_terms=chi_squared_terms,
-                                                                                      noise_terms=noise_terms)
+        residual = fitting_util.residual_from_data_and_model_data(data=data, model_data=model_data)
+        chi_squared = fitting_util.chi_squared_from_residual_and_noise_map(residual=residual, noise_map=noise_map)
+        chi_squared_term = fitting_util.chi_squared_term_from_chi_squared(chi_squared=chi_squared)
+        noise_term = fitting_util.noise_term_from_noise_map(noise_map=noise_map)
+        likelihood = fitting_util.likelihood_from_chi_squared_term_and_noise_term(chi_squared_term=chi_squared_term,
+                                                                                   noise_term=noise_term)
 
         chi_squared_term = 0
         noise_term = np.log(2 * np.pi * 4.0) + np.log(2 * np.pi * 4.0) + np.log(2 * np.pi * 4.0) + np.log(
             2 * np.pi * 4.0)
 
-        assert likelihoods[0] == -0.5 * (chi_squared_term + noise_term)
+        assert likelihood == -0.5 * (chi_squared_term + noise_term)
 
     def test__model_data_mismatch__chi_squared_term_contributes_to_lh(self):
+
         data = np.array([10.0, 10.0, 10.0, 10.0])
         noise_map = np.array([2.0, 2.0, 2.0, 2.0])
         model_data = np.array([11.0, 10.0, 9.0, 8.0])
 
-        residuals = fitting_util.residuals_from_datas_and_model_datas(datas_=[data], model_datas_=[model_data])
-        chi_squareds = fitting_util.chi_squareds_from_residuals_and_noise_maps(residuals_=residuals, noise_maps_=[noise_map])
-        chi_squared_terms = fitting_util.chi_squared_terms_from_chi_squareds(chi_squareds_=chi_squareds)
-        noise_terms = fitting_util.noise_terms_from_noise_maps(noise_maps_=[noise_map])
-        likelihoods = fitting_util.likelihoods_from_chi_squared_terms_and_noise_terms(chi_squared_terms=chi_squared_terms,
-                                                                                      noise_terms=noise_terms)
+        residual = fitting_util.residual_from_data_and_model_data(data=data, model_data=model_data)
+        chi_squared = fitting_util.chi_squared_from_residual_and_noise_map(residual=residual, noise_map=noise_map)
+        chi_squared_term = fitting_util.chi_squared_term_from_chi_squared(chi_squared=chi_squared)
+        noise_term = fitting_util.noise_term_from_noise_map(noise_map=noise_map)
+        likelihood = fitting_util.likelihood_from_chi_squared_term_and_noise_term(chi_squared_term=chi_squared_term,
+                                                                                   noise_term=noise_term)
 
         # chi squared = 0.25, 0, 0.25, 1.0
         # likelihood = -0.5*(0.25+0+0.25+1.0)
@@ -188,19 +156,20 @@ class TestLikelihood:
         noise_term = np.log(2 * np.pi * 4.0) + np.log(2 * np.pi * 4.0) + np.log(2 * np.pi * 4.0) + np.log(
             2 * np.pi * 4.0)
 
-        assert likelihoods[0] == -0.5 * (chi_squared_term + noise_term)
+        assert likelihood == -0.5 * (chi_squared_term + noise_term)
 
     def test__same_as_above_but_different_noise_in_each_pixel(self):
+
         data = np.array([10.0, 10.0, 10.0, 10.0])
         noise_map = np.array([1.0, 2.0, 3.0, 4.0])
         model_data = np.array([11.0, 10.0, 9.0, 8.0])
 
-        residuals = fitting_util.residuals_from_datas_and_model_datas(datas_=[data], model_datas_=[model_data])
-        chi_squareds = fitting_util.chi_squareds_from_residuals_and_noise_maps(residuals_=residuals, noise_maps_=[noise_map])
-        chi_squared_terms = fitting_util.chi_squared_terms_from_chi_squareds(chi_squareds_=chi_squareds)
-        noise_terms = fitting_util.noise_terms_from_noise_maps(noise_maps_=[noise_map])
-        likelihoods = fitting_util.likelihoods_from_chi_squared_terms_and_noise_terms(chi_squared_terms=chi_squared_terms,
-                                                                                      noise_terms=noise_terms)
+        residual = fitting_util.residual_from_data_and_model_data(data=data, model_data=model_data)
+        chi_squared = fitting_util.chi_squared_from_residual_and_noise_map(residual=residual, noise_map=noise_map)
+        chi_squared_term = fitting_util.chi_squared_term_from_chi_squared(chi_squared=chi_squared)
+        noise_term = fitting_util.noise_term_from_noise_map(noise_map=noise_map)
+        likelihood = fitting_util.likelihood_from_chi_squared_term_and_noise_term(chi_squared_term=chi_squared_term,
+                                                                                  noise_term=noise_term)
 
         # chi squared = (1.0/1.0)**2, (0.0), (-1.0/3.0)**2.0, (2.0/4.0)**2.0
 
@@ -208,46 +177,7 @@ class TestLikelihood:
         noise_term = np.log(2 * np.pi * 1.0) + np.log(2 * np.pi * 4.0) + np.log(2 * np.pi * 9.0) + np.log(
             2 * np.pi * 16.0)
 
-        assert likelihoods[0] == pytest.approx(-0.5 * (chi_squared_term + noise_term), 1e-4)
-
-    def test__same_as_above__x2_images(self):
-        data_0 = np.array([10.0, 10.0, 10.0, 10.0])
-        noise_map_0 = np.array([2.0, 2.0, 2.0, 2.0])
-        model_data_0 = np.array([11.0, 10.0, 9.0, 8.0])
-
-        data_1 = np.array([10.0, 10.0, 10.0, 10.0])
-        noise_map_1 = np.array([1.0, 2.0, 3.0, 4.0])
-        model_data_1 = np.array([11.0, 10.0, 9.0, 8.0])
-
-        residuals = fitting_util.residuals_from_datas_and_model_datas(datas_=[data_0, data_1],
-                                                                 model_datas_=[model_data_0, model_data_1])
-        chi_squareds = fitting_util.chi_squareds_from_residuals_and_noise_maps(residuals_=residuals,
-                                                                          noise_maps_=[noise_map_0, noise_map_1])
-        chi_squared_terms = fitting_util.chi_squared_terms_from_chi_squareds(chi_squareds_=chi_squareds)
-        noise_terms = fitting_util.noise_terms_from_noise_maps(noise_maps_=[noise_map_0, noise_map_1])
-        likelihoods = fitting_util.likelihoods_from_chi_squared_terms_and_noise_terms(chi_squared_terms=chi_squared_terms,
-                                                                                      noise_terms=noise_terms)
-
-        # chi squared = 0.25, 0, 0.25, 1.0
-        # likelihood = -0.5*(0.25+0+0.25+1.0)
-
-        chi_squared_term = 1.5
-        noise_term = np.log(2 * np.pi * 4.0) + np.log(2 * np.pi * 4.0) + np.log(2 * np.pi * 4.0) + np.log(
-            2 * np.pi * 4.0)
-
-        likelihood_0 = -0.5 * (chi_squared_term + noise_term)
-
-        assert likelihoods[0] == pytest.approx(likelihood_0, 1e-4)
-
-        # chi squared = (1.0/1.0)**2, (0.0), (-1.0/3.0)**2.0, (2.0/4.0)**2.0
-
-        chi_squared_term = 1.0 + (1.0 / 9.0) + 0.25
-        noise_term = np.log(2 * np.pi * 1.0) + np.log(2 * np.pi * 4.0) + np.log(2 * np.pi * 9.0) + np.log(
-            2 * np.pi * 16.0)
-
-        likelihood_1 = -0.5 * (chi_squared_term + noise_term)
-
-        assert likelihoods[1] == pytest.approx(likelihood_1, 1e-4)
+        assert likelihood == pytest.approx(-0.5 * (chi_squared_term + noise_term), 1e-4)
 
 
 class TestInversionEvidence:
@@ -255,33 +185,16 @@ class TestInversionEvidence:
     def test__simple_values(self):
 
         likelihood_with_regularization_terms = \
-            fitting_util.likelihoods_with_regularization_from_chi_squared_terms_regularization_and_noise_terms(
-                chi_squared_terms=[3.0], regularization_terms=[6.0], noise_terms=[2.0])
+            fitting_util.likelihood_with_regularization_from_chi_squared_term_regularization_and_noise_term(
+                chi_squared_term=3.0, regularization_term=6.0, noise_term=2.0)
 
-        assert likelihood_with_regularization_terms[0] == -0.5 * (3.0 + 6.0 + 2.0)
+        assert likelihood_with_regularization_terms == -0.5 * (3.0 + 6.0 + 2.0)
 
-        evidences = fitting_util.evidences_from_reconstruction_terms(chi_squared_terms=[3.0], regularization_terms=[6.0],
-                                                                log_covariance_regularization_terms=[9.0],
-                                                                log_regularization_terms=[10.0], noise_terms=[30.0])
+        evidences = fitting_util.evidence_from_reconstruction_terms(chi_squared_term=3.0, regularization_term=6.0,
+                                                                    log_covariance_regularization_term=9.0,
+                                                                    log_regularization_term=10.0, noise_term=30.0)
 
-        assert evidences[0] == -0.5 * (3.0 + 6.0 + 9.0 - 10.0 + 30.0)
-
-    def test__x2_images_simple_values(self):
-        likelihood_with_regularization_terms = \
-            fitting_util.likelihoods_with_regularization_from_chi_squared_terms_regularization_and_noise_terms(
-                chi_squared_terms=[3.0, 4.0], regularization_terms=[6.0, 7.0], noise_terms=[2.0, 3.0])
-
-        assert likelihood_with_regularization_terms[0] == -0.5 * (3.0 + 6.0 + 2.0)
-        assert likelihood_with_regularization_terms[1] == -0.5 * (4.0 + 7.0 + 3.0)
-
-        evidences = fitting_util.evidences_from_reconstruction_terms(chi_squared_terms=[3.0, 4.0],
-                                                                regularization_terms=[6.0, 7.0],
-                                                                log_covariance_regularization_terms=[9.0, 10.0],
-                                                                log_regularization_terms=[10.0, 11.0],
-                                                                noise_terms=[30.0, 31.0])
-
-        assert evidences[0] == -0.5 * (3.0 + 6.0 + 9.0 - 10.0 + 30.0)
-        assert evidences[1] == -0.5 * (4.0 + 7.0 + 10.0 - 11.0 + 31.0)
+        assert evidences == -0.5 * (3.0 + 6.0 + 9.0 - 10.0 + 30.0)
         
         
 class TestPaddedModelImages:
@@ -361,6 +274,7 @@ def make_mask():
 class TestContributionsFromHypers:
 
     def test__x1_hyper_galaxy__model_is_galaxy_image__contributions_all_1(self):
+
         hyper_galaxies = [MockHyperGalaxy(contribution_factor=1.0, noise_factor=0.0, noise_power=1.0)]
 
         hyper_model_image = np.array([[1.0, 1.0, 1.0]])

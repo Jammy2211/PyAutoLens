@@ -9,12 +9,12 @@ from autolens.lensing import lensing_image
 from test.mock.mock_galaxy import MockHyperGalaxy
 
 @pytest.fixture(name='fi_no_blur')
-def make_li_no_blur():
+def make_fi_no_blur():
 
     image = np.array([[0.0, 0.0, 0.0, 0.0],
-                   [0.0, 1.0, 1.0, 0.0],
-                   [0.0, 1.0, 1.0, 0.0],
-                   [0.0, 0.0, 0.0, 0.0]])
+                      [0.0, 1.0, 1.0, 0.0],
+                      [0.0, 1.0, 1.0, 0.0],
+                      [0.0, 0.0, 0.0, 0.0]])
 
     psf = im.PSF(array=(np.array([[0.0, 0.0, 0.0],
                                      [0.0, 1.0, 0.0],
@@ -31,7 +31,7 @@ def make_li_no_blur():
 
 
 @pytest.fixture(name='fi_blur')
-def make_li_blur():
+def make_fi_blur():
 
     image = np.array([[0.0, 0.0, 0.0, 0.0],
                    [0.0, 1.0, 1.0, 0.0],
