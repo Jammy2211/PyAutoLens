@@ -232,7 +232,7 @@ class AbstractHyperFit(object):
 
 
         self.scaled_noise_maps_ =\
-            fitting_util.scaled_noises_from_fitting_hyper_images_contributions_and_hyper_galaxies(
+            fitting_util.scaled_noise_maps_from_fitting_hyper_images_contributions_and_hyper_galaxies(
                 fitting_hyper_images=fitting_hyper_images, contributions_=self.contributions_,
                 hyper_galaxies=hyper_galaxies)
 

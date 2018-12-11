@@ -972,7 +972,7 @@ class TestHyperLensingProfileFit:
                                                                                  li_hyper_manual.hyper_galaxy_images, [hyper_galaxy, hyper_galaxy],
                                                                                  li_hyper_manual.hyper_minimum_values)
 
-            scaled_noise_maps = fitting_util.scaled_noises_from_fitting_hyper_images_contributions_and_hyper_galaxies(
+            scaled_noise_maps = fitting_util.scaled_noise_maps_from_fitting_hyper_images_contributions_and_hyper_galaxies(
                 fitting_hyper_images=[li_hyper_manual], contributions_=[contributions], hyper_galaxies=[hyper_galaxy,
                                                                                                         hyper_galaxy])
             scaled_chi_squareds = fitting_util.chi_squareds_from_residuals_and_noise_maps(residuals, scaled_noise_maps)
@@ -1070,7 +1070,7 @@ class TestHyperLensingProfileFit:
                 fitting_hyper_images=[li_hyper_manual, li_hyper_manual_1],
                 hyper_galaxies=[hyper_galaxy, hyper_galaxy])
 
-            scaled_noise_maps = fitting_util.scaled_noises_from_fitting_hyper_images_contributions_and_hyper_galaxies(
+            scaled_noise_maps = fitting_util.scaled_noise_maps_from_fitting_hyper_images_contributions_and_hyper_galaxies(
                 fitting_hyper_images=[li_hyper_manual, li_hyper_manual_1], 
                 contributions_=contributions, hyper_galaxies=[hyper_galaxy, hyper_galaxy])
 
@@ -1438,7 +1438,7 @@ class TestHyperLensingInversionFit:
                                                                                  li_hyper_manual.hyper_galaxy_images, [hyper_galaxy, hyper_galaxy],
                                                                                  li_hyper_manual.hyper_minimum_values)
 
-            scaled_noise_maps = fitting_util.scaled_noises_from_fitting_hyper_images_contributions_and_hyper_galaxies(
+            scaled_noise_maps = fitting_util.scaled_noise_maps_from_fitting_hyper_images_contributions_and_hyper_galaxies(
                 fitting_hyper_images=[li_hyper_manual], contributions_=[contributions], hyper_galaxies=[hyper_galaxy,
                                                                                                         hyper_galaxy])
 
@@ -1626,7 +1626,7 @@ class TestHyperLensingProfileInversionFit:
                                                                                  li_hyper_manual.hyper_galaxy_images, [hyper_galaxy, hyper_galaxy],
                                                                                  li_hyper_manual.hyper_minimum_values)
 
-            scaled_noise_maps = fitting_util.scaled_noises_from_fitting_hyper_images_contributions_and_hyper_galaxies(
+            scaled_noise_maps = fitting_util.scaled_noise_maps_from_fitting_hyper_images_contributions_and_hyper_galaxies(
                 fitting_hyper_images=[li_hyper_manual], contributions_=[contributions], hyper_galaxies=[hyper_galaxy,
                                                                                                         hyper_galaxy])
 
