@@ -247,8 +247,8 @@ def contributions_from_hyper_images_and_galaxies(hyper_model_image, hyper_galaxy
                     hyper.contributions_from_hyper_images(hyper_model_image, galaxy_image, minimum_value),
                     hyper_galaxies, hyper_galaxy_images, minimum_values))
 
-def scaled_noises_from_fitting_hyper_images_contributions_and_hyper_galaxies(fitting_hyper_images, contributions_,
-                                                                             hyper_galaxies):
+def scaled_noise_maps_from_fitting_hyper_images_contributions_and_hyper_galaxies(fitting_hyper_images, contributions_,
+                                                                                 hyper_galaxies):
     """For a list of fitting hyper-images (which includes the hyper model regular and hyper galaxy images),
      contribution maps and model hyper-galaxies, compute their scaled noise-maps.
 
@@ -266,12 +266,12 @@ def scaled_noises_from_fitting_hyper_images_contributions_and_hyper_galaxies(fit
         individual galaxies in the regular.
     """
     return list(map(lambda hyp, contribution_ :
-                    scaled_noise_from_hyper_galaxies_and_contributions(contributions_=contribution_,
-                                                                       hyper_galaxies=hyper_galaxies,
-                                                                       noise_map_=hyp.noise_map_),
+                    scaled_noise_map_from_hyper_galaxies_and_contributions(contributions_=contribution_,
+                                                                           hyper_galaxies=hyper_galaxies,
+                                                                           noise_map_=hyp.noise_map_),
                     fitting_hyper_images, contributions_))
 
-def scaled_noise_from_hyper_galaxies_and_contributions(contributions_, hyper_galaxies, noise_map_):
+def scaled_noise_map_from_hyper_galaxies_and_contributions(contributions_, hyper_galaxies, noise_map_):
     """For a contribution map and noise-map, use the model hyper galaxies to computed a scaled noise-map.
 
     Parameters

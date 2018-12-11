@@ -305,7 +305,7 @@ class HyperLensingProfileFit(LensingProfileFit, fitting.AbstractHyperFit):
         contributions_ = fitting_util.contributions_from_fitting_hyper_images_and_hyper_galaxies(
             fitting_hyper_images=lensing_hyper_images, hyper_galaxies=tracer.hyper_galaxies)
 
-        scaled_noise_maps_ = fitting_util.scaled_noises_from_fitting_hyper_images_contributions_and_hyper_galaxies(
+        scaled_noise_maps_ = fitting_util.scaled_noise_maps_from_fitting_hyper_images_contributions_and_hyper_galaxies(
             fitting_hyper_images=lensing_hyper_images, contributions_=contributions_,
             hyper_galaxies=tracer.hyper_galaxies)
 
@@ -446,7 +446,7 @@ class HyperLensingInversionFit(LensingInversionFit, HyperLensingInversion):
         contributions_ = fitting_util.contributions_from_fitting_hyper_images_and_hyper_galaxies(
             fitting_hyper_images=lensing_hyper_images, hyper_galaxies=tracer.hyper_galaxies)
 
-        scaled_noise_maps_ = fitting_util.scaled_noises_from_fitting_hyper_images_contributions_and_hyper_galaxies(
+        scaled_noise_maps_ = fitting_util.scaled_noise_maps_from_fitting_hyper_images_contributions_and_hyper_galaxies(
             fitting_hyper_images=lensing_hyper_images, contributions_=contributions_,
             hyper_galaxies=tracer.hyper_galaxies)
 
@@ -570,7 +570,7 @@ class HyperLensingProfileInversionFit(LensingProfileInversionFit, HyperLensingIn
         contributions_ = fitting_util.contributions_from_fitting_hyper_images_and_hyper_galaxies(
             fitting_hyper_images=lensing_hyper_images, hyper_galaxies=tracer.hyper_galaxies)
 
-        scaled_noise_maps_ = fitting_util.scaled_noises_from_fitting_hyper_images_contributions_and_hyper_galaxies(
+        scaled_noise_maps_ = fitting_util.scaled_noise_maps_from_fitting_hyper_images_contributions_and_hyper_galaxies(
             fitting_hyper_images=lensing_hyper_images, contributions_=contributions_,
             hyper_galaxies=tracer.hyper_galaxies)
 
