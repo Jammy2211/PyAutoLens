@@ -67,13 +67,13 @@ class AbstractFit(object):
                                              fitting_datas))
 
         self.model_datas_ = model_datas_
-        self.residuals_ = fitting_util.residuals_from_datas_and_model_datas(datas_=self.datas_, 
-                                                                            model_datas_=self.model_datas_)
-        self.chi_squareds_ = fitting_util.chi_squareds_from_residuals_and_noise_maps(self.residuals_, self.noise_maps_)
+        self.residuals_ = fitting_util.residual_from_data_and_model_data(data=self.datas_,
+                                                                         model_data=self.model_datas_)
+        self.chi_squareds_ = fitting_util.chi_squared_from_residual_and_noise_map(self.residuals_, self.noise_maps_)
 
     @property
     def chi_squared_terms(self):
-        return fitting_util.chi_squared_terms_from_chi_squareds(self.chi_squareds_)
+        return fitting_util.chi_squared_term_from_chi_squared(self.chi_squareds_)
 
     @property
     def chi_squared_term(self):
@@ -90,7 +90,7 @@ class AbstractFit(object):
 
     @property
     def noise_terms(self):
-        return fitting_util.noise_terms_from_noise_maps(self.noise_maps_)
+        return fitting_util.noise_term_from_noise_map(self.noise_maps_)
 
     @property
     def noise_term(self):
@@ -98,7 +98,7 @@ class AbstractFit(object):
 
     @property
     def likelihoods(self):
-        return fitting_util.likelihoods_from_chi_squared_terms_and_noise_terms(self.chi_squared_terms, self.noise_terms)
+        return fitting_util.likelihood_from_chi_squared_term_and_noise_term(self.chi_squared_terms, self.noise_terms)
 
     @property
     def likelihood(self):
@@ -238,11 +238,11 @@ class AbstractHyperFit(object):
 
     @property
     def scaled_chi_squared_terms(self):
-        return fitting_util.chi_squared_terms_from_chi_squareds(self.scaled_chi_squareds_)
+        return fitting_util.chi_squared_term_from_chi_squared(self.scaled_chi_squareds_)
 
     @property
     def scaled_noise_terms(self):
-        return fitting_util.noise_terms_from_noise_maps(self.scaled_noise_maps_)
+        return fitting_util.noise_term_from_noise_map(self.scaled_noise_maps_)
 
     @property
     def scaled_noise_maps(self):
@@ -279,7 +279,7 @@ class AbstractHyperImageFit(AbstractImageFit, AbstractHyperFit):
        *AbstractHyperFit* for more details."""
        AbstractHyperFit.__init__(self=self, fitting_hyper_images=fitting_hyper_images, hyper_galaxies=hyper_galaxies)
        super(AbstractHyperImageFit, self).__init__(fitting_images=fitting_hyper_images, model_images_=model_images_)
-       self.scaled_chi_squareds_ = fitting_util.chi_squareds_from_residuals_and_noise_maps(self.residuals_, self.scaled_noise_maps_)
+       self.scaled_chi_squareds_ = fitting_util.chi_squared_from_residual_and_noise_map(self.residuals_, self.scaled_noise_maps_)
 
 
 class AbstractConvolutionFit(AbstractImageFit):
@@ -302,8 +302,8 @@ class AbstractConvolutionFit(AbstractImageFit):
 
         self.convolvers_image = list(map(lambda fit_image : fit_image.convolver_image, fitting_images))
 
-        model_images_ = fitting_util.blur_images_including_blurring_regions(images_=images_, blurring_images_=blurring_images_,
-                                                               convolvers=self.convolvers_image)
+        model_images_ = fitting_util.blur_image_including_blurring_region(image_=images_, blurring_image_=blurring_images_,
+                                                                          convolver=self.convolvers_image)
 
         super(AbstractConvolutionFit, self).__init__(fitting_images=fitting_images, model_images_=model_images_)
 
@@ -348,8 +348,8 @@ class AbstractInversionFit(AbstractImageFit):
 
     @property
     def likelihoods_with_regularization(self):
-        return fitting_util.likelihoods_with_regularization_from_chi_squared_terms_regularization_and_noise_terms(self.chi_squared_terms,
-                                                                                                                  [self.inversion.regularization_term], self.noise_terms)
+        return fitting_util.likelihood_with_regularization_from_chi_squared_term_regularization_and_noise_term(self.chi_squared_terms,
+                                                                                                               [self.inversion.regularization_term], self.noise_terms)
 
     @property
     def likelihood_with_regularization(self):
@@ -357,8 +357,8 @@ class AbstractInversionFit(AbstractImageFit):
 
     @property
     def evidences(self):
-        return fitting_util.evidences_from_reconstruction_terms(self.chi_squared_terms, 
-                                                                [self.inversion.regularization_term],
+        return fitting_util.evidence_from_reconstruction_terms(self.chi_squared_terms,
+                                                               [self.inversion.regularization_term],
                                                                [self.inversion.log_det_curvature_reg_matrix_term],
                                                                [self.inversion.log_det_regularization_matrix_term],
                                                                self.noise_terms)
@@ -374,9 +374,9 @@ class AbstractConvolutionInversionFit(AbstractImageFit):
         
         self.convolvers_image = list(map(lambda fit_image : fit_image.convolver_image, fitting_images))
 
-        self.profile_model_images_ = fitting_util.blur_images_including_blurring_regions(images_=images_,
-                                                                            blurring_images_=blurring_images_,
-                                                                            convolvers=self.convolvers_image)
+        self.profile_model_images_ = fitting_util.blur_image_including_blurring_region(image_=images_,
+                                                                                       blurring_image_=blurring_images_,
+                                                                                       convolver=self.convolvers_image)
 
         self.profile_subtracted_images_ = list(map(lambda fitting_image, profile_model_image_ :
                                                    fitting_image[:] - profile_model_image_,
@@ -423,10 +423,10 @@ class AbstractConvolutionInversionFit(AbstractImageFit):
 
     @property
     def evidences(self):
-        return fitting_util.evidences_from_reconstruction_terms(self.chi_squared_terms, [self.inversion.regularization_term],
-                                                   [self.inversion.log_det_curvature_reg_matrix_term],
-                                                   [self.inversion.log_det_regularization_matrix_term],
-                                                   self.noise_terms)
+        return fitting_util.evidence_from_reconstruction_terms(self.chi_squared_terms, [self.inversion.regularization_term],
+                                                               [self.inversion.log_det_curvature_reg_matrix_term],
+                                                               [self.inversion.log_det_regularization_matrix_term],
+                                                               self.noise_terms)
 
     @property
     def evidence(self):

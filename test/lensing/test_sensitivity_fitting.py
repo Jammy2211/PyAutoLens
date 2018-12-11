@@ -55,18 +55,18 @@ class TestSensitivityProfileFit:
         assert (fit.fit_normal.datas_[0] == si_blur).all()
         assert (fit.fit_normal.noise_maps_[0] == si_blur.noise_map_).all()
 
-        model_datas_ = fitting_util.blur_images_including_blurring_regions(images_=[tracer.image_plane_images_[0]],
-                                                                      blurring_images_=[tracer.image_plane_blurring_images_[0]],
-                                                                      convolvers=[si_blur.convolver_image])
+        model_datas_ = fitting_util.blur_image_including_blurring_region(image_=[tracer.image_plane_images_[0]],
+                                                                         blurring_image_=[tracer.image_plane_blurring_images_[0]],
+                                                                         convolver=[si_blur.convolver_image])
 
         assert (fit.fit_normal.model_datas_[0] == model_datas_[0]).all()
 
-        residuals_ = fitting_util.residuals_from_datas_and_model_datas(datas_=[si_blur],
-                                                                  model_datas_=[model_datas_])
+        residuals_ = fitting_util.residual_from_data_and_model_data(data=[si_blur],
+                                                                    model_data=[model_datas_])
         assert (fit.fit_normal.residuals_[0] == residuals_[0]).all()
 
-        chi_squareds_ = fitting_util.chi_squareds_from_residuals_and_noise_maps(residuals_=residuals_,
-                                                                           noise_maps_=[si_blur.noise_map_])
+        chi_squareds_ = fitting_util.chi_squared_from_residual_and_noise_map(residual=residuals_,
+                                                                             noise_map=[si_blur.noise_map_])
         assert (fit.fit_normal.chi_squareds_[0] == chi_squareds_).all()
 
 
@@ -74,23 +74,23 @@ class TestSensitivityProfileFit:
         assert (fit.fit_sensitive.datas_[0] == si_blur).all()
         assert (fit.fit_sensitive.noise_maps_[0] == si_blur.noise_map_).all()
 
-        model_datas_ = fitting_util.blur_images_including_blurring_regions(images_=[tracer.image_plane_images_[0]],
-                                                                      blurring_images_=[
+        model_datas_ = fitting_util.blur_image_including_blurring_region(image_=[tracer.image_plane_images_[0]],
+                                                                         blurring_image_=[
                                                                           tracer.image_plane_blurring_images_[0]],
-                                                                      convolvers=[si_blur.convolver_image])
+                                                                         convolver=[si_blur.convolver_image])
 
         assert (fit.fit_sensitive.model_datas_[0] == model_datas_[0]).all()
 
-        residuals_ = fitting_util.residuals_from_datas_and_model_datas(datas_=[si_blur],
-                                                                  model_datas_=[model_datas_])
+        residuals_ = fitting_util.residual_from_data_and_model_data(data=[si_blur],
+                                                                    model_data=[model_datas_])
         assert (fit.fit_sensitive.residuals_[0] == residuals_[0]).all()
 
-        chi_squareds_ = fitting_util.chi_squareds_from_residuals_and_noise_maps(residuals_=residuals_,
-                                                                           noise_maps_=[si_blur.noise_map_])
+        chi_squareds_ = fitting_util.chi_squared_from_residual_and_noise_map(residual=residuals_,
+                                                                             noise_map=[si_blur.noise_map_])
         assert (fit.fit_sensitive.chi_squareds_[0] == chi_squareds_).all()
 
-        chi_squared_term = sum(fitting_util.chi_squared_terms_from_chi_squareds(chi_squareds_=chi_squareds_))
-        noise_term = sum(fitting_util.noise_terms_from_noise_maps(noise_maps_=[si_blur.noise_map_]))
+        chi_squared_term = sum(fitting_util.chi_squared_term_from_chi_squared(chi_squared=chi_squareds_))
+        noise_term = sum(fitting_util.noise_term_from_noise_map(noise_map=[si_blur.noise_map_]))
         assert fit.fit_normal.likelihood == -0.5 * (chi_squared_term + noise_term)
         assert fit.fit_sensitive.likelihood == -0.5 * (chi_squared_term + noise_term)
 
@@ -119,18 +119,19 @@ class TestSensitivityProfileFit:
         assert (fit.fit_normal.datas_[0] == si_blur).all()
         assert (fit.fit_normal.noise_maps_[0] == si_blur.noise_map_).all()
 
-        model_datas_ = fitting_util.blur_images_including_blurring_regions(images_=[tracer_normal.image_plane_images_[0]],
-                                                                      blurring_images_=[tracer_normal.image_plane_blurring_images_[0]],
-                                                                      convolvers=[si_blur.convolver_image])
+        model_datas_ = fitting_util.blur_image_including_blurring_region(
+            image_=[tracer_normal.image_plane_images_[0]],
+            blurring_image_=[tracer_normal.image_plane_blurring_images_[0]],
+            convolver=[si_blur.convolver_image])
 
         assert (fit.fit_normal.model_datas_[0] == model_datas_[0]).all()
 
-        residuals_ = fitting_util.residuals_from_datas_and_model_datas(datas_=[si_blur],
-                                                                  model_datas_=[model_datas_])
+        residuals_ = fitting_util.residual_from_data_and_model_data(data=[si_blur],
+                                                                    model_data=[model_datas_])
         assert (fit.fit_normal.residuals_[0] == residuals_[0]).all()
 
-        chi_squareds_normal_ = fitting_util.chi_squareds_from_residuals_and_noise_maps(residuals_=residuals_,
-                                                                                  noise_maps_=[si_blur.noise_map_])
+        chi_squareds_normal_ = fitting_util.chi_squared_from_residual_and_noise_map(residual=residuals_,
+                                                                                    noise_map=[si_blur.noise_map_])
         assert (fit.fit_normal.chi_squareds_[0] == chi_squareds_normal_).all()
 
 
@@ -138,24 +139,25 @@ class TestSensitivityProfileFit:
         assert (fit.fit_sensitive.datas_[0] == si_blur).all()
         assert (fit.fit_sensitive.noise_maps_[0] == si_blur.noise_map_).all()
 
-        model_datas_ = fitting_util.blur_images_including_blurring_regions(images_=[tracer_sensitive.image_plane_images_[0]],
-                                                                      blurring_images_=[tracer_sensitive.image_plane_blurring_images_[0]],
-                                                                      convolvers=[si_blur.convolver_image])
+        model_datas_ = fitting_util.blur_image_including_blurring_region(
+            image_=[tracer_sensitive.image_plane_images_[0]],
+            blurring_image_=[tracer_sensitive.image_plane_blurring_images_[0]],
+            convolver=[si_blur.convolver_image])
 
         assert (fit.fit_sensitive.model_datas_[0] == model_datas_[0]).all()
 
-        residuals_ = fitting_util.residuals_from_datas_and_model_datas(datas_=[si_blur], model_datas_=[model_datas_])
+        residuals_ = fitting_util.residual_from_data_and_model_data(data=[si_blur], model_data=[model_datas_])
         assert (fit.fit_sensitive.residuals_[0] == residuals_[0]).all()
 
-        chi_squareds_sensitive = fitting_util.chi_squareds_from_residuals_and_noise_maps(residuals_=residuals_,
-                                                                                    noise_maps_=[si_blur.noise_map_])
+        chi_squareds_sensitive = fitting_util.chi_squared_from_residual_and_noise_map(residual=residuals_,
+                                                                                      noise_map=[si_blur.noise_map_])
         assert (fit.fit_sensitive.chi_squareds_[0] == chi_squareds_sensitive).all()
 
         chi_squared_term_normal = \
-            sum(fitting_util.chi_squared_terms_from_chi_squareds(chi_squareds_=chi_squareds_normal_))
+            sum(fitting_util.chi_squared_term_from_chi_squared(chi_squared=chi_squareds_normal_))
         chi_squared_term_sensitive = \
-            sum(fitting_util.chi_squared_terms_from_chi_squareds(chi_squareds_=chi_squareds_sensitive))
-        noise_term = sum(fitting_util.noise_terms_from_noise_maps(noise_maps_=[si_blur.noise_map_]))
+            sum(fitting_util.chi_squared_term_from_chi_squared(chi_squared=chi_squareds_sensitive))
+        noise_term = sum(fitting_util.noise_term_from_noise_map(noise_map=[si_blur.noise_map_]))
         assert fit.fit_normal.likelihood == -0.5 * (chi_squared_term_normal + noise_term)
         assert fit.fit_sensitive.likelihood == -0.5 * (chi_squared_term_sensitive + noise_term)
 
