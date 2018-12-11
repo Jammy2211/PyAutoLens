@@ -740,8 +740,8 @@ class TestLensingProfileFit:
 
             chi_squared_terms = fitting_util.chi_squared_terms_from_chi_squareds(chi_squareds_=chi_squareds)
             noise_terms = fitting_util.noise_terms_from_noise_maps(noise_maps_=[li_manual.noise_map_])
-            likelihoods = fitting_util.likelihoods_from_chi_squareds_and_noise_terms(chi_squared_terms=chi_squared_terms,
-                                                                                noise_terms=noise_terms)
+            likelihoods = fitting_util.likelihoods_from_chi_squared_terms_and_noise_terms(chi_squared_terms=chi_squared_terms,
+                                                                                          noise_terms=noise_terms)
 
             assert likelihoods[0] == pytest.approx(fit.likelihood, 1e-4)
 
@@ -806,8 +806,8 @@ class TestLensingProfileFit:
 
             chi_squared_terms = fitting_util.chi_squared_terms_from_chi_squareds(chi_squareds_=chi_squareds)
             noise_terms = fitting_util.noise_terms_from_noise_maps(noise_maps_=[li_manual.noise_map_, li_manual_1.noise_map_])
-            likelihoods = fitting_util.likelihoods_from_chi_squareds_and_noise_terms(chi_squared_terms=chi_squared_terms,
-                                                                                noise_terms=noise_terms)
+            likelihoods = fitting_util.likelihoods_from_chi_squared_terms_and_noise_terms(chi_squared_terms=chi_squared_terms,
+                                                                                          noise_terms=noise_terms)
 
             assert likelihoods[0] == pytest.approx(fit.likelihoods[0], 1e-4)
             assert likelihoods[1] == pytest.approx(fit.likelihoods[1], 1e-4)
@@ -963,8 +963,8 @@ class TestHyperLensingProfileFit:
 
             chi_squared_terms = fitting_util.chi_squared_terms_from_chi_squareds(chi_squareds_=chi_squareds)
             noise_terms = fitting_util.noise_terms_from_noise_maps(noise_maps_=li_hyper_manual.noise_map_)
-            likelihoods = fitting_util.likelihoods_from_chi_squareds_and_noise_terms(chi_squared_terms=chi_squared_terms,
-                                                                                noise_terms=noise_terms)
+            likelihoods = fitting_util.likelihoods_from_chi_squared_terms_and_noise_terms(chi_squared_terms=chi_squared_terms,
+                                                                                          noise_terms=noise_terms)
 
             assert likelihoods[0] == pytest.approx(fit.likelihood, 1e-4)
 
@@ -988,7 +988,7 @@ class TestHyperLensingProfileFit:
 
             scaled_chi_squared_terms= fitting_util.chi_squared_terms_from_chi_squareds(chi_squareds_=scaled_chi_squareds)
             scaled_noise_terms = fitting_util.noise_terms_from_noise_maps(noise_maps_=scaled_noise_maps)
-            scaled_likelihoods = fitting_util.likelihoods_from_chi_squareds_and_noise_terms(
+            scaled_likelihoods = fitting_util.likelihoods_from_chi_squared_terms_and_noise_terms(
                 chi_squared_terms=scaled_chi_squared_terms, noise_terms=scaled_noise_terms)
 
             assert scaled_likelihoods[0] == pytest.approx(fit.scaled_likelihood, 1e-4)
@@ -1059,8 +1059,8 @@ class TestHyperLensingProfileFit:
             chi_squared_terms = fitting_util.chi_squared_terms_from_chi_squareds(chi_squareds_=chi_squareds)
             noise_terms = fitting_util.noise_terms_from_noise_maps(noise_maps_=[li_hyper_manual.noise_map_,
                                                                            li_hyper_manual_1.noise_map_])
-            likelihoods = fitting_util.likelihoods_from_chi_squareds_and_noise_terms(chi_squared_terms=chi_squared_terms,
-                                                                                noise_terms=noise_terms)
+            likelihoods = fitting_util.likelihoods_from_chi_squared_terms_and_noise_terms(chi_squared_terms=chi_squared_terms,
+                                                                                          noise_terms=noise_terms)
 
             assert likelihoods[0] == pytest.approx(fit.likelihoods[0], 1e-4)
             assert likelihoods[1] == pytest.approx(fit.likelihoods[1], 1e-4)
@@ -1096,7 +1096,7 @@ class TestHyperLensingProfileFit:
 
             scaled_chi_squared_terms= fitting_util.chi_squared_terms_from_chi_squareds(chi_squareds_=scaled_chi_squareds)
             scaled_noise_terms = fitting_util.noise_terms_from_noise_maps(noise_maps_=scaled_noise_maps)
-            scaled_likelihoods = fitting_util.likelihoods_from_chi_squareds_and_noise_terms(
+            scaled_likelihoods = fitting_util.likelihoods_from_chi_squared_terms_and_noise_terms(
                 chi_squared_terms=scaled_chi_squared_terms, noise_terms=scaled_noise_terms)
 
             assert scaled_likelihoods[0] == pytest.approx(fit.scaled_likelihoods[0], 1e-4)
@@ -1280,7 +1280,7 @@ class TestInversionLensingFit:
             chi_squared_terms = fitting_util.chi_squared_terms_from_chi_squareds(chi_squareds_=chi_squareds)
             noise_terms = fitting_util.noise_terms_from_noise_maps(noise_maps_=[li_manual.noise_map_])
             likelihoods_with_regularization = \
-                fitting_util.likelihoods_with_regularization_from_chi_squared_regularization_and_noise_terms(
+                fitting_util.likelihoods_with_regularization_from_chi_squared_terms_regularization_and_noise_terms(
                     chi_squared_terms, [inversion.regularization_term], noise_terms)
 
             assert likelihoods_with_regularization[0] == pytest.approx(fit.likelihoods_with_regularization[0], 1e-4)
@@ -1422,8 +1422,8 @@ class TestHyperLensingInversionFit:
             noise_terms = fitting_util.noise_terms_from_noise_maps(noise_maps_=[li_hyper_manual.noise_map_])
 
             likelihoods_with_regularization = \
-                fitting_util.likelihoods_with_regularization_from_chi_squared_regularization_and_noise_terms(chi_squared_terms,
-                                                                                                        [inversion.regularization_term], noise_terms)
+                fitting_util.likelihoods_with_regularization_from_chi_squared_terms_regularization_and_noise_terms(chi_squared_terms,
+                                                                                                                   [inversion.regularization_term], noise_terms)
 
             assert likelihoods_with_regularization[0] == pytest.approx(fit.likelihoods_with_regularization[0], 1e-2)
 

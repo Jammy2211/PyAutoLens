@@ -166,7 +166,7 @@ class TestGalaxyFit:
 
             chi_squared_terms = fitting_util.chi_squared_terms_from_chi_squareds(chi_squareds)
             noise_terms = fitting_util.noise_terms_from_noise_maps([g_data.noise_map_])
-            likelihoods = fitting_util.likelihoods_from_chi_squareds_and_noise_terms(chi_squared_terms, noise_terms)
+            likelihoods = fitting_util.likelihoods_from_chi_squared_terms_and_noise_terms(chi_squared_terms, noise_terms)
 
             assert likelihoods[0] == pytest.approx(fit.likelihood, 1e-4)
 
@@ -210,7 +210,7 @@ class TestGalaxyFit:
 
             chi_squared_terms = fitting_util.chi_squared_terms_from_chi_squareds(chi_squareds)
             noise_terms = fitting_util.noise_terms_from_noise_maps([g_data.noise_map_])
-            likelihoods = fitting_util.likelihoods_from_chi_squareds_and_noise_terms(chi_squared_terms, noise_terms)
+            likelihoods = fitting_util.likelihoods_from_chi_squared_terms_and_noise_terms(chi_squared_terms, noise_terms)
 
             assert likelihoods[0] == pytest.approx(fit.likelihood, 1e-4)
 
@@ -254,7 +254,7 @@ class TestGalaxyFit:
 
             chi_squared_terms = fitting_util.chi_squared_terms_from_chi_squareds(chi_squareds)
             noise_terms = fitting_util.noise_terms_from_noise_maps([g_data.noise_map_])
-            likelihoods = fitting_util.likelihoods_from_chi_squareds_and_noise_terms(chi_squared_terms, noise_terms)
+            likelihoods = fitting_util.likelihoods_from_chi_squared_terms_and_noise_terms(chi_squared_terms, noise_terms)
 
             assert likelihoods[0] == pytest.approx(fit.likelihood, 1e-4)
 
@@ -321,7 +321,7 @@ class TestGalaxyFit:
 
             chi_squared_terms = fitting_util.chi_squared_terms_from_chi_squareds(chi_squareds)
             noise_terms = fitting_util.noise_terms_from_noise_maps([g_data_y.noise_map_, g_data_x.noise_map_])
-            likelihoods = fitting_util.likelihoods_from_chi_squareds_and_noise_terms(chi_squared_terms, noise_terms)
+            likelihoods = fitting_util.likelihoods_from_chi_squared_terms_and_noise_terms(chi_squared_terms, noise_terms)
 
             assert likelihoods[0] == pytest.approx(fit.likelihoods[0], 1e-4)
             assert likelihoods[1] == pytest.approx(fit.likelihoods[1], 1e-4)

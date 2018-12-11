@@ -10,33 +10,33 @@ class FittingImage(im.Image):
         return np.array(mask.map_2d_array_to_masked_1d_array(image)).view(cls)
 
     def __init__(self, image, mask, sub_grid_size=2, image_psf_shape=None):
-        """A fitting regular is the collection of data components (e.g. the regular, noise-maps, PSF, etc.) which are used \
-        to fit a generate a model regular of the fitting regular and fit it to its observed regular.
+        """A fitting image is the collection of data components (e.g. the image, noise-maps, PSF, etc.) which are used \
+        to generate and fit it with a model image.
 
-        The fitting regular is masked, by converting all relevent data-components to masked 1D arrays (which are \
+        The fitting image is masked, by converting all relevent data-components to masked 1D arrays (which are \
         syntacically followed by an underscore, e.g. noise_map_). 1D arrays are converted back to 2D masked arrays
         after the fit, using the mask's *scaled_array_from_1d_array* function.
 
-        A fitting regular also includes a number of attributes which are used to performt the fit, including (y,x) \
+        A fitting image also includes a number of attributes which are used to performt the fit, including (y,x) \
         grids of coordinates, convolvers and other utilities.
 
         Parameters
         ----------
         image : im.Image
-            The 2D observed regular and other observed quantities (noise-map, PSF, exposure-time map, etc.)
+            The 2D observed image and other observed quantities (noise-map, PSF, exposure-time map, etc.)
         mask: msk.Mask
-            The 2D mask that is applied to regular data.
+            The 2D mask that is applied to image data.
         sub_grid_size : int
             The size of the sub-grid used for computing the SubGrid (see imaging.mask.SubGrid).
         image_psf_shape : (int, int)
-            The shape of the PSF used for convolving model regular generated using analytic light profiles. A smaller \
-            shape will trim the PSF relative to the input regular PSF, giving a faster analysis run-time.
+            The shape of the PSF used for convolving model image generated using analytic light profiles. A smaller \
+            shape will trim the PSF relative to the input image PSF, giving a faster analysis run-time.
 
         Attributes
         ----------
         image : ScaledSquarePixelArray
-            The 2D observed regular data (not an instance of im.Image, so does not include the other data attributes,
-            which are explicitly made as new attributes of the fitting regular).
+            The 2D observed image data (not an instance of im.Image, so does not include the other data attributes,
+            which are explicitly made as new attributes of the fitting image).
         image_ : ndarray
             The masked 1D array of the regular.
         noise_map : NoiseMap
@@ -55,7 +55,7 @@ class FittingImage(im.Image):
         poisson_noise_map_ : ndarray or None
             The masked 1D array of the poisson noise-map.
         exposure_time_map : ScaledSquarePixelArray
-            An array describing the effective exposure time in each regular pixel.
+            An array describing the effective exposure time in each image pixel.
         exposure_time_map_ : ndarray or None
             The masked 1D array of the exposure time-map.
         background_sky_map : ScaledSquarePixelArray
@@ -65,15 +65,15 @@ class FittingImage(im.Image):
         sub_grid_size : int
             The size of the sub-grid used for computing the SubGrid (see imaging.mask.SubGrid).
         image_psf_shape : (int, int)
-            The shape of the PSF used for convolving model regular generated using analytic light profiles. A smaller \
-            shape will trim the PSF relative to the input regular PSF, giving a faster analysis run-time.
+            The shape of the PSF used for convolving model image generated using analytic light profiles. A smaller \
+            shape will trim the PSF relative to the input image PSF, giving a faster analysis run-time.
         convolver_image : imaging.convolution.ConvolverImage
-            A convolver which convoles a 1D masked regular (using the input mask) with the 2D PSF kernel.
+            A convolver which convoles a 1D masked image (using the input mask) with the 2D PSF kernel.
         grids : imaging.mask.DataGrids
-            Grids of (y,x) Cartesian coordinates which map over the masked 1D observed regular's pixels (includes an \
+            Grids of (y,x) Cartesian coordinates which map over the masked 1D observed image's pixels (includes an \
             regular-grid, sub-grid, etc.)
         padded_grids : imaging.mask.DataGrids
-            Grids of padded (y,x) Cartesian coordinates which map over the every observed regular's pixel in 1D and a \
+            Grids of padded (y,x) Cartesian coordinates which map over the every observed image's pixel in 1D and a \
             padded regioon to include edge's for accurate PSF convolution (includes an regular-grid, sub-grid, etc.)
         border  imaging.mask.ImagingGridsBorders
             The border of the regular-grid and sub-grid (see *ImagingGridsBorders* for their use).
@@ -129,19 +129,19 @@ class FittingHyperImage(FittingImage):
 
     def __init__(self, image, mask, hyper_model_image, hyper_galaxy_images, hyper_minimum_values, sub_grid_size=2,
                  image_psf_shape=None):
-        """A fitting hyper regular is a fitting_image (see *FittingImage) which additionally includes a set of \
+        """A fitting hyper image is a fitting_image (see *FittingImage) which additionally includes a set of \
         'hyper_data'. This hyper-data is the best-fit model images of the observed data from a previous analysis, \
-        and it is used to scale the noise in the regular, so as to avoid over-fitting localized regions of the regular \
+        and it is used to scale the noise in the image, so as to avoid over-fitting localized regions of the image \
         where the model does not provide a good fit.
 
-        Look at the *FittingImage* docstring for all parameters / attributes not specific to a hyper regular.
+        Look at the *FittingImage* docstring for all parameters / attributes not specific to a hyper image.
 
         Parameters
         ----------
         hyper_model_images : [ndarray]
-            List of the masked 1D array best-fit model regular's to each observed regular in a previous analysis.
+            List of the masked 1D array best-fit model image's to each observed image in a previous analysis.
         hyper_galaxy_images : [[ndarray]]
-            List of the masked 1D array best-fit model regular's of every galaxy to each observed regular in a previous \
+            List of the masked 1D array best-fit model image's of every galaxy to each observed image in a previous \
             analysis.
 
         Attributes
