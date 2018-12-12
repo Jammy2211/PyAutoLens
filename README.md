@@ -86,7 +86,7 @@ PyAutoLens's advanced modeling features include:
 - **Pipelines** - build automated analysis pipelines to fit complex lens models to large samples of strong lenses.
 - **Inversions** - Reconstruct complex source galaxy morphologies on a variety of pixel-grids.
 - **Adaption** - (December 2018) - Adapt the lensing analysis to the features of the observed strong lens imaging.
-- **Multi-Plane** - (January 2018) Model multi-plane lenses, including systems with multiple lensed source galaxies.
+- **Multi-Plane** - (January 2019) Model multi-plane lenses, including systems with multiple lensed source galaxies.
 
 ## HowToLens
 
