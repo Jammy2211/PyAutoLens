@@ -5,7 +5,7 @@ from autolens.data.imaging import image as im
 from autolens.data.array import mask as ma
 from autolens.lensing import ray_tracing
 from autolens.model.galaxy import galaxy as g, galaxy_model as gm
-from autolens.lensing import lensing_fitting
+from autolens.lensing.fitting import lensing_fitters
 from autolens.lensing import lensing_image as li
 from autolens.model.profiles import light_profiles as lp
 from autolens.model.profiles import mass_profiles as mp
@@ -115,7 +115,7 @@ tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source
                                              image_plane_grids=[lensing_image.grids])
 
 # Now, lets fit_normal the lensing regular with the tracer_without_subhalo and plot the fit_normal. It looks a lot better than above, doesn't it?
-fit = lensing_fitting.fit_lensing_image_with_tracer(lensing_image=lensing_image, tracer=tracer)
+fit = lensing_fitters.fit_lensing_image_with_tracer(lensing_image=lensing_image, tracer=tracer)
 lensing_fitting_plotters.plot_fitting_subplot(fit=fit)
 
 # Finally, just to be sure, lets compare the two likelihoods

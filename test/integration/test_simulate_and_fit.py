@@ -7,7 +7,7 @@ import pytest
 from autolens.data.imaging import image as im
 from autolens.data.array.util import array_util
 from autolens.data.array import grids, mask as msk
-from autolens.lensing import lensing_fitting
+from autolens.lensing.fitting import lensing_fitters
 from autolens.model.galaxy import galaxy as g
 from autolens.lensing import lensing_image as li
 from autolens.lensing import ray_tracing
@@ -59,7 +59,7 @@ def test__simulate_lensed_source_and_fit__no_psf_blurring__chi_squared_is_0__noi
     tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
                                                  image_plane_grids=[lensing_image.grids])
 
-    fitter = lensing_fitting.LensingProfileFit(lensing_images=[lensing_image], tracer=tracer)
+    fitter = lensing_fitters.LensingProfileFitter(lensing_image=[lensing_image], tracer=tracer)
 
     assert fitter.chi_squared_term == 0.0
 
@@ -107,6 +107,6 @@ def test__simulate_lensed_source_and_fit__include_psf_blurring__chi_squared_is_0
     tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
                                                  image_plane_grids=[lensing_image.grids])
 
-    fitter = lensing_fitting.LensingProfileFit(lensing_images=[lensing_image], tracer=tracer)
+    fitter = lensing_fitters.LensingProfileFitter(lensing_image=[lensing_image], tracer=tracer)
 
     assert fitter.chi_squared_term == pytest.approx(0.0, 1e-4)

@@ -12,7 +12,8 @@ from autolens.model.profiles import light_profiles as lp, mass_profiles as mp
 from autolens.lensing import lensing_image as li
 from autolens.model.galaxy import galaxy as g
 from autolens.lensing import ray_tracing
-from autolens.lensing import lensing_fitting
+from autolens.lensing.fitting import lensing_fitters
+
 
 @pytest.fixture(name='general_config')
 def test_general_config():
@@ -70,13 +71,13 @@ def test_lensing_image(image, mask):
 def test_fit_lens_only(lensing_image, galaxy_light):
     tracer = ray_tracing.TracerImagePlane(lens_galaxies=[galaxy_light], image_plane_grids=[lensing_image.grids],
                                           cosmology=cosmo.Planck15)
-    return lensing_fitting.fit_lensing_image_with_tracer(lensing_image=lensing_image, tracer=tracer)
+    return lensing_fitters.fit_lensing_image_with_tracer(lensing_image=lensing_image, tracer=tracer)
 
 @pytest.fixture(name='fit_source_and_lens')
 def test_fit_source_and_lens(lensing_image, galaxy_light, galaxy_mass):
     tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[galaxy_mass], source_galaxies=[galaxy_light],
                                                image_plane_grids=[lensing_image.grids], cosmology=cosmo.Planck15)
-    return lensing_fitting.fit_lensing_image_with_tracer(lensing_image=lensing_image, tracer=tracer)
+    return lensing_fitters.fit_lensing_image_with_tracer(lensing_image=lensing_image, tracer=tracer)
 
 @pytest.fixture(name='hyper')
 def make_hyper():
@@ -106,7 +107,7 @@ def test_lensing_hyper_image(image, mask, hyper):
 def test_fit_hyper_lens_only(lensing_hyper_image, hyper):
     tracer = ray_tracing.TracerImagePlane(lens_galaxies=[hyper.hyper_galaxy],
                                           image_plane_grids=[lensing_hyper_image.grids])
-    return lensing_fitting.fit_lensing_image_with_tracer(lensing_image=lensing_hyper_image, tracer=tracer)
+    return lensing_fitters.fit_lensing_image_with_tracer(lensing_image=lensing_hyper_image, tracer=tracer)
 
 
 def test__fit_sub_plot_lens_only__output_dependent_on_config(fit_lens_only, general_config, lensing_fitting_plotter_path):

@@ -1,6 +1,6 @@
 from autolens.data.imaging import image as im
 from autolens.data.array import mask as ma
-from autolens.lensing import lensing_fitting
+from autolens.lensing.fitting import lensing_fitters
 from autolens.lensing import ray_tracing
 from autolens.model.galaxy import galaxy as g
 from autolens.lensing import lensing_image as li
@@ -95,7 +95,7 @@ ray_tracing_plotters.plot_image_plane_image(tracer=tracer)
 # 4) Sums up these chi-squared values and converts them to a 'likelihood', which quantities how good the tracer_without_subhalo's fit_normal
 #    to the datas was (higher likelihood = better fit_normal).
 
-fit = lensing_fitting.fit_lensing_image_with_tracer(lensing_image=lensing_image, tracer=tracer)
+fit = lensing_fitters.fit_lensing_image_with_tracer(lensing_image=lensing_image, tracer=tracer)
 lensing_fitting_plotters.plot_fitting_subplot(fit=fit)
 
 # We can print the fit_normal's attributes - if we don't specify where we'll get all zeros, as the edges were masked:
@@ -133,7 +133,7 @@ source_galaxy = g.Galaxy(light=lp.EllipticalSersic(centre=(0.1, 0.1), axis_ratio
                                                         intensity=1.0, effective_radius=1.0, sersic_index=2.5))
 tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
                                              image_plane_grids=[lensing_image.grids])
-fit = lensing_fitting.fit_lensing_image_with_tracer(lensing_image=lensing_image, tracer=tracer)
+fit = lensing_fitters.fit_lensing_image_with_tracer(lensing_image=lensing_image, tracer=tracer)
 lensing_fitting_plotters.plot_fitting_subplot(fit=fit)
 
 # We now observe residuals to appear at the locations the source model_galaxy was observed, which
@@ -152,7 +152,7 @@ source_galaxy = g.Galaxy(light=lp.EllipticalSersic(centre=(0.1, 0.1), axis_ratio
                                                         intensity=1.0, effective_radius=0.4, sersic_index=3.5))
 tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
                                              image_plane_grids=[lensing_image.grids])
-fit = lensing_fitting.fit_lensing_image_with_tracer(lensing_image=lensing_image, tracer=tracer)
+fit = lensing_fitters.fit_lensing_image_with_tracer(lensing_image=lensing_image, tracer=tracer)
 lensing_fitting_plotters.plot_fitting_subplot(fit=fit)
 
 # Clearly, the model provides a terrible fit_normal, and this tracer_without_subhalo is not a plausible representation of

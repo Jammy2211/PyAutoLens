@@ -1,5 +1,4 @@
-from autolens.data.fitting import fitter
-from autolens.data.fitting.util import fitting_util
+from autolens.data.fitting import fitter, fitting_util
 from autolens.lensing import ray_tracing
 
 class AbstractSensitivityFit(object):
