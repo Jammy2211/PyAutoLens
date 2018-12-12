@@ -45,6 +45,34 @@ AutoLens requires [PyMultiNest](http://johannesbuchner.github.io/pymultinest-tut
 $ pip install autolens
 ```
 
+## Installation on Mac
+
+Install [conda](https://conda.io/miniconda.html).
+
+Create a conda environment:
+
+```
+conda create -n autolens python=3.7 anaconda
+```
+
+Install multinest:
+
+```
+conda install -c conda-forge multinest
+```
+
+Tell matplotlib what backend to use:
+
+```
+echo "backend : TKAgg" > ~/.matplotlib/matplotlibrc
+```
+
+Install autolens:
+
+```
+pip install autolens
+```
+
 ## Workspace
 
 If you install AutoLens with Docker a workspace will be generated for you in the home directory the first time you run the image. This contains configuration, examples and tutorials. After the first time you run docker the workspace will persist any changes you make and won't be updated again.
