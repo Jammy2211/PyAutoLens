@@ -50,7 +50,7 @@ def perform_fit_with_source_galaxy(source_galaxy):
     image = simulate()
     mask = ma.Mask.circular_annular(shape=image.shape, pixel_scale=image.pixel_scale, inner_radius_arcsec=0.5,
                                     outer_radius_arcsec=2.2)
-    lensing_image = li.LensingImage(data=image, mask=mask)
+    lensing_image = li.LensingImage(image=image, mask=mask)
     lens_galaxy = g.Galaxy(
         mass=mp.EllipticalIsothermal(centre=(0.0, 0.0), axis_ratio=0.8, phi=135.0, einstein_radius=1.6))
     tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],

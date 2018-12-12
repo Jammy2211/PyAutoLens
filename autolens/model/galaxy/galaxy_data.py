@@ -33,7 +33,7 @@ class GalaxyData(scaled_array.ScaledSquarePixelArray):
 
         Attributes
         ----------
-        noise_map_ : ndarray
+        noise_map_1d : ndarray
             The masked 1D array of the noise-map
         grids : imaging.mask.DataGrids
             Grids of (y,x) Cartesian coordinates which map over the masked 1D data array's pixels (includes an \

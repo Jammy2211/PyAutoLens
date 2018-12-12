@@ -116,7 +116,7 @@ image_small_stamp_padded = im.load_imaging_from_fits(image_path=path+'data/image
 mask = ma.Mask.circular(shape=image_small_stamp_padded.shape, pixel_scale=image_small_stamp_padded.pixel_scale,
                         radius_arcsec=2.0)
 imaging_plotters.plot_image_subplot(image=image_small_stamp_padded, mask=mask)
-lensing_image = li.LensingImage(data=image_small_stamp_padded, mask=mask)
+lensing_image = li.LensingImage(image=image_small_stamp_padded, mask=mask)
 
 ########## IVE INCLUDED THE TEXT FOR 5 BELOW SO YOU CAN BE AWARE OF CENTERING, BUT THE BUILT IN FUNCTIONALITY FOR #####
 ########## RECENTERING CURRENTLY DOES NOT WORK :( ###########

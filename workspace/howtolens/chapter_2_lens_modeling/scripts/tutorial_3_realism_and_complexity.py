@@ -101,7 +101,7 @@ print(results.constant)
 
 # Create a lensing regular to make the fit_normal - the masks we used above was a 3" circle (we'll come back to this later)
 mask = ma.Mask.circular(shape=image.shape, pixel_scale=image.pixel_scale, radius_arcsec=3.0)
-lensing_image = li.LensingImage(data=image, mask=mask)
+lensing_image = li.LensingImage(image=image, mask=mask)
 imaging_plotters.plot_image_subplot(lensing_image.image)
 
 # Make the tracer_without_subhalo we use to simulate the regular

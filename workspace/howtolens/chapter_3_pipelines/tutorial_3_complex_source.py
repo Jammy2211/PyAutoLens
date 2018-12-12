@@ -144,8 +144,8 @@ pipeline_complex_source.run(image=image)
 # I simulated the lens with 4 sources. There is a 'perfect incorrect_fit' somewhere in that parameter space - lets confirm that
 # by fitting the input model (which I've copied from simulations.py):
 
-lensing_image = li.LensingImage(data=image, mask=mask.Mask.circular(shape=image.shape, pixel_scale=image.pixel_scale,
-                                                                    radius_arcsec=3.0))
+lensing_image = li.LensingImage(image=image, mask=mask.Mask.circular(shape=image.shape, pixel_scale=image.pixel_scale,
+                                                                     radius_arcsec=3.0))
 
 lens_galaxy = g.Galaxy(mass=mp.EllipticalIsothermal(centre=(0.0, 0.0), axis_ratio=0.8, phi=135.0,
                                                     einstein_radius=1.6))

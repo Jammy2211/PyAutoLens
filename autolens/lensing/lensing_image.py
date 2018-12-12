@@ -10,44 +10,40 @@ from autolens.model.inversion import convolution as inversion_convolution
 
 class LensingImage(fit_data.FitData):
 
-    def __new__(cls, image, mask, sub_grid_size=2, image_psf_shape=None, mapping_matrix_psf_shape=None, positions=None):
-        return np.array(mask.map_2d_array_to_masked_1d_array(image)).view(cls)
-
-    def __init__(self, data, mask, sub_grid_size=2, image_psf_shape=None, mapping_matrix_psf_shape=None,
+    def __init__(self, image, mask, sub_grid_size=2, image_psf_shape=None, mapping_matrix_psf_shape=None,
                  positions=None):
         """
-        The lensing datas_ is the collection of datas (regular, noise-maps, PSF), a masks, grids, convolvers and other \
-        utilities that are used for modeling and fitting an datas_ of a strong lens.
+        The lensing image is the collection of datas (regular, noise-maps, PSF), a masks, grids, convolvers and other \
+        utilities that are used for modeling and fitting an image of a strong lens.
 
-        Whilst the datas_ datas is initially loaded in 2D, for the lensing datas_ the masked-datas_ (and noise-maps) \
+        Whilst the image data is initially loaded in 2D, for the lensing image the masked-image (and noise-maps) \
         are reduced to 1D arrays for faster calculations.
 
         Parameters
         ----------
-        data: im.Image
-            The original datas_ datas in 2D.
+        image: im.Image
+            The original image datas in 2D.
         mask: msk.Mask
-            The 2D masks that is applied to the datas_.
+            The 2D masks that is applied to the image.
         sub_grid_size : int
-            The size of the sub-grid used for each lensing SubGrid. E.g. a value of 2 grids each datas_-pixel on a 2x2 \
+            The size of the sub-grid used for each lensing SubGrid. E.g. a value of 2 grids each image-pixel on a 2x2 \
             sub-grid.
         image_psf_shape : (int, int)
             The shape of the PSF used for convolving model regular generated using analytic light profiles. A smaller \
-            shape will trim the PSF relative to the input datas_ PSF, giving a faster analysis run-time.
+            shape will trim the PSF relative to the input image PSF, giving a faster analysis run-time.
         mapping_matrix_psf_shape : (int, int)
             The shape of the PSF used for convolving the inversion mapping matrix. A smaller \
-            shape will trim the PSF relative to the input datas_ PSF, giving a faster analysis run-time.
+            shape will trim the PSF relative to the input image PSF, giving a faster analysis run-time.
         positions : [[]]
-            Lists of datas_-pixel coordinates (arc-seconds) that mappers close to one another in the source-plane(s), used \
+            Lists of image-pixel coordinates (arc-seconds) that mappers close to one another in the source-plane(s), used \
             to speed up the non-linear sampling.
         """
-        super().__init__(data=data, mask=mask)
+        super().__init__(data=image[:,:], noise_map=image.noise_map, mask=mask)
 
-        self.noise_map_ = mask.map_2d_array_to_masked_1d_array(data.noise_map)
-        self.background_noise_map_ = mask.map_2d_array_to_masked_1d_array(data.background_noise_map)
-        self.poisson_noise_map_ = mask.map_2d_array_to_masked_1d_array(data.poisson_noise_map)
-        self.exposure_time_map_ = mask.map_2d_array_to_masked_1d_array(data.exposure_time_map)
-        self.background_sky_map_ = mask.map_2d_array_to_masked_1d_array(data.background_sky_map)
+        self.pixel_scale = image.pixel_scale
+        self.psf = image.psf
+        self.image_1d = mask.map_2d_array_to_masked_1d_array(array_2d=image[:,:])
+        self.noise_map_1d = mask.map_2d_array_to_masked_1d_array(array_2d=image.noise_map)
 
         self.sub_grid_size = sub_grid_size
 
@@ -74,17 +70,18 @@ class LensingImage(fit_data.FitData):
 
         self.positions = positions
 
+    @property
+    def image(self):
+        return self.data
+
+    def map_to_scaled_array(self, array_1d):
+        return self.grids.regular.scaled_array_from_array_1d(array_1d=array_1d)
 
     def __array_finalize__(self, obj):
         super(LensingImage, self).__array_finalize__(obj)
         if isinstance(obj, LensingImage):
-            self.image = obj.image
             self.mask = obj.mask
-            self.noise_map_ = obj.noise_map_
-            self.background_noise_map_ = obj.background_noise_map_
-            self.poisson_noise_map_ = obj.poisson_noise_map_
-            self.exposure_time_map_ = obj.exposure_time_map_
-            self.background_sky_map_ = obj.background_sky_map_
+            self.noise_map_1d = obj.noise_map_1d
             self.convolver_image = obj.convolver_image
             self.convolver_mapping_matrix = obj.convolver_mapping_matrix
             self.sub_grid_size = obj.sub_grid_size
@@ -94,64 +91,53 @@ class LensingImage(fit_data.FitData):
             self.positions = obj.positions
 
 
-class LensingHyperImage(fit_data.FitDataHyper):
+class LensingHyperImage(LensingImage):
 
-    def __new__(cls, image, mask, hyper_model_image, hyper_galaxy_images, hyper_minimum_values, sub_grid_size=2,
-                image_psf_shape=None, mapping_matrix_psf_shape=None, positions=None):
-        return np.array(mask.map_2d_array_to_masked_1d_array(image)).view(cls)
-
-    def __init__(self, data, mask, hyper_model_image, hyper_galaxy_images, hyper_minimum_values, sub_grid_size=2,
+    def __init__(self, image, mask, hyper_model_image, hyper_galaxy_images, hyper_minimum_values, sub_grid_size=2,
                  image_psf_shape=None, mapping_matrix_psf_shape=None, positions=None):
         """
-        The lensing datas_ is the collection of datas (regular, noise-maps, PSF), a masks, grids, convolvers and other \
-        utilities that are used for modeling and fitting an datas_ of a strong lens.
+        The lensing image is the collection of datas (regular, noise-maps, PSF), a masks, grids, convolvers and other \
+        utilities that are used for modeling and fitting an image of a strong lens.
 
-        Whilst the datas_ datas is initially loaded in 2D, for the lensing datas_ the masked-datas_ (and noise-maps) \
+        Whilst the image datas is initially loaded in 2D, for the lensing image the masked-image (and noise-maps) \
         are reduced to 1D arrays for faster calculations.
 
         Parameters
         ----------
-        data: im.Image
-            The original datas_ datas in 2D.
+        image: im.Image
+            The original image datas in 2D.
         mask: msk.Mask
-            The 2D masks that is applied to the datas_.
+            The 2D masks that is applied to the image.
         sub_grid_size : int
-            The size of the sub-grid used for each lensing SubGrid. E.g. a value of 2 grids each datas_-pixel on a 2x2 \
+            The size of the sub-grid used for each lensing SubGrid. E.g. a value of 2 grids each image-pixel on a 2x2 \
             sub-grid.
         image_psf_shape : (int, int)
             The shape of the PSF used for convolving model regular generated using analytic light profiles. A smaller \
-            shape will trim the PSF relative to the input datas_ PSF, giving a faster analysis run-time.
+            shape will trim the PSF relative to the input image PSF, giving a faster analysis run-time.
         mapping_matrix_psf_shape : (int, int)
             The shape of the PSF used for convolving the inversion mapping matrix. A smaller \
-            shape will trim the PSF relative to the input datas_ PSF, giving a faster analysis run-time.
+            shape will trim the PSF relative to the input image PSF, giving a faster analysis run-time.
         positions : [[]]
-            Lists of datas_-pixel coordinates (arc-seconds) that mappers close to one another in the source-plane(s), used \
+            Lists of image-pixel coordinates (arc-seconds) that mappers close to one another in the source-plane(s), used \
             to speed up the non-linear sampling.
         """
-        super().__init__(data=data, mask=mask, hyper_model_image=hyper_model_image,
-                         hyper_galaxy_images=hyper_galaxy_images, hyper_minimum_values=hyper_minimum_values,
-                         sub_grid_size=sub_grid_size, image_psf_shape=image_psf_shape)
+        super().__init__(image=image, mask=mask, sub_grid_size=sub_grid_size, image_psf_shape=image_psf_shape,
+                         mapping_matrix_psf_shape=mapping_matrix_psf_shape, positions=positions)
 
-        if mapping_matrix_psf_shape is None:
-            mapping_matrix_psf_shape = self.image.psf.shape
+        self.hyper_model_image = hyper_model_image
+        self.hyper_galaxy_images = hyper_galaxy_images
+        self.hyper_minimum_values = hyper_minimum_values
 
-        self.convolver_mapping_matrix = inversion_convolution.ConvolverMappingMatrix(self.mask,
-                      self.image.psf.resized_scaled_array_from_array(mapping_matrix_psf_shape))
-
-        self.positions = positions
+        self.hyper_model_image_1d = mask.map_2d_array_to_masked_1d_array(array_2d=hyper_model_image)
+        self.hyper_galaxy_images_1d = list(map(lambda hyper_galaxy_image :
+                                               mask.map_2d_array_to_masked_1d_array(hyper_galaxy_image),
+                                               hyper_galaxy_images))
 
     def __array_finalize__(self, obj):
         super(LensingHyperImage, self).__array_finalize__(obj)
         if isinstance(obj, LensingHyperImage):
-            self.image = obj.image
-            self.mask = obj.mask
-            self.convolver_image = obj.convolver_image
-            self.convolver_mapping_matrix = obj.convolver_mapping_matrix
-            self.grids = obj.grids
-            self.sub_grid_size = obj.sub_grid_size
-            self.padded_grids = obj.padded_grids
-            self.border = obj.border
-            self.positions = obj.positions
             self.hyper_model_image = obj.hyper_model_image
             self.hyper_galaxy_images = obj.hyper_galaxy_images
             self.hyper_minimum_values = obj.hyper_minimum_values
+            self.hyper_model_image_1d = obj.hyper_model_image_1d
+            self.hyper_galaxy_images_1d = obj.hyper_galaxy_images_1d

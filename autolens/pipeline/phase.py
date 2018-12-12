@@ -452,7 +452,7 @@ class PhaseImaging(Phase):
         """
         mask = mask or self.mask_function(image)
         image = self.modify_image(image, previous_results)
-        lensing_image = li.LensingImage(data=image, mask=mask, sub_grid_size=self.sub_grid_size,
+        lensing_image = li.LensingImage(image=image, mask=mask, sub_grid_size=self.sub_grid_size,
                                         image_psf_shape=self.image_psf_shape, positions=self.positions)
         self.pass_priors(previous_results)
 
