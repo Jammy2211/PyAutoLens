@@ -729,7 +729,7 @@ def load_imaging_from_fits(image_path, pixel_scale, image_hdu=0,
         If True, the input images are in units of electrons and all converted to electrons / second using the exposure \
         time map.
     gain : float
-        The image gain, used for convert from ADUs.
+        The data gain, used for convert from ADUs.
     convert_from_adus : bool
         If True, the input images are in units of adus and all converted to electrons / second using the exposure \
         time map and gain.
@@ -853,7 +853,7 @@ def load_noise_map(noise_map_path, noise_map_hdu, pixel_scale, image, background
         If True, the input images are in units of electrons and all converted to electrons / second using the exposure \
         time map.
     gain : float
-        The image gain, used for convert from ADUs.
+        The data gain, used for convert from ADUs.
     convert_from_adus : bool
         If True, the input images are in units of adus and all converted to electrons / second using the exposure \
         time map and gain.
@@ -880,15 +880,15 @@ def load_noise_map(noise_map_path, noise_map_hdu, pixel_scale, image, background
     elif noise_map_from_image_and_background_noise_map:
 
         if background_noise_map is None:
-            raise exc.ImagingException('Cannot compute the noise-map from the image and background noise map if a '
+            raise exc.ImagingException('Cannot compute the noise-map from the data and background noise map if a '
                                        'background noise map is not supplied.')
 
         if not (convert_from_electrons or convert_from_adus) and exposure_time_map is None:
-            raise exc.ImagingException('Cannot compute the noise-map from the image and background noise map if an '
+            raise exc.ImagingException('Cannot compute the noise-map from the data and background noise map if an '
                                        'exposure-time (or exposure time map) is not supplied to convert to adus')
 
         if convert_from_adus and gain is None:
-            raise exc.ImagingException('Cannot compute the noise-map from the image and background noise map if a'
+            raise exc.ImagingException('Cannot compute the noise-map from the data and background noise map if a'
                                        'gain is not supplied to convert from adus')
 
         return NoiseMap.from_image_and_background_noise_map(pixel_scale=pixel_scale, image=image,
@@ -972,7 +972,7 @@ def load_poisson_noise_map(poisson_noise_map_path, poisson_noise_map_hdu, pixel_
         If True, the input images are in units of electrons and all converted to electrons / second using the exposure \
         time map.
     gain : float
-        The image gain, used for convert from ADUs.
+        The data gain, used for convert from ADUs.
     convert_from_adus : bool
         If True, the input images are in units of adus and all converted to electrons / second using the exposure \
         time map and gain.
@@ -987,11 +987,11 @@ def load_poisson_noise_map(poisson_noise_map_path, poisson_noise_map_hdu, pixel_
     elif poisson_noise_map_from_image:
 
         if not (convert_from_electrons or convert_from_adus) and exposure_time_map is None:
-            raise exc.ImagingException('Cannot compute the Poisson noise-map from the image if an '
+            raise exc.ImagingException('Cannot compute the Poisson noise-map from the data if an '
                                        'exposure-time (or exposure time map) is not supplied to convert to adus')
 
         if convert_from_adus and gain is None:
-            raise exc.ImagingException('Cannot compute the Poisson noise-map from the image if a'
+            raise exc.ImagingException('Cannot compute the Poisson noise-map from the data if a'
                                        'gain is not supplied to convert from adus')
 
         return PoissonNoiseMap.from_image_and_exposure_time_map(pixel_scale=pixel_scale, image=image,

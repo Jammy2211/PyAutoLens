@@ -31,7 +31,7 @@ def get_subplot_rows_columns_figsize(number_subplots):
 
 
 def setup_figure(figsize, as_subplot):
-    """Setup a figure for plotting an image.
+    """Setup a figure for plotting an data.
 
     Parameters
     -----------
@@ -59,7 +59,7 @@ def set_title(title, titlesize):
 
 
 def output_figure(array, as_subplot, output_path, output_filename, output_format):
-    """Output the figure, either as an image on the screen or to the hard-disk as a .png or .fits file.
+    """Output the figure, either as an data on the screen or to the hard-disk as a .png or .fits file.
 
     Parameters
     -----------
@@ -91,7 +91,7 @@ def output_figure(array, as_subplot, output_path, output_filename, output_format
 
 
 def output_subplot_array(output_path, output_filename, output_format):
-    """Output a figure which consists of a set of subplot,, either as an image on the screen or to the hard-disk as a \
+    """Output a figure which consists of a set of subplot,, either as an data on the screen or to the hard-disk as a \
     .png file.
 
     Parameters

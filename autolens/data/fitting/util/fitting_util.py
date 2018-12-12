@@ -1,5 +1,74 @@
 import numpy as np
 
+def residuals_from_data_mask_and_model_data(data, mask, model_data):
+    """Compute the residuals between a list of 1D masked observed datas and model datas, where:
+
+    Residuals = (Data - Model_Data).
+
+    For strong lens imaging, this subtracts the model lens regular from the observed regular within the mask.
+
+    Parameters
+    -----------
+    data : np.ndarray
+        The 1D masked observed data-set.
+    model_data : np.ndarray
+        The 1D masked model data-set.
+    """
+    residuals = np.subtract(data, model_data)
+    return residuals - residuals * mask
+
+def chi_squared_from_residuals_and_noise_map(residuals, noise_map):
+    """Computes the chi-squared images between a list of 1D masked residuals and noise-maps, where:
+
+    Chi_Squared = ((Residuals) / (Noise)) ** 2.0 = ((Data - Model)**2.0)/(Variances)
+
+    Parameters
+    -----------
+    residuals : np.ndarray
+        The 1D masked residual of the model-data fit to the observed data.
+    noise_map : np.ndarray
+        The 1D masked noise-map of the observed data.
+    """
+    return np.square((np.divide(residuals, noise_map)))
+
+def chi_squared_term_from_chi_squareds(chi_squareds):
+    """Compute the chi-squared terms of each model's data-set's fit to an observed data-set, by summing the 1D masked
+    chi-squared values of the fit.
+
+    Parameters
+    ----------
+    chi_squareds : np.ndarray
+        The 1D masked chi-squared values of the model-data fit to the observed data.
+    """
+    return np.sum(chi_squareds)
+
+def noise_term_from_noise_map(noise_map):
+    """Compute the noise-map normalization terms of a list of masked 1D noise-maps, summing the noise vale in every
+    pixel as:
+
+    [Noise_Term] = sum(log(2*pi*[Noise]**2.0))
+
+    Parameters
+    ----------
+    noise_map : np.ndarray
+        List of masked 1D noise-maps.
+    """
+    return np.sum(np.log(2 * np.pi * noise_map ** 2.0))
+
+def likelihood_from_chi_squared_term_and_noise_term(chi_squared_term, noise_term):
+    """Compute the likelihood of each masked 1D model-datas fit to the data, where:
+
+    Likelihood = -0.5*[Chi_Squared_Term + Noise_Term] (see functions above for these definitions)
+
+    Parameters
+    ----------
+    chi_squared_term : float
+        The chi-squared term for the model-data fit to the observed data.
+    noise_term : float
+        The normalization noise-term for the observed data's noise-map.
+    """
+    return -0.5 * (chi_squared_term + noise_term)
+
 def map_arrays_to_scaled_arrays(arrays_, map_to_scaled_arrays):
     """Map a list of masked 1D arrays (followed by an underscore _) to their masked 2D regular, using their
     *map_to_scaled_array* functions.
@@ -7,7 +76,7 @@ def map_arrays_to_scaled_arrays(arrays_, map_to_scaled_arrays):
     Parameters
     -----------
     arrays_ : [ndarray]
-        The arrays (e.g. datas_, model_images_, residuals_) which are mapped to 2D.
+        The arrays (e.g. datas_, model_images_, residuals) which are mapped to 2D.
     map_to_scaled_arrays : [func]
         A list of functions which map each regular from 1D to 2D, using their mask.
     """
@@ -39,81 +108,13 @@ def blur_image_including_blurring_region(image_, blurring_image_, convolver):
     Parameters
     ----------
     image_ : ndarray
-        The 1D masked image which is blurred.
+        The 1D masked data which is blurred.
     blurring_image : ndarray
         The 1D masked blurring images which are blurred.
     convolver : imaging.convolution.Convolver
         The convolver which perform the convolution and have built into the the PSF kernel.
     """
     return convolver.convolve_image(image_array=image_, blurring_array=blurring_image_)
-
-def residual_from_data_and_model_data(data, model_data):
-    """Compute the residuals between a list of 1D masked observed datas and model datas, where:
-
-    Residuals = (Data - Model_Data).
-
-    For strong lens imaging, this subtracts the model lens regular from the observed regular within the mask.
-
-    Parameters
-    -----------
-    data : np.ndarray
-        The 1D masked observed data-set.
-    model_data : np.ndarray
-        The 1D masked model data-set.
-    """
-    return np.subtract(data, model_data)
-
-def chi_squared_from_residual_and_noise_map(residual, noise_map):
-    """Computes the chi-squared images between a list of 1D masked residuals and noise-maps, where:
-
-    Chi_Squared = ((Residuals) / (Noise)) ** 2.0 = ((Data - Model)**2.0)/(Variances)
-
-    Parameters
-    -----------
-    residual : np.ndarray
-        The 1D masked residual of the model-data fit to the observed data.
-    noise_map : np.ndarray
-        The 1D masked noise-map of the observed data.
-    """
-    return np.square((np.divide(residual, noise_map)))
-
-def chi_squared_term_from_chi_squared(chi_squared):
-    """Compute the chi-squared terms of each model's data-set's fit to an observed data-set, by summing the 1D masked
-    chi-squared values of the fit.
-
-    Parameters
-    ----------
-    chi_squared : np.ndarray
-        The 1D masked chi-squared values of the model-data fit to the observed data.
-    """
-    return np.sum(chi_squared)
-
-def noise_term_from_noise_map(noise_map):
-    """Compute the noise-map normalization terms of a list of masked 1D noise-maps, summing the noise vale in every
-    pixel as:
-
-    [Noise_Term] = sum(log(2*pi*[Noise]**2.0))
-
-    Parameters
-    ----------
-    noise_map : np.ndarray
-        List of masked 1D noise-maps.
-    """
-    return np.sum(np.log(2 * np.pi * noise_map ** 2.0))
-
-def likelihood_from_chi_squared_term_and_noise_term(chi_squared_term, noise_term):
-    """Compute the likelihood of each masked 1D model-datas fit to the data, where:
-
-    Likelihood = -0.5*[Chi_Squared_Term + Noise_Term] (see functions above for these definitions)
-
-    Parameters
-    ----------
-    chi_squared_term : float
-        The chi-squared term for the model-data fit to the observed data.
-    noise_term : float
-        The normalization noise-term for the observed data's noise-map.
-    """
-    return -0.5 * (chi_squared_term + noise_term)
 
 def likelihood_with_regularization_from_chi_squared_term_regularization_and_noise_term(chi_squared_term,
                                                                                        regularization_term,
@@ -165,7 +166,7 @@ def unmasked_blurred_images_from_fitting_images(fitting_images, unmasked_images_
 
     Parameters
     ----------
-    fitting_images_ : [fitting.fitting_data.FittingImage]
+    fitting_images_ : [fitting.fit_data.FitData]
         The fitting images.
     unmasked_images_ : [ndarray]
         The 1D unmasked images which are blurred.
@@ -183,7 +184,7 @@ def unmasked_model_image_from_fitting_image(fitting_image, unmasked_image_):
 
     Parameters
     ----------
-    fitting_image_ : fitting.fitting_data.FittingImage
+    fitting_image_ : fitting.fit_data.FitData
         A fitting_image, whose padded grid is used for PSF convolution.
     unmasked_images_ : [ndarray]
         The 1D unmasked images which are blurred.
@@ -199,7 +200,7 @@ def contributions_from_fitting_hyper_images_and_hyper_galaxies(fitting_hyper_ima
 
     Parameters
     ----------
-    fitting_hyper_images : [fitting.fitting_data.FittingHyperImage]
+    fitting_hyper_images : [fitting.fit_data.FitDataHyper]
         The fitting hyper-images.
     hyper_galaxies : [galaxy.Galaxy]
         The hyper-galaxies which represent the model components used to scale the noise, which correspond to
@@ -240,7 +241,7 @@ def contributions_from_hyper_images_and_galaxies(hyper_model_image, hyper_galaxy
 
 def scaled_noise_maps_from_fitting_hyper_images_contributions_and_hyper_galaxies(fitting_hyper_images, contributions_,
                                                                                  hyper_galaxies):
-    """For a list of fitting hyper-images (which includes the hyper model image and hyper galaxy images),
+    """For a list of fitting hyper-images (which includes the hyper model data and hyper galaxy images),
      contribution maps and model hyper-galaxies, compute their scaled noise-maps.
 
      This is performed by using each hyper-galaxy's *noise_factor* and *noise_power* parameter in conjunction with the
@@ -248,7 +249,7 @@ def scaled_noise_maps_from_fitting_hyper_images_contributions_and_hyper_galaxies
 
     Parameters
     ----------
-    fitting_hyper_images : [fitting.fitting_data.FittingHyperImage]
+    fitting_hyper_images : [fitting.fit_data.FitDataHyper]
         The fitting hyper-images.
     contributions_ : [[ndarray]]
         List of each regular's list of 1D masked contribution maps (e.g. one for each hyper-galaxy)

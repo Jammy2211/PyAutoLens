@@ -7,16 +7,16 @@ def plot_model_image(fit, image_index=0, mask=None, positions=None, as_subplot=F
                      title='Fit Model Image', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
                      mask_pointsize=10, position_pointsize=10.0,
                      output_path=None, output_format='show', output_filename='fit_model_image'):
-    """Plot the model-image of a fit.
+    """Plot the model-data of a fit.
 
     Set *autolens.data.array.plotters.array_plotters* for a description of all innput parameters not described below.
 
     Parameters
     -----------
-    fit : data.fitting.fitting.AbstractFit
-        The fit to the data, which includes a list of every model-image, residuals, chi-squareds, etc.
+    fit : data.fitting.fitting.AbstractFitter
+        The fit to the data, which includes a list of every model-data, residuals, chi-squareds, etc.
     image_index : int
-        The index of the image in the data-set of which the model-image is plotted.
+        The index of the data in the data-set of which the model-data is plotted.
     """
     array_plotters.plot_array(array=fit.model_datas[image_index], mask=mask, positions=positions, as_subplot=as_subplot,
                               units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
@@ -36,18 +36,18 @@ def plot_model_image_of_plane(fit, image_index=0, plane_index=0, mask=None, posi
                               title='Fit Model Image', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
                               mask_pointsize=10, position_pointsize=10.0,
                               output_path=None, output_format='show', output_filename='fit_model_image_of_plane'):
-    """Plot the model-image of a specific plane of a lensing fit.
+    """Plot the model-data of a specific plane of a lensing fit.
 
     Set *autolens.data.array.plotters.array_plotters* for a description of all innput parameters not described below.
 
     Parameters
     -----------
-    fit : data.fitting.fitting.AbstractFit
-        The fit to the data, which includes a list of every model-image, residuals, chi-squareds, etc.
+    fit : data.fitting.fitting.AbstractFitter
+        The fit to the data, which includes a list of every model-data, residuals, chi-squareds, etc.
     image_index : int
-        The index of the image in the data-set of which the model-image is plotted.
+        The index of the data in the data-set of which the model-data is plotted.
     plane_index : int
-        The plane from which the model-image is generated.
+        The plane from which the model-data is generated.
     """
     array_plotters.plot_array(array=fit.model_images_of_planes[image_index][plane_index], mask=mask, positions=positions,
                               as_subplot=as_subplot,
@@ -74,10 +74,10 @@ def plot_residuals(fit, image_index=0, mask=None, positions=None, as_subplot=Fal
 
     Parameters
     -----------
-    fit : data.fitting.fitting.AbstractFit
-        The fit to the data, which includes a list of every model-image, residuals, chi-squareds, etc.
+    fit : data.fitting.fitting.AbstractFitter
+        The fit to the data, which includes a list of every model-data, residuals, chi-squareds, etc.
     image_index : int
-        The index of the image in the data-set of which the residuals are plotted.
+        The index of the data in the data-set of which the residuals are plotted.
     """
     array_plotters.plot_array(array=fit.residuals[image_index], mask=mask, positions=positions, as_subplot=as_subplot,
                               units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
@@ -103,10 +103,10 @@ def plot_chi_squareds(fit, image_index=0, mask=None, positions=None, as_subplot=
 
     Parameters
     -----------
-    fit : data.fitting.fitting.AbstractFit
-        The fit to the data, which includes a list of every model-image, residuals, chi-squareds, etc.
+    fit : data.fitting.fitting.AbstractFitter
+        The fit to the data, which includes a list of every model-data, residuals, chi-squareds, etc.
     image_index : int
-        The index of the image in the data-set of which the chi-squareds are plotted.
+        The index of the data in the data-set of which the chi-squareds are plotted.
     """
     array_plotters.plot_array(array=fit.chi_squareds[image_index], mask=mask, positions=positions, as_subplot=as_subplot,
                               units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
@@ -133,9 +133,9 @@ def plot_contributions(fit, image_index=0, mask=None, positions=None, as_subplot
     Parameters
     -----------
     fit : data.fitting.fitting.AbstractHyperFit
-        The hyper-fit to the data, which includes a list of every model-image, residuals, chi-squareds, etc.
+        The hyper-fit to the data, which includes a list of every model-data, residuals, chi-squareds, etc.
     image_index : int
-        The index of the image in the data-set of which the contributions are plotted.
+        The index of the data in the data-set of which the contributions are plotted.
     """
     if len(fit.contributions[image_index]) > 1:
         contributions = sum(fit.contributions[image_index])
@@ -160,16 +160,16 @@ def plot_scaled_model_image(fit, image_index=0, mask=None, positions=None, as_su
                             title='Fit Scaled Model Image', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
                             mask_pointsize=10, position_pointsize=10.0,
                             output_path=None, output_format='show', output_filename='fit_scaled_model_image'):
-    """Plot the scaled model image of a hyper-fit.
+    """Plot the scaled model data of a hyper-fit.
 
     Set *autolens.data.array.plotters.array_plotters* for a description of all innput parameters not described below.
 
     Parameters
     -----------
     fit : data.fitting.fitting.AbstractHyperFit
-        The hyper-fit to the data, which includes a list of every model-image, residuals, chi-squareds, etc.
+        The hyper-fit to the data, which includes a list of every model-data, residuals, chi-squareds, etc.
     image_index : int
-        The index of the image in the data-set of which the scaled model image is plotted.
+        The index of the data in the data-set of which the scaled model data is plotted.
     """
     array_plotters.plot_array(array=fit.scaled_model_images[image_index], mask=mask, positions=positions, as_subplot=as_subplot,
                               units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
@@ -196,9 +196,9 @@ def plot_scaled_residuals(fit, image_index=0, mask=None, positions=None, as_subp
     Parameters
     -----------
     fit : data.fitting.fitting.AbstractHyperFit
-        The hyper-fit to the data, which includes a list of every model-image, residuals, chi-squareds, etc.
+        The hyper-fit to the data, which includes a list of every model-data, residuals, chi-squareds, etc.
     image_index : int
-        The index of the image in the data-set of which the scaled residuals are plotted.
+        The index of the data in the data-set of which the scaled residuals are plotted.
     """
     array_plotters.plot_array(array=fit.scaled_residuals[image_index], mask=mask, positions=positions, as_subplot=as_subplot,
                               units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
@@ -225,9 +225,9 @@ def plot_scaled_chi_squareds(fit, image_index=0, mask=None, positions=None, as_s
     Parameters
     -----------
     fit : data.fitting.fitting.AbstractHyperFit
-        The hyper-fit to the data, which includes a list of every model-image, residuals, chi-squareds, etc.
+        The hyper-fit to the data, which includes a list of every model-data, residuals, chi-squareds, etc.
     image_index : int
-        The index of the image in the data-set of which the scaled chi-squareds are plotted.
+        The index of the data in the data-set of which the scaled chi-squareds are plotted.
     """
     array_plotters.plot_array(array=fit.scaled_chi_squareds[image_index], mask=mask, positions=positions, as_subplot=as_subplot,
                               units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
@@ -254,9 +254,9 @@ def plot_scaled_noise_map(fit, image_index=0, mask=None, positions=None, as_subp
     Parameters
     -----------
     fit : data.fitting.fitting.AbstractHyperFit
-        The hyper-fit to the data, which includes a list of every model-image, residuals, chi-squareds, etc.
+        The hyper-fit to the data, which includes a list of every model-data, residuals, chi-squareds, etc.
     image_index : int
-        The index of the image in the data-set of which the scaled noise-map is plotted.
+        The index of the data in the data-set of which the scaled noise-map is plotted.
     """
     array_plotters.plot_array(array=fit.scaled_noise_maps[image_index], mask=mask, positions=positions, as_subplot=as_subplot,
                               units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
@@ -289,9 +289,9 @@ def get_mask(fit, should_plot_mask):
     Parameters
     -----------
     fit : data.fitting.fitting.AbstractHyperFit
-        The fit to the data, which includes a list of every model-image, residuals, chi-squareds, etc.
+        The fit to the data, which includes a list of every model-data, residuals, chi-squareds, etc.
     should_plot_mask : bool
-        If *True*, the mask is plotted on the fit's image.
+        If *True*, the mask is plotted on the fit's data.
     """
     if should_plot_mask:
         return fit.masks[0]

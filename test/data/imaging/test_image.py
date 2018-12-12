@@ -2307,7 +2307,7 @@ class TestLoadImagingFromFits(object):
                                              exposure_time_map_from_single_value=1.0,
                                              noise_map_from_image_and_background_noise_map=True)
 
-        # Dont need gain if image is in electrons
+        # Dont need gain if data is in electrons
         image.load_imaging_from_fits(image_path=test_data_dir + '3x3_ones.fits',
                                      psf_path=test_data_dir + '3x3_ones.fits', pixel_scale=0.1,
                                      noise_map_path=test_data_dir + '3x3_threes.fits',
@@ -2316,7 +2316,7 @@ class TestLoadImagingFromFits(object):
                                      noise_map_from_image_and_background_noise_map=True,
                                      convert_from_electrons=True)
 
-        # Need gain if image is in adus
+        # Need gain if data is in adus
         with pytest.raises(exc.ImagingException):
             image.load_imaging_from_fits(image_path=test_data_dir + '3x3_ones.fits',
                                          psf_path=test_data_dir + '3x3_ones.fits', pixel_scale=0.1,
@@ -2337,7 +2337,7 @@ class TestLoadImagingFromFits(object):
 
     def test__poisson_noise_map_from_image_exceptions(self):
 
-        # Dont need gain if image is in e/s
+        # Dont need gain if data is in e/s
         image.load_imaging_from_fits(image_path=test_data_dir + '3x3_ones.fits',
                                      psf_path=test_data_dir + '3x3_ones.fits', pixel_scale=0.1,
                                      noise_map_path=test_data_dir + '3x3_threes.fits',

@@ -54,7 +54,7 @@ def test__simulate_lensed_source_and_fit__no_psf_blurring__chi_squared_is_0__noi
 
     mask = msk.Mask.circular(shape=image.shape, pixel_scale=0.2, radius_arcsec=0.8)
 
-    lensing_image = li.LensingImage(image=image, mask=mask, sub_grid_size=1)
+    lensing_image = li.LensingImage(data=image, mask=mask, sub_grid_size=1)
 
     tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
                                                  image_plane_grids=[lensing_image.grids])
@@ -102,7 +102,7 @@ def test__simulate_lensed_source_and_fit__include_psf_blurring__chi_squared_is_0
 
     mask = msk.Mask.circular(shape=image.shape, pixel_scale=0.2, radius_arcsec=0.8)
 
-    lensing_image = li.LensingImage(image=image, mask=mask, sub_grid_size=1)
+    lensing_image = li.LensingImage(data=image, mask=mask, sub_grid_size=1)
 
     tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
                                                  image_plane_grids=[lensing_image.grids])

@@ -44,7 +44,7 @@ def test_galaxy_mass():
 def test_grids():
     return grids.DataGrids.from_shape_and_pixel_scale(shape=(100, 100), pixel_scale=0.05, sub_grid_size=2)
 
-@pytest.fixture(name='image')
+@pytest.fixture(name='data')
 def test_image():
 
     image = scaled_array.ScaledSquarePixelArray(array=np.ones((3, 3)), pixel_scale=1.0)
@@ -64,7 +64,7 @@ def test_mask():
 
 @pytest.fixture(name='lensing_image')
 def test_lensing_image(image, mask):
-    return li.LensingImage(image=image, mask=mask)
+    return li.LensingImage(data=image, mask=mask)
 
 @pytest.fixture(name='fit_lens_only')
 def test_fit_lens_only(lensing_image, galaxy_light):
@@ -98,7 +98,7 @@ def make_hyper():
 @pytest.fixture(name='lensing_hyper_image')
 def test_lensing_hyper_image(image, mask, hyper):
 
-    return li.LensingHyperImage(image=image, mask=mask, hyper_model_image=hyper.hyper_model_image,
+    return li.LensingHyperImage(data=image, mask=mask, hyper_model_image=hyper.hyper_model_image,
                                 hyper_galaxy_images=hyper.hyper_galaxy_images,
                                 hyper_minimum_values=hyper.hyper_minimum_values)
 

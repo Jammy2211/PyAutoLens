@@ -63,7 +63,7 @@ imaging_plotters.plot_image_subplot(image=image, mask=mask_annular, should_plot_
 def perform_fit_with_source_galaxy_mask_and_border(source_galaxy, mask, use_border):
 
     image = simulate()
-    lensing_image = li.LensingImage(image=image, mask=mask)
+    lensing_image = li.LensingImage(data=image, mask=mask)
     lens_galaxy = g.Galaxy(
         mass=mp.EllipticalIsothermal(centre=(0.0, 0.0), axis_ratio=0.8, phi=135.0, einstein_radius=1.6))
 
@@ -181,7 +181,7 @@ imaging_plotters.plot_image_subplot(image=image, mask=mask_circular, should_plot
 def perform_fit_x2_lenses_with_source_galaxy_mask_and_border(source_galaxy, mask, use_border):
 
     simulate_image_x2_lenses()
-    lensing_image = li.LensingImage(image=image, mask=mask)
+    lensing_image = li.LensingImage(data=image, mask=mask)
     lens_galaxy_0 = g.Galaxy(
         mass=mp.EllipticalIsothermal(centre=(1.1, 0.51), axis_ratio=0.9, phi=110.0, einstein_radius=1.07))
     lens_galaxy_1 = g.Galaxy(

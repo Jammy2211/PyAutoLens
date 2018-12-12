@@ -1,4 +1,4 @@
-from autolens.data.fitting import fitting
+from autolens.data.fitting import fitter
 from autolens.data.fitting.util import fitting_util
 from autolens.model.galaxy import galaxy_data as gd
 
@@ -43,7 +43,7 @@ def fast_likelihood_from_galaxy_data_and_galaxy(galaxy_datas, model_galaxy):
         return GalaxyFitDeflections.fast_likelihood(galaxy_datas=galaxy_datas, model_galaxy=model_galaxy)
 
 
-class GalaxyFit(fitting.AbstractDataFit):
+class GalaxyFit(fitter.DataFitterMulti):
 
     def __init__(self, galaxy_datas, model_galaxy):
         """Class which fits a set of galaxy-datas to a model galaxy, using either the galaxy's intensities, \
@@ -63,7 +63,7 @@ class GalaxyFit(fitting.AbstractDataFit):
         model_data_ = galaxy_datas[0].profile_quantity_from_galaxy_and_sub_grid(galaxy=model_galaxy,
                                                                             sub_grid=galaxy_datas[0].grids.sub)
 
-        super(GalaxyFit, self).__init__(fitting_datas=galaxy_datas, model_datas_=[model_data_])
+        super(GalaxyFit, self).__init__(fit_data=galaxy_datas, model_data=[model_data_])
 
     @classmethod
     def fast_likelihood(cls, galaxy_datas, galaxy):
@@ -71,14 +71,14 @@ class GalaxyFit(fitting.AbstractDataFit):
         minimizing memory use and maximizing run-speed."""
         model_datas_ = galaxy_datas[0].profile_quantity_from_galaxy_and_sub_grid(galaxy=galaxy,
                                                                              sub_grid=galaxy_datas[0].grids.sub)
-        residuals_ = fitting_util.residual_from_data_and_model_data([galaxy_datas[:]], [model_datas_])
-        chi_squareds_ = fitting_util.chi_squared_from_residual_and_noise_map(residuals_, [galaxy_datas[0].noise_map_])
-        chi_squared_terms = fitting_util.chi_squared_term_from_chi_squared(chi_squareds_)
+        residuals_ = fitting_util.residuals_from_data_mask_and_model_data([galaxy_datas[:]], [model_datas_])
+        chi_squareds_ = fitting_util.chi_squared_from_residuals_and_noise_map(residuals_, [galaxy_datas[0].noise_map_])
+        chi_squared_terms = fitting_util.chi_squared_term_from_chi_squareds(chi_squareds_)
         noise_terms = fitting_util.noise_term_from_noise_map([galaxy_datas[0].noise_map_])
         return sum(fitting_util.likelihood_from_chi_squared_term_and_noise_term(chi_squared_terms, noise_terms))
 
 
-class GalaxyFitDeflections(fitting.AbstractDataFit):
+class GalaxyFitDeflections(fitter.DataFitterMulti):
 
     def __init__(self, galaxy_datas, model_galaxy):
         """Class which fits a set of galaxy-datas to a model galaxy, using the galaxy's deflection-angle maps.
@@ -96,7 +96,7 @@ class GalaxyFitDeflections(fitting.AbstractDataFit):
         model_data_ = galaxy_datas[0].profile_quantity_from_galaxy_and_sub_grid(galaxy=model_galaxy,
                                                                             sub_grid=galaxy_datas[0].grids.sub)
 
-        super(GalaxyFitDeflections, self).__init__(fitting_datas=galaxy_datas, model_datas_=[model_data_[:, 0],
+        super(GalaxyFitDeflections, self).__init__(fit_data=galaxy_datas, model_data=[model_data_[:, 0],
                                                                                               model_data_[:,1]])
 
     @classmethod
@@ -106,10 +106,10 @@ class GalaxyFitDeflections(fitting.AbstractDataFit):
         model_datas_ = galaxy_datas[0].profile_quantity_from_galaxy_and_sub_grid(galaxy=model_galaxy,
                                                                               sub_grid=galaxy_datas[0].grids.sub)
 
-        residuals_ = fitting_util.residual_from_data_and_model_data(galaxy_datas, [model_datas_[:, 0],
+        residuals_ = fitting_util.residuals_from_data_mask_and_model_data(galaxy_datas, [model_datas_[:, 0],
                                                                                  model_datas_[:,1]])
-        chi_squareds_ = fitting_util.chi_squared_from_residual_and_noise_map(residuals_, [galaxy_datas[0].noise_map_,
-                                                                                          galaxy_datas[0].noise_map_])
-        chi_squared_terms = fitting_util.chi_squared_term_from_chi_squared(chi_squareds_)
+        chi_squareds_ = fitting_util.chi_squared_from_residuals_and_noise_map(residuals_, [galaxy_datas[0].noise_map_,
+                                                                                           galaxy_datas[0].noise_map_])
+        chi_squared_terms = fitting_util.chi_squared_term_from_chi_squareds(chi_squareds_)
         noise_terms = fitting_util.noise_term_from_noise_map([galaxy_datas[0].noise_map_, galaxy_datas[0].noise_map_])
         return sum(fitting_util.likelihood_from_chi_squared_term_and_noise_term(chi_squared_terms, noise_terms))

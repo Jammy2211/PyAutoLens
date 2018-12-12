@@ -46,7 +46,7 @@ def perform_fit_with_lens_and_source_galaxy(lens_galaxy, source_galaxy):
     image = simulate()
     mask = ma.Mask.circular_annular(shape=image.shape, pixel_scale=image.pixel_scale, inner_radius_arcsec=0.5,
                                     outer_radius_arcsec=2.2)
-    lensing_image = li.LensingImage(image=image, mask=mask)
+    lensing_image = li.LensingImage(data=image, mask=mask)
     tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
                                                  image_plane_grids=[lensing_image.grids], border=[lensing_image.border])
     return lensing_fitting.fit_lensing_image_with_tracer(lensing_image=lensing_image, tracer=tracer)
@@ -136,7 +136,7 @@ lens_galaxy = g.Galaxy(light=lp.SphericalSersic(centre=(0.0, 0.0), intensity=0.2
 # These are just all the other things we do when setting up a fit_normal.
 source_galaxy = g.Galaxy(pixelization=pix.Rectangular(shape=(40, 40)), regularization=reg.Constant(coefficients=(1.0,)))
 
-lensing_image = li.LensingImage(image=image, mask=mask)
+lensing_image = li.LensingImage(data=image, mask=mask)
 tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
                                              image_plane_grids=[lensing_image.grids], border=lensing_image.border)
 

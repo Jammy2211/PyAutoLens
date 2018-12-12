@@ -26,7 +26,7 @@ def test_imaging_plotter_setup():
 
     return imaging_plotter_path
 
-@pytest.fixture(name='image')
+@pytest.fixture(name='data')
 def test_image():
 
     image = scaled_array.ScaledSquarePixelArray(array=np.ones((3, 3)), pixel_scale=1.0)

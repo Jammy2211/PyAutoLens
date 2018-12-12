@@ -22,13 +22,13 @@ def plot_array(array, origin=None, mask=None, should_plot_border=False, position
     array : ndarray or data.array.scaled_array.ScaledArray
         The 2D array of data which is plotted.
     origin : (float, float).
-        The origin of the coordinate system of the data, which is plotted as an 'x' on the image if input.
+        The origin of the coordinate system of the data, which is plotted as an 'x' on the data if input.
     mask : ndarray of data.array.mask.Mask
         The mask applied to the data, the edge of which is plotted as a set of points over the plotted array.
     should_plot_border : bool
         If a mask is supplied, its border pixels (e.g. the exterior edge) is plotted if this is *True*.
     positions : [[]]
-        Lists of (y,x) coordinates on the image which are plotted as colored dots, to highlight specific pixels.
+        Lists of (y,x) coordinates on the data which are plotted as colored dots, to highlight specific pixels.
     grid : ndarray or data.array.grids.RegularGrid
         A grid of (y,x) coordinates which may be plotted over the plotted array.
     as_subplot : bool
@@ -40,12 +40,12 @@ def plot_array(array, origin=None, mask=None, should_plot_border=False, position
     figsize : (int, int)
         The size of the figure in (rows, columns).
     aspect : str
-        The aspect ratio of the image, specifically whether it is forced to be square ('equal') or adapts its size to \
+        The aspect ratio of the data, specifically whether it is forced to be square ('equal') or adapts its size to \
         the figure size ('auto').
     cmap : str
         The colormap the array is plotted using, which may be chosen from the standard matplotlib colormaps.
     norm : str
-        The normalization of the colormap used to plot the image, specifically whether it is linear ('linear'), log \
+        The normalization of the colormap used to plot the data, specifically whether it is linear ('linear'), log \
         ('log') or a symmetric log normalization ('symmetric_log').
     norm_min : float or None
         The minimum array value the colormap map spans (all values below this value are plotted the same color).
@@ -130,12 +130,12 @@ def plot_figure(array, as_subplot, units, kpc_per_arcsec, figsize, aspect, cmap,
     figsize : (int, int)
         The size of the figure in (rows, columns).
     aspect : str
-        The aspect ratio of the image, specifically whether it is forced to be square ('equal') or adapts its size to \
+        The aspect ratio of the data, specifically whether it is forced to be square ('equal') or adapts its size to \
         the figure size ('auto').
     cmap : str
         The colormap the array is plotted using, which may be chosen from the standard matplotlib colormaps.
     norm : str
-        The normalization of the colormap used to plot the image, specifically whether it is linear ('linear'), log \
+        The normalization of the colormap used to plot the data, specifically whether it is linear ('linear'), log \
         ('log') or a symmetric log normalization ('symmetric_log').
     norm_min : float or None
         The minimum array value the colormap map spans (all values below this value are plotted the same color).
@@ -337,7 +337,7 @@ def plot_origin(array, origin, units, kpc_per_arcsec):
     array : ndarray or data.array.scaled_array.ScaledArray
         The 2D array of data which is plotted.
     origin : (float, float).
-        The origin of the coordinate system of the data, which is plotted as an 'x' on the image if input.
+        The origin of the coordinate system of the data, which is plotted as an 'x' on the data if input.
     units : str
         The units of the y / x axis of the plots, in arc-seconds ('arcsec') or kiloparsecs ('kpc').
     kpc_per_arcsec : float or None
@@ -406,7 +406,7 @@ def plot_points(points_arc_seconds, array, units, kpc_per_arcsec, pointsize):
     Parameters
     -----------
     positions : [[]]
-        Lists of (y,x) coordinates on the image which are plotted as colored dots, to highlight specific pixels.    
+        Lists of (y,x) coordinates on the data which are plotted as colored dots, to highlight specific pixels.
     array : ndarray or data.array.scaled_array.ScaledArray
         The 2D array of data which is plotted.
     units : str

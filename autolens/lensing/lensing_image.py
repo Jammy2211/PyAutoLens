@@ -1,17 +1,19 @@
 import numpy as np
 
+from autolens.data.array import grids
 from autolens.data.imaging import image as im
+from autolens.data.imaging import convolution
 from autolens.data.array import mask as msk
-from autolens.data.fitting import fitting_data
+from autolens.data.fitting import fit_data
 from autolens.model.inversion import convolution as inversion_convolution
 
 
-class LensingImage(fitting_data.FittingImage):
+class LensingImage(fit_data.FitData):
 
     def __new__(cls, image, mask, sub_grid_size=2, image_psf_shape=None, mapping_matrix_psf_shape=None, positions=None):
         return np.array(mask.map_2d_array_to_masked_1d_array(image)).view(cls)
 
-    def __init__(self, image, mask, sub_grid_size=2, image_psf_shape=None, mapping_matrix_psf_shape=None,
+    def __init__(self, data, mask, sub_grid_size=2, image_psf_shape=None, mapping_matrix_psf_shape=None,
                  positions=None):
         """
         The lensing datas_ is the collection of datas (regular, noise-maps, PSF), a masks, grids, convolvers and other \
@@ -22,7 +24,7 @@ class LensingImage(fitting_data.FittingImage):
 
         Parameters
         ----------
-        image: im.Image
+        data: im.Image
             The original datas_ datas in 2D.
         mask: msk.Mask
             The 2D masks that is applied to the datas_.
@@ -39,7 +41,30 @@ class LensingImage(fitting_data.FittingImage):
             Lists of datas_-pixel coordinates (arc-seconds) that mappers close to one another in the source-plane(s), used \
             to speed up the non-linear sampling.
         """
-        super().__init__(image=image, mask=mask, sub_grid_size=sub_grid_size, image_psf_shape=image_psf_shape)
+        super().__init__(data=data, mask=mask)
+
+        self.noise_map_ = mask.map_2d_array_to_masked_1d_array(data.noise_map)
+        self.background_noise_map_ = mask.map_2d_array_to_masked_1d_array(data.background_noise_map)
+        self.poisson_noise_map_ = mask.map_2d_array_to_masked_1d_array(data.poisson_noise_map)
+        self.exposure_time_map_ = mask.map_2d_array_to_masked_1d_array(data.exposure_time_map)
+        self.background_sky_map_ = mask.map_2d_array_to_masked_1d_array(data.background_sky_map)
+
+        self.sub_grid_size = sub_grid_size
+
+        if image_psf_shape is None:
+            image_psf_shape = self.image.psf.shape
+
+        self.convolver_image = convolution.ConvolverImage(self.mask, mask.blurring_mask_for_psf_shape(image_psf_shape),
+                                                          self.image.psf.resized_scaled_array_from_array(image_psf_shape))
+
+        self.grids = grids.DataGrids.grids_from_mask_sub_grid_size_and_psf_shape(mask=mask,
+                                                                                 sub_grid_size=sub_grid_size,
+                                                                                 psf_shape=image_psf_shape)
+
+        self.padded_grids = grids.DataGrids.padded_grids_from_mask_sub_grid_size_and_psf_shape(mask=mask,
+                                                  sub_grid_size=sub_grid_size, psf_shape=image_psf_shape)
+
+        self.border = grids.RegularGridBorder.from_mask(mask=mask)
 
         if mapping_matrix_psf_shape is None:
             mapping_matrix_psf_shape = self.image.psf.shape
@@ -69,13 +94,13 @@ class LensingImage(fitting_data.FittingImage):
             self.positions = obj.positions
 
 
-class LensingHyperImage(fitting_data.FittingHyperImage):
+class LensingHyperImage(fit_data.FitDataHyper):
 
     def __new__(cls, image, mask, hyper_model_image, hyper_galaxy_images, hyper_minimum_values, sub_grid_size=2,
                 image_psf_shape=None, mapping_matrix_psf_shape=None, positions=None):
         return np.array(mask.map_2d_array_to_masked_1d_array(image)).view(cls)
 
-    def __init__(self, image, mask, hyper_model_image, hyper_galaxy_images, hyper_minimum_values, sub_grid_size=2,
+    def __init__(self, data, mask, hyper_model_image, hyper_galaxy_images, hyper_minimum_values, sub_grid_size=2,
                  image_psf_shape=None, mapping_matrix_psf_shape=None, positions=None):
         """
         The lensing datas_ is the collection of datas (regular, noise-maps, PSF), a masks, grids, convolvers and other \
@@ -86,7 +111,7 @@ class LensingHyperImage(fitting_data.FittingHyperImage):
 
         Parameters
         ----------
-        image: im.Image
+        data: im.Image
             The original datas_ datas in 2D.
         mask: msk.Mask
             The 2D masks that is applied to the datas_.
@@ -103,7 +128,7 @@ class LensingHyperImage(fitting_data.FittingHyperImage):
             Lists of datas_-pixel coordinates (arc-seconds) that mappers close to one another in the source-plane(s), used \
             to speed up the non-linear sampling.
         """
-        super().__init__(image=image, mask=mask, hyper_model_image=hyper_model_image,
+        super().__init__(data=data, mask=mask, hyper_model_image=hyper_model_image,
                          hyper_galaxy_images=hyper_galaxy_images, hyper_minimum_values=hyper_minimum_values,
                          sub_grid_size=sub_grid_size, image_psf_shape=image_psf_shape)
 

@@ -5,7 +5,7 @@ import numpy as np
 import pytest
 
 from autofit import conf
-from autolens.data.fitting import fitting_data, fitting
+from autolens.data.fitting import fit_data, fitter
 from autolens.model.galaxy import galaxy as g
 from autolens.data.imaging import image as im
 from autolens.data.array import mask as msk, scaled_array
@@ -31,7 +31,7 @@ def test_fitting_plotter_setup():
     return galaxy_plotter_path
 
 
-@pytest.fixture(name='image')
+@pytest.fixture(name='data')
 def test_image():
     image = scaled_array.ScaledSquarePixelArray(array=np.ones((3, 3)), pixel_scale=1.0)
     noise_map = im.NoiseMap(array=2.0 * np.ones((3, 3)), pixel_scale=1.0)
@@ -47,12 +47,12 @@ def test_mask():
 
 @pytest.fixture(name='fitting_image')
 def test_fitting_image(image, mask):
-    return fitting_data.FittingImage(image=image, mask=mask)
+    return fit_data.FitData(data=image, mask=mask)
 
 
 @pytest.fixture(name='fit_normal')
 def test_fit(fitting_image):
-    return fitting.AbstractImageFit(fitting_images=[fitting_image], model_images_=[np.ones(5)])
+    return fitter.AbstractImageFitter(fitting_images=[fitting_image], model_images_=[np.ones(5)])
 
 
 @pytest.fixture(name='hyper')
@@ -75,15 +75,15 @@ def make_hyper():
 
 @pytest.fixture(name='fitting_hyper_image')
 def test_fitting_hyper_image(image, mask, hyper):
-    return fitting_data.FittingHyperImage(image=image, mask=mask, hyper_model_image=hyper.hyper_model_image,
-                                          hyper_galaxy_images=hyper.hyper_galaxy_images,
-                                          hyper_minimum_values=hyper.hyper_minimum_values)
+    return fit_data.FitDataHyper(data=image, mask=mask, hyper_model_image=hyper.hyper_model_image,
+                                 hyper_galaxy_images=hyper.hyper_galaxy_images,
+                                 hyper_minimum_values=hyper.hyper_minimum_values)
 
 
 @pytest.fixture(name='fit_hyper')
 def test_fit_hyper(fitting_hyper_image, hyper):
-    return fitting.AbstractHyperImageFit(fitting_hyper_images=[fitting_hyper_image], model_images_=[np.ones(5)],
-                                         hyper_galaxies=[hyper.hyper_galaxy.hyper_galaxy])
+    return fitter.AbstractHyperImageFit(fitting_hyper_images=[fitting_hyper_image], model_images_=[np.ones(5)],
+                                        hyper_galaxies=[hyper.hyper_galaxy.hyper_galaxy])
 
 
 def test__model_image_is_output(fit_normal, fitting_plotter_path):

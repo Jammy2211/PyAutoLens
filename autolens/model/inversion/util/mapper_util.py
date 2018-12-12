@@ -12,7 +12,7 @@ def mapping_matrix_from_sub_to_pix(sub_to_pix, pixels, regular_pixels, sub_to_re
     pixels : int
         The number of pixels in the pixelization.
     regular_pixels : int
-        The number of image pixels in the observed image and thus on the regular grid.
+        The number of data pixels in the observed data and thus on the regular grid.
     sub_to_regular : ndarray
         The mappings between the observed regular's sub-pixels and observed regular's pixels.
     sub_grid_fraction : float

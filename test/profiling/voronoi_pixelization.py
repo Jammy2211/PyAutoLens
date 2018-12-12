@@ -41,7 +41,7 @@ image = im.Image.simulate(array=tracer.image_plane_image_for_simulation, pixel_s
 
 
 mask = ma.Mask.circular(shape=image_shape, pixel_scale=pixel_scale, radius_arcsec=3.0)
-lensing_image = li.LensingImage(image=image, mask=mask)
+lensing_image = li.LensingImage(data=image, mask=mask)
 
 adaptive_pix = pix.AdaptiveMagnification(shape=(30, 30))
 

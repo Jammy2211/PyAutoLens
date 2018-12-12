@@ -35,7 +35,7 @@ def test_sensitivity_fitting_plotter_setup():
 def test_grids():
     return grids.DataGrids.from_shape_and_pixel_scale(shape=(100, 100), pixel_scale=0.05, sub_grid_size=2)
 
-@pytest.fixture(name='image')
+@pytest.fixture(name='data')
 def test_image():
 
     image = scaled_array.ScaledSquarePixelArray(array=np.ones((3, 3)), pixel_scale=1.0)
@@ -56,7 +56,7 @@ def test_mask():
 
 @pytest.fixture(name='lensing_image')
 def test_lensing_image(image, mask):
-    return li.LensingImage(image=image, mask=mask)
+    return li.LensingImage(data=image, mask=mask)
 
 @pytest.fixture(name='fit')
 def test_fit(lensing_image):
