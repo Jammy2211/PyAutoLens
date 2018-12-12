@@ -458,7 +458,9 @@ class TestSparseToRegularGrid:
             assert (pix_grid.sparse_grid == np.array([[2.0, 2.0], [0.0, 0.0], [0.0, 2.0], [0.0, 4.0],
                                                       [-2.0, 2.0]])).all()
 
-class TestUnmaskedGrids:
+
+class TestPaddedGrids:
+
     class TestPaddedImageGridFromShapes:
 
         def test__3x3_array__psf_size_is_1x1__no_padding(self):
@@ -656,7 +658,8 @@ class TestUnmaskedGrids:
 
     class TestConvolve:
 
-        def test__convolve_1d_mapper_array_with_psf_and_trim_to_original_size(self):
+        def test__convolves_1d_array_with_psf(self):
+
             msk = mask.Mask(array=np.full((4, 4), False), pixel_scale=1.0)
 
             image_padded_grid = grids.PaddedRegularGrid(arr=np.empty((0)), mask=msk, image_shape=(2, 2))
@@ -680,6 +683,7 @@ class TestUnmaskedGrids:
                                                   0.0, 1.0, 0.0, 0.0])).all()
 
         def test__same_as_above_but_different_quantities(self):
+
             msk = mask.Mask(array=np.full((5, 4), False), pixel_scale=1.0)
 
             image_padded_grid = grids.PaddedRegularGrid(arr=np.empty((0)), mask=msk, image_shape=(3, 2))
@@ -704,9 +708,11 @@ class TestUnmaskedGrids:
                                                   2.0, 5.0, 1.0, 0.0,
                                                   3.0, 1.0, 0.0, 0.0])).all()
 
+
     class TestMapUnmaskedArrays:
 
         def test__map_to_2d_keep_padded__4x4_from_1d(self):
+
             msk = mask.Mask(array=np.full((4, 4), False), pixel_scale=1.0)
 
             image_padded_grid = grids.PaddedRegularGrid(arr=np.empty((0)), mask=msk, image_shape=(2, 2))
@@ -715,6 +721,7 @@ class TestUnmaskedGrids:
                                  1.0, 2.0, 3.0, 4.0,
                                  5.0, 6.0, 7.0, 8.0,
                                  1.0, 2.0, 3.0, 4.0])
+
             array_2d = image_padded_grid.map_to_2d_keep_padded(array_1d)
 
             assert (array_2d == np.array([[6.0, 7.0, 9.0, 10.0],
@@ -796,6 +803,55 @@ class TestUnmaskedGrids:
 
             assert (array_2d == np.array([[7.0, 8.0, 9.0]])).all()
 
+    class TestUnmaskedBlurredImage:
+
+        def test__convolve_1d_array_with_psf_and_trims_to_original_size(self):
+
+            msk = mask.Mask(array=np.full((4, 4), False), pixel_scale=1.0)
+
+            image_padded_grid = grids.PaddedRegularGrid(arr=np.empty((0)), mask=msk, image_shape=(2, 2))
+
+            array_1d = np.array([0.0, 0.0, 0.0, 0.0,
+                                 0.0, 0.0, 0.0, 0.0,
+                                 0.0, 1.0, 0.0, 0.0,
+                                 0.0, 0.0, 0.0, 0.0])
+
+            kernel = np.array([[0.0, 1.0, 0.0],
+                               [1.0, 2.0, 1.0],
+                               [0.0, 1.0, 0.0]])
+
+            psf = image.PSF(array=kernel, pixel_scale=1.0)
+
+            blurred_array_2d = image_padded_grid.unmasked_blurred_image_2d_from_unmasked_image_1d_and_psf(
+                unmasked_image_1d=array_1d, psf=psf)
+
+            assert (blurred_array_2d == np.array([[1.0, 0.0],
+                                                  [2.0, 1.0]])).all()
+
+        def test__same_as_above_but_different_quantities(self):
+
+            msk = mask.Mask(array=np.full((5, 4), False), pixel_scale=1.0)
+
+            image_padded_grid = grids.PaddedRegularGrid(arr=np.empty((0)), mask=msk, image_shape=(3, 2))
+
+            array_1d = np.array([0.0, 0.0, 0.0, 0.0,
+                                 0.0, 0.0, 0.0, 0.0,
+                                 0.0, 1.0, 0.0, 0.0,
+                                 0.0, 0.0, 0.0, 0.0,
+                                 1.0, 0.0, 0.0, 0.0])
+
+            kernel = np.array([[1.0, 1.0, 4.0],
+                               [1.0, 3.0, 1.0],
+                               [1.0, 1.0, 1.0]])
+
+            psf = image.PSF(array=kernel, pixel_scale=1.0)
+
+            blurred_array_2d = image_padded_grid.unmasked_blurred_image_2d_from_unmasked_image_1d_and_psf(
+                unmasked_image_1d=array_1d, psf=psf)
+
+            assert (blurred_array_2d == np.array([[1.0, 4.0],
+                                                  [3.0, 1.0],
+                                                  [5.0, 1.0]])).all()
 
 class TestDataGrids(object):
 

@@ -65,8 +65,8 @@ class TestSensitivityProfileFit:
                                                                           model_data=[model_datas_])
         assert (fit.fit_normal.residuals_[0] == residuals_[0]).all()
 
-        chi_squareds_ = fitting_util.chi_squared_from_residuals_and_noise_map(residuals=residuals_,
-                                                                              noise_map=[si_blur.noise_map_])
+        chi_squareds_ = fitting_util.chi_squareds_from_residuals_and_noise_map(residuals=residuals_,
+                                                                               noise_map=[si_blur.noise_map_])
         assert (fit.fit_normal.chi_squareds_[0] == chi_squareds_).all()
 
 
@@ -85,12 +85,12 @@ class TestSensitivityProfileFit:
                                                                           model_data=[model_datas_])
         assert (fit.fit_sensitive.residuals_[0] == residuals_[0]).all()
 
-        chi_squareds_ = fitting_util.chi_squared_from_residuals_and_noise_map(residuals=residuals_,
-                                                                              noise_map=[si_blur.noise_map_])
+        chi_squareds_ = fitting_util.chi_squareds_from_residuals_and_noise_map(residuals=residuals_,
+                                                                               noise_map=[si_blur.noise_map_])
         assert (fit.fit_sensitive.chi_squareds_[0] == chi_squareds_).all()
 
         chi_squared_term = sum(fitting_util.chi_squared_term_from_chi_squareds(chi_squareds=chi_squareds_))
-        noise_term = sum(fitting_util.noise_term_from_noise_map(noise_map=[si_blur.noise_map_]))
+        noise_term = sum(fitting_util.noise_term_from_mask_and_noise_map(noise_map=[si_blur.noise_map_]))
         assert fit.fit_normal.likelihood == -0.5 * (chi_squared_term + noise_term)
         assert fit.fit_sensitive.likelihood == -0.5 * (chi_squared_term + noise_term)
 
@@ -130,8 +130,8 @@ class TestSensitivityProfileFit:
                                                                           model_data=[model_datas_])
         assert (fit.fit_normal.residuals_[0] == residuals_[0]).all()
 
-        chi_squareds_normal_ = fitting_util.chi_squared_from_residuals_and_noise_map(residuals=residuals_,
-                                                                                     noise_map=[si_blur.noise_map_])
+        chi_squareds_normal_ = fitting_util.chi_squareds_from_residuals_and_noise_map(residuals=residuals_,
+                                                                                      noise_map=[si_blur.noise_map_])
         assert (fit.fit_normal.chi_squareds_[0] == chi_squareds_normal_).all()
 
 
@@ -149,15 +149,15 @@ class TestSensitivityProfileFit:
         residuals_ = fitting_util.residuals_from_data_mask_and_model_data(data=[si_blur], model_data=[model_datas_])
         assert (fit.fit_sensitive.residuals_[0] == residuals_[0]).all()
 
-        chi_squareds_sensitive = fitting_util.chi_squared_from_residuals_and_noise_map(residuals=residuals_,
-                                                                                       noise_map=[si_blur.noise_map_])
+        chi_squareds_sensitive = fitting_util.chi_squareds_from_residuals_and_noise_map(residuals=residuals_,
+                                                                                        noise_map=[si_blur.noise_map_])
         assert (fit.fit_sensitive.chi_squareds_[0] == chi_squareds_sensitive).all()
 
         chi_squared_term_normal = \
             sum(fitting_util.chi_squared_term_from_chi_squareds(chi_squareds=chi_squareds_normal_))
         chi_squared_term_sensitive = \
             sum(fitting_util.chi_squared_term_from_chi_squareds(chi_squareds=chi_squareds_sensitive))
-        noise_term = sum(fitting_util.noise_term_from_noise_map(noise_map=[si_blur.noise_map_]))
+        noise_term = sum(fitting_util.noise_term_from_mask_and_noise_map(noise_map=[si_blur.noise_map_]))
         assert fit.fit_normal.likelihood == -0.5 * (chi_squared_term_normal + noise_term)
         assert fit.fit_sensitive.likelihood == -0.5 * (chi_squared_term_sensitive + noise_term)
 
