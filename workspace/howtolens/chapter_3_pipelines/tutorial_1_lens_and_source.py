@@ -1,3 +1,4 @@
+from autofit import conf
 from autofit.core import non_linear as nl
 from autolens.data.imaging import image as im
 from autolens.data.array import mask
@@ -7,6 +8,7 @@ from autolens.pipeline import pipeline
 from autolens.model.profiles import light_profiles as lp
 from autolens.model.profiles import mass_profiles as mp
 
+import os
 
 # In chapter 2, we fitted a strong lens which included the contribution of light from the lens model_galaxy. We're going to
 # fit_normal this lens again (I promise, this is the last time!). However, now we're approaching lens modeling with runners,
