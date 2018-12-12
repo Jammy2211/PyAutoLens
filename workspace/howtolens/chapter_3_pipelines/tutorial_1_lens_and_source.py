@@ -7,6 +7,7 @@ from autolens.pipeline import pipeline
 from autolens.model.profiles import light_profiles as lp
 from autolens.model.profiles import mass_profiles as mp
 
+import os
 
 # In chapter 2, we fitted a strong lens which included the contribution of light from the lens model_galaxy. We're going to
 # fit_normal this lens again (I promise, this is the last time!). However, now we're approaching lens modeling with runners,
@@ -47,8 +48,8 @@ from autolens.model.profiles import mass_profiles as mp
 
 # To set these up without docker, you need to uncomment and run the command below. If you are using Docker, you don't
 # need to do anything so leave this uncommented!
-# path = '{}/../../'.format(os.path.dirname(os.path.realpath(__file__)))
-# conf.instance = conf.Config(config_path=path+'config', output_path=path+'output')
+path = '{}/../../'.format(os.path.dirname(os.path.realpath(__file__)))
+conf.instance = conf.Config(config_path=path+'config', output_path=path+'output')
 
 # We'll also put the output in 'workspace/output', which is where output goes for a normal analysis.
 

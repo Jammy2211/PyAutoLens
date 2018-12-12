@@ -9,11 +9,11 @@ from autolens.model.inversion.util import pixelization_util
 
 
 def setup_image_plane_pixelization_grid_from_galaxies_and_grids(galaxies, data_grids):
-    """An image-plane pixelization is one where its pixel centres are computed by tracing a sparse grid of pixels from \
+    """An data-plane pixelization is one where its pixel centres are computed by tracing a sparse grid of pixels from \
     the data's regular grid to other planes (e.g. the source-plane).
 
-    Provided a galaxy has an image-plane pixelization, this function returns a new *DataGrids* instance where the \
-    image-plane pixelization's sparse grid is added to it as an attibute.
+    Provided a galaxy has an data-plane pixelization, this function returns a new *DataGrids* instance where the \
+    data-plane pixelization's sparse grid is added to it as an attibute.
 
     Thus, when the *DataGrids* are are passed to the *ray_tracing* module this sparse grid is also traced and the \
     traced coordinates represent the centre of each pixelization pixel.
@@ -23,7 +23,7 @@ def setup_image_plane_pixelization_grid_from_galaxies_and_grids(galaxies, data_g
     galaxies : [model.galaxy.galaxy.Galaxy]
         A list of galaxies, which may contain pixelizations and an *ImagePlanePixelization*.
     grids : data.array.grids.DataGrids
-        The collection of grids (regular, sub, etc.) which the image-plane pixelization grid (referred to as pix) \
+        The collection of grids (regular, sub, etc.) which the data-plane pixelization grid (referred to as pix) \
         may be added to.
     """
     if not isinstance(data_grids.regular, grids.PaddedRegularGrid):
@@ -42,7 +42,7 @@ def setup_image_plane_pixelization_grid_from_galaxies_and_grids(galaxies, data_g
 class ImagePlanePixelization(object):
 
     def __init__(self, shape):
-        """An image-plane pixelization is one where its pixel centres are computed by tracing a sparse grid of pixels \
+        """An data-plane pixelization is one where its pixel centres are computed by tracing a sparse grid of pixels \
         from the data's regular grid to other planes (e.g. the source-plane).
 
         The traced coordinates of this sparse grid represent each centre of a pixelization pixel.
@@ -52,20 +52,20 @@ class ImagePlanePixelization(object):
         Parameters
         -----------
         shape : (float, float) or (int, int)
-            The shape of the image-plane pixelizaton grid in pixels (floats are converted to integers). The grid is \
+            The shape of the data-plane pixelizaton grid in pixels (floats are converted to integers). The grid is \
             laid over the masked data such that it spans the most outer pixels of the mask.
         """
         self.shape = (int(shape[0]), int(shape[1]))
 
     def image_plane_pix_grid_from_regular_grid(self, regular_grid):
-        """Calculate the image-plane pixelization from a regular-grid of coordinates and its masked.
+        """Calculate the data-plane pixelization from a regular-grid of coordinates and its masked.
 
         See *grids.SparseToRegularGrid* for details on how this grid is calculated.
 
         Parameters
         -----------
         regular_grid : grids.RegularGrid
-            The grid of (y,x) arc-second coordinates at the centre of every data value (e.g. image-pixels).
+            The grid of (y,x) arc-second coordinates at the centre of every data value (e.g. data-pixels).
         """
         image_pixel_scale = regular_grid.mask.pixel_scale
         pixel_scales = ((regular_grid.masked_shape_arcsec[0] + image_pixel_scale) / self.shape[0],
@@ -269,7 +269,7 @@ class Voronoi(Pixelization):
 class AdaptiveMagnification(Voronoi, ImagePlanePixelization):
 
     def __init__(self, shape=(3, 3)):
-        """A Voronoi pixelization, which traces an image-plane grid to determine the cluster-centers.
+        """A Voronoi pixelization, which traces an data-plane grid to determine the cluster-centers.
 
         Parameters
         ----------

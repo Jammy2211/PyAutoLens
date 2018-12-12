@@ -23,13 +23,13 @@ class DataGrids(object):
         Parameters
         -----------
         regular : RegularGrid
-            The grid of (y,x) arc-second coordinates at the centre of every data value (e.g. image-pixels).
+            The grid of (y,x) arc-second coordinates at the centre of every data value (e.g. data-pixels).
         sub : SubGrid
             The grid of (y,x) arc-second coordinates at the centre of every regular pixel's sub-pixels.
         blurring : RegularGrid | ndarray | None
             The grid of (y,x) arc-second coordinates at the centre of every blurring-mask pixel.
         pix : RegularGrid | ndarray | None
-            The grid of (y,x) arc-second coordinates of every image-plane pixelization grid used for adaptive source \
+            The grid of (y,x) arc-second coordinates of every data-plane pixelization grid used for adaptive source \
             -plane pixelizations.
         """
         self.regular = regular
@@ -478,7 +478,7 @@ class SparseToRegularGrid(scaled_array.RectangularArrayGeometry):
         regular_grid : RegularGrid
             The regular-grid the sparse grid is compared to.
         origin : (float, float)
-            The centre of the image-plane pix grid, which matches the centre of the mask (note that the origin of the \
+            The centre of the data-plane pix grid, which matches the centre of the mask (note that the origin of the \
             coordinate system stays at (0.0", 0.0").
         """
 

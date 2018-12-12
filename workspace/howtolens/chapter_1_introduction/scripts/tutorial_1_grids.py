@@ -2,13 +2,13 @@ from autolens.data.array import grids
 from autolens.data.array.plotters import grid_plotters
 
 # In this example, we'll create a grid of Cartesian (y,x) coordinates, representing the arc second coordinate grid of
-# an observed data-set (e.g. an image).
+# an observed data-set (e.g. an data).
 
 # In AutoLens, a grid is a set of two-dimensional (y,x) coordinates (in arc-seconds) that are deflected
 # and traced by a strong lensing system.
 
-# This coordinate grid is aligned with the image we analyze, thus each coordinate on the regular grid maps to the
-# centre of each image-pixel. Lets make a grid using 100 x 100 pixels, with a pixel scale (arcsecond-to-pixel
+# This coordinate grid is aligned with the data we analyze, thus each coordinate on the regular grid maps to the
+# centre of each data-pixel. Lets make a grid using 100 x 100 pixels, with a pixel scale (arcsecond-to-pixel
 # conversion factor) of 0.05", giving us a a 5" x 5" grid.
 data_grids = grids.DataGrids.from_shape_and_pixel_scale(shape=(10, 100), pixel_scale=0.05,
                                                          sub_grid_size=2)

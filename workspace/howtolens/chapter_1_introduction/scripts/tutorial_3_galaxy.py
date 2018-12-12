@@ -21,8 +21,8 @@ galaxy_with_light_profile = galaxy.Galaxy(light=sersic_light_profile)
 # We can print the model_galaxy to confirm its profile and their parameters
 print(galaxy_with_light_profile)
 
-# In the previous example, we passed grids to the light-profile module to compute its image.
-# We can pass grids to galaxies, in exactly the same way, to compute the model_galaxy's image.
+# In the previous example, we passed grids to the light-profile module to compute its data.
+# We can pass grids to galaxies, in exactly the same way, to compute the model_galaxy's data.
 galaxy_intensities = galaxy_with_light_profile.intensities_from_grid(grid=data_grids.regular)
 print('intensity of regular-pixel 1:')
 print(galaxy_intensities[0])
@@ -92,7 +92,7 @@ galaxy_with_many_profiles = galaxy.Galaxy(light_1=light_profile_1, light_2=light
                                           mass_1=mass_profile_1, mass_2=mass_profile_2,
                                           mass_3=mass_profile_3, mass_4=mass_profile_4)
 
-# Suffice to say, the model_galaxy's image, surface density, potential and deflections look pretty
+# Suffice to say, the model_galaxy's data, surface density, potential and deflections look pretty
 # interesting.
 
 galaxy_plotters.plot_intensities(galaxy=galaxy_with_many_profiles, grid=data_grids.regular)
@@ -104,6 +104,6 @@ galaxy_plotters.plot_deflections_x(galaxy=galaxy_with_many_profiles, grid=data_g
 # And we're done. Lets finished by just thinking about one question:
 
 # 1) We've learnt we can group profiles into galaxies, to essentially sum the contribution of each light profile to the
-#    model_galaxy image's intensity, or sum the contribution of each mass profile to the surface density, potential and
+#    model_galaxy data's intensity, or sum the contribution of each mass profile to the surface density, potential and
 #    deflection angles. In strong lensing, there are often multiple galaxies next to one another responsible for the
 #    lensing - how might we account for this?

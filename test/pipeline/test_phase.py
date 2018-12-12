@@ -95,7 +95,7 @@ def make_galaxy_model():
     return gm.GalaxyModel()
 
 
-@pytest.fixture(name="image")
+@pytest.fixture(name="data")
 def make_image():
     image = img.Image(np.array(np.zeros(shape)), pixel_scale=1.0, psf=img.PSF(np.ones((3, 3)), pixel_scale=1.0),
                       noise_map=img.NoiseMap(np.ones(shape), pixel_scale=1.0))

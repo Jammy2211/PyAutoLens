@@ -272,7 +272,7 @@ class HyperGalaxy(object):
         
         This is performed by first computing the hyper-galalxy's 'contribution-map', which determines the fraction of \ 
         flux in every pixel of the regular that can be associated with this particular hyper-galaxy. This is computed \
-        using  hyper-data set (e.g. fitting.fitting_data.FittingHyperData), which includes  best-fit images of the \ 
+        using  hyper-data set (e.g. fitting.fit_data.FitDataHyper), which includes  best-fit images of the \
         galaxy's light from a previous analysis phase. 
          
         The *HyperGalaxy* class contains the hyper-parameters which are associated with this galaxy for scaling the \

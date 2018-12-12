@@ -37,7 +37,7 @@ print(source_galaxy)
 tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
                                              image_plane_grids=[image_plane_grids])
 
-# The tracer is composed of an image-plane and source-plane, just like in the previous example!
+# The tracer is composed of an data-plane and source-plane, just like in the previous example!
 print('Image-pixel 1 regular-plane coordinate')
 print(tracer.image_plane.grids[0].regular[0])
 print('Image-pixel 2 regular-plane coordinate')

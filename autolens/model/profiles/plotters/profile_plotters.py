@@ -9,7 +9,7 @@ def plot_intensities(light_profile, grid, mask=None, positions=None, as_subplot=
                      title='Intensities', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
                      mask_pointsize=10, position_pointsize=10.0, grid_pointsize=1,
                      output_path=None, output_format='show', output_filename='intensities'):
-    """Plot the intensities (e.g. the image) of a light profile, on a regular grid of (y,x) coordinates.
+    """Plot the intensities (e.g. the data) of a light profile, on a regular grid of (y,x) coordinates.
 
     Set *autolens.data.array.plotters.array_plotters* for a description of all innput parameters not described below.
 

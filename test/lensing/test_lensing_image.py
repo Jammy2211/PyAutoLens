@@ -8,7 +8,7 @@ from autolens.lensing import lensing_image as li
 from autolens.model.inversion import convolution as inversion_convolution
 
 
-@pytest.fixture(name='image')
+@pytest.fixture(name='data')
 def make_image():
     psf = im.PSF(array=np.ones((3, 3)), pixel_scale=3.0, renormalize=False)
     return im.Image(np.ones((4, 4)), pixel_scale=3., psf=psf, noise_map=np.ones((4, 4)),
@@ -24,7 +24,7 @@ def make_mask():
 
 @pytest.fixture(name="lensing_image")
 def make_lensing_image(image, mask):
-    return li.LensingImage(image=image, mask=mask)
+    return li.LensingImage(data=image, mask=mask)
 
 
 class TestLensingImage(object):
@@ -116,7 +116,7 @@ class TestLensingImage(object):
 
 @pytest.fixture(name="lensing_hyper_image")
 def make_lensing_hyper_image(image, mask):
-    return li.LensingHyperImage(image=image, mask=mask, hyper_model_image=np.ones(4),
+    return li.LensingHyperImage(data=image, mask=mask, hyper_model_image=np.ones(4),
                                 hyper_galaxy_images=[np.ones(4), np.ones(4)], hyper_minimum_values=[0.1, 0.2])
 
 
