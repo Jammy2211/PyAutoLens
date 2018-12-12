@@ -2,7 +2,7 @@ import numpy as np
 import pytest
 
 from autolens.data.imaging import convolution
-from autolens.lensing.util import lensing_fitting_util
+from autolens.lensing.fitting import lensing_fitting_util
 from autolens.model.galaxy import galaxy as g
 from test.mock.mock_galaxy import MockHyperGalaxy
 
@@ -47,7 +47,7 @@ class TestBlurImages:
         blurring_image_ = np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
 
         blurred_image_ = lensing_fitting_util.blur_image_including_blurring_region(unblurred_image_1d=image_,
-                                                                                   blurring_image_1d=blurring_image_, convolver=convolver_no_blur)
+                                              blurring_image_1d=blurring_image_, convolver=convolver_no_blur)
 
         assert (blurred_image_ == np.array([1.0, 1.0, 1.0, 1.0])).all()
 
@@ -57,8 +57,8 @@ class TestBlurImages:
         blurring_image_ = np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
 
         blurred_image_ = lensing_fitting_util.blur_image_including_blurring_region(unblurred_image_1d=image_,
-                                                                                   blurring_image_1d=blurring_image_,
-                                                                                   convolver=convolver_blur)
+                                                                           blurring_image_1d=blurring_image_,
+                                                                           convolver=convolver_blur)
         assert (blurred_image_ == np.array([4.0, 4.0, 4.0, 4.0])).all()
 
 
@@ -163,7 +163,7 @@ class TestContributionsFromHypers:
     #     fitting_hyper_image = fit_data.FitDataHyper(data=image, mask=mask, hyper_model_image=hyper_model_image,
     #                                                 hyper_galaxy_images=hyper_galaxy_images, hyper_minimum_values=minimum_values)
     # 
-    #     contributions = lensing_fitting_util.contributions_from_fitting_hyper_images_and_hyper_galaxies(
+    #     contributions = lensing_lensing_fitting_util.contributions_from_fitting_hyper_images_and_hyper_galaxies(
     #         fitting_hyper_images=[fitting_hyper_image], hyper_galaxies=hyper_galaxies)
     # 
     #     assert (contributions[0][0] == np.array([[1.0, 1.0, 1.0]])).all()
@@ -184,7 +184,7 @@ class TestContributionsFromHypers:
     #     fitting_hyper_image_1 = fit_data.FitDataHyper(data=image, mask=mask, hyper_model_image=hyper_model_image,
     #                                                   hyper_galaxy_images=hyper_galaxy_images, hyper_minimum_values=minimum_values)
     # 
-    #     contributions = lensing_fitting_util.contributions_from_fitting_hyper_images_and_hyper_galaxies(
+    #     contributions = lensing_lensing_fitting_util.contributions_from_fitting_hyper_images_and_hyper_galaxies(
     #         fitting_hyper_images=[fitting_hyper_image_0, fitting_hyper_image_1], hyper_galaxies=hyper_galaxies)
     # 
     #     assert (contributions[0][0] == np.array([[1.0, 1.0, 1.0]])).all()
@@ -260,7 +260,7 @@ class TestScaledNoiseFromContributions:
     #     contributions = [np.array([1.0, 1.0, 0.5]), np.array([0.25, 0.25, 0.25])]
     #     hyper_galaxies = [g.HyperGalaxy(contribution_factor=1.0, noise_factor=1.0, noise_power=2.0),
     #                       g.HyperGalaxy(contribution_factor=1.0, noise_factor=2.0, noise_power=1.0)]
-    #     scaled_noises = lensing_fitting_util.scaled_noise_maps_from_fitting_hyper_images_contributions_and_hyper_galaxies(
+    #     scaled_noises = lensing_lensing_fitting_util.scaled_noise_maps_from_fitting_hyper_images_contributions_and_hyper_galaxies(
     #         fitting_hyper_images=[fitting_hyper_image], contributions_=[contributions], hyper_galaxies=hyper_galaxies)
     # 
     #     assert (scaled_noises[0] == np.array([2.5, 2.5, 1.75])).all()
@@ -276,7 +276,7 @@ class TestScaledNoiseFromContributions:
     #     contributions_1 = [np.array([1.0, 1.0, 0.5]), np.array([0.25, 0.25, 0.25])]
     #     hyper_galaxies = [g.HyperGalaxy(contribution_factor=1.0, noise_factor=1.0, noise_power=2.0),
     #                       g.HyperGalaxy(contribution_factor=1.0, noise_factor=2.0, noise_power=1.0)]
-    #     scaled_noises = lensing_fitting_util.scaled_noise_maps_from_fitting_hyper_images_contributions_and_hyper_galaxies(
+    #     scaled_noises = lensing_lensing_fitting_util.scaled_noise_maps_from_fitting_hyper_images_contributions_and_hyper_galaxies(
     #         fitting_hyper_images=[fitting_hyper_image_0, fitting_hyper_image_1],
     #         contributions_=[contributions_0, contributions_1], hyper_galaxies=hyper_galaxies)
     # 
@@ -299,7 +299,7 @@ class TestScaledNoiseFromContributions:
 #
 #         fitting_image = fit_data.FitData(image, mask, sub_grid_size=1)
 #
-#         padded_model_image = lensing_lensing_fitting_util.unmasked_blurred_images_from_fitting_images(fitting_images=[fitting_image],
+#         padded_model_image = lensing_lensing_lensing_fitting_util.unmasked_blurred_images_from_fitting_images(fitting_images=[fitting_image],
 #                                                                                  unmasked_images_=[np.ones(25)])
 #
 #         assert (padded_model_image[0] == np.ones((3,3))).all()
@@ -317,7 +317,7 @@ class TestScaledNoiseFromContributions:
 #
 #         fitting_image = fit_data.FitData(image, mask, sub_grid_size=1)
 #
-#         padded_model_image = lensing_lensing_fitting_util.unmasked_blurred_images_from_fitting_images(fitting_images=[fitting_image],
+#         padded_model_image = lensing_lensing_lensing_fitting_util.unmasked_blurred_images_from_fitting_images(fitting_images=[fitting_image],
 #                                                                                  unmasked_images_=[np.ones(25)])
 #
 #         assert (padded_model_image == 3.0*np.ones((3, 3))).all()
@@ -338,7 +338,7 @@ class TestScaledNoiseFromContributions:
 #         _unmasked_image = np.zeros(25)
 #         _unmasked_image[12] = 1.0
 #
-#         padded_model_image = lensing_lensing_fitting_util.unmasked_blurred_images_from_fitting_images(fitting_images=[fitting_image],
+#         padded_model_image = lensing_lensing_lensing_fitting_util.unmasked_blurred_images_from_fitting_images(fitting_images=[fitting_image],
 #                                                                                  unmasked_images_=[_unmasked_image])
 #
 #         assert (padded_model_image == np.array([[0.0, 3.0, 0.0],
@@ -559,7 +559,7 @@ class TestScaledNoiseFromContributions:
 #
 #         tracer = ray_tracing.TracerImagePlane(lens_galaxies=[galaxy_light], image_plane_grids=[li.grids])
 #
-#         fit = lensing_fitting.LensingProfileFit(lensing_images=[li], tracer=tracer, padded_tracer=padded_tracer)
+#         fit = lensing_fitting.LensingProfileFitter(lensing_images=[li], tracer=tracer, padded_tracer=padded_tracer)
 #
 #         assert (manual_model_image_0[1:4, 1:4] == fit.unmasked_model_profile_images[0]).all()
 #         assert (padded_model_images[0][0] == fit.unmasked_model_profile_images_of_galaxies[0][0][0]).all()
@@ -578,7 +578,7 @@ class TestScaledNoiseFromContributions:
 #
 #         tracer = ray_tracing.TracerImagePlane(lens_galaxies=[galaxy_light], image_plane_grids=[li.grids])
 #
-#         fit = lensing_fitting.LensingProfileFit(lensing_images=[li], tracer=tracer, padded_tracer=None)
+#         fit = lensing_fitting.LensingProfileFitter(lensing_images=[li], tracer=tracer, padded_tracer=None)
 #
 #         assert fit.unmasked_model_profile_images == None
 #         assert fit.unmasked_model_profile_images_of_galaxies == None

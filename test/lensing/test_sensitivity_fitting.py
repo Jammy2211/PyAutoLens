@@ -4,8 +4,7 @@ import pytest
 from autolens.data.imaging import image
 from autolens.data.array import mask as mask
 from autolens.model.galaxy import galaxy as g
-from autolens.data.fitting import fitter
-from autolens.data.fitting.util import fitting_util
+from autolens.data.fitting import fitting_util
 from autolens.lensing import lensing_image
 from autolens.lensing import sensitivity_fitting
 from autolens.lensing import ray_tracing

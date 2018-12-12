@@ -5,7 +5,7 @@ from autolens.model.profiles import mass_profiles as mp
 from autolens.model.galaxy import galaxy as g
 from autolens.lensing import ray_tracing
 from autolens.lensing import lensing_image as li
-from autolens.lensing import lensing_fitting
+from autolens.lensing.fitting import lensing_fitters
 from autolens.model.inversion import pixelizations as pix, regularization as reg
 from autolens.data.imaging.plotters import imaging_plotters
 from autolens.lensing.plotters import ray_tracing_plotters
@@ -74,7 +74,7 @@ def perform_fit_with_source_galaxy_mask_and_border(source_galaxy, mask, use_bord
 
     tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
                                                  image_plane_grids=[lensing_image.grids], border=border)
-    return lensing_fitting.fit_lensing_image_with_tracer(lensing_image=lensing_image, tracer=tracer)
+    return lensing_fitters.fit_lensing_image_with_tracer(lensing_image=lensing_image, tracer=tracer)
 
 # Okay, so lets first look at our mapper without using a border, and using our annular mask.
 source_galaxy = g.Galaxy(pixelization=pix.Rectangular(shape=(40, 40)), regularization=reg.Constant(coefficients=(1.0,)))
@@ -195,7 +195,7 @@ def perform_fit_x2_lenses_with_source_galaxy_mask_and_border(source_galaxy, mask
     tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy_0, lens_galaxy_1],
                                                  source_galaxies=[source_galaxy],
                                                  image_plane_grids=[lensing_image.grids], border=border)
-    return lensing_fitting.fit_lensing_image_with_tracer(lensing_image=lensing_image, tracer=tracer)
+    return lensing_fitters.fit_lensing_image_with_tracer(lensing_image=lensing_image, tracer=tracer)
 
 # Now, lets fit this regular using the input model and perform the source reconstruction without a border. As you can see,
 # we get many demagnified regular pixels which trace well beyond our source-plane border if we don't relocate them!

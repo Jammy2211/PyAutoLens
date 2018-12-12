@@ -1,96 +1,12 @@
 import numpy as np
 
 from autolens import exc
-from autolens.lensing.util import lensing_fitting_util
-from autolens.model.inversion import inversions
+from autolens.lensing.fitting import lensing_fitting_util
 from autolens.data.fitting import fitter
-from autolens.data.fitting.util import fitting_util
 from autolens.lensing import lensing_image as li
 from autolens.lensing import ray_tracing
 
 minimum_value_profile = 0.1
-
-def fit_multiple_lensing_images_with_tracer(lensing_images, tracer, padded_tracer=None):
-    """Fit a list of lensing images with a model tracer, automatically determining the type of fit based on the \
-    properties of the galaxies in the tracer.
-
-    Parameters
-    -----------
-    lensing_image : [li.LensingImage] or [li.LensingHyperImage]
-        List of the lensing-images that are to be fitted.
-    tracer : ray_tracing.AbstractTracer
-        The tracer, which describes the ray-tracing of the strong lensing configuration.
-    padded_tracer : ray_tracing.AbstractTracer
-        A tracer with an identical strong lensing configuration to the tracer above, but using the lensing regular's \
-        padded grids such that unmasked model-images can be computed.
-    """
-
-    if tracer.has_light_profile and not tracer.has_pixelization:
-
-        if not tracer.has_hyper_galaxy:
-            return LensingProfileFit(lensing_images=lensing_images, tracer=tracer, padded_tracer=padded_tracer)
-        elif tracer.has_hyper_galaxy:
-            return HyperLensingProfileFit(lensing_hyper_images=lensing_images, tracer=tracer, padded_tracer=padded_tracer)
-
-    elif not tracer.has_light_profile and tracer.has_pixelization:
-
-        if not tracer.has_hyper_galaxy:
-            return LensingInversionFit(lensing_images=lensing_images, tracer=tracer)
-        elif tracer.has_hyper_galaxy:
-            return HyperLensingInversionFit(lensing_hyper_images=lensing_images, tracer=tracer)
-
-    elif tracer.has_light_profile and tracer.has_pixelization:
-
-        if not tracer.has_hyper_galaxy:
-            return LensingProfileInversionFit(lensing_images=lensing_images, tracer=tracer, padded_tracer=padded_tracer)
-        elif tracer.has_hyper_galaxy:
-            return HyperLensingProfileInversionFit(lensing_hyper_images=lensing_images, tracer=tracer,
-                                                   padded_tracer=padded_tracer)
-
-    else:
-
-        raise exc.FittingException('The fit_normal routine did not call a Fit class - check the '
-                                   'properties of the tracer_normal')
-
-
-def fast_likelihood_from_multiple_lensing_images_and_tracer(lensing_images, tracer):
-    """Fit a list of lensing images with a model tracer, automatically determining the type of fit based on the \
-    properties of the galaxies in the tracer.
-
-    The likelihood is computed in the fastest, least memory-intensive, way possible, for efficient non-linear sampling.
-
-    Parameters
-    -----------
-    lensing_image : [li.LensingImage] or [li.LensingHyperImage]
-        List of the lensing-images that are to be fitted.
-    tracer : ray_tracing.AbstractTracer
-        The tracer, which describes the ray-tracing of the strong lensing configuration.
-    """
-    if tracer.has_light_profile and not tracer.has_pixelization:
-
-        if not tracer.has_hyper_galaxy:
-            return LensingProfileFit.fast_likelihood(lensing_images=lensing_images, tracer=tracer)
-        elif tracer.has_hyper_galaxy:
-            return HyperLensingProfileFit.fast_scaled_likelihood(lensing_hyper_images=lensing_images, tracer=tracer)
-
-    elif not tracer.has_light_profile and tracer.has_pixelization:
-
-        if not tracer.has_hyper_galaxy:
-            return LensingInversionFit.fast_evidence(lensing_images=lensing_images, tracer=tracer)
-        elif tracer.has_hyper_galaxy:
-            return HyperLensingInversionFit.fast_scaled_evidence(lensing_hyper_images=lensing_images, tracer=tracer)
-
-    elif tracer.has_light_profile and tracer.has_pixelization:
-
-        if not tracer.has_hyper_galaxy:
-            return LensingProfileInversionFit.fast_evidence(lensing_images=lensing_images, tracer=tracer)
-        elif tracer.has_hyper_galaxy:
-            return HyperLensingProfileInversionFit.fast_scaled_evidence(lensing_hyper_images=lensing_images, tracer=tracer)
-
-    else:
-
-        raise exc.FittingException('The fast likelihood routine did not call a likelihood functions - check the '
-                                   'properties of the tracer_normal')
 
 
 def fit_lensing_image_with_tracer(lensing_image, tracer, padded_tracer=None):
@@ -111,7 +27,7 @@ def fit_lensing_image_with_tracer(lensing_image, tracer, padded_tracer=None):
     if tracer.has_light_profile and not tracer.has_pixelization:
 
         if not tracer.has_hyper_galaxy:
-            return LensingProfileFit(lensing_images=[lensing_image], tracer=tracer, padded_tracer=padded_tracer)
+            return LensingProfileFitter(lensing_image=[lensing_image], tracer=tracer, padded_tracer=padded_tracer)
         elif tracer.has_hyper_galaxy:
             return HyperLensingProfileFit(lensing_hyper_images=[lensing_image], tracer=tracer, padded_tracer=padded_tracer)
 
@@ -135,7 +51,6 @@ def fit_lensing_image_with_tracer(lensing_image, tracer, padded_tracer=None):
         raise exc.FittingException('The fit_normal routine did not call a Fit class - check the '
                                    'properties of the tracer_normal')
 
-
 def fast_likelihood_from_lensing_image_and_tracer(lensing_image, tracer):
     """Fit a lensing regular with a model tracer, automatically determining the type of fit based on the properties of \
      the galaxies in the tracer.
@@ -155,7 +70,7 @@ def fast_likelihood_from_lensing_image_and_tracer(lensing_image, tracer):
     if tracer.has_light_profile and not tracer.has_pixelization:
 
         if not tracer.has_hyper_galaxy:
-            return LensingProfileFit.fast_likelihood(lensing_images=[lensing_image], tracer=tracer)
+            return LensingProfileFitter.fast_likelihood(lensing_images=[lensing_image], tracer=tracer)
         elif tracer.has_hyper_galaxy:
             return HyperLensingProfileFit.fast_scaled_likelihood(lensing_hyper_images=[lensing_image], tracer=tracer)
 
@@ -223,124 +138,90 @@ class LensingConvolutionFitter(fitter.DataFitter):
         return self.model_data
 
 
-class LensingConvolutionFitterMulti(fitter.DataFitterMulti):
+class LensingProfileFitter(LensingConvolutionFitter, AbstractLensingFitter):
 
-    def __init__(self, lensing_images, unblurred_images_1d, blurring_images_1d):
-        """Abstract base class for a fit to an regular using a light-profile.
-
-        This includes the blurring of the light-profile model regular with the instrumental PSF.
+    def __init__(self, lensing_image, tracer, padded_tracer=None):
+        """
+        Class to evaluate the fit_normal between a model described by a tracer_normal and an actual lensing_image.
 
         Parameters
-        -----------
-        lensing_image : lensing_image.LensingImage
-            The lensing image that is being fitted.
-        unblurred_image_1d : [ndarray]
-            The masked 1D representation of the unblurred light profile image before PSF blurring.
-        blurring_image_1d : [ndarray]
-            The 1D representation of the light profile image's blurring region, which corresponds to all pixels \
-            which are not inside the mask but close enough that their light will be blurred into it via PSF convolution.
+        ----------
+        lensing_image : li.LensingImage
+            List of the lensing-images that are to be fitted.
+        tracer : ray_tracing.AbstractTracer
+            The tracer, which describes the ray-tracing of the strong lensing configuration.
+        padded_tracer : ray_tracing.AbstractTracer
+            A tracer with an identical strong lensing configuration to the tracer above, but using the lensing regular's \
+            padded grids such that unmasked model-images can be computed.
         """
+        AbstractLensingFitter.__init__(self=self, tracer=tracer, padded_tracer=padded_tracer)
+        super(LensingProfileFitter, self).__init__(lensing_image=lensing_image,
+                                                   unblurred_image_1d=tracer.image_plane_images_,
+                                                   blurring_image_1d=tracer.image_plane_blurring_images_)
 
-        model_images_1d = list(map(lambda lensing_image, unblurred_image_1d, blurring_image_1d :
-        lensing_fitting_util.blur_image_including_blurring_region(unblurred_image_1d=unblurred_image_1d,
-            blurring_image_1d=blurring_image_1d, convolver=lensing_image.convolver_image),
-                                   lensing_images, unblurred_images_1d, blurring_images_1d))
-
-        model_images = list(map(lambda lensing_image, model_image_1d :
-                                lensing_image.map_to_scaled_array(array_1d=model_image_1d),
-                                lensing_images, model_images_1d))
-
-        super(LensingConvolutionFitterMulti, self).__init__(fit_data=lensing_images, model_data=model_images)
+    @classmethod
+    def fast_likelihood(cls, lensing_images, tracer):
+        """Perform the fit of this class as described above, but storing no results as class instances, thereby \
+        minimizing memory use and maximizing run-speed."""
+        convolvers = list(map(lambda lensing_image : lensing_image.convolver_image, lensing_images))
+        noise_maps_ = list(map(lambda lensing_image : lensing_image.noise_map_, lensing_images))
+        model_images_ = lensing_fitting_util.blur_image_including_blurring_region(image_=tracer.image_plane_images_,
+                                                                                  blurring_image_=tracer.image_plane_blurring_images_, convolver=convolvers)
+        residuals_ = lensing_fitting_util.residuals_from_data_mask_and_model_data(data=lensing_images, model_data=model_images_),
+        chi_squareds_ = lensing_fitting_util.chi_squareds_from_residuals_and_noise_map(residuals=residuals_, noise_map=noise_maps_),
+        chi_squared_terms = lensing_fitting_util.chi_squared_term_from_chi_squareds(chi_squareds=chi_squareds_)
+        noise_terms = lensing_fitting_util.noise_term_from_mask_and_noise_map(noise_map=noise_maps_)
+        return sum(lensing_fitting_util.likelihood_from_chi_squared_term_and_noise_term(chi_squared_term=chi_squared_terms,
+                                                                                        noise_term=noise_terms))
 
     @property
-    def model_images(self):
-        return self.model_data
+    def model_images_of_planes(self):
+
+        image_plane_images_of_planes_ = self.tracer.image_plane_images_of_planes_
+        image_plane_blurring_images_of_planes_ = self.tracer.image_plane_blurring_images_of_planes_
+
+        model_images_of_planes = [[] for _ in range(self.tracer.total_images)]
+
+        for image_index in range(self.tracer.total_images):
+            convolver = self.convolvers_image[image_index]
+            map_to_scaled_array = self.map_to_scaled_arrays[image_index]
+            for plane_index in range(self.tracer.total_planes):
+                _image = image_plane_images_of_planes_[image_index][plane_index]
+                if np.count_nonzero(_image): # If all entries are zero, there was no light profile
+                    _blurring_image = image_plane_blurring_images_of_planes_[image_index][plane_index]
+                    _blurred_image = (convolver.convolve_image(image_array=_image, blurring_array=_blurring_image))
+                    _blurred_image = map_to_scaled_array(_blurred_image)
+                    model_images_of_planes[image_index].append(_blurred_image)
+                else:
+                    model_images_of_planes[image_index].append(None)
+
+        return model_images_of_planes
+
+    @property
+    def unmasked_model_profile_images(self):
+        if self.padded_tracer is None:
+            return None
+        elif self.padded_tracer is not None:
+            return lensing_fitting_util.unmasked_blurred_images_from_fitting_images(fitting_images=self.datas_,
+                                                                                    unmasked_images_=self.padded_tracer.image_plane_images_)
+
+    @property
+    def unmasked_model_profile_images_of_galaxies(self):
+        if self.padded_tracer is None:
+            return None
+        elif self.padded_tracer is not None:
+            return unmasked_model_images_of_galaxies_from_lensing_images_and_tracer(lensing_images=self.datas_,
+                                                                                    tracer=self.padded_tracer)
+
+    @property
+    def unmasked_model_profile_image(self):
+        if self.padded_tracer is None:
+            return None
+        elif self.padded_tracer is not None:
+            return self.unmasked_model_profile_images[0]
 
 
-# class LensingProfileFit(LensingConvolutionFitter, AbstractLensingFitter):
-#
-#     def __init__(self, lensing_images, tracer, padded_tracer=None):
-#         """
-#         Class to evaluate the fit_normal between a model described by a tracer_normal and an actual lensing_image.
-#
-#         Parameters
-#         ----------
-#         lensing_images : [li.LensingImage]
-#             List of the lensing-images that are to be fitted.
-#         tracer : ray_tracing.AbstractTracer
-#             The tracer, which describes the ray-tracing of the strong lensing configuration.
-#         padded_tracer : ray_tracing.AbstractTracer
-#             A tracer with an identical strong lensing configuration to the tracer above, but using the lensing regular's \
-#             padded grids such that unmasked model-images can be computed.
-#         """
-#         AbstractLensingFitter.__init__(self=self, lensing_images=lensing_images, tracer=tracer,
-#                                     padded_tracer=padded_tracer)
-#         super(LensingProfileFit, self).__init__(fitting_images=lensing_images, images_=tracer.image_plane_images_,
-#                                                 blurring_images_=tracer.image_plane_blurring_images_)
-#
-#     @classmethod
-#     def fast_likelihood(cls, lensing_images, tracer):
-#         """Perform the fit of this class as described above, but storing no results as class instances, thereby \
-#         minimizing memory use and maximizing run-speed."""
-#         convolvers = list(map(lambda lensing_image : lensing_image.convolver_image, lensing_images))
-#         noise_maps_ = list(map(lambda lensing_image : lensing_image.noise_map_, lensing_images))
-#         model_images_ = fitting_util.blur_image_including_blurring_region(image_=tracer.image_plane_images_,
-#                                                                           blurring_image_=tracer.image_plane_blurring_images_, convolver=convolvers)
-#         residuals_ = fitting_util.residuals_from_data_mask_and_model_data(data=lensing_images, model_data=model_images_),
-#         chi_squareds_ = fitting_util.chi_squareds_from_residuals_and_noise_map(residuals=residuals_, noise_map=noise_maps_),
-#         chi_squared_terms = fitting_util.chi_squared_term_from_chi_squareds(chi_squareds=chi_squareds_)
-#         noise_terms = fitting_util.noise_term_from_mask_and_noise_map(noise_map=noise_maps_)
-#         return sum(fitting_util.likelihood_from_chi_squared_term_and_noise_term(chi_squared_term=chi_squared_terms,
-#                                                                                 noise_term=noise_terms))
-#
-#     @property
-#     def model_images_of_planes(self):
-#
-#         image_plane_images_of_planes_ = self.tracer.image_plane_images_of_planes_
-#         image_plane_blurring_images_of_planes_ = self.tracer.image_plane_blurring_images_of_planes_
-#
-#         model_images_of_planes = [[] for _ in range(self.tracer.total_images)]
-#
-#         for image_index in range(self.tracer.total_images):
-#             convolver = self.convolvers_image[image_index]
-#             map_to_scaled_array = self.map_to_scaled_arrays[image_index]
-#             for plane_index in range(self.tracer.total_planes):
-#                 _image = image_plane_images_of_planes_[image_index][plane_index]
-#                 if np.count_nonzero(_image): # If all entries are zero, there was no light profile
-#                     _blurring_image = image_plane_blurring_images_of_planes_[image_index][plane_index]
-#                     _blurred_image = (convolver.convolve_image(image_array=_image, blurring_array=_blurring_image))
-#                     _blurred_image = map_to_scaled_array(_blurred_image)
-#                     model_images_of_planes[image_index].append(_blurred_image)
-#                 else:
-#                     model_images_of_planes[image_index].append(None)
-#
-#         return model_images_of_planes
-#
-#     @property
-#     def unmasked_model_profile_images(self):
-#         if self.padded_tracer is None:
-#             return None
-#         elif self.padded_tracer is not None:
-#             return fitting_util.unmasked_blurred_images_from_fitting_images(fitting_images=self.datas_,
-#                                                                        unmasked_images_=self.padded_tracer.image_plane_images_)
-#
-#     @property
-#     def unmasked_model_profile_images_of_galaxies(self):
-#         if self.padded_tracer is None:
-#             return None
-#         elif self.padded_tracer is not None:
-#             return unmasked_model_images_of_galaxies_from_lensing_images_and_tracer(lensing_images=self.datas_,
-#                                                                                     tracer=self.padded_tracer)
-#
-#     @property
-#     def unmasked_model_profile_image(self):
-#         if self.padded_tracer is None:
-#             return None
-#         elif self.padded_tracer is not None:
-#             return self.unmasked_model_profile_images[0]
-#
-#
-# class HyperLensingProfileFit(LensingProfileFit, fitter.AbstractHyperFit):
+# class HyperLensingProfileFit(LensingProfileFitter, fitter.AbstractHyperFit):
 #
 #     def __init__(self, lensing_hyper_images, tracer, padded_tracer=None):
 #         """
