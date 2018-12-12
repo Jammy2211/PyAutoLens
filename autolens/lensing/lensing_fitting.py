@@ -180,12 +180,9 @@ def fast_likelihood_from_lensing_image_and_tracer(lensing_image, tracer):
                                    'properties of the tracer_normal')
 
 
-class AbstractLensingFit(object):
+class AbstractLensingFitter(object):
 
-    def __init__(self, lensing_images, tracer, padded_tracer=None):
-
-        self.map_to_scaled_arrays = list(map(lambda lensing_image : lensing_image.grids.regular.scaled_array_from_array_1d,
-                                             lensing_images))
+    def __init__(self, tracer, padded_tracer=None):
 
         self.tracer = tracer
         self.padded_tracer = padded_tracer
@@ -195,7 +192,7 @@ class AbstractLensingFit(object):
         return len(self.tracer.mappers_of_planes)
 
 
-class AbstractConvolutionFit(fitter.DataFitter):
+class LensingConvolutionFitter(fitter.DataFitter):
 
     def __init__(self, lensing_image, unblurred_image_1d, blurring_image_1d):
         """Abstract base class for a fit to an regular using a light-profile.
@@ -219,14 +216,48 @@ class AbstractConvolutionFit(fitter.DataFitter):
 
         model_image = lensing_image.map_to_scaled_array(array_1d=model_image_1d)
 
-        super(AbstractConvolutionFit, self).__init__(fit_data=lensing_image, model_data=model_image)
+        super(LensingConvolutionFitter, self).__init__(fit_data=lensing_image, model_data=model_image)
 
     @property
     def model_image(self):
         return self.model_data
 
 
-# class LensingProfileFit(AbstractConvolutionFit, AbstractLensingFit):
+class LensingConvolutionFitterMulti(fitter.DataFitterMulti):
+
+    def __init__(self, lensing_images, unblurred_images_1d, blurring_images_1d):
+        """Abstract base class for a fit to an regular using a light-profile.
+
+        This includes the blurring of the light-profile model regular with the instrumental PSF.
+
+        Parameters
+        -----------
+        lensing_image : lensing_image.LensingImage
+            The lensing image that is being fitted.
+        unblurred_image_1d : [ndarray]
+            The masked 1D representation of the unblurred light profile image before PSF blurring.
+        blurring_image_1d : [ndarray]
+            The 1D representation of the light profile image's blurring region, which corresponds to all pixels \
+            which are not inside the mask but close enough that their light will be blurred into it via PSF convolution.
+        """
+
+        model_images_1d = list(map(lambda lensing_image, unblurred_image_1d, blurring_image_1d :
+        lensing_fitting_util.blur_image_including_blurring_region(unblurred_image_1d=unblurred_image_1d,
+            blurring_image_1d=blurring_image_1d, convolver=lensing_image.convolver_image),
+                                   lensing_images, unblurred_images_1d, blurring_images_1d))
+
+        model_images = list(map(lambda lensing_image, model_image_1d :
+                                lensing_image.map_to_scaled_array(array_1d=model_image_1d),
+                                lensing_images, model_images_1d))
+
+        super(LensingConvolutionFitterMulti, self).__init__(fit_data=lensing_images, model_data=model_images)
+
+    @property
+    def model_images(self):
+        return self.model_data
+
+
+# class LensingProfileFit(LensingConvolutionFitter, AbstractLensingFitter):
 #
 #     def __init__(self, lensing_images, tracer, padded_tracer=None):
 #         """
@@ -242,7 +273,7 @@ class AbstractConvolutionFit(fitter.DataFitter):
 #             A tracer with an identical strong lensing configuration to the tracer above, but using the lensing regular's \
 #             padded grids such that unmasked model-images can be computed.
 #         """
-#         AbstractLensingFit.__init__(self=self, lensing_images=lensing_images, tracer=tracer,
+#         AbstractLensingFitter.__init__(self=self, lensing_images=lensing_images, tracer=tracer,
 #                                     padded_tracer=padded_tracer)
 #         super(LensingProfileFit, self).__init__(fitting_images=lensing_images, images_=tracer.image_plane_images_,
 #                                                 blurring_images_=tracer.image_plane_blurring_images_)
@@ -326,7 +357,7 @@ class AbstractConvolutionFit(fitter.DataFitter):
 #             padded grids such that unmasked model-images can be computed.
 #         """
 #
-#         AbstractLensingFit.__init__(self=self, lensing_images=lensing_hyper_images, tracer=tracer,
+#         AbstractLensingFitter.__init__(self=self, lensing_images=lensing_hyper_images, tracer=tracer,
 #                                     padded_tracer=padded_tracer)
 #         fitter.AbstractHyperFit.__init__(self=self, fitting_hyper_images=lensing_hyper_images,
 #                                          hyper_galaxies=tracer.hyper_galaxies)
@@ -368,7 +399,7 @@ class AbstractConvolutionFit(fitter.DataFitter):
 #         return sum(self.scaled_likelihoods)
 #
 #
-# class LensingInversionFit(fitter.AbstractInversionFit, AbstractLensingFit):
+# class LensingInversionFit(fitter.AbstractInversionFit, AbstractLensingFitter):
 #
 #     def __init__(self, lensing_images, tracer):
 #         """
@@ -382,7 +413,7 @@ class AbstractConvolutionFit(fitter.DataFitter):
 #             The tracer, which describes the ray-tracing of the strong lensing configuration.
 #         """
 #
-#         AbstractLensingFit.__init__(self=self, lensing_images=lensing_images, tracer=tracer)
+#         AbstractLensingFitter.__init__(self=self, lensing_images=lensing_images, tracer=tracer)
 #
 #         self.mapper = tracer.mappers_of_planes[0]
 #         self.regularization = tracer.regularizations_of_planes[0]
@@ -463,7 +494,7 @@ class AbstractConvolutionFit(fitter.DataFitter):
 #             The tracer, which describes the ray-tracing of the strong lensing configuration.
 #         """
 #
-#         AbstractLensingFit.__init__(self=self, lensing_images=lensing_hyper_images, tracer=tracer)
+#         AbstractLensingFitter.__init__(self=self, lensing_images=lensing_hyper_images, tracer=tracer)
 #         fitter.AbstractHyperFit.__init__(self=self, fitting_hyper_images=lensing_hyper_images,
 #                                          hyper_galaxies=tracer.hyper_galaxies)
 #         super(HyperLensingInversionFit, self).__init__(lensing_hyper_images, tracer)
@@ -509,7 +540,7 @@ class AbstractConvolutionFit(fitter.DataFitter):
 #                                                                    scaled_noise_terms))
 #
 #
-# class LensingProfileInversionFit(fitter.AbstractConvolutionInversionFit, AbstractLensingFit):
+# class LensingProfileInversionFit(fitter.AbstractConvolutionInversionFit, AbstractLensingFitter):
 #
 #     def __init__(self, lensing_images, tracer, padded_tracer=None):
 #         """
@@ -529,7 +560,7 @@ class AbstractConvolutionFit(fitter.DataFitter):
 #         self.mapper = tracer.mappers_of_planes[0]
 #         self.regularization = tracer.regularizations_of_planes[0]
 #
-#         AbstractLensingFit.__init__(self=self, lensing_images=lensing_images, tracer=tracer,
+#         AbstractLensingFitter.__init__(self=self, lensing_images=lensing_images, tracer=tracer,
 #                                     padded_tracer=padded_tracer)
 #         super(LensingProfileInversionFit, self).__init__(fitting_images=lensing_images, images_=tracer.image_plane_images_,
 #                                                          blurring_images_=tracer.image_plane_blurring_images_,
@@ -587,7 +618,7 @@ class AbstractConvolutionFit(fitter.DataFitter):
 #             padded grids such that unmasked model-images can be computed.
 #         """
 #
-#         AbstractLensingFit.__init__(self=self, lensing_images=lensing_hyper_images, tracer=tracer,
+#         AbstractLensingFitter.__init__(self=self, lensing_images=lensing_hyper_images, tracer=tracer,
 #                                     padded_tracer=padded_tracer)
 #         fitter.AbstractHyperFit.__init__(self=self, fitting_hyper_images=lensing_hyper_images,
 #                                          hyper_galaxies=tracer.hyper_galaxies)
