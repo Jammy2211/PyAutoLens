@@ -32,15 +32,16 @@ def make_galaxy_light(sersic):
     return g.Galaxy(light_profile=sersic)
 
 
-@pytest.fixture(name='li_no_blur')
-def make_li_no_blur():
+@pytest.fixture(name='li_blur')
+def make_li_blur():
+
     im = np.array([[0.0, 0.0, 0.0, 0.0],
                    [0.0, 1.0, 1.0, 0.0],
                    [0.0, 1.0, 1.0, 0.0],
                    [0.0, 0.0, 0.0, 0.0]])
-    psf = image.PSF(array=(np.array([[0.0, 0.0, 0.0],
-                                     [0.0, 1.0, 0.0],
-                                     [0.0, 0.0, 0.0]])), pixel_scale=1.0, renormalize=False)
+    psf = image.PSF(array=(np.array([[1.0, 1.0, 1.0],
+                                     [1.0, 1.0, 1.0],
+                                     [1.0, 1.0, 1.0]])), pixel_scale=1.0, renormalize=False)
     im = image.Image(im, pixel_scale=1.0, psf=psf, noise_map=np.ones((4, 4)))
 
     ma = np.array([[True, True, True, True],
@@ -52,15 +53,15 @@ def make_li_no_blur():
     return lensing_image.LensingImage(im, ma, sub_grid_size=2)
 
 
-@pytest.fixture(name='li_blur')
-def make_li_blur():
+@pytest.fixture(name='li_no_blur')
+def make_li_no_blur():
     im = np.array([[0.0, 0.0, 0.0, 0.0],
                    [0.0, 1.0, 1.0, 0.0],
                    [0.0, 1.0, 1.0, 0.0],
                    [0.0, 0.0, 0.0, 0.0]])
-    psf = image.PSF(array=(np.array([[1.0, 1.0, 1.0],
-                                     [1.0, 1.0, 1.0],
-                                     [1.0, 1.0, 1.0]])), pixel_scale=1.0, renormalize=False)
+    psf = image.PSF(array=(np.array([[0.0, 0.0, 0.0],
+                                     [0.0, 1.0, 0.0],
+                                     [0.0, 0.0, 0.0]])), pixel_scale=1.0, renormalize=False)
     im = image.Image(im, pixel_scale=1.0, psf=psf, noise_map=np.ones((4, 4)))
 
     ma = np.array([[True, True, True, True],
@@ -221,242 +222,18 @@ def make_li_hyper_manual_1(hyper):
                                            hyper_minimum_values=hyper.hyper_minimum_values, sub_grid_size=2)
 
 
-class TestUnmaskedModelImages:
+class TestAbstractConvolutionFit:
 
-    def test___of_galaxies__x1_galaxy__3x3_padded_image__no_psf_blurring(self, galaxy_light):
+    def test__2x2_unblurred_image_all_1s__3x3_psf_no_blurring__image_blurs_to_itself(self, li_blur):
 
-        psf = image.PSF(array=(np.array([[0.0, 0.0, 0.0],
-                                         [0.0, 1.0, 0.0],
-                                         [0.0, 0.0, 0.0]])), pixel_scale=1.0)
-        im = image.Image(array=np.ones((3, 3)), pixel_scale=1.0, psf=psf, noise_map=np.ones((3, 3)))
+        fit = lensing_fitting.AbstractConvolutionFit(lensing_image=li_blur,
+              unblurred_image_1d=np.array([1.0, 1.0, 1.0, 1.0]),
+              blurring_image_1d=np.array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]))
 
-        ma = mask.Mask(array=np.array([[True, True, True],
-                                       [True, False, True],
-                                       [True, True, True]]), pixel_scale=1.0)
-        li = lensing_image.LensingImage(im, ma, sub_grid_size=1)
-
-        tracer = ray_tracing.TracerImagePlane(lens_galaxies=[galaxy_light], image_plane_grids=[li.padded_grids])
-
-        manual_model_image_0 = tracer.image_plane.grids[0].regular.map_to_2d_keep_padded(tracer.image_plane_images_[0])
-        manual_model_image_0 = psf.convolve(manual_model_image_0)
-
-        padded_model_images = lensing_fitting.unmasked_model_images_of_galaxies_from_lensing_image_and_tracer(
-            lensing_image=li, tracer=tracer, image_index=0)
-
-        assert (manual_model_image_0[1:4, 1:4] == padded_model_images[0][0]).all()
-
-    def test___of_galaxies__x1_galaxy__3x3_padded_image__asymetric_psf_blurring(self, galaxy_light):
-
-        psf = image.PSF(array=(np.array([[0.0, 0.0, 0.0],
-                                         [0.0, 1.0, 0.0],
-                                         [0.0, 0.0, 0.0]])), pixel_scale=1.0)
-        im = image.Image(array=np.ones((3, 3)), pixel_scale=1.0, psf=psf, noise_map=np.ones((3, 3)))
-
-        ma = mask.Mask(array=np.array([[True, True, True],
-                                       [True, False, True],
-                                       [True, True, True]]), pixel_scale=1.0)
-        li = lensing_image.LensingImage(im, ma, sub_grid_size=1)
-
-        tracer = ray_tracing.TracerImagePlane(lens_galaxies=[galaxy_light], image_plane_grids=[li.padded_grids])
-
-        manual_model_image_0 = tracer.image_plane.grids[0].regular.map_to_2d_keep_padded(tracer.image_plane_images_[0])
-        manual_model_image_0 = psf.convolve(manual_model_image_0)
-
-        padded_model_images = lensing_fitting.unmasked_model_images_of_galaxies_from_lensing_image_and_tracer(
-            lensing_image=li, tracer=tracer, image_index=0)
-
-        assert (manual_model_image_0[1:4, 1:4] == padded_model_images[0][0]).all()
-
-    def test___of_galaxies__x2_galaxies__3x3_padded_image__asymetric_psf_blurring(self):
-        psf = image.PSF(array=(np.array([[0.0, 0.0, 0.0],
-                                         [0.0, 1.0, 0.0],
-                                         [0.0, 0.0, 0.0]])), pixel_scale=1.0)
-        im = image.Image(array=np.ones((3, 3)), pixel_scale=1.0, psf=psf, noise_map=np.ones((3, 3)))
-
-        ma = mask.Mask(array=np.array([[True, True, True],
-                                       [True, False, True],
-                                       [True, True, True]]), pixel_scale=1.0)
-        li = lensing_image.LensingImage(im, ma, sub_grid_size=1)
-
-        g0 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=0.1))
-        g1 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=0.2))
-
-        tracer = ray_tracing.TracerImagePlane(lens_galaxies=[g0, g1], image_plane_grids=[li.padded_grids])
-
-        manual_model_image_0 = tracer.image_plane.grids[0].regular.map_to_2d_keep_padded(
-            tracer.image_plane.image_plane_images_of_galaxies_[0][0])
-        manual_model_image_0 = psf.convolve(manual_model_image_0)
-
-        manual_model_image_1 = tracer.image_plane.grids[0].regular.map_to_2d_keep_padded(
-            tracer.image_plane.image_plane_images_of_galaxies_[0][1])
-        manual_model_image_1 = psf.convolve(manual_model_image_1)
-
-        padded_model_images = lensing_fitting.unmasked_model_images_of_galaxies_from_lensing_image_and_tracer(
-            lensing_image=li, tracer=tracer, image_index=0)
-
-        assert (manual_model_image_0[1:4, 1:4] == padded_model_images[0][0]).all()
-        assert (manual_model_image_1[1:4, 1:4] == padded_model_images[0][1]).all()
-
-    def test___same_as_above_but_image_and_souce_plane(self):
-
-        psf = image.PSF(array=(np.array([[0.0, 0.0, 0.0],
-                                         [0.0, 1.0, 0.0],
-                                         [0.0, 0.0, 0.0]])), pixel_scale=1.0)
-        im = image.Image(array=np.ones((3, 3)), pixel_scale=1.0, psf=psf, noise_map=np.ones((3, 3)))
-
-        ma = mask.Mask(array=np.array([[True, True, True],
-                                       [True, False, True],
-                                       [True, True, True]]), pixel_scale=1.0)
-        li = lensing_image.LensingImage(im, ma, sub_grid_size=1)
-
-        g0 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=0.1))
-        g1 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=0.2))
-        g2 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=0.3))
-        g3 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=0.4))
-
-        tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0, g1], source_galaxies=[g2, g3],
-                                                     image_plane_grids=[li.padded_grids])
-
-        manual_model_image_0 = tracer.image_plane.grids[0].regular.map_to_2d_keep_padded(
-            tracer.image_plane.image_plane_images_of_galaxies_[0][0])
-        manual_model_image_0 = psf.convolve(manual_model_image_0)
-
-        manual_model_image_1 = tracer.image_plane.grids[0].regular.map_to_2d_keep_padded(
-            tracer.image_plane.image_plane_images_of_galaxies_[0][1])
-        manual_model_image_1 = psf.convolve(manual_model_image_1)
-
-
-        manual_model_image_2 = tracer.image_plane.grids[0].regular.map_to_2d_keep_padded(
-            tracer.source_plane.image_plane_images_of_galaxies_[0][0])
-        manual_model_image_2 = psf.convolve(manual_model_image_2)
-
-        manual_model_image_3 = tracer.image_plane.grids[0].regular.map_to_2d_keep_padded(
-            tracer.source_plane.image_plane_images_of_galaxies_[0][1])
-        manual_model_image_3 = psf.convolve(manual_model_image_3)
-
-        padded_model_images = lensing_fitting.unmasked_model_images_of_galaxies_from_lensing_image_and_tracer(
-            lensing_image=li, tracer=tracer, image_index=0)
-
-        assert (manual_model_image_0[1:4, 1:4] == padded_model_images[0][0]).all()
-        assert (manual_model_image_1[1:4, 1:4] == padded_model_images[0][1]).all()
-        assert (manual_model_image_2[1:4, 1:4] == padded_model_images[1][0]).all()
-        assert (manual_model_image_3[1:4, 1:4] == padded_model_images[1][1]).all()
-
-    def test___same_as_above_but_x2_images(self):
-
-        psf = image.PSF(array=(np.array([[0.0, 0.0, 0.0],
-                                         [0.0, 1.0, 0.0],
-                                         [0.0, 0.0, 0.0]])), pixel_scale=1.0)
-
-        ma = mask.Mask(array=np.array([[True, True, True],
-                                       [True, False, True],
-                                       [True, True, True]]), pixel_scale=1.0)
-
-        im_0 = image.Image(array=np.ones((3, 3)), pixel_scale=1.0, psf=psf, noise_map=np.ones((3, 3)))
-        li_0 = lensing_image.LensingImage(im_0, ma, sub_grid_size=1)
-
-        im_1 = image.Image(array=2.0 * np.ones((3, 3)), pixel_scale=2.0, psf=psf, noise_map=np.ones((3, 3)))
-        li_1 = lensing_image.LensingImage(im_1, ma, sub_grid_size=2)
-
-        g0 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=0.1), centre=(0.1, 0.1))
-        g1 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=0.2))
-        g2 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=0.3))
-        g3 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=0.4))
-
-        tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0, g1], source_galaxies=[g2, g3],
-                                                     image_plane_grids=[li_0.padded_grids, li_1.padded_grids])
-
-        manual_model_image_0_of_image_0 = tracer.image_plane.grids[0].regular.map_to_2d_keep_padded(
-            tracer.image_plane.image_plane_images_of_galaxies_[0][0])
-        manual_model_image_0_of_image_0 = psf.convolve(manual_model_image_0_of_image_0)
-
-        manual_model_image_1_of_image_0 = tracer.image_plane.grids[0].regular.map_to_2d_keep_padded(
-            tracer.image_plane.image_plane_images_of_galaxies_[0][1])
-        manual_model_image_1_of_image_0 = psf.convolve(manual_model_image_1_of_image_0)
-
-        manual_model_image_2_of_image_0 = tracer.image_plane.grids[0].regular.map_to_2d_keep_padded(
-            tracer.source_plane.image_plane_images_of_galaxies_[0][0])
-        manual_model_image_2_of_image_0 = psf.convolve(manual_model_image_2_of_image_0)
-
-        manual_model_image_3_of_image_0 = tracer.image_plane.grids[0].regular.map_to_2d_keep_padded(
-            tracer.source_plane.image_plane_images_of_galaxies_[0][1])
-        manual_model_image_3_of_image_0 = psf.convolve(manual_model_image_3_of_image_0)
-
-        manual_model_image_0_of_image_1 = tracer.image_plane.grids[0].regular.map_to_2d_keep_padded(
-            tracer.image_plane.image_plane_images_of_galaxies_[1][0])
-        manual_model_image_0_of_image_1 = psf.convolve(manual_model_image_0_of_image_1)
-
-        manual_model_image_1_of_image_1 = tracer.image_plane.grids[0].regular.map_to_2d_keep_padded(
-            tracer.image_plane.image_plane_images_of_galaxies_[1][1])
-        manual_model_image_1_of_image_1 = psf.convolve(manual_model_image_1_of_image_1)
-
-        manual_model_image_2_of_image_1 = tracer.image_plane.grids[0].regular.map_to_2d_keep_padded(
-            tracer.source_plane.image_plane_images_of_galaxies_[1][0])
-        manual_model_image_2_of_image_1 = psf.convolve(manual_model_image_2_of_image_1)
-
-        manual_model_image_3_of_image_1 = tracer.image_plane.grids[0].regular.map_to_2d_keep_padded(
-            tracer.source_plane.image_plane_images_of_galaxies_[1][1])
-        manual_model_image_3_of_image_1 = psf.convolve(manual_model_image_3_of_image_1)
-
-        padded_model_images = lensing_fitting.unmasked_model_images_of_galaxies_from_lensing_images_and_tracer(
-            lensing_images=[li_0, li_1], tracer=tracer)
-
-        assert (manual_model_image_0_of_image_0[1:4, 1:4] == padded_model_images[0][0][0]).all()
-        assert (manual_model_image_1_of_image_0[1:4, 1:4] == padded_model_images[0][0][1]).all()
-        assert (manual_model_image_2_of_image_0[1:4, 1:4] == padded_model_images[0][1][0]).all()
-        assert (manual_model_image_3_of_image_0[1:4, 1:4] == padded_model_images[0][1][1]).all()
-
-        assert (manual_model_image_0_of_image_1[1:4, 1:4] == padded_model_images[1][0][0]).all()
-        assert (manual_model_image_1_of_image_1[1:4, 1:4] == padded_model_images[1][0][1]).all()
-        assert (manual_model_image_2_of_image_1[1:4, 1:4] == padded_model_images[1][1][0]).all()
-        assert (manual_model_image_3_of_image_1[1:4, 1:4] == padded_model_images[1][1][1]).all()
-
-    def test__properties_of_fit(self, galaxy_light):
-
-        psf = image.PSF(array=(np.array([[0.0, 0.0, 0.0],
-                                         [0.0, 1.0, 0.0],
-                                         [0.0, 0.0, 0.0]])), pixel_scale=1.0)
-        im = image.Image(array=np.ones((3, 3)), pixel_scale=1.0, psf=psf, noise_map=np.ones((3, 3)))
-
-        ma = mask.Mask(array=np.array([[True, True, True],
-                                       [True, False, True],
-                                       [True, True, True]]), pixel_scale=1.0)
-        li = lensing_image.LensingImage(im, ma, sub_grid_size=1)
-
-        padded_tracer = ray_tracing.TracerImagePlane(lens_galaxies=[galaxy_light], image_plane_grids=[li.padded_grids])
-
-        manual_model_image_0 = \
-            padded_tracer.image_plane.grids[0].regular.map_to_2d_keep_padded(padded_tracer.image_plane_images_[0])
-        manual_model_image_0 = psf.convolve(manual_model_image_0)
-
-        padded_model_images = lensing_fitting.unmasked_model_images_of_galaxies_from_lensing_image_and_tracer(
-            lensing_image=li, tracer=padded_tracer, image_index=0)
-
-        tracer = ray_tracing.TracerImagePlane(lens_galaxies=[galaxy_light], image_plane_grids=[li.grids])
-
-        fit = lensing_fitting.LensingProfileFit(lensing_images=[li], tracer=tracer, padded_tracer=padded_tracer)
-
-        assert (manual_model_image_0[1:4, 1:4] == fit.unmasked_model_profile_images[0]).all()
-        assert (padded_model_images[0][0] == fit.unmasked_model_profile_images_of_galaxies[0][0][0]).all()
-
-    def test__padded_tracer_is_none__returns_none(self, galaxy_light):
-
-        psf = image.PSF(array=(np.array([[0.0, 0.0, 0.0],
-                                         [0.0, 1.0, 0.0],
-                                         [0.0, 0.0, 0.0]])), pixel_scale=1.0)
-        im = image.Image(array=np.ones((3, 3)), pixel_scale=1.0, psf=psf, noise_map=np.ones((3, 3)))
-
-        ma = mask.Mask(array=np.array([[True, True, True],
-                                       [True, False, True],
-                                       [True, True, True]]), pixel_scale=1.0)
-        li = lensing_image.LensingImage(im, ma, sub_grid_size=1)
-
-        tracer = ray_tracing.TracerImagePlane(lens_galaxies=[galaxy_light], image_plane_grids=[li.grids])
-
-        fit = lensing_fitting.LensingProfileFit(lensing_images=[li], tracer=tracer, padded_tracer=None)
-
-        assert fit.unmasked_model_profile_images == None
-        assert fit.unmasked_model_profile_images_of_galaxies == None
+        (fit.model_image == np.array([[0.0, 0.0, 0.0, 0.0],
+                                      [0.0, 1.0, 1.0, 0.0],
+                                      [0.0, 1.0, 1.0, 0.0],
+                                      [0.0, 0.0, 0.0, 0.0]])).all()
 
 
 class TestLensingProfileFit:

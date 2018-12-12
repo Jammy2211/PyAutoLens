@@ -44,7 +44,7 @@ imaging_plotters.plot_image(image=image, mask=mask)
 
 # Next, lets set this regular up as a lensing regular, and setup a tracer_without_subhalo using the input lens model_galaxy model (we don't need
 # to provide the source's light profile, as we're using a mapper to reconstruct it).
-lensing_image = li.LensingImage(data=image, mask=mask, sub_grid_size=1)
+lensing_image = li.LensingImage(image=image, mask=mask, sub_grid_size=1)
 lens_galaxy = g.Galaxy(mass=mp.EllipticalIsothermal(centre=(0.0, 0.0), axis_ratio=0.8, phi=135.0, einstein_radius=1.6))
 tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[g.Galaxy()],
                                              image_plane_grids=[lensing_image.grids])
@@ -57,7 +57,7 @@ mapper_plotters.plot_image_and_mapper(image=image, mask=mask, mapper=mapper, sho
 # And now, finally, we're going to use our mapper to invert the regular using the 'inversions' module, which is imported
 # as 'inv'. I'll explain how this works in a second - but lets just go ahead and perform the inversion first.
 # (Ignore the 'regularization' input below for now, we'll cover this in the next tutorial).
-inversion = inv.Inversion(image=lensing_image[:], noise_map=lensing_image.noise_map_,
+inversion = inv.Inversion(image=lensing_image[:], noise_map=lensing_image.noise_map_1d,
                           convolver=lensing_image.convolver_mapping_matrix, mapper=mapper,
                           regularization=reg.Constant(coefficients=(1.0,)))
 
@@ -110,11 +110,11 @@ mask = ma.Mask.circular_annular(shape=image.shape, pixel_scale=image.pixel_scale
                                 inner_radius_arcsec=0.1, outer_radius_arcsec=3.2)
 imaging_plotters.plot_image(image=image, mask=mask)
 
-lensing_image = li.LensingImage(data=image, mask=mask, sub_grid_size=1)
+lensing_image = li.LensingImage(image=image, mask=mask, sub_grid_size=1)
 tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[g.Galaxy()],
                                              image_plane_grids=[lensing_image.grids])
 mapper = rectangular.mapper_from_grids_and_border(grids=tracer.source_plane.grids[0], border=None)
-inversion = inv.Inversion(image=lensing_image[:], noise_map=lensing_image.noise_map_,
+inversion = inv.Inversion(image=lensing_image[:], noise_map=lensing_image.noise_map_1d,
                           convolver=lensing_image.convolver_mapping_matrix, mapper=mapper,
                           regularization=reg.Constant(coefficients=(1.0,)))
 

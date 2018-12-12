@@ -49,7 +49,7 @@ imaging_plotters.plot_image(image=image, mask=mask)
 
 # 4) The regular's grids: so the tracer_without_subhalo's regular-plane regular is generated on the same (masked) grid as the regular-datas.
 
-lensing_image = li.LensingImage(data=image, mask=mask)
+lensing_image = li.LensingImage(image=image, mask=mask)
 imaging_plotters.plot_image_subplot(lensing_image.image)
 
 # By printing its attribute, we can see that it does indeed contain the regular, masks, psf and so on

@@ -56,7 +56,7 @@ def test_mask():
 
 @pytest.fixture(name='lensing_image')
 def test_lensing_image(image, mask):
-    return li.LensingImage(data=image, mask=mask)
+    return li.LensingImage(image=image, mask=mask)
 
 @pytest.fixture(name='fit')
 def test_fit(lensing_image):

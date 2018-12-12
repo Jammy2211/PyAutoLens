@@ -45,16 +45,16 @@ def test__simulate_lensed_source_and_fit__no_psf_blurring__chi_squared_is_0__noi
         os.makedirs(path)
 
     array_util.numpy_array_to_fits(array=image_simulated, path=path + '/data.fits')
-    array_util.numpy_array_to_fits(array=image_simulated.noise_map, path=path + '/noise_map_.fits')
+    array_util.numpy_array_to_fits(array=image_simulated.noise_map, path=path + '/noise_map_1d.fits')
     array_util.numpy_array_to_fits(array=psf, path=path + '/psf.fits')
 
     image = im.load_imaging_from_fits(image_path=path + '/data.fits',
-                                      noise_map_path=path + '/noise_map_.fits',
+                                      noise_map_path=path + '/noise_map_1d.fits',
                                       psf_path=path + '/psf.fits', pixel_scale=0.2)
 
     mask = msk.Mask.circular(shape=image.shape, pixel_scale=0.2, radius_arcsec=0.8)
 
-    lensing_image = li.LensingImage(data=image, mask=mask, sub_grid_size=1)
+    lensing_image = li.LensingImage(image=image, mask=mask, sub_grid_size=1)
 
     tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
                                                  image_plane_grids=[lensing_image.grids])
@@ -93,16 +93,16 @@ def test__simulate_lensed_source_and_fit__include_psf_blurring__chi_squared_is_0
         os.makedirs(path)
 
     array_util.numpy_array_to_fits(array=image_simulated, path=path + '/data.fits')
-    array_util.numpy_array_to_fits(array=image_simulated.noise_map, path=path + '/noise_map_.fits')
+    array_util.numpy_array_to_fits(array=image_simulated.noise_map, path=path + '/noise_map_1d.fits')
     array_util.numpy_array_to_fits(array=psf, path=path + '/psf.fits')
 
     image = im.load_imaging_from_fits(image_path=path + '/data.fits',
-                                      noise_map_path=path + '/noise_map_.fits',
+                                      noise_map_path=path + '/noise_map_1d.fits',
                                       psf_path=path + '/psf.fits', pixel_scale=0.2)
 
     mask = msk.Mask.circular(shape=image.shape, pixel_scale=0.2, radius_arcsec=0.8)
 
-    lensing_image = li.LensingImage(data=image, mask=mask, sub_grid_size=1)
+    lensing_image = li.LensingImage(image=image, mask=mask, sub_grid_size=1)
 
     tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
                                                  image_plane_grids=[lensing_image.grids])

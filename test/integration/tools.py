@@ -59,7 +59,7 @@ def simulate_integration_image(data_name, pixel_scale, lens_galaxies, source_gal
         os.makedirs(output_path)
 
     array_util.numpy_array_to_fits(sim_image, path=output_path + 'regular.fits')
-    array_util.numpy_array_to_fits(sim_image.noise_map, path=output_path + 'noise_map_.fits')
+    array_util.numpy_array_to_fits(sim_image.noise_map, path=output_path + 'noise_map_1d.fits')
     array_util.numpy_array_to_fits(psf, path=output_path + '/psf.fits')
     array_util.numpy_array_to_fits(sim_image.exposure_time_map, path=output_path + 'exposure_map.fits')
 
@@ -69,7 +69,7 @@ def load_image(data_name, pixel_scale):
 
     data = scaled_array.ScaledSquarePixelArray.from_fits_with_pixel_scale(file_path=data_dir + '/regular.fits', hdu=0,
                                                                           pixel_scale=pixel_scale)
-    noise = scaled_array.ScaledSquarePixelArray.from_fits_with_pixel_scale(file_path=data_dir + '/noise_map_.fits', hdu=0,
+    noise = scaled_array.ScaledSquarePixelArray.from_fits_with_pixel_scale(file_path=data_dir + '/noise_map_1d.fits', hdu=0,
                                                                            pixel_scale=pixel_scale)
     psf = im.PSF.from_fits_with_scale(file_path=data_dir + '/psf.fits', hdu=0, pixel_scale=pixel_scale)
 

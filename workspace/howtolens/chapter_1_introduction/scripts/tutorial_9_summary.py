@@ -33,7 +33,7 @@ image = im.load_imaging_from_fits(image_path=path + '/data/regular.fits',
                                   noise_map_path=path+'/data/noise_map.fits',
                                   psf_path=path + '/data/psf.fits', pixel_scale=0.1)
 mask = ma.Mask.circular(shape=image.shape, pixel_scale=image.pixel_scale, radius_arcsec=3.0)
-lensing_image = li.LensingImage(data=image, mask=mask)
+lensing_image = li.LensingImage(image=image, mask=mask)
 lens_galaxy = g.Galaxy(mass=mp.EllipticalIsothermal(centre=(0.0, 0.0), einstein_radius=1.6, axis_ratio=0.7, phi=45.0))
 source_galaxy = g.Galaxy(bulge=lp.EllipticalSersic(centre=(0.1, 0.1), axis_ratio=0.8, phi=45.0,
                                                   intensity=1.0, effective_radius=1.0, sersic_index=4.0),

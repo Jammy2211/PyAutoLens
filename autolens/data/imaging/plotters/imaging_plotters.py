@@ -168,7 +168,7 @@ def plot_noise_map(image, plot_origin=True, mask=None, as_subplot=False,
                    cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
                    title='Noise-Map', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
                    mask_pointsize=10,
-                   output_path=None, output_format='show', output_filename='noise_map_'):
+                   output_path=None, output_format='show', output_filename='noise_map_1d'):
     """Plot the noise-map of the data data.
 
     Set *autolens.data.array.plotters.array_plotters* for a description of all innput parameters not described below.

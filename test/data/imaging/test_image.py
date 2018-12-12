@@ -186,7 +186,7 @@ class TestImage:
                                                       [0.0, 1.05, 0.0],
                                                       [0.0, 0.0, 0.0]]), 1e-2)
 
-            # Because of the regular value is 1.05, the estimated Poisson noise_map_ is:
+            # Because of the regular value is 1.05, the estimated Poisson noise_map_1d is:
             # sqrt((1.05 * 20))/20 = 0.2291
 
             assert sim_img.poisson_noise_map == pytest.approx(np.array([[0.0, 0.0, 0.0],
@@ -316,7 +316,7 @@ class TestImage:
 
             assert sim_poisson_img.shape == (2, 2)
 
-            # Use known noise_map_ map for given seed.
+            # Use known noise_map_1d map for given seed.
             assert (poisson_noise_map == np.array([[(10.0 - 9.0), 0],
                                                    [0, (10.0 - 6.0)]])).all()
             assert (sim_poisson_img == np.array([[11, 0],
@@ -335,7 +335,7 @@ class TestImage:
 
             assert sim_poisson_img.shape == (2, 2)
 
-            # Use known noise_map_ map for given seed.
+            # Use known noise_map_1d map for given seed.
             assert (poisson_noise_map == np.array([[1, 4],
                                                    [3, 1]])).all()
 
@@ -356,7 +356,7 @@ class TestImage:
 
             assert sim_poisson_img.shape == (2, 2)
 
-            # Use known noise_map_ map for given seed.
+            # Use known noise_map_1d map for given seed.
             assert (poisson_noise_map == np.array([[571, 0],
                                                    [0, -441]])).all()
 

@@ -1,6 +1,6 @@
 
 
-def blur_image_including_blurring_region(image_, blurring_image_, convolver):
+def blur_image_including_blurring_region(unblurred_image_1d, blurring_image_1d, convolver):
     """For a 1D masked image and 1D blurring image (the regular regions outside the mask whose light blurs \
     into the mask after PSF convolution), use both to computed the blurred regular within the mask via PSF convolution.
 
@@ -8,14 +8,14 @@ def blur_image_including_blurring_region(image_, blurring_image_, convolver):
 
     Parameters
     ----------
-    image_ : ndarray
+    unblurred_image_1d : ndarray
         The 1D masked data which is blurred.
-    blurring_image_ : ndarray
+    blurring_image_1d : ndarray
         The 1D masked blurring images which are blurred.
     convolver_ : imaging.convolution.Convolver
         The convolver which perform the convolution and have built into the the PSF kernel.
     """
-    return convolver.convolve_image(image_array=image_, blurring_array=blurring_image_)
+    return convolver.convolve_image(image_array=unblurred_image_1d, blurring_array=blurring_image_1d)
 
 def likelihood_with_regularization_from_chi_squared_term_regularization_and_noise_term(chi_squared_term,
                                                                                        regularization_term,
@@ -146,7 +146,7 @@ def contributions_from_hyper_images_and_galaxies(hyper_model_image, hyper_galaxy
 #     return list(map(lambda fitting_hyper_image, contribution_ :
 #                     scaled_noise_map_from_hyper_galaxies_and_contributions(contributions_=contribution_,
 #                                                                            hyper_galaxies=hyper_galaxies,
-#                                                                            noise_map_=fitting_hyper_image.noise_map_),
+#                                                                            noise_map_1d=fitting_hyper_image.noise_map_1d),
 #                     fitting_hyper_images, contributions_))
 
 def scaled_noise_map_from_hyper_galaxies_and_contributions(contributions, hyper_galaxies, noise_map):
@@ -185,3 +185,25 @@ def map_contributions_to_scaled_arrays(contributions_, map_to_scaled_array):
         A list of functions which map each regular from 1D to 2D, using their mask.
     """
     return list(map(lambda _contribution : map_to_scaled_array(_contribution), contributions_))
+
+def unmasked_model_images_of_galaxies_from_lensing_images_and_tracer(lensing_images, tracer):
+    return list(map(lambda lensing_image, image_index :
+                    unmasked_model_images_of_galaxies_from_lensing_image_and_tracer(lensing_image, tracer, image_index),
+                    lensing_images, list(range(tracer.total_images))))
+
+def unmasked_model_images_of_galaxies_from_lensing_image_and_tracer(lensing_image, tracer, image_index):
+
+
+    padded_model_images_of_galaxies = [[] for _ in range(len(tracer.all_planes))]
+
+    for plane_index, plane in enumerate(tracer.all_planes):
+        for galaxy_index in range(len(plane.galaxies)):
+
+            _galaxy_image_plane_image = plane.image_plane_images_of_galaxies_[image_index][galaxy_index]
+
+            galaxy_model_image = fitting_util.unmasked_model_image_from_fitting_image(fitting_image=lensing_image,
+                                                                                 unmasked_image_=_galaxy_image_plane_image)
+
+            padded_model_images_of_galaxies[plane_index].append(galaxy_model_image)
+
+    return padded_model_images_of_galaxies
