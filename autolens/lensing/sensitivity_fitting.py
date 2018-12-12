@@ -56,12 +56,12 @@ class SensitivityProfileFit(AbstractSensitivityFit):
         residuals_normal_ = fitting_util.residuals_from_data_mask_and_model_data(data=sensitivity_images,
                                                                                  model_data=model_images_normal_)
         
-        chi_squareds_normal_ = fitting_util.chi_squared_from_residuals_and_noise_map(residuals=residuals_normal_,
-                                                                                     noise_map=noise_maps_)
+        chi_squareds_normal_ = fitting_util.chi_squareds_from_residuals_and_noise_map(residuals=residuals_normal_,
+                                                                                      noise_map=noise_maps_)
         
         chi_squared_terms_normal = fitting_util.chi_squared_term_from_chi_squareds(chi_squareds=chi_squareds_normal_)
         
-        noise_terms_normal = fitting_util.noise_term_from_noise_map(noise_map=noise_maps_)
+        noise_terms_normal = fitting_util.noise_term_from_mask_and_noise_map(noise_map=noise_maps_)
         likelihoods_normal = fitting_util.likelihood_from_chi_squared_term_and_noise_term(
             chi_squared_term=chi_squared_terms_normal,
             noise_term=noise_terms_normal)
@@ -72,11 +72,11 @@ class SensitivityProfileFit(AbstractSensitivityFit):
         
         residuals_sensitive_ = fitting_util.residuals_from_data_mask_and_model_data(data=sensitivity_images,
                                                                                     model_data=model_images_sensitive_),
-        chi_squareds_sensitive_ = fitting_util.chi_squared_from_residuals_and_noise_map(residuals=residuals_sensitive_,
-                                                                                        noise_map=noise_maps_),
+        chi_squareds_sensitive_ = fitting_util.chi_squareds_from_residuals_and_noise_map(residuals=residuals_sensitive_,
+                                                                                         noise_map=noise_maps_),
         chi_squared_terms_sensitive = fitting_util.chi_squared_term_from_chi_squareds(
             chi_squareds=chi_squareds_sensitive_)
-        noise_terms_sensitive = fitting_util.noise_term_from_noise_map(noise_map=noise_maps_)
+        noise_terms_sensitive = fitting_util.noise_term_from_mask_and_noise_map(noise_map=noise_maps_)
         
         likelihoods_sensitive = fitting_util.likelihood_from_chi_squared_term_and_noise_term(
             chi_squared_term=chi_squared_terms_sensitive,

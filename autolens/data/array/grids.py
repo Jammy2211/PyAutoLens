@@ -572,6 +572,19 @@ class PaddedRegularGrid(RegularGrid):
         padded_mask = msk.Mask.padded_for_shape_and_pixel_scale(shape=padded_shape, pixel_scale=pixel_scale)
         return PaddedRegularGrid(arr=padded_image_grid, mask=padded_mask, image_shape=shape)
 
+    def unmasked_blurred_image_2d_from_unmasked_image_1d_and_psf(self, unmasked_image_1d, psf):
+        """Compute a 1D unmasked blurred image from an unmasked image.
+
+        Parameters
+        ----------
+        unmasked_image_1d : ndarray
+            A 1D unmasked image which is blurred with the PSF.
+        psf : ndarray
+            An array describing the PSF kernel of the data.
+        """
+        model_image_1d = self.convolve_array_1d_with_psf(padded_array_1d=unmasked_image_1d, psf=psf)
+        return self.scaled_array_from_array_1d(array_1d=model_image_1d)
+
     def convolve_array_1d_with_psf(self, padded_array_1d, psf):
         """Convolve a 2d padded array of values (e.g. intensities beforoe PSF blurring) with a PSF, and then trim \
         the convolved array to its original 2D shape.
