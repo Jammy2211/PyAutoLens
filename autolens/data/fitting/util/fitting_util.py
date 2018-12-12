@@ -53,7 +53,8 @@ def noise_term_from_mask_and_noise_map(mask, noise_map):
     noise_map : np.ndarray
         List of masked 1D noise-maps.
     """
-    return np.sum(np.log(2 * np.pi * (noise_map[mask == False]) ** 2.0))
+    masked_noise_map = np.extract(condition=np.logical_not(mask), arr=noise_map)
+    return np.sum(np.log(2 * np.pi * masked_noise_map ** 2.0))
 
 def likelihood_from_chi_squared_term_and_noise_term(chi_squared_term, noise_term):
     """Compute the likelihood of each masked 1D model-datas fit to the data, where:

@@ -222,18 +222,106 @@ def make_li_hyper_manual_1(hyper):
                                            hyper_minimum_values=hyper.hyper_minimum_values, sub_grid_size=2)
 
 
-class TestAbstractConvolutionFit:
+class TestLensingConvolutionFit:
 
-    def test__2x2_unblurred_image_all_1s__3x3_psf_no_blurring__image_blurs_to_itself(self, li_blur):
+    def test__2x2_unblurred_image_all_1s__3x3_psf_no_blurring__image_blurs_to_itself(self, li_no_blur):
 
-        fit = lensing_fitting.AbstractConvolutionFit(lensing_image=li_blur,
-              unblurred_image_1d=np.array([1.0, 1.0, 1.0, 1.0]),
-              blurring_image_1d=np.array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]))
+        unblurred_image_1d = np.array([1.0, 1.0, 1.0, 1.0])
+        blurring_image_1d = np.array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0])
 
-        (fit.model_image == np.array([[0.0, 0.0, 0.0, 0.0],
-                                      [0.0, 1.0, 1.0, 0.0],
-                                      [0.0, 1.0, 1.0, 0.0],
-                                      [0.0, 0.0, 0.0, 0.0]])).all()
+        fit = lensing_fitting.LensingConvolutionFitter(lensing_image=li_no_blur, unblurred_image_1d=unblurred_image_1d,
+                                                       blurring_image_1d=blurring_image_1d)
+
+        assert (fit.model_image == np.array([[0.0, 0.0, 0.0, 0.0],
+                                             [0.0, 1.0, 1.0, 0.0],
+                                             [0.0, 1.0, 1.0, 0.0],
+                                             [0.0, 0.0, 0.0, 0.0]])).all()
+
+        assert fit.likelihood == 0.0
+
+    def test__2x2_unblurred_image_all_1s__3x3_psf_all_1s__image_blurs_to_9s(self, li_blur):
+
+        unblurred_image_1d = np.array([1.0, 1.0, 1.0, 1.0])
+        blurring_image_1d = np.array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0])
+
+        fit = lensing_fitting.LensingConvolutionFitter(lensing_image=li_blur, unblurred_image_1d=unblurred_image_1d,
+                                                       blurring_image_1d=blurring_image_1d)
+
+        assert (fit.model_image == np.array([[0.0, 0.0, 0.0, 0.0],
+                                             [0.0, 9.0, 9.0, 0.0],
+                                             [0.0, 9.0, 9.0, 0.0],
+                                             [0.0, 0.0, 0.0, 0.0]])).all()
+
+        chi_squared_term =  4.0 * (8.0/1.0)**2.0
+        noise_term = 4.0*np.sum(np.log(2 * np.pi * 1.0 ** 2.0))
+
+        assert fit.likelihood == pytest.approx(-0.5 * (chi_squared_term + noise_term), 1.0e-4)
+
+    def test__2x2_image__psf_is_non_symmetric_producing_l_shape(self):
+        
+        psf = image.PSF(array=(np.array([[0.0, 3.0, 0.0],
+                                         [0.0, 2.0, 1.0],
+                                         [0.0, 0.0, 0.0]])), pixel_scale=1.0)
+        
+        im = image.Image(array=np.ones((4, 4)), pixel_scale=1.0, psf=psf, noise_map=np.ones((4, 4)))
+
+        ma = mask.Mask(array=np.array([[True, True, True, True],
+                                       [True, False, False, True],
+                                       [True, False, False, True],
+                                       [True, True, True, True]]), pixel_scale=1.0)
+        
+        li = lensing_image.LensingImage(im, ma, sub_grid_size=1)
+
+        unblurred_image_1d = np.array([1.0, 2.0, 3.0, 4.0])
+        blurring_image_1d = np.array([1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0])
+
+        fit = lensing_fitting.LensingConvolutionFitter(lensing_image=li, unblurred_image_1d=unblurred_image_1d,
+                                                       blurring_image_1d=blurring_image_1d)
+
+        # Manually compute result of convolution, which is each central value *2.0 plus its 2 appropriate neighbors
+
+        blurred_image_manual_0 = 2.0 * unblurred_image_1d[0] + 3.0 * unblurred_image_1d[2] + blurring_image_1d[4]
+        blurred_image_manual_1 = 2.0 * unblurred_image_1d[1] + 3.0 * unblurred_image_1d[3] + unblurred_image_1d[0]
+        blurred_image_manual_2 = 2.0 * unblurred_image_1d[2] + 3.0 * blurring_image_1d[9] + blurring_image_1d[6]
+        blurred_image_manual_3 = 2.0 * unblurred_image_1d[3] + 3.0 * blurring_image_1d[10] + unblurred_image_1d[2]
+
+        assert blurred_image_manual_0 == pytest.approx(fit.model_image[1, 1], 1e-6)
+        assert blurred_image_manual_1 == pytest.approx(fit.model_image[1, 2], 1e-6)
+        assert blurred_image_manual_2 == pytest.approx(fit.model_image[2, 1], 1e-6)
+        assert blurred_image_manual_3 == pytest.approx(fit.model_image[2, 2], 1e-6)
+
+    class TestLensingConvolutionFitMulti:
+
+        def test__multi_image__2x2_unblurred_image_and_blurred_image__computed_correctly(self, li_no_blur, li_blur):
+
+            unblurred_image_1d_0 = np.array([2.0, 1.0, 1.0, 1.0])
+            blurring_image_1d_0 = np.array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0])
+
+            unblurred_image_1d_1 = np.array([1.0, 1.0, 1.0, 1.0])
+            blurring_image_1d_1 = np.array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0])
+
+            fit = lensing_fitting.LensingConvolutionFitterMulti(lensing_images=[li_no_blur, li_blur],
+                  unblurred_images_1d=[unblurred_image_1d_0, unblurred_image_1d_1],
+                  blurring_images_1d=[blurring_image_1d_0, blurring_image_1d_1])
+
+            assert (fit.model_images[0] == np.array([[0.0, 0.0, 0.0, 0.0],
+                                                     [0.0, 2.0, 1.0, 0.0],
+                                                     [0.0, 1.0, 1.0, 0.0],
+                                                     [0.0, 0.0, 0.0, 0.0]])).all()
+
+            assert (fit.model_images[1] == np.array([[0.0, 0.0, 0.0, 0.0],
+                                                     [0.0, 9.0, 9.0, 0.0],
+                                                     [0.0, 9.0, 9.0, 0.0],
+                                                     [0.0, 0.0, 0.0, 0.0]])).all()
+
+            noise_term = 4.0*np.sum(np.log(2 * np.pi * 1.0 ** 2.0))
+
+            assert fit.likelihoods[0] == -0.5 * (1.0 + noise_term)
+
+            chi_squared_term =  4.0 * (8.0/1.0)**2.0
+
+            assert fit.likelihoods[1] == pytest.approx(-0.5 * (chi_squared_term + noise_term), 1.0e-4)
+            assert fit.likelihood == fit.likelihoods[0] + fit.likelihoods[1]
 
 
 class TestLensingProfileFit:
@@ -264,42 +352,6 @@ class TestLensingProfileFit:
 
             tracer_image_2d = li_no_blur.grids.regular.scaled_array_from_array_1d(tracer_image)
             assert (tracer_image_2d == fit.model_data_set[0]).all()
-
-        def test__real_tracer__2x2_image__psf_is_non_symmetric_producing_l_shape(self, galaxy_light):
-            psf = image.PSF(array=(np.array([[0.0, 3.0, 0.0],
-                                             [0.0, 2.0, 1.0],
-                                             [0.0, 0.0, 0.0]])), pixel_scale=1.0)
-            im = image.Image(array=np.ones((4, 4)), pixel_scale=1.0, psf=psf, noise_map=np.ones((4, 4)))
-
-            ma = mask.Mask(array=np.array([[True, True, True, True],
-                                           [True, False, False, True],
-                                           [True, False, False, True],
-                                           [True, True, True, True]]), pixel_scale=1.0)
-            li = lensing_image.LensingImage(im, ma, sub_grid_size=1)
-
-            tracer = ray_tracing.TracerImagePlane(lens_galaxies=[galaxy_light], image_plane_grids=[li.grids])
-
-            fit = lensing_fitting.LensingProfileFit(lensing_images=[li], tracer=tracer)
-
-            # Manually compute result of convolution, which is each central value *2.0 plus its 2 appropriate neighbors
-
-            central_values = tracer.image_plane_images_[0]
-            blurring_values = tracer.image_plane_blurring_images_[0]
-
-            tracer_blurred_image_manual_0 = 2.0 * central_values[0] + 3.0 * central_values[2] + blurring_values[4]
-            tracer_blurred_image_manual_1 = 2.0 * central_values[1] + 3.0 * central_values[3] + central_values[0]
-            tracer_blurred_image_manual_2 = 2.0 * central_values[2] + 3.0 * blurring_values[9] + blurring_values[6]
-            tracer_blurred_image_manual_3 = 2.0 * central_values[3] + 3.0 * blurring_values[10] + central_values[2]
-
-            assert tracer_blurred_image_manual_0 == pytest.approx(fit.model_data_set[0][0], 1e-6)
-            assert tracer_blurred_image_manual_1 == pytest.approx(fit.model_data_set[0][1], 1e-6)
-            assert tracer_blurred_image_manual_2 == pytest.approx(fit.model_data_set[0][2], 1e-6)
-            assert tracer_blurred_image_manual_3 == pytest.approx(fit.model_data_set[0][3], 1e-6)
-
-            assert tracer_blurred_image_manual_0 == pytest.approx(fit.model_data_set[0][1, 1], 1e-6)
-            assert tracer_blurred_image_manual_1 == pytest.approx(fit.model_data_set[0][1, 2], 1e-6)
-            assert tracer_blurred_image_manual_2 == pytest.approx(fit.model_data_set[0][2, 1], 1e-6)
-            assert tracer_blurred_image_manual_3 == pytest.approx(fit.model_data_set[0][2, 2], 1e-6)
 
         def test__model_images_of_planes__real_tracer__2x2_image__psf_is_non_symmetric_producing_l_shape(self):
 
