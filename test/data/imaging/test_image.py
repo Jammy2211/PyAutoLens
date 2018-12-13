@@ -736,6 +736,23 @@ class TestImage:
                                                          [0.1, 1.0]])).all()
             assert img.signal_to_noise_max == 1.0
 
+    class TestChiSqContributions:
+
+        def test__image_and_noise_are_values__chi_squared_contribution_is_chi_squared_of_each(self):
+
+            array = np.array([[1.0, 2.0],
+                              [3.0, 4.0]])
+
+            noise = np.array([[10.0, 10.0],
+                              [30.0, 4.0]])
+
+            img = image.Image(array=array, pixel_scale=1.0,
+                              psf=image.PSF(array=np.ones((2, 2)), pixel_scale=1.0), noise_map=noise)
+
+            assert (img.chi_squared_contribution_map == np.array([[(0.1) ** 2.0, (0.2) ** 2.0],
+                                                                  [(0.1)**2.0, 1.0**2.0]])).all()
+            assert img.chi_squared_contribution_max == 1.0
+
     class TestNewImageResize:
 
         def test__all_components_resized__psf_is_not(self):

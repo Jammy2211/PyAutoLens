@@ -219,8 +219,8 @@ class LensingProfileFit(fitting.AbstractConvolutionFit, AbstractLensingFit):
         noise_maps_ = list(map(lambda lensing_image : lensing_image.noise_map_, lensing_images))
         model_images_ = fitting_util.blur_images_including_blurring_regions(images_=tracer.image_plane_images_,
                                                                        blurring_images_=tracer.image_plane_blurring_images_, convolvers=convolvers)
-        residuals_ = fitting_util.residuals_from_datas_and_model_datas(datas_=lensing_images, model_datas_=model_images_),
-        chi_squareds_ = fitting_util.chi_squareds_from_residuals_and_noise_maps(residuals_=residuals_, noise_maps_=noise_maps_),
+        residuals_ = fitting_util.residuals_from_datas_and_model_datas(datas_=lensing_images, model_datas_=model_images_)
+        chi_squareds_ = fitting_util.chi_squareds_from_residuals_and_noise_maps(residuals_=residuals_, noise_maps_=noise_maps_)
         chi_squared_terms = fitting_util.chi_squared_terms_from_chi_squareds(chi_squareds_=chi_squareds_)
         noise_terms = fitting_util.noise_terms_from_noise_maps(noise_maps_=noise_maps_)
         return sum(fitting_util.likelihoods_from_chi_squareds_and_noise_terms(chi_squared_terms=chi_squared_terms,

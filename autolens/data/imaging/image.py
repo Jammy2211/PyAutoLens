@@ -275,6 +275,14 @@ class Image(ScaledSquarePixelArray):
         """The maximum value of signal-to-noise_map in an data pixel in the data's signal-to-noise_map mappers"""
         return np.max(self.signal_to_noise_map)
 
+    @property
+    def chi_squared_contribution_map(self):
+        return np.square(np.divide(self, self.noise_map))
+
+    @property
+    def chi_squared_contribution_max(self):
+        return np.max(self.chi_squared_contribution_map)
+
     @staticmethod
     def trim_psf_edges(array, psf):
         if psf is not None:
