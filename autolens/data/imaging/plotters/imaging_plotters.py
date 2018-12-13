@@ -226,7 +226,7 @@ def plot_signal_to_noise_map(image, plot_origin=True, mask=None, as_subplot=Fals
                              units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
                              cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
                              cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
-                             title='Signal-To-Noise-Map', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
+                             title='Signal-To-Noise Map', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
                              mask_pointsize=10,
                              output_path=None, output_format='show', output_filename='signal_to_noise_map'):
     """Plot the signal-to-noise-map of the image data.
@@ -251,6 +251,37 @@ def plot_signal_to_noise_map(image, plot_origin=True, mask=None, as_subplot=Fals
                               xyticksize=xyticksize,
                               mask_pointsize=mask_pointsize,
                               output_path=output_path, output_format=output_format, output_filename=output_filename)
+
+
+def plot_chi_squared_contribution_map(image, plot_origin=True, mask=None, as_subplot=False,
+                                      units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
+                                      cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
+                                      cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
+                                      title='Chi-Squared Contribution Map', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
+                                      mask_pointsize=10,
+                                      output_path=None, output_format='show', output_filename='chi_squared_contribution_map'):
+            """Plot the signal-to-noise-map of the image data.
+
+            Set *autolens.data.array.plotters.array_plotters* for a description of all innput parameters not described below.
+
+            Parameters
+            -----------
+            image : data.imaging.image.Image
+                The image-data, which includes the observed image, noise-map, PSF, signal-to-noise-map, etc.
+            plot_origin : True
+                If true, the origin of the image's coordinate system is plotted as a 'x'.
+            """
+            origin = get_origin(image=image, plot_origin=plot_origin)
+
+            array_plotters.plot_array(array=image.chi_squared_contribution_map, origin=origin, mask=mask, as_subplot=as_subplot,
+                                      units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
+                                      cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max,
+                                      linthresh=linthresh, linscale=linscale,
+                                      cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
+                                      title=title, titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize,
+                                      xyticksize=xyticksize,
+                                      mask_pointsize=mask_pointsize,
+                                      output_path=output_path, output_format=output_format, output_filename=output_filename)
 
 
 def get_origin(image, plot_origin):
