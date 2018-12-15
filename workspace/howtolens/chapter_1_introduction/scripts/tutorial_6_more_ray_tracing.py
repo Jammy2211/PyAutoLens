@@ -89,7 +89,7 @@ galaxy_plotters.plot_intensities(galaxy=source_galaxy_1, grid=image_plane_grids.
 # Note that we've also supplied the tracer_without_subhalo below with a Planck15 cosmology.
 tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy, lens_satellite],
                                              source_galaxies=[source_galaxy_0, source_galaxy_1],
-                                             image_plane_grids=[image_plane_grids], cosmology=cosmology.Planck15)
+                                             image_plane_grid_stack=[image_plane_grids], cosmology=cosmology.Planck15)
 
 # As we did previous, we can inspect each grid.
 plane_plotters.plot_plane_grid(plane=tracer.image_plane, title='Image-plane Grid')

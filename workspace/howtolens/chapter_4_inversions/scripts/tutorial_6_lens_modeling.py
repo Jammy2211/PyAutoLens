@@ -35,7 +35,7 @@ def simulate():
                                                          effective_radius=0.3, sersic_index=1.0))
 
     tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
-                                                 image_plane_grids=[image_plane_grids])
+                                                 image_plane_grid_stack=[image_plane_grids])
 
     return im.Image.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=0.05,
                                         exposure_time=300.0, psf=psf, background_sky_level=0.1, add_noise=True)
@@ -48,7 +48,7 @@ def perform_fit_with_lens_and_source_galaxy(lens_galaxy, source_galaxy):
                                     outer_radius_arcsec=2.2)
     lensing_image = li.LensingImage(image=image, mask=mask)
     tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
-                                                 image_plane_grids=[lensing_image.grids], border=[lensing_image.border])
+                                                 image_plane_grid_stack=[lensing_image.grids], border=[lensing_image.border])
     return lensing_fitters.fit_lensing_image_with_tracer(lensing_image=lensing_image, tracer=tracer)
 
 
@@ -117,7 +117,7 @@ def simulate_lens_with_light_profile():
                                                          effective_radius=0.3, sersic_index=1.0))
 
     tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
-                                                 image_plane_grids=[image_plane_grids])
+                                                 image_plane_grid_stack=[image_plane_grids])
 
     return im.Image.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=0.05,
                                         exposure_time=300.0, psf=psf, background_sky_level=0.1, add_noise=True)
@@ -138,7 +138,7 @@ source_galaxy = g.Galaxy(pixelization=pix.Rectangular(shape=(40, 40)), regulariz
 
 lensing_image = li.LensingImage(image=image, mask=mask)
 tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
-                                             image_plane_grids=[lensing_image.grids], border=lensing_image.border)
+                                             image_plane_grid_stack=[lensing_image.grids], border=lensing_image.border)
 
 # This fit_normal subtracts the lens model_galaxy's light from the regular and fits the resulting source-only regular with the inversion.
 # When we plot the regular, a new panel on the sub-plot appears showing the model regular of the lens model_galaxy.
@@ -152,7 +152,7 @@ lens_galaxy = g.Galaxy(light=lp.SphericalSersic(centre=(0.0, 0.0), intensity=0.3
                        mass=mp.EllipticalIsothermal(centre=(0.0, 0.0), axis_ratio=0.8, phi=135.0,
                                                     einstein_radius=1.6))
 tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
-                                             image_plane_grids=[lensing_image.grids], border=lensing_image.border)
+                                             image_plane_grid_stack=[lensing_image.grids], border=lensing_image.border)
 fit = lensing_fitters.fit_lensing_image_with_tracer(lensing_image=lensing_image, tracer=tracer)
 lensing_fitting_plotters.plot_fitting_subplot(fit=fit)
 

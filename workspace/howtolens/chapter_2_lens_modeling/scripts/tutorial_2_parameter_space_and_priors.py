@@ -103,7 +103,7 @@ def simulate():
     lens_galaxy = g.Galaxy(mass=mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=1.6))
     source_galaxy = g.Galaxy(light=lp.SphericalExponential(centre=(0.0, 0.0), intensity=0.2, effective_radius=0.2))
     tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
-                                                 image_plane_grids=[image_plane_grids])
+                                                 image_plane_grid_stack=[image_plane_grids])
 
     image_simulated = im.Image.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=0.1,
                                                    exposure_time=300.0, psf=psf, background_sky_level=0.1, add_noise=True)

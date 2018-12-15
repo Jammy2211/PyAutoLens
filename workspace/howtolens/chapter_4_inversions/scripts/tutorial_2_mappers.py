@@ -29,7 +29,7 @@ def simulate():
     source_galaxy = g.Galaxy(light=lp.EllipticalSersic(centre=(0.0, 0.0), axis_ratio=0.7, phi=135.0, intensity=0.2,
                                                        effective_radius=0.2, sersic_index=2.5))
     tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
-                                                 image_plane_grids=[image_plane_grids])
+                                                 image_plane_grid_stack=[image_plane_grids])
 
     return im.Image.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=0.05,
                                         exposure_time=300.0, psf=psf, background_sky_level=0.1, add_noise=True)
@@ -46,7 +46,7 @@ image_plane_grids = grids.DataGridStack.from_shape_and_pixel_scale(shape=image.s
 lens_galaxy = g.Galaxy(mass=mp.EllipticalIsothermal(centre=(0.0, 0.0), axis_ratio=0.8, phi=45.0,
                                                     einstein_radius=1.6))
 tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[g.Galaxy()],
-                                             image_plane_grids=[image_plane_grids])
+                                             image_plane_grid_stack=[image_plane_grids])
 
 # Finally, lets setup our pixelization and mapper, like we did before, using the tracer's source-plane grid.
 rectangular = pix.Rectangular(shape=(25, 25))
@@ -92,7 +92,7 @@ mask = ma.Mask.circular_annular(shape=image.shape, pixel_scale=image.pixel_scale
 # As usual, we setup our regular and masks up as a lensing regular and create a tracer using its (now masked) grid_stacks.
 lensing_image = li.LensingImage(image=image, mask=mask)
 tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[g.Galaxy()],
-                                             image_plane_grids=[lensing_image.grids])
+                                             image_plane_grid_stack=[lensing_image.grids])
 
 # Finally, we use the tracer's (masked) source-plane grid to setup a new mapper (using the same rectangular 25 x 25
 # pixelization as before).

@@ -33,7 +33,7 @@ def simulate():
 
     tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy],
                                                  source_galaxies=[source_galaxy_0],
-                                                 image_plane_grids=[image_plane_grids])
+                                                 image_plane_grid_stack=[image_plane_grids])
 
     return im.Image.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=0.05,
                                         exposure_time=300.0, psf=psf, background_sky_level=0.1, add_noise=True)
@@ -73,7 +73,7 @@ def perform_fit_with_source_galaxy_mask_and_border(source_galaxy, mask, use_bord
         border = None
 
     tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
-                                                 image_plane_grids=[lensing_image.grids], border=border)
+                                                 image_plane_grid_stack=[lensing_image.grids], border=border)
     return lensing_fitters.fit_lensing_image_with_tracer(lensing_image=lensing_image, tracer=tracer)
 
 # Okay, so lets first look at our mapper without using a borders, and using our annular masks.
@@ -167,7 +167,7 @@ def simulate_image_x2_lenses():
 
     tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy_0, lens_galaxy_1],
                                                  source_galaxies=[source_galaxy_0],
-                                                 image_plane_grids=[image_plane_grids])
+                                                 image_plane_grid_stack=[image_plane_grids])
 
     return im.Image.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=0.05,
                                         exposure_time=300.0, psf=psf, background_sky_level=0.1, add_noise=True)
@@ -194,7 +194,7 @@ def perform_fit_x2_lenses_with_source_galaxy_mask_and_border(source_galaxy, mask
 
     tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy_0, lens_galaxy_1],
                                                  source_galaxies=[source_galaxy],
-                                                 image_plane_grids=[lensing_image.grids], border=border)
+                                                 image_plane_grid_stack=[lensing_image.grids], border=border)
     return lensing_fitters.fit_lensing_image_with_tracer(lensing_image=lensing_image, tracer=tracer)
 
 # Now, lets fit this regular using the input model and perform the source reconstruction without a borders. As you can see,

@@ -46,7 +46,7 @@ class TestSensitivityProfileFit:
         g1 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=2.0))
 
         tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g1],
-                                                     image_plane_grids=[si_blur.grids])
+                                                     image_plane_grid_stack=[si_blur.grids])
 
         fit = sensitivity_fitting.SensitivityProfileFit(sensitivity_images=[si_blur], tracer_normal=tracer,
                                                         tracer_sensitive=tracer)
@@ -54,8 +54,8 @@ class TestSensitivityProfileFit:
         assert (fit.fit_normal.datas_[0] == si_blur).all()
         assert (fit.fit_normal.noise_maps_[0] == si_blur.noise_map_).all()
 
-        model_datas_ = fitting_util.blur_image_including_blurring_region(image_=[tracer.image_plane_images_[0]],
-                                                                         blurring_image_=[tracer.image_plane_blurring_images_[0]],
+        model_datas_ = fitting_util.blur_image_including_blurring_region(image_=[tracer.image_plane_images_1d[0]],
+                                                                         blurring_image_=[tracer.image_plane_blurring_images_1d[0]],
                                                                          convolver=[si_blur.convolver_image])
 
         assert (fit.fit_normal.model_datas_[0] == model_datas_[0]).all()
@@ -73,9 +73,9 @@ class TestSensitivityProfileFit:
         assert (fit.fit_sensitive.datas_[0] == si_blur).all()
         assert (fit.fit_sensitive.noise_maps_[0] == si_blur.noise_map_).all()
 
-        model_datas_ = fitting_util.blur_image_including_blurring_region(image_=[tracer.image_plane_images_[0]],
+        model_datas_ = fitting_util.blur_image_including_blurring_region(image_=[tracer.image_plane_images_1d[0]],
                                                                          blurring_image_=[
-                                                                          tracer.image_plane_blurring_images_[0]],
+                                                                          tracer.image_plane_blurring_images_1d[0]],
                                                                          convolver=[si_blur.convolver_image])
 
         assert (fit.fit_sensitive.model_datas_[0] == model_datas_[0]).all()
@@ -107,10 +107,10 @@ class TestSensitivityProfileFit:
         g1 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=2.0))
 
         tracer_normal = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g1],
-                                                     image_plane_grids=[si_blur.grids])
+                                                            image_plane_grid_stack=[si_blur.grids])
 
         tracer_sensitive = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0, g0_subhalo], source_galaxies=[g1],
-                                                     image_plane_grids=[si_blur.grids])
+                                                               image_plane_grid_stack=[si_blur.grids])
 
         fit = sensitivity_fitting.SensitivityProfileFit(sensitivity_images=[si_blur], tracer_normal=tracer_normal,
                                                         tracer_sensitive=tracer_sensitive)
@@ -119,8 +119,8 @@ class TestSensitivityProfileFit:
         assert (fit.fit_normal.noise_maps_[0] == si_blur.noise_map_).all()
 
         model_datas_ = fitting_util.blur_image_including_blurring_region(
-            image_=[tracer_normal.image_plane_images_[0]],
-            blurring_image_=[tracer_normal.image_plane_blurring_images_[0]],
+            image_=[tracer_normal.image_plane_images_1d[0]],
+            blurring_image_=[tracer_normal.image_plane_blurring_images_1d[0]],
             convolver=[si_blur.convolver_image])
 
         assert (fit.fit_normal.model_datas_[0] == model_datas_[0]).all()
@@ -139,8 +139,8 @@ class TestSensitivityProfileFit:
         assert (fit.fit_sensitive.noise_maps_[0] == si_blur.noise_map_).all()
 
         model_datas_ = fitting_util.blur_image_including_blurring_region(
-            image_=[tracer_sensitive.image_plane_images_[0]],
-            blurring_image_=[tracer_sensitive.image_plane_blurring_images_[0]],
+            image_=[tracer_sensitive.image_plane_images_1d[0]],
+            blurring_image_=[tracer_sensitive.image_plane_blurring_images_1d[0]],
             convolver=[si_blur.convolver_image])
 
         assert (fit.fit_sensitive.model_datas_[0] == model_datas_[0]).all()

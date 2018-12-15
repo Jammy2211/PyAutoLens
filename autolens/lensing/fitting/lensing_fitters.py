@@ -139,7 +139,7 @@ class LensingProfileFitter(LensingFitter):
         self.convolver_image = lensing_image.convolver_image
 
         model_image = lensing_fitting_util.blurred_image_from_1d_unblurred_and_blurring_images(
-            unblurred_image_1d=tracer.image_plane_images_[0], blurring_image_1d=tracer.image_plane_blurring_images_[0],
+            unblurred_image_1d=tracer.image_plane_images_1d[0], blurring_image_1d=tracer.image_plane_blurring_images_1d[0],
             convolver=lensing_image.convolver_image, map_to_scaled_array=lensing_image.map_to_scaled_array)
 
         super(LensingProfileFitter, self).__init__(lensing_image=lensing_image, model_image=model_image,

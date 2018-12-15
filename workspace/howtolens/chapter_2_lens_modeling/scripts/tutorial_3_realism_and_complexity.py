@@ -56,7 +56,7 @@ def simulate():
     source_galaxy = g.Galaxy(light=lp.EllipticalSersic(centre=(0.0, 0.0), axis_ratio=0.5, phi=90.0, intensity=0.03,
                                                        effective_radius=0.3, sersic_index=3.0))
     tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
-                                                 image_plane_grids=[image_plane_grids])
+                                                 image_plane_grid_stack=[image_plane_grids])
 
     image_simulated = im.Image.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=0.1,
                                                    exposure_time=300.0, psf=psf, background_sky_level=0.1, add_noise=True)
@@ -112,7 +112,7 @@ lens_galaxy = g.Galaxy(light=lp.EllipticalSersic(centre=(0.0, 0.0), axis_ratio=0
 source_galaxy = g.Galaxy(light=lp.EllipticalSersic(centre=(0.0, 0.0), axis_ratio=0.5, phi=90.0, intensity=0.03,
                                                    effective_radius=0.3, sersic_index=3.0))
 tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
-                                             image_plane_grids=[lensing_image.grids])
+                                             image_plane_grid_stack=[lensing_image.grids])
 
 # Now, lets fit_normal the lensing regular with the tracer_without_subhalo and plot the fit_normal. It looks a lot better than above, doesn't it?
 fit = lensing_fitters.fit_lensing_image_with_tracer(lensing_image=lensing_image, tracer=tracer)
