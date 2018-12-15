@@ -556,7 +556,7 @@ class AbstractEllipticalGeneralizedNFW(EllipticalMassProfile, MassProfile):
         Parameters
         -----------
         grid : masks.RegularGrid
-            The grid of coordinates the potential / deflections are computed on.
+            The grid of coordinates the potential / deflection_stacks are computed on.
         tabulate_bins : int
             The number of bins used to tabulate the integral over.
         """

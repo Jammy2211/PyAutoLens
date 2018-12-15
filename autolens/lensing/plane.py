@@ -254,10 +254,10 @@ class Plane(AbstractPlane):
             def calculate_deflections(grid):
                 return sum(map(lambda galaxy: galaxy.deflections_from_grid(grid), galaxies))
 
-            self.deflections = self.grid_stack.apply_function(calculate_deflections)
+            self.deflection_stack = self.grid_stack.apply_function(calculate_deflections)
 
         else:
-            self.deflections = None
+            self.deflection_stack = None
         self.cosmology = cosmology
 
     def trace_grids_to_next_plane(self):
@@ -266,14 +266,14 @@ class Plane(AbstractPlane):
         def minus(grid, deflections):
             return grid - deflections
 
-        return self.grid_stack.map_function(minus, self.deflections)
+        return self.grid_stack.map_function(minus, self.deflection_stack)
 
     @property
     def primary_grid_stack(self):
         return self.grid_stack
 
     @property
-    def has_padded_grids(self):
+    def has_padded_grid_stack(self):
         return isinstance(self.grid_stack.regular, grids.PaddedRegularGrid)
 
     @property
@@ -307,7 +307,7 @@ class Plane(AbstractPlane):
 
     @property
     def image_plane_image_for_simulation(self):
-        if not self.has_padded_grids:
+        if not self.has_padded_grid_stack:
             raise exc.RayTracingException(
                 'To retrieve an image plane image for the simulation, the grid_stacks in the tracer_normal'
                 'must be padded grid_stacks')
@@ -371,12 +371,12 @@ class PlaneMulti(AbstractPlane):
         if compute_deflections:
 
             def calculate_deflections(grid):
-                return sum(map(lambda galaxy: galaxy.deflections_from_grid(self.grid_stacks), galaxies))
+                return sum(map(lambda galaxy: galaxy.deflections_from_grid(grid), galaxies))
 
-            self.deflections = list(map(lambda grid: grid.apply_function(calculate_deflections), self.grid_stacks))
+            self.deflection_stacks = list(map(lambda grid_stack: grid_stack.apply_function(calculate_deflections), self.grid_stacks))
 
         else:
-            self.deflections = None
+            self.deflection_stacks = None
 
     def trace_grids_to_next_plane(self):
         """Trace this plane's grid_stacks to the next plane, using its deflection angles."""
@@ -385,7 +385,7 @@ class PlaneMulti(AbstractPlane):
             return grid - deflections
 
         return list(
-            map(lambda grid, deflections: grid.map_function(minus, deflections), self.grid_stacks, self.deflections))
+            map(lambda grid, deflections: grid.map_function(minus, deflections), self.grid_stacks, self.deflection_stacks))
 
     @property
     def primary_grid_stack(self):
@@ -396,7 +396,7 @@ class PlaneMulti(AbstractPlane):
         return len(self.grid_stacks)
 
     @property
-    def has_padded_grids(self):
+    def has_padded_grid_stack(self):
         return any(list(map(lambda grid_stack : isinstance(grid_stack.regular, grids.PaddedRegularGrid),
                             self.grid_stacks)))
 
@@ -433,7 +433,7 @@ class PlaneMulti(AbstractPlane):
 
     @property
     def image_plane_images_for_simulation(self):
-        if not self.has_padded_grids:
+        if not self.has_padded_grid_stack:
             raise exc.RayTracingException(
                 'To retrieve an image plane image for the simulation, the grids in the tracer_normal'
                 'must be padded grids')

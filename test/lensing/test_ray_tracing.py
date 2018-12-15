@@ -60,7 +60,7 @@ def make_data_grids_1():
 @pytest.fixture(name="padded_grids")
 def make_padded_grids():
     ma = mask.Mask(np.array([[True, False]]), pixel_scale=3.0)
-    return grids.DataGridStack.padded_grids_from_mask_sub_grid_size_and_psf_shape(ma, 2, (3, 3))
+    return grids.DataGridStack.padded_grid_stack_from_mask_sub_grid_size_and_psf_shape(ma, 2, (3, 3))
 
 
 @pytest.fixture(name='galaxy_non', scope='function')
@@ -965,8 +965,8 @@ class TestTracerImageSourcePlanes(object):
                                      [False, False, False],
                                      [False, True, False]]), pixel_scale=1.0)
 
-            data_grids = grids.DataGridStack.padded_grids_from_mask_sub_grid_size_and_psf_shape(mask=ma, sub_grid_size=1,
-                                                                                                psf_shape=(1, 1))
+            data_grids = grids.DataGridStack.padded_grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=ma, sub_grid_size=1,
+                                                                                                     psf_shape=(1, 1))
 
             galaxy = g.Galaxy(pixelization=pixelizations.AdaptiveMagnification(shape=(3, 3)),
                               regularization=regularization.Constant())
@@ -1692,8 +1692,8 @@ class TestMultiTracer(object):
                                      [False, False, False],
                                      [False, True, False]]), pixel_scale=1.0)
 
-            data_grids = grids.DataGridStack.padded_grids_from_mask_sub_grid_size_and_psf_shape(mask=ma, sub_grid_size=1,
-                                                                                                psf_shape=(1, 1))
+            data_grids = grids.DataGridStack.padded_grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=ma, sub_grid_size=1,
+                                                                                                     psf_shape=(1, 1))
 
             galaxy = g.Galaxy(pixelization=pixelizations.AdaptiveMagnification(shape=(3, 3)),
                               regularization=regularization.Constant(), redshift=2.0)

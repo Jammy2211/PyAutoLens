@@ -223,7 +223,7 @@ class EllipticalProfile(SphericalProfile):
         unrotated coordinate grid reference frame (coordinates are not shifted back to their original origin).
 
         This routine is used after computing deflection angles in the reference frame of the profile, so that the
-        deflections can be re-rotated to the frame of the original coordinates before performing ray-tracing.
+        deflection_stacks can be re-rotated to the frame of the original coordinates before performing ray-tracing.
 
         Parameters
         ----------
