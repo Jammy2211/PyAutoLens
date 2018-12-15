@@ -100,14 +100,14 @@ def map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(array_1d, shape):
 @numba.jit(nopython=True, cache=True)
 def sparse_to_unmasked_sparse_from_mask_and_pixel_centres(total_sparse_pixels, mask, unmasked_sparse_grid_pixel_centres):
     """Determine the mapping between every masked pixelization-grid pixel and pixelization-grid pixel. This is
-    performed by checking whether each pixelization-grid pixel is within the regular-mask, and mapping the indexes.
+    performed by checking whether each pixelization-grid pixel is within the regular-masks, and mapping the indexes.
 
     Parameters
     -----------
     total_sparse_pixels : int
-        The total number of pixels in the pixelization grid which fall within the regular-mask.
-    mask : imaging.mask.Mask
-        The regular-mask within which pixelization pixels must be inside
+        The total number of pixels in the pixelization grid which fall within the regular-masks.
+    mask : imaging.masks.Mask
+        The regular-masks within which pixelization pixels must be inside
     unmasked_sparse_grid_pixel_centres : ndarray
         The centres of the unmasked pixelization grid pixels.
     """
@@ -131,7 +131,7 @@ def sparse_to_unmasked_sparse_from_mask_and_pixel_centres(total_sparse_pixels, m
 @numba.jit(nopython=True, cache=True)
 def unmasked_sparse_to_sparse_from_mask_and_pixel_centres(mask, unmasked_sparse_grid_pixel_centres, total_sparse_pixels):
     """Determine the mapping between every pixelization-grid pixel and masked pixelization-grid pixel. This is
-    performed by checking whether each pixelization-grid pixel is within the regular-mask, and mapping the indexes.
+    performed by checking whether each pixelization-grid pixel is within the regular-masks, and mapping the indexes.
 
     Pixelization pixels are paired with the next masked pixel index. This may mean that a pixel is not paired with a
     pixel near it, if the next pixel is on the next row of the grid. This is not a problem, as it is only
@@ -140,9 +140,9 @@ def unmasked_sparse_to_sparse_from_mask_and_pixel_centres(mask, unmasked_sparse_
     Parameters
     -----------
     total_pix_pixels : int
-        The total number of pixels in the pixelization grid which fall within the regular-mask.
-    mask : imaging.mask.Mask
-        The regular-mask within which pixelization pixels must be inside
+        The total number of pixels in the pixelization grid which fall within the regular-masks.
+    mask : imaging.masks.Mask
+        The regular-masks within which pixelization pixels must be inside
     unmasked_sparse_grid_pixel_centres : ndarray
         The centres of the unmasked pixelization grid pixels.
     """

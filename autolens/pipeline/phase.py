@@ -54,7 +54,7 @@ class AbstractPhase(object):
     def __init__(self, optimizer_class=non_linear.MultiNest, cosmology=cosmo.Planck15, phase_name=None,
                  auto_link_priors=False):
         """
-        A phase in an lensing pipeline. Uses the set non_linear optimizer to try to fit_normal models and data
+        A phase in an lensing pipeline. Uses the set non_linear optimizer to try to fit_normal models and datas
         passed to it.
 
         Parameters
@@ -227,7 +227,7 @@ class AbstractPhase(object):
 
             self.position_threshold = conf.instance.general.get('positions', 'position_threshold', float)
             self.plot_count = 0
-            self.output_image_path = "{}/data/".format(self.phase_output_path)
+            self.output_image_path = "{}/datas/".format(self.phase_output_path)
             make_path_if_does_not_exist(path=self.output_image_path)
 
         @property
@@ -365,7 +365,7 @@ class PhaseImaging(Phase):
 
         """
 
-        A phase in an lensing pipeline. Uses the set non_linear optimizer to try to fit_normal models and data
+        A phase in an lensing pipeline. Uses the set non_linear optimizer to try to fit_normal models and datas
         passed to it.
 
         Parameters
@@ -413,7 +413,7 @@ class PhaseImaging(Phase):
         Parameters
         ----------
         mask: Mask
-            The default mask passed in by the pipeline
+            The default masks passed in by the pipeline
         previous_results: ResultsCollection
             An object describing the results of the last phase or None if no phase has been executed
         image: img.Image
@@ -438,7 +438,7 @@ class PhaseImaging(Phase):
         Parameters
         ----------
         mask: Mask
-            The default mask passed in by the pipeline
+            The default masks passed in by the pipeline
         image: im.Image
             An lensing_image that has been masked
         previous_results: ResultsCollection
@@ -702,7 +702,7 @@ class LensLightHyperOnlyPhase(LensPlaneHyperPhase, HyperOnly):
         Parameters
         ----------
         mask: Mask
-            The default mask passed in by the pipeline
+            The default masks passed in by the pipeline
         image: im.Image
             An lensing_image that has been masked
         previous_results: ResultsCollection
@@ -923,7 +923,7 @@ class LensMassAndSourceProfileHyperOnlyPhase(LensSourcePlaneHyperPhase, HyperOnl
         Parameters
         ----------
         mask: Mask
-            The default mask passed in by the pipeline
+            The default masks passed in by the pipeline
         image: im.Image
             An lensing_image that has been masked
         previous_results: ResultsCollection
@@ -1021,7 +1021,7 @@ class GalaxyFitPhase(AbstractPhase):
     def __init__(self, galaxy_data_class, galaxy=None, optimizer_class=non_linear.MultiNest, sub_grid_size=2,
                  mask_function=default_mask_function, phase_name=None):
         """
-        A phase in an lensing pipeline. Uses the set non_linear optimizer to try to fit_normal models and data
+        A phase in an lensing pipeline. Uses the set non_linear optimizer to try to fit_normal models and datas
         passed to it.
 
         Parameters
@@ -1046,7 +1046,7 @@ class GalaxyFitPhase(AbstractPhase):
         Parameters
         ----------
         mask: Mask
-            The default mask passed in by the pipeline
+            The default masks passed in by the pipeline
         noise_map
         array
         previous_results: ResultsCollection
@@ -1070,7 +1070,7 @@ class GalaxyFitPhase(AbstractPhase):
         Parameters
         ----------
         mask: Mask
-            The default mask passed in by the pipeline
+            The default masks passed in by the pipeline
         array
         noise_map
         previous_results: ResultsCollection
@@ -1169,7 +1169,7 @@ class GalaxyFitDeflectionsPhase(AbstractPhase):
     def __init__(self, galaxy=None, optimizer_class=non_linear.MultiNest, sub_grid_size=2,
                  mask_function=default_mask_function, phase_name=None):
         """
-        A phase in an lensing pipeline. Uses the set non_linear optimizer to try to fit_normal models and data
+        A phase in an lensing pipeline. Uses the set non_linear optimizer to try to fit_normal models and datas
         passed to it.
 
         Parameters
@@ -1195,7 +1195,7 @@ class GalaxyFitDeflectionsPhase(AbstractPhase):
         array_x
         array_y
         mask: Mask
-            The default mask passed in by the pipeline
+            The default masks passed in by the pipeline
         previous_results: ResultsCollection
             An object describing the results of the last phase or None if no phase has been executed
 
@@ -1222,7 +1222,7 @@ class GalaxyFitDeflectionsPhase(AbstractPhase):
         array_x
         array_y
         mask: Mask
-            The default mask passed in by the pipeline
+            The default masks passed in by the pipeline
         previous_results: ResultsCollection
             The result from the previous phase
 
@@ -1307,7 +1307,7 @@ class SensitivityPhase(PhaseImaging):
                  optimizer_class=non_linear.MultiNest, sub_grid_size=2,
                  mask_function=default_mask_function, phase_name=None):
         """
-        A phase in an lensing pipeline. Uses the set non_linear optimizer to try to fit_normal models and data
+        A phase in an lensing pipeline. Uses the set non_linear optimizer to try to fit_normal models and datas
         passed to it.
 
         Parameters

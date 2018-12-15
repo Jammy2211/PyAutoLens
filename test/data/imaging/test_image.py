@@ -2307,7 +2307,7 @@ class TestLoadImagingFromFits(object):
                                              exposure_time_map_from_single_value=1.0,
                                              noise_map_from_image_and_background_noise_map=True)
 
-        # Dont need gain if data is in electrons
+        # Dont need gain if datas is in electrons
         image.load_imaging_from_fits(image_path=test_data_dir + '3x3_ones.fits',
                                      psf_path=test_data_dir + '3x3_ones.fits', pixel_scale=0.1,
                                      noise_map_path=test_data_dir + '3x3_threes.fits',
@@ -2316,7 +2316,7 @@ class TestLoadImagingFromFits(object):
                                      noise_map_from_image_and_background_noise_map=True,
                                      convert_from_electrons=True)
 
-        # Need gain if data is in adus
+        # Need gain if datas is in adus
         with pytest.raises(exc.ImagingException):
             image.load_imaging_from_fits(image_path=test_data_dir + '3x3_ones.fits',
                                          psf_path=test_data_dir + '3x3_ones.fits', pixel_scale=0.1,
@@ -2325,7 +2325,7 @@ class TestLoadImagingFromFits(object):
                                          noise_map_from_image_and_background_noise_map=True,
                                          convert_from_adus=True)
 
-        # No error if data already in adus
+        # No error if datas already in adus
         image.load_imaging_from_fits(image_path=test_data_dir + '3x3_ones.fits',
                                      psf_path=test_data_dir + '3x3_ones.fits', pixel_scale=0.1,
                                      noise_map_path=test_data_dir + '3x3_threes.fits',
@@ -2337,7 +2337,7 @@ class TestLoadImagingFromFits(object):
 
     def test__poisson_noise_map_from_image_exceptions(self):
 
-        # Dont need gain if data is in e/s
+        # Dont need gain if datas is in e/s
         image.load_imaging_from_fits(image_path=test_data_dir + '3x3_ones.fits',
                                      psf_path=test_data_dir + '3x3_ones.fits', pixel_scale=0.1,
                                      noise_map_path=test_data_dir + '3x3_threes.fits',
@@ -2351,7 +2351,7 @@ class TestLoadImagingFromFits(object):
                                      poisson_noise_map_from_image=True,
                                      convert_from_electrons=True)
 
-        # Need gain if data in adus
+        # Need gain if datas in adus
         with pytest.raises(exc.ImagingException):
             image.load_imaging_from_fits(image_path=test_data_dir + '3x3_ones.fits',
                                          psf_path=test_data_dir + '3x3_ones.fits', pixel_scale=0.1,
@@ -2384,7 +2384,7 @@ class TestOutputImagingToFits(object):
         image.output_imaging_to_fits(image=im,
                                      image_path=output_data_dir + 'regular.fits',
                                      psf_path=output_data_dir + 'psf.fits',
-                                     noise_map_path=output_data_dir + 'noise_map.fits',
+                                     noise_map_path=output_data_dir + 'noise_maps.fits',
                                      background_noise_map_path=output_data_dir + 'background_noise_map.fits',
                                      poisson_noise_map_path=output_data_dir + 'poisson_noise_map.fits',
                                      exposure_time_map_path=output_data_dir + 'exposure_time_map.fits',
@@ -2392,7 +2392,7 @@ class TestOutputImagingToFits(object):
 
         im = image.load_imaging_from_fits(image_path=output_data_dir + 'regular.fits', pixel_scale=0.1,
                                           psf_path=output_data_dir + 'psf.fits',
-                                          noise_map_path=output_data_dir + 'noise_map.fits',
+                                          noise_map_path=output_data_dir + 'noise_maps.fits',
                                           background_noise_map_path=output_data_dir + 'background_noise_map.fits',
                                           poisson_noise_map_path=output_data_dir + 'poisson_noise_map.fits',
                                           exposure_time_map_path=output_data_dir + 'exposure_time_map.fits',

@@ -6,30 +6,33 @@ from autolens.data.array.util import grid_util
 from autolens.data.array.util import mapping_util, array_util, mask_util
 
 
-class DataGrids(object):
+class DataGridStack(object):
 
     def __init__(self, regular, sub, blurring, pix=None):
-        """The grids containing the (y,x) arc-second coordinates of padded pixels in a masks. There are 3 grids:
+        """A 'stack' of grid_stacks containing the (y,x) arc-second coordinates of padded pixels in a masks. There are at \
+        least 3 grid_stacks:
 
         Regular - the (y,x) coordinate at the center of every padded pixel.
+
         Sub - the (y,x) coordinates of every sub-pixel in every padded pixel, each using a grid of size \
         sub_grid_size x sub_grid_size.
+
         Blurring - the (y,x) coordinates of all blurring pixels, which are masked pixels whose light is \
         blurred into masked pixels during PSF convolution.
 
-        The grids are stored as 1D arrays, where each entry corresponds to an padded (sub-)pixel. The 1D array is \
+        The grid_stacks are stored as 1D arrays, where each entry corresponds to an padded (sub-)pixel. The 1D array is \
         ordered such pixels begin from the top-row of the masks 2D array and then downwards.
 
         Parameters
         -----------
         regular : RegularGrid
-            The grid of (y,x) arc-second coordinates at the centre of every data value (e.g. data-pixels).
+            The grid of (y,x) arc-second coordinates at the centre of every datas value (e.g. datas-pixels).
         sub : SubGrid
             The grid of (y,x) arc-second coordinates at the centre of every regular pixel's sub-pixels.
         blurring : RegularGrid | ndarray | None
-            The grid of (y,x) arc-second coordinates at the centre of every blurring-mask pixel.
+            The grid of (y,x) arc-second coordinates at the centre of every blurring-masks pixel.
         pix : RegularGrid | ndarray | None
-            The grid of (y,x) arc-second coordinates of every data-plane pixelization grid used for adaptive source \
+            The grid of (y,x) arc-second coordinates of every datas-plane pixelization grid used for adaptive source \
             -plane pixelizations.
         """
         self.regular = regular
@@ -42,12 +45,12 @@ class DataGrids(object):
 
     @classmethod
     def grids_from_mask_sub_grid_size_and_psf_shape(cls, mask, sub_grid_size, psf_shape):
-        """Setup the *DataGrids* from a masks, sub-grid size and psf-shape.
+        """Setup the *DataGridStack* from a masks, sub-grid size and psf-shape.
 
         Parameters
         -----------
         mask : Mask
-            The masks whose padded pixels the imaging-grids are setup using.
+            The masks whose padded pixels the imaging-grid_stacks are setup using.
         sub_grid_size : int
             The size of a sub-pixels sub-grid (sub_grid_size x sub_grid_size).
         psf_shape : (int, int)
@@ -56,7 +59,7 @@ class DataGrids(object):
         image_grid = RegularGrid.from_mask(mask)
         sub_grid = SubGrid.from_mask_and_sub_grid_size(mask, sub_grid_size)
         blurring_grid = RegularGrid.blurring_grid_from_mask_and_psf_shape(mask, psf_shape)
-        return DataGrids(image_grid, sub_grid, blurring_grid)
+        return DataGridStack(image_grid, sub_grid, blurring_grid)
 
     @classmethod
     def from_shape_and_pixel_scale(cls, shape, pixel_scale, sub_grid_size=2, psf_shape=(1, 1)):
@@ -64,17 +67,17 @@ class DataGrids(object):
         sub_grid = SubGrid.from_shape_pixel_scale_and_sub_grid_size(shape=shape, pixel_scale=pixel_scale,
                                                                     sub_grid_size=sub_grid_size)
         blurring_grid = np.array([[0.0, 0.0]])
-        return DataGrids(image_grid, sub_grid, blurring_grid)
+        return DataGridStack(image_grid, sub_grid, blurring_grid)
 
     @classmethod
     def padded_grids_from_mask_sub_grid_size_and_psf_shape(cls, mask, sub_grid_size, psf_shape):
-        """Setup the collection of padded imaging-grids from a masks, using also an input sub-grid size to setup the \
+        """Setup the collection of padded imaging-grid_stacks from a masks, using also an input sub-grid size to setup the \
         sub-grid and psf-shape to setup the blurring grid.
 
         Parameters
         -----------
         mask : Mask
-            The masks whose padded pixels the imaging-grids are setup using.
+            The masks whose padded pixels the imaging-grid_stacks are setup using.
         sub_grid_size : int
             The size of a sub-pixels sub-grid (sub_grid_size x sub_grid_size).
         psf_shape : (int, int)
@@ -88,13 +91,13 @@ class DataGrids(object):
                                                                                           psf_shape=psf_shape)
         # TODO : The blurring grid is not used when the grid mapper is called, the 0.0 0.0 stops errors inr ayT_racing
         # TODO : implement a more explicit solution
-        return DataGrids(regular=image_padded_grid, sub=sub_padded_grid, blurring=np.array([[0.0, 0.0]]))
+        return DataGridStack(regular=image_padded_grid, sub=sub_padded_grid, blurring=np.array([[0.0, 0.0]]))
 
     @classmethod
     def grids_for_simulation(cls, shape, pixel_scale, psf_shape, sub_grid_size=1):
-        """Setup a collection of imaging-grids for simulating an datas_ of a strong lens.
+        """Setup a collection of imaging-grid_stacks for simulating an datas_ of a strong lens.
 
-        This routine uses padded-grids which ensure that the PSF blurring in the simulation routine \
+        This routine uses padded-grid_stacks which ensure that the PSF blurring in the simulation routine \
         (*imaging.PrepatoryImage.simulate*) is not degraded due to edge effects.
 
         Parameters
@@ -111,22 +114,22 @@ class DataGrids(object):
                                                                       sub_grid_size=sub_grid_size,
                                                                       psf_shape=psf_shape)
 
-    def data_grids_with_pix_grid(self, pix_grid, regular_to_nearest_regular_pix):
+    def data_grid_stack_with_pix_grid(self, pix_grid, regular_to_nearest_regular_pix):
         pix = PixGrid(arr=pix_grid, regular_to_nearest_regular_pix=regular_to_nearest_regular_pix)
-        return DataGrids(regular=self.regular, sub=self.sub, blurring=self.blurring, pix=pix)
+        return DataGridStack(regular=self.regular, sub=self.sub, blurring=self.blurring, pix=pix)
 
     def apply_function(self, func):
         if self.blurring is not None and self.pix is not None:
-            return DataGrids(func(self.regular), func(self.sub), func(self.blurring), func(self.pix))
+            return DataGridStack(func(self.regular), func(self.sub), func(self.blurring), func(self.pix))
         elif self.blurring is None and self.pix is not None:
-            return DataGrids(func(self.regular), func(self.sub), self.blurring, func(self.pix))
+            return DataGridStack(func(self.regular), func(self.sub), self.blurring, func(self.pix))
         elif self.blurring is not None and self.pix is None:
-            return DataGrids(func(self.regular), func(self.sub), func(self.blurring), self.pix)
+            return DataGridStack(func(self.regular), func(self.sub), func(self.blurring), self.pix)
         else:
-            return DataGrids(func(self.regular), func(self.sub), self.blurring, self.pix)
+            return DataGridStack(func(self.regular), func(self.sub), self.blurring, self.pix)
 
     def map_function(self, func, *arg_lists):
-        return DataGrids(*[func(*args) for args in zip(self, *arg_lists)])
+        return DataGridStack(*[func(*args) for args in zip(self, *arg_lists)])
 
     @property
     def sub_pixels(self):
@@ -216,7 +219,7 @@ class RegularGrid(np.ndarray):
         Parameters
         -----------
         mask : Mask
-            The masks whose padded pixels are used to setup the sub-pixel grids."""
+            The masks whose padded pixels are used to setup the sub-pixel grid_stacks."""
         array = grid_util.regular_grid_1d_masked_from_mask_pixel_scales_and_origin(mask=mask, pixel_scales=mask.pixel_scales)
         return cls(array, mask)
 
@@ -394,7 +397,7 @@ class SubGrid(RegularGrid):
         Parameters
         -----------
         mask : Mask
-            The masks whose padded pixels are used to setup the sub-pixel grids.
+            The masks whose padded pixels are used to setup the sub-pixel grid_stacks.
         sub_grid_size : int
             The size (sub_grid_size x sub_grid_size) of each datas_-pixels sub-grid.
         """
@@ -459,13 +462,13 @@ class PixGrid(np.ndarray):
 class SparseToRegularGrid(scaled_array.RectangularArrayGeometry):
 
     def __init__(self, unmasked_sparse_grid_shape, pixel_scales, regular_grid, origin=(0.0, 0.0)):
-        """Abstract class which represents a sparse grid overlaid over a regular-grid. The regular-grids mask is used to \
-         determine which sparse-grid pixels are in the mask, and these pixels form the centers of the sparse grid.
+        """Abstract class which represents a sparse grid overlaid over a regular-grid. The regular-grid_stacks masks is used to \
+         determine which sparse-grid pixels are in the masks, and these pixels form the centers of the sparse grid.
 
         The origin of the unmasked sparse grid can be changed to allow off-center pairings with sparse-grid pixels, \
-        which is typically used when a mask with an offset centre is being used. However, the sparse grid itself \
+        which is typically used when a masks with an offset centre is being used. However, the sparse grid itself \
         remains at the origin (0.0, 0.0), such that its arc-second grid uses the same coordinate system as the \
-        other grids.
+        other grid_stacks.
 
         This sparse grid is used to determine the pixel centers of an adaptive grid pixelization.
 
@@ -478,7 +481,7 @@ class SparseToRegularGrid(scaled_array.RectangularArrayGeometry):
         regular_grid : RegularGrid
             The regular-grid the sparse grid is compared to.
         origin : (float, float)
-            The centre of the data-plane pix grid, which matches the centre of the mask (note that the origin of the \
+            The centre of the datas-plane pix grid, which matches the centre of the masks (note that the origin of the \
             coordinate system stays at (0.0", 0.0").
         """
 
@@ -537,7 +540,7 @@ class PaddedRegularGrid(RegularGrid):
         - All pixels are used (as opposed to just padded pixels)
         - The masks is padded when computing the grid, such that additional pixels beyond its edge are included.
 
-        Padded-grids allow quantities like intensities to be computed on large 2D arrays spanning the entire datas_, as
+        Padded-grid_stacks allow quantities like intensities to be computed on large 2D arrays spanning the entire datas_, as
         opposed to just within the masked region.
         """
         arr = arr.view(cls)
@@ -580,7 +583,7 @@ class PaddedRegularGrid(RegularGrid):
         unmasked_image_1d : ndarray
             A 1D unmasked image which is blurred with the PSF.
         psf : ndarray
-            An array describing the PSF kernel of the data.
+            An array describing the PSF kernel of the datas.
         """
         model_image_1d = self.convolve_array_1d_with_psf(padded_array_1d=unmasked_image_1d, psf=psf)
         return self.scaled_array_from_array_1d(array_1d=model_image_1d)
@@ -640,7 +643,7 @@ class PaddedSubGrid(SubGrid, PaddedRegularGrid):
         - All pixels are used (as opposed to just padded pixels)
         - The masks is padded when computing the grid, such that additional pixels beyond its edge are included.
 
-        Padded-grids allow quantities like intensities to be computed on large 2D arrays spanning the entire datas_, as
+        Padded-grid_stacks allow quantities like intensities to be computed on large 2D arrays spanning the entire datas_, as
         opposed to just within the masked region.
         """
         super(PaddedSubGrid, self).__init__(arr, mask, sub_grid_size)
@@ -656,7 +659,7 @@ class PaddedSubGrid(SubGrid, PaddedRegularGrid):
         Parameters
         ----------
         mask : Mask
-            The masks whose padded pixels are used to setup the sub-pixel grids.
+            The masks whose padded pixels are used to setup the sub-pixel grid_stacks.
         sub_grid_size : int
             The size (sub_grid_size x sub_grid_size) of each datas_-pixels sub-grid.
         psf_shape : (int, int)
@@ -682,21 +685,21 @@ class PaddedSubGrid(SubGrid, PaddedRegularGrid):
 class RegularGridBorder(np.ndarray):
 
     def __new__(cls, arr, *args, **kwargs):
-        """The border of a regular, containing the pixel-index's of all padded pixels that are on the \
-        masks's border (e.g. they are next to a *True* value in at least one of the surrounding 8 pixels).
+        """The borders of a regular, containing the pixel-index's of all padded pixels that are on the \
+        masks's borders (e.g. they are next to a *True* value in at least one of the surrounding 8 pixels).
 
-        A polynomial is fitted to the (y,x) coordinates of the border's pixels. This allows us to relocate \
-        demagnified pixel's in a grid to its border, so that they do not disrupt an adaptive inversion.
+        A polynomial is fitted to the (y,x) coordinates of the borders's pixels. This allows us to relocate \
+        demagnified pixel's in a grid to its borders, so that they do not disrupt an adaptive inversion.
 
         Parameters
         -----------
         arr : ndarray
-            A 1D array of the integer indexes of an *RegularGrid*'s border pixels.
+            A 1D array of the integer indexes of an *RegularGrid*'s borders pixels.
         polynomial_degree : int
-            The degree of the polynomial that is used to fit_normal the border when relocating pixels outside the border to \
+            The degree of the polynomial that is used to fit_normal the borders when relocating pixels outside the borders to \
             its edge.
         centre : (float, float)
-            The origin of the border, which can be shifted relative to its coordinates.
+            The origin of the borders, which can be shifted relative to its coordinates.
         """
         border = arr.view(cls)
         return border
@@ -708,32 +711,32 @@ class RegularGridBorder(np.ndarray):
         Parameters
         -----------
         mask : Mask
-            The masks the padded border pixel index's are computed from.
+            The masks the padded borders pixel index's are computed from.
         polynomial_degree : int
-            The degree of the polynomial that is used to fit_normal the border when relocating pixels outside the border to \
+            The degree of the polynomial that is used to fit_normal the borders when relocating pixels outside the borders to \
             its edge.
         centre : (float, float)
-            The origin of the border, which can be shifted relative to its coordinates.
+            The origin of the borders, which can be shifted relative to its coordinates.
         """
         return cls(mask.border_pixels)
 
     def relocated_grids_from_grids(self, grids):
-        """Determine a set of relocated grids from an input set of grids, by relocating their pixels based on the \
-        border.
+        """Determine a set of relocated grid_stacks from an input set of grid_stacks, by relocating their pixels based on the \
+        borders.
 
         The blurring-grid does not have its coordinates relocated, as it is only used for computing analytic \
-        light-profiles and not inversion-grids.
+        light-profiles and not inversion-grid_stacks.
 
         Parameters
         -----------
-        grids : DataGrids
-            The imaging-grids (datas_, sub) which have their coordinates relocated.
+        grids : DataGridStack
+            The imaging-grid_stacks (datas_, sub) which have their coordinates relocated.
         """
         border_grid = grids.regular[self]
-        return DataGrids(regular=self.relocated_grid_from_grid_jit(grid=grids.regular, border_grid=border_grid),
-                         sub=self.relocated_grid_from_grid_jit(grid=grids.sub, border_grid=border_grid),
-                         blurring=None,
-                         pix=self.relocated_grid_from_grid_jit(grid=grids.pix, border_grid=border_grid))
+        return DataGridStack(regular=self.relocated_grid_from_grid_jit(grid=grids.regular, border_grid=border_grid),
+                             sub=self.relocated_grid_from_grid_jit(grid=grids.sub, border_grid=border_grid),
+                             blurring=None,
+                             pix=self.relocated_grid_from_grid_jit(grid=grids.pix, border_grid=border_grid))
 
     @staticmethod
     @numba.jit(nopython=True, cache=True)

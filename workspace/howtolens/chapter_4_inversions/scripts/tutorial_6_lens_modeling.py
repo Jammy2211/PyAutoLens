@@ -27,7 +27,7 @@ def simulate():
 
     psf = im.PSF.simulate_as_gaussian(shape=(11, 11), sigma=0.05, pixel_scale=0.05)
 
-    image_plane_grids = grids.DataGrids.grids_for_simulation(shape=(180, 180), pixel_scale=0.05, psf_shape=(11, 11))
+    image_plane_grids = grids.DataGridStack.grids_for_simulation(shape=(180, 180), pixel_scale=0.05, psf_shape=(11, 11))
 
     lens_galaxy = g.Galaxy(mass=mp.EllipticalIsothermal(centre=(0.0, 0.0), axis_ratio=0.8, phi=135.0,
                                                         einstein_radius=1.6))
@@ -107,7 +107,7 @@ def simulate_lens_with_light_profile():
 
     psf = im.PSF.simulate_as_gaussian(shape=(11, 11), sigma=0.05, pixel_scale=0.05)
 
-    image_plane_grids = grids.DataGrids.grids_for_simulation(shape=(180, 180), pixel_scale=0.05, psf_shape=(11, 11))
+    image_plane_grids = grids.DataGridStack.grids_for_simulation(shape=(180, 180), pixel_scale=0.05, psf_shape=(11, 11))
 
     lens_galaxy = g.Galaxy(light=lp.SphericalSersic(centre=(0.0, 0.0), intensity=0.2, effective_radius=0.8,
                                                     sersic_index=4.0),
@@ -169,7 +169,7 @@ lensing_fitting_plotters.plot_fitting_subplot(fit=fit)
 #   have completely been resolved!
 
 # - When the lens model_galaxy's light is subtracted perfectly, it leaves no residuals. However, if it isn't subtracted
-#   perfectly, it does leave residuals, and these residuals will be fitted by the inversion. If the residual are
+#   perfectly, it does leave residual_map, and these residual_map will be fitted by the inversion. If the residual are
 #   significant, this is going to really mess-up our source reconstruction and can lead to some pretty nasty
 #   systematics. In the next chapter, we'll learn how our adaptive analysis can prevent this residual fitting.
 

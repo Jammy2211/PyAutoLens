@@ -11,7 +11,7 @@ def plot_image_plane_image(plane, image_index=0, mask=None, positions=None, grid
                            mask_pointsize=10, position_pointsize=10.0, grid_pointsize=1,
                            output_path=None, output_format='show', output_filename='plane_image_plane_image'):
 
-    array_plotters.plot_array(array=plane.image_plane_images[image_index], mask=mask, positions=positions, grid=grid,
+    array_plotters.plot_array(array=plane.image_plane_image[image_index], mask=mask, positions=positions, grid=grid,
                               as_subplot=as_subplot,
                               units=units, kpc_per_arcsec=plane.kpc_per_arcsec_proper, figsize=figsize, aspect=aspect,
                               cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max,
@@ -37,11 +37,11 @@ def plot_plane_image(plane, image_index=0, plot_origin=True, positions=None, plo
         grid = None
 
     if plot_origin:
-        origin = plane.plane_images[image_index].origin
+        origin = plane.plane_image[image_index].origin
     else:
         origin = None
 
-    array_plotters.plot_array(array=plane.plane_images[image_index], origin=origin, positions=positions, grid=grid,
+    array_plotters.plot_array(array=plane.plane_image[image_index], origin=origin, positions=positions, grid=grid,
                               as_subplot=as_subplot,
                               units=units, kpc_per_arcsec=plane.kpc_per_arcsec_proper, figsize=figsize, aspect=aspect,
                               cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max,

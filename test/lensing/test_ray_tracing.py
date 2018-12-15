@@ -19,10 +19,10 @@ def make_data_grids():
                              [True, False, False, True],
                              [True, True, True, True]]), pixel_scale=6.0)
 
-    data_grids = grids.DataGrids.grids_from_mask_sub_grid_size_and_psf_shape(mask=ma, sub_grid_size=2,
-                                                                                psf_shape=(3, 3))
+    data_grids = grids.DataGridStack.grids_from_mask_sub_grid_size_and_psf_shape(mask=ma, sub_grid_size=2,
+                                                                                 psf_shape=(3, 3))
 
-    # Manually overwrite a set of cooridnates to make tests of grids and defledctions straightforward
+    # Manually overwrite a set of cooridnates to make tests of grid_stacks and defledctions straightforward
 
     data_grids.regular[0] = np.array([1.0, 1.0])
     data_grids.regular[1] = np.array([1.0, 0.0])
@@ -41,10 +41,10 @@ def make_data_grids_1():
                              [True, False, False, True],
                              [True, True, True, True]]), pixel_scale=12.0)
 
-    data_grids = grids.DataGrids.grids_from_mask_sub_grid_size_and_psf_shape(mask=ma, sub_grid_size=2,
-                                                                                psf_shape=(3, 3))
+    data_grids = grids.DataGridStack.grids_from_mask_sub_grid_size_and_psf_shape(mask=ma, sub_grid_size=2,
+                                                                                 psf_shape=(3, 3))
 
-    # Manually overwrite a set of cooridnates to make tests of grids and defledctions straightforward
+    # Manually overwrite a set of cooridnates to make tests of grid_stacks and defledctions straightforward
 
     data_grids.regular[0] = np.array([2.0, 2.0])
     data_grids.regular[1] = np.array([2.0, 0.0])
@@ -60,7 +60,7 @@ def make_data_grids_1():
 @pytest.fixture(name="padded_grids")
 def make_padded_grids():
     ma = mask.Mask(np.array([[True, False]]), pixel_scale=3.0)
-    return grids.DataGrids.padded_grids_from_mask_sub_grid_size_and_psf_shape(ma, 2, (3, 3))
+    return grids.DataGridStack.padded_grids_from_mask_sub_grid_size_and_psf_shape(ma, 2, (3, 3))
 
 
 @pytest.fixture(name='galaxy_non', scope='function')
@@ -174,13 +174,13 @@ class TestTracerImagePlane(object):
             g1 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=2.0))
             g2 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=3.0))
 
-            image_plane = pl.Plane(galaxies=[g0, g1, g2], grids=[data_grids], compute_deflections=True)
+            image_plane = pl.Plane(galaxies=[g0, g1, g2], grid_stack=[data_grids], compute_deflections=True)
 
             tracer = ray_tracing.TracerImagePlane(lens_galaxies=[g0, g1, g2], image_plane_grids=[data_grids])
 
-            assert (tracer.image_plane_images_[0] == image_plane.image_plane_images_[0]).all()
+            assert (tracer.image_plane_images_[0] == image_plane.image_plane_image_1d[0]).all()
 
-            image_plane_image_2d = data_grids.regular.scaled_array_from_array_1d(image_plane.image_plane_images_[0])
+            image_plane_image_2d = data_grids.regular.scaled_array_from_array_1d(image_plane.image_plane_image_1d[0])
             assert image_plane_image_2d.shape == (3, 4)
             assert (image_plane_image_2d == tracer.image_plane_images[0]).all()
 
@@ -190,21 +190,21 @@ class TestTracerImagePlane(object):
             g1 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=2.0))
             g2 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=3.0))
 
-            image_plane = pl.Plane(galaxies=[g0, g1, g2], grids=[data_grids, data_grids_1],
+            image_plane = pl.Plane(galaxies=[g0, g1, g2], grid_stack=[data_grids, data_grids_1],
                                    compute_deflections=True)
 
             tracer = ray_tracing.TracerImagePlane(lens_galaxies=[g0, g1, g2], image_plane_grids=[data_grids,
                                                                                                  data_grids_1])
 
-            assert (tracer.image_plane_images_[0] == image_plane.image_plane_images_[0]).all()
+            assert (tracer.image_plane_images_[0] == image_plane.image_plane_image_1d[0]).all()
 
-            image_plane_image_2d = data_grids.regular.scaled_array_from_array_1d(image_plane.image_plane_images_[0])
+            image_plane_image_2d = data_grids.regular.scaled_array_from_array_1d(image_plane.image_plane_image_1d[0])
             assert image_plane_image_2d.shape == (3, 4)
             assert (image_plane_image_2d == tracer.image_plane_images[0]).all()
 
-            assert (tracer.image_plane_images_[1] == image_plane.image_plane_images_[1]).all()
+            assert (tracer.image_plane_images_[1] == image_plane.image_plane_image_1d[1]).all()
 
-            image_plane_image_2d = data_grids.regular.scaled_array_from_array_1d(image_plane.image_plane_images_[1])
+            image_plane_image_2d = data_grids.regular.scaled_array_from_array_1d(image_plane.image_plane_image_1d[1])
             assert image_plane_image_2d.shape == (3, 4)
             assert (image_plane_image_2d == tracer.image_plane_images[1]).all()
 
@@ -216,11 +216,11 @@ class TestTracerImagePlane(object):
             g1 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=2.0))
             g2 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=3.0))
 
-            image_plane = pl.Plane(galaxies=[g0, g1, g2], grids=[data_grids], compute_deflections=True)
+            image_plane = pl.Plane(galaxies=[g0, g1, g2], grid_stack=[data_grids], compute_deflections=True)
 
             tracer = ray_tracing.TracerImagePlane(lens_galaxies=[g0, g1, g2], image_plane_grids=[data_grids])
 
-            assert (tracer.image_plane_blurring_images_[0] == image_plane.image_plane_blurring_images_[0]).all()
+            assert (tracer.image_plane_blurring_images_[0] == image_plane.image_plane_blurring_image_1d[0]).all()
 
 
 class TestTracerImageSourcePlanes(object):
@@ -412,18 +412,18 @@ class TestTracerImageSourcePlanes(object):
             g0 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=1.0))
             g1 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=2.0))
 
-            image_plane = pl.Plane(galaxies=[g0], grids=[data_grids], compute_deflections=True)
-            source_plane = pl.Plane(galaxies=[g1], grids=[data_grids], compute_deflections=False)
+            image_plane = pl.Plane(galaxies=[g0], grid_stack=[data_grids], compute_deflections=True)
+            source_plane = pl.Plane(galaxies=[g1], grid_stack=[data_grids], compute_deflections=False)
 
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g1],
                                                          image_plane_grids=[data_grids])
 
-            image_plane_image_1d = image_plane.image_plane_images_[0] + source_plane.image_plane_images_[0]
+            image_plane_image_1d = image_plane.image_plane_image_1d[0] + source_plane.image_plane_image_1d[0]
 
             assert (image_plane_image_1d == tracer.image_plane_images_[0]).all()
 
-            image_plane_image_2d = data_grids.regular.scaled_array_from_array_1d(image_plane.image_plane_images_[0]) + \
-                                   data_grids.regular.scaled_array_from_array_1d(source_plane.image_plane_images_[0])
+            image_plane_image_2d = data_grids.regular.scaled_array_from_array_1d(image_plane.image_plane_image_1d[0]) + \
+                                   data_grids.regular.scaled_array_from_array_1d(source_plane.image_plane_image_1d[0])
             assert image_plane_image_2d.shape == (3, 4)
             assert (image_plane_image_2d == tracer.image_plane_images[0]).all()
 
@@ -433,20 +433,20 @@ class TestTracerImageSourcePlanes(object):
                           mass_profile=mp.SphericalIsothermal(einstein_radius=1.0))
             g1 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=2.0))
 
-            image_plane = pl.Plane(galaxies=[g0], grids=[data_grids], compute_deflections=True)
+            image_plane = pl.Plane(galaxies=[g0], grid_stack=[data_grids], compute_deflections=True)
 
-            deflections_grid = pl.deflections_from_grid_collection(data_grids, galaxies=[g0])
+            deflections_grid = pl.deflections_from_grid_stack(data_grids, galaxies=[g0])
             source_grids = pl.traced_collection_for_deflections(data_grids, deflections_grid)
-            source_plane = pl.Plane(galaxies=[g1], grids=[source_grids], compute_deflections=False)
+            source_plane = pl.Plane(galaxies=[g1], grid_stack=[source_grids], compute_deflections=False)
 
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g1],
                                                          image_plane_grids=[data_grids])
 
-            image_plane_image_1d = image_plane.image_plane_images_[0] + source_plane.image_plane_images_[0]
+            image_plane_image_1d = image_plane.image_plane_image_1d[0] + source_plane.image_plane_image_1d[0]
             assert (image_plane_image_1d == tracer.image_plane_images_[0]).all()
 
-            image_plane_image_2d = data_grids.regular.scaled_array_from_array_1d(image_plane.image_plane_images_[0]) + \
-                                   data_grids.regular.scaled_array_from_array_1d(source_plane.image_plane_images_[0])
+            image_plane_image_2d = data_grids.regular.scaled_array_from_array_1d(image_plane.image_plane_image_1d[0]) + \
+                                   data_grids.regular.scaled_array_from_array_1d(source_plane.image_plane_image_1d[0])
             assert image_plane_image_2d.shape == (3, 4)
             assert (image_plane_image_2d == tracer.image_plane_images[0]).all()
 
@@ -474,18 +474,18 @@ class TestTracerImageSourcePlanes(object):
             g0 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=1.0),
                           mass_profile=mp.SphericalIsothermal(einstein_radius=1.0))
 
-            image_plane = pl.Plane(galaxies=[g0], grids=[data_grids], compute_deflections=True)
+            image_plane = pl.Plane(galaxies=[g0], grid_stack=[data_grids], compute_deflections=True)
             source_plane_data_grids = image_plane.trace_grids_to_next_plane()
-            source_plane = pl.Plane(galaxies=[g0], grids=source_plane_data_grids, compute_deflections=False)
+            source_plane = pl.Plane(galaxies=[g0], grid_stack=source_plane_data_grids, compute_deflections=False)
 
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g0],
                                                          image_plane_grids=[data_grids])
 
-            assert (tracer.image_plane_images_[0] == image_plane.image_plane_images_[0] +
-                    source_plane.image_plane_images_[0]).all()
+            assert (tracer.image_plane_images_[0] == image_plane.image_plane_image_1d[0] +
+                    source_plane.image_plane_image_1d[0]).all()
 
-            image_plane_image_2d = data_grids.regular.scaled_array_from_array_1d(image_plane.image_plane_images_[0]) + \
-                                   data_grids.regular.scaled_array_from_array_1d(source_plane.image_plane_images_[0])
+            image_plane_image_2d = data_grids.regular.scaled_array_from_array_1d(image_plane.image_plane_image_1d[0]) + \
+                                   data_grids.regular.scaled_array_from_array_1d(source_plane.image_plane_image_1d[0])
             assert image_plane_image_2d.shape == (3, 4)
             assert (image_plane_image_2d == tracer.image_plane_images[0]).all()
 
@@ -494,26 +494,26 @@ class TestTracerImageSourcePlanes(object):
             g0 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=1.0),
                           mass_profile=mp.SphericalIsothermal(einstein_radius=1.0))
 
-            image_plane = pl.Plane(galaxies=[g0], grids=[data_grids, data_grids_1], compute_deflections=True)
+            image_plane = pl.Plane(galaxies=[g0], grid_stack=[data_grids, data_grids_1], compute_deflections=True)
             source_plane_grids = image_plane.trace_grids_to_next_plane()
-            source_plane = pl.Plane(galaxies=[g0], grids=source_plane_grids, compute_deflections=False)
+            source_plane = pl.Plane(galaxies=[g0], grid_stack=source_plane_grids, compute_deflections=False)
 
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g0],
                                                          image_plane_grids=[data_grids, data_grids_1])
 
-            assert (tracer.image_plane_images_[0] == image_plane.image_plane_images_[0] +
-                    source_plane.image_plane_images_[0]).all()
+            assert (tracer.image_plane_images_[0] == image_plane.image_plane_image_1d[0] +
+                    source_plane.image_plane_image_1d[0]).all()
 
-            image_plane_image_2d = data_grids.regular.scaled_array_from_array_1d(image_plane.image_plane_images_[0]) + \
-                                   data_grids.regular.scaled_array_from_array_1d(source_plane.image_plane_images_[0])
+            image_plane_image_2d = data_grids.regular.scaled_array_from_array_1d(image_plane.image_plane_image_1d[0]) + \
+                                   data_grids.regular.scaled_array_from_array_1d(source_plane.image_plane_image_1d[0])
             assert image_plane_image_2d.shape == (3, 4)
             assert (image_plane_image_2d == tracer.image_plane_images[0]).all()
 
-            assert (tracer.image_plane_images_[1] == image_plane.image_plane_images_[1] +
-                    source_plane.image_plane_images_[1]).all()
+            assert (tracer.image_plane_images_[1] == image_plane.image_plane_image_1d[1] +
+                    source_plane.image_plane_image_1d[1]).all()
 
-            image_plane_image_2d = data_grids.regular.scaled_array_from_array_1d(image_plane.image_plane_images_[1]) + \
-                                   data_grids.regular.scaled_array_from_array_1d(source_plane.image_plane_images_[1])
+            image_plane_image_2d = data_grids.regular.scaled_array_from_array_1d(image_plane.image_plane_image_1d[1]) + \
+                                   data_grids.regular.scaled_array_from_array_1d(source_plane.image_plane_image_1d[1])
             assert image_plane_image_2d.shape == (3, 4)
             assert (image_plane_image_2d == tracer.image_plane_images[1]).all()
 
@@ -524,8 +524,8 @@ class TestTracerImageSourcePlanes(object):
                                                          source_galaxies=[galaxy_light],
                                                          image_plane_grids=[padded_grids])
 
-            image_plane_image_2d = padded_grids.regular.scaled_array_from_array_1d(tracer.image_plane.image_plane_images_[0]) + \
-                                   padded_grids.regular.scaled_array_from_array_1d(tracer.source_plane.image_plane_images_[0])
+            image_plane_image_2d = padded_grids.regular.scaled_array_from_array_1d(tracer.image_plane.image_plane_image_1d[0]) + \
+                                   padded_grids.regular.scaled_array_from_array_1d(tracer.source_plane.image_plane_image_1d[0])
 
             assert image_plane_image_2d.shape == (1, 2)
             assert (image_plane_image_2d == tracer.image_plane_images[0]).all()
@@ -536,8 +536,8 @@ class TestTracerImageSourcePlanes(object):
                                                          source_galaxies=[galaxy_light],
                                                          image_plane_grids=[padded_grids])
 
-            image_plane_image_2d = padded_grids.regular.map_to_2d_keep_padded(tracer.image_plane.image_plane_images_[0]) + \
-                                   padded_grids.regular.map_to_2d_keep_padded(tracer.source_plane.image_plane_images_[0])
+            image_plane_image_2d = padded_grids.regular.map_to_2d_keep_padded(tracer.image_plane.image_plane_image_1d[0]) + \
+                                   padded_grids.regular.map_to_2d_keep_padded(tracer.source_plane.image_plane_image_1d[0])
 
             assert image_plane_image_2d.shape == (3, 4)
             assert (image_plane_image_2d == tracer.image_plane_images_for_simulation[0]).all()
@@ -551,11 +551,11 @@ class TestTracerImageSourcePlanes(object):
             g0 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=1.0))
             g1 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=2.0))
 
-            image_plane = pl.Plane(galaxies=[g0], grids=[data_grids], compute_deflections=True)
-            source_plane = pl.Plane(galaxies=[g1], grids=[data_grids], compute_deflections=False)
+            image_plane = pl.Plane(galaxies=[g0], grid_stack=[data_grids], compute_deflections=True)
+            source_plane = pl.Plane(galaxies=[g1], grid_stack=[data_grids], compute_deflections=False)
 
-            plane_image_plane_blurring_image = image_plane.image_plane_blurring_images_[0] + \
-                                               source_plane.image_plane_blurring_images_[0]
+            plane_image_plane_blurring_image = image_plane.image_plane_blurring_image_1d[0] + \
+                                               source_plane.image_plane_blurring_image_1d[0]
 
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g1],
                                                          image_plane_grids=[data_grids])
@@ -568,14 +568,14 @@ class TestTracerImageSourcePlanes(object):
                           mass_profile=mp.SphericalIsothermal(einstein_radius=1.0))
             g1 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=2.0))
 
-            image_plane = pl.Plane(galaxies=[g0], grids=[data_grids], compute_deflections=True)
+            image_plane = pl.Plane(galaxies=[g0], grid_stack=[data_grids], compute_deflections=True)
 
-            deflections_grid = pl.deflections_from_grid_collection(data_grids, galaxies=[g0])
+            deflections_grid = pl.deflections_from_grid_stack(data_grids, galaxies=[g0])
             source_grid = pl.traced_collection_for_deflections(data_grids, deflections_grid)
-            source_plane = pl.Plane(galaxies=[g1], grids=[source_grid], compute_deflections=False)
+            source_plane = pl.Plane(galaxies=[g1], grid_stack=[source_grid], compute_deflections=False)
 
-            plane_image_plane_blurring_image = image_plane.image_plane_blurring_images_[0] + \
-                                               source_plane.image_plane_blurring_images_[0]
+            plane_image_plane_blurring_image = image_plane.image_plane_blurring_image_1d[0] + \
+                                               source_plane.image_plane_blurring_image_1d[0]
 
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g1],
                                                          image_plane_grids=[data_grids])
@@ -588,26 +588,26 @@ class TestTracerImageSourcePlanes(object):
                           mass_profile=mp.SphericalIsothermal(einstein_radius=1.0))
             g1 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=2.0))
 
-            image_plane = pl.Plane(galaxies=[g0], grids=[data_grids, data_grids_1], compute_deflections=True)
+            image_plane = pl.Plane(galaxies=[g0], grid_stack=[data_grids, data_grids_1], compute_deflections=True)
 
-            deflections_grid_0 = pl.deflections_from_grid_collection(data_grids, galaxies=[g0])
+            deflections_grid_0 = pl.deflections_from_grid_stack(data_grids, galaxies=[g0])
             source_grid_0 = pl.traced_collection_for_deflections(data_grids, deflections_grid_0)
 
-            deflections_grid_1 = pl.deflections_from_grid_collection(data_grids_1, galaxies=[g0])
+            deflections_grid_1 = pl.deflections_from_grid_stack(data_grids_1, galaxies=[g0])
             source_grid_1 = pl.traced_collection_for_deflections(data_grids_1, deflections_grid_1)
 
-            source_plane = pl.Plane(galaxies=[g1], grids=[source_grid_0, source_grid_1], compute_deflections=False)
+            source_plane = pl.Plane(galaxies=[g1], grid_stack=[source_grid_0, source_grid_1], compute_deflections=False)
 
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g1],
                                                          image_plane_grids=[data_grids, data_grids_1])
 
-            plane_image_plane_blurring_image = image_plane.image_plane_blurring_images_[0] + \
-                                               source_plane.image_plane_blurring_images_[0]
+            plane_image_plane_blurring_image = image_plane.image_plane_blurring_image_1d[0] + \
+                                               source_plane.image_plane_blurring_image_1d[0]
 
             assert (plane_image_plane_blurring_image == tracer.image_plane_blurring_images_[0]).all()
 
-            plane_image_plane_blurring_image = image_plane.image_plane_blurring_images_[1] + \
-                                               source_plane.image_plane_blurring_images_[1]
+            plane_image_plane_blurring_image = image_plane.image_plane_blurring_image_1d[1] + \
+                                               source_plane.image_plane_blurring_image_1d[1]
 
             assert (plane_image_plane_blurring_image == tracer.image_plane_blurring_images_[1]).all()
 
@@ -618,7 +618,7 @@ class TestTracerImageSourcePlanes(object):
             g0 = g.Galaxy(mass_profile=mp.SphericalIsothermal(einstein_radius=1.0))
             g1 = g.Galaxy()
 
-            image_plane = pl.Plane(galaxies=[g0], grids=[data_grids], compute_deflections=True)
+            image_plane = pl.Plane(galaxies=[g0], grid_stack=[data_grids], compute_deflections=True)
 
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g1],
                                                          image_plane_grids=[data_grids])
@@ -663,7 +663,7 @@ class TestTracerImageSourcePlanes(object):
             g0 = g.Galaxy(mass_profile=mp.SphericalIsothermal(einstein_radius=1.0))
             g1 = g.Galaxy()
 
-            image_plane = pl.Plane(galaxies=[g0], grids=[data_grids], compute_deflections=True)
+            image_plane = pl.Plane(galaxies=[g0], grid_stack=[data_grids], compute_deflections=True)
 
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g1],
                                                          image_plane_grids=[data_grids])
@@ -708,7 +708,7 @@ class TestTracerImageSourcePlanes(object):
             g0 = g.Galaxy(mass_profile=mp.SphericalIsothermal(einstein_radius=1.0))
             g1 = g.Galaxy()
 
-            image_plane = pl.Plane(galaxies=[g0], grids=[data_grids], compute_deflections=True)
+            image_plane = pl.Plane(galaxies=[g0], grid_stack=[data_grids], compute_deflections=True)
 
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g1],
                                                          image_plane_grids=[data_grids])
@@ -930,8 +930,8 @@ class TestTracerImageSourcePlanes(object):
                                      [False, False, False],
                                      [False, False, False]]), pixel_scale=1.0)
 
-            data_grids = grids.DataGrids.grids_from_mask_sub_grid_size_and_psf_shape(mask=ma, sub_grid_size=1,
-                                                                                     psf_shape=(1, 1))
+            data_grids = grids.DataGridStack.grids_from_mask_sub_grid_size_and_psf_shape(mask=ma, sub_grid_size=1,
+                                                                                         psf_shape=(1, 1))
 
             galaxy = g.Galaxy()
 
@@ -947,8 +947,8 @@ class TestTracerImageSourcePlanes(object):
                                      [False, False, False],
                                      [False, False, False]]), pixel_scale=1.0)
 
-            data_grids = grids.DataGrids.grids_from_mask_sub_grid_size_and_psf_shape(mask=ma, sub_grid_size=1,
-                                                                                     psf_shape=(1, 1))
+            data_grids = grids.DataGridStack.grids_from_mask_sub_grid_size_and_psf_shape(mask=ma, sub_grid_size=1,
+                                                                                         psf_shape=(1, 1))
 
             galaxy = g.Galaxy(pixelization=pixelizations.Rectangular(shape=(3, 3)),
                               regularization=regularization.Constant())
@@ -965,8 +965,8 @@ class TestTracerImageSourcePlanes(object):
                                      [False, False, False],
                                      [False, True, False]]), pixel_scale=1.0)
 
-            data_grids = grids.DataGrids.padded_grids_from_mask_sub_grid_size_and_psf_shape(mask=ma, sub_grid_size=1,
-                                                                                            psf_shape=(1, 1))
+            data_grids = grids.DataGridStack.padded_grids_from_mask_sub_grid_size_and_psf_shape(mask=ma, sub_grid_size=1,
+                                                                                                psf_shape=(1, 1))
 
             galaxy = g.Galaxy(pixelization=pixelizations.AdaptiveMagnification(shape=(3, 3)),
                               regularization=regularization.Constant())
@@ -983,8 +983,8 @@ class TestTracerImageSourcePlanes(object):
                                      [False, False, False],
                                      [False, True, False]]), pixel_scale=1.0)
 
-            data_grids = grids.DataGrids.grids_from_mask_sub_grid_size_and_psf_shape(mask=ma, sub_grid_size=1,
-                                                                                     psf_shape=(1, 1))
+            data_grids = grids.DataGridStack.grids_from_mask_sub_grid_size_and_psf_shape(mask=ma, sub_grid_size=1,
+                                                                                         psf_shape=(1, 1))
 
             galaxy = g.Galaxy(pixelization=pixelizations.AdaptiveMagnification(shape=(3, 3)),
                               regularization=regularization.Constant())
@@ -1325,12 +1325,12 @@ class TestMultiTracer(object):
             tracer = ray_tracing.TracerMulti(galaxies=[g0, g1, g2], image_plane_grids=[data_grids],
                                              cosmology=cosmo.Planck15)
 
-            plane_0 = pl.Plane(galaxies=[g0], grids=[data_grids], compute_deflections=True)
-            plane_1 = pl.Plane(galaxies=[g1], grids=[data_grids], compute_deflections=True)
-            plane_2 = pl.Plane(galaxies=[g2], grids=[data_grids], compute_deflections=False)
+            plane_0 = pl.Plane(galaxies=[g0], grid_stack=[data_grids], compute_deflections=True)
+            plane_1 = pl.Plane(galaxies=[g1], grid_stack=[data_grids], compute_deflections=True)
+            plane_2 = pl.Plane(galaxies=[g2], grid_stack=[data_grids], compute_deflections=False)
 
-            image_plane_image = plane_0.image_plane_images[0] + plane_1.image_plane_images[0] + \
-                                plane_2.image_plane_images[0]
+            image_plane_image = plane_0.image_plane_image[0] + plane_1.image_plane_image[0] + \
+                                plane_2.image_plane_image[0]
 
             assert image_plane_image.shape == (3, 4)
             assert (image_plane_image == tracer.image_plane_images[0]).all()
@@ -1348,7 +1348,7 @@ class TestMultiTracer(object):
             plane_1 = tracer.planes[1]
             plane_2 = tracer.planes[2]
 
-            image_plane_image = plane_0.image_plane_images[0] + plane_1.image_plane_images[0] + plane_2.image_plane_images[0]
+            image_plane_image = plane_0.image_plane_image[0] + plane_1.image_plane_image[0] + plane_2.image_plane_image[0]
 
             assert image_plane_image.shape == (3, 4)
             assert (image_plane_image == tracer.image_plane_images[0]).all()
@@ -1364,12 +1364,12 @@ class TestMultiTracer(object):
             tracer = ray_tracing.TracerMulti(galaxies=[g0, g1, g2, g3, g4], image_plane_grids=[data_grids],
                                              cosmology=cosmo.Planck15)
 
-            plane_0 = pl.Plane(galaxies=[g0, g3], grids=[data_grids], compute_deflections=True)
-            plane_1 = pl.Plane(galaxies=[g1, g4], grids=[data_grids], compute_deflections=True)
-            plane_2 = pl.Plane(galaxies=[g2], grids=[data_grids], compute_deflections=False)
+            plane_0 = pl.Plane(galaxies=[g0, g3], grid_stack=[data_grids], compute_deflections=True)
+            plane_1 = pl.Plane(galaxies=[g1, g4], grid_stack=[data_grids], compute_deflections=True)
+            plane_2 = pl.Plane(galaxies=[g2], grid_stack=[data_grids], compute_deflections=False)
 
-            image_plane_image = plane_0.image_plane_images[0] + plane_1.image_plane_images[0] + \
-                                plane_2.image_plane_images[0]
+            image_plane_image = plane_0.image_plane_image[0] + plane_1.image_plane_image[0] + \
+                                plane_2.image_plane_image[0]
 
             assert image_plane_image.shape == (3, 4)
             assert (image_plane_image == tracer.image_plane_images[0]).all()
@@ -1386,18 +1386,18 @@ class TestMultiTracer(object):
                                              image_plane_grids=[data_grids, data_grids_1],
                                              cosmology=cosmo.Planck15)
 
-            plane_0 = pl.Plane(galaxies=[g0, g3], grids=[data_grids, data_grids_1], compute_deflections=True)
-            plane_1 = pl.Plane(galaxies=[g1, g4], grids=[data_grids, data_grids_1], compute_deflections=True)
-            plane_2 = pl.Plane(galaxies=[g2], grids=[data_grids, data_grids_1], compute_deflections=False)
+            plane_0 = pl.Plane(galaxies=[g0, g3], grid_stack=[data_grids, data_grids_1], compute_deflections=True)
+            plane_1 = pl.Plane(galaxies=[g1, g4], grid_stack=[data_grids, data_grids_1], compute_deflections=True)
+            plane_2 = pl.Plane(galaxies=[g2], grid_stack=[data_grids, data_grids_1], compute_deflections=False)
 
-            image_plane_image_0 = plane_0.image_plane_images[0] + plane_1.image_plane_images[0] + \
-                                plane_2.image_plane_images[0]
+            image_plane_image_0 = plane_0.image_plane_image[0] + plane_1.image_plane_image[0] + \
+                                  plane_2.image_plane_image[0]
 
             assert image_plane_image_0.shape == (3, 4)
             assert (image_plane_image_0 == tracer.image_plane_images[0]).all()
 
-            image_plane_image_1 = plane_0.image_plane_images[1] + plane_1.image_plane_images[1] + \
-                                plane_2.image_plane_images[1]
+            image_plane_image_1 = plane_0.image_plane_image[1] + plane_1.image_plane_image[1] + \
+                                  plane_2.image_plane_image[1]
 
             assert image_plane_image_1.shape == (3, 4)
             assert (image_plane_image_1 == tracer.image_plane_images[1]).all()
@@ -1411,12 +1411,12 @@ class TestMultiTracer(object):
             tracer = ray_tracing.TracerMulti(galaxies=[g0, g1, g2], image_plane_grids=[padded_grids],
                                              cosmology=cosmo.Planck15)
 
-            plane_0 = pl.Plane(galaxies=[g0], grids=[padded_grids], compute_deflections=True)
-            plane_1 = pl.Plane(galaxies=[g1], grids=[padded_grids], compute_deflections=True)
-            plane_2 = pl.Plane(galaxies=[g2], grids=[padded_grids], compute_deflections=False)
+            plane_0 = pl.Plane(galaxies=[g0], grid_stack=[padded_grids], compute_deflections=True)
+            plane_1 = pl.Plane(galaxies=[g1], grid_stack=[padded_grids], compute_deflections=True)
+            plane_2 = pl.Plane(galaxies=[g2], grid_stack=[padded_grids], compute_deflections=False)
 
-            image_plane_image = plane_0.image_plane_images[0] + plane_1.image_plane_images[0] + \
-                                plane_2.image_plane_images[0]
+            image_plane_image = plane_0.image_plane_image[0] + plane_1.image_plane_image[0] + \
+                                plane_2.image_plane_image[0]
 
             assert image_plane_image.shape == (1, 2)
             assert (image_plane_image == tracer.image_plane_images[0]).all()
@@ -1430,13 +1430,13 @@ class TestMultiTracer(object):
             tracer = ray_tracing.TracerMulti(galaxies=[g0, g1, g2], image_plane_grids=[padded_grids],
                                              cosmology=cosmo.Planck15)
 
-            plane_0 = pl.Plane(galaxies=[g0], grids=[padded_grids], compute_deflections=True)
-            plane_1 = pl.Plane(galaxies=[g1], grids=[padded_grids], compute_deflections=True)
-            plane_2 = pl.Plane(galaxies=[g2], grids=[padded_grids], compute_deflections=False)
+            plane_0 = pl.Plane(galaxies=[g0], grid_stack=[padded_grids], compute_deflections=True)
+            plane_1 = pl.Plane(galaxies=[g1], grid_stack=[padded_grids], compute_deflections=True)
+            plane_2 = pl.Plane(galaxies=[g2], grid_stack=[padded_grids], compute_deflections=False)
 
-            image_plane_image_for_simulation = plane_0.image_plane_images_for_simulation[0] + \
-                                               plane_1.image_plane_images_for_simulation[0] + \
-                                               plane_2.image_plane_images_for_simulation[0]
+            image_plane_image_for_simulation = plane_0.image_plane_image_for_simulation[0] + \
+                                               plane_1.image_plane_image_for_simulation[0] + \
+                                               plane_2.image_plane_image_for_simulation[0]
 
             assert image_plane_image_for_simulation.shape == (3,4)
             assert (image_plane_image_for_simulation == tracer.image_plane_images_for_simulation[0]).all()
@@ -1455,13 +1455,13 @@ class TestMultiTracer(object):
             tracer = ray_tracing.TracerMulti(galaxies=[g0, g1, g2], image_plane_grids=[data_grids],
                                              cosmology=cosmo.Planck15)
 
-            plane_0 = pl.Plane(galaxies=[g0], grids=[data_grids], compute_deflections=True)
-            plane_1 = pl.Plane(galaxies=[g1], grids=[data_grids], compute_deflections=True)
-            plane_2 = pl.Plane(galaxies=[g2], grids=[data_grids], compute_deflections=False)
+            plane_0 = pl.Plane(galaxies=[g0], grid_stack=[data_grids], compute_deflections=True)
+            plane_1 = pl.Plane(galaxies=[g1], grid_stack=[data_grids], compute_deflections=True)
+            plane_2 = pl.Plane(galaxies=[g2], grid_stack=[data_grids], compute_deflections=False)
 
-            image_plane_blurring_image = plane_0.image_plane_blurring_images_[0] + \
-                                         plane_1.image_plane_blurring_images_[0] + \
-                                         plane_2.image_plane_blurring_images_[0]
+            image_plane_blurring_image = plane_0.image_plane_blurring_image_1d[0] + \
+                                         plane_1.image_plane_blurring_image_1d[0] + \
+                                         plane_2.image_plane_blurring_image_1d[0]
 
             assert (image_plane_blurring_image == tracer.image_plane_blurring_images_[0]).all()
 
@@ -1483,9 +1483,9 @@ class TestMultiTracer(object):
             plane_1 = tracer.planes[1]
             plane_2 = tracer.planes[2]
 
-            image_plane_blurring_image = plane_0.image_plane_blurring_images_[0] + \
-                                         plane_1.image_plane_blurring_images_[0] + \
-                                         plane_2.image_plane_blurring_images_[0]
+            image_plane_blurring_image = plane_0.image_plane_blurring_image_1d[0] + \
+                                         plane_1.image_plane_blurring_image_1d[0] + \
+                                         plane_2.image_plane_blurring_image_1d[0]
 
             assert (image_plane_blurring_image == tracer.image_plane_blurring_images_[0]).all()
 
@@ -1501,13 +1501,13 @@ class TestMultiTracer(object):
             tracer = ray_tracing.TracerMulti(galaxies=[g0, g1, g2], image_plane_grids=[data_grids],
                                              cosmology=cosmo.Planck15)
 
-            plane_0 = pl.Plane(galaxies=[g0], grids=[data_grids], compute_deflections=True)
-            plane_1 = pl.Plane(galaxies=[g1], grids=[data_grids], compute_deflections=True)
-            plane_2 = pl.Plane(galaxies=[g2], grids=[data_grids], compute_deflections=False)
+            plane_0 = pl.Plane(galaxies=[g0], grid_stack=[data_grids], compute_deflections=True)
+            plane_1 = pl.Plane(galaxies=[g1], grid_stack=[data_grids], compute_deflections=True)
+            plane_2 = pl.Plane(galaxies=[g2], grid_stack=[data_grids], compute_deflections=False)
 
-            image_plane_blurring_image = plane_0.image_plane_blurring_images_[0] + \
-                                         plane_1.image_plane_blurring_images_[0] + \
-                                         plane_2.image_plane_blurring_images_[0]
+            image_plane_blurring_image = plane_0.image_plane_blurring_image_1d[0] + \
+                                         plane_1.image_plane_blurring_image_1d[0] + \
+                                         plane_2.image_plane_blurring_image_1d[0]
 
             assert (image_plane_blurring_image == tracer.image_plane_blurring_images_[0]).all()
 
@@ -1525,13 +1525,13 @@ class TestMultiTracer(object):
             tracer = ray_tracing.TracerMulti(galaxies=[g0, g1, g2, g3, g4], image_plane_grids=[data_grids],
                                              cosmology=cosmo.Planck15)
 
-            plane_0 = pl.Plane(galaxies=[g0, g3], grids=[data_grids], compute_deflections=True)
-            plane_1 = pl.Plane(galaxies=[g1, g4], grids=[data_grids], compute_deflections=True)
-            plane_2 = pl.Plane(galaxies=[g2], grids=[data_grids], compute_deflections=False)
+            plane_0 = pl.Plane(galaxies=[g0, g3], grid_stack=[data_grids], compute_deflections=True)
+            plane_1 = pl.Plane(galaxies=[g1, g4], grid_stack=[data_grids], compute_deflections=True)
+            plane_2 = pl.Plane(galaxies=[g2], grid_stack=[data_grids], compute_deflections=False)
 
-            image_plane_blurring_image = plane_0.image_plane_blurring_images_[0] + \
-                                         plane_1.image_plane_blurring_images_[0] + \
-                                         plane_2.image_plane_blurring_images_[0]
+            image_plane_blurring_image = plane_0.image_plane_blurring_image_1d[0] + \
+                                         plane_1.image_plane_blurring_image_1d[0] + \
+                                         plane_2.image_plane_blurring_image_1d[0]
 
             assert (image_plane_blurring_image == tracer.image_plane_blurring_images_[0]).all()
 
@@ -1550,19 +1550,19 @@ class TestMultiTracer(object):
                                              image_plane_grids=[data_grids, data_grids_1],
                                              cosmology=cosmo.Planck15)
 
-            plane_0 = pl.Plane(galaxies=[g0, g3], grids=[data_grids, data_grids_1], compute_deflections=True)
-            plane_1 = pl.Plane(galaxies=[g1, g4], grids=[data_grids, data_grids_1], compute_deflections=True)
-            plane_2 = pl.Plane(galaxies=[g2], grids=[data_grids, data_grids_1], compute_deflections=False)
+            plane_0 = pl.Plane(galaxies=[g0, g3], grid_stack=[data_grids, data_grids_1], compute_deflections=True)
+            plane_1 = pl.Plane(galaxies=[g1, g4], grid_stack=[data_grids, data_grids_1], compute_deflections=True)
+            plane_2 = pl.Plane(galaxies=[g2], grid_stack=[data_grids, data_grids_1], compute_deflections=False)
 
-            image_plane_blurring_image_0 = plane_0.image_plane_blurring_images_[0] + \
-                                           plane_1.image_plane_blurring_images_[0] + \
-                                           plane_2.image_plane_blurring_images_[0]
+            image_plane_blurring_image_0 = plane_0.image_plane_blurring_image_1d[0] + \
+                                           plane_1.image_plane_blurring_image_1d[0] + \
+                                           plane_2.image_plane_blurring_image_1d[0]
 
             assert (image_plane_blurring_image_0 == tracer.image_plane_blurring_images_[0]).all()
 
-            image_plane_blurring_image_1 = plane_0.image_plane_blurring_images_[1] + \
-                                           plane_1.image_plane_blurring_images_[1] + \
-                                           plane_2.image_plane_blurring_images_[1]
+            image_plane_blurring_image_1 = plane_0.image_plane_blurring_image_1d[1] + \
+                                           plane_1.image_plane_blurring_image_1d[1] + \
+                                           plane_2.image_plane_blurring_image_1d[1]
 
             assert (image_plane_blurring_image_1 == tracer.image_plane_blurring_images_[1]).all()
 
@@ -1660,8 +1660,8 @@ class TestMultiTracer(object):
                                      [False, False, False],
                                      [False, False, False]]), pixel_scale=1.0)
 
-            data_grids = grids.DataGrids.grids_from_mask_sub_grid_size_and_psf_shape(mask=ma, sub_grid_size=1,
-                                                                                     psf_shape=(1, 1))
+            data_grids = grids.DataGridStack.grids_from_mask_sub_grid_size_and_psf_shape(mask=ma, sub_grid_size=1,
+                                                                                         psf_shape=(1, 1))
 
             tracer = ray_tracing.TracerMulti(galaxies=[g.Galaxy(redshift=2.0), g.Galaxy(redshift=1.0)],
                                              image_plane_grids=[data_grids])
@@ -1675,8 +1675,8 @@ class TestMultiTracer(object):
                                      [False, False, False],
                                      [False, False, False]]), pixel_scale=1.0)
 
-            data_grids = grids.DataGrids.grids_from_mask_sub_grid_size_and_psf_shape(mask=ma, sub_grid_size=1,
-                                                                                     psf_shape=(1, 1))
+            data_grids = grids.DataGridStack.grids_from_mask_sub_grid_size_and_psf_shape(mask=ma, sub_grid_size=1,
+                                                                                         psf_shape=(1, 1))
 
             galaxy = g.Galaxy(pixelization=pixelizations.Rectangular(shape=(3, 3)),
                               regularization=regularization.Constant(), redshift=2.0)
@@ -1692,8 +1692,8 @@ class TestMultiTracer(object):
                                      [False, False, False],
                                      [False, True, False]]), pixel_scale=1.0)
 
-            data_grids = grids.DataGrids.padded_grids_from_mask_sub_grid_size_and_psf_shape(mask=ma, sub_grid_size=1,
-                                                                                            psf_shape=(1, 1))
+            data_grids = grids.DataGridStack.padded_grids_from_mask_sub_grid_size_and_psf_shape(mask=ma, sub_grid_size=1,
+                                                                                                psf_shape=(1, 1))
 
             galaxy = g.Galaxy(pixelization=pixelizations.AdaptiveMagnification(shape=(3, 3)),
                               regularization=regularization.Constant(), redshift=2.0)
@@ -1710,8 +1710,8 @@ class TestMultiTracer(object):
                                      [False, False, False],
                                      [False, True, False]]), pixel_scale=1.0)
 
-            data_grids = grids.DataGrids.grids_from_mask_sub_grid_size_and_psf_shape(mask=ma, sub_grid_size=1,
-                                                                                     psf_shape=(1, 1))
+            data_grids = grids.DataGridStack.grids_from_mask_sub_grid_size_and_psf_shape(mask=ma, sub_grid_size=1,
+                                                                                         psf_shape=(1, 1))
 
             galaxy = g.Galaxy(pixelization=pixelizations.AdaptiveMagnification(shape=(3, 3)),
                               regularization=regularization.Constant(), redshift=2.0)

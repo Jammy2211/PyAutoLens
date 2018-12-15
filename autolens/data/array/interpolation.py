@@ -9,7 +9,7 @@ from autolens.data.array import grids, mask as msk
 class InterpolationGeometry(object):
 
     def __init__(self, y_min, y_max, x_min, x_max, y_pixel_scale, x_pixel_scale):
-        """The geometry of a rectangular grid, defining where the grids top-left, top-right, bottom-left and \
+        """The geometry of a rectangular grid, defining where the grid_stacks top-left, top-right, bottom-left and \
         bottom-right corners are in arc seconds. The arc-second size of each rectangular pixel is also computed.
 
         Parameters
@@ -45,8 +45,8 @@ class InterpolationScheme(object):
         interpolation-grid and the neighbors of every pixel on the grid in the 4 directions required for bilinear \
         interpolation.
 
-        The interpolation scheme can be performed on masked_image and sub grids that are non-uniform (e.g. after tracing them \
-        from the masked_image-plane to a source-plane). The x_pixel and y_pixel bounds of the new grids are used to scale the \
+        The interpolation scheme can be performed on masked_image and sub grid_stacks that are non-uniform (e.g. after tracing them \
+        from the masked_image-plane to a source-plane). The x_pixel and y_pixel bounds of the new grid_stacks are used to scale the \
         interpolation scheme to the new plane.
 
         Parameters

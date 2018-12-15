@@ -234,7 +234,7 @@ class ScaledArray(Array, RectangularArrayGeometry):
 
 class ScaledSquarePixelArray(ScaledArray):
     """
-    Class storing the grids for 2D pixel grids (e.g. datas_, PSF, signal_to_noise_ratio).
+    Class storing the grid_stacks for 2D pixel grid_stacks (e.g. datas_, PSF, signal_to_noise_ratio).
     """
 
     # noinspection PyUnusedLocal
@@ -327,7 +327,7 @@ class ScaledSquarePixelArray(ScaledArray):
             The new two-dimensional shape of the array.
         """
         if new_centre_pixels is None and new_centre_arc_seconds is None:
-            new_centre = (-1, -1)  # In Numba, the input origin must be the same data type as the origin, thus we cannot
+            new_centre = (-1, -1)  # In Numba, the input origin must be the same datas type as the origin, thus we cannot
             # pass 'None' and instead use the tuple (-1, -1).
         elif new_centre_pixels is not None and new_centre_arc_seconds is None:
             new_centre = new_centre_pixels
@@ -343,7 +343,7 @@ class ScaledSquarePixelArray(ScaledArray):
 
 class ScaledRectangularPixelArray(ScaledArray):
     """
-    Class storing the grids for 2D pixel grids (e.g. datas_, PSF, signal_to_noise_ratio).
+    Class storing the grid_stacks for 2D pixel grid_stacks (e.g. datas_, PSF, signal_to_noise_ratio).
     """
 
     # noinspection PyUnusedLocal

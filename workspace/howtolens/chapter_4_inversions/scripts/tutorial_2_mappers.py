@@ -37,9 +37,9 @@ def simulate():
 image = simulate()
 imaging_plotters.plot_image_subplot(image=image)
 
-# Lets begin by setting up our grids (using the regular we loaded above).
-image_plane_grids = grids.DataGrids.from_shape_and_pixel_scale(shape=image.shape, pixel_scale=image.pixel_scale,
-                                                               sub_grid_size=2)
+# Lets begin by setting up our grid_stacks (using the regular we loaded above).
+image_plane_grids = grids.DataGridStack.from_shape_and_pixel_scale(shape=image.shape, pixel_scale=image.pixel_scale,
+                                                                   sub_grid_size=2)
 
 # Our tracer will use the same lens model_galaxy and source model_galaxy that we used to simulate the regular (although, becuase
 # we're modeling the source with a pixel-grid, we don't need to supply its light profile).
@@ -89,7 +89,7 @@ mask = ma.Mask.circular_annular(shape=image.shape, pixel_scale=image.pixel_scale
 # Lets quickly confirm the annuli radii capture the source's light
 #imaging_plotters.plot_image(regular=regular, masks=masks)
 
-# As usual, we setup our regular and masks up as a lensing regular and create a tracer using its (now masked) grids.
+# As usual, we setup our regular and masks up as a lensing regular and create a tracer using its (now masked) grid_stacks.
 lensing_image = li.LensingImage(image=image, mask=mask)
 tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[g.Galaxy()],
                                              image_plane_grids=[lensing_image.grids])

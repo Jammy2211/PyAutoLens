@@ -9,9 +9,9 @@ def fit_galaxy_data_with_galaxy(galaxy_datas, model_galaxy):
     Parameters
     ----------
     galaxy_datas : [GalaxyData]
-        The galaxy-data objects being fitted.
+        The galaxy-datas objects being fitted.
     model_galaxy : galaxy.Galaxy
-        The model galaxy used to fit the galaxy-data.
+        The model galaxy used to fit the galaxy-datas.
     """
     if isinstance(galaxy_datas[0], gd.GalaxyDataIntensities) or isinstance(galaxy_datas[0], gd.GalaxyDataSurfaceDensity) or \
         isinstance(galaxy_datas[0], gd.GalaxyDataPotential):
@@ -30,9 +30,9 @@ def fast_likelihood_from_galaxy_data_and_galaxy(galaxy_datas, model_galaxy):
     Parameters
     ----------
     galaxy_datas : [GalaxyData]
-        The model_galaxy-data objects being fitted.
+        The model_galaxy-datas objects being fitted.
     model_galaxy : model_galaxy.Galaxy
-        The model model_galaxy used to fit the model_galaxy-data.
+        The model model_galaxy used to fit the model_galaxy-datas.
     """
     if isinstance(galaxy_datas[0], gd.GalaxyDataIntensities) or isinstance(galaxy_datas[0], gd.GalaxyDataSurfaceDensity) or \
         isinstance(galaxy_datas[0], gd.GalaxyDataPotential):
@@ -51,9 +51,9 @@ class GalaxyFit(fitter.DataFitterMulti):
         Parameters
         ----------
         galaxy_datas : [GalaxyData]
-            The galaxy-data object being fitted.
+            The galaxy-datas object being fitted.
         model_galaxy : galaxy.Galaxy
-            The model galaxy used to fit the galaxy-data.
+            The model galaxy used to fit the galaxy-datas.
         """
 
         self.galaxy_datas = galaxy_datas
@@ -70,9 +70,9 @@ class GalaxyFit(fitter.DataFitterMulti):
         minimizing memory use and maximizing run-speed."""
         model_datas_ = galaxy_datas[0].profile_quantity_from_galaxy_and_sub_grid(galaxy=galaxy,
                                                                              sub_grid=galaxy_datas[0].grids.sub)
-        residuals_ = fitting_util.residuals_from_data_mask_and_model_data([galaxy_datas[:]], [model_datas_])
-        chi_squareds_ = fitting_util.chi_squareds_from_residuals_and_noise_map(residuals_, [galaxy_datas[0].noise_map_])
-        chi_squared_terms = fitting_util.chi_squared_term_from_chi_squareds(chi_squareds_)
+        residuals_ = fitting_util.residual_map_from_data_mask_and_model_data([galaxy_datas[:]], [model_datas_])
+        chi_squareds_ = fitting_util.chi_squareds_from_residual_map_and_noise_map(residuals_, [galaxy_datas[0].noise_map_])
+        chi_squared_terms = fitting_util.chi_squared_term_from_chi_squared_map(chi_squareds_)
         noise_terms = fitting_util.noise_term_from_mask_and_noise_map([galaxy_datas[0].noise_map_])
         return sum(fitting_util.likelihood_from_chi_squared_term_and_noise_term(chi_squared_terms, noise_terms))
 
@@ -85,9 +85,9 @@ class GalaxyFitDeflections(fitter.DataFitterMulti):
         Parameters
         ----------
         galaxy_datas : [GalaxyData]
-            The galaxy-data object being fitted.
+            The galaxy-datas object being fitted.
         model_galaxy : galaxy.Galaxy
-            The model galaxy used to fit the galaxy-data.
+            The model galaxy used to fit the galaxy-datas.
         """
         self.galaxy_datas = galaxy_datas
         self.model_galaxy = model_galaxy
@@ -105,10 +105,10 @@ class GalaxyFitDeflections(fitter.DataFitterMulti):
         model_datas_ = galaxy_datas[0].profile_quantity_from_galaxy_and_sub_grid(galaxy=model_galaxy,
                                                                               sub_grid=galaxy_datas[0].grids.sub)
 
-        residuals_ = fitting_util.residuals_from_data_mask_and_model_data(galaxy_datas, [model_datas_[:, 0],
+        residuals_ = fitting_util.residual_map_from_data_mask_and_model_data(galaxy_datas, [model_datas_[:, 0],
                                                                                  model_datas_[:,1]])
-        chi_squareds_ = fitting_util.chi_squareds_from_residuals_and_noise_map(residuals_, [galaxy_datas[0].noise_map_,
-                                                                                            galaxy_datas[0].noise_map_])
-        chi_squared_terms = fitting_util.chi_squared_term_from_chi_squareds(chi_squareds_)
+        chi_squareds_ = fitting_util.chi_squareds_from_residual_map_and_noise_map(residuals_, [galaxy_datas[0].noise_map_,
+                                                                                               galaxy_datas[0].noise_map_])
+        chi_squared_terms = fitting_util.chi_squared_term_from_chi_squared_map(chi_squareds_)
         noise_terms = fitting_util.noise_term_from_mask_and_noise_map([galaxy_datas[0].noise_map_, galaxy_datas[0].noise_map_])
         return sum(fitting_util.likelihood_from_chi_squared_term_and_noise_term(chi_squared_terms, noise_terms))

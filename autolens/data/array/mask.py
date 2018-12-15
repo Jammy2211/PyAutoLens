@@ -79,7 +79,7 @@ class Mask(scaled_array.ScaledSquarePixelArray):
         radius_arcsec : float
             The radius (in arc seconds) of the circle within which pixels are not masked.
         centre: (float, float)
-            The centre of the circle used to mask pixels.
+            The centre of the circle used to masks pixels.
         """
         mask = mask_util.mask_circular_from_shape_pixel_scale_and_radius(shape, pixel_scale, radius_arcsec,
                                                                          centre)
@@ -244,7 +244,7 @@ class Mask(scaled_array.ScaledSquarePixelArray):
 
     @property
     def border_pixels(self):
-        """The indicies of the masks's edge pixels, where a border pixel is any pixel inside the masks but on an
-         exterior edge (e.g. not the central pixels of an annulus mask).
+        """The indicies of the masks's edge pixels, where a borders pixel is any pixel inside the masks but on an
+         exterior edge (e.g. not the central pixels of an annulus masks).
         """
         return mask_util.border_pixels_from_mask(self).astype('int')

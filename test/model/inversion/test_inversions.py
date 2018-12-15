@@ -156,8 +156,8 @@ class TestReconstructedDataVectorAndImage:
                                         [False, False, False],
                                         [True, True, True]]), pixel_scale=1.0)
 
-        imaging_grids = grids.DataGrids.grids_from_mask_sub_grid_size_and_psf_shape(mask=msk, sub_grid_size=1,
-                                                                                    psf_shape=(1,1))
+        imaging_grids = grids.DataGridStack.grids_from_mask_sub_grid_size_and_psf_shape(mask=msk, sub_grid_size=1,
+                                                                                        psf_shape=(1,1))
 
         inv = inversions.Inversion(image=np.ones(9), noise_map=np.ones(9), convolver=MockConvolver(matrix_shape),
                                    mapper=MockMapper(matrix_shape, imaging_grids),
@@ -185,8 +185,8 @@ class TestReconstructedDataVectorAndImage:
                                         [False, False, False],
                                         [True, True, True]]), pixel_scale=1.0)
 
-        imaging_grids = grids.DataGrids.grids_from_mask_sub_grid_size_and_psf_shape(mask=msk, sub_grid_size=1,
-                                                                                    psf_shape=(1,1))
+        imaging_grids = grids.DataGridStack.grids_from_mask_sub_grid_size_and_psf_shape(mask=msk, sub_grid_size=1,
+                                                                                        psf_shape=(1,1))
 
         inv = inversions.Inversion(image=np.ones(9), noise_map=np.ones(9), convolver=MockConvolver(matrix_shape),
                                    mapper=MockMapper(matrix_shape, imaging_grids), regularization=MockRegularization(matrix_shape))

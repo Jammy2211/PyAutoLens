@@ -41,11 +41,11 @@ def test_galaxy_light():
 def test_galaxy_mass():
     return g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=1.0), redshift=1.0)
 
-@pytest.fixture(name='grids')
+@pytest.fixture(name='grid_stacks')
 def test_grids():
-    return grids.DataGrids.from_shape_and_pixel_scale(shape=(100, 100), pixel_scale=0.05, sub_grid_size=2)
+    return grids.DataGridStack.from_shape_and_pixel_scale(shape=(100, 100), pixel_scale=0.05, sub_grid_size=2)
 
-@pytest.fixture(name='data')
+@pytest.fixture(name='datas')
 def test_image():
 
     image = scaled_array.ScaledSquarePixelArray(array=np.ones((3, 3)), pixel_scale=1.0)
@@ -59,7 +59,7 @@ def test_positions():
     positions = [[[0.1, 0.1], [0.2, 0.2]], [[0.3, 0.3]]]
     return list(map(lambda position_set: np.asarray(position_set), positions))
 
-@pytest.fixture(name='mask')
+@pytest.fixture(name='masks')
 def test_mask():
     return msk.Mask.circular(shape=((3,3)), pixel_scale=0.1, radius_arcsec=0.1)
 

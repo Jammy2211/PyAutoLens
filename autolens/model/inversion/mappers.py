@@ -12,8 +12,8 @@ class Mapper(object):
         Abstract base class representing the mapping between the pixels in an observed regular of a strong lens and \
         the pixels of a pixelization.
 
-        1D arrays are used to represent these mappings, in particular between the different regular-grids (e.g. the \
-        regular and sub grids, see the *imaging.masks module*). The nomenclature here follows grid_to_grid, whereby the \
+        1D arrays are used to represent these mappings, in particular between the different regular-grid_stacks (e.g. the \
+        regular and sub grid_stacks, see the *imaging.masks module*). The nomenclature here follows grid_to_grid, whereby the \
         index of a value on one grid equals another. For howtolens:
 
         - image_to_pixelization[2] = 1 tells us that the 3rd regular-pixel maps to the 2nd pixelization-pixel.
@@ -24,7 +24,7 @@ class Mapper(object):
         ----------
         pixels : int
             The number of pixels in the pixelization.
-        grids: masks.DataGrids
+        grids: masks.DataGridStack
             A collection of grid describing the observed regular's pixel coordinates (includes an regular and sub grid).
         """
         self.pixels = pixels
@@ -121,7 +121,7 @@ class RectangularMapper(Mapper):
         ----------
         pixels : int
             The number of pixels in the pixelization.
-        grids: masks.DataGrids
+        grids: masks.DataGridStack
             A collection of grid describing the observed regular's pixel coordinates (includes an regular and sub grid).
         shape : (int, int)
             The dimensions of the rectangular grid of pixels (x_pixels, y_pixel)
@@ -160,13 +160,13 @@ class VoronoiMapper(Mapper):
         the pixels of a Voronoi pixelization.
 
         The irregular and non-uniform geometry of the Voronoi grid means efficient pixel pairings requires knowledge \
-        of how many different grids mappers to one another (see *pairregular_and_pixel*).
+        of how many different grid_stacks mappers to one another (see *pairregular_and_pixel*).
 
         Parameters
         ----------
         pixels : int
             The number of pixels in the pixelization.
-        grids: masks.DataGrids
+        grids: masks.DataGridStack
             A collection of grid describing the observed regular's pixel coordinates (includes an regular and sub grid).
         shape : (int, int)
             The dimensions of the rectangular grid of pixels (x_pixels, y_pixel)

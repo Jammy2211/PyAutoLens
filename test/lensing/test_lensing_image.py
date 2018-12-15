@@ -42,7 +42,6 @@ class TestLensingImage(object):
         assert lensing_image.pixel_scale == image.pixel_scale
         assert lensing_image.pixel_scale == 3.0
 
-        assert (lensing_image.data == image).all()
         assert (lensing_image.image == image).all()
         assert (lensing_image.image == np.ones((4,4))).all()
 
@@ -56,6 +55,7 @@ class TestLensingImage(object):
 
         assert (lensing_image.image_1d == np.ones(4)).all()
         assert (lensing_image.noise_map_1d == 2.0*np.ones(4)).all()
+        assert (lensing_image.mask_1d == np.array([False, False, False, False])).all()
 
     def test_grids(self, lensing_image):
 
@@ -123,7 +123,6 @@ class TestLensingHyperImage(object):
 
         assert lensing_hyper_image.pixel_scale == image.pixel_scale
 
-        assert (lensing_hyper_image.data == image).all()
         assert (lensing_hyper_image.image == image).all()
         assert (lensing_hyper_image.image == np.ones((4,4))).all()
 

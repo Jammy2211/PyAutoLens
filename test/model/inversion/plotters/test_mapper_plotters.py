@@ -29,7 +29,7 @@ def test_mapper_plotter_setup():
 
     return galaxy_plotter_path
 
-@pytest.fixture(name='data')
+@pytest.fixture(name='datas')
 def test_image():
 
     image = scaled_array.ScaledSquarePixelArray(array=np.ones((3, 3)), pixel_scale=1.0)
@@ -38,7 +38,7 @@ def test_image():
 
     return im.Image(array=image, pixel_scale=1.0, noise_map=noise_map, psf=psf)
 
-@pytest.fixture(name='mask')
+@pytest.fixture(name='masks')
 def test_mask():
     return msk.Mask.circular(shape=((3,3)), pixel_scale=0.1, radius_arcsec=0.1)
 
@@ -51,11 +51,11 @@ def test_galaxy_light():
 def test_galaxy_mass():
     return g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=1.0))
 
-@pytest.fixture(name='grids')
+@pytest.fixture(name='grid_stacks')
 def test_grids():
-    return grids.DataGrids.from_shape_and_pixel_scale(shape=(100, 100), pixel_scale=0.05, sub_grid_size=2)
+    return grids.DataGridStack.from_shape_and_pixel_scale(shape=(100, 100), pixel_scale=0.05, sub_grid_size=2)
 
-@pytest.fixture(name='border')
+@pytest.fixture(name='borders')
 def test_border(mask):
     return grids.RegularGridBorder.from_mask(mask=mask)
 

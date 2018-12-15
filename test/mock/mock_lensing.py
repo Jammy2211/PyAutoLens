@@ -3,10 +3,11 @@ from test.mock.mock_galaxy import MockHyperGalaxy
 
 class MockTracer(object):
 
-    def __init__(self, images, blurring_images, has_light_profile, has_pixelization, has_hyper_galaxy,
+    def __init__(self, unblurred_image_1d, blurring_image_1d, has_light_profile, has_pixelization, has_hyper_galaxy,
                  has_grid_mappers=False):
-        self.images = images
-        self.blurring_images = blurring_images
+
+        self.unblurred_image_1d = unblurred_image_1d
+        self.blurring_image_1d = blurring_image_1d
         self.has_light_profile = has_light_profile
         self.has_pixelization = has_pixelization
         self.has_hyper_galaxy = has_hyper_galaxy
@@ -18,11 +19,11 @@ class MockTracer(object):
 
     @property
     def image_plane_images_(self):
-        return self.images
+        return [self.unblurred_image_1d]
 
     @property
     def image_plane_blurring_images_(self):
-        return self.blurring_images
+        return [self.blurring_image_1d]
 
     @property
     def mappers_of_planes(self):

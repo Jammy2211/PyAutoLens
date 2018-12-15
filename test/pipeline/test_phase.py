@@ -74,9 +74,9 @@ class NLO(non_linear.NonLinearOptimizer):
         return fitness_function.result
 
 
-@pytest.fixture(name="grids")
+@pytest.fixture(name="grid_stacks")
 def make_grids(lensing_image):
-    return grids.DataGrids.grids_from_mask_sub_grid_size_and_psf_shape(
+    return grids.DataGridStack.grids_from_mask_sub_grid_size_and_psf_shape(
         lensing_image.mask, 1, lensing_image.psf.shape)
 
 
@@ -95,7 +95,7 @@ def make_galaxy_model():
     return gm.GalaxyModel()
 
 
-@pytest.fixture(name="data")
+@pytest.fixture(name="datas")
 def make_image():
     image = img.Image(np.array(np.zeros(shape)), pixel_scale=1.0, psf=img.PSF(np.ones((3, 3)), pixel_scale=1.0),
                       noise_map=img.NoiseMap(np.ones(shape), pixel_scale=1.0))
