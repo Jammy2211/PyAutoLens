@@ -66,11 +66,11 @@ def test_fit(lensing_image):
     source_galaxy = g.Galaxy(light=lp.EllipticalSersic(intensity=1.0), redshift=2.0)
 
     tracer_normal = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
-                                                        image_plane_grids=[lensing_image.grids],
+                                                        image_plane_grid_stack=[lensing_image.grids],
                                                         cosmology=cosmo.Planck15)
     tracer_sensitivity = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy, lens_subhalo],
                                                              source_galaxies=[source_galaxy],
-                                                             image_plane_grids=[lensing_image.grids],
+                                                             image_plane_grid_stack=[lensing_image.grids],
                                                              cosmology=cosmo.Planck15)
     return sensitivity_fitting.SensitivityProfileFit(sensitivity_images=[lensing_image], tracer_normal=tracer_normal,
                                                      tracer_sensitive=tracer_sensitivity)

@@ -31,7 +31,7 @@ def simulate():
     source_galaxy = g.Galaxy(light=lp.EllipticalSersic(centre=(0., 0.), axis_ratio=0.8, phi=90.0, intensity=0.2,
                                                          effective_radius=1.0, sersic_index=1.5))
     tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
-                                                 image_plane_grids=[image_plane_grids])
+                                                 image_plane_grid_stack=[image_plane_grids])
 
     return im.Image.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=0.05,
                                         exposure_time=300.0, psf=psf, background_sky_level=0.1, add_noise=True)
@@ -47,7 +47,7 @@ imaging_plotters.plot_image(image=image, mask=mask)
 lensing_image = li.LensingImage(image=image, mask=mask, sub_grid_size=1)
 lens_galaxy = g.Galaxy(mass=mp.EllipticalIsothermal(centre=(0.0, 0.0), axis_ratio=0.8, phi=135.0, einstein_radius=1.6))
 tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[g.Galaxy()],
-                                             image_plane_grids=[lensing_image.grids])
+                                             image_plane_grid_stack=[lensing_image.grids])
 
 # We'll use another rectangular pixelization and mapper to perform the reconstruction
 rectangular = pix.Rectangular(shape=(25, 25))
@@ -98,7 +98,7 @@ def simulate_complex_source():
     tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy],
                                                  source_galaxies=[source_galaxy_0, source_galaxy_1, source_galaxy_2,
                                                                   source_galaxy_3, source_galaxy_4, source_galaxy_5],
-                                                 image_plane_grids=[image_plane_grids])
+                                                 image_plane_grid_stack=[image_plane_grids])
 
     return im.Image.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=0.05,
                                         exposure_time=300.0, psf=psf, background_sky_level=0.1, add_noise=True)
@@ -112,7 +112,7 @@ imaging_plotters.plot_image(image=image, mask=mask)
 
 lensing_image = li.LensingImage(image=image, mask=mask, sub_grid_size=1)
 tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[g.Galaxy()],
-                                             image_plane_grids=[lensing_image.grids])
+                                             image_plane_grid_stack=[lensing_image.grids])
 mapper = rectangular.mapper_from_grids_and_border(grids=tracer.source_plane.grids[0], border=None)
 inversion = inv.Inversion(image=lensing_image[:], noise_map=lensing_image.noise_map_1d,
                           convolver=lensing_image.convolver_mapping_matrix, mapper=mapper,
@@ -171,7 +171,7 @@ mapper_plotters.plot_image_and_mapper(image=image, mapper=mapper, mask=mask,
 # the source model_galaxy a light profile, we give it a pixelization and regularization, and pass it to a tracer_without_subhalo.
 source_galaxy = g.Galaxy(pixelization=pix.Rectangular(shape=(25, 25)), regularization=reg.Constant(coefficients=(1.0,)))
 tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
-                                             image_plane_grids=[lensing_image.grids], border=None)
+                                             image_plane_grid_stack=[lensing_image.grids], border=None)
 
 # Then, like before, we call on the fitting module to perform the fit_normal to the lensing regular. Indeed, we see
 # some pretty good looking residual_map - we're certainly fitting the lensed source accurately!

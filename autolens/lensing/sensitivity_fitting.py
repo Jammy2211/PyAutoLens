@@ -25,8 +25,8 @@ class SensitivityProfileFit(AbstractSensitivityFit):
         AbstractSensitivityFit.__init__(self=self, tracer_normal=tracer_normal, tracer_sensitive=tracer_sensitive)
 
         self.fit_normal = fitter.AbstractConvolutionFit(fitting_images=sensitivity_images,
-                                                        images_=tracer_normal.image_plane_images_,
-                                                        blurring_images_=tracer_normal.image_plane_blurring_images_)
+                                                        images_=tracer_normal.image_plane_images_1d,
+                                                        blurring_images_=tracer_normal.image_plane_blurring_images_1d)
         
         self.fit_sensitive = fitter.AbstractConvolutionFit(fitting_images=sensitivity_images,
                                                            images_=tracer_sensitive.image_plane_image_1d,
@@ -49,8 +49,8 @@ class SensitivityProfileFit(AbstractSensitivityFit):
         noise_maps_ = list(map(lambda lensing_image : lensing_image.noise_map_, sensitivity_images))
         
         model_images_normal_ = fitting_util.blur_image_including_blurring_region(
-            image_=tracer_normal.image_plane_images_,
-            blurring_image_=tracer_normal.image_plane_blurring_images_, convolver=convolvers)
+            image_=tracer_normal.image_plane_images_1d,
+            blurring_image_=tracer_normal.image_plane_blurring_images_1d, convolver=convolvers)
         
         residuals_normal_ = fitting_util.residual_map_from_data_mask_and_model_data(data=sensitivity_images,
                                                                                     model_data=model_images_normal_)

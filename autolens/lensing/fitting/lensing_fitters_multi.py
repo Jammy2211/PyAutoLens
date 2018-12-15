@@ -127,14 +127,14 @@ class LensingConvolutionFitterMulti(fitter.DataFitterMulti):
     @property
     def model_image_of_planes(self):
 
-        model_images_of_planes = [[] for _ in range(self.tracer.total_images)]
+        model_images_of_planes = [[] for _ in range(self.tracer.total_grid_stacks)]
 
-        for image_index in range(self.tracer.total_images):
+        for image_index in range(self.tracer.total_grid_stacks):
             convolver = self.convolvers_image[image_index]
             map_to_scaled_array = self.map_to_scaled_arrays[image_index]
             for plane_index in range(self.tracer.total_planes):
 
-                if np.count_nonzero(self.tracer.image_plane_images_of_planes_[
+                if np.count_nonzero(self.tracer.image_plane_images_1d_of_planes[
                                         plane_index]):  # If all entries are zero, there was no light profile
 
                     model_image_of_plane = lensing_fitting_util.blurred_image_from_1d_unblurred_and_blurring_images(

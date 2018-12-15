@@ -15,7 +15,7 @@ lens_galaxy = g.Galaxy(mass=mp.EllipticalIsothermal(centre=(0.0, 0.0), axis_rati
 
 # (Our source model_galaxy doesn't have a light profile from here on, as we're reconstructing its light using a pixelization).
 tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[g.Galaxy()],
-                                             image_plane_grids=[image_plane_grids])
+                                             image_plane_grid_stack=[image_plane_grids])
 
 # Next, lets set up a pixelization using the 'pixelizations' module, which we've imported as 'pix'.
 # There are multiple pixelizations available in PyAutoLens, but for now we'll keep it simple and use a uniform

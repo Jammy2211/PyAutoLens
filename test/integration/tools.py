@@ -39,12 +39,12 @@ def simulate_integration_image(data_name, pixel_scale, lens_galaxies, source_gal
 
     if not source_galaxies:
 
-        tracer = ray_tracing.TracerImagePlane(lens_galaxies=lens_galaxies, image_plane_grids=[image_grids])
+        tracer = ray_tracing.TracerImagePlane(lens_galaxies=lens_galaxies, image_plane_grid_stack=[image_grids])
 
     elif source_galaxies:
 
         tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=lens_galaxies, source_galaxies=source_galaxies,
-                                                     image_plane_grids=[image_grids])
+                                                     image_plane_grid_stack=[image_grids])
 
     ### Setup as a simulated image_coords and output as a fits for an lensing ###
 

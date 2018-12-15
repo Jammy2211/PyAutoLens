@@ -161,7 +161,7 @@ class TestBlurredImageOfPlanes:
         g1 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=2.0))
 
         tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g1],
-                                                     image_plane_grids=[data_grids])
+                                                     image_plane_grid_stack=[data_grids])
 
         blurred_lens_image = convolver_blur.convolve_image(image_array=tracer.image_plane.image_plane_image_1d[0],
                                                            blurring_array=tracer.image_plane.image_plane_blurring_image_1d[0])
@@ -186,7 +186,7 @@ class TestBlurredImageOfPlanes:
         g1 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=2.0), redshift=0.2)
         g2 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=3.0), redshift=0.3)
 
-        tracer = ray_tracing.TracerMulti(galaxies=[g0, g1, g2], image_plane_grids=[data_grids],
+        tracer = ray_tracing.TracerMulti(galaxies=[g0, g1, g2], image_plane_grid_stack=[data_grids],
                                          cosmology=cosmo.Planck15)
 
         blurred_plane_image_0 = convolver_blur.convolve_image(tracer.planes[0].image_plane_image_1d[0],
@@ -221,7 +221,7 @@ class TestBlurredImageOfPlanes:
         g0_blurred_image = data_grids.regular.scaled_array_from_array_1d(array_1d=g0_blurred_image_1d)
 
         tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g0],
-                                                     image_plane_grids=[data_grids])
+                                                     image_plane_grid_stack=[data_grids])
 
         blurred_image_of_planes = lensing_fitting_util.blurred_image_of_planes_from_tracer_and_convolver(tracer=tracer,
                                   convolver_image=convolver_blur, map_to_scaled_array=data_grids.regular.map_to_2d)
@@ -230,7 +230,7 @@ class TestBlurredImageOfPlanes:
         assert (blurred_image_of_planes[1] == g0_blurred_image).all()
 
         tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g.Galaxy()],
-                                                     image_plane_grids=[data_grids])
+                                                     image_plane_grid_stack=[data_grids])
 
         blurred_image_of_planes = lensing_fitting_util.blurred_image_of_planes_from_tracer_and_convolver(tracer=tracer,
                                   convolver_image=convolver_blur, map_to_scaled_array=data_grids.regular.map_to_2d)
@@ -239,7 +239,7 @@ class TestBlurredImageOfPlanes:
         assert blurred_image_of_planes[1] == None
 
         tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g.Galaxy()], source_galaxies=[g0],
-                                                     image_plane_grids=[data_grids])
+                                                     image_plane_grid_stack=[data_grids])
 
         blurred_image_of_planes = lensing_fitting_util.blurred_image_of_planes_from_tracer_and_convolver(tracer=tracer,
                                   convolver_image=convolver_blur, map_to_scaled_array=data_grids.regular.map_to_2d)
@@ -248,7 +248,7 @@ class TestBlurredImageOfPlanes:
         assert (blurred_image_of_planes[1] == g0_blurred_image).all()
 
         tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g.Galaxy()], source_galaxies=[g.Galaxy()],
-                                                     image_plane_grids=[data_grids])
+                                                     image_plane_grid_stack=[data_grids])
 
         blurred_image_of_planes = lensing_fitting_util.blurred_image_of_planes_from_tracer_and_convolver(tracer=tracer,
                                   convolver_image=convolver_blur, map_to_scaled_array=data_grids.regular.map_to_2d)

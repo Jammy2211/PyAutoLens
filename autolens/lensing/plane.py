@@ -70,7 +70,7 @@ class AbstractPlane(object):
 
         if any([redshift is not None for redshift in self.galaxy_redshifts]):
             if not all([galaxies[0].redshift == galaxy.redshift for galaxy in galaxies]):
-                raise exc.RayTracingException('The galaxies supplied to A Plane have different redshifts or one galaxy'
+                raise exc.RayTracingException('The galaxies supplied to A Plane have different redshifts or one galaxy '
                                               'does not have a redshift.')
 
         self.cosmology = cosmology
@@ -343,7 +343,7 @@ class Plane(AbstractPlane):
         return np.linspace(np.amin(self.grid_stack.regular[:, 1]), np.amax(self.grid_stack.regular[:, 1]), 4)
 
 
-class PlaneMulti(AbstractPlane):
+class PlaneStack(AbstractPlane):
 
     def __init__(self, galaxies, grid_stacks, borders=None, compute_deflections=True, cosmology=None):
         """A plane which uses just one stacked grid_stack of coordinates (e.g. a regular-grid_stack, sub-grid_stack, etc.)
@@ -363,7 +363,7 @@ class PlaneMulti(AbstractPlane):
             The cosmology associated with the plane, used to convert arc-second coordinates to physical values.
         """
 
-        super(PlaneMulti, self).__init__(galaxies=galaxies, cosmology=cosmology)
+        super(PlaneStack, self).__init__(galaxies=galaxies, cosmology=cosmology)
 
         self.grid_stacks = grid_stacks
         self.borders = borders
@@ -392,7 +392,7 @@ class PlaneMulti(AbstractPlane):
         return self.grid_stacks[0]
 
     @property
-    def total_images(self):
+    def total_grid_stacks(self):
         return len(self.grid_stacks)
 
     @property

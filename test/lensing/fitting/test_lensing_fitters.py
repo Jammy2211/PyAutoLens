@@ -251,7 +251,7 @@ class TestLensingProfileFit:
             li = lensing_image.LensingImage(im, ma, sub_grid_size=1)
 
             g0 = g.Galaxy(light_profile=MockLightProfile(value=1.0))
-            tracer = ray_tracing.TracerImagePlane(lens_galaxies=[g0], image_plane_grids=[li.grids])
+            tracer = ray_tracing.TracerImagePlane(lens_galaxies=[g0], image_plane_grid_stack=[li.grids])
 
             fit = lensing_fitters.LensingProfileFitter(lensing_image=li, tracer=tracer)
             assert fit.likelihood == -0.5 * np.log(2 * np.pi * 1.0)
@@ -274,7 +274,7 @@ class TestLensingProfileFit:
             # Setup as a ray trace instance, using a light profile for the lens
 
             g0 = g.Galaxy(light_profile=MockLightProfile(value=1.0, size=2))
-            tracer = ray_tracing.TracerImagePlane(lens_galaxies=[g0], image_plane_grids=[li.grids])
+            tracer = ray_tracing.TracerImagePlane(lens_galaxies=[g0], image_plane_grid_stack=[li.grids])
 
             fit = lensing_fitters.LensingProfileFitter(lensing_image=li, tracer=tracer)
 
@@ -289,18 +289,18 @@ class TestLensingProfileFit:
             g0 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=1.0))
 
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g0],
-                                                         image_plane_grids=[li_manual.grids])
+                                                         image_plane_grid_stack=[li_manual.grids])
 
             padded_tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g0],
-                                                                  image_plane_grids=[li_manual.padded_grids])
+                                                                image_plane_grid_stack=[li_manual.padded_grids])
 
             fit = lensing_fitters.fit_lensing_image_with_tracer(lensing_image=li_manual, tracer=tracer,
                                                                 padded_tracer=padded_tracer)
 
             assert li_manual.noise_map == pytest.approx(fit.noise_map, 1e-4)
 
-            unblurred_image_1d = tracer.image_plane_images_[0]
-            blurring_image_1d = tracer.image_plane_blurring_images_[0]
+            unblurred_image_1d = tracer.image_plane_images_1d[0]
+            blurring_image_1d = tracer.image_plane_blurring_images_1d[0]
 
             model_image = lensing_fitting_util.blurred_image_from_1d_unblurred_and_blurring_images(
                 unblurred_image_1d=unblurred_image_1d, blurring_image_1d=blurring_image_1d,

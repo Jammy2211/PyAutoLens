@@ -580,11 +580,11 @@ class LensPlanePhase(PhaseImaging):
 
         def tracer_for_instance(self, instance):
             return ray_tracing.TracerImagePlane(lens_galaxies=instance.lens_galaxies,
-                                                image_plane_grids=[self.lensing_image.grids], cosmology=self.cosmology)
+                                                image_plane_grid_stack=[self.lensing_image.grids], cosmology=self.cosmology)
 
         def padded_tracer_for_instance(self, instance):
             return ray_tracing.TracerImagePlane(lens_galaxies=instance.lens_galaxies,
-                                                image_plane_grids=[self.lensing_image.padded_grids],
+                                                image_plane_grid_stack=[self.lensing_image.padded_grids],
                                                 cosmology=self.cosmology)
 
         @classmethod
@@ -786,13 +786,13 @@ class LensSourcePlanePhase(PhaseImaging):
 
             return ray_tracing.TracerImageSourcePlanes(lens_galaxies=instance.lens_galaxies,
                                                        source_galaxies=instance.source_galaxies,
-                                                       image_plane_grids=[self.lensing_image.grids],
+                                                       image_plane_grid_stack=[self.lensing_image.grids],
                                                        border=self.lensing_image.border, cosmology=self.cosmology)
 
         def padded_tracer_for_instance(self, instance):
             return ray_tracing.TracerImageSourcePlanes(lens_galaxies=instance.lens_galaxies,
                                                        source_galaxies=instance.source_galaxies,
-                                                       image_plane_grids=[self.lensing_image.padded_grids],
+                                                       image_plane_grid_stack=[self.lensing_image.padded_grids],
                                                        cosmology=self.cosmology)
 
         @classmethod
@@ -1000,12 +1000,12 @@ class MultiPlanePhase(PhaseImaging):
 
         def tracer_for_instance(self, instance):
             return ray_tracing.TracerMulti(galaxies=instance.galaxies,
-                                           image_plane_grids=[self.lensing_image.grids],
+                                           image_plane_grid_stack=[self.lensing_image.grids],
                                            border=self.lensing_image.border, cosmology=self.cosmology)
 
         def padded_tracer_for_instance(self, instance):
             return ray_tracing.TracerMulti(galaxies=instance.galaxies,
-                                           image_plane_grids=[self.lensing_image.padded_grids],
+                                           image_plane_grid_stack=[self.lensing_image.padded_grids],
                                            cosmology=self.cosmology)
 
         @classmethod
@@ -1373,14 +1373,14 @@ class SensitivityPhase(PhaseImaging):
         def tracer_normal_for_instance(self, instance):
             return ray_tracing.TracerImageSourcePlanes(lens_galaxies=instance.lens_galaxies,
                                                        source_galaxies=instance.source_galaxies,
-                                                       image_plane_grids=[self.sensitivity_image.grids],
+                                                       image_plane_grid_stack=[self.sensitivity_image.grids],
                                                        border=self.sensitivity_image.border)
 
         def tracer_sensitive_for_instance(self, instance):
             return ray_tracing.TracerImageSourcePlanes(
                 lens_galaxies=instance.lens_galaxies + instance.sensitive_galaxies,
                 source_galaxies=instance.source_galaxies,
-                image_plane_grids=[self.sensitivity_image.grids],
+                image_plane_grid_stack=[self.sensitivity_image.grids],
                 border=self.sensitivity_image.border)
 
         def fast_likelihood_for_tracers(self, tracer_normal, tracer_sensitive):

@@ -69,14 +69,14 @@ def test_lensing_image(image, mask):
 
 @pytest.fixture(name='fit_lens_only')
 def test_fit_lens_only(lensing_image, galaxy_light):
-    tracer = ray_tracing.TracerImagePlane(lens_galaxies=[galaxy_light], image_plane_grids=[lensing_image.grids],
+    tracer = ray_tracing.TracerImagePlane(lens_galaxies=[galaxy_light], image_plane_grid_stack=[lensing_image.grids],
                                           cosmology=cosmo.Planck15)
     return lensing_fitters.fit_lensing_image_with_tracer(lensing_image=lensing_image, tracer=tracer)
 
 @pytest.fixture(name='fit_source_and_lens')
 def test_fit_source_and_lens(lensing_image, galaxy_light, galaxy_mass):
     tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[galaxy_mass], source_galaxies=[galaxy_light],
-                                               image_plane_grids=[lensing_image.grids], cosmology=cosmo.Planck15)
+                                                 image_plane_grid_stack=[lensing_image.grids], cosmology=cosmo.Planck15)
     return lensing_fitters.fit_lensing_image_with_tracer(lensing_image=lensing_image, tracer=tracer)
 
 @pytest.fixture(name='hyper')
@@ -106,7 +106,7 @@ def test_lensing_hyper_image(image, mask, hyper):
 @pytest.fixture(name='fit_hyper_lens_only')
 def test_fit_hyper_lens_only(lensing_hyper_image, hyper):
     tracer = ray_tracing.TracerImagePlane(lens_galaxies=[hyper.hyper_galaxy],
-                                          image_plane_grids=[lensing_hyper_image.grids])
+                                          image_plane_grid_stack=[lensing_hyper_image.grids])
     return lensing_fitters.fit_lensing_image_with_tracer(lensing_image=lensing_hyper_image, tracer=tracer)
 
 

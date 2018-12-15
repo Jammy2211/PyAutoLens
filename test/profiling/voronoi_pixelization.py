@@ -30,7 +30,7 @@ source_galaxy = g.Galaxy(light=lp.SphericalSersic(centre=(0.0, 0.0), intensity=0
                                                   sersic_index=1.5))
 
 tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
-                                             image_plane_grids=[image_plane_grids])
+                                             image_plane_grid_stack=[image_plane_grids])
 
 image = im.Image.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=pixel_scale,
                           exposure_time=300.0, psf=psf, background_sky_level=0.1, add_noise=True)
@@ -50,7 +50,7 @@ image_plane_grids = pix.setup_image_plane_pixelization_grid_from_galaxies_and_gr
 # print("{}".format(diff))
 
 tracer_fit = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy_voronoi],
-                                             image_plane_grids=[image_plane_grids])
+                                                 image_plane_grid_stack=[image_plane_grids])
 
 relocated_grids = lensing_image.border.relocated_grids_from_grids(tracer_fit.source_plane.grids[0])
 voronoi = adaptive_pix.voronoi_from_pixel_centers(relocated_grids.pix)

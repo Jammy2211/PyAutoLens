@@ -107,11 +107,11 @@ def blurred_image_of_planes_from_tracer_and_convolver(tracer, convolver_image, m
     for plane_index in range(tracer.total_planes):
 
         # If all entries are zero, there was no light profile / pixeization
-        if np.count_nonzero(tracer.image_plane_images_of_planes_[0][plane_index]) > 0:
+        if np.count_nonzero(tracer.image_plane_images_1d_of_planes[0][plane_index]) > 0:
 
             blurred_image_of_plane = blurred_image_from_1d_unblurred_and_blurring_images(
-                unblurred_image_1d=tracer.image_plane_images_of_planes_[0][plane_index],
-                blurring_image_1d=tracer.image_plane_blurring_images_of_planes_[0][plane_index],
+                unblurred_image_1d=tracer.image_plane_images_1d_of_planes[0][plane_index],
+                blurring_image_1d=tracer.image_plane_blurring_images_of_planes_1d[0][plane_index],
                 convolver=convolver_image, map_to_scaled_array=map_to_scaled_array)
 
             blurred_image_of_planes.append(blurred_image_of_plane)
@@ -249,7 +249,7 @@ def map_contributions_to_scaled_arrays(contributions_, map_to_scaled_array):
 def unmasked_model_images_of_galaxies_from_lensing_images_and_tracer(lensing_images, tracer):
     return list(map(lambda lensing_image, image_index :
                     unmasked_model_images_of_galaxies_from_lensing_image_and_tracer(lensing_image, tracer, image_index),
-                    lensing_images, list(range(tracer.total_images))))
+                    lensing_images, list(range(tracer.total_grid_stacks))))
 
 def unmasked_model_images_of_galaxies_from_lensing_image_and_tracer(lensing_image, tracer, image_index):
 
