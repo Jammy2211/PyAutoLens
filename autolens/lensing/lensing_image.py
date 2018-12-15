@@ -65,8 +65,8 @@ class LensingImage(object):
                                                                                      sub_grid_size=sub_grid_size,
                                                                                      psf_shape=image_psf_shape)
 
-        self.padded_grids = grids.DataGridStack.padded_grids_from_mask_sub_grid_size_and_psf_shape(mask=mask,
-                                                                                                   sub_grid_size=sub_grid_size, psf_shape=image_psf_shape)
+        self.padded_grids = grids.DataGridStack.padded_grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=mask,
+                                                                                                        sub_grid_size=sub_grid_size, psf_shape=image_psf_shape)
 
         self.border = grids.RegularGridBorder.from_mask(mask=mask)
 

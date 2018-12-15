@@ -70,7 +70,7 @@ class DataGridStack(object):
         return DataGridStack(image_grid, sub_grid, blurring_grid)
 
     @classmethod
-    def padded_grids_from_mask_sub_grid_size_and_psf_shape(cls, mask, sub_grid_size, psf_shape):
+    def padded_grid_stack_from_mask_sub_grid_size_and_psf_shape(cls, mask, sub_grid_size, psf_shape):
         """Setup the collection of padded imaging-grid_stacks from a masks, using also an input sub-grid size to setup the \
         sub-grid and psf-shape to setup the blurring grid.
 
@@ -109,10 +109,10 @@ class DataGridStack(object):
         psf_shape : (int, int)
             the shape of the PSF used in the analysis, which therefore defines the masks's blurring-region.
         """
-        return cls.padded_grids_from_mask_sub_grid_size_and_psf_shape(mask=msk.Mask(array=np.full(shape, False),
-                                                                                pixel_scale=pixel_scale),
-                                                                      sub_grid_size=sub_grid_size,
-                                                                      psf_shape=psf_shape)
+        return cls.padded_grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=msk.Mask(array=np.full(shape, False),
+                                                                                         pixel_scale=pixel_scale),
+                                                                           sub_grid_size=sub_grid_size,
+                                                                           psf_shape=psf_shape)
 
     def data_grid_stack_with_pix_grid(self, pix_grid, regular_to_nearest_regular_pix):
         pix = PixGrid(arr=pix_grid, regular_to_nearest_regular_pix=regular_to_nearest_regular_pix)

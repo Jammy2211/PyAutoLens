@@ -39,7 +39,7 @@ def setup_and_run_phase():
 
     pixel_scale = 0.1
 
-    tools.reset_paths(data_name='/deflections', pipeline_name='', output_path=output_path)
+    tools.reset_paths(data_name='/deflection_stacks', pipeline_name='', output_path=output_path)
 
     galaxy = g.Galaxy(sie=mp.EllipticalIsothermal(centre=(0.01, 0.01), axis_ratio=0.8, phi=80.0,
                                                         einstein_radius=1.6))
@@ -55,7 +55,7 @@ def setup_and_run_phase():
                                                                        hdu=0, pixel_scale=pixel_scale)
 
     phase = ph.GalaxyFitDeflectionsPhase(dict(galaxy=gm.GalaxyModel(light=mp.EllipticalIsothermal)),
-                                               phase_name='deflections')
+                                               phase_name='deflection_stacks')
 
     result = phase.run(array_y=array_y, array_x=array_x, noise_map=np.ones(array_y.shape))
     print(result)

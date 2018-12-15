@@ -55,7 +55,7 @@ class GalaxyData(scaled_array.ScaledSquarePixelArray):
                                                                                      sub_grid_size=sub_grid_size,
                                                                                      psf_shape=(1, 1))
 
-        self.padded_grids = grids.DataGridStack.padded_grids_from_mask_sub_grid_size_and_psf_shape(
+        self.padded_grids = grids.DataGridStack.padded_grid_stack_from_mask_sub_grid_size_and_psf_shape(
             mask=mask, sub_grid_size=sub_grid_size, psf_shape=(1, 1))
 
     def __array_finalize__(self, obj):

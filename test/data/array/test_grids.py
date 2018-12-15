@@ -896,8 +896,8 @@ class TestDataGridStack(object):
 
         msk = mask.Mask(msk, pixel_scale=1.0)
 
-        padded_grids = grids.DataGridStack.padded_grids_from_mask_sub_grid_size_and_psf_shape(msk, sub_grid_size=2,
-                                                                                              psf_shape=(3, 3))
+        padded_grids = grids.DataGridStack.padded_grid_stack_from_mask_sub_grid_size_and_psf_shape(msk, sub_grid_size=2,
+                                                                                                   psf_shape=(3, 3))
 
         image_padded_grid_util = grid_util.regular_grid_1d_masked_from_mask_pixel_scales_and_origin(
             mask=np.full((4, 4), False),
