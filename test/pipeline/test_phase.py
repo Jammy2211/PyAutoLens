@@ -76,7 +76,7 @@ class NLO(non_linear.NonLinearOptimizer):
 
 @pytest.fixture(name="grid_stacks")
 def make_grids(lensing_image):
-    return grids.DataGridStack.grids_from_mask_sub_grid_size_and_psf_shape(
+    return grids.DataGridStack.grid_stack_from_mask_sub_grid_size_and_psf_shape(
         lensing_image.mask, 1, lensing_image.psf.shape)
 
 

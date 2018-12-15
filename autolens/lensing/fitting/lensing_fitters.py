@@ -102,6 +102,7 @@ class LensingFitter(fitter.DataFitter):
         self.tracer = tracer
         self.padded_tracer = padded_tracer
         self.map_to_scaled_array = lensing_image.map_to_scaled_array
+        self.psf = lensing_image.psf
 
         super(LensingFitter, self).__init__(data=lensing_image.image, noise_map=lensing_image.noise_map,
                                             mask=lensing_image.mask, model_data=model_image)
@@ -129,9 +130,9 @@ class LensingProfileFitter(LensingFitter):
         ----------
         lensing_image : li.LensingImage
             List of the lensing-unblurred_image_1d that are to be fitted.
-        tracer : ray_tracing.AbstractTracer
+        tracer : ray_tracing.AbstractTracerNonStack
             The tracer, which describes the ray-tracing of the strong lensing configuration.
-        padded_tracer : ray_tracing.AbstractTracer
+        padded_tracer : ray_tracing.AbstractTracerNonStack or None
             A tracer with an identical strong lensing configuration to the tracer above, but using the lensing regular's \
             padded grid_stacks such that unmasked model-unblurred_image_1d can be computed.
         """
@@ -139,7 +140,7 @@ class LensingProfileFitter(LensingFitter):
         self.convolver_image = lensing_image.convolver_image
 
         model_image = lensing_fitting_util.blurred_image_from_1d_unblurred_and_blurring_images(
-            unblurred_image_1d=tracer.image_plane_images_1d[0], blurring_image_1d=tracer.image_plane_blurring_images_1d[0],
+            unblurred_image_1d=tracer.image_plane_image_1d, blurring_image_1d=tracer.image_plane_blurring_image_1d,
             convolver=lensing_image.convolver_image, map_to_scaled_array=lensing_image.map_to_scaled_array)
 
         super(LensingProfileFitter, self).__init__(lensing_image=lensing_image, model_image=model_image,
@@ -150,7 +151,7 @@ class LensingProfileFitter(LensingFitter):
         """Perform the fit of this class as described above, but storing no results as class instances, thereby \
         minimizing memory use and maximizing run-speed."""
         model_image_1d = lensing_fitting_util.blurred_image_1d_from_1d_unblurred_and_blurring_images(
-            unblurred_image_1d=tracer.image_plane_image_1d[0], blurring_image_1d=tracer.image_plane_blurring_image_1d[0],
+            unblurred_image_1d=tracer.image_plane_image_1d, blurring_image_1d=tracer.image_plane_blurring_image_1d,
             convolver=lensing_image.convolver_image)
         fit = fitter.DataFitter(data=lensing_image.image_1d, noise_map=lensing_image.noise_map_1d,
                                 mask=lensing_image.mask_1d, model_data=model_image_1d)
@@ -162,27 +163,21 @@ class LensingProfileFitter(LensingFitter):
                convolver_image=self.convolver_image, map_to_scaled_array=self.map_to_scaled_array)
 
     @property
-    def unmasked_model_profile_images(self):
-        if self.padded_tracer is None:
-            return None
-        elif self.padded_tracer is not None:
-            return lensing_fitting_util.unmasked_blurred_images_from_fitting_images(fitting_images=self.datas_,
-                                                                                    unmasked_images_=self.padded_tracer.image_plane_image_1d)
-
-    @property
-    def unmasked_model_profile_images_of_galaxies(self):
-        if self.padded_tracer is None:
-            return None
-        elif self.padded_tracer is not None:
-            return unmasked_model_images_of_galaxies_from_lensing_images_and_tracer(lensing_images=self.datas_,
-                                                                                    tracer=self.padded_tracer)
-
-    @property
     def unmasked_model_profile_image(self):
         if self.padded_tracer is None:
             return None
         elif self.padded_tracer is not None:
-            return self.unmasked_model_profile_images[0]
+            return lensing_fitting_util.unmasked_blurred_image_from_padded_grid_stack_psf_and_unmasked_image(
+                padded_grid_stack=self.padded_tracer.image_plane.grid_stack, psf=self.psf,
+                unmasked_image_1d=self.padded_tracer.image_plane_image_1d)
+
+    @property
+    def unmasked_model_profile_image_of_galaxies(self):
+        if self.padded_tracer is None:
+            return None
+        elif self.padded_tracer is not None:
+            return lensing_fitting_util.unmasked_blurred_image_of_galaxies_from_padded_grid_stack_psf_and_tracer(
+                padded_grid_stack=self.padded_tracer.image_plane.grid_stack, psf=self.psf, tracer=self.padded_tracer)
 
 
 # class HyperLensingProfileFit(LensingProfileFitter, fitter.AbstractHyperFit):
