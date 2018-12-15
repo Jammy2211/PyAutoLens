@@ -283,45 +283,7 @@ class TracerImagePlaneStack(AbstractTracerStack):
                          cosmology=cosmology)
 
 
-class TracerImageSourcePlanes(AbstractTracerNonStack):
-
-    @property
-    def all_planes(self):
-        return [self.image_plane, self.source_plane]
-
-    def __init__(self, lens_galaxies, source_galaxies, image_plane_grid_stack, border=None, cosmology=None):
-        """Ray-tracer_normal for a lensing system with two planes, an datas-plane and source-plane.
-
-        By default, this has no associated cosmology, thus all calculations are performed in arc seconds and galaxies \
-        do not need input redshifts. If a cosmology is supplied, the plane's angular diameter distances, \ 
-        conversion factors, etc. are used to provide quantities in kpc.
-
-        Parameters
-        ----------
-        lens_galaxies : [Galaxy]
-            The list of galaxies in the datas-plane.
-        source_galaxies : [Galaxy]
-            The list of galaxies in the source-plane.
-        image_plane_grid_stack : [grid_stacks.DataGridStack]
-            The datas-plane grid_stacks where ray-tracing calculation are performed, (this includes the datas_-grid_stack, \
-            sub-grid_stack, blurring-grid_stack, etc.).
-        border : masks.RegularGridBorder
-            The borders of the regular-grid_stack, which is used to relocate demagnified traced regular-pixel to the \
-            source-plane borders.
-        cosmology : astropy.cosmology.Planck15
-            The cosmology of the ray-tracing calculation.
-        """
-
-        image_plane_grid_stack = pix.setup_image_plane_pixelization_grid_from_galaxies_and_grids(
-            galaxies=source_galaxies, data_grids=image_plane_grid_stack)
-
-        super().__init__(lens_galaxies=lens_galaxies, image_plane_grid_stack=image_plane_grid_stack, border=border,
-                         cosmology=cosmology)
-
-        source_plane_grid_stack = self.image_plane.trace_grids_to_next_plane()
-
-        self.source_plane = pl.Plane(galaxies=source_galaxies, grid_stack=source_plane_grid_stack, border=border,
-                                     compute_deflections=False, cosmology=cosmology)
+class AbstractTracerImageSourcePlanes(object):
 
     @property
     @check_tracer_cosmology
@@ -397,13 +359,54 @@ class TracerImageSourcePlanes(AbstractTracerNonStack):
             return None
 
 
-class TracerImageSourcePlanesStack(AbstractTracerStack):
+class TracerImageSourcePlanes(AbstractTracerNonStack, AbstractTracerImageSourcePlanes):
 
     @property
     def all_planes(self):
         return [self.image_plane, self.source_plane]
 
-    def __init__(self, lens_galaxies, source_galaxies, image_plane_grid_stacks, border=None, cosmology=None):
+    def __init__(self, lens_galaxies, source_galaxies, image_plane_grid_stack, border=None, cosmology=None):
+        """Ray-tracer_normal for a lensing system with two planes, an datas-plane and source-plane.
+
+        By default, this has no associated cosmology, thus all calculations are performed in arc seconds and galaxies \
+        do not need input redshifts. If a cosmology is supplied, the plane's angular diameter distances, \ 
+        conversion factors, etc. are used to provide quantities in kpc.
+
+        Parameters
+        ----------
+        lens_galaxies : [Galaxy]
+            The list of galaxies in the datas-plane.
+        source_galaxies : [Galaxy]
+            The list of galaxies in the source-plane.
+        image_plane_grid_stack : [grid_stacks.DataGridStack]
+            The datas-plane grid_stacks where ray-tracing calculation are performed, (this includes the datas_-grid_stack, \
+            sub-grid_stack, blurring-grid_stack, etc.).
+        border : masks.RegularGridBorder
+            The borders of the regular-grid_stack, which is used to relocate demagnified traced regular-pixel to the \
+            source-plane borders.
+        cosmology : astropy.cosmology.Planck15
+            The cosmology of the ray-tracing calculation.
+        """
+
+        image_plane_grid_stack = pix.setup_image_plane_pixelization_grid_from_galaxies_and_grids(
+            galaxies=source_galaxies, data_grids=image_plane_grid_stack)
+
+        super().__init__(lens_galaxies=lens_galaxies, image_plane_grid_stack=image_plane_grid_stack, border=border,
+                         cosmology=cosmology)
+
+        source_plane_grid_stack = self.image_plane.trace_grids_to_next_plane()
+
+        self.source_plane = pl.Plane(galaxies=source_galaxies, grid_stack=source_plane_grid_stack, border=border,
+                                     compute_deflections=False, cosmology=cosmology)
+
+
+class TracerImageSourcePlanesStack(AbstractTracerStack, AbstractTracerImageSourcePlanes):
+
+    @property
+    def all_planes(self):
+        return [self.image_plane, self.source_plane]
+
+    def __init__(self, lens_galaxies, source_galaxies, image_plane_grid_stacks, borders=None, cosmology=None):
         """Ray-tracer_normal for a lensing system with two planes, an datas-plane and source-plane.
 
         By default, this has no associated cosmology, thus all calculations are performed in arc seconds and galaxies \
@@ -436,8 +439,8 @@ class TracerImageSourcePlanesStack(AbstractTracerStack):
 
         source_plane_grid_stacks = self.image_plane.trace_grids_to_next_plane()
 
-        self.source_plane = pl.Plane(galaxies=source_galaxies, grid_stack=source_plane_grid_stacks, border=border,
-                                     compute_deflections=False, cosmology=cosmology)
+        self.source_plane = pl.PlaneStack(galaxies=source_galaxies, grid_stacks=source_plane_grid_stacks,
+                                          borders=borders, compute_deflections=False, cosmology=cosmology)
 
 
 class AbstractTracerMulti(object):
