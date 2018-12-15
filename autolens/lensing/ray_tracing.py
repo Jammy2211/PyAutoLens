@@ -181,7 +181,7 @@ class AbstractTracerStack(AbstractTracer):
 
     @property
     def image_plane_images_of_planes_for_simulation(self):
-        return [plane.image_plane_image_for_simulation for plane in self.all_planes]
+        return [plane.image_plane_images_for_simulation for plane in self.all_planes]
 
     @property
     def image_plane_images_1d(self):
@@ -443,9 +443,9 @@ class TracerImageSourcePlanesStack(AbstractTracerStack, AbstractTracerImageSourc
                                           borders=borders, compute_deflections=False, cosmology=cosmology)
 
 
-class AbstractTracerMulti(object):
+class AbstractTracerMultiPlanes(object):
 
-    def __init__(self, galaxies):
+    def __init__(self, galaxies, cosmology=cosmo.Planck15):
         """The ray-tracing calculations, defined by a lensing system with just one datas-plane and source-plane.
 
         This has no associated cosmology, thus all calculations are performed in arc seconds and galaxies do not need
@@ -459,8 +459,10 @@ class AbstractTracerMulti(object):
             The cosmology of the ray-tracing calculation.
         """
 
+        self.cosmology = cosmology
+
         if not galaxies:
-            raise exc.RayTracingException('No galaxies have been input into the Tracer (TracerMulti)')
+            raise exc.RayTracingException('No galaxies have been input into the Tracer (TracerMultiPlanes)')
 
         self.galaxies_redshift_order = sorted(galaxies, key=lambda galaxy: galaxy.redshift, reverse=False)
 
@@ -527,7 +529,7 @@ class AbstractTracerMulti(object):
                 self.angular_diameter_distance_between_planes(i, self.source_plane_index))
 
 
-class TracerMulti(AbstractTracerNonStack, AbstractTracerMulti):
+class TracerMultiPlanes(AbstractTracerNonStack, AbstractTracerMultiPlanes):
 
     def __init__(self, galaxies, image_plane_grid_stack, border=None, cosmology=cosmo.Planck15):
         """Ray-tracer_normal for a lensing system with any number of planes.
@@ -552,11 +554,11 @@ class TracerMulti(AbstractTracerNonStack, AbstractTracerMulti):
         image_plane_grid_stack = pix.setup_image_plane_pixelization_grid_from_galaxies_and_grids(
             galaxies=galaxies, data_grids=image_plane_grid_stack)
 
-        AbstractTracerMulti.__init__(self=self, galaxies=galaxies)
+        AbstractTracerMultiPlanes.__init__(self=self, galaxies=galaxies, cosmology=cosmology)
 
-        super(TracerMulti, self).__init__(lens_galaxies=self.planes_galaxies[0],
-                                          image_plane_grid_stack=image_plane_grid_stack, border=border,
-                                          cosmology=cosmology)
+        super(TracerMultiPlanes, self).__init__(lens_galaxies=self.planes_galaxies[0],
+                                                image_plane_grid_stack=image_plane_grid_stack, border=border,
+                                                cosmology=cosmology)
 
         self.planes = []
 
@@ -595,7 +597,7 @@ class TracerMulti(AbstractTracerNonStack, AbstractTracerMulti):
                                         border=border, compute_deflections=compute_deflections, cosmology=cosmology))
 
 
-class TracerMultiStack(AbstractTracerStack, AbstractTracerMulti):
+class TracerMultiPlanesStack(AbstractTracerStack, AbstractTracerMultiPlanes):
 
     def __init__(self, galaxies, image_plane_grid_stacks, borders=None, cosmology=cosmo.Planck15):
         """Ray-tracer_normal for a lensing system with any number of planes.
@@ -617,16 +619,16 @@ class TracerMultiStack(AbstractTracerStack, AbstractTracerMulti):
             The cosmology of the ray-tracing calculation.
         """
 
-        image_plane_grid_stacks = list(map(lambda data_grids :
+        image_plane_grid_stacks = list(map(lambda grid_stack :
                         pix.setup_image_plane_pixelization_grid_from_galaxies_and_grids(galaxies=galaxies,
-                                                                                        data_grids=data_grids),
-                                          image_plane_grid_stacks))
+                                                                                        data_grids=grid_stack),
+                                           image_plane_grid_stacks))
 
-        AbstractTracerMulti.__init__(self=self, galaxies=galaxies)
+        AbstractTracerMultiPlanes.__init__(self=self, galaxies=galaxies, cosmology=cosmology)
 
-        super(TracerMultiStack, self).__init__(lens_galaxies=self.plane_galaxies[0],
-                                               image_plane_grid_stacks=image_plane_grid_stacks,
-                                               borders=borders, cosmology=cosmology)
+        super(TracerMultiPlanesStack, self).__init__(lens_galaxies=self.planes_galaxies[0],
+                                                     image_plane_grid_stacks=image_plane_grid_stacks,
+                                                     borders=borders, cosmology=cosmology)
 
         self.planes = []
 
@@ -649,7 +651,7 @@ class TracerMultiStack(AbstractTracerStack, AbstractTracerMulti):
                     def scale(grid):
                         return np.multiply(scaling_factor, grid)
 
-                    if self.planes[previous_plane_index].deflections is not None:
+                    if self.planes[previous_plane_index].deflection_stacks is not None:
                         scaled_deflections = list(map(lambda deflection_stack : deflection_stack.apply_function(scale),
                                                       self.planes[previous_plane_index].deflection_stacks))
                     else:
@@ -673,9 +675,9 @@ class TracerImageSourcePlanesPositions(AbstractTracer):
     def all_planes(self):
         return [self.image_plane, self.source_plane]
 
-    def __init__(self, lens_galaxies, positions, cosmology=None):
+    def __init__(self, lens_galaxies, image_plane_positions, cosmology=cosmo.Planck15):
         """Positional ray-tracer_normal for a lensing system with two planes, an datas-plane and source-plane (source-plane \
-        galaxies are not input for the positional ray-tracer_normal, as it is only the proximity that positions trace to \
+        galaxies are not input for the positional ray-tracer_normal, as it is only the proximity that image_plane_positions trace to \
         within one another that needs to be computed).
 
         By default, this has no associated cosmology, thus all calculations are performed in arc seconds and galaxies \
@@ -686,25 +688,29 @@ class TracerImageSourcePlanesPositions(AbstractTracer):
         ----------
         lens_galaxies : [Galaxy]
             The list of lens galaxies in the datas-plane.
-        positions : [[[]]]
+        image_plane_positions : [[[]]]
             The (x,y) arc-second coordinates of datas-plane pixels which (are expected to) mappers to the same location(s) \
             in the source-plane.
         cosmology : astropy.cosmology.Planck15
             The cosmology of the ray-tracing calculation.
         """
-        super().__init__(pl.PlanePositions(lens_galaxies, positions, compute_deflections=True, cosmology=cosmology))
+
+        image_plane = pl.PlanePositions(galaxies=lens_galaxies, positions=image_plane_positions,
+                                        compute_deflections=True, cosmology=cosmology)
+
+        super().__init__(image_plane=image_plane, cosmology=cosmology)
 
         self.cosmology = cosmology
 
-        source_plane_grids = self.image_plane.trace_to_next_plane()
+        source_plane_positions = self.image_plane.trace_to_next_plane()
 
-        self.source_plane = pl.PlanePositions(None, source_plane_grids, compute_deflections=False,
-                                              cosmology=cosmology)
+        self.source_plane = pl.PlanePositions(galaxies=None, positions=source_plane_positions,
+                                              compute_deflections=False, cosmology=cosmology)
 
 
-class TracerMultiPositions(AbstractTracerMulti):
+class TracerMultiPlanesPositions(AbstractTracer, AbstractTracerMultiPlanes):
 
-    def __init__(self, galaxies, positions, cosmology):
+    def __init__(self, galaxies, image_plane_positions, cosmology=cosmo.Planck15):
         """Positional ray-tracer_normal for a lensing system with any number of planes.
 
         To perform multi-plane ray-tracing, a cosmology must be supplied so that deflection-angles can be rescaled \
@@ -714,7 +720,7 @@ class TracerMultiPositions(AbstractTracerMulti):
         ----------
         galaxies : [Galaxy]
             The list of galaxies in the ray-tracing calculation.
-        positions : [[[]]]
+        image_plane_positions : [[[]]]
             The (x,y) arc-second coordinates of datas-plane pixels which (are expected to) mappers to the same location(s) \
             in the final source-plane.
         cosmology : astropy.cosmology
@@ -722,9 +728,15 @@ class TracerMultiPositions(AbstractTracerMulti):
         """
 
         if not galaxies:
-            raise exc.RayTracingException('No galaxies have been input into the Tracer (TracerImageSourcepl.Planes)')
+            raise exc.RayTracingException('No galaxies have been input into the Tracer (TracerImageSourcePlanes)')
 
-        super(TracerMultiPositions, self).__init__(galaxies, cosmology)
+        AbstractTracerMultiPlanes.__init__(self=self, galaxies=galaxies, cosmology=cosmology)
+
+        image_plane = pl.PlanePositions(galaxies=self.planes_galaxies[0], positions=image_plane_positions,
+                                        compute_deflections=True, cosmology=cosmology)
+
+
+        super(TracerMultiPlanesPositions, self).__init__(image_plane=image_plane, cosmology=cosmology)
 
         self.planes = []
 
@@ -737,7 +749,7 @@ class TracerMultiPositions(AbstractTracerMulti):
             else:
                 raise exc.RayTracingException('A galaxy was not correctly allocated its previous / next redshifts')
 
-            new_positions = positions
+            new_positions = image_plane_positions
 
             if plane_index > 0:
                 for previous_plane_index in range(plane_index):

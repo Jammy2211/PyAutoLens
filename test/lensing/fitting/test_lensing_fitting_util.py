@@ -186,8 +186,8 @@ class TestBlurredImageOfPlanes:
         g1 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=2.0), redshift=0.2)
         g2 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=3.0), redshift=0.3)
 
-        tracer = ray_tracing.TracerMulti(galaxies=[g0, g1, g2], image_plane_grid_stack=[data_grids],
-                                         cosmology=cosmo.Planck15)
+        tracer = ray_tracing.TracerMultiPlanes(galaxies=[g0, g1, g2], image_plane_grid_stack=[data_grids],
+                                               cosmology=cosmo.Planck15)
 
         blurred_plane_image_0 = convolver_blur.convolve_image(tracer.planes[0].image_plane_image_1d[0],
                                                               tracer.planes[0].image_plane_blurring_image_1d[0])

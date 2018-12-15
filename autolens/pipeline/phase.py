@@ -346,7 +346,7 @@ class PhasePositions(AbstractPhase):
 
         def tracer_for_instance(self, instance):
             return ray_tracing.TracerImageSourcePlanesPositions(lens_galaxies=instance.lens_galaxies,
-                                                                positions=self.positions, cosmology=self.cosmology)
+                                                                image_plane_positions=self.positions, cosmology=self.cosmology)
 
         def fit_for_tracer(self, tracer):
             return lensing_fitters.PositionFit(positions=tracer.source_plane.positions, noise=self.pixel_scale)
@@ -525,7 +525,7 @@ class PhaseImaging(Phase):
             if self.lensing_image.positions is not None:
 
                 tracer = ray_tracing.TracerImageSourcePlanesPositions(lens_galaxies=instance.lens_galaxies,
-                                                                      positions=self.lensing_image.positions)
+                                                                      image_plane_positions=self.lensing_image.positions)
                 fit = lensing_fitters.PositionFit(positions=tracer.source_plane.positions,
                                                   noise=self.lensing_image.image.pixel_scale)
 
@@ -999,14 +999,14 @@ class MultiPlanePhase(PhaseImaging):
                                                         previous_results=previous_results)
 
         def tracer_for_instance(self, instance):
-            return ray_tracing.TracerMulti(galaxies=instance.galaxies,
-                                           image_plane_grid_stack=[self.lensing_image.grids],
-                                           border=self.lensing_image.border, cosmology=self.cosmology)
+            return ray_tracing.TracerMultiPlanes(galaxies=instance.galaxies,
+                                                 image_plane_grid_stack=[self.lensing_image.grids],
+                                                 border=self.lensing_image.border, cosmology=self.cosmology)
 
         def padded_tracer_for_instance(self, instance):
-            return ray_tracing.TracerMulti(galaxies=instance.galaxies,
-                                           image_plane_grid_stack=[self.lensing_image.padded_grids],
-                                           cosmology=self.cosmology)
+            return ray_tracing.TracerMultiPlanes(galaxies=instance.galaxies,
+                                                 image_plane_grid_stack=[self.lensing_image.padded_grids],
+                                                 cosmology=self.cosmology)
 
         @classmethod
         def log(cls, instance):
