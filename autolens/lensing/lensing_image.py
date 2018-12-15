@@ -61,19 +61,18 @@ class LensingImage(object):
         self.convolver_mapping_matrix = inversion_convolution.ConvolverMappingMatrix(self.mask,
                       self.image.psf.resized_scaled_array_from_array(mapping_matrix_psf_shape))
 
-        self.grids = grids.DataGridStack.grids_from_mask_sub_grid_size_and_psf_shape(mask=mask,
-                                                                                     sub_grid_size=sub_grid_size,
-                                                                                     psf_shape=image_psf_shape)
+        self.grid_stack = grids.DataGridStack.grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=mask,
+                        sub_grid_size=sub_grid_size, psf_shape=image_psf_shape)
 
-        self.padded_grids = grids.DataGridStack.padded_grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=mask,
-                                                                                                        sub_grid_size=sub_grid_size, psf_shape=image_psf_shape)
+        self.padded_grid_stack = grids.DataGridStack.padded_grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=mask,
+                                                                 sub_grid_size=sub_grid_size, psf_shape=image_psf_shape)
 
         self.border = grids.RegularGridBorder.from_mask(mask=mask)
 
         self.positions = positions
 
     def map_to_scaled_array(self, array_1d):
-        return self.grids.regular.scaled_array_from_array_1d(array_1d=array_1d)
+        return self.grid_stack.regular.scaled_array_from_array_1d(array_1d=array_1d)
 
     def __array_finalize__(self, obj):
         if isinstance(obj, LensingImage):
@@ -87,8 +86,8 @@ class LensingImage(object):
             self.sub_grid_size = obj.sub_grid_size
             self.convolver_image = obj.convolver_image
             self.convolver_mapping_matrix = obj.convolver_mapping_matrix
-            self.grids = obj.grids
-            self.padded_grids = obj.padded_grids
+            self.grid_stack = obj.grid_stack
+            self.padded_grid_stack = obj.padded_grid_stack
             self.border = obj.border
             self.positions = obj.positions
 

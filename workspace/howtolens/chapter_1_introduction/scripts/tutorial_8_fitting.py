@@ -62,13 +62,13 @@ print(lensing_image.image.psf)
 print('Mask')
 print(lensing_image.mask)
 print('Grid')
-print(lensing_image.grids.regular)
+print(lensing_image.grid_stack.regular)
 
 # The shapes of these grid_stacks reveals they are 1D and have been masked:
 print(lensing_image.image.shape) # This is the original 2D regular
 print(lensing_image.shape)
 print(lensing_image.noise_map.shape)
-print(lensing_image.grids.regular.shape)
+print(lensing_image.grid_stack.regular.shape)
 
 # To fit_normal an regular, we need to create an regular-plane regular using a tracer_without_subhalo.
 # Lets use the same tracer_without_subhalo we simulated the regular with (thus, our fit_normal should be 'perfect').
@@ -80,7 +80,7 @@ lens_galaxy = g.Galaxy(mass=mp.EllipticalIsothermal(centre=(0.0, 0.0), einstein_
 source_galaxy = g.Galaxy(light=lp.EllipticalSersic(centre=(0.1, 0.1), axis_ratio=0.8, phi=45.0,
                                                         intensity=1.0, effective_radius=1.0, sersic_index=2.5))
 tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
-                                             image_plane_grid_stack=[lensing_image.grids])
+                                             image_plane_grid_stack=[lensing_image.grid_stack])
 ray_tracing_plotters.plot_image_plane_image(tracer=tracer)
 
 # To fit_normal the regular, we pass the lensing regular and tracer_without_subhalo to the fitting module. This performs the following:
@@ -132,7 +132,7 @@ lens_galaxy = g.Galaxy(mass=mp.EllipticalIsothermal(centre=(0.005, 0.005), einst
 source_galaxy = g.Galaxy(light=lp.EllipticalSersic(centre=(0.1, 0.1), axis_ratio=0.8, phi=45.0,
                                                         intensity=1.0, effective_radius=1.0, sersic_index=2.5))
 tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
-                                             image_plane_grid_stack=[lensing_image.grids])
+                                             image_plane_grid_stack=[lensing_image.grid_stack])
 fit = lensing_fitters.fit_lensing_image_with_tracer(lensing_image=lensing_image, tracer=tracer)
 lensing_fitting_plotters.plot_fitting_subplot(fit=fit)
 
@@ -151,7 +151,7 @@ lens_galaxy = g.Galaxy(mass=mp.EllipticalIsothermal(centre=(0.005, 0.005), einst
 source_galaxy = g.Galaxy(light=lp.EllipticalSersic(centre=(0.1, 0.1), axis_ratio=0.7, phi=65.0,
                                                         intensity=1.0, effective_radius=0.4, sersic_index=3.5))
 tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
-                                             image_plane_grid_stack=[lensing_image.grids])
+                                             image_plane_grid_stack=[lensing_image.grid_stack])
 fit = lensing_fitters.fit_lensing_image_with_tracer(lensing_image=lensing_image, tracer=tracer)
 lensing_fitting_plotters.plot_fitting_subplot(fit=fit)
 

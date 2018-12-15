@@ -161,4 +161,4 @@ source_galaxy_3 = g.Galaxy(light=lp.EllipticalSersic(centre=(-0.05, -0.0), axis_
 tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy],
                                              source_galaxies=[source_galaxy_0, source_galaxy_1,
                                                               source_galaxy_2, source_galaxy_3],
-                                             image_plane_grid_stack=lensing_image.grids)
+                                             image_plane_grid_stack=lensing_image.grid_stack)

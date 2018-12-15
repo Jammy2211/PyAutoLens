@@ -92,7 +92,7 @@ mask = ma.Mask.circular_annular(shape=image.shape, pixel_scale=image.pixel_scale
 # As usual, we setup our regular and masks up as a lensing regular and create a tracer using its (now masked) grid_stacks.
 lensing_image = li.LensingImage(image=image, mask=mask)
 tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[g.Galaxy()],
-                                             image_plane_grid_stack=[lensing_image.grids])
+                                             image_plane_grid_stack=[lensing_image.grid_stack])
 
 # Finally, we use the tracer's (masked) source-plane grid to setup a new mapper (using the same rectangular 25 x 25
 # pixelization as before).

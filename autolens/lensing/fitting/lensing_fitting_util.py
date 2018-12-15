@@ -107,11 +107,11 @@ def blurred_image_of_planes_from_tracer_and_convolver(tracer, convolver_image, m
     for plane_index in range(tracer.total_planes):
 
         # If all entries are zero, there was no light profile / pixeization
-        if np.count_nonzero(tracer.image_plane_images_1d_of_planes[0][plane_index]) > 0:
+        if np.count_nonzero(tracer.image_plane_image_1d_of_planes[plane_index]) > 0:
 
             blurred_image_of_plane = blurred_image_from_1d_unblurred_and_blurring_images(
-                unblurred_image_1d=tracer.image_plane_images_1d_of_planes[0][plane_index],
-                blurring_image_1d=tracer.image_plane_blurring_images_of_planes_1d[0][plane_index],
+                unblurred_image_1d=tracer.image_plane_image_1d_of_planes[plane_index],
+                blurring_image_1d=tracer.image_plane_blurring_image_of_planes_1d[plane_index],
                 convolver=convolver_image, map_to_scaled_array=map_to_scaled_array)
 
             blurred_image_of_planes.append(blurred_image_of_plane)
@@ -122,23 +122,40 @@ def blurred_image_of_planes_from_tracer_and_convolver(tracer, convolver_image, m
 
     return blurred_image_of_planes
 
-# def unmasked_blurred_images_from_fitting_images(fitting_images, unmasked_images_):
-#     """For a list of fitting unblurred_image_1d, compute an unmasked blurred unblurred_image_1d from a list of unmasked unblurred unblurred_image_1d.
-#     Unmasked unblurred_image_1d are used for plotting the results of a model outside a masked region.
-#
-#     This relies on using a fitting regular's padded_grid, which is grid of coordinates which extends over the entire
-#     regular as opposed to just the masked region.
-#
-#     Parameters
-#     ----------
-#     fitting_images_ : [fitting.fit_data.FitData]
-#         The fitting unblurred_image_1d.
-#     unmasked_images_ : [ndarray]
-#         The 1D unmasked unblurred_image_1d which are blurred.
-#     """
-#     return list(map(lambda fitting_image, _unmasked_image :
-#                     unmasked_model_image_from_psf_padded_grids_and_unmasked_image(fitting_image, _unmasked_image),
-#                     fitting_images, unmasked_images_))
+def unmasked_blurred_image_from_padded_grid_stack_psf_and_unmasked_image(padded_grid_stack, psf, unmasked_image_1d):
+    """For a fitting regular, compute an unmasked blurred regular from an unmasked unblurred regular. Unmasked
+    images are used for plotting the results of a model outside a masked region.
+
+    This relies on using a fitting regular's padded_grid, which is grid of coordinates which extends over the entire
+    regular as opposed to just the masked region.
+
+    Parameters
+    ----------
+    fitting_image_ : fitting.fitting_data.FittingImage
+        A padded_grid_stack, whose padded grid is used for PSF convolution.
+    unmasked_images_ : [ndarray]
+        The 1D unmasked images which are blurred.
+    """
+    blurred_image_1d = padded_grid_stack.regular.convolve_array_1d_with_psf(padded_array_1d=unmasked_image_1d,
+                                                                            psf=psf)
+
+    return padded_grid_stack.regular.scaled_array_from_array_1d(array_1d=blurred_image_1d)
+
+def unmasked_blurred_image_of_galaxies_from_padded_grid_stack_psf_and_tracer(padded_grid_stack, psf, tracer):
+
+    unmasked_blurred_images_of_galaxies = [[] for _ in range(len(tracer.all_planes))]
+
+    for plane_index, plane in enumerate(tracer.all_planes):
+        for galaxy_index in range(len(plane.galaxies)):
+
+            image_plane_image_1d_of_galaxy = plane.image_plane_image_1d_of_galaxies[galaxy_index]
+
+            blurred_galaxy_image = unmasked_blurred_image_from_padded_grid_stack_psf_and_unmasked_image(
+                padded_grid_stack=padded_grid_stack, psf=psf, unmasked_image_1d=image_plane_image_1d_of_galaxy)
+
+            unmasked_blurred_images_of_galaxies[plane_index].append(blurred_galaxy_image)
+
+    return unmasked_blurred_images_of_galaxies
 
 # def contributions_from_fitting_hyper_images_and_hyper_galaxies(fitting_hyper_images, hyper_galaxies):
 #     """For a list of fitting hyper-unblurred_image_1d (which includes the hyper model regular and hyper galaxy unblurred_image_1d) and model
@@ -246,24 +263,25 @@ def map_contributions_to_scaled_arrays(contributions_, map_to_scaled_array):
     """
     return list(map(lambda _contribution : map_to_scaled_array(_contribution), contributions_))
 
-def unmasked_model_images_of_galaxies_from_lensing_images_and_tracer(lensing_images, tracer):
-    return list(map(lambda lensing_image, image_index :
-                    unmasked_model_images_of_galaxies_from_lensing_image_and_tracer(lensing_image, tracer, image_index),
-                    lensing_images, list(range(tracer.total_grid_stacks))))
+# def unmasked_blurred_images_from_fitting_images(fitting_images, unmasked_images_):
+#     """For a list of fitting unblurred_image_1d, compute an unmasked blurred unblurred_image_1d from a list of unmasked unblurred unblurred_image_1d.
+#     Unmasked unblurred_image_1d are used for plotting the results of a model outside a masked region.
+#
+#     This relies on using a fitting regular's padded_grid, which is grid of coordinates which extends over the entire
+#     regular as opposed to just the masked region.
+#
+#     Parameters
+#     ----------
+#     fitting_images_ : [fitting.fit_data.FitData]
+#         The fitting unblurred_image_1d.
+#     unmasked_images_ : [ndarray]
+#         The 1D unmasked unblurred_image_1d which are blurred.
+#     """
+#     return list(map(lambda fitting_image, _unmasked_image :
+#                     unmasked_model_image_from_psf_padded_grids_and_unmasked_image(fitting_image, _unmasked_image),
+#                     fitting_images, unmasked_images_))
 
-def unmasked_model_images_of_galaxies_from_lensing_image_and_tracer(lensing_image, tracer, image_index):
-
-
-    padded_model_images_of_galaxies = [[] for _ in range(len(tracer.all_planes))]
-
-    for plane_index, plane in enumerate(tracer.all_planes):
-        for galaxy_index in range(len(plane.galaxies)):
-
-            _galaxy_image_plane_image = plane.image_plane_image_1d_of_galaxies[image_index][galaxy_index]
-
-            galaxy_model_image = fitting_util.unmasked_model_image_from_fitting_image(fitting_image=lensing_image,
-                                                                                 unmasked_image_=_galaxy_image_plane_image)
-
-            padded_model_images_of_galaxies[plane_index].append(galaxy_model_image)
-
-    return padded_model_images_of_galaxies
+# def unmasked_model_images_of_galaxies_from_lensing_images_and_tracer(lensing_images, tracer):
+#     return list(map(lambda lensing_image, image_index :
+#                     unmasked_model_images_of_galaxies_from_lensing_image_and_tracer(lensing_image, tracer, image_index),
+#                     lensing_images, list(range(tracer.total_grid_stacks))))

@@ -44,7 +44,7 @@ class DataGridStack(object):
             self.pix = pix
 
     @classmethod
-    def grids_from_mask_sub_grid_size_and_psf_shape(cls, mask, sub_grid_size, psf_shape):
+    def grid_stack_from_mask_sub_grid_size_and_psf_shape(cls, mask, sub_grid_size, psf_shape):
         """Setup the *DataGridStack* from a masks, sub-grid size and psf-shape.
 
         Parameters

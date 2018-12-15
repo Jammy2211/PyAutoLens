@@ -45,7 +45,7 @@ source_galaxy_voronoi = g.Galaxy(pixelization=adaptive_pix, regularization=reg.C
 
 # start = time.time()
 image_plane_grids = pix.setup_image_plane_pixelization_grid_from_galaxies_and_grids(
-    galaxies=[source_galaxy_voronoi], grids=lensing_image.grids)
+    galaxies=[source_galaxy_voronoi], grids=lensing_image.grid_stack)
 # diff = time.time() - start
 # print("{}".format(diff))
 

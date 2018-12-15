@@ -195,7 +195,7 @@ def make_li_blur():
                    [True, True, True, True]])
     ma = mask.Mask(array=ma, pixel_scale=1.0)
 
-    return lensing_image.LensingImage(im, ma, sub_grid_size=2)
+    return lensing_image.LensingImage(im, ma, sub_grid_size=1)
 
 
 @pytest.fixture(name='li_no_blur')
@@ -215,7 +215,7 @@ def make_li_no_blur():
                    [True, True, True, True]])
     ma = mask.Mask(array=ma, pixel_scale=1.0)
 
-    return lensing_image.LensingImage(im, ma, sub_grid_size=2)
+    return lensing_image.LensingImage(im, ma, sub_grid_size=1)
 
 
 class TestLensingProfileFit:
@@ -251,7 +251,7 @@ class TestLensingProfileFit:
             li = lensing_image.LensingImage(im, ma, sub_grid_size=1)
 
             g0 = g.Galaxy(light_profile=MockLightProfile(value=1.0))
-            tracer = ray_tracing.TracerImagePlane(lens_galaxies=[g0], image_plane_grid_stack=[li.grids])
+            tracer = ray_tracing.TracerImagePlane(lens_galaxies=[g0], image_plane_grid_stack=li.grid_stack)
 
             fit = lensing_fitters.LensingProfileFitter(lensing_image=li, tracer=tracer)
             assert fit.likelihood == -0.5 * np.log(2 * np.pi * 1.0)
@@ -274,13 +274,25 @@ class TestLensingProfileFit:
             # Setup as a ray trace instance, using a light profile for the lens
 
             g0 = g.Galaxy(light_profile=MockLightProfile(value=1.0, size=2))
-            tracer = ray_tracing.TracerImagePlane(lens_galaxies=[g0], image_plane_grid_stack=[li.grids])
+            tracer = ray_tracing.TracerImagePlane(lens_galaxies=[g0], image_plane_grid_stack=li.grid_stack)
 
             fit = lensing_fitters.LensingProfileFitter(lensing_image=li, tracer=tracer)
 
             assert fit.chi_squared_term == 25.0
             assert fit.reduced_chi_squared_term == 25.0 / 2.0
             assert fit.likelihood == -0.5 * (25.0 + 2.0*np.log(2 * np.pi * 1.0))
+
+    class TestBlurredImageOfGalaxies:
+
+        def test__padded_tracer_is_none__mode_profie_images_return_none(self, li_blur):
+
+            g0 = g.Galaxy(light_profile=MockLightProfile(value=1.0))
+            tracer = ray_tracing.TracerImagePlane(lens_galaxies=[g0], image_plane_grid_stack=li_blur.grid_stack)
+
+            fit = lensing_fitters.LensingProfileFitter(lensing_image=li_blur, tracer=tracer, padded_tracer=None)
+
+            assert fit.unmasked_model_profile_image == None
+            assert fit.unmasked_model_profile_image_of_galaxies == None
 
     class TestCompareToManual:
 
@@ -289,18 +301,18 @@ class TestLensingProfileFit:
             g0 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=1.0))
 
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g0],
-                                                         image_plane_grid_stack=[li_manual.grids])
+                                                         image_plane_grid_stack=li_manual.grid_stack)
 
             padded_tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g0],
-                                                                image_plane_grid_stack=[li_manual.padded_grids])
+                                                                image_plane_grid_stack=li_manual.padded_grid_stack)
 
             fit = lensing_fitters.fit_lensing_image_with_tracer(lensing_image=li_manual, tracer=tracer,
                                                                 padded_tracer=padded_tracer)
 
             assert li_manual.noise_map == pytest.approx(fit.noise_map, 1e-4)
 
-            unblurred_image_1d = tracer.image_plane_images_1d[0]
-            blurring_image_1d = tracer.image_plane_blurring_images_1d[0]
+            unblurred_image_1d = tracer.image_plane_image_1d
+            blurring_image_1d = tracer.image_plane_blurring_image_1d
 
             model_image = lensing_fitting_util.blurred_image_from_1d_unblurred_and_blurring_images(
                 unblurred_image_1d=unblurred_image_1d, blurring_image_1d=blurring_image_1d,
@@ -337,18 +349,19 @@ class TestLensingProfileFit:
             assert (model_image_of_planes[0] == fit.model_image_of_planes[0]).all()
             assert (model_image_of_planes[1] == fit.model_image_of_planes[1]).all()
 
-            # padded_model_image = fitting_util.unmasked_blurred_images_from_fitting_images(fitting_images=[li_manual],
-            #                                                                          unmasked_images_=padded_tracer.image_plane_images_)
-            #
-            # assert (padded_model_image == fit.unmasked_model_profile_image).all()
-            #
-            # padded_model_image_of_galaxies = \
-            #     lensing_fitters.unmasked_model_images_of_galaxies_from_lensing_image_and_tracer(lensing_image=li_manual,
-            #                                                                                     tracer=padded_tracer,
-            #                                                                                     image_index=0)
-            #
-            # assert (padded_model_image_of_galaxies[0][0] == fit.unmasked_model_profile_images_of_galaxies[0][0][0]).all()
-            # assert (padded_model_image_of_galaxies[1][0] == fit.unmasked_model_profile_images_of_galaxies[0][1][0]).all()
+            unmasked_model_image = \
+                lensing_fitting_util.unmasked_blurred_image_from_padded_grid_stack_psf_and_unmasked_image(
+                padded_grid_stack=li_manual.padded_grid_stack, psf=li_manual.psf,
+                    unmasked_image_1d=padded_tracer.image_plane_image_1d)
+
+            assert (unmasked_model_image == fit.unmasked_model_profile_image).all()
+
+            unmasked_model_image_of_galaxies = \
+                lensing_fitting_util.unmasked_blurred_image_of_galaxies_from_padded_grid_stack_psf_and_tracer(
+                    padded_grid_stack=li_manual.padded_grid_stack, psf=li_manual.psf, tracer=padded_tracer)
+
+            assert (unmasked_model_image_of_galaxies[0][0] == fit.unmasked_model_profile_image_of_galaxies[0][0]).all()
+            assert (unmasked_model_image_of_galaxies[1][0] == fit.unmasked_model_profile_image_of_galaxies[1][0]).all()
 
 # class TestHyperLensingProfileFit:
 #
@@ -449,7 +462,7 @@ class TestLensingProfileFit:
 #                                                          image_plane_grids=[li_hyper_manual.grid_stacks])
 #
 #             padded_tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g0],
-#                                                                 image_plane_grids=[li_hyper_manual.padded_grids])
+#                                                                 image_plane_grids=[li_hyper_manual.padded_grid_stack])
 #
 #             fit = lensing_fitters.fit_lensing_image_with_tracer(lensing_image=li_hyper_manual, tracer=tracer,
 #                                                                 padded_tracer=padded_tracer)
@@ -531,8 +544,8 @@ class TestLensingProfileFit:
 #                                                                             li_hyper_manual_1.grid_stacks])
 #
 #             padded_tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g0],
-#                                                                 image_plane_grids=[li_hyper_manual.padded_grids,
-#                                                                                    li_hyper_manual_1.padded_grids])
+#                                                                 image_plane_grids=[li_hyper_manual.padded_grid_stack,
+#                                                                                    li_hyper_manual_1.padded_grid_stack])
 #
 #             fit = lensing_fitters.fit_multiple_lensing_images_with_tracer(lensing_images=[li_hyper_manual,
 #                                                                                           li_hyper_manual_1], tracer=tracer,

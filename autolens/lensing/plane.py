@@ -435,8 +435,8 @@ class PlaneStack(AbstractPlane):
     def image_plane_images_for_simulation(self):
         if not self.has_padded_grid_stack:
             raise exc.RayTracingException(
-                'To retrieve an image plane image for the simulation, the grids in the tracer_normal'
-                'must be padded grids')
+                'To retrieve an image plane image for the simulation, the grid_stack in the tracer_normal'
+                'must be padded grid_stack')
         return list(map(lambda image_plane_image_1d, grid_stack : 
                         grid_stack.regular.map_to_2d_keep_padded(padded_array_1d=image_plane_image_1d),
                         self.image_plane_images_1d, self.grid_stacks))

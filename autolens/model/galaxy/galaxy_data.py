@@ -38,7 +38,7 @@ class GalaxyData(scaled_array.ScaledSquarePixelArray):
         grid_stacks : imaging.masks.DataGridStack
             Grids of (y,x) Cartesian coordinates which map over the masked 1D datas array's pixels (includes an \
             regular-grid, sub-grid, etc.)
-        padded_grids : imaging.masks.DataGridStack
+        padded_grid_stack : imaging.masks.DataGridStack
             Grids of padded (y,x) Cartesian coordinates which map over the every datas array's pixel in 1D and a \
             padded regioon to include edge's for accurate PSF convolution (includes an regular-grid, sub-grid, etc.)
         """
@@ -51,9 +51,9 @@ class GalaxyData(scaled_array.ScaledSquarePixelArray):
         self.noise_map_ = mask.map_2d_array_to_masked_1d_array(array_2d=noise_map)
         self.sub_grid_size = sub_grid_size
 
-        self.grids = grids.DataGridStack.grids_from_mask_sub_grid_size_and_psf_shape(mask=mask,
-                                                                                     sub_grid_size=sub_grid_size,
-                                                                                     psf_shape=(1, 1))
+        self.grids = grids.DataGridStack.grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=mask,
+                                                                                          sub_grid_size=sub_grid_size,
+                                                                                          psf_shape=(1, 1))
 
         self.padded_grids = grids.DataGridStack.padded_grid_stack_from_mask_sub_grid_size_and_psf_shape(
             mask=mask, sub_grid_size=sub_grid_size, psf_shape=(1, 1))

@@ -29,7 +29,7 @@ def make_sub_grid(msk):
 
 @pytest.fixture(name="data_grid_stack")
 def make_data_grid_stack(centre_mask):
-    return grids.DataGridStack.grids_from_mask_sub_grid_size_and_psf_shape(centre_mask, 2, (3, 3))
+    return grids.DataGridStack.grid_stack_from_mask_sub_grid_size_and_psf_shape(centre_mask, 2, (3, 3))
 
 
 class TestRegularGrid:
@@ -880,8 +880,8 @@ class TestDataGridStack(object):
                                  [False, False, False],
                                  [False, False, False]]), pixel_scale=2.0)
 
-        data_grid_stack_mask = grids.DataGridStack.grids_from_mask_sub_grid_size_and_psf_shape(mask=ma, sub_grid_size=2,
-                                                                                          psf_shape=(1, 1))
+        data_grid_stack_mask = grids.DataGridStack.grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=ma, sub_grid_size=2,
+                                                                                                    psf_shape=(1, 1))
 
         data_grid_stack_shape = grids.DataGridStack.from_shape_and_pixel_scale(shape=(3, 3), pixel_scale=2.0,
                                                                           sub_grid_size=2)

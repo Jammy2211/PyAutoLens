@@ -40,7 +40,7 @@ source_galaxy = g.Galaxy(bulge=lp.EllipticalSersic(centre=(0.1, 0.1), axis_ratio
                          disk=lp.EllipticalSersic(centre=(0.1, 0.1), axis_ratio=0.8, phi=45.0,
                                                   intensity=1.0, effective_radius=1.0, sersic_index=1.0))
 tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
-                                             image_plane_grid_stack=[lensing_image.grids])
+                                             image_plane_grid_stack=[lensing_image.grid_stack])
 fit = lensing_fitters.fit_lensing_image_with_tracer(lensing_image=lensing_image, tracer=tracer)
 
 # The fit_normal contains our tracer_without_subhalo, which contains our planes, which contain our grid_stacks and galaxies, which contain our

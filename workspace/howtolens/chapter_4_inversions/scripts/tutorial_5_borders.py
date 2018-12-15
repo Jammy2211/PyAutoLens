@@ -73,7 +73,7 @@ def perform_fit_with_source_galaxy_mask_and_border(source_galaxy, mask, use_bord
         border = None
 
     tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
-                                                 image_plane_grid_stack=[lensing_image.grids], border=border)
+                                                 image_plane_grid_stack=[lensing_image.grid_stack], border=border)
     return lensing_fitters.fit_lensing_image_with_tracer(lensing_image=lensing_image, tracer=tracer)
 
 # Okay, so lets first look at our mapper without using a borders, and using our annular masks.
@@ -194,7 +194,7 @@ def perform_fit_x2_lenses_with_source_galaxy_mask_and_border(source_galaxy, mask
 
     tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy_0, lens_galaxy_1],
                                                  source_galaxies=[source_galaxy],
-                                                 image_plane_grid_stack=[lensing_image.grids], border=border)
+                                                 image_plane_grid_stack=[lensing_image.grid_stack], border=border)
     return lensing_fitters.fit_lensing_image_with_tracer(lensing_image=lensing_image, tracer=tracer)
 
 # Now, lets fit this regular using the input model and perform the source reconstruction without a borders. As you can see,
