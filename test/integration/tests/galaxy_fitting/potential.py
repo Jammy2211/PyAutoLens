@@ -10,7 +10,7 @@ from test.integration import tools
 
 dirpath = os.path.dirname(os.path.realpath(__file__))
 dirpath = os.path.dirname(dirpath)
-data_path = '{}/../data/galaxy_fit'.format(dirpath)
+data_path = '{}/../datas/galaxy_fit'.format(dirpath)
 output_path = '{}/../output/galaxy_fit'.format(dirpath)
 
 def simulate_potential(data_name, pixel_scale, galaxy):

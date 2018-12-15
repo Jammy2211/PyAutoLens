@@ -27,7 +27,7 @@ def simulate():
 
     psf = im.PSF.simulate_as_gaussian(shape=(11, 11), sigma=0.05, pixel_scale=0.05)
 
-    image_plane_grids = grids.DataGrids.grids_for_simulation(shape=(180, 180), pixel_scale=0.05, psf_shape=(11, 11))
+    image_plane_grids = grids.DataGridStack.grids_for_simulation(shape=(180, 180), pixel_scale=0.05, psf_shape=(11, 11))
 
     lens_galaxy = g.Galaxy(mass=mp.EllipticalIsothermal(centre=(0.0, 0.0), axis_ratio=0.8, phi=135.0,
                                                         einstein_radius=1.6))
@@ -43,7 +43,7 @@ def simulate():
 
 # We're going to perform a lot of fits using an inversion this tutorial. This would create a lot of code, so to keep
 # things tidy, I've setup this function which handles it all for us.
-# (You may notice we include a border in the tracer, instead of setting it to None - just ignore this for now, as we'll
+# (You may notice we include a borders in the tracer, instead of setting it to None - just ignore this for now, as we'll
 # be covering borders in the next tutorial)
 def perform_fit_with_source_galaxy(source_galaxy):
 

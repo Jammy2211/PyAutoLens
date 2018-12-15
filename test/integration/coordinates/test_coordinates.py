@@ -79,7 +79,7 @@ def test__centre_mass_profile_on_grid_coordinate__peak_density_is_correct_index(
 
 def test__same_as_above__but_grid_is_padded_to_7x7_for_simulation():
 
-    data_grids = grids.DataGrids.grids_for_simulation(shape=(5, 5), pixel_scale=1.0, psf_shape=(3, 3))
+    data_grids = grids.DataGridStack.grids_for_simulation(shape=(5, 5), pixel_scale=1.0, psf_shape=(3, 3))
 
     sersic = lp.SphericalSersic(centre=(2.0, -2.0))
     image_1d = sersic.intensities_from_grid(grid=data_grids.regular)
@@ -152,13 +152,13 @@ def test__deflection_angles():
 #     source_image = sersic.intensities_from_grid(grid=source_grid)
 #     print(source_image.argmax())
 #
-#     data_grids = masks.DataGrids.from_shape_and_pixel_scale(shape=(5, 5), pixel_scales=1.0)
+#     data_grids = masks.DataGridStack.from_shape_and_pixel_scale(shape=(5, 5), pixel_scales=1.0)
 #     lens_galaxy = g.Galaxy(mass=sis)
 #     source_galaxy = g.Galaxy(light=sersic)
 #     tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
 #                                                  image_plane_grids=data_grids)
 #
 #     print(source_grid)
-#     print(tracer.source_plane.grids.regular)
-#     print(np.subtract(source_grid, tracer.source_plane.grids.regular))
+#     print(tracer.source_plane.grid_stacks.regular)
+#     print(np.subtract(source_grid, tracer.source_plane.grid_stacks.regular))
 #     print(tracer.regular_plane_image)

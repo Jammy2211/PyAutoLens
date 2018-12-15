@@ -34,9 +34,9 @@ def test_light_profile():
 def test_mass_profile():
     return mp.SphericalIsothermal(einstein_radius=1.0)
 
-@pytest.fixture(name='grids')
+@pytest.fixture(name='grid_stacks')
 def test_grids():
-    return grids.DataGrids.from_shape_and_pixel_scale(shape=(100, 100), pixel_scale=0.05, sub_grid_size=2)
+    return grids.DataGridStack.from_shape_and_pixel_scale(shape=(100, 100), pixel_scale=0.05, sub_grid_size=2)
 
 
 def test__intensities_is_output(light_profile, grids, profile_plotter_path):

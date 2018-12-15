@@ -9,8 +9,8 @@ from autolens.model.inversion.plotters import mapper_plotters
 # apply to an regular-plane).
 #
 # Lets setup a lensed source-plane grid, using a lens model_galaxy and tracer_normal.
-image_plane_grids = grids.DataGrids.from_shape_and_pixel_scale(shape=(100, 100), pixel_scale=0.05,
-                                                               sub_grid_size=2)
+image_plane_grids = grids.DataGridStack.from_shape_and_pixel_scale(shape=(100, 100), pixel_scale=0.05,
+                                                                   sub_grid_size=2)
 lens_galaxy = g.Galaxy(mass=mp.EllipticalIsothermal(centre=(0.0, 0.0), axis_ratio=0.8, phi=90.0, einstein_radius=1.6))
 
 # (Our source model_galaxy doesn't have a light profile from here on, as we're reconstructing its light using a pixelization).
@@ -24,7 +24,7 @@ rectangular = pix.Rectangular(shape=(25, 25))
 
 # By itself, a pixelization doesn't tell us much. It has no grid of coordinates, no regular, and nothing which tells it
 # about the lens we're fitting. This information comes when we use the pixelization to set up a 'mapper'.
-# (The 'border=None' will be covered in tutorial 5, so just ignore it for now!)
+# (The 'borders=None' will be covered in tutorial 5, so just ignore it for now!)
 mapper = rectangular.mapper_from_grids_and_border(grids=tracer.source_plane.grids[0], border=None)
 
 # This mapper is a 'RectangularMapper' - every pixelization generates it owns mapper.
@@ -47,7 +47,7 @@ print('etc.')
 # Infact, we can plot these origin on our grid - to make it look slightly less boring!
 mapper_plotters.plot_rectangular_mapper(mapper=mapper, should_plot_grid=False, should_plot_centres=True)
 
-# The mapper also has the (source-plane) grid that we passed when we set it up. Lets check they're the same grids.
+# The mapper also has the (source-plane) grid that we passed when we set it up. Lets check they're the same grid_stacks.
 print('Source Grid Pixel 1')
 print(tracer.source_plane.grids[0].regular[0])
 print(mapper.grids.regular[0])

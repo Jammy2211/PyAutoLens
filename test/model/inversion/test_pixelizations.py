@@ -111,8 +111,8 @@ class TestImagePlanePixelization:
                                  [False, False, False],
                                  [False, False, False]]), pixel_scale=1.0)
 
-        data_grids = grids.DataGrids.grids_from_mask_sub_grid_size_and_psf_shape(mask=ma, sub_grid_size=1,
-                                                                                 psf_shape=(1, 1))
+        data_grids = grids.DataGridStack.grids_from_mask_sub_grid_size_and_psf_shape(mask=ma, sub_grid_size=1,
+                                                                                     psf_shape=(1, 1))
 
         galaxy = g.Galaxy()
 
@@ -128,8 +128,8 @@ class TestImagePlanePixelization:
                                  [False, False, False],
                                  [False, False, False]]), pixel_scale=1.0)
 
-        data_grids = grids.DataGrids.grids_from_mask_sub_grid_size_and_psf_shape(mask=ma, sub_grid_size=1,
-                                                                                 psf_shape=(1, 1))
+        data_grids = grids.DataGridStack.grids_from_mask_sub_grid_size_and_psf_shape(mask=ma, sub_grid_size=1,
+                                                                                     psf_shape=(1, 1))
 
         galaxy = g.Galaxy(pixelization=pixelizations.Rectangular(shape=(3,3)),
                           regularization=regularization.Constant())
@@ -147,8 +147,8 @@ class TestImagePlanePixelization:
                                  [False, False, False],
                                  [False, True, False]]), pixel_scale=1.0)
 
-        data_grids = grids.DataGrids.padded_grids_from_mask_sub_grid_size_and_psf_shape(mask=ma, sub_grid_size=1,
-                                                                                 psf_shape=(1, 1))
+        data_grids = grids.DataGridStack.padded_grids_from_mask_sub_grid_size_and_psf_shape(mask=ma, sub_grid_size=1,
+                                                                                            psf_shape=(1, 1))
 
         galaxy = g.Galaxy(pixelization=pixelizations.AdaptiveMagnification(shape=(3, 3)),
                           regularization=regularization.Constant())
@@ -165,8 +165,8 @@ class TestImagePlanePixelization:
                                  [False, False, False],
                                  [False, True, False]]), pixel_scale=1.0)
 
-        data_grids = grids.DataGrids.grids_from_mask_sub_grid_size_and_psf_shape(mask=ma, sub_grid_size=1, 
-                                                                                 psf_shape=(1, 1))
+        data_grids = grids.DataGridStack.grids_from_mask_sub_grid_size_and_psf_shape(mask=ma, sub_grid_size=1,
+                                                                                     psf_shape=(1, 1))
 
         galaxy = g.Galaxy(pixelization=pixelizations.AdaptiveMagnification(shape=(3, 3)),
                           regularization=regularization.Constant())

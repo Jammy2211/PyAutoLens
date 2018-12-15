@@ -7,8 +7,8 @@ image_shape = (50, 50)
 pixel_scale = 0.02
 psf_shape = (21, 21)
 
-grids = grids.DataGrids.grids_for_simulation(shape=image_shape, sub_grid_size=2,
-                                             pixel_scale=pixel_scale, psf_shape=psf_shape)
+grids = grids.DataGridStack.grids_for_simulation(shape=image_shape, sub_grid_size=2,
+                                                 pixel_scale=pixel_scale, psf_shape=psf_shape)
 
 print('Number of points = ', grids.sub.shape[0])
 

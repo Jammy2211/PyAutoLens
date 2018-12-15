@@ -16,9 +16,9 @@ from autolens.lensing.plotters import lensing_fitting_plotters
 # First, we load the regular-datas we simualted in the previous tutorial.
 path = 'path/to/AutoLens/howtolens/1_introduction' # Unfortunately, in a Jupyter notebook you have to manually specify the path to PyAutoLens and this tutorial.
 path = '/home/jammy/PyCharm/Projects/AutoLens/workspace/howtolens/chapter_1_introduction'
-image = im.load_imaging_from_fits(image_path=path + '/data/regular.fits',
-                                  noise_map_path=path+'/data/noise_map.fits',
-                                  psf_path=path + '/data/psf.fits', pixel_scale=0.1)
+image = im.load_imaging_from_fits(image_path=path + '/datas/regular.fits',
+                                  noise_map_path=path+'/datas/noise_maps.fits',
+                                  psf_path=path + '/datas/psf.fits', pixel_scale=0.1)
 
 # To fit_normal an regular, we first specify a masks. A masks describes the sections of the regular that we fit_normal.
 
@@ -47,7 +47,7 @@ imaging_plotters.plot_image(image=image, mask=mask)
 
 # 3) The noise-map: so our goodness-of-fit_normal measure accounts for noise in the observations.
 
-# 4) The regular's grids: so the tracer_without_subhalo's regular-plane regular is generated on the same (masked) grid as the regular-datas.
+# 4) The regular's grid_stacks: so the tracer_without_subhalo's regular-plane regular is generated on the same (masked) grid as the regular-datas.
 
 lensing_image = li.LensingImage(image=image, mask=mask)
 imaging_plotters.plot_image_subplot(lensing_image.image)
@@ -64,7 +64,7 @@ print(lensing_image.mask)
 print('Grid')
 print(lensing_image.grids.regular)
 
-# The shapes of these grids reveals they are 1D and have been masked:
+# The shapes of these grid_stacks reveals they are 1D and have been masked:
 print(lensing_image.image.shape) # This is the original 2D regular
 print(lensing_image.shape)
 print(lensing_image.noise_map.shape)
@@ -73,7 +73,7 @@ print(lensing_image.grids.regular.shape)
 # To fit_normal an regular, we need to create an regular-plane regular using a tracer_without_subhalo.
 # Lets use the same tracer_without_subhalo we simulated the regular with (thus, our fit_normal should be 'perfect').
 
-# Its worth noting that below, we use the sensitivity_image's grids to setup the tracer_without_subhalo. This ensures that our regular-plane
+# Its worth noting that below, we use the sensitivity_image's grid_stacks to setup the tracer_without_subhalo. This ensures that our regular-plane
 # regular will be the same resolution and alignment as our regular-datas, as well as being masked appropriately.
 
 lens_galaxy = g.Galaxy(mass=mp.EllipticalIsothermal(centre=(0.0, 0.0), einstein_radius=1.6, axis_ratio=0.7, phi=45.0))

@@ -19,8 +19,8 @@ psf_shape = (21, 21)
 
 psf = im.PSF.simulate_as_gaussian(shape=psf_shape, sigma=0.05, pixel_scale=pixel_scale)
 
-image_plane_grids = grids.DataGrids.grids_for_simulation(shape=image_shape, sub_grid_size=4,
-                                                         pixel_scale=pixel_scale, psf_shape=psf_shape)
+image_plane_grids = grids.DataGridStack.grids_for_simulation(shape=image_shape, sub_grid_size=4,
+                                                             pixel_scale=pixel_scale, psf_shape=psf_shape)
 
 lens_galaxy = g.Galaxy(light=lp.SphericalSersic(centre=(0.0, 0.0), intensity=0.3, effective_radius=1.0,
                                                 sersic_index=2.0),

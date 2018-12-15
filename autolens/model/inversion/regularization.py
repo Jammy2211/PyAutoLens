@@ -76,7 +76,7 @@ class Regularization(object):
         Whilst the howtolens above used a square-grid with regularization to the right and downwards, this matrix \
         formalism can be extended to describe regularization in more directions (e.g. upwards, to the left).
 
-        It can also describe irregular grids, e.g. an irregular Voronoi grid, where a B matrix is computed for every \
+        It can also describe irregular grid_stacks, e.g. an irregular Voronoi grid, where a B matrix is computed for every \
         shared Voronoi vertex of each Voronoi pixel. The number of B matrices is now equal to the number of Voronoi \
         vertices in the pixel with the most Voronoi vertices. However, we describe below a scheme to compute this \
         solution more efficiently.

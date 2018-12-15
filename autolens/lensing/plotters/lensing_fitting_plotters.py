@@ -93,7 +93,7 @@ def plot_fitting_subplot_lens_plane_only(fit, should_plot_mask=True, positions=N
     Parameters
     -----------
     fit : autolens.lensing.fittingting.Fitter
-        Class containing fitting between the model datas_ and observed lensing datas_ (including residuals, chi_squareds etc.)
+        Class containing fitting between the model datas_ and observed lensing datas_ (including residual_map, chi_squared_map etc.)
     output_path : str
         The path where the datas_ is output if the output_type is a file format (e.g. png, fittings)
     output_filename : str
@@ -182,7 +182,7 @@ def plot_fitting_subplot_hyper_lens_plane_only(fit, should_plot_mask=True, posit
     Parameters
     -----------
     fit : autolens.lensing.fittingting.Fitter
-        Class containing fitting between the model datas_ and observed lensing datas_ (including residuals, chi_squareds etc.)
+        Class containing fitting between the model datas_ and observed lensing datas_ (including residual_map, chi_squared_map etc.)
     output_path : str
         The path where the datas_ is output if the output_type is a file format (e.g. png, fittings)
     output_filename : str
@@ -312,7 +312,7 @@ def plot_fitting_subplot_lens_and_source_planes(fit, should_plot_mask=True, shou
     Parameters
     -----------
     fit : autolens.lensing.fittingting.Fitter
-        Class containing fitting between the model datas_ and observed lensing datas_ (including residuals, chi_squareds etc.)
+        Class containing fitting between the model datas_ and observed lensing datas_ (including residual_map, chi_squared_map etc.)
     output_path : str
         The path where the datas_ is output if the output_type is a file format (e.g. png, fittings)
     output_filename : str
@@ -453,7 +453,7 @@ def plot_fitting_individuals_lens_plane_only(fit, units='kpc', output_path=None,
     Parameters
     -----------
     fit : autolens.lensing.fittingting.Fitter
-        Class containing fitting between the model datas_ and observed lensing datas_ (including residuals, chi_squareds etc.)
+        Class containing fitting between the model datas_ and observed lensing datas_ (including residual_map, chi_squared_map etc.)
     output_path : str
         The path where the datas_ is output if the output_type is a file format (e.g. png, fittings)
     output_format : str
@@ -490,7 +490,7 @@ def plot_fitting_individuals_hyper_lens_plane_only(fit, units='kpc', output_path
     Parameters
     -----------
     fit : autolens.lensing.fittingting.Fitter
-        Class containing fitting between the model datas_ and observed lensing datas_ (including residuals, chi_squareds etc.)
+        Class containing fitting between the model datas_ and observed lensing datas_ (including residual_map, chi_squared_map etc.)
     output_path : str
         The path where the datas_ is output if the output_type is a file format (e.g. png, fittings)
     output_format : str
@@ -549,7 +549,7 @@ def plot_fitting_individuals_lens_and_source_planes(fit, units='kpc', output_pat
     Parameters
     -----------
     fit : autolens.lensing.fittingting.Fitter
-        Class containing fitting between the model datas_ and observed lensing datas_ (including residuals, chi_squareds etc.)
+        Class containing fitting between the model datas_ and observed lensing datas_ (including residual_map, chi_squared_map etc.)
     output_path : str
         The path where the datas_ is output if the output_type is a file format (e.g. png, fittings)
     output_format : str

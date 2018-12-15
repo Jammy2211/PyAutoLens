@@ -21,7 +21,7 @@ class Galaxy(object):
 
     def __init__(self, redshift=None, pixelization=None, regularization=None, hyper_galaxy=None, **kwargs):
         """
-        Class representing a galaxy, which is composed of attributes used for fitting data (e.g. light profiles, mass
+        Class representing a galaxy, which is composed of attributes used for fitting datas (e.g. light profiles, mass
         profiles, pixelizations, etc.).
         
         All *has_* methods retun *True* if galaxy has that attribute, *False* if not.
@@ -272,7 +272,7 @@ class HyperGalaxy(object):
         
         This is performed by first computing the hyper-galalxy's 'contribution-map', which determines the fraction of \ 
         flux in every pixel of the regular that can be associated with this particular hyper-galaxy. This is computed \
-        using  hyper-data set (e.g. fitting.fit_data.FitDataHyper), which includes  best-fit images of the \
+        using  hyper-datas set (e.g. fitting.fit_data.FitDataHyper), which includes  best-fit unblurred_image_1d of the \
         galaxy's light from a previous analysis phase. 
          
         The *HyperGalaxy* class contains the hyper-parameters which are associated with this galaxy for scaling the \
@@ -283,9 +283,9 @@ class HyperGalaxy(object):
         contribution_factor : float
             Factor that adjusts how much of the galaxy's light is attributed to the contribution map.
         noise_factor : float
-            Factor by which the noise_map is increased in the regions of the galaxy's contribution map.
+            Factor by which the noise_maps is increased in the regions of the galaxy's contribution map.
         noise_power : float
-            The power to which the contribution map is raised when scaling the noise_map.
+            The power to which the contribution map is raised when scaling the noise_maps.
         """
         self.contribution_factor = contribution_factor
         self.noise_factor = noise_factor
@@ -323,7 +323,7 @@ class HyperGalaxy(object):
         Parameters
         -----------
         noise_map : ndarray
-            The observed noise_map (before scaling).
+            The observed noise_maps (before scaling).
         contributions : ndarray
             The galaxy contribution map.
         """

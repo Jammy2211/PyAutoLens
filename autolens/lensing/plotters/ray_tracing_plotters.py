@@ -166,7 +166,7 @@ def plot_image_plane_image(tracer, image_index=0, mask=None, positions=None, as_
                            mask_pointsize=10, position_pointsize=10.0,
                            output_path=None, output_format='show', output_filename='tracer_image_plane_image'):
 
-    array_plotters.plot_array(array=tracer.image_plane_images[image_index], mask=mask, positions=positions,
+    array_plotters.plot_array(array=tracer.image_plane_image[image_index], mask=mask, positions=positions,
                               as_subplot=as_subplot,
                               units=units, kpc_per_arcsec=tracer.image_plane.kpc_per_arcsec_proper, figsize=figsize,
                               aspect=aspect,

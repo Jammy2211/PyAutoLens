@@ -52,7 +52,7 @@
 # def test_galaxy_mass():
 #     return g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=1.0))
 #
-# @pytest.fixture(name='grids')
+# @pytest.fixture(name='grid_stacks')
 # def test_grids():
 #     return msk.ImagingGrids.from_shape_and_pixel_scale(shape=(100, 100), pixel_scale=0.05, sub_grid_size=2)
 #
@@ -61,8 +61,8 @@
 #     return pix.Rectangular(shape=(25, 25))
 #
 # @pytest.fixture(name='rectangular_mapper')
-# def test_rectangular_mapper(rectangular_pixelization, grids):
-#     return rectangular_pixelization.mapper_from_grids(grids=grids)
+# def test_rectangular_mapper(rectangular_pixelization, grid_stacks):
+#     return rectangular_pixelization.mapper_from_grids(grid_stacks=grid_stacks)
 #
 # @pytest.fixture(name='regularization')
 # def test_regularization():

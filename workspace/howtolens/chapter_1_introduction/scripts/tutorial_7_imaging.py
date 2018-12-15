@@ -15,9 +15,9 @@ from autolens.data.imaging.plotters import imaging_plotters
 # Point-Spread Function, which we can simulate as a Gaussian using the imaging module.
 psf = im.PSF.simulate_as_gaussian(shape=(11, 11), pixel_scale=0.1, sigma=0.1)
 
-# To simulate an regular, we use a special type of grid. This pads the grids 2D dimensions relative to the PSF-shape,
+# To simulate an regular, we use a special type of grid. This pads the grid_stacks 2D dimensions relative to the PSF-shape,
 # to ensure that the edge's of our simulated regular are not degraded.
-image_plane_grids = grids.DataGrids.grids_for_simulation(shape=(100, 100), pixel_scale=0.1, psf_shape=psf.shape)
+image_plane_grids = grids.DataGridStack.grids_for_simulation(shape=(100, 100), pixel_scale=0.1, psf_shape=psf.shape)
 print(image_plane_grids.regular.image_shape)
 print(image_plane_grids.regular.padded_shape)
 
@@ -53,9 +53,9 @@ imaging_plotters.plot_image_subplot(image=image_simulated)
 # Finally, lets output these files to.fits files, we'll begin to analyze them in the next tutorial!
 # Unfortunately, in a Jupyter notebook you have to manually specify the path to PyAutoLens and this tutorial.
 path = '/home/jammy/PyCharm/Projects/AutoLens/workspace/howtolens/chapter_1_introduction'
-im.output_imaging_to_fits(image=image_simulated, image_path=path+'/data/regular.fits',
-                                                 noise_map_path=path+'/data/noise_map.fits',
-                                                 psf_path=path+'/data/psf.fits',
+im.output_imaging_to_fits(image=image_simulated, image_path=path+'/datas/regular.fits',
+                                                 noise_map_path=path+'/datas/noise_maps.fits',
+                                                 psf_path=path+'/datas/psf.fits',
                           overwrite=True)
 
 # You've just completed your third tutorial, try the following:

@@ -14,8 +14,8 @@ from autolens.lensing.plotters import ray_tracing_plotters
 
 # In this chapter, you've learnt how create and fit_normal strong lenses with PyAutoLens. In particular, you've learnt:
 
-# 1) PyAutoLens uses Cartesian grids of (y,x) coordinates to perform ray-tracing.
-# 2) These grids are combined with light and mass profiles to compute regular, surface-densities, potentials and
+# 1) PyAutoLens uses Cartesian grid_stacks of (y,x) coordinates to perform ray-tracing.
+# 2) These grid_stacks are combined with light and mass profiles to compute regular, surface-densities, potentials and
 #    deflection angles.
 # 3) Profiles are combined to make galaxies.
 # 4) Collections of galaxies (at the same redshift) form a plane.
@@ -29,9 +29,9 @@ from autolens.lensing.plotters import ray_tracing_plotters
 
 path = 'path/to/AutoLens/howtolens/chapter_1_introduction' # Unfortunately, in a Jupyter notebook you have to manually specify the path to PyAutoLens and this tutorial.
 path = '/home/jammy/PyCharm/Projects/AutoLens/workspace/howtolens/chapter_1_introduction'
-image = im.load_imaging_from_fits(image_path=path + '/data/regular.fits',
-                                  noise_map_path=path+'/data/noise_map.fits',
-                                  psf_path=path + '/data/psf.fits', pixel_scale=0.1)
+image = im.load_imaging_from_fits(image_path=path + '/datas/regular.fits',
+                                  noise_map_path=path+'/datas/noise_maps.fits',
+                                  psf_path=path + '/datas/psf.fits', pixel_scale=0.1)
 mask = ma.Mask.circular(shape=image.shape, pixel_scale=image.pixel_scale, radius_arcsec=3.0)
 lensing_image = li.LensingImage(image=image, mask=mask)
 lens_galaxy = g.Galaxy(mass=mp.EllipticalIsothermal(centre=(0.0, 0.0), einstein_radius=1.6, axis_ratio=0.7, phi=45.0))
@@ -43,7 +43,7 @@ tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source
                                              image_plane_grids=[lensing_image.grids])
 fit = lensing_fitters.fit_lensing_image_with_tracer(lensing_image=lensing_image, tracer=tracer)
 
-# The fit_normal contains our tracer_without_subhalo, which contains our planes, which contain our grids and galaxies, which contain our
+# The fit_normal contains our tracer_without_subhalo, which contains our planes, which contain our grid_stacks and galaxies, which contain our
 # profiles:
 print(fit)
 print()

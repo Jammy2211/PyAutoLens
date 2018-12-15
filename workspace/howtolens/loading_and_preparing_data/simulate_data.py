@@ -14,7 +14,7 @@ def simulate_image():
 
     psf = im.PSF.simulate_as_gaussian(shape=(21, 21), sigma=0.05, pixel_scale=0.1)
 
-    image_plane_grids = grids.DataGrids.grids_for_simulation(shape=(100, 100), pixel_scale=0.1, psf_shape=(21, 21))
+    image_plane_grids = grids.DataGridStack.grids_for_simulation(shape=(100, 100), pixel_scale=0.1, psf_shape=(21, 21))
 
     lens_galaxy = g.Galaxy(light=lp.SphericalSersic(centre=(0.0, 0.0), intensity=0.3, effective_radius=1.0,
                                                     sersic_index=2.0),
@@ -37,7 +37,7 @@ def simulate_image_in_counts():
 
     psf = im.PSF.simulate_as_gaussian(shape=(21, 21), sigma=0.05, pixel_scale=0.1)
 
-    image_plane_grids = grids.DataGrids.grids_for_simulation(shape=(100, 100), pixel_scale=0.1, psf_shape=(21, 21))
+    image_plane_grids = grids.DataGridStack.grids_for_simulation(shape=(100, 100), pixel_scale=0.1, psf_shape=(21, 21))
 
     lens_galaxy = g.Galaxy(light=lp.SphericalSersic(centre=(0.0, 0.0), intensity=1000*0.3, effective_radius=1.0,
                                                     sersic_index=2.0),
@@ -60,7 +60,7 @@ def simulate_image_large_stamp():
 
     psf = im.PSF.simulate_as_gaussian(shape=(21, 21), sigma=0.05, pixel_scale=0.1)
 
-    image_plane_grids = grids.DataGrids.grids_for_simulation(shape=(500, 500), pixel_scale=0.1, psf_shape=(21, 21))
+    image_plane_grids = grids.DataGridStack.grids_for_simulation(shape=(500, 500), pixel_scale=0.1, psf_shape=(21, 21))
 
     lens_galaxy = g.Galaxy(light=lp.SphericalSersic(centre=(0.0, 0.0), intensity=0.3, effective_radius=1.0,
                                                     sersic_index=2.0),
@@ -83,7 +83,7 @@ def simulate_image_small_stamp():
 
     psf = im.PSF.simulate_as_gaussian(shape=(21, 21), sigma=0.05, pixel_scale=0.1)
 
-    image_plane_grids = grids.DataGrids.grids_for_simulation(shape=(50, 50), pixel_scale=0.1, psf_shape=(21, 21))
+    image_plane_grids = grids.DataGridStack.grids_for_simulation(shape=(50, 50), pixel_scale=0.1, psf_shape=(21, 21))
 
     lens_galaxy = g.Galaxy(light=lp.SphericalSersic(centre=(0.0, 0.0), intensity=0.3, effective_radius=1.0,
                                                     sersic_index=2.0),
@@ -106,7 +106,7 @@ def simulate_image_offset_centre():
 
     psf = im.PSF.simulate_as_gaussian(shape=(21, 21), sigma=0.05, pixel_scale=0.1)
 
-    image_plane_grids = grids.DataGrids.grids_for_simulation(shape=(100, 100), pixel_scale=0.1, psf_shape=(21, 21))
+    image_plane_grids = grids.DataGridStack.grids_for_simulation(shape=(100, 100), pixel_scale=0.1, psf_shape=(21, 21))
 
     lens_galaxy = g.Galaxy(light=lp.SphericalSersic(centre=(1.0, 1.0), intensity=0.3, effective_radius=1.0,
                                                     sersic_index=2.0),
@@ -129,7 +129,7 @@ def simulate_image_with_large_psf():
 
     psf = im.PSF.simulate_as_gaussian(shape=(101, 101), sigma=0.05, pixel_scale=0.1)
 
-    image_plane_grids = grids.DataGrids.grids_for_simulation(shape=(100, 100), pixel_scale=0.1, psf_shape=(101, 101))
+    image_plane_grids = grids.DataGridStack.grids_for_simulation(shape=(100, 100), pixel_scale=0.1, psf_shape=(101, 101))
 
     lens_galaxy = g.Galaxy(light=lp.SphericalSersic(centre=(0.0, 0.0), intensity=0.3, effective_radius=1.0,
                                                     sersic_index=2.0),
@@ -154,7 +154,7 @@ def simulate_image_with_offset_centre_psf():
 
     psf = im.PSF.simulate_as_gaussian(shape=(21, 21), sigma=0.05, pixel_scale=0.1, centre=(0.1, 0.1))
 
-    image_plane_grids = grids.DataGrids.grids_for_simulation(shape=(100, 100), pixel_scale=0.1, psf_shape=(21, 21))
+    image_plane_grids = grids.DataGridStack.grids_for_simulation(shape=(100, 100), pixel_scale=0.1, psf_shape=(21, 21))
 
     lens_galaxy = g.Galaxy(light=lp.SphericalSersic(centre=(0.0, 0.0), intensity=0.3, effective_radius=1.0,
                                                     sersic_index=2.0),
@@ -175,9 +175,9 @@ path = '{}/'.format(os.path.dirname(os.path.realpath(__file__)))
 def simulate_all_images(plot_images=False):
 
     image = simulate_image()
-    im.output_imaging_to_fits(image=image, image_path=path + '/data/data/data.fits',
-                              noise_map_path=path + '/data/data/noise_map.fits',
-                              psf_path=path + '/data/data/psf.fits', overwrite=True)
+    im.output_imaging_to_fits(image=image, image_path=path + '/datas/datas/datas.fits',
+                              noise_map_path=path + '/datas/datas/noise_maps.fits',
+                              psf_path=path + '/datas/datas/psf.fits', overwrite=True)
 
     new_hdul = fits.HDUList()
     new_hdul.append(fits.ImageHDU(image))
@@ -185,42 +185,42 @@ def simulate_all_images(plot_images=False):
     new_hdul.append(fits.ImageHDU(image.psf))
     new_hdul.append(fits.ImageHDU(image.exposure_time_map))
 
-    if os.path.exists(path + 'data/data/multiple_hdus.fits'):
-        os.remove(path+ 'data/data/multiple_hdus.fits')
-    new_hdul.writeto(path + '/data/data/multiple_hdus.fits')
+    if os.path.exists(path + 'datas/datas/multiple_hdus.fits'):
+        os.remove(path+ 'datas/datas/multiple_hdus.fits')
+    new_hdul.writeto(path + '/datas/datas/multiple_hdus.fits')
 
     image_in_counts = simulate_image_in_counts()
-    im.output_imaging_to_fits(image=image_in_counts, image_path=path + '/data/image_in_counts/data.fits',
-                              noise_map_path=path + '/data/image_in_counts/noise_map.fits',
-                              psf_path=path + '/data/image_in_counts/psf.fits',
-                              exposure_time_map_path=path + '/data/image_in_counts/exposure_time_map.fits',
+    im.output_imaging_to_fits(image=image_in_counts, image_path=path + '/datas/image_in_counts/datas.fits',
+                              noise_map_path=path + '/datas/image_in_counts/noise_maps.fits',
+                              psf_path=path + '/datas/image_in_counts/psf.fits',
+                              exposure_time_map_path=path + '/datas/image_in_counts/exposure_time_map.fits',
                               overwrite=True)
 
     image_large_stamp = simulate_image_large_stamp()
-    im.output_imaging_to_fits(image=image_large_stamp, image_path=path + '/data/image_large_stamp/data.fits',
-                              noise_map_path=path + '/data/image_large_stamp/noise_map.fits',
-                              psf_path=path + '/data/image_large_stamp/psf.fits', overwrite=True)
+    im.output_imaging_to_fits(image=image_large_stamp, image_path=path + '/datas/image_large_stamp/datas.fits',
+                              noise_map_path=path + '/datas/image_large_stamp/noise_maps.fits',
+                              psf_path=path + '/datas/image_large_stamp/psf.fits', overwrite=True)
 
     image_small_stamp = simulate_image_small_stamp()
-    im.output_imaging_to_fits(image=image_small_stamp, image_path=path + '/data/image_small_stamp/data.fits',
-                              noise_map_path=path + '/data/image_small_stamp/noise_map.fits',
-                              psf_path=path + '/data/image_small_stamp/psf.fits', overwrite=True)
+    im.output_imaging_to_fits(image=image_small_stamp, image_path=path + '/datas/image_small_stamp/datas.fits',
+                              noise_map_path=path + '/datas/image_small_stamp/noise_maps.fits',
+                              psf_path=path + '/datas/image_small_stamp/psf.fits', overwrite=True)
 
     image_offset_centre = simulate_image_offset_centre()
-    im.output_imaging_to_fits(image=image_offset_centre, image_path=path + '/data/image_offset_centre/data.fits',
-                              noise_map_path=path + '/data/image_offset_centre/noise_map.fits',
-                              psf_path=path + '/data/image_offset_centre/psf.fits', overwrite=True)
+    im.output_imaging_to_fits(image=image_offset_centre, image_path=path + '/datas/image_offset_centre/datas.fits',
+                              noise_map_path=path + '/datas/image_offset_centre/noise_maps.fits',
+                              psf_path=path + '/datas/image_offset_centre/psf.fits', overwrite=True)
 
     image_with_large_psf = simulate_image_with_large_psf()
-    im.output_imaging_to_fits(image=image_with_large_psf, image_path=path + '/data/image_with_large_psf/data.fits',
-                              noise_map_path=path + '/data/image_with_large_psf/noise_map.fits',
-                              psf_path=path + '/data/image_with_large_psf/psf.fits', overwrite=True)
+    im.output_imaging_to_fits(image=image_with_large_psf, image_path=path + '/datas/image_with_large_psf/datas.fits',
+                              noise_map_path=path + '/datas/image_with_large_psf/noise_maps.fits',
+                              psf_path=path + '/datas/image_with_large_psf/psf.fits', overwrite=True)
 
     image_with_off_centre_psf = simulate_image_with_offset_centre_psf()
     im.output_imaging_to_fits(image=image_with_off_centre_psf,
-                              image_path=path + '/data/image_with_off_centre_psf/data.fits',
-                              noise_map_path=path + '/data/image_with_off_centre_psf/noise_map.fits',
-                              psf_path=path + '/data/image_with_off_centre_psf/psf.fits', overwrite=True)
+                              image_path=path + '/datas/image_with_off_centre_psf/datas.fits',
+                              noise_map_path=path + '/datas/image_with_off_centre_psf/noise_maps.fits',
+                              psf_path=path + '/datas/image_with_off_centre_psf/psf.fits', overwrite=True)
 
 
     if plot_images:

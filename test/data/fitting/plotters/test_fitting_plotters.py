@@ -31,7 +31,7 @@ def test_fitting_plotter_setup():
     return galaxy_plotter_path
 
 
-@pytest.fixture(name='data')
+@pytest.fixture(name='datas')
 def test_image():
     image = scaled_array.ScaledSquarePixelArray(array=np.ones((3, 3)), pixel_scale=1.0)
     noise_map = im.NoiseMap(array=2.0 * np.ones((3, 3)), pixel_scale=1.0)
@@ -40,7 +40,7 @@ def test_image():
     return im.Image(array=image, pixel_scale=1.0, noise_map=noise_map, psf=psf)
 
 
-@pytest.fixture(name='mask')
+@pytest.fixture(name='masks')
 def test_mask():
     return msk.Mask.circular(shape=((3, 3)), pixel_scale=0.1, radius_arcsec=0.1)
 

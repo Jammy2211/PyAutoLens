@@ -11,8 +11,8 @@ from autolens.lensing.plotters import ray_tracing_plotters
 # 'ray-tracing module to do it a lot faster!
 
 # Lets use the same grid as always, you should be used to seeing this now!
-image_plane_grids = grids.DataGrids.from_shape_and_pixel_scale(shape=(100, 100), pixel_scale=0.05,
-                                                               sub_grid_size=2)
+image_plane_grids = grids.DataGridStack.from_shape_and_pixel_scale(shape=(100, 100), pixel_scale=0.05,
+                                                                   sub_grid_size=2)
 
 # Unlike the previous tutorial, we'll offset our lens model_galaxy slightly from the source, to get a slightly ray-tracing
 # paths.
@@ -26,8 +26,8 @@ sersic_light_profile = light_profiles.EllipticalSersic(centre=(0.0, 0.0), axis_r
 source_galaxy = galaxy.Galaxy(light=sersic_light_profile)
 print(source_galaxy)
 
-# Finally, we can use a 'tracer_without_subhalo', the lens model_galaxy and the source model_galaxy to ray-trace our grids. When we pass our
-# galaxies and grids into the Tracer below, the following happens:
+# Finally, we can use a 'tracer_without_subhalo', the lens model_galaxy and the source model_galaxy to ray-trace our grid_stacks. When we pass our
+# galaxies and grid_stacks into the Tracer below, the following happens:
 
 # 1) Using the lens-model_galaxy's mass-profile, the deflection angle of every regular-plane grid coordinate is computed.
 # 2) These deflection angles are used to trace every regular-plane coordinate to a source-plane coordinate.
@@ -37,7 +37,7 @@ print(source_galaxy)
 tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
                                              image_plane_grids=[image_plane_grids])
 
-# The tracer is composed of an data-plane and source-plane, just like in the previous example!
+# The tracer is composed of an datas-plane and source-plane, just like in the previous example!
 print('Image-pixel 1 regular-plane coordinate')
 print(tracer.image_plane.grids[0].regular[0])
 print('Image-pixel 2 regular-plane coordinate')
@@ -53,7 +53,7 @@ print(tracer.source_plane.grids[0].regular[1])
 print('Image-pixel 3 source-plane coordinate')
 print(tracer.source_plane.grids[0].regular[2])
 
-# We can use the plane_plotter to plot these grids, like before.
+# We can use the plane_plotter to plot these grid_stacks, like before.
 plane_plotters.plot_plane_grid(plane=tracer.image_plane, title='Image-plane Grid')
 plane_plotters.plot_plane_grid(plane=tracer.source_plane, title='Source-plane Grid')
 plane_plotters.plot_plane_grid(plane=tracer.source_plane, axis_limits=[-0.1, 0.3, -0.1, 0.3], title='Source-plane Grid')

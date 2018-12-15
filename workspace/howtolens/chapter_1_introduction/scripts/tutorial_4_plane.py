@@ -48,8 +48,8 @@ from autolens.lensing.plotters import plane_plotters
 # We still need a grid - our grid is effectively the coordinates we 'trace' from the regular-plane to the source-plane
 # in the lensing configuration above. Our grid is no longer just ouor 'image_grid', but our regular-plane grid, so
 # lets name as such.
-image_plane_grids = grids.DataGrids.from_shape_and_pixel_scale(shape=(100, 100), pixel_scale=0.05,
-                                                               sub_grid_size=2)
+image_plane_grids = grids.DataGridStack.from_shape_and_pixel_scale(shape=(100, 100), pixel_scale=0.05,
+                                                                   sub_grid_size=2)
 
 # Whereas before we called our model_galaxy's things like 'galaxy_with_light_profile', lets now refer to them by their role
 # in lensing, e.g. 'lens_galaxy' and 'source_galaxy'.
@@ -59,9 +59,9 @@ light_profile = light_profiles.SphericalSersic(centre=(0.0, 0.0), intensity=1.0,
 source_galaxy = galaxy.Galaxy(light=light_profile)
 
 # Lets setup our regular plane. This plane takes the lens model_galaxy we made above and the grid of regular-plane coordinates.
-image_plane = plane.Plane(galaxies=[lens_galaxy], grids=[image_plane_grids])
+image_plane = plane.Plane(galaxies=[lens_galaxy], grid_stack=[image_plane_grids])
 
-# Up to now, we've kept our light-profiles / mass-profiles / model_galaxy's and grids separate, and passed the grid to these
+# Up to now, we've kept our light-profiles / mass-profiles / model_galaxy's and grid_stacks separate, and passed the grid to these
 # objects to compute quantities (e.g. light_profile.intensities_from_grid(grid=grid)). Plane's combine the two,
 # meaning that when we plot a plane's quantities we no longer have to pass the grid.
 # Lets have a quick look at our regular-plane's deflection angles.
@@ -75,13 +75,13 @@ plane_plotters.plot_deflections_x(plane=image_plane)
 
 # source_plane_grids = image_plane_grids - image_plane_deflection_angles
 
-# Therefore, we can use our image_plane to 'trace' its grids to the source-plane...
+# Therefore, we can use our image_plane to 'trace' its grid_stacks to the source-plane...
 source_plane_grids = image_plane.trace_grids_to_next_plane()
 
-# ... and use these grids to setup our source-plane
-source_plane = plane.Plane(galaxies=[source_galaxy], grids=source_plane_grids)
+# ... and use these grid_stacks to setup our source-plane
+source_plane = plane.Plane(galaxies=[source_galaxy], grid_stack=source_plane_grids)
 
-# Lets inspect our grids - I bet our source-plane isn't the boring uniform grid we plotted in the first tutorial!
+# Lets inspect our grid_stacks - I bet our source-plane isn't the boring uniform grid we plotted in the first tutorial!
 plane_plotters.plot_plane_grid(plane=image_plane, title='Image-plane Grid')
 plane_plotters.plot_plane_grid(plane=source_plane, title='Source-plane Grid')
 
@@ -89,7 +89,7 @@ plane_plotters.plot_plane_grid(plane=source_plane, title='Source-plane Grid')
 # ymax] (remembering the lens model_galaxy was centred at (0.1, 0.1)
 plane_plotters.plot_plane_grid(plane=source_plane, axis_limits=[-0.1, 0.1, -0.1, 0.1], title='Source-plane Grid')
 
-# We can also plot both planes next to one another, and highlight specific points on the grids. This means we can see
+# We can also plot both planes next to one another, and highlight specific points on the grid_stacks. This means we can see
 # how different regular pixels map to the source-plane.
 # (We are inputting the pixel index's into 'points' - the first set of points go from 0 -> 50, which is the top row of
 # the regular-grid running from the left - as we said it would!)

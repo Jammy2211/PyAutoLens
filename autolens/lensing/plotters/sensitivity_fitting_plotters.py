@@ -13,14 +13,14 @@ def plot_fitting_subplot(fit, should_plot_mask=True, positions=None,
                          titlesize=10, xlabelsize=10, ylabelsize=10, xyticksize=10,
                          mask_pointsize=10, position_pointsize=10.0, grid_pointsize=1,
                          output_path=None, output_filename='sensitivity_fit', output_format='show'):
-    """Plot the model data of an analysis, using the *Fitter* class object.
+    """Plot the model datas of an analysis, using the *Fitter* class object.
 
     The visualization and output type can be fully customized.
 
     Parameters
     -----------
     fit : autolens.sensitivity_fitting.SensitivityProfileFit
-        Class containing fitting between the model data and observed lensing data (including residuals, chi_squareds etc.)
+        Class containing fitting between the model datas and observed lensing datas (including residual_map, chi_squared_map etc.)
     """
 
     rows, columns, figsize_tool = plotter_util.get_subplot_rows_columns_figsize(number_subplots=9)
