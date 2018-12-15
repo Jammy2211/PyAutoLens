@@ -158,15 +158,15 @@ def unmasked_blurred_image_of_galaxies_from_padded_grid_stack_psf_and_tracer(pad
     return unmasked_blurred_images_of_galaxies
 
 # def contributions_from_fitting_hyper_images_and_hyper_galaxies(fitting_hyper_images, hyper_galaxies):
-#     """For a list of fitting hyper-unblurred_image_1d (which includes the hyper model regular and hyper galaxy unblurred_image_1d) and model
-#     hyper-galaxies, compute their contribution maps, which are used to compute a scaled-noise map.
+#     """For a list of fitting hyper_galaxy-unblurred_image_1d (which includes the hyper_galaxy model regular and hyper_galaxy galaxy unblurred_image_1d) and model
+#     hyper_galaxy-galaxies, compute their contribution maps, which are used to compute a scaled-noise map.
 #
 #     Parameters
 #     ----------
 #     fitting_hyper_images : [fitting.fit_data.FitDataHyper]
-#         The fitting hyper-unblurred_image_1d.
+#         The fitting hyper_galaxy-unblurred_image_1d.
 #     hyper_galaxies : [galaxy.Galaxy]
-#         The hyper-galaxies which represent the model components used to scale the noise, which correspond to
+#         The hyper_galaxy-galaxies which represent the model components used to scale the noise, which correspond to
 #         individual galaxies in the regular.
 #     """
 #     return list(map(lambda hyp :
@@ -176,74 +176,78 @@ def unmasked_blurred_image_of_galaxies_from_padded_grid_stack_psf_and_tracer(pad
 #                                                                  minimum_values=hyp.hyper_minimum_values),
 #                 fitting_hyper_images))
 
-def contributions_from_hyper_images_and_galaxies(hyper_model_image, hyper_galaxy_images, hyper_galaxies, minimum_values):
-    """For a fitting hyper-regular, hyper model regular, list of hyper galaxy unblurred_image_1d and model hyper-galaxies, compute
+def contributions_from_hyper_images_and_galaxies(hyper_model_image_1d, hyper_galaxy_images_1d, hyper_galaxies,
+                                                 hyper_minimum_values):
+    """For a fitting hyper_galaxy-regular, hyper_galaxy model regular, list of hyper_galaxy galaxy unblurred_image_1d and model hyper_galaxy-galaxies, compute
     their contribution maps, which are used to compute a scaled-noise map. All quantities are masked 1D arrays.
 
     The reason this is separate from the *contributions_from_fitting_hyper_images_and_hyper_galaxies* function is that
-    each hyper regular has a list of hyper galaxy unblurred_image_1d and associated hyper galaxies (one for each galaxy). Thus,
+    each hyper_galaxy regular has a list of hyper_galaxy galaxy unblurred_image_1d and associated hyper_galaxy galaxies (one for each galaxy). Thus,
     this function breaks down the calculation of each 1D masked contribution map and returns them in the same datas
     structure (2 lists with indexes [image_index][contribution_map_index].
 
     Parameters
     ----------
-    hyper_model_image : ndarray
+    hyper_model_image_1d : ndarray
         The best-fit model regular to the datas (e.g. from a previous analysis phase).
-    hyper_galaxy_images : [ndarray]
-        The best-fit model regular of each hyper-galaxy to the datas (e.g. from a previous analysis phase).
+    hyper_galaxy_images_1d : [ndarray]
+        The best-fit model regular of each hyper_galaxy-galaxy to the datas (e.g. from a previous analysis phase).
     hyper_galaxies : [galaxy.Galaxy]
-        The hyper-galaxies which represent the model components used to scale the noise, which correspond to
+        The hyper_galaxy-galaxies which represent the model components used to scale the noise, which correspond to
         individual galaxies in the regular.
-    minimum_values : [float]
-        The minimum value of each hyper-unblurred_image_1d contribution map, which ensure zero's don't impact the scaled noise-map.
+    hyper_minimum_values : [float]
+        The minimum value of each hyper_galaxy-unblurred_image_1d contribution map, which ensure zero's don't impact the scaled noise-map.
     """
     # noinspection PyArgumentList
-    return list(map(lambda hyper, galaxy_image, minimum_value:
-                    hyper.contributions_from_hyper_images(hyper_model_image, galaxy_image, minimum_value),
-                    hyper_galaxies, hyper_galaxy_images, minimum_values))
+    return list(map(lambda hyper_galaxy, hyper_galaxy_image_1d, hyper_minimum_value:
+                    hyper_galaxy.contributions_from_hyper_images(hyper_model_image=hyper_model_image_1d,
+                                                                 hyper_galaxy_image=hyper_galaxy_images_1d,
+                                                                 hyper_minimum_value=hyper_minimum_value),
+                    hyper_galaxies, hyper_galaxy_images_1d, hyper_minimum_values))
 
-# def scaled_noise_maps_from_fitting_hyper_images_contributions_and_hyper_galaxies(fitting_hyper_images, contributions_,
+# def scaled_noise_maps_from_fitting_hyper_images_contributions_and_hyper_galaxies(fitting_hyper_images, contributions_1d,
 #                                                                                  hyper_galaxies):
-#     """For a list of fitting hyper-unblurred_image_1d (which includes the hyper model datas and hyper galaxy unblurred_image_1d),
-#      contribution maps and model hyper-galaxies, compute their scaled noise-maps.
+#     """For a list of fitting hyper_galaxy-unblurred_image_1d (which includes the hyper_galaxy model datas and hyper_galaxy galaxy unblurred_image_1d),
+#      contribution maps and model hyper_galaxy-galaxies, compute their scaled noise-maps.
 #
-#      This is performed by using each hyper-galaxy's *noise_factor* and *noise_power* parameter in conjunction with the
+#      This is performed by using each hyper_galaxy-galaxy's *noise_factor* and *noise_power* parameter in conjunction with the
 #      unscaled noise-map and contribution map.
 #
 #     Parameters
 #     ----------
 #     fitting_hyper_images : [fitting.fit_data.FitDataHyper]
-#         The fitting hyper-unblurred_image_1d.
-#     contributions_ : [[ndarray]]
-#         List of each regular's list of 1D masked contribution maps (e.g. one for each hyper-galaxy)
+#         The fitting hyper_galaxy-unblurred_image_1d.
+#     contributions_1d : [[ndarray]]
+#         List of each regular's list of 1D masked contribution maps (e.g. one for each hyper_galaxy-galaxy)
 #     hyper_galaxies : [galaxy.Galaxy]
-#         The hyper-galaxies which represent the model components used to scale the noise, which correspond to
+#         The hyper_galaxy-galaxies which represent the model components used to scale the noise, which correspond to
 #         individual galaxies in the regular.
 #     """
-#     return list(map(lambda fitting_hyper_image, contribution_ :
-#                     scaled_noise_map_from_hyper_galaxies_and_contributions(contributions_=contribution_,
+#     return list(map(lambda fitting_hyper_image, contribution_1d :
+#                     scaled_noise_map_from_hyper_galaxies_and_contributions(contributions_1d=contribution_1d,
 #                                                                            hyper_galaxies=hyper_galaxies,
 #                                                                            noise_map_1d=fitting_hyper_image.noise_map_1d),
-#                     fitting_hyper_images, contributions_))
+#                     fitting_hyper_images, contributions_1d))
 
-def scaled_noise_map_from_hyper_galaxies_and_contributions(contributions, hyper_galaxies, noise_map):
-    """For a contribution map and noise-map, use the model hyper galaxies to compute a scaled noise-map.
+def scaled_noise_map_from_hyper_galaxies_and_contributions(contributions_1d, hyper_galaxies, noise_map_1d):
+    """For a contribution map and noise-map, use the model hyper_galaxy galaxies to compute a scaled noise-map.
 
     Parameters
     -----------
-    contributions : ndarray
-        The regular's list of 1D masked contribution maps (e.g. one for each hyper-galaxy)
+    contributions_1d : ndarray
+        The regular's list of 1D masked contribution maps (e.g. one for each hyper_galaxy-galaxy)
     hyper_galaxies : [galaxy.Galaxy]
-        The hyper-galaxies which represent the model components used to scale the noise, which correspond to
+        The hyper_galaxy-galaxies which represent the model components used to scale the noise, which correspond to
         individual galaxies in the regular.
-    noise_map : imaging.NoiseMap or ndarray
+    noise_map_1d : imaging.NoiseMap or ndarray
         An array describing the RMS standard deviation error in each pixel, preferably in units of electrons per
         second.
     """
-    scaled_noise_maps_ = list(map(lambda hyper, contribution_:
-                              hyper.scaled_noise_from_contributions(noise_map, contribution_),
-                                  hyper_galaxies, contributions))
-    return noise_map + sum(scaled_noise_maps_)
+    scaled_noise_maps_1d = list(map(lambda hyper_galaxy, contribution_1d:
+                              hyper_galaxy.scaled_noise_from_contributions(noise_map=noise_map_1d,
+                                                                           contributions=contribution_1d),
+                              hyper_galaxies, contributions_1d))
+    return noise_map_1d + sum(scaled_noise_maps_1d)
 
 
 def map_contributions_to_scaled_arrays(contributions_, map_to_scaled_array):

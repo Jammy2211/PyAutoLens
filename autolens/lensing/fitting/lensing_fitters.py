@@ -29,7 +29,7 @@ def fit_lensing_image_with_tracer(lensing_image, tracer, padded_tracer=None):
         if not tracer.has_hyper_galaxy:
             return LensingProfileFitter(lensing_image=lensing_image, tracer=tracer, padded_tracer=padded_tracer)
         elif tracer.has_hyper_galaxy:
-            return HyperLensingProfileFit(lensing_hyper_images=lensing_image, tracer=tracer, padded_tracer=padded_tracer)
+            return LensingHyperProfileFitter(lensing_hyper_image=lensing_image, tracer=tracer, padded_tracer=padded_tracer)
 
     elif not tracer.has_light_profile and tracer.has_pixelization:
 
@@ -72,7 +72,7 @@ def fast_likelihood_from_lensing_image_and_tracer(lensing_image, tracer):
         if not tracer.has_hyper_galaxy:
             return LensingProfileFitter.fast_likelihood(lensing_image=lensing_image, tracer=tracer)
         elif tracer.has_hyper_galaxy:
-            return HyperLensingProfileFit.fast_scaled_likelihood(lensing_hyper_images=lensing_image, tracer=tracer)
+            return LensingHyperProfileFitter.fast_scaled_likelihood(lensing_hyper_images=lensing_image, tracer=tracer)
 
     elif not tracer.has_light_profile and tracer.has_pixelization:
 
@@ -119,6 +119,81 @@ class LensingFitter(fitter.DataFitter):
     def total_inversions(self):
         return len(self.tracer.mappers_of_planes)
 
+    @property
+    def fitter_noise_map(self):
+        return self.noise_map
+
+class AbstractLensingHyperFitter(object):
+
+    def __init__(self, lensing_hyper_image, hyper_galaxies):
+        """Abstract base class of a hyper-fit.
+
+        A hyper-fit is a fit which performs a fit as described in the *AbstractFitter*, but also includes a set of
+        parameters which allow the noise-map of the datas-set to be scaled. This is done to prevent over-fitting
+        small regions of a datas-set with high chi-squared values and therefore provide a global fit to the overall
+        datas-set.
+
+        This is performed using an existing model of the datas-set to compute a contributions regular, which a set of
+        hyper-parameters then use to increase the noise in localized regions of the datas-set.
+
+        Parameters
+        -----------
+        lensing_hyper_image : [fit_data.FitDataHyper]
+            The fitting unblurred_image_1d that are fitted, which include the hyper-unblurred_image_1d used for scaling the noise-map.
+        hyper_galaxies : [galaxy.Galaxy]
+            The hyper-galaxies which represent the model components used to scale the noise, which correspond to
+            individual galaxies in the regular.
+
+        Attributes
+        -----------
+        contributions : [[scaled_array.ScaledSquarePixelArray]]
+            The contribution map of every regular, where there is an individual contribution map for each hyper-galaxy in
+            the model.
+        scaled_noise_maps : [scaled_array.ScaledSquarePixelArray]
+            The scaled noise maps of the regular, computed after using the hyper-galaxies.
+        scaled_chi_squared_terms : [float]
+            The summed scaled chi-squared of every datas-point in a fit.
+        scaled_chi_squareds_term : float
+            The sum of all scaled_chi_squared_terms for all unblurred_image_1d.
+        scaled_noise_terms : [float]
+            The normalization term of a likelihood function assuming Gaussian noise in every datas-point, using the
+            scaled noise-map.
+        scaled_noise_term : float
+            The sum of all scaled_noise_terms for all unblurred_image_1d.
+        scaled_likelihoods : [float]
+            The likelihood of every fit between datas and model using the scaled noise-map's fit \
+            -0.5 * (scaled_chi_squared_term + scaled_noise_term)
+        scaled_likelihood : float
+            The summed scaled likelihood of the fit between datas and model for all unblurred_image_1d.
+        """
+
+        self.is_hyper_fit = True
+        self.contributions_1d = \
+            lensing_fitting_util.contributions_from_hyper_images_and_galaxies(
+                hyper_model_image_1d=lensing_hyper_image.hyper_model_image_1d,
+                hyper_galaxy_images_1d=lensing_hyper_image.hyper_galaxy_images_1d,
+                hyper_galaxies=hyper_galaxies, hyper_minimum_values=lensing_hyper_image.hyper_minimum_values)
+
+
+        scaled_noise_map_1d =\
+            lensing_fitting_util.scaled_noise_map_from_hyper_galaxies_and_contributions(
+                contributions_1d=self.contributions_1d, hyper_galaxies=hyper_galaxies,
+                noise_map_1d=lensing_hyper_image.noise_map_1d)
+
+        self.scaled_noise_map = lensing_hyper_image.map_to_scaled_aray(array_1d=scaled_noise_map_1d)
+
+    @property
+    def contributions(self):
+        contributions = [[] for _ in range(len(self.contributions_1d))]
+        for image_index in range(len(contributions)):
+            contributions[image_index] = list(map(lambda contributions_1d :
+                                                  self.map_to_scaled_arrays[image_index](contributions_1d),
+                                                  self.contributions_1d[image_index]))
+        return contributions
+
+    @property
+    def fitter_noise_map(self):
+        return self.scaled_noise_map
 
 class LensingProfileFitter(LensingFitter):
 
@@ -180,63 +255,52 @@ class LensingProfileFitter(LensingFitter):
                 padded_grid_stack=self.padded_tracer.image_plane.grid_stack, psf=self.psf, tracer=self.padded_tracer)
 
 
-# class HyperLensingProfileFit(LensingProfileFitter, fitter.AbstractHyperFit):
-#
-#     def __init__(self, lensing_hyper_images, tracer, padded_tracer=None):
-#         """
-#         Class to evaluate the fit_normal between a model described by a tracer_normal and an actual lensing_image.
-#
-#         Parameters
-#         ----------
-#         lensing_hyper_images : [li.LensingHyperImage]
-#             List of the lensing hyper unblurred_image_1d that are to be fitted.
-#         tracer : ray_tracing.AbstractTracer
-#             The tracer, which describes the ray-tracing of the strong lensing configuration.
-#         padded_tracer : ray_tracing.AbstractTracer
-#             A tracer with an identical strong lensing configuration to the tracer above, but using the lensing regular's \
-#             padded grid_stacks such that unmasked model-unblurred_image_1d can be computed.
-#         """
-#
-#         LensingFitter.__init__(self=self, lensing_images=lensing_hyper_images, tracer=tracer,
-#                                     padded_tracer=padded_tracer)
-#         fitter.AbstractHyperFit.__init__(self=self, fitting_hyper_images=lensing_hyper_images,
-#                                          hyper_galaxies=tracer.hyper_galaxies)
-#         super(HyperLensingProfileFit, self).__init__(lensing_hyper_images, tracer, padded_tracer)
-#
-#         self.scaled_chi_squareds_ = fitting_util.chi_squareds_from_residuals_and_noise_map(self.residuals,
-#                                                                                            self.scaled_noise_maps_)
-#
-#     @classmethod
-#     def fast_scaled_likelihood(cls, lensing_hyper_images, tracer):
-#         """Perform the fit of this class as described above, but storing no results as class instances, thereby \
-#         minimizing memory use and maximizing run-speed."""
-#
-#         contributions_ = fitting_util.contributions_from_fitting_hyper_images_and_hyper_galaxies(
-#             fitting_hyper_images=lensing_hyper_images, hyper_galaxies=tracer.hyper_galaxies)
-#
-#         scaled_noise_maps_ = fitting_util.scaled_noise_maps_from_fitting_hyper_images_contributions_and_hyper_galaxies(
-#             fitting_hyper_images=lensing_hyper_images, contributions_=contributions_,
-#             hyper_galaxies=tracer.hyper_galaxies)
-#
-#         convolvers = list(map(lambda lensing_image : lensing_image.convolver_image, lensing_hyper_images))
-#         model_images_ = fitting_util.blur_image_including_blurring_region(image_=tracer.image_plane_images_,
-#                                                                           blurring_image_=tracer.image_plane_blurring_images_, convolver=convolvers)
-#         residuals_ = fitting_util.residuals_from_data_mask_and_model_data(datas=lensing_hyper_images, model_data=model_images_),
-#         scaled_chi_squareds_ = fitting_util.chi_squareds_from_residuals_and_noise_map(residuals=residuals_,
-#                                                                                       noise_maps=scaled_noise_maps_)
-#
-#         scaled_chi_squared_terms = fitting_util.chi_squared_term_from_chi_squareds(chi_squareds=scaled_chi_squareds_)
-#         scaled_noise_terms = fitting_util.noise_term_from_mask_and_noise_map(noise_maps=scaled_noise_maps_)
-#         return sum(fitting_util.likelihood_from_chi_squared_term_and_noise_term(scaled_chi_squared_terms, scaled_noise_terms))
-#
-#     @property
-#     def scaled_likelihoods(self):
-#         return fitting_util.likelihood_from_chi_squared_term_and_noise_term(self.scaled_chi_squared_terms,
-#                                                                             self.scaled_noise_terms)
-#
-#     @property
-#     def scaled_likelihood(self):
-#         return sum(self.scaled_likelihoods)
+class LensingHyperProfileFitter(LensingProfileFitter, AbstractLensingHyperFitter):
+
+    def __init__(self, lensing_hyper_image, tracer, padded_tracer=None):
+        """
+        Class to evaluate the fit_normal between a model described by a tracer_normal and an actual lensing_image.
+
+        Parameters
+        ----------
+        lensing_hyper_image : [li.LensingHyperImage]
+            List of the lensing hyper unblurred_image_1d that are to be fitted.
+        tracer : ray_tracing.AbstractTracer
+            The tracer, which describes the ray-tracing of the strong lensing configuration.
+        padded_tracer : ray_tracing.AbstractTracer
+            A tracer with an identical strong lensing configuration to the tracer above, but using the lensing regular's \
+            padded grid_stacks such that unmasked model-unblurred_image_1d can be computed.
+        """
+
+        fitter.AbstractHyperFit.__init__(self=self, fitting_hyper_image=lensing_hyper_image,
+                                         hyper_galaxies=tracer.hyper_galaxies)
+
+        super(LensingHyperProfileFitter, self).__init__(lensing_image=lensing_hyper_image, tracer=tracer,
+                                                        padded_tracer=padded_tracer)
+
+    @classmethod
+    def fast_scaled_likelihood(cls, lensing_hyper_images, tracer):
+        """Perform the fit of this class as described above, but storing no results as class instances, thereby \
+        minimizing memory use and maximizing run-speed."""
+
+        contributions_ = fitting_util.contributions_from_fitting_hyper_images_and_hyper_galaxies(
+            fitting_hyper_images=lensing_hyper_images, hyper_galaxies=tracer.hyper_galaxies)
+
+        scaled_noise_maps_ = fitting_util.scaled_noise_maps_from_fitting_hyper_images_contributions_and_hyper_galaxies(
+            fitting_hyper_images=lensing_hyper_images, contributions_=contributions_,
+            hyper_galaxies=tracer.hyper_galaxies)
+
+        convolvers = list(map(lambda lensing_image : lensing_image.convolver_image, lensing_hyper_images))
+        model_images_ = fitting_util.blur_image_including_blurring_region(image_=tracer.image_plane_images_,
+                                                                          blurring_image_=tracer.image_plane_blurring_images_, convolver=convolvers)
+        residuals_ = fitting_util.residuals_from_data_mask_and_model_data(datas=lensing_hyper_images, model_data=model_images_),
+        scaled_chi_squareds_ = fitting_util.chi_squareds_from_residuals_and_noise_map(residuals=residuals_,
+                                                                                      noise_maps=scaled_noise_maps_)
+
+        scaled_chi_squared_terms = fitting_util.chi_squared_term_from_chi_squareds(chi_squareds=scaled_chi_squareds_)
+        scaled_noise_terms = fitting_util.noise_term_from_mask_and_noise_map(noise_maps=scaled_noise_maps_)
+        return sum(fitting_util.likelihood_from_chi_squared_term_and_noise_term(scaled_chi_squared_terms, scaled_noise_terms))
+
 #
 #
 # class LensingInversionFit(fitter.AbstractInversionFit, LensingFitter):
@@ -287,7 +351,7 @@ class LensingProfileFitter(LensingFitter):
 #         return [[None, self.map_to_scaled_arrays[0](self.model_data_set[0])]]
 #
 #
-# class HyperLensingInversion(fitter.AbstractHyperFit):
+# class HyperLensingInversion(fitter.AbstractLensingHyperFitter):
 #
 #     @property
 #     def scaled_model_images(self):
@@ -335,29 +399,29 @@ class LensingProfileFitter(LensingFitter):
 #         """
 #
 #         LensingFitter.__init__(self=self, lensing_images=lensing_hyper_images, tracer=tracer)
-#         fitter.AbstractHyperFit.__init__(self=self, fitting_hyper_images=lensing_hyper_images,
+#         fitter.AbstractLensingHyperFitter.__init__(self=self, fitting_hyper_images=lensing_hyper_images,
 #                                          hyper_galaxies=tracer.hyper_galaxies)
 #         super(HyperLensingInversionFit, self).__init__(lensing_hyper_images, tracer)
 #
 #         self.scaled_inversion = inversions.inversion_from_lensing_image_mapper_and_regularization(
-#             lensing_hyper_images[0][:], self.scaled_noise_maps_[0], lensing_hyper_images[0].convolver_mapping_matrix,
+#             lensing_hyper_images[0][:], self.scaled_noise_map_1d[0], lensing_hyper_images[0].convolver_mapping_matrix,
 #             self.inversion.mapper, self.inversion.regularization)
 #
 #         self.scaled_model_images_ = [self.scaled_inversion.reconstructed_data_vector]
 #         self.scaled_residuals_ = fitting_util.residuals_from_data_mask_and_model_data(self.datas_, self.scaled_model_images_)
 #         self.scaled_chi_squareds_ = fitting_util.chi_squareds_from_residuals_and_noise_map(self.scaled_residuals_,
-#                                                                                            self.scaled_noise_maps_)
+#                                                                                            self.scaled_noise_map_1d)
 #
 #     @classmethod
 #     def fast_scaled_evidence(cls, lensing_hyper_images, tracer):
 #         """Perform the fit of this class as described above, but storing no results as class instances, thereby \
 #         minimizing memory use and maximizing run-speed."""
 #
-#         contributions_ = fitting_util.contributions_from_fitting_hyper_images_and_hyper_galaxies(
+#         contributions_1d = fitting_util.contributions_from_fitting_hyper_images_and_hyper_galaxies(
 #             fitting_hyper_images=lensing_hyper_images, hyper_galaxies=tracer.hyper_galaxies)
 #
-#         scaled_noise_maps_ = fitting_util.scaled_noise_maps_from_fitting_hyper_images_contributions_and_hyper_galaxies(
-#             fitting_hyper_images=lensing_hyper_images, contributions_=contributions_,
+#         scaled_noise_map_1d = fitting_util.scaled_noise_maps_from_fitting_hyper_images_contributions_and_hyper_galaxies(
+#             fitting_hyper_images=lensing_hyper_images, contributions_1d=contributions_1d,
 #             hyper_galaxies=tracer.hyper_galaxies)
 #
 #         convolvers = list(map(lambda lensing_image : lensing_image.convolver_mapping_matrix, lensing_hyper_images))
@@ -366,13 +430,13 @@ class LensingProfileFitter(LensingFitter):
 #         regularization = tracer.regularizations_of_planes[0]
 #
 #         scaled_inversion = inversions.inversion_from_lensing_image_mapper_and_regularization(
-#             lensing_hyper_images[0][:], scaled_noise_maps_[0], convolvers[0], mapper, regularization)
+#             lensing_hyper_images[0][:], scaled_noise_map_1d[0], convolvers[0], mapper, regularization)
 #
 #         scaled_residuals_ = fitting_util.residuals_from_data_mask_and_model_data(lensing_hyper_images,
 #                                                                                  [scaled_inversion.reconstructed_data_vector])
-#         scaled_chi_squareds_ = fitting_util.chi_squareds_from_residuals_and_noise_map(scaled_residuals_, scaled_noise_maps_)
+#         scaled_chi_squareds_ = fitting_util.chi_squareds_from_residuals_and_noise_map(scaled_residuals_, scaled_noise_map_1d)
 #         scaled_chi_squared_terms = fitting_util.chi_squared_term_from_chi_squareds(scaled_chi_squareds_)
-#         scaled_noise_terms = fitting_util.noise_term_from_mask_and_noise_map(scaled_noise_maps_)
+#         scaled_noise_terms = fitting_util.noise_term_from_mask_and_noise_map(scaled_noise_map_1d)
 #         return sum(fitting_util.evidence_from_reconstruction_terms(scaled_chi_squared_terms,
 #                                                                    [scaled_inversion.regularization_term],
 #                                                                    [scaled_inversion.log_det_curvature_reg_matrix_term],
@@ -460,12 +524,12 @@ class LensingProfileFitter(LensingFitter):
 #
 #         LensingFitter.__init__(self=self, lensing_images=lensing_hyper_images, tracer=tracer,
 #                                     padded_tracer=padded_tracer)
-#         fitter.AbstractHyperFit.__init__(self=self, fitting_hyper_images=lensing_hyper_images,
+#         fitter.AbstractLensingHyperFitter.__init__(self=self, fitting_hyper_images=lensing_hyper_images,
 #                                          hyper_galaxies=tracer.hyper_galaxies)
 #         super(HyperLensingProfileInversionFit, self).__init__(lensing_hyper_images, tracer, padded_tracer)
 #
 #         self.scaled_inversion = inversions.inversion_from_lensing_image_mapper_and_regularization(
-#             self.profile_subtracted_images_[0], self.scaled_noise_maps_[0],
+#             self.profile_subtracted_images_[0], self.scaled_noise_map_1d[0],
 #             lensing_hyper_images[0].convolver_mapping_matrix, self.inversion.mapper, self.inversion.regularization)
 #
 #         self.scaled_model_images_ = list(map(lambda _profile_model_image :
@@ -474,17 +538,17 @@ class LensingProfileFitter(LensingFitter):
 #
 #         self.scaled_residuals_ = fitting_util.residuals_from_data_mask_and_model_data(self.datas_, self.scaled_model_images_)
 #         self.scaled_chi_squareds_ = fitting_util.chi_squareds_from_residuals_and_noise_map(self.scaled_residuals_,
-#                                                                                            self.scaled_noise_maps_)
+#                                                                                            self.scaled_noise_map_1d)
 #
 #     @classmethod
 #     def fast_scaled_evidence(cls, lensing_hyper_images, tracer):
 #         """Perform the fit of this class as described above, but storing no results as class instances, thereby \
 #         minimizing memory use and maximizing run-speed."""
-#         contributions_ = fitting_util.contributions_from_fitting_hyper_images_and_hyper_galaxies(
+#         contributions_1d = fitting_util.contributions_from_fitting_hyper_images_and_hyper_galaxies(
 #             fitting_hyper_images=lensing_hyper_images, hyper_galaxies=tracer.hyper_galaxies)
 #
-#         scaled_noise_maps_ = fitting_util.scaled_noise_maps_from_fitting_hyper_images_contributions_and_hyper_galaxies(
-#             fitting_hyper_images=lensing_hyper_images, contributions_=contributions_,
+#         scaled_noise_map_1d = fitting_util.scaled_noise_maps_from_fitting_hyper_images_contributions_and_hyper_galaxies(
+#             fitting_hyper_images=lensing_hyper_images, contributions_1d=contributions_1d,
 #             hyper_galaxies=tracer.hyper_galaxies)
 #
 #         convolvers_image = list(map(lambda lensing_image : lensing_image.convolver_image, lensing_hyper_images))
@@ -502,7 +566,7 @@ class LensingProfileFitter(LensingFitter):
 #         regularization = tracer.regularizations_of_planes[0]
 #
 #         scaled_inversion = inversions.inversion_from_lensing_image_mapper_and_regularization(
-#             profile_subtracted_images_[0], scaled_noise_maps_[0], convolvers_mapping_matrix[0], mapper,
+#             profile_subtracted_images_[0], scaled_noise_map_1d[0], convolvers_mapping_matrix[0], mapper,
 #             regularization)
 #
 #         scaled_model_images_ = list(map(lambda profile_model_image_ :
@@ -510,9 +574,9 @@ class LensingProfileFitter(LensingFitter):
 #                                         profile_model_images_))
 #
 #         scaled_residuals_ = fitting_util.residuals_from_data_mask_and_model_data(lensing_hyper_images, scaled_model_images_)
-#         scaled_chi_squareds_ = fitting_util.chi_squareds_from_residuals_and_noise_map(scaled_residuals_, scaled_noise_maps_)
+#         scaled_chi_squareds_ = fitting_util.chi_squareds_from_residuals_and_noise_map(scaled_residuals_, scaled_noise_map_1d)
 #         scaled_chi_squared_terms = fitting_util.chi_squared_term_from_chi_squareds(scaled_chi_squareds_)
-#         scaled_noise_terms = fitting_util.noise_term_from_mask_and_noise_map(scaled_noise_maps_)
+#         scaled_noise_terms = fitting_util.noise_term_from_mask_and_noise_map(scaled_noise_map_1d)
 #         return sum(fitting_util.evidence_from_reconstruction_terms(scaled_chi_squared_terms,
 #                                                                    [scaled_inversion.regularization_term],
 #                                                                    [scaled_inversion.log_det_curvature_reg_matrix_term],
@@ -552,108 +616,6 @@ class LensingProfileFitter(LensingFitter):
 #             ydists = np.square(np.subtract(grid[i, 1], grid[:, 1]))
 #             rdist_max[i] = np.max(np.add(xdists, ydists))
 #         return np.max(np.sqrt(rdist_max))
-
-
-# class AbstractHyperFit(object):
-#
-#     def __init__(self, fitting_hyper_images, hyper_galaxies):
-#         """Abstract base class of a hyper-fit.
-#
-#         A hyper-fit is a fit which performs a fit as described in the *AbstractFitter*, but also includes a set of
-#         parameters which allow the noise-map of the datas-set to be scaled. This is done to prevent over-fitting
-#         small regions of a datas-set with high chi-squared values and therefore provide a global fit to the overall
-#         datas-set.
-#
-#         This is performed using an existing model of the datas-set to compute a contributions regular, which a set of
-#         hyper-parameters then use to increase the noise in localized regions of the datas-set.
-#
-#         Parameters
-#         -----------
-#         fitting_hyper_images : [fit_data.FitDataHyper]
-#             The fitting unblurred_image_1d that are fitted, which include the hyper-unblurred_image_1d used for scaling the noise-map.
-#         hyper_galaxies : [galaxy.Galaxy]
-#             The hyper-galaxies which represent the model components used to scale the noise, which correspond to
-#             individual galaxies in the regular.
-#
-#         Attributes
-#         -----------
-#         contributions : [[scaled_array.ScaledSquarePixelArray]]
-#             The contribution map of every regular, where there is an individual contribution map for each hyper-galaxy in
-#             the model.
-#         scaled_noise_maps : [scaled_array.ScaledSquarePixelArray]
-#             The scaled noise maps of the regular, computed after using the hyper-galaxies.
-#         scaled_chi_squared_terms : [float]
-#             The summed scaled chi-squared of every datas-point in a fit.
-#         scaled_chi_squareds_term : float
-#             The sum of all scaled_chi_squared_terms for all unblurred_image_1d.
-#         scaled_noise_terms : [float]
-#             The normalization term of a likelihood function assuming Gaussian noise in every datas-point, using the
-#             scaled noise-map.
-#         scaled_noise_term : float
-#             The sum of all scaled_noise_terms for all unblurred_image_1d.
-#         scaled_likelihoods : [float]
-#             The likelihood of every fit between datas and model using the scaled noise-map's fit \
-#             -0.5 * (scaled_chi_squared_term + scaled_noise_term)
-#         scaled_likelihood : float
-#             The summed scaled likelihood of the fit between datas and model for all unblurred_image_1d.
-#         """
-#
-#         self.is_hyper_fit = True
-#         self.contributions_ = \
-#             fitting_util.contributions_from_fitting_hyper_images_and_hyper_galaxies(fitting_hyper_images=fitting_hyper_images,
-#                                                                        hyper_galaxies=hyper_galaxies)
-#
-#
-#         self.scaled_noise_maps_ =\
-#             fitting_util.scaled_noise_maps_from_fitting_hyper_images_contributions_and_hyper_galaxies(
-#                 fitting_hyper_images=fitting_hyper_images, contributions_=self.contributions_,
-#                 hyper_galaxies=hyper_galaxies)
-#
-#     @property
-#     def scaled_chi_squared_terms(self):
-#         return fitting_util.chi_squared_term_from_chi_squareds(self.scaled_chi_squareds_)
-#
-#     @property
-#     def scaled_noise_terms(self):
-#         return fitting_util.noise_term_from_noise_map(self.scaled_noise_maps_)
-#
-#     @property
-#     def scaled_noise_maps(self):
-#         return fitting_util.map_arrays_to_scaled_arrays(arrays_=self.scaled_noise_maps_,
-#                                            map_to_scaled_arrays=self.map_to_scaled_arrays)
-#
-#     @property
-#     def scaled_chi_squareds(self):
-#         return fitting_util.map_arrays_to_scaled_arrays(arrays_=self.scaled_chi_squareds_,
-#                                            map_to_scaled_arrays=self.map_to_scaled_arrays)
-#
-#     @property
-#     def contributions(self):
-#         contributions = [[] for _ in range(len(self.contributions_))]
-#         for image_index in range(len(contributions)):
-#             contributions[image_index] = list(map(lambda _contributions :
-#                                                   self.map_to_scaled_arrays[image_index](_contributions),
-#                                                   self.contributions_[image_index]))
-#         return contributions
-#
-#     @property
-#     def scaled_noise_map(self):
-#         return self.scaled_noise_maps[0]
-#
-#     @property
-#     def scaled_chi_squared(self):
-#         return self.scaled_chi_squareds[0]
-#
-#
-# class AbstractHyperImageFit(AbstractImageFitter, AbstractHyperFit):
-#
-#     def __init__(self, fitting_hyper_images, model_images_, hyper_galaxies):
-#        """Abstract base class for an regular datas-set which includes hyper noise-scaling. Seee *AbstractFitter* and
-#        *AbstractHyperFit* for more details."""
-#        AbstractHyperFit.__init__(self=self, fitting_hyper_images=fitting_hyper_images, hyper_galaxies=hyper_galaxies)
-#        super(AbstractHyperImageFit, self).__init__(fitting_images=fitting_hyper_images, model_images_=model_images_)
-#        self.scaled_chi_squareds_ = fitting_util.chi_squared_from_residuals_and_noise_map(self.residuals, self.scaled_noise_maps_)
-#
 #
 #
 #

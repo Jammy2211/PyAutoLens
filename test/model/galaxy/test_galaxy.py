@@ -555,7 +555,7 @@ class TestHyperGalaxy(object):
             hyp = g.HyperGalaxy(contribution_factor=0.0)
             contributions = hyp.contributions_from_hyper_images(hyper_model_image=gal_image,
                                                                 hyper_galaxy_image=gal_image,
-                                                                minimum_value=0.0)
+                                                                hyper_minimum_value=0.0)
 
             assert (contributions == np.ones((3,))).all()
 
@@ -565,7 +565,7 @@ class TestHyperGalaxy(object):
             hyp = g.HyperGalaxy(contribution_factor=1.0)
             contributions = hyp.contributions_from_hyper_images(hyper_model_image=gal_image,
                                                                 hyper_galaxy_image=gal_image,
-                                                                minimum_value=0.0)
+                                                                hyper_minimum_value=0.0)
 
             assert (contributions == np.array([(0.5 / 1.5) / (1.5 / 2.5), (1.0 / 2.0) / (1.5 / 2.5), 1.0])).all()
 
@@ -575,7 +575,7 @@ class TestHyperGalaxy(object):
             hyp = g.HyperGalaxy(contribution_factor=1.0)
             contributions = hyp.contributions_from_hyper_images(hyper_model_image=gal_image,
                                                                 hyper_galaxy_image=gal_image,
-                                                                minimum_value=0.6)
+                                                                hyper_minimum_value=0.6)
 
             assert (contributions == np.array([0.0, (1.0 / 2.0) / (1.5 / 2.5), 1.0])).all()
 

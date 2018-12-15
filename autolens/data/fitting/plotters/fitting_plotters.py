@@ -132,7 +132,7 @@ def plot_contributions(fit, image_index=0, mask=None, positions=None, as_subplot
 
     Parameters
     -----------
-    fit : datas.fitting.fitting.AbstractHyperFit
+    fit : datas.fitting.fitting.AbstractLensingHyperFitter
         The hyper-fit to the datas, which includes a list of every model-datas, residual_map, chi-squareds, etc.
     image_index : int
         The index of the datas in the datas-set of which the contributions are plotted.
@@ -166,7 +166,7 @@ def plot_scaled_model_image(fit, image_index=0, mask=None, positions=None, as_su
 
     Parameters
     -----------
-    fit : datas.fitting.fitting.AbstractHyperFit
+    fit : datas.fitting.fitting.AbstractLensingHyperFitter
         The hyper-fit to the datas, which includes a list of every model-datas, residual_map, chi-squareds, etc.
     image_index : int
         The index of the datas in the datas-set of which the scaled model datas is plotted.
@@ -195,7 +195,7 @@ def plot_scaled_residuals(fit, image_index=0, mask=None, positions=None, as_subp
 
     Parameters
     -----------
-    fit : datas.fitting.fitting.AbstractHyperFit
+    fit : datas.fitting.fitting.AbstractLensingHyperFitter
         The hyper-fit to the datas, which includes a list of every model-datas, residual_map, chi-squareds, etc.
     image_index : int
         The index of the datas in the datas-set of which the scaled residual_map are plotted.
@@ -224,7 +224,7 @@ def plot_scaled_chi_squareds(fit, image_index=0, mask=None, positions=None, as_s
 
     Parameters
     -----------
-    fit : datas.fitting.fitting.AbstractHyperFit
+    fit : datas.fitting.fitting.AbstractLensingHyperFitter
         The hyper-fit to the datas, which includes a list of every model-datas, residual_map, chi-squareds, etc.
     image_index : int
         The index of the datas in the datas-set of which the scaled chi-squareds are plotted.
@@ -253,7 +253,7 @@ def plot_scaled_noise_map(fit, image_index=0, mask=None, positions=None, as_subp
 
     Parameters
     -----------
-    fit : datas.fitting.fitting.AbstractHyperFit
+    fit : datas.fitting.fitting.AbstractLensingHyperFitter
         The hyper-fit to the datas, which includes a list of every model-datas, residual_map, chi-squareds, etc.
     image_index : int
         The index of the datas in the datas-set of which the scaled noise-map is plotted.
@@ -288,7 +288,7 @@ def get_mask(fit, should_plot_mask):
 
     Parameters
     -----------
-    fit : datas.fitting.fitting.AbstractHyperFit
+    fit : datas.fitting.fitting.AbstractLensingHyperFitter
         The fit to the datas, which includes a list of every model-datas, residual_map, chi-squareds, etc.
     should_plot_mask : bool
         If *True*, the masks is plotted on the fit's datas.

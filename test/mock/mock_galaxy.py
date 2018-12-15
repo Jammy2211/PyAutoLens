@@ -26,11 +26,11 @@ class MockHyperGalaxy(object):
         self.noise_factor = noise_factor
         self.noise_power = noise_power
 
-    def contributions_from_hyper_images(self, hyper_model_image, hyper_galaxy_images, minimum_value):
-        contributions = hyper_galaxy_images / (hyper_model_image + self.contribution_factor)
+    def contributions_from_hyper_images(self, hyper_model_image, hyper_galaxy_image, hyper_minimum_value):
+        contributions = hyper_galaxy_image / (hyper_model_image + self.contribution_factor)
         contributions = contributions / np.max(contributions)
-        contributions[contributions < minimum_value] = 0.0
+        contributions[contributions < hyper_minimum_value] = 0.0
         return contributions
 
-    def scaled_noise_from_contributions(self, noise, contributions):
-        return self.noise_factor * (noise * contributions) ** self.noise_power
+    def scaled_noise_from_contributions(self, noise_map, contributions):
+        return self.noise_factor * (noise_map * contributions) ** self.noise_power

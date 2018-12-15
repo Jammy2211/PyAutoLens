@@ -473,15 +473,15 @@ class TestContributionsFromHypers:
 
         hyper_galaxies = [MockHyperGalaxy(contribution_factor=1.0, noise_factor=0.0, noise_power=1.0)]
 
-        hyper_model_image_ = np.array([1.0, 1.0, 1.0])
+        hyper_model_image_1d = np.array([1.0, 1.0, 1.0])
 
-        hyper_galaxy_images_ = [np.array([1.0, 1.0, 1.0])]
+        hyper_galaxy_images_1d = [np.array([1.0, 1.0, 1.0])]
 
         minimum_values = [0.0]
 
         contributions = lensing_fitting_util.contributions_from_hyper_images_and_galaxies(
-            hyper_model_image=hyper_model_image_, hyper_galaxy_images=hyper_galaxy_images_, hyper_galaxies=hyper_galaxies,
-            minimum_values=minimum_values)
+            hyper_model_image_1d=hyper_model_image_1d, hyper_galaxy_images_1d=hyper_galaxy_images_1d, 
+            hyper_galaxies=hyper_galaxies, hyper_minimum_values=minimum_values)
 
         assert (contributions[0] == np.array([1.0, 1.0, 1.0])).all()
 
@@ -489,15 +489,15 @@ class TestContributionsFromHypers:
 
         hyper_galaxies = [MockHyperGalaxy(contribution_factor=1.0, noise_factor=0.0, noise_power=1.0)]
 
-        hyper_model_image_ = np.array([0.5, 1.0, 1.5])
+        hyper_model_image_1d = np.array([0.5, 1.0, 1.5])
 
-        hyper_galaxy_images_ = [np.array([0.5, 1.0, 1.5])]
+        hyper_galaxy_images_1d = [np.array([0.5, 1.0, 1.5])]
 
         minimum_values = [0.6]
 
         contributions = lensing_fitting_util.contributions_from_hyper_images_and_galaxies(
-            hyper_model_image=hyper_model_image_, hyper_galaxy_images=hyper_galaxy_images_, hyper_galaxies=hyper_galaxies,
-            minimum_values=minimum_values)
+            hyper_model_image_1d=hyper_model_image_1d, hyper_galaxy_images_1d=hyper_galaxy_images_1d, hyper_galaxies=hyper_galaxies,
+            hyper_minimum_values=minimum_values)
 
         assert (contributions[0] == np.array([0.0, (1.0 / 2.0) / (1.5 / 2.5), 1.0])).all()
 
@@ -506,15 +506,15 @@ class TestContributionsFromHypers:
         hyper_galaxies = [MockHyperGalaxy(contribution_factor=0.0, noise_factor=0.0, noise_power=1.0),
                           MockHyperGalaxy(contribution_factor=1.0, noise_factor=0.0, noise_power=1.0)]
 
-        hyper_model_image_ = np.array([0.5, 1.0, 1.5])
+        hyper_model_image_1d = np.array([0.5, 1.0, 1.5])
 
-        hyper_galaxy_images_ = [np.array([0.5, 1.0, 1.5]), np.array([0.5, 1.0, 1.5])]
+        hyper_galaxy_images_1d = [np.array([0.5, 1.0, 1.5]), np.array([0.5, 1.0, 1.5])]
 
         minimum_values = [0.5, 0.6]
 
         contributions = lensing_fitting_util.contributions_from_hyper_images_and_galaxies(
-            hyper_model_image=hyper_model_image_, hyper_galaxy_images=hyper_galaxy_images_, hyper_galaxies=hyper_galaxies,
-            minimum_values=minimum_values)
+            hyper_model_image_1d=hyper_model_image_1d, hyper_galaxy_images_1d=hyper_galaxy_images_1d, hyper_galaxies=hyper_galaxies,
+            hyper_minimum_values=minimum_values)
 
         assert (contributions[0] == np.array([1.0, 1.0, 1.0])).all()
         assert (contributions[1] == np.array([0.0, (1.0 / 2.0) / (1.5 / 2.5), 1.0])).all()
@@ -524,15 +524,15 @@ class TestContributionsFromHypers:
         hyper_galaxies = [g.HyperGalaxy(contribution_factor=0.0, noise_factor=0.0, noise_power=1.0),
                           g.HyperGalaxy(contribution_factor=1.0, noise_factor=0.0, noise_power=1.0)]
 
-        hyper_model_image_ = np.array([0.5, 1.0, 1.5])
+        hyper_model_image_1d = np.array([0.5, 1.0, 1.5])
 
-        hyper_galaxy_images_ = [np.array([0.5, 1.0, 1.5]), np.array([0.5, 1.0, 1.5])]
+        hyper_galaxy_images_1d = [np.array([0.5, 1.0, 1.5]), np.array([0.5, 1.0, 1.5])]
 
         minimum_values = [0.5, 0.6]
 
         contributions = lensing_fitting_util.contributions_from_hyper_images_and_galaxies(
-            hyper_model_image=hyper_model_image_, hyper_galaxy_images=hyper_galaxy_images_, hyper_galaxies=hyper_galaxies,
-            minimum_values=minimum_values)
+            hyper_model_image_1d=hyper_model_image_1d, hyper_galaxy_images_1d=hyper_galaxy_images_1d, hyper_galaxies=hyper_galaxies,
+            hyper_minimum_values=minimum_values)
 
         assert (contributions[0] == np.array([1.0, 1.0, 1.0])).all()
         assert (contributions[1] == np.array([0.0, (1.0 / 2.0) / (1.5 / 2.5), 1.0])).all()
@@ -585,58 +585,58 @@ class TestScaledNoiseFromContributions:
 
     def test__x1_hyper_galaxy__noise_factor_is_0__scaled_noise_is_input_noise(self):
 
-        contributions_ = [np.array([1.0, 1.0, 2.0])]
+        contributions_1d = [np.array([1.0, 1.0, 2.0])]
         hyper_galaxies = [MockHyperGalaxy(contribution_factor=1.0, noise_factor=0.0, noise_power=1.0)]
         noise_map_ = np.array([1.0, 1.0, 1.0])
 
         scaled_noise_map_ = lensing_fitting_util.scaled_noise_map_from_hyper_galaxies_and_contributions(
-            contributions=contributions_, hyper_galaxies=hyper_galaxies, noise_map=noise_map_)
+            contributions_1d=contributions_1d, hyper_galaxies=hyper_galaxies, noise_map_1d=noise_map_)
 
         assert (scaled_noise_map_ == noise_map_).all()
 
     def test__x1_hyper_galaxy__noise_factor_and_power_are_1__scaled_noise_added_to_input_noise(self):
 
-        contributions_ = [np.array([1.0, 1.0, 0.5])]
+        contributions_1d = [np.array([1.0, 1.0, 0.5])]
         hyper_galaxies = [MockHyperGalaxy(contribution_factor=1.0, noise_factor=1.0, noise_power=1.0)]
         noise_map_ = np.array([1.0, 1.0, 1.0])
 
         scaled_noise_map_ = lensing_fitting_util.scaled_noise_map_from_hyper_galaxies_and_contributions(
-            contributions=contributions_, hyper_galaxies=hyper_galaxies, noise_map=noise_map_)
+            contributions_1d=contributions_1d, hyper_galaxies=hyper_galaxies, noise_map_1d=noise_map_)
 
         assert (scaled_noise_map_ == np.array([2.0, 2.0, 1.5])).all()
 
     def test__x1_hyper_galaxy__noise_factor_1_and_power_is_2__scaled_noise_added_to_input_noise(self):
 
-        contributions_ = [np.array([1.0, 1.0, 0.5])]
+        contributions_1d = [np.array([1.0, 1.0, 0.5])]
         hyper_galaxies = [MockHyperGalaxy(contribution_factor=1.0, noise_factor=1.0, noise_power=2.0)]
         noise_map_ = np.array([1.0, 1.0, 1.0])
 
         scaled_noise_map_ = lensing_fitting_util.scaled_noise_map_from_hyper_galaxies_and_contributions(
-            contributions=contributions_, hyper_galaxies=hyper_galaxies, noise_map=noise_map_)
+            contributions_1d=contributions_1d, hyper_galaxies=hyper_galaxies, noise_map_1d=noise_map_)
 
         assert (scaled_noise_map_ == np.array([2.0, 2.0, 1.25])).all()
 
     def test__x2_hyper_galaxy__noise_factor_1_and_power_is_2__scaled_noise_added_to_input_noise(self):
 
-        contributions_ = [np.array([1.0, 1.0, 0.5]), np.array([0.25, 0.25, 0.25])]
+        contributions_1d = [np.array([1.0, 1.0, 0.5]), np.array([0.25, 0.25, 0.25])]
         hyper_galaxies = [MockHyperGalaxy(contribution_factor=1.0, noise_factor=1.0, noise_power=2.0),
                           MockHyperGalaxy(contribution_factor=1.0, noise_factor=2.0, noise_power=1.0)]
         noise_map_ = np.array([1.0, 1.0, 1.0])
 
         scaled_noise_map_ = lensing_fitting_util.scaled_noise_map_from_hyper_galaxies_and_contributions(
-            contributions=contributions_, hyper_galaxies=hyper_galaxies, noise_map=noise_map_)
+            contributions_1d=contributions_1d, hyper_galaxies=hyper_galaxies, noise_map_1d=noise_map_)
 
         assert (scaled_noise_map_ == np.array([2.5, 2.5, 1.75])).all()
 
     def test__x2_hyper_galaxy__same_as_above_but_use_real_hyper_galaxy(self):
 
-        contributions_ = [np.array([1.0, 1.0, 0.5]), np.array([0.25, 0.25, 0.25])]
+        contributions_1d = [np.array([1.0, 1.0, 0.5]), np.array([0.25, 0.25, 0.25])]
         hyper_galaxies = [g.HyperGalaxy(contribution_factor=1.0, noise_factor=1.0, noise_power=2.0),
                           g.HyperGalaxy(contribution_factor=1.0, noise_factor=2.0, noise_power=1.0)]
         noise_map_ = np.array([1.0, 1.0, 1.0])
 
         scaled_noise_map_ = lensing_fitting_util.scaled_noise_map_from_hyper_galaxies_and_contributions(
-            contributions=contributions_, hyper_galaxies=hyper_galaxies, noise_map=noise_map_)
+            contributions_1d=contributions_1d, hyper_galaxies=hyper_galaxies, noise_map_1d=noise_map_)
 
         assert (scaled_noise_map_ == np.array([2.5, 2.5, 1.75])).all()
 
@@ -649,7 +649,7 @@ class TestScaledNoiseFromContributions:
     #     hyper_galaxies = [g.HyperGalaxy(contribution_factor=1.0, noise_factor=1.0, noise_power=2.0),
     #                       g.HyperGalaxy(contribution_factor=1.0, noise_factor=2.0, noise_power=1.0)]
     #     scaled_noises = lensing_fitting_util.scaled_noise_maps_from_fitting_hyper_images_contributions_and_hyper_galaxies(
-    #         fitting_hyper_images=[fitting_hyper_image], contributions_=[contributions], hyper_galaxies=hyper_galaxies)
+    #         fitting_hyper_images=[fitting_hyper_image], contributions_1d=[contributions], hyper_galaxies=hyper_galaxies)
     # 
     #     assert (scaled_noises[0] == np.array([2.5, 2.5, 1.75])).all()
     # 
@@ -666,7 +666,7 @@ class TestScaledNoiseFromContributions:
     #                       g.HyperGalaxy(contribution_factor=1.0, noise_factor=2.0, noise_power=1.0)]
     #     scaled_noises = lensing_fitting_util.scaled_noise_maps_from_fitting_hyper_images_contributions_and_hyper_galaxies(
     #         fitting_hyper_images=[fitting_hyper_image_0, fitting_hyper_image_1],
-    #         contributions_=[contributions_0, contributions_1], hyper_galaxies=hyper_galaxies)
+    #         contributions_1d=[contributions_0, contributions_1], hyper_galaxies=hyper_galaxies)
     # 
     #     assert (scaled_noises[0] == np.array([2.5, 2.5, 1.75])).all()
     #     assert (scaled_noises[1] == np.array([2.5, 2.5, 1.75])).all()
