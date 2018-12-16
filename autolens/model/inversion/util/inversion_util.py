@@ -50,7 +50,7 @@ def curvature_matrix_from_blurred_mapping_matrix_jit(blurred_mapping_matrix, noi
 
 @numba.jit(nopython=True, parallel=True)
 def reconstructed_data_vector_from_blurred_mapping_matrix_and_solution_vector(blurred_mapping_matrix, solution_vector):
-    """ Map the reconstructed_image pix s_vector back to the masked_image-plane to compute the inversion's model-masked_image.
+    """ Map the reconstructed_inversion_image pix s_vector back to the masked_image-plane to compute the inversion's model-masked_image.
     """
     reconstructed_data_vector = np.zeros(blurred_mapping_matrix.shape[0])
     for i in range(blurred_mapping_matrix.shape[0]):

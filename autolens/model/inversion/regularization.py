@@ -160,7 +160,7 @@ class Regularization(object):
         shape : (int, int)
             The dimensions of the rectangular grid of pixels (x_pixels, y_pixel)
         coefficients : (float,)
-            The regularization_matrix coefficients used to smooth the pix reconstructed_image.            
+            The regularization_matrix coefficients used to smooth the pix reconstructed_inversion_image.
             
         """
         self.coefficients = coefficients

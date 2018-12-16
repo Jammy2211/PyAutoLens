@@ -144,7 +144,7 @@ def make_pipeline():
 
         def modify_image(self, image, previous_results):
             phase_1_results = previous_results[0]
-            return image - phase_1_results.fit.unmasked_blurred_profile_image
+            return image - phase_1_results.fit.unmasked_model_image
 
     # The function above demonstrates the most important thing about runners - that every phase has access to the
     # results of all previous phases. This means we can feed information through the pipeline and therefore use the

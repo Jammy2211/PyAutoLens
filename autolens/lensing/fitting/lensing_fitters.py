@@ -43,7 +43,7 @@ def fit_lensing_image_with_tracer(lensing_image, tracer, padded_tracer=None):
     elif tracer.has_light_profile and tracer.has_pixelization:
 
         if not tracer.has_hyper_galaxy:
-            return LensingProfileInversionFit(lensing_image=lensing_image, tracer=tracer, padded_tracer=padded_tracer)
+            return LensingProfileInversionFitter(lensing_image=lensing_image, tracer=tracer, padded_tracer=padded_tracer)
         elif tracer.has_hyper_galaxy:
             return HyperLensingProfileInversionFit(lensing_hyper_image=lensing_image, tracer=tracer,
                                                    padded_tracer=padded_tracer)
@@ -87,7 +87,7 @@ def fast_fit_from_lensing_image_and_tracer(lensing_image, tracer):
     elif tracer.has_light_profile and tracer.has_pixelization:
 
         if not tracer.has_hyper_galaxy:
-            return LensingProfileInversionFit.fast_fit(lensing_image=lensing_image, tracer=tracer)
+            return LensingProfileInversionFitter.fast_fit(lensing_image=lensing_image, tracer=tracer)
         elif tracer.has_hyper_galaxy:
             return HyperLensingProfileInversionFit.fast_scaled_evidence(lensing_hyper_image=lensing_image,
                                                                         tracer=tracer)
@@ -113,25 +113,24 @@ class AbstractLensingFitter(object):
 
 class AbstractLensingProfileFitter(AbstractLensingFitter):
 
-    def __init__(self, psf, convolver_image, tracer, padded_tracer, map_to_scaled_array):
+    def __init__(self, lensing_image, tracer, padded_tracer):
 
         super(AbstractLensingProfileFitter, self).__init__(tracer=tracer, padded_tracer=padded_tracer,
-                                                           map_to_scaled_array=map_to_scaled_array)
+                                                           map_to_scaled_array=lensing_image.map_to_scaled_array)
 
-        self.psf = psf
-        self.convolver_image = convolver_image
-
-        self.blurred_image = lensing_fitting_util.blurred_image_from_1d_unblurred_and_blurring_images(
+        self.psf = lensing_image.psf
+        self.convolver_image = lensing_image.convolver_image
+        self.blurred_profile_image = lensing_fitting_util.blurred_image_from_1d_unblurred_and_blurring_images(
             unblurred_image_1d=tracer.image_plane_image_1d, blurring_image_1d=tracer.image_plane_blurring_image_1d,
-            convolver=convolver_image, map_to_scaled_array=map_to_scaled_array)
+            convolver=self.convolver_image, map_to_scaled_array=self.map_to_scaled_array)
 
     @property
-    def blurred_image_of_planes(self):
+    def model_image_of_planes(self):
         return lensing_fitting_util.blurred_image_of_planes_from_tracer_and_convolver(tracer=self.tracer,
                convolver_image=self.convolver_image, map_to_scaled_array=self.map_to_scaled_array)
 
     @property
-    def unmasked_blurred_profile_image(self):
+    def unmasked_model_image(self):
         if self.padded_tracer is None:
             return None
         elif self.padded_tracer is not None:
@@ -140,7 +139,7 @@ class AbstractLensingProfileFitter(AbstractLensingFitter):
                 unmasked_image_1d=self.padded_tracer.image_plane_image_1d)
 
     @property
-    def unmasked_blurred_profile_image_of_galaxies(self):
+    def unmasked_model_image_of_galaxies(self):
         if self.padded_tracer is None:
             return None
         elif self.padded_tracer is not None:
@@ -150,7 +149,7 @@ class AbstractLensingProfileFitter(AbstractLensingFitter):
 
 class AbstractLensingInversionFitter(AbstractLensingFitter):
 
-    def __init__(self, image_1d, noise_map_1d, convolver_mapping_matrix, tracer, map_to_scaled_array):
+    def __init__(self, lensing_image, noise_map_1d, tracer):
         """Abstract base class for a fit to an regular which uses a linear inversion.
 
         This includes passing the regular / noise_maps / PSF and inversion objects to the inversons module to perform \
@@ -178,13 +177,206 @@ class AbstractLensingInversionFitter(AbstractLensingFitter):
         """
 
         super(AbstractLensingInversionFitter, self).__init__(tracer=tracer, padded_tracer=None,
-                                                             map_to_scaled_array=map_to_scaled_array)
+                                                             map_to_scaled_array=lensing_image.map_to_scaled_array)
 
         self.inversion = inversions.inversion_from_lensing_image_mapper_and_regularization(
-            image_1d=image_1d, noise_map_1d=noise_map_1d, convolver=convolver_mapping_matrix,
+            image_1d=lensing_image.image_1d, noise_map_1d=noise_map_1d, convolver=lensing_image.convolver_mapping_matrix,
             mapper=tracer.mappers_of_planes[-1], regularization=tracer.regularizations_of_planes[-1])
 
-        self.reconstructed_image = map_to_scaled_array(array_1d=self.inversion.reconstructed_data_vector)
+
+class AbstractLensingProfileInversionFitter(AbstractLensingFitter):
+
+    def __init__(self, lensing_image, noise_map_1d, tracer, padded_tracer):
+
+        super(AbstractLensingProfileInversionFitter, self).__init__(tracer=tracer, padded_tracer=padded_tracer,
+                                                           map_to_scaled_array=lensing_image.map_to_scaled_array)
+
+        self.psf = lensing_image.psf
+        self.convolver_image = lensing_image.convolver_image
+
+        blurred_profile_image_1d = lensing_fitting_util.blurred_image_1d_from_1d_unblurred_and_blurring_images(
+            unblurred_image_1d=tracer.image_plane_image_1d, blurring_image_1d=tracer.image_plane_blurring_image_1d,
+            convolver=lensing_image.convolver_image)
+
+        self.blurred_profile_image = self.map_to_scaled_array(array_1d=blurred_profile_image_1d)
+
+        profile_subtracted_image_1d = lensing_image.image_1d - blurred_profile_image_1d
+        self.profile_subtracted_image = lensing_image.image - self.blurred_profile_image
+
+        self.inversion = inversions.inversion_from_lensing_image_mapper_and_regularization(
+            image_1d=profile_subtracted_image_1d, noise_map_1d=noise_map_1d,
+            convolver=lensing_image.convolver_mapping_matrix, mapper=tracer.mappers_of_planes[-1],
+            regularization=tracer.regularizations_of_planes[-1])
+
+    @property
+    def model_image_of_planes(self):
+        return [self.blurred_profile_image, self.inversion.reconstructed_data]
+
+
+class LensingDataFitter(fitter.DataFitter):
+
+    def __init__(self, image, noise_map, mask, model_image):
+
+        super(LensingDataFitter, self).__init__(data=np.asarray(image), noise_map=np.asarray(noise_map),
+                                                mask=np.asarray(mask), model_data=np.asarray(model_image))
+
+    @property
+    def image(self):
+        return self.data
+
+    @property
+    def model_image(self):
+        return self.model_data
+
+
+class LensingDataInversionFitter(LensingDataFitter):
+
+    def __init__(self, image, noise_map, mask, model_image, inversion):
+
+        super(LensingDataFitter, self).__init__(data=np.asarray(image), noise_map=np.asarray(noise_map),
+                                                mask=np.asarray(mask), model_data=np.asarray(model_image))
+
+        self.likelihood_with_regularization = \
+            lensing_fitting_util.likelihood_with_regularization_from_chi_squared_term_regularization_and_noise_term(
+            chi_squared_term=self.chi_squared_term, regularization_term=inversion.regularization_term,
+            noise_term=self.noise_term)
+
+        self.evidence = lensing_fitting_util.evidence_from_reconstruction_terms(chi_squared_term=self.chi_squared_term,
+                        regularization_term=inversion.regularization_term,
+                        log_covariance_regularization_term=inversion.log_det_curvature_reg_matrix_term,
+                        log_regularization_term=inversion.log_det_regularization_matrix_term,
+                        noise_term=self.noise_term)
+
+
+class LensingProfileFitter(LensingDataFitter, AbstractLensingProfileFitter):
+
+    def __init__(self, lensing_image, tracer, padded_tracer=None):
+        """
+        Class to evaluate the fit_normal between a model described by a tracer_normal and an actual lensing_image.
+
+        Parameters
+        ----------
+        lensing_image : li.LensingImage
+            List of the lensing-unblurred_image_1d that are to be fitted.
+        tracer : ray_tracing.AbstractTracerNonStack
+            The tracer, which describes the ray-tracing of the strong lensing configuration.
+        padded_tracer : ray_tracing.AbstractTracerNonStack or None
+            A tracer with an identical strong lensing configuration to the tracer above, but using the lensing regular's \
+            padded grid_stacks such that unmasked model-unblurred_image_1d can be computed.
+        """
+
+        AbstractLensingProfileFitter.__init__(self=self, lensing_image=lensing_image, tracer=tracer,
+                                              padded_tracer=padded_tracer)
+
+        super(LensingProfileFitter, self).__init__(image=lensing_image.image, noise_map=lensing_image.noise_map,
+                                                   mask=lensing_image.mask, model_image=self.blurred_profile_image)
+
+    @classmethod
+    def fast_fit(cls, lensing_image, tracer):
+        """Perform the fit of this class as described above, but storing no results as class instances, thereby \
+        minimizing memory use and maximizing run-speed."""
+
+        blurred_profile_image_1d = lensing_fitting_util.blurred_image_1d_from_1d_unblurred_and_blurring_images(
+            unblurred_image_1d=tracer.image_plane_image_1d, blurring_image_1d=tracer.image_plane_blurring_image_1d,
+            convolver=lensing_image.convolver_image)
+
+        fit = LensingDataFitter(image=lensing_image.image_1d, noise_map=lensing_image.noise_map_1d,
+                                mask=lensing_image.mask_1d, model_image=blurred_profile_image_1d)
+        return fit.likelihood
+
+
+class LensingInversionFitter(LensingDataInversionFitter, AbstractLensingInversionFitter):
+
+    def __init__(self, lensing_image, tracer):
+        """
+        Class to evaluate the fit_normal between a model described by a tracer_normal and an actual lensing_image.
+
+        Parameters
+        ----------
+        lensing_image : li.LensingImage
+            List of the lensing-unblurred_image_1d that are to be fitted.
+        tracer : ray_tracing.AbstractTracerNonStack
+            The tracer, which describes the ray-tracing of the strong lensing configuration.
+        """
+
+        AbstractLensingInversionFitter.__init__(self=self, lensing_image=lensing_image,
+                                                noise_map_1d=lensing_image.noise_map_1d, tracer=tracer)
+
+        super(LensingInversionFitter, self).__init__(image=lensing_image.image, noise_map=lensing_image.noise_map,
+                                                     mask=lensing_image.mask,
+                                                     model_image=self.inversion.reconstructed_data,
+                                                     inversion=self.inversion)
+
+    @classmethod
+    def fast_fit(cls, lensing_image, tracer):
+        """Perform the fit of this class as described above, but storing no results as class instances, thereby \
+        minimizing memory use and maximizing run-speed."""
+
+        inversion = inversions.inversion_from_lensing_image_mapper_and_regularization(
+            image_1d=lensing_image.image_1d, noise_map_1d=lensing_image.noise_map_1d, 
+            convolver=lensing_image.convolver_mapping_matrix, mapper=tracer.mappers_of_planes[-1], 
+            regularization=tracer.regularizations_of_planes[-1])
+
+        fit = LensingDataInversionFitter(image=lensing_image.image_1d, noise_map=lensing_image.noise_map_1d,
+                                         mask=lensing_image.mask_1d, model_image=inversion.reconstructed_data_vector,
+                                         inversion=inversion)
+
+        return fit.evidence
+
+    @property
+    def model_images_of_planes(self):
+        return [None, self.model_image]
+
+
+class LensingProfileInversionFitter(LensingDataInversionFitter, AbstractLensingProfileInversionFitter):
+
+    def __init__(self, lensing_image, tracer, padded_tracer=None):
+        """
+        Class to evaluate the fit_normal between a model described by a tracer_normal and an actual lensing_image.
+
+        Parameters
+        ----------
+        lensing_images : li.LensingImage
+            List of the lensing-unblurred_image_1d that are to be fitted.
+        tracer : ray_tracing.AbstractTracerNonStack
+            The tracer, which describes the ray-tracing of the strong lensing configuration.
+        padded_tracer : ray_tracing.AbstractTracerNonStack or None
+            A tracer with an identical strong lensing configuration to the tracer above, but using the lensing regular's \
+            padded grid_stacks such that unmasked model-unblurred_image_1d can be computed.
+        """
+
+        AbstractLensingProfileInversionFitter.__init__(self=self, lensing_image=lensing_image,
+                                                       noise_map_1d=lensing_image.noise_map_1d, tracer=tracer,
+                                                       padded_tracer=padded_tracer)
+
+        model_image = self.blurred_profile_image + self.inversion.reconstructed_data
+
+        super(LensingProfileInversionFitter, self).__init__(image=lensing_image.image, noise_map=lensing_image.noise_map,
+                                                            mask=lensing_image.mask, model_image=model_image,
+                                                            inversion=self.inversion)
+
+    @classmethod
+    def fast_fit(cls, lensing_image, tracer):
+        """Perform the fit of this class as described above, but storing no results as class instances, thereby \
+        minimizing memory use and maximizing run-speed."""
+
+        blurred_profile_image_1d = lensing_fitting_util.blurred_image_1d_from_1d_unblurred_and_blurring_images(
+            unblurred_image_1d=tracer.image_plane_image_1d, blurring_image_1d=tracer.image_plane_blurring_image_1d,
+            convolver=lensing_image.convolver_image)
+
+        profile_subtracted_image_1d = lensing_image.image_1d - blurred_profile_image_1d
+
+        inversion = inversions.inversion_from_lensing_image_mapper_and_regularization(
+            image_1d=profile_subtracted_image_1d, noise_map_1d=lensing_image.noise_map_1d,
+            convolver=lensing_image.convolver_mapping_matrix, mapper=tracer.mappers_of_planes[-1],
+            regularization=tracer.regularizations_of_planes[-1])
+
+        fit = LensingDataInversionFitter(image=lensing_image.image_1d, noise_map=lensing_image.noise_map_1d,
+                                         mask=lensing_image.mask_1d,
+                                         model_image=blurred_profile_image_1d + inversion.reconstructed_data_vector,
+                                         inversion=inversion)
+
+        return fit.evidence
 
 
 class AbstractLensingHyperFitter(object):
@@ -237,117 +429,6 @@ class AbstractLensingHyperFitter(object):
         self.hyper_noise_map = lensing_hyper_image.map_to_scaled_array(array_1d=hyper_noise_map_1d)
 
 
-class LensingDataFitter(fitter.DataFitter):
-
-    def __init__(self, image, noise_map, mask, model_image):
-
-        super(LensingDataFitter, self).__init__(data=np.asarray(image), noise_map=np.asarray(noise_map),
-                                                mask=np.asarray(mask), model_data=np.asarray(model_image))
-
-    @property
-    def image(self):
-        return self.data
-
-    @property
-    def model_image(self):
-        return self.model_data
-
-
-class LensingProfileFitter(LensingDataFitter, AbstractLensingProfileFitter):
-
-    def __init__(self, lensing_image, tracer, padded_tracer=None):
-        """
-        Class to evaluate the fit_normal between a model described by a tracer_normal and an actual lensing_image.
-
-        Parameters
-        ----------
-        lensing_image : li.LensingImage
-            List of the lensing-unblurred_image_1d that are to be fitted.
-        tracer : ray_tracing.AbstractTracerNonStack
-            The tracer, which describes the ray-tracing of the strong lensing configuration.
-        padded_tracer : ray_tracing.AbstractTracerNonStack or None
-            A tracer with an identical strong lensing configuration to the tracer above, but using the lensing regular's \
-            padded grid_stacks such that unmasked model-unblurred_image_1d can be computed.
-        """
-
-        AbstractLensingProfileFitter.__init__(self=self, psf=lensing_image.psf,
-                                              convolver_image=lensing_image.convolver_image, tracer=tracer,
-                                              padded_tracer=padded_tracer,
-                                              map_to_scaled_array=lensing_image.map_to_scaled_array)
-
-        super(LensingProfileFitter, self).__init__(image=lensing_image.image, noise_map=lensing_image.noise_map,
-                                                   mask=lensing_image.mask, model_image=self.blurred_image)
-
-    @classmethod
-    def fast_fit(cls, lensing_image, tracer):
-        """Perform the fit of this class as described above, but storing no results as class instances, thereby \
-        minimizing memory use and maximizing run-speed."""
-        model_image_1d = lensing_fitting_util.blurred_image_1d_from_1d_unblurred_and_blurring_images(
-            unblurred_image_1d=tracer.image_plane_image_1d, blurring_image_1d=tracer.image_plane_blurring_image_1d,
-            convolver=lensing_image.convolver_image)
-        fit = fitter.DataFitter(data=lensing_image.image_1d, noise_map=lensing_image.noise_map_1d,
-                                mask=lensing_image.mask_1d, model_data=model_image_1d)
-        return fit.likelihood
-
-
-class LensingInversionFitter(LensingDataFitter, AbstractLensingInversionFitter):
-
-    def __init__(self, lensing_image, tracer):
-        """
-        Class to evaluate the fit_normal between a model described by a tracer_normal and an actual lensing_image.
-
-        Parameters
-        ----------
-        lensing_image : li.LensingImage
-            List of the lensing-unblurred_image_1d that are to be fitted.
-        tracer : ray_tracing.AbstractTracerNonStack
-            The tracer, which describes the ray-tracing of the strong lensing configuration.
-        """
-
-        AbstractLensingInversionFitter.__init__(self=self, image_1d=lensing_image.image_1d,
-                                                noise_map_1d=lensing_image.noise_map_1d, tracer=tracer,
-                                                convolver_mapping_matrix=lensing_image.convolver_mapping_matrix,
-                                                map_to_scaled_array=lensing_image.map_to_scaled_array)
-
-        super(LensingInversionFitter, self).__init__(image=lensing_image.image, noise_map=lensing_image.noise_map,
-                                                     mask=lensing_image.mask, model_image=self.reconstructed_image)
-
-        self.likelihood_with_regularization = \
-            lensing_fitting_util.likelihood_with_regularization_from_chi_squared_term_regularization_and_noise_term(
-            chi_squared_term=self.chi_squared_term, regularization_term=self.inversion.regularization_term,
-            noise_term=self.noise_term)
-
-        self.evidence = lensing_fitting_util.evidence_from_reconstruction_terms(chi_squared_term=self.chi_squared_term,
-                        regularization_term=self.inversion.regularization_term,
-                        log_covariance_regularization_term=self.inversion.log_det_curvature_reg_matrix_term,
-                        log_regularization_term=self.inversion.log_det_regularization_matrix_term,
-                        noise_term=self.noise_term)
-
-    @classmethod
-    def fast_fit(cls, lensing_image, tracer):
-        """Perform the fit of this class as described above, but storing no results as class instances, thereby \
-        minimizing memory use and maximizing run-speed."""
-
-        inversion = inversions.inversion_from_lensing_image_mapper_and_regularization(
-            image_1d=lensing_image.image_1d, noise_map_1d=lensing_image.noise_map_1d, 
-            convolver=lensing_image.convolver_mapping_matrix, mapper=tracer.mappers_of_planes[-1], 
-            regularization=tracer.regularizations_of_planes[-1])
-
-        fit = fitter.DataFitter(data=lensing_image.image_1d, noise_map=lensing_image.noise_map_1d,
-                                mask=lensing_image.mask_1d, model_data=inversion.reconstructed_data_vector)
-        
-        return lensing_fitting_util.evidence_from_reconstruction_terms(chi_squared_term=fit.chi_squared_term,
-                                    regularization_term=inversion.regularization_term,
-                                    log_covariance_regularization_term=inversion.log_det_curvature_reg_matrix_term,
-                                    log_regularization_term=inversion.log_det_regularization_matrix_term,
-                                    noise_term=fit.noise_term)
-
-
-    @property
-    def model_images_of_planes(self):
-        return [None, self.model_image]
-
-
 class LensingProfileHyperFitter(LensingDataFitter, AbstractLensingProfileFitter, AbstractLensingHyperFitter):
 
     def __init__(self, lensing_hyper_image, tracer, padded_tracer=None):
@@ -368,13 +449,11 @@ class LensingProfileHyperFitter(LensingDataFitter, AbstractLensingProfileFitter,
         AbstractLensingHyperFitter.__init__(self=self, lensing_hyper_image=lensing_hyper_image,
                                             hyper_galaxies=tracer.hyper_galaxies)
 
-        AbstractLensingProfileFitter.__init__(self=self, psf=lensing_hyper_image.psf,
-                                              convolver_image=lensing_hyper_image.convolver_image, tracer=tracer,
-                                              padded_tracer=padded_tracer,
-                                              map_to_scaled_array=lensing_hyper_image.map_to_scaled_array)
+        AbstractLensingProfileFitter.__init__(self=self, lensing_image=lensing_hyper_image, tracer=tracer,
+                                              padded_tracer=padded_tracer)
 
         super(LensingProfileHyperFitter, self).__init__(image=lensing_hyper_image.image, noise_map=self.hyper_noise_map,
-                                                        mask=lensing_hyper_image.mask, model_image=self.blurred_image)
+                                                  mask=lensing_hyper_image.mask, model_image=self.blurred_profile_image)
 
     @classmethod
     def fast_fit(cls, lensing_hyper_image, tracer):
@@ -496,68 +575,10 @@ class LensingProfileHyperFitter(LensingDataFitter, AbstractLensingProfileFitter,
 #                                                                    scaled_noise_terms))
 #
 #
-# class LensingProfileInversionFit(fitter.AbstractConvolutionInversionFit, LensingDataFitter):
-#
-#     def __init__(self, lensing_images, tracer, padded_tracer=None):
-#         """
-#         Class to evaluate the fit_normal between a model described by a tracer_normal and an actual lensing_image.
-#
-#         Parameters
-#         ----------
-#         lensing_images : [li.LensingHyperImage]
-#             List of the lensing-unblurred_image_1d that are to be fitted.
-#         tracer : ray_tracing.AbstractTracer
-#             The tracer, which describes the ray-tracing of the strong lensing configuration.
-#         padded_tracer : ray_tracing.AbstractTracer
-#             A tracer with an identical strong lensing configuration to the tracer above, but using the lensing regular's \
-#             padded grid_stacks such that unmasked model-unblurred_image_1d can be computed.
-#         """
-#
-#         self.mapper = tracer.mappers_of_planes[0]
-#         self.regularization = tracer.regularizations_of_planes[0]
-#
-#         LensingDataFitter.__init__(self=self, lensing_images=lensing_images, tracer=tracer,
-#                                     padded_tracer=padded_tracer)
-#         super(LensingProfileInversionFit, self).__init__(fitting_images=lensing_images, images_=tracer.image_plane_images_,
-#                                                          blurring_images_=tracer.image_plane_blurring_images_,
-#                                                          mapper=self.mapper, regularization=self.regularization)
-#
-#     @classmethod
-#     def fast_evidence(cls, lensing_images, tracer):
-#         """Perform the fit of this class as described above, but storing no results as class instances, thereby \
-#         minimizing memory use and maximizing run-speed."""
-#         convolvers_image = list(map(lambda lensing_image : lensing_image.convolver_image, lensing_images))
-#         convolvers_mapping_matrix = list(map(lambda lensing_image : lensing_image.convolver_mapping_matrix,
-#                                              lensing_images))
-#
-#         noise_maps_ = list(map(lambda lensing_image : lensing_image.noise_map_, lensing_images))
-#
-#         profile_model_images_ = fitting_util.blur_image_including_blurring_region(image_=tracer.image_plane_images_,
-#                                                                                   blurring_image_=tracer.image_plane_blurring_images_, convolver=convolvers_image)
-#
-#         profile_subtracted_images_ = list(map(lambda lensing_image, profile_model_image_ :
-#                                               lensing_image[:] - profile_model_image_,
-#                                               lensing_images, profile_model_images_))
-#
-#         mapper = tracer.mappers_of_planes[0]
-#         regularization = tracer.regularizations_of_planes[0]
-#         inversion = inversions.inversion_from_lensing_image_mapper_and_regularization(profile_subtracted_images_[0],
-#                                                                                       noise_maps_[0], convolvers_mapping_matrix[0], mapper, regularization)
-#         model_images_ = [profile_model_images_[0] + inversion.reconstructed_data_vector]
-#         residuals_ = fitting_util.residuals_from_data_mask_and_model_data(lensing_images[:], model_images_)
-#         chi_squareds_ = fitting_util.chi_squareds_from_residuals_and_noise_map(residuals_, noise_maps_)
-#         chi_squared_terms = fitting_util.chi_squared_term_from_chi_squareds(chi_squareds_)
-#         noise_terms = fitting_util.noise_term_from_mask_and_noise_map(noise_maps_)
-#         return sum(fitting_util.evidence_from_reconstruction_terms(chi_squared_terms, [inversion.regularization_term],
-#                                                                    [inversion.log_det_curvature_reg_matrix_term],
-#                                                                    [inversion.log_det_regularization_matrix_term], noise_terms))
-#
-#     @property
-#     def model_images_of_planes(self):
-#         return [[self.profile_model_image, self.inversion_model_image]]
+
 #
 #
-# class HyperLensingProfileInversionFit(LensingProfileInversionFit, HyperLensingInversion):
+# class HyperLensingProfileInversionFit(LensingProfileInversionFitter, HyperLensingInversion):
 #
 #     def __init__(self, lensing_hyper_images, tracer, padded_tracer=None):
 #         """
@@ -671,70 +692,6 @@ class LensingProfileHyperFitter(LensingDataFitter, AbstractLensingProfileFitter,
 #
 #
 #
-
-# class AbstractConvolutionInversionFit(AbstractImageFitter):
-#
-#     def __init__(self, fitting_images, images_, blurring_images_, mapper, regularization):
-#
-#         self.convolvers_image = list(map(lambda fit_image : fit_image.convolver_image, fitting_images))
-#
-#         self.profile_model_images_ = fitting_util.blur_image_including_blurring_region(image_=images_,
-#                                                                                        blurring_image_=blurring_images_,
-#                                                                                        convolver=self.convolvers_image)
-#
-#         self.profile_subtracted_images_ = list(map(lambda fitting_image, profile_model_image_ :
-#                                                    fitting_image[:] - profile_model_image_,
-#                                                    fitting_images, self.profile_model_images_))
-#
-#         self.inversion = inversions.inversion_from_lensing_image_mapper_and_regularization(
-#             image=self.profile_subtracted_images_[0], noise_maps=fitting_images[0].noise_map_1d,
-#             convolver=fitting_images[0].convolver_mapping_matrix, mapper=mapper, regularization=regularization)
-#
-#         self.inversion_model_images_ = [self.inversion.reconstructed_data_vector]
-#
-#         model_images_ = list(map(lambda profile_model_image_, inversion_model_image_ :
-#                                  profile_model_image_ + inversion_model_image_,
-#                                  self.profile_model_images_, self.inversion_model_images_))
-#
-#         super(AbstractConvolutionInversionFit, self).__init__(fitting_images=fitting_images, model_images_=model_images_)
-#
-#     @property
-#     def profile_subtracted_images(self):
-#         return fitting_util.map_arrays_to_scaled_arrays(arrays_=self.profile_subtracted_images_,
-#                                            map_to_scaled_arrays=self.map_to_scaled_arrays)
-#
-#     @property
-#     def profile_model_images(self):
-#         return fitting_util.map_arrays_to_scaled_arrays(arrays_=self.profile_model_images_,
-#                                            map_to_scaled_arrays=self.map_to_scaled_arrays)
-#
-#     @property
-#     def inversion_model_images(self):
-#         return fitting_util.map_arrays_to_scaled_arrays(arrays_=self.inversion_model_images_,
-#                                            map_to_scaled_arrays=self.map_to_scaled_arrays)
-#
-#     @property
-#     def profile_subtracted_image(self):
-#         return self.profile_subtracted_images[0]
-#
-#     @property
-#     def profile_model_image(self):
-#         return self.profile_model_images[0]
-#
-#     @property
-#     def inversion_model_image(self):
-#         return self.inversion_model_images[0]
-#
-#     @property
-#     def evidences(self):
-#         return fitting_util.evidence_from_reconstruction_terms(self.chi_squared_terms, [self.inversion.regularization_term],
-#                                                                [self.inversion.log_det_curvature_reg_matrix_term],
-#                                                                [self.inversion.log_det_regularization_matrix_term],
-#                                                                self.noise_terms)
-#
-#     @property
-#     def evidence(self):
-#         return sum(self.evidences)
 
 
 # TODO : The [plane_index][galaxy_index] datas structure is going to be key to tracking galaxies / hyper galaxies in
