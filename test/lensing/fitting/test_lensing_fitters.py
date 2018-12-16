@@ -229,6 +229,88 @@ class TestAbstractLensingProfileFitter:
             assert fit.unmasked_model_image_of_galaxies == None
 
 
+class TestAbstractLensingInversionFitter:
+
+    class TestModelImageOfPlanes:
+
+        def test__model_images_are_none_and_an_image(self):
+
+            im = np.array([[0.0, 0.0, 0.0, 0.0, 0.0],
+                           [0.0, 1.0, 1.0, 1.0, 0.0],
+                           [0.0, 1.0, 1.0, 1.0, 0.0],
+                           [0.0, 1.0, 1.0, 1.0, 0.0],
+                           [0.0, 0.0, 0.0, 0.0, 0.0]]).view(image.Image)
+
+            ma = np.array([[True, True, True, True, True],
+                           [True, False, False, False, True],
+                           [True, False, False, False, True],
+                           [True, False, False, False, True],
+                           [True, True, True, True, True]])
+
+            ma = mask.Mask(ma, pixel_scale=1.0)
+
+            psf = image.PSF(array=np.array([[0.0, 0.0, 0.0],
+                                            [0.0, 1.0, 0.0],
+                                            [0.0, 0.0, 0.0]]), pixel_scale=1.0)
+            im = image.Image(im, pixel_scale=1.0, psf=psf, noise_map=np.ones((5, 5)))
+            li = lensing_image.LensingImage(im, ma, sub_grid_size=2)
+
+            galaxy_pix = g.Galaxy(pixelization=pixelizations.Rectangular(shape=(3, 3)),
+                                  regularization=regularization.Constant(coefficients=(1.0,)))
+            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g.Galaxy()], source_galaxies=[galaxy_pix],
+                                                         image_plane_grid_stack=li.grid_stack, border=None)
+
+            fit = lensing_fitters.AbstractLensingInversionFitter(lensing_image=li, noise_map_1d=li.noise_map_1d,
+                                                                 tracer=tracer)
+
+            assert fit.model_images_of_planes[0] == None
+            assert fit.model_images_of_planes[1] == pytest.approx(np.array([[0.0, 0.0, 0.0, 0.0, 0.0],
+                                                                            [0.0, 1.0, 1.0, 1.0, 0.0],
+                                                                            [0.0, 1.0, 1.0, 1.0, 0.0],
+                                                                            [0.0, 1.0, 1.0, 1.0, 0.0],
+                                                                            [0.0, 0.0, 0.0, 0.0, 0.0]]), 1e-2)
+
+
+class TestAbstractLensingProfileInversionFit:
+
+    class TestModelImagesOfPlanes:
+
+        def test___model_images_of_planes_are_profile_and_inversion_images(self, li_manual):
+
+            galaxy_light = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=1.0))
+
+            pix = pixelizations.Rectangular(shape=(3, 3))
+            reg = regularization.Constant(coefficients=(1.0,))
+            galaxy_pix = g.Galaxy(pixelization=pix, regularization=reg)
+
+            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[galaxy_light], source_galaxies=[galaxy_pix],
+                                                         image_plane_grid_stack=li_manual.grid_stack, border=None)
+
+            fit = lensing_fitters.AbstractLensingProfileInversionFitter(lensing_image=li_manual,
+                                                                        noise_map_1d=li_manual.noise_map_1d,
+                                                                        tracer=tracer, padded_tracer=None)
+
+            blurred_profile_image = lensing_fitting_util.blurred_image_from_1d_unblurred_and_blurring_images(
+                unblurred_image_1d=tracer.image_plane_image_1d, blurring_image_1d=tracer.image_plane_blurring_image_1d,
+                convolver=li_manual.convolver_image, map_to_scaled_array=li_manual.map_to_scaled_array)
+
+            assert (fit.model_image_of_planes[0] == blurred_profile_image).all()
+
+            blurred_profile_image_1d = lensing_fitting_util.blurred_image_1d_from_1d_unblurred_and_blurring_images(
+                unblurred_image_1d=tracer.image_plane_image_1d, blurring_image_1d=tracer.image_plane_blurring_image_1d,
+                convolver=li_manual.convolver_image)
+
+            profile_subtracted_image_1d = li_manual.image_1d - blurred_profile_image_1d
+
+            mapper = pix.mapper_from_grid_stack_and_border(grid_stack=li_manual.grid_stack, border=None)
+
+            inversion = inversions.inversion_from_lensing_image_mapper_and_regularization(
+                image_1d=profile_subtracted_image_1d, noise_map_1d=li_manual.noise_map_1d,
+                convolver=li_manual.convolver_mapping_matrix, mapper=mapper, regularization=reg)
+
+            assert (fit.model_image_of_planes[1] == inversion.reconstructed_data).all()
+
+
 class TestLensingProfileFitter:
 
     class TestLikelihood:
@@ -346,67 +428,6 @@ class TestLensingProfileFitter:
 
 class TestLensingInversionFitter:
 
-    class TestRectangularInversion:
-
-        def test__image_all_1s__direct_image_to_source_mapping__perfect_fit_even_with_regularization(self):
-
-            im = np.array([[0.0, 0.0, 0.0, 0.0, 0.0],
-                           [0.0, 1.0, 1.0, 1.0, 0.0],
-                           [0.0, 1.0, 1.0, 1.0, 0.0],
-                           [0.0, 1.0, 1.0, 1.0, 0.0],
-                           [0.0, 0.0, 0.0, 0.0, 0.0]]).view(image.Image)
-
-            ma = np.array([[True, True, True, True, True],
-                           [True, False, False, False, True],
-                           [True, False, False, False, True],
-                           [True, False, False, False, True],
-                           [True, True, True, True, True]])
-            ma = mask.Mask(ma, pixel_scale=1.0)
-
-            psf = image.PSF(array=np.array([[0.0, 0.0, 0.0],
-                                            [0.0, 1.0, 0.0],
-                                            [0.0, 0.0, 0.0]]), pixel_scale=1.0)
-            im = image.Image(im, pixel_scale=1.0, psf=psf, noise_map=np.ones((5, 5)))
-            li = lensing_image.LensingImage(im, ma, sub_grid_size=2)
-
-            galaxy_pix = g.Galaxy(pixelization=pixelizations.Rectangular(shape=(3, 3)),
-                                  regularization=regularization.Constant(coefficients=(1.0,)))
-
-            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g.Galaxy()], source_galaxies=[galaxy_pix],
-                                                         image_plane_grid_stack=li.grid_stack, border=None)
-
-            fit = lensing_fitters.LensingInversionFitter(lensing_image=li, tracer=tracer)
-
-            cov_matrix = np.array([[1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-                                   [0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-                                   [0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-                                   [0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-                                   [0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0],
-                                   [0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0],
-                                   [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0],
-                                   [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0],
-                                   [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0]])
-            reg_matrix = np.array([[2.0, -1.0, 0.0, -1.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-                                   [-1.0, 3.0, -1.0, 0.0, -1.0, 0.0, 0.0, 0.0, 0.0],
-                                   [0.0, -1.0, 2.0, 0.0, 0.0, -1.0, 0.0, 0.0, 0.0],
-                                   [-1.0, 0.0, 0.0, 3.0, -1.0, 0.0, -1.0, 0.0, 0.0],
-                                   [0.0, -1.0, 0.0, -1.0, 4.0, -1.0, 0.0, -1.0, 0.0],
-                                   [0.0, 0.0, -1.0, 0.0, -1.0, 3.0, 0.0, 0.0, - 1.0],
-                                   [0.0, 0.0, 0.0, -1.0, 0.0, 0.0, 2.0, -1.0, 0.0],
-                                   [0.0, 0.0, 0.0, 0.0, -1.0, 0.0, -1.0, 3.0, -1.0],
-                                   [0.0, 0.0, 0.0, 0.0, 0.0, -1.0, 0.0, -1.0, 2.0]])
-            reg_matrix = reg_matrix + 1e-8 * np.identity(9)
-            cov_reg_matrix = cov_matrix + reg_matrix
-
-            chi_sq_term = 0.0
-            gl_term = 1e-8
-            det_cov_reg_term = np.log(np.linalg.det(cov_reg_matrix))
-            det_reg_term = np.log(np.linalg.det(reg_matrix))
-            noise_term = 9.0 * np.log(2 * np.pi * 1.0 ** 2.0)
-            evidence = -0.5 * (chi_sq_term + gl_term + det_cov_reg_term - det_reg_term + noise_term)
-
-            assert fit.evidence == pytest.approx(evidence, 1e-4)
-
     class TestCompareToManual:
 
         def test___manual_image_and_psf(self, li_manual):
@@ -464,43 +485,6 @@ class TestLensingInversionFitter:
             fast_evidence = lensing_fitters.fast_fit_from_lensing_image_and_tracer(lensing_image=li_manual,
                                                                                    tracer=tracer)
             assert fast_evidence == fit.evidence
-
-    class TestModelImageOfPlanes:
-
-        def test__model_images_are_none_and_an_image(self):
-
-            im = np.array([[0.0, 0.0, 0.0, 0.0, 0.0],
-                           [0.0, 1.0, 1.0, 1.0, 0.0],
-                           [0.0, 1.0, 1.0, 1.0, 0.0],
-                           [0.0, 1.0, 1.0, 1.0, 0.0],
-                           [0.0, 0.0, 0.0, 0.0, 0.0]]).view(image.Image)
-
-            ma = np.array([[True, True, True, True, True],
-                           [True, False, False, False, True],
-                           [True, False, False, False, True],
-                           [True, False, False, False, True],
-                           [True, True, True, True, True]])
-
-            ma = mask.Mask(ma, pixel_scale=1.0)
-
-            psf = image.PSF(array=np.array([[0.0, 0.0, 0.0],
-                                            [0.0, 1.0, 0.0],
-                                            [0.0, 0.0, 0.0]]), pixel_scale=1.0)
-            im = image.Image(im, pixel_scale=1.0, psf=psf, noise_map=np.ones((5, 5)))
-            li = lensing_image.LensingImage(im, ma, sub_grid_size=2)
-
-            galaxy_pix = g.Galaxy(pixelization=pixelizations.Rectangular(shape=(3, 3)),
-                                  regularization=regularization.Constant(coefficients=(1.0,)))
-            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g.Galaxy()], source_galaxies=[galaxy_pix],
-                                                         image_plane_grid_stack=li.grid_stack, border=None)
-            fit = lensing_fitters.LensingInversionFitter(lensing_image=li, tracer=tracer)
-
-            assert fit.model_images_of_planes[0] == None
-            assert fit.model_images_of_planes[1] == pytest.approx(np.array([[0.0, 0.0, 0.0, 0.0, 0.0],
-                                                                            [0.0, 1.0, 1.0, 1.0, 0.0],
-                                                                            [0.0, 1.0, 1.0, 1.0, 0.0],
-                                                                            [0.0, 1.0, 1.0, 1.0, 0.0],
-                                                                            [0.0, 0.0, 0.0, 0.0, 0.0]]), 1e-2)
 
 
 class TestLensingProfileInversionFit:
@@ -583,39 +567,6 @@ class TestLensingProfileInversionFit:
             fast_evidence = lensing_fitters.fast_fit_from_lensing_image_and_tracer(lensing_image=li_manual,
                                                                                    tracer=tracer)
             assert fast_evidence == fit.evidence
-
-        def test___model_images_of_planes_are_profile_and_inversion_images(self, li_manual):
-
-            galaxy_light = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=1.0))
-
-            pix = pixelizations.Rectangular(shape=(3, 3))
-            reg = regularization.Constant(coefficients=(1.0,))
-            galaxy_pix = g.Galaxy(pixelization=pix, regularization=reg)
-
-            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[galaxy_light], source_galaxies=[galaxy_pix],
-                                                         image_plane_grid_stack=li_manual.grid_stack, border=None)
-
-            fit = lensing_fitters.fit_lensing_image_with_tracer(lensing_image=li_manual, tracer=tracer)
-
-            blurred_profile_image = lensing_fitting_util.blurred_image_from_1d_unblurred_and_blurring_images(
-                unblurred_image_1d=tracer.image_plane_image_1d, blurring_image_1d=tracer.image_plane_blurring_image_1d,
-                convolver=li_manual.convolver_image, map_to_scaled_array=li_manual.map_to_scaled_array)
-
-            assert (fit.model_image_of_planes[0] == blurred_profile_image).all()
-
-            blurred_profile_image_1d = lensing_fitting_util.blurred_image_1d_from_1d_unblurred_and_blurring_images(
-                unblurred_image_1d=tracer.image_plane_image_1d, blurring_image_1d=tracer.image_plane_blurring_image_1d,
-                convolver=li_manual.convolver_image)
-
-            profile_subtracted_image_1d = li_manual.image_1d - blurred_profile_image_1d
-
-            mapper = pix.mapper_from_grid_stack_and_border(grid_stack=li_manual.grid_stack, border=None)
-
-            inversion = inversions.inversion_from_lensing_image_mapper_and_regularization(
-                image_1d=profile_subtracted_image_1d, noise_map_1d=li_manual.noise_map_1d,
-                convolver=li_manual.convolver_mapping_matrix, mapper=mapper, regularization=reg)
-
-            assert (fit.model_image_of_planes[1] == inversion.reconstructed_data).all()
 
 
 class TestLensingProfileHyperFitter:
@@ -762,185 +713,102 @@ class TestLensingProfileHyperFitter:
             assert (unmasked_blurred_image_of_galaxies[1][0] == fit.unmasked_model_image_of_galaxies[1][0]).all()
 
 
-# class TestHyperLensingInversionFit:
-#
-#     class TestRectangularInversion:
-#
-#         def test__image_all_1s__direct_image_to_source_mapping__perfect_fit_even_with_regularization(self):
-#
-#             im = np.array([[0.0, 0.0, 0.0, 0.0, 0.0],
-#                            [0.0, 1.0, 1.0, 1.0, 0.0],
-#                            [0.0, 1.0, 1.0, 1.0, 0.0],
-#                            [0.0, 1.0, 1.0, 1.0, 0.0],
-#                            [0.0, 0.0, 0.0, 0.0, 0.0]]).view(image.Image)
-#             ma = np.array([[True, True, True, True, True],
-#                            [True, False, False, False, True],
-#                            [True, False, False, False, True],
-#                            [True, False, False, False, True],
-#                            [True, True, True, True, True]])
-#             ma = mask.Mask(ma, pixel_scale=1.0)
-#             psf = image.PSF(array=np.array([[0.0, 0.0, 0.0],
-#                                             [0.0, 1.0, 0.0],
-#                                             [0.0, 0.0, 0.0]]), pixel_scale=1.0)
-#             im = image.Image(im, pixel_scale=1.0, psf=psf, noise_map=np.ones((5, 5)))
-#             hyper_model_image = np.array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0])
-#             hyper_galaxy_images = [np.array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0])]
-#             li = lensing_image.LensingHyperImage(im, ma, hyper_model_image=hyper_model_image,
-#                                                  hyper_galaxy_images=hyper_galaxy_images,
-#                                                  hyper_minimum_values=[0.0, 0.0],
-#                                                  sub_grid_size=2)
-#
-#             hyper_galaxy = g.HyperGalaxy(contribution_factor=0.0, noise_factor=1.0, noise_power=1.0)
-#
-#             galaxy_pix = g.Galaxy(pixelization=pixelizations.Rectangular(shape=(3, 3)),
-#                                   regularization=regularization.Constant(coefficients=(1.0,)),
-#                                   hyper_galaxy=hyper_galaxy)
-#
-#             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g.Galaxy()], source_galaxies=[galaxy_pix],
-#                                                          image_plane_grids=[li.grid_stack], borders=None)
-#
-#             fit = lensing_fitters.HyperLensingInversionFit(lensing_hyper_images=[li], tracer=tracer)
-#
-#             curvature_matrix = np.array([[0.25, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-#                                          [0.0, 0.25, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-#                                          [0.0, 0.0, 0.25, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-#                                          [0.0, 0.0, 0.0, 0.25, 0.0, 0.0, 0.0, 0.0, 0.0],
-#                                          [0.0, 0.0, 0.0, 0.0, 0.25, 0.0, 0.0, 0.0, 0.0],
-#                                          [0.0, 0.0, 0.0, 0.0, 0.0, 0.25, 0.0, 0.0, 0.0],
-#                                          [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.25, 0.0, 0.0],
-#                                          [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.25, 0.0],
-#                                          [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.25]])
-#             regularization_matrix = np.array([[2.0, -1.0, 0.0, -1.0, 0.0, 0.0, 0.0, 0.0, 0.0],
-#                                               [-1.0, 3.0, -1.0, 0.0, -1.0, 0.0, 0.0, 0.0, 0.0],
-#                                               [0.0, -1.0, 2.0, 0.0, 0.0, -1.0, 0.0, 0.0, 0.0],
-#                                               [-1.0, 0.0, 0.0, 3.0, -1.0, 0.0, -1.0, 0.0, 0.0],
-#                                               [0.0, -1.0, 0.0, -1.0, 4.0, -1.0, 0.0, -1.0, 0.0],
-#                                               [0.0, 0.0, -1.0, 0.0, -1.0, 3.0, 0.0, 0.0, - 1.0],
-#                                               [0.0, 0.0, 0.0, -1.0, 0.0, 0.0, 2.0, -1.0, 0.0],
-#                                               [0.0, 0.0, 0.0, 0.0, -1.0, 0.0, -1.0, 3.0, -1.0],
-#                                               [0.0, 0.0, 0.0, 0.0, 0.0, -1.0, 0.0, -1.0, 2.0]])
-#             regularization_matrix = regularization_matrix + 1e-8 * np.identity(9)
-#             curvature_reg_matrix = curvature_matrix + regularization_matrix
-#
-#             scaled_chi_sq_term = 0.0
-#             gl_term = 1e-8
-#             det_curvature_reg_term = np.log(np.linalg.det(curvature_reg_matrix))
-#             det_regularization_term = np.log(np.linalg.det(regularization_matrix))
-#             scaled_noise_term = 9.0 * np.log(2 * np.pi * 2.0 ** 2.0)
-#
-#             scaled_evidence = -0.5 * (scaled_chi_sq_term + gl_term + det_curvature_reg_term - det_regularization_term +
-#                                       scaled_noise_term)
-#
-#             assert fit.scaled_evidences == pytest.approx(scaled_evidence, 1e-4)
-#
-#     class TestAbstractLogic:
-#
-#         def test__logic_in_abstract_fit(self, li_hyper_no_blur):
-#             galaxy_pix = g.Galaxy(pixelization=pixelizations.Rectangular(shape=(3, 3)),
-#                                   regularization=regularization.Constant(coefficients=(1.0,)))
-#
-#             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g.Galaxy()], source_galaxies=[galaxy_pix],
-#                                                          image_plane_grids=[li_hyper_no_blur.grid_stack],
-#                                                          borders=None)
-#
-#             fit = lensing_fitters.HyperLensingInversionFit(lensing_hyper_images=[li_hyper_no_blur], tracer=tracer)
-#
-#             assert fit.total_inversions == 1
-#
-#     class TestCompareToManual:
-#
-#         def test___manual_image_and_psf(self, li_hyper_manual):
-#
-#             pix = pixelizations.Rectangular(shape=(3, 3))
-#             mapper = pixelizations.mapper_from_grids_and_border(li_hyper_manual.grid_stack, li_hyper_manual.borders)
-#             reg = regularization.Constant(coefficients=(1.0,))
-#
-#             hyper_galaxy = g.HyperGalaxy(contribution_factor=4.0, noise_factor=2.0, noise_power=3.0)
-#             hyp_galaxy = g.Galaxy(hyper_galaxy=hyper_galaxy)
-#             inv_galaxy = g.Galaxy(pixelization=pix, regularization=reg)
-#
-#             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[hyp_galaxy, hyp_galaxy],
-#                                                          source_galaxies=[inv_galaxy],
-#                                                          image_plane_grids=[li_hyper_manual.grid_stack],
-#                                                          borders=None)
-#
-#             fit = lensing_fitters.fit_lensing_image_with_tracer(lensing_image=li_hyper_manual, tracer=tracer)
-#
-#             inversion = inversions.inversion_from_lensing_image_mapper_and_regularization(mapper=mapper,
-#                                                                                           regularization=reg, image=li_hyper_manual, noise_map=li_hyper_manual.noise_map_,
-#                                                                                           convolver=li_hyper_manual.convolver_mapping_matrix)
-#
-#             residual_map = fitting_util.residuals_from_data_mask_and_model_data([li_hyper_manual],
-#                                                                              [inversion.reconstructed_data_vector])
-#             chi_squared_map = fitting_util.chi_squareds_from_residuals_and_noise_map(residual_map, [li_hyper_manual.noise_map_])
-#
-#             assert li_hyper_manual.grid_stack.regular.scaled_array_from_array_1d(li_hyper_manual.noise_map_) == \
-#                    pytest.approx(fit.noise_map[0], 1e-4)
-#             assert li_hyper_manual.grid_stack.regular.scaled_array_from_array_1d(inversion.reconstructed_data_vector) == \
-#                    pytest.approx(fit.model_datas[0], 1e-4)
-#             assert li_hyper_manual.grid_stack.regular.scaled_array_from_array_1d(residual_map[0]) == \
-#                    pytest.approx(fit.residual_map[0], 1e-4)
-#             assert li_hyper_manual.grid_stack.regular.scaled_array_from_array_1d(chi_squared_map[0]) == \
-#                    pytest.approx(fit.chi_squared_map[0], 1e-4)
-#
-#             chi_squared_terms = fitting_util.chi_squared_term_from_chi_squareds(chi_squared_map=chi_squared_map)
-#             noise_terms = fitting_util.noise_term_from_mask_and_noise_map(noise_map=[li_hyper_manual.noise_map_])
-#
-#             likelihoods_with_regularization = \
-#                 fitting_util.likelihood_with_regularization_from_chi_squared_term_regularization_and_noise_term(chi_squared_terms,
-#                                                                                                                 [inversion.regularization_term], noise_terms)
-#
-#             assert likelihoods_with_regularization[0] == pytest.approx(fit.likelihoods_with_regularization[0], 1e-2)
-#
-#             evidences = fitting_util.evidence_from_reconstruction_terms(chi_squared_terms, [inversion.regularization_term],
-#                                                                         [inversion.log_det_curvature_reg_matrix_term],
-#                                                                         [inversion.log_det_regularization_matrix_term],
-#                                                                         noise_terms)
-#
-#             assert evidences[0] == fit.evidences[0]
-#
-#             contributions = fitting_util.contributions_from_hyper_images_and_galaxies(li_hyper_manual.hyper_model_image,
-#                                                                                  li_hyper_manual.hyper_galaxy_images, [hyper_galaxy, hyper_galaxy],
-#                                                                                  li_hyper_manual.hyper_minimum_values)
-#
-#             scaled_noise_map = fitting_util.scaled_noise_map_from_fitting_hyper_images_contributions_and_hyper_galaxies(
-#                 fitting_hyper_images=[li_hyper_manual], contributions_1d=[contributions], hyper_galaxies=[hyper_galaxy,
-#                                                                                                         hyper_galaxy])
-#
-#             scaled_inversion = inversions.inversion_from_lensing_image_mapper_and_regularization(mapper=mapper,
-#                                                                                                  regularization=reg, image=li_hyper_manual, noise_map=scaled_noise_map[0],
-#                                                                                                  convolver=li_hyper_manual.convolver_mapping_matrix)
-#
-#             scaled_residuals = fitting_util.residuals_from_data_mask_and_model_data(datas=[li_hyper_manual],
-#                                                                                     model_data=[scaled_inversion.reconstructed_data_vector])
-#
-#             scaled_chi_squareds = fitting_util.chi_squareds_from_residuals_and_noise_map(scaled_residuals,
-#                                                                                          scaled_noise_map)
-#
-#             assert li_hyper_manual.grid_stack.regular.scaled_array_from_array_1d(contributions[0]) == \
-#                    pytest.approx(fit.contributions[0][0], 1e-4)
-#             assert li_hyper_manual.grid_stack.regular.scaled_array_from_array_1d(contributions[1]) == \
-#                    pytest.approx(fit.contributions[0][1], 1e-4)
-#             assert li_hyper_manual.grid_stack.regular.scaled_array_from_array_1d(scaled_noise_map[0]) == \
-#                    pytest.approx(fit.hyper_noise_map, 1e-4)
-#             assert li_hyper_manual.grid_stack.regular.scaled_array_from_array_1d(scaled_residuals[0]) == \
-#                    pytest.approx(fit.scaled_residual, 1e-4)
-#             assert li_hyper_manual.grid_stack.regular.scaled_array_from_array_1d(scaled_chi_squareds[0]) == \
-#                    pytest.approx(fit.scaled_chi_squared, 1e-4)
-#
-#             scaled_chi_squared_terms= fitting_util.chi_squared_term_from_chi_squareds(chi_squared_map=scaled_chi_squareds)
-#             scaled_noise_terms = fitting_util.noise_term_from_mask_and_noise_map(noise_map=scaled_noise_map)
-#
-#             scaled_evidences = fitting_util.evidence_from_reconstruction_terms(scaled_chi_squared_terms,
-#                                                                                [scaled_inversion.regularization_term], [scaled_inversion.log_det_curvature_reg_matrix_term],
-#                                                                                [scaled_inversion.log_det_regularization_matrix_term], scaled_noise_terms)
-#             assert scaled_evidences[0] == fit.scaled_evidences[0]
-#
-#             fast_scaled_evidence = \
-#                 lensing_fitters.fast_fit_from_lensing_image_and_tracer(lensing_image=li_hyper_manual,
-#                                                                        tracer=tracer)
-#             assert fast_scaled_evidence == scaled_evidences[0]
-#
+class TestLensingInversionHyperFit:
+
+    class TestCompareToManual:
+
+        def test___manual_image_and_psf(self, li_hyper_manual):
+
+            pix = pixelizations.Rectangular(shape=(3, 3))
+            mapper = pixelizations.mapper_from_grids_and_border(li_hyper_manual.grid_stack, li_hyper_manual.borders)
+            reg = regularization.Constant(coefficients=(1.0,))
+
+            hyper_galaxy = g.HyperGalaxy(contribution_factor=4.0, noise_factor=2.0, noise_power=3.0)
+            hyp_galaxy = g.Galaxy(hyper_galaxy=hyper_galaxy)
+            inv_galaxy = g.Galaxy(pixelization=pix, regularization=reg)
+
+            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[hyp_galaxy, hyp_galaxy],
+                                                         source_galaxies=[inv_galaxy],
+                                                         image_plane_grids=[li_hyper_manual.grid_stack],
+                                                         borders=None)
+
+            fit = lensing_fitters.fit_lensing_image_with_tracer(lensing_image=li_hyper_manual, tracer=tracer)
+
+            inversion = inversions.inversion_from_lensing_image_mapper_and_regularization(mapper=mapper,
+                                                                                          regularization=reg, image=li_hyper_manual, noise_map=li_hyper_manual.noise_map_,
+                                                                                          convolver=li_hyper_manual.convolver_mapping_matrix)
+
+            residual_map = fitting_util.residuals_from_data_mask_and_model_data([li_hyper_manual],
+                                                                             [inversion.reconstructed_data_vector])
+            chi_squared_map = fitting_util.chi_squareds_from_residuals_and_noise_map(residual_map, [li_hyper_manual.noise_map_])
+
+            assert li_hyper_manual.grid_stack.regular.scaled_array_from_array_1d(li_hyper_manual.noise_map_) == \
+                   pytest.approx(fit.noise_map[0], 1e-4)
+            assert li_hyper_manual.grid_stack.regular.scaled_array_from_array_1d(inversion.reconstructed_data_vector) == \
+                   pytest.approx(fit.model_datas[0], 1e-4)
+            assert li_hyper_manual.grid_stack.regular.scaled_array_from_array_1d(residual_map[0]) == \
+                   pytest.approx(fit.residual_map[0], 1e-4)
+            assert li_hyper_manual.grid_stack.regular.scaled_array_from_array_1d(chi_squared_map[0]) == \
+                   pytest.approx(fit.chi_squared_map[0], 1e-4)
+
+            chi_squared_terms = fitting_util.chi_squared_term_from_chi_squareds(chi_squared_map=chi_squared_map)
+            noise_terms = fitting_util.noise_term_from_mask_and_noise_map(noise_map=[li_hyper_manual.noise_map_])
+
+            likelihoods_with_regularization = \
+                fitting_util.likelihood_with_regularization_from_chi_squared_term_regularization_and_noise_term(chi_squared_terms,
+                                                                                                                [inversion.regularization_term], noise_terms)
+
+            assert likelihoods_with_regularization[0] == pytest.approx(fit.likelihoods_with_regularization[0], 1e-2)
+
+            evidences = fitting_util.evidence_from_reconstruction_terms(chi_squared_terms, [inversion.regularization_term],
+                                                                        [inversion.log_det_curvature_reg_matrix_term],
+                                                                        [inversion.log_det_regularization_matrix_term],
+                                                                        noise_terms)
+
+            assert evidences[0] == fit.evidences[0]
+
+            contributions = fitting_util.contributions_from_hyper_images_and_galaxies(li_hyper_manual.hyper_model_image,
+                                                                                 li_hyper_manual.hyper_galaxy_images, [hyper_galaxy, hyper_galaxy],
+                                                                                 li_hyper_manual.hyper_minimum_values)
+
+            scaled_noise_map = fitting_util.scaled_noise_map_from_fitting_hyper_images_contributions_and_hyper_galaxies(
+                fitting_hyper_images=[li_hyper_manual], contributions_1d=[contributions], hyper_galaxies=[hyper_galaxy,
+                                                                                                        hyper_galaxy])
+
+            scaled_inversion = inversions.inversion_from_lensing_image_mapper_and_regularization(mapper=mapper,
+                                                                                                 regularization=reg, image=li_hyper_manual, noise_map=scaled_noise_map[0],
+                                                                                                 convolver=li_hyper_manual.convolver_mapping_matrix)
+
+            scaled_residuals = fitting_util.residuals_from_data_mask_and_model_data(datas=[li_hyper_manual],
+                                                                                    model_data=[scaled_inversion.reconstructed_data_vector])
+
+            scaled_chi_squareds = fitting_util.chi_squareds_from_residuals_and_noise_map(scaled_residuals,
+                                                                                         scaled_noise_map)
+
+            assert li_hyper_manual.grid_stack.regular.scaled_array_from_array_1d(contributions[0]) == \
+                   pytest.approx(fit.contributions[0][0], 1e-4)
+            assert li_hyper_manual.grid_stack.regular.scaled_array_from_array_1d(contributions[1]) == \
+                   pytest.approx(fit.contributions[0][1], 1e-4)
+            assert li_hyper_manual.grid_stack.regular.scaled_array_from_array_1d(scaled_noise_map[0]) == \
+                   pytest.approx(fit.hyper_noise_map, 1e-4)
+            assert li_hyper_manual.grid_stack.regular.scaled_array_from_array_1d(scaled_residuals[0]) == \
+                   pytest.approx(fit.scaled_residual, 1e-4)
+            assert li_hyper_manual.grid_stack.regular.scaled_array_from_array_1d(scaled_chi_squareds[0]) == \
+                   pytest.approx(fit.scaled_chi_squared, 1e-4)
+
+            scaled_chi_squared_terms= fitting_util.chi_squared_term_from_chi_squareds(chi_squared_map=scaled_chi_squareds)
+            scaled_noise_terms = fitting_util.noise_term_from_mask_and_noise_map(noise_map=scaled_noise_map)
+
+            scaled_evidences = fitting_util.evidence_from_reconstruction_terms(scaled_chi_squared_terms,
+                                                                               [scaled_inversion.regularization_term], [scaled_inversion.log_det_curvature_reg_matrix_term],
+                                                                               [scaled_inversion.log_det_regularization_matrix_term], scaled_noise_terms)
+            assert scaled_evidences[0] == fit.scaled_evidences[0]
+
+            fast_scaled_evidence = \
+                lensing_fitters.fast_fit_from_lensing_image_and_tracer(lensing_image=li_hyper_manual,
+                                                                       tracer=tracer)
+            assert fast_scaled_evidence == scaled_evidences[0]
+
 #
 # class TestHyperLensingProfileInversionFit:
 #

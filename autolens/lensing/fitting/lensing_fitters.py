@@ -183,6 +183,10 @@ class AbstractLensingInversionFitter(AbstractLensingFitter):
             image_1d=lensing_image.image_1d, noise_map_1d=noise_map_1d, convolver=lensing_image.convolver_mapping_matrix,
             mapper=tracer.mappers_of_planes[-1], regularization=tracer.regularizations_of_planes[-1])
 
+    @property
+    def model_images_of_planes(self):
+        return [None, self.inversion.reconstructed_data]
+
 
 class AbstractLensingProfileInversionFitter(AbstractLensingFitter):
 
@@ -323,10 +327,6 @@ class LensingInversionFitter(LensingDataInversionFitter, AbstractLensingInversio
 
         return fit.evidence
 
-    @property
-    def model_images_of_planes(self):
-        return [None, self.model_image]
-
 
 class LensingProfileInversionFitter(LensingDataInversionFitter, AbstractLensingProfileInversionFitter):
 
@@ -421,12 +421,12 @@ class AbstractLensingHyperFitter(object):
                                       lensing_hyper_image.map_to_scaled_array(array_1d=contribution_1d),
                                       contributions_1d))
 
-        hyper_noise_map_1d =\
+        self.hyper_noise_map_1d =\
             lensing_fitting_util.scaled_noise_map_from_hyper_galaxies_and_contributions(
                 contributions_1d=contributions_1d, hyper_galaxies=hyper_galaxies,
                 noise_map_1d=lensing_hyper_image.noise_map_1d)
 
-        self.hyper_noise_map = lensing_hyper_image.map_to_scaled_array(array_1d=hyper_noise_map_1d)
+        self.hyper_noise_map = lensing_hyper_image.map_to_scaled_array(array_1d=self.hyper_noise_map_1d)
 
 
 class LensingProfileHyperFitter(LensingDataFitter, AbstractLensingProfileFitter, AbstractLensingHyperFitter):
@@ -480,183 +480,48 @@ class LensingProfileHyperFitter(LensingDataFitter, AbstractLensingProfileFitter,
         return fit.likelihood
 
 
-#
-#
-# class HyperLensingInversion(fitter.AbstractLensingHyperFitter):
-#
-#     @property
-#     def scaled_model_images(self):
-#         return fitting_util.map_arrays_to_scaled_arrays(arrays_=self.scaled_model_images_,
-#                                                    map_to_scaled_arrays=self.map_to_scaled_arrays)
-#
-#     @property
-#     def scaled_residuals(self):
-#         return fitting_util.map_arrays_to_scaled_arrays(arrays_=self.scaled_residuals_,
-#                                                    map_to_scaled_arrays=self.map_to_scaled_arrays)
-#
-#     @property
-#     def scaled_evidences(self):
-#         return fitting_util.evidence_from_reconstruction_terms(self.scaled_chi_squared_terms,
-#                                                                [self.scaled_inversion.regularization_term],
-#                                                                [self.scaled_inversion.log_det_curvature_reg_matrix_term],
-#                                                                [self.scaled_inversion.log_det_regularization_matrix_term],
-#                                                                self.scaled_noise_terms)
-#
-#     @property
-#     def scaled_evidence(self):
-#         return sum(self.scaled_evidences)
-#
-#     @property
-#     def scaled_model_image(self):
-#         return self.scaled_model_images[0]
-#
-#     @property
-#     def scaled_residual(self):
-#         return self.scaled_residuals[0]
-#
-#
-# class HyperLensingInversionFit(LensingInversionFitter, HyperLensingInversion):
-#
-#     def __init__(self, lensing_hyper_images, tracer):
-#         """
-#         Class to evaluate the fit_normal between a model described by a tracer_normal and an actual lensing_image.
-#
-#         Parameters
-#         ----------
-#         lensing_hyper_images : [li.LensingHyperImage]
-#             List of the lensing hyper unblurred_image_1d that are to be fitted.
-#         tracer : ray_tracing.AbstractTracer
-#             The tracer, which describes the ray-tracing of the strong lensing configuration.
-#         """
-#
-#         LensingDataFitter.__init__(self=self, lensing_images=lensing_hyper_images, tracer=tracer)
-#         fitter.AbstractLensingHyperFitter.__init__(self=self, fitting_hyper_images=lensing_hyper_images,
-#                                          hyper_galaxies=tracer.hyper_galaxies)
-#         super(HyperLensingInversionFit, self).__init__(lensing_hyper_images, tracer)
-#
-#         self.scaled_inversion = inversions.inversion_from_lensing_image_mapper_and_regularization(
-#             lensing_hyper_images[0][:], self.scaled_noise_map_1d[0], lensing_hyper_images[0].convolver_mapping_matrix,
-#             self.inversion.mapper, self.inversion.regularization)
-#
-#         self.scaled_model_images_ = [self.scaled_inversion.reconstructed_data_vector]
-#         self.scaled_residuals_ = fitting_util.residuals_from_data_mask_and_model_data(self.datas_, self.scaled_model_images_)
-#         self.scaled_chi_squareds_ = fitting_util.chi_squareds_from_residuals_and_noise_map(self.scaled_residuals_,
-#                                                                                            self.scaled_noise_map_1d)
-#
-#     @classmethod
-#     def fast_scaled_evidence(cls, lensing_hyper_images, tracer):
-#         """Perform the fit of this class as described above, but storing no results as class instances, thereby \
-#         minimizing memory use and maximizing run-speed."""
-#
-#         contributions_1d = fitting_util.contributions_from_fitting_hyper_images_and_hyper_galaxies(
-#             fitting_hyper_images=lensing_hyper_images, hyper_galaxies=tracer.hyper_galaxies)
-#
-#         scaled_noise_map_1d = fitting_util.scaled_noise_maps_from_fitting_hyper_images_contributions_and_hyper_galaxies(
-#             fitting_hyper_images=lensing_hyper_images, contributions_1d=contributions_1d,
-#             hyper_galaxies=tracer.hyper_galaxies)
-#
-#         convolvers = list(map(lambda lensing_image : lensing_image.convolver_mapping_matrix, lensing_hyper_images))
-#
-#         mapper = tracer.mappers_of_planes[0]
-#         regularization = tracer.regularizations_of_planes[0]
-#
-#         scaled_inversion = inversions.inversion_from_lensing_image_mapper_and_regularization(
-#             lensing_hyper_images[0][:], scaled_noise_map_1d[0], convolvers[0], mapper, regularization)
-#
-#         scaled_residuals_ = fitting_util.residuals_from_data_mask_and_model_data(lensing_hyper_images,
-#                                                                                  [scaled_inversion.reconstructed_data_vector])
-#         scaled_chi_squareds_ = fitting_util.chi_squareds_from_residuals_and_noise_map(scaled_residuals_, scaled_noise_map_1d)
-#         scaled_chi_squared_terms = fitting_util.chi_squared_term_from_chi_squareds(scaled_chi_squareds_)
-#         scaled_noise_terms = fitting_util.noise_term_from_mask_and_noise_map(scaled_noise_map_1d)
-#         return sum(fitting_util.evidence_from_reconstruction_terms(scaled_chi_squared_terms,
-#                                                                    [scaled_inversion.regularization_term],
-#                                                                    [scaled_inversion.log_det_curvature_reg_matrix_term],
-#                                                                    [scaled_inversion.log_det_regularization_matrix_term],
-#                                                                    scaled_noise_terms))
-#
-#
+class LensingInversionHyperFitter(LensingDataInversionFitter, AbstractLensingInversionFitter, AbstractLensingHyperFitter):
 
-#
-#
-# class HyperLensingProfileInversionFit(LensingProfileInversionFitter, HyperLensingInversion):
-#
-#     def __init__(self, lensing_hyper_images, tracer, padded_tracer=None):
-#         """
-#         Class to evaluate the fit_normal between a model described by a tracer_normal and an actual lensing_image.
-#
-#         Parameters
-#         ----------
-#         lensing_hyper_images : [li.LensingHyperImage]
-#             List of the lensing hyper unblurred_image_1d that are to be fitted.
-#         tracer : ray_tracing.AbstractTracer
-#             The tracer, which describes the ray-tracing of the strong lensing configuration.
-#         padded_tracer : ray_tracing.AbstractTracer
-#             A tracer with an identical strong lensing configuration to the tracer above, but using the lensing regular's \
-#             padded grid_stacks such that unmasked model-unblurred_image_1d can be computed.
-#         """
-#
-#         LensingDataFitter.__init__(self=self, lensing_images=lensing_hyper_images, tracer=tracer,
-#                                     padded_tracer=padded_tracer)
-#         fitter.AbstractLensingHyperFitter.__init__(self=self, fitting_hyper_images=lensing_hyper_images,
-#                                          hyper_galaxies=tracer.hyper_galaxies)
-#         super(HyperLensingProfileInversionFit, self).__init__(lensing_hyper_images, tracer, padded_tracer)
-#
-#         self.scaled_inversion = inversions.inversion_from_lensing_image_mapper_and_regularization(
-#             self.profile_subtracted_images_[0], self.scaled_noise_map_1d[0],
-#             lensing_hyper_images[0].convolver_mapping_matrix, self.inversion.mapper, self.inversion.regularization)
-#
-#         self.scaled_model_images_ = list(map(lambda _profile_model_image :
-#                                              _profile_model_image + self.scaled_inversion.reconstructed_data_vector,
-#                                              self.profile_model_images_))
-#
-#         self.scaled_residuals_ = fitting_util.residuals_from_data_mask_and_model_data(self.datas_, self.scaled_model_images_)
-#         self.scaled_chi_squareds_ = fitting_util.chi_squareds_from_residuals_and_noise_map(self.scaled_residuals_,
-#                                                                                            self.scaled_noise_map_1d)
-#
-#     @classmethod
-#     def fast_scaled_evidence(cls, lensing_hyper_images, tracer):
-#         """Perform the fit of this class as described above, but storing no results as class instances, thereby \
-#         minimizing memory use and maximizing run-speed."""
-#         contributions_1d = fitting_util.contributions_from_fitting_hyper_images_and_hyper_galaxies(
-#             fitting_hyper_images=lensing_hyper_images, hyper_galaxies=tracer.hyper_galaxies)
-#
-#         scaled_noise_map_1d = fitting_util.scaled_noise_maps_from_fitting_hyper_images_contributions_and_hyper_galaxies(
-#             fitting_hyper_images=lensing_hyper_images, contributions_1d=contributions_1d,
-#             hyper_galaxies=tracer.hyper_galaxies)
-#
-#         convolvers_image = list(map(lambda lensing_image : lensing_image.convolver_image, lensing_hyper_images))
-#         convolvers_mapping_matrix = list(map(lambda lensing_image : lensing_image.convolver_mapping_matrix,
-#                                              lensing_hyper_images))
-#
-#         profile_model_images_ = fitting_util.blur_image_including_blurring_region(image_=tracer.image_plane_images_,
-#                                                                                   blurring_image_=tracer.image_plane_blurring_images_, convolver=convolvers_image)
-#
-#         profile_subtracted_images_ = list(map(lambda lensing_image, profile_model_image_ :
-#                                               lensing_image[:] - profile_model_image_,
-#                                               lensing_hyper_images, profile_model_images_))
-#
-#         mapper = tracer.mappers_of_planes[0]
-#         regularization = tracer.regularizations_of_planes[0]
-#
-#         scaled_inversion = inversions.inversion_from_lensing_image_mapper_and_regularization(
-#             profile_subtracted_images_[0], scaled_noise_map_1d[0], convolvers_mapping_matrix[0], mapper,
-#             regularization)
-#
-#         scaled_model_images_ = list(map(lambda profile_model_image_ :
-#                                         profile_model_image_ + scaled_inversion.reconstructed_data_vector,
-#                                         profile_model_images_))
-#
-#         scaled_residuals_ = fitting_util.residuals_from_data_mask_and_model_data(lensing_hyper_images, scaled_model_images_)
-#         scaled_chi_squareds_ = fitting_util.chi_squareds_from_residuals_and_noise_map(scaled_residuals_, scaled_noise_map_1d)
-#         scaled_chi_squared_terms = fitting_util.chi_squared_term_from_chi_squareds(scaled_chi_squareds_)
-#         scaled_noise_terms = fitting_util.noise_term_from_mask_and_noise_map(scaled_noise_map_1d)
-#         return sum(fitting_util.evidence_from_reconstruction_terms(scaled_chi_squared_terms,
-#                                                                    [scaled_inversion.regularization_term],
-#                                                                    [scaled_inversion.log_det_curvature_reg_matrix_term],
-#                                                                    [scaled_inversion.log_det_regularization_matrix_term],
-#                                                                    scaled_noise_terms))
-#
-#
+    def __init__(self, lensing_hyper_image, tracer):
+        """
+        Class to evaluate the fit_normal between a model described by a tracer_normal and an actual lensing_image.
+
+        Parameters
+        ----------
+        lensing_image : li.LensingHyperImage
+            List of the lensing-unblurred_image_1d that are to be fitted.
+        tracer : ray_tracing.AbstractTracerNonStack
+            The tracer, which describes the ray-tracing of the strong lensing configuration.
+        """
+
+        AbstractLensingHyperFitter.__init__(self=self, lensing_hyper_image=lensing_hyper_image,
+                                            hyper_galaxies=tracer.hyper_galaxies)
+
+        AbstractLensingInversionFitter.__init__(self=self, lensing_image=lensing_hyper_image,
+                                                noise_map_1d=self.hyper_noise_map_1d, tracer=tracer)
+
+        super(LensingInversionHyperFitter, self).__init__(image=lensing_hyper_image.image,
+                                                          noise_map=self.hyper_noise_map, mask=lensing_hyper_image.mask,
+                                                          model_image=self.inversion.reconstructed_data,
+                                                          inversion=self.inversion)
+
+
+    @classmethod
+    def fast_fit(cls, lensing_image, tracer):
+        """Perform the fit of this class as described above, but storing no results as class instances, thereby \
+        minimizing memory use and maximizing run-speed."""
+
+        inversion = inversions.inversion_from_lensing_image_mapper_and_regularization(
+            image_1d=lensing_image.image_1d, noise_map_1d=lensing_image.noise_map_1d,
+            convolver=lensing_image.convolver_mapping_matrix, mapper=tracer.mappers_of_planes[-1],
+            regularization=tracer.regularizations_of_planes[-1])
+
+        fit = LensingDataInversionFitter(image=lensing_image.image_1d, noise_map=lensing_image.noise_map_1d,
+                                         mask=lensing_image.mask_1d, model_image=inversion.reconstructed_data_vector,
+                                         inversion=inversion)
+
+        return fit.evidence
+
 # class PositionFit:
 #
 #     def __init__(self, positions, noise):
