@@ -153,7 +153,7 @@ class TestGalaxyFit:
             model_data = galaxy.intensities_from_grid(grid=g_data.grids.sub)
             model_datas = [g_data.grids.sub.sub_data_to_regular_data(sub_array=model_data)]
             residuals = fitting_util.residual_map_from_data_mask_and_model_data([g_data[:]], model_datas)
-            chi_squareds = fitting_util.chi_squareds_from_residual_map_and_noise_map(residuals, [g_data.noise_map_])
+            chi_squareds = fitting_util.chi_squareds_from_residual_map_mask_and_noise_map(residuals, [g_data.noise_map_])
 
             assert g_data.grids.regular.scaled_array_from_array_1d(g_data.noise_map_) == \
                    pytest.approx(fit.noise_map, 1e-4)
@@ -197,7 +197,7 @@ class TestGalaxyFit:
             model_data = galaxy.surface_density_from_grid(grid=g_data.grids.sub)
             model_datas = [g_data.grids.sub.sub_data_to_regular_data(sub_array=model_data)]
             residuals = fitting_util.residual_map_from_data_mask_and_model_data([g_data[:]], model_datas)
-            chi_squareds = fitting_util.chi_squareds_from_residual_map_and_noise_map(residuals, [g_data.noise_map_])
+            chi_squareds = fitting_util.chi_squareds_from_residual_map_mask_and_noise_map(residuals, [g_data.noise_map_])
 
             assert g_data.grids.regular.scaled_array_from_array_1d(g_data.noise_map_) == \
                    pytest.approx(fit.noise_map, 1e-4)
@@ -241,7 +241,7 @@ class TestGalaxyFit:
             model_data = galaxy.potential_from_grid(grid=g_data.grids.sub)
             model_datas = [g_data.grids.sub.sub_data_to_regular_data(sub_array=model_data)]
             residuals = fitting_util.residual_map_from_data_mask_and_model_data([g_data[:]], model_datas)
-            chi_squareds = fitting_util.chi_squareds_from_residual_map_and_noise_map(residuals, [g_data.noise_map_])
+            chi_squareds = fitting_util.chi_squareds_from_residual_map_mask_and_noise_map(residuals, [g_data.noise_map_])
 
             assert g_data.grids.regular.scaled_array_from_array_1d(g_data.noise_map_) == \
                    pytest.approx(fit.noise_map, 1e-4)
@@ -298,8 +298,8 @@ class TestGalaxyFit:
             model_data_x = g_data_y.grids.sub.sub_data_to_regular_data(sub_array=model_data_x[:, 1])
             model_datas = [model_data_y, model_data_x]
             residuals = fitting_util.residual_map_from_data_mask_and_model_data([g_data_y[:], g_data_x[:]], model_datas)
-            chi_squareds = fitting_util.chi_squareds_from_residual_map_and_noise_map(residuals, [g_data_y.noise_map_,
-                                                                                                 g_data_x.noise_map_])
+            chi_squareds = fitting_util.chi_squareds_from_residual_map_mask_and_noise_map(residuals, [g_data_y.noise_map_,
+                                                                                                      g_data_x.noise_map_])
 
             assert g_data_y.grids.regular.scaled_array_from_array_1d(g_data_y.noise_map_) == \
                    pytest.approx(fit.noise_maps[0], 1e-4)

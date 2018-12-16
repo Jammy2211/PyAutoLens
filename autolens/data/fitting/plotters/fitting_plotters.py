@@ -49,7 +49,7 @@ def plot_model_image_of_plane(fit, image_index=0, plane_index=0, mask=None, posi
     plane_index : int
         The plane from which the model-datas is generated.
     """
-    array_plotters.plot_array(array=fit.model_image_of_planes[image_index][plane_index], mask=mask, positions=positions,
+    array_plotters.plot_array(array=fit.blurred_image_of_planes[image_index][plane_index], mask=mask, positions=positions,
                               as_subplot=as_subplot,
                               units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
                               cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max,

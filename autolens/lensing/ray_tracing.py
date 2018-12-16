@@ -388,8 +388,8 @@ class TracerImageSourcePlanes(AbstractTracerNonStack, AbstractTracerImageSourceP
             The cosmology of the ray-tracing calculation.
         """
 
-        image_plane_grid_stack = pix.setup_image_plane_pixelization_grid_from_galaxies_and_grids(
-            galaxies=source_galaxies, data_grids=image_plane_grid_stack)
+        image_plane_grid_stack = pix.setup_image_plane_pixelization_grid_from_galaxies_and_grid_stack(
+            galaxies=source_galaxies, grid_stack=image_plane_grid_stack)
 
         super().__init__(lens_galaxies=lens_galaxies, image_plane_grid_stack=image_plane_grid_stack, border=border,
                          cosmology=cosmology)
@@ -430,8 +430,8 @@ class TracerImageSourcePlanesStack(AbstractTracerStack, AbstractTracerImageSourc
         """
 
         image_plane_grid_stacks = list(map(lambda data_grids :
-                        pix.setup_image_plane_pixelization_grid_from_galaxies_and_grids(galaxies=source_galaxies,
-                                                                                        data_grids=data_grids),
+                        pix.setup_image_plane_pixelization_grid_from_galaxies_and_grid_stack(galaxies=source_galaxies,
+                                                                                             grid_stack=data_grids),
                                            image_plane_grid_stacks))
 
         super().__init__(lens_galaxies=lens_galaxies, image_plane_grid_stacks=image_plane_grid_stacks, borders=borders,
@@ -551,8 +551,8 @@ class TracerMultiPlanes(AbstractTracerNonStack, AbstractTracerMultiPlanes):
             The cosmology of the ray-tracing calculation.
         """
 
-        image_plane_grid_stack = pix.setup_image_plane_pixelization_grid_from_galaxies_and_grids(
-            galaxies=galaxies, data_grids=image_plane_grid_stack)
+        image_plane_grid_stack = pix.setup_image_plane_pixelization_grid_from_galaxies_and_grid_stack(
+            galaxies=galaxies, grid_stack=image_plane_grid_stack)
 
         AbstractTracerMultiPlanes.__init__(self=self, galaxies=galaxies, cosmology=cosmology)
 
@@ -620,8 +620,8 @@ class TracerMultiPlanesStack(AbstractTracerStack, AbstractTracerMultiPlanes):
         """
 
         image_plane_grid_stacks = list(map(lambda grid_stack :
-                        pix.setup_image_plane_pixelization_grid_from_galaxies_and_grids(galaxies=galaxies,
-                                                                                        data_grids=grid_stack),
+                        pix.setup_image_plane_pixelization_grid_from_galaxies_and_grid_stack(galaxies=galaxies,
+                                                                                             grid_stack=grid_stack),
                                            image_plane_grid_stacks))
 
         AbstractTracerMultiPlanes.__init__(self=self, galaxies=galaxies, cosmology=cosmology)

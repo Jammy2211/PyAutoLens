@@ -117,8 +117,8 @@ class TestImagePlanePixelization:
         galaxy = g.Galaxy()
 
         image_plane_pix_grids = \
-            pixelizations.setup_image_plane_pixelization_grid_from_galaxies_and_grids(galaxies=[galaxy, galaxy],
-                                                                                      data_grids=data_grids)
+            pixelizations.setup_image_plane_pixelization_grid_from_galaxies_and_grid_stack(galaxies=[galaxy, galaxy],
+                                                                                           grid_stack=data_grids)
 
         assert image_plane_pix_grids == data_grids
 
@@ -136,8 +136,8 @@ class TestImagePlanePixelization:
 
 
         image_plane_pix_grids = \
-            pixelizations.setup_image_plane_pixelization_grid_from_galaxies_and_grids(galaxies=[galaxy, galaxy],
-                                                                                      data_grids=data_grids)
+            pixelizations.setup_image_plane_pixelization_grid_from_galaxies_and_grid_stack(galaxies=[galaxy, galaxy],
+                                                                                           grid_stack=data_grids)
 
         assert image_plane_pix_grids == data_grids
 
@@ -154,8 +154,8 @@ class TestImagePlanePixelization:
                           regularization=regularization.Constant())
 
         image_plane_pix_grids = \
-            pixelizations.setup_image_plane_pixelization_grid_from_galaxies_and_grids(galaxies=[galaxy, galaxy],
-                                                                                      data_grids=data_grids)
+            pixelizations.setup_image_plane_pixelization_grid_from_galaxies_and_grid_stack(galaxies=[galaxy, galaxy],
+                                                                                           grid_stack=data_grids)
 
         assert image_plane_pix_grids == data_grids
 
@@ -172,8 +172,8 @@ class TestImagePlanePixelization:
                           regularization=regularization.Constant())
 
         image_plane_pix_grids = \
-            pixelizations.setup_image_plane_pixelization_grid_from_galaxies_and_grids(galaxies=[galaxy, galaxy],
-                                                                                      data_grids=data_grids)
+            pixelizations.setup_image_plane_pixelization_grid_from_galaxies_and_grid_stack(galaxies=[galaxy, galaxy],
+                                                                                           grid_stack=data_grids)
 
         assert (image_plane_pix_grids.regular == data_grids.regular).all()
         assert (image_plane_pix_grids.sub == data_grids.sub).all()

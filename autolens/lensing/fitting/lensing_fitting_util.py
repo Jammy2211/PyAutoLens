@@ -201,7 +201,7 @@ def contributions_from_hyper_images_and_galaxies(hyper_model_image_1d, hyper_gal
     # noinspection PyArgumentList
     return list(map(lambda hyper_galaxy, hyper_galaxy_image_1d, hyper_minimum_value:
                     hyper_galaxy.contributions_from_hyper_images(hyper_model_image=hyper_model_image_1d,
-                                                                 hyper_galaxy_image=hyper_galaxy_images_1d,
+                                                                 hyper_galaxy_image=hyper_galaxy_image_1d,
                                                                  hyper_minimum_value=hyper_minimum_value),
                     hyper_galaxies, hyper_galaxy_images_1d, hyper_minimum_values))
 

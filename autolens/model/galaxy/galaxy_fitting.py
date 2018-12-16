@@ -71,7 +71,7 @@ class GalaxyFit(fitter.DataFitterMulti):
         model_datas_ = galaxy_datas[0].profile_quantity_from_galaxy_and_sub_grid(galaxy=galaxy,
                                                                              sub_grid=galaxy_datas[0].grids.sub)
         residuals_ = fitting_util.residual_map_from_data_mask_and_model_data([galaxy_datas[:]], [model_datas_])
-        chi_squareds_ = fitting_util.chi_squareds_from_residual_map_and_noise_map(residuals_, [galaxy_datas[0].noise_map_])
+        chi_squareds_ = fitting_util.chi_squareds_from_residual_map_mask_and_noise_map(residuals_, [galaxy_datas[0].noise_map_])
         chi_squared_terms = fitting_util.chi_squared_term_from_chi_squared_map(chi_squareds_)
         noise_terms = fitting_util.noise_term_from_mask_and_noise_map([galaxy_datas[0].noise_map_])
         return sum(fitting_util.likelihood_from_chi_squared_term_and_noise_term(chi_squared_terms, noise_terms))
@@ -107,8 +107,8 @@ class GalaxyFitDeflections(fitter.DataFitterMulti):
 
         residuals_ = fitting_util.residual_map_from_data_mask_and_model_data(galaxy_datas, [model_datas_[:, 0],
                                                                                  model_datas_[:,1]])
-        chi_squareds_ = fitting_util.chi_squareds_from_residual_map_and_noise_map(residuals_, [galaxy_datas[0].noise_map_,
-                                                                                               galaxy_datas[0].noise_map_])
+        chi_squareds_ = fitting_util.chi_squareds_from_residual_map_mask_and_noise_map(residuals_, [galaxy_datas[0].noise_map_,
+                                                                                                    galaxy_datas[0].noise_map_])
         chi_squared_terms = fitting_util.chi_squared_term_from_chi_squared_map(chi_squareds_)
         noise_terms = fitting_util.noise_term_from_mask_and_noise_map([galaxy_datas[0].noise_map_, galaxy_datas[0].noise_map_])
         return sum(fitting_util.likelihood_from_chi_squared_term_and_noise_term(chi_squared_terms, noise_terms))

@@ -513,8 +513,8 @@ class PhaseImaging(Phase):
             return fit
 
         def fast_likelihood_for_tracer(self, tracer):
-            return lensing_fitters.fast_likelihood_from_lensing_image_and_tracer(lensing_image=self.lensing_image,
-                                                                                 tracer=tracer)
+            return lensing_fitters.fast_fit_from_lensing_image_and_tracer(lensing_image=self.lensing_image,
+                                                                          tracer=tracer)
 
         def fit_for_tracers(self, tracer, padded_tracer):
             return lensing_fitters.fit_lensing_image_with_tracer(lensing_image=self.lensing_image, tracer=tracer,
@@ -601,8 +601,8 @@ class LensPlanePhase(PhaseImaging):
 
             super(LensPlanePhase.Result, self).__init__(constant, likelihood, variable, analysis)
 
-            self.padded_model_image = self.fit.unmasked_model_profile_image
-            self.lens_galaxy_padded_model_images = self.fit.unmasked_model_profile_image_of_galaxies
+            self.padded_model_image = self.fit.unmasked_blurred_profile_image
+            self.lens_galaxy_padded_model_images = self.fit.unmasked_blurred_profile_image_of_galaxies
             self.lens_subtracted_padded_image = analysis.lensing_image.image - self.padded_model_image
 
 
@@ -627,7 +627,7 @@ class LensPlaneHyperPhase(LensPlanePhase):
         def __init__(self, lensing_image, cosmology, phase_name, previous_results=None):
             super(LensPlanePhase.Analysis, self).__init__(lensing_image=lensing_image, cosmology=cosmology,
                                                           phase_name=phase_name, previous_results=previous_results)
-            self.hyper_model_image = self.map_to_1d(previous_results.last.unmasked_model_profile_image)
+            self.hyper_model_image = self.map_to_1d(previous_results.last.unmasked_blurred_profile_image)
             self.hyper_galaxy_images = list(map(lambda galaxy_image: self.map_to_1d(galaxy_image),
                                                 previous_results.last.lens_galaxy_padded_model_images))
             self.hyper_minimum_values = len(self.hyper_galaxy_images) * [0.0]
@@ -635,8 +635,8 @@ class LensPlaneHyperPhase(LensPlanePhase):
         # TODO : Can we make a HyperPhase class that overwrites these for all HyperPhases?
 
         def fast_likelihood_for_tracer(self, tracer):
-            return lensing_fitters.fast_likelihood_from_lensing_image_and_tracer(lensing_image=self.lensing_image,
-                                                                                 tracer=tracer)
+            return lensing_fitters.fast_fit_from_lensing_image_and_tracer(lensing_image=self.lensing_image,
+                                                                          tracer=tracer)
 
         def fit_for_tracers(self, tracer, padded_tracer):
             return lensing_fitters.fit_lensing_image_with_tracer(lensing_image=self.lensing_image, tracer=tracer,
@@ -727,7 +727,7 @@ class LensLightHyperOnlyPhase(LensPlaneHyperPhase, HyperOnly):
             super(LensPlaneHyperPhase.Analysis, self).__init__(lensing_image=lensing_image, cosmology=cosmology,
                                                                phase_name=phase_name, previous_results=previous_results)
 
-            self.hyper_model_image = self.map_to_1d(previous_results.last.unmasked_model_profile_image)
+            self.hyper_model_image = self.map_to_1d(previous_results.last.unmasked_blurred_profile_image)
             self.hyper_galaxy_images = list(map(lambda galaxy_image: self.map_to_1d(galaxy_image),
                                                 previous_results.last.lens_galaxy_padded_model_images))
             self.hyper_galaxy_images = [self.hyper_galaxy_images[hyper_index]]
@@ -854,8 +854,8 @@ class LensSourcePlaneHyperPhase(LensSourcePlanePhase):
             self.hyper_minimum_values = len(self.hyper_galaxy_images) * [0.0]
 
         def fast_likelihood_for_tracer(self, tracer):
-            return lensing_fitters.fast_likelihood_from_lensing_image_and_tracer(lensing_image=self.lensing_image,
-                                                                                 tracer=tracer)
+            return lensing_fitters.fast_fit_from_lensing_image_and_tracer(lensing_image=self.lensing_image,
+                                                                          tracer=tracer)
 
         def fit_for_tracer(self, tracer):
             return lensing_fitters.fit_lensing_image_with_tracer(lensing_image=self.lensing_image, tracer=tracer)
