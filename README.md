@@ -112,14 +112,14 @@ With PyAutoLens, you can begin modeling a lens in just a couple of minutes. The 
 ```python
 from autolens.pipeline import phase as ph
 from autofit.core import non_linear as nl
-from autolens.lensing import galaxy_model as gm
-from autolens.imaging import image as im
-from autolens.profiles import light_profiles as lp
-from autolens.profiles import mass_profiles as mp
-from autolens.plotting import fitting_plotters
+from autolens.data.imaging import image as im
+from autolens.model.galaxy import galaxy_model as gm
+from autolens.model.profiles import light_profiles as lp
+from autolens.model.profiles import mass_profiles as mp
+from autolens.data.fitting.plotters import fitting_plotters
 import os
 
-# In this example, we'll generate a phase which fits a lens + source plane system.
+# In this example, we'll generate a phase which fits a lens + source strong lens system.
 
 # First, lets setup the path to this script so we can easily load the example data.
 path = "{}".format(os.path.dirname(os.path.realpath(__file__)))
@@ -130,14 +130,14 @@ image = im.load_imaging_from_path(image_path=path + '/data/image.fits',
                                   psf_path=path + '/data/psf.fits', pixel_scale=0.1)
 
 # We're going to model our lens galaxy using a light profile (an elliptical Sersic) and mass profile
-# (a singular isothermal sphere). We load these profiles from the 'light_profile (lp)' and 'mass_profile (mp)'
+# (a singular isothermal ellsoid). We load these profiles from the 'light_profile (lp)' and 'mass_profile (mp)'
 # modules (check out the source code to see all the profiles that are available).
 
 # To setup our model galaxies, we use the 'galaxy_model' module and GalaxyModel class. 
 # A GalaxyModel represents a galaxy where the parameters of its associated profiles are 
 # variable and fitted for by the analysis.
-lens_galaxy_model = gm.GalaxyModel(light=lp.AbstractEllipticalSersic, mass=mp.EllipticalIsothermal)
-source_galaxy_model = gm.GalaxyModel(light=lp.AbstractEllipticalSersic)
+lens_galaxy_model = gm.GalaxyModel(light=lp.EllipticalSersic, mass=mp.EllipticalIsothermal)
+source_galaxy_model = gm.GalaxyModel(light=lp.EllipticalSersic)
 
 # To perform the analysis, we set up a phase using the 'phase' module (imported as 'ph').
 # A phase takes our galaxy models and fits their parameters using a non-linear search (in this case, MultiNest).
@@ -150,3 +150,17 @@ print(results)
 fitting_plotters.plot_fitting_subplot(fit=results.fit)
 
 ```
+
+## Credits
+
+[James Nightingale](https://github.com/Jammy2211) - Co-lead developer and PyAutoLens guru.
+
+[Richard Hayes](https://github.com/rhayes777) - Co-lead developer and [PyAutoFit](https://github.com/rhayes777/PyAutoFit) guru.
+
+[Ashley Kelly](https://github.com/AshKelly) - Developer of [pyquad](https://github.com/AshKelly/pyquad) for fast deflections computations.
+
+[Nan Li](https://github.com/linan7788626) - Docker integration & support.
+
+[Andrew Robertson](https://github.com/Andrew-Robertson) - Critical curve and caustic calculations.
+
+[Andrea Enia](https://github.com/AndreaEnia) - Voronoi source-plane plotting tools.
