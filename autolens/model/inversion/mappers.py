@@ -7,7 +7,7 @@ from autolens.model.inversion.util import mapper_util
 
 class Mapper(object):
 
-    def __init__(self, pixels, grids, border):
+    def __init__(self, pixels, grid_stack, border):
         """
         Abstract base class representing the mapping between the pixels in an observed regular of a strong lens and \
         the pixels of a pixelization.
@@ -24,11 +24,11 @@ class Mapper(object):
         ----------
         pixels : int
             The number of pixels in the pixelization.
-        grids: masks.DataGridStack
+        grid_stack: masks.DataGridStack
             A collection of grid describing the observed regular's pixel coordinates (includes an regular and sub grid).
         """
         self.pixels = pixels
-        self.grids = grids
+        self.grid_stack = grid_stack
         self.border = border
 
     @property
@@ -76,8 +76,8 @@ class Mapper(object):
         [ 0.0,  1.0, 0.0, 0.0] [All sub-pixels mappers to pixel 1]
         [ 0.0,  0.0, 0.5, 0.5] [2 sub-pixels mappers to pixel 2, 2 mappers to pixel 3]
         """
-        return mapper_util.mapping_matrix_from_sub_to_pix(self.sub_to_pix, self.pixels, self.grids.regular.shape[0],
-                                                       self.grids.sub.sub_to_regular, self.grids.sub.sub_grid_fraction)
+        return mapper_util.mapping_matrix_from_sub_to_pix(self.sub_to_pix, self.pixels, self.grid_stack.regular.shape[0],
+                                                          self.grid_stack.sub.sub_to_regular, self.grid_stack.sub.sub_grid_fraction)
 
     @property
     def regular_to_pix(self):
@@ -111,7 +111,7 @@ class Mapper(object):
 
 class RectangularMapper(Mapper):
 
-    def __init__(self, pixels, grids, border, shape, geometry):
+    def __init__(self, pixels, grid_stack, border, shape, geometry):
         """Class representing the mappings between the pixels in an observed regular of a strong lens and \
         the pixels of a rectangular pixelization.
 
@@ -121,7 +121,7 @@ class RectangularMapper(Mapper):
         ----------
         pixels : int
             The number of pixels in the pixelization.
-        grids: masks.DataGridStack
+        grid_stack: masks.DataGridStack
             A collection of grid describing the observed regular's pixel coordinates (includes an regular and sub grid).
         shape : (int, int)
             The dimensions of the rectangular grid of pixels (x_pixels, y_pixel)
@@ -130,7 +130,7 @@ class RectangularMapper(Mapper):
         """
         self.shape = shape
         self.geometry = geometry
-        super(RectangularMapper, self).__init__(pixels, grids, border)
+        super(RectangularMapper, self).__init__(pixels, grid_stack, border)
 
     @property
     def is_image_plane_pixelization(self):
@@ -139,12 +139,12 @@ class RectangularMapper(Mapper):
     @property
     def regular_to_pix(self):
         """The 1D index mappings between the regular pixels and rectangular pixelization pixels."""
-        return self.geometry.grid_arc_seconds_to_grid_pixel_indexes(grid_arc_seconds=self.grids.regular)
+        return self.geometry.grid_arc_seconds_to_grid_pixel_indexes(grid_arc_seconds=self.grid_stack.regular)
 
     @property
     def sub_to_pix(self):
         """The 1D index mappings between the sub-pixels and rectangular pixelization pixels"""
-        return self.geometry.grid_arc_seconds_to_grid_pixel_indexes(grid_arc_seconds=self.grids.sub)
+        return self.geometry.grid_arc_seconds_to_grid_pixel_indexes(grid_arc_seconds=self.grid_stack.sub)
 
     def reconstructed_pixelization_from_solution_vector(self, solution_vector):
         recon = mapping_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(array_1d=solution_vector,
@@ -155,7 +155,7 @@ class RectangularMapper(Mapper):
 
 class VoronoiMapper(Mapper):
 
-    def __init__(self, pixels, grids, border, voronoi, geometry):
+    def __init__(self, pixels, grid_stack, border, voronoi, geometry):
         """Class representing the mappings between the pixels in an observed regular of a strong lens and \
         the pixels of a Voronoi pixelization.
 
@@ -166,7 +166,7 @@ class VoronoiMapper(Mapper):
         ----------
         pixels : int
             The number of pixels in the pixelization.
-        grids: masks.DataGridStack
+        grid_stack: masks.DataGridStack
             A collection of grid describing the observed regular's pixel coordinates (includes an regular and sub grid).
         shape : (int, int)
             The dimensions of the rectangular grid of pixels (x_pixels, y_pixel)
@@ -175,7 +175,7 @@ class VoronoiMapper(Mapper):
         """
         self.voronoi = voronoi
         self.geometry = geometry
-        super(VoronoiMapper, self).__init__(pixels, grids, border)
+        super(VoronoiMapper, self).__init__(pixels, grid_stack, border)
 
     @property
     def is_image_plane_pixelization(self):
@@ -184,11 +184,11 @@ class VoronoiMapper(Mapper):
     @property
     def regular_to_pix(self):
         """The 1D index mappings between the regular pixels and Voronoi pixelization pixels."""
-        return mapper_util.voronoi_regular_to_pix_from_grids_and_geometry(regular_grid=self.grids.regular,
-                                       regular_to_nearest_regular_pix=self.grids.pix.regular_to_nearest_regular_pix,
-                                       pixel_centres=self.geometry.pixel_centres,
-                                       pixel_neighbors=self.geometry.pixel_neighbors,
-                                       pixel_neighbors_size=self.geometry.pixel_neighbors_size).astype('int')
+        return mapper_util.voronoi_regular_to_pix_from_grids_and_geometry(regular_grid=self.grid_stack.regular,
+                                                                          regular_to_nearest_regular_pix=self.grid_stack.pix.regular_to_nearest_regular_pix,
+                                                                          pixel_centres=self.geometry.pixel_centres,
+                                                                          pixel_neighbors=self.geometry.pixel_neighbors,
+                                                                          pixel_neighbors_size=self.geometry.pixel_neighbors_size).astype('int')
 
     @property
     def sub_to_pix(self):
@@ -211,9 +211,9 @@ class VoronoiMapper(Mapper):
         Thus, it may not actually be that sub_coordinate's closest pixel (the routine will eventually
         determine this).
          """
-        return mapper_util.voronoi_sub_to_pix_from_grids_and_geometry(sub_grid=self.grids.sub,
-                                   regular_to_nearest_regular_pix=self.grids.pix.regular_to_nearest_regular_pix,
-                                   sub_to_regular=self.grids.sub.sub_to_regular,
-                                   pixel_centres=self.geometry.pixel_centres,
-                                   pixel_neighbors=self.geometry.pixel_neighbors,
-                                   pixel_neighbors_size=self.geometry.pixel_neighbors_size).astype('int')
+        return mapper_util.voronoi_sub_to_pix_from_grids_and_geometry(sub_grid=self.grid_stack.sub,
+                                                                      regular_to_nearest_regular_pix=self.grid_stack.pix.regular_to_nearest_regular_pix,
+                                                                      sub_to_regular=self.grid_stack.sub.sub_to_regular,
+                                                                      pixel_centres=self.geometry.pixel_centres,
+                                                                      pixel_neighbors=self.geometry.pixel_neighbors,
+                                                                      pixel_neighbors_size=self.geometry.pixel_neighbors_size).astype('int')

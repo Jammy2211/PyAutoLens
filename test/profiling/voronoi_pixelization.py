@@ -44,7 +44,7 @@ adaptive_pix = pix.AdaptiveMagnification(shape=(30, 30))
 source_galaxy_voronoi = g.Galaxy(pixelization=adaptive_pix, regularization=reg.Constant(coefficients=(1.0,)))
 
 # start = time.time()
-image_plane_grids = pix.setup_image_plane_pixelization_grid_from_galaxies_and_grids(
+image_plane_grids = pix.setup_image_plane_pixelization_grid_from_galaxies_and_grid_stack(
     galaxies=[source_galaxy_voronoi], grids=lensing_image.grid_stack)
 # diff = time.time() - start
 # print("{}".format(diff))
@@ -60,8 +60,8 @@ pixel_neighbors, pixel_neighbors_size = adaptive_pix.neighbors_from_pixelization
                                                                                  ridge_points=voronoi.ridge_points)
 adaptive_pix.geometry_from_grid(grid=relocated_grids.sub, pixel_centres=pixel_centres,
                                 pixel_neighbors=pixel_neighbors, pixel_neighbors_size=pixel_neighbors_size)
-adaptive_mapper = adaptive_pix.mapper_from_grids_and_border(grids=tracer_fit.source_plane.grids[0],
-                                                            border=lensing_image.border)
+adaptive_mapper = adaptive_pix.mapper_from_grid_stack_and_border(grid_stack=tracer_fit.source_plane.grids[0],
+                                                                 border=lensing_image.border)
 mapping_matrix = adaptive_mapper.mapping_matrix
 blurred_mapping_matrix = lensing_image.convolver_mapping_matrix.convolve_mapping_matrix(mapping_matrix=mapping_matrix)
 data_vector = inversion_util.data_vector_from_blurred_mapping_matrix_and_data(
@@ -106,8 +106,8 @@ diff = time.time() - start
 print("Geometry Time = {}".format(diff))
 
 start = time.time()
-adaptive_mapper = adaptive_pix.mapper_from_grids_and_border(grids=tracer_fit.source_plane.grids[0],
-                                                            border=lensing_image.border)
+adaptive_mapper = adaptive_pix.mapper_from_grid_stack_and_border(grid_stack=tracer_fit.source_plane.grids[0],
+                                                                 border=lensing_image.border)
 diff = time.time() - start
 print("Time to get mapper = {}".format(diff))
 

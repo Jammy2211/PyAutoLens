@@ -51,13 +51,13 @@ tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source
 
 # We'll use another rectangular pixelization and mapper to perform the reconstruction
 rectangular = pix.Rectangular(shape=(25, 25))
-mapper = rectangular.mapper_from_grids_and_border(grids=tracer.source_plane.grids[0], border=None)
+mapper = rectangular.mapper_from_grid_stack_and_border(grid_stack=tracer.source_plane.grids[0], border=None)
 mapper_plotters.plot_image_and_mapper(image=image, mask=mask, mapper=mapper, should_plot_grid=True)
 
 # And now, finally, we're going to use our mapper to invert the regular using the 'inversions' module, which is imported
 # as 'inv'. I'll explain how this works in a second - but lets just go ahead and perform the inversion first.
 # (Ignore the 'regularization' input below for now, we'll cover this in the next tutorial).
-inversion = inv.Inversion(image=lensing_image[:], noise_map=lensing_image.noise_map_1d,
+inversion = inv.Inversion(image_1d=lensing_image[:], noise_map_1d=lensing_image.noise_map_1d,
                           convolver=lensing_image.convolver_mapping_matrix, mapper=mapper,
                           regularization=reg.Constant(coefficients=(1.0,)))
 
@@ -113,8 +113,8 @@ imaging_plotters.plot_image(image=image, mask=mask)
 lensing_image = li.LensingImage(image=image, mask=mask, sub_grid_size=1)
 tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[g.Galaxy()],
                                              image_plane_grid_stack=[lensing_image.grid_stack])
-mapper = rectangular.mapper_from_grids_and_border(grids=tracer.source_plane.grids[0], border=None)
-inversion = inv.Inversion(image=lensing_image[:], noise_map=lensing_image.noise_map_1d,
+mapper = rectangular.mapper_from_grid_stack_and_border(grid_stack=tracer.source_plane.grids[0], border=None)
+inversion = inv.Inversion(image_1d=lensing_image[:], noise_map_1d=lensing_image.noise_map_1d,
                           convolver=lensing_image.convolver_mapping_matrix, mapper=mapper,
                           regularization=reg.Constant(coefficients=(1.0,)))
 

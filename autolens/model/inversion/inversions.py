@@ -5,20 +5,20 @@ from autolens.model.inversion.util import inversion_util
 
 # TODO : Unit test this properly, using a cleverly made mock datas-set
 
-def inversion_from_lensing_image_mapper_and_regularization(image, noise_map, convolver, mapper, regularization):
-    return Inversion(image=image, noise_map=noise_map, convolver=convolver, mapper=mapper,
+def inversion_from_lensing_image_mapper_and_regularization(image_1d, noise_map_1d, convolver, mapper, regularization):
+    return Inversion(image_1d=image_1d, noise_map_1d=noise_map_1d, convolver=convolver, mapper=mapper,
                      regularization=regularization)
 
 class Inversion(object):
 
-    def __init__(self, image, noise_map, convolver, mapper, regularization):
+    def __init__(self, image_1d, noise_map_1d, convolver, mapper, regularization):
         """The matrices, mappings which have been used to linearly invert and fit_normal a datas-set.
 
         Parameters
         -----------
-        image : ndarray
+        image_1d : ndarray
             Flattened 1D array of the regular the inversion fits.
-        noise_map : ndarray
+        noise_map_1d : ndarray
             Flattened 1D array of the noise-map used by the inversion.
         convolver : imaging.convolution.Convolver
             The convolver used to blur the mapping matrix with the PSF.
@@ -47,10 +47,10 @@ class Inversion(object):
         self.blurred_mapping_matrix = convolver.convolve_mapping_matrix(mapping_matrix=mapper.mapping_matrix)
 
         self.data_vector = inversion_util.data_vector_from_blurred_mapping_matrix_and_data(
-                blurred_mapping_matrix=self.blurred_mapping_matrix, image=image, noise_map=noise_map)
+                blurred_mapping_matrix=self.blurred_mapping_matrix, image=image_1d, noise_map=noise_map_1d)
 
         self.curvature_matrix = inversion_util.curvature_matrix_from_blurred_mapping_matrix(
-                blurred_mapping_matrix=self.blurred_mapping_matrix, noise_map=noise_map)
+                blurred_mapping_matrix=self.blurred_mapping_matrix, noise_map=noise_map_1d)
 
         self.regularization_matrix = \
             regularization.regularization_matrix_from_pixel_neighbors(pixel_neighbors=mapper.geometry.pixel_neighbors,

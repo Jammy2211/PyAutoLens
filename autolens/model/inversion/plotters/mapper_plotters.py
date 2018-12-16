@@ -25,7 +25,7 @@ def plot_image_and_mapper(image, mapper, mask=None, positions=None, should_plot_
                                 titlesize=10, xlabelsize=10, ylabelsize=10,
                                 output_path=output_path, output_format=output_format)
 
-    image_grid = convert_grid(grid=mapper.grids.regular.unlensed_grid, units=units, kpc_per_arcsec=kpc_per_arcsec)
+    image_grid = convert_grid(grid=mapper.grid_stack.regular.unlensed_grid, units=units, kpc_per_arcsec=kpc_per_arcsec)
 
     point_colors = itertools.cycle(["y", "r", "k", "g", "m"])
     plot_image_plane_image_pixels(grid=image_grid, image_pixels=image_pixels, point_colors=point_colors)
@@ -86,7 +86,7 @@ def plot_rectangular_mapper(mapper, should_plot_centres=False, should_plot_grid=
                 kpc_per_arcsec=kpc_per_arcsec, pointsize=30, xyticksize=xyticksize,
                 title=title, titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize)
 
-    mapper_grid = convert_grid(grid=mapper.grids.regular, units=units, kpc_per_arcsec=kpc_per_arcsec)
+    mapper_grid = convert_grid(grid=mapper.grid_stack.regular, units=units, kpc_per_arcsec=kpc_per_arcsec)
 
     point_colors = itertools.cycle(["y", "r", "k", "g", "m"])
     plot_source_plane_image_pixels(grid=mapper_grid, image_pixels=image_pixels, point_colors=point_colors)
@@ -132,7 +132,7 @@ def plot_voronoi_mapper(mapper, solution_vector, should_plot_centres=True, shoul
                 kpc_per_arcsec=kpc_per_arcsec, pointsize=30, xyticksize=xyticksize,
                 title=title, titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize)
 
-    mapper_grid = convert_grid(grid=mapper.grids.regular, units=units, kpc_per_arcsec=kpc_per_arcsec)
+    mapper_grid = convert_grid(grid=mapper.grid_stack.regular, units=units, kpc_per_arcsec=kpc_per_arcsec)
 
     point_colors = itertools.cycle(["y", "r", "k", "g", "m"])
     plot_source_plane_image_pixels(grid=mapper_grid, image_pixels=image_pixels, point_colors=point_colors)
@@ -278,7 +278,7 @@ def plot_plane_grid(should_plot_grid, mapper, as_subplot, units, kpc_per_arcsec,
 
     if should_plot_grid:
 
-        grid_units = convert_grid(grid=mapper.grids.regular, units=units, kpc_per_arcsec=kpc_per_arcsec)
+        grid_units = convert_grid(grid=mapper.grid_stack.regular, units=units, kpc_per_arcsec=kpc_per_arcsec)
 
         grid_plotters.plot_grid(grid=grid_units, as_subplot=as_subplot, units=units, kpc_per_arcsec=kpc_per_arcsec,
                                 pointsize=pointsize, xyticksize=xyticksize, title=title, titlesize=titlesize,
@@ -289,7 +289,7 @@ def plot_border(should_plot_border, mapper, as_subplot, units, kpc_per_arcsec, p
 
     if should_plot_border:
 
-        border_arc_seconds = mapper.grids.regular[mapper.border]
+        border_arc_seconds = mapper.grid_stack.regular[mapper.border]
         border_units = convert_grid(grid=border_arc_seconds, units=units, kpc_per_arcsec=kpc_per_arcsec)
 
         grid_plotters.plot_grid(grid=border_units, as_subplot=as_subplot, units=units, kpc_per_arcsec=kpc_per_arcsec,

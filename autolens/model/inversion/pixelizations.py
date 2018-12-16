@@ -8,7 +8,7 @@ from autolens.model.inversion import mappers
 from autolens.model.inversion.util import pixelization_util
 
 
-def setup_image_plane_pixelization_grid_from_galaxies_and_grids(galaxies, data_grids):
+def setup_image_plane_pixelization_grid_from_galaxies_and_grid_stack(galaxies, grid_stack):
     """An datas-plane pixelization is one where its pixel centres are computed by tracing a sparse grid of pixels from \
     the datas's regular grid to other planes (e.g. the source-plane).
 
@@ -26,17 +26,17 @@ def setup_image_plane_pixelization_grid_from_galaxies_and_grids(galaxies, data_g
         The collection of grid_stacks (regular, sub, etc.) which the datas-plane pixelization grid (referred to as pix) \
         may be added to.
     """
-    if not isinstance(data_grids.regular, grids.PaddedRegularGrid):
+    if not isinstance(grid_stack.regular, grids.PaddedRegularGrid):
         for galaxy in galaxies:
             if hasattr(galaxy, 'pixelization'):
                 if isinstance(galaxy.pixelization, ImagePlanePixelization):
 
                     image_plane_pix_grid = galaxy.pixelization.image_plane_pix_grid_from_regular_grid(
-                        regular_grid=data_grids.regular)
-                    return data_grids.data_grid_stack_with_pix_grid(pix_grid=image_plane_pix_grid.sparse_grid,
+                        regular_grid=grid_stack.regular)
+                    return grid_stack.data_grid_stack_with_pix_grid(pix_grid=image_plane_pix_grid.sparse_grid,
                                                                     regular_to_nearest_regular_pix=image_plane_pix_grid.regular_to_sparse)
 
-    return data_grids
+    return grid_stack
 
 
 class ImagePlanePixelization(object):
@@ -81,7 +81,7 @@ class Pixelization(object):
         pixels.
         """
 
-    def mapper_from_grids_and_border(self, grids, border):
+    def mapper_from_grid_stack_and_border(self, grid_stack, border):
         raise NotImplementedError("pixelization_mapper_from_grids_and_borders should be overridden")
 
     def __str__(self):
@@ -157,7 +157,7 @@ class Rectangular(Pixelization):
     def neighbors_from_pixelization(self):
         return pixelization_util.rectangular_neighbors_from_shape(shape=self.shape)
 
-    def mapper_from_grids_and_border(self, grids, border):
+    def mapper_from_grid_stack_and_border(self, grid_stack, border):
         """Setup the pixelization mapper of this rectangular pixelization as follows:
 
         This first relocateds all grid-coordinates, such that any which tracer_normal beyond its borders (e.g. due to high \
@@ -165,20 +165,20 @@ class Rectangular(Pixelization):
 
         Parameters
         ----------
-        grids: masks.DataGridStack
+        grid_stack: masks.DataGridStack
             A collection of grid describing the observed datas_'s pixel coordinates (includes an datas_ and sub grid).
         border : masks.ImagingGridBorders
             The borders of the grid_stacks (defined by their datas_-plane masks).
         """
 
         if border is not None:
-            relocated_grids = border.relocated_grids_from_grids(grids)
+            relocated_grids = border.relocated_grids_from_grids(grid_stack)
         else:
-            relocated_grids = grids
+            relocated_grids = grid_stack
 
         geometry = self.geometry_from_grid(grid=relocated_grids.sub)
 
-        return mappers.RectangularMapper(pixels=self.pixels, grids=relocated_grids, border=border,
+        return mappers.RectangularMapper(pixels=self.pixels, grid_stack=relocated_grids, border=border,
                                          shape=self.shape, geometry=geometry)
 
 
@@ -279,7 +279,7 @@ class AdaptiveMagnification(Voronoi, ImagePlanePixelization):
         super(AdaptiveMagnification, self).__init__()
         ImagePlanePixelization.__init__(self=self, shape=shape)
 
-    def mapper_from_grids_and_border(self, grids, border):
+    def mapper_from_grid_stack_and_border(self, grid_stack, border):
         """Setup the pixelization mapper of the cluster pixelization.
 
         This first relocateds all grid-coordinates, such that any which tracer_normal beyond its borders (e.g. due to high \
@@ -287,7 +287,7 @@ class AdaptiveMagnification(Voronoi, ImagePlanePixelization):
 
         Parameters
         ----------
-        grids: masks.DataGridStack
+        grid_stack: masks.DataGridStack
             A collection of grid describing the observed datas_'s pixel coordinates (includes an datas_ and sub grid).
         border : masks.ImagingGridBorders
             The borders of the grid_stacks (defined by their datas_-plane masks).
@@ -298,9 +298,9 @@ class AdaptiveMagnification(Voronoi, ImagePlanePixelization):
         """
 
         if border is not None:
-            relocated_grids = border.relocated_grids_from_grids(grids)
+            relocated_grids = border.relocated_grids_from_grids(grid_stack)
         else:
-            relocated_grids = grids
+            relocated_grids = grid_stack
 
         pixel_centres = relocated_grids.pix
         pixels = pixel_centres.shape[0]
@@ -313,7 +313,7 @@ class AdaptiveMagnification(Voronoi, ImagePlanePixelization):
                                            pixel_neighbors=pixel_neighbors,
                                            pixel_neighbors_size=pixel_neighbors_size)
 
-        return mappers.VoronoiMapper(pixels=pixels, grids=relocated_grids, border=border,
+        return mappers.VoronoiMapper(pixels=pixels, grid_stack=relocated_grids, border=border,
                                      voronoi=voronoi, geometry=geometry)
 
 

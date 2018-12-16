@@ -25,7 +25,7 @@ rectangular = pix.Rectangular(shape=(25, 25))
 # By itself, a pixelization doesn't tell us much. It has no grid of coordinates, no regular, and nothing which tells it
 # about the lens we're fitting. This information comes when we use the pixelization to set up a 'mapper'.
 # (The 'borders=None' will be covered in tutorial 5, so just ignore it for now!)
-mapper = rectangular.mapper_from_grids_and_border(grids=tracer.source_plane.grids[0], border=None)
+mapper = rectangular.mapper_from_grid_stack_and_border(grid_stack=tracer.source_plane.grids[0], border=None)
 
 # This mapper is a 'RectangularMapper' - every pixelization generates it owns mapper.
 print(type(mapper))

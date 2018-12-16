@@ -50,7 +50,7 @@ tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source
 
 # Finally, lets setup our pixelization and mapper, like we did before, using the tracer's source-plane grid.
 rectangular = pix.Rectangular(shape=(25, 25))
-mapper = rectangular.mapper_from_grids_and_border(grids=tracer.source_plane.grids[0], border=None)
+mapper = rectangular.mapper_from_grid_stack_and_border(grid_stack=tracer.source_plane.grids[0], border=None)
 
 # Again, we're going to plot our mapper, but we're also going to plot the regular which was used to generate the grid we
 # mapped to the source-plane.
@@ -96,7 +96,7 @@ tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source
 
 # Finally, we use the tracer's (masked) source-plane grid to setup a new mapper (using the same rectangular 25 x 25
 # pixelization as before).
-mapper = rectangular.mapper_from_grids_and_border(grids=tracer.source_plane.grids[0], border=None)
+mapper = rectangular.mapper_from_grid_stack_and_border(grid_stack=tracer.source_plane.grids[0], border=None)
 
 # Lets have another look
 mapper_plotters.plot_image_and_mapper(image=image, mask=mask, mapper=mapper, should_plot_grid=True)

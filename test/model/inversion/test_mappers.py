@@ -58,7 +58,7 @@ class TestRectangularMapper:
                                        sub=MockSubGrid(pixelization_grid, sub_to_regular=np.ones((1)),
                                                        sub_grid_size=1))
 
-            pix = mappers.RectangularMapper(pixels=9, shape=(3, 3), grids=grids, geometry=geometry, border=None)
+            pix = mappers.RectangularMapper(pixels=9, shape=(3, 3), grid_stack=grids, geometry=geometry, border=None)
 
             assert (pix.regular_to_pix == np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])).all()
             assert (pix.sub_to_pix == np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])).all()
@@ -83,7 +83,7 @@ class TestRectangularMapper:
                                        sub=MockSubGrid(pixelization_grid, sub_to_regular=np.ones((1)),
                                                        sub_grid_size=1))
 
-            pix = mappers.RectangularMapper(pixels=9, shape=(3, 3), grids=grids, border=None, geometry=geometry)
+            pix = mappers.RectangularMapper(pixels=9, shape=(3, 3), grid_stack=grids, border=None, geometry=geometry)
 
             assert (pix.regular_to_pix == np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])).all()
             assert (pix.sub_to_pix == np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])).all()
@@ -108,7 +108,7 @@ class TestRectangularMapper:
                                        sub=MockSubGrid(pixelization_grid, sub_to_regular=np.ones((1)),
                                                        sub_grid_size=1))
 
-            pix = mappers.RectangularMapper(pixels=9, shape=(3, 3), grids=grids, border=None, geometry=geometry)
+            pix = mappers.RectangularMapper(pixels=9, shape=(3, 3), grid_stack=grids, border=None, geometry=geometry)
 
             assert (pix.regular_to_pix == np.array([0, 4, 2, 4, 4, 4, 6, 4, 8])).all()
             assert (pix.sub_to_pix == np.array([0, 4, 2, 4, 4, 4, 6, 4, 8])).all()
@@ -143,7 +143,7 @@ class TestRectangularMapper:
                                        sub=MockSubGrid(pixelization_grid, sub_to_regular=np.ones((1)),
                                                        sub_grid_size=1))
 
-            pix = mappers.RectangularMapper(pixels=12, shape=(4, 3), grids=grids, border=None, geometry=geometry)
+            pix = mappers.RectangularMapper(pixels=12, shape=(4, 3), grid_stack=grids, border=None, geometry=geometry)
 
             assert (pix.regular_to_pix == np.array([0, 1, 2, 3, 8, 11])).all()
             assert (pix.sub_to_pix == np.array([0, 1, 2, 3, 8, 11])).all()
@@ -176,7 +176,7 @@ class TestRectangularMapper:
                                        sub=MockSubGrid(pixelization_grid, sub_to_regular=np.ones((1)),
                                                        sub_grid_size=1))
 
-            pix = mappers.RectangularMapper(pixels=12, shape=(3, 4), grids=grids, border=None, geometry=geometry)
+            pix = mappers.RectangularMapper(pixels=12, shape=(3, 4), grid_stack=grids, border=None, geometry=geometry)
 
             assert (pix.regular_to_pix == np.array([0, 1, 2, 6, 9, 11])).all()
             assert (pix.sub_to_pix == np.array([0, 1, 2, 6, 9, 11])).all()
@@ -199,7 +199,7 @@ class TestRectangularMapper:
                                        sub=MockSubGrid(pixelization_grid, sub_to_regular=np.ones((1)),
                                                        sub_grid_size=1))
 
-            pix = mappers.RectangularMapper(pixels=9, shape=(3, 3), grids=grids, border=None, geometry=geometry)
+            pix = mappers.RectangularMapper(pixels=9, shape=(3, 3), grid_stack=grids, border=None, geometry=geometry)
 
             assert (pix.regular_to_pix == np.array([0, 1, 2, 7, 8])).all()
             assert (pix.sub_to_pix == np.array([0, 1, 2, 7, 8])).all()
@@ -222,7 +222,7 @@ class TestRectangularMapper:
                                        sub=MockSubGrid(pixelization_grid, sub_to_regular=np.ones((1)),
                                                        sub_grid_size=1))
 
-            pix = mappers.RectangularMapper(pixels=9, shape=(3, 3), grids=grids, border=None, geometry=geometry)
+            pix = mappers.RectangularMapper(pixels=9, shape=(3, 3), grid_stack=grids, border=None, geometry=geometry)
 
             assert (pix.regular_to_pix == np.array([0, 1, 3, 5, 8])).all()
             assert (pix.sub_to_pix == np.array([0, 1, 3, 5, 8])).all()
@@ -246,7 +246,7 @@ class TestRectangularMapper:
                                        sub=MockSubGrid(pixelization_grid, sub_to_regular=np.ones((1)),
                                                        sub_grid_size=1))
 
-            pix = mappers.RectangularMapper(pixels=12, shape=(4, 3), grids=grids, border=None, geometry=geometry)
+            pix = mappers.RectangularMapper(pixels=12, shape=(4, 3), grid_stack=grids, border=None, geometry=geometry)
 
             assert (pix.regular_to_pix == np.array([0, 1, 3, 10, 11])).all()
             assert (pix.sub_to_pix == np.array([0, 1, 3, 10, 11])).all()
@@ -269,7 +269,7 @@ class TestRectangularMapper:
 
             geometry = pix.geometry_from_grid(grid=pixelization_grid)
 
-            pix = mappers.RectangularMapper(pixels=12, shape=(3, 4), grids=grids, border=None, geometry=geometry)
+            pix = mappers.RectangularMapper(pixels=12, shape=(3, 4), grid_stack=grids, border=None, geometry=geometry)
 
             assert (pix.regular_to_pix == np.array([0, 1, 4, 10, 11])).all()
             assert (pix.sub_to_pix == np.array([0, 1, 4, 10, 11])).all()
@@ -298,7 +298,7 @@ class TestRectangularMapper:
                                        sub=MockSubGrid(pixelization_sub_grid, sub_to_regular=np.ones((1)),
                                                        sub_grid_size=1))
 
-            pix = mappers.RectangularMapper(pixels=9, shape=(3, 3), grids=grids, border=None, geometry=geometry)
+            pix = mappers.RectangularMapper(pixels=9, shape=(3, 3), grid_stack=grids, border=None, geometry=geometry)
 
             assert (pix.regular_to_pix == np.array([0, 4, 2, 4, 4, 4, 6, 4, 8])).all()
             assert (pix.sub_to_pix == np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])).all()
@@ -323,7 +323,7 @@ class TestRectangularMapper:
                                        sub=MockSubGrid(pixelization_grid, sub_to_regular=np.ones((1)),
                                                        sub_grid_size=1))
 
-            pix = mappers.RectangularMapper(pixels=9, shape=(3, 3), grids=grids, border=None, geometry=geometry)
+            pix = mappers.RectangularMapper(pixels=9, shape=(3, 3), grid_stack=grids, border=None, geometry=geometry)
 
             assert (pix.regular_to_pix == np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])).all()
             assert (pix.sub_to_pix == np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])).all()
@@ -347,7 +347,7 @@ class TestRectangularMapper:
                                        sub=MockSubGrid(pixelization_grid, sub_to_regular=np.ones((1)),
                                                        sub_grid_size=1))
 
-            pix = mappers.RectangularMapper(pixels=12, shape=(4, 3), grids=grids, border=None, geometry=geometry)
+            pix = mappers.RectangularMapper(pixels=12, shape=(4, 3), grid_stack=grids, border=None, geometry=geometry)
 
             assert (pix.regular_to_pix == np.array([0, 1, 3, 10, 11])).all()
             assert (pix.sub_to_pix == np.array([0, 1, 3, 10, 11])).all()
@@ -366,7 +366,7 @@ class TestRectangularMapper:
 
             geometry = pix.geometry_from_grid(grid=pixelization_grid)
 
-            pix = mappers.RectangularMapper(pixels=9, shape=(3, 3), grids=None, border=None, geometry=geometry)
+            pix = mappers.RectangularMapper(pixels=9, shape=(3, 3), grid_stack=None, border=None, geometry=geometry)
 
             recon_pix = pix.reconstructed_pixelization_from_solution_vector(solution_vector=np.array([1.0, 2.0, 3.0,
                                                                                                       4.0, 5.0, 6.0,
@@ -380,7 +380,7 @@ class TestRectangularMapper:
 
         def test__compare_to_imaging_util(self):
 
-            pix = mappers.RectangularMapper(pixels=9, shape=(4, 3), grids=None, border=None, geometry=MockGeometry())
+            pix = mappers.RectangularMapper(pixels=9, shape=(4, 3), grid_stack=None, border=None, geometry=MockGeometry())
             solution = np.array([1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 1.0, 2.0, 3.0])
             recon_pix = pix.reconstructed_pixelization_from_solution_vector(solution_vector=solution)
             recon_pix_util = mapping_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(array_1d=solution,
@@ -388,7 +388,7 @@ class TestRectangularMapper:
             assert (recon_pix == recon_pix_util).all()
             assert recon_pix.shape == (4,3)
 
-            pix = mappers.RectangularMapper(pixels=9, shape=(3, 4), grids=None, border=None, geometry=MockGeometry())
+            pix = mappers.RectangularMapper(pixels=9, shape=(3, 4), grid_stack=None, border=None, geometry=MockGeometry())
             solution = np.array([1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 1.0, 2.0, 3.0])
             recon_pix = pix.reconstructed_pixelization_from_solution_vector(solution_vector=solution)
             recon_pix_util = mapping_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(array_1d=solution,
@@ -510,8 +510,8 @@ class TestVoronoiMapper:
             pixel_neighbors, pixel_neighbors_size = pix.neighbors_from_pixelization(pixels=6,
                                                                                     ridge_points=voronoi.ridge_points)
 
-            mapper = mappers.VoronoiMapper(pixels=6, grids=grids, border=None, voronoi=voronoi,
-                         geometry=MockGeometry(pixel_centres=pixel_centers, pixel_neighbors=pixel_neighbors,
+            mapper = mappers.VoronoiMapper(pixels=6, grid_stack=grids, border=None, voronoi=voronoi,
+                                           geometry=MockGeometry(pixel_centres=pixel_centers, pixel_neighbors=pixel_neighbors,
                                                pixel_neighbors_size=pixel_neighbors_size))
 
             assert (mapper.regular_to_pix == regular_to_pixelization_nearest_neighbour).all()
@@ -545,8 +545,8 @@ class TestVoronoiMapper:
             pixel_neighbors, pixel_neighbors_size = pix.neighbors_from_pixelization(pixels=6,
                                                                                     ridge_points=voronoi.ridge_points)
 
-            mapper = mappers.VoronoiMapper(pixels=6, grids=grids, border=None, voronoi=voronoi,
-                    geometry=MockGeometry(pixel_centres=pixel_centers, pixel_neighbors=pixel_neighbors,
+            mapper = mappers.VoronoiMapper(pixels=6, grid_stack=grids, border=None, voronoi=voronoi,
+                                           geometry=MockGeometry(pixel_centres=pixel_centers, pixel_neighbors=pixel_neighbors,
                                           pixel_neighbors_size=pixel_neighbors_size))
 
             assert (mapper.sub_to_pix == sub_to_pix_nearest_neighbour).all()
