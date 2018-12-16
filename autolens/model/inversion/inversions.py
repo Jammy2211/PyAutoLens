@@ -30,15 +30,15 @@ class Inversion(object):
         Attributes
         -----------
         blurred_mapping_matrix : ndarray | None
-            The matrix representing the mapping_matrix between reconstructed_image-pixels and datas-pixels, including a \
+            The matrix representing the mapping_matrix between reconstructed_inversion_image-pixels and datas-pixels, including a \
             blurring operation (f).
         regularization_matrix : ndarray | None
-            The matrix defining how the reconstructed_image's pixels are regularized with one another (H).
+            The matrix defining how the reconstructed_inversion_image's pixels are regularized with one another (H).
         curvature_matrix : ndarray | None
-            The curvature_matrix between each reconstructed_image pixel and all other reconstructed_image pixels (F).
+            The curvature_matrix between each reconstructed_inversion_image pixel and all other reconstructed_inversion_image pixels (F).
         curvature_reg_matrix : ndarray | None
             The curvature_matrix + regularizationo matrix.
-        reconstructed_image : ndarray | None
+        reconstructed_inversion_image : ndarray | None
             The vector containing the reconstructed fit_normal of the datas.
         """
 
@@ -60,7 +60,7 @@ class Inversion(object):
 
     @property
     def reconstructed_data(self):
-        return self.mapper.grids.regular.scaled_array_from_array_1d(np.asarray(self.reconstructed_data_vector))
+        return self.mapper.grid_stack.regular.scaled_array_from_array_1d(np.asarray(self.reconstructed_data_vector))
 
     @property
     def reconstructed_data_vector(self):
