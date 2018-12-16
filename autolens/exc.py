@@ -1,6 +1,10 @@
 from autofit import exc
 
 
+class ScaledArrayException(Exception):
+    pass
+
+
 class ImagingException(Exception):
     pass
 
