@@ -249,6 +249,9 @@ class ScaledSquarePixelArray(ScaledArray):
         origin : (float, float)
             The arc-second origin of the scaled array's coordinate system.
         """
+
+        pixel_scale_sanity_checks(pixel_scales=(pixel_scale, pixel_scale))
+
         # noinspection PyArgumentList
         self.pixel_scale = pixel_scale
         self.origin = origin
@@ -358,6 +361,9 @@ class ScaledRectangularPixelArray(ScaledArray):
         origin : (float, float)
             The arc-second origin of the scaled array's coordinate system.
         """
+
+        pixel_scale_sanity_checks(pixel_scales=pixel_scales)
+
         self.pixel_scales = pixel_scales
         self.origin = origin
         # noinspection PyArgumentList
@@ -422,3 +428,10 @@ class ScaledRectangularPixelArray(ScaledArray):
             return super_result.all()
         except AttributeError:
             return super_result
+
+
+def pixel_scale_sanity_checks(pixel_scales):
+
+    if pixel_scales[0] <= 0.0 or pixel_scales[1] <= 0:
+        raise exc.ScaledArrayException('A pixel scale supplied to ScaledRectangularPixelArray (and therefore the Image) '
+                                   'is zero or negative')

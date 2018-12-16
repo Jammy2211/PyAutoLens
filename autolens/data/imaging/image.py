@@ -45,6 +45,7 @@ class Image(ScaledSquarePixelArray):
         background_sky_map : ScaledSquarePixelArray
             An array describing the background sky.
         """
+
         super(Image, self).__init__(array=array, pixel_scale=pixel_scale)
         self.psf = psf
         self.noise_map = noise_map
