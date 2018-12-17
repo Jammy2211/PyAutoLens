@@ -16,8 +16,7 @@ from autolens.lensing import sensitivity_fitting
 from autolens.lensing.plotters import sensitivity_fitting_plotters, lensing_fitting_plotters
 from autolens.model.galaxy import galaxy as g, galaxy_model as gm, galaxy_fitting, galaxy_data as gd
 from autolens.model.galaxy.plotters import galaxy_fitting_plotters
-from autolens.model.inversion import pixelizations as pix
-from autolens.pipeline.phase_property import PhasePropertyCollection
+from autofit.core.phase_property import PhasePropertyCollection
 
 logger = logging.getLogger(__name__)
 logger.level = logging.DEBUG

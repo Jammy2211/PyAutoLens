@@ -45,6 +45,34 @@ AutoLens requires [PyMultiNest](http://johannesbuchner.github.io/pymultinest-tut
 $ pip install autolens
 ```
 
+## Installation on Mac
+
+Install [conda](https://conda.io/miniconda.html).
+
+Create a conda environment:
+
+```
+conda create -n autolens python=3.7 anaconda
+```
+
+Install multinest:
+
+```
+conda install -c conda-forge multinest
+```
+
+Tell matplotlib what backend to use:
+
+```
+echo "backend : TKAgg" > ~/.matplotlib/matplotlibrc
+```
+
+Install autolens:
+
+```
+pip install autolens
+```
+
 ## Workspace
 
 If you install AutoLens with Docker a workspace will be generated for you in the home directory the first time you run the image. This contains configuration, examples and tutorials. After the first time you run docker the workspace will persist any changes you make and won't be updated again.
@@ -58,7 +86,7 @@ PyAutoLens's advanced modeling features include:
 - **Pipelines** - build automated analysis pipelines to fit complex lens models to large samples of strong lenses.
 - **Inversions** - Reconstruct complex source galaxy morphologies on a variety of pixel-grids.
 - **Adaption** - (December 2018) - Adapt the lensing analysis to the features of the observed strong lens imaging.
-- **Multi-Plane** - (January 2018) Model multi-plane lenses, including systems with multiple lensed source galaxies.
+- **Multi-Plane** - (January 2019) Model multi-plane lenses, including systems with multiple lensed source galaxies.
 
 ## HowToLens
 
@@ -84,14 +112,14 @@ With PyAutoLens, you can begin modeling a lens in just a couple of minutes. The 
 ```python
 from autolens.pipeline import phase as ph
 from autofit.core import non_linear as nl
-from autolens.lensing import galaxy_model as gm
-from autolens.imaging import image as im
-from autolens.profiles import light_profiles as lp
-from autolens.profiles import mass_profiles as mp
-from autolens.plotting import fitting_plotters
+from autolens.data.imaging import image as im
+from autolens.model.galaxy import galaxy_model as gm
+from autolens.model.profiles import light_profiles as lp
+from autolens.model.profiles import mass_profiles as mp
+from autolens.data.fitting.plotters import fitting_plotters
 import os
 
-# In this example, we'll generate a phase which fits a lens + source plane system.
+# In this example, we'll generate a phase which fits a lens + source strong lens system.
 
 # First, lets setup the path to this script so we can easily load the example data.
 path = "{}".format(os.path.dirname(os.path.realpath(__file__)))
@@ -102,14 +130,14 @@ image = im.load_imaging_from_path(image_path=path + '/data/image.fits',
                                   psf_path=path + '/data/psf.fits', pixel_scale=0.1)
 
 # We're going to model our lens galaxy using a light profile (an elliptical Sersic) and mass profile
-# (a singular isothermal sphere). We load these profiles from the 'light_profile (lp)' and 'mass_profile (mp)'
+# (a singular isothermal ellsoid). We load these profiles from the 'light_profile (lp)' and 'mass_profile (mp)'
 # modules (check out the source code to see all the profiles that are available).
 
 # To setup our model galaxies, we use the 'galaxy_model' module and GalaxyModel class. 
 # A GalaxyModel represents a galaxy where the parameters of its associated profiles are 
 # variable and fitted for by the analysis.
-lens_galaxy_model = gm.GalaxyModel(light=lp.AbstractEllipticalSersic, mass=mp.EllipticalIsothermal)
-source_galaxy_model = gm.GalaxyModel(light=lp.AbstractEllipticalSersic)
+lens_galaxy_model = gm.GalaxyModel(light=lp.EllipticalSersic, mass=mp.EllipticalIsothermal)
+source_galaxy_model = gm.GalaxyModel(light=lp.EllipticalSersic)
 
 # To perform the analysis, we set up a phase using the 'phase' module (imported as 'ph').
 # A phase takes our galaxy models and fits their parameters using a non-linear search (in this case, MultiNest).
@@ -122,3 +150,17 @@ print(results)
 fitting_plotters.plot_fitting_subplot(fit=results.fit)
 
 ```
+
+## Credits
+
+[James Nightingale](https://github.com/Jammy2211) - Co-lead developer and PyAutoLens guru.
+
+[Richard Hayes](https://github.com/rhayes777) - Co-lead developer and [PyAutoFit](https://github.com/rhayes777/PyAutoFit) guru.
+
+[Ashley Kelly](https://github.com/AshKelly) - Developer of [pyquad](https://github.com/AshKelly/pyquad) for fast deflections computations.
+
+[Nan Li](https://github.com/linan7788626) - Docker integration & support.
+
+[Andrew Robertson](https://github.com/Andrew-Robertson) - Critical curve and caustic calculations.
+
+[Andrea Enia](https://github.com/AndreaEnia) - Voronoi source-plane plotting tools.
