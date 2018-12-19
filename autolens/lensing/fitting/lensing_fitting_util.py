@@ -41,9 +41,8 @@ def blurred_image_from_1d_unblurred_and_blurring_images(unblurred_image_1d, blur
 
     return map_to_scaled_array(array_1d=blurred_image_1d)
 
-def likelihood_with_regularization_from_chi_squared_term_regularization_and_noise_term(chi_squared_term,
-                                                                                       regularization_term,
-                                                                                       noise_term):
+def likelihood_with_regularization_from_chi_squared_regularization_term_and_noise_normalization(chi_squared,
+                                                                  regularization_term, noise_normalization):
     """Compute the likelihood of an inversion's fit to the datas, including a regularization term which \
     comes from an inversion:
 
@@ -51,18 +50,18 @@ def likelihood_with_regularization_from_chi_squared_term_regularization_and_nois
 
     Parameters
     ----------
-    chi_squared_term : float
+    chi_squared : float
         The chi-squared term of the inversion's fit to the observed datas.
     regularization_term : float
         The regularization term of the inversion, which is the sum of the difference between reconstructed \
         flux of every pixel multiplied by the regularization coefficient.
-    noise_term : float
+    noise_normalization : float
         The normalization noise-term for the observed datas's noise-map.
     """
-    return -0.5 * (chi_squared_term + regularization_term + noise_term)
+    return -0.5 * (chi_squared + regularization_term + noise_normalization)
 
-def evidence_from_reconstruction_terms(chi_squared_term, regularization_term, log_covariance_regularization_term,
-                                       log_regularization_term, noise_term):
+def evidence_from_inversion_terms(chi_squared, regularization_term, log_curvature_regularization_term,
+                                  log_regularization_term, noise_normalization):
     """Compute the evidence of an inversion's fit to the datas, where the evidence includes a number of \
     terms which quantify the complexity of an inversion's reconstruction (see the *inversion* module):
 
@@ -71,20 +70,20 @@ def evidence_from_reconstruction_terms(chi_squared_term, regularization_term, lo
 
     Parameters
     ----------
-    chi_squared_term : float
+    chi_squared : float
         The chi-squared term of the inversion's fit to the observed datas.
     regularization_term : float
         The regularization term of the inversion, which is the sum of the difference between reconstructed \
         flux of every pixel multiplied by the regularization coefficient.
-    log_covariance_regularization_term : float
+    log_curvature_regularization_term : float
         The log of the determinant of the sum of the curvature and regularization matrices.
     log_regularization_term : float
         The log of the determinant o the regularization matrix.
-    noise_term : float
+    noise_normalization : float
         The normalization noise-term for the observed datas's noise-map.
     """
-    return -0.5 * (chi_squared_term + regularization_term + log_covariance_regularization_term -log_regularization_term
-                   + noise_term)
+    return -0.5 * (chi_squared + regularization_term + log_curvature_regularization_term - log_regularization_term
+                   + noise_normalization)
 
 def blurred_image_of_planes_from_tracer_and_convolver(tracer, convolver_image, map_to_scaled_array):
     """For a tracer, extract the image-plane image of every plane and blur it with the PSF.
