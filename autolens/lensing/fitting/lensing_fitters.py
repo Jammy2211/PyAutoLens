@@ -11,18 +11,18 @@ minimum_value_profile = 0.1
 
 
 def fit_lensing_image_with_tracer(lensing_image, tracer, padded_tracer=None):
-    """Fit a lensing regular with a model tracer, automatically determining the type of fit based on the \
+    """Fit a lensing image with a model tracer, automatically determining the type of fit based on the \
     properties of the galaxies in the tracer.
 
     Parameters
     -----------
     lensing_image : li.LensingImage or li.LensingHyperImage
-        List of the lensing-unblurred_image_1d that are to be fitted.
+        The lensing-images that is fitted.
     tracer : ray_tracing.AbstractTracerNonStack
-        The tracer, which describes the ray-tracing of the strong lensing configuration.
+        The tracer, which describes the ray-tracing and strong lensing configuration.
     padded_tracer : ray_tracing.AbstractTracerNonStack or None
-        A tracer with an identical strong lensing configuration to the tracer above, but using the lensing regular's \
-        padded grid_stacks such that unmasked model-unblurred_image_1d can be computed.
+        A tracer with an identical strong lensing configuration to the tracer above, but using the lensing image's \
+        padded grid_stack such that unmasked model-images can be computed.
     """
 
     if tracer.has_light_profile and not tracer.has_pixelization:
@@ -38,37 +38,38 @@ def fit_lensing_image_with_tracer(lensing_image, tracer, padded_tracer=None):
         if not tracer.has_hyper_galaxy:
             return LensingInversionFitter(lensing_image=lensing_image, tracer=tracer)
         elif tracer.has_hyper_galaxy:
-            return HyperLensingInversionFit(lensing_hyper_image=lensing_image, tracer=tracer)
+            return LensingInversionHyperFitter(lensing_hyper_image=lensing_image, tracer=tracer)
 
     elif tracer.has_light_profile and tracer.has_pixelization:
 
         if not tracer.has_hyper_galaxy:
-            return LensingProfileInversionFitter(lensing_image=lensing_image, tracer=tracer, padded_tracer=padded_tracer)
+            return LensingProfileInversionFitter(lensing_image=lensing_image, tracer=tracer,
+                                                 padded_tracer=padded_tracer)
         elif tracer.has_hyper_galaxy:
-            return HyperLensingProfileInversionFit(lensing_hyper_image=lensing_image, tracer=tracer,
-                                                   padded_tracer=padded_tracer)
+            return LensingProfileInversionHyperFitter(lensing_hyper_image=lensing_image, tracer=tracer,
+                                                      padded_tracer=padded_tracer)
 
     else:
 
-        raise exc.FittingException('The fit_normal routine did not call a Fit class - check the '
-                                   'properties of the tracer_normal')
+        raise exc.FittingException('The fit routine did not call a Fit class - check the '
+                                   'properties of the tracer')
 
 
 def fast_fit_from_lensing_image_and_tracer(lensing_image, tracer):
-    """Fit a lensing regular with a model tracer, automatically determining the type of fit based on the properties of \
+    """Fit a lensing image with a model tracer, automatically determining the type of fit based on the properties of \
      the galaxies in the tracer.
 
     The likelihood is computed in the fastest, least memory-intensive, way possible, for efficient non-linear sampling.
 
     Parameters
     -----------
-    lensing_image : [li.LensingImage] or [li.LensingHyperImage]
-        List of the lensing-unblurred_image_1d that are to be fitted.
-    tracer : ray_tracing.AbstractTracer
-        The tracer, which describes the ray-tracing of the strong lensing configuration.
-    padded_tracer : ray_tracing.AbstractTracer
-        A tracer with an identical strong lensing configuration to the tracer above, but using the lensing regular's \
-        padded grid_stacks such that unmasked model-unblurred_image_1d can be computed.
+    lensing_image : li.LensingImage or li.LensingHyperImage
+        The lensing-images that is fitted.
+    tracer : ray_tracing.AbstractTracerNonStack
+        The tracer, which describes the ray-tracing and strong lensing configuration.
+    padded_tracer : ray_tracing.AbstractTracerNonStack or None
+        A tracer with an identical strong lensing configuration to the tracer above, but using the lensing image's \
+        padded grid_stack such that unmasked model-images can be computed.
     """
     if tracer.has_light_profile and not tracer.has_pixelization:
 
@@ -82,26 +83,37 @@ def fast_fit_from_lensing_image_and_tracer(lensing_image, tracer):
         if not tracer.has_hyper_galaxy:
             return LensingInversionFitter.fast_fit(lensing_image=lensing_image, tracer=tracer)
         elif tracer.has_hyper_galaxy:
-            return HyperLensingInversionFit.fast_scaled_evidence(lensing_hyper_image=lensing_image, tracer=tracer)
+            return LensingInversionHyperFitter.fast_fit(lensing_hyper_image=lensing_image, tracer=tracer)
 
     elif tracer.has_light_profile and tracer.has_pixelization:
 
         if not tracer.has_hyper_galaxy:
             return LensingProfileInversionFitter.fast_fit(lensing_image=lensing_image, tracer=tracer)
         elif tracer.has_hyper_galaxy:
-            return HyperLensingProfileInversionFit.fast_scaled_evidence(lensing_hyper_image=lensing_image,
-                                                                        tracer=tracer)
+            return LensingProfileInversionHyperFitter.fast_fit(lensing_hyper_image=lensing_image, tracer=tracer)
 
     else:
 
         raise exc.FittingException('The fast likelihood routine did not call a likelihood functions - check the '
-                                   'properties of the tracer_normal')
+                                   'properties of the tracer')
 
 
 class AbstractLensingFitter(object):
 
     def __init__(self, tracer, padded_tracer, map_to_scaled_array):
+        """ An abstract lensing fitter, which contains the tracer's used to perform the fit and functions to manipulate \
+        the lensing image's data.
 
+        Parameters
+        -----------
+        tracer : ray_tracing.AbstractTracerNonStack
+            The tracer, which describes the ray-tracing and strong lensing configuration.
+        padded_tracer : ray_tracing.AbstractTracerNonStack or None
+            A tracer with an identical strong lensing configuration to the tracer above, but using the lensing image's \
+            padded grid_stack such that unmasked model-images can be computed.
+        map_to_scaled_array : func
+            A function which maps the 1D lensing data to its unmasked 2D array.
+        """
         self.tracer = tracer
         self.padded_tracer = padded_tracer
         self.map_to_scaled_array = map_to_scaled_array
@@ -114,7 +126,22 @@ class AbstractLensingFitter(object):
 class AbstractLensingProfileFitter(AbstractLensingFitter):
 
     def __init__(self, lensing_image, tracer, padded_tracer):
+        """ An abstract lensing profile fitter, which generates the image-plane image of all galaxies (with light \
+        profiles) in the tracer and blurs it with the lensing image's PSF.
 
+        If a padded tracer is supplied, the blurred profile image's can be generated over the entire image and thus \
+        without the mask.
+
+        Parameters
+        -----------
+        lensing_image : li.LensingImage
+            The lensing-image that is fitted.
+        tracer : ray_tracing.AbstractTracerNonStack
+            The tracer, which describes the ray-tracing and strong lensing configuration.
+        padded_tracer : ray_tracing.AbstractTracerNonStack or None
+            A tracer with an identical strong lensing configuration to the tracer above, but using the lensing image's \
+            padded grid_stack such that unmasked model-images can be computed.
+        """
         super(AbstractLensingProfileFitter, self).__init__(tracer=tracer, padded_tracer=padded_tracer,
                                                            map_to_scaled_array=lensing_image.map_to_scaled_array)
 
@@ -150,32 +177,21 @@ class AbstractLensingProfileFitter(AbstractLensingFitter):
 class AbstractLensingInversionFitter(AbstractLensingFitter):
 
     def __init__(self, lensing_image, noise_map_1d, tracer):
-        """Abstract base class for a fit to an regular which uses a linear inversion.
+        """ An abstract lensing inversion fitter, which fits the lensing image an inversion using the mapper(s) and \
+        regularization(s) in the galaxies of the tracer.
 
-        This includes passing the regular / noise_maps / PSF and inversion objects to the inversons module to perform \
-        the inversion.
+        This inversion use's the lensing-image, its PSF and an input noise-map.
 
         Parameters
         -----------
         lensing_image : li.LensingImage
-            List of the lensing-unblurred_image_1d that are to be fitted.
+            The lensing-image that is fitted.
+        noise_map_1d : ndarray
+            The 1D noise map that is fitted, which is an input variable so a hyper-noise map can be used (see \
+            *AbstractHyperFitter*).
         tracer : ray_tracing.AbstractTracerNonStack
-            The tracer, which describes the ray-tracing of the strong lensing configuration.
-
-        Attributes
-        -----------
-        likelihoods_with_regularization : [float]
-            The likelihood of each fit to the regular, including jsut 3 terms, the chi-squared term, regularization
-            penalty factor and noise normalization term.
-        likelihood_with_regularization : float
-            The sum of all likelihoods_with_regularization for all unblurred_image_1d.
-        evidences : [float]
-            The Bayesian evidence of each fit to the regular. The Bayesian evidence is described in Suyu et al. 2006 and
-            the howtolens inversion tutorial chapter_4_inversions/tutorial_4_bayesian_regularization.
-        evidence : float
-            The sum of evidence values for all unblurred_image_1d.
+            The tracer, which describes the ray-tracing and strong lensing configuration.
         """
-
         super(AbstractLensingInversionFitter, self).__init__(tracer=tracer, padded_tracer=None,
                                                              map_to_scaled_array=lensing_image.map_to_scaled_array)
 
@@ -191,7 +207,28 @@ class AbstractLensingInversionFitter(AbstractLensingFitter):
 class AbstractLensingProfileInversionFitter(AbstractLensingFitter):
 
     def __init__(self, lensing_image, noise_map_1d, tracer, padded_tracer):
+        """ An abstract lensing profile and inversion fitter, which first generates and subtracts the image-plane \
+        image of all galaxies (with light profiles) in the tracer, blurs it with the PSF and fits the residual image \
+        with an inversion using the mapper(s) and regularization(s) in the galaxy's of the tracer.
 
+        This inversion use's the lensing-image, its PSF and an input noise-map.
+
+        If a padded tracer is supplied, the blurred profile image's can be generated over the entire image and thus \
+        without the mask.
+
+        Parameters
+        -----------
+        lensing_image : li.LensingImage
+            The lensing-image that is fitted.
+        noise_map_1d : ndarray
+            The 1D noise map that is fitted, which is an input variable so a hyper-noise map can be used (see \
+            *AbstractHyperFitter*).
+        tracer : ray_tracing.AbstractTracerNonStack
+            The tracer, which describes the ray-tracing and strong lensing configuration.
+        padded_tracer : ray_tracing.AbstractTracerNonStack or None
+            A tracer with an identical strong lensing configuration to the tracer above, but using the lensing image's \
+            padded grid_stack such that unmasked model-images can be computed.
+        """
         super(AbstractLensingProfileInversionFitter, self).__init__(tracer=tracer, padded_tracer=padded_tracer,
                                                            map_to_scaled_array=lensing_image.map_to_scaled_array)
 
@@ -220,7 +257,19 @@ class AbstractLensingProfileInversionFitter(AbstractLensingFitter):
 class LensingDataFitter(fitter.DataFitter):
 
     def __init__(self, image, noise_map, mask, model_image):
+        """Class to fit a lensing image with a model image.
 
+        Parameters
+        -----------
+        image : ndarray
+            The observed image that is fitted.
+        noise_map : ndarray
+            The noise-map of the observed image.
+        mask: msk.Mask
+            The mask that is applied to the image.
+        model_data : ndarray
+            The model image the oberved image is fitted with.
+        """
         super(LensingDataFitter, self).__init__(data=np.asarray(image), noise_map=np.asarray(noise_map),
                                                 mask=np.asarray(mask), model_data=np.asarray(model_image))
 
@@ -236,39 +285,58 @@ class LensingDataFitter(fitter.DataFitter):
 class LensingDataInversionFitter(LensingDataFitter):
 
     def __init__(self, image, noise_map, mask, model_image, inversion):
+        """Class to fit a lensing image with a inversion model image.
 
+        Parameters
+        -----------
+        image : ndarray
+            The observed image that is fitted.
+        noise_map : ndarray
+            The noise-map of the observed image.
+        mask: msk.Mask
+            The mask that is applied to the image.
+        model_data : ndarray
+            The model image the oberved image is fitted with.
+        inversion : inversions.Inversion
+            The inversion used to ofit the image.
+        """
         super(LensingDataFitter, self).__init__(data=np.asarray(image), noise_map=np.asarray(noise_map),
                                                 mask=np.asarray(mask), model_data=np.asarray(model_image))
 
         self.likelihood_with_regularization = \
-            lensing_fitting_util.likelihood_with_regularization_from_chi_squared_term_regularization_and_noise_term(
-            chi_squared_term=self.chi_squared_term, regularization_term=inversion.regularization_term,
-            noise_term=self.noise_term)
+            lensing_fitting_util.likelihood_with_regularization_from_chi_squared_regularization_term_and_noise_normalization(
+            chi_squared=self.chi_squared, regularization_term=inversion.regularization_term,
+            noise_normalization=self.noise_normalization)
 
-        self.evidence = lensing_fitting_util.evidence_from_reconstruction_terms(chi_squared_term=self.chi_squared_term,
+        self.evidence = lensing_fitting_util.evidence_from_inversion_terms(chi_squared=self.chi_squared,
                         regularization_term=inversion.regularization_term,
-                        log_covariance_regularization_term=inversion.log_det_curvature_reg_matrix_term,
+                        log_curvature_regularization_term=inversion.log_det_curvature_reg_matrix_term,
                         log_regularization_term=inversion.log_det_regularization_matrix_term,
-                        noise_term=self.noise_term)
+                        noise_normalization=self.noise_normalization)
 
 
 class LensingProfileFitter(LensingDataFitter, AbstractLensingProfileFitter):
 
     def __init__(self, lensing_image, tracer, padded_tracer=None):
-        """
-        Class to evaluate the fit_normal between a model described by a tracer_normal and an actual lensing_image.
+        """ Fit a lensing image with galaxy light-profiles, as follows:
+
+        1) Generates the image-plane image of all galaxies with light profiles in the tracer.
+        2) Blur this image-plane image with the lensing image's PSF to generate the model-image.
+        3) Fit the observed with this model-image.
+
+        If a padded tracer is supplied, the blurred profile image's can be generated over the entire image and thus \
+        without the mask.
 
         Parameters
-        ----------
+        -----------
         lensing_image : li.LensingImage
-            List of the lensing-unblurred_image_1d that are to be fitted.
+            The lensing-image that is fitted.
         tracer : ray_tracing.AbstractTracerNonStack
-            The tracer, which describes the ray-tracing of the strong lensing configuration.
+            The tracer, which describes the ray-tracing and strong lensing configuration.
         padded_tracer : ray_tracing.AbstractTracerNonStack or None
-            A tracer with an identical strong lensing configuration to the tracer above, but using the lensing regular's \
-            padded grid_stacks such that unmasked model-unblurred_image_1d can be computed.
+            A tracer with an identical strong lensing configuration to the tracer above, but using the lensing image's \
+            padded grid_stack such that unmasked model-images can be computed.
         """
-
         AbstractLensingProfileFitter.__init__(self=self, lensing_image=lensing_image, tracer=tracer,
                                               padded_tracer=padded_tracer)
 
@@ -292,15 +360,18 @@ class LensingProfileFitter(LensingDataFitter, AbstractLensingProfileFitter):
 class LensingInversionFitter(LensingDataInversionFitter, AbstractLensingInversionFitter):
 
     def __init__(self, lensing_image, tracer):
-        """
-        Class to evaluate the fit_normal between a model described by a tracer_normal and an actual lensing_image.
+        """ Fit a lensing image with an inversion, as follows:
+
+        1) Extract the mapper(s) and regularization(s) of galaxies in the tracer.
+        2) Use these to perform an inversion on the lensing image (including PSF blurring) and generate the model-image.
+        3) Fit the observed with this model-image.
 
         Parameters
-        ----------
+        -----------
         lensing_image : li.LensingImage
-            List of the lensing-unblurred_image_1d that are to be fitted.
+            The lensing-image that is fitted.
         tracer : ray_tracing.AbstractTracerNonStack
-            The tracer, which describes the ray-tracing of the strong lensing configuration.
+            The tracer, which describes the ray-tracing and strong lensing configuration.
         """
 
         AbstractLensingInversionFitter.__init__(self=self, lensing_image=lensing_image,
@@ -331,18 +402,31 @@ class LensingInversionFitter(LensingDataInversionFitter, AbstractLensingInversio
 class LensingProfileInversionFitter(LensingDataInversionFitter, AbstractLensingProfileInversionFitter):
 
     def __init__(self, lensing_image, tracer, padded_tracer=None):
-        """
-        Class to evaluate the fit_normal between a model described by a tracer_normal and an actual lensing_image.
+        """ Fit a lensing image with galaxy light-profiles and an inversion, as follows:
+
+        1) Generates the image-plane image of all galaxies with light profiles in the tracer.
+        2) Blur this image-plane image with the lensing image's PSF to generate the model-image.
+        3) Subtract this image from the observed image to generate a profile subtracted image.
+        4) Extract the mapper(s) and regularization(s) of galaxies in the tracer.
+        5) Use these to perform an inversion on the profile subtracted image (including PSF blurring).
+        6) Add the blurred profile image and reconstructed inversion image together to generate the model-image.
+        7) Fit the observed with this model-image.
+
+        Typically, this fit is used to subtract the foreground lens's light using light profiles \
+        and then fit the source galaxy with an inversion, however the fitting routine in general
+
+        If a padded tracer is supplied, the blurred profile image's can be generated over the entire image and thus \
+        without the mask.
 
         Parameters
-        ----------
-        lensing_images : li.LensingImage
-            List of the lensing-unblurred_image_1d that are to be fitted.
+        -----------
+        lensing_image : li.LensingImage
+            The lensing-image that is fitted.
         tracer : ray_tracing.AbstractTracerNonStack
-            The tracer, which describes the ray-tracing of the strong lensing configuration.
+            The tracer, which describes the ray-tracing and strong lensing configuration.
         padded_tracer : ray_tracing.AbstractTracerNonStack or None
-            A tracer with an identical strong lensing configuration to the tracer above, but using the lensing regular's \
-            padded grid_stacks such that unmasked model-unblurred_image_1d can be computed.
+            A tracer with an identical strong lensing configuration to the tracer above, but using the lensing image's \
+            padded grid_stack such that unmasked model-images can be computed.
         """
 
         AbstractLensingProfileInversionFitter.__init__(self=self, lensing_image=lensing_image,
@@ -389,21 +473,21 @@ class AbstractLensingHyperFitter(object):
         small regions of a datas-set with high chi-squared values and therefore provide a global fit to the overall
         datas-set.
 
-        This is performed using an existing model of the datas-set to compute a contributions regular, which a set of
+        This is performed using an existing model of the datas-set to compute a contributions image, which a set of
         hyper-parameters then use to increase the noise in localized regions of the datas-set.
 
         Parameters
         -----------
         lensing_hyper_image : [fit_data.FitDataHyper]
-            The fitting unblurred_image_1d that are fitted, which include the hyper-unblurred_image_1d used for scaling the noise-map.
+            The fitting image that are fitted, which include the hyper-image used for scaling the noise-map.
         hyper_galaxies : [galaxy.Galaxy]
             The hyper-galaxies which represent the model components used to scale the noise, which correspond to
-            individual galaxies in the regular.
+            individual galaxies in the image.
 
         Attributes
         -----------
         contributions : [scaled_array.ScaledSquarePixelArray]
-            The contribution map of every regular, where there is an individual contribution map for each hyper-galaxy in
+            The contribution map of every image, where there is an individual contribution map for each hyper-galaxy in
             the model.
         hyper_noise_map : scaled_array.ScaledSquarePixelArray
             The hyper noise map of the image, computed after using the hyper-galaxies.
@@ -433,17 +517,17 @@ class LensingProfileHyperFitter(LensingDataFitter, AbstractLensingProfileFitter,
 
     def __init__(self, lensing_hyper_image, tracer, padded_tracer=None):
         """
-        Class to evaluate the fit_normal between a model described by a tracer_normal and an actual lensing_image.
+        Class to evaluate the fit between a model described by a tracer and an actual lensing_image.
 
         Parameters
         ----------
         lensing_hyper_image : li.LensingHyperImage
-            List of the lensing hyper unblurred_image_1d that are to be fitted.
+            List of the lensing hyper image that are to be fitted.
         tracer : ray_tracing.AbstractTracerNonStack
             The tracer, which describes the ray-tracing of the strong lensing configuration.
         tracer : ray_tracing.AbstractTracerNonStack or None
-            A tracer with an identical strong lensing configuration to the tracer above, but using the lensing regular's \
-            padded grid_stacks such that unmasked model-unblurred_image_1d can be computed.
+            A tracer with an identical strong lensing configuration to the tracer above, but using the lensing image's \
+            padded grid_stacks such that unmasked model-image can be computed.
         """
 
         AbstractLensingHyperFitter.__init__(self=self, lensing_hyper_image=lensing_hyper_image,
@@ -484,12 +568,12 @@ class LensingInversionHyperFitter(LensingDataInversionFitter, AbstractLensingInv
 
     def __init__(self, lensing_hyper_image, tracer):
         """
-        Class to evaluate the fit_normal between a model described by a tracer_normal and an actual lensing_image.
+        Class to evaluate the fit between a model described by a tracer and an actual lensing_image.
 
         Parameters
         ----------
         lensing_image : li.LensingHyperImage
-            List of the lensing-unblurred_image_1d that are to be fitted.
+            List of the lensing-image that are to be fitted.
         tracer : ray_tracing.AbstractTracerNonStack
             The tracer, which describes the ray-tracing of the strong lensing configuration.
         """
@@ -505,19 +589,93 @@ class LensingInversionHyperFitter(LensingDataInversionFitter, AbstractLensingInv
                                                           model_image=self.inversion.reconstructed_data,
                                                           inversion=self.inversion)
 
-
     @classmethod
-    def fast_fit(cls, lensing_image, tracer):
+    def fast_fit(cls, lensing_hyper_image, tracer):
         """Perform the fit of this class as described above, but storing no results as class instances, thereby \
         minimizing memory use and maximizing run-speed."""
 
+        contributions_1d = \
+            lensing_fitting_util.contributions_from_hyper_images_and_galaxies(
+                hyper_model_image_1d=lensing_hyper_image.hyper_model_image_1d,
+                hyper_galaxy_images_1d=lensing_hyper_image.hyper_galaxy_images_1d,
+                hyper_galaxies=tracer.hyper_galaxies, hyper_minimum_values=lensing_hyper_image.hyper_minimum_values)
+
+        hyper_noise_map_1d = lensing_fitting_util.scaled_noise_map_from_hyper_galaxies_and_contributions(
+                             contributions_1d=contributions_1d, hyper_galaxies=tracer.hyper_galaxies,
+                             noise_map_1d=lensing_hyper_image.noise_map_1d)
+
         inversion = inversions.inversion_from_lensing_image_mapper_and_regularization(
-            image_1d=lensing_image.image_1d, noise_map_1d=lensing_image.noise_map_1d,
-            convolver=lensing_image.convolver_mapping_matrix, mapper=tracer.mappers_of_planes[-1],
+                    image_1d=lensing_hyper_image.image_1d, noise_map_1d=hyper_noise_map_1d,
+                    convolver=lensing_hyper_image.convolver_mapping_matrix, mapper=tracer.mappers_of_planes[-1],
+                    regularization=tracer.regularizations_of_planes[-1])
+
+        fit = LensingDataInversionFitter(image=lensing_hyper_image.image_1d, noise_map=hyper_noise_map_1d,
+              mask=lensing_hyper_image.mask_1d, model_image=inversion.reconstructed_data_vector, inversion=inversion)
+
+        return fit.evidence
+
+
+class LensingProfileInversionHyperFitter(LensingDataInversionFitter, AbstractLensingProfileInversionFitter,
+                                         AbstractLensingHyperFitter):
+
+    def __init__(self, lensing_hyper_image, tracer, padded_tracer=None):
+        """
+        Class to evaluate the fit between a model described by a tracer and an actual lensing_image.
+
+        Parameters
+        ----------
+        lensing_images : li.LensingImage
+            List of the lensing-image that are to be fitted.
+        tracer : ray_tracing.AbstractTracerNonStack
+            The tracer, which describes the ray-tracing of the strong lensing configuration.
+        padded_tracer : ray_tracing.AbstractTracerNonStack or None
+            A tracer with an identical strong lensing configuration to the tracer above, but using the lensing image's \
+            padded grid_stacks such that unmasked model-image can be computed.
+        """
+
+        AbstractLensingHyperFitter.__init__(self=self, lensing_hyper_image=lensing_hyper_image,
+                                            hyper_galaxies=tracer.hyper_galaxies)
+
+        AbstractLensingProfileInversionFitter.__init__(self=self, lensing_image=lensing_hyper_image,
+                                                       noise_map_1d=self.hyper_noise_map_1d, tracer=tracer,
+                                                       padded_tracer=padded_tracer)
+
+        model_image = self.blurred_profile_image + self.inversion.reconstructed_data
+
+        super(LensingProfileInversionHyperFitter, self).__init__(image=lensing_hyper_image.image,
+                                                                 noise_map=self.hyper_noise_map,
+                                                                 mask=lensing_hyper_image.mask, model_image=model_image,
+                                                                 inversion=self.inversion)
+
+    @classmethod
+    def fast_fit(cls, lensing_hyper_image, tracer):
+        """Perform the fit of this class as described above, but storing no results as class instances, thereby \
+        minimizing memory use and maximizing run-speed."""
+
+        contributions_1d = \
+            lensing_fitting_util.contributions_from_hyper_images_and_galaxies(
+                hyper_model_image_1d=lensing_hyper_image.hyper_model_image_1d,
+                hyper_galaxy_images_1d=lensing_hyper_image.hyper_galaxy_images_1d,
+                hyper_galaxies=tracer.hyper_galaxies, hyper_minimum_values=lensing_hyper_image.hyper_minimum_values)
+
+        hyper_noise_map_1d = lensing_fitting_util.scaled_noise_map_from_hyper_galaxies_and_contributions(
+                             contributions_1d=contributions_1d, hyper_galaxies=tracer.hyper_galaxies,
+                             noise_map_1d=lensing_hyper_image.noise_map_1d)
+
+        blurred_profile_image_1d = lensing_fitting_util.blurred_image_1d_from_1d_unblurred_and_blurring_images(
+            unblurred_image_1d=tracer.image_plane_image_1d, blurring_image_1d=tracer.image_plane_blurring_image_1d,
+            convolver=lensing_hyper_image.convolver_image)
+
+        profile_subtracted_image_1d = lensing_hyper_image.image_1d - blurred_profile_image_1d
+
+        inversion = inversions.inversion_from_lensing_image_mapper_and_regularization(
+            image_1d=profile_subtracted_image_1d, noise_map_1d=hyper_noise_map_1d,
+            convolver=lensing_hyper_image.convolver_mapping_matrix, mapper=tracer.mappers_of_planes[-1],
             regularization=tracer.regularizations_of_planes[-1])
 
-        fit = LensingDataInversionFitter(image=lensing_image.image_1d, noise_map=lensing_image.noise_map_1d,
-                                         mask=lensing_image.mask_1d, model_image=inversion.reconstructed_data_vector,
+        fit = LensingDataInversionFitter(image=lensing_hyper_image.image_1d, noise_map=hyper_noise_map_1d,
+                                         mask=lensing_hyper_image.mask_1d,
+                                         model_image=blurred_profile_image_1d + inversion.reconstructed_data_vector,
                                          inversion=inversion)
 
         return fit.evidence

@@ -61,7 +61,7 @@ def test__simulate_lensed_source_and_fit__no_psf_blurring__chi_squared_is_0__noi
 
     fitter = lensing_fitters.LensingProfileFitter(lensing_image=lensing_image, tracer=tracer)
 
-    assert fitter.chi_squared_term == 0.0
+    assert fitter.chi_squared == 0.0
 
 
 def test__simulate_lensed_source_and_fit__include_psf_blurring__chi_squared_is_0__noise_term_correct():
@@ -109,4 +109,4 @@ def test__simulate_lensed_source_and_fit__include_psf_blurring__chi_squared_is_0
 
     fitter = lensing_fitters.LensingProfileFitter(lensing_image=lensing_image, tracer=tracer)
 
-    assert fitter.chi_squared_term == pytest.approx(0.0, 1e-4)
+    assert fitter.chi_squared == pytest.approx(0.0, 1e-4)

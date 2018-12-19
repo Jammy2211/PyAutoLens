@@ -67,7 +67,7 @@ def fast_likelihood_from_multiple_lensing_images_and_tracer(lensing_images, trac
     if tracer.has_light_profile and not tracer.has_pixelization:
 
         if not tracer.has_hyper_galaxy:
-            return LensingProfileFitter.fast_fit(lensing_image=lensing_images, tracer=tracer)
+            return LensingProfileFitter.fast_fit(lensing_hyper_image=lensing_images, tracer=tracer)
         elif tracer.has_hyper_galaxy:
             return HyperLensingProfileFit.fast_fit(lensing_hyper_images=lensing_images, tracer=tracer)
 
