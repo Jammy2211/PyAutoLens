@@ -2299,7 +2299,7 @@ class TestLoadImagingFromFits(object):
 
     def test__noise_map_from_image_and_background_noise_map_exceptions(self):
 
-        # need background noise map - raise error if not present
+        # need background noise_map map - raise error if not present
         with pytest.raises(exc.ImagingException):
             image.load_imaging_from_fits(image_path=test_data_dir + '3x3_ones.fits',
                                              psf_path=test_data_dir + '3x3_ones.fits', pixel_scale=0.1,

@@ -349,7 +349,7 @@ class PhasePositions(AbstractPhase):
                                                                 image_plane_positions=self.positions, cosmology=self.cosmology)
 
         def fit_for_tracer(self, tracer):
-            return lensing_fitters.PositionFit(positions=tracer.source_plane.positions, noise=self.pixel_scale)
+            return lensing_fitters.LensingPositionFitter(positions=tracer.source_plane.positions, noise_map=self.pixel_scale)
 
         @classmethod
         def log(cls, instance):
@@ -526,8 +526,8 @@ class PhaseImaging(Phase):
 
                 tracer = ray_tracing.TracerImageSourcePlanesPositions(lens_galaxies=instance.lens_galaxies,
                                                                       image_plane_positions=self.lensing_image.positions)
-                fit = lensing_fitters.PositionFit(positions=tracer.source_plane.positions,
-                                                  noise=self.lensing_image.image.pixel_scale)
+                fit = lensing_fitters.LensingPositionFitter(positions=tracer.source_plane.positions,
+                                                            noise_map=self.lensing_image.image.pixel_scale)
 
                 if not fit.maximum_separation_within_threshold(self.position_threshold):
                     return exc.RayTracingException

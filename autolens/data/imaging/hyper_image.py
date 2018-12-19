@@ -1,7 +1,7 @@
 class HyperImage(object):
 
     def __init__(self, background_sky_scale=0.0, background_noise_scale=0.0):
-        """Class for scaling the background sky map and background noise-map of an regular.
+        """Class for scaling the background sky map and background noise_map-map of an regular.
 
         Parameters
         -----------

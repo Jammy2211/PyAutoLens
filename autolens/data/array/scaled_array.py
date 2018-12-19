@@ -219,7 +219,7 @@ class ScaledArray(Array, RectangularArrayGeometry):
         Parameters
         ----------
         array: ndarray
-            An array representing datas (e.g. an datas_, noise-mappers, etc.)
+            An array representing datas (e.g. an datas_, noise_map-mappers, etc.)
         origin : (float, float)
             The arc-second origin of the scaled array's coordinate system.
         """
@@ -243,7 +243,7 @@ class ScaledSquarePixelArray(ScaledArray):
         Parameters
         ----------
         array: ndarray
-            An array representing datas (e.g. an datas_, noise-mappers, etc.)
+            An array representing datas (e.g. an datas_, noise_map-mappers, etc.)
         pixel_scale: float
             The arc-second to pixel conversion factor of each pixel.
         origin : (float, float)
@@ -352,7 +352,7 @@ class ScaledRectangularPixelArray(ScaledArray):
         Parameters
         ----------
         array: ndarray
-            An array representing datas (e.g. an datas_, noise-mappers, etc.)
+            An array representing datas (e.g. an datas_, noise_map-mappers, etc.)
         pixel_scales : (float, float)
             The arc-second to pixel conversion factor of each pixel.
         origin : (float, float)

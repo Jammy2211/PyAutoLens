@@ -35,7 +35,7 @@ class Image(ScaledSquarePixelArray):
             An array describing the RMS standard deviation error in each pixel, preferably in units of electrons per
             second.
         background_noise_map : NoiseMap
-            An array describing the RMS standard deviation error in each pixel due to the background sky noise,
+            An array describing the RMS standard deviation error in each pixel due to the background sky noise_map,
             preferably in units of electrons per second.
         poisson_noise_map : NoiseMap
             An array describing the RMS standard deviation error in each pixel due to the Poisson counts of the source,
@@ -392,7 +392,7 @@ class NoiseMap(ScaledSquarePixelArray):
 
     @classmethod
     def from_weight_map(cls, pixel_scale, weight_map):
-        """Setup the noise-map from a weight map, which is a form of noise-map that comes via HST datas-reduction and \
+        """Setup the noise_map-map from a weight map, which is a form of noise_map-map that comes via HST datas-reduction and \
         the software package MultiDrizzle.
 
         The variance in each pixel is computed as:
@@ -416,7 +416,7 @@ class NoiseMap(ScaledSquarePixelArray):
 
     @classmethod
     def from_inverse_noise_map(cls, pixel_scale, inverse_noise_map):
-        """Setup the noise-map from an root-mean square standard deviation map, which is a form of noise-map that \
+        """Setup the noise_map-map from an root-mean square standard deviation map, which is a form of noise_map-map that \
         comes via HST datas-reduction and the software package MultiDrizzle.
 
         The variance in each pixel is computed as:
@@ -431,7 +431,7 @@ class NoiseMap(ScaledSquarePixelArray):
         pixel_scale : float
             The size of each pixel in arc seconds.
         inverse_noise_map : ndarray
-            The inverse noise value of each pixel which is converted to a variance.
+            The inverse noise_map value of each pixel which is converted to a variance.
         """
         noise_map = 1.0 / inverse_noise_map
         return NoiseMap(array=noise_map, pixel_scale=pixel_scale)
@@ -648,7 +648,7 @@ def load_imaging_from_fits(image_path, pixel_scale, image_hdu=0,
                            background_sky_map_path=None, background_sky_map_hdu=0,
                            convert_from_electrons=False,
                            gain=None, convert_from_adus=False):
-    """Factory for loading the imaging datas from a .fits file, as well as computing other properties like the noise-map,
+    """Factory for loading the imaging datas from a .fits file, as well as computing other properties like the noise_map-map,
     exposure-time map, etc. from the existing datas.
 
     This factory also includes a number of routines for converting unblurred_image_1d from other units (e.g. counts) to electrons \
@@ -663,7 +663,7 @@ def load_imaging_from_fits(image_path, pixel_scale, image_hdu=0,
     image_hdu : int
         The hdu the regular is contained in the .fits file that *image_path* points too.
     resized_image_shape : (int, int) | None
-        If input, the regular (and arrays that are regular sized, e.g. the noise-maps) are resized to these dimensions.
+        If input, the regular (and arrays that are regular sized, e.g. the noise_map-maps) are resized to these dimensions.
     resized_image_origin_pixels : (int, int) | None
         If the regular is resized, this defines a new origin in pixels around which recentering occurs.
     resized_image_origin_arc_seconds : (float, float) | None
@@ -677,40 +677,40 @@ def load_imaging_from_fits(image_path, pixel_scale, image_hdu=0,
     renormalize_psf : bool
         If True, the PSF is renoralized such that all elements sum to 1.0.
     noise_map_path : str
-        The path and filename of the .fits datas containing the noise-map.
+        The path and filename of the .fits datas containing the noise_map-map.
     noise_map_hdu : int
-        The hdu the noise-map is contained in the .fits file that *noise_map_path* points too.
+        The hdu the noise_map-map is contained in the .fits file that *noise_map_path* points too.
     noise_map_from_image_and_background_noise_map : bool
-        If True, the noise-map is computed from the observed regular and background noise-map \
+        If True, the noise_map-map is computed from the observed regular and background noise_map-map \
         (see NoiseMap.from_image_and_background_noise_map).
     convert_noise_map_from_weight_map : bool
-        If True, the noise-map loaded from the .fits file is converted from a weight-map to a noise-map (see \
+        If True, the noise_map-map loaded from the .fits file is converted from a weight-map to a noise_map-map (see \
         *NoiseMap.from_weight_map).
     convert_noise_map_from_inverse_noise_map : bool
-        If True, the noise-map loaded from the .fits file is converted from an inverse noise-map to a noise-map (see \
+        If True, the noise_map-map loaded from the .fits file is converted from an inverse noise_map-map to a noise_map-map (see \
         *NoiseMap.from_inverse_noise_map).
     background_noise_map_path : str
-        The path and filename of the .fits datas containing the background noise-map.
+        The path and filename of the .fits datas containing the background noise_map-map.
     background_noise_map_hdu : int
-        The hdu the background noise-map is contained in the .fits file that *background_noise_map_path* points too.
+        The hdu the background noise_map-map is contained in the .fits file that *background_noise_map_path* points too.
     convert_background_noise_map_from_weight_map : bool
-        If True, the bacground noise-map loaded from the .fits file is converted from a weight-map to a noise-map (see \
+        If True, the bacground noise_map-map loaded from the .fits file is converted from a weight-map to a noise_map-map (see \
         *NoiseMap.from_weight_map).
     convert_background_noise_map_from_inverse_noise_map : bool
-        If True, the background noise-map loaded from the .fits file is converted from an inverse noise-map to a \
-        noise-map (see *NoiseMap.from_inverse_noise_map).
+        If True, the background noise_map-map loaded from the .fits file is converted from an inverse noise_map-map to a \
+        noise_map-map (see *NoiseMap.from_inverse_noise_map).
     poisson_noise_map_path : str
-        The path and filename of the .fits datas containing the Poisson noise-map.
+        The path and filename of the .fits datas containing the Poisson noise_map-map.
     poisson_noise_map_hdu : int
-        The hdu the Poisson noise-map is contained in the .fits file that *poisson_noise_map_path* points too.
+        The hdu the Poisson noise_map-map is contained in the .fits file that *poisson_noise_map_path* points too.
     poisson_noise_map_from_image : bool
-        If True, the Poisson noise-map is estimated using the regular-datas.
+        If True, the Poisson noise_map-map is estimated using the regular-datas.
     convert_poisson_noise_map_from_weight_map : bool
-        If True, the Poisson noise-map loaded from the .fits file is converted from a weight-map to a noise-map (see \
+        If True, the Poisson noise_map-map loaded from the .fits file is converted from a weight-map to a noise_map-map (see \
         *NoiseMap.from_weight_map).
     convert_poisson_noise_map_from_inverse_noise_map : bool
-        If True, the Poisson noise-map loaded from the .fits file is converted from an inverse noise-map to a \
-        noise-map (see *NoiseMap.from_inverse_noise_map).
+        If True, the Poisson noise_map-map loaded from the .fits file is converted from an inverse noise_map-map to a \
+        noise_map-map (see *NoiseMap.from_inverse_noise_map).
     exposure_time_map_path : str
         The path and filename of the .fits datas containing the exposure time map.
     exposure_time_map_hdu : int
@@ -719,7 +719,7 @@ def load_imaging_from_fits(image_path, pixel_scale, image_hdu=0,
         The exposure time of the regular, which computes the exposure-time map as a single value \
         (see *ExposureTimeMap.from_single_value*).
     exposure_time_map_from_background_noise_map : bool
-        If True, the exposure-time map is computed from the background noise map \
+        If True, the exposure-time map is computed from the background noise_map map \
         (see *ExposureTimeMap.from_background_noise_map*)
     backgrond_sky_map_path : str
         The path and filename of the .fits datas containing the backgrond sky map.
@@ -811,43 +811,43 @@ def load_image(image_path, image_hdu, pixel_scale):
 def load_noise_map(noise_map_path, noise_map_hdu, pixel_scale, image, background_noise_map, exposure_time_map,
                    convert_noise_map_from_weight_map, convert_noise_map_from_inverse_noise_map,
                    noise_map_from_image_and_background_noise_map, convert_from_electrons, gain, convert_from_adus):
-    """Factory for loading the noise-map from a .fits file.
+    """Factory for loading the noise_map-map from a .fits file.
 
-    This factory also includes a number of routines for converting the noise-map from from other units (e.g. \
-    a weight map) or computing the noise-map from other unblurred_image_1d (e.g. the imaging datas and background noise-map).
+    This factory also includes a number of routines for converting the noise_map-map from from other units (e.g. \
+    a weight map) or computing the noise_map-map from other unblurred_image_1d (e.g. the imaging datas and background noise_map-map).
 
     Parameters
     ----------
     noise_map_path : str
-        The path and filename of the .fits datas containing the noise-map.
+        The path and filename of the .fits datas containing the noise_map-map.
     noise_map_hdu : int
-        The hdu the noise-map is contained in the .fits file that *noise_map_path* points too.
+        The hdu the noise_map-map is contained in the .fits file that *noise_map_path* points too.
     pixel_scale : float
         The size of each pixel in arc seconds.
     image : ndarray
-        The regular-datas, which the noise-map can be calculated using.
+        The regular-datas, which the noise_map-map can be calculated using.
     background_noise_map : ndarray
-        The background noise-map, which the noise-map can be calculated using.
+        The background noise_map-map, which the noise_map-map can be calculated using.
     exposure_time_map : ndarray
-        The exposure-time map, which the noise-map can be calculated using.
+        The exposure-time map, which the noise_map-map can be calculated using.
     convert_noise_map_from_weight_map : bool
-        If True, the noise-map loaded from the .fits file is converted from a weight-map to a noise-map (see \
+        If True, the noise_map-map loaded from the .fits file is converted from a weight-map to a noise_map-map (see \
         *NoiseMap.from_weight_map).
     convert_noise_map_from_inverse_noise_map : bool
-        If True, the noise-map loaded from the .fits file is converted from an inverse noise-map to a noise-map (see \
+        If True, the noise_map-map loaded from the .fits file is converted from an inverse noise_map-map to a noise_map-map (see \
         *NoiseMap.from_inverse_noise_map).
     background_noise_map_path : str
-        The path and filename of the .fits datas containing the background noise-map.
+        The path and filename of the .fits datas containing the background noise_map-map.
     background_noise_map_hdu : int
-        The hdu the background noise-map is contained in the .fits file that *background_noise_map_path* points too.
+        The hdu the background noise_map-map is contained in the .fits file that *background_noise_map_path* points too.
     convert_background_noise_map_from_weight_map : bool
-        If True, the bacground noise-map loaded from the .fits file is converted from a weight-map to a noise-map (see \
+        If True, the bacground noise_map-map loaded from the .fits file is converted from a weight-map to a noise_map-map (see \
         *NoiseMap.from_weight_map).
     convert_background_noise_map_from_inverse_noise_map : bool
-        If True, the background noise-map loaded from the .fits file is converted from an inverse noise-map to a \
-        noise-map (see *NoiseMap.from_inverse_noise_map).
+        If True, the background noise_map-map loaded from the .fits file is converted from an inverse noise_map-map to a \
+        noise_map-map (see *NoiseMap.from_inverse_noise_map).
     noise_map_from_image_and_background_noise_map : bool
-        If True, the noise-map is computed from the observed regular and background noise-map \
+        If True, the noise_map-map is computed from the observed regular and background noise_map-map \
         (see NoiseMap.from_image_and_background_noise_map).
     convert_from_electrons : bool
         If True, the input unblurred_image_1d are in units of electrons and all converted to electrons / second using the exposure \
@@ -863,7 +863,7 @@ def load_noise_map(noise_map_path, noise_map_hdu, pixel_scale, image, background
                              noise_map_from_image_and_background_noise_map])
 
     if noise_map_options > 1:
-        raise exc.ImagingException('You have specified more than one method to load the noise map, e.g.:'
+        raise exc.ImagingException('You have specified more than one method to load the noise_map map, e.g.:'
                                    'convert_noise_map_from_weight_map | '
                                    'convert_noise_map_from_inverse_noise_map |'
                                    'noise_map_from_image_and_background_noise_map')
@@ -880,15 +880,15 @@ def load_noise_map(noise_map_path, noise_map_hdu, pixel_scale, image, background
     elif noise_map_from_image_and_background_noise_map:
 
         if background_noise_map is None:
-            raise exc.ImagingException('Cannot compute the noise-map from the datas and background noise map if a '
-                                       'background noise map is not supplied.')
+            raise exc.ImagingException('Cannot compute the noise_map-map from the datas and background noise_map map if a '
+                                       'background noise_map map is not supplied.')
 
         if not (convert_from_electrons or convert_from_adus) and exposure_time_map is None:
-            raise exc.ImagingException('Cannot compute the noise-map from the datas and background noise map if an '
+            raise exc.ImagingException('Cannot compute the noise_map-map from the datas and background noise_map map if an '
                                        'exposure-time (or exposure time map) is not supplied to convert to adus')
 
         if convert_from_adus and gain is None:
-            raise exc.ImagingException('Cannot compute the noise-map from the datas and background noise map if a'
+            raise exc.ImagingException('Cannot compute the noise_map-map from the datas and background noise_map map if a'
                                        'gain is not supplied to convert from adus')
 
         return NoiseMap.from_image_and_background_noise_map(pixel_scale=pixel_scale, image=image,
@@ -897,30 +897,30 @@ def load_noise_map(noise_map_path, noise_map_hdu, pixel_scale, image, background
                                                             convert_from_electrons=convert_from_electrons,
                                                             gain=gain, convert_from_adus=convert_from_adus)
     else:
-        raise exc.ImagingException('A noise map was not loaded, specify a noise_map_path or option to compute a noise map.')
+        raise exc.ImagingException('A noise_map map was not loaded, specify a noise_map_path or option to compute a noise_map map.')
 
 def load_background_noise_map(background_noise_map_path, background_noise_map_hdu, pixel_scale,
                               convert_background_noise_map_from_weight_map,
                               convert_background_noise_map_from_inverse_noise_map):
-    """Factory for loading the background noise-map from a .fits file.
+    """Factory for loading the background noise_map-map from a .fits file.
 
-    This factory also includes a number of routines for converting the background noise-map from from other units (e.g. \
+    This factory also includes a number of routines for converting the background noise_map-map from from other units (e.g. \
     a weight map).
 
     Parameters
     ----------
     background_noise_map_path : str
-        The path and filename of the .fits datas containing the background noise-map.
+        The path and filename of the .fits datas containing the background noise_map-map.
     background_noise_map_hdu : int
-        The hdu the background noise-map is contained in the .fits file that *background_noise_map_path* points too.
+        The hdu the background noise_map-map is contained in the .fits file that *background_noise_map_path* points too.
     pixel_scale : float
         The size of each pixel in arc seconds.
     convert_background_noise_map_from_weight_map : bool
-        If True, the bacground noise-map loaded from the .fits file is converted from a weight-map to a noise-map (see \
+        If True, the bacground noise_map-map loaded from the .fits file is converted from a weight-map to a noise_map-map (see \
         *NoiseMap.from_weight_map).
     convert_background_noise_map_from_inverse_noise_map : bool
-        If True, the background noise-map loaded from the .fits file is converted from an inverse noise-map to a \
-        noise-map (see *NoiseMap.from_inverse_noise_map).
+        If True, the background noise_map-map loaded from the .fits file is converted from an inverse noise_map-map to a \
+        noise_map-map (see *NoiseMap.from_inverse_noise_map).
     """
     background_noise_map_options = sum([convert_background_noise_map_from_weight_map,
                                         convert_background_noise_map_from_inverse_noise_map])
@@ -941,33 +941,33 @@ def load_poisson_noise_map(poisson_noise_map_path, poisson_noise_map_hdu, pixel_
                            convert_poisson_noise_map_from_inverse_noise_map,
                            poisson_noise_map_from_image,
                            image, exposure_time_map, convert_from_electrons, gain, convert_from_adus):
-    """Factory for loading the Poisson noise-map from a .fits file.
+    """Factory for loading the Poisson noise_map-map from a .fits file.
 
-    This factory also includes a number of routines for converting the Poisson noise-map from from other units (e.g. \
-    a weight map) or computing the Poisson noise from other unblurred_image_1d (e.g. the imaging datas).
+    This factory also includes a number of routines for converting the Poisson noise_map-map from from other units (e.g. \
+    a weight map) or computing the Poisson noise_map from other unblurred_image_1d (e.g. the imaging datas).
 
     Parameters
     ----------
     poisson_noise_map_path : str
-        The path and filename of the .fits datas containing the Poisson noise-map.
+        The path and filename of the .fits datas containing the Poisson noise_map-map.
     poisson_noise_map_hdu : int
-        The hdu the Poisson noise-map is contained in the .fits file that *poisson_noise_map_path* points too.
+        The hdu the Poisson noise_map-map is contained in the .fits file that *poisson_noise_map_path* points too.
     pixel_scale : float
         The size of each pixel in arc seconds.
     convert_poisson_noise_map_from_weight_map : bool
-        If True, the Poisson noise-map loaded from the .fits file is converted from a weight-map to a noise-map (see \
+        If True, the Poisson noise_map-map loaded from the .fits file is converted from a weight-map to a noise_map-map (see \
         *NoiseMap.from_weight_map).
     convert_poisson_noise_map_from_inverse_noise_map : bool
-        If True, the Poisson noise-map loaded from the .fits file is converted from an inverse noise-map to a \
-        noise-map (see *NoiseMap.from_inverse_noise_map).
+        If True, the Poisson noise_map-map loaded from the .fits file is converted from an inverse noise_map-map to a \
+        noise_map-map (see *NoiseMap.from_inverse_noise_map).
     poisson_noise_map_from_image : bool
-        If True, the Poisson noise-map is estimated using the regular-datas.
+        If True, the Poisson noise_map-map is estimated using the regular-datas.
     image : ndarray
-        The regular-datas, which the Poisson noise-map can be calculated using.
+        The regular-datas, which the Poisson noise_map-map can be calculated using.
     background_noise_map : ndarray
-        The background noise-map, which the Poisson noise-map can be calculated using.
+        The background noise_map-map, which the Poisson noise_map-map can be calculated using.
     exposure_time_map : ndarray
-        The exposure-time map, which the Poisson noise-map can be calculated using.
+        The exposure-time map, which the Poisson noise_map-map can be calculated using.
     convert_from_electrons : bool
         If True, the input unblurred_image_1d are in units of electrons and all converted to electrons / second using the exposure \
         time map.
@@ -987,11 +987,11 @@ def load_poisson_noise_map(poisson_noise_map_path, poisson_noise_map_hdu, pixel_
     elif poisson_noise_map_from_image:
 
         if not (convert_from_electrons or convert_from_adus) and exposure_time_map is None:
-            raise exc.ImagingException('Cannot compute the Poisson noise-map from the datas if an '
+            raise exc.ImagingException('Cannot compute the Poisson noise_map-map from the datas if an '
                                        'exposure-time (or exposure time map) is not supplied to convert to adus')
 
         if convert_from_adus and gain is None:
-            raise exc.ImagingException('Cannot compute the Poisson noise-map from the datas if a'
+            raise exc.ImagingException('Cannot compute the Poisson noise_map-map from the datas if a'
                                        'gain is not supplied to convert from adus')
 
         return PoissonNoiseMap.from_image_and_exposure_time_map(pixel_scale=pixel_scale, image=image,
@@ -1032,7 +1032,7 @@ def load_exposure_time_map(exposure_time_map_path, exposure_time_map_hdu, pixel_
     """Factory for loading the exposure time map from a .fits file.
 
     This factory also includes a number of routines for computing the exposure-time map from other unblurred_image_1d \
-    (e.g. the background noise-map).
+    (e.g. the background noise_map-map).
 
     Parameters
     ----------
@@ -1047,10 +1047,10 @@ def load_exposure_time_map(exposure_time_map_path, exposure_time_map_hdu, pixel_
     exposure_time : float
         The exposure-time used to compute the expsure-time map if only a single value is used.
     exposure_time_map_from_background_noise_map : bool
-        If True, the exposure-time map is computed from the background noise map \
+        If True, the exposure-time map is computed from the background noise_map map \
         (see *ExposureTimeMap.from_background_noise_map*)
     background_noise_map : ndarray
-        The background noise-map, which the Poisson noise-map can be calculated using.
+        The background noise_map-map, which the Poisson noise_map-map can be calculated using.
     """
     exposure_time_map_options = sum([exposure_time_map_from_background_noise_map])
 

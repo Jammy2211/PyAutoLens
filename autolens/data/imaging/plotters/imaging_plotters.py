@@ -12,7 +12,7 @@ def plot_image_subplot(image, plot_origin=True, mask=None, should_plot_border=Fa
                        titlesize=10, xlabelsize=10, ylabelsize=10, xyticksize=10,
                        mask_pointsize=10, position_pointsize=30, grid_pointsize=1,
                        output_path=None, output_filename='regular', output_format='show', ignore_config=True):
-    """Plot the datas datas as a sub-plot of all its quantites (e.g. the datas, noise-map, PSF, Signal-to_noise-map, \
+    """Plot the datas datas as a sub-plot of all its quantites (e.g. the datas, noise_map-map, PSF, Signal-to_noise-map, \
      etc).
 
     Set *autolens.datas.array.plotters.array_plotters* for a description of all innput parameters not described below.
@@ -20,7 +20,7 @@ def plot_image_subplot(image, plot_origin=True, mask=None, should_plot_border=Fa
     Parameters
     -----------
     image : datas.imaging.datas.Image
-        The datas-datas, which includes the observed datas, noise-map, PSF, signal-to-noise-map, etc.
+        The datas-datas, which includes the observed datas, noise_map-map, PSF, signal-to-noise_map-map, etc.
     plot_origin : True
         If true, the origin of the datas's coordinate system is plotted as a 'x'.
     image_plane_pix_grid : ndarray or datas.array.grid_stacks.PixGrid
@@ -91,7 +91,7 @@ def plot_image_subplot(image, plot_origin=True, mask=None, should_plot_border=Fa
 
 
 def plot_image_individual(image, plot_origin=True, mask=None, positions=None, output_path=None, output_format='png'):
-    """Plot each attribute of the datas datas as individual figures one by one (e.g. the datas, noise-map, PSF, \
+    """Plot each attribute of the datas datas as individual figures one by one (e.g. the datas, noise_map-map, PSF, \
      Signal-to_noise-map, etc).
 
     Set *autolens.datas.array.plotters.array_plotters* for a description of all innput parameters not described below.
@@ -99,7 +99,7 @@ def plot_image_individual(image, plot_origin=True, mask=None, positions=None, ou
     Parameters
     -----------
     image : datas.imaging.datas.Image
-        The datas-datas, which includes the observed datas, noise-map, PSF, signal-to-noise-map, etc.
+        The datas-datas, which includes the observed datas, noise_map-map, PSF, signal-to-noise_map-map, etc.
     plot_origin : True
         If true, the origin of the datas's coordinate system is plotted as a 'x'.
     """
@@ -140,7 +140,7 @@ def plot_image(image, plot_origin=True, mask=None, should_plot_border=False, pos
     Parameters
     -----------
     image : datas.imaging.datas.Image
-        The datas-datas, which includes the observed datas, noise-map, PSF, signal-to-noise-map, etc.
+        The datas-datas, which includes the observed datas, noise_map-map, PSF, signal-to-noise_map-map, etc.
     plot_origin : True
         If true, the origin of the datas's coordinate system is plotted as a 'x'.
     image_plane_pix_grid : ndarray or datas.array.grid_stacks.PixGrid
@@ -169,14 +169,14 @@ def plot_noise_map(image, plot_origin=True, mask=None, as_subplot=False,
                    title='Noise-Map', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
                    mask_pointsize=10,
                    output_path=None, output_format='show', output_filename='noise_map_1d'):
-    """Plot the noise-map of the datas datas.
+    """Plot the noise_map-map of the datas datas.
 
     Set *autolens.datas.array.plotters.array_plotters* for a description of all innput parameters not described below.
 
     Parameters
     -----------
     image : datas.imaging.datas.Image
-        The datas-datas, which includes the observed datas, noise-map, PSF, signal-to-noise-map, etc.
+        The datas-datas, which includes the observed datas, noise_map-map, PSF, signal-to-noise_map-map, etc.
     plot_origin : True
         If true, the origin of the datas's coordinate system is plotted as a 'x'.
     """
@@ -206,7 +206,7 @@ def plot_psf(image, plot_origin=True, as_subplot=False,
     Parameters
     -----------
     image : datas.imaging.datas.Image
-        The datas-datas, which includes the observed datas, noise-map, PSF, signal-to-noise-map, etc.
+        The datas-datas, which includes the observed datas, noise_map-map, PSF, signal-to-noise_map-map, etc.
     plot_origin : True
         If true, the origin of the datas's coordinate system is plotted as a 'x'.
     """
@@ -229,14 +229,14 @@ def plot_signal_to_noise_map(image, plot_origin=True, mask=None, as_subplot=Fals
                              title='Signal-To-Noise-Map', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
                              mask_pointsize=10,
                              output_path=None, output_format='show', output_filename='signal_to_noise_map'):
-    """Plot the signal-to-noise-map of the datas datas.
+    """Plot the signal-to-noise_map-map of the datas datas.
 
     Set *autolens.datas.array.plotters.array_plotters* for a description of all innput parameters not described below.
 
     Parameters
     -----------
     image : datas.imaging.datas.Image
-        The datas-datas, which includes the observed datas, noise-map, PSF, signal-to-noise-map, etc.
+        The datas-datas, which includes the observed datas, noise_map-map, PSF, signal-to-noise_map-map, etc.
     plot_origin : True
         If true, the origin of the datas's coordinate system is plotted as a 'x'.
     """
@@ -259,7 +259,7 @@ def get_origin(image, plot_origin):
     Parameters
     -----------
     image : datas.imaging.datas.Image
-        The datas-datas, which includes the observed datas, noise-map, PSF, signal-to-noise-map, etc.
+        The datas-datas, which includes the observed datas, noise_map-map, PSF, signal-to-noise_map-map, etc.
     plot_origin : True
         If true, the origin of the datas's coordinate system is returned.
     """

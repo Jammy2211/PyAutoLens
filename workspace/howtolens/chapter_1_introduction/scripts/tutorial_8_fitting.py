@@ -23,7 +23,7 @@ image = im.load_imaging_from_fits(image_path=path + '/datas/regular.fits',
 # To fit_normal an regular, we first specify a masks. A masks describes the sections of the regular that we fit_normal.
 
 # Typically, we want to masks out regions of the regular where the lens and source galaxies are not visible, for example
-# at the edges where the signal is entirely background sky and noise.
+# at the edges where the signal is entirely background sky and noise_map.
 
 # For the regular we simulated, a 3" circular masks will do the job.
 
@@ -45,7 +45,7 @@ imaging_plotters.plot_image(image=image, mask=mask)
 # 2) The PSF: so that when we compare a tracer_without_subhalo's regular-plane regular to the regular datas we can include blurring due to
 #    the telescope optics.
 
-# 3) The noise-map: so our goodness-of-fit_normal measure accounts for noise in the observations.
+# 3) The noise_map-map: so our goodness-of-fit_normal measure accounts for noise_map in the observations.
 
 # 4) The regular's grid_stacks: so the tracer_without_subhalo's regular-plane regular is generated on the same (masked) grid as the regular-datas.
 
@@ -90,7 +90,7 @@ ray_tracing_plotters.plot_image_plane_image(tracer=tracer)
 
 # 2) Computes the difference between this model_image and the observed regular-datas, creating the fit_normal's 'residuals'.
 
-# 3) Divides the residuals by the noise-map and squaring each value, creating the fits 'chi-squareds'.
+# 3) Divides the residuals by the noise_map-map and squaring each value, creating the fits 'chi-squareds'.
 
 # 4) Sums up these chi-squared values and converts them to a 'likelihood', which quantities how good the tracer_without_subhalo's fit_normal
 #    to the datas was (higher likelihood = better fit_normal).
@@ -121,7 +121,7 @@ print(fit.likelihood)
 
 # We used the same tracer_without_subhalo to create and fit_normal the regular. Therefore, our fit_normal to the regular was excellent.
 # For example, by inspecting the residuals and chi-squareds, one can see no signs of the source model_galaxy's light present
-# and we only see the noise that we simulated the regular with.
+# and we only see the noise_map that we simulated the regular with.
 
 # This solution should translate to one of the highest-likelihood solutions possible.
 

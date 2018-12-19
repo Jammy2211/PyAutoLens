@@ -42,12 +42,12 @@ print(tracer.image_plane_image_for_simulation.shape)
 
 # 1) Telescope optics: Using the Point Spread Function above.
 # 2) The Background Sky: Although the regular that is returned is automatically background sky subtracted.
-# 3) Poisson noise: Due to the background sky, lens model_galaxy and source model_galaxy Poisson photon counts.
+# 3) Poisson noise_map: Due to the background sky, lens model_galaxy and source model_galaxy Poisson photon counts.
 
 image_simulated = im.Image.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=0.1,
                                                exposure_time=300.0, psf=psf, background_sky_level=0.1, add_noise=True)
 
-# Lets plot the regular - we can see the regular has been blurred due to the telescope optics and noise has been added.
+# Lets plot the regular - we can see the regular has been blurred due to the telescope optics and noise_map has been added.
 imaging_plotters.plot_image_subplot(image=image_simulated)
 
 # Finally, lets output these files to.fits files, we'll begin to analyze them in the next tutorial!

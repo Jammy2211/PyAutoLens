@@ -594,20 +594,20 @@ class TestLensingProfileHyperFitter:
             fit = lensing_fitters.fit_lensing_image_with_tracer(lensing_image=li_hyper_manual, tracer=tracer,
                                                                 padded_tracer=padded_tracer)            
 
-            contributions_1d = lensing_fitting_util.contributions_from_hyper_images_and_galaxies(
+            contributions_1d = lensing_fitting_util.contribution_maps_1d_from_hyper_images_and_galaxies(
                 hyper_model_image_1d=li_hyper_manual.hyper_model_image_1d, 
                 hyper_galaxy_images_1d=li_hyper_manual.hyper_galaxy_images_1d, 
                 hyper_galaxies=tracer.hyper_galaxies, hyper_minimum_values=li_hyper_manual.hyper_minimum_values)
             
-            contributions = list(map(lambda contribution_1d :
+            contribution_maps = list(map(lambda contribution_1d :
                                      li_hyper_manual.map_to_scaled_array(array_1d=contribution_1d),
                                      contributions_1d))
             
-            assert contributions[0] == pytest.approx(fit.contributions[0], 1.0e-4)
+            assert contribution_maps[0] == pytest.approx(fit.contribution_maps[0], 1.0e-4)
             
-            hyper_noise_map_1d = lensing_fitting_util.scaled_noise_map_from_hyper_galaxies_and_contributions(
-                contributions_1d=contributions_1d, hyper_galaxies=tracer.hyper_galaxies, 
-                noise_map_1d=li_hyper_manual.noise_map_1d)
+            hyper_noise_map_1d = lensing_fitting_util.scaled_noise_map_from_hyper_galaxies_and_contribution_maps(
+                contribution_maps=contributions_1d, hyper_galaxies=tracer.hyper_galaxies,
+                noise_map=li_hyper_manual.noise_map_1d)
             
             hyper_noise_map = li_hyper_manual.map_to_scaled_array(array_1d=hyper_noise_map_1d)
             
@@ -687,20 +687,20 @@ class TestLensingInversionHyperFitter:
 
             fit = lensing_fitters.fit_lensing_image_with_tracer(lensing_image=li_hyper_manual, tracer=tracer)
 
-            contributions_1d = lensing_fitting_util.contributions_from_hyper_images_and_galaxies(
+            contributions_1d = lensing_fitting_util.contribution_maps_1d_from_hyper_images_and_galaxies(
                 hyper_model_image_1d=li_hyper_manual.hyper_model_image_1d,
                 hyper_galaxy_images_1d=li_hyper_manual.hyper_galaxy_images_1d,
                 hyper_galaxies=tracer.hyper_galaxies, hyper_minimum_values=li_hyper_manual.hyper_minimum_values)
 
-            contributions = list(map(lambda contribution_1d:
+            contribution_maps = list(map(lambda contribution_1d:
                                      li_hyper_manual.map_to_scaled_array(array_1d=contribution_1d),
                                      contributions_1d))
 
-            assert contributions[0] == pytest.approx(fit.contributions[0], 1.0e-4)
+            assert contribution_maps[0] == pytest.approx(fit.contribution_maps[0], 1.0e-4)
 
-            hyper_noise_map_1d = lensing_fitting_util.scaled_noise_map_from_hyper_galaxies_and_contributions(
-                contributions_1d=contributions_1d, hyper_galaxies=tracer.hyper_galaxies,
-                noise_map_1d=li_hyper_manual.noise_map_1d)
+            hyper_noise_map_1d = lensing_fitting_util.scaled_noise_map_from_hyper_galaxies_and_contribution_maps(
+                contribution_maps=contributions_1d, hyper_galaxies=tracer.hyper_galaxies,
+                noise_map=li_hyper_manual.noise_map_1d)
 
             hyper_noise_map = li_hyper_manual.map_to_scaled_array(array_1d=hyper_noise_map_1d)
 
@@ -772,20 +772,20 @@ class TestLensingProfileInversionHyperFitter:
 
             fit = lensing_fitters.fit_lensing_image_with_tracer(lensing_image=li_hyper_manual, tracer=tracer)
 
-            contributions_1d = lensing_fitting_util.contributions_from_hyper_images_and_galaxies(
+            contributions_1d = lensing_fitting_util.contribution_maps_1d_from_hyper_images_and_galaxies(
                 hyper_model_image_1d=li_hyper_manual.hyper_model_image_1d,
                 hyper_galaxy_images_1d=li_hyper_manual.hyper_galaxy_images_1d,
                 hyper_galaxies=tracer.hyper_galaxies, hyper_minimum_values=li_hyper_manual.hyper_minimum_values)
 
-            contributions = list(map(lambda contribution_1d:
+            contribution_maps = list(map(lambda contribution_1d:
                                      li_hyper_manual.map_to_scaled_array(array_1d=contribution_1d),
                                      contributions_1d))
 
-            assert contributions[0] == pytest.approx(fit.contributions[0], 1.0e-4)
+            assert contribution_maps[0] == pytest.approx(fit.contribution_maps[0], 1.0e-4)
 
-            hyper_noise_map_1d = lensing_fitting_util.scaled_noise_map_from_hyper_galaxies_and_contributions(
-                contributions_1d=contributions_1d, hyper_galaxies=tracer.hyper_galaxies,
-                noise_map_1d=li_hyper_manual.noise_map_1d)
+            hyper_noise_map_1d = lensing_fitting_util.scaled_noise_map_from_hyper_galaxies_and_contribution_maps(
+                contribution_maps=contributions_1d, hyper_galaxies=tracer.hyper_galaxies,
+                noise_map=li_hyper_manual.noise_map_1d)
 
             hyper_noise_map = li_hyper_manual.map_to_scaled_array(array_1d=hyper_noise_map_1d)
 
@@ -854,91 +854,91 @@ class TestLensingProfileInversionHyperFitter:
                                                                                    tracer=tracer)
             assert fast_evidence == pytest.approx(fit.evidence, 1.0e-4)
 
-#
-# class MockTracerPositions:
-#
-#     def __init__(self, positions, noise=None):
-#         self.positions = positions
-#         self.noise = noise
-#
-#
-# class TestPositionFit:
-#
-#     def test__x1_positions__mock_position_tracer__maximum_separation_is_correct(self):
-#         tracer = MockTracerPositions(positions=[np.array([[0.0, 0.0], [0.0, 1.0]])])
-#         fit = lensing_fitters.PositionFit(positions=tracer.positions, noise=1.0)
-#         assert fit.maximum_separations[0] == 1.0
-#
-#         tracer = MockTracerPositions(positions=[np.array([[0.0, 0.0], [1.0, 1.0]])])
-#         fit = lensing_fitters.PositionFit(positions=tracer.positions, noise=1.0)
-#         assert fit.maximum_separations[0] == np.sqrt(2)
-#
-#         tracer = MockTracerPositions(positions=[np.array([[0.0, 0.0], [1.0, 3.0]])])
-#         fit = lensing_fitters.PositionFit(positions=tracer.positions, noise=1.0)
-#         assert fit.maximum_separations[0] == np.sqrt(np.square(1.0) + np.square(3.0))
-#
-#         tracer = MockTracerPositions(positions=[np.array([[-2.0, -4.0], [1.0, 3.0]])])
-#         fit = lensing_fitters.PositionFit(positions=tracer.positions, noise=1.0)
-#         assert fit.maximum_separations[0] == np.sqrt(np.square(3.0) + np.square(7.0))
-#
-#         tracer = MockTracerPositions(positions=[np.array([[8.0, 4.0], [-9.0, -4.0]])])
-#         fit = lensing_fitters.PositionFit(positions=tracer.positions, noise=1.0)
-#         assert fit.maximum_separations[0] == np.sqrt(np.square(17.0) + np.square(8.0))
-#
-#     def test_multiple_positions__mock_position_tracer__maximum_separation_is_correct(self):
-#         tracer = MockTracerPositions(positions=[np.array([[0.0, 0.0], [0.0, 1.0], [0.0, 0.5]])])
-#         fit = lensing_fitters.PositionFit(positions=tracer.positions, noise=1.0)
-#         assert fit.maximum_separations[0] == 1.0
-#
-#         tracer = MockTracerPositions(positions=[np.array([[0.0, 0.0], [0.0, 0.0], [3.0, 3.0]])])
-#         fit = lensing_fitters.PositionFit(positions=tracer.positions, noise=1.0)
-#         assert fit.maximum_separations[0] == np.sqrt(18)
-#
-#         tracer = MockTracerPositions(positions=[np.array([[0.0, 0.0], [1.0, 1.0], [3.0, 3.0]])])
-#         fit = lensing_fitters.PositionFit(positions=tracer.positions, noise=1.0)
-#         assert fit.maximum_separations[0] == np.sqrt(18)
-#
-#         tracer = MockTracerPositions(positions=[np.array([[-2.0, -4.0], [1.0, 3.0], [0.1, 0.1], [-0.1, -0.1],
-#                                                           [0.3, 0.4], [-0.6, 0.5]])])
-#         fit = lensing_fitters.PositionFit(positions=tracer.positions, noise=1.0)
-#         assert fit.maximum_separations[0] == np.sqrt(np.square(3.0) + np.square(7.0))
-#
-#         tracer = MockTracerPositions(positions=[np.array([[8.0, 4.0], [8.0, 4.0], [-9.0, -4.0]])])
-#         fit = lensing_fitters.PositionFit(positions=tracer.positions, noise=1.0)
-#         assert fit.maximum_separations[0] == np.sqrt(np.square(17.0) + np.square(8.0))
-#
-#     def test_multiple_sets_of_positions__multiple_sets_of_max_distances(self):
-#         tracer = MockTracerPositions(positions=[np.array([[0.0, 0.0], [0.0, 1.0], [0.0, 0.5]]),
-#                                                 np.array([[0.0, 0.0], [0.0, 0.0], [3.0, 3.0]]),
-#                                                 np.array([[0.0, 0.0], [1.0, 1.0], [3.0, 3.0]])])
-#
-#         fit = lensing_fitters.PositionFit(positions=tracer.positions, noise=1.0)
-#
-#         assert fit.maximum_separations[0] == 1.0
-#         assert fit.maximum_separations[1] == np.sqrt(18)
-#         assert fit.maximum_separations[2] == np.sqrt(18)
-#
-#     def test__likelihood__is_sum_of_separations_divided_by_noise(self):
-#         tracer = MockTracerPositions(positions=[np.array([[0.0, 0.0], [0.0, 1.0], [0.0, 0.5]]),
-#                                                 np.array([[0.0, 0.0], [0.0, 0.0], [3.0, 3.0]]),
-#                                                 np.array([[0.0, 0.0], [1.0, 1.0], [3.0, 3.0]])])
-#
-#         fit = lensing_fitters.PositionFit(positions=tracer.positions, noise=1.0)
-#         assert fit.chi_squared_map[0] == 1.0
-#         assert fit.chi_squared_map[1] == pytest.approx(18.0, 1e-4)
-#         assert fit.chi_squared_map[2] == pytest.approx(18.0, 1e-4)
-#         assert fit.likelihood == pytest.approx(-0.5 * (1.0 + 18 + 18), 1e-4)
-#
-#         fit = lensing_fitters.PositionFit(positions=tracer.positions, noise=2.0)
-#         assert fit.chi_squared_map[0] == (1.0 / 2.0) ** 2.0
-#         assert fit.chi_squared_map[1] == pytest.approx((np.sqrt(18.0) / 2.0) ** 2.0, 1e-4)
-#         assert fit.chi_squared_map[2] == pytest.approx((np.sqrt(18.0) / 2.0) ** 2.0, 1e-4)
-#         assert fit.likelihood == pytest.approx(-0.5 * ((1.0 / 2.0) ** 2.0 + (np.sqrt(18.0) / 2.0) ** 2.0 +
-#                                                        (np.sqrt(18.0) / 2.0) ** 2.0), 1e-4)
-#
-#     def test__threshold__if_not_met_returns_ray_tracing_exception(self):
-#         tracer = MockTracerPositions(positions=[np.array([[0.0, 0.0], [0.0, 1.0]])])
-#         fit = lensing_fitters.PositionFit(positions=tracer.positions, noise=1.0)
-#
-#         assert fit.maximum_separation_within_threshold(threshold=100.0) == True
-#         assert fit.maximum_separation_within_threshold(threshold=0.1) == False
+
+class MockTracerPositions:
+
+    def __init__(self, positions, noise=None):
+        self.positions = positions
+        self.noise = noise
+
+
+class TestPositionFit:
+
+    def test__x1_positions__mock_position_tracer__maximum_separation_is_correct(self):
+        tracer = MockTracerPositions(positions=[np.array([[0.0, 0.0], [0.0, 1.0]])])
+        fit = lensing_fitters.LensingPositionFitter(positions=tracer.positions, noise_map=1.0)
+        assert fit.maximum_separations[0] == 1.0
+
+        tracer = MockTracerPositions(positions=[np.array([[0.0, 0.0], [1.0, 1.0]])])
+        fit = lensing_fitters.LensingPositionFitter(positions=tracer.positions, noise_map=1.0)
+        assert fit.maximum_separations[0] == np.sqrt(2)
+
+        tracer = MockTracerPositions(positions=[np.array([[0.0, 0.0], [1.0, 3.0]])])
+        fit = lensing_fitters.LensingPositionFitter(positions=tracer.positions, noise_map=1.0)
+        assert fit.maximum_separations[0] == np.sqrt(np.square(1.0) + np.square(3.0))
+
+        tracer = MockTracerPositions(positions=[np.array([[-2.0, -4.0], [1.0, 3.0]])])
+        fit = lensing_fitters.LensingPositionFitter(positions=tracer.positions, noise_map=1.0)
+        assert fit.maximum_separations[0] == np.sqrt(np.square(3.0) + np.square(7.0))
+
+        tracer = MockTracerPositions(positions=[np.array([[8.0, 4.0], [-9.0, -4.0]])])
+        fit = lensing_fitters.LensingPositionFitter(positions=tracer.positions, noise_map=1.0)
+        assert fit.maximum_separations[0] == np.sqrt(np.square(17.0) + np.square(8.0))
+
+    def test_multiple_positions__mock_position_tracer__maximum_separation_is_correct(self):
+        tracer = MockTracerPositions(positions=[np.array([[0.0, 0.0], [0.0, 1.0], [0.0, 0.5]])])
+        fit = lensing_fitters.LensingPositionFitter(positions=tracer.positions, noise_map=1.0)
+        assert fit.maximum_separations[0] == 1.0
+
+        tracer = MockTracerPositions(positions=[np.array([[0.0, 0.0], [0.0, 0.0], [3.0, 3.0]])])
+        fit = lensing_fitters.LensingPositionFitter(positions=tracer.positions, noise_map=1.0)
+        assert fit.maximum_separations[0] == np.sqrt(18)
+
+        tracer = MockTracerPositions(positions=[np.array([[0.0, 0.0], [1.0, 1.0], [3.0, 3.0]])])
+        fit = lensing_fitters.LensingPositionFitter(positions=tracer.positions, noise_map=1.0)
+        assert fit.maximum_separations[0] == np.sqrt(18)
+
+        tracer = MockTracerPositions(positions=[np.array([[-2.0, -4.0], [1.0, 3.0], [0.1, 0.1], [-0.1, -0.1],
+                                                          [0.3, 0.4], [-0.6, 0.5]])])
+        fit = lensing_fitters.LensingPositionFitter(positions=tracer.positions, noise_map=1.0)
+        assert fit.maximum_separations[0] == np.sqrt(np.square(3.0) + np.square(7.0))
+
+        tracer = MockTracerPositions(positions=[np.array([[8.0, 4.0], [8.0, 4.0], [-9.0, -4.0]])])
+        fit = lensing_fitters.LensingPositionFitter(positions=tracer.positions, noise_map=1.0)
+        assert fit.maximum_separations[0] == np.sqrt(np.square(17.0) + np.square(8.0))
+
+    def test_multiple_sets_of_positions__multiple_sets_of_max_distances(self):
+        tracer = MockTracerPositions(positions=[np.array([[0.0, 0.0], [0.0, 1.0], [0.0, 0.5]]),
+                                                np.array([[0.0, 0.0], [0.0, 0.0], [3.0, 3.0]]),
+                                                np.array([[0.0, 0.0], [1.0, 1.0], [3.0, 3.0]])])
+
+        fit = lensing_fitters.LensingPositionFitter(positions=tracer.positions, noise_map=1.0)
+
+        assert fit.maximum_separations[0] == 1.0
+        assert fit.maximum_separations[1] == np.sqrt(18)
+        assert fit.maximum_separations[2] == np.sqrt(18)
+
+    def test__likelihood__is_sum_of_separations_divided_by_noise(self):
+        tracer = MockTracerPositions(positions=[np.array([[0.0, 0.0], [0.0, 1.0], [0.0, 0.5]]),
+                                                np.array([[0.0, 0.0], [0.0, 0.0], [3.0, 3.0]]),
+                                                np.array([[0.0, 0.0], [1.0, 1.0], [3.0, 3.0]])])
+
+        fit = lensing_fitters.LensingPositionFitter(positions=tracer.positions, noise_map=1.0)
+        assert fit.chi_squared_map[0] == 1.0
+        assert fit.chi_squared_map[1] == pytest.approx(18.0, 1e-4)
+        assert fit.chi_squared_map[2] == pytest.approx(18.0, 1e-4)
+        assert fit.likelihood == pytest.approx(-0.5 * (1.0 + 18 + 18), 1e-4)
+
+        fit = lensing_fitters.LensingPositionFitter(positions=tracer.positions, noise_map=2.0)
+        assert fit.chi_squared_map[0] == (1.0 / 2.0) ** 2.0
+        assert fit.chi_squared_map[1] == pytest.approx((np.sqrt(18.0) / 2.0) ** 2.0, 1e-4)
+        assert fit.chi_squared_map[2] == pytest.approx((np.sqrt(18.0) / 2.0) ** 2.0, 1e-4)
+        assert fit.likelihood == pytest.approx(-0.5 * ((1.0 / 2.0) ** 2.0 + (np.sqrt(18.0) / 2.0) ** 2.0 +
+                                                       (np.sqrt(18.0) / 2.0) ** 2.0), 1e-4)
+
+    def test__threshold__if_not_met_returns_ray_tracing_exception(self):
+        tracer = MockTracerPositions(positions=[np.array([[0.0, 0.0], [0.0, 1.0]])])
+        fit = lensing_fitters.LensingPositionFitter(positions=tracer.positions, noise_map=1.0)
+
+        assert fit.maximum_separation_within_threshold(threshold=100.0) == True
+        assert fit.maximum_separation_within_threshold(threshold=0.1) == False

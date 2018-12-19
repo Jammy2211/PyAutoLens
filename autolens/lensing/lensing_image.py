@@ -12,10 +12,10 @@ class LensingImage(object):
     def __init__(self, image, mask, sub_grid_size=2, image_psf_shape=None, mapping_matrix_psf_shape=None,
                  positions=None):
         """
-        The lensing image is the collection of datas (regular, noise-maps, PSF), a masks, grid_stacks, convolvers and other \
+        The lensing image is the collection of datas (regular, noise_map-maps, PSF), a masks, grid_stacks, convolvers and other \
         utilities that are used for modeling and fitting an image of a strong lens.
 
-        Whilst the image datas is initially loaded in 2D, for the lensing image the masked-image (and noise-maps) \
+        Whilst the image datas is initially loaded in 2D, for the lensing image the masked-image (and noise_map-maps) \
         are reduced to 1D arrays for faster calculations.
 
         Parameters
@@ -97,10 +97,10 @@ class LensingHyperImage(LensingImage):
     def __init__(self, image, mask, hyper_model_image, hyper_galaxy_images, hyper_minimum_values, sub_grid_size=2,
                  image_psf_shape=None, mapping_matrix_psf_shape=None, positions=None):
         """
-        The lensing image is the collection of datas (regular, noise-maps, PSF), a masks, grid_stacks, convolvers and other \
+        The lensing image is the collection of datas (regular, noise_map-maps, PSF), a masks, grid_stacks, convolvers and other \
         utilities that are used for modeling and fitting an image of a strong lens.
 
-        Whilst the image datas is initially loaded in 2D, for the lensing image the masked-image (and noise-maps) \
+        Whilst the image datas is initially loaded in 2D, for the lensing image the masked-image (and noise_map-maps) \
         are reduced to 1D arrays for faster calculations.
 
         Parameters
