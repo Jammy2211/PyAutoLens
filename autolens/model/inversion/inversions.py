@@ -19,7 +19,7 @@ class Inversion(object):
         image_1d : ndarray
             Flattened 1D array of the regular the inversion fits.
         noise_map_1d : ndarray
-            Flattened 1D array of the noise-map used by the inversion.
+            Flattened 1D array of the noise_map-map used by the inversion.
         convolver : imaging.convolution.Convolver
             The convolver used to blur the mapping matrix with the PSF.
         mapper : inversion.mappers.Mapper

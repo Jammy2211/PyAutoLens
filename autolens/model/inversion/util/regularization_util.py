@@ -37,7 +37,7 @@ def weighted_pixel_signals_from_images(pixels, signal_scale, regular_to_pix, gal
     'relative' signal (i.e. a pixel with 10 regular-pixels doesn't have x2 the signal of one with 5).
 
     2) Divided by the maximum pixel-signal, so that all signals vary between 0 and 1. This ensures that the \
-    regularizations weights are defined identically for any datas_ units or signal-to-noise ratio.
+    regularizations weights are defined identically for any datas_ units or signal-to-noise_map ratio.
 
     3) Raised to the power of the hyper-parameter *signal_scale*, so the method can control the relative \
     contribution regularization in different regions of pixelization.

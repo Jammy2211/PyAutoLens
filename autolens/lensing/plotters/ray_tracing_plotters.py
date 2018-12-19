@@ -19,7 +19,7 @@ def plot_ray_tracing_subplot(tracer, mask=None, positions=None,
     Parameters
     -----------
     tracer : autolens.imaging.tracer_normal.Image
-        Class containing the _tracer, noise-mappers and PSF that are to be plotted.
+        Class containing the _tracer, noise_map-mappers and PSF that are to be plotted.
         The font size of the figure ylabel.
     output_path : str
         The path where the _tracer is output if the output_type is a file format (e.g. png, fits)
@@ -115,7 +115,7 @@ def plot_ray_tracing_individual(tracer, output_path=None, output_format='show'):
     Parameters
     -----------
     tracer : autolens.imaging.tracer_normal.Image
-        Class containing the _tracer, noise-mappers and PSF that are to be plotted.
+        Class containing the _tracer, noise_map-mappers and PSF that are to be plotted.
         The font size of the figure ylabel.
     output_path : str
         The path where the _tracer is output if the output_type is a file format (e.g. png, fits)

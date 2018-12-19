@@ -35,7 +35,7 @@ class Galaxy(object):
         mass_profiles: [mp.MassProfile]
             A list of the galaxy's mass profiles.
         hyper_galaxy : HyperGalaxy
-            The hyper-parameters of the hyper-galaxy, if is used to scale the regular's noise-map.
+            The hyper-parameters of the hyper-galaxy, if is used to scale the regular's noise_map-map.
             
         Attributes
         ----------
@@ -140,6 +140,9 @@ class Galaxy(object):
         ----------
         radius : float
             The radius of the circle to compute the luminosity within.
+        conversion_factor : float
+            Factor the dimensionless luminosity is multiplied by to convert it to a physical luminosity \
+            (e.g. a photometric zeropoint).
         """
         if self.has_light_profile:
             return sum(map(lambda p: p.luminosity_within_circle(radius, conversion_factor), self.light_profiles))
@@ -160,6 +163,9 @@ class Galaxy(object):
         ----------
         major_axis: float
             The major-axis of the ellipse to compute the luminosity within.
+        conversion_factor : float
+            Factor the dimensionless luminosity is multiplied by to convert it to a physical luminosity \
+            (e.g. a photometric zeropoint).
         """
         if self.has_light_profile:
             return sum(map(lambda p: p.luminosity_within_ellipse(major_axis, conversion_factor), self.light_profiles))
@@ -235,7 +241,8 @@ class Galaxy(object):
         radius : float
             The radius of the circle to compute the dimensionless mass within.
         conversion_factor : float
-            The factor the dimensionless mass is multiplied by to convert it to a physical mass.
+            Factor the dimensionless mass is multiplied by to convert it to a physical mass (e.g. the critical surface \
+            mass density).
         """
         if self.has_mass_profile:
             return sum(map(lambda p: p.mass_within_circle(radius, conversion_factor), self.mass_profiles))
@@ -255,7 +262,8 @@ class Galaxy(object):
         major_axis : float
             The major axis of the ellipse
         conversion_factor : float
-            The factor the dimensionless mass is multiplied by to convert it to a physical mass.
+            Factor the dimensionless mass is multiplied by to convert it to a physical mass (e.g. the critical surface \
+            mass density).
         """
         if self.has_mass_profile:
             return sum(map(lambda p: p.mass_within_ellipse(major_axis, conversion_factor), self.mass_profiles))
@@ -267,7 +275,7 @@ class HyperGalaxy(object):
     _ids = count()
 
     def __init__(self, contribution_factor=0.0, noise_factor=0.0, noise_power=1.0):
-        """ If a *Galaxy* is given a *HyperGalaxy* as an attribute, the noise-map in the regions of the regular that the \
+        """ If a *Galaxy* is given a *HyperGalaxy* as an attribute, the noise_map-map in the regions of the regular that the \
         galaxy is located will be scaled, to prevent over-fitting of the galaxy. 
         
         This is performed by first computing the hyper-galalxy's 'contribution-map', which determines the fraction of \ 
@@ -276,7 +284,7 @@ class HyperGalaxy(object):
         galaxy's light from a previous analysis phase. 
          
         The *HyperGalaxy* class contains the hyper-parameters which are associated with this galaxy for scaling the \
-        noise-map.
+        noise_map-map.
         
         Parameters
         -----------
@@ -316,7 +324,7 @@ class HyperGalaxy(object):
         return contributions
 
     def scaled_noise_from_contributions(self, noise_map, contributions):
-        """Compute a scaled galaxy noise map from a baseline noise map.
+        """Compute a scaled galaxy noise_map map from a baseline noise_map map.
 
         This uses the galaxy contribution map and the *noise_factor* and *noise_power* hyper-parameters.
 

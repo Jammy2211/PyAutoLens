@@ -39,7 +39,7 @@ imaging_plotters.plot_image_subplot(image=image)
 # in-built functions in PyAutoLens to convert the datas to a good format for you. However, your life will be much easier
 # if you can just reduce it this way in the first place!
 
-# 1) Brightness units - the regular's flux and noise-map values are in units of electrons per second (and not electrons,
+# 1) Brightness units - the regular's flux and noise_map-map values are in units of electrons per second (and not electrons,
 #    counts, ADU's etc.). Although PyAutoLens can technically perform an analysis using other units, the default
 #    settings assume the regular is in electrons per second (e.g. the priors on light profile intensities and
 #    regularization coefficient). Thus, images not in electrons per second should be converted!
@@ -79,7 +79,7 @@ image_large_stamp = im.load_imaging_from_fits(image_path=path+'datas/image_large
 imaging_plotters.plot_image_subplot(image=image_large_stamp)
 
 #    If you have a large postage stamp, you can trim it when you load the datas by specifying a new regular size in pixels.
-#    This will also trim the noise-map, exposoure time map and other arrays which are the same dimensions / scale as
+#    This will also trim the noise_map-map, exposoure time map and other arrays which are the same dimensions / scale as
 #    the regular. This trimming is centred on the regular.
 image_large_stamp_trimmed = im.load_imaging_from_fits(image_path=path+'datas/image_large_stamp/regular.fits',
                                                       pixel_scale=0.1,
@@ -144,11 +144,11 @@ lensing_image = li.LensingImage(image=image_small_stamp_padded, mask=mask)
 # print(image_recentred_pixels.shape)
 # imaging_plotters.plot_image_subplot(regular=image_recentred_pixels)
 
-# 6) The noise-map values are the RMS standard deviation in every pixel (and not the variances, HST WHT-map values,
-#    etc.). You MUST be 100% certain that the noise map is the RMS standard deviations, or else your analysis will
+# 6) The noise_map-map values are the RMS standard deviation in every pixel (and not the variances, HST WHT-map values,
+#    etc.). You MUST be 100% certain that the noise_map map is the RMS standard deviations, or else your analysis will
 #    be incorrect.
 
-# There are many different ways the noise-map can be reduced. We are aiming to include conversion functions for all
+# There are many different ways the noise_map-map can be reduced. We are aiming to include conversion functions for all
 # common datas-reductions. Currently, we have a function to convert an regular from a HST WHT map, where
 # RMS SD = 1.0/ sqrt(WHT). This can be called using the 'convert_noise_map_from_weight_map' flag.
 image_noise_from_wht = im.load_imaging_from_fits(image_path=path+'datas/image_large_stamp/regular.fits',
@@ -158,7 +158,7 @@ image_noise_from_wht = im.load_imaging_from_fits(image_path=path+'datas/image_la
                                                  convert_noise_map_from_weight_map=True)
 
 # (I don't currently have an example regular in WHT for this tutorial, but the function above will work. Above, it
-# actually converts an accurate noise-map to an inverse WHT map!
+# actually converts an accurate noise_map-map to an inverse WHT map!
 
 # 7) The PSF is zoomed in around its central core, which is the most important region for strong lens modeling. By
 #    default, the size of the PSF regular is used to perform convolution. The larger this stamp, the longer this

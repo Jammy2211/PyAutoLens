@@ -21,7 +21,7 @@ class Mask(scaled_array.ScaledSquarePixelArray):
         Parameters
         ----------
         array: ndarray
-            An array representing datas (e.g. an datas_, noise-mappers, etc.)
+            An array representing datas (e.g. an datas_, noise_map-mappers, etc.)
         pixel_scale: float
             The arc-second to pixel conversion factor of each pixel.
         origin : (float, float)
@@ -206,7 +206,7 @@ class Mask(scaled_array.ScaledSquarePixelArray):
         return mask_util.masked_grid_1d_index_to_2d_pixel_index_from_mask(self).astype('int')
 
     def map_2d_array_to_masked_1d_array(self, array_2d):
-        """For a 2D datas-array (e.g. the datas_, noise-mappers, etc.) mappers it to a masked 1D array of values usin this masks.
+        """For a 2D datas-array (e.g. the datas_, noise_map-mappers, etc.) mappers it to a masked 1D array of values usin this masks.
 
         Parameters
         ----------

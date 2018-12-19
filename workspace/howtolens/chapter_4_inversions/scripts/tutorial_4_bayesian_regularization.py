@@ -81,9 +81,9 @@ lensing_fitting_plotters.plot_fitting_subplot(fit=no_regularization_fit)
 # omitted.
 
 # Why do we need to regularize our solution? Well, we just saw why - if we don't apply this smoothing, we 'over-fit_normal'
-# the regular. More specifically, we over-fit_normal the noise in the regular - which is what the the large flux values located
+# the regular. More specifically, we over-fit_normal the noise_map in the regular - which is what the the large flux values located
 # at the exteriors of the source reconstruction are doing. Think about it - if your sole aim is to maximize the
-# likelihood, the best way to do this is to fit_normal *everything* accurately, including the noise.
+# likelihood, the best way to do this is to fit_normal *everything* accurately, including the noise_map.
 
 # If we change the 'normalization' variables of the plotter, such that the color-map is restricuted to a narrower
 # range of values, we can see that even without regularization we are still reconstructing the actual source model_galaxy.
@@ -91,7 +91,7 @@ inversion_plotters.plot_reconstructed_pixelization(inversion=no_regularization_f
                                                    norm_max=1.0, norm_min=-1.0)
 
 # Over-fitting is why regularization is necessary - solutions like this would completely ruin our attempts to model a
-# strong lens. By smoothing our source reconstruction, we ensure it doesn't fit_normal the noise in the regular. If we set a
+# strong lens. By smoothing our source reconstruction, we ensure it doesn't fit_normal the noise_map in the regular. If we set a
 # really high regularization coefficient, we can completely remove over-fitting, at the expense of also fitting the
 # regular less accurately.
 source_galaxy = g.Galaxy(pixelization=pix.Rectangular(shape=(40, 40)),
@@ -112,12 +112,12 @@ print(high_regularization_fit.likelihoods_with_regularization)
 # If we use the likelihood, we'll always choose a coefficient of 0! We need a different goodness-of-fit_normal measure. For this,
 # we invoke the 'Bayesian evidence'. This quantifies the goodness of the fit_normal as follows:
 
-# - First, it requires that the residuals of the fit_normal are consistent with Gaussian noise (which is the noise expected
-#   in CCD imaging). If this Gaussian pattern is not visible in the residuals, it tells us that the noise must have been
+# - First, it requires that the residuals of the fit_normal are consistent with Gaussian noise_map (which is the noise_map expected
+#   in CCD imaging). If this Gaussian pattern is not visible in the residuals, it tells us that the noise_map must have been
 #   over-fitted. Thus, the Bayesian evidence decreases. Obviously, if the regular is poorly fitted, the residuals don't
 #   be Gaussian either, but the poor fit_normal will lead to a decrease in Bayesian evidence decreases all the same!
 
-# - This leaves us with a large number of solutions which all fit_normal the datas equally well (e.g., to the noise level). To
+# - This leaves us with a large number of solutions which all fit_normal the datas equally well (e.g., to the noise_map level). To
 #   determine the best-fit_normal from these solutions, the Bayesian evidence quantifies the complexity of each solution's
 #   source reconstruction. If the inversion requires lots of pixels and a low level of regularization to achieve a good
 #   fit_normal, the Bayesian evidence decreases. It penalizes solutions which are complex, which, in a Bayesian sense, are less

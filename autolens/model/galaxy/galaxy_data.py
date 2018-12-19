@@ -18,14 +18,14 @@ class GalaxyData(scaled_array.ScaledSquarePixelArray):
         of light or mass profiles.
 
         This omits a number of the datas components typically used when fitting an regular (e.g. the observed regular, PSF, \
-        exposure time map), but still has a number of the other components (e.g. an effective noise-map, grid_stacks).
+        exposure time map), but still has a number of the other components (e.g. an effective noise_map-map, grid_stacks).
 
         Parameters
         ----------
         array : scaled_array.ScaledSquarePixelArray
             An array of the quantity of the galaxy that is being fitted (e.g. its intensities, surface density, etc.).
         noise_map : scaled_array.ScaledSquarePixelArray
-            The noise-map used for computing the likelihood of each fit. This can be chosen arbritarily.
+            The noise_map-map used for computing the likelihood of each fit. This can be chosen arbritarily.
         mask: msk.Mask
             The 2D masks that is applied to regular datas.
         sub_grid_size : int
@@ -34,7 +34,7 @@ class GalaxyData(scaled_array.ScaledSquarePixelArray):
         Attributes
         ----------
         noise_map_1d : ndarray
-            The masked 1D array of the noise-map
+            The masked 1D array of the noise_map-map
         grid_stacks : imaging.masks.DataGridStack
             Grids of (y,x) Cartesian coordinates which map over the masked 1D datas array's pixels (includes an \
             regular-grid, sub-grid, etc.)

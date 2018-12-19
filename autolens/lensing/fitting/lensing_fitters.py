@@ -180,14 +180,14 @@ class AbstractLensingInversionFitter(AbstractLensingFitter):
         """ An abstract lensing inversion fitter, which fits the lensing image an inversion using the mapper(s) and \
         regularization(s) in the galaxies of the tracer.
 
-        This inversion use's the lensing-image, its PSF and an input noise-map.
+        This inversion use's the lensing-image, its PSF and an input noise_map-map.
 
         Parameters
         -----------
         lensing_image : li.LensingImage
             The lensing-image that is fitted.
         noise_map_1d : ndarray
-            The 1D noise map that is fitted, which is an input variable so a hyper-noise map can be used (see \
+            The 1D noise_map map that is fitted, which is an input variable so a hyper-noise_map map can be used (see \
             *AbstractHyperFitter*).
         tracer : ray_tracing.AbstractTracerNonStack
             The tracer, which describes the ray-tracing and strong lensing configuration.
@@ -211,7 +211,7 @@ class AbstractLensingProfileInversionFitter(AbstractLensingFitter):
         image of all galaxies (with light profiles) in the tracer, blurs it with the PSF and fits the residual image \
         with an inversion using the mapper(s) and regularization(s) in the galaxy's of the tracer.
 
-        This inversion use's the lensing-image, its PSF and an input noise-map.
+        This inversion use's the lensing-image, its PSF and an input noise_map-map.
 
         If a padded tracer is supplied, the blurred profile image's can be generated over the entire image and thus \
         without the mask.
@@ -221,7 +221,7 @@ class AbstractLensingProfileInversionFitter(AbstractLensingFitter):
         lensing_image : li.LensingImage
             The lensing-image that is fitted.
         noise_map_1d : ndarray
-            The 1D noise map that is fitted, which is an input variable so a hyper-noise map can be used (see \
+            The 1D noise_map map that is fitted, which is an input variable so a hyper-noise_map map can be used (see \
             *AbstractHyperFitter*).
         tracer : ray_tracing.AbstractTracerNonStack
             The tracer, which describes the ray-tracing and strong lensing configuration.
@@ -264,7 +264,7 @@ class LensingDataFitter(fitter.DataFitter):
         image : ndarray
             The observed image that is fitted.
         noise_map : ndarray
-            The noise-map of the observed image.
+            The noise_map-map of the observed image.
         mask: msk.Mask
             The mask that is applied to the image.
         model_data : ndarray
@@ -292,7 +292,7 @@ class LensingDataInversionFitter(LensingDataFitter):
         image : ndarray
             The observed image that is fitted.
         noise_map : ndarray
-            The noise-map of the observed image.
+            The noise_map-map of the observed image.
         mask: msk.Mask
             The mask that is applied to the image.
         model_data : ndarray
@@ -345,8 +345,7 @@ class LensingProfileFitter(LensingDataFitter, AbstractLensingProfileFitter):
 
     @classmethod
     def fast_fit(cls, lensing_image, tracer):
-        """Perform the fit of this class as described above, but storing no results as class instances, thereby \
-        minimizing memory use and maximizing run-speed."""
+        """Perform the fit of this class as described above, but minimizing memory use and maximizing run-speed."""
 
         blurred_profile_image_1d = lensing_fitting_util.blurred_image_1d_from_1d_unblurred_and_blurring_images(
             unblurred_image_1d=tracer.image_plane_image_1d, blurring_image_1d=tracer.image_plane_blurring_image_1d,
@@ -384,8 +383,7 @@ class LensingInversionFitter(LensingDataInversionFitter, AbstractLensingInversio
 
     @classmethod
     def fast_fit(cls, lensing_image, tracer):
-        """Perform the fit of this class as described above, but storing no results as class instances, thereby \
-        minimizing memory use and maximizing run-speed."""
+        """Perform the fit of this class as described above, but minimizing memory use and maximizing run-speed."""
 
         inversion = inversions.inversion_from_lensing_image_mapper_and_regularization(
             image_1d=lensing_image.image_1d, noise_map_1d=lensing_image.noise_map_1d, 
@@ -441,8 +439,7 @@ class LensingProfileInversionFitter(LensingDataInversionFitter, AbstractLensingP
 
     @classmethod
     def fast_fit(cls, lensing_image, tracer):
-        """Perform the fit of this class as described above, but storing no results as class instances, thereby \
-        minimizing memory use and maximizing run-speed."""
+        """Perform the fit of this class as described above, but minimizing memory use and maximizing run-speed."""
 
         blurred_profile_image_1d = lensing_fitting_util.blurred_image_1d_from_1d_unblurred_and_blurring_images(
             unblurred_image_1d=tracer.image_plane_image_1d, blurring_image_1d=tracer.image_plane_blurring_image_1d,
@@ -468,47 +465,46 @@ class AbstractLensingHyperFitter(object):
     def __init__(self, lensing_hyper_image, hyper_galaxies):
         """Abstract base class of a hyper-fit.
 
-        A hyper-fit is a fit which performs a fit as described in the *AbstractFitter*, but also includes a set of
-        parameters which allow the noise-map of the datas-set to be scaled. This is done to prevent over-fitting
-        small regions of a datas-set with high chi-squared values and therefore provide a global fit to the overall
-        datas-set.
+        A hyper-fit is a fit which performs the fit  described in the *AbstractFitter*, but also includes a set of \
+        parameters which allow the noise_map-map of the image to be scaled. This prevents over-fitting of small regions of \
+        an image with high chi-squared values, ensuring the model gives global fit to the data.
 
-        This is performed using an existing model of the datas-set to compute a contributions image, which a set of
-        hyper-parameters then use to increase the noise in localized regions of the datas-set.
+        This is performed using existing model-images of the observed image, from which a 'contribution-map' is \
+        computed and used to increase the noise_map in localized regions of the noise_map-map.
 
         Parameters
         -----------
         lensing_hyper_image : [fit_data.FitDataHyper]
-            The fitting image that are fitted, which include the hyper-image used for scaling the noise-map.
+            The fitting image that are fitted, which include the hyper-image used for scaling the noise_map-map.
         hyper_galaxies : [galaxy.Galaxy]
-            The hyper-galaxies which represent the model components used to scale the noise, which correspond to
+            The hyper-galaxies which represent the model components used to scale the noise_map, which correspond to
             individual galaxies in the image.
 
         Attributes
         -----------
-        contributions : [scaled_array.ScaledSquarePixelArray]
+        contribution_maps : [scaled_array.ScaledSquarePixelArray]
             The contribution map of every image, where there is an individual contribution map for each hyper-galaxy in
             the model.
         hyper_noise_map : scaled_array.ScaledSquarePixelArray
-            The hyper noise map of the image, computed after using the hyper-galaxies.
+            The hyper noise_map map of the image, computed after using the hyper-galaxies.
         """
 
         self.is_hyper_fit = True
 
-        contributions_1d = \
-            lensing_fitting_util.contributions_from_hyper_images_and_galaxies(
+        contribution_maps_1d = \
+            lensing_fitting_util.contribution_maps_1d_from_hyper_images_and_galaxies(
                 hyper_model_image_1d=lensing_hyper_image.hyper_model_image_1d,
                 hyper_galaxy_images_1d=lensing_hyper_image.hyper_galaxy_images_1d,
                 hyper_galaxies=hyper_galaxies, hyper_minimum_values=lensing_hyper_image.hyper_minimum_values)
 
-        self.contributions = list(map(lambda contribution_1d :
-                                      lensing_hyper_image.map_to_scaled_array(array_1d=contribution_1d),
-                                      contributions_1d))
+        self.contribution_maps = list(map(lambda contribution_map_1d :
+                                          lensing_hyper_image.map_to_scaled_array(array_1d=contribution_map_1d),
+                                           contribution_maps_1d))
 
         self.hyper_noise_map_1d =\
-            lensing_fitting_util.scaled_noise_map_from_hyper_galaxies_and_contributions(
-                contributions_1d=contributions_1d, hyper_galaxies=hyper_galaxies,
-                noise_map_1d=lensing_hyper_image.noise_map_1d)
+            lensing_fitting_util.scaled_noise_map_from_hyper_galaxies_and_contribution_maps(
+                contribution_maps=contribution_maps_1d, hyper_galaxies=hyper_galaxies,
+                noise_map=lensing_hyper_image.noise_map_1d)
 
         self.hyper_noise_map = lensing_hyper_image.map_to_scaled_array(array_1d=self.hyper_noise_map_1d)
 
@@ -516,8 +512,15 @@ class AbstractLensingHyperFitter(object):
 class LensingProfileHyperFitter(LensingDataFitter, AbstractLensingProfileFitter, AbstractLensingHyperFitter):
 
     def __init__(self, lensing_hyper_image, tracer, padded_tracer=None):
-        """
-        Class to evaluate the fit between a model described by a tracer and an actual lensing_image.
+        """ Fit a lensing hyper-image with galaxy light-profiles, as follows:
+
+        1) Use the hyper-image and tracer's hyper-galaxies to generate a hyper noise_map-map.
+        2) Generates the image-plane image of all galaxies with light profiles in the tracer.
+        3) Blur this image-plane image with the lensing image's PSF to generate the model-image.
+        4) Fit the observed with this model-image, using the hyper-noise_map map to compute the chi-squared values..
+
+        If a padded tracer is supplied, the blurred profile image's can be generated over the entire image and thus \
+        without the mask.
 
         Parameters
         ----------
@@ -541,18 +544,17 @@ class LensingProfileHyperFitter(LensingDataFitter, AbstractLensingProfileFitter,
 
     @classmethod
     def fast_fit(cls, lensing_hyper_image, tracer):
-        """Perform the fit of this class as described above, but storing no results as class instances, thereby \
-        minimizing memory use and maximizing run-speed."""
+        """Perform the fit of this class as described above, but minimizing memory use and maximizing run-speed."""
 
         contributions_1d = \
-            lensing_fitting_util.contributions_from_hyper_images_and_galaxies(
+            lensing_fitting_util.contribution_maps_1d_from_hyper_images_and_galaxies(
                 hyper_model_image_1d=lensing_hyper_image.hyper_model_image_1d,
                 hyper_galaxy_images_1d=lensing_hyper_image.hyper_galaxy_images_1d,
                 hyper_galaxies=tracer.hyper_galaxies, hyper_minimum_values=lensing_hyper_image.hyper_minimum_values)
 
-        hyper_noise_map_1d = lensing_fitting_util.scaled_noise_map_from_hyper_galaxies_and_contributions(
-                contributions_1d=contributions_1d, hyper_galaxies=tracer.hyper_galaxies,
-                noise_map_1d=lensing_hyper_image.noise_map_1d)
+        hyper_noise_map_1d = lensing_fitting_util.scaled_noise_map_from_hyper_galaxies_and_contribution_maps(
+                contribution_maps=contributions_1d, hyper_galaxies=tracer.hyper_galaxies,
+                noise_map=lensing_hyper_image.noise_map_1d)
 
         model_image_1d = lensing_fitting_util.blurred_image_1d_from_1d_unblurred_and_blurring_images(
             unblurred_image_1d=tracer.image_plane_image_1d, blurring_image_1d=tracer.image_plane_blurring_image_1d,
@@ -564,11 +566,17 @@ class LensingProfileHyperFitter(LensingDataFitter, AbstractLensingProfileFitter,
         return fit.likelihood
 
 
-class LensingInversionHyperFitter(LensingDataInversionFitter, AbstractLensingInversionFitter, AbstractLensingHyperFitter):
+class LensingInversionHyperFitter(LensingDataInversionFitter, AbstractLensingInversionFitter,
+                                  AbstractLensingHyperFitter):
 
     def __init__(self, lensing_hyper_image, tracer):
-        """
-        Class to evaluate the fit between a model described by a tracer and an actual lensing_image.
+        """ Fit a lensing hyper-image with an inversion, as follows:
+
+        1) Use the hyper-image and tracer's hyper-galaxies to generate a hyper noise_map-map.
+        2) Extract the mapper(s) and regularization(s) of galaxies in the tracer.
+        3) Use these to perform an inversion on the lensing image (including PSF blurring), using the hyper noise_map-map, \
+           and generate the model-image.
+        4) Fit the observed with this model-image, using the hyper-noise_map map to compute the chi-squared values.
 
         Parameters
         ----------
@@ -591,18 +599,17 @@ class LensingInversionHyperFitter(LensingDataInversionFitter, AbstractLensingInv
 
     @classmethod
     def fast_fit(cls, lensing_hyper_image, tracer):
-        """Perform the fit of this class as described above, but storing no results as class instances, thereby \
-        minimizing memory use and maximizing run-speed."""
+        """Perform the fit of this class as described above, but minimizing memory use and maximizing run-speed."""
 
         contributions_1d = \
-            lensing_fitting_util.contributions_from_hyper_images_and_galaxies(
+            lensing_fitting_util.contribution_maps_1d_from_hyper_images_and_galaxies(
                 hyper_model_image_1d=lensing_hyper_image.hyper_model_image_1d,
                 hyper_galaxy_images_1d=lensing_hyper_image.hyper_galaxy_images_1d,
                 hyper_galaxies=tracer.hyper_galaxies, hyper_minimum_values=lensing_hyper_image.hyper_minimum_values)
 
-        hyper_noise_map_1d = lensing_fitting_util.scaled_noise_map_from_hyper_galaxies_and_contributions(
-                             contributions_1d=contributions_1d, hyper_galaxies=tracer.hyper_galaxies,
-                             noise_map_1d=lensing_hyper_image.noise_map_1d)
+        hyper_noise_map_1d = lensing_fitting_util.scaled_noise_map_from_hyper_galaxies_and_contribution_maps(
+                             contribution_maps=contributions_1d, hyper_galaxies=tracer.hyper_galaxies,
+                             noise_map=lensing_hyper_image.noise_map_1d)
 
         inversion = inversions.inversion_from_lensing_image_mapper_and_regularization(
                     image_1d=lensing_hyper_image.image_1d, noise_map_1d=hyper_noise_map_1d,
@@ -619,8 +626,23 @@ class LensingProfileInversionHyperFitter(LensingDataInversionFitter, AbstractLen
                                          AbstractLensingHyperFitter):
 
     def __init__(self, lensing_hyper_image, tracer, padded_tracer=None):
-        """
-        Class to evaluate the fit between a model described by a tracer and an actual lensing_image.
+        """Fit a lensing hyper-image with galaxy light-profiles and an inversion, as follows:
+
+        1) Use the hyper-image and tracer's hyper-galaxies to generate a hyper noise_map-map.
+        2) Generates the image-plane image of all galaxies with light profiles in the tracer.
+        3) Blur this image-plane image with the lensing image's PSF to generate the model-image.
+        4) Subtract this image from the observed image to generate a profile subtracted image.
+        5) Extract the mapper(s) and regularization(s) of galaxies in the tracer.
+        6) Use these to perform an inversion on the profile subtracted image (including PSF blurring), using the \
+           hyper noise_map-map in the inversion.
+        7) Add the blurred profile image and reconstructed inversion image together to generate the model-image.
+        8) Fit the observed with this model-image, using the hyper-noise_map map to compute the chi-squared values.
+
+        Typically, this fit is used to subtract the foreground lens's light using light profiles \
+        and then fit the source galaxy with an inversion, however the fitting routine in general
+
+        If a padded tracer is supplied, the blurred profile image's can be generated over the entire image and thus \
+        without the mask.
 
         Parameters
         ----------
@@ -649,18 +671,17 @@ class LensingProfileInversionHyperFitter(LensingDataInversionFitter, AbstractLen
 
     @classmethod
     def fast_fit(cls, lensing_hyper_image, tracer):
-        """Perform the fit of this class as described above, but storing no results as class instances, thereby \
-        minimizing memory use and maximizing run-speed."""
+        """Perform the fit of this class as described above, but minimizing memory use and maximizing run-speed."""
 
         contributions_1d = \
-            lensing_fitting_util.contributions_from_hyper_images_and_galaxies(
+            lensing_fitting_util.contribution_maps_1d_from_hyper_images_and_galaxies(
                 hyper_model_image_1d=lensing_hyper_image.hyper_model_image_1d,
                 hyper_galaxy_images_1d=lensing_hyper_image.hyper_galaxy_images_1d,
                 hyper_galaxies=tracer.hyper_galaxies, hyper_minimum_values=lensing_hyper_image.hyper_minimum_values)
 
-        hyper_noise_map_1d = lensing_fitting_util.scaled_noise_map_from_hyper_galaxies_and_contributions(
-                             contributions_1d=contributions_1d, hyper_galaxies=tracer.hyper_galaxies,
-                             noise_map_1d=lensing_hyper_image.noise_map_1d)
+        hyper_noise_map_1d = lensing_fitting_util.scaled_noise_map_from_hyper_galaxies_and_contribution_maps(
+                             contribution_maps=contributions_1d, hyper_galaxies=tracer.hyper_galaxies,
+                             noise_map=lensing_hyper_image.noise_map_1d)
 
         blurred_profile_image_1d = lensing_fitting_util.blurred_image_1d_from_1d_unblurred_and_blurring_images(
             unblurred_image_1d=tracer.image_plane_image_1d, blurring_image_1d=tracer.image_plane_blurring_image_1d,
@@ -680,41 +701,50 @@ class LensingProfileInversionHyperFitter(LensingDataInversionFitter, AbstractLen
 
         return fit.evidence
 
-# class PositionFit:
-#
-#     def __init__(self, positions, noise):
-#
-#         self.positions = positions
-#         self.noise = noise
-#
-#     @property
-#     def chi_squared_map(self):
-#         return np.square(np.divide(self.maximum_separations, self.noise))
-#
-#     @property
-#     def likelihood(self):
-#         return -0.5 * sum(self.chi_squared_map)
-#
-#     def maximum_separation_within_threshold(self, threshold):
-#         if max(self.maximum_separations) > threshold:
-#             return False
-#         else:
-#             return True
-#
-#     @property
-#     def maximum_separations(self):
-#         return list(map(lambda positions: self.max_separation_of_grid(positions), self.positions))
-#
-#     def max_separation_of_grid(self, grid):
-#         rdist_max = np.zeros((grid.shape[0]))
-#         for i in range(grid.shape[0]):
-#             xdists = np.square(np.subtract(grid[i, 0], grid[:, 0]))
-#             ydists = np.square(np.subtract(grid[i, 1], grid[:, 1]))
-#             rdist_max[i] = np.max(np.add(xdists, ydists))
-#         return np.max(np.sqrt(rdist_max))
-#
-#
-#
+class LensingPositionFitter(object):
+
+    def __init__(self, positions, noise_map):
+        """A lensing position fitter, which takes a set of positions (e.g. from a plane in the tracer) and computes \
+        their maximum separation, such that points which tracer closer to one another have a higher likelihood.
+
+        Parameters
+        -----------
+        positions : [[]]
+            The (y,x) arc-second coordinates of pisitions which the maximum distance and likelihood is computed using.
+        noise_map : ndarray
+            The noise-value assumed when computing the likelihood.
+        """
+        self.positions = positions
+        self.noise_map = noise_map
+
+    @property
+    def chi_squared_map(self):
+        return np.square(np.divide(self.maximum_separations, self.noise_map))
+
+    @property
+    def likelihood(self):
+        return -0.5 * sum(self.chi_squared_map)
+
+    def maximum_separation_within_threshold(self, threshold):
+        if max(self.maximum_separations) > threshold:
+            return False
+        else:
+            return True
+
+    @property
+    def maximum_separations(self):
+        return list(map(lambda positions: self.max_separation_of_grid(positions), self.positions))
+
+    def max_separation_of_grid(self, grid):
+        rdist_max = np.zeros((grid.shape[0]))
+        for i in range(grid.shape[0]):
+            xdists = np.square(np.subtract(grid[i, 0], grid[:, 0]))
+            ydists = np.square(np.subtract(grid[i, 1], grid[:, 1]))
+            rdist_max[i] = np.max(np.add(xdists, ydists))
+        return np.max(np.sqrt(rdist_max))
+
+
+
 
 
 # TODO : The [plane_index][galaxy_index] datas structure is going to be key to tracking galaxies / hyper galaxies in

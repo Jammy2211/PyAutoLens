@@ -6,7 +6,7 @@ class Regularization(object):
 
     def __init__(self, coefficients=(1.0,)):
         """ Abstract base class for a regularization-scheme, which is applied to a pixelization to enforce a \
-        smooth-source solution and prevent over-fitting noise in the datas_. This is achieved by computing a \
+        smooth-source solution and prevent over-fitting noise_map in the datas_. This is achieved by computing a \
         'regularization term' - which is the sum of differences in reconstructed flux between every set of neighboring \
         pixels. This regularization term is added to the solution's chi-squared as a penalty term. This effects \
         a pixelization in the following ways:

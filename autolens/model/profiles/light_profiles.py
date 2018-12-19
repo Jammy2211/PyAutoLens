@@ -71,6 +71,8 @@ class EllipticalLP(geometry_profiles.EllipticalProfile, LightProfile):
         ----------
         radius : float
             The radius of the circle to compute the luminosity within.
+        conversion_factor : float
+            Factor which converts the computed dimensionless quantity to a physical one (e.g. a photometric zeropoint).
         """
         return conversion_factor*quad(self.luminosity_integral, a=0.0, b=radius, args=(1.0,))[0]
 
@@ -86,6 +88,9 @@ class EllipticalLP(geometry_profiles.EllipticalProfile, LightProfile):
         ----------
         major_axis: float
             The major-axis of the ellipse to compute the luminosity within.
+        conversion_factor : float
+            Factor the dimensionless luminosity is multiplied by to convert it to a physical luminosity \
+            (e.g. a photometric zeropoint).
         """
         return conversion_factor*quad(self.luminosity_integral, a=0.0, b=major_axis, args=(self.axis_ratio,))[0]
 

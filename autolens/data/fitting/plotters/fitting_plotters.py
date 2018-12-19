@@ -135,7 +135,7 @@ def plot_contributions(fit, image_index=0, mask=None, positions=None, as_subplot
     fit : datas.fitting.fitting.AbstractLensingHyperFitter
         The hyper-fit to the datas, which includes a list of every model-datas, residual_map, chi-squareds, etc.
     image_index : int
-        The index of the datas in the datas-set of which the contributions are plotted.
+        The index of the datas in the datas-set of which the contribution_maps are plotted.
     """
     if len(fit.contributions[image_index]) > 1:
         contributions = sum(fit.contributions[image_index])
@@ -247,7 +247,7 @@ def plot_scaled_noise_map(fit, image_index=0, mask=None, positions=None, as_subp
                           title='Fit Scaled Noise Map', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
                           mask_pointsize=10, position_pointsize=10.0,
                           output_path=None, output_format='show', output_filename='fit_scaled_noise_map'):
-    """Plot the scaled noise-map of a hyper-fit.
+    """Plot the scaled noise_map-map of a hyper-fit.
 
     Set *autolens.datas.array.plotters.array_plotters* for a description of all innput parameters not described below.
 
@@ -256,7 +256,7 @@ def plot_scaled_noise_map(fit, image_index=0, mask=None, positions=None, as_subp
     fit : datas.fitting.fitting.AbstractLensingHyperFitter
         The hyper-fit to the datas, which includes a list of every model-datas, residual_map, chi-squareds, etc.
     image_index : int
-        The index of the datas in the datas-set of which the scaled noise-map is plotted.
+        The index of the datas in the datas-set of which the scaled noise_map-map is plotted.
     """
     array_plotters.plot_array(array=fit.scaled_noise_maps[image_index], mask=mask, positions=positions, as_subplot=as_subplot,
                               units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,

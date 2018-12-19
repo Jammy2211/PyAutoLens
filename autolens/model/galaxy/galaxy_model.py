@@ -94,7 +94,7 @@ class GalaxyModel(model_mapper.AbstractPriorModel):
             The regularization-scheme used to regularization reconstruct the galaxy light when fitting the observed \
             regular if using an inversion.
         hyper_galaxy : HyperGalaxy
-            A model hyper-galaxy used for scaling the observed regular's noise.
+            A model hyper-galaxy used for scaling the observed regular's noise_map.
         """
 
         self.align_centres = align_centres

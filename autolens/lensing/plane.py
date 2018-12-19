@@ -2,6 +2,7 @@ from functools import wraps
 
 import numpy as np
 from astropy import constants
+from astropy import cosmology as cosmo
 
 from autolens import exc
 from autolens.data.array.util import grid_util
@@ -9,19 +10,18 @@ from autolens.data.array.util import mapping_util
 from autolens.data.array import grids, scaled_array
 
 
-def check_plane_cosmology(func):
-    """
-    Wrap the function in a function that, if the grid_stack is a sub-grid_stack (grid_stacks.SubGrid), rebins the computed values to  the
-    image-grid_stack by taking the mean of each set of sub-gridded values.
+def check_plane_for_redshift(func):
+    """If a plane's galaxies do not have redshifts, its cosmological quantities cannot be computed. This wrapper \
+    makes these functions return *None* if the galaxies do not have redshifts
 
     Parameters
     ----------
-    func : (profiles, *args, **kwargs) -> Object
-        A function that requires transformed coordinates
+    func : (self) -> Object
+        A property function that requires galaxies to have redshifts.
     """
 
     @wraps(func)
-    def wrapper(self, *args, **kwargs):
+    def wrapper(self):
         """
 
         Parameters
@@ -35,8 +35,8 @@ def check_plane_cosmology(func):
             A value or coordinate in the same coordinate system as those passed in.
         """
 
-        if self.cosmology is not None and self.redshift is not None:
-            return func(self, *args, *kwargs)
+        if self.redshift is not None:
+            return func(self)
         else:
             return None
 
@@ -45,20 +45,16 @@ def check_plane_cosmology(func):
 
 class AbstractPlane(object):
 
-    def __init__(self, galaxies, cosmology=None):
-        """An abstract plane which represents a set of galaxies at a given redshift in a ray-tracer and the grid_stack of \
-        image-plane lensed coordinates.
+    def __init__(self, galaxies, cosmology):
+        """An abstract plane which represents a set of galaxies at a given redshift.
 
-        From a plane, the image's of its galaxies can be computed (in both the image-plane and source-plane). The \
-        surface-density, potential and deflection angles of the galaxies can also be computed.
+        From a plane, the surface-density, potential and deflection angles of the galaxies can be computed, as well as \
+        cosmological quantities like angular diameter distances..
 
         Parameters
         -----------
         galaxies : [Galaxy]
             The list of lens galaxies in this plane.
-        borders : masks.RegularGridBorder
-            The borders of the regular-grid_stack, which is used to relocate demagnified traced regular-pixel to the \
-            source-plane borders.
         cosmology : astropy.cosmology
             The cosmology associated with the plane, used to convert arc-second coordinates to physical values.
         """
@@ -93,17 +89,17 @@ class AbstractPlane(object):
         return constants.c.to('kpc / s').value ** 2.0 / (4 * math.pi * constants.G.to('kpc3 / M_sun s2').value)
 
     @property
-    @check_plane_cosmology
+    @check_plane_for_redshift
     def arcsec_per_kpc_proper(self):
         return self.cosmology.arcsec_per_kpc_proper(z=self.redshift).value
 
     @property
-    @check_plane_cosmology
+    @check_plane_for_redshift
     def kpc_per_arcsec_proper(self):
         return 1.0 / self.arcsec_per_kpc_proper
 
     @property
-    @check_plane_cosmology
+    @check_plane_for_redshift
     def angular_diameter_distance_to_earth(self):
         return self.cosmology.angular_diameter_distance(self.redshift).to('kpc').value
 
@@ -152,8 +148,7 @@ class AbstractPlane(object):
                     for galaxy in self.galaxies])
 
     def luminosities_of_galaxies_within_circles(self, radius, conversion_factor=1.0):
-        """
-        Compute the total luminosity of all galaxies in this plane within a circle of specified radius.
+        """Compute the total luminosity of all galaxies in this plane within a circle of specified radius.
 
         The value returned by this integral is dimensionless, and a conversion factor can be specified to convert it \
         to a physical value (e.g. the photometric zeropoint).
@@ -165,6 +160,9 @@ class AbstractPlane(object):
         ----------
         radius : float
             The radius of the circle to compute the dimensionless luminosity within.
+        conversion_factor : float
+            Factor the dimensionless luminosity is multiplied by to convert it to a physical luminosity \ 
+            (e.g. a photometric zeropoint).                
         """
         return list(map(lambda galaxy : galaxy.luminosity_within_circle(radius, conversion_factor),
                         self.galaxies))
@@ -183,6 +181,9 @@ class AbstractPlane(object):
         ----------
         major_axis : float
             The major-axis of the ellipse to compute the dimensionless luminosity within.
+        conversion_factor : float
+            Factor the dimensionless luminosity is multiplied by to convert it to a physical luminosity \ 
+            (e.g. a photometric zeropoint).            
         """
         return list(map(lambda galaxy : galaxy.luminosity_within_ellipse(major_axis, conversion_factor),
                         self.galaxies))
@@ -201,6 +202,9 @@ class AbstractPlane(object):
         ----------
         radius : float
             The radius of the circle to compute the dimensionless mass within.
+        conversion_factor : float
+            Factor the dimensionless mass is multiplied by to convert it to a physical mass (e.g. the critical surface \
+            mass density).            
         """
         return list(map(lambda galaxy : galaxy.mass_within_circle(radius, conversion_factor),
                         self.galaxies))
@@ -219,6 +223,9 @@ class AbstractPlane(object):
         ----------
         major_axis : float
             The major-axis of the ellipse to compute the dimensionless mass within.
+        conversion_factor : float
+            Factor the dimensionless mass is multiplied by to convert it to a physical mass (e.g. the critical surface \
+            mass density).            
         """
         return list(map(lambda galaxy : galaxy.mass_within_ellipse(major_axis, conversion_factor),
                         self.galaxies))
@@ -226,17 +233,17 @@ class AbstractPlane(object):
 
 class Plane(AbstractPlane):
 
-    def __init__(self, galaxies, grid_stack, border=None, compute_deflections=True, cosmology=None):
-        """A plane which uses just one stacked grid_stack of coordinates (e.g. a regular-grid_stack, sub-grid_stack, etc.)
+    def __init__(self, galaxies, grid_stack, border=None, compute_deflections=True, cosmology=cosmo.Planck15):
+        """A plane which uses one grid-stack of (y,x) grids (e.g. a regular-grid, sub-grid, etc.)
 
         Parameters
         -----------
         galaxies : [Galaxy]
             The list of lens galaxies in this plane.
         grid_stack : masks.DataGridStack
-            The stack of grid_stacks of (x,y) arc-second coordinates of this plane.
+            The stack of grid_stacks of (y,x) arc-second coordinates of this plane.
         border : masks.RegularGridBorder
-            The borders of the regular-grid_stack, which is used to relocate demagnified traced regular-pixel to the \
+            The borders of the regular-grid, which is used to relocate demagnified traced regular-pixel to the \
             source-plane borders.
         compute_deflections : bool
             If true, the deflection-angles of this plane's coordinates are calculated use its galaxy's mass-profiles.
@@ -346,16 +353,16 @@ class Plane(AbstractPlane):
 class PlaneStack(AbstractPlane):
 
     def __init__(self, galaxies, grid_stacks, borders=None, compute_deflections=True, cosmology=None):
-        """A plane which uses just one stacked grid_stack of coordinates (e.g. a regular-grid_stack, sub-grid_stack, etc.)
+        """A plane which uses a list of grid-stacks of (y,x) grids (e.g. a regular-grid, sub-grid, etc.)
 
         Parameters
         -----------
         galaxies : [Galaxy]
             The list of lens galaxies in this plane.
         grid_stacks : masks.DataGridStack
-            The stack of grid_stacks of (x,y) arc-second coordinates of this plane.
+            The stack of grid_stacks of (y,x) arc-second coordinates of this plane.
         borders : masks.RegularGridBorder
-            The borders of the regular-grid_stack, which is used to relocate demagnified traced regular-pixel to the \
+            The borders of the regular-grid, which is used to relocate demagnified traced regular-pixel to the \
             source-plane borders.
         compute_deflections : bool
             If true, the deflection-angles of this plane's coordinates are calculated use its galaxy's mass-profiles.
@@ -491,7 +498,7 @@ class PlanePositions(object):
         galaxies : [Galaxy]
             The list of lens galaxies in this plane.
         positions : [[[]]]
-            The (x,y) arc-second coordinates of image-plane pixels which (are expected to) mappers to the same
+            The (y,x) arc-second coordinates of image-plane pixels which (are expected to) mappers to the same
             location(s) in the final source-plane.
         compute_deflections : bool
             If true, the deflection-angles of this plane's coordinates are calculated use its galaxy's mass-profiles.
@@ -523,13 +530,13 @@ class PlaneImage(scaled_array.ScaledRectangularPixelArray):
 
 def sub_to_image_grid(func):
     """
-    Wrap the function in a function that, if the grid_stack is a sub-grid_stack (grid_stacks.SubGrid), rebins the computed values to
-    the image-grid_stack by taking the mean of each set of sub-gridded values.
+    Wrap the function in a function that, if the grid_stack is a sub-grid (grid_stacks.SubGrid), rebins the computed \
+    values te the regular-grid by taking the mean of each set of sub-gridded values.
 
     Parameters
     ----------
     func : (profiles, *args, **kwargs) -> Object
-        A function that requires transformed coordinates
+        A function that requires the sub-grid and galaxies.
     """
 
     @wraps(func)
