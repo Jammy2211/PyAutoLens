@@ -837,22 +837,6 @@ class TestSersic(object):
         # assert elliptical.potential_from_grid(grid) == spherical.potential_from_grid(grid)
         np.testing.assert_almost_equal(elliptical.deflections_from_grid(grid), spherical.deflections_from_grid(grid))
 
-    def test__from_light_profile(self):
-        light_exponential = lp.EllipticalExponential(centre=(-0.4, -0.2), axis_ratio=0.8, phi=110.0,
-                                                     intensity=5.0, effective_radius=0.2)
-        mass_exponential = mp.EllipticalExponential.from_exponential_light_profile(light_exponential,
-                                                                                   mass_to_light_ratio=1.)
-        defls = mass_exponential.deflections_from_grid(grid=np.array([[0.1625, 0.1625]]))
-        assert defls[0, 0] == pytest.approx(0.90493, 1e-3)
-        assert defls[0, 1] == pytest.approx(0.62569, 1e-3)
-
-        light_dev = lp.EllipticalDevVaucouleurs(centre=(0.4, 0.2), axis_ratio=0.9, phi=10.0, intensity=2.0,
-                                                effective_radius=0.8)
-        mass_dev = mp.EllipticalDevVaucouleurs.from_dev_vaucouleurs_light_profile(light_dev, mass_to_light_ratio=3.)
-        defls = mass_dev.deflections_from_grid(grid=np.array([[0.1625, 0.1625]]))
-        assert defls[0, 0] == pytest.approx(-24.528, 1e-3)
-        assert defls[0, 1] == pytest.approx(-3.37605, 1e-3)
-
 
 class TestExponential(object):
 
@@ -1117,15 +1101,6 @@ class TestSersicMassRadialGradient(object):
 
         assert sersic_grad_defls[0, 0] == sersic_defls[0, 0] == pytest.approx(1.1446, 1e-3)
         assert sersic_grad_defls[0, 1] == sersic_defls[0, 1] == pytest.approx(0.79374, 1e-3)
-
-    def test__from_light_profile__deflection_angles_unchanged(self):
-        light_sersic = lp.EllipticalSersic(centre=(-0.4, -0.2), axis_ratio=0.8, phi=110.0, intensity=5.0,
-                                           effective_radius=0.2, sersic_index=2.0)
-        mass_sersic = mp.EllipticalSersicRadialGradient.from_profile(light_sersic, mass_to_light_ratio=1.0,
-                                                                     mass_to_light_gradient=0.0)
-        defls = mass_sersic.deflections_from_grid(grid=np.array([[0.1625, 0.1625]]))
-        assert defls[0, 0] == pytest.approx(1.1446, 1e-3)
-        assert defls[0, 1] == pytest.approx(0.79374, 1e-3)
 
     def test__spherical_and_elliptical_identical(self):
         elliptical = mp.EllipticalSersicRadialGradient(centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=1.0,
