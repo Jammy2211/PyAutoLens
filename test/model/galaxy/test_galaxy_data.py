@@ -11,7 +11,7 @@ from test.mock.mock_galaxy import MockGalaxy
 def make_scaled_array():
     return sca.ScaledSquarePixelArray(array=np.ones((4, 4)), pixel_scale=3.0)
 
-@pytest.fixture(name="masks")
+@pytest.fixture(name="mask")
 def make_mask():
     return msk.Mask(np.array([[True, True, True, True],
                               [True, False, False, True],

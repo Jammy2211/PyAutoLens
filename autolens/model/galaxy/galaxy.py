@@ -20,9 +20,8 @@ class Galaxy(object):
     """
 
     def __init__(self, redshift=None, pixelization=None, regularization=None, hyper_galaxy=None, **kwargs):
-        """
-        Class representing a galaxy, which is composed of attributes used for fitting datas (e.g. light profiles, mass
-        profiles, pixelizations, etc.).
+        """Class representing a galaxy, which is composed of attributes used for fitting data (e.g. light profiles, \ 
+        mass profiles, pixelizations, etc.).
         
         All *has_* methods retun *True* if galaxy has that attribute, *False* if not.
 
@@ -35,14 +34,14 @@ class Galaxy(object):
         mass_profiles: [mp.MassProfile]
             A list of the galaxy's mass profiles.
         hyper_galaxy : HyperGalaxy
-            The hyper-parameters of the hyper-galaxy, if is used to scale the regular's noise_map-map.
+            The hyper-parameters of the hyper-galaxy, which is used for performing a hyper-analysis on the noise-map.
             
         Attributes
         ----------
         pixelization : inversion.Pixelization
-            The pixelization of the galaxy used to reconstruct an observed regular using an inversion.
+            The pixelization of the galaxy used to reconstruct an observed image using an inversion.
         regularization : inversion.Regularization
-            The regularization of the pixel-grid used to reconstruct an observed regular using an inversion.
+            The imageization of the pixel-grid used to reconstruct an observed regular using an inversion.
         """
         self.redshift = redshift
 
@@ -110,7 +109,7 @@ class Galaxy(object):
         return string
 
     def intensities_from_grid(self, grid):
-        """Calculate the summed intensities of all of the galaxy's light profiles using a grid of Cartesian (y,x) 
+        """Calculate the summed intensities of all of the galaxy's light profiles using a grid of Cartesian (y,x) \
         coordinates.
         
         If the galaxy has no light profiles, a grid of zeros is returned.
@@ -173,7 +172,7 @@ class Galaxy(object):
             return None
 
     def surface_density_from_grid(self, grid):
-        """Compute the summed surface density of the galaxy's mass profiles using a grid of Cartesian (y,x)
+        """Compute the summed surface density of the galaxy's mass profiles using a grid of Cartesian (y,x) \
         coordinates.
 
         If the galaxy has no mass profiles, a grid of zeros is returned.
@@ -191,8 +190,7 @@ class Galaxy(object):
             return np.zeros((grid.shape[0],))
 
     def potential_from_grid(self, grid):
-        """
-        Compute the summed gravitational potential of the galaxy's mass profiles using a grid of Cartesian (y,x)
+        """Compute the summed gravitational potential of the galaxy's mass profiles using a grid of Cartesian (y,x) \
         coordinates.
 
         If the galaxy has no mass profiles, a grid of zeros is returned.
@@ -210,8 +208,7 @@ class Galaxy(object):
             return np.zeros((grid.shape[0],))
 
     def deflections_from_grid(self, grid):
-        """
-        Compute the summed (y,x) deflection angles of the galaxy's mass profiles using a grid of Cartesian (y,x)
+        """Compute the summed (y,x) deflection angles of the galaxy's mass profiles using a grid of Cartesian (y,x) \
         coordinates.
 
         If the galaxy has no mass profiles, two grid of zeros are returned.
@@ -275,25 +272,25 @@ class HyperGalaxy(object):
     _ids = count()
 
     def __init__(self, contribution_factor=0.0, noise_factor=0.0, noise_power=1.0):
-        """ If a *Galaxy* is given a *HyperGalaxy* as an attribute, the noise_map-map in the regions of the regular that the \
+        """ If a *Galaxy* is given a *HyperGalaxy* as an attribute, the noise-map in the regions of the image that the \
         galaxy is located will be scaled, to prevent over-fitting of the galaxy. 
         
         This is performed by first computing the hyper-galalxy's 'contribution-map', which determines the fraction of \ 
-        flux in every pixel of the regular that can be associated with this particular hyper-galaxy. This is computed \
-        using  hyper-datas set (e.g. fitting.fit_data.FitDataHyper), which includes  best-fit unblurred_image_1d of the \
+        flux in every pixel of the image that can be associated with this particular hyper-galaxy. This is computed \
+        using  hyper-data set (e.g. fitting.fit_data.FitDataHyper), which includes  best-fit unblurred_image_1d of the \
         galaxy's light from a previous analysis phase. 
          
         The *HyperGalaxy* class contains the hyper-parameters which are associated with this galaxy for scaling the \
-        noise_map-map.
+        noise-map.
         
         Parameters
         -----------
         contribution_factor : float
             Factor that adjusts how much of the galaxy's light is attributed to the contribution map.
         noise_factor : float
-            Factor by which the noise_maps is increased in the regions of the galaxy's contribution map.
+            Factor by which the noise-map is increased in the regions of the galaxy's contribution map.
         noise_power : float
-            The power to which the contribution map is raised when scaling the noise_maps.
+            The power to which the contribution map is raised when scaling the noise-map.
         """
         self.contribution_factor = contribution_factor
         self.noise_factor = noise_factor
@@ -311,10 +308,10 @@ class HyperGalaxy(object):
         Parameters
         -----------
         hyper_model_image : ndarray
-            The best-fit model regular to the observed regular from a previous analysis phase. This provides the \
-            total light attributed to each regular pixel by the model.
+            The best-fit model image to the observed image from a previous analysis phase. This provides the \
+            total light attributed to each image pixel by the model.
         hyper_galaxy_image : ndarray
-            A model regular of the galaxy (from light profiles or an inversion) from a previous analysis phase.
+            A model image of the galaxy (from light profiles or an inversion) from a previous analysis phase.
         hyper_minimum_value : float
             The minimum contribution value a pixel must contain to not be rounded to 0.
         """
@@ -324,14 +321,14 @@ class HyperGalaxy(object):
         return contributions
 
     def scaled_noise_from_contributions(self, noise_map, contributions):
-        """Compute a scaled galaxy noise_map map from a baseline noise_map map.
+        """Compute a scaled galaxy noise-map from a baseline noise-map.
 
         This uses the galaxy contribution map and the *noise_factor* and *noise_power* hyper-parameters.
 
         Parameters
         -----------
         noise_map : ndarray
-            The observed noise_maps (before scaling).
+            The observed noise-map (before scaling).
         contributions : ndarray
             The galaxy contribution map.
         """
