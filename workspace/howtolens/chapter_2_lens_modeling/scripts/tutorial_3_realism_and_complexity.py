@@ -3,9 +3,8 @@ from autofit.core import non_linear as nl
 from autolens.pipeline import phase as ph
 from autolens.data.imaging import image as im
 from autolens.data.array import mask as ma
-from autolens.lensing import ray_tracing
+from autolens.lensing import ray_tracing, lensing_fitters
 from autolens.model.galaxy import galaxy as g, galaxy_model as gm
-from autolens.lensing.fitting import lensing_fitters
 from autolens.lensing import lensing_image as li
 from autolens.model.profiles import light_profiles as lp
 from autolens.model.profiles import mass_profiles as mp
@@ -47,7 +46,7 @@ def simulate():
     from autolens.lensing import ray_tracing
 
     psf = im.PSF.simulate_as_gaussian(shape=(11, 11), sigma=0.05, pixel_scale=0.05)
-    image_plane_grids = grids.DataGridStack.grids_for_simulation(shape=(130, 130), pixel_scale=0.1, psf_shape=(11, 11))
+    image_plane_grids = grids.GridStack.grid_stack_for_simulation(shape=(130, 130), pixel_scale=0.1, psf_shape=(11, 11))
 
     lens_galaxy = g.Galaxy(light=lp.EllipticalSersic(centre=(0.0, 0.0), axis_ratio=0.9, phi=45.0, intensity=0.04,
                                                              effective_radius=0.5, sersic_index=3.5),

@@ -1,10 +1,9 @@
 import numpy as np
 
 from autolens import exc
-from autolens.lensing.fitting import lensing_fitting_util
 from autolens.data.fitting import fitter
 from autolens.model.inversion import inversions
-from autolens.lensing import lensing_image as li
+from autolens.lensing import lensing_image as li, lensing_util
 from autolens.lensing import ray_tracing
 
 minimum_value_profile = 0.1
@@ -147,21 +146,21 @@ class AbstractLensingProfileFitter(AbstractLensingFitter):
 
         self.psf = lensing_image.psf
         self.convolver_image = lensing_image.convolver_image
-        self.blurred_profile_image = lensing_fitting_util.blurred_image_from_1d_unblurred_and_blurring_images(
+        self.blurred_profile_image = lensing_util.blurred_image_from_1d_unblurred_and_blurring_images(
             unblurred_image_1d=tracer.image_plane_image_1d, blurring_image_1d=tracer.image_plane_blurring_image_1d,
             convolver=self.convolver_image, map_to_scaled_array=self.map_to_scaled_array)
 
     @property
     def model_image_of_planes(self):
-        return lensing_fitting_util.blurred_image_of_planes_from_tracer_and_convolver(tracer=self.tracer,
-               convolver_image=self.convolver_image, map_to_scaled_array=self.map_to_scaled_array)
+        return lensing_util.blurred_image_of_planes_from_tracer_and_convolver(tracer=self.tracer,
+                                                                              convolver_image=self.convolver_image, map_to_scaled_array=self.map_to_scaled_array)
 
     @property
     def unmasked_model_image(self):
         if self.padded_tracer is None:
             return None
         elif self.padded_tracer is not None:
-            return lensing_fitting_util.unmasked_blurred_image_from_padded_grid_stack_psf_and_unmasked_image(
+            return lensing_util.unmasked_blurred_image_from_padded_grid_stack_psf_and_unmasked_image(
                 padded_grid_stack=self.padded_tracer.image_plane.grid_stack, psf=self.psf,
                 unmasked_image_1d=self.padded_tracer.image_plane_image_1d)
 
@@ -170,7 +169,7 @@ class AbstractLensingProfileFitter(AbstractLensingFitter):
         if self.padded_tracer is None:
             return None
         elif self.padded_tracer is not None:
-            return lensing_fitting_util.unmasked_blurred_image_of_galaxies_from_padded_grid_stack_psf_and_tracer(
+            return lensing_util.unmasked_blurred_image_of_galaxies_from_padded_grid_stack_psf_and_tracer(
                 padded_grid_stack=self.padded_tracer.image_plane.grid_stack, psf=self.psf, tracer=self.padded_tracer)
 
 
@@ -235,7 +234,7 @@ class AbstractLensingProfileInversionFitter(AbstractLensingFitter):
         self.psf = lensing_image.psf
         self.convolver_image = lensing_image.convolver_image
 
-        blurred_profile_image_1d = lensing_fitting_util.blurred_image_1d_from_1d_unblurred_and_blurring_images(
+        blurred_profile_image_1d = lensing_util.blurred_image_1d_from_1d_unblurred_and_blurring_images(
             unblurred_image_1d=tracer.image_plane_image_1d, blurring_image_1d=tracer.image_plane_blurring_image_1d,
             convolver=lensing_image.convolver_image)
 
@@ -304,15 +303,15 @@ class LensingDataInversionFitter(LensingDataFitter):
                                                 mask=np.asarray(mask), model_data=np.asarray(model_image))
 
         self.likelihood_with_regularization = \
-            lensing_fitting_util.likelihood_with_regularization_from_chi_squared_regularization_term_and_noise_normalization(
+            lensing_util.likelihood_with_regularization_from_chi_squared_regularization_term_and_noise_normalization(
             chi_squared=self.chi_squared, regularization_term=inversion.regularization_term,
             noise_normalization=self.noise_normalization)
 
-        self.evidence = lensing_fitting_util.evidence_from_inversion_terms(chi_squared=self.chi_squared,
-                        regularization_term=inversion.regularization_term,
-                        log_curvature_regularization_term=inversion.log_det_curvature_reg_matrix_term,
-                        log_regularization_term=inversion.log_det_regularization_matrix_term,
-                        noise_normalization=self.noise_normalization)
+        self.evidence = lensing_util.evidence_from_inversion_terms(chi_squared=self.chi_squared,
+                                                                   regularization_term=inversion.regularization_term,
+                                                                   log_curvature_regularization_term=inversion.log_det_curvature_reg_matrix_term,
+                                                                   log_regularization_term=inversion.log_det_regularization_matrix_term,
+                                                                   noise_normalization=self.noise_normalization)
 
 
 class LensingProfileFitter(LensingDataFitter, AbstractLensingProfileFitter):
@@ -347,7 +346,7 @@ class LensingProfileFitter(LensingDataFitter, AbstractLensingProfileFitter):
     def fast_fit(cls, lensing_image, tracer):
         """Perform the fit of this class as described above, but minimizing memory use and maximizing run-speed."""
 
-        blurred_profile_image_1d = lensing_fitting_util.blurred_image_1d_from_1d_unblurred_and_blurring_images(
+        blurred_profile_image_1d = lensing_util.blurred_image_1d_from_1d_unblurred_and_blurring_images(
             unblurred_image_1d=tracer.image_plane_image_1d, blurring_image_1d=tracer.image_plane_blurring_image_1d,
             convolver=lensing_image.convolver_image)
 
@@ -441,7 +440,7 @@ class LensingProfileInversionFitter(LensingDataInversionFitter, AbstractLensingP
     def fast_fit(cls, lensing_image, tracer):
         """Perform the fit of this class as described above, but minimizing memory use and maximizing run-speed."""
 
-        blurred_profile_image_1d = lensing_fitting_util.blurred_image_1d_from_1d_unblurred_and_blurring_images(
+        blurred_profile_image_1d = lensing_util.blurred_image_1d_from_1d_unblurred_and_blurring_images(
             unblurred_image_1d=tracer.image_plane_image_1d, blurring_image_1d=tracer.image_plane_blurring_image_1d,
             convolver=lensing_image.convolver_image)
 
@@ -492,7 +491,7 @@ class AbstractLensingHyperFitter(object):
         self.is_hyper_fit = True
 
         contribution_maps_1d = \
-            lensing_fitting_util.contribution_maps_1d_from_hyper_images_and_galaxies(
+            lensing_util.contribution_maps_1d_from_hyper_images_and_galaxies(
                 hyper_model_image_1d=lensing_hyper_image.hyper_model_image_1d,
                 hyper_galaxy_images_1d=lensing_hyper_image.hyper_galaxy_images_1d,
                 hyper_galaxies=hyper_galaxies, hyper_minimum_values=lensing_hyper_image.hyper_minimum_values)
@@ -502,7 +501,7 @@ class AbstractLensingHyperFitter(object):
                                            contribution_maps_1d))
 
         self.hyper_noise_map_1d =\
-            lensing_fitting_util.scaled_noise_map_from_hyper_galaxies_and_contribution_maps(
+            lensing_util.scaled_noise_map_from_hyper_galaxies_and_contribution_maps(
                 contribution_maps=contribution_maps_1d, hyper_galaxies=hyper_galaxies,
                 noise_map=lensing_hyper_image.noise_map_1d)
 
@@ -547,16 +546,16 @@ class LensingProfileHyperFitter(LensingDataFitter, AbstractLensingProfileFitter,
         """Perform the fit of this class as described above, but minimizing memory use and maximizing run-speed."""
 
         contributions_1d = \
-            lensing_fitting_util.contribution_maps_1d_from_hyper_images_and_galaxies(
+            lensing_util.contribution_maps_1d_from_hyper_images_and_galaxies(
                 hyper_model_image_1d=lensing_hyper_image.hyper_model_image_1d,
                 hyper_galaxy_images_1d=lensing_hyper_image.hyper_galaxy_images_1d,
                 hyper_galaxies=tracer.hyper_galaxies, hyper_minimum_values=lensing_hyper_image.hyper_minimum_values)
 
-        hyper_noise_map_1d = lensing_fitting_util.scaled_noise_map_from_hyper_galaxies_and_contribution_maps(
+        hyper_noise_map_1d = lensing_util.scaled_noise_map_from_hyper_galaxies_and_contribution_maps(
                 contribution_maps=contributions_1d, hyper_galaxies=tracer.hyper_galaxies,
                 noise_map=lensing_hyper_image.noise_map_1d)
 
-        model_image_1d = lensing_fitting_util.blurred_image_1d_from_1d_unblurred_and_blurring_images(
+        model_image_1d = lensing_util.blurred_image_1d_from_1d_unblurred_and_blurring_images(
             unblurred_image_1d=tracer.image_plane_image_1d, blurring_image_1d=tracer.image_plane_blurring_image_1d,
             convolver=lensing_hyper_image.convolver_image)
 
@@ -602,12 +601,12 @@ class LensingInversionHyperFitter(LensingDataInversionFitter, AbstractLensingInv
         """Perform the fit of this class as described above, but minimizing memory use and maximizing run-speed."""
 
         contributions_1d = \
-            lensing_fitting_util.contribution_maps_1d_from_hyper_images_and_galaxies(
+            lensing_util.contribution_maps_1d_from_hyper_images_and_galaxies(
                 hyper_model_image_1d=lensing_hyper_image.hyper_model_image_1d,
                 hyper_galaxy_images_1d=lensing_hyper_image.hyper_galaxy_images_1d,
                 hyper_galaxies=tracer.hyper_galaxies, hyper_minimum_values=lensing_hyper_image.hyper_minimum_values)
 
-        hyper_noise_map_1d = lensing_fitting_util.scaled_noise_map_from_hyper_galaxies_and_contribution_maps(
+        hyper_noise_map_1d = lensing_util.scaled_noise_map_from_hyper_galaxies_and_contribution_maps(
                              contribution_maps=contributions_1d, hyper_galaxies=tracer.hyper_galaxies,
                              noise_map=lensing_hyper_image.noise_map_1d)
 
@@ -674,16 +673,16 @@ class LensingProfileInversionHyperFitter(LensingDataInversionFitter, AbstractLen
         """Perform the fit of this class as described above, but minimizing memory use and maximizing run-speed."""
 
         contributions_1d = \
-            lensing_fitting_util.contribution_maps_1d_from_hyper_images_and_galaxies(
+            lensing_util.contribution_maps_1d_from_hyper_images_and_galaxies(
                 hyper_model_image_1d=lensing_hyper_image.hyper_model_image_1d,
                 hyper_galaxy_images_1d=lensing_hyper_image.hyper_galaxy_images_1d,
                 hyper_galaxies=tracer.hyper_galaxies, hyper_minimum_values=lensing_hyper_image.hyper_minimum_values)
 
-        hyper_noise_map_1d = lensing_fitting_util.scaled_noise_map_from_hyper_galaxies_and_contribution_maps(
+        hyper_noise_map_1d = lensing_util.scaled_noise_map_from_hyper_galaxies_and_contribution_maps(
                              contribution_maps=contributions_1d, hyper_galaxies=tracer.hyper_galaxies,
                              noise_map=lensing_hyper_image.noise_map_1d)
 
-        blurred_profile_image_1d = lensing_fitting_util.blurred_image_1d_from_1d_unblurred_and_blurring_images(
+        blurred_profile_image_1d = lensing_util.blurred_image_1d_from_1d_unblurred_and_blurring_images(
             unblurred_image_1d=tracer.image_plane_image_1d, blurring_image_1d=tracer.image_plane_blurring_image_1d,
             convolver=lensing_hyper_image.convolver_image)
 

@@ -17,7 +17,7 @@ psf = im.PSF.simulate_as_gaussian(shape=(11, 11), pixel_scale=0.1, sigma=0.1)
 
 # To simulate an regular, we use a special type of grid. This pads the grid_stacks 2D dimensions relative to the PSF-shape,
 # to ensure that the edge's of our simulated regular are not degraded.
-image_plane_grids = grids.DataGridStack.grids_for_simulation(shape=(100, 100), pixel_scale=0.1, psf_shape=psf.shape)
+image_plane_grids = grids.GridStack.grid_stack_for_simulation(shape=(100, 100), pixel_scale=0.1, psf_shape=psf.shape)
 print(image_plane_grids.regular.image_shape)
 print(image_plane_grids.regular.padded_shape)
 

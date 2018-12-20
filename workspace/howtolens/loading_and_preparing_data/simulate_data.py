@@ -14,7 +14,7 @@ def simulate_image():
 
     psf = im.PSF.simulate_as_gaussian(shape=(21, 21), sigma=0.05, pixel_scale=0.1)
 
-    image_plane_grids = grids.DataGridStack.grids_for_simulation(shape=(100, 100), pixel_scale=0.1, psf_shape=(21, 21))
+    image_plane_grids = grids.GridStack.grid_stack_for_simulation(shape=(100, 100), pixel_scale=0.1, psf_shape=(21, 21))
 
     lens_galaxy = g.Galaxy(light=lp.SphericalSersic(centre=(0.0, 0.0), intensity=0.3, effective_radius=1.0,
                                                     sersic_index=2.0),
@@ -37,7 +37,7 @@ def simulate_image_in_counts():
 
     psf = im.PSF.simulate_as_gaussian(shape=(21, 21), sigma=0.05, pixel_scale=0.1)
 
-    image_plane_grids = grids.DataGridStack.grids_for_simulation(shape=(100, 100), pixel_scale=0.1, psf_shape=(21, 21))
+    image_plane_grids = grids.GridStack.grid_stack_for_simulation(shape=(100, 100), pixel_scale=0.1, psf_shape=(21, 21))
 
     lens_galaxy = g.Galaxy(light=lp.SphericalSersic(centre=(0.0, 0.0), intensity=1000*0.3, effective_radius=1.0,
                                                     sersic_index=2.0),
@@ -60,7 +60,7 @@ def simulate_image_large_stamp():
 
     psf = im.PSF.simulate_as_gaussian(shape=(21, 21), sigma=0.05, pixel_scale=0.1)
 
-    image_plane_grids = grids.DataGridStack.grids_for_simulation(shape=(500, 500), pixel_scale=0.1, psf_shape=(21, 21))
+    image_plane_grids = grids.GridStack.grid_stack_for_simulation(shape=(500, 500), pixel_scale=0.1, psf_shape=(21, 21))
 
     lens_galaxy = g.Galaxy(light=lp.SphericalSersic(centre=(0.0, 0.0), intensity=0.3, effective_radius=1.0,
                                                     sersic_index=2.0),
@@ -83,7 +83,7 @@ def simulate_image_small_stamp():
 
     psf = im.PSF.simulate_as_gaussian(shape=(21, 21), sigma=0.05, pixel_scale=0.1)
 
-    image_plane_grids = grids.DataGridStack.grids_for_simulation(shape=(50, 50), pixel_scale=0.1, psf_shape=(21, 21))
+    image_plane_grids = grids.GridStack.grid_stack_for_simulation(shape=(50, 50), pixel_scale=0.1, psf_shape=(21, 21))
 
     lens_galaxy = g.Galaxy(light=lp.SphericalSersic(centre=(0.0, 0.0), intensity=0.3, effective_radius=1.0,
                                                     sersic_index=2.0),
@@ -106,7 +106,7 @@ def simulate_image_offset_centre():
 
     psf = im.PSF.simulate_as_gaussian(shape=(21, 21), sigma=0.05, pixel_scale=0.1)
 
-    image_plane_grids = grids.DataGridStack.grids_for_simulation(shape=(100, 100), pixel_scale=0.1, psf_shape=(21, 21))
+    image_plane_grids = grids.GridStack.grid_stack_for_simulation(shape=(100, 100), pixel_scale=0.1, psf_shape=(21, 21))
 
     lens_galaxy = g.Galaxy(light=lp.SphericalSersic(centre=(1.0, 1.0), intensity=0.3, effective_radius=1.0,
                                                     sersic_index=2.0),
@@ -129,7 +129,7 @@ def simulate_image_with_large_psf():
 
     psf = im.PSF.simulate_as_gaussian(shape=(101, 101), sigma=0.05, pixel_scale=0.1)
 
-    image_plane_grids = grids.DataGridStack.grids_for_simulation(shape=(100, 100), pixel_scale=0.1, psf_shape=(101, 101))
+    image_plane_grids = grids.GridStack.grid_stack_for_simulation(shape=(100, 100), pixel_scale=0.1, psf_shape=(101, 101))
 
     lens_galaxy = g.Galaxy(light=lp.SphericalSersic(centre=(0.0, 0.0), intensity=0.3, effective_radius=1.0,
                                                     sersic_index=2.0),
@@ -154,7 +154,7 @@ def simulate_image_with_offset_centre_psf():
 
     psf = im.PSF.simulate_as_gaussian(shape=(21, 21), sigma=0.05, pixel_scale=0.1, centre=(0.1, 0.1))
 
-    image_plane_grids = grids.DataGridStack.grids_for_simulation(shape=(100, 100), pixel_scale=0.1, psf_shape=(21, 21))
+    image_plane_grids = grids.GridStack.grid_stack_for_simulation(shape=(100, 100), pixel_scale=0.1, psf_shape=(21, 21))
 
     lens_galaxy = g.Galaxy(light=lp.SphericalSersic(centre=(0.0, 0.0), intensity=0.3, effective_radius=1.0,
                                                     sersic_index=2.0),

@@ -38,9 +38,8 @@ class Mask(scaled_array.ScaledSquarePixelArray):
             return True
 
     @classmethod
-    def padded_for_shape_and_pixel_scale(cls, shape, pixel_scale):
-        """
-        Setup the masks such that all pixels are padded.
+    def unmasked_for_shape_and_pixel_scale(cls, shape, pixel_scale):
+        """Setup the masks such that all pixels are unmasked.
 
         Parameters
         ----------
@@ -53,8 +52,7 @@ class Mask(scaled_array.ScaledSquarePixelArray):
 
     @classmethod
     def masked_for_shape_and_pixel_scale(cls, shape, pixel_scale):
-        """
-        Setup the masks such that all pixels are masked.
+        """Setup the masks such that all pixels are masked.
 
         Parameters
         ----------
@@ -219,7 +217,7 @@ class Mask(scaled_array.ScaledSquarePixelArray):
 
     @array_util.Memoizer()
     def blurring_mask_for_psf_shape(self, psf_shape):
-        """Compute the blurring masks, which represents all masked pixels whose light will be blurred into padded \
+        """Compute the blurring masks, which represents all masked pixels whose light will be blurred into unmasked \
         pixels via PSF convolution.
 
         Parameters

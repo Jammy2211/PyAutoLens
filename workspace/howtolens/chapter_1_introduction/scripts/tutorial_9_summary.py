@@ -1,7 +1,6 @@
 from autolens.data.imaging import image as im
 from autolens.data.array import mask as ma
-from autolens.lensing.fitting import lensing_fitters
-from autolens.lensing import ray_tracing
+from autolens.lensing import ray_tracing, lensing_fitters
 from autolens.model.galaxy import galaxy as g
 from autolens.lensing import lensing_image as li
 from autolens.model.profiles import light_profiles as lp

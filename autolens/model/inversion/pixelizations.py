@@ -12,17 +12,17 @@ def setup_image_plane_pixelization_grid_from_galaxies_and_grid_stack(galaxies, g
     """An datas-plane pixelization is one where its pixel centres are computed by tracing a sparse grid of pixels from \
     the datas's regular grid to other planes (e.g. the source-plane).
 
-    Provided a galaxy has an datas-plane pixelization, this function returns a new *DataGridStack* instance where the \
+    Provided a galaxy has an datas-plane pixelization, this function returns a new *GridStack* instance where the \
     datas-plane pixelization's sparse grid is added to it as an attibute.
 
-    Thus, when the *DataGridStack* are are passed to the *ray_tracing* module this sparse grid is also traced and the \
+    Thus, when the *GridStack* are are passed to the *ray_tracing* module this sparse grid is also traced and the \
     traced coordinates represent the centre of each pixelization pixel.
 
     Parameters
     -----------
     galaxies : [model.galaxy.galaxy.Galaxy]
         A list of galaxies, which may contain pixelizations and an *ImagePlanePixelization*.
-    grid_stacks : datas.array.grid_stacks.DataGridStack
+    grid_stacks : datas.array.grid_stacks.GridStack
         The collection of grid_stacks (regular, sub, etc.) which the datas-plane pixelization grid (referred to as pix) \
         may be added to.
     """
@@ -33,8 +33,8 @@ def setup_image_plane_pixelization_grid_from_galaxies_and_grid_stack(galaxies, g
 
                     image_plane_pix_grid = galaxy.pixelization.image_plane_pix_grid_from_regular_grid(
                         regular_grid=grid_stack.regular)
-                    return grid_stack.data_grid_stack_with_pix_grid(pix_grid=image_plane_pix_grid.sparse_grid,
-                                                                    regular_to_nearest_regular_pix=image_plane_pix_grid.regular_to_sparse)
+                    return grid_stack.grid_stack_with_pix_grid_added(pix_grid=image_plane_pix_grid.sparse_grid,
+                                                                     regular_to_nearest_pix=image_plane_pix_grid.regular_to_sparse)
 
     return grid_stack
 
@@ -165,14 +165,14 @@ class Rectangular(Pixelization):
 
         Parameters
         ----------
-        grid_stack: masks.DataGridStack
+        grid_stack: masks.GridStack
             A collection of grid describing the observed datas_'s pixel coordinates (includes an datas_ and sub grid).
         border : masks.ImagingGridBorders
             The borders of the grid_stacks (defined by their datas_-plane masks).
         """
 
         if border is not None:
-            relocated_grids = border.relocated_grids_from_grids(grid_stack)
+            relocated_grids = border.relocated_grid_stack_from_grid_stack(grid_stack)
         else:
             relocated_grids = grid_stack
 
@@ -287,7 +287,7 @@ class AdaptiveMagnification(Voronoi, ImagePlanePixelization):
 
         Parameters
         ----------
-        grid_stack: masks.DataGridStack
+        grid_stack: masks.GridStack
             A collection of grid describing the observed datas_'s pixel coordinates (includes an datas_ and sub grid).
         border : masks.ImagingGridBorders
             The borders of the grid_stacks (defined by their datas_-plane masks).
@@ -298,7 +298,7 @@ class AdaptiveMagnification(Voronoi, ImagePlanePixelization):
         """
 
         if border is not None:
-            relocated_grids = border.relocated_grids_from_grids(grid_stack)
+            relocated_grids = border.relocated_grid_stack_from_grid_stack(grid_stack)
         else:
             relocated_grids = grid_stack
 

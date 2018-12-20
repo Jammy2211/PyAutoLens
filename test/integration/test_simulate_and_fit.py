@@ -7,9 +7,8 @@ import pytest
 from autolens.data.imaging import image as im
 from autolens.data.array.util import array_util
 from autolens.data.array import grids, mask as msk
-from autolens.lensing.fitting import lensing_fitters
 from autolens.model.galaxy import galaxy as g
-from autolens.lensing import lensing_image as li
+from autolens.lensing import lensing_image as li, lensing_fitters
 from autolens.lensing import ray_tracing
 from autolens.model.profiles import light_profiles as lp, mass_profiles as mp
 
@@ -20,7 +19,7 @@ def test__simulate_lensed_source_and_fit__no_psf_blurring__chi_squared_is_0__noi
                                  [0.0, 1.0, 0.0],
                                  [0.0, 0.0, 0.0]]), pixel_scale=1.0)
 
-    grid_stack = grids.DataGridStack.grids_for_simulation(shape=(11, 11), pixel_scale=0.2, psf_shape=psf.shape)
+    grid_stack = grids.GridStack.grid_stack_for_simulation(shape=(11, 11), pixel_scale=0.2, psf_shape=psf.shape)
 
     lens_galaxy = g.Galaxy(light=lp.EllipticalSersic(centre=(0.1, 0.1), intensity=0.1),
                            mass=mp.EllipticalIsothermal(centre=(0.1, 0.1), einstein_radius=1.8))
@@ -68,7 +67,7 @@ def test__simulate_lensed_source_and_fit__include_psf_blurring__chi_squared_is_0
 
     psf = im.PSF.simulate_as_gaussian(shape=(3, 3), pixel_scale=1.0, sigma=0.75)
 
-    grid_stack = grids.DataGridStack.grids_for_simulation(shape=(11, 11), pixel_scale=0.2, psf_shape=psf.shape)
+    grid_stack = grids.GridStack.grid_stack_for_simulation(shape=(11, 11), pixel_scale=0.2, psf_shape=psf.shape)
 
     lens_galaxy = g.Galaxy(light=lp.EllipticalSersic(centre=(0.1, 0.1), intensity=0.1),
                            mass=mp.EllipticalIsothermal(centre=(0.1, 0.1), einstein_radius=1.8))

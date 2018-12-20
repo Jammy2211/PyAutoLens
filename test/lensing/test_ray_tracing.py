@@ -19,8 +19,8 @@ def make_data_grid_stack():
                              [True, False, False, True],
                              [True, True, True, True]]), pixel_scale=6.0)
 
-    data_grid_stack = grids.DataGridStack.grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=ma, sub_grid_size=2,
-                                                                                           psf_shape=(3, 3))
+    data_grid_stack = grids.GridStack.grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=ma, sub_grid_size=2,
+                                                                                       psf_shape=(3, 3))
 
     # Manually overwrite a set of cooridnates to make tests of grid_stacks and defledctions straightforward
 
@@ -41,8 +41,8 @@ def make_data_grid_stack_1():
                              [True, False, False, True],
                              [True, True, True, True]]), pixel_scale=12.0)
 
-    data_grid_stack = grids.DataGridStack.grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=ma, sub_grid_size=2,
-                                                                                           psf_shape=(3, 3))
+    data_grid_stack = grids.GridStack.grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=ma, sub_grid_size=2,
+                                                                                       psf_shape=(3, 3))
 
     # Manually overwrite a set of cooridnates to make tests of grid_stacks and defledctions straightforward
 
@@ -60,7 +60,7 @@ def make_data_grid_stack_1():
 @pytest.fixture(name="padded_grid_stack")
 def make_padded_grid_stack():
     ma = mask.Mask(np.array([[True, False]]), pixel_scale=3.0)
-    return grids.DataGridStack.padded_grid_stack_from_mask_sub_grid_size_and_psf_shape(ma, 2, (3, 3))
+    return grids.GridStack.padded_grid_stack_from_mask_sub_grid_size_and_psf_shape(ma, 2, (3, 3))
 
 
 @pytest.fixture(name='galaxy_non', scope='function')
@@ -911,8 +911,8 @@ class TestTracerImageSourcePlanes(object):
                                      [False, False, False],
                                      [False, False, False]]), pixel_scale=1.0)
 
-            data_grid_stack = grids.DataGridStack.grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=ma, sub_grid_size=1,
-                                                                                                   psf_shape=(1, 1))
+            data_grid_stack = grids.GridStack.grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=ma, sub_grid_size=1,
+                                                                                               psf_shape=(1, 1))
 
             galaxy = g.Galaxy()
 
@@ -928,8 +928,8 @@ class TestTracerImageSourcePlanes(object):
                                      [False, False, False],
                                      [False, False, False]]), pixel_scale=1.0)
 
-            data_grid_stack = grids.DataGridStack.grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=ma, sub_grid_size=1,
-                                                                                                   psf_shape=(1, 1))
+            data_grid_stack = grids.GridStack.grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=ma, sub_grid_size=1,
+                                                                                               psf_shape=(1, 1))
 
             galaxy = g.Galaxy(pixelization=pixelizations.Rectangular(shape=(3, 3)),
                               regularization=regularization.Constant())
@@ -946,8 +946,8 @@ class TestTracerImageSourcePlanes(object):
                                      [False, False, False],
                                      [False, True, False]]), pixel_scale=1.0)
 
-            data_grid_stack = grids.DataGridStack.padded_grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=ma, sub_grid_size=1,
-                                                                                                     psf_shape=(1, 1))
+            data_grid_stack = grids.GridStack.padded_grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=ma, sub_grid_size=1,
+                                                                                                      psf_shape=(1, 1))
 
             galaxy = g.Galaxy(pixelization=pixelizations.AdaptiveMagnification(shape=(3, 3)),
                               regularization=regularization.Constant())
@@ -964,8 +964,8 @@ class TestTracerImageSourcePlanes(object):
                                      [False, False, False],
                                      [False, True, False]]), pixel_scale=1.0)
 
-            data_grid_stack = grids.DataGridStack.grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=ma, sub_grid_size=1,
-                                                                                                   psf_shape=(1, 1))
+            data_grid_stack = grids.GridStack.grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=ma, sub_grid_size=1,
+                                                                                               psf_shape=(1, 1))
 
             galaxy = g.Galaxy(pixelization=pixelizations.AdaptiveMagnification(shape=(3, 3)),
                               regularization=regularization.Constant())
@@ -1151,8 +1151,8 @@ class TestTracerImageSourcePlanesStack(object):
                                      [False, False, False],
                                      [False, False, False]]), pixel_scale=1.0)
 
-            data_grid_stack = grids.DataGridStack.grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=ma, sub_grid_size=1,
-                                                                                                   psf_shape=(1, 1))
+            data_grid_stack = grids.GridStack.grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=ma, sub_grid_size=1,
+                                                                                               psf_shape=(1, 1))
 
             galaxy = g.Galaxy()
 
@@ -1167,8 +1167,8 @@ class TestTracerImageSourcePlanesStack(object):
                                      [False, False, False],
                                      [False, False, False]]), pixel_scale=1.0)
 
-            data_grid_stack = grids.DataGridStack.grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=ma, sub_grid_size=1,
-                                                                                                   psf_shape=(1, 1))
+            data_grid_stack = grids.GridStack.grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=ma, sub_grid_size=1,
+                                                                                               psf_shape=(1, 1))
 
             galaxy = g.Galaxy(pixelization=pixelizations.Rectangular(shape=(3, 3)),
                               regularization=regularization.Constant())
@@ -1185,8 +1185,8 @@ class TestTracerImageSourcePlanesStack(object):
                                      [False, False, False],
                                      [False, True, False]]), pixel_scale=1.0)
 
-            data_grid_stack = grids.DataGridStack.padded_grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=ma, 
-                                                sub_grid_size=1, psf_shape=(1, 1))
+            data_grid_stack = grids.GridStack.padded_grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=ma,
+                                                                                                      sub_grid_size=1, psf_shape=(1, 1))
 
             galaxy = g.Galaxy(pixelization=pixelizations.AdaptiveMagnification(shape=(3, 3)),
                               regularization=regularization.Constant())
@@ -1202,8 +1202,8 @@ class TestTracerImageSourcePlanesStack(object):
                                      [False, False, False],
                                      [False, True, False]]), pixel_scale=1.0)
 
-            data_grid_stack = grids.DataGridStack.grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=ma, sub_grid_size=1,
-                                                                                                   psf_shape=(1, 1))
+            data_grid_stack = grids.GridStack.grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=ma, sub_grid_size=1,
+                                                                                               psf_shape=(1, 1))
 
             galaxy = g.Galaxy(pixelization=pixelizations.AdaptiveMagnification(shape=(3, 3)),
                               regularization=regularization.Constant())
@@ -1249,71 +1249,6 @@ class TestTracerImageSourcePlanesStack(object):
 
             assert (tracer_stack.image_plane_images[1] == tracer_1.image_plane_image).all()
             assert (tracer_stack.image_plane_blurring_images_1d[1] == tracer_1.image_plane_blurring_image_1d).all()
-
-
-class TestMultiPlanesMethods(object):
-
-    class TestGalaxyOrder:
-
-        def test__3_galaxies_reordered_in_ascending_redshift(self):
-
-            galaxies = [g.Galaxy(redshift=2.0), g.Galaxy(redshift=1.0), g.Galaxy(redshift=0.1)]
-
-            ordered_plane_redshifts = ray_tracing.ordered_redshifts_from_galaxies(galaxies=galaxies)
-
-            assert ordered_plane_redshifts == [0.1, 1.0, 2.0]
-
-            ordered_galaxies = ray_tracing.galaxies_in_redshift_ordered_lists_from_galaxies(galaxies=galaxies,
-                                                                                            ordered_redshifts=ordered_plane_redshifts)
-
-            assert ordered_galaxies[0][0].redshift == 0.1
-            assert ordered_galaxies[1][0].redshift == 1.0
-            assert ordered_galaxies[2][0].redshift == 2.0
-
-        def test_3_galaxies_two_same_redshift_planes_redshift_order_is_size_2_with_redshifts(self):
-
-            galaxies = [g.Galaxy(redshift=1.0), g.Galaxy(redshift=1.0), g.Galaxy(redshift=0.1)]
-
-            ordered_plane_redshifts = ray_tracing.ordered_redshifts_from_galaxies(galaxies=galaxies)
-
-            assert ordered_plane_redshifts == [0.1, 1.0]
-
-            ordered_galaxies = ray_tracing.galaxies_in_redshift_ordered_lists_from_galaxies(galaxies=galaxies,
-                                                                                            ordered_redshifts=ordered_plane_redshifts)
-
-            assert ordered_galaxies[0][0].redshift == 0.1
-            assert ordered_galaxies[1][0].redshift == 1.0
-            assert ordered_galaxies[1][1].redshift == 1.0
-
-        def test__6_galaxies_producing_4_planes(self):
-
-            g0 = g.Galaxy(redshift=1.0)
-            g1 = g.Galaxy(redshift=1.0)
-            g2 = g.Galaxy(redshift=0.1)
-            g3 = g.Galaxy(redshift=1.05)
-            g4 = g.Galaxy(redshift=0.95)
-            g5 = g.Galaxy(redshift=1.05)
-
-            galaxies = [g0, g1, g2, g3, g4, g5]
-
-            ordered_plane_redshifts = ray_tracing.ordered_redshifts_from_galaxies(galaxies=galaxies)
-
-            assert ordered_plane_redshifts == [0.1, 0.95, 1.0, 1.05]
-
-            ordered_galaxies = ray_tracing.galaxies_in_redshift_ordered_lists_from_galaxies(galaxies=galaxies,
-                                                                                            ordered_redshifts=ordered_plane_redshifts)
-
-            assert ordered_galaxies[0][0].redshift == 0.1
-            assert ordered_galaxies[1][0].redshift == 0.95
-            assert ordered_galaxies[2][0].redshift == 1.0
-            assert ordered_galaxies[2][1].redshift == 1.0
-            assert ordered_galaxies[3][0].redshift == 1.05
-            assert ordered_galaxies[3][1].redshift == 1.05
-            
-            assert ordered_galaxies[0] == [g2]
-            assert ordered_galaxies[1] == [g4]
-            assert ordered_galaxies[2] == [g0, g1]
-            assert ordered_galaxies[3] == [g3, g5]
 
 
 class TestMultiTracer(object):
@@ -1746,8 +1681,8 @@ class TestMultiTracer(object):
                                      [False, False, False],
                                      [False, False, False]]), pixel_scale=1.0)
 
-            data_grid_stack = grids.DataGridStack.grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=ma, sub_grid_size=1,
-                                                                                                   psf_shape=(1, 1))
+            data_grid_stack = grids.GridStack.grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=ma, sub_grid_size=1,
+                                                                                               psf_shape=(1, 1))
 
             tracer = ray_tracing.TracerMultiPlanes(galaxies=[g.Galaxy(redshift=2.0), g.Galaxy(redshift=1.0)],
                                                    image_plane_grid_stack=data_grid_stack)
@@ -1761,8 +1696,8 @@ class TestMultiTracer(object):
                                      [False, False, False],
                                      [False, False, False]]), pixel_scale=1.0)
 
-            data_grid_stack = grids.DataGridStack.grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=ma, sub_grid_size=1,
-                                                                                                   psf_shape=(1, 1))
+            data_grid_stack = grids.GridStack.grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=ma, sub_grid_size=1,
+                                                                                               psf_shape=(1, 1))
 
             galaxy = g.Galaxy(pixelization=pixelizations.Rectangular(shape=(3, 3)),
                               regularization=regularization.Constant(), redshift=2.0)
@@ -1778,8 +1713,8 @@ class TestMultiTracer(object):
                                      [False, False, False],
                                      [False, True, False]]), pixel_scale=1.0)
 
-            data_grid_stack = grids.DataGridStack.padded_grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=ma, sub_grid_size=1,
-                                                                                                     psf_shape=(1, 1))
+            data_grid_stack = grids.GridStack.padded_grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=ma, sub_grid_size=1,
+                                                                                                      psf_shape=(1, 1))
 
             galaxy = g.Galaxy(pixelization=pixelizations.AdaptiveMagnification(shape=(3, 3)),
                               regularization=regularization.Constant(), redshift=2.0)
@@ -1796,8 +1731,8 @@ class TestMultiTracer(object):
                                      [False, False, False],
                                      [False, True, False]]), pixel_scale=1.0)
 
-            data_grid_stack = grids.DataGridStack.grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=ma, sub_grid_size=1,
-                                                                                                   psf_shape=(1, 1))
+            data_grid_stack = grids.GridStack.grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=ma, sub_grid_size=1,
+                                                                                               psf_shape=(1, 1))
 
             galaxy = g.Galaxy(pixelization=pixelizations.AdaptiveMagnification(shape=(3, 3)),
                               regularization=regularization.Constant(), redshift=2.0)
@@ -2113,8 +2048,8 @@ class TestMultiTracerStack(object):
                                      [False, False, False],
                                      [False, False, False]]), pixel_scale=1.0)
 
-            data_grid_stack = grids.DataGridStack.grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=ma, sub_grid_size=1,
-                                                                                                   psf_shape=(1, 1))
+            data_grid_stack = grids.GridStack.grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=ma, sub_grid_size=1,
+                                                                                               psf_shape=(1, 1))
 
             tracer = ray_tracing.TracerMultiPlanesStack(galaxies=[g.Galaxy(redshift=2.0), g.Galaxy(redshift=1.0)],
                                                         image_plane_grid_stacks=[data_grid_stack, data_grid_stack])
@@ -2131,8 +2066,8 @@ class TestMultiTracerStack(object):
                                      [False, False, False],
                                      [False, False, False]]), pixel_scale=1.0)
 
-            data_grid_stack = grids.DataGridStack.grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=ma, sub_grid_size=1,
-                                                                                                   psf_shape=(1, 1))
+            data_grid_stack = grids.GridStack.grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=ma, sub_grid_size=1,
+                                                                                               psf_shape=(1, 1))
 
             galaxy = g.Galaxy(pixelization=pixelizations.Rectangular(shape=(3, 3)),
                               regularization=regularization.Constant(), redshift=2.0)
@@ -2152,8 +2087,8 @@ class TestMultiTracerStack(object):
                                      [False, False, False],
                                      [False, True, False]]), pixel_scale=1.0)
 
-            data_grid_stack = grids.DataGridStack.padded_grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=ma,
-                                                                                    sub_grid_size=1, psf_shape=(1, 1))
+            data_grid_stack = grids.GridStack.padded_grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=ma,
+                                                                                                      sub_grid_size=1, psf_shape=(1, 1))
 
             galaxy = g.Galaxy(pixelization=pixelizations.AdaptiveMagnification(shape=(3, 3)),
                               regularization=regularization.Constant(), redshift=2.0)
@@ -2174,8 +2109,8 @@ class TestMultiTracerStack(object):
                                      [False, False, False],
                                      [False, True, False]]), pixel_scale=1.0)
 
-            data_grid_stack = grids.DataGridStack.grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=ma, sub_grid_size=1,
-                                                                                                   psf_shape=(1, 1))
+            data_grid_stack = grids.GridStack.grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=ma, sub_grid_size=1,
+                                                                                               psf_shape=(1, 1))
 
             galaxy = g.Galaxy(pixelization=pixelizations.AdaptiveMagnification(shape=(3, 3)),
                               regularization=regularization.Constant(), redshift=2.0)

@@ -25,7 +25,7 @@ class TestMask(object):
 
     def test__mask_padded__5x5__input__all_are_false(self):
 
-        msk = mask.Mask.padded_for_shape_and_pixel_scale(shape=(5, 5), pixel_scale=1.5)
+        msk = mask.Mask.unmasked_for_shape_and_pixel_scale(shape=(5, 5), pixel_scale=1.5)
 
         assert msk.shape == (5, 5)
         assert (msk == np.array([[False, False, False, False, False],

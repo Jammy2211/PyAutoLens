@@ -9,8 +9,7 @@ from autolens import exc
 from autolens.data.array import mask as msk
 from autolens.data.imaging import image as im
 from autolens.data.imaging.plotters import imaging_plotters
-from autolens.lensing.fitting import lensing_fitters
-from autolens.lensing import lensing_image as li
+from autolens.lensing import lensing_image as li, lensing_fitters
 from autolens.lensing import ray_tracing
 from autolens.lensing import sensitivity_fitting
 from autolens.lensing.plotters import sensitivity_fitting_plotters, lensing_fitting_plotters
