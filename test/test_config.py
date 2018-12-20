@@ -28,7 +28,7 @@ class TestLabel(object):
         assert label_config.label("contribution_factor") == r"\omega0"
 
     def test_subscript(self, label_config):
-        assert label_config.subscript(light_profiles.EllipticalLP) == "l"
+        assert label_config.subscript(light_profiles.EllipticalLightProfile) == "l"
 
     def test_inheritance(self, label_config):
         assert label_config.subscript(light_profiles.EllipticalGaussian) == "l"
