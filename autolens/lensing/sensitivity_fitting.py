@@ -1,4 +1,4 @@
-from autolens.data.fitting import fitter, fitting_util
+from autolens.lensing import lensing_fitters
 from autolens.lensing import ray_tracing
 
 class AbstractSensitivityFit(object):
@@ -8,82 +8,56 @@ class AbstractSensitivityFit(object):
         self.tracer_normal = tracer_normal
         self.tracer_sensitive = tracer_sensitive
 
+class SensitivityProfileFitter(AbstractSensitivityFit):
 
-class SensitivityProfileFit(AbstractSensitivityFit):
+    def __init__(self, lensing_image, tracer_normal, tracer_sensitive):
+        """Evaluate the sensitivity of a profile fit to a specific component of a lens model and tracer. This is \
+        performed by evaluating the likelihood of a fit to an image using two tracers:
 
-    def __init__(self, sensitivity_images, tracer_normal, tracer_sensitive):
-        """
-        Class to evaluate the fit between a model described by a tracer_normal and an actual sensitivity_image.
+        1) A 'normal tracer', which uses the same lens model as a the simulated lensing image. This gives a baseline \
+           value of the likelihood we can expect when we fit the model to itself.,
+        2) A 'sensitive tracer', which uses the same lens model as the simulated lensing image, but also includes the \
+           additional model components (e.g. a mass clump 'subhalo') which we are testing our sensitivity to.
+
+        The difference in likelihood of these two fits informs us of how sensitive we are to the component in the \
+        second tracer. For example, if the difference in likelihood is neglible, it means the model component had no \
+        impact on our fit, meaning we are not sensitive to its properties.
 
         Parameters
         ----------
-        sensitivity_images: [li.LensingImage]
-            An sensitivity_image that has been masked for efficiency
-        tracer_normal: ray_tracing.AbstractTracer
-            An object describing the model
+        lensing_image: li.LensingImage
+            A simulated lensing image which is used to determine our sensitiivity to specific model components.
+        tracer_normal : ray_tracing.AbstractTracerNonStack
+            A tracer whose galaxies have the same model components (e.g. light profiles, mass profiles) as the \
+            lensing image that we are fitting.
+       tracer_sensitive : ray_tracing.AbstractTracerNonStack
+            A tracer whose galaxies have the same model components (e.g. light profiles, mass profiles) as the \
+            lensing image that we are fitting, but also addition components (e.g. mass clumps) which we measure \
+            how sensitive we are too.
         """
         AbstractSensitivityFit.__init__(self=self, tracer_normal=tracer_normal, tracer_sensitive=tracer_sensitive)
-
-        self.fit_normal = fitter.AbstractConvolutionFit(fitting_images=sensitivity_images,
-                                                        images_=tracer_normal.image_plane_images_1d,
-                                                        blurring_images_=tracer_normal.image_plane_blurring_images_1d)
-        
-        self.fit_sensitive = fitter.AbstractConvolutionFit(fitting_images=sensitivity_images,
-                                                           images_=tracer_sensitive.image_plane_image_1d,
-                                                           blurring_images_=tracer_sensitive.image_plane_blurring_image_1d)
+        self.fit_normal = lensing_fitters.LensingProfileFitter(lensing_image=lensing_image, tracer=tracer_normal)
+        self.fit_sensitive = lensing_fitters.LensingProfileFitter(lensing_image=lensing_image, tracer=tracer_sensitive)
 
     @classmethod
-    def fast_likelihood(cls, sensitivity_images, tracer_normal, tracer_sensitive):
-        """
-        Fast calculation of likelihood
+    def fast_fit(cls, lensing_image, tracer_normal, tracer_sensitive):
+        """Perform the fit of this class as described above, but minimizing memory use and maximizing run-speed.
 
         Parameters
         ----------
-        sensitivity_images: [li.LensingImage]
-            An sensitivity_image that has been masked for efficiency
+        lensing_image: li.LensingImage
+            An lensing image that has been masked for efficiency
         tracer_normal: ray_tracing.AbstractTracer
             An object describing the model
         """
 
-        convolvers = list(map(lambda lensing_image : lensing_image.convolver_image, sensitivity_images))
-        noise_maps_ = list(map(lambda lensing_image : lensing_image.noise_map_, sensitivity_images))
-        
-        model_images_normal_ = fitting_util.blur_image_including_blurring_region(
-            image_=tracer_normal.image_plane_images_1d,
-            blurring_image_=tracer_normal.image_plane_blurring_images_1d, convolver=convolvers)
-        
-        residuals_normal_ = fitting_util.residual_map_from_data_mask_and_model_data(data=sensitivity_images,
-                                                                                    model_data=model_images_normal_)
-        
-        chi_squareds_normal_ = fitting_util.chi_squared_map_from_residual_map_mask_and_noise_map(residual_map=residuals_normal_,
-                                                                                                 noise_map=noise_maps_)
-        
-        chi_squared_terms_normal = fitting_util.chi_squared_from_chi_squared_map(
-            chi_squared_map=chi_squareds_normal_)
-        
-        noise_terms_normal = fitting_util.noise_normalization_from_mask_and_noise_map(noise_map=noise_maps_)
-        likelihoods_normal = fitting_util.likelihood_from_chi_squared_and_noise_normalization(
-            chi_squared=chi_squared_terms_normal,
-            noise_normalization=noise_terms_normal)
-        
-        model_images_sensitive_ = fitting_util.blur_image_including_blurring_region(
-            image_=tracer_sensitive.image_plane_image_1d, blurring_image_=tracer_sensitive.image_plane_blurring_image_1d,
-            convolver=convolvers)
-        
-        residuals_sensitive_ = fitting_util.residual_map_from_data_mask_and_model_data(data=sensitivity_images,
-                                                                                       model_data=model_images_sensitive_),
-        chi_squareds_sensitive_ = fitting_util.chi_squared_map_from_residual_map_mask_and_noise_map(
-            residual_map=residuals_sensitive_,
-            noise_map=noise_maps_),
-        chi_squared_terms_sensitive = fitting_util.chi_squared_from_chi_squared_map(
-            chi_squared_map=chi_squareds_sensitive_)
-        noise_terms_sensitive = fitting_util.noise_normalization_from_mask_and_noise_map(noise_map=noise_maps_)
-        
-        likelihoods_sensitive = fitting_util.likelihood_from_chi_squared_and_noise_normalization(
-            chi_squared=chi_squared_terms_sensitive,
-            noise_normalization=noise_terms_sensitive)
+        likelihood_normal = lensing_fitters.LensingProfileFitter.fast_fit(lensing_image=lensing_image,
+                                                                          tracer=tracer_normal)
 
-        return sum(likelihoods_sensitive) - sum(likelihoods_normal)
+        likelihood_sensitive = lensing_fitters.LensingProfileFitter.fast_fit(lensing_image=lensing_image,
+                                                                             tracer=tracer_sensitive)
+
+        return likelihood_sensitive - likelihood_normal
 
     @property
     def likelihood(self):

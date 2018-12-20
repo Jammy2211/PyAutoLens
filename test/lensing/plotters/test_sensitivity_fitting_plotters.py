@@ -72,8 +72,8 @@ def test_fit(lensing_image):
                                                              source_galaxies=[source_galaxy],
                                                              image_plane_grid_stack=[lensing_image.grids],
                                                              cosmology=cosmo.Planck15)
-    return sensitivity_fitting.SensitivityProfileFit(sensitivity_images=[lensing_image], tracer_normal=tracer_normal,
-                                                     tracer_sensitive=tracer_sensitivity)
+    return sensitivity_fitting.SensitivityProfileFitter(lensing_image=[lensing_image], tracer_normal=tracer_normal,
+                                                        tracer_sensitive=tracer_sensitivity)
 
 
 def test__fit_sub_plot__output_dependent_on_config(fit, general_config, sensitivity_fitting_plotter_path):

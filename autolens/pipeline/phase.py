@@ -1383,15 +1383,15 @@ class SensitivityPhase(PhaseImaging):
                 border=self.sensitivity_image.border)
 
         def fast_likelihood_for_tracers(self, tracer_normal, tracer_sensitive):
-            return sensitivity_fitting.SensitivityProfileFit.fast_likelihood(
+            return sensitivity_fitting.SensitivityProfileFitter.fast_fit(
                 sensitivity_images=[self.sensitivity_image],
                 tracer_normal=tracer_normal,
                 tracer_sensitive=tracer_sensitive)
 
         def fit_for_tracers(self, tracer_normal, tracer_sensitive):
-            return sensitivity_fitting.SensitivityProfileFit(sensitivity_images=[self.sensitivity_image],
-                                                             tracer_normal=tracer_normal,
-                                                             tracer_sensitive=tracer_sensitive)
+            return sensitivity_fitting.SensitivityProfileFitter(lensing_image=[self.sensitivity_image],
+                                                                tracer_normal=tracer_normal,
+                                                                tracer_sensitive=tracer_sensitive)
 
         @classmethod
         def log(cls, instance):
