@@ -481,9 +481,7 @@ class SubGrid(RegularGrid):
     @property
     def unlensed_grid(self):
         return SubGrid(grid_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(
-            mask=self.mask,
-            pixel_scales=self.mask.pixel_scales,
-            sub_grid_size=self.sub_grid_size),
+            mask=self.mask, pixel_scales=self.mask.pixel_scales, sub_grid_size=self.sub_grid_size),
             self.mask, self.sub_grid_size)
 
     @property
@@ -720,7 +718,7 @@ class PaddedRegularGrid(RegularGrid):
         padded_shape = (shape[0] + psf_shape[0] - 1, shape[1] + psf_shape[1] - 1)
         padded_regular_grid = grid_util.regular_grid_1d_masked_from_mask_pixel_scales_and_origin(
             mask=np.full(padded_shape, False), pixel_scales=(pixel_scale, pixel_scale))
-        padded_mask = msk.Mask.masked_for_shape_and_pixel_scale(shape=padded_shape, pixel_scale=pixel_scale)
+        padded_mask = msk.Mask.unmasked_for_shape_and_pixel_scale(shape=padded_shape, pixel_scale=pixel_scale)
         return PaddedRegularGrid(arr=padded_regular_grid, mask=padded_mask, image_shape=shape)
 
     def padded_blurred_image_2d_from_padded_image_1d_and_psf(self, padded_image_1d, psf):
@@ -820,7 +818,7 @@ class PaddedSubGrid(SubGrid, PaddedRegularGrid):
         padded_sub_grid = grid_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(
             mask=np.full(padded_shape, False), pixel_scales=mask.pixel_scales, sub_grid_size=sub_grid_size)
 
-        padded_mask = msk.Mask.masked_for_shape_and_pixel_scale(shape=padded_shape, pixel_scale=mask.pixel_scale)
+        padded_mask = msk.Mask.unmasked_for_shape_and_pixel_scale(shape=padded_shape, pixel_scale=mask.pixel_scale)
 
         return PaddedSubGrid(arr=padded_sub_grid, mask=padded_mask, image_shape=mask.shape,
                              sub_grid_size=sub_grid_size)

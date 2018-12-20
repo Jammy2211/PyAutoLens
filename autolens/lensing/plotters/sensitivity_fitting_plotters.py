@@ -2,7 +2,7 @@ from matplotlib import pyplot as plt
 
 from autolens.data.array.plotters import plotter_util
 from autolens.data.imaging.plotters import imaging_plotters
-from autolens.data.fitting.plotters import fitting_plotters
+from autolens.lensing.plotters import lensing_plotter_util
 
 
 def plot_fitting_subplot(fit, should_plot_mask=True, positions=None,
@@ -25,7 +25,7 @@ def plot_fitting_subplot(fit, should_plot_mask=True, positions=None,
 
     rows, columns, figsize_tool = plotter_util.get_subplot_rows_columns_figsize(number_subplots=9)
 
-    mask = fitting_plotters.get_mask(fit=fit.fit_normal, should_plot_mask=should_plot_mask)
+    mask = lensing_plotter_util.get_mask(fit=fit.fit_normal, should_plot_mask=should_plot_mask)
 
     if figsize is None:
         figsize = figsize_tool
@@ -35,7 +35,7 @@ def plot_fitting_subplot(fit, should_plot_mask=True, positions=None,
 
     kpc_per_arcsec = fit.tracer_normal.image_plane.kpc_per_arcsec_proper
 
-    imaging_plotters.plot_image(image=fit.fit_normal.images[0], mask=mask, positions=positions, image_plane_pix_grid=None,
+    lensing_plotter_util.plot_image(fit=fit.fit_normal, mask=mask, positions=positions, image_plane_pix_grid=None,
                                 as_subplot=True,
                                 units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
                                 cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
@@ -49,7 +49,7 @@ def plot_fitting_subplot(fit, should_plot_mask=True, positions=None,
 
     plt.subplot(rows, columns, 4)
 
-    fitting_plotters.plot_model_image(fit=fit.fit_normal, image_index=0, mask=mask, as_subplot=True,
+    lensing_plotter_util.plot_model_image(fit=fit.fit_normal, mask=mask, as_subplot=True,
                                       units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
                                       cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
                                       linscale=linscale,
@@ -59,7 +59,7 @@ def plot_fitting_subplot(fit, should_plot_mask=True, positions=None,
 
     plt.subplot(rows, columns, 5)
 
-    fitting_plotters.plot_residuals(fit=fit.fit_normal, image_index=0, mask=mask, as_subplot=True,
+    lensing_plotter_util.plot_residual_map(fit=fit.fit_normal, mask=mask, as_subplot=True,
                                     units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
                                     cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
                                     linscale=linscale,
@@ -69,7 +69,7 @@ def plot_fitting_subplot(fit, should_plot_mask=True, positions=None,
 
     plt.subplot(rows, columns, 6)
 
-    fitting_plotters.plot_chi_squareds(fit=fit.fit_normal, image_index=0, mask=mask, as_subplot=True,
+    lensing_plotter_util.plot_chi_squared_map(fit=fit.fit_normal, mask=mask, as_subplot=True,
                                        units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
                                        cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
                                        linscale=linscale,
@@ -79,7 +79,7 @@ def plot_fitting_subplot(fit, should_plot_mask=True, positions=None,
     
     plt.subplot(rows, columns, 7)
 
-    fitting_plotters.plot_model_image(fit=fit.fit_sensitive, image_index=0, mask=mask, as_subplot=True,
+    lensing_plotter_util.plot_model_image(fit=fit.fit_sensitive, mask=mask, as_subplot=True,
                                       units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
                                       cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
                                       linscale=linscale,
@@ -89,7 +89,7 @@ def plot_fitting_subplot(fit, should_plot_mask=True, positions=None,
 
     plt.subplot(rows, columns, 8)
 
-    fitting_plotters.plot_residuals(fit=fit.fit_sensitive, image_index=0, mask=mask, as_subplot=True,
+    lensing_plotter_util.plot_residual_map(fit=fit.fit_sensitive, mask=mask, as_subplot=True,
                                     units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
                                     cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
                                     linscale=linscale,
@@ -99,7 +99,7 @@ def plot_fitting_subplot(fit, should_plot_mask=True, positions=None,
 
     plt.subplot(rows, columns, 9)
 
-    fitting_plotters.plot_chi_squareds(fit=fit.fit_sensitive, image_index=0, mask=mask, as_subplot=True,
+    lensing_plotter_util.plot_chi_squared_map(fit=fit.fit_sensitive, mask=mask, as_subplot=True,
                                        units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
                                        cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
                                        linscale=linscale,

@@ -19,7 +19,6 @@ def test_general_config():
     general_config_path = "{}/../../test_files/configs/plotting/".format(os.path.dirname(os.path.realpath(__file__)))
     conf.instance.general = conf.NamedConfig(general_config_path + "general.ini")
 
-
 @pytest.fixture(name='sensitivity_fitting_plotter_path')
 def test_sensitivity_fitting_plotter_setup():
     galaxy_plotter_path = "{}/../../test_files/plotting/fitting/".format(os.path.dirname(os.path.realpath(__file__)))
@@ -31,11 +30,11 @@ def test_sensitivity_fitting_plotter_setup():
 
     return galaxy_plotter_path
 
-@pytest.fixture(name='grid_stacks')
+@pytest.fixture(name='grid_stack')
 def test_grids():
     return grids.GridStack.from_shape_and_pixel_scale(shape=(100, 100), pixel_scale=0.05, sub_grid_size=2)
 
-@pytest.fixture(name='datas')
+@pytest.fixture(name='image')
 def test_image():
 
     image = scaled_array.ScaledSquarePixelArray(array=np.ones((3, 3)), pixel_scale=1.0)
@@ -50,7 +49,7 @@ def test_positions():
     positions = [[[0.1, 0.1], [0.2, 0.2]], [[0.3, 0.3]]]
     return list(map(lambda position_set: np.asarray(position_set), positions))
 
-@pytest.fixture(name='masks')
+@pytest.fixture(name='mask')
 def test_mask():
     return msk.Mask.circular(shape=((3,3)), pixel_scale=0.1, radius_arcsec=0.1)
 
@@ -66,13 +65,13 @@ def test_fit(lensing_image):
     source_galaxy = g.Galaxy(light=lp.EllipticalSersic(intensity=1.0), redshift=2.0)
 
     tracer_normal = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
-                                                        image_plane_grid_stack=[lensing_image.grids],
+                                                        image_plane_grid_stack=lensing_image.grid_stack,
                                                         cosmology=cosmo.Planck15)
     tracer_sensitivity = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy, lens_subhalo],
                                                              source_galaxies=[source_galaxy],
-                                                             image_plane_grid_stack=[lensing_image.grids],
+                                                             image_plane_grid_stack=lensing_image.grid_stack,
                                                              cosmology=cosmo.Planck15)
-    return sensitivity_fitting.SensitivityProfileFitter(lensing_image=[lensing_image], tracer_normal=tracer_normal,
+    return sensitivity_fitting.SensitivityProfileFitter(lensing_image=lensing_image, tracer_normal=tracer_normal,
                                                         tracer_sensitive=tracer_sensitivity)
 
 
