@@ -2,7 +2,7 @@ import numpy as np
 import pytest
 
 from autolens.model.inversion.util import mapper_util
-from test.mock.mock_imaging import MockSubGrid, MockGridCollection
+from test.mock.mock_imaging import MockSubGrid, MockGridStack
 
 @pytest.fixture(name="three_pixels")
 def make_three_pixels():
@@ -21,8 +21,8 @@ class TestMappingMatrix:
         sub_to_pix = np.array([0, 1, 2])
         sub_to_regular = np.array([0, 1, 2])
 
-        grids = MockGridCollection(regular=three_pixels, sub=MockSubGrid(three_pixels, sub_to_regular,
-                                                                         sub_grid_size=1))
+        grids = MockGridStack(regular=three_pixels, sub=MockSubGrid(three_pixels, sub_to_regular,
+                                                                    sub_grid_size=1))
 
         mapping_matrix = mapper_util.mapping_matrix_from_sub_to_pix(sub_to_pix=sub_to_pix, pixels=6,
                                                                 regular_pixels=grids.regular.shape[0],
@@ -38,8 +38,8 @@ class TestMappingMatrix:
         sub_to_pix = np.array([0, 1, 2, 7, 6])
         sub_to_regular = np.array([0, 1, 2, 3, 4])
 
-        grids = MockGridCollection(regular=five_pixels, sub=MockSubGrid(five_pixels, sub_to_regular,
-                                                                        sub_grid_size=1))
+        grids = MockGridStack(regular=five_pixels, sub=MockSubGrid(five_pixels, sub_to_regular,
+                                                                   sub_grid_size=1))
 
         mapping_matrix = mapper_util.mapping_matrix_from_sub_to_pix(sub_to_pix=sub_to_pix, pixels=8,
                                                                 regular_pixels=grids.regular.shape[0],
@@ -57,8 +57,8 @@ class TestMappingMatrix:
         sub_to_pix = np.array([0, 1, 2, 3, 1, 2, 3, 4, 2, 3, 4, 5, 7, 0, 1, 3, 6, 7, 4, 2])
         sub_to_regular = np.array([0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4])
 
-        grids = MockGridCollection(regular=five_pixels, sub=MockSubGrid(five_pixels, sub_to_regular,
-                                                                        sub_grid_size=2))
+        grids = MockGridStack(regular=five_pixels, sub=MockSubGrid(five_pixels, sub_to_regular,
+                                                                   sub_grid_size=2))
 
         mapping_matrix = mapper_util.mapping_matrix_from_sub_to_pix(sub_to_pix=sub_to_pix, pixels=8,
                                                                 regular_pixels=grids.regular.shape[0],
@@ -77,8 +77,8 @@ class TestMappingMatrix:
         sub_to_pix = np.array([0, 0, 0, 1, 1, 1, 0, 0, 2, 3, 4, 5, 7, 0, 1, 3, 6, 7, 4, 2])
         sub_to_regular = np.array([0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4])
 
-        grids = MockGridCollection(regular=five_pixels, sub=MockSubGrid(five_pixels, sub_to_regular,
-                                                                        sub_grid_size=2))
+        grids = MockGridStack(regular=five_pixels, sub=MockSubGrid(five_pixels, sub_to_regular,
+                                                                   sub_grid_size=2))
 
         mapping_matrix = mapper_util.mapping_matrix_from_sub_to_pix(sub_to_pix=sub_to_pix, pixels=8,
                                                                 regular_pixels=grids.regular.shape[0],
@@ -102,8 +102,8 @@ class TestMappingMatrix:
                                  1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
                                  2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2])
 
-        grids = MockGridCollection(regular=three_pixels, sub=MockSubGrid(three_pixels, sub_to_regular,
-                                                                         sub_grid_size=4))
+        grids = MockGridStack(regular=three_pixels, sub=MockSubGrid(three_pixels, sub_to_regular,
+                                                                    sub_grid_size=4))
 
         mapping_matrix = mapper_util.mapping_matrix_from_sub_to_pix(sub_to_pix=sub_to_pix, pixels=6,
                                                                 regular_pixels=grids.regular.shape[0],

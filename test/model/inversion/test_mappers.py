@@ -5,7 +5,7 @@ from autolens.data.array.util import mapping_util
 from autolens.model.inversion import mappers
 from autolens.model.inversion import pixelizations
 from autolens.model.inversion.util import mapper_util
-from test.mock.mock_imaging import MockSubGrid, MockGridCollection
+from test.mock.mock_imaging import MockSubGrid, MockGridStack
 from test.mock.mock_inversion import MockGeometry
 
 
@@ -54,8 +54,8 @@ class TestRectangularMapper:
 
             geometry = pix.geometry_from_grid(grid=pixelization_grid)
 
-            grids = MockGridCollection(regular=pixelization_grid,
-                                       sub=MockSubGrid(pixelization_grid, sub_to_regular=np.ones((1)),
+            grids = MockGridStack(regular=pixelization_grid,
+                                  sub=MockSubGrid(pixelization_grid, sub_to_regular=np.ones((1)),
                                                        sub_grid_size=1))
 
             pix = mappers.RectangularMapper(pixels=9, shape=(3, 3), grid_stack=grids, geometry=geometry, border=None)
@@ -79,8 +79,8 @@ class TestRectangularMapper:
 
             geometry = pix.geometry_from_grid(grid=pixelization_grid)
 
-            grids = MockGridCollection(regular=pixelization_grid,
-                                       sub=MockSubGrid(pixelization_grid, sub_to_regular=np.ones((1)),
+            grids = MockGridStack(regular=pixelization_grid,
+                                  sub=MockSubGrid(pixelization_grid, sub_to_regular=np.ones((1)),
                                                        sub_grid_size=1))
 
             pix = mappers.RectangularMapper(pixels=9, shape=(3, 3), grid_stack=grids, border=None, geometry=geometry)
@@ -104,8 +104,8 @@ class TestRectangularMapper:
 
             geometry = pix.geometry_from_grid(grid=pixelization_grid)
 
-            grids = MockGridCollection(regular=pixelization_grid,
-                                       sub=MockSubGrid(pixelization_grid, sub_to_regular=np.ones((1)),
+            grids = MockGridStack(regular=pixelization_grid,
+                                  sub=MockSubGrid(pixelization_grid, sub_to_regular=np.ones((1)),
                                                        sub_grid_size=1))
 
             pix = mappers.RectangularMapper(pixels=9, shape=(3, 3), grid_stack=grids, border=None, geometry=geometry)
@@ -139,8 +139,8 @@ class TestRectangularMapper:
 
             geometry = pix.geometry_from_grid(grid=pixelization_grid)
 
-            grids = MockGridCollection(regular=pixelization_grid,
-                                       sub=MockSubGrid(pixelization_grid, sub_to_regular=np.ones((1)),
+            grids = MockGridStack(regular=pixelization_grid,
+                                  sub=MockSubGrid(pixelization_grid, sub_to_regular=np.ones((1)),
                                                        sub_grid_size=1))
 
             pix = mappers.RectangularMapper(pixels=12, shape=(4, 3), grid_stack=grids, border=None, geometry=geometry)
@@ -172,8 +172,8 @@ class TestRectangularMapper:
 
             geometry = pix.geometry_from_grid(grid=pixelization_grid)
 
-            grids = MockGridCollection(regular=pixelization_grid,
-                                       sub=MockSubGrid(pixelization_grid, sub_to_regular=np.ones((1)),
+            grids = MockGridStack(regular=pixelization_grid,
+                                  sub=MockSubGrid(pixelization_grid, sub_to_regular=np.ones((1)),
                                                        sub_grid_size=1))
 
             pix = mappers.RectangularMapper(pixels=12, shape=(3, 4), grid_stack=grids, border=None, geometry=geometry)
@@ -195,8 +195,8 @@ class TestRectangularMapper:
 
             geometry = pix.geometry_from_grid(grid=pixelization_grid)
 
-            grids = MockGridCollection(regular=pixelization_grid,
-                                       sub=MockSubGrid(pixelization_grid, sub_to_regular=np.ones((1)),
+            grids = MockGridStack(regular=pixelization_grid,
+                                  sub=MockSubGrid(pixelization_grid, sub_to_regular=np.ones((1)),
                                                        sub_grid_size=1))
 
             pix = mappers.RectangularMapper(pixels=9, shape=(3, 3), grid_stack=grids, border=None, geometry=geometry)
@@ -218,8 +218,8 @@ class TestRectangularMapper:
 
             geometry = pix.geometry_from_grid(grid=pixelization_grid)
 
-            grids = MockGridCollection(regular=pixelization_grid,
-                                       sub=MockSubGrid(pixelization_grid, sub_to_regular=np.ones((1)),
+            grids = MockGridStack(regular=pixelization_grid,
+                                  sub=MockSubGrid(pixelization_grid, sub_to_regular=np.ones((1)),
                                                        sub_grid_size=1))
 
             pix = mappers.RectangularMapper(pixels=9, shape=(3, 3), grid_stack=grids, border=None, geometry=geometry)
@@ -242,8 +242,8 @@ class TestRectangularMapper:
 
             geometry = pix.geometry_from_grid(grid=pixelization_grid)
 
-            grids = MockGridCollection(regular=pixelization_grid,
-                                       sub=MockSubGrid(pixelization_grid, sub_to_regular=np.ones((1)),
+            grids = MockGridStack(regular=pixelization_grid,
+                                  sub=MockSubGrid(pixelization_grid, sub_to_regular=np.ones((1)),
                                                        sub_grid_size=1))
 
             pix = mappers.RectangularMapper(pixels=12, shape=(4, 3), grid_stack=grids, border=None, geometry=geometry)
@@ -263,8 +263,8 @@ class TestRectangularMapper:
 
             pix = pixelizations.Rectangular(shape=(3, 4))
 
-            grids = MockGridCollection(regular=pixelization_grid,
-                                       sub=MockSubGrid(pixelization_grid, sub_to_regular=np.ones((1)),
+            grids = MockGridStack(regular=pixelization_grid,
+                                  sub=MockSubGrid(pixelization_grid, sub_to_regular=np.ones((1)),
                                                        sub_grid_size=1))
 
             geometry = pix.geometry_from_grid(grid=pixelization_grid)
@@ -294,8 +294,8 @@ class TestRectangularMapper:
 
             geometry = pix.geometry_from_grid(grid=pixelization_grid)
 
-            grids = MockGridCollection(regular=pixelization_grid,
-                                       sub=MockSubGrid(pixelization_sub_grid, sub_to_regular=np.ones((1)),
+            grids = MockGridStack(regular=pixelization_grid,
+                                  sub=MockSubGrid(pixelization_sub_grid, sub_to_regular=np.ones((1)),
                                                        sub_grid_size=1))
 
             pix = mappers.RectangularMapper(pixels=9, shape=(3, 3), grid_stack=grids, border=None, geometry=geometry)
@@ -319,8 +319,8 @@ class TestRectangularMapper:
 
             geometry = pix.geometry_from_grid(grid=pixelization_grid)
 
-            grids = MockGridCollection(regular=pixelization_grid,
-                                       sub=MockSubGrid(pixelization_grid, sub_to_regular=np.ones((1)),
+            grids = MockGridStack(regular=pixelization_grid,
+                                  sub=MockSubGrid(pixelization_grid, sub_to_regular=np.ones((1)),
                                                        sub_grid_size=1))
 
             pix = mappers.RectangularMapper(pixels=9, shape=(3, 3), grid_stack=grids, border=None, geometry=geometry)
@@ -343,8 +343,8 @@ class TestRectangularMapper:
 
             geometry = pix.geometry_from_grid(grid=pixelization_grid)
 
-            grids = MockGridCollection(regular=pixelization_grid,
-                                       sub=MockSubGrid(pixelization_grid, sub_to_regular=np.ones((1)),
+            grids = MockGridStack(regular=pixelization_grid,
+                                  sub=MockSubGrid(pixelization_grid, sub_to_regular=np.ones((1)),
                                                        sub_grid_size=1))
 
             pix = mappers.RectangularMapper(pixels=12, shape=(4, 3), grid_stack=grids, border=None, geometry=geometry)
@@ -501,9 +501,9 @@ class TestVoronoiMapper:
 
             sub_to_regular = np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])
             regular_to_nearest_regular_pix = np.array([0, 0, 1, 0, 0, 1, 2, 2, 3])
-            grids = MockGridCollection(regular=pixelization_grid, sub=MockSubGrid(np.array([]), sub_to_regular,
-                                                                                  sub_grid_size=1), 
-                                       pix=pixelization_grid, regular_to_nearest_regular_pix=regular_to_nearest_regular_pix)
+            grids = MockGridStack(regular=pixelization_grid, sub=MockSubGrid(np.array([]), sub_to_regular,
+                                                                             sub_grid_size=1),
+                                  pix=pixelization_grid, regular_to_nearest_regular_pix=regular_to_nearest_regular_pix)
 
             pix = pixelizations.Voronoi()
             voronoi = pix.voronoi_from_pixel_centers(pixel_centers)
@@ -535,10 +535,10 @@ class TestVoronoiMapper:
 
             sub_to_regular = np.array([0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5])
             regular_to_nearest_regular_pix = np.array([0, 0, 1, 0, 0, 1, 2, 2, 3])
-            grids = MockGridCollection(regular=np.array([]), sub=MockSubGrid(pixelization_sub_grid, sub_to_regular,
-                                                                             sub_grid_size=1),
-                                       pix=pixelization_sub_grid,
-                                       regular_to_nearest_regular_pix=regular_to_nearest_regular_pix)
+            grids = MockGridStack(regular=np.array([]), sub=MockSubGrid(pixelization_sub_grid, sub_to_regular,
+                                                                        sub_grid_size=1),
+                                  pix=pixelization_sub_grid,
+                                  regular_to_nearest_regular_pix=regular_to_nearest_regular_pix)
 
             pix = pixelizations.Voronoi()
             voronoi = pix.voronoi_from_pixel_centers(pixel_centers)

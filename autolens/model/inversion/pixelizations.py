@@ -8,7 +8,7 @@ from autolens.model.inversion import mappers
 from autolens.model.inversion.util import pixelization_util
 
 
-def setup_imageplane_pixelization_grid_from_galaxies_and_grid_stack(galaxies, grid_stack):
+def setup_image_plane_pixelization_grid_from_galaxies_and_grid_stack(galaxies, grid_stack):
     """An image-plane pixelization is one where its pixel centres are computed by tracing a sparse grid of pixels from \
     the image's regular grid to other planes (e.g. the source-plane).
 
@@ -31,10 +31,10 @@ def setup_imageplane_pixelization_grid_from_galaxies_and_grid_stack(galaxies, gr
             if hasattr(galaxy, 'pixelization'):
                 if isinstance(galaxy.pixelization, ImagePlanePixelization):
 
-                    imageplane_pix_grid = galaxy.pixelization.imageplane_pix_grid_from_regular_grid(
+                    image_plane_pix_grid = galaxy.pixelization.image_plane_pix_grid_from_regular_grid(
                         regular_grid=grid_stack.regular)
-                    return grid_stack.grid_stack_with_pix_grid_added(pix_grid=imageplane_pix_grid.sparse_grid,
-                                                                     regular_to_nearest_pix=imageplane_pix_grid.regular_to_sparse)
+                    return grid_stack.grid_stack_with_pix_grid_added(pix_grid=image_plane_pix_grid.sparse_grid,
+                                                                     regular_to_nearest_pix=image_plane_pix_grid.regular_to_sparse)
 
     return grid_stack
 
@@ -57,7 +57,7 @@ class ImagePlanePixelization(object):
         """
         self.shape = (int(shape[0]), int(shape[1]))
 
-    def imageplane_pix_grid_from_regular_grid(self, regular_grid):
+    def image_plane_pix_grid_from_regular_grid(self, regular_grid):
         """Calculate the image-plane pixelization from a regular-grid of coordinates (and its mask).
 
         See *grid_stacks.SparseToRegularGrid* for details on how this grid is calculated.
@@ -177,9 +177,9 @@ class Rectangular(Pixelization):
 
         Parameters
         ----------
-        grid_stack: masks.GridStack
+        grid_stack : grids.GridStack
             A stack of grid describing the observed image's pixel coordinates (e.g. an image-grid, sub-grid, etc.).
-        border : masks.ImagingGridBorders
+        border : grids.RegularGridBorder
             The border of the grid-stack's regular-grid.
         """
 
@@ -318,9 +318,9 @@ class AdaptiveMagnification(Voronoi, ImagePlanePixelization):
 
         Parameters
         ----------
-        grid_stack: masks.GridStack
+        grid_stack : grids.GridStack
             A collection of grid describing the observed image's pixel coordinates (includes an image and sub grid).
-        border : masks.ImagingGridBorders
+        border : grids.RegularGridBorder
             The borders of the grid_stacks (defined by their image-plane masks).
         """
 

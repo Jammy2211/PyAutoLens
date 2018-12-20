@@ -586,7 +586,7 @@ class PixGrid(np.ndarray):
             A 1D array that maps every regular-grid pixel to its nearest pix-grid pixel.
         """
         obj = arr.view(cls)
-        obj.regular_to_nearest_regular_pix = regular_to_nearest_pix
+        obj.regular_to_nearest_pix = regular_to_nearest_pix
         return obj
 
     def __array_finalize__(self, obj):
