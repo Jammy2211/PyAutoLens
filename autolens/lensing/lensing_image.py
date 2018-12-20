@@ -61,11 +61,11 @@ class LensingImage(object):
         self.convolver_mapping_matrix = inversion_convolution.ConvolverMappingMatrix(self.mask,
                       self.image.psf.resized_scaled_array_from_array(mapping_matrix_psf_shape))
 
-        self.grid_stack = grids.DataGridStack.grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=mask,
-                        sub_grid_size=sub_grid_size, psf_shape=image_psf_shape)
+        self.grid_stack = grids.GridStack.grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=mask,
+                                                                                           sub_grid_size=sub_grid_size, psf_shape=image_psf_shape)
 
-        self.padded_grid_stack = grids.DataGridStack.padded_grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=mask,
-                                                                 sub_grid_size=sub_grid_size, psf_shape=image_psf_shape)
+        self.padded_grid_stack = grids.GridStack.padded_grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=mask,
+                                                                                                         sub_grid_size=sub_grid_size, psf_shape=image_psf_shape)
 
         self.border = grids.RegularGridBorder.from_mask(mask=mask)
 

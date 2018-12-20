@@ -18,7 +18,7 @@ def make_data_grid_stack():
                              [True, False, False, True],
                              [True, True, True, True]]), pixel_scale=6.0)
 
-    data_grid_stack = grids.DataGridStack.grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=ma, sub_grid_size=2, psf_shape=(3, 3))
+    data_grid_stack = grids.GridStack.grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=ma, sub_grid_size=2, psf_shape=(3, 3))
 
     # Manually overwrite a set of cooridnates to make tests of grid_stacks and defledctions straightforward
 
@@ -52,7 +52,7 @@ def make_data_grid_stack_1():
                              [True, False, False, True],
                              [True, True, True, True]]), pixel_scale=12.0)
 
-    data_grid_stack = grids.DataGridStack.grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=ma, sub_grid_size=2, psf_shape=(3, 3))
+    data_grid_stack = grids.GridStack.grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=ma, sub_grid_size=2, psf_shape=(3, 3))
 
     # Manually overwrite a set of cooridnates to make tests of grid_stacks and defledctions straightforward
 
@@ -83,7 +83,7 @@ def make_data_grid_stack_1():
 @pytest.fixture(name="padded_grid_stack")
 def make_padded_grid_stack():
     ma = mask.Mask(np.array([[True, False]]), pixel_scale=3.0)
-    return grids.DataGridStack.padded_grid_stack_from_mask_sub_grid_size_and_psf_shape(ma, 2, (3, 3))
+    return grids.GridStack.padded_grid_stack_from_mask_sub_grid_size_and_psf_shape(ma, 2, (3, 3))
 
 
 @pytest.fixture(name='galaxy_non', scope='function')

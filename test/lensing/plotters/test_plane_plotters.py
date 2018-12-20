@@ -51,7 +51,7 @@ def test_galaxy_mass():
 
 @pytest.fixture(name='grid_stacks')
 def test_grids():
-    return grids.DataGridStack.from_shape_and_pixel_scale(shape=(100, 100), pixel_scale=0.05, sub_grid_size=2)
+    return grids.GridStack.from_shape_and_pixel_scale(shape=(100, 100), pixel_scale=0.05, sub_grid_size=2)
 
 @pytest.fixture(name='plane')
 def test_plane(galaxy_light, grids):

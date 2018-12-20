@@ -10,8 +10,8 @@ from autolens.data.array.plotters import grid_plotters
 # This coordinate grid is aligned with the datas we analyze, thus each coordinate on the regular grid maps to the
 # centre of each datas-pixel. Lets make a grid using 100 x 100 pixels, with a pixel scale (arcsecond-to-pixel
 # conversion factor) of 0.05", giving us a a 5" x 5" grid.
-data_grids = grids.DataGridStack.from_shape_and_pixel_scale(shape=(10, 100), pixel_scale=0.05,
-                                                            sub_grid_size=2)
+data_grids = grids.GridStack.from_shape_and_pixel_scale(shape=(10, 100), pixel_scale=0.05,
+                                                        sub_grid_size=2)
 
 # If we print the regular grid, we see it consists of a set of arc-second coordinates
 # (noting that the difference between each coordinate is the 'pixel_scales' of 0.05" defined above)

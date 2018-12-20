@@ -19,8 +19,8 @@ psf_shape = (21, 21)
 
 psf = im.PSF.simulate_as_gaussian(shape=psf_shape, sigma=0.05, pixel_scale=pixel_scale)
 
-image_plane_grids = grids.DataGridStack.grids_for_simulation(shape=image_shape, sub_grid_size=4,
-                                                             pixel_scale=pixel_scale, psf_shape=psf_shape)
+image_plane_grids = grids.GridStack.grid_stack_for_simulation(shape=image_shape, sub_grid_size=4,
+                                                              pixel_scale=pixel_scale, psf_shape=psf_shape)
 
 lens_galaxy = g.Galaxy(light=lp.SphericalSersic(centre=(0.0, 0.0), intensity=0.3, effective_radius=1.0,
                                                 sersic_index=2.0),
@@ -52,7 +52,7 @@ image_plane_grids = pix.setup_image_plane_pixelization_grid_from_galaxies_and_gr
 tracer_fit = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy_voronoi],
                                                  image_plane_grid_stack=[image_plane_grids])
 
-relocated_grids = lensing_image.border.relocated_grids_from_grids(tracer_fit.source_plane.grids[0])
+relocated_grids = lensing_image.border.relocated_grid_stack_from_grid_stack(tracer_fit.source_plane.grids[0])
 voronoi = adaptive_pix.voronoi_from_pixel_centers(relocated_grids.pix)
 pixel_centres = relocated_grids.pix
 pixels = pixel_centres.shape[0]
@@ -80,7 +80,7 @@ inversion_util.reconstructed_data_vector_from_blurred_mapping_matrix_and_solutio
 start_overall = time.time()
 
 start = time.time()
-relocated_grids = lensing_image.border.relocated_grids_from_grids(tracer_fit.source_plane.grids[0])
+relocated_grids = lensing_image.border.relocated_grid_stack_from_grid_stack(tracer_fit.source_plane.grids[0])
 diff = time.time() - start
 print("Border time = {}".format(diff))
 

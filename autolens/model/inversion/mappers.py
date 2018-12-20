@@ -24,7 +24,7 @@ class Mapper(object):
         ----------
         pixels : int
             The number of pixels in the pixelization.
-        grid_stack: masks.DataGridStack
+        grid_stack: masks.GridStack
             A collection of grid describing the observed regular's pixel coordinates (includes an regular and sub grid).
         """
         self.pixels = pixels
@@ -121,7 +121,7 @@ class RectangularMapper(Mapper):
         ----------
         pixels : int
             The number of pixels in the pixelization.
-        grid_stack: masks.DataGridStack
+        grid_stack: masks.GridStack
             A collection of grid describing the observed regular's pixel coordinates (includes an regular and sub grid).
         shape : (int, int)
             The dimensions of the rectangular grid of pixels (x_pixels, y_pixel)
@@ -166,7 +166,7 @@ class VoronoiMapper(Mapper):
         ----------
         pixels : int
             The number of pixels in the pixelization.
-        grid_stack: masks.DataGridStack
+        grid_stack: masks.GridStack
             A collection of grid describing the observed regular's pixel coordinates (includes an regular and sub grid).
         shape : (int, int)
             The dimensions of the rectangular grid of pixels (x_pixels, y_pixel)

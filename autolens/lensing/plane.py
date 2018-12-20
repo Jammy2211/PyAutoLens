@@ -240,7 +240,7 @@ class Plane(AbstractPlane):
         -----------
         galaxies : [Galaxy]
             The list of lens galaxies in this plane.
-        grid_stack : masks.DataGridStack
+        grid_stack : masks.GridStack
             The stack of grid_stacks of (y,x) arc-second coordinates of this plane.
         border : masks.RegularGridBorder
             The borders of the regular-grid, which is used to relocate demagnified traced regular-pixel to the \
@@ -359,7 +359,7 @@ class PlaneStack(AbstractPlane):
         -----------
         galaxies : [Galaxy]
             The list of lens galaxies in this plane.
-        grid_stacks : masks.DataGridStack
+        grid_stacks : masks.GridStack
             The stack of grid_stacks of (y,x) arc-second coordinates of this plane.
         borders : masks.RegularGridBorder
             The borders of the regular-grid, which is used to relocate demagnified traced regular-pixel to the \

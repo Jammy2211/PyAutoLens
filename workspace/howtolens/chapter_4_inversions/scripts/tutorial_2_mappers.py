@@ -22,7 +22,7 @@ def simulate():
 
     psf = im.PSF.simulate_as_gaussian(shape=(11, 11), sigma=0.05, pixel_scale=0.05)
 
-    image_plane_grids = grids.ImagingGrids.grids_for_simulation(shape=(150, 150), pixel_scale=0.05, psf_shape=(11, 11))
+    image_plane_grids = grids.ImagingGrids.grid_stack_for_simulation(shape=(150, 150), pixel_scale=0.05, psf_shape=(11, 11))
 
     lens_galaxy = g.Galaxy(mass=mp.EllipticalIsothermal(centre=(0.0, 0.0), axis_ratio=0.8, phi=45.0,
                                                         einstein_radius=1.6))
@@ -38,8 +38,8 @@ image = simulate()
 imaging_plotters.plot_image_subplot(image=image)
 
 # Lets begin by setting up our grid_stacks (using the regular we loaded above).
-image_plane_grids = grids.DataGridStack.from_shape_and_pixel_scale(shape=image.shape, pixel_scale=image.pixel_scale,
-                                                                   sub_grid_size=2)
+image_plane_grids = grids.GridStack.from_shape_and_pixel_scale(shape=image.shape, pixel_scale=image.pixel_scale,
+                                                               sub_grid_size=2)
 
 # Our tracer will use the same lens model_galaxy and source model_galaxy that we used to simulate the regular (although, becuase
 # we're modeling the source with a pixel-grid, we don't need to supply its light profile).

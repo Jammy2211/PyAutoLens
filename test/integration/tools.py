@@ -32,8 +32,8 @@ def simulate_integration_image(data_name, pixel_scale, lens_galaxies, source_gal
 
     psf = im.PSF.simulate_as_gaussian(shape=psf_shape, pixel_scale=pixel_scale, sigma=pixel_scale)
 
-    image_grids = grids.DataGridStack.grids_for_simulation(shape=image_shape, pixel_scale=pixel_scale,
-                                                           sub_grid_size=1, psf_shape=psf_shape)
+    image_grids = grids.GridStack.grid_stack_for_simulation(shape=image_shape, pixel_scale=pixel_scale,
+                                                            sub_grid_size=1, psf_shape=psf_shape)
 
     image_shape = image_grids.regular.padded_shape
 

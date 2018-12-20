@@ -33,7 +33,7 @@ def test_sensitivity_fitting_plotter_setup():
 
 @pytest.fixture(name='grid_stacks')
 def test_grids():
-    return grids.DataGridStack.from_shape_and_pixel_scale(shape=(100, 100), pixel_scale=0.05, sub_grid_size=2)
+    return grids.GridStack.from_shape_and_pixel_scale(shape=(100, 100), pixel_scale=0.05, sub_grid_size=2)
 
 @pytest.fixture(name='datas')
 def test_image():

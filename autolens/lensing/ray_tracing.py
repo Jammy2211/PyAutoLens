@@ -7,6 +7,7 @@ from astropy import cosmology as cosmo
 
 from autolens import exc
 from autolens.data.array import grids
+from autolens.lensing import lensing_util
 from autolens.lensing import plane as pl
 from autolens.model.inversion import pixelizations as pix
 
@@ -160,7 +161,7 @@ class AbstractTracer(object):
         return self.critical_density_kpc_between_planes(i=i, j=j) * self.kpc_per_arcsec_proper_of_plane(i=i) ** 2.0
 
     def scaling_factor_between_planes(self, i, j):
-        return scaling_factor_between_redshifts_for_cosmology(z1=self.plane_redshifts[i], z2=self.plane_redshifts[j],
+        return lensing_util.scaling_factor_between_redshifts_for_cosmology(z1=self.plane_redshifts[i], z2=self.plane_redshifts[j],
                                                               z_final=self.plane_redshifts[-1], cosmology=self.cosmology)
 
     @property
@@ -356,7 +357,7 @@ class TracerImagePlane(AbstractTracerNonStack):
         ----------
         lens_galaxies : [Galaxy]
             The list of lens galaxies in the image-plane.
-        image_plane_grid_stack : grid_stacks.DataGridStack
+        image_plane_grid_stack : grid_stacks.GridStack
             The image-plane grid stack which is traced. (includes the regular-grid, sub-grid, blurring-grid, etc.).
         border : masks.RegularGridBorder
             The border of the regular-grid, which is used to relocate demagnified traced pixels to the \
@@ -388,7 +389,7 @@ class TracerImagePlaneStack(AbstractTracerStack):
         ----------
         lens_galaxies : [Galaxy]
             The list of lens galaxies in the image-plane.
-        image_plane_grid_stacks : [grid_stacks.DataGridStack]
+        image_plane_grid_stacks : [grid_stacks.GridStack]
             The image-plane grid stacks which are traced. (each stack includes the regular-grid, sub-grid, \
             blurring-grid, etc.).
         borders : [masks.RegularGridBorder]
@@ -419,7 +420,7 @@ class TracerImageSourcePlanes(AbstractTracerNonStack):
             The list of galaxies in the image-plane.
         source_galaxies : [Galaxy]
             The list of galaxies in the source-plane.
-        image_plane_grid_stack : grid_stacks.DataGridStack
+        image_plane_grid_stack : grid_stacks.GridStack
             The image-plane grid stack which is traced. (includes the regular-grid, sub-grid, blurring-grid, etc.).
         border : masks.RegularGridBorder
             The border of the regular-grid, which is used to relocate demagnified traced pixels to the \
@@ -455,7 +456,7 @@ class TracerImageSourcePlanesStack(AbstractTracerStack):
             The list of galaxies in the image-plane.
         source_galaxies : [Galaxy]
             The list of galaxies in the source-plane.
-        image_plane_grid_stacks : [grid_stacks.DataGridStack]
+        image_plane_grid_stacks : [grid_stacks.GridStack]
             The image-plane grid stacks which are traced. (each stack includes the regular-grid, sub-grid, \
             blurring-grid, etc.).
         borders : [masks.RegularGridBorder]
@@ -496,7 +497,7 @@ class TracerMultiPlanes(AbstractTracerNonStack):
         ----------
         galaxies : [Galaxy]
             The list of galaxies in the ray-tracing calculation.
-        image_plane_grid_stack : grid_stacks.DataGridStack
+        image_plane_grid_stack : grid_stacks.GridStack
             The image-plane grid stack which is traced. (includes the regular-grid, sub-grid, blurring-grid, etc.).
         border : masks.RegularGridBorder
             The border of the regular-grid, which is used to relocate demagnified traced pixels to the \
@@ -505,10 +506,11 @@ class TracerMultiPlanes(AbstractTracerNonStack):
             The cosmology of the ray-tracing calculation.
         """
 
-        ordered_redshifts = ordered_redshifts_from_galaxies(galaxies=galaxies)
+        ordered_redshifts = lensing_util.ordered_redshifts_from_galaxies(galaxies=galaxies)
 
-        galaxies_in_redshift_ordered_lists = galaxies_in_redshift_ordered_lists_from_galaxies(galaxies=galaxies,
-                                                                      ordered_redshifts=ordered_redshifts)
+        galaxies_in_redshift_ordered_lists = \
+            lensing_util.galaxies_in_redshift_ordered_lists_from_galaxies(galaxies=galaxies,
+                                                                           ordered_redshifts=ordered_redshifts)
 
         image_plane_grid_stack = pix.setup_image_plane_pixelization_grid_from_galaxies_and_grid_stack(
             galaxies=galaxies, grid_stack=image_plane_grid_stack)
@@ -529,7 +531,7 @@ class TracerMultiPlanes(AbstractTracerNonStack):
             if plane_index > 0:
                 for previous_plane_index in range(plane_index):
 
-                    scaling_factor = scaling_factor_between_redshifts_for_cosmology(
+                    scaling_factor = lensing_util.scaling_factor_between_redshifts_for_cosmology(
                         z1=ordered_redshifts[previous_plane_index], z2=ordered_redshifts[plane_index],
                         z_final=ordered_redshifts[-1], cosmology=cosmology)
 
@@ -569,7 +571,7 @@ class TracerMultiPlanesStack(AbstractTracerStack):
         ----------
         galaxies : [Galaxy]
             The list of galaxies in the ray-tracing calculation.
-        image_plane_grid_stacks : [grid_stacks.DataGridStack]
+        image_plane_grid_stacks : [grid_stacks.GridStack]
             The image-plane grid stacks which are traced. (each stack includes the regular-grid, sub-grid, \
             blurring-grid, etc.).
         borders : [masks.RegularGridBorder]
@@ -579,10 +581,11 @@ class TracerMultiPlanesStack(AbstractTracerStack):
             The cosmology of the ray-tracing calculation.
         """
 
-        ordered_redshifts = ordered_redshifts_from_galaxies(galaxies=galaxies)
+        ordered_redshifts = lensing_util.ordered_redshifts_from_galaxies(galaxies=galaxies)
 
-        galaxies_in_redshift_ordered_lists = galaxies_in_redshift_ordered_lists_from_galaxies(galaxies=galaxies,
-                                                                                               ordered_redshifts=ordered_redshifts)
+        galaxies_in_redshift_ordered_lists = \
+            lensing_util.galaxies_in_redshift_ordered_lists_from_galaxies(galaxies=galaxies,
+                                                                          ordered_redshifts=ordered_redshifts)
 
         image_plane_grid_stacks = list(map(lambda grid_stack :
                         pix.setup_image_plane_pixelization_grid_from_galaxies_and_grid_stack(galaxies=galaxies,
@@ -605,7 +608,7 @@ class TracerMultiPlanesStack(AbstractTracerStack):
             if plane_index > 0:
                 for previous_plane_index in range(plane_index):
 
-                    scaling_factor = scaling_factor_between_redshifts_for_cosmology(
+                    scaling_factor = lensing_util.scaling_factor_between_redshifts_for_cosmology(
                         z1=ordered_redshifts[previous_plane_index], z2=ordered_redshifts[plane_index],
                         z_final=ordered_redshifts[-1], cosmology=cosmology)
 
@@ -685,10 +688,11 @@ class TracerMultiPlanesPositions(AbstractTracer):
             The cosmology of the ray-tracing calculation.
         """
 
-        ordered_redshifts = ordered_redshifts_from_galaxies(galaxies=galaxies)
+        ordered_redshifts = lensing_util.ordered_redshifts_from_galaxies(galaxies=galaxies)
 
-        galaxies_in_redshift_ordered_lists = galaxies_in_redshift_ordered_lists_from_galaxies(galaxies=galaxies,
-                                                                            ordered_redshifts=ordered_redshifts)
+        galaxies_in_redshift_ordered_lists = \
+            lensing_util.galaxies_in_redshift_ordered_lists_from_galaxies(galaxies=galaxies,
+                                                                           ordered_redshifts=ordered_redshifts)
 
         if not galaxies:
             raise exc.RayTracingException('No galaxies have been input into the Tracer (TracerImageSourcePlanes)')
@@ -709,7 +713,7 @@ class TracerMultiPlanesPositions(AbstractTracer):
             if plane_index > 0:
                 for previous_plane_index in range(plane_index):
 
-                    scaling_factor = scaling_factor_between_redshifts_for_cosmology(
+                    scaling_factor = lensing_util.scaling_factor_between_redshifts_for_cosmology(
                         z1=ordered_redshifts[previous_plane_index], z2=ordered_redshifts[plane_index],
                         z_final=ordered_redshifts[-1], cosmology=cosmology)
 
@@ -724,56 +728,3 @@ class TracerMultiPlanesPositions(AbstractTracer):
                                                  positions=new_positions, compute_deflections=compute_deflections))
 
         super(TracerMultiPlanesPositions, self).__init__(planes=planes, cosmology=cosmology)
-
-
-def ordered_redshifts_from_galaxies(galaxies):
-    """Given a list of galaxies (with redshifts), return a list of the in ascending order.
-
-    If two or more galaxies have the same redshift that redshift is not double counted.
-
-    Parameters
-    -----------
-    galaxies : [Galaxy]
-        The list of galaxies in the ray-tracing calculation.
-    """
-    ordered_galaxies = sorted(galaxies, key=lambda galaxy: galaxy.redshift, reverse=False)
-
-    # Ideally we'd extract the planes_red_Shfit order from the list above. However, I dont know how to extract it
-    # Using a list of class attributes so make a list of redshifts for now.
-
-    galaxy_redshifts = list(map(lambda galaxy: galaxy.redshift, ordered_galaxies))
-    return [redshift for i, redshift in enumerate(galaxy_redshifts) if redshift not in galaxy_redshifts[:i]]
-
-def galaxies_in_redshift_ordered_lists_from_galaxies(galaxies, ordered_redshifts):
-    """Given a list of galaxies (with redshifts), return a list of the galaxies where each entry contains a list \
-    of galaxies at the same redshift in ascending redshift order.
-
-    Parameters
-    -----------
-    galaxies : [Galaxy]
-        The list of galaxies in the ray-tracing calculation.
-    """
-    ordered_galaxies = sorted(galaxies, key=lambda galaxy: galaxy.redshift, reverse=False)
-
-    galaxies_in_redshift_ordered_lists = []
-
-    for (index, redshift) in enumerate(ordered_redshifts):
-
-        galaxies_in_redshift_ordered_lists.append(list(map(lambda galaxy:
-                                                            galaxy if galaxy.redshift == redshift else None,
-                                                            ordered_galaxies)))
-
-        galaxies_in_redshift_ordered_lists[index] = list(filter(None, galaxies_in_redshift_ordered_lists[index]))
-
-    return galaxies_in_redshift_ordered_lists
-
-def scaling_factor_between_redshifts_for_cosmology(z1, z2, z_final, cosmology):
-
-    angular_diameter_distance_between_z1_z2 = cosmology.angular_diameter_distance_z1z2(z1=z1, z2=z2).to('kpc').value
-    angular_diameter_distance_to_z_final = cosmology.angular_diameter_distance(z=z_final).to('kpc').value
-    angular_diameter_distance_of_z2_to_earth = cosmology.angular_diameter_distance(z=z2).to('kpc').value
-    angular_diameter_distance_between_z2_z_final = \
-        cosmology.angular_diameter_distance_z1z2(z1=z1, z2=z_final).to('kpc').value
-
-    return (angular_diameter_distance_between_z1_z2 * angular_diameter_distance_to_z_final) / \
-           (angular_diameter_distance_of_z2_to_earth * angular_diameter_distance_between_z2_z_final)

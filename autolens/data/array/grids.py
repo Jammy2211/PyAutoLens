@@ -6,33 +6,39 @@ from autolens.data.array.util import grid_util
 from autolens.data.array.util import mapping_util, array_util, mask_util
 
 
-class DataGridStack(object):
+class GridStack(object):
 
     def __init__(self, regular, sub, blurring, pix=None):
-        """A 'stack' of grid_stacks containing the (y,x) arc-second coordinates of padded pixels in a masks. There are at \
-        least 3 grid_stacks:
+        """A 'stack' of grids which contain the (y,x) arc-second coordinates of pixels in a mask. The stack contains \
+        at least 3 grids:
 
-        Regular - the (y,x) coordinate at the center of every padded pixel.
+        regular - the (y,x) coordinate at the center of every unmasked pixel.
 
-        Sub - the (y,x) coordinates of every sub-pixel in every padded pixel, each using a grid of size \
-        sub_grid_size x sub_grid_size.
+        sub - the (y,x) coordinates of every sub-pixel in every unmasked pixel, each using a grid of size \
+        (sub_grid_size x sub_grid_size).
 
-        Blurring - the (y,x) coordinates of all blurring pixels, which are masked pixels whose light is \
-        blurred into masked pixels during PSF convolution.
+        blurring - the (y,x) coordinates of all blurring pixels, which are masked pixels whose light is \
+        blurred into unmasked pixels during PSF convolution.
 
-        The grid_stacks are stored as 1D arrays, where each entry corresponds to an padded (sub-)pixel. The 1D array is \
-        ordered such pixels begin from the top-row of the masks 2D array and then downwards.
+        There are also optional grids, used if specific PyAutoLens functionality is required:
+
+        pix - the (y,x) coordinates of the grid which is used to form the pixels of a \
+        *pixelizations.AdaptivePixelization* pixelization.
+
+        The grids are stored as 2D arrays, where each entry corresponds to the (y,x) coordinates of a pixel. The
+        positive y-axis is upwards and poitive x-axis to the right. The array is ordered such pixels begin from the \
+        top-row of the mask and go rightwards and then downwards.
 
         Parameters
         -----------
         regular : RegularGrid
-            The grid of (y,x) arc-second coordinates at the centre of every datas value (e.g. datas-pixels).
+            The grid of (y,x) arc-second coordinates at the centre of every unmasked pixel.
         sub : SubGrid
-            The grid of (y,x) arc-second coordinates at the centre of every regular pixel's sub-pixels.
+            The grid of (y,x) arc-second coordinates at the centre of every unmasked pixel's sub-pixels.
         blurring : RegularGrid | ndarray | None
-            The grid of (y,x) arc-second coordinates at the centre of every blurring-masks pixel.
-        pix : RegularGrid | ndarray | None
-            The grid of (y,x) arc-second coordinates of every datas-plane pixelization grid used for adaptive source \
+            The grid of (y,x) arc-second coordinates at the centre of every blurring-mask pixel.
+        pix : PixGrid | ndarray | None
+            The grid of (y,x) arc-second coordinates of every image-plane pixelization grid used for adaptive source \
             -plane pixelizations.
         """
         self.regular = regular
@@ -45,91 +51,122 @@ class DataGridStack(object):
 
     @classmethod
     def grid_stack_from_mask_sub_grid_size_and_psf_shape(cls, mask, sub_grid_size, psf_shape):
-        """Setup the *DataGridStack* from a masks, sub-grid size and psf-shape.
+        """Setup a grid-stack of grids from a mask, sub-grid size and psf-shape.
 
         Parameters
         -----------
         mask : Mask
-            The masks whose padded pixels the imaging-grid_stacks are setup using.
+            The mask whose unmasked pixels (*False*) are used to generate the grid-stack's grids.
         sub_grid_size : int
-            The size of a sub-pixels sub-grid (sub_grid_size x sub_grid_size).
+            The size of a sub-pixel's sub-grid (sub_grid_size x sub_grid_size).
         psf_shape : (int, int)
-            the shape of the PSF used in the analysis, which defines the masks's blurring-region.
+            the shape of the PSF used in the analysis, which defines the mask's blurring-region.
         """
-        image_grid = RegularGrid.from_mask(mask)
+        regular_grid = RegularGrid.from_mask(mask)
         sub_grid = SubGrid.from_mask_and_sub_grid_size(mask, sub_grid_size)
         blurring_grid = RegularGrid.blurring_grid_from_mask_and_psf_shape(mask, psf_shape)
-        return DataGridStack(image_grid, sub_grid, blurring_grid)
+        return GridStack(regular_grid, sub_grid, blurring_grid)
 
     @classmethod
-    def from_shape_and_pixel_scale(cls, shape, pixel_scale, sub_grid_size=2, psf_shape=(1, 1)):
-        image_grid = RegularGrid.from_shape_and_pixel_scale(shape=shape, pixel_scale=pixel_scale)
+    def from_shape_and_pixel_scale(cls, shape, pixel_scale, sub_grid_size=2):
+        """Setup a grid-stack of grids from a 2D array shape, a pixel scale and a sub-grid size.
+        
+        This grid corresponds to a fully unmasked 2D array.
+
+        Parameters
+        -----------
+        shape : (int, int)
+            The 2D shape of the array, where all pixels are used to generate the grid-stack's grids.
+        pixel_scale : float
+            The size of each pixel in arc seconds.            
+        sub_grid_size : int
+            The size of a sub-pixel's sub-grid (sub_grid_size x sub_grid_size).
+        """
+        regular_grid = RegularGrid.from_shape_and_pixel_scale(shape=shape, pixel_scale=pixel_scale)
         sub_grid = SubGrid.from_shape_pixel_scale_and_sub_grid_size(shape=shape, pixel_scale=pixel_scale,
                                                                     sub_grid_size=sub_grid_size)
         blurring_grid = np.array([[0.0, 0.0]])
-        return DataGridStack(image_grid, sub_grid, blurring_grid)
+        return GridStack(regular_grid, sub_grid, blurring_grid)
 
     @classmethod
     def padded_grid_stack_from_mask_sub_grid_size_and_psf_shape(cls, mask, sub_grid_size, psf_shape):
-        """Setup the collection of padded imaging-grid_stacks from a masks, using also an input sub-grid size to setup the \
-        sub-grid and psf-shape to setup the blurring grid.
+        """Setup a grid-stack of masked grids from a mask,  sub-grid size and psf-shape.
 
         Parameters
         -----------
         mask : Mask
-            The masks whose padded pixels the imaging-grid_stacks are setup using.
+            The mask whose masked pixels the grid-stack are setup using.
         sub_grid_size : int
             The size of a sub-pixels sub-grid (sub_grid_size x sub_grid_size).
         psf_shape : (int, int)
-            the shape of the PSF used in the analysis, which therefore defines the masks's blurring-region.
+            The shape of the PSF used in the analysis, which defines the mask's blurring-region.
         """
-        image_padded_grid = PaddedRegularGrid.padded_grid_from_shapes_and_pixel_scale(shape=mask.shape,
-                                                                                      psf_shape=psf_shape,
-                                                                                      pixel_scale=mask.pixel_scale)
+        regular_padded_grid = PaddedRegularGrid.padded_grid_from_shape_psf_shape_and_pixel_scale(shape=mask.shape,
+                                                                                                 psf_shape=psf_shape,
+                                                                                                 pixel_scale=mask.pixel_scale)
         sub_padded_grid = PaddedSubGrid.padded_grid_from_mask_sub_grid_size_and_psf_shape(mask=mask,
                                                                                           sub_grid_size=sub_grid_size,
                                                                                           psf_shape=psf_shape)
         # TODO : The blurring grid is not used when the grid mapper is called, the 0.0 0.0 stops errors inr ayT_racing
         # TODO : implement a more explicit solution
-        return DataGridStack(regular=image_padded_grid, sub=sub_padded_grid, blurring=np.array([[0.0, 0.0]]))
+        return GridStack(regular=regular_padded_grid, sub=sub_padded_grid, blurring=np.array([[0.0, 0.0]]))
 
     @classmethod
-    def grids_for_simulation(cls, shape, pixel_scale, psf_shape, sub_grid_size=1):
-        """Setup a collection of imaging-grid_stacks for simulating an datas_ of a strong lens.
-
-        This routine uses padded-grid_stacks which ensure that the PSF blurring in the simulation routine \
-        (*imaging.PrepatoryImage.simulate*) is not degraded due to edge effects.
+    def grid_stack_for_simulation(cls, shape, pixel_scale, psf_shape, sub_grid_size=2):
+        """Setup a grid-stack of grids for simulating an image of a strong lens, whereby the grid's use padded-grids \
+        to ensure that the PSF blurring in the simulation routine (*imaging.PrepatoryImage.simulate*) is not degraded \
+        due to edge effects.
 
         Parameters
         -----------
-        pixel_scale
-        shape
-        sub_grid_size : int
-            The size of a sub-pixels sub-grid (sub_grid_size x sub_grid_size).
+        shape : (int, int)
+            The 2D shape of the array, where all pixels are used to generate the grid-stack's grids.
+        pixel_scale : float
+            The size of each pixel in arc seconds.            
         psf_shape : (int, int)
-            the shape of the PSF used in the analysis, which therefore defines the masks's blurring-region.
+            The shape of the PSF used in the analysis, which defines how much the grid's must be masked to mitigate \
+            edge effects.
+        sub_grid_size : int
+            The size of a sub-pixel's sub-grid (sub_grid_size x sub_grid_size).
         """
         return cls.padded_grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=msk.Mask(array=np.full(shape, False),
                                                                                          pixel_scale=pixel_scale),
                                                                            sub_grid_size=sub_grid_size,
                                                                            psf_shape=psf_shape)
 
-    def data_grid_stack_with_pix_grid(self, pix_grid, regular_to_nearest_regular_pix):
-        pix = PixGrid(arr=pix_grid, regular_to_nearest_regular_pix=regular_to_nearest_regular_pix)
-        return DataGridStack(regular=self.regular, sub=self.sub, blurring=self.blurring, pix=pix)
+    def grid_stack_with_pix_grid_added(self, pix_grid, regular_to_nearest_pix):
+        """Setup a grid-stack of grids using an existing grid-stack. 
+        
+        The new grid-stack has the same grids (regular, sub, blurring, etc.) as before, but adds a pix-grid as a \ 
+        new attribute.
+
+        Parameters
+        -----------
+        pix_grid : ndarray
+            The grid of (y,x) arc-second coordinates of every image-plane pixelization grid used for adaptive \
+             pixelizations.
+        regular_to_nearest_pix : ndarray
+            A 1D array that maps every regular-grid pixel to its nearest pix-grid pixel.
+        """
+        pix = PixGrid(arr=pix_grid, regular_to_nearest_pix=regular_to_nearest_pix)
+        return GridStack(regular=self.regular, sub=self.sub, blurring=self.blurring, pix=pix)
 
     def apply_function(self, func):
+        """Apply a function to all grids in the grid-stack. 
+        
+        This is used by the *ray-tracing* module to easily apply tracing operations to all grids."""
         if self.blurring is not None and self.pix is not None:
-            return DataGridStack(func(self.regular), func(self.sub), func(self.blurring), func(self.pix))
+            return GridStack(func(self.regular), func(self.sub), func(self.blurring), func(self.pix))
         elif self.blurring is None and self.pix is not None:
-            return DataGridStack(func(self.regular), func(self.sub), self.blurring, func(self.pix))
+            return GridStack(func(self.regular), func(self.sub), self.blurring, func(self.pix))
         elif self.blurring is not None and self.pix is None:
-            return DataGridStack(func(self.regular), func(self.sub), func(self.blurring), self.pix)
+            return GridStack(func(self.regular), func(self.sub), func(self.blurring), self.pix)
         else:
-            return DataGridStack(func(self.regular), func(self.sub), self.blurring, self.pix)
+            return GridStack(func(self.regular), func(self.sub), self.blurring, self.pix)
 
     def map_function(self, func, *arg_lists):
-        return DataGridStack(*[func(*args) for args in zip(self, *arg_lists)])
+        """Map a function to all grids in a grid-stack"""
+        return GridStack(*[func(*args) for args in zip(self, *arg_lists)])
 
     @property
     def sub_pixels(self):
@@ -140,53 +177,50 @@ class DataGridStack(object):
 
 
 class RegularGrid(np.ndarray):
-    """Abstract class for a regular grid of coordinates, where each padded pixel's (y,x) arc-second coordinates \
-    are represented by the value at the origin of the pixel.
-
-    Coordinates are defined from the top-left corner, such that pixels in the top-left corner of a masks (e.g. [0,0]) \
-    have a negative x and y-value in arc seconds. The masks pixel indexes are also counted from the top-left.
-
-    An *RegularGrid* is a ndarray of shape [regular_pixels, 2], where regular_pixels is the total number of padded \
-    datas_-pixels. The first element maps of the ndarray corresponds to the padded pixel index and second element the \
-    x or y arc second coordinates. For howtolens:
-
-    - regular_grid[3,1] = the 4th padded pixel's y-coordinate.
-    - regular_grid[6,0] = the 5th padded pixel's x-coordinate.
-
-    Below is a visual illustration of a regular, where a total of 10 pixels are padded and are included in the \
-    grid.
-
-    |x|x|x|x|x|x|x|x|x|x|
-    |x|x|x|x|x|x|x|x|x|x|     This is an howtolens masks.Mask, where:
-    |x|x|x|x|x|x|x|x|x|x|
-    |x|x|x|x|o|o|x|x|x|x|     x = True (Pixel is masked and excluded from lensing)
-    |x|x|x|o|o|o|o|x|x|x|     o = False (Pixel is not masked and included in lensing)
-    |x|x|x|o|o|o|o|x|x|x|
-    |x|x|x|x|x|x|x|x|x|x|
-    |x|x|x|x|x|x|x|x|x|x|
-    |x|x|x|x|x|x|x|x|x|x|
-    |x|x|x|x|x|x|x|x|x|x|
-
-    The masks pixel index's will come out like this (and the direction of arc-second coordinates is highlighted
-    around the masks.
-
-    pixel_scale = 1.0"
-
-    <--- -ve  x  +ve -->
-
-    |x|x|x|x|x|x|x|x|x|x|  ^   regular_grid[0] = [-0.5, -1.5]
-    |x|x|x|x|x|x|x|x|x|x|  |   regular_grid[1] = [ 0.5, -1.5]
-    |x|x|x|x|x|x|x|x|x|x|  |   regular_grid[2] = [-1.5, -0.5]
-    |x|x|x|x|0|1|x|x|x|x| -ve  regular_grid[3] = [-0.5, -0.5]
-    |x|x|x|2|3|4|5|x|x|x|  y   regular_grid[4] = [ 0.5, -0.5]
-    |x|x|x|6|7|8|9|x|x|x| +ve  regular_grid[5] = [ 1.5, -0.5]
-    |x|x|x|x|x|x|x|x|x|x|  |   regular_grid[6] = [-1.5,  0.5]
-    |x|x|x|x|x|x|x|x|x|x|  |   regular_grid[7] = [-0.5,  0.5]
-    |x|x|x|x|x|x|x|x|x|x| \/   regular_grid[8] = [ 0.5,  0.5]
-    |x|x|x|x|x|x|x|x|x|x|      regular_grid[9] = [ 1.5,  0.5]
-    """
 
     def __new__(cls, arr, mask, *args, **kwargs):
+        """A regular grid of coordinates, where each entry corresponds to the (y,x) coordinates at the centre of an \
+        unmasked pixel. The positive y-axis is upwards and poitive x-axis to the right. 
+        
+        A *RegularGrid* is ordered such pixels begin from the top-row of the mask and go rightwards and then \ 
+        downwards. Therefore, it is a ndarray of shape [total_unmasked_pixels, 2]. The first element of the ndarray \
+        thus corresponds to the regular pixel index and second element the y or x arc -econd coordinates. For example:
+
+        - regular_grid[3,0] = the 4th unmasked pixel's y-coordinate.
+        - regular_grid[6,1] = the 7th unmasked pixel's x-coordinate.
+
+        Below is a visual illustration of a regular-grid, where a total of 10 pixels are unmasked and are included in \
+        the grid.
+
+        |x|x|x|x|x|x|x|x|x|x|
+        |x|x|x|x|x|x|x|x|x|x|     This is an example mask.Mask, where:
+        |x|x|x|x|x|x|x|x|x|x|
+        |x|x|x|x|o|o|x|x|x|x|     x = True (Pixel is masked and excluded from the regular grid)
+        |x|x|x|o|o|o|o|x|x|x|     o = False (Pixel is not masked and included in the regular grid)
+        |x|x|x|o|o|o|o|x|x|x|
+        |x|x|x|x|x|x|x|x|x|x|
+        |x|x|x|x|x|x|x|x|x|x|
+        |x|x|x|x|x|x|x|x|x|x|
+        |x|x|x|x|x|x|x|x|x|x|
+
+        The mask pixel index's will come out like this (and the direction of arc-second coordinates is highlighted
+        around the mask.
+
+        pixel_scale = 1.0"
+
+        <--- -ve  x  +ve -->
+                                                        y      x
+        |x|x|x|x|x|x|x|x|x|x|  ^   regular_grid[0] = [ 1.5, -0.5]
+        |x|x|x|x|x|x|x|x|x|x|  |   regular_grid[1] = [ 1.5,  0.5]
+        |x|x|x|x|x|x|x|x|x|x|  |   regular_grid[2] = [ 0.5, -1.5]
+        |x|x|x|x|0|1|x|x|x|x| +ve  regular_grid[3] = [ 0.5, -0.5]
+        |x|x|x|2|3|4|5|x|x|x|  y   regular_grid[4] = [ 0.5,  0.5]
+        |x|x|x|6|7|8|9|x|x|x| -ve  regular_grid[5] = [ 0.5,  1.5]
+        |x|x|x|x|x|x|x|x|x|x|  |   regular_grid[6] = [-0.5, -1.5]
+        |x|x|x|x|x|x|x|x|x|x|  |   regular_grid[7] = [-0.5, -0.5]
+        |x|x|x|x|x|x|x|x|x|x| \/   regular_grid[8] = [-0.5,  0.5]
+        |x|x|x|x|x|x|x|x|x|x|      regular_grid[9] = [-0.5,  1.5]
+        """
         obj = arr.view(cls)
         obj.mask = mask
         return obj
@@ -202,54 +236,130 @@ class RegularGrid(np.ndarray):
     @property
     def unlensed_grid(self):
         return RegularGrid(arr=grid_util.regular_grid_1d_masked_from_mask_pixel_scales_and_origin(mask=self.mask,
-                                                                             pixel_scales=self.mask.pixel_scales),
+                           pixel_scales=self.mask.pixel_scales), 
                            mask=self.mask)
 
     @property
     def unlensed_unmasked_grid(self):
         return RegularGrid(arr=grid_util.regular_grid_1d_from_shape_pixel_scales_and_origin(shape=self.mask.shape,
-                                                                                            pixel_scales=self.mask.pixel_scales),
+                           pixel_scales=self.mask.pixel_scales), 
                            mask=self.mask)
 
     @classmethod
     def from_mask(cls, mask):
-        """Setup an *RegularGrid* of the regular regular from a masks. The center of every padded pixel gives \
-        the grid's (y,x) arc-second coordinates.
+        """Setup a regular-grid from a mask, wehere the center of every unmasked pixel gives the grid's (y,x) arc-second \
+        coordinates.
 
         Parameters
         -----------
         mask : Mask
-            The masks whose padded pixels are used to setup the sub-pixel grid_stacks."""
+            The mask whose unmasked pixels are used to setup the regular-pixel grid.
+        """
         array = grid_util.regular_grid_1d_masked_from_mask_pixel_scales_and_origin(mask=mask, pixel_scales=mask.pixel_scales)
         return cls(array, mask)
 
     @classmethod
     def from_shape_and_pixel_scale(cls, shape, pixel_scale):
-        mask = msk.Mask.padded_for_shape_and_pixel_scale(shape=shape, pixel_scale=pixel_scale)
-        array = grid_util.regular_grid_1d_masked_from_mask_pixel_scales_and_origin(mask=mask, pixel_scales=mask.pixel_scales)
+        """Setup a regular-grid from a 2D array shape and pixel scale. Here, the center of every pixel on the 2D \
+        array gives the grid's (y,x) arc-second coordinates. 
+         
+        This is equivalent to using a 2D mask consisting entirely of unmasked pixels.
+
+        Parameters
+        -----------
+        shape : (int, int)
+            The 2D shape of the array, where all pixels are used to generate the grid-stack's grids.
+        pixel_scale : float
+            The size of each pixel in arc seconds.                 
+        """
+        mask = msk.Mask.unmasked_for_shape_and_pixel_scale(shape=shape, pixel_scale=pixel_scale)
+        array = grid_util.regular_grid_1d_masked_from_mask_pixel_scales_and_origin(mask=mask,
+                                                                                   pixel_scales=mask.pixel_scales)
         return cls(array, mask)
 
     @classmethod
     def blurring_grid_from_mask_and_psf_shape(cls, mask, psf_shape):
-        """Setup an *RegularGrid* of the blurring-grid from a masks. The center of every padded blurring-pixel gives \
-        the grid's (y,x) arc-second coordinates."""
+        """Setup a blurring-grid from a mask, where a blurring grid consists of all pixels that are masked, but they \
+        are close enough to the unmasked pixels that a fraction of their light will be blurred into those pixels \
+        via PSF convolution. For example, if our mask is as follows:
+        
+        |x|x|x|x|x|x|x|x|x|x|
+        |x|x|x|x|x|x|x|x|x|x|     This is an imaging.Mask, where:
+        |x|x|x|x|x|x|x|x|x|x|
+        |x|x|x|x|x|x|x|x|x|x|     x = True (Pixel is masked and excluded from lensing)
+        |x|x|x|o|o|o|x|x|x|x|     o = False (Pixel is not masked and included in lensing)
+        |x|x|x|o|o|o|x|x|x|x|
+        |x|x|x|o|o|o|x|x|x|x|
+        |x|x|x|x|x|x|x|x|x|x|
+        |x|x|x|x|x|x|x|x|x|x|
+        |x|x|x|x|x|x|x|x|x|x|
+        
+        For a PSF of shape (3,3), the following blurring mask is computed (noting that only pixels that are direct \
+        neighbors of the unmasked pixels above will blur light into an unmasked pixel):
+
+        |x|x|x|x|x|x|x|x|x|     This is an example regular.Mask, where:
+        |x|x|x|x|x|x|x|x|x|
+        |x|x|o|o|o|o|o|x|x|     x = True (Pixel is masked and excluded from lensing)
+        |x|x|o|x|x|x|o|x|x|     o = False (Pixel is not masked and included in lensing)
+        |x|x|o|x|x|x|o|x|x|
+        |x|x|o|x|x|x|o|x|x|
+        |x|x|o|o|o|o|o|x|x|
+        |x|x|x|x|x|x|x|x|x|
+        |x|x|x|x|x|x|x|x|x|
+        
+        Thus, the blurring grid coordinates and indexes will be as follows:
+        
+        pixel_scale = 1.0"
+
+        <--- -ve  x  +ve -->
+                                                            y     x
+        |x|x|x |x |x |x |x |x|x|  |   blurring_grid[0] = [2.0, -2.0]  blurring_grid[9] =  [-1.0, -2.0]
+        |x|x|x |x |x |x |x |x|x|  |   blurring_grid[1] = [2.0, -1.0]  blurring_grid[10] = [-1.0,  2.0]
+        |x|x|0 |1 |2 |3 |4 |x|x| +ve  blurring_grid[2] = [2.0,  0.0]  blurring_grid[11] = [-2.0, -2.0]
+        |x|x|5 |x |x |x |6 |x|x|  y   blurring_grid[3] = [2.0,  1.0]  blurring_grid[12] = [-2.0, -1.0]
+        |x|x|7 |x |x |x |8 |x|x| -ve  blurring_grid[4] = [2.0,  2.0]  blurring_grid[13] = [-2.0,  0.0]
+        |x|x|9 |x |x |x |10|x|x|  |   blurring_grid[5] = [1.0, -2.0]  blurring_grid[14] = [-2.0,  1.0]
+        |x|x|11|12|13|14|15|x|x|  |   blurring_grid[6] = [1.0,  2.0]  blurring_grid[15] = [-2.0,  2.0]
+        |x|x|x |x |x |x |x |x|x| \/   blurring_grid[7] = [0.0, -2.0]
+        |x|x|x |x |x |x |x |x|x|      blurring_grid[8] = [0.0,  2.0]
+        
+        For a PSF of shape (5,5), the following blurring mask is computed (noting that pixels that are 2 pixels from an
+        direct unmasked pixels now blur light into an unmasked pixel):
+
+        |x|x|x|x|x|x|x|x|x|     This is an example regular.Mask, where:
+        |x|o|o|o|o|o|o|o|x|
+        |x|o|o|o|o|o|o|o|x|     x = True (Pixel is masked and excluded from lensing)
+        |x|o|o|x|x|x|o|o|x|     o = False (Pixel is not masked and included in lensing)
+        |x|o|o|x|x|x|o|o|x|
+        |x|o|o|x|x|x|o|o|x|
+        |x|o|o|o|o|o|o|o|x|
+        |x|o|o|o|o|o|o|o|x|
+        |x|x|x|x|x|x|x|x|x|
+        """
         blurring_mask = mask.blurring_mask_for_psf_shape(psf_shape)
         return RegularGrid.from_mask(blurring_mask)
 
-    def map_to_2d(self, array_1d):
-        """ Map a 1D array the same dimension as the grid to its original 2D array.
+    def array_2d_from_array_1d(self, array_1d):
+        """ Map a 1D array the same dimension as the grid to its original masked 2D array.
 
         Parameters
         -----------
         array_1d : ndarray
-            The 1D array of masked datas which is mapped to 2D.
+            The 1D array of which is mapped to its masked 2D array.
         """
         return mapping_util.map_masked_1d_array_to_2d_array_from_array_1d_shape_and_one_to_two(array_1d,
-                                                                                               self.mask.shape,
-                                                                                               self.mask.masked_grid_index_to_pixel)
+               self.mask.shape, self.mask.masked_grid_index_to_pixel)
 
     def scaled_array_from_array_1d(self, array_1d):
-        return scaled_array.ScaledSquarePixelArray(array=self.map_to_2d(array_1d), pixel_scale=self.mask.pixel_scale,
+        """ Map a 1D array the same dimension as the grid to its original masked 2D array and return it as a scaled \
+        array.
+
+        Parameters
+        -----------
+        array_1d : ndarray
+            The 1D array of which is mapped to a 2D scaled array
+        """
+        return scaled_array.ScaledSquarePixelArray(array=self.array_2d_from_array_1d(array_1d), pixel_scale=self.mask.pixel_scale,
                                                    origin=self.mask.origin)
 
     def __reduce__(self):
@@ -276,7 +386,6 @@ class RegularGrid(np.ndarray):
 
     @property
     def pixel_scale(self):
-
         return self.mask.pixel_scale
 
     @property
@@ -291,30 +400,24 @@ class RegularGrid(np.ndarray):
 
 
 class SubGrid(RegularGrid):
-    """Abstract class for a sub-grid of coordinates. On a sub-grid, each padded pixel is sub-gridded into a uniform \
-     grid of (y,x) sub-coordinates..
+    """ A sub-grid of coordinates, where each entry corresponds to the (y,x) coordinates at the centre of each \
+    sub-pixel of an unmasked pixel (e.g. the pixels of a regular-grid). The positive y-axis is upwards and poitive \
+    x-axis to the right, and this convention is followed for the sub-pixels in each unmasked pixel.
 
-    Coordinates are defined from the top-left corner, such that pixels in the top-left corner of an \
-    masks (e.g. [0,0]) have negative x and y-values in arc seconds. The masks pixel indexes are also counted from the \
-    top-left.
+    A *SubGrid* is ordered such that pixels begin from the first (top-left) sub-pixel in the first unmasked pixel. \
+    Indexes then go over the sub-pixels in each unmasked pixel, for every unmasked pixel. Therefore, \
+    the sub-grid is an ndarray of shape [total_unmasked_pixels*(sub_grid_shape)**2, 2]. For example:
 
-    Sub-pixels follow the same convention as above, where the top-left sub-pixel has the lowest x and y-values in each \
-    datas_-pixel. Sub-pixel indexes include all previous sub-pixels in all previous regular-pixels.
-
-    A *SubGrid* is a NumPy array of shape [image_pixels*sub_grid_pixels**2, 2]. The first element of the ndarray \
-    corresponds to the padded sub-pixel index, and second element the sub-pixel's (y,x) arc second coordinates. \
-    For howtolens:
-
-    - sub_grid[9, 1] - using a 2x2 sub-grid, gives the 3rd datas_-pixel's 2nd sub-pixel y-coordinate.
-    - sub_grid[9, 1] - using a 3x3 sub-grid, gives the 2nd datas_-pixel's 1st sub-pixel y-coordinate.
-    - sub_grid[27, 0] - using a 3x3 sub-grid, gives the 4th datas_-pixel's 1st sub-pixel x-coordinate.
+    - sub_grid[9, 1] - using a 2x2 sub-grid, gives the 3rd unmasked pixel's 2nd sub-pixel x-coordinate.
+    - sub_grid[9, 1] - using a 3x3 sub-grid, gives the 2nd unmasked pixel's 1st sub-pixel x-coordinate.
+    - sub_grid[27, 0] - using a 3x3 sub-grid, gives the 4th unmasked pixel's 1st sub-pixel y-coordinate.
 
     Below is a visual illustration of a sub grid. Like the regular grid, the indexing of each sub-pixel goes from \
-    the top-left corner. In contrast to the regular grid above, our illustration below restricts the masks to just
+    the top-left corner. In contrast to the regular grid above, our illustration below restricts the mask to just \
     2 pixels, to keep the illustration brief.
 
     |x|x|x|x|x|x|x|x|x|x|
-    |x|x|x|x|x|x|x|x|x|x|     This is an howtolens masks.Mask, where:
+    |x|x|x|x|x|x|x|x|x|x|     This is an example mask.Mask, where:
     |x|x|x|x|x|x|x|x|x|x|
     |x|x|x|x|x|x|x|x|x|x|     x = True (Pixel is masked and excluded from lensing)
     |x|x|x|x|o|o|x|x|x|x|     o = False (Pixel is not masked and included in lensing)
@@ -332,37 +435,38 @@ class SubGrid(RegularGrid):
 
     |x|x|x|x|x|x|x|x|x|x|  ^
     |x|x|x|x|x|x|x|x|x|x|  |
-    |x|x|x|x|x|x|x|x|x|x|  |
-    |x|x|x|x|x|x|x|x|x|x| +ve  regular_grid[0] = [-1.5,  0.5]
-    |x|x|x|0|1|x|x|x|x|x|  y   regular_grid[1] = [-0.5,  0.5]
+    |x|x|x|x|x|x|x|x|x|x|  |                        y     x
+    |x|x|x|x|x|x|x|x|x|x| +ve  regular_grid[0] = [0.5,  -1.5]
+    |x|x|x|0|1|x|x|x|x|x|  y   regular_grid[1] = [0.5,  -0.5]
     |x|x|x|x|x|x|x|x|x|x| -ve
     |x|x|x|x|x|x|x|x|x|x|  |
     |x|x|x|x|x|x|x|x|x|x|  |
     |x|x|x|x|x|x|x|x|x|x| \/
     |x|x|x|x|x|x|x|x|x|x|
 
-    However, we now go to each masks-pixel and derive a sub-pixel grid for it. For howtolens, for pixel 0,
+    However, we now go to each unmasked pixel and derive a sub-pixel grid for it. For example, for pixel 0,
     if *sub_grid_size=2*, we use a 2x2 sub-grid:
 
     Pixel 0 - (2x2):
-
-           regular_grid[0] = [-1.66, 0.66]
-    |0|1|  regular_grid[1] = [-1.33, 0.66]
-    |2|3|  regular_grid[2] = [-1.66, 0.33]
-           regular_grid[3] = [-1.33, 0.33]
+                            y      x
+           sub_grid[0] = [0.66, -1.66]
+    |0|1|  sub_grid[1] = [0.66, -1.33]
+    |2|3|  sub_grid[2] = [0.33, -1.66]
+           sub_grid[3] = [0.33, -1.33]
 
     Now, we'd normally sub-grid all pixels using the same *sub_grid_size*, but for this illustration lets
     pretend we used a sub_grid_size of 3x3 for pixel 1:
 
-             regular_grid[0] = [-0.75, 0.75]
-             regular_grid[1] = [-0.5,  0.75]
-             regular_grid[2] = [-0.25, 0.75]
-    |0|1|2|  regular_grid[3] = [-0.75,  0.5]
-    |3|4|5|  regular_grid[4] = [-0.5,   0.5]
-    |6|7|8|  regular_grid[5] = [-0.25,  0.5]
-             regular_grid[6] = [-0.75, 0.25]
-             regular_grid[7] = [-0.5,  0.25]
-             regular_grid[8] = [-0.25, 0.25]
+                              y      x
+             sub_grid[0] = [0.75, -0.75]
+             sub_grid[1] = [0.75, -0.5]
+             sub_grid[2] = [0.75, -0.25]
+    |0|1|2|  sub_grid[3] = [0.5,  -0.75]
+    |3|4|5|  sub_grid[4] = [0.5,  -0.5]
+    |6|7|8|  sub_grid[5] = [0.5,  -0.25]
+             sub_grid[6] = [0.25, -0.75]
+             sub_grid[7] = [0.25, -0.5]
+             sub_grid[8] = [0.25, -0.25]
     """
 
     # noinspection PyUnusedLocal
@@ -391,15 +495,15 @@ class SubGrid(RegularGrid):
 
     @classmethod
     def from_mask_and_sub_grid_size(cls, mask, sub_grid_size=1):
-        """Setup a *SubGrid* of the regular-pixels, using a masks and a specified sub-grid size. The center of \
-        every padded pixel's sub-pixels give the grid's (y,x) arc-second coordinates.
+        """Setup a sub-grid of the unmasked pixels, using a mask and a specified sub-grid size. The center of \
+        every unmasked pixel's sub-pixels give the grid's (y,x) arc-second coordinates.
 
         Parameters
         -----------
         mask : Mask
-            The masks whose padded pixels are used to setup the sub-pixel grid_stacks.
+            The mask whose masked pixels are used to setup the sub-pixel grids.
         sub_grid_size : int
-            The size (sub_grid_size x sub_grid_size) of each datas_-pixels sub-grid.
+            The size (sub_grid_size x sub_grid_size) of each unmasked pixels sub-grid.
         """
         sub_grid_masked = grid_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(mask=mask,
                                                                                                 pixel_scales=mask.pixel_scales,
@@ -408,7 +512,22 @@ class SubGrid(RegularGrid):
 
     @classmethod
     def from_shape_pixel_scale_and_sub_grid_size(cls, shape, pixel_scale, sub_grid_size):
-        mask = msk.Mask.padded_for_shape_and_pixel_scale(shape=shape, pixel_scale=pixel_scale)
+        """Setup a sub-grid from a 2D array shape and pixel scale. Here, the center of every pixel on the 2D \
+        array gives the grid's (y,x) arc-second coordinates, where each pixel has sub-pixels specified by the \
+        sub-grid size.
+
+        This is equivalent to using a 2D mask consisting entirely of unmasked pixels.
+
+        Parameters
+        -----------
+        shape : (int, int)
+            The 2D shape of the array, where all pixels are used to generate the grid-stack's grids.
+        pixel_scale : float
+            The size of each pixel in arc seconds.
+       sub_grid_size : int
+            The size (sub_grid_size x sub_grid_size) of each unmasked pixels sub-grid.
+        """
+        mask = msk.Mask.unmasked_for_shape_and_pixel_scale(shape=shape, pixel_scale=pixel_scale)
         sub_grid = grid_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(mask=mask,
                                                                                          pixel_scales=mask.pixel_scales,
                                                                                          sub_grid_size=sub_grid_size)
@@ -423,8 +542,8 @@ class SubGrid(RegularGrid):
             self.mask = obj.mask
 
     def sub_data_to_regular_data(self, sub_array):
-        """For an input sub-gridded array, mappers it from the sub-grid to a 1D regular by summing each set of
-        each set of sub-pixels values and dividing by the total number of sub-pixels.
+        """For an input sub-gridded array, map its data-values from the sub-gridded values to a 1D regular grid of \
+        values by summing each set of each set of sub-pixels values and dividing by the total number of sub-pixels.
 
         Parameters
         -----------
@@ -437,52 +556,79 @@ class SubGrid(RegularGrid):
     @property
     @array_util.Memoizer()
     def sub_to_regular(self):
-        """ Compute the mapping between every sub-pixel and its host regular-pixel.
+        """The mapping between every sub-pixel and its host regular-pixel.
 
-        For howtolens:
+        For example:
 
-        - sub_to_pixel[8] = 2 -  The seventh sub-pixel is within the 3rd regular pixel.
-        - sub_to_pixel[20] = 4 -  The nineteenth sub-pixel is within the 5th regular pixel.
+        - sub_to_pixel[8] = 2 -  The ninth sub-pixel is within the 3rd regular pixel.
+        - sub_to_pixel[20] = 4 -  The twenty first sub-pixel is within the 5th regular pixel.
         """
         return mapping_util.sub_to_regular_from_mask(self.mask, self.sub_grid_size).astype('int')
 
 
 class PixGrid(np.ndarray):
 
-    def __new__(cls, arr, regular_to_nearest_regular_pix, *args, **kwargs):
+    def __new__(cls, arr, regular_to_nearest_pix, *args, **kwargs):
+        """A pix-grid of (y,x) coordinates which are used to form the pixel centres of adaptive pixelizations in the \
+        *pixelizations* module.
+
+        A *PixGrid* is ordered such pixels begin from the top-row of the mask and go rightwards and then \
+        downwards. Therefore, it is a ndarray of shape [total_pix_pixels, 2]. The first element of the ndarray \
+        thus corresponds to the pix pixel index and second element the y or x arc -econd coordinates. For example:
+
+        - pix_grid[3,0] = the 4th unmasked pixel's y-coordinate.
+        - pix_grid[6,1] = the 7th unmasked pixel's x-coordinate.
+
+        Parameters
+        -----------
+        pix_grid : ndarray
+            The grid of (y,x) arc-second coordinates of every image-plane pixelization grid used for adaptive source \
+            -plane pixelizations.
+        regular_to_nearest_pix : ndarray
+            A 1D array that maps every regular-grid pixel to its nearest pix-grid pixel.
+        """
         obj = arr.view(cls)
-        obj.regular_to_nearest_regular_pix = regular_to_nearest_regular_pix
+        obj.regular_to_nearest_regular_pix = regular_to_nearest_pix
         return obj
 
     def __array_finalize__(self, obj):
-        if hasattr(obj, "regular_to_nearest_regular_pix"):
+        if hasattr(obj, "regular_to_nearest_pix"):
             self.regular_to_nearest_regular_pix = obj.regular_to_nearest_regular_pix
 
 
 class SparseToRegularGrid(scaled_array.RectangularArrayGeometry):
 
     def __init__(self, unmasked_sparse_grid_shape, pixel_scales, regular_grid, origin=(0.0, 0.0)):
-        """Abstract class which represents a sparse grid overlaid over a regular-grid. The regular-grid_stacks masks is used to \
-         determine which sparse-grid pixels are in the masks, and these pixels form the centers of the sparse grid.
+        """A sparse grid of coordinates, where each entry corresponds to the (y,x) coordinates at the centre of a \
+        pixel on the sparse grid. To setup the sparse-grid, it is laid over a regular-grid of unmasked pixels, such \
+        that all sparse-grid pixels which map inside of an unmasked regular-grid pixel are included on the sparse grid.
+
+        To setup this sparse grid, we thus have two sparse grids:
+
+        - The unmasked sparse-grid, which corresponds to a uniform 2D array of pixels. The edges of this grid \
+          correspond to the 4 edges of the mask (e.g. the higher and lowest (y,x) arc-second unmasked pixels) and the \
+          grid's shape is speciifed by the unmasked_sparse_grid_shape parameter.
+
+        - The (masked) sparse-grid, which is all pixels on the unmasked sparse-grid above which fall within unmasked \
+          regular-grid pixels. These are the pixels which are actually used for other modules in PyAutoLens.
 
         The origin of the unmasked sparse grid can be changed to allow off-center pairings with sparse-grid pixels, \
-        which is typically used when a masks with an offset centre is being used. However, the sparse grid itself \
-        remains at the origin (0.0, 0.0), such that its arc-second grid uses the same coordinate system as the \
-        other grid_stacks.
+        which is necessary when a mask has a centre offset from (0.0", 0.0"). However, the sparse grid itself \
+        retains an origin of (0.0", 0.0"), ensuring its arc-second grid uses the same coordinate system as the \
+        other grids.
 
-        This sparse grid is used to determine the pixel centers of an adaptive grid pixelization.
+        The sparse grid is used to determine the pixel centers of an adaptive grid pixelization.
 
         Parameters
         ----------
         unmasked_sparse_grid_shape : (int, int)
-            The shape of the unmasked sparse-grid whose centres form the centres of pixelization pixels.
+            The shape of the unmasked sparse-grid whose centres form the sparse-grid.
         pixel_scales : (float, float)
             The pixel-to-arcsecond scale of a pixel in the y and x directions.
         regular_grid : RegularGrid
-            The regular-grid the sparse grid is compared to.
+            The regular-grid used to determine which pixels are in the sparse grid.
         origin : (float, float)
-            The centre of the datas-plane pix grid, which matches the centre of the masks (note that the origin of the \
-            coordinate system stays at (0.0", 0.0").
+            The centre of the unmasked sparse grid, which matches the centre of the mask.
         """
 
         self.shape = unmasked_sparse_grid_shape
@@ -534,14 +680,16 @@ class SparseToRegularGrid(scaled_array.RectangularArrayGeometry):
 class PaddedRegularGrid(RegularGrid):
 
     def __new__(cls, arr, mask, image_shape, *args, **kwargs):
-        """An *PaddedRegularGrid* stores the (y,x) arc-second coordinates of a masks's pixels in 1D, in an analogous
-        fashion to an *RegularGrid*. An *PaddedRegularGrid* deviate from a normal grid in that:
+        """A padded regular-grid stores the (y,x) arc-second coordinates of a 2D array, analogous to a *RegularGrid*. \
+         Howeve, the padded grid deviates from a regular grid in that:
 
-        - All pixels are used (as opposed to just padded pixels)
-        - The masks is padded when computing the grid, such that additional pixels beyond its edge are included.
+        - All pixels are used to form the grid (as opposed to just masked pixels)
+        - The mask is padded when computing the grid, such that additional pixels beyond its edge are included. This \
+          padding extends based on the size of the PSF kernel, such that PSF blurring effects at the edge of the \
+          array do not degrade the image.
 
-        Padded-grid_stacks allow quantities like intensities to be computed on large 2D arrays spanning the entire datas_, as
-        opposed to just within the masked region.
+        Padded-grids are therefore used to compute quantities like light-profile intensities large 2D arrays \
+        that span the entire image (as opposed to just the masked region).
         """
         arr = arr.view(cls)
         arr.mask = mask
@@ -554,59 +702,59 @@ class PaddedRegularGrid(RegularGrid):
             self.image_shape = obj.image_shape
 
     @classmethod
-    def padded_grid_from_shapes_and_pixel_scale(self, shape, psf_shape, pixel_scale):
-        """Setup an *PaddedRegularGrid* of the regular regular for an input datas_-shape, psf-shape and pixel-scale.
+    def padded_grid_from_shape_psf_shape_and_pixel_scale(self, shape, psf_shape, pixel_scale):
+        """Setup a regular padded grid from a 2D array shape, psf-shape and pixel-scale.
 
-        The center of every pixel is used to setup the grid's (y,x) arc-second coordinates, including padded-pixels
-        which are beyond the input shape but will have light blurred into them given the psf-shape.
+        The center of every pixel is used to setup the grid's (y,x) arc-second coordinates, including padded pixels \
+        which are beyond the input shape but will blurred light into the 2D array's shape due to the psf.
 
         Parameters
         ----------
-        pixel_scale : float
-            The scale of each pixel in arc seconds
         shape : (int, int)
-            The (y,x) shape of the padded-grid's 2D datas_ in units of pixels.
+            The (y,x) shape of the masked-grid's 2D image in units of pixels.
         psf_shape : (int, int)
            The shape of the psf which defines the blurring region and therefore size of padding.
+        pixel_scale : float
+            The scale of each pixel in arc seconds
         """
         padded_shape = (shape[0] + psf_shape[0] - 1, shape[1] + psf_shape[1] - 1)
-        padded_image_grid = grid_util.regular_grid_1d_masked_from_mask_pixel_scales_and_origin(
+        padded_regular_grid = grid_util.regular_grid_1d_masked_from_mask_pixel_scales_and_origin(
             mask=np.full(padded_shape, False), pixel_scales=(pixel_scale, pixel_scale))
-        padded_mask = msk.Mask.padded_for_shape_and_pixel_scale(shape=padded_shape, pixel_scale=pixel_scale)
-        return PaddedRegularGrid(arr=padded_image_grid, mask=padded_mask, image_shape=shape)
+        padded_mask = msk.Mask.masked_for_shape_and_pixel_scale(shape=padded_shape, pixel_scale=pixel_scale)
+        return PaddedRegularGrid(arr=padded_regular_grid, mask=padded_mask, image_shape=shape)
 
-    def unmasked_blurred_image_2d_from_unmasked_image_1d_and_psf(self, unmasked_image_1d, psf):
-        """Compute a 1D unmasked blurred image from an unmasked image.
+    def padded_blurred_image_2d_from_padded_image_1d_and_psf(self, padded_image_1d, psf):
+        """Compute a 2D padded blurred image from a 1D padded image.
 
         Parameters
         ----------
-        unmasked_image_1d : ndarray
+        padded_image_1d : ndarray
             A 1D unmasked image which is blurred with the PSF.
         psf : ndarray
-            An array describing the PSF kernel of the datas.
+            An array describing the PSF kernel of the image.
         """
-        model_image_1d = self.convolve_array_1d_with_psf(padded_array_1d=unmasked_image_1d, psf=psf)
-        return self.scaled_array_from_array_1d(array_1d=model_image_1d)
+        padded_model_image_1d = self.convolve_array_1d_with_psf(padded_array_1d=padded_image_1d, psf=psf)
+        return self.scaled_array_from_array_1d(array_1d=padded_model_image_1d)
 
     def convolve_array_1d_with_psf(self, padded_array_1d, psf):
-        """Convolve a 2d padded array of values (e.g. intensities beforoe PSF blurring) with a PSF, and then trim \
+        """Convolve a 1d padded array of values (e.g. intensities before PSF blurring) with a PSF, and then trim \
         the convolved array to its original 2D shape.
 
         Parameters
         -----------
-        psf
         padded_array_1d: ndarray
             A 1D array of values which were computed using the *PaddedRegularGrid*.
+        psf : ndarray
+            An array describing the PSF kernel of the image.
         """
-        padded_array_2d = mapping_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(padded_array_1d,
-                                                                                                 self.mask.shape)
-        blurred_padded_array_2d = psf.convolve(padded_array_2d)
+        padded_array_2d = mapping_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(
+            array_1d=padded_array_1d, shape=self.mask.shape)
+        blurred_padded_array_2d = psf.convolve(array=padded_array_2d)
         return mapping_util.map_2d_array_to_masked_1d_array_from_array_2d_and_mask(array_2d=blurred_padded_array_2d,
-                                                                                   mask=np.full(self.mask.shape,
-                                                                                                False))
+                            mask=np.full(self.mask.shape, False))
 
-    def map_to_2d(self, padded_array_1d):
-        """ Map a padded 1D array of values to its origianl 2D array.
+    def array_2d_from_array_1d(self, padded_array_1d):
+        """ Map a padded 1D array of values to its original 2D array, trimming all edge values.
 
         Parameters
         -----------
@@ -627,7 +775,8 @@ class PaddedRegularGrid(RegularGrid):
         padded_array_1d : ndarray
             A 1D array of values which were computed using the *PaddedRegularGrid*.
         """
-        return mapping_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(padded_array_1d, self.mask.shape)
+        return mapping_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(array_1d=padded_array_1d,
+                                                                                      shape=self.mask.shape)
 
     @property
     def padded_shape(self):
@@ -637,13 +786,13 @@ class PaddedRegularGrid(RegularGrid):
 class PaddedSubGrid(SubGrid, PaddedRegularGrid):
 
     def __init__(self, arr, mask, image_shape, sub_grid_size=1):
-        """A *PaddedSubGrid* stores the (y,x) arc-second coordinates of a masks's sub-pixels in 1D, in an analogous
+        """A *PaddedSubGrid* stores the (y,x) arc-second coordinates of a mask's sub-pixels in 1D, in an analogous
         fashion to a *SubGrid*. A *PaddedSubGrid* deviate from a normal grid in that:
 
-        - All pixels are used (as opposed to just padded pixels)
-        - The masks is padded when computing the grid, such that additional pixels beyond its edge are included.
+        - All pixels are used (as opposed to just masked pixels)
+        - The mask is masked when computing the grid, such that additional pixels beyond its edge are included.
 
-        Padded-grid_stacks allow quantities like intensities to be computed on large 2D arrays spanning the entire datas_, as
+        Padded-grids allow quantities like intensities to be computed on large 2D arrays spanning the entire image, as
         opposed to just within the masked region.
         """
         super(PaddedSubGrid, self).__init__(arr, mask, sub_grid_size)
@@ -651,17 +800,17 @@ class PaddedSubGrid(SubGrid, PaddedRegularGrid):
 
     @classmethod
     def padded_grid_from_mask_sub_grid_size_and_psf_shape(cls, mask, sub_grid_size, psf_shape):
-        """Setup an *PaddedSubGrid* for an input masks, sub-grid size and psf-shape.
+        """Setup an *PaddedSubGrid* for an input mask, sub-grid size and psf-shape.
 
         The center of every sub-pixel is used to setup the grid's (y,x) arc-second coordinates, including \
-        padded-pixels which are beyond the input shape but will have light blurred into them given the psf-shape.
+        masked-pixels which are beyond the input shape but will have light blurred into them given the psf-shape.
 
         Parameters
         ----------
         mask : Mask
-            The masks whose padded pixels are used to setup the sub-pixel grid_stacks.
+            The mask whose masked pixels are used to setup the sub-pixel grids.
         sub_grid_size : int
-            The size (sub_grid_size x sub_grid_size) of each datas_-pixels sub-grid.
+            The size (sub_grid_size x sub_grid_size) of each image-pixels sub-grid.
         psf_shape : (int, int)
            The shape of the psf which defines the blurring region and therefore size of padding.
         """
@@ -671,7 +820,7 @@ class PaddedSubGrid(SubGrid, PaddedRegularGrid):
         padded_sub_grid = grid_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(
             mask=np.full(padded_shape, False), pixel_scales=mask.pixel_scales, sub_grid_size=sub_grid_size)
 
-        padded_mask = msk.Mask.padded_for_shape_and_pixel_scale(shape=padded_shape, pixel_scale=mask.pixel_scale)
+        padded_mask = msk.Mask.masked_for_shape_and_pixel_scale(shape=padded_shape, pixel_scale=mask.pixel_scale)
 
         return PaddedSubGrid(arr=padded_sub_grid, mask=padded_mask, image_shape=mask.shape,
                              sub_grid_size=sub_grid_size)
@@ -685,63 +834,69 @@ class PaddedSubGrid(SubGrid, PaddedRegularGrid):
 class RegularGridBorder(np.ndarray):
 
     def __new__(cls, arr, *args, **kwargs):
-        """The borders of a regular, containing the pixel-index's of all padded pixels that are on the \
-        masks's borders (e.g. they are next to a *True* value in at least one of the surrounding 8 pixels).
+        """The borders of a regular grid, containing the pixel-index's of all masked pixels that are on the \
+        mask's border (e.g. they are next to a *True* value in at least one of the surrounding 8 pixels and at one of \
+        the exterior edge's of the mask).
 
-        A polynomial is fitted to the (y,x) coordinates of the borders's pixels. This allows us to relocate \
-        demagnified pixel's in a grid to its borders, so that they do not disrupt an adaptive inversion.
+        This is used to relocate demagnified pixel's in a grid to its border, so that they do not disrupt an \
+        adaptive pixelization's inversion.
 
         Parameters
         -----------
         arr : ndarray
             A 1D array of the integer indexes of an *RegularGrid*'s borders pixels.
-        polynomial_degree : int
-            The degree of the polynomial that is used to fit_normal the borders when relocating pixels outside the borders to \
-            its edge.
-        centre : (float, float)
-            The origin of the borders, which can be shifted relative to its coordinates.
         """
         border = arr.view(cls)
         return border
 
     @classmethod
     def from_mask(cls, mask):
-        """Setup the *RegularGridBorder* from a masks.
+        """Setup the regular-grid border using a mask.
 
         Parameters
         -----------
         mask : Mask
-            The masks the padded borders pixel index's are computed from.
-        polynomial_degree : int
-            The degree of the polynomial that is used to fit_normal the borders when relocating pixels outside the borders to \
-            its edge.
-        centre : (float, float)
-            The origin of the borders, which can be shifted relative to its coordinates.
+            The mask the masked borders pixel index's are computed from.
         """
         return cls(mask.border_pixels)
 
-    def relocated_grids_from_grids(self, grids):
-        """Determine a set of relocated grid_stacks from an input set of grid_stacks, by relocating their pixels based on the \
+    def relocated_grid_stack_from_grid_stack(self, grid_stack):
+        """Determine a set of relocated grids from an input set of grids, by relocating their pixels based on the \
         borders.
 
         The blurring-grid does not have its coordinates relocated, as it is only used for computing analytic \
-        light-profiles and not inversion-grid_stacks.
+        light-profiles and not inversion-grids.
 
         Parameters
         -----------
-        grids : DataGridStack
-            The imaging-grid_stacks (datas_, sub) which have their coordinates relocated.
+        grid_stack : GridStack
+            The grid-stack, whose grids coordinates are relocated.
         """
-        border_grid = grids.regular[self]
-        return DataGridStack(regular=self.relocated_grid_from_grid_jit(grid=grids.regular, border_grid=border_grid),
-                             sub=self.relocated_grid_from_grid_jit(grid=grids.sub, border_grid=border_grid),
-                             blurring=None,
-                             pix=self.relocated_grid_from_grid_jit(grid=grids.pix, border_grid=border_grid))
+        border_grid = grid_stack.regular[self]
+        return GridStack(regular=self.relocated_grid_from_grid_jit(grid=grid_stack.regular, border_grid=border_grid),
+                         sub=self.relocated_grid_from_grid_jit(grid=grid_stack.sub, border_grid=border_grid),
+                         blurring=None,
+                         pix=self.relocated_grid_from_grid_jit(grid=grid_stack.pix, border_grid=border_grid))
 
     @staticmethod
     @numba.jit(nopython=True, cache=True)
     def relocated_grid_from_grid_jit(grid, border_grid):
+        """ Relocate the coordinates of a grid to its border if they are outside the border. This is performed as \
+        follows:
 
+        1) Use the mean value of the grid's y and x coordinates to determine the origin of the grid.
+        2) Compute the radial distance of every grid coordinate from the origin.
+        3) For every coordinate, find its nearest pixel in the border.
+        4) Determmine if it is outside the border, by compairing its radial distance from the origin to its paid \
+           border pixel's radial distance.
+        5) If its radial distance is larger, use the ratio of radial distances to move the coordinate to the border \
+           (if its inside the border, do nothing).
+
+        Parameters
+        -----------
+        grid_stack : GridStack
+            The grid-stack, whose grids coordinates are relocated.
+        """
         border_origin = np.zeros(2)
         border_origin[0] = np.mean(border_grid[: ,0])
         border_origin[1] = np.mean(border_grid[: ,1])

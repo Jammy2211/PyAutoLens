@@ -1,5 +1,57 @@
 import numpy as np
 
+def ordered_redshifts_from_galaxies(galaxies):
+    """Given a list of galaxies (with redshifts), return a list of the in ascending order.
+
+    If two or more galaxies have the same redshift that redshift is not double counted.
+
+    Parameters
+    -----------
+    galaxies : [Galaxy]
+        The list of galaxies in the ray-tracing calculation.
+    """
+    ordered_galaxies = sorted(galaxies, key=lambda galaxy: galaxy.redshift, reverse=False)
+
+    # Ideally we'd extract the planes_red_Shfit order from the list above. However, I dont know how to extract it
+    # Using a list of class attributes so make a list of redshifts for now.
+
+    galaxy_redshifts = list(map(lambda galaxy: galaxy.redshift, ordered_galaxies))
+    return [redshift for i, redshift in enumerate(galaxy_redshifts) if redshift not in galaxy_redshifts[:i]]
+
+def galaxies_in_redshift_ordered_lists_from_galaxies(galaxies, ordered_redshifts):
+    """Given a list of galaxies (with redshifts), return a list of the galaxies where each entry contains a list \
+    of galaxies at the same redshift in ascending redshift order.
+
+    Parameters
+    -----------
+    galaxies : [Galaxy]
+        The list of galaxies in the ray-tracing calculation.
+    """
+    ordered_galaxies = sorted(galaxies, key=lambda galaxy: galaxy.redshift, reverse=False)
+
+    galaxies_in_redshift_ordered_lists = []
+
+    for (index, redshift) in enumerate(ordered_redshifts):
+
+        galaxies_in_redshift_ordered_lists.append(list(map(lambda galaxy:
+                                                            galaxy if galaxy.redshift == redshift else None,
+                                                            ordered_galaxies)))
+
+        galaxies_in_redshift_ordered_lists[index] = list(filter(None, galaxies_in_redshift_ordered_lists[index]))
+
+    return galaxies_in_redshift_ordered_lists
+
+def scaling_factor_between_redshifts_for_cosmology(z1, z2, z_final, cosmology):
+
+    angular_diameter_distance_between_z1_z2 = cosmology.angular_diameter_distance_z1z2(z1=z1, z2=z2).to('kpc').value
+    angular_diameter_distance_to_z_final = cosmology.angular_diameter_distance(z=z_final).to('kpc').value
+    angular_diameter_distance_of_z2_to_earth = cosmology.angular_diameter_distance(z=z2).to('kpc').value
+    angular_diameter_distance_between_z2_z_final = \
+        cosmology.angular_diameter_distance_z1z2(z1=z1, z2=z_final).to('kpc').value
+
+    return (angular_diameter_distance_between_z1_z2 * angular_diameter_distance_to_z_final) / \
+           (angular_diameter_distance_of_z2_to_earth * angular_diameter_distance_between_z2_z_final)
+
 def blurred_image_1d_from_1d_unblurred_and_blurring_images(unblurred_image_1d, blurring_image_1d, convolver):
     """For a 1D masked image and 1D blurring image (the regular regions outside the masks whose light blurs \
     into the masks after PSF convolution), use both to computed the blurred regular within the masks via PSF convolution.
@@ -56,7 +108,7 @@ def likelihood_with_regularization_from_chi_squared_regularization_term_and_nois
         The regularization term of the inversion, which is the sum of the difference between reconstructed \
         flux of every pixel multiplied by the regularization coefficient.
     noise_normalization : float
-        The normalization noise_map-term for the observed datas's noise_map-map.
+        The normalization noise_map-term for the observed datas's noise-map.
     """
     return -0.5 * (chi_squared + regularization_term + noise_normalization)
 
@@ -80,7 +132,7 @@ def evidence_from_inversion_terms(chi_squared, regularization_term, log_curvatur
     log_regularization_term : float
         The log of the determinant o the regularization matrix.
     noise_normalization : float
-        The normalization noise_map-term for the observed datas's noise_map-map.
+        The normalization noise_map-term for the observed datas's noise-map.
     """
     return -0.5 * (chi_squared + regularization_term + log_curvature_regularization_term - log_regularization_term
                    + noise_normalization)
@@ -142,9 +194,9 @@ def unmasked_blurred_image_from_padded_grid_stack_psf_and_unmasked_image(padded_
 
 def unmasked_blurred_image_of_galaxies_from_padded_grid_stack_psf_and_tracer(padded_grid_stack, psf, tracer):
 
-    unmasked_blurred_images_of_galaxies = [[] for _ in range(len(tracer.all_planes))]
+    unmasked_blurred_images_of_galaxies = [[] for _ in range(len(tracer.planes))]
 
-    for plane_index, plane in enumerate(tracer.all_planes):
+    for plane_index, plane in enumerate(tracer.planes):
         for galaxy_index in range(len(plane.galaxies)):
 
             image_plane_image_1d_of_galaxy = plane.image_plane_image_1d_of_galaxies[galaxy_index]
@@ -158,7 +210,7 @@ def unmasked_blurred_image_of_galaxies_from_padded_grid_stack_psf_and_tracer(pad
 
 def contribution_maps_1d_from_hyper_images_and_galaxies(hyper_model_image_1d, hyper_galaxy_images_1d, hyper_galaxies,
                                                         hyper_minimum_values):
-    """For a fitting hyper_galaxy-regular, hyper_galaxy model regular, list of hyper_galaxy galaxy unblurred_image_1d and model hyper_galaxy-galaxies, compute
+    """For a fitting hyper_galaxy_image, hyper_galaxy model regular, list of hyper_galaxy galaxy unblurred_image_1d and model hyper_galaxy-galaxies, compute
     their contribution maps, which are used to compute a scaled-noise_map map. All quantities are masked 1D arrays.
 
     The reason this is separate from the *contributions_from_fitting_hyper_images_and_hyper_galaxies* function is that
@@ -176,7 +228,7 @@ def contribution_maps_1d_from_hyper_images_and_galaxies(hyper_model_image_1d, hy
         The hyper_galaxy-galaxies which represent the model components used to scale the noise_map, which correspond to
         individual galaxies in the regular.
     hyper_minimum_values : [float]
-        The minimum value of each hyper_galaxy-unblurred_image_1d contribution map, which ensure zero's don't impact the scaled noise_map-map.
+        The minimum value of each hyper_galaxy-unblurred_image_1d contribution map, which ensure zero's don't impact the scaled noise-map.
     """
     # noinspection PyArgumentList
     return list(map(lambda hyper_galaxy, hyper_galaxy_image_1d, hyper_minimum_value:
@@ -187,7 +239,7 @@ def contribution_maps_1d_from_hyper_images_and_galaxies(hyper_model_image_1d, hy
 
 def contribution_maps_from_hyper_images_and_galaxies(hyper_model_image_1d, hyper_galaxy_images_1d, hyper_galaxies,
                                                      hyper_minimum_values, map_to_scaled_array):
-    """For a fitting hyper_galaxy-regular, hyper_galaxy model regular, list of hyper_galaxy galaxy unblurred_image_1d and model hyper_galaxy-galaxies, compute
+    """For a fitting hyper_galaxy_image, hyper_galaxy model regular, list of hyper_galaxy galaxy unblurred_image_1d and model hyper_galaxy-galaxies, compute
     their contribution maps, which are used to compute a scaled-noise_map map. All quantities are masked 1D arrays.
 
     The reason this is separate from the *contributions_from_fitting_hyper_images_and_hyper_galaxies* function is that
@@ -205,7 +257,7 @@ def contribution_maps_from_hyper_images_and_galaxies(hyper_model_image_1d, hyper
         The hyper_galaxy-galaxies which represent the model components used to scale the noise_map, which correspond to
         individual galaxies in the regular.
     hyper_minimum_values : [float]
-        The minimum value of each hyper_galaxy-unblurred_image_1d contribution map, which ensure zero's don't impact the scaled noise_map-map.
+        The minimum value of each hyper_galaxy-unblurred_image_1d contribution map, which ensure zero's don't impact the scaled noise-map.
     """
 
     contributions_maps_1d = contribution_maps_1d_from_hyper_images_and_galaxies(hyper_model_image_1d=hyper_model_image_1d,
@@ -218,7 +270,7 @@ def contribution_maps_from_hyper_images_and_galaxies(hyper_model_image_1d, hyper
 
 
 def scaled_noise_map_from_hyper_galaxies_and_contribution_maps(contribution_maps, hyper_galaxies, noise_map):
-    """For a contribution map and noise_map-map, use the model hyper_galaxy galaxies to compute a scaled noise_map-map.
+    """For a contribution map and noise-map, use the model hyper_galaxy galaxies to compute a scaled noise-map.
 
     Parameters
     -----------
@@ -236,27 +288,3 @@ def scaled_noise_map_from_hyper_galaxies_and_contribution_maps(contribution_maps
                                                                            contributions=contribution_map),
                                     hyper_galaxies, contribution_maps))
     return noise_map + sum(scaled_noise_maps)
-
-
-# def unmasked_blurred_images_from_fitting_images(fitting_images, unmasked_images_):
-#     """For a list of fitting unblurred_image_1d, compute an unmasked blurred unblurred_image_1d from a list of unmasked unblurred unblurred_image_1d.
-#     Unmasked unblurred_image_1d are used for plotting the results of a model outside a masked region.
-#
-#     This relies on using a fitting regular's padded_grid, which is grid of coordinates which extends over the entire
-#     regular as opposed to just the masked region.
-#
-#     Parameters
-#     ----------
-#     fitting_images_ : [fitting.fit_data.FitData]
-#         The fitting unblurred_image_1d.
-#     unmasked_images_ : [ndarray]
-#         The 1D unmasked unblurred_image_1d which are blurred.
-#     """
-#     return list(map(lambda fitting_image, _unmasked_image :
-#                     unmasked_model_image_from_psf_padded_grids_and_unmasked_image(fitting_image, _unmasked_image),
-#                     fitting_images, unmasked_images_))
-
-# def unmasked_model_images_of_galaxies_from_lensing_images_and_tracer(lensing_images, tracer):
-#     return list(map(lambda lensing_image, image_index :
-#                     unmasked_model_images_of_galaxies_from_lensing_image_and_tracer(lensing_image, tracer, image_index),
-#                     lensing_images, list(range(tracer.total_grid_stacks))))

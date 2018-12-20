@@ -18,7 +18,7 @@ from astropy import cosmology
 
 # To begin, lets setup the grid_stacks we 'll ray-trace using. Lets do something crazy, and use a
 # higher resolution grid then before and set the sub grid size to 4x4 per pixel!
-image_plane_grids = grids.DataGridStack.from_shape_and_pixel_scale(shape=(200, 200), pixel_scale=0.025, sub_grid_size=4)
+image_plane_grids = grids.GridStack.from_shape_and_pixel_scale(shape=(200, 200), pixel_scale=0.025, sub_grid_size=4)
 print(image_plane_grids.regular.shape)
 print(image_plane_grids.sub.shape) # Every regular-pixel is sub-gridded by 4x4, so the sub-grid has x16 more coordinates.
 
