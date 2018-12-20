@@ -36,7 +36,7 @@ def test_galaxy():
 def test_array():
     return scaled_array.ScaledSquarePixelArray(array=np.ones((3, 3)), pixel_scale=3.0)
 
-@pytest.fixture(name='masks')
+@pytest.fixture(name='mask')
 def test_mask():
     return msk.Mask.circular(shape=((3,3)), pixel_scale=0.1, radius_arcsec=0.1)
 

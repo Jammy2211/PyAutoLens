@@ -9,7 +9,7 @@ class GalaxyData(scaled_array.ScaledSquarePixelArray):
         return np.array(mask.map_2d_array_to_masked_1d_array(array)).view(cls)
 
     def __init__(self, array, noise_map, mask, sub_grid_size=2):
-        """ A galaxy-datas is a collection of datas components which are used to fit a galaxy to another galaxy. \
+        """ A galaxy-data is a collection of data components which are used to fit a galaxy to another galaxy. \
         This is where a component of a galaxy's light profiles (e.g. intensities) or mass profiles (e.g. surface \
         density, potential or deflection angles) are fitted to one another.
 
@@ -17,7 +17,7 @@ class GalaxyData(scaled_array.ScaledSquarePixelArray):
         using one inferred parametrization of light or mass profiles to a new galaxy with a different parametrization \
         of light or mass profiles.
 
-        This omits a number of the datas components typically used when fitting an regular (e.g. the observed regular, PSF, \
+        This omits a number of the data components typically used when fitting an image (e.g. the observed image, PSF, \
         exposure time map), but still has a number of the other components (e.g. an effective noise_map-map, grid_stacks).
 
         Parameters
@@ -27,7 +27,7 @@ class GalaxyData(scaled_array.ScaledSquarePixelArray):
         noise_map : scaled_array.ScaledSquarePixelArray
             The noise_map-map used for computing the likelihood of each fit. This can be chosen arbritarily.
         mask: msk.Mask
-            The 2D masks that is applied to regular datas.
+            The 2D masks that is applied to image data.
         sub_grid_size : int
             The size of the sub-grid used for computing the SubGrid (see imaging.masks.SubGrid).
 
@@ -36,10 +36,10 @@ class GalaxyData(scaled_array.ScaledSquarePixelArray):
         noise_map_1d : ndarray
             The masked 1D array of the noise_map-map
         grid_stacks : imaging.masks.GridStack
-            Grids of (y,x) Cartesian coordinates which map over the masked 1D datas array's pixels (includes an \
+            Grids of (y,x) Cartesian coordinates which map over the masked 1D data array's pixels (includes an \
             regular-grid, sub-grid, etc.)
         padded_grid_stack : imaging.masks.GridStack
-            Grids of padded (y,x) Cartesian coordinates which map over the every datas array's pixel in 1D and a \
+            Grids of padded (y,x) Cartesian coordinates which map over the every data array's pixel in 1D and a \
             padded regioon to include edge's for accurate PSF convolution (includes an regular-grid, sub-grid, etc.)
         """
 
@@ -74,10 +74,10 @@ class GalaxyData(scaled_array.ScaledSquarePixelArray):
 
 
 class GalaxyDataIntensities(GalaxyData):
-    """ A galaxy-datas collection for fitting two galaxies based on their light-profile intensities."""
+    """ A galaxy-data collection for fitting two galaxies based on their light-profile intensities."""
 
     def profile_quantity_from_galaxy_and_sub_grid(self, galaxy, sub_grid):
-        """Generic function so that this galaxy-datas type computes the correct profile quantity for the fitting.
+        """Generic function so that this galaxy-data type computes the correct profile quantity for the fitting.
 
         In this case, the light profile intensities are computed."""
         intensities = galaxy.intensities_from_grid(grid=sub_grid)
@@ -85,10 +85,10 @@ class GalaxyDataIntensities(GalaxyData):
 
 
 class GalaxyDataSurfaceDensity(GalaxyData):
-    """ A galaxy-datas collection for fitting two galaxies based on their mass-profile surface densities."""
+    """ A galaxy-data collection for fitting two galaxies based on their mass-profile surface densities."""
 
     def profile_quantity_from_galaxy_and_sub_grid(self, galaxy, sub_grid):
-        """Generic function so that this galaxy-datas type computes the correct profile quantity for the fitting.
+        """Generic function so that this galaxy-data type computes the correct profile quantity for the fitting.
 
         In this case, the mass profile surface density is computed."""
         surface_density = galaxy.surface_density_from_grid(grid=sub_grid)
@@ -96,10 +96,10 @@ class GalaxyDataSurfaceDensity(GalaxyData):
 
 
 class GalaxyDataPotential(GalaxyData):
-    """ A galaxy-datas collection for fitting two galaxies based on their mass-profile potentials."""
+    """ A galaxy-data collection for fitting two galaxies based on their mass-profile potentials."""
 
     def profile_quantity_from_galaxy_and_sub_grid(self, galaxy, sub_grid):
-        """Generic function so that this galaxy-datas type computes the correct profile quantity for the fitting.
+        """Generic function so that this galaxy-data type computes the correct profile quantity for the fitting.
 
         In this case, the mass profile potential is computed."""
         potential = galaxy.potential_from_grid(grid=sub_grid)
@@ -107,10 +107,10 @@ class GalaxyDataPotential(GalaxyData):
 
 
 class GalaxyDataDeflectionsY(GalaxyData):
-    """ A galaxy-datas collection for fitting two galaxies based on their mass-profile (y) deflection angles."""
+    """ A galaxy-data collection for fitting two galaxies based on their mass-profile (y) deflection angles."""
 
     def profile_quantity_from_galaxy_and_sub_grid(self, galaxy, sub_grid):
-        """Generic function so that this galaxy-datas type computes the correct profile quantity for the fitting.
+        """Generic function so that this galaxy-data type computes the correct profile quantity for the fitting.
 
         In this case, the mass profile deflection angles are computed."""
         deflections = galaxy.deflections_from_grid(grid=sub_grid)
@@ -119,10 +119,10 @@ class GalaxyDataDeflectionsY(GalaxyData):
 
 
 class GalaxyDataDeflectionsX(GalaxyData):
-    """ A galaxy-datas collection for fitting two galaxies based on their mass-profile (x) deflection angles."""
+    """ A galaxy-data collection for fitting two galaxies based on their mass-profile (x) deflection angles."""
 
     def profile_quantity_from_galaxy_and_sub_grid(self, galaxy, sub_grid):
-        """Generic function so that this galaxy-datas type computes the correct profile quantity for the fitting.
+        """Generic function so that this galaxy-data type computes the correct profile quantity for the fitting.
 
         In this case, the mass profile deflection angles are computed."""
         deflections = galaxy.deflections_from_grid(grid=sub_grid)

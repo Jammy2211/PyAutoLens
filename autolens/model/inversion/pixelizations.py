@@ -8,12 +8,12 @@ from autolens.model.inversion import mappers
 from autolens.model.inversion.util import pixelization_util
 
 
-def setup_image_plane_pixelization_grid_from_galaxies_and_grid_stack(galaxies, grid_stack):
-    """An datas-plane pixelization is one where its pixel centres are computed by tracing a sparse grid of pixels from \
-    the datas's regular grid to other planes (e.g. the source-plane).
+def setup_imageplane_pixelization_grid_from_galaxies_and_grid_stack(galaxies, grid_stack):
+    """An image-plane pixelization is one where its pixel centres are computed by tracing a sparse grid of pixels from \
+    the image's regular grid to other planes (e.g. the source-plane).
 
-    Provided a galaxy has an datas-plane pixelization, this function returns a new *GridStack* instance where the \
-    datas-plane pixelization's sparse grid is added to it as an attibute.
+    Provided a galaxy has an image-plane pixelization, this function returns a new *GridStack* instance where the \
+    image-plane pixelization's sparse grid is added to it as an attibute.
 
     Thus, when the *GridStack* are are passed to the *ray_tracing* module this sparse grid is also traced and the \
     traced coordinates represent the centre of each pixelization pixel.
@@ -22,8 +22,8 @@ def setup_image_plane_pixelization_grid_from_galaxies_and_grid_stack(galaxies, g
     -----------
     galaxies : [model.galaxy.galaxy.Galaxy]
         A list of galaxies, which may contain pixelizations and an *ImagePlanePixelization*.
-    grid_stacks : datas.array.grid_stacks.GridStack
-        The collection of grid_stacks (regular, sub, etc.) which the datas-plane pixelization grid (referred to as pix) \
+    grid_stacks : image.array.grid_stacks.GridStack
+        The collection of grid_stacks (regular, sub, etc.) which the image-plane pixelization grid (referred to as pix) \
         may be added to.
     """
     if not isinstance(grid_stack.regular, grids.PaddedRegularGrid):
@@ -31,10 +31,10 @@ def setup_image_plane_pixelization_grid_from_galaxies_and_grid_stack(galaxies, g
             if hasattr(galaxy, 'pixelization'):
                 if isinstance(galaxy.pixelization, ImagePlanePixelization):
 
-                    image_plane_pix_grid = galaxy.pixelization.image_plane_pix_grid_from_regular_grid(
+                    imageplane_pix_grid = galaxy.pixelization.imageplane_pix_grid_from_regular_grid(
                         regular_grid=grid_stack.regular)
-                    return grid_stack.grid_stack_with_pix_grid_added(pix_grid=image_plane_pix_grid.sparse_grid,
-                                                                     regular_to_nearest_pix=image_plane_pix_grid.regular_to_sparse)
+                    return grid_stack.grid_stack_with_pix_grid_added(pix_grid=imageplane_pix_grid.sparse_grid,
+                                                                     regular_to_nearest_pix=imageplane_pix_grid.regular_to_sparse)
 
     return grid_stack
 
@@ -42,8 +42,8 @@ def setup_image_plane_pixelization_grid_from_galaxies_and_grid_stack(galaxies, g
 class ImagePlanePixelization(object):
 
     def __init__(self, shape):
-        """An datas-plane pixelization is one where its pixel centres are computed by tracing a sparse grid of pixels \
-        from the datas's regular grid to other planes (e.g. the source-plane).
+        """An image-plane pixelization is one where its pixel centres are computed by tracing a sparse grid of pixels \
+        from the image's regular grid to other planes (e.g. the source-plane).
 
         The traced coordinates of this sparse grid represent each centre of a pixelization pixel.
 
@@ -52,24 +52,24 @@ class ImagePlanePixelization(object):
         Parameters
         -----------
         shape : (float, float) or (int, int)
-            The shape of the datas-plane pixelizaton grid in pixels (floats are converted to integers). The grid is \
-            laid over the masked datas such that it spans the most outer pixels of the masks.
+            The shape of the image-plane pixelizaton grid in pixels (floats are converted to integers). The grid is \
+            laid over the masked image such that it spans the most outer pixels of the masks.
         """
         self.shape = (int(shape[0]), int(shape[1]))
 
-    def image_plane_pix_grid_from_regular_grid(self, regular_grid):
-        """Calculate the datas-plane pixelization from a regular-grid of coordinates and its masked.
+    def imageplane_pix_grid_from_regular_grid(self, regular_grid):
+        """Calculate the image-plane pixelization from a regular-grid of coordinates (and its mask).
 
         See *grid_stacks.SparseToRegularGrid* for details on how this grid is calculated.
 
         Parameters
         -----------
         regular_grid : grids.RegularGrid
-            The grid of (y,x) arc-second coordinates at the centre of every datas value (e.g. datas-pixels).
+            The grid of (y,x) arc-second coordinates at the centre of every image value (e.g. image-pixels).
         """
-        image_pixel_scale = regular_grid.mask.pixel_scale
-        pixel_scales = ((regular_grid.masked_shape_arcsec[0] + image_pixel_scale) / self.shape[0],
-                        (regular_grid.masked_shape_arcsec[1] + image_pixel_scale) / self.shape[1])
+        imagepixel_scale = regular_grid.mask.pixel_scale
+        pixel_scales = ((regular_grid.masked_shape_arcsec[0] + imagepixel_scale) / self.shape[0],
+                        (regular_grid.masked_shape_arcsec[1] + imagepixel_scale) / self.shape[1])
         return grids.SparseToRegularGrid(unmasked_sparse_grid_shape=self.shape, pixel_scales=pixel_scales,
                                          regular_grid=regular_grid, origin=regular_grid.mask.centre)
 
@@ -77,8 +77,7 @@ class ImagePlanePixelization(object):
 class Pixelization(object):
 
     def __init__(self):
-        """ Abstract base class for a pixelization, which discretizes a set of coordinates (e.g. an datas_-grid) into \
-        pixels.
+        """ Abstract base class for a pixelization, which discretizes grids of (y,x) coordinates into pixels.
         """
 
     def mapper_from_grid_stack_and_border(self, grid_stack, border):
@@ -94,14 +93,15 @@ class Pixelization(object):
 class Rectangular(Pixelization):
 
     def __init__(self, shape=(3, 3)):
-        """A rectangular pixelization, where pixels are defined on a Cartesian and uniform grid of shape (rows, columns).
+        """A rectangular pixelization, where pixels are defined on a Cartesian and uniform grid of shape \ 
+        (rows, columns).
 
-        Like an datas_, the indexing of the rectangular grid begins in the top-left corner and goes right and down.
+        Like arrays, the indexing of the rectangular grid begins in the top-left corner and goes right and down.
 
         Parameters
         -----------
         shape : (int, int)
-            The dimensions of the rectangular grid of pixels (x_pixels, y_pixel)
+            The dimensions of the rectangular grid of pixels (y_pixels, x_pixel)
         """
 
         if shape[0] <= 2 or shape[1] <= 2:
@@ -114,14 +114,24 @@ class Rectangular(Pixelization):
     class Geometry(scaled_array.RectangularArrayGeometry):
 
         def __init__(self, shape, pixel_scales, origin, pixel_neighbors, pixel_neighbors_size):
-            """The geometry of a rectangular grid
+            """The geometry of a rectangular grid.
+
+            This is used to map grids of (y,x) arc-second coordinates to the pixels on the rectangular grid.
 
             Parameters
             -----------
             shape : (int, int)
-                The dimensions of the rectangular grid of pixels (x_pixels, y_pixel)
+                The dimensions of the rectangular grid of pixels (y_pixels, x_pixel)
             pixel_scales : (float, float)
                 The pixel-to-arcsecond scale of a pixel in the y and x directions.
+            origin : (float, float)
+                The arc-second origin of the rectangular pixelization's coordinate system.
+            pixel_neighbors : ndarray
+                An array of length (y_pixels*x_pixels) which provides the index of all neighbors of every pixel in \
+                the rectangular grid (entries of -1 correspond to no neighbor).
+            pixel_neighbors_size : ndarrayy
+                An array of length (y_pixels*x_pixels) which gives the number of neighbors of every pixel in the \
+                rectangular grid.
             """
             self.shape = shape
             self.pixel_scales = pixel_scales
@@ -131,6 +141,7 @@ class Rectangular(Pixelization):
 
         @property
         def pixel_centres(self):
+            """The centre of every pixel in the rectangular pixelization."""
             return self.grid_1d
 
     def geometry_from_grid(self, grid, buffer=1e-8):
@@ -166,9 +177,9 @@ class Rectangular(Pixelization):
         Parameters
         ----------
         grid_stack: masks.GridStack
-            A collection of grid describing the observed datas_'s pixel coordinates (includes an datas_ and sub grid).
+            A collection of grid describing the observed image's pixel coordinates (includes an image and sub grid).
         border : masks.ImagingGridBorders
-            The borders of the grid_stacks (defined by their datas_-plane masks).
+            The borders of the grid_stacks (defined by their image-plane masks).
         """
 
         if border is not None:
@@ -188,7 +199,7 @@ class Voronoi(Pixelization):
         """Abstract base class for a Voronoi pixelization, which represents pixels as an irregular grid of Voronoi \
          pixels which can form any shape, size or tesselation.
 
-         The traced datas_-pixels are paired to Voronoi pixels as the nearest-neighbors of the Voronoi pixel-centers.
+         The traced image-pixels are paired to Voronoi pixels as the nearest-neighbors of the Voronoi pixel-centers.
 
          Parameters
          ----------
@@ -269,7 +280,7 @@ class Voronoi(Pixelization):
 class AdaptiveMagnification(Voronoi, ImagePlanePixelization):
 
     def __init__(self, shape=(3, 3)):
-        """A Voronoi pixelization, which traces an datas-plane grid to determine the cluster-centers.
+        """A Voronoi pixelization, which traces an image-plane grid to determine the cluster-centers.
 
         Parameters
         ----------
@@ -288,13 +299,13 @@ class AdaptiveMagnification(Voronoi, ImagePlanePixelization):
         Parameters
         ----------
         grid_stack: masks.GridStack
-            A collection of grid describing the observed datas_'s pixel coordinates (includes an datas_ and sub grid).
+            A collection of grid describing the observed image's pixel coordinates (includes an image and sub grid).
         border : masks.ImagingGridBorders
-            The borders of the grid_stacks (defined by their datas_-plane masks).
+            The borders of the grid_stacks (defined by their image-plane masks).
         pixel_centres : ndarray
-            The center of each Voronoi pixel, computed from an traced datas_-plane grid.
-        image_to_nearest_image_pix : ndarray
-            The mapping of each datas_ pixel to Voronoi pixels.
+            The center of each Voronoi pixel, computed from an traced image-plane grid.
+        imageto_nearest_imagepix : ndarray
+            The mapping of each image pixel to Voronoi pixels.
         """
 
         if border is not None:

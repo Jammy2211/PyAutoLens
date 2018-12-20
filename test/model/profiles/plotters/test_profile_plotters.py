@@ -34,42 +34,42 @@ def test_light_profile():
 def test_mass_profile():
     return mp.SphericalIsothermal(einstein_radius=1.0)
 
-@pytest.fixture(name='grid_stacks')
-def test_grids():
+@pytest.fixture(name='grid_stack')
+def test_grid_stack():
     return grids.GridStack.from_shape_and_pixel_scale(shape=(100, 100), pixel_scale=0.05, sub_grid_size=2)
 
 
-def test__intensities_is_output(light_profile, grids, profile_plotter_path):
+def test__intensities_is_output(light_profile, grid_stack, profile_plotter_path):
 
-    profile_plotters.plot_intensities(light_profile=light_profile, grid=grids.regular,
+    profile_plotters.plot_intensities(light_profile=light_profile, grid=grid_stack.regular,
                                       output_path=profile_plotter_path, output_format='png')
     assert os.path.isfile(path=profile_plotter_path+'intensities.png')
     os.remove(path=profile_plotter_path+'intensities.png')
 
-def test__surface_density_is_output(mass_profile, grids, profile_plotter_path):
+def test__surface_density_is_output(mass_profile, grid_stack, profile_plotter_path):
 
-    profile_plotters.plot_surface_density(mass_profile=mass_profile, grid=grids.regular,
+    profile_plotters.plot_surface_density(mass_profile=mass_profile, grid=grid_stack.regular,
                                           output_path=profile_plotter_path, output_format='png')
     assert os.path.isfile(path=profile_plotter_path+'surface_density.png')
     os.remove(path=profile_plotter_path+'surface_density.png')
     
-def test__potential_is_output(mass_profile, grids, profile_plotter_path):
+def test__potential_is_output(mass_profile, grid_stack, profile_plotter_path):
 
-    profile_plotters.plot_potential(mass_profile=mass_profile, grid=grids.regular,
+    profile_plotters.plot_potential(mass_profile=mass_profile, grid=grid_stack.regular,
                                     output_path=profile_plotter_path, output_format='png')
     assert os.path.isfile(path=profile_plotter_path+'potential.png')
     os.remove(path=profile_plotter_path+'potential.png')
     
-def test__deflections_y_is_output(mass_profile, grids, profile_plotter_path):
+def test__deflections_y_is_output(mass_profile, grid_stack, profile_plotter_path):
 
-    profile_plotters.plot_deflections_y(mass_profile=mass_profile, grid=grids.regular,
+    profile_plotters.plot_deflections_y(mass_profile=mass_profile, grid=grid_stack.regular,
                                         output_path=profile_plotter_path, output_format='png')
     assert os.path.isfile(path=profile_plotter_path+'deflections_y.png')
     os.remove(path=profile_plotter_path+'deflections_y.png')
 
-def test__deflections_x_is_output(mass_profile, grids, profile_plotter_path):
+def test__deflections_x_is_output(mass_profile, grid_stack, profile_plotter_path):
 
-    profile_plotters.plot_deflections_x(mass_profile=mass_profile, grid=grids.regular,
+    profile_plotters.plot_deflections_x(mass_profile=mass_profile, grid=grid_stack.regular,
                                         output_path=profile_plotter_path, output_format='png')
     assert os.path.isfile(path=profile_plotter_path+'deflections_x.png')
     os.remove(path=profile_plotter_path+'deflections_x.png')
