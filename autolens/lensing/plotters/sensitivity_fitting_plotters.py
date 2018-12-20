@@ -19,7 +19,7 @@ def plot_fitting_subplot(fit, should_plot_mask=True, positions=None,
 
     Parameters
     -----------
-    fit : autolens.sensitivity_fitting.SensitivityProfileFit
+    fit : autolens.sensitivity_fitting.SensitivityProfileFitter
         Class containing fitting between the model datas and observed lensing datas (including residual_map, chi_squared_map etc.)
     """
 
