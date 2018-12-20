@@ -79,9 +79,13 @@ def make_hyper():
 
     hyper = Hyper()
 
-    hyper.hyper_model_image = np.ones((5))
-    hyper.hyper_galaxy_images = [np.ones((5))]
-    hyper.hyper_minimum_values = [0.2]
+    hyper.hyper_model_image = np.array([[3.0, 5.0, 7.0],
+                                        [9.0, 8.0, 1.0],
+                                        [4.0, 0.0, 9.0]])
+    hyper.hyper_galaxy_images = [np.array([[1.0, 3.0, 5.0],
+                                           [7.0, 9.0, 8.0],
+                                           [6.0, 4.0, 0.0]])]
+    hyper.hyper_minimum_values = [0.2, 0.8]
 
     hyper_galaxy = g.HyperGalaxy(contribution_factor=4.0, noise_factor=2.0, noise_power=3.0)
     hyper.hyper_galaxy = g.Galaxy(light=lp.EllipticalSersic(intensity=1.0), hyper_galaxy=hyper_galaxy)
@@ -97,7 +101,7 @@ def test_lensing_hyper_image(image, mask, hyper):
 @pytest.fixture(name='fit_hyper')
 def test_fit_hyper(lensing_hyper_image, hyper):
     tracer = ray_tracing.TracerImagePlane(lens_galaxies=[hyper.hyper_galaxy],
-                                          image_plane_grid_stack=[lensing_hyper_image.grid_stack])
+                                          image_plane_grid_stack=lensing_hyper_image.grid_stack)
     return lensing_fitters.fit_lensing_image_with_tracer(lensing_image=lensing_hyper_image, tracer=tracer)
 
 def test__image_is_output(fit, lensing_plotter_util_path):
@@ -131,8 +135,9 @@ def test__chi_squared_map_is_output(fit, lensing_plotter_util_path):
     assert os.path.isfile(path=lensing_plotter_util_path + 'fit_chi_squared_map.png')
     os.remove(path=lensing_plotter_util_path + 'fit_chi_squared_map.png')
     
-def test__contributions_is_output(fit_hyper, lensing_plotter_util_path):
+def test__contribution_map_is_output(fit_hyper, lensing_plotter_util_path):
 
-    lensing_plotter_util.plot_contribution_maps(fit=fit_hyper, output_path=lensing_plotter_util_path, output_format='png')
+    lensing_plotter_util.plot_contribution_maps(fit=fit_hyper, output_path=lensing_plotter_util_path,
+                                                output_format='png')
     assert os.path.isfile(path=lensing_plotter_util_path + 'fit_contribution_maps.png')
     os.remove(path=lensing_plotter_util_path + 'fit_contribution_maps.png')

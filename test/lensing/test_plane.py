@@ -12,72 +12,72 @@ from autolens.model.profiles import light_profiles as lp, mass_profiles as mp
 from test.mock.mock_inversion import MockRegularization, MockPixelization
 from test.mock.mock_imaging import MockBorders
 
-@pytest.fixture(name="data_grid_stack")
-def make_data_grid_stack():
+@pytest.fixture(name="grid_stack_0")
+def make_grid_stack_0():
     ma = mask.Mask(np.array([[True, True, True, True],
                              [True, False, False, True],
                              [True, True, True, True]]), pixel_scale=6.0)
 
-    data_grid_stack = grids.GridStack.grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=ma, sub_grid_size=2, psf_shape=(3, 3))
+    grid_stack_0 = grids.GridStack.grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=ma, sub_grid_size=2, psf_shape=(3, 3))
 
     # Manually overwrite a set of cooridnates to make tests of grid_stacks and defledctions straightforward
 
-    data_grid_stack.regular[0] = np.array([1.0, 1.0])
-    data_grid_stack.regular[1] = np.array([1.0, 0.0])
-    data_grid_stack.sub[0] = np.array([1.0, 1.0])
-    data_grid_stack.sub[1] = np.array([1.0, 0.0])
-    data_grid_stack.sub[2] = np.array([1.0, 1.0])
-    data_grid_stack.sub[3] = np.array([1.0, 0.0])
-    data_grid_stack.sub[4] = np.array([-1.0, 2.0])
-    data_grid_stack.sub[5] = np.array([-1.0, 4.0])
-    data_grid_stack.sub[6] = np.array([1.0, 2.0])
-    data_grid_stack.sub[7] = np.array([1.0, 4.0])
-    data_grid_stack.blurring[0] = np.array([1.0, 0.0])
-    data_grid_stack.blurring[1] = np.array([-6.0, -3.0])
-    data_grid_stack.blurring[2] = np.array([-6.0, 3.0])
-    data_grid_stack.blurring[3] = np.array([-6.0, 9.0])
-    data_grid_stack.blurring[4] = np.array([0.0, -9.0])
-    data_grid_stack.blurring[5] = np.array([0.0, 9.0])
-    data_grid_stack.blurring[6] = np.array([6.0, -9.0])
-    data_grid_stack.blurring[7] = np.array([6.0, -3.0])
-    data_grid_stack.blurring[8] = np.array([6.0, 3.0])
-    data_grid_stack.blurring[9] = np.array([6.0, 9.0])
+    grid_stack_0.regular[0] = np.array([1.0, 1.0])
+    grid_stack_0.regular[1] = np.array([1.0, 0.0])
+    grid_stack_0.sub[0] = np.array([1.0, 1.0])
+    grid_stack_0.sub[1] = np.array([1.0, 0.0])
+    grid_stack_0.sub[2] = np.array([1.0, 1.0])
+    grid_stack_0.sub[3] = np.array([1.0, 0.0])
+    grid_stack_0.sub[4] = np.array([-1.0, 2.0])
+    grid_stack_0.sub[5] = np.array([-1.0, 4.0])
+    grid_stack_0.sub[6] = np.array([1.0, 2.0])
+    grid_stack_0.sub[7] = np.array([1.0, 4.0])
+    grid_stack_0.blurring[0] = np.array([1.0, 0.0])
+    grid_stack_0.blurring[1] = np.array([-6.0, -3.0])
+    grid_stack_0.blurring[2] = np.array([-6.0, 3.0])
+    grid_stack_0.blurring[3] = np.array([-6.0, 9.0])
+    grid_stack_0.blurring[4] = np.array([0.0, -9.0])
+    grid_stack_0.blurring[5] = np.array([0.0, 9.0])
+    grid_stack_0.blurring[6] = np.array([6.0, -9.0])
+    grid_stack_0.blurring[7] = np.array([6.0, -3.0])
+    grid_stack_0.blurring[8] = np.array([6.0, 3.0])
+    grid_stack_0.blurring[9] = np.array([6.0, 9.0])
 
-    return data_grid_stack
+    return grid_stack_0
 
 
-@pytest.fixture(name="data_grid_stack_1")
-def make_data_grid_stack_1():
+@pytest.fixture(name="grid_stack_1")
+def make_grid_stack_1():
     ma = mask.Mask(np.array([[True, True, True, True],
                              [True, False, False, True],
                              [True, True, True, True]]), pixel_scale=12.0)
 
-    data_grid_stack = grids.GridStack.grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=ma, sub_grid_size=2, psf_shape=(3, 3))
+    grid_stack_0 = grids.GridStack.grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=ma, sub_grid_size=2, psf_shape=(3, 3))
 
     # Manually overwrite a set of cooridnates to make tests of grid_stacks and defledctions straightforward
 
-    data_grid_stack.regular[0] = np.array([2.0, 2.0])
-    data_grid_stack.regular[1] = np.array([2.0, 2.0])
-    data_grid_stack.sub[0] = np.array([2.0, 2.0])
-    data_grid_stack.sub[1] = np.array([2.0, 0.0])
-    data_grid_stack.sub[2] = np.array([2.0, 2.0])
-    data_grid_stack.sub[3] = np.array([2.0, 0.0])
-    data_grid_stack.sub[4] = np.array([-2.0, 4.0])
-    data_grid_stack.sub[5] = np.array([-2.0, 8.0])
-    data_grid_stack.sub[6] = np.array([2.0, 4.0])
-    data_grid_stack.sub[7] = np.array([2.0, 8.0])
-    data_grid_stack.blurring[0] = np.array([2.0, 0.0])
-    data_grid_stack.blurring[1] = np.array([-12.0, -6.0])
-    data_grid_stack.blurring[2] = np.array([-12.0, 6.0])
-    data_grid_stack.blurring[3] = np.array([-12.0, 18.0])
-    data_grid_stack.blurring[4] = np.array([0.0, -18.0])
-    data_grid_stack.blurring[5] = np.array([0.0, 18.0])
-    data_grid_stack.blurring[6] = np.array([12.0, -18.0])
-    data_grid_stack.blurring[7] = np.array([12.0, -6.0])
-    data_grid_stack.blurring[8] = np.array([12.0, 6.0])
-    data_grid_stack.blurring[9] = np.array([12.0, 18.0])
+    grid_stack_0.regular[0] = np.array([2.0, 2.0])
+    grid_stack_0.regular[1] = np.array([2.0, 2.0])
+    grid_stack_0.sub[0] = np.array([2.0, 2.0])
+    grid_stack_0.sub[1] = np.array([2.0, 0.0])
+    grid_stack_0.sub[2] = np.array([2.0, 2.0])
+    grid_stack_0.sub[3] = np.array([2.0, 0.0])
+    grid_stack_0.sub[4] = np.array([-2.0, 4.0])
+    grid_stack_0.sub[5] = np.array([-2.0, 8.0])
+    grid_stack_0.sub[6] = np.array([2.0, 4.0])
+    grid_stack_0.sub[7] = np.array([2.0, 8.0])
+    grid_stack_0.blurring[0] = np.array([2.0, 0.0])
+    grid_stack_0.blurring[1] = np.array([-12.0, -6.0])
+    grid_stack_0.blurring[2] = np.array([-12.0, 6.0])
+    grid_stack_0.blurring[3] = np.array([-12.0, 18.0])
+    grid_stack_0.blurring[4] = np.array([0.0, -18.0])
+    grid_stack_0.blurring[5] = np.array([0.0, 18.0])
+    grid_stack_0.blurring[6] = np.array([12.0, -18.0])
+    grid_stack_0.blurring[7] = np.array([12.0, -6.0])
+    grid_stack_0.blurring[8] = np.array([12.0, 6.0])
+    grid_stack_0.blurring[9] = np.array([12.0, 18.0])
 
-    return data_grid_stack
+    return grid_stack_0
 
 
 @pytest.fixture(name="padded_grid_stack")
@@ -110,98 +110,98 @@ def make_galaxy_mass_x2():
 
 class TestIntensitiesFromGrid:
 
-    def test__no_galaxies__intensities_returned_as_0s(self, data_grid_stack, galaxy_non):
+    def test__no_galaxies__intensities_returned_as_0s(self, grid_stack_0, galaxy_non):
 
-        data_grid_stack.regular = np.array([[1.0, 1.0],
+        grid_stack_0.regular = np.array([[1.0, 1.0],
                                         [2.0, 2.0],
                                         [3.0, 3.0]])
 
-        intensities = pl.intensities_from_grid(grid=data_grid_stack.regular,
+        intensities = pl.intensities_from_grid(grid=grid_stack_0.regular,
                                                         galaxies=[galaxy_non])
 
         assert (intensities[0] == np.array([0.0, 0.0])).all()
         assert (intensities[1] == np.array([0.0, 0.0])).all()
         assert (intensities[2] == np.array([0.0, 0.0])).all()
 
-    def test__galaxy_light__intensities_returned_as_correct_values(self, data_grid_stack, galaxy_light):
-        data_grid_stack.regular = np.array([[1.0, 1.0],
+    def test__galaxy_light__intensities_returned_as_correct_values(self, grid_stack_0, galaxy_light):
+        grid_stack_0.regular = np.array([[1.0, 1.0],
                                         [1.0, 0.0],
                                         [-1.0, 0.0]])
 
-        galaxy_intensities = galaxy_light.intensities_from_grid(data_grid_stack.regular)
+        galaxy_intensities = galaxy_light.intensities_from_grid(grid_stack_0.regular)
 
-        tracer_intensities = pl.intensities_from_grid(grid=data_grid_stack.regular,
+        tracer_intensities = pl.intensities_from_grid(grid=grid_stack_0.regular,
                                                                galaxies=[galaxy_light])
 
         assert (galaxy_intensities == tracer_intensities).all()
 
-    def test__galaxy_light_x2__intensities_double_from_above(self, data_grid_stack, galaxy_light):
-        data_grid_stack.regular = np.array([[1.0, 1.0],
+    def test__galaxy_light_x2__intensities_double_from_above(self, grid_stack_0, galaxy_light):
+        grid_stack_0.regular = np.array([[1.0, 1.0],
                                         [1.0, 0.0],
                                         [-1.0, 0.0]])
 
-        galaxy_intensities = galaxy_light.intensities_from_grid(data_grid_stack.regular)
+        galaxy_intensities = galaxy_light.intensities_from_grid(grid_stack_0.regular)
 
-        tracer_intensities = pl.intensities_from_grid(grid=data_grid_stack.regular,
+        tracer_intensities = pl.intensities_from_grid(grid=grid_stack_0.regular,
                                                                galaxies=[galaxy_light, galaxy_light])
 
         assert (2.0 * galaxy_intensities == tracer_intensities).all()
 
-    def test__sub_grid_in__grid_is_mapped_to_image_grid_by_wrapper(self, data_grid_stack, galaxy_light):
-        galaxy_image = galaxy_light.intensities_from_grid(data_grid_stack.sub)
+    def test__sub_grid_in__grid_is_mapped_to_image_grid_by_wrapper(self, grid_stack_0, galaxy_light):
+        galaxy_image = galaxy_light.intensities_from_grid(grid_stack_0.sub)
 
         galaxy_image = (galaxy_image[0] + galaxy_image[1] + galaxy_image[2] +
                         galaxy_image[3]) / 4.0
 
-        tracer_intensities = pl.intensities_from_grid(grid=data_grid_stack.sub, galaxies=[galaxy_light])
+        tracer_intensities = pl.intensities_from_grid(grid=grid_stack_0.sub, galaxies=[galaxy_light])
 
         assert tracer_intensities[0] == galaxy_image
 
 
 class TestSurfaceDensityFromGrid:
 
-    def test__no_galaxies__surface_density_returned_as_0s(self, data_grid_stack, galaxy_non):
-        data_grid_stack.regular = np.array([[1.0, 1.0],
+    def test__no_galaxies__surface_density_returned_as_0s(self, grid_stack_0, galaxy_non):
+        grid_stack_0.regular = np.array([[1.0, 1.0],
                                         [2.0, 2.0],
                                         [3.0, 3.0]])
 
-        surface_density = pl.surface_density_from_grid(grid=data_grid_stack.regular, galaxies=[galaxy_non])
+        surface_density = pl.surface_density_from_grid(grid=grid_stack_0.regular, galaxies=[galaxy_non])
 
         assert (surface_density[0] == np.array([0.0, 0.0])).all()
         assert (surface_density[1] == np.array([0.0, 0.0])).all()
         assert (surface_density[2] == np.array([0.0, 0.0])).all()
 
-    def test__galaxy_mass__surface_density_returned_as_correct_values(self, data_grid_stack, galaxy_mass):
-        data_grid_stack.regular = np.array([[1.0, 1.0],
+    def test__galaxy_mass__surface_density_returned_as_correct_values(self, grid_stack_0, galaxy_mass):
+        grid_stack_0.regular = np.array([[1.0, 1.0],
                                         [1.0, 0.0],
                                         [-1.0, 0.0]])
 
-        galaxy_surface_density = galaxy_mass.surface_density_from_grid(data_grid_stack.regular)
+        galaxy_surface_density = galaxy_mass.surface_density_from_grid(grid_stack_0.regular)
 
-        tracer_surface_density = pl.surface_density_from_grid(grid=data_grid_stack.regular,
+        tracer_surface_density = pl.surface_density_from_grid(grid=grid_stack_0.regular,
                                                                        galaxies=[galaxy_mass])
 
         assert (galaxy_surface_density == tracer_surface_density).all()
 
-    def test__galaxy_mass_x2__surface_density_double_from_above(self, data_grid_stack, galaxy_mass):
-        data_grid_stack.regular = np.array([[1.0, 1.0],
+    def test__galaxy_mass_x2__surface_density_double_from_above(self, grid_stack_0, galaxy_mass):
+        grid_stack_0.regular = np.array([[1.0, 1.0],
                                         [1.0, 0.0],
                                         [-1.0, 0.0]])
 
-        galaxy_surface_density = galaxy_mass.surface_density_from_grid(data_grid_stack.regular)
+        galaxy_surface_density = galaxy_mass.surface_density_from_grid(grid_stack_0.regular)
 
-        tracer_surface_density = pl.surface_density_from_grid(grid=data_grid_stack.regular,
+        tracer_surface_density = pl.surface_density_from_grid(grid=grid_stack_0.regular,
                                                                        galaxies=[galaxy_mass, galaxy_mass])
 
         assert (2.0 * galaxy_surface_density == tracer_surface_density).all()
 
-    def test__sub_grid_in__grid_is_mapped_to_image_grid_by_wrapper(self, data_grid_stack, galaxy_mass):
-        galaxy_image = galaxy_mass.surface_density_from_grid(data_grid_stack.sub)
+    def test__sub_grid_in__grid_is_mapped_to_image_grid_by_wrapper(self, grid_stack_0, galaxy_mass):
+        galaxy_image = galaxy_mass.surface_density_from_grid(grid_stack_0.sub)
 
         galaxy_image = (galaxy_image[0] + galaxy_image[1] + galaxy_image[2] +
                         galaxy_image[3]) / 4.0
 
-        tracer_surface_density = pl.surface_density_from_grid(grid=data_grid_stack.sub,
+        tracer_surface_density = pl.surface_density_from_grid(grid=grid_stack_0.sub,
                                                                        galaxies=[galaxy_mass])
 
         assert tracer_surface_density[0] == galaxy_image
@@ -209,55 +209,55 @@ class TestSurfaceDensityFromGrid:
 
 class TestPotentialFromGrid:
 
-    def test__no_galaxies__potential_returned_as_0s(self, data_grid_stack, galaxy_non):
-        data_grid_stack.regular = np.array([[1.0, 1.0],
+    def test__no_galaxies__potential_returned_as_0s(self, grid_stack_0, galaxy_non):
+        grid_stack_0.regular = np.array([[1.0, 1.0],
                                         [2.0, 2.0],
                                         [3.0, 3.0]])
 
-        potential = pl.potential_from_grid(grid=data_grid_stack.regular, galaxies=[galaxy_non])
+        potential = pl.potential_from_grid(grid=grid_stack_0.regular, galaxies=[galaxy_non])
 
         assert (potential[0] == np.array([0.0, 0.0])).all()
         assert (potential[1] == np.array([0.0, 0.0])).all()
         assert (potential[2] == np.array([0.0, 0.0])).all()
 
-    def test__galaxy_mass__potential_returned_as_correct_values(self, data_grid_stack, galaxy_mass):
-        data_grid_stack.regular = np.array([[1.0, 1.0],
+    def test__galaxy_mass__potential_returned_as_correct_values(self, grid_stack_0, galaxy_mass):
+        grid_stack_0.regular = np.array([[1.0, 1.0],
                                         [1.0, 0.0],
                                         [-1.0, 0.0]])
 
-        galaxy_potential = galaxy_mass.potential_from_grid(data_grid_stack.regular)
+        galaxy_potential = galaxy_mass.potential_from_grid(grid_stack_0.regular)
 
-        tracer_potential = pl.potential_from_grid(grid=data_grid_stack.regular, galaxies=[galaxy_mass])
+        tracer_potential = pl.potential_from_grid(grid=grid_stack_0.regular, galaxies=[galaxy_mass])
 
         assert (galaxy_potential == tracer_potential).all()
 
-    def test__galaxy_mass_x2__potential_double_from_above(self, data_grid_stack, galaxy_mass):
-        data_grid_stack.regular = np.array([[1.0, 1.0],
+    def test__galaxy_mass_x2__potential_double_from_above(self, grid_stack_0, galaxy_mass):
+        grid_stack_0.regular = np.array([[1.0, 1.0],
                                         [1.0, 0.0],
                                         [-1.0, 0.0]])
 
-        galaxy_potential = galaxy_mass.potential_from_grid(data_grid_stack.regular)
+        galaxy_potential = galaxy_mass.potential_from_grid(grid_stack_0.regular)
 
-        tracer_potential = pl.potential_from_grid(grid=data_grid_stack.regular,
+        tracer_potential = pl.potential_from_grid(grid=grid_stack_0.regular,
                                                            galaxies=[galaxy_mass, galaxy_mass])
 
         assert (2.0 * galaxy_potential == tracer_potential).all()
 
-    def test__sub_grid_in__grid_is_mapped_to_image_grid_by_wrapper(self, data_grid_stack, galaxy_mass):
-        galaxy_image = galaxy_mass.potential_from_grid(data_grid_stack.sub)
+    def test__sub_grid_in__grid_is_mapped_to_image_grid_by_wrapper(self, grid_stack_0, galaxy_mass):
+        galaxy_image = galaxy_mass.potential_from_grid(grid_stack_0.sub)
 
         galaxy_image = (galaxy_image[0] + galaxy_image[1] + galaxy_image[2] +
                         galaxy_image[3]) / 4.0
 
-        tracer_potential = pl.potential_from_grid(grid=data_grid_stack.sub, galaxies=[galaxy_mass])
+        tracer_potential = pl.potential_from_grid(grid=grid_stack_0.sub, galaxies=[galaxy_mass])
 
         assert tracer_potential[0] == galaxy_image
 
 
 class TestDeflectionsFromGrid:
 
-    def test__all_coordinates(self, data_grid_stack, galaxy_mass):
-        deflections = pl.deflections_from_grid_stack(data_grid_stack, [galaxy_mass])
+    def test__all_coordinates(self, grid_stack_0, galaxy_mass):
+        deflections = pl.deflections_from_grid_stack(grid_stack_0, [galaxy_mass])
 
         assert deflections.regular[0] == pytest.approx(np.array([0.707, 0.707]), 1e-3)
         assert deflections.sub[0] == pytest.approx(np.array([0.707, 0.707]), 1e-3)
@@ -265,8 +265,8 @@ class TestDeflectionsFromGrid:
         #    assert deflection_stacks.sub.sub_grid_size == 2
         assert deflections.blurring[0] == pytest.approx(np.array([1.0, 0.0]), 1e-3)
 
-    def test__2_identical_lens_galaxies__deflection_angles_double(self, data_grid_stack, galaxy_mass):
-        deflections = pl.deflections_from_grid_stack(data_grid_stack, [galaxy_mass, galaxy_mass])
+    def test__2_identical_lens_galaxies__deflection_angles_double(self, grid_stack_0, galaxy_mass):
+        deflections = pl.deflections_from_grid_stack(grid_stack_0, [galaxy_mass, galaxy_mass])
 
         assert deflections.regular[0] == pytest.approx(np.array([2.0 * 0.707, 2.0 * 0.707]), 1e-3)
         assert deflections.sub[0] == pytest.approx(np.array([2.0 * 0.707, 2.0 * 0.707]), 1e-3)
@@ -274,8 +274,8 @@ class TestDeflectionsFromGrid:
         #    assert deflection_stacks.sub.sub_grid_size == 2
         assert deflections.blurring[0] == pytest.approx(np.array([2.0, 0.0]), 1e-3)
 
-    def test__1_lens_with_2_identical_mass_profiles__deflection_angles_double(self, data_grid_stack, galaxy_mass_x2):
-        deflections = pl.deflections_from_grid_stack(data_grid_stack, [galaxy_mass_x2])
+    def test__1_lens_with_2_identical_mass_profiles__deflection_angles_double(self, grid_stack_0, galaxy_mass_x2):
+        deflections = pl.deflections_from_grid_stack(grid_stack_0, [galaxy_mass_x2])
 
         assert deflections.regular[0] == pytest.approx(np.array([2.0 * 0.707, 2.0 * 0.707]), 1e-3)
         assert deflections.sub[0] == pytest.approx(np.array([2.0 * 0.707, 2.0 * 0.707]), 1e-3)
@@ -285,25 +285,25 @@ class TestDeflectionsFromGrid:
 
 class TestSetupTracedGrid:
 
-    def test__simple_sis_model__deflection_angles(self, data_grid_stack, galaxy_mass):
-        deflections = pl.deflections_from_grid_stack(data_grid_stack, [galaxy_mass])
+    def test__simple_sis_model__deflection_angles(self, grid_stack_0, galaxy_mass):
+        deflections = pl.deflections_from_grid_stack(grid_stack_0, [galaxy_mass])
 
-        grid_traced = pl.traced_collection_for_deflections(data_grid_stack, deflections)
+        grid_traced = pl.traced_collection_for_deflections(grid_stack_0, deflections)
 
         assert grid_traced.regular[0] == pytest.approx(np.array([1.0 - 0.707, 1.0 - 0.707]), 1e-2)
 
-    def test_two_identical_lenses__deflection_angles_double(self, data_grid_stack, galaxy_mass):
-        deflections = pl.deflections_from_grid_stack(data_grid_stack, [galaxy_mass, galaxy_mass])
+    def test_two_identical_lenses__deflection_angles_double(self, grid_stack_0, galaxy_mass):
+        deflections = pl.deflections_from_grid_stack(grid_stack_0, [galaxy_mass, galaxy_mass])
 
-        grid_traced = pl.traced_collection_for_deflections(data_grid_stack, deflections)
+        grid_traced = pl.traced_collection_for_deflections(grid_stack_0, deflections)
 
         assert grid_traced.regular[0] == pytest.approx(np.array([1.0 - 2.0 * 0.707, 1.0 - 2.0 * 0.707]), 1e-3)
 
-    def test_one_lens_with_double_identical_mass_profiles__deflection_angles_double(self, data_grid_stack,
+    def test_one_lens_with_double_identical_mass_profiles__deflection_angles_double(self, grid_stack_0,
                                                                                     galaxy_mass_x2):
-        deflections = pl.deflections_from_grid_stack(data_grid_stack, [galaxy_mass_x2])
+        deflections = pl.deflections_from_grid_stack(grid_stack_0, [galaxy_mass_x2])
 
-        grid_traced = pl.traced_collection_for_deflections(data_grid_stack, deflections)
+        grid_traced = pl.traced_collection_for_deflections(grid_stack_0, deflections)
 
         assert grid_traced.regular[0] == pytest.approx(np.array([1.0 - 2.0 * 0.707, 1.0 - 2.0 * 0.707]), 1e-3)
 
@@ -665,10 +665,10 @@ class TestPlane(object):
 
     class TestGridStackSetup:
 
-        def test__data_grid_stack_setup_for_regular_sub_and_blurring__no_deflections(self, data_grid_stack,
+        def test__grid_stack_0_setup_for_regular_sub_and_blurring__no_deflections(self, grid_stack_0,
                                                                                      galaxy_mass):
             
-            plane = pl.Plane(galaxies=[galaxy_mass], grid_stack=data_grid_stack, compute_deflections=False)
+            plane = pl.Plane(galaxies=[galaxy_mass], grid_stack=grid_stack_0, compute_deflections=False)
 
             assert plane.grid_stack.regular == pytest.approx(np.array([[1.0, 1.0], [1.0, 0.0]]), 1e-3)
             assert plane.grid_stack.sub == pytest.approx(np.array([[1.0, 1.0], [1.0, 0.0], [1.0, 1.0], [1.0, 0.0],
@@ -679,34 +679,34 @@ class TestPlane(object):
 
             assert plane.deflection_stack == None
 
-        def test__same_as_above_but_test_deflections(self, data_grid_stack, galaxy_mass):
+        def test__same_as_above_but_test_deflections(self, grid_stack_0, galaxy_mass):
 
-            plane = pl.Plane(galaxies=[galaxy_mass], grid_stack=data_grid_stack, compute_deflections=True)
+            plane = pl.Plane(galaxies=[galaxy_mass], grid_stack=grid_stack_0, compute_deflections=True)
 
-            sub_galaxy_deflections = galaxy_mass.deflections_from_grid(data_grid_stack.sub)
-            blurring_galaxy_deflections = galaxy_mass.deflections_from_grid(data_grid_stack.blurring)
+            sub_galaxy_deflections = galaxy_mass.deflections_from_grid(grid_stack_0.sub)
+            blurring_galaxy_deflections = galaxy_mass.deflections_from_grid(grid_stack_0.blurring)
 
             assert plane.deflection_stack.regular == pytest.approx(np.array([[0.707, 0.707], [1.0, 0.0]]), 1e-3)
             assert (plane.deflection_stack.sub == sub_galaxy_deflections).all()
             assert (plane.deflection_stack.blurring == blurring_galaxy_deflections).all()
 
-        def test__same_as_above__x2_galaxy_in_plane__or_galaxy_x2_sis__deflections_double(self, data_grid_stack,
+        def test__same_as_above__x2_galaxy_in_plane__or_galaxy_x2_sis__deflections_double(self, grid_stack_0,
                                                                                           galaxy_mass,
                                                                                           galaxy_mass_x2):
 
-            plane = pl.Plane(galaxies=[galaxy_mass_x2], grid_stack=data_grid_stack, compute_deflections=True)
+            plane = pl.Plane(galaxies=[galaxy_mass_x2], grid_stack=grid_stack_0, compute_deflections=True)
 
-            sub_galaxy_deflections = galaxy_mass_x2.deflections_from_grid(data_grid_stack.sub)
-            blurring_galaxy_deflections = galaxy_mass_x2.deflections_from_grid(data_grid_stack.blurring)
+            sub_galaxy_deflections = galaxy_mass_x2.deflections_from_grid(grid_stack_0.sub)
+            blurring_galaxy_deflections = galaxy_mass_x2.deflections_from_grid(grid_stack_0.blurring)
 
             assert plane.deflection_stack.regular == pytest.approx(np.array([[2.0 * 0.707, 2.0 * 0.707], [2.0, 0.0]]), 1e-3)
             assert (plane.deflection_stack.sub == sub_galaxy_deflections).all()
             assert (plane.deflection_stack.blurring == blurring_galaxy_deflections).all()
 
-            plane = pl.Plane(galaxies=[galaxy_mass, galaxy_mass], grid_stack=data_grid_stack, compute_deflections=True)
+            plane = pl.Plane(galaxies=[galaxy_mass, galaxy_mass], grid_stack=grid_stack_0, compute_deflections=True)
 
-            sub_galaxy_deflections = galaxy_mass.deflections_from_grid(data_grid_stack.sub)
-            blurring_galaxy_deflections = galaxy_mass.deflections_from_grid(data_grid_stack.blurring)
+            sub_galaxy_deflections = galaxy_mass.deflections_from_grid(grid_stack_0.sub)
+            blurring_galaxy_deflections = galaxy_mass.deflections_from_grid(grid_stack_0.blurring)
 
             assert plane.deflection_stack.regular == pytest.approx(np.array([[2.0 * 0.707, 2.0 * 0.707], [2.0, 0.0]]), 1e-3)
             assert (plane.deflection_stack.sub == 2.0 * sub_galaxy_deflections).all()
@@ -714,9 +714,9 @@ class TestPlane(object):
 
     class TestProperties:
 
-        def test__padded_grid_in__tracer_has_padded_grid_property(self, data_grid_stack, padded_grid_stack, galaxy_light):
+        def test__padded_grid_in__tracer_has_padded_grid_property(self, grid_stack_0, padded_grid_stack, galaxy_light):
 
-            plane = pl.Plane(grid_stack=data_grid_stack, galaxies=[galaxy_light])
+            plane = pl.Plane(grid_stack=grid_stack_0, galaxies=[galaxy_light])
             assert plane.has_padded_grid_stack == False
 
             plane = pl.Plane(grid_stack=padded_grid_stack, galaxies=[galaxy_light])
@@ -724,37 +724,37 @@ class TestPlane(object):
 
     class TestImage:
 
-        def test__image_from_plane__same_as_its_light_profile_image(self, data_grid_stack, galaxy_light):
+        def test__image_from_plane__same_as_its_light_profile_image(self, grid_stack_0, galaxy_light):
             
             lp = galaxy_light.light_profiles[0]
 
-            lp_sub_image = lp.intensities_from_grid(data_grid_stack.sub)
+            lp_sub_image = lp.intensities_from_grid(grid_stack_0.sub)
 
             # Perform sub gridding average manually
             lp_image_pixel_0 = (lp_sub_image[0] + lp_sub_image[1] + lp_sub_image[2] + lp_sub_image[3]) / 4
             lp_image_pixel_1 = (lp_sub_image[4] + lp_sub_image[5] + lp_sub_image[6] + lp_sub_image[7]) / 4
 
-            plane = pl.Plane(galaxies=[galaxy_light], grid_stack=data_grid_stack)
+            plane = pl.Plane(galaxies=[galaxy_light], grid_stack=grid_stack_0)
 
             assert (plane.image_plane_image_1d[0] == lp_image_pixel_0).all()
             assert (plane.image_plane_image_1d[1] == lp_image_pixel_1).all()
             assert (plane.image_plane_image ==
-                    data_grid_stack.regular.scaled_array_from_array_1d(plane.image_plane_image_1d)).all()
+                    grid_stack_0.regular.scaled_array_from_array_1d(plane.image_plane_image_1d)).all()
 
-        def test__image_from_plane__same_as_its_galaxy_image(self, data_grid_stack, galaxy_light):
+        def test__image_from_plane__same_as_its_galaxy_image(self, grid_stack_0, galaxy_light):
 
-            galaxy_image = pl.intensities_from_grid(data_grid_stack.sub, galaxies=[galaxy_light])
+            galaxy_image = pl.intensities_from_grid(grid_stack_0.sub, galaxies=[galaxy_light])
 
-            plane = pl.Plane(galaxies=[galaxy_light], grid_stack=data_grid_stack)
+            plane = pl.Plane(galaxies=[galaxy_light], grid_stack=grid_stack_0)
 
             assert (plane.image_plane_image_1d == galaxy_image).all()
             assert (plane.image_plane_image ==
-                    data_grid_stack.regular.scaled_array_from_array_1d(plane.image_plane_image_1d)).all()
+                    grid_stack_0.regular.scaled_array_from_array_1d(plane.image_plane_image_1d)).all()
 
-        def test__image_plane_image_of_galaxies(self, data_grid_stack):
+        def test__image_plane_image_of_galaxies(self, grid_stack_0):
 
             # Overwrite one value so intensity in each pixel is different
-            data_grid_stack.sub[5] = np.array([2.0, 2.0])
+            grid_stack_0.sub[5] = np.array([2.0, 2.0])
 
             g0 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=1.0))
             g1 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=2.0))
@@ -762,8 +762,8 @@ class TestPlane(object):
             lp0 = g0.light_profiles[0]
             lp1 = g1.light_profiles[0]
 
-            lp0_sub_image = lp0.intensities_from_grid(data_grid_stack.sub)
-            lp1_sub_image = lp1.intensities_from_grid(data_grid_stack.sub)
+            lp0_sub_image = lp0.intensities_from_grid(grid_stack_0.sub)
+            lp1_sub_image = lp1.intensities_from_grid(grid_stack_0.sub)
 
             # Perform sub gridding average manually
             lp0_image_pixel_0 = (lp0_sub_image[0] + lp0_sub_image[1] + lp0_sub_image[2] + lp0_sub_image[3]) / 4
@@ -771,34 +771,34 @@ class TestPlane(object):
             lp1_image_pixel_0 = (lp1_sub_image[0] + lp1_sub_image[1] + lp1_sub_image[2] + lp1_sub_image[3]) / 4
             lp1_image_pixel_1 = (lp1_sub_image[4] + lp1_sub_image[5] + lp1_sub_image[6] + lp1_sub_image[7]) / 4
 
-            plane = pl.Plane(galaxies=[g0, g1], grid_stack=data_grid_stack)
+            plane = pl.Plane(galaxies=[g0, g1], grid_stack=grid_stack_0)
 
             assert (plane.image_plane_image_1d[0] == lp0_image_pixel_0 + lp1_image_pixel_0).all()
             assert (plane.image_plane_image_1d[1] == lp0_image_pixel_1 + lp1_image_pixel_1).all()
             assert (plane.image_plane_image ==
-                    data_grid_stack.regular.scaled_array_from_array_1d(plane.image_plane_image_1d)).all()
+                    grid_stack_0.regular.scaled_array_from_array_1d(plane.image_plane_image_1d)).all()
 
             assert (plane.image_plane_image_1d_of_galaxies[0][0] == lp0_image_pixel_0)
             assert (plane.image_plane_image_1d_of_galaxies[0][1] == lp0_image_pixel_1)
             assert (plane.image_plane_image_1d_of_galaxies[1][0] == lp1_image_pixel_0)
             assert (plane.image_plane_image_1d_of_galaxies[1][1] == lp1_image_pixel_1)
 
-        def test__same_as_above__use_multiple_galaxies(self, data_grid_stack):
+        def test__same_as_above__use_multiple_galaxies(self, grid_stack_0):
 
             # Overwrite one value so intensity in each pixel is different
-            data_grid_stack.sub[5] = np.array([2.0, 2.0])
+            grid_stack_0.sub[5] = np.array([2.0, 2.0])
 
             g0 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=1.0))
             g1 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=2.0))
 
-            g0_image = pl.intensities_from_grid(data_grid_stack.sub, galaxies=[g0])
-            g1_image = pl.intensities_from_grid(data_grid_stack.sub, galaxies=[g1])
+            g0_image = pl.intensities_from_grid(grid_stack_0.sub, galaxies=[g0])
+            g1_image = pl.intensities_from_grid(grid_stack_0.sub, galaxies=[g1])
 
-            plane = pl.Plane(galaxies=[g0, g1], grid_stack=data_grid_stack)
+            plane = pl.Plane(galaxies=[g0, g1], grid_stack=grid_stack_0)
 
             assert (plane.image_plane_image_1d == g0_image + g1_image).all()
             assert (plane.image_plane_image ==
-                    data_grid_stack.regular.scaled_array_from_array_1d(plane.image_plane_image_1d)).all()
+                    grid_stack_0.regular.scaled_array_from_array_1d(plane.image_plane_image_1d)).all()
 
             assert (plane.image_plane_image_1d_of_galaxies[0] == g0_image).all()
             assert (plane.image_plane_image_1d_of_galaxies[1] == g1_image).all()
@@ -841,19 +841,19 @@ class TestPlane(object):
 
     class TestBlurringImage:
 
-        def test__image_from_plane__same_as_its_light_profile_image(self, data_grid_stack, galaxy_light):
+        def test__image_from_plane__same_as_its_light_profile_image(self, grid_stack_0, galaxy_light):
 
             lp = galaxy_light.light_profiles[0]
 
-            lp_blurring_image = lp.intensities_from_grid(data_grid_stack.blurring)
+            lp_blurring_image = lp.intensities_from_grid(grid_stack_0.blurring)
 
-            plane = pl.Plane(galaxies=[galaxy_light], grid_stack=data_grid_stack)
+            plane = pl.Plane(galaxies=[galaxy_light], grid_stack=grid_stack_0)
 
             assert (plane.image_plane_blurring_image_1d == lp_blurring_image).all()
 
-        def test__same_as_above__use_multiple_galaxies(self, data_grid_stack):
+        def test__same_as_above__use_multiple_galaxies(self, grid_stack_0):
             # Overwrite one value so intensity in each pixel is different
-            data_grid_stack.blurring[1] = np.array([2.0, 2.0])
+            grid_stack_0.blurring[1] = np.array([2.0, 2.0])
 
             g0 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=1.0))
             g1 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=2.0))
@@ -861,57 +861,57 @@ class TestPlane(object):
             lp0 = g0.light_profiles[0]
             lp1 = g1.light_profiles[0]
 
-            lp0_blurring_image = lp0.intensities_from_grid(data_grid_stack.blurring)
-            lp1_blurring_image = lp1.intensities_from_grid(data_grid_stack.blurring)
+            lp0_blurring_image = lp0.intensities_from_grid(grid_stack_0.blurring)
+            lp1_blurring_image = lp1.intensities_from_grid(grid_stack_0.blurring)
 
-            plane = pl.Plane(galaxies=[g0, g1], grid_stack=data_grid_stack)
+            plane = pl.Plane(galaxies=[g0, g1], grid_stack=grid_stack_0)
 
             assert (plane.image_plane_blurring_image_1d == lp0_blurring_image + lp1_blurring_image).all()
 
-        def test__image_from_plane__same_as_its_galaxy_image(self, data_grid_stack, galaxy_light):
+        def test__image_from_plane__same_as_its_galaxy_image(self, grid_stack_0, galaxy_light):
 
-            galaxy_image = pl.intensities_from_grid(data_grid_stack.blurring, galaxies=[galaxy_light])
+            galaxy_image = pl.intensities_from_grid(grid_stack_0.blurring, galaxies=[galaxy_light])
 
-            plane = pl.Plane(galaxies=[galaxy_light], grid_stack=data_grid_stack)
+            plane = pl.Plane(galaxies=[galaxy_light], grid_stack=grid_stack_0)
 
             assert (plane.image_plane_blurring_image_1d == galaxy_image).all()
 
-        def test__same_as_above_galaxies___use_multiple_galaxies(self, data_grid_stack):
+        def test__same_as_above_galaxies___use_multiple_galaxies(self, grid_stack_0):
 
             # Overwrite one value so intensity in each pixel is different
-            data_grid_stack.blurring[1] = np.array([2.0, 2.0])
+            grid_stack_0.blurring[1] = np.array([2.0, 2.0])
 
             g0 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=1.0))
             g1 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=2.0))
 
-            g0_image = pl.intensities_from_grid(data_grid_stack.blurring, galaxies=[g0])
-            g1_image = pl.intensities_from_grid(data_grid_stack.blurring, galaxies=[g1])
+            g0_image = pl.intensities_from_grid(grid_stack_0.blurring, galaxies=[g0])
+            g1_image = pl.intensities_from_grid(grid_stack_0.blurring, galaxies=[g1])
 
-            plane = pl.Plane(galaxies=[g0, g1], grid_stack=data_grid_stack)
+            plane = pl.Plane(galaxies=[g0, g1], grid_stack=grid_stack_0)
 
             assert (plane.image_plane_blurring_image_1d == g0_image + g1_image).all()
 
     class TestSurfaceDensity:
 
-        def test__surface_density_from_plane__same_as_its_mass_profile(self, data_grid_stack, galaxy_mass):
+        def test__surface_density_from_plane__same_as_its_mass_profile(self, grid_stack_0, galaxy_mass):
 
             mp = galaxy_mass.mass_profiles[0]
 
-            mp_sub_image = mp.surface_density_from_grid(data_grid_stack.sub.unlensed_grid)
+            mp_sub_image = mp.surface_density_from_grid(grid_stack_0.sub.unlensed_grid)
 
             # Perform sub gridding average manually
             mp_image_pixel_0 = (mp_sub_image[0] + mp_sub_image[1] + mp_sub_image[2] + mp_sub_image[3]) / 4
             mp_image_pixel_1 = (mp_sub_image[4] + mp_sub_image[5] + mp_sub_image[6] + mp_sub_image[7]) / 4
 
-            plane = pl.Plane(galaxies=[galaxy_mass], grid_stack=data_grid_stack)
+            plane = pl.Plane(galaxies=[galaxy_mass], grid_stack=grid_stack_0)
 
             assert (plane.surface_density[1,1] == mp_image_pixel_0).all()
             assert (plane.surface_density[1,2] == mp_image_pixel_1).all()
 
-        def test__same_as_above__use_multiple_galaxies(self, data_grid_stack):
+        def test__same_as_above__use_multiple_galaxies(self, grid_stack_0):
 
             # Overwrite one value so intensity in each pixel is different
-            data_grid_stack.sub[5] = np.array([2.0, 2.0])
+            grid_stack_0.sub[5] = np.array([2.0, 2.0])
 
             g0 = g.Galaxy(mass_profile=mp.SphericalIsothermal(einstein_radius=1.0))
             g1 = g.Galaxy(mass_profile=mp.SphericalIsothermal(einstein_radius=2.0))
@@ -919,8 +919,8 @@ class TestPlane(object):
             mp0 = g0.mass_profiles[0]
             mp1 = g1.mass_profiles[0]
 
-            mp0_sub_image = mp0.surface_density_from_grid(data_grid_stack.sub.unlensed_grid)
-            mp1_sub_image = mp1.surface_density_from_grid(data_grid_stack.sub.unlensed_grid)
+            mp0_sub_image = mp0.surface_density_from_grid(grid_stack_0.sub.unlensed_grid)
+            mp1_sub_image = mp1.surface_density_from_grid(grid_stack_0.sub.unlensed_grid)
 
             # Perform sub gridding average manually
             mp0_image_pixel_0 = (mp0_sub_image[0] + mp0_sub_image[1] + mp0_sub_image[2] + mp0_sub_image[3]) / 4
@@ -928,43 +928,61 @@ class TestPlane(object):
             mp1_image_pixel_0 = (mp1_sub_image[0] + mp1_sub_image[1] + mp1_sub_image[2] + mp1_sub_image[3]) / 4
             mp1_image_pixel_1 = (mp1_sub_image[4] + mp1_sub_image[5] + mp1_sub_image[6] + mp1_sub_image[7]) / 4
 
-            plane = pl.Plane(galaxies=[g0, g1], grid_stack=data_grid_stack)
+            plane = pl.Plane(galaxies=[g0, g1], grid_stack=grid_stack_0)
 
             assert (plane.surface_density[1,1] == mp0_image_pixel_0 + mp1_image_pixel_0).all()
             assert (plane.surface_density[1,2] == mp0_image_pixel_1 + mp1_image_pixel_1).all()
 
-        def test__surface_density__same_as_its_galaxy(self, data_grid_stack, galaxy_mass):
+        def test__surface_density__same_as_its_galaxy(self, grid_stack_0, galaxy_mass):
 
-            galaxy_surface_density = pl.surface_density_from_grid(data_grid_stack.sub.unlensed_grid,
+            galaxy_surface_density = pl.surface_density_from_grid(grid_stack_0.sub.unlensed_grid,
                                                                   galaxies=[galaxy_mass])
 
-            galaxy_surface_density = data_grid_stack.regular.scaled_array_from_array_1d(galaxy_surface_density)
+            galaxy_surface_density = grid_stack_0.regular.scaled_array_from_array_1d(galaxy_surface_density)
 
-            plane = pl.Plane(galaxies=[galaxy_mass], grid_stack=data_grid_stack)
+            plane = pl.Plane(galaxies=[galaxy_mass], grid_stack=grid_stack_0)
 
             assert (plane.surface_density == galaxy_surface_density).all()
 
-        def test__same_as_above_galaxies___use_multiple_galaxies(self, data_grid_stack):
+        def test__same_as_above_galaxies___use_multiple_galaxies(self, grid_stack_0):
 
             g0 = g.Galaxy(mass_profile=mp.SphericalIsothermal(einstein_radius=1.0))
             g1 = g.Galaxy(mass_profile=mp.SphericalIsothermal(einstein_radius=2.0))
 
-            g0_surface_density = pl.surface_density_from_grid(data_grid_stack.sub.unlensed_grid, galaxies=[g0])
-            g1_surface_density = pl.surface_density_from_grid(data_grid_stack.sub.unlensed_grid, galaxies=[g1])
+            g0_surface_density = pl.surface_density_from_grid(grid_stack_0.sub.unlensed_grid, galaxies=[g0])
+            g1_surface_density = pl.surface_density_from_grid(grid_stack_0.sub.unlensed_grid, galaxies=[g1])
 
-            g0_surface_density = data_grid_stack.regular.scaled_array_from_array_1d(g0_surface_density)
-            g1_surface_density = data_grid_stack.regular.scaled_array_from_array_1d(g1_surface_density)
+            g0_surface_density = grid_stack_0.regular.scaled_array_from_array_1d(g0_surface_density)
+            g1_surface_density = grid_stack_0.regular.scaled_array_from_array_1d(g1_surface_density)
 
-            plane = pl.Plane(galaxies=[g0, g1], grid_stack=data_grid_stack)
+            plane = pl.Plane(galaxies=[g0, g1], grid_stack=grid_stack_0)
 
             assert (plane.surface_density == g0_surface_density + g1_surface_density).all()
 
-    class TestPotential:
+        def test__surface_density_from_plane__same_as_its_mass_profile__use_padded_grid_stack(self, padded_grid_stack, 
+                                                                                              galaxy_mass):
 
-        def test__potential_from_plane__same_as_its_mass_profile(self, data_grid_stack, galaxy_mass):
             mp = galaxy_mass.mass_profiles[0]
 
-            mp_sub_potential = mp.potential_from_grid(data_grid_stack.sub.unlensed_grid)
+            mp_sub_image = mp.surface_density_from_grid(padded_grid_stack.sub.unlensed_grid)
+
+            # The padded sub-grid adds 5 pixels arounds the mask from the top-left which we skip over, thus our
+            # first sub-pixel index is 20.
+            mp_image_pixel_0 = (mp_sub_image[20] + mp_sub_image[21] + mp_sub_image[22] + mp_sub_image[23]) / 4
+            mp_image_pixel_1 = (mp_sub_image[24] + mp_sub_image[25] + mp_sub_image[26] + mp_sub_image[27]) / 4
+
+            plane = pl.Plane(galaxies=[galaxy_mass], grid_stack=padded_grid_stack)
+
+            # The padded array is trimed to the same size as the original mask (1x2).
+            assert plane.surface_density[0,0] == pytest.approx(mp_image_pixel_0, 1.0e-4)
+            assert plane.surface_density[0,1] == pytest.approx(mp_image_pixel_1, 1.0e-4)
+
+    class TestPotential:
+
+        def test__potential_from_plane__same_as_its_mass_profile(self, grid_stack_0, galaxy_mass):
+            mp = galaxy_mass.mass_profiles[0]
+
+            mp_sub_potential = mp.potential_from_grid(grid_stack_0.sub.unlensed_grid)
 
             # Perform sub gridding average manually
             mp_potential_pixel_0 = (mp_sub_potential[0] + mp_sub_potential[1] + mp_sub_potential[2] + mp_sub_potential
@@ -972,14 +990,14 @@ class TestPlane(object):
             mp_potential_pixel_1 = (mp_sub_potential[4] + mp_sub_potential[5] + mp_sub_potential[6] + mp_sub_potential
                 [7]) / 4
 
-            plane = pl.Plane(galaxies=[galaxy_mass], grid_stack=data_grid_stack)
+            plane = pl.Plane(galaxies=[galaxy_mass], grid_stack=grid_stack_0)
 
             assert (plane.potential[1,1] == mp_potential_pixel_0).all()
             assert (plane.potential[1,2] == mp_potential_pixel_1).all()
 
-        def test__same_as_above__use_multiple_galaxies(self, data_grid_stack):
+        def test__same_as_above__use_multiple_galaxies(self, grid_stack_0):
             # Overwrite one value so intensity in each pixel is different
-            data_grid_stack.sub.unlensed_grid[5] = np.array([2.0, 2.0])
+            grid_stack_0.sub.unlensed_grid[5] = np.array([2.0, 2.0])
 
             g0 = g.Galaxy(mass_profile=mp.SphericalIsothermal(einstein_radius=1.0))
             g1 = g.Galaxy(mass_profile=mp.SphericalIsothermal(einstein_radius=2.0))
@@ -987,8 +1005,8 @@ class TestPlane(object):
             mp0 = g0.mass_profiles[0]
             mp1 = g1.mass_profiles[0]
 
-            mp0_sub_potential = mp0.potential_from_grid(data_grid_stack.sub.unlensed_grid)
-            mp1_sub_potential = mp1.potential_from_grid(data_grid_stack.sub.unlensed_grid)
+            mp0_sub_potential = mp0.potential_from_grid(grid_stack_0.sub.unlensed_grid)
+            mp1_sub_potential = mp1.potential_from_grid(grid_stack_0.sub.unlensed_grid)
 
             # Perform sub gridding average manually
             mp0_potential_pixel_0 = (mp0_sub_potential[0] + mp0_sub_potential[1] + mp0_sub_potential[2] + mp0_sub_potential[3]) / 4
@@ -996,44 +1014,62 @@ class TestPlane(object):
             mp1_potential_pixel_0 = (mp1_sub_potential[0] + mp1_sub_potential[1] + mp1_sub_potential[2] + mp1_sub_potential[3]) / 4
             mp1_potential_pixel_1 = (mp1_sub_potential[4] + mp1_sub_potential[5] + mp1_sub_potential[6] + mp1_sub_potential[7]) / 4
 
-            plane = pl.Plane(galaxies=[g0, g1], grid_stack=data_grid_stack)
+            plane = pl.Plane(galaxies=[g0, g1], grid_stack=grid_stack_0)
 
             assert (plane.potential[1,1] == mp0_potential_pixel_0 + mp1_potential_pixel_0).all()
             assert (plane.potential[1,2] == mp0_potential_pixel_1 + mp1_potential_pixel_1).all()
 
-        def test__potential__same_as_its_galaxy(self, data_grid_stack, galaxy_mass):
-            galaxy_potential = pl.potential_from_grid(data_grid_stack.sub.unlensed_grid, galaxies=[galaxy_mass])
+        def test__potential__same_as_its_galaxy(self, grid_stack_0, galaxy_mass):
+            galaxy_potential = pl.potential_from_grid(grid_stack_0.sub.unlensed_grid, galaxies=[galaxy_mass])
 
-            galaxy_potential = data_grid_stack.regular.scaled_array_from_array_1d(galaxy_potential)
+            galaxy_potential = grid_stack_0.regular.scaled_array_from_array_1d(galaxy_potential)
 
-            plane = pl.Plane(galaxies=[galaxy_mass], grid_stack=data_grid_stack)
+            plane = pl.Plane(galaxies=[galaxy_mass], grid_stack=grid_stack_0)
 
             assert (plane.potential == galaxy_potential).all()
 
-        def test__same_as_above_galaxies___use_multiple_galaxies(self, data_grid_stack):
+        def test__same_as_above_galaxies___use_multiple_galaxies(self, grid_stack_0):
             # Overwrite one value so intensity in each pixel is different
-            data_grid_stack.sub.unlensed_grid[5] = np.array([2.0, 2.0])
+            grid_stack_0.sub.unlensed_grid[5] = np.array([2.0, 2.0])
 
             g0 = g.Galaxy(mass_profile=mp.SphericalIsothermal(einstein_radius=1.0))
             g1 = g.Galaxy(mass_profile=mp.SphericalIsothermal(einstein_radius=2.0))
 
-            g0_potential = pl.potential_from_grid(data_grid_stack.sub.unlensed_grid, galaxies=[g0])
-            g1_potential = pl.potential_from_grid(data_grid_stack.sub.unlensed_grid, galaxies=[g1])
+            g0_potential = pl.potential_from_grid(grid_stack_0.sub.unlensed_grid, galaxies=[g0])
+            g1_potential = pl.potential_from_grid(grid_stack_0.sub.unlensed_grid, galaxies=[g1])
 
-            g0_potential = data_grid_stack.regular.scaled_array_from_array_1d(g0_potential)
-            g1_potential = data_grid_stack.regular.scaled_array_from_array_1d(g1_potential)
+            g0_potential = grid_stack_0.regular.scaled_array_from_array_1d(g0_potential)
+            g1_potential = grid_stack_0.regular.scaled_array_from_array_1d(g1_potential)
 
-            plane = pl.Plane(galaxies=[g0, g1], grid_stack=data_grid_stack)
+            plane = pl.Plane(galaxies=[g0, g1], grid_stack=grid_stack_0)
 
             assert (plane.potential == g0_potential + g1_potential).all()
 
-    class TestDeflections:
-
-        def test__deflections_from_plane__same_as_its_mass_profile(self, data_grid_stack, galaxy_mass):
+        def test__potential_from_plane__same_as_its_mass_profile__use_padded_grid_stack(self, padded_grid_stack, 
+                                                                                              galaxy_mass):
 
             mp = galaxy_mass.mass_profiles[0]
 
-            mp_sub_image = mp.deflections_from_grid(data_grid_stack.sub.unlensed_grid)
+            mp_sub_image = mp.potential_from_grid(padded_grid_stack.sub.unlensed_grid)
+
+            # The padded sub-grid adds 5 pixels arounds the mask from the top-left which we skip over, thus our
+            # first sub-pixel index is 20.
+            mp_image_pixel_0 = (mp_sub_image[20] + mp_sub_image[21] + mp_sub_image[22] + mp_sub_image[23]) / 4
+            mp_image_pixel_1 = (mp_sub_image[24] + mp_sub_image[25] + mp_sub_image[26] + mp_sub_image[27]) / 4
+
+            plane = pl.Plane(galaxies=[galaxy_mass], grid_stack=padded_grid_stack)
+
+            # The padded array is trimed to the same size as the original mask (1x2).
+            assert plane.potential[0,0] == pytest.approx(mp_image_pixel_0, 1.0e-4)
+            assert plane.potential[0,1] == pytest.approx(mp_image_pixel_1, 1.0e-4)
+
+    class TestDeflections:
+
+        def test__deflections_from_plane__same_as_its_mass_profile(self, grid_stack_0, galaxy_mass):
+
+            mp = galaxy_mass.mass_profiles[0]
+
+            mp_sub_image = mp.deflections_from_grid(grid_stack_0.sub.unlensed_grid)
 
             # Perform sub gridding average manually
             mp_image_pixel_0x = (mp_sub_image[0 ,0] + mp_sub_image[1 ,0] + mp_sub_image[2 ,0] + mp_sub_image[3 ,0]) / 4
@@ -1041,20 +1077,20 @@ class TestPlane(object):
             mp_image_pixel_0y = (mp_sub_image[0 ,1] + mp_sub_image[1 ,1] + mp_sub_image[2 ,1] + mp_sub_image[3 ,1]) / 4
             mp_image_pixel_1y = (mp_sub_image[4 ,1] + mp_sub_image[5 ,1] + mp_sub_image[6 ,1] + mp_sub_image[7 ,1]) / 4
 
-            plane = pl.Plane(galaxies=[galaxy_mass], grid_stack=data_grid_stack)
+            plane = pl.Plane(galaxies=[galaxy_mass], grid_stack=grid_stack_0)
 
             assert (plane.deflections_1d[0 , 0] == mp_image_pixel_0x).all()
             assert (plane.deflections_1d[0 , 1] == mp_image_pixel_0y).all()
             assert (plane.deflections_1d[1 , 0] == mp_image_pixel_1x).all()
             assert (plane.deflections_1d[1 , 1] == mp_image_pixel_1y).all()
             assert (plane.deflections_y ==
-                    data_grid_stack.regular.scaled_array_from_array_1d(plane.deflections_1d[:, 0])).all()
+                    grid_stack_0.regular.scaled_array_from_array_1d(plane.deflections_1d[:, 0])).all()
             assert (plane.deflections_x ==
-                    data_grid_stack.regular.scaled_array_from_array_1d(plane.deflections_1d[:, 1])).all()
+                    grid_stack_0.regular.scaled_array_from_array_1d(plane.deflections_1d[:, 1])).all()
 
-        def test__same_as_above__use_multiple_galaxies(self, data_grid_stack):
+        def test__same_as_above__use_multiple_galaxies(self, grid_stack_0):
             # Overwrite one value so intensity in each pixel is different
-            data_grid_stack.sub.unlensed_grid[5] = np.array([2.0, 2.0])
+            grid_stack_0.sub.unlensed_grid[5] = np.array([2.0, 2.0])
 
             g0 = g.Galaxy(mass_profile=mp.SphericalIsothermal(einstein_radius=1.0))
             g1 = g.Galaxy(mass_profile=mp.SphericalIsothermal(einstein_radius=2.0))
@@ -1062,8 +1098,8 @@ class TestPlane(object):
             mp0 = g0.mass_profiles[0]
             mp1 = g1.mass_profiles[0]
 
-            mp0_sub_image = mp0.deflections_from_grid(data_grid_stack.sub.unlensed_grid)
-            mp1_sub_image = mp1.deflections_from_grid(data_grid_stack.sub.unlensed_grid)
+            mp0_sub_image = mp0.deflections_from_grid(grid_stack_0.sub.unlensed_grid)
+            mp1_sub_image = mp1.deflections_from_grid(grid_stack_0.sub.unlensed_grid)
 
             # Perform sub gridding average manually
             mp0_image_pixel_0x = (mp0_sub_image[0 ,0] + mp0_sub_image[1 ,0] + mp0_sub_image[2 ,0] + mp0_sub_image
@@ -1084,164 +1120,164 @@ class TestPlane(object):
             mp1_image_pixel_1y = (mp1_sub_image[4 ,1] + mp1_sub_image[5 ,1] + mp1_sub_image[6 ,1] + mp1_sub_image
                 [7 ,1]) / 4
 
-            plane = pl.Plane(galaxies=[g0, g1], grid_stack=data_grid_stack)
+            plane = pl.Plane(galaxies=[g0, g1], grid_stack=grid_stack_0)
 
             assert (plane.deflections_1d[0 , 0] == mp0_image_pixel_0x + mp1_image_pixel_0x).all()
             assert (plane.deflections_1d[1 , 0] == mp0_image_pixel_1x + mp1_image_pixel_1x).all()
             assert (plane.deflections_1d[0 , 1] == mp0_image_pixel_0y + mp1_image_pixel_0y).all()
             assert (plane.deflections_1d[1 , 1] == mp0_image_pixel_1y + mp1_image_pixel_1y).all()
             assert (plane.deflections_y ==
-                    data_grid_stack.regular.scaled_array_from_array_1d(plane.deflections_1d[:, 0])).all()
+                    grid_stack_0.regular.scaled_array_from_array_1d(plane.deflections_1d[:, 0])).all()
             assert (plane.deflections_x ==
-                    data_grid_stack.regular.scaled_array_from_array_1d(plane.deflections_1d[:, 1])).all()
+                    grid_stack_0.regular.scaled_array_from_array_1d(plane.deflections_1d[:, 1])).all()
 
-        def test__deflections__same_as_its_galaxy(self, data_grid_stack, galaxy_mass):
+        def test__deflections__same_as_its_galaxy(self, grid_stack_0, galaxy_mass):
 
-            galaxy_deflections = pl.deflections_from_grid(data_grid_stack.sub.unlensed_grid, galaxies=[galaxy_mass])
+            galaxy_deflections = pl.deflections_from_grid(grid_stack_0.sub.unlensed_grid, galaxies=[galaxy_mass])
 
-            plane = pl.Plane(galaxies=[galaxy_mass], grid_stack=data_grid_stack)
+            plane = pl.Plane(galaxies=[galaxy_mass], grid_stack=grid_stack_0)
 
             assert (plane.deflections_1d == galaxy_deflections).all()
             assert (plane.deflections_y ==
-                    data_grid_stack.regular.scaled_array_from_array_1d(plane.deflections_1d[:, 0])).all()
+                    grid_stack_0.regular.scaled_array_from_array_1d(plane.deflections_1d[:, 0])).all()
             assert (plane.deflections_x ==
-                    data_grid_stack.regular.scaled_array_from_array_1d(plane.deflections_1d[:, 1])).all()
+                    grid_stack_0.regular.scaled_array_from_array_1d(plane.deflections_1d[:, 1])).all()
 
-        def test__same_as_above_galaxies___use_multiple_galaxies(self, data_grid_stack):
+        def test__same_as_above_galaxies___use_multiple_galaxies(self, grid_stack_0):
             # Overwrite one value so intensity in each pixel is different
-            data_grid_stack.sub.unlensed_grid[5] = np.array([2.0, 2.0])
+            grid_stack_0.sub.unlensed_grid[5] = np.array([2.0, 2.0])
 
             g0 = g.Galaxy(mass_profile=mp.SphericalIsothermal(einstein_radius=1.0))
             g1 = g.Galaxy(mass_profile=mp.SphericalIsothermal(einstein_radius=2.0))
 
-            g0_deflections = pl.deflections_from_grid(data_grid_stack.sub.unlensed_grid, galaxies=[g0])
-            g1_deflections = pl.deflections_from_grid(data_grid_stack.sub.unlensed_grid, galaxies=[g1])
+            g0_deflections = pl.deflections_from_grid(grid_stack_0.sub.unlensed_grid, galaxies=[g0])
+            g1_deflections = pl.deflections_from_grid(grid_stack_0.sub.unlensed_grid, galaxies=[g1])
 
-            plane = pl.Plane(galaxies=[g0, g1], grid_stack=data_grid_stack)
+            plane = pl.Plane(galaxies=[g0, g1], grid_stack=grid_stack_0)
 
             assert (plane.deflections_1d == g0_deflections + g1_deflections).all()
             assert (plane.deflections_y ==
-                    data_grid_stack.regular.scaled_array_from_array_1d(plane.deflections_1d[:, 0])).all()
+                    grid_stack_0.regular.scaled_array_from_array_1d(plane.deflections_1d[:, 0])).all()
             assert (plane.deflections_x ==
-                    data_grid_stack.regular.scaled_array_from_array_1d(plane.deflections_1d[:, 1])).all()
+                    grid_stack_0.regular.scaled_array_from_array_1d(plane.deflections_1d[:, 1])).all()
 
     class TestMapper:
 
-        def test__no_galaxies_with_pixelizations_in_plane__returns_none(self, data_grid_stack):
+        def test__no_galaxies_with_pixelizations_in_plane__returns_none(self, grid_stack_0):
             galaxy_no_pix = g.Galaxy()
 
-            plane = pl.Plane(galaxies=[galaxy_no_pix], grid_stack=data_grid_stack, border=[MockBorders()])
+            plane = pl.Plane(galaxies=[galaxy_no_pix], grid_stack=grid_stack_0, border=[MockBorders()])
 
             assert plane.mapper is None
 
-        def test__1_galaxy_in_plane__it_has_pixelization__returns_mapper(self, data_grid_stack):
+        def test__1_galaxy_in_plane__it_has_pixelization__returns_mapper(self, grid_stack_0):
             galaxy_pix = g.Galaxy(pixelization=MockPixelization(value=1), regularization=MockRegularization(value=0))
 
-            plane = pl.Plane(galaxies=[galaxy_pix], grid_stack=data_grid_stack, border=[MockBorders()])
+            plane = pl.Plane(galaxies=[galaxy_pix], grid_stack=grid_stack_0, border=[MockBorders()])
 
             assert plane.mapper == 1
 
-        def test__2_galaxies_in_plane__1_has_pixelization__extracts_reconstructor(self, data_grid_stack):
-            galaxy_pix = g.Galaxy(pixelization=MockPixelization(value=1), regularization=MockRegularization(value=0))
-            galaxy_no_pix = g.Galaxy()
-
-            plane = pl.Plane(galaxies=[galaxy_no_pix, galaxy_pix], grid_stack=data_grid_stack, border=[MockBorders()])
-
-            assert plane.mapper == 1
-
-        def test__plane_has_no_border__still_returns_mapper(self, data_grid_stack):
-
+        def test__2_galaxies_in_plane__1_has_pixelization__extracts_reconstructor(self, grid_stack_0):
             galaxy_pix = g.Galaxy(pixelization=MockPixelization(value=1), regularization=MockRegularization(value=0))
             galaxy_no_pix = g.Galaxy()
 
-            plane = pl.Plane(galaxies=[galaxy_no_pix, galaxy_pix], grid_stack=data_grid_stack)
+            plane = pl.Plane(galaxies=[galaxy_no_pix, galaxy_pix], grid_stack=grid_stack_0, border=[MockBorders()])
 
             assert plane.mapper == 1
 
-        def test__2_galaxies_in_plane__both_have_pixelization__raises_error(self, data_grid_stack):
+        def test__plane_has_no_border__still_returns_mapper(self, grid_stack_0):
+
+            galaxy_pix = g.Galaxy(pixelization=MockPixelization(value=1), regularization=MockRegularization(value=0))
+            galaxy_no_pix = g.Galaxy()
+
+            plane = pl.Plane(galaxies=[galaxy_no_pix, galaxy_pix], grid_stack=grid_stack_0)
+
+            assert plane.mapper == 1
+
+        def test__2_galaxies_in_plane__both_have_pixelization__raises_error(self, grid_stack_0):
             galaxy_pix_0 = g.Galaxy(pixelization=MockPixelization(value=1), regularization=MockRegularization(value=0))
             galaxy_pix_1 = g.Galaxy(pixelization=MockPixelization(value=2), regularization=MockRegularization(value=0))
 
-            plane = pl.Plane(galaxies=[galaxy_pix_0, galaxy_pix_1], grid_stack=data_grid_stack, border=[MockBorders()])
+            plane = pl.Plane(galaxies=[galaxy_pix_0, galaxy_pix_1], grid_stack=grid_stack_0, border=[MockBorders()])
 
             with pytest.raises(exc.PixelizationException):
                 plane.mapper
 
     class TestRegularization:
 
-        def test__no_galaxies_with_pixelizations_in_plane__returns_none(self, data_grid_stack):
+        def test__no_galaxies_with_pixelizations_in_plane__returns_none(self, grid_stack_0):
 
             galaxy_no_pix = g.Galaxy()
 
-            plane = pl.Plane(galaxies=[galaxy_no_pix], grid_stack=data_grid_stack, border=MockBorders())
+            plane = pl.Plane(galaxies=[galaxy_no_pix], grid_stack=grid_stack_0, border=MockBorders())
 
             assert plane.regularization is None
 
-        def test__1_galaxy_in_plane__it_has_pixelization__returns_mapper(self, data_grid_stack):
+        def test__1_galaxy_in_plane__it_has_pixelization__returns_mapper(self, grid_stack_0):
             galaxy_pix = g.Galaxy(pixelization=MockPixelization(value=1), regularization=MockRegularization(value=0))
 
-            plane = pl.Plane(galaxies=[galaxy_pix], grid_stack=data_grid_stack, border=MockBorders())
+            plane = pl.Plane(galaxies=[galaxy_pix], grid_stack=grid_stack_0, border=MockBorders())
 
             assert plane.regularization.value == 0
 
-        def test__2_galaxies_in_plane__1_has_pixelization__extracts_reconstructor(self, data_grid_stack):
+        def test__2_galaxies_in_plane__1_has_pixelization__extracts_reconstructor(self, grid_stack_0):
             galaxy_pix = g.Galaxy(pixelization=MockPixelization(value=1), regularization=MockRegularization(value=0))
             galaxy_no_pix = g.Galaxy()
 
-            plane = pl.Plane(galaxies=[galaxy_no_pix, galaxy_pix], grid_stack=data_grid_stack, border=MockBorders())
+            plane = pl.Plane(galaxies=[galaxy_no_pix, galaxy_pix], grid_stack=grid_stack_0, border=MockBorders())
 
             assert plane.regularization.value == 0
 
-        def test__2_galaxies_in_plane__both_have_pixelization__raises_error(self, data_grid_stack):
+        def test__2_galaxies_in_plane__both_have_pixelization__raises_error(self, grid_stack_0):
             galaxy_pix_0 = g.Galaxy(pixelization=MockPixelization(value=1), regularization=MockRegularization(value=0))
             galaxy_pix_1 = g.Galaxy(pixelization=MockPixelization(value=2), regularization=MockRegularization(value=0))
 
-            plane = pl.Plane(galaxies=[galaxy_pix_0, galaxy_pix_1], grid_stack=data_grid_stack, border=MockBorders())
+            plane = pl.Plane(galaxies=[galaxy_pix_0, galaxy_pix_1], grid_stack=grid_stack_0, border=MockBorders())
 
             with pytest.raises(exc.PixelizationException):
                 plane.regularization
 
     class TestPlaneImage:
 
-        def test__3x3_grid__extracts_max_min_coordinates__ignores_other_coordinates_more_central(self, data_grid_stack):
+        def test__3x3_grid__extracts_max_min_coordinates__ignores_other_coordinates_more_central(self, grid_stack_0):
 
-            data_grid_stack.regular[1] = np.array([2.0, 2.0])
+            grid_stack_0.regular[1] = np.array([2.0, 2.0])
 
             galaxy = g.Galaxy(light=lp.EllipticalSersic(intensity=1.0))
 
-            plane = pl.Plane(galaxies=[galaxy], grid_stack=data_grid_stack, compute_deflections=False)
+            plane = pl.Plane(galaxies=[galaxy], grid_stack=grid_stack_0, compute_deflections=False)
 
             plane_image_from_func = pl.plane_image_from_grid_and_galaxies(shape=(3, 4),
-                                                                          grid_stack=data_grid_stack.regular,
+                                                                          grid_stack=grid_stack_0.regular,
                                                                           galaxies=[galaxy])
 
             assert (plane_image_from_func == plane.plane_image).all()
 
-        def test__ensure_index_of_plane_image_has_negative_arcseconds_at_start(self, data_grid_stack):
+        def test__ensure_index_of_plane_image_has_negative_arcseconds_at_start(self, grid_stack_0):
             # The grid coordinates -2.0 -> 2.0 mean a plane of shape (5,5) has arc second coordinates running over
             # -1.6, -0.8, 0.0, 0.8, 1.6. The origin -1.6, -1.6 of the model_galaxy means its brighest pixel should be
             # index 0 of the 1D grid and (0,0) of the 2d plane datas_.
 
             msk = mask.Mask(array=np.full((5, 5), False), pixel_scale=1.0)
 
-            data_grid_stack.regular = grids.RegularGrid(np.array([[-2.0, -2.0], [2.0, 2.0]]), mask=msk)
+            grid_stack_0.regular = grids.RegularGrid(np.array([[-2.0, -2.0], [2.0, 2.0]]), mask=msk)
 
             g0 = g.Galaxy(light_profile=lp.EllipticalSersic(centre=(1.6, -1.6), intensity=1.0))
-            plane = pl.Plane(galaxies=[g0], grid_stack=data_grid_stack)
+            plane = pl.Plane(galaxies=[g0], grid_stack=grid_stack_0)
 
             assert plane.plane_image.shape == (5, 5)
             assert np.unravel_index(plane.plane_image.argmax(), plane.plane_image.shape) == (0, 0)
 
             g0 = g.Galaxy(light_profile=lp.EllipticalSersic(centre=(1.6, 1.6), intensity=1.0))
-            plane = pl.Plane(galaxies=[g0], grid_stack=data_grid_stack)
+            plane = pl.Plane(galaxies=[g0], grid_stack=grid_stack_0)
             assert np.unravel_index(plane.plane_image.argmax(), plane.plane_image.shape) == (0, 4)
 
             g0 = g.Galaxy(light_profile=lp.EllipticalSersic(centre=(-1.6, -1.6), intensity=1.0))
-            plane = pl.Plane(galaxies=[g0], grid_stack=data_grid_stack)
+            plane = pl.Plane(galaxies=[g0], grid_stack=grid_stack_0)
             assert np.unravel_index(plane.plane_image.argmax(), plane.plane_image.shape) == (4, 0)
 
             g0 = g.Galaxy(light_profile=lp.EllipticalSersic(centre=(-1.6, 1.6), intensity=1.0))
-            plane = pl.Plane(galaxies=[g0], grid_stack=data_grid_stack)
+            plane = pl.Plane(galaxies=[g0], grid_stack=grid_stack_0)
             assert np.unravel_index(plane.plane_image.argmax(), plane.plane_image.shape) == (4, 4)
 
         def test__compute_xticks_from_image_grid_correctly(self):
@@ -1271,9 +1307,9 @@ class TestPlaneMulti:
 
     class TestGridsStacksSetup:
 
-        def test__data_grid_stack_setup_for_regular_sub_and_blurring__no_deflections(self, data_grid_stack,
+        def test__grid_stack_0_setup_for_regular_sub_and_blurring__no_deflections(self, grid_stack_0,
                                                                                      galaxy_mass):
-            plane = pl.PlaneStack(galaxies=[galaxy_mass], grid_stacks=[data_grid_stack, data_grid_stack],
+            plane = pl.PlaneStack(galaxies=[galaxy_mass], grid_stacks=[grid_stack_0, grid_stack_0],
                                   compute_deflections=False)
 
             assert plane.grid_stacks[0].regular == pytest.approx(np.array([[1.0, 1.0], [1.0, 0.0]]), 1e-3)
@@ -1296,12 +1332,12 @@ class TestPlaneMulti:
 
             assert plane.deflection_stacks == None
 
-        def test__same_as_above_but_test_deflections(self, data_grid_stack, galaxy_mass):
-            plane = pl.PlaneStack(galaxies=[galaxy_mass], grid_stacks=[data_grid_stack, data_grid_stack],
+        def test__same_as_above_but_test_deflections(self, grid_stack_0, galaxy_mass):
+            plane = pl.PlaneStack(galaxies=[galaxy_mass], grid_stacks=[grid_stack_0, grid_stack_0],
                                   compute_deflections=True)
 
-            sub_galaxy_deflections = galaxy_mass.deflections_from_grid(data_grid_stack.sub)
-            blurring_galaxy_deflections = galaxy_mass.deflections_from_grid(data_grid_stack.blurring)
+            sub_galaxy_deflections = galaxy_mass.deflections_from_grid(grid_stack_0.sub)
+            blurring_galaxy_deflections = galaxy_mass.deflections_from_grid(grid_stack_0.blurring)
 
             assert plane.deflection_stacks[0].regular == pytest.approx(np.array([[0.707, 0.707], [1.0, 0.0]]), 1e-3)
             assert (plane.deflection_stacks[0].sub == sub_galaxy_deflections).all()
@@ -1311,14 +1347,14 @@ class TestPlaneMulti:
             assert (plane.deflection_stacks[1].sub == sub_galaxy_deflections).all()
             assert (plane.deflection_stacks[1].blurring == blurring_galaxy_deflections).all()
 
-        def test__same_as_above__x2_galaxy_in_plane__or_galaxy_x2_sis__deflections_double(self, data_grid_stack,
+        def test__same_as_above__x2_galaxy_in_plane__or_galaxy_x2_sis__deflections_double(self, grid_stack_0,
                                                                                           galaxy_mass,
                                                                                           galaxy_mass_x2):
-            plane = pl.PlaneStack(galaxies=[galaxy_mass_x2], grid_stacks=[data_grid_stack, data_grid_stack],
+            plane = pl.PlaneStack(galaxies=[galaxy_mass_x2], grid_stacks=[grid_stack_0, grid_stack_0],
                                   compute_deflections=True)
 
-            sub_galaxy_deflections = galaxy_mass_x2.deflections_from_grid(data_grid_stack.sub)
-            blurring_galaxy_deflections = galaxy_mass_x2.deflections_from_grid(data_grid_stack.blurring)
+            sub_galaxy_deflections = galaxy_mass_x2.deflections_from_grid(grid_stack_0.sub)
+            blurring_galaxy_deflections = galaxy_mass_x2.deflections_from_grid(grid_stack_0.blurring)
 
             assert plane.deflection_stacks[0].regular == pytest.approx(np.array([[2.0 * 0.707, 2.0 * 0.707], [2.0, 0.0]]),
                                                                        1e-3)
@@ -1330,11 +1366,11 @@ class TestPlaneMulti:
             assert (plane.deflection_stacks[1].sub == sub_galaxy_deflections).all()
             assert (plane.deflection_stacks[1].blurring == blurring_galaxy_deflections).all()
 
-            plane = pl.PlaneStack(galaxies=[galaxy_mass, galaxy_mass], grid_stacks=[data_grid_stack, data_grid_stack],
+            plane = pl.PlaneStack(galaxies=[galaxy_mass, galaxy_mass], grid_stacks=[grid_stack_0, grid_stack_0],
                                   compute_deflections=True)
 
-            sub_galaxy_deflections = galaxy_mass.deflections_from_grid(data_grid_stack.sub)
-            blurring_galaxy_deflections = galaxy_mass.deflections_from_grid(data_grid_stack.blurring)
+            sub_galaxy_deflections = galaxy_mass.deflections_from_grid(grid_stack_0.sub)
+            blurring_galaxy_deflections = galaxy_mass.deflections_from_grid(grid_stack_0.blurring)
 
             assert plane.deflection_stacks[0].regular == pytest.approx(np.array([[2.0 * 0.707, 2.0 * 0.707], [2.0, 0.0]]),
                                                                        1e-3)
@@ -1348,94 +1384,94 @@ class TestPlaneMulti:
 
     class TestProperties:
 
-        def test__total_images(self, data_grid_stack):
+        def test__total_images(self, grid_stack_0):
 
-            plane = pl.PlaneStack(galaxies=[g.Galaxy()], grid_stacks=[data_grid_stack])
+            plane = pl.PlaneStack(galaxies=[g.Galaxy()], grid_stacks=[grid_stack_0])
             assert plane.total_grid_stacks == 1
 
-            plane = pl.PlaneStack(galaxies=[g.Galaxy()], grid_stacks=[data_grid_stack, data_grid_stack])
+            plane = pl.PlaneStack(galaxies=[g.Galaxy()], grid_stacks=[grid_stack_0, grid_stack_0])
             assert plane.total_grid_stacks == 2
 
-            plane = pl.PlaneStack(galaxies=[g.Galaxy()], grid_stacks=[data_grid_stack, data_grid_stack, data_grid_stack])
+            plane = pl.PlaneStack(galaxies=[g.Galaxy()], grid_stacks=[grid_stack_0, grid_stack_0, grid_stack_0])
             assert plane.total_grid_stacks == 3
 
-        def test__padded_grid_in__tracer_has_padded_grid_property(self, data_grid_stack, padded_grid_stack, galaxy_light):
+        def test__padded_grid_in__tracer_has_padded_grid_property(self, grid_stack_0, padded_grid_stack, galaxy_light):
 
-            plane = pl.PlaneStack(grid_stacks=[data_grid_stack], galaxies=[galaxy_light])
+            plane = pl.PlaneStack(grid_stacks=[grid_stack_0], galaxies=[galaxy_light])
             assert plane.has_padded_grid_stack == False
 
             plane = pl.PlaneStack(grid_stacks=[padded_grid_stack], galaxies=[galaxy_light])
             assert plane.has_padded_grid_stack == True
 
-            plane = pl.PlaneStack(grid_stacks=[data_grid_stack, padded_grid_stack], galaxies=[galaxy_light])
+            plane = pl.PlaneStack(grid_stacks=[grid_stack_0, padded_grid_stack], galaxies=[galaxy_light])
             assert plane.has_padded_grid_stack == True
 
     class TestImages:
 
-        def test__images_from_plane__same_as_light_profile_images(self, data_grid_stack, galaxy_light):
+        def test__images_from_plane__same_as_light_profile_images(self, grid_stack_0, galaxy_light):
 
             # Overwrite one value so intensity in each pixel is different
-            data_grid_stack.sub[5] = np.array([2.0, 2.0])
+            grid_stack_0.sub[5] = np.array([2.0, 2.0])
 
             lp = galaxy_light.light_profiles[0]
 
-            lp_sub_image = lp.intensities_from_grid(data_grid_stack.sub)
+            lp_sub_image = lp.intensities_from_grid(grid_stack_0.sub)
 
             # Perform sub gridding average manually
             lp_image_pixel_0 = (lp_sub_image[0] + lp_sub_image[1] + lp_sub_image[2] + lp_sub_image[3]) / 4
             lp_image_pixel_1 = (lp_sub_image[4] + lp_sub_image[5] + lp_sub_image[6] + lp_sub_image[7]) / 4
 
-            plane = pl.PlaneStack(galaxies=[galaxy_light], grid_stacks=[data_grid_stack])
+            plane = pl.PlaneStack(galaxies=[galaxy_light], grid_stacks=[grid_stack_0])
 
             assert (plane.image_plane_images_1d[0][0] == lp_image_pixel_0).all()
             assert (plane.image_plane_images_1d[0][1] == lp_image_pixel_1).all()
             assert (plane.image_plane_images[0] ==
-                    data_grid_stack.regular.scaled_array_from_array_1d(plane.image_plane_images_1d[0])).all()
+                    grid_stack_0.regular.scaled_array_from_array_1d(plane.image_plane_images_1d[0])).all()
 
-        def test__image_from_plane__same_as_galaxy_images(self, data_grid_stack, galaxy_light):
+        def test__image_from_plane__same_as_galaxy_images(self, grid_stack_0, galaxy_light):
 
             # Overwrite one value so intensity in each pixel is different
-            data_grid_stack.sub[5] = np.array([2.0, 2.0])
+            grid_stack_0.sub[5] = np.array([2.0, 2.0])
 
-            galaxy_image = pl.intensities_from_grid(data_grid_stack.sub, galaxies=[galaxy_light])
+            galaxy_image = pl.intensities_from_grid(grid_stack_0.sub, galaxies=[galaxy_light])
 
-            plane = pl.PlaneStack(galaxies=[galaxy_light], grid_stacks=[data_grid_stack, data_grid_stack])
+            plane = pl.PlaneStack(galaxies=[galaxy_light], grid_stacks=[grid_stack_0, grid_stack_0])
 
             assert (plane.image_plane_images_1d[0] == galaxy_image).all()
             assert (plane.image_plane_images[0] ==
-                    data_grid_stack.regular.scaled_array_from_array_1d(plane.image_plane_images_1d[0])).all()
+                    grid_stack_0.regular.scaled_array_from_array_1d(plane.image_plane_images_1d[0])).all()
 
             assert (plane.image_plane_images_1d[1] == galaxy_image).all()
             assert (plane.image_plane_images[1] ==
-                    data_grid_stack.regular.scaled_array_from_array_1d(plane.image_plane_images_1d[1])).all()
+                    grid_stack_0.regular.scaled_array_from_array_1d(plane.image_plane_images_1d[1])).all()
 
-        def test__image_plane_image_of_galaxies__use_multiple_grids__get_multiple_images(self, data_grid_stack,
-                                                                                         data_grid_stack_1):
+        def test__image_plane_image_of_galaxies__use_multiple_grids__get_multiple_images(self, grid_stack_0,
+                                                                                         grid_stack_1):
 
             # Overwrite one value so intensity in each pixel is different
-            data_grid_stack.sub[5] = np.array([2.0, 2.0])
+            grid_stack_0.sub[5] = np.array([2.0, 2.0])
 
             g0 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=1.0))
             g1 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=2.0))
 
-            plane = pl.PlaneStack(galaxies=[g0, g1], grid_stacks=[data_grid_stack, data_grid_stack_1])
+            plane = pl.PlaneStack(galaxies=[g0, g1], grid_stacks=[grid_stack_0, grid_stack_1])
 
-            g0_image_grid_0 = pl.intensities_from_grid(data_grid_stack.sub, galaxies=[g0])
-            g1_image_grid_0 = pl.intensities_from_grid(data_grid_stack.sub, galaxies=[g1])
+            g0_image_grid_0 = pl.intensities_from_grid(grid_stack_0.sub, galaxies=[g0])
+            g1_image_grid_0 = pl.intensities_from_grid(grid_stack_0.sub, galaxies=[g1])
 
             assert (plane.image_plane_images_1d[0] == g0_image_grid_0 + g1_image_grid_0).all()
             assert (plane.image_plane_images[0] ==
-                    data_grid_stack.regular.scaled_array_from_array_1d(plane.image_plane_images_1d[0])).all()
+                    grid_stack_0.regular.scaled_array_from_array_1d(plane.image_plane_images_1d[0])).all()
 
             assert (plane.image_plane_images_1d_of_galaxies[0][0] == g0_image_grid_0).all()
             assert (plane.image_plane_images_1d_of_galaxies[0][1] == g1_image_grid_0).all()
 
-            g0_image_grid_1 = pl.intensities_from_grid(data_grid_stack_1.sub, galaxies=[g0])
-            g1_image_grid_1 = pl.intensities_from_grid(data_grid_stack_1.sub, galaxies=[g1])
+            g0_image_grid_1 = pl.intensities_from_grid(grid_stack_1.sub, galaxies=[g0])
+            g1_image_grid_1 = pl.intensities_from_grid(grid_stack_1.sub, galaxies=[g1])
 
             assert (plane.image_plane_images_1d[1] == g0_image_grid_1 + g1_image_grid_1).all()
             assert (plane.image_plane_images[1] ==
-                    data_grid_stack.regular.scaled_array_from_array_1d(plane.image_plane_images_1d[1])).all()
+                    grid_stack_0.regular.scaled_array_from_array_1d(plane.image_plane_images_1d[1])).all()
 
             assert (plane.image_plane_images_1d_of_galaxies[1][0] == g0_image_grid_1).all()
             assert (plane.image_plane_images_1d_of_galaxies[1][1] == g1_image_grid_1).all()
@@ -1492,102 +1528,102 @@ class TestPlaneMulti:
 
     class TestBlurringImages:
 
-        def test__images_from_plane__same_as_their_light_profile(self, data_grid_stack, data_grid_stack_1,
+        def test__images_from_plane__same_as_their_light_profile(self, grid_stack_0, grid_stack_1,
                                                                   galaxy_light):
 
             # Overwrite one value so intensity in each pixel is different
-            data_grid_stack.blurring[1] = np.array([2.0, 2.0])
+            grid_stack_0.blurring[1] = np.array([2.0, 2.0])
 
             lp = galaxy_light.light_profiles[0]
 
-            lp_blurring_image = lp.intensities_from_grid(data_grid_stack.blurring)
-            lp_blurring_image_1 = lp.intensities_from_grid(data_grid_stack_1.blurring)
+            lp_blurring_image = lp.intensities_from_grid(grid_stack_0.blurring)
+            lp_blurring_image_1 = lp.intensities_from_grid(grid_stack_1.blurring)
 
-            plane = pl.PlaneStack(galaxies=[galaxy_light], grid_stacks=[data_grid_stack, data_grid_stack_1])
+            plane = pl.PlaneStack(galaxies=[galaxy_light], grid_stacks=[grid_stack_0, grid_stack_1])
 
             assert (plane.image_plane_blurring_images_1d[0] == lp_blurring_image).all()
             assert (plane.image_plane_blurring_images_1d[1] == lp_blurring_image_1).all()
 
-        def test__same_as_above_but_for_galaxies(self, data_grid_stack, data_grid_stack_1, galaxy_light):
+        def test__same_as_above_but_for_galaxies(self, grid_stack_0, grid_stack_1, galaxy_light):
 
             # Overwrite one value so intensity in each pixel is different
-            data_grid_stack.blurring[1] = np.array([2.0, 2.0])
+            grid_stack_0.blurring[1] = np.array([2.0, 2.0])
 
-            galaxy_image = pl.intensities_from_grid(data_grid_stack.blurring, galaxies=[galaxy_light])
-            galaxy_image_1 = pl.intensities_from_grid(data_grid_stack_1.blurring, galaxies=[galaxy_light])
+            galaxy_image = pl.intensities_from_grid(grid_stack_0.blurring, galaxies=[galaxy_light])
+            galaxy_image_1 = pl.intensities_from_grid(grid_stack_1.blurring, galaxies=[galaxy_light])
 
-            plane = pl.PlaneStack(galaxies=[galaxy_light], grid_stacks=[data_grid_stack, data_grid_stack_1])
+            plane = pl.PlaneStack(galaxies=[galaxy_light], grid_stacks=[grid_stack_0, grid_stack_1])
 
             assert (plane.image_plane_blurring_images_1d[0] == galaxy_image).all()
             assert (plane.image_plane_blurring_images_1d[1] == galaxy_image_1).all()
 
-        def test__same_as_above__multiple_galaxies(self, data_grid_stack, data_grid_stack_1):
+        def test__same_as_above__multiple_galaxies(self, grid_stack_0, grid_stack_1):
 
             # Overwrite one value so intensity in each pixel is different
-            data_grid_stack.blurring[1] = np.array([2.0, 2.0])
-            data_grid_stack_1.blurring[1] = np.array([2.0, 2.0])
+            grid_stack_0.blurring[1] = np.array([2.0, 2.0])
+            grid_stack_1.blurring[1] = np.array([2.0, 2.0])
 
             g0 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=1.0))
             g1 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=2.0))
 
-            g0_image_grid_0 = pl.intensities_from_grid(data_grid_stack.blurring, galaxies=[g0])
-            g1_image_grid_0 = pl.intensities_from_grid(data_grid_stack.blurring, galaxies=[g1])
+            g0_image_grid_0 = pl.intensities_from_grid(grid_stack_0.blurring, galaxies=[g0])
+            g1_image_grid_0 = pl.intensities_from_grid(grid_stack_0.blurring, galaxies=[g1])
 
-            plane = pl.PlaneStack(galaxies=[g0, g1], grid_stacks=[data_grid_stack, data_grid_stack_1])
+            plane = pl.PlaneStack(galaxies=[g0, g1], grid_stacks=[grid_stack_0, grid_stack_1])
 
             assert (plane.image_plane_blurring_images_1d[0] == g0_image_grid_0 + g1_image_grid_0).all()
 
-            g0_image_grid_1 = pl.intensities_from_grid(data_grid_stack_1.blurring, galaxies=[g0])
-            g1_image_grid_1 = pl.intensities_from_grid(data_grid_stack_1.blurring, galaxies=[g1])
+            g0_image_grid_1 = pl.intensities_from_grid(grid_stack_1.blurring, galaxies=[g0])
+            g1_image_grid_1 = pl.intensities_from_grid(grid_stack_1.blurring, galaxies=[g1])
 
-            plane = pl.PlaneStack(galaxies=[g0, g1], grid_stacks=[data_grid_stack, data_grid_stack_1])
+            plane = pl.PlaneStack(galaxies=[g0, g1], grid_stacks=[grid_stack_0, grid_stack_1])
 
             assert (plane.image_plane_blurring_images_1d[1] == g0_image_grid_1 + g1_image_grid_1).all()
 
     class TestSurfaceDensity:
 
-        def test__computes_x1_surface_density__uses_primary_data_grid_stack(self, data_grid_stack, data_grid_stack_1,
+        def test__computes_x1_surface_density__uses_primary_grid_stack_0(self, grid_stack_0, grid_stack_1,
                                                                                   galaxy_mass):
 
             mp = galaxy_mass.mass_profiles[0]
 
-            mp_sub_image = mp.surface_density_from_grid(data_grid_stack.sub.unlensed_grid)
+            mp_sub_image = mp.surface_density_from_grid(grid_stack_0.sub.unlensed_grid)
 
             # Perform sub gridding average manually
             mp_image_pixel_0 = (mp_sub_image[0] + mp_sub_image[1] + mp_sub_image[2] + mp_sub_image[3]) / 4
             mp_image_pixel_1 = (mp_sub_image[4] + mp_sub_image[5] + mp_sub_image[6] + mp_sub_image[7]) / 4
 
-            plane = pl.PlaneStack(galaxies=[galaxy_mass], grid_stacks=[data_grid_stack, data_grid_stack_1])
+            plane = pl.PlaneStack(galaxies=[galaxy_mass], grid_stacks=[grid_stack_0, grid_stack_1])
 
             assert (plane.surface_density[1, 1] == mp_image_pixel_0).all()
             assert (plane.surface_density[1, 2] == mp_image_pixel_1).all()
 
     class TestPotential:
 
-        def test__computes_x1_potential__uses_primary_data_grid_stack(self, data_grid_stack, data_grid_stack_1,
+        def test__computes_x1_potential__uses_primary_grid_stack_0(self, grid_stack_0, grid_stack_1,
                                                                       galaxy_mass):
 
             mp = galaxy_mass.mass_profiles[0]
 
-            mp_sub_image = mp.potential_from_grid(data_grid_stack.sub.unlensed_grid)
+            mp_sub_image = mp.potential_from_grid(grid_stack_0.sub.unlensed_grid)
 
             # Perform sub gridding average manually
             mp_image_pixel_0 = (mp_sub_image[0] + mp_sub_image[1] + mp_sub_image[2] + mp_sub_image[3]) / 4
             mp_image_pixel_1 = (mp_sub_image[4] + mp_sub_image[5] + mp_sub_image[6] + mp_sub_image[7]) / 4
 
-            plane = pl.PlaneStack(galaxies=[galaxy_mass], grid_stacks=[data_grid_stack, data_grid_stack_1])
+            plane = pl.PlaneStack(galaxies=[galaxy_mass], grid_stacks=[grid_stack_0, grid_stack_1])
 
             assert (plane.potential[1, 1] == mp_image_pixel_0).all()
             assert (plane.potential[1, 2] == mp_image_pixel_1).all()
 
     class TestDeflections:
 
-        def test__computes_x1_deflections__uses_primary_data_grid_stack(self, data_grid_stack, data_grid_stack_1,
+        def test__computes_x1_deflections__uses_primary_grid_stack_0(self, grid_stack_0, grid_stack_1,
                                                                         galaxy_mass):
 
             mp = galaxy_mass.mass_profiles[0]
 
-            mp_sub_image = mp.deflections_from_grid(data_grid_stack.sub.unlensed_grid)
+            mp_sub_image = mp.deflections_from_grid(grid_stack_0.sub.unlensed_grid)
 
             # Perform sub gridding average manually
             mp_image_pixel_0x = (mp_sub_image[0 ,0] + mp_sub_image[1 ,0] + mp_sub_image[2 ,0] + mp_sub_image[3 ,0]) / 4
@@ -1595,60 +1631,60 @@ class TestPlaneMulti:
             mp_image_pixel_0y = (mp_sub_image[0 ,1] + mp_sub_image[1 ,1] + mp_sub_image[2 ,1] + mp_sub_image[3 ,1]) / 4
             mp_image_pixel_1y = (mp_sub_image[4 ,1] + mp_sub_image[5 ,1] + mp_sub_image[6 ,1] + mp_sub_image[7 ,1]) / 4
 
-            plane = pl.PlaneStack(galaxies=[galaxy_mass], grid_stacks=[data_grid_stack, data_grid_stack_1])
+            plane = pl.PlaneStack(galaxies=[galaxy_mass], grid_stacks=[grid_stack_0, grid_stack_1])
 
             assert (plane.deflections_1d[0 , 0] == mp_image_pixel_0x).all()
             assert (plane.deflections_1d[0 , 1] == mp_image_pixel_0y).all()
             assert (plane.deflections_1d[1 , 0] == mp_image_pixel_1x).all()
             assert (plane.deflections_1d[1 , 1] == mp_image_pixel_1y).all()
             assert (plane.deflections_y ==
-                    data_grid_stack.regular.scaled_array_from_array_1d(plane.deflections_1d[:, 0])).all()
+                    grid_stack_0.regular.scaled_array_from_array_1d(plane.deflections_1d[:, 0])).all()
             assert (plane.deflections_x ==
-                    data_grid_stack.regular.scaled_array_from_array_1d(plane.deflections_1d[:, 1])).all()
+                    grid_stack_0.regular.scaled_array_from_array_1d(plane.deflections_1d[:, 1])).all()
 
     class TestMapper:
 
-        def test__no_galaxies_with_pixelizations_in_plane__returns_none(self, data_grid_stack):
+        def test__no_galaxies_with_pixelizations_in_plane__returns_none(self, grid_stack_0):
 
             galaxy_no_pix = g.Galaxy()
 
-            plane = pl.PlaneStack(galaxies=[galaxy_no_pix], grid_stacks=[data_grid_stack],
+            plane = pl.PlaneStack(galaxies=[galaxy_no_pix], grid_stacks=[grid_stack_0],
                                   borders=[MockBorders()])
 
             assert plane.mapper is None
 
-        def test__1_galaxy_in_plane__it_has_pixelization__returns_mapper(self, data_grid_stack):
+        def test__1_galaxy_in_plane__it_has_pixelization__returns_mapper(self, grid_stack_0):
             galaxy_pix = g.Galaxy(pixelization=MockPixelization(value=1), regularization=MockRegularization(value=0))
 
-            plane = pl.PlaneStack(galaxies=[galaxy_pix], grid_stacks=[data_grid_stack],
+            plane = pl.PlaneStack(galaxies=[galaxy_pix], grid_stacks=[grid_stack_0],
                                   borders=[MockBorders()])
 
             assert plane.mapper == 1
 
-        def test__2_galaxies_in_plane__1_has_pixelization__extracts_reconstructor(self, data_grid_stack):
+        def test__2_galaxies_in_plane__1_has_pixelization__extracts_reconstructor(self, grid_stack_0):
             galaxy_pix = g.Galaxy(pixelization=MockPixelization(value=1), regularization=MockRegularization(value=0))
             galaxy_no_pix = g.Galaxy()
 
-            plane = pl.PlaneStack(galaxies=[galaxy_no_pix, galaxy_pix], grid_stacks=[data_grid_stack],
+            plane = pl.PlaneStack(galaxies=[galaxy_no_pix, galaxy_pix], grid_stacks=[grid_stack_0],
                                   borders=[MockBorders()])
 
             assert plane.mapper == 1
 
-        def test__plane_has_no_border__still_returns_mapper(self, data_grid_stack):
+        def test__plane_has_no_border__still_returns_mapper(self, grid_stack_0):
 
             galaxy_pix = g.Galaxy(pixelization=MockPixelization(value=1), regularization=MockRegularization(value=0))
             galaxy_no_pix = g.Galaxy()
 
-            plane = pl.PlaneStack(galaxies=[galaxy_no_pix, galaxy_pix], grid_stacks=[data_grid_stack])
+            plane = pl.PlaneStack(galaxies=[galaxy_no_pix, galaxy_pix], grid_stacks=[grid_stack_0])
 
             assert plane.mapper == 1
 
-        def test__2_galaxies_in_plane__both_have_pixelization__raises_error(self, data_grid_stack):
+        def test__2_galaxies_in_plane__both_have_pixelization__raises_error(self, grid_stack_0):
 
             galaxy_pix_0 = g.Galaxy(pixelization=MockPixelization(value=1), regularization=MockRegularization(value=0))
             galaxy_pix_1 = g.Galaxy(pixelization=MockPixelization(value=2), regularization=MockRegularization(value=0))
 
-            plane = pl.PlaneStack(galaxies=[galaxy_pix_0, galaxy_pix_1], grid_stacks=[data_grid_stack],
+            plane = pl.PlaneStack(galaxies=[galaxy_pix_0, galaxy_pix_1], grid_stacks=[grid_stack_0],
                                   borders=[MockBorders()])
 
             with pytest.raises(exc.PixelizationException):
@@ -1656,38 +1692,38 @@ class TestPlaneMulti:
 
     class TestRegularization:
 
-        def test__no_galaxies_with_pixelizations_in_plane__returns_none(self, data_grid_stack):
+        def test__no_galaxies_with_pixelizations_in_plane__returns_none(self, grid_stack_0):
 
             galaxy_no_pix = g.Galaxy()
 
-            plane = pl.PlaneStack(galaxies=[galaxy_no_pix], grid_stacks=[data_grid_stack], borders=[MockBorders()])
+            plane = pl.PlaneStack(galaxies=[galaxy_no_pix], grid_stacks=[grid_stack_0], borders=[MockBorders()])
 
             assert plane.regularization is None
 
-        def test__1_galaxy_in_plane__it_has_pixelization__returns_mapper(self, data_grid_stack):
+        def test__1_galaxy_in_plane__it_has_pixelization__returns_mapper(self, grid_stack_0):
 
             galaxy_pix = g.Galaxy(pixelization=MockPixelization(value=1), regularization=MockRegularization(value=0))
 
-            plane = pl.PlaneStack(galaxies=[galaxy_pix], grid_stacks=[data_grid_stack], borders=[MockBorders()])
+            plane = pl.PlaneStack(galaxies=[galaxy_pix], grid_stacks=[grid_stack_0], borders=[MockBorders()])
 
             assert plane.regularization.value == 0
 
-        def test__2_galaxies_in_plane__1_has_pixelization__extracts_reconstructor(self, data_grid_stack):
+        def test__2_galaxies_in_plane__1_has_pixelization__extracts_reconstructor(self, grid_stack_0):
 
             galaxy_pix = g.Galaxy(pixelization=MockPixelization(value=1), regularization=MockRegularization(value=0))
             galaxy_no_pix = g.Galaxy()
 
-            plane = pl.PlaneStack(galaxies=[galaxy_no_pix, galaxy_pix], grid_stacks=[data_grid_stack],
+            plane = pl.PlaneStack(galaxies=[galaxy_no_pix, galaxy_pix], grid_stacks=[grid_stack_0],
                                   borders=[MockBorders()])
 
             assert plane.regularization.value == 0
 
-        def test__2_galaxies_in_plane__both_have_pixelization__raises_error(self, data_grid_stack):
+        def test__2_galaxies_in_plane__both_have_pixelization__raises_error(self, grid_stack_0):
 
             galaxy_pix_0 = g.Galaxy(pixelization=MockPixelization(value=1), regularization=MockRegularization(value=0))
             galaxy_pix_1 = g.Galaxy(pixelization=MockPixelization(value=2), regularization=MockRegularization(value=0))
 
-            plane = pl.PlaneStack(galaxies=[galaxy_pix_0, galaxy_pix_1], grid_stacks=[data_grid_stack],
+            plane = pl.PlaneStack(galaxies=[galaxy_pix_0, galaxy_pix_1], grid_stacks=[grid_stack_0],
                                   borders=[MockBorders()])
 
             with pytest.raises(exc.PixelizationException):
@@ -1695,27 +1731,27 @@ class TestPlaneMulti:
 
     class TestPlaneImages:
 
-        def test__x2_data_stacks__x2_plane_images(self, data_grid_stack, data_grid_stack_1):
+        def test__x2_data_stacks__x2_plane_images(self, grid_stack_0, grid_stack_1):
 
-            data_grid_stack.regular[1] = np.array([2.0, 2.0])
+            grid_stack_0.regular[1] = np.array([2.0, 2.0])
 
             galaxy = g.Galaxy(light=lp.EllipticalSersic(intensity=1.0))
 
-            plane = pl.PlaneStack(galaxies=[galaxy], grid_stacks=[data_grid_stack, data_grid_stack_1],
+            plane = pl.PlaneStack(galaxies=[galaxy], grid_stacks=[grid_stack_0, grid_stack_1],
                                   compute_deflections=False)
 
             plane_image_from_func = pl.plane_image_from_grid_and_galaxies(shape=(3, 4),
-                                                                          grid_stack=data_grid_stack.regular,
+                                                                          grid_stack=grid_stack_0.regular,
                                                                           galaxies=[galaxy])
 
             plane_image_from_func_1 = pl.plane_image_from_grid_and_galaxies(shape=(3, 4),
-                                                                          grid_stack=data_grid_stack_1.regular,
+                                                                          grid_stack=grid_stack_1.regular,
                                                                           galaxies=[galaxy])
 
             assert (plane_image_from_func == plane.plane_images[0]).all()
             assert (plane_image_from_func_1 == plane.plane_images[1]).all()
 
-        def test__ensure_index_of_plane_image_has_negative_arcseconds_at_start(self, data_grid_stack):
+        def test__ensure_index_of_plane_image_has_negative_arcseconds_at_start(self, grid_stack_0):
 
             # The grid coordinates -2.0 -> 2.0 mean a plane of shape (5,5) has arc second coordinates running over
             # -1.6, -0.8, 0.0, 0.8, 1.6. The origin -1.6, -1.6 of the model_galaxy means its brighest pixel should be
@@ -1723,24 +1759,24 @@ class TestPlaneMulti:
 
             msk = mask.Mask(array=np.full((5, 5), False), pixel_scale=1.0)
 
-            data_grid_stack.regular = grids.RegularGrid(np.array([[-2.0, -2.0], [2.0, 2.0]]), mask=msk)
+            grid_stack_0.regular = grids.RegularGrid(np.array([[-2.0, -2.0], [2.0, 2.0]]), mask=msk)
 
             g0 = g.Galaxy(light_profile=lp.EllipticalSersic(centre=(1.6, -1.6), intensity=1.0))
-            plane = pl.PlaneStack(galaxies=[g0], grid_stacks=[data_grid_stack])
+            plane = pl.PlaneStack(galaxies=[g0], grid_stacks=[grid_stack_0])
 
             assert plane.plane_images[0].shape == (5, 5)
             assert np.unravel_index(plane.plane_images[0].argmax(), plane.plane_images[0].shape) == (0, 0)
 
             g0 = g.Galaxy(light_profile=lp.EllipticalSersic(centre=(1.6, 1.6), intensity=1.0))
-            plane = pl.PlaneStack(galaxies=[g0], grid_stacks=[data_grid_stack])
+            plane = pl.PlaneStack(galaxies=[g0], grid_stacks=[grid_stack_0])
             assert np.unravel_index(plane.plane_images[0].argmax(), plane.plane_images[0].shape) == (0, 4)
 
             g0 = g.Galaxy(light_profile=lp.EllipticalSersic(centre=(-1.6, -1.6), intensity=1.0))
-            plane = pl.PlaneStack(galaxies=[g0], grid_stacks=[data_grid_stack])
+            plane = pl.PlaneStack(galaxies=[g0], grid_stacks=[grid_stack_0])
             assert np.unravel_index(plane.plane_images[0].argmax(), plane.plane_images[0].shape) == (4, 0)
 
             g0 = g.Galaxy(light_profile=lp.EllipticalSersic(centre=(-1.6, 1.6), intensity=1.0))
-            plane = pl.PlaneStack(galaxies=[g0], grid_stacks=[data_grid_stack])
+            plane = pl.PlaneStack(galaxies=[g0], grid_stacks=[grid_stack_0])
             assert np.unravel_index(plane.plane_images[0].argmax(), plane.plane_images[0].shape) == (4, 4)
 
 

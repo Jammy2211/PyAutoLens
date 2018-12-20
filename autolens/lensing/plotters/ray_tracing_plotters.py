@@ -11,14 +11,14 @@ def plot_ray_tracing_subplot(tracer, mask=None, positions=None,
                              cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
                             titlesize=10, xlabelsize=10, ylabelsize=10, xyticksize=10,
                              mask_pointsize=10, position_pointsize=10.0, grid_pointsize=1.0,
-                             output_path=None, output_filename='tracer_normal', output_format='show', ignore_config=True):
+                             output_path=None, output_filename='tracer', output_format='show', ignore_config=True):
     """Plot the observed _tracer of an analysis, using the *Image* class object.
 
     The visualization and output type can be fully customized.
 
     Parameters
     -----------
-    tracer : autolens.imaging.tracer_normal.Image
+    tracer : autolens.imaging.tracer.Image
         Class containing the _tracer, noise_map-mappers and PSF that are to be plotted.
         The font size of the figure ylabel.
     output_path : str
@@ -114,7 +114,7 @@ def plot_ray_tracing_individual(tracer, output_path=None, output_format='show'):
 
     Parameters
     -----------
-    tracer : autolens.imaging.tracer_normal.Image
+    tracer : autolens.imaging.tracer.Image
         Class containing the _tracer, noise_map-mappers and PSF that are to be plotted.
         The font size of the figure ylabel.
     output_path : str
@@ -158,7 +158,7 @@ def plot_ray_tracing_individual(tracer, output_path=None, output_format='show'):
         plot_deflections_x(tracer=tracer, output_path=output_path, output_format=output_format)
 
 
-def plot_image_plane_image(tracer, image_index=0, mask=None, positions=None, as_subplot=False,
+def plot_image_plane_image(tracer, mask=None, positions=None, as_subplot=False,
                            units='arcsec', figsize=(7, 7), aspect='equal',
                            cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
                            cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
@@ -166,7 +166,7 @@ def plot_image_plane_image(tracer, image_index=0, mask=None, positions=None, as_
                            mask_pointsize=10, position_pointsize=10.0,
                            output_path=None, output_format='show', output_filename='tracer_image_plane_image'):
 
-    array_plotters.plot_array(array=tracer.image_plane_image[image_index], mask=mask, positions=positions,
+    array_plotters.plot_array(array=tracer.image_plane_image, mask=mask, positions=positions,
                               as_subplot=as_subplot,
                               units=units, kpc_per_arcsec=tracer.image_plane.kpc_per_arcsec_proper, figsize=figsize,
                               aspect=aspect,
