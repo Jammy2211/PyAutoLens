@@ -145,15 +145,15 @@ class Rectangular(Pixelization):
             return self.grid_1d
 
     def geometry_from_grid(self, grid, buffer=1e-8):
-        """Determine the geometry of the rectangular grid, by alligning it with the outer-most pixels on a grid \
-        plus a small buffer.
+        """Determine the geometry of the rectangular grid, by overlaying it over a grid of coordinates such that its \
+         outer-most pixels align with the grid's outer most coordinates plus a small buffer.
 
         Parameters
         -----------
-        grid : [[float, float]]
-            The x and y pix grid (or sub-coordinates) which are to be matched with their pixels.
+        grid : ndarray
+            The (y,x) grid of coordinates over which the rectangular pixelization is placed to determine its geometry.
         buffer : float
-            The size the grid-geometry is extended beyond the most exterior grid.
+            The size the pixelization is buffered relative to the grid.
         """
         y_min = np.min(grid[:, 0]) - buffer
         y_max = np.max(grid[:, 0]) + buffer
@@ -169,27 +169,28 @@ class Rectangular(Pixelization):
         return pixelization_util.rectangular_neighbors_from_shape(shape=self.shape)
 
     def mapper_from_grid_stack_and_border(self, grid_stack, border):
-        """Setup the pixelization mapper of this rectangular pixelization as follows:
+        """Setup a rectangular mapper from a rectangular pixelization, as follows:
 
-        This first relocateds all grid-coordinates, such that any which tracer_normal beyond its borders (e.g. due to high \
-        levels of demagnification) are relocated to the borders.
+        1) If a border is supplied, relocate all of the grid-stack's regular and sub grid pixels beyond the border.
+        2) Determine the rectangular pixelization's geometry, by laying the pixelization over the sub-grid.
+        3) Setup the rectangular mapper from the relocated grid-stack and rectangular pixelization.
 
         Parameters
         ----------
         grid_stack: masks.GridStack
-            A collection of grid describing the observed image's pixel coordinates (includes an image and sub grid).
+            A stack of grid describing the observed image's pixel coordinates (e.g. an image-grid, sub-grid, etc.).
         border : masks.ImagingGridBorders
-            The borders of the grid_stacks (defined by their image-plane masks).
+            The border of the grid-stack's regular-grid.
         """
 
         if border is not None:
-            relocated_grids = border.relocated_grid_stack_from_grid_stack(grid_stack)
+            relocated_grid_stack = border.relocated_grid_stack_from_grid_stack(grid_stack)
         else:
-            relocated_grids = grid_stack
+            relocated_grid_stack = grid_stack
 
-        geometry = self.geometry_from_grid(grid=relocated_grids.sub)
+        geometry = self.geometry_from_grid(grid=relocated_grid_stack.sub)
 
-        return mappers.RectangularMapper(pixels=self.pixels, grid_stack=relocated_grids, border=border,
+        return mappers.RectangularMapper(pixels=self.pixels, grid_stack=relocated_grid_stack, border=border,
                                          shape=self.shape, geometry=geometry)
 
 
@@ -197,28 +198,32 @@ class Voronoi(Pixelization):
 
     def __init__(self):
         """Abstract base class for a Voronoi pixelization, which represents pixels as an irregular grid of Voronoi \
-         pixels which can form any shape, size or tesselation.
+         cells which can form any shape, size or tesselation.
 
-         The traced image-pixels are paired to Voronoi pixels as the nearest-neighbors of the Voronoi pixel-centers.
-
-         Parameters
-         ----------
-         pixels : int
-             The number of pixels in the pixelization.
+         The grid-stack's coordinates are paired to Voronoi pixels as the nearest-neighbors of the Voronoi \
+        pixel-centers.
          """
         super(Voronoi, self).__init__()
 
     class Geometry(scaled_array.ArrayGeometry):
 
         def __init__(self, shape_arc_seconds, pixel_centres, origin, pixel_neighbors, pixel_neighbors_size):
-            """The geometry of a rectangular grid
+            """The geometry of a Voronoi pixelization.
 
             Parameters
             -----------
-            shape : (int, int)
-                The dimensions of the rectangular grid of pixels (x_pixels, y_pixel)
-            pixel_scales : (float, float)
-                The pixel-to-arcsecond scale of a pixel in the y and x directions.
+            shape_arc_seconds : (float, float)
+                The dimensions of the Voronoi grid ni arc-second (y_arcseconds, x_arcseconds)
+            pixel_centres : (float, float)
+                The (y,x) centre of every Voronoi pixel in arc-seconds.
+            origin : (float, float)
+                The arc-second origin of the Voronoi pixelization's coordinate system.
+            pixel_neighbors : ndarray
+                An array of length (voronoi_pixels) which provides the index of all neighbors of every pixel in \
+                the Voronoi grid (entries of -1 correspond to no neighbor).
+            pixel_neighbors_size : ndarrayy
+                An array of length (voronoi_pixels) which gives the number of neighbors of every pixel in the \
+                Voronoi grid.
             """
             self.shape_arc_sec = shape_arc_seconds
             self.pixel_centres = pixel_centres
@@ -228,18 +233,23 @@ class Voronoi(Pixelization):
 
 
     def geometry_from_grid(self, grid, pixel_centres, pixel_neighbors, pixel_neighbors_size, buffer=1e-8):
-        """Determine the geometry of the rectangular grid, by alligning it with the outer-most pixels on a grid \
-        plus a small buffer.
+        """Determine the geometry of the Voronoi pixelization, by alligning it with the outer-most coordinates on a \
+        grid plus a small buffer.
 
         Parameters
         -----------
-        grid : [[float, float]]
-            The x and y pix grid (or sub-coordinates) which are to be matched with their pixels.
-        pixel_neighbors : [[]]
-            The neighboring pix_pixels of each pix_pixel, computed via the Voronoi grid_coords. \
-            (e.g. if the fifth pix_pixel neighbors pix_pixels 7, 9 and 44, pixel_neighbors[4] = [6, 8, 43])
-        buffer : float
-            The size the grid-geometry is extended beyond the most exterior grid.
+        grid : ndarray
+            The (y,x) grid of coordinates which determine the Voronoi pixelization's geometry.
+        pixel_centres : (float, float)
+            The (y,x) centre of every Voronoi pixel in arc-seconds.
+        origin : (float, float)
+            The arc-second origin of the Voronoi pixelization's coordinate system.
+        pixel_neighbors : ndarray
+            An array of length (voronoi_pixels) which provides the index of all neighbors of every pixel in \
+            the Voronoi grid (entries of -1 correspond to no neighbor).
+        pixel_neighbors_size : ndarrayy
+            An array of length (voronoi_pixels) which gives the number of neighbors of every pixel in the \
+            Voronoi grid.
         """
         y_min = np.min(grid[:, 0]) - buffer
         y_max = np.max(grid[:, 0]) + buffer
@@ -257,14 +267,15 @@ class Voronoi(Pixelization):
         Parameters
         ----------
         pixel_centers : ndarray
-            The x and y regular_grid to derive the Voronoi grid_coords.
+            The (y,x) centre of every Voronoi pixel.
         """
         return scipy.spatial.Voronoi(np.asarray([pixel_centers[:, 1], pixel_centers[:, 0]]).T,
                                      qhull_options='Qbb Qc Qx Qm')
 
 
     def neighbors_from_pixelization(self, pixels, ridge_points):
-        """Compute the neighbors of every pixel as a list of the pixel index's each pixel shares a vertex with.
+        """Compute the neighbors of every Voronoi pixel as an ndarray of the pixel index's each pixel shares a \
+        vertex with.
 
         The ridge points of the Voronoi grid are used to derive this.
 
@@ -280,21 +291,30 @@ class Voronoi(Pixelization):
 class AdaptiveMagnification(Voronoi, ImagePlanePixelization):
 
     def __init__(self, shape=(3, 3)):
-        """A Voronoi pixelization, which traces an image-plane grid to determine the cluster-centers.
+        """A pixelization which adapts to the magnification pattern of a lens's mass model and uses a Voronoi \
+        pixelization to discretize the grid into pixels.
 
         Parameters
         ----------
         shape : (int, int)
-            The shape of the regular-grid whose centres form the centres of pixelization pixels.
+            The shape of the unmasked sparse-grid which is laid over the masked image, in order to derive the \
+            adaptive-magnification pixelization (see *ImagePlanePixelization*)
         """
         super(AdaptiveMagnification, self).__init__()
         ImagePlanePixelization.__init__(self=self, shape=shape)
 
     def mapper_from_grid_stack_and_border(self, grid_stack, border):
-        """Setup the pixelization mapper of the cluster pixelization.
+        """Setup a Voronoi mapper from an adaptive-magnification pixelization, as follows:
 
-        This first relocateds all grid-coordinates, such that any which tracer_normal beyond its borders (e.g. due to high \
-        levels of demagnification) are relocated to the borders.
+        1) (before this routine is called), setup the 'pix' grid as part of the grid-stack, which corresponds to a \
+           sparse set of pixels in the image-plane which are traced to form the pixel centres.
+        2) If a border is supplied, relocate all of the grid-stack's regular, sub and pix grid pixels beyond the border.
+        3) Determine the adaptive-magnification pixelization's pixel centres, by extracting them from the relocated \
+           pix grid.
+        4) Use these pixelization centres to setup the Voronoi pixelization.
+        5) Determine the neighbors of every Voronoi cell in the Voronoi pixelization.
+        6) Setup the geometry of the pixelizatioon using the relocated sub-grid and Voronoi pixelization.
+        7) Setup a Voronoi mapper from all of the above quantities.
 
         Parameters
         ----------
@@ -302,10 +322,6 @@ class AdaptiveMagnification(Voronoi, ImagePlanePixelization):
             A collection of grid describing the observed image's pixel coordinates (includes an image and sub grid).
         border : masks.ImagingGridBorders
             The borders of the grid_stacks (defined by their image-plane masks).
-        pixel_centres : ndarray
-            The center of each Voronoi pixel, computed from an traced image-plane grid.
-        imageto_nearest_imagepix : ndarray
-            The mapping of each image pixel to Voronoi pixels.
         """
 
         if border is not None:
@@ -326,36 +342,3 @@ class AdaptiveMagnification(Voronoi, ImagePlanePixelization):
 
         return mappers.VoronoiMapper(pixels=pixels, grid_stack=relocated_grids, border=border,
                                      voronoi=voronoi, geometry=geometry)
-
-
-class Amorphous(Voronoi):
-
-    def __init__(self, pix_grid_shape):
-        """
-        An amorphous pixelization, which represents pixels as a set of centers where all of the \
-        nearest-neighbor pix-grid (i.e. traced masked_image-pixels) are mapped to them.
-
-        For this pixelization, a set of cluster-pixels (defined in the masked_image-plane as a cluster uniform grid of \
-        masked_image-pixels) are used to determine a set of pix-plane grid. These grid are then fed into a \
-        weighted k-means clustering algorithm, such that the pixel centers adapt to the unlensed pix \
-        surface-brightness profile.
-
-        Parameters
-        ----------
-        pix_grid_shape : (int, int)
-            The shape of the regular-grid whose centres form the centres of pixelization pixels.
-        """
-        super(Amorphous, self).__init__()
-
-    def kmeans_cluster(self, pixels, cluster_grid):
-        """Perform k-means clustering on the cluster_grid to compute the k-means clusters which represent \
-        pixels.
-
-        Parameters
-        ----------
-        cluster_grid : ndarray
-            The x and y cluster-grid which are used to derive the k-means pixelization.
-        """
-        kmeans = sklearn.cluster.KMeans(pixels)
-        km = kmeans.fit(cluster_grid)
-        return km.cluster_centers_, km.labels_
