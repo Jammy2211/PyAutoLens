@@ -6,7 +6,7 @@ from autolens.model.galaxy import galaxy as g
 from autolens.lensing import ray_tracing, lensing_fitters
 from autolens.lensing import lensing_image as li
 from autolens.model.inversion import pixelizations as pix, regularization as reg
-from autolens.lensing.plotters import lensing_fitting_plotters
+from autolens.lensing.plotters import lensing_fit_plotters
 
 # I think you'll agree, inversions are a very powerful tool for modeling strong lenses. Now that our source galaxies
 # comprise just a few parameters, we've got a much less complex non-linear parameter space to deal with. This allows us
@@ -55,7 +55,7 @@ def perform_fit_with_lens_and_source_galaxy(lens_galaxy, source_galaxy):
 lens_galaxy = g.Galaxy(mass=mp.EllipticalIsothermal(centre=(0.0, 0.0), axis_ratio=0.8, phi=135.0, einstein_radius=0.8))
 source_galaxy = g.Galaxy(pixelization=pix.Rectangular(shape=(40, 40)), regularization=reg.Constant(coefficients=(1.0,)))
 fit = perform_fit_with_lens_and_source_galaxy(lens_galaxy=lens_galaxy, source_galaxy=source_galaxy)
-lensing_fitting_plotters.plot_fitting_subplot(fit=fit)
+lensing_fit_plotters.plot_fit_subplot(fit=fit)
 
 # What happened!? This incorrect mass-model provides a really good_fit to the regular! The residuals and chi-squared map
 # are as good as the ones we saw in the last tutorial.
@@ -71,7 +71,7 @@ lens_galaxy = g.Galaxy(mass=mp.EllipticalIsothermal(centre=(0.0, 0.0), axis_rati
                                                     einstein_radius=1.6))
 source_galaxy = g.Galaxy(pixelization=pix.Rectangular(shape=(40, 40)), regularization=reg.Constant(coefficients=(1.0,)))
 correct_fit = perform_fit_with_lens_and_source_galaxy(lens_galaxy=lens_galaxy, source_galaxy=source_galaxy)
-lensing_fitting_plotters.plot_fitting_subplot(fit=correct_fit)
+lensing_fit_plotters.plot_fit_subplot(fit=correct_fit)
 print('Bayesian Evidence of Incorrect Fit:')
 print(fit.evidences)
 print('Bayesian Evidence of Correct Fit:')
@@ -142,7 +142,7 @@ tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source
 # This fit_normal subtracts the lens model_galaxy's light from the regular and fits the resulting source-only regular with the inversion.
 # When we plot the regular, a new panel on the sub-plot appears showing the model regular of the lens model_galaxy.
 fit = lensing_fitters.fit_lensing_image_with_tracer(lensing_image=lensing_image, tracer=tracer)
-lensing_fitting_plotters.plot_fitting_subplot(fit=fit)
+lensing_fit_plotters.plot_fit_subplot(fit=fit)
 
 # Of course if the lens subtraction is rubbish, so is our fit_normal, so we can be sure that our lens model wants to fit_normal the
 # lens model_galaxy's light accurately!
@@ -153,7 +153,7 @@ lens_galaxy = g.Galaxy(light=lp.SphericalSersic(centre=(0.0, 0.0), intensity=0.3
 tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
                                              image_plane_grid_stack=[lensing_image.grid_stack], border=lensing_image.border)
 fit = lensing_fitters.fit_lensing_image_with_tracer(lensing_image=lensing_image, tracer=tracer)
-lensing_fitting_plotters.plot_fitting_subplot(fit=fit)
+lensing_fit_plotters.plot_fit_subplot(fit=fit)
 
 # And with that, we're done. We've pretty much covered everything inversion related, so in the last tutorial I'll set
 # you up with a pipeline that you can use to model lenses with an inversion.

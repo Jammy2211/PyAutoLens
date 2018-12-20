@@ -9,7 +9,7 @@ from autolens.lensing import lensing_image as li
 from autolens.model.profiles import light_profiles as lp
 from autolens.model.profiles import mass_profiles as mp
 from autolens.data.imaging.plotters import imaging_plotters
-from autolens.lensing.plotters import lensing_fitting_plotters
+from autolens.lensing.plotters import lensing_fit_plotters
 
 import os
 
@@ -88,7 +88,7 @@ phase = ph.LensSourcePlanePhase(lens_galaxies=dict(lens_galaxy=gm.GalaxyModel(li
 results = phase.run(image)
 
 # And lets look at the regular.
-lensing_fitting_plotters.plot_fitting_subplot(fit=results.fit)
+lensing_fit_plotters.plot_fit_subplot(fit=results.fit)
 
 # Uh-oh. That regular didn't look very good, did it? If we compare our inferred parameters to the actual values (in the
 # simulations.py file) you'll see that we have, indeed, fitted the wrong model.
@@ -115,7 +115,7 @@ tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source
 
 # Now, lets fit_normal the lensing regular with the tracer_without_subhalo and plot the fit_normal. It looks a lot better than above, doesn't it?
 fit = lensing_fitters.fit_lensing_image_with_tracer(lensing_image=lensing_image, tracer=tracer)
-lensing_fitting_plotters.plot_fitting_subplot(fit=fit)
+lensing_fit_plotters.plot_fit_subplot(fit=fit)
 
 # Finally, just to be sure, lets compare the two likelihoods
 print('Likelihood of Non-linear Search:')

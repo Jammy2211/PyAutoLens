@@ -12,7 +12,7 @@ from autolens.data.imaging.plotters import imaging_plotters
 from autolens.lensing import lensing_image as li, lensing_fitters
 from autolens.lensing import ray_tracing
 from autolens.lensing import sensitivity_fitting
-from autolens.lensing.plotters import sensitivity_fitting_plotters, lensing_fitting_plotters
+from autolens.lensing.plotters import sensitivity_fitting_plotters, lensing_fit_plotters
 from autolens.model.galaxy import galaxy as g, galaxy_model as gm, galaxy_fitting, galaxy_data as gd
 from autolens.model.galaxy.plotters import galaxy_fitting_plotters
 from autolens.pipeline.phase_property import PhasePropertyCollection
@@ -502,12 +502,12 @@ class PhaseImaging(Phase):
                                                    positions=self.lensing_image.positions,
                                                    output_path=self.output_image_path, output_format='png')
 
-            lensing_fitting_plotters.plot_fitting_subplot(fit=fit, output_path=self.output_image_path,
-                                                          output_format='png',
-                                                          ignore_config=False)
+            lensing_fit_plotters.plot_fit_subplot(fit=fit, output_path=self.output_image_path,
+                                                  output_format='png',
+                                                  ignore_config=False)
 
-            lensing_fitting_plotters.plot_fitting_individuals(fit=fit, output_path=self.output_image_path,
-                                                              output_format='png')
+            lensing_fit_plotters.plot_fit_individuals(fit=fit, output_path=self.output_image_path,
+                                                      output_format='png')
 
             return fit
 

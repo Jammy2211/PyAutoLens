@@ -7,7 +7,7 @@ from autolens.data.imaging import image as im
 from autolens.model.profiles import light_profiles as lp
 from autolens.model.profiles import mass_profiles as mp
 from autolens.data.imaging.plotters import imaging_plotters
-from autolens.lensing.plotters import lensing_fitting_plotters
+from autolens.lensing.plotters import lensing_fit_plotters
 
 import os
 
@@ -125,7 +125,7 @@ phase_1.optimizer.sampling_efficiency = 0.9
 phase_1_results = phase_1.run(image=image)
 
 # And indeed, we get a reasonably good model and fit_normal to the datas - in a much shorter space of time!
-lensing_fitting_plotters.plot_fitting_subplot(fit=phase_1_results.fit)
+lensing_fit_plotters.plot_fit_subplot(fit=phase_1_results.fit)
 
 # Now all we need to do is look at the results of phase 1 and tune our priors in phase 2 to those results. Lets
 # setup a custom phase that does exactly that.
@@ -176,7 +176,7 @@ phase_2.optimizer.sampling_efficiency = 0.9
 phase_2_results = phase_2.run(image=image)
 
 # Look at that, the right lens model, again!
-lensing_fitting_plotters.plot_fitting_subplot(fit=phase_2_results.fit)
+lensing_fit_plotters.plot_fit_subplot(fit=phase_2_results.fit)
 
 # Our choice to link two phases together was a huge success. We managed to fit_normal a complex and realistic model,
 # but were able to begin by making simplifying assumptions that eased our search of non-linear parameter space. We
