@@ -23,7 +23,7 @@ def test_positions():
     positions = [[[0.1, 0.1], [0.2, 0.2]], [[0.3, 0.3]]]
     return list(map(lambda position_set: np.asarray(position_set), positions))
 
-@pytest.fixture(name='masks')
+@pytest.fixture(name='mask')
 def test_mask():
     return msk.Mask.circular(shape=((3,3)), pixel_scale=0.1, radius_arcsec=0.1)
 
@@ -49,14 +49,13 @@ def test_galaxy_mass():
     return g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=1.0))
 
 
-@pytest.fixture(name='grid_stacks')
-def test_grids():
+@pytest.fixture(name='grid_stack')
+def test_grid_stack():
     return grids.GridStack.from_shape_and_pixel_scale(shape=(100, 100), pixel_scale=0.05, sub_grid_size=2)
 
 @pytest.fixture(name='plane')
-def test_plane(galaxy_light, grids):
-    return pl.Plane(galaxies=[galaxy_light], grid_stack=[grids])
-
+def test_plane(galaxy_light, grid_stack):
+    return pl.Plane(galaxies=[galaxy_light], grid_stack=grid_stack)
 
 
 def test__image_plane_image_is_output(plane, mask, positions, plane_plotter_path):

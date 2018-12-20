@@ -269,8 +269,7 @@ class LensingDataFitter(fitter.DataFitter):
         model_data : ndarray
             The model image the oberved image is fitted with.
         """
-        super(LensingDataFitter, self).__init__(data=np.asarray(image), noise_map=np.asarray(noise_map),
-                                                mask=np.asarray(mask), model_data=np.asarray(model_image))
+        super(LensingDataFitter, self).__init__(data=image, noise_map=noise_map, mask=mask, model_data=model_image)
 
     @property
     def image(self):

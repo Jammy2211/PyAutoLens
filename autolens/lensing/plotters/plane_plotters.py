@@ -3,7 +3,7 @@ from matplotlib import pyplot as plt
 from autolens.data.array.plotters import plotter_util, grid_plotters, array_plotters
 
 
-def plot_image_plane_image(plane, image_index=0, mask=None, positions=None, grid=None, as_subplot=False,
+def plot_image_plane_image(plane, mask=None, positions=None, grid=None, as_subplot=False,
                            units='arcsec', figsize=(7, 7), aspect='equal',
                            cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
                            cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
@@ -11,7 +11,7 @@ def plot_image_plane_image(plane, image_index=0, mask=None, positions=None, grid
                            mask_pointsize=10, position_pointsize=10.0, grid_pointsize=1,
                            output_path=None, output_format='show', output_filename='plane_image_plane_image'):
 
-    array_plotters.plot_array(array=plane.image_plane_image[image_index], mask=mask, positions=positions, grid=grid,
+    array_plotters.plot_array(array=plane.image_plane_image, mask=mask, positions=positions, grid=grid,
                               as_subplot=as_subplot,
                               units=units, kpc_per_arcsec=plane.kpc_per_arcsec_proper, figsize=figsize, aspect=aspect,
                               cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max,
@@ -23,7 +23,7 @@ def plot_image_plane_image(plane, image_index=0, mask=None, positions=None, grid
                               grid_pointsize=grid_pointsize,
                               output_path=output_path, output_format=output_format, output_filename=output_filename)
 
-def plot_plane_image(plane, image_index=0, plot_origin=True, positions=None, plot_grid=True, as_subplot=False,
+def plot_plane_image(plane, plot_origin=True, positions=None, plot_grid=True, as_subplot=False,
                      units='arcsec', figsize=(7, 7), aspect='equal',
                      cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
                      cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
@@ -32,16 +32,16 @@ def plot_plane_image(plane, image_index=0, plot_origin=True, positions=None, plo
                      output_path=None, output_format='show', output_filename='plane_image'):
 
     if plot_grid:
-        grid = plane.grids[image_index].regular
+        grid = plane.grid_stack.regular
     else:
         grid = None
 
     if plot_origin:
-        origin = plane.plane_image[image_index].origin
+        origin = plane.plane_image.origin
     else:
         origin = None
 
-    array_plotters.plot_array(array=plane.plane_image[image_index], origin=origin, positions=positions, grid=grid,
+    array_plotters.plot_array(array=plane.plane_image, origin=origin, positions=positions, grid=grid,
                               as_subplot=as_subplot,
                               units=units, kpc_per_arcsec=plane.kpc_per_arcsec_proper, figsize=figsize, aspect=aspect,
                               cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max,
@@ -149,7 +149,7 @@ def plot_plane_grid(plane, axis_limits=None, points=None, as_subplot=False,
                     title='Plane Grid', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
                     output_path=None, output_format='show', output_filename='plane_grid'):
 
-    grid_plotters.plot_grid(grid=plane.grids[0].regular, points=points, axis_limits=axis_limits, as_subplot=as_subplot,
+    grid_plotters.plot_grid(grid=plane.grid_stack.regular, points=points, axis_limits=axis_limits, as_subplot=as_subplot,
                             units=units, kpc_per_arcsec=plane.kpc_per_arcsec_proper,
                             figsize=figsize, pointsize=pointsize, xyticksize=xyticksize,
                             title=title, titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize,
