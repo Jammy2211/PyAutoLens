@@ -27,7 +27,7 @@ def mapping_matrix_from_sub_to_pix(sub_to_pix, pixels, regular_pixels, sub_to_re
     return mapping_matrix
 
 @numba.jit(nopython=True, parallel=True)
-def voronoi_regular_to_pix_from_grids_and_geometry(regular_grid, regular_to_nearest_regular_pix, pixel_centres,
+def voronoi_regular_to_pix_from_grids_and_geometry(regular_grid, regular_to_nearest_pix, pixel_centres,
                                                    pixel_neighbors, pixel_neighbors_size):
     """ Compute the mappings between a set of sub-maskedimage pixels and pixels, using the maskedimage's traced \
     pix-plane sub-grid and the pixel centers. This uses the pix-neighbors to perform a graph \
@@ -61,7 +61,7 @@ def voronoi_regular_to_pix_from_grids_and_geometry(regular_grid, regular_to_near
 
     for regular_index in range(regular_grid.shape[0]):
 
-        nearest_pix_pixel_index = regular_to_nearest_regular_pix[regular_index]
+        nearest_pix_pixel_index = regular_to_nearest_pix[regular_index]
 
         while True:
 
@@ -95,7 +95,7 @@ def voronoi_regular_to_pix_from_grids_and_geometry(regular_grid, regular_to_near
     return regular_to_pix
 
 @numba.jit(nopython=True, parallel=True)
-def voronoi_sub_to_pix_from_grids_and_geometry(sub_grid, regular_to_nearest_regular_pix, sub_to_regular, pixel_centres,
+def voronoi_sub_to_pix_from_grids_and_geometry(sub_grid, regular_to_nearest_pix, sub_to_regular, pixel_centres,
                                                pixel_neighbors, pixel_neighbors_size):
     """ Compute the mappings between a set of sub-maskedimage pixels and pixels, using the maskedimage's traced \
     pix-plane sub-grid and the pixel centers. This uses the pix-neighbors to perform a graph \
@@ -129,7 +129,7 @@ def voronoi_sub_to_pix_from_grids_and_geometry(sub_grid, regular_to_nearest_regu
 
     for sub_index in range(sub_grid.shape[0]):
 
-        nearest_pix_pixel_index = regular_to_nearest_regular_pix[sub_to_regular[sub_index]]
+        nearest_pix_pixel_index = regular_to_nearest_pix[sub_to_regular[sub_index]]
 
         while True:
 

@@ -298,7 +298,7 @@ class TestPixGrid:
 
         assert type(pix_regular_grid) == grids.PixGrid
         assert (pix_regular_grid == np.array([[1.0, 1.0], [2.0, 2.0]])).all()
-        assert (pix_regular_grid.regular_to_nearest_regular_pix == np.array([0, 1])).all()
+        assert (pix_regular_grid.regular_to_nearest_pix == np.array([0, 1])).all()
 
 
 class TestSparseToRegularGrid:
