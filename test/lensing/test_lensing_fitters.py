@@ -265,7 +265,7 @@ class TestLensingProfileFitter:
 
     class TestLikelihood:
 
-        def test__image__tracing_fits_data_perfectly__no_psf_blurring__lh_is_noise_term(self):
+        def test__image__tracing_fits_data_perfectly__no_psf_blurring__lh_is_noise_normalization(self):
 
             psf = image.PSF(array=(np.array([[0.0, 0.0, 0.0],
                                              [0.0, 1.0, 0.0],
@@ -339,15 +339,15 @@ class TestLensingProfileFitter:
             assert residual_map == pytest.approx(fit.residual_map, 1e-4)
 
             chi_squared_map = fitting_util.chi_squared_map_from_residual_map_mask_and_noise_map(residual_map=residual_map,
-                                                                                                mask=li_manual.mask, noise_map=li_manual.noise_map)
+                                                                    mask=li_manual.mask, noise_map=li_manual.noise_map)
 
             assert chi_squared_map == pytest.approx(fit.chi_squared_map, 1e-4)
 
-            chi_squared_term = fitting_util.chi_squared_from_chi_squared_map(chi_squared_map=chi_squared_map)
-            noise_term = fitting_util.noise_normalization_from_mask_and_noise_map(mask=li_manual.mask,
+            chi_squared = fitting_util.chi_squared_from_chi_squared_map(chi_squared_map=chi_squared_map)
+            noise_normalization = fitting_util.noise_normalization_from_mask_and_noise_map(mask=li_manual.mask,
                                                                                   noise_map=li_manual.noise_map)
-            likelihood = fitting_util.likelihood_from_chi_squared_and_noise_normalization(chi_squared=chi_squared_term,
-                                                                                          noise_normalization=noise_term)
+            likelihood = fitting_util.likelihood_from_chi_squared_and_noise_normalization(chi_squared=chi_squared,
+                                                                                          noise_normalization=noise_normalization)
 
             assert likelihood == pytest.approx(fit.likelihood, 1e-4)
 
@@ -409,26 +409,26 @@ class TestLensingInversionFitter:
 
             assert chi_squared_map == pytest.approx(fit.chi_squared_map, 1e-4)
 
-            chi_squared_term = fitting_util.chi_squared_from_chi_squared_map(chi_squared_map=chi_squared_map)
-            noise_term = fitting_util.noise_normalization_from_mask_and_noise_map(mask=li_manual.mask,
+            chi_squared = fitting_util.chi_squared_from_chi_squared_map(chi_squared_map=chi_squared_map)
+            noise_normalization = fitting_util.noise_normalization_from_mask_and_noise_map(mask=li_manual.mask,
                                                                                   noise_map=li_manual.noise_map)
 
-            likelihood = fitting_util.likelihood_from_chi_squared_and_noise_normalization(chi_squared=chi_squared_term,
-                                                                                          noise_normalization=noise_term)
+            likelihood = fitting_util.likelihood_from_chi_squared_and_noise_normalization(chi_squared=chi_squared,
+                                                                                          noise_normalization=noise_normalization)
 
             assert likelihood == pytest.approx(fit.likelihood, 1e-4)
 
             likelihood_with_regularization = \
                 lensing_util.likelihood_with_regularization_from_chi_squared_regularization_term_and_noise_normalization(
-                    chi_squared=chi_squared_term, regularization_term=inversion.regularization_term,
-                    noise_normalization=noise_term)
+                    chi_squared=chi_squared, regularization_term=inversion.regularization_term,
+                    noise_normalization=noise_normalization)
 
             assert likelihood_with_regularization == pytest.approx(fit.likelihood_with_regularization, 1e-4)
 
-            evidence = lensing_util.evidence_from_inversion_terms(chi_squared=chi_squared_term,
+            evidence = lensing_util.evidence_from_inversion_terms(chi_squared=chi_squared,
                                                                   regularization_term=inversion.regularization_term,
                                                                   log_curvature_regularization_term=inversion.log_det_curvature_reg_matrix_term,
-                                                                  log_regularization_term=inversion.log_det_regularization_matrix_term, noise_normalization=noise_term)
+                                                                  log_regularization_term=inversion.log_det_regularization_matrix_term, noise_normalization=noise_normalization)
 
             assert evidence == fit.evidence
 
@@ -491,26 +491,26 @@ class TestLensingProfileInversionFit:
 
             assert chi_squared_map == pytest.approx(fit.chi_squared_map, 1e-4)
 
-            chi_squared_term = fitting_util.chi_squared_from_chi_squared_map(chi_squared_map=chi_squared_map)
-            noise_term = fitting_util.noise_normalization_from_mask_and_noise_map(mask=li_manual.mask,
+            chi_squared = fitting_util.chi_squared_from_chi_squared_map(chi_squared_map=chi_squared_map)
+            noise_normalization = fitting_util.noise_normalization_from_mask_and_noise_map(mask=li_manual.mask,
                                                                                   noise_map=li_manual.noise_map)
 
-            likelihood = fitting_util.likelihood_from_chi_squared_and_noise_normalization(chi_squared=chi_squared_term,
-                                                                                          noise_normalization=noise_term)
+            likelihood = fitting_util.likelihood_from_chi_squared_and_noise_normalization(chi_squared=chi_squared,
+                                                                                          noise_normalization=noise_normalization)
 
             assert likelihood == pytest.approx(fit.likelihood, 1e-4)
 
             likelihood_with_regularization = \
                 lensing_util.likelihood_with_regularization_from_chi_squared_regularization_term_and_noise_normalization(
-                    chi_squared=chi_squared_term, regularization_term=inversion.regularization_term,
-                    noise_normalization=noise_term)
+                    chi_squared=chi_squared, regularization_term=inversion.regularization_term,
+                    noise_normalization=noise_normalization)
 
             assert likelihood_with_regularization == pytest.approx(fit.likelihood_with_regularization, 1e-4)
 
-            evidence = lensing_util.evidence_from_inversion_terms(chi_squared=chi_squared_term,
+            evidence = lensing_util.evidence_from_inversion_terms(chi_squared=chi_squared,
                                                                   regularization_term=inversion.regularization_term,
                                                                   log_curvature_regularization_term=inversion.log_det_curvature_reg_matrix_term,
-                                                                  log_regularization_term=inversion.log_det_regularization_matrix_term, noise_normalization=noise_term)
+                                                                  log_regularization_term=inversion.log_det_regularization_matrix_term, noise_normalization=noise_normalization)
 
             assert evidence == fit.evidence
 
@@ -523,7 +523,7 @@ class TestLensingProfileHyperFitter:
 
     class TestLikelihood:
 
-        def test__hyper_galaxy_adds_to_noise_term__chi_squared_is_0(self, li_hyper_no_blur):
+        def test__hyper_galaxy_adds_to_noise_normalization__chi_squared_is_0(self, li_hyper_no_blur):
             # Setup as a ray trace instance, using a light profile for the lens
 
             g0 = g.Galaxy(light_profile=MockLightProfile(value=1.0, size=4))
@@ -543,12 +543,12 @@ class TestLensingProfileHyperFitter:
 
             fit = lensing_fitters.LensingProfileHyperFitter(lensing_hyper_image=li_hyper_no_blur, tracer=tracer)
 
-            chi_squared_term = 0.0
-            noise_term = 4.0 * np.log(2 * np.pi * 4.0 ** 2.0)
+            chi_squared = 0.0
+            noise_normalization = 4.0 * np.log(2 * np.pi * 4.0 ** 2.0)
 
-            assert fit.likelihood == -0.5 * (chi_squared_term + noise_term)
+            assert fit.likelihood == -0.5 * (chi_squared + noise_normalization)
 
-        def test__hyper_galaxy_adds_to_noise_term_for_scaled_noise__chi_squared_nonzero(self, li_hyper_no_blur):
+        def test__hyper_galaxy_adds_to_noise_normalization_for_scaled_noise__chi_squared_nonzero(self, li_hyper_no_blur):
 
             li_hyper_no_blur.image[1:3,1:3] = 2.0
 
@@ -570,10 +570,10 @@ class TestLensingProfileHyperFitter:
 
             fit = lensing_fitters.LensingProfileHyperFitter(lensing_hyper_image=li_hyper_no_blur, tracer=tracer)
 
-            chi_squared_term = 4.0 * (1.0 / (4.0)) ** 2.0
-            noise_term = 4.0 * np.log(2 * np.pi * 4.0 ** 2.0)
+            chi_squared = 4.0 * (1.0 / (4.0)) ** 2.0
+            noise_normalization = 4.0 * np.log(2 * np.pi * 4.0 ** 2.0)
 
-            assert fit.likelihood == -0.5 * (chi_squared_term + noise_term)
+            assert fit.likelihood == -0.5 * (chi_squared + noise_normalization)
 
     class TestCompareToManual:
 
@@ -628,11 +628,11 @@ class TestLensingProfileHyperFitter:
 
             assert chi_squared_map == pytest.approx(fit.chi_squared_map, 1e-4)
 
-            chi_squared_term = fitting_util.chi_squared_from_chi_squared_map(chi_squared_map=chi_squared_map)
-            noise_term = fitting_util.noise_normalization_from_mask_and_noise_map(mask=li_hyper_manual.mask,
+            chi_squared = fitting_util.chi_squared_from_chi_squared_map(chi_squared_map=chi_squared_map)
+            noise_normalization = fitting_util.noise_normalization_from_mask_and_noise_map(mask=li_hyper_manual.mask,
                                                                                   noise_map=li_hyper_manual.noise_map)
-            likelihood = fitting_util.likelihood_from_chi_squared_and_noise_normalization(chi_squared=chi_squared_term,
-                                                                                          noise_normalization=noise_term)
+            likelihood = fitting_util.likelihood_from_chi_squared_and_noise_normalization(chi_squared=chi_squared,
+                                                                                          noise_normalization=noise_normalization)
 
             assert likelihood == pytest.approx(fit.likelihood, 1e-4)
             
@@ -720,26 +720,26 @@ class TestLensingInversionHyperFitter:
 
             assert chi_squared_map == pytest.approx(fit.chi_squared_map, 1e-4)
 
-            chi_squared_term = fitting_util.chi_squared_from_chi_squared_map(chi_squared_map=chi_squared_map)
-            noise_term = fitting_util.noise_normalization_from_mask_and_noise_map(mask=li_hyper_manual.mask,
+            chi_squared = fitting_util.chi_squared_from_chi_squared_map(chi_squared_map=chi_squared_map)
+            noise_normalization = fitting_util.noise_normalization_from_mask_and_noise_map(mask=li_hyper_manual.mask,
                                                                                   noise_map=hyper_noise_map)
 
-            likelihood = fitting_util.likelihood_from_chi_squared_and_noise_normalization(chi_squared=chi_squared_term,
-                                                                                          noise_normalization=noise_term)
+            likelihood = fitting_util.likelihood_from_chi_squared_and_noise_normalization(chi_squared=chi_squared,
+                                                                                          noise_normalization=noise_normalization)
 
             assert likelihood == pytest.approx(fit.likelihood, 1e-4)
 
             likelihood_with_regularization = \
                 lensing_util.likelihood_with_regularization_from_chi_squared_regularization_term_and_noise_normalization(
-                    chi_squared=chi_squared_term, regularization_term=inversion.regularization_term,
-                    noise_normalization=noise_term)
+                    chi_squared=chi_squared, regularization_term=inversion.regularization_term,
+                    noise_normalization=noise_normalization)
 
             assert likelihood_with_regularization == pytest.approx(fit.likelihood_with_regularization, 1e-4)
 
-            evidence = lensing_util.evidence_from_inversion_terms(chi_squared=chi_squared_term,
+            evidence = lensing_util.evidence_from_inversion_terms(chi_squared=chi_squared,
                                                                   regularization_term=inversion.regularization_term,
                                                                   log_curvature_regularization_term=inversion.log_det_curvature_reg_matrix_term,
-                                                                  log_regularization_term=inversion.log_det_regularization_matrix_term, noise_normalization=noise_term)
+                                                                  log_regularization_term=inversion.log_det_regularization_matrix_term, noise_normalization=noise_normalization)
 
             assert evidence == fit.evidence
 
@@ -824,27 +824,27 @@ class TestLensingProfileInversionHyperFitter:
 
             assert chi_squared_map == pytest.approx(fit.chi_squared_map, 1e-4)
 
-            chi_squared_term = fitting_util.chi_squared_from_chi_squared_map(chi_squared_map=chi_squared_map)
-            noise_term = fitting_util.noise_normalization_from_mask_and_noise_map(mask=li_hyper_manual.mask,
+            chi_squared = fitting_util.chi_squared_from_chi_squared_map(chi_squared_map=chi_squared_map)
+            noise_normalization = fitting_util.noise_normalization_from_mask_and_noise_map(mask=li_hyper_manual.mask,
                                                                                   noise_map=hyper_noise_map)
 
-            likelihood = fitting_util.likelihood_from_chi_squared_and_noise_normalization(chi_squared=chi_squared_term,
-                                                                                          noise_normalization=noise_term)
+            likelihood = fitting_util.likelihood_from_chi_squared_and_noise_normalization(chi_squared=chi_squared,
+                                                                                          noise_normalization=noise_normalization)
 
             assert likelihood == pytest.approx(fit.likelihood, 1e-4)
 
             likelihood_with_regularization = \
                 lensing_util.likelihood_with_regularization_from_chi_squared_regularization_term_and_noise_normalization(
-                    chi_squared=chi_squared_term, regularization_term=inversion.regularization_term,
-                    noise_normalization=noise_term)
+                    chi_squared=chi_squared, regularization_term=inversion.regularization_term,
+                    noise_normalization=noise_normalization)
 
             assert likelihood_with_regularization == pytest.approx(fit.likelihood_with_regularization, 1e-4)
 
-            evidence = lensing_util.evidence_from_inversion_terms(chi_squared=chi_squared_term,
+            evidence = lensing_util.evidence_from_inversion_terms(chi_squared=chi_squared,
                                                                   regularization_term=inversion.regularization_term,
                                                                   log_curvature_regularization_term=inversion.log_det_curvature_reg_matrix_term,
                                                                   log_regularization_term=inversion.log_det_regularization_matrix_term,
-                                                                  noise_normalization=noise_term)
+                                                                  noise_normalization=noise_normalization)
 
             assert evidence == fit.evidence
 

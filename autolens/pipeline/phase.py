@@ -1126,7 +1126,7 @@ class GalaxyFitPhase(AbstractPhase):
                                                                               model_galaxy=instance.galaxy[0])
 
         def fit_for_instance(self, instance):
-            return galaxy_fitting.fit_galaxy_data_with_galaxy(galaxy_datas=[self.galaxy_data],
+            return galaxy_fitting.fit_galaxy_data_with_galaxy(galaxy_data=[self.galaxy_data],
                                                               model_galaxy=instance.galaxy[0])
 
         @classmethod
@@ -1279,7 +1279,7 @@ class GalaxyFitDeflectionsPhase(AbstractPhase):
                                                                               model_galaxy=instance.galaxy[0])
 
         def fit_for_instance(self, instance):
-            return galaxy_fitting.fit_galaxy_data_with_galaxy(galaxy_datas=[self.galaxy_data_y, self.galaxy_data_x],
+            return galaxy_fitting.fit_galaxy_data_with_galaxy(galaxy_data=[self.galaxy_data_y, self.galaxy_data_x],
                                                               model_galaxy=instance.galaxy[0])
 
         @classmethod
