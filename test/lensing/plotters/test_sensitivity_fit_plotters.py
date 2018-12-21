@@ -7,7 +7,7 @@ import numpy as np
 from autofit import conf
 from autolens.data.imaging import image as im
 from autolens.data.array import grids, mask as msk, scaled_array
-from autolens.lensing.plotters import sensitivity_fitting_plotters
+from autolens.lensing.plotters import sensitivity_fit_plotters
 from autolens.model.profiles import light_profiles as lp, mass_profiles as mp
 from autolens.lensing import lensing_image as li
 from autolens.model.galaxy import galaxy as g
@@ -77,7 +77,7 @@ def test_fit(lensing_image):
 
 def test__fit_sub_plot__output_dependent_on_config(fit, general_config, sensitivity_fitting_plotter_path):
 
-    sensitivity_fitting_plotters.plot_fitting_subplot(fit=fit, should_plot_mask=True,
-                                                      output_path=sensitivity_fitting_plotter_path, output_format='png')
+    sensitivity_fit_plotters.plot_fitting_subplot(fit=fit, should_plot_mask=True,
+                                                  output_path=sensitivity_fitting_plotter_path, output_format='png')
     assert os.path.isfile(path=sensitivity_fitting_plotter_path + 'sensitivity_fit.png')
     os.remove(path=sensitivity_fitting_plotter_path + 'sensitivity_fit.png')
