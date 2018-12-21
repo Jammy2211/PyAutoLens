@@ -223,7 +223,7 @@ class Mask(scaled_array.ScaledSquarePixelArray):
     @array_util.Memoizer()
     def blurring_mask_for_psf_shape(self, psf_shape):
         """Compute a blurring mask, which represents all masked pixels whose light will be blurred into unmasked \
-        pixels via PSF convolution (see grids.RegularGrid.blurring_grid_from_mask_and_psf_shape).
+        pixels via PSF convolution (see grid_stack.RegularGrid.blurring_grid_from_mask_and_psf_shape).
 
         Parameters
         ----------

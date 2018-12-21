@@ -111,16 +111,16 @@ class TestImagePlanePixelization:
                                  [False, False, False],
                                  [False, False, False]]), pixel_scale=1.0)
 
-        data_grids = grids.GridStack.grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=ma, sub_grid_size=1,
+        grid_stack = grids.GridStack.grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=ma, sub_grid_size=1,
                                                                                       psf_shape=(1, 1))
 
         galaxy = g.Galaxy()
 
         image_plane_pix_grids = \
             pixelizations.setup_image_plane_pixelization_grid_from_galaxies_and_grid_stack(galaxies=[galaxy, galaxy],
-                                                                                           grid_stack=data_grids)
+                                                                                           grid_stack=grid_stack)
 
-        assert image_plane_pix_grids == data_grids
+        assert image_plane_pix_grids == grid_stack
 
     def test__setup_pixelization__galaxies_have_other_pixelization__returns_normal_grids(self):
 
@@ -128,7 +128,7 @@ class TestImagePlanePixelization:
                                  [False, False, False],
                                  [False, False, False]]), pixel_scale=1.0)
 
-        data_grids = grids.GridStack.grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=ma, sub_grid_size=1,
+        grid_stack = grids.GridStack.grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=ma, sub_grid_size=1,
                                                                                       psf_shape=(1, 1))
 
         galaxy = g.Galaxy(pixelization=pixelizations.Rectangular(shape=(3,3)),
@@ -137,9 +137,9 @@ class TestImagePlanePixelization:
 
         image_plane_pix_grids = \
             pixelizations.setup_image_plane_pixelization_grid_from_galaxies_and_grid_stack(galaxies=[galaxy, galaxy],
-                                                                                           grid_stack=data_grids)
+                                                                                           grid_stack=grid_stack)
 
-        assert image_plane_pix_grids == data_grids
+        assert image_plane_pix_grids == grid_stack
 
     def test__setup_pixelization__galaxy_has_pixelization__but_grid_is_padded_grid__returns_normal_grids(self):
 
@@ -147,7 +147,7 @@ class TestImagePlanePixelization:
                                  [False, False, False],
                                  [False, True, False]]), pixel_scale=1.0)
 
-        data_grids = grids.GridStack.padded_grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=ma, sub_grid_size=1,
+        grid_stack = grids.GridStack.padded_grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=ma, sub_grid_size=1,
                                                                                              psf_shape=(1, 1))
 
         galaxy = g.Galaxy(pixelization=pixelizations.AdaptiveMagnification(shape=(3, 3)),
@@ -155,9 +155,9 @@ class TestImagePlanePixelization:
 
         image_plane_pix_grids = \
             pixelizations.setup_image_plane_pixelization_grid_from_galaxies_and_grid_stack(galaxies=[galaxy, galaxy],
-                                                                                           grid_stack=data_grids)
+                                                                                           grid_stack=grid_stack)
 
-        assert image_plane_pix_grids == data_grids
+        assert image_plane_pix_grids == grid_stack
 
     def test__setup_pixelization__galaxy_has_pixelization__returns_grids_with_pix_grid(self):
         
@@ -165,7 +165,7 @@ class TestImagePlanePixelization:
                                  [False, False, False],
                                  [False, True, False]]), pixel_scale=1.0)
 
-        data_grids = grids.GridStack.grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=ma, sub_grid_size=1,
+        grid_stack = grids.GridStack.grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=ma, sub_grid_size=1,
                                                                                       psf_shape=(1, 1))
 
         galaxy = g.Galaxy(pixelization=pixelizations.AdaptiveMagnification(shape=(3, 3)),
@@ -173,14 +173,14 @@ class TestImagePlanePixelization:
 
         image_plane_pix_grids = \
             pixelizations.setup_image_plane_pixelization_grid_from_galaxies_and_grid_stack(galaxies=[galaxy, galaxy],
-                                                                                           grid_stack=data_grids)
+                                                                                           grid_stack=grid_stack)
 
-        assert (image_plane_pix_grids.regular == data_grids.regular).all()
-        assert (image_plane_pix_grids.sub == data_grids.sub).all()
-        assert (image_plane_pix_grids.blurring == data_grids.blurring).all()
-        assert (image_plane_pix_grids.pix == np.array([[1.0, -1.0], [1.0, 0.0], [1.0, 1.0],
-                                                       [0.0, -1.0], [0.0, 0.0], [0.0, 1.0],
-                                                       [-1.0, -1.0],             [-1.0, 1.0]])).all()
+        assert (image_plane_pix_grids.regular == grid_stack.regular).all()
+        assert (image_plane_pix_grids.sub == grid_stack.sub).all()
+        assert (image_plane_pix_grids.blurring == grid_stack.blurring).all()
+        assert image_plane_pix_grids.pix == pytest.approx(np.array([[1.0, -1.0], [1.0, 0.0], [1.0, 1.0],
+                                                                    [0.0, -1.0], [0.0, 0.0], [0.0, 1.0],
+                                                                    [-1.0, -1.0],            [-1.0, 1.0]]), 1.0e-4)
 
 
 class TestRectangular:

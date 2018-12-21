@@ -9,10 +9,10 @@ class Mapper(object):
 
     def __init__(self, pixels, grid_stack, border):
         """ Abstract base class representing a mapper, which maps unmasked pixels on a masked 2D array (in the form of \
-        a grid, see the *data.array.grids* module) to discretized pixels in a pixelization.
+        a grid, see the *data.array.grid_stack* module) to discretized pixels in a pixelization.
 
-        1D arrays are used to represent these mappings, for example between the different grids in a grid-stack \
-        (e.g. the regular / sub grids). This follows the syntax grid_to_grid, whereby the index of a value on one grid \
+        1D arrays are used to represent these mappings, for example between the different grid_stack in a grid-stack \
+        (e.g. the regular / sub grid_stack). This follows the syntax grid_to_grid, whereby the index of a value on one grid \
         equals that of another grid, for example:
 
         - image_to_pix[2] = 1  tells us that the 3rd pixel on a regular grid maps to the 2nd pixel of a pixelization.
@@ -24,9 +24,9 @@ class Mapper(object):
         ----------
         pixels : int
             The number of pixels in the mapper's pixelization.
-        grid_stack: grids.GridStack
+        grid_stack: grid_stack.GridStack
             A stack of grid's which are mapped to the pixelization (includes an regular and sub grid).
-        border : grids.RegularGridBorder
+        border : grid_stack.RegularGridBorder
             The border of the grid-stack's regular-grid.
         """
         self.pixels = pixels
@@ -125,7 +125,7 @@ class RectangularMapper(Mapper):
 
     def __init__(self, pixels, grid_stack, border, shape, geometry):
         """ Class representing a rectangular mapper, which maps unmasked pixels on a masked 2D array (in the form of \
-        a grid, see the *data.array.grids* module) to pixels discretized on a rectangular grid.
+        a grid, see the *data.array.grid_stack* module) to pixels discretized on a rectangular grid.
 
         The regular and uniform geometry of the rectangular grid is used to perform efficient pixel pairings.
 
@@ -133,9 +133,9 @@ class RectangularMapper(Mapper):
         ----------
         pixels : int
             The number of pixels in the rectangular pixelization (y_pixels*x_pixels).
-        grid_stack : grids.GridStack
+        grid_stack : grid_stack.GridStack
             A stack of grid describing the observed image's pixel coordinates (e.g. an image-grid, sub-grid, etc.).
-        border : grids.RegularGridBorder
+        border : grid_stack.RegularGridBorder
             The border of the grid-stack's regular-grid.
         shape : (int, int)
             The dimensions of the rectangular grid of pixels (y_pixels, x_pixel)
@@ -173,18 +173,18 @@ class VoronoiMapper(Mapper):
 
     def __init__(self, pixels, grid_stack, border, voronoi, geometry):
         """Class representing a Voronoi mapper, which maps unmasked pixels on a masked 2D array (in the form of \
-        a grid, see the *data.array.grids* module) to pixels discretized on a Voronoi grid.
+        a grid, see the *data.array.grid_stack* module) to pixels discretized on a Voronoi grid.
 
         The irregular and non-uniform geometry of the Voronoi grid means efficient pixel pairings requires knowledge \
-        of how different grids map to one another.
+        of how different grid_stack map to one another.
 
         Parameters
         ----------
         pixels : int
             The number of pixels in the Voronoi pixelization.
-        grid_stack : grids.GridStack
+        grid_stack : grid_stack.GridStack
             A stack of grid describing the observed image's pixel coordinates (e.g. an image-grid, sub-grid, etc.).
-        border : grids.RegularGridBorder
+        border : grid_stack.RegularGridBorder
             The border of the grid-stack's regular-grid.
         voronoi : scipy.spatial.Voronoi
             Class storing the Voronoi grid's geometry.
@@ -209,25 +209,7 @@ class VoronoiMapper(Mapper):
 
     @property
     def sub_to_pix(self):
-        """  The 1D index mappings between the sub pixels and Voronoi pixelization pixels.
-        
-        To compute these mappings, a set of sub-maskedimage pixels and pixels, using the maskedimage's traced \
-        pix-plane sub-grid and the pixel centers. This uses the pix-neighbors to perform a graph \
-        search when pairing pixels, for efficiency.
-
-        For the Voronoi pixelizations, a cluster set of 'cluster-pixels' are used to determine the pixelization. \
-        These provide the mappings between only a sub-set of sub-pixels / maskedimage-pixels and pixels.
-
-        To determine the complete set of sub-pixel to pixel mappings, we must therefore pair every sub-pixel to \
-        its nearest pixel (using the sub-pixel's pix-plane coordinate and pixel center). Using a full \
-        nearest neighbor search to do this is slow, thus the pixel neighbors (derived via the Voronoi grid) \
-        is used to localize each nearest neighbor search.
-
-        In this routine, some variables and function names refer to a 'cluster_pix_'. This term describes a \
-        pixel that we have paired to a sub_coordinate using the cluster_coordinate of an maskedimage coordinate. \
-        Thus, it may not actually be that sub_coordinate's closest pixel (the routine will eventually
-        determine this).
-         """
+        """  The 1D index mappings between the sub pixels and Voronoi pixelization pixels. """
         return mapper_util.voronoi_sub_to_pix_from_grids_and_geometry(sub_grid=self.grid_stack.sub,
                regular_to_nearest_pix=self.grid_stack.pix.regular_to_nearest_pix,
                sub_to_regular=self.grid_stack.sub.sub_to_regular, pixel_centres=self.geometry.pixel_centres,

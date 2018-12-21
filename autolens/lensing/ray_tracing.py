@@ -351,7 +351,7 @@ class TracerImagePlane(AbstractTracerNonStack):
         As there is only 1 plane, there are no ray-tracing calculations. This class is therefore only used for fitting \ 
         image-plane galaxies with light profiles.
         
-        This tracer has only one grid-stack (see grids.GridStack) which is used for ray-tracing.
+        This tracer has only one grid-stack (see grid_stack.GridStack) which is used for ray-tracing.
 
         Parameters
         ----------
@@ -383,7 +383,7 @@ class TracerImagePlaneStack(AbstractTracerStack):
         As there is only 1 plane, there are no ray-tracing calculations. This class is therefore only used for fitting \
         image-plane galaxies with light profiles.
 
-        This tracer has a list of grid-stacks (see grids.GridStack) which are all used for ray-tracing.
+        This tracer has a list of grid-stacks (see grid_stack.GridStack) which are all used for ray-tracing.
 
         Parameters
         ----------
@@ -412,7 +412,7 @@ class TracerImageSourcePlanes(AbstractTracerNonStack):
     def __init__(self, lens_galaxies, source_galaxies, image_plane_grid_stack, border=None, cosmology=cosmo.Planck15):
         """Ray-tracer for a lensing system with two planes, an image-plane and source-plane.
 
-        This tracer has only one grid-stack (see grids.GridStack) which is used for ray-tracing.
+        This tracer has only one grid-stack (see grid_stack.GridStack) which is used for ray-tracing.
 
         Parameters
         ----------
@@ -448,7 +448,7 @@ class TracerImageSourcePlanesStack(AbstractTracerStack):
     def __init__(self, lens_galaxies, source_galaxies, image_plane_grid_stacks, borders=None, cosmology=cosmo.Planck15):
         """Ray-tracer for a lensing system with two planes, an image-plane and source-plane.
 
-        This tracer has a list of grid-stacks (see grids.GridStack) which are all used for ray-tracing.
+        This tracer has a list of grid-stacks (see grid_stack.GridStack) which are all used for ray-tracing.
 
         Parameters
         ----------
@@ -491,7 +491,7 @@ class TracerMultiPlanes(AbstractTracerNonStack):
         according to the lensing-geometry of the multi-plane system. All galaxies input to the tracer must therefore \
         have redshifts.
 
-        This tracer has only one grid-stack (see grids.GridStack) which is used for ray-tracing.
+        This tracer has only one grid-stack (see grid_stack.GridStack) which is used for ray-tracing.
 
         Parameters
         ----------
@@ -565,7 +565,7 @@ class TracerMultiPlanesStack(AbstractTracerStack):
         according to the lensing-geometry of the multi-plane system. All galaxies input to the tracer must therefore \
         have redshifts.
 
-        This tracer has a list of grid-stacks (see grids.GridStack) which are all used for ray-tracing.
+        This tracer has a list of grid-stacks (see grid_stack.GridStack) which are all used for ray-tracing.
 
         Parameters
         ----------
