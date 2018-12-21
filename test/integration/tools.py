@@ -32,23 +32,23 @@ def simulate_integration_image(data_name, pixel_scale, lens_galaxies, source_gal
 
     psf = im.PSF.simulate_as_gaussian(shape=psf_shape, pixel_scale=pixel_scale, sigma=pixel_scale)
 
-    image_grids = grids.GridStack.grid_stack_for_simulation(shape=image_shape, pixel_scale=pixel_scale,
+    grid_stack = grids.GridStack.grid_stack_for_simulation(shape=image_shape, pixel_scale=pixel_scale,
                                                             sub_grid_size=1, psf_shape=psf_shape)
 
-    image_shape = image_grids.regular.padded_shape
+    image_shape = grid_stack.regular.padded_shape
 
     if not source_galaxies:
 
-        tracer = ray_tracing.TracerImagePlane(lens_galaxies=lens_galaxies, image_plane_grid_stack=[image_grids])
+        tracer = ray_tracing.TracerImagePlane(lens_galaxies=lens_galaxies, image_plane_grid_stack=grid_stack)
 
     elif source_galaxies:
 
         tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=lens_galaxies, source_galaxies=source_galaxies,
-                                                     image_plane_grid_stack=[image_grids])
+                                                     image_plane_grid_stack=grid_stack)
 
     ### Setup as a simulated image_coords and output as a fits for an lensing ###
 
-    sim_image = im.Image.simulate_to_target_signal_to_noise(array=tracer.image_plane_images_for_simulation[0],
+    sim_image = im.Image.simulate_to_target_signal_to_noise(array=tracer.image_plane_image_for_simulation,
                                                             pixel_scale=pixel_scale,
                                                             target_signal_to_noise=target_signal_to_noise,
                                                             exposure_time_map=np.ones(image_shape),

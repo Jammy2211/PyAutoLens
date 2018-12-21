@@ -1060,7 +1060,7 @@ class TestDataGridStack(object):
                                                     [-1., 0.],
                                                     [-1., 1.]])).all()
         assert (grid_stack.pix == np.array([[5.0, 5.0], [6.0, 7.0]])).all()
-        assert (grid_stack.pix.regular_to_nearest_regular_pix == np.array([0, 1])).all()
+        assert (grid_stack.pix.regular_to_nearest_pix == np.array([0, 1])).all()
 
 
 class TestImageGridBorder(object):
