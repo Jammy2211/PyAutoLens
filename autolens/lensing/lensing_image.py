@@ -12,8 +12,8 @@ class LensingImage(object):
     def __init__(self, image, mask, sub_grid_size=2, image_psf_shape=None, mapping_matrix_psf_shape=None,
                  positions=None):
         """
-        The lensing image is the collection of datas (regular, noise_map-maps, PSF), a masks, grid_stacks, convolvers and other \
-        utilities that are used for modeling and fitting an image of a strong lens.
+        The lensing image is the collection of datas (regular, noise_map-maps, PSF), a masks, grid_stacks, convolvers \
+        and other utilities that are used for modeling and fitting an image of a strong lens.
 
         Whilst the image datas is initially loaded in 2D, for the lensing image the masked-image (and noise_map-maps) \
         are reduced to 1D arrays for faster calculations.
@@ -34,8 +34,8 @@ class LensingImage(object):
             The shape of the PSF used for convolving the inversion mapping matrix. A smaller \
             shape will trim the PSF relative to the input image PSF, giving a faster analysis run-time.
         positions : [[]]
-            Lists of image-pixel coordinates (arc-seconds) that mappers close to one another in the source-plane(s), used \
-            to speed up the non-linear sampling.
+            Lists of image-pixel coordinates (arc-seconds) that mappers close to one another in the source-plane(s), \
+            used to speed up the non-linear sampling.
         """
         self.image = image[:,:]
         self.noise_map = image.noise_map
@@ -52,8 +52,9 @@ class LensingImage(object):
         if image_psf_shape is None:
             image_psf_shape = self.image.psf.shape
 
-        self.convolver_image = convolution.ConvolverImage(self.mask, mask.blurring_mask_for_psf_shape(image_psf_shape),
-                                                          self.image.psf.resized_scaled_array_from_array(image_psf_shape))
+        self.convolver_image = convolution.ConvolverImage(mask=self.mask,
+                                        blurring_mask=mask.blurring_mask_for_psf_shape(psf_shape=image_psf_shape),
+                                        psf=self.image.psf.resized_scaled_array_from_array(new_shape=image_psf_shape))
 
         if mapping_matrix_psf_shape is None:
             mapping_matrix_psf_shape = self.image.psf.shape
@@ -62,10 +63,10 @@ class LensingImage(object):
                       self.image.psf.resized_scaled_array_from_array(mapping_matrix_psf_shape))
 
         self.grid_stack = grids.GridStack.grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=mask,
-                                                                                           sub_grid_size=sub_grid_size, psf_shape=image_psf_shape)
+                                              sub_grid_size=sub_grid_size, psf_shape=image_psf_shape)
 
         self.padded_grid_stack = grids.GridStack.padded_grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=mask,
-                                                                                                         sub_grid_size=sub_grid_size, psf_shape=image_psf_shape)
+                                                            sub_grid_size=sub_grid_size, psf_shape=image_psf_shape)
 
         self.border = grids.RegularGridBorder.from_mask(mask=mask)
 

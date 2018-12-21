@@ -58,13 +58,13 @@ def plot_noise_map(fit, mask=None, positions=None, as_subplot=False,
                               mask_pointsize=mask_pointsize, position_pointsize=position_pointsize,
                               output_path=output_path, output_format=output_format, output_filename=output_filename)
 
-def plot_model_image(fit, mask=None, positions=None, as_subplot=False,
-                     units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
-                     cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
-                     cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
-                     title='Fit Model Image', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
-                     mask_pointsize=10, position_pointsize=10,
-                     output_path=None, output_format='show', output_filename='fit_model_image'):
+def plot_model_data(fit, mask=None, positions=None, as_subplot=False,
+                    units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
+                    cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
+                    cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
+                    title='Fit Model Image', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
+                    mask_pointsize=10, position_pointsize=10,
+                    output_path=None, output_format='show', output_filename='fit_model_image'):
     """Plot the model image of a fit.
 
     Set *autolens.datas.array.plotters.array_plotters* for a description of all input parameters not described below.
@@ -76,7 +76,7 @@ def plot_model_image(fit, mask=None, positions=None, as_subplot=False,
     image_index : int
         The index of the datas in the datas-set of which the model image is plotted.
     """
-    array_plotters.plot_array(array=fit.model_image, mask=mask, positions=positions, as_subplot=as_subplot,
+    array_plotters.plot_array(array=fit.model_data, mask=mask, positions=positions, as_subplot=as_subplot,
                               units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
                               cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max,
                               linthresh=linthresh, linscale=linscale,
@@ -208,6 +208,7 @@ def plot_contribution_maps(fit, mask=None, positions=None, as_subplot=False,
                               output_path=output_path, output_format=output_format, output_filename=output_filename)
 
 def get_image_plane_pix_grid(should_plot_image_plane_pix, fit):
+
     if hasattr(fit, 'mapper'):
         if should_plot_image_plane_pix and fit.mapper.is_image_plane_pixelization:
             return fit.tracer.image_plane.grids[0].pix

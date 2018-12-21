@@ -118,8 +118,8 @@ def test__noise_map_is_output(fit, lensing_plotter_util_path):
     os.remove(path=lensing_plotter_util_path + 'fit_noise_map.png')
 
 def test__model_image_is_output(fit, lensing_plotter_util_path):
-    lensing_plotter_util.plot_model_image(fit=fit, output_path=lensing_plotter_util_path,
-                                              output_format='png')
+    lensing_plotter_util.plot_model_data(fit=fit, output_path=lensing_plotter_util_path,
+                                         output_format='png')
     assert os.path.isfile(path=lensing_plotter_util_path + 'fit_model_image.png')
     os.remove(path=lensing_plotter_util_path + 'fit_model_image.png')
 

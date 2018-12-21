@@ -105,13 +105,13 @@ def plot_fit_subplot_lens_plane_only(fit, should_plot_mask=True, positions=None,
 
     plt.subplot(rows, columns, 2)
 
-    lensing_plotter_util.plot_model_image(fit=fit, mask=mask, as_subplot=True,
-                      units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
-                      cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
-                      linscale=linscale,
-                      cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
-                      titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize, xyticksize=xyticksize,
-                      output_path=output_path, output_filename='', output_format=output_format)
+    lensing_plotter_util.plot_model_data(fit=fit, mask=mask, as_subplot=True,
+                                         units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
+                                         cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
+                                         linscale=linscale,
+                                         cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
+                                         titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize, xyticksize=xyticksize,
+                                         output_path=output_path, output_filename='', output_format=output_format)
 
     plt.subplot(rows, columns, 3)
 
@@ -301,8 +301,8 @@ def plot_fit_individuals_lens_plane_only(fit, units='kpc', output_path=None, out
     kpc_per_arcsec = fit.tracer.image_plane.kpc_per_arcsec_proper
 
     if plot_lensing_fitting_model_image:
-        lensing_plotter_util.plot_model_image(fit=fit, mask=mask, units=units, kpc_per_arcsec=kpc_per_arcsec,
-                                          output_path=output_path, output_format=output_format)
+        lensing_plotter_util.plot_model_data(fit=fit, mask=mask, units=units, kpc_per_arcsec=kpc_per_arcsec,
+                                             output_path=output_path, output_format=output_format)
 
     if plot_lensing_fitting_residuals:
         lensing_plotter_util.plot_residual_map(fit=fit, mask=mask, units=units, kpc_per_arcsec=kpc_per_arcsec,
@@ -344,8 +344,8 @@ def plot_fit_individuals_lens_and_source_planes(fit, units='kpc', output_path=No
     kpc_per_arcsec = fit.tracer.image_plane.kpc_per_arcsec_proper
 
     if plot_lensing_fitting_model_image:
-        lensing_plotter_util.plot_model_image(fit=fit, units=units, mask=mask, kpc_per_arcsec=kpc_per_arcsec,
-                                          output_path=output_path, output_format=output_format)
+        lensing_plotter_util.plot_model_data(fit=fit, units=units, mask=mask, kpc_per_arcsec=kpc_per_arcsec,
+                                             output_path=output_path, output_format=output_format)
 
     if plot_lensing_fitting_lens_model_image:
         lensing_plotter_util.plot_model_image_of_plane(fit=fit, plane_index=0, mask=mask, units=units,

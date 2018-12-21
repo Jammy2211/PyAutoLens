@@ -49,13 +49,13 @@ def plot_fitting_subplot(fit, should_plot_mask=True, positions=None,
 
     plt.subplot(rows, columns, 4)
 
-    lensing_plotter_util.plot_model_image(fit=fit.fit_normal, mask=mask, as_subplot=True,
-                                      units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
-                                      cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
-                                      linscale=linscale,
-                                      cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
-                                      titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize, xyticksize=xyticksize,
-                                      output_path=output_path, output_filename='', output_format=output_format)
+    lensing_plotter_util.plot_model_data(fit=fit.fit_normal, mask=mask, as_subplot=True,
+                                         units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
+                                         cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
+                                         linscale=linscale,
+                                         cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
+                                         titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize, xyticksize=xyticksize,
+                                         output_path=output_path, output_filename='', output_format=output_format)
 
     plt.subplot(rows, columns, 5)
 
@@ -79,13 +79,13 @@ def plot_fitting_subplot(fit, should_plot_mask=True, positions=None,
     
     plt.subplot(rows, columns, 7)
 
-    lensing_plotter_util.plot_model_image(fit=fit.fit_sensitive, mask=mask, as_subplot=True,
-                                      units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
-                                      cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
-                                      linscale=linscale,
-                                      cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
-                                      titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize, xyticksize=xyticksize,
-                                      output_path=output_path, output_filename='', output_format=output_format)
+    lensing_plotter_util.plot_model_data(fit=fit.fit_sensitive, mask=mask, as_subplot=True,
+                                         units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
+                                         cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
+                                         linscale=linscale,
+                                         cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
+                                         titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize, xyticksize=xyticksize,
+                                         output_path=output_path, output_filename='', output_format=output_format)
 
     plt.subplot(rows, columns, 8)
 
