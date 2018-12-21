@@ -77,7 +77,7 @@ class ImagePlanePixelization(object):
 class Pixelization(object):
 
     def __init__(self):
-        """ Abstract base class for a pixelization, which discretizes grids of (y,x) coordinates into pixels.
+        """ Abstract base class for a pixelization, which discretizes grid_stack of (y,x) coordinates into pixels.
         """
 
     def mapper_from_grid_stack_and_border(self, grid_stack, border):
@@ -116,7 +116,7 @@ class Rectangular(Pixelization):
         def __init__(self, shape, pixel_scales, origin, pixel_neighbors, pixel_neighbors_size):
             """The geometry of a rectangular grid.
 
-            This is used to map grids of (y,x) arc-second coordinates to the pixels on the rectangular grid.
+            This is used to map grid_stack of (y,x) arc-second coordinates to the pixels on the rectangular grid.
 
             Parameters
             -----------
@@ -214,7 +214,7 @@ class Voronoi(Pixelization):
             -----------
             shape_arc_seconds : (float, float)
                 The dimensions of the Voronoi grid ni arc-second (y_arcseconds, x_arcseconds)
-            pixel_centres : (float, float)
+            pixel_centres : ndarray
                 The (y,x) centre of every Voronoi pixel in arc-seconds.
             origin : (float, float)
                 The arc-second origin of the Voronoi pixelization's coordinate system.
@@ -240,7 +240,7 @@ class Voronoi(Pixelization):
         -----------
         grid : ndarray
             The (y,x) grid of coordinates which determine the Voronoi pixelization's geometry.
-        pixel_centres : (float, float)
+        pixel_centres : ndarray
             The (y,x) centre of every Voronoi pixel in arc-seconds.
         origin : (float, float)
             The arc-second origin of the Voronoi pixelization's coordinate system.

@@ -1,14 +1,20 @@
 import numpy as np
 import numba
 
-@numba.jit(nopython=True, parallel=True)
+@numba.jit(nopython=True, cache=True)
 def constant_regularization_matrix_from_pixel_neighbors(coefficients, pixel_neighbors, pixel_neighbors_size):
     """From the pixel-neighbors, setup the regularization matrix using the constant regularization scheme.
 
     Parameters
     ----------
-    pixel_neighbors : [[]]
-        A list of the neighbors of each pixel.
+    coefficients : tuple
+        The regularization coefficients which controls the degree of smoothing of the inversion reconstruction.
+    pixel_neighbors : ndarray
+        An array of length (total_pixels) which provides the index of all neighbors of every pixel in \
+        the Voronoi grid (entries of -1 correspond to no neighbor).
+    pixel_neighbors_size : ndarrayy
+        An array of length (total_pixels) which gives the number of neighbors of every pixel in the \
+        Voronoi grid.
     """
 
     pixels = len(pixel_neighbors)
@@ -26,7 +32,7 @@ def constant_regularization_matrix_from_pixel_neighbors(coefficients, pixel_neig
 
     return regularization_matrix
 
-@numba.jit(nopython=True, parallel=True)
+@numba.jit(nopython=True, cache=True)
 def weighted_pixel_signals_from_images(pixels, signal_scale, regular_to_pix, galaxy_image):
     """Compute the (scaled) signal in each pixel, where the signal is the sum of its datas_-pixel fluxes. \
     These pixel-signals are used to compute the effective regularization weight of each pixel.
@@ -41,6 +47,18 @@ def weighted_pixel_signals_from_images(pixels, signal_scale, regular_to_pix, gal
 
     3) Raised to the power of the hyper-parameter *signal_scale*, so the method can control the relative \
     contribution regularization in different regions of pixelization.
+
+    Parameters
+    -----------
+    pixels : int
+        The total number of pixels in the pixelization the regularization scheme is applied to.
+    signal_scale : float
+        A factor which controls how rapidly the smoothness of regularization varies from high signal regions to \
+        low signal regions.
+    regular_to_pix : ndarray
+        A 1D array mapping every pixel on the regular-grid to a pixel on the pixelization.
+    galaxy_image : ndarray
+        The image of the galaxy which is used to compute the weigghted pixel signals.
     """
 
     pixel_signals = np.zeros((pixels,))
@@ -64,20 +82,32 @@ def weighted_regularization_weights_from_pixel_signals(coefficients, pixel_signa
     1) (pixel_signals) - pixels with a high pixel-signal (i.e. where the signal is located in the pixelization).
     2) (1.0 - pixel_signals) - pixels with a low pixel-signal (i.e. where the signal is not located in the \
      pixelization).
-    """
-    return (coefficients[0] * pixel_signals + coefficients[1] * (1.0 - pixel_signals)) ** 2.0
-
-@numba.jit(nopython=True, parallel=True)
-def weighted_regularization_matrix_from_pixel_neighbors(regularization_weights, pixel_neighbors,
-                                                        pixel_neighbors_size):
-    """ From the pixel-neighbors, setup the regularization matrix using the weighted regularization scheme.
 
     Parameters
     ----------
-    regularization_weights : list(float)
-        The regularization_matrix weight of each pixel
-    pixel_neighbors : [[]]
-        A list of the neighbors of each pixel.
+    coefficients : (float, float)
+        The regularization coefficients which controls the degree of smoothing of the inversion reconstruction.
+    pixel_signals : ndarray
+        The estimated signal in every pixelization pixel, used to change the regularization weighting of high signal \
+        and low signal pixelizations.
+    """
+    return (coefficients[0] * pixel_signals + coefficients[1] * (1.0 - pixel_signals)) ** 2.0
+
+@numba.jit(nopython=True, cache=True)
+def weighted_regularization_matrix_from_pixel_neighbors(regularization_weights, pixel_neighbors,
+                                                        pixel_neighbors_size):
+    """From the pixel-neighbors, setup the regularization matrix using the weighted regularization scheme.
+
+    Parameters
+    ----------
+    regularization_weights : ndarray
+        The regularization_ weight of each pixel, which governs how much smoothing is applied to that individual pixel.
+    pixel_neighbors : ndarray
+        An array of length (total_pixels) which provides the index of all neighbors of every pixel in \
+        the Voronoi grid (entries of -1 correspond to no neighbor).
+    pixel_neighbors_size : ndarrayy
+        An array of length (total_pixels) which gives the number of neighbors of every pixel in the \
+        Voronoi grid.
     """
 
     pixels = len(regularization_weights)

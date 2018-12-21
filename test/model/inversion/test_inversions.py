@@ -20,9 +20,9 @@ class MockGeometry(object):
 
 class MockMapper(object):
 
-    def __init__(self, matrix_shape, grids=None):
+    def __init__(self, matrix_shape, grid_stack=None):
 
-        self.grids = grids
+        self.grid_stack = grid_stack
         self.mapping_matrix = np.ones(matrix_shape)
         self.geometry = MockGeometry()
 
@@ -156,18 +156,18 @@ class TestReconstructedDataVectorAndImage:
                                         [False, False, False],
                                         [True, True, True]]), pixel_scale=1.0)
 
-        imaging_grids = grids.GridStack.grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=msk, sub_grid_size=1,
+        grid_stack = grids.GridStack.grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=msk, sub_grid_size=1,
                                                                                          psf_shape=(1,1))
 
         inv = inversions.Inversion(image_1d=np.ones(9), noise_map_1d=np.ones(9), convolver=MockConvolver(matrix_shape),
-                                   mapper=MockMapper(matrix_shape, imaging_grids),
+                                   mapper=MockMapper(matrix_shape, grid_stack),
                                    regularization=MockRegularization(matrix_shape))
 
         inv.solution_vector = np.array([1.0, 1.0, 1.0, 1.0])
 
         inv.blurred_mapping_matrix = np.array([[1.0, 1.0, 1.0, 1.0],
-                                           [1.0, 0.0, 1.0, 1.0],
-                                           [1.0, 0.0, 0.0, 0.0]])
+                                               [1.0, 0.0, 1.0, 1.0],
+                                               [1.0, 0.0, 0.0, 0.0]])
         # Image pixel 0 maps to 4 pixs pixxels -> value is 4.0
         # Image pixel 1 maps to 3 pixs pixxels -> value is 3.0
         # Image pixel 2 maps to 1 pixs pixxels -> value is 1.0
@@ -185,11 +185,11 @@ class TestReconstructedDataVectorAndImage:
                                         [False, False, False],
                                         [True, True, True]]), pixel_scale=1.0)
 
-        imaging_grids = grids.GridStack.grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=msk, sub_grid_size=1,
+        grid_stack = grids.GridStack.grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=msk, sub_grid_size=1,
                                                                                          psf_shape=(1,1))
 
         inv = inversions.Inversion(image_1d=np.ones(9), noise_map_1d=np.ones(9), convolver=MockConvolver(matrix_shape),
-                                   mapper=MockMapper(matrix_shape, imaging_grids), regularization=MockRegularization(matrix_shape))
+                                   mapper=MockMapper(matrix_shape, grid_stack), regularization=MockRegularization(matrix_shape))
 
         inv.solution_vector = np.array([1.0, 2.0, 3.0, 4.0])
 

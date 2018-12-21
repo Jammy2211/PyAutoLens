@@ -3,7 +3,7 @@ import numpy as np
 from autolens import exc
 from autolens.model.inversion.util import inversion_util
 
-# TODO : Unit test this properly, using a cleverly made mock datas-set
+# TODO : Unit test this properly, using a cleverly made mock data-set
 
 def inversion_from_lensing_image_mapper_and_regularization(image_1d, noise_map_1d, convolver, mapper, regularization):
     return Inversion(image_1d=image_1d, noise_map_1d=noise_map_1d, convolver=convolver, mapper=mapper,
@@ -12,34 +12,40 @@ def inversion_from_lensing_image_mapper_and_regularization(image_1d, noise_map_1
 class Inversion(object):
 
     def __init__(self, image_1d, noise_map_1d, convolver, mapper, regularization):
-        """The matrices, mappings which have been used to linearly invert and fit_normal a datas-set.
+        """ An inversion, which given an input image and noise-map reconstructs the image using a linear inversion, \
+        including a convolution that accounts for blurring.
+
+        The inversion uses a 2D pixelization to perform the reconstruction by mapping each pixelization pixel to a \
+        set of image pixels via a mapper. The reconstructed pixelization is smoothed via a regularization scheme to \
+        prevent over-fitting noise.
 
         Parameters
         -----------
         image_1d : ndarray
-            Flattened 1D array of the regular the inversion fits.
+            Flattened 1D array of the observed image the inversion is fitting.
         noise_map_1d : ndarray
-            Flattened 1D array of the noise_map-map used by the inversion.
+            Flattened 1D array of the noise-map used by the inversion during the fit.   
         convolver : imaging.convolution.Convolver
             The convolver used to blur the mapping matrix with the PSF.
         mapper : inversion.mappers.Mapper
-            The mapping between the regular and pixelization.
+            The mapping between the image-pixels (via its regular / sub-grid) and pixelization pixels.
         regularization : inversion.regularization.Regularization
-            The regularization scheme applied to the pixeliztion for the inversion
+            The regularization scheme applied to smooth the pixelization used to reconstruct the image for the \
+            inversion
 
         Attributes
         -----------
-        blurred_mapping_matrix : ndarray | None
-            The matrix representing the mapping_matrix between reconstructed_inversion_image-pixels and datas-pixels, including a \
-            blurring operation (f).
-        regularization_matrix : ndarray | None
-            The matrix defining how the reconstructed_inversion_image's pixels are regularized with one another (H).
-        curvature_matrix : ndarray | None
-            The curvature_matrix between each reconstructed_inversion_image pixel and all other reconstructed_inversion_image pixels (F).
-        curvature_reg_matrix : ndarray | None
-            The curvature_matrix + regularizationo matrix.
-        reconstructed_inversion_image : ndarray | None
-            The vector containing the reconstructed fit_normal of the datas.
+        blurred_mapping_matrix : ndarray
+            The matrix representing the blurred mappings between the image's sub-grid of pixels and the pixelization \
+            pixels.
+        regularization_matrix : ndarray
+            The matrix defining how the pixelization's pixels are regularized with one another for smoothing (H).
+        curvature_matrix : ndarray
+            The curvature_matrix between each pixelization pixel and all other pixelization pixels (F).
+        curvature_reg_matrix : ndarray
+            The curvature_matrix + regularization matrix.
+        solution_vector : ndarray
+            The vector containing the reconstructed fit to the data.
         """
 
         self.mapper = mapper
@@ -47,10 +53,10 @@ class Inversion(object):
         self.blurred_mapping_matrix = convolver.convolve_mapping_matrix(mapping_matrix=mapper.mapping_matrix)
 
         self.data_vector = inversion_util.data_vector_from_blurred_mapping_matrix_and_data(
-                blurred_mapping_matrix=self.blurred_mapping_matrix, image=image_1d, noise_map=noise_map_1d)
+                blurred_mapping_matrix=self.blurred_mapping_matrix, image_1d=image_1d, noise_map_1d=noise_map_1d)
 
         self.curvature_matrix = inversion_util.curvature_matrix_from_blurred_mapping_matrix(
-                blurred_mapping_matrix=self.blurred_mapping_matrix, noise_map=noise_map_1d)
+                blurred_mapping_matrix=self.blurred_mapping_matrix, noise_map_1d=noise_map_1d)
 
         self.regularization_matrix = \
             regularization.regularization_matrix_from_pixel_neighbors(pixel_neighbors=mapper.geometry.pixel_neighbors,
@@ -69,16 +75,16 @@ class Inversion(object):
 
     @property
     def regularization_term(self):
-        """ Compute the regularization_matrix term of a inversion's Bayesian likelihood function. This represents the sum \
-         of the difference in fluxes between every pair of neighboring pixels. This is computed as:
+        """ Compute the regularization term of an inversion. This term represents the sum of the difference in flux \
+        between every pair of neighboring pixels. This is computed as:
 
-         s_T * H * s = s_vector.T * regularization_matrix_const * s_vector
+        s_T * H * s = solution_vector.T * regularization_matrix * solution_vector
 
-         The term is referred to as 'G_l' in Warren & Dye 2003, Nightingale & Dye 2015.
+        The term is referred to as *G_l* in Warren & Dye 2003, Nightingale & Dye 2015.
 
-         The above works include the regularization_matrix coefficient (lambda) in this calculation. In PyAutoLens, this is  \
-         already in the regularization_matrix matrix and thus included in the matrix multiplication.
-         """
+        The above works include the regularization_matrix coefficient (lambda) in this calculation. In PyAutoLens, \
+        this is already in the regularization matrix and thus implicitly included in the matrix multiplication.
+        """
         return np.matmul(self.solution_vector.T, np.matmul(self.regularization_matrix, self.solution_vector))
 
     @property
@@ -94,11 +100,12 @@ class Inversion(object):
         """There are two terms in the inversion's Bayesian likelihood function which require the log determinant of \
         a matrix. These are (Nightingale & Dye 2015, Nightingale, Dye and Massey 2018):
 
-        ln[det(F + H)] = ln[det(cov_reg_matrix)]
-        ln[det(H)]     = ln[det(regularization_matrix_const)]
+        ln[det(F + H)] = ln[det(curvature_reg_matrix)]
+        ln[det(H)]     = ln[det(regularization_matrix)]
 
-        The cov_reg_matrix is positive-definite, which means its log_determinant can be computed efficiently \
-        (compared to using np.det) by using a Cholesky decomposition first and summing the log of each diagonal term.
+        The curvature_reg_matrix is positive-definite, which means the above log determinants can be computed \
+        efficiently (compared to using np.det) by using a Cholesky decomposition first and summing the log of each \
+        diagonal term.
 
         Parameters
         -----------

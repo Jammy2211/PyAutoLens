@@ -46,7 +46,6 @@ def test_mask():
 def test_galaxy_light():
     return g.Galaxy(light=lp.EllipticalSersic(intensity=1.0))
 
-
 @pytest.fixture(name='galaxy_mass')
 def test_galaxy_mass():
     return g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=1.0))

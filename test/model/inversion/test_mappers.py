@@ -500,10 +500,10 @@ class TestVoronoiMapper:
                                                                                                  pixel_centers)
 
             sub_to_regular = np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])
-            regular_to_nearest_regular_pix = np.array([0, 0, 1, 0, 0, 1, 2, 2, 3])
+            regular_to_nearest_pix = np.array([0, 0, 1, 0, 0, 1, 2, 2, 3])
             grids = MockGridStack(regular=pixelization_grid, sub=MockSubGrid(np.array([]), sub_to_regular,
                                                                              sub_grid_size=1),
-                                  pix=pixelization_grid, regular_to_nearest_regular_pix=regular_to_nearest_regular_pix)
+                                  pix=pixelization_grid, regular_to_nearest_pix=regular_to_nearest_pix)
 
             pix = pixelizations.Voronoi()
             voronoi = pix.voronoi_from_pixel_centers(pixel_centers)
@@ -534,11 +534,11 @@ class TestVoronoiMapper:
                                                                                                pixel_centers)
 
             sub_to_regular = np.array([0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5])
-            regular_to_nearest_regular_pix = np.array([0, 0, 1, 0, 0, 1, 2, 2, 3])
+            regular_to_nearest_pix = np.array([0, 0, 1, 0, 0, 1, 2, 2, 3])
             grids = MockGridStack(regular=np.array([]), sub=MockSubGrid(pixelization_sub_grid, sub_to_regular,
                                                                         sub_grid_size=1),
                                   pix=pixelization_sub_grid,
-                                  regular_to_nearest_regular_pix=regular_to_nearest_regular_pix)
+                                  regular_to_nearest_pix=regular_to_nearest_pix)
 
             pix = pixelizations.Voronoi()
             voronoi = pix.voronoi_from_pixel_centers(pixel_centers)

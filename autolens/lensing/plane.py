@@ -234,7 +234,7 @@ class AbstractPlane(object):
 class Plane(AbstractPlane):
 
     def __init__(self, galaxies, grid_stack, border=None, compute_deflections=True, cosmology=cosmo.Planck15):
-        """A plane which uses one grid-stack of (y,x) grids (e.g. a regular-grid, sub-grid, etc.)
+        """A plane which uses one grid-stack of (y,x) grid_stack (e.g. a regular-grid, sub-grid, etc.)
 
         Parameters
         -----------
@@ -353,7 +353,7 @@ class Plane(AbstractPlane):
 class PlaneStack(AbstractPlane):
 
     def __init__(self, galaxies, grid_stacks, borders=None, compute_deflections=True, cosmology=None):
-        """A plane which uses a list of grid-stacks of (y,x) grids (e.g. a regular-grid, sub-grid, etc.)
+        """A plane which uses a list of grid-stacks of (y,x) grid_stack (e.g. a regular-grid, sub-grid, etc.)
 
         Parameters
         -----------

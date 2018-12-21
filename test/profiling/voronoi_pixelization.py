@@ -65,9 +65,9 @@ adaptive_mapper = adaptive_pix.mapper_from_grid_stack_and_border(grid_stack=trac
 mapping_matrix = adaptive_mapper.mapping_matrix
 blurred_mapping_matrix = lensing_image.convolver_mapping_matrix.convolve_mapping_matrix(mapping_matrix=mapping_matrix)
 data_vector = inversion_util.data_vector_from_blurred_mapping_matrix_and_data(
-                blurred_mapping_matrix=blurred_mapping_matrix, image=lensing_image, noise_map=lensing_image.noise_map_1d)
+                blurred_mapping_matrix=blurred_mapping_matrix, image_1d=lensing_image, noise_map_1d=lensing_image.noise_map_1d)
 curvature_matrix = inversion_util.curvature_matrix_from_blurred_mapping_matrix(
-                blurred_mapping_matrix=blurred_mapping_matrix, noise_map=lensing_image.noise_map_1d)
+                blurred_mapping_matrix=blurred_mapping_matrix, noise_map_1d=lensing_image.noise_map_1d)
 regularization_matrix = regularization_util.constant_regularization_matrix_from_pixel_neighbors(coefficients=(1.0,),
                         pixel_neighbors=adaptive_mapper.geometry.pixel_neighbors,
                         pixel_neighbors_size=pixel_neighbors_size)
@@ -123,13 +123,13 @@ print("Blurred Mapping Matrix Time = {}".format(diff))
 
 start = time.time()
 data_vector = inversion_util.data_vector_from_blurred_mapping_matrix_and_data(
-                blurred_mapping_matrix=blurred_mapping_matrix, image=lensing_image, noise_map=lensing_image.noise_map_1d)
+                blurred_mapping_matrix=blurred_mapping_matrix, image_1d=lensing_image, noise_map_1d=lensing_image.noise_map_1d)
 diff = time.time() - start
 print("Data Vector Time = {}".format(diff))
 
 start = time.time()
 curvature_matrix = inversion_util.curvature_matrix_from_blurred_mapping_matrix(
-                blurred_mapping_matrix=blurred_mapping_matrix, noise_map=lensing_image.noise_map_1d)
+                blurred_mapping_matrix=blurred_mapping_matrix, noise_map_1d=lensing_image.noise_map_1d)
 diff = time.time() - start
 print("Curvature Matrix Time = {}".format(diff))
 
