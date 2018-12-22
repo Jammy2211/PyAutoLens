@@ -5,9 +5,9 @@ from autolens.data.imaging import image
 from autolens.data.array import mask as mask
 from autolens.model.galaxy import galaxy as g
 from autolens.data.fitting import fitting_util
+from autolens.lensing.util import lensing_fitters_util as util
 from autolens.lensing import lensing_image
-from autolens.lensing import lensing_util
-from autolens.lensing import sensitivity_fitting
+from autolens.lensing import sensitivity_fitters
 from autolens.lensing import ray_tracing
 from autolens.model.profiles import light_profiles as lp, mass_profiles as mp
 
@@ -46,13 +46,13 @@ class TestSensitivityProfileFit:
         tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g1],
                                                      image_plane_grid_stack=si_blur.grid_stack)
 
-        fit = sensitivity_fitting.SensitivityProfileFitter(lensing_image=si_blur, tracer_normal=tracer,
+        fit = sensitivity_fitters.SensitivityProfileFitter(lensing_image=si_blur, tracer_normal=tracer,
                                                            tracer_sensitive=tracer)
 
         assert (fit.fit_normal.image == si_blur.image).all()
         assert (fit.fit_normal.noise_map == si_blur.noise_map).all()
 
-        model_image = lensing_util.blurred_image_from_1d_unblurred_and_blurring_images(
+        model_image = util.blurred_image_from_1d_unblurred_and_blurring_images(
             unblurred_image_1d=tracer.image_plane_image_1d, blurring_image_1d=tracer.image_plane_blurring_image_1d,
             convolver=si_blur.convolver_image, map_to_scaled_array=si_blur.map_to_scaled_array)
 
@@ -81,7 +81,7 @@ class TestSensitivityProfileFit:
 
         assert fit.likelihood == 0.0
 
-        fast_likelihood = sensitivity_fitting.SensitivityProfileFitter.fast_fit(
+        fast_likelihood = sensitivity_fitters.SensitivityProfileFitter.fast_fit(
             lensing_image=si_blur, tracer_normal=tracer, tracer_sensitive=tracer)
 
         assert fit.likelihood == fast_likelihood
@@ -97,13 +97,13 @@ class TestSensitivityProfileFit:
 
         tracer_sensitive = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0, g0_subhalo], source_galaxies=[g1],
                                                                image_plane_grid_stack=si_blur.grid_stack)
-        fit = sensitivity_fitting.SensitivityProfileFitter(lensing_image=si_blur, tracer_normal=tracer_normal,
+        fit = sensitivity_fitters.SensitivityProfileFitter(lensing_image=si_blur, tracer_normal=tracer_normal,
                                                            tracer_sensitive=tracer_sensitive)
 
         assert (fit.fit_normal.image == si_blur.image).all()
         assert (fit.fit_normal.noise_map == si_blur.noise_map).all()
 
-        model_image = lensing_util.blurred_image_from_1d_unblurred_and_blurring_images(
+        model_image = util.blurred_image_from_1d_unblurred_and_blurring_images(
             unblurred_image_1d=tracer_normal.image_plane_image_1d, 
             blurring_image_1d=tracer_normal.image_plane_blurring_image_1d,
             convolver=si_blur.convolver_image, map_to_scaled_array=si_blur.map_to_scaled_array)
@@ -123,7 +123,7 @@ class TestSensitivityProfileFit:
         assert (fit.fit_sensitive.image == si_blur.image).all()
         assert (fit.fit_sensitive.noise_map == si_blur.noise_map).all()
         
-        model_image = lensing_util.blurred_image_from_1d_unblurred_and_blurring_images(
+        model_image = util.blurred_image_from_1d_unblurred_and_blurring_images(
             unblurred_image_1d=tracer_sensitive.image_plane_image_1d, 
             blurring_image_1d=tracer_sensitive.image_plane_blurring_image_1d,
             convolver=si_blur.convolver_image, map_to_scaled_array=si_blur.map_to_scaled_array)
@@ -151,7 +151,7 @@ class TestSensitivityProfileFit:
 
         assert fit.likelihood == fit.fit_sensitive.likelihood - fit.fit_normal.likelihood
 
-        fast_likelihood = sensitivity_fitting.SensitivityProfileFitter.fast_fit(
+        fast_likelihood = sensitivity_fitters.SensitivityProfileFitter.fast_fit(
             lensing_image=si_blur, tracer_normal=tracer_normal, tracer_sensitive=tracer_sensitive)
 
         assert fit.likelihood == fast_likelihood

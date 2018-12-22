@@ -241,31 +241,6 @@ class TestDeflectionsFromGrid:
         assert deflections.blurring[0] == pytest.approx(np.array([2.0, 0.0]), 1e-3)
 
 
-class TestSetupTracedGrid:
-
-    def test__simple_sis_model__deflection_angles(self, grid_stack, galaxy_mass):
-        deflections = plane_util.deflections_of_galaxies_from_grid_stack(grid_stack, [galaxy_mass])
-
-        grid_traced = plane_util.traced_collection_for_deflections(grid_stack, deflections)
-
-        assert grid_traced.regular[0] == pytest.approx(np.array([1.0 - 0.707, 1.0 - 0.707]), 1e-2)
-
-    def test_two_identical_lenses__deflection_angles_double(self, grid_stack, galaxy_mass):
-        deflections = plane_util.deflections_of_galaxies_from_grid_stack(grid_stack, [galaxy_mass, galaxy_mass])
-
-        grid_traced = plane_util.traced_collection_for_deflections(grid_stack, deflections)
-
-        assert grid_traced.regular[0] == pytest.approx(np.array([1.0 - 2.0 * 0.707, 1.0 - 2.0 * 0.707]), 1e-3)
-
-    def test_one_lens_with_double_identical_mass_profiles__deflection_angles_double(self, grid_stack,
-                                                                                    galaxy_mass_x2):
-        deflections = plane_util.deflections_of_galaxies_from_grid_stack(grid_stack, [galaxy_mass_x2])
-
-        grid_traced = plane_util.traced_collection_for_deflections(grid_stack, deflections)
-
-        assert grid_traced.regular[0] == pytest.approx(np.array([1.0 - 2.0 * 0.707, 1.0 - 2.0 * 0.707]), 1e-3)
-
-
 class TestPlaneImageFromGrid:
 
     def test__3x3_grid__extracts_max_min_coordinates__creates_regular_grid_including_half_pixel_offset_from_edge(self):
@@ -352,63 +327,3 @@ class TestPlaneImageFromGrid:
             array_1d=plane_image_galaxy, shape=(3,3))
 
         assert (plane_image == plane_image_galaxy).all()
-
-
-class TestGalaxyOrdering:
-
-    def test__3_galaxies_reordered_in_ascending_redshift(self):
-        galaxies = [g.Galaxy(redshift=2.0), g.Galaxy(redshift=1.0), g.Galaxy(redshift=0.1)]
-
-        ordered_plane_redshifts = plane_util.ordered_redshifts_from_galaxies(galaxies=galaxies)
-
-        assert ordered_plane_redshifts == [0.1, 1.0, 2.0]
-
-        ordered_galaxies = plane_util.galaxies_in_redshift_ordered_lists_from_galaxies(galaxies=galaxies,
-                                                                                         ordered_redshifts=ordered_plane_redshifts)
-
-        assert ordered_galaxies[0][0].redshift == 0.1
-        assert ordered_galaxies[1][0].redshift == 1.0
-        assert ordered_galaxies[2][0].redshift == 2.0
-
-    def test_3_galaxies_two_same_redshift_planes_redshift_order_is_size_2_with_redshifts(self):
-        galaxies = [g.Galaxy(redshift=1.0), g.Galaxy(redshift=1.0), g.Galaxy(redshift=0.1)]
-
-        ordered_plane_redshifts = plane_util.ordered_redshifts_from_galaxies(galaxies=galaxies)
-
-        assert ordered_plane_redshifts == [0.1, 1.0]
-
-        ordered_galaxies = plane_util.galaxies_in_redshift_ordered_lists_from_galaxies(galaxies=galaxies,
-                                                                                         ordered_redshifts=ordered_plane_redshifts)
-
-        assert ordered_galaxies[0][0].redshift == 0.1
-        assert ordered_galaxies[1][0].redshift == 1.0
-        assert ordered_galaxies[1][1].redshift == 1.0
-
-    def test__6_galaxies_producing_4_planes(self):
-        g0 = g.Galaxy(redshift=1.0)
-        g1 = g.Galaxy(redshift=1.0)
-        g2 = g.Galaxy(redshift=0.1)
-        g3 = g.Galaxy(redshift=1.05)
-        g4 = g.Galaxy(redshift=0.95)
-        g5 = g.Galaxy(redshift=1.05)
-
-        galaxies = [g0, g1, g2, g3, g4, g5]
-
-        ordered_plane_redshifts = plane_util.ordered_redshifts_from_galaxies(galaxies=galaxies)
-
-        assert ordered_plane_redshifts == [0.1, 0.95, 1.0, 1.05]
-
-        ordered_galaxies = plane_util.galaxies_in_redshift_ordered_lists_from_galaxies(galaxies=galaxies,
-                                                                                         ordered_redshifts=ordered_plane_redshifts)
-
-        assert ordered_galaxies[0][0].redshift == 0.1
-        assert ordered_galaxies[1][0].redshift == 0.95
-        assert ordered_galaxies[2][0].redshift == 1.0
-        assert ordered_galaxies[2][1].redshift == 1.0
-        assert ordered_galaxies[3][0].redshift == 1.05
-        assert ordered_galaxies[3][1].redshift == 1.05
-
-        assert ordered_galaxies[0] == [g2]
-        assert ordered_galaxies[1] == [g4]
-        assert ordered_galaxies[2] == [g0, g1]
-        assert ordered_galaxies[3] == [g3, g5]

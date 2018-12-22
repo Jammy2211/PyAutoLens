@@ -12,7 +12,7 @@ from autolens.model.profiles import light_profiles as lp, mass_profiles as mp
 from autolens.lensing import lensing_image as li
 from autolens.model.galaxy import galaxy as g
 from autolens.lensing import ray_tracing
-from autolens.lensing import sensitivity_fitting
+from autolens.lensing import sensitivity_fitters
 
 @pytest.fixture(name='general_config')
 def test_general_config():
@@ -71,7 +71,7 @@ def test_fit(lensing_image):
                                                              source_galaxies=[source_galaxy],
                                                              image_plane_grid_stack=lensing_image.grid_stack,
                                                              cosmology=cosmo.Planck15)
-    return sensitivity_fitting.SensitivityProfileFitter(lensing_image=lensing_image, tracer_normal=tracer_normal,
+    return sensitivity_fitters.SensitivityProfileFitter(lensing_image=lensing_image, tracer_normal=tracer_normal,
                                                         tracer_sensitive=tracer_sensitivity)
 
 

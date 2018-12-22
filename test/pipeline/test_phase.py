@@ -82,7 +82,7 @@ def make_grids(lensing_image):
 
 @pytest.fixture(name="phase")
 def make_phase():
-    return ph.LensSourcePlanePhase(optimizer_class=NLO)
+    return ph.LensSourcePlanePhase(optimizer_class=NLO, phase_name='test_phase')
 
 
 @pytest.fixture(name="galaxy")
@@ -244,7 +244,8 @@ class TestPhase(object):
 
         phase = ph.LensSourcePlanePhase(optimizer_class=NLO,
                                         lens_galaxies=[gm.GalaxyModel(light=lp.EllipticalSersic)],
-                                        source_galaxies=[gm.GalaxyModel(light=lp.EllipticalSersic)])
+                                        source_galaxies=[gm.GalaxyModel(light=lp.EllipticalSersic)],
+                                        phase_name='test_phase')
         result = phase.run(image=image)
         assert isinstance(result.constant.lens_galaxies[0], g.Galaxy)
         assert isinstance(result.constant.source_galaxies[0], g.Galaxy)
@@ -261,7 +262,7 @@ class TestPhase(object):
         setattr(results.constant, "lens_galaxies", [galaxy])
         setattr(results.variable, "source_galaxies", [galaxy_model])
 
-        phase = MyPlanePhaseAnd(optimizer_class=NLO)
+        phase = MyPlanePhaseAnd(optimizer_class=NLO, phase_name='test_phase')
         phase.make_analysis(image=image, previous_results=ph.ResultsCollection([results]))
 
         assert phase.lens_galaxies == [galaxy]
@@ -272,9 +273,10 @@ class TestPhase(object):
         assert len(lensing_image.image_1d) == 32
 
     def test_duplication(self):
-        phase = ph.LensSourcePlanePhase(lens_galaxies=[gm.GalaxyModel()], source_galaxies=[gm.GalaxyModel()])
+        phase = ph.LensSourcePlanePhase(lens_galaxies=[gm.GalaxyModel()], source_galaxies=[gm.GalaxyModel()],
+                                        phase_name='test_phase')
 
-        ph.LensSourcePlanePhase()
+        ph.LensSourcePlanePhase(phase_name='test_phase')
 
         assert phase.lens_galaxies is not None
         assert phase.source_galaxies is not None
@@ -295,7 +297,7 @@ class TestPhase(object):
         lens_galaxy = g.Galaxy()
         source_galaxy = g.Galaxy()
 
-        phase = ph.LensPlanePhase(lens_galaxies=[lens_galaxy], cosmology=cosmo.FLRW)
+        phase = ph.LensPlanePhase(lens_galaxies=[lens_galaxy], cosmology=cosmo.FLRW, phase_name='test_phase')
         analysis = phase.make_analysis(image)
         instance = phase.constant
         tracer = analysis.tracer_for_instance(instance)
@@ -307,7 +309,7 @@ class TestPhase(object):
         assert padded_tracer.cosmology == cosmo.FLRW
 
         phase = ph.LensSourcePlanePhase(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
-                                        cosmology=cosmo.FLRW)
+                                        cosmology=cosmo.FLRW, phase_name='test_phase')
         analysis = phase.make_analysis(image)
         instance = phase.constant
         tracer = analysis.tracer_for_instance(instance)
@@ -324,7 +326,8 @@ class TestPhase(object):
         galaxy_1 = g.Galaxy(redshift=0.2)
         galaxy_2 = g.Galaxy(redshift=0.3)
 
-        phase = ph.MultiPlanePhase(galaxies=[galaxy_0, galaxy_1, galaxy_2], cosmology=cosmo.WMAP7)
+        phase = ph.MultiPlanePhase(galaxies=[galaxy_0, galaxy_1, galaxy_2], cosmology=cosmo.WMAP7,
+                                   phase_name='test_phase')
         analysis = phase.make_analysis(image)
         instance = phase.constant
         tracer = analysis.tracer_for_instance(instance)
@@ -390,8 +393,7 @@ class TestPhase(object):
                                                                 sis=mp.SphericalIsothermal,
                                                                 variable_redshift=True),
                                                  gm.GalaxyModel(sis=mp.SphericalIsothermal,
-                                                                variable_redshift=True)],
-                                  optimizer_class=non_linear.MultiNest)
+                                                                variable_redshift=True)], optimizer_class=non_linear.MultiNest, phase_name='test_phase')
 
         instance = phase.optimizer.variable.instance_from_physical_vector(
             [0.2, 0.21, 0.22, 0.23, 0.24, 0.25, 0.8, 0.1, 0.2, 0.3,
@@ -417,7 +419,7 @@ class TestPhase(object):
                                                               variable_redshift=True),
                                                gm.GalaxyModel(sis=mp.SphericalIsothermal,
                                                               variable_redshift=True)],
-                                optimizer_class=non_linear.MultiNest)
+                                optimizer_class=non_linear.MultiNest, phase_name='test_phase')
 
         # noinspection PyTypeChecker
         phase.pass_models(None)

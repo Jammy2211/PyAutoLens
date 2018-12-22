@@ -45,7 +45,7 @@ def make_phase():
     class MyPhase(ph.Phase):
         prop = phase_property.PhaseProperty("prop")
 
-    return MyPhase(optimizer_class=NLO)
+    return MyPhase(optimizer_class=NLO, phase_name='test_phase')
 
 
 @pytest.fixture(name='list_phase')
@@ -53,7 +53,7 @@ def make_list_phase():
     class MyPhase(ph.Phase):
         prop = phase_property.PhasePropertyCollection("prop")
 
-    return MyPhase(optimizer_class=NLO)
+    return MyPhase(optimizer_class=NLO, phase_name='test_phase')
 
 
 class TestPhaseProperty(object):
