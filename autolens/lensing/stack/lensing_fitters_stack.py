@@ -15,7 +15,7 @@ def fit_lensing_image_stack_with_tracer(lensing_image, tracer, padded_tracer=Non
     -----------
     lensing_image : li.LensingImage or li.LensingHyperImage
         The lensing-images that is fitted.
-    tracer : ray_tracing.AbstractTracerNonStack
+    tracer : ray_tracing.Tracer
         The tracer, which describes the ray-tracing and strong lensing configuration.
     padded_tracer : ray_tracing.AbstractTracerNonStack or None
         A tracer with an identical strong lensing configuration to the tracer above, but using the lensing image's \
@@ -64,7 +64,7 @@ def fast_fit_from_lensing_image_and_tracer(lensing_image, tracer):
         The lensing-images that is fitted.
     tracer : ray_tracing.AbstractTracerNonStack
         The tracer, which describes the ray-tracing and strong lensing configuration.
-    padded_tracer : ray_tracing.AbstractTracerNonStack or None
+    padded_tracer : ray_tracing.Tracer or None
         A tracer with an identical strong lensing configuration to the tracer above, but using the lensing image's \
         padded grid_stack such that unmasked model-images can be computed.
     """
@@ -108,7 +108,7 @@ class AbstractLensingProfileFitter(AbstractLensingFitter):
         -----------
         lensing_image : li.LensingImage
             The lensing-image that is fitted.
-        tracer : ray_tracing.AbstractTracerNonStack
+        tracer : ray_tracing.Tracer
             The tracer, which describes the ray-tracing and strong lensing configuration.
         padded_tracer : ray_tracing.AbstractTracerNonStack or None
             A tracer with an identical strong lensing configuration to the tracer above, but using the lensing image's \

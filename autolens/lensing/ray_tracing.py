@@ -233,7 +233,7 @@ class AbstractTracer(object):
             return None
 
 
-class AbstractTracerNonStack(AbstractTracer):
+class Tracer(AbstractTracer):
 
     def __init__(self, planes, cosmology):
         """Abstract ray-tracer for lensing systems with any number of planes and just one grid-stack.
@@ -247,7 +247,7 @@ class AbstractTracerNonStack(AbstractTracer):
         cosmology : astropy.cosmology
             The cosmology of the ray-tracing calculation.
         """
-        super(AbstractTracerNonStack, self).__init__(planes=planes, cosmology=cosmology)
+        super(Tracer, self).__init__(planes=planes, cosmology=cosmology)
 
     @property
     def image_plane_image(self):
@@ -278,7 +278,7 @@ class AbstractTracerNonStack(AbstractTracer):
         return [plane.image_plane_blurring_image_1d for plane in self.planes]
 
 
-class TracerImagePlane(AbstractTracerNonStack):
+class TracerImagePlane(Tracer):
 
     def __init__(self, lens_galaxies, image_plane_grid_stack, border=None, cosmology=cosmo.Planck15):
         """Ray tracer for a lensing system with just an image-plane. 
@@ -310,7 +310,7 @@ class TracerImagePlane(AbstractTracerNonStack):
         super(TracerImagePlane, self).__init__(planes=[image_plane], cosmology=cosmology)
 
 
-class TracerImageSourcePlanes(AbstractTracerNonStack):
+class TracerImageSourcePlanes(Tracer):
 
     def __init__(self, lens_galaxies, source_galaxies, image_plane_grid_stack, border=None, cosmology=cosmo.Planck15):
         """Ray-tracer for a lensing system with two planes, an image-plane and source-plane.
@@ -346,7 +346,7 @@ class TracerImageSourcePlanes(AbstractTracerNonStack):
         super(TracerImageSourcePlanes, self).__init__(planes=[image_plane, source_plane], cosmology=cosmology)
 
 
-class TracerMultiPlanes(AbstractTracerNonStack):
+class TracerMultiPlanes(Tracer):
 
     def __init__(self, galaxies, image_plane_grid_stack, border=None, cosmology=cosmo.Planck15):
         """Ray-tracer for a lensing system with any number of planes.

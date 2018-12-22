@@ -27,7 +27,7 @@ class SensitivityProfileFitter(AbstractSensitivityFit):
         ----------
         lensing_image: li.LensingImage
             A simulated lensing image which is used to determine our sensitiivity to specific model components.
-        tracer_normal : ray_tracing.AbstractTracerNonStack
+        tracer_normal : ray_tracing.Tracer
             A tracer whose galaxies have the same model components (e.g. light profiles, mass profiles) as the \
             lensing image that we are fitting.
        tracer_sensitive : ray_tracing.AbstractTracerNonStack
