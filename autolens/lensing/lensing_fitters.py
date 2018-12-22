@@ -6,8 +6,6 @@ from autolens.model.inversion import inversions
 from autolens.lensing import lensing_image as li, lensing_util
 from autolens.lensing import ray_tracing
 
-minimum_value_profile = 0.1
-
 
 def fit_lensing_image_with_tracer(lensing_image, tracer, padded_tracer=None):
     """Fit a lensing image with a model tracer, automatically determining the type of fit based on the \
@@ -199,6 +197,10 @@ class AbstractLensingInversionFitter(AbstractLensingFitter):
             mapper=tracer.mappers_of_planes[-1], regularization=tracer.regularizations_of_planes[-1])
 
     @property
+    def unmasked_model_image(self):
+        return None
+
+    @property
     def model_images_of_planes(self):
         return [None, self.inversion.reconstructed_data]
 
@@ -247,6 +249,10 @@ class AbstractLensingProfileInversionFitter(AbstractLensingFitter):
             image_1d=profile_subtracted_image_1d, noise_map_1d=noise_map_1d,
             convolver=lensing_image.convolver_mapping_matrix, mapper=tracer.mappers_of_planes[-1],
             regularization=tracer.regularizations_of_planes[-1])
+
+    @property
+    def unmasked_model_image(self):
+        return None
 
     @property
     def model_image_of_planes(self):
@@ -298,8 +304,7 @@ class LensingDataInversionFitter(LensingDataFitter):
         inversion : inversions.Inversion
             The inversion used to ofit the image.
         """
-        super(LensingDataFitter, self).__init__(data=np.asarray(image), noise_map=np.asarray(noise_map),
-                                                mask=np.asarray(mask), model_data=np.asarray(model_image))
+        super(LensingDataFitter, self).__init__(data=image, noise_map=noise_map, mask=mask, model_data=model_image)
 
         self.likelihood_with_regularization = \
             lensing_util.likelihood_with_regularization_from_chi_squared_regularization_term_and_noise_normalization(

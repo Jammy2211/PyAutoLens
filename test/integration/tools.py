@@ -3,7 +3,6 @@ import shutil
 
 import numpy as np
 
-from autofit import conf
 from autolens.data.imaging import image as im
 from autolens.data.array.util import array_util
 from autolens.data.array import grids, scaled_array
@@ -11,22 +10,21 @@ from autolens.lensing import ray_tracing
 
 dirpath = os.path.dirname(os.path.realpath(__file__))
 
-def reset_paths(data_name, pipeline_name, output_path):
-
-    conf.instance.output_path = output_path
+def reset_paths(test_name, output_path):
 
     try:
-        shutil.rmtree(dirpath + '/datas' + data_name)
+        shutil.rmtree(dirpath + '/data/' + test_name)
     except FileNotFoundError:
         pass
 
     try:
-        shutil.rmtree(output_path + '/' + pipeline_name)
+        shutil.rmtree(output_path + '/' + test_name)
     except FileNotFoundError:
         pass
 
-def simulate_integration_image(data_name, pixel_scale, lens_galaxies, source_galaxies, target_signal_to_noise):
-    output_path = "{}/datas/".format(os.path.dirname(os.path.realpath(__file__))) + data_name + '/'
+def simulate_integration_image(test_name, pixel_scale, lens_galaxies, source_galaxies, target_signal_to_noise):
+    
+    output_path = "{}/data/".format(os.path.dirname(os.path.realpath(__file__))) + test_name + '/'
     psf_shape = (11, 11)
     image_shape = (150, 150)
 
@@ -58,18 +56,18 @@ def simulate_integration_image(data_name, pixel_scale, lens_galaxies, source_gal
     if os.path.exists(output_path) == False:
         os.makedirs(output_path)
 
-    array_util.numpy_array_to_fits(sim_image, path=output_path + 'regular.fits')
-    array_util.numpy_array_to_fits(sim_image.noise_map, path=output_path + 'noise_map_1d.fits')
+    array_util.numpy_array_to_fits(sim_image, path=output_path + '/image.fits')
+    array_util.numpy_array_to_fits(sim_image.noise_map, path=output_path + '/noise_map.fits')
     array_util.numpy_array_to_fits(psf, path=output_path + '/psf.fits')
-    array_util.numpy_array_to_fits(sim_image.exposure_time_map, path=output_path + 'exposure_map.fits')
+    array_util.numpy_array_to_fits(sim_image.exposure_time_map, path=output_path + '/exposure_map.fits')
 
 
-def load_image(data_name, pixel_scale):
-    data_dir = "{}/datas/{}".format(dirpath, data_name)
+def load_image(test_name, pixel_scale):
 
-    data = scaled_array.ScaledSquarePixelArray.from_fits_with_pixel_scale(file_path=data_dir + '/regular.fits', hdu=0,
+    data_dir = "{}/data/{}".format(dirpath, test_name)
+    data = scaled_array.ScaledSquarePixelArray.from_fits_with_pixel_scale(file_path=data_dir + '/image.fits', hdu=0,
                                                                           pixel_scale=pixel_scale)
-    noise = scaled_array.ScaledSquarePixelArray.from_fits_with_pixel_scale(file_path=data_dir + '/noise_map_1d.fits', hdu=0,
+    noise = scaled_array.ScaledSquarePixelArray.from_fits_with_pixel_scale(file_path=data_dir + '/noise_map.fits', hdu=0,
                                                                            pixel_scale=pixel_scale)
     psf = im.PSF.from_fits_with_scale(file_path=data_dir + '/psf.fits', hdu=0, pixel_scale=pixel_scale)
 

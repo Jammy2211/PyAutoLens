@@ -50,83 +50,19 @@ def make_galaxy_light():
                                                       effective_radius=0.6, sersic_index=4.0))
 
 
-class TestGalaxyOrdering:
-
-    def test__3_galaxies_reordered_in_ascending_redshift(self):
-        
-        galaxies = [g.Galaxy(redshift=2.0), g.Galaxy(redshift=1.0), g.Galaxy(redshift=0.1)]
-
-        ordered_plane_redshifts = lensing_util.ordered_redshifts_from_galaxies(galaxies=galaxies)
-
-        assert ordered_plane_redshifts == [0.1, 1.0, 2.0]
-
-        ordered_galaxies = lensing_util.galaxies_in_redshift_ordered_lists_from_galaxies(galaxies=galaxies,
-                                                                 ordered_redshifts=ordered_plane_redshifts)
-
-        assert ordered_galaxies[0][0].redshift == 0.1
-        assert ordered_galaxies[1][0].redshift == 1.0
-        assert ordered_galaxies[2][0].redshift == 2.0
-
-    def test_3_galaxies_two_same_redshift_planes_redshift_order_is_size_2_with_redshifts(self):
-        
-        galaxies = [g.Galaxy(redshift=1.0), g.Galaxy(redshift=1.0), g.Galaxy(redshift=0.1)]
-
-        ordered_plane_redshifts = lensing_util.ordered_redshifts_from_galaxies(galaxies=galaxies)
-
-        assert ordered_plane_redshifts == [0.1, 1.0]
-
-        ordered_galaxies = lensing_util.galaxies_in_redshift_ordered_lists_from_galaxies(galaxies=galaxies,
-                                                                 ordered_redshifts=ordered_plane_redshifts)
-
-        assert ordered_galaxies[0][0].redshift == 0.1
-        assert ordered_galaxies[1][0].redshift == 1.0
-        assert ordered_galaxies[1][1].redshift == 1.0
-
-    def test__6_galaxies_producing_4_planes(self):
-        
-        g0 = g.Galaxy(redshift=1.0)
-        g1 = g.Galaxy(redshift=1.0)
-        g2 = g.Galaxy(redshift=0.1)
-        g3 = g.Galaxy(redshift=1.05)
-        g4 = g.Galaxy(redshift=0.95)
-        g5 = g.Galaxy(redshift=1.05)
-
-        galaxies = [g0, g1, g2, g3, g4, g5]
-
-        ordered_plane_redshifts = lensing_util.ordered_redshifts_from_galaxies(galaxies=galaxies)
-
-        assert ordered_plane_redshifts == [0.1, 0.95, 1.0, 1.05]
-
-        ordered_galaxies = lensing_util.galaxies_in_redshift_ordered_lists_from_galaxies(galaxies=galaxies,
-                                                                 ordered_redshifts=ordered_plane_redshifts)
-
-        assert ordered_galaxies[0][0].redshift == 0.1
-        assert ordered_galaxies[1][0].redshift == 0.95
-        assert ordered_galaxies[2][0].redshift == 1.0
-        assert ordered_galaxies[2][1].redshift == 1.0
-        assert ordered_galaxies[3][0].redshift == 1.05
-        assert ordered_galaxies[3][1].redshift == 1.05
-
-        assert ordered_galaxies[0] == [g2]
-        assert ordered_galaxies[1] == [g4]
-        assert ordered_galaxies[2] == [g0, g1]
-        assert ordered_galaxies[3] == [g3, g5]
-
-
 class TestBlurImages:
 
     def test__2x2_image_all_1s__3x3__psf_central_1__no_blurring(self, convolver_no_blur):
-
         image_ = np.array([1.0, 1.0, 1.0, 1.0])
         blurring_image_ = np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
 
         blurred_image_ = lensing_util.blurred_image_1d_from_1d_unblurred_and_blurring_images(unblurred_image_1d=image_,
-                                            blurring_image_1d=blurring_image_, convolver=convolver_no_blur)
+                                                                                             blurring_image_1d=blurring_image_,
+                                                                                             convolver=convolver_no_blur)
 
         assert (blurred_image_ == np.array([1.0, 1.0, 1.0, 1.0])).all()
 
     def test__2x2_image_all_1s__3x3_psf_all_1s__image_blurs_to_4s(self, convolver_blur):
-
         image_ = np.array([1.0, 1.0, 1.0, 1.0])
         blurring_image_ = np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
 
@@ -139,7 +75,6 @@ class TestBlurImages:
 class TestLensingConvolutionFitter:
 
     def test__2x2_unblurred_image_all_1s__3x3_psf_no_blurring__image_blurs_to_itself(self, mask, convolver_no_blur):
-
         unblurred_image_1d = np.array([1.0, 1.0, 1.0, 1.0])
         blurring_image_1d = np.array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0])
 
@@ -155,7 +90,6 @@ class TestLensingConvolutionFitter:
                                            [0.0, 0.0, 0.0, 0.0]])).all()
 
     def test__2x2_unblurred_image_all_1s__3x3_psf_all_1s__image_blurs_to_9s(self, mask, convolver_blur):
-
         unblurred_image_1d = np.array([1.0, 1.0, 1.0, 1.0])
         blurring_image_1d = np.array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0])
 
@@ -171,7 +105,6 @@ class TestLensingConvolutionFitter:
                                            [0.0, 0.0, 0.0, 0.0]])).all()
 
     def test__2x2_image__psf_is_non_symmetric_producing_l_shape(self, mask, blurring_mask):
-
         psf = np.array([[0.0, 3.0, 0.0],
                         [0.0, 2.0, 1.0],
                         [0.0, 0.0, 0.0]])
@@ -203,7 +136,6 @@ class TestLensingConvolutionFitter:
 class TestInversionEvidence:
 
     def test__simple_values(self):
-
         likelihood_with_regularization_terms = \
             lensing_util.likelihood_with_regularization_from_chi_squared_regularization_term_and_noise_normalization(
                 chi_squared=3.0, regularization_term=6.0, noise_normalization=2.0)
@@ -220,10 +152,9 @@ class TestInversionEvidence:
 class TestBlurredImageOfPlanes:
 
     def test__blurred_image_of_planes__real_tracer__2x2_image__psf_is_non_symmetric_producing_l_shape(self, mask,
-                                                                                                     convolver_blur):
-
+                                                                                                      convolver_blur):
         data_grid_stack = grids.GridStack.grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=mask, sub_grid_size=1,
-                                                                                           psf_shape=(3,3))
+                                                                                           psf_shape=(3, 3))
 
         g0 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=1.0))
         g1 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=2.0))
@@ -232,24 +163,24 @@ class TestBlurredImageOfPlanes:
                                                      image_plane_grid_stack=data_grid_stack)
 
         blurred_lens_image = convolver_blur.convolve_image(image_array=tracer.image_plane.image_plane_image_1d,
-                                               blurring_array=tracer.image_plane.image_plane_blurring_image_1d)
+                                                           blurring_array=tracer.image_plane.image_plane_blurring_image_1d)
         blurred_lens_image = data_grid_stack.regular.scaled_array_from_array_1d(array_1d=blurred_lens_image)
 
         blurred_source_image = convolver_blur.convolve_image(image_array=tracer.source_plane.image_plane_image_1d,
-                                                 blurring_array=tracer.source_plane.image_plane_blurring_image_1d)
+                                                             blurring_array=tracer.source_plane.image_plane_blurring_image_1d)
         blurred_source_image = data_grid_stack.regular.scaled_array_from_array_1d(array_1d=blurred_source_image)
-        
+
         blurred_image_of_planes = lensing_util.blurred_image_of_planes_from_tracer_and_convolver(tracer=tracer,
-                                                                                                 convolver_image=convolver_blur, map_to_scaled_array=data_grid_stack.regular.array_2d_from_array_1d)
+                                                                                                 convolver_image=convolver_blur,
+                                                                                                 map_to_scaled_array=data_grid_stack.regular.array_2d_from_array_1d)
 
         assert (blurred_image_of_planes[0] == blurred_lens_image).all()
         assert (blurred_image_of_planes[1] == blurred_source_image).all()
 
     def test__same_as_above_but_multi_tracer(self, mask, convolver_blur):
-
         data_grid_stack = grids.GridStack.grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=mask,
                                                                                            sub_grid_size=1,
-                                                                                           psf_shape=(3,3))
+                                                                                           psf_shape=(3, 3))
 
         g0 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=1.0), redshift=0.1)
         g1 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=2.0), redshift=0.2)
@@ -272,17 +203,17 @@ class TestBlurredImageOfPlanes:
         blurred_plane_image_2 = data_grid_stack.regular.scaled_array_from_array_1d(blurred_plane_image_2)
 
         blurred_image_of_planes = lensing_util.blurred_image_of_planes_from_tracer_and_convolver(tracer=tracer,
-                                                                                                 convolver_image=convolver_blur, map_to_scaled_array=data_grid_stack.regular.array_2d_from_array_1d)
+                                                                                                 convolver_image=convolver_blur,
+                                                                                                 map_to_scaled_array=data_grid_stack.regular.array_2d_from_array_1d)
 
         assert (blurred_image_of_planes[0] == blurred_plane_image_0).all()
         assert (blurred_image_of_planes[1] == blurred_plane_image_1).all()
         assert (blurred_image_of_planes[2] == blurred_plane_image_2).all()
 
     def test__blurred_images_of_planes__if_galaxy_has_no_light_profile__replace_with_none(self, mask, convolver_blur):
-
         data_grid_stack = grids.GridStack.grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=mask,
                                                                                            sub_grid_size=1,
-                                                                                           psf_shape=(3,3))
+                                                                                           psf_shape=(3, 3))
 
         g0 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=1.0))
         g0_image = pl.intensities_from_grid(grid=data_grid_stack.sub, galaxies=[g0])
@@ -294,7 +225,8 @@ class TestBlurredImageOfPlanes:
                                                      image_plane_grid_stack=data_grid_stack)
 
         blurred_image_of_planes = lensing_util.blurred_image_of_planes_from_tracer_and_convolver(tracer=tracer,
-                                                                                                 convolver_image=convolver_blur, map_to_scaled_array=data_grid_stack.regular.array_2d_from_array_1d)
+                                                                                                 convolver_image=convolver_blur,
+                                                                                                 map_to_scaled_array=data_grid_stack.regular.array_2d_from_array_1d)
 
         assert (blurred_image_of_planes[0] == g0_blurred_image).all()
         assert (blurred_image_of_planes[1] == g0_blurred_image).all()
@@ -303,7 +235,8 @@ class TestBlurredImageOfPlanes:
                                                      image_plane_grid_stack=data_grid_stack)
 
         blurred_image_of_planes = lensing_util.blurred_image_of_planes_from_tracer_and_convolver(tracer=tracer,
-                                                                                                 convolver_image=convolver_blur, map_to_scaled_array=data_grid_stack.regular.array_2d_from_array_1d)
+                                                                                                 convolver_image=convolver_blur,
+                                                                                                 map_to_scaled_array=data_grid_stack.regular.array_2d_from_array_1d)
 
         assert (blurred_image_of_planes[0] == g0_blurred_image).all()
         assert blurred_image_of_planes[1] == None
@@ -312,7 +245,8 @@ class TestBlurredImageOfPlanes:
                                                      image_plane_grid_stack=data_grid_stack)
 
         blurred_image_of_planes = lensing_util.blurred_image_of_planes_from_tracer_and_convolver(tracer=tracer,
-                                                                                                 convolver_image=convolver_blur, map_to_scaled_array=data_grid_stack.regular.array_2d_from_array_1d)
+                                                                                                 convolver_image=convolver_blur,
+                                                                                                 map_to_scaled_array=data_grid_stack.regular.array_2d_from_array_1d)
 
         assert blurred_image_of_planes[0] == None
         assert (blurred_image_of_planes[1] == g0_blurred_image).all()
@@ -321,7 +255,8 @@ class TestBlurredImageOfPlanes:
                                                      image_plane_grid_stack=data_grid_stack)
 
         blurred_image_of_planes = lensing_util.blurred_image_of_planes_from_tracer_and_convolver(tracer=tracer,
-                                                                                                 convolver_image=convolver_blur, map_to_scaled_array=data_grid_stack.regular.array_2d_from_array_1d)
+                                                                                                 convolver_image=convolver_blur,
+                                                                                                 map_to_scaled_array=data_grid_stack.regular.array_2d_from_array_1d)
 
         assert blurred_image_of_planes[0] == None
         assert blurred_image_of_planes[1] == None
@@ -330,80 +265,80 @@ class TestBlurredImageOfPlanes:
 class TestUnmaskedModelImages:
 
     def test___3x3_padded_image__no_psf_blurring__produces_padded_image(self):
-
         mask = msk.Mask(array=np.array([[True, True, True],
-                                       [True, False, True],
-                                       [True, True, True]]), pixel_scale=1.0)
+                                        [True, False, True],
+                                        [True, True, True]]), pixel_scale=1.0)
 
         psf = im.PSF(array=(np.array([[0.0, 0.0, 0.0],
-                                       [0.0, 1.0, 0.0],
-                                       [0.0, 0.0, 0.0]])), pixel_scale=1.0)
+                                      [0.0, 1.0, 0.0],
+                                      [0.0, 0.0, 0.0]])), pixel_scale=1.0)
 
         padded_grid_stack = grids.GridStack.padded_grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=mask,
-                                                                                                    sub_grid_size=1, psf_shape=(3,3))
+                                                                                                    sub_grid_size=1,
+                                                                                                    psf_shape=(3, 3))
 
-        unmasked_blurred_image  = lensing_util.unmasked_blurred_image_from_padded_grid_stack_psf_and_unmasked_image(
+        unmasked_blurred_image = lensing_util.unmasked_blurred_image_from_padded_grid_stack_psf_and_unmasked_image(
             padded_grid_stack=padded_grid_stack, psf=psf, unmasked_image_1d=np.ones(25))
 
-        assert (unmasked_blurred_image == np.ones((3,3))).all()
+        assert (unmasked_blurred_image == np.ones((3, 3))).all()
 
     def test___3x3_padded_image__simple_psf_blurring__produces_padded_image(self):
-
         mask = msk.Mask(array=np.array([[True, True, True],
-                                       [True, False, True],
-                                       [True, True, True]]), pixel_scale=1.0)
+                                        [True, False, True],
+                                        [True, True, True]]), pixel_scale=1.0)
 
         psf = im.PSF(array=(np.array([[0.0, 0.0, 0.0],
-                                         [0.0, 1.0, 2.0],
-                                         [0.0, 0.0, 0.0]])), pixel_scale=1.0)
+                                      [0.0, 1.0, 2.0],
+                                      [0.0, 0.0, 0.0]])), pixel_scale=1.0)
 
         padded_grid_stack = grids.GridStack.padded_grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=mask,
-                                                                                                    sub_grid_size=1, psf_shape=(3,3))
+                                                                                                    sub_grid_size=1,
+                                                                                                    psf_shape=(3, 3))
 
-        unmasked_blurred_image  = lensing_util.unmasked_blurred_image_from_padded_grid_stack_psf_and_unmasked_image(
+        unmasked_blurred_image = lensing_util.unmasked_blurred_image_from_padded_grid_stack_psf_and_unmasked_image(
             padded_grid_stack=padded_grid_stack, psf=psf, unmasked_image_1d=np.ones(25))
 
-        assert (unmasked_blurred_image == 3.0*np.ones((3, 3))).all()
+        assert (unmasked_blurred_image == 3.0 * np.ones((3, 3))).all()
 
     def test___3x3_padded_image__asymmetric_psf_blurring__produces_padded_image(self):
-
         mask = msk.Mask(array=np.array([[True, True, True],
-                                       [True, False, True],
-                                       [True, True, True]]), pixel_scale=1.0)
+                                        [True, False, True],
+                                        [True, True, True]]), pixel_scale=1.0)
 
         psf = im.PSF(array=(np.array([[0.0, 3.0, 0.0],
                                       [0.0, 1.0, 2.0],
                                       [0.0, 0.0, 0.0]])), pixel_scale=1.0)
 
         padded_grid_stack = grids.GridStack.padded_grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=mask,
-                                                                                                    sub_grid_size=1, psf_shape=(3,3))
+                                                                                                    sub_grid_size=1,
+                                                                                                    psf_shape=(3, 3))
 
         unmasked_image_1d = np.zeros(25)
         unmasked_image_1d[12] = 1.0
 
-        unmasked_blurred_image  = lensing_util.unmasked_blurred_image_from_padded_grid_stack_psf_and_unmasked_image(
+        unmasked_blurred_image = lensing_util.unmasked_blurred_image_from_padded_grid_stack_psf_and_unmasked_image(
             padded_grid_stack=padded_grid_stack, psf=psf, unmasked_image_1d=unmasked_image_1d)
 
         assert (unmasked_blurred_image == np.array([[0.0, 3.0, 0.0],
-                                                [0.0, 1.0, 2.0],
-                                                [0.0, 0.0, 0.0]])).all()
+                                                    [0.0, 1.0, 2.0],
+                                                    [0.0, 0.0, 0.0]])).all()
 
 
 class TestUnmaskedModelImagesOfGalaxies:
 
     def test___3x3_padded_image__no_psf_blurring(self, galaxy_light):
-
         psf = im.PSF(array=(np.array([[0.0, 0.0, 0.0],
                                       [0.0, 1.0, 0.0],
                                       [0.0, 0.0, 0.0]])), pixel_scale=1.0)
-        
+
         mask = msk.Mask(array=np.array([[True, True, True],
-                                       [True, False, True],
-                                       [True, True, True]]), pixel_scale=1.0)
-        
+                                        [True, False, True],
+                                        [True, True, True]]), pixel_scale=1.0)
+
         padded_grid_stack = grids.GridStack.padded_grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=mask,
-                                                                                                    sub_grid_size=1, psf_shape=(3,3))
-        
+                                                                                                    sub_grid_size=1,
+                                                                                                    psf_shape=(3, 3))
+
         tracer = ray_tracing.TracerImagePlane(lens_galaxies=[galaxy_light], image_plane_grid_stack=padded_grid_stack)
 
         manual_blurred_image_0 = \
@@ -412,12 +347,11 @@ class TestUnmaskedModelImagesOfGalaxies:
 
         unmasked_blurred_image_of_galaxies = \
             lensing_util.unmasked_blurred_image_of_galaxies_from_padded_grid_stack_psf_and_tracer(
-            padded_grid_stack=padded_grid_stack, psf=psf, tracer=tracer)
+                padded_grid_stack=padded_grid_stack, psf=psf, tracer=tracer)
 
         assert (unmasked_blurred_image_of_galaxies[0][0] == manual_blurred_image_0[1:4, 1:4]).all()
 
     def test___x1_galaxy__3x3_padded_image__asymetric_psf_blurring(self, galaxy_light):
-
         psf = im.PSF(array=(np.array([[0.0, 3.0, 0.0],
                                       [0.0, 1.0, 2.0],
                                       [0.0, 0.0, 0.0]])), pixel_scale=1.0)
@@ -444,7 +378,6 @@ class TestUnmaskedModelImagesOfGalaxies:
         assert (unmasked_blurred_image_of_galaxies[0][0] == manual_blurred_image_0[1:4, 1:4]).all()
 
     def test___x2_galaxies__3x3_padded_image__asymetric_psf_blurring(self):
-
         psf = im.PSF(array=(np.array([[0.0, 3.0, 0.0],
                                       [0.0, 1.0, 2.0],
                                       [0.0, 0.0, 0.0]])), pixel_scale=1.0)
@@ -454,7 +387,8 @@ class TestUnmaskedModelImagesOfGalaxies:
                                         [True, True, True]]), pixel_scale=1.0)
 
         padded_grid_stack = grids.GridStack.padded_grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=mask,
-                                                                                                    sub_grid_size=1, psf_shape=(3, 3))
+                                                                                                    sub_grid_size=1,
+                                                                                                    psf_shape=(3, 3))
 
         g0 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=0.1))
         g1 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=0.2))
@@ -479,7 +413,6 @@ class TestUnmaskedModelImagesOfGalaxies:
         assert (unmasked_blurred_image_of_galaxies[0][1] == manual_blurred_image_1[1:4, 1:4]).all()
 
     def test___same_as_above_but_image_and_souce_plane(self):
-
         psf = im.PSF(array=(np.array([[0.0, 3.0, 0.0],
                                       [0.0, 1.0, 2.0],
                                       [0.0, 0.0, 0.0]])), pixel_scale=1.0)
@@ -489,7 +422,8 @@ class TestUnmaskedModelImagesOfGalaxies:
                                         [True, True, True]]), pixel_scale=1.0)
 
         padded_grid_stack = grids.GridStack.padded_grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=mask,
-                                                                                                    sub_grid_size=1, psf_shape=(3, 3))
+                                                                                                    sub_grid_size=1,
+                                                                                                    psf_shape=(3, 3))
 
         g0 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=0.1))
         g1 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=0.2))
@@ -532,7 +466,6 @@ class TestUnmaskedModelImagesOfGalaxies:
 class TestContributionsFromHypers:
 
     def test__x1_hyper_galaxy__model_is_galaxy_image__contributions_all_1(self):
-
         hyper_galaxies = [MockHyperGalaxy(contribution_factor=1.0, noise_factor=0.0, noise_power=1.0)]
 
         hyper_model_image_1d = np.array([1.0, 1.0, 1.0, 1.0])
@@ -542,13 +475,12 @@ class TestContributionsFromHypers:
         minimum_values = [0.0]
 
         contribution_maps_1d = lensing_util.contribution_maps_1d_from_hyper_images_and_galaxies(
-            hyper_model_image_1d=hyper_model_image_1d, hyper_galaxy_images_1d=hyper_galaxy_images_1d, 
+            hyper_model_image_1d=hyper_model_image_1d, hyper_galaxy_images_1d=hyper_galaxy_images_1d,
             hyper_galaxies=hyper_galaxies, hyper_minimum_values=minimum_values)
 
         assert (contribution_maps_1d[0] == np.array([1.0, 1.0, 1.0, 1.0])).all()
 
     def test__x1_hyper_galaxy__model_and_galaxy_image_different_contributions_change(self):
-
         hyper_galaxies = [MockHyperGalaxy(contribution_factor=1.0, noise_factor=0.0, noise_power=1.0)]
 
         hyper_model_image_1d = np.array([0.5, 1.0, 1.5, 0.5])
@@ -558,13 +490,13 @@ class TestContributionsFromHypers:
         minimum_values = [0.6]
 
         contribution_maps_1d = lensing_util.contribution_maps_1d_from_hyper_images_and_galaxies(
-            hyper_model_image_1d=hyper_model_image_1d, hyper_galaxy_images_1d=hyper_galaxy_images_1d, hyper_galaxies=hyper_galaxies,
+            hyper_model_image_1d=hyper_model_image_1d, hyper_galaxy_images_1d=hyper_galaxy_images_1d,
+            hyper_galaxies=hyper_galaxies,
             hyper_minimum_values=minimum_values)
 
         assert (contribution_maps_1d[0] == np.array([0.0, (1.0 / 2.0) / (1.5 / 2.5), 1.0, 0.0])).all()
 
     def test__x2_hyper_galaxy__model_and_galaxy_image_different_contributions_change(self):
-
         hyper_galaxies = [MockHyperGalaxy(contribution_factor=0.0, noise_factor=0.0, noise_power=1.0),
                           MockHyperGalaxy(contribution_factor=1.0, noise_factor=0.0, noise_power=1.0)]
 
@@ -575,14 +507,14 @@ class TestContributionsFromHypers:
         minimum_values = [0.5, 0.6]
 
         contribution_maps_1d = lensing_util.contribution_maps_1d_from_hyper_images_and_galaxies(
-            hyper_model_image_1d=hyper_model_image_1d, hyper_galaxy_images_1d=hyper_galaxy_images_1d, hyper_galaxies=hyper_galaxies,
+            hyper_model_image_1d=hyper_model_image_1d, hyper_galaxy_images_1d=hyper_galaxy_images_1d,
+            hyper_galaxies=hyper_galaxies,
             hyper_minimum_values=minimum_values)
 
         assert (contribution_maps_1d[0] == np.array([1.0, 1.0, 1.0])).all()
         assert (contribution_maps_1d[1] == np.array([0.0, (1.0 / 2.0) / (1.5 / 2.5), 1.0])).all()
 
     def test__x2_hyper_galaxy__same_as_above_use_real_hyper_galaxy(self):
-
         hyper_galaxies = [g.HyperGalaxy(contribution_factor=0.0, noise_factor=0.0, noise_power=1.0),
                           g.HyperGalaxy(contribution_factor=1.0, noise_factor=0.0, noise_power=1.0)]
 
@@ -593,14 +525,14 @@ class TestContributionsFromHypers:
         minimum_values = [0.5, 0.6]
 
         contribution_maps_1d = lensing_util.contribution_maps_1d_from_hyper_images_and_galaxies(
-            hyper_model_image_1d=hyper_model_image_1d, hyper_galaxy_images_1d=hyper_galaxy_images_1d, hyper_galaxies=hyper_galaxies,
+            hyper_model_image_1d=hyper_model_image_1d, hyper_galaxy_images_1d=hyper_galaxy_images_1d,
+            hyper_galaxies=hyper_galaxies,
             hyper_minimum_values=minimum_values)
 
         assert (contribution_maps_1d[0] == np.array([1.0, 1.0, 1.0, 1.0])).all()
         assert (contribution_maps_1d[1] == np.array([0.0, (1.0 / 2.0) / (1.5 / 2.5), 1.0, 0.0])).all()
 
     def test__same_as_above__but_return_as_2d_map(self, mask):
-
         regular_grid = grids.RegularGrid.from_mask(mask=mask)
 
         hyper_galaxies = [g.HyperGalaxy(contribution_factor=0.0, noise_factor=0.0, noise_power=1.0),
@@ -613,24 +545,23 @@ class TestContributionsFromHypers:
         minimum_values = [0.5, 0.6]
 
         contribution_maps = lensing_util.contribution_maps_from_hyper_images_and_galaxies(
-            hyper_model_image_1d=hyper_model_image_1d, hyper_galaxy_images_1d=hyper_galaxy_images_1d, 
-            hyper_galaxies=hyper_galaxies, hyper_minimum_values=minimum_values, 
+            hyper_model_image_1d=hyper_model_image_1d, hyper_galaxy_images_1d=hyper_galaxy_images_1d,
+            hyper_galaxies=hyper_galaxies, hyper_minimum_values=minimum_values,
             map_to_scaled_array=regular_grid.array_2d_from_array_1d)
 
         assert (contribution_maps[0] == np.array([[0.0, 0.0, 0.0, 0.0],
                                                   [0.0, 1.0, 1.0, 0.0],
                                                   [0.0, 1.0, 1.0, 0.0],
                                                   [0.0, 0.0, 0.0, 0.0]])).all()
-        assert (contribution_maps[1] == np.array([[0.0, 0.0, 0.0,                       0.0],
+        assert (contribution_maps[1] == np.array([[0.0, 0.0, 0.0, 0.0],
                                                   [0.0, 0.0, (1.0 / 2.0) / (1.5 / 2.5), 0.0],
-                                                  [0.0, 1.0, 0.0,                       0.0],
-                                                  [0.0, 0.0, 0.0,                       0.0]])).all()
+                                                  [0.0, 1.0, 0.0, 0.0],
+                                                  [0.0, 0.0, 0.0, 0.0]])).all()
 
 
 class TestScaledNoiseFromContributions:
 
     def test__x1_hyper_galaxy__noise_factor_is_0__scaled_noise_is_input_noise(self):
-
         contributions_1d = [np.array([1.0, 1.0, 2.0])]
         hyper_galaxies = [MockHyperGalaxy(contribution_factor=1.0, noise_factor=0.0, noise_power=1.0)]
         noise_map_ = np.array([1.0, 1.0, 1.0])
@@ -641,7 +572,6 @@ class TestScaledNoiseFromContributions:
         assert (scaled_noise_map_ == noise_map_).all()
 
     def test__x1_hyper_galaxy__noise_factor_and_power_are_1__scaled_noise_added_to_input_noise(self):
-
         contributions_1d = [np.array([1.0, 1.0, 0.5])]
         hyper_galaxies = [MockHyperGalaxy(contribution_factor=1.0, noise_factor=1.0, noise_power=1.0)]
         noise_map_ = np.array([1.0, 1.0, 1.0])
@@ -652,7 +582,6 @@ class TestScaledNoiseFromContributions:
         assert (scaled_noise_map_ == np.array([2.0, 2.0, 1.5])).all()
 
     def test__x1_hyper_galaxy__noise_factor_1_and_power_is_2__scaled_noise_added_to_input_noise(self):
-
         contributions_1d = [np.array([1.0, 1.0, 0.5])]
         hyper_galaxies = [MockHyperGalaxy(contribution_factor=1.0, noise_factor=1.0, noise_power=2.0)]
         noise_map_ = np.array([1.0, 1.0, 1.0])
@@ -663,7 +592,6 @@ class TestScaledNoiseFromContributions:
         assert (scaled_noise_map_ == np.array([2.0, 2.0, 1.25])).all()
 
     def test__x2_hyper_galaxy__noise_factor_1_and_power_is_2__scaled_noise_added_to_input_noise(self):
-
         contributions_1d = [np.array([1.0, 1.0, 0.5]), np.array([0.25, 0.25, 0.25])]
         hyper_galaxies = [MockHyperGalaxy(contribution_factor=1.0, noise_factor=1.0, noise_power=2.0),
                           MockHyperGalaxy(contribution_factor=1.0, noise_factor=2.0, noise_power=1.0)]
@@ -675,7 +603,6 @@ class TestScaledNoiseFromContributions:
         assert (scaled_noise_map_ == np.array([2.5, 2.5, 1.75])).all()
 
     def test__x2_hyper_galaxy__same_as_above_but_use_real_hyper_galaxy(self):
-
         contributions_1d = [np.array([1.0, 1.0, 0.5]), np.array([0.25, 0.25, 0.25])]
         hyper_galaxies = [g.HyperGalaxy(contribution_factor=1.0, noise_factor=1.0, noise_power=2.0),
                           g.HyperGalaxy(contribution_factor=1.0, noise_factor=2.0, noise_power=1.0)]
@@ -687,25 +614,25 @@ class TestScaledNoiseFromContributions:
         assert (scaled_noise_map_ == np.array([2.5, 2.5, 1.75])).all()
 
     # def test__same_as_above_but_using_fiting_hyper_image(self, image, masks):
-    # 
+    #
     #     fitting_hyper_image = fit_data.FitDataHyper(datas=image, masks=masks, hyper_model_image=None,
     #                                                 hyper_galaxy_images=None, hyper_minimum_values=None)
-    # 
+    #
     #     contribution_maps_1d = [np.array([1.0, 1.0, 0.5]), np.array([0.25, 0.25, 0.25])]
     #     hyper_galaxies = [g.HyperGalaxy(contribution_factor=1.0, noise_factor=1.0, noise_power=2.0),
     #                       g.HyperGalaxy(contribution_factor=1.0, noise_factor=2.0, noise_power=1.0)]
     #     scaled_noises = lensing_fitting_util.scaled_noise_maps_from_fitting_hyper_images_contributions_and_hyper_galaxies(
     #         fitting_hyper_images=[fitting_hyper_image], contributions_1d=[contribution_maps_1d], hyper_galaxies=hyper_galaxies)
-    # 
+    #
     #     assert (scaled_noises[0] == np.array([2.5, 2.5, 1.75])).all()
-    # 
+    #
     # def test__same_as_above_but_using_x2_fiting_hyper_image(self, image, masks):
-    # 
+    #
     #     fitting_hyper_image_0 = fit_data.FitDataHyper(datas=image, masks=masks, hyper_model_image=None,
     #                                                   hyper_galaxy_images=None, hyper_minimum_values=None)
     #     fitting_hyper_image_1 = fit_data.FitDataHyper(datas=image, masks=masks, hyper_model_image=None,
     #                                                   hyper_galaxy_images=None, hyper_minimum_values=None)
-    # 
+    #
     #     contributions_0 = [np.array([1.0, 1.0, 0.5]), np.array([0.25, 0.25, 0.25])]
     #     contributions_1 = [np.array([1.0, 1.0, 0.5]), np.array([0.25, 0.25, 0.25])]
     #     hyper_galaxies = [g.HyperGalaxy(contribution_factor=1.0, noise_factor=1.0, noise_power=2.0),
@@ -713,6 +640,6 @@ class TestScaledNoiseFromContributions:
     #     scaled_noises = lensing_fitting_util.scaled_noise_maps_from_fitting_hyper_images_contributions_and_hyper_galaxies(
     #         fitting_hyper_images=[fitting_hyper_image_0, fitting_hyper_image_1],
     #         contributions_1d=[contributions_0, contributions_1], hyper_galaxies=hyper_galaxies)
-    # 
+    #
     #     assert (scaled_noises[0] == np.array([2.5, 2.5, 1.75])).all()
     #     assert (scaled_noises[1] == np.array([2.5, 2.5, 1.75])).all()

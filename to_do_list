@@ -2,14 +2,14 @@ Hey, welcome to my PyAutoLens to-do. This should give you a sense of what we're 
 
 Let me know if you think anything is missing, or should be pushed up the to-do list ;)
 
-1) Finish fitting refactor, including tutorials.
-2) Reduce memory use
+1) Finish fitting refactor tutorials.
+2) Lognormal prior for intensity
 3) Multiplane for Nan
 4) Write MultiNest constant efficiency mode howtolens
 5) Write Adaptive Grid howtolens.
 5a) Read and update all howtolens tutorials
 6) Power-law Analytic Deflections
-7) Magnification + sCaustic + Critical curves
+7) Magnification + Caustic + Critical curves
 8) Image loading sanity checks
 9) Interpolation Scheme for fast deflection angles
 10) Implement faster numerical integration (Ashley Kelly)
@@ -17,13 +17,12 @@ Let me know if you think anything is missing, or should be pushed up the to-do l
 12) Docstrings
 13) Parallelize MultiNest
 
-Dec/Jan) Automated Prior Linking
-Dec/Jan) Pixelization which Adapts to source's light (not magnification).
-Dec/Jan) Hyper-image analysis in fitting modules.
-Dec/Jan) Hyper Analysis intergration at high level (e.g. phase).
-Dec/Jan) Write hyper analysis howtolens
+Jan) Automated Prior Linking
+Jan) Pixelization which Adapts to source's light (not magnification).
+Jan) Hyper Analysis intergration at high level (e.g. phase).
+Jan) Write hyper analysis howtolens
 
-Jan/Feb) Multi-plane analysis.
+Feb/Mar) Multi-plane analysis.
 
 2019) Quasar modeling (time-delays, variable cosmology, PSF refinement)
 2019) UV-plane

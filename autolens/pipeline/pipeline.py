@@ -44,10 +44,7 @@ class PipelineImaging(Pipeline):
         results = []
         for i, phase in enumerate(self.phases):
             logger.info("Running Phase {} (Number {})".format(phase.phase_name, i))
-            if isinstance(phase, ph.HyperOnly):
-                results[-1].hyper = phase.hyper_run(image, ph.ResultsCollection(results), mask)
-            else:
-                results.append(phase.run(image, ph.ResultsCollection(results), mask))
+            results.append(phase.run(image, ph.ResultsCollection(results), mask))
         return results
 
 
