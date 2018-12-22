@@ -39,10 +39,11 @@ class LensingImage(object):
         """
         self.image = image[:,:]
         self.noise_map = image.noise_map
-        self.mask = mask
-
         self.pixel_scale = image.pixel_scale
         self.psf = image.psf
+
+        self.mask = mask
+
         self.image_1d = mask.map_2d_array_to_masked_1d_array(array_2d=image[:,:])
         self.noise_map_1d = mask.map_2d_array_to_masked_1d_array(array_2d=image.noise_map)
         self.mask_1d = mask.map_2d_array_to_masked_1d_array(array_2d=mask)
