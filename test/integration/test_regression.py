@@ -16,23 +16,24 @@ conf.instance = conf.Config("{}/../../workspace/config".format(dirpath),
 dirpath = os.path.dirname(dirpath)
 output_path = '{}/output'.format(dirpath)
 
-pipeline_name = "test"
+test_name = "test"
 
 
 class TestPhaseModelMapper(object):
     def test_pairing_works(self):
-        data_name = '/pair_floats'
 
-        tools.reset_paths(data_name, pipeline_name, output_path)
+        test_name = 'pair_floats'
+
+        tools.reset_paths(test_name, output_path)
 
         sersic = lp.EllipticalSersic(centre=(0.0, 0.0), axis_ratio=0.8, phi=90.0, intensity=1.0, effective_radius=1.3,
                                      sersic_index=3.0)
 
         lens_galaxy = galaxy.Galaxy(light_profile=sersic)
 
-        tools.simulate_integration_image(data_name=data_name, pixel_scale=0.5, lens_galaxies=[lens_galaxy],
+        tools.simulate_integration_image(test_name=test_name, pixel_scale=0.5, lens_galaxies=[lens_galaxy],
                                          source_galaxies=[], target_signal_to_noise=10.0)
-        image = tools.load_image(data_name=data_name, pixel_scale=0.5)
+        image = tools.load_image(test_name=test_name, pixel_scale=0.5)
 
         class MMPhase(ph.LensPlanePhase):
 
@@ -40,7 +41,7 @@ class TestPhaseModelMapper(object):
                 self.lens_galaxies[0].sersic.intensity = self.lens_galaxies[0].sersic.axis_ratio
 
         phase = MMPhase(lens_galaxies=dict(lens=gm.GalaxyModel(sersic=lp.EllipticalSersic)),
-                        optimizer_class=nl.MultiNest, phase_name="{}/phase1".format(pipeline_name))
+                        optimizer_class=nl.MultiNest, phase_name="{}/phase1".format(test_name))
 
         initial_total_priors = phase.variable.prior_count
         phase.make_analysis(image)
@@ -60,18 +61,18 @@ class TestPhaseModelMapper(object):
 
     def test_constants_work(self):
         name = "const_float"
-        data_name = '/const_float'
+        test_name = '/const_float'
 
-        tools.reset_paths(data_name, name, output_path)
+        tools.reset_paths(test_name, output_path)
 
         sersic = lp.EllipticalSersic(centre=(0.0, 0.0), axis_ratio=0.8, phi=90.0, intensity=1.0, effective_radius=1.3,
                                      sersic_index=3.0)
 
         lens_galaxy = galaxy.Galaxy(light_profile=sersic)
 
-        tools.simulate_integration_image(data_name=data_name, pixel_scale=0.5, lens_galaxies=[lens_galaxy],
+        tools.simulate_integration_image(test_name=test_name, pixel_scale=0.5, lens_galaxies=[lens_galaxy],
                                          source_galaxies=[], target_signal_to_noise=10.0)
-        image = tools.load_image(data_name=data_name, pixel_scale=0.5)
+        image = tools.load_image(test_name=test_name, pixel_scale=0.5)
 
         class MMPhase(ph.LensPlanePhase):
 

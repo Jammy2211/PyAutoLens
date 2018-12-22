@@ -11,7 +11,7 @@ from autolens.data.imaging import image as im
 from autolens.data.imaging.plotters import imaging_plotters
 from autolens.lensing import lensing_image as li, lensing_fitters
 from autolens.lensing import ray_tracing
-from autolens.lensing import sensitivity_fitting
+from autolens.lensing import sensitivity_fitters
 from autolens.lensing.plotters import sensitivity_fit_plotters, lensing_fit_plotters
 from autolens.model.galaxy import galaxy as g, galaxy_model as gm, galaxy_fitting, galaxy_data as gd
 from autolens.model.galaxy.plotters import galaxy_fitting_plotters
@@ -44,7 +44,7 @@ class ResultsCollection(list):
 
 class AbstractPhase(object):
 
-    def __init__(self, optimizer_class=non_linear.MultiNest, cosmology=cosmo.Planck15, phase_name=None,
+    def __init__(self, phase_name, optimizer_class=non_linear.MultiNest, cosmology=cosmo.Planck15,
                  auto_link_priors=False):
         """
         A phase in an lensing pipeline. Uses the set non_linear optimizer to try to fit models and data
@@ -212,9 +212,6 @@ class AbstractPhase(object):
             self.phase_name = phase_name
             self.phase_output_path = "{}/{}".format(conf.instance.output_path, self.phase_name)
 
-            print(self.phase_name)
-            print(self.phase_output_path)
-
             log_file = conf.instance.general.get('output', 'log_file', str)
             if not len(log_file.replace(" ", "")) == 0:
                 log_path = "{}/{}".format(self.phase_output_path, log_file)
@@ -265,8 +262,8 @@ class PhasePositions(AbstractPhase):
     def phase_property_collections(self):
         return [self.lens_galaxies]
 
-    def __init__(self, lens_galaxies=None, optimizer_class=non_linear.MultiNest, cosmology=cosmo.Planck15,
-                 phase_name=None, auto_link_priors=False):
+    def __init__(self, phase_name, lens_galaxies=None, optimizer_class=non_linear.MultiNest, cosmology=cosmo.Planck15,
+                 auto_link_priors=False):
         super().__init__(optimizer_class=optimizer_class, cosmology=cosmology,
                          phase_name=phase_name, auto_link_priors=auto_link_priors)
         self.lens_galaxies = lens_galaxies
@@ -358,9 +355,9 @@ class PhasePositions(AbstractPhase):
 
 class PhaseImaging(Phase):
 
-    def __init__(self, optimizer_class=non_linear.MultiNest, sub_grid_size=2, image_psf_shape=None,
+    def __init__(self, phase_name, optimizer_class=non_linear.MultiNest, sub_grid_size=2, image_psf_shape=None,
                  pixelization_psf_shape=None, positions=None, mask_function=default_mask_function,
-                 cosmology=cosmo.Planck15, phase_name=None, auto_link_priors=False):
+                 cosmology=cosmo.Planck15, auto_link_priors=False):
 
         """
 
@@ -561,9 +558,8 @@ class LensPlanePhase(PhaseImaging):
     def phase_property_collections(self):
         return [self.lens_galaxies]
 
-    def __init__(self, lens_galaxies=None, optimizer_class=non_linear.MultiNest, sub_grid_size=2, image_psf_shape=None,
-                 mask_function=default_mask_function, cosmology=cosmo.Planck15, phase_name=None,
-                 auto_link_priors=False):
+    def __init__(self, phase_name, lens_galaxies=None, optimizer_class=non_linear.MultiNest, sub_grid_size=2, image_psf_shape=None,
+                 mask_function=default_mask_function, cosmology=cosmo.Planck15, auto_link_priors=False):
         super(LensPlanePhase, self).__init__(optimizer_class=optimizer_class,
                                              sub_grid_size=sub_grid_size,
                                              image_psf_shape=image_psf_shape,
@@ -616,9 +612,9 @@ class LensSourcePlanePhase(PhaseImaging):
     def phase_property_collections(self):
         return [self.lens_galaxies, self.source_galaxies]
 
-    def __init__(self, lens_galaxies=None, source_galaxies=None, optimizer_class=non_linear.MultiNest,
+    def __init__(self, phase_name, lens_galaxies=None, source_galaxies=None, optimizer_class=non_linear.MultiNest,
                  sub_grid_size=2, image_psf_shape=None, positions=None, mask_function=default_mask_function,
-                 cosmology=cosmo.Planck15, phase_name=None, auto_link_priors=False):
+                 cosmology=cosmo.Planck15,  auto_link_priors=False):
         """
         A phase with a simple source/lens model
 
@@ -683,9 +679,9 @@ class MultiPlanePhase(PhaseImaging):
     def phase_property_collections(self):
         return [self.galaxies]
 
-    def __init__(self, galaxies=None, optimizer_class=non_linear.MultiNest,
+    def __init__(self, phase_name, galaxies=None, optimizer_class=non_linear.MultiNest,
                  sub_grid_size=2, image_psf_shape=None, positions=None, mask_function=default_mask_function,
-                 cosmology=cosmo.Planck15, phase_name=None, auto_link_priors=False):
+                 cosmology=cosmo.Planck15, auto_link_priors=False):
         """
         A phase with a simple source/lens model
 
@@ -735,9 +731,9 @@ class GalaxyFitPhase(AbstractPhase):
 
     galaxy = PhasePropertyCollection("galaxy")
 
-    def __init__(self, use_intensities=False, use_surface_density=False, use_potential=False, use_deflections=False,
+    def __init__(self, phase_name, use_intensities=False, use_surface_density=False, use_potential=False, use_deflections=False,
                  galaxy=None, optimizer_class=non_linear.MultiNest, sub_grid_size=2,
-                 mask_function=default_mask_function, cosmology=cosmo.Planck15, phase_name=None):
+                 mask_function=default_mask_function, cosmology=cosmo.Planck15):
         """
         A phase in an lensing pipeline. Uses the set non_linear optimizer to try to fit models and data
         passed to it.
@@ -943,9 +939,9 @@ class SensitivityPhase(PhaseImaging):
     source_galaxies = PhasePropertyCollection("source_galaxies")
     sensitive_galaxies = PhasePropertyCollection("sensitive_galaxies")
 
-    def __init__(self, lens_galaxies=None, source_galaxies=None, sensitive_galaxies=None,
+    def __init__(self, phase_name, lens_galaxies=None, source_galaxies=None, sensitive_galaxies=None,
                  optimizer_class=non_linear.MultiNest, sub_grid_size=2,
-                 mask_function=default_mask_function, phase_name=None):
+                 mask_function=default_mask_function):
         """
         A phase in an lensing pipeline. Uses the set non_linear optimizer to try to fit models and data
         passed to it.
@@ -1024,13 +1020,13 @@ class SensitivityPhase(PhaseImaging):
                 border=self.sensitivity_image.border)
 
         def fast_likelihood_for_tracers(self, tracer_normal, tracer_sensitive):
-            return sensitivity_fitting.SensitivityProfileFitter.fast_fit(
+            return sensitivity_fitters.SensitivityProfileFitter.fast_fit(
                 sensitivity_images=[self.sensitivity_image],
                 tracer_normal=tracer_normal,
                 tracer_sensitive=tracer_sensitive)
 
         def fit_for_tracers(self, tracer_normal, tracer_sensitive):
-            return sensitivity_fitting.SensitivityProfileFitter(lensing_image=[self.sensitivity_image],
+            return sensitivity_fitters.SensitivityProfileFitter(lensing_image=[self.sensitivity_image],
                                                                 tracer_normal=tracer_normal,
                                                                 tracer_sensitive=tracer_sensitive)
 
