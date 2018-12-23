@@ -1,4 +1,4 @@
-from autolens.data.imaging import image as im
+from autolens.data.imaging import ccd as im
 from autolens.data.array import mask as ma
 from autolens.lens import ray_tracing, lens_fit
 from autolens.model.galaxy import galaxy as g
@@ -28,9 +28,9 @@ from autolens.lens.plotters import ray_tracing_plotters
 
 path = 'path/to/AutoLens/howtolens/chapter_1_introduction' # Unfortunately, in a Jupyter notebook you have to manually specify the path to PyAutoLens and this tutorial.
 path = '/home/jammy/PyCharm/Projects/AutoLens/workspace/howtolens/chapter_1_introduction'
-image = im.load_imaging_from_fits(image_path=path + '/datas/regular.fits',
-                                  noise_map_path=path+'/datas/noise_maps.fits',
-                                  psf_path=path + '/datas/psf.fits', pixel_scale=0.1)
+image = im.load_ccd_from_fits(image_path=path + '/datas/regular.fits',
+                              noise_map_path=path+'/datas/noise_maps.fits',
+                              psf_path=path + '/datas/psf.fits', pixel_scale=0.1)
 mask = ma.Mask.circular(shape=image.shape, pixel_scale=image.pixel_scale, radius_arcsec=3.0)
 lensing_image = li.LensImage(image=image, mask=mask)
 lens_galaxy = g.Galaxy(mass=mp.EllipticalIsothermal(centre=(0.0, 0.0), einstein_radius=1.6, axis_ratio=0.7, phi=45.0))
@@ -77,9 +77,9 @@ galaxy_plotters.plot_intensities(galaxy=fit.tracer.source_plane.galaxies[0], gri
 # profiles, a 'bulge' and 'disk. We can plot the regular-plane regular of each component individually, if we know how to
 # break-up the different components of the fit_normal and tracer_without_subhalo.
 profile_plotters.plot_intensities(light_profile=fit.tracer.source_plane.galaxies[0].bulge,
-                                  grid=fit.tracer.source_plane.grids[0].regular, title='Bulge Image-Plane Image')
+                                  grid=fit.tracer.source_plane.grids[0].regular, title='Bulge CCD-Plane CCD')
 profile_plotters.plot_intensities(light_profile=fit.tracer.source_plane.galaxies[0].disk,
-                                  grid=fit.tracer.source_plane.grids[0].regular, title='Disk Image-Plane Image')
+                                  grid=fit.tracer.source_plane.grids[0].regular, title='Disk CCD-Plane CCD')
 
 # The fit_normal also has the lensing regular, so we can plot the regular using the fit_normal too, if we so desire
 imaging_plotters.plot_image_subplot(image=lensing_image.image)

@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from autolens.data.imaging import image
+from autolens.data.imaging import ccd
 from autolens.data.array.util import grid_util
 from autolens.data.array.util import mapping_util, mask_util
 from autolens.data.array import grids, mask
@@ -696,7 +696,7 @@ class TestPaddedGrids:
                                [1.0, 2.0, 1.0],
                                [0.0, 1.0, 0.0]])
 
-            psf = image.PSF(array=kernel, pixel_scale=1.0)
+            psf = ccd.PSF(array=kernel, pixel_scale=1.0)
 
             blurred_array_1d = regular_padded_grid.convolve_array_1d_with_psf(array_1d, psf)
 
@@ -721,7 +721,7 @@ class TestPaddedGrids:
                                [1.0, 3.0, 1.0],
                                [1.0, 1.0, 1.0]])
 
-            psf = image.PSF(array=kernel, pixel_scale=1.0)
+            psf = ccd.PSF(array=kernel, pixel_scale=1.0)
 
             blurred_array_1d = regular_padded_grid.convolve_array_1d_with_psf(array_1d, psf)
 
@@ -842,7 +842,7 @@ class TestPaddedGrids:
                                [1.0, 2.0, 1.0],
                                [0.0, 1.0, 0.0]])
 
-            psf = image.PSF(array=kernel, pixel_scale=1.0)
+            psf = ccd.PSF(array=kernel, pixel_scale=1.0)
 
             blurred_array_2d = regular_padded_grid.padded_blurred_image_2d_from_padded_image_1d_and_psf(
                 padded_image_1d=array_1d, psf=psf)
@@ -866,7 +866,7 @@ class TestPaddedGrids:
                                [1.0, 3.0, 1.0],
                                [1.0, 1.0, 1.0]])
 
-            psf = image.PSF(array=kernel, pixel_scale=1.0)
+            psf = ccd.PSF(array=kernel, pixel_scale=1.0)
 
             blurred_array_2d = regular_padded_grid.padded_blurred_image_2d_from_padded_image_1d_and_psf(
                 padded_image_1d=array_1d, psf=psf)

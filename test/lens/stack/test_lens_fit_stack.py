@@ -2,7 +2,7 @@ import numpy as np
 import pytest
 
 from autofit.core import fitting_util
-from autolens.data.imaging import image as im
+from autolens.data.imaging import ccd as im
 from autolens.data.array import mask as msk
 from autolens.model.galaxy import galaxy as g
 from autolens.lens.util import lens_fit_util
@@ -23,7 +23,7 @@ def make_li_blur_stack():
     psf_0 = im.PSF(array=(np.array([[1.0, 1.0, 1.0],
                                      [1.0, 1.0, 1.0],
                                      [1.0, 1.0, 1.0]])), pixel_scale=1.0, renormalize=False)
-    image_0 = im.Image(image_0, pixel_scale=1.0, psf=psf_0, noise_map=np.ones((4, 4)))
+    image_0 = im.CCD(image_0, pixel_scale=1.0, psf=psf_0, noise_map=np.ones((4, 4)))
 
     mask_0 = np.array([[True, True, True, True],
                    [True, False, False, True],
@@ -38,7 +38,7 @@ def make_li_blur_stack():
     psf_1 = im.PSF(array=(np.array([[1.0, 1.0, 1.0],
                                      [1.0, 1.0, 1.0],
                                      [1.0, 1.0, 1.0]])), pixel_scale=1.0, renormalize=False)
-    image_1 = im.Image(image_1, pixel_scale=1.0, psf=psf_1, noise_map=np.ones((4, 4)))
+    image_1 = im.CCD(image_1, pixel_scale=1.0, psf=psf_1, noise_map=np.ones((4, 4)))
 
     mask_1 = np.array([[True, True, True, True],
                    [True, False, False, True],
@@ -59,7 +59,7 @@ def make_li_manual_stack():
     psf_0 = im.PSF(array=(np.array([[1.0, 5.0, 9.0],
                                      [2.0, 5.0, 1.0],
                                      [3.0, 4.0, 0.0]])), pixel_scale=1.0)
-    image_0 = im.Image(image_0, pixel_scale=1.0, psf=psf_0, noise_map=np.ones((5, 5)))
+    image_0 = im.CCD(image_0, pixel_scale=1.0, psf=psf_0, noise_map=np.ones((5, 5)))
     mask_0 = msk.Mask(array=np.array([[True, True, True, True, True],
                                    [True, False, False, False, True],
                                    [True, False, False, False, True],
@@ -74,7 +74,7 @@ def make_li_manual_stack():
     psf_1 = im.PSF(array=(np.array([[1.0, 1.0, 1.0],
                                      [2.0, 1.0, 1.0],
                                      [3.0, 1.0, 0.0]])), pixel_scale=1.0)
-    image_1 = im.Image(image_1, pixel_scale=1.0, psf=psf_1, noise_map=np.ones((5, 5)))
+    image_1 = im.CCD(image_1, pixel_scale=1.0, psf=psf_1, noise_map=np.ones((5, 5)))
     mask_1 = msk.Mask(array=np.array([[True, True, True, True, True],
                                    [True, False, False, False, True],
                                    [True, False, False, False, True],
@@ -93,7 +93,7 @@ class TestLensProfileFit:
             psf_0 = im.PSF(array=(np.array([[0.0, 0.0, 0.0],
                                              [0.0, 1.0, 0.0],
                                              [0.0, 0.0, 0.0]])), pixel_scale=1.0)
-            image_0 = im.Image(np.ones((3, 3)), pixel_scale=1.0, psf=psf_0, noise_map=np.ones((3, 3)))
+            image_0 = im.CCD(np.ones((3, 3)), pixel_scale=1.0, psf=psf_0, noise_map=np.ones((3, 3)))
             mask_0 = msk.Mask(array=np.array([[True, True, True],
                                            [True, False, True],
                                            [True, True, True]]), pixel_scale=1.0)
@@ -101,7 +101,7 @@ class TestLensProfileFit:
             psf_1 = im.PSF(array=(np.array([[0.0, 0.0, 0.0],
                                              [0.0, 1.0, 0.0],
                                              [0.0, 0.0, 0.0]])), pixel_scale=1.0)
-            image_1 = im.Image(np.ones((3, 3)), pixel_scale=1.0, psf=psf_1, noise_map=np.ones((3, 3)))
+            image_1 = im.CCD(np.ones((3, 3)), pixel_scale=1.0, psf=psf_1, noise_map=np.ones((3, 3)))
             mask_1 = msk.Mask(array=np.array([[True, True, True],
                                            [True, False, True],
                                            [True, True, True]]), pixel_scale=1.0)
@@ -120,7 +120,7 @@ class TestLensProfileFit:
             psf_0 = im.PSF(array=(np.array([[0.0, 0.0, 0.0],
                                              [0.0, 1.0, 0.0],
                                              [0.0, 0.0, 0.0]])), pixel_scale=1.0)
-            image_0 = im.Image(5.0 * np.ones((3, 4)), pixel_scale=1.0, psf=psf_0, noise_map=np.ones((3, 4)))
+            image_0 = im.CCD(5.0 * np.ones((3, 4)), pixel_scale=1.0, psf=psf_0, noise_map=np.ones((3, 4)))
             image_0[1,2]  = 4.0
             mask_0 = msk.Mask(array=np.array([[True, True, True, True],
                                            [True, False, False, True],
@@ -129,7 +129,7 @@ class TestLensProfileFit:
             psf_1 = im.PSF(array=(np.array([[0.0, 0.0, 0.0],
                                              [0.0, 1.0, 0.0],
                                              [0.0, 0.0, 0.0]])), pixel_scale=1.0)
-            image_1 = im.Image(5.0 * np.ones((3, 4)), pixel_scale=1.0, psf=psf_1, noise_map=np.ones((3, 4)))
+            image_1 = im.CCD(5.0 * np.ones((3, 4)), pixel_scale=1.0, psf=psf_1, noise_map=np.ones((3, 4)))
             mask_1 = msk.Mask(array=np.array([[True, True, True, True],
                                            [True, False, False, True],
                                            [True, True, True, True]]), pixel_scale=1.0)

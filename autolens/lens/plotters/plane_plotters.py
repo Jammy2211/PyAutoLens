@@ -7,7 +7,7 @@ def plot_image_plane_image(plane, mask=None, positions=None, grid=None, as_subpl
                            units='arcsec', figsize=(7, 7), aspect='equal',
                            cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
                            cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
-                           title='Plane Image-Plane Image', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
+                           title='Plane CCD-Plane CCD', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
                            mask_pointsize=10, position_pointsize=10.0, grid_pointsize=1,
                            output_path=None, output_format='show', output_filename='plane_image_plane_image'):
 
@@ -27,7 +27,7 @@ def plot_plane_image(plane, plot_origin=True, positions=None, plot_grid=True, as
                      units='arcsec', figsize=(7, 7), aspect='equal',
                      cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
                      cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
-                     title='Plane Image', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
+                     title='Plane CCD', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
                      position_pointsize=10, grid_pointsize=1,
                      output_path=None, output_format='show', output_filename='plane_image'):
 
@@ -128,7 +128,7 @@ def plot_image_and_source_plane_subplot(image_plane, source_plane, points=None, 
     plot_plane_grid(plane=image_plane, axis_limits=axis_limits, points=points, as_subplot=True,
                     units=units,
                     pointsize=3, xyticksize=16, titlesize=10, xlabelsize=10, ylabelsize=10,
-                    title='Image-plane Grid',
+                    title='CCD-plane Grid',
                     output_path=output_path, output_filename=output_filename, output_format=output_format)
 
     plt.subplot(rows, columns, 2)

@@ -3,7 +3,7 @@ import shutil
 
 import numpy as np
 
-from autolens.data.imaging import image as im
+from autolens.data.imaging import ccd as im
 from autolens.data.array.util import array_util
 from autolens.data.array import grids, scaled_array
 from autolens.lens import ray_tracing
@@ -46,12 +46,12 @@ def simulate_integration_image(test_name, pixel_scale, lens_galaxies, source_gal
 
     ### Setup as a simulated image_coords and output as a fits for an lensing ###
 
-    sim_image = im.Image.simulate_to_target_signal_to_noise(array=tracer.image_plane_image_for_simulation,
-                                                            pixel_scale=pixel_scale,
-                                                            target_signal_to_noise=target_signal_to_noise,
-                                                            exposure_time_map=np.ones(image_shape),
-                                                            background_sky_map=10.0 * np.ones(image_shape),
-                                                            psf=psf, seed=1)
+    sim_image = im.CCD.simulate_to_target_signal_to_noise(image=tracer.image_plane_image_for_simulation,
+                                                          pixel_scale=pixel_scale,
+                                                          target_signal_to_noise=target_signal_to_noise,
+                                                          exposure_time_map=np.ones(image_shape),
+                                                          background_sky_map=10.0 * np.ones(image_shape),
+                                                          psf=psf, seed=1)
 
     if os.path.exists(output_path) == False:
         os.makedirs(output_path)
@@ -71,4 +71,4 @@ def load_image(test_name, pixel_scale):
                                                                            pixel_scale=pixel_scale)
     psf = im.PSF.from_fits_with_scale(file_path=data_dir + '/psf.fits', hdu=0, pixel_scale=pixel_scale)
 
-    return im.Image(array=data, pixel_scale=pixel_scale, psf=psf, noise_map=noise)
+    return im.CCD(image=data, pixel_scale=pixel_scale, psf=psf, noise_map=noise)

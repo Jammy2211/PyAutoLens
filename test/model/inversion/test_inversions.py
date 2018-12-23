@@ -168,9 +168,9 @@ class TestReconstructedDataVectorAndImage:
         inv.blurred_mapping_matrix = np.array([[1.0, 1.0, 1.0, 1.0],
                                                [1.0, 0.0, 1.0, 1.0],
                                                [1.0, 0.0, 0.0, 0.0]])
-        # Image pixel 0 maps to 4 pixs pixxels -> value is 4.0
-        # Image pixel 1 maps to 3 pixs pixxels -> value is 3.0
-        # Image pixel 2 maps to 1 pixs pixxels -> value is 1.0
+        # CCD pixel 0 maps to 4 pixs pixxels -> value is 4.0
+        # CCD pixel 1 maps to 3 pixs pixxels -> value is 3.0
+        # CCD pixel 2 maps to 1 pixs pixxels -> value is 1.0
 
         assert (inv.reconstructed_data_vector == np.array([4.0, 3.0, 1.0])).all()
         assert (inv.reconstructed_data == np.array([[0.0, 0.0, 0.0],
@@ -197,9 +197,9 @@ class TestReconstructedDataVectorAndImage:
                                                [1.0, 0.0, 1.0, 1.0],
                                                [1.0, 0.0, 0.0, 0.0]])
 
-        # # Image pixel 0 maps to 4 pixs pixxels -> value is 1.0 + 2.0 + 3.0 + 4.0 = 10.0
-        # # Image pixel 1 maps to 3 pixs pixxels -> value is 1.0 + 3.0 + 4.0
-        # # Image pixel 2 maps to 1 pixs pixxels -> value is 1.0
+        # # CCD pixel 0 maps to 4 pixs pixxels -> value is 1.0 + 2.0 + 3.0 + 4.0 = 10.0
+        # # CCD pixel 1 maps to 3 pixs pixxels -> value is 1.0 + 3.0 + 4.0
+        # # CCD pixel 2 maps to 1 pixs pixxels -> value is 1.0
 
         assert (inv.reconstructed_data_vector == np.array([10.0, 8.0, 1.0])).all()
         assert (inv.reconstructed_data == np.array([[0.0, 0.0, 0.0],

@@ -1,4 +1,4 @@
-from autolens.data.imaging import image as im
+from autolens.data.imaging import ccd as im
 from autolens.data.array import mask as ma
 from autolens.model.profiles import light_profiles as lp
 from autolens.model.profiles import mass_profiles as mp
@@ -34,8 +34,8 @@ def simulate():
                                                  source_galaxies=[source_galaxy_0],
                                                  image_plane_grid_stack=[image_plane_grids])
 
-    return im.Image.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=0.05,
-                                        exposure_time=300.0, psf=psf, background_sky_level=0.1, add_noise=True)
+    return im.CCD.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=0.05,
+                           exposure_time=300.0, psf=psf, background_sky_level=0.1, add_noise=True)
 
 # Lets have a quick look at the regular.
 image = simulate()
@@ -168,8 +168,8 @@ def simulate_image_x2_lenses():
                                                  source_galaxies=[source_galaxy_0],
                                                  image_plane_grid_stack=[image_plane_grids])
 
-    return im.Image.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=0.05,
-                                        exposure_time=300.0, psf=psf, background_sky_level=0.1, add_noise=True)
+    return im.CCD.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=0.05,
+                           exposure_time=300.0, psf=psf, background_sky_level=0.1, add_noise=True)
 
 # Lets simulate our 2 lens system, define a new circular masks and plot them.
 image = simulate_image_x2_lenses()

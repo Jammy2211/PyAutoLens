@@ -1,4 +1,4 @@
-from autolens.data.imaging import image as im
+from autolens.data.imaging import ccd as im
 from autolens.data.array import mask as ma
 from autolens.lens import ray_tracing, lens_fit
 from autolens.model.galaxy import galaxy as g
@@ -15,9 +15,9 @@ from autolens.lens.plotters import lens_fit_plotters
 # First, we load the regular-datas we simualted in the previous tutorial.
 path = 'path/to/AutoLens/howtolens/1_introduction' # Unfortunately, in a Jupyter notebook you have to manually specify the path to PyAutoLens and this tutorial.
 path = '/home/jammy/PyCharm/Projects/AutoLens/workspace/howtolens/chapter_1_introduction'
-image = im.load_imaging_from_fits(image_path=path + '/datas/regular.fits',
-                                  noise_map_path=path+'/datas/noise_maps.fits',
-                                  psf_path=path + '/datas/psf.fits', pixel_scale=0.1)
+image = im.load_ccd_from_fits(image_path=path + '/datas/regular.fits',
+                              noise_map_path=path+'/datas/noise_maps.fits',
+                              psf_path=path + '/datas/psf.fits', pixel_scale=0.1)
 
 # To fit_normal an regular, we first specify a masks. A masks describes the sections of the regular that we fit_normal.
 
@@ -52,7 +52,7 @@ lensing_image = li.LensImage(image=image, mask=mask)
 imaging_plotters.plot_image_subplot(lensing_image.image)
 
 # By printing its attribute, we can see that it does indeed contain the regular, masks, psf and so on
-print('Image:')
+print('CCD:')
 print(lensing_image.image)
 print('Noise-Map:')
 print(lensing_image.image.noise_map)
@@ -98,7 +98,7 @@ fit = lens_fit.fit_lens_image_with_tracer(lens_image=lensing_image, tracer=trace
 lens_fit_plotters.plot_fit_subplot(fit=fit)
 
 # We can print the fit_normal's attributes - if we don't specify where we'll get all zeros, as the edges were masked:
-print('Model-Image Edge Pixels:')
+print('Model-CCD Edge Pixels:')
 print(fit.model_data)
 print('Residuals Edge Pixels:')
 print(fit.residual)
@@ -106,7 +106,7 @@ print('Chi-Squareds Edge Pixels:')
 print(fit.chi_squared)
 
 # Of course, the central unmasked pixels have non-zero values.
-print('Model-Image Central Pixels:')
+print('Model-CCD Central Pixels:')
 print(fit.model_data[48:53, 48:53])
 print('Residuals Central Pixels:')
 print(fit.residual[48:53, 48:53])

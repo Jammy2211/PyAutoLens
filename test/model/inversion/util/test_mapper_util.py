@@ -29,9 +29,9 @@ class TestMappingMatrix:
                                                                 sub_to_regular=grids.sub.sub_to_regular,
                                                                 sub_grid_fraction=grids.sub.sub_grid_fraction)
 
-        assert (mapping_matrix == np.array([[1, 0, 0, 0, 0, 0],  # Image pixel 0 maps to pix pixel 0.
-                                            [0, 1, 0, 0, 0, 0],  # Image pixel 1 maps to pix pixel 1.
-                                            [0, 0, 1, 0, 0, 0]])).all()  # Image pixel 2 maps to pix pixel 2
+        assert (mapping_matrix == np.array([[1, 0, 0, 0, 0, 0],  # CCD pixel 0 maps to pix pixel 0.
+                                            [0, 1, 0, 0, 0, 0],  # CCD pixel 1 maps to pix pixel 1.
+                                            [0, 0, 1, 0, 0, 0]])).all()  # CCD pixel 2 maps to pix pixel 2
 
     def test__5_image_pixels__8_pixel_pixels__sub_grid_1x1(self, five_pixels):
 
@@ -46,11 +46,11 @@ class TestMappingMatrix:
                                                                 sub_to_regular=grids.sub.sub_to_regular,
                                                                 sub_grid_fraction=grids.sub.sub_grid_fraction)
         assert (mapping_matrix == np.array(
-            [[1, 0, 0, 0, 0, 0, 0, 0],  # Image image_to_pixel 0 and 3 mappers to pix pixel 0.
-             [0, 1, 0, 0, 0, 0, 0, 0],  # Image image_to_pixel 1 and 4 mappers to pix pixel 1.
+            [[1, 0, 0, 0, 0, 0, 0, 0],  # CCD image_to_pixel 0 and 3 mappers to pix pixel 0.
+             [0, 1, 0, 0, 0, 0, 0, 0],  # CCD image_to_pixel 1 and 4 mappers to pix pixel 1.
              [0, 0, 1, 0, 0, 0, 0, 0],
              [0, 0, 0, 0, 0, 0, 0, 1],
-             [0, 0, 0, 0, 0, 0, 1, 0]])).all()  # Image image_to_pixel 2 and 5 mappers to pix pixel 2
+             [0, 0, 0, 0, 0, 0, 1, 0]])).all()  # CCD image_to_pixel 2 and 5 mappers to pix pixel 2
 
     def test__5_image_pixels__8_pixel_pixels__sub_grid_2x2__no_overlapping_pixels(self, five_pixels):
 

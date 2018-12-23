@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from autolens.data.imaging import image as im, convolution
+from autolens.data.imaging import ccd as im, convolution
 from autolens.data.array.util import grid_util
 from autolens.data.array import scaled_array
 from autolens.data.array import mask as msk
@@ -19,9 +19,9 @@ def make_image_0():
     exposure_time_map = im.ExposureTimeMap(array=5.0 * np.ones((4, 4)), pixel_scale=3.0)
     background_sky_map = scaled_array.ScaledSquarePixelArray(array=6.0 * np.ones((4, 4)), pixel_scale=3.0)
 
-    return im.Image(array=np.ones((4,4)), pixel_scale=3.0, psf=psf, noise_map=noise_map,
-                    background_noise_map=background_noise_map, poisson_noise_map=poisson_noise_map,
-                    exposure_time_map=exposure_time_map, background_sky_map=background_sky_map)
+    return im.CCD(image=np.ones((4, 4)), pixel_scale=3.0, psf=psf, noise_map=noise_map,
+                  background_noise_map=background_noise_map, poisson_noise_map=poisson_noise_map,
+                  exposure_time_map=exposure_time_map, background_sky_map=background_sky_map)
 
 @pytest.fixture(name='image_1')
 def make_image_1():
@@ -33,9 +33,9 @@ def make_image_1():
     exposure_time_map = im.ExposureTimeMap(array=15.0 * np.ones((4, 4)), pixel_scale=6.0)
     background_sky_map = scaled_array.ScaledSquarePixelArray(array=16.0 * np.ones((4, 4)), pixel_scale=6.0)
 
-    return im.Image(array=10.0*np.ones((4,4)), pixel_scale=6.0, psf=psf, noise_map=noise_map,
-                    background_noise_map=background_noise_map, poisson_noise_map=poisson_noise_map,
-                    exposure_time_map=exposure_time_map, background_sky_map=background_sky_map)
+    return im.CCD(image=10.0 * np.ones((4, 4)), pixel_scale=6.0, psf=psf, noise_map=noise_map,
+                  background_noise_map=background_noise_map, poisson_noise_map=poisson_noise_map,
+                  exposure_time_map=exposure_time_map, background_sky_map=background_sky_map)
 
 @pytest.fixture(name="mask_0")
 def make_mask_0():
@@ -174,12 +174,12 @@ class TestLensingImage(object):
     def test__constructor_inputs(self):
 
         psf_0 = im.PSF(np.ones((7, 7)), 1)
-        image_0 = im.Image(np.ones((51, 51)), pixel_scale=3., psf=psf_0, noise_map=np.ones((51, 51)))
+        image_0 = im.CCD(np.ones((51, 51)), pixel_scale=3., psf=psf_0, noise_map=np.ones((51, 51)))
         mask_0 = msk.Mask.masked_for_shape_and_pixel_scale(shape=(51, 51), pixel_scale=1.0)
         mask_0[26, 26] = False
 
         psf_1 = im.PSF(np.ones((7, 7)), 1)
-        image_1 = im.Image(np.ones((51, 51)), pixel_scale=3., psf=psf_1, noise_map=np.ones((51, 51)))
+        image_1 = im.CCD(np.ones((51, 51)), pixel_scale=3., psf=psf_1, noise_map=np.ones((51, 51)))
         mask_1 = msk.Mask.masked_for_shape_and_pixel_scale(shape=(51, 51), pixel_scale=1.0)
         mask_1[26, 26] = False
 

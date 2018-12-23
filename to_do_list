@@ -8,7 +8,7 @@ Let me know if you think anything is missing, or should be pushed up the to-do l
 4) Write Adaptive Grid howtolens.
 5) Power-law Analytic Deflections
 6) Magnification + Caustic + Critical curves
-7) Image loading sanity checks
+7) CCD loading sanity checks
 8) Interpolation Scheme for fast deflection angles
 9) Implement faster numerical integration (Ashley Kelly)
 10) SLACS Database
@@ -23,4 +23,4 @@ Feb/Mar) Multi-plane analysis.
 
 2019) Quasar modeling (time-delays, variable cosmology, PSF refinement)
 2019) UV-plane
-2019) Multi-Image analysis.
+2019) Multi-CCD analysis.

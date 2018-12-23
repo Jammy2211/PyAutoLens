@@ -18,7 +18,7 @@ def plot_image_subplot(image, plot_origin=True, mask=None, should_plot_border=Fa
 
     Parameters
     -----------
-    image : datas.imaging.datas.Image
+    image : datas.imaging.datas.CCD
         The datas-datas, which includes the observed datas, noise_map-map, PSF, signal-to-noise_map-map, etc.
     plot_origin : True
         If true, the origin of the datas's coordinate system is plotted as a 'x'.
@@ -97,7 +97,7 @@ def plot_image_individual(image, plot_origin=True, mask=None, positions=None, ou
 
     Parameters
     -----------
-    image : datas.imaging.datas.Image
+    image : datas.imaging.datas.CCD
         The datas-datas, which includes the observed datas, noise_map-map, PSF, signal-to-noise_map-map, etc.
     plot_origin : True
         If true, the origin of the datas's coordinate system is plotted as a 'x'.
@@ -128,7 +128,7 @@ def plot_image(image, plot_origin=True, mask=None, should_plot_border=False, pos
                units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
                cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
                cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
-               title='Observed Image', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
+               title='Observed CCD', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
                mask_pointsize=10, position_pointsize=30, grid_pointsize=1,
                output_path=None, output_format='show', output_filename='observed_image'):
     """Plot the observed datas of the datas datas.
@@ -137,7 +137,7 @@ def plot_image(image, plot_origin=True, mask=None, should_plot_border=False, pos
 
     Parameters
     -----------
-    image : datas.imaging.datas.Image
+    image : datas.imaging.datas.CCD
         The datas-datas, which includes the observed datas, noise_map-map, PSF, signal-to-noise_map-map, etc.
     plot_origin : True
         If true, the origin of the datas's coordinate system is plotted as a 'x'.
@@ -173,7 +173,7 @@ def plot_noise_map(image, plot_origin=True, mask=None, as_subplot=False,
 
     Parameters
     -----------
-    image : datas.imaging.datas.Image
+    image : datas.imaging.datas.CCD
         The datas-datas, which includes the observed datas, noise_map-map, PSF, signal-to-noise_map-map, etc.
     plot_origin : True
         If true, the origin of the datas's coordinate system is plotted as a 'x'.
@@ -203,7 +203,7 @@ def plot_psf(image, plot_origin=True, as_subplot=False,
 
     Parameters
     -----------
-    image : datas.imaging.datas.Image
+    image : datas.imaging.datas.CCD
         The datas-datas, which includes the observed datas, noise_map-map, PSF, signal-to-noise_map-map, etc.
     plot_origin : True
         If true, the origin of the datas's coordinate system is plotted as a 'x'.
@@ -233,7 +233,7 @@ def plot_signal_to_noise_map(image, plot_origin=True, mask=None, as_subplot=Fals
 
     Parameters
     -----------
-    image : datas.imaging.datas.Image
+    image : datas.imaging.datas.CCD
         The datas-datas, which includes the observed datas, noise_map-map, PSF, signal-to-noise_map-map, etc.
     plot_origin : True
         If true, the origin of the datas's coordinate system is plotted as a 'x'.
@@ -256,7 +256,7 @@ def get_origin(image, plot_origin):
 
     Parameters
     -----------
-    image : datas.imaging.datas.Image
+    image : datas.imaging.datas.CCD
         The datas-datas, which includes the observed datas, noise_map-map, PSF, signal-to-noise_map-map, etc.
     plot_origin : True
         If true, the origin of the datas's coordinate system is returned.

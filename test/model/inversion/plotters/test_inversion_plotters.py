@@ -41,7 +41,7 @@
 #     noise_map_1d = im.NoiseMap(array=2.0*np.ones((3,3)), pixel_scale=1.0)
 #     psf = im.PSF(array=3.0*np.ones((3,3)), pixel_scale=1.0)
 #
-#     return im.Image(array=regular, pixel_scale=1.0, noise_map_1d=noise_map_1d, psf=psf)
+#     return im.CCD(array=regular, pixel_scale=1.0, noise_map_1d=noise_map_1d, psf=psf)
 #
 # @pytest.fixture(name='galaxy_light')
 # def test_galaxy_light():

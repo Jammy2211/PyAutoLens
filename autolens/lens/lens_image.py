@@ -1,7 +1,7 @@
 import numpy as np
 
 from autolens.data.array import grids
-from autolens.data.imaging import image as im
+from autolens.data.imaging import ccd as im
 from autolens.data.imaging import convolution
 from autolens.data.array import mask as msk
 from autolens.model.inversion import convolution as inversion_convolution
@@ -20,7 +20,7 @@ class LensImage(object):
 
         Parameters
         ----------
-        image: im.Image
+        image: im.CCD
             The original image datas in 2D.
         mask: msk.Mask
             The 2D masks that is applied to the image.
@@ -109,7 +109,7 @@ class LensHyperImage(LensImage):
 
         Parameters
         ----------
-        image: im.Image
+        image: im.CCD
             The original image datas in 2D.
         mask: msk.Mask
             The 2D masks that is applied to the image.

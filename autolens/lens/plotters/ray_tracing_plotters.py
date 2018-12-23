@@ -12,13 +12,13 @@ def plot_ray_tracing_subplot(tracer, mask=None, positions=None,
                             titlesize=10, xlabelsize=10, ylabelsize=10, xyticksize=10,
                              mask_pointsize=10, position_pointsize=10.0, grid_pointsize=1.0,
                              output_path=None, output_filename='tracer', output_format='show', ignore_config=True):
-    """Plot the observed _tracer of an analysis, using the *Image* class object.
+    """Plot the observed _tracer of an analysis, using the *CCD* class object.
 
     The visualization and output type can be fully customized.
 
     Parameters
     -----------
-    tracer : autolens.imaging.tracer.Image
+    tracer : autolens.imaging.tracer.CCD
         Class containing the _tracer, noise_map-mappers and PSF that are to be plotted.
         The font size of the figure ylabel.
     output_path : str
@@ -108,13 +108,13 @@ def plot_ray_tracing_subplot(tracer, mask=None, positions=None,
         plt.close()
 
 def plot_ray_tracing_individual(tracer, output_path=None, output_format='show'):
-    """Plot the observed _tracer of an analysis, using the *Image* class object.
+    """Plot the observed _tracer of an analysis, using the *CCD* class object.
 
     The visualization and output type can be fully customized.
 
     Parameters
     -----------
-    tracer : autolens.imaging.tracer.Image
+    tracer : autolens.imaging.tracer.CCD
         Class containing the _tracer, noise_map-mappers and PSF that are to be plotted.
         The font size of the figure ylabel.
     output_path : str
@@ -162,7 +162,7 @@ def plot_image_plane_image(tracer, mask=None, positions=None, as_subplot=False,
                            units='arcsec', figsize=(7, 7), aspect='equal',
                            cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
                            cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
-                           title='Tracer Image-Plane Image', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
+                           title='Tracer CCD-Plane CCD', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
                            mask_pointsize=10, position_pointsize=10.0,
                            output_path=None, output_format='show', output_filename='tracer_image_plane_image'):
 

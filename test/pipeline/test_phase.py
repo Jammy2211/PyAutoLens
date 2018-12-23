@@ -7,7 +7,7 @@ from autofit import conf
 from autofit.core import model_mapper as mm
 from autofit.core import non_linear
 
-from autolens.data.imaging import image as img
+from autolens.data.imaging import ccd as img
 from autolens.data.array import grids, mask as msk
 from autolens.lens import lens_image as li
 from autolens.lens import lens_fit
@@ -100,15 +100,15 @@ def make_galaxy_model():
 
 @pytest.fixture(name="image")
 def make_image():
-    image = img.Image(np.array(np.zeros(shape)), pixel_scale=1.0, psf=img.PSF(np.ones((3, 3)), pixel_scale=1.0),
-                      noise_map=img.NoiseMap(np.ones(shape), pixel_scale=1.0))
+    image = img.CCD(np.array(np.zeros(shape)), pixel_scale=1.0, psf=img.PSF(np.ones((3, 3)), pixel_scale=1.0),
+                    noise_map=img.NoiseMap(np.ones(shape), pixel_scale=1.0))
     return image
 
 
 @pytest.fixture(name="lensing_image")
 def make_lensing_image():
-    image = img.Image(np.array(np.zeros(shape)), pixel_scale=1.0, psf=img.PSF(np.ones((3, 3)), pixel_scale=1.0),
-                      noise_map=img.NoiseMap(np.ones(shape), pixel_scale=1.0))
+    image = img.CCD(np.array(np.zeros(shape)), pixel_scale=1.0, psf=img.PSF(np.ones((3, 3)), pixel_scale=1.0),
+                    noise_map=img.NoiseMap(np.ones(shape), pixel_scale=1.0))
     mask = msk.Mask.circular(shape=shape, pixel_scale=1, radius_arcsec=3.0)
     return li.LensImage(image, mask)
 
