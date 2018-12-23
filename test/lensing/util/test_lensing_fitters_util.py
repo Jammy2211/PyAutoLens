@@ -55,58 +55,47 @@ def make_galaxy_light():
 class TestBlurImages:
 
     def test__2x2_image_all_1s__3x3__psf_central_1__no_blurring(self, convolver_no_blur):
-        image_ = np.array([1.0, 1.0, 1.0, 1.0])
-        blurring_image_ = np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
+        image_1d = np.array([1.0, 1.0, 1.0, 1.0])
+        blurring_image_1d = np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
 
-        blurred_image_ = util.blurred_image_1d_from_1d_unblurred_and_blurring_images(unblurred_image_1d=image_,
-                                                                                             blurring_image_1d=blurring_image_,
+        blurred_image_1d = util.blurred_image_1d_from_1d_unblurred_and_blurring_images(unblurred_image_1d=image_1d,
+                                                                                             blurring_image_1d=blurring_image_1d,
                                                                                              convolver=convolver_no_blur)
 
-        assert (blurred_image_ == np.array([1.0, 1.0, 1.0, 1.0])).all()
+        assert (blurred_image_1d == np.array([1.0, 1.0, 1.0, 1.0])).all()
 
     def test__2x2_image_all_1s__3x3_psf_all_1s__image_blurs_to_4s(self, convolver_blur):
-        image_ = np.array([1.0, 1.0, 1.0, 1.0])
-        blurring_image_ = np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
+        image_1d = np.array([1.0, 1.0, 1.0, 1.0])
+        blurring_image_1d = np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
 
-        blurred_image_ = util.blurred_image_1d_from_1d_unblurred_and_blurring_images(unblurred_image_1d=image_,
-                                                                                             blurring_image_1d=blurring_image_,
+        blurred_image_1d = util.blurred_image_1d_from_1d_unblurred_and_blurring_images(unblurred_image_1d=image_1d,
+                                                                                             blurring_image_1d=blurring_image_1d,
                                                                                              convolver=convolver_blur)
-        assert (blurred_image_ == np.array([4.0, 4.0, 4.0, 4.0])).all()
+        assert (blurred_image_1d == np.array([4.0, 4.0, 4.0, 4.0])).all()
 
 
-class TestLensingConvolutionFitter:
+    def test__2x2_unblurred_image_all_1s__3x3_psf_no_blurring__image_blurs_to_itself(self, convolver_no_blur):
 
-    def test__2x2_unblurred_image_all_1s__3x3_psf_no_blurring__image_blurs_to_itself(self, mask, convolver_no_blur):
         unblurred_image_1d = np.array([1.0, 1.0, 1.0, 1.0])
         blurring_image_1d = np.array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0])
 
-        regular_grid = grids.RegularGrid.from_mask(mask=mask)
+        blurred_image = util.blurred_image_1d_from_1d_unblurred_and_blurring_images(
+            unblurred_image_1d=unblurred_image_1d, blurring_image_1d=blurring_image_1d, convolver=convolver_no_blur)
 
-        blurred_image = util.blurred_image_from_1d_unblurred_and_blurring_images(
-            unblurred_image_1d=unblurred_image_1d, blurring_image_1d=blurring_image_1d, convolver=convolver_no_blur,
-            map_to_scaled_array=regular_grid.array_2d_from_array_1d)
+        assert (blurred_image == np.array([1.0, 1.0, 1.0, 1.0])).all()
 
-        assert (blurred_image == np.array([[0.0, 0.0, 0.0, 0.0],
-                                           [0.0, 1.0, 1.0, 0.0],
-                                           [0.0, 1.0, 1.0, 0.0],
-                                           [0.0, 0.0, 0.0, 0.0]])).all()
+    def test__2x2_unblurred_image_all_1s__3x3_psf_all_1s__image_blurs_to_9s(self, convolver_blur):
 
-    def test__2x2_unblurred_image_all_1s__3x3_psf_all_1s__image_blurs_to_9s(self, mask, convolver_blur):
         unblurred_image_1d = np.array([1.0, 1.0, 1.0, 1.0])
         blurring_image_1d = np.array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0])
 
-        regular_grid = grids.RegularGrid.from_mask(mask=mask)
+        blurred_image = util.blurred_image_1d_from_1d_unblurred_and_blurring_images(
+            unblurred_image_1d=unblurred_image_1d, blurring_image_1d=blurring_image_1d, convolver=convolver_blur)
 
-        blurred_image = util.blurred_image_from_1d_unblurred_and_blurring_images(
-            unblurred_image_1d=unblurred_image_1d, blurring_image_1d=blurring_image_1d, convolver=convolver_blur,
-            map_to_scaled_array=regular_grid.array_2d_from_array_1d)
-
-        assert (blurred_image == np.array([[0.0, 0.0, 0.0, 0.0],
-                                           [0.0, 9.0, 9.0, 0.0],
-                                           [0.0, 9.0, 9.0, 0.0],
-                                           [0.0, 0.0, 0.0, 0.0]])).all()
+        assert (blurred_image == np.array([ 9.0, 9.0, 9.0, 9.0])).all()
 
     def test__2x2_image__psf_is_non_symmetric_producing_l_shape(self, mask, blurring_mask):
+
         psf = np.array([[0.0, 3.0, 0.0],
                         [0.0, 2.0, 1.0],
                         [0.0, 0.0, 0.0]])
@@ -116,11 +105,8 @@ class TestLensingConvolutionFitter:
         unblurred_image_1d = np.array([1.0, 2.0, 3.0, 4.0])
         blurring_image_1d = np.array([1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0])
 
-        regular_grid = grids.RegularGrid.from_mask(mask=mask)
-
-        blurred_image = util.blurred_image_from_1d_unblurred_and_blurring_images(
-            unblurred_image_1d=unblurred_image_1d, blurring_image_1d=blurring_image_1d, convolver=convolver,
-            map_to_scaled_array=regular_grid.array_2d_from_array_1d)
+        blurred_image = util.blurred_image_1d_from_1d_unblurred_and_blurring_images(
+            unblurred_image_1d=unblurred_image_1d, blurring_image_1d=blurring_image_1d, convolver=convolver)
 
         # Manually compute result of convolution, which is each central value *2.0 plus its 2 appropriate neighbors
 
@@ -129,10 +115,10 @@ class TestLensingConvolutionFitter:
         blurred_image_manual_2 = 2.0 * unblurred_image_1d[2] + 3.0 * blurring_image_1d[9] + blurring_image_1d[6]
         blurred_image_manual_3 = 2.0 * unblurred_image_1d[3] + 3.0 * blurring_image_1d[10] + unblurred_image_1d[2]
 
-        assert blurred_image_manual_0 == pytest.approx(blurred_image[1, 1], 1e-6)
-        assert blurred_image_manual_1 == pytest.approx(blurred_image[1, 2], 1e-6)
-        assert blurred_image_manual_2 == pytest.approx(blurred_image[2, 1], 1e-6)
-        assert blurred_image_manual_3 == pytest.approx(blurred_image[2, 2], 1e-6)
+        assert blurred_image_manual_0 == pytest.approx(blurred_image[0], 1e-6)
+        assert blurred_image_manual_1 == pytest.approx(blurred_image[1], 1e-6)
+        assert blurred_image_manual_2 == pytest.approx(blurred_image[2], 1e-6)
+        assert blurred_image_manual_3 == pytest.approx(blurred_image[3], 1e-6)
 
 
 class TestInversionEvidence:
@@ -172,9 +158,10 @@ class TestBlurredImageOfPlanes:
                                                              blurring_array=tracer.source_plane.image_plane_blurring_image_1d)
         blurred_source_image = data_grid_stack.regular.scaled_array_from_array_1d(array_1d=blurred_source_image)
 
-        blurred_image_of_planes = util.blurred_image_of_planes_from_tracer_and_convolver(tracer=tracer,
-                                                                                                 convolver_image=convolver_blur,
-                                                                                                 map_to_scaled_array=data_grid_stack.regular.array_2d_from_array_1d)
+        blurred_image_of_planes = util.blurred_image_of_planes_from_1d_images_and_convolver(
+            total_planes=tracer.total_planes, image_plane_image_1d_of_planes=tracer.image_plane_image_1d_of_planes,
+            image_plane_blurring_image_1d_of_planes=tracer.image_plane_blurring_image_1d_of_planes,
+            convolver=convolver_blur, map_to_scaled_array=data_grid_stack.regular.array_2d_from_array_1d)
 
         assert (blurred_image_of_planes[0] == blurred_lens_image).all()
         assert (blurred_image_of_planes[1] == blurred_source_image).all()
@@ -204,9 +191,10 @@ class TestBlurredImageOfPlanes:
         blurred_plane_image_1 = data_grid_stack.regular.scaled_array_from_array_1d(blurred_plane_image_1)
         blurred_plane_image_2 = data_grid_stack.regular.scaled_array_from_array_1d(blurred_plane_image_2)
 
-        blurred_image_of_planes = util.blurred_image_of_planes_from_tracer_and_convolver(tracer=tracer,
-                                                                                                 convolver_image=convolver_blur,
-                                                                                                 map_to_scaled_array=data_grid_stack.regular.array_2d_from_array_1d)
+        blurred_image_of_planes = util.blurred_image_of_planes_from_1d_images_and_convolver(
+            total_planes=tracer.total_planes, image_plane_image_1d_of_planes=tracer.image_plane_image_1d_of_planes,
+            image_plane_blurring_image_1d_of_planes=tracer.image_plane_blurring_image_1d_of_planes,
+            convolver=convolver_blur, map_to_scaled_array=data_grid_stack.regular.array_2d_from_array_1d)
 
         assert (blurred_image_of_planes[0] == blurred_plane_image_0).all()
         assert (blurred_image_of_planes[1] == blurred_plane_image_1).all()
@@ -226,9 +214,10 @@ class TestBlurredImageOfPlanes:
         tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g0],
                                                      image_plane_grid_stack=data_grid_stack)
 
-        blurred_image_of_planes = util.blurred_image_of_planes_from_tracer_and_convolver(tracer=tracer,
-                                    convolver_image=convolver_blur,
-                                    map_to_scaled_array=data_grid_stack.regular.array_2d_from_array_1d)
+        blurred_image_of_planes = util.blurred_image_of_planes_from_1d_images_and_convolver(
+            total_planes=tracer.total_planes, image_plane_image_1d_of_planes=tracer.image_plane_image_1d_of_planes,
+            image_plane_blurring_image_1d_of_planes=tracer.image_plane_blurring_image_1d_of_planes,
+            convolver=convolver_blur, map_to_scaled_array=data_grid_stack.regular.array_2d_from_array_1d)
 
         assert (blurred_image_of_planes[0] == g0_blurred_image).all()
         assert (blurred_image_of_planes[1] == g0_blurred_image).all()
@@ -236,9 +225,10 @@ class TestBlurredImageOfPlanes:
         tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g.Galaxy()],
                                                      image_plane_grid_stack=data_grid_stack)
 
-        blurred_image_of_planes = util.blurred_image_of_planes_from_tracer_and_convolver(tracer=tracer,
-                                                                                                 convolver_image=convolver_blur,
-                                                                                                 map_to_scaled_array=data_grid_stack.regular.array_2d_from_array_1d)
+        blurred_image_of_planes = util.blurred_image_of_planes_from_1d_images_and_convolver(
+            total_planes=tracer.total_planes, image_plane_image_1d_of_planes=tracer.image_plane_image_1d_of_planes,
+            image_plane_blurring_image_1d_of_planes=tracer.image_plane_blurring_image_1d_of_planes,
+            convolver=convolver_blur,  map_to_scaled_array=data_grid_stack.regular.array_2d_from_array_1d)
 
         assert (blurred_image_of_planes[0] == g0_blurred_image).all()
         assert blurred_image_of_planes[1] == None
@@ -246,9 +236,10 @@ class TestBlurredImageOfPlanes:
         tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g.Galaxy()], source_galaxies=[g0],
                                                      image_plane_grid_stack=data_grid_stack)
 
-        blurred_image_of_planes = util.blurred_image_of_planes_from_tracer_and_convolver(tracer=tracer,
-                                                                                                 convolver_image=convolver_blur,
-                                                                                                 map_to_scaled_array=data_grid_stack.regular.array_2d_from_array_1d)
+        blurred_image_of_planes = util.blurred_image_of_planes_from_1d_images_and_convolver(
+            total_planes=tracer.total_planes, image_plane_image_1d_of_planes=tracer.image_plane_image_1d_of_planes,
+            image_plane_blurring_image_1d_of_planes=tracer.image_plane_blurring_image_1d_of_planes,
+            convolver=convolver_blur, map_to_scaled_array=data_grid_stack.regular.array_2d_from_array_1d)
 
         assert blurred_image_of_planes[0] == None
         assert (blurred_image_of_planes[1] == g0_blurred_image).all()
@@ -256,15 +247,16 @@ class TestBlurredImageOfPlanes:
         tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g.Galaxy()], source_galaxies=[g.Galaxy()],
                                                      image_plane_grid_stack=data_grid_stack)
 
-        blurred_image_of_planes = util.blurred_image_of_planes_from_tracer_and_convolver(tracer=tracer,
-                                                                                                 convolver_image=convolver_blur,
-                                                                                                 map_to_scaled_array=data_grid_stack.regular.array_2d_from_array_1d)
+        blurred_image_of_planes = util.blurred_image_of_planes_from_1d_images_and_convolver(
+            total_planes=tracer.total_planes, image_plane_image_1d_of_planes=tracer.image_plane_image_1d_of_planes,
+            image_plane_blurring_image_1d_of_planes=tracer.image_plane_blurring_image_1d_of_planes,
+            convolver=convolver_blur, map_to_scaled_array=data_grid_stack.regular.array_2d_from_array_1d)
 
         assert blurred_image_of_planes[0] == None
         assert blurred_image_of_planes[1] == None
 
 
-class TestUnmaskedModelImages:
+class TestUnmaskedModelImage:
 
     def test___3x3_padded_image__no_psf_blurring__produces_padded_image(self):
         mask = msk.Mask(array=np.array([[True, True, True],
@@ -326,9 +318,10 @@ class TestUnmaskedModelImages:
                                                     [0.0, 0.0, 0.0]])).all()
 
 
-class TestUnmaskedModelImagesOfGalaxies:
+class TestUnmaskedModelImageOfPlanesAndGalaxies:
 
     def test___3x3_padded_image__no_psf_blurring(self, galaxy_light):
+
         psf = im.PSF(array=(np.array([[0.0, 0.0, 0.0],
                                       [0.0, 1.0, 0.0],
                                       [0.0, 0.0, 0.0]])), pixel_scale=1.0)
@@ -343,15 +336,15 @@ class TestUnmaskedModelImagesOfGalaxies:
 
         tracer = ray_tracing.TracerImagePlane(lens_galaxies=[galaxy_light], image_plane_grid_stack=padded_grid_stack)
 
-        manual_blurred_image_0 = \
-            tracer.image_plane.grid_stack.regular.map_to_2d_keep_padded(tracer.image_plane_image_1d)
-        manual_blurred_image_0 = psf.convolve(manual_blurred_image_0)
+        manual_blurred_image_0 = tracer.image_plane.image_plane_image_1d_of_galaxies[0]
+        manual_blurred_image_0 = padded_grid_stack.regular.map_to_2d_keep_padded(padded_array_1d=manual_blurred_image_0)
+        manual_blurred_image_0 = psf.convolve(array=manual_blurred_image_0)
 
-        unmasked_blurred_image_of_galaxies = \
-            util.unmasked_blurred_image_of_galaxies_from_padded_grid_stack_psf_and_tracer(
-                padded_grid_stack=padded_grid_stack, psf=psf, tracer=tracer)
+        unmasked_blurred_image_of_planes_and_galaxies = \
+            util.unmasked_blurred_image_of_planes_and_galaxies_from_padded_grid_stack_and_psf(planes=tracer.planes,
+                                                                                              padded_grid_stack=padded_grid_stack, psf=psf)
 
-        assert (unmasked_blurred_image_of_galaxies[0][0] == manual_blurred_image_0[1:4, 1:4]).all()
+        assert (unmasked_blurred_image_of_planes_and_galaxies[0][0] == manual_blurred_image_0[1:4, 1:4]).all()
 
     def test___x1_galaxy__3x3_padded_image__asymetric_psf_blurring(self, galaxy_light):
         psf = im.PSF(array=(np.array([[0.0, 3.0, 0.0],
@@ -369,15 +362,15 @@ class TestUnmaskedModelImagesOfGalaxies:
 
         tracer = ray_tracing.TracerImagePlane(lens_galaxies=[galaxy_light], image_plane_grid_stack=padded_grid_stack)
 
-        manual_blurred_image_0 = \
-            tracer.image_plane.grid_stack.regular.map_to_2d_keep_padded(tracer.image_plane_image_1d)
-        manual_blurred_image_0 = psf.convolve(manual_blurred_image_0)
+        manual_blurred_image_0 = tracer.image_plane.image_plane_image_1d_of_galaxies[0]
+        manual_blurred_image_0 = padded_grid_stack.regular.map_to_2d_keep_padded(padded_array_1d=manual_blurred_image_0)
+        manual_blurred_image_0 = psf.convolve(array=manual_blurred_image_0)
 
-        unmasked_blurred_image_of_galaxies = \
-            util.unmasked_blurred_image_of_galaxies_from_padded_grid_stack_psf_and_tracer(
-                padded_grid_stack=padded_grid_stack, psf=psf, tracer=tracer)
+        unmasked_blurred_image_of_planes_and_galaxies = \
+            util.unmasked_blurred_image_of_planes_and_galaxies_from_padded_grid_stack_and_psf(planes=tracer.planes,
+                                                                                              padded_grid_stack=padded_grid_stack, psf=psf)
 
-        assert (unmasked_blurred_image_of_galaxies[0][0] == manual_blurred_image_0[1:4, 1:4]).all()
+        assert (unmasked_blurred_image_of_planes_and_galaxies[0][0] == manual_blurred_image_0[1:4, 1:4]).all()
 
     def test___x2_galaxies__3x3_padded_image__asymetric_psf_blurring(self):
         psf = im.PSF(array=(np.array([[0.0, 3.0, 0.0],
@@ -397,24 +390,23 @@ class TestUnmaskedModelImagesOfGalaxies:
 
         tracer = ray_tracing.TracerImagePlane(lens_galaxies=[g0, g1], image_plane_grid_stack=padded_grid_stack)
 
-        manual_blurred_image_0 = \
-            tracer.image_plane.grid_stack.regular.map_to_2d_keep_padded(
-                tracer.image_plane.image_plane_image_1d_of_galaxies[0])
-        manual_blurred_image_0 = psf.convolve(manual_blurred_image_0)
+        manual_blurred_image_0 = tracer.image_plane.image_plane_image_1d_of_galaxies[0]
+        manual_blurred_image_0 = padded_grid_stack.regular.map_to_2d_keep_padded(padded_array_1d=manual_blurred_image_0)
+        manual_blurred_image_0 = psf.convolve(array=manual_blurred_image_0)
 
-        manual_blurred_image_1 = \
-            tracer.image_plane.grid_stack.regular.map_to_2d_keep_padded(
-                tracer.image_plane.image_plane_image_1d_of_galaxies[1])
-        manual_blurred_image_1 = psf.convolve(manual_blurred_image_1)
+        manual_blurred_image_1 = tracer.image_plane.image_plane_image_1d_of_galaxies[1]
+        manual_blurred_image_1 = padded_grid_stack.regular.map_to_2d_keep_padded(padded_array_1d=manual_blurred_image_1)
+        manual_blurred_image_1 = psf.convolve(array=manual_blurred_image_1)
 
-        unmasked_blurred_image_of_galaxies = \
-            util.unmasked_blurred_image_of_galaxies_from_padded_grid_stack_psf_and_tracer(
-                padded_grid_stack=padded_grid_stack, psf=psf, tracer=tracer)
+        unmasked_blurred_image_of_planes_and_galaxies = \
+            util.unmasked_blurred_image_of_planes_and_galaxies_from_padded_grid_stack_and_psf(planes=tracer.planes,
+                                                                                              padded_grid_stack=padded_grid_stack, psf=psf)
 
-        assert (unmasked_blurred_image_of_galaxies[0][0] == manual_blurred_image_0[1:4, 1:4]).all()
-        assert (unmasked_blurred_image_of_galaxies[0][1] == manual_blurred_image_1[1:4, 1:4]).all()
+        assert (unmasked_blurred_image_of_planes_and_galaxies[0][0] == manual_blurred_image_0[1:4, 1:4]).all()
+        assert (unmasked_blurred_image_of_planes_and_galaxies[0][1] == manual_blurred_image_1[1:4, 1:4]).all()
 
     def test___same_as_above_but_image_and_souce_plane(self):
+
         psf = im.PSF(array=(np.array([[0.0, 3.0, 0.0],
                                       [0.0, 1.0, 2.0],
                                       [0.0, 0.0, 0.0]])), pixel_scale=1.0)
@@ -435,34 +427,30 @@ class TestUnmaskedModelImagesOfGalaxies:
         tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0, g1], source_galaxies=[g2, g3],
                                                      image_plane_grid_stack=padded_grid_stack)
 
-        manual_blurred_image_0 = \
-            tracer.image_plane.grid_stack.regular.map_to_2d_keep_padded(
-                tracer.image_plane.image_plane_image_1d_of_galaxies[0])
-        manual_blurred_image_0 = psf.convolve(manual_blurred_image_0)
+        manual_blurred_image_0 = tracer.image_plane.image_plane_image_1d_of_galaxies[0]
+        manual_blurred_image_0 = padded_grid_stack.regular.map_to_2d_keep_padded(padded_array_1d=manual_blurred_image_0)
+        manual_blurred_image_0 = psf.convolve(array=manual_blurred_image_0)
 
-        manual_blurred_image_1 = \
-            tracer.image_plane.grid_stack.regular.map_to_2d_keep_padded(
-                tracer.image_plane.image_plane_image_1d_of_galaxies[1])
-        manual_blurred_image_1 = psf.convolve(manual_blurred_image_1)
+        manual_blurred_image_1 = tracer.image_plane.image_plane_image_1d_of_galaxies[1]
+        manual_blurred_image_1 = padded_grid_stack.regular.map_to_2d_keep_padded(padded_array_1d=manual_blurred_image_1)
+        manual_blurred_image_1 = psf.convolve(array=manual_blurred_image_1)
 
-        manual_blurred_image_2 = \
-            tracer.image_plane.grid_stack.regular.map_to_2d_keep_padded(
-                tracer.source_plane.image_plane_image_1d_of_galaxies[0])
-        manual_blurred_image_2 = psf.convolve(manual_blurred_image_2)
+        manual_blurred_image_2 = tracer.source_plane.image_plane_image_1d_of_galaxies[0]
+        manual_blurred_image_2 = padded_grid_stack.regular.map_to_2d_keep_padded(padded_array_1d=manual_blurred_image_2)
+        manual_blurred_image_2 = psf.convolve(array=manual_blurred_image_2)
 
-        manual_blurred_image_3 = \
-            tracer.image_plane.grid_stack.regular.map_to_2d_keep_padded(
-                tracer.source_plane.image_plane_image_1d_of_galaxies[1])
-        manual_blurred_image_3 = psf.convolve(manual_blurred_image_3)
+        manual_blurred_image_3 = tracer.source_plane.image_plane_image_1d_of_galaxies[1]
+        manual_blurred_image_3 = padded_grid_stack.regular.map_to_2d_keep_padded(padded_array_1d=manual_blurred_image_3)
+        manual_blurred_image_3 = psf.convolve(array=manual_blurred_image_3)
 
-        unmasked_blurred_image_of_galaxies = \
-            util.unmasked_blurred_image_of_galaxies_from_padded_grid_stack_psf_and_tracer(
-                padded_grid_stack=padded_grid_stack, psf=psf, tracer=tracer)
+        unmasked_blurred_image_of_planes_and_galaxies = \
+            util.unmasked_blurred_image_of_planes_and_galaxies_from_padded_grid_stack_and_psf(planes=tracer.planes,
+                                                                                              padded_grid_stack=padded_grid_stack, psf=psf)
 
-        assert (unmasked_blurred_image_of_galaxies[0][0] == manual_blurred_image_0[1:4, 1:4]).all()
-        assert (unmasked_blurred_image_of_galaxies[0][1] == manual_blurred_image_1[1:4, 1:4]).all()
-        assert (unmasked_blurred_image_of_galaxies[1][0] == manual_blurred_image_2[1:4, 1:4]).all()
-        assert (unmasked_blurred_image_of_galaxies[1][1] == manual_blurred_image_3[1:4, 1:4]).all()
+        assert (unmasked_blurred_image_of_planes_and_galaxies[0][0] == manual_blurred_image_0[1:4, 1:4]).all()
+        assert (unmasked_blurred_image_of_planes_and_galaxies[0][1] == manual_blurred_image_1[1:4, 1:4]).all()
+        assert (unmasked_blurred_image_of_planes_and_galaxies[1][0] == manual_blurred_image_2[1:4, 1:4]).all()
+        assert (unmasked_blurred_image_of_planes_and_galaxies[1][1] == manual_blurred_image_3[1:4, 1:4]).all()
 
 
 class TestContributionsFromHypers:
@@ -533,32 +521,6 @@ class TestContributionsFromHypers:
 
         assert (contribution_maps_1d[0] == np.array([1.0, 1.0, 1.0, 1.0])).all()
         assert (contribution_maps_1d[1] == np.array([0.0, (1.0 / 2.0) / (1.5 / 2.5), 1.0, 0.0])).all()
-
-    def test__same_as_above__but_return_as_2d_map(self, mask):
-        regular_grid = grids.RegularGrid.from_mask(mask=mask)
-
-        hyper_galaxies = [g.HyperGalaxy(contribution_factor=0.0, noise_factor=0.0, noise_power=1.0),
-                          g.HyperGalaxy(contribution_factor=1.0, noise_factor=0.0, noise_power=1.0)]
-
-        hyper_model_image_1d = np.array([0.5, 1.0, 1.5, 0.5])
-
-        hyper_galaxy_images_1d = [np.array([0.5, 1.0, 1.5, 0.5]), np.array([0.5, 1.0, 1.5, 0.5])]
-
-        minimum_values = [0.5, 0.6]
-
-        contribution_maps = util.contribution_maps_from_hyper_images_and_galaxies(
-            hyper_model_image_1d=hyper_model_image_1d, hyper_galaxy_images_1d=hyper_galaxy_images_1d,
-            hyper_galaxies=hyper_galaxies, hyper_minimum_values=minimum_values,
-            map_to_scaled_array=regular_grid.array_2d_from_array_1d)
-
-        assert (contribution_maps[0] == np.array([[0.0, 0.0, 0.0, 0.0],
-                                                  [0.0, 1.0, 1.0, 0.0],
-                                                  [0.0, 1.0, 1.0, 0.0],
-                                                  [0.0, 0.0, 0.0, 0.0]])).all()
-        assert (contribution_maps[1] == np.array([[0.0, 0.0, 0.0, 0.0],
-                                                  [0.0, 0.0, (1.0 / 2.0) / (1.5 / 2.5), 0.0],
-                                                  [0.0, 1.0, 0.0, 0.0],
-                                                  [0.0, 0.0, 0.0, 0.0]])).all()
 
 
 class TestScaledNoiseFromContributions:

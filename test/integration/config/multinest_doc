@@ -20,7 +20,7 @@ for 25+ non-linear parameters -> 75+ live points
 sampling_efficiency:
 
 The sampling efficiency controls the ratio of accepted to total samples a MultiNest search targets. A higher efficiency
-will converge on the high likelihood regions of parameter space faster, at the risk of missing the global maxima
+will converge on the high figure_of_merit regions of parameter space faster, at the risk of missing the global maxima
 solution.
 
 *Recommended Values*
@@ -48,7 +48,7 @@ map out parameter-space accurately, it will it fall to a lower acceptance rate. 
 MultiNest to maintain the acceptance rate, but aggresively converging on the regions of parameter space that have known
 high likelihoods.
 
-This can dramatically reduce run-times, but increases the risk of missing the global maximum likelihood solution.
+This can dramatically reduce run-times, but increases the risk of missing the global maximum figure_of_merit solution.
 
 *Recommend values*
 

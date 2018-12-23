@@ -237,16 +237,16 @@ class AbstractPhase(object):
         def fit_for_tracers(self, tracer, padded_tracer):
             raise NotImplementedError()
 
-        def fast_likelihood_for_tracer(self, tracer):
+        def figure_of_merit_for_fit(self, tracer):
             raise NotImplementedError()
 
     class Result(non_linear.Result):
 
-        def __init__(self, constant, likelihood, variable):
+        def __init__(self, constant, figure_of_merit, variable):
             """
             The result of a phase
             """
-            super(Phase.Result, self).__init__(constant, likelihood, variable)
+            super(Phase.Result, self).__init__(constant=constant, figure_of_merit=figure_of_merit, variable=variable)
 
 
 class Phase(AbstractPhase):
@@ -286,7 +286,7 @@ class PhasePositions(AbstractPhase):
         """
         analysis = self.make_analysis(positions=positions, pixel_scale=pixel_scale, previous_results=previous_results)
         result = self.optimizer.fit(analysis)
-        return self.__class__.Result(result.constant, result.likelihood, result.variable)
+        return self.__class__.Result(result.constant, result.figure_of_merit, result.variable)
 
     def make_analysis(self, positions, pixel_scale, previous_results=None):
         """
@@ -338,7 +338,7 @@ class PhasePositions(AbstractPhase):
             """
             tracer = self.tracer_for_instance(instance)
             fit = self.fit_for_tracer(tracer)
-            return fit.likelihood
+            return fit.figure_of_merit
 
         def tracer_for_instance(self, instance):
             return ray_tracing.TracerImageSourcePlanesPositions(lens_galaxies=instance.lens_galaxies,
@@ -424,7 +424,7 @@ class PhaseImaging(Phase):
         result = self.optimizer.fit(analysis)
         analysis.visualize(instance=result.constant, suffix=None, during_analysis=False)
 
-        return self.__class__.Result(result.constant, result.likelihood, result.variable, analysis)
+        return self.__class__.Result(result.constant, result.figure_of_merit, result.variable, analysis)
 
     def make_analysis(self, image, previous_results=None, mask=None):
         """
@@ -449,6 +449,7 @@ class PhaseImaging(Phase):
         image = self.modify_image(image, previous_results)
         lensing_image = li.LensingImage(image=image, mask=mask, sub_grid_size=self.sub_grid_size,
                                         image_psf_shape=self.image_psf_shape, positions=self.positions)
+
         self.pass_priors(previous_results)
 
         analysis = self.__class__.Analysis(lensing_image=lensing_image, cosmology=self.cosmology,
@@ -481,7 +482,8 @@ class PhaseImaging(Phase):
             """
             self.check_positions_trace_within_threshold(instance)
             tracer = self.tracer_for_instance(instance)
-            return self.fast_likelihood_for_tracer(tracer)
+            fit = self.fit_for_tracers(tracer=tracer, padded_tracer=None)
+            return fit.figure_of_merit
 
         def visualize(self, instance, suffix, during_analysis):
             self.plot_count += 1
@@ -508,10 +510,6 @@ class PhaseImaging(Phase):
 
             return fit
 
-        def fast_likelihood_for_tracer(self, tracer):
-            return lensing_fitters.fast_fit_from_lensing_image_and_tracer(lensing_image=self.lensing_image,
-                                                                          tracer=tracer)
-
         def fit_for_tracers(self, tracer, padded_tracer):
             return lensing_fitters.fit_lensing_image_with_tracer(lensing_image=self.lensing_image, tracer=tracer,
                                                                  padded_tracer=padded_tracer)
@@ -534,11 +532,12 @@ class PhaseImaging(Phase):
 
     class Result(Phase.Result):
 
-        def __init__(self, constant, likelihood, variable, analysis):
+        def __init__(self, constant, figure_of_merit, variable, analysis):
             """
             The result of a phase
             """
-            super(PhaseImaging.Result, self).__init__(constant, likelihood, variable)
+            super(PhaseImaging.Result, self).__init__(constant=constant, figure_of_merit=figure_of_merit,
+                                                      variable=variable)
 
             tracer = analysis.tracer_for_instance(constant)
             padded_tracer = analysis.padded_tracer_for_instance(constant)
@@ -592,12 +591,13 @@ class LensPlanePhase(PhaseImaging):
 
     class Result(PhaseImaging.Result):
 
-        def __init__(self, constant, likelihood, variable, analysis):
+        def __init__(self, constant, figure_of_merit, variable, analysis):
             """
             The result of a phase
             """
 
-            super(LensPlanePhase.Result, self).__init__(constant, likelihood, variable, analysis)
+            super(LensPlanePhase.Result, self).__init__(constant=constant, figure_of_merit=figure_of_merit,
+                                                        variable=variable, analysis=analysis)
 
 
 class LensSourcePlanePhase(PhaseImaging):
@@ -778,7 +778,7 @@ class GalaxyFitPhase(AbstractPhase):
         analysis = self.make_analysis(array=array, noise_map=noise_map, previous_results=previous_results, mask=mask)
         result = self.optimizer.fit(analysis)
 
-        return self.__class__.Result(result.constant, result.likelihood, result.variable, analysis)
+        return self.__class__.Result(result.constant, result.figure_of_merit, result.variable, analysis)
 
     def make_analysis(self, array, noise_map, previous_results=None, mask=None):
         """
@@ -856,7 +856,8 @@ class GalaxyFitPhase(AbstractPhase):
             self.galaxy_data = galaxy_data
 
         def fit(self, instance):
-            return self.fast_likelihood_for_instance(instance=instance)
+            fit = self.fit_for_instance(instance=instance)
+            return fit.figure_of_merit
 
         def visualize(self, instance, suffix, during_analysis):
             self.plot_count += 1
@@ -883,10 +884,6 @@ class GalaxyFitPhase(AbstractPhase):
             """
             return galaxy_fitting.GalaxyFit(galaxy_data=self.galaxy_data, model_galaxy=instance.galaxy[0])
 
-        def fast_likelihood_for_instance(self, instance):
-            fit = self.fit_for_instance(instance=instance)
-            return fit.likelihood
-
     # noinspection PyAbstractClass
     class AnalysisDeflections(Analysis):
 
@@ -899,7 +896,8 @@ class GalaxyFitPhase(AbstractPhase):
             self.galaxy_data_x = galaxy_data_x
 
         def fit(self, instance):
-            return self.fast_likelihood_for_instance(instance=instance)
+            fit_y, fit_x = self.fit_for_instance(instance=instance)
+            return fit_y.figure_of_merit + fit_x.figure_of_merit
 
         def visualize(self, instance, suffix, during_analysis):
 
@@ -913,10 +911,6 @@ class GalaxyFitPhase(AbstractPhase):
 
             return fit_y, fit_x
 
-        def fast_likelihood_for_instance(self, instance):
-            fit_y, fit_x = self.fit_for_instance(instance=instance)
-            return fit_y.likelihood + fit_x.likelihood
-
         def fit_for_instance(self, instance):
 
             fit_y = galaxy_fitting.GalaxyFit(galaxy_data=self.galaxy_data_y, model_galaxy=instance.galaxy)
@@ -926,15 +920,17 @@ class GalaxyFitPhase(AbstractPhase):
 
     class Result(Phase.Result):
 
-        def __init__(self, constant, likelihood, variable, analysis):
+        def __init__(self, constant, figure_of_merit, variable, analysis):
             """
             The result of a phase
             """
 
-            super(GalaxyFitPhase.Result, self).__init__(constant, likelihood, variable)
+            super(GalaxyFitPhase.Result, self).__init__(constant=constant, figure_of_merit=figure_of_merit,
+                                                        variable=variable)
 
 
 class SensitivityPhase(PhaseImaging):
+
     lens_galaxies = PhasePropertyCollection("lens_galaxies")
     source_galaxies = PhasePropertyCollection("source_galaxies")
     sensitive_galaxies = PhasePropertyCollection("sensitive_galaxies")
@@ -984,7 +980,8 @@ class SensitivityPhase(PhaseImaging):
             """
             tracer_normal = self.tracer_normal_for_instance(instance)
             tracer_sensitive = self.tracer_sensitive_for_instance(instance)
-            return self.fast_likelihood_for_tracers(tracer_normal=tracer_normal, tracer_sensitive=tracer_sensitive)
+            fit = self.fit_for_tracers(tracer_normal=tracer_normal, tracer_sensitive=tracer_sensitive)
+            return fit.figure_of_merit
 
         def visualize(self, instance, suffix, during_analysis):
             tracer_normal = self.tracer_normal_for_instance(instance)
@@ -1018,12 +1015,6 @@ class SensitivityPhase(PhaseImaging):
                 source_galaxies=instance.source_galaxies,
                 image_plane_grid_stack=[self.sensitivity_image.grids],
                 border=self.sensitivity_image.border)
-
-        def fast_likelihood_for_tracers(self, tracer_normal, tracer_sensitive):
-            return sensitivity_fitters.SensitivityProfileFitter.fast_fit(
-                sensitivity_images=[self.sensitivity_image],
-                tracer_normal=tracer_normal,
-                tracer_sensitive=tracer_sensitive)
 
         def fit_for_tracers(self, tracer_normal, tracer_sensitive):
             return sensitivity_fitters.SensitivityProfileFitter(lensing_image=[self.sensitivity_image],

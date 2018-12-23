@@ -2,8 +2,8 @@ import numpy as np
 import pytest
 from astropy import cosmology as cosmo
 
-from autolens import exc
-from autolens.data.array import grids, mask
+from autolens.data.array import grids
+from autolens.data.array import mask as msk
 from autolens.model.inversion import pixelizations, regularization
 from autolens.model.galaxy import galaxy as g
 from autolens.lensing.util import ray_tracing_util
@@ -17,11 +17,11 @@ from test.mock.mock_imaging import MockBorders
 
 @pytest.fixture(name="grid_stack")
 def make_grid_stack():
-    ma = mask.Mask(np.array([[True, True, True, True],
+    mask = msk.Mask(np.array([[True, True, True, True],
                              [True, False, False, True],
                              [True, True, True, True]]), pixel_scale=6.0)
 
-    grid_stack = grids.GridStack.grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=ma, sub_grid_size=2,
+    grid_stack = grids.GridStack.grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=mask, sub_grid_size=2,
                                                                                        psf_shape=(3, 3))
 
     # Manually overwrite a set of cooridnates to make tests of grid_stacks and defledctions straightforward
@@ -39,8 +39,8 @@ def make_grid_stack():
 
 @pytest.fixture(name="padded_grid_stack")
 def make_padded_grid_stack():
-    ma = mask.Mask(np.array([[True, False]]), pixel_scale=3.0)
-    return grids.GridStack.padded_grid_stack_from_mask_sub_grid_size_and_psf_shape(ma, 2, (3, 3))
+    mask = msk.Mask(np.array([[True, False]]), pixel_scale=3.0)
+    return grids.GridStack.padded_grid_stack_from_mask_sub_grid_size_and_psf_shape(mask, 2, (3, 3))
 
 
 @pytest.fixture(name='galaxy_non', scope='function')
@@ -823,11 +823,11 @@ class TestTracerImageSourcePlanes(object):
 
         def test__galaxies_have_no_pixelization__no_pix_grid_added(self):
 
-            ma = mask.Mask(np.array([[False, False, False],
+            mask = msk.Mask(np.array([[False, False, False],
                                      [False, False, False],
                                      [False, False, False]]), pixel_scale=1.0)
 
-            grid_stack = grids.GridStack.grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=ma, sub_grid_size=1,
+            grid_stack = grids.GridStack.grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=mask, sub_grid_size=1,
                                                                                                psf_shape=(1, 1))
 
             galaxy = g.Galaxy()
@@ -840,11 +840,11 @@ class TestTracerImageSourcePlanes(object):
 
         def test__setup_pixelization__galaxies_have_other_pixelization__returns_normal_grids(self):
 
-            ma = mask.Mask(np.array([[False, False, False],
+            mask = msk.Mask(np.array([[False, False, False],
                                      [False, False, False],
                                      [False, False, False]]), pixel_scale=1.0)
 
-            grid_stack = grids.GridStack.grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=ma, sub_grid_size=1,
+            grid_stack = grids.GridStack.grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=mask, sub_grid_size=1,
                                                                                                psf_shape=(1, 1))
 
             galaxy = g.Galaxy(pixelization=pixelizations.Rectangular(shape=(3, 3)),
@@ -858,11 +858,11 @@ class TestTracerImageSourcePlanes(object):
 
         def test__setup_pixelization__galaxy_has_pixelization__but_grid_is_padded_grid__returns_normal_grids(self):
 
-            ma = mask.Mask(np.array([[False, False, False],
+            mask = msk.Mask(np.array([[False, False, False],
                                      [False, False, False],
                                      [False, True, False]]), pixel_scale=1.0)
 
-            grid_stack = grids.GridStack.padded_grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=ma, sub_grid_size=1,
+            grid_stack = grids.GridStack.padded_grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=mask, sub_grid_size=1,
                                                                                                       psf_shape=(1, 1))
 
             galaxy = g.Galaxy(pixelization=pixelizations.AdaptiveMagnification(shape=(3, 3)),
@@ -876,11 +876,11 @@ class TestTracerImageSourcePlanes(object):
 
         def test__setup_pixelization__galaxy_has_pixelization__returns_grids_with_pix_grid(self):
 
-            ma = mask.Mask(np.array([[False, False, False],
+            mask = msk.Mask(np.array([[False, False, False],
                                      [False, False, False],
                                      [False, True, False]]), pixel_scale=1.0)
 
-            grid_stack = grids.GridStack.grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=ma, sub_grid_size=1,
+            grid_stack = grids.GridStack.grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=mask, sub_grid_size=1,
                                                                                                psf_shape=(1, 1))
 
             galaxy = g.Galaxy(pixelization=pixelizations.AdaptiveMagnification(shape=(3, 3)),
@@ -1330,11 +1330,11 @@ class TestMultiTracer(object):
 
         def test__galaxies_have_no_pixelization__no_pix_grid_added(self):
 
-            ma = mask.Mask(np.array([[False, False, False],
+            mask = msk.Mask(np.array([[False, False, False],
                                      [False, False, False],
                                      [False, False, False]]), pixel_scale=1.0)
 
-            grid_stack = grids.GridStack.grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=ma, sub_grid_size=1,
+            grid_stack = grids.GridStack.grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=mask, sub_grid_size=1,
                                                                                                psf_shape=(1, 1))
 
             tracer = ray_tracing.TracerMultiPlanes(galaxies=[g.Galaxy(redshift=2.0), g.Galaxy(redshift=1.0)],
@@ -1345,11 +1345,11 @@ class TestMultiTracer(object):
 
         def test__setup_pixelization__galaxies_have_other_pixelization__returns_normal_grids(self):
 
-            ma = mask.Mask(np.array([[False, False, False],
+            mask = msk.Mask(np.array([[False, False, False],
                                      [False, False, False],
                                      [False, False, False]]), pixel_scale=1.0)
 
-            grid_stack = grids.GridStack.grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=ma, sub_grid_size=1,
+            grid_stack = grids.GridStack.grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=mask, sub_grid_size=1,
                                                                                                psf_shape=(1, 1))
 
             galaxy = g.Galaxy(pixelization=pixelizations.Rectangular(shape=(3, 3)),
@@ -1362,11 +1362,11 @@ class TestMultiTracer(object):
             assert (tracer.planes[1].grid_stack.pix == np.array([[0.0, 0.0]])).all()
 
         def test__setup_pixelization__galaxy_has_pixelization__but_grid_is_padded_grid__returns_normal_grids(self):
-            ma = mask.Mask(np.array([[False, False, False],
+            mask = msk.Mask(np.array([[False, False, False],
                                      [False, False, False],
                                      [False, True, False]]), pixel_scale=1.0)
 
-            grid_stack = grids.GridStack.padded_grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=ma, sub_grid_size=1,
+            grid_stack = grids.GridStack.padded_grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=mask, sub_grid_size=1,
                                                                                                       psf_shape=(1, 1))
 
             galaxy = g.Galaxy(pixelization=pixelizations.AdaptiveMagnification(shape=(3, 3)),
@@ -1380,11 +1380,11 @@ class TestMultiTracer(object):
 
         def test__setup_pixelization__galaxy_has_pixelization__returns_grids_with_pix_grid(self):
 
-            ma = mask.Mask(np.array([[False, False, False],
+            mask = msk.Mask(np.array([[False, False, False],
                                      [False, False, False],
                                      [False, True, False]]), pixel_scale=1.0)
 
-            grid_stack = grids.GridStack.grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=ma, sub_grid_size=1,
+            grid_stack = grids.GridStack.grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=mask, sub_grid_size=1,
                                                                                                psf_shape=(1, 1))
 
             galaxy = g.Galaxy(pixelization=pixelizations.AdaptiveMagnification(shape=(3, 3)),

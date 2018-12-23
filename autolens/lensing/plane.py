@@ -293,7 +293,7 @@ class Plane(AbstractPlane):
             return None
         if len(galaxies_with_pixelization) == 1:
             pixelization = galaxies_with_pixelization[0].pixelization
-            return pixelization.mapper_from_grid_stack_and_border(self.grid_stack, self.border)
+            return pixelization.mapper_from_grid_stack_and_border(grid_stack=self.grid_stack, border=self.border)
         elif len(galaxies_with_pixelization) > 1:
             raise exc.PixelizationException('The number of galaxies with pixelizations in one plane is above 1')
 

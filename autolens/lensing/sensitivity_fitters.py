@@ -39,26 +39,6 @@ class SensitivityProfileFitter(AbstractSensitivityFit):
         self.fit_normal = lensing_fitters.LensingProfileFitter(lensing_image=lensing_image, tracer=tracer_normal)
         self.fit_sensitive = lensing_fitters.LensingProfileFitter(lensing_image=lensing_image, tracer=tracer_sensitive)
 
-    @classmethod
-    def fast_fit(cls, lensing_image, tracer_normal, tracer_sensitive):
-        """Perform the fit of this class as described above, but minimizing memory use and maximizing run-speed.
-
-        Parameters
-        ----------
-        lensing_image: li.LensingImage
-            An lensing image that has been masked for efficiency
-        tracer_normal: ray_tracing.AbstractTracer
-            An object describing the model
-        """
-
-        likelihood_normal = lensing_fitters.LensingProfileFitter.fast_fit(lensing_image=lensing_image,
-                                                                          tracer=tracer_normal)
-
-        likelihood_sensitive = lensing_fitters.LensingProfileFitter.fast_fit(lensing_image=lensing_image,
-                                                                             tracer=tracer_sensitive)
-
-        return likelihood_sensitive - likelihood_normal
-
     @property
-    def likelihood(self):
+    def figure_of_merit(self):
         return self.fit_sensitive.likelihood - self.fit_normal.likelihood

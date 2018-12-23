@@ -10,8 +10,11 @@ from autofit.core import non_linear
 from autolens.data.imaging import image as img
 from autolens.data.array import grids, mask as msk
 from autolens.lensing import lensing_image as li
+from autolens.lensing import lensing_fitters
 from autolens.model.galaxy import galaxy as g, galaxy_model as gm
 from autolens.model.profiles import light_profiles as lp, mass_profiles as mp
+from autolens.model.inversion import pixelizations as pix
+from autolens.model.inversion import regularization as reg
 from autolens.pipeline import phase as ph
 
 pytestmark = pytest.mark.filterwarnings(
@@ -341,6 +344,37 @@ class TestPhase(object):
         assert padded_tracer.planes[1].galaxies[0] == galaxy_1
         assert padded_tracer.planes[2].galaxies[0] == galaxy_2
         assert padded_tracer.cosmology == cosmo.WMAP7
+
+    def test__fit_figure_of_merit__matches_correct_fit_given_galaxy_profiles(self, image):
+
+        lens_galaxy = g.Galaxy(light=lp.EllipticalSersic(intensity=0.1))
+        source_galaxy = g.Galaxy(pixelization=pix.Rectangular(shape=(4,4)),
+                                 regularization=reg.Constant(coefficients=(1.0,)))
+
+        phase = ph.LensPlanePhase(lens_galaxies=[lens_galaxy], cosmology=cosmo.FLRW, phase_name='test_phase')
+        analysis = phase.make_analysis(image)
+        instance = phase.constant
+        fit_figure_of_merit = analysis.fit(instance=instance)
+
+        mask = phase.mask_function(image=image)
+        lensing_image = li.LensingImage(image=image, mask=mask)
+        tracer = analysis.tracer_for_instance(instance=instance)
+        fit = lensing_fitters.LensingProfileFitter(lensing_image=lensing_image, tracer=tracer)
+
+        assert fit.likelihood == fit_figure_of_merit
+
+        phase = ph.LensSourcePlanePhase(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
+                                        cosmology=cosmo.FLRW, phase_name='test_phase')
+        analysis = phase.make_analysis(image)
+        instance = phase.constant
+        fit_figure_of_merit = analysis.fit(instance=instance)
+
+        mask = phase.mask_function(image=image)
+        lensing_image = li.LensingImage(image=image, mask=mask)
+        tracer = analysis.tracer_for_instance(instance=instance)
+        fit = lensing_fitters.LensingProfileInversionFitter(lensing_image=lensing_image, tracer=tracer)
+
+        assert fit.evidence == fit_figure_of_merit
 
     # TODO : Need to test using results
 

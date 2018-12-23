@@ -1,7 +1,7 @@
 import numpy as np
 
+from autofit.core import fitter
 from autolens import exc
-from autolens.data.fitting import fitter
 from autolens.model.inversion import inversions
 from autolens.lensing.util import lensing_fitters_util as util
 from autolens.lensing import lensing_image as li
@@ -50,49 +50,6 @@ def fit_lensing_image_with_tracer(lensing_image, tracer, padded_tracer=None):
     else:
 
         raise exc.FittingException('The fit routine did not call a Fit class - check the '
-                                   'properties of the tracer')
-
-
-def fast_fit_from_lensing_image_and_tracer(lensing_image, tracer):
-    """Fit a lensing image with a model tracer, automatically determining the type of fit based on the properties of \
-     the galaxies in the tracer.
-
-    The likelihood is computed in the fastest, least memory-intensive, way possible, for efficient non-linear sampling.
-
-    Parameters
-    -----------
-    lensing_image : li.LensingImage or li.LensingHyperImage
-        The lensing-images that is fitted.
-    tracer : ray_tracing.Tracer
-        The tracer, which describes the ray-tracing and strong lensing configuration.
-    padded_tracer : ray_tracing.AbstractTracerNonStack or None
-        A tracer with an identical strong lensing configuration to the tracer above, but using the lensing image's \
-        padded grid_stack such that unmasked model-images can be computed.
-    """
-    if tracer.has_light_profile and not tracer.has_pixelization:
-
-        if not tracer.has_hyper_galaxy:
-            return LensingProfileFitter.fast_fit(lensing_image=lensing_image, tracer=tracer)
-        elif tracer.has_hyper_galaxy:
-            return LensingProfileHyperFitter.fast_fit(lensing_hyper_image=lensing_image, tracer=tracer)
-
-    elif not tracer.has_light_profile and tracer.has_pixelization:
-
-        if not tracer.has_hyper_galaxy:
-            return LensingInversionFitter.fast_fit(lensing_image=lensing_image, tracer=tracer)
-        elif tracer.has_hyper_galaxy:
-            return LensingInversionHyperFitter.fast_fit(lensing_hyper_image=lensing_image, tracer=tracer)
-
-    elif tracer.has_light_profile and tracer.has_pixelization:
-
-        if not tracer.has_hyper_galaxy:
-            return LensingProfileInversionFitter.fast_fit(lensing_image=lensing_image, tracer=tracer)
-        elif tracer.has_hyper_galaxy:
-            return LensingProfileInversionHyperFitter.fast_fit(lensing_hyper_image=lensing_image, tracer=tracer)
-
-    else:
-
-        raise exc.FittingException('The fast likelihood routine did not call a likelihood functions - check the '
                                    'properties of the tracer')
 
 
@@ -145,14 +102,19 @@ class AbstractLensingProfileFitter(AbstractLensingFitter):
 
         self.psf = lensing_image.psf
         self.convolver_image = lensing_image.convolver_image
-        self.blurred_profile_image = util.blurred_image_from_1d_unblurred_and_blurring_images(
+
+        blurred_profile_image_1d = util.blurred_image_1d_from_1d_unblurred_and_blurring_images(
             unblurred_image_1d=tracer.image_plane_image_1d, blurring_image_1d=tracer.image_plane_blurring_image_1d,
-            convolver=self.convolver_image, map_to_scaled_array=self.map_to_scaled_array)
+            convolver=self.convolver_image)
+
+        self.blurred_profile_image = self.map_to_scaled_array(array_1d=blurred_profile_image_1d)
 
     @property
     def model_image_of_planes(self):
-        return util.blurred_image_of_planes_from_tracer_and_convolver(tracer=self.tracer,
-                                                                              convolver_image=self.convolver_image, map_to_scaled_array=self.map_to_scaled_array)
+        return util.blurred_image_of_planes_from_1d_images_and_convolver(total_planes=self.tracer.total_planes,
+                image_plane_image_1d_of_planes=self.tracer.image_plane_image_1d_of_planes,
+                image_plane_blurring_image_1d_of_planes=self.tracer.image_plane_blurring_image_1d_of_planes,
+                convolver=self.convolver_image, map_to_scaled_array=self.map_to_scaled_array)
 
     @property
     def unmasked_model_image(self):
@@ -164,12 +126,12 @@ class AbstractLensingProfileFitter(AbstractLensingFitter):
                 unmasked_image_1d=self.padded_tracer.image_plane_image_1d)
 
     @property
-    def unmasked_model_image_of_galaxies(self):
+    def unmasked_model_image_of_planes_and_galaxies(self):
         if self.padded_tracer is None:
             return None
         elif self.padded_tracer is not None:
-            return util.unmasked_blurred_image_of_galaxies_from_padded_grid_stack_psf_and_tracer(
-                padded_grid_stack=self.padded_tracer.image_plane.grid_stack, psf=self.psf, tracer=self.padded_tracer)
+            return util.unmasked_blurred_image_of_planes_and_galaxies_from_padded_grid_stack_and_psf(
+                planes=self.padded_tracer.planes, padded_grid_stack=self.padded_tracer.image_plane.grid_stack, psf=self.psf)
 
 
 class AbstractLensingInversionFitter(AbstractLensingFitter):
@@ -286,6 +248,10 @@ class LensingDataFitter(fitter.DataFitter):
     def model_image(self):
         return self.model_data
 
+    @property
+    def figure_of_merit(self):
+        return self.likelihood
+
 
 class LensingDataInversionFitter(LensingDataFitter):
 
@@ -305,7 +271,8 @@ class LensingDataInversionFitter(LensingDataFitter):
         inversion : inversions.Inversion
             The inversion used to ofit the image.
         """
-        super(LensingDataFitter, self).__init__(data=image, noise_map=noise_map, mask=mask, model_data=model_image)
+        super(LensingDataInversionFitter, self).__init__(image=image, noise_map=noise_map,
+                                                         mask=mask, model_image=model_image)
 
         self.likelihood_with_regularization = \
             util.likelihood_with_regularization_from_chi_squared_regularization_term_and_noise_normalization(
@@ -317,6 +284,10 @@ class LensingDataInversionFitter(LensingDataFitter):
                                                                    log_curvature_regularization_term=inversion.log_det_curvature_reg_matrix_term,
                                                                    log_regularization_term=inversion.log_det_regularization_matrix_term,
                                                                    noise_normalization=self.noise_normalization)
+
+    @property
+    def figure_of_merit(self):
+        return self.evidence
 
 
 class LensingProfileFitter(LensingDataFitter, AbstractLensingProfileFitter):
@@ -347,18 +318,6 @@ class LensingProfileFitter(LensingDataFitter, AbstractLensingProfileFitter):
         super(LensingProfileFitter, self).__init__(image=lensing_image.image, noise_map=lensing_image.noise_map,
                                                    mask=lensing_image.mask, model_image=self.blurred_profile_image)
 
-    @classmethod
-    def fast_fit(cls, lensing_image, tracer):
-        """Perform the fit of this class as described above, but minimizing memory use and maximizing run-speed."""
-
-        blurred_profile_image_1d = util.blurred_image_1d_from_1d_unblurred_and_blurring_images(
-            unblurred_image_1d=tracer.image_plane_image_1d, blurring_image_1d=tracer.image_plane_blurring_image_1d,
-            convolver=lensing_image.convolver_image)
-
-        fit = LensingDataFitter(image=lensing_image.image_1d, noise_map=lensing_image.noise_map_1d,
-                                mask=lensing_image.mask_1d, model_image=blurred_profile_image_1d)
-        return fit.likelihood
-
 
 class LensingInversionFitter(LensingDataInversionFitter, AbstractLensingInversionFitter):
 
@@ -384,21 +343,6 @@ class LensingInversionFitter(LensingDataInversionFitter, AbstractLensingInversio
                                                      mask=lensing_image.mask,
                                                      model_image=self.inversion.reconstructed_data,
                                                      inversion=self.inversion)
-
-    @classmethod
-    def fast_fit(cls, lensing_image, tracer):
-        """Perform the fit of this class as described above, but minimizing memory use and maximizing run-speed."""
-
-        inversion = inversions.inversion_from_lensing_image_mapper_and_regularization(
-            image_1d=lensing_image.image_1d, noise_map_1d=lensing_image.noise_map_1d, 
-            convolver=lensing_image.convolver_mapping_matrix, mapper=tracer.mappers_of_planes[-1], 
-            regularization=tracer.regularizations_of_planes[-1])
-
-        fit = LensingDataInversionFitter(image=lensing_image.image_1d, noise_map=lensing_image.noise_map_1d,
-                                         mask=lensing_image.mask_1d, model_image=inversion.reconstructed_data_vector,
-                                         inversion=inversion)
-
-        return fit.evidence
 
 
 class LensingProfileInversionFitter(LensingDataInversionFitter, AbstractLensingProfileInversionFitter):
@@ -440,28 +384,6 @@ class LensingProfileInversionFitter(LensingDataInversionFitter, AbstractLensingP
         super(LensingProfileInversionFitter, self).__init__(image=lensing_image.image, noise_map=lensing_image.noise_map,
                                                             mask=lensing_image.mask, model_image=model_image,
                                                             inversion=self.inversion)
-
-    @classmethod
-    def fast_fit(cls, lensing_image, tracer):
-        """Perform the fit of this class as described above, but minimizing memory use and maximizing run-speed."""
-
-        blurred_profile_image_1d = util.blurred_image_1d_from_1d_unblurred_and_blurring_images(
-            unblurred_image_1d=tracer.image_plane_image_1d, blurring_image_1d=tracer.image_plane_blurring_image_1d,
-            convolver=lensing_image.convolver_image)
-
-        profile_subtracted_image_1d = lensing_image.image_1d - blurred_profile_image_1d
-
-        inversion = inversions.inversion_from_lensing_image_mapper_and_regularization(
-            image_1d=profile_subtracted_image_1d, noise_map_1d=lensing_image.noise_map_1d,
-            convolver=lensing_image.convolver_mapping_matrix, mapper=tracer.mappers_of_planes[-1],
-            regularization=tracer.regularizations_of_planes[-1])
-
-        fit = LensingDataInversionFitter(image=lensing_image.image_1d, noise_map=lensing_image.noise_map_1d,
-                                         mask=lensing_image.mask_1d,
-                                         model_image=blurred_profile_image_1d + inversion.reconstructed_data_vector,
-                                         inversion=inversion)
-
-        return fit.evidence
 
 
 class AbstractLensingHyperFitter(object):
@@ -546,29 +468,6 @@ class LensingProfileHyperFitter(LensingDataFitter, AbstractLensingProfileFitter,
         super(LensingProfileHyperFitter, self).__init__(image=lensing_hyper_image.image, noise_map=self.hyper_noise_map,
                                                   mask=lensing_hyper_image.mask, model_image=self.blurred_profile_image)
 
-    @classmethod
-    def fast_fit(cls, lensing_hyper_image, tracer):
-        """Perform the fit of this class as described above, but minimizing memory use and maximizing run-speed."""
-
-        contributions_1d = \
-            util.contribution_maps_1d_from_hyper_images_and_galaxies(
-                hyper_model_image_1d=lensing_hyper_image.hyper_model_image_1d,
-                hyper_galaxy_images_1d=lensing_hyper_image.hyper_galaxy_images_1d,
-                hyper_galaxies=tracer.hyper_galaxies, hyper_minimum_values=lensing_hyper_image.hyper_minimum_values)
-
-        hyper_noise_map_1d = util.scaled_noise_map_from_hyper_galaxies_and_contribution_maps(
-                contribution_maps=contributions_1d, hyper_galaxies=tracer.hyper_galaxies,
-                noise_map=lensing_hyper_image.noise_map_1d)
-
-        model_image_1d = util.blurred_image_1d_from_1d_unblurred_and_blurring_images(
-            unblurred_image_1d=tracer.image_plane_image_1d, blurring_image_1d=tracer.image_plane_blurring_image_1d,
-            convolver=lensing_hyper_image.convolver_image)
-
-        fit = fitter.DataFitter(data=lensing_hyper_image.image_1d, noise_map=hyper_noise_map_1d,
-                                mask=lensing_hyper_image.mask_1d, model_data=model_image_1d)
-
-        return fit.likelihood
-
 
 class LensingInversionHyperFitter(LensingDataInversionFitter, AbstractLensingInversionFitter,
                                   AbstractLensingHyperFitter):
@@ -600,30 +499,6 @@ class LensingInversionHyperFitter(LensingDataInversionFitter, AbstractLensingInv
                                                           noise_map=self.hyper_noise_map, mask=lensing_hyper_image.mask,
                                                           model_image=self.inversion.reconstructed_data,
                                                           inversion=self.inversion)
-
-    @classmethod
-    def fast_fit(cls, lensing_hyper_image, tracer):
-        """Perform the fit of this class as described above, but minimizing memory use and maximizing run-speed."""
-
-        contributions_1d = \
-            util.contribution_maps_1d_from_hyper_images_and_galaxies(
-                hyper_model_image_1d=lensing_hyper_image.hyper_model_image_1d,
-                hyper_galaxy_images_1d=lensing_hyper_image.hyper_galaxy_images_1d,
-                hyper_galaxies=tracer.hyper_galaxies, hyper_minimum_values=lensing_hyper_image.hyper_minimum_values)
-
-        hyper_noise_map_1d = util.scaled_noise_map_from_hyper_galaxies_and_contribution_maps(
-                             contribution_maps=contributions_1d, hyper_galaxies=tracer.hyper_galaxies,
-                             noise_map=lensing_hyper_image.noise_map_1d)
-
-        inversion = inversions.inversion_from_lensing_image_mapper_and_regularization(
-                    image_1d=lensing_hyper_image.image_1d, noise_map_1d=hyper_noise_map_1d,
-                    convolver=lensing_hyper_image.convolver_mapping_matrix, mapper=tracer.mappers_of_planes[-1],
-                    regularization=tracer.regularizations_of_planes[-1])
-
-        fit = LensingDataInversionFitter(image=lensing_hyper_image.image_1d, noise_map=hyper_noise_map_1d,
-              mask=lensing_hyper_image.mask_1d, model_image=inversion.reconstructed_data_vector, inversion=inversion)
-
-        return fit.evidence
 
 
 class LensingProfileInversionHyperFitter(LensingDataInversionFitter, AbstractLensingProfileInversionFitter,
@@ -673,37 +548,6 @@ class LensingProfileInversionHyperFitter(LensingDataInversionFitter, AbstractLen
                                                                  mask=lensing_hyper_image.mask, model_image=model_image,
                                                                  inversion=self.inversion)
 
-    @classmethod
-    def fast_fit(cls, lensing_hyper_image, tracer):
-        """Perform the fit of this class as described above, but minimizing memory use and maximizing run-speed."""
-
-        contributions_1d = \
-            util.contribution_maps_1d_from_hyper_images_and_galaxies(
-                hyper_model_image_1d=lensing_hyper_image.hyper_model_image_1d,
-                hyper_galaxy_images_1d=lensing_hyper_image.hyper_galaxy_images_1d,
-                hyper_galaxies=tracer.hyper_galaxies, hyper_minimum_values=lensing_hyper_image.hyper_minimum_values)
-
-        hyper_noise_map_1d = util.scaled_noise_map_from_hyper_galaxies_and_contribution_maps(
-                             contribution_maps=contributions_1d, hyper_galaxies=tracer.hyper_galaxies,
-                             noise_map=lensing_hyper_image.noise_map_1d)
-
-        blurred_profile_image_1d = util.blurred_image_1d_from_1d_unblurred_and_blurring_images(
-            unblurred_image_1d=tracer.image_plane_image_1d, blurring_image_1d=tracer.image_plane_blurring_image_1d,
-            convolver=lensing_hyper_image.convolver_image)
-
-        profile_subtracted_image_1d = lensing_hyper_image.image_1d - blurred_profile_image_1d
-
-        inversion = inversions.inversion_from_lensing_image_mapper_and_regularization(
-            image_1d=profile_subtracted_image_1d, noise_map_1d=hyper_noise_map_1d,
-            convolver=lensing_hyper_image.convolver_mapping_matrix, mapper=tracer.mappers_of_planes[-1],
-            regularization=tracer.regularizations_of_planes[-1])
-
-        fit = LensingDataInversionFitter(image=lensing_hyper_image.image_1d, noise_map=hyper_noise_map_1d,
-                                         mask=lensing_hyper_image.mask_1d,
-                                         model_image=blurred_profile_image_1d + inversion.reconstructed_data_vector,
-                                         inversion=inversion)
-
-        return fit.evidence
 
 class LensingPositionFitter(object):
 
@@ -726,7 +570,7 @@ class LensingPositionFitter(object):
         return np.square(np.divide(self.maximum_separations, self.noise_map))
 
     @property
-    def likelihood(self):
+    def figure_of_merit(self):
         return -0.5 * sum(self.chi_squared_map)
 
     def maximum_separation_within_threshold(self, threshold):

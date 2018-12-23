@@ -4,7 +4,8 @@ from astropy import cosmology as cosmo
 
 from autolens import exc
 from autolens.data.array.util import mapping_util
-from autolens.data.array import grids, mask
+from autolens.data.array import grids
+from autolens.data.array import mask as msk
 from autolens.model.inversion import pixelizations, regularization
 from autolens.model.galaxy import galaxy as g
 from autolens.lensing.util import plane_util
@@ -15,11 +16,11 @@ from test.mock.mock_imaging import MockBorders
 
 @pytest.fixture(name="grid_stack")
 def make_grid_stack():
-    ma = mask.Mask(np.array([[True, True, True, True],
+    mask = msk.Mask(np.array([[True, True, True, True],
                              [True, False, False, True],
                              [True, True, True, True]]), pixel_scale=6.0)
 
-    grid_stack = grids.GridStack.grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=ma, sub_grid_size=2, psf_shape=(3, 3))
+    grid_stack = grids.GridStack.grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=mask, sub_grid_size=2, psf_shape=(3, 3))
 
     # Manually overwrite a set of cooridnates to make tests of grid_stacks and defledctions straightforward
 
@@ -48,8 +49,8 @@ def make_grid_stack():
 
 @pytest.fixture(name="padded_grid_stack")
 def make_padded_grid_stack():
-    ma = mask.Mask(np.array([[True, False]]), pixel_scale=3.0)
-    return grids.GridStack.padded_grid_stack_from_mask_sub_grid_size_and_psf_shape(ma, 2, (3, 3))
+    mask = msk.Mask(np.array([[True, False]]), pixel_scale=3.0)
+    return grids.GridStack.padded_grid_stack_from_mask_sub_grid_size_and_psf_shape(mask, 2, (3, 3))
 
 @pytest.fixture(name='galaxy_non', scope='function')
 def make_galaxy_non():
@@ -1043,9 +1044,9 @@ class TestPlane(object):
             # -1.6, -0.8, 0.0, 0.8, 1.6. The origin -1.6, -1.6 of the model_galaxy means its brighest pixel should be
             # index 0 of the 1D grid and (0,0) of the 2d plane datas_.
 
-            msk = mask.Mask(array=np.full((5, 5), False), pixel_scale=1.0)
+            mask = msk.Mask(array=np.full((5, 5), False), pixel_scale=1.0)
 
-            grid_stack.regular = grids.RegularGrid(np.array([[-2.0, -2.0], [2.0, 2.0]]), mask=msk)
+            grid_stack.regular = grids.RegularGrid(np.array([[-2.0, -2.0], [2.0, 2.0]]), mask=mask)
 
             g0 = g.Galaxy(light_profile=lp.EllipticalSersic(centre=(1.6, -1.6), intensity=1.0))
             plane = pl.Plane(galaxies=[g0], grid_stack=grid_stack)

@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from autolens.data.fitting import fitting_util
+from autofit.core import fitting_util
 from autolens.data.array import mask as msk, scaled_array as sca
 from autolens.model.galaxy import galaxy_data
 from autolens.model.galaxy import galaxy as g, galaxy_fitting
@@ -22,7 +22,6 @@ class TestGalaxyFit:
             mask = msk.Mask(array=np.array([[True, True, True],
                                            [True, False, True],
                                            [True, True, True]]), pixel_scale=1.0)
-
             g0 = MockGalaxy(value=1.0)
 
             g_data = galaxy_data.GalaxyData(array=array, noise_map=noise_map, mask=mask, sub_grid_size=1,
@@ -138,18 +137,19 @@ class TestGalaxyFit:
 
             assert residual_map == pytest.approx(fit.residual_map, 1e-4)
 
-            chi_squared_map = fitting_util.chi_squared_map_from_residual_map_mask_and_noise_map(residual_map=residual_map,
+            chi_squared_map = fitting_util.chi_squared_map_from_residual_map_noise_map_and_mask(residual_map=residual_map,
                                                                     mask=g_data.mask, noise_map=g_data.noise_map)
 
             assert chi_squared_map == pytest.approx(fit.chi_squared_map, 1e-4)
 
-            chi_squared_map = fitting_util.chi_squared_map_from_residual_map_mask_and_noise_map(residual_map=residual_map,
+            chi_squared_map = fitting_util.chi_squared_map_from_residual_map_noise_map_and_mask(residual_map=residual_map,
                                                                     mask=g_data.mask, noise_map=g_data.noise_map)
 
             assert chi_squared_map == pytest.approx(fit.chi_squared_map, 1e-4)
 
-            chi_squared = fitting_util.chi_squared_from_chi_squared_map(chi_squared_map=chi_squared_map)
-            noise_normalization = fitting_util.noise_normalization_from_mask_and_noise_map(mask=g_data.mask,
+            chi_squared = fitting_util.chi_squared_from_chi_squared_map_and_mask(chi_squared_map=chi_squared_map, 
+                                                                                 mask=mask)
+            noise_normalization = fitting_util.noise_normalization_from_noise_map_and_mask(mask=g_data.mask,
                                                                                   noise_map=g_data.noise_map)
             likelihood = fitting_util.likelihood_from_chi_squared_and_noise_normalization(chi_squared=chi_squared,
                                                                                           noise_normalization=noise_normalization)
@@ -185,18 +185,19 @@ class TestGalaxyFit:
 
             assert residual_map == pytest.approx(fit.residual_map, 1e-4)
 
-            chi_squared_map = fitting_util.chi_squared_map_from_residual_map_mask_and_noise_map(residual_map=residual_map,
+            chi_squared_map = fitting_util.chi_squared_map_from_residual_map_noise_map_and_mask(residual_map=residual_map,
                                                                     mask=g_data.mask, noise_map=g_data.noise_map)
 
             assert chi_squared_map == pytest.approx(fit.chi_squared_map, 1e-4)
 
-            chi_squared_map = fitting_util.chi_squared_map_from_residual_map_mask_and_noise_map(residual_map=residual_map,
+            chi_squared_map = fitting_util.chi_squared_map_from_residual_map_noise_map_and_mask(residual_map=residual_map,
                                                                     mask=g_data.mask, noise_map=g_data.noise_map)
 
             assert chi_squared_map == pytest.approx(fit.chi_squared_map, 1e-4)
 
-            chi_squared = fitting_util.chi_squared_from_chi_squared_map(chi_squared_map=chi_squared_map)
-            noise_normalization = fitting_util.noise_normalization_from_mask_and_noise_map(mask=g_data.mask,
+            chi_squared = fitting_util.chi_squared_from_chi_squared_map_and_mask(chi_squared_map=chi_squared_map,
+                                                                                 mask=mask)
+            noise_normalization = fitting_util.noise_normalization_from_noise_map_and_mask(mask=g_data.mask,
                                                                                   noise_map=g_data.noise_map)
             likelihood = fitting_util.likelihood_from_chi_squared_and_noise_normalization(chi_squared=chi_squared,
                                                                                           noise_normalization=noise_normalization)
@@ -232,116 +233,118 @@ class TestGalaxyFit:
 
             assert residual_map == pytest.approx(fit.residual_map, 1e-4)
 
-            chi_squared_map = fitting_util.chi_squared_map_from_residual_map_mask_and_noise_map(residual_map=residual_map,
+            chi_squared_map = fitting_util.chi_squared_map_from_residual_map_noise_map_and_mask(residual_map=residual_map,
                                                                     mask=g_data.mask, noise_map=g_data.noise_map)
 
             assert chi_squared_map == pytest.approx(fit.chi_squared_map, 1e-4)
 
-            chi_squared_map = fitting_util.chi_squared_map_from_residual_map_mask_and_noise_map(residual_map=residual_map,
+            chi_squared_map = fitting_util.chi_squared_map_from_residual_map_noise_map_and_mask(residual_map=residual_map,
                                                                     mask=g_data.mask, noise_map=g_data.noise_map)
 
             assert chi_squared_map == pytest.approx(fit.chi_squared_map, 1e-4)
 
-            chi_squared = fitting_util.chi_squared_from_chi_squared_map(chi_squared_map=chi_squared_map)
-            noise_normalization = fitting_util.noise_normalization_from_mask_and_noise_map(mask=g_data.mask,
+            chi_squared = fitting_util.chi_squared_from_chi_squared_map_and_mask(chi_squared_map=chi_squared_map,
+                                                                                 mask=mask)
+            noise_normalization = fitting_util.noise_normalization_from_noise_map_and_mask(mask=g_data.mask,
                                                                                   noise_map=g_data.noise_map)
             likelihood = fitting_util.likelihood_from_chi_squared_and_noise_normalization(chi_squared=chi_squared,
                                                                                           noise_normalization=noise_normalization)
 
             assert likelihood == pytest.approx(fit.likelihood, 1e-4)
 
-    def test__deflections_y(self):
+        def test__deflections_y(self):
 
-        im = sca.ScaledSquarePixelArray(array=np.array([[0.0, 0.0, 0.0, 0.0, 0.0],
-                                                        [0.0, 1.0, 2.0, 3.0, 0.0],
-                                                        [0.0, 4.0, 5.0, 6.0, 0.0],
-                                                        [0.0, 7.0, 8.0, 9.0, 0.0],
-                                                        [0.0, 0.0, 0.0, 0.0, 0.0]]), pixel_scale=1.0)
-        mask = msk.Mask(array=np.array([[True, True, True, True, True],
-                                        [True, False, False, False, True],
-                                        [True, False, False, False, True],
-                                        [True, False, False, False, True],
-                                        [True, True, True, True, True]]), pixel_scale=1.0)
-        noise_map = 2.0 * np.ones((5, 5))
+            im = sca.ScaledSquarePixelArray(array=np.array([[0.0, 0.0, 0.0, 0.0, 0.0],
+                                                            [0.0, 1.0, 2.0, 3.0, 0.0],
+                                                            [0.0, 4.0, 5.0, 6.0, 0.0],
+                                                            [0.0, 7.0, 8.0, 9.0, 0.0],
+                                                            [0.0, 0.0, 0.0, 0.0, 0.0]]), pixel_scale=1.0)
+            mask = msk.Mask(array=np.array([[True, True, True, True, True],
+                                            [True, False, False, False, True],
+                                            [True, False, False, False, True],
+                                            [True, False, False, False, True],
+                                            [True, True, True, True, True]]), pixel_scale=1.0)
+            noise_map = 2.0 * np.ones((5, 5))
 
-        galaxy = g.Galaxy(mass=mp.SphericalIsothermal(centre=(1.0, 2.0), einstein_radius=1.0))
-        g_data = galaxy_data.GalaxyData(array=im, mask=mask, noise_map=noise_map, sub_grid_size=2,
-                                        use_deflections_y=True)
-        fit = galaxy_fitting.GalaxyFit(galaxy_data=g_data, model_galaxy=galaxy)
+            galaxy = g.Galaxy(mass=mp.SphericalIsothermal(centre=(1.0, 2.0), einstein_radius=1.0))
+            g_data = galaxy_data.GalaxyData(array=im, mask=mask, noise_map=noise_map, sub_grid_size=2,
+                                            use_deflections_y=True)
+            fit = galaxy_fitting.GalaxyFit(galaxy_data=g_data, model_galaxy=galaxy)
 
-        assert fit.model_galaxy == galaxy
+            assert fit.model_galaxy == galaxy
 
-        model_data_1d = galaxy.deflections_from_grid(grid=g_data.grid_stack.sub)
-        model_data_1d = g_data.grid_stack.sub.sub_data_to_regular_data(sub_array=model_data_1d[:,0])
-        model_data = g_data.map_to_scaled_array(array_1d=model_data_1d)
-        residual_map = fitting_util.residual_map_from_data_mask_and_model_data(data=g_data.array, mask=g_data.mask,
-                                                                               model_data=model_data)
+            model_data_1d = galaxy.deflections_from_grid(grid=g_data.grid_stack.sub)
+            model_data_1d = g_data.grid_stack.sub.sub_data_to_regular_data(sub_array=model_data_1d[:,0])
+            model_data = g_data.map_to_scaled_array(array_1d=model_data_1d)
+            residual_map = fitting_util.residual_map_from_data_mask_and_model_data(data=g_data.array, mask=g_data.mask,
+                                                                                   model_data=model_data)
 
-        assert residual_map == pytest.approx(fit.residual_map, 1e-4)
+            assert residual_map == pytest.approx(fit.residual_map, 1e-4)
 
-        chi_squared_map = fitting_util.chi_squared_map_from_residual_map_mask_and_noise_map(residual_map=residual_map,
-                                                                                            mask=g_data.mask,
-                                                                                            noise_map=g_data.noise_map)
+            chi_squared_map = fitting_util.chi_squared_map_from_residual_map_noise_map_and_mask(residual_map=residual_map,
+                                                                                                mask=g_data.mask,
+                                                                                                noise_map=g_data.noise_map)
 
-        assert chi_squared_map == pytest.approx(fit.chi_squared_map, 1e-4)
+            assert chi_squared_map == pytest.approx(fit.chi_squared_map, 1e-4)
 
-        chi_squared_map = fitting_util.chi_squared_map_from_residual_map_mask_and_noise_map(residual_map=residual_map,
-                                                                                            mask=g_data.mask,
-                                                                                            noise_map=g_data.noise_map)
+            chi_squared_map = fitting_util.chi_squared_map_from_residual_map_noise_map_and_mask(residual_map=residual_map,
+                                                                                                mask=g_data.mask,
+                                                                                                noise_map=g_data.noise_map)
 
-        assert chi_squared_map == pytest.approx(fit.chi_squared_map, 1e-4)
+            assert chi_squared_map == pytest.approx(fit.chi_squared_map, 1e-4)
 
-        chi_squared = fitting_util.chi_squared_from_chi_squared_map(chi_squared_map=chi_squared_map)
-        noise_normalization = fitting_util.noise_normalization_from_mask_and_noise_map(mask=g_data.mask,
-                                                                                       noise_map=g_data.noise_map)
-        likelihood = fitting_util.likelihood_from_chi_squared_and_noise_normalization(chi_squared=chi_squared,
-                                                                                      noise_normalization=noise_normalization)
+            chi_squared = fitting_util.chi_squared_from_chi_squared_map_and_mask(chi_squared_map=chi_squared_map, mask=mask)
+            noise_normalization = fitting_util.noise_normalization_from_noise_map_and_mask(mask=g_data.mask,
+                                                                                           noise_map=g_data.noise_map)
+            likelihood = fitting_util.likelihood_from_chi_squared_and_noise_normalization(chi_squared=chi_squared,
+                                                                                          noise_normalization=noise_normalization)
 
-        assert likelihood == pytest.approx(fit.likelihood, 1e-4)
+            assert likelihood == pytest.approx(fit.likelihood, 1e-4)
 
-    def test__deflections_x(self):
+        def test__deflections_x(self):
 
-        im = sca.ScaledSquarePixelArray(array=np.array([[0.0, 0.0, 0.0, 0.0, 0.0],
-                                                        [0.0, 1.0, 2.0, 3.0, 0.0],
-                                                        [0.0, 4.0, 5.0, 6.0, 0.0],
-                                                        [0.0, 7.0, 8.0, 9.0, 0.0],
-                                                        [0.0, 0.0, 0.0, 0.0, 0.0]]), pixel_scale=1.0)
-        mask = msk.Mask(array=np.array([[True, True, True, True, True],
-                                        [True, False, False, False, True],
-                                        [True, False, False, False, True],
-                                        [True, False, False, False, True],
-                                        [True, True, True, True, True]]), pixel_scale=1.0)
-        noise_map = 2.0 * np.ones((5, 5))
+            im = sca.ScaledSquarePixelArray(array=np.array([[0.0, 0.0, 0.0, 0.0, 0.0],
+                                                            [0.0, 1.0, 2.0, 3.0, 0.0],
+                                                            [0.0, 4.0, 5.0, 6.0, 0.0],
+                                                            [0.0, 7.0, 8.0, 9.0, 0.0],
+                                                            [0.0, 0.0, 0.0, 0.0, 0.0]]), pixel_scale=1.0)
+            mask = msk.Mask(array=np.array([[True, True, True, True, True],
+                                            [True, False, False, False, True],
+                                            [True, False, False, False, True],
+                                            [True, False, False, False, True],
+                                            [True, True, True, True, True]]), pixel_scale=1.0)
+            noise_map = 2.0 * np.ones((5, 5))
 
-        galaxy = g.Galaxy(mass=mp.SphericalIsothermal(centre=(1.0, 2.0), einstein_radius=1.0))
-        g_data = galaxy_data.GalaxyData(array=im, mask=mask, noise_map=noise_map, sub_grid_size=2,
-                                        use_deflections_x=True)
-        fit = galaxy_fitting.GalaxyFit(galaxy_data=g_data, model_galaxy=galaxy)
+            galaxy = g.Galaxy(mass=mp.SphericalIsothermal(centre=(1.0, 2.0), einstein_radius=1.0))
+            g_data = galaxy_data.GalaxyData(array=im, mask=mask, noise_map=noise_map, sub_grid_size=2,
+                                            use_deflections_x=True)
+            fit = galaxy_fitting.GalaxyFit(galaxy_data=g_data, model_galaxy=galaxy)
 
-        assert fit.model_galaxy == galaxy
+            assert fit.model_galaxy == galaxy
 
-        model_data_1d = galaxy.deflections_from_grid(grid=g_data.grid_stack.sub)
-        model_data_1d = g_data.grid_stack.sub.sub_data_to_regular_data(sub_array=model_data_1d[:,1])
-        model_data = g_data.map_to_scaled_array(array_1d=model_data_1d)
-        residual_map = fitting_util.residual_map_from_data_mask_and_model_data(data=g_data.array, mask=g_data.mask,
-                                                                               model_data=model_data)
+            model_data_1d = galaxy.deflections_from_grid(grid=g_data.grid_stack.sub)
+            model_data_1d = g_data.grid_stack.sub.sub_data_to_regular_data(sub_array=model_data_1d[:,1])
+            model_data = g_data.map_to_scaled_array(array_1d=model_data_1d)
+            residual_map = fitting_util.residual_map_from_data_mask_and_model_data(data=g_data.array, mask=g_data.mask,
+                                                                                   model_data=model_data)
 
-        assert residual_map == pytest.approx(fit.residual_map, 1e-4)
+            assert residual_map == pytest.approx(fit.residual_map, 1e-4)
 
-        chi_squared_map = fitting_util.chi_squared_map_from_residual_map_mask_and_noise_map(residual_map=residual_map,
-                                                                mask=g_data.mask, noise_map=g_data.noise_map)
+            chi_squared_map = fitting_util.chi_squared_map_from_residual_map_noise_map_and_mask(residual_map=residual_map,
+                                                                    mask=g_data.mask, noise_map=g_data.noise_map)
 
-        assert chi_squared_map == pytest.approx(fit.chi_squared_map, 1e-4)
+            assert chi_squared_map == pytest.approx(fit.chi_squared_map, 1e-4)
 
-        chi_squared_map = fitting_util.chi_squared_map_from_residual_map_mask_and_noise_map(residual_map=residual_map,
-                                                                mask=g_data.mask, noise_map=g_data.noise_map)
+            chi_squared_map = fitting_util.chi_squared_map_from_residual_map_noise_map_and_mask(residual_map=residual_map,
+                                                                    mask=g_data.mask, noise_map=g_data.noise_map)
 
-        assert chi_squared_map == pytest.approx(fit.chi_squared_map, 1e-4)
+            assert chi_squared_map == pytest.approx(fit.chi_squared_map, 1e-4)
 
-        chi_squared = fitting_util.chi_squared_from_chi_squared_map(chi_squared_map=chi_squared_map)
-        noise_normalization = fitting_util.noise_normalization_from_mask_and_noise_map(mask=g_data.mask,
-                                                                              noise_map=g_data.noise_map)
-        likelihood = fitting_util.likelihood_from_chi_squared_and_noise_normalization(chi_squared=chi_squared,
-                                                                                      noise_normalization=noise_normalization)
+            chi_squared = fitting_util.chi_squared_from_chi_squared_map_and_mask(chi_squared_map=chi_squared_map,
+                                                                                 mask=mask)
+            noise_normalization = fitting_util.noise_normalization_from_noise_map_and_mask(mask=g_data.mask,
+                                                                                  noise_map=g_data.noise_map)
+            likelihood = fitting_util.likelihood_from_chi_squared_and_noise_normalization(chi_squared=chi_squared,
+                                                                                          noise_normalization=noise_normalization)
 
-        assert likelihood == pytest.approx(fit.likelihood, 1e-4)
+            assert likelihood == pytest.approx(fit.likelihood, 1e-4)

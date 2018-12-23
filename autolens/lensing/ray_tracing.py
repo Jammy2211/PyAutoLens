@@ -271,10 +271,10 @@ class Tracer(AbstractTracer):
 
     @property
     def image_plane_blurring_image_1d(self):
-        return sum(self.image_plane_blurring_image_of_planes_1d)
+        return sum(self.image_plane_blurring_image_1d_of_planes)
 
     @property
-    def image_plane_blurring_image_of_planes_1d(self):
+    def image_plane_blurring_image_1d_of_planes(self):
         return [plane.image_plane_blurring_image_1d for plane in self.planes]
 
 

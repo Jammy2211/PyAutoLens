@@ -1,10 +1,10 @@
 import numpy as np
 import pytest
 
+from autofit.core import fitting_util
 from autolens.data.imaging import image
 from autolens.data.array import mask as mask
 from autolens.model.galaxy import galaxy as g
-from autolens.data.fitting import fitting_util
 from autolens.lensing.util import lensing_fitters_util as util
 from autolens.lensing import lensing_image
 from autolens.lensing import sensitivity_fitters
@@ -52,9 +52,11 @@ class TestSensitivityProfileFit:
         assert (fit.fit_normal.image == si_blur.image).all()
         assert (fit.fit_normal.noise_map == si_blur.noise_map).all()
 
-        model_image = util.blurred_image_from_1d_unblurred_and_blurring_images(
+        model_image_1d = util.blurred_image_1d_from_1d_unblurred_and_blurring_images(
             unblurred_image_1d=tracer.image_plane_image_1d, blurring_image_1d=tracer.image_plane_blurring_image_1d,
-            convolver=si_blur.convolver_image, map_to_scaled_array=si_blur.map_to_scaled_array)
+            convolver=si_blur.convolver_image)
+
+        model_image = si_blur.map_to_scaled_array(array_1d=model_image_1d)
 
         assert (fit.fit_normal.model_image == model_image).all()
 
@@ -62,7 +64,7 @@ class TestSensitivityProfileFit:
                                                                              model_data=model_image)
         assert (fit.fit_normal.residual_map == residual_map).all()
 
-        chi_squared_map = fitting_util.chi_squared_map_from_residual_map_mask_and_noise_map(residual_map=residual_map,
+        chi_squared_map = fitting_util.chi_squared_map_from_residual_map_noise_map_and_mask(residual_map=residual_map,
                                                         mask=si_blur.mask, noise_map=si_blur.noise_map)
 
         assert (fit.fit_normal.chi_squared_map == chi_squared_map).all()
@@ -73,18 +75,14 @@ class TestSensitivityProfileFit:
         assert (fit.fit_sensitive.residual_map == residual_map).all()
         assert (fit.fit_sensitive.chi_squared_map == chi_squared_map).all()
 
-        chi_squared = fitting_util.chi_squared_from_chi_squared_map(chi_squared_map=chi_squared_map)
-        noise_normalization = fitting_util.noise_normalization_from_mask_and_noise_map(mask=si_blur.mask,
+        chi_squared = fitting_util.chi_squared_from_chi_squared_map_and_mask(chi_squared_map=chi_squared_map, 
+                                                                             mask=si_blur.mask)
+        noise_normalization = fitting_util.noise_normalization_from_noise_map_and_mask(mask=si_blur.mask,
                                                                                        noise_map=si_blur.noise_map)
         assert fit.fit_normal.likelihood == -0.5 * (chi_squared + noise_normalization)
         assert fit.fit_sensitive.likelihood == -0.5 * (chi_squared + noise_normalization)
 
-        assert fit.likelihood == 0.0
-
-        fast_likelihood = sensitivity_fitters.SensitivityProfileFitter.fast_fit(
-            lensing_image=si_blur, tracer_normal=tracer, tracer_sensitive=tracer)
-
-        assert fit.likelihood == fast_likelihood
+        assert fit.figure_of_merit == 0.0
 
     def test__tracers_are_different__likelihood_is_non_zero(self, si_blur):
 
@@ -103,10 +101,11 @@ class TestSensitivityProfileFit:
         assert (fit.fit_normal.image == si_blur.image).all()
         assert (fit.fit_normal.noise_map == si_blur.noise_map).all()
 
-        model_image = util.blurred_image_from_1d_unblurred_and_blurring_images(
-            unblurred_image_1d=tracer_normal.image_plane_image_1d, 
-            blurring_image_1d=tracer_normal.image_plane_blurring_image_1d,
-            convolver=si_blur.convolver_image, map_to_scaled_array=si_blur.map_to_scaled_array)
+        model_image_1d = util.blurred_image_1d_from_1d_unblurred_and_blurring_images(
+            unblurred_image_1d=tracer_normal.image_plane_image_1d, blurring_image_1d=tracer_normal.image_plane_blurring_image_1d,
+            convolver=si_blur.convolver_image)
+
+        model_image = si_blur.map_to_scaled_array(array_1d=model_image_1d)
 
         assert (fit.fit_normal.model_image == model_image).all()
 
@@ -114,7 +113,7 @@ class TestSensitivityProfileFit:
                                                                              model_data=model_image)
         assert (fit.fit_normal.residual_map == residual_map).all()
 
-        chi_squared_map = fitting_util.chi_squared_map_from_residual_map_mask_and_noise_map(residual_map=residual_map,
+        chi_squared_map = fitting_util.chi_squared_map_from_residual_map_noise_map_and_mask(residual_map=residual_map,
                                                         mask=si_blur.mask, noise_map=si_blur.noise_map)
 
         assert (fit.fit_normal.chi_squared_map == chi_squared_map).all()
@@ -123,10 +122,12 @@ class TestSensitivityProfileFit:
         assert (fit.fit_sensitive.image == si_blur.image).all()
         assert (fit.fit_sensitive.noise_map == si_blur.noise_map).all()
         
-        model_image = util.blurred_image_from_1d_unblurred_and_blurring_images(
-            unblurred_image_1d=tracer_sensitive.image_plane_image_1d, 
+        model_image_1d = util.blurred_image_1d_from_1d_unblurred_and_blurring_images(
+            unblurred_image_1d=tracer_sensitive.image_plane_image_1d,
             blurring_image_1d=tracer_sensitive.image_plane_blurring_image_1d,
-            convolver=si_blur.convolver_image, map_to_scaled_array=si_blur.map_to_scaled_array)
+            convolver=si_blur.convolver_image)
+
+        model_image = si_blur.map_to_scaled_array(array_1d=model_image_1d)
         
         assert (fit.fit_sensitive.model_image == model_image).all()
         
@@ -135,23 +136,18 @@ class TestSensitivityProfileFit:
         
         assert (fit.fit_sensitive.residual_map == residual_map).all()
         
-        chi_squared_map = fitting_util.chi_squared_map_from_residual_map_mask_and_noise_map(residual_map=residual_map,
+        chi_squared_map = fitting_util.chi_squared_map_from_residual_map_noise_map_and_mask(residual_map=residual_map,
                                                         mask=si_blur.mask, noise_map=si_blur.noise_map)
         
         assert (fit.fit_sensitive.chi_squared_map == chi_squared_map).all()
 
-        chi_squared_normal = fitting_util.chi_squared_from_chi_squared_map(
-            chi_squared_map=fit.fit_normal.chi_squared_map)
-        chi_squared_sensitive = fitting_util.chi_squared_from_chi_squared_map(
-            chi_squared_map=fit.fit_sensitive.chi_squared_map)
-        noise_normalization = fitting_util.noise_normalization_from_mask_and_noise_map(mask=si_blur.mask,
+        chi_squared_normal = fitting_util.chi_squared_from_chi_squared_map_and_mask(
+            chi_squared_map=fit.fit_normal.chi_squared_map, mask=si_blur.mask)
+        chi_squared_sensitive = fitting_util.chi_squared_from_chi_squared_map_and_mask(
+            chi_squared_map=fit.fit_sensitive.chi_squared_map, mask=si_blur.mask)
+        noise_normalization = fitting_util.noise_normalization_from_noise_map_and_mask(mask=si_blur.mask,
                                                                                        noise_map=si_blur.noise_map)
         assert fit.fit_normal.likelihood == -0.5 * (chi_squared_normal + noise_normalization)
         assert fit.fit_sensitive.likelihood == -0.5 * (chi_squared_sensitive + noise_normalization)
 
-        assert fit.likelihood == fit.fit_sensitive.likelihood - fit.fit_normal.likelihood
-
-        fast_likelihood = sensitivity_fitters.SensitivityProfileFitter.fast_fit(
-            lensing_image=si_blur, tracer_normal=tracer_normal, tracer_sensitive=tracer_sensitive)
-
-        assert fit.likelihood == fast_likelihood
+        assert fit.figure_of_merit == fit.fit_sensitive.likelihood - fit.fit_normal.likelihood

@@ -1,5 +1,4 @@
-from autolens.data.fitting import fitter, fitting_util
-from autolens.model.galaxy import galaxy_data as gd
+from autofit.core import fitter
 
 class GalaxyFit(fitter.DataFitter):
 
@@ -24,3 +23,7 @@ class GalaxyFit(fitter.DataFitter):
         super(GalaxyFit, self).__init__(data=galaxy_data.array, noise_map=galaxy_data.noise_map,
                                         mask=galaxy_data.mask,
                                         model_data=galaxy_data.map_to_scaled_array(array_1d=model_data_1d))
+
+    @property
+    def figure_of_merit(self):
+        return self.likelihood

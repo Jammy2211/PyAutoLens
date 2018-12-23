@@ -119,9 +119,9 @@ lensing_fit_plotters.plot_fit_subplot(fit=fit)
 
 # Finally, just to be sure, lets compare the two likelihoods
 print('Likelihood of Non-linear Search:')
-print(results.fit.likelihood)
+print(results.fit.figure_of_merit)
 print('Likelihood of Correct Model:')
-print(fit.likelihood)
+print(fit.figure_of_merit)
 
 # Well, there we have it, the input model has a much higher likelihood than the one our non-linear search inferred.
 

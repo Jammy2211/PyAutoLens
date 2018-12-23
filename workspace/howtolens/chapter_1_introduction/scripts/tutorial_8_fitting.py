@@ -116,7 +116,7 @@ print(fit.chi_squared[48:53, 48:53])
 # It also provides a likelihood, which is a single-figure estimate of how good the model regular fitted the
 # simulated regular (in unmasked pixels only!).
 print('Likelihood:')
-print(fit.likelihood)
+print(fit.figure_of_merit)
 
 # We used the same tracer_without_subhalo to create and fit_normal the regular. Therefore, our fit_normal to the regular was excellent.
 # For example, by inspecting the residuals and chi-squareds, one can see no signs of the source model_galaxy's light present
@@ -142,7 +142,7 @@ lensing_fit_plotters.plot_fit_subplot(fit=fit)
 print('Previous Likelihood:')
 print(11697.24)
 print('New Likelihood:')
-print(fit.likelihood)
+print(fit.figure_of_merit)
 # It decreases! This model was a worse fit_normal to the datas.
 
 # Lets change the tracer_without_subhalo, one more time, to a solution that is nowhere near the correct one.
@@ -162,7 +162,7 @@ print('Previous Likelihoods:')
 print(11697.24)
 print(10319.44)
 print('New Likelihood:')
-print(fit.likelihood)
+print(fit.figure_of_merit)
 
 # Congratulations, you've fitted your first strong lens with PyAutoLens! Perform the following exercises:
 
