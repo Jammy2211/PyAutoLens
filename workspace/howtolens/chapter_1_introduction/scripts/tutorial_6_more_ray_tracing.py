@@ -1,11 +1,11 @@
 from autolens.model.profiles import light_profiles as lp
 from autolens.model.profiles import mass_profiles as mp
 from autolens.model.galaxy import galaxy as g
-from autolens.lensing import ray_tracing
+from autolens.lens import ray_tracing
 from autolens.data.array import grids
 from autolens.model.galaxy.plotters import galaxy_plotters
-from autolens.lensing.plotters import plane_plotters
-from autolens.lensing.plotters import ray_tracing_plotters
+from autolens.lens.plotters import plane_plotters
+from autolens.lens.plotters import ray_tracing_plotters
 
 from astropy import cosmology
 

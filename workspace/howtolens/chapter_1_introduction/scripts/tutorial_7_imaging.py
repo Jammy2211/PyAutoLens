@@ -1,10 +1,10 @@
 from autolens.data.imaging import image as im
 from autolens.data.array import grids
-from autolens.lensing import ray_tracing
+from autolens.lens import ray_tracing
 from autolens.model.galaxy import galaxy as g
 from autolens.model.profiles import light_profiles as lp
 from autolens.model.profiles import mass_profiles as mp
-from autolens.lensing.plotters import ray_tracing_plotters
+from autolens.lens.plotters import ray_tracing_plotters
 from autolens.data.imaging.plotters import imaging_plotters
 
 # In this example, we'll use the 'imaging' module (imported as 'im') to 'simulate' an regular of a strong lens made

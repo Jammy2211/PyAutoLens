@@ -9,11 +9,11 @@ from autolens import exc
 from autolens.data.array import mask as msk
 from autolens.data.imaging import image as im
 from autolens.data.imaging.plotters import imaging_plotters
-from autolens.lensing import lensing_image as li, lensing_fitters
-from autolens.lensing import ray_tracing
-from autolens.lensing import sensitivity_fitters
-from autolens.lensing.plotters import sensitivity_fit_plotters, lensing_fit_plotters
-from autolens.model.galaxy import galaxy as g, galaxy_model as gm, galaxy_fitting, galaxy_data as gd
+from autolens.lens import lens_image as li, lens_fit
+from autolens.lens import ray_tracing
+from autolens.lens import sensitivity_fit
+from autolens.lens.plotters import sensitivity_fit_plotters, lens_fit_plotters
+from autolens.model.galaxy import galaxy as g, galaxy_model as gm, galaxy_fit, galaxy_data as gd
 from autolens.model.galaxy.plotters import galaxy_fitting_plotters
 from autolens.pipeline.phase_property import PhasePropertyCollection
 
@@ -47,7 +47,7 @@ class AbstractPhase(object):
     def __init__(self, phase_name, optimizer_class=non_linear.MultiNest, cosmology=cosmo.Planck15,
                  auto_link_priors=False):
         """
-        A phase in an lensing pipeline. Uses the set non_linear optimizer to try to fit models and data
+        A phase in an lens pipeline. Uses the set non_linear optimizer to try to fit models and data
         passed to it.
 
         Parameters
@@ -70,7 +70,7 @@ class AbstractPhase(object):
         Returns
         -------
         ModelInstance
-            A model instance comprising all the constant objects in this lensing
+            A model instance comprising all the constant objects in this lens
         """
         return self.optimizer.constant
 
@@ -82,7 +82,7 @@ class AbstractPhase(object):
         Returns
         -------
         ModelMapper
-            A model mapper comprising all the variable (prior) objects in this lensing
+            A model mapper comprising all the variable (prior) objects in this lens
         """
         return self.optimizer.variable
 
@@ -197,7 +197,7 @@ class AbstractPhase(object):
 
         def __init__(self, cosmology, phase_name, previous_results=None):
             """
-            An lensing object
+            An lens object
 
             Parameters
             ----------
@@ -290,7 +290,7 @@ class PhasePositions(AbstractPhase):
 
     def make_analysis(self, positions, pixel_scale, previous_results=None):
         """
-        Create an lensing object. Also calls the prior passing and lensing_image modifying functions to allow child
+        Create an lens object. Also calls the prior passing and lensing_image modifying functions to allow child
         classes to change the behaviour of the phase.
 
         Parameters
@@ -302,8 +302,8 @@ class PhasePositions(AbstractPhase):
 
         Returns
         -------
-        lensing: Analysis
-            An lensing object that the non-linear optimizer calls to determine the fit of a set of values
+        lens: Analysis
+            An lens object that the non-linear optimizer calls to determine the fit of a set of values
         """
         self.pass_priors(previous_results)
         analysis = self.__class__.Analysis(positions=positions, pixel_scale=pixel_scale, cosmology=self.cosmology,
@@ -324,7 +324,7 @@ class PhasePositions(AbstractPhase):
 
         def fit(self, instance):
             """
-            Determine the fit of a lens galaxy and source galaxy to the lensing_image in this lensing.
+            Determine the fit of a lens galaxy and source galaxy to the lensing_image in this lens.
 
             Parameters
             ----------
@@ -345,12 +345,12 @@ class PhasePositions(AbstractPhase):
                                                                 image_plane_positions=self.positions, cosmology=self.cosmology)
 
         def fit_for_tracer(self, tracer):
-            return lensing_fitters.LensingPositionFitter(positions=tracer.source_plane.positions, noise_map=self.pixel_scale)
+            return lens_fit.LensPositionFit(positions=tracer.source_plane.positions, noise_map=self.pixel_scale)
 
         @classmethod
         def log(cls, instance):
             logger.debug(
-                "\nRunning lens lensing for... \n\nLens Galaxy::\n{}\n\n".format(instance.lens_galaxies))
+                "\nRunning lens lens for... \n\nLens Galaxy::\n{}\n\n".format(instance.lens_galaxies))
 
 
 class PhaseImaging(Phase):
@@ -361,7 +361,7 @@ class PhaseImaging(Phase):
 
         """
 
-        A phase in an lensing pipeline. Uses the set non_linear optimizer to try to fit models and data
+        A phase in an lens pipeline. Uses the set non_linear optimizer to try to fit models and data
         passed to it.
 
         Parameters
@@ -393,7 +393,7 @@ class PhaseImaging(Phase):
         image: img.Image
             An lensing_image that has been masked
         previous_results: ResultsCollection
-            The result of the previous lensing
+            The result of the previous lens
 
         Returns
         -------
@@ -428,7 +428,7 @@ class PhaseImaging(Phase):
 
     def make_analysis(self, image, previous_results=None, mask=None):
         """
-        Create an lensing object. Also calls the prior passing and lensing_image modifying functions to allow child
+        Create an lens object. Also calls the prior passing and lensing_image modifying functions to allow child
         classes to change the behaviour of the phase.
 
         Parameters
@@ -442,13 +442,13 @@ class PhaseImaging(Phase):
 
         Returns
         -------
-        lensing: Analysis
-            An lensing object that the non-linear optimizer calls to determine the fit of a set of values
+        lens: Analysis
+            An lens object that the non-linear optimizer calls to determine the fit of a set of values
         """
         mask = mask or self.mask_function(image)
         image = self.modify_image(image, previous_results)
-        lensing_image = li.LensingImage(image=image, mask=mask, sub_grid_size=self.sub_grid_size,
-                                        image_psf_shape=self.image_psf_shape, positions=self.positions)
+        lensing_image = li.LensImage(image=image, mask=mask, sub_grid_size=self.sub_grid_size,
+                                     image_psf_shape=self.image_psf_shape, positions=self.positions)
 
         self.pass_priors(previous_results)
 
@@ -468,7 +468,7 @@ class PhaseImaging(Phase):
 
         def fit(self, instance):
             """
-            Determine the fit of a lens galaxy and source galaxy to the lensing_image in this lensing.
+            Determine the fit of a lens galaxy and source galaxy to the lensing_image in this lens.
 
             Parameters
             ----------
@@ -501,18 +501,18 @@ class PhaseImaging(Phase):
                                                    positions=self.lensing_image.positions,
                                                    output_path=self.output_image_path, output_format='png')
 
-            lensing_fit_plotters.plot_fit_subplot(fit=fit, output_path=self.output_image_path,
-                                                  output_format='png',
-                                                  ignore_config=False)
+            lens_fit_plotters.plot_fit_subplot(fit=fit, output_path=self.output_image_path,
+                                               output_format='png',
+                                               ignore_config=False)
 
-            lensing_fit_plotters.plot_fit_individuals(fit=fit, output_path=self.output_image_path,
-                                                      output_format='png')
+            lens_fit_plotters.plot_fit_individuals(fit=fit, output_path=self.output_image_path,
+                                                   output_format='png')
 
             return fit
 
         def fit_for_tracers(self, tracer, padded_tracer):
-            return lensing_fitters.fit_lensing_image_with_tracer(lensing_image=self.lensing_image, tracer=tracer,
-                                                                 padded_tracer=padded_tracer)
+            return lens_fit.fit_lens_image_with_tracer(lens_image=self.lensing_image, tracer=tracer,
+                                                       padded_tracer=padded_tracer)
 
         def check_positions_trace_within_threshold(self, instance):
 
@@ -520,8 +520,8 @@ class PhaseImaging(Phase):
 
                 tracer = ray_tracing.TracerImageSourcePlanesPositions(lens_galaxies=instance.lens_galaxies,
                                                                       image_plane_positions=self.lensing_image.positions)
-                fit = lensing_fitters.LensingPositionFitter(positions=tracer.source_plane.positions,
-                                                            noise_map=self.lensing_image.image.pixel_scale)
+                fit = lens_fit.LensPositionFit(positions=tracer.source_plane.positions,
+                                               noise_map=self.lensing_image.image.pixel_scale)
 
                 if not fit.maximum_separation_within_threshold(self.position_threshold):
                     return exc.RayTracingException
@@ -587,7 +587,7 @@ class LensPlanePhase(PhaseImaging):
         @classmethod
         def log(cls, instance):
             logger.debug(
-                "\nRunning lens lensing for... \n\nLens Galaxy::\n{}\n\n".format(instance.lens_galaxies))
+                "\nRunning lens lens for... \n\nLens Galaxy::\n{}\n\n".format(instance.lens_galaxies))
 
     class Result(PhaseImaging.Result):
 
@@ -664,7 +664,7 @@ class LensSourcePlanePhase(PhaseImaging):
         @classmethod
         def log(cls, instance):
             logger.debug(
-                "\nRunning lens/source lensing for... \n\nLens Galaxy:\n{}\n\nSource Galaxy:\n{}\n\n".format(
+                "\nRunning lens/source lens for... \n\nLens Galaxy:\n{}\n\nSource Galaxy:\n{}\n\n".format(
                     instance.lens_galaxies, instance.source_galaxies))
 
 
@@ -723,7 +723,7 @@ class MultiPlanePhase(PhaseImaging):
         @classmethod
         def log(cls, instance):
             logger.debug(
-                "\nRunning lens/source lensing for... \n\nLens Galaxy:\n{}\n\nSource Galaxy:\n{}\n\n".format(
+                "\nRunning lens/source lens for... \n\nLens Galaxy:\n{}\n\nSource Galaxy:\n{}\n\n".format(
                     instance.lens_galaxies, instance.source_galaxies))
 
 
@@ -735,7 +735,7 @@ class GalaxyFitPhase(AbstractPhase):
                  galaxy=None, optimizer_class=non_linear.MultiNest, sub_grid_size=2,
                  mask_function=default_mask_function, cosmology=cosmo.Planck15):
         """
-        A phase in an lensing pipeline. Uses the set non_linear optimizer to try to fit models and data
+        A phase in an lens pipeline. Uses the set non_linear optimizer to try to fit models and data
         passed to it.
 
         Parameters
@@ -782,7 +782,7 @@ class GalaxyFitPhase(AbstractPhase):
 
     def make_analysis(self, array, noise_map, previous_results=None, mask=None):
         """
-        Create an lensing object. Also calls the prior passing and lensing_image modifying functions to allow child
+        Create an lens object. Also calls the prior passing and lensing_image modifying functions to allow child
         classes to change the behaviour of the phase.
 
         Parameters
@@ -796,8 +796,8 @@ class GalaxyFitPhase(AbstractPhase):
 
         Returns
         -------
-        lensing: Analysis
-            An lensing object that the non-linear optimizer calls to determine the fit of a set of values
+        lens: Analysis
+            An lens object that the non-linear optimizer calls to determine the fit of a set of values
         """
         mask = mask or self.mask_function(array)
 
@@ -870,7 +870,7 @@ class GalaxyFitPhase(AbstractPhase):
 
         def fit_for_instance(self, instance):
             """
-            Determine the fit of a lens galaxy and source galaxy to the lensing_image in this lensing.
+            Determine the fit of a lens galaxy and source galaxy to the lensing_image in this lens.
 
             Parameters
             ----------
@@ -882,7 +882,7 @@ class GalaxyFitPhase(AbstractPhase):
             fit: Fit
                 A fractional value indicating how well this model fit and the model lensing_image itself
             """
-            return galaxy_fitting.GalaxyFit(galaxy_data=self.galaxy_data, model_galaxy=instance.galaxy[0])
+            return galaxy_fit.GalaxyFit(galaxy_data=self.galaxy_data, model_galaxy=instance.galaxy[0])
 
     # noinspection PyAbstractClass
     class AnalysisDeflections(Analysis):
@@ -913,8 +913,8 @@ class GalaxyFitPhase(AbstractPhase):
 
         def fit_for_instance(self, instance):
 
-            fit_y = galaxy_fitting.GalaxyFit(galaxy_data=self.galaxy_data_y, model_galaxy=instance.galaxy)
-            fit_x = galaxy_fitting.GalaxyFit(galaxy_data=self.galaxy_data_x, model_galaxy=instance.galaxy)
+            fit_y = galaxy_fit.GalaxyFit(galaxy_data=self.galaxy_data_y, model_galaxy=instance.galaxy)
+            fit_x = galaxy_fit.GalaxyFit(galaxy_data=self.galaxy_data_x, model_galaxy=instance.galaxy)
 
             return fit_y, fit_x
 
@@ -939,7 +939,7 @@ class SensitivityPhase(PhaseImaging):
                  optimizer_class=non_linear.MultiNest, sub_grid_size=2,
                  mask_function=default_mask_function):
         """
-        A phase in an lensing pipeline. Uses the set non_linear optimizer to try to fit models and data
+        A phase in an lens pipeline. Uses the set non_linear optimizer to try to fit models and data
         passed to it.
 
         Parameters
@@ -966,7 +966,7 @@ class SensitivityPhase(PhaseImaging):
 
         def fit(self, instance):
             """
-            Determine the fit of a lens galaxy and source galaxy to the lensing_image in this lensing.
+            Determine the fit of a lens galaxy and source galaxy to the lensing_image in this lens.
 
             Parameters
             ----------
@@ -998,8 +998,8 @@ class SensitivityPhase(PhaseImaging):
                                                    output_path=self.output_image_path,
                                                    output_format='png')
 
-            sensitivity_fit_plotters.plot_fitting_subplot(fit=fit, output_path=self.output_image_path,
-                                                          output_format='png')
+            sensitivity_fit_plotters.plot_fit_subplot(fit=fit, output_path=self.output_image_path,
+                                                      output_format='png')
 
             return fit
 
@@ -1017,14 +1017,14 @@ class SensitivityPhase(PhaseImaging):
                 border=self.sensitivity_image.border)
 
         def fit_for_tracers(self, tracer_normal, tracer_sensitive):
-            return sensitivity_fitters.SensitivityProfileFitter(lensing_image=[self.sensitivity_image],
-                                                                tracer_normal=tracer_normal,
-                                                                tracer_sensitive=tracer_sensitive)
+            return sensitivity_fit.SensitivityProfileFit(lensing_image=[self.sensitivity_image],
+                                                         tracer_normal=tracer_normal,
+                                                         tracer_sensitive=tracer_sensitive)
 
         @classmethod
         def log(cls, instance):
             logger.debug(
-                "\nRunning lens/source lensing for... \n\nLens Galaxy:\n{}\n\nSource Galaxy:\n{}\n\n Sensitive "
+                "\nRunning lens/source lens for... \n\nLens Galaxy:\n{}\n\nSource Galaxy:\n{}\n\n Sensitive "
                 "Galaxy\n{}\n\n "
                 "".format(instance.lens_galaxies, instance.source_galaxies, instance.sensitive_galaxies))
 

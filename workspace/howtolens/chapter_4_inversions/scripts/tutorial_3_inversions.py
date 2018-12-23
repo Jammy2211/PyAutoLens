@@ -3,12 +3,12 @@ from autolens.data.array import mask as ma
 from autolens.model.profiles import light_profiles as lp
 from autolens.model.profiles import mass_profiles as mp
 from autolens.model.galaxy import galaxy as g
-from autolens.lensing import ray_tracing, lensing_fitters
-from autolens.lensing import lensing_image as li
+from autolens.lens import ray_tracing, lens_fit
+from autolens.lens import lens_image as li
 from autolens.model.inversion import inversions as inv, pixelizations as pix, regularization as reg
 from autolens.data.imaging.plotters import imaging_plotters
 from autolens.model.inversion.plotters import inversion_plotters, mapper_plotters
-from autolens.lensing.plotters import lensing_fit_plotters
+from autolens.lens.plotters import lens_fit_plotters
 
 # We've covered mappers, which, if I haven't emphasised it enough yet, map things. Now, we're going to look at how we
 # can use these mappers (which map things) to reconstruct the source model_galaxy - I hope you're excited!
@@ -19,7 +19,7 @@ def simulate():
 
     from autolens.data.array import grids
     from autolens.model.galaxy import galaxy as g
-    from autolens.lensing import ray_tracing
+    from autolens.lens import ray_tracing
 
     psf = im.PSF.simulate_as_gaussian(shape=(11, 11), sigma=0.05, pixel_scale=0.05)
 
@@ -43,7 +43,7 @@ imaging_plotters.plot_image(image=image, mask=mask)
 
 # Next, lets set this regular up as a lensing regular, and setup a tracer_without_subhalo using the input lens model_galaxy model (we don't need
 # to provide the source's light profile, as we're using a mapper to reconstruct it).
-lensing_image = li.LensingImage(image=image, mask=mask, sub_grid_size=1)
+lensing_image = li.LensImage(image=image, mask=mask, sub_grid_size=1)
 lens_galaxy = g.Galaxy(mass=mp.EllipticalIsothermal(centre=(0.0, 0.0), axis_ratio=0.8, phi=135.0, einstein_radius=1.6))
 tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[g.Galaxy()],
                                              image_plane_grid_stack=[lensing_image.grid_stack])
@@ -73,7 +73,7 @@ def simulate_complex_source():
 
     from autolens.data.array import grids
     from autolens.model.galaxy import galaxy as g
-    from autolens.lensing import ray_tracing
+    from autolens.lens import ray_tracing
 
     psf = im.PSF.simulate_as_gaussian(shape=(11, 11), sigma=0.05, pixel_scale=0.05)
 
@@ -109,7 +109,7 @@ mask = ma.Mask.circular_annular(shape=image.shape, pixel_scale=image.pixel_scale
                                 inner_radius_arcsec=0.1, outer_radius_arcsec=3.2)
 imaging_plotters.plot_image(image=image, mask=mask)
 
-lensing_image = li.LensingImage(image=image, mask=mask, sub_grid_size=1)
+lensing_image = li.LensImage(image=image, mask=mask, sub_grid_size=1)
 tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[g.Galaxy()],
                                              image_plane_grid_stack=[lensing_image.grid_stack])
 mapper = rectangular.mapper_from_grid_stack_and_border(grid_stack=tracer.source_plane.grids[0], border=None)
@@ -174,8 +174,8 @@ tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source
 
 # Then, like before, we call on the fitting module to perform the fit_normal to the lensing regular. Indeed, we see
 # some pretty good looking residual_map - we're certainly fitting the lensed source accurately!
-fit = lensing_fitters.fit_lensing_image_with_tracer(lensing_image=lensing_image, tracer=tracer)
-lensing_fit_plotters.plot_fit_subplot(fit=fit)
+fit = lens_fit.fit_lens_image_with_tracer(lens_image=lensing_image, tracer=tracer)
+lens_fit_plotters.plot_fit_subplot(fit=fit)
 
 # And, we're done, here are a few questions to get you thinking about inversions:
 

@@ -41,7 +41,7 @@ def voronoi_regular_to_pix_from_grids_and_geometry(regular_grid, regular_to_near
     ----------
     regular_grid : RegularGrid
         The grid of (y,x) arc-second coordinates at the centre of every unmasked pixel, which has been traced to \
-        to an irregular grid via lensing.
+        to an irregular grid via lens.
     regular_to_nearest_pix : ndarray
         A 1D array that maps every regular-grid pixel to its nearest pix-grid pixel (as determined on the unlensed \
         2D array).
@@ -108,7 +108,7 @@ def voronoi_sub_to_pix_from_grids_and_geometry(sub_grid, regular_to_nearest_pix,
     ----------
     regular_grid : RegularGrid
         The grid of (y,x) arc-second coordinates at the centre of every unmasked pixel, which has been traced to \
-        to an irregular grid via lensing.
+        to an irregular grid via lens.
     regular_to_nearest_pix : ndarray
         A 1D array that maps every regular-grid pixel to its nearest pix-grid pixel (as determined on the unlensed \
         2D array).

@@ -1,15 +1,15 @@
 from autolens.data.imaging import image as im
 from autolens.data.array import mask as ma
-from autolens.lensing import ray_tracing, lensing_fitters
+from autolens.lens import ray_tracing, lens_fit
 from autolens.model.galaxy import galaxy as g
-from autolens.lensing import lensing_image as li
+from autolens.lens import lens_image as li
 from autolens.model.profiles import light_profiles as lp
 from autolens.model.profiles import mass_profiles as mp
 from autolens.data.imaging.plotters import imaging_plotters
 from autolens.model.profiles.plotters import profile_plotters
 from autolens.model.galaxy.plotters import galaxy_plotters
-from autolens.lensing.plotters import plane_plotters
-from autolens.lensing.plotters import ray_tracing_plotters
+from autolens.lens.plotters import plane_plotters
+from autolens.lens.plotters import ray_tracing_plotters
 
 # In this chapter, you've learnt how create and fit_normal strong lenses with PyAutoLens. In particular, you've learnt:
 
@@ -32,7 +32,7 @@ image = im.load_imaging_from_fits(image_path=path + '/datas/regular.fits',
                                   noise_map_path=path+'/datas/noise_maps.fits',
                                   psf_path=path + '/datas/psf.fits', pixel_scale=0.1)
 mask = ma.Mask.circular(shape=image.shape, pixel_scale=image.pixel_scale, radius_arcsec=3.0)
-lensing_image = li.LensingImage(image=image, mask=mask)
+lensing_image = li.LensImage(image=image, mask=mask)
 lens_galaxy = g.Galaxy(mass=mp.EllipticalIsothermal(centre=(0.0, 0.0), einstein_radius=1.6, axis_ratio=0.7, phi=45.0))
 source_galaxy = g.Galaxy(bulge=lp.EllipticalSersic(centre=(0.1, 0.1), axis_ratio=0.8, phi=45.0,
                                                   intensity=1.0, effective_radius=1.0, sersic_index=4.0),
@@ -40,7 +40,7 @@ source_galaxy = g.Galaxy(bulge=lp.EllipticalSersic(centre=(0.1, 0.1), axis_ratio
                                                   intensity=1.0, effective_radius=1.0, sersic_index=1.0))
 tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
                                              image_plane_grid_stack=[lensing_image.grid_stack])
-fit = lensing_fitters.fit_lensing_image_with_tracer(lensing_image=lensing_image, tracer=tracer)
+fit = lens_fit.fit_lens_image_with_tracer(lens_image=lensing_image, tracer=tracer)
 
 # The fit_normal contains our tracer_without_subhalo, which contains our planes, which contain our grid_stacks and galaxies, which contain our
 # profiles:

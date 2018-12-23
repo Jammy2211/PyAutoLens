@@ -40,8 +40,8 @@ class Convolver(object):
     |x|x|x|x|x|x|x|x|x|x|
     |x|x|x|x|x|x|x|x|x|x|     This is an imaging.Mask, where:
     |x|x|x|x|x|x|x|x|x|x|
-    |x|x|x|x|x|x|x|x|x|x|     x = True (Pixel is masked and excluded from lensing)
-    |x|x|x|o|o|o|x|x|x|x|     o = False (Pixel is not masked and included in lensing)
+    |x|x|x|x|x|x|x|x|x|x|     x = True (Pixel is masked and excluded from lens)
+    |x|x|x|o|o|o|x|x|x|x|     o = False (Pixel is not masked and included in lens)
     |x|x|x|o|o|o|x|x|x|x|
     |x|x|x|o|o|o|x|x|x|x|
     |x|x|x|x|x|x|x|x|x|x|
@@ -113,8 +113,8 @@ class Convolver(object):
     |x|x|x|x|x|x|x|x|x|x|
     |x|x|x|x|x|x|x|x|x|x|     This is an example regular.Mask, where:
     |x|x|x|x|x|x|x|x|x|x|
-    |x|x|o|o|o|o|o|x|x|x|     x = True (Pixel is masked and excluded from lensing)
-    |x|x|o|x|x|x|o|x|x|x|     o = False (Pixel is not masked and included in lensing)
+    |x|x|o|o|o|o|o|x|x|x|     x = True (Pixel is masked and excluded from lens)
+    |x|x|o|x|x|x|o|x|x|x|     o = False (Pixel is not masked and included in lens)
     |x|x|o|x|x|x|o|x|x|x|
     |x|x|o|x|x|x|o|x|x|x|
     |x|x|o|o|o|o|o|x|x|x|

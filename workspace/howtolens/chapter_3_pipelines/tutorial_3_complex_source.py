@@ -3,8 +3,8 @@ from autofit.core import non_linear as nl
 from autolens.data.imaging import image as im
 from autolens.data.array import mask
 from autolens.model.galaxy import galaxy as g, galaxy_model as gm
-from autolens.lensing import lensing_image as li
-from autolens.lensing import ray_tracing
+from autolens.lens import lens_image as li
+from autolens.lens import ray_tracing
 from autolens.pipeline import phase as ph
 from autolens.pipeline import pipeline
 from autolens.data.imaging.plotters import imaging_plotters
@@ -32,7 +32,7 @@ def simulate():
 
     from autolens.data.array import grids
     from autolens.model.galaxy import galaxy as g
-    from autolens.lensing import ray_tracing
+    from autolens.lens import ray_tracing
 
     psf = im.PSF.simulate_as_gaussian(shape=(11, 11), sigma=0.05, pixel_scale=0.05)
 
@@ -144,8 +144,8 @@ pipeline_complex_source.run(image=image)
 # I simulated the lens with 4 sources. There is a 'perfect incorrect_fit' somewhere in that parameter space - lets confirm that
 # by fitting the input model (which I've copied from simulations.py):
 
-lensing_image = li.LensingImage(image=image, mask=mask.Mask.circular(shape=image.shape, pixel_scale=image.pixel_scale,
-                                                                     radius_arcsec=3.0))
+lensing_image = li.LensImage(image=image, mask=mask.Mask.circular(shape=image.shape, pixel_scale=image.pixel_scale,
+                                                                  radius_arcsec=3.0))
 
 lens_galaxy = g.Galaxy(mass=mp.EllipticalIsothermal(centre=(0.0, 0.0), axis_ratio=0.8, phi=135.0,
                                                     einstein_radius=1.6))

@@ -1,6 +1,6 @@
 from autolens.model.profiles import mass_profiles as mp
 from autolens.model.galaxy import galaxy as g
-from autolens.lensing import ray_tracing
+from autolens.lens import ray_tracing
 from autolens.data.array import grids
 from autolens.model.inversion import pixelizations as pix
 from autolens.model.inversion.plotters import mapper_plotters

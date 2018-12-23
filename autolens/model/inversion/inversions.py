@@ -5,7 +5,7 @@ from autolens.model.inversion.util import inversion_util
 
 # TODO : Unit test this properly, using a cleverly made mock data-set
 
-def inversion_from_lensing_image_mapper_and_regularization(image_1d, noise_map_1d, convolver, mapper, regularization):
+def inversion_from_image_mapper_and_regularization(image_1d, noise_map_1d, convolver, mapper, regularization):
     return Inversion(image_1d=image_1d, noise_map_1d=noise_map_1d, convolver=convolver, mapper=mapper,
                      regularization=regularization)
 

@@ -3,11 +3,11 @@ from autolens.data.array import mask as ma
 from autolens.model.profiles import light_profiles as lp
 from autolens.model.profiles import mass_profiles as mp
 from autolens.model.galaxy import galaxy as g
-from autolens.lensing import ray_tracing, lensing_fitters
-from autolens.lensing import lensing_image as li
+from autolens.lens import ray_tracing, lens_fit
+from autolens.lens import lens_image as li
 from autolens.model.inversion import pixelizations as pix, regularization as reg
 from autolens.data.imaging.plotters import imaging_plotters
-from autolens.lensing.plotters import ray_tracing_plotters
+from autolens.lens.plotters import ray_tracing_plotters
 from autolens.model.inversion.plotters import inversion_plotters, mapper_plotters
 
 
@@ -19,7 +19,7 @@ def simulate():
 
     from autolens.data.array import grids
     from autolens.model.galaxy import galaxy as g
-    from autolens.lensing import ray_tracing
+    from autolens.lens import ray_tracing
 
     psf = im.PSF.simulate_as_gaussian(shape=(11, 11), sigma=0.05, pixel_scale=0.05)
 
@@ -62,7 +62,7 @@ imaging_plotters.plot_image_subplot(image=image, mask=mask_annular, should_plot_
 def perform_fit_with_source_galaxy_mask_and_border(source_galaxy, mask, use_border):
 
     image = simulate()
-    lensing_image = li.LensingImage(image=image, mask=mask)
+    lensing_image = li.LensImage(image=image, mask=mask)
     lens_galaxy = g.Galaxy(
         mass=mp.EllipticalIsothermal(centre=(0.0, 0.0), axis_ratio=0.8, phi=135.0, einstein_radius=1.6))
 
@@ -73,7 +73,7 @@ def perform_fit_with_source_galaxy_mask_and_border(source_galaxy, mask, use_bord
 
     tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
                                                  image_plane_grid_stack=[lensing_image.grid_stack], border=border)
-    return lensing_fitters.fit_lensing_image_with_tracer(lensing_image=lensing_image, tracer=tracer)
+    return lens_fit.fit_lens_image_with_tracer(lens_image=lensing_image, tracer=tracer)
 
 # Okay, so lets first look at our mapper without using a borders, and using our annular masks.
 source_galaxy = g.Galaxy(pixelization=pix.Rectangular(shape=(40, 40)), regularization=reg.Constant(coefficients=(1.0,)))
@@ -151,7 +151,7 @@ def simulate_image_x2_lenses():
 
     from autolens.data.array import grids
     from autolens.model.galaxy import galaxy as g
-    from autolens.lensing import ray_tracing
+    from autolens.lens import ray_tracing
 
     psf = im.PSF.simulate_as_gaussian(shape=(11, 11), sigma=0.05, pixel_scale=0.05)
 
@@ -180,7 +180,7 @@ imaging_plotters.plot_image_subplot(image=image, mask=mask_circular, should_plot
 def perform_fit_x2_lenses_with_source_galaxy_mask_and_border(source_galaxy, mask, use_border):
 
     simulate_image_x2_lenses()
-    lensing_image = li.LensingImage(image=image, mask=mask)
+    lensing_image = li.LensImage(image=image, mask=mask)
     lens_galaxy_0 = g.Galaxy(
         mass=mp.EllipticalIsothermal(centre=(1.1, 0.51), axis_ratio=0.9, phi=110.0, einstein_radius=1.07))
     lens_galaxy_1 = g.Galaxy(
@@ -194,7 +194,7 @@ def perform_fit_x2_lenses_with_source_galaxy_mask_and_border(source_galaxy, mask
     tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy_0, lens_galaxy_1],
                                                  source_galaxies=[source_galaxy],
                                                  image_plane_grid_stack=[lensing_image.grid_stack], border=border)
-    return lensing_fitters.fit_lensing_image_with_tracer(lensing_image=lensing_image, tracer=tracer)
+    return lens_fit.fit_lens_image_with_tracer(lens_image=lensing_image, tracer=tracer)
 
 # Now, lets fit this regular using the input model and perform the source reconstruction without a borders. As you can see,
 # we get many demagnified regular pixels which trace well beyond our source-plane borders if we don't relocate them!

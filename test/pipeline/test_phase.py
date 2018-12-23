@@ -9,8 +9,8 @@ from autofit.core import non_linear
 
 from autolens.data.imaging import image as img
 from autolens.data.array import grids, mask as msk
-from autolens.lensing import lensing_image as li
-from autolens.lensing import lensing_fitters
+from autolens.lens import lens_image as li
+from autolens.lens import lens_fit
 from autolens.model.galaxy import galaxy as g, galaxy_model as gm
 from autolens.model.profiles import light_profiles as lp, mass_profiles as mp
 from autolens.model.inversion import pixelizations as pix
@@ -110,7 +110,7 @@ def make_lensing_image():
     image = img.Image(np.array(np.zeros(shape)), pixel_scale=1.0, psf=img.PSF(np.ones((3, 3)), pixel_scale=1.0),
                       noise_map=img.NoiseMap(np.ones(shape), pixel_scale=1.0))
     mask = msk.Mask.circular(shape=shape, pixel_scale=1, radius_arcsec=3.0)
-    return li.LensingImage(image, mask)
+    return li.LensImage(image, mask)
 
 
 @pytest.fixture(name="results")
@@ -272,7 +272,7 @@ class TestPhase(object):
         assert phase.source_galaxies == [galaxy_model]
 
     def test_default_mask_function(self, phase, image):
-        lensing_image = li.LensingImage(image=image, mask=phase.mask_function(image))
+        lensing_image = li.LensImage(image=image, mask=phase.mask_function(image))
         assert len(lensing_image.image_1d) == 32
 
     def test_duplication(self):
@@ -357,9 +357,9 @@ class TestPhase(object):
         fit_figure_of_merit = analysis.fit(instance=instance)
 
         mask = phase.mask_function(image=image)
-        lensing_image = li.LensingImage(image=image, mask=mask)
+        lensing_image = li.LensImage(image=image, mask=mask)
         tracer = analysis.tracer_for_instance(instance=instance)
-        fit = lensing_fitters.LensingProfileFitter(lensing_image=lensing_image, tracer=tracer)
+        fit = lens_fit.LensProfileFit(lens_image=lensing_image, tracer=tracer)
 
         assert fit.likelihood == fit_figure_of_merit
 
@@ -370,9 +370,9 @@ class TestPhase(object):
         fit_figure_of_merit = analysis.fit(instance=instance)
 
         mask = phase.mask_function(image=image)
-        lensing_image = li.LensingImage(image=image, mask=mask)
+        lensing_image = li.LensImage(image=image, mask=mask)
         tracer = analysis.tracer_for_instance(instance=instance)
-        fit = lensing_fitters.LensingProfileInversionFitter(lensing_image=lensing_image, tracer=tracer)
+        fit = lens_fit.LensProfileInversionFit(lens_image=lensing_image, tracer=tracer)
 
         assert fit.evidence == fit_figure_of_merit
 
@@ -494,7 +494,7 @@ class TestResult(object):
     #     lensing = MockAnalysis(number_galaxies=2, value=1.0)
     #
     # result = ph.LensSourcePlanePhase.Result(constant=mm.ModelInstance(), likelihood=1,
-    # variable=mm.ModelMapper(), lensing=lensing) assert (result.image_plane_source_images[0] == np.array([
+    # variable=mm.ModelMapper(), lens=lens) assert (result.image_plane_source_images[0] == np.array([
     # 1.0])).all() assert (result.image_plane_source_images[1] == np.array([1.0])).all() assert (
     # result.image_ == np.array([2.0])).all()
 
