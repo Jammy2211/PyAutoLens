@@ -357,7 +357,7 @@ class RegularGrid(np.ndarray):
         Parameters
         -----------
         array_1d : ndarray
-            The 1D array of which is mapped to a 2D scaled array
+            The 1D array of which is mapped to a 2D scaled array.
         """
         return scaled_array.ScaledSquarePixelArray(array=self.array_2d_from_array_1d(array_1d), pixel_scale=self.mask.pixel_scale,
                                                    origin=self.mask.origin)

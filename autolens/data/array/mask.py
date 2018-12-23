@@ -54,7 +54,7 @@ class Mask(scaled_array.ScaledSquarePixelArray):
         pixel_scale: float
             The arc-second to pixel conversion factor of each pixel.
         """
-        return cls(np.full(tuple(map(lambda d: int(d), shape)), False, dtype='bool'), pixel_scale)
+        return cls(array=np.full(tuple(map(lambda d: int(d), shape)), False), pixel_scale=pixel_scale)
 
     @classmethod
     def masked_for_shape_and_pixel_scale(cls, shape, pixel_scale):
@@ -67,7 +67,7 @@ class Mask(scaled_array.ScaledSquarePixelArray):
         pixel_scale: float
             The arc-second to pixel conversion factor of each pixel.
         """
-        return cls(np.full(tuple(map(lambda d: int(d), shape)), True, dtype='bool'), pixel_scale)
+        return cls(array=np.full(tuple(map(lambda d: int(d), shape)), True), pixel_scale=pixel_scale)
 
     @classmethod
     def circular(cls, shape, pixel_scale, radius_arcsec, centre=(0., 0.)):
@@ -86,7 +86,7 @@ class Mask(scaled_array.ScaledSquarePixelArray):
         """
         mask = mask_util.mask_circular_from_shape_pixel_scale_and_radius(shape, pixel_scale, radius_arcsec,
                                                                          centre)
-        return cls(mask.astype('bool'), pixel_scale, centre=centre)
+        return cls(array=mask.astype('bool'), pixel_scale=pixel_scale, centre=centre)
 
     @classmethod
     def circular_annular(cls, shape, pixel_scale, inner_radius_arcsec, outer_radius_arcsec, centre=(0., 0.)):

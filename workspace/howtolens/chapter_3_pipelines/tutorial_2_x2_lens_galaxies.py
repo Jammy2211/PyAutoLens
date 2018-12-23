@@ -126,8 +126,8 @@ def make_pipeline():
         def modify_image(self, image, previous_results):
             phase_1_results = previous_results[0]
             phase_2_results = previous_results[1]
-            return image - phase_1_results.fit.unmasked_model_image - \
-                   phase_2_results.fit.unmasked_model_image
+            return image - phase_1_results.fit.unmasked_model_images - \
+                   phase_2_results.fit.unmasked_model_images
 
         def pass_priors(self, previous_results):
 

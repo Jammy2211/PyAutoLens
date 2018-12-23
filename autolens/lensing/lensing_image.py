@@ -43,6 +43,7 @@ class LensingImage(object):
         self.psf = image.psf
 
         self.mask = mask
+        self.mask[:,:] = np.asarray(mask[:,:], dtype='bool')
 
         self.image_1d = mask.map_2d_array_to_masked_1d_array(array_2d=image[:,:])
         self.noise_map_1d = mask.map_2d_array_to_masked_1d_array(array_2d=image.noise_map)
@@ -73,8 +74,9 @@ class LensingImage(object):
 
         self.positions = positions
 
-    def map_to_scaled_array(self, array_1d):
-        return self.grid_stack.regular.scaled_array_from_array_1d(array_1d=array_1d)
+    @property
+    def map_to_scaled_array(self):
+        return self.grid_stack.regular.scaled_array_from_array_1d
 
     def __array_finalize__(self, obj):
         if isinstance(obj, LensingImage):

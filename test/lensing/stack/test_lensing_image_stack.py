@@ -166,10 +166,10 @@ class TestLensingImage(object):
         assert (lensing_image_stack.borders[1] == np.array([0, 1, 2, 3])).all()
 
     def test_convolvers(self, lensing_image_stack):
-        assert type(lensing_image_stack.convolver_images[0]) == convolution.ConvolverImage
-        assert type(lensing_image_stack.convolver_mapping_matrices[0]) == inversion_convolution.ConvolverMappingMatrix
-        assert type(lensing_image_stack.convolver_images[1]) == convolution.ConvolverImage
-        assert type(lensing_image_stack.convolver_mapping_matrices[1]) == inversion_convolution.ConvolverMappingMatrix
+        assert type(lensing_image_stack.convolvers_image[0]) == convolution.ConvolverImage
+        assert type(lensing_image_stack.convolvers_mapping_matrix[0]) == inversion_convolution.ConvolverMappingMatrix
+        assert type(lensing_image_stack.convolvers_image[1]) == convolution.ConvolverImage
+        assert type(lensing_image_stack.convolvers_mapping_matrix[1]) == inversion_convolution.ConvolverMappingMatrix
 
     def test__constructor_inputs(self):
 
@@ -188,10 +188,10 @@ class TestLensingImage(object):
                                               positions=[np.array([[1.0, 1.0]])])
 
         assert lensing_image_stack.sub_grid_size == 8
-        assert lensing_image_stack.convolver_images[0].psf_shape == (5, 5)
-        assert lensing_image_stack.convolver_mapping_matrices[0].psf_shape == (3, 3)
-        assert lensing_image_stack.convolver_images[1].psf_shape == (5, 5)
-        assert lensing_image_stack.convolver_mapping_matrices[1].psf_shape == (3, 3)
+        assert lensing_image_stack.convolvers_image[0].psf_shape == (5, 5)
+        assert lensing_image_stack.convolvers_mapping_matrix[0].psf_shape == (3, 3)
+        assert lensing_image_stack.convolvers_image[1].psf_shape == (5, 5)
+        assert lensing_image_stack.convolvers_mapping_matrix[1].psf_shape == (3, 3)
         assert (lensing_image_stack.positions[0] == np.array([[1.0, 1.0]])).all()
 
 

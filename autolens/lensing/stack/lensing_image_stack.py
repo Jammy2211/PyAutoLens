@@ -61,19 +61,19 @@ class LensingImageStack(object):
         if image_psf_shape is None:
             image_psf_shape = self.images[0].psf.shape
 
-        self.convolver_images = list(map(lambda image, mask :
+        self.convolvers_image = list(map(lambda image, mask :
                                 convolution.ConvolverImage(mask=mask,
                                 blurring_mask=mask.blurring_mask_for_psf_shape(psf_shape=image_psf_shape),
                                 psf=image.psf.resized_scaled_array_from_array(new_shape=image_psf_shape)),
-                                self.images, self.masks))
+                                         self.images, self.masks))
 
         if mapping_matrix_psf_shape is None:
             mapping_matrix_psf_shape = self.images[0].psf.shape
 
-        self.convolver_mapping_matrices = list(map(lambda image, mask :
+        self.convolvers_mapping_matrix = list(map(lambda image, mask :
                                 inversion_convolution.ConvolverMappingMatrix(mask=mask,
                                 psf=image.psf.resized_scaled_array_from_array(new_shape=mapping_matrix_psf_shape)),
-                                self.images, self.masks))
+                                                  self.images, self.masks))
 
         self.grid_stacks = list(map(lambda mask :
                                     grids.GridStack.grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=mask,
@@ -89,10 +89,9 @@ class LensingImageStack(object):
 
         self.positions = positions
 
-    def map_to_scaled_arrays(self, arrays_1d):
-        return list(map(lambda array_1d, grid_stack :
-                        self.grid_stack.regular.scaled_array_from_array_1d(array_1d=array_1d),
-                        arrays_1d, self.grid_stacks))
+    @property
+    def map_to_scaled_arrays(self):
+        return list(map(lambda grid_stack : grid_stack.regular.scaled_array_from_array_1d, self.grid_stacks))
 
     def __array_finalize__(self, obj):
         if isinstance(obj, LensingImageStack):
@@ -104,8 +103,8 @@ class LensingImageStack(object):
             self.noise_maps_1d = obj.noise_maps_1d
             self.masks_1d = obj.masks_1d
             self.sub_grid_size = obj.sub_grid_size
-            self.convolver_images = obj.convolver_images
-            self.convolver_mapping_matrices = obj.convolver_mapping_matrices
+            self.convolvers_image = obj.convolvers_image
+            self.convolvers_mapping_matrix = obj.convolvers_mapping_matrix
             self.grid_stacks = obj.grid_stacks
             self.padded_grid_stacks = obj.padded_grid_stacks
             self.borders = obj.borders

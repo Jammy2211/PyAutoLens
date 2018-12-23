@@ -63,10 +63,10 @@ class AbstractTracerStack(ray_tracing.AbstractTracer):
     @property
     def image_plane_blurring_images_1d(self):
         return list(map(lambda image_plane_blurring_image_1d_of_planes: sum(image_plane_blurring_image_1d_of_planes),
-                        self.image_plane_blurring_images_of_planes_1d))
+                        self.image_plane_blurring_images_1d_of_planes))
 
     @property
-    def image_plane_blurring_images_of_planes_1d(self):
+    def image_plane_blurring_images_1d_of_planes(self):
         image_plane_blurring_images_1d = [plane.image_plane_blurring_images_1d for plane in self.planes]
         image_plane_blurring_images_1d_of_planes = [[] for _ in range(self.total_grid_stacks)]
         for image_index in range(self.total_grid_stacks):
