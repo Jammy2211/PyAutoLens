@@ -4,7 +4,7 @@ from astropy import cosmology as cosmo
 
 from autolens.data.array import mask as msk
 from autolens.data.array import grids
-from autolens.data.imaging import image as im
+from autolens.data.imaging import ccd as im
 from autolens.data.imaging import convolution
 from autolens.model.profiles import light_profiles as lp
 from autolens.model.profiles import mass_profiles as mp

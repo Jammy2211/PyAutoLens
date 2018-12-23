@@ -5,7 +5,7 @@ import pytest
 import numpy as np
 
 from autofit import conf
-from autolens.data.imaging import image as im
+from autolens.data.imaging import ccd as im
 from autolens.data.array import mask as msk, scaled_array
 from autolens.data.imaging.plotters import imaging_plotters
 
@@ -33,7 +33,7 @@ def test_image():
     noise_map = im.NoiseMap(array=2.0*np.ones((3,3)), pixel_scale=1.0)
     psf = im.PSF(array=3.0*np.ones((3,3)), pixel_scale=1.0)
 
-    return im.Image(array=image, pixel_scale=1.0, noise_map=noise_map, psf=psf)
+    return im.CCD(image=image, pixel_scale=1.0, noise_map=noise_map, psf=psf)
 
 @pytest.fixture(name='positions')
 def test_positions():

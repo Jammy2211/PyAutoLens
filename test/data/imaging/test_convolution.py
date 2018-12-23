@@ -2,7 +2,7 @@ import numpy as np
 import pytest
 
 from autolens import exc
-from autolens.data.imaging import image, convolution
+from autolens.data.imaging import ccd, convolution
 from autolens.data.array import mask
 
 
@@ -475,7 +475,7 @@ class TestCompareToFull2dConv:
         # Setup a blurred datas_, using the PSF to perform the convolution in 2D, then masks it to make a 1d array.
 
         im = np.arange(900).reshape(30, 30)
-        psf = image.PSF(array=np.arange(49).reshape(7, 7), pixel_scale=1.0)
+        psf = ccd.PSF(array=np.arange(49).reshape(7, 7), pixel_scale=1.0)
         blurred_im = psf.convolve(im)
         msk = mask.Mask.circular(shape=(30, 30), pixel_scale=1.0, radius_arcsec=4.0)
         blurred_masked_im_0 = msk.map_2d_array_to_masked_1d_array(blurred_im)

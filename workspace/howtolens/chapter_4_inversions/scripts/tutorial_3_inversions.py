@@ -1,4 +1,4 @@
-from autolens.data.imaging import image as im
+from autolens.data.imaging import ccd as im
 from autolens.data.array import mask as ma
 from autolens.model.profiles import light_profiles as lp
 from autolens.model.profiles import mass_profiles as mp
@@ -32,8 +32,8 @@ def simulate():
     tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
                                                  image_plane_grid_stack=[image_plane_grids])
 
-    return im.Image.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=0.05,
-                                        exposure_time=300.0, psf=psf, background_sky_level=0.1, add_noise=True)
+    return im.CCD.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=0.05,
+                           exposure_time=300.0, psf=psf, background_sky_level=0.1, add_noise=True)
 
 # Now, lets simulate the source, masks it, and use a plot to check the masking is appropriate.
 image = simulate()
@@ -99,8 +99,8 @@ def simulate_complex_source():
                                                                   source_galaxy_3, source_galaxy_4, source_galaxy_5],
                                                  image_plane_grid_stack=[image_plane_grids])
 
-    return im.Image.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=0.05,
-                                        exposure_time=300.0, psf=psf, background_sky_level=0.1, add_noise=True)
+    return im.CCD.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=0.05,
+                           exposure_time=300.0, psf=psf, background_sky_level=0.1, add_noise=True)
 
 # This code is doing all the the same as above (setup the regular, galaxies, tracer_without_subhalo, mapper, ec.),
 # but I have made the masks slightly larger for this source.

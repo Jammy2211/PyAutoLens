@@ -1,6 +1,6 @@
 import os
 
-from autolens.data.imaging import image as im
+from autolens.data.imaging import ccd as im
 from autolens.data.array import mask as ma
 from autolens.lens import lens_image as li
 from autolens.data.imaging.plotters import imaging_plotters
@@ -20,15 +20,15 @@ simulate_data.simulate_all_images() # This will populate the 'datas' folder.
 
 # First, lets load a datas-set using the 'load_imaging_from_fits' function of the regular module (import as 'im'). This
 # datas-set represents a good datas-reduction - it conforms to all the formatting standards I describe in this tutorial!
-image = im.load_imaging_from_fits(image_path=path+'datas/regular/regular.fits',
-                                  noise_map_path=path+'datas/regular/noise_maps.fits',
-                                  psf_path=path+'datas/regular/psf.fits', pixel_scale=0.1)
+image = im.load_ccd_from_fits(image_path=path + 'datas/regular/regular.fits',
+                              noise_map_path=path+'datas/regular/noise_maps.fits',
+                              psf_path=path+'datas/regular/psf.fits', pixel_scale=0.1)
 imaging_plotters.plot_image_subplot(image=image)
 
 # If your datas comes in one .fits file spread across multiple hdus, you can specify the hdus of each regular instead.
-image = im.load_imaging_from_fits(image_path=path+'datas/regular/multiple_hdus.fits', image_hdu=0,
-                                  noise_map_path=path+'datas/regular/multiple_hdus.fits', noise_map_hdu=1,
-                                  psf_path=path+'datas/regular/multiple_hdus.fits', psf_hdu=2, pixel_scale=0.1)
+image = im.load_ccd_from_fits(image_path=path + 'datas/regular/multiple_hdus.fits', image_hdu=0,
+                              noise_map_path=path+'datas/regular/multiple_hdus.fits', noise_map_hdu=1,
+                              psf_path=path+'datas/regular/multiple_hdus.fits', psf_hdu=2, pixel_scale=0.1)
 imaging_plotters.plot_image_subplot(image=image)
 
 # Now, lets think about the format and datas-reduction of our datas. There are numerous reasons why the regular we just
@@ -46,46 +46,46 @@ imaging_plotters.plot_image_subplot(image=image)
 
 # Lets look at an regular that is in units of counts - its easy to tell because the peak values are in the 1000's or
 # 10000's.
-image_in_counts = im.load_imaging_from_fits(image_path=path+'datas/image_in_counts/regular.fits', pixel_scale=0.1,
-                                  noise_map_path=path+'datas/image_in_counts/noise_maps.fits',
-                                  psf_path=path+'datas/image_in_counts/psf.fits')
+image_in_counts = im.load_ccd_from_fits(image_path=path + 'datas/image_in_counts/regular.fits', pixel_scale=0.1,
+                                        noise_map_path=path+'datas/image_in_counts/noise_maps.fits',
+                                        psf_path=path+'datas/image_in_counts/psf.fits')
 imaging_plotters.plot_image_subplot(image=image_in_counts)
 
 # If your datas is in counts, you can convert it to electrons per second by supplying the function above with an
 # exposure time and using the 'convert_arrays_from_counts' boolean flag.
-image_converted_to_eps = im.load_imaging_from_fits(image_path=path+'datas/image_in_counts/regular.fits', pixel_scale=0.1,
-                                                   noise_map_path=path+'datas/image_in_counts/noise_maps.fits',
-                                                   psf_path=path+'datas/image_in_counts/psf.fits',
-                                                   exposure_time_map_from_single_value=1000.0, convert_from_adus=True)
+image_converted_to_eps = im.load_ccd_from_fits(image_path=path + 'datas/image_in_counts/regular.fits', pixel_scale=0.1,
+                                               noise_map_path=path+'datas/image_in_counts/noise_maps.fits',
+                                               psf_path=path+'datas/image_in_counts/psf.fits',
+                                               exposure_time_map_from_single_value=1000.0, convert_from_adus=True)
 imaging_plotters.plot_image_subplot(image=image_converted_to_eps)
 
 # The effective exposure time in each pixel may vary. This occurs when datas is reduced in a specific way, called
 # 'dithering' and 'drizzling'. If you have access to an effective exposure-time map, you can use this to convert
 # the regular to electrons per second instead.
-image_converted_to_eps = im.load_imaging_from_fits(image_path=path+'datas/image_in_counts/regular.fits', pixel_scale=0.1,
-                                                   noise_map_path=path+'datas/image_in_counts/noise_maps.fits',
-                                                   psf_path=path+'datas/image_in_counts/psf.fits',
-                                                   exposure_time_map_path=path+'datas/image_in_counts/exposure_time_map.fits',
-                                                   convert_from_adus=True)
+image_converted_to_eps = im.load_ccd_from_fits(image_path=path + 'datas/image_in_counts/regular.fits', pixel_scale=0.1,
+                                               noise_map_path=path+'datas/image_in_counts/noise_maps.fits',
+                                               psf_path=path+'datas/image_in_counts/psf.fits',
+                                               exposure_time_map_path=path+'datas/image_in_counts/exposure_time_map.fits',
+                                               convert_from_adus=True)
 imaging_plotters.plot_image_subplot(image=image_converted_to_eps)
 
 # 2) Postage stamp size - The bigger the postage stamp cut-out of the regular, the more memory it requires to store it.
 #    Why keep the edges surrounding the lens if there is no actual signal there?
 
 #    Lets look at an example of a very large postage stamp - we can barely even see the lens and source galaxies!
-image_large_stamp = im.load_imaging_from_fits(image_path=path+'datas/image_large_stamp/regular.fits', pixel_scale=0.1,
-                                              noise_map_path=path+'datas/image_large_stamp/noise_maps.fits',
-                                              psf_path=path+'datas/image_large_stamp/psf.fits')
+image_large_stamp = im.load_ccd_from_fits(image_path=path + 'datas/image_large_stamp/regular.fits', pixel_scale=0.1,
+                                          noise_map_path=path+'datas/image_large_stamp/noise_maps.fits',
+                                          psf_path=path+'datas/image_large_stamp/psf.fits')
 imaging_plotters.plot_image_subplot(image=image_large_stamp)
 
 #    If you have a large postage stamp, you can trim it when you load the datas by specifying a new regular size in pixels.
 #    This will also trim the noise_map-map, exposoure time map and other arrays which are the same dimensions / scale as
 #    the regular. This trimming is centred on the regular.
-image_large_stamp_trimmed = im.load_imaging_from_fits(image_path=path+'datas/image_large_stamp/regular.fits',
-                                                      pixel_scale=0.1,
-                                                      noise_map_path=path+'datas/image_large_stamp/noise_maps.fits',
-                                                      psf_path=path+'datas/image_large_stamp/psf.fits',
-                                                      resized_image_shape=(101, 101))
+image_large_stamp_trimmed = im.load_ccd_from_fits(image_path=path + 'datas/image_large_stamp/regular.fits',
+                                                  pixel_scale=0.1,
+                                                  noise_map_path=path+'datas/image_large_stamp/noise_maps.fits',
+                                                  psf_path=path+'datas/image_large_stamp/psf.fits',
+                                                  resized_image_shape=(101, 101))
 imaging_plotters.plot_image_subplot(image=image_large_stamp_trimmed)
 
 # 3) Postage stamp size - On the other hand, the postage stamp must have enough padding in the border that our masks can
@@ -95,9 +95,9 @@ imaging_plotters.plot_image_subplot(image=image_large_stamp_trimmed)
 
 #    This regular is an example of a stamp which is big enough to contain the lens and source galaxies, but when we
 #    apply a sensible masks we get an error, because the masks's blurring region hits the edge of the regular.
-image_small_stamp = im.load_imaging_from_fits(image_path=path+'datas/image_small_stamp/regular.fits', pixel_scale=0.1,
-                                              noise_map_path=path+'datas/image_small_stamp/noise_maps.fits',
-                                              psf_path=path+'datas/image_small_stamp/psf.fits')
+image_small_stamp = im.load_ccd_from_fits(image_path=path + 'datas/image_small_stamp/regular.fits', pixel_scale=0.1,
+                                          noise_map_path=path+'datas/image_small_stamp/noise_maps.fits',
+                                          psf_path=path+'datas/image_small_stamp/psf.fits')
 imaging_plotters.plot_image_subplot(image=image_small_stamp)
 
 # If we apply a masks to this regular, we'll get an error when we try to use it to set up a lensing regular, because its
@@ -108,11 +108,11 @@ mask = ma.Mask.circular(shape=image_small_stamp.shape, pixel_scale=image_small_s
 
 # We can overcome this using the same input as before. However, now, the resized regular shape is bigger than the regular,
 # thus a padding of zeros is introduced to the edges.
-image_small_stamp_padded = im.load_imaging_from_fits(image_path=path+'datas/image_small_stamp/regular.fits',
-                                                     pixel_scale=0.1,
-                                                     noise_map_path=path+'datas/image_small_stamp/noise_maps.fits',
-                                                     psf_path=path+'datas/image_small_stamp/psf.fits',
-                                                     resized_image_shape=(140, 140))
+image_small_stamp_padded = im.load_ccd_from_fits(image_path=path + 'datas/image_small_stamp/regular.fits',
+                                                 pixel_scale=0.1,
+                                                 noise_map_path=path+'datas/image_small_stamp/noise_maps.fits',
+                                                 psf_path=path+'datas/image_small_stamp/psf.fits',
+                                                 resized_image_shape=(140, 140))
 mask = ma.Mask.circular(shape=image_small_stamp_padded.shape, pixel_scale=image_small_stamp_padded.pixel_scale,
                         radius_arcsec=2.0)
 imaging_plotters.plot_image_subplot(image=image_small_stamp_padded, mask=mask)
@@ -151,11 +151,11 @@ lensing_image = li.LensImage(image=image_small_stamp_padded, mask=mask)
 # There are many different ways the noise_map-map can be reduced. We are aiming to include conversion functions for all
 # common datas-reductions. Currently, we have a function to convert an regular from a HST WHT map, where
 # RMS SD = 1.0/ sqrt(WHT). This can be called using the 'convert_noise_map_from_weight_map' flag.
-image_noise_from_wht = im.load_imaging_from_fits(image_path=path+'datas/image_large_stamp/regular.fits',
-                                                 pixel_scale=0.1,
-                                                 noise_map_path=path+'datas/image_large_stamp/noise_maps.fits',
-                                                 psf_path=path+'datas/image_large_stamp/psf.fits',
-                                                 convert_noise_map_from_weight_map=True)
+image_noise_from_wht = im.load_ccd_from_fits(image_path=path + 'datas/image_large_stamp/regular.fits',
+                                             pixel_scale=0.1,
+                                             noise_map_path=path+'datas/image_large_stamp/noise_maps.fits',
+                                             psf_path=path+'datas/image_large_stamp/psf.fits',
+                                             convert_noise_map_from_weight_map=True)
 
 # (I don't currently have an example regular in WHT for this tutorial, but the function above will work. Above, it
 # actually converts an accurate noise_map-map to an inverse WHT map!
@@ -165,18 +165,18 @@ image_noise_from_wht = im.load_imaging_from_fits(image_path=path+'datas/image_la
 #    convolution will take to run. In geneal, we would recommend the PSF size is 21 x 21.
 
 #    Lets look at an regular where a large PSF kernel is loaded.
-image_with_large_psf = im.load_imaging_from_fits(image_path=path+'datas/image_with_large_psf/regular.fits',
-                                                 pixel_scale=0.1,
-                                                 noise_map_path=path+'datas/image_with_large_psf/noise_maps.fits',
-                                                 psf_path=path+'datas/image_with_large_psf/psf.fits')
+image_with_large_psf = im.load_ccd_from_fits(image_path=path + 'datas/image_with_large_psf/regular.fits',
+                                             pixel_scale=0.1,
+                                             noise_map_path=path+'datas/image_with_large_psf/noise_maps.fits',
+                                             psf_path=path+'datas/image_with_large_psf/psf.fits')
 imaging_plotters.plot_image_subplot(image=image_with_large_psf)
 
 # We can resize a psf the same way that we resize an regular.
-image_with_trimmed_psf = im.load_imaging_from_fits(image_path=path+'datas/image_with_large_psf/regular.fits',
-                                                 pixel_scale=0.1,
-                                                 noise_map_path=path+'datas/image_with_large_psf/noise_maps.fits',
-                                                 psf_path=path+'datas/image_with_large_psf/psf.fits',
-                                                   resized_psf_shape=(21, 21))
+image_with_trimmed_psf = im.load_ccd_from_fits(image_path=path + 'datas/image_with_large_psf/regular.fits',
+                                               pixel_scale=0.1,
+                                               noise_map_path=path+'datas/image_with_large_psf/noise_maps.fits',
+                                               psf_path=path+'datas/image_with_large_psf/psf.fits',
+                                               resized_psf_shape=(21, 21))
 imaging_plotters.plot_image_subplot(image=image_with_trimmed_psf)
 
 # 8) The PSF dimensions are odd x odd (21 x 21). It is important that the PSF dimensions are odd, because even-sized

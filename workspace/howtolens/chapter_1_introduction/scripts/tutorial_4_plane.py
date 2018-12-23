@@ -15,7 +15,7 @@ from autolens.lens.plotters import plane_plotters
 # around the lens model_galaxy and into the observer (light should bend 'smoothly', but drawing this on a keyboard wasn't
 # possible - so just pretend the diagonal lines coming from the observer and source are less jagged):
 
-#  Observer                  Image-Plane               Source-Plane
+#  Observer                  CCD-Plane               Source-Plane
 #  (z=0, Earth)               (z = 0.5)                (z = 1.0)
 #
 #           ----------------------------------------------
@@ -33,7 +33,7 @@ from autolens.lens.plotters import plane_plotters
 # its light after it is deflected and lensed by the foreground model_galaxy's mass. In this exercise, we'll make a source
 # model_galaxy regular whose light has been deflected by a lens model_galaxy.
 
-# In the schematic above, we used the terms 'Image-Plane' and 'Source-Plane'. In lensing speak, a 'plane' is a
+# In the schematic above, we used the terms 'CCD-Plane' and 'Source-Plane'. In lensing speak, a 'plane' is a
 # collection of galaxies at the same redshift (that is, parallel to one another down our line-of-sight). Therefore:
 
 # - If two or more lens galaxies are at the same redshift in the regular-plane, they deflection light in the same way.
@@ -82,7 +82,7 @@ source_plane_grids = image_plane.trace_grids_to_next_plane()
 source_plane = plane.Plane(galaxies=[source_galaxy], grid_stack=source_plane_grids)
 
 # Lets inspect our grid_stacks - I bet our source-plane isn't the boring uniform grid we plotted in the first tutorial!
-plane_plotters.plot_plane_grid(plane=image_plane, title='Image-plane Grid')
+plane_plotters.plot_plane_grid(plane=image_plane, title='CCD-plane Grid')
 plane_plotters.plot_plane_grid(plane=source_plane, title='Source-plane Grid')
 
 # We can zoom in on the 'origin' of the source-plane using the axis limits, which are defined as [xmin, xmax, ymin,

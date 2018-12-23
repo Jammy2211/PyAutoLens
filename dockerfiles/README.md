@@ -1,7 +1,7 @@
 ***need more work***
 Before Building the Images, please git pull to update PyAutoLens first.
 
-- Build the Docker Image for PyAutoLens
+- Build the Docker CCD for PyAutoLens
 	docker build -t linan7788626/docker-pyautolens .
 
 
@@ -18,7 +18,7 @@ Before Building the Images, please git pull to update PyAutoLens first.
 	docker run -it -e LOCAL_USER_ID=`id -u $USER` -h PyAutoLens -p 8888:8888 -p 6006:6006 -v $HOME/PyAutoLensWorkDir:/home/user/PyAutoLens/workDir linan7788626/docker-pyautolens
 
 
-- Pull the Docker Image
+- Pull the Docker CCD
 	docker pull linan7788626/docker-pyautolens
 
 

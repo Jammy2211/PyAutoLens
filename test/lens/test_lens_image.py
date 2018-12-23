@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from autolens.data.imaging import image as im, convolution
+from autolens.data.imaging import ccd as im, convolution
 from autolens.data.array.util import grid_util
 from autolens.data.array import scaled_array
 from autolens.data.array import mask as msk
@@ -19,9 +19,9 @@ def make_image():
     exposure_time_map = im.ExposureTimeMap(array=5.0 * np.ones((4, 4)), pixel_scale=3.0)
     background_sky_map = scaled_array.ScaledSquarePixelArray(array=6.0 * np.ones((4, 4)), pixel_scale=3.0)
 
-    return im.Image(array=np.ones((4,4)), pixel_scale=3.0, psf=psf, noise_map=noise_map,
-                    background_noise_map=background_noise_map, poisson_noise_map=poisson_noise_map,
-                    exposure_time_map=exposure_time_map, background_sky_map=background_sky_map)
+    return im.CCD(image=np.ones((4, 4)), pixel_scale=3.0, psf=psf, noise_map=noise_map,
+                  background_noise_map=background_noise_map, poisson_noise_map=poisson_noise_map,
+                  exposure_time_map=exposure_time_map, background_sky_map=background_sky_map)
 
 @pytest.fixture(name="mask")
 def make_mask():
@@ -96,7 +96,7 @@ class TestLensImage(object):
 
     def test__constructor_inputs(self):
         psf = im.PSF(np.ones((7, 7)), 1)
-        image = im.Image(np.ones((51, 51)), pixel_scale=3., psf=psf, noise_map=np.ones((51, 51)))
+        image = im.CCD(np.ones((51, 51)), pixel_scale=3., psf=psf, noise_map=np.ones((51, 51)))
         mask = msk.Mask.masked_for_shape_and_pixel_scale(shape=(51, 51), pixel_scale=1.0)
         mask[26, 26] = False
 

@@ -1,7 +1,7 @@
 from autofit import conf
 from autofit.core import non_linear as nl
 from autofit.core import model_mapper as mm
-from autolens.data.imaging import image as im
+from autolens.data.imaging import ccd as im
 from autolens.model.galaxy import galaxy_model as gm
 from autolens.model.inversion import pixelizations as pix, regularization as reg
 from autolens.pipeline import phase as ph
@@ -46,8 +46,8 @@ def simulate():
                                                                   source_galaxy_2, source_galaxy_3],
                                                  image_plane_grid_stack=[image_plane_grids])
 
-    return im.Image.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=0.05,
-                                        exposure_time=300.0, psf=psf, background_sky_level=0.1, add_noise=True)
+    return im.CCD.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=0.05,
+                           exposure_time=300.0, psf=psf, background_sky_level=0.1, add_noise=True)
 
 # Lets simulate the regular we'll fit, which is the same complex source as the 3_pipelines.py tutorial.
 image = simulate()

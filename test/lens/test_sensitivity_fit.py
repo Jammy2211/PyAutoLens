@@ -2,7 +2,7 @@ import numpy as np
 import pytest
 
 from autofit.core import fitting_util
-from autolens.data.imaging import image
+from autolens.data.imaging import ccd
 from autolens.data.array import mask as mask
 from autolens.model.galaxy import galaxy as g
 from autolens.lens.util import lens_fit_util as util
@@ -21,11 +21,11 @@ def make_galaxy_light(sersic):
 
 @pytest.fixture(name='si_blur')
 def make_si_blur():
-    psf = image.PSF(array=(np.array([[1.0, 1.0, 1.0],
-                                     [1.0, 1.0, 1.0],
-                                     [1.0, 1.0, 1.0]])), pixel_scale=1.0, renormalize=False)
-    im = image.Image(array=5.0 * np.ones((4, 4)), pixel_scale=1.0, psf=psf, noise_map=np.ones((4, 4)),
-                     exposure_time_map=3.0 * np.ones((4, 4)), background_sky_map=4.0 * np.ones((4, 4)))
+    psf = ccd.PSF(array=(np.array([[1.0, 1.0, 1.0],
+                                   [1.0, 1.0, 1.0],
+                                   [1.0, 1.0, 1.0]])), pixel_scale=1.0, renormalize=False)
+    im = ccd.CCD(image=5.0 * np.ones((4, 4)), pixel_scale=1.0, psf=psf, noise_map=np.ones((4, 4)),
+                 exposure_time_map=3.0 * np.ones((4, 4)), background_sky_map=4.0 * np.ones((4, 4)))
 
     ma = np.array([[True, True, True, True],
                    [True, False, False, True],

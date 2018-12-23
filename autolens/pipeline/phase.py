@@ -7,7 +7,7 @@ from autofit.core import non_linear
 
 from autolens import exc
 from autolens.data.array import mask as msk
-from autolens.data.imaging import image as im
+from autolens.data.imaging import ccd as im
 from autolens.data.imaging.plotters import imaging_plotters
 from autolens.lens import lens_image as li, lens_fit
 from autolens.lens import ray_tracing
@@ -390,14 +390,14 @@ class PhaseImaging(Phase):
 
         Parameters
         ----------
-        image: img.Image
+        image: img.CCD
             An lensing_image that has been masked
         previous_results: ResultsCollection
             The result of the previous lens
 
         Returns
         -------
-        lensing_image: img.Image
+        lensing_image: img.CCD
             The modified lensing_image (not changed by default)
         """
         return image
@@ -412,7 +412,7 @@ class PhaseImaging(Phase):
             The default masks passed in by the pipeline
         previous_results: ResultsCollection
             An object describing the results of the last phase or None if no phase has been executed
-        image: img.Image
+        image: img.CCD
             An lensing_image that has been masked
 
         Returns
@@ -435,7 +435,7 @@ class PhaseImaging(Phase):
         ----------
         mask: Mask
             The default masks passed in by the pipeline
-        image: im.Image
+        image: im.CCD
             An lensing_image that has been masked
         previous_results: ResultsCollection
             The result from the previous phase
