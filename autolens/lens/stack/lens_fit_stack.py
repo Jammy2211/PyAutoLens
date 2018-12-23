@@ -36,7 +36,7 @@ class AbstractLensFitStack(object):
 
     def __init__(self, tracer, padded_tracer, map_to_scaled_arrays):
         """ An abstract lens fitter, which contains the tracer's used to perform the fit and functions to manipulate \
-        the lens image's data.
+        the lens image's hyper.
 
         Parameters
         -----------
@@ -46,7 +46,7 @@ class AbstractLensFitStack(object):
             A tracer with an identical strong lens configuration to the tracer above, but using the lens image's \
             padded grid_stack such that unmasked model-images can be computed.
         map_to_scaled_arrays : func
-            A list of functions which maps the 1D lens data to its unmasked 2D scaled-array.
+            A list of functions which maps the 1D lens hyper to its unmasked 2D scaled-array.
         """
         self.tracer = tracer
         self.padded_tracer = padded_tracer

@@ -32,5 +32,5 @@ class MockHyperGalaxy(object):
         contributions[contributions < hyper_minimum_value] = 0.0
         return contributions
 
-    def scaled_noise_from_contributions(self, noise_map, contributions):
+    def hyper_noise_from_contributions(self, noise_map, contributions):
         return self.noise_factor * (noise_map * contributions) ** self.noise_power

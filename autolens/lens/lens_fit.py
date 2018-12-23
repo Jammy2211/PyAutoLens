@@ -57,7 +57,7 @@ class AbstractLensFit(object):
 
     def __init__(self, tracer, padded_tracer, map_to_scaled_array):
         """ An abstract lens fitter, which contains the tracer's used to perform the fit and functions to manipulate \
-        the lens image's data.
+        the lens image's hyper.
 
         Parameters
         -----------
@@ -67,7 +67,7 @@ class AbstractLensFit(object):
             A tracer with an identical strong lens configuration to the tracer above, but using the lens image's \
             padded grid_stack such that unmasked model-images can be computed.
         map_to_scaled_array : func
-            A function which maps the 1D lens data to its unmasked 2D array.
+            A function which maps the 1D lens hyper to its unmasked 2D array.
         """
         self.tracer = tracer
         self.padded_tracer = padded_tracer
@@ -393,7 +393,7 @@ class AbstractLensHyperFit(object):
 
         A hyper-fit is a fit which performs the fit  described in the *AbstractFitter*, but also includes a set of \
         parameters which allow the noise-map of the image to be scaled. This prevents over-fitting of small regions of \
-        an image with high chi-squared values, ensuring the model gives global fit to the data.
+        an image with high chi-squared values, ensuring the model gives global fit to the hyper.
 
         This is performed using existing model-images of the observed image, from which a 'contribution-map' is \
         computed and used to increase the noise_map in localized regions of the noise-map.

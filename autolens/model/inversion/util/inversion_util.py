@@ -3,7 +3,7 @@ import numpy as np
 
 @numba.jit(nopython=True, cache=True)
 def data_vector_from_blurred_mapping_matrix_and_data(blurred_mapping_matrix, image_1d, noise_map_1d):
-    """Compute the data vector *D* from a blurred mapping matrix *f* and the 1D image *d* and 1D noise-map *\sigma* \
+    """Compute the hyper vector *D* from a blurred mapping matrix *f* and the 1D image *d* and 1D noise-map *\sigma* \
     (see Warren & Dye 2003).
     
     Parameters
@@ -84,7 +84,7 @@ def curvature_matrix_from_blurred_mapping_matrix_jit(blurred_mapping_matrix, noi
 
 @numba.jit(nopython=True, cache=True)
 def reconstructed_data_vector_from_blurred_mapping_matrix_and_solution_vector(blurred_mapping_matrix, solution_vector):
-    """ Compute the reconstructed data vector from the blurrred mapping matrix *f* and solution vector *S*.
+    """ Compute the reconstructed hyper vector from the blurrred mapping matrix *f* and solution vector *S*.
 
     Parameters
     -----------

@@ -10,7 +10,7 @@ def map_arrays_1d_to_scaled_arrays(arrays_1d, map_to_scaled_arrays):
     arrays_1d : [ndarray]
         The list of 1D arrays which are mapped to unmasked 2D scaled-arrays.
     map_to_scaled_arrays : [func]
-        A list of functions which maps the 1D lens data to its unmasked 2D scaled-array.
+        A list of functions which maps the 1D lens hyper to its unmasked 2D scaled-array.
     """
     return list(map(lambda array_1d, map_to_scaled_array :
                     map_to_scaled_array(array_1d=array_1d),
@@ -60,7 +60,7 @@ def blurred_images_of_images_and_planes_from_1d_images_and_convolver(total_plane
         For every image and for every plane, the 1D image-plane image.
     image_plane_blurring_image_1d_of_planes : [ndarray]
         For every image and for every plane, the 1D image-plane blurring image.
-    convolver : data.imaging.convolution.ConvolverImage
+    convolver : hyper.imaging.convolution.ConvolverImage
         Class which performs the PSF convolution of a masked image in 1D.
     map_to_scaled_array : func
         A function which maps a masked image from 1D to 2D.

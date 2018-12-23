@@ -6,16 +6,16 @@ class Regularization(object):
 
     def __init__(self, coefficients=(1.0,)):
         """ Abstract base class for a regularization-scheme, which is applied to a pixelization to enforce a \
-        smooth-source solution and prevent over-fitting noise_map in the data. This is achieved by computing a \
+        smooth-source solution and prevent over-fitting noise_map in the hyper. This is achieved by computing a \
         'regularization term' - which is the sum of differences in reconstructed flux between every set of neighboring \
         pixels. This regularization term is added to the solution's chi-squared as a penalty term. This effects \
         a pixelization in the following ways:
 
         1) The regularization matrix (see below) is added to the curvature matrix used by the inversion to \
-           linearly invert and fit the data. Thus, it changes the pixelization in a linear manner, ensuring that \
+           linearly invert and fit the hyper. Thus, it changes the pixelization in a linear manner, ensuring that \
            the minimum chi-squared solution is achieved accounting for the penalty term.
 
-        2) The likelihood of the pixelization's fit to the data changes from L = -0.5 *(chi^2 + noise_normalization) \ 
+        2) The likelihood of the pixelization's fit to the hyper changes from L = -0.5 *(chi^2 + noise_normalization) \
            to L = -0.5 (chi^2 + coefficients * regularization_term + noise_normalization). The regularization \
            coefficient is a 'hyper-parameter' which determines how strongly we smooth the pixelization's reconstruction.
 

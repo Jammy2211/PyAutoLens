@@ -13,7 +13,7 @@ dirpath = os.path.dirname(os.path.realpath(__file__))
 def reset_paths(test_name, output_path):
 
     try:
-        shutil.rmtree(dirpath + '/data/' + test_name)
+        shutil.rmtree(dirpath + '/hyper/' + test_name)
     except FileNotFoundError:
         pass
 
@@ -24,7 +24,7 @@ def reset_paths(test_name, output_path):
 
 def simulate_integration_image(test_name, pixel_scale, lens_galaxies, source_galaxies, target_signal_to_noise):
     
-    output_path = "{}/data/".format(os.path.dirname(os.path.realpath(__file__))) + test_name + '/'
+    output_path = "{}/hyper/".format(os.path.dirname(os.path.realpath(__file__))) + test_name + '/'
     psf_shape = (11, 11)
     image_shape = (150, 150)
 
@@ -64,7 +64,7 @@ def simulate_integration_image(test_name, pixel_scale, lens_galaxies, source_gal
 
 def load_image(test_name, pixel_scale):
 
-    data_dir = "{}/data/{}".format(dirpath, test_name)
+    data_dir = "{}/hyper/{}".format(dirpath, test_name)
     data = scaled_array.ScaledSquarePixelArray.from_fits_with_pixel_scale(file_path=data_dir + '/image.fits', hdu=0,
                                                                           pixel_scale=pixel_scale)
     noise = scaled_array.ScaledSquarePixelArray.from_fits_with_pixel_scale(file_path=data_dir + '/noise_map.fits', hdu=0,
