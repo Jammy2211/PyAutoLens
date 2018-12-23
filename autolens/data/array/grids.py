@@ -540,7 +540,7 @@ class SubGrid(RegularGrid):
             self.mask = obj.mask
 
     def sub_data_to_regular_data(self, sub_array):
-        """For an input sub-gridded array, map its data-values from the sub-gridded values to a 1D regular grid of \
+        """For an input sub-gridded array, map its hyper-values from the sub-gridded values to a 1D regular grid of \
         values by summing each set of each set of sub-pixels values and dividing by the total number of sub-pixels.
 
         Parameters

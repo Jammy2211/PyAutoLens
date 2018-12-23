@@ -47,7 +47,7 @@ class AbstractPhase(object):
     def __init__(self, phase_name, optimizer_class=non_linear.MultiNest, cosmology=cosmo.Planck15,
                  auto_link_priors=False):
         """
-        A phase in an lens pipeline. Uses the set non_linear optimizer to try to fit models and data
+        A phase in an lens pipeline. Uses the set non_linear optimizer to try to fit models and hyper
         passed to it.
 
         Parameters
@@ -282,7 +282,7 @@ class PhasePositions(AbstractPhase):
         Returns
         -------
         result: non_linear.Result
-            A result object comprising the best fit model and other data.
+            A result object comprising the best fit model and other hyper.
         """
         analysis = self.make_analysis(positions=positions, pixel_scale=pixel_scale, previous_results=previous_results)
         result = self.optimizer.fit(analysis)
@@ -361,7 +361,7 @@ class PhaseImaging(Phase):
 
         """
 
-        A phase in an lens pipeline. Uses the set non_linear optimizer to try to fit models and data
+        A phase in an lens pipeline. Uses the set non_linear optimizer to try to fit models and hyper
         passed to it.
 
         Parameters
@@ -418,7 +418,7 @@ class PhaseImaging(Phase):
         Returns
         -------
         result: non_linear.Result
-            A result object comprising the best fit model and other data.
+            A result object comprising the best fit model and other hyper.
         """
         analysis = self.make_analysis(image=image, previous_results=previous_results, mask=mask)
         result = self.optimizer.fit(analysis)
@@ -735,7 +735,7 @@ class GalaxyFitPhase(AbstractPhase):
                  galaxy=None, optimizer_class=non_linear.MultiNest, sub_grid_size=2,
                  mask_function=default_mask_function, cosmology=cosmo.Planck15):
         """
-        A phase in an lens pipeline. Uses the set non_linear optimizer to try to fit models and data
+        A phase in an lens pipeline. Uses the set non_linear optimizer to try to fit models and hyper
         passed to it.
 
         Parameters
@@ -773,7 +773,7 @@ class GalaxyFitPhase(AbstractPhase):
         Returns
         -------
         result: non_linear.Result
-            A result object comprising the best fit model and other data.
+            A result object comprising the best fit model and other hyper.
         """
         analysis = self.make_analysis(array=array, noise_map=noise_map, previous_results=previous_results, mask=mask)
         result = self.optimizer.fit(analysis)
@@ -939,7 +939,7 @@ class SensitivityPhase(PhaseImaging):
                  optimizer_class=non_linear.MultiNest, sub_grid_size=2,
                  mask_function=default_mask_function):
         """
-        A phase in an lens pipeline. Uses the set non_linear optimizer to try to fit models and data
+        A phase in an lens pipeline. Uses the set non_linear optimizer to try to fit models and hyper
         passed to it.
 
         Parameters

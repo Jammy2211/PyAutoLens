@@ -8,7 +8,7 @@ class GalaxyData(object):
 
     def __init__(self, array, noise_map, mask, sub_grid_size=2, use_intensities=False, use_surface_density=False,
                  use_potential=False, use_deflections_y=False, use_deflections_x=False):
-        """ A galaxy-data is a collection of data components which are used to fit a galaxy to another galaxy. \
+        """ A galaxy-hyper is a collection of hyper components which are used to fit a galaxy to another galaxy. \
         This is where a component of a galaxy's light profiles (e.g. intensities) or mass profiles (e.g. surface \
         density, potential or deflection angles) are fitted to one another.
 
@@ -16,7 +16,7 @@ class GalaxyData(object):
         using one inferred parametrization of light or mass profiles to a new galaxy with a different parametrization \
         of light or mass profiles.
 
-        This omits a number of the data components typically used when fitting an image (e.g. the observed image, PSF, \
+        This omits a number of the hyper components typically used when fitting an image (e.g. the observed image, PSF, \
         exposure time map), but still has a number of the other components (e.g. an effective noise_map-map, grid_stacks).
 
         Parameters
@@ -26,7 +26,7 @@ class GalaxyData(object):
         noise_map : scaled_array.ScaledSquarePixelArray
             The noise_map-map used for computing the likelihood of each fit. This can be chosen arbritarily.
         mask: msk.Mask
-            The 2D masks that is applied to image data.
+            The 2D masks that is applied to image hyper.
         sub_grid_size : int
             The size of the sub-grid used for computing the SubGrid (see imaging.masks.SubGrid).
 
@@ -35,10 +35,10 @@ class GalaxyData(object):
         noise_map_1d : ndarray
             The masked 1D array of the noise_map-map
         grid_stacks : imaging.masks.GridStack
-            Grids of (y,x) Cartesian coordinates which map over the masked 1D data array's pixels (includes an \
+            Grids of (y,x) Cartesian coordinates which map over the masked 1D hyper array's pixels (includes an \
             regular-grid, sub-grid, etc.)
         padded_grid_stack : imaging.masks.GridStack
-            Grids of padded (y,x) Cartesian coordinates which map over the every data array's pixel in 1D and a \
+            Grids of padded (y,x) Cartesian coordinates which map over the every hyper array's pixel in 1D and a \
             padded regioon to include edge's for accurate PSF convolution (includes an regular-grid, sub-grid, etc.)
         """
         self.array = array
@@ -60,10 +60,10 @@ class GalaxyData(object):
 
         if all(not element for element in [use_intensities, use_surface_density, use_potential,
                                            use_deflections_y, use_deflections_x]):
-            raise exc.GalaxyException('The galaxy data has not been supplied with a use_ method.')
+            raise exc.GalaxyException('The galaxy hyper has not been supplied with a use_ method.')
 
         if sum([use_intensities, use_surface_density, use_potential, use_deflections_y, use_deflections_x]) > 1:
-            raise exc.GalaxyException('The galaxy data has not been supplied with multiple use_ methods, only supply '
+            raise exc.GalaxyException('The galaxy hyper has not been supplied with multiple use_ methods, only supply '
                                       'one.')
 
         self.use_intensities = use_intensities

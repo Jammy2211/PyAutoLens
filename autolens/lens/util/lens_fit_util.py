@@ -77,7 +77,7 @@ def blurred_image_of_planes_from_1d_images_and_convolver(total_planes, image_pla
         For every plane, the 1D image-plane image.
     image_plane_blurring_image_1d_of_planes : [ndarray]
         For every plane, the 1D image-plane blurring image.
-    convolver : data.imaging.convolution.ConvolverImage
+    convolver : hyper.imaging.convolution.ConvolverImage
         Class which performs the PSF convolution of a masked image in 1D.
     map_to_scaled_array : func
         A function which maps a masked image from 1D to 2D.
@@ -199,7 +199,7 @@ def scaled_noise_map_from_hyper_galaxies_and_contribution_maps(contribution_maps
         second.
     """
     scaled_noise_maps = list(map(lambda hyper_galaxy, contribution_map:
-                              hyper_galaxy.scaled_noise_from_contributions(noise_map=noise_map,
-                                                                           contributions=contribution_map),
+                              hyper_galaxy.hyper_noise_from_contributions(noise_map=noise_map,
+                                                                          contributions=contribution_map),
                                     hyper_galaxies, contribution_maps))
     return noise_map + sum(scaled_noise_maps)

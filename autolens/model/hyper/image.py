@@ -13,7 +13,7 @@ class HyperImage(object):
         self.background_sky_scale = background_sky_scale
         self.background_noise_scale = background_noise_scale
 
-    def sky_scaled_image_from_image(self, image):
+    def sky_scaled_hyper_image_from_image(self, image):
         """Compute a new regular with the background sky level scaled. This can simply multiple by a constant factor \
         (assuming a uniform background sky) because the regular is in units electrons per second.
 
@@ -24,7 +24,7 @@ class HyperImage(object):
         """
         return image + self.background_sky_scale
 
-    def scaled_noise_from_background_noise(self, noise, background_noise):
+    def hyper_noise_from_background_noise(self, noise, background_noise):
         """Compute a scaled noise_maps regular from the background noise_maps regular.
 
         Parameters

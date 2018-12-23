@@ -3,7 +3,7 @@ import numpy as np
 from autolens import exc
 from autolens.model.inversion.util import inversion_util
 
-# TODO : Unit test this properly, using a cleverly made mock data-set
+# TODO : Unit test this properly, using a cleverly made mock hyper-set
 
 def inversion_from_image_mapper_and_regularization(image_1d, noise_map_1d, convolver, mapper, regularization):
     return Inversion(image_1d=image_1d, noise_map_1d=noise_map_1d, convolver=convolver, mapper=mapper,
@@ -45,7 +45,7 @@ class Inversion(object):
         curvature_reg_matrix : ndarray
             The curvature_matrix + regularization matrix.
         solution_vector : ndarray
-            The vector containing the reconstructed fit to the data.
+            The vector containing the reconstructed fit to the hyper.
         """
 
         self.mapper = mapper

@@ -15,21 +15,21 @@ def plot_array(array, origin=None, mask=None, should_plot_border=False, position
                mask_pointsize=10, border_pointsize=2, position_pointsize=30, grid_pointsize=1,
                xticks_manual=None, yticks_manual=None,
                output_path=None, output_format='show', output_filename='array'):
-    """Plot an array of data as a figure.
+    """Plot an array of hyper as a figure.
 
     Parameters
     -----------
-    array : ndarray or data.array.scaled_array.ScaledArray
-        The 2D array of data which is plotted.
+    array : ndarray or hyper.array.scaled_array.ScaledArray
+        The 2D array of hyper which is plotted.
     origin : (float, float).
-        The origin of the coordinate system of the data, which is plotted as an 'x' on the data if input.
-    mask : ndarray of data.array.masks.Mask
-        The masks applied to the data, the edge of which is plotted as a set of points over the plotted array.
+        The origin of the coordinate system of the hyper, which is plotted as an 'x' on the hyper if input.
+    mask : ndarray of hyper.array.masks.Mask
+        The masks applied to the hyper, the edge of which is plotted as a set of points over the plotted array.
     should_plot_border : bool
         If a masks is supplied, its borders pixels (e.g. the exterior edge) is plotted if this is *True*.
     positions : [[]]
-        Lists of (y,x) coordinates on the data which are plotted as colored dots, to highlight specific pixels.
-    grid : ndarray or data.array.grid_stacks.RegularGrid
+        Lists of (y,x) coordinates on the hyper which are plotted as colored dots, to highlight specific pixels.
+    grid : ndarray or hyper.array.grid_stacks.RegularGrid
         A grid of (y,x) coordinates which may be plotted over the plotted array.
     as_subplot : bool
         Whether the array is plotted as part of a subplot, in which case the grid figure is not opened / closed.
@@ -40,12 +40,12 @@ def plot_array(array, origin=None, mask=None, should_plot_border=False, position
     figsize : (int, int)
         The size of the figure in (rows, columns).
     aspect : str
-        The aspect ratio of the data, specifically whether it is forced to be square ('equal') or adapts its size to \
+        The aspect ratio of the hyper, specifically whether it is forced to be square ('equal') or adapts its size to \
         the figure size ('auto').
     cmap : str
         The colormap the array is plotted using, which may be chosen from the standard matplotlib colormaps.
     norm : str
-        The normalization of the colormap used to plot the data, specifically whether it is linear ('linear'), log \
+        The normalization of the colormap used to plot the hyper, specifically whether it is linear ('linear'), log \
         ('log') or a symmetric log normalization ('symmetric_log').
     norm_min : float or None
         The minimum array value the colormap map spans (all values below this value are plotted the same color).
@@ -115,12 +115,12 @@ def plot_array(array, origin=None, mask=None, should_plot_border=False, position
 
 def plot_figure(array, as_subplot, units, kpc_per_arcsec, figsize, aspect, cmap, norm, norm_min, norm_max,
                 linthresh, linscale, xticks_manual, yticks_manual):
-    """Open a matplotlib figure and plot the array of data on it.
+    """Open a matplotlib figure and plot the array of hyper on it.
 
     Parameters
     -----------
-    array : ndarray or data.array.scaled_array.ScaledArray
-        The 2D array of data which is plotted.
+    array : ndarray or hyper.array.scaled_array.ScaledArray
+        The 2D array of hyper which is plotted.
     as_subplot : bool
         Whether the array is plotted as part of a subplot, in which case the grid figure is not opened / closed.
     units : str
@@ -130,12 +130,12 @@ def plot_figure(array, as_subplot, units, kpc_per_arcsec, figsize, aspect, cmap,
     figsize : (int, int)
         The size of the figure in (rows, columns).
     aspect : str
-        The aspect ratio of the data, specifically whether it is forced to be square ('equal') or adapts its size to \
+        The aspect ratio of the hyper, specifically whether it is forced to be square ('equal') or adapts its size to \
         the figure size ('auto').
     cmap : str
         The colormap the array is plotted using, which may be chosen from the standard matplotlib colormaps.
     norm : str
-        The normalization of the colormap used to plot the data, specifically whether it is linear ('linear'), log \
+        The normalization of the colormap used to plot the hyper, specifically whether it is linear ('linear'), log \
         ('log') or a symmetric log normalization ('symmetric_log').
     norm_min : float or None
         The minimum array value the colormap map spans (all values below this value are plotted the same color).
@@ -171,8 +171,8 @@ def get_extent(array, units, kpc_per_arcsec, xticks_manual, yticks_manual):
 
     Parameters
     -----------
-    array : ndarray or data.array.scaled_array.ScaledArray
-        The 2D array of data which is plotted.
+    array : ndarray or hyper.array.scaled_array.ScaledArray
+        The 2D array of hyper which is plotted.
     units : str
         The units of the y / x axis of the plots, in arc-seconds ('arcsec') or kiloparsecs ('kpc').
     kpc_per_arcsec : float
@@ -199,12 +199,12 @@ def get_normalization_min_max(array, norm_min, norm_max):
     """Get the minimum and maximum of the normalization of the array, which sets the lower and upper limits of the \
     colormap.
 
-    If norm_min / norm_max are not supplied, the minimum / maximum values of the array of data are used.
+    If norm_min / norm_max are not supplied, the minimum / maximum values of the array of hyper are used.
 
     Parameters
     -----------
-    array : ndarray or data.array.scaled_array.ScaledArray
-        The 2D array of data which is plotted.
+    array : ndarray or hyper.array.scaled_array.ScaledArray
+        The 2D array of hyper which is plotted.
     norm_min : float or None
         The minimum array value the colormap map spans (all values below this value are plotted the same color).
     norm_max : float or None
@@ -223,12 +223,12 @@ def get_normalization_scale(norm, norm_min, norm_max, linthresh, linscale):
 
     For a 'symmetric_log' colormap, linthesh and linscale also change the colormap.
 
-    If norm_min / norm_max are not supplied, the minimum / maximum values of the array of data are used.
+    If norm_min / norm_max are not supplied, the minimum / maximum values of the array of hyper are used.
 
     Parameters
     -----------
-    array : ndarray or data.array.scaled_array.ScaledArray
-        The 2D array of data which is plotted.
+    array : ndarray or hyper.array.scaled_array.ScaledArray
+        The 2D array of hyper which is plotted.
     norm_min : float or None
         The minimum array value the colormap map spans (all values below this value are plotted the same color).
     norm_max : float or None
@@ -313,9 +313,9 @@ def convert_grid_units(array, grid_arc_seconds, units, kpc_per_arcsec):
 
     Parameters
     -----------
-    array : ndarray or data.array.scaled_array.ScaledArray
-        The 2D array of data which is plotted, the shape of which is used for converting the grid to units of pixels.
-    grid_arc_seconds : ndarray or data.array.grid_stacks.RegularGrid
+    array : ndarray or hyper.array.scaled_array.ScaledArray
+        The 2D array of hyper which is plotted, the shape of which is used for converting the grid to units of pixels.
+    grid_arc_seconds : ndarray or hyper.array.grid_stacks.RegularGrid
         The (y,x) coordinates of the grid in arc-seconds, in an array of shape (total_coordinates, 2).
     units : str
         The units of the y / x axis of the plots, in arc-seconds ('arcsec') or kiloparsecs ('kpc').
@@ -334,10 +334,10 @@ def plot_origin(array, origin, units, kpc_per_arcsec):
     
     Parameters
     -----------
-    array : ndarray or data.array.scaled_array.ScaledArray
-        The 2D array of data which is plotted.
+    array : ndarray or hyper.array.scaled_array.ScaledArray
+        The 2D array of hyper which is plotted.
     origin : (float, float).
-        The origin of the coordinate system of the data, which is plotted as an 'x' on the data if input.
+        The origin of the coordinate system of the hyper, which is plotted as an 'x' on the hyper if input.
     units : str
         The units of the y / x axis of the plots, in arc-seconds ('arcsec') or kiloparsecs ('kpc').
     kpc_per_arcsec : float or None
@@ -355,8 +355,8 @@ def plot_mask(mask, units, kpc_per_arcsec, pointsize):
 
     Parameters
     -----------
-    mask : ndarray of data.array.masks.Mask
-        The masks applied to the data, the edge of which is plotted as a set of points over the plotted array.
+    mask : ndarray of hyper.array.masks.Mask
+        The masks applied to the hyper, the edge of which is plotted as a set of points over the plotted array.
     units : str
         The units of the y / x axis of the plots, in arc-seconds ('arcsec') or kiloparsecs ('kpc').
     kpc_per_arcsec : float or None
@@ -379,8 +379,8 @@ def plot_border(mask, should_plot_border, units, kpc_per_arcsec, pointsize):
 
     Parameters
     -----------t.
-    masks : ndarray of data.array.masks.Mask
-        The masks applied to the data, the edge of which is plotted as a set of points over the plotted array.
+    masks : ndarray of hyper.array.masks.Mask
+        The masks applied to the hyper, the edge of which is plotted as a set of points over the plotted array.
     should_plot_border : bool
         If a masks is supplied, its borders pixels (e.g. the exterior edge) is plotted if this is *True*.
     units : str
@@ -401,14 +401,14 @@ def plot_border(mask, should_plot_border, units, kpc_per_arcsec, pointsize):
         plt.scatter(y=border_units[:,0], x=border_units[:,1], s=pointsize, c='y')
 
 def plot_points(points_arc_seconds, array, units, kpc_per_arcsec, pointsize):
-    """Plot a set of points over the array of data on the figure.
+    """Plot a set of points over the array of hyper on the figure.
 
     Parameters
     -----------
     positions : [[]]
-        Lists of (y,x) coordinates on the data which are plotted as colored dots, to highlight specific pixels.
-    array : ndarray or data.array.scaled_array.ScaledArray
-        The 2D array of data which is plotted.
+        Lists of (y,x) coordinates on the hyper which are plotted as colored dots, to highlight specific pixels.
+    array : ndarray or hyper.array.scaled_array.ScaledArray
+        The 2D array of hyper which is plotted.
     units : str
         The units of the y / x axis of the plots, in arc-seconds ('arcsec') or kiloparsecs ('kpc').
     kpc_per_arcsec : float or None
@@ -425,14 +425,14 @@ def plot_points(points_arc_seconds, array, units, kpc_per_arcsec, pointsize):
             plt.scatter(y=point_set_units[:,0], x=point_set_units[:,1], color=next(point_colors), s=pointsize)
 
 def plot_grid(grid_arc_seconds, array, units, kpc_per_arcsec, pointsize):
-    """Plot a grid of points over the array of data on the figure.
+    """Plot a grid of points over the array of hyper on the figure.
 
      Parameters
      -----------.
-     grid_arc_seconds : ndarray or data.array.grid_stacks.RegularGrid
+     grid_arc_seconds : ndarray or hyper.array.grid_stacks.RegularGrid
          A grid of (y,x) coordinates in arc-seconds which may be plotted over the array.
-     array : ndarray or data.array.scaled_array.ScaledArray
-        The 2D array of data which is plotted.
+     array : ndarray or hyper.array.scaled_array.ScaledArray
+        The 2D array of hyper which is plotted.
      units : str
          The units of the y / x axis of the plots, in arc-seconds ('arcsec') or kiloparsecs ('kpc').
      kpc_per_arcsec : float or None

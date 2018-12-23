@@ -9,7 +9,7 @@ class Mapper(object):
 
     def __init__(self, pixels, grid_stack, border):
         """ Abstract base class representing a mapper, which maps unmasked pixels on a masked 2D array (in the form of \
-        a grid, see the *data.array.grid_stack* module) to discretized pixels in a pixelization.
+        a grid, see the *hyper.array.grid_stack* module) to discretized pixels in a pixelization.
 
         1D arrays are used to represent these mappings, for example between the different grid_stack in a grid-stack \
         (e.g. the regular / sub grid_stack). This follows the syntax grid_to_grid, whereby the index of a value on one grid \
@@ -125,7 +125,7 @@ class RectangularMapper(Mapper):
 
     def __init__(self, pixels, grid_stack, border, shape, geometry):
         """ Class representing a rectangular mapper, which maps unmasked pixels on a masked 2D array (in the form of \
-        a grid, see the *data.array.grid_stack* module) to pixels discretized on a rectangular grid.
+        a grid, see the *hyper.array.grid_stack* module) to pixels discretized on a rectangular grid.
 
         The regular and uniform geometry of the rectangular grid is used to perform efficient pixel pairings.
 
@@ -173,7 +173,7 @@ class VoronoiMapper(Mapper):
 
     def __init__(self, pixels, grid_stack, border, voronoi, geometry):
         """Class representing a Voronoi mapper, which maps unmasked pixels on a masked 2D array (in the form of \
-        a grid, see the *data.array.grid_stack* module) to pixels discretized on a Voronoi grid.
+        a grid, see the *hyper.array.grid_stack* module) to pixels discretized on a Voronoi grid.
 
         The irregular and non-uniform geometry of the Voronoi grid means efficient pixel pairings requires knowledge \
         of how different grid_stack map to one another.

@@ -15,7 +15,7 @@ test_name = "intensities"
 path = '{}/../../'.format(os.path.dirname(os.path.realpath(__file__)))
 output_path = path+'output/'+test_type
 config_path = path+'config'
-data_path = path+'data/'+test_type
+data_path = path+'hyper/'+test_type
 conf.instance = conf.Config(config_path=config_path, output_path=output_path)
 
 def simulate_intensities(pixel_scale, galaxy):
