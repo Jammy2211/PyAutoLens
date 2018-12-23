@@ -8,8 +8,8 @@ from autolens.data.array import grids
 from autolens.model.galaxy import galaxy as g
 from autolens.model.inversion import pixelizations as pix
 from autolens.model.inversion import regularization as reg
-from autolens.lensing import lensing_image as li
-from autolens.lensing import ray_tracing
+from autolens.lens import lens_image as li
+from autolens.lens import ray_tracing
 from autolens.model.inversion.util import inversion_util
 from autolens.model.inversion.util import regularization_util
 
@@ -37,7 +37,7 @@ image = im.Image.simulate(array=tracer.image_plane_image_for_simulation, pixel_s
 
 
 mask = ma.Mask.circular(shape=image_shape, pixel_scale=pixel_scale, radius_arcsec=3.0)
-lensing_image = li.LensingImage(image=image, mask=mask)
+lensing_image = li.LensImage(image=image, mask=mask)
 
 adaptive_pix = pix.AdaptiveMagnification(shape=(30, 30))
 

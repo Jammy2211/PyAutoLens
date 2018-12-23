@@ -2,7 +2,7 @@ import os
 
 from autolens.data.imaging import image as im
 from autolens.data.array import mask as ma
-from autolens.lensing import lensing_image as li
+from autolens.lens import lens_image as li
 from autolens.data.imaging.plotters import imaging_plotters
 from workspace.howtolens.loading_and_preparing_data import simulate_data
 
@@ -104,7 +104,7 @@ imaging_plotters.plot_image_subplot(image=image_small_stamp)
 # blurring region hits the regular edge.
 mask = ma.Mask.circular(shape=image_small_stamp.shape, pixel_scale=image_small_stamp.pixel_scale,
                         radius_arcsec=2.0)
-# lensing_image = li.LensingImage(regular=regular, masks=masks)
+# lensing_image = li.LensImage(regular=regular, masks=masks)
 
 # We can overcome this using the same input as before. However, now, the resized regular shape is bigger than the regular,
 # thus a padding of zeros is introduced to the edges.
@@ -116,7 +116,7 @@ image_small_stamp_padded = im.load_imaging_from_fits(image_path=path+'datas/imag
 mask = ma.Mask.circular(shape=image_small_stamp_padded.shape, pixel_scale=image_small_stamp_padded.pixel_scale,
                         radius_arcsec=2.0)
 imaging_plotters.plot_image_subplot(image=image_small_stamp_padded, mask=mask)
-lensing_image = li.LensingImage(image=image_small_stamp_padded, mask=mask)
+lensing_image = li.LensImage(image=image_small_stamp_padded, mask=mask)
 
 ########## IVE INCLUDED THE TEXT FOR 5 BELOW SO YOU CAN BE AWARE OF CENTERING, BUT THE BUILT IN FUNCTIONALITY FOR #####
 ########## RECENTERING CURRENTLY DOES NOT WORK :( ###########

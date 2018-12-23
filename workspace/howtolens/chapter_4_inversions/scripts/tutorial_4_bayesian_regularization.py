@@ -3,10 +3,10 @@ from autolens.data.array import mask as ma
 from autolens.model.profiles import light_profiles as lp
 from autolens.model.profiles import mass_profiles as mp
 from autolens.model.galaxy import galaxy as g
-from autolens.lensing import ray_tracing, lensing_fitters
-from autolens.lensing import lensing_image as li
+from autolens.lens import ray_tracing, lens_fit
+from autolens.lens import lens_image as li
 from autolens.model.inversion import pixelizations as pix, regularization as reg
-from autolens.lensing.plotters import lensing_fit_plotters
+from autolens.lens.plotters import lens_fit_plotters
 from autolens.model.inversion.plotters import inversion_plotters
 
 # So, we've seen that we can use an inversion to reconstruct an regular. Furthermore, this reconstruction provides
@@ -22,7 +22,7 @@ def simulate():
 
     from autolens.data.array import grids
     from autolens.model.galaxy import galaxy as g
-    from autolens.lensing import ray_tracing
+    from autolens.lens import ray_tracing
 
     psf = im.PSF.simulate_as_gaussian(shape=(11, 11), sigma=0.05, pixel_scale=0.05)
 
@@ -49,24 +49,24 @@ def perform_fit_with_source_galaxy(source_galaxy):
     image = simulate()
     mask = ma.Mask.circular_annular(shape=image.shape, pixel_scale=image.pixel_scale, inner_radius_arcsec=0.5,
                                     outer_radius_arcsec=2.2)
-    lensing_image = li.LensingImage(image=image, mask=mask)
+    lensing_image = li.LensImage(image=image, mask=mask)
     lens_galaxy = g.Galaxy(
         mass=mp.EllipticalIsothermal(centre=(0.0, 0.0), axis_ratio=0.8, phi=135.0, einstein_radius=1.6))
     tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
                                                  image_plane_grid_stack=[lensing_image.grid_stack], border=lensing_image.border)
-    return lensing_fitters.fit_lensing_image_with_tracer(lensing_image=lensing_image, tracer=tracer)
+    return lens_fit.fit_lens_image_with_tracer(lens_image=lensing_image, tracer=tracer)
 
 # Okay, so lets look at our fit_normal from the previous tutorial in more detail. We'll use a higher resolution 40 x 40 grid.
 source_galaxy = g.Galaxy(pixelization=pix.Rectangular(shape=(40, 40)), regularization=reg.Constant(coefficients=(1.0,)))
 fit = perform_fit_with_source_galaxy(source_galaxy=source_galaxy)
-lensing_fit_plotters.plot_fit_subplot(fit=fit)
+lens_fit_plotters.plot_fit_subplot(fit=fit)
 
 # It still looks pretty good! However, this is because I sneakily chose a regularization coefficient that gives a
 # good looking solution, without telling you. If we reduce this regularization coefficient to zero, our source
 # reconstruction goes extremely weird.
 source_galaxy = g.Galaxy(pixelization=pix.Rectangular(shape=(40, 40)), regularization=reg.Constant(coefficients=(0.0,)))
 no_regularization_fit = perform_fit_with_source_galaxy(source_galaxy=source_galaxy)
-lensing_fit_plotters.plot_fit_subplot(fit=no_regularization_fit)
+lens_fit_plotters.plot_fit_subplot(fit=no_regularization_fit)
 
 # So, whats happening here, and why does removing regularization do this to our source reconstruction? When our
 # inversion  reconstructs a source, it doesn't *just* compute the set of fluxes that best-fit_normal the regular. It is also
@@ -96,7 +96,7 @@ inversion_plotters.plot_reconstructed_pixelization(inversion=no_regularization_f
 source_galaxy = g.Galaxy(pixelization=pix.Rectangular(shape=(40, 40)),
                          regularization=reg.Constant(coefficients=(100.0,)))
 high_regularization_fit = perform_fit_with_source_galaxy(source_galaxy=source_galaxy)
-lensing_fit_plotters.plot_fit_subplot(fit=high_regularization_fit)
+lens_fit_plotters.plot_fit_subplot(fit=high_regularization_fit)
 
 # So there we have it, we now understand regularization and its purpose. But there is one nagging question that remains,
 # how do I choose the regularization coefficient? We can't use our likelihood, as decreasing the regularization
@@ -163,7 +163,7 @@ print('Previous Bayesian Evidence:')
 print(10395.370224426646)
 print('New Bayesian Evidence:')
 print(fit.evidences)
-lensing_fit_plotters.plot_fit_subplot(fit=fit)
+lens_fit_plotters.plot_fit_subplot(fit=fit)
 
 # 2) Can you think of any other ways we might increase the evidence even further? If not - don't worry about - but
 #    you'll learn that PyAutoLens actually adapts its source reconstructions to the properties of the regular that it is

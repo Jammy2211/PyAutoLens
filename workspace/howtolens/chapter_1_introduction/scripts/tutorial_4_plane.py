@@ -1,9 +1,9 @@
 from autolens.model.profiles import light_profiles
 from autolens.model.profiles import mass_profiles
 from autolens.model.galaxy import galaxy
-from autolens.lensing import plane
+from autolens.lens import plane
 from autolens.data.array import grids
-from autolens.lensing.plotters import plane_plotters
+from autolens.lens.plotters import plane_plotters
 
 # Now we've learnt how to make galaxies out of light and mass profiles, we'll now use galaxies to make a
 # strong-gravitational lens. For the newcomers to lensing, a strong gravitation lens is a system where two (or more)
@@ -153,7 +153,7 @@ plane_plotters.plot_plane_image(plane=source_plane, plot_grid=True)
 #    galaxies and see how multi-model_galaxy lensing leads to crazy source regular-plane regular. Also try making a source-plane
 #    with two galaxies!
 
-# Finally, if you are a newcomer to strong lensing, it might be worth reading briefly about some strong lensing theory.
+# Finally, if you are a newcomer to strong lens, it might be worth reading briefly about some strong lens theory.
 # Don't worry about maths, and equations, and anything scary, but you should at least go to Wikipedia to figure out:
 
 # - What a critical line is.

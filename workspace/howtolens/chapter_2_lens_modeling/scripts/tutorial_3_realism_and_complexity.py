@@ -3,13 +3,13 @@ from autofit.core import non_linear as nl
 from autolens.pipeline import phase as ph
 from autolens.data.imaging import image as im
 from autolens.data.array import mask as ma
-from autolens.lensing import ray_tracing, lensing_fitters
+from autolens.lens import ray_tracing, lens_fit
 from autolens.model.galaxy import galaxy as g, galaxy_model as gm
-from autolens.lensing import lensing_image as li
+from autolens.lens import lens_image as li
 from autolens.model.profiles import light_profiles as lp
 from autolens.model.profiles import mass_profiles as mp
 from autolens.data.imaging.plotters import imaging_plotters
-from autolens.lensing.plotters import lensing_fit_plotters
+from autolens.lens.plotters import lens_fit_plotters
 
 import os
 
@@ -43,7 +43,7 @@ def simulate():
 
     from autolens.data.array import grids
     from autolens.model.galaxy import galaxy as g
-    from autolens.lensing import ray_tracing
+    from autolens.lens import ray_tracing
 
     psf = im.PSF.simulate_as_gaussian(shape=(11, 11), sigma=0.05, pixel_scale=0.05)
     image_plane_grids = grids.GridStack.grid_stack_for_simulation(shape=(130, 130), pixel_scale=0.1, psf_shape=(11, 11))
@@ -88,7 +88,7 @@ phase = ph.LensSourcePlanePhase(lens_galaxies=dict(lens_galaxy=gm.GalaxyModel(li
 results = phase.run(image)
 
 # And lets look at the regular.
-lensing_fit_plotters.plot_fit_subplot(fit=results.fit)
+lens_fit_plotters.plot_fit_subplot(fit=results.fit)
 
 # Uh-oh. That regular didn't look very good, did it? If we compare our inferred parameters to the actual values (in the
 # simulations.py file) you'll see that we have, indeed, fitted the wrong model.
@@ -100,7 +100,7 @@ print(results.constant)
 
 # Create a lensing regular to make the fit_normal - the masks we used above was a 3" circle (we'll come back to this later)
 mask = ma.Mask.circular(shape=image.shape, pixel_scale=image.pixel_scale, radius_arcsec=3.0)
-lensing_image = li.LensingImage(image=image, mask=mask)
+lensing_image = li.LensImage(image=image, mask=mask)
 imaging_plotters.plot_image_subplot(lensing_image.image)
 
 # Make the tracer_without_subhalo we use to simulate the regular
@@ -114,8 +114,8 @@ tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source
                                              image_plane_grid_stack=[lensing_image.grid_stack])
 
 # Now, lets fit_normal the lensing regular with the tracer_without_subhalo and plot the fit_normal. It looks a lot better than above, doesn't it?
-fit = lensing_fitters.fit_lensing_image_with_tracer(lensing_image=lensing_image, tracer=tracer)
-lensing_fit_plotters.plot_fit_subplot(fit=fit)
+fit = lens_fit.fit_lens_image_with_tracer(lens_image=lensing_image, tracer=tracer)
+lens_fit_plotters.plot_fit_subplot(fit=fit)
 
 # Finally, just to be sure, lets compare the two likelihoods
 print('Likelihood of Non-linear Search:')

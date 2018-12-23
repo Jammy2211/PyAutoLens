@@ -6,7 +6,7 @@ import numpy as np
 from autolens.data.imaging import image as im
 from autolens.data.array.util import array_util
 from autolens.data.array import grids, scaled_array
-from autolens.lensing import ray_tracing
+from autolens.lens import ray_tracing
 
 dirpath = os.path.dirname(os.path.realpath(__file__))
 

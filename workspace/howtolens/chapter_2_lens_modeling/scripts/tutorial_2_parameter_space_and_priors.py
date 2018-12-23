@@ -7,7 +7,7 @@ from autolens.data.imaging import image as im
 from autolens.model.profiles import light_profiles as lp
 from autolens.model.profiles import mass_profiles as mp
 from autolens.data.imaging.plotters import imaging_plotters
-from autolens.lensing.plotters import lensing_fit_plotters
+from autolens.lens.plotters import lens_fit_plotters
 
 import os
 
@@ -94,7 +94,7 @@ def simulate():
 
     from autolens.data.array import grids
     from autolens.model.galaxy import galaxy as g
-    from autolens.lensing import ray_tracing
+    from autolens.lens import ray_tracing
 
     psf = im.PSF.simulate_as_gaussian(shape=(11, 11), sigma=0.1, pixel_scale=0.1)
 
@@ -163,7 +163,7 @@ custom_phase = CustomPhase(lens_galaxies=dict(lens_galaxy=lens_galaxy_model),
 
 results_custom = custom_phase.run(image)
 print(results_custom) # NOTE - this isn't working yet, need to sort out.
-lensing_fit_plotters.plot_fit_subplot(fit=results_custom.fit)
+lens_fit_plotters.plot_fit_subplot(fit=results_custom.fit)
 
 # And, we're done. This tutorial had some pretty difficult concepts to wrap your head around. However, I can't
 # emphasize enough how important it is that you develop an intuition for non-linear searches and the notion of a

@@ -1,13 +1,13 @@
 from autolens.data.imaging import image as im
 from autolens.data.array import mask as ma
-from autolens.lensing import ray_tracing, lensing_fitters
+from autolens.lens import ray_tracing, lens_fit
 from autolens.model.galaxy import galaxy as g
-from autolens.lensing import lensing_image as li
+from autolens.lens import lens_image as li
 from autolens.model.profiles import light_profiles as lp
 from autolens.model.profiles import mass_profiles as mp
 from autolens.data.imaging.plotters import imaging_plotters
-from autolens.lensing.plotters import ray_tracing_plotters
-from autolens.lensing.plotters import lensing_fit_plotters
+from autolens.lens.plotters import ray_tracing_plotters
+from autolens.lens.plotters import lens_fit_plotters
 
 # In this example, we'll fit_normal the regular we simulated in the previous exercise. We'll do this using model regular generated
 # via a tracer_without_subhalo, and by compairing to the simulated regular we'll get diagostics about the quality of the fit_normal.
@@ -48,7 +48,7 @@ imaging_plotters.plot_image(image=image, mask=mask)
 
 # 4) The regular's grid_stacks: so the tracer_without_subhalo's regular-plane regular is generated on the same (masked) grid as the regular-datas.
 
-lensing_image = li.LensingImage(image=image, mask=mask)
+lensing_image = li.LensImage(image=image, mask=mask)
 imaging_plotters.plot_image_subplot(lensing_image.image)
 
 # By printing its attribute, we can see that it does indeed contain the regular, masks, psf and so on
@@ -94,8 +94,8 @@ ray_tracing_plotters.plot_image_plane_image(tracer=tracer)
 # 4) Sums up these chi-squared values and converts them to a 'likelihood', which quantities how good the tracer_without_subhalo's fit_normal
 #    to the datas was (higher likelihood = better fit_normal).
 
-fit = lensing_fitters.fit_lensing_image_with_tracer(lensing_image=lensing_image, tracer=tracer)
-lensing_fit_plotters.plot_fit_subplot(fit=fit)
+fit = lens_fit.fit_lens_image_with_tracer(lens_image=lensing_image, tracer=tracer)
+lens_fit_plotters.plot_fit_subplot(fit=fit)
 
 # We can print the fit_normal's attributes - if we don't specify where we'll get all zeros, as the edges were masked:
 print('Model-Image Edge Pixels:')
@@ -132,8 +132,8 @@ source_galaxy = g.Galaxy(light=lp.EllipticalSersic(centre=(0.1, 0.1), axis_ratio
                                                         intensity=1.0, effective_radius=1.0, sersic_index=2.5))
 tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
                                              image_plane_grid_stack=[lensing_image.grid_stack])
-fit = lensing_fitters.fit_lensing_image_with_tracer(lensing_image=lensing_image, tracer=tracer)
-lensing_fit_plotters.plot_fit_subplot(fit=fit)
+fit = lens_fit.fit_lens_image_with_tracer(lens_image=lensing_image, tracer=tracer)
+lens_fit_plotters.plot_fit_subplot(fit=fit)
 
 # We now observe residuals to appear at the locations the source model_galaxy was observed, which
 # corresponds to an increase in our chi-squareds (which determines our goodness-of-fit_normal).
@@ -151,8 +151,8 @@ source_galaxy = g.Galaxy(light=lp.EllipticalSersic(centre=(0.1, 0.1), axis_ratio
                                                         intensity=1.0, effective_radius=0.4, sersic_index=3.5))
 tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
                                              image_plane_grid_stack=[lensing_image.grid_stack])
-fit = lensing_fitters.fit_lensing_image_with_tracer(lensing_image=lensing_image, tracer=tracer)
-lensing_fit_plotters.plot_fit_subplot(fit=fit)
+fit = lens_fit.fit_lens_image_with_tracer(lens_image=lensing_image, tracer=tracer)
+lens_fit_plotters.plot_fit_subplot(fit=fit)
 
 # Clearly, the model provides a terrible fit_normal, and this tracer_without_subhalo is not a plausible representation of
 # the regular-datas  (of course, we already knew that, given that we simulated it!)

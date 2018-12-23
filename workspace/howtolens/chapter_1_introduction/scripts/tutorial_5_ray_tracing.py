@@ -1,10 +1,10 @@
 from autolens.model.profiles import light_profiles
 from autolens.model.profiles import mass_profiles
 from autolens.model.galaxy import galaxy
-from autolens.lensing import ray_tracing
+from autolens.lens import ray_tracing
 from autolens.data.array import grids
-from autolens.lensing.plotters import plane_plotters
-from autolens.lensing.plotters import ray_tracing_plotters
+from autolens.lens.plotters import plane_plotters
+from autolens.lens.plotters import ray_tracing_plotters
 
 # In the previous example, we used light-profiles, mass-profiles, galaxies and planes to create an regular-plane +
 # source-plane strong lens system. However, this took a lot of lines of code to do, so in this example we'll use the
@@ -121,7 +121,7 @@ ray_tracing_plotters.plot_surface_density(tracer=tracer)
 #                  'plane_plotters.surface_density(plane=tracer_without_subhalo.image_plane). However, code appears neater if you can
 #                   just write 'tracer_normal.surface_density' and 'ray_tracing_plotters.plot_surface_density(tracer_normal=tracer_normal).
 
-# 2) Multi-plane lensing - For now, we're focused on the regular-plane + source-plane lensing configuration. However,
+# 2) Multi-plane lens - For now, we're focused on the regular-plane + source-plane lens configuration. However,
 #                          there are strong lens system where there are more than 2 planes! In these instances, the
 #                          surface density, potential and deflections of each plane is different to that of the tracer_without_subhalo.
 #                          This is way beyond the scope of this chapter, but be reassured that what you're learning now
