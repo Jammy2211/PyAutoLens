@@ -1,5 +1,5 @@
 from autofit.core import non_linear as nl
-from autolens.data.ccd import ccd as im
+from autolens.data import ccd as im
 from autolens.data.array import mask
 from autolens.model.galaxy import galaxy_model as gm
 from autolens.pipeline import phase
@@ -74,8 +74,8 @@ def simulate():
     tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
                                                  image_plane_grid_stack=[image_plane_grids])
 
-    return im.CCD.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=0.1,
-                           exposure_time=300.0, psf=psf, background_sky_level=0.1, add_noise=True)
+    return im.CCDData.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=0.1,
+                               exposure_time=300.0, psf=psf, background_sky_level=0.1, add_noise=True)
 
 # Now lets simulate hte regular we'll fit_normal, which as I said above, is the same regular we saw in the previous chapter.
 image = simulate()
@@ -210,7 +210,7 @@ def make_pipeline():
 
 
 pipeline_lens_and_source = make_pipeline()
-pipeline_lens_and_source.run(image=image)
+pipeline_lens_and_source.run(data=image)
 
 # And there we have it, a pipeline that breaks the analysis of the lens and source model_galaxy into a set of phases. This
 # approach is signifcantly faster than fitting everything at once. Instead of asking you questions at the end of

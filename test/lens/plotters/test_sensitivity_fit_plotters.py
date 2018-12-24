@@ -5,7 +5,7 @@ import pytest
 import numpy as np
 
 from autofit import conf
-from autolens.data.ccd import ccd as im
+from autolens.data import ccd as im
 from autolens.data.array import grids, mask as msk, scaled_array
 from autolens.lens.plotters import sensitivity_fit_plotters
 from autolens.model.profiles import light_profiles as lp, mass_profiles as mp
@@ -41,8 +41,8 @@ def test_ccd():
     noise_map = im.NoiseMap(array=2.0*np.ones((3,3)), pixel_scale=1.0)
     psf = im.PSF(array=3.0*np.ones((1,1)), pixel_scale=1.0)
 
-    return im.CCD(image=image, pixel_scale=1.0, noise_map=noise_map, psf=psf, exposure_time_map=2.0 * np.ones((3, 3)),
-                  background_sky_map=3.0*np.ones((3,3)))
+    return im.CCDData(image=image, pixel_scale=1.0, noise_map=noise_map, psf=psf, exposure_time_map=2.0 * np.ones((3, 3)),
+                      background_sky_map=3.0*np.ones((3,3)))
 
 @pytest.fixture(name='positions')
 def test_positions():
@@ -55,7 +55,7 @@ def test_mask():
 
 @pytest.fixture(name='lens_image')
 def test_lens_image(ccd, mask):
-    return li.LensImage(ccd=ccd, mask=mask)
+    return li.LensData(ccd_data=ccd, mask=mask)
 
 @pytest.fixture(name='fit')
 def test_fit(lens_image):

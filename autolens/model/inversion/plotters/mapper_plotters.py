@@ -5,7 +5,7 @@ from scipy.spatial import Voronoi
 
 from autolens.data.array.plotters import plotter_util, grid_plotters
 from autolens.model.inversion import mappers
-from autolens.data.ccd.plotters import ccd_plotters
+from autolens.data.plotters import ccd_plotters
 
 
 def plot_image_and_mapper(ccd, mapper, mask=None, positions=None, should_plot_centres=False, should_plot_grid=False,
@@ -18,12 +18,12 @@ def plot_image_and_mapper(ccd, mapper, mask=None, positions=None, should_plot_ce
     plt.figure(figsize=figsize)
     plt.subplot(rows, columns, 1)
 
-    ccd_plotters.plot_image(ccd=ccd, mask=mask, positions=positions, as_subplot=True,
-                                units=units, kpc_per_arcsec=None, xyticksize=16,
-                                norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
-                                figsize=None, aspect='equal', cmap='jet', cb_ticksize=10,
-                                titlesize=10, xlabelsize=10, ylabelsize=10,
-                                output_path=output_path, output_format=output_format)
+    ccd_plotters.plot_image(ccd_data=ccd, mask=mask, positions=positions, as_subplot=True,
+                            units=units, kpc_per_arcsec=None, xyticksize=16,
+                            norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
+                            figsize=None, aspect='equal', cmap='jet', cb_ticksize=10,
+                            titlesize=10, xlabelsize=10, ylabelsize=10,
+                            output_path=output_path, output_format=output_format)
 
     image_grid = convert_grid(grid=mapper.grid_stack.regular.unlensed_grid, units=units, kpc_per_arcsec=kpc_per_arcsec)
 

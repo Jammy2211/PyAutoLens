@@ -1,4 +1,4 @@
-from autolens.data.ccd import ccd as im
+from autolens.data import ccd as im
 from autolens.data.array import mask as ma
 from autolens.model.profiles import light_profiles as lp
 from autolens.model.profiles import mass_profiles as mp
@@ -6,7 +6,7 @@ from autolens.model.galaxy import galaxy as g
 from autolens.lens import ray_tracing, lens_fit
 from autolens.lens import lens_image as li
 from autolens.model.inversion import pixelizations as pix, regularization as reg
-from autolens.data.ccd.plotters import imaging_plotters
+from autolens.data.plotters import imaging_plotters
 from autolens.lens.plotters import ray_tracing_plotters
 from autolens.model.inversion.plotters import inversion_plotters, mapper_plotters
 
@@ -34,8 +34,8 @@ def simulate():
                                                  source_galaxies=[source_galaxy_0],
                                                  image_plane_grid_stack=[image_plane_grids])
 
-    return im.CCD.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=0.05,
-                           exposure_time=300.0, psf=psf, background_sky_level=0.1, add_noise=True)
+    return im.CCDData.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=0.05,
+                               exposure_time=300.0, psf=psf, background_sky_level=0.1, add_noise=True)
 
 # Lets have a quick look at the regular.
 image = simulate()
@@ -62,7 +62,7 @@ imaging_plotters.plot_image_subplot(image=image, mask=mask_annular, should_plot_
 def perform_fit_with_source_galaxy_mask_and_border(source_galaxy, mask, use_border):
 
     image = simulate()
-    lensing_image = li.LensImage(ccd=image, mask=mask)
+    lensing_image = li.LensData(ccd_data=image, mask=mask)
     lens_galaxy = g.Galaxy(
         mass=mp.EllipticalIsothermal(centre=(0.0, 0.0), axis_ratio=0.8, phi=135.0, einstein_radius=1.6))
 
@@ -168,8 +168,8 @@ def simulate_image_x2_lenses():
                                                  source_galaxies=[source_galaxy_0],
                                                  image_plane_grid_stack=[image_plane_grids])
 
-    return im.CCD.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=0.05,
-                           exposure_time=300.0, psf=psf, background_sky_level=0.1, add_noise=True)
+    return im.CCDData.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=0.05,
+                               exposure_time=300.0, psf=psf, background_sky_level=0.1, add_noise=True)
 
 # Lets simulate our 2 lens system, define a new circular masks and plot them.
 image = simulate_image_x2_lenses()
@@ -180,7 +180,7 @@ imaging_plotters.plot_image_subplot(image=image, mask=mask_circular, should_plot
 def perform_fit_x2_lenses_with_source_galaxy_mask_and_border(source_galaxy, mask, use_border):
 
     simulate_image_x2_lenses()
-    lensing_image = li.LensImage(ccd=image, mask=mask)
+    lensing_image = li.LensData(ccd_data=image, mask=mask)
     lens_galaxy_0 = g.Galaxy(
         mass=mp.EllipticalIsothermal(centre=(1.1, 0.51), axis_ratio=0.9, phi=110.0, einstein_radius=1.07))
     lens_galaxy_1 = g.Galaxy(

@@ -4,7 +4,7 @@ import shutil
 import numpy as np
 import pytest
 
-from autolens.data.ccd import ccd
+from autolens.data import ccd
 from autolens.data.array.util import array_util
 from autolens.data.array import grids, mask as msk
 from autolens.model.galaxy import galaxy as g
@@ -16,8 +16,8 @@ from autolens.model.profiles import light_profiles as lp, mass_profiles as mp
 def test__simulate_lensed_source_and_fit__no_psf_blurring__chi_squared_is_0__noise_normalization_correct():
 
     psf = ccd.PSF(array=np.array([[0.0, 0.0, 0.0],
-                                 [0.0, 1.0, 0.0],
-                                 [0.0, 0.0, 0.0]]), pixel_scale=0.2)
+                                  [0.0, 1.0, 0.0],
+                                  [0.0, 0.0, 0.0]]), pixel_scale=0.2)
 
     grid_stack = grids.GridStack.grid_stack_for_simulation(shape=(11, 11), pixel_scale=0.2, psf_shape=psf.shape,
                                                            sub_grid_size=2)
@@ -30,9 +30,9 @@ def test__simulate_lensed_source_and_fit__no_psf_blurring__chi_squared_is_0__noi
     tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
                                                  image_plane_grid_stack=grid_stack)
 
-    ccd_simulated = ccd.CCD.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=0.2,
-                                      exposure_time=300.0, psf=psf, background_sky_level=None,
-                                      add_noise=False)
+    ccd_simulated = ccd.CCDData.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=0.2,
+                                         exposure_time=300.0, psf=psf, background_sky_level=None,
+                                         add_noise=False)
     ccd_simulated.noise_map = np.ones(ccd_simulated.image.shape)
 
     path = "{}/image".format(
@@ -50,13 +50,13 @@ def test__simulate_lensed_source_and_fit__no_psf_blurring__chi_squared_is_0__noi
     array_util.numpy_array_to_fits(array=ccd_simulated.noise_map, path=path + '/noise_map.fits')
     array_util.numpy_array_to_fits(array=psf, path=path + '/psf.fits')
 
-    ccd_data = ccd.load_ccd_from_fits(image_path=path + '/image.fits',
-                                   noise_map_path=path + '/noise_map.fits',
-                                   psf_path=path + '/psf.fits', pixel_scale=0.2)
+    ccd_data = ccd.load_ccd_data_from_fits(image_path=path + '/image.fits',
+                                           noise_map_path=path + '/noise_map.fits',
+                                           psf_path=path + '/psf.fits', pixel_scale=0.2)
 
     mask = msk.Mask.circular(shape=ccd_data.image.shape, pixel_scale=0.2, radius_arcsec=0.8)
 
-    lens_image = li.LensImage(ccd=ccd_data, mask=mask, sub_grid_size=2)
+    lens_image = li.LensData(ccd_data=ccd_data, mask=mask, sub_grid_size=2)
 
     tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
                                                  image_plane_grid_stack=lens_image.grid_stack)
@@ -79,9 +79,9 @@ def test__simulate_lensed_source_and_fit__include_psf_blurring__chi_squared_is_0
     tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
                                                  image_plane_grid_stack=grid_stack)
 
-    ccd_simulated = ccd.CCD.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=0.2,
-                                      exposure_time=300.0, psf=psf, background_sky_level=None,
-                                      add_noise=False)
+    ccd_simulated = ccd.CCDData.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=0.2,
+                                         exposure_time=300.0, psf=psf, background_sky_level=None,
+                                         add_noise=False)
     ccd_simulated.noise_map = np.ones(ccd_simulated.image.shape)
 
     path = "{}/image".format(
@@ -99,13 +99,13 @@ def test__simulate_lensed_source_and_fit__include_psf_blurring__chi_squared_is_0
     array_util.numpy_array_to_fits(array=ccd_simulated.noise_map, path=path + '/noise_map.fits')
     array_util.numpy_array_to_fits(array=psf, path=path + '/psf.fits')
 
-    ccd_data = ccd.load_ccd_from_fits(image_path=path + '/image.fits',
-                                  noise_map_path=path + '/noise_map.fits',
-                                  psf_path=path + '/psf.fits', pixel_scale=0.2)
+    ccd_data = ccd.load_ccd_data_from_fits(image_path=path + '/image.fits',
+                                           noise_map_path=path + '/noise_map.fits',
+                                           psf_path=path + '/psf.fits', pixel_scale=0.2)
 
     mask = msk.Mask.circular(shape=ccd_data.image.shape, pixel_scale=0.2, radius_arcsec=0.8)
 
-    lens_image = li.LensImage(ccd=ccd_data, mask=mask, sub_grid_size=1)
+    lens_image = li.LensData(ccd_data=ccd_data, mask=mask, sub_grid_size=1)
 
     tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
                                                  image_plane_grid_stack=lens_image.grid_stack)

@@ -1,31 +1,28 @@
-import numpy as np
-
 from autolens.data.array import grids
-from autolens.data.ccd import ccd as im
-from autolens.data.ccd import convolution
+from autolens.data import convolution
 from autolens.data.array import mask as msk
 from autolens.model.inversion import convolution as inversion_convolution
 
 
-class LensImage(object):
+class LensData(object):
 
-    def __init__(self, ccd, mask, sub_grid_size=2, image_psf_shape=None, mapping_matrix_psf_shape=None,
+    def __init__(self, ccd_data, mask, sub_grid_size=2, image_psf_shape=None, mapping_matrix_psf_shape=None,
                  positions=None):
         """
-        The lens image is the collection of datas (image, noise-map, PSF), a masks, grid_stacks, convolvers \
+        The lens data is the collection of data (image, noise-map, PSF), a mask, grid_stack, convolver \
         and other utilities that are used for modeling and fitting an image of a strong lens.
 
-        Whilst the image datas is initially loaded in 2D, for the lens image the masked-image (and noise-map) \
-        are reduced to 1D arrays for faster calculations.
+        Whilst the image, noise-map, etc. are loaded in 2D, the lens data creates reduced 1D arrays of each \
+        for lensing calculations.
 
         Parameters
         ----------
-        ccd: im.CCD
+        ccd_data: im.CCD
             The ccd data all in 2D (the image, noise-map, PSF, etc.)
         mask: msk.Mask
-            The 2D masks that is applied to the image.
+            The 2D mask that is applied to the image.
         sub_grid_size : int
-            The size of the sub-grid used for each lens SubGrid. E.g. a value of 2 grid_stacks each image-pixel on a 2x2 \
+            The size of the sub-grid used for each lens SubGrid. E.g. a value of 2 grid_stack each image-pixel on a 2x2 \
             sub-grid.
         image_psf_shape : (int, int)
             The shape of the PSF used for convolving model image generated using analytic light profiles. A smaller \
@@ -38,17 +35,17 @@ class LensImage(object):
             used to speed up the non-linear sampling.
         """
 
-        self.ccd = ccd
+        self.ccd_data = ccd_data
 
-        self.image = ccd.image
-        self.noise_map = ccd.noise_map
-        self.pixel_scale = ccd.pixel_scale
-        self.psf = ccd.psf
+        self.image = ccd_data.image
+        self.noise_map = ccd_data.noise_map
+        self.pixel_scale = ccd_data.pixel_scale
+        self.psf = ccd_data.psf
 
         self.mask = mask
 
-        self.image_1d = mask.map_2d_array_to_masked_1d_array(array_2d=ccd.image)
-        self.noise_map_1d = mask.map_2d_array_to_masked_1d_array(array_2d=ccd.noise_map)
+        self.image_1d = mask.map_2d_array_to_masked_1d_array(array_2d=ccd_data.image)
+        self.noise_map_1d = mask.map_2d_array_to_masked_1d_array(array_2d=ccd_data.noise_map)
         self.mask_1d = mask.map_2d_array_to_masked_1d_array(array_2d=mask)
 
         self.sub_grid_size = sub_grid_size
@@ -57,8 +54,8 @@ class LensImage(object):
             image_psf_shape = self.psf.shape
 
         self.convolver_image = convolution.ConvolverImage(mask=self.mask,
-                                        blurring_mask=mask.blurring_mask_for_psf_shape(psf_shape=image_psf_shape),
-                                        psf=self.psf.resized_scaled_array_from_array(new_shape=image_psf_shape))
+                                                          blurring_mask=mask.blurring_mask_for_psf_shape(psf_shape=image_psf_shape),
+                                                          psf=self.psf.resized_scaled_array_from_array(new_shape=image_psf_shape))
 
         if mapping_matrix_psf_shape is None:
             mapping_matrix_psf_shape = self.psf.shape
@@ -81,7 +78,7 @@ class LensImage(object):
         return self.grid_stack.regular.scaled_array_from_array_1d
 
     def __array_finalize__(self, obj):
-        if isinstance(obj, LensImage):
+        if isinstance(obj, LensData):
             self.image = obj.image
             self.noise_map = obj.noise_map
             self.mask = obj.mask
@@ -98,25 +95,25 @@ class LensImage(object):
             self.positions = obj.positions
 
 
-class LensHyperImage(LensImage):
+class LensHyperData(LensData):
 
-    def __init__(self, ccd, mask, hyper_model_image, hyper_galaxy_images, hyper_minimum_values, sub_grid_size=2,
+    def __init__(self, ccd_data, mask, hyper_model_image, hyper_galaxy_images, hyper_minimum_values, sub_grid_size=2,
                  image_psf_shape=None, mapping_matrix_psf_shape=None, positions=None):
         """
-        The lens image is the collection of datas (image, noise-map, PSF), a masks, grid_stacks, convolvers and other \
+        The lens data is the collection of data (image, noise-map, PSF), a mask, grid_stack, convolver and other \
         utilities that are used for modeling and fitting an image of a strong lens.
 
-        Whilst the image datas is initially loaded in 2D, for the lens image the masked-image (and noise-map) \
+        Whilst the image data is initially loaded in 2D, for the lens data the masked-image (and noise-map) \
         are reduced to 1D arrays for faster calculations.
 
         Parameters
         ----------
-        ccd: im.CCD
+        ccd_data: im.CCD
             The ccd data all in 2D (the image, noise-map, PSF, etc.)
         mask: msk.Mask
-            The 2D masks that is applied to the image.
+            The 2D mask that is applied to the image.
         sub_grid_size : int
-            The size of the sub-grid used for each lens SubGrid. E.g. a value of 2 grid_stacks each image-pixel on a 2x2 \
+            The size of the sub-grid used for each lens SubGrid. E.g. a value of 2 grid_stack each image-pixel on a 2x2 \
             sub-grid.
         image_psf_shape : (int, int)
             The shape of the PSF used for convolving model image generated using analytic light profiles. A smaller \
@@ -128,7 +125,7 @@ class LensHyperImage(LensImage):
             Lists of image-pixel coordinates (arc-seconds) that mappers close to one another in the source-plane(s), used \
             to speed up the non-linear sampling.
         """
-        super().__init__(ccd=ccd, mask=mask, sub_grid_size=sub_grid_size, image_psf_shape=image_psf_shape,
+        super().__init__(ccd_data=ccd_data, mask=mask, sub_grid_size=sub_grid_size, image_psf_shape=image_psf_shape,
                          mapping_matrix_psf_shape=mapping_matrix_psf_shape, positions=positions)
 
         self.hyper_model_image = hyper_model_image
@@ -141,8 +138,8 @@ class LensHyperImage(LensImage):
                                                hyper_galaxy_images))
 
     def __array_finalize__(self, obj):
-        super(LensHyperImage, self).__array_finalize__(obj)
-        if isinstance(obj, LensHyperImage):
+        super(LensHyperData, self).__array_finalize__(obj)
+        if isinstance(obj, LensHyperData):
             self.hyper_model_image = obj.hyper_model_image
             self.hyper_galaxy_images = obj.hyper_galaxy_images
             self.hyper_minimum_values = obj.hyper_minimum_values

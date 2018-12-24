@@ -1,8 +1,8 @@
 from astropy.io import fits
 import os
 
-from autolens.data.ccd import ccd as im
-from autolens.data.ccd.plotters import imaging_plotters
+from autolens.data import ccd as im
+from autolens.data.plotters import imaging_plotters
 from autolens.model.profiles import light_profiles as lp, mass_profiles as mp
 
 
@@ -26,8 +26,8 @@ def simulate_image():
     tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
                                                  image_plane_grid_stack=[image_plane_grids])
 
-    return im.CCD.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=0.1,
-                           exposure_time=300.0, psf=psf, background_sky_level=0.1, add_noise=True)
+    return im.CCDData.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=0.1,
+                               exposure_time=300.0, psf=psf, background_sky_level=0.1, add_noise=True)
 
 def simulate_image_in_counts():
 
@@ -49,8 +49,8 @@ def simulate_image_in_counts():
     tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
                                                  image_plane_grid_stack=[image_plane_grids])
 
-    return im.CCD.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=0.1,
-                           exposure_time=300.0, psf=psf, background_sky_level=0.1, add_noise=True)
+    return im.CCDData.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=0.1,
+                               exposure_time=300.0, psf=psf, background_sky_level=0.1, add_noise=True)
 
 def simulate_image_large_stamp():
 
@@ -72,8 +72,8 @@ def simulate_image_large_stamp():
     tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
                                                  image_plane_grid_stack=[image_plane_grids])
 
-    return im.CCD.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=0.1,
-                           exposure_time=300.0, psf=psf, background_sky_level=0.1, add_noise=True)
+    return im.CCDData.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=0.1,
+                               exposure_time=300.0, psf=psf, background_sky_level=0.1, add_noise=True)
 
 def simulate_image_small_stamp():
 
@@ -95,8 +95,8 @@ def simulate_image_small_stamp():
     tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
                                                  image_plane_grid_stack=[image_plane_grids])
 
-    return im.CCD.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=0.1,
-                           exposure_time=300.0, psf=psf, background_sky_level=0.1, add_noise=True)
+    return im.CCDData.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=0.1,
+                               exposure_time=300.0, psf=psf, background_sky_level=0.1, add_noise=True)
 
 def simulate_image_offset_centre():
 
@@ -118,8 +118,8 @@ def simulate_image_offset_centre():
     tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
                                                  image_plane_grid_stack=[image_plane_grids])
 
-    return im.CCD.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=0.1,
-                           exposure_time=300.0, psf=psf, background_sky_level=0.1, add_noise=True)
+    return im.CCDData.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=0.1,
+                               exposure_time=300.0, psf=psf, background_sky_level=0.1, add_noise=True)
 
 def simulate_image_with_large_psf():
 
@@ -141,8 +141,8 @@ def simulate_image_with_large_psf():
     tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
                                                  image_plane_grid_stack=[image_plane_grids])
 
-    return im.CCD.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=0.1,
-                           exposure_time=300.0, psf=psf, background_sky_level=0.1, add_noise=True)
+    return im.CCDData.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=0.1,
+                               exposure_time=300.0, psf=psf, background_sky_level=0.1, add_noise=True)
 
 path = '{}/'.format(os.path.dirname(os.path.realpath(__file__)))
 
@@ -166,8 +166,8 @@ def simulate_image_with_offset_centre_psf():
     tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
                                                  image_plane_grid_stack=[image_plane_grids])
 
-    return im.CCD.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=0.1,
-                           exposure_time=300.0, psf=psf, background_sky_level=0.1, add_noise=True)
+    return im.CCDData.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=0.1,
+                               exposure_time=300.0, psf=psf, background_sky_level=0.1, add_noise=True)
 
 path = '{}/'.format(os.path.dirname(os.path.realpath(__file__)))
 
@@ -175,9 +175,9 @@ path = '{}/'.format(os.path.dirname(os.path.realpath(__file__)))
 def simulate_all_images(plot_images=False):
 
     image = simulate_image()
-    im.output_ccd_to_fits(ccd=image, image_path=path + '/datas/datas/datas.fits',
-                          noise_map_path=path + '/datas/datas/noise_maps.fits',
-                          psf_path=path + '/datas/datas/psf.fits', overwrite=True)
+    im.output_ccd_data_to_fits(ccd_data=image, image_path=path + '/datas/datas/datas.fits',
+                               noise_map_path=path + '/datas/datas/noise_maps.fits',
+                               psf_path=path + '/datas/datas/psf.fits', overwrite=True)
 
     new_hdul = fits.HDUList()
     new_hdul.append(fits.ImageHDU(image))
@@ -190,37 +190,37 @@ def simulate_all_images(plot_images=False):
     new_hdul.writeto(path + '/datas/datas/multiple_hdus.fits')
 
     image_in_counts = simulate_image_in_counts()
-    im.output_ccd_to_fits(ccd=image_in_counts, image_path=path + '/datas/image_in_counts/datas.fits',
-                          noise_map_path=path + '/datas/image_in_counts/noise_maps.fits',
-                          psf_path=path + '/datas/image_in_counts/psf.fits',
-                          exposure_time_map_path=path + '/datas/image_in_counts/exposure_time_map.fits',
-                          overwrite=True)
+    im.output_ccd_data_to_fits(ccd_data=image_in_counts, image_path=path + '/datas/image_in_counts/datas.fits',
+                               noise_map_path=path + '/datas/image_in_counts/noise_maps.fits',
+                               psf_path=path + '/datas/image_in_counts/psf.fits',
+                               exposure_time_map_path=path + '/datas/image_in_counts/exposure_time_map.fits',
+                               overwrite=True)
 
     image_large_stamp = simulate_image_large_stamp()
-    im.output_ccd_to_fits(ccd=image_large_stamp, image_path=path + '/datas/image_large_stamp/datas.fits',
-                          noise_map_path=path + '/datas/image_large_stamp/noise_maps.fits',
-                          psf_path=path + '/datas/image_large_stamp/psf.fits', overwrite=True)
+    im.output_ccd_data_to_fits(ccd_data=image_large_stamp, image_path=path + '/datas/image_large_stamp/datas.fits',
+                               noise_map_path=path + '/datas/image_large_stamp/noise_maps.fits',
+                               psf_path=path + '/datas/image_large_stamp/psf.fits', overwrite=True)
 
     image_small_stamp = simulate_image_small_stamp()
-    im.output_ccd_to_fits(ccd=image_small_stamp, image_path=path + '/datas/image_small_stamp/datas.fits',
-                          noise_map_path=path + '/datas/image_small_stamp/noise_maps.fits',
-                          psf_path=path + '/datas/image_small_stamp/psf.fits', overwrite=True)
+    im.output_ccd_data_to_fits(ccd_data=image_small_stamp, image_path=path + '/datas/image_small_stamp/datas.fits',
+                               noise_map_path=path + '/datas/image_small_stamp/noise_maps.fits',
+                               psf_path=path + '/datas/image_small_stamp/psf.fits', overwrite=True)
 
     image_offset_centre = simulate_image_offset_centre()
-    im.output_ccd_to_fits(ccd=image_offset_centre, image_path=path + '/datas/image_offset_centre/datas.fits',
-                          noise_map_path=path + '/datas/image_offset_centre/noise_maps.fits',
-                          psf_path=path + '/datas/image_offset_centre/psf.fits', overwrite=True)
+    im.output_ccd_data_to_fits(ccd_data=image_offset_centre, image_path=path + '/datas/image_offset_centre/datas.fits',
+                               noise_map_path=path + '/datas/image_offset_centre/noise_maps.fits',
+                               psf_path=path + '/datas/image_offset_centre/psf.fits', overwrite=True)
 
     image_with_large_psf = simulate_image_with_large_psf()
-    im.output_ccd_to_fits(ccd=image_with_large_psf, image_path=path + '/datas/image_with_large_psf/datas.fits',
-                          noise_map_path=path + '/datas/image_with_large_psf/noise_maps.fits',
-                          psf_path=path + '/datas/image_with_large_psf/psf.fits', overwrite=True)
+    im.output_ccd_data_to_fits(ccd_data=image_with_large_psf, image_path=path + '/datas/image_with_large_psf/datas.fits',
+                               noise_map_path=path + '/datas/image_with_large_psf/noise_maps.fits',
+                               psf_path=path + '/datas/image_with_large_psf/psf.fits', overwrite=True)
 
     image_with_off_centre_psf = simulate_image_with_offset_centre_psf()
-    im.output_ccd_to_fits(ccd=image_with_off_centre_psf,
-                          image_path=path + '/datas/image_with_off_centre_psf/datas.fits',
-                          noise_map_path=path + '/datas/image_with_off_centre_psf/noise_maps.fits',
-                          psf_path=path + '/datas/image_with_off_centre_psf/psf.fits', overwrite=True)
+    im.output_ccd_data_to_fits(ccd_data=image_with_off_centre_psf,
+                               image_path=path + '/datas/image_with_off_centre_psf/datas.fits',
+                               noise_map_path=path + '/datas/image_with_off_centre_psf/noise_maps.fits',
+                               psf_path=path + '/datas/image_with_off_centre_psf/psf.fits', overwrite=True)
 
 
     if plot_images:

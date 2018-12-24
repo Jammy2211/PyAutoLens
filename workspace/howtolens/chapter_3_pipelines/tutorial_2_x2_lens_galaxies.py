@@ -1,13 +1,13 @@
 from autofit.core import non_linear as nl
 from autofit.core import model_mapper as mm
-from autolens.data.ccd import ccd as im
+from autolens.data import ccd as im
 from autolens.data.array import mask
 from autolens.model.galaxy import galaxy_model as gm
 from autolens.pipeline import phase as ph
 from autolens.pipeline import pipeline
 from autolens.model.profiles import light_profiles as lp
 from autolens.model.profiles import mass_profiles as mp
-from autolens.data.ccd.plotters import imaging_plotters
+from autolens.data.plotters import imaging_plotters
 
 
 # Up to now, all of the regular that we fitted had only one lens model_galaxy. However we saw in chapter 1 that we can
@@ -50,8 +50,8 @@ def simulate():
     tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy_0, lens_galaxy_1],
                                                  source_galaxies=[source_galaxy], image_plane_grid_stack=[image_plane_grids])
 
-    return im.CCD.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=0.05,
-                           exposure_time=300.0, psf=psf, background_sky_level=0.1, add_noise=True)
+    return im.CCDData.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=0.05,
+                               exposure_time=300.0, psf=psf, background_sky_level=0.1, add_noise=True)
 
 # Lets simulate the regular we'll fit_normal, which is a new regular, finally!
 image = simulate()
@@ -200,7 +200,7 @@ def make_pipeline():
 
 
 pipeline_x2_galaxies = make_pipeline()
-pipeline_x2_galaxies.run(image=image)
+pipeline_x2_galaxies.run(data=image)
 
 # And, we're done. This pipeline takes a while to run, as is the nature of multi-model_galaxy modeling. Nevertheless, the
 # techniques we've learnt above can be applied to systems with even more galaxies, albeit the increases in parameters

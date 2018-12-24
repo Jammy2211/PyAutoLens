@@ -39,7 +39,7 @@ def test_pipeline():
 
     pipeline = make_pipeline(test_name=test_name)
 
-    pipeline.run(image=image)
+    pipeline.run(data=image)
 
 def make_pipeline(test_name):
     def modify_mask_function(img):

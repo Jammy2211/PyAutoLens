@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from autolens.data.ccd import ccd as im, convolution
+from autolens.data import ccd as im, convolution
 from autolens.data.array.util import grid_util
 from autolens.data.array import scaled_array
 from autolens.data.array import mask as msk
@@ -20,9 +20,9 @@ def make_ccd():
     exposure_time_map = im.ExposureTimeMap(array=5.0 * np.ones((4, 4)), pixel_scale=3.0)
     background_sky_map = scaled_array.ScaledSquarePixelArray(array=6.0 * np.ones((4, 4)), pixel_scale=3.0)
 
-    return im.CCD(image=image, pixel_scale=3.0, psf=psf, noise_map=noise_map,
-                  background_noise_map=background_noise_map, poisson_noise_map=poisson_noise_map,
-                  exposure_time_map=exposure_time_map, background_sky_map=background_sky_map)
+    return im.CCDData(image=image, pixel_scale=3.0, psf=psf, noise_map=noise_map,
+                      background_noise_map=background_noise_map, poisson_noise_map=poisson_noise_map,
+                      exposure_time_map=exposure_time_map, background_sky_map=background_sky_map)
 
 @pytest.fixture(name="mask")
 def make_mask():
@@ -33,7 +33,7 @@ def make_mask():
 
 @pytest.fixture(name="lens_image")
 def make_lens_ccd(ccd, mask):
-    return li.LensImage(ccd=ccd, mask=mask)
+    return li.LensData(ccd_data=ccd, mask=mask)
 
 
 class TestLensImage(object):
@@ -97,12 +97,12 @@ class TestLensImage(object):
 
     def test__constructor_inputs(self):
         psf = im.PSF(np.ones((7, 7)), 1)
-        image = im.CCD(np.ones((51, 51)), pixel_scale=3., psf=psf, noise_map=np.ones((51, 51)))
+        image = im.CCDData(np.ones((51, 51)), pixel_scale=3., psf=psf, noise_map=np.ones((51, 51)))
         mask = msk.Mask.masked_for_shape_and_pixel_scale(shape=(51, 51), pixel_scale=1.0)
         mask[26, 26] = False
 
-        lens_image = li.LensImage(image, mask, sub_grid_size=8, image_psf_shape=(5, 5),
-                                     mapping_matrix_psf_shape=(3, 3), positions=[np.array([[1.0, 1.0]])])
+        lens_image = li.LensData(image, mask, sub_grid_size=8, image_psf_shape=(5, 5),
+                                 mapping_matrix_psf_shape=(3, 3), positions=[np.array([[1.0, 1.0]])])
 
         assert lens_image.sub_grid_size == 8
         assert lens_image.convolver_image.psf_shape == (5, 5)
@@ -113,9 +113,9 @@ class TestLensImage(object):
 @pytest.fixture(name="lens_hyper_image")
 def make_lens_hyper_image(ccd, mask):
 
-    return li.LensHyperImage(ccd=ccd, mask=mask, hyper_model_image=10.0 * np.ones((4, 4)),
-                             hyper_galaxy_images=[11.0*np.ones((4,4)), 12.0*np.ones((4,4))],
-                             hyper_minimum_values=[0.1, 0.2])
+    return li.LensHyperData(ccd_data=ccd, mask=mask, hyper_model_image=10.0 * np.ones((4, 4)),
+                            hyper_galaxy_images=[11.0*np.ones((4,4)), 12.0*np.ones((4,4))],
+                            hyper_minimum_values=[0.1, 0.2])
 
 
 class TestLensHyperImage(object):

@@ -1,7 +1,6 @@
 from matplotlib import pyplot as plt
 
 from autolens.data.array.plotters import plotter_util
-from autolens.data.ccd.plotters import ccd_plotters
 from autolens.lens.plotters import lens_plotter_util
 
 

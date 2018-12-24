@@ -5,7 +5,7 @@ import pytest
 import numpy as np
 
 from autofit import conf
-from autolens.data.ccd import ccd as im
+from autolens.data import ccd as im
 from autolens.data.array import grids, mask as msk, scaled_array
 from autolens.lens.plotters import lens_fit_hyper_plotters
 from autolens.model.profiles import light_profiles as lp, mass_profiles as mp
@@ -49,7 +49,7 @@ def test_image():
     noise_map = im.NoiseMap(array=2.0*np.ones((3,3)), pixel_scale=1.0)
     psf = im.PSF(array=3.0*np.ones((1,1)), pixel_scale=1.0)
 
-    return im.CCD(image=image, pixel_scale=1.0, noise_map=noise_map, psf=psf)
+    return im.CCDData(image=image, pixel_scale=1.0, noise_map=noise_map, psf=psf)
 
 @pytest.fixture(name='positions')
 def test_positions():
@@ -62,7 +62,7 @@ def test_mask():
 
 @pytest.fixture(name='lens_image')
 def test_lens_image(image, mask):
-    return li.LensImage(ccd=image, mask=mask)
+    return li.LensData(ccd_data=image, mask=mask)
 
 @pytest.fixture(name='fit_lens_only')
 def test_fit_lens_only(lens_image, galaxy_light):
@@ -100,9 +100,9 @@ def make_hyper():
 @pytest.fixture(name='lens_hyper_image')
 def test_lens_hyper_image(image, mask, hyper):
 
-    return li.LensHyperImage(ccd=image, mask=mask, hyper_model_image=hyper.hyper_model_image,
-                             hyper_galaxy_images=hyper.hyper_galaxy_images,
-                             hyper_minimum_values=hyper.hyper_minimum_values)
+    return li.LensHyperData(ccd_data=image, mask=mask, hyper_model_image=hyper.hyper_model_image,
+                            hyper_galaxy_images=hyper.hyper_galaxy_images,
+                            hyper_minimum_values=hyper.hyper_minimum_values)
 
 @pytest.fixture(name='fit_hyper_lens_only')
 def test_fit_hyper_lens_only(lens_hyper_image, hyper):
