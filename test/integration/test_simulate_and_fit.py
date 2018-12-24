@@ -8,7 +8,8 @@ from autolens.data import ccd
 from autolens.data.array.util import array_util
 from autolens.data.array import grids, mask as msk
 from autolens.model.galaxy import galaxy as g
-from autolens.lens import lens_image as li, lens_fit
+from autolens.lens import lens_data as ld
+from autolens.lens import lens_fit
 from autolens.lens import ray_tracing
 from autolens.model.profiles import light_profiles as lp, mass_profiles as mp
 
@@ -56,12 +57,12 @@ def test__simulate_lensed_source_and_fit__no_psf_blurring__chi_squared_is_0__noi
 
     mask = msk.Mask.circular(shape=ccd_data.image.shape, pixel_scale=0.2, radius_arcsec=0.8)
 
-    lens_image = li.LensData(ccd_data=ccd_data, mask=mask, sub_grid_size=2)
+    lens_data = ld.LensData(ccd_data=ccd_data, mask=mask, sub_grid_size=2)
 
     tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
-                                                 image_plane_grid_stack=lens_image.grid_stack)
+                                                 image_plane_grid_stack=lens_data.grid_stack)
 
-    fitter = lens_fit.LensProfileFit(lens_image=lens_image, tracer=tracer)
+    fitter = lens_fit.LensProfileFit(lens_data=lens_data, tracer=tracer)
 
     assert fitter.chi_squared == 0.0
 
@@ -105,11 +106,11 @@ def test__simulate_lensed_source_and_fit__include_psf_blurring__chi_squared_is_0
 
     mask = msk.Mask.circular(shape=ccd_data.image.shape, pixel_scale=0.2, radius_arcsec=0.8)
 
-    lens_image = li.LensData(ccd_data=ccd_data, mask=mask, sub_grid_size=1)
+    lens_data = ld.LensData(ccd_data=ccd_data, mask=mask, sub_grid_size=1)
 
     tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
-                                                 image_plane_grid_stack=lens_image.grid_stack)
+                                                 image_plane_grid_stack=lens_data.grid_stack)
 
-    fitter = lens_fit.LensProfileFit(lens_image=lens_image, tracer=tracer)
+    fitter = lens_fit.LensProfileFit(lens_data=lens_data, tracer=tracer)
 
     assert fitter.chi_squared == pytest.approx(0.0, 1e-4)

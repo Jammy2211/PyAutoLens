@@ -3,7 +3,7 @@ from autofit.core import non_linear as nl
 from autolens.data import ccd as im
 from autolens.data.array import mask
 from autolens.model.galaxy import galaxy as g, galaxy_model as gm
-from autolens.lens import lens_image as li
+from autolens.lens import lens_data as li
 from autolens.lens import ray_tracing
 from autolens.pipeline import phase as ph
 from autolens.pipeline import pipeline

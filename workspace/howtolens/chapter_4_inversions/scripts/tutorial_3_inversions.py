@@ -4,7 +4,7 @@ from autolens.model.profiles import light_profiles as lp
 from autolens.model.profiles import mass_profiles as mp
 from autolens.model.galaxy import galaxy as g
 from autolens.lens import ray_tracing, lens_fit
-from autolens.lens import lens_image as li
+from autolens.lens import lens_data as li
 from autolens.model.inversion import inversions as inv, pixelizations as pix, regularization as reg
 from autolens.data.plotters import imaging_plotters
 from autolens.model.inversion.plotters import inversion_plotters, mapper_plotters

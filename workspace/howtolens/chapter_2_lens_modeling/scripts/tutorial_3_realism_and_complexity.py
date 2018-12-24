@@ -5,7 +5,7 @@ from autolens.data import ccd as im
 from autolens.data.array import mask as ma
 from autolens.lens import ray_tracing, lens_fit
 from autolens.model.galaxy import galaxy as g, galaxy_model as gm
-from autolens.lens import lens_image as li
+from autolens.lens import lens_data as li
 from autolens.model.profiles import light_profiles as lp
 from autolens.model.profiles import mass_profiles as mp
 from autolens.data.plotters import imaging_plotters

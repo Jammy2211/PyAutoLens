@@ -9,7 +9,7 @@ from autolens.data import ccd as im
 from autolens.data.array import grids, mask as msk, scaled_array
 from autolens.lens.plotters import sensitivity_fit_plotters
 from autolens.model.profiles import light_profiles as lp, mass_profiles as mp
-from autolens.lens import lens_image as li
+from autolens.lens import lens_data as li
 from autolens.model.galaxy import galaxy as g
 from autolens.lens import ray_tracing
 from autolens.lens import sensitivity_fit
@@ -53,25 +53,25 @@ def test_positions():
 def test_mask():
     return msk.Mask.circular(shape=((3,3)), pixel_scale=0.1, radius_arcsec=0.1)
 
-@pytest.fixture(name='lens_image')
+@pytest.fixture(name='lens_data')
 def test_lens_image(ccd, mask):
     return li.LensData(ccd_data=ccd, mask=mask)
 
 @pytest.fixture(name='fit')
-def test_fit(lens_image):
+def test_fit(lens_data):
 
     lens_galaxy = g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=1.0), redshift=1.0)
     lens_subhalo = g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=0.1), redshift=1.0)
     source_galaxy = g.Galaxy(light=lp.EllipticalSersic(intensity=1.0), redshift=2.0)
 
     tracer_normal = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
-                                                        image_plane_grid_stack=lens_image.grid_stack,
+                                                        image_plane_grid_stack=lens_data.grid_stack,
                                                         cosmology=cosmo.Planck15)
     tracer_sensitivity = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy, lens_subhalo],
                                                              source_galaxies=[source_galaxy],
-                                                             image_plane_grid_stack=lens_image.grid_stack,
+                                                             image_plane_grid_stack=lens_data.grid_stack,
                                                              cosmology=cosmo.Planck15)
-    return sensitivity_fit.SensitivityProfileFit(lens_image=lens_image, tracer_normal=tracer_normal,
+    return sensitivity_fit.SensitivityProfileFit(lens_data=lens_data, tracer_normal=tracer_normal,
                                                  tracer_sensitive=tracer_sensitivity)
 
 

@@ -4,9 +4,9 @@ from autolens.data.array import mask as msk
 from autolens.model.inversion import convolution as inversion_convolution
 
 
-class LensImageStack(object):
+class LensDataStack(object):
 
-    def __init__(self, ccds, masks, sub_grid_size=2, image_psf_shape=None, mapping_matrix_psf_shape=None,
+    def __init__(self, ccd_datas, masks, sub_grid_size=2, image_psf_shape=None, mapping_matrix_psf_shape=None,
                  positions=None):
         """
         The lens image is the collection of data (regular, noise_map-maps, PSF), a masks, grid_stacks, convolvers \
@@ -35,11 +35,12 @@ class LensImageStack(object):
             used to speed up the non-linear sampling.
         """
 
+        self.ccd_datas = ccd_datas
 
-        self.images = list(map(lambda ccd : ccd.image, ccds))
-        self.noise_maps = list(map(lambda ccd : ccd.noise_map, ccds))
-        self.pixel_scales = list(map(lambda ccd : ccd.pixel_scale, ccds))
-        self.psfs = list(map(lambda ccd : ccd.psf, ccds))
+        self.images = list(map(lambda ccd : ccd.image, ccd_datas))
+        self.noise_maps = list(map(lambda ccd : ccd.noise_map, ccd_datas))
+        self.pixel_scales = list(map(lambda ccd : ccd.pixel_scale, ccd_datas))
+        self.psfs = list(map(lambda ccd : ccd.psf, ccd_datas))
 
         self.masks = masks
 
@@ -91,7 +92,8 @@ class LensImageStack(object):
         return list(map(lambda grid_stack : grid_stack.regular.scaled_array_from_array_1d, self.grid_stacks))
 
     def __array_finalize__(self, obj):
-        if isinstance(obj, LensImageStack):
+        if isinstance(obj, LensDataStack):
+            self.ccd_datas = obj.ccd_datas
             self.images = obj.images
             self.noise_maps = obj.noise_maps
             self.masks = obj.masks
@@ -108,9 +110,9 @@ class LensImageStack(object):
             self.positions = obj.positions
 
 
-class LensHyperImageStack(LensImageStack):
+class LensHyperDataStack(LensDataStack):
 
-    def __init__(self, ccds, masks, hyper_model_images, hyper_galaxy_images_stack, hyper_minimum_values,
+    def __init__(self, ccd_datas, masks, hyper_model_images, hyper_galaxy_images_stack, hyper_minimum_values,
                  sub_grid_size=2, image_psf_shape=None, mapping_matrix_psf_shape=None, positions=None):
         """
         The lens image is the collection of data (regular, noise_map-maps, PSF), a masks, grid_stacks, convolvers and other \
@@ -138,7 +140,7 @@ class LensHyperImageStack(LensImageStack):
             Lists of image-pixel coordinates (arc-seconds) that mappers close to one another in the source-plane(s), used \
             to speed up the non-linear sampling.
         """
-        super().__init__(ccds=ccds, masks=masks, sub_grid_size=sub_grid_size, image_psf_shape=image_psf_shape,
+        super().__init__(ccd_datas=ccd_datas, masks=masks, sub_grid_size=sub_grid_size, image_psf_shape=image_psf_shape,
                          mapping_matrix_psf_shape=mapping_matrix_psf_shape, positions=positions)
 
         self.hyper_model_images = hyper_model_images
@@ -159,8 +161,8 @@ class LensHyperImageStack(LensImageStack):
                                self.masks, self.hyper_galaxy_images_stack[image_index])))
 
     def __array_finalize__(self, obj):
-        super(LensHyperImageStack, self).__array_finalize__(obj)
-        if isinstance(obj, LensHyperImageStack):
+        super(LensHyperDataStack, self).__array_finalize__(obj)
+        if isinstance(obj, LensHyperDataStack):
             self.hyper_model_images = obj.hyper_model_images
             self.hyper_galaxy_images_stack = obj.hyper_galaxy_images_stack
             self.hyper_minimum_values = obj.hyper_minimum_values
