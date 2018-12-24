@@ -3,10 +3,10 @@ from autofit.core import non_linear as nl
 from autofit.core import model_mapper as mm
 from autolens.pipeline import phase as ph
 from autolens.model.galaxy import galaxy_model as gm
-from autolens.data.imaging import ccd as im
+from autolens.data.ccd import ccd as im
 from autolens.model.profiles import light_profiles as lp
 from autolens.model.profiles import mass_profiles as mp
-from autolens.data.imaging.plotters import imaging_plotters
+from autolens.data.ccd.plotters import imaging_plotters
 from autolens.lens.plotters import lens_fit_plotters
 
 import os
@@ -122,7 +122,7 @@ phase_1.optimizer.sampling_efficiency = 0.9
 
 # Lets run the phase, noting that our liberal approach to reducing the lens model complexity has reduced it to just
 # 11 parameters. (The results are still preloaded for you, but feel free to run it yourself, its fairly quick).
-phase_1_results = phase_1.run(image=image)
+phase_1_results = phase_1.run(data=image)
 
 # And indeed, we get a reasonably good model and fit_normal to the datas - in a much shorter space of time!
 lens_fit_plotters.plot_fit_subplot(fit=phase_1_results.fit)
@@ -173,7 +173,7 @@ phase_2 = CustomPriorPhase(lens_galaxies=dict(lens=gm.GalaxyModel(light=lp.Ellip
                            optimizer_class=nl.MultiNest, phase_name='5_linking_phase_2')
 phase_2.optimizer.n_live_points = 30
 phase_2.optimizer.sampling_efficiency = 0.9
-phase_2_results = phase_2.run(image=image)
+phase_2_results = phase_2.run(data=image)
 
 # Look at that, the right lens model, again!
 lens_fit_plotters.plot_fit_subplot(fit=phase_2_results.fit)

@@ -5,7 +5,7 @@ import pytest
 import numpy as np
 
 from autofit import conf
-from autolens.data.imaging import ccd as im
+from autolens.data.ccd import ccd as im
 from autolens.data.array import grids, mask as msk, scaled_array
 from autolens.lens.plotters import lens_fit_plotters
 from autolens.model.profiles import light_profiles as lp, mass_profiles as mp
@@ -62,7 +62,7 @@ def test_mask():
 
 @pytest.fixture(name='lens_image')
 def test_lens_image(image, mask):
-    return li.LensImage(image=image, mask=mask)
+    return li.LensImage(ccd=image, mask=mask)
 
 @pytest.fixture(name='fit_lens_only')
 def test_fit_lens_only(lens_image, galaxy_light):

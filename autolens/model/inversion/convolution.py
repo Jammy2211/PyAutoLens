@@ -1,7 +1,7 @@
 import numba
 import numpy as np
 
-from autolens.data.imaging import convolution
+from autolens.data.ccd import convolution
 
 
 class ConvolverMappingMatrix(convolution.Convolver):

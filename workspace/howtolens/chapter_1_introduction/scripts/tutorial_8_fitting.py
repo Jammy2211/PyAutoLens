@@ -1,11 +1,11 @@
-from autolens.data.imaging import ccd as im
+from autolens.data.ccd import ccd as im
 from autolens.data.array import mask as ma
 from autolens.lens import ray_tracing, lens_fit
 from autolens.model.galaxy import galaxy as g
 from autolens.lens import lens_image as li
 from autolens.model.profiles import light_profiles as lp
 from autolens.model.profiles import mass_profiles as mp
-from autolens.data.imaging.plotters import imaging_plotters
+from autolens.data.ccd.plotters import imaging_plotters
 from autolens.lens.plotters import ray_tracing_plotters
 from autolens.lens.plotters import lens_fit_plotters
 
@@ -48,7 +48,7 @@ imaging_plotters.plot_image(image=image, mask=mask)
 
 # 4) The regular's grid_stacks: so the tracer_without_subhalo's regular-plane regular is generated on the same (masked) grid as the regular-datas.
 
-lensing_image = li.LensImage(image=image, mask=mask)
+lensing_image = li.LensImage(ccd=image, mask=mask)
 imaging_plotters.plot_image_subplot(lensing_image.image)
 
 # By printing its attribute, we can see that it does indeed contain the regular, masks, psf and so on

@@ -5,7 +5,7 @@ import pytest
 import numpy as np
 
 from autofit import conf
-from autolens.data.imaging import ccd as im
+from autolens.data.ccd import ccd as im
 from autolens.data.array import grids, mask as msk, scaled_array
 from autolens.lens.plotters import sensitivity_fit_plotters
 from autolens.model.profiles import light_profiles as lp, mass_profiles as mp
@@ -34,8 +34,8 @@ def test_sensitivity_fit_plotter_setup():
 def test_grids():
     return grids.GridStack.from_shape_and_pixel_scale(shape=(100, 100), pixel_scale=0.05, sub_grid_size=2)
 
-@pytest.fixture(name='image')
-def test_image():
+@pytest.fixture(name='ccd')
+def test_ccd():
 
     image = scaled_array.ScaledSquarePixelArray(array=np.ones((3, 3)), pixel_scale=1.0)
     noise_map = im.NoiseMap(array=2.0*np.ones((3,3)), pixel_scale=1.0)
@@ -54,8 +54,8 @@ def test_mask():
     return msk.Mask.circular(shape=((3,3)), pixel_scale=0.1, radius_arcsec=0.1)
 
 @pytest.fixture(name='lens_image')
-def test_lens_image(image, mask):
-    return li.LensImage(image=image, mask=mask)
+def test_lens_image(ccd, mask):
+    return li.LensImage(ccd=ccd, mask=mask)
 
 @pytest.fixture(name='fit')
 def test_fit(lens_image):

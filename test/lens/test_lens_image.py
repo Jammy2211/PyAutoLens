@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from autolens.data.imaging import ccd as im, convolution
+from autolens.data.ccd import ccd as im, convolution
 from autolens.data.array.util import grid_util
 from autolens.data.array import scaled_array
 from autolens.data.array import mask as msk
@@ -9,9 +9,10 @@ from autolens.lens import lens_image as li
 from autolens.model.inversion import convolution as inversion_convolution
 
 
-@pytest.fixture(name='image')
-def make_image():
+@pytest.fixture(name='ccd')
+def make_ccd():
 
+    image = scaled_array.ScaledSquarePixelArray(array=np.ones((4, 4)), pixel_scale=3.0)
     psf = im.PSF(array=np.ones((3, 3)), pixel_scale=3.0, renormalize=False)
     noise_map = im.NoiseMap(array=2.0*np.ones((4,4)), pixel_scale=3.0)
     background_noise_map = im.NoiseMap(array=3.0*np.ones((4,4)), pixel_scale=3.0)
@@ -19,7 +20,7 @@ def make_image():
     exposure_time_map = im.ExposureTimeMap(array=5.0 * np.ones((4, 4)), pixel_scale=3.0)
     background_sky_map = scaled_array.ScaledSquarePixelArray(array=6.0 * np.ones((4, 4)), pixel_scale=3.0)
 
-    return im.CCD(image=np.ones((4, 4)), pixel_scale=3.0, psf=psf, noise_map=noise_map,
+    return im.CCD(image=image, pixel_scale=3.0, psf=psf, noise_map=noise_map,
                   background_noise_map=background_noise_map, poisson_noise_map=poisson_noise_map,
                   exposure_time_map=exposure_time_map, background_sky_map=background_sky_map)
 
@@ -31,24 +32,24 @@ def make_mask():
                               [True, True, True, True]]), pixel_scale=3.0)
 
 @pytest.fixture(name="lens_image")
-def make_lens_image(image, mask):
-    return li.LensImage(image=image, mask=mask)
+def make_lens_ccd(ccd, mask):
+    return li.LensImage(ccd=ccd, mask=mask)
 
 
 class TestLensImage(object):
 
-    def test_attributes(self, image, lens_image):
+    def test_attributes(self, ccd, lens_image):
 
-        assert lens_image.pixel_scale == image.pixel_scale
+        assert lens_image.pixel_scale == ccd.pixel_scale
         assert lens_image.pixel_scale == 3.0
 
-        assert (lens_image.image == image).all()
+        assert (lens_image.image == ccd.image).all()
         assert (lens_image.image == np.ones((4,4))).all()
 
-        assert (lens_image.psf == image.psf).all()
+        assert (lens_image.psf == ccd.psf).all()
         assert (lens_image.psf == np.ones((3,3))).all()
 
-        assert (lens_image.noise_map == image.noise_map).all()
+        assert (lens_image.noise_map == ccd.noise_map).all()
         assert (lens_image.noise_map == 2.0*np.ones((4,4))).all()
 
     def test_masking(self, lens_image):
@@ -110,26 +111,26 @@ class TestLensImage(object):
 
 
 @pytest.fixture(name="lens_hyper_image")
-def make_lens_hyper_image(image, mask):
+def make_lens_hyper_image(ccd, mask):
 
-    return li.LensHyperImage(image=image, mask=mask, hyper_model_image=10.0 * np.ones((4, 4)),
-                        hyper_galaxy_images=[11.0*np.ones((4,4)), 12.0*np.ones((4,4))],
-                        hyper_minimum_values=[0.1, 0.2])
+    return li.LensHyperImage(ccd=ccd, mask=mask, hyper_model_image=10.0 * np.ones((4, 4)),
+                             hyper_galaxy_images=[11.0*np.ones((4,4)), 12.0*np.ones((4,4))],
+                             hyper_minimum_values=[0.1, 0.2])
 
 
 class TestLensHyperImage(object):
 
-    def test_attributes(self, image, lens_hyper_image):
+    def test_attributes(self, ccd, lens_hyper_image):
 
-        assert lens_hyper_image.pixel_scale == image.pixel_scale
+        assert lens_hyper_image.pixel_scale == ccd.pixel_scale
 
-        assert (lens_hyper_image.image == image).all()
+        assert (lens_hyper_image.image == ccd.image).all()
         assert (lens_hyper_image.image == np.ones((4,4))).all()
 
-        assert (lens_hyper_image.psf == image.psf).all()
+        assert (lens_hyper_image.psf == ccd.psf).all()
         assert (lens_hyper_image.psf == np.ones((3,3))).all()
 
-        assert (lens_hyper_image.noise_map == image.noise_map).all()
+        assert (lens_hyper_image.noise_map == ccd.noise_map).all()
         assert (lens_hyper_image.noise_map == 2.0*np.ones((4,4))).all()
 
         assert (lens_hyper_image.hyper_model_image == 10.0*np.ones((4,4))).all()

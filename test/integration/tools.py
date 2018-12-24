@@ -3,7 +3,7 @@ import shutil
 
 import numpy as np
 
-from autolens.data.imaging import ccd as im
+from autolens.data.ccd import ccd
 from autolens.data.array.util import array_util
 from autolens.data.array import grids, scaled_array
 from autolens.lens import ray_tracing
@@ -28,7 +28,7 @@ def simulate_integration_image(test_name, pixel_scale, lens_galaxies, source_gal
     psf_shape = (11, 11)
     image_shape = (150, 150)
 
-    psf = im.PSF.simulate_as_gaussian(shape=psf_shape, pixel_scale=pixel_scale, sigma=pixel_scale)
+    psf = ccd.PSF.simulate_as_gaussian(shape=psf_shape, pixel_scale=pixel_scale, sigma=pixel_scale)
 
     grid_stack = grids.GridStack.grid_stack_for_simulation(shape=image_shape, pixel_scale=pixel_scale,
                                                             sub_grid_size=1, psf_shape=psf_shape)
@@ -46,7 +46,7 @@ def simulate_integration_image(test_name, pixel_scale, lens_galaxies, source_gal
 
     ### Setup as a simulated image_coords and output as a fits for an lensing ###
 
-    sim_image = im.CCD.simulate_to_target_signal_to_noise(image=tracer.image_plane_image_for_simulation,
+    ccd_simulated = ccd.CCD.simulate_to_target_signal_to_noise(image=tracer.image_plane_image_for_simulation,
                                                           pixel_scale=pixel_scale,
                                                           target_signal_to_noise=target_signal_to_noise,
                                                           exposure_time_map=np.ones(image_shape),
@@ -56,10 +56,10 @@ def simulate_integration_image(test_name, pixel_scale, lens_galaxies, source_gal
     if os.path.exists(output_path) == False:
         os.makedirs(output_path)
 
-    array_util.numpy_array_to_fits(sim_image, path=output_path + '/image.fits')
-    array_util.numpy_array_to_fits(sim_image.noise_map, path=output_path + '/noise_map.fits')
-    array_util.numpy_array_to_fits(psf, path=output_path + '/psf.fits')
-    array_util.numpy_array_to_fits(sim_image.exposure_time_map, path=output_path + '/exposure_map.fits')
+    array_util.numpy_array_to_fits(array=ccd_simulated.image, path=output_path + '/image.fits')
+    array_util.numpy_array_to_fits(array=ccd_simulated.noise_map, path=output_path + '/noise_map.fits')
+    array_util.numpy_array_to_fits(array=psf, path=output_path + '/psf.fits')
+    array_util.numpy_array_to_fits(array=ccd_simulated.exposure_time_map, path=output_path + '/exposure_map.fits')
 
 
 def load_image(test_name, pixel_scale):
@@ -69,6 +69,6 @@ def load_image(test_name, pixel_scale):
                                                                           pixel_scale=pixel_scale)
     noise = scaled_array.ScaledSquarePixelArray.from_fits_with_pixel_scale(file_path=data_dir + '/noise_map.fits', hdu=0,
                                                                            pixel_scale=pixel_scale)
-    psf = im.PSF.from_fits_with_scale(file_path=data_dir + '/psf.fits', hdu=0, pixel_scale=pixel_scale)
+    psf = ccd.PSF.from_fits_with_scale(file_path=data_dir + '/psf.fits', hdu=0, pixel_scale=pixel_scale)
 
-    return im.CCD(image=data, pixel_scale=pixel_scale, psf=psf, noise_map=noise)
+    return ccd.CCD(image=data, pixel_scale=pixel_scale, psf=psf, noise_map=noise)

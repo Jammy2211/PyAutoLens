@@ -4,7 +4,7 @@ def blurred_image_1d_from_1d_unblurred_and_blurring_images(unblurred_image_1d, b
     """For a 1D masked image and 1D blurring image (the regions outside the mask whose light blurs \
     into the mask after PSF convolution), use both to compute the blurred image within the mask via PSF convolution.
 
-    The convolution uses each image's convolver (*See imaging.convolution*).
+    The convolution uses each image's convolver (*See ccd.convolution*).
 
     Parameters
     ----------
@@ -12,7 +12,7 @@ def blurred_image_1d_from_1d_unblurred_and_blurring_images(unblurred_image_1d, b
         The 1D masked datas which is blurred.
     blurring_image_1d : ndarray
         The 1D masked blurring image which is used for blurring.
-    convolver : imaging.convolution.ConvolverImage
+    convolver : ccd.convolution.ConvolverImage
         The image-convolver which performs the convolution in 1D.
     """
     return convolver.convolve_image(image_array=unblurred_image_1d, blurring_array=blurring_image_1d)
@@ -77,7 +77,7 @@ def blurred_image_of_planes_from_1d_images_and_convolver(total_planes, image_pla
         For every plane, the 1D image-plane image.
     image_plane_blurring_image_1d_of_planes : [ndarray]
         For every plane, the 1D image-plane blurring image.
-    convolver : hyper.imaging.convolution.ConvolverImage
+    convolver : hyper.ccd.convolution.ConvolverImage
         Class which performs the PSF convolution of a masked image in 1D.
     map_to_scaled_array : func
         A function which maps a masked image from 1D to 2D.
@@ -194,7 +194,7 @@ def scaled_noise_map_from_hyper_galaxies_and_contribution_maps(contribution_maps
     hyper_galaxies : [galaxy.Galaxy]
         The hyper galaxies which represent the model components used to scale the noise_map, which correspond to
         individual galaxies in the image.
-    noise_map : imaging.NoiseMap or ndarray
+    noise_map : ccd.NoiseMap or ndarray
         An array describing the RMS standard deviation error in each pixel, preferably in units of electrons per
         second.
     """

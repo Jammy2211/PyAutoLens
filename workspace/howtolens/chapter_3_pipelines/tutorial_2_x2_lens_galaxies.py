@@ -1,13 +1,13 @@
 from autofit.core import non_linear as nl
 from autofit.core import model_mapper as mm
-from autolens.data.imaging import ccd as im
+from autolens.data.ccd import ccd as im
 from autolens.data.array import mask
 from autolens.model.galaxy import galaxy_model as gm
 from autolens.pipeline import phase as ph
 from autolens.pipeline import pipeline
 from autolens.model.profiles import light_profiles as lp
 from autolens.model.profiles import mass_profiles as mp
-from autolens.data.imaging.plotters import imaging_plotters
+from autolens.data.ccd.plotters import imaging_plotters
 
 
 # Up to now, all of the regular that we fitted had only one lens model_galaxy. However we saw in chapter 1 that we can

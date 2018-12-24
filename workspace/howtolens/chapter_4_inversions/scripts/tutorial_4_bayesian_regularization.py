@@ -1,4 +1,4 @@
-from autolens.data.imaging import ccd as im
+from autolens.data.ccd import ccd as im
 from autolens.data.array import mask as ma
 from autolens.model.profiles import light_profiles as lp
 from autolens.model.profiles import mass_profiles as mp
@@ -49,7 +49,7 @@ def perform_fit_with_source_galaxy(source_galaxy):
     image = simulate()
     mask = ma.Mask.circular_annular(shape=image.shape, pixel_scale=image.pixel_scale, inner_radius_arcsec=0.5,
                                     outer_radius_arcsec=2.2)
-    lensing_image = li.LensImage(image=image, mask=mask)
+    lensing_image = li.LensImage(ccd=image, mask=mask)
     lens_galaxy = g.Galaxy(
         mass=mp.EllipticalIsothermal(centre=(0.0, 0.0), axis_ratio=0.8, phi=135.0, einstein_radius=1.6))
     tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
@@ -112,7 +112,7 @@ print(high_regularization_fit.likelihoods_with_regularization)
 # we invoke the 'Bayesian evidence'. This quantifies the goodness of the fit_normal as follows:
 
 # - First, it requires that the residuals of the fit_normal are consistent with Gaussian noise_map (which is the noise_map expected
-#   in CCD imaging). If this Gaussian pattern is not visible in the residuals, it tells us that the noise_map must have been
+#   in CCD ccd). If this Gaussian pattern is not visible in the residuals, it tells us that the noise_map must have been
 #   over-fitted. Thus, the Bayesian evidence decreases. Obviously, if the regular is poorly fitted, the residuals don't
 #   be Gaussian either, but the poor fit_normal will lead to a decrease in Bayesian evidence decreases all the same!
 

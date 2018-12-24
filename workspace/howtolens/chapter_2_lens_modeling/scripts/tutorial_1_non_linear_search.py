@@ -1,10 +1,10 @@
 from autofit import conf
 from autofit.core import non_linear
-from autolens.data.imaging import ccd as im
+from autolens.data.ccd import ccd as im
 from autolens.model.galaxy import galaxy_model as gm
 from autolens.pipeline import phase as ph
 from autolens.lens.plotters import lens_fit_plotters
-from autolens.data.imaging.plotters import imaging_plotters
+from autolens.data.ccd.plotters import imaging_plotters
 from autolens.model.profiles import light_profiles as lp
 from autolens.model.profiles import mass_profiles as mp
 
@@ -46,7 +46,7 @@ import os
 #    and a tracer_without_subhalo.
 
 # 2) Pass this tracer_without_subhalo through the fitting module, generating a model regular and comparing this model regular to the
-#    observed strong lens imaging datas. This means that we've computed a likelihood.
+#    observed strong lens ccd datas. This means that we've computed a likelihood.
 
 # 3) Repeat this many times, using the likelihoods of previous fits (typically those with a high likelihood) to
 #    guide us to the lens models with the highest liikelihood.

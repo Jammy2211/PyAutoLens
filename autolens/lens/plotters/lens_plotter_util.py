@@ -13,7 +13,7 @@ def plot_image(fit, mask=None, positions=None, image_plane_pix_grid=None, as_sub
 
     Parameters
     -----------
-    image : datas.imaging.datas.CCD
+    image : datas.ccd.datas.CCD
         The datas-datas, which includes the observed datas, noise_map-map, PSF, signal-to-noise_map-map, etc.
     plot_origin : True
         If true, the origin of the datas's coordinate system is plotted as a 'x'.
@@ -43,7 +43,7 @@ def plot_noise_map(fit, mask=None, positions=None, as_subplot=False,
 
     Parameters
     -----------
-    image : datas.imaging.datas.CCD
+    image : datas.ccd.datas.CCD
         The datas-datas, which includes the observed datas, noise_map-map, PSF, signal-to-noise_map-map, etc.
     plot_origin : True
         If true, the origin of the datas's coordinate system is plotted as a 'x'.

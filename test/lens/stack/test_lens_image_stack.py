@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from autolens.data.imaging import ccd as im, convolution
+from autolens.data.ccd import ccd as im, convolution
 from autolens.data.array.util import grid_util
 from autolens.data.array import scaled_array
 from autolens.data.array import mask as msk
@@ -9,9 +9,10 @@ from autolens.lens.stack import lens_image_stack as lis
 from autolens.model.inversion import convolution as inversion_convolution
 
 
-@pytest.fixture(name='image_0')
+@pytest.fixture(name='ccd_0')
 def make_image_0():
 
+    image = scaled_array.ScaledSquarePixelArray(array=np.ones((4, 4)), pixel_scale=3.0)
     psf = im.PSF(array=np.ones((3, 3)), pixel_scale=3.0, renormalize=False)
     noise_map = im.NoiseMap(array=2.0*np.ones((4,4)), pixel_scale=3.0)
     background_noise_map = im.NoiseMap(array=3.0*np.ones((4,4)), pixel_scale=3.0)
@@ -19,13 +20,14 @@ def make_image_0():
     exposure_time_map = im.ExposureTimeMap(array=5.0 * np.ones((4, 4)), pixel_scale=3.0)
     background_sky_map = scaled_array.ScaledSquarePixelArray(array=6.0 * np.ones((4, 4)), pixel_scale=3.0)
 
-    return im.CCD(image=np.ones((4, 4)), pixel_scale=3.0, psf=psf, noise_map=noise_map,
+    return im.CCD(image=image, pixel_scale=3.0, psf=psf, noise_map=noise_map,
                   background_noise_map=background_noise_map, poisson_noise_map=poisson_noise_map,
                   exposure_time_map=exposure_time_map, background_sky_map=background_sky_map)
 
-@pytest.fixture(name='image_1')
+@pytest.fixture(name='ccd_1')
 def make_image_1():
 
+    image = scaled_array.ScaledSquarePixelArray(array=10.0*np.ones((4, 4)), pixel_scale=6.0)
     psf = im.PSF(array=11.0*np.ones((3, 3)), pixel_scale=6.0, renormalize=False)
     noise_map = im.NoiseMap(array=12.0*np.ones((4,4)), pixel_scale=6.0)
     background_noise_map = im.NoiseMap(array=13.0*np.ones((4,4)), pixel_scale=6.0)
@@ -33,7 +35,7 @@ def make_image_1():
     exposure_time_map = im.ExposureTimeMap(array=15.0 * np.ones((4, 4)), pixel_scale=6.0)
     background_sky_map = scaled_array.ScaledSquarePixelArray(array=16.0 * np.ones((4, 4)), pixel_scale=6.0)
 
-    return im.CCD(image=10.0 * np.ones((4, 4)), pixel_scale=6.0, psf=psf, noise_map=noise_map,
+    return im.CCD(image=image, pixel_scale=6.0, psf=psf, noise_map=noise_map,
                   background_noise_map=background_noise_map, poisson_noise_map=poisson_noise_map,
                   exposure_time_map=exposure_time_map, background_sky_map=background_sky_map)
 
@@ -52,30 +54,30 @@ def make_mask_1():
                               [True, True, True, True]]), pixel_scale=6.0)
 
 @pytest.fixture(name="lens_image_stack")
-def make_lens_image(image_0, image_1, mask_0, mask_1):
-    return lis.LensImageStack(images=[image_0, image_1], masks=[mask_0, mask_1])
+def make_lens_image(ccd_0, ccd_1, mask_0, mask_1):
+    return lis.LensImageStack(ccds=[ccd_0, ccd_1], masks=[mask_0, mask_1])
 
 
 class TestLensingImage(object):
 
-    def test_attributes(self, image_0, image_1, lens_image_stack):
+    def test_attributes(self, ccd_0, ccd_1, lens_image_stack):
 
-        assert lens_image_stack.pixel_scales[0] == image_0.pixel_scale
+        assert lens_image_stack.pixel_scales[0] == ccd_0.pixel_scale
         assert lens_image_stack.pixel_scales[0] == 3.0
-        assert (lens_image_stack.images[0] == image_0).all()
+        assert (lens_image_stack.images[0] == ccd_0.image).all()
         assert (lens_image_stack.images[0] == np.ones((4,4))).all()
-        assert (lens_image_stack.psfs[0] == image_0.psf).all()
+        assert (lens_image_stack.psfs[0] == ccd_0.psf).all()
         assert (lens_image_stack.psfs[0] == np.ones((3,3))).all()
-        assert (lens_image_stack.noise_maps[0] == image_0.noise_map).all()
+        assert (lens_image_stack.noise_maps[0] == ccd_0.noise_map).all()
         assert (lens_image_stack.noise_maps[0] == 2.0*np.ones((4,4))).all()
 
-        assert lens_image_stack.pixel_scales[1] == image_1.pixel_scale
+        assert lens_image_stack.pixel_scales[1] == ccd_1.pixel_scale
         assert lens_image_stack.pixel_scales[1] == 6.0
-        assert (lens_image_stack.images[1] == image_1).all()
+        assert (lens_image_stack.images[1] == ccd_1.image).all()
         assert (lens_image_stack.images[1] == 10.0*np.ones((4,4))).all()
-        assert (lens_image_stack.psfs[1] == image_1.psf).all()
+        assert (lens_image_stack.psfs[1] == ccd_1.psf).all()
         assert (lens_image_stack.psfs[1] == 11.0*np.ones((3,3))).all()
-        assert (lens_image_stack.noise_maps[1] == image_1.noise_map).all()
+        assert (lens_image_stack.noise_maps[1] == ccd_1.noise_map).all()
         assert (lens_image_stack.noise_maps[1] == 12.0*np.ones((4,4))).all()
 
     def test_masking(self, lens_image_stack):
@@ -174,18 +176,18 @@ class TestLensingImage(object):
     def test__constructor_inputs(self):
 
         psf_0 = im.PSF(np.ones((7, 7)), 1)
-        image_0 = im.CCD(np.ones((51, 51)), pixel_scale=3., psf=psf_0, noise_map=np.ones((51, 51)))
+        ccd_0 = im.CCD(np.ones((51, 51)), pixel_scale=3., psf=psf_0, noise_map=np.ones((51, 51)))
         mask_0 = msk.Mask.masked_for_shape_and_pixel_scale(shape=(51, 51), pixel_scale=1.0)
         mask_0[26, 26] = False
 
         psf_1 = im.PSF(np.ones((7, 7)), 1)
-        image_1 = im.CCD(np.ones((51, 51)), pixel_scale=3., psf=psf_1, noise_map=np.ones((51, 51)))
+        ccd_1 = im.CCD(np.ones((51, 51)), pixel_scale=3., psf=psf_1, noise_map=np.ones((51, 51)))
         mask_1 = msk.Mask.masked_for_shape_and_pixel_scale(shape=(51, 51), pixel_scale=1.0)
         mask_1[26, 26] = False
 
-        lens_image_stack = lis.LensImageStack(images=[image_0, image_1], masks=[mask_0, mask_1], sub_grid_size=8,
-                                                 image_psf_shape=(5, 5), mapping_matrix_psf_shape=(3, 3),
-                                                 positions=[np.array([[1.0, 1.0]])])
+        lens_image_stack = lis.LensImageStack(ccds=[ccd_0, ccd_1], masks=[mask_0, mask_1], sub_grid_size=8,
+                                              image_psf_shape=(5, 5), mapping_matrix_psf_shape=(3, 3),
+                                              positions=[np.array([[1.0, 1.0]])])
 
         assert lens_image_stack.sub_grid_size == 8
         assert lens_image_stack.convolvers_image[0].psf_shape == (5, 5)
@@ -196,9 +198,9 @@ class TestLensingImage(object):
 
 
 @pytest.fixture(name="lens_hyper_image_stack")
-def make_lens_hyper_image(image_0, image_1, mask_0, mask_1):
+def make_lens_hyper_image(ccd_0, ccd_1, mask_0, mask_1):
 
-    return lis.LensHyperImageStack(images=[image_0, image_1], masks=[mask_0, mask_1],
+    return lis.LensHyperImageStack(ccds=[ccd_0, ccd_1], masks=[mask_0, mask_1],
                                    hyper_model_images=[10.0*np.ones((4,4)), 20.0*np.ones((4,4))],
                                    hyper_galaxy_images_stack=[[11.0*np.ones((4,4)), 12.0*np.ones((4,4))],
                                                                   [21.0*np.ones((4,4)), 22.0*np.ones((4,4))]],
@@ -207,32 +209,32 @@ def make_lens_hyper_image(image_0, image_1, mask_0, mask_1):
 
 class TestLensingHyperImage(object):
 
-    def test_attributes(self, image_0, image_1, lens_hyper_image_stack):
+    def test_attributes(self, ccd_0, ccd_1, lens_hyper_image_stack):
 
-        assert lens_hyper_image_stack.pixel_scales[0] == image_0.pixel_scale
+        assert lens_hyper_image_stack.pixel_scales[0] == ccd_0.pixel_scale
 
-        assert (lens_hyper_image_stack.images[0] == image_0).all()
+        assert (lens_hyper_image_stack.images[0] == ccd_0.image).all()
         assert (lens_hyper_image_stack.images[0] == np.ones((4,4))).all()
 
-        assert (lens_hyper_image_stack.psfs[0] == image_0.psf).all()
+        assert (lens_hyper_image_stack.psfs[0] == ccd_0.psf).all()
         assert (lens_hyper_image_stack.psfs[0] == np.ones((3,3))).all()
 
-        assert (lens_hyper_image_stack.noise_maps[0] == image_0.noise_map).all()
+        assert (lens_hyper_image_stack.noise_maps[0] == ccd_0.noise_map).all()
         assert (lens_hyper_image_stack.noise_maps[0] == 2.0*np.ones((4,4))).all()
 
         assert (lens_hyper_image_stack.hyper_model_images[0] == 10.0*np.ones((4,4))).all()
         assert (lens_hyper_image_stack.hyper_galaxy_images_stack[0][0] == 11.0*np.ones((4,4))).all()
         assert (lens_hyper_image_stack.hyper_galaxy_images_stack[0][1] == 12.0*np.ones((4,4))).all()
 
-        assert lens_hyper_image_stack.pixel_scales[1] == image_1.pixel_scale
+        assert lens_hyper_image_stack.pixel_scales[1] == ccd_1.pixel_scale
 
-        assert (lens_hyper_image_stack.images[1] == image_1).all()
+        assert (lens_hyper_image_stack.images[1] == ccd_1.image).all()
         assert (lens_hyper_image_stack.images[1] == 10.0*np.ones((4,4))).all()
 
-        assert (lens_hyper_image_stack.psfs[1] == image_1.psf).all()
+        assert (lens_hyper_image_stack.psfs[1] == ccd_1.psf).all()
         assert (lens_hyper_image_stack.psfs[1] == 11.0*np.ones((3,3))).all()
 
-        assert (lens_hyper_image_stack.noise_maps[1] == image_1.noise_map).all()
+        assert (lens_hyper_image_stack.noise_maps[1] == ccd_1.noise_map).all()
         assert (lens_hyper_image_stack.noise_maps[1] == 12.0*np.ones((4,4))).all()
 
         assert (lens_hyper_image_stack.hyper_model_images[1] == 20.0*np.ones((4,4))).all()

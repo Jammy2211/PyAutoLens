@@ -1,11 +1,11 @@
-from autolens.data.imaging import ccd as im
+from autolens.data.ccd import ccd as im
 from autolens.data.array import mask as ma
 from autolens.lens import ray_tracing, lens_fit
 from autolens.model.galaxy import galaxy as g
 from autolens.lens import lens_image as li
 from autolens.model.profiles import light_profiles as lp
 from autolens.model.profiles import mass_profiles as mp
-from autolens.data.imaging.plotters import imaging_plotters
+from autolens.data.ccd.plotters import imaging_plotters
 from autolens.model.profiles.plotters import profile_plotters
 from autolens.model.galaxy.plotters import galaxy_plotters
 from autolens.lens.plotters import plane_plotters
@@ -20,7 +20,7 @@ from autolens.lens.plotters import ray_tracing_plotters
 # 4) Collections of galaxies (at the same redshift) form a plane.
 # 5) A tracer_without_subhalo can make an regular-plane + source-plane strong lens system.
 # 6) The Universe's cosmology can be input into this tracer_without_subhalo to convert units to physical values.
-# 7) The tracer_without_subhalo's regular-plane regular can be used to simulate strong lens imaging observed on a real telescope.
+# 7) The tracer_without_subhalo's regular-plane regular can be used to simulate strong lens ccd observed on a real telescope.
 # 8) That this regular can be fitted, so to as quantify how well a model strong lens system represents the observed regular.
 
 # In this summary, we'll consider how flexible the tools PyAutoLens gives you are to study every aspect of a strong
@@ -32,7 +32,7 @@ image = im.load_ccd_from_fits(image_path=path + '/datas/regular.fits',
                               noise_map_path=path+'/datas/noise_maps.fits',
                               psf_path=path + '/datas/psf.fits', pixel_scale=0.1)
 mask = ma.Mask.circular(shape=image.shape, pixel_scale=image.pixel_scale, radius_arcsec=3.0)
-lensing_image = li.LensImage(image=image, mask=mask)
+lensing_image = li.LensImage(ccd=image, mask=mask)
 lens_galaxy = g.Galaxy(mass=mp.EllipticalIsothermal(centre=(0.0, 0.0), einstein_radius=1.6, axis_ratio=0.7, phi=45.0))
 source_galaxy = g.Galaxy(bulge=lp.EllipticalSersic(centre=(0.1, 0.1), axis_ratio=0.8, phi=45.0,
                                                   intensity=1.0, effective_radius=1.0, sersic_index=4.0),

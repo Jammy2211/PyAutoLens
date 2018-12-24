@@ -1,12 +1,12 @@
 from autofit import conf
 from autofit.core import non_linear as nl
 from autofit.core import model_mapper as mm
-from autolens.data.imaging import ccd as im
+from autolens.data.ccd import ccd as im
 from autolens.model.galaxy import galaxy_model as gm
 from autolens.model.inversion import pixelizations as pix, regularization as reg
 from autolens.pipeline import phase as ph
 from autolens.pipeline import pipeline
-from autolens.data.imaging.plotters import imaging_plotters
+from autolens.data.ccd.plotters import imaging_plotters
 from autolens.model.profiles import light_profiles as lp, mass_profiles as mp
 
 import os

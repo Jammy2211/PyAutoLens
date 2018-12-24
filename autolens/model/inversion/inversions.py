@@ -25,7 +25,7 @@ class Inversion(object):
             Flattened 1D array of the observed image the inversion is fitting.
         noise_map_1d : ndarray
             Flattened 1D array of the noise-map used by the inversion during the fit.   
-        convolver : imaging.convolution.Convolver
+        convolver : ccd.convolution.Convolver
             The convolver used to blur the mapping matrix with the PSF.
         mapper : inversion.mappers.Mapper
             The mapping between the image-pixels (via its regular / sub-grid) and pixelization pixels.
