@@ -4,6 +4,7 @@ from astropy import cosmology as cosmo
 import numpy as np
 from autofit import conf
 from autofit.core import non_linear
+from autofit.core.phase_property import PhasePropertyCollection
 
 from autolens import exc
 from autolens.data.array import mask as msk
@@ -14,7 +15,6 @@ from autolens.lens import sensitivity_fit
 from autolens.lens.plotters import sensitivity_fit_plotters, lens_fit_plotters
 from autolens.model.galaxy import galaxy as g, galaxy_model as gm, galaxy_fit, galaxy_data as gd
 from autolens.model.galaxy.plotters import galaxy_fitting_plotters
-from autolens.pipeline.phase_property import PhasePropertyCollection
 
 logger = logging.getLogger(__name__)
 logger.level = logging.DEBUG
