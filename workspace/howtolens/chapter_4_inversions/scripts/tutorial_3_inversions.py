@@ -1,4 +1,4 @@
-from autolens.data.imaging import ccd as im
+from autolens.data.ccd import ccd as im
 from autolens.data.array import mask as ma
 from autolens.model.profiles import light_profiles as lp
 from autolens.model.profiles import mass_profiles as mp
@@ -6,7 +6,7 @@ from autolens.model.galaxy import galaxy as g
 from autolens.lens import ray_tracing, lens_fit
 from autolens.lens import lens_image as li
 from autolens.model.inversion import inversions as inv, pixelizations as pix, regularization as reg
-from autolens.data.imaging.plotters import imaging_plotters
+from autolens.data.ccd.plotters import imaging_plotters
 from autolens.model.inversion.plotters import inversion_plotters, mapper_plotters
 from autolens.lens.plotters import lens_fit_plotters
 
@@ -43,7 +43,7 @@ imaging_plotters.plot_image(image=image, mask=mask)
 
 # Next, lets set this regular up as a lensing regular, and setup a tracer_without_subhalo using the input lens model_galaxy model (we don't need
 # to provide the source's light profile, as we're using a mapper to reconstruct it).
-lensing_image = li.LensImage(image=image, mask=mask, sub_grid_size=1)
+lensing_image = li.LensImage(ccd=image, mask=mask, sub_grid_size=1)
 lens_galaxy = g.Galaxy(mass=mp.EllipticalIsothermal(centre=(0.0, 0.0), axis_ratio=0.8, phi=135.0, einstein_radius=1.6))
 tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[g.Galaxy()],
                                              image_plane_grid_stack=[lensing_image.grid_stack])
@@ -51,7 +51,7 @@ tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source
 # We'll use another rectangular pixelization and mapper to perform the reconstruction
 rectangular = pix.Rectangular(shape=(25, 25))
 mapper = rectangular.mapper_from_grid_stack_and_border(grid_stack=tracer.source_plane.grids[0], border=None)
-mapper_plotters.plot_image_and_mapper(image=image, mask=mask, mapper=mapper, should_plot_grid=True)
+mapper_plotters.plot_image_and_mapper(ccd=image, mask=mask, mapper=mapper, should_plot_grid=True)
 
 # And now, finally, we're going to use our mapper to invert the regular using the 'inversions' module, which is imported
 # as 'inv'. I'll explain how this works in a second - but lets just go ahead and perform the inversion first.
@@ -109,7 +109,7 @@ mask = ma.Mask.circular_annular(shape=image.shape, pixel_scale=image.pixel_scale
                                 inner_radius_arcsec=0.1, outer_radius_arcsec=3.2)
 imaging_plotters.plot_image(image=image, mask=mask)
 
-lensing_image = li.LensImage(image=image, mask=mask, sub_grid_size=1)
+lensing_image = li.LensImage(ccd=image, mask=mask, sub_grid_size=1)
 tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[g.Galaxy()],
                                              image_plane_grid_stack=[lensing_image.grid_stack])
 mapper = rectangular.mapper_from_grid_stack_and_border(grid_stack=tracer.source_plane.grids[0], border=None)
@@ -139,7 +139,7 @@ inversion_plotters.plot_reconstructed_pixelization(inversion=inversion, should_p
 # inversions.inversions.Inversion
 
 # To begin, lets consider some random mappings between our mapper's source-pixels and the regular
-mapper_plotters.plot_image_and_mapper(image=image, mapper=mapper, mask=mask,
+mapper_plotters.plot_image_and_mapper(ccd=image, mapper=mapper, mask=mask,
                                       source_pixels=[[445], [285], [313], [132], [11]])
 
 # These mappings are known before the inversion, which means pre-inversion we know two key pieces of information:

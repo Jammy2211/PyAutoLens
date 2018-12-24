@@ -114,7 +114,7 @@ class GridStack(object):
     @classmethod
     def grid_stack_for_simulation(cls, shape, pixel_scale, psf_shape, sub_grid_size=2):
         """Setup a grid-stack of grid_stack for simulating an image of a strong lens, whereby the grid's use padded-grid_stack \
-        to ensure that the PSF blurring in the simulation routine (*imaging.PrepatoryImage.simulate*) is not degraded \
+        to ensure that the PSF blurring in the simulation routine (*ccd.PrepatoryImage.simulate*) is not degraded \
         due to edge effects.
 
         Parameters
@@ -284,7 +284,7 @@ class RegularGrid(np.ndarray):
         via PSF convolution. For example, if our mask is as follows:
         
         |x|x|x|x|x|x|x|x|x|x|
-        |x|x|x|x|x|x|x|x|x|x|     This is an imaging.Mask, where:
+        |x|x|x|x|x|x|x|x|x|x|     This is an ccd.Mask, where:
         |x|x|x|x|x|x|x|x|x|x|
         |x|x|x|x|x|x|x|x|x|x|     x = True (Pixel is masked and excluded from lens)
         |x|x|x|o|o|o|x|x|x|x|     o = False (Pixel is not masked and included in lens)

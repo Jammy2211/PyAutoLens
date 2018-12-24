@@ -3,10 +3,10 @@ from autofit.core import non_linear
 from autofit.core import model_mapper
 from autolens.pipeline import phase as ph
 from autolens.model.galaxy import galaxy_model as gm
-from autolens.data.imaging import ccd as im
+from autolens.data.ccd import ccd as im
 from autolens.model.profiles import light_profiles as lp
 from autolens.model.profiles import mass_profiles as mp
-from autolens.data.imaging.plotters import imaging_plotters
+from autolens.data.ccd.plotters import imaging_plotters
 from autolens.lens.plotters import lens_fit_plotters
 
 import os

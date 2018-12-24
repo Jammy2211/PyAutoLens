@@ -20,7 +20,7 @@ def blurred_images_1d_of_images_from_1d_unblurred_and_bluring_images(unblurred_i
     """For a list of 1D masked images and 1D blurring images (the regions outside the masks whose light blurs \
     into the masks after PSF convolution), use both to compute the blurred image within the masks via PSF convolution.
 
-    The convolution uses each image's convolver (*See imaging.convolution*).
+    The convolution uses each image's convolver (*See ccd.convolution*).
 
     Parameters
     ----------
@@ -28,7 +28,7 @@ def blurred_images_1d_of_images_from_1d_unblurred_and_bluring_images(unblurred_i
         List of the 1D masked images which are blurred.
     blurring_images_1d : [ndarray]
         List of the 1D masked blurring images which are used for blurring.
-    convolvers : [imaging.convolution.ConvolverImage]
+    convolvers : [ccd.convolution.ConvolverImage]
         List of the image-convolvers which perform the convolutions in 1D.
     """
     blurred_images = []
@@ -60,7 +60,7 @@ def blurred_images_of_images_and_planes_from_1d_images_and_convolver(total_plane
         For every image and for every plane, the 1D image-plane image.
     image_plane_blurring_image_1d_of_planes : [ndarray]
         For every image and for every plane, the 1D image-plane blurring image.
-    convolver : hyper.imaging.convolution.ConvolverImage
+    convolver : hyper.ccd.convolution.ConvolverImage
         Class which performs the PSF convolution of a masked image in 1D.
     map_to_scaled_array : func
         A function which maps a masked image from 1D to 2D.

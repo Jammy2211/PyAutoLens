@@ -5,10 +5,10 @@ from scipy.spatial import Voronoi
 
 from autolens.data.array.plotters import plotter_util, grid_plotters
 from autolens.model.inversion import mappers
-from autolens.data.imaging.plotters import imaging_plotters
+from autolens.data.ccd.plotters import ccd_plotters
 
 
-def plot_image_and_mapper(image, mapper, mask=None, positions=None, should_plot_centres=False, should_plot_grid=False,
+def plot_image_and_mapper(ccd, mapper, mask=None, positions=None, should_plot_centres=False, should_plot_grid=False,
                           should_plot_border=False,
                           image_pixels=None, source_pixels=None,
                           units='arcsec', kpc_per_arcsec=None,
@@ -18,7 +18,7 @@ def plot_image_and_mapper(image, mapper, mask=None, positions=None, should_plot_
     plt.figure(figsize=figsize)
     plt.subplot(rows, columns, 1)
 
-    imaging_plotters.plot_image(image=image, mask=mask, positions=positions, as_subplot=True,
+    ccd_plotters.plot_image(ccd=ccd, mask=mask, positions=positions, as_subplot=True,
                                 units=units, kpc_per_arcsec=None, xyticksize=16,
                                 norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
                                 figsize=None, aspect='equal', cmap='jet', cb_ticksize=10,

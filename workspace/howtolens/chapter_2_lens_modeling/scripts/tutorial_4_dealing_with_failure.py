@@ -3,8 +3,8 @@ from autofit.core import non_linear as nl
 from autofit.core import model_mapper as mm
 from autolens.pipeline import phase as ph
 from autolens.model.galaxy import galaxy_model as gm
-from autolens.data.imaging import ccd as im
-from autolens.data.imaging.plotters import imaging_plotters
+from autolens.data.ccd import ccd as im
+from autolens.data.ccd.plotters import imaging_plotters
 from autolens.model.profiles import light_profiles as lp
 from autolens.model.profiles import mass_profiles as mp
 from autolens.lens.plotters import lens_fit_plotters
@@ -130,7 +130,7 @@ custom_prior_phase = CustomPriorPhase(lens_galaxies=dict(lens=gm.GalaxyModel(lig
                                       source_galaxies=dict(source=gm.GalaxyModel(light=lp.EllipticalExponential)),
                                       optimizer_class=nl.MultiNest,
                                       phase_name='4_custom_priors')
-custom_prior_result = custom_prior_phase.run(image=image)
+custom_prior_result = custom_prior_phase.run(data=image)
 
 # Bam! We get a good model. The right model. A glorious model! We gave our non-linear search a helping hand, and it
 # repaid us in spades!
@@ -184,7 +184,7 @@ light_traces_mass_phase = LightTracesMassPhase(lens_galaxies=dict(lens=gm.Galaxy
                                       optimizer_class=nl.MultiNest,
                                                phase_name='4_light_traces_mass')
 
-light_traces_mass_phase_result = light_traces_mass_phase.run(image=image)
+light_traces_mass_phase_result = light_traces_mass_phase.run(data=image)
 lens_fit_plotters.plot_fit_subplot(fit=light_traces_mass_phase_result.fit)
 
 # The results look pretty good. Our source model_galaxy fits the datas pretty well, and we've clearly inferred a model that
@@ -247,7 +247,7 @@ custom_non_linear_phase.optimizer.sampling_efficiency = 0.5
 
 # These are the two most important MultiNest parameters controlling how it navigates parameter space, so lets run this
 # phase and see if our more detailed inspection of parameter space finds the correct lens model.
-custom_non_linear_result = custom_non_linear_phase.run(image=image)
+custom_non_linear_result = custom_non_linear_phase.run(data=image)
 
 # Indeed, it does. Thus, we can always brute-force our way to a good lens model, if all else fails.
 lens_fit_plotters.plot_fit_subplot(fit=custom_non_linear_result.fit)

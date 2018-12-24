@@ -1,8 +1,8 @@
 from astropy.io import fits
 import os
 
-from autolens.data.imaging import ccd as im
-from autolens.data.imaging.plotters import imaging_plotters
+from autolens.data.ccd import ccd as im
+from autolens.data.ccd.plotters import imaging_plotters
 from autolens.model.profiles import light_profiles as lp, mass_profiles as mp
 
 

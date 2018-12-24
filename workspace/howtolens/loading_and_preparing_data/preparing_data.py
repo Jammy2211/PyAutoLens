@@ -1,9 +1,9 @@
 import os
 
-from autolens.data.imaging import ccd as im
+from autolens.data.ccd import ccd as im
 from autolens.data.array import mask as ma
 from autolens.lens import lens_image as li
-from autolens.data.imaging.plotters import imaging_plotters
+from autolens.data.ccd.plotters import imaging_plotters
 from workspace.howtolens.loading_and_preparing_data import simulate_data
 
 # To model datas with PyAutoLens, you first need to ensure it is in a format suitable for lens modeling. This tutorial
@@ -116,7 +116,7 @@ image_small_stamp_padded = im.load_ccd_from_fits(image_path=path + 'datas/image_
 mask = ma.Mask.circular(shape=image_small_stamp_padded.shape, pixel_scale=image_small_stamp_padded.pixel_scale,
                         radius_arcsec=2.0)
 imaging_plotters.plot_image_subplot(image=image_small_stamp_padded, mask=mask)
-lensing_image = li.LensImage(image=image_small_stamp_padded, mask=mask)
+lensing_image = li.LensImage(ccd=image_small_stamp_padded, mask=mask)
 
 ########## IVE INCLUDED THE TEXT FOR 5 BELOW SO YOU CAN BE AWARE OF CENTERING, BUT THE BUILT IN FUNCTIONALITY FOR #####
 ########## RECENTERING CURRENTLY DOES NOT WORK :( ###########

@@ -2,7 +2,7 @@ import numpy as np
 import pytest
 
 from autofit.core import fitting_util
-from autolens.data.imaging import ccd
+from autolens.data.ccd import ccd
 from autolens.data.array import mask as mask
 from autolens.model.galaxy import galaxy as g
 from autolens.lens.util import lens_fit_util as util
@@ -33,7 +33,7 @@ def make_si_blur():
                    [True, True, True, True]])
     ma = mask.Mask(array=ma, pixel_scale=1.0)
 
-    return lens_image.LensImage(image=im, mask=ma, sub_grid_size=2)
+    return lens_image.LensImage(ccd=im, mask=ma, sub_grid_size=2)
 
 
 class TestSensitivityProfileFit:

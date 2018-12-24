@@ -1,7 +1,8 @@
 import numpy as np
 import pytest
 
-from autolens.data.array import interpolation, mask
+from autolens.data.array import mask
+from autolens.data.array import interpolation
 from autolens.model.galaxy import galaxy
 from autolens.model.profiles import mass_profiles
 

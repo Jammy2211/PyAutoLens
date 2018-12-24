@@ -28,16 +28,16 @@ class GalaxyData(object):
         mask: msk.Mask
             The 2D masks that is applied to image hyper.
         sub_grid_size : int
-            The size of the sub-grid used for computing the SubGrid (see imaging.masks.SubGrid).
+            The size of the sub-grid used for computing the SubGrid (see ccd.masks.SubGrid).
 
         Attributes
         ----------
         noise_map_1d : ndarray
             The masked 1D array of the noise_map-map
-        grid_stacks : imaging.masks.GridStack
+        grid_stacks : ccd.masks.GridStack
             Grids of (y,x) Cartesian coordinates which map over the masked 1D hyper array's pixels (includes an \
             regular-grid, sub-grid, etc.)
-        padded_grid_stack : imaging.masks.GridStack
+        padded_grid_stack : ccd.masks.GridStack
             Grids of padded (y,x) Cartesian coordinates which map over the every hyper array's pixel in 1D and a \
             padded regioon to include edge's for accurate PSF convolution (includes an regular-grid, sub-grid, etc.)
         """

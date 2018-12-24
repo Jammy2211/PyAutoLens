@@ -1,18 +1,18 @@
-from autolens.data.imaging import ccd as im
+from autolens.data.ccd import ccd as im
 from autolens.data.array import grids
 from autolens.lens import ray_tracing
 from autolens.model.galaxy import galaxy as g
 from autolens.model.profiles import light_profiles as lp
 from autolens.model.profiles import mass_profiles as mp
 from autolens.lens.plotters import ray_tracing_plotters
-from autolens.data.imaging.plotters import imaging_plotters
+from autolens.data.ccd.plotters import imaging_plotters
 
-# In this example, we'll use the 'imaging' module (imported as 'im') to 'simulate' an regular of a strong lens made
+# In this example, we'll use the 'ccd' module (imported as 'im') to 'simulate' an regular of a strong lens made
 # using a tracer_without_subhalo. By simulate, we mean that it will appear as if we had observed it using a real telescope,
-# with this example making an regular representative of Hubble Space Telescope imaging.
+# with this example making an regular representative of Hubble Space Telescope ccd.
 
 # To simulate an regular, we need to model the telescope's optics. We'll do this by convolving the regular with a
-# Point-Spread Function, which we can simulate as a Gaussian using the imaging module.
+# Point-Spread Function, which we can simulate as a Gaussian using the ccd module.
 psf = im.PSF.simulate_as_gaussian(shape=(11, 11), pixel_scale=0.1, sigma=0.1)
 
 # To simulate an regular, we use a special type of grid. This pads the grid_stacks 2D dimensions relative to the PSF-shape,
@@ -37,7 +37,7 @@ ray_tracing_plotters.plot_image_plane_image(tracer=tracer)
 print(tracer.image_plane_image.shape)
 print(tracer.image_plane_image_for_simulation.shape)
 
-# Now, to simulate the regular, we pass the tracer_without_subhalo's regular-plane regular to the imaging module's simulate function. This
+# Now, to simulate the regular, we pass the tracer_without_subhalo's regular-plane regular to the ccd module's simulate function. This
 # adds the following effects:
 
 # 1) Telescope optics: Using the Point Spread Function above.

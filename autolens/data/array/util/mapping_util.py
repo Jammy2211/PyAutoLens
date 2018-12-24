@@ -106,7 +106,7 @@ def sparse_to_unmasked_sparse_from_mask_and_pixel_centres(total_sparse_pixels, m
     -----------
     total_sparse_pixels : int
         The total number of pixels in the pixelization grid which fall within the regular-masks.
-    mask : imaging.masks.Mask
+    mask : ccd.masks.Mask
         The regular-masks within which pixelization pixels must be inside
     unmasked_sparse_grid_pixel_centres : ndarray
         The centres of the unmasked pixelization grid pixels.
@@ -141,7 +141,7 @@ def unmasked_sparse_to_sparse_from_mask_and_pixel_centres(mask, unmasked_sparse_
     -----------
     total_pix_pixels : int
         The total number of pixels in the pixelization grid which fall within the regular-masks.
-    mask : imaging.masks.Mask
+    mask : ccd.masks.Mask
         The regular-masks within which pixelization pixels must be inside
     unmasked_sparse_grid_pixel_centres : ndarray
         The centres of the unmasked pixelization grid pixels.

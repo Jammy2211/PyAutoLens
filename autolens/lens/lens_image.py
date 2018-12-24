@@ -1,18 +1,18 @@
 import numpy as np
 
 from autolens.data.array import grids
-from autolens.data.imaging import ccd as im
-from autolens.data.imaging import convolution
+from autolens.data.ccd import ccd as im
+from autolens.data.ccd import convolution
 from autolens.data.array import mask as msk
 from autolens.model.inversion import convolution as inversion_convolution
 
 
 class LensImage(object):
 
-    def __init__(self, image, mask, sub_grid_size=2, image_psf_shape=None, mapping_matrix_psf_shape=None,
+    def __init__(self, ccd, mask, sub_grid_size=2, image_psf_shape=None, mapping_matrix_psf_shape=None,
                  positions=None):
         """
-        The lens image is the collection of datas (regular, noise-map, PSF), a masks, grid_stacks, convolvers \
+        The lens image is the collection of datas (image, noise-map, PSF), a masks, grid_stacks, convolvers \
         and other utilities that are used for modeling and fitting an image of a strong lens.
 
         Whilst the image datas is initially loaded in 2D, for the lens image the masked-image (and noise-map) \
@@ -20,15 +20,15 @@ class LensImage(object):
 
         Parameters
         ----------
-        image: im.CCD
-            The original image datas in 2D.
+        ccd: im.CCD
+            The ccd data all in 2D (the image, noise-map, PSF, etc.)
         mask: msk.Mask
             The 2D masks that is applied to the image.
         sub_grid_size : int
             The size of the sub-grid used for each lens SubGrid. E.g. a value of 2 grid_stacks each image-pixel on a 2x2 \
             sub-grid.
         image_psf_shape : (int, int)
-            The shape of the PSF used for convolving model regular generated using analytic light profiles. A smaller \
+            The shape of the PSF used for convolving model image generated using analytic light profiles. A smaller \
             shape will trim the PSF relative to the input image PSF, giving a faster analysis run-time.
         mapping_matrix_psf_shape : (int, int)
             The shape of the PSF used for convolving the inversion mapping matrix. A smaller \
@@ -37,32 +37,34 @@ class LensImage(object):
             Lists of image-pixel coordinates (arc-seconds) that mappers close to one another in the source-plane(s), \
             used to speed up the non-linear sampling.
         """
-        self.image = image[:,:]
-        self.noise_map = image.noise_map
-        self.pixel_scale = image.pixel_scale
-        self.psf = image.psf
+
+        self.ccd = ccd
+
+        self.image = ccd.image
+        self.noise_map = ccd.noise_map
+        self.pixel_scale = ccd.pixel_scale
+        self.psf = ccd.psf
 
         self.mask = mask
-        self.mask[:,:] = np.asarray(mask[:,:], dtype='bool')
 
-        self.image_1d = mask.map_2d_array_to_masked_1d_array(array_2d=image[:,:])
-        self.noise_map_1d = mask.map_2d_array_to_masked_1d_array(array_2d=image.noise_map)
+        self.image_1d = mask.map_2d_array_to_masked_1d_array(array_2d=ccd.image)
+        self.noise_map_1d = mask.map_2d_array_to_masked_1d_array(array_2d=ccd.noise_map)
         self.mask_1d = mask.map_2d_array_to_masked_1d_array(array_2d=mask)
 
         self.sub_grid_size = sub_grid_size
 
         if image_psf_shape is None:
-            image_psf_shape = self.image.psf.shape
+            image_psf_shape = self.psf.shape
 
         self.convolver_image = convolution.ConvolverImage(mask=self.mask,
                                         blurring_mask=mask.blurring_mask_for_psf_shape(psf_shape=image_psf_shape),
-                                        psf=self.image.psf.resized_scaled_array_from_array(new_shape=image_psf_shape))
+                                        psf=self.psf.resized_scaled_array_from_array(new_shape=image_psf_shape))
 
         if mapping_matrix_psf_shape is None:
-            mapping_matrix_psf_shape = self.image.psf.shape
+            mapping_matrix_psf_shape = self.psf.shape
 
         self.convolver_mapping_matrix = inversion_convolution.ConvolverMappingMatrix(self.mask,
-                      self.image.psf.resized_scaled_array_from_array(mapping_matrix_psf_shape))
+                      self.psf.resized_scaled_array_from_array(mapping_matrix_psf_shape))
 
         self.grid_stack = grids.GridStack.grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=mask,
                                               sub_grid_size=sub_grid_size, psf_shape=image_psf_shape)
@@ -98,10 +100,10 @@ class LensImage(object):
 
 class LensHyperImage(LensImage):
 
-    def __init__(self, image, mask, hyper_model_image, hyper_galaxy_images, hyper_minimum_values, sub_grid_size=2,
+    def __init__(self, ccd, mask, hyper_model_image, hyper_galaxy_images, hyper_minimum_values, sub_grid_size=2,
                  image_psf_shape=None, mapping_matrix_psf_shape=None, positions=None):
         """
-        The lens image is the collection of datas (regular, noise-map, PSF), a masks, grid_stacks, convolvers and other \
+        The lens image is the collection of datas (image, noise-map, PSF), a masks, grid_stacks, convolvers and other \
         utilities that are used for modeling and fitting an image of a strong lens.
 
         Whilst the image datas is initially loaded in 2D, for the lens image the masked-image (and noise-map) \
@@ -109,15 +111,15 @@ class LensHyperImage(LensImage):
 
         Parameters
         ----------
-        image: im.CCD
-            The original image datas in 2D.
+        ccd: im.CCD
+            The ccd data all in 2D (the image, noise-map, PSF, etc.)
         mask: msk.Mask
             The 2D masks that is applied to the image.
         sub_grid_size : int
             The size of the sub-grid used for each lens SubGrid. E.g. a value of 2 grid_stacks each image-pixel on a 2x2 \
             sub-grid.
         image_psf_shape : (int, int)
-            The shape of the PSF used for convolving model regular generated using analytic light profiles. A smaller \
+            The shape of the PSF used for convolving model image generated using analytic light profiles. A smaller \
             shape will trim the PSF relative to the input image PSF, giving a faster analysis run-time.
         mapping_matrix_psf_shape : (int, int)
             The shape of the PSF used for convolving the inversion mapping matrix. A smaller \
@@ -126,7 +128,7 @@ class LensHyperImage(LensImage):
             Lists of image-pixel coordinates (arc-seconds) that mappers close to one another in the source-plane(s), used \
             to speed up the non-linear sampling.
         """
-        super().__init__(image=image, mask=mask, sub_grid_size=sub_grid_size, image_psf_shape=image_psf_shape,
+        super().__init__(ccd=ccd, mask=mask, sub_grid_size=sub_grid_size, image_psf_shape=image_psf_shape,
                          mapping_matrix_psf_shape=mapping_matrix_psf_shape, positions=positions)
 
         self.hyper_model_image = hyper_model_image
@@ -139,8 +141,8 @@ class LensHyperImage(LensImage):
                                                hyper_galaxy_images))
 
     def __array_finalize__(self, obj):
-        super(LensImage, self).__array_finalize__(obj)
-        if isinstance(obj, LensImage):
+        super(LensHyperImage, self).__array_finalize__(obj)
+        if isinstance(obj, LensHyperImage):
             self.hyper_model_image = obj.hyper_model_image
             self.hyper_galaxy_images = obj.hyper_galaxy_images
             self.hyper_minimum_values = obj.hyper_minimum_values

@@ -4,9 +4,9 @@
 # import pytest
 #
 # from autofit import conf
-# from autolens.imaging import scaled_array
-# from autolens.imaging import regular as im
-# from autolens.imaging import masks as msk
+# from autolens.ccd import scaled_array
+# from autolens.ccd import regular as im
+# from autolens.ccd import masks as msk
 # from autolens.profiles import light_profiles as lp
 # from autolens.profiles import mass_profiles as mp
 # from autolens.lensing import model_galaxy as g

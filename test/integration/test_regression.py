@@ -20,6 +20,7 @@ test_name = "test"
 
 
 class TestPhaseModelMapper(object):
+
     def test_pairing_works(self):
 
         test_name = 'pair_floats'

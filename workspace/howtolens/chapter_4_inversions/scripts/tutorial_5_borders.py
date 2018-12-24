@@ -1,4 +1,4 @@
-from autolens.data.imaging import ccd as im
+from autolens.data.ccd import ccd as im
 from autolens.data.array import mask as ma
 from autolens.model.profiles import light_profiles as lp
 from autolens.model.profiles import mass_profiles as mp
@@ -6,7 +6,7 @@ from autolens.model.galaxy import galaxy as g
 from autolens.lens import ray_tracing, lens_fit
 from autolens.lens import lens_image as li
 from autolens.model.inversion import pixelizations as pix, regularization as reg
-from autolens.data.imaging.plotters import imaging_plotters
+from autolens.data.ccd.plotters import imaging_plotters
 from autolens.lens.plotters import ray_tracing_plotters
 from autolens.model.inversion.plotters import inversion_plotters, mapper_plotters
 
@@ -42,7 +42,7 @@ image = simulate()
 imaging_plotters.plot_image_subplot(image=image)
 
 # So, what is a borders? In the regular-plane, a borders is the set of exterior pixels in a masks that are at, well, its
-# borders. Lets plot the regular with a circular masks, and tell our imaging plotter to plot the borders as well.
+# borders. Lets plot the regular with a circular masks, and tell our ccd plotter to plot the borders as well.
 mask_circular = ma.Mask.circular(shape=image.shape, pixel_scale=image.pixel_scale, radius_arcsec=2.5)
 imaging_plotters.plot_image_subplot(image=image, mask=mask_circular, should_plot_border=True)
 
@@ -62,7 +62,7 @@ imaging_plotters.plot_image_subplot(image=image, mask=mask_annular, should_plot_
 def perform_fit_with_source_galaxy_mask_and_border(source_galaxy, mask, use_border):
 
     image = simulate()
-    lensing_image = li.LensImage(image=image, mask=mask)
+    lensing_image = li.LensImage(ccd=image, mask=mask)
     lens_galaxy = g.Galaxy(
         mass=mp.EllipticalIsothermal(centre=(0.0, 0.0), axis_ratio=0.8, phi=135.0, einstein_radius=1.6))
 
@@ -90,7 +90,7 @@ inversion_plotters.plot_reconstructed_pixelization(inversion=fit.inversion, shou
 # points) which correspond to the central regular-pixels that our annular masks masked, but that our circular masks didn't!
 
 # Lets quickly check this using a mapper plotter
-mapper_plotters.plot_image_and_mapper(image=image, mapper=fit.mapper, mask=mask_circular, should_plot_grid=True,
+mapper_plotters.plot_image_and_mapper(ccd=image, mapper=fit.mapper, mask=mask_circular, should_plot_grid=True,
                                       image_pixels=[[range(3765, 3795)], [range(4065, 4095)], [range(3865, 3895)],
                                                     [range(3965, 3995)], [range(4165, 4195)]])
 
@@ -131,7 +131,7 @@ inversion_plotters.plot_reconstructed_pixelization(inversion=fit.inversion, shou
 # edge. Lets take a look.
 fit = perform_fit_with_source_galaxy_mask_and_border(source_galaxy=source_galaxy, mask=mask_circular, use_border=True)
 inversion_plotters.plot_reconstructed_pixelization(inversion=fit.inversion, should_plot_grid=True)
-mapper_plotters.plot_image_and_mapper(image=image, mapper=fit.mapper, mask=mask_circular, should_plot_grid=True,
+mapper_plotters.plot_image_and_mapper(ccd=image, mapper=fit.mapper, mask=mask_circular, should_plot_grid=True,
                                       image_pixels=[[range(3765, 3795)], [range(4065, 4095)], [range(3865, 3895)],
                                                     [range(3965, 3995)], [range(4165, 4195)]])
 
@@ -180,7 +180,7 @@ imaging_plotters.plot_image_subplot(image=image, mask=mask_circular, should_plot
 def perform_fit_x2_lenses_with_source_galaxy_mask_and_border(source_galaxy, mask, use_border):
 
     simulate_image_x2_lenses()
-    lensing_image = li.LensImage(image=image, mask=mask)
+    lensing_image = li.LensImage(ccd=image, mask=mask)
     lens_galaxy_0 = g.Galaxy(
         mass=mp.EllipticalIsothermal(centre=(1.1, 0.51), axis_ratio=0.9, phi=110.0, einstein_radius=1.07))
     lens_galaxy_1 = g.Galaxy(

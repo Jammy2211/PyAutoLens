@@ -1,14 +1,14 @@
 from autofit import conf
 from autofit.core import non_linear as nl
 from autolens.pipeline import phase as ph
-from autolens.data.imaging import ccd as im
+from autolens.data.ccd import ccd as im
 from autolens.data.array import mask as ma
 from autolens.lens import ray_tracing, lens_fit
 from autolens.model.galaxy import galaxy as g, galaxy_model as gm
 from autolens.lens import lens_image as li
 from autolens.model.profiles import light_profiles as lp
 from autolens.model.profiles import mass_profiles as mp
-from autolens.data.imaging.plotters import imaging_plotters
+from autolens.data.ccd.plotters import imaging_plotters
 from autolens.lens.plotters import lens_fit_plotters
 
 import os
@@ -100,7 +100,7 @@ print(results.constant)
 
 # Create a lensing regular to make the fit_normal - the masks we used above was a 3" circle (we'll come back to this later)
 mask = ma.Mask.circular(shape=image.shape, pixel_scale=image.pixel_scale, radius_arcsec=3.0)
-lensing_image = li.LensImage(image=image, mask=mask)
+lensing_image = li.LensImage(ccd=image, mask=mask)
 imaging_plotters.plot_image_subplot(lensing_image.image)
 
 # Make the tracer_without_subhalo we use to simulate the regular

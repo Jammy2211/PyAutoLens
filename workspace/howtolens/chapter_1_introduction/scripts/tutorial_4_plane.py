@@ -108,7 +108,7 @@ plane_plotters.plot_image_and_source_plane_subplot(image_plane=image_plane, sour
 # its not boring!
 
 # We can now ask the question - 'what does our source-model_galaxy look like in the regular-plane'? That is, to us, the
-# observer on Earth, how do we see the source-model_galaxy (after it is lensed). To do this, we simply imaging the source
+# observer on Earth, how do we see the source-model_galaxy (after it is lensed). To do this, we simply ccd the source
 # model_galaxy's light 'mapping back' from the lensed source-plane grid above.
 plane_plotters.plot_image_plane_image(plane=source_plane)
 

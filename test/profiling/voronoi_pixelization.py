@@ -2,7 +2,7 @@ import numpy as np
 import time
 
 from autolens.data.array import mask as ma
-from autolens.data.imaging import ccd as im
+from autolens.data.ccd import ccd as im
 from autolens.model.profiles import light_profiles as lp, mass_profiles as mp
 from autolens.data.array import grids
 from autolens.model.galaxy import galaxy as g
@@ -37,7 +37,7 @@ image = im.CCD.simulate(array=tracer.image_plane_image_for_simulation, pixel_sca
 
 
 mask = ma.Mask.circular(shape=image_shape, pixel_scale=pixel_scale, radius_arcsec=3.0)
-lensing_image = li.LensImage(image=image, mask=mask)
+lensing_image = li.LensImage(ccd=image, mask=mask)
 
 adaptive_pix = pix.AdaptiveMagnification(shape=(30, 30))
 

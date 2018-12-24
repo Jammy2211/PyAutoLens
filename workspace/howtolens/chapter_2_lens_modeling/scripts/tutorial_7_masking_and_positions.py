@@ -1,12 +1,12 @@
 from autofit import conf
 from autofit.core import non_linear
-from autolens.data.imaging import ccd as im
+from autolens.data.ccd import ccd as im
 from autolens.data.array import mask as msk
 from autolens.model.profiles import light_profiles as lp
 from autolens.model.profiles import mass_profiles as mp
 from autolens.model.galaxy import galaxy as g
 from autolens.pipeline import phase as ph
-from autolens.data.imaging.plotters import imaging_plotters
+from autolens.data.ccd.plotters import imaging_plotters
 
 import os
 
@@ -44,7 +44,7 @@ image = simulate()
 imaging_plotters.plot_image_subplot(image=image)
 
 # When it comes to determining an appropriate masks for this regular, the best approach is to set up a masks using the masks
-# module and pass it to an imaging plotter. You can then check visually if the masks is an appropriate size or not.
+# module and pass it to an ccd plotter. You can then check visually if the masks is an appropriate size or not.
 # Below, we choose an inner radius that cuts into our lensed source galaxy - clearly this isn't a good masks.
 mask = msk.Mask.circular_annular(shape=image.shape, pixel_scale=image.pixel_scale, inner_radius_arcsec=1.4,
                                  outer_radius_arcsec=2.4)

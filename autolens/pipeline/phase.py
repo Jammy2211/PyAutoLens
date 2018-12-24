@@ -7,8 +7,8 @@ from autofit.core import non_linear
 
 from autolens import exc
 from autolens.data.array import mask as msk
-from autolens.data.imaging import ccd as im
-from autolens.data.imaging.plotters import imaging_plotters
+from autolens.data.ccd import ccd as im
+from autolens.data.ccd.plotters import ccd_plotters
 from autolens.lens import lens_image as li, lens_fit
 from autolens.lens import ray_tracing
 from autolens.lens import sensitivity_fit
@@ -290,7 +290,7 @@ class PhasePositions(AbstractPhase):
 
     def make_analysis(self, positions, pixel_scale, previous_results=None):
         """
-        Create an lens object. Also calls the prior passing and lensing_image modifying functions to allow child
+        Create an lens object. Also calls the prior passing and lens_image modifying functions to allow child
         classes to change the behaviour of the phase.
 
         Parameters
@@ -324,7 +324,7 @@ class PhasePositions(AbstractPhase):
 
         def fit(self, instance):
             """
-            Determine the fit of a lens galaxy and source galaxy to the lensing_image in this lens.
+            Determine the fit of a lens galaxy and source galaxy to the lens_image in this lens.
 
             Parameters
             ----------
@@ -334,7 +334,7 @@ class PhasePositions(AbstractPhase):
             Returns
             -------
             fit: Fit
-                A fractional value indicating how well this model fit and the model lensing_image itself
+                A fractional value indicating how well this model fit and the model lens_image itself
             """
             tracer = self.tracer_for_instance(instance)
             fit = self.fit_for_tracer(tracer)
@@ -386,23 +386,23 @@ class PhaseImaging(Phase):
     # noinspection PyMethodMayBeStatic,PyUnusedLocal
     def modify_image(self, image, previous_results):
         """
-        Customize an lensing_image. e.g. removing lens light.
+        Customize an lens_image. e.g. removing lens light.
 
         Parameters
         ----------
         image: img.CCD
-            An lensing_image that has been masked
+            An lens_image that has been masked
         previous_results: ResultsCollection
             The result of the previous lens
 
         Returns
         -------
-        lensing_image: img.CCD
-            The modified lensing_image (not changed by default)
+        lens_image: img.CCD
+            The modified lens_image (not changed by default)
         """
         return image
 
-    def run(self, image, previous_results=None, mask=None):
+    def run(self, data, previous_results=None, mask=None):
         """
         Run this phase.
 
@@ -412,31 +412,31 @@ class PhaseImaging(Phase):
             The default masks passed in by the pipeline
         previous_results: ResultsCollection
             An object describing the results of the last phase or None if no phase has been executed
-        image: img.CCD
-            An lensing_image that has been masked
+        data: img.CCD
+            An lens_image that has been masked
 
         Returns
         -------
         result: non_linear.Result
             A result object comprising the best fit model and other hyper.
         """
-        analysis = self.make_analysis(image=image, previous_results=previous_results, mask=mask)
+        analysis = self.make_analysis(ccd=data, previous_results=previous_results, mask=mask)
         result = self.optimizer.fit(analysis)
         analysis.visualize(instance=result.constant, suffix=None, during_analysis=False)
 
         return self.__class__.Result(result.constant, result.figure_of_merit, result.variable, analysis)
 
-    def make_analysis(self, image, previous_results=None, mask=None):
+    def make_analysis(self, ccd, previous_results=None, mask=None):
         """
-        Create an lens object. Also calls the prior passing and lensing_image modifying functions to allow child
+        Create an lens object. Also calls the prior passing and lens_image modifying functions to allow child
         classes to change the behaviour of the phase.
 
         Parameters
         ----------
         mask: Mask
             The default masks passed in by the pipeline
-        image: im.CCD
-            An lensing_image that has been masked
+        ccd: im.CCD
+            An lens_image that has been masked
         previous_results: ResultsCollection
             The result from the previous phase
 
@@ -445,30 +445,32 @@ class PhaseImaging(Phase):
         lens: Analysis
             An lens object that the non-linear optimizer calls to determine the fit of a set of values
         """
-        mask = mask or self.mask_function(image)
-        image = self.modify_image(image, previous_results)
-        lensing_image = li.LensImage(image=image, mask=mask, sub_grid_size=self.sub_grid_size,
+        mask = mask or self.mask_function(image=ccd.image)
+
+        lens_image = li.LensImage(ccd=ccd, mask=mask, sub_grid_size=self.sub_grid_size,
                                      image_psf_shape=self.image_psf_shape, positions=self.positions)
+
+        lens_image.image = self.modify_image(image=lens_image.image, previous_results=previous_results)
 
         self.pass_priors(previous_results)
 
-        analysis = self.__class__.Analysis(lensing_image=lensing_image, cosmology=self.cosmology,
+        analysis = self.__class__.Analysis(lens_image=lens_image, cosmology=self.cosmology,
                                            phase_name=self.phase_name, previous_results=previous_results)
         return analysis
 
     # noinspection PyAbstractClass
     class Analysis(Phase.Analysis):
 
-        def __init__(self, lensing_image, cosmology, phase_name, previous_results=None):
+        def __init__(self, lens_image, cosmology, phase_name, previous_results=None):
 
             super(PhaseImaging.Analysis, self).__init__(cosmology=cosmology, phase_name=phase_name,
                                                         previous_results=previous_results)
 
-            self.lensing_image = lensing_image
+            self.lens_image = lens_image
 
         def fit(self, instance):
             """
-            Determine the fit of a lens galaxy and source galaxy to the lensing_image in this lens.
+            Determine the fit of a lens galaxy and source galaxy to the lens_image in this lens.
 
             Parameters
             ----------
@@ -478,7 +480,7 @@ class PhaseImaging(Phase):
             Returns
             -------
             fit: Fit
-                A fractional value indicating how well this model fit and the model lensing_image itself
+                A fractional value indicating how well this model fit and the model lens_image itself
             """
             self.check_positions_trace_within_threshold(instance)
             tracer = self.tracer_for_instance(instance)
@@ -492,18 +494,17 @@ class PhaseImaging(Phase):
             padded_tracer = self.padded_tracer_for_instance(instance)
             fit = self.fit_for_tracers(tracer=tracer, padded_tracer=padded_tracer)
 
-            imaging_plotters.plot_image_subplot(image=self.lensing_image.image, mask=self.lensing_image.mask,
-                                                positions=self.lensing_image.positions,
-                                                output_path=self.output_image_path,
-                                                output_format='png', ignore_config=False)
+            ccd_plotters.plot_ccd_subplot(ccd=self.lens_image.ccd, mask=self.lens_image.mask,
+                                          positions=self.lens_image.positions,
+                                          output_path=self.output_image_path,
+                                          output_format='png', ignore_config=False)
 
-            imaging_plotters.plot_image_individual(image=self.lensing_image.image, mask=self.lensing_image.mask,
-                                                   positions=self.lensing_image.positions,
-                                                   output_path=self.output_image_path, output_format='png')
+            ccd_plotters.plot_ccd_individual(ccd=self.lens_image.ccd, mask=self.lens_image.mask,
+                                               positions=self.lens_image.positions,
+                                               output_path=self.output_image_path, output_format='png')
 
             lens_fit_plotters.plot_fit_subplot(fit=fit, output_path=self.output_image_path,
-                                               output_format='png',
-                                               ignore_config=False)
+                                               output_format='png', ignore_config=False)
 
             lens_fit_plotters.plot_fit_individuals(fit=fit, output_path=self.output_image_path,
                                                    output_format='png')
@@ -511,24 +512,24 @@ class PhaseImaging(Phase):
             return fit
 
         def fit_for_tracers(self, tracer, padded_tracer):
-            return lens_fit.fit_lens_image_with_tracer(lens_image=self.lensing_image, tracer=tracer,
+            return lens_fit.fit_lens_image_with_tracer(lens_image=self.lens_image, tracer=tracer,
                                                        padded_tracer=padded_tracer)
 
         def check_positions_trace_within_threshold(self, instance):
 
-            if self.lensing_image.positions is not None:
+            if self.lens_image.positions is not None:
 
                 tracer = ray_tracing.TracerImageSourcePlanesPositions(lens_galaxies=instance.lens_galaxies,
-                                                                      image_plane_positions=self.lensing_image.positions)
+                                                                      image_plane_positions=self.lens_image.positions)
                 fit = lens_fit.LensPositionFit(positions=tracer.source_plane.positions,
-                                               noise_map=self.lensing_image.image.pixel_scale)
+                                               noise_map=self.lens_image.image.pixel_scale)
 
                 if not fit.maximum_separation_within_threshold(self.position_threshold):
                     return exc.RayTracingException
 
         def map_to_1d(self, data):
             """Convenience method"""
-            return self.lensing_image.mask.map_2d_array_to_masked_1d_array(data)
+            return self.lens_image.mask.map_2d_array_to_masked_1d_array(data)
 
     class Result(Phase.Result):
 
@@ -570,18 +571,18 @@ class LensPlanePhase(PhaseImaging):
 
     class Analysis(PhaseImaging.Analysis):
 
-        def __init__(self, lensing_image, cosmology, phase_name, previous_results=None):
-            super(LensPlanePhase.Analysis, self).__init__(lensing_image=lensing_image, cosmology=cosmology,
+        def __init__(self, lens_image, cosmology, phase_name, previous_results=None):
+            super(LensPlanePhase.Analysis, self).__init__(lens_image=lens_image, cosmology=cosmology,
                                                           phase_name=phase_name, previous_results=previous_results)
 
         def tracer_for_instance(self, instance):
             return ray_tracing.TracerImagePlane(lens_galaxies=instance.lens_galaxies,
-                                                image_plane_grid_stack=self.lensing_image.grid_stack,
+                                                image_plane_grid_stack=self.lens_image.grid_stack,
                                                 cosmology=self.cosmology)
 
         def padded_tracer_for_instance(self, instance):
             return ray_tracing.TracerImagePlane(lens_galaxies=instance.lens_galaxies,
-                                                image_plane_grid_stack=self.lensing_image.padded_grid_stack,
+                                                image_plane_grid_stack=self.lens_image.padded_grid_stack,
                                                 cosmology=self.cosmology)
 
         @classmethod
@@ -643,8 +644,8 @@ class LensSourcePlanePhase(PhaseImaging):
 
     class Analysis(PhaseImaging.Analysis):
 
-        def __init__(self, lensing_image, cosmology, phase_name, previous_results=None):
-            self.lensing_image = lensing_image
+        def __init__(self, lens_image, cosmology, phase_name, previous_results=None):
+            self.lens_image = lens_image
             super(PhaseImaging.Analysis, self).__init__(cosmology=cosmology, phase_name=phase_name,
                                                         previous_results=previous_results)
 
@@ -652,13 +653,13 @@ class LensSourcePlanePhase(PhaseImaging):
 
             return ray_tracing.TracerImageSourcePlanes(lens_galaxies=instance.lens_galaxies,
                                                        source_galaxies=instance.source_galaxies,
-                                                       image_plane_grid_stack=self.lensing_image.grid_stack,
-                                                       border=self.lensing_image.border, cosmology=self.cosmology)
+                                                       image_plane_grid_stack=self.lens_image.grid_stack,
+                                                       border=self.lens_image.border, cosmology=self.cosmology)
 
         def padded_tracer_for_instance(self, instance):
             return ray_tracing.TracerImageSourcePlanes(lens_galaxies=instance.lens_galaxies,
                                                        source_galaxies=instance.source_galaxies,
-                                                       image_plane_grid_stack=self.lensing_image.padded_grid_stack,
+                                                       image_plane_grid_stack=self.lens_image.padded_grid_stack,
                                                        cosmology=self.cosmology)
 
         @classmethod
@@ -705,19 +706,19 @@ class MultiPlanePhase(PhaseImaging):
 
     class Analysis(PhaseImaging.Analysis):
 
-        def __init__(self, lensing_image, cosmology, phase_name, previous_results=None):
-            self.lensing_image = lensing_image
+        def __init__(self, lens_image, cosmology, phase_name, previous_results=None):
+            self.lens_image = lens_image
             super(PhaseImaging.Analysis, self).__init__(cosmology=cosmology, phase_name=phase_name,
                                                         previous_results=previous_results)
 
         def tracer_for_instance(self, instance):
             return ray_tracing.TracerMultiPlanes(galaxies=instance.galaxies,
-                                                 image_plane_grid_stack=self.lensing_image.grid_stack,
-                                                 border=self.lensing_image.border, cosmology=self.cosmology)
+                                                 image_plane_grid_stack=self.lens_image.grid_stack,
+                                                 border=self.lens_image.border, cosmology=self.cosmology)
 
         def padded_tracer_for_instance(self, instance):
             return ray_tracing.TracerMultiPlanes(galaxies=instance.galaxies,
-                                                 image_plane_grid_stack=self.lensing_image.padded_grid_stack,
+                                                 image_plane_grid_stack=self.lens_image.padded_grid_stack,
                                                  cosmology=self.cosmology)
 
         @classmethod
@@ -782,7 +783,7 @@ class GalaxyFitPhase(AbstractPhase):
 
     def make_analysis(self, array, noise_map, previous_results=None, mask=None):
         """
-        Create an lens object. Also calls the prior passing and lensing_image modifying functions to allow child
+        Create an lens object. Also calls the prior passing and lens_image modifying functions to allow child
         classes to change the behaviour of the phase.
 
         Parameters
@@ -870,7 +871,7 @@ class GalaxyFitPhase(AbstractPhase):
 
         def fit_for_instance(self, instance):
             """
-            Determine the fit of a lens galaxy and source galaxy to the lensing_image in this lens.
+            Determine the fit of a lens galaxy and source galaxy to the lens_image in this lens.
 
             Parameters
             ----------
@@ -880,7 +881,7 @@ class GalaxyFitPhase(AbstractPhase):
             Returns
             -------
             fit: Fit
-                A fractional value indicating how well this model fit and the model lensing_image itself
+                A fractional value indicating how well this model fit and the model lens_image itself
             """
             return galaxy_fit.GalaxyFit(galaxy_data=self.galaxy_data, model_galaxy=instance.galaxy[0])
 
@@ -960,13 +961,13 @@ class SensitivityPhase(PhaseImaging):
     # noinspection PyAbstractClass
     class Analysis(PhaseImaging.Analysis):
 
-        def __init__(self, lensing_image, phase_name, previous_results=None):
-            self.sensitivity_image = lensing_image
+        def __init__(self, lens_image, phase_name, previous_results=None):
+            self.sensitivity_image = lens_image
             super(PhaseImaging.Analysis, self).__init__(phase_name, previous_results)
 
         def fit(self, instance):
             """
-            Determine the fit of a lens galaxy and source galaxy to the lensing_image in this lens.
+            Determine the fit of a lens galaxy and source galaxy to the lens_image in this lens.
 
             Parameters
             ----------
@@ -976,7 +977,7 @@ class SensitivityPhase(PhaseImaging):
             Returns
             -------
             fit: Fit
-                A fractional value indicating how well this model fit and the model lensing_image itself
+                A fractional value indicating how well this model fit and the model lens_image itself
             """
             tracer_normal = self.tracer_normal_for_instance(instance)
             tracer_sensitive = self.tracer_sensitive_for_instance(instance)
@@ -988,15 +989,15 @@ class SensitivityPhase(PhaseImaging):
             tracer_sensitive = self.tracer_sensitive_for_instance(instance)
             fit = self.fit_for_tracers(tracer_normal=tracer_normal, tracer_sensitive=tracer_sensitive)
 
-            imaging_plotters.plot_image_subplot(image=self.sensitivity_image.image, mask=self.lensing_image.mask,
-                                                positions=self.lensing_image.positions,
-                                                output_path=self.output_image_path, output_format='png',
-                                                ignore_config=False)
+            ccd_plotters.plot_image_subplot(image=self.sensitivity_image.image, mask=self.lens_image.mask,
+                                            positions=self.lens_image.positions,
+                                            output_path=self.output_image_path, output_format='png',
+                                            ignore_config=False)
 
-            imaging_plotters.plot_image_individual(image=self.sensitivity_image.image, mask=self.lensing_image.mask,
-                                                   positions=self.lensing_image.positions,
-                                                   output_path=self.output_image_path,
-                                                   output_format='png')
+            ccd_plotters.plot_image_individual(image=self.sensitivity_image.image, mask=self.lens_image.mask,
+                                               positions=self.lens_image.positions,
+                                               output_path=self.output_image_path,
+                                               output_format='png')
 
             sensitivity_fit_plotters.plot_fit_subplot(fit=fit, output_path=self.output_image_path,
                                                       output_format='png')
@@ -1017,7 +1018,7 @@ class SensitivityPhase(PhaseImaging):
                 border=self.sensitivity_image.border)
 
         def fit_for_tracers(self, tracer_normal, tracer_sensitive):
-            return sensitivity_fit.SensitivityProfileFit(lensing_image=[self.sensitivity_image],
+            return sensitivity_fit.SensitivityProfileFit(lens_image=[self.sensitivity_image],
                                                          tracer_normal=tracer_normal,
                                                          tracer_sensitive=tracer_sensitive)
 
