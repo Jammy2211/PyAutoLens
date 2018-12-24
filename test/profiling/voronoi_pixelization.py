@@ -8,7 +8,7 @@ from autolens.data.array import grids
 from autolens.model.galaxy import galaxy as g
 from autolens.model.inversion import pixelizations as pix
 from autolens.model.inversion import regularization as reg
-from autolens.lens import lens_image as li
+from autolens.lens import lens_data as li
 from autolens.lens import ray_tracing
 from autolens.model.inversion.util import inversion_util
 from autolens.model.inversion.util import regularization_util

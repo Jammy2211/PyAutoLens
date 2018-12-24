@@ -2,7 +2,7 @@ import os
 
 from autolens.data import ccd as im
 from autolens.data.array import mask as ma
-from autolens.lens import lens_image as li
+from autolens.lens import lens_data as li
 from autolens.data.plotters import imaging_plotters
 from workspace.howtolens.loading_and_preparing_data import simulate_data
 

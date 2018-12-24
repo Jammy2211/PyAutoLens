@@ -9,7 +9,7 @@ from autolens.data import ccd as im
 from autolens.data.array import grids, mask as msk, scaled_array
 from autolens.lens.plotters import lens_plotter_util
 from autolens.model.profiles import light_profiles as lp, mass_profiles as mp
-from autolens.lens import lens_image as li, lens_fit
+from autolens.lens import lens_data as li, lens_fit
 from autolens.model.galaxy import galaxy as g
 from autolens.lens import ray_tracing
 
@@ -60,15 +60,15 @@ def test_positions():
 def test_mask():
     return msk.Mask.circular(shape=((3,3)), pixel_scale=0.1, radius_arcsec=0.1)
 
-@pytest.fixture(name='lens_image')
+@pytest.fixture(name='lens_data')
 def test_lens_image(image, mask):
     return li.LensData(ccd_data=image, mask=mask)
 
 @pytest.fixture(name='fit')
-def test_fit(lens_image, galaxy_light, galaxy_mass):
+def test_fit(lens_data, galaxy_light, galaxy_mass):
     tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[galaxy_mass], source_galaxies=[galaxy_light],
-                                                 image_plane_grid_stack=lens_image.grid_stack, cosmology=cosmo.Planck15)
-    return lens_fit.fit_lens_image_with_tracer(lens_image=lens_image, tracer=tracer)
+                                                 image_plane_grid_stack=lens_data.grid_stack, cosmology=cosmo.Planck15)
+    return lens_fit.fit_lens_image_with_tracer(lens_data=lens_data, tracer=tracer)
 
 @pytest.fixture(name='hyper')
 def make_hyper():
@@ -94,7 +94,7 @@ def make_hyper():
 @pytest.fixture(name='lens_hyper_image')
 def test_lens_hyper_image(image, mask, hyper):
 
-    return li.LensHyperData(ccd_data=image, mask=mask, hyper_model_image=hyper.hyper_model_image,
+    return li.LensDataHyper(ccd_data=image, mask=mask, hyper_model_image=hyper.hyper_model_image,
                             hyper_galaxy_images=hyper.hyper_galaxy_images,
                             hyper_minimum_values=hyper.hyper_minimum_values)
 
@@ -102,7 +102,7 @@ def test_lens_hyper_image(image, mask, hyper):
 def test_fit_hyper(lens_hyper_image, hyper):
     tracer = ray_tracing.TracerImagePlane(lens_galaxies=[hyper.hyper_galaxy],
                                           image_plane_grid_stack=lens_hyper_image.grid_stack)
-    return lens_fit.fit_lens_image_with_tracer(lens_image=lens_hyper_image, tracer=tracer)
+    return lens_fit.fit_lens_image_with_tracer(lens_data=lens_hyper_image, tracer=tracer)
 
 def test__image_is_output(fit, lens_plotter_util_path):
 

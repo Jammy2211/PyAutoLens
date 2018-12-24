@@ -10,7 +10,7 @@ class AbstractSensitivityFit(object):
 
 class SensitivityProfileFit(AbstractSensitivityFit):
 
-    def __init__(self, lens_image, tracer_normal, tracer_sensitive):
+    def __init__(self, lens_data, tracer_normal, tracer_sensitive):
         """Evaluate the sensitivity of a profile fit to a specific component of a lens model and tracer. This is \
         performed by evaluating the likelihood of a fit to an image using two tracers:
 
@@ -25,7 +25,7 @@ class SensitivityProfileFit(AbstractSensitivityFit):
 
         Parameters
         ----------
-        lens_image: li.LensImage
+        lens_data: li.LensImage
             A simulated lens image which is used to determine our sensitiivity to specific model components.
         tracer_normal : ray_tracing.Tracer
             A tracer whose galaxies have the same model components (e.g. light profiles, mass profiles) as the \
@@ -36,8 +36,8 @@ class SensitivityProfileFit(AbstractSensitivityFit):
             how sensitive we are too.
         """
         AbstractSensitivityFit.__init__(self=self, tracer_normal=tracer_normal, tracer_sensitive=tracer_sensitive)
-        self.fit_normal = lens_fit.LensProfileFit(lens_image=lens_image, tracer=tracer_normal)
-        self.fit_sensitive = lens_fit.LensProfileFit(lens_image=lens_image, tracer=tracer_sensitive)
+        self.fit_normal = lens_fit.LensProfileFit(lens_data=lens_data, tracer=tracer_normal)
+        self.fit_sensitive = lens_fit.LensProfileFit(lens_data=lens_data, tracer=tracer_sensitive)
 
     @property
     def figure_of_merit(self):

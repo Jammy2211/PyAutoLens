@@ -79,6 +79,7 @@ class LensData(object):
 
     def __array_finalize__(self, obj):
         if isinstance(obj, LensData):
+            self.ccd_data = obj.ccd_data
             self.image = obj.image
             self.noise_map = obj.noise_map
             self.mask = obj.mask
@@ -95,16 +96,19 @@ class LensData(object):
             self.positions = obj.positions
 
 
-class LensHyperData(LensData):
+class LensDataHyper(LensData):
 
     def __init__(self, ccd_data, mask, hyper_model_image, hyper_galaxy_images, hyper_minimum_values, sub_grid_size=2,
                  image_psf_shape=None, mapping_matrix_psf_shape=None, positions=None):
         """
-        The lens data is the collection of data (image, noise-map, PSF), a mask, grid_stack, convolver and other \
-        utilities that are used for modeling and fitting an image of a strong lens.
+        The lens data is the collection of data (image, noise-map, PSF), a mask, grid_stack, convolver \
+        and other utilities that are used for modeling and fitting an image of a strong lens.
 
-        Whilst the image data is initially loaded in 2D, for the lens data the masked-image (and noise-map) \
-        are reduced to 1D arrays for faster calculations.
+        Whilst the image, noise-map, etc. are loaded in 2D, the lens data creates reduced 1D arrays of each \
+        for lensing calculations.
+
+        Lens hyper-data includes the hyper-images necessary for changing different aspects of the data that is fitted \
+        in a Bayesian framework, for example the background-sky subtraction and noise-map.
 
         Parameters
         ----------
@@ -138,8 +142,8 @@ class LensHyperData(LensData):
                                                hyper_galaxy_images))
 
     def __array_finalize__(self, obj):
-        super(LensHyperData, self).__array_finalize__(obj)
-        if isinstance(obj, LensHyperData):
+        super(LensDataHyper, self).__array_finalize__(obj)
+        if isinstance(obj, LensDataHyper):
             self.hyper_model_image = obj.hyper_model_image
             self.hyper_galaxy_images = obj.hyper_galaxy_images
             self.hyper_minimum_values = obj.hyper_minimum_values

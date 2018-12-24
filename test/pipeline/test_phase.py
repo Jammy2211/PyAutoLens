@@ -10,7 +10,7 @@ from autofit.core import non_linear
 from autolens.data import ccd
 from autolens.data.array import scaled_array
 from autolens.data.array import grids, mask as msk
-from autolens.lens import lens_image as li
+from autolens.lens import lens_data as li
 from autolens.lens import lens_fit
 from autolens.model.galaxy import galaxy as g, galaxy_model as gm
 from autolens.model.profiles import light_profiles as lp, mass_profiles as mp
@@ -79,9 +79,9 @@ class NLO(non_linear.NonLinearOptimizer):
 
 
 @pytest.fixture(name="grid_stack")
-def make_grids(lens_image):
+def make_grids(lens_data):
     return grids.GridStack.grid_stack_from_mask_sub_grid_size_and_psf_shape(
-        lens_image.mask, 1, lens_image.psf.shape)
+        lens_data.mask, 1, lens_data.psf.shape)
 
 
 @pytest.fixture(name="phase")
@@ -111,7 +111,7 @@ def make_ccd_data():
     return ccd.CCDData(image=image, pixel_scale=pixel_scale, psf=psf, noise_map=noise_map)
 
 
-@pytest.fixture(name="lens_image")
+@pytest.fixture(name="lens_data")
 def make_lens_image():
     image = ccd.CCDData(np.array(np.zeros(shape)), pixel_scale=1.0, psf=ccd.PSF(np.ones((3, 3)), pixel_scale=1.0),
                         noise_map=ccd.NoiseMap(np.ones(shape), pixel_scale=1.0))
@@ -240,13 +240,13 @@ class TestPhase(object):
         assert phase.optimizer.variable.lens_galaxies == [galaxy_model]
         assert phase.optimizer.constant.lens_galaxies == []
 
-    def test_make_analysis(self, phase, ccd_data, lens_image):
+    def test_make_analysis(self, phase, ccd_data, lens_data):
         analysis = phase.make_analysis(data=ccd_data)
         assert analysis.last_results is None
-        assert analysis.lens_image.image == ccd_data.image
-        assert analysis.lens_image.noise_map == ccd_data.noise_map
-        assert analysis.lens_image.image == lens_image.image
-        assert analysis.lens_image.noise_map == lens_image.noise_map
+        assert analysis.lens_data.image == ccd_data.image
+        assert analysis.lens_data.noise_map == ccd_data.noise_map
+        assert analysis.lens_data.image == lens_data.image
+        assert analysis.lens_data.noise_map == lens_data.noise_map
 
     def test_fit(self, ccd_data):
 
@@ -279,8 +279,8 @@ class TestPhase(object):
         assert phase.source_galaxies == [galaxy_model]
 
     def test_default_mask_function(self, phase, ccd_data):
-        lens_image = li.LensData(ccd_data=ccd_data, mask=phase.mask_function(ccd_data.image))
-        assert len(lens_image.image_1d) == 32
+        lens_data = li.LensData(ccd_data=ccd_data, mask=phase.mask_function(ccd_data.image))
+        assert len(lens_data.image_1d) == 32
 
     def test_duplication(self):
         phase = ph.LensSourcePlanePhase(lens_galaxies=[gm.GalaxyModel()], source_galaxies=[gm.GalaxyModel()],
@@ -302,7 +302,7 @@ class TestPhase(object):
 
         phase = MyPhase(phase_name='phase')
         analysis = phase.make_analysis(data=ccd_data)
-        assert analysis.lens_image.image[0,0] == 1.0
+        assert analysis.lens_data.image[0,0] == 1.0
 
     def test__tracer_for_instance__includes_cosmology(self, ccd_data):
 
@@ -366,9 +366,9 @@ class TestPhase(object):
         fit_figure_of_merit = analysis.fit(instance=instance)
 
         mask = phase.mask_function(image=ccd_data.image)
-        lens_image = li.LensData(ccd_data=ccd_data, mask=mask)
+        lens_data = li.LensData(ccd_data=ccd_data, mask=mask)
         tracer = analysis.tracer_for_instance(instance=instance)
-        fit = lens_fit.LensProfileFit(lens_image=lens_image, tracer=tracer)
+        fit = lens_fit.LensProfileFit(lens_data=lens_data, tracer=tracer)
 
         assert fit.likelihood == fit_figure_of_merit
 
@@ -379,9 +379,9 @@ class TestPhase(object):
         fit_figure_of_merit = analysis.fit(instance=instance)
 
         mask = phase.mask_function(image=ccd_data.image)
-        lens_image = li.LensData(ccd_data=ccd_data, mask=mask)
+        lens_data = li.LensData(ccd_data=ccd_data, mask=mask)
         tracer = analysis.tracer_for_instance(instance=instance)
-        fit = lens_fit.LensProfileInversionFit(lens_image=lens_image, tracer=tracer)
+        fit = lens_fit.LensProfileInversionFit(lens_data=lens_data, tracer=tracer)
 
         assert fit.evidence == fit_figure_of_merit
 
@@ -491,8 +491,8 @@ class TestPhase(object):
 
 
 # class TestAnalysis(object):
-#     def test_model_image(self, results_collection, lens_image):
-#         lens = ph.LensPlanePhase.Analysis(results_collection, lens_image, "analysis_path")
+#     def test_model_image(self, results_collection, lens_data):
+#         lens = ph.LensPlanePhase.Analysis(results_collection, lens_data, "analysis_path")
 #         assert (results_collection[0].model_image == lens.last_results.model_image).all()
 
 

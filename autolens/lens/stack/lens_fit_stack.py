@@ -4,13 +4,13 @@ from autolens.lens.util import lens_fit_stack_util as stack_util
 from autolens.lens import ray_tracing
 
 
-def fit_lens_image_stack_with_tracer(lens_image_stack, tracer, padded_tracer=None):
+def fit_lens_image_stack_with_tracer(lens_data_stack, tracer, padded_tracer=None):
     """Fit a lens image with a model tracer, automatically determining the type of fit based on the \
     properties of the galaxies in the tracer.
 
     Parameters
     -----------
-    lens_image_stack : li.LensImageStack
+    lens_data_stack : li.LensImageStack
         The lens-image stack that is fitted.
     tracer : ray_tracing.AbstractTracerStack
         The tracer, which describes the ray-tracing and strong lens configuration.
@@ -22,7 +22,7 @@ def fit_lens_image_stack_with_tracer(lens_image_stack, tracer, padded_tracer=Non
     if tracer.has_light_profile and not tracer.has_pixelization:
 
         if not tracer.has_hyper_galaxy:
-            return LensProfileFitStack(lens_image_stack=lens_image_stack, tracer=tracer,
+            return LensProfileFitStack(lens_data_stack=lens_data_stack, tracer=tracer,
                                        padded_tracer=padded_tracer)
 
     else:
@@ -58,7 +58,7 @@ class AbstractLensFitStack(object):
 
 class AbstractLensProfileFitStack(AbstractLensFitStack):
 
-    def __init__(self, lens_image_stack, tracer, padded_tracer):
+    def __init__(self, lens_data_stack, tracer, padded_tracer):
         """ An abstract lens profile fitter, which generates the image-plane image of all galaxies (with light \
         profiles) in the tracer and blurs it with the lens image's PSF.
 
@@ -67,7 +67,7 @@ class AbstractLensProfileFitStack(AbstractLensFitStack):
 
         Parameters
         -----------
-        lens_image_stack : li.LensImageStack
+        lens_data_stack : li.LensImageStack
             The lens-image stack that is fitted.
         tracer : ray_tracing_stack.AbstractTracerStack
             The tracer, which describes the ray-tracing and strong lens configuration.
@@ -76,10 +76,10 @@ class AbstractLensProfileFitStack(AbstractLensFitStack):
             padded grid_stack such that unmasked model-images can be computed.
         """
         super(AbstractLensProfileFitStack, self).__init__(tracer=tracer, padded_tracer=padded_tracer,
-                                                          map_to_scaled_arrays=lens_image_stack.map_to_scaled_arrays)
+                                                          map_to_scaled_arrays=lens_data_stack.map_to_scaled_arrays)
 
-        self.psfs = lens_image_stack.psfs
-        self.convolvers_image = lens_image_stack.convolvers_image
+        self.psfs = lens_data_stack.psfs
+        self.convolvers_image = lens_data_stack.convolvers_image
 
         blurred_profile_images_1d = stack_util.blurred_images_1d_of_images_from_1d_unblurred_and_bluring_images(
             unblurred_images_1d=tracer.image_plane_images_1d,
@@ -151,7 +151,7 @@ class LensDataFitStack(fit.DataFitStack):
 
 class LensProfileFitStack(LensDataFitStack, AbstractLensProfileFitStack):
 
-    def __init__(self, lens_image_stack, tracer, padded_tracer=None):
+    def __init__(self, lens_data_stack, tracer, padded_tracer=None):
         """ Fit a lens image with galaxy light-profiles, as follows:
 
         1) Generates the image-plane image of all galaxies with light profiles in the tracer.
@@ -171,10 +171,10 @@ class LensProfileFitStack(LensDataFitStack, AbstractLensProfileFitStack):
             A tracer with an identical strong lens configuration to the tracer above, but using the lens image's \
             padded grid_stack such that unmasked model-images can be computed.
         """
-        AbstractLensProfileFitStack.__init__(self=self, lens_image_stack=lens_image_stack, tracer=tracer,
+        AbstractLensProfileFitStack.__init__(self=self, lens_data_stack=lens_data_stack, tracer=tracer,
                                              padded_tracer=padded_tracer)
 
-        super(LensProfileFitStack, self).__init__(images=lens_image_stack.images,
-                                                  noise_maps=lens_image_stack.noise_maps,
-                                                  masks=lens_image_stack.masks,
+        super(LensProfileFitStack, self).__init__(images=lens_data_stack.images,
+                                                  noise_maps=lens_data_stack.noise_maps,
+                                                  masks=lens_data_stack.masks,
                                                   model_images=self.blurred_profile_images)
