@@ -112,7 +112,8 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
         radius : float
             The radius of the circle to compute the dimensionless mass within.
         conversion_factor : float
-            The factor the dimensionless mass is multiplied by to convert it to a physical mass.
+            Factor the dimensionless mass is multiplied by to convert it to a physical mass (e.g. the critical surface \
+            mass density).
         """
         return conversion_factor*quad(self.mass_integral, a=0.0, b=radius, args=(1.0,))[0]
 
@@ -129,7 +130,8 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
         major_axis : float
             The major-axis radius of the ellipse.
         conversion_factor : float
-            The factor the dimensionless mass is multiplied by to convert it to a physical mass.
+            Factor the dimensionless mass is multiplied by to convert it to a physical mass (e.g. the critical surface \
+            mass density).
         """
         return conversion_factor*quad(self.mass_integral, a=0.0, b=major_axis, args=(self.axis_ratio,))[0]
 
@@ -556,7 +558,7 @@ class AbstractEllipticalGeneralizedNFW(EllipticalMassProfile, MassProfile):
         Parameters
         -----------
         grid : masks.RegularGrid
-            The grid of coordinates the potential / deflections are computed on.
+            The grid of coordinates the potential / deflection_stacks are computed on.
         tabulate_bins : int
             The number of bins used to tabulate the integral over.
         """

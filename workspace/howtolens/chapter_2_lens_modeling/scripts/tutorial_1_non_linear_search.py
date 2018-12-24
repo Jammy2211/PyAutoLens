@@ -1,10 +1,10 @@
 from autofit import conf
 from autofit.core import non_linear
-from autolens.data.imaging import image as im
+from autolens.data import ccd as im
 from autolens.model.galaxy import galaxy_model as gm
 from autolens.pipeline import phase as ph
-from autolens.lensing.plotters import lensing_fitting_plotters
-from autolens.data.imaging.plotters import imaging_plotters
+from autolens.lens.plotters import lens_fit_plotters
+from autolens.data.plotters import imaging_plotters
 from autolens.model.profiles import light_profiles as lp
 from autolens.model.profiles import mass_profiles as mp
 
@@ -46,7 +46,7 @@ import os
 #    and a tracer_without_subhalo.
 
 # 2) Pass this tracer_without_subhalo through the fitting module, generating a model regular and comparing this model regular to the
-#    observed strong lens imaging datas. This means that we've computed a likelihood.
+#    observed strong lens ccd datas. This means that we've computed a likelihood.
 
 # 3) Repeat this many times, using the likelihoods of previous fits (typically those with a high likelihood) to
 #    guide us to the lens models with the highest liikelihood.
@@ -71,19 +71,19 @@ def simulate():
 
     from autolens.data.array import grids
     from autolens.model.galaxy import galaxy as g
-    from autolens.lensing import ray_tracing
+    from autolens.lens import ray_tracing
 
     psf = im.PSF.simulate_as_gaussian(shape=(11, 11), sigma=0.1, pixel_scale=0.1)
 
-    image_plane_grids = grids.DataGrids.grids_for_simulation(shape=(130, 130), pixel_scale=0.1, psf_shape=(11, 11))
+    image_plane_grids = grids.GridStack.grid_stack_for_simulation(shape=(130, 130), pixel_scale=0.1, psf_shape=(11, 11))
 
     lens_galaxy = g.Galaxy(mass=mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=1.6))
     source_galaxy = g.Galaxy(light=lp.SphericalExponential(centre=(0.0, 0.0), intensity=0.2, effective_radius=0.2))
     tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
-                                                 image_plane_grids=[image_plane_grids])
+                                                 image_plane_grid_stack=[image_plane_grids])
 
-    image_simulated = im.Image.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=0.1,
-                                                   exposure_time=300.0, psf=psf, background_sky_level=0.1, add_noise=True)
+    image_simulated = im.CCDData.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=0.1,
+                                          exposure_time=300.0, psf=psf, background_sky_level=0.1, add_noise=True)
 
     return image_simulated
 
@@ -131,7 +131,7 @@ results = phase.run(image)
 # print(results) # NOTE - this isn't working yet, need to sort out.
 
 # The best-fit_normal solution (i.e. the highest likelihood) is stored in the 'results', which we can plot as per usual.
-lensing_fitting_plotters.plot_fitting_subplot(fit=results.fit)
+lens_fit_plotters.plot_fit_subplot(fit=results.fit)
 
 # The fit_normal looks good, and we've therefore found a model pretty close to the one we simulated the regular with (you can
 # confirm this yourself if you want, by comparing the inferred parameters to those found in the simulations.py file).

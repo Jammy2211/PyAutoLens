@@ -7,11 +7,15 @@ from autofit import conf
 from autofit.core import model_mapper as mm
 from autofit.core import non_linear
 
-from autolens.data.imaging import image as img
+from autolens.data import ccd
+from autolens.data.array import scaled_array
 from autolens.data.array import grids, mask as msk
-from autolens.lensing import lensing_image as li
+from autolens.lens import lens_data as li
+from autolens.lens import lens_fit
 from autolens.model.galaxy import galaxy as g, galaxy_model as gm
 from autolens.model.profiles import light_profiles as lp, mass_profiles as mp
+from autolens.model.inversion import pixelizations as pix
+from autolens.model.inversion import regularization as reg
 from autolens.pipeline import phase as ph
 
 pytestmark = pytest.mark.filterwarnings(
@@ -74,15 +78,15 @@ class NLO(non_linear.NonLinearOptimizer):
         return fitness_function.result
 
 
-@pytest.fixture(name="grids")
-def make_grids(lensing_image):
-    return grids.DataGrids.grids_from_mask_sub_grid_size_and_psf_shape(
-        lensing_image.mask, 1, lensing_image.psf.shape)
+@pytest.fixture(name="grid_stack")
+def make_grids(lens_data):
+    return grids.GridStack.grid_stack_from_mask_sub_grid_size_and_psf_shape(
+        lens_data.mask, 1, lens_data.psf.shape)
 
 
 @pytest.fixture(name="phase")
 def make_phase():
-    return ph.LensSourcePlanePhase(optimizer_class=NLO)
+    return ph.LensSourcePlanePhase(optimizer_class=NLO, phase_name='test_phase')
 
 
 @pytest.fixture(name="galaxy")
@@ -95,19 +99,24 @@ def make_galaxy_model():
     return gm.GalaxyModel()
 
 
-@pytest.fixture(name="image")
-def make_image():
-    image = img.Image(np.array(np.zeros(shape)), pixel_scale=1.0, psf=img.PSF(np.ones((3, 3)), pixel_scale=1.0),
-                      noise_map=img.NoiseMap(np.ones(shape), pixel_scale=1.0))
-    return image
+@pytest.fixture(name="ccd_data")
+def make_ccd_data():
+
+    pixel_scale = 1.0
+
+    image = scaled_array.ScaledSquarePixelArray(array=np.array(np.zeros(shape)), pixel_scale=pixel_scale)
+    psf = ccd.PSF(array=np.ones((3, 3)), pixel_scale=pixel_scale)
+    noise_map = ccd.NoiseMap(np.ones(shape), pixel_scale=1.0)
+
+    return ccd.CCDData(image=image, pixel_scale=pixel_scale, psf=psf, noise_map=noise_map)
 
 
-@pytest.fixture(name="lensing_image")
-def make_lensing_image():
-    image = img.Image(np.array(np.zeros(shape)), pixel_scale=1.0, psf=img.PSF(np.ones((3, 3)), pixel_scale=1.0),
-                      noise_map=img.NoiseMap(np.ones(shape), pixel_scale=1.0))
+@pytest.fixture(name="lens_data")
+def make_lens_image():
+    image = ccd.CCDData(np.array(np.zeros(shape)), pixel_scale=1.0, psf=ccd.PSF(np.ones((3, 3)), pixel_scale=1.0),
+                        noise_map=ccd.NoiseMap(np.ones(shape), pixel_scale=1.0))
     mask = msk.Mask.circular(shape=shape, pixel_scale=1, radius_arcsec=3.0)
-    return li.LensingImage(image, mask)
+    return li.LensData(image, mask)
 
 
 @pytest.fixture(name="results")
@@ -122,6 +131,7 @@ def make_results_collection(results):
 
 
 class TestAutomaticPriorPassing(object):
+
     def test_galaxy_model_dict(self, phase, galaxy_model):
         phase.lens_galaxies = dict(galaxy_one=galaxy_model)
         assert phase.galaxy_model_tuples == [("galaxy_one", galaxy_model)]
@@ -230,22 +240,27 @@ class TestPhase(object):
         assert phase.optimizer.variable.lens_galaxies == [galaxy_model]
         assert phase.optimizer.constant.lens_galaxies == []
 
-    def test_make_analysis(self, phase, image, lensing_image):
-        analysis = phase.make_analysis(image=image)
+    def test_make_analysis(self, phase, ccd_data, lens_data):
+        analysis = phase.make_analysis(data=ccd_data)
         assert analysis.last_results is None
-        assert analysis.lensing_image == lensing_image
+        assert analysis.lens_data.image == ccd_data.image
+        assert analysis.lens_data.noise_map == ccd_data.noise_map
+        assert analysis.lens_data.image == lens_data.image
+        assert analysis.lens_data.noise_map == lens_data.noise_map
 
-    def test_fit(self, image):
+    def test_fit(self, ccd_data):
+
         clean_images()
 
         phase = ph.LensSourcePlanePhase(optimizer_class=NLO,
                                         lens_galaxies=[gm.GalaxyModel(light=lp.EllipticalSersic)],
-                                        source_galaxies=[gm.GalaxyModel(light=lp.EllipticalSersic)])
-        result = phase.run(image=image)
+                                        source_galaxies=[gm.GalaxyModel(light=lp.EllipticalSersic)],
+                                        phase_name='test_phase')
+        result = phase.run(data=ccd_data)
         assert isinstance(result.constant.lens_galaxies[0], g.Galaxy)
         assert isinstance(result.constant.source_galaxies[0], g.Galaxy)
 
-    def test_customize(self, results, image):
+    def test_customize(self, results, ccd_data):
         class MyPlanePhaseAnd(ph.LensSourcePlanePhase):
             def pass_priors(self, previous_results):
                 self.lens_galaxies = previous_results.last.constant.lens_galaxies
@@ -257,40 +272,45 @@ class TestPhase(object):
         setattr(results.constant, "lens_galaxies", [galaxy])
         setattr(results.variable, "source_galaxies", [galaxy_model])
 
-        phase = MyPlanePhaseAnd(optimizer_class=NLO)
-        phase.make_analysis(image=image, previous_results=ph.ResultsCollection([results]))
+        phase = MyPlanePhaseAnd(optimizer_class=NLO, phase_name='test_phase')
+        phase.make_analysis(data=ccd_data, previous_results=ph.ResultsCollection([results]))
 
         assert phase.lens_galaxies == [galaxy]
         assert phase.source_galaxies == [galaxy_model]
 
-    def test_default_mask_function(self, phase, image):
-        assert len(li.LensingImage(image, phase.mask_function(image))) == 32
+    def test_default_mask_function(self, phase, ccd_data):
+        lens_data = li.LensData(ccd_data=ccd_data, mask=phase.mask_function(ccd_data.image))
+        assert len(lens_data.image_1d) == 32
 
     def test_duplication(self):
-        phase = ph.LensSourcePlanePhase(lens_galaxies=[gm.GalaxyModel()], source_galaxies=[gm.GalaxyModel()])
+        phase = ph.LensSourcePlanePhase(lens_galaxies=[gm.GalaxyModel()], source_galaxies=[gm.GalaxyModel()],
+                                        phase_name='test_phase')
 
-        ph.LensSourcePlanePhase()
+        ph.LensSourcePlanePhase(phase_name='test_phase')
 
         assert phase.lens_galaxies is not None
         assert phase.source_galaxies is not None
 
-    def test_modify_image(self, image):
+    def test_modify_image(self, ccd_data):
+
         class MyPhase(ph.PhaseImaging):
-            def modify_image(self, im, previous_results):
-                assert image.shape == im.shape
-                return im
+            def modify_image(self, image, previous_results):
+
+                assert ccd_data.image.shape == image.shape
+                image[0,0] = 1.0
+                return image
 
         phase = MyPhase(phase_name='phase')
-        analysis = phase.make_analysis(image)
-        assert analysis.lensing_image != image
+        analysis = phase.make_analysis(data=ccd_data)
+        assert analysis.lens_data.image[0,0] == 1.0
 
-    def test__tracer_for_instance__includes_cosmology(self, image):
+    def test__tracer_for_instance__includes_cosmology(self, ccd_data):
 
         lens_galaxy = g.Galaxy()
         source_galaxy = g.Galaxy()
 
-        phase = ph.LensPlanePhase(lens_galaxies=[lens_galaxy], cosmology=cosmo.FLRW)
-        analysis = phase.make_analysis(image)
+        phase = ph.LensPlanePhase(lens_galaxies=[lens_galaxy], cosmology=cosmo.FLRW, phase_name='test_phase')
+        analysis = phase.make_analysis(ccd_data)
         instance = phase.constant
         tracer = analysis.tracer_for_instance(instance)
         padded_tracer = analysis.padded_tracer_for_instance(instance)
@@ -301,8 +321,8 @@ class TestPhase(object):
         assert padded_tracer.cosmology == cosmo.FLRW
 
         phase = ph.LensSourcePlanePhase(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
-                                        cosmology=cosmo.FLRW)
-        analysis = phase.make_analysis(image)
+                                        cosmology=cosmo.FLRW, phase_name='test_phase')
+        analysis = phase.make_analysis(ccd_data)
         instance = phase.constant
         tracer = analysis.tracer_for_instance(instance)
         padded_tracer = analysis.padded_tracer_for_instance(instance)
@@ -318,8 +338,9 @@ class TestPhase(object):
         galaxy_1 = g.Galaxy(redshift=0.2)
         galaxy_2 = g.Galaxy(redshift=0.3)
 
-        phase = ph.MultiPlanePhase(galaxies=[galaxy_0, galaxy_1, galaxy_2], cosmology=cosmo.WMAP7)
-        analysis = phase.make_analysis(image)
+        phase = ph.MultiPlanePhase(galaxies=[galaxy_0, galaxy_1, galaxy_2], cosmology=cosmo.WMAP7,
+                                   phase_name='test_phase')
+        analysis = phase.make_analysis(ccd_data)
         instance = phase.constant
         tracer = analysis.tracer_for_instance(instance)
         padded_tracer = analysis.padded_tracer_for_instance(instance)
@@ -333,45 +354,76 @@ class TestPhase(object):
         assert padded_tracer.planes[2].galaxies[0] == galaxy_2
         assert padded_tracer.cosmology == cosmo.WMAP7
 
+    def test__fit_figure_of_merit__matches_correct_fit_given_galaxy_profiles(self, ccd_data):
+
+        lens_galaxy = g.Galaxy(light=lp.EllipticalSersic(intensity=0.1))
+        source_galaxy = g.Galaxy(pixelization=pix.Rectangular(shape=(4,4)),
+                                 regularization=reg.Constant(coefficients=(1.0,)))
+
+        phase = ph.LensPlanePhase(lens_galaxies=[lens_galaxy], cosmology=cosmo.FLRW, phase_name='test_phase')
+        analysis = phase.make_analysis(data=ccd_data)
+        instance = phase.constant
+        fit_figure_of_merit = analysis.fit(instance=instance)
+
+        mask = phase.mask_function(image=ccd_data.image)
+        lens_data = li.LensData(ccd_data=ccd_data, mask=mask)
+        tracer = analysis.tracer_for_instance(instance=instance)
+        fit = lens_fit.LensProfileFit(lens_data=lens_data, tracer=tracer)
+
+        assert fit.likelihood == fit_figure_of_merit
+
+        phase = ph.LensSourcePlanePhase(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
+                                        cosmology=cosmo.FLRW, phase_name='test_phase')
+        analysis = phase.make_analysis(data=ccd_data)
+        instance = phase.constant
+        fit_figure_of_merit = analysis.fit(instance=instance)
+
+        mask = phase.mask_function(image=ccd_data.image)
+        lens_data = li.LensData(ccd_data=ccd_data, mask=mask)
+        tracer = analysis.tracer_for_instance(instance=instance)
+        fit = lens_fit.LensProfileInversionFit(lens_data=lens_data, tracer=tracer)
+
+        assert fit.evidence == fit_figure_of_merit
+
     # TODO : Need to test using results
 
-    # def test_unmasked_model_image_for_instance(self, datas_):
+    # def test_unmasked_model_image_for_instance(self, image_):
     #
     #     lens_galaxy = g.Galaxy(light_profile=lp.SphericalSersic(intensity=1.0))
-    #     image_padded_grid = msk.PaddedRegularGrid.unmasked_grid_from_shapes_and_pixel_scale(shape=datas_.shape,
-    #                                                                                         psf_shape=datas_.psf.shape,
-    #                                                                                         pixel_scale=datas_.pixel_scale)
+    #     image_padded_grid = msk.PaddedRegularGrid.unmasked_grid_from_shapes_and_pixel_scale(shape=image_.shape,
+    #                                                                                         psf_shape=image_.psf.shape,
+    #                                                                                         pixel_scale=image_.pixel_scale)
     #     image_1d = lens_galaxy.intensities_from_grid(image_padded_grid)
-    #     blurred_image_1d = image_padded_grid.convolve_array_1d_with_psf(image_1d, datas_.psf)
+    #     blurred_image_1d = image_padded_grid.convolve_array_1d_with_psf(image_1d, image_.psf)
     #     blurred_image = image_padded_grid.scaled_array_from_array_1d(blurred_image_1d)
     #
     #     phase = ph.LensPlanePhase(lens_galaxies=[lens_galaxy])
-    #     analysis = phase.make_analysis(datas_)
+    #     analysis = phase.make_analysis(image_)
     #     instance = phase.constant
     #     unmasked_tracer = analysis.unmasked_tracer_for_instance(instance)
     #     unmasked_model_image = analysis.unmasked_model_image_for_tracer(unmasked_tracer)
     #
     #     assert blurred_image == pytest.approx(unmasked_model_image, 1e-4)
     #
-    # def test_unmasked_model_images_of_galaxies_for_instance(self, datas_):
+    # def test_unmasked_model_images_of_galaxies_for_instance(self, image_):
     #
     #     g0= g.Galaxy(light_profile=lp.SphericalSersic(intensity=1.0))
     #     g1 = g.Galaxy(light_profile=lp.SphericalSersic(intensity=2.0))
     #
-    #     image_padded_grid = msk.PaddedRegularGrid.unmasked_grid_from_shapes_and_pixel_scale(shape=datas_.shape,
-    #                                                                                         psf_shape=datas_.psf.shape,
-    #                                                                                         pixel_scale=datas_.pixel_scale)
+    #     image_padded_grid = msk.PaddedRegularGrid.unmasked_grid_from_shapes_and_pixel_scale(shape=image_.shape,
+    #                                                                                         psf_shape=image_.psf.shape,
+    #                                                                                         pixel_scale=image_.pixel_scale)
     #
     #     g0_image_1d = g0.intensities_from_grid(image_padded_grid)
-    #     g0_blurred_image_1d = image_padded_grid.convolve_array_1d_with_psf(g0_image_1d, datas_.psf)
+    #     g0_blurred_image_1d = image_padded_grid.convolve_array_1d_with_psf(g0_image_1d, image_.psf)
     #     g0_blurred_image = image_padded_grid.scaled_array_from_array_1d(g0_blurred_image_1d)
     #
     #     g1_image_1d = g1.intensities_from_grid(image_padded_grid)
-    #     g1_blurred_image_1d = image_padded_grid.convolve_array_1d_with_psf(g1_image_1d, datas_.psf)
+    #     g1_blurred_image_1d = image_padded_grid.convolve_array_1d_with_psf(g1_image_1d, image_.psf)
     #     g1_blurred_image = image_padded_grid.scaled_array_from_array_1d(g1_blurred_image_1d)
     #
     #     phase = ph.LensPlanePhase(lens_galaxies=[g0, g1])
-    #     analysis = phase.make_analysis(datas_)
+    #     analysis = phase.make_analysis(image_)
     #     instance = phase.constant
     #     unmasked_tracer = analysis.unmasked_tracer_for_instance(instance)
     #     unmasked_model_images = analysis.unmasked_model_images_of_galaxies_for_tracer(unmasked_tracer)
@@ -384,8 +436,7 @@ class TestPhase(object):
                                                                 sis=mp.SphericalIsothermal,
                                                                 variable_redshift=True),
                                                  gm.GalaxyModel(sis=mp.SphericalIsothermal,
-                                                                variable_redshift=True)],
-                                  optimizer_class=non_linear.MultiNest)
+                                                                variable_redshift=True)], optimizer_class=non_linear.MultiNest, phase_name='test_phase')
 
         instance = phase.optimizer.variable.instance_from_physical_vector(
             [0.2, 0.21, 0.22, 0.23, 0.24, 0.25, 0.8, 0.1, 0.2, 0.3,
@@ -411,7 +462,7 @@ class TestPhase(object):
                                                               variable_redshift=True),
                                                gm.GalaxyModel(sis=mp.SphericalIsothermal,
                                                               variable_redshift=True)],
-                                optimizer_class=non_linear.MultiNest)
+                                optimizer_class=non_linear.MultiNest, phase_name='test_phase')
 
         # noinspection PyTypeChecker
         phase.pass_models(None)
@@ -440,21 +491,21 @@ class TestPhase(object):
 
 
 # class TestAnalysis(object):
-#     def test_model_image(self, results_collection, lensing_image):
-#         lensing = ph.LensPlanePhase.Analysis(results_collection, lensing_image, "analysis_path")
-#         assert (results_collection[0].model_image == lensing.last_results.model_image).all()
+#     def test_model_image(self, results_collection, lens_data):
+#         lens = ph.LensPlanePhase.Analysis(results_collection, lens_data, "analysis_path")
+#         assert (results_collection[0].model_image == lens.last_results.model_image).all()
 
 
 class TestResult(object):
 
     # def test_hyper_galaxy_and_model_images(self):
     #
-    #     lensing = MockAnalysis(number_galaxies=2, value=1.0)
+    #     lens = MockAnalysis(number_galaxies=2, value=1.0)
     #
     # result = ph.LensSourcePlanePhase.Result(constant=mm.ModelInstance(), likelihood=1,
-    # variable=mm.ModelMapper(), lensing=lensing) assert (result.image_plane_source_images[0] == np.array([
+    # variable=mm.ModelMapper(), lens=lens) assert (result.image_plane_source_images[0] == np.array([
     # 1.0])).all() assert (result.image_plane_source_images[1] == np.array([1.0])).all() assert (
-    # result.datas_ == np.array([2.0])).all()
+    # result.image_ == np.array([2.0])).all()
 
     def test_results(self):
         results = ph.ResultsCollection([1, 2, 3])

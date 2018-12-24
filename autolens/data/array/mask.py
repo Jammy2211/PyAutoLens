@@ -12,20 +12,26 @@ logger = logging.getLogger(__name__)
 
 class Mask(scaled_array.ScaledSquarePixelArray):
     """
-    A masks represented by an ndarray where True is masked.
+    A mask represented by an ndarray where True is masked.
     """
 
     # noinspection PyUnusedLocal
     def __init__(self, array, pixel_scale, centre=(0.0, 0.0), origin=(0.0, 0.0)):
-        """
+        """ A mask, which is applied to a 2D array of hyper to extract a set of unmasked image pixels (i.e. mask entry \
+        is *False* or 0) which are then fitted in an analysis.
+        
+        The mask retains the pixel scale of the array and has a centre and origin.
+        
         Parameters
         ----------
         array: ndarray
-            An array representing datas (e.g. an datas_, noise-mappers, etc.)
+            An array of bools representing the mask.
         pixel_scale: float
             The arc-second to pixel conversion factor of each pixel.
         origin : (float, float)
-            The arc-second origin of the scaled array's coordinate system.
+            The (y,x) arc-second origin of the mask's coordinate system.
+        centre : (float, float)
+            The (y,x) arc-second centre of the mask provided it is a standard geometric shape (e.g. a circle).
         """
         # noinspection PyArgumentList
         self.centre = centre
@@ -38,70 +44,67 @@ class Mask(scaled_array.ScaledSquarePixelArray):
             return True
 
     @classmethod
-    def padded_for_shape_and_pixel_scale(cls, shape, pixel_scale):
-        """
-        Setup the masks such that all pixels are padded.
+    def unmasked_for_shape_and_pixel_scale(cls, shape, pixel_scale):
+        """Setup a mask where all pixels are unmasked.
 
         Parameters
         ----------
         shape : (int, int)
-            The (y,x) shape of the masks in units of pixels.
+            The (y,x) shape of the mask in units of pixels.
         pixel_scale: float
             The arc-second to pixel conversion factor of each pixel.
         """
-        return cls(np.full(tuple(map(lambda d: int(d), shape)), False, dtype='bool'), pixel_scale)
+        return cls(array=np.full(tuple(map(lambda d: int(d), shape)), False), pixel_scale=pixel_scale)
 
     @classmethod
     def masked_for_shape_and_pixel_scale(cls, shape, pixel_scale):
-        """
-        Setup the masks such that all pixels are masked.
+        """Setup a mask where all pixels are masked.
 
         Parameters
         ----------
         shape : (int, int)
-            The (y,x) shape of the masks in units of pixels.
+            The (y,x) shape of the mask in units of pixels.
         pixel_scale: float
             The arc-second to pixel conversion factor of each pixel.
         """
-        return cls(np.full(tuple(map(lambda d: int(d), shape)), True, dtype='bool'), pixel_scale)
+        return cls(array=np.full(tuple(map(lambda d: int(d), shape)), True), pixel_scale=pixel_scale)
 
     @classmethod
     def circular(cls, shape, pixel_scale, radius_arcsec, centre=(0., 0.)):
-        """
-        Setup the masks as a circle, using a specified arc second radius.
+        """Setup a mask where unmasked pixels are within a circle of an input arc second radius and centre.
 
         Parameters
         ----------
         shape: (int, int)
-            The (y,x) shape of the masks in units of pixels.
+            The (y,x) shape of the mask in units of pixels.
         pixel_scale: float
             The arc-second to pixel conversion factor of each pixel.
         radius_arcsec : float
-            The radius (in arc seconds) of the circle within which pixels are not masked.
+            The radius (in arc seconds) of the circle within which pixels unmasked.
         centre: (float, float)
             The centre of the circle used to mask pixels.
         """
         mask = mask_util.mask_circular_from_shape_pixel_scale_and_radius(shape, pixel_scale, radius_arcsec,
                                                                          centre)
-        return cls(mask.astype('bool'), pixel_scale, centre=centre)
+        return cls(array=mask.astype('bool'), pixel_scale=pixel_scale, centre=centre)
 
     @classmethod
     def circular_annular(cls, shape, pixel_scale, inner_radius_arcsec, outer_radius_arcsec, centre=(0., 0.)):
-        """
-        Setup the masks as an annulus, using a specified inner and outer radius in arc seconds.
+        """Setup a mask where unmasked pixels are within an annulus of input inner and outer arc second radii and \
+         centre.
 
         Parameters
         ----------
         shape : (int, int)
-            The (y,x) shape of the masks in units of pixels.
+            The (y,x) shape of the mask in units of pixels.
         pixel_scale: float
             The arc-second to pixel conversion factor of each pixel.
         inner_radius_arcsec : float
-            The radius (in arc seconds) of the inner circle outside of which pixels are not masked.
+            The radius (in arc seconds) of the inner circle outside of which pixels are unmasked.
         outer_radius_arcsec : float
-            The radius (in arc seconds) of the outer circle within which pixels are not masked.
+            The radius (in arc seconds) of the outer circle within which pixels are unmasked.
         centre: (float, float)
-            The origin of the masks.
+            The centre of the annulus used to mask pixels.
         """
         mask = mask_util.mask_circular_annular_from_shape_pixel_scale_and_radii(shape, pixel_scale, inner_radius_arcsec,
                                                                                 outer_radius_arcsec, centre)
@@ -110,25 +113,28 @@ class Mask(scaled_array.ScaledSquarePixelArray):
     @classmethod
     def circular_anti_annular(cls, shape, pixel_scale, inner_radius_arcsec, outer_radius_arcsec, outer_radius_2_arcsec,
                               centre=(0., 0.)):
-        """
-        Setup the masks as an annulus, using a specified inner and outer radius in arc seconds.
+        """Setup a mask where unmasked pixels are outside an annulus of input inner and outer arc second radii, but \
+        within a second outer radius, and at a given centre.
+
+        This mask there has two distinct unmasked regions (an inner circle and outer annulus), with an inner annulus \
+        of masked pixels.
 
         Parameters
         ----------
         shape : (int, int)
-            The (y,x) shape of the masks in units of pixels.
+            The (y,x) shape of the mask in units of pixels.
         pixel_scale: float
             The arc-second to pixel conversion factor of each pixel.
         inner_radius_arcsec : float
-            The radius (in arc seconds) of the inner circle inside of which pixels are not masked.
+            The radius (in arc seconds) of the inner circle inside of which pixels are unmasked.
         outer_radius_arcsec : float
             The radius (in arc seconds) of the outer circle within which pixels are masked and outside of which they \
-            are not.
+            are unmasked.
         outer_radius_2_arcsec : float
-            The radius (in arc seconds) of the second outer circle within which pixels are not masked and outside of \
-            which they are.
+            The radius (in arc seconds) of the second outer circle within which pixels are unmasked and outside of \
+            which they masked.
         centre: (float, float)
-            The origin of the masks.
+            The centre of the anti-annulus used to mask pixels.
         """
         mask = mask_util.mask_circular_anti_annular_from_shape_pixel_scale_and_radii(shape, pixel_scale, inner_radius_arcsec,
                                                                                      outer_radius_arcsec,
@@ -137,25 +143,23 @@ class Mask(scaled_array.ScaledSquarePixelArray):
 
     @classmethod
     def elliptical(cls, shape, pixel_scale, major_axis_radius_arcsec, axis_ratio, phi, centre=(0., 0.)):
-        """
-        Setup the masks as a ellipse, using a specified arc second major axis, axis-ratio and rotation angle phi \
-        defined counter-clockwise from the positive x-axis.
+        """ Setup a mask where unmasked pixels are within an ellipse of an input arc second major-axis and centre.
 
         Parameters
         ----------
         shape: (int, int)
-            The (y,x) shape of the masks in units of pixels.
+            The (y,x) shape of the mask in units of pixels.
         pixel_scale: float
             The arc-second to pixel conversion factor of each pixel.
         major_axis_radius_arcsec : float
-            The major-axis (in arc seconds) of the ellipse within which pixels are not masked.
+            The major-axis (in arc seconds) of the ellipse within which pixels are unmasked.
         axis_ratio : float
-            The axis-ratio of the ellipse within which pixels are not masked.
+            The axis-ratio of the ellipse within which pixels are unmasked.
         phi : float
-            The rotation angle of the ellipse within which pixels are not masked, defined counter-clockwise from the \
-             positive x-axis.
+            The rotation angle of the ellipse within which pixels are unmasked, (counter-clockwise from the positive \
+             x-axis).
         centre: (float, float)
-            The origin of the masks.
+            The centre of the ellipse used to mask pixels.
         """
         mask = mask_util.mask_elliptical_from_shape_pixel_scale_and_radius(shape, pixel_scale, major_axis_radius_arcsec,
                                                                           axis_ratio, phi, centre)
@@ -164,14 +168,13 @@ class Mask(scaled_array.ScaledSquarePixelArray):
     @classmethod
     def elliptical_annular(cls, shape, pixel_scale,inner_major_axis_radius_arcsec, inner_axis_ratio, inner_phi,
                            outer_major_axis_radius_arcsec, outer_axis_ratio, outer_phi, centre=(0.0, 0.0)):
-        """
-        Setup the masks as a ellipse, using a specified arc second major axis, axis-ratio and rotation angle phi \
-        defined counter-clockwise from the positive x-axis.
+        """Setup a mask where unmasked pixels are within an elliptical annulus of input inner and outer arc second \
+        major-axis and centre.
 
         Parameters
         ----------
         shape: (int, int)
-            The (y,x) shape of the masks in units of pixels.
+            The (y,x) shape of the mask in units of pixels.
         pixel_scale: float
             The arc-second to pixel conversion factor of each pixel.
         inner_major_axis_radius_arcsec : float
@@ -179,17 +182,17 @@ class Mask(scaled_array.ScaledSquarePixelArray):
         inner_axis_ratio : float
             The axis-ratio of the inner ellipse within which pixels are masked.
         inner_phi : float
-            The rotation angle of the inner ellipse within which pixels are masked, defined counter-clockwise from the \
-            positive x-axis.
+            The rotation angle of the inner ellipse within which pixels are masked, (counter-clockwise from the \
+            positive x-axis).
         outer_major_axis_radius_arcsec : float
-            The major-axis (in arc seconds) of the outer ellipse within which pixels are not masked.
+            The major-axis (in arc seconds) of the outer ellipse within which pixels are unmasked.
         outer_axis_ratio : float
-            The axis-ratio of the outer ellipse within which pixels are not masked.
+            The axis-ratio of the outer ellipse within which pixels are unmasked.
         outer_phi : float
-            The rotation angle of the outer ellipse within which pixels are not masked, defined counter-clockwise from
-            the positive x-axis.
+            The rotation angle of the outer ellipse within which pixels are unmasked, (counter-clockwise from the \
+            positive x-axis).
         centre: (float, float)
-            The origin of the masks.
+            The centre of the elliptical annuli used to mask pixels.
         """
         mask = mask_util.mask_elliptical_annular_from_shape_pixel_scale_and_radius(shape, pixel_scale,
                            inner_major_axis_radius_arcsec, inner_axis_ratio, inner_phi,
@@ -202,16 +205,16 @@ class Mask(scaled_array.ScaledSquarePixelArray):
 
     @property
     def masked_grid_index_to_pixel(self):
-        """A 1D array of mappings between every masked pixel and its 2D pixel coordinates."""
+        """A 1D array of mappings between every unmasked pixel and its 2D pixel coordinates."""
         return mask_util.masked_grid_1d_index_to_2d_pixel_index_from_mask(self).astype('int')
 
     def map_2d_array_to_masked_1d_array(self, array_2d):
-        """For a 2D datas-array (e.g. the datas_, noise-mappers, etc.) mappers it to a masked 1D array of values usin this masks.
+        """For a 2D array (e.g. an image, noise_map, etc.) map it to a masked 1D array of valuees using this mask.
 
         Parameters
         ----------
         array_2d : ndarray | None | float
-            The datas to be mapped to a masked 1D array.
+            The 2D array to be mapped to a masked 1D array.
         """
         if array_2d is None or isinstance(array_2d, float):
             return array_2d
@@ -219,8 +222,8 @@ class Mask(scaled_array.ScaledSquarePixelArray):
 
     @array_util.Memoizer()
     def blurring_mask_for_psf_shape(self, psf_shape):
-        """Compute the blurring masks, which represents all masked pixels whose light will be blurred into padded \
-        pixels via PSF convolution.
+        """Compute a blurring mask, which represents all masked pixels whose light will be blurred into unmasked \
+        pixels via PSF convolution (see grid_stack.RegularGrid.blurring_grid_from_mask_and_psf_shape).
 
         Parameters
         ----------
@@ -237,14 +240,15 @@ class Mask(scaled_array.ScaledSquarePixelArray):
 
     @property
     def edge_pixels(self):
-        """The indicies of the masks's edge pixels, where an edge pixel is any pixel inside the masks but on its edge \
+        """The indicies of the mask's edge pixels, where an edge pixel is any unmasked pixel on its edge \
         (next to at least one pixel with a *True* value).
         """
         return mask_util.edge_pixels_from_mask(self).astype('int')
 
     @property
     def border_pixels(self):
-        """The indicies of the masks's edge pixels, where a border pixel is any pixel inside the masks but on an
-         exterior edge (e.g. not the central pixels of an annulus mask).
+        """The indicies of the mask's border pixels, where a border pixel is any unmasked pixel on an
+        exterior edge (e.g. next to at least one pixel with a *True* value but not central pixels like those within \
+        an annulus mask).
         """
         return mask_util.border_pixels_from_mask(self).astype('int')

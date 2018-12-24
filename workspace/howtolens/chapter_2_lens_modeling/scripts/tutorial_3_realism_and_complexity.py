@@ -1,16 +1,15 @@
 from autofit import conf
 from autofit.core import non_linear as nl
 from autolens.pipeline import phase as ph
-from autolens.data.imaging import image as im
+from autolens.data import ccd as im
 from autolens.data.array import mask as ma
-from autolens.lensing import ray_tracing
+from autolens.lens import ray_tracing, lens_fit
 from autolens.model.galaxy import galaxy as g, galaxy_model as gm
-from autolens.lensing import lensing_fitting
-from autolens.lensing import lensing_image as li
+from autolens.lens import lens_data as li
 from autolens.model.profiles import light_profiles as lp
 from autolens.model.profiles import mass_profiles as mp
-from autolens.data.imaging.plotters import imaging_plotters
-from autolens.lensing.plotters import lensing_fitting_plotters
+from autolens.data.plotters import imaging_plotters
+from autolens.lens.plotters import lens_fit_plotters
 
 import os
 
@@ -44,10 +43,10 @@ def simulate():
 
     from autolens.data.array import grids
     from autolens.model.galaxy import galaxy as g
-    from autolens.lensing import ray_tracing
+    from autolens.lens import ray_tracing
 
     psf = im.PSF.simulate_as_gaussian(shape=(11, 11), sigma=0.05, pixel_scale=0.05)
-    image_plane_grids = grids.DataGrids.grids_for_simulation(shape=(130, 130), pixel_scale=0.1, psf_shape=(11, 11))
+    image_plane_grids = grids.GridStack.grid_stack_for_simulation(shape=(130, 130), pixel_scale=0.1, psf_shape=(11, 11))
 
     lens_galaxy = g.Galaxy(light=lp.EllipticalSersic(centre=(0.0, 0.0), axis_ratio=0.9, phi=45.0, intensity=0.04,
                                                              effective_radius=0.5, sersic_index=3.5),
@@ -56,10 +55,10 @@ def simulate():
     source_galaxy = g.Galaxy(light=lp.EllipticalSersic(centre=(0.0, 0.0), axis_ratio=0.5, phi=90.0, intensity=0.03,
                                                        effective_radius=0.3, sersic_index=3.0))
     tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
-                                                 image_plane_grids=[image_plane_grids])
+                                                 image_plane_grid_stack=[image_plane_grids])
 
-    image_simulated = im.Image.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=0.1,
-                                                   exposure_time=300.0, psf=psf, background_sky_level=0.1, add_noise=True)
+    image_simulated = im.CCDData.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=0.1,
+                                          exposure_time=300.0, psf=psf, background_sky_level=0.1, add_noise=True)
 
     return image_simulated
 
@@ -89,7 +88,7 @@ phase = ph.LensSourcePlanePhase(lens_galaxies=dict(lens_galaxy=gm.GalaxyModel(li
 results = phase.run(image)
 
 # And lets look at the regular.
-lensing_fitting_plotters.plot_fitting_subplot(fit=results.fit)
+lens_fit_plotters.plot_fit_subplot(fit=results.fit)
 
 # Uh-oh. That regular didn't look very good, did it? If we compare our inferred parameters to the actual values (in the
 # simulations.py file) you'll see that we have, indeed, fitted the wrong model.
@@ -101,7 +100,7 @@ print(results.constant)
 
 # Create a lensing regular to make the fit_normal - the masks we used above was a 3" circle (we'll come back to this later)
 mask = ma.Mask.circular(shape=image.shape, pixel_scale=image.pixel_scale, radius_arcsec=3.0)
-lensing_image = li.LensingImage(image=image, mask=mask)
+lensing_image = li.LensData(ccd_data=image, mask=mask)
 imaging_plotters.plot_image_subplot(lensing_image.image)
 
 # Make the tracer_without_subhalo we use to simulate the regular
@@ -112,17 +111,17 @@ lens_galaxy = g.Galaxy(light=lp.EllipticalSersic(centre=(0.0, 0.0), axis_ratio=0
 source_galaxy = g.Galaxy(light=lp.EllipticalSersic(centre=(0.0, 0.0), axis_ratio=0.5, phi=90.0, intensity=0.03,
                                                    effective_radius=0.3, sersic_index=3.0))
 tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
-                                             image_plane_grids=[lensing_image.grids])
+                                             image_plane_grid_stack=[lensing_image.grid_stack])
 
 # Now, lets fit_normal the lensing regular with the tracer_without_subhalo and plot the fit_normal. It looks a lot better than above, doesn't it?
-fit = lensing_fitting.fit_lensing_image_with_tracer(lensing_image=lensing_image, tracer=tracer)
-lensing_fitting_plotters.plot_fitting_subplot(fit=fit)
+fit = lens_fit.fit_lens_image_with_tracer(lens_image=lensing_image, tracer=tracer)
+lens_fit_plotters.plot_fit_subplot(fit=fit)
 
 # Finally, just to be sure, lets compare the two likelihoods
 print('Likelihood of Non-linear Search:')
-print(results.fit.likelihood)
+print(results.fit.figure_of_merit)
 print('Likelihood of Correct Model:')
-print(fit.likelihood)
+print(fit.figure_of_merit)
 
 # Well, there we have it, the input model has a much higher likelihood than the one our non-linear search inferred.
 

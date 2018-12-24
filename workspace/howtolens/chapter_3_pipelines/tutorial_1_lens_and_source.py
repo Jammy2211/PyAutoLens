@@ -1,6 +1,6 @@
 from autofit import conf
 from autofit.core import non_linear as nl
-from autolens.data.imaging import image as im
+from autolens.data import ccd as im
 from autolens.data.array import mask
 from autolens.model.galaxy import galaxy_model as gm
 from autolens.pipeline import phase
@@ -49,8 +49,8 @@ import os
 
 # To set these up without docker, you need to uncomment and run the command below. If you are using Docker, you don't
 # need to do anything so leave this uncommented!
-# path = '{}/../../'.format(os.path.dirname(os.path.realpath(__file__)))
-# conf.instance = conf.Config(config_path=path+'config', output_path=path+'output')
+path = '{}/../../'.format(os.path.dirname(os.path.realpath(__file__)))
+conf.instance = conf.Config(config_path=path+'config', output_path=path+'output')
 
 # We'll also put the output in 'workspace/output', which is where output goes for a normal analysis.
 
@@ -60,11 +60,11 @@ def simulate():
 
     from autolens.data.array import grids
     from autolens.model.galaxy import galaxy as g
-    from autolens.lensing import ray_tracing
+    from autolens.lens import ray_tracing
 
     psf = im.PSF.simulate_as_gaussian(shape=(11, 11), sigma=0.1, pixel_scale=0.1)
 
-    image_plane_grids = grids.DataGrids.grids_for_simulation(shape=(130, 130), pixel_scale=0.1, psf_shape=(11, 11))
+    image_plane_grids = grids.GridStack.grid_stack_for_simulation(shape=(130, 130), pixel_scale=0.1, psf_shape=(11, 11))
 
     lens_galaxy = g.Galaxy(light=lp.EllipticalSersic(centre=(0.0, 0.0), axis_ratio=0.9, phi=45.0, intensity=0.04,
                                                      effective_radius=0.5, sersic_index=3.5),
@@ -73,10 +73,10 @@ def simulate():
                            shear=mp.ExternalShear(magnitude=0.05, phi=90.0))
     source_galaxy = g.Galaxy(light=lp.SphericalExponential(centre=(0.0, 0.0), intensity=0.2, effective_radius=0.2))
     tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
-                                                 image_plane_grids=[image_plane_grids])
+                                                 image_plane_grid_stack=[image_plane_grids])
 
-    return im.Image.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=0.1,
-                                        exposure_time=300.0, psf=psf, background_sky_level=0.1, add_noise=True)
+    return im.CCDData.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=0.1,
+                               exposure_time=300.0, psf=psf, background_sky_level=0.1, add_noise=True)
 
 # Now lets simulate hte regular we'll fit_normal, which as I said above, is the same regular we saw in the previous chapter.
 image = simulate()
@@ -145,7 +145,7 @@ def make_pipeline():
 
         def modify_image(self, image, previous_results):
             phase_1_results = previous_results[0]
-            return image - phase_1_results.fit.unmasked_model_profile_image
+            return image - phase_1_results.fit.unmasked_model_images
 
     # The function above demonstrates the most important thing about runners - that every phase has access to the
     # results of all previous phases. This means we can feed information through the pipeline and therefore use the
@@ -211,7 +211,7 @@ def make_pipeline():
 
 
 pipeline_lens_and_source = make_pipeline()
-pipeline_lens_and_source.run(image=image)
+pipeline_lens_and_source.run(data=image)
 
 # And there we have it, a pipeline that breaks the analysis of the lens and source model_galaxy into a set of phases. This
 # approach is signifcantly faster than fitting everything at once. Instead of asking you questions at the end of

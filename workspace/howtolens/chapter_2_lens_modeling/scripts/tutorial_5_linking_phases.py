@@ -3,11 +3,11 @@ from autofit.core import non_linear as nl
 from autofit.core import model_mapper as mm
 from autolens.pipeline import phase as ph
 from autolens.model.galaxy import galaxy_model as gm
-from autolens.data.imaging import image as im
+from autolens.data import ccd as im
 from autolens.model.profiles import light_profiles as lp
 from autolens.model.profiles import mass_profiles as mp
-from autolens.data.imaging.plotters import imaging_plotters
-from autolens.lensing.plotters import lensing_fitting_plotters
+from autolens.data.plotters import imaging_plotters
+from autolens.lens.plotters import lens_fit_plotters
 
 import os
 
@@ -50,10 +50,10 @@ def simulate():
 
     from autolens.data.array import grids
     from autolens.model.galaxy import galaxy as g
-    from autolens.lensing import ray_tracing
+    from autolens.lens import ray_tracing
 
     psf = im.PSF.simulate_as_gaussian(shape=(11, 11), sigma=0.05, pixel_scale=0.05)
-    image_plane_grids = grids.DataGrids.grids_for_simulation(shape=(130, 130), pixel_scale=0.1, psf_shape=(11, 11))
+    image_plane_grids = grids.GridStack.grid_stack_for_simulation(shape=(130, 130), pixel_scale=0.1, psf_shape=(11, 11))
 
     lens_galaxy = g.Galaxy(light=lp.EllipticalSersic(centre=(0.0, 0.0), axis_ratio=0.9, phi=45.0, intensity=0.04,
                                                              effective_radius=0.5, sersic_index=3.5),
@@ -62,10 +62,10 @@ def simulate():
     source_galaxy = g.Galaxy(light=lp.EllipticalSersic(centre=(0.0, 0.0), axis_ratio=0.5, phi=90.0, intensity=0.03,
                                                        effective_radius=0.3, sersic_index=3.0))
     tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
-                                                 image_plane_grids=[image_plane_grids])
+                                                 image_plane_grid_stack=[image_plane_grids])
 
-    image_simulated = im.Image.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=0.1,
-                                                   exposure_time=300.0, psf=psf, background_sky_level=0.1, add_noise=True)
+    image_simulated = im.CCDData.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=0.1,
+                                          exposure_time=300.0, psf=psf, background_sky_level=0.1, add_noise=True)
 
     return image_simulated
 
@@ -122,10 +122,10 @@ phase_1.optimizer.sampling_efficiency = 0.9
 
 # Lets run the phase, noting that our liberal approach to reducing the lens model complexity has reduced it to just
 # 11 parameters. (The results are still preloaded for you, but feel free to run it yourself, its fairly quick).
-phase_1_results = phase_1.run(image=image)
+phase_1_results = phase_1.run(data=image)
 
 # And indeed, we get a reasonably good model and fit_normal to the datas - in a much shorter space of time!
-lensing_fitting_plotters.plot_fitting_subplot(fit=phase_1_results.fit)
+lens_fit_plotters.plot_fit_subplot(fit=phase_1_results.fit)
 
 # Now all we need to do is look at the results of phase 1 and tune our priors in phase 2 to those results. Lets
 # setup a custom phase that does exactly that.
@@ -173,10 +173,10 @@ phase_2 = CustomPriorPhase(lens_galaxies=dict(lens=gm.GalaxyModel(light=lp.Ellip
                            optimizer_class=nl.MultiNest, phase_name='5_linking_phase_2')
 phase_2.optimizer.n_live_points = 30
 phase_2.optimizer.sampling_efficiency = 0.9
-phase_2_results = phase_2.run(image=image)
+phase_2_results = phase_2.run(data=image)
 
 # Look at that, the right lens model, again!
-lensing_fitting_plotters.plot_fitting_subplot(fit=phase_2_results.fit)
+lens_fit_plotters.plot_fit_subplot(fit=phase_2_results.fit)
 
 # Our choice to link two phases together was a huge success. We managed to fit_normal a complex and realistic model,
 # but were able to begin by making simplifying assumptions that eased our search of non-linear parameter space. We

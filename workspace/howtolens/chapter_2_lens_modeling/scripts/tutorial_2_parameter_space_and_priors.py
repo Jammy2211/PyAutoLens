@@ -3,11 +3,11 @@ from autofit.core import non_linear
 from autofit.core import model_mapper
 from autolens.pipeline import phase as ph
 from autolens.model.galaxy import galaxy_model as gm
-from autolens.data.imaging import image as im
+from autolens.data import ccd as im
 from autolens.model.profiles import light_profiles as lp
 from autolens.model.profiles import mass_profiles as mp
-from autolens.data.imaging.plotters import imaging_plotters
-from autolens.lensing.plotters import lensing_fitting_plotters
+from autolens.data.plotters import imaging_plotters
+from autolens.lens.plotters import lens_fit_plotters
 
 import os
 
@@ -94,19 +94,19 @@ def simulate():
 
     from autolens.data.array import grids
     from autolens.model.galaxy import galaxy as g
-    from autolens.lensing import ray_tracing
+    from autolens.lens import ray_tracing
 
     psf = im.PSF.simulate_as_gaussian(shape=(11, 11), sigma=0.1, pixel_scale=0.1)
 
-    image_plane_grids = grids.DataGrids.grids_for_simulation(shape=(130, 130), pixel_scale=0.1, psf_shape=(11, 11))
+    image_plane_grids = grids.GridStack.grid_stack_for_simulation(shape=(130, 130), pixel_scale=0.1, psf_shape=(11, 11))
 
     lens_galaxy = g.Galaxy(mass=mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=1.6))
     source_galaxy = g.Galaxy(light=lp.SphericalExponential(centre=(0.0, 0.0), intensity=0.2, effective_radius=0.2))
     tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
-                                                 image_plane_grids=[image_plane_grids])
+                                                 image_plane_grid_stack=[image_plane_grids])
 
-    image_simulated = im.Image.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=0.1,
-                                                   exposure_time=300.0, psf=psf, background_sky_level=0.1, add_noise=True)
+    image_simulated = im.CCDData.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=0.1,
+                                          exposure_time=300.0, psf=psf, background_sky_level=0.1, add_noise=True)
 
     return image_simulated
 
@@ -163,7 +163,7 @@ custom_phase = CustomPhase(lens_galaxies=dict(lens_galaxy=lens_galaxy_model),
 
 results_custom = custom_phase.run(image)
 print(results_custom) # NOTE - this isn't working yet, need to sort out.
-lensing_fitting_plotters.plot_fitting_subplot(fit=results_custom.fit)
+lens_fit_plotters.plot_fit_subplot(fit=results_custom.fit)
 
 # And, we're done. This tutorial had some pretty difficult concepts to wrap your head around. However, I can't
 # emphasize enough how important it is that you develop an intuition for non-linear searches and the notion of a

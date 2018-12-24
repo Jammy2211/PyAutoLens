@@ -17,11 +17,11 @@ class MockPixelization(object):
         self.value = value
 
     # noinspection PyUnusedLocal,PyShadowingNames
-    def mapper_from_grids_and_border(self, grids, border):
+    def mapper_from_grid_stack_and_border(self, grid_stack, border):
         return self.value
 
     # noinspection PyUnusedLocal,PyShadowingNames
-    def mapper_from_grids(self, grids):
+    def mapper_from_grid_stack(self, grid_stack):
         return self.value
 
 class MockRegularization(object):

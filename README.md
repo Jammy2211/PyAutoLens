@@ -147,7 +147,7 @@ phase = ph.LensSourcePlanePhase(lens_galaxies=[lens_galaxy_model], source_galaxi
 # We run the phase on the image, print the results and plot the fit.
 results = phase.run(image)
 print(results)
-fitting_plotters.plot_fitting_subplot(fit=results.fit)
+fitting_plotters.plot_fit_subplot(fit=results.fit)
 
 ```
 

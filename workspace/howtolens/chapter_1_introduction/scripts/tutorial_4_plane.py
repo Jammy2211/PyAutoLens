@@ -1,9 +1,9 @@
 from autolens.model.profiles import light_profiles
 from autolens.model.profiles import mass_profiles
 from autolens.model.galaxy import galaxy
-from autolens.lensing import plane
+from autolens.lens import plane
 from autolens.data.array import grids
-from autolens.lensing.plotters import plane_plotters
+from autolens.lens.plotters import plane_plotters
 
 # Now we've learnt how to make galaxies out of light and mass profiles, we'll now use galaxies to make a
 # strong-gravitational lens. For the newcomers to lensing, a strong gravitation lens is a system where two (or more)
@@ -15,7 +15,7 @@ from autolens.lensing.plotters import plane_plotters
 # around the lens model_galaxy and into the observer (light should bend 'smoothly', but drawing this on a keyboard wasn't
 # possible - so just pretend the diagonal lines coming from the observer and source are less jagged):
 
-#  Observer                  Image-Plane               Source-Plane
+#  Observer                  CCD-Plane               Source-Plane
 #  (z=0, Earth)               (z = 0.5)                (z = 1.0)
 #
 #           ----------------------------------------------
@@ -33,7 +33,7 @@ from autolens.lensing.plotters import plane_plotters
 # its light after it is deflected and lensed by the foreground model_galaxy's mass. In this exercise, we'll make a source
 # model_galaxy regular whose light has been deflected by a lens model_galaxy.
 
-# In the schematic above, we used the terms 'Image-Plane' and 'Source-Plane'. In lensing speak, a 'plane' is a
+# In the schematic above, we used the terms 'CCD-Plane' and 'Source-Plane'. In lensing speak, a 'plane' is a
 # collection of galaxies at the same redshift (that is, parallel to one another down our line-of-sight). Therefore:
 
 # - If two or more lens galaxies are at the same redshift in the regular-plane, they deflection light in the same way.
@@ -48,7 +48,7 @@ from autolens.lensing.plotters import plane_plotters
 # We still need a grid - our grid is effectively the coordinates we 'trace' from the regular-plane to the source-plane
 # in the lensing configuration above. Our grid is no longer just ouor 'image_grid', but our regular-plane grid, so
 # lets name as such.
-image_plane_grids = grids.DataGrids.from_shape_and_pixel_scale(shape=(100, 100), pixel_scale=0.05,
+image_plane_grids = grids.GridStack.from_shape_and_pixel_scale(shape=(100, 100), pixel_scale=0.05,
                                                                sub_grid_size=2)
 
 # Whereas before we called our model_galaxy's things like 'galaxy_with_light_profile', lets now refer to them by their role
@@ -59,9 +59,9 @@ light_profile = light_profiles.SphericalSersic(centre=(0.0, 0.0), intensity=1.0,
 source_galaxy = galaxy.Galaxy(light=light_profile)
 
 # Lets setup our regular plane. This plane takes the lens model_galaxy we made above and the grid of regular-plane coordinates.
-image_plane = plane.Plane(galaxies=[lens_galaxy], grids=[image_plane_grids])
+image_plane = plane.Plane(galaxies=[lens_galaxy], grid_stack=[image_plane_grids])
 
-# Up to now, we've kept our light-profiles / mass-profiles / model_galaxy's and grids separate, and passed the grid to these
+# Up to now, we've kept our light-profiles / mass-profiles / model_galaxy's and grid_stacks separate, and passed the grid to these
 # objects to compute quantities (e.g. light_profile.intensities_from_grid(grid=grid)). Plane's combine the two,
 # meaning that when we plot a plane's quantities we no longer have to pass the grid.
 # Lets have a quick look at our regular-plane's deflection angles.
@@ -75,21 +75,21 @@ plane_plotters.plot_deflections_x(plane=image_plane)
 
 # source_plane_grids = image_plane_grids - image_plane_deflection_angles
 
-# Therefore, we can use our image_plane to 'trace' its grids to the source-plane...
+# Therefore, we can use our image_plane to 'trace' its grid_stacks to the source-plane...
 source_plane_grids = image_plane.trace_grids_to_next_plane()
 
-# ... and use these grids to setup our source-plane
-source_plane = plane.Plane(galaxies=[source_galaxy], grids=source_plane_grids)
+# ... and use these grid_stacks to setup our source-plane
+source_plane = plane.Plane(galaxies=[source_galaxy], grid_stack=source_plane_grids)
 
-# Lets inspect our grids - I bet our source-plane isn't the boring uniform grid we plotted in the first tutorial!
-plane_plotters.plot_plane_grid(plane=image_plane, title='Image-plane Grid')
+# Lets inspect our grid_stacks - I bet our source-plane isn't the boring uniform grid we plotted in the first tutorial!
+plane_plotters.plot_plane_grid(plane=image_plane, title='CCD-plane Grid')
 plane_plotters.plot_plane_grid(plane=source_plane, title='Source-plane Grid')
 
 # We can zoom in on the 'origin' of the source-plane using the axis limits, which are defined as [xmin, xmax, ymin,
 # ymax] (remembering the lens model_galaxy was centred at (0.1, 0.1)
 plane_plotters.plot_plane_grid(plane=source_plane, axis_limits=[-0.1, 0.1, -0.1, 0.1], title='Source-plane Grid')
 
-# We can also plot both planes next to one another, and highlight specific points on the grids. This means we can see
+# We can also plot both planes next to one another, and highlight specific points on the grid_stacks. This means we can see
 # how different regular pixels map to the source-plane.
 # (We are inputting the pixel index's into 'points' - the first set of points go from 0 -> 50, which is the top row of
 # the regular-grid running from the left - as we said it would!)
@@ -108,7 +108,7 @@ plane_plotters.plot_image_and_source_plane_subplot(image_plane=image_plane, sour
 # its not boring!
 
 # We can now ask the question - 'what does our source-model_galaxy look like in the regular-plane'? That is, to us, the
-# observer on Earth, how do we see the source-model_galaxy (after it is lensed). To do this, we simply imaging the source
+# observer on Earth, how do we see the source-model_galaxy (after it is lensed). To do this, we simply ccd the source
 # model_galaxy's light 'mapping back' from the lensed source-plane grid above.
 plane_plotters.plot_image_plane_image(plane=source_plane)
 
@@ -153,7 +153,7 @@ plane_plotters.plot_plane_image(plane=source_plane, plot_grid=True)
 #    galaxies and see how multi-model_galaxy lensing leads to crazy source regular-plane regular. Also try making a source-plane
 #    with two galaxies!
 
-# Finally, if you are a newcomer to strong lensing, it might be worth reading briefly about some strong lensing theory.
+# Finally, if you are a newcomer to strong lens, it might be worth reading briefly about some strong lens theory.
 # Don't worry about maths, and equations, and anything scary, but you should at least go to Wikipedia to figure out:
 
 # - What a critical line is.

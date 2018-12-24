@@ -1,13 +1,12 @@
-from autolens.data.imaging import image as im
+from autolens.data import ccd as im
 from autolens.data.array import mask as ma
 from autolens.model.profiles import light_profiles as lp
 from autolens.model.profiles import mass_profiles as mp
 from autolens.model.galaxy import galaxy as g
-from autolens.lensing import ray_tracing
-from autolens.lensing import lensing_image as li
-from autolens.lensing import lensing_fitting
+from autolens.lens import ray_tracing, lens_fit
+from autolens.lens import lens_data as li
 from autolens.model.inversion import pixelizations as pix, regularization as reg
-from autolens.lensing.plotters import lensing_fitting_plotters
+from autolens.lens.plotters import lens_fit_plotters
 from autolens.model.inversion.plotters import inversion_plotters
 
 # So, we've seen that we can use an inversion to reconstruct an regular. Furthermore, this reconstruction provides
@@ -23,11 +22,11 @@ def simulate():
 
     from autolens.data.array import grids
     from autolens.model.galaxy import galaxy as g
-    from autolens.lensing import ray_tracing
+    from autolens.lens import ray_tracing
 
     psf = im.PSF.simulate_as_gaussian(shape=(11, 11), sigma=0.05, pixel_scale=0.05)
 
-    image_plane_grids = grids.DataGrids.grids_for_simulation(shape=(180, 180), pixel_scale=0.05, psf_shape=(11, 11))
+    image_plane_grids = grids.GridStack.grid_stack_for_simulation(shape=(180, 180), pixel_scale=0.05, psf_shape=(11, 11))
 
     lens_galaxy = g.Galaxy(mass=mp.EllipticalIsothermal(centre=(0.0, 0.0), axis_ratio=0.8, phi=135.0,
                                                         einstein_radius=1.6))
@@ -36,38 +35,38 @@ def simulate():
 
     tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy],
                                                  source_galaxies=[source_galaxy_0],
-                                                 image_plane_grids=[image_plane_grids])
+                                                 image_plane_grid_stack=[image_plane_grids])
 
-    return im.Image.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=0.05,
-                                        exposure_time=300.0, psf=psf, background_sky_level=0.1, add_noise=True)
+    return im.CCDData.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=0.05,
+                               exposure_time=300.0, psf=psf, background_sky_level=0.1, add_noise=True)
 
 # We're going to perform a lot of fits using an inversion this tutorial. This would create a lot of code, so to keep
 # things tidy, I've setup this function which handles it all for us.
-# (You may notice we include a border in the tracer, instead of setting it to None - just ignore this for now, as we'll
+# (You may notice we include a borders in the tracer, instead of setting it to None - just ignore this for now, as we'll
 # be covering borders in the next tutorial)
 def perform_fit_with_source_galaxy(source_galaxy):
 
     image = simulate()
     mask = ma.Mask.circular_annular(shape=image.shape, pixel_scale=image.pixel_scale, inner_radius_arcsec=0.5,
                                     outer_radius_arcsec=2.2)
-    lensing_image = li.LensingImage(image=image, mask=mask)
+    lensing_image = li.LensData(ccd_data=image, mask=mask)
     lens_galaxy = g.Galaxy(
         mass=mp.EllipticalIsothermal(centre=(0.0, 0.0), axis_ratio=0.8, phi=135.0, einstein_radius=1.6))
     tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
-                                                 image_plane_grids=[lensing_image.grids], border=lensing_image.border)
-    return lensing_fitting.fit_lensing_image_with_tracer(lensing_image=lensing_image, tracer=tracer)
+                                                 image_plane_grid_stack=[lensing_image.grid_stack], border=lensing_image.border)
+    return lens_fit.fit_lens_image_with_tracer(lens_image=lensing_image, tracer=tracer)
 
 # Okay, so lets look at our fit_normal from the previous tutorial in more detail. We'll use a higher resolution 40 x 40 grid.
 source_galaxy = g.Galaxy(pixelization=pix.Rectangular(shape=(40, 40)), regularization=reg.Constant(coefficients=(1.0,)))
 fit = perform_fit_with_source_galaxy(source_galaxy=source_galaxy)
-lensing_fitting_plotters.plot_fitting_subplot(fit=fit)
+lens_fit_plotters.plot_fit_subplot(fit=fit)
 
 # It still looks pretty good! However, this is because I sneakily chose a regularization coefficient that gives a
 # good looking solution, without telling you. If we reduce this regularization coefficient to zero, our source
 # reconstruction goes extremely weird.
 source_galaxy = g.Galaxy(pixelization=pix.Rectangular(shape=(40, 40)), regularization=reg.Constant(coefficients=(0.0,)))
 no_regularization_fit = perform_fit_with_source_galaxy(source_galaxy=source_galaxy)
-lensing_fitting_plotters.plot_fitting_subplot(fit=no_regularization_fit)
+lens_fit_plotters.plot_fit_subplot(fit=no_regularization_fit)
 
 # So, whats happening here, and why does removing regularization do this to our source reconstruction? When our
 # inversion  reconstructs a source, it doesn't *just* compute the set of fluxes that best-fit_normal the regular. It is also
@@ -81,9 +80,9 @@ lensing_fitting_plotters.plot_fitting_subplot(fit=no_regularization_fit)
 # omitted.
 
 # Why do we need to regularize our solution? Well, we just saw why - if we don't apply this smoothing, we 'over-fit_normal'
-# the regular. More specifically, we over-fit_normal the noise in the regular - which is what the the large flux values located
+# the regular. More specifically, we over-fit_normal the noise_map in the regular - which is what the the large flux values located
 # at the exteriors of the source reconstruction are doing. Think about it - if your sole aim is to maximize the
-# likelihood, the best way to do this is to fit_normal *everything* accurately, including the noise.
+# likelihood, the best way to do this is to fit_normal *everything* accurately, including the noise_map.
 
 # If we change the 'normalization' variables of the plotter, such that the color-map is restricuted to a narrower
 # range of values, we can see that even without regularization we are still reconstructing the actual source model_galaxy.
@@ -91,13 +90,13 @@ inversion_plotters.plot_reconstructed_pixelization(inversion=no_regularization_f
                                                    norm_max=1.0, norm_min=-1.0)
 
 # Over-fitting is why regularization is necessary - solutions like this would completely ruin our attempts to model a
-# strong lens. By smoothing our source reconstruction, we ensure it doesn't fit_normal the noise in the regular. If we set a
+# strong lens. By smoothing our source reconstruction, we ensure it doesn't fit_normal the noise_map in the regular. If we set a
 # really high regularization coefficient, we can completely remove over-fitting, at the expense of also fitting the
 # regular less accurately.
 source_galaxy = g.Galaxy(pixelization=pix.Rectangular(shape=(40, 40)),
                          regularization=reg.Constant(coefficients=(100.0,)))
 high_regularization_fit = perform_fit_with_source_galaxy(source_galaxy=source_galaxy)
-lensing_fitting_plotters.plot_fitting_subplot(fit=high_regularization_fit)
+lens_fit_plotters.plot_fit_subplot(fit=high_regularization_fit)
 
 # So there we have it, we now understand regularization and its purpose. But there is one nagging question that remains,
 # how do I choose the regularization coefficient? We can't use our likelihood, as decreasing the regularization
@@ -112,12 +111,12 @@ print(high_regularization_fit.likelihoods_with_regularization)
 # If we use the likelihood, we'll always choose a coefficient of 0! We need a different goodness-of-fit_normal measure. For this,
 # we invoke the 'Bayesian evidence'. This quantifies the goodness of the fit_normal as follows:
 
-# - First, it requires that the residuals of the fit_normal are consistent with Gaussian noise (which is the noise expected
-#   in CCD imaging). If this Gaussian pattern is not visible in the residuals, it tells us that the noise must have been
+# - First, it requires that the residuals of the fit_normal are consistent with Gaussian noise_map (which is the noise_map expected
+#   in CCD ccd). If this Gaussian pattern is not visible in the residuals, it tells us that the noise_map must have been
 #   over-fitted. Thus, the Bayesian evidence decreases. Obviously, if the regular is poorly fitted, the residuals don't
 #   be Gaussian either, but the poor fit_normal will lead to a decrease in Bayesian evidence decreases all the same!
 
-# - This leaves us with a large number of solutions which all fit_normal the datas equally well (e.g., to the noise level). To
+# - This leaves us with a large number of solutions which all fit_normal the datas equally well (e.g., to the noise_map level). To
 #   determine the best-fit_normal from these solutions, the Bayesian evidence quantifies the complexity of each solution's
 #   source reconstruction. If the inversion requires lots of pixels and a low level of regularization to achieve a good
 #   fit_normal, the Bayesian evidence decreases. It penalizes solutions which are complex, which, in a Bayesian sense, are less
@@ -164,7 +163,7 @@ print('Previous Bayesian Evidence:')
 print(10395.370224426646)
 print('New Bayesian Evidence:')
 print(fit.evidences)
-lensing_fitting_plotters.plot_fitting_subplot(fit=fit)
+lens_fit_plotters.plot_fit_subplot(fit=fit)
 
 # 2) Can you think of any other ways we might increase the evidence even further? If not - don't worry about - but
 #    you'll learn that PyAutoLens actually adapts its source reconstructions to the properties of the regular that it is

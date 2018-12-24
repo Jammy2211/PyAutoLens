@@ -1,28 +1,14 @@
-from astropy.io import fits
-import os
-import numpy as np
 import time
 
-from autolens.data.array import mask as ma
-from autolens.data.imaging import image as im
-from autolens.data.imaging.plotters import imaging_plotters
-from autolens.model.profiles import light_profiles as lp, mass_profiles as mp
+from autolens.model.profiles import mass_profiles as mp
 from autolens.data.array import grids
-from autolens.model.galaxy import galaxy as g
-from autolens.model.inversion import pixelizations as pix
-from autolens.model.inversion import regularization as reg
-from autolens.lensing import lensing_image as li
-from autolens.lensing import ray_tracing
-from autolens.model.inversion.util import inversion_util
-from autolens.model.inversion.util import regularization_util
-from autolens.lensing import lensing_fitting
 
 image_shape = (50, 50)
 pixel_scale = 0.02
 psf_shape = (21, 21)
 
-grids = grids.DataGrids.grids_for_simulation(shape=image_shape, sub_grid_size=2,
-                                             pixel_scale=pixel_scale, psf_shape=psf_shape)
+grids = grids.GridStack.grid_stack_for_simulation(shape=image_shape, sub_grid_size=2,
+                                                  pixel_scale=pixel_scale, psf_shape=psf_shape)
 
 print('Number of points = ', grids.sub.shape[0])
 

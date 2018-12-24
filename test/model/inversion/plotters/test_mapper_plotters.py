@@ -4,7 +4,7 @@ import shutil
 import pytest
 
 from autofit import conf
-from autolens.data.imaging import image as im
+from autolens.data import ccd as im
 from autolens.data.array import grids, mask as msk, scaled_array
 from autolens.model.profiles import light_profiles as lp, mass_profiles as mp
 from autolens.model.galaxy import galaxy as g
@@ -36,7 +36,7 @@ def test_image():
     noise_map = im.NoiseMap(array=2.0*np.ones((3,3)), pixel_scale=1.0)
     psf = im.PSF(array=3.0*np.ones((3,3)), pixel_scale=1.0)
 
-    return im.Image(array=image, pixel_scale=1.0, noise_map=noise_map, psf=psf)
+    return im.CCDData(image=image, pixel_scale=1.0, noise_map=noise_map, psf=psf)
 
 @pytest.fixture(name='mask')
 def test_mask():
@@ -46,14 +46,13 @@ def test_mask():
 def test_galaxy_light():
     return g.Galaxy(light=lp.EllipticalSersic(intensity=1.0))
 
-
 @pytest.fixture(name='galaxy_mass')
 def test_galaxy_mass():
     return g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=1.0))
 
-@pytest.fixture(name='grids')
-def test_grids():
-    return grids.DataGrids.from_shape_and_pixel_scale(shape=(100, 100), pixel_scale=0.05, sub_grid_size=2)
+@pytest.fixture(name='grid_stack')
+def test_grid_stack():
+    return grids.GridStack.from_shape_and_pixel_scale(shape=(100, 100), pixel_scale=0.05, sub_grid_size=2)
 
 @pytest.fixture(name='border')
 def test_border(mask):
@@ -64,12 +63,12 @@ def test_rectangular_pixelization():
     return pix.Rectangular(shape=(25, 25))
 
 @pytest.fixture(name='rectangular_mapper')
-def test_rectangular_mapper(rectangular_pixelization, grids, border):
-    return rectangular_pixelization.mapper_from_grids_and_border(grids=grids, border=border)
+def test_rectangular_mapper(rectangular_pixelization, grid_stack, border):
+    return rectangular_pixelization.mapper_from_grid_stack_and_border(grid_stack=grid_stack, border=border)
 
 def test__image_and_rectangular_mapper_is_output(image, rectangular_mapper, mapper_plotter_path):
 
-    mapper_plotters.plot_image_and_mapper(image=image, mapper=rectangular_mapper, should_plot_centres=True,
+    mapper_plotters.plot_image_and_mapper(ccd=image, mapper=rectangular_mapper, should_plot_centres=True,
                                           should_plot_grid=True,
                                           image_pixels=[[0, 1, 2], [3]], source_pixels=[[1, 2], [0]],
                                           output_path=mapper_plotter_path, output_format='png')

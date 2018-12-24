@@ -3,11 +3,11 @@ from autofit.core import non_linear as nl
 from autofit.core import model_mapper as mm
 from autolens.pipeline import phase as ph
 from autolens.model.galaxy import galaxy_model as gm
-from autolens.data.imaging import image as im
-from autolens.data.imaging.plotters import imaging_plotters
+from autolens.data import ccd as im
+from autolens.data.plotters import imaging_plotters
 from autolens.model.profiles import light_profiles as lp
 from autolens.model.profiles import mass_profiles as mp
-from autolens.lensing.plotters import lensing_fitting_plotters
+from autolens.lens.plotters import lens_fit_plotters
 
 import os
 
@@ -36,10 +36,10 @@ def simulate():
 
     from autolens.data.array import grids
     from autolens.model.galaxy import galaxy as g
-    from autolens.lensing import ray_tracing
+    from autolens.lens import ray_tracing
 
     psf = im.PSF.simulate_as_gaussian(shape=(11, 11), sigma=0.05, pixel_scale=0.05)
-    image_plane_grids = grids.DataGrids.grids_for_simulation(shape=(130, 130), pixel_scale=0.1, psf_shape=(11, 11))
+    image_plane_grids = grids.GridStack.grid_stack_for_simulation(shape=(130, 130), pixel_scale=0.1, psf_shape=(11, 11))
 
     lens_galaxy = g.Galaxy(light=lp.EllipticalSersic(centre=(0.0, 0.0), axis_ratio=0.9, phi=45.0, intensity=0.04,
                                                              effective_radius=0.5, sersic_index=3.5),
@@ -48,10 +48,10 @@ def simulate():
     source_galaxy = g.Galaxy(light=lp.EllipticalSersic(centre=(0.0, 0.0), axis_ratio=0.5, phi=90.0, intensity=0.03,
                                                        effective_radius=0.3, sersic_index=3.0))
     tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
-                                                 image_plane_grids=[image_plane_grids])
+                                                 image_plane_grid_stack=[image_plane_grids])
 
-    image_simulated = im.Image.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=0.1,
-                                                   exposure_time=300.0, psf=psf, background_sky_level=0.1, add_noise=True)
+    image_simulated = im.CCDData.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=0.1,
+                                          exposure_time=300.0, psf=psf, background_sky_level=0.1, add_noise=True)
 
     return image_simulated
 
@@ -130,14 +130,14 @@ custom_prior_phase = CustomPriorPhase(lens_galaxies=dict(lens=gm.GalaxyModel(lig
                                       source_galaxies=dict(source=gm.GalaxyModel(light=lp.EllipticalExponential)),
                                       optimizer_class=nl.MultiNest,
                                       phase_name='4_custom_priors')
-custom_prior_result = custom_prior_phase.run(image=image)
+custom_prior_result = custom_prior_phase.run(data=image)
 
 # Bam! We get a good model. The right model. A glorious model! We gave our non-linear search a helping hand, and it
 # repaid us in spades!
 
 # Check out the PDF in the 'output/howstolens/4_custom_priors/optimizer/chains/pdfs' folder - what degeneracies do you
 # notice between parameters?
-lensing_fitting_plotters.plot_fitting_subplot(fit=custom_prior_result.fit)
+lens_fit_plotters.plot_fit_subplot(fit=custom_prior_result.fit)
 
 # Okay, so we've learnt that by tuning our priors to the lens we're fitting, we can increase our chance of inferring a
 # good lens model. Before moving onto the next approach, lets think about the advantages and disadvantages of prior
@@ -184,8 +184,8 @@ light_traces_mass_phase = LightTracesMassPhase(lens_galaxies=dict(lens=gm.Galaxy
                                       optimizer_class=nl.MultiNest,
                                                phase_name='4_light_traces_mass')
 
-light_traces_mass_phase_result = light_traces_mass_phase.run(image=image)
-lensing_fitting_plotters.plot_fitting_subplot(fit=light_traces_mass_phase_result.fit)
+light_traces_mass_phase_result = light_traces_mass_phase.run(data=image)
+lens_fit_plotters.plot_fit_subplot(fit=light_traces_mass_phase_result.fit)
 
 # The results look pretty good. Our source model_galaxy fits the datas pretty well, and we've clearly inferred a model that
 # looks similar to the one above. However, inspection of the residuals shows that the fit_normal wasn't quite as good as the
@@ -247,10 +247,10 @@ custom_non_linear_phase.optimizer.sampling_efficiency = 0.5
 
 # These are the two most important MultiNest parameters controlling how it navigates parameter space, so lets run this
 # phase and see if our more detailed inspection of parameter space finds the correct lens model.
-custom_non_linear_result = custom_non_linear_phase.run(image=image)
+custom_non_linear_result = custom_non_linear_phase.run(data=image)
 
 # Indeed, it does. Thus, we can always brute-force our way to a good lens model, if all else fails.
-lensing_fitting_plotters.plot_fitting_subplot(fit=custom_non_linear_result.fit)
+lens_fit_plotters.plot_fit_subplot(fit=custom_non_linear_result.fit)
 
 # Finally, lets list the advantages and disadvantages of this approach:
 

@@ -1,11 +1,11 @@
 from autolens.model.profiles import light_profiles as lp
 from autolens.model.profiles import mass_profiles as mp
 from autolens.model.galaxy import galaxy as g
-from autolens.lensing import ray_tracing
+from autolens.lens import ray_tracing
 from autolens.data.array import grids
 from autolens.model.galaxy.plotters import galaxy_plotters
-from autolens.lensing.plotters import plane_plotters
-from autolens.lensing.plotters import ray_tracing_plotters
+from autolens.lens.plotters import plane_plotters
+from autolens.lens.plotters import ray_tracing_plotters
 
 from astropy import cosmology
 
@@ -16,9 +16,9 @@ from astropy import cosmology
 # 2) That a tracer_without_subhalo can be given any number of galaxies.
 # 3) That by specifying redshifts and a cosmology, our results are converted to physical units of kiloparsecs (kpc).
 
-# To begin, lets setup the grids we 'll ray-trace using. Lets do something crazy, and use a
+# To begin, lets setup the grid_stacks we 'll ray-trace using. Lets do something crazy, and use a
 # higher resolution grid then before and set the sub grid size to 4x4 per pixel!
-image_plane_grids = grids.DataGrids.from_shape_and_pixel_scale(shape=(200, 200), pixel_scale=0.025, sub_grid_size=4)
+image_plane_grids = grids.GridStack.from_shape_and_pixel_scale(shape=(200, 200), pixel_scale=0.025, sub_grid_size=4)
 print(image_plane_grids.regular.shape)
 print(image_plane_grids.sub.shape) # Every regular-pixel is sub-gridded by 4x4, so the sub-grid has x16 more coordinates.
 
@@ -89,10 +89,10 @@ galaxy_plotters.plot_intensities(galaxy=source_galaxy_1, grid=image_plane_grids.
 # Note that we've also supplied the tracer_without_subhalo below with a Planck15 cosmology.
 tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy, lens_satellite],
                                              source_galaxies=[source_galaxy_0, source_galaxy_1],
-                                             image_plane_grids=[image_plane_grids], cosmology=cosmology.Planck15)
+                                             image_plane_grid_stack=[image_plane_grids], cosmology=cosmology.Planck15)
 
 # As we did previous, we can inspect each grid.
-plane_plotters.plot_plane_grid(plane=tracer.image_plane, title='Image-plane Grid')
+plane_plotters.plot_plane_grid(plane=tracer.image_plane, title='CCD-plane Grid')
 plane_plotters.plot_plane_grid(plane=tracer.source_plane, title='Source-plane Grid')
 # We can zoom in on the 'origin' of the source-plane (thistime, the lens gaalxy was centred at (0.0, 0.0)
 plane_plotters.plot_plane_grid(plane=tracer.source_plane, axis_limits=[-0.2, 0.2, -0.2, 0.2], title='Source-plane Grid')
@@ -104,11 +104,11 @@ ray_tracing_plotters.plot_ray_tracing_subplot(tracer=tracer)
 
 # In the previous example, we saw that the tracer_without_subhalo had attributes we plotted (e.g. surface density, potential, etc.)
 # Now we've input a cosmology and gaalxy redshifts, the tracer_without_subhalo has attributes associated with its cosmology.
-print('Image-plane arcsec-per-kpc:')
+print('CCD-plane arcsec-per-kpc:')
 print(tracer.image_plane.arcsec_per_kpc_proper)
-print('Image-plane kpc-per-arcsec:')
+print('CCD-plane kpc-per-arcsec:')
 print(tracer.image_plane.kpc_per_arcsec_proper)
-print('Angular Diameter Distance to Image-plane:')
+print('Angular Diameter Distance to CCD-plane:')
 print(tracer.image_plane.angular_diameter_distance_to_earth)
 
 print('Source-plane arcsec-per-kpc:')
@@ -118,7 +118,7 @@ print(tracer.source_plane.kpc_per_arcsec_proper)
 print('Angular Diameter Distance to Source-plane:')
 print(tracer.source_plane.angular_diameter_distance_to_earth)
 
-print('Angular Diameter Distance From Image To Source Plane:')
+print('Angular Diameter Distance From CCD To Source Plane:')
 print(tracer.angular_diameter_distance_from_image_to_source_plane)
 print('Lensing Critical Surface Density:')
 print(tracer.critical_density_kpc)
