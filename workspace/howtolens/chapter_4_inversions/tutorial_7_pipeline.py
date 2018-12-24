@@ -1,12 +1,12 @@
 from autofit import conf
 from autofit.core import non_linear as nl
 from autofit.core import model_mapper as mm
-from autolens.data.imaging import image as im
+from autolens.data import ccd as im
 from autolens.model.galaxy import galaxy_model as gm
 from autolens.model.inversion import pixelizations as pix, regularization as reg
 from autolens.pipeline import phase as ph
 from autolens.pipeline import pipeline
-from autolens.data.imaging.plotters import imaging_plotters
+from autolens.data.plotters import imaging_plotters
 from autolens.model.profiles import light_profiles as lp, mass_profiles as mp
 
 import os
@@ -24,11 +24,11 @@ def simulate():
 
     from autolens.data.array import grids
     from autolens.model.galaxy import galaxy as g
-    from autolens.lensing import ray_tracing
+    from autolens.lens import ray_tracing
 
     psf = im.PSF.simulate_as_gaussian(shape=(11, 11), sigma=0.05, pixel_scale=0.05)
 
-    image_plane_grids = grids.DataGrids.grids_for_simulation(shape=(180, 180), pixel_scale=0.05, psf_shape=(11, 11))
+    image_plane_grids = grids.GridStack.grid_stack_for_simulation(shape=(180, 180), pixel_scale=0.05, psf_shape=(11, 11))
 
     lens_galaxy = g.Galaxy(mass=mp.EllipticalIsothermal( centre=(0.0, 0.0), axis_ratio=0.8, phi=135.0,
                                                          einstein_radius=1.6))
@@ -44,10 +44,10 @@ def simulate():
     tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy],
                                                  source_galaxies=[source_galaxy_0, source_galaxy_1,
                                                                   source_galaxy_2, source_galaxy_3],
-                                                 image_plane_grids=[image_plane_grids])
+                                                 image_plane_grid_stack=[image_plane_grids])
 
-    return im.Image.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=0.05,
-                                        exposure_time=300.0, psf=psf, background_sky_level=0.1, add_noise=True)
+    return im.CCDData.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=0.05,
+                               exposure_time=300.0, psf=psf, background_sky_level=0.1, add_noise=True)
 
 # Lets simulate the regular we'll fit, which is the same complex source as the 3_pipelines.py tutorial.
 image = simulate()
@@ -95,4 +95,4 @@ def make_pipeline():
 
 
 pipeline_inversion = make_pipeline()
-pipeline_inversion.run(image=image)
+pipeline_inversion.run(data=image)

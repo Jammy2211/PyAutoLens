@@ -11,13 +11,13 @@ def plot_intensities(light_profile, grid, mask=None, positions=None, as_subplot=
                      output_path=None, output_format='show', output_filename='intensities'):
     """Plot the intensities (e.g. the image) of a light profile, on a regular grid of (y,x) coordinates.
 
-    Set *autolens.data.array.plotters.array_plotters* for a description of all innput parameters not described below.
+    Set *autolens.hyper.array.plotters.array_plotters* for a description of all innput parameters not described below.
 
     Parameters
     -----------
     light_profile : model.profiles.light_profiles.LightProfile
         The light profile whose intensities are plotted.
-    grid : ndarray or data.array.grids.RegularGrid
+    grid : ndarray or hyper.array.grid_stacks.RegularGrid
         The (y,x) coordinates of the grid, in an array of shape (total_coordinates, 2)
     """
     intensities = light_profile.intensities_from_grid(grid=grid)
@@ -43,13 +43,13 @@ def plot_surface_density(mass_profile, grid, mask=None, positions=None, as_subpl
                          output_path=None, output_format='show', output_filename='surface_density'):
     """Plot the surface density of a mass profile, on a regular grid of (y,x) coordinates.
 
-    Set *autolens.data.array.plotters.array_plotters* for a description of all innput parameters not described below.
+    Set *autolens.hyper.array.plotters.array_plotters* for a description of all innput parameters not described below.
 
     Parameters
     -----------
     mass_profile : model.profiles.mass_profiles.MassProfile
         The mass profile whose surface density is plotted.
-    grid : ndarray or data.array.grids.RegularGrid
+    grid : ndarray or hyper.array.grid_stacks.RegularGrid
         The (y,x) coordinates of the grid, in an array of shape (total_coordinates, 2)
     """
     surface_density = mass_profile.surface_density_from_grid(grid=grid)
@@ -75,13 +75,13 @@ def plot_potential(mass_profile, grid, mask=None, positions=None, as_subplot=Fal
                    output_path=None, output_format='show', output_filename='potential'):
     """Plot the potential of a mass profile, on a regular grid of (y,x) coordinates.
 
-    Set *autolens.data.array.plotters.array_plotters* for a description of all innput parameters not described below.
+    Set *autolens.hyper.array.plotters.array_plotters* for a description of all innput parameters not described below.
 
     Parameters
     -----------
     mass_profile : model.profiles.mass_profiles.MassProfile
         The mass profile whose potential is plotted.
-    grid : ndarray or data.array.grids.RegularGrid
+    grid : ndarray or hyper.array.grid_stacks.RegularGrid
         The (y,x) coordinates of the grid, in an array of shape (total_coordinates, 2)
     """
     potential = mass_profile.potential_from_grid(grid=grid)
@@ -108,13 +108,13 @@ def plot_deflections_y(mass_profile, grid, mask=None, positions=None, as_subplot
                        output_path=None, output_format='show', output_filename='deflections_y'):
     """Plot the y component of the deflection angles of a mass profile, on a regular grid of (y,x) coordinates.
 
-    Set *autolens.data.array.plotters.array_plotters* for a description of all innput parameters not described below.
+    Set *autolens.hyper.array.plotters.array_plotters* for a description of all innput parameters not described below.
 
     Parameters
     -----------
     mass_profile : model.profiles.mass_profiles.MassProfile
         The mass profile whose y deflecton angles are plotted.
-    grid : ndarray or data.array.grids.RegularGrid
+    grid : ndarray or hyper.array.grid_stacks.RegularGrid
         The (y,x) coordinates of the grid, in an array of shape (total_coordinates, 2)
     """
     deflections = mass_profile.deflections_from_grid(grid)
@@ -141,13 +141,13 @@ def plot_deflections_x(mass_profile, grid, mask=None, positions=None, as_subplot
                        output_path=None, output_format='show', output_filename='deflections_x'):
     """Plot the x component of the deflection angles of a mass profile, on a regular grid of (y,x) coordinates.
 
-     Set *autolens.data.array.plotters.array_plotters* for a description of all innput parameters not described below.
+     Set *autolens.hyper.array.plotters.array_plotters* for a description of all innput parameters not described below.
 
      Parameters
      -----------
      mass_profile : model.profiles.mass_profiles.MassProfile
          The mass profile whose x deflecton angles are plotted.
-     grid : ndarray or data.array.grids.RegularGrid
+     grid : ndarray or hyper.array.grid_stacks.RegularGrid
          The (y,x) coordinates of the grid, in an array of shape (total_coordinates, 2)
      """
     deflections = mass_profile.deflections_from_grid(grid)

@@ -1,9 +1,11 @@
 import numpy as np
 import pytest
 
+from autolens import exc
 from autolens.data.array.util import grid_util
 from autolens.data.array import mask as msk, scaled_array as sca
 from autolens.model.galaxy import galaxy as g, galaxy_data as gd
+from autolens.model.profiles import light_profiles as lp
 from autolens.model.profiles import mass_profiles as mp
 from test.mock.mock_galaxy import MockGalaxy
 
@@ -21,218 +23,242 @@ def make_mask():
 @pytest.fixture(name="galaxy_data")
 def make_galaxy_data(scaled_array, mask):
     noise_map = sca.ScaledSquarePixelArray(array=2.0*np.ones((4,4)), pixel_scale=3.0)
-    return gd.GalaxyData(array=scaled_array, noise_map=noise_map, mask=mask)
+    return gd.GalaxyData(array=scaled_array, noise_map=noise_map, mask=mask, use_intensities=True)
 
 
 class TestGalaxyData(object):
 
-    def test__attributes(self, scaled_array, galaxy_data):
-        assert scaled_array.pixel_scale == galaxy_data.pixel_scale
-
     def test__scaled_array_and_mapper(self, galaxy_data):
-        assert (galaxy_data == np.ones(4)).all()
+
+        assert galaxy_data.pixel_scale == 3.0
         assert (galaxy_data.array == np.ones((4,4))).all()
         assert (galaxy_data.noise_map == 2.0 * np.ones((4,4))).all()
         assert (galaxy_data.mask == np.array([[True, True, True, True],
                                               [True, False, False, True],
                                               [True, False, False, True],
                                               [True, True, True, True]])).all()
+        assert (galaxy_data.array_1d == np.ones(4)).all()
+        assert (galaxy_data.noise_map_1d == 2.0* np.ones(4)).all()
+        assert (galaxy_data.mask_1d == np.array([False, False, False, False])).all()
 
-    def test__grids(self, galaxy_data):
+    def test__grid_stack(self, galaxy_data):
 
-        assert galaxy_data.grids.regular.shape == (4, 2)
+        assert galaxy_data.grid_stack.regular.shape == (4, 2)
 
-        assert (galaxy_data.grids.regular == np.array([[1.5, -1.5], [1.5, 1.5],
+        assert (galaxy_data.grid_stack.regular == np.array([[1.5, -1.5], [1.5, 1.5],
                                                        [-1.5, -1.5], [-1.5, 1.5]])).all()
-        assert (galaxy_data.grids.sub == np.array([[2.0, -2.0], [2.0, -1.0], [1.0, -2.0], [1.0, -1.0],
+        assert (galaxy_data.grid_stack.sub == np.array([[2.0, -2.0], [2.0, -1.0], [1.0, -2.0], [1.0, -1.0],
                                                      [2.0, 1.0], [2.0, 2.0], [1.0, 1.0], [1.0, 2.0],
                                                      [-1.0, -2.0], [-1.0, -1.0], [-2.0, -2.0], [-2.0, -1.0],
                                                      [-1.0, 1.0], [-1.0, 2.0], [-2.0, 1.0], [-2.0, 2.0]])).all()
 
-    def test__padded_grids(self, galaxy_data):
+    def test__padded_grid_stack(self, galaxy_data):
 
         padded_image_util = grid_util.regular_grid_1d_masked_from_mask_pixel_scales_and_origin(mask=np.full((4, 4), False),
-                                                                                               pixel_scales=galaxy_data.array.pixel_scales)
+                                                                        pixel_scales=galaxy_data.array.pixel_scales)
 
-        assert (galaxy_data.padded_grids.regular == padded_image_util).all()
-        assert galaxy_data.padded_grids.regular.image_shape == (4, 4)
-        assert galaxy_data.padded_grids.regular.padded_shape == (4, 4)
+        assert (galaxy_data.padded_grid_stack.regular == padded_image_util).all()
+        assert galaxy_data.padded_grid_stack.regular.image_shape == (4, 4)
+        assert galaxy_data.padded_grid_stack.regular.padded_shape == (4, 4)
 
         padded_sub_util = grid_util.sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(
             mask=np.full((4, 4), False), pixel_scales=galaxy_data.array.pixel_scales,
-            sub_grid_size=galaxy_data.grids.sub.sub_grid_size)
+            sub_grid_size=galaxy_data.grid_stack.sub.sub_grid_size)
 
-        assert galaxy_data.padded_grids.sub == pytest.approx(padded_sub_util, 1e-4)
-        assert galaxy_data.padded_grids.sub.image_shape == (4, 4)
-        assert galaxy_data.padded_grids.sub.padded_shape == (4, 4)
-
-    def test__subtract(self, galaxy_data):
-        subtracted_image = galaxy_data - np.array([1, 0, 1, 0])
-        assert isinstance(subtracted_image, gd.GalaxyData)
-        assert subtracted_image.pixel_scale == galaxy_data.pixel_scale
-
-        assert subtracted_image == np.array([0, 1, 0, 1])
+        assert galaxy_data.padded_grid_stack.sub == pytest.approx(padded_sub_util, 1e-4)
+        assert galaxy_data.padded_grid_stack.sub.image_shape == (4, 4)
+        assert galaxy_data.padded_grid_stack.sub.padded_shape == (4, 4)
 
     def test__galaxy_data_intensities(self, scaled_array, mask):
 
-        galaxy_data = gd.GalaxyDataIntensities(array=scaled_array, noise_map=2.0*np.ones((4,4)), mask=mask,
-                                               sub_grid_size=2)
+        galaxy_data = gd.GalaxyData(array=scaled_array, noise_map=2.0*np.ones((4,4)), mask=mask, sub_grid_size=2,
+                                    use_intensities=True)
 
-        assert scaled_array.pixel_scale == galaxy_data.pixel_scale
-
-        assert (galaxy_data[:] == np.ones(4)).all()
+        assert galaxy_data.pixel_scale == 3.0
         assert (galaxy_data.array == np.ones((4,4))).all()
-        assert (galaxy_data.noise_map_ == 2.0 * np.ones((4))).all()
+        assert (galaxy_data.noise_map == 2.0 * np.ones((4,4))).all()
         assert (galaxy_data.mask == np.array([[True, True, True, True],
                                               [True, False, False, True],
                                               [True, False, False, True],
                                               [True, True, True, True]])).all()
+        assert (galaxy_data.array_1d == np.ones(4)).all()
+        assert (galaxy_data.noise_map_1d == 2.0* np.ones(4)).all()
+        assert (galaxy_data.mask_1d == np.array([False, False, False, False])).all()
 
         galaxy = MockGalaxy(value=1, shape=4)
 
         intensities = galaxy_data.profile_quantity_from_galaxy_and_sub_grid(galaxy=galaxy,
-                                                                            sub_grid=galaxy_data.grids.sub)
+                                                                            sub_grid=galaxy_data.grid_stack.sub)
 
         assert (intensities == np.array([1.0, 1.0, 1.0, 1.0])).all()
 
-        galaxy = g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=1.0))
+        galaxy = g.Galaxy(light=lp.SphericalSersic(intensity=1.0))
 
-        intensities_gal = galaxy.intensities_from_grid(grid=galaxy_data.grids.sub)
-        intensities_gal = galaxy_data.grids.sub.sub_data_to_regular_data(sub_array=intensities_gal)
+        intensities_gal = galaxy.intensities_from_grid(grid=galaxy_data.grid_stack.sub)
+        intensities_gal = galaxy_data.grid_stack.sub.sub_data_to_regular_data(sub_array=intensities_gal)
 
         intensities_gd = galaxy_data.profile_quantity_from_galaxy_and_sub_grid(galaxy=galaxy,
-                                                                               sub_grid=galaxy_data.grids.sub)
+                                                                               sub_grid=galaxy_data.grid_stack.sub)
 
         assert (intensities_gal == intensities_gd).all()
 
     def test__galaxy_data_surface_density(self, scaled_array, mask):
 
-        galaxy_data = gd.GalaxyDataSurfaceDensity(array=scaled_array, noise_map=2.0*np.ones((4,4)), mask=mask,
-                                                  sub_grid_size=2)
+        galaxy_data = gd.GalaxyData(array=scaled_array, noise_map=2.0*np.ones((4,4)), mask=mask, sub_grid_size=2,
+                                    use_surface_density=True)
 
-        assert scaled_array.pixel_scale == galaxy_data.pixel_scale
-        assert (galaxy_data == np.ones(4)).all()
+        assert galaxy_data.pixel_scale == 3.0
         assert (galaxy_data.array == np.ones((4,4))).all()
-        assert (galaxy_data.noise_map_ == 2.0 * np.ones((4))).all()
+        assert (galaxy_data.noise_map == 2.0 * np.ones((4,4))).all()
         assert (galaxy_data.mask == np.array([[True, True, True, True],
                                               [True, False, False, True],
                                               [True, False, False, True],
                                               [True, True, True, True]])).all()
+        assert (galaxy_data.array_1d == np.ones(4)).all()
+        assert (galaxy_data.noise_map_1d == 2.0* np.ones(4)).all()
+        assert (galaxy_data.mask_1d == np.array([False, False, False, False])).all()
 
         galaxy = MockGalaxy(value=1, shape=4)
 
         surface_density = galaxy_data.profile_quantity_from_galaxy_and_sub_grid(galaxy=galaxy,
-                                                                                sub_grid=galaxy_data.grids.sub)
+                                                                                sub_grid=galaxy_data.grid_stack.sub)
 
         assert (surface_density == np.array([1.0, 1.0, 1.0, 1.0])).all()
 
-        surface_density_gal = galaxy.surface_density_from_grid(grid=galaxy_data.grids.sub)
-        surface_density_gal = galaxy_data.grids.sub.sub_data_to_regular_data(sub_array=surface_density_gal)
+        galaxy = g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=1.0))
+
+        surface_density_gal = galaxy.surface_density_from_grid(grid=galaxy_data.grid_stack.sub)
+        surface_density_gal = galaxy_data.grid_stack.sub.sub_data_to_regular_data(sub_array=surface_density_gal)
 
         surface_density_gd = galaxy_data.profile_quantity_from_galaxy_and_sub_grid(galaxy=galaxy,
-                                                                                   sub_grid=galaxy_data.grids.sub)
+                                                                                   sub_grid=galaxy_data.grid_stack.sub)
 
         assert (surface_density_gal == surface_density_gd).all()
         
     def test__galaxy_data_potential(self, scaled_array, mask):
 
-        galaxy_data = gd.GalaxyDataPotential(array=scaled_array, noise_map=2.0*np.ones((4,4)), mask=mask,
-                                             sub_grid_size=2)
+        galaxy_data = gd.GalaxyData(array=scaled_array, noise_map=2.0*np.ones((4,4)), mask=mask, sub_grid_size=2,
+                                    use_potential=True)
 
-        assert scaled_array.pixel_scale == galaxy_data.pixel_scale
-        assert (galaxy_data == np.ones(4)).all()
+        assert galaxy_data.pixel_scale == 3.0
         assert (galaxy_data.array == np.ones((4,4))).all()
-        assert (galaxy_data.noise_map_ == 2.0 * np.ones((4))).all()
+        assert (galaxy_data.noise_map == 2.0 * np.ones((4,4))).all()
         assert (galaxy_data.mask == np.array([[True, True, True, True],
                                               [True, False, False, True],
                                               [True, False, False, True],
                                               [True, True, True, True]])).all()
+        assert (galaxy_data.array_1d == np.ones(4)).all()
+        assert (galaxy_data.noise_map_1d == 2.0* np.ones(4)).all()
+        assert (galaxy_data.mask_1d == np.array([False, False, False, False])).all()
 
         galaxy = MockGalaxy(value=1, shape=4)
 
         potential = galaxy_data.profile_quantity_from_galaxy_and_sub_grid(galaxy=galaxy,
-                                                                                sub_grid=galaxy_data.grids.sub)
+                                                                          sub_grid=galaxy_data.grid_stack.sub)
 
         assert (potential == np.array([1.0, 1.0, 1.0, 1.0])).all()
 
         galaxy = g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=1.0))
 
-        potential_gal = galaxy.potential_from_grid(grid=galaxy_data.grids.sub)
-        potential_gal = galaxy_data.grids.sub.sub_data_to_regular_data(sub_array=potential_gal)
+        potential_gal = galaxy.potential_from_grid(grid=galaxy_data.grid_stack.sub)
+        potential_gal = galaxy_data.grid_stack.sub.sub_data_to_regular_data(sub_array=potential_gal)
 
         potential_gd = galaxy_data.profile_quantity_from_galaxy_and_sub_grid(galaxy=galaxy,
-                                                                                   sub_grid=galaxy_data.grids.sub)
+                                                                             sub_grid=galaxy_data.grid_stack.sub)
 
         assert (potential_gal == potential_gd).all()
         
     def test__galaxy_data_deflections_y(self, scaled_array, mask):
 
-        galaxy = g.Galaxy(mass=mp.EllipticalIsothermal(einstein_radius=1.0))
+        galaxy_data = gd.GalaxyData(array=scaled_array, noise_map=2.0*np.ones((4,4)), mask=mask, sub_grid_size=2,
+                                    use_deflections_y=True)
 
-        galaxy_data = gd.GalaxyDataDeflectionsY(array=scaled_array, noise_map=2.0*np.ones((4,4)), mask=mask,
-                                                sub_grid_size=2)
-
-        assert scaled_array.pixel_scale == galaxy_data.pixel_scale
-        assert (galaxy_data == np.ones(4)).all()
+        assert galaxy_data.pixel_scale == 3.0
         assert (galaxy_data.array == np.ones((4,4))).all()
-        assert (galaxy_data.noise_map_ == 2.0 * np.ones((4))).all()
+        assert (galaxy_data.noise_map == 2.0 * np.ones((4,4))).all()
         assert (galaxy_data.mask == np.array([[True, True, True, True],
                                               [True, False, False, True],
                                               [True, False, False, True],
                                               [True, True, True, True]])).all()
+        assert (galaxy_data.array_1d == np.ones(4)).all()
+        assert (galaxy_data.noise_map_1d == 2.0* np.ones(4)).all()
+        assert (galaxy_data.mask_1d == np.array([False, False, False, False])).all()
 
         galaxy = MockGalaxy(value=1, shape=4)
 
-        deflections = galaxy_data.profile_quantity_from_galaxy_and_sub_grid(galaxy=galaxy,
-                                                                            sub_grid=galaxy_data.grids.sub)
+        deflections_y = galaxy_data.profile_quantity_from_galaxy_and_sub_grid(galaxy=galaxy,
+                                                                            sub_grid=galaxy_data.grid_stack.sub)
 
-        assert (deflections[:,0] == np.array([1.0, 1.0, 1.0, 1.0])).all()
-        assert (deflections[:,1] == np.array([1.0, 1.0, 1.0, 1.0])).all()
+        assert (deflections_y == np.array([1.0, 1.0, 1.0, 1.0])).all()
 
         galaxy = g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=1.0))
 
-        deflections_gal = galaxy.deflections_from_grid(grid=galaxy_data.grids.sub)
-        deflections_gal = np.asarray([galaxy_data.grids.sub.sub_data_to_regular_data(deflections_gal[:, 0]),
-                                      galaxy_data.grids.sub.sub_data_to_regular_data(deflections_gal[:, 1])]).T
+        deflections_gal = galaxy.deflections_from_grid(grid=galaxy_data.grid_stack.sub)
+        deflections_gal = np.asarray([galaxy_data.grid_stack.sub.sub_data_to_regular_data(deflections_gal[:, 0]),
+                                      galaxy_data.grid_stack.sub.sub_data_to_regular_data(deflections_gal[:, 1])]).T
 
         deflections_gd = galaxy_data.profile_quantity_from_galaxy_and_sub_grid(galaxy=galaxy,
-                                                                               sub_grid=galaxy_data.grids.sub)
+                                                                               sub_grid=galaxy_data.grid_stack.sub)
 
-        assert (deflections_gal[:,0] == deflections_gd[:,0]).all()
-        assert (deflections_gal[:,1] == deflections_gd[:,1]).all()
+        assert (deflections_gal[:,0] == deflections_gd).all()
 
     def test__galaxy_data_deflections_x(self, scaled_array, mask):
 
-        galaxy = g.Galaxy(mass=mp.EllipticalIsothermal(einstein_radius=1.0))
+        galaxy_data = gd.GalaxyData(array=scaled_array, noise_map=2.0*np.ones((4,4)), mask=mask, sub_grid_size=2,
+                                    use_deflections_x=True)
 
-        galaxy_data = gd.GalaxyDataDeflectionsX(array=scaled_array, noise_map=2.0*np.ones((4,4)), mask=mask,
-                                                sub_grid_size=2)
-
-        assert scaled_array.pixel_scale == galaxy_data.pixel_scale
-        assert (galaxy_data == np.ones(4)).all()
+        assert galaxy_data.pixel_scale == 3.0
         assert (galaxy_data.array == np.ones((4,4))).all()
-        assert (galaxy_data.noise_map_ == 2.0 * np.ones((4))).all()
+        assert (galaxy_data.noise_map == 2.0 * np.ones((4,4))).all()
         assert (galaxy_data.mask == np.array([[True, True, True, True],
                                               [True, False, False, True],
                                               [True, False, False, True],
                                               [True, True, True, True]])).all()
+        assert (galaxy_data.array_1d == np.ones(4)).all()
+        assert (galaxy_data.noise_map_1d == 2.0* np.ones(4)).all()
+        assert (galaxy_data.mask_1d == np.array([False, False, False, False])).all()
 
         galaxy = MockGalaxy(value=1, shape=4)
 
-        deflections = galaxy_data.profile_quantity_from_galaxy_and_sub_grid(galaxy=galaxy,
-                                                                            sub_grid=galaxy_data.grids.sub)
+        deflections_x = galaxy_data.profile_quantity_from_galaxy_and_sub_grid(galaxy=galaxy,
+                                                                            sub_grid=galaxy_data.grid_stack.sub)
 
-        assert (deflections[:,0] == np.array([1.0, 1.0, 1.0, 1.0])).all()
-        assert (deflections[:,1] == np.array([1.0, 1.0, 1.0, 1.0])).all()
+        assert (deflections_x == np.array([1.0, 1.0, 1.0, 1.0])).all()
 
         galaxy = g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=1.0))
 
-        deflections_gal = galaxy.deflections_from_grid(grid=galaxy_data.grids.sub)
-        deflections_gal = np.asarray([galaxy_data.grids.sub.sub_data_to_regular_data(deflections_gal[:, 0]),
-                                      galaxy_data.grids.sub.sub_data_to_regular_data(deflections_gal[:, 1])]).T
+        deflections_gal = galaxy.deflections_from_grid(grid=galaxy_data.grid_stack.sub)
+        deflections_gal = np.asarray([galaxy_data.grid_stack.sub.sub_data_to_regular_data(deflections_gal[:, 0]),
+                                      galaxy_data.grid_stack.sub.sub_data_to_regular_data(deflections_gal[:, 1])]).T
 
         deflections_gd = galaxy_data.profile_quantity_from_galaxy_and_sub_grid(galaxy=galaxy,
-                                                                               sub_grid=galaxy_data.grids.sub)
+                                                                               sub_grid=galaxy_data.grid_stack.sub)
 
-        assert (deflections_gal[:,0] == deflections_gd[:,0]).all()
-        assert (deflections_gal[:,1] == deflections_gd[:,1]).all()
+        assert (deflections_gal[:,1] == deflections_gd).all()
+
+    def test__no_use_method__raises_exception(self, scaled_array, mask):
+
+        with pytest.raises(exc.GalaxyException):
+            gd.GalaxyData(array=scaled_array, noise_map=2.0 * np.ones((4, 4)), mask=mask, sub_grid_size=2)
+
+    def test__multiple_use_methods__raises_exception(self, scaled_array, mask):
+
+        with pytest.raises(exc.GalaxyException):
+            gd.GalaxyData(array=scaled_array, noise_map=2.0 * np.ones((4, 4)), mask=mask, sub_grid_size=2,
+                          use_intensities=True, use_surface_density=True)
+
+        with pytest.raises(exc.GalaxyException):
+            gd.GalaxyData(array=scaled_array, noise_map=2.0 * np.ones((4, 4)), mask=mask, sub_grid_size=2,
+                          use_intensities=True, use_potential=True)
+
+        with pytest.raises(exc.GalaxyException):
+            gd.GalaxyData(array=scaled_array, noise_map=2.0 * np.ones((4, 4)), mask=mask, sub_grid_size=2,
+                          use_intensities=True, use_deflections_y=True)
+
+        with pytest.raises(exc.GalaxyException):
+            gd.GalaxyData(array=scaled_array, noise_map=2.0 * np.ones((4, 4)), mask=mask, sub_grid_size=2,
+                          use_intensities=True, use_surface_density=True, use_potential=True)
+
+        with pytest.raises(exc.GalaxyException):
+                gd.GalaxyData(array=scaled_array, noise_map=2.0 * np.ones((4, 4)), mask=mask, sub_grid_size=2,
+                use_intensities=True, use_surface_density=True, use_potential=True, use_deflections_x=True)

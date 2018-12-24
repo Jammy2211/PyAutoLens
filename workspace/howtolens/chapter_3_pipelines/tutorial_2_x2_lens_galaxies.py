@@ -1,13 +1,13 @@
 from autofit.core import non_linear as nl
 from autofit.core import model_mapper as mm
-from autolens.data.imaging import image as im
+from autolens.data import ccd as im
 from autolens.data.array import mask
 from autolens.model.galaxy import galaxy_model as gm
 from autolens.pipeline import phase as ph
 from autolens.pipeline import pipeline
 from autolens.model.profiles import light_profiles as lp
 from autolens.model.profiles import mass_profiles as mp
-from autolens.data.imaging.plotters import imaging_plotters
+from autolens.data.plotters import imaging_plotters
 
 
 # Up to now, all of the regular that we fitted had only one lens model_galaxy. However we saw in chapter 1 that we can
@@ -32,11 +32,11 @@ def simulate():
 
     from autolens.data.array import grids
     from autolens.model.galaxy import galaxy as g
-    from autolens.lensing import ray_tracing
+    from autolens.lens import ray_tracing
 
     psf = im.PSF.simulate_as_gaussian(shape=(11, 11), sigma=0.05, pixel_scale=0.05)
 
-    image_plane_grids = grids.DataGrids.grids_for_simulation(shape=(180, 180), pixel_scale=0.05, psf_shape=(11, 11))
+    image_plane_grids = grids.GridStack.grid_stack_for_simulation(shape=(180, 180), pixel_scale=0.05, psf_shape=(11, 11))
 
     lens_galaxy_0 = g.Galaxy(light=lp.EllipticalSersic(centre=(0.0, -1.0), axis_ratio=0.8, phi=55.0, intensity=0.1,
                                                        effective_radius=0.8, sersic_index=2.5),
@@ -48,10 +48,10 @@ def simulate():
                                                           einstein_radius=0.8))
     source_galaxy = g.Galaxy(light=lp.SphericalExponential(centre=(0.05, 0.15), intensity=0.2, effective_radius=0.5))
     tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy_0, lens_galaxy_1],
-                                                 source_galaxies=[source_galaxy], image_plane_grids=[image_plane_grids])
+                                                 source_galaxies=[source_galaxy], image_plane_grid_stack=[image_plane_grids])
 
-    return im.Image.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=0.05,
-                                        exposure_time=300.0, psf=psf, background_sky_level=0.1, add_noise=True)
+    return im.CCDData.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=0.05,
+                               exposure_time=300.0, psf=psf, background_sky_level=0.1, add_noise=True)
 
 # Lets simulate the regular we'll fit_normal, which is a new regular, finally!
 image = simulate()
@@ -126,8 +126,8 @@ def make_pipeline():
         def modify_image(self, image, previous_results):
             phase_1_results = previous_results[0]
             phase_2_results = previous_results[1]
-            return image - phase_1_results.fit.unmasked_model_profile_image - \
-                   phase_2_results.fit.unmasked_model_profile_image
+            return image - phase_1_results.fit.unmasked_model_images - \
+                   phase_2_results.fit.unmasked_model_images
 
         def pass_priors(self, previous_results):
 
@@ -200,7 +200,7 @@ def make_pipeline():
 
 
 pipeline_x2_galaxies = make_pipeline()
-pipeline_x2_galaxies.run(image=image)
+pipeline_x2_galaxies.run(data=image)
 
 # And, we're done. This pipeline takes a while to run, as is the nature of multi-model_galaxy modeling. Nevertheless, the
 # techniques we've learnt above can be applied to systems with even more galaxies, albeit the increases in parameters

@@ -8,8 +8,8 @@ from autolens.model.profiles.plotters import profile_plotters
 
 # Lets use the a same resolution grid as the previous tutorial but make it 100 x 100 (if you skipped that 
 # tutorial, I recommend you go back to it!)
-data_grids = grids.DataGrids.from_shape_and_pixel_scale(shape=(100, 100), pixel_scale=0.05,
-                                                         sub_grid_size=2)
+data_grids = grids.GridStack.from_shape_and_pixel_scale(shape=(100, 100), pixel_scale=0.05,
+                                                        sub_grid_size=2)
 
 # Next, lets create a light profile using the 'light_profiles' module. We'll use a Sersic function,
 # which is a analytic function often use to depict galaxies.

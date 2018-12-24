@@ -2,16 +2,16 @@ from autolens.data.array import grids
 from autolens.data.array.plotters import grid_plotters
 
 # In this example, we'll create a grid of Cartesian (y,x) coordinates, representing the arc second coordinate grid of
-# an observed data-set (e.g. an image).
+# an observed datas-set (e.g. an datas).
 
 # In AutoLens, a grid is a set of two-dimensional (y,x) coordinates (in arc-seconds) that are deflected
 # and traced by a strong lensing system.
 
-# This coordinate grid is aligned with the image we analyze, thus each coordinate on the regular grid maps to the
-# centre of each image-pixel. Lets make a grid using 100 x 100 pixels, with a pixel scale (arcsecond-to-pixel
+# This coordinate grid is aligned with the datas we analyze, thus each coordinate on the regular grid maps to the
+# centre of each datas-pixel. Lets make a grid using 100 x 100 pixels, with a pixel scale (arcsecond-to-pixel
 # conversion factor) of 0.05", giving us a a 5" x 5" grid.
-data_grids = grids.DataGrids.from_shape_and_pixel_scale(shape=(10, 100), pixel_scale=0.05,
-                                                         sub_grid_size=2)
+data_grids = grids.GridStack.from_shape_and_pixel_scale(shape=(10, 100), pixel_scale=0.05,
+                                                        sub_grid_size=2)
 
 # If we print the regular grid, we see it consists of a set of arc-second coordinates
 # (noting that the difference between each coordinate is the 'pixel_scales' of 0.05" defined above)
@@ -43,7 +43,7 @@ grid_plotters.plot_grid(grid=data_grids.regular, title='Custom Grid', xlabelsize
 
 # You might be wondering why the data_grids are using the attribute 'regular' (e.g. data_grids.regular).
 
-# This is because the data-grids consist of multiple grids. The 'regular' grid is the grid where each (y,x) coordinate
+# This is because the datas-grid_stacks consist of multiple grid_stacks. The 'regular' grid is the grid where each (y,x) coordinate
 # is located at the centre of each pixel on the grid.
 
 # There is also a sub-grid, which splits each pixel into a (sub_grid_size x sub_grid_size) pixel. This is

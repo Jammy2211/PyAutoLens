@@ -30,12 +30,12 @@ class ArrayGeometry(object):
 
     @property
     def yticks(self):
-        """Compute the yticks labels of this grid, used for plotting the y-axis ticks when visualizing an datas_-grid"""
+        """Compute the yticks labels of this grid, used for plotting the y-axis ticks when visualizing an image-grid"""
         return np.linspace(self.arc_second_minima[0], self.arc_second_maxima[0], 4)
 
     @property
     def xticks(self):
-        """Compute the xticks labels of this grid, used for plotting the x-axis ticks when visualizing an datas_-grid"""
+        """Compute the xticks labels of this grid, used for plotting the x-axis ticks when visualizing an image-grid"""
         return np.linspace(self.arc_second_minima[1], self.arc_second_maxima[1], 4)
 
 # noinspection PyUnresolvedReferences
@@ -56,11 +56,11 @@ class RectangularArrayGeometry(ArrayGeometry):
                 int(((arc_second_coordinates[1] - self.origin[1]) / self.pixel_scales[1]) + self.central_pixel_coordinates[1] + 0.5))
 
     def grid_arc_seconds_to_grid_pixels(self, grid_arc_seconds):
-        """Convert a grid of (y,x) arc second coordinates to a grid of (y,x) pixel values. Pixel coordinates are
+        """Convert a grid of (y,x) arc second coordinates to a grid of (y,x) pixel values. Pixel coordinates are \
         returned as floats such that they include the decimal offset from each pixel's top-left corner.
 
         The pixel coordinate origin is at the top left corner of the grid, such that the pixel [0,0] corresponds to \
-        higher y arc-second coordinate value and lowest x arc-second coordinate.
+        highest y arc-second coordinate value and lowest x arc-second coordinate.
 
         The arc-second coordinate origin is defined by the class attribute origin, and coordinates are shifted to this \
         origin before computing their 1D grid pixel indexes.
@@ -68,7 +68,7 @@ class RectangularArrayGeometry(ArrayGeometry):
         Parameters
         ----------
         grid_arc_seconds: ndarray
-            The grid of (y,x) coordinates in arc seconds.
+            A grid of (y,x) coordinates in arc seconds.
         """
         return grid_util.grid_arc_seconds_1d_to_grid_pixels_1d(grid_arc_seconds=grid_arc_seconds, shape=self.shape,
                                                                pixel_scales=self.pixel_scales, origin=self.origin)
@@ -180,6 +180,10 @@ class Array(np.ndarray):
             setattr(self, key, value)
         super(Array, self).__setstate__(state[0:-1])
 
+
+    def __array_wrap__(self, out_arr, context=None):
+        return np.ndarray.__array_wrap__(self, out_arr, context)
+
     def new_with_array(self, array):
         """
         Parameters
@@ -199,14 +203,14 @@ class Array(np.ndarray):
     @classmethod
     def from_fits(cls, file_path, hdu):
         """
-        Loads the datas from a .fits file.
+        Loads the image from a .fits file.
 
         Parameters
         ----------
         file_path : str
             The full path of the fits file.
         hdu : int
-            The HDU number in the fits file containing the datas_ datas.
+            The HDU number in the fits file containing the image image.
         """
         return cls(array_util.numpy_array_from_fits(file_path, hdu))
 
@@ -215,11 +219,13 @@ class ScaledArray(Array, RectangularArrayGeometry):
 
     # noinspection PyUnusedLocal
     def __init__(self, array):
-        """
+        """ A scaled-array is a 2D array with a pixel-scale, such that all pixels on the array has associated with \
+        them arc-second coordinates.
+        
         Parameters
         ----------
         array: ndarray
-            An array representing datas (e.g. an datas_, noise-mappers, etc.)
+            An array representing image (e.g. an image, noise-map, etc.)
         origin : (float, float)
             The arc-second origin of the scaled array's coordinate system.
         """
@@ -234,16 +240,17 @@ class ScaledArray(Array, RectangularArrayGeometry):
 
 class ScaledSquarePixelArray(ScaledArray):
     """
-    Class storing the grids for 2D pixel grids (e.g. datas_, PSF, signal_to_noise_ratio).
+    Class storing the grid_stacks for 2D pixel grid_stacks (e.g. image, PSF, signal_to_noise_ratio).
     """
 
     # noinspection PyUnusedLocal
     def __init__(self, array, pixel_scale, origin=(0.0, 0.0)):
-        """
+        """ A scaled array with square-pixels.
+        
         Parameters
         ----------
         array: ndarray
-            An array representing datas (e.g. an datas_, noise-mappers, etc.)
+            An array representing image (e.g. an image, noise-map, etc.)
         pixel_scale: float
             The arc-second to pixel conversion factor of each pixel.
         origin : (float, float)
@@ -270,14 +277,14 @@ class ScaledSquarePixelArray(ScaledArray):
     @classmethod
     def from_fits_with_pixel_scale(cls, file_path, hdu, pixel_scale, origin=(0.0, 0.0)):
         """
-        Loads the datas from a .fits file.
+        Loads the image from a .fits file.
 
         Parameters
         ----------
         file_path : str
             The full path of the fits file.
         hdu : int
-            The HDU number in the fits file containing the datas_ datas.
+            The HDU number in the fits file containing the image image.
         pixel_scale: float
             The arc-second to pixel conversion factor of each pixel.
         """
@@ -330,7 +337,7 @@ class ScaledSquarePixelArray(ScaledArray):
             The new two-dimensional shape of the array.
         """
         if new_centre_pixels is None and new_centre_arc_seconds is None:
-            new_centre = (-1, -1)  # In Numba, the input origin must be the same data type as the origin, thus we cannot
+            new_centre = (-1, -1)  # In Numba, the input origin must be the same image type as the origin, thus we cannot
             # pass 'None' and instead use the tuple (-1, -1).
         elif new_centre_pixels is not None and new_centre_arc_seconds is None:
             new_centre = new_centre_pixels
@@ -346,7 +353,7 @@ class ScaledSquarePixelArray(ScaledArray):
 
 class ScaledRectangularPixelArray(ScaledArray):
     """
-    Class storing the grids for 2D pixel grids (e.g. datas_, PSF, signal_to_noise_ratio).
+    Class storing the grid_stacks for 2D pixel grid_stacks (e.g. image, PSF, signal_to_noise_ratio).
     """
 
     # noinspection PyUnusedLocal
@@ -355,7 +362,7 @@ class ScaledRectangularPixelArray(ScaledArray):
         Parameters
         ----------
         array: ndarray
-            An array representing datas (e.g. an datas_, noise-mappers, etc.)
+            An array representing image (e.g. an image, noise-map, etc.)
         pixel_scales : (float, float)
             The arc-second to pixel conversion factor of each pixel.
         origin : (float, float)
@@ -400,14 +407,14 @@ class ScaledRectangularPixelArray(ScaledArray):
     @classmethod
     def from_fits_with_pixel_scale(cls, file_path, hdu, pixel_scales, origin=(0.0, 0.0)):
         """
-        Loads the datas from a .fits file.
+        Loads the image from a .fits file.
 
         Parameters
         ----------
         file_path : str
             The full path of the fits file.
         hdu : int
-            The HDU number in the fits file containing the datas_ datas.
+            The HDU number in the fits file containing the hyper.
         pixel_scales: (float, float)
             The arc-second to pixel conversion factor of each pixel.
         """

@@ -1,17 +1,17 @@
 from autolens.model.profiles import light_profiles
 from autolens.model.profiles import mass_profiles
 from autolens.model.galaxy import galaxy
-from autolens.lensing import ray_tracing
+from autolens.lens import ray_tracing
 from autolens.data.array import grids
-from autolens.lensing.plotters import plane_plotters
-from autolens.lensing.plotters import ray_tracing_plotters
+from autolens.lens.plotters import plane_plotters
+from autolens.lens.plotters import ray_tracing_plotters
 
 # In the previous example, we used light-profiles, mass-profiles, galaxies and planes to create an regular-plane +
 # source-plane strong lens system. However, this took a lot of lines of code to do, so in this example we'll use the
 # 'ray-tracing module to do it a lot faster!
 
 # Lets use the same grid as always, you should be used to seeing this now!
-image_plane_grids = grids.DataGrids.from_shape_and_pixel_scale(shape=(100, 100), pixel_scale=0.05,
+image_plane_grids = grids.GridStack.from_shape_and_pixel_scale(shape=(100, 100), pixel_scale=0.05,
                                                                sub_grid_size=2)
 
 # Unlike the previous tutorial, we'll offset our lens model_galaxy slightly from the source, to get a slightly ray-tracing
@@ -26,8 +26,8 @@ sersic_light_profile = light_profiles.EllipticalSersic(centre=(0.0, 0.0), axis_r
 source_galaxy = galaxy.Galaxy(light=sersic_light_profile)
 print(source_galaxy)
 
-# Finally, we can use a 'tracer_without_subhalo', the lens model_galaxy and the source model_galaxy to ray-trace our grids. When we pass our
-# galaxies and grids into the Tracer below, the following happens:
+# Finally, we can use a 'tracer_without_subhalo', the lens model_galaxy and the source model_galaxy to ray-trace our grid_stacks. When we pass our
+# galaxies and grid_stacks into the Tracer below, the following happens:
 
 # 1) Using the lens-model_galaxy's mass-profile, the deflection angle of every regular-plane grid coordinate is computed.
 # 2) These deflection angles are used to trace every regular-plane coordinate to a source-plane coordinate.
@@ -35,26 +35,26 @@ print(source_galaxy)
 
 # This is what we did using Plane's in the preious chapter, but its a lot less lines of code!
 tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
-                                             image_plane_grids=[image_plane_grids])
+                                             image_plane_grid_stack=[image_plane_grids])
 
-# The tracer is composed of an image-plane and source-plane, just like in the previous example!
-print('Image-pixel 1 regular-plane coordinate')
+# The tracer is composed of an datas-plane and source-plane, just like in the previous example!
+print('CCD-pixel 1 regular-plane coordinate')
 print(tracer.image_plane.grids[0].regular[0])
-print('Image-pixel 2 regular-plane coordinate')
+print('CCD-pixel 2 regular-plane coordinate')
 print(tracer.image_plane.grids[0].regular[1])
-print('Image-pixel 3 regular-plane coordinate')
+print('CCD-pixel 3 regular-plane coordinate')
 print(tracer.image_plane.grids[0].regular[2])
 
 # And the source-plane's grid has been deflected.
-print('Image-pixel 1 source-plane coordinate')
+print('CCD-pixel 1 source-plane coordinate')
 print(tracer.source_plane.grids[0].regular[0])
-print('Image-pixel 2 source-plane coordinate')
+print('CCD-pixel 2 source-plane coordinate')
 print(tracer.source_plane.grids[0].regular[1])
-print('Image-pixel 3 source-plane coordinate')
+print('CCD-pixel 3 source-plane coordinate')
 print(tracer.source_plane.grids[0].regular[2])
 
-# We can use the plane_plotter to plot these grids, like before.
-plane_plotters.plot_plane_grid(plane=tracer.image_plane, title='Image-plane Grid')
+# We can use the plane_plotter to plot these grid_stacks, like before.
+plane_plotters.plot_plane_grid(plane=tracer.image_plane, title='CCD-plane Grid')
 plane_plotters.plot_plane_grid(plane=tracer.source_plane, title='Source-plane Grid')
 plane_plotters.plot_plane_grid(plane=tracer.source_plane, axis_limits=[-0.1, 0.3, -0.1, 0.3], title='Source-plane Grid')
 
@@ -68,24 +68,24 @@ ray_tracing_plotters.plot_ray_tracing_subplot(tracer=tracer)
 
 # These attributes can be assessed by print statements (Which you might notice have been converted to 2D NumPy arrays
 # which are the same dimensions as our input regular!).
-print('Image-Pixel 1 - Tracer - Surface Density:')
+print('CCD-Pixel 1 - Tracer - Surface Density:')
 print(tracer.surface_density[0,0])
-print('Image-Pixel 2 - Tracer - Surface Density:')
+print('CCD-Pixel 2 - Tracer - Surface Density:')
 print(tracer.surface_density[0,1])
-print('Image-Pixel 3 - Tracer - Surface Density:')
+print('CCD-Pixel 3 - Tracer - Surface Density:')
 print(tracer.surface_density[0,2])
-print('Image-Pixel 101 - Tracer - Surface Density:')
+print('CCD-Pixel 101 - Tracer - Surface Density:')
 print(tracer.surface_density[1,0])
 
 # Of course, these surface densities are identical to the regular-plane surface densities, as it's only the lens model_galaxy
 # that contributes to the overall mass of the system.
-print('Image-Pixel 1 - Image-Plane - Surface Density:')
+print('CCD-Pixel 1 - CCD-Plane - Surface Density:')
 print(tracer.image_plane.surface_density[0,0])
-print('Image-Pixel 2 - Image-Plane - Surface Density:')
+print('CCD-Pixel 2 - CCD-Plane - Surface Density:')
 print(tracer.image_plane.surface_density[0,1])
-print('Image-Pixel 3 - Image-Plane - Surface Density:')
+print('CCD-Pixel 3 - CCD-Plane - Surface Density:')
 print(tracer.image_plane.surface_density[0,2])
-print('Image-Pixel 101 - Image-Plane - Surface Density:')
+print('CCD-Pixel 101 - CCD-Plane - Surface Density:')
 print(tracer.image_plane.surface_density[1,0])
 
 # I've left the rest below commented to avoid too much printing, but you can inspect their datas if you please!
@@ -97,10 +97,10 @@ print(tracer.image_plane.surface_density[1,0])
 # print(tracer_without_subhalo.deflections_y)
 # print(tracer_without_subhalo.image_plane.deflections_x)
 # print(tracer_without_subhalo.image_plane.deflections_y)
-# print('Image-plane Image:')
+# print('CCD-plane CCD:')
 # print(tracer_without_subhalo.image_plane_image)
 # print(tracer_without_subhalo.image_plane.image_plane_image)
-# print('Source-plane Image:')
+# print('Source-plane CCD:')
 # print(tracer_without_subhalo.source_plane_image)
 # print(tracer_without_subhalo.image_plane.source_plane_image)
 
@@ -121,7 +121,7 @@ ray_tracing_plotters.plot_surface_density(tracer=tracer)
 #                  'plane_plotters.surface_density(plane=tracer_without_subhalo.image_plane). However, code appears neater if you can
 #                   just write 'tracer_normal.surface_density' and 'ray_tracing_plotters.plot_surface_density(tracer_normal=tracer_normal).
 
-# 2) Multi-plane lensing - For now, we're focused on the regular-plane + source-plane lensing configuration. However,
+# 2) Multi-plane lens - For now, we're focused on the regular-plane + source-plane lens configuration. However,
 #                          there are strong lens system where there are more than 2 planes! In these instances, the
 #                          surface density, potential and deflections of each plane is different to that of the tracer_without_subhalo.
 #                          This is way beyond the scope of this chapter, but be reassured that what you're learning now
