@@ -1,11 +1,9 @@
 import numpy as np
 import pytest
-from astropy import cosmology as cosmo
 
 from autolens.data.array import mask as msk
 from autolens.data.array import grids
-from autolens.data.ccd import ccd as im
-from autolens.data.ccd import convolution
+from autolens.data import ccd as im, convolution
 from autolens.model.profiles import light_profiles as lp
 from autolens.model.profiles import mass_profiles as mp
 from autolens.lens.util import lens_fit_stack_util as stack_util

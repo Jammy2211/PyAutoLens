@@ -7,8 +7,7 @@ from autofit.core import non_linear
 
 from autolens import exc
 from autolens.data.array import mask as msk
-from autolens.data.ccd import ccd as im
-from autolens.data.ccd.plotters import ccd_plotters
+from autolens.data.plotters import ccd_plotters
 from autolens.lens import lens_image as li, lens_fit
 from autolens.lens import ray_tracing
 from autolens.lens import sensitivity_fit
@@ -420,13 +419,13 @@ class PhaseImaging(Phase):
         result: non_linear.Result
             A result object comprising the best fit model and other hyper.
         """
-        analysis = self.make_analysis(ccd=data, previous_results=previous_results, mask=mask)
+        analysis = self.make_analysis(data=data, previous_results=previous_results, mask=mask)
         result = self.optimizer.fit(analysis)
         analysis.visualize(instance=result.constant, suffix=None, during_analysis=False)
 
         return self.__class__.Result(result.constant, result.figure_of_merit, result.variable, analysis)
 
-    def make_analysis(self, ccd, previous_results=None, mask=None):
+    def make_analysis(self, data, previous_results=None, mask=None):
         """
         Create an lens object. Also calls the prior passing and lens_image modifying functions to allow child
         classes to change the behaviour of the phase.
@@ -435,7 +434,7 @@ class PhaseImaging(Phase):
         ----------
         mask: Mask
             The default masks passed in by the pipeline
-        ccd: im.CCD
+        data: im.CCD
             An lens_image that has been masked
         previous_results: ResultsCollection
             The result from the previous phase
@@ -445,10 +444,10 @@ class PhaseImaging(Phase):
         lens: Analysis
             An lens object that the non-linear optimizer calls to determine the fit of a set of values
         """
-        mask = mask or self.mask_function(image=ccd.image)
+        mask = mask or self.mask_function(image=data.image)
 
-        lens_image = li.LensImage(ccd=ccd, mask=mask, sub_grid_size=self.sub_grid_size,
-                                     image_psf_shape=self.image_psf_shape, positions=self.positions)
+        lens_image = li.LensData(ccd_data=data, mask=mask, sub_grid_size=self.sub_grid_size,
+                                 image_psf_shape=self.image_psf_shape, positions=self.positions)
 
         lens_image.image = self.modify_image(image=lens_image.image, previous_results=previous_results)
 
@@ -494,14 +493,14 @@ class PhaseImaging(Phase):
             padded_tracer = self.padded_tracer_for_instance(instance)
             fit = self.fit_for_tracers(tracer=tracer, padded_tracer=padded_tracer)
 
-            ccd_plotters.plot_ccd_subplot(ccd=self.lens_image.ccd, mask=self.lens_image.mask,
+            ccd_plotters.plot_ccd_subplot(ccd_data=self.lens_image.ccd_data, mask=self.lens_image.mask,
                                           positions=self.lens_image.positions,
                                           output_path=self.output_image_path,
                                           output_format='png', ignore_config=False)
 
-            ccd_plotters.plot_ccd_individual(ccd=self.lens_image.ccd, mask=self.lens_image.mask,
-                                               positions=self.lens_image.positions,
-                                               output_path=self.output_image_path, output_format='png')
+            ccd_plotters.plot_ccd_individual(ccd_data=self.lens_image.ccd_data, mask=self.lens_image.mask,
+                                             positions=self.lens_image.positions,
+                                             output_path=self.output_image_path, output_format='png')
 
             lens_fit_plotters.plot_fit_subplot(fit=fit, output_path=self.output_image_path,
                                                output_format='png', ignore_config=False)
@@ -522,7 +521,7 @@ class PhaseImaging(Phase):
                 tracer = ray_tracing.TracerImageSourcePlanesPositions(lens_galaxies=instance.lens_galaxies,
                                                                       image_plane_positions=self.lens_image.positions)
                 fit = lens_fit.LensPositionFit(positions=tracer.source_plane.positions,
-                                               noise_map=self.lens_image.image.pixel_scale)
+                                               noise_map=self.lens_image.pixel_scale)
 
                 if not fit.maximum_separation_within_threshold(self.position_threshold):
                     return exc.RayTracingException
@@ -989,12 +988,12 @@ class SensitivityPhase(PhaseImaging):
             tracer_sensitive = self.tracer_sensitive_for_instance(instance)
             fit = self.fit_for_tracers(tracer_normal=tracer_normal, tracer_sensitive=tracer_sensitive)
 
-            ccd_plotters.plot_image_subplot(image=self.sensitivity_image.image, mask=self.lens_image.mask,
+            ccd_plotters.plot_ccd_subplot(ccd_data=self.sensitivity_image.ccd_data, mask=self.lens_image.mask,
                                             positions=self.lens_image.positions,
                                             output_path=self.output_image_path, output_format='png',
                                             ignore_config=False)
 
-            ccd_plotters.plot_image_individual(image=self.sensitivity_image.image, mask=self.lens_image.mask,
+            ccd_plotters.plot_ccd_individual(ccd_data=self.sensitivity_image.ccd_data, mask=self.lens_image.mask,
                                                positions=self.lens_image.positions,
                                                output_path=self.output_image_path,
                                                output_format='png')

@@ -1,4 +1,4 @@
-from autolens.data.ccd import ccd as im
+from autolens.data import ccd as im
 from autolens.data.array import grids, mask as ma
 from autolens.model.profiles import light_profiles as lp
 from autolens.model.profiles import mass_profiles as mp
@@ -6,7 +6,7 @@ from autolens.model.galaxy import galaxy as g
 from autolens.lens import ray_tracing
 from autolens.lens import lens_image as li
 from autolens.model.inversion import pixelizations as pix
-from autolens.data.ccd.plotters import imaging_plotters
+from autolens.data.plotters import imaging_plotters
 from autolens.model.inversion.plotters import mapper_plotters
 
 
@@ -31,8 +31,8 @@ def simulate():
     tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
                                                  image_plane_grid_stack=[image_plane_grids])
 
-    return im.CCD.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=0.05,
-                           exposure_time=300.0, psf=psf, background_sky_level=0.1, add_noise=True)
+    return im.CCDData.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=0.05,
+                               exposure_time=300.0, psf=psf, background_sky_level=0.1, add_noise=True)
 
 image = simulate()
 imaging_plotters.plot_image_subplot(image=image)
@@ -90,7 +90,7 @@ mask = ma.Mask.circular_annular(shape=image.shape, pixel_scale=image.pixel_scale
 #imaging_plotters.plot_image(regular=regular, masks=masks)
 
 # As usual, we setup our regular and masks up as a lensing regular and create a tracer using its (now masked) grid_stacks.
-lensing_image = li.LensImage(ccd=image, mask=mask)
+lensing_image = li.LensData(ccd_data=image, mask=mask)
 tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[g.Galaxy()],
                                              image_plane_grid_stack=[lensing_image.grid_stack])
 

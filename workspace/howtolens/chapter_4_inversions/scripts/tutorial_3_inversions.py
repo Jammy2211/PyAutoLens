@@ -1,4 +1,4 @@
-from autolens.data.ccd import ccd as im
+from autolens.data import ccd as im
 from autolens.data.array import mask as ma
 from autolens.model.profiles import light_profiles as lp
 from autolens.model.profiles import mass_profiles as mp
@@ -6,7 +6,7 @@ from autolens.model.galaxy import galaxy as g
 from autolens.lens import ray_tracing, lens_fit
 from autolens.lens import lens_image as li
 from autolens.model.inversion import inversions as inv, pixelizations as pix, regularization as reg
-from autolens.data.ccd.plotters import imaging_plotters
+from autolens.data.plotters import imaging_plotters
 from autolens.model.inversion.plotters import inversion_plotters, mapper_plotters
 from autolens.lens.plotters import lens_fit_plotters
 
@@ -32,8 +32,8 @@ def simulate():
     tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
                                                  image_plane_grid_stack=[image_plane_grids])
 
-    return im.CCD.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=0.05,
-                           exposure_time=300.0, psf=psf, background_sky_level=0.1, add_noise=True)
+    return im.CCDData.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=0.05,
+                               exposure_time=300.0, psf=psf, background_sky_level=0.1, add_noise=True)
 
 # Now, lets simulate the source, masks it, and use a plot to check the masking is appropriate.
 image = simulate()
@@ -43,7 +43,7 @@ imaging_plotters.plot_image(image=image, mask=mask)
 
 # Next, lets set this regular up as a lensing regular, and setup a tracer_without_subhalo using the input lens model_galaxy model (we don't need
 # to provide the source's light profile, as we're using a mapper to reconstruct it).
-lensing_image = li.LensImage(ccd=image, mask=mask, sub_grid_size=1)
+lensing_image = li.LensData(ccd_data=image, mask=mask, sub_grid_size=1)
 lens_galaxy = g.Galaxy(mass=mp.EllipticalIsothermal(centre=(0.0, 0.0), axis_ratio=0.8, phi=135.0, einstein_radius=1.6))
 tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[g.Galaxy()],
                                              image_plane_grid_stack=[lensing_image.grid_stack])
@@ -99,8 +99,8 @@ def simulate_complex_source():
                                                                   source_galaxy_3, source_galaxy_4, source_galaxy_5],
                                                  image_plane_grid_stack=[image_plane_grids])
 
-    return im.CCD.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=0.05,
-                           exposure_time=300.0, psf=psf, background_sky_level=0.1, add_noise=True)
+    return im.CCDData.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=0.05,
+                               exposure_time=300.0, psf=psf, background_sky_level=0.1, add_noise=True)
 
 # This code is doing all the the same as above (setup the regular, galaxies, tracer_without_subhalo, mapper, ec.),
 # but I have made the masks slightly larger for this source.
@@ -109,7 +109,7 @@ mask = ma.Mask.circular_annular(shape=image.shape, pixel_scale=image.pixel_scale
                                 inner_radius_arcsec=0.1, outer_radius_arcsec=3.2)
 imaging_plotters.plot_image(image=image, mask=mask)
 
-lensing_image = li.LensImage(ccd=image, mask=mask, sub_grid_size=1)
+lensing_image = li.LensData(ccd_data=image, mask=mask, sub_grid_size=1)
 tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[g.Galaxy()],
                                              image_plane_grid_stack=[lensing_image.grid_stack])
 mapper = rectangular.mapper_from_grid_stack_and_border(grid_stack=tracer.source_plane.grids[0], border=None)

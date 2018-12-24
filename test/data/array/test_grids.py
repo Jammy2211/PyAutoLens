@@ -1,12 +1,11 @@
 import numpy as np
 import pytest
 
-from autolens.data.ccd import ccd
+from autolens.data import ccd
 from autolens.data.array.util import grid_util
 from autolens.data.array.util import mapping_util, mask_util
 from autolens.data.array import mask as msk
 from autolens.data.array import grids
-from autolens.model.inversion import pixelizations as pix
 
 
 @pytest.fixture(name="mask")

@@ -1,11 +1,11 @@
-from autolens.data.ccd import ccd as im
+from autolens.data import ccd as im
 from autolens.data.array import grids
 from autolens.lens import ray_tracing
 from autolens.model.galaxy import galaxy as g
 from autolens.model.profiles import light_profiles as lp
 from autolens.model.profiles import mass_profiles as mp
 from autolens.lens.plotters import ray_tracing_plotters
-from autolens.data.ccd.plotters import imaging_plotters
+from autolens.data.plotters import imaging_plotters
 
 # In this example, we'll use the 'ccd' module (imported as 'im') to 'simulate' an regular of a strong lens made
 # using a tracer_without_subhalo. By simulate, we mean that it will appear as if we had observed it using a real telescope,
@@ -44,8 +44,8 @@ print(tracer.image_plane_image_for_simulation.shape)
 # 2) The Background Sky: Although the regular that is returned is automatically background sky subtracted.
 # 3) Poisson noise_map: Due to the background sky, lens model_galaxy and source model_galaxy Poisson photon counts.
 
-image_simulated = im.CCD.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=0.1,
-                                  exposure_time=300.0, psf=psf, background_sky_level=0.1, add_noise=True)
+image_simulated = im.CCDData.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=0.1,
+                                      exposure_time=300.0, psf=psf, background_sky_level=0.1, add_noise=True)
 
 # Lets plot the regular - we can see the regular has been blurred due to the telescope optics and noise_map has been added.
 imaging_plotters.plot_image_subplot(image=image_simulated)
@@ -53,10 +53,10 @@ imaging_plotters.plot_image_subplot(image=image_simulated)
 # Finally, lets output these files to.fits files, we'll begin to analyze them in the next tutorial!
 # Unfortunately, in a Jupyter notebook you have to manually specify the path to PyAutoLens and this tutorial.
 path = '/home/jammy/PyCharm/Projects/AutoLens/workspace/howtolens/chapter_1_introduction'
-im.output_ccd_to_fits(ccd=image_simulated, image_path=path + '/datas/regular.fits',
-                      noise_map_path=path+'/datas/noise_maps.fits',
-                      psf_path=path+'/datas/psf.fits',
-                      overwrite=True)
+im.output_ccd_data_to_fits(ccd_data=image_simulated, image_path=path + '/datas/regular.fits',
+                           noise_map_path=path+'/datas/noise_maps.fits',
+                           psf_path=path+'/datas/psf.fits',
+                           overwrite=True)
 
 # You've just completed your third tutorial, try the following:
 

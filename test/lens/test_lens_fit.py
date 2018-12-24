@@ -2,7 +2,7 @@ import numpy as np
 import pytest
 
 from autofit.core import fit_util
-from autolens.data.ccd import ccd as im
+from autolens.data import ccd as im
 from autolens.data.array import mask as msk
 from autolens.model.galaxy import galaxy as g
 from autolens.lens.util import lens_fit_util as util
@@ -27,7 +27,7 @@ def make_li_blur():
     psf = im.PSF(array=(np.array([[1.0, 1.0, 1.0],
                                      [1.0, 1.0, 1.0],
                                      [1.0, 1.0, 1.0]])), pixel_scale=1.0, renormalize=False)
-    ccd = im.CCD(image, pixel_scale=1.0, psf=psf, noise_map=np.ones((4, 4)))
+    ccd = im.CCDData(image, pixel_scale=1.0, psf=psf, noise_map=np.ones((4, 4)))
 
     mask = np.array([[True, True, True, True],
                    [True, False, False, True],
@@ -35,7 +35,7 @@ def make_li_blur():
                    [True, True, True, True]])
     mask = msk.Mask(array=mask, pixel_scale=1.0)
 
-    return li.LensImage(ccd, mask, sub_grid_size=1)
+    return li.LensData(ccd, mask, sub_grid_size=1)
 
 @pytest.fixture(name='li_manual')
 def make_li_manual():
@@ -47,14 +47,14 @@ def make_li_manual():
     psf = im.PSF(array=(np.array([[1.0, 5.0, 9.0],
                                      [2.0, 5.0, 1.0],
                                      [3.0, 4.0, 0.0]])), pixel_scale=1.0)
-    image = im.CCD(image, pixel_scale=1.0, psf=psf, noise_map=np.ones((5, 5)))
+    image = im.CCDData(image, pixel_scale=1.0, psf=psf, noise_map=np.ones((5, 5)))
     mask = msk.Mask(array=np.array([[True, True, True, True, True],
                                    [True, False, False, False, True],
                                    [True, False, False, False, True],
                                    [True, False, False, False, True],
                                    [True, True, True, True, True]]), pixel_scale=1.0)
 
-    return li.LensImage(image, mask, sub_grid_size=1)
+    return li.LensData(image, mask, sub_grid_size=1)
 
 @pytest.fixture(name='hyper')
 def make_hyper():
@@ -91,7 +91,7 @@ def make_li_hyper_no_blur(hyper):
     psf = im.PSF(array=(np.array([[0.0, 0.0, 0.0],
                                      [0.0, 1.0, 0.0],
                                      [0.0, 0.0, 0.0]])), pixel_scale=1.0, renormalize=False)
-    ccd = im.CCD(image, pixel_scale=1.0, psf=psf, noise_map=np.ones((4, 4)))
+    ccd = im.CCDData(image, pixel_scale=1.0, psf=psf, noise_map=np.ones((4, 4)))
 
     mask = np.array([[True, True, True, True],
                    [True, False, False, True],
@@ -99,9 +99,9 @@ def make_li_hyper_no_blur(hyper):
                    [True, True, True, True]])
     mask = msk.Mask(array=mask, pixel_scale=1.0)
 
-    return li.LensHyperImage(ccd, mask, hyper_model_image=hyper.hyper_model_image,
-                        hyper_galaxy_images=hyper.hyper_galaxy_images,
-                        hyper_minimum_values=hyper.hyper_minimum_values, sub_grid_size=1)
+    return li.LensHyperData(ccd, mask, hyper_model_image=hyper.hyper_model_image,
+                            hyper_galaxy_images=hyper.hyper_galaxy_images,
+                            hyper_minimum_values=hyper.hyper_minimum_values, sub_grid_size=1)
 
 @pytest.fixture(name='li_hyper_manual')
 def make_li_hyper_manual(hyper):
@@ -113,16 +113,16 @@ def make_li_hyper_manual(hyper):
     psf = im.PSF(array=(np.array([[1.0, 5.0, 9.0],
                                      [2.0, 5.0, 1.0],
                                      [3.0, 4.0, 0.0]])), pixel_scale=1.0)
-    ccd = im.CCD(image, pixel_scale=1.0, psf=psf, noise_map=np.ones((5, 5)))
+    ccd = im.CCDData(image, pixel_scale=1.0, psf=psf, noise_map=np.ones((5, 5)))
     mask = msk.Mask(array=np.array([[True, True, True, True, True],
                                    [True, False, False, False, True],
                                    [True, False, False, False, True],
                                    [True, False, False, False, True],
                                    [True, True, True, True, True]]), pixel_scale=1.0)
 
-    return li.LensHyperImage(ccd, mask, hyper_model_image=hyper.hyper_model_image,
-                        hyper_galaxy_images=hyper.hyper_galaxy_images,
-                        hyper_minimum_values=hyper.hyper_minimum_values, sub_grid_size=1)
+    return li.LensHyperData(ccd, mask, hyper_model_image=hyper.hyper_model_image,
+                            hyper_galaxy_images=hyper.hyper_galaxy_images,
+                            hyper_minimum_values=hyper.hyper_minimum_values, sub_grid_size=1)
 
 
 class TestAbstractLensFit:
@@ -204,8 +204,8 @@ class TestAbstractLensInversionFit:
             psf = im.PSF(array=np.array([[0.0, 0.0, 0.0],
                                             [0.0, 1.0, 0.0],
                                             [0.0, 0.0, 0.0]]), pixel_scale=1.0)
-            ccd = im.CCD(image=image, pixel_scale=1.0, psf=psf, noise_map=np.ones((5, 5)))
-            lens_image = li.LensImage(ccd=ccd, mask=mask, sub_grid_size=2)
+            ccd = im.CCDData(image=image, pixel_scale=1.0, psf=psf, noise_map=np.ones((5, 5)))
+            lens_image = li.LensData(ccd_data=ccd, mask=mask, sub_grid_size=2)
 
             galaxy_pix = g.Galaxy(pixelization=pixelizations.Rectangular(shape=(3, 3)),
                                   regularization=regularization.Constant(coefficients=(1.0,)))
@@ -275,12 +275,12 @@ class TestLensProfileFit:
                                              [0.0, 1.0, 0.0],
                                              [0.0, 0.0, 0.0]])), pixel_scale=1.0)
 
-            ccd = im.CCD(image=np.ones((3, 3)), pixel_scale=1.0, psf=psf, noise_map=np.ones((3, 3)))
+            ccd = im.CCDData(image=np.ones((3, 3)), pixel_scale=1.0, psf=psf, noise_map=np.ones((3, 3)))
 
             mask = msk.Mask(array=np.array([[True, True, True],
                                            [True, False, True],
                                            [True, True, True]]), pixel_scale=1.0)
-            lens_image = li.LensImage(ccd=ccd, mask=mask, sub_grid_size=1)
+            lens_image = li.LensData(ccd_data=ccd, mask=mask, sub_grid_size=1)
 
             g0 = g.Galaxy(light_profile=MockLightProfile(value=1.0))
             tracer = ray_tracing.TracerImagePlane(lens_galaxies=[g0], image_plane_grid_stack=lens_image.grid_stack)
@@ -294,14 +294,14 @@ class TestLensProfileFit:
                                              [0.0, 1.0, 0.0],
                                              [0.0, 0.0, 0.0]])), pixel_scale=1.0)
 
-            ccd = im.CCD(5.0 * np.ones((3, 4)), pixel_scale=1.0, psf=psf, noise_map=np.ones((3, 4)))
+            ccd = im.CCDData(5.0 * np.ones((3, 4)), pixel_scale=1.0, psf=psf, noise_map=np.ones((3, 4)))
             ccd.image[1,2]  = 4.0
 
             mask = msk.Mask(array=np.array([[True, True, True, True],
                                            [True, False, False, True],
                                            [True, True, True, True]]), pixel_scale=1.0)
 
-            lens_image = li.LensImage(ccd=ccd, mask=mask, sub_grid_size=1)
+            lens_image = li.LensData(ccd_data=ccd, mask=mask, sub_grid_size=1)
 
             # Setup as a ray trace instance, using a light profile for the lens
 

@@ -3,10 +3,10 @@ from autofit.core import non_linear
 from autofit.core import model_mapper
 from autolens.pipeline import phase as ph
 from autolens.model.galaxy import galaxy_model as gm
-from autolens.data.ccd import ccd as im
+from autolens.data import ccd as im
 from autolens.model.profiles import light_profiles as lp
 from autolens.model.profiles import mass_profiles as mp
-from autolens.data.ccd.plotters import imaging_plotters
+from autolens.data.plotters import imaging_plotters
 from autolens.lens.plotters import lens_fit_plotters
 
 import os
@@ -105,8 +105,8 @@ def simulate():
     tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
                                                  image_plane_grid_stack=[image_plane_grids])
 
-    image_simulated = im.CCD.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=0.1,
-                                      exposure_time=300.0, psf=psf, background_sky_level=0.1, add_noise=True)
+    image_simulated = im.CCDData.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=0.1,
+                                          exposure_time=300.0, psf=psf, background_sky_level=0.1, add_noise=True)
 
     return image_simulated
 

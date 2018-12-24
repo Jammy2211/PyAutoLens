@@ -1,8 +1,5 @@
-import numpy as np
-
 from autolens.data.array import grids
-from autolens.data.ccd import ccd as im
-from autolens.data.ccd import convolution
+from autolens.data import convolution
 from autolens.data.array import mask as msk
 from autolens.model.inversion import convolution as inversion_convolution
 
@@ -63,8 +60,8 @@ class LensImageStack(object):
 
         self.convolvers_image = list(map(lambda psf, mask :
                                 convolution.ConvolverImage(mask=mask,
-                                blurring_mask=mask.blurring_mask_for_psf_shape(psf_shape=image_psf_shape),
-                                psf=psf.resized_scaled_array_from_array(new_shape=image_psf_shape)),
+                                                           blurring_mask=mask.blurring_mask_for_psf_shape(psf_shape=image_psf_shape),
+                                                           psf=psf.resized_scaled_array_from_array(new_shape=image_psf_shape)),
                                          self.psfs, self.masks))
 
         if mapping_matrix_psf_shape is None:

@@ -1,11 +1,11 @@
-from autolens.data.ccd import ccd as im
+from autolens.data import ccd as im
 from autolens.data.array import mask as ma
 from autolens.lens import ray_tracing, lens_fit
 from autolens.model.galaxy import galaxy as g
 from autolens.lens import lens_image as li
 from autolens.model.profiles import light_profiles as lp
 from autolens.model.profiles import mass_profiles as mp
-from autolens.data.ccd.plotters import imaging_plotters
+from autolens.data.plotters import imaging_plotters
 from autolens.lens.plotters import ray_tracing_plotters
 from autolens.lens.plotters import lens_fit_plotters
 
@@ -15,9 +15,9 @@ from autolens.lens.plotters import lens_fit_plotters
 # First, we load the regular-datas we simualted in the previous tutorial.
 path = 'path/to/AutoLens/howtolens/1_introduction' # Unfortunately, in a Jupyter notebook you have to manually specify the path to PyAutoLens and this tutorial.
 path = '/home/jammy/PyCharm/Projects/AutoLens/workspace/howtolens/chapter_1_introduction'
-image = im.load_ccd_from_fits(image_path=path + '/datas/regular.fits',
-                              noise_map_path=path+'/datas/noise_maps.fits',
-                              psf_path=path + '/datas/psf.fits', pixel_scale=0.1)
+image = im.load_ccd_data_from_fits(image_path=path + '/datas/regular.fits',
+                                   noise_map_path=path+'/datas/noise_maps.fits',
+                                   psf_path=path + '/datas/psf.fits', pixel_scale=0.1)
 
 # To fit_normal an regular, we first specify a masks. A masks describes the sections of the regular that we fit_normal.
 
@@ -48,7 +48,7 @@ imaging_plotters.plot_image(image=image, mask=mask)
 
 # 4) The regular's grid_stacks: so the tracer_without_subhalo's regular-plane regular is generated on the same (masked) grid as the regular-datas.
 
-lensing_image = li.LensImage(ccd=image, mask=mask)
+lensing_image = li.LensData(ccd_data=image, mask=mask)
 imaging_plotters.plot_image_subplot(lensing_image.image)
 
 # By printing its attribute, we can see that it does indeed contain the regular, masks, psf and so on
