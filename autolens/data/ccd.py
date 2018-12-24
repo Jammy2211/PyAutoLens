@@ -54,6 +54,10 @@ class CCDData(object):
         self.background_sky_map = background_sky_map
         self.origin = (0.0, 0.0)
 
+    @property
+    def shape(self):
+        return self.image.shape
+
     @classmethod
     def simulate(cls, array, pixel_scale, exposure_time, psf=None, background_sky_level=None,
                  add_noise=False, seed=-1):
