@@ -241,11 +241,31 @@ class AbstractPhase(object):
 
     class Result(non_linear.Result):
 
-        def __init__(self, constant, figure_of_merit, variable):
+        def __init__(self, constant, figure_of_merit, variable, analysis, optimizer):
             """
             The result of a phase
             """
             super(Phase.Result, self).__init__(constant=constant, figure_of_merit=figure_of_merit, variable=variable)
+
+            self.analysis = analysis
+            self.optimizer = optimizer
+
+        @property
+        def most_likely_tracer(self):
+            return self.analysis.tracer_for_instance(instance=self.constant)
+
+        @property
+        def most_likely_padded_tracer(self):
+            return self.analysis.padded_tracer_for_instance(instance=self.constant)
+
+        @property
+        def most_likely_fit(self):
+            return self.analysis.fit_for_tracers(tracer=self.most_likely_tracer,
+                                                 padded_tracer=self.most_likely_padded_tracer)
+
+        @property
+        def unmasked_model_image(self):
+            return self.most_likely_fit.unmasked_model_image
 
 
 class Phase(AbstractPhase):
@@ -285,7 +305,8 @@ class PhasePositions(AbstractPhase):
         """
         analysis = self.make_analysis(positions=positions, pixel_scale=pixel_scale, previous_results=previous_results)
         result = self.optimizer.fit(analysis)
-        return self.__class__.Result(result.constant, result.figure_of_merit, result.variable)
+        return self.__class__.Result(constant=result.constant, figure_of_merit=result.figure_of_merit,
+                                     variable=result.variable, analysis=analysis, optimizer=self.optimizer)
 
     def make_analysis(self, positions, pixel_scale, previous_results=None):
         """
@@ -423,7 +444,8 @@ class PhaseImaging(Phase):
         result = self.optimizer.fit(analysis)
         analysis.visualize(instance=result.constant, suffix=None, during_analysis=False)
 
-        return self.__class__.Result(result.constant, result.figure_of_merit, result.variable, analysis)
+        return self.__class__.Result(constant=result.constant, figure_of_merit=result.figure_of_merit,
+                                     variable=result.variable, analysis=analysis, optimizer=self.optimizer)
 
     def make_analysis(self, data, previous_results=None, mask=None):
         """
@@ -532,18 +554,12 @@ class PhaseImaging(Phase):
 
     class Result(Phase.Result):
 
-        def __init__(self, constant, figure_of_merit, variable, analysis):
+        def __init__(self, constant, figure_of_merit, variable, analysis, optimizer):
             """
             The result of a phase
             """
             super(PhaseImaging.Result, self).__init__(constant=constant, figure_of_merit=figure_of_merit,
-                                                      variable=variable)
-
-            tracer = analysis.tracer_for_instance(constant)
-            padded_tracer = analysis.padded_tracer_for_instance(constant)
-            fit = analysis.fit_for_tracers(tracer=tracer, padded_tracer=padded_tracer)
-
-            self.unmasked_model_image = fit.unmasked_model_image
+                                                      variable=variable, analysis=analysis, optimizer=optimizer)
 
 
 class LensPlanePhase(PhaseImaging):
@@ -591,13 +607,13 @@ class LensPlanePhase(PhaseImaging):
 
     class Result(PhaseImaging.Result):
 
-        def __init__(self, constant, figure_of_merit, variable, analysis):
+        def __init__(self, constant, figure_of_merit, variable, analysis, optimizer):
             """
             The result of a phase
             """
 
             super(LensPlanePhase.Result, self).__init__(constant=constant, figure_of_merit=figure_of_merit,
-                                                        variable=variable, analysis=analysis)
+                                                        variable=variable, analysis=analysis, optimizer=optimizer)
 
 
 class LensSourcePlanePhase(PhaseImaging):
@@ -778,7 +794,8 @@ class GalaxyFitPhase(AbstractPhase):
         analysis = self.make_analysis(array=array, noise_map=noise_map, previous_results=previous_results, mask=mask)
         result = self.optimizer.fit(analysis)
 
-        return self.__class__.Result(result.constant, result.figure_of_merit, result.variable, analysis)
+        return self.__class__.Result(constant=result.constant, figure_of_merit=result.figure_of_merit,
+                                     variable=result.variable, analysis=analysis, optimizer=self.optimizer)
 
     def make_analysis(self, array, noise_map, previous_results=None, mask=None):
         """
@@ -920,13 +937,13 @@ class GalaxyFitPhase(AbstractPhase):
 
     class Result(Phase.Result):
 
-        def __init__(self, constant, figure_of_merit, variable, analysis):
+        def __init__(self, constant, figure_of_merit, variable, analysis, optimizer):
             """
             The result of a phase
             """
 
             super(GalaxyFitPhase.Result, self).__init__(constant=constant, figure_of_merit=figure_of_merit,
-                                                        variable=variable)
+                                                        variable=variable, analysis=analysis, optimizer=optimizer)
 
 
 class SensitivityPhase(PhaseImaging):

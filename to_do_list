@@ -3,16 +3,15 @@ Hey, welcome to my PyAutoLens to-do. This should give you a sense of what we're 
 Let me know if you think anything is missing, or should be pushed up the to-do list ;)
 
 1) Finish fitting refactor tutorials.
-2) Lognormal prior for intensity
-3) Write MultiNest constant efficiency mode howtolens
-4) Write Adaptive Grid howtolens.
-5) Power-law Analytic Deflections
-6) Magnification + Caustic + Critical curves
-7) CCD loading sanity checks
-8) Interpolation Scheme for fast deflection angles
-9) Implement faster numerical integration (Ashley Kelly)
-10) SLACS Database
-11) Parallelize MultiNest
+2) Write MultiNest constant efficiency mode howtolens
+3) Write Adaptive Grid howtolens.
+4) Power-law Analytic Deflections
+5) Magnification + Caustic + Critical curves
+6) CCD loading sanity checks
+7) Interpolation Scheme for fast deflection angles
+8) Implement faster numerical integration (Ashley Kelly)
+9) SLACS Database (Cristoph)
+10) Parallelize MultiNest
 
 Jan) Automated Prior Linking
 Jan) Pixelization which Adapts to source's light (not magnification).

@@ -47,11 +47,13 @@ class MockAnalysis(object):
 
 
 class MockResults(object):
-    def __init__(self, model_image=None, galaxy_images=(), constant=None):
+    def __init__(self, model_image=None, galaxy_images=(), constant=None, analysis=None, optimizer=None):
         self.model_image = model_image
         self.galaxy_images = galaxy_images
         self.constant = constant or mm.ModelInstance()
         self.variable = mm.ModelMapper()
+        self.analysis = analysis
+        self.optimizer = optimizer
 
 
 class NLO(non_linear.NonLinearOptimizer):
@@ -508,7 +510,54 @@ class TestResult(object):
     # result.image_ == np.array([2.0])).all()
 
     def test_results(self):
+
         results = ph.ResultsCollection([1, 2, 3])
         assert results == [1, 2, 3]
         assert results.last == 3
         assert results.first == 1
+
+    def test__results_of_phase_are_available_as_properties(self, ccd_data):
+
+        clean_images()
+
+        phase = ph.LensPlanePhase(optimizer_class=NLO,
+                                  lens_galaxies=[g.Galaxy(light=lp.EllipticalSersic(intensity=1.0))],
+                                  phase_name='test_phase')
+
+        result = phase.run(data=ccd_data)
+
+        result.most_likely_tracer
+        result.most_likely_padded_tracer
+        result.most_likely_fit
+        result.unmasked_model_image
+
+    def test__fit_figure_of_merit__matches_correct_fit_given_galaxy_profiles(self, ccd_data):
+
+        lens_galaxy = g.Galaxy(light=lp.EllipticalSersic(intensity=0.1))
+        source_galaxy = g.Galaxy(pixelization=pix.Rectangular(shape=(4,4)),
+                                 regularization=reg.Constant(coefficients=(1.0,)))
+
+        phase = ph.LensPlanePhase(lens_galaxies=[lens_galaxy], cosmology=cosmo.FLRW, phase_name='test_phase')
+        analysis = phase.make_analysis(data=ccd_data)
+        instance = phase.constant
+        fit_figure_of_merit = analysis.fit(instance=instance)
+
+        mask = phase.mask_function(image=ccd_data.image)
+        lens_data = li.LensData(ccd_data=ccd_data, mask=mask)
+        tracer = analysis.tracer_for_instance(instance=instance)
+        fit = lens_fit.LensProfileFit(lens_data=lens_data, tracer=tracer)
+
+        assert fit.likelihood == fit_figure_of_merit
+
+        phase = ph.LensSourcePlanePhase(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
+                                        cosmology=cosmo.FLRW, phase_name='test_phase')
+        analysis = phase.make_analysis(data=ccd_data)
+        instance = phase.constant
+        fit_figure_of_merit = analysis.fit(instance=instance)
+
+        mask = phase.mask_function(image=ccd_data.image)
+        lens_data = li.LensData(ccd_data=ccd_data, mask=mask)
+        tracer = analysis.tracer_for_instance(instance=instance)
+        fit = lens_fit.LensProfileInversionFit(lens_data=lens_data, tracer=tracer)
+
+        assert fit.evidence == fit_figure_of_merit
