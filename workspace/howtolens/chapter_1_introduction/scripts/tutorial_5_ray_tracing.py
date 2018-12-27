@@ -11,8 +11,8 @@ from autolens.lens.plotters import ray_tracing_plotters
 # 'ray-tracing module to do it a lot faster!
 
 # Lets use the same grid as always, you should be used to seeing this now!
-image_plane_grids = grids.GridStack.from_shape_and_pixel_scale(shape=(100, 100), pixel_scale=0.05,
-                                                               sub_grid_size=2)
+image_plane_grids = grids.GridStack.from_shape_pixel_scale_and_sub_grid_size(shape=(100, 100), pixel_scale=0.05,
+                                                                             sub_grid_size=2)
 
 # Unlike the previous tutorial, we'll offset our lens model_galaxy slightly from the source, to get a slightly ray-tracing
 # paths.

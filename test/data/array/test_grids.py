@@ -903,8 +903,8 @@ class TestDataGridStack(object):
         grid_stack_mask = grids.GridStack.grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=ma, sub_grid_size=2,
                                                                                                 psf_shape=(1, 1))
 
-        grid_stack_shape = grids.GridStack.from_shape_and_pixel_scale(shape=(3, 3), pixel_scale=2.0,
-                                                                           sub_grid_size=2)
+        grid_stack_shape = grids.GridStack.from_shape_pixel_scale_and_sub_grid_size(shape=(3, 3), pixel_scale=2.0,
+                                                                                    sub_grid_size=2)
 
         assert (grid_stack_mask.regular == grid_stack_shape.regular).all()
         assert (grid_stack_mask.sub == grid_stack_shape.sub).all()

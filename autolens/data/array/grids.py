@@ -68,7 +68,7 @@ class GridStack(object):
         return GridStack(regular_grid, sub_grid, blurring_grid)
 
     @classmethod
-    def from_shape_and_pixel_scale(cls, shape, pixel_scale, sub_grid_size=2):
+    def from_shape_pixel_scale_and_sub_grid_size(cls, shape, pixel_scale, sub_grid_size=2):
         """Setup a grid-stack of grid_stack from a 2D array shape, a pixel scale and a sub-grid size.
         
         This grid corresponds to a fully unmasked 2D array.

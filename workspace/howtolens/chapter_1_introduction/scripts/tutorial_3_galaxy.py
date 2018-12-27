@@ -11,8 +11,8 @@ from autolens.model.galaxy.plotters import galaxy_plotters
 # 2) Galaxies can take multiple mass-profiles which each contribute to a deflection angle map.
 
 # Lets use an identical grid to the previous example.
-data_grids = grids.GridStack.from_shape_and_pixel_scale(shape=(100, 100), pixel_scale=0.05,
-                                                        sub_grid_size=2)
+data_grids = grids.GridStack.from_shape_pixel_scale_and_sub_grid_size(shape=(100, 100), pixel_scale=0.05,
+                                                                      sub_grid_size=2)
 
 # We make our source model_galaxy in the same way, passing it the same Sersic light profile again.
 sersic_light_profile = light_profiles.EllipticalSersic(centre=(0.0, 0.0), axis_ratio=0.8, phi=45.0,

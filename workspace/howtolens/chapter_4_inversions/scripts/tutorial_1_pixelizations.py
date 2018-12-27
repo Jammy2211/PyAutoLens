@@ -9,8 +9,8 @@ from autolens.model.inversion.plotters import mapper_plotters
 # apply to an regular-plane).
 #
 # Lets setup a lensed source-plane grid, using a lens model_galaxy and tracer_normal.
-image_plane_grids = grids.GridStack.from_shape_and_pixel_scale(shape=(100, 100), pixel_scale=0.05,
-                                                               sub_grid_size=2)
+image_plane_grids = grids.GridStack.from_shape_pixel_scale_and_sub_grid_size(shape=(100, 100), pixel_scale=0.05,
+                                                                             sub_grid_size=2)
 lens_galaxy = g.Galaxy(mass=mp.EllipticalIsothermal(centre=(0.0, 0.0), axis_ratio=0.8, phi=90.0, einstein_radius=1.6))
 
 # (Our source model_galaxy doesn't have a light profile from here on, as we're reconstructing its light using a pixelization).

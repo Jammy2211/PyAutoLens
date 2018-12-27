@@ -22,7 +22,7 @@ def simulate_intensities(pixel_scale, galaxy):
 
     image_shape = (150, 150)
 
-    grid_stack = grids.GridStack.from_shape_and_pixel_scale(shape=image_shape, pixel_scale=pixel_scale)
+    grid_stack = grids.GridStack.from_shape_pixel_scale_and_sub_grid_size(shape=image_shape, pixel_scale=pixel_scale)
 
     intensities = galaxy.intensities_from_grid(grid=grid_stack.regular)
     intensities = mapping_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(array_1d=intensities,
