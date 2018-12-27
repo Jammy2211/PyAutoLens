@@ -38,8 +38,8 @@ image = simulate()
 imaging_plotters.plot_image_subplot(image=image)
 
 # Lets begin by setting up our grid_stacks (using the regular we loaded above).
-image_plane_grids = grids.GridStack.from_shape_and_pixel_scale(shape=image.shape, pixel_scale=image.pixel_scale,
-                                                               sub_grid_size=2)
+image_plane_grids = grids.GridStack.from_shape_pixel_scale_and_sub_grid_size(shape=image.shape, pixel_scale=image.pixel_scale,
+                                                                             sub_grid_size=2)
 
 # Our tracer will use the same lens model_galaxy and source model_galaxy that we used to simulate the regular (although, becuase
 # we're modeling the source with a pixel-grid, we don't need to supply its light profile).

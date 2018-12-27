@@ -40,7 +40,7 @@ def test_galaxy_mass():
 
 @pytest.fixture(name='grid_stack')
 def test_grids():
-    return grids.GridStack.from_shape_and_pixel_scale(shape=(100, 100), pixel_scale=0.05, sub_grid_size=2)
+    return grids.GridStack.from_shape_pixel_scale_and_sub_grid_size(shape=(100, 100), pixel_scale=0.05, sub_grid_size=2)
 
 
 def test__intensities_is_output(galaxy_light, grid_stack, galaxy_plotter_path):

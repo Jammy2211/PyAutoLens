@@ -48,8 +48,8 @@ from autolens.lens.plotters import plane_plotters
 # We still need a grid - our grid is effectively the coordinates we 'trace' from the regular-plane to the source-plane
 # in the lensing configuration above. Our grid is no longer just ouor 'image_grid', but our regular-plane grid, so
 # lets name as such.
-image_plane_grids = grids.GridStack.from_shape_and_pixel_scale(shape=(100, 100), pixel_scale=0.05,
-                                                               sub_grid_size=2)
+image_plane_grids = grids.GridStack.from_shape_pixel_scale_and_sub_grid_size(shape=(100, 100), pixel_scale=0.05,
+                                                                             sub_grid_size=2)
 
 # Whereas before we called our model_galaxy's things like 'galaxy_with_light_profile', lets now refer to them by their role
 # in lensing, e.g. 'lens_galaxy' and 'source_galaxy'.
