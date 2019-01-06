@@ -741,7 +741,7 @@ class TestTracerImageSourcePlanes(object):
                           mass_profile=mp.SphericalIsothermal(einstein_radius=1.0))
 
             image_plane = pl.Plane(galaxies=[g0], grid_stack=grid_stack, compute_deflections=True)
-            source_plane_grid_stack = image_plane.trace_grids_to_next_plane()
+            source_plane_grid_stack = image_plane.trace_grid_stack_to_next_plane()
             source_plane = pl.Plane(galaxies=[g0], grid_stack=source_plane_grid_stack, compute_deflections=False)
 
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g0],

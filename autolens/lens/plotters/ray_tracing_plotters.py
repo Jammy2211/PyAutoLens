@@ -28,9 +28,12 @@ def plot_ray_tracing_subplot(tracer, mask=None, positions=None,
         in the python interpreter window.
     """
 
-    plot_ray_tracing_as_subplot = conf.instance.general.get('output', 'plot_ray_tracing_as_subplot', bool)
+    if not ignore_config:
+        plot_ray_tracing_as_subplot = conf.instance.general.get('output', 'plot_ray_tracing_as_subplot', bool)
+    else:
+        plot_ray_tracing_as_subplot = True
 
-    if plot_ray_tracing_as_subplot or ignore_config is True:
+    if plot_ray_tracing_as_subplot:
 
         rows, columns, figsize_tool = plotter_util.get_subplot_rows_columns_figsize(number_subplots=6)
 

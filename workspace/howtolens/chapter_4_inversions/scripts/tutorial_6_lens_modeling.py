@@ -48,7 +48,7 @@ def perform_fit_with_lens_and_source_galaxy(lens_galaxy, source_galaxy):
     lensing_image = li.LensData(ccd_data=image, mask=mask)
     tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
                                                  image_plane_grid_stack=[lensing_image.grid_stack], border=[lensing_image.border])
-    return lens_fit.fit_lens_image_with_tracer(lens_image=lensing_image, tracer=tracer)
+    return lens_fit.fit_lens_data_with_tracer(lens_image=lensing_image, tracer=tracer)
 
 
 # This lens model_galaxy has the wrong mass-model -  I've reduced its Einstein Radius from 1.6 to 0.8.
@@ -141,7 +141,7 @@ tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source
 
 # This fit_normal subtracts the lens model_galaxy's light from the regular and fits the resulting source-only regular with the inversion.
 # When we plot the regular, a new panel on the sub-plot appears showing the model regular of the lens model_galaxy.
-fit = lens_fit.fit_lens_image_with_tracer(lens_image=lensing_image, tracer=tracer)
+fit = lens_fit.fit_lens_data_with_tracer(lens_image=lensing_image, tracer=tracer)
 lens_fit_plotters.plot_fit_subplot(fit=fit)
 
 # Of course if the lens subtraction is rubbish, so is our fit_normal, so we can be sure that our lens model wants to fit_normal the
@@ -152,7 +152,7 @@ lens_galaxy = g.Galaxy(light=lp.SphericalSersic(centre=(0.0, 0.0), intensity=0.3
                                                     einstein_radius=1.6))
 tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
                                              image_plane_grid_stack=[lensing_image.grid_stack], border=lensing_image.border)
-fit = lens_fit.fit_lens_image_with_tracer(lens_image=lensing_image, tracer=tracer)
+fit = lens_fit.fit_lens_data_with_tracer(lens_image=lensing_image, tracer=tracer)
 lens_fit_plotters.plot_fit_subplot(fit=fit)
 
 # And with that, we're done. We've pretty much covered everything inversion related, so in the last tutorial I'll set

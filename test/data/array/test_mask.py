@@ -1,3 +1,5 @@
+import shutil
+import os
 import numpy as np
 import pytest
 
@@ -5,6 +7,7 @@ from autolens.data.array.util import mask_util as util
 from autolens.data.array.util import mapping_util
 from autolens.data.array import mask as msk
 
+test_data_dir = "{}/../../test_files/array/".format(os.path.dirname(os.path.realpath(__file__)))
 
 class TestMask(object):
 
@@ -194,3 +197,30 @@ class TestMask(object):
         mask = msk.Mask(mask, pixel_scale=3.0)
 
         assert mask.border_pixels == pytest.approx(border_pixels_util, 1e-4)
+
+
+class TestParse:
+
+    def test__load_mask_from_fits__loads_mask(self):
+
+        mask = msk.load_mask_from_fits(mask_path=test_data_dir + '3x3_ones.fits', pixel_scale=0.1)
+
+        assert (mask == np.ones((3,3))).all()
+        assert mask.pixel_scale == 0.1
+
+    def test__output_mask_to_fits__outputs_mask(self):
+
+        mask = msk.load_mask_from_fits(mask_path=test_data_dir + '3x3_ones.fits', pixel_scale=0.1)
+
+        output_data_dir = "{}/../../test_files/array/output_test/".format(os.path.dirname(os.path.realpath(__file__)))
+        if os.path.exists(output_data_dir):
+            shutil.rmtree(output_data_dir)
+
+        os.makedirs(output_data_dir)
+
+        msk.output_mask_to_fits(mask=mask, mask_path=output_data_dir + 'mask.fits')
+
+        mask = msk.load_mask_from_fits(mask_path=output_data_dir + 'mask.fits', pixel_scale=0.1)
+
+        assert (mask == np.ones((3,3))).all()
+        assert mask.pixel_scale == 0.1

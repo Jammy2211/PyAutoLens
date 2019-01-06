@@ -252,3 +252,10 @@ class Mask(scaled_array.ScaledSquarePixelArray):
         an annulus mask).
         """
         return mask_util.border_pixels_from_mask(self).astype('int')
+
+
+def load_mask_from_fits(mask_path, pixel_scale, mask_hdu=0):
+    return Mask.from_fits_with_pixel_scale(file_path=mask_path, hdu=mask_hdu, pixel_scale=pixel_scale)
+
+def output_mask_to_fits(mask, mask_path, overwrite=False):
+    array_util.numpy_array_to_fits(array=mask, path=mask_path, overwrite=overwrite)

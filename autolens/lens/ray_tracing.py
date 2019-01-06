@@ -338,7 +338,7 @@ class TracerImageSourcePlanes(Tracer):
         image_plane = pl.Plane(galaxies=lens_galaxies, grid_stack=image_plane_grid_stack, border=border,
                                compute_deflections=True, cosmology=cosmology)
 
-        source_plane_grid_stack = image_plane.trace_grids_to_next_plane()
+        source_plane_grid_stack = image_plane.trace_grid_stack_to_next_plane()
 
         source_plane = pl.Plane(galaxies=source_galaxies, grid_stack=source_plane_grid_stack, border=border,
                                 compute_deflections=False, cosmology=cosmology)

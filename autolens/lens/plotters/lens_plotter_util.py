@@ -4,7 +4,7 @@ def plot_image(fit, mask=None, positions=None, image_plane_pix_grid=None, as_sub
                units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
                cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
                cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
-               title='CCD', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
+               title='Image', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
                grid_pointsize=1, mask_pointsize=10, position_pointsize=10,
                output_path=None, output_format='show', output_filename='fit_image'):
     """Plot the image of a lens fit.
@@ -62,7 +62,7 @@ def plot_model_data(fit, mask=None, positions=None, as_subplot=False,
                     units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
                     cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
                     cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
-                    title='Fit Model CCD', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
+                    title='Fit Model Image', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
                     mask_pointsize=10, position_pointsize=10,
                     output_path=None, output_format='show', output_filename='fit_model_image'):
     """Plot the model image of a fit.
@@ -90,7 +90,7 @@ def plot_model_image_of_plane(fit, plane_index=0, mask=None, positions=None, as_
                               units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
                               cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
                               cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
-                              title='Fit Model CCD', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
+                              title='Fit Model Image', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
                               mask_pointsize=10, position_pointsize=10,
                               output_path=None, output_format='show', output_filename='fit_model_image_of_plane'):
     """Plot the model image of a specific plane of a lens fit.

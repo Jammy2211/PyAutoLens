@@ -30,7 +30,10 @@ def plot_ccd_subplot(ccd_data, plot_origin=True, mask=None, should_plot_border=F
         config file is ignored.
     """
 
-    plot_data_as_subplot = conf.instance.general.get('output', 'plot_data_as_subplot', bool)
+    if not ignore_config:
+        plot_data_as_subplot = conf.instance.general.get('output', 'plot_data_as_subplot', bool)
+    else:
+        plot_data_as_subplot = True
 
     if plot_data_as_subplot or ignore_config:
 
@@ -128,7 +131,7 @@ def plot_image(ccd_data, plot_origin=True, mask=None, should_plot_border=False, 
                units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
                cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
                cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
-               title='Observed CCD', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
+               title='Image', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
                mask_pointsize=10, position_pointsize=30, grid_pointsize=1,
                output_path=None, output_format='show', output_filename='image'):
     """Plot the observed data of the ccd data.
