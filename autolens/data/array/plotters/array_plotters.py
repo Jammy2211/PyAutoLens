@@ -307,6 +307,7 @@ def set_colorbar(cb_ticksize, cb_fraction, cb_pad):
     cb = plt.colorbar(fraction=cb_fraction, pad=cb_pad)
     cb.ax.tick_params(labelsize=cb_ticksize)
 
+
 def convert_grid_units(array, grid_arc_seconds, units, kpc_per_arcsec):
     """Convert the grid from its input units (arc-seconds) to the input unit (e.g. retain arc-seconds) or convert to \
     another set of units (pixels or kilo parsecs).

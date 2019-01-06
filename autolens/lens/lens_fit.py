@@ -8,7 +8,7 @@ from autolens.lens import lens_data as li
 from autolens.lens import ray_tracing
 
 
-def fit_lens_image_with_tracer(lens_data, tracer, padded_tracer=None):
+def fit_lens_data_with_tracer(lens_data, tracer, padded_tracer=None):
     """Fit a lens image with a model tracer, automatically determining the type of fit based on the \
     properties of the galaxies in the tracer.
 

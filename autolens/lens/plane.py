@@ -268,7 +268,7 @@ class Plane(AbstractPlane):
             self.deflection_stack = None
         self.cosmology = cosmology
 
-    def trace_grids_to_next_plane(self):
+    def trace_grid_stack_to_next_plane(self):
         """Trace this plane's grid_stacks to the next plane, using its deflection angles."""
 
         def minus(grid, deflections):

@@ -133,7 +133,14 @@ class CCDData(object):
         array_counts = np.multiply(array, exposure_time_map)
         poisson_noise_map = np.divide(np.sqrt(np.abs(array_counts)), exposure_time_map)
 
+        array = ScaledSquarePixelArray(array=array, pixel_scale=pixel_scale)
         noise_map = NoiseMap(array=noise_map, pixel_scale=pixel_scale)
+
+        if background_noise_map is not None:
+            background_noise_map = NoiseMap(array=background_noise_map, pixel_scale=pixel_scale)
+
+        if poisson_noise_map is not None:
+            poisson_noise_map = PoissonNoiseMap(array=poisson_noise_map, pixel_scale=pixel_scale)
 
         return CCDData(array, pixel_scale=pixel_scale, psf=psf, noise_map=noise_map,
                        background_noise_map=background_noise_map, poisson_noise_map=poisson_noise_map,

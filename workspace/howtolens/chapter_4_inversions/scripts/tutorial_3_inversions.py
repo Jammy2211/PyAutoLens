@@ -174,7 +174,7 @@ tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source
 
 # Then, like before, we call on the fitting module to perform the fit_normal to the lensing regular. Indeed, we see
 # some pretty good looking residual_map - we're certainly fitting the lensed source accurately!
-fit = lens_fit.fit_lens_image_with_tracer(lens_image=lensing_image, tracer=tracer)
+fit = lens_fit.fit_lens_data_with_tracer(lens_image=lensing_image, tracer=tracer)
 lens_fit_plotters.plot_fit_subplot(fit=fit)
 
 # And, we're done, here are a few questions to get you thinking about inversions:

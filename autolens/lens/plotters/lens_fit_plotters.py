@@ -14,7 +14,11 @@ def plot_fit_subplot(fit, should_plot_mask=True, positions=None, should_plot_ima
                      titlesize=10, xlabelsize=10, ylabelsize=10, xyticksize=10,
                      mask_pointsize=10, position_pointsize=10, grid_pointsize=1,
                      output_path=None, output_filename='lens_fit', output_format='show', ignore_config=True):
-    plot_lens_fit_as_subplot = conf.instance.general.get('output', 'plot_lens_fit_as_subplot', bool)
+
+    if not ignore_config:
+        plot_lens_fit_as_subplot = conf.instance.general.get('output', 'plot_lens_fit_as_subplot', bool)
+    else:
+        plot_lens_fit_as_subplot = True
 
     if not plot_lens_fit_as_subplot and ignore_config is False:
         return

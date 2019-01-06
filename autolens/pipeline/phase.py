@@ -533,8 +533,8 @@ class PhaseImaging(Phase):
             return fit
 
         def fit_for_tracers(self, tracer, padded_tracer):
-            return lens_fit.fit_lens_image_with_tracer(lens_data=self.lens_data, tracer=tracer,
-                                                       padded_tracer=padded_tracer)
+            return lens_fit.fit_lens_data_with_tracer(lens_data=self.lens_data, tracer=tracer,
+                                                      padded_tracer=padded_tracer)
 
         def check_positions_trace_within_threshold(self, instance):
 

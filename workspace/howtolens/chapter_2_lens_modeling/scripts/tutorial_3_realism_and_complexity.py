@@ -114,7 +114,7 @@ tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source
                                              image_plane_grid_stack=[lensing_image.grid_stack])
 
 # Now, lets fit_normal the lensing regular with the tracer_without_subhalo and plot the fit_normal. It looks a lot better than above, doesn't it?
-fit = lens_fit.fit_lens_image_with_tracer(lens_image=lensing_image, tracer=tracer)
+fit = lens_fit.fit_lens_data_with_tracer(lens_image=lensing_image, tracer=tracer)
 lens_fit_plotters.plot_fit_subplot(fit=fit)
 
 # Finally, just to be sure, lets compare the two likelihoods

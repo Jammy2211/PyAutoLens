@@ -327,8 +327,8 @@ class TestLensProfileFit:
             padded_tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0, g1], source_galaxies=[g0],
                                                                 image_plane_grid_stack=lens_data_manual.padded_grid_stack)
 
-            fit = lens_fit.fit_lens_image_with_tracer(lens_data=lens_data_manual, tracer=tracer,
-                                                      padded_tracer=padded_tracer)
+            fit = lens_fit.fit_lens_data_with_tracer(lens_data=lens_data_manual, tracer=tracer,
+                                                     padded_tracer=padded_tracer)
 
             assert lens_data_manual.noise_map == pytest.approx(fit.noise_map, 1e-4)
 
@@ -397,7 +397,7 @@ class TestLensInversionFit:
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g.Galaxy()], source_galaxies=[g0],
                                                          image_plane_grid_stack=lens_data_manual.grid_stack, border=None)
 
-            fit = lens_fit.fit_lens_image_with_tracer(lens_data=lens_data_manual, tracer=tracer)
+            fit = lens_fit.fit_lens_data_with_tracer(lens_data=lens_data_manual, tracer=tracer)
 
             mapper = pix.mapper_from_grid_stack_and_border(grid_stack=lens_data_manual.grid_stack, border=None)
             inversion = inversions.inversion_from_image_mapper_and_regularization(mapper=mapper,
@@ -459,7 +459,7 @@ class TestLensProfileInversionFit:
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[galaxy_light], source_galaxies=[galaxy_pix],
                                                          image_plane_grid_stack=lens_data_manual.grid_stack, border=None)
 
-            fit = lens_fit.fit_lens_image_with_tracer(lens_data=lens_data_manual, tracer=tracer)
+            fit = lens_fit.fit_lens_data_with_tracer(lens_data=lens_data_manual, tracer=tracer)
 
             blurred_profile_image_1d = util.blurred_image_1d_from_1d_unblurred_and_blurring_images(
                 unblurred_image_1d=tracer.image_plane_image_1d, blurring_image_1d=tracer.image_plane_blurring_image_1d,
@@ -595,8 +595,8 @@ class TestLensProfileHyperFit:
             padded_tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g0],
                                                                image_plane_grid_stack=lens_data_hyper_manual.padded_grid_stack)
 
-            fit = lens_fit.fit_lens_image_with_tracer(lens_data=lens_data_hyper_manual, tracer=tracer,
-                                                      padded_tracer=padded_tracer)
+            fit = lens_fit.fit_lens_data_with_tracer(lens_data=lens_data_hyper_manual, tracer=tracer,
+                                                     padded_tracer=padded_tracer)
 
             contributions_1d = util.contribution_maps_1d_from_hyper_images_and_galaxies(
                 hyper_model_image_1d=lens_data_hyper_manual.hyper_model_image_1d,
@@ -691,7 +691,7 @@ class TestLensInversionHyperFit:
                                                          image_plane_grid_stack=lens_data_hyper_manual.grid_stack,
                                                          border=None)
 
-            fit = lens_fit.fit_lens_image_with_tracer(lens_data=lens_data_hyper_manual, tracer=tracer)
+            fit = lens_fit.fit_lens_data_with_tracer(lens_data=lens_data_hyper_manual, tracer=tracer)
 
             contributions_1d = util.contribution_maps_1d_from_hyper_images_and_galaxies(
                 hyper_model_image_1d=lens_data_hyper_manual.hyper_model_image_1d,
@@ -774,7 +774,7 @@ class TestLensProfileInversionHyperFit:
                                                          image_plane_grid_stack=lens_data_hyper_manual.grid_stack,
                                                          border=None)
 
-            fit = lens_fit.fit_lens_image_with_tracer(lens_data=lens_data_hyper_manual, tracer=tracer)
+            fit = lens_fit.fit_lens_data_with_tracer(lens_data=lens_data_hyper_manual, tracer=tracer)
 
             contributions_1d = util.contribution_maps_1d_from_hyper_images_and_galaxies(
                 hyper_model_image_1d=lens_data_hyper_manual.hyper_model_image_1d,
