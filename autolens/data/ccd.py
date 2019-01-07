@@ -1,14 +1,14 @@
 import numpy as np
 import scipy.signal
 from scipy.stats import norm
-from autolens.model.profiles.light_profiles import EllipticalGaussian
 from astropy import units
-from astropy.coordinates import Angle
+import ast
 
 from autolens import exc
 from autolens.data.array.util import grid_util
 from autolens.data.array.util import mapping_util, array_util
 from autolens.data.array.scaled_array import ScaledSquarePixelArray, Array
+from autolens.model.profiles.light_profiles import EllipticalGaussian
 
 import logging
 
@@ -40,7 +40,7 @@ class CCDData(object):
             An array describing the RMS standard deviation error in each pixel due to the Poisson counts of the source,
             preferably in units of electrons per second.
         exposure_time_map : scaled_array.ScaledSquarePixelArray
-            An array describing the effective exposure time in each regular pixel.
+            An array describing the effective exposure time in each ccd pixel.
         background_sky_map : scaled_array.ScaledSquarePixelArray
             An array describing the background sky.
         """
@@ -640,8 +640,8 @@ def generate_poisson_noise(image, exposure_time_map, seed=-1):
 
 
 def load_ccd_data_from_fits(image_path, pixel_scale, image_hdu=0,
-                            resized_image_shape=None, resized_image_origin_pixels=None,
-                            resized_image_origin_arc_seconds=None,
+                            resized_ccd_shape=None, resized_ccd_origin_pixels=None,
+                            resized_ccd_origin_arc_seconds=None,
                             psf_path=None, psf_hdu=0, resized_psf_shape=None, renormalize_psf=True,
                             noise_map_path=None, noise_map_hdu=0,
                             noise_map_from_image_and_background_noise_map=False,
@@ -669,31 +669,33 @@ def load_ccd_data_from_fits(image_path, pixel_scale, image_hdu=0,
     Parameters
     ----------
     image_path : str
-        The path and filename of the .fits image containing the regular.
+        The path to the image .fits file containing the image (e.g. '/path/to/image.fits')
     pixel_scale : float
         The size of each pixel in arc seconds.
     image_hdu : int
-        The hdu the regular is contained in the .fits file that *image_path* points too.
-    resized_image_shape : (int, int) | None
-        If input, the regular (and arrays that are regular sized, e.g. the noise_map-maps) are resized to these dimensions.
-    resized_image_origin_pixels : (int, int) | None
-        If the regular is resized, this defines a new origin in pixels around which recentering occurs.
-    resized_image_origin_arc_seconds : (float, float) | None
-        If the regular is resized, this defines a new origin in arc-seconds around which recentering occurs.
+        The hdu the image is contained in the .fits file specified by *image_path*.        
+    image_hdu : int
+        The hdu the image is contained in the .fits file that *image_path* points too.
+    resized_ccd_shape : (int, int) | None
+        If input, the ccd arrays that are image sized, e.g. the image, noise-maps) are resized to these dimensions.
+    resized_ccd_origin_pixels : (int, int) | None
+        If the ccd arrays are resized, this defines a new origin (in pixels) around which recentering occurs.
+    resized_ccd_origin_arc_seconds : (float, float) | None
+        If the ccd arrays are resized, this defines a new origin (in arc-seconds) around which recentering occurs.
     psf_path : str
-        The path and filename of the .fits image containing the PSF.
+        The path to the psf .fits file containing the psf (e.g. '/path/to/psf.fits')        
     psf_hdu : int
-        The hdu the psf is contained in the .fits file that *psf_path* points too.
+        The hdu the psf is contained in the .fits file specified by *psf_path*.
     resized_psf_shape : (int, int) | None
         If input, the psf is resized to these dimensions.
     renormalize_psf : bool
         If True, the PSF is renoralized such that all elements sum to 1.0.
     noise_map_path : str
-        The path and filename of the .fits image containing the noise-map.
+        The path to the noise_map .fits file containing the noise_map (e.g. '/path/to/noise_map.fits')        
     noise_map_hdu : int
-        The hdu the noise-map is contained in the .fits file that *noise_map_path* points too.
+        The hdu the noise_map is contained in the .fits file specified by *noise_map_path*.
     noise_map_from_image_and_background_noise_map : bool
-        If True, the noise-map is computed from the observed regular and background noise-map \
+        If True, the noise-map is computed from the observed image and background noise-map \
         (see NoiseMap.from_image_and_background_noise_map).
     convert_noise_map_from_weight_map : bool
         If True, the noise-map loaded from the .fits file is converted from a weight-map to a noise-map (see \
@@ -702,9 +704,10 @@ def load_ccd_data_from_fits(image_path, pixel_scale, image_hdu=0,
         If True, the noise-map loaded from the .fits file is converted from an inverse noise-map to a noise-map (see \
         *NoiseMap.from_inverse_noise_map).
     background_noise_map_path : str
-        The path and filename of the .fits image containing the background noise-map.
+        The path to the background_noise_map .fits file containing the background noise-map \ 
+        (e.g. '/path/to/background_noise_map.fits')        
     background_noise_map_hdu : int
-        The hdu the background noise-map is contained in the .fits file that *background_noise_map_path* points too.
+        The hdu the background_noise_map is contained in the .fits file specified by *background_noise_map_path*.
     convert_background_noise_map_from_weight_map : bool
         If True, the bacground noise-map loaded from the .fits file is converted from a weight-map to a noise-map (see \
         *NoiseMap.from_weight_map).
@@ -712,11 +715,12 @@ def load_ccd_data_from_fits(image_path, pixel_scale, image_hdu=0,
         If True, the background noise-map loaded from the .fits file is converted from an inverse noise-map to a \
         noise-map (see *NoiseMap.from_inverse_noise_map).
     poisson_noise_map_path : str
-        The path and filename of the .fits image containing the Poisson noise-map.
+        The path to the poisson_noise_map .fits file containing the Poisson noise-map \
+         (e.g. '/path/to/poisson_noise_map.fits')        
     poisson_noise_map_hdu : int
-        The hdu the Poisson noise-map is contained in the .fits file that *poisson_noise_map_path* points too.
+        The hdu the poisson_noise_map is contained in the .fits file specified by *poisson_noise_map_path*.
     poisson_noise_map_from_image : bool
-        If True, the Poisson noise-map is estimated using the regular-image.
+        If True, the Poisson noise-map is estimated using the image.
     convert_poisson_noise_map_from_weight_map : bool
         If True, the Poisson noise-map loaded from the .fits file is converted from a weight-map to a noise-map (see \
         *NoiseMap.from_weight_map).
@@ -724,19 +728,21 @@ def load_ccd_data_from_fits(image_path, pixel_scale, image_hdu=0,
         If True, the Poisson noise-map loaded from the .fits file is converted from an inverse noise-map to a \
         noise-map (see *NoiseMap.from_inverse_noise_map).
     exposure_time_map_path : str
-        The path and filename of the .fits image containing the exposure time map.
+        The path to the exposure_time_map .fits file containing the exposure time map \ 
+        (e.g. '/path/to/exposure_time_map.fits')        
     exposure_time_map_hdu : int
-        The hdu the exposure time map is contained in the .fits file that *exposure_time_map_path* points too.
+        The hdu the exposure_time_map is contained in the .fits file specified by *exposure_time_map_path*.
     exposure_time_map_from_single_value : float
-        The exposure time of the regular, which computes the exposure-time map as a single value \
+        The exposure time of the ccd imaging, which is used to compute the exposure-time map as a single value \
         (see *ExposureTimeMap.from_single_value*).
     exposure_time_map_from_background_noise_map : bool
         If True, the exposure-time map is computed from the background noise_map map \
         (see *ExposureTimeMap.from_background_noise_map*)
-    backgrond_sky_map_path : str
-        The path and filename of the .fits image containing the backgrond sky map.
-    backgrond_sky_map_hdu : int
-        The hdu the backgrond sky map is contained in the .fits file that *backgrond_sky_map_path* points too.
+    background_sky_map_path : str
+        The path to the background_sky_map .fits file containing the background sky map \
+        (e.g. '/path/to/background_sky_map.fits').
+    background_sky_map_hdu : int
+        The hdu the background_sky_map is contained in the .fits file specified by *background_sky_map_path*.
     convert_from_electrons : bool
         If True, the input unblurred_image_1d are in units of electrons and all converted to electrons / second using the exposure \
         time map.
@@ -790,10 +796,10 @@ def load_ccd_data_from_fits(image_path, pixel_scale, image_hdu=0,
                     background_noise_map=background_noise_map, poisson_noise_map=poisson_noise_map,
                     exposure_time_map=exposure_time_map, background_sky_map=background_sky_map, gain=gain)
 
-    if resized_image_shape is not None:
-        image = image.new_ccd_with_resized_arrays(new_shape=resized_image_shape,
-                                                  new_centre_pixels=resized_image_origin_pixels,
-                                                  new_centre_arc_seconds=resized_image_origin_arc_seconds)
+    if resized_ccd_shape is not None:
+        image = image.new_ccd_with_resized_arrays(new_shape=resized_ccd_shape,
+                                                  new_centre_pixels=resized_ccd_origin_pixels,
+                                                  new_centre_arc_seconds=resized_ccd_origin_arc_seconds)
 
     if resized_psf_shape is not None:
         image = image.new_ccd_with_resized_psf(new_shape=resized_psf_shape)
@@ -806,14 +812,14 @@ def load_ccd_data_from_fits(image_path, pixel_scale, image_hdu=0,
     return image
 
 def load_image(image_path, image_hdu, pixel_scale):
-    """Factory for loading the regular from a .fits file
+    """Factory for loading the image from a .fits file
 
     Parameters
     ----------
     image_path : str
-        The image_path and filename of the .fits image containing the regular.
+        The path to the image .fits file containing the image (e.g. '/path/to/image.fits')
     image_hdu : int
-        The image_hdu the regular is contained in the .fits file that *image_path* points too
+        The hdu the image is contained in the .fits file specified by *image_path*.
     pixel_scale : float
         The size of each pixel in arc seconds..
     """
@@ -831,13 +837,13 @@ def load_noise_map(noise_map_path, noise_map_hdu, pixel_scale, image, background
     Parameters
     ----------
     noise_map_path : str
-        The path and filename of the .fits image containing the noise-map.
+        The path to the noise_map .fits file containing the noise_map (e.g. '/path/to/noise_map.fits')
     noise_map_hdu : int
-        The hdu the noise-map is contained in the .fits file that *noise_map_path* points too.
+        The hdu the noise_map is contained in the .fits file specified by *noise_map_path*.
     pixel_scale : float
         The size of each pixel in arc seconds.
     image : ndarray
-        The regular-image, which the noise-map can be calculated using.
+        The image-image, which the noise-map can be calculated using.
     background_noise_map : ndarray
         The background noise-map, which the noise-map can be calculated using.
     exposure_time_map : ndarray
@@ -859,7 +865,7 @@ def load_noise_map(noise_map_path, noise_map_hdu, pixel_scale, image, background
         If True, the background noise-map loaded from the .fits file is converted from an inverse noise-map to a \
         noise-map (see *NoiseMap.from_inverse_noise_map).
     noise_map_from_image_and_background_noise_map : bool
-        If True, the noise-map is computed from the observed regular and background noise-map \
+        If True, the noise-map is computed from the observed image and background noise-map \
         (see NoiseMap.from_image_and_background_noise_map).
     convert_from_electrons : bool
         If True, the input unblurred_image_1d are in units of electrons and all converted to electrons / second using the exposure \
@@ -922,9 +928,10 @@ def load_background_noise_map(background_noise_map_path, background_noise_map_hd
     Parameters
     ----------
     background_noise_map_path : str
-        The path and filename of the .fits image containing the background noise-map.
+        The path to the background_noise_map .fits file containing the background noise-map \
+        (e.g. '/path/to/background_noise_map.fits')
     background_noise_map_hdu : int
-        The hdu the background noise-map is contained in the .fits file that *background_noise_map_path* points too.
+        The hdu the background_noise_map is contained in the .fits file specified by *background_noise_map_path*.
     pixel_scale : float
         The size of each pixel in arc seconds.
     convert_background_noise_map_from_weight_map : bool
@@ -961,9 +968,10 @@ def load_poisson_noise_map(poisson_noise_map_path, poisson_noise_map_hdu, pixel_
     Parameters
     ----------
     poisson_noise_map_path : str
-        The path and filename of the .fits image containing the Poisson noise-map.
+        The path to the poisson_noise_map .fits file containing the Poisson noise-map \
+         (e.g. '/path/to/poisson_noise_map.fits')
     poisson_noise_map_hdu : int
-        The hdu the Poisson noise-map is contained in the .fits file that *poisson_noise_map_path* points too.
+        The hdu the poisson_noise_map is contained in the .fits file specified by *poisson_noise_map_path*.
     pixel_scale : float
         The size of each pixel in arc seconds.
     convert_poisson_noise_map_from_weight_map : bool
@@ -973,9 +981,9 @@ def load_poisson_noise_map(poisson_noise_map_path, poisson_noise_map_hdu, pixel_
         If True, the Poisson noise-map loaded from the .fits file is converted from an inverse noise-map to a \
         noise-map (see *NoiseMap.from_inverse_noise_map).
     poisson_noise_map_from_image : bool
-        If True, the Poisson noise-map is estimated using the regular-image.
+        If True, the Poisson noise-map is estimated using the image.
     image : ndarray
-        The regular-image, which the Poisson noise-map can be calculated using.
+        The image, which the Poisson noise-map can be calculated using.
     background_noise_map : ndarray
         The background noise-map, which the Poisson noise-map can be calculated using.
     exposure_time_map : ndarray
@@ -1026,9 +1034,9 @@ def load_psf(psf_path, psf_hdu, pixel_scale, renormalize=False):
     Parameters
     ----------
     psf_path : str
-        The path and filename of the .fits image containing the PSF.
+        The path to the psf .fits file containing the psf (e.g. '/path/to/psf.fits')
     psf_hdu : int
-        The hdu the psf is contained in the .fits file that *psf_path* points too.
+        The hdu the psf is contained in the .fits file specified by *psf_path*.
     pixel_scale : float
         The size of each pixel in arc seconds.
     renormalize : bool
@@ -1049,13 +1057,14 @@ def load_exposure_time_map(exposure_time_map_path, exposure_time_map_hdu, pixel_
     Parameters
     ----------
     exposure_time_map_path : str
-        The path and filename of the .fits image containing the exposure time map.
+        The path to the exposure_time_map .fits file containing the exposure time map \
+        (e.g. '/path/to/exposure_time_map.fits')
     exposure_time_map_hdu : int
-        The hdu the exposure time map is contained in the .fits file that *exposure_time_map_path* points too.
+        The hdu the exposure_time_map is contained in the .fits file specified by *exposure_time_map_path*.
     pixel_scale : float
         The size of each pixel in arc seconds.
     shape : (int, int)
-        The shape of the regular-image, required if a single value is used to calculate the exposure time map.
+        The shape of the image, required if a single value is used to calculate the exposure time map.
     exposure_time : float
         The exposure-time used to compute the expsure-time map if only a single value is used.
     exposure_time_map_from_background_noise_map : bool
@@ -1088,12 +1097,13 @@ def load_background_sky_map(background_sky_map_path, background_sky_map_hdu, pix
 
     Parameters
     ----------
-    backgrond_sky_map_path : str
-        The path and filename of the .fits image containing the backgrond sky map.
-    backgrond_sky_map_hdu : int
-        The hdu the backgrond sky map is contained in the .fits file that *backgrond_sky_map_path* points too.
-    image_path : str
-        The path and filename of the .fits image containing the regular.
+    background_sky_map_path : str
+        The path to the background_sky_map .fits file containing the background sky map \
+        (e.g. '/path/to/background_sky_map.fits').
+    background_sky_map_hdu : int
+        The hdu the background_sky_map is contained in the .fits file specified by *background_sky_map_path*.
+    pixel_scale : float
+        The size of each pixel in arc seconds.
     """
     if background_sky_map_path is not None:
         return ScaledSquarePixelArray.from_fits_with_pixel_scale(file_path=background_sky_map_path,
@@ -1125,3 +1135,52 @@ def output_ccd_data_to_fits(ccd_data, image_path, psf_path, noise_map_path=None,
     if ccd_data.background_sky_map is not None and background_sky_map_path is not None:
         array_util.numpy_array_to_fits(array=ccd_data.background_sky_map, path=background_sky_map_path,
                                        overwrite=overwrite)
+
+def load_positions(positions_path):
+    """Load the positions of an image.
+
+    Positions correspond to a set of pixels in the lensed source galaxy that are anticipated to come from the same \
+    multiply-imaged region of the source-plane. Mass models which do not trace the pixels within a threshold value of \
+    one another are resampled during the non-linear search.
+
+    Positions are stored in a .dat file, where each line of the file gives a list of list of (y,x) positions which \
+    correspond to the same region of the source-plane. Thus, multiple source-plane regions can be input over multiple \
+    lines of the same positions file.
+
+    Parameters
+    ----------
+    positions_path : str
+        The path to the positions .dat file containing the positions (e.g. '/path/to/positions.dat')
+    """
+    with open(positions_path) as f:
+        position_string = f.readlines()
+
+    positions = []
+
+    for line in position_string:
+        position_list = ast.literal_eval(line)
+        positions.append(position_list)
+
+    return positions
+
+def output_positions(positions, positions_path):
+    """Output the positions of an image to a positions.dat file.
+
+    Positions correspond to a set of pixels in the lensed source galaxy that are anticipated to come from the same \
+    multiply-imaged region of the source-plane. Mass models which do not trace the pixels within a threshold value of \
+    one another are resampled during the non-linear search.
+
+    Positions are stored in a .dat file, where each line of the file gives a list of list of (y,x) positions which \
+    correspond to the same region of the source-plane. Thus, multiple source-plane regions can be input over multiple \
+    lines of the same positions file.
+
+    Parameters
+    ----------
+    positions : [[[]]]
+        The lists of positions (e.g. [[[1.0, 1.0], [2.0, 2.0]], [[3.0, 3.0], [4.0, 4.0]]])
+    positions_path : str
+        The path to the positions .dat file containing the positions (e.g. '/path/to/positions.dat')
+    """
+    with open(positions_path, 'w') as f:
+        for position in positions:
+            f.write("%s\n" % position)
