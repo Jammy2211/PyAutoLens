@@ -85,7 +85,7 @@ image_large_stamp_trimmed = im.load_ccd_data_from_fits(image_path=path + 'datas/
                                                        pixel_scale=0.1,
                                                        noise_map_path=path+'datas/image_large_stamp/noise_maps.fits',
                                                        psf_path=path+'datas/image_large_stamp/psf.fits',
-                                                       resized_image_shape=(101, 101))
+                                                       resized_ccd_shape=(101, 101))
 imaging_plotters.plot_image_subplot(image=image_large_stamp_trimmed)
 
 # 3) Postage stamp size - On the other hand, the postage stamp must have enough padding in the border that our masks can
@@ -112,7 +112,7 @@ image_small_stamp_padded = im.load_ccd_data_from_fits(image_path=path + 'datas/i
                                                       pixel_scale=0.1,
                                                       noise_map_path=path+'datas/image_small_stamp/noise_maps.fits',
                                                       psf_path=path+'datas/image_small_stamp/psf.fits',
-                                                      resized_image_shape=(140, 140))
+                                                      resized_ccd_shape=(140, 140))
 mask = ma.Mask.circular(shape=image_small_stamp_padded.shape, pixel_scale=image_small_stamp_padded.pixel_scale,
                         radius_arcsec=2.0)
 imaging_plotters.plot_image_subplot(image=image_small_stamp_padded, mask=mask)
