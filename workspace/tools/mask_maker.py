@@ -36,6 +36,6 @@ mask = msk.Mask.circular_annular(shape=image.shape, pixel_scale=image.pixel_scal
 # Now lets plot the image and mask, so we can check that the mask includes the regions of the image we want.
 data_plotters.plot_image(image=image, mask=mask)
 
-# Now we're happy with the mask, lets output it to the data folder the lens, so that we can load it from a .fits
+# Now we're happy with the mask, lets output it to the data folder of the lens, so that we can load it from a .fits
 # file in our pipelines!
 msk.output_mask_to_fits(mask=mask, mask_path=path+'/data/'+lens_name+'/mask.fits')
