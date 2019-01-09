@@ -115,10 +115,10 @@ def make_ccd_data():
 
 @pytest.fixture(name="lens_data")
 def make_lens_image():
-    image = ccd.CCDData(np.array(np.zeros(shape)), pixel_scale=1.0, psf=ccd.PSF(np.ones((3, 3)), pixel_scale=1.0),
+    ccd_data = ccd.CCDData(np.array(np.zeros(shape)), pixel_scale=1.0, psf=ccd.PSF(np.ones((3, 3)), pixel_scale=1.0),
                         noise_map=ccd.NoiseMap(np.ones(shape), pixel_scale=1.0))
     mask = msk.Mask.circular(shape=shape, pixel_scale=1, radius_arcsec=3.0)
-    return li.LensData(image, mask)
+    return li.LensData(ccd_data=ccd_data, mask=mask)
 
 
 @pytest.fixture(name="results")
@@ -249,6 +249,18 @@ class TestPhase(object):
         assert analysis.lens_data.noise_map == ccd_data.noise_map
         assert analysis.lens_data.image == lens_data.image
         assert analysis.lens_data.noise_map == lens_data.noise_map
+
+    def test_make_analysis__mask_input_uses_mask__no_mask_uses_mask_function(self, phase, ccd_data):
+
+        mask_input = msk.Mask.circular(shape=shape, pixel_scale=1, radius_arcsec=2.0)
+
+        analysis = phase.make_analysis(data=ccd_data, mask=mask_input)
+        assert (analysis.lens_data.mask == mask_input).all()
+
+        mask_default = ph.default_mask_function(image=ccd_data.image)
+
+        analysis = phase.make_analysis(data=ccd_data, mask=None)
+        assert (analysis.lens_data.mask == mask_default).all()
 
     def test_fit(self, ccd_data):
 

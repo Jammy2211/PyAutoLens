@@ -466,7 +466,8 @@ class PhaseImaging(Phase):
         lens: Analysis
             An lens object that the non-linear optimizer calls to determine the fit of a set of values
         """
-        mask = mask or self.mask_function(data.image)
+        if mask is None:
+            mask = self.mask_function(data.image)
 
         lens_data = li.LensData(ccd_data=data, mask=mask, sub_grid_size=self.sub_grid_size,
                                  image_psf_shape=self.image_psf_shape, positions=self.positions)
