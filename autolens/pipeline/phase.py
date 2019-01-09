@@ -376,7 +376,7 @@ class PhasePositions(AbstractPhase):
 class PhaseImaging(Phase):
 
     def __init__(self, phase_name, optimizer_class=non_linear.MultiNest, sub_grid_size=2, image_psf_shape=None,
-                 pixelization_psf_shape=None, positions=None, mask_function=default_mask_function,
+                 pixelization_psf_shape=None, use_positions=False, mask_function=default_mask_function,
                  cosmology=cosmo.Planck15, auto_link_priors=False):
 
         """
@@ -397,10 +397,7 @@ class PhaseImaging(Phase):
         self.sub_grid_size = sub_grid_size
         self.image_psf_shape = image_psf_shape
         self.pixelization_psf_shape = pixelization_psf_shape
-        if positions is not None:
-            self.positions = list(map(lambda position_set: np.asarray(position_set), positions))
-        else:
-            self.positions = None
+        self.use_positions = use_positions
         self.mask_function = mask_function
 
     # noinspection PyMethodMayBeStatic,PyUnusedLocal
@@ -422,7 +419,7 @@ class PhaseImaging(Phase):
         """
         return image
 
-    def run(self, data, previous_results=None, mask=None):
+    def run(self, data, previous_results=None, mask=None, positions=None):
         """
         Run this phase.
 
@@ -440,14 +437,14 @@ class PhaseImaging(Phase):
         result: non_linear.Result
             A result object comprising the best fit model and other hyper.
         """
-        analysis = self.make_analysis(data=data, previous_results=previous_results, mask=mask)
+        analysis = self.make_analysis(data=data, previous_results=previous_results, mask=mask, positions=positions)
         result = self.optimizer.fit(analysis)
         analysis.visualize(instance=result.constant, suffix=None, during_analysis=False)
 
         return self.__class__.Result(constant=result.constant, figure_of_merit=result.figure_of_merit,
                                      variable=result.variable, analysis=analysis, optimizer=self.optimizer)
 
-    def make_analysis(self, data, previous_results=None, mask=None):
+    def make_analysis(self, data, previous_results=None, mask=None, positions=None):
         """
         Create an lens object. Also calls the prior passing and lens_data modifying functions to allow child
         classes to change the behaviour of the phase.
@@ -469,8 +466,15 @@ class PhaseImaging(Phase):
         if mask is None:
             mask = self.mask_function(data.image)
 
+        if self.use_positions and positions is not None:
+            positions = list(map(lambda position_set: np.asarray(position_set), positions))
+        elif self.use_positions and positions is None:
+            raise Warning('You have specified for a phase to use positions, but not input positions too the pipeline'
+                          'when you ran it. PyAutoLens will run the analysis without using the positions to resample'
+                          'mass models.')
+
         lens_data = li.LensData(ccd_data=data, mask=mask, sub_grid_size=self.sub_grid_size,
-                                 image_psf_shape=self.image_psf_shape, positions=self.positions)
+                                 image_psf_shape=self.image_psf_shape, positions=positions)
 
         lens_data.image = self.modify_image(image=lens_data.image, previous_results=previous_results)
 
@@ -574,8 +578,9 @@ class LensPlanePhase(PhaseImaging):
     def phase_property_collections(self):
         return [self.lens_galaxies]
 
-    def __init__(self, phase_name, lens_galaxies=None, optimizer_class=non_linear.MultiNest, sub_grid_size=2, image_psf_shape=None,
-                 mask_function=default_mask_function, cosmology=cosmo.Planck15, auto_link_priors=False):
+    def __init__(self, phase_name, lens_galaxies=None, optimizer_class=non_linear.MultiNest, sub_grid_size=2,
+                 image_psf_shape=None, mask_function=default_mask_function, cosmology=cosmo.Planck15,
+                 auto_link_priors=False):
         super(LensPlanePhase, self).__init__(optimizer_class=optimizer_class,
                                              sub_grid_size=sub_grid_size,
                                              image_psf_shape=image_psf_shape,
@@ -630,7 +635,7 @@ class LensSourcePlanePhase(PhaseImaging):
         return [self.lens_galaxies, self.source_galaxies]
 
     def __init__(self, phase_name, lens_galaxies=None, source_galaxies=None, optimizer_class=non_linear.MultiNest,
-                 sub_grid_size=2, image_psf_shape=None, positions=None, mask_function=default_mask_function,
+                 sub_grid_size=2, image_psf_shape=None, use_positions=False, mask_function=default_mask_function,
                  cosmology=cosmo.Planck15,  auto_link_priors=False):
         """
         A phase with a simple source/lens model
@@ -650,7 +655,7 @@ class LensSourcePlanePhase(PhaseImaging):
         super(LensSourcePlanePhase, self).__init__(optimizer_class=optimizer_class,
                                                    sub_grid_size=sub_grid_size,
                                                    image_psf_shape=image_psf_shape,
-                                                   positions=positions,
+                                                   use_positions=use_positions,
                                                    mask_function=mask_function,
                                                    cosmology=cosmology,
                                                    phase_name=phase_name,
@@ -697,7 +702,7 @@ class MultiPlanePhase(PhaseImaging):
         return [self.galaxies]
 
     def __init__(self, phase_name, galaxies=None, optimizer_class=non_linear.MultiNest,
-                 sub_grid_size=2, image_psf_shape=None, positions=None, mask_function=default_mask_function,
+                 sub_grid_size=2, image_psf_shape=None, use_positions=False, mask_function=default_mask_function,
                  cosmology=cosmo.Planck15, auto_link_priors=False):
         """
         A phase with a simple source/lens model
@@ -715,7 +720,7 @@ class MultiPlanePhase(PhaseImaging):
         """
 
         super(MultiPlanePhase, self).__init__(optimizer_class=optimizer_class, sub_grid_size=sub_grid_size,
-                                              image_psf_shape=image_psf_shape, positions=positions,
+                                              image_psf_shape=image_psf_shape, use_positions=use_positions,
                                               mask_function=mask_function, cosmology=cosmology,
                                               phase_name=phase_name, auto_link_priors=auto_link_priors)
         self.galaxies = galaxies
