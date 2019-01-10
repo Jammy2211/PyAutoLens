@@ -1,6 +1,6 @@
-from autofit.core import fitter
+from autofit.core import fit
 
-class GalaxyFit(fitter.DataFitter):
+class GalaxyFit(fit.DataFit):
 
     def __init__(self, galaxy_data, model_galaxy):
         """Class which fits a set of galaxy-datas to a model galaxy, using either the galaxy's intensities, \
