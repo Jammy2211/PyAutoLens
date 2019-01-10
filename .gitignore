@@ -46,4 +46,6 @@ bfg-1.13.0.jar
 __pycache__
 error.log
 workspace/scraps
-workspace_jam
+workspace_jamtest/integration/hyper/
+test/integration/image/
+test/integration/hyper/
