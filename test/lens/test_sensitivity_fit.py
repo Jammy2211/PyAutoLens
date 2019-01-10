@@ -60,11 +60,11 @@ class TestSensitivityProfileFit:
 
         assert (fit.fit_normal.model_image == model_image).all()
 
-        residual_map = fitting_util.residual_map_from_data_mask_and_model_data(data=lens_data_blur.image, mask=lens_data_blur.mask,
+        residual_map = fit_util.residual_map_from_data_mask_and_model_data(data=lens_data_blur.image, mask=lens_data_blur.mask,
                                                                              model_data=model_image)
         assert (fit.fit_normal.residual_map == residual_map).all()
 
-        chi_squared_map = fitting_util.chi_squared_map_from_residual_map_noise_map_and_mask(residual_map=residual_map,
+        chi_squared_map = fit_util.chi_squared_map_from_residual_map_noise_map_and_mask(residual_map=residual_map,
                                                         mask=lens_data_blur.mask, noise_map=lens_data_blur.noise_map)
 
         assert (fit.fit_normal.chi_squared_map == chi_squared_map).all()
@@ -75,9 +75,9 @@ class TestSensitivityProfileFit:
         assert (fit.fit_sensitive.residual_map == residual_map).all()
         assert (fit.fit_sensitive.chi_squared_map == chi_squared_map).all()
 
-        chi_squared = fitting_util.chi_squared_from_chi_squared_map_and_mask(chi_squared_map=chi_squared_map, 
+        chi_squared = fit_util.chi_squared_from_chi_squared_map_and_mask(chi_squared_map=chi_squared_map, 
                                                                              mask=lens_data_blur.mask)
-        noise_normalization = fitting_util.noise_normalization_from_noise_map_and_mask(mask=lens_data_blur.mask,
+        noise_normalization = fit_util.noise_normalization_from_noise_map_and_mask(mask=lens_data_blur.mask,
                                                                                        noise_map=lens_data_blur.noise_map)
         assert fit.fit_normal.likelihood == -0.5 * (chi_squared + noise_normalization)
         assert fit.fit_sensitive.likelihood == -0.5 * (chi_squared + noise_normalization)
@@ -109,11 +109,11 @@ class TestSensitivityProfileFit:
 
         assert (fit.fit_normal.model_image == model_image).all()
 
-        residual_map = fitting_util.residual_map_from_data_mask_and_model_data(data=lens_data_blur.image, mask=lens_data_blur.mask,
+        residual_map = fit_util.residual_map_from_data_mask_and_model_data(data=lens_data_blur.image, mask=lens_data_blur.mask,
                                                                              model_data=model_image)
         assert (fit.fit_normal.residual_map == residual_map).all()
 
-        chi_squared_map = fitting_util.chi_squared_map_from_residual_map_noise_map_and_mask(residual_map=residual_map,
+        chi_squared_map = fit_util.chi_squared_map_from_residual_map_noise_map_and_mask(residual_map=residual_map,
                                                         mask=lens_data_blur.mask, noise_map=lens_data_blur.noise_map)
 
         assert (fit.fit_normal.chi_squared_map == chi_squared_map).all()
@@ -131,21 +131,21 @@ class TestSensitivityProfileFit:
         
         assert (fit.fit_sensitive.model_image == model_image).all()
         
-        residual_map = fitting_util.residual_map_from_data_mask_and_model_data(data=lens_data_blur.image, mask=lens_data_blur.mask,
+        residual_map = fit_util.residual_map_from_data_mask_and_model_data(data=lens_data_blur.image, mask=lens_data_blur.mask,
                                                                              model_data=model_image)
         
         assert (fit.fit_sensitive.residual_map == residual_map).all()
         
-        chi_squared_map = fitting_util.chi_squared_map_from_residual_map_noise_map_and_mask(residual_map=residual_map,
+        chi_squared_map = fit_util.chi_squared_map_from_residual_map_noise_map_and_mask(residual_map=residual_map,
                                                         mask=lens_data_blur.mask, noise_map=lens_data_blur.noise_map)
         
         assert (fit.fit_sensitive.chi_squared_map == chi_squared_map).all()
 
-        chi_squared_normal = fitting_util.chi_squared_from_chi_squared_map_and_mask(
+        chi_squared_normal = fit_util.chi_squared_from_chi_squared_map_and_mask(
             chi_squared_map=fit.fit_normal.chi_squared_map, mask=lens_data_blur.mask)
-        chi_squared_sensitive = fitting_util.chi_squared_from_chi_squared_map_and_mask(
+        chi_squared_sensitive = fit_util.chi_squared_from_chi_squared_map_and_mask(
             chi_squared_map=fit.fit_sensitive.chi_squared_map, mask=lens_data_blur.mask)
-        noise_normalization = fitting_util.noise_normalization_from_noise_map_and_mask(mask=lens_data_blur.mask,
+        noise_normalization = fit_util.noise_normalization_from_noise_map_and_mask(mask=lens_data_blur.mask,
                                                                                        noise_map=lens_data_blur.noise_map)
         assert fit.fit_normal.likelihood == -0.5 * (chi_squared_normal + noise_normalization)
         assert fit.fit_sensitive.likelihood == -0.5 * (chi_squared_sensitive + noise_normalization)
