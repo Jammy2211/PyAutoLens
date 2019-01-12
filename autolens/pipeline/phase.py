@@ -2,6 +2,8 @@ import logging
 import os
 from astropy import cosmology as cosmo
 import numpy as np
+import warnings
+
 from autofit import conf
 from autofit.core import non_linear
 from autofit.core.phase_property import PhasePropertyCollection
@@ -300,7 +302,7 @@ class PhasePositions(AbstractPhase):
 
         Returns
         -------
-        result: non_linear.Result
+        result: AbstractPhase.Result
             A result object comprising the best fit model and other hyper.
         """
         analysis = self.make_analysis(positions=positions, pixel_scale=pixel_scale, previous_results=previous_results)
@@ -407,15 +409,15 @@ class PhaseImaging(Phase):
 
         Parameters
         ----------
-        image: img.CCD
+        image: scaled_array.ScaledSquarePixelArray
             An lens_data that has been masked
         previous_results: ResultsCollection
             The result of the previous lens
 
         Returns
         -------
-        lens_data: img.CCD
-            The modified lens_data (not changed by default)
+        lens_data: scaled_array.ScaledSquarePixelArray
+            The modified image (not changed by default)
         """
         return image
 
@@ -429,12 +431,12 @@ class PhaseImaging(Phase):
             The default masks passed in by the pipeline
         previous_results: ResultsCollection
             An object describing the results of the last phase or None if no phase has been executed
-        data: img.CCD
+        data: scaled_array.ScaledSquarePixelArray
             An lens_data that has been masked
 
         Returns
         -------
-        result: non_linear.Result
+        result: AbstractPhase.Result
             A result object comprising the best fit model and other hyper.
         """
         analysis = self.make_analysis(data=data, previous_results=previous_results, mask=mask, positions=positions)
@@ -460,7 +462,7 @@ class PhaseImaging(Phase):
 
         Returns
         -------
-        lens: Analysis
+        lens : Analysis
             An lens object that the non-linear optimizer calls to determine the fit of a set of values
         """
         if mask is None:
@@ -468,10 +470,12 @@ class PhaseImaging(Phase):
 
         if self.use_positions and positions is not None:
             positions = list(map(lambda position_set: np.asarray(position_set), positions))
+        elif not self.use_positions:
+            positions = None
         elif self.use_positions and positions is None:
-            raise Warning('You have specified for a phase to use positions, but not input positions too the pipeline'
-                          'when you ran it. PyAutoLens will run the analysis without using the positions to resample'
-                          'mass models.')
+            warnings.warn('You have specified for a phase to use positions, but not input positions too the '
+                          'pipeline when you ran it. PyAutoLens will run the analysis without using the positions '
+                          'to resample mass models.')
 
         lens_data = li.LensData(ccd_data=data, mask=mask, sub_grid_size=self.sub_grid_size,
                                  image_psf_shape=self.image_psf_shape, positions=positions)
@@ -505,7 +509,7 @@ class PhaseImaging(Phase):
 
             Returns
             -------
-            fit: Fit
+            fit : Fit
                 A fractional value indicating how well this model fit and the model lens_data itself
             """
             self.check_positions_trace_within_threshold(instance)
@@ -794,7 +798,7 @@ class GalaxyFitPhase(AbstractPhase):
 
         Returns
         -------
-        result: non_linear.Result
+        result: AbstractPhase.Result
             A result object comprising the best fit model and other hyper.
         """
         analysis = self.make_analysis(array=array, noise_map=noise_map, previous_results=previous_results, mask=mask)

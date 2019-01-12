@@ -215,13 +215,12 @@ class TestAbstractLensInversionFit:
             fit = lens_fit.AbstractLensInversionFit(lens_data=lens_data, noise_map_1d=lens_data.noise_map_1d,
                                                     tracer=tracer)
 
-            assert fit.model_images_of_planes[0] == None
-            assert fit.model_images_of_planes[1] == pytest.approx(np.array([[0.0, 0.0, 0.0, 0.0, 0.0],
+            assert fit.model_image_of_planes[0] == None
+            assert fit.model_image_of_planes[1] == pytest.approx(np.array([[0.0, 0.0, 0.0, 0.0, 0.0],
                                                                             [0.0, 1.0, 1.0, 1.0, 0.0],
                                                                             [0.0, 1.0, 1.0, 1.0, 0.0],
                                                                             [0.0, 1.0, 1.0, 1.0, 0.0],
                                                                             [0.0, 0.0, 0.0, 0.0, 0.0]]), 1e-2)
-
 
 class TestAbstractLensProfileInversionFit:
 

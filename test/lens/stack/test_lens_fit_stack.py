@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from autofit.core import fitting_util
+from autofit.core import fit_util
 from autolens.data import ccd
 from autolens.data.array import mask as msk
 from autolens.model.galaxy import galaxy as g
@@ -183,34 +183,34 @@ class TestLensProfileFit:
             assert model_image_0 == pytest.approx(fit.model_images[0], 1e-4)
             assert model_image_1 == pytest.approx(fit.model_images[1], 1e-4)
 
-            residual_map_0 = fitting_util.residual_map_from_data_mask_and_model_data(data=lens_data_stack_manual.images[0],
+            residual_map_0 = fit_util.residual_map_from_data_mask_and_model_data(data=lens_data_stack_manual.images[0],
                                                             mask=lens_data_stack_manual.masks[0], model_data=model_image_0)
-            residual_map_1 = fitting_util.residual_map_from_data_mask_and_model_data(data=lens_data_stack_manual.images[1],
+            residual_map_1 = fit_util.residual_map_from_data_mask_and_model_data(data=lens_data_stack_manual.images[1],
                                                             mask=lens_data_stack_manual.masks[1], model_data=model_image_1)
 
             assert residual_map_0 == pytest.approx(fit.residual_maps[0], 1e-4)
             assert residual_map_1 == pytest.approx(fit.residual_maps[1], 1e-4)
 
-            chi_squared_map_0 = fitting_util.chi_squared_map_from_residual_map_noise_map_and_mask(
+            chi_squared_map_0 = fit_util.chi_squared_map_from_residual_map_noise_map_and_mask(
                 residual_map=residual_map_0, mask=lens_data_stack_manual.masks[0], noise_map=lens_data_stack_manual.noise_maps[0])
-            chi_squared_map_1 = fitting_util.chi_squared_map_from_residual_map_noise_map_and_mask(
+            chi_squared_map_1 = fit_util.chi_squared_map_from_residual_map_noise_map_and_mask(
                 residual_map=residual_map_1, mask=lens_data_stack_manual.masks[1], noise_map=lens_data_stack_manual.noise_maps[1])
 
             assert chi_squared_map_0 == pytest.approx(fit.chi_squared_maps[0], 1e-4)
             assert chi_squared_map_1 == pytest.approx(fit.chi_squared_maps[1], 1e-4)
 
-            chi_squared_0 = fitting_util.chi_squared_from_chi_squared_map_and_mask(chi_squared_map=chi_squared_map_0,
+            chi_squared_0 = fit_util.chi_squared_from_chi_squared_map_and_mask(chi_squared_map=chi_squared_map_0,
                                                                                  mask=lens_data_stack_manual.masks[0])
-            noise_normalization_0 = fitting_util.noise_normalization_from_noise_map_and_mask(noise_map=lens_data_stack_manual.noise_maps[0],
+            noise_normalization_0 = fit_util.noise_normalization_from_noise_map_and_mask(noise_map=lens_data_stack_manual.noise_maps[0],
                                                                                            mask=lens_data_stack_manual.masks[0])
-            likelihood_0 = fitting_util.likelihood_from_chi_squared_and_noise_normalization(chi_squared=chi_squared_0,
+            likelihood_0 = fit_util.likelihood_from_chi_squared_and_noise_normalization(chi_squared=chi_squared_0,
                                                                                           noise_normalization=noise_normalization_0)
 
-            chi_squared_1 = fitting_util.chi_squared_from_chi_squared_map_and_mask(chi_squared_map=chi_squared_map_1,
+            chi_squared_1 = fit_util.chi_squared_from_chi_squared_map_and_mask(chi_squared_map=chi_squared_map_1,
                                                                                  mask=lens_data_stack_manual.masks[1])
-            noise_normalization_1 = fitting_util.noise_normalization_from_noise_map_and_mask(noise_map=lens_data_stack_manual.noise_maps[1],
+            noise_normalization_1 = fit_util.noise_normalization_from_noise_map_and_mask(noise_map=lens_data_stack_manual.noise_maps[1],
                                                                                            mask=lens_data_stack_manual.masks[1])
-            likelihood_1 = fitting_util.likelihood_from_chi_squared_and_noise_normalization(chi_squared=chi_squared_1,
+            likelihood_1 = fit_util.likelihood_from_chi_squared_and_noise_normalization(chi_squared=chi_squared_1,
                                                                                           noise_normalization=noise_normalization_1)
 
             assert fit.chi_squareds == [chi_squared_0, chi_squared_1]

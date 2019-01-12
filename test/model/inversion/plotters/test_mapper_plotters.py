@@ -68,7 +68,7 @@ def test_rectangular_mapper(rectangular_pixelization, grid_stack, border):
 
 def test__image_and_rectangular_mapper_is_output(image, rectangular_mapper, mapper_plotter_path):
 
-    mapper_plotters.plot_image_and_mapper(ccd=image, mapper=rectangular_mapper, should_plot_centres=True,
+    mapper_plotters.plot_image_and_mapper(ccd_data=image, mapper=rectangular_mapper, should_plot_centres=True,
                                           should_plot_grid=True,
                                           image_pixels=[[0, 1, 2], [3]], source_pixels=[[1, 2], [0]],
                                           output_path=mapper_plotter_path, output_format='png')

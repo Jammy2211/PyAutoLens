@@ -8,7 +8,7 @@ from autolens.model.inversion import mappers
 from autolens.data.plotters import ccd_plotters
 
 
-def plot_image_and_mapper(ccd, mapper, mask=None, positions=None, should_plot_centres=False, should_plot_grid=False,
+def plot_image_and_mapper(ccd_data, mapper, mask=None, positions=None, should_plot_centres=False, should_plot_grid=False,
                           should_plot_border=False,
                           image_pixels=None, source_pixels=None,
                           units='arcsec', kpc_per_arcsec=None,
@@ -18,7 +18,7 @@ def plot_image_and_mapper(ccd, mapper, mask=None, positions=None, should_plot_ce
     plt.figure(figsize=figsize)
     plt.subplot(rows, columns, 1)
 
-    ccd_plotters.plot_image(ccd_data=ccd, mask=mask, positions=positions, as_subplot=True,
+    ccd_plotters.plot_image(ccd_data=ccd_data, mask=mask, positions=positions, as_subplot=True,
                             units=units, kpc_per_arcsec=None, xyticksize=16,
                             norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
                             figsize=None, aspect='equal', cmap='jet', cb_ticksize=10,

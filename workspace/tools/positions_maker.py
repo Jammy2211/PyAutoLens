@@ -33,3 +33,9 @@ data_plotters.plot_image(image=image, positions=positions)
 # Now we're happy with the positions, lets output them to the data folder of the lens, so that we can load them from a
 # .dat file in our pipelines!
 ccd.output_positions(positions=positions, positions_path=path+'/data/'+lens_name+'/positions.dat')
+
+
+# These commented out lines would create the positions for the example_multi_plane data.
+# lens_name = 'example_multi_plane'
+# pixel_scale = 0.05
+# positions = [[[0.8, 1.12], [-0.64, 1.13], [1.38, -0.2], [-0.72, -0.83]]]
