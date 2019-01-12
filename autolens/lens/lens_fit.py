@@ -4,7 +4,6 @@ from autofit.core import fit
 from autolens import exc
 from autolens.model.inversion import inversions
 from autolens.lens.util import lens_fit_util as util
-from autolens.lens import lens_data as li
 from autolens.lens import ray_tracing
 
 
@@ -14,7 +13,7 @@ def fit_lens_data_with_tracer(lens_data, tracer, padded_tracer=None):
 
     Parameters
     -----------
-    lens_data : li.Lensimage or li.LensingHyperImage
+    lens_data : lens_data.LensData or lens_data.LensDataHyper
         The lens-images that is fitted.
     tracer : ray_tracing.AbstractTracerNonStack
         The tracer, which describes the ray-tracing and strong lens configuration.
@@ -89,7 +88,7 @@ class AbstractLensProfileFit(AbstractLensFit):
 
         Parameters
         -----------
-        lens_data : li.Lensimage
+        lens_data : lens_data.LensData
             The lens-image that is fitted.
         tracer : ray_tracing.AbstractTracerNonStack
             The tracer, which describes the ray-tracing and strong lens configuration.
@@ -144,7 +143,7 @@ class AbstractLensInversionFit(AbstractLensFit):
 
         Parameters
         -----------
-        lens_data : li.Lensimage
+        lens_data : lens_data.LensData
             The lens-image that is fitted.
         noise_map_1d : ndarray
             The 1D noise_map map that is fitted, which is an input variable so a hyper-noise_map map can be used (see \
@@ -164,7 +163,7 @@ class AbstractLensInversionFit(AbstractLensFit):
         return None
 
     @property
-    def model_images_of_planes(self):
+    def model_image_of_planes(self):
         return [None, self.inversion.reconstructed_data]
 
 
@@ -182,7 +181,7 @@ class AbstractLensProfileInversionFit(AbstractLensFit):
 
         Parameters
         -----------
-        lens_data : li.Lensimage
+        lens_data : lens_data.LensData
             The lens-image that is fitted.
         noise_map_1d : ndarray
             The 1D noise_map map that is fitted, which is an input variable so a hyper-noise_map map can be used (see \
@@ -304,7 +303,7 @@ class LensProfileFit(LensDataFit, AbstractLensProfileFit):
 
         Parameters
         -----------
-        lens_data : li.Lensimage
+        lens_data : lens_data.LensData
             The lens-image that is fitted.
         tracer : ray_tracing.AbstractTracerNonStack
             The tracer, which describes the ray-tracing and strong lens configuration.
@@ -330,7 +329,7 @@ class LensInversionFit(LensDataInversionFit, AbstractLensInversionFit):
 
         Parameters
         -----------
-        lens_data : li.Lensimage
+        lens_data : lens_data.LensData
             The lens-image that is fitted.
         tracer : ray_tracing.Tracer
             The tracer, which describes the ray-tracing and strong lens configuration.
@@ -366,7 +365,7 @@ class LensProfileInversionFit(LensDataInversionFit, AbstractLensProfileInversion
 
         Parameters
         -----------
-        lens_data : li.Lensimage
+        lens_data : lens_data.LensData
             The lens-image that is fitted.
         tracer : ray_tracing.AbstractTracerNonStack
             The tracer, which describes the ray-tracing and strong lens configuration.

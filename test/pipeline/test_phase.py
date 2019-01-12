@@ -264,11 +264,17 @@ class TestPhase(object):
 
     def test_make_analysis__positions_are_input__are_used_in_analysis(self, phase, ccd_data):
 
+        phase.use_positions = True
+
         analysis = phase.make_analysis(data=ccd_data, positions=[[[1.0, 1.0], [2.0, 2.0]]])
         assert (analysis.lens_data.positions[0][0] == np.array([1.0, 1.0])).all()
         assert (analysis.lens_data.positions[0][1] == np.array([2.0, 2.0])).all()
 
         analysis = phase.make_analysis(data=ccd_data)
+        assert analysis.lens_data.positions == None
+
+        phase.use_positions = False
+        analysis = phase.make_analysis(data=ccd_data, positions=[[[1.0, 1.0], [2.0, 2.0]]])
         assert analysis.lens_data.positions == None
 
     def test_fit(self, ccd_data):

@@ -1,0 +1,35 @@
+Congratulations, you've completed the second chapter of the PyAutoLens tutorials!
+
+In this chapter, you learnt:
+
+1) What a non-linear search is.
+2) How to use a non-linear search to sample the parametric space of a lens model.
+3) How the priors we give parameters specify our search of this parameter space.
+4) How one must carefully balance complexity and realism when fitting a model to a data-set.
+5) The importance of factoring in run-speed when modeling a lens, and tricks to speed up the analysis.
+6) About masking data and using positions in the analysis.
+
+At this point, you are actually ready to begin modeling lenses with PyAutoLens. However, I'd encourage you to hold off
+for now and continue to chapter 3 on pipelines, which I've already hyped-up multiple times throughout this chapter.
+Pipelines are where PyAutoLens really comes into its own, and if you arn't using pipelines you arn't really exploiting
+PyAutoLens's most powerful features. Furthermore, once you've done chapter 3, you'll have templates ready to write your
+own pipelines - this will save you a lot more time in the long run!
+
+Finally, I want to tell you about one of PyAutoLens most awesome features. Whenever a phase is running, it outputs the
+the current best-fit results of the lens model to your hard-disk, on-the-fly. If you navigate to the output/phase_name
+folder of a phase, checkout:
+
+1) The 'model.info' file, which lists all parameters of the lens model and their priors.
+2) The 'model.results' file, which lists the current best-fit lens model (this outputs on-the-fly).
+3) The 'image' folder, where the current best-fit lens model tracer and fit are visualized (again, this outputs
+    on-the-fly).
+
+4) The 'output.log' file, where all Python interpreter output is directed..
+
+On-the-fly output is super-nice, it means you can just sit at your computer and watch the lens modeling unfold (I often
+spend hours doing this, I probably need more of a social life). More importantly, it gives you immediate feedback on
+whether your non-linear search is heading towards a 'good' lens model, or if something has gone wrong during the fit.
+Without on-the-fly output, you could have to waste hours waiting to see if the results look good!
+
+So, when you run the pipelines in chapter 3 (which, unfortunately, will take a bit longer to run than we're used to in
+this chapter), make sure to checkout the on-the-fly outputs and watch that lens modeling go!
