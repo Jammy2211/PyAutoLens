@@ -166,9 +166,9 @@ If you have any suggestions or would like to contribute please get in touch.
 
 ## Credits
 
-[James Nightingale](https://github.com/Jammy2211) - Co-lead developer and PyAutoLens guru.
+[James Nightingale](https://github.com/Jammy2211) - Lead developer and PyAutoLens guru.
 
-[Richard Hayes](https://github.com/rhayes777) - Co-lead developer and [PyAutoFit](https://github.com/rhayes777/PyAutoFit) guru.
+[Richard Hayes](https://github.com/rhayes777) - Lead developer and [PyAutoFit](https://github.com/rhayes777/PyAutoFit) guru.
 
 [Ashley Kelly](https://github.com/AshKelly) - Developer of [pyquad](https://github.com/AshKelly/pyquad) for fast deflections computations.
 
