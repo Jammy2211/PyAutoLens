@@ -116,7 +116,7 @@ def make_pipeline(pipeline_name):
 
     def mask_function(image):
         return msk.Mask.circular_anti_annular(image.shape, pixel_scale=image.pixel_scale, inner_radius_arcsec=0.5,
-                                               outer_radius_arcsec=1.6, outer_radius_2_arcsec=2.0)
+                                               outer_radius_arcsec=1.6, outer_radius_2_arcsec=2.5)
 
     # We next create the phase, using the same notation we learnt before (but noting the masks function is passed to
     # this phase ensuring the anti-annular masks above is used).
@@ -241,7 +241,7 @@ def make_pipeline(pipeline_name):
     return pipeline.PipelineImaging(pipeline_name, phase1, phase2, phase3)
 
 
-pipeline_lens_and_source = make_pipeline(pipeline_name='howtolens_c3_t1_lens_and_source')
+pipeline_lens_and_source = make_pipeline(pipeline_name='howtolens/c3_t1_lens_and_source')
 pipeline_lens_and_source.run(data=ccd_data)
 
 # And there we have it, a pipeline that breaks the analysis of the lens and source galaxy into 3 simple phases. This
