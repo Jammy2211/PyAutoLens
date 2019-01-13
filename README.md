@@ -32,9 +32,10 @@ path = '{}/../'.format(os.path.dirname(os.path.realpath(__file__)))
 
 lens_name = 'example_lens'
 
-ccd_data = ccd.load_ccd_data_from_fits(image_path=path + '/data/' + lens_name + '/image.fits', pixel_scale=0.1,
+ccd_data = ccd.load_ccd_data_from_fits(image_path=path + '/data/' + lens_name + '/image.fits', 
                                        psf_path=path+'/data/'+lens_name+'/psf.fits',
-                                       noise_map_path=path+'/data/'+lens_name+'/noise_map.fits')
+                                       noise_map_path=path+'/data/'+lens_name+'/noise_map.fits', 
+                                       pixel_scale=0.1)
 
 # Create a mask for the data, which we setup below as a 3.0" circle.
 mask = msk.Mask.circular(shape=ccd_data.shape, pixel_scale=ccd_data.pixel_scale, radius_arcsec=3.0)
@@ -51,7 +52,8 @@ lens_galaxy_model = gm.GalaxyModel(mass=lens_mass_profile)
 source_galaxy_model = gm.GalaxyModel(light=source_light_profile)
 
 # To perform the analysis, we set up a phase using the 'phase' module (imported as 'ph').
-# A phase takes our galaxy models and fits their parameters using a non-linear search (in this case, MultiNest).
+# A phase takes our galaxy models and fits their parameters using a non-linear search 
+# (in this case, MultiNest).
 phase = ph.LensSourcePlanePhase(lens_galaxies=dict(lens=gm.GalaxyModel(mass=mp.EllipticalIsothermal)),
                                 source_galaxies=dict(source=gm.GalaxyModel(light=lp.EllipticalSersic)),
                                 optimizer_class=nl.MultiNest, phase_name='example/phase_example')
