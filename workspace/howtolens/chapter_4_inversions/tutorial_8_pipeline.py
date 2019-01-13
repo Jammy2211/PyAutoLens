@@ -98,7 +98,7 @@ def make_pipeline(pipeline_name):
     return pipeline.PipelineImaging(pipeline_name, phase1, phase2)
 
 
-pipeline_inversion = make_pipeline(pipeline_name='howtolens_c4_t7_6_inversion')
+pipeline_inversion = make_pipeline(pipeline_name='howtolens/c4_t7_6_inversion')
 pipeline_inversion.run(data=ccd_data)
 
 # And with that, we now have a pipeline to model strong lenses using an inversion! Checkout the example pipeline in

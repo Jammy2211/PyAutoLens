@@ -233,7 +233,7 @@ def make_pipeline(pipeline_name):
     return pipeline.PipelineImaging(pipeline_name, phase1, phase2, phase3, phase4)
 
 
-pipeline_x2_galaxies = make_pipeline(pipeline_name='howtolens_c3_t2_x2_lens_galaxies')
+pipeline_x2_galaxies = make_pipeline(pipeline_name='howtolens/c3_t2_x2_lens_galaxies')
 pipeline_x2_galaxies.run(data=ccd_data)
 
 # And, we're done. This pipeline takes a while to run, as is the nature of multi-galaxy modeling. Nevertheless, the

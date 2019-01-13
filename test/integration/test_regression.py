@@ -10,8 +10,8 @@ from autolens.pipeline import phase as ph
 from test.integration import tools
 
 dirpath = os.path.dirname(os.path.realpath(__file__))
-conf.instance = conf.Config("{}/../../workspace/config".format(dirpath),
-                            "{}/../../workspace/output/".format(dirpath))
+conf.instance = conf.Config("{}/config".format(dirpath),
+                            "{}/output/".format(dirpath))
 
 dirpath = os.path.dirname(dirpath)
 output_path = '{}/output'.format(dirpath)

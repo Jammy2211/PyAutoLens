@@ -153,7 +153,7 @@ def make_pipeline(pipeline_name):
 
     return pipeline.PipelineImaging(pipeline_name, phase1, phase2, phase3, phase4)
 
-pipeline_complex_source = make_pipeline(pipeline_name='howtolens_c3_t3_complex_source')
+pipeline_complex_source = make_pipeline(pipeline_name='howtolens/c3_t3_complex_source')
 pipeline_complex_source.run(data=ccd_data)
 
 # Okay, so with 4 sources, we still couldn't get a good a fit to the source that didn't leave residuals. The thing is,

@@ -10,7 +10,7 @@ import os
 
 # The 'lens name' is the name of the lens in the data folder, e.g. the mask will be output as 
 # '/workspace/data/example_sim/mask.fits' (this file is already in the workspace and is remade running this script)
-lens_name = 'example_sim'
+lens_name = 'example_lens_light_and_x1_source'
 pixel_scale = 0.1 # If you use this tool for your own data, you *must* double check this pixel scale is correct!
 
 # First, load the CCD imaging data, so that the mask can be plotted over the strong lens image.
