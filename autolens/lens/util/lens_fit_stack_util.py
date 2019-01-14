@@ -80,62 +80,161 @@ def blurred_images_of_images_and_planes_from_1d_images_and_convolver(total_plane
 
     return blurred_images_of_planes
 
-def unmasked_blurred_images_from_padded_grid_stacks_psfs_and_unmasked_images(padded_grid_stacks, psfs,
-                                                                             unmasked_images_1d):
-    """For a fitting image, compute an unmasked blurred image from an unmasked unblurred image. Unmasked
-    images are used for plotting the results of a model outside a masked region.
+def unmasked_blurred_image_of_datas_from_padded_grid_stacks_psfs_and_unmasked_images(padded_grid_stacks, psfs,
+                                                                                     unmasked_images_1d):
+    """For a list of padded grid-stacks and psf, compute an unmasked blurred image from an unmasked unblurred image \
+    for every grid on the stack (e.g. each image in the data-set).
 
-    This relies on using a fitting image's padded_grid, which is grid of coordinates which extends over the entire
-    image as opposed to just the masked region.
+    This relies on using the lens data's padded-grids, which are grids of (y,x) coordinates which extend over the \
+    entire image as opposed to just the masked region.
+
+    This returns a list, where each list index corresponds to [data_index].
 
     Parameters
     ----------
-    fitting_image_ : fitting.fitting_data.FittingImage
-        A padded_grid_stack, whose padded grid is used for PSF convolution.
-    unmasked_images_ : [ndarray]
+    padded_grid_stacks : [grids.GridStack]
+        The list of padded-grid_stacks, whose padded grid are used for PSF convolution.
+    psfs : [ccd.PSF]
+        The PSF of each image used for convolution.
+    unmasked_image_1d : [ndarray]
         The 1D unmasked images which are blurred.
     """
 
-    unmasked_blurred_images = []
+    unmasked_blurred_image_of_datas = []
 
     for image_index in range(len(padded_grid_stacks)):
 
-        unmasked_blurred_image = \
+        unmasked_blurred_image_of_data = \
             lens_fit_util.unmasked_blurred_image_from_padded_grid_stack_psf_and_unmasked_image(
             padded_grid_stack=padded_grid_stacks[image_index], psf=psfs[image_index],
             unmasked_image_1d=unmasked_images_1d[image_index])
 
-        unmasked_blurred_images.append(unmasked_blurred_image)
+        unmasked_blurred_image_of_datas.append(unmasked_blurred_image_of_data)
 
-    return unmasked_blurred_images
+    return unmasked_blurred_image_of_datas
 
-def unmasked_blurred_images_of_images_planes_and_galaxies_from_padded_grid_stacks_and_psf(planes, padded_grid_stacks,
-                                                                                          psfs):
+def unmasked_blurred_image_of_datas_and_planes_from_padded_grid_stacks_and_psf(planes, padded_grid_stacks, psfs):
+    """For each image in the lens data-set, compute the unmasked blurred image of every unmasked unblurred image of \
+    each plane. To do this, this function iterates over all planes to extract their unmasked unblurred images.
 
-    unmasked_blurred_images_of_images_planes_and_galaxies = []
+    If a galaxy in a plane has a pixelization, the unmasked image is returned as None, as as the inversion's model \
+    image cannot be mapped to an unmasked version.
+
+    This relies on using the lens data's padded-grids, which are grids of (y,x) coordinates which extend over the \
+    entire image as opposed to just the masked region.
+
+    This returns a list, where each list index corresponds to [data_index][plane_index].
+
+    Parameters
+    ----------
+    planes : [plane.Plane]
+        The list of planes the unmasked blurred images are computed using.
+    padded_grid_stacks : [grids.GridStack]
+        The list of padded-grid_stacks, whose padded grid are used for PSF convolution.
+    psfs : [ccd.PSF]
+        The PSF of each image used for convolution.
+    """
+    unmasked_blurred_image_of_datas_and_planes = []
+
+    for image_index in range(len(padded_grid_stacks)):
+
+        unmasked_blurred_image_of_planes = \
+            unmasked_blurred_image_of_planes_from_padded_grid_stack_and_psf(planes=planes,
+                padded_grid_stack=padded_grid_stacks[image_index], psf=psfs[image_index])
+
+        unmasked_blurred_image_of_datas_and_planes.append(unmasked_blurred_image_of_planes)
+
+    return unmasked_blurred_image_of_datas_and_planes
+
+def unmasked_blurred_image_of_planes_from_padded_grid_stack_and_psf(planes, padded_grid_stack, psf):
+    """This is a utility function for the function above, which performs the iteration over each plane'and \
+    computes the unmasked blurred image of that plane.
+
+    Parameters
+    ----------
+    planes : [plane.Plane]
+        The list of planes the unmasked blurred images are computed using.
+    padded_grid_stack : grids.GridStack
+        A padded-grid_stack, whose padded grid is used for PSF convolution.
+    psf : ccd.PSF
+        The PSF of the image used for convolution.
+    """
+    unmasked_blurred_image_of_planes = []
+
+    for plane_index, plane in enumerate(planes):
+
+        if plane.has_pixelization:
+
+            unmasked_blurred_image_of_plane = None
+
+        else:
+
+            unmasked_blurred_image_of_plane = \
+                lens_fit_util.unmasked_blurred_image_from_padded_grid_stack_psf_and_unmasked_image(
+                unmasked_image_1d=plane.image_plane_images_1d[plane_index],
+                padded_grid_stack=padded_grid_stack, psf=psf)
+
+        unmasked_blurred_image_of_planes.append(unmasked_blurred_image_of_plane)
+
+    return unmasked_blurred_image_of_planes
+
+def unmasked_blurred_image_of_datas_planes_and_galaxies_from_padded_grid_stacks_and_psf(planes, padded_grid_stacks,
+                                                                                        psfs):
+    """For each image in the lens data-set, compute the unmasked blurred image of every unmasked unblurred image of \
+    every galaxy in each plane. To do this, this function iterates over all planes to extract their unmasked unblurred images.
+
+    If a galaxy in a plane has a pixelization, the unmasked image of the galaxy in that plane is returned as None, \
+    as an the inversion's model image cannot be mapped to an unmasked version.
+
+    This relies on using the lens data's padded-grids, which are grids of (y,x) coordinates which extend over the \
+    entire image as opposed to just the masked region.
+
+    This returns a list, where each list index corresponds to [data_index][plane_index][galaxy_index].
+
+    Parameters
+    ----------
+    planes : [plane.Plane]
+        The list of planes the unmasked blurred images are computed using.
+    padded_grid_stacks : [grids.GridStack]
+        The list of padded-grid_stacks, whose padded grid are used for PSF convolution.
+    psfs : [ccd.PSF]
+        The PSF of each image used for convolution.
+    """
+    unmasked_blurred_image_of_datas_planes_and_galaxies = []
 
     for image_index in range(len(padded_grid_stacks)):
 
         unmasked_blurred_image_of_planes_and_galaxies = \
-            unmasked_blurred_images_of_planes_and_galaxies_from_padded_grid_stacks_and_psfs(planes=planes,
+            unmasked_blurred_image_of_planes_and_galaxies_from_padded_grid_stacks_and_psfs(planes=planes,
                                     padded_grid_stack=padded_grid_stacks[image_index], psf=psfs[image_index])
 
-        unmasked_blurred_images_of_images_planes_and_galaxies.append(unmasked_blurred_image_of_planes_and_galaxies)
+        unmasked_blurred_image_of_datas_planes_and_galaxies.append(unmasked_blurred_image_of_planes_and_galaxies)
 
-    return unmasked_blurred_images_of_images_planes_and_galaxies
+    return unmasked_blurred_image_of_datas_planes_and_galaxies
 
-def unmasked_blurred_images_of_planes_and_galaxies_from_padded_grid_stacks_and_psfs(planes, padded_grid_stack, psf):
+def unmasked_blurred_image_of_planes_and_galaxies_from_padded_grid_stacks_and_psfs(planes, padded_grid_stack, psf):
+    """This is a utility function for the function above, which performs the iteration over each plane and \
+    computes the unmasked blurred image of each galaxy in the plane.
 
-    unmasked_blurred_images_of_planes_and_galaxies = []
+    Parameters
+    ----------
+    planes : [plane.Plane]
+        The list of planes the unmasked blurred images are computed using.
+    padded_grid_stack : grids.GridStack
+        A padded-grid_stack, whose padded grid is used for PSF convolution.
+    psf : ccd.PSF
+        The PSF of the image used for convolution.
+    """
+    unmasked_blurred_image_of_planes_and_galaxies = []
 
     for plane_index, plane in enumerate(planes):
 
-        unmasked_blurred_images_of_galaxies = \
-            lens_fit_util.unmasked_blurred_images_of_galaxies_from_psf_and_unmasked_1d_galaxy_images(
+        unmasked_blurred_image_of_galaxies = \
+            lens_fit_util.unmasked_blurred_image_of_galaxies_from_psf_and_unmasked_1d_galaxy_images(
                 galaxies=plane.galaxies,
                 image_plane_image_1d_of_galaxies=plane.image_plane_images_1d_of_galaxies[plane_index],
                 padded_grid_stack=padded_grid_stack, psf=psf)
 
-        unmasked_blurred_images_of_planes_and_galaxies.append(unmasked_blurred_images_of_galaxies)
+        unmasked_blurred_image_of_planes_and_galaxies.append(unmasked_blurred_image_of_galaxies)
 
-    return unmasked_blurred_images_of_planes_and_galaxies
+    return unmasked_blurred_image_of_planes_and_galaxies
