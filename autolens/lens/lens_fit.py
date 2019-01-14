@@ -54,7 +54,7 @@ def fit_lens_data_with_tracer(lens_data, tracer, padded_tracer=None):
 
 class AbstractLensFit(object):
 
-    def __init__(self, tracer, padded_tracer, map_to_scaled_array):
+    def __init__(self, tracer, padded_tracer, psf, map_to_scaled_array):
         """ An abstract lens fitter, which contains the tracer's used to perform the fit and functions to manipulate \
         the lens image's hyper.
 
@@ -70,11 +70,39 @@ class AbstractLensFit(object):
         """
         self.tracer = tracer
         self.padded_tracer = padded_tracer
+        self.psf = psf
         self.map_to_scaled_array = map_to_scaled_array
 
     @property
     def total_inversions(self):
         return len(self.tracer.mappers_of_planes)
+
+    @property
+    def unmasked_model_image(self):
+        if self.padded_tracer is None or self.padded_tracer.has_pixelization:
+            return None
+        elif self.padded_tracer is not None:
+            return util.unmasked_blurred_image_from_padded_grid_stack_psf_and_unmasked_image(
+                padded_grid_stack=self.padded_tracer.image_plane.grid_stack, psf=self.psf,
+                unmasked_image_1d=self.padded_tracer.image_plane_image_1d)
+
+    @property
+    def unmasked_model_image_of_planes(self):
+        if self.padded_tracer is None:
+            return None
+        elif self.padded_tracer is not None:
+            return util.unmasked_blurred_image_of_planes_from_padded_grid_stack_and_psf(
+                planes=self.padded_tracer.planes, padded_grid_stack=self.padded_tracer.image_plane.grid_stack,
+                psf=self.psf)
+
+    @property
+    def unmasked_model_image_of_planes_and_galaxies(self):
+        if self.padded_tracer is None:
+            return None
+        elif self.padded_tracer is not None:
+            return util.unmasked_blurred_image_of_planes_and_galaxies_from_padded_grid_stack_and_psf(
+                planes=self.padded_tracer.planes, padded_grid_stack=self.padded_tracer.image_plane.grid_stack,
+                psf=self.psf)
 
 
 class AbstractLensProfileFit(AbstractLensFit):
@@ -96,10 +124,9 @@ class AbstractLensProfileFit(AbstractLensFit):
             A tracer with an identical strong lens configuration to the tracer above, but using the lens image's \
             padded grid_stack such that unmasked model-images can be computed.
         """
-        super(AbstractLensProfileFit, self).__init__(tracer=tracer, padded_tracer=padded_tracer,
+        super(AbstractLensProfileFit, self).__init__(tracer=tracer, padded_tracer=padded_tracer, psf=lens_data.psf,
                                                      map_to_scaled_array=lens_data.map_to_scaled_array)
 
-        self.psf = lens_data.psf
         self.convolver_image = lens_data.convolver_image
 
         blurred_profile_image_1d = util.blurred_image_1d_from_1d_unblurred_and_blurring_images(
@@ -114,23 +141,6 @@ class AbstractLensProfileFit(AbstractLensFit):
                 image_plane_image_1d_of_planes=self.tracer.image_plane_image_1d_of_planes,
                 image_plane_blurring_image_1d_of_planes=self.tracer.image_plane_blurring_image_1d_of_planes,
                 convolver=self.convolver_image, map_to_scaled_array=self.map_to_scaled_array)
-
-    @property
-    def unmasked_model_image(self):
-        if self.padded_tracer is None:
-            return None
-        elif self.padded_tracer is not None:
-            return util.unmasked_blurred_image_from_padded_grid_stack_psf_and_unmasked_image(
-                padded_grid_stack=self.padded_tracer.image_plane.grid_stack, psf=self.psf,
-                unmasked_image_1d=self.padded_tracer.image_plane_image_1d)
-
-    @property
-    def unmasked_model_image_of_planes_and_galaxies(self):
-        if self.padded_tracer is None:
-            return None
-        elif self.padded_tracer is not None:
-            return util.unmasked_blurred_image_of_planes_and_galaxies_from_padded_grid_stack_and_psf(
-                planes=self.padded_tracer.planes, padded_grid_stack=self.padded_tracer.image_plane.grid_stack, psf=self.psf)
 
 
 class AbstractLensInversionFit(AbstractLensFit):
@@ -151,16 +161,12 @@ class AbstractLensInversionFit(AbstractLensFit):
         tracer : ray_tracing.Tracer
             The tracer, which describes the ray-tracing and strong lens configuration.
         """
-        super(AbstractLensInversionFit, self).__init__(tracer=tracer, padded_tracer=None,
+        super(AbstractLensInversionFit, self).__init__(tracer=tracer, padded_tracer=None, psf=lens_data.psf,
                                                        map_to_scaled_array=lens_data.map_to_scaled_array)
 
         self.inversion = inversions.inversion_from_image_mapper_and_regularization(
             image_1d=lens_data.image_1d, noise_map_1d=noise_map_1d, convolver=lens_data.convolver_mapping_matrix,
             mapper=tracer.mappers_of_planes[-1], regularization=tracer.regularizations_of_planes[-1])
-
-    @property
-    def unmasked_model_image(self):
-        return None
 
     @property
     def model_image_of_planes(self):
@@ -193,6 +199,7 @@ class AbstractLensProfileInversionFit(AbstractLensFit):
             padded grid_stack such that unmasked model-images can be computed.
         """
         super(AbstractLensProfileInversionFit, self).__init__(tracer=tracer, padded_tracer=padded_tracer,
+                                                              psf=lens_data.psf,
                                                               map_to_scaled_array=lens_data.map_to_scaled_array)
 
         self.psf = lens_data.psf
@@ -211,10 +218,6 @@ class AbstractLensProfileInversionFit(AbstractLensFit):
             image_1d=profile_subtracted_image_1d, noise_map_1d=noise_map_1d,
             convolver=lens_data.convolver_mapping_matrix, mapper=tracer.mappers_of_planes[-1],
             regularization=tracer.regularizations_of_planes[-1])
-
-    @property
-    def unmasked_model_image(self):
-        return None
 
     @property
     def model_image_of_planes(self):

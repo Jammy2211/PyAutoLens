@@ -252,25 +252,25 @@ class TestLensProfileFit:
             assert (unmasked_blurred_image_1 == fit.unmasked_model_images[1]).all()
 
             unmasked_blurred_image_of_galaxies_i0 = \
-                lens_fit_util.unmasked_blurred_images_of_galaxies_from_psf_and_unmasked_1d_galaxy_images(
+                lens_fit_util.unmasked_blurred_image_of_galaxies_from_psf_and_unmasked_1d_galaxy_images(
                     galaxies=padded_tracer.image_plane.galaxies,
                     image_plane_image_1d_of_galaxies=padded_tracer.image_plane.image_plane_images_1d_of_galaxies[0],
                     padded_grid_stack=lens_data_stack_manual.padded_grid_stacks[0], psf=lens_data_stack_manual.psfs[0])
 
             unmasked_blurred_image_of_galaxies_s0 = \
-                lens_fit_util.unmasked_blurred_images_of_galaxies_from_psf_and_unmasked_1d_galaxy_images(
+                lens_fit_util.unmasked_blurred_image_of_galaxies_from_psf_and_unmasked_1d_galaxy_images(
                     galaxies=padded_tracer.source_plane.galaxies,
                     image_plane_image_1d_of_galaxies=padded_tracer.source_plane.image_plane_images_1d_of_galaxies[0],
                     padded_grid_stack=lens_data_stack_manual.padded_grid_stacks[0], psf=lens_data_stack_manual.psfs[0])
 
             unmasked_blurred_image_of_galaxies_i1 = \
-                lens_fit_util.unmasked_blurred_images_of_galaxies_from_psf_and_unmasked_1d_galaxy_images(
+                lens_fit_util.unmasked_blurred_image_of_galaxies_from_psf_and_unmasked_1d_galaxy_images(
                     galaxies=padded_tracer.image_plane.galaxies,
                     image_plane_image_1d_of_galaxies=padded_tracer.image_plane.image_plane_images_1d_of_galaxies[0],
                     padded_grid_stack=lens_data_stack_manual.padded_grid_stacks[1], psf=lens_data_stack_manual.psfs[1])
 
             unmasked_blurred_image_of_galaxies_s1 = \
-                lens_fit_util.unmasked_blurred_images_of_galaxies_from_psf_and_unmasked_1d_galaxy_images(
+                lens_fit_util.unmasked_blurred_image_of_galaxies_from_psf_and_unmasked_1d_galaxy_images(
                     galaxies=padded_tracer.source_plane.galaxies,
                     image_plane_image_1d_of_galaxies=padded_tracer.source_plane.image_plane_images_1d_of_galaxies[0],
                     padded_grid_stack=lens_data_stack_manual.padded_grid_stacks[1], psf=lens_data_stack_manual.psfs[1])

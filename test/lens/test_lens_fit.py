@@ -2,7 +2,8 @@ import numpy as np
 import pytest
 
 from autofit.core import fit_util
-from autolens.data import ccd as im
+from autolens.data import ccd
+from autolens.data.array import scaled_array
 from autolens.data.array import mask as msk
 from autolens.model.galaxy import galaxy as g
 from autolens.lens.util import lens_fit_util as util
@@ -24,10 +25,10 @@ def make_lens_data_blur():
                    [0.0, 1.0, 1.0, 0.0],
                    [0.0, 1.0, 1.0, 0.0],
                    [0.0, 0.0, 0.0, 0.0]])
-    psf = im.PSF(array=(np.array([[1.0, 1.0, 1.0],
+    psf = ccd.PSF(array=(np.array([[1.0, 1.0, 1.0],
                                      [1.0, 1.0, 1.0],
                                      [1.0, 1.0, 1.0]])), pixel_scale=1.0, renormalize=False)
-    ccd = im.CCDData(image, pixel_scale=1.0, psf=psf, noise_map=np.ones((4, 4)))
+    ccd_data = ccd.CCDData(image, pixel_scale=1.0, psf=psf, noise_map=np.ones((4, 4)))
 
     mask = np.array([[True, True, True, True],
                    [True, False, False, True],
@@ -35,7 +36,7 @@ def make_lens_data_blur():
                    [True, True, True, True]])
     mask = msk.Mask(array=mask, pixel_scale=1.0)
 
-    return ld.LensData(ccd, mask, sub_grid_size=1)
+    return ld.LensData(ccd_data, mask, sub_grid_size=1)
 
 @pytest.fixture(name='lens_data_manual')
 def make_li_manual():
@@ -44,10 +45,10 @@ def make_li_manual():
                    [0.0, 4.0, 5.0, 6.0, 0.0],
                    [0.0, 7.0, 8.0, 9.0, 0.0],
                    [0.0, 0.0, 0.0, 0.0, 0.0]])
-    psf = im.PSF(array=(np.array([[1.0, 5.0, 9.0],
+    psf = ccd.PSF(array=(np.array([[1.0, 5.0, 9.0],
                                      [2.0, 5.0, 1.0],
                                      [3.0, 4.0, 0.0]])), pixel_scale=1.0)
-    image = im.CCDData(image, pixel_scale=1.0, psf=psf, noise_map=np.ones((5, 5)))
+    image = ccd.CCDData(image, pixel_scale=1.0, psf=psf, noise_map=np.ones((5, 5)))
     mask = msk.Mask(array=np.array([[True, True, True, True, True],
                                    [True, False, False, False, True],
                                    [True, False, False, False, True],
@@ -88,10 +89,10 @@ def make_li_hyper_no_blur(hyper):
                    [0.0, 1.0, 1.0, 0.0],
                    [0.0, 0.0, 0.0, 0.0]])
 
-    psf = im.PSF(array=(np.array([[0.0, 0.0, 0.0],
+    psf = ccd.PSF(array=(np.array([[0.0, 0.0, 0.0],
                                      [0.0, 1.0, 0.0],
                                      [0.0, 0.0, 0.0]])), pixel_scale=1.0, renormalize=False)
-    ccd = im.CCDData(image, pixel_scale=1.0, psf=psf, noise_map=np.ones((4, 4)))
+    ccd_data = ccd.CCDData(image, pixel_scale=1.0, psf=psf, noise_map=np.ones((4, 4)))
 
     mask = np.array([[True, True, True, True],
                    [True, False, False, True],
@@ -99,7 +100,7 @@ def make_li_hyper_no_blur(hyper):
                    [True, True, True, True]])
     mask = msk.Mask(array=mask, pixel_scale=1.0)
 
-    return ld.LensDataHyper(ccd, mask, hyper_model_image=hyper.hyper_model_image,
+    return ld.LensDataHyper(ccd_data, mask, hyper_model_image=hyper.hyper_model_image,
                             hyper_galaxy_images=hyper.hyper_galaxy_images,
                             hyper_minimum_values=hyper.hyper_minimum_values, sub_grid_size=1)
 
@@ -110,17 +111,17 @@ def make_li_hyper_manual(hyper):
                    [0.0, 4.0, 5.0, 6.0, 0.0],
                    [0.0, 7.0, 8.0, 9.0, 0.0],
                    [0.0, 0.0, 0.0, 0.0, 0.0]])
-    psf = im.PSF(array=(np.array([[1.0, 5.0, 9.0],
+    psf = ccd.PSF(array=(np.array([[1.0, 5.0, 9.0],
                                      [2.0, 5.0, 1.0],
                                      [3.0, 4.0, 0.0]])), pixel_scale=1.0)
-    ccd = im.CCDData(image, pixel_scale=1.0, psf=psf, noise_map=np.ones((5, 5)))
+    ccd_data = ccd.CCDData(image, pixel_scale=1.0, psf=psf, noise_map=np.ones((5, 5)))
     mask = msk.Mask(array=np.array([[True, True, True, True, True],
                                    [True, False, False, False, True],
                                    [True, False, False, False, True],
                                    [True, False, False, False, True],
                                    [True, True, True, True, True]]), pixel_scale=1.0)
 
-    return ld.LensDataHyper(ccd, mask, hyper_model_image=hyper.hyper_model_image,
+    return ld.LensDataHyper(ccd_data, mask, hyper_model_image=hyper.hyper_model_image,
                             hyper_galaxy_images=hyper.hyper_galaxy_images,
                             hyper_minimum_values=hyper.hyper_minimum_values, sub_grid_size=1)
 
@@ -136,7 +137,7 @@ class TestAbstractLensFit:
             tracer = ray_tracing.TracerImagePlane(lens_galaxies=[galaxy_light],
                                                   image_plane_grid_stack=lens_data_manual.grid_stack)
 
-            fit = lens_fit.AbstractLensFit(tracer=tracer, padded_tracer=None,
+            fit = lens_fit.AbstractLensFit(tracer=tracer, padded_tracer=None, psf=lens_data_manual.psf,
                                            map_to_scaled_array=lens_data_manual.map_to_scaled_array)
 
             assert fit.total_inversions == 0
@@ -145,10 +146,207 @@ class TestAbstractLensFit:
                                                                           regularization=regularization.Constant())],
                                                   image_plane_grid_stack=lens_data_manual.grid_stack)
 
-            fit = lens_fit.AbstractLensFit(tracer=tracer, padded_tracer=None,
+            fit = lens_fit.AbstractLensFit(tracer=tracer, padded_tracer=None, psf=lens_data_manual.psf,
                                            map_to_scaled_array=lens_data_manual.map_to_scaled_array)
 
             assert fit.total_inversions == 1
+
+    class TestUnmaskedModelImage:
+
+        def test__padded_tracer_is_none__unmasked_model_images_return_none(self, lens_data_blur):
+
+            g0 = g.Galaxy(light_profile=MockLightProfile(value=1.0))
+            tracer = ray_tracing.TracerImagePlane(lens_galaxies=[g0], image_plane_grid_stack=lens_data_blur.grid_stack)
+
+            fit = lens_fit.AbstractLensFit(tracer=tracer, padded_tracer=None, psf=lens_data_blur.psf,
+                                           map_to_scaled_array=lens_data_blur.map_to_scaled_array)
+
+            assert fit.unmasked_model_image == None
+
+        def test__padded_tracer_input__all_planes_have_light_profiles__unmasked_model_image_returns_array(self,
+                                                                                                          lens_data_blur):
+
+            g0 = g.Galaxy(light_profile=MockLightProfile(value=1.0))
+            tracer = ray_tracing.TracerImagePlane(lens_galaxies=[g0], image_plane_grid_stack=lens_data_blur.grid_stack)
+            padded_tracer = ray_tracing.TracerImagePlane(lens_galaxies=[g0],
+                                                  image_plane_grid_stack=lens_data_blur.padded_grid_stack)
+
+            fit = lens_fit.AbstractLensFit(tracer=tracer, padded_tracer=padded_tracer, psf=lens_data_blur.psf,
+                                           map_to_scaled_array=lens_data_blur.map_to_scaled_array)
+
+            assert type(fit.unmasked_model_image) == scaled_array.ScaledSquarePixelArray
+
+            padded_tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0, g0], source_galaxies=[g0, g0],
+                                                  image_plane_grid_stack=lens_data_blur.padded_grid_stack)
+
+            fit = lens_fit.AbstractLensFit(tracer=tracer, padded_tracer=padded_tracer, psf=lens_data_blur.psf,
+                                           map_to_scaled_array=lens_data_blur.map_to_scaled_array)
+
+            assert type(fit.unmasked_model_image) == scaled_array.ScaledSquarePixelArray
+
+        def test__galaxy_in_tracer_has_pixelization__unmasked_model_image_is_none(self, lens_data_blur):
+
+            g0 = g.Galaxy(light_profile=MockLightProfile(value=1.0),
+                          pixelization=pixelizations.Rectangular(), regularization=regularization.Constant())
+
+            tracer = ray_tracing.TracerImagePlane(lens_galaxies=[g0], image_plane_grid_stack=lens_data_blur.grid_stack)
+            padded_tracer = ray_tracing.TracerImagePlane(lens_galaxies=[g0],
+                                                  image_plane_grid_stack=lens_data_blur.padded_grid_stack)
+
+            fit = lens_fit.AbstractLensFit(tracer=tracer, padded_tracer=padded_tracer, psf=lens_data_blur.psf,
+                                           map_to_scaled_array=lens_data_blur.map_to_scaled_array)
+
+            assert fit.unmasked_model_image == None
+
+            padded_tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0, g0], source_galaxies=[g0, g0],
+                                                  image_plane_grid_stack=lens_data_blur.padded_grid_stack)
+
+            fit = lens_fit.AbstractLensFit(tracer=tracer, padded_tracer=padded_tracer, psf=lens_data_blur.psf,
+                                           map_to_scaled_array=lens_data_blur.map_to_scaled_array)
+
+            assert fit.unmasked_model_image == None
+
+    class TestUnmaskedModelImageOfPlanes:
+
+        def test__padded_tracer_is_none__unmasked_model_images_return_none(self, lens_data_blur):
+
+            g0 = g.Galaxy(light_profile=MockLightProfile(value=1.0))
+            tracer = ray_tracing.TracerImagePlane(lens_galaxies=[g0], image_plane_grid_stack=lens_data_blur.grid_stack)
+
+            fit = lens_fit.AbstractLensFit(tracer=tracer, padded_tracer=None, psf=lens_data_blur.psf,
+                                           map_to_scaled_array=lens_data_blur.map_to_scaled_array)
+
+            assert fit.unmasked_model_image_of_planes == None
+
+        def test__padded_tracer_input__all_planes_have_light_profiles__unmasked_model_image_returns_array(self,
+                                                                                                          lens_data_blur):
+
+            g0 = g.Galaxy(light_profile=MockLightProfile(value=1.0))
+            tracer = ray_tracing.TracerImagePlane(lens_galaxies=[g0], image_plane_grid_stack=lens_data_blur.grid_stack)
+            padded_tracer = ray_tracing.TracerImagePlane(lens_galaxies=[g0],
+                                                  image_plane_grid_stack=lens_data_blur.padded_grid_stack)
+
+            fit = lens_fit.AbstractLensFit(tracer=tracer, padded_tracer=padded_tracer, psf=lens_data_blur.psf,
+                                           map_to_scaled_array=lens_data_blur.map_to_scaled_array)
+
+            assert type(fit.unmasked_model_image_of_planes[0]) == scaled_array.ScaledSquarePixelArray
+
+            padded_tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0, g0], source_galaxies=[g0, g0],
+                                                  image_plane_grid_stack=lens_data_blur.padded_grid_stack)
+
+            fit = lens_fit.AbstractLensFit(tracer=tracer, padded_tracer=padded_tracer, psf=lens_data_blur.psf,
+                                           map_to_scaled_array=lens_data_blur.map_to_scaled_array)
+
+            assert type(fit.unmasked_model_image_of_planes[0]) == scaled_array.ScaledSquarePixelArray
+            assert type(fit.unmasked_model_image_of_planes[1]) == scaled_array.ScaledSquarePixelArray
+
+        def test__galaxy_in_tracer_has_pixelization__unmasked_model_image_of_that_plane_is_none(self, lens_data_blur):
+
+            g0 = g.Galaxy(light_profile=MockLightProfile(value=1.0),
+                          pixelization=pixelizations.Rectangular(), regularization=regularization.Constant())
+
+            tracer = ray_tracing.TracerImagePlane(lens_galaxies=[g0], image_plane_grid_stack=lens_data_blur.grid_stack)
+
+            padded_tracer = ray_tracing.TracerImagePlane(lens_galaxies=[g0],
+                                                  image_plane_grid_stack=lens_data_blur.padded_grid_stack)
+
+            fit = lens_fit.AbstractLensFit(tracer=tracer, padded_tracer=padded_tracer, psf=lens_data_blur.psf,
+                                           map_to_scaled_array=lens_data_blur.map_to_scaled_array)
+
+            assert fit.unmasked_model_image_of_planes[0] == None
+
+            padded_tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0, g0], source_galaxies=[g.Galaxy()],
+                                                  image_plane_grid_stack=lens_data_blur.padded_grid_stack)
+
+            fit = lens_fit.AbstractLensFit(tracer=tracer, padded_tracer=padded_tracer, psf=lens_data_blur.psf,
+                                           map_to_scaled_array=lens_data_blur.map_to_scaled_array)
+
+            assert fit.unmasked_model_image_of_planes[0] == None
+            assert type(fit.unmasked_model_image_of_planes[1]) == scaled_array.ScaledSquarePixelArray
+
+            padded_tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g.Galaxy()], source_galaxies=[g0],
+                                                  image_plane_grid_stack=lens_data_blur.padded_grid_stack)
+
+            fit = lens_fit.AbstractLensFit(tracer=tracer, padded_tracer=padded_tracer, psf=lens_data_blur.psf,
+                                           map_to_scaled_array=lens_data_blur.map_to_scaled_array)
+
+            assert type(fit.unmasked_model_image_of_planes[0]) == scaled_array.ScaledSquarePixelArray
+            assert fit.unmasked_model_image_of_planes[1] == None
+
+    class TestUnmaskedModelImageOfPlanesAndGalaxies:
+
+        def test__padded_tracer_is_none__unmasked_model_images_return_none(self, lens_data_blur):
+
+            g0 = g.Galaxy(light_profile=MockLightProfile(value=1.0))
+            tracer = ray_tracing.TracerImagePlane(lens_galaxies=[g0], image_plane_grid_stack=lens_data_blur.grid_stack)
+
+            fit = lens_fit.AbstractLensFit(tracer=tracer, padded_tracer=None, psf=lens_data_blur.psf,
+                                           map_to_scaled_array=lens_data_blur.map_to_scaled_array)
+
+            assert fit.unmasked_model_image_of_planes_and_galaxies == None
+
+        def test__padded_tracer_input__all_planes_have_light_profiles__unmasked_model_images_returns_array(self,
+                                                                                                          lens_data_blur):
+
+            g0 = g.Galaxy(light_profile=MockLightProfile(value=1.0))
+            tracer = ray_tracing.TracerImagePlane(lens_galaxies=[g0], image_plane_grid_stack=lens_data_blur.grid_stack)
+            padded_tracer = ray_tracing.TracerImagePlane(lens_galaxies=[g0, g0],
+                                                  image_plane_grid_stack=lens_data_blur.padded_grid_stack)
+
+            fit = lens_fit.AbstractLensFit(tracer=tracer, padded_tracer=padded_tracer, psf=lens_data_blur.psf,
+                                           map_to_scaled_array=lens_data_blur.map_to_scaled_array)
+
+            assert type(fit.unmasked_model_image_of_planes_and_galaxies[0][0]) == scaled_array.ScaledSquarePixelArray
+            assert type(fit.unmasked_model_image_of_planes_and_galaxies[0][1]) == scaled_array.ScaledSquarePixelArray
+
+            padded_tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0, g0], source_galaxies=[g0, g0, g0],
+                                                  image_plane_grid_stack=lens_data_blur.padded_grid_stack)
+
+            fit = lens_fit.AbstractLensFit(tracer=tracer, padded_tracer=padded_tracer, psf=lens_data_blur.psf,
+                                           map_to_scaled_array=lens_data_blur.map_to_scaled_array)
+
+            assert type(fit.unmasked_model_image_of_planes_and_galaxies[0][0]) == scaled_array.ScaledSquarePixelArray
+            assert type(fit.unmasked_model_image_of_planes_and_galaxies[0][1]) == scaled_array.ScaledSquarePixelArray
+            assert type(fit.unmasked_model_image_of_planes_and_galaxies[1][0]) == scaled_array.ScaledSquarePixelArray
+            assert type(fit.unmasked_model_image_of_planes_and_galaxies[1][1]) == scaled_array.ScaledSquarePixelArray
+            assert type(fit.unmasked_model_image_of_planes_and_galaxies[1][2]) == scaled_array.ScaledSquarePixelArray
+
+        def test__galaxy_in_tracer_has_pixelization__unmasked_model_image_of_that_galaxy_is_none(self, lens_data_blur):
+
+            g0 = g.Galaxy(light_profile=MockLightProfile(value=1.0))
+            g_pix = g.Galaxy(pixelization=pixelizations.Rectangular(), regularization=regularization.Constant())
+
+            tracer = ray_tracing.TracerImagePlane(lens_galaxies=[g0], image_plane_grid_stack=lens_data_blur.grid_stack)
+
+            padded_tracer = ray_tracing.TracerImagePlane(lens_galaxies=[g_pix],
+                                                  image_plane_grid_stack=lens_data_blur.padded_grid_stack)
+
+            fit = lens_fit.AbstractLensFit(tracer=tracer, padded_tracer=padded_tracer, psf=lens_data_blur.psf,
+                                           map_to_scaled_array=lens_data_blur.map_to_scaled_array)
+
+            assert fit.unmasked_model_image_of_planes_and_galaxies[0][0] == None
+
+            padded_tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0, g_pix], source_galaxies=[g0],
+                                                  image_plane_grid_stack=lens_data_blur.padded_grid_stack)
+
+            fit = lens_fit.AbstractLensFit(tracer=tracer, padded_tracer=padded_tracer, psf=lens_data_blur.psf,
+                                           map_to_scaled_array=lens_data_blur.map_to_scaled_array)
+
+            assert type(fit.unmasked_model_image_of_planes_and_galaxies[0][0]) == scaled_array.ScaledSquarePixelArray
+            assert fit.unmasked_model_image_of_planes_and_galaxies[0][1] == None
+            assert type(fit.unmasked_model_image_of_planes_and_galaxies[1][0]) == scaled_array.ScaledSquarePixelArray
+
+            padded_tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g.Galaxy(), g_pix],
+                                                                source_galaxies=[g0, g_pix],
+                                                  image_plane_grid_stack=lens_data_blur.padded_grid_stack)
+
+            fit = lens_fit.AbstractLensFit(tracer=tracer, padded_tracer=padded_tracer, psf=lens_data_blur.psf,
+                                           map_to_scaled_array=lens_data_blur.map_to_scaled_array)
+
+            assert type(fit.unmasked_model_image_of_planes_and_galaxies[0][0]) == scaled_array.ScaledSquarePixelArray
+            assert fit.unmasked_model_image_of_planes_and_galaxies[0][1] == None
+            assert type(fit.unmasked_model_image_of_planes_and_galaxies[1][0]) == scaled_array.ScaledSquarePixelArray
+            assert fit.unmasked_model_image_of_planes_and_galaxies[1][1] == None
 
 
 class TestAbstractLensProfileFit:
@@ -167,18 +365,6 @@ class TestAbstractLensProfileFit:
                                                            [0.0, 9.0, 9.0, 0.0],
                                                            [0.0, 9.0, 9.0, 0.0],
                                                            [0.0, 0.0, 0.0, 0.0]])).all()
-
-    class TestBlurredImageOfGalaxies:
-
-        def test__padded_tracer_is_none__mode_profie_images_return_none(self, lens_data_blur):
-
-            g0 = g.Galaxy(light_profile=MockLightProfile(value=1.0))
-            tracer = ray_tracing.TracerImagePlane(lens_galaxies=[g0], image_plane_grid_stack=lens_data_blur.grid_stack)
-
-            fit = lens_fit.AbstractLensProfileFit(lens_data=lens_data_blur, tracer=tracer, padded_tracer=None)
-
-            assert fit.unmasked_model_image == None
-            assert fit.unmasked_model_image_of_planes_and_galaxies == None
 
 
 class TestAbstractLensInversionFit:
@@ -201,11 +387,11 @@ class TestAbstractLensInversionFit:
 
             mask = msk.Mask(mask, pixel_scale=1.0)
 
-            psf = im.PSF(array=np.array([[0.0, 0.0, 0.0],
+            psf = ccd.PSF(array=np.array([[0.0, 0.0, 0.0],
                                             [0.0, 1.0, 0.0],
                                             [0.0, 0.0, 0.0]]), pixel_scale=1.0)
-            ccd = im.CCDData(image=image, pixel_scale=1.0, psf=psf, noise_map=np.ones((5, 5)))
-            lens_data = ld.LensData(ccd_data=ccd, mask=mask, sub_grid_size=2)
+            ccd_data = ccd.CCDData(image=image, pixel_scale=1.0, psf=psf, noise_map=np.ones((5, 5)))
+            lens_data = ld.LensData(ccd_data=ccd_data, mask=mask, sub_grid_size=2)
 
             galaxy_pix = g.Galaxy(pixelization=pixelizations.Rectangular(shape=(3, 3)),
                                   regularization=regularization.Constant(coefficients=(1.0,)))
@@ -221,6 +407,7 @@ class TestAbstractLensInversionFit:
                                                                             [0.0, 1.0, 1.0, 1.0, 0.0],
                                                                             [0.0, 1.0, 1.0, 1.0, 0.0],
                                                                             [0.0, 0.0, 0.0, 0.0, 0.0]]), 1e-2)
+
 
 class TestAbstractLensProfileInversionFit:
 
@@ -270,16 +457,16 @@ class TestLensProfileFit:
 
         def test__image__tracing_fits_data_perfectly__no_psf_blurring__lh_is_noise_normalization(self):
 
-            psf = im.PSF(array=(np.array([[0.0, 0.0, 0.0],
+            psf = ccd.PSF(array=(np.array([[0.0, 0.0, 0.0],
                                              [0.0, 1.0, 0.0],
                                              [0.0, 0.0, 0.0]])), pixel_scale=1.0)
 
-            ccd = im.CCDData(image=np.ones((3, 3)), pixel_scale=1.0, psf=psf, noise_map=np.ones((3, 3)))
+            ccd_data = ccd.CCDData(image=np.ones((3, 3)), pixel_scale=1.0, psf=psf, noise_map=np.ones((3, 3)))
 
             mask = msk.Mask(array=np.array([[True, True, True],
                                            [True, False, True],
                                            [True, True, True]]), pixel_scale=1.0)
-            lens_data = ld.LensData(ccd_data=ccd, mask=mask, sub_grid_size=1)
+            lens_data = ld.LensData(ccd_data=ccd_data, mask=mask, sub_grid_size=1)
 
             g0 = g.Galaxy(light_profile=MockLightProfile(value=1.0))
             tracer = ray_tracing.TracerImagePlane(lens_galaxies=[g0], image_plane_grid_stack=lens_data.grid_stack)
@@ -289,18 +476,18 @@ class TestLensProfileFit:
 
         def test__1x2_image__tracing_fits_data_with_chi_sq_5(self):
 
-            psf = im.PSF(array=(np.array([[0.0, 0.0, 0.0],
+            psf = ccd.PSF(array=(np.array([[0.0, 0.0, 0.0],
                                              [0.0, 1.0, 0.0],
                                              [0.0, 0.0, 0.0]])), pixel_scale=1.0)
 
-            ccd = im.CCDData(5.0 * np.ones((3, 4)), pixel_scale=1.0, psf=psf, noise_map=np.ones((3, 4)))
-            ccd.image[1,2]  = 4.0
+            ccd_data = ccd.CCDData(5.0 * np.ones((3, 4)), pixel_scale=1.0, psf=psf, noise_map=np.ones((3, 4)))
+            ccd_data.image[1,2]  = 4.0
 
             mask = msk.Mask(array=np.array([[True, True, True, True],
                                            [True, False, False, True],
                                            [True, True, True, True]]), pixel_scale=1.0)
 
-            lens_data = ld.LensData(ccd_data=ccd, mask=mask, sub_grid_size=1)
+            lens_data = ld.LensData(ccd_data=ccd_data, mask=mask, sub_grid_size=1)
 
             # Setup as a ray trace instance, using a light profile for the lens
 
@@ -374,6 +561,13 @@ class TestLensProfileFit:
 
             assert (unmasked_blurred_image == fit.unmasked_model_image).all()
 
+            unmasked_blurred_image_of_planes = \
+                util.unmasked_blurred_image_of_planes_from_padded_grid_stack_and_psf(
+                    planes=padded_tracer.planes, padded_grid_stack=lens_data_manual.padded_grid_stack, psf=lens_data_manual.psf)
+
+            assert (unmasked_blurred_image_of_planes[0] == fit.unmasked_model_image_of_planes[0]).all()
+            assert (unmasked_blurred_image_of_planes[1] == fit.unmasked_model_image_of_planes[1]).all()
+
             unmasked_blurred_image_of_galaxies = \
                 util.unmasked_blurred_image_of_planes_and_galaxies_from_padded_grid_stack_and_psf(
                     planes=padded_tracer.planes, padded_grid_stack=lens_data_manual.padded_grid_stack, psf=lens_data_manual.psf)
@@ -443,7 +637,6 @@ class TestLensInversionFit:
 
 
 class TestLensProfileInversionFit:
-
 
     class TestCompareToManual:
 
@@ -660,6 +853,14 @@ class TestLensProfileHyperFit:
                     unmasked_image_1d=padded_tracer.image_plane_image_1d)
 
             assert (unmasked_blurred_image == fit.unmasked_model_image).all()
+
+            unmasked_blurred_image_of_planes = \
+                util.unmasked_blurred_image_of_planes_from_padded_grid_stack_and_psf(
+                    planes=padded_tracer.planes, padded_grid_stack=lens_data_hyper_manual.padded_grid_stack,
+                    psf=lens_data_hyper_manual.psf)
+
+            assert (unmasked_blurred_image_of_planes[0] == fit.unmasked_model_image_of_planes[0]).all()
+            assert (unmasked_blurred_image_of_planes[1] == fit.unmasked_model_image_of_planes[1]).all()
 
             unmasked_blurred_image_of_galaxies = \
                 util.unmasked_blurred_image_of_planes_and_galaxies_from_padded_grid_stack_and_psf(

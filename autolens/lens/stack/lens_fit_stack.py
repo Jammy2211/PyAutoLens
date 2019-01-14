@@ -103,7 +103,7 @@ class AbstractLensProfileFitStack(AbstractLensFitStack):
         if self.padded_tracer is None:
             return None
         elif self.padded_tracer is not None:
-            return stack_util.unmasked_blurred_images_from_padded_grid_stacks_psfs_and_unmasked_images(
+            return stack_util.unmasked_blurred_image_of_datas_from_padded_grid_stacks_psfs_and_unmasked_images(
                 padded_grid_stacks=self.padded_tracer.image_plane.grid_stacks, psfs=self.psfs,
                 unmasked_images_1d=self.padded_tracer.image_plane_images_1d)
 
@@ -112,7 +112,7 @@ class AbstractLensProfileFitStack(AbstractLensFitStack):
         if self.padded_tracer is None:
             return None
         elif self.padded_tracer is not None:
-            return stack_util.unmasked_blurred_images_of_images_planes_and_galaxies_from_padded_grid_stacks_and_psf(
+            return stack_util.unmasked_blurred_image_of_datas_planes_and_galaxies_from_padded_grid_stacks_and_psf(
                    planes=self.padded_tracer.planes, padded_grid_stacks=self.padded_tracer.image_plane.grid_stacks,
                    psfs=self.psfs)
 
