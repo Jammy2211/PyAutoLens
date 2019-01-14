@@ -152,13 +152,13 @@ def make_pipeline(pipeline_name):
     # To setup the modified image, we take the observed image data and subtract-off the model image from the
     # previous phase, which, if you're keeping track, is an image of the lens galaxy. However, if we just used the
     # 'model_image' in the fit, this would only include pixels that were masked. We want to subtract the lens off the
-    # entire image - fortunately, PyAutoLens automatically generates a 'unmasked_model_image' as well!
+    # entire image - fortunately, PyAutoLens automatically generates a 'unmasked_lens_plane_model_image' as well!
 
     class LensSubtractedPhase(phase.LensSourcePlanePhase):
 
         def modify_image(self, image, previous_results):
             phase_1_results = previous_results[0]
-            return image - phase_1_results.most_likely_fit.unmasked_model_image
+            return image - phase_1_results.most_likely_fit.unmasked_lens_plane_model_image
 
     # The function above demonstrates the most important thing about pipelines - that every phase has access to the
     # results of all previous phases. This means we can feed information through the pipeline and therefore use the

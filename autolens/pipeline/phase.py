@@ -269,6 +269,14 @@ class AbstractPhase(object):
         def unmasked_model_image(self):
             return self.most_likely_fit.unmasked_model_image
 
+        @property
+        def unmasked_model_image_of_planes(self):
+            return self.most_likely_fit.unmasked_model_image_of_planes
+
+        @property
+        def unmasked_model_image_of_planes_and_galaxies(self):
+            return self.most_likely_fit.unmasked_model_image_of_planes_and_galaxies
+
 
 class Phase(AbstractPhase):
 
@@ -625,6 +633,9 @@ class LensPlanePhase(PhaseImaging):
             super(LensPlanePhase.Result, self).__init__(constant=constant, figure_of_merit=figure_of_merit,
                                                         variable=variable, analysis=analysis, optimizer=optimizer)
 
+        @property
+        def unmasked_lens_plane_model_image(self):
+            return self.most_likely_fit.unmasked_model_image_of_planes[0]
 
 class LensSourcePlanePhase(PhaseImaging):
     """
@@ -692,6 +703,24 @@ class LensSourcePlanePhase(PhaseImaging):
             logger.debug(
                 "\nRunning lens/source lens for... \n\nLens Galaxy:\n{}\n\nSource Galaxy:\n{}\n\n".format(
                     instance.lens_galaxies, instance.source_galaxies))
+
+    class Result(PhaseImaging.Result):
+
+        def __init__(self, constant, figure_of_merit, variable, analysis, optimizer):
+            """
+            The result of a phase
+            """
+
+            super(LensSourcePlanePhase.Result, self).__init__(constant=constant, figure_of_merit=figure_of_merit,
+                                                        variable=variable, analysis=analysis, optimizer=optimizer)
+
+        @property
+        def unmasked_lens_plane_model_image(self):
+            return self.most_likely_fit.unmasked_model_image_of_planes[0]
+
+        @property
+        def unmasked_source_plane_model_image(self):
+            return self.most_likely_fit.unmasked_model_image_of_planes[1]
 
 
 class MultiPlanePhase(PhaseImaging):

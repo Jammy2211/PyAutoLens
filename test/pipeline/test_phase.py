@@ -557,6 +557,8 @@ class TestResult(object):
         result.most_likely_padded_tracer
         result.most_likely_fit
         result.unmasked_model_image
+        result.unmasked_model_image_of_planes
+        result.unmasked_model_image_of_planes_and_galaxies
 
     def test__fit_figure_of_merit__matches_correct_fit_given_galaxy_profiles(self, ccd_data):
 

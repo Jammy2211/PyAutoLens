@@ -152,8 +152,8 @@ def make_pipeline(pipeline_name):
 
             phase_1_results = previous_results[0]
             phase_2_results = previous_results[1]
-            return image - phase_1_results.most_likely_fit.unmasked_model_image - \
-                   phase_2_results.most_likely_fit.unmasked_model_image
+            return image - phase_1_results.most_likely_fit.unmasked_lens_plane_model_image - \
+                   phase_2_results.most_likely_fit.unmasked_lens_plane_model_image
 
         def pass_priors(self, previous_results):
 

@@ -97,7 +97,7 @@ def make_lens_light_and_x1_source_inversion_pipeline(pipeline_name):
     class LensSubtractedPhase(ph.LensSourcePlanePhase):
 
         def modify_image(self, image, previous_results):
-            return image - previous_results[0].unmasked_model_image
+            return image - previous_results[0].unmasked_lens_plane_model_image
 
         def pass_priors(self, previous_results):
 
@@ -151,7 +151,7 @@ def make_lens_light_and_x1_source_inversion_pipeline(pipeline_name):
     class InversionPhase(ph.LensSourcePlanePhase):
 
         def modify_image(self, image, previous_results):
-            return image - previous_results[0].unmasked_model_image
+            return image - previous_results[2].unmasked_lens_plane_model_image
 
         def pass_priors(self, previous_results):
 
