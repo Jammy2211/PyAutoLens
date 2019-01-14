@@ -104,7 +104,7 @@ def make_mask_and_positions_pipeline(pipeline_name):
     class LensSubtractedPhase(ph.LensSourcePlanePhase):
 
         def modify_image(self, image, previous_results):
-            return image - previous_results[-1].unmasked_model_image
+            return image - previous_results[-1].unmasked_lens_plane_model_image
 
         def pass_priors(self, previous_results):
 

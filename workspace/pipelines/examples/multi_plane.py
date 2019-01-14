@@ -113,7 +113,7 @@ def make_multi_plane_pipeline(pipeline_name):
     class LensSubtractedPhase(ph.LensSourcePlanePhase):
 
         def modify_image(self, image, previous_results):
-            return image - previous_results[0].unmasked_model_image
+            return image - previous_results[0].unmasked_lens_plane_model_image
 
         def pass_priors(self, previous_results):
 
@@ -137,7 +137,7 @@ def make_multi_plane_pipeline(pipeline_name):
     class InversionPhase(ph.LensSourcePlanePhase):
 
         def modify_image(self, image, previous_results):
-            return image - previous_results[0].unmasked_model_image
+            return image - previous_results[0].unmasked_lens_plane_model_image
 
         def pass_priors(self, previous_results):
 
@@ -168,7 +168,7 @@ def make_multi_plane_pipeline(pipeline_name):
     class SingleLensPlanePhase(ph.LensSourcePlanePhase):
 
         def modify_image(self, image, previous_results):
-            return image - previous_results[0].unmasked_model_image
+            return image - previous_results[0].unmasked_lens_plane_model_image
 
         def pass_priors(self, previous_results):
 
@@ -205,7 +205,7 @@ def make_multi_plane_pipeline(pipeline_name):
     class MultiPlanePhase(ph.MultiPlanePhase):
 
         def modify_image(self, image, previous_results):
-            return image - previous_results[0].unmasked_model_image
+            return image - previous_results[0].unmasked_lens_plane_model_image
 
         def pass_priors(self, previous_results):
 
