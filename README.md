@@ -1,15 +1,15 @@
 # PyAutoLens
 
-PyAutoLens makes it simple to model strong gravitational lenses, like this one: 
+**PyAutoLens** makes it simple to model strong gravitational lenses, like this one: 
 
-PyAutoLens is based on the following papers:
+**PyAutoLens** is based on the following papers:
 
 https://arxiv.org/abs/1412.7436<br/>
 https://arxiv.org/abs/1708.07377
 
 ## Python Example
 
-With PyAutoLens, you can begin modeling a lens in just a couple of minutes. The example below demonstrates a simple analysis which fits a lens galaxy's light, mass and a source galaxy.
+With **PyAutoLens**, you can begin modeling a lens in just a couple of minutes. The example below demonstrates a simple analysis which fits a lens galaxy's light, mass and a source galaxy.
 
 ```python
 from autofit import conf
@@ -66,19 +66,13 @@ lens_fit_plotters.plot_fit_subplot(fit=result.most_likely_fit)
 
 ## Slack
 
-We're building a PyAutoLens community on Slack, so you should contact us on our [Slack channel](https://pyautolens.slack.com/) before getting started with PyAutoLens. Here, I can introduce you to the community, give you the latest update on the software and discuss how best to use PyAutoLens for your science case.
+We're building a **PyAutoLens** community on Slack, so you should contact us on our [Slack channel](https://pyautolens.slack.com/) before getting started. Here, I can introduce you to the community, give you the latest update on the software and discuss how best to use **PyAutoLens** for your science case.
 
 Unfortunately, Slack is invitation-only, so first send me an [email](https://github.com/Jammy2211) requesting an invite.
 
-## Workspace
-
-If you install PyAutoLens with Docker a workspace will be generated for you in the home directory the first time you run the image. This contains configuration, examples and tutorials. After the first time you run docker the workspace will persist any changes you make and won't be updated again.
-
-If you installed PyAutoLens with pip or want to get access to the latest workspace then you can download it from [here](https://drive.google.com/open?id=1QOwXBy2CFmdngN35tjQ4AsoiEHKWpoHR).
-
 ## Features
 
-PyAutoLens's advanced modeling features include:
+**PyAutoLens's** advanced modeling features include:
 
 - **Pipelines** - build automated analysis pipelines to fit complex lens models to large samples of strong lenses.
 - **Inversions** - Reconstruct complex source galaxy morphologies on a variety of pixel-grids.
@@ -87,50 +81,28 @@ PyAutoLens's advanced modeling features include:
 
 ## HowToLens
 
-Included with PyAutoLens is the HowToLens eBook, which provides an introduction to strong gravitational lens modeling with PyAutoLens. It can be found in the 'workspace/howtolens' folder and consists of 4 chapters:
+Included with **PyAutoLens** is the **HowToLens** eBook, which provides an introduction to strong gravitational lens modeling with **PyAutoLens**. It can be found in the workspace and consists of 4 chapters:
 
-- **Introduction** - An introduction to strong gravitational lensing and PyAutolens.
+- **Introduction** - An introduction to strong gravitational lensing and **PyAutolens**.
 - **Lens Modeling** - How to model strong lenses, including a primer on Bayesian non-linear analysis.
 - **Pipelines** - How to build pipelines and tailor them to your own science case.
 - **Inversions** - How to perform pixelized reconstructions of the source-galaxy.
 
-## Installation with Docker
+## Workspace
 
-We recommend you install AutoLens using Docker. It makes installation easier by containerising the project.
+**PyAutoLens** includes a workspace, which includes template scripts, examples and the **HowToLens** eBook. If you install **PyAutoLens** with conda or pip the workspace these should be included, however if not then workspace can be found on the master branch of this git repository.
 
-If you don't have Docker then you can install it by following the guide [here](https://docs.docker.com/install/).
+If you install **PyAutoLens** with Docker a workspace will be generated for you in the home directory the first time you run the image. After the first time you run docker the workspace will persist any changes you make and won't be updated again.
 
-Once you have Docker installed you can download the AutoLens Docker project with the command:
+## Depedencies
 
-```
-docker pull autolens/autolens
-```
+**PyAutoLens** requires [PyMultiNest](http://johannesbuchner.github.io/pymultinest-tutorial/install.html) and [Numba](https://github.com/numba/numba).
 
-This command can also be used to update the project.
+## Installation with conda
 
-The project can be run using:
+We recommend installation using a conda environment as this circumvents a number of compatibility issues when installing **PyMultiNest**.
 
-```
-docker run -it -e LOCAL_USER_ID=`id -u $USER` -h autolens -p 8888:8888 -p 6006:6006 -v $HOME/autolens_workspace:/home/user/workspace autolens/autolens
-```
-
-Once the project is running Docker will provide you with a URL. Copy and paste this URL into your browser, making sure you replace '(PyAutoLens or 127.0.0.1)' with '127.0.0.1'. This will bring up a Jupyter notebook including the 'howtolens' directory which is full of tutorials.
-
-Any changes you make inside the Docker workspace will be saved in the autolens_workspace in your home directory.
-
-## Installation with pip
-
-Installation is also available via pip, however there are a number of dependencies that can be installation difficult, see the file [INSTALL.notes](https://github.com/Jammy2211/PyAutoLens/blob/master/INSTALL.notes)
-
-AutoLens requires [PyMultiNest](http://johannesbuchner.github.io/pymultinest-tutorial/install.html) and [Numba](https://github.com/numba/numba).
-
-```
-$ pip install autolens
-```
-
-## Installation on Mac with conda
-
-Install [conda](https://conda.io/miniconda.html).
+First, install [conda](https://conda.io/miniconda.html).
 
 Create a conda environment:
 
@@ -155,6 +127,38 @@ Install autolens:
 ```
 pip install autolens
 ```
+
+## Installation with pip
+
+Installation is also available via pip, however there are reported issues with installing **PyMultiNest** that can make installation difficult, see the file [INSTALL.notes](https://github.com/Jammy2211/PyAutoLens/blob/master/INSTALL.notes)
+
+```
+$ pip install autolens
+```
+
+## Installation with Docker
+
+An alternative to conda and pip is Docker, which makes installation easier by containerising the project.
+
+If you don't have Docker then you can install it by following the guide [here](https://docs.docker.com/install/).
+
+Once you have Docker installed you can download the **PyAutoLens** Docker project with the command:
+
+```
+docker pull autolens/autolens
+```
+
+This command can also be used to update the project.
+
+The project can be run using:
+
+```
+docker run -it -e LOCAL_USER_ID=`id -u $USER` -h autolens -p 8888:8888 -p 6006:6006 -v $HOME/autolens_workspace:/home/user/workspace autolens/autolens
+```
+
+Once the project is running Docker will provide you with a URL. Copy and paste this URL into your browser, making sure you replace '(PyAutoLens or 127.0.0.1)' with '127.0.0.1'. This will bring up a Jupyter notebook including the 'howtolens' directory which is full of tutorials.
+
+Any changes you make inside the Docker workspace will be saved in the autolens_workspace in your home directory.
 
 ## Support & Discussion
 
