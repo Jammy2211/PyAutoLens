@@ -174,6 +174,18 @@ class TestAbstractPlane(object):
                                      cosmology=cosmo.Planck15)
             assert plane.has_light_profile == True
 
+        def test__has_mass_profile(self):
+
+            plane = pl.AbstractPlane(galaxies=[g.Galaxy()], cosmology=cosmo.Planck15)
+            assert plane.has_mass_profile == False
+
+            plane = pl.AbstractPlane(galaxies=[g.Galaxy(light_profile=mp.MassProfile())], cosmology=cosmo.Planck15)
+            assert plane.has_mass_profile == True
+
+            plane = pl.AbstractPlane(galaxies=[g.Galaxy(light_profile=mp.MassProfile()), g.Galaxy()],
+                                     cosmology=cosmo.Planck15)
+            assert plane.has_mass_profile == True
+
         def test__has_pixelization(self):
 
             plane = pl.AbstractPlane(galaxies=[g.Galaxy()], cosmology=cosmo.Planck15)

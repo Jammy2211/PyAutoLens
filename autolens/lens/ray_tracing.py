@@ -44,6 +44,72 @@ def check_tracer_for_redshifts(func):
     return wrapper
 
 
+def check_tracer_for_light_profile(func):
+    """If none of the tracer's galaxies have a light profile, it image-plane image cannot be computed. This wrapper \
+    makes this property return *None*.
+
+    Parameters
+    ----------
+    func : (self) -> Object
+        A property function that requires galaxies to have a mass profile.
+    """
+
+    @wraps(func)
+    def wrapper(self):
+        """
+
+        Parameters
+        ----------
+        self
+        args
+        kwargs
+
+        Returns
+        -------
+            A value or coordinate in the same coordinate system as those passed in.
+        """
+
+        if self.has_light_profile is True:
+            return func(self)
+        else:
+            return None
+
+    return wrapper
+
+
+def check_tracer_for_mass_profile(func):
+    """If none of the tracer's galaxies have a mass profile, it surface density, potential and deflections cannot \
+    be computed. This wrapper makes these properties return *None*.
+
+    Parameters
+    ----------
+    func : (self) -> Object
+        A property function that requires galaxies to have a mass profile.
+    """
+
+    @wraps(func)
+    def wrapper(self):
+        """
+
+        Parameters
+        ----------
+        self
+        args
+        kwargs
+
+        Returns
+        -------
+            A value or coordinate in the same coordinate system as those passed in.
+        """
+
+        if self.has_mass_profile is True:
+            return func(self)
+        else:
+            return None
+
+    return wrapper
+
+
 class AbstractTracer(object):
 
     def __init__(self, planes, cosmology):
@@ -87,6 +153,10 @@ class AbstractTracer(object):
         return any(list(map(lambda plane: plane.has_light_profile, self.planes)))
 
     @property
+    def has_mass_profile(self):
+        return any(list(map(lambda plane: plane.has_mass_profile, self.planes)))
+
+    @property
     def has_pixelization(self):
         return any(list(map(lambda plane: plane.has_pixelization, self.planes)))
 
@@ -115,18 +185,22 @@ class AbstractTracer(object):
         return list(filter(None, [plane.regularization for plane in self.planes]))
 
     @property
+    @check_tracer_for_mass_profile
     def surface_density(self):
         return sum([plane.surface_density for plane in self.planes])
 
     @property
+    @check_tracer_for_mass_profile
     def potential(self):
         return sum([plane.potential for plane in self.planes])
 
     @property
+    @check_tracer_for_mass_profile
     def deflections_y(self):
         return sum([plane.deflections_y for plane in self.planes])
 
     @property
+    @check_tracer_for_mass_profile
     def deflections_x(self):
         return sum([plane.deflections_x for plane in self.planes])
 
@@ -250,10 +324,12 @@ class Tracer(AbstractTracer):
         super(Tracer, self).__init__(planes=planes, cosmology=cosmology)
 
     @property
+    @check_tracer_for_light_profile
     def image_plane_image(self):
         return  self.image_plane.grid_stack.regular.scaled_array_from_array_1d(self.image_plane_image_1d)
 
     @property
+    @check_tracer_for_light_profile
     def image_plane_image_for_simulation(self):
         return sum(self.image_plane_image_of_planes_for_simulation)
 
@@ -262,6 +338,7 @@ class Tracer(AbstractTracer):
         return [plane.image_plane_image_for_simulation for plane in self.planes]
 
     @property
+    @check_tracer_for_light_profile
     def image_plane_image_1d(self):
         return sum(self.image_plane_image_1d_of_planes)
 
@@ -270,6 +347,7 @@ class Tracer(AbstractTracer):
         return [plane.image_plane_image_1d for plane in self.planes]
 
     @property
+    @check_tracer_for_light_profile
     def image_plane_blurring_image_1d(self):
         return sum(self.image_plane_blurring_image_1d_of_planes)
 

@@ -108,6 +108,10 @@ class AbstractPlane(object):
         return any(list(map(lambda galaxy: galaxy.has_light_profile, self.galaxies)))
 
     @property
+    def has_mass_profile(self):
+        return any(list(map(lambda galaxy: galaxy.has_mass_profile, self.galaxies)))
+
+    @property
     def has_pixelization(self):
         return any(list(map(lambda galaxy: galaxy.has_pixelization, self.galaxies)))
 

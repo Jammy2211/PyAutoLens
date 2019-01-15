@@ -58,7 +58,7 @@ def test__tracer_sub_plot_output_dependent_on_config(tracer, general_config, ray
     assert os.path.isfile(path=ray_tracing_plotter_path + 'tracer.png')
     os.remove(path=ray_tracing_plotter_path + 'tracer.png')
 
-def test__tracer_individuals__depedent_on_config(tracer, general_config, ray_tracing_plotter_path):
+def test__tracer_individuals__dependent_on_config(tracer, general_config, ray_tracing_plotter_path):
     ray_tracing_plotters.plot_ray_tracing_individual(tracer=tracer, output_path=ray_tracing_plotter_path,
                                                      output_format='png')
 

@@ -192,18 +192,12 @@ def plot_fit_individuals_lens_plane_only(fit_hyper, fit, units='kpc', output_pat
         in the python interpreter window.
     """
 
-    plot_lens_fit_model_image = \
-        conf.instance.general.get('output', 'plot_lens_fit_model_image', bool)
-    plot_lens_fit_residuals = \
-        conf.instance.general.get('output', 'plot_lens_fit_residuals', bool)
-    plot_lens_fit_chi_squareds = \
-        conf.instance.general.get('output', 'plot_lens_fit_chi_squareds', bool)
-    plot_lens_fit_contributions = \
-        conf.instance.general.get('output', 'plot_lens_fit_contributions', bool)
-    plot_lens_fit_hyper_chi_squareds = \
-        conf.instance.general.get('output', 'plot_lens_fit_hyper_chi_squareds', bool)
-    plot_lens_fit_hyper_noise_map = \
-        conf.instance.general.get('output', 'plot_lens_fit_hyper_noise_map', bool)
+    plot_lens_fit_model_image = conf.instance.general.get('output', 'plot_lens_fit_model_image', bool)
+    plot_lens_fit_residuals = conf.instance.general.get('output', 'plot_lens_fit_residual_map', bool)
+    plot_lens_fit_chi_squareds = conf.instance.general.get('output', 'plot_lens_fit_chi_squared_map', bool)
+    plot_lens_fit_contributions = conf.instance.general.get('output', 'plot_lens_fit_contributions', bool)
+    plot_lens_fit_hyper_chi_squareds = conf.instance.general.get('output', 'plot_lens_fit_hyper_chi_squared_map', bool)
+    plot_lens_fit_hyper_noise_map = conf.instance.general.get('output', 'plot_lens_fit_hyper_noise_map', bool)
 
     mask = lens_plotter_util.get_mask(fit=fit, should_plot_mask=True)
 
@@ -230,6 +224,6 @@ def plot_fit_individuals_lens_plane_only(fit_hyper, fit, units='kpc', output_pat
                                          output_path=output_path, output_filename='fit_hyper_noise_map', output_format=output_format)
 
     if plot_lens_fit_hyper_chi_squareds:
-        lens_plotter_util.plot_chi_squareds(fit=fit_hyper, mask=mask, units=units, kpc_per_arcsec=kpc_per_arcsec,
-                                            output_path=output_path, output_filename='fit_hyper_chi_squared_map',
-                                            output_format=output_format)
+        lens_plotter_util.plot_chi_squared_map(fit=fit_hyper, mask=mask, units=units, kpc_per_arcsec=kpc_per_arcsec,
+                                               output_path=output_path, output_filename='fit_hyper_chi_squared_map',
+                                               output_format=output_format)
