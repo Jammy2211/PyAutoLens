@@ -299,8 +299,8 @@ def plot_fit_individuals_lens_plane_only(fit, units='kpc', output_path=None, out
     if not ignore_config:
 
         plot_lens_fit_model_image = conf.instance.general.get('output', 'plot_lens_fit_model_image', bool)
-        plot_lens_fit_residuals = conf.instance.general.get('output', 'plot_lens_fit_residuals', bool)
-        plot_lens_fit_chi_squareds = conf.instance.general.get('output', 'plot_lens_fit_chi_squareds', bool)
+        plot_lens_fit_residuals = conf.instance.general.get('output', 'plot_lens_fit_residual_map', bool)
+        plot_lens_fit_chi_squareds = conf.instance.general.get('output', 'plot_lens_fit_chi_squared_map', bool)
 
     else:
 
@@ -380,7 +380,7 @@ def plot_fit_individuals_lens_and_source_planes(fit, units='kpc', output_path=No
                                                     kpc_per_arcsec=kpc_per_arcsec,
                                                     output_path=output_path,
                                                     output_filename='fit_source_plane_model_image',
-                                                output_format=output_format)
+                                                    output_format=output_format)
 
     if plot_lens_fit_source_plane_image:
 
