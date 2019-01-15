@@ -5,10 +5,10 @@ from scipy.spatial import Voronoi
 
 from autolens.data.array.plotters import plotter_util, grid_plotters
 from autolens.model.inversion import mappers
-from autolens.data.imaging.plotters import imaging_plotters
+from autolens.data.plotters import ccd_plotters
 
 
-def plot_image_and_mapper(image, mapper, mask=None, positions=None, should_plot_centres=False, should_plot_grid=False,
+def plot_image_and_mapper(ccd_data, mapper, mask=None, positions=None, should_plot_centres=False, should_plot_grid=False,
                           should_plot_border=False,
                           image_pixels=None, source_pixels=None,
                           units='arcsec', kpc_per_arcsec=None,
@@ -18,14 +18,14 @@ def plot_image_and_mapper(image, mapper, mask=None, positions=None, should_plot_
     plt.figure(figsize=figsize)
     plt.subplot(rows, columns, 1)
 
-    imaging_plotters.plot_image(image=image, mask=mask, positions=positions, image_plane_pix_grid=None, as_subplot=True,
-                                units=units, kpc_per_arcsec=None, xyticksize=16,
-                                norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
-                                figsize=None, aspect='equal', cmap='jet', cb_ticksize=10,
-                                titlesize=10, xlabelsize=10, ylabelsize=10,
-                                output_path=output_path, output_format=output_format)
+    ccd_plotters.plot_image(ccd_data=ccd_data, mask=mask, positions=positions, as_subplot=True,
+                            units=units, kpc_per_arcsec=None, xyticksize=16,
+                            norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
+                            figsize=None, aspect='equal', cmap='jet', cb_ticksize=10,
+                            titlesize=10, xlabelsize=10, ylabelsize=10,
+                            output_path=output_path, output_format=output_format)
 
-    image_grid = convert_grid(grid=mapper.grids.regular.unlensed_grid, units=units, kpc_per_arcsec=kpc_per_arcsec)
+    image_grid = convert_grid(grid=mapper.grid_stack.regular.unlensed_grid, units=units, kpc_per_arcsec=kpc_per_arcsec)
 
     point_colors = itertools.cycle(["y", "r", "k", "g", "m"])
     plot_image_plane_image_pixels(grid=image_grid, image_pixels=image_pixels, point_colors=point_colors)
@@ -73,9 +73,8 @@ def plot_rectangular_mapper(mapper, should_plot_centres=False, should_plot_grid=
     plot_rectangular_pixelization_lines(mapper=mapper, units=units, kpc_per_arcsec=kpc_per_arcsec)
 
     plotter_util.set_title(title=title, titlesize=titlesize)
-    grid_plotters.set_xy_labels_and_ticks_in_arcsec(units=units, kpc_per_arcsec=kpc_per_arcsec,
-                                                    xticks=mapper.geometry.xticks, yticks=mapper.geometry.yticks,
-                                                    xlabelsize=xlabelsize, ylabelsize=ylabelsize, xyticksize=xyticksize)
+    grid_plotters.set_xy_labels(units=units, kpc_per_arcsec=kpc_per_arcsec,
+                                xlabelsize=xlabelsize, ylabelsize=ylabelsize, xyticksize=xyticksize)
 
     plot_centres(should_plot_centres=should_plot_centres, mapper=mapper, units=units, kpc_per_arcsec=kpc_per_arcsec)
 
@@ -87,7 +86,7 @@ def plot_rectangular_mapper(mapper, should_plot_centres=False, should_plot_grid=
                 kpc_per_arcsec=kpc_per_arcsec, pointsize=30, xyticksize=xyticksize,
                 title=title, titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize)
 
-    mapper_grid = convert_grid(grid=mapper.grids.regular, units=units, kpc_per_arcsec=kpc_per_arcsec)
+    mapper_grid = convert_grid(grid=mapper.grid_stack.regular, units=units, kpc_per_arcsec=kpc_per_arcsec)
 
     point_colors = itertools.cycle(["y", "r", "k", "g", "m"])
     plot_source_plane_image_pixels(grid=mapper_grid, image_pixels=image_pixels, point_colors=point_colors)
@@ -120,10 +119,8 @@ def plot_voronoi_mapper(mapper, solution_vector, should_plot_centres=True, shoul
         plt.fill(*zip(*polygon), alpha=0.7, facecolor=col, lw=0.0)
 
     plotter_util.set_title(title=title, titlesize=titlesize)
-    grid_plotters.set_xy_labels_and_ticks_in_arcsec(units=units, kpc_per_arcsec=kpc_per_arcsec,
-                                                    xticks=mapper.grids.regular.xticks,
-                                                    yticks=mapper.grids.regular.yticks,
-                                                    xlabelsize=xlabelsize, ylabelsize=ylabelsize, xyticksize=xyticksize)
+    grid_plotters.set_xy_labels(units=units, kpc_per_arcsec=kpc_per_arcsec,
+                                xlabelsize=xlabelsize, ylabelsize=ylabelsize, xyticksize=xyticksize)
 
     plot_centres(should_plot_centres=should_plot_centres, mapper=mapper, units=units, kpc_per_arcsec=kpc_per_arcsec)
 
@@ -135,7 +132,7 @@ def plot_voronoi_mapper(mapper, solution_vector, should_plot_centres=True, shoul
                 kpc_per_arcsec=kpc_per_arcsec, pointsize=30, xyticksize=xyticksize,
                 title=title, titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize)
 
-    mapper_grid = convert_grid(grid=mapper.grids.regular, units=units, kpc_per_arcsec=kpc_per_arcsec)
+    mapper_grid = convert_grid(grid=mapper.grid_stack.regular, units=units, kpc_per_arcsec=kpc_per_arcsec)
 
     point_colors = itertools.cycle(["y", "r", "k", "g", "m"])
     plot_source_plane_image_pixels(grid=mapper_grid, image_pixels=image_pixels, point_colors=point_colors)
@@ -281,7 +278,7 @@ def plot_plane_grid(should_plot_grid, mapper, as_subplot, units, kpc_per_arcsec,
 
     if should_plot_grid:
 
-        grid_units = convert_grid(grid=mapper.grids.regular, units=units, kpc_per_arcsec=kpc_per_arcsec)
+        grid_units = convert_grid(grid=mapper.grid_stack.regular, units=units, kpc_per_arcsec=kpc_per_arcsec)
 
         grid_plotters.plot_grid(grid=grid_units, as_subplot=as_subplot, units=units, kpc_per_arcsec=kpc_per_arcsec,
                                 pointsize=pointsize, xyticksize=xyticksize, title=title, titlesize=titlesize,
@@ -292,7 +289,7 @@ def plot_border(should_plot_border, mapper, as_subplot, units, kpc_per_arcsec, p
 
     if should_plot_border:
 
-        border_arc_seconds = mapper.grids.regular[mapper.border]
+        border_arc_seconds = mapper.grid_stack.regular[mapper.border]
         border_units = convert_grid(grid=border_arc_seconds, units=units, kpc_per_arcsec=kpc_per_arcsec)
 
         grid_plotters.plot_grid(grid=border_units, as_subplot=as_subplot, units=units, kpc_per_arcsec=kpc_per_arcsec,

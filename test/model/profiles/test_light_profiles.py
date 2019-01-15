@@ -476,6 +476,7 @@ class TestLuminosityIntegral(object):
 
         assert 3.0*luminosity_tot[0] == pytest.approx(intensity_integral, 0.02)
 
+
 class TestGrids(object):
 
     def test__grid_to_eccentric_radius(self, elliptical):

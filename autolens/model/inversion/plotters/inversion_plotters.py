@@ -7,8 +7,8 @@ def plot_reconstructed_image(inversion, mask=None, positions=None, grid=None, as
                              units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
                              cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
                              cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
-                             title='Reconstructed Image', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
-                             output_path=None, output_format='show', output_filename='reconstructed_image'):
+                             title='Reconstructed CCD', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
+                             output_path=None, output_format='show', output_filename='reconstructed_inversion_image'):
 
     array_plotters.plot_array(array=inversion.reconstructed_data, mask=mask, positions=positions, grid=grid,
                               as_subplot=as_subplot,
@@ -29,7 +29,10 @@ def plot_reconstructed_pixelization(inversion, plot_origin=True, positions=None,
                                     cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
                                     title='Reconstructed Pixelization', titlesize=16, xlabelsize=16, ylabelsize=16,
                                     xyticksize=16,
-                                    output_path=None, output_format='show', output_filename='reconstructed_image'):
+                                    output_path=None, output_format='show', output_filename='reconstructed_inversion_image'):
+
+    if output_format is 'fits':
+        return
 
     plotter_util.setup_figure(figsize=figsize, as_subplot=as_subplot)
 

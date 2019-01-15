@@ -79,22 +79,48 @@ class TestImagePlanePixelization:
                                                   [0.0, -1.5], [0.0, -0.5], [0.0, 0.5], [0.0, 1.5],
                                                   [-1.0, -0.5]])).all()
 
+    def test__pixelization_regular_grid_from_regular_grid__offset_mask__origin_shift_corrects(self):
+
+        ma = mask.Mask(array=np.array([[True, True, False, False, False],
+                                       [True, True, False, False, False],
+                                       [True, True, False, False, False],
+                                       [True,  True, True,  True,  True],
+                                       [True,  True, True,  True,  True]]), pixel_scale=1.0, centre=(1.0, 1.0))
+
+        regular_grid = grids.RegularGrid.from_mask(mask=ma)
+
+        adaptive_image_grid = pixelizations.ImagePlanePixelization(shape=(3, 3))
+
+        pix_grid = adaptive_image_grid.image_plane_pix_grid_from_regular_grid(regular_grid=regular_grid)
+
+        assert pix_grid.shape == (3, 3)
+        assert pix_grid.pixel_scales == (1.0, 1.0)
+        assert pix_grid.total_sparse_pixels == 9
+        assert (pix_grid.sparse_to_unmasked_sparse == np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])).all()
+        assert (pix_grid.unmasked_sparse_to_sparse == np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])).all()
+        assert (pix_grid.regular_to_unmasked_sparse == np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])).all()
+        assert (pix_grid.regular_to_sparse == np.array([0, 1, 2, 3, 4, 5, 6, 7, 8])).all()
+        assert (pix_grid.sparse_grid == np.array([[2.0, 0.0], [2.0, 1.0], [2.0, 2.0],
+                                                  [1.0, 0.0], [1.0, 1.0], [1.0, 2.0],
+                                                  [0.0, 0.0], [0.0, 1.0], [0.0, 2.0]])).all()
+        assert pix_grid.regular_grid == pytest.approx(regular_grid, 1e-4)
+
     def test__setup_pixelization__galaxies_have_no_pixelization__returns_normal_grids(self):
 
         ma = mask.Mask(np.array([[False, False, False],
                                  [False, False, False],
                                  [False, False, False]]), pixel_scale=1.0)
 
-        data_grids = grids.DataGrids.grids_from_mask_sub_grid_size_and_psf_shape(mask=ma, sub_grid_size=1,
-                                                                                 psf_shape=(1, 1))
+        grid_stack = grids.GridStack.grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=ma, sub_grid_size=1,
+                                                                                      psf_shape=(1, 1))
 
         galaxy = g.Galaxy()
 
         image_plane_pix_grids = \
-            pixelizations.setup_image_plane_pixelization_grid_from_galaxies_and_grids(galaxies=[galaxy, galaxy],
-                                                                                      data_grids=data_grids)
+            pixelizations.setup_image_plane_pixelization_grid_from_galaxies_and_grid_stack(galaxies=[galaxy, galaxy],
+                                                                                           grid_stack=grid_stack)
 
-        assert image_plane_pix_grids == data_grids
+        assert image_plane_pix_grids == grid_stack
 
     def test__setup_pixelization__galaxies_have_other_pixelization__returns_normal_grids(self):
 
@@ -102,18 +128,18 @@ class TestImagePlanePixelization:
                                  [False, False, False],
                                  [False, False, False]]), pixel_scale=1.0)
 
-        data_grids = grids.DataGrids.grids_from_mask_sub_grid_size_and_psf_shape(mask=ma, sub_grid_size=1,
-                                                                                 psf_shape=(1, 1))
+        grid_stack = grids.GridStack.grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=ma, sub_grid_size=1,
+                                                                                      psf_shape=(1, 1))
 
         galaxy = g.Galaxy(pixelization=pixelizations.Rectangular(shape=(3,3)),
                           regularization=regularization.Constant())
 
 
         image_plane_pix_grids = \
-            pixelizations.setup_image_plane_pixelization_grid_from_galaxies_and_grids(galaxies=[galaxy, galaxy],
-                                                                                      data_grids=data_grids)
+            pixelizations.setup_image_plane_pixelization_grid_from_galaxies_and_grid_stack(galaxies=[galaxy, galaxy],
+                                                                                           grid_stack=grid_stack)
 
-        assert image_plane_pix_grids == data_grids
+        assert image_plane_pix_grids == grid_stack
 
     def test__setup_pixelization__galaxy_has_pixelization__but_grid_is_padded_grid__returns_normal_grids(self):
 
@@ -121,17 +147,17 @@ class TestImagePlanePixelization:
                                  [False, False, False],
                                  [False, True, False]]), pixel_scale=1.0)
 
-        data_grids = grids.DataGrids.padded_grids_from_mask_sub_grid_size_and_psf_shape(mask=ma, sub_grid_size=1,
-                                                                                 psf_shape=(1, 1))
+        grid_stack = grids.GridStack.padded_grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=ma, sub_grid_size=1,
+                                                                                             psf_shape=(1, 1))
 
         galaxy = g.Galaxy(pixelization=pixelizations.AdaptiveMagnification(shape=(3, 3)),
                           regularization=regularization.Constant())
 
         image_plane_pix_grids = \
-            pixelizations.setup_image_plane_pixelization_grid_from_galaxies_and_grids(galaxies=[galaxy, galaxy],
-                                                                                      data_grids=data_grids)
+            pixelizations.setup_image_plane_pixelization_grid_from_galaxies_and_grid_stack(galaxies=[galaxy, galaxy],
+                                                                                           grid_stack=grid_stack)
 
-        assert image_plane_pix_grids == data_grids
+        assert image_plane_pix_grids == grid_stack
 
     def test__setup_pixelization__galaxy_has_pixelization__returns_grids_with_pix_grid(self):
         
@@ -139,22 +165,22 @@ class TestImagePlanePixelization:
                                  [False, False, False],
                                  [False, True, False]]), pixel_scale=1.0)
 
-        data_grids = grids.DataGrids.grids_from_mask_sub_grid_size_and_psf_shape(mask=ma, sub_grid_size=1, 
-                                                                                 psf_shape=(1, 1))
+        grid_stack = grids.GridStack.grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=ma, sub_grid_size=1,
+                                                                                      psf_shape=(1, 1))
 
         galaxy = g.Galaxy(pixelization=pixelizations.AdaptiveMagnification(shape=(3, 3)),
                           regularization=regularization.Constant())
 
         image_plane_pix_grids = \
-            pixelizations.setup_image_plane_pixelization_grid_from_galaxies_and_grids(galaxies=[galaxy, galaxy],
-                                                                                      data_grids=data_grids)
+            pixelizations.setup_image_plane_pixelization_grid_from_galaxies_and_grid_stack(galaxies=[galaxy, galaxy],
+                                                                                           grid_stack=grid_stack)
 
-        assert (image_plane_pix_grids.regular == data_grids.regular).all()
-        assert (image_plane_pix_grids.sub == data_grids.sub).all()
-        assert (image_plane_pix_grids.blurring == data_grids.blurring).all()
-        assert (image_plane_pix_grids.pix == np.array([[1.0, -1.0], [1.0, 0.0], [1.0, 1.0],
-                                                       [0.0, -1.0], [0.0, 0.0], [0.0, 1.0],
-                                                       [-1.0, -1.0],             [-1.0, 1.0]])).all()
+        assert (image_plane_pix_grids.regular == grid_stack.regular).all()
+        assert (image_plane_pix_grids.sub == grid_stack.sub).all()
+        assert (image_plane_pix_grids.blurring == grid_stack.blurring).all()
+        assert image_plane_pix_grids.pix == pytest.approx(np.array([[1.0, -1.0], [1.0, 0.0], [1.0, 1.0],
+                                                                    [0.0, -1.0], [0.0, 0.0], [0.0, 1.0],
+                                                                    [-1.0, -1.0],            [-1.0, 1.0]]), 1.0e-4)
 
 
 class TestRectangular:
@@ -422,68 +448,3 @@ class TestAdaptiveMagnification:
             pix = pixelizations.AdaptiveMagnification(shape=(3, 3))
 
             assert pix.shape == (3, 3)
-
-
-class TestAmorphous:
-
-    class TestKMeans:
-
-        def test__simple_points__sets_up_two_clusters(self):
-
-            cluster_grid = np.array([[1.99, 0.99], [2.0, 1.0], [2.01, 1.01],
-                                     [0.99, 1.99], [1.0, 2.0], [1.01, 2.01]])
-
-            pix = pixelizations.Amorphous(pix_grid_shape=(1, 2))
-
-            pixel_centers, pix_to_image = pix.kmeans_cluster(pixels=2, cluster_grid=cluster_grid)
-
-            assert [2.0, 2.0] in pixel_centers
-            assert [1.0, 1.0] in pixel_centers
-
-            assert list(pix_to_image).count(0) == 3
-            assert list(pix_to_image).count(1) == 3
-
-        def test__simple_points__sets_up_three_clusters(self):
-            cluster_grid = np.array([[1.99, -0.99], [2.0, -1.0], [2.01, -1.01],
-                                     [0.99, 0.99], [1.0, 1.0], [1.01, 1.01],
-                                     [-0.99, 1.99], [-1.0, 2.0], [-1.01, 2.01]])
-
-            pix = pixelizations.Amorphous(pix_grid_shape=(1, 3))
-
-            pixel_centers, pix_to_image = pix.kmeans_cluster(pixels=3, cluster_grid=cluster_grid)
-
-            assert [2.0, 2.0] in pixel_centers
-            assert [1.0, 1.0] in pixel_centers
-            assert [-1.0, -1.0] in pixel_centers
-
-            assert list(pix_to_image).count(0) == 3
-            assert list(pix_to_image).count(1) == 3
-            assert list(pix_to_image).count(2) == 3
-
-        def test__simple_points__sets_up_three_clusters_more_points_in_third_cluster(self):
-
-            cluster_grid = np.array([[-0.99, -0.99], [-1.0, -1.0], [-1.01, -1.01],
-
-                                     [0.99, 0.99], [1.0, 1.0], [1.01, 1.01],
-                                     [0.99, 0.99], [1.0, 1.0], [1.01, 1.01],
-
-                                     [1.99, 1.99], [2.0, 2.0], [2.01, 2.01],
-                                     [1.99, 1.99], [2.0, 2.0], [2.01, 2.01],
-                                     [1.99, 1.99], [2.0, 2.0], [2.01, 2.01],
-                                     [1.99, 1.99], [2.0, 2.0], [2.01, 2.01]])
-
-            pix = pixelizations.Amorphous(pix_grid_shape=(1, 3))
-
-            pixel_centers, pix_to_image = pix.kmeans_cluster(pixels=3, cluster_grid=cluster_grid)
-
-            pixel_centers = list(map(lambda x: pytest.approx(list(x), 1e-3), pixel_centers))
-
-            assert [2.0, 2.0] in pixel_centers
-            assert [1.0, 1.0] in pixel_centers
-            assert [-1.0, -1.0] in pixel_centers
-
-            assert list(pix_to_image).count(0) == 3 or 6 or 12
-            assert list(pix_to_image).count(1) == 3 or 6 or 12
-            assert list(pix_to_image).count(2) == 3 or 6 or 12
-
-            assert list(pix_to_image).count(0) != list(pix_to_image).count(1) != list(pix_to_image).count(2)

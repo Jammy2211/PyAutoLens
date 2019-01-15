@@ -9,6 +9,7 @@ RUN apt-get update \
 			gcc g++ gfortran cmake make git \
 			liblapack3 liblapack-dev \
 			python3-pip python3-setuptools python3-pytest \
+    			python3-tk \
 	&& apt-get clean \
 	&& apt-get autoclean \
 	&& apt-get autoremove \

@@ -5,9 +5,8 @@ import numpy as np
 
 
 def transform_grid(func):
-    """
-    Wrap the function in a function that checks whether the coordinates have been transformed. If they have not been \
-    transformed then they are transformed.
+    """Wrap the function in a function that checks whether the coordinates have been transformed. If they have not \ 
+    been transformed then they are transformed.
 
     Parameters
     ----------
@@ -51,7 +50,13 @@ class TransformedGrid(np.ndarray):
 class GeometryProfile(object):
 
     def __init__(self, centre=(0.0, 0.0)):
-        """Abstract GeometryProfile, describing an object with y, x cartesian coordinates"""
+        """An abstract geometry profile, which describes profiles with y and x centre Cartesian coordinates
+        
+        Parameters
+        -----------
+      centre : (float, float)
+            The (y,x) coordinates of the centre of the profile.
+        """
         self.centre = centre
 
     def transform_grid_to_reference_frame(self, grid):
@@ -59,35 +64,6 @@ class GeometryProfile(object):
 
     def transform_grid_from_reference_frame(self, grid):
         raise NotImplemented()
-
-    @classmethod
-    def from_profile(cls, profile, **kwargs):
-        """ Creates any profiles from any other profiles, keeping all attributes from the original profiles that can
-        then be passed into the constructor of the new profiles. Any none optional attributes required by the new \
-        profiles's constructor which are not available as attributes of the original profiles must be passed in as \
-        key word arguments. Arguments matching attributes in the original profiles may be passed in to override \
-        those attributes.
-
-        Examples
-        ----------
-        p = profiles.Profile(origin=(1, 1))
-        elliptical_profile = profiles.EllipticalProfile.from_profile(p, axis_ratio=1, phi=2)
-
-        elliptical_profile = profiles.EllipticalProfile(1, 2)
-        profiles.Profile.from_profile(elliptical_profile).__class__ == profiles.Profile
-
-        Parameters
-        ----------
-        profile: GeometryProfile
-            A child of the profiles class
-        kwargs
-            Key word constructor arguments for the new profiles
-        """
-        arguments = vars(profile)
-        arguments.update(kwargs)
-        init_args = inspect.getfullargspec(cls.__init__).args
-        arguments = {argument[0]: argument[1] for argument in arguments.items() if argument[0] in init_args}
-        return cls(**arguments)
 
     def __repr__(self):
         return '{}\n{}'.format(self.__class__.__name__,
@@ -97,28 +73,27 @@ class GeometryProfile(object):
 class SphericalProfile(GeometryProfile):
 
     def __init__(self, centre=(0.0, 0.0)):
-        """ Generic circular profiles class to contain functions shared by light and mass profiles.
+        """ A spherical profile, which describes profiles with y and x centre Cartesian coordinates.
 
         Parameters
         ----------
         centre: (float, float)
-            The (y,x) coordinates of the origin of the profile.
+            The (y,x) coordinates of the centre of the profile.
         """
         super(SphericalProfile, self).__init__(centre)
 
     @transform_grid
     def grid_to_radius(self, grid):
-        """
-        Convert coordinates to a circular radius.
+        """Convert a grid of (y, x) coordinates to their circular radii.
 
-        If the coordinates have not been transformed to the profile's origin, this is performed automatically.
+        If the coordinates have not been transformed to the profile's centre, this is performed automatically.
 
         Parameters
         ----------
         grid : TransformedGrid(ndarray)
             The (y, x) coordinates in the reference frame of the profile.
         """
-        return np.sqrt(np.add(np.square(grid[:, 1]), np.square(grid[:, 0])))
+        return np.sqrt(np.add(np.square(grid[:, 0]), np.square(grid[:, 1])))
 
     def grid_angle_to_profile(self, grid_thetas):
         """The angle between each (y,x) coordinate on the grid and the profile, in radians.
@@ -148,7 +123,7 @@ class SphericalProfile(GeometryProfile):
 
     def transform_grid_to_reference_frame(self, grid):
         """Transform a grid of (y,x) coordinates to the reference frame of the profile, including a translation to \
-        its origin.
+        its centre.
 
         Parameters
         ----------
@@ -160,7 +135,7 @@ class SphericalProfile(GeometryProfile):
 
     def transform_grid_from_reference_frame(self, grid):
         """Transform a grid of (y,x) coordinates from the reference frame of the profile to the original observer \
-        reference frame, including a translation from the profile's origin.
+        reference frame, including a translation from the profile's centre.
 
         Parameters
         ----------
@@ -174,16 +149,17 @@ class SphericalProfile(GeometryProfile):
 class EllipticalProfile(SphericalProfile):
 
     def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0):
-        """ Generic elliptical profiles class to contain functions shared by light and mass profiles.
+        """ An elliptical profile, which describes profiles with y and x centre Cartesian coordinates, an axis-ratio \
+        and rotational angle phi.
 
         Parameters
         ----------
         centre: (float, float)
-            The (y,x) coordinates of the origin of the profiles
+            The (y,x) coordinates of the centre of the profile.
         axis_ratio : float
             Ratio of profiles ellipse's minor and major axes (b/a)
         phi : float
-            Rotational angle of profiles ellipse counter-clockwise from positive x-axis
+            Rotation angle of profiles ellipse counter-clockwise from positive x-axis
         """
         super(EllipticalProfile, self).__init__(centre)
         self.axis_ratio = axis_ratio
@@ -219,11 +195,11 @@ class EllipticalProfile(SphericalProfile):
         return np.cos(theta_coordinate_to_profile), np.sin(theta_coordinate_to_profile)
 
     def rotate_grid_from_profile(self, grid_elliptical):
-        """ Rotate a grid of elliptical (y,x) coordinates from the reference frame of the profile back to the
-        unrotated coordinate grid reference frame (coordinates are not shifted back to their original origin).
+        """ Rotate a grid of elliptical (y,x) coordinates from the reference frame of the profile back to the \
+        unrotated coordinate grid reference frame (coordinates are not shifted back to their original centre).
 
-        This routine is used after computing deflection angles in the reference frame of the profile, so that the
-        deflections can be re-rotated to the frame of the original coordinates before performing ray-tracing.
+        This routine is used after computing deflection angles in the reference frame of the profile, so that the \
+        deflection angles can be re-rotated to the frame of the original coordinates before performing ray-tracing.
 
         Parameters
         ----------
@@ -236,8 +212,7 @@ class EllipticalProfile(SphericalProfile):
 
     @transform_grid
     def grid_to_elliptical_radii(self, grid):
-        """
-        Convert a grid of (y,x) coordinates to an elliptical radius.
+        """ Convert a grid of (y,x) coordinates to an elliptical radius.
 
         If the coordinates have not been transformed to the profile's geometry, this is performed automatically.
 
@@ -250,9 +225,8 @@ class EllipticalProfile(SphericalProfile):
 
     @transform_grid
     def grid_to_eccentric_radii(self, grid):
-        """
-        Convert a grid of (y,x) coordinates to an eccentric radius, which is (1.0/axis_ratio) * elliptical radius and
-        used to define light profile half-light radii using circular radii.
+        """Convert a grid of (y,x) coordinates to an eccentric radius, which is (1.0/axis_ratio) * elliptical radius \
+        and used to define light profile half-light radii using circular radii.
 
         If the coordinates have not been transformed to the profile's geometry, this is performed automatically.
 
@@ -265,7 +239,7 @@ class EllipticalProfile(SphericalProfile):
 
     def transform_grid_to_reference_frame(self, grid):
         """Transform a grid of (y,x) coordinates to the reference frame of the profile, including a translation to \
-        its origin and a rotation to it orientation.
+        its centre and a rotation to it orientation.
 
         Parameters
         ----------
@@ -284,7 +258,7 @@ class EllipticalProfile(SphericalProfile):
 
     def transform_grid_from_reference_frame(self, grid):
         """Transform a grid of (y,x) coordinates from the reference frame of the profile to the original observer \
-        reference frame, including a rotation to its original orientation and a translation from the profile's origin.
+        reference frame, including a rotation to its original orientation and a translation from the profile's centre.
 
         Parameters
         ----------

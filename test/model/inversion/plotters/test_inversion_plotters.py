@@ -4,9 +4,9 @@
 # import pytest
 #
 # from autofit import conf
-# from autolens.imaging import scaled_array
-# from autolens.imaging import regular as im
-# from autolens.imaging import masks as msk
+# from autolens.ccd import scaled_array
+# from autolens.ccd import regular as im
+# from autolens.ccd import masks as msk
 # from autolens.profiles import light_profiles as lp
 # from autolens.profiles import mass_profiles as mp
 # from autolens.lensing import model_galaxy as g
@@ -38,10 +38,10 @@
 # def test_image():
 #
 #     regular = scaled_array.ScaledSquarePixelArray(array=np.ones((3,3)), pixel_scale=1.0)
-#     noise_map_ = im.NoiseMap(array=2.0*np.ones((3,3)), pixel_scale=1.0)
+#     noise_map_1d = im.NoiseMap(array=2.0*np.ones((3,3)), pixel_scale=1.0)
 #     psf = im.PSF(array=3.0*np.ones((3,3)), pixel_scale=1.0)
 #
-#     return im.Image(array=regular, pixel_scale=1.0, noise_map_=noise_map_, psf=psf)
+#     return im.CCD(array=regular, pixel_scale=1.0, noise_map_1d=noise_map_1d, psf=psf)
 #
 # @pytest.fixture(name='galaxy_light')
 # def test_galaxy_light():
@@ -52,7 +52,7 @@
 # def test_galaxy_mass():
 #     return g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=1.0))
 #
-# @pytest.fixture(name='grids')
+# @pytest.fixture(name='grid_stacks')
 # def test_grids():
 #     return msk.ImagingGrids.from_shape_and_pixel_scale(shape=(100, 100), pixel_scale=0.05, sub_grid_size=2)
 #
@@ -61,8 +61,8 @@
 #     return pix.Rectangular(shape=(25, 25))
 #
 # @pytest.fixture(name='rectangular_mapper')
-# def test_rectangular_mapper(rectangular_pixelization, grids):
-#     return rectangular_pixelization.mapper_from_grids(grids=grids)
+# def test_rectangular_mapper(rectangular_pixelization, grid_stacks):
+#     return rectangular_pixelization.mapper_from_grids(grid_stacks=grid_stacks)
 #
 # @pytest.fixture(name='regularization')
 # def test_regularization():

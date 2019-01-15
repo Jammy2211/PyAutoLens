@@ -94,7 +94,7 @@ class GalaxyModel(model_mapper.AbstractPriorModel):
             The regularization-scheme used to regularization reconstruct the galaxy light when fitting the observed \
             regular if using an inversion.
         hyper_galaxy : HyperGalaxy
-            A model hyper-galaxy used for scaling the observed regular's noise.
+            A model hyper-galaxy used for scaling the observed regular's noise_map.
         """
 
         self.align_centres = align_centres
@@ -284,9 +284,9 @@ class GalaxyModel(model_mapper.AbstractPriorModel):
                        in self.profile_prior_model_dict.items()}, **self.constant_profile_dict}
 
         if isinstance(self.redshift, galaxy.Redshift):
-            redshift = self.redshift
+            redshift = self.redshift.value
         else:
-            redshift = self.redshift.instance_for_arguments(arguments)
+            redshift = self.redshift.instance_for_arguments(arguments).value
         pixelization = self.pixelization.instance_for_arguments(arguments) \
             if isinstance(self.pixelization, model_mapper.PriorModel) \
             else self.pixelization
@@ -297,7 +297,7 @@ class GalaxyModel(model_mapper.AbstractPriorModel):
             if isinstance(self.hyper_galaxy, model_mapper.PriorModel) \
             else self.hyper_galaxy
 
-        return galaxy.Galaxy(redshift=redshift.redshift, pixelization=pixelization, regularization=regularization,
+        return galaxy.Galaxy(redshift=redshift, pixelization=pixelization, regularization=regularization,
                              hyper_galaxy=hyper_galaxy, **profiles)
 
     def gaussian_prior_model_for_arguments(self, arguments):
