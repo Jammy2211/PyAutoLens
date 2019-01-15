@@ -73,7 +73,7 @@ def make_no_lens_light_and_x2_source_inversion_pipeline(pipeline_name):
             self.lens_galaxies.lens.mass.centre_1 = mm.GaussianPrior(mean=0.0, sigma=0.1)
 
     phase1 = LensSourceX1Phase(lens_galaxies=dict(lens=gm.GalaxyModel(mass=mp.EllipticalIsothermal,
-                                                                    shear=mp.ExternalShear)),
+                                                                      shear=mp.ExternalShear)),
                              source_galaxies=dict(source=gm.GalaxyModel(light=lp.EllipticalSersic)),
                              mask_function=mask_function_annular, optimizer_class=nl.MultiNest,
                              phase_name=pipeline_name + '/phase_1_x1_source')
@@ -93,7 +93,7 @@ def make_no_lens_light_and_x2_source_inversion_pipeline(pipeline_name):
 
     ### PHASE 2 ###
 
-    # In phase 2, we fit the lens's mass and source galaxy using an inversion, where we will:
+    # In phase 2, we fit the lens's mass and source galaxy using an inversion, where we:
 
     # 1) Initialize the priors on the lens galaxy using the results of phase 1.
     # 2) Assume default priors for all source inversion parameters.
@@ -105,8 +105,7 @@ def make_no_lens_light_and_x2_source_inversion_pipeline(pipeline_name):
             self.lens_galaxies.lens.mass = previous_results[0].variable.lens.mass
             self.lens_galaxies.lens.shear = previous_results[0].variable.lens.shear
 
-    phase2 = InversionPhase(lens_galaxies=dict(lens=gm.GalaxyModel(light=lp.EllipticalSersic,
-                                                                   mass=mp.EllipticalIsothermal,
+    phase2 = InversionPhase(lens_galaxies=dict(lens=gm.GalaxyModel(mass=mp.EllipticalIsothermal,
                                                                    shear=mp.ExternalShear)),
                             source_galaxies=dict(source=gm.GalaxyModel(pixelization=pix.AdaptiveMagnification,
                                                                       regularization=reg.Constant)),
