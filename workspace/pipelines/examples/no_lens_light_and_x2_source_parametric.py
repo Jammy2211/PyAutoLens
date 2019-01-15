@@ -69,7 +69,7 @@ def make_no_lens_light_and_x2_source_parametric_pipeline(pipeline_name):
             self.lens_galaxies.lens.mass.centre_1 = mm.GaussianPrior(mean=0.0, sigma=0.1)
 
     phase1 = LensSourceX1Phase(lens_galaxies=dict(lens=gm.GalaxyModel(mass=mp.EllipticalIsothermal,
-                                                                    shear=mp.ExternalShear)),
+                                                                      shear=mp.ExternalShear)),
                              source_galaxies=dict(source_0=gm.GalaxyModel(light=lp.EllipticalSersic)),
                              mask_function=mask_function, optimizer_class=nl.MultiNest,
                              phase_name=pipeline_name + '/phase_1_x1_source')
@@ -102,7 +102,7 @@ def make_no_lens_light_and_x2_source_parametric_pipeline(pipeline_name):
             self.source_galaxies.source_0 = previous_results[0].variable.source_0
 
     phase2 = LensSourceX2Phase(lens_galaxies=dict(lens=gm.GalaxyModel(mass=mp.EllipticalIsothermal,
-                                                                        shear=mp.ExternalShear)),
+                                                                      shear=mp.ExternalShear)),
                                  source_galaxies=dict(source_0=gm.GalaxyModel(light=lp.EllipticalSersic),
                                                       source_1=gm.GalaxyModel(light=lp.EllipticalSersic)),
                                  optimizer_class=nl.MultiNest, mask_function=mask_function,
