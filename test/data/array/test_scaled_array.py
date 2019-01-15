@@ -3,6 +3,7 @@ import os
 import numpy as np
 import pytest
 
+from autolens import exc
 from autolens.data.array.util import array_util, grid_util
 from autolens.data.array import scaled_array
 
@@ -650,6 +651,14 @@ class TestScaledSquarePixelArray:
             assert data_grid.central_pixel_coordinates == (1.5, 1.0)
             assert data_grid.shape_arc_seconds == pytest.approx((0.4, 0.3))
 
+        def test__zero_or_negative_pixel_scale__raises_exception(self):
+
+            with pytest.raises(exc.ScaledArrayException):
+                scaled_array.ScaledSquarePixelArray(array=np.ones((2,2)), pixel_scale=0.0)
+
+            with pytest.raises(exc.ScaledArrayException):
+                scaled_array.ScaledSquarePixelArray(array=np.ones((2,2)), pixel_scale=-0.5)
+
 
 class TestScaledRectangularPixelArray:
 
@@ -689,3 +698,16 @@ class TestScaledRectangularPixelArray:
             assert data_grid.central_pixel_coordinates == (1.5, 1.0)
             assert data_grid.shape_arc_seconds == pytest.approx((0.8, 0.3))
 
+        def test__zero_or_negative_pixel_scale__raises_exception(self):
+
+            with pytest.raises(exc.ScaledArrayException):
+                scaled_array.ScaledRectangularPixelArray(array=np.ones((2,2)), pixel_scales=(0.0, 0.5))
+
+            with pytest.raises(exc.ScaledArrayException):
+                scaled_array.ScaledRectangularPixelArray(array=np.ones((2,2)), pixel_scales=(0.5, 0.0))
+
+            with pytest.raises(exc.ScaledArrayException):
+                scaled_array.ScaledRectangularPixelArray(array=np.ones((2,2)), pixel_scales=(-0.5, 0.5))
+
+            with pytest.raises(exc.ScaledArrayException):
+                scaled_array.ScaledRectangularPixelArray(array=np.ones((2,2)), pixel_scales=(0.5, -0.5))

@@ -23,17 +23,17 @@ class MockMask(object):
 
 class DummyPhaseImaging(object):
     def __init__(self):
-        self.masked_image = None
+        self.data = None
         self.positions = None
         self.previous_results = None
         self.phase_name = "dummy_phase"
         self.mask = None
 
-    def run(self, masked_image, previous_results, mask=None):
-        print(mask)
-        self.masked_image = masked_image
+    def run(self, data, previous_results, mask=None, positions=None):
+        self.data = data
         self.previous_results = previous_results
         self.mask = mask
+        self.positions = positions
         return non_linear.Result(model_mapper.ModelInstance(), 1)
 
 
@@ -43,11 +43,22 @@ class TestPassMask(object):
         phase_1 = DummyPhaseImaging()
         phase_2 = DummyPhaseImaging()
         pipeline = pl.PipelineImaging("", phase_1, phase_2)
-        pipeline.run(None, mask)
+        pipeline.run(data=None, mask=mask)
 
         assert phase_1.mask is mask
         assert phase_2.mask is mask
 
+
+class TestPassPositions(object):
+    def test_pass_positions(self):
+        positions = [[[1.0, 1.0], [2.0, 2.0]]]
+        phase_1 = DummyPhaseImaging()
+        phase_2 = DummyPhaseImaging()
+        pipeline = pl.PipelineImaging("", phase_1, phase_2)
+        pipeline.run(data=None, positions=positions)
+
+        assert phase_1.positions == positions
+        assert phase_2.positions == positions
 
 class TestPipelineImaging(object):
     def test_run_pipeline(self):

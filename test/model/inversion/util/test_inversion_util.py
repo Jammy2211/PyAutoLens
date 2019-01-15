@@ -20,7 +20,7 @@ class TestDataVectorFromData(object):
         noise_map = np.array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0])
 
         data_vector = inversion_util.data_vector_from_blurred_mapping_matrix_and_data(
-            blurred_mapping_matrix=blurred_mapping_matrix, image=image, noise_map=noise_map)
+            blurred_mapping_matrix=blurred_mapping_matrix, image_1d=image, noise_map_1d=noise_map)
 
         assert (data_vector == np.array([2.0, 3.0, 1.0])).all()
 
@@ -37,7 +37,7 @@ class TestDataVectorFromData(object):
         noise_map = np.array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0])
 
         data_vector = inversion_util.data_vector_from_blurred_mapping_matrix_and_data(
-            blurred_mapping_matrix=blurred_mapping_matrix, image=image, noise_map=noise_map)
+            blurred_mapping_matrix=blurred_mapping_matrix, image_1d=image, noise_map_1d=noise_map)
 
         assert (data_vector == np.array([4.0, 14.0, 10.0])).all()
 
@@ -54,7 +54,7 @@ class TestDataVectorFromData(object):
         noise_map = np.array([2.0, 1.0, 1.0, 4.0, 1.0, 1.0])
 
         data_vector = inversion_util.data_vector_from_blurred_mapping_matrix_and_data(
-            blurred_mapping_matrix=blurred_mapping_matrix, image=image, noise_map=noise_map)
+            blurred_mapping_matrix=blurred_mapping_matrix, image_1d=image, noise_map_1d=noise_map)
 
         assert (data_vector == np.array([2.0, 3.0, 1.0])).all()
         
@@ -73,7 +73,7 @@ class TestCurvatureMatrixFromBlurred(object):
         noise_map = np.array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0])
 
         curvature_matrix = inversion_util.curvature_matrix_from_blurred_mapping_matrix(
-            blurred_mapping_matrix=blurred_mapping_matrix, noise_map=noise_map)
+            blurred_mapping_matrix=blurred_mapping_matrix, noise_map_1d=noise_map)
 
         assert (curvature_matrix == np.array([[2.0, 1.0, 0.0],
                                               [1.0, 3.0, 1.0],
@@ -91,7 +91,7 @@ class TestCurvatureMatrixFromBlurred(object):
         noise_map = np.array([2.0, 1.0, 1.0, 1.0, 1.0, 1.0])
 
         curvature_matrix = inversion_util.curvature_matrix_from_blurred_mapping_matrix(
-            blurred_mapping_matrix=blurred_mapping_matrix, noise_map=noise_map)
+            blurred_mapping_matrix=blurred_mapping_matrix, noise_map_1d=noise_map)
 
         assert (curvature_matrix == np.array([[1.25, 0.25, 0.0],
                                               [0.25, 2.25, 1.0],

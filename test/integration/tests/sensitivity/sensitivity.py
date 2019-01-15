@@ -33,7 +33,7 @@ def pipeline():
     pipeline = make_pipeline(pipeline_name=pipeline_name)
     image = tools.load_image(data_name=data_name, pixel_scale=0.05)
 
-    results = pipeline.run(image=image)
+    results = pipeline.run(data=image)
     for result in results:
         print(result)
 

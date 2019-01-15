@@ -112,7 +112,8 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
         radius : float
             The radius of the circle to compute the dimensionless mass within.
         conversion_factor : float
-            The factor the dimensionless mass is multiplied by to convert it to a physical mass.
+            Factor the dimensionless mass is multiplied by to convert it to a physical mass (e.g. the critical surface \
+            mass density).
         """
         return conversion_factor*quad(self.mass_integral, a=0.0, b=radius, args=(1.0,))[0]
 
@@ -129,7 +130,8 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
         major_axis : float
             The major-axis radius of the ellipse.
         conversion_factor : float
-            The factor the dimensionless mass is multiplied by to convert it to a physical mass.
+            Factor the dimensionless mass is multiplied by to convert it to a physical mass (e.g. the critical surface \
+            mass density).
         """
         return conversion_factor*quad(self.mass_integral, a=0.0, b=major_axis, args=(self.axis_ratio,))[0]
 
@@ -139,7 +141,25 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
         r = x * axis_ratio
         return 2 * np.pi * r * self.surface_density_func(x)
 
- #   def density_as_function_of_radius_circular_annuli(self):
+    def density_between_circular_annuli(self, inner_annuli_radius, outer_annuli_radius, conversion_factor=1.0):
+        """Calculate the mass between two circular annuli and compute the density by dividing by the annuli surface
+        area.
+
+        The value returned by the mass integral is dimensionless, therefore the density between annuli is returned in \
+        units of inverse radius squared. A conversion factor can be specified to convert this to a physical value \
+        (e.g. the critical surface mass density).
+
+        Parameters
+        -----------
+        inner_annuli_radius : float
+            The radius of the inner annulus outside of which the density are estimated.
+        outer_annuli_radius : float
+            The radius of the outer annulus inside of which the density is estimated.
+        """
+        annuli_area = (np.pi * outer_annuli_radius ** 2.0) - (np.pi * inner_annuli_radius **2.0)
+        return (self.mass_within_circle(radius=outer_annuli_radius, conversion_factor=conversion_factor) -
+                self.mass_within_circle(radius=inner_annuli_radius, conversion_factor=conversion_factor)) \
+               / annuli_area
 
 
 class EllipticalCoredPowerLaw(EllipticalMassProfile, MassProfile):
@@ -249,7 +269,7 @@ class EllipticalCoredPowerLaw(EllipticalMassProfile, MassProfile):
     def potential_func(u, y, x, axis_ratio, slope, core_radius):
         eta = np.sqrt((u * ((x ** 2) + (y ** 2 / (1 - (1 - axis_ratio ** 2) * u)))))
         return (eta / u) * ((3.0 - slope) * eta) ** -1.0 * \
-               ((core_radius ** 2 + eta ** 2) ** ((3.0 - slope) / 2.0) -
+               ((core_radius ** 2.0 + eta ** 2.0) ** ((3.0 - slope) / 2.0) -
                 core_radius ** (3 - slope)) / ((1 - (1 - axis_ratio ** 2) * u) ** 0.5)
 
     @staticmethod
@@ -435,13 +455,16 @@ class EllipticalIsothermal(EllipticalPowerLaw):
         """
         Calculate the deflection angles at a given set of gridded coordinates.
 
+        For coordinates (0.0, 0.0) the analytic calculation of the deflection angle gives a NaN. Therefore, \
+        coordinates at (0.0, 0.0) are shifted slightly to (1.0e-8, 1.0e-8).
+
         Parameters
         ----------
         grid : masks.RegularGrid
             The grid of coordinates the deflection angles are computed on.
         """
 
-        np.seterr(all='ignore')
+        grid[(grid[:,0] == 0.0) & (grid[:,1] == 0.0)] = np.array([1.0e-8, 1.0e-8])
 
         try:
             factor = 2.0 * self.einstein_radius_rescaled * self.axis_ratio / np.sqrt(1 - self.axis_ratio ** 2)
@@ -450,7 +473,6 @@ class EllipticalIsothermal(EllipticalPowerLaw):
 
             deflection_y = np.arctanh(np.divide(np.multiply(np.sqrt(1 - self.axis_ratio ** 2), grid[:, 0]), psi))
             deflection_x = np.arctan(np.divide(np.multiply(np.sqrt(1 - self.axis_ratio ** 2), grid[:, 1]), psi))
-
             return self.rotate_grid_from_profile(np.multiply(factor, np.vstack((deflection_y, deflection_x)).T))
         except ZeroDivisionError:
             return self.grid_radius_to_cartesian(grid, np.full(grid.shape[0], 2.0 * self.einstein_radius_rescaled))
@@ -500,7 +522,7 @@ class SphericalIsothermal(EllipticalIsothermal):
 
 
 # noinspection PyAbstractClass
-class AbstractEllipticalGeneralizedNFW(geometry_profiles.EllipticalProfile, MassProfile):
+class AbstractEllipticalGeneralizedNFW(EllipticalMassProfile, MassProfile):
     epsrel = 1.49e-5
 
     def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, kappa_s=0.05, inner_slope=1.0, scale_radius=5.0):
@@ -536,7 +558,7 @@ class AbstractEllipticalGeneralizedNFW(geometry_profiles.EllipticalProfile, Mass
         Parameters
         -----------
         grid : masks.RegularGrid
-            The grid of coordinates the potential / deflections are computed on.
+            The grid of coordinates the potential / deflection_stacks are computed on.
         tabulate_bins : int
             The number of bins used to tabulate the integral over.
         """

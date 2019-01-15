@@ -19,13 +19,13 @@ class MockSubGrid(np.ndarray):
         self.sub_grid_fraction = 1.0 / self.sub_grid_length
 
 
-class MockGridCollection(object):
+class MockGridStack(object):
 
-    def __init__(self, regular, sub, blurring=None, pix=None, regular_to_nearest_regular_pix=None):
+    def __init__(self, regular, sub, blurring=None, pix=None, regular_to_nearest_pix=None):
         self.regular = grids.RegularGrid(regular, mask=None)
         self.sub = sub
         self.blurring = grids.RegularGrid(blurring, mask=None) if blurring is not None else None
-        self.pix = grids.PixGrid(pix, regular_to_nearest_regular_pix=regular_to_nearest_regular_pix,
+        self.pix = grids.PixGrid(pix, regular_to_nearest_pix=regular_to_nearest_pix,
                                  mask=None) if pix is not None else np.array([[0.0, 0.0]])
 
 

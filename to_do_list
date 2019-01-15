@@ -1,0 +1,26 @@
+Hey, welcome to my PyAutoLens to-do. This should give you a sense of what we're working on.
+
+Let me know if you think anything is missing, or should be pushed up the to-do list ;)
+
+1) Write Adaptive Grid howtolens.
+2) Power-law Analytic Deflections
+3) Magnification + Caustic + Critical curves
+4) CCD loading sanity checks
+5) Interpolation Scheme for fast deflection angles
+6) SLACS Database (Cristoph)
+7) Parallelize MultiNest
+8) Elegent handling of model image generation in lens_fit module, by building model image generation into
+   lens_fit_util, in an analogous fashion to unmasked image generation. The key point here is we can make it so
+   the fit module does not 'know' whether it is a lens + source plane system, or a multi-plane system. It should
+   just generate lists of model images across all planes and for all galaxies.
+
+Feb/Mar) Automated Prior Linking
+Feb/Mar) Pixelization which Adapts to source's light (not magnification).
+Feb/Mar) Hyper Analysis intergration at high level (e.g. phase).
+Feb/Mar) Write hyper analysis howtolens
+
+April) Multi-plane analysis.
+
+2019) Quasar modeling (time-delays, variable cosmology, PSF refinement)
+2019) UV-plane
+2019) Multi-CCD analysis.
