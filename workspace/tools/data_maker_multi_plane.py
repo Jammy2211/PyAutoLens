@@ -19,7 +19,7 @@ import os
 # The psf will be output as '/workspace/data/example1/psf.fits'.
 
 # (these files are already in the workspace and are remade running this script)
-lens_name = 'example_multi_plane'
+lens_name = 'multi_plane'
 pixel_scale = 0.05
 
 # Simulate a simple Gaussian PSF for the image.
@@ -72,11 +72,11 @@ ccd_plotters.plot_ccd_subplot(ccd_data=simulated_ccd)
 path = '{}/../'.format(os.path.dirname(os.path.realpath(__file__)))
 
 # Check a folder of the lens_name exists in the data folder for the images to be output. If it doesn't make it.
-if not os.path.exists(path+'/data/'+lens_name):
-    os.makedirs(path+'/data/'+lens_name)
+if not os.path.exists(path+'/data/example/'+lens_name):
+    os.makedirs(path+'/data/example/'+lens_name)
 
 image = ccd.output_ccd_data_to_fits(ccd_data=simulated_ccd,
-                                    image_path=path+'/data/'+lens_name+'/image.fits',
-                                    psf_path=path + '/data/' + lens_name + '/psf.fits',
-                                    noise_map_path=path + '/data/' + lens_name + '/noise_map.fits',
+                                    image_path=path+'/data/example/'+lens_name+'/image.fits',
+                                    psf_path=path + '/data/example/' + lens_name + '/psf.fits',
+                                    noise_map_path=path + '/data/example/' + lens_name + '/noise_map.fits',
                                     overwrite=True)

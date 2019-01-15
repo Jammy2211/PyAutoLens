@@ -11,12 +11,12 @@ import os
 
 # The 'lens name' is the name of the lens in the data folder, e.g. the positions will be output as 
 # '/workspace/data/example_sim/positionss.dat' (this file is already in the workspace and is remade running this script)
-lens_name = 'example_lens_light_and_x1_source'
+lens_name = 'lens_light_and_x1_source'
 pixel_scale = 0.1 # If you use this tool for your own data, you *must* double check this pixel scale is correct!
 
 # First, load the CCD imaging data, so that the positions can be plotted over the strong lens image.
 path = '{}/../'.format(os.path.dirname(os.path.realpath(__file__)))
-image = ccd.load_image(image_path=path+'/data/'+lens_name+'/image.fits', image_hdu=0, pixel_scale=pixel_scale)
+image = ccd.load_image(image_path=path+'/data/example/'+lens_name+'/image.fits', image_hdu=0, pixel_scale=pixel_scale)
 
 # Now, create a set of positions, which is simply a python list of (y,x) values.
 positions = [[[0.8, 1.45], [1.78, -0.4], [-0.95, 1.38], [-0.83, -1.04]]]
@@ -32,7 +32,7 @@ data_plotters.plot_image(image=image, positions=positions)
 
 # Now we're happy with the positions, lets output them to the data folder of the lens, so that we can load them from a
 # .dat file in our pipelines!
-ccd.output_positions(positions=positions, positions_path=path+'/data/'+lens_name+'/positions.dat')
+ccd.output_positions(positions=positions, positions_path=path+'/data/example/'+lens_name+'/positions.dat')
 
 
 # These commented out lines would create the positions for the example_multi_plane data.
