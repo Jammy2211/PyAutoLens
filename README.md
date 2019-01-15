@@ -81,16 +81,16 @@ Unfortunately, Slack is invitation-only, so first send me an [email](https://git
 
 ## HowToLens
 
-Included with **PyAutoLens** is the HowToLens eBook, which provides an introduction to strong gravitational lens modeling with **PyAutoLens**. It can be found in the workspace and consists of 4 chapters:
+Included with **PyAutoLens** is the **HowToLens** eBook, which provides an introduction to strong gravitational lens modeling with **PyAutoLens**. It can be found in the workspace and consists of 4 chapters:
 
-- **Introduction** - An introduction to strong gravitational lensing and PyAutolens.
+- **Introduction** - An introduction to strong gravitational lensing and **PyAutolens**.
 - **Lens Modeling** - How to model strong lenses, including a primer on Bayesian non-linear analysis.
 - **Pipelines** - How to build pipelines and tailor them to your own science case.
 - **Inversions** - How to perform pixelized reconstructions of the source-galaxy.
 
 ## Workspace
 
-**PyAutoLens** includes a workspace, which includes template scripts, examples and the HowToLens ebook. If you install **PyAutoLens** with conda or pip the workspace these should be included, however if not then workspace can be found on the master branch of this git repository.
+**PyAutoLens** includes a workspace, which includes template scripts, examples and the **HowToLens** eBook. If you install **PyAutoLens** with conda or pip the workspace these should be included, however if not then workspace can be found on the master branch of this git repository.
 
 If you install **PyAutoLens** with Docker a workspace will be generated for you in the home directory the first time you run the image. After the first time you run docker the workspace will persist any changes you make and won't be updated again.
 
@@ -100,9 +100,9 @@ If you install **PyAutoLens** with Docker a workspace will be generated for you 
 
 ## Installation with conda
 
-We recommend installation using a conda environment as this circumvents a number of compatibility issues when installing PyMultiNest.
+We recommend installation using a conda environment as this circumvents a number of compatibility issues when installing **PyMultiNest**.
 
-Install [conda](https://conda.io/miniconda.html).
+First, install [conda](https://conda.io/miniconda.html).
 
 Create a conda environment:
 
