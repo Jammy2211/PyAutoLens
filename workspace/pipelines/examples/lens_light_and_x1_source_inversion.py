@@ -41,11 +41,11 @@ conf.instance = conf.Config(config_path=path+'config', output_path=path+'output'
 
 # It is convenient to specify the lens name as a string, so that if the pipeline is applied to multiple images we \
 # don't have to change all of the path entries in the load_ccd_data_from_fits function below.
-lens_name = 'example_lens_light_and_x1_source'
+lens_name = 'lens_light_and_x1_source'
 
-ccd_data = ccd.load_ccd_data_from_fits(image_path=path + '/data/' + lens_name + '/image.fits', pixel_scale=0.1,
-                                       psf_path=path+'/data/'+lens_name+'/psf.fits',
-                                       noise_map_path=path+'/data/'+lens_name+'/noise_map.fits')
+ccd_data = ccd.load_ccd_data_from_fits(image_path=path + '/data/example/' + lens_name + '/image.fits', pixel_scale=0.1,
+                                       psf_path=path+'/data/example/'+lens_name+'/psf.fits',
+                                       noise_map_path=path+'/data/example/'+lens_name+'/noise_map.fits')
 
 ccd_plotters.plot_ccd_subplot(ccd_data=ccd_data)
 

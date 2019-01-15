@@ -54,11 +54,11 @@ conf.instance = conf.Config(config_path=path+'config', output_path=path+'output'
 
 # It is convinient to specify the lens name as a string, so that if the pipeline is applied to multiple images we \
 # don't have to change all of the path entries in the load_ccd_data_from_fits function below.
-lens_name = 'example_multi_plane'
+lens_name = 'multi_plane'
 
-ccd_data = ccd.load_ccd_data_from_fits(image_path=path + '/data/' + lens_name + '/image.fits', pixel_scale=0.1,
-                                       psf_path=path+'/data/'+lens_name+'/psf.fits',
-                                       noise_map_path=path+'/data/'+lens_name+'/noise_map.fits')
+ccd_data = ccd.load_ccd_data_from_fits(image_path=path + '/data/example/' + lens_name + '/image.fits', pixel_scale=0.1,
+                                       psf_path=path+'/data/example/'+lens_name+'/psf.fits',
+                                       noise_map_path=path+'/data/example/'+lens_name+'/noise_map.fits')
 
 # Load its mask from a mask.fits file generated using the tools/mask_maker.py file.
 mask = msk.load_mask_from_fits(mask_path=path + '/data/' + lens_name + '/mask.fits', pixel_scale=0.1)

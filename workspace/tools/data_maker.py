@@ -19,7 +19,7 @@ import os
 # The psf will be output as '/workspace/data/example1/psf.fits'.
 
 # (these files are already in the workspace and are remade running this script)
-lens_name = 'example_lens_light_and_x1_source'
+lens_name = 'lens_light_and_x1_source'
 pixel_scale = 0.1
 
 
@@ -66,9 +66,9 @@ if not os.path.exists(path+'/data/'+lens_name):
     os.makedirs(path+'/data/'+lens_name)
 
 image = ccd.output_ccd_data_to_fits(ccd_data=simulated_ccd,
-                                    image_path=path+'/data/'+lens_name+'/image.fits',
-                                    psf_path=path + '/data/' + lens_name + '/psf.fits',
-                                    noise_map_path=path + '/data/' + lens_name + '/noise_map.fits',
+                                    image_path=path+'/data/example/'+lens_name+'/image.fits',
+                                    psf_path=path + '/data/example/' + lens_name + '/psf.fits',
+                                    noise_map_path=path + '/data/example/' + lens_name + '/noise_map.fits',
                                     overwrite=True)
 
 
