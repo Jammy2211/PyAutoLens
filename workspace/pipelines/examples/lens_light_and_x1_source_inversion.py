@@ -83,7 +83,7 @@ def make_lens_light_and_x1_source_inversion_pipeline(pipeline_name):
 
     phase1.optimizer.const_efficiency_mode = True
     phase1.optimizer.n_live_points = 30
-    phase1.optimizer.sampling_efficiency = 0.5
+    phase1.optimizer.sampling_efficiency = 0.3
 
     ### PHASE 2 ###
 
@@ -111,8 +111,8 @@ def make_lens_light_and_x1_source_inversion_pipeline(pipeline_name):
                                  phase_name=pipeline_name + '/phase_2_source_only')
 
     phase2.optimizer.const_efficiency_mode = True
-    phase2.optimizer.n_live_points = 50
-    phase2.optimizer.sampling_efficiency = 0.3
+    phase2.optimizer.n_live_points = 60
+    phase2.optimizer.sampling_efficiency = 0.2
 
 
     ### PHASE 3 ###
@@ -137,7 +137,7 @@ def make_lens_light_and_x1_source_inversion_pipeline(pipeline_name):
                              optimizer_class=nl.MultiNest, phase_name=pipeline_name + '/phase_3_both')
 
     phase3.optimizer.const_efficiency_mode = True
-    phase3.optimizer.n_live_points = 50
+    phase3.optimizer.n_live_points = 75
     phase3.optimizer.sampling_efficiency = 0.3
 
     ### PHASE 4 ###

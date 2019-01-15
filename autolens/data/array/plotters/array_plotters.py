@@ -92,6 +92,9 @@ def plot_array(array, origin=None, mask=None, should_plot_border=False, position
         'fits' - output to hard-disk as a fits file.'
     """
 
+    if array is None:
+        return
+
     plot_figure(array=array, as_subplot=as_subplot, units=units, kpc_per_arcsec=kpc_per_arcsec,
                 figsize=figsize, aspect=aspect, cmap=cmap, norm=norm,
                 norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,

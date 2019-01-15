@@ -110,7 +110,7 @@ def plot_ray_tracing_subplot(tracer, mask=None, positions=None,
 
         plt.close()
 
-def plot_ray_tracing_individual(tracer, output_path=None, output_format='show'):
+def plot_ray_tracing_individual(tracer, output_path=None, output_format='show', ignore_config=False):
     """Plot the observed _tracer of an analysis, using the *CCD* class object.
 
     The visualization and output type can be fully customized.
@@ -127,12 +127,21 @@ def plot_ray_tracing_individual(tracer, output_path=None, output_format='show'):
         in the python interpreter window.
     """
 
-    plot_ray_tracing_image_plane_image = conf.instance.general.get('output', 'plot_ray_tracing_image_plane_image', bool)
-    plot_ray_tracing_source_plane = conf.instance.general.get('output', 'plot_ray_tracing_source_plane_image', bool)
-    plot_ray_tracing_surface_density = conf.instance.general.get('output', 'plot_ray_tracing_surface_density', bool)
-    plot_ray_tracing_potential = conf.instance.general.get('output', 'plot_ray_tracing_potential', bool)
-    plot_ray_tracing_deflections_y = conf.instance.general.get('output', 'plot_ray_tracing_deflections_y', bool)
-    plot_ray_tracing_deflections_x = conf.instance.general.get('output', 'plot_ray_tracing_deflections_x', bool)
+    if not ignore_config:
+
+        plot_ray_tracing_image_plane_image = conf.instance.general.get('output', 'plot_ray_tracing_image_plane_image', bool)
+        plot_ray_tracing_source_plane = conf.instance.general.get('output', 'plot_ray_tracing_source_plane_image', bool)
+        plot_ray_tracing_surface_density = conf.instance.general.get('output', 'plot_ray_tracing_surface_density', bool)
+        plot_ray_tracing_potential = conf.instance.general.get('output', 'plot_ray_tracing_potential', bool)
+        plot_ray_tracing_deflections = conf.instance.general.get('output', 'plot_ray_tracing_deflections', bool)
+
+    else:
+
+        plot_ray_tracing_image_plane_image = True
+        plot_ray_tracing_source_plane = True
+        plot_ray_tracing_surface_density = True
+        plot_ray_tracing_potential = True
+        plot_ray_tracing_deflections = True
 
     if plot_ray_tracing_image_plane_image:
 
@@ -152,11 +161,11 @@ def plot_ray_tracing_individual(tracer, output_path=None, output_format='show'):
         plane_plotters.plot_plane_image(plane=tracer.source_plane, positions=None, plot_grid=False,
                                         output_path=output_path, output_filename='tracer_source_plane', output_format=output_format)
 
-    if plot_ray_tracing_deflections_y:
+    if plot_ray_tracing_deflections:
 
         plot_deflections_y(tracer=tracer, output_path=output_path, output_format=output_format)
 
-    if plot_ray_tracing_deflections_x:
+    if plot_ray_tracing_deflections:
 
         plot_deflections_x(tracer=tracer, output_path=output_path, output_format=output_format)
 
@@ -189,7 +198,8 @@ def plot_surface_density(tracer, as_subplot=False,
                          output_path=None, output_format='show', output_filename='tracer_surface_density'):
 
     array_plotters.plot_array(array=tracer.surface_density, as_subplot=as_subplot,
-                              units=units, kpc_per_arcsec=tracer.image_plane.kpc_per_arcsec_proper, figsize=figsize, aspect=aspect,
+                              units=units, kpc_per_arcsec=tracer.image_plane.kpc_per_arcsec_proper, figsize=figsize,
+                              aspect=aspect,
                               cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max,
                               linthresh=linthresh, linscale=linscale,
                               cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,

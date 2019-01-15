@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 from astropy.io import fits
 
 from autolens import exc
-
+from autolens.data.array.util import array_util
 
 def get_subplot_rows_columns_figsize(number_subplots):
     """Get the size of a sub plot in (rows, columns), based on the number of subplots that are going to be plotted.
@@ -85,9 +85,7 @@ def output_figure(array, as_subplot, output_path, output_filename, output_format
         elif output_format is 'png':
             plt.savefig(output_path + output_filename + '.png', bbox_inches='tight')
         elif output_format is 'fits':
-            hdu = fits.PrimaryHDU()
-            hdu.data = array
-            hdu.writeto(output_path + output_filename + '.fits')
+            array_util.numpy_array_to_fits(array=array, path=output_path + output_filename + '.fits', overwrite=True)
 
 
 def output_subplot_array(output_path, output_filename, output_format):

@@ -31,6 +31,9 @@ def plot_reconstructed_pixelization(inversion, plot_origin=True, positions=None,
                                     xyticksize=16,
                                     output_path=None, output_format='show', output_filename='reconstructed_inversion_image'):
 
+    if output_format is 'fits':
+        return
+
     plotter_util.setup_figure(figsize=figsize, as_subplot=as_subplot)
 
     if isinstance(inversion.mapper, mappers.RectangularMapper):
