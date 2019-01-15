@@ -84,7 +84,7 @@ def make_mask_and_positions_pipeline(pipeline_name):
 
     phase1.optimizer.const_efficiency_mode = True
     phase1.optimizer.n_live_points = 30
-    phase1.optimizer.sampling_efficiency = 0.5
+    phase1.optimizer.sampling_efficiency = 0.3
 
     ### PHASE 2 ###
 
@@ -119,7 +119,7 @@ def make_mask_and_positions_pipeline(pipeline_name):
 
     phase2.optimizer.const_efficiency_mode = True
     phase2.optimizer.n_live_points = 50
-    phase2.optimizer.sampling_efficiency = 0.3
+    phase2.optimizer.sampling_efficiency = 0.2
 
     return pipeline.PipelineImaging(pipeline_name, phase1, phase2)
 

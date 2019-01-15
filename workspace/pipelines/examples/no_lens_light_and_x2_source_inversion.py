@@ -114,8 +114,8 @@ def make_no_lens_light_and_x2_source_inversion_pipeline(pipeline_name):
                             phase_name=pipeline_name + '/phase_2_inversion')
 
     phase2.optimizer.const_efficiency_mode = True
-    phase2.optimizer.n_live_points = 20
-    phase2.optimizer.sampling_efficiency = 0.8
+    phase2.optimizer.n_live_points = 50
+    phase2.optimizer.sampling_efficiency = 0.5
 
     return pipeline.PipelineImaging(pipeline_name, phase1, phase2)
 

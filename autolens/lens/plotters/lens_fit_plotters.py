@@ -270,17 +270,17 @@ def plot_fit_subplot_lens_and_source_planes(fit, should_plot_mask=True, should_p
 
     plt.close()
 
-def plot_fit_individuals(fit, units='kpc', output_path=None, output_format='show'):
+def plot_fit_individuals(fit, units='kpc', output_path=None, output_format='show', ignore_config=False):
 
     if fit.tracer.total_planes == 1:
 
-        plot_fit_individuals_lens_plane_only(fit, units, output_path, output_format)
+        plot_fit_individuals_lens_plane_only(fit, units, output_path, output_format, ignore_config)
 
     elif fit.tracer.total_planes == 2:
 
-        plot_fit_individuals_lens_and_source_planes(fit, units, output_path, output_format)
+        plot_fit_individuals_lens_and_source_planes(fit, units, output_path, output_format, ignore_config)
 
-def plot_fit_individuals_lens_plane_only(fit, units='kpc', output_path=None, output_format='show'):
+def plot_fit_individuals_lens_plane_only(fit, units='kpc', output_path=None, output_format='show', ignore_config=False):
     """Plot the model datas_ of an analysis, using the *Fitter* class object.
 
     The visualization and output type can be fully customized.
@@ -296,9 +296,17 @@ def plot_fit_individuals_lens_plane_only(fit, units='kpc', output_path=None, out
         in the python interpreter window.
     """
 
-    plot_lens_fit_model_image = conf.instance.general.get('output', 'plot_lens_fit_model_image', bool)
-    plot_lens_fit_residuals = conf.instance.general.get('output', 'plot_lens_fit_residuals', bool)
-    plot_lens_fit_chi_squareds = conf.instance.general.get('output', 'plot_lens_fit_chi_squareds', bool)
+    if not ignore_config:
+
+        plot_lens_fit_model_image = conf.instance.general.get('output', 'plot_lens_fit_model_image', bool)
+        plot_lens_fit_residuals = conf.instance.general.get('output', 'plot_lens_fit_residuals', bool)
+        plot_lens_fit_chi_squareds = conf.instance.general.get('output', 'plot_lens_fit_chi_squareds', bool)
+
+    else:
+
+        plot_lens_fit_model_image = True
+        plot_lens_fit_residuals = True
+        plot_lens_fit_chi_squareds = True
 
     mask = lens_plotter_util.get_mask(fit=fit, should_plot_mask=True)
 
@@ -316,7 +324,8 @@ def plot_fit_individuals_lens_plane_only(fit, units='kpc', output_path=None, out
         lens_plotter_util.plot_chi_squared_map(fit=fit, mask=mask, units=units, kpc_per_arcsec=kpc_per_arcsec,
                                                output_path=output_path, output_format=output_format)
 
-def plot_fit_individuals_lens_and_source_planes(fit, units='kpc', output_path=None, output_format='show'):
+def plot_fit_individuals_lens_and_source_planes(fit, units='kpc', output_path=None, output_format='show',
+                                                ignore_config=False):
     """Plot the model datas_ of an analysis, using the *Fitter* class object.
 
     The visualization and output type can be fully customized.
@@ -332,16 +341,23 @@ def plot_fit_individuals_lens_and_source_planes(fit, units='kpc', output_path=No
         in the python interpreter window.
     """
 
-    plot_lens_fit_model_image = \
-        conf.instance.general.get('output', 'plot_lens_fit_model_image', bool)
-    plot_lens_fit_lens_model_image = \
-        conf.instance.general.get('output', 'plot_lens_fit_lens_model_image', bool)
-    plot_lens_fit_source_model_image = \
-        conf.instance.general.get('output', 'plot_lens_fit_source_model_image', bool)
-    plot_lens_fit_source_plane_image = \
-        conf.instance.general.get('output', 'plot_lens_fit_source_plane_image', bool)
-    plot_lens_fit_residuals = conf.instance.general.get('output', 'plot_lens_fit_residuals', bool)
-    plot_lens_fit_chi_squareds = conf.instance.general.get('output', 'plot_lens_fit_chi_squareds', bool)
+    if not ignore_config:
+
+        plot_lens_fit_model_image = conf.instance.general.get('output', 'plot_lens_fit_model_image', bool)
+        plot_lens_fit_lens_model_image = conf.instance.general.get('output', 'plot_lens_fit_lens_model_image', bool)
+        plot_lens_fit_source_model_image = conf.instance.general.get('output', 'plot_lens_fit_source_model_image', bool)
+        plot_lens_fit_source_plane_image = conf.instance.general.get('output', 'plot_lens_fit_source_plane_image', bool)
+        plot_lens_fit_residuals = conf.instance.general.get('output', 'plot_lens_fit_residual_map', bool)
+        plot_lens_fit_chi_squareds = conf.instance.general.get('output', 'plot_lens_fit_chi_squared_map', bool)
+
+    else:
+
+        plot_lens_fit_model_image = True
+        plot_lens_fit_lens_model_image = True
+        plot_lens_fit_source_model_image = True
+        plot_lens_fit_source_plane_image = True
+        plot_lens_fit_residuals = True
+        plot_lens_fit_chi_squareds = True
 
     mask = lens_plotter_util.get_mask(fit=fit, should_plot_mask=True)
 
@@ -352,16 +368,19 @@ def plot_fit_individuals_lens_and_source_planes(fit, units='kpc', output_path=No
                                           output_path=output_path, output_format=output_format)
 
     if plot_lens_fit_lens_model_image:
+
         lens_plotter_util.plot_model_image_of_plane(fit=fit, plane_index=0, mask=mask, units=units,
                                                     kpc_per_arcsec=kpc_per_arcsec,
                                                     output_path=output_path, output_filename='fit_lens_plane_model_image',
                                                     output_format=output_format)
 
     if plot_lens_fit_source_model_image:
+
         lens_plotter_util.plot_model_image_of_plane(fit=fit, plane_index=1, mask=mask, units=units,
                                                     kpc_per_arcsec=kpc_per_arcsec,
-                                                    output_path=output_path, output_filename='fit_source_plane_model_image',
-                                                    output_format=output_format)
+                                                    output_path=output_path,
+                                                    output_filename='fit_source_plane_model_image',
+                                                output_format=output_format)
 
     if plot_lens_fit_source_plane_image:
 

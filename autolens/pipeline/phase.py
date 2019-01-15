@@ -14,7 +14,7 @@ from autolens.data.plotters import ccd_plotters
 from autolens.lens import lens_data as li, lens_fit
 from autolens.lens import ray_tracing
 from autolens.lens import sensitivity_fit
-from autolens.lens.plotters import sensitivity_fit_plotters, lens_fit_plotters
+from autolens.lens.plotters import sensitivity_fit_plotters, ray_tracing_plotters, lens_fit_plotters
 from autolens.model.galaxy import galaxy as g, galaxy_model as gm, galaxy_fit, galaxy_data as gd
 from autolens.model.galaxy.plotters import galaxy_fitting_plotters
 
@@ -223,6 +223,8 @@ class AbstractPhase(object):
             self.plot_count = 0
             self.output_image_path = "{}/image/".format(self.phase_output_path)
             make_path_if_does_not_exist(path=self.output_image_path)
+            self.output_fits_path = "{}/image/fits/".format(self.phase_output_path)
+            make_path_if_does_not_exist(path=self.output_fits_path)
 
         @property
         def last_results(self):
@@ -526,6 +528,7 @@ class PhaseImaging(Phase):
             return fit.figure_of_merit
 
         def visualize(self, instance, suffix, during_analysis):
+
             self.plot_count += 1
 
             tracer = self.tracer_for_instance(instance)
@@ -541,11 +544,42 @@ class PhaseImaging(Phase):
                                              positions=self.lens_data.positions,
                                              output_path=self.output_image_path, output_format='png')
 
+            ray_tracing_plotters.plot_ray_tracing_subplot(tracer=tracer, output_path=self.output_image_path,
+                                                          output_format='png', ignore_config=False)
+
             lens_fit_plotters.plot_fit_subplot(fit=fit, output_path=self.output_image_path,
                                                output_format='png', ignore_config=False)
 
-            lens_fit_plotters.plot_fit_individuals(fit=fit, output_path=self.output_image_path,
-                                                   output_format='png')
+            if during_analysis:
+
+                ray_tracing_plotters.plot_ray_tracing_individual(tracer=tracer, output_path=self.output_image_path,
+                                                             output_format='png', ignore_config=False)
+
+                lens_fit_plotters.plot_fit_individuals(fit=fit, output_path=self.output_image_path,
+                                                       output_format='png', ignore_config=False)
+
+            elif not during_analysis:
+
+                if conf.instance.general.get('output', 'plot_ray_tracing_all_at_end_png', bool):
+
+                    ray_tracing_plotters.plot_ray_tracing_individual(tracer=tracer, output_path=self.output_image_path,
+                                                             output_format='png', ignore_config=True)
+
+                if conf.instance.general.get('output', 'plot_ray_tracing_all_at_end_fits', bool):
+
+                    ray_tracing_plotters.plot_ray_tracing_individual(tracer=tracer,
+                                                                     output_path=self.output_fits_path,
+                                                                     output_format='fits', ignore_config=True)
+
+                if conf.instance.general.get('output', 'plot_lens_fit_all_at_end_png', bool):
+
+                    lens_fit_plotters.plot_fit_individuals(fit=fit, output_path=self.output_image_path,
+                                                           output_format='png', ignore_config=True)
+
+                if conf.instance.general.get('output', 'plot_lens_fit_all_at_end_fits', bool):
+
+                    lens_fit_plotters.plot_fit_individuals(fit=fit, output_path=self.output_fits_path,
+                                                           output_format='fits', ignore_config=True)
 
             return fit
 
@@ -636,6 +670,7 @@ class LensPlanePhase(PhaseImaging):
         @property
         def unmasked_lens_plane_model_image(self):
             return self.most_likely_fit.unmasked_model_image_of_planes[0]
+
 
 class LensSourcePlanePhase(PhaseImaging):
     """

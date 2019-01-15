@@ -35,12 +35,12 @@ image_plane_grid_stack = grids.GridStack.grid_stack_for_simulation(shape=(100, 1
 # Setup the lens galaxy's light (elliptical Sersic), mass (SIE+Shear) and source galaxy light (elliptical Sersic) for
 # this simulated lens.
 lens_galaxy = g.Galaxy(light=lp.EllipticalSersic(centre=(0.0, 0.0), axis_ratio=0.9, phi=45.0,
-                                                 intensity=1.5, effective_radius=0.8, sersic_index=4.0),
+                                                 intensity=1.0, effective_radius=0.8, sersic_index=4.0),
                        mass=mp.EllipticalIsothermal(centre=(0.0, 0.0), einstein_radius=1.6, axis_ratio=0.7, phi=45.0),
                        shear=mp.ExternalShear(magnitude=0.05, phi=90.0))
 
 source_galaxy = g.Galaxy(light=lp.EllipticalSersic(centre=(0.1, 0.1), axis_ratio=0.8, phi=60.0,
-                                                   intensity=1.0, effective_radius=1.0, sersic_index=2.5))
+                                                   intensity=0.3, effective_radius=1.0, sersic_index=2.5))
 
 
 # Use these galaxies to setup a tracer, which will generate the image-plane image for the simulated CCD data.
