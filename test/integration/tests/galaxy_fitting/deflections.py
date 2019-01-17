@@ -33,8 +33,8 @@ def simulate_deflections(pixel_scale, galaxy):
     if os.path.exists(output_path) == False:
         os.makedirs(output_path)
 
-    array_util.numpy_array_to_fits(deflections_y, path=data_path + 'y.fits', overwrite=True)
-    array_util.numpy_array_to_fits(deflections_x, path=data_path + 'x.fits', overwrite=True)
+    array_util.numpy_array_to_fits(deflections_y, file_path=data_path + 'y.fits', overwrite=True)
+    array_util.numpy_array_to_fits(deflections_x, file_path=data_path + 'x.fits', overwrite=True)
 
 def setup_and_run_phase():
 

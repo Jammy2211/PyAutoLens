@@ -1114,26 +1114,26 @@ def load_background_sky_map(background_sky_map_path, background_sky_map_hdu, pix
 def output_ccd_data_to_fits(ccd_data, image_path, psf_path, noise_map_path=None, background_noise_map_path=None,
                             poisson_noise_map_path=None, exposure_time_map_path=None, background_sky_map_path=None,
                             overwrite=False):
-    array_util.numpy_array_to_fits(array=ccd_data.image, path=image_path, overwrite=overwrite)
-    array_util.numpy_array_to_fits(array=ccd_data.psf, path=psf_path, overwrite=overwrite)
+    array_util.numpy_array_to_fits(array=ccd_data.image, file_path=image_path, overwrite=overwrite)
+    array_util.numpy_array_to_fits(array=ccd_data.psf, file_path=psf_path, overwrite=overwrite)
 
     if ccd_data.noise_map is not None and noise_map_path is not None:
-        array_util.numpy_array_to_fits(array=ccd_data.noise_map, path=noise_map_path, overwrite=overwrite)
+        array_util.numpy_array_to_fits(array=ccd_data.noise_map, file_path=noise_map_path, overwrite=overwrite)
 
     if ccd_data.background_noise_map is not None and background_noise_map_path is not None:
-        array_util.numpy_array_to_fits(array=ccd_data.background_noise_map, path=background_noise_map_path,
+        array_util.numpy_array_to_fits(array=ccd_data.background_noise_map, file_path=background_noise_map_path,
                                        overwrite=overwrite)
 
     if ccd_data.poisson_noise_map is not None and poisson_noise_map_path is not None:
-        array_util.numpy_array_to_fits(array=ccd_data.poisson_noise_map, path=poisson_noise_map_path,
+        array_util.numpy_array_to_fits(array=ccd_data.poisson_noise_map, file_path=poisson_noise_map_path,
                                        overwrite=overwrite)
 
     if ccd_data.exposure_time_map is not None and exposure_time_map_path is not None:
-        array_util.numpy_array_to_fits(array=ccd_data.exposure_time_map, path=exposure_time_map_path,
+        array_util.numpy_array_to_fits(array=ccd_data.exposure_time_map, file_path=exposure_time_map_path,
                                        overwrite=overwrite)
 
     if ccd_data.background_sky_map is not None and background_sky_map_path is not None:
-        array_util.numpy_array_to_fits(array=ccd_data.background_sky_map, path=background_sky_map_path,
+        array_util.numpy_array_to_fits(array=ccd_data.background_sky_map, file_path=background_sky_map_path,
                                        overwrite=overwrite)
 
 def load_positions(positions_path):
