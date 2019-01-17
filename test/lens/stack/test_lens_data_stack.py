@@ -58,7 +58,7 @@ def make_lens_image(ccd_0, ccd_1, mask_0, mask_1):
     return lis.LensDataStack(ccd_datas=[ccd_0, ccd_1], masks=[mask_0, mask_1])
 
 
-class TestLensingImage(object):
+class TestLensData(object):
 
     def test_attributes(self, ccd_0, ccd_1, lens_data_stack):
 

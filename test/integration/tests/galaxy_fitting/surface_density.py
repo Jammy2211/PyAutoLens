@@ -31,7 +31,7 @@ def simulate_surface_density(pixel_scale, galaxy):
     if os.path.exists(output_path) == False:
         os.makedirs(output_path)
 
-    array_util.numpy_array_to_fits(surface_density, path=data_path + '.fits', overwrite=True)
+    array_util.numpy_array_to_fits(surface_density, file_path=data_path + '.fits', overwrite=True)
 
 def setup_and_run_phase():
 

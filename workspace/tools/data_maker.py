@@ -14,9 +14,9 @@ import os
 
 # The 'lens name' is the name of the lens in the data folder, e.g:
 
-# The image will be output as '/workspace/data/example1/image.fits'.
-# The noise-map will be output as '/workspace/data/example1/noise_map.fits'.
-# The psf will be output as '/workspace/data/example1/psf.fits'.
+# The image will be output as '/workspace/data/lens_name/image.fits'.
+# The noise-map will be output as '/workspace/data/lens_name/noise_map.fits'.
+# The psf will be output as '/workspace/data/lens_name/psf.fits'.
 
 # (these files are already in the workspace and are remade running this script)
 lens_name = 'lens_light_and_x1_source'

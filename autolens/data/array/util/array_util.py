@@ -113,18 +113,18 @@ def resize_array_2d(array_2d, new_shape, origin=(-1, -1)):
     return resized_array
 
 
-def numpy_array_to_fits(array, path, overwrite=False):
+def numpy_array_to_fits(array, file_path, overwrite=False):
 
-    if overwrite and os.path.exists(path):
-        os.remove(path)
+    if overwrite and os.path.exists(file_path):
+        os.remove(file_path)
 
     new_hdr = fits.Header()
     hdu = fits.PrimaryHDU(np.flipud(array), new_hdr)
-    hdu.writeto(path)
+    hdu.writeto(file_path)
 
 
-def numpy_array_from_fits(path, hdu):
-    hdu_list = fits.open(path)
+def numpy_array_from_fits(file_path, hdu):
+    hdu_list = fits.open(file_path)
     return np.flipud(np.array(hdu_list[hdu].data))
 
 

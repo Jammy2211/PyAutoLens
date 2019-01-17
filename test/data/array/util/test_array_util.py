@@ -273,12 +273,12 @@ class TestResize:
 class TestFits:
 
     def test__numpy_array_from_fits__3x3_all_ones(self):
-        arr = array_util.numpy_array_from_fits(path=test_data_dir + '3x3_ones.fits', hdu=0)
+        arr = array_util.numpy_array_from_fits(file_path=test_data_dir + '3x3_ones.fits', hdu=0)
 
         assert (arr == np.ones((3, 3))).all()
 
     def test__numpy_array_from_fits__4x3_all_ones(self):
-        arr = array_util.numpy_array_from_fits(path=test_data_dir + '4x3_ones.fits', hdu=0)
+        arr = array_util.numpy_array_from_fits(file_path=test_data_dir + '4x3_ones.fits', hdu=0)
 
         assert (arr == np.ones((4, 3))).all()
 
@@ -289,9 +289,9 @@ class TestFits:
         arr = np.array([[10., 30., 40.],
                         [92., 19., 20.]])
 
-        array_util.numpy_array_to_fits(arr, path=test_data_dir + 'test.fits')
+        array_util.numpy_array_to_fits(arr, file_path=test_data_dir + 'test.fits')
 
-        array_load = array_util.numpy_array_from_fits(path=test_data_dir + 'test.fits', hdu=0)
+        array_load = array_util.numpy_array_from_fits(file_path=test_data_dir + 'test.fits', hdu=0)
 
         assert (arr == array_load).all()
 

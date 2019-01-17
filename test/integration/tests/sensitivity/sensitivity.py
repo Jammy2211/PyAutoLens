@@ -2,6 +2,7 @@ import os
 
 from autofit.core import non_linear as nl
 from autofit.core import model_mapper as mm
+from autolens.data import ccd
 from autolens.model.galaxy import galaxy, galaxy_model as gm
 from autolens.pipeline import phase as ph
 from autolens.pipeline import pipeline as pl
@@ -31,11 +32,14 @@ def pipeline():
         pass
 
     pipeline = make_pipeline(pipeline_name=pipeline_name)
-    image = tools.load_image(data_name=data_name, pixel_scale=0.05)
 
-    results = pipeline.run(data=image)
-    for result in results:
-        print(result)
+    ccd_data = ccd.load_ccd_data_from_fits(image_path=path + '/data/' + test_name + '/image.fits',
+                                        psf_path=path + '/data/' + test_name + '/psf.fits',
+                                        noise_map_path=path + '/data/' + test_name + '/noise_map.fits',
+                                        pixel_scale=0.1)
+
+    pipeline = make_pipeline(test_name=test_name)
+    pipeline.run(data=ccd_data)
 
 
 def make_pipeline(pipeline_name):
