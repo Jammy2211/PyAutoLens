@@ -4,6 +4,7 @@ from autofit import conf
 from autofit.core import model_mapper as mm
 from autofit.core import non_linear as nl
 
+from autolens.data import ccd
 from autolens.model.galaxy import galaxy, galaxy_model as gm
 from autolens.model.profiles import light_profiles as lp
 from autolens.pipeline import phase as ph
@@ -34,7 +35,14 @@ class TestPhaseModelMapper(object):
 
         tools.simulate_integration_image(test_name=test_name, pixel_scale=0.5, lens_galaxies=[lens_galaxy],
                                          source_galaxies=[], target_signal_to_noise=10.0)
-        image = tools.load_image(test_name=test_name, pixel_scale=0.5)
+
+        path = "{}/".format(
+            os.path.dirname(os.path.realpath(__file__)))  # Setup path so we can output the simulated image.
+
+        ccd_data = ccd.load_ccd_data_from_fits(image_path=path + '/data/' + test_name + '/image.fits',
+                                               psf_path=path + '/data/' + test_name + '/psf.fits',
+                                               noise_map_path=path + '/data/' + test_name + '/noise_map.fits',
+                                               pixel_scale=0.1)
 
         class MMPhase(ph.LensPlanePhase):
 
@@ -45,7 +53,7 @@ class TestPhaseModelMapper(object):
                         optimizer_class=nl.MultiNest, phase_name="{}/phase1".format(test_name))
 
         initial_total_priors = phase.variable.prior_count
-        phase.make_analysis(image)
+        phase.make_analysis(data=ccd_data)
 
         assert phase.lens_galaxies[0].sersic.intensity == phase.lens_galaxies[0].sersic.axis_ratio
         assert initial_total_priors - 1 == phase.variable.prior_count
@@ -61,6 +69,7 @@ class TestPhaseModelMapper(object):
                "upper_limit = 1.0" in lines
 
     def test_constants_work(self):
+
         name = "const_float"
         test_name = '/const_float'
 
@@ -73,7 +82,13 @@ class TestPhaseModelMapper(object):
 
         tools.simulate_integration_image(test_name=test_name, pixel_scale=0.5, lens_galaxies=[lens_galaxy],
                                          source_galaxies=[], target_signal_to_noise=10.0)
-        image = tools.load_image(test_name=test_name, pixel_scale=0.5)
+        path = "{}/".format(
+            os.path.dirname(os.path.realpath(__file__)))  # Setup path so we can output the simulated image.
+
+        ccd_data = ccd.load_ccd_data_from_fits(image_path=path + '/data/' + test_name + '/image.fits',
+                                               psf_path=path + '/data/' + test_name + '/psf.fits',
+                                               noise_map_path=path + '/data/' + test_name + '/noise_map.fits',
+                                               pixel_scale=0.1)
 
         class MMPhase(ph.LensPlanePhase):
 
@@ -90,7 +105,7 @@ class TestPhaseModelMapper(object):
         phase.optimizer.n_live_points = 20
         phase.optimizer.sampling_efficiency = 0.8
 
-        phase.make_analysis(image)
+        phase.make_analysis(data=ccd_data)
 
         sersic = phase.variable.lens_galaxies[0].sersic
 
