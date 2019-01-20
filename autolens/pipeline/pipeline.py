@@ -38,14 +38,14 @@ class PipelineImaging(Pipeline):
     def __init__(self, pipeline_name, *phases):
         super(PipelineImaging, self).__init__(pipeline_name, *phases)
 
-    def run(self, data, mask=None, positions=None):
+    def run(self, data, mask=None, positions=None, skip_optimizer=False):
 
         from autolens.pipeline import phase as ph
         results = []
         for i, phase in enumerate(self.phases):
             logger.info("Running Phase {} (Number {})".format(phase.phase_name, i))
             results.append(phase.run(data=data, previous_results=ph.ResultsCollection(results), mask=mask,
-                                     positions=positions))
+                                     positions=positions, skip_optimizer=skip_optimizer))
         return results
 
 
@@ -54,11 +54,12 @@ class PipelinePositions(Pipeline):
     def __init__(self, pipeline_name, *phases):
         super(PipelinePositions, self).__init__(pipeline_name, *phases)
 
-    def run(self, positions, pixel_scale):
+    def run(self, positions, pixel_scale, skip_optimizer=False):
         from autolens.pipeline import phase as ph
 
         results = []
         for i, phase in enumerate(self.phases):
             logger.info("Running Phase {} (Number {})".format(phase.phase_name, i))
-            results.append(phase.run(positions, pixel_scale, ph.ResultsCollection(results)))
+            results.append(phase.run(positions=positions, pixel_scale=pixel_scale,
+                                     previous_results=ph.ResultsCollection(results), skip_optimizer=skip_optimizer))
         return results

@@ -3,25 +3,14 @@ introduce pipelines, a concept we mentioned many times in the previous chapter. 
 phases together, so that we can seamlessly navigate the complex non-linear parameter spaces that come when fitting
 realistic lens models.
 
-The interface for writing pipelines doesn't mesh nicely with Juypter notebooks. Pipelines are a fairly long block of
-code, which runs all at once. Breaking it down into notebook cells obfuscates this interface, and running
-each cell by itself doesn't work.
-
-Therefore, in this chapter, all tutorials are given to you as python scripts (there are no Jupyter Notebooks). If you
-want, you can completely ignore my advise and copy and paste the pipelines into notebooks - I won't take it
-personally - but I can promise you it won't make your life any easier!
-
-***FOR DOCKER USERS *** - If you are running PyAutoLens in Docker, the way to run a python script is as follows:
-
-1) Go to the main docker page (where you can see 'config', 'data', 'output', etc.)
-2) On the right hand side, click 'New', and on the drop down menu 'Terminal'.
-3) Navigate to the directory of your pipeline (e.g. cd howtolens/chapter_3_pipelines).
-4) Run the pipeline by using the python command (e.g. python tutorial_1_lens_and_source.py).
+In this chapter, every tutorial will come as two files, a Juypter notebook 'pipeline_runner' and a python script which
+is the pipeline itself. For each tutorial, begin with the pipeline runner file. Midway through the tutorial, you'll be
+told to checkout the pipeline script itself, before finishing the tutorial by returning to the pipeline runner.
 
 In the previous chapter, I preloaded config files so that your non-linear searches ran in a relatively short space
 of time. In this chapter, I'm not going to do that. Writing pipelines is all about understanding how to balance
 non-linear parameter space complexity with run-time. So, unfortunately, the non-linear searches in this chapter may take
-a while to run, but that's the point, its time you get an intuition for when lens modeling starts to become slow, and
+a while to run, but that's the point. Its time you get an intuition for when lens modeling starts to become slow, and
 how one can go about speeding it up (we will, of course, be using the tricks I disucssed in the previous chapter).
 
 Also, be sure to checkout the on-the-fly output I discussed in the summary of chapter 2 (checkout this summary now
