@@ -299,7 +299,7 @@ class PhasePositions(AbstractPhase):
                          phase_name=phase_name, auto_link_priors=auto_link_priors)
         self.lens_galaxies = lens_galaxies
 
-    def run(self, positions, pixel_scale, previous_results=None):
+    def run(self, positions, pixel_scale, previous_results=None, skip_optimizer=False):
         """
         Run this phase.
 
@@ -431,7 +431,7 @@ class PhaseImaging(Phase):
         """
         return image
 
-    def run(self, data, previous_results=None, mask=None, positions=None):
+    def run(self, data, previous_results=None, mask=None, positions=None, skip_optimizer=False):
         """
         Run this phase.
 
@@ -450,8 +450,8 @@ class PhaseImaging(Phase):
             A result object comprising the best fit model and other hyper.
         """
         analysis = self.make_analysis(data=data, previous_results=previous_results, mask=mask, positions=positions)
+
         result = self.optimizer.fit(analysis)
-        analysis.visualize(instance=result.constant, suffix=None, during_analysis=False)
 
         return self.__class__.Result(constant=result.constant, figure_of_merit=result.figure_of_merit,
                                      variable=result.variable, analysis=analysis, optimizer=self.optimizer)

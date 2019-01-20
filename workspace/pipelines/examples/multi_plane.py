@@ -42,27 +42,6 @@ import os
 #          redshift of each line-of-sight galaxy is included in the non-linear search as a free parameter. This phase
 #          uses priors initialized from phase 4.
 
-# Get the relative path to the config files and output folder in our workspace.
-path = '{}/../../'.format(os.path.dirname(os.path.realpath(__file__)))
-
-# There is a x2 '/../../' because we are in the 'workspace/pipelines/examples' folder. If you write your own pipeline \
-# in the 'workspace/pipelines' folder you should remove one '../', as shown below.
-# path = '{}/../'.format(os.path.dirname(os.path.realpath(__file__)))
-
-# Use this path to explicitly set the config path and output papth
-conf.instance = conf.Config(config_path=path+'config', output_path=path+'output')
-
-# It is convinient to specify the lens name as a string, so that if the pipeline is applied to multiple images we \
-# don't have to change all of the path entries in the load_ccd_data_from_fits function below.
-lens_name = 'multi_plane'
-
-ccd_data = ccd.load_ccd_data_from_fits(image_path=path + '/data/example/' + lens_name + '/image.fits', pixel_scale=0.1,
-                                       psf_path=path+'/data/example/'+lens_name+'/psf.fits',
-                                       noise_map_path=path+'/data/example/'+lens_name+'/noise_map.fits')
-
-# Load its mask from a mask.fits file generated using the tools/mask_maker.py file.
-mask = msk.load_mask_from_fits(mask_path=path + '/data/' + lens_name + '/mask.fits', pixel_scale=0.1)
-
 # Phase 5 risks the inversion falling into the systematic solutions where the mass of the lens model is too high,
 # resulting in the inversion reconstructing the image as a demagnified version of itself. This is because the \
 # line-of-sight halos each have a mass, which during the modeling can go to very high values.
@@ -74,7 +53,10 @@ positions = ccd.load_positions(positions_path=path + '/data/' + lens_name + '/po
 
 ccd_plotters.plot_ccd_subplot(ccd_data=ccd_data)
 
-def make_multi_plane_pipeline(pipeline_name):
+def make_pipeline(pipeline_path=''):
+
+    pipeline_name = 'pipeline_multi_plane'
+    pipeline_path = pipeline_path + pipeline_name
 
     # In phase 1, we will:
 
@@ -98,7 +80,7 @@ def make_multi_plane_pipeline(pipeline_name):
                                            los_0=gm.GalaxyModel(light=lp.SphericalSersic),
                                            los_1=gm.GalaxyModel(light=lp.SphericalSersic),
                                            los_2=gm.GalaxyModel(light=lp.SphericalSersic)),
-                       optimizer_class=nl.MultiNest, phase_name=pipeline_name + '/phase_1_light_subtraction')
+                       optimizer_class=nl.MultiNest, phase_name=pipeline_path + '/phase_1_light_subtraction')
 
     # Customize MultiNest so it runs fast
     phase1.optimizer.n_live_points = 80
@@ -123,7 +105,7 @@ def make_multi_plane_pipeline(pipeline_name):
     phase2 = LensSubtractedPhase(lens_galaxies=dict(lens=gm.GalaxyModel(mass=mp.EllipticalIsothermal)),
                                  source_galaxies=dict(source=gm.GalaxyModel(light=lp.EllipticalSersic)),
                                  use_positions=True,
-                                 optimizer_class=nl.MultiNest, phase_name=pipeline_name + '/phase_2_source_parametric')
+                                 optimizer_class=nl.MultiNest, phase_name=pipeline_path + '/phase_2_source_parametric')
 
     phase2.optimizer.n_live_points = 50
     phase2.optimizer.sampling_efficiency = 0.2
@@ -149,8 +131,8 @@ def make_multi_plane_pipeline(pipeline_name):
     phase3 = InversionPhase(lens_galaxies=dict(lens=gm.GalaxyModel(mass=mp.EllipticalIsothermal)),
                             source_galaxies=dict(source=gm.GalaxyModel(pixelization=pix.AdaptiveMagnification,
                                                                       regularization=reg.Constant)),
-                                        optimizer_class=nl.MultiNest,
-                                        phase_name=pipeline_name + '/phase_3_inversion_init')
+                            optimizer_class=nl.MultiNest,
+                            phase_name=pipeline_path + '/phase_3_inversion_init')
 
     # Customize MultiNest so it runs fast
     phase3.optimizer.n_live_points = 10
@@ -190,7 +172,7 @@ def make_multi_plane_pipeline(pipeline_name):
                                   source_galaxies=dict(source=gm.GalaxyModel(pixelization=pix.AdaptiveMagnification,
                                                                              regularization=reg.Constant)),
                                   use_positions=True,
-                                  optimizer_class=nl.MultiNest, phase_name=pipeline_name + '/phase_4_single_plane')
+                                  optimizer_class=nl.MultiNest, phase_name=pipeline_path + '/phase_4_single_plane')
 
     # Customize MultiNest so it runs fast
     phase4.optimizer.n_live_points = 60
@@ -224,15 +206,11 @@ def make_multi_plane_pipeline(pipeline_name):
                              source=gm.GalaxyModel(pixelization=pix.AdaptiveMagnification,
                                                    regularization=reg.Constant)),
                              use_positions=True,
-                             optimizer_class=nl.MultiNest, phase_name=pipeline_name + '/phase_5_multi_plane')
+                             optimizer_class=nl.MultiNest, phase_name=pipeline_path + '/phase_5_multi_plane')
 
     # Customize MultiNest so it runs fast
     phase5.optimizer.n_live_points = 60
     phase5.optimizer.sampling_efficiency = 0.2
     phase5.optimizer.const_efficiency_mode = True
 
-    return pipeline.PipelineImaging(pipeline_name, phase1, phase2, phase3, phase4, phase5)
-
-
-pipeline_multi_plane = make_multi_plane_pipeline(pipeline_name='example/mask_and_positions')
-pipeline_multi_plane.run(data=ccd_data, mask=mask, positions=positions)
+    return pipeline.PipelineImaging(pipeline_path, phase1, phase2, phase3, phase4, phase5)

@@ -1,95 +1,39 @@
-from autofit import conf
 from autofit.core import non_linear as nl
-from autolens.data import ccd
 from autolens.data.array import mask as msk
 from autolens.model.profiles import light_profiles as lp
 from autolens.model.profiles import mass_profiles as mp
 from autolens.model.galaxy import galaxy_model as gm
 from autolens.pipeline import phase
 from autolens.pipeline import pipeline
-from autolens.data.plotters import ccd_plotters
 
-import os
+# I recommend that any pipeline you write begins at the top with a comment like this, which describes te pipeline and
+# gives a phase-by-phase description of what it does.
 
-# In chapter 2, we fitted a strong lens which included the contribution of light from the lens galaxy. We're going to
-# fit this lens again (I promise, this is the last time!). However, now we're using pipelines, we can perform a 
-# completely different (and significantly faster) analysis.
+# In this pipeline, we'll perform a basic analysis which fits a source galaxy using a parametric light profile and a
+# lens galaxy where its light is included and fitted, using three phases:
 
-# Load up the PDFs from the previous tutorial -
-# 'howtolens/chapter_2_lens_modeling/output/5_linking_phase_2/image/pdf_triangle.png'.
+# Phase 1) Fit the lens galaxy's light using an elliptical Sersic light profile.
 
-# This is a big triangle. As we fit models using more and more parameters, its only going to get bigger!
+# Phase 2) Use this lens subtracted image to fit the lens galaxy's mass (SIE) and source galaxy's light (Sersic).
 
-# As usual, you should notice some clear degeneracies between:
+# Phase 3) Fit the lens's light, mass and source's light simultaneously using priors initialized from the above 2 phases.
 
-# 1) The size (effective_radius, R_l) and intensity (intensity, I_l) of light profiles.
-# 2) The mass normalization (einstein_radius, /Theta_m) and ellipticity (axis_ratio, q_m) of mass profiles.
+def make_pipeline(pipeline_path=''):
 
-# This isn't surprising. You can produce similar looking galaxies by trading out intensity for size, and you can
-# produce similar mass distributions by compensating for a loss in lens mass by making it a bit less elliptical.
+    # Pipelines takes a path as input, which in conjunction with the pipeline name specify the directory structure of
+    # its results in the output folder. In pipeline runners we'll pass the pipeline path
+    # 'howtolens/c3_t1_lens_and_source', which means the results of this pipeline will go to the folder
+    # 'output/howtolens/c3_t1_lens_and_source/pipeline_light_and_source'.
 
-# What do you notice about the contours between the lens galaxy's light-profile and its mass-profile / the source
-# galaxy's light profile? Look again.
+    # By default, the pipeline path is an empty string, such that without a pipeline path the results go to the output
+    # directory 'output/pipeline_name', which in this case would be 'output/pipeline_light_and_source'.
 
-# That's right - they're not degenerate. The covariance between these sets of parameters is minimal. Again, this makes
-# sense - why would fitting the lens's light (which is an elliptical blob of light) be degenerate with fitting the
-# source's light (which is a ring of light)? They look nothing like one another!
+    # In the example pipelines supplied with PyAutoLens in the workspace/pipeline/examples folder, you'll see that
+    # we pass the name of our strong lens data to the pipeline path. This allows us to fit a large sample of lenses
+    # using one pipeline and store all of their results in an ordered directory structure.
 
-# So, as a newly trained lens modeler, what does the lack of covariance between these parameters make you think?
-# Hopefully, you're thinking, why would I even both fitting the lens and source galaxy simultaneously? Certainly not
-# at the beginning of an analysis, when we just want to find the right regions of non-linear parameter space. This is
-# what we're going to do in this tutorial, using a pipeline composed of a modest 3 phases:
-
-# Phase 1) Fit the lens galaxy's light, ignoring the source.
-# Phase 2) Fit the source galaxy's light, ignoring the lens.
-# Phase 3) Fit both simultaneously, using these results to initialize our starting location in parameter space.
-
-# From here on, we'll use the configs in the 'workspace/config' folder, which are the default configs used
-# by all pipelines (e.g. not just this tutorial, but when you model your own images and lenses!).
-
-
-# To set these up without docker, you need to uncomment and run the command below. If you are using Docker, you don't
-# need to do anything so leave this uncommented!
-path = '{}/../../'.format(os.path.dirname(os.path.realpath(__file__)))
-conf.instance = conf.Config(config_path=path+'config', output_path=path+'output')
-
-# We'll also put the output in 'workspace/output', which is where output goes for a normal analysis.
-
-# This is true of all tutorials from now on, to get you used to using the code for modeling real images.
-
-def simulate():
-
-    from autolens.data.array import grids
-    from autolens.model.galaxy import galaxy as g
-    from autolens.lens import ray_tracing
-
-    psf = ccd.PSF.simulate_as_gaussian(shape=(11, 11), sigma=0.1, pixel_scale=0.1)
-
-    image_plane_grid_stack = grids.GridStack.grid_stack_for_simulation(shape=(130, 130), pixel_scale=0.1, 
-                                                                       psf_shape=(11, 11))
-
-    lens_galaxy = g.Galaxy(light=lp.EllipticalSersic(centre=(0.0, 0.0), axis_ratio=0.9, phi=45.0, intensity=0.04,
-                                                     effective_radius=0.5, sersic_index=3.5),
-                           mass=mp.EllipticalIsothermal(centre=(0.0, 0.0), axis_ratio=0.9, phi=45.0,
-                                                        einstein_radius=1.0),
-                           shear=mp.ExternalShear(magnitude=0.05, phi=90.0))
-    
-    source_galaxy = g.Galaxy(light=lp.SphericalExponential(centre=(0.0, 0.0), intensity=0.2, effective_radius=0.2))
-    tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
-                                                 image_plane_grid_stack=image_plane_grid_stack)
-
-    return ccd.CCDData.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=0.1,
-                               exposure_time=300.0, psf=psf, background_sky_level=0.1, add_noise=True)
-
-# Now lets simulate the ccd data we'll fit, which as I said above, is the same image we saw in the previous chapter.
-ccd_data = simulate()
-ccd_plotters.plot_ccd_subplot(ccd_data=ccd_data)
-
-# A pipeline is a one long python function (this is why Jupyter notebooks arn't ideal). When we run it, this function
-# 'makes' the pipeline, as you'll see in a moment.
-def make_pipeline(pipeline_name):
-
-    # The pipeline takes a name as input, which specifies the directory that it appears in the output folder.
+    pipeline_name = 'pipeline_light_and_source'
+    pipeline_path = pipeline_path + pipeline_name
 
     ### PHASE 1 ###
 
@@ -123,7 +67,7 @@ def make_pipeline(pipeline_name):
 
     phase1 = phase.LensPlanePhase(lens_galaxies=dict(lens=gm.GalaxyModel(light=lp.EllipticalSersic)),
                                   optimizer_class=nl.MultiNest, mask_function=mask_function,
-                                  phase_name=pipeline_name + '/phase_1_lens_light_only')
+                                  phase_name=pipeline_path + '/phase_1_lens_light_only')
 
     # We'll use the MultiNest black magic we covered in tutorial 7 of chapter 2 to get this phase to run fast.
 
@@ -169,7 +113,7 @@ def make_pipeline(pipeline_name):
     phase2 = LensSubtractedPhase(lens_galaxies=dict(lens=gm.GalaxyModel(mass=mp.EllipticalIsothermal)),
                                  source_galaxies=dict(source=gm.GalaxyModel(light=lp.EllipticalSersic)),
                                  optimizer_class=nl.MultiNest, mask_function=mask_function,
-                                 phase_name=pipeline_name + '/phase_2_source_only')
+                                 phase_name=pipeline_path + '/phase_2_source_only')
 
     phase2.optimizer.const_efficiency_mode = True
     phase2.optimizer.n_live_points = 50
@@ -232,38 +176,10 @@ def make_pipeline(pipeline_name):
     phase3 = LensSourcePhase(lens_galaxies=dict(lens=gm.GalaxyModel(light=lp.EllipticalSersic,
                                                                     mass=mp.EllipticalIsothermal)),
                              source_galaxies=dict(source=gm.GalaxyModel(light=lp.EllipticalSersic)),
-                             optimizer_class=nl.MultiNest, phase_name=pipeline_name + '/phase_3_both')
+                             optimizer_class=nl.MultiNest, phase_name=pipeline_path + '/phase_3_both')
 
     phase3.optimizer.const_efficiency_mode = True
     phase3.optimizer.n_live_points = 50
     phase3.optimizer.sampling_efficiency = 0.3
 
-    return pipeline.PipelineImaging(pipeline_name, phase1, phase2, phase3)
-
-
-pipeline_lens_and_source = make_pipeline(pipeline_name='howtolens/c3_t1_lens_and_source')
-pipeline_lens_and_source.run(data=ccd_data)
-
-# And there we have it, a pipeline that breaks the analysis of the lens and source galaxy into 3 simple phases. This
-# approach is signifcantly faster than fitting the lens and source simultaneously from the beginning. Instead of asking
-# you questions at the end of this chapter's tutorials, I'm gonna give Q&A's - this'll hopefully get you thinking about
-# how to approach pipeline writing.
-
-# 1) Can this pipeline really be generalized to any lens? Surely the radii of the masks in phase 1 and 2 depend on the
-#    lens and source galaxies?
-#
-#    Whilst this is true, we've chosen values of masks radii above that are 'excessive' and mask out a lot more of the
-#    image than just the source (which, in terms of run-time, is desirable). Thus, provided you know the Einstein
-#    radius distribution of your lens sample, you can choose masks radii that will masks out every source in your sample
-#    adequately (and even if some of the source is still there, who cares? The fit to the lens galaxy will be okay).
-
-#    Furthermore, we discussed in chapter 2, tutorial 8 the ability to input custom masks to a phase. You can also input
-#    custom masks to a pipeline, which are used by default if a mask_function is not supplied. I haven't included a
-#    howtolens tutorial on this, but if you navigate to the workspace/pipelines/examples/ folder you'll find an example
-#    pipeline describingn how to do this ('mask_and_positions.py').
-
-# 2) What if my source galaxy isn't a ring of light? Surely my Annulus masks won't match it?
-#
-#    Just use the annulus anyway! Yeah, you'll masks out lots of image pixels with no source light, but remember, at
-#    the beginning of the pipeline, *we don't care*. In phase 3, we'll use a large circular masks and do the fit
-#    properly.
+    return pipeline.PipelineImaging(pipeline_path, phase1, phase2, phase3)
