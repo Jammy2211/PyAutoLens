@@ -299,7 +299,7 @@ class PhasePositions(AbstractPhase):
                          phase_name=phase_name, auto_link_priors=auto_link_priors)
         self.lens_galaxies = lens_galaxies
 
-    def run(self, positions, pixel_scale, previous_results=None, skip_optimizer=False):
+    def run(self, positions, pixel_scale, previous_results=None):
         """
         Run this phase.
 
@@ -431,7 +431,7 @@ class PhaseImaging(Phase):
         """
         return image
 
-    def run(self, data, previous_results=None, mask=None, positions=None, skip_optimizer=False):
+    def run(self, data, previous_results=None, mask=None, positions=None):
         """
         Run this phase.
 
