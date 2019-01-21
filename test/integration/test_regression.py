@@ -47,7 +47,7 @@ class TestPhaseModelMapper(object):
         class MMPhase(ph.LensPlanePhase):
 
             def pass_priors(self, previous_results):
-                self.lens_galaxies[0].sersic.intensity = self.lens_galaxies[0].sersic.axis_ratio
+                self.lens_galaxies.lens.sersic.intensity = self.lens_galaxies.lens.sersic.axis_ratio
 
         phase = MMPhase(lens_galaxies=dict(lens=gm.GalaxyModel(sersic=lp.EllipticalSersic)),
                         optimizer_class=nl.MultiNest, phase_name="{}/phase1".format(test_name))
@@ -93,13 +93,13 @@ class TestPhaseModelMapper(object):
         class MMPhase(ph.LensPlanePhase):
 
             def pass_priors(self, previous_results):
-                self.lens_galaxies[0].sersic.axis_ratio = 0.2
-                self.lens_galaxies[0].sersic.phi = 90.0
-                self.lens_galaxies[0].sersic.intensity = 1.0
-                self.lens_galaxies[0].sersic.effective_radius = 1.3
-                self.lens_galaxies[0].sersic.sersic_index = 3.0
+                self.lens_galaxies.lens.sersic.axis_ratio = 0.2
+                self.lens_galaxies.lens.sersic.phi = 90.0
+                self.lens_galaxies.lens.sersic.intensity = 1.0
+                self.lens_galaxies.lens.sersic.effective_radius = 1.3
+                self.lens_galaxies.lens.sersic.sersic_index = 3.0
 
-        phase = MMPhase(lens_galaxies=[gm.GalaxyModel(sersic=lp.EllipticalSersic)],
+        phase = MMPhase(lens_galaxies=dict(lens=gm.GalaxyModel(sersic=lp.EllipticalSersic)),
                         optimizer_class=nl.MultiNest, phase_name="{}/phase1".format(name))
 
         phase.optimizer.n_live_points = 20

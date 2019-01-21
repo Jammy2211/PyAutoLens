@@ -20,20 +20,20 @@ import os
 # Phase 2) Use this lens subtracted image to fit the lens galaxy's mass (SIE+Shear) and source galaxy's light (Sersic).
 #          This phase will use a custom mask and positions.
 
-# The second phase of this pipeline loads a custom mask, which is used instead of the default mask function. A set of \
+# The second phase of this pipeline loads a custom mask, which is used instead of the default mask function. A set of
 # positions are also loaded and use to restrict mass models to only those where the positions trace close to one another.
 
 # Get the relative path to the config files and output folder in our workspace.
 path = '{}/../../'.format(os.path.dirname(os.path.realpath(__file__)))
 
-# There is a x2 '/../../' because we are in the 'workspace/pipelines/examples' folder. If you write your own pipeline \
+# There is a x2 '/../../' because we are in the 'workspace/pipelines/examples' folder. If you write your own pipeline
 # in the 'workspace/pipelines' folder you should remove one '../', as shown below.
 # path = '{}/../'.format(os.path.dirname(os.path.realpath(__file__)))
 
 # Use this path to explicitly set the config path and output papth
 conf.instance = conf.Config(config_path=path+'config', output_path=path+'output')
 
-# It is convinient to specify the lens name as a string, so that if the pipeline is applied to multiple images we \
+# It is convinient to specify the lens name as a string, so that if the pipeline is applied to multiple images we
 # don't have to change all of the path entries in the load_ccd_data_from_fits function below.
 lens_name = 'lens_light_and_x1_source'
 
@@ -51,7 +51,10 @@ positions = ccd.load_positions(positions_path=path + '/data/example/' + lens_nam
 # Lets plot an image of the ccd data, mask and positions to make sure they are chosen correctly.
 ccd_plotters.plot_ccd_subplot(ccd_data=ccd_data, mask=mask, positions=positions)
 
-def make_mask_and_positions_pipeline(pipeline_name):
+def make_pipeline(pipeline_path=''):
+
+    pipeline_name = 'pipeline_mask_and_positions'
+    pipeline_path = pipeline_path + pipeline_name
 
     ### PHASE 1 ###
 
@@ -77,7 +80,7 @@ def make_mask_and_positions_pipeline(pipeline_name):
 
     phase1 = LensPhase(lens_galaxies=dict(lens=gm.GalaxyModel(light=lp.EllipticalSersic)),
                        optimizer_class=nl.MultiNest, mask_function=mask_function,
-                       phase_name=pipeline_name + '/phase_1_lens_light_only')
+                       phase_name=pipeline_path + '/phase_1_lens_light_only')
 
     # You'll see these lines throughout all of the example pipelines. They are used to make MultiNest sample the \
     # non-linear parameter space faster (if you haven't already, checkout the tutorial '' in howtolens/chapter_2).
@@ -115,16 +118,10 @@ def make_mask_and_positions_pipeline(pipeline_name):
                                                                         shear=mp.ExternalShear)),
                                  source_galaxies=dict(source=gm.GalaxyModel(light=lp.EllipticalSersic)),
                                  optimizer_class=nl.MultiNest, mask_function=mask_function, use_positions=True,
-                                 phase_name=pipeline_name + '/phase_2_source_custom_mask_and_positions')
+                                 phase_name=pipeline_path + '/phase_2_source_custom_mask_and_positions')
 
     phase2.optimizer.const_efficiency_mode = True
     phase2.optimizer.n_live_points = 50
     phase2.optimizer.sampling_efficiency = 0.2
 
-    return pipeline.PipelineImaging(pipeline_name, phase1, phase2)
-
-
-pipeline_mask_and_positions = make_mask_and_positions_pipeline(pipeline_name='example/mask_and_positions')
-
-# Note that here we pass the mask and positions loaded above to run the pipeline.
-pipeline_mask_and_positions.run(data=ccd_data, mask=mask, positions=positions)
+    return pipeline.PipelineImaging(pipeline_path, phase1, phase2)
