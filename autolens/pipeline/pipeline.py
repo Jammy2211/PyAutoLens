@@ -60,5 +60,6 @@ class PipelinePositions(Pipeline):
         results = []
         for i, phase in enumerate(self.phases):
             logger.info("Running Phase {} (Number {})".format(phase.phase_name, i))
-            results.append(phase.run(positions, pixel_scale, ph.ResultsCollection(results)))
+            results.append(phase.run(positions=positions, pixel_scale=pixel_scale,
+                                     previous_results=ph.ResultsCollection(results)))
         return results

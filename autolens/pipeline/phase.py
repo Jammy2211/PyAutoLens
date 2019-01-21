@@ -450,8 +450,8 @@ class PhaseImaging(Phase):
             A result object comprising the best fit model and other hyper.
         """
         analysis = self.make_analysis(data=data, previous_results=previous_results, mask=mask, positions=positions)
+
         result = self.optimizer.fit(analysis)
-        analysis.visualize(instance=result.constant, suffix=None, during_analysis=False)
 
         return self.__class__.Result(constant=result.constant, figure_of_merit=result.figure_of_merit,
                                      variable=result.variable, analysis=analysis, optimizer=self.optimizer)
