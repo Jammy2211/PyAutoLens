@@ -1,7 +1,7 @@
 import os
 
 from autofit import conf
-from autofit.core import model_mapper as mm
+from autofit.mapper import model_mapper as mm
 from autolens.model.galaxy import galaxy_model as gm
 from autolens.model.profiles import light_profiles, mass_profiles
 

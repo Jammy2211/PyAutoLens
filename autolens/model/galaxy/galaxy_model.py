@@ -1,7 +1,7 @@
 import inspect
 
 from autofit import exc
-from autofit.core import model_mapper
+from autofit.mapper import model_mapper
 from autofit.core.model_mapper import PriorNameValue, ConstantNameValue, cast_collection
 
 from autolens.model.galaxy import galaxy

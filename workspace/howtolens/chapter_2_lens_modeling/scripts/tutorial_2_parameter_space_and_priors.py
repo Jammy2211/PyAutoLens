@@ -1,6 +1,6 @@
 from autofit import conf
-from autofit.core import non_linear
-from autofit.core import model_mapper
+from autofit.optimize import non_linear
+from autofit.mapper import model_mapper
 from autolens.pipeline import phase as ph
 from autolens.model.galaxy import galaxy_model as gm
 from autolens.data import ccd

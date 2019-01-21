@@ -13,7 +13,7 @@ With **PyAutoLens**, you can begin modeling a lens in just a couple of minutes. 
 
 ```python
 from autofit import conf
-from autofit.core import non_linear as nl
+from autofit.optimize import non_linear as nl
 from autolens.pipeline import phase as ph
 from autolens.data.array import mask as msk
 from autolens.model.galaxy import galaxy_model as gm

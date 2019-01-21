@@ -1,7 +1,7 @@
 import numpy as np
 
-from autofit.core import model_mapper
-from autofit.core import non_linear
+from autofit.mapper import model_mapper
+from autofit.optimize import non_linear
 from autolens.pipeline import pipeline as pl
 
 
