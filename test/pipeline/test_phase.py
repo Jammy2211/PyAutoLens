@@ -4,8 +4,8 @@ from astropy import cosmology as cosmo
 import numpy as np
 import pytest
 from autofit import conf
-from autofit.core import model_mapper as mm
-from autofit.core import non_linear
+from autofit.mapper import model_mapper as mm
+from autofit.optimize import non_linear
 
 from autolens.data import ccd
 from autolens.data.array import scaled_array

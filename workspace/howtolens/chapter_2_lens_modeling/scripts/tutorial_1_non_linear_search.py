@@ -1,5 +1,5 @@
 from autofit import conf
-from autofit.core import non_linear
+from autofit.optimize import non_linear
 from autolens.data import ccd
 from autolens.model.galaxy import galaxy_model as gm
 from autolens.pipeline import phase as ph

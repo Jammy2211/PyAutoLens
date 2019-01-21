@@ -3,7 +3,7 @@ import os
 import pytest
 from autofit import conf
 from autofit import exc
-from autofit.core import model_mapper as mm
+from autofit.mapper import model_mapper as mm
 
 from autolens.model.inversion import pixelizations, regularization
 from autolens.model.galaxy import galaxy as g, galaxy_model as gp

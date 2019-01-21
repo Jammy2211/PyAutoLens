@@ -5,7 +5,7 @@ import numpy as np
 import warnings
 
 from autofit import conf
-from autofit.core import non_linear
+from autofit.optimize import non_linear
 from autofit.core.phase_property import PhasePropertyCollection
 
 from autolens import exc
