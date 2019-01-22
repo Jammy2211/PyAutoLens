@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+rm -rf $p/dist
+rm -rf $p/build
+
 set -e
 
 VERSION=$1
