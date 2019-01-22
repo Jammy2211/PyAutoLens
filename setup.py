@@ -65,7 +65,7 @@ setup(
                       'numba',
                       'matplotlib',
                       'colorama',
-		      'autofit==0.7.3'
+		      'autofit==0.7.4'
                       ],
     extras_require={
         'test': ['coverage', 'pytest', 'pytest-cov'],
