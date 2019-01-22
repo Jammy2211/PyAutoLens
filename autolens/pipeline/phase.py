@@ -1,12 +1,13 @@
 import logging
 import os
-from astropy import cosmology as cosmo
-import numpy as np
 import warnings
 
+import numpy as np
+from astropy import cosmology as cosmo
 from autofit import conf
-from autofit.optimize import non_linear
+from autofit.core import phase
 from autofit.core.phase_property import PhasePropertyCollection
+from autofit.optimize import non_linear
 
 from autolens import exc
 from autolens.data.array import mask as msk
@@ -43,7 +44,7 @@ class ResultsCollection(list):
         return None
 
 
-class AbstractPhase(object):
+class AbstractPhase(phase.AbstractPhase):
 
     def __init__(self, phase_name, optimizer_class=non_linear.MultiNest, cosmology=cosmo.Planck15,
                  auto_link_priors=False):
@@ -243,6 +244,10 @@ class AbstractPhase(object):
         def figure_of_merit_for_fit(self, tracer):
             raise NotImplementedError()
 
+    def make_result(self, result, analysis):
+        return self.__class__.Result(constant=result.constant, figure_of_merit=result.figure_of_merit,
+                              variable=result.variable, analysis=analysis, optimizer=self.optimizer)
+
     class Result(non_linear.Result):
 
         def __init__(self, constant, figure_of_merit, variable, analysis, optimizer):
@@ -316,9 +321,8 @@ class PhasePositions(AbstractPhase):
             A result object comprising the best fit model and other hyper.
         """
         analysis = self.make_analysis(positions=positions, pixel_scale=pixel_scale, previous_results=previous_results)
-        result = self.optimizer.fit(analysis)
-        return self.__class__.Result(constant=result.constant, figure_of_merit=result.figure_of_merit,
-                                     variable=result.variable, analysis=analysis, optimizer=self.optimizer)
+        result = self.run_analysis(analysis)
+        return self.make_result(result, analysis)
 
     def make_analysis(self, positions, pixel_scale, previous_results=None):
         """
@@ -374,7 +378,8 @@ class PhasePositions(AbstractPhase):
 
         def tracer_for_instance(self, instance):
             return ray_tracing.TracerImageSourcePlanesPositions(lens_galaxies=instance.lens_galaxies,
-                                                                image_plane_positions=self.positions, cosmology=self.cosmology)
+                                                                image_plane_positions=self.positions,
+                                                                cosmology=self.cosmology)
 
         def fit_for_tracer(self, tracer):
             return lens_fit.LensPositionFit(positions=tracer.source_plane.positions, noise_map=self.pixel_scale)
@@ -451,10 +456,9 @@ class PhaseImaging(Phase):
         """
         analysis = self.make_analysis(data=data, previous_results=previous_results, mask=mask, positions=positions)
 
-        result = self.optimizer.fit(analysis)
+        result = self.run_analysis(analysis)
 
-        return self.__class__.Result(constant=result.constant, figure_of_merit=result.figure_of_merit,
-                                     variable=result.variable, analysis=analysis, optimizer=self.optimizer)
+        return self.make_result(result, analysis)
 
     def make_analysis(self, data, previous_results=None, mask=None, positions=None):
         """
@@ -488,7 +492,7 @@ class PhaseImaging(Phase):
                           'to resample mass models.')
 
         lens_data = li.LensData(ccd_data=data, mask=mask, sub_grid_size=self.sub_grid_size,
-                                 image_psf_shape=self.image_psf_shape, positions=positions)
+                                image_psf_shape=self.image_psf_shape, positions=positions)
 
         lens_data.image = self.modify_image(image=lens_data.image, previous_results=previous_results)
 
@@ -553,7 +557,7 @@ class PhaseImaging(Phase):
             if during_analysis:
 
                 ray_tracing_plotters.plot_ray_tracing_individual(tracer=tracer, output_path=self.output_image_path,
-                                                             output_format='png', ignore_config=False)
+                                                                 output_format='png', ignore_config=False)
 
                 lens_fit_plotters.plot_fit_individuals(fit=fit, output_path=self.output_image_path,
                                                        output_format='png', ignore_config=False)
@@ -561,23 +565,19 @@ class PhaseImaging(Phase):
             elif not during_analysis:
 
                 if conf.instance.general.get('output', 'plot_ray_tracing_all_at_end_png', bool):
-
                     ray_tracing_plotters.plot_ray_tracing_individual(tracer=tracer, output_path=self.output_image_path,
-                                                             output_format='png', ignore_config=True)
+                                                                     output_format='png', ignore_config=True)
 
                 if conf.instance.general.get('output', 'plot_ray_tracing_all_at_end_fits', bool):
-
                     ray_tracing_plotters.plot_ray_tracing_individual(tracer=tracer,
                                                                      output_path=self.output_fits_path,
                                                                      output_format='fits', ignore_config=True)
 
                 if conf.instance.general.get('output', 'plot_lens_fit_all_at_end_png', bool):
-
                     lens_fit_plotters.plot_fit_individuals(fit=fit, output_path=self.output_image_path,
                                                            output_format='png', ignore_config=True)
 
                 if conf.instance.general.get('output', 'plot_lens_fit_all_at_end_fits', bool):
-
                     lens_fit_plotters.plot_fit_individuals(fit=fit, output_path=self.output_fits_path,
                                                            output_format='fits', ignore_config=True)
 
@@ -686,7 +686,7 @@ class LensSourcePlanePhase(PhaseImaging):
 
     def __init__(self, phase_name, lens_galaxies=None, source_galaxies=None, optimizer_class=non_linear.MultiNest,
                  sub_grid_size=2, image_psf_shape=None, use_positions=False, mask_function=default_mask_function,
-                 cosmology=cosmo.Planck15,  auto_link_priors=False):
+                 cosmology=cosmo.Planck15, auto_link_priors=False):
         """
         A phase with a simple source/lens model
 
@@ -721,7 +721,6 @@ class LensSourcePlanePhase(PhaseImaging):
                                                         previous_results=previous_results)
 
         def tracer_for_instance(self, instance):
-
             return ray_tracing.TracerImageSourcePlanes(lens_galaxies=instance.lens_galaxies,
                                                        source_galaxies=instance.source_galaxies,
                                                        image_plane_grid_stack=self.lens_data.grid_stack,
@@ -747,7 +746,7 @@ class LensSourcePlanePhase(PhaseImaging):
             """
 
             super(LensSourcePlanePhase.Result, self).__init__(constant=constant, figure_of_merit=figure_of_merit,
-                                                        variable=variable, analysis=analysis, optimizer=optimizer)
+                                                              variable=variable, analysis=analysis, optimizer=optimizer)
 
         @property
         def unmasked_lens_plane_model_image(self):
@@ -816,10 +815,10 @@ class MultiPlanePhase(PhaseImaging):
 
 
 class GalaxyFitPhase(AbstractPhase):
-
     galaxy = PhasePropertyCollection("galaxy")
 
-    def __init__(self, phase_name, use_intensities=False, use_surface_density=False, use_potential=False, use_deflections=False,
+    def __init__(self, phase_name, use_intensities=False, use_surface_density=False, use_potential=False,
+                 use_deflections=False,
                  galaxy=None, optimizer_class=non_linear.MultiNest, sub_grid_size=2,
                  mask_function=default_mask_function, cosmology=cosmo.Planck15):
         """
@@ -864,10 +863,9 @@ class GalaxyFitPhase(AbstractPhase):
             A result object comprising the best fit model and other hyper.
         """
         analysis = self.make_analysis(array=array, noise_map=noise_map, previous_results=previous_results, mask=mask)
-        result = self.optimizer.fit(analysis)
+        result = self.run_analysis(analysis)
 
-        return self.__class__.Result(constant=result.constant, figure_of_merit=result.figure_of_merit,
-                                     variable=result.variable, analysis=analysis, optimizer=self.optimizer)
+        return self.make_result(result, analysis)
 
     def make_analysis(self, array, noise_map, previous_results=None, mask=None):
         """
@@ -903,7 +901,6 @@ class GalaxyFitPhase(AbstractPhase):
             return self.__class__.AnalysisSingle(galaxy_data=galaxy_data, phase_name=self.phase_name,
                                                  cosmology=self.cosmology, previous_results=previous_results)
 
-
         elif self.use_deflections:
 
             galaxy_data_y = gd.GalaxyData(array=array, noise_map=noise_map, mask=mask, sub_grid_size=self.sub_grid_size,
@@ -925,7 +922,6 @@ class GalaxyFitPhase(AbstractPhase):
     class Analysis(Phase.Analysis):
 
         def __init__(self, cosmology, phase_name, previous_results):
-
             super(GalaxyFitPhase.Analysis, self).__init__(cosmology=cosmology, phase_name=phase_name,
                                                           previous_results=previous_results)
 
@@ -938,7 +934,6 @@ class GalaxyFitPhase(AbstractPhase):
     class AnalysisSingle(Analysis):
 
         def __init__(self, galaxy_data, cosmology, phase_name, previous_results=None):
-
             super(GalaxyFitPhase.AnalysisSingle, self).__init__(cosmology=cosmology, phase_name=phase_name,
                                                                 previous_results=previous_results)
 
@@ -977,7 +972,6 @@ class GalaxyFitPhase(AbstractPhase):
     class AnalysisDeflections(Analysis):
 
         def __init__(self, galaxy_data_y, galaxy_data_x, cosmology, phase_name, previous_results=None):
-
             super(GalaxyFitPhase.AnalysisDeflections, self).__init__(cosmology=cosmology, phase_name=phase_name,
                                                                      previous_results=previous_results)
 
@@ -989,7 +983,6 @@ class GalaxyFitPhase(AbstractPhase):
             return fit_y.figure_of_merit + fit_x.figure_of_merit
 
         def visualize(self, instance, suffix, during_analysis):
-
             fit_y, fit_x = self.fit_for_instance(instance)
 
             galaxy_fitting_plotters.plot_single_subplot(fit=fit_y, output_path=self.output_image_path,
@@ -1001,7 +994,6 @@ class GalaxyFitPhase(AbstractPhase):
             return fit_y, fit_x
 
         def fit_for_instance(self, instance):
-
             fit_y = galaxy_fit.GalaxyFit(galaxy_data=self.galaxy_data_y, model_galaxy=instance.galaxy)
             fit_x = galaxy_fit.GalaxyFit(galaxy_data=self.galaxy_data_x, model_galaxy=instance.galaxy)
 
@@ -1019,7 +1011,6 @@ class GalaxyFitPhase(AbstractPhase):
 
 
 class SensitivityPhase(PhaseImaging):
-
     lens_galaxies = PhasePropertyCollection("lens_galaxies")
     source_galaxies = PhasePropertyCollection("source_galaxies")
     sensitive_galaxies = PhasePropertyCollection("sensitive_galaxies")
@@ -1078,14 +1069,14 @@ class SensitivityPhase(PhaseImaging):
             fit = self.fit_for_tracers(tracer_normal=tracer_normal, tracer_sensitive=tracer_sensitive)
 
             ccd_plotters.plot_ccd_subplot(ccd_data=self.sensitivity_image.ccd_data, mask=self.lens_data.mask,
-                                            positions=self.lens_data.positions,
-                                            output_path=self.output_image_path, output_format='png',
-                                            ignore_config=False)
+                                          positions=self.lens_data.positions,
+                                          output_path=self.output_image_path, output_format='png',
+                                          ignore_config=False)
 
             ccd_plotters.plot_ccd_individual(ccd_data=self.sensitivity_image.ccd_data, mask=self.lens_data.mask,
-                                               positions=self.lens_data.positions,
-                                               output_path=self.output_image_path,
-                                               output_format='png')
+                                             positions=self.lens_data.positions,
+                                             output_path=self.output_image_path,
+                                             output_format='png')
 
             sensitivity_fit_plotters.plot_fit_subplot(fit=fit, output_path=self.output_image_path,
                                                       output_format='png')
