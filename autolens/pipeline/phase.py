@@ -244,6 +244,10 @@ class AbstractPhase(phase.AbstractPhase):
         def figure_of_merit_for_fit(self, tracer):
             raise NotImplementedError()
 
+    def make_result(self, result, analysis):
+        return self.__class__.Result(constant=result.constant, figure_of_merit=result.figure_of_merit,
+                              variable=result.variable, analysis=analysis, optimizer=self.optimizer)
+
     class Result(non_linear.Result):
 
         def __init__(self, constant, figure_of_merit, variable, analysis, optimizer):
@@ -318,8 +322,7 @@ class PhasePositions(AbstractPhase):
         """
         analysis = self.make_analysis(positions=positions, pixel_scale=pixel_scale, previous_results=previous_results)
         result = self.run_analysis(analysis)
-        return self.__class__.Result(constant=result.constant, figure_of_merit=result.figure_of_merit,
-                                     variable=result.variable, analysis=analysis, optimizer=self.optimizer)
+        return self.make_result(result, analysis)
 
     def make_analysis(self, positions, pixel_scale, previous_results=None):
         """
@@ -455,8 +458,7 @@ class PhaseImaging(Phase):
 
         result = self.run_analysis(analysis)
 
-        return self.__class__.Result(constant=result.constant, figure_of_merit=result.figure_of_merit,
-                                     variable=result.variable, analysis=analysis, optimizer=self.optimizer)
+        return self.make_result(result, analysis)
 
     def make_analysis(self, data, previous_results=None, mask=None, positions=None):
         """
@@ -865,8 +867,7 @@ class GalaxyFitPhase(AbstractPhase):
         analysis = self.make_analysis(array=array, noise_map=noise_map, previous_results=previous_results, mask=mask)
         result = self.run_analysis(analysis)
 
-        return self.__class__.Result(constant=result.constant, figure_of_merit=result.figure_of_merit,
-                                     variable=result.variable, analysis=analysis, optimizer=self.optimizer)
+        return self.make_result(result, analysis)
 
     def make_analysis(self, array, noise_map, previous_results=None, mask=None):
         """
