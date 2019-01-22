@@ -812,9 +812,7 @@ class MultiPlanePhase(PhaseImaging):
 
         @classmethod
         def log(cls, instance):
-            logger.debug(
-                "\nRunning lens/source lens for... \n\nLens Galaxy:\n{}\n\nSource Galaxy:\n{}\n\n".format(
-                    instance.lens_galaxies, instance.source_galaxies))
+            logger.debug("\nRunning multi-plane for... \n\nGalaxies:\n{}\n\n".format(instance.galaxies))
 
 
 class GalaxyFitPhase(AbstractPhase):

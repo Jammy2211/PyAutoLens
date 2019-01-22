@@ -2,6 +2,7 @@ Hey, welcome to my PyAutoLens to-do. This should give you a sense of what we're 
 
 Let me know if you think anything is missing, or should be pushed up the to-do list ;)
 
+0) Sort out cosma scripts.
 1) Write Adaptive Grid howtolens.
 2) Power-law Analytic Deflections
 3) Magnification + Caustic + Critical curves
@@ -24,3 +25,13 @@ April) Multi-plane analysis.
 2019) Quasar modeling (time-delays, variable cosmology, PSF refinement)
 2019) UV-plane
 2019) Multi-CCD analysis.
+
+
+
+
+Jan 22
+
+Pipeline with fixed lens mass / source light profile (and the inversion). Vary 4 subhalo parameters (x, y, mass, r_s) and
+iterate over intervals of redshift.
+
+M200 mass for NFW halo.
