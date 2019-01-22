@@ -246,7 +246,7 @@ class AbstractPhase(phase.AbstractPhase):
 
     def make_result(self, result, analysis):
         return self.__class__.Result(constant=result.constant, figure_of_merit=result.figure_of_merit,
-                              variable=result.variable, analysis=analysis, optimizer=self.optimizer)
+                                     variable=result.variable, analysis=analysis, optimizer=self.optimizer)
 
     class Result(non_linear.Result):
 
