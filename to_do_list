@@ -3,6 +3,7 @@ Hey, welcome to my PyAutoLens to-do. This should give you a sense of what we're 
 Let me know if you think anything is missing, or should be pushed up the to-do list ;)
 
 0) Sort out cosma scripts.
+0.5) Add multi-plane coordinate mappings for Qiuhan.
 1) Write Adaptive Grid howtolens.
 2) Power-law Analytic Deflections
 3) Magnification + Caustic + Critical curves
@@ -35,3 +36,8 @@ Pipeline with fixed lens mass / source light profile (and the inversion). Vary 4
 iterate over intervals of redshift.
 
 M200 mass for NFW halo.
+
+Jan 23
+
+Given the angular coodinates at a given plane, determine the angular coordinates at any given redshift (e.g. for a
+given tracer, lens galaxy, source galaxy, etc.).
