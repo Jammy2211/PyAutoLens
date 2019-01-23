@@ -2,6 +2,8 @@
 
 **PyAutoLens** makes it simple to model strong gravitational lenses, like this one: 
 
+![alt text](https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/gitimage.png)
+
 **PyAutoLens** is based on the following papers:
 
 https://arxiv.org/abs/1412.7436<br/>
