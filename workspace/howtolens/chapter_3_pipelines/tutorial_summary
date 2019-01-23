@@ -5,14 +5,16 @@ template pipelines that perform a range of different lens model fits. In general
 see if a template exists for what you want to do with PyAutoLens, before attempting to write a pipeline from scratch.
 Of course, many of these templates probably require only minor tweaking to meet your scientific needs.
 
+
 If a pipeline isn't available for what you need to do, and you go on to write your own, feel free to get in contact
 with me to add it to the examples. We really have no idea what science people are ultimately going to do with
 PyAutoLens, so we have no idea of the weird and wonderful pipelines people will craft along the way!
 
-You'll also find a pipeline runner script in the 'workspace/pipelines' folder, which you can use to run these pipelines.
-Its setup to make management of your directory structure simple, and comes as both a Python script and Juypter notebook.
-I personally prefer to run pipelines using a Python script, but I know others like notebooks. You should experiment
-with using both, and figure out your own personal preference.
+You should also checkout the 'workspace/runners' folder, where the corresponding runners which import and run these
+pipeines are found. The example runners come as both a Python scripts and Juypter notebooks. I personally prefer to use
+runners as Python scripts, but others prefer notebooks. You should experiment with using both, and figure out your own
+personal preference.Its nice to keep pipelines and runners separate, as it encourages one to separate the analysis
+(which the pipeline defines) from the data that analysis is run on (which the runner loads).
 
 Before moving onto chapter 4, there's one more thing I'd like you to do. At this point, you're probably a bit bored of
 fitting simulated images. Sure, they're informative, and look pretty, but I think its time you model a real strong lens,

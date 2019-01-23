@@ -5,7 +5,7 @@ from autolens.data.plotters import ccd_plotters
 import os
 
 # Welcome to the pipeline runner. This tool allows you to load data on strong lenses, and pass it to pipelines for a
-# strong lens analysis. To show you around, we'll load up some example data and run it through some of the example
+# PyAutoLens analysis. To show you around, we'll load up some example data and run it through some of the example
 # pipelines that come distributed with PyAutoLens.
 
 # The runner is supplied as both this Python script and a Juypter notebook. Its up to you which you use - I personally
@@ -14,7 +14,7 @@ import os
 # feel free to use notebooks. Or, use both for a bit, and decide your favourite!
 
 # The pipeline runner is fairly self explanatory. Make sure to checkout the pipelines in the
-#  _workspace/pipelines/examples/_ folder - they come with detailed descriptions of what they do! I hope that you'll
+#  _workspace/pipelines/examples/_ folder - they come with detailed descriptions of what they do. I hope that you'll
 # expand on them for your own personal scientific needs
 
 # Get the relative path to the config files and output folder in our workspace.
@@ -23,7 +23,7 @@ path = '{}/../'.format(os.path.dirname(os.path.realpath(__file__)))
 # Use this path to explicitly set the config path and output path.
 conf.instance = conf.Config(config_path=path+'config', output_path=path+'output')
 
-# It is convenient to specify the lens name as a string, so that if the pipeline is applied to multiple images we \
+# It is convenient to specify the lens name as a string, so that if the pipeline is applied to multiple images we
 # don't have to change all of the path entries in the load_ccd_data_from_fits function below.
 
 # lens_name = 'lens_light_and_x1_source' # An example simulated image with lens light emission and a source galaxy.
@@ -62,7 +62,7 @@ pipeline.run(data=ccd_data)
 
 # And there we have it, the pipeline runner. For me personally, I find it easiest too manage my lens models by having
 # multiple pipeline runners as Python, with each dedicated to a specific set of pipelines and lenses. This makes it
-# easy for me to set off multiple pipelines at the same time, whilst keeping a good sense of what I'm currently doing.
+# easier to set off multiple pipelines at the same time, whilst keeping a good sense of what their purpose is.
 
-# You should seek to figure out your own workflow - you may well prefer using a Juypter notebook to run pipelines,
-# so make sure to checkout the notebook pipeline runner also in this folder.
+# You experiment with different runners to figure out the workflow that works best for you - you may well prefer using
+# a Juypter notebook to run pipelines, so make sure to checkout the notebook pipeline runner also in this folder.
