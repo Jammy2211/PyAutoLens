@@ -26,9 +26,6 @@ conf.instance = conf.Config(config_path=path+'config', output_path=path+'output'
 # It is convenient to specify the lens name as a string, so that if the pipeline is applied to multiple images we
 # don't have to change all of the path entries in the load_ccd_data_from_fits function below.
 
-# lens_name = 'lens_light_and_x1_source' # An example simulated image with lens light emission and a source galaxy.
-# pixel_scale = 0.1
-
 lens_name = 'slacs1430+4105' # Example HST imaging of the SLACS strong lens slacs1430+4150.
 pixel_scale = 0.03
 

@@ -23,33 +23,8 @@ import os
 # The second phase of this pipeline loads a custom mask, which is used instead of the default mask function. A set of
 # positions are also loaded and use to restrict mass models to only those where the positions trace close to one another.
 
-# Get the relative path to the config files and output folder in our workspace.
-path = '{}/../../'.format(os.path.dirname(os.path.realpath(__file__)))
-
-# There is a x2 '/../../' because we are in the 'workspace/pipelines/examples' folder. If you write your own pipeline
-# in the 'workspace/pipelines' folder you should remove one '../', as shown below.
-# path = '{}/../'.format(os.path.dirname(os.path.realpath(__file__)))
-
-# Use this path to explicitly set the config path and output papth
-conf.instance = conf.Config(config_path=path+'config', output_path=path+'output')
-
-# It is convinient to specify the lens name as a string, so that if the pipeline is applied to multiple images we
-# don't have to change all of the path entries in the load_ccd_data_from_fits function below.
-lens_name = 'lens_light_and_x1_source'
-
-# Load the CCD data of the lens
-ccd_data = ccd.load_ccd_data_from_fits(image_path=path + '/data/example/' + lens_name + '/image.fits', pixel_scale=0.1,
-                                       psf_path=path+'/data/example/'+lens_name+'/psf.fits',
-                                       noise_map_path=path+'/data/example/'+lens_name+'/noise_map.fits')
-
-# Load its mask from a mask.fits file generated using the tools/mask_maker.py file.
-mask = msk.load_mask_from_fits(mask_path=path + '/data/example/' + lens_name + '/mask.fits', pixel_scale=0.1)
-
-# Load its positions from a positions.fits file generated using the tools/positions_maker.py file.
-positions = ccd.load_positions(positions_path=path + '/data/example/' + lens_name + '/positions.dat')
-
-# Lets plot an image of the ccd data, mask and positions to make sure they are chosen correctly.
-ccd_plotters.plot_ccd_subplot(ccd_data=ccd_data, mask=mask, positions=positions)
+# Checkout the 'workspace/runners/pipeline_runner.py' script for how the custom mask and positions are loaded and used
+# in the pipeline.
 
 def make_pipeline(pipeline_path=''):
 
@@ -117,7 +92,7 @@ def make_pipeline(pipeline_path=''):
     phase2 = LensSubtractedPhase(lens_galaxies=dict(lens=gm.GalaxyModel(mass=mp.EllipticalIsothermal,
                                                                         shear=mp.ExternalShear)),
                                  source_galaxies=dict(source=gm.GalaxyModel(light=lp.EllipticalSersic)),
-                                 optimizer_class=nl.MultiNest, mask_function=mask_function, use_positions=True,
+                                 optimizer_class=nl.MultiNest, use_positions=True,
                                  phase_name=pipeline_path + '/phase_2_source_custom_mask_and_positions')
 
     phase2.optimizer.const_efficiency_mode = True
