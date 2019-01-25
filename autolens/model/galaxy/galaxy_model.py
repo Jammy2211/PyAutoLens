@@ -1,10 +1,10 @@
+import copy
 import inspect
 
 from autofit import exc
 from autofit.mapper import model_mapper
-from autofit.mapper.prior import PriorNameValue, ConstantNameValue, cast_collection
 from autofit.mapper import prior
-
+from autofit.mapper.prior import PriorNameValue, ConstantNameValue, cast_collection
 from autolens.model.galaxy import galaxy
 from autolens.model.profiles import light_profiles, mass_profiles
 
@@ -316,8 +316,7 @@ class GalaxyModel(model_mapper.AbstractPriorModel):
         new_model: GalaxyModel
             A model with some or all priors replaced.
         """
-        new_model = GalaxyModel(align_centres=self.align_centres, align_axis_ratios=self.align_axis_ratios,
-                                align_orientations=self.align_orientations)
+        new_model = copy.deepcopy(self)
 
         for key, value in filter(lambda t: isinstance(t[1], model_mapper.PriorModel), self.__dict__.items()):
             setattr(new_model, key, value.gaussian_prior_model_for_arguments(arguments))
