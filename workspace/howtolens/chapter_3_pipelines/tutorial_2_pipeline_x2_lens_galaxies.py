@@ -1,5 +1,5 @@
 from autofit.optimize import non_linear as nl
-from autofit.mapper import model_mapper as mm
+from autofit.mapper import prior
 from autolens.data.array import mask as msk
 from autolens.model.profiles import light_profiles as lp
 from autolens.model.profiles import mass_profiles as mp
@@ -41,8 +41,8 @@ def make_pipeline(pipeline_path=''):
 
             # Lets restrict the prior's on the centres around the pixel we know the galaxy's light centre peaks.
 
-            self.lens_galaxies.left_lens.light.centre_0 = mm.GaussianPrior(mean=0.0, sigma=0.05)
-            self.lens_galaxies.left_lens.light.centre_1 = mm.GaussianPrior(mean=-1.0, sigma=0.05)
+            self.lens_galaxies.left_lens.light.centre_0 = prior.GaussianPrior(mean=0.0, sigma=0.05)
+            self.lens_galaxies.left_lens.light.centre_1 = prior.GaussianPrior(mean=-1.0, sigma=0.05)
 
             # Given we are only fitting the very central region of the lens galaxy, we don't want to let a parameter 
             # like th Sersic index vary. Lets fix it to 4.0.
@@ -68,8 +68,8 @@ def make_pipeline(pipeline_path=''):
 
         def pass_priors(self, previous_results):
 
-            self.lens_galaxies.right_lens.light.centre_0 = mm.GaussianPrior(mean=0.0, sigma=0.05)
-            self.lens_galaxies.right_lens.light.centre_1 = mm.GaussianPrior(mean=1.0, sigma=0.05)
+            self.lens_galaxies.right_lens.light.centre_0 = prior.GaussianPrior(mean=0.0, sigma=0.05)
+            self.lens_galaxies.right_lens.light.centre_1 = prior.GaussianPrior(mean=1.0, sigma=0.05)
             self.lens_galaxies.right_lens.light.sersic_index = 4.0
 
     phase2 = RightLensPhase(lens_galaxies=dict(right_lens=gm.GalaxyModel(light=lp.EllipticalSersic)),
@@ -152,8 +152,8 @@ def make_pipeline(pipeline_path=''):
             # We also want the Sersic index's to be free parameters now, so lets change it from a constant to a
             # variable.
 
-            self.lens_galaxies.left_lens.light.sersic_index = mm.GaussianPrior(mean=4.0, sigma=2.0)
-            self.lens_galaxies.right_lens.light.sersic_index = mm.GaussianPrior(mean=4.0, sigma=2.0)
+            self.lens_galaxies.left_lens.light.sersic_index = prior.GaussianPrior(mean=4.0, sigma=2.0)
+            self.lens_galaxies.right_lens.light.sersic_index = prior.GaussianPrior(mean=4.0, sigma=2.0)
 
             # Things are much simpler for the source galaxies - just like them togerther!
 

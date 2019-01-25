@@ -102,7 +102,7 @@ def make_pipeline(pipeline_path=''):
 
         def modify_image(self, image, previous_results):
             phase_1_results = previous_results[0]
-            return image - phase_1_results.most_likely_fit.unmasked_lens_plane_model_image
+            return image - phase_1_results.unmasked_lens_plane_model_image
 
     # The function above demonstrates the most important thing about pipelines - that every phase has access to the
     # results of all previous phases. This means we can feed information through the pipeline and therefore use the
@@ -154,8 +154,7 @@ def make_pipeline(pipeline_path=''):
             self.source_galaxies.source.light.axis_ratio = phase_2_results.variable.source.light.axis_ratio
             self.source_galaxies.source.light.phi = phase_2_results.variable.source.light.phi
             self.source_galaxies.source.light.intensity = phase_2_results.variable.source.light.intensity
-            self.source_galaxies.source.light.effective_radius = \
-                phase_2_results.variable.source.light.effective_radius
+            self.source_galaxies.source.light.effective_radius = phase_2_results.variable.source.light.effective_radius
             self.source_galaxies.source.light.sersic_index = phase_2_results.variable.source.light.sersic_index
 
             # However, listing every parameter like this is ugly, and is combersome if we have a lot of parameters.

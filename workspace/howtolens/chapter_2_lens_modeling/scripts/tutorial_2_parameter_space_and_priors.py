@@ -1,6 +1,6 @@
 from autofit import conf
 from autofit.optimize import non_linear
-from autofit.mapper import model_mapper
+from autofit.mapper import prior
 from autolens.pipeline import phase as ph
 from autolens.model.galaxy import galaxy_model as gm
 from autolens.data import ccd
@@ -124,7 +124,7 @@ class CustomPhase(ph.LensSourcePlanePhase):
 
     def pass_priors(self, previous_results):
 
-        # To change priors, we use the 'model_mapper' module of PyAutoFit. This is what links our GalaxyModel's to the
+        # To change priors, we use the 'prior' module of PyAutoFit. These priors link our GalaxyModel to the
         # non-linear search. Thus, it tells PyAutoLens where to search non-linear parameter space.
 
         # These two lines change the centre of the lens galaxy's mass-profile to UniformPriors around the coordinates
@@ -136,18 +136,17 @@ class CustomPhase(ph.LensSourcePlanePhase):
 
         # The word 'mass' corresponds to the word we used when setting up the GalaxyModel above.
 
-        self.lens_galaxies.lens_galaxy.mass.centre_0 = model_mapper.UniformPrior(lower_limit=-0.1, upper_limit=0.1)
-        self.lens_galaxies.lens_galaxy.mass.centre_1 = model_mapper.UniformPrior(lower_limit=-0.1, upper_limit=0.1)
+        self.lens_galaxies.lens_galaxy.mass.centre_0 = prior.UniformPrior(lower_limit=-0.1, upper_limit=0.1)
+        self.lens_galaxies.lens_galaxy.mass.centre_1 = prior.UniformPrior(lower_limit=-0.1, upper_limit=0.1)
 
         # Lets also change the prior on the lens galaxy's einstein radius, to a GaussianPrior centred on 1.4".
         # For real lens modeling, this might be done by visually estimating the radius the lens's arcs / ring appear.
 
-        self.lens_galaxies.lens_galaxy.mass.einstein_radius = model_mapper.GaussianPrior(mean=1.4, sigma=0.2)
+        self.lens_galaxies.lens_galaxy.mass.einstein_radius = prior.GaussianPrior(mean=1.4, sigma=0.2)
 
         # We can also customize the source galaxy - lets say we believe it is compact and limit its effective radius
 
-        self.source_galaxies.source_galaxy.light.effective_radius = \
-            model_mapper.UniformPrior(lower_limit=0.0, upper_limit=0.3)
+        self.source_galaxies.source_galaxy.light.effective_radius = prior.UniformPrior(lower_limit=0.0, upper_limit=0.3)
 
 # (If the use of a python 'class' here, or some of the python code doesn't appear clear, don't worry about it. This
 # code is using a number of Python's object-oriented features. In general, I expect that'll you'll simply copy the code
