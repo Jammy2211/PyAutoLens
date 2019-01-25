@@ -1,0 +1,20 @@
+The priors/default config files set the default priors assigned to every parameter.
+
+The following priors can be assigned to a parameter:
+
+- UniformPrior - 'u' - The parameter values are sampled uniformly between the lower and upper limits of the priors.
+
+  For example, if the prior on a parameter reads 'param = u,-1.0,1.0' its values are sampled uniformly between
+  -1.0 and 1.0.
+
+- GaussianPrior - 'g' - The parameter values are sampled from a Gaussian distribution described by a mean value and
+  width sigma.
+
+  For example, if the prior on a parameter reads 'param = g,1.0,2.0' its values are sampled from a Gaussian
+  distribution with mean=1.0 and sigma=2.0.
+
+- LogUniformPrior - 'l' - The parameter values are sampled from a log uniform distribution between the lower and upper
+  limits of the priors.
+
+  For example, if the prior on a parameter reads 'param = u,-1.0,1.0' its values are sampled from a log-uniform
+  distribution between -1.0 and 1.0.
