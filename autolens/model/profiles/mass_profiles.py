@@ -90,7 +90,7 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
         Parameters
         ----------
         centre: (float, float)
-            The origin of the profile
+            The (y,x) arc-second coordinates of the profile centre.
         axis_ratio : float
             Ellipse's minor-to-major axis ratio (b/a)
         phi : float
@@ -171,17 +171,17 @@ class EllipticalCoredPowerLaw(EllipticalMassProfile, MassProfile):
         Parameters
         ----------
         centre: (float, float)
-            The regular_grid of the origin of the profiles
+            The (y,x) arc-second coordinates of the profile centre.
         axis_ratio : float
-            Elliptical mass profile's minor-to-major axis ratio (b/a)
+            The elliptical mass profile's minor-to-major axis ratio (b/a).
         phi : float
-            Rotation angle of mass profile's ellipse counter-clockwise from positive x-axis
+            Rotation angle of mass profile's ellipse counter-clockwise from positive x-axis.
         einstein_radius : float
-            Einstein radius of power-law mass profiles
+            The arc-second Einstein radius.
         slope : float
-            power-law density slope of mass profiles
+            The density slope of the power-law (lower value -> shallower profile, higher value -> steeper profile).
         core_radius : float
-            The radius of the inner core
+            The arc-second radius of the inner core.
         """
         super(EllipticalCoredPowerLaw, self).__init__(centre, axis_ratio, phi)
         self.einstein_radius = einstein_radius
@@ -200,8 +200,8 @@ class EllipticalCoredPowerLaw(EllipticalMassProfile, MassProfile):
 
         Parameters
         ----------
-        grid : masks.RegularGrid
-            The grid of coordinates the surface density is computed on.
+        grid : grids.RegularGrid
+            The grid of (y,x) arc-second coordinates the surface density is computed on.
         """
 
         surface_density_grid = np.zeros(grid.shape[0])
@@ -220,8 +220,8 @@ class EllipticalCoredPowerLaw(EllipticalMassProfile, MassProfile):
 
         Parameters
         ----------
-        grid : masks.RegularGrid
-            The grid of coordinates the deflection angles are computed on.
+        grid : grids.RegularGrid
+            The grid of (y,x) arc-second coordinates the deflection angles are computed on.
         """
         potential_grid = np.zeros(grid.shape[0])
 
@@ -238,8 +238,8 @@ class EllipticalCoredPowerLaw(EllipticalMassProfile, MassProfile):
 
         Parameters
         ----------
-        grid : masks.RegularGrid
-            The grid of coordinates the deflection angles are computed on.
+        grid : grids.RegularGrid
+            The grid of (y,x) arc-second coordinates the deflection angles are computed on.
         """
 
         def calculate_deflection_component(npow, index):
@@ -289,13 +289,13 @@ class SphericalCoredPowerLaw(EllipticalCoredPowerLaw):
         Parameters
         ----------
         centre: (float, float)
-            The regular_grid of the origin of the profiles
+            The (y,x) arc-second coordinates of the profile centre.
         einstein_radius : float
-            Einstein radius of power-law mass profiles
+            The arc-second Einstein radius.
         slope : float
-            power-law density slope of mass profiles
+            The density slope of the power-law (lower value -> shallower profile, higher value -> steeper profile).
         core_radius : float
-            The radius of the inner core
+            The arc-second radius of the inner core.
         """
         super(SphericalCoredPowerLaw, self).__init__(centre, 1.0, 0.0, einstein_radius, slope, core_radius)
 
@@ -306,8 +306,8 @@ class SphericalCoredPowerLaw(EllipticalCoredPowerLaw):
 
         Parameters
         ----------
-        grid : masks.RegularGrid
-            The grid of coordinates the deflection angles are computed on.
+        grid : grids.RegularGrid
+            The grid of (y,x) arc-second coordinates the deflection angles are computed on.
         """
         eta = self.grid_to_radius(grid)
         deflection = np.multiply(2. * self.einstein_radius_rescaled, np.divide(
@@ -325,15 +325,15 @@ class EllipticalPowerLaw(EllipticalCoredPowerLaw):
         Parameters
         ----------
         centre: (float, float)
-            The (x,y) coordinates of the origin of the profile.
+            The (y,x) arc-second coordinates of the profile centre.
         axis_ratio : float
-            Elliptical mass profile's minor-to-major axis ratio (b/a)
+            The elliptical mass profile's minor-to-major axis ratio (b/a).
         phi : float
-            Rotation angle of mass profile's ellipse counter-clockwise from positive x-axis
+            Rotation angle of mass profile's ellipse counter-clockwise from positive x-axis.
         einstein_radius : float
-            Einstein radius of power-law mass profile.
+            The arc-second Einstein radius.
         slope : float
-            power-law density slope of mass profile.
+            The density slope of the power-law (lower value -> shallower profile, higher value -> steeper profile).
         """
 
         super(EllipticalPowerLaw, self).__init__(centre, axis_ratio, phi, einstein_radius, slope, 0.0)
@@ -367,11 +367,11 @@ class SphericalPowerLaw(EllipticalPowerLaw):
         Parameters
         ----------
         centre: (float, float)
-            The (x,y) coordinates of the origin of the profile.
+            The (y,x) arc-second coordinates of the profile centre.
         einstein_radius : float
-            Einstein radius of power-law mass profiles
+            The arc-second Einstein radius.
         slope : float
-            power-law density slope of mass profiles
+            The density slope of the power-law (lower value -> shallower profile, higher value -> steeper profile).
         """
 
         super(SphericalPowerLaw, self).__init__(centre, 1.0, 0.0, einstein_radius, slope)
@@ -394,17 +394,16 @@ class EllipticalCoredIsothermal(EllipticalCoredPowerLaw):
         Parameters
         ----------
         centre: (float, float)
-            The regular_grid of the origin of the profiles
+            The (y,x) arc-second coordinates of the profile centre.
         axis_ratio : float
-            Elliptical mass profile's minor-to-major axis ratio (b/a)
+            The elliptical mass profile's minor-to-major axis ratio (b/a).
         phi : float
-            Rotation angle of mass profile's ellipse counter-clockwise from positive x-axis
+            Rotation angle of mass profile's ellipse counter-clockwise from positive x-axis.
         einstein_radius : float
-            Einstein radius of power-law mass profiles
+            The arc-second Einstein radius.
         core_radius : float
-            The radius of the inner core
+            The arc-second radius of the inner core.
         """
-
         super(EllipticalCoredIsothermal, self).__init__(centre, axis_ratio, phi, einstein_radius, 2.0,
                                                         core_radius)
 
@@ -419,13 +418,12 @@ class SphericalCoredIsothermal(SphericalCoredPowerLaw):
         Parameters
         ----------
         centre: (float, float)
-            The regular_grid of the origin of the profiles
+            The (y,x) arc-second coordinates of the profile centre.
         einstein_radius : float
-            Einstein radius of power-law mass profiles
+            The arc-second Einstein radius.
         core_radius : float
-            The radius of the inner core
+            The arc-second radius of the inner core.
         """
-
         super(SphericalCoredIsothermal, self).__init__(centre, einstein_radius, 2.0, core_radius)
 
 
@@ -439,15 +437,14 @@ class EllipticalIsothermal(EllipticalPowerLaw):
         Parameters
         ----------
         centre: (float, float)
-            The regular_grid of the origin of the profiles
+            The (y,x) arc-second coordinates of the profile centre.
         axis_ratio : float
-            Elliptical mass profile's minor-to-major axis ratio (b/a)
+            The elliptical mass profile's minor-to-major axis ratio (b/a).
         phi : float
-            Rotation angle of mass profile's ellipse counter-clockwise from positive x-axis
+            Rotation angle of mass profile's ellipse counter-clockwise from positive x-axis.
         einstein_radius : float
-            Einstein radius of power-law mass profiles
+            The arc-second Einstein radius.
         """
-
         super(EllipticalIsothermal, self).__init__(centre, axis_ratio, phi, einstein_radius, 2.0)
 
     @geometry_profiles.transform_grid
@@ -460,8 +457,8 @@ class EllipticalIsothermal(EllipticalPowerLaw):
 
         Parameters
         ----------
-        grid : masks.RegularGrid
-            The grid of coordinates the deflection angles are computed on.
+        grid : grids.RegularGrid
+            The grid of (y,x) arc-second coordinates the deflection angles are computed on.
         """
 
         grid[(grid[:,0] == 0.0) & (grid[:,1] == 0.0)] = np.array([1.0e-8, 1.0e-8])
@@ -488,11 +485,10 @@ class SphericalIsothermal(EllipticalIsothermal):
         Parameters
         ----------
         centre: (float, float)
-            The regular_grid of the origin of the profiles
+            The (y,x) arc-second coordinates of the profile centre.
         einstein_radius : float
-            Einstein radius of power-law mass profiles
+            The arc-second Einstein radius.
         """
-
         super(SphericalIsothermal, self).__init__(centre, 1.0, 0.0, einstein_radius)
 
     @geometry_profiles.transform_grid
@@ -502,8 +498,8 @@ class SphericalIsothermal(EllipticalIsothermal):
 
         Parameters
         ----------
-        grid : masks.RegularGrid
-            The grid of coordinates the deflection angles are computed on.
+        grid : grids.RegularGrid
+            The grid of (y,x) arc-second coordinates the deflection angles are computed on.
         """
         eta = self.grid_to_elliptical_radii(grid)
         return 2.0 * self.einstein_radius_rescaled * eta
@@ -515,8 +511,8 @@ class SphericalIsothermal(EllipticalIsothermal):
 
         Parameters
         ----------
-        grid : masks.RegularGrid
-            The grid of coordinates the deflection angles are computed on.
+        grid : grids.RegularGrid
+            The grid of (y,x) arc-second coordinates the deflection angles are computed on.
         """
         return self.grid_radius_to_cartesian(grid, np.full(grid.shape[0], 2.0 * self.einstein_radius_rescaled))
 
@@ -527,22 +523,24 @@ class AbstractEllipticalGeneralizedNFW(EllipticalMassProfile, MassProfile):
 
     def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, kappa_s=0.05, inner_slope=1.0, scale_radius=5.0):
         """
-        The elliptical NFW profiles, used to fit_normal the dark matter halo of the lens.
+        The elliptical NFW profiles, used to fit the dark matter halo of the lens.
 
         Parameters
         ----------
         centre: (float, float)
-            The regular_grid of the origin of the profiles
+            The (y,x) arc-second coordinates of the profile centre.
         axis_ratio : float
-            Ratio of profiles ellipse's minor and major axes (b/a)
+            Ratio of profiles ellipse's minor and major axes (b/a).
         phi : float
-            Rotational angle of profiles ellipse counter-clockwise from positive x-axis
+            Rotational angle of profiles ellipse counter-clockwise from positive x-axis.
         kappa_s : float
-            The overall normalization of the dark matter halo
+            The overall normalization of the dark matter halo \
+            (kappa_s = (rho_s * scale_radius)/lensing_critical_density)
         inner_slope : float
             The inner slope of the dark matter halo
         scale_radius : float
-            The radius containing half the light of this model_mapper
+            The arc-second radius where the average density within this radius is 200 times the critical density of \
+            the Universe..
         """
 
         super(AbstractEllipticalGeneralizedNFW, self).__init__(centre, axis_ratio, phi)
@@ -557,10 +555,10 @@ class AbstractEllipticalGeneralizedNFW(EllipticalMassProfile, MassProfile):
 
         Parameters
         -----------
-        grid : masks.RegularGrid
-            The grid of coordinates the potential / deflection_stacks are computed on.
+        grid : grids.RegularGrid
+            The grid of (y,x) arc-second coordinates the potential / deflection_stacks are computed on.
         tabulate_bins : int
-            The number of bins used to tabulate the integral over.
+            The number of bins to tabulate the inner integral of this profile.
         """
         eta_min = 1.0e-4
         eta_max = 1.05 * np.max(self.grid_to_elliptical_radii(grid))
@@ -577,8 +575,8 @@ class AbstractEllipticalGeneralizedNFW(EllipticalMassProfile, MassProfile):
 
         Parameters
         ----------
-        grid : masks.RegularGrid
-            The grid of coordinates the surface density is computed on.
+        grid : grids.RegularGrid
+            The grid of (y,x) arc-second coordinates the surface density is computed on.
         """
 
         surface_density_grid = np.zeros(grid.shape[0])
@@ -600,9 +598,10 @@ class EllipticalGeneralizedNFW(AbstractEllipticalGeneralizedNFW):
 
         Parameters
         ----------
-        tabulate_bins
-        grid : masks.RegularGrid
-            The grid of coordinates the deflection angles are computed on.
+        grid : grids.RegularGrid
+            The grid of (y,x) arc-second coordinates the deflection angles are computed on.
+        tabulate_bins : int
+            The number of bins to tabulate the inner integral of this profile.
         """
 
         @jit_integrand
@@ -644,9 +643,10 @@ class EllipticalGeneralizedNFW(AbstractEllipticalGeneralizedNFW):
 
         Parameters
         ----------
-        tabulate_bins
-        grid : masks.RegularGrid
-            The grid of coordinates the deflection angles are computed on.
+        grid : grids.RegularGrid
+            The grid of (y,x) arc-second coordinates the deflection angles are computed on.
+        tabulate_bins : int
+            The number of bins to tabulate the inner integral of this profile.
         """
 
         @jit_integrand
@@ -733,18 +733,20 @@ class SphericalGeneralizedNFW(EllipticalGeneralizedNFW):
 
     def __init__(self, centre=(0.0, 0.0), kappa_s=0.05, inner_slope=1.0, scale_radius=5.0):
         """
-        The spherical NFW profiles, used to fit_normal the dark matter halo of the lens.
+        The spherical NFW profiles, used to fit the dark matter halo of the lens.
 
         Parameters
         ----------
         centre: (float, float)
-            The regular_grid of the origin of the profiles
+            The (y,x) arc-second coordinates of the profile centre.
         kappa_s : float
-            The overall normalization of the dark matter halo
+            The overall normalization of the dark matter halo \
+            (kappa_s = (rho_s * scale_radius)/lensing_critical_density)
         inner_slope : float
-            The inner slope of the dark matter halo
+            The inner slope of the dark matter halo.
         scale_radius : float
-            The radius containing half the light of this model_mapper
+            The arc-second radius where the average density within this radius is 200 times the critical density of \
+            the Universe..
         """
 
         super(SphericalGeneralizedNFW, self).__init__(centre, 1.0, 0.0, kappa_s, inner_slope, scale_radius)
@@ -756,8 +758,8 @@ class SphericalGeneralizedNFW(EllipticalGeneralizedNFW):
 
         Parameters
         ----------
-        grid : masks.RegularGrid
-            The grid of coordinates the deflection angles are computed on.
+        grid : grids.RegularGrid
+            The grid of (y,x) arc-second coordinates the deflection angles are computed on.
         """
 
         eta = np.multiply(1. / self.scale_radius, self.grid_to_radius(grid))
@@ -784,20 +786,22 @@ class EllipticalNFW(AbstractEllipticalGeneralizedNFW):
 
     def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, kappa_s=0.05, scale_radius=5.0):
         """
-        The elliptical NFW profiles, used to fit_normal the dark matter halo of the lens.
+        The elliptical NFW profiles, used to fit the dark matter halo of the lens.
 
         Parameters
         ----------
         centre: (float, float)
-            The regular_grid of the origin of the profiles
+            The (y,x) arc-second coordinates of the profile centre.
         axis_ratio : float
-            Ratio of profiles ellipse's minor and major axes (b/a)
+            Ratio of profiles ellipse's minor and major axes (b/a).
         phi : float
-            Rotational angle of profiles ellipse counter-clockwise from positive x-axis
+            Rotational angle of profiles ellipse counter-clockwise from positive x-axis.
         kappa_s : float
-            The overall normalization of the dark matter halo
+            The overall normalization of the dark matter halo \
+            (kappa_s = (rho_s * scale_radius)/lensing_critical_density)
         scale_radius : float
-            The radius containing half the light of this model_mapper
+            The arc-second radius where the average density within this radius is 200 times the critical density of \
+            the Universe..
         """
 
         super(EllipticalNFW, self).__init__(centre, axis_ratio, phi, kappa_s, 1.0, scale_radius)
@@ -818,8 +822,8 @@ class EllipticalNFW(AbstractEllipticalGeneralizedNFW):
 
         Parameters
         ----------
-        grid : masks.RegularGrid
-            The grid of coordinates the deflection angles are computed on.
+        grid : grids.RegularGrid
+            The grid of (y,x) arc-second coordinates the deflection angles are computed on.
         """
 
         potential_grid = np.zeros(grid.shape[0])
@@ -838,8 +842,8 @@ class EllipticalNFW(AbstractEllipticalGeneralizedNFW):
 
         Parameters
         ----------
-        grid : masks.RegularGrid
-            The grid of coordinates the deflection angles are computed on.
+        grid : grids.RegularGrid
+            The grid of (y,x) arc-second coordinates the deflection angles are computed on.
         """
 
         def calculate_deflection_component(npow, index):
@@ -899,16 +903,18 @@ class SphericalNFW(EllipticalNFW):
 
     def __init__(self, centre=(0.0, 0.0), kappa_s=0.05, scale_radius=5.0):
         """
-        The spherical NFW profiles, used to fit_normal the dark matter halo of the lens.
+        The spherical NFW profiles, used to fit the dark matter halo of the lens.
 
         Parameters
         ----------
         centre: (float, float)
-            The regular_grid of the origin of the profiles
+            The (y,x) arc-second coordinates of the profile centre.
         kappa_s : float
-            The overall normalization of the dark matter halo
+            The overall normalization of the dark matter halo \
+            (kappa_s = (rho_s * scale_radius)/lensing_critical_density)
         scale_radius : float
-            The radius containing half the light of this model_mapper
+            The arc-second radius where the average density within this radius is 200 times the critical density of \
+            the Universe..
         """
 
         super(SphericalNFW, self).__init__(centre, 1.0, 0.0, kappa_s, scale_radius)
@@ -925,8 +931,8 @@ class SphericalNFW(EllipticalNFW):
 
         Parameters
         ----------
-        grid : masks.RegularGrid
-            The grid of coordinates the deflection angles are computed on.
+        grid : grids.RegularGrid
+            The grid of (y,x) arc-second coordinates the deflection angles are computed on.
         """
         eta = (1.0 / self.scale_radius) * self.grid_to_radius(grid)
         return 2.0 * self.scale_radius * self.kappa_s * self.potential_func_sph(eta)
@@ -938,8 +944,8 @@ class SphericalNFW(EllipticalNFW):
 
         Parameters
         ----------
-        grid : masks.RegularGrid
-            The grid of coordinates the deflection angles are computed on.
+        grid : grids.RegularGrid
+            The grid of (y,x) arc-second coordinates the deflection angles are computed on.
         """
         eta = np.multiply(1. / self.scale_radius, self.grid_to_radius(grid))
         deflection_r = np.multiply(4. * self.kappa_s * self.scale_radius, self.deflection_func_sph(eta))
@@ -967,23 +973,24 @@ class AbstractEllipticalSersic(light_profiles.AbstractEllipticalSersic, Elliptic
     def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=0.1, effective_radius=0.6,
                  sersic_index=4.0, mass_to_light_ratio=1.0):
         """
-        The Sersic mass profile, the mass profiles of the light profiles that are used to fit_normal and subtract the lens \
+        The Sersic mass profile, the mass profiles of the light profiles that are used to fit and subtract the lens \
         model_galaxy's light.
 
         Parameters
         ----------
         centre: (float, float)
-            The regular_grid of the origin of the profiles
+            The (y,x) arc-second coordinates of the profile centre.
         axis_ratio : float
-            Ratio of profiles ellipse's minor and major axes (b/a)
+            Ratio of profiles ellipse's minor and major axes (b/a).
         phi : float
-            Rotational angle of profiles ellipse counter-clockwise from positive x-axis
+            Rotational angle of profiles ellipse counter-clockwise from positive x-axis.
         intensity : float
-            Overall flux intensity normalisation in the light profiles (electrons per second)
+            Overall flux intensity normalisation in the light profiles (electrons per second).
         effective_radius : float
-            The radius containing half the light of this model_mapper
-        sersic_index : Int
-            The concentration of the light profiles
+            The radius containing half the light of this profile.
+        sersic_index : float
+            Controls the concentration of the of the profile (lower value -> less concentrated, \
+            higher value -> more concentrated).
         mass_to_light_ratio : float
             The mass-to-light ratio of the light profiles
         """
@@ -998,8 +1005,8 @@ class AbstractEllipticalSersic(light_profiles.AbstractEllipticalSersic, Elliptic
 
         Parameters
         ----------
-        grid : masks.RegularGrid
-            The grid of coordinates the surface density is computed on.
+        grid : grids.RegularGrid
+            The grid of (y,x) arc-second coordinates the surface density is computed on.
         """
         return self.surface_density_func(self.grid_to_eccentric_radii(grid))
 
@@ -1025,8 +1032,8 @@ class EllipticalSersic(AbstractEllipticalSersic):
 
         Parameters
         ----------
-        grid : masks.RegularGrid
-            The grid of coordinates the deflection angles are computed on.
+        grid : grids.RegularGrid
+            The grid of (y,x) arc-second coordinates the deflection angles are computed on.
         """
 
         def calculate_deflection_component(npow, index):
@@ -1056,21 +1063,22 @@ class SphericalSersic(EllipticalSersic):
     def __init__(self, centre=(0.0, 0.0), intensity=0.1, effective_radius=0.6, sersic_index=4.0,
                  mass_to_light_ratio=1.0):
         """
-        The Sersic mass profile, the mass profiles of the light profiles that are used to fit_normal and subtract the lens
+        The Sersic mass profile, the mass profiles of the light profiles that are used to fit and subtract the lens
         model_galaxy's light.
 
         Parameters
         ----------
         centre: (float, float)
-            The regular_grid of the origin of the profiles
+            The (y,x) arc-second coordinates of the profile centre
         intensity : float
             Overall flux intensity normalisation in the light profiles (electrons per second)
         effective_radius : float
-            The radius containing half the light of this model_mapper
-        sersic_index : Int
-            The concentration of the light profiles
+            The circular radius containing half the light of this profile.
+        sersic_index : float
+            Controls the concentration of the of the profile (lower value -> less concentrated, \
+            higher value -> more concentrated).
         mass_to_light_ratio : float
-            The mass-to-light ratio of the light profiles
+            The mass-to-light ratio of the light profile.
         """
         super(SphericalSersic, self).__init__(centre, 1.0, 0.0, intensity, effective_radius, sersic_index,
                                               mass_to_light_ratio)
@@ -1081,50 +1089,45 @@ class EllipticalExponential(EllipticalSersic):
     def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=0.1, effective_radius=0.6,
                  mass_to_light_ratio=1.0):
         """
-        The EllipticalExponential mass profile, the mass profiles of the light profiles that are used to fit_normal and
+        The EllipticalExponential mass profile, the mass profiles of the light profiles that are used to fit and
         subtract the lens model_galaxy's light.
 
         Parameters
         ----------
         centre: (float, float)
-            The regular_grid of the origin of the profiles
+            The (y,x) arc-second coordinates of the profile centre.
         axis_ratio : float
-            Ratio of profiles ellipse's minor and major axes (b/a)
+            Ratio of profiles ellipse's minor and major axes (b/a).
         phi : float
-            Rotational angle of profiles ellipse counter-clockwise from positive x-axis
+            Rotational angle of profiles ellipse counter-clockwise from positive x-axis.
         intensity : float
-            Overall flux intensity normalisation in the light profiles (electrons per second)
+            Overall flux intensity normalisation in the light profiles (electrons per second).
         effective_radius : float
-            The radius containing half the light of this model_mapper
+            The circular radius containing half the light of this profile.
         mass_to_light_ratio : float
             The mass-to-light ratio of the light profiles
         """
         super(EllipticalExponential, self).__init__(centre, axis_ratio, phi, intensity, effective_radius, 1.0,
                                                     mass_to_light_ratio)
 
-    @classmethod
-    def from_exponential_light_profile(cls, exponential_light_profile, mass_to_light_ratio):
-        return EllipticalExponential.from_profile(exponential_light_profile,
-                                                  mass_to_light_ratio=mass_to_light_ratio)
-
 
 class SphericalExponential(EllipticalExponential):
 
     def __init__(self, centre=(0.0, 0.0), intensity=0.1, effective_radius=0.6, mass_to_light_ratio=1.0):
         """
-        The Exponential mass profile, the mass profiles of the light profiles that are used to fit_normal and subtract the lens
+        The Exponential mass profile, the mass profiles of the light profiles that are used to fit and subtract the lens
         model_galaxy's light.
 
         Parameters
         ----------
         centre: (float, float)
-            The regular_grid of the origin of the profiles
+            The (y,x) arc-second coordinates of the profile centre.
         intensity : float
-            Overall flux intensity normalisation in the light profiles (electrons per second)
+            Overall flux intensity normalisation in the light profiles (electrons per second).
         effective_radius : float
-            The radius containing half the light of this model_mapper
+            The circular radius containing half the light of this profile.
         mass_to_light_ratio : float
-            The mass-to-light ratio of the light profiles
+            The mass-to-light ratio of the light profiles.
         """
         super(SphericalExponential, self).__init__(centre, 1.0, 0.0, intensity, effective_radius, mass_to_light_ratio)
 
@@ -1134,50 +1137,45 @@ class EllipticalDevVaucouleurs(EllipticalSersic):
     def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=0.1, effective_radius=0.6,
                  mass_to_light_ratio=1.0):
         """
-        The EllipticalDevVaucouleurs mass profile, the mass profiles of the light profiles that are used to fit_normal and
+        The EllipticalDevVaucouleurs mass profile, the mass profiles of the light profiles that are used to fit and
         subtract the lens model_galaxy's light.
 
         Parameters
         ----------
         centre: (float, float)
-            The regular_grid of the origin of the profiles
+            The (y,x) arc-second coordinates of the profile centre.
         axis_ratio : float
-            Ratio of profiles ellipse's minor and major axes (b/a)
+            Ratio of profiles ellipse's minor and major axes (b/a).
         phi : float
-            Rotational angle of profiles ellipse counter-clockwise from positive x-axis
+            Rotational angle of profiles ellipse counter-clockwise from positive x-axis.
         intensity : float
-            Overall flux intensity normalisation in the light profiles (electrons per second)
+            Overall flux intensity normalisation in the light profiles (electrons per second).
         effective_radius : float
-            The radius containing half the light of this model_mapper
+            The radius containing half the light of this profile.
         mass_to_light_ratio : float
-            The mass-to-light ratio of the light profiles
+            The mass-to-light ratio of the light profile.
         """
         super(EllipticalDevVaucouleurs, self).__init__(centre, axis_ratio, phi, intensity, effective_radius, 4.0,
                                                        mass_to_light_ratio)
-
-    @classmethod
-    def from_dev_vaucouleurs_light_profile(cls, dev_vaucouleurs_light_profile, mass_to_light_ratio):
-        return EllipticalDevVaucouleurs.from_profile(dev_vaucouleurs_light_profile,
-                                                     mass_to_light_ratio=mass_to_light_ratio)
 
 
 class SphericalDevVaucouleurs(EllipticalDevVaucouleurs):
 
     def __init__(self, centre=(0.0, 0.0), intensity=0.1, effective_radius=0.6, mass_to_light_ratio=1.0):
         """
-        The DevVaucouleurs mass profile, the mass profiles of the light profiles that are used to fit_normal and subtract the
+        The DevVaucouleurs mass profile, the mass profiles of the light profiles that are used to fit and subtract the
         lens model_galaxy's light.
 
         Parameters
         ----------
         centre: (float, float)
-            The regular_grid of the origin of the profiles
+            The (y,x) arc-second coordinates of the profile centre.
         intensity : float
-            Overall flux intensity normalisation in the light profiles (electrons per second)
+            Overall flux intensity normalisation in the light profiles (electrons per second).
         effective_radius : float
-            The radius containing half the light of this model_mapper
+            The circular radius containing half the light of this profile.
         mass_to_light_ratio : float
-            The mass-to-light ratio of the light profiles
+            The mass-to-light ratio of the light profiles.
         """
         super(SphericalDevVaucouleurs, self).__init__(centre, 1.0, 0.0, intensity, effective_radius,
                                                       mass_to_light_ratio)
@@ -1193,19 +1191,20 @@ class EllipticalSersicRadialGradient(AbstractEllipticalSersic):
         Parameters
         ----------
         centre: (float, float)
-            The origin of the profiles
+            The (y,x) arc-second coordinates of the profile centre.
         axis_ratio : float
-            Ratio of profiles ellipse's minor and major axes (b/a)
+            Ratio of profiles ellipse's minor and major axes (b/a).
         phi : float
-            Rotational angle of profiles ellipse counter-clockwise from positive x-axis
+            Rotational angle of profiles ellipse counter-clockwise from positive x-axis.
         intensity : float
-            Overall flux intensity normalisation in the light profiles (electrons per second)
+            Overall flux intensity normalisation in the light profiles (electrons per second).
         effective_radius : float
-            The radius containing half the light of this model_mapper
-        sersic_index : Int
-            The concentration of the light profiles
+            The circular radius containing half the light of this profile.
+        sersic_index : float
+            Controls the concentration of the of the profile (lower value -> less concentrated, \
+            higher value -> more concentrated).
         mass_to_light_ratio : float
-            The mass-to-light ratio of the light profiles
+            The mass-to-light ratio of the light profile.
         mass_to_light_gradient : float
             The mass-to-light radial gradient.
         """
@@ -1219,8 +1218,8 @@ class EllipticalSersicRadialGradient(AbstractEllipticalSersic):
 
         Parameters
         ----------
-        grid : masks.RegularGrid
-            The grid of coordinates the surface density is computed on.
+        grid : grids.RegularGrid
+            The grid of (y,x) arc-second coordinates the surface density is computed on.
         """
         return self.surface_density_func(self.grid_to_eccentric_radii(grid))
 
@@ -1231,8 +1230,8 @@ class EllipticalSersicRadialGradient(AbstractEllipticalSersic):
 
         Parameters
         ----------
-        grid : masks.RegularGrid
-            The grid of coordinates the deflection angles are computed on.
+        grid : grids.RegularGrid
+            The grid of (y,x) arc-second coordinates the deflection angles are computed on.
         """
 
         def calculate_deflection_component(npow, index):
@@ -1285,15 +1284,16 @@ class SphericalSersicRadialGradient(EllipticalSersicRadialGradient):
         Parameters
         ----------
         centre: (float, float)
-            The origin of the profiles
+            The (y,x) arc-second coordinates of the profile centre.
         intensity : float
-            Overall flux intensity normalisation in the light profiles (electrons per second)
+            Overall flux intensity normalisation in the light profiles (electrons per second).
         effective_radius : float
-            The radius containing half the light of this model_mapper
-        sersic_index : Int
-            The concentration of the light profiles
+            The circular radius containing half the light of this profile.
+        sersic_index : float
+            Controls the concentration of the of the profile (lower value -> less concentrated, \
+            higher value -> more concentrated).
         mass_to_light_ratio : float
-            The mass-to-light ratio of the light profiles
+            The mass-to-light ratio of the light profile.
         mass_to_light_gradient : float
             The mass-to-light radial gradient.
         """
@@ -1332,8 +1332,8 @@ class ExternalShear(geometry_profiles.EllipticalProfile, MassProfile):
 
         Parameters
         ----------
-        grid : masks.RegularGrid
-            The grid of coordinates the deflection angles are computed on.
+        grid : grids.RegularGrid
+            The grid of (y,x) arc-second coordinates the deflection angles are computed on.
         """
         deflection_y = -np.multiply(self.magnitude, grid[:, 0])
         deflection_x = np.multiply(self.magnitude, grid[:, 1])
