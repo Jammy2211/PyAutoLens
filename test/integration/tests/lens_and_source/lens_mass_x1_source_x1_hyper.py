@@ -62,8 +62,8 @@ def make_pipeline(test_name):
             self.source_galaxies = phase1_results.variable.source_galaxies
             self.source_galaxies[0].hyper_galaxy = phase1h_results.constant.source_galaxies[0].hyper_galaxy
 
-    phase2 = SourceHyperPhase(lens_galaxies=[gm.GalaxyModel(sie=mp.EllipticalIsothermal)],
-                              source_galaxies=[gm.GalaxyModel(sersic=lp.EllipticalSersic)],
+    phase2 = SourceHyperPhase(lens_galaxies=dict(lens=gm.GalaxyModel(mass=mp.EllipticalIsothermal)),
+                              source_galaxies=dict(source=gm.GalaxyModel(light=lp.EllipticalSersic)),
                               optimizer_class=nl.MultiNest, phase_name="{}/phase2".format(test_name))
 
     phase2.optimizer.n_live_points = 40

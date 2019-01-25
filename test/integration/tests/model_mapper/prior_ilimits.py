@@ -3,7 +3,7 @@ import shutil
 
 from autofit import conf
 from autofit.optimize import non_linear as nl
-from autofit.mapper import model_mapper as mm
+from autofit.mapper import prior
 from autolens.data import ccd
 from autolens.model.galaxy import galaxy, galaxy_model as gm
 from autolens.pipeline import phase as ph
@@ -46,9 +46,9 @@ def make_pipeline(test_name):
         def pass_priors(self, previous_results):
             self.lens_galaxies.lens.sersic.centre_0 = 0.0
             self.lens_galaxies.lens.sersic.centre_1 = 0.0
-            self.lens_galaxies.lens.sersic.axis_ratio = mm.UniformPrior(lower_limit=-0.5, upper_limit=0.1)
+            self.lens_galaxies.lens.sersic.axis_ratio = prior.UniformPrior(lower_limit=-0.5, upper_limit=0.1)
             self.lens_galaxies.lens.sersic.phi = 90.0
-            self.lens_galaxies.lens.sersic.intensity = mm.UniformPrior(lower_limit=-0.5, upper_limit=0.1)
+            self.lens_galaxies.lens.sersic.intensity = prior.UniformPrior(lower_limit=-0.5, upper_limit=0.1)
             self.lens_galaxies.lens.sersic.effective_radius = 1.3
             self.lens_galaxies.lens.sersic.sersic_index = 3.0
 
@@ -61,14 +61,9 @@ def make_pipeline(test_name):
     class MMPhase(ph.LensPlanePhase):
 
         def pass_priors(self, previous_results):
-            print(self.lens_galaxies.lens.sersic.intensity.lower_limit)
-            print(self.lens_galaxies.lens.sersic.intensity.upper_limit)
+
             self.lens_galaxies.lens.sersic.intensity = previous_results[0].variable.lens.sersic.intensity
-            print(self.lens_galaxies.lens.sersic.intensity.lower_limit)
-            print(self.lens_galaxies.lens.sersic.intensity.upper_limit)
             self.lens_galaxies.lens = previous_results[0].variable.lens
-            print(self.lens_galaxies.lens.sersic.intensity.lower_limit)
-            print(self.lens_galaxies.lens.sersic.intensity.upper_limit)
 
     phase2 = MMPhase(lens_galaxies=dict(lens=gm.GalaxyModel(sersic=lp.EllipticalSersic)),
                      optimizer_class=nl.MultiNest, phase_name="{}/phase2".format(test_name))

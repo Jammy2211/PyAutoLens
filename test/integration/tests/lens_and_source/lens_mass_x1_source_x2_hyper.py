@@ -44,8 +44,9 @@ def pipeline():
     pipeline.run(data=ccd_data)
 
 def make_pipeline(test_name):
-    phase1 = ph.LensSourcePlanePhase(lens_galaxies=[gm.GalaxyModel(sie=mp.EllipticalIsothermal)],
-                                     source_galaxies=[gm.GalaxyModel(sersic=lp.EllipticalSersic)],
+    
+    phase1 = ph.LensSourcePlanePhase(lens_galaxies=dict(lens=gm.GalaxyModel(mass=mp.EllipticalIsothermal)),
+                                     source_galaxies=dict(source_0=gm.GalaxyModel(sersic=lp.EllipticalSersic)),
                                      optimizer_class=nl.MultiNest, phase_name="{}/phase1".format(test_name))
 
     phase1.optimizer.n_live_points = 60
@@ -55,16 +56,17 @@ def make_pipeline(test_name):
                                                         phase_name="{}/phase1h".format(test_name))
 
     class AddSourceGalaxyPhase(ph.LensSourcePlaneHyperPhase):
+        
         def pass_priors(self, previous_results):
             phase1_results = previous_results[-1]
             phase1h_results = previous_results[-1].hyper
-            self.lens_galaxies[0] = phase1_results.variable.lens_galaxies[0]
-            self.source_galaxies[0] = phase1_results.variable.source_galaxies[0]
-            self.source_galaxies[0].hyper_galaxy = phase1h_results.constant.source_galaxies[0].hyper_galaxy
+            self.lens_galaxies.lens = phase1_results.variable.lens
+            self.source_galaxies.source_0 = phase1_results.variable.source_0
+            self.source_galaxies.source_0.hyper_galaxy = phase1h_results.constant.source_0.hyper_galaxy
 
-    phase2 = AddSourceGalaxyPhase(lens_galaxies=[gm.GalaxyModel(sie=mp.EllipticalIsothermal)],
-                                  source_galaxies=[gm.GalaxyModel(sersic=lp.EllipticalSersic),
-                                                   gm.GalaxyModel(sersic=lp.EllipticalSersic)],
+    phase2 = AddSourceGalaxyPhase(lens_galaxies=dict(lens=gm.GalaxyModel(mass=mp.EllipticalIsothermal)),
+                                  source_galaxies=dict(source_0=gm.GalaxyModel(sersic=lp.EllipticalSersic),
+                                                       source_1=gm.GalaxyModel(sersic=lp.EllipticalSersic)),
                                   optimizer_class=nl.MultiNest, phase_name="{}/phase2".format(test_name))
 
     phase2.optimizer.n_live_points = 60
@@ -74,19 +76,21 @@ def make_pipeline(test_name):
                                                         phase_name="{}/phase1h".format(test_name))
 
     class BothSourceGalaxiesPhase(ph.LensSourcePlaneHyperPhase):
+
         def pass_priors(self, previous_results):
+
             phase2_results = previous_results[1]
             phase2h_results = previous_results[1].hyper
-            self.lens_galaxies[0] = phase2_results.variable.lens_galaxies[0]
-            self.source_galaxies[0] = phase2_results.variable.source_galaxies[0]
-            self.source_galaxies[1] = phase2_results.variable.source_galaxies[1]
-            self.source_galaxies[0].hyper_galaxy = phase2h_results.constant.source_galaxies[0].hyper_galaxy
-            self.source_galaxies[1].hyper_galaxy = phase2h_results.constant.source_galaxies[1].hyper_galaxy
+            self.lens_galaxies.lens = phase2_results.variable.lens
+            self.source_galaxies.source_0 = phase2_results.variable.source_0
+            self.source_galaxies.source_1 = phase2_results.variable.source_1
+            self.source_galaxies.source_0.hyper_galaxy = phase2h_results.constant.source_0.hyper_galaxy
+            self.source_galaxies.source_1.hyper_galaxy = phase2h_results.constant.source_1.hyper_galaxy
 
-    phase3 = BothSourceGalaxiesPhase(lens_galaxies=[gm.GalaxyModel(sie=mp.EllipticalIsothermal)],
-                                     source_galaxies=[gm.GalaxyModel(sersic=lp.EllipticalSersic),
-                                                      gm.GalaxyModel(sersic=lp.EllipticalSersic)],
-                                     optimizer_class=nl.MultiNest, phase_name="{}/phase2".format(test_name))
+    phase3 = BothSourceGalaxiesPhase(lens_galaxies=dict(lens=gm.GalaxyModel(mass=mp.EllipticalIsothermal)),
+                                     source_galaxies=dict(source_0=gm.GalaxyModel(sersic=lp.EllipticalSersic),
+                                                          source_1=gm.GalaxyModel(sersic=lp.EllipticalSersic)),
+                                     optimizer_class=nl.MultiNest, phase_name="{}/phase3".format(test_name))
 
     return pl.PipelineImaging(test_name, phase1, phase1h, phase2, phase2h, phase3)
 

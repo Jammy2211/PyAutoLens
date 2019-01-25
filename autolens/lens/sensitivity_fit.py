@@ -8,6 +8,7 @@ class AbstractSensitivityFit(object):
         self.tracer_normal = tracer_normal
         self.tracer_sensitive = tracer_sensitive
 
+
 class SensitivityProfileFit(AbstractSensitivityFit):
 
     def __init__(self, lens_data, tracer_normal, tracer_sensitive):

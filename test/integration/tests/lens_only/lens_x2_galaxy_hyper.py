@@ -50,11 +50,13 @@ def make_pipeline(test_name):
         return msk.Mask.circular(shape=img.shape, pixel_scale=img.pixel_scale, radius_arcsec=5.)
 
     class LensPlaneGalaxy0Phase(ph.LensPlanePhase):
+        
         def pass_priors(self, previous_results):
-            self.lens_galaxies[0].sersic.centre_0 = -1.0
-            self.lens_galaxies[0].sersic.centre_1 = -1.0
+            
+            self.lens_galaxies.lens_0.light.centre_0 = -1.0
+            self.lens_galaxies.lens_0.light.centre_1 = -1.0
 
-    phase1 = LensPlaneGalaxy0Phase(lens_galaxies=[gm.GalaxyModel(sersic=lp.EllipticalSersic)],
+    phase1 = LensPlaneGalaxy0Phase(lens_galaxies=dict(lens_0=gm.GalaxyModel(light=lp.EllipticalSersic)),
                                    mask_function=modify_mask_function, optimizer_class=nl.MultiNest,
                                    phase_name="{}/phase1".format(test_name))
 
@@ -63,12 +65,13 @@ def make_pipeline(test_name):
 
     class LensPlaneGalaxy1Phase(ph.LensPlanePhase):
         def pass_priors(self, previous_results):
-            self.lens_galaxies[0] = previous_results[0].constant.lens_galaxies[0]
-            self.lens_galaxies[1].sersic.centre_0 = 1.0
-            self.lens_galaxies[1].sersic.centre_1 = 1.0
+            
+            self.lens_galaxies.lens_0 = previous_results[0].constant.lens_0
+            self.lens_galaxies.lens_1.light.centre_0 = 1.0
+            self.lens_galaxies.lens_1.light.centre_1 = 1.0
 
-    phase2 = LensPlaneGalaxy1Phase(lens_galaxies=[gm.GalaxyModel(sersic=lp.EllipticalSersic),
-                                                  gm.GalaxyModel(sersic=lp.EllipticalSersic)],
+    phase2 = LensPlaneGalaxy1Phase(lens_galaxies=dict(lens_0=gm.GalaxyModel(light=lp.EllipticalSersic),
+                                                      lens_1=gm.GalaxyModel(light=lp.EllipticalSersic)),
                                    mask_function=modify_mask_function, optimizer_class=nl.MultiNest,
                                    phase_name="{}/phase2".format(test_name))
 
@@ -80,17 +83,18 @@ def make_pipeline(test_name):
 
     class LensPlaneBothGalaxyPhase(ph.LensPlaneHyperPhase):
         def pass_priors(self, previous_results):
-            self.lens_galaxies[0] = previous_results[0].variable.lens_galaxies[0]
-            self.lens_galaxies[1] = previous_results[1].variable.lens_galaxies[0]
-            self.lens_galaxies[0].hyper_galaxy = previous_results[-1].hyper.constant.lens_galaxies[0].hyper_galaxy
-            self.lens_galaxies[1].hyper_galaxy = previous_results[-1].hyper.constant.lens_galaxies[1].hyper_galaxy
-            self.lens_galaxies[0].sersic.centre_0 = -1.0
-            self.lens_galaxies[0].sersic.centre_1 = -1.0
-            self.lens_galaxies[1].sersic.centre_0 = 1.0
-            self.lens_galaxies[1].sersic.centre_1 = 1.0
+            
+            self.lens_galaxies.lens_0 = previous_results[0].variable.lens_0
+            self.lens_galaxies.lens_1 = previous_results[1].variable.lens_0
+            self.lens_galaxies.lens_0.hyper_galaxy = previous_results[-1].hyper.constant.lens_0.hyper_galaxy
+            self.lens_galaxies.lens_1.hyper_galaxy = previous_results[-1].hyper.constant.lens_1.hyper_galaxy
+            self.lens_galaxies.lens_0.light.centre_0 = -1.0
+            self.lens_galaxies.lens_0.light.centre_1 = -1.0
+            self.lens_galaxies.lens_1.light.centre_0 = 1.0
+            self.lens_galaxies.lens_1.light.centre_1 = 1.0
 
-    phase3 = LensPlaneBothGalaxyPhase(lens_galaxies=[gm.GalaxyModel(sersic=lp.EllipticalSersic),
-                                                     gm.GalaxyModel(sersic=lp.EllipticalSersic)],
+    phase3 = LensPlaneBothGalaxyPhase(lens_galaxies=dict(lens_0=gm.GalaxyModel(light=lp.EllipticalSersic),
+                                                         lens_1=gm.GalaxyModel(light=lp.EllipticalSersic)),
                                       mask_function=modify_mask_function, optimizer_class=nl.MultiNest,
                                       phase_name="{}/phase3".format(test_name))
 

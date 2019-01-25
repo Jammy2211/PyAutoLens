@@ -43,10 +43,10 @@ def make_pipeline(test_name):
     class MMPhase(ph.LensPlanePhase):
         pass
 
-    phase1 = MMPhase(lens_galaxies=[gm.GalaxyModel(sersic0=lp.EllipticalSersic, 
-                                                   sersic1=lp.EllipticalSersic,
-                                                   sie=mp.EllipticalIsothermal, 
-                                                   align_centres=True)],
+    phase1 = MMPhase(lens_galaxies=dict(lens=gm.GalaxyModel(light_0=lp.EllipticalSersic,
+                                                            light_1=lp.EllipticalSersic,
+                                                            mass=mp.EllipticalIsothermal,
+                                                            align_centres=True)),
                      optimizer_class=nl.MultiNest, phase_name="{}/phase1".format(test_name))
 
     phase1.optimizer.n_live_points = 20

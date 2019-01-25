@@ -46,16 +46,17 @@ def make_pipeline(test_name):
     class LensPlanex2GalPhase(ph.LensPlanePhase):
 
         def pass_priors(self, previous_results):
-            self.lens_galaxies[0].sersic.centre_0 = -1.0
-            self.lens_galaxies[0].sersic.centre_1 = -1.0
-            self.lens_galaxies[1].sersic.centre_0 = 1.0
-            self.lens_galaxies[1].sersic.centre_1 = 1.0
+
+            self.lens_galaxies.lens_0.light.centre_0 = -1.0
+            self.lens_galaxies.lens_0.light.centre_1 = -1.0
+            self.lens_galaxies.lens_1.light.centre_0 = 1.0
+            self.lens_galaxies.lens_1.light.centre_1 = 1.0
 
     def modify_mask_function(img):
         return msk.Mask.circular(shape=img.shape, pixel_scale=img.pixel_scale, radius_arcsec=5.)
 
-    phase1 = LensPlanex2GalPhase(lens_galaxies=[gm.GalaxyModel(sersic=lp.EllipticalSersic),
-                                                gm.GalaxyModel(sersic=lp.EllipticalSersic)],
+    phase1 = LensPlanex2GalPhase(lens_galaxies=dict(lens_0=gm.GalaxyModel(light=lp.EllipticalSersic),
+                                                    lens_1=gm.GalaxyModel(light=lp.EllipticalSersic)),
                                  mask_function=modify_mask_function, optimizer_class=nl.MultiNest,
                                  phase_name="{}/phase1".format(test_name))
 
