@@ -8,7 +8,7 @@ from autolens.lens import ray_tracing
 
 
 def fit_lens_data_with_tracer(lens_data, tracer, padded_tracer=None):
-    """Fit a lens image with a model tracer, automatically determining the type of fit based on the \
+    """Fit lens data with a model tracer, automatically determining the type of fit based on the \
     properties of the galaxies in the tracer.
 
     Parameters
@@ -18,7 +18,7 @@ def fit_lens_data_with_tracer(lens_data, tracer, padded_tracer=None):
     tracer : ray_tracing.AbstractTracerNonStack
         The tracer, which describes the ray-tracing and strong lens configuration.
     padded_tracer : ray_tracing.Tracer or None
-        A tracer with an identical strong lens configuration to the tracer above, but using the lens image's \
+        A tracer with an identical strong lens configuration to the tracer above, but using the lens data's \
         padded grid_stack such that unmasked model-images can be computed.
     """
 
@@ -56,14 +56,14 @@ class AbstractLensFit(object):
 
     def __init__(self, tracer, padded_tracer, psf, map_to_scaled_array):
         """ An abstract lens fitter, which contains the tracer's used to perform the fit and functions to manipulate \
-        the lens image's hyper.
+        the lens data's hyper.
 
         Parameters
         -----------
         tracer : ray_tracing.Tracer
             The tracer, which describes the ray-tracing and strong lens configuration.
         padded_tracer : ray_tracing.AbstractTracerNonStack or None
-            A tracer with an identical strong lens configuration to the tracer above, but using the lens image's \
+            A tracer with an identical strong lens configuration to the tracer above, but using the lens data's \
             padded grid_stack such that unmasked model-images can be computed.
         map_to_scaled_array : func
             A function which maps the 1D lens hyper to its unmasked 2D array.
@@ -109,7 +109,7 @@ class AbstractLensProfileFit(AbstractLensFit):
 
     def __init__(self, lens_data, tracer, padded_tracer):
         """ An abstract lens profile fitter, which generates the image-plane image of all galaxies (with light \
-        profiles) in the tracer and blurs it with the lens image's PSF.
+        profiles) in the tracer and blurs it with the lens data's PSF.
 
         If a padded tracer is supplied, the blurred profile image's can be generated over the entire image and thus \
         without the mask.
@@ -121,7 +121,7 @@ class AbstractLensProfileFit(AbstractLensFit):
         tracer : ray_tracing.AbstractTracerNonStack
             The tracer, which describes the ray-tracing and strong lens configuration.
         padded_tracer : ray_tracing.Tracer or None
-            A tracer with an identical strong lens configuration to the tracer above, but using the lens image's \
+            A tracer with an identical strong lens configuration to the tracer above, but using the lens data's \
             padded grid_stack such that unmasked model-images can be computed.
         """
         super(AbstractLensProfileFit, self).__init__(tracer=tracer, padded_tracer=padded_tracer, psf=lens_data.psf,
@@ -146,7 +146,7 @@ class AbstractLensProfileFit(AbstractLensFit):
 class AbstractLensInversionFit(AbstractLensFit):
 
     def __init__(self, lens_data, noise_map_1d, tracer):
-        """ An abstract lens inversion fitter, which fits the lens image an inversion using the mapper(s) and \
+        """ An abstract lens inversion fitter, which fits the lens data an inversion using the mapper(s) and \
         regularization(s) in the galaxies of the tracer.
 
         This inversion use's the lens-image, its PSF and an input noise-map.
@@ -195,7 +195,7 @@ class AbstractLensProfileInversionFit(AbstractLensFit):
         tracer : ray_tracing.Tracer
             The tracer, which describes the ray-tracing and strong lens configuration.
         padded_tracer : ray_tracing.AbstractTracerNonStack or None
-            A tracer with an identical strong lens configuration to the tracer above, but using the lens image's \
+            A tracer with an identical strong lens configuration to the tracer above, but using the lens data's \
             padded grid_stack such that unmasked model-images can be computed.
         """
         super(AbstractLensProfileInversionFit, self).__init__(tracer=tracer, padded_tracer=padded_tracer,
@@ -227,7 +227,7 @@ class AbstractLensProfileInversionFit(AbstractLensFit):
 class LensDataFit(fit.DataFit):
 
     def __init__(self, image, noise_map, mask, model_image):
-        """Class to fit a lens image with a model image.
+        """Class to fit lens data with a model image.
 
         Parameters
         -----------
@@ -258,7 +258,7 @@ class LensDataFit(fit.DataFit):
 class LensDataInversionFit(LensDataFit):
 
     def __init__(self, image, noise_map, mask, model_image, inversion):
-        """Class to fit a lens image with a inversion model image.
+        """Class to fit lens data with a inversion model image.
 
         Parameters
         -----------
@@ -295,10 +295,10 @@ class LensDataInversionFit(LensDataFit):
 class LensProfileFit(LensDataFit, AbstractLensProfileFit):
 
     def __init__(self, lens_data, tracer, padded_tracer=None):
-        """ Fit a lens image with galaxy light-profiles, as follows:
+        """ Fit lens data with galaxy light-profiles, as follows:
 
         1) Generates the image-plane image of all galaxies with light profiles in the tracer.
-        2) Blur this image-plane image with the lens image's PSF to generate the model-image.
+        2) Blur this image-plane image with the lens data's PSF to generate the model-image.
         3) Fit the observed with this model-image.
 
         If a padded tracer is supplied, the blurred profile image's can be generated over the entire image and thus \
@@ -311,7 +311,7 @@ class LensProfileFit(LensDataFit, AbstractLensProfileFit):
         tracer : ray_tracing.AbstractTracerNonStack
             The tracer, which describes the ray-tracing and strong lens configuration.
         padded_tracer : ray_tracing.Tracer or None
-            A tracer with an identical strong lens configuration to the tracer above, but using the lens image's \
+            A tracer with an identical strong lens configuration to the tracer above, but using the lens data's \
             padded grid_stack such that unmasked model-images can be computed.
         """
         AbstractLensProfileFit.__init__(self=self, lens_data=lens_data, tracer=tracer,
@@ -324,10 +324,10 @@ class LensProfileFit(LensDataFit, AbstractLensProfileFit):
 class LensInversionFit(LensDataInversionFit, AbstractLensInversionFit):
 
     def __init__(self, lens_data, tracer):
-        """ Fit a lens image with an inversion, as follows:
+        """ Fit lens data with an inversion, as follows:
 
         1) Extract the mapper(s) and regularization(s) of galaxies in the tracer.
-        2) Use these to perform an inversion on the lens image (including PSF blurring) and generate the model-image.
+        2) Use these to perform an inversion on the lens data (including PSF blurring) and generate the model-image.
         3) Fit the observed with this model-image.
 
         Parameters
@@ -350,10 +350,10 @@ class LensInversionFit(LensDataInversionFit, AbstractLensInversionFit):
 class LensProfileInversionFit(LensDataInversionFit, AbstractLensProfileInversionFit):
 
     def __init__(self, lens_data, tracer, padded_tracer=None):
-        """ Fit a lens image with galaxy light-profiles and an inversion, as follows:
+        """ Fit lens data with galaxy light-profiles and an inversion, as follows:
 
         1) Generates the image-plane image of all galaxies with light profiles in the tracer.
-        2) Blur this image-plane image with the lens image's PSF to generate the model-image.
+        2) Blur this image-plane image with the lens data's PSF to generate the model-image.
         3) Subtract this image from the observed image to generate a profile subtracted image.
         4) Extract the mapper(s) and regularization(s) of galaxies in the tracer.
         5) Use these to perform an inversion on the profile subtracted image (including PSF blurring).
@@ -373,7 +373,7 @@ class LensProfileInversionFit(LensDataInversionFit, AbstractLensProfileInversion
         tracer : ray_tracing.AbstractTracerNonStack
             The tracer, which describes the ray-tracing and strong lens configuration.
         padded_tracer : ray_tracing.Tracer or None
-            A tracer with an identical strong lens configuration to the tracer above, but using the lens image's \
+            A tracer with an identical strong lens configuration to the tracer above, but using the lens data's \
             padded grid_stack such that unmasked model-images can be computed.
         """
 
@@ -444,7 +444,7 @@ class LensProfileHyperFit(LensDataFit, AbstractLensProfileFit, AbstractLensHyper
 
         1) Use the hyper-image and tracer's hyper-galaxies to generate a hyper noise-map.
         2) Generates the image-plane image of all galaxies with light profiles in the tracer.
-        3) Blur this image-plane image with the lens image's PSF to generate the model-image.
+        3) Blur this image-plane image with the lens data's PSF to generate the model-image.
         4) Fit the observed with this model-image, using the hyper-noise_map map to compute the chi-squared values..
 
         If a padded tracer is supplied, the blurred profile image's can be generated over the entire image and thus \
@@ -457,7 +457,7 @@ class LensProfileHyperFit(LensDataFit, AbstractLensProfileFit, AbstractLensHyper
         tracer : ray_tracing.AbstractTracerNonStack
             The tracer, which describes the ray-tracing of the strong lens configuration.
         tracer : ray_tracing.Tracer or None
-            A tracer with an identical strong lens configuration to the tracer above, but using the lens image's \
+            A tracer with an identical strong lens configuration to the tracer above, but using the lens data's \
             padded grid_stacks such that unmasked model-image can be computed.
         """
 
@@ -478,7 +478,7 @@ class LensInversionHyperFit(LensDataInversionFit, AbstractLensInversionFit, Abst
 
         1) Use the hyper-image and tracer's hyper-galaxies to generate a hyper noise-map.
         2) Extract the mapper(s) and regularization(s) of galaxies in the tracer.
-        3) Use these to perform an inversion on the lens image (including PSF blurring), using the hyper noise-map, \
+        3) Use these to perform an inversion on the lens data (including PSF blurring), using the hyper noise-map, \
            and generate the model-image.
         4) Fit the observed with this model-image, using the hyper-noise_map map to compute the chi-squared values.
 
@@ -509,7 +509,7 @@ class LensProfileInversionHyperFit(LensDataInversionFit, AbstractLensProfileInve
 
         1) Use the hyper-image and tracer's hyper-galaxies to generate a hyper noise-map.
         2) Generates the image-plane image of all galaxies with light profiles in the tracer.
-        3) Blur this image-plane image with the lens image's PSF to generate the model-image.
+        3) Blur this image-plane image with the lens data's PSF to generate the model-image.
         4) Subtract this image from the observed image to generate a profile subtracted image.
         5) Extract the mapper(s) and regularization(s) of galaxies in the tracer.
         6) Use these to perform an inversion on the profile subtracted image (including PSF blurring), using the \
@@ -530,7 +530,7 @@ class LensProfileInversionHyperFit(LensDataInversionFit, AbstractLensProfileInve
         tracer : ray_tracing.Tracer
             The tracer, which describes the ray-tracing of the strong lens configuration.
         padded_tracer : ray_tracing.AbstractTracerNonStack or None
-            A tracer with an identical strong lens configuration to the tracer above, but using the lens image's \
+            A tracer with an identical strong lens configuration to the tracer above, but using the lens data's \
             padded grid_stacks such that unmasked model-image can be computed.
         """
 

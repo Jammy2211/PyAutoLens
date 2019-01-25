@@ -159,6 +159,12 @@ class TestSensitivityProfileFit:
 
         assert fit.figure_of_merit == fit.fit_sensitive.likelihood - fit.fit_normal.likelihood
 
+        fit_from_factory = sensitivity_fit.fit_lens_data_with_sensitivity_tracers(lens_data=lens_data_blur,
+                                                                                 tracer_normal=tracer_normal,
+                                                                                 tracer_sensitive=tracer_sensitive)
+
+        assert fit.figure_of_merit == fit_from_factory.figure_of_merit
+
 
 class TestSensitivityInversionFit:
 
@@ -291,3 +297,9 @@ class TestSensitivityInversionFit:
         assert fit.fit_sensitive.likelihood == -0.5 * (chi_squared_sensitive + noise_normalization)
 
         assert fit.figure_of_merit == fit.fit_sensitive.likelihood - fit.fit_normal.likelihood
+
+        fit_from_factory = sensitivity_fit.fit_lens_data_with_sensitivity_tracers(lens_data=lens_data_blur,
+                                                                                 tracer_normal=tracer_normal,
+                                                                                 tracer_sensitive=tracer_sensitive)
+
+        assert fit.figure_of_merit == fit_from_factory.figure_of_merit
