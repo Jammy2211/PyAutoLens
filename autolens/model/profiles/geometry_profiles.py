@@ -54,8 +54,8 @@ class GeometryProfile(object):
         
         Parameters
         -----------
-      centre : (float, float)
-            The (y,x) coordinates of the centre of the profile.
+        centre : (float, float)
+            The (y,x) arc-second coordinates of the profile centre.
         """
         self.centre = centre
 
@@ -78,7 +78,7 @@ class SphericalProfile(GeometryProfile):
         Parameters
         ----------
         centre: (float, float)
-            The (y,x) coordinates of the centre of the profile.
+            The (y,x) arc-second coordinates of the profile centre.
         """
         super(SphericalProfile, self).__init__(centre)
 
@@ -155,7 +155,7 @@ class EllipticalProfile(SphericalProfile):
         Parameters
         ----------
         centre: (float, float)
-            The (y,x) coordinates of the centre of the profile.
+            The (y,x) arc-second coordinates of the profile centre.
         axis_ratio : float
             Ratio of profiles ellipse's minor and major axes (b/a)
         phi : float
