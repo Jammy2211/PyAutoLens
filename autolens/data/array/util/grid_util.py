@@ -1,10 +1,10 @@
-import numba
+from autolens import decorator_util
 import numpy as np
 
 from autolens.data.array.util import mask_util
 
 
-@numba.jit(nopython=True, cache=True)
+@decorator_util.jit()
 def centres_from_shape_pixel_scales_and_origin(shape, pixel_scales, origin):
 
     y_cen = float(shape[0] - 1) / 2 + (origin[0] / pixel_scales[0])
@@ -12,7 +12,7 @@ def centres_from_shape_pixel_scales_and_origin(shape, pixel_scales, origin):
 
     return y_cen, x_cen
 
-@numba.jit(nopython=True, cache=True)
+@decorator_util.jit()
 def regular_grid_2d_from_shape_pixel_scales_and_origin(shape, pixel_scales, origin=(0.0, 0.0)):
     """
     Computes the (y,x) arc second coordinates at the centre of every pixel in an array of shape (rows, columns).
@@ -33,7 +33,7 @@ def regular_grid_2d_from_shape_pixel_scales_and_origin(shape, pixel_scales, orig
 
     return grid_2d
 
-@numba.jit(nopython=True, cache=True)
+@decorator_util.jit()
 def regular_grid_1d_from_shape_pixel_scales_and_origin(shape, pixel_scales, origin=(0.0, 0.0)):
     """
     Computes the (y,x) arc second coordinates at the centre of every pixel in an array of shape (rows, columns).
@@ -56,7 +56,7 @@ def regular_grid_1d_from_shape_pixel_scales_and_origin(shape, pixel_scales, orig
 
     return grid_1d
 
-@numba.jit(nopython=True, cache=True)
+@decorator_util.jit()
 def regular_grid_1d_masked_from_mask_pixel_scales_and_origin(mask, pixel_scales, origin=(0.0, 0.0)):
     """Compute a 1D grid of (y,x) coordinates, using the center of every unmasked pixel."""
 
@@ -74,7 +74,7 @@ def regular_grid_1d_masked_from_mask_pixel_scales_and_origin(mask, pixel_scales,
 
     return regular_grid
 
-@numba.jit(nopython=True, cache=True)
+@decorator_util.jit()
 def sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(mask, pixel_scales, sub_grid_size, origin=(0.0, 0.0)):
     """Compute a 1D grid of (y,x) sub-pixel coordinates, using the sub-pixel centers of every unmasked pixel."""
 
@@ -109,7 +109,7 @@ def sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(mask, pixel_scal
 
     return sub_grid
 
-@numba.jit(nopython=True, cache=True)
+@decorator_util.jit()
 def grid_arc_seconds_1d_to_grid_pixels_1d(grid_arc_seconds, shape, pixel_scales, origin=(0.0, 0.0)):
     """ Convert a grid of (y,x) arc second coordinates to a grid of (y,x) pixel values. Pixel coordinates are
     returned as floats such that they include the decimal offset from each pixel's top-left corner.
@@ -143,7 +143,7 @@ def grid_arc_seconds_1d_to_grid_pixels_1d(grid_arc_seconds, shape, pixel_scales,
 
     return grid_pixels
 
-@numba.jit(nopython=True, cache=True)
+@decorator_util.jit()
 def grid_arc_seconds_1d_to_grid_pixel_centres_1d(grid_arc_seconds, shape, pixel_scales, origin=(0.0, 0.0)):
     """ Convert a grid of (y,x) arc second coordinates to a grid of (y,x) pixel values. Pixel coordinates are \
     returned as integers such that they map directly to the pixel they are contained within.
@@ -177,7 +177,7 @@ def grid_arc_seconds_1d_to_grid_pixel_centres_1d(grid_arc_seconds, shape, pixel_
 
     return grid_pixels
 
-@numba.jit(nopython=True, cache=True)
+@decorator_util.jit()
 def grid_arc_seconds_1d_to_grid_pixel_indexes_1d(grid_arc_seconds, shape, pixel_scales, origin=(0.0, 0.0)):
     """ Convert a grid of (y,x) arc second coordinates to a grid of (y,x) pixel 1D indexes. Pixel coordinates are \
     returned as integers such that they are the pixel from the top-left of the 2D grid going rights and then \
@@ -215,7 +215,7 @@ def grid_arc_seconds_1d_to_grid_pixel_indexes_1d(grid_arc_seconds, shape, pixel_
 
     return grid_pixel_indexes
 
-@numba.jit(nopython=True, cache=True)
+@decorator_util.jit()
 def grid_pixels_1d_to_grid_arc_seconds_1d(grid_pixels, shape, pixel_scales, origin=(0.0, 0.0)):
     """ Convert a grid of (y,x) pixel coordinates to a grid of (y,x) arc second values.
 
