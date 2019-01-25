@@ -30,3 +30,6 @@ git checkout master
 git push
 git checkout development
 git push
+
+rm -rf $p/dist
+rm -rf $p/build
