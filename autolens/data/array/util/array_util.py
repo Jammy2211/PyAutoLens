@@ -1,10 +1,11 @@
 import inspect
-from functools import wraps
-
 import os
-import numba
+
+from autolens import decorator_util
 import numpy as np
 from astropy.io import fits
+from functools import wraps
+
 
 class Memoizer(object):
 
@@ -54,7 +55,7 @@ class Memoizer(object):
         return wrapper
 
 
-@numba.jit(nopython=True, cache=True)
+@decorator_util.jit()
 def resize_array_2d(array_2d, new_shape, origin=(-1, -1)):
     """Resize an array to a new size around its a central pixel defined by the array's origin..
 
@@ -74,9 +75,9 @@ def resize_array_2d(array_2d, new_shape, origin=(-1, -1)):
     if origin is (-1, -1):
 
         if y_is_even:
-            y_centre = int(array_2d.shape[0]/2)
+            y_centre = int(array_2d.shape[0] / 2)
         elif not y_is_even:
-            y_centre = int(array_2d.shape[0]/2)
+            y_centre = int(array_2d.shape[0] / 2)
 
         if x_is_even:
             x_centre = int(array_2d.shape[1] / 2)
@@ -105,16 +106,15 @@ def resize_array_2d(array_2d, new_shape, origin=(-1, -1)):
         for x_resized, x in enumerate(range(xmin, xmax)):
             if y >= 0 and y < array_2d.shape[0] and x >= 0 and x < array_2d.shape[1]:
                 if y_resized >= 0 and y_resized < new_shape[0] and x_resized >= 0 and x_resized < new_shape[1]:
-                    resized_array[y_resized, x_resized] = array_2d[y,x]
+                    resized_array[y_resized, x_resized] = array_2d[y, x]
             else:
-                if y_resized >=0 and y_resized < new_shape[0] and x_resized >= 0 and x_resized < new_shape[1]:
+                if y_resized >= 0 and y_resized < new_shape[0] and x_resized >= 0 and x_resized < new_shape[1]:
                     resized_array[y_resized, x_resized] = 0.0
 
     return resized_array
 
 
 def numpy_array_to_fits(array, file_path, overwrite=False):
-
     if overwrite and os.path.exists(file_path):
         os.remove(file_path)
 

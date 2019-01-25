@@ -1,10 +1,10 @@
-import numba
+from autolens import decorator_util
 import numpy as np
 
 from autolens import exc
 
 
-@numba.jit(nopython=True, cache=True)
+@decorator_util.jit()
 def mask_centres_from_shape_pixel_scale_and_centre(shape, pixel_scale, centre):
 
     y_cen = (float(shape[0] - 1) / 2) - (centre[0] / pixel_scale)
@@ -12,7 +12,7 @@ def mask_centres_from_shape_pixel_scale_and_centre(shape, pixel_scale, centre):
 
     return y_cen, x_cen
 
-@numba.jit(nopython=True, cache=True)
+@decorator_util.jit()
 def total_regular_pixels_from_mask(mask):
     """Compute the total number of unmasked regular pixels in a masks."""
 
@@ -25,12 +25,12 @@ def total_regular_pixels_from_mask(mask):
 
     return total_regular_pixels
 
-@numba.jit(nopython=True, cache=True)
+@decorator_util.jit()
 def total_sub_pixels_from_mask_and_sub_grid_size(mask, sub_grid_size):
     """Compute the total number of sub-pixels in unmasked regular pixels in a masks."""
     return total_regular_pixels_from_mask(mask) * sub_grid_size ** 2
 
-@numba.jit(nopython=True, cache=True)
+@decorator_util.jit()
 def total_sparse_pixels_from_mask(mask, unmasked_sparse_grid_pixel_centres):
     """Given the full (i.e. without removing pixels which are outside the regular-masks) pixelization grid's pixel centers
     and the regular-masks, compute the total number of pixels which are within the regular-masks and thus used by the
@@ -56,7 +56,7 @@ def total_sparse_pixels_from_mask(mask, unmasked_sparse_grid_pixel_centres):
 
     return total_sparse_pixels
 
-@numba.jit(nopython=True, cache=True)
+@decorator_util.jit()
 def mask_circular_from_shape_pixel_scale_and_radius(shape, pixel_scale, radius_arcsec, centre=(0.0, 0.0)):
     """Compute a circular masks from an input masks radius and regular shape."""
 
@@ -77,7 +77,7 @@ def mask_circular_from_shape_pixel_scale_and_radius(shape, pixel_scale, radius_a
 
     return mask
 
-@numba.jit(nopython=True, cache=True)
+@decorator_util.jit()
 def mask_circular_annular_from_shape_pixel_scale_and_radii(shape, pixel_scale, inner_radius_arcsec, outer_radius_arcsec,
                                                            centre=(0.0, 0.0)):
     """Compute an annular masks from an input inner and outer masks radius and regular shape."""
@@ -99,7 +99,7 @@ def mask_circular_annular_from_shape_pixel_scale_and_radii(shape, pixel_scale, i
 
     return mask
 
-@numba.jit(nopython=True, cache=True)
+@decorator_util.jit()
 def mask_circular_anti_annular_from_shape_pixel_scale_and_radii(shape, pixel_scale, inner_radius_arcsec, outer_radius_arcsec,
                                                                 outer_radius_2_arcsec, centre=(0.0, 0.0)):
     """Compute an annular masks from an input inner and outer masks radius and regular shape."""
@@ -122,7 +122,7 @@ def mask_circular_anti_annular_from_shape_pixel_scale_and_radii(shape, pixel_sca
 
     return mask
 
-@numba.jit(nopython=True, cache=True)
+@decorator_util.jit()
 def elliptical_radius_from_y_x_phi_and_axis_ratio(y_arcsec, x_arcsec, phi, axis_ratio):
     r_arcsec = np.sqrt(x_arcsec ** 2 + y_arcsec ** 2)
 
@@ -133,7 +133,7 @@ def elliptical_radius_from_y_x_phi_and_axis_ratio(y_arcsec, x_arcsec, phi, axis_
 
     return np.sqrt(x_arcsec_elliptical ** 2.0 + (y_arcsec_elliptical / axis_ratio) ** 2.0)
 
-@numba.jit(nopython=True, cache=True)
+@decorator_util.jit()
 def mask_elliptical_from_shape_pixel_scale_and_radius(shape, pixel_scale, major_axis_radius_arcsec, axis_ratio, phi,
                                                       centre=(0.0, 0.0)):
     """Compute a circular masks from an input masks radius and regular shape."""
@@ -156,7 +156,7 @@ def mask_elliptical_from_shape_pixel_scale_and_radius(shape, pixel_scale, major_
 
     return mask
 
-@numba.jit(nopython=True, cache=True)
+@decorator_util.jit()
 def mask_elliptical_annular_from_shape_pixel_scale_and_radius(shape, pixel_scale,
                                                               inner_major_axis_radius_arcsec, inner_axis_ratio, inner_phi,
                                                               outer_major_axis_radius_arcsec, outer_axis_ratio, outer_phi,
@@ -186,7 +186,7 @@ def mask_elliptical_annular_from_shape_pixel_scale_and_radius(shape, pixel_scale
 
     return mask
 
-@numba.jit(nopython=True, cache=True)
+@decorator_util.jit()
 def mask_blurring_from_mask_and_psf_shape(mask, psf_shape):
     """Compute a blurring masks from an input masks and psf shape.
 
@@ -210,7 +210,7 @@ def mask_blurring_from_mask_and_psf_shape(mask, psf_shape):
 
     return blurring_mask
 
-@numba.jit(nopython=True, cache=True)
+@decorator_util.jit()
 def masked_grid_1d_index_to_2d_pixel_index_from_mask(mask):
     """Compute a 1D array that maps every unmasked pixel to its corresponding 2d pixel using its (y,x) pixel indexes.
 
@@ -228,7 +228,7 @@ def masked_grid_1d_index_to_2d_pixel_index_from_mask(mask):
 
     return grid_to_pixel
 
-@numba.jit(nopython=True, cache=True)
+@decorator_util.jit()
 def total_edge_pixels_from_mask(mask):
     """Compute the total number of borders-pixels in a masks."""
 
@@ -243,7 +243,7 @@ def total_edge_pixels_from_mask(mask):
 
     return border_pixel_total
 
-@numba.jit(nopython=True, cache=True)
+@decorator_util.jit()
 def edge_pixels_from_mask(mask):
     """Compute a 1D array listing all edge pixel indexes in the masks. An edge pixel is a pixel which is not fully \
     surrounding by False masks values i.e. it is on an edge."""
@@ -266,7 +266,7 @@ def edge_pixels_from_mask(mask):
 
     return edge_pixels
 
-@numba.jit(nopython=True, cache=True)
+@decorator_util.jit()
 def check_if_border_pixel(mask, edge_pixel_1d, masked_grid_index_to_pixel):
 
     edge_pixel_index = int(edge_pixel_1d)
@@ -282,7 +282,7 @@ def check_if_border_pixel(mask, edge_pixel_1d, masked_grid_index_to_pixel):
     else:
         return False
 
-@numba.jit(nopython=True, cache=True)
+@decorator_util.jit()
 def total_border_pixels_from_mask_and_edge_pixels(mask, edge_pixels, masked_grid_index_to_pixel):
     """Compute the total number of borders-pixels in a masks."""
 
@@ -295,7 +295,7 @@ def total_border_pixels_from_mask_and_edge_pixels(mask, edge_pixels, masked_grid
 
     return border_pixel_total
 
-@numba.jit(nopython=True, cache=True)
+@decorator_util.jit()
 def border_pixels_from_mask(mask):
     """Compute a 1D array listing all borders pixel indexes in the masks. A borders pixel is a pixel which:
 

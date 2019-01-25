@@ -1,4 +1,4 @@
-import numba
+from autolens import decorator_util
 import numpy as np
 
 from autolens.data.array.util import mapping_util

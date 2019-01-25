@@ -1,4 +1,4 @@
-import numba
+from autolens import decorator_util
 import numpy as np
 
 from autolens import exc
@@ -209,7 +209,7 @@ class Convolver(object):
                     image_index += 1
 
     @staticmethod
-    @numba.jit(nopython=True, cache=True)
+    @decorator_util.jit()
     def frame_at_coordinates_jit(coordinates, mask, mask_index_array, psf):
         """ Compute the frame (indexes of pixels light is blurred into) and psf_frame (psf kernel values of those \
         pixels) for a given coordinate in a masks and its PSF.
@@ -299,7 +299,7 @@ class ConvolverImage(Convolver):
                                  self.blurring_frame_lengths)
 
     @staticmethod
-    @numba.jit(nopython=True, cache=True)
+    @decorator_util.jit()
     def convolve_jit(image_array, image_frame_indexes, image_frame_kernels, image_frame_lengths,
                      blurring_array, blurring_frame_indexes, blurring_frame_kernels, blurring_frame_lengths):
 
