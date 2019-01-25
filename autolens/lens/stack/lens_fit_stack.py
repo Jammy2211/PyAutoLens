@@ -1,4 +1,4 @@
-from autofit.core import fit
+from autofit.tools import fit
 from autolens import exc
 from autolens.lens.util import lens_fit_stack_util as stack_util
 from autolens.lens import ray_tracing

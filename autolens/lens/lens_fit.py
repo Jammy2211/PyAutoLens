@@ -1,6 +1,6 @@
 import numpy as np
 
-from autofit.core import fit
+from autofit.tools import fit
 from autolens import exc
 from autolens.model.inversion import inversions
 from autolens.lens.util import lens_fit_util as util
