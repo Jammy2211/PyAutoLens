@@ -1,6 +1,5 @@
 import inspect
 
-import numba
 import numpy as np
 from numba import cfunc
 from numba.types import intc, CPointer, float64
@@ -8,13 +7,13 @@ from scipy import LowLevelCallable
 from scipy import special
 from scipy.integrate import quad
 
+from autolens import decorator_util
 from autolens.model.profiles import geometry_profiles
 from autolens.model.profiles import light_profiles
 
 
 def jit_integrand(integrand_function):
-
-    jitted_function = numba.jit(integrand_function, nopython=True, cache=True)
+    jitted_function = decorator_util.jit(nopython=True, cache=True)(integrand_function)
     no_args = len(inspect.getfullargspec(integrand_function).args)
 
     wrapped = None
@@ -115,7 +114,7 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
             Factor the dimensionless mass is multiplied by to convert it to a physical mass (e.g. the critical surface \
             mass density).
         """
-        return conversion_factor*quad(self.mass_integral, a=0.0, b=radius, args=(1.0,))[0]
+        return conversion_factor * quad(self.mass_integral, a=0.0, b=radius, args=(1.0,))[0]
 
     def mass_within_ellipse(self, major_axis, conversion_factor=1.0):
         """ Compute the mass profiles's total dimensionless mass within an ellipse of specified radius. This is \
@@ -133,7 +132,7 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
             Factor the dimensionless mass is multiplied by to convert it to a physical mass (e.g. the critical surface \
             mass density).
         """
-        return conversion_factor*quad(self.mass_integral, a=0.0, b=major_axis, args=(self.axis_ratio,))[0]
+        return conversion_factor * quad(self.mass_integral, a=0.0, b=major_axis, args=(self.axis_ratio,))[0]
 
     def mass_integral(self, x, axis_ratio):
         """Routine to integrate an elliptical light profiles - set axis ratio to 1 to compute the luminosity within a \
@@ -156,7 +155,7 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
         outer_annuli_radius : float
             The radius of the outer annulus inside of which the density is estimated.
         """
-        annuli_area = (np.pi * outer_annuli_radius ** 2.0) - (np.pi * inner_annuli_radius **2.0)
+        annuli_area = (np.pi * outer_annuli_radius ** 2.0) - (np.pi * inner_annuli_radius ** 2.0)
         return (self.mass_within_circle(radius=outer_annuli_radius, conversion_factor=conversion_factor) -
                 self.mass_within_circle(radius=inner_annuli_radius, conversion_factor=conversion_factor)) \
                / annuli_area
@@ -464,7 +463,7 @@ class EllipticalIsothermal(EllipticalPowerLaw):
             The grid of coordinates the deflection angles are computed on.
         """
 
-        grid[(grid[:,0] == 0.0) & (grid[:,1] == 0.0)] = np.array([1.0e-8, 1.0e-8])
+        grid[(grid[:, 0] == 0.0) & (grid[:, 1] == 0.0)] = np.array([1.0e-8, 1.0e-8])
 
         try:
             factor = 2.0 * self.einstein_radius_rescaled * self.axis_ratio / np.sqrt(1 - self.axis_ratio ** 2)

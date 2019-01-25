@@ -1,7 +1,7 @@
 import numpy as np
-import numba
+from autolens import decorator_util
 
-@numba.jit(nopython=True, cache=True)
+@decorator_util.jit()
 def rectangular_neighbors_from_shape(shape):
     """Compute the neighbors of every pixel as a list of the pixel index's each pixel shares a vertex with.
 
@@ -29,7 +29,7 @@ def rectangular_neighbors_from_shape(shape):
 
     return pixel_neighbors, pixel_neighbors_size
 
-@numba.jit(nopython=True, cache=True)
+@decorator_util.jit()
 def compute_corner_neighbors(pixel_neighbors, pixel_neighbors_size, shape, pixels):
 
     pixel_neighbors[0, 0:2] = np.array([1, shape[1]])
@@ -47,7 +47,7 @@ def compute_corner_neighbors(pixel_neighbors, pixel_neighbors_size, shape, pixel
 
     return pixel_neighbors, pixel_neighbors_size
 
-@numba.jit(nopython=True, cache=True)
+@decorator_util.jit()
 def compute_top_edge_neighbors(pixel_neighbors, pixel_neighbors_size, shape, pixels):
 
     for pix in range(1, shape[1] - 1):
@@ -58,7 +58,7 @@ def compute_top_edge_neighbors(pixel_neighbors, pixel_neighbors_size, shape, pix
 
     return pixel_neighbors, pixel_neighbors_size
 
-@numba.jit(nopython=True, cache=True)
+@decorator_util.jit()
 def compute_left_edge_neighbors(pixel_neighbors, pixel_neighbors_size, shape, pixels):
 
     for pix in range(1, shape[0] - 1):
@@ -69,7 +69,7 @@ def compute_left_edge_neighbors(pixel_neighbors, pixel_neighbors_size, shape, pi
 
     return pixel_neighbors, pixel_neighbors_size
 
-@numba.jit(nopython=True, cache=True)
+@decorator_util.jit()
 def compute_right_edge_neighbors(pixel_neighbors, pixel_neighbors_size, shape, pixels):
 
     for pix in range(1, shape[0] - 1):
@@ -80,7 +80,7 @@ def compute_right_edge_neighbors(pixel_neighbors, pixel_neighbors_size, shape, p
 
     return pixel_neighbors, pixel_neighbors_size
 
-@numba.jit(nopython=True, cache=True)
+@decorator_util.jit()
 def compute_bottom_edge_neighbors(pixel_neighbors, pixel_neighbors_size, shape, pixels):
 
     for pix in range(1, shape[1] - 1):
@@ -91,7 +91,7 @@ def compute_bottom_edge_neighbors(pixel_neighbors, pixel_neighbors_size, shape, 
 
     return pixel_neighbors, pixel_neighbors_size
 
-@numba.jit(nopython=True, cache=True)
+@decorator_util.jit()
 def compute_central_neighbors(pixel_neighbors, pixel_neighbors_size, shape, pixels):
 
     for x in range(1, shape[0] - 1):
@@ -103,7 +103,7 @@ def compute_central_neighbors(pixel_neighbors, pixel_neighbors_size, shape, pixe
 
     return pixel_neighbors, pixel_neighbors_size
 
-@numba.jit(nopython=True, cache=True)
+@decorator_util.jit()
 def voronoi_neighbors_from_pixels_and_ridge_points(pixels, ridge_points):
     """Compute the neighbors of every pixel as a list of the pixel index's each pixel shares a vertex with.
 

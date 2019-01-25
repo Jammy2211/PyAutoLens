@@ -1,6 +1,6 @@
 import logging
 
-import numba
+from autolens import decorator_util
 import numpy as np
 
 from autolens.data.array.util import mask_util
@@ -8,7 +8,7 @@ from autolens.data.array.util import mask_util
 logger = logging.getLogger(__name__)
 logger.level = logging.DEBUG
 
-@numba.jit(nopython=True, cache=True)
+@decorator_util.jit()
 def map_1d_indexes_to_2d_indexes_for_shape(indexes_1d, shape):
 
     indexes_2d = np.zeros((indexes_1d.shape[0], 2))
@@ -20,7 +20,7 @@ def map_1d_indexes_to_2d_indexes_for_shape(indexes_1d, shape):
 
     return indexes_2d
 
-@numba.jit(nopython=True, cache=True)
+@decorator_util.jit()
 def map_2d_indexes_to_1d_indexes_for_shape(indexes_2d, shape):
 
     indexes_1d = np.zeros(indexes_2d.shape[0])
@@ -31,7 +31,7 @@ def map_2d_indexes_to_1d_indexes_for_shape(indexes_2d, shape):
 
     return indexes_1d
 
-@numba.jit(nopython=True, cache=True)
+@decorator_util.jit()
 def sub_to_regular_from_mask(mask, sub_grid_size):
     """Compute a 1D array that maps every unmasked pixel's sub-pixel to its corresponding 1d datas_-pixel.
 
@@ -55,7 +55,7 @@ def sub_to_regular_from_mask(mask, sub_grid_size):
 
     return sub_to_regular
 
-@numba.jit(nopython=True, cache=True)
+@decorator_util.jit()
 def map_2d_array_to_masked_1d_array_from_array_2d_and_mask(mask, array_2d):
     """For a given 2D array and masks, mappers all unmasked pixels to a 1D array."""
 
@@ -72,7 +72,7 @@ def map_2d_array_to_masked_1d_array_from_array_2d_and_mask(mask, array_2d):
 
     return array_1d
 
-@numba.jit(nopython=True, cache=True)
+@decorator_util.jit()
 def map_masked_1d_array_to_2d_array_from_array_1d_shape_and_one_to_two(array_1d, shape, one_to_two):
     """For a masked 1D array, mappers it to a 2D array using the mappings from 1D to 2D (one_to_two)."""
 
@@ -83,7 +83,7 @@ def map_masked_1d_array_to_2d_array_from_array_1d_shape_and_one_to_two(array_1d,
 
     return array_2d
 
-@numba.jit(nopython=True, cache=True)
+@decorator_util.jit()
 def map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(array_1d, shape):
     """Map a 1D array where every value in its original 2D array was unmasked, to this original 2D array."""
 
@@ -97,7 +97,7 @@ def map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(array_1d, shape):
 
     return array_2d
 
-@numba.jit(nopython=True, cache=True)
+@decorator_util.jit()
 def sparse_to_unmasked_sparse_from_mask_and_pixel_centres(total_sparse_pixels, mask, unmasked_sparse_grid_pixel_centres):
     """Determine the mapping between every masked pixelization-grid pixel and pixelization-grid pixel. This is
     performed by checking whether each pixelization-grid pixel is within the regular-masks, and mapping the indexes.
@@ -128,7 +128,7 @@ def sparse_to_unmasked_sparse_from_mask_and_pixel_centres(total_sparse_pixels, m
 
     return pix_to_full_pix
 
-@numba.jit(nopython=True, cache=True)
+@decorator_util.jit()
 def unmasked_sparse_to_sparse_from_mask_and_pixel_centres(mask, unmasked_sparse_grid_pixel_centres, total_sparse_pixels):
     """Determine the mapping between every pixelization-grid pixel and masked pixelization-grid pixel. This is
     performed by checking whether each pixelization-grid pixel is within the regular-masks, and mapping the indexes.
@@ -165,7 +165,7 @@ def unmasked_sparse_to_sparse_from_mask_and_pixel_centres(mask, unmasked_sparse_
 
     return unmasked_sparse_to_sparse
 
-@numba.jit(nopython=True, cache=True)
+@decorator_util.jit()
 def regular_to_sparse_from_sparse_mappings(regular_to_unmasked_sparse, unmasked_sparse_to_sparse):
     """Using the mapping between the regular-grid and unmasked pixelization grid, compute the mapping between each regular
     pixel and the masked pixelization grid.
@@ -187,7 +187,7 @@ def regular_to_sparse_from_sparse_mappings(regular_to_unmasked_sparse, unmasked_
 
     return regular_to_sparse
 
-@numba.jit(nopython=True, cache=True)
+@decorator_util.jit()
 def sparse_grid_from_unmasked_sparse_grid(unmasked_sparse_grid, sparse_to_unmasked_sparse):
     """Use the central arc-second coordinate of every unmasked pixelization grid's pixels and mapping between each
     pixelization pixel and unmasked pixelization pixel to compute the central arc-second coordinate of every masked
