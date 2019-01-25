@@ -2,6 +2,7 @@ import os
 
 from autofit import conf
 from autofit.mapper import model_mapper as mm
+from autofit.mapper import prior
 from autofit.optimize import non_linear as nl
 
 from autolens.data import ccd
@@ -23,7 +24,6 @@ test_name = "test"
 class TestPhaseModelMapper(object):
 
     def test_pairing_works(self):
-
         test_name = 'pair_floats'
 
         tools.reset_paths(test_name, output_path)
@@ -69,7 +69,6 @@ class TestPhaseModelMapper(object):
                "upper_limit = 1.0" in lines
 
     def test_constants_work(self):
-
         name = "const_float"
         test_name = '/const_float'
 
@@ -111,8 +110,8 @@ class TestPhaseModelMapper(object):
 
         assert isinstance(sersic, mm.PriorModel)
 
-        assert isinstance(sersic.axis_ratio, mm.Constant)
-        assert isinstance(sersic.phi, mm.Constant)
-        assert isinstance(sersic.intensity, mm.Constant)
-        assert isinstance(sersic.effective_radius, mm.Constant)
-        assert isinstance(sersic.sersic_index, mm.Constant)
+        assert isinstance(sersic.axis_ratio, prior.Constant)
+        assert isinstance(sersic.phi, prior.Constant)
+        assert isinstance(sersic.intensity, prior.Constant)
+        assert isinstance(sersic.effective_radius, prior.Constant)
+        assert isinstance(sersic.sersic_index, prior.Constant)

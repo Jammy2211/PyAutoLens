@@ -1,21 +1,23 @@
 import os
 from os import path
-from astropy import cosmology as cosmo
+
 import numpy as np
 import pytest
+from astropy import cosmology as cosmo
 from autofit import conf
 from autofit.mapper import model_mapper as mm
+from autofit.mapper import prior
 from autofit.optimize import non_linear
 
 from autolens.data import ccd
-from autolens.data.array import scaled_array
 from autolens.data.array import grids, mask as msk
+from autolens.data.array import scaled_array
 from autolens.lens import lens_data as li
 from autolens.lens import lens_fit
 from autolens.model.galaxy import galaxy as g, galaxy_model as gm
-from autolens.model.profiles import light_profiles as lp, mass_profiles as mp
 from autolens.model.inversion import pixelizations as pix
 from autolens.model.inversion import regularization as reg
+from autolens.model.profiles import light_profiles as lp, mass_profiles as mp
 from autolens.pipeline import phase as ph
 
 pytestmark = pytest.mark.filterwarnings(
@@ -103,7 +105,6 @@ def make_galaxy_model():
 
 @pytest.fixture(name="ccd_data")
 def make_ccd_data():
-
     pixel_scale = 1.0
 
     image = scaled_array.ScaledSquarePixelArray(array=np.array(np.zeros(shape)), pixel_scale=pixel_scale)
@@ -116,7 +117,7 @@ def make_ccd_data():
 @pytest.fixture(name="lens_data")
 def make_lens_image():
     ccd_data = ccd.CCDData(np.array(np.zeros(shape)), pixel_scale=1.0, psf=ccd.PSF(np.ones((3, 3)), pixel_scale=1.0),
-                        noise_map=ccd.NoiseMap(np.ones(shape), pixel_scale=1.0))
+                           noise_map=ccd.NoiseMap(np.ones(shape), pixel_scale=1.0))
     mask = msk.Mask.circular(shape=shape, pixel_scale=1, radius_arcsec=3.0)
     return li.LensData(ccd_data=ccd_data, mask=mask)
 
@@ -251,7 +252,6 @@ class TestPhase(object):
         assert analysis.lens_data.noise_map == lens_data.noise_map
 
     def test_make_analysis__mask_input_uses_mask__no_mask_uses_mask_function(self, phase, ccd_data):
-
         mask_input = msk.Mask.circular(shape=shape, pixel_scale=1, radius_arcsec=2.0)
 
         analysis = phase.make_analysis(data=ccd_data, mask=mask_input)
@@ -263,7 +263,6 @@ class TestPhase(object):
         assert (analysis.lens_data.mask == mask_default).all()
 
     def test_make_analysis__positions_are_input__are_used_in_analysis(self, phase, ccd_data):
-
         phase.use_positions = True
 
         analysis = phase.make_analysis(data=ccd_data, positions=[[[1.0, 1.0], [2.0, 2.0]]])
@@ -278,7 +277,6 @@ class TestPhase(object):
         assert analysis.lens_data.positions == None
 
     def test_fit(self, ccd_data):
-
         clean_images()
 
         phase = ph.LensSourcePlanePhase(optimizer_class=NLO,
@@ -321,20 +319,17 @@ class TestPhase(object):
         assert phase.source_galaxies is not None
 
     def test_modify_image(self, ccd_data):
-
         class MyPhase(ph.PhaseImaging):
             def modify_image(self, image, previous_results):
-
                 assert ccd_data.image.shape == image.shape
-                image[0,0] = 1.0
+                image[0, 0] = 1.0
                 return image
 
         phase = MyPhase(phase_name='phase')
         analysis = phase.make_analysis(data=ccd_data)
-        assert analysis.lens_data.image[0,0] == 1.0
+        assert analysis.lens_data.image[0, 0] == 1.0
 
     def test__tracer_for_instance__includes_cosmology(self, ccd_data):
-
         lens_galaxy = g.Galaxy()
         source_galaxy = g.Galaxy()
 
@@ -384,9 +379,8 @@ class TestPhase(object):
         assert padded_tracer.cosmology == cosmo.WMAP7
 
     def test__fit_figure_of_merit__matches_correct_fit_given_galaxy_profiles(self, ccd_data):
-
         lens_galaxy = g.Galaxy(light=lp.EllipticalSersic(intensity=0.1))
-        source_galaxy = g.Galaxy(pixelization=pix.Rectangular(shape=(4,4)),
+        source_galaxy = g.Galaxy(pixelization=pix.Rectangular(shape=(4, 4)),
                                  regularization=reg.Constant(coefficients=(1.0,)))
 
         phase = ph.LensPlanePhase(lens_galaxies=[lens_galaxy], cosmology=cosmo.FLRW, phase_name='test_phase')
@@ -465,7 +459,8 @@ class TestPhase(object):
                                                                 sis=mp.SphericalIsothermal,
                                                                 variable_redshift=True),
                                                  gm.GalaxyModel(sis=mp.SphericalIsothermal,
-                                                                variable_redshift=True)], optimizer_class=non_linear.MultiNest, phase_name='test_phase')
+                                                                variable_redshift=True)],
+                                  optimizer_class=non_linear.MultiNest, phase_name='test_phase')
 
         instance = phase.optimizer.variable.instance_from_physical_vector(
             [0.2, 0.21, 0.22, 0.23, 0.24, 0.25, 0.8, 0.1, 0.2, 0.3,
@@ -484,7 +479,7 @@ class TestPhase(object):
         class LensPlanePhase2(ph.LensPlanePhase):
             # noinspection PyUnusedLocal
             def pass_models(self, previous_results):
-                self.lens_galaxies[0].sis.einstein_radius = mm.Constant(10.0)
+                self.lens_galaxies[0].sis.einstein_radius = prior.Constant(10.0)
 
         phase = LensPlanePhase2(lens_galaxies=[gm.GalaxyModel(sersic=lp.EllipticalSersic,
                                                               sis=mp.SphericalIsothermal,
@@ -537,14 +532,12 @@ class TestResult(object):
     # result.image_ == np.array([2.0])).all()
 
     def test_results(self):
-
         results = ph.ResultsCollection([1, 2, 3])
         assert results == [1, 2, 3]
         assert results.last == 3
         assert results.first == 1
 
     def test__results_of_phase_are_available_as_properties(self, ccd_data):
-
         clean_images()
 
         phase = ph.LensPlanePhase(optimizer_class=NLO,
@@ -553,17 +546,16 @@ class TestResult(object):
 
         result = phase.run(data=ccd_data)
 
-        result.most_likely_tracer
-        result.most_likely_padded_tracer
-        result.most_likely_fit
-        result.unmasked_model_image
-        result.unmasked_model_image_of_planes
-        result.unmasked_model_image_of_planes_and_galaxies
+        assert hasattr(result, "most_likely_tracer")
+        assert hasattr(result, "most_likely_padded_tracer")
+        assert hasattr(result, "most_likely_fit")
+        assert hasattr(result, "unmasked_model_image")
+        assert hasattr(result, "unmasked_model_image_of_planes")
+        assert hasattr(result, "unmasked_model_image_of_planes_and_galaxies")
 
     def test__fit_figure_of_merit__matches_correct_fit_given_galaxy_profiles(self, ccd_data):
-
         lens_galaxy = g.Galaxy(light=lp.EllipticalSersic(intensity=0.1))
-        source_galaxy = g.Galaxy(pixelization=pix.Rectangular(shape=(4,4)),
+        source_galaxy = g.Galaxy(pixelization=pix.Rectangular(shape=(4, 4)),
                                  regularization=reg.Constant(coefficients=(1.0,)))
 
         phase = ph.LensPlanePhase(lens_galaxies=[lens_galaxy], cosmology=cosmo.FLRW, phase_name='test_phase')
