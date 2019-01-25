@@ -1,7 +1,7 @@
 import numpy as np
-import numba
+from autolens import decorator_util
 
-@numba.jit(nopython=True, cache=True)
+@decorator_util.jit()
 def constant_regularization_matrix_from_pixel_neighbors(coefficients, pixel_neighbors, pixel_neighbors_size):
     """From the pixel-neighbors, setup the regularization matrix using the constant regularization scheme.
 
@@ -32,7 +32,7 @@ def constant_regularization_matrix_from_pixel_neighbors(coefficients, pixel_neig
 
     return regularization_matrix
 
-@numba.jit(nopython=True, cache=True)
+@decorator_util.jit()
 def weighted_pixel_signals_from_images(pixels, signal_scale, regular_to_pix, galaxy_image):
     """Compute the (scaled) signal in each pixel, where the signal is the sum of its datas_-pixel fluxes. \
     These pixel-signals are used to compute the effective regularization weight of each pixel.
@@ -93,7 +93,7 @@ def weighted_regularization_weights_from_pixel_signals(coefficients, pixel_signa
     """
     return (coefficients[0] * pixel_signals + coefficients[1] * (1.0 - pixel_signals)) ** 2.0
 
-@numba.jit(nopython=True, cache=True)
+@decorator_util.jit()
 def weighted_regularization_matrix_from_pixel_neighbors(regularization_weights, pixel_neighbors,
                                                         pixel_neighbors_size):
     """From the pixel-neighbors, setup the regularization matrix using the weighted regularization scheme.

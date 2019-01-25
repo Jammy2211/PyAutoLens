@@ -1,7 +1,7 @@
-import numba
+from autolens import decorator_util
 import numpy as np
 
-@numba.jit(nopython=True, cache=True)
+@decorator_util.jit()
 def data_vector_from_blurred_mapping_matrix_and_data(blurred_mapping_matrix, image_1d, noise_map_1d):
     """Compute the hyper vector *D* from a blurred mapping matrix *f* and the 1D image *d* and 1D noise-map *\sigma* \
     (see Warren & Dye 2003).
@@ -43,7 +43,7 @@ def curvature_matrix_from_blurred_mapping_matrix(blurred_mapping_matrix, noise_m
     iflist = np.zeros(blurred_mapping_matrix.shape[0], dtype='int')
     return curvature_matrix_from_blurred_mapping_matrix_jit(blurred_mapping_matrix, noise_map_1d, flist, iflist)
 
-@numba.jit(nopython=True, cache=True)
+@decorator_util.jit()
 def curvature_matrix_from_blurred_mapping_matrix_jit(blurred_mapping_matrix, noise_map_1d, flist, iflist):
     """Compute the curvature matrix *F* from a blurred mapping matrix *f* and the 1D noise-map *\sigma* \
     (see Warren & Dye 2003).
@@ -82,7 +82,7 @@ def curvature_matrix_from_blurred_mapping_matrix_jit(blurred_mapping_matrix, noi
 
     return curvature_matrix
 
-@numba.jit(nopython=True, cache=True)
+@decorator_util.jit()
 def reconstructed_data_vector_from_blurred_mapping_matrix_and_solution_vector(blurred_mapping_matrix, solution_vector):
     """ Compute the reconstructed hyper vector from the blurrred mapping matrix *f* and solution vector *S*.
 

@@ -1,5 +1,5 @@
 import numpy as np
-import numba
+from autolens import decorator_util
 
 from autolens.data.array import mask as msk, scaled_array
 from autolens.data.array.util import grid_util
@@ -877,7 +877,7 @@ class RegularGridBorder(np.ndarray):
                          pix=self.relocated_grid_from_grid_jit(grid=grid_stack.pix, border_grid=border_grid))
 
     @staticmethod
-    @numba.jit(nopython=True, cache=True)
+    @decorator_util.jit()
     def relocated_grid_from_grid_jit(grid, border_grid):
         """ Relocate the coordinates of a grid to its border if they are outside the border. This is performed as \
         follows:
