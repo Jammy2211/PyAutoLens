@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from autofit.core import fit_util
+from autofit.tools import fit_util
 from autolens.data import ccd
 from autolens.data.array import scaled_array
 from autolens.data.array import mask as msk

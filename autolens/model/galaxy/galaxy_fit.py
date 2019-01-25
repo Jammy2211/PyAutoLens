@@ -1,4 +1,4 @@
-from autofit.core import fit
+from autofit.tools import fit
 
 class GalaxyFit(fit.DataFit):
 

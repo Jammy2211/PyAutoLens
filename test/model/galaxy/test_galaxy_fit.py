@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from autofit.core import fit_util
+from autofit.tools import fit_util
 from autolens.data.array import mask as msk, scaled_array as sca
 from autolens.model.galaxy import galaxy_data
 from autolens.model.galaxy import galaxy as g, galaxy_fit

@@ -5,8 +5,8 @@ import warnings
 import numpy as np
 from astropy import cosmology as cosmo
 from autofit import conf
-from autofit.core import phase
-from autofit.core.phase_property import PhasePropertyCollection
+from autofit.tools import phase
+from autofit.tools.phase_property import PhasePropertyCollection
 from autofit.optimize import non_linear
 
 from autolens import exc
