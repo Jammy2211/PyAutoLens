@@ -1,5 +1,5 @@
 from autofit.optimize import non_linear as nl
-from autofit.mapper import model_mapper as mm
+from autofit.mapper import prior
 from autolens.data.array import mask as msk
 from autolens.model.galaxy import galaxy_model as gm
 from autolens.pipeline import phase as ph
@@ -43,8 +43,8 @@ def make_pipeline(pipeline_path=''):
 
         def pass_priors(self, previous_results):
 
-            self.lens_galaxies.lens.mass.centre_0 = mm.GaussianPrior(mean=0.0, sigma=0.1)
-            self.lens_galaxies.lens.mass.centre_1 = mm.GaussianPrior(mean=0.0, sigma=0.1)
+            self.lens_galaxies.lens.mass.centre_0 = prior.GaussianPrior(mean=0.0, sigma=0.1)
+            self.lens_galaxies.lens.mass.centre_1 = prior.GaussianPrior(mean=0.0, sigma=0.1)
 
     phase1 = LensSourceX1Phase(lens_galaxies=dict(lens=gm.GalaxyModel(mass=mp.EllipticalIsothermal,
                                                                       shear=mp.ExternalShear)),

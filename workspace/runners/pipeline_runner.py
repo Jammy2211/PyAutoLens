@@ -41,21 +41,21 @@ ccd_plotters.plot_ccd_subplot(ccd_data=ccd_data)
 # profile. Checkout _workspace/pipelines/examples/lens_light_and_x1_source_parametric.py_' for a full description of
 # the pipeline.
 
-from pipelines.examples import lens_light_and_x1_source_parametric
-
-pipeline = lens_light_and_x1_source_parametric.make_pipeline(pipeline_path='example/' + lens_name + '/')
-
-pipeline.run(data=ccd_data)
+# from pipelines.examples import lens_light_and_x1_source_parametric
+#
+# pipeline = lens_light_and_x1_source_parametric.make_pipeline(pipeline_path='example/' + lens_name + '/')
+#
+# pipeline.run(data=ccd_data)
 
 # Another pipeline in the examples folder uses 5 phases to ultimately reconstruct the source galaxy on an adaptive
 # pixel-grid. To run this pipeline on our data, simply comment out / delete the lines above (lines 47-51) which run
 # the parametric souorce pipeline, and uncomment the lines below.
 
-# from pipelines.examples import lens_light_and_source_inversion
-#
-# pipeline = lens_light_and_source_inversion.make_pipeline(pipeline_path='example/' + lens_name + '/')
-#
-# pipeline.run(data=ccd_data)
+from pipelines.examples import lens_light_and_source_inversion
+
+pipeline = lens_light_and_source_inversion.make_pipeline(pipeline_path='example/' + lens_name + '/')
+
+pipeline.run(data=ccd_data)
 
 # And there we have it, the pipeline runner. For me personally, I find it easiest too manage my lens models by having
 # multiple pipeline runners as Python, with each dedicated to a specific set of pipelines and lenses. This makes it

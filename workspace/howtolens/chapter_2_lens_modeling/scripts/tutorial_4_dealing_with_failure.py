@@ -1,6 +1,6 @@
 from autofit import conf
 from autofit.optimize import non_linear as nl
-from autofit.mapper import model_mapper as mm
+from autofit.mapper import prior
 from autolens.pipeline import phase as ph
 from autolens.model.galaxy import galaxy_model as gm
 from autolens.data import ccd
@@ -73,49 +73,48 @@ class CustomPriorPhase(ph.LensSourcePlanePhase):
 
     def pass_priors(self, previous_results):
 
-        # We've imported the 'model_mapper' module as 'mm' this time, to make the code more readable. We've also
-        # called our lens galaxy 'lens' this time, for shorter more readable code.
+        # We've called our lens galaxy 'lens' this time, for shorter more readable code.
 
         # By default, the prior on the (y,x) coordinates of a light / mass profile is a GaussianPrior with mean
         # 0.0" and sigma "1.0. However, visual inspection of our strong lens image tells us that its clearly around
         # x = 0.0" and y = 0.0", so lets reduce where non-linear search looks for these parameters.
 
-        self.lens_galaxies.lens.light.centre_0 = mm.UniformPrior(lower_limit=-0.05, upper_limit=0.05)
-        self.lens_galaxies.lens.light.centre_1 = mm.UniformPrior(lower_limit=-0.05, upper_limit=0.05)
-        self.lens_galaxies.lens.mass.centre_0 = mm.UniformPrior(lower_limit=-0.05, upper_limit=0.05)
-        self.lens_galaxies.lens.mass.centre_1 = mm.UniformPrior(lower_limit=-0.05, upper_limit=0.05)
+        self.lens_galaxies.lens.light.centre_0 = prior.UniformPrior(lower_limit=-0.05, upper_limit=0.05)
+        self.lens_galaxies.lens.light.centre_1 = prior.UniformPrior(lower_limit=-0.05, upper_limit=0.05)
+        self.lens_galaxies.lens.mass.centre_0 = prior.UniformPrior(lower_limit=-0.05, upper_limit=0.05)
+        self.lens_galaxies.lens.mass.centre_1 = prior.UniformPrior(lower_limit=-0.05, upper_limit=0.05)
 
         # By default, the axis-ratio (ellipticity) of our lens galaxy's light profile is a UniformPrior between 0.2 and
         # 1.0. However, by looking at the image it looks fairly circular, so lets use a GaussianPrior nearer 1.0.
-        self.lens_galaxies.lens.light.axis_ratio = mm.GaussianPrior(mean=0.8, sigma=0.15)
+        self.lens_galaxies.lens.light.axis_ratio = prior.GaussianPrior(mean=0.8, sigma=0.15)
 
         # We'll also assume that the light profile's axis_ratio informs us of the mass-profile's axis_ratio, but
         # because this may not strictly be true (e.g. because of dark matter) we'll use a wider prior.
-        self.lens_galaxies.lens.mass.axis_ratio = mm.GaussianPrior(mean=0.8, sigma=0.25)
+        self.lens_galaxies.lens.mass.axis_ratio = prior.GaussianPrior(mean=0.8, sigma=0.25)
 
         # By default, the orientation of the galaxy's light profile, phi, uses a UniformPrior between 0.0 and
         # 180.0 degrees. However, if you look really close at the image (and maybe adjust the color-map of the plot),
         # you'll be able to notice that it is elliptical and that it is oriented around 45.0 degrees counter-clockwise
         # from the x-axis. Lets update our prior
-        self.lens_galaxies.lens.light.phi = mm.GaussianPrior(mean=45.0, sigma=15.0)
+        self.lens_galaxies.lens.light.phi = prior.GaussianPrior(mean=45.0, sigma=15.0)
 
         # Again, lets kind of assume that the light's orientation roughly traces that of mass.
-        self.lens_galaxies.lens.mass.phi = mm.GaussianPrior(mean=45.0, sigma=30.0)
+        self.lens_galaxies.lens.mass.phi = prior.GaussianPrior(mean=45.0, sigma=30.0)
 
         # The effective radius of a light profile is its 'half-light' radius, the radius at which 50% of its
         # total luminosity is internal to a circle defined within that radius. PyAutoLens assumes a
         # UniformPrior on this quantity between 0.0" and 4.0", but inspection of the image (again, using a colormap
         # scaling) shows the lens's light doesn't extend anywhere near 4.0", so lets reduce it.
-        self.lens_galaxies.lens.light.effective_radius = mm.GaussianPrior(mean=0.5, sigma=0.8)
+        self.lens_galaxies.lens.light.effective_radius = prior.GaussianPrior(mean=0.5, sigma=0.8)
 
         # Typically, we have some knowledge of what morphology our lens galaxy is. Infact, most strong lenses are
         # massive elliptical galaxies, and anyone who studies galaxy morphology will tell you these galaxies have a
         # Sersic index near 4. So lets change our Sersic index from a UniformPrior between 0.8 and 8.0 to reflect this.
-        self.lens_galaxies.lens.light.sersic_index = mm.GaussianPrior(mean=4.0, sigma=1.0)
+        self.lens_galaxies.lens.light.sersic_index = prior.GaussianPrior(mean=4.0, sigma=1.0)
 
         # Finally, the 'ring' that the lensed source forms clearly has a radius of about 0.8". This is its Einstein
         # radius, so lets change the prior from a UniformPrior between 0.0" and 4.0".
-        self.lens_galaxies.lens.mass.einstein_radius = mm.GaussianPrior(mean=0.8, sigma=0.2)
+        self.lens_galaxies.lens.mass.einstein_radius = prior.GaussianPrior(mean=0.8, sigma=0.2)
 
         # In this exercise, I'm not going to change any priors on the source galaxy. Whilst lens modeling experts can
         # look at a strong lens and often tell you roughly where the source-galaxy is located (in the source-plane),
