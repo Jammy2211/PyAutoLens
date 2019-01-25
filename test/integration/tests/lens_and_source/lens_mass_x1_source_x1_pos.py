@@ -38,15 +38,14 @@ def pipeline():
                                         pixel_scale=0.1)
 
     pipeline = make_pipeline(test_name=test_name)
-    pipeline.run(data=ccd_data)
+    pipeline.run(data=ccd_data, positions=[[[1.0, 1.0], [1.0, -1.0], [-1.0, 1.0], [-1.0, -1.0]]])
 
 
 def make_pipeline(test_name):
 
-    phase1 = ph.LensSourcePlanePhase(lens_galaxies=[gm.GalaxyModel(sie=mp.EllipticalIsothermal)],
-                                     source_galaxies=[gm.GalaxyModel(sersic=lp.EllipticalSersic)],
-                                     optimizer_class=nl.MultiNest,
-                                     positions=[[[1.0, 1.0], [1.0, -1.0], [-1.0, 1.0], [-1.0, -1.0]]],
+    phase1 = ph.LensSourcePlanePhase(lens_galaxies=dict(lens=gm.GalaxyModel(mass=mp.EllipticalIsothermal)),
+                                     source_galaxies=dict(source=gm.GalaxyModel(light=lp.EllipticalSersic)),
+                                     optimizer_class=nl.MultiNest, use_positions=True,
                                      phase_name="{}/phase1".format(test_name))
 
     phase1.optimizer.n_live_points = 30

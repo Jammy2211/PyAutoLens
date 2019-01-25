@@ -815,6 +815,7 @@ class MultiPlanePhase(PhaseImaging):
 
 
 class GalaxyFitPhase(AbstractPhase):
+
     galaxy = PhasePropertyCollection("galaxy")
 
     def __init__(self, phase_name, use_intensities=False, use_surface_density=False, use_potential=False,
@@ -1011,13 +1012,14 @@ class GalaxyFitPhase(AbstractPhase):
 
 
 class SensitivityPhase(PhaseImaging):
+
     lens_galaxies = PhasePropertyCollection("lens_galaxies")
     source_galaxies = PhasePropertyCollection("source_galaxies")
     sensitive_galaxies = PhasePropertyCollection("sensitive_galaxies")
 
     def __init__(self, phase_name, lens_galaxies=None, source_galaxies=None, sensitive_galaxies=None,
-                 optimizer_class=non_linear.MultiNest, sub_grid_size=2,
-                 mask_function=default_mask_function):
+                 optimizer_class=non_linear.MultiNest, sub_grid_size=2, mask_function=default_mask_function,
+                 cosmology=cosmo.Planck15):
         """
         A phase in an lens pipeline. Uses the set non_linear optimizer to try to fit models and hyper
         passed to it.
@@ -1031,7 +1033,8 @@ class SensitivityPhase(PhaseImaging):
         """
 
         super(SensitivityPhase, self).__init__(optimizer_class=optimizer_class, sub_grid_size=sub_grid_size,
-                                               mask_function=mask_function, phase_name=phase_name)
+                                               mask_function=mask_function, cosmology=cosmology,
+                                               phase_name=phase_name)
 
         self.lens_galaxies = lens_galaxies or []
         self.source_galaxies = source_galaxies or []
@@ -1040,9 +1043,10 @@ class SensitivityPhase(PhaseImaging):
     # noinspection PyAbstractClass
     class Analysis(PhaseImaging.Analysis):
 
-        def __init__(self, lens_data, phase_name, previous_results=None):
-            self.sensitivity_image = lens_data
-            super(PhaseImaging.Analysis, self).__init__(phase_name, previous_results)
+        def __init__(self, lens_data, cosmology, phase_name, previous_results=None):
+            self.lens_data = lens_data
+            super(PhaseImaging.Analysis, self).__init__(cosmology=cosmology, phase_name=phase_name,
+                                                        previous_results=previous_results)
 
         def fit(self, instance):
             """
@@ -1064,40 +1068,50 @@ class SensitivityPhase(PhaseImaging):
             return fit.figure_of_merit
 
         def visualize(self, instance, suffix, during_analysis):
+
+            self.plot_count += 1
+
             tracer_normal = self.tracer_normal_for_instance(instance)
             tracer_sensitive = self.tracer_sensitive_for_instance(instance)
             fit = self.fit_for_tracers(tracer_normal=tracer_normal, tracer_sensitive=tracer_sensitive)
 
-            ccd_plotters.plot_ccd_subplot(ccd_data=self.sensitivity_image.ccd_data, mask=self.lens_data.mask,
+            ccd_plotters.plot_ccd_subplot(ccd_data=self.lens_data.ccd_data, mask=self.lens_data.mask,
                                           positions=self.lens_data.positions,
                                           output_path=self.output_image_path, output_format='png',
                                           ignore_config=False)
 
-            ccd_plotters.plot_ccd_individual(ccd_data=self.sensitivity_image.ccd_data, mask=self.lens_data.mask,
+            ccd_plotters.plot_ccd_individual(ccd_data=self.lens_data.ccd_data, mask=self.lens_data.mask,
                                              positions=self.lens_data.positions,
                                              output_path=self.output_image_path,
                                              output_format='png')
 
-            sensitivity_fit_plotters.plot_fit_subplot(fit=fit, output_path=self.output_image_path,
-                                                      output_format='png')
+            ray_tracing_plotters.plot_ray_tracing_subplot(tracer=tracer_normal, output_path=self.output_image_path,
+                                                          output_format='png', output_filename='tracer_normal',
+                                                          ignore_config=False)
+
+            ray_tracing_plotters.plot_ray_tracing_subplot(tracer=tracer_sensitive, output_path=self.output_image_path,
+                                                          output_format='png', output_filename='tracer_sensitive',
+                                                          ignore_config=False)
+
+            sensitivity_fit_plotters.plot_fit_subplot(fit=fit, output_path=self.output_image_path, output_format='png')
 
             return fit
 
         def tracer_normal_for_instance(self, instance):
             return ray_tracing.TracerImageSourcePlanes(lens_galaxies=instance.lens_galaxies,
                                                        source_galaxies=instance.source_galaxies,
-                                                       image_plane_grid_stack=[self.sensitivity_image.grids],
-                                                       border=self.sensitivity_image.border)
+                                                       image_plane_grid_stack=self.lens_data.grid_stack,
+                                                       border=self.lens_data.border)
 
         def tracer_sensitive_for_instance(self, instance):
             return ray_tracing.TracerImageSourcePlanes(
                 lens_galaxies=instance.lens_galaxies + instance.sensitive_galaxies,
                 source_galaxies=instance.source_galaxies,
-                image_plane_grid_stack=[self.sensitivity_image.grids],
-                border=self.sensitivity_image.border)
+                image_plane_grid_stack=self.lens_data.grid_stack,
+                border=self.lens_data.border)
 
         def fit_for_tracers(self, tracer_normal, tracer_sensitive):
-            return sensitivity_fit.SensitivityProfileFit(lens_data=[self.sensitivity_image],
+            return sensitivity_fit.SensitivityProfileFit(lens_data=self.lens_data,
                                                          tracer_normal=tracer_normal,
                                                          tracer_sensitive=tracer_sensitive)
 
