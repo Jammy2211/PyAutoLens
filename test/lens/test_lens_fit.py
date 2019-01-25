@@ -594,8 +594,8 @@ class TestLensInversionFit:
 
             mapper = pix.mapper_from_grid_stack_and_border(grid_stack=lens_data_manual.grid_stack, border=None)
             inversion = inversions.inversion_from_image_mapper_and_regularization(mapper=mapper,
-                                                                                  regularization=reg, image_1d=lens_data_manual.image_1d, noise_map_1d=lens_data_manual.noise_map_1d,
-                                                                                  convolver=lens_data_manual.convolver_mapping_matrix)
+                regularization=reg, image_1d=lens_data_manual.image_1d, noise_map_1d=lens_data_manual.noise_map_1d,
+                convolver=lens_data_manual.convolver_mapping_matrix)
 
             assert inversion.reconstructed_data == pytest.approx(fit.model_image, 1e-4)
 
