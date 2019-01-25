@@ -4,9 +4,10 @@ import pytest
 from autofit import conf
 from autofit import exc
 from autofit.mapper import model_mapper as mm
+from autofit.mapper import prior
 
-from autolens.model.inversion import pixelizations, regularization
 from autolens.model.galaxy import galaxy as g, galaxy_model as gp
+from autolens.model.inversion import pixelizations, regularization
 from autolens.model.profiles import mass_profiles, light_profiles, light_and_mass_profiles
 
 
@@ -260,7 +261,7 @@ class TestPixelization(object):
                                       regularization=regularization.Constant)
 
         arguments = {galaxy_prior.redshift.redshift: 2.0,
-                     galaxy_prior.pixelization.shape_0 : 14.0,
+                     galaxy_prior.pixelization.shape_0: 14.0,
                      galaxy_prior.pixelization.shape_1: 13.0,
                      galaxy_prior.regularization.coefficients_0: 0.5}
 
@@ -292,7 +293,7 @@ class TestRegularization(object):
                                       regularization=regularization.Constant)
 
         arguments = {galaxy_prior.redshift.redshift: 2.0,
-                     galaxy_prior.pixelization.shape_0 : 14.0,
+                     galaxy_prior.pixelization.shape_0: 14.0,
                      galaxy_prior.pixelization.shape_1: 13.0,
                      galaxy_prior.regularization.coefficients_0: 0.5}
 
@@ -412,7 +413,7 @@ class TestRedshift(object):
 
     def test_set_redshift_constant(self):
         galaxy_prior = gp.GalaxyModel(variable_redshift=True, )
-        galaxy_prior.redshift = mm.Constant(3)
+        galaxy_prior.redshift = prior.Constant(3)
         # noinspection PyUnresolvedReferences
         assert galaxy_prior.redshift.redshift == 3
 
