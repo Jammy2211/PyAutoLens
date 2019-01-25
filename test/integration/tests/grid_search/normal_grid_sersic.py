@@ -3,7 +3,6 @@ import os
 from autofit import conf
 from autofit.mapper import prior
 from autofit.optimize import non_linear as nl
-from autofit.tools import phase as autofit_ph
 from autolens.data import ccd
 from autolens.model.galaxy import galaxy, galaxy_model as gm
 from autolens.model.profiles import light_profiles as lp
@@ -45,6 +44,7 @@ def make_pipeline(test_name):
     class QuickPhase(ph.LensPlanePhase):
 
         def pass_priors(self, previous_results):
+
             self.lens_galaxies.lens.light.centre_0 = prior.UniformPrior(lower_limit=-0.01, upper_limit=0.01)
             self.lens_galaxies.lens.light.centre_1 = prior.UniformPrior(lower_limit=-0.01, upper_limit=0.01)
             self.lens_galaxies.lens.light.axis_ratio = prior.UniformPrior(lower_limit=0.79, upper_limit=0.81)

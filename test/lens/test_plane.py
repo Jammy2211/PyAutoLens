@@ -19,7 +19,8 @@ def make_grid_stack():
                              [True, False, False, True],
                              [True, True, True, True]]), pixel_scale=6.0)
 
-    grid_stack = grids.GridStack.grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=mask, sub_grid_size=2, psf_shape=(3, 3))
+    grid_stack = grids.GridStack.grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=mask, sub_grid_size=2,
+                                                                                  psf_shape=(3, 3))
 
     # Manually overwrite a set of cooridnates to make tests of grid_stacks and defledctions straightforward
 
