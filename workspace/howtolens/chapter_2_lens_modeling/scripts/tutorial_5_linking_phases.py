@@ -1,6 +1,6 @@
 from autofit import conf
 from autofit.optimize import non_linear as nl
-from autofit.mapper import model_mapper as mm
+from autofit.mapper import prior
 from autolens.pipeline import phase as ph
 from autolens.model.galaxy import galaxy_model as gm
 from autolens.data import ccd
@@ -149,26 +149,26 @@ class CustomPriorPhase(ph.LensSourcePlanePhase):
         # about the sigma values for now, I've chosen values that I know will ensure reasonable sampling, but we'll
         # cover this later.
 
-        self.lens_galaxies.lens.light.centre_0 = mm.GaussianPrior(mean=0.0, sigma=0.1)
-        self.lens_galaxies.lens.light.centre_1 = mm.GaussianPrior(mean=0.0, sigma=0.1)
-        self.lens_galaxies.lens.light.axis_ratio = mm.GaussianPrior(mean=0.8, sigma=0.15)
-        self.lens_galaxies.lens.light.phi = mm.GaussianPrior(mean=45.0, sigma=15.0)
-        self.lens_galaxies.lens.light.intensity = mm.GaussianPrior(mean=0.02, sigma=0.01)
-        self.lens_galaxies.lens.light.effective_radius = mm.GaussianPrior(mean=0.62, sigma=0.2)
-        self.lens_galaxies.lens.light.sersic_index = mm.GaussianPrior(mean=4.0, sigma=2.0)
+        self.lens_galaxies.lens.light.centre_0 = prior.GaussianPrior(mean=0.0, sigma=0.1)
+        self.lens_galaxies.lens.light.centre_1 = prior.GaussianPrior(mean=0.0, sigma=0.1)
+        self.lens_galaxies.lens.light.axis_ratio = prior.GaussianPrior(mean=0.8, sigma=0.15)
+        self.lens_galaxies.lens.light.phi = prior.GaussianPrior(mean=45.0, sigma=15.0)
+        self.lens_galaxies.lens.light.intensity = prior.GaussianPrior(mean=0.02, sigma=0.01)
+        self.lens_galaxies.lens.light.effective_radius = prior.GaussianPrior(mean=0.62, sigma=0.2)
+        self.lens_galaxies.lens.light.sersic_index = prior.GaussianPrior(mean=4.0, sigma=2.0)
 
-        self.lens_galaxies.lens.mass.centre_0 = mm.GaussianPrior(mean=0.0, sigma=0.1)
-        self.lens_galaxies.lens.mass.centre_1 = mm.GaussianPrior(mean=0.0, sigma=0.1)
-        self.lens_galaxies.lens.mass.axis_ratio = mm.GaussianPrior(mean=0.8, sigma=0.25)
-        self.lens_galaxies.lens.mass.phi = mm.GaussianPrior(mean=45.0, sigma=30.0)
-        self.lens_galaxies.lens.mass.einstein_radius = mm.GaussianPrior(mean=0.8, sigma=0.1)
+        self.lens_galaxies.lens.mass.centre_0 = prior.GaussianPrior(mean=0.0, sigma=0.1)
+        self.lens_galaxies.lens.mass.centre_1 = prior.GaussianPrior(mean=0.0, sigma=0.1)
+        self.lens_galaxies.lens.mass.axis_ratio = prior.GaussianPrior(mean=0.8, sigma=0.25)
+        self.lens_galaxies.lens.mass.phi = prior.GaussianPrior(mean=45.0, sigma=30.0)
+        self.lens_galaxies.lens.mass.einstein_radius = prior.GaussianPrior(mean=0.8, sigma=0.1)
 
-        self.source_galaxies.source.light.centre_0 = mm.GaussianPrior(mean=0.0, sigma=0.1)
-        self.source_galaxies.source.light.centre_1 = mm.GaussianPrior(mean=0.0, sigma=0.1)
-        self.source_galaxies.source.light.axis_ratio = mm.GaussianPrior(mean=0.8, sigma=0.1)
-        self.source_galaxies.source.light.phi = mm.GaussianPrior(mean=90.0, sigma=10.0)
-        self.source_galaxies.source.light.intensity = mm.GaussianPrior(mean=0.14, sigma=0.05)
-        self.source_galaxies.source.light.effective_radius = mm.GaussianPrior(mean=0.12, sigma=0.2)
+        self.source_galaxies.source.light.centre_0 = prior.GaussianPrior(mean=0.0, sigma=0.1)
+        self.source_galaxies.source.light.centre_1 = prior.GaussianPrior(mean=0.0, sigma=0.1)
+        self.source_galaxies.source.light.axis_ratio = prior.GaussianPrior(mean=0.8, sigma=0.1)
+        self.source_galaxies.source.light.phi = prior.GaussianPrior(mean=90.0, sigma=10.0)
+        self.source_galaxies.source.light.intensity = prior.GaussianPrior(mean=0.14, sigma=0.05)
+        self.source_galaxies.source.light.effective_radius = prior.GaussianPrior(mean=0.12, sigma=0.2)
 
 # Lets setup and run the phase. As expected, it gives us the correct lens model. However, it does so significantly
 # faster than we're used to - I didn't have to edit the config files to get this phase to run fast!

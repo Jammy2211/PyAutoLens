@@ -12,7 +12,7 @@ from autolens.pipeline import pipeline as pl
 from test.integration import tools
 
 test_type = 'grid_search'
-test_name = "fixed_disk"
+test_name = "multinest_grid_fixed_disk"
 
 path = '{}/../../'.format(os.path.dirname(os.path.realpath(__file__)))
 output_path = path + 'output/' + test_type
