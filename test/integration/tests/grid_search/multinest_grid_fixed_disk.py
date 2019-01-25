@@ -45,6 +45,7 @@ def make_pipeline(test_name):
     class QuickPhase(ph.LensPlanePhase):
 
         def pass_priors(self, previous_results):
+
             self.lens_galaxies.lens.bulge.centre_0 = prior.UniformPrior(lower_limit=-0.01, upper_limit=0.01)
             self.lens_galaxies.lens.bulge.centre_1 = prior.UniformPrior(lower_limit=-0.01, upper_limit=0.01)
             self.lens_galaxies.lens.bulge.axis_ratio = prior.UniformPrior(lower_limit=0.79, upper_limit=0.81)
@@ -75,6 +76,7 @@ def make_pipeline(test_name):
             return [self.variable.lens.bulge.sersic_index]
 
         def pass_priors(self, previous_results):
+
             self.lens_galaxies.lens.disk = previous_results[0].constant.lens.disk
 
             self.lens_galaxies.lens.bulge.centre_0 = prior.UniformPrior(lower_limit=-0.01, upper_limit=0.01)

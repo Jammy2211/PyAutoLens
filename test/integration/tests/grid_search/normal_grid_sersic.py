@@ -64,7 +64,11 @@ def make_pipeline(test_name):
 
         def pass_priors(self, previous_results):
 
-            self.lens_galaxies.lens.light = previous_results[0].constant.lens.light
+            self.lens_galaxies.lens.light.centre_0 = 0.0
+            self.lens_galaxies.lens.light.centre_1 = 0.0
+            self.lens_galaxies.lens.light.axis_ratio = previous_results[0].constant.lens.light.axis_ratio
+            self.lens_galaxies.lens.light.phi = previous_results[0].constant.lens.light.phi
+            self.lens_galaxies.lens.light.intensity = previous_results[0].constant.lens.light.intensity
 
             self.lens_galaxies.lens.light.effective_radius = prior.UniformPrior(lower_limit=0.0, upper_limit=4.0)
             self.lens_galaxies.lens.light.sersic_index = prior.UniformPrior(lower_limit=1.0, upper_limit=8.0)
