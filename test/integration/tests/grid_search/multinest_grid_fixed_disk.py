@@ -12,7 +12,7 @@ from autolens.pipeline import pipeline as pl
 from test.integration import tools
 
 test_type = 'grid_search'
-test_name = "fixed_disk"
+test_name = "multinest_grid_fixed_disk"
 
 path = '{}/../../'.format(os.path.dirname(os.path.realpath(__file__)))
 output_path = path + 'output/' + test_type
@@ -45,6 +45,7 @@ def make_pipeline(test_name):
     class QuickPhase(ph.LensPlanePhase):
 
         def pass_priors(self, previous_results):
+
             self.lens_galaxies.lens.bulge.centre_0 = prior.UniformPrior(lower_limit=-0.01, upper_limit=0.01)
             self.lens_galaxies.lens.bulge.centre_1 = prior.UniformPrior(lower_limit=-0.01, upper_limit=0.01)
             self.lens_galaxies.lens.bulge.axis_ratio = prior.UniformPrior(lower_limit=0.79, upper_limit=0.81)
@@ -75,6 +76,7 @@ def make_pipeline(test_name):
             return [self.variable.lens.bulge.sersic_index]
 
         def pass_priors(self, previous_results):
+
             self.lens_galaxies.lens.disk = previous_results[0].constant.lens.disk
 
             self.lens_galaxies.lens.bulge.centre_0 = prior.UniformPrior(lower_limit=-0.01, upper_limit=0.01)

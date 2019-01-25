@@ -1,7 +1,5 @@
-from autofit import conf
 from autofit.optimize import non_linear as nl
-from autofit.mapper import model_mapper as mm
-from autolens.data.array import mask as msk
+from autofit.mapper import prior
 from autolens.data import ccd
 from autolens.model.inversion import pixelizations as pix
 from autolens.model.inversion import regularization as reg
@@ -67,14 +65,14 @@ def make_pipeline(pipeline_path=''):
 
         def pass_priors(self, previous_results):
 
-            self.lens_galaxies.lens.light.centre_0 = mm.GaussianPrior(mean=0.0, sigma=0.1)
-            self.lens_galaxies.lens.light.centre_1 = mm.GaussianPrior(mean=0.0, sigma=0.1)
-            self.lens_galaxies.los0.light.centre_0 = mm.GaussianPrior(mean=4.0, sigma=0.1)
-            self.lens_galaxies.los0.light.centre_1 = mm.GaussianPrior(mean=4.0, sigma=0.1)
-            self.lens_galaxies.los1.light.centre_0 = mm.GaussianPrior(mean=3.6, sigma=0.1)
-            self.lens_galaxies.los1.light.centre_1 = mm.GaussianPrior(mean=-5.3, sigma=0.1)
-            self.lens_galaxies.los2.light.centre_0 = mm.GaussianPrior(mean=-3.1, sigma=0.1)
-            self.lens_galaxies.los2.light.centre_1 = mm.GaussianPrior(mean=-2.4, sigma=0.1)
+            self.lens_galaxies.lens.light.centre_0 = prior.GaussianPrior(mean=0.0, sigma=0.1)
+            self.lens_galaxies.lens.light.centre_1 = prior.GaussianPrior(mean=0.0, sigma=0.1)
+            self.lens_galaxies.los0.light.centre_0 = prior.GaussianPrior(mean=4.0, sigma=0.1)
+            self.lens_galaxies.los0.light.centre_1 = prior.GaussianPrior(mean=4.0, sigma=0.1)
+            self.lens_galaxies.los1.light.centre_0 = prior.GaussianPrior(mean=3.6, sigma=0.1)
+            self.lens_galaxies.los1.light.centre_1 = prior.GaussianPrior(mean=-5.3, sigma=0.1)
+            self.lens_galaxies.los2.light.centre_0 = prior.GaussianPrior(mean=-3.1, sigma=0.1)
+            self.lens_galaxies.los2.light.centre_1 = prior.GaussianPrior(mean=-2.4, sigma=0.1)
 
     phase1 = LensPhase(lens_galaxies=dict(lens=gm.GalaxyModel(light=lp.EllipticalSersic),
                                            los_0=gm.GalaxyModel(light=lp.SphericalSersic),
@@ -99,8 +97,8 @@ def make_pipeline(pipeline_path=''):
 
         def pass_priors(self, previous_results):
 
-            self.lens_galaxies.lens.mass.centre_0 = mm.GaussianPrior(mean=0.0, sigma=0.1)
-            self.lens_galaxies.lens.mass.centre_1 = mm.GaussianPrior(mean=0.0, sigma=0.1)
+            self.lens_galaxies.lens.mass.centre_0 = prior.GaussianPrior(mean=0.0, sigma=0.1)
+            self.lens_galaxies.lens.mass.centre_1 = prior.GaussianPrior(mean=0.0, sigma=0.1)
 
     phase2 = LensSubtractedPhase(lens_galaxies=dict(lens=gm.GalaxyModel(mass=mp.EllipticalIsothermal)),
                                  source_galaxies=dict(source=gm.GalaxyModel(light=lp.EllipticalSersic)),
@@ -125,8 +123,8 @@ def make_pipeline(pipeline_path=''):
 
             self.lens_galaxies.lens = previous_results[1].constant.lens
 
-            self.source_galaxies.source.pixelization.shape_0 = mm.UniformPrior(lower_limit=20.0, upper_limit=45.0)
-            self.source_galaxies.source.pixelization.shape_1 = mm.UniformPrior(lower_limit=20.0, upper_limit=45.0)
+            self.source_galaxies.source.pixelization.shape_0 = prior.UniformPrior(lower_limit=20.0, upper_limit=45.0)
+            self.source_galaxies.source.pixelization.shape_1 = prior.UniformPrior(lower_limit=20.0, upper_limit=45.0)
 
     phase3 = InversionPhase(lens_galaxies=dict(lens=gm.GalaxyModel(mass=mp.EllipticalIsothermal)),
                             source_galaxies=dict(source=gm.GalaxyModel(pixelization=pix.AdaptiveMagnification,

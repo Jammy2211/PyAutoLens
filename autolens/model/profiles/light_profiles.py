@@ -51,7 +51,7 @@ class EllipticalLightProfile(geometry_profiles.EllipticalProfile, LightProfile):
         Parameters
         ----------
         centre : (float, float)
-            The (y,x) coordinates of the centre of the profile.
+            The (y,x) arc-second coordinates of the profile centre.
         axis_ratio : float
             Ratio of light profiles ellipse's minor and major axes (b/a)
         phi : float
@@ -110,7 +110,7 @@ class EllipticalGaussian(EllipticalLightProfile):
         Parameters
         ----------
         centre : (float, float)
-            The (y,x) centre of the light profile.
+            The (y,x) arc-second coordinates of the profile centre.
         axis_ratio : float
             Ratio of light profiles ellipse's minor and major axes (b/a).
         phi : float
@@ -159,7 +159,7 @@ class SphericalGaussian(EllipticalGaussian):
         Parameters
         ----------
         centre : (float, float)
-            The (y,x) centre of the light profile.
+            The (y,x) arc-second coordinates of the profile centre.
         intensity : float
             Overall intensity normalisation of the light profiles (electrons per second).
         sigma : float
@@ -178,7 +178,7 @@ class AbstractEllipticalSersic(geometry_profiles.EllipticalProfile):
         Parameters
         ----------
         centre : (float, float)
-            The (y,x) coordinates of the centre of the profile.
+            The (y,x) arc-second coordinates of the profile centre.
         axis_ratio : float
             Ratio of light profiles ellipse's minor and major axes (b/a)
         phi : float
@@ -188,7 +188,8 @@ class AbstractEllipticalSersic(geometry_profiles.EllipticalProfile):
         effective_radius : float
             The circular radius containing half the light of this model_mapper
         sersic_index : Int
-            The Sersic index, which controls the light profile concentration
+            Controls the concentration of the of the profile (lower value -> less concentrated, \
+            higher value -> more concentrated).
         """
         super(AbstractEllipticalSersic, self).__init__(centre, axis_ratio, phi)
         self.intensity = intensity
@@ -235,7 +236,7 @@ class EllipticalSersic(AbstractEllipticalSersic, EllipticalLightProfile):
         Parameters
         ----------
         centre : (float, float)
-            The (y,x) centre of the light profile.
+            The (y,x) arc-second coordinates of the profile centre.
         axis_ratio : float
             Ratio of light profiles ellipse's minor and major axes (b/a).
         phi : float
@@ -245,7 +246,8 @@ class EllipticalSersic(AbstractEllipticalSersic, EllipticalLightProfile):
         effective_radius : float
             The circular radius containing half the light of this profile.
         sersic_index : Int
-            Controls the concentration of the of the light profile.
+            Controls the concentration of the of the profile (lower value -> less concentrated, \
+            higher value -> more concentrated).
         """
         super(EllipticalSersic, self).__init__(centre, axis_ratio, phi, intensity, effective_radius,
                                                sersic_index)
@@ -286,7 +288,7 @@ class SphericalSersic(EllipticalSersic):
         Parameters
         ----------
         centre : (float, float)
-            The (y,x) centre of the light profile.
+            The (y,x) arc-second coordinates of the profile centre.
         intensity : float
             Overall intensity normalisation of the light profiles (electrons per second).
         effective_radius : float
@@ -307,7 +309,7 @@ class EllipticalExponential(EllipticalSersic):
         Parameters
         ----------
         centre : (float, float)
-            The (y,x) centre of the light profile.
+            The (y,x) arc-second centre of the light profile.
         axis_ratio : float
             Ratio of light profiles ellipse's minor and major axes (b/a).
         phi : float
@@ -330,7 +332,7 @@ class SphericalExponential(EllipticalExponential):
         Parameters
         ----------
         centre : (float, float)
-            The (y,x) centre of the light profile.
+            The (y,x) arc-second coordinates of the profile centre.
         intensity : float
             Overall intensity normalisation of the light profiles (electrons per second).
         effective_radius : float
@@ -349,7 +351,7 @@ class EllipticalDevVaucouleurs(EllipticalSersic):
         Parameters
         ----------
         centre : (float, float)
-            The (y,x) centre of the light profile.
+            The (y,x) arc-second coordinates of the profile centre.
         axis_ratio : float
             Ratio of light profiles ellipse's minor and major axes (b/a).
         phi : float
@@ -372,7 +374,7 @@ class SphericalDevVaucouleurs(EllipticalDevVaucouleurs):
         Parameters
         ----------
         centre : (float, float)
-            The (y,x) centre of the light profile.
+            The (y,x) arc-second coordinates of the profile centre.
         intensity : float
             Overall intensity normalisation of the light profiles (electrons per second).
         effective_radius : float
@@ -390,7 +392,7 @@ class EllipticalCoreSersic(EllipticalSersic):
         Parameters
         ----------
         centre : (float, float)
-            The (y,x) centre of the light profile.
+            The (y,x) arc-second coordinates of the profile centre.
         axis_ratio : float
             Ratio of light profiles ellipse's minor and major axes (b/a).
         phi : float
@@ -400,7 +402,8 @@ class EllipticalCoreSersic(EllipticalSersic):
         effective_radius : float
             The circular radius containing half the light of this profile.
         sersic_index : Int
-            Controls the concetration of the of the light profile.
+            Controls the concentration of the of the profile (lower value -> less concentrated, \
+            higher value -> more concentrated).
         radius_break : Float
             The break radius separating the inner power-law (with logarithmic slope gamma) and outer Sersic function.
         intensity_break : Float
@@ -450,13 +453,14 @@ class SphericalCoreSersic(EllipticalCoreSersic):
         Parameters
         ----------
         centre : (float, float)
-            The (y,x) centre of the light profile.
+            The (y,x) arc-second coordinates of the profile centre.
         intensity : float
             Overall intensity normalisation of the light profiles (electrons per second).
         effective_radius : float
             The circular radius containing half the light of this profile.
         sersic_index : Int
-            Controls the concetration of the of the light profile.
+            Controls the concentration of the of the profile (lower value -> less concentrated, \
+            higher value -> more concentrated).
         radius_break : Float
             The break radius separating the inner power-law (with logarithmic slope gamma) and outer Sersic function.
         intensity_break : Float
