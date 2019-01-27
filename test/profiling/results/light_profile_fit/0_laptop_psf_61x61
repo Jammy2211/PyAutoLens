@@ -1,0 +1,8 @@
+26/01/19 - Numba jitted integrands
+
+NOTES:
+
+The sub AO images ran fine, and even at 61 x 61 the convolution run times were fine.
+
+The AI image crashed, due to memory amount. Thus, we shouldn't use large psfs for the AO, and we know memory issues
+arise on lower resolution images as well.
