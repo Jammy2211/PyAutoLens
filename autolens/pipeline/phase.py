@@ -1111,9 +1111,9 @@ class SensitivityPhase(PhaseImaging):
                 border=self.lens_data.border)
 
         def fit_for_tracers(self, tracer_normal, tracer_sensitive):
-            return sensitivity_fit.SensitivityProfileFit(lens_data=self.lens_data,
-                                                         tracer_normal=tracer_normal,
-                                                         tracer_sensitive=tracer_sensitive)
+            return sensitivity_fit.fit_lens_data_with_sensitivity_tracers(lens_data=self.lens_data,
+                                                                          tracer_normal=tracer_normal,
+                                                                          tracer_sensitive=tracer_sensitive)
 
         @classmethod
         def log(cls, instance):
