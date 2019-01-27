@@ -1,0 +1,92 @@
+26/01/19 - Numba jitted integrands
+
+NOTES:
+
+For the GeneralizedNFW profiles, an inner slope > ~1.0 gives an integration error, warning numerical accuracy may not
+be reached.
+
+I gave up after HST, as the run times are too slow :(
+
+sub grid size = 4
+circular mask radius = 3.0
+
+Deflection angle run times for image type LSST
+
+Number of points = 11456
+
+EllipticalIsothermal time = 0.0024497509002685547
+SphericalIsothermal time = 0.0013439655303955078
+EllipticalPowerLaw (slope = 1.5) time = 1.2168631553649902
+SphericalPowerLaw (slope = 1.5) time = 0.0018694400787353516
+EllipticalPowerLaw (slope = 2.5) time = 1.2955451011657715
+SphericalPowerLaw (slope = 2.5) time = 0.0016887187957763672
+EllipticalCoredPowerLaw time = 1.1432700157165527
+SphericalCoredPowerLaw time = 0.0016837120056152344
+EllipticalGeneralizedNFW (inner_slope = 1.0) time = 78.9535505771637
+SphericalGeneralizedNFW (inner_slope = 1.0) time = 4.732160806655884
+EllipticalNFW time = 0.8500964641571045
+SphericalNFW time = 0.0015861988067626953
+EllipticalExponential time = 0.8432064056396484
+SphericalExponential time = 0.6108255386352539
+EllipticalDevVaucouleurs time = 2.546180009841919
+SphericalDevVaucouleurs time = 2.0644538402557373
+EllipticalSersic time = 2.102583169937134
+SphericalSersic time = 1.7634217739105225
+EllipticalSersicRadialGradient (gradient = -1.0) time = 1.8975920677185059
+SphericalSersicRadialGradient (gradient = -1.0) time = 1.5721595287322998
+EllipticalSersicRadialGradient (gradient = 1.0) time = 3.127636671066284
+SphericalSersicRadialGradient (gradient = 1.0) time = 2.3512537479400635
+
+Deflection angle run times for image type Euclid
+
+Number of points = 45248
+
+EllipticalIsothermal time = 0.008093833923339844
+SphericalIsothermal time = 0.0038874149322509766
+EllipticalPowerLaw (slope = 1.5) time = 4.871051788330078
+SphericalPowerLaw (slope = 1.5) time = 0.007828950881958008
+EllipticalPowerLaw (slope = 2.5) time = 5.656132936477661
+SphericalPowerLaw (slope = 2.5) time = 0.007998466491699219
+EllipticalCoredPowerLaw time = 4.642886161804199
+SphericalCoredPowerLaw time = 0.006722688674926758
+EllipticalGeneralizedNFW (inner_slope = 1.0) time = 321.6879942417145
+SphericalGeneralizedNFW (inner_slope = 1.0) time = 19.176706790924072
+EllipticalNFW time = 3.7217299938201904
+SphericalNFW time = 0.006346702575683594
+EllipticalExponential time = 3.3239171504974365
+SphericalExponential time = 2.3407933712005615
+EllipticalDevVaucouleurs time = 10.233924865722656
+SphericalDevVaucouleurs time = 8.978341817855835
+EllipticalSersic time = 8.3004891872406
+SphericalSersic time = 7.002116441726685
+EllipticalSersicRadialGradient (gradient = -1.0) time = 7.190021991729736
+SphericalSersicRadialGradient (gradient = -1.0) time = 6.311654090881348
+EllipticalSersicRadialGradient (gradient = 1.0) time = 12.200123071670532
+SphericalSersicRadialGradient (gradient = 1.0) time = 10.260600566864014
+
+Deflection angle run times for image type HST
+
+Number of points = 180864
+
+EllipticalIsothermal time = 0.03465723991394043
+SphericalIsothermal time = 0.020566701889038086
+EllipticalPowerLaw (slope = 1.5) time = 20.628430604934692
+SphericalPowerLaw (slope = 1.5) time = 0.034819841384887695
+EllipticalPowerLaw (slope = 2.5) time = 21.88350772857666
+SphericalPowerLaw (slope = 2.5) time = 0.03583884239196777
+EllipticalCoredPowerLaw time = 19.354443788528442
+SphericalCoredPowerLaw time = 0.03646087646484375
+EllipticalGeneralizedNFW (inner_slope = 1.0) time = 1377.2137682437897
+SphericalGeneralizedNFW (inner_slope = 1.0) time = 87.85079431533813
+EllipticalNFW time = 18.233051538467407
+SphericalNFW time = 0.04047870635986328
+EllipticalExponential time = 16.423184394836426
+SphericalExponential time = 11.14801549911499
+EllipticalDevVaucouleurs time = 49.168904304504395
+SphericalDevVaucouleurs time = 39.729419469833374
+EllipticalSersic time = 38.61942672729492
+SphericalSersic time = 31.773098707199097
+EllipticalSersicRadialGradient (gradient = -1.0) time = 34.49314904212952
+SphericalSersicRadialGradient (gradient = -1.0) time = 27.11011242866516
+EllipticalSersicRadialGradient (gradient = 1.0) time = 51.934507846832275
+SphericalSersicRadialGradient (gradient = 1.0) time = 46.85942769050598

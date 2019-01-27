@@ -1,0 +1,85 @@
+26/01/19 - Normal light profile calculations
+
+NOTES:
+
+Pretty fast already :). We can speed this up further with an iterator grid calculation
+
+RESULTS
+
+sub grid size = 4
+circular mask radius = 3.0
+
+Deflection angle run times for image type LSST
+
+Number of points = 11456
+
+EllipticalGaussian time = 0.001756906509399414
+SphericalGaussian time = 0.0003857612609863281
+EllipticalExponential time = 0.0015828609466552734
+SphericalExponential time = 0.0004684925079345703
+EllipticalDevVaucouleurs time = 0.002260446548461914
+SphericalDevVaucouleurs time = 0.001134634017944336
+EllipticalSersic time = 0.002249479293823242
+SphericalSersic time = 0.001108407974243164
+EllipticalCoreSersic time = 0.004377603530883789
+SphericalCoreSersic time = 0.0031647682189941406
+
+Deflection angle run times for image type Euclid
+
+Number of points = 45248
+
+EllipticalGaussian time = 0.0062961578369140625
+SphericalGaussian time = 0.0012996196746826172
+EllipticalExponential time = 0.005564451217651367
+SphericalExponential time = 0.0016226768493652344
+EllipticalDevVaucouleurs time = 0.008417844772338867
+SphericalDevVaucouleurs time = 0.00405120849609375
+EllipticalSersic time = 0.008125782012939453
+SphericalSersic time = 0.004316568374633789
+EllipticalCoreSersic time = 0.015913724899291992
+SphericalCoreSersic time = 0.011998414993286133
+
+Deflection angle run times for image type HST
+
+Number of points = 180864
+
+EllipticalGaussian time = 0.023421764373779297
+SphericalGaussian time = 0.0054013729095458984
+EllipticalExponential time = 0.022211313247680664
+SphericalExponential time = 0.007487773895263672
+EllipticalDevVaucouleurs time = 0.03218555450439453
+SphericalDevVaucouleurs time = 0.016741037368774414
+EllipticalSersic time = 0.03191328048706055
+SphericalSersic time = 0.01735854148864746
+EllipticalCoreSersic time = 0.06948328018188477
+SphericalCoreSersic time = 0.06926846504211426
+
+Deflection angle run times for image type HST_Up
+
+Number of points = 502848
+
+EllipticalGaussian time = 0.06703472137451172
+SphericalGaussian time = 0.01996755599975586
+EllipticalExponential time = 0.06639361381530762
+SphericalExponential time = 0.02120184898376465
+EllipticalDevVaucouleurs time = 0.11455988883972168
+SphericalDevVaucouleurs time = 0.06693267822265625
+EllipticalSersic time = 0.09723472595214844
+SphericalSersic time = 0.04880237579345703
+EllipticalCoreSersic time = 0.18215417861938477
+SphericalCoreSersic time = 0.13807892799377441
+
+Deflection angle run times for image type AO
+
+Number of points = 4524672
+
+EllipticalGaussian time = 0.7711186408996582
+SphericalGaussian time = 0.27178096771240234
+EllipticalExponential time = 0.8246471881866455
+SphericalExponential time = 0.31340932846069336
+EllipticalDevVaucouleurs time = 1.0705204010009766
+SphericalDevVaucouleurs time = 0.5633993148803711
+EllipticalSersic time = 1.1021943092346191
+SphericalSersic time = 0.545457124710083
+EllipticalCoreSersic time = 1.919982671737671
+SphericalCoreSersic time = 1.4354841709136963

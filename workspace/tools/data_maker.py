@@ -50,7 +50,7 @@ tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source
 # Lets look at the tracer's image-plane image - this is the image we'll be simulating.
 ray_tracing_plotters.plot_image_plane_image(tracer=tracer)
 
-# Now lets simulate the CCD data, remembering that we use a special image-plane image which ensures edge-effects don't
+# Simulate the CCD data, remembering that we use a special image-plane image which ensures edge-effects don't
 # degrade our modeling of the telescope optics (e.g. the PSF convolution).
 simulated_ccd = ccd.CCDData.simulate(array=tracer.image_plane_image_for_simulation, pixel_scale=pixel_scale,
                                      exposure_time=300.0, psf=psf, background_sky_level=0.1, add_noise=True)
@@ -65,11 +65,11 @@ path = '{}/../'.format(os.path.dirname(os.path.realpath(__file__)))
 if not os.path.exists(path+'/data/'+lens_name):
     os.makedirs(path+'/data/'+lens_name)
 
-image = ccd.output_ccd_data_to_fits(ccd_data=simulated_ccd,
-                                    image_path=path+'/data/example/'+lens_name+'/image.fits',
-                                    psf_path=path + '/data/example/' + lens_name + '/psf.fits',
-                                    noise_map_path=path + '/data/example/' + lens_name + '/noise_map.fits',
-                                    overwrite=True)
+ccd.output_ccd_data_to_fits(ccd_data=simulated_ccd,
+                            image_path=path+'/data/example/'+lens_name+'/image.fits',
+                            psf_path=path + '/data/example/' + lens_name + '/psf.fits',
+                            noise_map_path=path + '/data/example/' + lens_name + '/noise_map.fits',
+                            overwrite=True)
 
 
 ### OTHER EXAMPLE IMAGES ###
