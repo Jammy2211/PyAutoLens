@@ -6,6 +6,7 @@ from autolens.data.array import mask
 from autolens.model.profiles import light_profiles as lp
 from autolens.model.profiles import mass_profiles as mp
 from autolens.model.galaxy import galaxy as g
+from autolens.lens import plane as pl
 from autolens.lens.util import ray_tracing_util
 from autolens.lens.util import plane_util
 
@@ -98,12 +99,12 @@ class TestGalaxyOrdering:
     def test__3_galaxies_reordered_in_ascending_redshift(self):
         galaxies = [g.Galaxy(redshift=2.0), g.Galaxy(redshift=1.0), g.Galaxy(redshift=0.1)]
 
-        ordered_plane_redshifts = ray_tracing_util.ordered_redshifts_from_galaxies(galaxies=galaxies)
+        ordered_plane_redshifts = ray_tracing_util.ordered_plane_redshifts_from_galaxies(galaxies=galaxies)
 
         assert ordered_plane_redshifts == [0.1, 1.0, 2.0]
 
-        ordered_galaxies = ray_tracing_util.galaxies_in_redshift_ordered_lists_from_galaxies(galaxies=galaxies,
-                                                                                         ordered_redshifts=ordered_plane_redshifts)
+        ordered_galaxies = ray_tracing_util.galaxies_in_redshift_ordered_planes_from_galaxies(galaxies=galaxies,
+                                                                                              plane_redshifts=ordered_plane_redshifts)
 
         assert ordered_galaxies[0][0].redshift == 0.1
         assert ordered_galaxies[1][0].redshift == 1.0
@@ -112,12 +113,12 @@ class TestGalaxyOrdering:
     def test_3_galaxies_two_same_redshift_planes_redshift_order_is_size_2_with_redshifts(self):
         galaxies = [g.Galaxy(redshift=1.0), g.Galaxy(redshift=1.0), g.Galaxy(redshift=0.1)]
 
-        ordered_plane_redshifts = ray_tracing_util.ordered_redshifts_from_galaxies(galaxies=galaxies)
+        ordered_plane_redshifts = ray_tracing_util.ordered_plane_redshifts_from_galaxies(galaxies=galaxies)
 
         assert ordered_plane_redshifts == [0.1, 1.0]
 
-        ordered_galaxies = ray_tracing_util.galaxies_in_redshift_ordered_lists_from_galaxies(galaxies=galaxies,
-                                                                                         ordered_redshifts=ordered_plane_redshifts)
+        ordered_galaxies = ray_tracing_util.galaxies_in_redshift_ordered_planes_from_galaxies(galaxies=galaxies,
+                                                                                              plane_redshifts=ordered_plane_redshifts)
 
         assert ordered_galaxies[0][0].redshift == 0.1
         assert ordered_galaxies[1][0].redshift == 1.0
@@ -133,12 +134,12 @@ class TestGalaxyOrdering:
 
         galaxies = [g0, g1, g2, g3, g4, g5]
 
-        ordered_plane_redshifts = ray_tracing_util.ordered_redshifts_from_galaxies(galaxies=galaxies)
+        ordered_plane_redshifts = ray_tracing_util.ordered_plane_redshifts_from_galaxies(galaxies=galaxies)
 
         assert ordered_plane_redshifts == [0.1, 0.95, 1.0, 1.05]
 
-        ordered_galaxies = ray_tracing_util.galaxies_in_redshift_ordered_lists_from_galaxies(galaxies=galaxies,
-                                                                                         ordered_redshifts=ordered_plane_redshifts)
+        ordered_galaxies = ray_tracing_util.galaxies_in_redshift_ordered_planes_from_galaxies(galaxies=galaxies,
+                                                                                              plane_redshifts=ordered_plane_redshifts)
 
         assert ordered_galaxies[0][0].redshift == 0.1
         assert ordered_galaxies[1][0].redshift == 0.95
@@ -151,3 +152,50 @@ class TestGalaxyOrdering:
         assert ordered_galaxies[1] == [g4]
         assert ordered_galaxies[2] == [g0, g1]
         assert ordered_galaxies[3] == [g3, g5]
+
+
+class TestComputeDeflections:
+
+    def test__if_plane_is_last_plane_is_false_else_is_true(self):
+
+        assert ray_tracing_util.compute_deflections_at_next_plane(plane_index=0, total_planes=4) == True
+        assert ray_tracing_util.compute_deflections_at_next_plane(plane_index=2, total_planes=4) == True
+        assert ray_tracing_util.compute_deflections_at_next_plane(plane_index=3, total_planes=4) == False
+        assert ray_tracing_util.compute_deflections_at_next_plane(plane_index=3, total_planes=5) == True
+
+class TestScaledDeflections:
+
+    def test__deflection_stack_is_scaled_by_scaling_factor(self, grid_stack, galaxy_mass):
+
+        plane = pl.Plane(galaxies=[galaxy_mass], grid_stack=grid_stack)
+
+        scaled_deflection_stack = ray_tracing_util.scaled_deflection_stack_from_plane_and_scaling_factor(plane=plane,
+                                                                                                    scaling_factor=1.0)
+
+        assert (scaled_deflection_stack.regular == plane.deflection_stack.regular).all()
+        assert (scaled_deflection_stack.sub == plane.deflection_stack.sub).all()
+        assert (scaled_deflection_stack.blurring == plane.deflection_stack.blurring).all()
+
+        scaled_deflection_stack = ray_tracing_util.scaled_deflection_stack_from_plane_and_scaling_factor(plane=plane,
+                                                                                                    scaling_factor=2.0)
+
+        assert (scaled_deflection_stack.regular == 2.0*plane.deflection_stack.regular).all()
+        assert (scaled_deflection_stack.sub == 2.0*plane.deflection_stack.sub).all()
+        assert (scaled_deflection_stack.blurring == 2.0*plane.deflection_stack.blurring).all()
+
+
+class TestGridStackDeflections:
+
+    def test__grid_stack_has_deflections_subtracted_from_it(self, grid_stack, galaxy_mass):
+
+        plane = pl.Plane(galaxies=[galaxy_mass], grid_stack=grid_stack)
+
+        deflection_stack = ray_tracing_util.scaled_deflection_stack_from_plane_and_scaling_factor(plane=plane,
+                                                                                                    scaling_factor=3.0)
+
+        traced_grid_stack = ray_tracing_util.grid_stack_from_deflection_stack(grid_stack=grid_stack,
+                                                                              deflection_stack=deflection_stack)
+
+        assert (traced_grid_stack.regular == grid_stack.regular - deflection_stack.regular).all()
+        assert (traced_grid_stack.sub == grid_stack.sub - deflection_stack.sub).all()
+        assert (traced_grid_stack.blurring == grid_stack.blurring - deflection_stack.blurring).all()

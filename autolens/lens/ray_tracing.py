@@ -173,6 +173,14 @@ class AbstractTracer(object):
         return any(list(map(lambda plane: plane.has_hyper_galaxy, self.planes)))
 
     @property
+    def galaxies(self):
+        return list([galaxy for plane in self.planes for galaxy in plane.galaxies])
+
+    @property
+    def galaxies_in_planes(self):
+        return list([plane.galaxies for plane in self.planes])
+
+    @property
     def hyper_galaxies(self):
         return list(filter(None, [hyper_galaxy for plane in self.planes for hyper_galaxy in plane.hyper_galaxies]))
 
@@ -254,6 +262,66 @@ class AbstractTracer(object):
     @check_tracer_for_redshifts
     def critical_density_arcsec(self):
         return self.critical_density_kpc * self.image_plane.kpc_per_arcsec_proper ** 2.0
+
+    def grid_at_redshift_from_image_plane_grid_and_redshift(self, image_plane_grid, redshift):
+        """For an input grid of (y,x) arc-second image-plane coordinates, ray-trace the coordinates to any redshift in \
+        the strong lens configuration.
+
+        This is performed using multi-plane ray-tracing and the existing redshifts and planes of the tracer. However, \
+        any redshift can be input even if a plane does not exist there, including redshifts before the first plane \
+        of the lensing system.
+
+        Parameters
+        ----------
+        image_plane_grid : ndsrray or grids.RegularGrid
+            The image-plane grid which is traced to the redshift.
+        redshift : float
+            The redshift the image-plane grid is traced to.
+        """
+
+        # TODO : We need to come up with a better abstraction for multi-plane lensing 0_0
+
+        image_plane_grid_stack = grids.GridStack(regular=image_plane_grid, sub=np.array([[0.0, 0.0]]),
+                                                 blurring=np.array([[0.0, 0.0]]))
+
+        for plane_index in range(0, len(self.plane_redshifts)):
+
+            new_grid_stack = image_plane_grid_stack
+
+            if redshift <= self.plane_redshifts[plane_index]:
+
+                # If redshift is between two planes, we need to map over all previous planes coordinates / deflections.
+
+                if plane_index > 0:
+                    for previous_plane_index in range(plane_index):
+
+                        scaling_factor = ray_tracing_util.scaling_factor_between_redshifts_for_cosmology(
+                            z1=self.plane_redshifts[previous_plane_index], z2=redshift,
+                            z_final=self.plane_redshifts[-1], cosmology=self.cosmology)
+
+                        scaled_deflection_stack = ray_tracing_util.scaled_deflection_stack_from_plane_and_scaling_factor(
+                            plane=self.planes[previous_plane_index], scaling_factor=scaling_factor)
+
+                        new_grid_stack = \
+                            ray_tracing_util.grid_stack_from_deflection_stack(grid_stack=new_grid_stack,
+                                                                              deflection_stack=scaled_deflection_stack)
+
+                # If redshift is before the first plane, just need to scale the image-plane coordinates.
+
+                elif plane_index == 0:
+
+                    scaling_factor = ray_tracing_util.scaling_factor_between_redshifts_for_cosmology(
+                        z1=redshift, z2=self.plane_redshifts[0],
+                        z_final=self.plane_redshifts[-1], cosmology=self.cosmology)
+
+                    scaled_deflection_stack = ray_tracing_util.scaled_deflection_stack_from_plane_and_scaling_factor(
+                        plane=self.planes[0], scaling_factor=scaling_factor)
+
+                    new_grid_stack = \
+                        ray_tracing_util.grid_stack_from_deflection_stack(grid_stack=new_grid_stack,
+                                                                          deflection_stack=scaled_deflection_stack)
+
+                return new_grid_stack.regular
 
     def masses_of_image_plane_galaxies_within_circles(self, radius):
         """
@@ -448,25 +516,21 @@ class TracerMultiPlanes(Tracer):
             The cosmology of the ray-tracing calculation.
         """
 
-        ordered_redshifts = ray_tracing_util.ordered_redshifts_from_galaxies(galaxies=galaxies)
+        plane_redshifts = ray_tracing_util.ordered_plane_redshifts_from_galaxies(galaxies=galaxies)
 
-        galaxies_in_redshift_ordered_lists = \
-            ray_tracing_util.galaxies_in_redshift_ordered_lists_from_galaxies(galaxies=galaxies,
-                                                                           ordered_redshifts=ordered_redshifts)
+        galaxies_in_planes = \
+            ray_tracing_util.galaxies_in_redshift_ordered_planes_from_galaxies(galaxies=galaxies,
+                                                                               plane_redshifts=plane_redshifts)
 
         image_plane_grid_stack = pix.setup_image_plane_pixelization_grid_from_galaxies_and_grid_stack(
             galaxies=galaxies, grid_stack=image_plane_grid_stack)
 
         planes = []
 
-        for plane_index in range(0, len(ordered_redshifts)):
+        for plane_index in range(0, len(plane_redshifts)):
 
-            if plane_index < len(ordered_redshifts) - 1:
-                compute_deflections = True
-            elif plane_index == len(ordered_redshifts) - 1:
-                compute_deflections = False
-            else:
-                raise exc.RayTracingException('A galaxy was not correctly allocated its previous / next redshifts')
+            compute_deflections = ray_tracing_util.compute_deflections_at_next_plane(plane_index=plane_index,
+                                                                                     total_planes=len(plane_redshifts))
 
             new_grid_stack = image_plane_grid_stack
 
@@ -474,25 +538,17 @@ class TracerMultiPlanes(Tracer):
                 for previous_plane_index in range(plane_index):
 
                     scaling_factor = ray_tracing_util.scaling_factor_between_redshifts_for_cosmology(
-                        z1=ordered_redshifts[previous_plane_index], z2=ordered_redshifts[plane_index],
-                        z_final=ordered_redshifts[-1], cosmology=cosmology)
+                        z1=plane_redshifts[previous_plane_index], z2=plane_redshifts[plane_index],
+                        z_final=plane_redshifts[-1], cosmology=cosmology)
 
-                    def scale(grid):
-                        return np.multiply(scaling_factor, grid)
+                    scaled_deflection_stack = ray_tracing_util.scaled_deflection_stack_from_plane_and_scaling_factor(
+                        plane=planes[previous_plane_index], scaling_factor=scaling_factor)
 
-                    if planes[previous_plane_index].deflection_stack is not None:
-                        scaled_deflections = planes[previous_plane_index].deflection_stack.apply_function(scale)
-                    else:
-                        scaled_deflections = None
+                    new_grid_stack = \
+                        ray_tracing_util.grid_stack_from_deflection_stack(grid_stack=new_grid_stack,
+                                                                          deflection_stack=scaled_deflection_stack)
 
-                    if scaled_deflections is not None:
-
-                        def minus(grid, deflections):
-                            return grid - deflections
-
-                        new_grid_stack = new_grid_stack.map_function(minus, scaled_deflections)
-
-            planes.append(pl.Plane(galaxies=galaxies_in_redshift_ordered_lists[plane_index], grid_stack=new_grid_stack,
+            planes.append(pl.Plane(galaxies=galaxies_in_planes[plane_index], grid_stack=new_grid_stack,
                                    border=border, compute_deflections=compute_deflections, cosmology=cosmology))
 
         super(TracerMultiPlanes, self).__init__(planes=planes, cosmology=cosmology)
@@ -550,11 +606,11 @@ class TracerMultiPlanesPositions(AbstractTracer):
             The cosmology of the ray-tracing calculation.
         """
 
-        ordered_redshifts = ray_tracing_util.ordered_redshifts_from_galaxies(galaxies=galaxies)
+        ordered_redshifts = ray_tracing_util.ordered_plane_redshifts_from_galaxies(galaxies=galaxies)
 
         galaxies_in_redshift_ordered_lists = \
-            ray_tracing_util.galaxies_in_redshift_ordered_lists_from_galaxies(galaxies=galaxies,
-                                                                           ordered_redshifts=ordered_redshifts)
+            ray_tracing_util.galaxies_in_redshift_ordered_planes_from_galaxies(galaxies=galaxies,
+                                                                               plane_redshifts=ordered_redshifts)
 
         if not galaxies:
             raise exc.RayTracingException('No galaxies have been input into the Tracer (TracerImageSourcePlanes)')

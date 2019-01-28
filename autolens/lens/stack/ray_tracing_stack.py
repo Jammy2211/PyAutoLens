@@ -173,11 +173,11 @@ class TracerMultiPlanesStack(AbstractTracerStack):
             The cosmology of the ray-tracing calculation.
         """
 
-        ordered_redshifts = ray_tracing_util.ordered_redshifts_from_galaxies(galaxies=galaxies)
+        ordered_redshifts = ray_tracing_util.ordered_plane_redshifts_from_galaxies(galaxies=galaxies)
 
         galaxies_in_redshift_ordered_lists = \
-            ray_tracing_util.galaxies_in_redshift_ordered_lists_from_galaxies(galaxies=galaxies,
-                                                                              ordered_redshifts=ordered_redshifts)
+            ray_tracing_util.galaxies_in_redshift_ordered_planes_from_galaxies(galaxies=galaxies,
+                                                                               plane_redshifts=ordered_redshifts)
 
         image_plane_grid_stacks = list(map(lambda grid_stack:
                                            pix.setup_image_plane_pixelization_grid_from_galaxies_and_grid_stack(
