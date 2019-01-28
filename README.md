@@ -6,8 +6,9 @@
 
 **PyAutoLens** is based on the following papers:
 
-https://arxiv.org/abs/1412.7436<br/>
-https://arxiv.org/abs/1708.07377
+[Adaptive Semi-linear Inversion of Strong Gravitational Lens Imaging](https://arxiv.org/abs/1412.7436)
+
+[AutoLens: Automated Modeling of a Strong Lens's Light, Mass and Source](https://arxiv.org/abs/1708.07377)
 
 ## Python Example
 
@@ -169,6 +170,14 @@ If you're having difficulty with installation, lens modeling, or just want a cha
 ## Contributing
 
 If you have any suggestions or would like to contribute please get in touch.
+
+## Publications
+
+The following papers use **PyAutoLens**:
+
+[Galaxy structure with strong gravitational lensing: decomposing the internal mass distribution of massive elliptical galaxies](https://arxiv.org/abs/1901.07801)
+
+[Novel Substructure and Superfluid Dark Matter](https://arxiv.org/abs/1901.03694)
 
 ## Credits
 
