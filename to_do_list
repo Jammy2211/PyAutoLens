@@ -2,8 +2,12 @@ Hey, welcome to my PyAutoLens to-do. This should give you a sense of what we're 
 
 Let me know if you think anything is missing, or should be pushed up the to-do list ;)
 
+0) position updating / thresholding.
+0) Quantitive output of lens model results (e.g. einstein mass, magnification)
+0) Output info on phase setup (positions, mask, psf shape, etc.)
 0) Sort out cosma scripts.
-0.5) Add multi-plane coordinate mappings for Qiuhan.
+0) Add feature to remove astropy bug.
+0) Add colorbar / features to pixelization plots, fix rectangular plot bug.
 1) Write Adaptive Grid howtolens.
 2) Power-law Analytic Deflections
 3) Magnification + Caustic + Critical curves
@@ -15,6 +19,11 @@ Let me know if you think anything is missing, or should be pushed up the to-do l
    lens_fit_util, in an analogous fashion to unmasked image generation. The key point here is we can make it so
    the fit module does not 'know' whether it is a lens + source plane system, or a multi-plane system. It should
    just generate lists of model images across all planes and for all galaxies.
+
+Bugs:
+
+1) Error message where some adaptive mappers lead to a qhull.Voronoi error
+2) Rectangular plots of source recons are still skewing.
 
 Feb/Mar) Automated Prior Linking
 Feb/Mar) Pixelization which Adapts to source's light (not magnification).

@@ -52,6 +52,9 @@ class TestLensImage(object):
         assert (lens_data.noise_map == ccd.noise_map).all()
         assert (lens_data.noise_map == 2.0*np.ones((4,4))).all()
 
+        assert lens_data.image_psf_shape == (3,3)
+        assert lens_data.mapping_matrix_psf_shape == (3,3)
+
     def test_masking(self, lens_data):
 
         assert (lens_data.image_1d == np.ones(4)).all()
@@ -96,6 +99,7 @@ class TestLensImage(object):
         assert type(lens_data.convolver_mapping_matrix) == inversion_convolution.ConvolverMappingMatrix
 
     def test__constructor_inputs(self):
+
         psf = ccd.PSF(np.ones((7, 7)), 1)
         image = ccd.CCDData(np.ones((51, 51)), pixel_scale=3., psf=psf, noise_map=np.ones((51, 51)))
         mask = msk.Mask.masked_for_shape_and_pixel_scale(shape=(51, 51), pixel_scale=1.0)
@@ -109,6 +113,15 @@ class TestLensImage(object):
         assert lens_data.convolver_mapping_matrix.psf_shape == (3, 3)
         assert (lens_data.positions[0] == np.array([[1.0, 1.0]])).all()
 
+        assert lens_data.image_psf_shape == (5,5)
+        assert lens_data.mapping_matrix_psf_shape == (3,3)
+
+    def test_lens_data_with_modified_image(self, lens_data):
+
+        lens_data = lens_data.new_lens_data_with_modified_image(modified_image=8.0 * np.ones((4, 4)))
+
+        assert (lens_data.image == 8.0*np.ones((4,4))).all()
+        assert (lens_data.image_1d == 8.0*np.ones(4)).all()
 
 @pytest.fixture(name="lens_data_hyper")
 def make_lens_hyper_image(ccd, mask):
