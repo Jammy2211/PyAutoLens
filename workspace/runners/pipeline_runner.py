@@ -26,8 +26,11 @@ conf.instance = conf.Config(config_path=path+'config', output_path=path+'output'
 # It is convenient to specify the lens name as a string, so that if the pipeline is applied to multiple images we
 # don't have to change all of the path entries in the load_ccd_data_from_fits function below.
 
-lens_name = 'slacs1430+4105' # Example HST imaging of the SLACS strong lens slacs1430+4150.
-pixel_scale = 0.03
+lens_name = 'lens_light_and_x1_source' # An example simulated image with lens light emission and a source galaxy.
+pixel_scale = 0.1
+
+# lens_name = 'slacs1430+4105' # Example HST imaging of the SLACS strong lens slacs1430+4150.
+# pixel_scale = 0.03
 
 ccd_data = ccd.load_ccd_data_from_fits(image_path=path + '/data/example/' + lens_name + '/image.fits',
                                        psf_path=path+'/data/example/'+lens_name+'/psf.fits',
@@ -51,7 +54,7 @@ ccd_plotters.plot_ccd_subplot(ccd_data=ccd_data)
 # pixel-grid. To run this pipeline on our data, simply comment out / delete the lines above (lines 47-51) which run
 # the parametric souorce pipeline, and uncomment the lines below.
 
-from pipelines.examples import lens_light_and_source_inversion
+from workspace.pipelines.examples import lens_light_and_source_inversion
 
 pipeline = lens_light_and_source_inversion.make_pipeline(pipeline_path='example/' + lens_name + '/')
 

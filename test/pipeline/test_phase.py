@@ -322,12 +322,13 @@ class TestPhase(object):
         class MyPhase(ph.PhaseImaging):
             def modify_image(self, image, previous_results):
                 assert ccd_data.image.shape == image.shape
-                image[0, 0] = 1.0
+                image = 20.0*np.ones(shape=shape)
                 return image
 
         phase = MyPhase(phase_name='phase')
         analysis = phase.make_analysis(data=ccd_data)
-        assert analysis.lens_data.image[0, 0] == 1.0
+        assert (analysis.lens_data.image == 20.0*np.ones(shape=shape)).all()
+        assert (analysis.lens_data.image_1d == 20.0*np.ones(shape=32)).all()
 
     def test__tracer_for_instance__includes_cosmology(self, ccd_data):
         lens_galaxy = g.Galaxy()

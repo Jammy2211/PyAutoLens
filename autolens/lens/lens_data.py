@@ -51,27 +51,39 @@ class LensData(object):
         self.sub_grid_size = sub_grid_size
 
         if image_psf_shape is None:
-            image_psf_shape = self.psf.shape
+            self.image_psf_shape = self.psf.shape
+        else:
+            self.image_psf_shape = image_psf_shape
 
         self.convolver_image = convolution.ConvolverImage(mask=self.mask,
-                                                          blurring_mask=mask.blurring_mask_for_psf_shape(psf_shape=image_psf_shape),
-                                                          psf=self.psf.resized_scaled_array_from_array(new_shape=image_psf_shape))
+                                        blurring_mask=mask.blurring_mask_for_psf_shape(psf_shape=self.image_psf_shape),
+                                        psf=self.psf.resized_scaled_array_from_array(new_shape=self.image_psf_shape))
 
         if mapping_matrix_psf_shape is None:
-            mapping_matrix_psf_shape = self.psf.shape
+            self.mapping_matrix_psf_shape = self.psf.shape
+        else:
+            self.mapping_matrix_psf_shape = mapping_matrix_psf_shape
 
         self.convolver_mapping_matrix = inversion_convolution.ConvolverMappingMatrix(self.mask,
-                      self.psf.resized_scaled_array_from_array(mapping_matrix_psf_shape))
+                      self.psf.resized_scaled_array_from_array(new_shape=self.mapping_matrix_psf_shape))
 
         self.grid_stack = grids.GridStack.grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=mask,
-                                              sub_grid_size=sub_grid_size, psf_shape=image_psf_shape)
+                                              sub_grid_size=sub_grid_size, psf_shape=self.image_psf_shape)
 
         self.padded_grid_stack = grids.GridStack.padded_grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=mask,
-                                                            sub_grid_size=sub_grid_size, psf_shape=image_psf_shape)
+                                                            sub_grid_size=sub_grid_size, psf_shape=self.image_psf_shape)
 
         self.border = grids.RegularGridBorder.from_mask(mask=mask)
 
         self.positions = positions
+
+    def new_lens_data_with_modified_image(self, modified_image):
+
+        ccd_data_with_modified_image = self.ccd_data.new_ccd_data_with_modified_image(modified_image=modified_image)
+
+        return LensData(ccd_data=ccd_data_with_modified_image, mask=self.mask, sub_grid_size=self.sub_grid_size,
+                        image_psf_shape=self.image_psf_shape, mapping_matrix_psf_shape=self.mapping_matrix_psf_shape,
+                        positions=self.positions)
 
     @property
     def map_to_scaled_array(self):

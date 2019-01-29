@@ -133,8 +133,8 @@ def make_pipeline(pipeline_path=''):
 
         def pass_priors(self, previous_results):
 
-            self.lens_galaxies.lens.mass = previous_results[1].constant.lens.mass
-            self.lens_galaxies.lens.shear = previous_results[1].constant.lens.shear
+            self.lens_galaxies.lens.mass = previous_results[2].constant.lens.mass
+            self.lens_galaxies.lens.shear = previous_results[2].constant.lens.shear
 
     phase4 = InversionPhase(lens_galaxies=dict(lens=gm.GalaxyModel(mass=mp.EllipticalIsothermal,
                                                                    shear=mp.ExternalShear)),

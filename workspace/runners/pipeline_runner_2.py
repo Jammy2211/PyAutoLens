@@ -41,7 +41,7 @@ ccd_plotters.plot_ccd_subplot(ccd_data=ccd_data)
 # profile. Checkout _workspace/pipelines/examples/lens_light_and_x1_source_parametric.py_' for a full description of
 # the pipeline.
 
-from pipelines.examples import no_lens_light_and_source_inversion
+from workspace.pipelines.examples import no_lens_light_and_source_inversion
 
 pipeline = no_lens_light_and_source_inversion.make_pipeline(pipeline_path='example/' + lens_name + '/')
 

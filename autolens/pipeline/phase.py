@@ -480,7 +480,7 @@ class PhaseImaging(Phase):
             An lens object that the non-linear optimizer calls to determine the fit of a set of values
         """
         if mask is None:
-            mask = self.mask_function(data.image)
+            mask = self.mask_function(image=data.image)
 
         if self.use_positions and positions is not None:
             positions = list(map(lambda position_set: np.asarray(position_set), positions))
@@ -494,7 +494,8 @@ class PhaseImaging(Phase):
         lens_data = li.LensData(ccd_data=data, mask=mask, sub_grid_size=self.sub_grid_size,
                                 image_psf_shape=self.image_psf_shape, positions=positions)
 
-        lens_data.image = self.modify_image(image=lens_data.image, previous_results=previous_results)
+        modified_image = self.modify_image(image=lens_data.image, previous_results=previous_results)
+        lens_data = lens_data.new_lens_data_with_modified_image(modified_image=modified_image)
 
         self.pass_priors(previous_results)
 

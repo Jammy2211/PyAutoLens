@@ -1,5 +1,7 @@
 from autolens.data.array.plotters import array_plotters
 
+import numpy as np
+
 def plot_image(fit, mask=None, positions=None, image_plane_pix_grid=None, as_subplot=False,
                units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
                cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
@@ -18,8 +20,10 @@ def plot_image(fit, mask=None, positions=None, image_plane_pix_grid=None, as_sub
     plot_origin : True
         If true, the origin of the datas's coordinate system is plotted as a 'x'.
     """
-    array_plotters.plot_array(array=fit.image, mask=mask, grid=image_plane_pix_grid, positions=positions,
-                              as_subplot=as_subplot,
+    masked_image = np.add(fit.image, 0.0, out=np.zeros_like(fit.image), where=np.asarray(mask) == 0)
+
+    array_plotters.plot_array(masked_image, mask=mask, grid=image_plane_pix_grid,
+                              positions=positions, as_subplot=as_subplot,
                               units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
                               cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max,
                               linthresh=linthresh, linscale=linscale,

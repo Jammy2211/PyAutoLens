@@ -194,7 +194,7 @@ class CCDData(object):
                                             psf=psf, background_sky_map=background_sky_map,
                                             add_noise=True, seed=seed)
 
-    def new_ccd_with_resized_arrays(self, new_shape, new_centre_pixels=None, new_centre_arc_seconds=None):
+    def new_ccd_data_with_resized_arrays(self, new_shape, new_centre_pixels=None, new_centre_arc_seconds=None):
         
         image = self.resize_scaled_array(scaled_array=self.image, new_shape=new_shape, new_centre_pixels=new_centre_pixels,
                                          new_centre_arc_seconds=new_centre_arc_seconds)
@@ -223,7 +223,7 @@ class CCDData(object):
                        background_noise_map=background_noise_map, poisson_noise_map=poisson_noise_map,
                        exposure_time_map=exposure_time_map, background_sky_map=background_sky_map)
 
-    def new_ccd_with_resized_psf(self, new_shape):
+    def new_ccd_data_with_resized_psf(self, new_shape):
         psf = self.resize_scaled_array(scaled_array=self.psf, new_shape=new_shape)
         return CCDData(image=self.image, pixel_scale=self.pixel_scale, psf=psf, noise_map=self.noise_map,
                        background_noise_map=self.background_noise_map, poisson_noise_map=self.poisson_noise_map,
@@ -237,7 +237,13 @@ class CCDData(object):
         else:
             return None
 
-    def new_ccd_with_poisson_noise_added(self, seed=-1):
+    def new_ccd_data_with_modified_image(self, modified_image):
+
+        return CCDData(image=modified_image, pixel_scale=self.pixel_scale, psf=self.psf,
+                       noise_map=self.noise_map, background_noise_map=self.background_noise_map,
+                       poisson_noise_map=self.poisson_noise_map)
+
+    def new_ccd_data_with_poisson_noise_added(self, seed=-1):
 
         image_with_sky = self.image + self.background_sky_map
 
@@ -250,7 +256,7 @@ class CCDData(object):
                        noise_map=self.noise_map, background_noise_map=self.background_noise_map,
                        poisson_noise_map=self.poisson_noise_map)
 
-    def new_ccd_converted_from_electrons(self):
+    def new_ccd_data_converted_from_electrons(self):
 
         image = self.array_from_counts_to_electrons_per_second(array=self.image)
         noise_map = self.array_from_counts_to_electrons_per_second(array=self.noise_map)
@@ -262,7 +268,7 @@ class CCDData(object):
                        background_noise_map=background_noise_map, poisson_noise_map=poisson_noise_map,
                        exposure_time_map=self.exposure_time_map, background_sky_map=background_sky_map)
 
-    def new_ccd_converted_from_adus(self, gain):
+    def new_ccd_data_converted_from_adus(self, gain):
 
         image = self.array_from_adus_to_electrons_per_second(array=self.image, gain=gain)
         noise_map = self.array_from_adus_to_electrons_per_second(array=self.noise_map, gain=gain)
@@ -797,17 +803,17 @@ def load_ccd_data_from_fits(image_path, pixel_scale, image_hdu=0,
                     exposure_time_map=exposure_time_map, background_sky_map=background_sky_map, gain=gain)
 
     if resized_ccd_shape is not None:
-        image = image.new_ccd_with_resized_arrays(new_shape=resized_ccd_shape,
-                                                  new_centre_pixels=resized_ccd_origin_pixels,
-                                                  new_centre_arc_seconds=resized_ccd_origin_arc_seconds)
+        image = image.new_ccd_data_with_resized_arrays(new_shape=resized_ccd_shape,
+                                                       new_centre_pixels=resized_ccd_origin_pixels,
+                                                       new_centre_arc_seconds=resized_ccd_origin_arc_seconds)
 
     if resized_psf_shape is not None:
-        image = image.new_ccd_with_resized_psf(new_shape=resized_psf_shape)
+        image = image.new_ccd_data_with_resized_psf(new_shape=resized_psf_shape)
 
     if convert_from_electrons:
-        image = image.new_ccd_converted_from_electrons()
+        image = image.new_ccd_data_converted_from_electrons()
     elif convert_from_adus:
-        image = image.new_ccd_converted_from_adus(gain=gain)
+        image = image.new_ccd_data_converted_from_adus(gain=gain)
 
     return image
 
