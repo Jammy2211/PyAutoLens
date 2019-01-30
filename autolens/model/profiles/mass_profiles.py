@@ -356,7 +356,6 @@ class EllipticalPowerLaw(EllipticalCoredPowerLaw):
         eta_u = np.sqrt((u * ((x ** 2) + (y ** 2 / (1 - (1 - axis_ratio ** 2) * u)))))
         return einstein_radius_rescaled * eta_u ** (-(slope - 1)) / ((1 - (1 - axis_ratio ** 2) * u) ** (npow + 0.5))
 
-
 class SphericalPowerLaw(EllipticalPowerLaw):
 
     def __init__(self, centre=(0.0, 0.0), einstein_radius=1.0, slope=2.0):

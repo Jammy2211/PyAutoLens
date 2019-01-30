@@ -393,8 +393,8 @@ class PhasePositions(AbstractPhase):
 class PhaseImaging(Phase):
 
     def __init__(self, phase_name, optimizer_class=non_linear.MultiNest, sub_grid_size=2, image_psf_shape=None,
-                 pixelization_psf_shape=None, use_positions=False, mask_function=default_mask_function,
-                 cosmology=cosmo.Planck15, auto_link_priors=False):
+                 pixelization_psf_shape=None, use_positions=False, mask_function=None, cosmology=cosmo.Planck15,
+                 auto_link_priors=False):
 
         """
 
@@ -479,7 +479,10 @@ class PhaseImaging(Phase):
         lens : Analysis
             An lens object that the non-linear optimizer calls to determine the fit of a set of values
         """
-        if mask is None:
+
+        if mask is None and self.mask_function is None:
+            mask = default_mask_function(image=data.image)
+        elif mask is None and self.mask_function is not None:
             mask = self.mask_function(image=data.image)
 
         if self.use_positions and positions is not None:
@@ -487,9 +490,8 @@ class PhaseImaging(Phase):
         elif not self.use_positions:
             positions = None
         elif self.use_positions and positions is None:
-            warnings.warn('You have specified for a phase to use positions, but not input positions too the '
-                          'pipeline when you ran it. PyAutoLens will run the analysis without using the positions '
-                          'to resample mass models.')
+            raise exc.PhaseException('You have specified for a phase to use positions, but not input positions to the '
+                                     'pipeline when you ran it.')
 
         lens_data = li.LensData(ccd_data=data, mask=mask, sub_grid_size=self.sub_grid_size,
                                 image_psf_shape=self.image_psf_shape, positions=positions)
@@ -499,9 +501,29 @@ class PhaseImaging(Phase):
 
         self.pass_priors(previous_results)
 
+        self.output_phase_info()
+
         analysis = self.__class__.Analysis(lens_data=lens_data, cosmology=self.cosmology,
                                            phase_name=self.phase_name, previous_results=previous_results)
         return analysis
+
+    def output_phase_info(self):
+
+        file_phase_info = "{}/{}/{}".format(conf.instance.output_path, self.phase_name, 'phase.info')
+
+        with open(file_phase_info, 'w') as phase_info:
+
+            phase_info.write('Optimizer = {} \n'.format(type(self.optimizer).__name__))
+            phase_info.write('Sub-grid size = {} \n'.format(self.sub_grid_size))
+            phase_info.write('Image PSF shape = {} \n'.format(self.image_psf_shape))
+            phase_info.write('Pixelization PSF shape = {} \n'.format(self.pixelization_psf_shape))
+            phase_info.write('Use positions = {} \n'.format(self.use_positions))
+            position_threshold = conf.instance.general.get('positions', 'position_threshold', float)
+            phase_info.write('Positions Threshold = {} \n'.format(position_threshold))
+            phase_info.write('Cosmology = {} \n'.format(self.cosmology))
+            phase_info.write('Auto Link Priors = {} \n'.format(self.auto_link_priors))
+
+            phase_info.close()
 
     # noinspection PyAbstractClass
     class Analysis(Phase.Analysis):
@@ -626,7 +648,7 @@ class LensPlanePhase(PhaseImaging):
         return [self.lens_galaxies]
 
     def __init__(self, phase_name, lens_galaxies=None, optimizer_class=non_linear.MultiNest, sub_grid_size=2,
-                 image_psf_shape=None, mask_function=default_mask_function, cosmology=cosmo.Planck15,
+                 image_psf_shape=None, mask_function=None, cosmology=cosmo.Planck15,
                  auto_link_priors=False):
         super(LensPlanePhase, self).__init__(optimizer_class=optimizer_class,
                                              sub_grid_size=sub_grid_size,
@@ -686,7 +708,7 @@ class LensSourcePlanePhase(PhaseImaging):
         return [self.lens_galaxies, self.source_galaxies]
 
     def __init__(self, phase_name, lens_galaxies=None, source_galaxies=None, optimizer_class=non_linear.MultiNest,
-                 sub_grid_size=2, image_psf_shape=None, use_positions=False, mask_function=default_mask_function,
+                 sub_grid_size=2, image_psf_shape=None, use_positions=False, mask_function=None,
                  cosmology=cosmo.Planck15, auto_link_priors=False):
         """
         A phase with a simple source/lens model
@@ -770,7 +792,7 @@ class MultiPlanePhase(PhaseImaging):
         return [self.galaxies]
 
     def __init__(self, phase_name, galaxies=None, optimizer_class=non_linear.MultiNest,
-                 sub_grid_size=2, image_psf_shape=None, use_positions=False, mask_function=default_mask_function,
+                 sub_grid_size=2, image_psf_shape=None, use_positions=False, mask_function=None,
                  cosmology=cosmo.Planck15, auto_link_priors=False):
         """
         A phase with a simple source/lens model
@@ -822,7 +844,7 @@ class GalaxyFitPhase(AbstractPhase):
     def __init__(self, phase_name, use_intensities=False, use_surface_density=False, use_potential=False,
                  use_deflections=False,
                  galaxy=None, optimizer_class=non_linear.MultiNest, sub_grid_size=2,
-                 mask_function=default_mask_function, cosmology=cosmo.Planck15):
+                 mask_function=None, cosmology=cosmo.Planck15):
         """
         A phase in an lens pipeline. Uses the set non_linear optimizer to try to fit models and hyper
         passed to it.
@@ -1019,7 +1041,7 @@ class SensitivityPhase(PhaseImaging):
     sensitive_galaxies = PhasePropertyCollection("sensitive_galaxies")
 
     def __init__(self, phase_name, lens_galaxies=None, source_galaxies=None, sensitive_galaxies=None,
-                 optimizer_class=non_linear.MultiNest, sub_grid_size=2, mask_function=default_mask_function,
+                 optimizer_class=non_linear.MultiNest, sub_grid_size=2, mask_function=None,
                  cosmology=cosmo.Planck15):
         """
         A phase in an lens pipeline. Uses the set non_linear optimizer to try to fit models and hyper

@@ -9,6 +9,7 @@ from autofit.mapper import model_mapper as mm
 from autofit.mapper import prior
 from autofit.optimize import non_linear
 
+from autolens import exc
 from autolens.data import ccd
 from autolens.data.array import grids, mask as msk
 from autolens.data.array import scaled_array
@@ -90,7 +91,7 @@ def make_grids(lens_data):
 
 @pytest.fixture(name="phase")
 def make_phase():
-    return ph.LensSourcePlanePhase(optimizer_class=NLO, phase_name='test_phase')
+    return ph.LensSourcePlanePhase(optimizer_class=NLO, mask_function=ph.default_mask_function, phase_name='test_phase')
 
 
 @pytest.fixture(name="galaxy")
@@ -252,29 +253,81 @@ class TestPhase(object):
         assert analysis.lens_data.noise_map == lens_data.noise_map
 
     def test_make_analysis__mask_input_uses_mask__no_mask_uses_mask_function(self, phase, ccd_data):
+
+        # If an input mask is suppled, we should use this make.
+
         mask_input = msk.Mask.circular(shape=shape, pixel_scale=1, radius_arcsec=2.0)
 
         analysis = phase.make_analysis(data=ccd_data, mask=mask_input)
         assert (analysis.lens_data.mask == mask_input).all()
 
-        mask_default = ph.default_mask_function(image=ccd_data.image)
+        # If a mask function is suppled, we should use this mask, regardless of whether an input mask is supplied.
 
+        def mask_function(image):
+            return msk.Mask.circular(shape=image.shape, pixel_scale=1, radius_arcsec=1.4)
+
+        mask_from_function = mask_function(image=ccd_data.image)
+        phase.mask_function = mask_function
+        analysis = phase.make_analysis(data=ccd_data, mask=None)
+        assert (analysis.lens_data.mask == mask_from_function).all()
+
+        # If no mask is suppled, nor a mask function, we should use the default mask.
+
+        mask_default = ph.default_mask_function(image=ccd_data.image)
+        phase.mask_function = None
         analysis = phase.make_analysis(data=ccd_data, mask=None)
         assert (analysis.lens_data.mask == mask_default).all()
 
     def test_make_analysis__positions_are_input__are_used_in_analysis(self, phase, ccd_data):
+
+        # If use positions is true and positions are input, make the positions part of the lens data.
+
         phase.use_positions = True
 
         analysis = phase.make_analysis(data=ccd_data, positions=[[[1.0, 1.0], [2.0, 2.0]]])
         assert (analysis.lens_data.positions[0][0] == np.array([1.0, 1.0])).all()
         assert (analysis.lens_data.positions[0][1] == np.array([2.0, 2.0])).all()
 
-        analysis = phase.make_analysis(data=ccd_data)
-        assert analysis.lens_data.positions == None
+        # If use positions is true but no positions are supplied, raise an error
+
+        with pytest.raises(exc.PhaseException):
+           phase.make_analysis(data=ccd_data, positions=None)
+           phase.make_analysis(data=ccd_data)
+
+        # If use positions is False, positions should always be None.
 
         phase.use_positions = False
         analysis = phase.make_analysis(data=ccd_data, positions=[[[1.0, 1.0], [2.0, 2.0]]])
         assert analysis.lens_data.positions == None
+
+    def test__make_analysis__phase_info_is_made(self, phase, ccd_data):
+
+        analysis = phase.make_analysis(data=ccd_data)
+
+        file_phase_info = "{}/{}/{}".format(conf.instance.output_path, phase.phase_name, 'phase.info')
+
+        phase_info = open(file_phase_info, 'r')
+
+        optimizer = phase_info.readline()
+        sub_grid_size = phase_info.readline()
+        image_psf_shape = phase_info.readline()
+        pixelization_psf_shape = phase_info.readline()
+        use_positions = phase_info.readline()
+        positions_threshold = phase_info.readline()
+        cosmology = phase_info.readline()
+        auto_link_priors = phase_info.readline()
+
+        phase_info.close()
+
+        assert optimizer == 'Optimizer = NLO \n'
+        assert sub_grid_size == 'Sub-grid size = 2 \n'
+        assert image_psf_shape == 'Image PSF shape = None \n'
+        assert pixelization_psf_shape == 'Pixelization PSF shape = None \n'
+        assert use_positions == 'Use positions = False \n'
+        assert positions_threshold == 'Positions Threshold = 0.5 \n'
+        assert cosmology == 'Cosmology = FlatLambdaCDM(name="Planck15", H0=67.7 km / (Mpc s), Om0=0.307, Tcmb0=2.725 K, ' \
+                            'Neff=3.05, m_nu=[0.   0.   0.06] eV, Ob0=0.0486) \n'
+        assert auto_link_priors == 'Auto Link Priors = False \n'
 
     def test_fit(self, ccd_data):
         clean_images()
@@ -380,11 +433,13 @@ class TestPhase(object):
         assert padded_tracer.cosmology == cosmo.WMAP7
 
     def test__fit_figure_of_merit__matches_correct_fit_given_galaxy_profiles(self, ccd_data):
+
         lens_galaxy = g.Galaxy(light=lp.EllipticalSersic(intensity=0.1))
         source_galaxy = g.Galaxy(pixelization=pix.Rectangular(shape=(4, 4)),
                                  regularization=reg.Constant(coefficients=(1.0,)))
 
-        phase = ph.LensPlanePhase(lens_galaxies=[lens_galaxy], cosmology=cosmo.FLRW, phase_name='test_phase')
+        phase = ph.LensPlanePhase(lens_galaxies=[lens_galaxy], mask_function=ph.default_mask_function,
+                                  cosmology=cosmo.FLRW, phase_name='test_phase')
         analysis = phase.make_analysis(data=ccd_data)
         instance = phase.constant
         fit_figure_of_merit = analysis.fit(instance=instance)
@@ -397,7 +452,8 @@ class TestPhase(object):
         assert fit.likelihood == fit_figure_of_merit
 
         phase = ph.LensSourcePlanePhase(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
-                                        cosmology=cosmo.FLRW, phase_name='test_phase')
+                                        mask_function=ph.default_mask_function, cosmology=cosmo.FLRW,
+                                        phase_name='test_phase')
         analysis = phase.make_analysis(data=ccd_data)
         instance = phase.constant
         fit_figure_of_merit = analysis.fit(instance=instance)
@@ -559,7 +615,8 @@ class TestResult(object):
         source_galaxy = g.Galaxy(pixelization=pix.Rectangular(shape=(4, 4)),
                                  regularization=reg.Constant(coefficients=(1.0,)))
 
-        phase = ph.LensPlanePhase(lens_galaxies=[lens_galaxy], cosmology=cosmo.FLRW, phase_name='test_phase')
+        phase = ph.LensPlanePhase(lens_galaxies=[lens_galaxy], mask_function=ph.default_mask_function,
+                                  cosmology=cosmo.FLRW, phase_name='test_phase')
         analysis = phase.make_analysis(data=ccd_data)
         instance = phase.constant
         fit_figure_of_merit = analysis.fit(instance=instance)
@@ -572,7 +629,8 @@ class TestResult(object):
         assert fit.likelihood == fit_figure_of_merit
 
         phase = ph.LensSourcePlanePhase(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
-                                        cosmology=cosmo.FLRW, phase_name='test_phase')
+                                        mask_function=ph.default_mask_function, cosmology=cosmo.FLRW,
+                                        phase_name='test_phase')
         analysis = phase.make_analysis(data=ccd_data)
         instance = phase.constant
         fit_figure_of_merit = analysis.fit(instance=instance)

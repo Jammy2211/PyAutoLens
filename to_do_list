@@ -2,14 +2,12 @@ Hey, welcome to my PyAutoLens to-do. This should give you a sense of what we're 
 
 Let me know if you think anything is missing, or should be pushed up the to-do list ;)
 
+0) Deflection fitting for Qiuhan.
 0) position updating / thresholding.
-0) Quantitive output of lens model results (e.g. einstein mass, magnification)
-0) Output info on phase setup (positions, mask, psf shape, etc.)
-0) Sort out cosma scripts.
+0) Quantitive output of lens model results (e.g. einstein mass, magnification), include otf output
 0) Add feature to remove astropy bug.
 0) Add colorbar / features to pixelization plots, fix rectangular plot bug.
 1) Write Adaptive Grid howtolens.
-2) Power-law Analytic Deflections
 3) Magnification + Caustic + Critical curves
 4) CCD loading sanity checks
 5) Interpolation Scheme for fast deflection angles
