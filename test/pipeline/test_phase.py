@@ -254,7 +254,9 @@ class TestPhase(object):
 
     def test_make_analysis__mask_input_uses_mask__no_mask_uses_mask_function(self, phase, ccd_data):
 
-        # If an input mask is suppled, we should use this make.
+        # If an input mask is supplied and there is no mask function, we use mask input.
+
+        phase.mask_function = None
 
         mask_input = msk.Mask.circular(shape=shape, pixel_scale=1, radius_arcsec=2.0)
 
@@ -268,7 +270,10 @@ class TestPhase(object):
 
         mask_from_function = mask_function(image=ccd_data.image)
         phase.mask_function = mask_function
+
         analysis = phase.make_analysis(data=ccd_data, mask=None)
+        assert (analysis.lens_data.mask == mask_from_function).all()
+        analysis = phase.make_analysis(data=ccd_data, mask=mask_input)
         assert (analysis.lens_data.mask == mask_from_function).all()
 
         # If no mask is suppled, nor a mask function, we should use the default mask.

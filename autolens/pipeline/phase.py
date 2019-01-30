@@ -480,10 +480,10 @@ class PhaseImaging(Phase):
             An lens object that the non-linear optimizer calls to determine the fit of a set of values
         """
 
-        if mask is None and self.mask_function is None:
-            mask = default_mask_function(image=data.image)
-        elif mask is None and self.mask_function is not None:
+        if self.mask_function is not None:
             mask = self.mask_function(image=data.image)
+        elif mask is None and self.mask_function is None:
+            mask = default_mask_function(image=data.image)
 
         if self.use_positions and positions is not None:
             positions = list(map(lambda position_set: np.asarray(position_set), positions))
