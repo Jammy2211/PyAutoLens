@@ -9,6 +9,7 @@ from autolens import exc
 from autolens.data.array import grids
 from autolens.lens.util import ray_tracing_util
 from autolens.lens import plane as pl
+from autolens.model.profiles import mass_profiles as mp
 from autolens.model.inversion import pixelizations as pix
 
 def check_tracer_for_redshifts(func):
@@ -491,6 +492,17 @@ class TracerImageSourcePlanes(Tracer):
 
         super(TracerImageSourcePlanes, self).__init__(planes=[image_plane, source_plane], cosmology=cosmology)
 
+    @property
+    def einstein_mass_of_lens_galaxy(self):
+
+        if self.cosmology is not None and self.all_planes_have_redshifts:
+            if len(self.galaxies_in_planes[0]) == 1:
+                if len(self.galaxies_in_planes[0][0].mass_profiles) == 1:
+                    if isinstance(self.galaxies_in_planes[0][0].mass_profiles[0], mp.EllipticalCoredPowerLaw):
+                        einstein_radius = self.galaxies_in_planes[0][0].mass_profiles[0].einstein_radius
+                        return self.masses_of_image_plane_galaxies_within_circles(radius=einstein_radius)[0]
+
+        return None
 
 class TracerMultiPlanes(Tracer):
 
