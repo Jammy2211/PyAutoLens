@@ -16,12 +16,12 @@ from autolens.lens import ray_tracing
 
 @pytest.fixture(name='general_config')
 def make_general_config():
-    general_config_path = "{}/../../make_files/configs/plotting/".format(os.path.dirname(os.path.realpath(__file__)))
+    general_config_path = "{}/../../test_files/configs/plotting/".format(os.path.dirname(os.path.realpath(__file__)))
     conf.instance.general = conf.NamedConfig(general_config_path + "general.ini")
 
 @pytest.fixture(name='lens_plotter_util_path')
 def make_lens_plotter_util_path_setup():
-    lens_plotter_util_path = "{}/../../make_files/plotting/lens_plotter_util/".format(os.path.dirname(os.path.realpath(__file__)))
+    lens_plotter_util_path = "{}/../../test_files/plotting/lens_plotter_util/".format(os.path.dirname(os.path.realpath(__file__)))
 
     if os.path.exists(lens_plotter_util_path):
         shutil.rmtree(lens_plotter_util_path)
@@ -104,38 +104,38 @@ def make_fit_hyper(lens_hyper_image, hyper):
                                           image_plane_grid_stack=lens_hyper_image.grid_stack)
     return lens_fit.fit_lens_data_with_tracer(lens_data=lens_hyper_image, tracer=tracer)
 
-def make__image_is_output(fit, lens_plotter_util_path):
+def test__image_is_output(fit, lens_plotter_util_path):
 
     lens_plotter_util.plot_image(fit=fit, output_path=lens_plotter_util_path, output_format='png')
     assert os.path.isfile(path=lens_plotter_util_path + 'fit_image.png')
     os.remove(path=lens_plotter_util_path + 'fit_image.png')
 
-def make__noise_map_is_output(fit, lens_plotter_util_path):
+def test__noise_map_is_output(fit, lens_plotter_util_path):
 
     lens_plotter_util.plot_noise_map(fit=fit, output_path=lens_plotter_util_path,
                                      output_format='png')
     assert os.path.isfile(path=lens_plotter_util_path + 'fit_noise_map.png')
     os.remove(path=lens_plotter_util_path + 'fit_noise_map.png')
 
-def make__model_image_is_output(fit, lens_plotter_util_path):
+def test__model_image_is_output(fit, lens_plotter_util_path):
     lens_plotter_util.plot_model_data(fit=fit, output_path=lens_plotter_util_path,
                                       output_format='png')
     assert os.path.isfile(path=lens_plotter_util_path + 'fit_model_image.png')
     os.remove(path=lens_plotter_util_path + 'fit_model_image.png')
 
-def make__residual_map_is_output(fit, lens_plotter_util_path):
+def test__residual_map_is_output(fit, lens_plotter_util_path):
 
     lens_plotter_util.plot_residual_map(fit=fit, output_path=lens_plotter_util_path,
                                         output_format='png')
     assert os.path.isfile(path=lens_plotter_util_path + 'fit_residual_map.png')
     os.remove(path=lens_plotter_util_path + 'fit_residual_map.png')
 
-def make__chi_squared_map_is_output(fit, lens_plotter_util_path):
+def test__chi_squared_map_is_output(fit, lens_plotter_util_path):
     lens_plotter_util.plot_chi_squared_map(fit=fit, output_path=lens_plotter_util_path, output_format='png')
     assert os.path.isfile(path=lens_plotter_util_path + 'fit_chi_squared_map.png')
     os.remove(path=lens_plotter_util_path + 'fit_chi_squared_map.png')
     
-def make__contribution_map_is_output(fit_hyper, lens_plotter_util_path):
+def test__contribution_map_is_output(fit_hyper, lens_plotter_util_path):
 
     lens_plotter_util.plot_contribution_maps(fit=fit_hyper, output_path=lens_plotter_util_path,
                                              output_format='png')

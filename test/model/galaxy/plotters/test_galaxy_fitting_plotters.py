@@ -32,33 +32,41 @@ def make_galaxy_fitting_plotter_setup():
 def make_galaxy():
     return g.Galaxy(light=lp.SphericalSersic(intensity=1.0), mass=mp.SphericalIsothermal(einstein_radius=1.0))
 
-@pytest.fixture(name='array')
-def make_array():
+@pytest.fixture(name='image')
+def make_image():
+    return scaled_array.ScaledSquarePixelArray(array=np.ones((3, 3)), pixel_scale=3.0)
+
+@pytest.fixture(name='noise_map')
+def make_noise_map():
     return scaled_array.ScaledSquarePixelArray(array=np.ones((3, 3)), pixel_scale=3.0)
 
 @pytest.fixture(name='mask')
 def make_mask():
     return msk.Mask.circular(shape=((3,3)), pixel_scale=0.1, radius_arcsec=0.1)
 
+@pytest.fixture(name='galaxy_data')
+def make_galaxy_data(image, noise_map):
+    return gd.GalaxyData(image=image, noise_map=noise_map, pixel_scale=3.0)
+
 @pytest.fixture(name='galaxy_data_intensities')
-def make_galaxy_data_intensities(array, mask):
-    return gd.GalaxyData(array=array, noise_map=np.ones((3,3)), mask=mask, sub_grid_size=2, use_intensities=True)
+def make_galaxy_data_intensities(galaxy_data, mask):
+    return gd.GalaxyFitData(galaxy_data=galaxy_data, mask=mask, sub_grid_size=2, use_intensities=True)
 
 @pytest.fixture(name='galaxy_data_surface_density')
-def make_galaxy_data_surface_density(array, mask):
-    return gd.GalaxyData(array=array, noise_map=np.ones((3,3)), mask=mask, sub_grid_size=2, use_surface_density=True)
+def make_galaxy_data_surface_density(galaxy_data, mask):
+    return gd.GalaxyFitData(galaxy_data=galaxy_data, mask=mask, sub_grid_size=2, use_surface_density=True)
 
 @pytest.fixture(name='galaxy_data_potential')
-def make_galaxy_data_potential(array, mask):
-    return gd.GalaxyData(array=array, noise_map=np.ones((3,3)), mask=mask, sub_grid_size=2, use_potential=True)
+def make_galaxy_data_potential(galaxy_data, mask):
+    return gd.GalaxyFitData(galaxy_data=galaxy_data, mask=mask, sub_grid_size=2, use_potential=True)
 
 @pytest.fixture(name='galaxy_data_deflections_y')
-def make_galaxy_data_deflections_y(array, mask):
-    return gd.GalaxyData(array=array, noise_map=np.ones((3,3)), mask=mask, sub_grid_size=2, use_deflections_y=True)
+def make_galaxy_data_deflections_y(galaxy_data, mask):
+    return gd.GalaxyFitData(galaxy_data=galaxy_data, mask=mask, sub_grid_size=2, use_deflections_y=True)
 
 @pytest.fixture(name='galaxy_data_deflections_x')
-def make_galaxy_data_deflections_x(array, mask):
-    return gd.GalaxyData(array=array, noise_map=np.ones((3,3)), mask=mask, sub_grid_size=2, use_deflections_x=True)
+def make_galaxy_data_deflections_x(galaxy_data, mask):
+    return gd.GalaxyFitData(galaxy_data=galaxy_data, mask=mask, sub_grid_size=2, use_deflections_x=True)
 
 @pytest.fixture(name='fit_intensities')
 def make_galaxy_fitting_intensities(galaxy_data_intensities, galaxy):
