@@ -9,7 +9,7 @@ def plot_image(image, plot_origin=True, mask=None, should_plot_border=False, pos
                title='Image', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
                mask_pointsize=10, position_pointsize=30, grid_pointsize=1,
                output_path=None, output_format='show', output_filename='image'):
-    """Plot the observed data of the ccd data.
+    """Plot the observed image of the ccd data.
 
     Set *autolens.data.array.plotters.array_plotters* for a description of all innput parameters not described below.
 

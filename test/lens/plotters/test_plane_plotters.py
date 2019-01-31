@@ -13,22 +13,12 @@ from autolens.lens import plane as pl
 
 
 @pytest.fixture(name='general_config')
-def test_general_config():
+def make_general_config():
     general_config_path = "{}/../../test_files/configs/plotting/".format(os.path.dirname(os.path.realpath(__file__)))
     conf.instance.general = conf.NamedConfig(general_config_path + "general.ini")
 
-
-@pytest.fixture(name='positions')
-def test_positions():
-    positions = [[[0.1, 0.1], [0.2, 0.2]], [[0.3, 0.3]]]
-    return list(map(lambda position_set: np.asarray(position_set), positions))
-
-@pytest.fixture(name='mask')
-def test_mask():
-    return msk.Mask.circular(shape=((3,3)), pixel_scale=0.1, radius_arcsec=0.1)
-
 @pytest.fixture(name='plane_plotter_path')
-def test_plane_plotter_setup():
+def make_plane_plotter_setup():
     plane_plotter_path = "{}/../../test_files/plotting/plane/".format(os.path.dirname(os.path.realpath(__file__)))
 
     if os.path.exists(plane_plotter_path):
@@ -38,23 +28,32 @@ def test_plane_plotter_setup():
 
     return plane_plotter_path
 
+@pytest.fixture(name='positions')
+def make_positions():
+    positions = [[[0.1, 0.1], [0.2, 0.2]], [[0.3, 0.3]]]
+    return list(map(lambda position_set: np.asarray(position_set), positions))
+
+@pytest.fixture(name='mask')
+def make_mask():
+    return msk.Mask.circular(shape=((3,3)), pixel_scale=0.1, radius_arcsec=0.1)
+
 
 @pytest.fixture(name='galaxy_light')
-def test_galaxy_light():
+def make_galaxy_light():
     return g.Galaxy(light=lp.EllipticalSersic(intensity=1.0))
 
 
 @pytest.fixture(name='galaxy_mass')
-def test_galaxy_mass():
+def make_galaxy_mass():
     return g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=1.0))
 
 
 @pytest.fixture(name='grid_stack')
-def test_grid_stack():
+def make_grid_stack():
     return grids.GridStack.from_shape_pixel_scale_and_sub_grid_size(shape=(100, 100), pixel_scale=0.05, sub_grid_size=2)
 
 @pytest.fixture(name='plane')
-def test_plane(galaxy_light, grid_stack):
+def make_plane(galaxy_light, grid_stack):
     return pl.Plane(galaxies=[galaxy_light], grid_stack=grid_stack)
 
 

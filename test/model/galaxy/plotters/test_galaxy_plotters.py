@@ -11,13 +11,13 @@ from autolens.model.galaxy import galaxy as g
 
 
 @pytest.fixture(name='general_config')
-def test_general_config():
+def make_general_config():
     general_config_path = "{}/../../../test_files/configs/plotting/".format(os.path.dirname(os.path.realpath(__file__)))
     conf.instance.general = conf.NamedConfig(general_config_path + "general.ini")
 
 
 @pytest.fixture(name='galaxy_plotter_path')
-def test_galaxy_plotter_setup():
+def make_galaxy_plotter_setup():
     galaxy_plotter_path = "{}/../../../test_files/plotting/model_galaxy/".format(os.path.dirname(os.path.realpath(__file__)))
 
     if os.path.exists(galaxy_plotter_path):
@@ -29,17 +29,17 @@ def test_galaxy_plotter_setup():
 
 
 @pytest.fixture(name='galaxy_light')
-def test_galaxy_light():
+def make_galaxy_light():
     return g.Galaxy(light=lp.EllipticalSersic(intensity=1.0))
 
 
 @pytest.fixture(name='galaxy_mass')
-def test_galaxy_mass():
+def make_galaxy_mass():
     return g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=1.0))
 
 
 @pytest.fixture(name='grid_stack')
-def test_grids():
+def make_grid_stack():
     return grids.GridStack.from_shape_pixel_scale_and_sub_grid_size(shape=(100, 100), pixel_scale=0.05, sub_grid_size=2)
 
 
