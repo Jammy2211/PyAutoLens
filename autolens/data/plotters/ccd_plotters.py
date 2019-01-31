@@ -2,7 +2,7 @@ from matplotlib import pyplot as plt
 
 from autofit import conf
 from autolens.data.plotters import data_plotters
-from autolens.data.array.plotters import plotter_util, array_plotters
+from autolens.data.array.plotters import plotter_util
 
 
 def plot_ccd_subplot(ccd_data, plot_origin=True, mask=None, should_plot_border=False, positions=None,
