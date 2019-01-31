@@ -515,6 +515,30 @@ class TestAbstractTracer(object):
             assert tracer.regularizations_of_planes[0].value == 3
             assert tracer.regularizations_of_planes[1].value == 4
 
+    class TestCosmology:
+
+        def test__2_planes__z01_and_z1(self, grid_stack):
+
+            g0 = g.Galaxy(redshift=0.1)
+            g1 = g.Galaxy(redshift=1.0)
+
+            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g1],
+                                                         image_plane_grid_stack=grid_stack,
+                                                         cosmology=cosmo.Planck15)
+
+            assert tracer.image_plane.arcsec_per_kpc_proper == pytest.approx(0.525060, 1e-5)
+            assert tracer.image_plane.kpc_per_arcsec_proper == pytest.approx(1.904544, 1e-5)
+            assert tracer.image_plane.angular_diameter_distance_to_earth == pytest.approx(392840, 1e-5)
+
+            assert tracer.source_plane.arcsec_per_kpc_proper == pytest.approx(0.1214785, 1e-5)
+            assert tracer.source_plane.kpc_per_arcsec_proper == pytest.approx(8.231907, 1e-5)
+            assert tracer.source_plane.angular_diameter_distance_to_earth == pytest.approx(1697952, 1e-5)
+
+            assert tracer.angular_diameter_distance_from_image_to_source_plane == pytest.approx(1481890.4, 1e-5)
+
+            assert tracer.critical_density_kpc == pytest.approx(4.85e9, 1e-2)
+            assert tracer.critical_density_arcsec == pytest.approx(17593241668, 1e-2)
+
     class TestGalaxyLists:
 
         def test__galaxy_list__comes_in_plane_redshift_order(self, grid_stack):
@@ -718,70 +742,6 @@ class TestAbstractTracer(object):
 
             assert (traced_grid_stack_manual.regular == traced_grid).all()
 
-
-
-
-class TestTracerImagePlane(object):
-
-    class TestImagePlaneImage:
-
-        def test__1_plane__single_plane_tracer(self, grid_stack):
-
-            g0 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=1.0))
-            g1 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=2.0))
-            g2 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=3.0))
-
-            image_plane = pl.Plane(galaxies=[g0, g1, g2], grid_stack=grid_stack, compute_deflections=True)
-
-            tracer = ray_tracing.TracerImagePlane(lens_galaxies=[g0, g1, g2], image_plane_grid_stack=grid_stack)
-
-            assert (tracer.image_plane_image_1d == image_plane.image_plane_image_1d).all()
-
-            image_plane_image_2d = grid_stack.regular.scaled_array_from_array_1d(image_plane.image_plane_image_1d)
-            assert image_plane_image_2d.shape == (3, 4)
-            assert (image_plane_image_2d == tracer.image_plane_image).all()
-
-    class TestImagePlaneBlurringImages:
-
-        def test__1_plane__single_plane_tracer(self, grid_stack):
-
-            g0 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=1.0))
-            g1 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=2.0))
-            g2 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=3.0))
-
-            image_plane = pl.Plane(galaxies=[g0, g1, g2], grid_stack=grid_stack, compute_deflections=True)
-
-            tracer = ray_tracing.TracerImagePlane(lens_galaxies=[g0, g1, g2], image_plane_grid_stack=grid_stack)
-
-            assert (tracer.image_plane_blurring_image_1d == image_plane.image_plane_blurring_image_1d).all()
-
-
-class TestAbstractTracerImageSourcePlanes(object):
-
-    class TestCosmology:
-
-        def test__2_planes__z01_and_z1(self, grid_stack):
-
-            g0 = g.Galaxy(redshift=0.1)
-            g1 = g.Galaxy(redshift=1.0)
-
-            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g1],
-                                                         image_plane_grid_stack=grid_stack,
-                                                         cosmology=cosmo.Planck15)
-
-            assert tracer.image_plane.arcsec_per_kpc_proper == pytest.approx(0.525060, 1e-5)
-            assert tracer.image_plane.kpc_per_arcsec_proper == pytest.approx(1.904544, 1e-5)
-            assert tracer.image_plane.angular_diameter_distance_to_earth == pytest.approx(392840, 1e-5)
-
-            assert tracer.source_plane.arcsec_per_kpc_proper == pytest.approx(0.1214785, 1e-5)
-            assert tracer.source_plane.kpc_per_arcsec_proper == pytest.approx(8.231907, 1e-5)
-            assert tracer.source_plane.angular_diameter_distance_to_earth == pytest.approx(1697952, 1e-5)
-
-            assert tracer.angular_diameter_distance_from_image_to_source_plane == pytest.approx(1481890.4, 1e-5)
-
-            assert tracer.critical_density_kpc == pytest.approx(4.85e9, 1e-2)
-            assert tracer.critical_density_arcsec == pytest.approx(17593241668, 1e-2)
-
     class TestGalaxyMasses:
 
         def test__masses_with_circle__1_galaxy__consistent_with_galaxy_mass(self, grid_stack):
@@ -875,6 +835,44 @@ class TestAbstractTracerImageSourcePlanes(object):
 
             assert tracer.masses_of_image_plane_galaxies_within_ellipses(major_axis=2.0)[0] == g0_mass
             assert tracer.masses_of_image_plane_galaxies_within_ellipses(major_axis=2.0)[1] == g1_mass
+
+class TestTracerImagePlane(object):
+
+    class TestImagePlaneImage:
+
+        def test__1_plane__single_plane_tracer(self, grid_stack):
+
+            g0 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=1.0))
+            g1 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=2.0))
+            g2 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=3.0))
+
+            image_plane = pl.Plane(galaxies=[g0, g1, g2], grid_stack=grid_stack, compute_deflections=True)
+
+            tracer = ray_tracing.TracerImagePlane(lens_galaxies=[g0, g1, g2], image_plane_grid_stack=grid_stack)
+
+            assert (tracer.image_plane_image_1d == image_plane.image_plane_image_1d).all()
+
+            image_plane_image_2d = grid_stack.regular.scaled_array_from_array_1d(image_plane.image_plane_image_1d)
+            assert image_plane_image_2d.shape == (3, 4)
+            assert (image_plane_image_2d == tracer.image_plane_image).all()
+
+    class TestImagePlaneBlurringImages:
+
+        def test__1_plane__single_plane_tracer(self, grid_stack):
+
+            g0 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=1.0))
+            g1 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=2.0))
+            g2 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=3.0))
+
+            image_plane = pl.Plane(galaxies=[g0, g1, g2], grid_stack=grid_stack, compute_deflections=True)
+
+            tracer = ray_tracing.TracerImagePlane(lens_galaxies=[g0, g1, g2], image_plane_grid_stack=grid_stack)
+
+            assert (tracer.image_plane_blurring_image_1d == image_plane.image_plane_blurring_image_1d).all()
+
+
+
+
 
 
 class TestTracerImageSourcePlanes(object):
@@ -1203,6 +1201,148 @@ class TestTracerImageSourcePlanes(object):
             assert (tracer.source_plane.grid_stack.pix == np.array([[1.0, -1.0], [1.0, 0.0], [1.0, 1.0],
                                                            [0.0, -1.0], [0.0, 0.0], [0.0, 1.0],
                                                            [-1.0, -1.0], [-1.0, 1.0]])).all()
+
+    class TestEinsteinMass:
+
+        def test__x1_lens_galaxy__is_child_of_power_law__einstein_mass_is_correct(self, grid_stack):
+
+            g0 = g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=1.0), redshift=1.0)
+
+            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0],
+                                                         source_galaxies=[g.Galaxy(redshift=2.0)],
+                                                         image_plane_grid_stack=grid_stack,
+                                                         cosmology=cosmo.Planck15)
+
+            g0_mass = g0.mass_within_circle(radius=1.0, conversion_factor=tracer.critical_density_arcsec)
+
+            assert tracer.einstein_mass_of_lens_galaxy == g0_mass
+
+            g0 = g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=2.0), redshift=1.0)
+
+            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0],
+                                                         source_galaxies=[g.Galaxy(redshift=2.0)],
+                                                         image_plane_grid_stack=grid_stack,
+                                                         cosmology=cosmo.Planck15)
+
+            g0_mass = g0.mass_within_circle(radius=2.0, conversion_factor=tracer.critical_density_arcsec)
+
+            assert tracer.einstein_mass_of_lens_galaxy == g0_mass
+
+        def test__x1_lens_galaxy__other_childs_of_power_law_all_work(self, grid_stack):
+
+            g0 = g.Galaxy(mass=mp.EllipticalIsothermal(einstein_radius=1.0), redshift=1.0)
+
+            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0],
+                                                         source_galaxies=[g.Galaxy(redshift=2.0)],
+                                                         image_plane_grid_stack=grid_stack,
+                                                         cosmology=cosmo.Planck15)
+
+            g0_mass = g0.mass_within_circle(radius=1.0, conversion_factor=tracer.critical_density_arcsec)
+
+            assert tracer.einstein_mass_of_lens_galaxy == g0_mass
+
+            g0 = g.Galaxy(mass=mp.SphericalCoredIsothermal(einstein_radius=1.0, core_radius=0.1), redshift=1.0)
+
+            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0],
+                                                         source_galaxies=[g.Galaxy(redshift=2.0)],
+                                                         image_plane_grid_stack=grid_stack,
+                                                         cosmology=cosmo.Planck15)
+
+            g0_mass = g0.mass_within_circle(radius=1.0, conversion_factor=tracer.critical_density_arcsec)
+
+            assert tracer.einstein_mass_of_lens_galaxy == g0_mass
+
+            g0 = g.Galaxy(mass=mp.EllipticalCoredIsothermal(einstein_radius=1.0, axis_ratio=0.9, core_radius=0.1),
+                          redshift=1.0)
+
+            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0],
+                                                         source_galaxies=[g.Galaxy(redshift=2.0)],
+                                                         image_plane_grid_stack=grid_stack,
+                                                         cosmology=cosmo.Planck15)
+
+            g0_mass = g0.mass_within_circle(radius=1.0, conversion_factor=tracer.critical_density_arcsec)
+
+            assert tracer.einstein_mass_of_lens_galaxy == g0_mass
+
+            g0 = g.Galaxy(mass=mp.SphericalPowerLaw(einstein_radius=1.0), redshift=1.0)
+
+            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0],
+                                                         source_galaxies=[g.Galaxy(redshift=2.0)],
+                                                         image_plane_grid_stack=grid_stack,
+                                                         cosmology=cosmo.Planck15)
+
+            g0_mass = g0.mass_within_circle(radius=1.0, conversion_factor=tracer.critical_density_arcsec)
+
+            assert tracer.einstein_mass_of_lens_galaxy == g0_mass
+
+            g0 = g.Galaxy(mass=mp.EllipticalPowerLaw(einstein_radius=1.0, axis_ratio=0.9), redshift=1.0)
+
+            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0],
+                                                         source_galaxies=[g.Galaxy(redshift=2.0)],
+                                                         image_plane_grid_stack=grid_stack,
+                                                         cosmology=cosmo.Planck15)
+
+            g0_mass = g0.mass_within_circle(radius=1.0, conversion_factor=tracer.critical_density_arcsec)
+
+            assert tracer.einstein_mass_of_lens_galaxy == g0_mass
+
+            g0 = g.Galaxy(mass=mp.SphericalCoredPowerLaw(einstein_radius=1.0, core_radius=0.1), redshift=1.0)
+
+            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0],
+                                                         source_galaxies=[g.Galaxy(redshift=2.0)],
+                                                         image_plane_grid_stack=grid_stack,
+                                                         cosmology=cosmo.Planck15)
+
+            g0_mass = g0.mass_within_circle(radius=1.0, conversion_factor=tracer.critical_density_arcsec)
+
+            assert tracer.einstein_mass_of_lens_galaxy == g0_mass
+
+            g0 = g.Galaxy(mass=mp.EllipticalCoredPowerLaw(einstein_radius=1.0, axis_ratio=0.9, core_radius=0.1),
+                          redshift=1.0)
+
+            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0],
+                                                         source_galaxies=[g.Galaxy(redshift=2.0)],
+                                                         image_plane_grid_stack=grid_stack,
+                                                         cosmology=cosmo.Planck15)
+
+            g0_mass = g0.mass_within_circle(radius=1.0, conversion_factor=tracer.critical_density_arcsec)
+
+            assert tracer.einstein_mass_of_lens_galaxy == g0_mass
+
+        def test__x2_lens_galaxies__returns_none(self, grid_stack):
+
+            g0 = g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=1.0), redshift=1.0)
+
+            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0, g0],
+                                                         source_galaxies=[g.Galaxy(redshift=2.0)],
+                                                         image_plane_grid_stack=grid_stack,
+                                                         cosmology=cosmo.Planck15)
+
+            assert tracer.einstein_mass_of_lens_galaxy == None
+
+        g0 = g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=1.0), redshift=1.0)
+
+        def test__no_cosmology__returns_none(self, grid_stack):
+
+            g0 = g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=1.0), redshift=1.0)
+
+            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0],
+                                                         source_galaxies=[g.Galaxy(redshift=2.0)],
+                                                         image_plane_grid_stack=grid_stack,
+                                                         cosmology=None)
+
+            assert tracer.einstein_mass_of_lens_galaxy == None
+
+        def test__no_galaxy_redshifts__returns_none(self, grid_stack):
+
+            g0 = g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=1.0))
+
+            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0],
+                                                         source_galaxies=[g.Galaxy()],
+                                                         image_plane_grid_stack=grid_stack,
+                                                         cosmology=cosmo.Planck15)
+
+            assert tracer.einstein_mass_of_lens_galaxy == None
 
 
 class TestMultiTracer(object):
