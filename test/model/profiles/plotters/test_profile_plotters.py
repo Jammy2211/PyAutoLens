@@ -10,12 +10,12 @@ from autolens.model.profiles import light_profiles as lp, mass_profiles as mp
 
 
 @pytest.fixture(name='general_config')
-def test_general_config():
+def make_general_config():
     general_config_path = "{}/../../../test_files/configs/plotting/".format(os.path.dirname(os.path.realpath(__file__)))
     conf.instance.general = conf.NamedConfig(general_config_path+"general.ini")
 
 @pytest.fixture(name='profile_plotter_path')
-def test_profile_plotter_setup():
+def make_profile_plotter_setup():
     
     profile_plotter_path = "{}/../../../test_files/plotting/profiles/".format(os.path.dirname(os.path.realpath(__file__)))
 
@@ -27,15 +27,15 @@ def test_profile_plotter_setup():
     return profile_plotter_path
 
 @pytest.fixture(name='light_profile')
-def test_light_profile():
+def make_light_profile():
     return lp.EllipticalSersic(intensity=1.0)
 
 @pytest.fixture(name='mass_profile')
-def test_mass_profile():
+def make_mass_profile():
     return mp.SphericalIsothermal(einstein_radius=1.0)
 
 @pytest.fixture(name='grid_stack')
-def test_grid_stack():
+def make_grid_stack():
     return grids.GridStack.from_shape_pixel_scale_and_sub_grid_size(shape=(100, 100), pixel_scale=0.05, sub_grid_size=2)
 
 
