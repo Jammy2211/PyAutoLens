@@ -17,12 +17,14 @@ set +e
 git commit -m "Incremented version number"
 set -e
 
-python setup.py test sdist bdist_wheel
+python setup.py test
+python setup.py sdist bdist_wheel
+
 twine upload dist/* --skip-existing --username $PYPI_USERNAME --password $PYPI_PASSWORD
 
-sudo docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
-sudo docker build -t autolens/$PACKAGE_NAME .
-sudo docker push autolens/$PACKAGE_NAME:latest
+# sudo docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+# sudo docker build -t autolens/$PACKAGE_NAME .
+# sudo docker push autolens/$PACKAGE_NAME:latest
 
 git flow release finish $VERSION
 
