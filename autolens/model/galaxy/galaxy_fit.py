@@ -20,7 +20,7 @@ class GalaxyFit(fit.DataFit):
         model_data_1d = galaxy_data.profile_quantity_from_galaxy_and_sub_grid(galaxy=model_galaxy,
                                                                               sub_grid=galaxy_data.grid_stack.sub)
 
-        super(GalaxyFit, self).__init__(data=galaxy_data.array, noise_map=galaxy_data.noise_map,
+        super(GalaxyFit, self).__init__(data=galaxy_data.image, noise_map=galaxy_data.noise_map,
                                         mask=galaxy_data.mask,
                                         model_data=galaxy_data.map_to_scaled_array(array_1d=model_data_1d))
 

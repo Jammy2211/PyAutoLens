@@ -14,12 +14,12 @@ from autolens.model.inversion.plotters import mapper_plotters
 import numpy as np
 
 @pytest.fixture(name='general_config')
-def test_general_config():
+def make_general_config():
     general_config_path = "{}/../../../test_files/configs/plotting/".format(os.path.dirname(os.path.realpath(__file__)))
     conf.instance.general = conf.NamedConfig(general_config_path + "general.ini")
 
 @pytest.fixture(name='mapper_plotter_path')
-def test_mapper_plotter_setup():
+def make_mapper_plotter_setup():
     galaxy_plotter_path = "{}/../../../test_files/plotting/mapper/".format(os.path.dirname(os.path.realpath(__file__)))
 
     if os.path.exists(galaxy_plotter_path):
@@ -30,7 +30,7 @@ def test_mapper_plotter_setup():
     return galaxy_plotter_path
 
 @pytest.fixture(name='image')
-def test_image():
+def make_image():
 
     image = scaled_array.ScaledSquarePixelArray(array=np.ones((3, 3)), pixel_scale=1.0)
     noise_map = im.NoiseMap(array=2.0*np.ones((3,3)), pixel_scale=1.0)
@@ -39,31 +39,31 @@ def test_image():
     return im.CCDData(image=image, pixel_scale=1.0, noise_map=noise_map, psf=psf)
 
 @pytest.fixture(name='mask')
-def test_mask():
+def make_mask():
     return msk.Mask.circular(shape=((3,3)), pixel_scale=0.1, radius_arcsec=0.1)
 
 @pytest.fixture(name='galaxy_light')
-def test_galaxy_light():
+def make_galaxy_light():
     return g.Galaxy(light=lp.EllipticalSersic(intensity=1.0))
 
 @pytest.fixture(name='galaxy_mass')
-def test_galaxy_mass():
+def make_galaxy_mass():
     return g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=1.0))
 
 @pytest.fixture(name='grid_stack')
-def test_grid_stack():
+def make_grid_stack():
     return grids.GridStack.from_shape_pixel_scale_and_sub_grid_size(shape=(100, 100), pixel_scale=0.05, sub_grid_size=2)
 
 @pytest.fixture(name='border')
-def test_border(mask):
+def make_border(mask):
     return grids.RegularGridBorder.from_mask(mask=mask)
 
 @pytest.fixture(name='rectangular_pixelization')
-def test_rectangular_pixelization():
+def make_rectangular_pixelization():
     return pix.Rectangular(shape=(25, 25))
 
 @pytest.fixture(name='rectangular_mapper')
-def test_rectangular_mapper(rectangular_pixelization, grid_stack, border):
+def make_rectangular_mapper(rectangular_pixelization, grid_stack, border):
     return rectangular_pixelization.mapper_from_grid_stack_and_border(grid_stack=grid_stack, border=border)
 
 def test__image_and_rectangular_mapper_is_output(image, rectangular_mapper, mapper_plotter_path):

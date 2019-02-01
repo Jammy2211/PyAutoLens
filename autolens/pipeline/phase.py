@@ -26,6 +26,19 @@ logger.level = logging.DEBUG
 def default_mask_function(image):
     return msk.Mask.circular(image.shape, image.pixel_scale, 3.0)
 
+def setup_phase_mask(data, mask, mask_function, inner_circular_mask_radii):
+
+    if mask_function is not None:
+        mask = mask_function(image=data.image)
+    elif mask is None and mask_function is None:
+        mask = default_mask_function(image=data.image)
+
+    if inner_circular_mask_radii is not None:
+        inner_mask = msk.Mask.circular(shape=mask.shape, pixel_scale=mask.pixel_scale,
+                                       radius_arcsec=inner_circular_mask_radii, invert=True)
+        mask = mask + inner_mask
+
+    return mask
 
 class ResultsCollection(list):
     def __init__(self, results):
@@ -393,8 +406,8 @@ class PhasePositions(AbstractPhase):
 class PhaseImaging(Phase):
 
     def __init__(self, phase_name, optimizer_class=non_linear.MultiNest, sub_grid_size=2, image_psf_shape=None,
-                 pixelization_psf_shape=None, use_positions=False, mask_function=None, cosmology=cosmo.Planck15,
-                 auto_link_priors=False):
+                 pixelization_psf_shape=None, use_positions=False, mask_function=None, inner_circular_mask_radii=None,
+                 cosmology=cosmo.Planck15, auto_link_priors=False):
 
         """
 
@@ -416,6 +429,7 @@ class PhaseImaging(Phase):
         self.pixelization_psf_shape = pixelization_psf_shape
         self.use_positions = use_positions
         self.mask_function = mask_function
+        self.inner_circular_mask_radii = inner_circular_mask_radii
 
     # noinspection PyMethodMayBeStatic,PyUnusedLocal
     def modify_image(self, image, previous_results):
@@ -480,10 +494,8 @@ class PhaseImaging(Phase):
             An lens object that the non-linear optimizer calls to determine the fit of a set of values
         """
 
-        if self.mask_function is not None:
-            mask = self.mask_function(image=data.image)
-        elif mask is None and self.mask_function is None:
-            mask = default_mask_function(image=data.image)
+        mask = setup_phase_mask(data=data, mask=mask, mask_function=self.mask_function,
+                                inner_circular_mask_radii=self.inner_circular_mask_radii)
 
         if self.use_positions and positions is not None:
             positions = list(map(lambda position_set: np.asarray(position_set), positions))
@@ -648,12 +660,13 @@ class LensPlanePhase(PhaseImaging):
         return [self.lens_galaxies]
 
     def __init__(self, phase_name, lens_galaxies=None, optimizer_class=non_linear.MultiNest, sub_grid_size=2,
-                 image_psf_shape=None, mask_function=None, cosmology=cosmo.Planck15,
+                 image_psf_shape=None, mask_function=None, inner_circular_mask_radii=None, cosmology=cosmo.Planck15,
                  auto_link_priors=False):
         super(LensPlanePhase, self).__init__(optimizer_class=optimizer_class,
                                              sub_grid_size=sub_grid_size,
                                              image_psf_shape=image_psf_shape,
                                              mask_function=mask_function,
+                                             inner_circular_mask_radii=inner_circular_mask_radii,
                                              cosmology=cosmology,
                                              phase_name=phase_name,
                                              auto_link_priors=auto_link_priors)
@@ -709,7 +722,7 @@ class LensSourcePlanePhase(PhaseImaging):
 
     def __init__(self, phase_name, lens_galaxies=None, source_galaxies=None, optimizer_class=non_linear.MultiNest,
                  sub_grid_size=2, image_psf_shape=None, use_positions=False, mask_function=None,
-                 cosmology=cosmo.Planck15, auto_link_priors=False):
+                 inner_circular_mask_radii=None, cosmology=cosmo.Planck15, auto_link_priors=False):
         """
         A phase with a simple source/lens model
 
@@ -730,6 +743,7 @@ class LensSourcePlanePhase(PhaseImaging):
                                                    image_psf_shape=image_psf_shape,
                                                    use_positions=use_positions,
                                                    mask_function=mask_function,
+                                                   inner_circular_mask_radii=inner_circular_mask_radii,
                                                    cosmology=cosmology,
                                                    phase_name=phase_name,
                                                    auto_link_priors=auto_link_priors)
@@ -793,7 +807,7 @@ class MultiPlanePhase(PhaseImaging):
 
     def __init__(self, phase_name, galaxies=None, optimizer_class=non_linear.MultiNest,
                  sub_grid_size=2, image_psf_shape=None, use_positions=False, mask_function=None,
-                 cosmology=cosmo.Planck15, auto_link_priors=False):
+                 inner_circular_mask_radii=None, cosmology=cosmo.Planck15, auto_link_priors=False):
         """
         A phase with a simple source/lens model
 
@@ -809,10 +823,15 @@ class MultiPlanePhase(PhaseImaging):
             The side length of the subgrid
         """
 
-        super(MultiPlanePhase, self).__init__(optimizer_class=optimizer_class, sub_grid_size=sub_grid_size,
-                                              image_psf_shape=image_psf_shape, use_positions=use_positions,
-                                              mask_function=mask_function, cosmology=cosmology,
-                                              phase_name=phase_name, auto_link_priors=auto_link_priors)
+        super(MultiPlanePhase, self).__init__(optimizer_class=optimizer_class,
+                                              sub_grid_size=sub_grid_size,
+                                              image_psf_shape=image_psf_shape,
+                                              use_positions=use_positions,
+                                              mask_function=mask_function,
+                                              inner_circular_mask_radii=inner_circular_mask_radii,
+                                              cosmology=cosmology,
+                                              phase_name=phase_name,
+                                              auto_link_priors=auto_link_priors)
         self.galaxies = galaxies
 
     class Analysis(PhaseImaging.Analysis):
@@ -841,9 +860,8 @@ class GalaxyFitPhase(AbstractPhase):
 
     galaxy = PhasePropertyCollection("galaxy")
 
-    def __init__(self, phase_name, use_intensities=False, use_surface_density=False, use_potential=False,
-                 use_deflections=False,
-                 galaxy=None, optimizer_class=non_linear.MultiNest, sub_grid_size=2,
+    def __init__(self, phase_name, galaxy=None, use_intensities=False, use_surface_density=False, use_potential=False,
+                 use_deflections=False, optimizer_class=non_linear.MultiNest, sub_grid_size=2,
                  mask_function=None, cosmology=cosmo.Planck15):
         """
         A phase in an lens pipeline. Uses the set non_linear optimizer to try to fit models and hyper
@@ -910,34 +928,35 @@ class GalaxyFitPhase(AbstractPhase):
         lens: Analysis
             An lens object that the non-linear optimizer calls to determine the fit of a set of values
         """
-        mask = mask or self.mask_function(array)
+
+        mask = setup_phase_mask(data=array, mask=mask, mask_function=self.mask_function, inner_circular_mask_radii=None)
 
         self.pass_priors(previous_results)
 
         if self.use_intensities or self.use_surface_density or self.use_potential:
 
-            galaxy_data = gd.GalaxyData(array=array, noise_map=noise_map, mask=mask, sub_grid_size=self.sub_grid_size,
-                                        use_intensities=self.use_intensities,
-                                        use_surface_density=self.use_surface_density,
-                                        use_potential=self.use_potential,
-                                        use_deflections_y=self.use_deflections, use_deflections_x=self.use_deflections)
+            galaxy_data = gd.GalaxyFitData(array=array, noise_map=noise_map, mask=mask, sub_grid_size=self.sub_grid_size,
+                                           use_intensities=self.use_intensities,
+                                           use_surface_density=self.use_surface_density,
+                                           use_potential=self.use_potential,
+                                           use_deflections_y=self.use_deflections, use_deflections_x=self.use_deflections)
 
             return self.__class__.AnalysisSingle(galaxy_data=galaxy_data, phase_name=self.phase_name,
                                                  cosmology=self.cosmology, previous_results=previous_results)
 
         elif self.use_deflections:
 
-            galaxy_data_y = gd.GalaxyData(array=array, noise_map=noise_map, mask=mask, sub_grid_size=self.sub_grid_size,
-                                          use_intensities=self.use_intensities,
-                                          use_surface_density=self.use_surface_density,
-                                          use_potential=self.use_potential,
-                                          use_deflections_y=self.use_deflections, use_deflections_x=False)
+            galaxy_data_y = gd.GalaxyFitData(array=array, noise_map=noise_map, mask=mask, sub_grid_size=self.sub_grid_size,
+                                             use_intensities=self.use_intensities,
+                                             use_surface_density=self.use_surface_density,
+                                             use_potential=self.use_potential,
+                                             use_deflections_y=self.use_deflections, use_deflections_x=False)
 
-            galaxy_data_x = gd.GalaxyData(array=array, noise_map=noise_map, mask=mask, sub_grid_size=self.sub_grid_size,
-                                          use_intensities=self.use_intensities,
-                                          use_surface_density=self.use_surface_density,
-                                          use_potential=self.use_potential,
-                                          use_deflections_y=False, use_deflections_x=self.use_deflections)
+            galaxy_data_x = gd.GalaxyFitData(array=array, noise_map=noise_map, mask=mask, sub_grid_size=self.sub_grid_size,
+                                             use_intensities=self.use_intensities,
+                                             use_surface_density=self.use_surface_density,
+                                             use_potential=self.use_potential,
+                                             use_deflections_y=False, use_deflections_x=self.use_deflections)
 
             return self.__class__.AnalysisDeflections(galaxy_data_y=galaxy_data_y, galaxy_data_x=galaxy_data_x,
                                                       cosmology=self.cosmology, phase_name=self.phase_name,
