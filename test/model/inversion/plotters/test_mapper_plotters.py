@@ -1,5 +1,4 @@
 import numpy as np
-import shutil
 
 from autolens.data import ccd as im
 from autolens.data.array import grids, mask as msk, scaled_array
@@ -12,14 +11,7 @@ from test.fixtures import *
 
 @pytest.fixture(name='mapper_plotter_path')
 def make_mapper_plotter_setup():
-    galaxy_plotter_path = "{}/../../../test_files/plotting/mapper/".format(os.path.dirname(os.path.realpath(__file__)))
-
-    if os.path.exists(galaxy_plotter_path):
-        shutil.rmtree(galaxy_plotter_path)
-
-    os.mkdir(galaxy_plotter_path)
-
-    return galaxy_plotter_path
+    return "{}/../../../test_files/plotting/mapper/".format(os.path.dirname(os.path.realpath(__file__)))
 
 
 @pytest.fixture(name='image')
