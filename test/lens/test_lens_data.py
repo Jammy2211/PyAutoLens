@@ -36,7 +36,7 @@ def make_lens_ccd(ccd, mask):
     return ld.LensData(ccd_data=ccd, mask=mask)
 
 
-class TestLensImage(object):
+class TestLensData(object):
 
     def test_attributes(self, ccd, lens_data):
 
@@ -102,7 +102,7 @@ class TestLensImage(object):
 
         psf = ccd.PSF(np.ones((7, 7)), 1)
         image = ccd.CCDData(np.ones((51, 51)), pixel_scale=3., psf=psf, noise_map=np.ones((51, 51)))
-        mask = msk.Mask.masked_for_shape_and_pixel_scale(shape=(51, 51), pixel_scale=1.0)
+        mask = msk.Mask.unmasked_for_shape_and_pixel_scale(shape=(51, 51), pixel_scale=1.0, invert=True)
         mask[26, 26] = False
 
         lens_data = ld.LensData(image, mask, sub_grid_size=8, image_psf_shape=(5, 5),
@@ -131,7 +131,7 @@ def make_lens_hyper_image(ccd, mask):
                             hyper_minimum_values=[0.1, 0.2])
 
 
-class TestLensHyperImage(object):
+class TestLensDataHyper(object):
 
     def test_attributes(self, ccd, lens_data_hyper):
 

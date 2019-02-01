@@ -2,6 +2,7 @@ Hey, welcome to my PyAutoLens to-do. This should give you a sense of what we're 
 
 Let me know if you think anything is missing, or should be pushed up the to-do list ;)
 
+0) fix speed of plotter tests.
 0) Added ability to add central mask to a custom mask.
 0) Deflection fitting for Qiuhan.
 0) Inclusion of lens / source redshifts for analysis.
