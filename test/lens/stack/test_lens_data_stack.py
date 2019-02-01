@@ -177,12 +177,12 @@ class TestLensData(object):
 
         psf_0 = im.PSF(np.ones((7, 7)), 1)
         ccd_0 = im.CCDData(np.ones((51, 51)), pixel_scale=3., psf=psf_0, noise_map=np.ones((51, 51)))
-        mask_0 = msk.Mask.masked_for_shape_and_pixel_scale(shape=(51, 51), pixel_scale=1.0)
+        mask_0 = msk.Mask.unmasked_for_shape_and_pixel_scale(shape=(51, 51), pixel_scale=1.0, invert=True)
         mask_0[26, 26] = False
 
         psf_1 = im.PSF(np.ones((7, 7)), 1)
         ccd_1 = im.CCDData(np.ones((51, 51)), pixel_scale=3., psf=psf_1, noise_map=np.ones((51, 51)))
-        mask_1 = msk.Mask.masked_for_shape_and_pixel_scale(shape=(51, 51), pixel_scale=1.0)
+        mask_1 = msk.Mask.unmasked_for_shape_and_pixel_scale(shape=(51, 51), pixel_scale=1.0, invert=True)
         mask_1[26, 26] = False
 
         lens_data_stack = lis.LensDataStack(ccd_datas=[ccd_0, ccd_1], masks=[mask_0, mask_1], sub_grid_size=8,

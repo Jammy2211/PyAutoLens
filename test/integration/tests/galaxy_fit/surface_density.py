@@ -37,7 +37,7 @@ def phase():
     phase = ph.GalaxyFitPhase(galaxy=dict(gal=gm.GalaxyModel(light=mp.SphericalIsothermal)), use_surface_density=True,
                               optimizer_class=nl.MultiNest, phase_name='phase')
 
-    phase.run(array=surface_density, noise_map=)
+    phase.run(array=surface_density)
 
 if __name__ == "__main__":
     phase()
