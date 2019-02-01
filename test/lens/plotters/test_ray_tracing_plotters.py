@@ -12,13 +12,13 @@ from autolens.model.profiles import light_profiles as lp, mass_profiles as mp
 
 
 @pytest.fixture(name='general_config')
-def test_general_config():
+def make_general_config():
     general_config_path = "{}/../../test_files/configs/plotting/".format(os.path.dirname(os.path.realpath(__file__)))
     conf.instance.general = conf.NamedConfig(general_config_path + "general.ini")
 
 
 @pytest.fixture(name='ray_tracing_plotter_path')
-def test_ray_tracing_plotter_setup():
+def make_ray_tracing_plotter_setup():
     galaxy_plotter_path = "{}/../../test_files/plotting/ray_tracing/".format(os.path.dirname(os.path.realpath(__file__)))
 
     if os.path.exists(galaxy_plotter_path):
@@ -30,22 +30,22 @@ def test_ray_tracing_plotter_setup():
 
 
 @pytest.fixture(name='galaxy_light')
-def test_galaxy_light():
+def make_galaxy_light():
     return g.Galaxy(light=lp.EllipticalSersic(intensity=1.0))
 
 
 @pytest.fixture(name='galaxy_mass')
-def test_galaxy_mass():
+def make_galaxy_mass():
     return g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=1.0))
 
 
 @pytest.fixture(name='grid_stack')
-def test_grid_stack():
+def make_grid_stack():
     return grids.GridStack.from_shape_pixel_scale_and_sub_grid_size(shape=(100, 100), pixel_scale=0.05, sub_grid_size=2)
 
 
 @pytest.fixture(name='tracer')
-def test_tracer(galaxy_light, galaxy_mass, grid_stack):
+def make_tracer(galaxy_light, galaxy_mass, grid_stack):
     return ray_tracing.TracerImageSourcePlanes(lens_galaxies=[galaxy_mass, galaxy_light],
                                                source_galaxies=[galaxy_light],
                                                image_plane_grid_stack=grid_stack)

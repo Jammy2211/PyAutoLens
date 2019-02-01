@@ -10,12 +10,16 @@ from autolens.model.profiles import mass_profiles as mp
 import os
 
 # In this pipeline, we show how custom masks and positions (generated using the tools/mask_maker.py and
-# tools/positions_maker.py files) can be input and used by a pipeline. We'll using a simple two phase pipeline:
+# tools/positions_maker.py files) can be input and used by a pipeline. We will also use the inner_circular_mask_radii
+# variable of a phase to mask the central regions of an image. We'll using a simple two phase pipeline:
 
 # Phase 1) Fit the lens galaxy's light using an elliptical Sersic light profile.
 
 # Phase 2) Use this lens subtracted image to fit the lens galaxy's mass (SIE+Shear) and source galaxy's light (Sersic).
 #          This phase will use a custom mask and positions.
+
+# The first phase will use the a circular mask function with a circle of radius 3.0", but mask the central regions of
+# the image via the inner_circular_mask_radii input variable.
 
 # The second phase of this pipeline loads a custom mask, which is used instead of the default mask function. A set of
 # positions are also loaded and use to restrict mass models to only those where the positions trace close to one another.
@@ -36,8 +40,10 @@ def make_pipeline(pipeline_path=''):
 
     # In terms of the custom mask and positions, for this phase we will:
 
-    # 1) Specify a mask_function which uses a circular mask, as the annular custom mask created for this lens is
-    #    not appropriate for subtracting the lens galaxy's light.
+    # 1) Specify a mask_function which uses a circular mask, but make the mask used in the analysis an annulus by
+    #    specifying inner_circular_mask_radii=0.3". This variable masks all pixels within its input radius, in this
+    #    case 0.3". This is the equivalent of making a circular_annular mask with inner_radius_arcsec=0.3, however
+    #    because it is a phase input variable we can turn this masking on and off for different phases.
     # 2) Don't specify anything about using positions, given this phase is a lens-only phase with no mass model.
 
     def mask_function(image):
@@ -52,7 +58,8 @@ def make_pipeline(pipeline_path=''):
 
     phase1 = LensPhase(lens_galaxies=dict(lens=gm.GalaxyModel(light=lp.EllipticalSersic)),
                        optimizer_class=nl.MultiNest, mask_function=mask_function,
-                       phase_name=pipeline_path + '/phase_1_lens_light_only')
+                       inner_circular_mask_radii=0.3,
+                       phase_name=pipeline_path + '/phase_1_lens_light_only_mask_uses_inner_radii_input')
 
     # You'll see these lines throughout all of the example pipelines. They are used to make MultiNest sample the \
     # non-linear parameter space faster (if you haven't already, checkout the tutorial '' in howtolens/chapter_2).

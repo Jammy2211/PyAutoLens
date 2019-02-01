@@ -15,12 +15,12 @@ from autolens.lens import ray_tracing
 from autolens.lens import sensitivity_fit
 
 @pytest.fixture(name='general_config')
-def test_general_config():
+def make_general_config():
     general_config_path = "{}/../../test_files/configs/plotting/".format(os.path.dirname(os.path.realpath(__file__)))
     conf.instance.general = conf.NamedConfig(general_config_path + "general.ini")
 
 @pytest.fixture(name='sensitivity_fit_plotter_path')
-def test_sensitivity_fit_plotter_setup():
+def make_sensitivity_fit_plotter_setup():
     galaxy_plotter_path = "{}/../../test_files/plotting/fit/".format(os.path.dirname(os.path.realpath(__file__)))
 
     if os.path.exists(galaxy_plotter_path):
@@ -31,11 +31,11 @@ def test_sensitivity_fit_plotter_setup():
     return galaxy_plotter_path
 
 @pytest.fixture(name='grid_stack')
-def test_grids():
+def make_grid_stack():
     return grids.GridStack.from_shape_pixel_scale_and_sub_grid_size(shape=(100, 100), pixel_scale=0.05, sub_grid_size=2)
 
 @pytest.fixture(name='ccd')
-def test_ccd():
+def make_ccd():
 
     image = scaled_array.ScaledSquarePixelArray(array=np.ones((3, 3)), pixel_scale=1.0)
     noise_map = im.NoiseMap(array=2.0*np.ones((3,3)), pixel_scale=1.0)
@@ -45,20 +45,20 @@ def test_ccd():
                       background_sky_map=3.0*np.ones((3,3)))
 
 @pytest.fixture(name='positions')
-def test_positions():
+def make_positions():
     positions = [[[0.1, 0.1], [0.2, 0.2]], [[0.3, 0.3]]]
     return list(map(lambda position_set: np.asarray(position_set), positions))
 
 @pytest.fixture(name='mask')
-def test_mask():
+def make_mask():
     return msk.Mask.circular(shape=((3,3)), pixel_scale=0.1, radius_arcsec=0.1)
 
 @pytest.fixture(name='lens_data')
-def test_lens_image(ccd, mask):
+def make_lens_image(ccd, mask):
     return li.LensData(ccd_data=ccd, mask=mask)
 
 @pytest.fixture(name='fit')
-def test_fit(lens_data):
+def make_fit(lens_data):
 
     lens_galaxy = g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=1.0), redshift=1.0)
     lens_subhalo = g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=0.1), redshift=1.0)

@@ -127,7 +127,7 @@ def plot_galaxy_data_array(galaxy_data, mask=None, positions=None, as_subplot=Fa
     elif galaxy_data.use_deflections_x:
         title='Galaxy Data Deflections (x)'
 
-    array_plotters.plot_array(array=galaxy_data.array, mask=mask, positions=positions, as_subplot=as_subplot,
+    array_plotters.plot_array(array=galaxy_data.image, mask=mask, positions=positions, as_subplot=as_subplot,
                               units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
                               cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max,
                               linthresh=linthresh, linscale=linscale,

@@ -283,6 +283,48 @@ class TestPhase(object):
         analysis = phase.make_analysis(data=ccd_data, mask=None)
         assert (analysis.lens_data.mask == mask_default).all()
 
+    def test_make_analysis__mask_input_uses_mask__inner_mask_radius_included_which_masks_centre(self, phase, ccd_data):
+
+        # If an input mask is supplied and there is no mask function, we use mask input.
+
+        phase.mask_function = None
+        phase.inner_circular_mask_radii = 1.0
+
+        mask_input = msk.Mask.circular(shape=shape, pixel_scale=1, radius_arcsec=2.0)
+
+        analysis = phase.make_analysis(data=ccd_data, mask=mask_input)
+
+        # The inner circulaar mask radii of 1.0" masks the centra pixels of the mask
+        mask_input[4:6, 4:6] = True
+
+        assert (analysis.lens_data.mask == mask_input).all()
+
+        # If a mask function is suppled, we should use this mask, regardless of whether an input mask is supplied.
+
+        def mask_function(image):
+            return msk.Mask.circular(shape=image.shape, pixel_scale=1, radius_arcsec=1.4)
+
+        mask_from_function = mask_function(image=ccd_data.image)
+        # The inner circulaar mask radii of 1.0" masks the centra pixels of the mask
+        mask_from_function[4:6, 4:6] = True
+
+        phase.mask_function = mask_function
+
+        analysis = phase.make_analysis(data=ccd_data, mask=None)
+        assert (analysis.lens_data.mask == mask_from_function).all()
+        analysis = phase.make_analysis(data=ccd_data, mask=mask_input)
+        assert (analysis.lens_data.mask == mask_from_function).all()
+
+        # If no mask is suppled, nor a mask function, we should use the default mask.
+
+        mask_default = ph.default_mask_function(image=ccd_data.image)
+        # The inner circulaar mask radii of 1.0" masks the centra pixels of the mask
+        mask_default[4:6, 4:6] = True
+
+        phase.mask_function = None
+        analysis = phase.make_analysis(data=ccd_data, mask=None)
+        assert (analysis.lens_data.mask == mask_default).all()
+
     def test_make_analysis__positions_are_input__are_used_in_analysis(self, phase, ccd_data):
 
         # If use positions is true and positions are input, make the positions part of the lens data.
