@@ -33,8 +33,10 @@ def setup_phase_mask(data, mask, mask_function, inner_circular_mask_radii):
     elif mask is None and mask_function is None:
         mask = default_mask_function(image=data.image)
 
-#    if inner_circular_mask_radii is not None:
-
+    if inner_circular_mask_radii is not None:
+        inner_mask = msk.Mask.circular(shape=mask.shape, pixel_scale=mask.pixel_scale,
+                                       radius_arcsec=inner_circular_mask_radii, invert=True)
+        mask = mask + inner_mask
 
     return mask
 
