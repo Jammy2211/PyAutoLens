@@ -10,7 +10,7 @@ from autolens.model.profiles import light_profiles as lp, mass_profiles as mp
 from test.integration import tools
 
 test_type = 'lens_and_source'
-test_name = "lens_both_x1_source_x1"
+test_name = "lens_light_and_mass_x1_source_x1"
 
 path = '{}/../../'.format(os.path.dirname(os.path.realpath(__file__)))
 output_path = path+'output/'+test_type

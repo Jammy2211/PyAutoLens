@@ -111,6 +111,12 @@ def test__noise_map_is_output(fit, lens_plotter_util_path, plot_patch):
     assert lens_plotter_util_path + 'fit_noise_map.png' in plot_patch.paths
 
 
+def test__signal_to_noise_map_is_output(fit, lens_plotter_util_path, plot_patch):
+    lens_plotter_util.plot_signal_to_noise_map(fit=fit, output_path=lens_plotter_util_path,
+                                     output_format='png')
+    assert lens_plotter_util_path + 'fit_signal_to_noise_map.png' in plot_patch.paths
+
+
 def test__model_image_is_output(fit, lens_plotter_util_path, plot_patch):
     lens_plotter_util.plot_model_data(fit=fit, output_path=lens_plotter_util_path,
                                       output_format='png')

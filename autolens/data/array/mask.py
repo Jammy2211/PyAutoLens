@@ -250,6 +250,29 @@ class Mask(scaled_array.ScaledSquarePixelArray):
         """
         return mask_util.border_pixels_from_mask(self).astype('int')
 
+    @property
+    def extraction_region(self):
+        """The rectangular region corresponding to the rectangle encompassing all unmasked values.
+
+        This is used to extract and visualize only the region of an image that is used in an analysis."""
+        # Have to convert mask to bool for invert function to work.
+        where = np.array(np.where(np.invert(self.astype('bool'))))
+        y0, x0 = np.amin(where, axis=1)
+        y1, x1 = np.amax(where, axis=1)
+        return [y0, y1+1, x0, x1+1]
+
+    def extract_2d_array_around_mask(self, array_2d):
+        """Extract the 2D region of an array corresponding to the rectangle encompassing all unmasked values.
+
+        This is used to extract and visualize only the region of an image that is used in an analysis.
+
+        Parameters
+        ----------
+        array_2d : ndarray | None | float
+            The 2D array to be extracted.
+        """
+        region = self.extraction_region
+        return array_2d[region[0]:region[1], region[2]:region[3]]
 
 def load_mask_from_fits(mask_path, pixel_scale, mask_hdu=0):
     return Mask.from_fits_with_pixel_scale(file_path=mask_path, hdu=mask_hdu, pixel_scale=pixel_scale)
