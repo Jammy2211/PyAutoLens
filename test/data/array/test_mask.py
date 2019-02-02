@@ -9,7 +9,7 @@ from autolens.data.array import mask as msk
 
 test_data_dir = "{}/../../test_files/array/".format(os.path.dirname(os.path.realpath(__file__)))
 
-class TestMask(object):
+class TestMask:
 
     def test__constructor(self):
 
@@ -26,6 +26,8 @@ class TestMask(object):
         assert mask.central_pixel_coordinates == (1.0, 1.5)
         assert mask.shape == (3, 4)
         assert mask.shape_arc_seconds == (3.0, 4.0)
+
+class TestMaskShapes:
 
     def test__mask_all_unmasked__5x5__input__all_are_false(self):
 
@@ -186,6 +188,8 @@ class TestMask(object):
         assert mask.origin == (0.0, 0.0)
         assert mask.centre == (1.0, 1.0)
 
+class TestMaskMappings:
+
     def test__grid_to_pixel__compare_to_array_utill(self):
         mask = np.array([[True, True, True],
                         [True, False, False],
@@ -215,6 +219,8 @@ class TestMask(object):
         array_1d = mask.map_2d_array_to_masked_1d_array(array_2d)
 
         assert (array_1d == array_1d_util).all()
+
+class TestMaskRegions:
 
     def test__blurring_mask_for_psf_shape__compare_to_array_util(self):
         
@@ -265,6 +271,103 @@ class TestMask(object):
         mask = msk.Mask(mask, pixel_scale=3.0)
 
         assert mask.border_pixels == pytest.approx(border_pixels_util, 1e-4)
+
+class TestMaskExtractor:
+
+    def test__mask_extract_region__uses_the_limits_of_the_mask(self):
+
+        mask = msk.Mask(array=np.array([[True,  True,  True, True],
+                                        [True, False, False, True],
+                                        [True, False, False, True],
+                                        [True,  True,  True, True]]), pixel_scale=1.0)
+
+        assert mask.extraction_region == [1,3,1,3]
+
+        mask = msk.Mask(array=np.array([[True,  True,  True, True],
+                                        [True, False, False, True],
+                                        [True, False, False, False],
+                                        [True,  True,  True, True]]), pixel_scale=1.0)
+
+        assert mask.extraction_region == [1,3,1,4]
+
+        mask = msk.Mask(array=np.array([[True,  True,  True, True],
+                                        [True, False, False, True],
+                                        [True, False, False, True],
+                                        [True,  True, False, True]]), pixel_scale=1.0)
+
+        assert mask.extraction_region == [1,4,1,3]
+
+        mask = msk.Mask(array=np.array([[True,  True,   True, True],
+                                        [True, False,  False, True],
+                                        [False, False, False, True],
+                                        [True,  True,  True, True]]), pixel_scale=1.0)
+
+        assert mask.extraction_region == [1,3,0,3]
+
+        mask = msk.Mask(array=np.array([[True, False,  True, True],
+                                        [True, False, False, True],
+                                        [True, False, False, True],
+                                        [True,  True,  True, True]]), pixel_scale=1.0)
+
+        assert mask.extraction_region == [0,3,1,3]
+
+    def test__mask_extract_2d_array__uses_the_limits_of_the_mask(self):
+
+        array = np.array([[ 1.0,  2.0,  3.0,  4.0],
+                          [ 5.0,  6.0,  7.0,  8.0],
+                          [ 9.0, 10.0, 11.0, 12.0],
+                          [13.0, 14.0, 15.0, 16.0]])
+
+        mask = msk.Mask(array=np.array([[True,  True,  True, True],
+                                        [True, False, False, True],
+                                        [True, False, False, True],
+                                        [True,  True,  True, True]]), pixel_scale=1.0)
+
+        array_extracted = mask.extract_2d_array_around_mask(array_2d=array)
+        assert (array_extracted == np.array([[6.0,   7.0],
+                                             [10.0, 11.0]])).all()
+
+        mask = msk.Mask(array=np.array([[True,  True,  True, True],
+                                        [True, False, False, True],
+                                        [True, False, False, False],
+                                        [True,  True,  True, True]]), pixel_scale=1.0)
+
+        array_extracted = mask.extract_2d_array_around_mask(array_2d=array)
+        assert (array_extracted == np.array([[6.0,   7.0,  8.0],
+                                             [10.0, 11.0, 12.0]])).all()
+
+        mask = msk.Mask(array=np.array([[True,  True,  True, True],
+                                        [True, False, False, True],
+                                        [True, False, False, True],
+                                        [True,  True, False, True]]), pixel_scale=1.0)
+
+        array_extracted = mask.extract_2d_array_around_mask(array_2d=array)
+        assert (array_extracted == np.array([[6.0,   7.0],
+                                             [10.0, 11.0],
+                                             [14.0, 15.0]])).all()
+
+        mask = msk.Mask(array=np.array([[True,  True,   True, True],
+                                        [True, False,  False, True],
+                                        [False, False, False, True],
+                                        [True,  True,  True, True]]), pixel_scale=1.0)
+
+        array_extracted = mask.extract_2d_array_around_mask(array_2d=array)
+        assert (array_extracted == np.array([[5.0,  6.0,  7.0],
+                                             [9.0, 10.0, 11.0]])).all()
+
+        mask = msk.Mask(array=np.array([[True, False,  True, True],
+                                        [True, False, False, True],
+                                        [True, False, False, True],
+                                        [True,  True,  True, True]]), pixel_scale=1.0)
+
+        array_extracted = mask.extract_2d_array_around_mask(array_2d=array)
+        assert (array_extracted == np.array([[2.0,   3.0],
+                                             [6.0,   7.0],
+                                             [10.0, 11.0]])).all()
+
+
+  #  def test__extract_2d_array_to_limits_of_mask(self):
+
 
 
 class TestParse:

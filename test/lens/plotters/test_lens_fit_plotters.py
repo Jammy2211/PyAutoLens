@@ -101,6 +101,8 @@ def test__fit_individuals__source_and_lens__depedent_on_config(fit_source_and_le
 
     assert lens_fit_plotter_path + 'fit_model_image.png' in plot_patch.paths
 
+    assert lens_fit_plotter_path + 'fit_lens_subtracted_image.png' in plot_patch.paths
+
     assert lens_fit_plotter_path + 'fit_lens_plane_model_image.png' not in plot_patch.paths
 
     assert lens_fit_plotter_path + 'fit_source_plane_model_image.png' in plot_patch.paths
