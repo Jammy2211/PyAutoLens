@@ -1,65 +1,56 @@
-import os
-import shutil
-from astropy import cosmology as cosmo
-import pytest
 import numpy as np
+from astropy import cosmology as cosmo
 
-from autofit import conf
 from autolens.data import ccd as im
 from autolens.data.array import grids, mask as msk, scaled_array
-from autolens.lens.plotters import sensitivity_fit_plotters
-from autolens.model.profiles import light_profiles as lp, mass_profiles as mp
 from autolens.lens import lens_data as li
-from autolens.model.galaxy import galaxy as g
 from autolens.lens import ray_tracing
 from autolens.lens import sensitivity_fit
+from autolens.lens.plotters import sensitivity_fit_plotters
+from autolens.model.galaxy import galaxy as g
+from autolens.model.profiles import light_profiles as lp, mass_profiles as mp
+from test.fixtures import *
 
-@pytest.fixture(name='general_config')
-def make_general_config():
-    general_config_path = "{}/../../test_files/configs/plotting/".format(os.path.dirname(os.path.realpath(__file__)))
-    conf.instance.general = conf.NamedConfig(general_config_path + "general.ini")
 
 @pytest.fixture(name='sensitivity_fit_plotter_path')
 def make_sensitivity_fit_plotter_setup():
-    galaxy_plotter_path = "{}/../../test_files/plotting/fit/".format(os.path.dirname(os.path.realpath(__file__)))
+    return "{}/../../test_files/plotting/fit/".format(os.path.dirname(os.path.realpath(__file__)))
 
-    if os.path.exists(galaxy_plotter_path):
-        shutil.rmtree(galaxy_plotter_path)
-
-    os.mkdir(galaxy_plotter_path)
-
-    return galaxy_plotter_path
 
 @pytest.fixture(name='grid_stack')
 def make_grid_stack():
     return grids.GridStack.from_shape_pixel_scale_and_sub_grid_size(shape=(100, 100), pixel_scale=0.05, sub_grid_size=2)
 
+
 @pytest.fixture(name='ccd')
 def make_ccd():
-
     image = scaled_array.ScaledSquarePixelArray(array=np.ones((3, 3)), pixel_scale=1.0)
-    noise_map = im.NoiseMap(array=2.0*np.ones((3,3)), pixel_scale=1.0)
-    psf = im.PSF(array=3.0*np.ones((1,1)), pixel_scale=1.0)
+    noise_map = im.NoiseMap(array=2.0 * np.ones((3, 3)), pixel_scale=1.0)
+    psf = im.PSF(array=3.0 * np.ones((1, 1)), pixel_scale=1.0)
 
-    return im.CCDData(image=image, pixel_scale=1.0, noise_map=noise_map, psf=psf, exposure_time_map=2.0 * np.ones((3, 3)),
-                      background_sky_map=3.0*np.ones((3,3)))
+    return im.CCDData(image=image, pixel_scale=1.0, noise_map=noise_map, psf=psf,
+                      exposure_time_map=2.0 * np.ones((3, 3)),
+                      background_sky_map=3.0 * np.ones((3, 3)))
+
 
 @pytest.fixture(name='positions')
 def make_positions():
     positions = [[[0.1, 0.1], [0.2, 0.2]], [[0.3, 0.3]]]
     return list(map(lambda position_set: np.asarray(position_set), positions))
 
+
 @pytest.fixture(name='mask')
 def make_mask():
-    return msk.Mask.circular(shape=((3,3)), pixel_scale=0.1, radius_arcsec=0.1)
+    return msk.Mask.circular(shape=((3, 3)), pixel_scale=0.1, radius_arcsec=0.1)
+
 
 @pytest.fixture(name='lens_data')
 def make_lens_image(ccd, mask):
     return li.LensData(ccd_data=ccd, mask=mask)
 
+
 @pytest.fixture(name='fit')
 def make_fit(lens_data):
-
     lens_galaxy = g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=1.0), redshift=1.0)
     lens_subhalo = g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=0.1), redshift=1.0)
     source_galaxy = g.Galaxy(light=lp.EllipticalSersic(intensity=1.0), redshift=2.0)
@@ -75,9 +66,7 @@ def make_fit(lens_data):
                                                  tracer_sensitive=tracer_sensitivity)
 
 
-def test__fit_sub_plot__output_dependent_on_config(fit, general_config, sensitivity_fit_plotter_path):
-
+def test__fit_sub_plot__output_dependent_on_config(fit, sensitivity_fit_plotter_path, plot_patch):
     sensitivity_fit_plotters.plot_fit_subplot(fit=fit, should_plot_mask=True,
-                                                  output_path=sensitivity_fit_plotter_path, output_format='png')
-    assert os.path.isfile(path=sensitivity_fit_plotter_path + 'sensitivity_fit.png')
-    os.remove(path=sensitivity_fit_plotter_path + 'sensitivity_fit.png')
+                                              output_path=sensitivity_fit_plotter_path, output_format='png')
+    assert sensitivity_fit_plotter_path + 'sensitivity_fit.png' in plot_patch.paths
