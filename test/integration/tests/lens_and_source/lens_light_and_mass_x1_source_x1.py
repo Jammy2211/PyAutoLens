@@ -19,6 +19,7 @@ conf.instance = conf.Config(config_path=config_path, output_path=output_path)
 
 def pipeline():
 
+    tools.reset_paths(test_name=test_name, output_path=output_path)
 
     lens_light = lp.SphericalDevVaucouleurs(centre=(0.0, 0.0), intensity=0.1, effective_radius=0.5)
     lens_mass = mp.EllipticalIsothermal(centre=(0.0, 0.0), axis_ratio=0.8, phi=80.0, einstein_radius=1.6)
@@ -28,7 +29,6 @@ def pipeline():
     lens_galaxy = galaxy.Galaxy(dev=lens_light, sie=lens_mass)
     source_galaxy = galaxy.Galaxy(sersic=source_light)
 
-    tools.reset_paths(test_name=test_name, output_path=output_path)
     tools.simulate_integration_image(test_name=test_name, pixel_scale=0.1, lens_galaxies=[lens_galaxy],
                                      source_galaxies=[source_galaxy], target_signal_to_noise=30.0)
 
@@ -48,6 +48,7 @@ def make_pipeline(test_name):
                                      source_galaxies=dict(source=gm.GalaxyModel(light=lp.EllipticalSersic)),
                                      optimizer_class=nl.MultiNest, phase_name="{}/phase1".format(test_name))
 
+    phase1.optimizer.const_efficiency_mode = True
     phase1.optimizer.n_live_points = 60
     phase1.optimizer.sampling_efficiency = 0.8
 

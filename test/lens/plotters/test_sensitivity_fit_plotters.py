@@ -68,7 +68,7 @@ def make_fit(lens_data):
 
 def test__fit_sub_plot__output_dependent_on_config(fit, sensitivity_fit_plotter_path, plot_patch):
 
-    sensitivity_fit_plotters.plot_fit_subplot(fit=fit, should_plot_mask=True, extract_mask_region=True,
+    sensitivity_fit_plotters.plot_fit_subplot(fit=fit, should_plot_mask=True, zoom_around_mask=True,
                                               output_path=sensitivity_fit_plotter_path, output_format='png')
 
     assert sensitivity_fit_plotter_path + 'sensitivity_fit.png' in plot_patch.paths

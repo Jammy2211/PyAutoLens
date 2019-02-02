@@ -91,6 +91,8 @@ def make_pipeline(test_name):
                        number_of_steps=2, optimizer_class=nl.MultiNest,
                        phase_name=test_name + '/phase2')
 
+    phase2.optimizer.const_efficiency_mode = True
+
     return pl.PipelineImaging(test_name, phase1, phase2)
 
 

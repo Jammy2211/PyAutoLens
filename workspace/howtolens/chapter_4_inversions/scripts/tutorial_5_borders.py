@@ -179,7 +179,7 @@ def simulate_image_x2_lenses():
 # Lets simulate our 2 lens system, define a new circular mask and plot them.
 ccd_data = simulate_image_x2_lenses()
 mask_circular = msk.Mask.circular(shape=ccd_data.shape, pixel_scale=ccd_data.pixel_scale, radius_arcsec=2.8)
-ccd_plotters.plot_ccd_subplot(ccd_data=ccd_data, mask=mask_circular, should_plot_border=True)
+ccd_plotters.plot_ccd_subplot(ccd_data=ccd_data, mask=mask_circular, zoom_around_mask=True, should_plot_border=True)
 
 
 # We need to redefine our perform fit function, to use the x2 lens galaxy model.

@@ -102,7 +102,7 @@ def make_fit_hyper(lens_hyper_image, hyper):
 
 def test__image_is_output(fit, lens_plotter_util_path, plot_patch):
 
-    lens_plotter_util.plot_image(fit=fit, mask=fit.mask, extract_mask_region=True,
+    lens_plotter_util.plot_image(fit=fit, mask=fit.mask, zoom_around_mask=True,
                                  output_path=lens_plotter_util_path, output_format='png')
 
     assert lens_plotter_util_path + 'fit_image.png' in plot_patch.paths
@@ -110,7 +110,7 @@ def test__image_is_output(fit, lens_plotter_util_path, plot_patch):
 
 def test__noise_map_is_output(fit, lens_plotter_util_path, plot_patch):
 
-    lens_plotter_util.plot_noise_map(fit=fit, mask=fit.mask, extract_mask_region=True,
+    lens_plotter_util.plot_noise_map(fit=fit, mask=fit.mask, zoom_around_mask=True,
                                      output_path=lens_plotter_util_path, output_format='png')
 
     assert lens_plotter_util_path + 'fit_noise_map.png' in plot_patch.paths
@@ -118,7 +118,7 @@ def test__noise_map_is_output(fit, lens_plotter_util_path, plot_patch):
 
 def test__signal_to_noise_map_is_output(fit, lens_plotter_util_path, plot_patch):
 
-    lens_plotter_util.plot_signal_to_noise_map(fit=fit, mask=fit.mask, extract_mask_region=True,
+    lens_plotter_util.plot_signal_to_noise_map(fit=fit, mask=fit.mask, zoom_around_mask=True,
                                                output_path=lens_plotter_util_path, output_format='png')
 
     assert lens_plotter_util_path + 'fit_signal_to_noise_map.png' in plot_patch.paths
@@ -126,7 +126,7 @@ def test__signal_to_noise_map_is_output(fit, lens_plotter_util_path, plot_patch)
 
 def test__model_image_is_output(fit, lens_plotter_util_path, plot_patch):
 
-    lens_plotter_util.plot_model_data(fit=fit, mask=fit.mask, extract_mask_region=True,
+    lens_plotter_util.plot_model_data(fit=fit, mask=fit.mask, zoom_around_mask=True,
                                       output_path=lens_plotter_util_path, output_format='png')
 
     assert lens_plotter_util_path + 'fit_model_image.png' in plot_patch.paths
@@ -134,7 +134,7 @@ def test__model_image_is_output(fit, lens_plotter_util_path, plot_patch):
 
 def test__residual_map_is_output(fit, lens_plotter_util_path, plot_patch):
 
-    lens_plotter_util.plot_residual_map(fit=fit, mask=fit.mask, extract_mask_region=True,
+    lens_plotter_util.plot_residual_map(fit=fit, mask=fit.mask, zoom_around_mask=True,
                                         output_path=lens_plotter_util_path, output_format='png')
 
     assert lens_plotter_util_path + 'fit_residual_map.png' in plot_patch.paths
@@ -142,7 +142,7 @@ def test__residual_map_is_output(fit, lens_plotter_util_path, plot_patch):
 
 def test__chi_squared_map_is_output(fit, lens_plotter_util_path, plot_patch):
 
-    lens_plotter_util.plot_chi_squared_map(fit=fit, mask=fit.mask, extract_mask_region=True,
+    lens_plotter_util.plot_chi_squared_map(fit=fit, mask=fit.mask, zoom_around_mask=True,
                                            output_path=lens_plotter_util_path, output_format='png')
 
     assert lens_plotter_util_path + 'fit_chi_squared_map.png' in plot_patch.paths
@@ -150,7 +150,7 @@ def test__chi_squared_map_is_output(fit, lens_plotter_util_path, plot_patch):
 
 def test__contribution_map_is_output(fit_hyper, lens_plotter_util_path, plot_patch):
 
-    lens_plotter_util.plot_contribution_maps(fit=fit_hyper, mask=fit_hyper.mask, extract_mask_region=True,
+    lens_plotter_util.plot_contribution_maps(fit=fit_hyper, mask=fit_hyper.mask, zoom_around_mask=True,
                                              output_path=lens_plotter_util_path, output_format='png')
 
     assert lens_plotter_util_path + 'fit_contribution_maps.png' in plot_patch.paths

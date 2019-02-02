@@ -21,6 +21,8 @@ conf.instance = conf.Config(config_path=config_path, output_path=output_path)
 
 def pipeline():
 
+    tools.reset_paths(test_name=test_name, output_path=output_path)
+
     sersic_0 = lp.EllipticalSersic(centre=(-1.0, -1.0), axis_ratio=0.8, phi=0.0, intensity=1.0,
                                    effective_radius=1.3, sersic_index=3.0)
 
@@ -30,7 +32,6 @@ def pipeline():
     lens_galaxy_0 = galaxy.Galaxy(light_profile=sersic_0)
     lens_galaxy_1 = galaxy.Galaxy(light_profile=sersic_1)
 
-    tools.reset_paths(test_name=test_name, output_path=output_path)
     tools.simulate_integration_image(test_name=test_name, pixel_scale=0.1, lens_galaxies=[lens_galaxy_0, lens_galaxy_1],
                                      source_galaxies=[], target_signal_to_noise=30.0)
 
@@ -41,6 +42,7 @@ def pipeline():
 
     pipeline = make_pipeline(test_name=test_name)
     pipeline.run(data=ccd_data)
+
 def make_pipeline(test_name):
     
     class LensPlanex2GalPhase(ph.LensPlanePhase):
@@ -52,14 +54,15 @@ def make_pipeline(test_name):
             self.lens_galaxies.lens_1.light.centre_0 = 1.0
             self.lens_galaxies.lens_1.light.centre_1 = 1.0
 
-    def modify_mask_function(img):
-        return msk.Mask.circular(shape=img.shape, pixel_scale=img.pixel_scale, radius_arcsec=5.)
+    def mask_function(image):
+        return msk.Mask.circular(shape=image.shape, pixel_scale=image.pixel_scale, radius_arcsec=5.)
 
     phase1 = LensPlanex2GalPhase(lens_galaxies=dict(lens_0=gm.GalaxyModel(light=lp.EllipticalSersic),
                                                     lens_1=gm.GalaxyModel(light=lp.EllipticalSersic)),
-                                 mask_function=modify_mask_function, optimizer_class=nl.MultiNest,
+                                 mask_function=mask_function, optimizer_class=nl.MultiNest,
                                  phase_name="{}/phase1".format(test_name))
 
+    phase1.optimizer.const_efficiency_mode = True
     phase1.optimizer.n_live_points = 40
     phase1.optimizer.sampling_efficiency = 0.8
 

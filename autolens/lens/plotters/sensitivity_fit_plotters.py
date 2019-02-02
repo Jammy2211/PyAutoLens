@@ -5,7 +5,7 @@ from autolens.lens.plotters import lens_plotter_util
 
 
 def plot_fit_subplot(
-        fit, should_plot_mask=True, extract_mask_region=False, positions=None, should_plot_image_plane_pix=True,
+        fit, should_plot_mask=True, zoom_around_mask=False, positions=None, should_plot_image_plane_pix=True,
         units='arcsec', figsize=None, aspect='equal',
         cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
         cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
@@ -36,7 +36,7 @@ def plot_fit_subplot(
     kpc_per_arcsec = fit.tracer_normal.image_plane.kpc_per_arcsec_proper
 
     lens_plotter_util.plot_image(
-        fit=fit.fit_normal, mask=mask, extract_mask_region=extract_mask_region, positions=positions,
+        fit=fit.fit_normal, mask=mask, zoom_around_mask=zoom_around_mask, positions=positions,
         image_plane_pix_grid=image_plane_pix_grid, as_subplot=True,
         units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
         cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
@@ -48,7 +48,7 @@ def plot_fit_subplot(
     plt.subplot(rows, columns, 4)
 
     lens_plotter_util.plot_model_data(
-        fit=fit.fit_normal, mask=mask, extract_mask_region=extract_mask_region, as_subplot=True,
+        fit=fit.fit_normal, mask=mask, zoom_around_mask=zoom_around_mask, as_subplot=True,
         units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
         cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
         cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
@@ -58,7 +58,7 @@ def plot_fit_subplot(
     plt.subplot(rows, columns, 5)
 
     lens_plotter_util.plot_residual_map(
-        fit=fit.fit_normal, mask=mask, extract_mask_region=extract_mask_region, as_subplot=True,
+        fit=fit.fit_normal, mask=mask, zoom_around_mask=zoom_around_mask, as_subplot=True,
         units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
         cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
         cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
@@ -68,7 +68,7 @@ def plot_fit_subplot(
     plt.subplot(rows, columns, 6)
 
     lens_plotter_util.plot_chi_squared_map(
-        fit=fit.fit_normal, mask=mask, extract_mask_region=extract_mask_region, as_subplot=True,
+        fit=fit.fit_normal, mask=mask, zoom_around_mask=zoom_around_mask, as_subplot=True,
         units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
         cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
         cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
@@ -78,7 +78,7 @@ def plot_fit_subplot(
     plt.subplot(rows, columns, 7)
 
     lens_plotter_util.plot_model_data(
-        fit=fit.fit_sensitive, mask=mask, extract_mask_region=extract_mask_region, as_subplot=True,
+        fit=fit.fit_sensitive, mask=mask, zoom_around_mask=zoom_around_mask, as_subplot=True,
         units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
         cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
         cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
@@ -88,7 +88,7 @@ def plot_fit_subplot(
     plt.subplot(rows, columns, 8)
 
     lens_plotter_util.plot_residual_map(
-        fit=fit.fit_sensitive, mask=mask, extract_mask_region=extract_mask_region, as_subplot=True,
+        fit=fit.fit_sensitive, mask=mask, zoom_around_mask=zoom_around_mask, as_subplot=True,
         units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
         cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
         cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
@@ -98,7 +98,7 @@ def plot_fit_subplot(
     plt.subplot(rows, columns, 9)
 
     lens_plotter_util.plot_chi_squared_map(
-        fit=fit.fit_sensitive, mask=mask, extract_mask_region=extract_mask_region, as_subplot=True,
+        fit=fit.fit_sensitive, mask=mask, zoom_around_mask=zoom_around_mask, as_subplot=True,
         units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
         cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
         cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,

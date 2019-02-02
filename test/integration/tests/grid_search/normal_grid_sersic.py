@@ -76,6 +76,8 @@ def make_pipeline(test_name):
     phase2 = GridPhase(lens_galaxies=dict(lens=gm.GalaxyModel(light=lp.EllipticalSersic)),
                        optimizer_class=nl.GridSearch, phase_name=test_type + '/phase2')
 
+    phase2.optimizer.const_efficiency_mode = True
+
     return pl.PipelineImaging(test_name, phase1, phase2)
 
 

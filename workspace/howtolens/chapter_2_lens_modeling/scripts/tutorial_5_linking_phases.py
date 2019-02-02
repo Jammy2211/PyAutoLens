@@ -131,7 +131,7 @@ phase_1_results = phase_1.run(data=ccd_data)
 print('MultiNest has finished run - you may now continue the notebook.')
 
 # And indeed, we get a reasonably good model and fit to the data - in a much shorter space of time!
-lens_fit_plotters.plot_fit_subplot(fit=phase_1_results.most_likely_fit)
+lens_fit_plotters.plot_fit_subplot(fit=phase_1_results.most_likely_fit, should_plot_mask=True, zoom_around_mask=True)
 
 # Now all we need to do is look at the results of phase 1 and tune our priors in phase 2 to those results. Lets
 # setup a custom phase that does exactly that.
@@ -188,7 +188,7 @@ phase_2_results = phase_2.run(data=ccd_data)
 print('MultiNest has finished run - you may now continue the notebook.')
 
 # Look at that, the right lens model, again!
-lens_fit_plotters.plot_fit_subplot(fit=phase_2_results.most_likely_fit)
+lens_fit_plotters.plot_fit_subplot(fit=phase_2_results.most_likely_fit, should_plot_mask=True, zoom_around_mask=True)
 
 # Our choice to link two phases together was a huge success. We managed to fit a complex and realistic model,
 # but were able to begin by making simplifying assumptions that eased our search of non-linear parameter space. We

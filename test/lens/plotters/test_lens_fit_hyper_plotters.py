@@ -107,30 +107,31 @@ def make_fit_hyper_lens_only(lens_hyper_image, hyper):
     return lens_fit.fit_lens_data_with_tracer(lens_data=lens_hyper_image, tracer=tracer)
 
 
-def test__fit_sub_plot_hyper_lens_only__output_dependent_on_config(fit_lens_only, fit_hyper_lens_only, plot_patch,
+def test__fit_sub_plot_hyper_lens_only(fit_lens_only, fit_hyper_lens_only, plot_patch,
                                                                    lens_fit_plotter_path):
 
     lens_fit_hyper_plotters.plot_fit_subplot(fit_hyper=fit_hyper_lens_only, fit=fit_lens_only, should_plot_mask=True,
-                                             extract_mask_region=True,
+                                             zoom_around_mask=True,
                                              output_path=lens_fit_plotter_path,
                                              output_filename='hyper_lens_fit', output_format='png')
 
     assert lens_fit_plotter_path + 'hyper_lens_fit.png' in plot_patch.paths
 
 
-def test__fit_individuals__hyper_lens_only__depedent_on_config(fit_hyper_lens_only, fit_lens_only, plot_patch,
+def test__fit_individuals__hyper_lens_only__depedent_on_input(fit_hyper_lens_only, fit_lens_only, plot_patch,
                                                                lens_fit_plotter_path):
 
     lens_fit_hyper_plotters.plot_fit_individuals(fit_hyper=fit_hyper_lens_only, fit=fit_lens_only,
-                                                 should_plot_mask=True, extract_mask_region=True,
+                                                 should_plot_mask=True, zoom_around_mask=True,
+                                                 should_plot_noise_map=True,
+                                                 should_plot_model_image=True,
+                                                 should_plot_chi_squared_map=True,
                                                  output_path=lens_fit_plotter_path, output_format='png')
 
     assert lens_fit_plotter_path + 'fit_model_image.png' in plot_patch.paths
 
     assert lens_fit_plotter_path + 'fit_residual_map.png' not in plot_patch.paths
 
-    assert lens_fit_plotter_path + 'fit_chi_squared_map.png' in plot_patch.paths
-
-    assert lens_fit_plotter_path + 'fit_hyper_chi_squared_map.png' not in plot_patch.paths
+    assert lens_fit_plotter_path + 'fit_hyper_chi_squared_map.png' in plot_patch.paths
 
     assert lens_fit_plotter_path + 'fit_hyper_noise_map.png' in plot_patch.paths

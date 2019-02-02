@@ -311,64 +311,6 @@ class TestMaskExtractor:
 
         assert mask.extraction_region == [0,3,1,3]
 
-    def test__mask_extract_2d_array__uses_the_limits_of_the_mask(self):
-
-        array = np.array([[ 1.0,  2.0,  3.0,  4.0],
-                          [ 5.0,  6.0,  7.0,  8.0],
-                          [ 9.0, 10.0, 11.0, 12.0],
-                          [13.0, 14.0, 15.0, 16.0]])
-
-        mask = msk.Mask(array=np.array([[True,  True,  True, True],
-                                        [True, False, False, True],
-                                        [True, False, False, True],
-                                        [True,  True,  True, True]]), pixel_scale=1.0)
-
-        array_extracted = mask.extract_2d_array_around_mask(array_2d=array)
-        assert (array_extracted == np.array([[6.0,   7.0],
-                                             [10.0, 11.0]])).all()
-
-        mask = msk.Mask(array=np.array([[True,  True,  True, True],
-                                        [True, False, False, True],
-                                        [True, False, False, False],
-                                        [True,  True,  True, True]]), pixel_scale=1.0)
-
-        array_extracted = mask.extract_2d_array_around_mask(array_2d=array)
-        assert (array_extracted == np.array([[6.0,   7.0,  8.0],
-                                             [10.0, 11.0, 12.0]])).all()
-
-        mask = msk.Mask(array=np.array([[True,  True,  True, True],
-                                        [True, False, False, True],
-                                        [True, False, False, True],
-                                        [True,  True, False, True]]), pixel_scale=1.0)
-
-        array_extracted = mask.extract_2d_array_around_mask(array_2d=array)
-        assert (array_extracted == np.array([[6.0,   7.0],
-                                             [10.0, 11.0],
-                                             [14.0, 15.0]])).all()
-
-        mask = msk.Mask(array=np.array([[True,  True,   True, True],
-                                        [True, False,  False, True],
-                                        [False, False, False, True],
-                                        [True,  True,  True, True]]), pixel_scale=1.0)
-
-        array_extracted = mask.extract_2d_array_around_mask(array_2d=array)
-        assert (array_extracted == np.array([[5.0,  6.0,  7.0],
-                                             [9.0, 10.0, 11.0]])).all()
-
-        mask = msk.Mask(array=np.array([[True, False,  True, True],
-                                        [True, False, False, True],
-                                        [True, False, False, True],
-                                        [True,  True,  True, True]]), pixel_scale=1.0)
-
-        array_extracted = mask.extract_2d_array_around_mask(array_2d=array)
-        assert (array_extracted == np.array([[2.0,   3.0],
-                                             [6.0,   7.0],
-                                             [10.0, 11.0]])).all()
-
-
-  #  def test__extract_2d_array_to_limits_of_mask(self):
-
-
 
 class TestParse:
 

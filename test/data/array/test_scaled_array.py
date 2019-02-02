@@ -5,6 +5,7 @@ import pytest
 
 from autolens import exc
 from autolens.data.array.util import array_util, grid_util
+from autolens.data.array import mask as msk
 from autolens.data.array import scaled_array
 
 test_data_dir = "{}/../../test_files/array/".format(os.path.dirname(os.path.realpath(__file__)))
@@ -658,6 +659,75 @@ class TestScaledSquarePixelArray:
 
             with pytest.raises(exc.ScaledArrayException):
                 scaled_array.ScaledSquarePixelArray(array=np.ones((2,2)), pixel_scale=-0.5)
+
+    class TestExtract:
+
+        def test__mask_extract_2d_array__uses_the_limits_of_the_mask(self):
+    
+            array = np.array([[ 1.0,  2.0,  3.0,  4.0],
+                              [ 5.0,  6.0,  7.0,  8.0],
+                              [ 9.0, 10.0, 11.0, 12.0],
+                              [13.0, 14.0, 15.0, 16.0]])
+
+            array = scaled_array.ScaledSquarePixelArray(array=array, pixel_scale=1.0)
+
+            mask = msk.Mask(array=np.array([[True,  True,  True, True],
+                                            [True, False, False, True],
+                                            [True, False, False, True],
+                                            [True,  True,  True, True]]), pixel_scale=1.0)
+
+            array_extracted = array.extract_scaled_array_around_mask(mask=mask, buffer=0)
+            assert (array_extracted == np.array([[6.0,   7.0],
+                                                 [10.0, 11.0]])).all()
+
+            mask = msk.Mask(array=np.array([[True,  True,  True, True],
+                                            [True, False, False, True],
+                                            [True, False, False, False],
+                                            [True,  True,  True, True]]), pixel_scale=1.0)
+
+            array_extracted = array.extract_scaled_array_around_mask(mask=mask, buffer=0)
+            assert (array_extracted == np.array([[6.0,   7.0,  8.0],
+                                                 [10.0, 11.0, 12.0]])).all()
+
+            mask = msk.Mask(array=np.array([[True,  True,  True, True],
+                                            [True, False, False, True],
+                                            [True, False, False, True],
+                                            [True,  True, False, True]]), pixel_scale=1.0)
+
+            array_extracted = array.extract_scaled_array_around_mask(mask=mask, buffer=0)
+            assert (array_extracted == np.array([[6.0,   7.0],
+                                                 [10.0, 11.0],
+                                                 [14.0, 15.0]])).all()
+
+            mask = msk.Mask(array=np.array([[True,  True,   True, True],
+                                            [True, False,  False, True],
+                                            [False, False, False, True],
+                                            [True,  True,  True, True]]), pixel_scale=1.0)
+
+            array_extracted = array.extract_scaled_array_around_mask(mask=mask, buffer=0)
+            assert (array_extracted == np.array([[5.0,  6.0,  7.0],
+                                                 [9.0, 10.0, 11.0]])).all()
+
+            mask = msk.Mask(array=np.array([[True, False,  True, True],
+                                            [True, False, False, True],
+                                            [True, False, False, True],
+                                            [True,  True,  True, True]]), pixel_scale=1.0)
+    
+            array_extracted = array.extract_scaled_array_around_mask(mask=mask, buffer=0)
+            assert (array_extracted == np.array([[2.0,   3.0],
+                                                 [6.0,   7.0],
+                                                 [10.0, 11.0]])).all()
+
+            mask = msk.Mask(array=np.array([[True,  True,  True, True],
+                                            [True, False, False, True],
+                                            [True, False, False, True],
+                                            [True,  True,  True, True]]), pixel_scale=1.0)
+
+            array_extracted = array.extract_scaled_array_around_mask(mask=mask, buffer=1)
+            assert (array_extracted == np.array([[ 1.0,  2.0,  3.0,  4.0],
+                                                 [ 5.0,  6.0,  7.0,  8.0],
+                                                 [ 9.0, 10.0, 11.0, 12.0],
+                                                 [13.0, 14.0, 15.0, 16.0]])).all()
 
 
 class TestScaledRectangularPixelArray:

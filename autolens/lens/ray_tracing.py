@@ -504,6 +504,7 @@ class TracerImageSourcePlanes(Tracer):
 
         return None
 
+
 class TracerMultiPlanes(Tracer):
 
     def __init__(self, galaxies, image_plane_grid_stack, border=None, cosmology=cosmo.Planck15):

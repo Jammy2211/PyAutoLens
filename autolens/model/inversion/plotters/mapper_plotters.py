@@ -225,12 +225,12 @@ def voronoi_finite_polygons_2d(vor, radius=None):
 
 def plot_rectangular_pixelization_lines(mapper, units, kpc_per_arcsec):
 
-    if units is 'arcsec' or kpc_per_arcsec is None:
+    if units in 'arcsec' or kpc_per_arcsec is None:
 
         ys = np.linspace(mapper.geometry.arc_second_minima[0], mapper.geometry.arc_second_maxima[0], mapper.shape[0]+1)
         xs = np.linspace(mapper.geometry.arc_second_minima[1], mapper.geometry.arc_second_maxima[1], mapper.shape[1]+1)
 
-    elif units is 'kpc':
+    elif units in 'kpc':
 
         ys = np.linspace(mapper.geometry.arc_second_minima[0]*kpc_per_arcsec,
                          mapper.geometry.arc_second_maxima[0]*kpc_per_arcsec, mapper.shape[0]+1)
@@ -245,14 +245,14 @@ def plot_rectangular_pixelization_lines(mapper, units, kpc_per_arcsec):
 
 def set_axis_limits(mapper, units, kpc_per_arcsec):
 
-    if units is 'arcsec' or kpc_per_arcsec is None:
+    if units in 'arcsec' or kpc_per_arcsec is None:
 
         grid_plotters.set_axis_limits(axis_limits=np.asarray([mapper.geometry.arc_second_minima[1],
                                                               mapper.geometry.arc_second_maxima[1],
                                                               mapper.geometry.arc_second_minima[0],
                                                               mapper.geometry.arc_second_maxima[0]]))
 
-    elif units is 'kpc':
+    elif units in 'kpc':
 
         grid_plotters.set_axis_limits(axis_limits=np.asarray([mapper.geometry.arc_second_minima[1] * kpc_per_arcsec,
                                                               mapper.geometry.arc_second_maxima[1] * kpc_per_arcsec,
@@ -263,11 +263,11 @@ def plot_centres(should_plot_centres, mapper, units, kpc_per_arcsec):
 
     if should_plot_centres:
 
-        if units is 'arcsec' or kpc_per_arcsec is None:
+        if units in 'arcsec' or kpc_per_arcsec is None:
 
             pixel_centres = mapper.geometry.pixel_centres
 
-        elif units is 'kpc':
+        elif units in 'kpc':
 
             pixel_centres = mapper.geometry.pixel_centres * kpc_per_arcsec
 
@@ -336,7 +336,7 @@ def plot_source_plane_source_pixels(grid, mapper, source_pixels, point_colors):
 
 def convert_grid(grid, units, kpc_per_arcsec):
 
-    if units is 'arcsec' or kpc_per_arcsec is None:
+    if units in 'arcsec' or kpc_per_arcsec is None:
         return grid
-    elif units is 'kpc':
+    elif units in 'kpc':
         return grid * kpc_per_arcsec

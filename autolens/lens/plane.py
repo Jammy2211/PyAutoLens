@@ -129,15 +129,15 @@ class AbstractPlane(object):
 
     @property
     def surface_density(self):
-        surface_density_1d = plane_util.surface_density_of_galaxies_from_grid(grid=self.primary_grid_stack.sub.unlensed_grid,
-                                                                              galaxies=self.galaxies)
-        return self.primary_grid_stack.regular.scaled_array_from_array_1d(surface_density_1d)
+        surface_density_1d = plane_util.surface_density_of_galaxies_from_grid(
+            grid=self.primary_grid_stack.sub.unlensed_grid, galaxies=self.galaxies)
+        return self.primary_grid_stack.regular.scaled_array_from_array_1d(array_1d=surface_density_1d)
 
     @property
     def potential(self):
         potential_1d = plane_util.potential_of_galaxies_from_grid(grid=self.primary_grid_stack.sub.unlensed_grid,
                                                                   galaxies=self.galaxies)
-        return self.primary_grid_stack.regular.scaled_array_from_array_1d(potential_1d)
+        return self.primary_grid_stack.regular.scaled_array_from_array_1d(array_1d=potential_1d)
 
     @property
     def deflections_y(self):
