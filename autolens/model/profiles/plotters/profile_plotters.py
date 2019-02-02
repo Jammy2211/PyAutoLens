@@ -3,7 +3,7 @@ import numpy as np
 from autolens.data.array.plotters import array_plotters
 
 def plot_intensities(
-        light_profile, grid, mask=None, extract_mask_region=False, positions=None, as_subplot=False,
+        light_profile, grid, mask=None, zoom_around_mask=False, positions=None, as_subplot=False,
         units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
         cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
         cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
@@ -25,7 +25,7 @@ def plot_intensities(
     intensities = grid.scaled_array_from_array_1d(intensities)
 
     array_plotters.plot_array(
-        array=intensities, mask=mask, extract_mask_region=extract_mask_region, positions=positions, as_subplot=as_subplot,
+        array=intensities, mask=mask, zoom_around_mask=zoom_around_mask, positions=positions, as_subplot=as_subplot,
         units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
         cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
         cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
@@ -34,7 +34,7 @@ def plot_intensities(
         output_path=output_path, output_format=output_format, output_filename=output_filename)
 
 def plot_surface_density(
-        mass_profile, grid, mask=None, extract_mask_region=False, positions=None, as_subplot=False,
+        mass_profile, grid, mask=None, zoom_around_mask=False, positions=None, as_subplot=False,
         units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
         cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
         cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
@@ -56,7 +56,7 @@ def plot_surface_density(
     surface_density = grid.scaled_array_from_array_1d(surface_density)
 
     array_plotters.plot_array(
-        array=surface_density, mask=mask, extract_mask_region=extract_mask_region, positions=positions, as_subplot=as_subplot,
+        array=surface_density, mask=mask, zoom_around_mask=zoom_around_mask, positions=positions, as_subplot=as_subplot,
         units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
         cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
         cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
@@ -65,7 +65,7 @@ def plot_surface_density(
         output_path=output_path, output_format=output_format, output_filename=output_filename)
 
 def plot_potential(
-        mass_profile, grid, mask=None, extract_mask_region=False, positions=None, as_subplot=False,
+        mass_profile, grid, mask=None, zoom_around_mask=False, positions=None, as_subplot=False,
         units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
         cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
         cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
@@ -87,7 +87,7 @@ def plot_potential(
     potential = grid.scaled_array_from_array_1d(potential)
 
     array_plotters.plot_array(
-        array=potential, mask=mask, extract_mask_region=extract_mask_region, positions=positions, as_subplot=as_subplot,
+        array=potential, mask=mask, zoom_around_mask=zoom_around_mask, positions=positions, as_subplot=as_subplot,
         units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
         cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
         cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
@@ -97,7 +97,7 @@ def plot_potential(
 
 
 def plot_deflections_y(
-        mass_profile, grid, mask=None, extract_mask_region=False, positions=None, as_subplot=False,
+        mass_profile, grid, mask=None, zoom_around_mask=False, positions=None, as_subplot=False,
         units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
         cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
         cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
@@ -119,7 +119,7 @@ def plot_deflections_y(
     deflections_y = grid.scaled_array_from_array_1d(deflections[:,0])
 
     array_plotters.plot_array(
-        array=deflections_y, mask=mask, extract_mask_region=extract_mask_region, positions=positions, as_subplot=as_subplot,
+        array=deflections_y, mask=mask, zoom_around_mask=zoom_around_mask, positions=positions, as_subplot=as_subplot,
         units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
         cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
         cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
@@ -129,7 +129,7 @@ def plot_deflections_y(
 
 
 def plot_deflections_x(
-        mass_profile, grid, mask=None, extract_mask_region=False, positions=None, as_subplot=False,
+        mass_profile, grid, mask=None, zoom_around_mask=False, positions=None, as_subplot=False,
         units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
         cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
         cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
@@ -151,7 +151,7 @@ def plot_deflections_x(
     deflections_x = grid.scaled_array_from_array_1d(deflections[:, 1])
 
     array_plotters.plot_array(
-        array=deflections_x, mask=mask, extract_mask_region=extract_mask_region, positions=positions,
+        array=deflections_x, mask=mask, zoom_around_mask=zoom_around_mask, positions=positions,
         as_subplot=as_subplot,
         units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
         cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,

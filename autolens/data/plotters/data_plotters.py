@@ -3,7 +3,7 @@ from matplotlib import pyplot as plt
 from autolens.data.array.plotters import array_plotters
 
 def plot_image(
-        image, plot_origin=True, mask=None, extract_mask_region=False, should_plot_border=False, positions=None,
+        image, plot_origin=True, mask=None, zoom_around_mask=False, should_plot_border=False, positions=None,
         as_subplot=False,
         units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
         cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
@@ -28,7 +28,7 @@ def plot_image(
     origin = get_origin(array=image, plot_origin=plot_origin)
 
     array_plotters.plot_array(
-        array=image, origin=origin, mask=mask, extract_mask_region=extract_mask_region,
+        array=image, origin=origin, mask=mask, zoom_around_mask=zoom_around_mask,
         should_plot_border=should_plot_border, positions=positions, as_subplot=as_subplot,
         units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
         cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
@@ -39,7 +39,7 @@ def plot_image(
 
 
 def plot_noise_map(
-        noise_map, plot_origin=True, mask=None, extract_mask_region=False, as_subplot=False,
+        noise_map, plot_origin=True, mask=None, zoom_around_mask=False, as_subplot=False,
         units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
         cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
         cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
@@ -60,7 +60,7 @@ def plot_noise_map(
     origin = get_origin(array=noise_map, plot_origin=plot_origin)
 
     array_plotters.plot_array(
-        array=noise_map, origin=origin, mask=mask, extract_mask_region=extract_mask_region, as_subplot=as_subplot,
+        array=noise_map, origin=origin, mask=mask, zoom_around_mask=zoom_around_mask, as_subplot=as_subplot,
         units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
         cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
         cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
@@ -99,7 +99,7 @@ def plot_psf(
 
 
 def plot_signal_to_noise_map(
-        signal_to_noise_map, plot_origin=True, mask=None, extract_mask_region=False, as_subplot=False,
+        signal_to_noise_map, plot_origin=True, mask=None, zoom_around_mask=False, as_subplot=False,
         units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
         cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
         cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
@@ -120,7 +120,7 @@ def plot_signal_to_noise_map(
     origin = get_origin(array=signal_to_noise_map, plot_origin=plot_origin)
 
     array_plotters.plot_array(
-        array=signal_to_noise_map, origin=origin, mask=mask, extract_mask_region=extract_mask_region,
+        array=signal_to_noise_map, origin=origin, mask=mask, zoom_around_mask=zoom_around_mask,
         as_subplot=as_subplot,
         units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
         cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,

@@ -39,7 +39,7 @@ def make_galaxy_plotter_setup():
 def test__intensities_is_output(galaxy_light,grid_stack, mask, positions, galaxy_plotter_path, plot_patch):
     
     galaxy_plotters.plot_intensities(galaxy=galaxy_light, grid=grid_stack.regular,
-                                     mask=mask, extract_mask_region=True, positions=positions,
+                                     mask=mask, zoom_around_mask=True, positions=positions,
                                      output_path=galaxy_plotter_path, output_format='png')
     
     assert galaxy_plotter_path + 'galaxy_intensities.png' in plot_patch.paths
@@ -48,7 +48,7 @@ def test__intensities_is_output(galaxy_light,grid_stack, mask, positions, galaxy
 def test__surface_density_is_output(galaxy_mass,grid_stack, mask, positions, galaxy_plotter_path, plot_patch):
     
     galaxy_plotters.plot_surface_density(galaxy=galaxy_mass, grid=grid_stack.regular,
-                                         mask=mask, extract_mask_region=True, positions=positions,
+                                         mask=mask, zoom_around_mask=True, positions=positions,
                                          output_path=galaxy_plotter_path, output_format='png')
     
     assert galaxy_plotter_path + 'galaxy_surface_density.png' in plot_patch.paths
@@ -57,7 +57,7 @@ def test__surface_density_is_output(galaxy_mass,grid_stack, mask, positions, gal
 def test__potential_is_output(galaxy_mass,grid_stack, mask, positions, galaxy_plotter_path, plot_patch):
     
     galaxy_plotters.plot_potential(galaxy=galaxy_mass, grid=grid_stack.regular,
-                                   mask=mask, extract_mask_region=True, positions=positions,
+                                   mask=mask, zoom_around_mask=True, positions=positions,
                                    output_path=galaxy_plotter_path, output_format='png')
     
     assert galaxy_plotter_path + 'galaxy_potential.png' in plot_patch.paths
@@ -66,7 +66,7 @@ def test__potential_is_output(galaxy_mass,grid_stack, mask, positions, galaxy_pl
 def test__deflections_y_is_output(galaxy_mass,grid_stack, mask, positions, galaxy_plotter_path, plot_patch):
     
     galaxy_plotters.plot_deflections_y(galaxy=galaxy_mass, grid=grid_stack.regular,
-                                       mask=mask, extract_mask_region=True, positions=positions,
+                                       mask=mask, zoom_around_mask=True, positions=positions,
                                        output_path=galaxy_plotter_path, output_format='png')
     
     assert galaxy_plotter_path + 'galaxy_deflections_y.png' in plot_patch.paths
@@ -75,7 +75,7 @@ def test__deflections_y_is_output(galaxy_mass,grid_stack, mask, positions, galax
 def test__deflections_x_is_output(galaxy_mass,grid_stack, mask, positions, galaxy_plotter_path, plot_patch):
     
     galaxy_plotters.plot_deflections_x(galaxy=galaxy_mass, grid=grid_stack.regular,
-                                       mask=mask, extract_mask_region=True, positions=positions,
+                                       mask=mask, zoom_around_mask=True, positions=positions,
                                        output_path=galaxy_plotter_path, output_format='png')
     
     assert galaxy_plotter_path + 'galaxy_deflections_x.png' in plot_patch.paths
@@ -84,7 +84,7 @@ def test__deflections_x_is_output(galaxy_mass,grid_stack, mask, positions, galax
 def test__individual_intensities_is_output(galaxy_light,grid_stack, mask, positions, galaxy_plotter_path, plot_patch):
     
     galaxy_plotters.plot_intensities_subplot(galaxy=galaxy_light, grid=grid_stack.regular,
-                                             mask=mask, extract_mask_region=True, positions=positions,
+                                             mask=mask, zoom_around_mask=True, positions=positions,
                                              output_path=galaxy_plotter_path, output_format='png')
     
     assert galaxy_plotter_path + 'galaxy_individual_intensities.png' in plot_patch.paths
@@ -93,7 +93,7 @@ def test__individual_intensities_is_output(galaxy_light,grid_stack, mask, positi
 def test__individual_surface_density_is_output(galaxy_light,grid_stack, mask, positions, galaxy_plotter_path, plot_patch):
     
     galaxy_plotters.plot_surface_density_subplot(galaxy=galaxy_light, grid=grid_stack.regular,
-                                                 mask=mask, extract_mask_region=True, positions=positions,
+                                                 mask=mask, zoom_around_mask=True, positions=positions,
                                                  output_path=galaxy_plotter_path, output_format='png')
     
     assert galaxy_plotter_path + 'galaxy_individual_surface_density.png' in plot_patch.paths
@@ -102,7 +102,7 @@ def test__individual_surface_density_is_output(galaxy_light,grid_stack, mask, po
 def test__individual_potential_is_output(galaxy_light,grid_stack, mask, positions, galaxy_plotter_path, plot_patch):
     
     galaxy_plotters.plot_potential_subplot(galaxy=galaxy_light, grid=grid_stack.regular,
-                                           mask=mask, extract_mask_region=True, positions=positions,
+                                           mask=mask, zoom_around_mask=True, positions=positions,
                                            output_path=galaxy_plotter_path, output_format='png')
     
     assert galaxy_plotter_path + 'galaxy_individual_potential.png' in plot_patch.paths
@@ -111,7 +111,7 @@ def test__individual_potential_is_output(galaxy_light,grid_stack, mask, position
 def test__individual_deflections_y_is_output(galaxy_light,grid_stack, mask, positions, galaxy_plotter_path, plot_patch):
     
     galaxy_plotters.plot_deflections_y_subplot(galaxy=galaxy_light, grid=grid_stack.regular,
-                                               mask=mask, extract_mask_region=True, positions=positions,
+                                               mask=mask, zoom_around_mask=True, positions=positions,
                                                output_path=galaxy_plotter_path, output_format='png')
     
     assert galaxy_plotter_path + 'galaxy_individual_deflections_y.png' in plot_patch.paths
@@ -120,7 +120,7 @@ def test__individual_deflections_y_is_output(galaxy_light,grid_stack, mask, posi
 def test__individual_deflections_x_is_output(galaxy_light,grid_stack, mask, positions, galaxy_plotter_path, plot_patch):
     
     galaxy_plotters.plot_intensities_subplot(galaxy=galaxy_light, grid=grid_stack.regular,
-                                             mask=mask, extract_mask_region=True, positions=positions,
+                                             mask=mask, zoom_around_mask=True, positions=positions,
                                              output_path=galaxy_plotter_path, output_format='png')
     
     assert galaxy_plotter_path + 'galaxy_individual_intensities.png' in plot_patch.paths

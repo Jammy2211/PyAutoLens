@@ -49,6 +49,7 @@ def make_pipeline(test_name):
     phase1 = MMPhase(lens_galaxies=dict(lens=gm.GalaxyModel(light=lp.EllipticalSersic)),
                      optimizer_class=nl.MultiNest, phase_name="{}/phase1".format(test_name))
 
+    phase1.optimizer.const_efficiency_mode = True
     phase1.optimizer.n_live_points = 20
     phase1.optimizer.sampling_efficiency = 0.8
 

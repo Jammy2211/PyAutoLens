@@ -328,6 +328,23 @@ class ScaledSquarePixelArray(ScaledArray):
         except AttributeError:
             return super_result
 
+    def extract_scaled_array_around_mask(self, mask, buffer=1):
+        """Extract the 2D region of an array corresponding to the rectangle encompassing all unmasked values.
+
+        This is used to extract and visualize only the region of an image that is used in an analysis.
+
+        Parameters
+        ----------
+        mask : mask.Mask
+            The mask around which the scaled array is extracted.
+        buffer : int
+            The buffer of pixels around the extraction.
+        """
+        region = mask.extraction_region
+        return self.new_with_array(array=array_util.extract_array_2d(array_2d=self,
+                                                                     y0=region[0]-buffer, y1=region[1]+buffer,
+                                                                     x0=region[2]-buffer, x1=region[3]+buffer))
+
     def resized_scaled_array_from_array(self, new_shape, new_centre_pixels=None, new_centre_arc_seconds=None):
         """resized the array to a new shape and at a new origin.
 
@@ -347,8 +364,8 @@ class ScaledSquarePixelArray(ScaledArray):
             raise exc.ImagingException('You have supplied two centres (pixels and arc-seconds) to the resize scaled'
                                        'array function')
 
-        return self.new_with_array(array_util.resize_array_2d(array_2d=self, new_shape=new_shape,
-                                                              origin=new_centre))
+        return self.new_with_array(array=array_util.resize_array_2d(array_2d=self, new_shape=new_shape,
+                                                                    origin=new_centre))
 
 
 class ScaledRectangularPixelArray(ScaledArray):

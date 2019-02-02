@@ -79,52 +79,52 @@ def make_galaxy_fitting_deflections_x(galaxy_data_deflections_x, galaxy):
     return galaxy_fit.GalaxyFit(galaxy_data=galaxy_data_deflections_x, model_galaxy=galaxy)
 
 
-def test__fit_sub_plot__galaxy_intensities__output_dependent_on_config(fit_intensities, positions, plot_patch,
+def test__fit_sub_plot__galaxy_intensities(fit_intensities, positions, plot_patch,
                                                                        galaxy_fitting_plotter_path):
 
-    galaxy_fit_plotters.plot_single_subplot(fit=fit_intensities,
-                                            should_plot_mask=True, extract_mask_region=True, positions=positions,
-                                            output_path=galaxy_fitting_plotter_path, output_format='png')
+    galaxy_fit_plotters.plot_fit_subplot(fit=fit_intensities,
+                                         should_plot_mask=True, zoom_around_mask=True, positions=positions,
+                                         output_path=galaxy_fitting_plotter_path, output_format='png')
 
     assert galaxy_fitting_plotter_path + 'galaxy_fit.png' in plot_patch.paths
 
 
-def test__fit_sub_plot__galaxy_surface_density__output_dependent_on_config(fit_surface_density, mask, positions,
+def test__fit_sub_plot__galaxy_surface_density(fit_surface_density, mask, positions,
                                                                            plot_patch,
                                                                            galaxy_fitting_plotter_path):
 
-    galaxy_fit_plotters.plot_single_subplot(fit=fit_surface_density,
-                                            should_plot_mask=True, extract_mask_region=True, positions=positions,
-                                            output_path=galaxy_fitting_plotter_path, output_format='png')
+    galaxy_fit_plotters.plot_fit_subplot(fit=fit_surface_density,
+                                         should_plot_mask=True, zoom_around_mask=True, positions=positions,
+                                         output_path=galaxy_fitting_plotter_path, output_format='png')
 
     assert galaxy_fitting_plotter_path + 'galaxy_fit.png' in plot_patch.paths
 
 
-def test__fit_sub_plot__galaxy_potential__output_dependent_on_config(fit_potential, mask, positions, plot_patch,
+def test__fit_sub_plot__galaxy_potential(fit_potential, mask, positions, plot_patch,
                                                                      galaxy_fitting_plotter_path):
 
-    galaxy_fit_plotters.plot_single_subplot(fit=fit_potential,
-                                            should_plot_mask=True, extract_mask_region=True, positions=positions,
-                                            output_path=galaxy_fitting_plotter_path, output_format='png')
+    galaxy_fit_plotters.plot_fit_subplot(fit=fit_potential,
+                                         should_plot_mask=True, zoom_around_mask=True, positions=positions,
+                                         output_path=galaxy_fitting_plotter_path, output_format='png')
 
     assert galaxy_fitting_plotter_path + 'galaxy_fit.png' in plot_patch.paths
 
 
-def test__fit_sub_plot__galaxy_deflections_y__output_dependent_on_config(fit_deflections_y, mask, positions, plot_patch,
+def test__fit_sub_plot__galaxy_deflections_y_(fit_deflections_y, mask, positions, plot_patch,
                                                                          galaxy_fitting_plotter_path):
 
-    galaxy_fit_plotters.plot_single_subplot(fit=fit_deflections_y,
-                                            should_plot_mask=True, extract_mask_region=True, positions=positions,
-                                            output_path=galaxy_fitting_plotter_path, output_format='png')
+    galaxy_fit_plotters.plot_fit_subplot(fit=fit_deflections_y,
+                                         should_plot_mask=True, zoom_around_mask=True, positions=positions,
+                                         output_path=galaxy_fitting_plotter_path, output_format='png')
 
     assert galaxy_fitting_plotter_path + 'galaxy_fit.png' in plot_patch.paths
 
 
-def test__fit_sub_plot__galaxy_deflections_x__output_dependent_on_config(fit_deflections_x, mask, positions, plot_patch,
+def test__fit_sub_plot__galaxy_deflections_x(fit_deflections_x, mask, positions, plot_patch,
                                                                          galaxy_fitting_plotter_path):
 
-    galaxy_fit_plotters.plot_single_subplot(fit=fit_deflections_x,
-                                            should_plot_mask=True, extract_mask_region=True, positions=positions,
-                                            output_path=galaxy_fitting_plotter_path, output_format='png')
+    galaxy_fit_plotters.plot_fit_subplot(fit=fit_deflections_x,
+                                         should_plot_mask=True, zoom_around_mask=True, positions=positions,
+                                         output_path=galaxy_fitting_plotter_path, output_format='png')
 
     assert galaxy_fitting_plotter_path + 'galaxy_fit.png' in plot_patch.paths

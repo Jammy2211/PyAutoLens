@@ -56,6 +56,31 @@ class Memoizer(object):
 
 
 @decorator_util.jit()
+def extract_array_2d(array_2d, y0, y1, x0, x1):
+    """Resize an array to a new size around its a central pixel defined by the array's origin..
+
+    Parameters
+    ----------
+    array_2d : ndarray
+        The 2D array that is to be resized.
+    new_shape : (int, int)
+        The (y,x) new pixel dimension of the trimmed array-array.
+    origin : (int, int)
+        The new centre of the resized array
+    """
+
+    new_shape = (y1-y0, x1-x0)
+
+    resized_array = np.zeros(shape=new_shape)
+
+    for y_resized, y in enumerate(range(y0, y1)):
+        for x_resized, x in enumerate(range(x0, x1)):
+                resized_array[y_resized, x_resized] = array_2d[y, x]
+
+    return resized_array
+
+
+@decorator_util.jit()
 def resize_array_2d(array_2d, new_shape, origin=(-1, -1)):
     """Resize an array to a new size around its a central pixel defined by the array's origin..
 

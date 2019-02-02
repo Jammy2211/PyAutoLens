@@ -87,7 +87,8 @@ phase_normal_results = phase_normal.run(data=ccd_data)
 print('MultiNest has finished run - you may now continue the notebook.')
 
 # Lets check we get a reasonably good model and fit to the data.
-lens_fit_plotters.plot_fit_subplot(fit=phase_normal_results.most_likely_fit)
+lens_fit_plotters.plot_fit_subplot(fit=phase_normal_results.most_likely_fit, should_plot_mask=True,
+                                   zoom_around_mask=True)
 
 print("Time without black magic = {}".format(time.time() - start))
 
@@ -116,7 +117,8 @@ phase_black_magic_results = phase_black_magic.run(data=ccd_data)
 print('MultiNest has finished run - you may now continue the notebook.')
 
 # Of course the key question is, does our use of black magic impact the quality of our fit to the data?
-lens_fit_plotters.plot_fit_subplot(fit=phase_black_magic_results.most_likely_fit)
+lens_fit_plotters.plot_fit_subplot(fit=phase_black_magic_results.most_likely_fit, should_plot_mask=True,
+                                   zoom_around_mask=True)
 
 print("Time with black magic = {}".format(time.time() - start))
 
@@ -178,7 +180,8 @@ print('MultiNest has begun running - checkout the workspace/howtolens/chapter_2_
 phase_too_much_black_magic_results = phase_too_much_black_magic.run(data=ccd_data)
 print('MultiNest has finished run - you may now continue the notebook.')
 
-lens_fit_plotters.plot_fit_subplot(fit=phase_too_much_black_magic_results.most_likely_fit)
+lens_fit_plotters.plot_fit_subplot(fit=phase_too_much_black_magic_results.most_likely_fit, should_plot_mask=True,
+                                   zoom_around_mask=True)
 
 print("Time with too much black magic = {}".format(time.time() - start))
 
