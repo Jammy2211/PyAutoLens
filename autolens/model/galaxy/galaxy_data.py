@@ -29,6 +29,7 @@ class GalaxyData(object):
         self.noise_map = noise_map
         self.pixel_scale = pixel_scale
 
+
 class GalaxyFitData(object):
 
     def __init__(self, galaxy_data, mask, sub_grid_size=2, use_intensities=False, use_surface_density=False,
