@@ -71,19 +71,20 @@ def make_fit_source_and_lens(lens_data, galaxy_light, galaxy_mass):
 
 
 def test__fit_sub_plot_lens_only__output_dependent_on_config(fit_lens_only, lens_fit_plotter_path, plot_patch):
-    lens_fit_plotters.plot_fit_subplot(fit=fit_lens_only, should_plot_mask=True,
+    lens_fit_plotters.plot_fit_subplot(fit=fit_lens_only, should_plot_mask=True, extract_mask_region=True,
                                        output_path=lens_fit_plotter_path, output_format='png')
     assert lens_fit_plotter_path + 'lens_fit.png' in plot_patch.paths
 
 
 def test__fit_sub_plot_source_and_lens__output_dependent_on_config(fit_source_and_lens,
                                                                    lens_fit_plotter_path, plot_patch):
-    lens_fit_plotters.plot_fit_subplot(fit=fit_source_and_lens, should_plot_mask=True,
+    lens_fit_plotters.plot_fit_subplot(fit=fit_source_and_lens, should_plot_mask=True, extract_mask_region=True,
                                        output_path=lens_fit_plotter_path, output_format='png')
     assert lens_fit_plotter_path + 'lens_fit.png' in plot_patch.paths
 
 
 def test__fit_individuals__lens_only__depedent_on_config(fit_lens_only, lens_fit_plotter_path, plot_patch):
+
     lens_fit_plotters.plot_fit_individuals(fit=fit_lens_only, output_path=lens_fit_plotter_path,
                                            output_format='png')
 
@@ -96,6 +97,7 @@ def test__fit_individuals__lens_only__depedent_on_config(fit_lens_only, lens_fit
 
 def test__fit_individuals__source_and_lens__depedent_on_config(fit_source_and_lens,
                                                                lens_fit_plotter_path, plot_patch):
+
     lens_fit_plotters.plot_fit_individuals(fit=fit_source_and_lens, output_path=lens_fit_plotter_path,
                                            output_format='png')
 

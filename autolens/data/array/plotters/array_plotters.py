@@ -7,7 +7,8 @@ import itertools
 from autolens.data.array.plotters import plotter_util
 
 
-def plot_array(array, origin=None, mask=None, should_plot_border=False, positions=None, grid=None, as_subplot=False,
+def plot_array(array, origin=None, mask=None, extract_mask_region=False, should_plot_border=False, positions=None,
+               grid=None, as_subplot=False,
                units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
                cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
                cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
@@ -23,8 +24,11 @@ def plot_array(array, origin=None, mask=None, should_plot_border=False, position
         The 2D array of hyper which is plotted.
     origin : (float, float).
         The origin of the coordinate system of the hyper, which is plotted as an 'x' on the hyper if input.
-    mask : ndarray of hyper.array.masks.Mask
+    mask : ndarray of array.mask.Mask
         The masks applied to the hyper, the edge of which is plotted as a set of points over the plotted array.
+    extract_mask_region : bool
+        If True, the 2D region of the array corresponding to the rectangle encompassing all unmasked values is \
+        extracted and plotted.
     should_plot_border : bool
         If a masks is supplied, its borders pixels (e.g. the exterior edge) is plotted if this is *True*.
     positions : [[]]
@@ -94,6 +98,9 @@ def plot_array(array, origin=None, mask=None, should_plot_border=False, position
 
     if array is None:
         return
+
+    if extract_mask_region and mask is not None:
+        array = mask.extract_2d_array_around_mask(array_2d=array)
 
     plot_figure(array=array, as_subplot=as_subplot, units=units, kpc_per_arcsec=kpc_per_arcsec,
                 figsize=figsize, aspect=aspect, cmap=cmap, norm=norm,

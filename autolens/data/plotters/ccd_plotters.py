@@ -5,13 +5,14 @@ from autolens.data.plotters import data_plotters
 from autolens.data.array.plotters import plotter_util
 
 
-def plot_ccd_subplot(ccd_data, plot_origin=True, mask=None, should_plot_border=False, positions=None,
-                     units='arcsec', kpc_per_arcsec=None, figsize=None, aspect='equal',
-                     cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
-                     cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
-                     titlesize=10, xlabelsize=10, ylabelsize=10, xyticksize=10,
-                     mask_pointsize=10, position_pointsize=30, grid_pointsize=1,
-                     output_path=None, output_filename='ccd_data', output_format='show', ignore_config=True):
+def plot_ccd_subplot(
+        ccd_data, plot_origin=True, mask=None, extract_mask_region=False, should_plot_border=False, positions=None,
+        units='arcsec', kpc_per_arcsec=None, figsize=None, aspect='equal',
+        cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
+        cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
+        titlesize=10, xlabelsize=10, ylabelsize=10, xyticksize=10,
+        mask_pointsize=10, position_pointsize=30, grid_pointsize=1,
+        output_path=None, output_filename='ccd_data', output_format='show', ignore_config=True):
     """Plot the ccd data as a sub-plot of all its quantites (e.g. the data, noise_map-map, PSF, Signal-to_noise-map, \
      etc).
 
@@ -46,46 +47,49 @@ def plot_ccd_subplot(ccd_data, plot_origin=True, mask=None, should_plot_border=F
         plt.figure(figsize=figsize)
         plt.subplot(rows, columns, 1)
 
-        plot_image(ccd_data=ccd_data, plot_origin=plot_origin, mask=mask, should_plot_border=should_plot_border,
-                   positions=positions, as_subplot=True,
-                   units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
-                   cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
-                   cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
-                   titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize, xyticksize=xyticksize,
-                   mask_pointsize=mask_pointsize, position_pointsize=position_pointsize, grid_pointsize=grid_pointsize,
-                   output_path=output_path, output_format=output_format)
+        plot_image(
+            ccd_data=ccd_data, plot_origin=plot_origin, mask=mask, extract_mask_region=extract_mask_region,
+            should_plot_border=should_plot_border, positions=positions, as_subplot=True,
+            units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
+            cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
+            cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
+            titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize, xyticksize=xyticksize,
+            mask_pointsize=mask_pointsize, position_pointsize=position_pointsize, grid_pointsize=grid_pointsize,
+            output_path=output_path, output_format=output_format)
 
         plt.subplot(rows, columns, 2)
 
-        plot_noise_map(ccd_data=ccd_data, plot_origin=plot_origin, mask=mask, as_subplot=True,
-                       units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
-                       cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
-                       linscale=linscale,
-                       cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
-                       titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize, xyticksize=xyticksize,
-                       mask_pointsize=mask_pointsize,
-                       output_path=output_path, output_format=output_format)
+        plot_noise_map(
+            ccd_data=ccd_data, plot_origin=plot_origin, mask=mask, extract_mask_region=extract_mask_region,
+            as_subplot=True,
+            units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
+            cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
+            cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
+            titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize, xyticksize=xyticksize,
+            mask_pointsize=mask_pointsize,
+            output_path=output_path, output_format=output_format)
 
         plt.subplot(rows, columns, 3)
 
-        plot_psf(ccd_data=ccd_data, as_subplot=True,
-                 units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
-                 cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
-                 cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
-                 titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize, xyticksize=xyticksize,
-                 output_path=output_path, output_format=output_format)
+        plot_psf(
+            ccd_data=ccd_data, as_subplot=True,
+            units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
+            cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
+            cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
+            titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize, xyticksize=xyticksize,
+            output_path=output_path, output_format=output_format)
 
         plt.subplot(rows, columns, 4)
 
-        plot_signal_to_noise_map(ccd_data=ccd_data, plot_origin=plot_origin, mask=mask, as_subplot=True,
-                                 units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
-                                 cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
-                                 linscale=linscale,
-                                 cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
-                                 titlesize=titlesize, xlabelsize=xlabelsize,
-                                 ylabelsize=ylabelsize, xyticksize=xyticksize,
-                                 mask_pointsize=mask_pointsize,
-                                 output_path=output_path, output_format=output_format)
+        plot_signal_to_noise_map(
+            ccd_data=ccd_data, plot_origin=plot_origin, mask=mask, extract_mask_region=extract_mask_region,
+            as_subplot=True,
+            units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
+            cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
+            cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
+            titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize, xyticksize=xyticksize,
+            mask_pointsize=mask_pointsize,
+            output_path=output_path, output_format=output_format)
 
         plotter_util.output_subplot_array(output_path=output_path, output_filename=output_filename,
                                           output_format=output_format)
@@ -93,7 +97,9 @@ def plot_ccd_subplot(ccd_data, plot_origin=True, mask=None, should_plot_border=F
         plt.close()
 
 
-def plot_ccd_individual(ccd_data, plot_origin=True, mask=None, positions=None, output_path=None, output_format='png'):
+def plot_ccd_individual(
+        ccd_data, plot_origin=True, mask=None, extract_mask_region=False, positions=None,
+        output_path=None, output_format='png'):
     """Plot each attribute of the ccd data as individual figures one by one (e.g. the data, noise_map-map, PSF, \
      Signal-to_noise-map, etc).
 
@@ -113,28 +119,35 @@ def plot_ccd_individual(ccd_data, plot_origin=True, mask=None, positions=None, o
     plot_data_signal_to_noise_map = conf.instance.general.get('output', 'plot_data_signal_to_noise_map', bool)
 
     if plot_data_image:
-        plot_image(ccd_data=ccd_data, plot_origin=plot_origin, mask=mask, positions=positions, output_path=output_path,
-                   output_format=output_format)
+        plot_image(
+            ccd_data=ccd_data, plot_origin=plot_origin, mask=mask, positions=positions,
+            output_path=output_path, output_format=output_format)
 
     if plot_data_noise_map:
-        plot_noise_map(ccd_data=ccd_data, plot_origin=plot_origin, mask=mask, output_path=output_path,
-                       output_format=output_format)
+        plot_noise_map(
+            ccd_data=ccd_data, plot_origin=plot_origin, mask=mask,
+            output_path=output_path, output_format=output_format)
 
     if plot_data_psf:
-        plot_psf(ccd_data=ccd_data, plot_origin=plot_origin, output_path=output_path, output_format=output_format)
+        plot_psf(
+            ccd_data=ccd_data, plot_origin=plot_origin,
+            output_path=output_path, output_format=output_format)
 
     if plot_data_signal_to_noise_map:
-        plot_signal_to_noise_map(ccd_data=ccd_data, plot_origin=plot_origin, mask=mask, output_path=output_path,
-                                 output_format=output_format)
+        plot_signal_to_noise_map(
+            ccd_data=ccd_data, plot_origin=plot_origin, mask=mask,
+            output_path=output_path, output_format=output_format)
 
 
-def plot_image(ccd_data, plot_origin=True, mask=None, should_plot_border=False, positions=None, as_subplot=False,
-               units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
-               cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
-               cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
-               title='CCD Image', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
-               mask_pointsize=10, position_pointsize=30, grid_pointsize=1,
-               output_path=None, output_format='show', output_filename='ccd_image'):
+def plot_image(
+        ccd_data, plot_origin=True, mask=None, extract_mask_region=False, should_plot_border=False, positions=None,
+        as_subplot=False,
+        units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
+        cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
+        cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
+        title='CCD Image', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
+        mask_pointsize=10, position_pointsize=30, grid_pointsize=1,
+        output_path=None, output_format='show', output_filename='ccd_image'):
     """Plot the observed data of the ccd data.
 
     Set *autolens.data.array.plotters.array_plotters* for a description of all innput parameters not described below.
@@ -149,26 +162,24 @@ def plot_image(ccd_data, plot_origin=True, mask=None, should_plot_border=False, 
         If an adaptive pixelization whose pixels are formed by tracing pixels from the data, this plots those pixels \
         over the immage.
     """
-    data_plotters.plot_image(image=ccd_data.image, plot_origin=plot_origin, mask=mask,
-                             should_plot_border=should_plot_border, positions=positions, as_subplot=as_subplot,
-                             units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
-                             cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
-                             linscale=linscale,
-                             cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
-                             title=title, titlesize=titlesize, xlabelsize=xlabelsize,
-                             ylabelsize=ylabelsize, xyticksize=xyticksize,
-                             mask_pointsize=mask_pointsize, position_pointsize=position_pointsize,
-                             grid_pointsize=grid_pointsize,
-                             output_path=output_path, output_format=output_format, output_filename=output_filename)
+    data_plotters.plot_image(
+        image=ccd_data.image, plot_origin=plot_origin, mask=mask, extract_mask_region=extract_mask_region,
+        should_plot_border=should_plot_border, positions=positions, as_subplot=as_subplot,
+        units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
+        cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
+        cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
+        title=title, titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize, xyticksize=xyticksize,
+        mask_pointsize=mask_pointsize, position_pointsize=position_pointsize, grid_pointsize=grid_pointsize,
+        output_path=output_path, output_format=output_format, output_filename=output_filename)
 
 
-def plot_noise_map(ccd_data, plot_origin=True, mask=None, as_subplot=False,
-                   units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
-                   cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
-                   cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
-                   title='CCD Noise-Map', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
-                   mask_pointsize=10,
-                   output_path=None, output_format='show', output_filename='ccd_noise_map'):
+def plot_noise_map(
+        ccd_data, plot_origin=True, mask=None, extract_mask_region=False, as_subplot=False,
+        units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
+        cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
+        cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
+        title='CCD Noise-Map', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16, mask_pointsize=10,
+        output_path=None, output_format='show', output_filename='ccd_noise_map'):
     """Plot the noise_map-map of the ccd data.
 
     Set *autolens.data.array.plotters.array_plotters* for a description of all innput parameters not described below.
@@ -181,23 +192,24 @@ def plot_noise_map(ccd_data, plot_origin=True, mask=None, as_subplot=False,
         If true, the origin of the data's coordinate system is plotted as a 'x'.
     """
 
-    data_plotters.plot_noise_map(noise_map=ccd_data.noise_map, plot_origin=plot_origin, mask=mask, as_subplot=as_subplot,
-                                 units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
-                                 cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
-                                 linscale=linscale,
-                                 cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
-                                 title=title, titlesize=titlesize, xlabelsize=xlabelsize,
-                                 ylabelsize=ylabelsize, xyticksize=xyticksize,
-                                 mask_pointsize=mask_pointsize,
-                                 output_path=output_path, output_format=output_format, output_filename=output_filename)
+    data_plotters.plot_noise_map(
+        noise_map=ccd_data.noise_map, plot_origin=plot_origin, mask=mask, extract_mask_region=extract_mask_region,
+        as_subplot=as_subplot,
+        units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
+        cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
+        cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
+        title=title, titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize, xyticksize=xyticksize,
+        mask_pointsize=mask_pointsize,
+        output_path=output_path, output_format=output_format, output_filename=output_filename)
 
 
-def plot_psf(ccd_data, plot_origin=True, as_subplot=False,
-             units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
-             cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
-             cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
-             title='CCD PSF', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
-             output_path=None, output_format='show', output_filename='ccd_psf'):
+def plot_psf(
+        ccd_data, plot_origin=True, as_subplot=False,
+        units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
+        cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
+        cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
+        title='CCD PSF', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
+        output_path=None, output_format='show', output_filename='ccd_psf'):
     """Plot the PSF of the ccd data.
 
     Set *autolens.data.array.plotters.array_plotters* for a description of all innput parameters not described below.
@@ -210,23 +222,23 @@ def plot_psf(ccd_data, plot_origin=True, as_subplot=False,
         If true, the origin of the data's coordinate system is plotted as a 'x'.
     """
 
-    data_plotters.plot_psf(psf=ccd_data.psf, plot_origin=plot_origin, as_subplot=as_subplot,
-                                 units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
-                                 cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
-                                 linscale=linscale,
-                                 cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
-                                 title=title, titlesize=titlesize, xlabelsize=xlabelsize,
-                                 ylabelsize=ylabelsize, xyticksize=xyticksize,
-                                 output_path=output_path, output_format=output_format, output_filename=output_filename)
+    data_plotters.plot_psf(
+        psf=ccd_data.psf, plot_origin=plot_origin, as_subplot=as_subplot,
+        units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
+        cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
+        cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
+        title=title, titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize, xyticksize=xyticksize,
+        output_path=output_path, output_format=output_format, output_filename=output_filename)
 
 
-def plot_signal_to_noise_map(ccd_data, plot_origin=True, mask=None, as_subplot=False,
-                             units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
-                             cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
-                             cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
-                             title='CCD Signal-To-Noise-Map', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
-                             mask_pointsize=10,
-                             output_path=None, output_format='show', output_filename='ccd_signal_to_noise_map'):
+def plot_signal_to_noise_map(
+        ccd_data, plot_origin=True, mask=None, extract_mask_region=False, as_subplot=False,
+        units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
+        cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
+        cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
+        title='CCD Signal-To-Noise-Map', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
+        mask_pointsize=10,
+        output_path=None, output_format='show', output_filename='ccd_signal_to_noise_map'):
     """Plot the signal-to-noise_map-map of the ccd data.
 
     Set *autolens.data.array.plotters.array_plotters* for a description of all innput parameters not described below.
@@ -239,16 +251,15 @@ def plot_signal_to_noise_map(ccd_data, plot_origin=True, mask=None, as_subplot=F
         If true, the origin of the data's coordinate system is plotted as a 'x'.
     """
 
-    data_plotters.plot_signal_to_noise_map(signal_to_noise_map=ccd_data.signal_to_noise_map, plot_origin=plot_origin,
-                                           mask=mask, as_subplot=as_subplot,
-                                 units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
-                                 cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
-                                 linscale=linscale,
-                                 cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
-                                 title=title, titlesize=titlesize, xlabelsize=xlabelsize,
-                                 ylabelsize=ylabelsize, xyticksize=xyticksize,
-                                 mask_pointsize=mask_pointsize,
-                                 output_path=output_path, output_format=output_format, output_filename=output_filename)
+    data_plotters.plot_signal_to_noise_map(
+        signal_to_noise_map=ccd_data.signal_to_noise_map, plot_origin=plot_origin, mask=mask,
+        extract_mask_region=extract_mask_region, as_subplot=as_subplot,
+        units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
+        cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
+        cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
+        title=title, titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize, xyticksize=xyticksize,
+        mask_pointsize=mask_pointsize,
+        output_path=output_path, output_format=output_format, output_filename=output_filename)
 
 
 def get_origin(array, plot_origin):
