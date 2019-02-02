@@ -574,20 +574,21 @@ class PhaseImaging(Phase):
             padded_tracer = self.padded_tracer_for_instance(instance)
             fit = self.fit_for_tracers(tracer=tracer, padded_tracer=padded_tracer)
 
-            ccd_plotters.plot_ccd_subplot(ccd_data=self.lens_data.ccd_data, mask=self.lens_data.mask,
-                                          positions=self.lens_data.positions,
-                                          output_path=self.output_image_path,
-                                          output_format='png', ignore_config=False)
+            ccd_plotters.plot_ccd_subplot(
+                ccd_data=self.lens_data.ccd_data, mask=self.lens_data.mask, positions=self.lens_data.positions,
+                output_path=self.output_image_path, output_format='png', ignore_config=False)
 
-            ccd_plotters.plot_ccd_individual(ccd_data=self.lens_data.ccd_data, mask=self.lens_data.mask,
-                                             positions=self.lens_data.positions,
-                                             output_path=self.output_image_path, output_format='png')
+            ccd_plotters.plot_ccd_individual(
+                ccd_data=self.lens_data.ccd_data, mask=self.lens_data.mask, positions=self.lens_data.positions,
+                output_path=self.output_image_path, output_format='png')
 
-            ray_tracing_plotters.plot_ray_tracing_subplot(tracer=tracer, output_path=self.output_image_path,
-                                                          output_format='png', ignore_config=False)
+            ray_tracing_plotters.plot_ray_tracing_subplot(
+                tracer=tracer,
+                output_path=self.output_image_path, output_format='png', ignore_config=False)
 
-            lens_fit_plotters.plot_fit_subplot(fit=fit, output_path=self.output_image_path,
-                                               output_format='png', ignore_config=False)
+            lens_fit_plotters.plot_fit_subplot(
+                fit=fit, positions=self.lens_data.positions, should_plot_image_plane_pix=True,
+                output_path=self.output_image_path, output_format='png', ignore_config=False)
 
             if during_analysis:
 
@@ -886,7 +887,7 @@ class GalaxyFitPhase(AbstractPhase):
         self.sub_grid_size = sub_grid_size
         self.mask_function = mask_function
 
-    def run(self, array, noise_map, previous_results=None, mask=None):
+    def run(self, galaxy_data, previous_results=None, mask=None):
         """
         Run this phase.
 
@@ -904,12 +905,12 @@ class GalaxyFitPhase(AbstractPhase):
         result: AbstractPhase.Result
             A result object comprising the best fit model and other hyper.
         """
-        analysis = self.make_analysis(array=array, noise_map=noise_map, previous_results=previous_results, mask=mask)
+        analysis = self.make_analysis(galaxy_data=galaxy_data, previous_results=previous_results, mask=mask)
         result = self.run_analysis(analysis)
 
         return self.make_result(result, analysis)
 
-    def make_analysis(self, array, noise_map, previous_results=None, mask=None):
+    def make_analysis(self, galaxy_data, previous_results=None, mask=None):
         """
         Create an lens object. Also calls the prior passing and lens_data modifying functions to allow child
         classes to change the behaviour of the phase.
@@ -929,30 +930,32 @@ class GalaxyFitPhase(AbstractPhase):
             An lens object that the non-linear optimizer calls to determine the fit of a set of values
         """
 
-        mask = setup_phase_mask(data=array, mask=mask, mask_function=self.mask_function, inner_circular_mask_radii=None)
+        mask = setup_phase_mask(data=galaxy_data, mask=mask, mask_function=self.mask_function,
+                                inner_circular_mask_radii=None)
 
         self.pass_priors(previous_results)
 
         if self.use_intensities or self.use_surface_density or self.use_potential:
 
-            galaxy_data = gd.GalaxyFitData(array=array, noise_map=noise_map, mask=mask, sub_grid_size=self.sub_grid_size,
+            galaxy_data = gd.GalaxyFitData(galaxy_data=galaxy_data, mask=mask, sub_grid_size=self.sub_grid_size,
                                            use_intensities=self.use_intensities,
                                            use_surface_density=self.use_surface_density,
                                            use_potential=self.use_potential,
-                                           use_deflections_y=self.use_deflections, use_deflections_x=self.use_deflections)
+                                           use_deflections_y=self.use_deflections,
+                                           use_deflections_x=self.use_deflections)
 
             return self.__class__.AnalysisSingle(galaxy_data=galaxy_data, phase_name=self.phase_name,
                                                  cosmology=self.cosmology, previous_results=previous_results)
 
         elif self.use_deflections:
 
-            galaxy_data_y = gd.GalaxyFitData(array=array, noise_map=noise_map, mask=mask, sub_grid_size=self.sub_grid_size,
+            galaxy_data_y = gd.GalaxyFitData(galaxy_data=galaxy_data, mask=mask, sub_grid_size=self.sub_grid_size,
                                              use_intensities=self.use_intensities,
                                              use_surface_density=self.use_surface_density,
                                              use_potential=self.use_potential,
                                              use_deflections_y=self.use_deflections, use_deflections_x=False)
 
-            galaxy_data_x = gd.GalaxyFitData(array=array, noise_map=noise_map, mask=mask, sub_grid_size=self.sub_grid_size,
+            galaxy_data_x = gd.GalaxyFitData(galaxy_data=galaxy_data, mask=mask, sub_grid_size=self.sub_grid_size,
                                              use_intensities=self.use_intensities,
                                              use_surface_density=self.use_surface_density,
                                              use_potential=self.use_potential,

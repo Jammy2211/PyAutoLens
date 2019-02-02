@@ -25,39 +25,27 @@ def plot_fit_subplot(fit, should_plot_mask=True, positions=None, should_plot_ima
 
     if fit.tracer.total_planes == 1:
 
-        plot_fit_subplot_lens_plane_only(fit=fit, should_plot_mask=should_plot_mask, positions=positions,
-                                         should_plot_image_plane_pix=should_plot_image_plane_pix,
-                                         units=units, figsize=figsize,
-                                         aspect=aspect,
-                                         cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max,
-                                         linthresh=linthresh,
-                                         linscale=linscale,
-                                         cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
-                                         titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize,
-                                         xyticksize=xyticksize,
-                                         mask_pointsize=mask_pointsize, position_pointsize=position_pointsize,
-                                         grid_pointsize=grid_pointsize,
-                                         output_path=output_path, output_filename=output_filename,
-                                         output_format=output_format)
+        plot_fit_subplot_lens_plane_only(
+            fit=fit, should_plot_mask=should_plot_mask, positions=positions,
+            should_plot_image_plane_pix=should_plot_image_plane_pix,
+            units=units, figsize=figsize, aspect=aspect,
+            cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
+            cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
+            titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize, xyticksize=xyticksize,
+            mask_pointsize=mask_pointsize, position_pointsize=position_pointsize, grid_pointsize=grid_pointsize,
+            output_path=output_path, output_filename=output_filename, output_format=output_format)
 
-    elif fit.tracer.total_planes == 2:
+    elif fit.tracer.total_planes >= 2:
 
-        plot_fit_subplot_lens_and_source_planes(fit=fit, should_plot_mask=should_plot_mask, positions=positions,
-                                                should_plot_image_plane_pix=should_plot_image_plane_pix,
-                                                units=units, figsize=figsize,
-                                                aspect=aspect,
-                                                cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max,
-                                                linthresh=linthresh,
-                                                linscale=linscale,
-                                                cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
-                                                titlesize=titlesize, xlabelsize=xlabelsize,
-                                                ylabelsize=ylabelsize,
-                                                xyticksize=xyticksize,
-                                                mask_pointsize=mask_pointsize,
-                                                position_pointsize=position_pointsize,
-                                                grid_pointsize=grid_pointsize,
-                                                output_path=output_path, output_filename=output_filename,
-                                                output_format=output_format)
+        plot_fit_subplot_lens_and_source_planes(
+            fit=fit, should_plot_mask=should_plot_mask, positions=positions,
+            should_plot_image_plane_pix=should_plot_image_plane_pix,
+            units=units, figsize=figsize, aspect=aspect,
+            cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
+            cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
+            titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize, xyticksize=xyticksize,
+            mask_pointsize=mask_pointsize, position_pointsize=position_pointsize, grid_pointsize=grid_pointsize,
+            output_path=output_path, output_filename=output_filename, output_format=output_format)
 
 def plot_fit_subplot_lens_plane_only(fit, should_plot_mask=True, positions=None, should_plot_image_plane_pix=True,
                                      units='arcsec', figsize=None, aspect='equal',
@@ -84,7 +72,7 @@ def plot_fit_subplot_lens_plane_only(fit, should_plot_mask=True, positions=None,
         in the python interpreter window.
     """
 
-    rows, columns, figsize_tool = plotter_util.get_subplot_rows_columns_figsize(number_subplots=4)
+    rows, columns, figsize_tool = plotter_util.get_subplot_rows_columns_figsize(number_subplots=6)
 
     mask = lens_plotter_util.get_mask(fit=fit, should_plot_mask=should_plot_mask)
 
@@ -98,44 +86,66 @@ def plot_fit_subplot_lens_plane_only(fit, should_plot_mask=True, positions=None,
 
     image_plane_pix_grid = lens_plotter_util.get_image_plane_pix_grid(should_plot_image_plane_pix, fit)
 
-    lens_plotter_util.plot_image(fit=fit, mask=mask, positions=positions, image_plane_pix_grid=image_plane_pix_grid,
-                                 as_subplot=True,
-                                 units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
-                                 cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
-                                 cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
-                                 titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize, xyticksize=xyticksize,
-                                 grid_pointsize=grid_pointsize, position_pointsize=position_pointsize, mask_pointsize=mask_pointsize,
-                                 output_path=output_path, output_filename='', output_format=output_format)
+    lens_plotter_util.plot_image(
+        fit=fit, mask=mask, positions=positions, image_plane_pix_grid=image_plane_pix_grid, as_subplot=True,
+        units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
+        cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
+        cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
+        titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize, xyticksize=xyticksize,
+        grid_pointsize=grid_pointsize, position_pointsize=position_pointsize, mask_pointsize=mask_pointsize,
+        output_path=output_path, output_filename='', output_format=output_format)
 
     plt.subplot(rows, columns, 2)
 
-    lens_plotter_util.plot_model_data(fit=fit, mask=mask, as_subplot=True,
-                                      units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
-                                      cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
-                                      linscale=linscale,
-                                      cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
-                                      titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize, xyticksize=xyticksize,
-                                      output_path=output_path, output_filename='', output_format=output_format)
+    lens_plotter_util.plot_noise_map(
+        fit=fit, mask=mask, positions=positions, as_subplot=True,
+        units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
+        cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
+        cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
+        titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize, xyticksize=xyticksize,
+        position_pointsize=position_pointsize, mask_pointsize=mask_pointsize,
+        output_path=output_path, output_filename='', output_format=output_format)
 
     plt.subplot(rows, columns, 3)
 
-    lens_plotter_util.plot_residual_map(fit=fit, mask=mask, as_subplot=True,
-                                        units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
-                                        cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
-                                        linscale=linscale,
-                                        cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
-                                        titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize, xyticksize=xyticksize,
-                                        output_path=output_path, output_filename='', output_format=output_format)
+    lens_plotter_util.plot_signal_to_noise_map(
+        fit=fit, mask=mask, positions=positions, as_subplot=True,
+        units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
+        cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
+        cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
+        titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize, xyticksize=xyticksize,
+        position_pointsize=position_pointsize, mask_pointsize=mask_pointsize,
+        output_path=output_path, output_filename='', output_format=output_format)
 
     plt.subplot(rows, columns, 4)
 
-    lens_plotter_util.plot_chi_squared_map(fit=fit, mask=mask, as_subplot=True,
-                                           units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
-                                           cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
-                                           linscale=linscale,
-                                           cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
-                                           titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize, xyticksize=xyticksize,
-                                           output_path=output_path, output_filename='', output_format=output_format)
+    lens_plotter_util.plot_model_data(
+        fit=fit, mask=mask, as_subplot=True,
+        units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
+        cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
+        cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
+        titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize, xyticksize=xyticksize,
+        output_path=output_path, output_filename='', output_format=output_format)
+
+    plt.subplot(rows, columns, 5)
+
+    lens_plotter_util.plot_residual_map(
+        fit=fit, mask=mask, as_subplot=True,
+        units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
+        cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
+        cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
+        titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize, xyticksize=xyticksize,
+        output_path=output_path, output_filename='', output_format=output_format)
+
+    plt.subplot(rows, columns, 6)
+
+    lens_plotter_util.plot_chi_squared_map(
+        fit=fit, mask=mask, as_subplot=True,
+        units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
+        cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
+        cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
+        titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize, xyticksize=xyticksize,
+        output_path=output_path, output_filename='', output_format=output_format)
 
     plotter_util.output_subplot_array(output_path=output_path, output_filename=output_filename,
                                       output_format=output_format)
@@ -168,7 +178,7 @@ def plot_fit_subplot_lens_and_source_planes(fit, should_plot_mask=True, should_p
         in the python interpreter window.
     """
 
-    rows, columns, figsize_tool = plotter_util.get_subplot_rows_columns_figsize(number_subplots=6)
+    rows, columns, figsize_tool = plotter_util.get_subplot_rows_columns_figsize(number_subplots=8)
 
     mask = lens_plotter_util.get_mask(fit=fit, should_plot_mask=should_plot_mask)
 
@@ -192,6 +202,17 @@ def plot_fit_subplot_lens_and_source_planes(fit, should_plot_mask=True, should_p
                                  grid_pointsize=grid_pointsize, position_pointsize=position_pointsize, mask_pointsize=mask_pointsize,
                                  output_path=output_path, output_filename='', output_format=output_format)
 
+    plt.subplot(rows, columns, 2)
+
+    lens_plotter_util.plot_noise_map(
+        fit=fit, mask=mask, positions=positions, as_subplot=True,
+        units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
+        cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
+        cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
+        titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize, xyticksize=xyticksize,
+        position_pointsize=position_pointsize, mask_pointsize=mask_pointsize,
+        output_path=output_path, output_filename='', output_format=output_format)
+
     if fit.tracer.image_plane.has_light_profile:
 
         plt.subplot(rows, columns, 2)
@@ -207,7 +228,7 @@ def plot_fit_subplot_lens_and_source_planes(fit, should_plot_mask=True, should_p
 
     plt.subplot(rows, columns, 3)
 
-    lens_plotter_util.plot_model_image_of_plane(fit=fit, plane_index=1, mask=mask, as_subplot=True,
+    lens_plotter_util.plot_model_image_of_plane(fit=fit, plane_index=-1, mask=mask, as_subplot=True,
                                                 units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
                                                 cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh,
                                                 linscale=linscale,
