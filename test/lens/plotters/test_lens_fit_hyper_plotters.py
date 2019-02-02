@@ -109,15 +109,20 @@ def make_fit_hyper_lens_only(lens_hyper_image, hyper):
 
 def test__fit_sub_plot_hyper_lens_only__output_dependent_on_config(fit_lens_only, fit_hyper_lens_only, plot_patch,
                                                                    lens_fit_plotter_path):
+
     lens_fit_hyper_plotters.plot_fit_subplot(fit_hyper=fit_hyper_lens_only, fit=fit_lens_only, should_plot_mask=True,
+                                             extract_mask_region=True,
                                              output_path=lens_fit_plotter_path,
                                              output_filename='hyper_lens_fit', output_format='png')
+
     assert lens_fit_plotter_path + 'hyper_lens_fit.png' in plot_patch.paths
 
 
 def test__fit_individuals__hyper_lens_only__depedent_on_config(fit_hyper_lens_only, fit_lens_only, plot_patch,
                                                                lens_fit_plotter_path):
+
     lens_fit_hyper_plotters.plot_fit_individuals(fit_hyper=fit_hyper_lens_only, fit=fit_lens_only,
+                                                 should_plot_mask=True, extract_mask_region=True,
                                                  output_path=lens_fit_plotter_path, output_format='png')
 
     assert lens_fit_plotter_path + 'fit_model_image.png' in plot_patch.paths

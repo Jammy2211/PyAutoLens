@@ -17,7 +17,7 @@ from autolens.lens import ray_tracing
 from autolens.lens import sensitivity_fit
 from autolens.lens.plotters import sensitivity_fit_plotters, ray_tracing_plotters, lens_fit_plotters
 from autolens.model.galaxy import galaxy as g, galaxy_model as gm, galaxy_fit, galaxy_data as gd
-from autolens.model.galaxy.plotters import galaxy_fitting_plotters
+from autolens.model.galaxy.plotters import galaxy_fit_plotters
 
 logger = logging.getLogger(__name__)
 logger.level = logging.DEBUG
@@ -993,7 +993,7 @@ class GalaxyFitPhase(AbstractPhase):
             self.plot_count += 1
             fit = self.fit_for_instance(instance)
 
-            galaxy_fitting_plotters.plot_single_subplot(fit=fit, output_path=self.output_image_path,
+            galaxy_fit_plotters.plot_single_subplot(fit=fit, output_path=self.output_image_path,
                                                         output_format='png', ignore_config=False)
 
             return fit
@@ -1031,10 +1031,10 @@ class GalaxyFitPhase(AbstractPhase):
         def visualize(self, instance, suffix, during_analysis):
             fit_y, fit_x = self.fit_for_instance(instance)
 
-            galaxy_fitting_plotters.plot_single_subplot(fit=fit_y, output_path=self.output_image_path,
+            galaxy_fit_plotters.plot_single_subplot(fit=fit_y, output_path=self.output_image_path,
                                                         output_format='png', ignore_config=False)
 
-            galaxy_fitting_plotters.plot_single_subplot(fit=fit_x, output_path=self.output_image_path,
+            galaxy_fit_plotters.plot_single_subplot(fit=fit_x, output_path=self.output_image_path,
                                                         output_format='png', ignore_config=False)
 
             return fit_y, fit_x

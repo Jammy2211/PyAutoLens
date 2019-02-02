@@ -45,37 +45,55 @@ def make_plane(galaxy_light, grid_stack):
 
 
 def test__image_plane_image_is_output(plane, mask, positions, plane_plotter_path, plot_patch):
-    plane_plotters.plot_image_plane_image(plane=plane, mask=mask, positions=positions,
+
+    plane_plotters.plot_image_plane_image(plane=plane, mask=mask, extract_mask_region=True, positions=positions,
                                           output_path=plane_plotter_path, output_format='png')
+
     assert plane_plotter_path + 'plane_image_plane_image.png' in plot_patch.paths
 
 
 def test__plane_image_is_output(plane, positions, plane_plotter_path, plot_patch):
+
     plane_plotters.plot_plane_image(plane=plane, positions=positions, output_path=plane_plotter_path,
                                     output_format='png')
+
     assert plane_plotter_path + 'plane_image.png' in plot_patch.paths
 
 
-def test__surface_density_is_output(plane, plane_plotter_path, plot_patch):
-    plane_plotters.plot_surface_density(plane=plane, output_path=plane_plotter_path, output_format='png')
+def test__surface_density_is_output(plane, mask, plane_plotter_path, plot_patch):
+
+    plane_plotters.plot_surface_density(plane=plane, mask=mask, extract_mask_region=True,
+                                        output_path=plane_plotter_path, output_format='png')
+
     assert plane_plotter_path + 'plane_surface_density.png' in plot_patch.paths
 
 
-def test__potential_is_output(plane, plane_plotter_path, plot_patch):
-    plane_plotters.plot_potential(plane=plane, output_path=plane_plotter_path, output_format='png')
+def test__potential_is_output(plane, mask, plane_plotter_path, plot_patch):
+
+    plane_plotters.plot_potential(plane=plane, mask=mask, extract_mask_region=True,
+                                  output_path=plane_plotter_path, output_format='png')
+
     assert plane_plotter_path + 'plane_potential.png' in plot_patch.paths
 
 
-def test__deflections_y_is_output(plane, plane_plotter_path, plot_patch):
-    plane_plotters.plot_deflections_y(plane=plane, output_path=plane_plotter_path, output_format='png')
+def test__deflections_y_is_output(plane, mask, plane_plotter_path, plot_patch):
+
+    plane_plotters.plot_deflections_y(plane=plane, mask=mask, extract_mask_region=True,
+                                      output_path=plane_plotter_path, output_format='png')
+
     assert plane_plotter_path + 'plane_deflections_y.png' in plot_patch.paths
 
 
-def test__deflections_x_is_output(plane, plane_plotter_path, plot_patch):
-    plane_plotters.plot_deflections_x(plane=plane, output_path=plane_plotter_path, output_format='png')
+def test__deflections_x_is_output(plane, mask, plane_plotter_path, plot_patch):
+
+    plane_plotters.plot_deflections_x(plane=plane, mask=mask, extract_mask_region=True,
+                                      output_path=plane_plotter_path, output_format='png')
+
     assert plane_plotter_path + 'plane_deflections_x.png' in plot_patch.paths
 
 
 def test__plane_grid_is_output(plane, plane_plotter_path, plot_patch):
+
     plane_plotters.plot_plane_grid(plane=plane, output_path=plane_plotter_path, output_format='png')
+
     assert plane_plotter_path + 'plane_grid.png' in plot_patch.paths
