@@ -79,9 +79,9 @@ def convert_grid_units(grid_arc_seconds, units, kpc_per_arcsec):
         The conversion factor between arc-seconds and kiloparsecs, required to plot the units in kpc.
     """
 
-    if units is 'arcsec' or kpc_per_arcsec is None:
+    if units in 'arcsec' or kpc_per_arcsec is None:
         return grid_arc_seconds
-    elif units is 'kpc':
+    elif units in 'kpc':
         return grid_arc_seconds * kpc_per_arcsec
 
 def set_xy_labels(units, kpc_per_arcsec, xlabelsize, ylabelsize, xyticksize):
@@ -103,12 +103,12 @@ def set_xy_labels(units, kpc_per_arcsec, xlabelsize, ylabelsize, xyticksize):
     xyticksize : int
         The font size of the x and y ticks on the figure axes.
     """
-    if units is 'arcsec' or kpc_per_arcsec is None:
+    if units in 'arcsec' or kpc_per_arcsec is None:
 
         plt.xlabel('x (arcsec)', fontsize=xlabelsize)
         plt.ylabel('y (arcsec)', fontsize=ylabelsize)
 
-    elif units is 'kpc':
+    elif units in 'kpc':
 
         plt.xlabel('x (kpc)', fontsize=xlabelsize)
         plt.ylabel('y (kpc)', fontsize=ylabelsize)

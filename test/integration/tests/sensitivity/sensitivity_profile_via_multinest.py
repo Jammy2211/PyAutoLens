@@ -68,6 +68,8 @@ def make_pipeline(test_name):
                             sensitive_galaxies=dict(subhalo=gm.GalaxyModel(mass=mp.SphericalNFW)),
                             optimizer_class=nl.MultiNest, phase_name="{}/phase1".format(test_name))
 
+    phase1.optimizer.const_efficiency_mode = True
+
     return pl.PipelineImaging(test_name, phase1)
 
 

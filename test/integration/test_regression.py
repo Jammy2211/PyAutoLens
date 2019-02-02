@@ -4,7 +4,6 @@ from autofit import conf
 from autofit.mapper import model_mapper as mm
 from autofit.mapper import prior
 from autofit.optimize import non_linear as nl
-
 from autolens.data import ccd
 from autolens.model.galaxy import galaxy, galaxy_model as gm
 from autolens.model.profiles import light_profiles as lp

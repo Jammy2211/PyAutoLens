@@ -24,20 +24,21 @@ def phase():
     pixel_scale = 0.1
     image_shape = (150, 150)
 
+    tools.reset_paths(test_name=test_name, output_path=output_path)
+
     grid_stack = grids.GridStack.from_shape_pixel_scale_and_sub_grid_size(shape=image_shape, pixel_scale=pixel_scale)
 
     galaxy = g.Galaxy(mass=mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=1.0))
 
     surface_density = galaxy.surface_density_from_grid(grid=grid_stack.regular)
-    surface_density = mapping_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(array_1d=surface_density,
-                                                                                          shape=image_shape)
+    surface_density = grid_stack.regular.scaled_array_from_array_1d(array_1d=surface_density)
 
-  #  data = gd.GalaxyData(image=surface_density, noise_map=np.ones(surface_density.shape), pixel_scale=pixel_scale)
+    data = gd.GalaxyData(image=surface_density, noise_map=np.ones(surface_density.shape), pixel_scale=pixel_scale)
 
     phase = ph.GalaxyFitPhase(galaxy=dict(gal=gm.GalaxyModel(light=mp.SphericalIsothermal)), use_surface_density=True,
-                              optimizer_class=nl.MultiNest, phase_name='phase')
+                              optimizer_class=nl.MultiNest, phase_name=test_name+'/')
 
-    phase.run(array=surface_density)
+    phase.run(galaxy_data=data)
 
 if __name__ == "__main__":
     phase()

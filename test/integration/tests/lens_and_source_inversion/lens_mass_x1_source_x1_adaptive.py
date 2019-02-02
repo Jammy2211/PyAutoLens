@@ -57,6 +57,7 @@ def make_pipeline(test_name):
                                                                   regularization=reg.Constant)),
                        optimizer_class=nl.MultiNest, phase_name="{}/phase1".format(test_name))
 
+    phase1.optimizer.const_efficiency_mode = True
     phase1.optimizer.n_live_points = 60
     phase1.optimizer.sampling_efficiency = 0.8
 
