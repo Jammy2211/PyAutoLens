@@ -1,41 +1,27 @@
-import os
-import shutil
-
-import pytest
 import numpy as np
 
-from autofit import conf
 from autolens.data.array import grids, mask as msk
-from autolens.lens.plotters import plane_plotters
-from autolens.model.profiles import light_profiles as lp, mass_profiles as mp
-from autolens.model.galaxy import galaxy as g
 from autolens.lens import plane as pl
+from autolens.lens.plotters import plane_plotters
+from autolens.model.galaxy import galaxy as g
+from autolens.model.profiles import light_profiles as lp, mass_profiles as mp
+from test.fixtures import *
 
-
-@pytest.fixture(name='general_config')
-def make_general_config():
-    general_config_path = "{}/../../test_files/configs/plotting/".format(os.path.dirname(os.path.realpath(__file__)))
-    conf.instance.general = conf.NamedConfig(general_config_path + "general.ini")
 
 @pytest.fixture(name='plane_plotter_path')
 def make_plane_plotter_setup():
-    plane_plotter_path = "{}/../../test_files/plotting/plane/".format(os.path.dirname(os.path.realpath(__file__)))
+    return "{}/../../test_files/plotting/plane/".format(os.path.dirname(os.path.realpath(__file__)))
 
-    if os.path.exists(plane_plotter_path):
-        shutil.rmtree(plane_plotter_path)
-
-    os.mkdir(plane_plotter_path)
-
-    return plane_plotter_path
 
 @pytest.fixture(name='positions')
 def make_positions():
     positions = [[[0.1, 0.1], [0.2, 0.2]], [[0.3, 0.3]]]
     return list(map(lambda position_set: np.asarray(position_set), positions))
 
+
 @pytest.fixture(name='mask')
 def make_mask():
-    return msk.Mask.circular(shape=((3,3)), pixel_scale=0.1, radius_arcsec=0.1)
+    return msk.Mask.circular(shape=((3, 3)), pixel_scale=0.1, radius_arcsec=0.1)
 
 
 @pytest.fixture(name='galaxy_light')
@@ -52,49 +38,62 @@ def make_galaxy_mass():
 def make_grid_stack():
     return grids.GridStack.from_shape_pixel_scale_and_sub_grid_size(shape=(100, 100), pixel_scale=0.05, sub_grid_size=2)
 
+
 @pytest.fixture(name='plane')
 def make_plane(galaxy_light, grid_stack):
     return pl.Plane(galaxies=[galaxy_light], grid_stack=grid_stack)
 
 
-def test__image_plane_image_is_output(plane, mask, positions, plane_plotter_path):
-    plane_plotters.plot_image_plane_image(plane=plane, mask=mask, positions=positions,
-                                          output_path=plane_plotter_path, output_format='png')
-    assert os.path.isfile(path=plane_plotter_path + 'plane_image_plane_image.png')
-    os.remove(path=plane_plotter_path + 'plane_image_plane_image.png')
+def test__image_plane_image_is_output(plane, mask, positions, plane_plotter_path, plot_patch):
 
-def test__plane_image_is_output(plane, positions, plane_plotter_path):
+    plane_plotters.plot_image_plane_image(plane=plane, mask=mask, zoom_around_mask=True, positions=positions,
+                                          output_path=plane_plotter_path, output_format='png')
+
+    assert plane_plotter_path + 'plane_image_plane_image.png' in plot_patch.paths
+
+
+def test__plane_image_is_output(plane, positions, plane_plotter_path, plot_patch):
+
     plane_plotters.plot_plane_image(plane=plane, positions=positions, output_path=plane_plotter_path,
                                     output_format='png')
-    assert os.path.isfile(path=plane_plotter_path + 'plane_image.png')
-    os.remove(path=plane_plotter_path + 'plane_image.png')
 
-def test__surface_density_is_output(plane, plane_plotter_path):
-    
-    plane_plotters.plot_surface_density(plane=plane, output_path=plane_plotter_path, output_format='png')
-    assert os.path.isfile(path=plane_plotter_path + 'plane_surface_density.png')
-    os.remove(path=plane_plotter_path + 'plane_surface_density.png')
+    assert plane_plotter_path + 'plane_image.png' in plot_patch.paths
 
-def test__potential_is_output(plane, plane_plotter_path):
-    
-    plane_plotters.plot_potential(plane=plane, output_path=plane_plotter_path, output_format='png')
-    assert os.path.isfile(path=plane_plotter_path + 'plane_potential.png')
-    os.remove(path=plane_plotter_path + 'plane_potential.png')
 
-def test__deflections_y_is_output(plane, plane_plotter_path):
-    
-    plane_plotters.plot_deflections_y(plane=plane, output_path=plane_plotter_path, output_format='png')
-    assert os.path.isfile(path=plane_plotter_path + 'plane_deflections_y.png')
-    os.remove(path=plane_plotter_path + 'plane_deflections_y.png')
+def test__surface_density_is_output(plane, mask, plane_plotter_path, plot_patch):
 
-def test__deflections_x_is_output(plane, plane_plotter_path):
-    
-    plane_plotters.plot_deflections_x(plane=plane, output_path=plane_plotter_path, output_format='png')
-    assert os.path.isfile(path=plane_plotter_path + 'plane_deflections_x.png')
-    os.remove(path=plane_plotter_path + 'plane_deflections_x.png')
+    plane_plotters.plot_surface_density(plane=plane, mask=mask, zoom_around_mask=True,
+                                        output_path=plane_plotter_path, output_format='png')
 
-def test__plane_grid_is_output(plane, plane_plotter_path):
+    assert plane_plotter_path + 'plane_surface_density.png' in plot_patch.paths
+
+
+def test__potential_is_output(plane, mask, plane_plotter_path, plot_patch):
+
+    plane_plotters.plot_potential(plane=plane, mask=mask, zoom_around_mask=True,
+                                  output_path=plane_plotter_path, output_format='png')
+
+    assert plane_plotter_path + 'plane_potential.png' in plot_patch.paths
+
+
+def test__deflections_y_is_output(plane, mask, plane_plotter_path, plot_patch):
+
+    plane_plotters.plot_deflections_y(plane=plane, mask=mask, zoom_around_mask=True,
+                                      output_path=plane_plotter_path, output_format='png')
+
+    assert plane_plotter_path + 'plane_deflections_y.png' in plot_patch.paths
+
+
+def test__deflections_x_is_output(plane, mask, plane_plotter_path, plot_patch):
+
+    plane_plotters.plot_deflections_x(plane=plane, mask=mask, zoom_around_mask=True,
+                                      output_path=plane_plotter_path, output_format='png')
+
+    assert plane_plotter_path + 'plane_deflections_x.png' in plot_patch.paths
+
+
+def test__plane_grid_is_output(plane, plane_plotter_path, plot_patch):
 
     plane_plotters.plot_plane_grid(plane=plane, output_path=plane_plotter_path, output_format='png')
-    assert os.path.isfile(path=plane_plotter_path + 'plane_grid.png')
-    os.remove(path=plane_plotter_path + 'plane_grid.png')
+
+    assert plane_plotter_path + 'plane_grid.png' in plot_patch.paths

@@ -43,6 +43,7 @@ def make_pipeline(test_name):
     phase1 = ph.LensPlanePhase(lens_galaxies=[gm.GalaxyModel(sersic=lp.EllipticalSersic)],
                                optimizer_class=nl.MultiNest, phase_name="{}/phase1".format(test_name))
 
+    phase1.optimizer.const_efficiency_mode = True
     phase1.optimizer.n_live_points = 40
     phase1.optimizer.sampling_efficiency = 0.8
 
@@ -58,6 +59,7 @@ def make_pipeline(test_name):
     phase2 = LensHyperPhase(lens_galaxies=[], optimizer_class=nl.MultiNest,
                             phase_name="{}/phase2".format(test_name))
 
+    phase2.optimizer.const_efficiency_mode = True
     phase2.optimizer.n_live_points = 40
     phase2.optimizer.sampling_efficiency = 0.8
 

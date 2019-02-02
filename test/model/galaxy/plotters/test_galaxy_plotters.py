@@ -1,32 +1,10 @@
-import os
-import shutil
-
-import pytest
-
-from autofit import conf
-from autolens.data.array import grids
+from autolens.data.array import grids, mask as msk
+from autolens.model.galaxy import galaxy as g
 from autolens.model.galaxy.plotters import galaxy_plotters
 from autolens.model.profiles import light_profiles as lp, mass_profiles as mp
-from autolens.model.galaxy import galaxy as g
+from test.fixtures import *
 
-
-@pytest.fixture(name='general_config')
-def make_general_config():
-    general_config_path = "{}/../../../test_files/configs/plotting/".format(os.path.dirname(os.path.realpath(__file__)))
-    conf.instance.general = conf.NamedConfig(general_config_path + "general.ini")
-
-
-@pytest.fixture(name='galaxy_plotter_path')
-def make_galaxy_plotter_setup():
-    galaxy_plotter_path = "{}/../../../test_files/plotting/model_galaxy/".format(os.path.dirname(os.path.realpath(__file__)))
-
-    if os.path.exists(galaxy_plotter_path):
-        shutil.rmtree(galaxy_plotter_path)
-
-    os.mkdir(galaxy_plotter_path)
-
-    return galaxy_plotter_path
-
+import numpy as np
 
 @pytest.fixture(name='galaxy_light')
 def make_galaxy_light():
@@ -38,67 +16,111 @@ def make_galaxy_mass():
     return g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=1.0))
 
 
+@pytest.fixture(name='positions')
+def make_positions():
+    positions = [[[0.1, 0.1], [0.2, 0.2]], [[0.3, 0.3]]]
+    return list(map(lambda position_set: np.asarray(position_set), positions))
+
+
+@pytest.fixture(name='mask')
+def make_mask():
+    return msk.Mask.circular(shape=((3, 3)), pixel_scale=0.1, radius_arcsec=0.1)
+
 @pytest.fixture(name='grid_stack')
 def make_grid_stack():
     return grids.GridStack.from_shape_pixel_scale_and_sub_grid_size(shape=(100, 100), pixel_scale=0.05, sub_grid_size=2)
 
 
-def test__intensities_is_output(galaxy_light, grid_stack, galaxy_plotter_path):
+@pytest.fixture(name='galaxy_plotter_path')
+def make_galaxy_plotter_setup():
+    return "{}/../../../test_files/plotting/model_galaxy/".format(os.path.dirname(os.path.realpath(__file__)))
+
+
+def test__intensities_is_output(galaxy_light,grid_stack, mask, positions, galaxy_plotter_path, plot_patch):
+    
     galaxy_plotters.plot_intensities(galaxy=galaxy_light, grid=grid_stack.regular,
+                                     mask=mask, zoom_around_mask=True, positions=positions,
                                      output_path=galaxy_plotter_path, output_format='png')
-    assert os.path.isfile(path=galaxy_plotter_path + 'galaxy_intensities.png')
-    os.remove(path=galaxy_plotter_path + 'galaxy_intensities.png')
+    
+    assert galaxy_plotter_path + 'galaxy_intensities.png' in plot_patch.paths
 
-def test__surface_density_is_output(galaxy_mass, grid_stack, galaxy_plotter_path):
+
+def test__surface_density_is_output(galaxy_mass,grid_stack, mask, positions, galaxy_plotter_path, plot_patch):
+    
     galaxy_plotters.plot_surface_density(galaxy=galaxy_mass, grid=grid_stack.regular,
+                                         mask=mask, zoom_around_mask=True, positions=positions,
                                          output_path=galaxy_plotter_path, output_format='png')
-    assert os.path.isfile(path=galaxy_plotter_path + 'galaxy_surface_density.png')
-    os.remove(path=galaxy_plotter_path + 'galaxy_surface_density.png')
+    
+    assert galaxy_plotter_path + 'galaxy_surface_density.png' in plot_patch.paths
 
-def test__potential_is_output(galaxy_mass, grid_stack, galaxy_plotter_path):
+
+def test__potential_is_output(galaxy_mass,grid_stack, mask, positions, galaxy_plotter_path, plot_patch):
+    
     galaxy_plotters.plot_potential(galaxy=galaxy_mass, grid=grid_stack.regular,
+                                   mask=mask, zoom_around_mask=True, positions=positions,
                                    output_path=galaxy_plotter_path, output_format='png')
-    assert os.path.isfile(path=galaxy_plotter_path + 'galaxy_potential.png')
-    os.remove(path=galaxy_plotter_path + 'galaxy_potential.png')
+    
+    assert galaxy_plotter_path + 'galaxy_potential.png' in plot_patch.paths
 
-def test__deflections_y_is_output(galaxy_mass, grid_stack, galaxy_plotter_path):
+
+def test__deflections_y_is_output(galaxy_mass,grid_stack, mask, positions, galaxy_plotter_path, plot_patch):
+    
     galaxy_plotters.plot_deflections_y(galaxy=galaxy_mass, grid=grid_stack.regular,
+                                       mask=mask, zoom_around_mask=True, positions=positions,
                                        output_path=galaxy_plotter_path, output_format='png')
-    assert os.path.isfile(path=galaxy_plotter_path + 'galaxy_deflections_y.png')
-    os.remove(path=galaxy_plotter_path + 'galaxy_deflections_y.png')
+    
+    assert galaxy_plotter_path + 'galaxy_deflections_y.png' in plot_patch.paths
 
-def test__deflections_x_is_output(galaxy_mass, grid_stack, galaxy_plotter_path):
+
+def test__deflections_x_is_output(galaxy_mass,grid_stack, mask, positions, galaxy_plotter_path, plot_patch):
+    
     galaxy_plotters.plot_deflections_x(galaxy=galaxy_mass, grid=grid_stack.regular,
+                                       mask=mask, zoom_around_mask=True, positions=positions,
                                        output_path=galaxy_plotter_path, output_format='png')
-    assert os.path.isfile(path=galaxy_plotter_path + 'galaxy_deflections_x.png')
-    os.remove(path=galaxy_plotter_path + 'galaxy_deflections_x.png')
+    
+    assert galaxy_plotter_path + 'galaxy_deflections_x.png' in plot_patch.paths
 
-def test__individual_intensities_is_output(galaxy_light, grid_stack, galaxy_plotter_path):
+
+def test__individual_intensities_is_output(galaxy_light,grid_stack, mask, positions, galaxy_plotter_path, plot_patch):
+    
     galaxy_plotters.plot_intensities_subplot(galaxy=galaxy_light, grid=grid_stack.regular,
+                                             mask=mask, zoom_around_mask=True, positions=positions,
                                              output_path=galaxy_plotter_path, output_format='png')
-    assert os.path.isfile(path=galaxy_plotter_path + 'galaxy_individual_intensities.png')
-    os.remove(path=galaxy_plotter_path + 'galaxy_individual_intensities.png')
+    
+    assert galaxy_plotter_path + 'galaxy_individual_intensities.png' in plot_patch.paths
 
-def test__individual_surface_density_is_output(galaxy_light, grid_stack, galaxy_plotter_path):
+
+def test__individual_surface_density_is_output(galaxy_light,grid_stack, mask, positions, galaxy_plotter_path, plot_patch):
+    
     galaxy_plotters.plot_surface_density_subplot(galaxy=galaxy_light, grid=grid_stack.regular,
+                                                 mask=mask, zoom_around_mask=True, positions=positions,
                                                  output_path=galaxy_plotter_path, output_format='png')
-    assert os.path.isfile(path=galaxy_plotter_path + 'galaxy_individual_surface_density.png')
-    os.remove(path=galaxy_plotter_path + 'galaxy_individual_surface_density.png')
     
-def test__individual_potential_is_output(galaxy_light, grid_stack, galaxy_plotter_path):
+    assert galaxy_plotter_path + 'galaxy_individual_surface_density.png' in plot_patch.paths
+
+
+def test__individual_potential_is_output(galaxy_light,grid_stack, mask, positions, galaxy_plotter_path, plot_patch):
+    
     galaxy_plotters.plot_potential_subplot(galaxy=galaxy_light, grid=grid_stack.regular,
+                                           mask=mask, zoom_around_mask=True, positions=positions,
                                            output_path=galaxy_plotter_path, output_format='png')
-    assert os.path.isfile(path=galaxy_plotter_path + 'galaxy_individual_potential.png')
-    os.remove(path=galaxy_plotter_path + 'galaxy_individual_potential.png')
     
-def test__individual_deflections_y_is_output(galaxy_light, grid_stack, galaxy_plotter_path):
+    assert galaxy_plotter_path + 'galaxy_individual_potential.png' in plot_patch.paths
+
+
+def test__individual_deflections_y_is_output(galaxy_light,grid_stack, mask, positions, galaxy_plotter_path, plot_patch):
+    
     galaxy_plotters.plot_deflections_y_subplot(galaxy=galaxy_light, grid=grid_stack.regular,
+                                               mask=mask, zoom_around_mask=True, positions=positions,
                                                output_path=galaxy_plotter_path, output_format='png')
-    assert os.path.isfile(path=galaxy_plotter_path + 'galaxy_individual_deflections_y.png')
-    os.remove(path=galaxy_plotter_path + 'galaxy_individual_deflections_y.png')
     
-def test__individual_deflections_x_is_output(galaxy_light, grid_stack, galaxy_plotter_path):
+    assert galaxy_plotter_path + 'galaxy_individual_deflections_y.png' in plot_patch.paths
+
+
+def test__individual_deflections_x_is_output(galaxy_light,grid_stack, mask, positions, galaxy_plotter_path, plot_patch):
+    
     galaxy_plotters.plot_intensities_subplot(galaxy=galaxy_light, grid=grid_stack.regular,
+                                             mask=mask, zoom_around_mask=True, positions=positions,
                                              output_path=galaxy_plotter_path, output_format='png')
-    assert os.path.isfile(path=galaxy_plotter_path + 'galaxy_individual_intensities.png')
-    os.remove(path=galaxy_plotter_path + 'galaxy_individual_intensities.png')
+    
+    assert galaxy_plotter_path + 'galaxy_individual_intensities.png' in plot_patch.paths

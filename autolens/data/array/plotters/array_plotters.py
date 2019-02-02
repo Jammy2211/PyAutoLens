@@ -7,7 +7,8 @@ import itertools
 from autolens.data.array.plotters import plotter_util
 
 
-def plot_array(array, origin=None, mask=None, should_plot_border=False, positions=None, grid=None, as_subplot=False,
+def plot_array(array, origin=None, mask=None, zoom_around_mask=False, should_plot_border=False, positions=None,
+               grid=None, as_subplot=False,
                units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
                cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
                cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
@@ -23,8 +24,11 @@ def plot_array(array, origin=None, mask=None, should_plot_border=False, position
         The 2D array of hyper which is plotted.
     origin : (float, float).
         The origin of the coordinate system of the hyper, which is plotted as an 'x' on the hyper if input.
-    mask : ndarray of hyper.array.masks.Mask
+    mask : ndarray of array.mask.Mask
         The masks applied to the hyper, the edge of which is plotted as a set of points over the plotted array.
+    zoom_around_mask : bool
+        If True, the 2D region of the array corresponding to the rectangle encompassing all unmasked values is \
+        extracted and plotted.
     should_plot_border : bool
         If a masks is supplied, its borders pixels (e.g. the exterior edge) is plotted if this is *True*.
     positions : [[]]
@@ -94,6 +98,9 @@ def plot_array(array, origin=None, mask=None, should_plot_border=False, position
 
     if array is None:
         return
+
+    if zoom_around_mask and mask is not None:
+        array = array.extract_scaled_array_around_mask(mask=mask, buffer=1)
 
     plot_figure(array=array, as_subplot=as_subplot, units=units, kpc_per_arcsec=kpc_per_arcsec,
                 figsize=figsize, aspect=aspect, cmap=cmap, norm=norm,
@@ -188,15 +195,18 @@ def get_extent(array, units, kpc_per_arcsec, xticks_manual, yticks_manual):
     if xticks_manual is not None and yticks_manual is not None:
         return np.asarray([xticks_manual[0], xticks_manual[3], yticks_manual[0], yticks_manual[3]])
 
-    if units is 'pixels':
+    if units in 'pixels':
         return np.asarray([0, array.shape[1], 0, array.shape[0]])
-    elif units is 'arcsec' or kpc_per_arcsec is None:
+    elif units in 'arcsec' or kpc_per_arcsec is None:
         return np.asarray([array.arc_second_minima[1], array.arc_second_maxima[1],
                            array.arc_second_minima[0], array.arc_second_maxima[0]])
-    elif units is 'kpc':
+    elif units in 'kpc':
         return list(map(lambda tick : tick*kpc_per_arcsec,
                         np.asarray([array.arc_second_minima[1], array.arc_second_maxima[1],
                                     array.arc_second_minima[0], array.arc_second_maxima[0]])))
+    else:
+        raise exc.PlottingException('The units supplied to the plotted are not a valid string (must be pixels | '
+                                     'arcsec | kpc)')
 
 def get_normalization_min_max(array, norm_min, norm_max):
     """Get the minimum and maximum of the normalization of the array, which sets the lower and upper limits of the \
@@ -274,23 +284,24 @@ def set_xy_labels_and_ticksize(units, kpc_per_arcsec, xlabelsize, ylabelsize, xy
     xyticksize : int
         The font size of the x and y ticks on the figure axes.
     """
-    if units is 'pixels':
+
+    if units in 'pixels':
 
         plt.xlabel('x (pixels)', fontsize=xlabelsize)
         plt.ylabel('y (pixels)', fontsize=ylabelsize)
 
-    elif units is 'arcsec' or kpc_per_arcsec is None:
+    elif units in 'arcsec' or kpc_per_arcsec is None:
 
         plt.xlabel('x (arcsec)', fontsize=xlabelsize)
         plt.ylabel('y (arcsec)', fontsize=ylabelsize)
 
-    elif units is 'kpc':
+    elif units in 'kpc':
 
         plt.xlabel('x (kpc)', fontsize=xlabelsize)
         plt.ylabel('y (kpc)', fontsize=ylabelsize)
 
     else:
-        raise exc.PlottingException('The units supplied to the plotted are not a valid string (must be pixels | '
+        raise exc.PlottingException('The units supplied to the plotter are not a valid string (must be pixels | '
                                      'arcsec | kpc)')
 
     plt.tick_params(labelsize=xyticksize)
@@ -325,12 +336,15 @@ def convert_grid_units(array, grid_arc_seconds, units, kpc_per_arcsec):
     kpc_per_arcsec : float
         The conversion factor between arc-seconds and kiloparsecs, required to plot the units in kpc.
     """
-    if units is 'pixels':
+    if units in 'pixels':
         return array.grid_arc_seconds_to_grid_pixels(grid_arc_seconds=grid_arc_seconds)
-    elif units is 'arcsec' or kpc_per_arcsec is None:
+    elif units in 'arcsec' or kpc_per_arcsec is None:
         return grid_arc_seconds
-    elif units is 'kpc':
+    elif units in 'kpc':
         return grid_arc_seconds * kpc_per_arcsec
+    else:
+        raise exc.PlottingException('The units supplied to the plotter are not a valid string (must be pixels | '
+                                     'arcsec | kpc)')
 
 def plot_origin(array, origin, units, kpc_per_arcsec):
     """Plot the (y,x) origin ofo the array's coordinates as a 'x'.
@@ -367,10 +381,11 @@ def plot_mask(mask, units, kpc_per_arcsec, pointsize):
     pointsize : int
         The size of the points plotted to show the masks.
     """
+
     if mask is not None:
 
         plt.gca()
-        edge_pixels = mask.masked_grid_index_to_pixel[mask.edge_pixels]
+        edge_pixels = mask.masked_grid_index_to_pixel[mask.edge_pixels] + 0.5
         edge_arc_seconds = mask.grid_pixels_to_grid_arc_seconds(grid_pixels=edge_pixels)
         edge_units = convert_grid_units(array=mask, grid_arc_seconds=edge_arc_seconds, units=units,
                                           kpc_per_arcsec=kpc_per_arcsec)

@@ -19,11 +19,12 @@ conf.instance = conf.Config(config_path=config_path, output_path=output_path)
 
 def pipeline():
 
+    tools.reset_paths(test_name=test_name, output_path=output_path)
+
     sersic = lp.EllipticalSersic(centre=(0.0, 0.0), axis_ratio=0.8, intensity=1.0, effective_radius=1.3)
 
     lens_galaxy = galaxy.Galaxy(light_profile=sersic)
 
-    tools.reset_paths(test_name=test_name, output_path=output_path)
     tools.simulate_integration_image(test_name=test_name, pixel_scale=0.1, lens_galaxies=[lens_galaxy],
                                      source_galaxies=[], target_signal_to_noise=30.0)
 
@@ -41,6 +42,7 @@ def make_pipeline(test_name):
     phase1 = ph.LensPlanePhase(lens_galaxies=dict(lens=gm.GalaxyModel(sersic=lp.EllipticalSersic)),
                                optimizer_class=nl.MultiNest, phase_name="{}/phase1".format(test_name))
 
+    phase1.optimizer.const_efficiency_mode = True
     phase1.optimizer.n_live_points = 40
     phase1.optimizer.sampling_efficiency = 0.8
 
