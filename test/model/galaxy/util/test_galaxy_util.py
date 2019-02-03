@@ -7,7 +7,7 @@ from autolens.data.array import mask
 from autolens.model.profiles import light_profiles as lp
 from autolens.model.profiles import mass_profiles as mp
 from autolens.model.galaxy import galaxy as g
-from autolens.lens.util import plane_util
+from autolens.model.galaxy.util import galaxy_util
 
 @pytest.fixture(name="grid_stack")
 def make_grid_stack():
@@ -75,7 +75,7 @@ class TestIntensitiesFromGrid:
                                          [2.0, 2.0],
                                          [3.0, 3.0]])
 
-        intensities = plane_util.intensities_of_galaxies_from_grid(grid=grid_stack.regular, galaxies=[galaxy_non])
+        intensities = galaxy_util.intensities_of_galaxies_from_grid(grid=grid_stack.regular, galaxies=[galaxy_non])
 
         assert (intensities[0] == np.array([0.0, 0.0])).all()
         assert (intensities[1] == np.array([0.0, 0.0])).all()
@@ -88,7 +88,7 @@ class TestIntensitiesFromGrid:
 
         galaxy_intensities = galaxy_light.intensities_from_grid(grid_stack.regular)
 
-        util_intensities = plane_util.intensities_of_galaxies_from_grid(grid=grid_stack.regular,
+        util_intensities = galaxy_util.intensities_of_galaxies_from_grid(grid=grid_stack.regular,
                                                                           galaxies=[galaxy_light])
 
         assert (galaxy_intensities == util_intensities).all()
@@ -100,7 +100,7 @@ class TestIntensitiesFromGrid:
 
         galaxy_intensities = galaxy_light.intensities_from_grid(grid_stack.regular)
 
-        util_intensities = plane_util.intensities_of_galaxies_from_grid(grid=grid_stack.regular,
+        util_intensities = galaxy_util.intensities_of_galaxies_from_grid(grid=grid_stack.regular,
                                                                           galaxies=[galaxy_light, galaxy_light])
 
         assert (2.0 * galaxy_intensities == util_intensities).all()
@@ -111,7 +111,7 @@ class TestIntensitiesFromGrid:
         galaxy_image = (galaxy_image[0] + galaxy_image[1] + galaxy_image[2] +
                         galaxy_image[3]) / 4.0
 
-        util_intensities = plane_util.intensities_of_galaxies_from_grid(grid=grid_stack.sub, galaxies=[galaxy_light])
+        util_intensities = galaxy_util.intensities_of_galaxies_from_grid(grid=grid_stack.sub, galaxies=[galaxy_light])
 
         assert util_intensities[0] == galaxy_image
 
@@ -123,7 +123,7 @@ class TestSurfaceDensityFromGrid:
                                          [2.0, 2.0],
                                          [3.0, 3.0]])
 
-        surface_density = plane_util.surface_density_of_galaxies_from_grid(grid=grid_stack.regular, galaxies=[galaxy_non])
+        surface_density = galaxy_util.surface_density_of_galaxies_from_grid(grid=grid_stack.regular, galaxies=[galaxy_non])
 
         assert (surface_density[0] == np.array([0.0, 0.0])).all()
         assert (surface_density[1] == np.array([0.0, 0.0])).all()
@@ -136,7 +136,7 @@ class TestSurfaceDensityFromGrid:
 
         galaxy_surface_density = galaxy_mass.surface_density_from_grid(grid_stack.regular)
 
-        util_surface_density = plane_util.surface_density_of_galaxies_from_grid(grid=grid_stack.regular,
+        util_surface_density = galaxy_util.surface_density_of_galaxies_from_grid(grid=grid_stack.regular,
                                                                                   galaxies=[galaxy_mass])
 
         assert (galaxy_surface_density == util_surface_density).all()
@@ -148,7 +148,7 @@ class TestSurfaceDensityFromGrid:
 
         galaxy_surface_density = galaxy_mass.surface_density_from_grid(grid_stack.regular)
 
-        util_surface_density = plane_util.surface_density_of_galaxies_from_grid(grid=grid_stack.regular,
+        util_surface_density = galaxy_util.surface_density_of_galaxies_from_grid(grid=grid_stack.regular,
                                                                                   galaxies=[galaxy_mass, galaxy_mass])
 
         assert (2.0 * galaxy_surface_density == util_surface_density).all()
@@ -159,7 +159,7 @@ class TestSurfaceDensityFromGrid:
         galaxy_image = (galaxy_image[0] + galaxy_image[1] + galaxy_image[2] +
                         galaxy_image[3]) / 4.0
 
-        util_surface_density = plane_util.surface_density_of_galaxies_from_grid(grid=grid_stack.sub,
+        util_surface_density = galaxy_util.surface_density_of_galaxies_from_grid(grid=grid_stack.sub,
                                                                                   galaxies=[galaxy_mass])
 
         assert util_surface_density[0] == galaxy_image
@@ -172,7 +172,7 @@ class TestPotentialFromGrid:
                                          [2.0, 2.0],
                                          [3.0, 3.0]])
 
-        potential = plane_util.potential_of_galaxies_from_grid(grid=grid_stack.regular, galaxies=[galaxy_non])
+        potential = galaxy_util.potential_of_galaxies_from_grid(grid=grid_stack.regular, galaxies=[galaxy_non])
 
         assert (potential[0] == np.array([0.0, 0.0])).all()
         assert (potential[1] == np.array([0.0, 0.0])).all()
@@ -185,7 +185,7 @@ class TestPotentialFromGrid:
 
         galaxy_potential = galaxy_mass.potential_from_grid(grid_stack.regular)
 
-        util_potential = plane_util.potential_of_galaxies_from_grid(grid=grid_stack.regular, galaxies=[galaxy_mass])
+        util_potential = galaxy_util.potential_of_galaxies_from_grid(grid=grid_stack.regular, galaxies=[galaxy_mass])
 
         assert (galaxy_potential == util_potential).all()
 
@@ -196,7 +196,7 @@ class TestPotentialFromGrid:
 
         galaxy_potential = galaxy_mass.potential_from_grid(grid_stack.regular)
 
-        util_potential = plane_util.potential_of_galaxies_from_grid(grid=grid_stack.regular,
+        util_potential = galaxy_util.potential_of_galaxies_from_grid(grid=grid_stack.regular,
                                                                     galaxies=[galaxy_mass, galaxy_mass])
 
         assert (2.0 * galaxy_potential == util_potential).all()
@@ -207,7 +207,7 @@ class TestPotentialFromGrid:
         galaxy_image = (galaxy_image[0] + galaxy_image[1] + galaxy_image[2] +
                         galaxy_image[3]) / 4.0
 
-        util_potential = plane_util.potential_of_galaxies_from_grid(grid=grid_stack.sub, galaxies=[galaxy_mass])
+        util_potential = galaxy_util.potential_of_galaxies_from_grid(grid=grid_stack.sub, galaxies=[galaxy_mass])
 
         assert util_potential[0] == galaxy_image
 
@@ -215,7 +215,7 @@ class TestPotentialFromGrid:
 class TestDeflectionsFromGrid:
 
     def test__all_coordinates(self, grid_stack, galaxy_mass):
-        deflections = plane_util.deflections_of_galaxies_from_grid_stack(grid_stack, [galaxy_mass])
+        deflections = galaxy_util.deflections_of_galaxies_from_grid_stack(grid_stack, [galaxy_mass])
 
         assert deflections.regular[0] == pytest.approx(np.array([0.707, 0.707]), 1e-3)
         assert deflections.sub[0] == pytest.approx(np.array([0.707, 0.707]), 1e-3)
@@ -224,7 +224,7 @@ class TestDeflectionsFromGrid:
         assert deflections.blurring[0] == pytest.approx(np.array([1.0, 0.0]), 1e-3)
 
     def test__2_identical_lens_galaxies__deflection_angles_double(self, grid_stack, galaxy_mass):
-        deflections = plane_util.deflections_of_galaxies_from_grid_stack(grid_stack, [galaxy_mass, galaxy_mass])
+        deflections = galaxy_util.deflections_of_galaxies_from_grid_stack(grid_stack, [galaxy_mass, galaxy_mass])
 
         assert deflections.regular[0] == pytest.approx(np.array([2.0 * 0.707, 2.0 * 0.707]), 1e-3)
         assert deflections.sub[0] == pytest.approx(np.array([2.0 * 0.707, 2.0 * 0.707]), 1e-3)
@@ -233,97 +233,9 @@ class TestDeflectionsFromGrid:
         assert deflections.blurring[0] == pytest.approx(np.array([2.0, 0.0]), 1e-3)
 
     def test__1_lens_with_2_identical_mass_profiles__deflection_angles_double(self, grid_stack, galaxy_mass_x2):
-        deflections = plane_util.deflections_of_galaxies_from_grid_stack(grid_stack, [galaxy_mass_x2])
+        deflections = galaxy_util.deflections_of_galaxies_from_grid_stack(grid_stack, [galaxy_mass_x2])
 
         assert deflections.regular[0] == pytest.approx(np.array([2.0 * 0.707, 2.0 * 0.707]), 1e-3)
         assert deflections.sub[0] == pytest.approx(np.array([2.0 * 0.707, 2.0 * 0.707]), 1e-3)
         assert deflections.sub[1] == pytest.approx(np.array([2.0, 0.0]), 1e-3)
         assert deflections.blurring[0] == pytest.approx(np.array([2.0, 0.0]), 1e-3)
-
-
-class TestPlaneImageFromGrid:
-
-    def test__3x3_grid__extracts_max_min_coordinates__creates_regular_grid_including_half_pixel_offset_from_edge(self):
-
-        galaxy = g.Galaxy(light=lp.EllipticalSersic(intensity=1.0))
-
-        grid = np.array([[-1.5, -1.5], [1.5, 1.5]])
-
-        plane_image = plane_util.plane_image_of_galaxies_from_grid(shape=(3, 3), grid=grid, galaxies=[galaxy], buffer=0.0)
-
-        plane_image_galaxy = galaxy.intensities_from_grid(grid=np.array([[-1.0, -1.0], [-1.0, 0.0], [-1.0, 1.0],
-                                                                           [0.0, -1.0], [0.0, 0.0], [0.0, 1.0],
-                                                                           [1.0, -1.0], [1.0, 0.0], [1.0, 1.0]]))
-
-        plane_image_galaxy = mapping_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(
-            array_1d=plane_image_galaxy, shape=(3,3))
-
-        assert (plane_image == plane_image_galaxy).all()
-
-    def test__3x3_grid__extracts_max_min_coordinates__ignores_other_coordinates_more_central(self):
-
-        galaxy = g.Galaxy(light=lp.EllipticalSersic(intensity=1.0))
-
-        grid = np.array([[-1.5, -1.5], [1.5, 1.5], [0.1, -0.1], [-1.0, 0.6], [1.4, -1.3], [1.5, 1.5]])
-
-        plane_image = plane_util.plane_image_of_galaxies_from_grid(shape=(3, 3), grid=grid, galaxies=[galaxy], buffer=0.0)
-
-        plane_image_galaxy = galaxy.intensities_from_grid(grid=np.array([[-1.0, -1.0], [-1.0, 0.0], [-1.0, 1.0],
-                                                                           [0.0, -1.0], [0.0, 0.0], [0.0, 1.0],
-                                                                           [1.0, -1.0], [1.0, 0.0], [1.0, 1.0]]))
-
-        plane_image_galaxy = mapping_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(
-            array_1d=plane_image_galaxy, shape=(3,3))
-
-        assert (plane_image == plane_image_galaxy).all()
-
-    def test__2x3_grid__shape_change_correct_and_coordinates_shift(self):
-
-        galaxy = g.Galaxy(light=lp.EllipticalSersic(intensity=1.0))
-
-        grid = np.array([[-1.5, -1.5], [1.5, 1.5]])
-
-        plane_image = plane_util.plane_image_of_galaxies_from_grid(shape=(2, 3), grid=grid, galaxies=[galaxy], buffer=0.0)
-
-        plane_image_galaxy = galaxy.intensities_from_grid(grid=np.array([[-0.75, -1.0], [-0.75, 0.0], [-0.75, 1.0],
-                                                                          [0.75, -1.0], [0.75, 0.0], [0.75, 1.0]]))
-
-        plane_image_galaxy = mapping_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(
-            array_1d=plane_image_galaxy, shape=(2,3))
-
-        assert (plane_image == plane_image_galaxy).all()
-
-    def test__3x2_grid__shape_change_correct_and_coordinates_shift(self):
-
-        galaxy = g.Galaxy(light=lp.EllipticalSersic(intensity=1.0))
-
-        grid = np.array([[-1.5, -1.5], [1.5, 1.5]])
-
-        plane_image = plane_util.plane_image_of_galaxies_from_grid(shape=(3, 2), grid=grid, galaxies=[galaxy], buffer=0.0)
-
-        plane_image_galaxy = galaxy.intensities_from_grid(grid=np.array([[-1.0, -0.75], [-1.0, 0.75],
-                                                                          [0.0, -0.75], [0.0, 0.75],
-                                                                          [1.0, -0.75], [1.0, 0.75]]))
-
-        plane_image_galaxy = mapping_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(
-            array_1d=plane_image_galaxy, shape=(3,2))
-
-        assert (plane_image == plane_image_galaxy).all()
-
-    def test__3x3_grid__buffer_aligns_two_grids(self):
-
-        galaxy = g.Galaxy(light=lp.EllipticalSersic(intensity=1.0))
-
-        grid_without_buffer = np.array([[-1.48, -1.48], [1.48, 1.48]])
-
-        plane_image = plane_util.plane_image_of_galaxies_from_grid(shape=(3, 3), grid=grid_without_buffer, galaxies=[galaxy],
-                                                                   buffer=0.02)
-
-        plane_image_galaxy = galaxy.intensities_from_grid(grid=np.array([[-1.0, -1.0], [-1.0, 0.0], [-1.0, 1.0],
-                                                                           [0.0, -1.0], [0.0, 0.0], [0.0, 1.0],
-                                                                           [1.0, -1.0], [1.0, 0.0], [1.0, 1.0]]))
-
-        plane_image_galaxy = mapping_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(
-            array_1d=plane_image_galaxy, shape=(3,3))
-
-        assert (plane_image == plane_image_galaxy).all()

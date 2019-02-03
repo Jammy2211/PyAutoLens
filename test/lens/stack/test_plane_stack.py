@@ -5,7 +5,8 @@ from astropy import cosmology as cosmo
 from autolens import exc
 from autolens.data.array import grids, mask
 from autolens.model.galaxy import galaxy as g
-from autolens.lens.util import plane_util
+from autolens.model.galaxy.util import galaxy_util
+from autolens.lens.util import lens_util
 from autolens.lens.stack import plane_stack as pl_stack
 from autolens.model.profiles import light_profiles as lp, mass_profiles as mp
 from test.mock.mock_inversion import MockRegularization, MockPixelization
@@ -17,7 +18,8 @@ def make_grid_stack_0():
                              [True, False, False, True],
                              [True, True, True, True]]), pixel_scale=6.0)
 
-    grid_stack_0 = grids.GridStack.grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=ma, sub_grid_size=2, psf_shape=(3, 3))
+    grid_stack_0 = grids.GridStack.grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=ma, sub_grid_size=2,
+                                                                                    psf_shape=(3, 3))
 
     # Manually overwrite a set of cooridnates to make tests of grid_stacks and defledctions straightforward
 
@@ -241,7 +243,7 @@ class TestPlaneStack:
             # Overwrite one value so intensity in each pixel is different
             grid_stack_0.sub[5] = np.array([2.0, 2.0])
 
-            galaxy_image = plane_util.intensities_of_galaxies_from_grid(grid_stack_0.sub, galaxies=[galaxy_light])
+            galaxy_image = galaxy_util.intensities_of_galaxies_from_grid(grid_stack_0.sub, galaxies=[galaxy_light])
 
             plane_stack = pl_stack.PlaneStack(galaxies=[galaxy_light], grid_stacks=[grid_stack_0, grid_stack_0])
 
@@ -264,8 +266,8 @@ class TestPlaneStack:
 
             plane_stack = pl_stack.PlaneStack(galaxies=[g0, g1], grid_stacks=[grid_stack_0, grid_stack_1])
 
-            g0_image_grid_0 = plane_util.intensities_of_galaxies_from_grid(grid_stack_0.sub, galaxies=[g0])
-            g1_image_grid_0 = plane_util.intensities_of_galaxies_from_grid(grid_stack_0.sub, galaxies=[g1])
+            g0_image_grid_0 = galaxy_util.intensities_of_galaxies_from_grid(grid_stack_0.sub, galaxies=[g0])
+            g1_image_grid_0 = galaxy_util.intensities_of_galaxies_from_grid(grid_stack_0.sub, galaxies=[g1])
 
             assert plane_stack.image_plane_images_1d[0] == pytest.approx(g0_image_grid_0 + g1_image_grid_0, 1.0e-4)
             assert (plane_stack.image_plane_images[0] ==
@@ -274,8 +276,8 @@ class TestPlaneStack:
             assert (plane_stack.image_plane_images_1d_of_galaxies[0][0] == g0_image_grid_0).all()
             assert (plane_stack.image_plane_images_1d_of_galaxies[0][1] == g1_image_grid_0).all()
 
-            g0_image_grid_1 = plane_util.intensities_of_galaxies_from_grid(grid_stack_1.sub, galaxies=[g0])
-            g1_image_grid_1 = plane_util.intensities_of_galaxies_from_grid(grid_stack_1.sub, galaxies=[g1])
+            g0_image_grid_1 = galaxy_util.intensities_of_galaxies_from_grid(grid_stack_1.sub, galaxies=[g0])
+            g1_image_grid_1 = galaxy_util.intensities_of_galaxies_from_grid(grid_stack_1.sub, galaxies=[g1])
 
             assert plane_stack.image_plane_images_1d[1] == pytest.approx(g0_image_grid_1 + g1_image_grid_1, 1.0e-4)
             assert (plane_stack.image_plane_images[1] ==
@@ -357,8 +359,8 @@ class TestPlaneStack:
             # Overwrite one value so intensity in each pixel is different
             grid_stack_0.blurring[1] = np.array([2.0, 2.0])
 
-            galaxy_image = plane_util.intensities_of_galaxies_from_grid(grid_stack_0.blurring, galaxies=[galaxy_light])
-            galaxy_image_1 = plane_util.intensities_of_galaxies_from_grid(grid_stack_1.blurring, galaxies=[galaxy_light])
+            galaxy_image = galaxy_util.intensities_of_galaxies_from_grid(grid_stack_0.blurring, galaxies=[galaxy_light])
+            galaxy_image_1 = galaxy_util.intensities_of_galaxies_from_grid(grid_stack_1.blurring, galaxies=[galaxy_light])
 
             plane_stack = pl_stack.PlaneStack(galaxies=[galaxy_light], grid_stacks=[grid_stack_0, grid_stack_1])
 
@@ -374,15 +376,15 @@ class TestPlaneStack:
             g0 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=1.0))
             g1 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=2.0))
 
-            g0_image_grid_0 = plane_util.intensities_of_galaxies_from_grid(grid_stack_0.blurring, galaxies=[g0])
-            g1_image_grid_0 = plane_util.intensities_of_galaxies_from_grid(grid_stack_0.blurring, galaxies=[g1])
+            g0_image_grid_0 = galaxy_util.intensities_of_galaxies_from_grid(grid_stack_0.blurring, galaxies=[g0])
+            g1_image_grid_0 = galaxy_util.intensities_of_galaxies_from_grid(grid_stack_0.blurring, galaxies=[g1])
 
             plane_stack = pl_stack.PlaneStack(galaxies=[g0, g1], grid_stacks=[grid_stack_0, grid_stack_1])
 
             assert (plane_stack.image_plane_blurring_images_1d[0] == g0_image_grid_0 + g1_image_grid_0).all()
 
-            g0_image_grid_1 = plane_util.intensities_of_galaxies_from_grid(grid_stack_1.blurring, galaxies=[g0])
-            g1_image_grid_1 = plane_util.intensities_of_galaxies_from_grid(grid_stack_1.blurring, galaxies=[g1])
+            g0_image_grid_1 = galaxy_util.intensities_of_galaxies_from_grid(grid_stack_1.blurring, galaxies=[g0])
+            g1_image_grid_1 = galaxy_util.intensities_of_galaxies_from_grid(grid_stack_1.blurring, galaxies=[g1])
 
             plane_stack = pl_stack.PlaneStack(galaxies=[g0, g1], grid_stacks=[grid_stack_0, grid_stack_1])
 
@@ -540,11 +542,11 @@ class TestPlaneStack:
             plane_stack = pl_stack.PlaneStack(galaxies=[galaxy], grid_stacks=[grid_stack_0, grid_stack_1],
                                   compute_deflections=False)
 
-            plane_image_from_func = plane_util.plane_image_of_galaxies_from_grid(shape=(3, 4),
+            plane_image_from_func = lens_util.plane_image_of_galaxies_from_grid(shape=(3, 4),
                                                                                  grid=grid_stack_0.regular,
                                                                           galaxies=[galaxy])
 
-            plane_image_from_func_1 = plane_util.plane_image_of_galaxies_from_grid(shape=(3, 4),
+            plane_image_from_func_1 = lens_util.plane_image_of_galaxies_from_grid(shape=(3, 4),
                                                                                    grid=grid_stack_1.regular,
                                                                             galaxies=[galaxy])
 

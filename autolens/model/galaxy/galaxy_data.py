@@ -2,6 +2,7 @@ import numpy as np
 
 from autolens import exc
 from autolens.data.array import grids, mask as msk, scaled_array
+from autolens.model.galaxy.util import galaxy_util
 
 
 class GalaxyData(object):
@@ -118,21 +119,15 @@ class GalaxyFitData(object):
     def map_to_scaled_array(self, array_1d):
         return self.grid_stack.regular.scaled_array_from_array_1d(array_1d=array_1d)
 
-    def profile_quantity_from_galaxy_and_sub_grid(self, galaxy, sub_grid):
+    def profile_quantity_from_galaxy_and_sub_grid(self, galaxies, sub_grid):
 
         if self.use_intensities:
-            return sub_grid.sub_data_to_regular_data(sub_array=galaxy.intensities_from_grid(grid=sub_grid))
+            return galaxy_util.intensities_of_galaxies_from_grid(galaxies=galaxies, grid=sub_grid)
         elif self.use_surface_density:
-            return sub_grid.sub_data_to_regular_data(sub_array=galaxy.surface_density_from_grid(grid=sub_grid))
+            return galaxy_util.surface_density_of_galaxies_from_grid(galaxies=galaxies, grid=sub_grid)
         elif self.use_potential:
-            return sub_grid.sub_data_to_regular_data(sub_array=galaxy.potential_from_grid(grid=sub_grid))
+            return galaxy_util.potential_of_galaxies_from_grid(galaxies=galaxies, grid=sub_grid)
         elif self.use_deflections_y:
-            deflections = galaxy.deflections_from_grid(grid=sub_grid)
-            deflections = np.asarray([sub_grid.sub_data_to_regular_data(deflections[:, 0]),
-                                      sub_grid.sub_data_to_regular_data(deflections[:, 1])]).T
-            return deflections[:,0]
+            return galaxy_util.deflections_of_galaxies_from_grid(galaxies=galaxies, grid=sub_grid)[:, 0]
         elif self.use_deflections_x:
-            deflections = galaxy.deflections_from_grid(grid=sub_grid)
-            deflections = np.asarray([sub_grid.sub_data_to_regular_data(deflections[:, 0]),
-                                      sub_grid.sub_data_to_regular_data(deflections[:, 1])]).T
-            return deflections[:,1]
+            return galaxy_util.deflections_of_galaxies_from_grid(galaxies=galaxies, grid=sub_grid)[:, 1]

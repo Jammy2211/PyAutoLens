@@ -14,12 +14,7 @@ def plot_fit_subplot(
         cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
         titlesize=10, xlabelsize=10, ylabelsize=10, xyticksize=10,
         mask_pointsize=10, position_pointsize=10.0, grid_pointsize=1,
-        output_path=None, output_filename='galaxy_fit', output_format='show', ignore_config=True):
-
-    plot_galaxy_fitting_as_subplot = conf.instance.general.get('output', 'plot_galaxy_fitting_as_subplot', bool)
-
-    if not plot_galaxy_fitting_as_subplot and ignore_config is False:
-        return
+        output_path=None, output_filename='galaxy_fit', output_format='show'):
 
     rows, columns, figsize_tool = plotter_util.get_subplot_rows_columns_figsize(number_subplots=4)
 
@@ -81,6 +76,8 @@ def plot_fit_subplot(
 
 def plot_fit_individuals(
         fit, should_plot_mask=True, zoom_around_mask=False, positions=None,
+        should_plot_image=False,
+        should_plot_noise_map=False,
         should_plot_model_image=False,
         should_plot_residual_map=False,
         should_plot_chi_squared_map=False,
@@ -89,7 +86,21 @@ def plot_fit_individuals(
 
     mask = lens_plotter_util.get_mask(fit=fit, should_plot_mask=should_plot_mask)
 
-    kpc_per_arcsec = fit.tracer.image_plane.kpc_per_arcsec_proper
+    kpc_per_arcsec = None
+
+    if should_plot_image:
+
+        plot_galaxy_data_array(
+            galaxy_data=fit.galaxy_data, mask=mask, zoom_around_mask=zoom_around_mask, positions=positions,
+            units=units, kpc_per_arcsec=kpc_per_arcsec,
+            output_path=output_path, output_format=output_format)
+
+    if should_plot_noise_map:
+
+        lens_plotter_util.plot_noise_map(
+            fit=fit, mask=mask, zoom_around_mask=zoom_around_mask, positions=positions,
+            units=units, kpc_per_arcsec=kpc_per_arcsec,
+            output_path=output_path, output_format=output_format)
 
     if should_plot_model_image:
 
@@ -119,7 +130,7 @@ def plot_galaxy_data_array(
         cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
         titlesize=10, xlabelsize=10, ylabelsize=10, xyticksize=10,
         mask_pointsize=10, position_pointsize=10.0, grid_pointsize=1,
-        output_path=None, output_filename='galaxy_fit', output_format='show'):
+        output_path=None, output_filename='galaxy_data', output_format='show'):
 
     if galaxy_data.use_intensities:
         title='Galaxy Data Intensities'

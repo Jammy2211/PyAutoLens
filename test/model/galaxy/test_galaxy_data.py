@@ -89,8 +89,8 @@ class TestGalaxyFitData(object):
 
         galaxy = MockGalaxy(value=1, shape=4)
 
-        intensities = galaxy_fit_data.profile_quantity_from_galaxy_and_sub_grid(galaxy=galaxy,
-                                                                            sub_grid=galaxy_fit_data.grid_stack.sub)
+        intensities = galaxy_fit_data.profile_quantity_from_galaxy_and_sub_grid(galaxies=[galaxy],
+                                                                                sub_grid=galaxy_fit_data.grid_stack.sub)
 
         assert (intensities == np.array([1.0, 1.0, 1.0, 1.0])).all()
 
@@ -99,8 +99,8 @@ class TestGalaxyFitData(object):
         intensities_gal = galaxy.intensities_from_grid(grid=galaxy_fit_data.grid_stack.sub)
         intensities_gal = galaxy_fit_data.grid_stack.sub.sub_data_to_regular_data(sub_array=intensities_gal)
 
-        intensities_gd = galaxy_fit_data.profile_quantity_from_galaxy_and_sub_grid(galaxy=galaxy,
-                                                                               sub_grid=galaxy_fit_data.grid_stack.sub)
+        intensities_gd = galaxy_fit_data.profile_quantity_from_galaxy_and_sub_grid(galaxies=[galaxy],
+                                                                                   sub_grid=galaxy_fit_data.grid_stack.sub)
 
         assert (intensities_gal == intensities_gd).all()
 
@@ -123,8 +123,8 @@ class TestGalaxyFitData(object):
 
         galaxy = MockGalaxy(value=1, shape=4)
 
-        surface_density = galaxy_fit_data.profile_quantity_from_galaxy_and_sub_grid(galaxy=galaxy,
-                                                                                sub_grid=galaxy_fit_data.grid_stack.sub)
+        surface_density = galaxy_fit_data.profile_quantity_from_galaxy_and_sub_grid(galaxies=[galaxy],
+                                                                                    sub_grid=galaxy_fit_data.grid_stack.sub)
 
         assert (surface_density == np.array([1.0, 1.0, 1.0, 1.0])).all()
 
@@ -133,8 +133,8 @@ class TestGalaxyFitData(object):
         surface_density_gal = galaxy.surface_density_from_grid(grid=galaxy_fit_data.grid_stack.sub)
         surface_density_gal = galaxy_fit_data.grid_stack.sub.sub_data_to_regular_data(sub_array=surface_density_gal)
 
-        surface_density_gd = galaxy_fit_data.profile_quantity_from_galaxy_and_sub_grid(galaxy=galaxy,
-                                                                                   sub_grid=galaxy_fit_data.grid_stack.sub)
+        surface_density_gd = galaxy_fit_data.profile_quantity_from_galaxy_and_sub_grid(galaxies=[galaxy],
+                                                                                       sub_grid=galaxy_fit_data.grid_stack.sub)
 
         assert (surface_density_gal == surface_density_gd).all()
         
@@ -157,8 +157,8 @@ class TestGalaxyFitData(object):
 
         galaxy = MockGalaxy(value=1, shape=4)
 
-        potential = galaxy_fit_data.profile_quantity_from_galaxy_and_sub_grid(galaxy=galaxy,
-                                                                          sub_grid=galaxy_fit_data.grid_stack.sub)
+        potential = galaxy_fit_data.profile_quantity_from_galaxy_and_sub_grid(galaxies=[galaxy],
+                                                                              sub_grid=galaxy_fit_data.grid_stack.sub)
 
         assert (potential == np.array([1.0, 1.0, 1.0, 1.0])).all()
 
@@ -167,8 +167,8 @@ class TestGalaxyFitData(object):
         potential_gal = galaxy.potential_from_grid(grid=galaxy_fit_data.grid_stack.sub)
         potential_gal = galaxy_fit_data.grid_stack.sub.sub_data_to_regular_data(sub_array=potential_gal)
 
-        potential_gd = galaxy_fit_data.profile_quantity_from_galaxy_and_sub_grid(galaxy=galaxy,
-                                                                             sub_grid=galaxy_fit_data.grid_stack.sub)
+        potential_gd = galaxy_fit_data.profile_quantity_from_galaxy_and_sub_grid(galaxies=[galaxy],
+                                                                                 sub_grid=galaxy_fit_data.grid_stack.sub)
 
         assert (potential_gal == potential_gd).all()
         
@@ -191,8 +191,8 @@ class TestGalaxyFitData(object):
 
         galaxy = MockGalaxy(value=1, shape=4)
 
-        deflections_y = galaxy_fit_data.profile_quantity_from_galaxy_and_sub_grid(galaxy=galaxy,
-                                                                            sub_grid=galaxy_fit_data.grid_stack.sub)
+        deflections_y = galaxy_fit_data.profile_quantity_from_galaxy_and_sub_grid(galaxies=[galaxy],
+                                                                                  sub_grid=galaxy_fit_data.grid_stack.sub)
 
         assert (deflections_y == np.array([1.0, 1.0, 1.0, 1.0])).all()
 
@@ -202,8 +202,8 @@ class TestGalaxyFitData(object):
         deflections_gal = np.asarray([galaxy_fit_data.grid_stack.sub.sub_data_to_regular_data(deflections_gal[:, 0]),
                                       galaxy_fit_data.grid_stack.sub.sub_data_to_regular_data(deflections_gal[:, 1])]).T
 
-        deflections_gd = galaxy_fit_data.profile_quantity_from_galaxy_and_sub_grid(galaxy=galaxy,
-                                                                               sub_grid=galaxy_fit_data.grid_stack.sub)
+        deflections_gd = galaxy_fit_data.profile_quantity_from_galaxy_and_sub_grid(galaxies=[galaxy],
+                                                                                   sub_grid=galaxy_fit_data.grid_stack.sub)
 
         assert (deflections_gal[:,0] == deflections_gd).all()
 
@@ -226,8 +226,8 @@ class TestGalaxyFitData(object):
 
         galaxy = MockGalaxy(value=1, shape=4)
 
-        deflections_x = galaxy_fit_data.profile_quantity_from_galaxy_and_sub_grid(galaxy=galaxy,
-                                                                            sub_grid=galaxy_fit_data.grid_stack.sub)
+        deflections_x = galaxy_fit_data.profile_quantity_from_galaxy_and_sub_grid(galaxies=[galaxy],
+                                                                                  sub_grid=galaxy_fit_data.grid_stack.sub)
 
         assert (deflections_x == np.array([1.0, 1.0, 1.0, 1.0])).all()
 
@@ -237,8 +237,8 @@ class TestGalaxyFitData(object):
         deflections_gal = np.asarray([galaxy_fit_data.grid_stack.sub.sub_data_to_regular_data(deflections_gal[:, 0]),
                                       galaxy_fit_data.grid_stack.sub.sub_data_to_regular_data(deflections_gal[:, 1])]).T
 
-        deflections_gd = galaxy_fit_data.profile_quantity_from_galaxy_and_sub_grid(galaxy=galaxy,
-                                                                               sub_grid=galaxy_fit_data.grid_stack.sub)
+        deflections_gd = galaxy_fit_data.profile_quantity_from_galaxy_and_sub_grid(galaxies=[galaxy],
+                                                                                   sub_grid=galaxy_fit_data.grid_stack.sub)
 
         assert (deflections_gal[:,1] == deflections_gd).all()
 
