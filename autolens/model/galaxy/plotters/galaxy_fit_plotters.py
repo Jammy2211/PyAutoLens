@@ -130,7 +130,7 @@ def plot_galaxy_data_array(
         cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
         titlesize=10, xlabelsize=10, ylabelsize=10, xyticksize=10,
         mask_pointsize=10, position_pointsize=10.0, grid_pointsize=1,
-        output_path=None, output_filename='galaxy_fit', output_format='show'):
+        output_path=None, output_filename='galaxy_data', output_format='show'):
 
     if galaxy_data.use_intensities:
         title='Galaxy Data Intensities'
