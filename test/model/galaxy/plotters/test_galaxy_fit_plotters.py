@@ -60,23 +60,23 @@ def make_galaxy_data_deflections_x(galaxy_data, mask):
 
 @pytest.fixture(name='fit_intensities')
 def make_galaxy_fitting_intensities(galaxy_data_intensities, galaxy):
-    return galaxy_fit.GalaxyFit(galaxy_data=galaxy_data_intensities, model_galaxy=galaxy)
+    return galaxy_fit.GalaxyFit(galaxy_data=galaxy_data_intensities, model_galaxies=[galaxy])
 
 @pytest.fixture(name='fit_surface_density')
 def make_galaxy_fitting_surface_density(galaxy_data_surface_density, galaxy):
-    return galaxy_fit.GalaxyFit(galaxy_data=galaxy_data_surface_density, model_galaxy=galaxy)
+    return galaxy_fit.GalaxyFit(galaxy_data=galaxy_data_surface_density, model_galaxies=[galaxy])
 
 @pytest.fixture(name='fit_potential')
 def make_galaxy_fitting_potential(galaxy_data_potential, galaxy):
-    return galaxy_fit.GalaxyFit(galaxy_data=galaxy_data_potential, model_galaxy=galaxy)
+    return galaxy_fit.GalaxyFit(galaxy_data=galaxy_data_potential, model_galaxies=[galaxy])
 
 @pytest.fixture(name='fit_deflections_y')
 def make_galaxy_fitting_deflections_y(galaxy_data_deflections_y, galaxy):
-    return galaxy_fit.GalaxyFit(galaxy_data=galaxy_data_deflections_y, model_galaxy=galaxy)
+    return galaxy_fit.GalaxyFit(galaxy_data=galaxy_data_deflections_y, model_galaxies=[galaxy])
 
 @pytest.fixture(name='fit_deflections_x')
 def make_galaxy_fitting_deflections_x(galaxy_data_deflections_x, galaxy):
-    return galaxy_fit.GalaxyFit(galaxy_data=galaxy_data_deflections_x, model_galaxy=galaxy)
+    return galaxy_fit.GalaxyFit(galaxy_data=galaxy_data_deflections_x, model_galaxies=[galaxy])
 
 
 def test__fit_sub_plot__galaxy_intensities(fit_intensities, positions, plot_patch,

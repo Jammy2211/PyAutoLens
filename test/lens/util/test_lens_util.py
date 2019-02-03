@@ -3,12 +3,13 @@ import pytest
 
 from autolens.data.array import grids
 from autolens.data.array import mask
+from autolens.data.array.util import mapping_util
 from autolens.model.profiles import light_profiles as lp
 from autolens.model.profiles import mass_profiles as mp
 from autolens.model.galaxy import galaxy as g
+from autolens.model.galaxy.util import galaxy_util
 from autolens.lens import plane as pl
-from autolens.lens.util import ray_tracing_util
-from autolens.lens.util import plane_util
+from autolens.lens.util import lens_util
 
 @pytest.fixture(name="grid_stack")
 def make_grid_stack():
@@ -68,28 +69,116 @@ def make_galaxy_mass_x2():
                     sis_1=mp.SphericalIsothermal(einstein_radius=1.0))
 
 
+class TestPlaneImageFromGrid:
+
+    def test__3x3_grid__extracts_max_min_coordinates__creates_regular_grid_including_half_pixel_offset_from_edge(self):
+
+        galaxy = g.Galaxy(light=lp.EllipticalSersic(intensity=1.0))
+
+        grid = np.array([[-1.5, -1.5], [1.5, 1.5]])
+
+        plane_image = lens_util.plane_image_of_galaxies_from_grid(shape=(3, 3), grid=grid, galaxies=[galaxy], buffer=0.0)
+
+        plane_image_galaxy = galaxy.intensities_from_grid(grid=np.array([[-1.0, -1.0], [-1.0, 0.0], [-1.0, 1.0],
+                                                                           [0.0, -1.0], [0.0, 0.0], [0.0, 1.0],
+                                                                           [1.0, -1.0], [1.0, 0.0], [1.0, 1.0]]))
+
+        plane_image_galaxy = mapping_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(
+            array_1d=plane_image_galaxy, shape=(3,3))
+
+        assert (plane_image == plane_image_galaxy).all()
+
+    def test__3x3_grid__extracts_max_min_coordinates__ignores_other_coordinates_more_central(self):
+
+        galaxy = g.Galaxy(light=lp.EllipticalSersic(intensity=1.0))
+
+        grid = np.array([[-1.5, -1.5], [1.5, 1.5], [0.1, -0.1], [-1.0, 0.6], [1.4, -1.3], [1.5, 1.5]])
+
+        plane_image = lens_util.plane_image_of_galaxies_from_grid(shape=(3, 3), grid=grid, galaxies=[galaxy], buffer=0.0)
+
+        plane_image_galaxy = galaxy.intensities_from_grid(grid=np.array([[-1.0, -1.0], [-1.0, 0.0], [-1.0, 1.0],
+                                                                           [0.0, -1.0], [0.0, 0.0], [0.0, 1.0],
+                                                                           [1.0, -1.0], [1.0, 0.0], [1.0, 1.0]]))
+
+        plane_image_galaxy = mapping_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(
+            array_1d=plane_image_galaxy, shape=(3,3))
+
+        assert (plane_image == plane_image_galaxy).all()
+
+    def test__2x3_grid__shape_change_correct_and_coordinates_shift(self):
+
+        galaxy = g.Galaxy(light=lp.EllipticalSersic(intensity=1.0))
+
+        grid = np.array([[-1.5, -1.5], [1.5, 1.5]])
+
+        plane_image = lens_util.plane_image_of_galaxies_from_grid(shape=(2, 3), grid=grid, galaxies=[galaxy], buffer=0.0)
+
+        plane_image_galaxy = galaxy.intensities_from_grid(grid=np.array([[-0.75, -1.0], [-0.75, 0.0], [-0.75, 1.0],
+                                                                          [0.75, -1.0], [0.75, 0.0], [0.75, 1.0]]))
+
+        plane_image_galaxy = mapping_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(
+            array_1d=plane_image_galaxy, shape=(2,3))
+
+        assert (plane_image == plane_image_galaxy).all()
+
+    def test__3x2_grid__shape_change_correct_and_coordinates_shift(self):
+
+        galaxy = g.Galaxy(light=lp.EllipticalSersic(intensity=1.0))
+
+        grid = np.array([[-1.5, -1.5], [1.5, 1.5]])
+
+        plane_image = lens_util.plane_image_of_galaxies_from_grid(shape=(3, 2), grid=grid, galaxies=[galaxy], buffer=0.0)
+
+        plane_image_galaxy = galaxy.intensities_from_grid(grid=np.array([[-1.0, -0.75], [-1.0, 0.75],
+                                                                          [0.0, -0.75], [0.0, 0.75],
+                                                                          [1.0, -0.75], [1.0, 0.75]]))
+
+        plane_image_galaxy = mapping_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(
+            array_1d=plane_image_galaxy, shape=(3,2))
+
+        assert (plane_image == plane_image_galaxy).all()
+
+    def test__3x3_grid__buffer_aligns_two_grids(self):
+
+        galaxy = g.Galaxy(light=lp.EllipticalSersic(intensity=1.0))
+
+        grid_without_buffer = np.array([[-1.48, -1.48], [1.48, 1.48]])
+
+        plane_image = lens_util.plane_image_of_galaxies_from_grid(shape=(3, 3), grid=grid_without_buffer, galaxies=[galaxy],
+                                                                   buffer=0.02)
+
+        plane_image_galaxy = galaxy.intensities_from_grid(grid=np.array([[-1.0, -1.0], [-1.0, 0.0], [-1.0, 1.0],
+                                                                           [0.0, -1.0], [0.0, 0.0], [0.0, 1.0],
+                                                                           [1.0, -1.0], [1.0, 0.0], [1.0, 1.0]]))
+
+        plane_image_galaxy = mapping_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(
+            array_1d=plane_image_galaxy, shape=(3,3))
+
+        assert (plane_image == plane_image_galaxy).all()
+
+
 class TestSetupTracedGrid:
 
     def test__simple_sis_model__deflection_angles(self, grid_stack, galaxy_mass):
 
-        deflections = plane_util.deflections_of_galaxies_from_grid_stack(grid_stack, [galaxy_mass])
+        deflections = galaxy_util.deflections_of_galaxies_from_grid_stack(grid_stack, [galaxy_mass])
 
-        grid_traced = ray_tracing_util.traced_collection_for_deflections(grid_stack, deflections)
+        grid_traced = lens_util.traced_collection_for_deflections(grid_stack, deflections)
 
         assert grid_traced.regular[0] == pytest.approx(np.array([1.0 - 0.707, 1.0 - 0.707]), 1e-2)
 
     def test_two_identical_lenses__deflection_angles_double(self, grid_stack, galaxy_mass):
-        deflections = plane_util.deflections_of_galaxies_from_grid_stack(grid_stack, [galaxy_mass, galaxy_mass])
+        deflections = galaxy_util.deflections_of_galaxies_from_grid_stack(grid_stack, [galaxy_mass, galaxy_mass])
 
-        grid_traced = ray_tracing_util.traced_collection_for_deflections(grid_stack, deflections)
+        grid_traced = lens_util.traced_collection_for_deflections(grid_stack, deflections)
 
         assert grid_traced.regular[0] == pytest.approx(np.array([1.0 - 2.0 * 0.707, 1.0 - 2.0 * 0.707]), 1e-3)
 
     def test_one_lens_with_double_identical_mass_profiles__deflection_angles_double(self, grid_stack,
                                                                                     galaxy_mass_x2):
-        deflections = plane_util.deflections_of_galaxies_from_grid_stack(grid_stack, [galaxy_mass_x2])
+        deflections = galaxy_util.deflections_of_galaxies_from_grid_stack(grid_stack, [galaxy_mass_x2])
 
-        grid_traced = ray_tracing_util.traced_collection_for_deflections(grid_stack, deflections)
+        grid_traced = lens_util.traced_collection_for_deflections(grid_stack, deflections)
 
         assert grid_traced.regular[0] == pytest.approx(np.array([1.0 - 2.0 * 0.707, 1.0 - 2.0 * 0.707]), 1e-3)
 
@@ -99,11 +188,11 @@ class TestGalaxyOrdering:
     def test__3_galaxies_reordered_in_ascending_redshift(self):
         galaxies = [g.Galaxy(redshift=2.0), g.Galaxy(redshift=1.0), g.Galaxy(redshift=0.1)]
 
-        ordered_plane_redshifts = ray_tracing_util.ordered_plane_redshifts_from_galaxies(galaxies=galaxies)
+        ordered_plane_redshifts = lens_util.ordered_plane_redshifts_from_galaxies(galaxies=galaxies)
 
         assert ordered_plane_redshifts == [0.1, 1.0, 2.0]
 
-        ordered_galaxies = ray_tracing_util.galaxies_in_redshift_ordered_planes_from_galaxies(galaxies=galaxies,
+        ordered_galaxies = lens_util.galaxies_in_redshift_ordered_planes_from_galaxies(galaxies=galaxies,
                                                                                               plane_redshifts=ordered_plane_redshifts)
 
         assert ordered_galaxies[0][0].redshift == 0.1
@@ -113,11 +202,11 @@ class TestGalaxyOrdering:
     def test_3_galaxies_two_same_redshift_planes_redshift_order_is_size_2_with_redshifts(self):
         galaxies = [g.Galaxy(redshift=1.0), g.Galaxy(redshift=1.0), g.Galaxy(redshift=0.1)]
 
-        ordered_plane_redshifts = ray_tracing_util.ordered_plane_redshifts_from_galaxies(galaxies=galaxies)
+        ordered_plane_redshifts = lens_util.ordered_plane_redshifts_from_galaxies(galaxies=galaxies)
 
         assert ordered_plane_redshifts == [0.1, 1.0]
 
-        ordered_galaxies = ray_tracing_util.galaxies_in_redshift_ordered_planes_from_galaxies(galaxies=galaxies,
+        ordered_galaxies = lens_util.galaxies_in_redshift_ordered_planes_from_galaxies(galaxies=galaxies,
                                                                                               plane_redshifts=ordered_plane_redshifts)
 
         assert ordered_galaxies[0][0].redshift == 0.1
@@ -134,11 +223,11 @@ class TestGalaxyOrdering:
 
         galaxies = [g0, g1, g2, g3, g4, g5]
 
-        ordered_plane_redshifts = ray_tracing_util.ordered_plane_redshifts_from_galaxies(galaxies=galaxies)
+        ordered_plane_redshifts = lens_util.ordered_plane_redshifts_from_galaxies(galaxies=galaxies)
 
         assert ordered_plane_redshifts == [0.1, 0.95, 1.0, 1.05]
 
-        ordered_galaxies = ray_tracing_util.galaxies_in_redshift_ordered_planes_from_galaxies(galaxies=galaxies,
+        ordered_galaxies = lens_util.galaxies_in_redshift_ordered_planes_from_galaxies(galaxies=galaxies,
                                                                                               plane_redshifts=ordered_plane_redshifts)
 
         assert ordered_galaxies[0][0].redshift == 0.1
@@ -158,10 +247,11 @@ class TestComputeDeflections:
 
     def test__if_plane_is_last_plane_is_false_else_is_true(self):
 
-        assert ray_tracing_util.compute_deflections_at_next_plane(plane_index=0, total_planes=4) == True
-        assert ray_tracing_util.compute_deflections_at_next_plane(plane_index=2, total_planes=4) == True
-        assert ray_tracing_util.compute_deflections_at_next_plane(plane_index=3, total_planes=4) == False
-        assert ray_tracing_util.compute_deflections_at_next_plane(plane_index=3, total_planes=5) == True
+        assert lens_util.compute_deflections_at_next_plane(plane_index=0, total_planes=4) == True
+        assert lens_util.compute_deflections_at_next_plane(plane_index=2, total_planes=4) == True
+        assert lens_util.compute_deflections_at_next_plane(plane_index=3, total_planes=4) == False
+        assert lens_util.compute_deflections_at_next_plane(plane_index=3, total_planes=5) == True
+
 
 class TestScaledDeflections:
 
@@ -169,14 +259,14 @@ class TestScaledDeflections:
 
         plane = pl.Plane(galaxies=[galaxy_mass], grid_stack=grid_stack)
 
-        scaled_deflection_stack = ray_tracing_util.scaled_deflection_stack_from_plane_and_scaling_factor(plane=plane,
+        scaled_deflection_stack = lens_util.scaled_deflection_stack_from_plane_and_scaling_factor(plane=plane,
                                                                                                     scaling_factor=1.0)
 
         assert (scaled_deflection_stack.regular == plane.deflection_stack.regular).all()
         assert (scaled_deflection_stack.sub == plane.deflection_stack.sub).all()
         assert (scaled_deflection_stack.blurring == plane.deflection_stack.blurring).all()
 
-        scaled_deflection_stack = ray_tracing_util.scaled_deflection_stack_from_plane_and_scaling_factor(plane=plane,
+        scaled_deflection_stack = lens_util.scaled_deflection_stack_from_plane_and_scaling_factor(plane=plane,
                                                                                                     scaling_factor=2.0)
 
         assert (scaled_deflection_stack.regular == 2.0*plane.deflection_stack.regular).all()
@@ -190,10 +280,10 @@ class TestGridStackDeflections:
 
         plane = pl.Plane(galaxies=[galaxy_mass], grid_stack=grid_stack)
 
-        deflection_stack = ray_tracing_util.scaled_deflection_stack_from_plane_and_scaling_factor(plane=plane,
+        deflection_stack = lens_util.scaled_deflection_stack_from_plane_and_scaling_factor(plane=plane,
                                                                                                     scaling_factor=3.0)
 
-        traced_grid_stack = ray_tracing_util.grid_stack_from_deflection_stack(grid_stack=grid_stack,
+        traced_grid_stack = lens_util.grid_stack_from_deflection_stack(grid_stack=grid_stack,
                                                                               deflection_stack=deflection_stack)
 
         assert (traced_grid_stack.regular == grid_stack.regular - deflection_stack.regular).all()

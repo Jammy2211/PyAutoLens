@@ -7,8 +7,8 @@ from autolens.data.array import mask as msk
 from autolens.data.array import grids
 from autolens.data import ccd as im, convolution
 from autolens.model.profiles import light_profiles as lp
+from autolens.model.galaxy.util import galaxy_util
 from autolens.lens.util import lens_fit_util as util
-from autolens.lens.util import plane_util
 from autolens.lens import ray_tracing
 from autolens.model.galaxy import galaxy as g
 from autolens.model.inversion import pixelizations as pix
@@ -207,8 +207,8 @@ class TestBlurredImageOfPlanes:
                                                                                            psf_shape=(3, 3))
 
         g0 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=1.0))
-        g0_image = plane_util.intensities_of_galaxies_from_grid(grid=data_grid_stack.sub, galaxies=[g0])
-        g0_blurring_image = plane_util.intensities_of_galaxies_from_grid(grid=data_grid_stack.blurring, galaxies=[g0])
+        g0_image = galaxy_util.intensities_of_galaxies_from_grid(grid=data_grid_stack.sub, galaxies=[g0])
+        g0_blurring_image = galaxy_util.intensities_of_galaxies_from_grid(grid=data_grid_stack.blurring, galaxies=[g0])
         g0_blurred_image_1d = convolver_blur.convolve_image(image_array=g0_image, blurring_array=g0_blurring_image)
         g0_blurred_image = data_grid_stack.regular.scaled_array_from_array_1d(array_1d=g0_blurred_image_1d)
 

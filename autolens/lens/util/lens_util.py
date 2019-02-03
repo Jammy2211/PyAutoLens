@@ -1,6 +1,31 @@
 from autolens import exc
+from autolens.data.array.util import grid_util, mapping_util
+from autolens.model.galaxy.util import galaxy_util
+from autolens.lens import plane as pl
 
 import numpy as np
+
+def plane_image_of_galaxies_from_grid(shape, grid, galaxies, buffer=1.0e-2):
+
+    y_min = np.min(grid[:, 0]) - buffer
+    y_max = np.max(grid[:, 0]) + buffer
+    x_min = np.min(grid[:, 1]) - buffer
+    x_max = np.max(grid[:, 1]) + buffer
+
+    pixel_scales = (float((y_max - y_min) / shape[0]), float((x_max - x_min) / shape[1]))
+    origin = ((y_max + y_min) / 2.0, (x_max + x_min) / 2.0)
+
+    uniform_grid = grid_util.regular_grid_1d_masked_from_mask_pixel_scales_and_origin(mask=np.full(shape=shape,
+                                                                                                   fill_value=False),
+                                                                                      pixel_scales=pixel_scales,
+                                                                                      origin=origin)
+
+    image_1d = sum([galaxy_util.intensities_of_galaxies_from_grid(grid=uniform_grid, galaxies=[galaxy])
+                    for galaxy in galaxies])
+
+    image_2d = mapping_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(array_1d=image_1d, shape=shape)
+
+    return pl.PlaneImage(array=image_2d, pixel_scales=pixel_scales, grid=grid, origin=origin)
 
 def ordered_plane_redshifts_from_galaxies(galaxies):
     """Given a list of galaxies (with redshifts), return a list of the redshifts in ascending order.

@@ -7,7 +7,8 @@ from autolens.data.array import grids
 from autolens.data.array import mask as msk
 from autolens.model.inversion import pixelizations, regularization
 from autolens.model.galaxy import galaxy as g
-from autolens.lens.util import plane_util
+from autolens.model.galaxy.util import galaxy_util
+from autolens.lens.util import lens_util
 from autolens.lens import plane as pl
 from autolens.model.profiles import light_profiles as lp, mass_profiles as mp
 from test.mock.mock_inversion import MockRegularization, MockPixelization
@@ -518,7 +519,7 @@ class TestPlane(object):
 
         def test__image_from_plane__same_as_its_galaxy_image(self, grid_stack, galaxy_light):
 
-            galaxy_image = plane_util.intensities_of_galaxies_from_grid(grid_stack.sub, galaxies=[galaxy_light])
+            galaxy_image = galaxy_util.intensities_of_galaxies_from_grid(grid_stack.sub, galaxies=[galaxy_light])
 
             plane = pl.Plane(galaxies=[galaxy_light], grid_stack=grid_stack)
 
@@ -570,8 +571,8 @@ class TestPlane(object):
             g0 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=1.0))
             g1 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=2.0))
 
-            g0_image = plane_util.intensities_of_galaxies_from_grid(grid_stack.sub, galaxies=[g0])
-            g1_image = plane_util.intensities_of_galaxies_from_grid(grid_stack.sub, galaxies=[g1])
+            g0_image = galaxy_util.intensities_of_galaxies_from_grid(grid_stack.sub, galaxies=[g0])
+            g1_image = galaxy_util.intensities_of_galaxies_from_grid(grid_stack.sub, galaxies=[g1])
 
             plane = pl.Plane(galaxies=[g0, g1], grid_stack=grid_stack)
 
@@ -649,7 +650,7 @@ class TestPlane(object):
 
         def test__image_from_plane__same_as_its_galaxy_image(self, grid_stack, galaxy_light):
 
-            galaxy_image = plane_util.intensities_of_galaxies_from_grid(grid_stack.blurring, galaxies=[galaxy_light])
+            galaxy_image = galaxy_util.intensities_of_galaxies_from_grid(grid_stack.blurring, galaxies=[galaxy_light])
 
             plane = pl.Plane(galaxies=[galaxy_light], grid_stack=grid_stack)
 
@@ -663,8 +664,8 @@ class TestPlane(object):
             g0 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=1.0))
             g1 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=2.0))
 
-            g0_image = plane_util.intensities_of_galaxies_from_grid(grid_stack.blurring, galaxies=[g0])
-            g1_image = plane_util.intensities_of_galaxies_from_grid(grid_stack.blurring, galaxies=[g1])
+            g0_image = galaxy_util.intensities_of_galaxies_from_grid(grid_stack.blurring, galaxies=[g0])
+            g1_image = galaxy_util.intensities_of_galaxies_from_grid(grid_stack.blurring, galaxies=[g1])
 
             plane = pl.Plane(galaxies=[g0, g1], grid_stack=grid_stack)
 
@@ -722,7 +723,7 @@ class TestPlane(object):
 
         def test__surface_density__same_as_its_galaxy(self, grid_stack, galaxy_mass):
 
-            galaxy_surface_density = plane_util.surface_density_of_galaxies_from_grid(grid_stack.sub.unlensed_grid,
+            galaxy_surface_density = galaxy_util.surface_density_of_galaxies_from_grid(grid_stack.sub.unlensed_grid,
                                                                   galaxies=[galaxy_mass])
 
             galaxy_surface_density = grid_stack.regular.scaled_array_from_array_1d(galaxy_surface_density)
@@ -736,9 +737,9 @@ class TestPlane(object):
             g0 = g.Galaxy(mass_profile=mp.SphericalIsothermal(einstein_radius=1.0))
             g1 = g.Galaxy(mass_profile=mp.SphericalIsothermal(einstein_radius=2.0))
 
-            g0_surface_density = plane_util.surface_density_of_galaxies_from_grid(grid_stack.sub.unlensed_grid,
+            g0_surface_density = galaxy_util.surface_density_of_galaxies_from_grid(grid_stack.sub.unlensed_grid,
                                                                                   galaxies=[g0])
-            g1_surface_density = plane_util.surface_density_of_galaxies_from_grid(grid_stack.sub.unlensed_grid,
+            g1_surface_density = galaxy_util.surface_density_of_galaxies_from_grid(grid_stack.sub.unlensed_grid,
                                                                                   galaxies=[g1])
 
             g0_surface_density = grid_stack.regular.scaled_array_from_array_1d(g0_surface_density)
@@ -818,7 +819,7 @@ class TestPlane(object):
                                                          mp1_potential_pixel_1, 1.0e-4)
 
         def test__potential__same_as_its_galaxy(self, grid_stack, galaxy_mass):
-            galaxy_potential = plane_util.potential_of_galaxies_from_grid(grid_stack.sub.unlensed_grid, galaxies=[galaxy_mass])
+            galaxy_potential = galaxy_util.potential_of_galaxies_from_grid(grid_stack.sub.unlensed_grid, galaxies=[galaxy_mass])
 
             galaxy_potential = grid_stack.regular.scaled_array_from_array_1d(galaxy_potential)
 
@@ -833,8 +834,8 @@ class TestPlane(object):
             g0 = g.Galaxy(mass_profile=mp.SphericalIsothermal(einstein_radius=1.0))
             g1 = g.Galaxy(mass_profile=mp.SphericalIsothermal(einstein_radius=2.0))
 
-            g0_potential = plane_util.potential_of_galaxies_from_grid(grid_stack.sub.unlensed_grid, galaxies=[g0])
-            g1_potential = plane_util.potential_of_galaxies_from_grid(grid_stack.sub.unlensed_grid, galaxies=[g1])
+            g0_potential = galaxy_util.potential_of_galaxies_from_grid(grid_stack.sub.unlensed_grid, galaxies=[g0])
+            g1_potential = galaxy_util.potential_of_galaxies_from_grid(grid_stack.sub.unlensed_grid, galaxies=[g1])
 
             g0_potential = grid_stack.regular.scaled_array_from_array_1d(g0_potential)
             g1_potential = grid_stack.regular.scaled_array_from_array_1d(g1_potential)
@@ -931,7 +932,7 @@ class TestPlane(object):
 
         def test__deflections__same_as_its_galaxy(self, grid_stack, galaxy_mass):
 
-            galaxy_deflections = plane_util.deflections_of_galaxies_from_grid(grid=grid_stack.sub.unlensed_grid, galaxies=[galaxy_mass])
+            galaxy_deflections = galaxy_util.deflections_of_galaxies_from_grid(grid=grid_stack.sub.unlensed_grid, galaxies=[galaxy_mass])
 
             plane = pl.Plane(galaxies=[galaxy_mass], grid_stack=grid_stack)
 
@@ -948,8 +949,8 @@ class TestPlane(object):
             g0 = g.Galaxy(mass_profile=mp.SphericalIsothermal(einstein_radius=1.0))
             g1 = g.Galaxy(mass_profile=mp.SphericalIsothermal(einstein_radius=2.0))
 
-            g0_deflections = plane_util.deflections_of_galaxies_from_grid(grid=grid_stack.sub.unlensed_grid, galaxies=[g0])
-            g1_deflections = plane_util.deflections_of_galaxies_from_grid(grid=grid_stack.sub.unlensed_grid, galaxies=[g1])
+            g0_deflections = galaxy_util.deflections_of_galaxies_from_grid(grid=grid_stack.sub.unlensed_grid, galaxies=[g0])
+            g1_deflections = galaxy_util.deflections_of_galaxies_from_grid(grid=grid_stack.sub.unlensed_grid, galaxies=[g1])
 
             plane = pl.Plane(galaxies=[g0, g1], grid_stack=grid_stack)
 
@@ -1045,7 +1046,7 @@ class TestPlane(object):
 
             plane = pl.Plane(galaxies=[galaxy], grid_stack=grid_stack, compute_deflections=False)
 
-            plane_image_from_func = plane_util.plane_image_of_galaxies_from_grid(shape=(3, 4),
+            plane_image_from_func = lens_util.plane_image_of_galaxies_from_grid(shape=(3, 4),
                                                                                  grid=grid_stack.regular,
                                                                                  galaxies=[galaxy])
 

@@ -5,7 +5,7 @@ import numpy as np
 from astropy import cosmology as cosmo
 
 from autolens import exc
-from autolens.lens.util import ray_tracing_util
+from autolens.lens.util import lens_util
 from autolens.lens import ray_tracing
 from autolens.lens.stack import plane_stack
 from autolens.model.inversion import pixelizations as pix
@@ -173,10 +173,10 @@ class TracerMultiPlanesStack(AbstractTracerStack):
             The cosmology of the ray-tracing calculation.
         """
 
-        ordered_redshifts = ray_tracing_util.ordered_plane_redshifts_from_galaxies(galaxies=galaxies)
+        ordered_redshifts = lens_util.ordered_plane_redshifts_from_galaxies(galaxies=galaxies)
 
         galaxies_in_redshift_ordered_lists = \
-            ray_tracing_util.galaxies_in_redshift_ordered_planes_from_galaxies(galaxies=galaxies,
+            lens_util.galaxies_in_redshift_ordered_planes_from_galaxies(galaxies=galaxies,
                                                                                plane_redshifts=ordered_redshifts)
 
         image_plane_grid_stacks = list(map(lambda grid_stack:
@@ -201,7 +201,7 @@ class TracerMultiPlanesStack(AbstractTracerStack):
             if plane_index > 0:
                 for previous_plane_index in range(plane_index):
 
-                    scaling_factor = ray_tracing_util.scaling_factor_between_redshifts_for_cosmology(
+                    scaling_factor = lens_util.scaling_factor_between_redshifts_for_cosmology(
                         z1=ordered_redshifts[previous_plane_index], z2=ordered_redshifts[plane_index],
                         z_final=ordered_redshifts[-1], cosmology=cosmology)
 
