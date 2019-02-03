@@ -5,7 +5,8 @@ import numpy as np
 from autolens import exc
 
 from autolens.data.array import grids
-from autolens.lens.util import plane_util
+from autolens.model.galaxy.util import galaxy_util
+from autolens.lens.util import lens_util
 from autolens.lens import plane as pl
 
 def check_plane_for_redshift(func):
@@ -142,26 +143,26 @@ class PlaneStack(pl.AbstractPlane):
     @property
     def image_plane_images_1d(self):
         return list(map(lambda grid_stack :
-                        plane_util.intensities_of_galaxies_from_grid(grid=grid_stack.sub, galaxies=self.galaxies),
+                        galaxy_util.intensities_of_galaxies_from_grid(grid=grid_stack.sub, galaxies=self.galaxies),
                         self.grid_stacks))
 
     @property
     def image_plane_images_1d_of_galaxies(self):
         return list(map(lambda grid_stack :
-                        [plane_util.intensities_of_galaxies_from_grid(grid=grid_stack.sub, galaxies=[galaxy])
+                        [galaxy_util.intensities_of_galaxies_from_grid(grid=grid_stack.sub, galaxies=[galaxy])
                          for galaxy in self.galaxies],
                         self.grid_stacks))
 
     @property
     def image_plane_blurring_images_1d(self):
         return list(map(lambda grid_stack :
-                        plane_util.intensities_of_galaxies_from_grid(grid=grid_stack.blurring, galaxies=self.galaxies),
+                        galaxy_util.intensities_of_galaxies_from_grid(grid=grid_stack.blurring, galaxies=self.galaxies),
                         self.grid_stacks))
 
     @property
     def plane_images(self):
         return list(map(lambda grid_stack :
-                        plane_util.plane_image_of_galaxies_from_grid(shape=grid_stack.regular.mask.shape,
+                        lens_util.plane_image_of_galaxies_from_grid(shape=grid_stack.regular.mask.shape,
                                                                      grid=grid_stack.regular, galaxies=self.galaxies),
                         self.grid_stacks))
     

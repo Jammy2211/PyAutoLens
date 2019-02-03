@@ -7,7 +7,7 @@ from astropy import cosmology as cosmo
 
 from autolens import exc
 from autolens.data.array import grids
-from autolens.lens.util import ray_tracing_util
+from autolens.lens.util import lens_util
 from autolens.lens import plane as pl
 from autolens.model.profiles import mass_profiles as mp
 from autolens.model.inversion import pixelizations as pix
@@ -244,7 +244,7 @@ class AbstractTracer(object):
         return self.critical_density_kpc_between_planes(i=i, j=j) * self.kpc_per_arcsec_proper_of_plane(i=i) ** 2.0
 
     def scaling_factor_between_planes(self, i, j):
-        return ray_tracing_util.scaling_factor_between_redshifts_for_cosmology(z1=self.plane_redshifts[i], z2=self.plane_redshifts[j],
+        return lens_util.scaling_factor_between_redshifts_for_cosmology(z1=self.plane_redshifts[i], z2=self.plane_redshifts[j],
                                                               z_final=self.plane_redshifts[-1], cosmology=self.cosmology)
 
     @property
@@ -296,30 +296,30 @@ class AbstractTracer(object):
                 if plane_index > 0:
                     for previous_plane_index in range(plane_index):
 
-                        scaling_factor = ray_tracing_util.scaling_factor_between_redshifts_for_cosmology(
+                        scaling_factor = lens_util.scaling_factor_between_redshifts_for_cosmology(
                             z1=self.plane_redshifts[previous_plane_index], z2=redshift,
                             z_final=self.plane_redshifts[-1], cosmology=self.cosmology)
 
-                        scaled_deflection_stack = ray_tracing_util.scaled_deflection_stack_from_plane_and_scaling_factor(
+                        scaled_deflection_stack = lens_util.scaled_deflection_stack_from_plane_and_scaling_factor(
                             plane=self.planes[previous_plane_index], scaling_factor=scaling_factor)
 
                         new_grid_stack = \
-                            ray_tracing_util.grid_stack_from_deflection_stack(grid_stack=new_grid_stack,
+                            lens_util.grid_stack_from_deflection_stack(grid_stack=new_grid_stack,
                                                                               deflection_stack=scaled_deflection_stack)
 
                 # If redshift is before the first plane, just need to scale the image-plane coordinates.
 
                 elif plane_index == 0:
 
-                    scaling_factor = ray_tracing_util.scaling_factor_between_redshifts_for_cosmology(
+                    scaling_factor = lens_util.scaling_factor_between_redshifts_for_cosmology(
                         z1=redshift, z2=self.plane_redshifts[0],
                         z_final=self.plane_redshifts[-1], cosmology=self.cosmology)
 
-                    scaled_deflection_stack = ray_tracing_util.scaled_deflection_stack_from_plane_and_scaling_factor(
+                    scaled_deflection_stack = lens_util.scaled_deflection_stack_from_plane_and_scaling_factor(
                         plane=self.planes[0], scaling_factor=scaling_factor)
 
                     new_grid_stack = \
-                        ray_tracing_util.grid_stack_from_deflection_stack(grid_stack=new_grid_stack,
+                        lens_util.grid_stack_from_deflection_stack(grid_stack=new_grid_stack,
                                                                           deflection_stack=scaled_deflection_stack)
 
                 return new_grid_stack.regular
@@ -529,10 +529,10 @@ class TracerMultiPlanes(Tracer):
             The cosmology of the ray-tracing calculation.
         """
 
-        plane_redshifts = ray_tracing_util.ordered_plane_redshifts_from_galaxies(galaxies=galaxies)
+        plane_redshifts = lens_util.ordered_plane_redshifts_from_galaxies(galaxies=galaxies)
 
         galaxies_in_planes = \
-            ray_tracing_util.galaxies_in_redshift_ordered_planes_from_galaxies(galaxies=galaxies,
+            lens_util.galaxies_in_redshift_ordered_planes_from_galaxies(galaxies=galaxies,
                                                                                plane_redshifts=plane_redshifts)
 
         image_plane_grid_stack = pix.setup_image_plane_pixelization_grid_from_galaxies_and_grid_stack(
@@ -542,7 +542,7 @@ class TracerMultiPlanes(Tracer):
 
         for plane_index in range(0, len(plane_redshifts)):
 
-            compute_deflections = ray_tracing_util.compute_deflections_at_next_plane(plane_index=plane_index,
+            compute_deflections = lens_util.compute_deflections_at_next_plane(plane_index=plane_index,
                                                                                      total_planes=len(plane_redshifts))
 
             new_grid_stack = image_plane_grid_stack
@@ -550,15 +550,15 @@ class TracerMultiPlanes(Tracer):
             if plane_index > 0:
                 for previous_plane_index in range(plane_index):
 
-                    scaling_factor = ray_tracing_util.scaling_factor_between_redshifts_for_cosmology(
+                    scaling_factor = lens_util.scaling_factor_between_redshifts_for_cosmology(
                         z1=plane_redshifts[previous_plane_index], z2=plane_redshifts[plane_index],
                         z_final=plane_redshifts[-1], cosmology=cosmology)
 
-                    scaled_deflection_stack = ray_tracing_util.scaled_deflection_stack_from_plane_and_scaling_factor(
+                    scaled_deflection_stack = lens_util.scaled_deflection_stack_from_plane_and_scaling_factor(
                         plane=planes[previous_plane_index], scaling_factor=scaling_factor)
 
                     new_grid_stack = \
-                        ray_tracing_util.grid_stack_from_deflection_stack(grid_stack=new_grid_stack,
+                        lens_util.grid_stack_from_deflection_stack(grid_stack=new_grid_stack,
                                                                           deflection_stack=scaled_deflection_stack)
 
             planes.append(pl.Plane(galaxies=galaxies_in_planes[plane_index], grid_stack=new_grid_stack,
@@ -619,10 +619,10 @@ class TracerMultiPlanesPositions(AbstractTracer):
             The cosmology of the ray-tracing calculation.
         """
 
-        ordered_redshifts = ray_tracing_util.ordered_plane_redshifts_from_galaxies(galaxies=galaxies)
+        ordered_redshifts = lens_util.ordered_plane_redshifts_from_galaxies(galaxies=galaxies)
 
         galaxies_in_redshift_ordered_lists = \
-            ray_tracing_util.galaxies_in_redshift_ordered_planes_from_galaxies(galaxies=galaxies,
+            lens_util.galaxies_in_redshift_ordered_planes_from_galaxies(galaxies=galaxies,
                                                                                plane_redshifts=ordered_redshifts)
 
         if not galaxies:
@@ -644,7 +644,7 @@ class TracerMultiPlanesPositions(AbstractTracer):
             if plane_index > 0:
                 for previous_plane_index in range(plane_index):
 
-                    scaling_factor = ray_tracing_util.scaling_factor_between_redshifts_for_cosmology(
+                    scaling_factor = lens_util.scaling_factor_between_redshifts_for_cosmology(
                         z1=ordered_redshifts[previous_plane_index], z2=ordered_redshifts[plane_index],
                         z_final=ordered_redshifts[-1], cosmology=cosmology)
 

@@ -6,8 +6,8 @@ from autolens.data.array import grids
 from autolens.data.array import mask as msk
 from autolens.model.inversion import pixelizations, regularization
 from autolens.model.galaxy import galaxy as g
-from autolens.lens.util import ray_tracing_util
-from autolens.lens.util import plane_util
+from autolens.model.galaxy.util import galaxy_util
+from autolens.lens.util import lens_util
 from autolens.lens import plane as pl
 from autolens.lens import ray_tracing
 from autolens.model.profiles import light_profiles as lp, mass_profiles as mp
@@ -273,9 +273,9 @@ class TestAbstractTracer(object):
             g1 = g.Galaxy(mass_profile=mp.SphericalIsothermal(einstein_radius=2.0))
             g2 = g.Galaxy(mass_profile=mp.SphericalIsothermal(einstein_radius=3.0))
 
-            g0_surface_density = plane_util.surface_density_of_galaxies_from_grid(grid_stack.sub.unlensed_grid, galaxies=[g0])
-            g1_surface_density = plane_util.surface_density_of_galaxies_from_grid(grid_stack.sub.unlensed_grid, galaxies=[g1])
-            g2_surface_density = plane_util.surface_density_of_galaxies_from_grid(grid_stack.sub.unlensed_grid, galaxies=[g2])
+            g0_surface_density = galaxy_util.surface_density_of_galaxies_from_grid(grid_stack.sub.unlensed_grid, galaxies=[g0])
+            g1_surface_density = galaxy_util.surface_density_of_galaxies_from_grid(grid_stack.sub.unlensed_grid, galaxies=[g1])
+            g2_surface_density = galaxy_util.surface_density_of_galaxies_from_grid(grid_stack.sub.unlensed_grid, galaxies=[g2])
 
             g0_surface_density = grid_stack.regular.scaled_array_from_array_1d(g0_surface_density)
             g1_surface_density = grid_stack.regular.scaled_array_from_array_1d(g1_surface_density)
@@ -334,9 +334,9 @@ class TestAbstractTracer(object):
             g1 = g.Galaxy(mass_profile=mp.SphericalIsothermal(einstein_radius=2.0))
             g2 = g.Galaxy(mass_profile=mp.SphericalIsothermal(einstein_radius=3.0))
 
-            g0_potential = plane_util.potential_of_galaxies_from_grid(grid_stack.sub.unlensed_grid, galaxies=[g0])
-            g1_potential = plane_util.potential_of_galaxies_from_grid(grid_stack.sub.unlensed_grid, galaxies=[g1])
-            g2_potential = plane_util.potential_of_galaxies_from_grid(grid_stack.sub.unlensed_grid, galaxies=[g2])
+            g0_potential = galaxy_util.potential_of_galaxies_from_grid(grid_stack.sub.unlensed_grid, galaxies=[g0])
+            g1_potential = galaxy_util.potential_of_galaxies_from_grid(grid_stack.sub.unlensed_grid, galaxies=[g1])
+            g2_potential = galaxy_util.potential_of_galaxies_from_grid(grid_stack.sub.unlensed_grid, galaxies=[g2])
 
             g0_potential = grid_stack.regular.scaled_array_from_array_1d(g0_potential)
             g1_potential = grid_stack.regular.scaled_array_from_array_1d(g1_potential)
@@ -396,11 +396,11 @@ class TestAbstractTracer(object):
             g1 = g.Galaxy(mass_profile=mp.SphericalIsothermal(einstein_radius=2.0))
             g2 = g.Galaxy(mass_profile=mp.SphericalIsothermal(einstein_radius=3.0))
 
-            g0_deflections = plane_util.deflections_of_galaxies_from_grid(grid=grid_stack.sub.unlensed_grid,
+            g0_deflections = galaxy_util.deflections_of_galaxies_from_grid(grid=grid_stack.sub.unlensed_grid,
                                                                           galaxies=[g0])
-            g1_deflections = plane_util.deflections_of_galaxies_from_grid(grid=grid_stack.sub.unlensed_grid,
+            g1_deflections = galaxy_util.deflections_of_galaxies_from_grid(grid=grid_stack.sub.unlensed_grid,
                                                                           galaxies=[g1])
-            g2_deflections = plane_util.deflections_of_galaxies_from_grid(grid=grid_stack.sub.unlensed_grid,
+            g2_deflections = galaxy_util.deflections_of_galaxies_from_grid(grid=grid_stack.sub.unlensed_grid,
                                                                           galaxies=[g2])
 
             g0_deflections_y = grid_stack.regular.scaled_array_from_array_1d(g0_deflections[:, 0])
@@ -657,13 +657,13 @@ class TestAbstractTracer(object):
             traced_grid = tracer.grid_at_redshift_from_image_plane_grid_and_redshift(
                 image_plane_grid=grid_stack.regular, redshift=0.6)
 
-            scaling_factor = ray_tracing_util.scaling_factor_between_redshifts_for_cosmology(
+            scaling_factor = lens_util.scaling_factor_between_redshifts_for_cosmology(
                 z1=0.5, z2=0.6, z_final=2.0, cosmology=tracer.cosmology)
 
-            deflection_stack = ray_tracing_util.scaled_deflection_stack_from_plane_and_scaling_factor(
+            deflection_stack = lens_util.scaled_deflection_stack_from_plane_and_scaling_factor(
                 plane=tracer.planes[0], scaling_factor=scaling_factor)
 
-            traced_grid_stack_manual = ray_tracing_util.grid_stack_from_deflection_stack(grid_stack=grid_stack,
+            traced_grid_stack_manual = lens_util.grid_stack_from_deflection_stack(grid_stack=grid_stack,
                                                                            deflection_stack=deflection_stack)
 
             assert (traced_grid_stack_manual.regular == traced_grid).all()
@@ -681,24 +681,24 @@ class TestAbstractTracer(object):
 
             ### First loop, Plane index = 0 ###
 
-            scaling_factor = ray_tracing_util.scaling_factor_between_redshifts_for_cosmology(
+            scaling_factor = lens_util.scaling_factor_between_redshifts_for_cosmology(
                 z1=0.5, z2=1.9, z_final=2.0, cosmology=tracer.cosmology)
 
-            deflection_stack = ray_tracing_util.scaled_deflection_stack_from_plane_and_scaling_factor(
+            deflection_stack = lens_util.scaled_deflection_stack_from_plane_and_scaling_factor(
                 plane=tracer.planes[0], scaling_factor=scaling_factor)
 
-            traced_grid_stack_manual = ray_tracing_util.grid_stack_from_deflection_stack(
+            traced_grid_stack_manual = lens_util.grid_stack_from_deflection_stack(
                 grid_stack=grid_stack, deflection_stack=deflection_stack)
 
             ### Second loop, Plane index = 1 ###
 
-            scaling_factor = ray_tracing_util.scaling_factor_between_redshifts_for_cosmology(
+            scaling_factor = lens_util.scaling_factor_between_redshifts_for_cosmology(
                 z1=0.75, z2=1.9, z_final=2.0, cosmology=tracer.cosmology)
 
-            deflection_stack = ray_tracing_util.scaled_deflection_stack_from_plane_and_scaling_factor(
+            deflection_stack = lens_util.scaled_deflection_stack_from_plane_and_scaling_factor(
                 plane=tracer.planes[1], scaling_factor=scaling_factor)
 
-            traced_grid_stack_manual = ray_tracing_util.grid_stack_from_deflection_stack(
+            traced_grid_stack_manual = lens_util.grid_stack_from_deflection_stack(
                 grid_stack=traced_grid_stack_manual, deflection_stack=deflection_stack)
 
             assert (traced_grid_stack_manual.regular == traced_grid).all()
@@ -715,13 +715,13 @@ class TestAbstractTracer(object):
             traced_grid = tracer.grid_at_redshift_from_image_plane_grid_and_redshift(
                 image_plane_grid=grid_stack.regular, redshift=0.3)
 
-            scaling_factor = ray_tracing_util.scaling_factor_between_redshifts_for_cosmology(
+            scaling_factor = lens_util.scaling_factor_between_redshifts_for_cosmology(
                 z1=0.3, z2=0.5, z_final=0.75, cosmology=tracer.cosmology)
 
-            deflection_stack = ray_tracing_util.scaled_deflection_stack_from_plane_and_scaling_factor(
+            deflection_stack = lens_util.scaled_deflection_stack_from_plane_and_scaling_factor(
                 plane=tracer.planes[0], scaling_factor=scaling_factor)
 
-            traced_grid_stack_manual = ray_tracing_util.grid_stack_from_deflection_stack(
+            traced_grid_stack_manual = lens_util.grid_stack_from_deflection_stack(
                 grid_stack=grid_stack, deflection_stack=deflection_stack)
 
             assert (traced_grid_stack_manual.regular == traced_grid).all()
@@ -731,13 +731,13 @@ class TestAbstractTracer(object):
             traced_grid = tracer.grid_at_redshift_from_image_plane_grid_and_redshift(
                 image_plane_grid=grid_stack.regular, redshift=0.2)
 
-            scaling_factor = ray_tracing_util.scaling_factor_between_redshifts_for_cosmology(
+            scaling_factor = lens_util.scaling_factor_between_redshifts_for_cosmology(
                 z1=0.2, z2=0.5, z_final=2.0, cosmology=tracer.cosmology)
 
-            deflection_stack = ray_tracing_util.scaled_deflection_stack_from_plane_and_scaling_factor(
+            deflection_stack = lens_util.scaled_deflection_stack_from_plane_and_scaling_factor(
                 plane=tracer.planes[0], scaling_factor=scaling_factor)
 
-            traced_grid_stack_manual = ray_tracing_util.grid_stack_from_deflection_stack(
+            traced_grid_stack_manual = lens_util.grid_stack_from_deflection_stack(
                 grid_stack=grid_stack, deflection_stack=deflection_stack)
 
             assert (traced_grid_stack_manual.regular == traced_grid).all()
@@ -999,8 +999,8 @@ class TestTracerImageSourcePlanes(object):
 
             image_plane = pl.Plane(galaxies=[g0], grid_stack=grid_stack, compute_deflections=True)
 
-            deflections_grid = plane_util.deflections_of_galaxies_from_grid_stack(grid_stack, galaxies=[g0])
-            source_grid_stack = ray_tracing_util.traced_collection_for_deflections(grid_stack, deflections_grid)
+            deflections_grid = galaxy_util.deflections_of_galaxies_from_grid_stack(grid_stack, galaxies=[g0])
+            source_grid_stack = lens_util.traced_collection_for_deflections(grid_stack, deflections_grid)
             source_plane = pl.Plane(galaxies=[g1], grid_stack=source_grid_stack, compute_deflections=False)
 
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g1],
@@ -1020,9 +1020,9 @@ class TestTracerImageSourcePlanes(object):
             g1 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=2.0))
             g2 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=3.0))
 
-            g0_image = plane_util.intensities_of_galaxies_from_grid(grid_stack.sub, galaxies=[g0])
-            g1_image = plane_util.intensities_of_galaxies_from_grid(grid_stack.sub, galaxies=[g1])
-            g2_image = plane_util.intensities_of_galaxies_from_grid(grid_stack.sub, galaxies=[g2])
+            g0_image = galaxy_util.intensities_of_galaxies_from_grid(grid_stack.sub, galaxies=[g0])
+            g1_image = galaxy_util.intensities_of_galaxies_from_grid(grid_stack.sub, galaxies=[g1])
+            g2_image = galaxy_util.intensities_of_galaxies_from_grid(grid_stack.sub, galaxies=[g2])
 
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0, g1], source_galaxies=[g2],
                                                          image_plane_grid_stack=grid_stack)
@@ -1106,8 +1106,8 @@ class TestTracerImageSourcePlanes(object):
 
             image_plane = pl.Plane(galaxies=[g0], grid_stack=grid_stack, compute_deflections=True)
 
-            deflection_grid_stack = plane_util.deflections_of_galaxies_from_grid_stack(grid_stack, galaxies=[g0])
-            source_grid_stack = ray_tracing_util.traced_collection_for_deflections(grid_stack, deflection_grid_stack)
+            deflection_grid_stack = galaxy_util.deflections_of_galaxies_from_grid_stack(grid_stack, galaxies=[g0])
+            source_grid_stack = lens_util.traced_collection_for_deflections(grid_stack, deflection_grid_stack)
             source_plane = pl.Plane(galaxies=[g1], grid_stack=source_grid_stack, compute_deflections=False)
 
             image_plane_blurring_image = image_plane.image_plane_blurring_image_1d + \
