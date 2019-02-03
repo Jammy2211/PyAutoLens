@@ -5,7 +5,8 @@ from astropy import cosmology as cosmo
 from autolens.data.array import grids, mask
 from autolens.model.inversion import pixelizations, regularization
 from autolens.model.galaxy import galaxy as g
-from autolens.lens.util import plane_util, ray_tracing_util
+from autolens.model.galaxy.util import galaxy_util
+from autolens.lens.util import lens_util
 from autolens.lens.stack import plane_stack
 from autolens.lens.stack import ray_tracing_stack
 from autolens.lens import ray_tracing
@@ -283,12 +284,12 @@ class TestTracerImageSourcePlanesStack(object):
             image_plane = plane_stack.PlaneStack(galaxies=[g0], grid_stacks=[grid_stack_0, grid_stack_1],
                                         compute_deflections=True)
 
-            deflections_grid_0 = plane_util.deflections_of_galaxies_from_grid_stack(grid_stack=grid_stack_0, galaxies=[g0])
-            source_grid_0 = ray_tracing_util.traced_collection_for_deflections(grid_stack=grid_stack_0,
+            deflections_grid_0 = galaxy_util.deflections_of_galaxies_from_grid_stack(grid_stack=grid_stack_0, galaxies=[g0])
+            source_grid_0 = lens_util.traced_collection_for_deflections(grid_stack=grid_stack_0,
                                                                  deflections=deflections_grid_0)
 
-            deflections_grid_1 = plane_util.deflections_of_galaxies_from_grid_stack(grid_stack=grid_stack_1, galaxies=[g0])
-            source_grid_1 = ray_tracing_util.traced_collection_for_deflections(grid_stack=grid_stack_1,
+            deflections_grid_1 = galaxy_util.deflections_of_galaxies_from_grid_stack(grid_stack=grid_stack_1, galaxies=[g0])
+            source_grid_1 = lens_util.traced_collection_for_deflections(grid_stack=grid_stack_1,
                                                                  deflections=deflections_grid_1)
 
             source_plane = plane_stack.PlaneStack(galaxies=[g1], grid_stacks=[source_grid_0, source_grid_1],

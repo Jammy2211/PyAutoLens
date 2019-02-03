@@ -7,8 +7,8 @@ from astropy import cosmology as cosmo
 from autolens import exc
 from autolens.data.array import scaled_array
 from autolens.data.array import grids
-from autolens.lens.util import plane_util
-
+from autolens.model.galaxy.util import galaxy_util
+from autolens.lens.util import lens_util
 
 def check_plane_for_redshift(func):
     """If a plane's galaxies do not have redshifts, its cosmological quantities cannot be computed. This wrapper \
@@ -129,13 +129,13 @@ class AbstractPlane(object):
 
     @property
     def surface_density(self):
-        surface_density_1d = plane_util.surface_density_of_galaxies_from_grid(
+        surface_density_1d = galaxy_util.surface_density_of_galaxies_from_grid(
             grid=self.primary_grid_stack.sub.unlensed_grid, galaxies=self.galaxies)
         return self.primary_grid_stack.regular.scaled_array_from_array_1d(array_1d=surface_density_1d)
 
     @property
     def potential(self):
-        potential_1d = plane_util.potential_of_galaxies_from_grid(grid=self.primary_grid_stack.sub.unlensed_grid,
+        potential_1d = galaxy_util.potential_of_galaxies_from_grid(grid=self.primary_grid_stack.sub.unlensed_grid,
                                                                   galaxies=self.galaxies)
         return self.primary_grid_stack.regular.scaled_array_from_array_1d(array_1d=potential_1d)
 
@@ -149,7 +149,7 @@ class AbstractPlane(object):
 
     @property
     def deflections_1d(self):
-        return plane_util.deflections_of_galaxies_from_grid(grid=self.primary_grid_stack.sub.unlensed_grid,
+        return galaxy_util.deflections_of_galaxies_from_grid(grid=self.primary_grid_stack.sub.unlensed_grid,
                                                             galaxies=self.galaxies)
 
     def luminosities_of_galaxies_within_circles(self, radius, conversion_factor=1.0):
@@ -327,20 +327,20 @@ class Plane(AbstractPlane):
 
     @property
     def image_plane_image_1d(self):
-        return plane_util.intensities_of_galaxies_from_grid(grid=self.primary_grid_stack.sub, galaxies=self.galaxies)
+        return galaxy_util.intensities_of_galaxies_from_grid(grid=self.primary_grid_stack.sub, galaxies=self.galaxies)
 
     @property
     def image_plane_image_1d_of_galaxies(self):
-        return [plane_util.intensities_of_galaxies_from_grid(grid=self.grid_stack.sub, galaxies=[galaxy]) 
+        return [galaxy_util.intensities_of_galaxies_from_grid(grid=self.grid_stack.sub, galaxies=[galaxy]) 
                 for galaxy in self.galaxies]
 
     @property
     def image_plane_blurring_image_1d(self):
-        return plane_util.intensities_of_galaxies_from_grid(grid=self.primary_grid_stack.blurring, galaxies=self.galaxies)
+        return galaxy_util.intensities_of_galaxies_from_grid(grid=self.primary_grid_stack.blurring, galaxies=self.galaxies)
 
     @property
     def plane_image(self):
-        return plane_util.plane_image_of_galaxies_from_grid(shape=self.grid_stack.regular.mask.shape,
+        return lens_util.plane_image_of_galaxies_from_grid(shape=self.grid_stack.regular.mask.shape,
                                                             grid=self.grid_stack.regular,
                                                             galaxies=self.galaxies)
 

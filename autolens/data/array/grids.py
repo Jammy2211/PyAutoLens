@@ -1,3 +1,4 @@
+from functools import wraps
 import numpy as np
 from autolens import decorator_util
 
@@ -5,12 +6,48 @@ from autolens.data.array import mask as msk, scaled_array
 from autolens.data.array.util import grid_util
 from autolens.data.array.util import mapping_util, array_util, mask_util
 
+def sub_to_image_grid(func):
+    """
+    Wrap the function in a function that, if the grid_stack is a sub-grid (grid_stacks.SubGrid), rebins the computed \
+    values te the regular-grid by taking the mean of each set of sub-gridded values.
+
+    Parameters
+    ----------
+    func : (profiles, *args, **kwargs) -> Object
+        A function that requires the sub-grid and galaxies.
+    """
+
+    @wraps(func)
+    def wrapper(grid, galaxies, *args, **kwargs):
+        """
+
+        Parameters
+        ----------
+        grid : ndarray
+            PlaneCoordinates in either cartesian or profiles coordinate system
+        args
+        kwargs
+
+        Returns
+        -------
+            A value or coordinate in the same coordinate system as those passed in.
+        """
+
+        result = func(grid, galaxies, *args, *kwargs)
+
+        if isinstance(grid, SubGrid):
+            return grid.sub_data_to_regular_data(result)
+        else:
+            return result
+
+    return wrapper
+
 
 class GridStack(object):
 
     def __init__(self, regular, sub, blurring, pix=None):
-        """A 'stack' of grid_stack which contain the (y,x) arc-second coordinates of pixels in a mask. The stack contains \
-        at least 3 grid_stack:
+        """A 'stack' of grid_stack which contain the (y,x) arc-second coordinates of pixels in a mask. The stack \
+        contains at least 3 grid_stack:
 
         regular - the (y,x) coordinate at the center of every unmasked pixel.
 
@@ -247,8 +284,8 @@ class RegularGrid(np.ndarray):
 
     @classmethod
     def from_mask(cls, mask):
-        """Setup a regular-grid from a mask, wehere the center of every unmasked pixel gives the grid's (y,x) arc-second \
-        coordinates.
+        """Setup a regular-grid from a mask, wehere the center of every unmasked pixel gives the grid's (y,x) \
+        arc-second coordinates.
 
         Parameters
         -----------

@@ -33,9 +33,12 @@ def phase():
     surface_density = galaxy.surface_density_from_grid(grid=grid_stack.regular)
     surface_density = grid_stack.regular.scaled_array_from_array_1d(array_1d=surface_density)
 
-    data = gd.GalaxyData(image=surface_density, noise_map=np.ones(surface_density.shape), pixel_scale=pixel_scale)
+    noise_map = scaled_array.ScaledSquarePixelArray(array=np.ones(surface_density.shape), pixel_scale=pixel_scale)
+
+    data = gd.GalaxyData(image=surface_density, noise_map=noise_map, pixel_scale=pixel_scale)
 
     phase = ph.GalaxyFitPhase(galaxy=dict(gal=gm.GalaxyModel(light=mp.SphericalIsothermal)), use_surface_density=True,
+                              sub_grid_size=2,
                               optimizer_class=nl.MultiNest, phase_name=test_name+'/')
 
     phase.run(galaxy_data=data)

@@ -311,6 +311,10 @@ class Phase(AbstractPhase):
             super(Phase.Analysis, self).__init__(cosmology=cosmology, phase_name=phase_name,
                                                  previous_results=previous_results)
 
+            self.should_plot_mask = \
+                conf.instance.general.get('output', 'plot_mask_on_images', bool)
+            self.zoom_around_mask = \
+                conf.instance.general.get('output', 'zoom_around_mask_of_images', bool)
             self.should_plot_positions = \
                 conf.instance.general.get('output', 'plot_positions_on_images', bool)
             self.plot_units = \
@@ -578,10 +582,6 @@ class PhaseImaging(Phase):
 
             self.lens_data = lens_data
 
-            self.should_plot_mask = \
-                conf.instance.general.get('output', 'plot_mask_on_images', bool)
-            self.zoom_around_mask = \
-                conf.instance.general.get('output', 'zoom_around_mask_of_images', bool)
             self.should_plot_image_plane_pix = \
                 conf.instance.general.get('output', 'plot_image_plane_adaptive_pixelization_grid', bool)
 
@@ -1131,6 +1131,16 @@ class GalaxyFitPhase(AbstractPhase):
             super(GalaxyFitPhase.Analysis, self).__init__(cosmology=cosmology, phase_name=phase_name,
                                                           previous_results=previous_results)
 
+            self.plot_galaxy_fit_all_at_end_png = \
+                conf.instance.general.get('output', 'plot_galaxy_fit_all_at_end_png', bool)
+            self.plot_galaxy_fit_all_at_end_fits = \
+                conf.instance.general.get('output', 'plot_galaxy_fit_all_at_end_fits', bool)
+            self.plot_galaxy_fit_as_subplot = \
+                conf.instance.general.get('output', 'plot_galaxy_fit_as_subplot', bool)
+            self.plot_galaxy_fit_image = \
+                conf.instance.general.get('output', 'plot_galaxy_fit_image', bool)
+            self.plot_galaxy_fit_noise_map = \
+                conf.instance.general.get('output', 'plot_galaxy_fit_noise_map', bool)
             self.plot_galaxy_fit_model_image = \
                 conf.instance.general.get('output', 'plot_galaxy_fit_model_image', bool)
             self.plot_galaxy_fit_residual_map = \
@@ -1157,11 +1167,52 @@ class GalaxyFitPhase(AbstractPhase):
             return fit.figure_of_merit
 
         def visualize(self, instance, suffix, during_analysis):
-            self.plot_count += 1
-            fit = self.fit_for_instance(instance)
 
-            galaxy_fit_plotters.plot_fit_subplot(fit=fit, output_path=self.output_image_path,
-                                                 output_format='png', ignore_config=False)
+            self.plot_count += 1
+            fit = self.fit_for_instance(instance=instance)
+
+            if self.plot_galaxy_fit_as_subplot:
+
+                galaxy_fit_plotters.plot_fit_subplot(
+                    fit=fit, should_plot_mask=self.should_plot_mask, zoom_around_mask=self.zoom_around_mask,
+                    units=self.plot_units,
+                    output_path=self.output_image_path, output_format='png')
+
+            if during_analysis:
+
+                galaxy_fit_plotters.plot_fit_individuals(
+                    fit=fit, should_plot_mask=self.should_plot_mask, zoom_around_mask=self.zoom_around_mask,
+                    should_plot_image=self.plot_galaxy_fit_image,
+                    should_plot_noise_map=self.plot_galaxy_fit_noise_map,
+                    should_plot_model_image=self.plot_galaxy_fit_model_image,
+                    should_plot_residual_map=self.plot_galaxy_fit_residual_map,
+                    should_plot_chi_squared_map=self.plot_galaxy_fit_chi_squared_map,
+                    units=self.plot_units,
+                    output_path=self.output_image_path, output_format='png')
+
+            elif not during_analysis:
+
+                if self.plot_ray_tracing_all_at_end_png:
+                    galaxy_fit_plotters.plot_fit_individuals(
+                        fit=fit, should_plot_mask=self.should_plot_mask, zoom_around_mask=self.zoom_around_mask,
+                        should_plot_image=True,
+                        should_plot_noise_map=True,
+                        should_plot_model_image=True,
+                        should_plot_residual_map=True,
+                        should_plot_chi_squared_map=True,
+                        units=self.plot_units,
+                        output_path=self.output_image_path, output_format='png')
+
+                if self.plot_ray_tracing_all_at_end_fits:
+                    galaxy_fit_plotters.plot_fit_individuals(
+                        fit=fit, should_plot_mask=self.should_plot_mask, zoom_around_mask=self.zoom_around_mask,
+                        should_plot_image=True,
+                        should_plot_noise_map=True,
+                        should_plot_model_image=True,
+                        should_plot_residual_map=True,
+                        should_plot_chi_squared_map=True,
+                        units=self.plot_units,
+                        output_path=self.output_fits_path, output_format='fits')
 
             return fit
 
