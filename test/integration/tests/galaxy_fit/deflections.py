@@ -2,63 +2,49 @@ import os
 import numpy as np
 
 from autofit import conf
+from autofit.optimize import non_linear as nl
 from autolens.model.galaxy import galaxy as g, galaxy_model as gm
-from autolens.data.array.util import array_util, mapping_util
+from autolens.model.galaxy import galaxy_data as gd
+from autolens.model.galaxy.util import galaxy_util
 from autolens.data.array import grids, scaled_array
 from autolens.pipeline import phase as ph
 from autolens.model.profiles import mass_profiles as mp
 from test.integration import tools
 
-test_type = 'galaxy_fitting'
+test_type = 'galaxy_fit'
 test_name = "deflections"
 
 path = '{}/../../'.format(os.path.dirname(os.path.realpath(__file__)))
 output_path = path+'output/'+test_type
 config_path = path+'config'
-data_path = path+'hyper/'+test_type
 conf.instance = conf.Config(config_path=config_path, output_path=output_path)
 
-def simulate_deflections(pixel_scale, galaxy):
-
-    image_shape = (150, 150)
-
-    grid_stack = grids.GridStack.from_shape_pixel_scale_and_sub_grid_size(shape=image_shape, pixel_scale=pixel_scale)
-
-    deflections = galaxy.deflections_from_grid(grid=grid_stack.regular)
-    deflections_y = mapping_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(array_1d=deflections[:, 0],
-                                                                                        shape=image_shape)
-    deflections_x = mapping_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(array_1d=deflections[:, 1],
-                                                                                        shape=image_shape)
-
-    if os.path.exists(output_path) == False:
-        os.makedirs(output_path)
-
-    array_util.numpy_array_to_fits(deflections_y, file_path=data_path + 'y.fits', overwrite=True)
-    array_util.numpy_array_to_fits(deflections_x, file_path=data_path + 'x.fits', overwrite=True)
-
-def setup_and_run_phase():
+def phase():
 
     pixel_scale = 0.1
+    image_shape = (150, 150)
 
-    galaxy = g.Galaxy(sie=mp.EllipticalIsothermal(centre=(0.01, 0.01), axis_ratio=0.8, phi=80.0,
-                                                        einstein_radius=1.6))
+    tools.reset_paths(test_name=test_name, output_path=output_path)
 
-    simulate_deflections(pixel_scale=pixel_scale, galaxy=galaxy)
+    grid_stack = grids.GridStack.from_shape_pixel_scale_and_sub_grid_size(shape=image_shape, pixel_scale=pixel_scale,
+                                                                          sub_grid_size=4)
 
-    array_y = \
-        scaled_array.ScaledSquarePixelArray.from_fits_with_pixel_scale(file_path=data_path + 'y.fits',
-                                                                       hdu=0, pixel_scale=pixel_scale)
+    galaxy = g.Galaxy(mass=mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=1.0))
 
-    array_x = \
-        scaled_array.ScaledSquarePixelArray.from_fits_with_pixel_scale(file_path=data_path + 'x.fits',
-                                                                       hdu=0, pixel_scale=pixel_scale)
+    deflections = galaxy_util.deflections_of_galaxies_from_grid(galaxies=[galaxy], grid=grid_stack.sub)
+    deflections_y = grid_stack.regular.scaled_array_from_array_1d(array_1d=deflections[:,0])
+    deflections_x = grid_stack.regular.scaled_array_from_array_1d(array_1d=deflections[:,1])
 
-    phase = ph.GalaxyFitDeflectionsPhase(dict(galaxy=gm.GalaxyModel(light=mp.EllipticalIsothermal)),
-                                               phase_name='deflection_stacks')
+    noise_map = scaled_array.ScaledSquarePixelArray(array=np.ones(deflections_y.shape), pixel_scale=pixel_scale)
 
-    result = phase.run(array_y=array_y, array_x=array_x, noise_map=np.ones(array_y.shape))
-    print(result)
+    data_y = gd.GalaxyData(image=deflections_y, noise_map=noise_map, pixel_scale=pixel_scale)
+    data_x = gd.GalaxyData(image=deflections_x, noise_map=noise_map, pixel_scale=pixel_scale)
 
+    phase = ph.GalaxyFitPhase(galaxies=dict(gal=gm.GalaxyModel(light=mp.SphericalIsothermal)), use_deflections=True,
+                              sub_grid_size=4,
+                              optimizer_class=nl.MultiNest, phase_name=test_name+'/')
+
+    phase.run(galaxy_data=[data_y, data_x])
 
 if __name__ == "__main__":
-    setup_and_run_phase()
+    phase()
