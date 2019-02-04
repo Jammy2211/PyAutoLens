@@ -4,7 +4,8 @@ from autolens.data.array.plotters import array_plotters
 import numpy as np
 
 def plot_image(
-        fit, mask=None, zoom_around_mask=False, positions=None, image_plane_pix_grid=None, as_subplot=False,
+        fit, mask=None, extract_array_from_mask=False, zoom_around_mask=False, positions=None,
+        image_plane_pix_grid=None, as_subplot=False,
         units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
         cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
         cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
@@ -22,10 +23,10 @@ def plot_image(
     plot_origin : True
         If true, the origin of the datas's coordinate system is plotted as a 'x'.
     """
-    masked_image = np.add(fit.image, 0.0, out=np.zeros_like(fit.image), where=np.asarray(mask) == 0)
 
     array_plotters.plot_array(
-        array=masked_image, mask=mask, zoom_around_mask=zoom_around_mask, grid=image_plane_pix_grid,
+        array=fit.image, mask=mask, extract_array_from_mask=extract_array_from_mask,
+        zoom_around_mask=zoom_around_mask, grid=image_plane_pix_grid,
         positions=positions, as_subplot=as_subplot,
         units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
         cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
@@ -35,7 +36,7 @@ def plot_image(
         output_path=output_path, output_format=output_format, output_filename=output_filename)
 
 def plot_noise_map(
-        fit, mask=None, zoom_around_mask=False, positions=None, as_subplot=False,
+        fit, mask=None, extract_array_from_mask=False, zoom_around_mask=False, positions=None, as_subplot=False,
         units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
         cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
         cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
@@ -54,7 +55,8 @@ def plot_noise_map(
         If true, the origin of the datas's coordinate system is plotted as a 'x'.
     """
     array_plotters.plot_array(
-        array=fit.noise_map, mask=mask, zoom_around_mask=zoom_around_mask,
+        array=fit.noise_map, mask=mask, extract_array_from_mask=extract_array_from_mask,
+        zoom_around_mask=zoom_around_mask,
         positions=positions, as_subplot=as_subplot,
         units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
         cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
@@ -64,7 +66,7 @@ def plot_noise_map(
         output_path=output_path, output_format=output_format, output_filename=output_filename)
 
 def plot_signal_to_noise_map(
-        fit, mask=None, zoom_around_mask=False, positions=None, as_subplot=False,
+        fit, mask=None, extract_array_from_mask=False, zoom_around_mask=False, positions=None, as_subplot=False,
         units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
         cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
         cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
@@ -83,8 +85,8 @@ def plot_signal_to_noise_map(
     If true, the origin of the datas's coordinate system is plotted as a 'x'.
     """
     array_plotters.plot_array(
-        array=fit.image/fit.noise_map, mask=mask, zoom_around_mask=zoom_around_mask,
-        positions=positions, as_subplot=as_subplot,
+        array=fit.image/fit.noise_map, mask=mask, extract_array_from_mask=extract_array_from_mask,
+        zoom_around_mask=zoom_around_mask, positions=positions, as_subplot=as_subplot,
         units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
         cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max,
         linthresh=linthresh, linscale=linscale,
@@ -94,7 +96,7 @@ def plot_signal_to_noise_map(
         output_path=output_path, output_format=output_format, output_filename=output_filename)
 
 def plot_model_data(
-        fit, mask=None, zoom_around_mask=False, positions=None, as_subplot=False,
+        fit, mask=None, extract_array_from_mask=False, zoom_around_mask=False, positions=None, as_subplot=False,
         units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
         cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
         cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
@@ -113,8 +115,8 @@ def plot_model_data(
         The index of the datas in the datas-set of which the model image is plotted.
     """
     array_plotters.plot_array(
-        array=fit.model_data, mask=mask, zoom_around_mask=zoom_around_mask,
-        positions=positions, as_subplot=as_subplot,
+        array=fit.model_data, mask=mask, extract_array_from_mask=extract_array_from_mask,
+        zoom_around_mask=zoom_around_mask, positions=positions, as_subplot=as_subplot,
         units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
         cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
         cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
@@ -123,7 +125,7 @@ def plot_model_data(
         output_path=output_path, output_format=output_format, output_filename=output_filename)
 
 def plot_lens_subtracted_image(
-        fit, mask=None, zoom_around_mask=False, positions=None, as_subplot=False,
+        fit, mask=None, extract_array_from_mask=False, zoom_around_mask=False, positions=None, as_subplot=False,
         units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
         cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
         cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
@@ -153,8 +155,8 @@ def plot_lens_subtracted_image(
         lens_subtracted_image = fit.image - sum(fit.model_image_of_planes[0:-2])
 
     array_plotters.plot_array(
-        array=lens_subtracted_image, mask=mask, zoom_around_mask=zoom_around_mask,
-        positions=positions, as_subplot=as_subplot,
+        array=lens_subtracted_image, mask=mask, extract_array_from_mask=extract_array_from_mask,
+        zoom_around_mask=zoom_around_mask, positions=positions, as_subplot=as_subplot,
         units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
         cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
         cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
@@ -163,8 +165,8 @@ def plot_lens_subtracted_image(
         output_path=output_path, output_format=output_format, output_filename=output_filename)
 
 def plot_model_image_of_planes(
-        fit, plot_foreground=False, plot_source=False, mask=None, zoom_around_mask=False, positions=None, 
-        as_subplot=False,
+        fit, plot_foreground=False, plot_source=False, mask=None, extract_array_from_mask=False, zoom_around_mask=False,
+        positions=None, as_subplot=False,
         units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
         cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
         cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
@@ -199,8 +201,8 @@ def plot_model_image_of_planes(
         raise exc.PlottingException('Both plot_foreground and plot_source were False, one must be True')
 
     array_plotters.plot_array(
-        array=model_image, mask=mask, zoom_around_mask=zoom_around_mask,
-        positions=positions, as_subplot=as_subplot,
+        array=model_image, mask=mask, extract_array_from_mask=extract_array_from_mask,
+        zoom_around_mask=zoom_around_mask, positions=positions, as_subplot=as_subplot,
         units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
         cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
         cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
@@ -209,7 +211,7 @@ def plot_model_image_of_planes(
         output_path=output_path, output_format=output_format, output_filename=output_filename)
 
 def plot_residual_map(
-        fit, mask=None, zoom_around_mask=False, positions=None, as_subplot=False,
+        fit, mask=None, extract_array_from_mask=False, zoom_around_mask=False, positions=None, as_subplot=False,
         units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
         cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
         cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
@@ -228,8 +230,8 @@ def plot_residual_map(
         The index of the datas in the datas-set of which the residual_map are plotted.
     """
     array_plotters.plot_array(
-        array=fit.residual_map, mask=mask, zoom_around_mask=zoom_around_mask,
-        positions=positions, as_subplot=as_subplot,
+        array=fit.residual_map, mask=mask, extract_array_from_mask=extract_array_from_mask,
+        zoom_around_mask=zoom_around_mask, positions=positions, as_subplot=as_subplot,
         units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
         cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
         cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
@@ -238,7 +240,7 @@ def plot_residual_map(
         output_path=output_path, output_format=output_format, output_filename=output_filename)
 
 def plot_chi_squared_map(
-        fit, mask=None, zoom_around_mask=False, positions=None, as_subplot=False,
+        fit, mask=None, extract_array_from_mask=False, zoom_around_mask=False, positions=None, as_subplot=False,
         units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
         cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
         cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
@@ -257,8 +259,8 @@ def plot_chi_squared_map(
         The index of the datas in the datas-set of which the chi-squareds are plotted.
     """
     array_plotters.plot_array(
-        array=fit.chi_squared_map, mask=mask, zoom_around_mask=zoom_around_mask,
-        positions=positions, as_subplot=as_subplot,
+        array=fit.chi_squared_map, mask=mask, extract_array_from_mask=extract_array_from_mask,
+        zoom_around_mask=zoom_around_mask, positions=positions, as_subplot=as_subplot,
         units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
         cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
         cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
@@ -267,7 +269,7 @@ def plot_chi_squared_map(
         output_path=output_path, output_format=output_format, output_filename=output_filename)
 
 def plot_contribution_maps(
-        fit, mask=None, zoom_around_mask=False, positions=None, as_subplot=False,
+        fit, mask=None, extract_array_from_mask=False, zoom_around_mask=False, positions=None, as_subplot=False,
         units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
         cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
         cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
@@ -292,8 +294,8 @@ def plot_contribution_maps(
         contribution_map = fit.contribution_maps[0]
 
     array_plotters.plot_array(
-        array=contribution_map, mask=mask, zoom_around_mask=zoom_around_mask,
-        positions=positions, as_subplot=as_subplot,
+        array=contribution_map, mask=mask, extract_array_from_mask=extract_array_from_mask,
+        zoom_around_mask=zoom_around_mask, positions=positions, as_subplot=as_subplot,
         units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
         cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
         cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
