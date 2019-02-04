@@ -51,12 +51,12 @@ ccd_plotters.plot_ccd_subplot(ccd_data=ccd_data)
 # Below, we choose an inner radius that cuts into our lensed source galaxy - clearly this isn't a good mask.
 mask = msk.Mask.circular_annular(shape=ccd_data.shape, pixel_scale=ccd_data.pixel_scale,
                                  inner_radius_arcsec=1.4, outer_radius_arcsec=2.4)
-ccd_plotters.plot_ccd_subplot(ccd_data=ccd_data, mask=mask, zoom_around_mask=True)
+ccd_plotters.plot_ccd_subplot(ccd_data=ccd_data, mask=mask, extract_array_from_mask=True, zoom_around_mask=True)
 
 # So, lets decrease the inner radius to correct for this
 mask = msk.Mask.circular_annular(shape=ccd_data.shape, pixel_scale=ccd_data.pixel_scale,
                                  inner_radius_arcsec=0.6, outer_radius_arcsec=2.4)
-ccd_plotters.plot_ccd_subplot(ccd_data=ccd_data, mask=mask, zoom_around_mask=True)
+ccd_plotters.plot_ccd_subplot(ccd_data=ccd_data, mask=mask, extract_array_from_mask=True, zoom_around_mask=True)
 
 # When we run the phase, we don't pass it the mask as an array. Instead, we pass it the mask as a function. The reason
 # for this will become clear in the next chapter, but for now I would say you just accept this syntax.

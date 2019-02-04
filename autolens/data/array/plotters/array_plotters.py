@@ -7,8 +7,8 @@ import itertools
 from autolens.data.array.plotters import plotter_util
 
 
-def plot_array(array, origin=None, mask=None, zoom_around_mask=False, should_plot_border=False, positions=None,
-               grid=None, as_subplot=False,
+def plot_array(array, origin=None, mask=None, extract_array_from_mask=False, zoom_around_mask=False,
+               should_plot_border=False, positions=None, grid=None, as_subplot=False,
                units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
                cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
                cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
@@ -98,6 +98,9 @@ def plot_array(array, origin=None, mask=None, zoom_around_mask=False, should_plo
 
     if array is None:
         return
+
+    if extract_array_from_mask and mask is not None:
+        array = np.add(array, 0.0, out=np.zeros_like(array), where=np.asarray(mask) == 0)
 
     if zoom_around_mask and mask is not None:
         array = array.extract_scaled_array_around_mask(mask=mask, buffer=1)
