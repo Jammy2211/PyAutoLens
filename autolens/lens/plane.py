@@ -269,7 +269,9 @@ class Plane(AbstractPlane):
             self.deflection_stack = self.grid_stack.apply_function(calculate_deflections)
 
         else:
+
             self.deflection_stack = None
+
         self.cosmology = cosmology
 
     def trace_grid_stack_to_next_plane(self):
