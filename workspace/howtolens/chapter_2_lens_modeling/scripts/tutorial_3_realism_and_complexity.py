@@ -93,7 +93,8 @@ results = phase.run(data=ccd_data)
 print('MultiNest has finished run - you may now continue the notebook.')
 
 # And lets look at the image.
-lens_fit_plotters.plot_fit_subplot(fit=results.most_likely_fit, should_plot_mask=True, zoom_around_mask=True)
+lens_fit_plotters.plot_fit_subplot(fit=results.most_likely_fit, should_plot_mask=True, extract_array_from_mask=True,
+                                   zoom_around_mask=True)
 
 # Uh-oh. That image didn't look very good, did it? If we compare our inferred parameters (look at the
 # 'workspace/howtolens/chapter_2_lens_modeling/output/3_realism_and_complexity' folder to the actual
@@ -106,7 +107,7 @@ lens_fit_plotters.plot_fit_subplot(fit=results.most_likely_fit, should_plot_mask
 # Create a lens data-set to make the fit - the mask we used above was a 3" circle (we'll come back to this later)
 mask = msk.Mask.circular(shape=ccd_data.shape, pixel_scale=ccd_data.pixel_scale, radius_arcsec=3.0)
 lens_data= li.LensData(ccd_data=ccd_data, mask=mask)
-ccd_plotters.plot_image(ccd_data=ccd_data, mask=mask, zoom_around_mask=True)
+ccd_plotters.plot_image(ccd_data=ccd_data, mask=mask, extract_array_from_mask=True, zoom_around_mask=True)
 
 # Make the tracer we use to simulate the image
 lens_galaxy = g.Galaxy(light=lp.EllipticalSersic(centre=(0.0, 0.0), axis_ratio=0.9, phi=45.0, intensity=0.04,
@@ -120,7 +121,8 @@ tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source
 
 # Now, lets fit the lensing image with the tracer and plot the fit. It looks a lot better than above, doesn't it?
 correct_fit = lens_fit.fit_lens_data_with_tracer(lens_data=lens_data, tracer=tracer)
-lens_fit_plotters.plot_fit_subplot(fit=correct_fit, should_plot_mask=True, zoom_around_mask=True)
+lens_fit_plotters.plot_fit_subplot(fit=correct_fit, should_plot_mask=True,  extract_array_from_mask=True,
+                                   zoom_around_mask=True)
 
 # Finally, just to be sure, lets compare the two likelihoods
 print('Likelihood of Non-linear Search:')
