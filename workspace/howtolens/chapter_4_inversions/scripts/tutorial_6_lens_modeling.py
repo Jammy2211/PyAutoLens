@@ -57,7 +57,7 @@ def perform_fit_with_lens_and_source_galaxy(lens_galaxy, source_galaxy):
 lens_galaxy = g.Galaxy(mass=mp.EllipticalIsothermal(centre=(0.0, 0.0), axis_ratio=0.8, phi=135.0, einstein_radius=0.8))
 source_galaxy = g.Galaxy(pixelization=pix.Rectangular(shape=(40, 40)), regularization=reg.Constant(coefficients=(1.0,)))
 fit = perform_fit_with_lens_and_source_galaxy(lens_galaxy=lens_galaxy, source_galaxy=source_galaxy)
-lens_fit_plotters.plot_fit_subplot(fit=fit, should_plot_mask=True, zoom_around_mask=True)
+lens_fit_plotters.plot_fit_subplot(fit=fit, should_plot_mask=True, extract_array_from_mask=True, zoom_around_mask=True)
 
 # What happened!? This incorrect mass-model provides a really good_fit to the image! The residuals and chi-squared map
 # are as good as the ones we saw in the last tutorial.
@@ -73,7 +73,8 @@ lens_galaxy = g.Galaxy(mass=mp.EllipticalIsothermal(centre=(0.0, 0.0), axis_rati
                                                     einstein_radius=1.6))
 source_galaxy = g.Galaxy(pixelization=pix.Rectangular(shape=(40, 40)), regularization=reg.Constant(coefficients=(1.0,)))
 correct_fit = perform_fit_with_lens_and_source_galaxy(lens_galaxy=lens_galaxy, source_galaxy=source_galaxy)
-lens_fit_plotters.plot_fit_subplot(fit=correct_fit, should_plot_mask=True, zoom_around_mask=True)
+lens_fit_plotters.plot_fit_subplot(fit=correct_fit, should_plot_mask=True, extract_array_from_mask=True,
+                                   zoom_around_mask=True)
 print('Bayesian Evidence of Incorrect Fit:')
 print(fit.evidence)
 print('Bayesian Evidence of Correct Fit:')
@@ -142,7 +143,8 @@ tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source
 # This fit subtracts the lens galaxy's light from the image and fits the resulting source-only image with the inversion.
 # When we plot the image, a new panel on the sub-plot appears showing the model image of the lens galaxy.
 fit = lens_fit.fit_lens_data_with_tracer(lens_data=lens_data, tracer=tracer)
-lens_fit_plotters.plot_fit_subplot(fit=fit, should_plot_mask=True, zoom_around_mask=True)
+lens_fit_plotters.plot_fit_subplot(fit=fit, should_plot_mask=True, extract_array_from_mask=True,
+                                   zoom_around_mask=True)
 
 # Of course if the lens subtraction is rubbish, so is our fit, so we can be sure that our lens model wants to fit the
 # lens galaxy's light accurately (below, I've increased the lens galaxy intensity from 0.2 to 0.3)!
@@ -153,7 +155,8 @@ lens_galaxy = g.Galaxy(light=lp.SphericalSersic(centre=(0.0, 0.0), intensity=0.3
 tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy],
                                              image_plane_grid_stack=lens_data.grid_stack, border=lens_data.border)
 fit = lens_fit.fit_lens_data_with_tracer(lens_data=lens_data, tracer=tracer)
-lens_fit_plotters.plot_fit_subplot(fit=fit, should_plot_mask=True, zoom_around_mask=True)
+lens_fit_plotters.plot_fit_subplot(fit=fit, should_plot_mask=True, extract_array_from_mask=True,
+                                   zoom_around_mask=True)
 
 # And with that, we're done. We've pretty much covered everything inversion related, so in the last tutorial I'll set
 # you up with a pipeline that you can use to model lenses with an inversion.

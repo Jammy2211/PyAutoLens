@@ -24,7 +24,7 @@ def make_galaxy_mass():
 
 @pytest.fixture(name='grid_stack')
 def make_grid_stack():
-    return grids.GridStack.from_shape_pixel_scale_and_sub_grid_size(shape=(100, 100), pixel_scale=0.05, sub_grid_size=2)
+    return grids.GridStack.from_shape_pixel_scale_and_sub_grid_size(shape=(3, 3), pixel_scale=0.05, sub_grid_size=2)
 
 @pytest.fixture(name='mask')
 def make_mask():
@@ -40,7 +40,7 @@ def make_tracer(galaxy_light, galaxy_mass, grid_stack):
 def test__tracer_sub_plot_output(tracer, mask, ray_tracing_plotter_path, plot_patch):
 
     ray_tracing_plotters.plot_ray_tracing_subplot(
-        tracer=tracer, mask=mask, zoom_around_mask=True,
+        tracer=tracer, mask=mask, extract_array_from_mask=True, zoom_around_mask=True,
         output_path=ray_tracing_plotter_path, output_format='png')
 
     assert ray_tracing_plotter_path + 'tracer.png' in plot_patch.paths
@@ -49,7 +49,7 @@ def test__tracer_sub_plot_output(tracer, mask, ray_tracing_plotter_path, plot_pa
 def test__tracer_individuals__dependent_on_input(tracer, mask, ray_tracing_plotter_path, plot_patch):
 
     ray_tracing_plotters.plot_ray_tracing_individual(
-        tracer=tracer, mask=mask, zoom_around_mask=True,
+        tracer=tracer, mask=mask, extract_array_from_mask=True, zoom_around_mask=True,
         should_plot_image_plane_image=True, should_plot_source_plane=True, should_plot_potential=True,
         output_path=ray_tracing_plotter_path, output_format='png')
 
@@ -68,7 +68,8 @@ def test__tracer_individuals__dependent_on_input(tracer, mask, ray_tracing_plott
 
 def test__image_plane_image_is_output(tracer, mask, ray_tracing_plotter_path, plot_patch):
 
-    ray_tracing_plotters.plot_image_plane_image(tracer=tracer, mask=mask, zoom_around_mask=True,
+    ray_tracing_plotters.plot_image_plane_image(tracer=tracer, mask=mask, extract_array_from_mask=True,
+                                                zoom_around_mask=True,
                                                 output_path=ray_tracing_plotter_path, output_format='png')
 
     assert ray_tracing_plotter_path + 'tracer_image_plane_image.png' in plot_patch.paths
@@ -76,7 +77,8 @@ def test__image_plane_image_is_output(tracer, mask, ray_tracing_plotter_path, pl
 
 def test__surface_density_is_output(tracer, mask, ray_tracing_plotter_path, plot_patch):
 
-    ray_tracing_plotters.plot_surface_density(tracer=tracer, mask=mask, zoom_around_mask=True,
+    ray_tracing_plotters.plot_surface_density(tracer=tracer, mask=mask, extract_array_from_mask=True,
+                                              zoom_around_mask=True,
                                               output_path=ray_tracing_plotter_path, output_format='png')
 
     assert ray_tracing_plotter_path + 'tracer_surface_density.png' in plot_patch.paths
@@ -84,7 +86,8 @@ def test__surface_density_is_output(tracer, mask, ray_tracing_plotter_path, plot
 
 def test__potential_is_output(tracer, mask, ray_tracing_plotter_path, plot_patch):
 
-    ray_tracing_plotters.plot_potential(tracer=tracer, mask=mask, zoom_around_mask=True,
+    ray_tracing_plotters.plot_potential(tracer=tracer, mask=mask, extract_array_from_mask=True,
+                                        zoom_around_mask=True,
                                         output_path=ray_tracing_plotter_path, output_format='png')
 
     assert ray_tracing_plotter_path + 'tracer_potential.png' in plot_patch.paths
@@ -92,7 +95,8 @@ def test__potential_is_output(tracer, mask, ray_tracing_plotter_path, plot_patch
 
 def test__deflections_y_is_output(tracer, mask, ray_tracing_plotter_path, plot_patch):
 
-    ray_tracing_plotters.plot_deflections_y(tracer=tracer, mask=mask, zoom_around_mask=True,
+    ray_tracing_plotters.plot_deflections_y(tracer=tracer, mask=mask, extract_array_from_mask=True,
+                                            zoom_around_mask=True,
                                             output_path=ray_tracing_plotter_path, output_format='png')
 
     assert ray_tracing_plotter_path + 'tracer_deflections_y.png' in plot_patch.paths
@@ -100,7 +104,8 @@ def test__deflections_y_is_output(tracer, mask, ray_tracing_plotter_path, plot_p
 
 def test__deflections_x_is_output(tracer, mask, ray_tracing_plotter_path, plot_patch):
 
-    ray_tracing_plotters.plot_deflections_x(tracer=tracer, mask=mask, zoom_around_mask=True,
+    ray_tracing_plotters.plot_deflections_x(tracer=tracer, mask=mask, extract_array_from_mask=True,
+                                            zoom_around_mask=True,
                                             output_path=ray_tracing_plotter_path, output_format='png')
 
     assert ray_tracing_plotter_path + 'tracer_deflections_x.png' in plot_patch.paths
