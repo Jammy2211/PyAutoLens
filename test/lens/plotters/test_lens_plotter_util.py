@@ -97,7 +97,7 @@ def make_lens_hyper_image(image, mask, hyper):
 def make_fit_hyper(lens_hyper_image, hyper):
     tracer = ray_tracing.TracerImagePlane(lens_galaxies=[hyper.hyper_galaxy],
                                           image_plane_grid_stack=lens_hyper_image.grid_stack)
-    return lens_fit.fit_lens_data_with_tracer(lens_data=lens_hyper_image, tracer=tracer)
+    return lens_fit.hyper_fit_lens_data_with_tracer(lens_data_hyper=lens_hyper_image, tracer=tracer)
 
 
 def test__image_is_output(fit, lens_plotter_util_path, plot_patch):

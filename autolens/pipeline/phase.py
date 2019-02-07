@@ -717,6 +717,9 @@ class PhaseImaging(Phase):
                     fit=fit, should_plot_mask=self.should_plot_mask,
                     extract_array_from_mask=self.extract_array_from_mask,zoom_around_mask=self.zoom_around_mask,
                     positions=positions, should_plot_image_plane_pix=self.should_plot_image_plane_pix,
+                    should_plot_image=self.plot_lens_fit_image,
+                    should_plot_noise_map=self.plot_lens_fit_noise_map,
+                    should_plot_signal_to_noise_map=self.plot_lens_fit_signal_to_noise_map,
                     should_plot_lens_subtracted_image=self.plot_lens_fit_lens_subtracted_image,
                     should_plot_model_image=self.plot_lens_fit_model_image,
                     should_plot_lens_model_image=self.plot_lens_fit_lens_model_image,
@@ -760,6 +763,9 @@ class PhaseImaging(Phase):
                         fit=fit, should_plot_mask=self.should_plot_mask,
                         extract_array_from_mask=self.extract_array_from_mask, zoom_around_mask=self.zoom_around_mask,
                         positions=positions, should_plot_image_plane_pix=self.should_plot_image_plane_pix,
+                        should_plot_image=True,
+                        should_plot_noise_map=True,
+                        should_plot_signal_to_noise_map=True,
                         should_plot_lens_subtracted_image=True,
                         should_plot_model_image=True,
                         should_plot_lens_model_image=True,
@@ -776,6 +782,9 @@ class PhaseImaging(Phase):
                         fit=fit, should_plot_mask=self.should_plot_mask,
                         extract_array_from_mask=self.extract_array_from_mask, zoom_around_mask=self.zoom_around_mask,
                         positions=positions, should_plot_image_plane_pix=self.should_plot_image_plane_pix,
+                        should_plot_image=True,
+                        should_plot_noise_map=True,
+                        should_plot_signal_to_noise_map=True,
                         should_plot_lens_subtracted_image=True,
                         should_plot_model_image=True,
                         should_plot_lens_model_image=True,
@@ -1476,6 +1485,13 @@ class SensitivityPhase(PhaseImaging):
                 "\nRunning lens/source lens for... \n\nLens Galaxy:\n{}\n\nSource Galaxy:\n{}\n\n Sensitive "
                 "Galaxy\n{}\n\n "
                 "".format(instance.lens_galaxies, instance.source_galaxies, instance.sensitive_galaxies))
+
+
+class HyperAnalysis(object):
+
+    def __init__(self):
+
+        pass
 
 
 def make_path_if_does_not_exist(path):

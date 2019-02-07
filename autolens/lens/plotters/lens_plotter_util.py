@@ -85,7 +85,7 @@ def plot_signal_to_noise_map(
     If true, the origin of the datas's coordinate system is plotted as a 'x'.
     """
     array_plotters.plot_array(
-        array=fit.image/fit.noise_map, mask=mask, extract_array_from_mask=extract_array_from_mask,
+        array=fit.signal_to_noise_map, mask=mask, extract_array_from_mask=extract_array_from_mask,
         zoom_around_mask=zoom_around_mask, positions=positions, as_subplot=as_subplot,
         units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
         cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max,
@@ -317,7 +317,7 @@ def get_mask(fit, should_plot_mask):
     Parameters
     -----------
     fit : datas.fitting.fitting.AbstractLensHyperFit
-        The fit to the datas, which includes a list of every model image, residual_map, chi-squareds, etc.
+        The fit to the datas, which includes a lisrt of every model image, residual_map, chi-squareds, etc.
     should_plot_mask : bool
         If *True*, the masks is plotted on the fit's datas.
     """
