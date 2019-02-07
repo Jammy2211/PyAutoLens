@@ -8,8 +8,8 @@ from autolens.data.array.util import mapping_util, array_util, mask_util
 
 def sub_to_image_grid(func):
     """
-    Wrap the function in a function that, if the grid_stack is a sub-grid (grid_stacks.SubGrid), rebins the computed \
-    values te the regular-grid by taking the mean of each set of sub-gridded values.
+    Wrap the function in a function that, if the grid is a sub-grid (grids.SubGrid), rebins the computed \
+    values to the sub-grids corresponding regular-grid by taking the mean of each set of sub-gridded values.
 
     Parameters
     ----------
@@ -23,14 +23,27 @@ def sub_to_image_grid(func):
 
         Parameters
         ----------
-        grid : ndarray
-            PlaneCoordinates in either cartesian or profiles coordinate system
-        args
-        kwargs
+        grid : RegularGrid
+            The (y,x) coordinates of the grid, in an array of shape (total_coordinates, 2).
+        galaxies : [Galaxy]
+            The list of galaxies a profile quantity (e.g. intensities) is computed for which is rebinned if it \
+            is a sub-grid.
 
         Returns
         -------
-            A value or coordinate in the same coordinate system as those passed in.
+        ndarray
+            If a RegularGrid is input, the profile quantity of the galaxy (e.g. intensities) evaluated using this grid.
+
+            If a SubGrid is input, the profile quantity of the galaxy (e.g. intensities) evaluated using the sub-grid \
+            and rebinned to the regular-grids array dimensions.
+
+        Examples
+        ---------
+        @grids.sub_to_image_grid
+        def intensities_of_galaxies_from_grid(grid, galaxies):
+            return sum(map(lambda g: g.intensities_from_grid(grid), galaxies))
+
+        galaxy_util.intensities_of_galaxies_from_grid(grid=grid_stack.sub, galaxies=galaxies)
         """
 
         result = func(grid, galaxies, *args, *kwargs)
