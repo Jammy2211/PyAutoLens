@@ -651,10 +651,6 @@ class PhaseImaging(Phase):
 
             self.plot_count += 1
 
-            tracer = self.tracer_for_instance(instance)
-            padded_tracer = self.padded_tracer_for_instance(instance)
-            fit = self.fit_for_tracers(tracer=tracer, padded_tracer=padded_tracer)
-
             if self.should_plot_mask:
                 mask = self.lens_data.mask
             else:
@@ -683,6 +679,10 @@ class PhaseImaging(Phase):
                 units=self.plot_units,
                 output_path=self.output_image_path, output_format='png')
 
+
+            tracer = self.tracer_for_instance(instance)
+            padded_tracer = self.padded_tracer_for_instance(instance)
+
             if self.plot_ray_tracing_as_subplot:
 
                 ray_tracing_plotters.plot_ray_tracing_subplot(
@@ -690,6 +690,8 @@ class PhaseImaging(Phase):
                     zoom_around_mask=self.zoom_around_mask, positions=positions,
                     units=self.plot_units,
                     output_path=self.output_image_path, output_format='png')
+
+            fit = self.fit_for_tracers(tracer=tracer, padded_tracer=padded_tracer)
 
             if self.plot_lens_fit_as_subplot:
 

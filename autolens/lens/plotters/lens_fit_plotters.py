@@ -475,7 +475,7 @@ def plot_fit_individuals_lens_and_source_planes(
             fit=fit, mask=mask, extract_array_from_mask=extract_array_from_mask, zoom_around_mask=zoom_around_mask,
             image_plane_pix_grid=image_plane_pix_grid,
             units=units, kpc_per_arcsec=kpc_per_arcsec,
-            output_path=output_path, output_filename='fit_hyper_image', output_format=output_format)
+            output_path=output_path, output_format=output_format)
 
     if should_plot_noise_map:
 
