@@ -10,7 +10,7 @@ from autolens.model.inversion import pixelizations as pix
 from autolens.model.inversion import regularization as reg
 
 # In this pipeline, we'll perform a basic analysis which initializes a lens model (the lens's light, mass and source's \
-# light) and then fits the source galaxy using an inversion. This pipeline will use four phases:
+# light) and then fits the source galaxy using an inversion. This pipeline uses four phases:
 
 # Phase 1) Fit the lens galaxy's light using an elliptical Sersic light profile.
 

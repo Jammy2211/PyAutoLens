@@ -82,8 +82,8 @@ def plot_fit_subplot_lens_plane_only(
     image_plane_pix_grid = lens_plotter_util.get_image_plane_pix_grid(should_plot_image_plane_pix, fit)
 
     lens_plotter_util.plot_image(
-        fit=fit, mask=mask, extract_array_from_mask=extract_array_from_mask, zoom_around_mask=zoom_around_mask, positions=positions,
-        image_plane_pix_grid=image_plane_pix_grid, as_subplot=True,
+        fit=fit, mask=mask, extract_array_from_mask=extract_array_from_mask, zoom_around_mask=zoom_around_mask,
+        positions=positions, image_plane_pix_grid=image_plane_pix_grid, as_subplot=True,
         units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
         cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
         cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
@@ -94,7 +94,8 @@ def plot_fit_subplot_lens_plane_only(
     plt.subplot(rows, columns, 2)
 
     lens_plotter_util.plot_noise_map(
-        fit=fit, mask=mask, extract_array_from_mask=extract_array_from_mask, zoom_around_mask=zoom_around_mask, positions=positions, as_subplot=True,
+        fit=fit, mask=mask, extract_array_from_mask=extract_array_from_mask, zoom_around_mask=zoom_around_mask,
+        positions=positions, as_subplot=True,
         units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
         cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
         cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
@@ -105,7 +106,8 @@ def plot_fit_subplot_lens_plane_only(
     plt.subplot(rows, columns, 3)
 
     lens_plotter_util.plot_signal_to_noise_map(
-        fit=fit, mask=mask, extract_array_from_mask=extract_array_from_mask, zoom_around_mask=zoom_around_mask, positions=positions, as_subplot=True,
+        fit=fit, mask=mask, extract_array_from_mask=extract_array_from_mask, zoom_around_mask=zoom_around_mask,
+        positions=positions, as_subplot=True,
         units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
         cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
         cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
@@ -307,6 +309,9 @@ def plot_fit_subplot_lens_and_source_planes(
 def plot_fit_individuals(
         fit, should_plot_mask=True, extract_array_from_mask=False, zoom_around_mask=False, positions=None,
         should_plot_image_plane_pix=False,
+        should_plot_image=False,
+        should_plot_noise_map=False,
+        should_plot_signal_to_noise_map=False,
         should_plot_lens_subtracted_image=False,
         should_plot_model_image=False,
         should_plot_lens_model_image=False,
@@ -321,8 +326,12 @@ def plot_fit_individuals(
 
         plot_fit_individuals_lens_plane_only(
             fit=fit,
-            should_plot_mask=should_plot_mask, extract_array_from_mask=extract_array_from_mask, zoom_around_mask=zoom_around_mask, positions=positions,
+            should_plot_mask=should_plot_mask, extract_array_from_mask=extract_array_from_mask,
+            zoom_around_mask=zoom_around_mask, positions=positions,
             should_plot_image_plane_pix=should_plot_image_plane_pix,
+            should_plot_image=should_plot_image,
+            should_plot_noise_map=should_plot_noise_map,
+            should_plot_signal_to_noise_map=should_plot_signal_to_noise_map,
             should_plot_model_image=should_plot_model_image,
             should_plot_residual_map=should_plot_residual_map,
             should_plot_chi_squared_map=should_plot_chi_squared_map,
@@ -333,8 +342,12 @@ def plot_fit_individuals(
 
         plot_fit_individuals_lens_and_source_planes(
             fit=fit,
-            should_plot_mask=should_plot_mask, extract_array_from_mask=extract_array_from_mask, zoom_around_mask=zoom_around_mask, positions=positions,
+            should_plot_mask=should_plot_mask, extract_array_from_mask=extract_array_from_mask,
+            zoom_around_mask=zoom_around_mask, positions=positions,
             should_plot_image_plane_pix=should_plot_image_plane_pix,
+            should_plot_image=should_plot_image,
+            should_plot_noise_map=should_plot_noise_map,
+            should_plot_signal_to_noise_map=should_plot_signal_to_noise_map,
             should_plot_lens_subtracted_image=should_plot_lens_subtracted_image,
             should_plot_model_image=should_plot_model_image,
             should_plot_lens_model_image=should_plot_lens_model_image,
@@ -350,6 +363,7 @@ def plot_fit_individuals_lens_plane_only(
         should_plot_image_plane_pix=False,
         should_plot_image=False,
         should_plot_noise_map=False,
+        should_plot_signal_to_noise_map=False,
         should_plot_model_image=False,
         should_plot_residual_map=False,
         should_plot_chi_squared_map=False,
@@ -379,16 +393,24 @@ def plot_fit_individuals_lens_plane_only(
         image_plane_pix_grid = lens_plotter_util.get_image_plane_pix_grid(should_plot_image_plane_pix, fit)
 
         lens_plotter_util.plot_image(
-            fit=fit, mask=mask, extract_array_from_mask=extract_array_from_mask, zoom_around_mask=zoom_around_mask, image_plane_pix_grid=image_plane_pix_grid,
+            fit=fit, mask=mask, extract_array_from_mask=extract_array_from_mask, zoom_around_mask=zoom_around_mask,
+            image_plane_pix_grid=image_plane_pix_grid,
             units=units, kpc_per_arcsec=kpc_per_arcsec,
-            output_path=output_path, output_filename='fit_hyper_image', output_format=output_format)
+            output_path=output_path, output_format=output_format)
 
     if should_plot_noise_map:
 
         lens_plotter_util.plot_noise_map(
             fit=fit, mask=mask, extract_array_from_mask=extract_array_from_mask, zoom_around_mask=zoom_around_mask,
             units=units, kpc_per_arcsec=kpc_per_arcsec,
-            output_path=output_path, output_filename='fit_hyper_noise_map', output_format=output_format)
+            output_path=output_path, output_format=output_format)
+
+    if should_plot_signal_to_noise_map:
+
+        lens_plotter_util.plot_signal_to_noise_map(
+            fit=fit, mask=mask, extract_array_from_mask=extract_array_from_mask, zoom_around_mask=zoom_around_mask,
+            units=units, kpc_per_arcsec=kpc_per_arcsec,
+            output_path=output_path, output_format=output_format)
 
     if should_plot_model_image:
 
@@ -416,6 +438,7 @@ def plot_fit_individuals_lens_and_source_planes(
         should_plot_image_plane_pix=False,
         should_plot_image=False,
         should_plot_noise_map=False,
+        should_plot_signal_to_noise_map=False,
         should_plot_lens_subtracted_image=False,
         should_plot_model_image=False,
         should_plot_lens_model_image=False,
@@ -452,14 +475,21 @@ def plot_fit_individuals_lens_and_source_planes(
             fit=fit, mask=mask, extract_array_from_mask=extract_array_from_mask, zoom_around_mask=zoom_around_mask,
             image_plane_pix_grid=image_plane_pix_grid,
             units=units, kpc_per_arcsec=kpc_per_arcsec,
-            output_path=output_path, output_filename='fit_hyper_image', output_format=output_format)
+            output_path=output_path, output_format=output_format)
 
     if should_plot_noise_map:
 
         lens_plotter_util.plot_noise_map(
             fit=fit, mask=mask, extract_array_from_mask=extract_array_from_mask, zoom_around_mask=zoom_around_mask,
             units=units, kpc_per_arcsec=kpc_per_arcsec,
-            output_path=output_path, output_filename='fit_hyper_noise_map', output_format=output_format)
+            output_path=output_path, output_format=output_format)
+
+    if should_plot_signal_to_noise_map:
+
+        lens_plotter_util.plot_signal_to_noise_map(
+            fit=fit, mask=mask, extract_array_from_mask=extract_array_from_mask, zoom_around_mask=zoom_around_mask,
+            units=units, kpc_per_arcsec=kpc_per_arcsec,
+            output_path=output_path, output_format=output_format)
 
     if should_plot_lens_subtracted_image:
 
