@@ -658,6 +658,7 @@ class TestResult(object):
         assert hasattr(result, "unmasked_model_image_of_planes_and_galaxies")
 
     def test__fit_figure_of_merit__matches_correct_fit_given_galaxy_profiles(self, ccd_data):
+
         lens_galaxy = g.Galaxy(light=lp.EllipticalSersic(intensity=0.1))
         source_galaxy = g.Galaxy(pixelization=pix.Rectangular(shape=(4, 4)),
                                  regularization=reg.Constant(coefficients=(1.0,)))

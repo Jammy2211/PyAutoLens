@@ -70,7 +70,7 @@ class RectangularArrayGeometry(ArrayGeometry):
         grid_arc_seconds: ndarray
             A grid of (y,x) coordinates in arc seconds.
         """
-        return grid_util.grid_arc_seconds_1d_to_grid_pixels_1d(grid_arc_seconds=grid_arc_seconds, shape=self.shape,
+        return grid_util.grid_arc_seconds_1d_to_grid_pixels_1d(grid_arc_seconds_1d=grid_arc_seconds, shape=self.shape,
                                                                pixel_scales=self.pixel_scales, origin=self.origin)
 
     def grid_arc_seconds_to_grid_pixel_centres(self, grid_arc_seconds):
@@ -88,7 +88,7 @@ class RectangularArrayGeometry(ArrayGeometry):
         grid_arc_seconds: ndarray
             The grid of (y,x) coordinates in arc seconds.
         """
-        return grid_util.grid_arc_seconds_1d_to_grid_pixel_centres_1d(grid_arc_seconds=grid_arc_seconds,
+        return grid_util.grid_arc_seconds_1d_to_grid_pixel_centres_1d(grid_arc_seconds_1d=grid_arc_seconds,
                                                                       shape=self.shape,
                                                                       pixel_scales=self.pixel_scales,
                                                                       origin=self.origin).astype('int')
@@ -112,7 +112,7 @@ class RectangularArrayGeometry(ArrayGeometry):
         grid_arc_seconds: ndarray
             The grid of (y,x) coordinates in arc seconds.
         """
-        return grid_util.grid_arc_seconds_1d_to_grid_pixel_indexes_1d(grid_arc_seconds=grid_arc_seconds,
+        return grid_util.grid_arc_seconds_1d_to_grid_pixel_indexes_1d(grid_arc_seconds_1d=grid_arc_seconds,
                                                                       shape=self.shape,
                                                                       pixel_scales=self.pixel_scales,
                                                                       origin=self.origin).astype('int')
@@ -131,7 +131,7 @@ class RectangularArrayGeometry(ArrayGeometry):
         grid_pixels : ndarray
             The grid of (y,x) coordinates in pixels.
         """
-        return grid_util.grid_pixels_1d_to_grid_arc_seconds_1d(grid_pixels=grid_pixels, shape=self.shape,
+        return grid_util.grid_pixels_1d_to_grid_arc_seconds_1d(grid_pixels_1d=grid_pixels, shape=self.shape,
                                                                pixel_scales=self.pixel_scales, origin=self.origin)
 
     @property
