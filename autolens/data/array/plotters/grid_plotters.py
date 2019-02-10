@@ -15,7 +15,7 @@ def plot_grid(grid, axis_limits=None, points=None, as_subplot=False,
 
     Parameters
     -----------
-    grid : ndarray or data.array.grids.RegularGrid
+    grid : data.array.grids.RegularGrid
         The (y,x) coordinates of the grid, in an array of shape (total_coordinates, 2).
     axis_limits : []
         The axis limits of the figure on which the grid is plotted, following [xmin, xmax, ymin, ymax].
