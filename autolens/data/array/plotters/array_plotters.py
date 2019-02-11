@@ -123,7 +123,7 @@ def plot_array(array, origin=None, mask=None, extract_array_from_mask=False, zoo
         array = np.add(array, 0.0, out=np.zeros_like(array), where=np.asarray(mask) == 0)
 
     if zoom_around_mask and mask is not None:
-        array = array.extract_scaled_array_around_mask(mask=mask, buffer=1)
+        array = array.extract_scaled_array_around_mask(mask=mask, buffer=2)
 
     plot_figure(array=array, as_subplot=as_subplot, units=units, kpc_per_arcsec=kpc_per_arcsec,
                 figsize=figsize, aspect=aspect, cmap=cmap, norm=norm,

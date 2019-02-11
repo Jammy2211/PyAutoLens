@@ -2,32 +2,31 @@ Hey, welcome to my PyAutoLens to-do. This should give you a sense of what we're 
 
 Let me know if you think anything is missing, or should be pushed up the to-do list ;)
 
-0) fix speed of plotter tests.
-0) Added ability to add central mask to a custom mask.
-0) Deflection fitting for Qiuhan.
-0) Inclusion of lens / source redshifts for analysis.
-0) Quantitive output of lens model results (e.g. einstein mass, magnification), include otf output
-0) Add feature to remove astropy bug.
-0) Add colorbar / features to pixelization plots, fix rectangular plot bug.
-1) Write Adaptive Grid howtolens.
-3) Magnification + Caustic + Critical curves
-4) CCD loading sanity checks
-5) Interpolation Scheme for fast deflection angles
-6) SLACS Database (Cristoph)
-7) Parallelize MultiNest
-8) Elegent handling of model image generation in lens_fit module, by building model image generation into
-   lens_fit_util, in an analogous fashion to unmasked image generation. The key point here is we can make it so
-   the fit module does not 'know' whether it is a lens + source plane system, or a multi-plane system. It should
-   just generate lists of model images across all planes and for all galaxies.
+
+- Inclusion of lens / source redshifts for analysis.
+- Quantitive output of lens model results (e.g. einstein mass, magnification), include otf output
+- Add feature to remove astropy bug.
+- Include output of data for a simulation (galaxies, ccd settings, etc).
+- Add colorbar / features to pixelization plots, fix rectangular plot bug.
+- Write Adaptive Grid howtolens.
+- Magnification + Caustic + Critical curves
+- CCD loading sanity checks
+- Interpolation Scheme for fast deflection angles
+- SLACS Database (Cristoph)
+- Parallelize MultiNest
+- Elegent handling of model image generation in lens_fit module, by building model image generation into
+  lens_fit_util, in an analogous fashion to unmasked image generation. The key point here is we can make it so
+  the fit module does not 'know' whether it is a lens + source plane system, or a multi-plane system. It should
+  just generate lists of model images across all planes and for all galaxies.
 
 Possible:
 
-1) position updating / thresholding.
+- position updating / thresholding.
 
 Bugs:
 
-1) Error message where some adaptive mappers lead to a qhull.Voronoi error
-2) Rectangular plots of source recons are still skewing.
+- Error message where some adaptive mappers lead to a qhull.Voronoi error
+- Rectangular plots of source recons are still skewing.
 
 Feb/Mar) Automated Prior Linking
 Feb/Mar) Pixelization which Adapts to source's light (not magnification).

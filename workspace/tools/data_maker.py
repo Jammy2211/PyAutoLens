@@ -22,6 +22,7 @@ import os
 lens_name = 'lens_light_and_x1_source'
 pixel_scale = 0.1
 
+data_folder = 'example' # The folder the data will be output into in the '/worksapce/data/' directory.
 
 # Simulate a simple Gaussian PSF for the image.
 psf = ccd.PSF.simulate_as_gaussian(shape=(11, 11), sigma=0.1, pixel_scale=pixel_scale)
@@ -66,9 +67,9 @@ if not os.path.exists(path+'/data/'+lens_name):
     os.makedirs(path+'/data/'+lens_name)
 
 ccd.output_ccd_data_to_fits(ccd_data=simulated_ccd,
-                            image_path=path+'/data/example/'+lens_name+'/image.fits',
-                            psf_path=path + '/data/example/' + lens_name + '/psf.fits',
-                            noise_map_path=path + '/data/example/' + lens_name + '/noise_map.fits',
+                            image_path=path + '/data/' + data_folder + '/' + lens_name + '/image.fits',
+                            psf_path=path + '/data/' + data_folder + '/' + lens_name + '/psf.fits',
+                            noise_map_path=path + '/data/' + data_folder + '/' + lens_name + '/noise_map.fits',
                             overwrite=True)
 
 
