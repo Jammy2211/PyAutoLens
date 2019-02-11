@@ -3,6 +3,7 @@ import numpy as np
 
 from autolens.data.array.util import mask_util
 
+
 @decorator_util.jit()
 def centres_from_shape_pixel_scales_and_origin(shape, pixel_scales, origin):
     """Determine the (y,x) arc-second central coordinates of an array from its shape, pixel-scales and origin.
