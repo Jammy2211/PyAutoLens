@@ -3,6 +3,28 @@ Hey, welcome to my PyAutoLens to-do. This should give you a sense of what we're 
 Let me know if you think anything is missing, or should be pushed up the to-do list ;)
 
 
+Today:
+
+- Change AutoFit grid search image folder.
+- Subhalo chalenge runs.
+- SLACS subhalo runs.
+- CTI
+
+Next week:
+
+- Visualize NLO grid search per NLO run.
+- Set off SLACS substructure run.
+
+- Quihan tracer bug.
+
+- Make it so workspace not part of pip install.
+- Custommize how model.results appear (E.g. decimal places, lens paramnames).
+- Bug with errors on certain parameters.
+
+- Binning up speed up for pipelines.
+- Interpolation Scheme for fast deflection angles
+- pyquad integration.
+
 - Inclusion of lens / source redshifts for analysis.
 - Quantitive output of lens model results (e.g. einstein mass, magnification), include otf output
 - Add feature to remove astropy bug.
@@ -11,7 +33,6 @@ Let me know if you think anything is missing, or should be pushed up the to-do l
 - Write Adaptive Grid howtolens.
 - Magnification + Caustic + Critical curves
 - CCD loading sanity checks
-- Interpolation Scheme for fast deflection angles
 - SLACS Database (Cristoph)
 - Parallelize MultiNest
 - Elegent handling of model image generation in lens_fit module, by building model image generation into

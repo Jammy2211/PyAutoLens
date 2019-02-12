@@ -367,6 +367,9 @@ class ScaledSquarePixelArray(ScaledArray):
         return self.new_with_array(array=array_util.resize_array_2d(array_2d=self, new_shape=new_shape,
                                                                     origin=new_centre))
 
+  #  def binned_up_array_from_array(self, bin_up_size):
+
+
 
 class ScaledRectangularPixelArray(ScaledArray):
     """
