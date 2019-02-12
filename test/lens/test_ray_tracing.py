@@ -611,6 +611,19 @@ class TestAbstractTracer(object):
 
             assert (traced_grid == tracer.source_plane.grid_stack.regular).all()
 
+        def test__same_as_above__input_grid_is_not_grid_stack(self, grid_stack):
+
+            g0 = g.Galaxy(mass_profile=mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=1.0), redshift=0.5)
+            g1 = g.Galaxy(redshift=1.0)
+
+            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g1],
+                                                         image_plane_grid_stack=grid_stack)
+
+            traced_grid = tracer.grid_at_redshift_from_image_plane_grid_and_redshift(
+                image_plane_grid=np.array([[1.0, 1.0], [1.0, 1.0], [1.0, 1.0], [1.0, 1.0], [1.0, 1.0]]), redshift=0.5)
+
+            assert (traced_grid == tracer.image_plane.grid_stack.regular[0]).all()
+
         def test__same_as_above_but_for_multi_tracer(self, grid_stack):
 
             g0 = g.Galaxy(mass_profile=mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=1.0), redshift=0.5)
@@ -836,6 +849,7 @@ class TestAbstractTracer(object):
             assert tracer.masses_of_image_plane_galaxies_within_ellipses(major_axis=2.0)[0] == g0_mass
             assert tracer.masses_of_image_plane_galaxies_within_ellipses(major_axis=2.0)[1] == g1_mass
 
+
 class TestTracerImagePlane(object):
 
     class TestImagePlaneImage:
@@ -869,10 +883,6 @@ class TestTracerImagePlane(object):
             tracer = ray_tracing.TracerImagePlane(lens_galaxies=[g0, g1, g2], image_plane_grid_stack=grid_stack)
 
             assert (tracer.image_plane_blurring_image_1d == image_plane.image_plane_blurring_image_1d).all()
-
-
-
-
 
 
 class TestTracerImageSourcePlanes(object):

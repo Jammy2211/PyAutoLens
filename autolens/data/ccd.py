@@ -501,7 +501,7 @@ class PSF(ScaledSquarePixelArray):
         # noinspection PyArgumentList
         super().__init__(array=array, pixel_scale=pixel_scale)
         if renormalize:
-            self.renormalize()
+            self[:,:] = np.divide(self, np.sum(self))
 
     @classmethod
     def simulate_as_gaussian(cls, shape, pixel_scale, sigma, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0):
@@ -551,7 +551,7 @@ class PSF(ScaledSquarePixelArray):
             A renormalized PSF instance
         """
         psf = PSF.from_fits_with_scale(file_path, hdu, pixel_scale)
-        psf.renormalize()
+        psf[:,:] = np.divide(psf, np.sum(psf))
         return psf
 
     @classmethod
@@ -569,9 +569,9 @@ class PSF(ScaledSquarePixelArray):
         """
         return cls(array=array_util.numpy_array_from_fits(file_path, hdu), pixel_scale=pixel_scale)
 
-    def renormalize(self):
+    def new_psf_with_renormalized_array(self):
         """Renormalize the PSF such that its data_vector values sum to unity."""
-        self[:, :] = np.divide(self, np.sum(self))
+        return PSF(array=self, pixel_scale=self.pixel_scale, renormalize=True)
 
     def convolve(self, array):
         """

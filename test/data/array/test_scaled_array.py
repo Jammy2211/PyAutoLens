@@ -729,6 +729,11 @@ class TestScaledSquarePixelArray:
                                                  [ 9.0, 10.0, 11.0, 12.0],
                                                  [13.0, 14.0, 15.0, 16.0]])).all()
 
+    # class TestBinnedUpArray:
+    #
+    #     def test__bin_up_size_is_1__returned_array_has_same_dimensions(self):
+
+
 
 class TestScaledRectangularPixelArray:
 

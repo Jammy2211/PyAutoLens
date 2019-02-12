@@ -69,7 +69,7 @@ ccd_plotters.plot_ccd_subplot(ccd_data=ccd_data)
 from workspace.howtolens.chapter_3_pipelines import tutorial_3_pipeline_complex_source
 
 pipeline_complex_source = tutorial_3_pipeline_complex_source.make_pipeline(
-    pipeline_path='howtolens/c3_t3_complex_source/')
+    pipeline_path='/howtolens/c3_t3_complex_source/')
 pipeline_complex_source.run(data=ccd_data)
 
 # Okay, so with 4 sources, we still couldn't get a good a fit to the source that didn't leave residuals. The thing is,

@@ -176,6 +176,38 @@ def resize_array_2d(array_2d, new_shape, origin=(-1, -1)):
     return resized_array
 
 
+
+def bin_up_array_2d_using_mean(array_2d):
+    """Bin up an array to coarser resolution, by binning up groups of pixels and using their mean value to determine \
+     the value of the new pixel.
+
+    If an array of shape (8,8) is input and the bin up size is 2, this would return a new array of size (4,4) where \
+    every pixel was the mean of each collection of 2x2 pixels on the (8,8) array.
+
+    If binning up the array leads to an edge being cut (e.g. a (9,9) array binned up by 2), an array is first \
+    extracted around the centre of that array.
+
+
+    Parameters
+    ----------
+    array_2d : ndarray
+        The 2D array that is resized.
+    new_shape : (int, int)
+        The (y,x) new pixel dimension of the trimmed array.
+    origin : (int, int)
+        The oigin of the resized array, e.g. the central pixel around which the array is extracted.
+
+    Returns
+    -------
+    ndarray
+        The resized 2D array from the input 2D array.
+
+    Examples
+    --------
+    array_2d = np.ones((5,5))
+    resize_array = resize_array_2d(array_2d=array_2d, new_shape=(2,2), origin=(2, 2))
+    """
+
 def numpy_array_to_fits(array, file_path, overwrite=False):
     """Write a 2D NumPy array to a .fits file.
 

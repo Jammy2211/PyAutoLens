@@ -284,12 +284,15 @@ class AbstractTracer(object):
 
         image_plane_grid_stack = grids.GridStack(regular=image_plane_grid, sub=np.array([[0.0, 0.0]]),
                                                  blurring=np.array([[0.0, 0.0]]))
+        
+        tracer = TracerMultiPlanes(galaxies=self.galaxies, image_plane_grid_stack=image_plane_grid_stack,
+                                   border=None, cosmology=self.cosmology)
 
         for plane_index in range(0, len(self.plane_redshifts)):
 
             new_grid_stack = image_plane_grid_stack
 
-            if redshift <= self.plane_redshifts[plane_index]:
+            if redshift <= tracer.plane_redshifts[plane_index]:
 
                 # If redshift is between two planes, we need to map over all previous planes coordinates / deflections.
 
@@ -297,26 +300,26 @@ class AbstractTracer(object):
                     for previous_plane_index in range(plane_index):
 
                         scaling_factor = lens_util.scaling_factor_between_redshifts_for_cosmology(
-                            z1=self.plane_redshifts[previous_plane_index], z2=redshift,
-                            z_final=self.plane_redshifts[-1], cosmology=self.cosmology)
+                            z1=tracer.plane_redshifts[previous_plane_index], z2=redshift,
+                            z_final=tracer.plane_redshifts[-1], cosmology=tracer.cosmology)
 
                         scaled_deflection_stack = lens_util.scaled_deflection_stack_from_plane_and_scaling_factor(
-                            plane=self.planes[previous_plane_index], scaling_factor=scaling_factor)
+                            plane=tracer.planes[previous_plane_index], scaling_factor=scaling_factor)
 
                         new_grid_stack = \
                             lens_util.grid_stack_from_deflection_stack(grid_stack=new_grid_stack,
-                                                                              deflection_stack=scaled_deflection_stack)
+                                                                       deflection_stack=scaled_deflection_stack)
 
                 # If redshift is before the first plane, just need to scale the image-plane coordinates.
 
                 elif plane_index == 0:
 
                     scaling_factor = lens_util.scaling_factor_between_redshifts_for_cosmology(
-                        z1=redshift, z2=self.plane_redshifts[0],
-                        z_final=self.plane_redshifts[-1], cosmology=self.cosmology)
+                        z1=redshift, z2=tracer.plane_redshifts[0],
+                        z_final=tracer.plane_redshifts[-1], cosmology=tracer.cosmology)
 
                     scaled_deflection_stack = lens_util.scaled_deflection_stack_from_plane_and_scaling_factor(
-                        plane=self.planes[0], scaling_factor=scaling_factor)
+                        plane=tracer.planes[0], scaling_factor=scaling_factor)
 
                     new_grid_stack = \
                         lens_util.grid_stack_from_deflection_stack(grid_stack=new_grid_stack,
