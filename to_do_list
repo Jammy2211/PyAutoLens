@@ -15,8 +15,6 @@ Next week:
 - Visualize NLO grid search per NLO run.
 - Set off SLACS substructure run.
 
-- Quihan tracer bug.
-
 - Make it so workspace not part of pip install.
 - Custommize how model.results appear (E.g. decimal places, lens paramnames).
 - Bug with errors on certain parameters.
