@@ -716,11 +716,10 @@ class TestAbstractTracer(object):
 
             assert (traced_grid_stack_manual.regular == traced_grid).all()
 
-        def test__input_redshift_before_first_plane__performs_tracing_correctly(self, grid_stack):
+        def test__input_redshift_before_first_plane__returns_image_plane(self, grid_stack):
 
             g0 = g.Galaxy(mass_profile=mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=1.0), redshift=0.5)
             g1 = g.Galaxy(mass_profile=mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=2.0), redshift=0.75)
-            g2 = g.Galaxy(redshift=2.0)
 
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g1],
                                                          image_plane_grid_stack=grid_stack)
@@ -728,32 +727,7 @@ class TestAbstractTracer(object):
             traced_grid = tracer.grid_at_redshift_from_image_plane_grid_and_redshift(
                 image_plane_grid=grid_stack.regular, redshift=0.3)
 
-            scaling_factor = lens_util.scaling_factor_between_redshifts_for_cosmology(
-                z1=0.3, z2=0.5, z_final=0.75, cosmology=tracer.cosmology)
-
-            deflection_stack = lens_util.scaled_deflection_stack_from_plane_and_scaling_factor(
-                plane=tracer.planes[0], scaling_factor=scaling_factor)
-
-            traced_grid_stack_manual = lens_util.grid_stack_from_deflection_stack(
-                grid_stack=grid_stack, deflection_stack=deflection_stack)
-
-            assert (traced_grid_stack_manual.regular == traced_grid).all()
-
-            tracer = ray_tracing.TracerMultiPlanes(galaxies=[g0, g1, g2], image_plane_grid_stack=grid_stack)
-
-            traced_grid = tracer.grid_at_redshift_from_image_plane_grid_and_redshift(
-                image_plane_grid=grid_stack.regular, redshift=0.2)
-
-            scaling_factor = lens_util.scaling_factor_between_redshifts_for_cosmology(
-                z1=0.2, z2=0.5, z_final=2.0, cosmology=tracer.cosmology)
-
-            deflection_stack = lens_util.scaled_deflection_stack_from_plane_and_scaling_factor(
-                plane=tracer.planes[0], scaling_factor=scaling_factor)
-
-            traced_grid_stack_manual = lens_util.grid_stack_from_deflection_stack(
-                grid_stack=grid_stack, deflection_stack=deflection_stack)
-
-            assert (traced_grid_stack_manual.regular == traced_grid).all()
+            assert (traced_grid == grid_stack.regular).all()
 
     class TestGalaxyMasses:
 
