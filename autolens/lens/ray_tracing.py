@@ -310,20 +310,11 @@ class AbstractTracer(object):
                             lens_util.grid_stack_from_deflection_stack(grid_stack=new_grid_stack,
                                                                        deflection_stack=scaled_deflection_stack)
 
-                # If redshift is before the first plane, just need to scale the image-plane coordinates.
+                # If redshift is before the first plane, no change to image pllane coordinates.
 
                 elif plane_index == 0:
 
-                    scaling_factor = lens_util.scaling_factor_between_redshifts_for_cosmology(
-                        z1=redshift, z2=tracer.plane_redshifts[0],
-                        z_final=tracer.plane_redshifts[-1], cosmology=tracer.cosmology)
-
-                    scaled_deflection_stack = lens_util.scaled_deflection_stack_from_plane_and_scaling_factor(
-                        plane=tracer.planes[0], scaling_factor=scaling_factor)
-
-                    new_grid_stack = \
-                        lens_util.grid_stack_from_deflection_stack(grid_stack=new_grid_stack,
-                                                                          deflection_stack=scaled_deflection_stack)
+                    return new_grid_stack.regular
 
                 return new_grid_stack.regular
 
