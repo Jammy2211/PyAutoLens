@@ -2,32 +2,33 @@ Hey, welcome to my PyAutoLens to-do. This should give you a sense of what we're 
 
 Let me know if you think anything is missing, or should be pushed up the to-do list ;)
 
+Rich:
+
+- Change AutoFit NLO grid search image folder.
+- Fix AutoFit grid search results output (grid search doesnt work, NLO grid search misses parameters).
+- Make it so workspace not part of pip install.
+- pip release autocti.
+- Custommize how model.results appear (E.g. decimal places, lens paramnames).
+- Make it so paramames have no duplicates.
 
 Today:
 
-- Change AutoFit grid search image folder.
-- Subhalo chalenge runs.
-- SLACS subhalo runs.
 - CTI
 
-Next week:
+Short term:
 
-- Visualize NLO grid search per NLO run.
-- Set off SLACS substructure run.
-
-- Make it so workspace not part of pip install.
-- Custommize how model.results appear (E.g. decimal places, lens paramnames).
 - Bug with errors on certain parameters.
-
 - Binning up speed up for pipelines.
 - Interpolation Scheme for fast deflection angles
 - pyquad integration.
-
 - Inclusion of lens / source redshifts for analysis.
 - Quantitive output of lens model results (e.g. einstein mass, magnification), include otf output
 - Add feature to remove astropy bug.
-- Include output of data for a simulation (galaxies, ccd settings, etc).
 - Add colorbar / features to pixelization plots, fix rectangular plot bug.
+
+Mid term:
+
+- Include output of data for a simulation (galaxies, ccd settings, etc).
 - Write Adaptive Grid howtolens.
 - Magnification + Caustic + Critical curves
 - CCD loading sanity checks
@@ -38,14 +39,7 @@ Next week:
   the fit module does not 'know' whether it is a lens + source plane system, or a multi-plane system. It should
   just generate lists of model images across all planes and for all galaxies.
 
-Possible:
-
-- position updating / thresholding.
-
-Bugs:
-
-- Error message where some adaptive mappers lead to a qhull.Voronoi error
-- Rectangular plots of source recons are still skewing.
+Long Term:
 
 Feb/Mar) Automated Prior Linking
 Feb/Mar) Pixelization which Adapts to source's light (not magnification).
@@ -59,16 +53,15 @@ April) Multi-plane analysis.
 2019) Multi-CCD analysis.
 
 
+Possible:
+
+- position updating / thresholding.
+
+Bugs:
+
+- Error message where some adaptive mappers lead to a qhull.Voronoi error
+- Rectangular plots of source recons are still skewing.
 
 
-Jan 22
 
-Pipeline with fixed lens mass / source light profile (and the inversion). Vary 4 subhalo parameters (x, y, mass, r_s) and
-iterate over intervals of redshift.
-
-M200 mass for NFW halo.
-
-Jan 23
-
-Given the angular coodinates at a given plane, determine the angular coordinates at any given redshift (e.g. for a
-given tracer, lens galaxy, source galaxy, etc.).
+Notes:
