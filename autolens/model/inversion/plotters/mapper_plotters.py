@@ -289,8 +289,8 @@ def plot_border(should_plot_border, mapper, as_subplot, units, kpc_per_arcsec, p
 
     if should_plot_border:
 
-        border_arc_seconds = mapper.grid_stack.regular[mapper.border]
-        border_units = convert_grid(grid=border_arc_seconds, units=units, kpc_per_arcsec=kpc_per_arcsec)
+        border_arcsec = mapper.grid_stack.regular[mapper.border]
+        border_units = convert_grid(grid=border_arcsec, units=units, kpc_per_arcsec=kpc_per_arcsec)
 
         grid_plotters.plot_grid(grid=border_units, as_subplot=as_subplot, units=units, kpc_per_arcsec=kpc_per_arcsec,
                                 pointsize=pointsize, pointcolor='y', xyticksize=xyticksize, title=title,

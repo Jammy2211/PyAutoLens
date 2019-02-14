@@ -56,8 +56,8 @@ class Memoizer(object):
 
 
 @decorator_util.jit()
-def extract_array_2d(array_2d, y0, y1, x0, x1):
-    """Resize an array to a new size by extracted a sub-set of the array.
+def extracted_array_2d_from_array_2d_and_coordinates(array_2d, y0, y1, x0, x1):
+    """Resize an array to a new size by extracting a sub-set of the array.
 
     The extracted input coordinates use NumPy convention, such that the upper values should be specified as +1 the \
     dimensions of the extracted array.
@@ -101,7 +101,7 @@ def extract_array_2d(array_2d, y0, y1, x0, x1):
 
 
 @decorator_util.jit()
-def resize_array_2d(array_2d, new_shape, origin=(-1, -1)):
+def resized_array_2d_from_array_2d_and_resized_shape(array_2d, resized_shape, origin=(-1, -1)):
     """Resize an array to a new size around a central pixel.
 
     If the origin (e.g. the central pixel) of the resized array is not specified, the central pixel of the array is \
@@ -115,7 +115,7 @@ def resize_array_2d(array_2d, new_shape, origin=(-1, -1)):
     ----------
     array_2d : ndarray
         The 2D array that is resized.
-    new_shape : (int, int)
+    resized_shape : (int, int)
         The (y,x) new pixel dimension of the trimmed array.
     origin : (int, int)
         The oigin of the resized array, e.g. the central pixel around which the array is extracted.
@@ -148,29 +148,29 @@ def resize_array_2d(array_2d, new_shape, origin=(-1, -1)):
 
         origin = (y_centre, x_centre)
 
-    resized_array = np.zeros(shape=new_shape)
+    resized_array = np.zeros(shape=resized_shape)
 
     if y_is_even:
-        ymin = origin[0] - int(new_shape[0] / 2)
-        ymax = origin[0] + int((new_shape[0] / 2)) + 1
+        y_min = origin[0] - int(resized_shape[0] / 2)
+        y_max = origin[0] + int((resized_shape[0] / 2)) + 1
     elif not y_is_even:
-        ymin = origin[0] - int(new_shape[0] / 2)
-        ymax = origin[0] + int((new_shape[0] / 2)) + 1
+        y_min = origin[0] - int(resized_shape[0] / 2)
+        y_max = origin[0] + int((resized_shape[0] / 2)) + 1
 
     if x_is_even:
-        xmin = origin[1] - int(new_shape[1] / 2)
-        xmax = origin[1] + int((new_shape[1] / 2)) + 1
+        x_min = origin[1] - int(resized_shape[1] / 2)
+        x_max = origin[1] + int((resized_shape[1] / 2)) + 1
     elif not x_is_even:
-        xmin = origin[1] - int(new_shape[1] / 2)
-        xmax = origin[1] + int((new_shape[1] / 2)) + 1
+        x_min = origin[1] - int(resized_shape[1] / 2)
+        x_max = origin[1] + int((resized_shape[1] / 2)) + 1
 
-    for y_resized, y in enumerate(range(ymin, ymax)):
-        for x_resized, x in enumerate(range(xmin, xmax)):
+    for y_resized, y in enumerate(range(y_min, y_max)):
+        for x_resized, x in enumerate(range(x_min, x_max)):
             if y >= 0 and y < array_2d.shape[0] and x >= 0 and x < array_2d.shape[1]:
-                if y_resized >= 0 and y_resized < new_shape[0] and x_resized >= 0 and x_resized < new_shape[1]:
+                if y_resized >= 0 and y_resized < resized_shape[0] and x_resized >= 0 and x_resized < resized_shape[1]:
                     resized_array[y_resized, x_resized] = array_2d[y, x]
             else:
-                if y_resized >= 0 and y_resized < new_shape[0] and x_resized >= 0 and x_resized < new_shape[1]:
+                if y_resized >= 0 and y_resized < resized_shape[0] and x_resized >= 0 and x_resized < resized_shape[1]:
                     resized_array[y_resized, x_resized] = 0.0
 
     return resized_array
@@ -208,7 +208,7 @@ def bin_up_array_2d_using_mean(array_2d):
     resize_array = resize_array_2d(array_2d=array_2d, new_shape=(2,2), origin=(2, 2))
     """
 
-def numpy_array_to_fits(array, file_path, overwrite=False):
+def numpy_array_2d_to_fits(array_2d, file_path, overwrite=False):
     """Write a 2D NumPy array to a .fits file.
 
     Before outputting a NumPy array, the array is flipped upside-down using np.flipud. This is so that the arrays \
@@ -216,7 +216,7 @@ def numpy_array_to_fits(array, file_path, overwrite=False):
 
     Parameters
     ----------
-    array : ndarray
+    array_2d : ndarray
         The 2D array that is written to fits.
     file_path : str
         The full path of the file that is output, including the file name and '.fits' extension.
@@ -237,11 +237,11 @@ def numpy_array_to_fits(array, file_path, overwrite=False):
         os.remove(file_path)
 
     new_hdr = fits.Header()
-    hdu = fits.PrimaryHDU(np.flipud(array), new_hdr)
+    hdu = fits.PrimaryHDU(np.flipud(array_2d), new_hdr)
     hdu.writeto(file_path)
 
 
-def numpy_array_from_fits(file_path, hdu):
+def numpy_array_2d_from_fits(file_path, hdu):
     """Read a 2D NumPy array to a .fits file.
 
     After loading the NumPy array, the array is flipped upside-down using np.flipud. This is so that the arrays \
