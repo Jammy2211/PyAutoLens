@@ -148,7 +148,7 @@ class TestRegularGrid:
         assert (scaled_array_2d == array_2d_util).all()
         assert (scaled_array_2d.xticks == np.array([-6.0, -2.0, 2.0, 6.0])).all()
         assert (scaled_array_2d.yticks == np.array([-4.5, -1.5, 1.5, 4.5])).all()
-        assert scaled_array_2d.shape_arc_seconds == (9.0, 12.0)
+        assert scaled_array_2d.shape_arcsec == (9.0, 12.0)
         assert scaled_array_2d.pixel_scale == 3.0
         assert scaled_array_2d.origin == (0.0, 0.0)
 
@@ -314,11 +314,11 @@ class TestSparseToRegularGrid:
         pix_grid = grids.SparseToRegularGrid(unmasked_sparse_grid_shape=(10, 10), pixel_scales=(0.16, 0.16),
                                              regular_grid=regular_grid)
 
-        full_pix_grid_pixel_centres = regular_grid.mask.grid_arc_seconds_to_grid_pixel_centres(pix_grid.unmasked_sparse_grid)
+        full_pix_grid_pixel_centres = regular_grid.mask.grid_arcsec_to_grid_pixel_centres(pix_grid.unmasked_sparse_grid)
         total_pix_pixels = mask_util.total_sparse_pixels_from_mask(mask=ma,
                                                                    unmasked_sparse_grid_pixel_centres=full_pix_grid_pixel_centres)
 
-        image_to_full_pix_util = pix_grid.grid_arc_seconds_to_grid_pixel_indexes(grid_arc_seconds=regular_grid)
+        image_to_full_pix_util = pix_grid.grid_arcsec_to_grid_pixel_indexes(grid_arcsec=regular_grid)
 
         pix_to_full_pix_util = mapping_util.sparse_to_unmasked_sparse_from_mask_and_pixel_centres(
             total_sparse_pixels=total_pix_pixels, mask=ma, unmasked_sparse_grid_pixel_centres=full_pix_grid_pixel_centres).astype('int')

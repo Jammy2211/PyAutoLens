@@ -47,9 +47,9 @@ def test__simulate_lensed_source_and_fit__no_psf_blurring__chi_squared_is_0__noi
     if os.path.exists(path) == False:
         os.makedirs(path)
 
-    array_util.numpy_array_to_fits(array=ccd_simulated.image, file_path=path + '/image.fits')
-    array_util.numpy_array_to_fits(array=ccd_simulated.noise_map, file_path=path + '/noise_map.fits')
-    array_util.numpy_array_to_fits(array=psf, file_path=path + '/psf.fits')
+    array_util.numpy_array_2d_to_fits(array_2d=ccd_simulated.image, file_path=path + '/image.fits')
+    array_util.numpy_array_2d_to_fits(array_2d=ccd_simulated.noise_map, file_path=path + '/noise_map.fits')
+    array_util.numpy_array_2d_to_fits(array_2d=psf, file_path=path + '/psf.fits')
 
     ccd_data = ccd.load_ccd_data_from_fits(image_path=path + '/image.fits',
                                            noise_map_path=path + '/noise_map.fits',
@@ -96,9 +96,9 @@ def test__simulate_lensed_source_and_fit__include_psf_blurring__chi_squared_is_0
     if os.path.exists(path) == False:
         os.makedirs(path)
 
-    array_util.numpy_array_to_fits(array=ccd_simulated.image, file_path=path + '/image.fits')
-    array_util.numpy_array_to_fits(array=ccd_simulated.noise_map, file_path=path + '/noise_map.fits')
-    array_util.numpy_array_to_fits(array=psf, file_path=path + '/psf.fits')
+    array_util.numpy_array_2d_to_fits(array_2d=ccd_simulated.image, file_path=path + '/image.fits')
+    array_util.numpy_array_2d_to_fits(array_2d=ccd_simulated.noise_map, file_path=path + '/noise_map.fits')
+    array_util.numpy_array_2d_to_fits(array_2d=psf, file_path=path + '/psf.fits')
 
     ccd_data = ccd.load_ccd_data_from_fits(image_path=path + '/image.fits',
                                            noise_map_path=path + '/noise_map.fits',

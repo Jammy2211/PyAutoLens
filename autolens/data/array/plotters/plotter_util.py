@@ -85,7 +85,7 @@ def output_figure(array, as_subplot, output_path, output_filename, output_format
         elif output_format is 'png':
             plt.savefig(output_path + output_filename + '.png', bbox_inches='tight')
         elif output_format is 'fits':
-            array_util.numpy_array_to_fits(array=array, file_path=output_path + output_filename + '.fits', overwrite=True)
+            array_util.numpy_array_2d_to_fits(array_2d=array, file_path=output_path + output_filename + '.fits', overwrite=True)
 
 
 def output_subplot_array(output_path, output_filename, output_format):

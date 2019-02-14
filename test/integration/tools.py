@@ -56,7 +56,7 @@ def simulate_integration_image(test_name, pixel_scale, lens_galaxies, source_gal
     if os.path.exists(output_path) == False:
         os.makedirs(output_path)
 
-    array_util.numpy_array_to_fits(array=ccd_simulated.image, file_path=output_path + '/image.fits')
-    array_util.numpy_array_to_fits(array=ccd_simulated.noise_map, file_path=output_path + '/noise_map.fits')
-    array_util.numpy_array_to_fits(array=psf, file_path=output_path + '/psf.fits')
-    array_util.numpy_array_to_fits(array=ccd_simulated.exposure_time_map, file_path=output_path + '/exposure_map.fits')
+    array_util.numpy_array_2d_to_fits(array_2d=ccd_simulated.image, file_path=output_path + '/image.fits')
+    array_util.numpy_array_2d_to_fits(array_2d=ccd_simulated.noise_map, file_path=output_path + '/noise_map.fits')
+    array_util.numpy_array_2d_to_fits(array_2d=psf, file_path=output_path + '/psf.fits')
+    array_util.numpy_array_2d_to_fits(array_2d=ccd_simulated.exposure_time_map, file_path=output_path + '/exposure_map.fits')

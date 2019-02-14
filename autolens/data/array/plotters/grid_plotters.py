@@ -53,7 +53,7 @@ def plot_grid(grid, axis_limits=None, points=None, as_subplot=False,
     """
 
     plotter_util.setup_figure(figsize=figsize, as_subplot=as_subplot)
-    grid = convert_grid_units(grid_arc_seconds=grid, units=units, kpc_per_arcsec=kpc_per_arcsec)
+    grid = convert_grid_units(grid_arcsec=grid, units=units, kpc_per_arcsec=kpc_per_arcsec)
     plt.scatter(y=np.asarray(grid[:, 0]), x=np.asarray(grid[:, 1]), s=pointsize, marker='.')
     plotter_util.set_title(title=title, titlesize=titlesize)
     set_xy_labels(units, kpc_per_arcsec, xlabelsize, ylabelsize, xyticksize)
@@ -65,13 +65,13 @@ def plot_grid(grid, axis_limits=None, points=None, as_subplot=False,
     plotter_util.output_figure(None, as_subplot, output_path, output_filename, output_format)
     plotter_util.close_figure(as_subplot=as_subplot)
 
-def convert_grid_units(grid_arc_seconds, units, kpc_per_arcsec):
+def convert_grid_units(grid_arcsec, units, kpc_per_arcsec):
     """Convert the grid from its input units (arc-seconds) to the input unit (e.g. retain arc-seconds) or convert to \
     another set of units (kiloparsecs).
 
     Parameters
     -----------
-    grid_arc_seconds : ndarray or data.array.grids.RegularGrid
+    grid_arcsec : ndarray or data.array.grids.RegularGrid
         The (y,x) coordinates of the grid in arc-seconds, in an array of shape (total_coordinates, 2).
     units : str
         The units of the y / x axis of the plots, in arc-seconds ('arcsec') or kiloparsecs ('kpc').
@@ -80,9 +80,9 @@ def convert_grid_units(grid_arc_seconds, units, kpc_per_arcsec):
     """
 
     if units in 'arcsec' or kpc_per_arcsec is None:
-        return grid_arc_seconds
+        return grid_arcsec
     elif units in 'kpc':
-        return grid_arc_seconds * kpc_per_arcsec
+        return grid_arcsec * kpc_per_arcsec
 
 def set_xy_labels(units, kpc_per_arcsec, xlabelsize, ylabelsize, xyticksize):
     """Set the x and y labels of the figure, and set the fontsize of those labels.

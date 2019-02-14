@@ -207,12 +207,12 @@ class Voronoi(Pixelization):
 
     class Geometry(scaled_array.ArrayGeometry):
 
-        def __init__(self, shape_arc_seconds, pixel_centres, origin, pixel_neighbors, pixel_neighbors_size):
+        def __init__(self, shape_arcsec, pixel_centres, origin, pixel_neighbors, pixel_neighbors_size):
             """The geometry of a Voronoi pixelization.
 
             Parameters
             -----------
-            shape_arc_seconds : (float, float)
+            shape_arcsec : (float, float)
                 The dimensions of the Voronoi grid ni arc-second (y_arcseconds, x_arcseconds)
             pixel_centres : ndarray
                 The (y,x) centre of every Voronoi pixel in arc-seconds.
@@ -225,7 +225,7 @@ class Voronoi(Pixelization):
                 An array of length (voronoi_pixels) which gives the number of neighbors of every pixel in the \
                 Voronoi grid.
             """
-            self.shape_arc_sec = shape_arc_seconds
+            self.shape_arc_sec = shape_arcsec
             self.pixel_centres = pixel_centres
             self.origin = origin
             self.pixel_neighbors = pixel_neighbors.astype('int')
@@ -255,9 +255,9 @@ class Voronoi(Pixelization):
         y_max = np.max(grid[:, 0]) + buffer
         x_min = np.min(grid[:, 1]) - buffer
         x_max = np.max(grid[:, 1]) + buffer
-        shape_arc_seconds = (y_max - y_min, x_max - x_min)
+        shape_arcsec = (y_max - y_min, x_max - x_min)
         origin = ((y_max + y_min) / 2.0, (x_max + x_min) / 2.0)
-        return self.Geometry(shape_arc_seconds=shape_arc_seconds, pixel_centres=pixel_centres, origin=origin,
+        return self.Geometry(shape_arcsec=shape_arcsec, pixel_centres=pixel_centres, origin=origin,
                              pixel_neighbors=pixel_neighbors, pixel_neighbors_size=pixel_neighbors_size)
 
     @staticmethod

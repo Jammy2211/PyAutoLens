@@ -82,7 +82,7 @@ class TestResize:
         array = np.ones((7, 7))
         array[3, 3] = 2.0
 
-        modified = array_util.resize_array_2d(array_2d=array, new_shape=(3, 3))
+        modified = array_util.resized_array_2d_from_array_2d_and_resized_shape(array_2d=array, resized_shape=(3, 3))
 
         assert (modified == np.array([[1.0, 1.0, 1.0],
                                       [1.0, 2.0, 1.0],
@@ -92,7 +92,7 @@ class TestResize:
         array = np.ones((7, 7))
         array[3, 3] = 2.0
 
-        modified = array_util.resize_array_2d(array_2d=array, new_shape=(4, 4))
+        modified = array_util.resized_array_2d_from_array_2d_and_resized_shape(array_2d=array, resized_shape=(4, 4))
 
 
         assert (modified == np.array([[1.0, 1.0, 1.0, 1.0],
@@ -105,7 +105,7 @@ class TestResize:
         array = np.ones((6, 6))
         array[2:4, 2:4] = 2.0
 
-        modified = array_util.resize_array_2d(array_2d=array, new_shape=(4, 4))
+        modified = array_util.resized_array_2d_from_array_2d_and_resized_shape(array_2d=array, resized_shape=(4, 4))
 
         assert (modified == np.array([[1.0, 1.0, 1.0, 1.0],
                                       [1.0, 2.0, 2.0, 1.0],
@@ -117,7 +117,7 @@ class TestResize:
         array = np.ones((6, 6))
         array[2:4, 2:4] = 2.0
 
-        modified = array_util.resize_array_2d(array_2d=array, new_shape=(3, 3))
+        modified = array_util.resized_array_2d_from_array_2d_and_resized_shape(array_2d=array, resized_shape=(3, 3))
 
         assert (modified == np.array([[2.0, 2.0, 1.0],
                                       [2.0, 2.0, 1.0],
@@ -127,7 +127,7 @@ class TestResize:
         array = np.ones((5, 4))
         array[2, 1:3] = 2.0
 
-        modified = array_util.resize_array_2d(array_2d=array, new_shape=(3, 2))
+        modified = array_util.resized_array_2d_from_array_2d_and_resized_shape(array_2d=array, resized_shape=(3, 2))
 
         assert (modified == np.array([[1.0, 1.0],
                                       [2.0, 2.0],
@@ -137,7 +137,7 @@ class TestResize:
         array = np.ones((4, 5))
         array[1:3, 2] = 2.0
 
-        modified = array_util.resize_array_2d(array_2d=array, new_shape=(2, 3))
+        modified = array_util.resized_array_2d_from_array_2d_and_resized_shape(array_2d=array, resized_shape=(2, 3))
 
         assert (modified == np.array([[1.0, 2.0, 1.0],
                                       [1.0, 2.0, 1.0]])).all()
@@ -146,28 +146,28 @@ class TestResize:
 
         array = np.ones((7, 7))
         array[4, 4] = 2.0
-        modified = array_util.resize_array_2d(array_2d=array, new_shape=(3, 3), origin=(4, 4))
+        modified = array_util.resized_array_2d_from_array_2d_and_resized_shape(array_2d=array, resized_shape=(3, 3), origin=(4, 4))
         assert (modified == np.array([[1.0, 1.0, 1.0],
                                       [1.0, 2.0, 1.0],
                                       [1.0, 1.0, 1.0]])).all()
 
         array = np.ones((6, 6))
         array[3, 4] = 2.0
-        modified = array_util.resize_array_2d(array_2d=array, new_shape=(3, 3), origin=(3, 4))
+        modified = array_util.resized_array_2d_from_array_2d_and_resized_shape(array_2d=array, resized_shape=(3, 3), origin=(3, 4))
         assert (modified == np.array([[1.0, 1.0, 1.0],
                                       [1.0, 2.0, 1.0],
                                       [1.0, 1.0, 1.0]])).all()
 
         array = np.ones((9, 8))
         array[4, 3] = 2.0
-        modified = array_util.resize_array_2d(array_2d=array, new_shape=(3, 3), origin=(4, 3))
+        modified = array_util.resized_array_2d_from_array_2d_and_resized_shape(array_2d=array, resized_shape=(3, 3), origin=(4, 3))
         assert (modified == np.array([[1.0, 1.0, 1.0],
                                       [1.0, 2.0, 1.0],
                                       [1.0, 1.0, 1.0]])).all()
 
         array = np.ones((8, 9))
         array[3, 5] = 2.0
-        modified = array_util.resize_array_2d(array_2d=array, new_shape=(3, 3), origin=(3, 5))
+        modified = array_util.resized_array_2d_from_array_2d_and_resized_shape(array_2d=array, resized_shape=(3, 3), origin=(3, 5))
         assert (modified == np.array([[1.0, 1.0, 1.0],
                                       [1.0, 2.0, 1.0],
                                       [1.0, 1.0, 1.0]])).all()
@@ -177,7 +177,7 @@ class TestResize:
         array = np.ones((3, 3))
         array[1, 1] = 2.0
 
-        modified = array_util.resize_array_2d(array_2d=array, new_shape=(5, 5))
+        modified = array_util.resized_array_2d_from_array_2d_and_resized_shape(array_2d=array, resized_shape=(5, 5))
 
         assert (modified == np.array([[0.0, 0.0, 0.0, 0.0, 0.0],
                                       [0.0, 1.0, 1.0, 1.0, 0.0],
@@ -190,7 +190,7 @@ class TestResize:
         array = np.ones((3, 3))
         array[1, 1] = 2.0
 
-        modified = array_util.resize_array_2d(array_2d=array, new_shape=(4, 4))
+        modified = array_util.resized_array_2d_from_array_2d_and_resized_shape(array_2d=array, resized_shape=(4, 4))
 
 
         assert (modified == np.array([[0.0, 0.0, 0.0, 0.0],
@@ -203,7 +203,7 @@ class TestResize:
         array = np.ones((4, 4))
         array[1:3, 1:3] = 2.0
 
-        modified = array_util.resize_array_2d(array_2d=array, new_shape=(6, 6))
+        modified = array_util.resized_array_2d_from_array_2d_and_resized_shape(array_2d=array, resized_shape=(6, 6))
 
         assert (modified == np.array([[0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
                                       [0.0, 1.0, 1.0, 1.0, 1.0, 0.0],
@@ -217,7 +217,7 @@ class TestResize:
         array = np.ones((4, 4))
         array[1:3, 1:3] = 2.0
 
-        modified = array_util.resize_array_2d(array_2d=array, new_shape=(5, 5))
+        modified = array_util.resized_array_2d_from_array_2d_and_resized_shape(array_2d=array, resized_shape=(5, 5))
 
         assert (modified == np.array([[1.0, 1.0, 1.0, 1.0, 0.0],
                                       [1.0, 2.0, 2.0, 1.0, 0.0],
@@ -229,7 +229,7 @@ class TestResize:
         array = np.ones((3, 2))
         array[1, 0:2] = 2.0
 
-        modified = array_util.resize_array_2d(array_2d=array, new_shape=(5, 4))
+        modified = array_util.resized_array_2d_from_array_2d_and_resized_shape(array_2d=array, resized_shape=(5, 4))
 
         assert (modified == np.array([[0.0, 0.0, 0.0, 0.0],
                                       [0.0, 1.0, 1.0, 0.0],
@@ -241,7 +241,7 @@ class TestResize:
         array = np.ones((2, 3))
         array[0:2, 1] = 2.0
 
-        modified = array_util.resize_array_2d(array_2d=array, new_shape=(4, 5))
+        modified = array_util.resized_array_2d_from_array_2d_and_resized_shape(array_2d=array, resized_shape=(4, 5))
 
         assert (modified == np.array([[0.0, 0.0, 0.0, 0.0, 0.0],
                                       [0.0, 1.0, 2.0, 1.0, 0.0],
@@ -252,7 +252,7 @@ class TestResize:
 
         array = np.ones((3, 3))
         array[2, 2] = 2.0
-        modified = array_util.resize_array_2d(array_2d=array, new_shape=(5, 5), origin=(2, 2))
+        modified = array_util.resized_array_2d_from_array_2d_and_resized_shape(array_2d=array, resized_shape=(5, 5), origin=(2, 2))
 
         assert (modified == np.array([[1.0, 1.0, 1.0, 0.0, 0.0],
                                       [1.0, 1.0, 1.0, 0.0, 0.0],
@@ -262,7 +262,7 @@ class TestResize:
 
         array = np.ones((2, 3))
         array[0, 0] = 2.0
-        modified = array_util.resize_array_2d(array_2d=array, new_shape=(4, 5), origin=(0, 1))
+        modified = array_util.resized_array_2d_from_array_2d_and_resized_shape(array_2d=array, resized_shape=(4, 5), origin=(0, 1))
 
         assert (modified == np.array([[0.0, 0.0, 0.0, 0.0, 0.0],
                                       [0.0, 0.0, 0.0, 0.0, 0.0],
@@ -273,12 +273,12 @@ class TestResize:
 class TestFits:
 
     def test__numpy_array_from_fits__3x3_all_ones(self):
-        arr = array_util.numpy_array_from_fits(file_path=test_data_dir + '3x3_ones.fits', hdu=0)
+        arr = array_util.numpy_array_2d_from_fits(file_path=test_data_dir + '3x3_ones.fits', hdu=0)
 
         assert (arr == np.ones((3, 3))).all()
 
     def test__numpy_array_from_fits__4x3_all_ones(self):
-        arr = array_util.numpy_array_from_fits(file_path=test_data_dir + '4x3_ones.fits', hdu=0)
+        arr = array_util.numpy_array_2d_from_fits(file_path=test_data_dir + '4x3_ones.fits', hdu=0)
 
         assert (arr == np.ones((4, 3))).all()
 
@@ -289,8 +289,8 @@ class TestFits:
         arr = np.array([[10., 30., 40.],
                         [92., 19., 20.]])
 
-        array_util.numpy_array_to_fits(arr, file_path=test_data_dir + 'test.fits')
+        array_util.numpy_array_2d_to_fits(arr, file_path=test_data_dir + 'test.fits')
 
-        array_load = array_util.numpy_array_from_fits(file_path=test_data_dir + 'test.fits', hdu=0)
+        array_load = array_util.numpy_array_2d_from_fits(file_path=test_data_dir + 'test.fits', hdu=0)
 
         assert (arr == array_load).all()

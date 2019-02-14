@@ -25,7 +25,7 @@ class TestMask:
         assert mask.pixel_scale == 1.0
         assert mask.central_pixel_coordinates == (1.0, 1.5)
         assert mask.shape == (3, 4)
-        assert mask.shape_arc_seconds == (3.0, 4.0)
+        assert mask.shape_arcsec == (3.0, 4.0)
 
     def test__array_finalize__masks_pass_attributes(self):
 
