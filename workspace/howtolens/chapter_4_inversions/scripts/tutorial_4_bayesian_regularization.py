@@ -68,7 +68,8 @@ lens_fit_plotters.plot_fit_subplot(fit=fit)
 # reconstruction goes extremely weird.
 source_galaxy = g.Galaxy(pixelization=pix.Rectangular(shape=(40, 40)), regularization=reg.Constant(coefficients=(0.0,)))
 no_regularization_fit = perform_fit_with_source_galaxy(source_galaxy=source_galaxy)
-lens_fit_plotters.plot_fit_subplot(fit=no_regularization_fit, should_plot_mask=True, zoom_around_mask=True)
+lens_fit_plotters.plot_fit_subplot(fit=no_regularization_fit, should_plot_mask=True, extract_array_from_mask=True,
+                                   zoom_around_mask=True)
 
 # So, what happening here, and why does removing regularization do this to our source reconstruction? When our inversion
 # reconstructs a source, it doesn't *just* compute the set of fluxes that best-fit the image. It is also 'regularized',
@@ -98,7 +99,8 @@ inversion_plotters.plot_reconstructed_pixelization(inversion=no_regularization_f
 source_galaxy = g.Galaxy(pixelization=pix.Rectangular(shape=(40, 40)),
                          regularization=reg.Constant(coefficients=(100.0,)))
 high_regularization_fit = perform_fit_with_source_galaxy(source_galaxy=source_galaxy)
-lens_fit_plotters.plot_fit_subplot(fit=high_regularization_fit, should_plot_mask=True, zoom_around_mask=True)
+lens_fit_plotters.plot_fit_subplot(fit=high_regularization_fit, should_plot_mask=True, extract_array_from_mask=True,
+                                   zoom_around_mask=True)
 
 # So there we have it, we now understand regularization and its purpose. But there is one nagging question that remains,
 # how do I choose the regularization coefficient? We can't use our likelihood, as decreasing the regularization
@@ -165,7 +167,7 @@ print('Previous Bayesian Evidence:')
 print(10395.370224426646)
 print('New Bayesian Evidence:')
 print(fit.evidence)
-lens_fit_plotters.plot_fit_subplot(fit=fit, should_plot_mask=True, zoom_around_mask=True)
+lens_fit_plotters.plot_fit_subplot(fit=fit, should_plot_mask=True, extract_array_from_mask=True, zoom_around_mask=True)
 
 # 2) Can you think of any other ways we might increase the evidence even further? If not - don't worry about - but
 #    you'll learn that PyAutoLens actually adapts its source reconstructions to the properties of the image that it is

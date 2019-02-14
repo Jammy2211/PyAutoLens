@@ -19,7 +19,7 @@ def make_sensitivity_fit_plotter_setup():
 
 @pytest.fixture(name='grid_stack')
 def make_grid_stack():
-    return grids.GridStack.from_shape_pixel_scale_and_sub_grid_size(shape=(100, 100), pixel_scale=0.05, sub_grid_size=2)
+    return grids.GridStack.from_shape_pixel_scale_and_sub_grid_size(shape=(3, 3), pixel_scale=0.05, sub_grid_size=2)
 
 
 @pytest.fixture(name='ccd')
@@ -68,7 +68,8 @@ def make_fit(lens_data):
 
 def test__fit_sub_plot__output_dependent_on_config(fit, sensitivity_fit_plotter_path, plot_patch):
 
-    sensitivity_fit_plotters.plot_fit_subplot(fit=fit, should_plot_mask=True, zoom_around_mask=True,
+    sensitivity_fit_plotters.plot_fit_subplot(fit=fit, should_plot_mask=True, extract_array_from_mask=True,
+                                              zoom_around_mask=True,
                                               output_path=sensitivity_fit_plotter_path, output_format='png')
 
     assert sensitivity_fit_plotter_path + 'sensitivity_fit.png' in plot_patch.paths

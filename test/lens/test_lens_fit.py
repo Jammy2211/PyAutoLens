@@ -746,7 +746,8 @@ class TestLensProfileHyperFit:
 
             assert fit.likelihood == -0.5 * (chi_squared + noise_normalization)
 
-        def test__hyper_galaxy_adds_to_noise_normalization_for_scaled_noise__chi_squared_nonzero(self, lens_data_hyper_no_blur):
+        def test__hyper_galaxy_adds_to_noise_normalization_for_scaled_noise__chi_squared_nonzero(self,
+                                                                                                 lens_data_hyper_no_blur):
 
             lens_data_hyper_no_blur.image[1:3,1:3] = 2.0
 
@@ -787,8 +788,8 @@ class TestLensProfileHyperFit:
             padded_tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g0],
                                                                image_plane_grid_stack=lens_data_hyper_manual.padded_grid_stack)
 
-            fit = lens_fit.fit_lens_data_with_tracer(lens_data=lens_data_hyper_manual, tracer=tracer,
-                                                     padded_tracer=padded_tracer)
+            fit = lens_fit.hyper_fit_lens_data_with_tracer(lens_data_hyper=lens_data_hyper_manual, tracer=tracer,
+                                                           padded_tracer=padded_tracer)
 
             contributions_1d = util.contribution_maps_1d_from_hyper_images_and_galaxies(
                 hyper_model_image_1d=lens_data_hyper_manual.hyper_model_image_1d,
@@ -891,7 +892,7 @@ class TestLensInversionHyperFit:
                                                          image_plane_grid_stack=lens_data_hyper_manual.grid_stack,
                                                          border=None)
 
-            fit = lens_fit.fit_lens_data_with_tracer(lens_data=lens_data_hyper_manual, tracer=tracer)
+            fit = lens_fit.hyper_fit_lens_data_with_tracer(lens_data_hyper=lens_data_hyper_manual, tracer=tracer)
 
             contributions_1d = util.contribution_maps_1d_from_hyper_images_and_galaxies(
                 hyper_model_image_1d=lens_data_hyper_manual.hyper_model_image_1d,
@@ -974,7 +975,7 @@ class TestLensProfileInversionHyperFit:
                                                          image_plane_grid_stack=lens_data_hyper_manual.grid_stack,
                                                          border=None)
 
-            fit = lens_fit.fit_lens_data_with_tracer(lens_data=lens_data_hyper_manual, tracer=tracer)
+            fit = lens_fit.hyper_fit_lens_data_with_tracer(lens_data_hyper=lens_data_hyper_manual, tracer=tracer)
 
             contributions_1d = util.contribution_maps_1d_from_hyper_images_and_galaxies(
                 hyper_model_image_1d=lens_data_hyper_manual.hyper_model_image_1d,

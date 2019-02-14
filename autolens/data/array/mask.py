@@ -37,6 +37,14 @@ class Mask(scaled_array.ScaledSquarePixelArray):
         self.centre = centre
         super(Mask, self).__init__(array=array, pixel_scale=pixel_scale, origin=origin)
 
+    def __array_finalize__(self, obj):
+        if hasattr(obj, "pixel_scale"):
+            self.pixel_scale = obj.pixel_scale
+        if hasattr(obj, "centre"):
+            self.centre = obj.centre
+        if hasattr(obj, 'origin'):
+            self.origin = obj.origin
+
     def __getitem__(self, coords):
         try:
             return super(Mask, self).__getitem__(coords)

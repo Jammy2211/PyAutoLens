@@ -59,8 +59,8 @@ def make_pipeline(pipeline_path=''):
     # actually use on phases by themselves like in the previous chapter).
 
     def mask_function(image):
-        return msk.Mask.circular_anti_annular(image.shape, pixel_scale=image.pixel_scale, inner_radius_arcsec=0.5,
-                                               outer_radius_arcsec=1.6, outer_radius_2_arcsec=2.5)
+        return msk.Mask.circular_anti_annular(shape=image.shape, pixel_scale=image.pixel_scale, inner_radius_arcsec=0.5,
+                                              outer_radius_arcsec=1.6, outer_radius_2_arcsec=2.5)
 
     # We next create the phase, using the same notation we learnt before (but noting the masks function is passed to
     # this phase ensuring the anti-annular masks above is used).
@@ -84,9 +84,9 @@ def make_pipeline(pipeline_path=''):
 
     # We can use the mask function again, to modify the mask to an annulus. We'll use the same ring radii as before.
 
-    def mask_function(img):
-        return msk.Mask.circular_annular(img.shape, pixel_scale=img.pixel_scale, inner_radius_arcsec=0.5,
-                                          outer_radius_arcsec=3.)
+    def mask_function(image):
+        return msk.Mask.circular_annular(shape=image.shape, pixel_scale=image.pixel_scale, inner_radius_arcsec=0.5,
+                                         outer_radius_arcsec=3.)
 
     # To modify an image, we call a new function, 'modify image'. This function behaves like the pass-priors functions
     # before, whereby we create a python 'class' in a Phase to set it up.  This ensures it has access to the pipeline's

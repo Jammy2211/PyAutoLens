@@ -27,6 +27,21 @@ class TestMask:
         assert mask.shape == (3, 4)
         assert mask.shape_arc_seconds == (3.0, 4.0)
 
+    def test__array_finalize__masks_pass_attributes(self):
+
+        mask = np.array([[True, True, True, True],
+                        [True, False, False, True],
+                        [True, True, True, True]])
+
+        mask = msk.Mask(mask, pixel_scale=1)
+
+        mask_new = mask + mask
+
+        assert mask_new.pixel_scale == 1.0
+        assert mask_new.origin == (0.0, 0.0)
+        assert mask_new.centre == (0.0, 0.0)
+
+
 class TestMaskShapes:
 
     def test__mask_all_unmasked__5x5__input__all_are_false(self):
