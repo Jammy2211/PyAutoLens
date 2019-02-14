@@ -475,12 +475,12 @@ class PoissonNoiseMap(NoiseMap):
     def from_image_and_exposure_time_map(cls, pixel_scale, image, exposure_time_map, gain=None,
                                          convert_from_electrons=False, convert_from_adus=False):
         if not convert_from_electrons and not convert_from_adus:
-            return PoissonNoiseMap(array=np.sqrt((image)*exposure_time_map) / (exposure_time_map),
+            return PoissonNoiseMap(array=np.sqrt(np.abs(image)*exposure_time_map) / (exposure_time_map),
                                    pixel_scale=pixel_scale)
         elif convert_from_electrons:
-            return PoissonNoiseMap(array=np.sqrt(image), pixel_scale=pixel_scale)
+            return PoissonNoiseMap(array=np.sqrt(np.abs(image)), pixel_scale=pixel_scale)
         elif convert_from_adus:
-            return NoiseMap(array=np.sqrt(gain*image) / gain, pixel_scale=pixel_scale)
+            return NoiseMap(array=np.sqrt(gain*np.abs(image)) / gain, pixel_scale=pixel_scale)
 
 
 class PSF(ScaledSquarePixelArray):
@@ -501,7 +501,7 @@ class PSF(ScaledSquarePixelArray):
         # noinspection PyArgumentList
         super().__init__(array=array, pixel_scale=pixel_scale)
         if renormalize:
-            self.renormalize()
+            self[:,:] = np.divide(self, np.sum(self))
 
     @classmethod
     def simulate_as_gaussian(cls, shape, pixel_scale, sigma, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0):
@@ -551,7 +551,7 @@ class PSF(ScaledSquarePixelArray):
             A renormalized PSF instance
         """
         psf = PSF.from_fits_with_scale(file_path, hdu, pixel_scale)
-        psf.renormalize()
+        psf[:,:] = np.divide(psf, np.sum(psf))
         return psf
 
     @classmethod
@@ -569,9 +569,9 @@ class PSF(ScaledSquarePixelArray):
         """
         return cls(array=array_util.numpy_array_from_fits(file_path, hdu), pixel_scale=pixel_scale)
 
-    def renormalize(self):
+    def new_psf_with_renormalized_array(self):
         """Renormalize the PSF such that its data_vector values sum to unity."""
-        self[:, :] = np.divide(self, np.sum(self))
+        return PSF(array=self, pixel_scale=self.pixel_scale, renormalize=True)
 
     def convolve(self, array):
         """
@@ -600,8 +600,8 @@ class PSF(ScaledSquarePixelArray):
 class ExposureTimeMap(ScaledSquarePixelArray):
 
     @classmethod
-    def from_exposure_time_and_background_noise_map(cls, pixel_scale, exposure_time, background_noise_map):
-        relative_background_noise_map = background_noise_map / np.max(background_noise_map)
+    def from_exposure_time_and_inverse_noise_map(cls, pixel_scale, exposure_time, inverse_noise_map):
+        relative_background_noise_map = inverse_noise_map / np.max(inverse_noise_map)
         return ExposureTimeMap(array=np.abs(exposure_time * (relative_background_noise_map)), pixel_scale=pixel_scale)
 
 
@@ -662,7 +662,7 @@ def load_ccd_data_from_fits(image_path, pixel_scale, image_hdu=0,
                             convert_poisson_noise_map_from_inverse_noise_map=False,
                             exposure_time_map_path=None, exposure_time_map_hdu=0,
                             exposure_time_map_from_single_value=None,
-                            exposure_time_map_from_background_noise_map=False,
+                            exposure_time_map_from_inverse_noise_map=False,
                             background_sky_map_path=None, background_sky_map_hdu=0,
                             convert_from_electrons=False,
                             gain=None, convert_from_adus=False):
@@ -741,7 +741,7 @@ def load_ccd_data_from_fits(image_path, pixel_scale, image_hdu=0,
     exposure_time_map_from_single_value : float
         The exposure time of the ccd imaging, which is used to compute the exposure-time map as a single value \
         (see *ExposureTimeMap.from_single_value*).
-    exposure_time_map_from_background_noise_map : bool
+    exposure_time_map_from_inverse_noise_map : bool
         If True, the exposure-time map is computed from the background noise_map map \
         (see *ExposureTimeMap.from_background_noise_map*)
     background_sky_map_path : str
@@ -767,12 +767,17 @@ def load_ccd_data_from_fits(image_path, pixel_scale, image_hdu=0,
              convert_background_noise_map_from_weight_map=convert_background_noise_map_from_weight_map,
              convert_background_noise_map_from_inverse_noise_map=convert_background_noise_map_from_inverse_noise_map)
 
+    if background_noise_map is not None:
+        inverse_noise_map = 1.0 / background_noise_map
+    else:
+        inverse_noise_map = None
+
     exposure_time_map = load_exposure_time_map(exposure_time_map_path=exposure_time_map_path,
-                           exposure_time_map_hdu=exposure_time_map_hdu,
-                           pixel_scale=pixel_scale, shape=image.shape,
-                           exposure_time=exposure_time_map_from_single_value,
-                           exposure_time_map_from_background_noise_map=exposure_time_map_from_background_noise_map,
-                           background_noise_map=background_noise_map)
+                                               exposure_time_map_hdu=exposure_time_map_hdu,
+                                               pixel_scale=pixel_scale, shape=image.shape,
+                                               exposure_time=exposure_time_map_from_single_value,
+                                               exposure_time_map_from_inverse_noise_map=exposure_time_map_from_inverse_noise_map,
+                                               inverse_noise_map=inverse_noise_map)
 
     poisson_noise_map = load_poisson_noise_map(poisson_noise_map_path=poisson_noise_map_path,
                                                poisson_noise_map_hdu=poisson_noise_map_hdu,
@@ -1054,7 +1059,7 @@ def load_psf(psf_path, psf_hdu, pixel_scale, renormalize=False):
         return PSF.from_fits_with_scale(file_path=psf_path, hdu=psf_hdu, pixel_scale=pixel_scale)
 
 def load_exposure_time_map(exposure_time_map_path, exposure_time_map_hdu, pixel_scale, shape, exposure_time,
-                           exposure_time_map_from_background_noise_map, background_noise_map):
+                           exposure_time_map_from_inverse_noise_map, inverse_noise_map):
     """Factory for loading the exposure time map from a .fits file.
 
     This factory also includes a number of routines for computing the exposure-time map from other unblurred_image_1d \
@@ -1073,13 +1078,13 @@ def load_exposure_time_map(exposure_time_map_path, exposure_time_map_hdu, pixel_
         The shape of the image, required if a single value is used to calculate the exposure time map.
     exposure_time : float
         The exposure-time used to compute the expsure-time map if only a single value is used.
-    exposure_time_map_from_background_noise_map : bool
+    exposure_time_map_from_inverse_noise_map : bool
         If True, the exposure-time map is computed from the background noise_map map \
         (see *ExposureTimeMap.from_background_noise_map*)
-    background_noise_map : ndarray
+    inverse_noise_map : ndarray
         The background noise-map, which the Poisson noise-map can be calculated using.
     """
-    exposure_time_map_options = sum([exposure_time_map_from_background_noise_map])
+    exposure_time_map_options = sum([exposure_time_map_from_inverse_noise_map])
 
     if exposure_time is not None and exposure_time_map_path is not None:
         raise exc.ImagingException('You have supplied both a exposure_time_map_path to an exposure time map and an exposure time. Only'
@@ -1094,9 +1099,10 @@ def load_exposure_time_map(exposure_time_map_path, exposure_time_map_hdu, pixel_
 
     else:
 
-        if exposure_time_map_from_background_noise_map:
-            return ExposureTimeMap.from_exposure_time_and_background_noise_map(pixel_scale=pixel_scale,
-                   exposure_time=exposure_time, background_noise_map=background_noise_map)
+        if exposure_time_map_from_inverse_noise_map:
+            return ExposureTimeMap.from_exposure_time_and_inverse_noise_map(pixel_scale=pixel_scale,
+                                                                            exposure_time=exposure_time,
+                                                                            inverse_noise_map=inverse_noise_map)
 
 def load_background_sky_map(background_sky_map_path, background_sky_map_hdu, pixel_scale):
     """Factory for loading the background sky from a .fits file.

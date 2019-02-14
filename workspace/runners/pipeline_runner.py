@@ -4,17 +4,17 @@ from autolens.data.plotters import ccd_plotters
 
 import os
 
-# Welcome to the pipeline runner. This tool allows you to load data on strong lenses, and pass it to pipelines for a
+# Welcome to the pipeline runner. This tool allows you to load strong lens data, and pass it to pipelines for a
 # PyAutoLens analysis. To show you around, we'll load up some example data and run it through some of the example
 # pipelines that come distributed with PyAutoLens.
 
 # The runner is supplied as both this Python script and a Juypter notebook. Its up to you which you use - I personally
 # prefer the python script as provided you keep it relatively small, its quick and easy to comment out different lens
-# names and pipelines to set off different analyses. However, notebooks are a tidier way to manage visualization - so
+# names and pipelines to perform different analyses. However, notebooks are a tidier way to manage visualization - so
 # feel free to use notebooks. Or, use both for a bit, and decide your favourite!
 
 # The pipeline runner is fairly self explanatory. Make sure to checkout the pipelines in the
-#  _workspace/pipelines/examples/_ folder - they come with detailed descriptions of what they do. I hope that you'll
+#  workspace/pipelines/examples/ folder - they come with detailed descriptions of what they do. I hope that you'll
 # expand on them for your own personal scientific needs
 
 # Get the relative path to the config files and output folder in our workspace.

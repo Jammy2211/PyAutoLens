@@ -23,34 +23,43 @@ def fit_lens_data_with_tracer(lens_data, tracer, padded_tracer=None):
     """
 
     if tracer.has_light_profile and not tracer.has_pixelization:
-
-        if not tracer.has_hyper_galaxy:
-            return LensProfileFit(lens_data=lens_data, tracer=tracer, padded_tracer=padded_tracer)
-        elif tracer.has_hyper_galaxy:
-            return LensProfileHyperFit(lens_data_hyper=lens_data, tracer=tracer,
-                                       padded_tracer=padded_tracer)
-
+        return LensProfileFit(lens_data=lens_data, tracer=tracer, padded_tracer=padded_tracer)
     elif not tracer.has_light_profile and tracer.has_pixelization:
-
-        if not tracer.has_hyper_galaxy:
-            return LensInversionFit(lens_data=lens_data, tracer=tracer)
-        elif tracer.has_hyper_galaxy:
-            return LensInversionHyperFit(lens_data_hyper=lens_data, tracer=tracer)
-
+        return LensInversionFit(lens_data=lens_data, tracer=tracer)
     elif tracer.has_light_profile and tracer.has_pixelization:
-
-        if not tracer.has_hyper_galaxy:
-            return LensProfileInversionFit(lens_data=lens_data, tracer=tracer,
+        return LensProfileInversionFit(lens_data=lens_data, tracer=tracer,
                                            padded_tracer=padded_tracer)
-        elif tracer.has_hyper_galaxy:
-            return LensProfileInversionHyperFit(lens_data_hyper=lens_data, tracer=tracer,
-                                                padded_tracer=padded_tracer)
-
     else:
-
         raise exc.FittingException('The fit routine did not call a Fit class - check the '
                                    'properties of the tracer')
 
+def hyper_fit_lens_data_with_tracer(lens_data_hyper, tracer, padded_tracer=None):
+    """Fit lens data with a model tracer, automatically determining the type of fit based on the \
+    properties of the galaxies in the tracer.
+
+    Parameters
+    -----------
+    lens_data_hyper : lens_data.LensData or lens_data.LensDataHyper
+        The lens-images that is fitted.
+    tracer : ray_tracing.AbstractTracerNonStack
+        The tracer, which describes the ray-tracing and strong lens configuration.
+    padded_tracer : ray_tracing.Tracer or None
+        A tracer with an identical strong lens configuration to the tracer above, but using the lens data's \
+        padded grid_stack such that unmasked model-images can be computed.
+    """
+
+    if tracer.has_light_profile and not tracer.has_pixelization:
+        return LensProfileHyperFit(lens_data_hyper=lens_data_hyper, tracer=tracer, padded_tracer=padded_tracer)
+
+    elif not tracer.has_light_profile and tracer.has_pixelization:
+        return LensInversionHyperFit(lens_data_hyper=lens_data_hyper, tracer=tracer)
+
+    elif tracer.has_light_profile and tracer.has_pixelization:
+        return LensProfileInversionHyperFit(lens_data_hyper=lens_data_hyper, tracer=tracer,
+                                            padded_tracer=padded_tracer)
+    else:
+        raise exc.FittingException('The hyper fit routine did not call a Fit class - check the '
+                                   'properties of the tracer')
 
 class AbstractLensFit(object):
 

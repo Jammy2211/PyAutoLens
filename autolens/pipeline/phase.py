@@ -313,6 +313,8 @@ class Phase(AbstractPhase):
 
             self.should_plot_mask = \
                 conf.instance.general.get('output', 'plot_mask_on_images', bool)
+            self.extract_array_from_mask = \
+                conf.instance.general.get('output', 'extract_images_from_mask', bool)
             self.zoom_around_mask = \
                 conf.instance.general.get('output', 'zoom_around_mask_of_images', bool)
             self.should_plot_positions = \
@@ -649,10 +651,6 @@ class PhaseImaging(Phase):
 
             self.plot_count += 1
 
-            tracer = self.tracer_for_instance(instance)
-            padded_tracer = self.padded_tracer_for_instance(instance)
-            fit = self.fit_for_tracers(tracer=tracer, padded_tracer=padded_tracer)
-
             if self.should_plot_mask:
                 mask = self.lens_data.mask
             else:
@@ -666,14 +664,14 @@ class PhaseImaging(Phase):
             if self.plot_data_as_subplot:
 
                 ccd_plotters.plot_ccd_subplot(
-                    ccd_data=self.lens_data.ccd_data, mask=mask, zoom_around_mask=self.zoom_around_mask,
-                    positions=positions,
+                    ccd_data=self.lens_data.ccd_data, mask=mask, extract_array_from_mask=self.extract_array_from_mask,
+                    zoom_around_mask=self.zoom_around_mask, positions=positions,
                     units=self.plot_units,
                     output_path=self.output_image_path, output_format='png')
 
             ccd_plotters.plot_ccd_individual(
-                ccd_data=self.lens_data.ccd_data, mask=mask, zoom_around_mask=self.zoom_around_mask,
-                positions=positions,
+                ccd_data=self.lens_data.ccd_data, mask=mask, extract_array_from_mask=self.extract_array_from_mask,
+                zoom_around_mask=self.zoom_around_mask, positions=positions,
                 should_plot_image=self.plot_data_image,
                 should_plot_noise_map=self.plot_data_noise_map,
                 should_plot_psf=self.plot_data_psf,
@@ -681,17 +679,25 @@ class PhaseImaging(Phase):
                 units=self.plot_units,
                 output_path=self.output_image_path, output_format='png')
 
+
+            tracer = self.tracer_for_instance(instance)
+            padded_tracer = self.padded_tracer_for_instance(instance)
+
             if self.plot_ray_tracing_as_subplot:
 
                 ray_tracing_plotters.plot_ray_tracing_subplot(
-                    tracer=tracer, mask=mask, zoom_around_mask=self.zoom_around_mask, positions=positions,
+                    tracer=tracer, mask=mask, extract_array_from_mask=self.extract_array_from_mask,
+                    zoom_around_mask=self.zoom_around_mask, positions=positions,
                     units=self.plot_units,
                     output_path=self.output_image_path, output_format='png')
+
+            fit = self.fit_for_tracers(tracer=tracer, padded_tracer=padded_tracer)
 
             if self.plot_lens_fit_as_subplot:
 
                 lens_fit_plotters.plot_fit_subplot(
-                    fit=fit, should_plot_mask=self.should_plot_mask, zoom_around_mask=self.zoom_around_mask,
+                    fit=fit, should_plot_mask=self.should_plot_mask,
+                    extract_array_from_mask=self.extract_array_from_mask, zoom_around_mask=self.zoom_around_mask,
                     positions=positions, should_plot_image_plane_pix=self.should_plot_image_plane_pix,
                     units=self.plot_units,
                     output_path=self.output_image_path, output_format='png')
@@ -699,7 +705,8 @@ class PhaseImaging(Phase):
             if during_analysis:
 
                 ray_tracing_plotters.plot_ray_tracing_individual(
-                    tracer=tracer, mask=mask, zoom_around_mask=self.zoom_around_mask, positions=positions,
+                    tracer=tracer, mask=mask, extract_array_from_mask=self.extract_array_from_mask,
+                    zoom_around_mask=self.zoom_around_mask, positions=positions,
                     should_plot_image_plane_image=self.plot_ray_tracing_image_plane_image,
                     should_plot_source_plane=self.plot_ray_tracing_source_plane,
                     should_plot_surface_density=self.plot_ray_tracing_surface_density,
@@ -709,8 +716,12 @@ class PhaseImaging(Phase):
                     output_path=self.output_image_path, output_format='png')
 
                 lens_fit_plotters.plot_fit_individuals(
-                    fit=fit, should_plot_mask=self.should_plot_mask, zoom_around_mask=self.zoom_around_mask,
+                    fit=fit, should_plot_mask=self.should_plot_mask,
+                    extract_array_from_mask=self.extract_array_from_mask,zoom_around_mask=self.zoom_around_mask,
                     positions=positions, should_plot_image_plane_pix=self.should_plot_image_plane_pix,
+                    should_plot_image=self.plot_lens_fit_image,
+                    should_plot_noise_map=self.plot_lens_fit_noise_map,
+                    should_plot_signal_to_noise_map=self.plot_lens_fit_signal_to_noise_map,
                     should_plot_lens_subtracted_image=self.plot_lens_fit_lens_subtracted_image,
                     should_plot_model_image=self.plot_lens_fit_model_image,
                     should_plot_lens_model_image=self.plot_lens_fit_lens_model_image,
@@ -726,7 +737,8 @@ class PhaseImaging(Phase):
                 if self.plot_ray_tracing_all_at_end_png:
 
                     ray_tracing_plotters.plot_ray_tracing_individual(
-                        tracer=tracer, mask=mask, zoom_around_mask=self.zoom_around_mask, positions=positions,
+                        tracer=tracer, mask=mask, extract_array_from_mask=self.extract_array_from_mask,
+                        zoom_around_mask=self.zoom_around_mask, positions=positions,
                         should_plot_image_plane_image=True,
                         should_plot_source_plane=True,
                         should_plot_surface_density=True,
@@ -738,7 +750,8 @@ class PhaseImaging(Phase):
                 if self.plot_ray_tracing_all_at_end_fits:
 
                     ray_tracing_plotters.plot_ray_tracing_individual(
-                        tracer=tracer, mask=mask, zoom_around_mask=self.zoom_around_mask, positions=positions,
+                        tracer=tracer, mask=mask, extract_array_from_mask=self.extract_array_from_mask,
+                        zoom_around_mask=self.zoom_around_mask, positions=positions,
                         should_plot_image_plane_image=True,
                         should_plot_source_plane=True,
                         should_plot_surface_density=True,
@@ -749,8 +762,12 @@ class PhaseImaging(Phase):
                 if self.plot_lens_fit_all_at_end_png:
 
                     lens_fit_plotters.plot_fit_individuals(
-                        fit=fit, should_plot_mask=self.should_plot_mask, zoom_around_mask=self.zoom_around_mask,
+                        fit=fit, should_plot_mask=self.should_plot_mask,
+                        extract_array_from_mask=self.extract_array_from_mask, zoom_around_mask=self.zoom_around_mask,
                         positions=positions, should_plot_image_plane_pix=self.should_plot_image_plane_pix,
+                        should_plot_image=True,
+                        should_plot_noise_map=True,
+                        should_plot_signal_to_noise_map=True,
                         should_plot_lens_subtracted_image=True,
                         should_plot_model_image=True,
                         should_plot_lens_model_image=True,
@@ -764,8 +781,12 @@ class PhaseImaging(Phase):
                 if self.plot_lens_fit_all_at_end_fits:
 
                     lens_fit_plotters.plot_fit_individuals(
-                        fit=fit, should_plot_mask=self.should_plot_mask, zoom_around_mask=self.zoom_around_mask,
+                        fit=fit, should_plot_mask=self.should_plot_mask,
+                        extract_array_from_mask=self.extract_array_from_mask, zoom_around_mask=self.zoom_around_mask,
                         positions=positions, should_plot_image_plane_pix=self.should_plot_image_plane_pix,
+                        should_plot_image=True,
+                        should_plot_noise_map=True,
+                        should_plot_signal_to_noise_map=True,
                         should_plot_lens_subtracted_image=True,
                         should_plot_model_image=True,
                         should_plot_lens_model_image=True,
@@ -1466,6 +1487,13 @@ class SensitivityPhase(PhaseImaging):
                 "\nRunning lens/source lens for... \n\nLens Galaxy:\n{}\n\nSource Galaxy:\n{}\n\n Sensitive "
                 "Galaxy\n{}\n\n "
                 "".format(instance.lens_galaxies, instance.source_galaxies, instance.sensitive_galaxies))
+
+
+class HyperAnalysis(object):
+
+    def __init__(self):
+
+        pass
 
 
 def make_path_if_does_not_exist(path):

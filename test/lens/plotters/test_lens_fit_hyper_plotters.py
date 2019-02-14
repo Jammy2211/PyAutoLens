@@ -104,14 +104,14 @@ def make_lens_hyper_image(image, mask, hyper):
 def make_fit_hyper_lens_only(lens_hyper_image, hyper):
     tracer = ray_tracing.TracerImagePlane(lens_galaxies=[hyper.hyper_galaxy],
                                           image_plane_grid_stack=lens_hyper_image.grid_stack)
-    return lens_fit.fit_lens_data_with_tracer(lens_data=lens_hyper_image, tracer=tracer)
+    return lens_fit.hyper_fit_lens_data_with_tracer(lens_data_hyper=lens_hyper_image, tracer=tracer)
 
 
 def test__fit_sub_plot_hyper_lens_only(fit_lens_only, fit_hyper_lens_only, plot_patch,
                                                                    lens_fit_plotter_path):
 
     lens_fit_hyper_plotters.plot_fit_subplot(fit_hyper=fit_hyper_lens_only, fit=fit_lens_only, should_plot_mask=True,
-                                             zoom_around_mask=True,
+                                             extract_array_from_mask=True, zoom_around_mask=True,
                                              output_path=lens_fit_plotter_path,
                                              output_filename='hyper_lens_fit', output_format='png')
 
@@ -122,7 +122,8 @@ def test__fit_individuals__hyper_lens_only__depedent_on_input(fit_hyper_lens_onl
                                                                lens_fit_plotter_path):
 
     lens_fit_hyper_plotters.plot_fit_individuals(fit_hyper=fit_hyper_lens_only, fit=fit_lens_only,
-                                                 should_plot_mask=True, zoom_around_mask=True,
+                                                 should_plot_mask=True, extract_array_from_mask=True,
+                                                 zoom_around_mask=True,
                                                  should_plot_noise_map=True,
                                                  should_plot_model_image=True,
                                                  should_plot_chi_squared_map=True,

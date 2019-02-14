@@ -24,7 +24,7 @@ def make_positions():
 
 @pytest.fixture(name='grid_stack')
 def make_grid_stack():
-    return grids.GridStack.from_shape_pixel_scale_and_sub_grid_size(shape=(100, 100), pixel_scale=0.05, sub_grid_size=2)
+    return grids.GridStack.from_shape_pixel_scale_and_sub_grid_size(shape=(3, 3), pixel_scale=0.05, sub_grid_size=2)
 
 @pytest.fixture(name='mask')
 def make_mask():
@@ -33,7 +33,8 @@ def make_mask():
 def test__intensities_is_output(light_profile, grid_stack, mask, positions, profile_plotter_path, plot_patch):
     
     profile_plotters.plot_intensities(light_profile=light_profile, grid=grid_stack.regular,
-                                      mask=mask, zoom_around_mask=True, positions=positions,
+                                      mask=mask, extract_array_from_mask=True, zoom_around_mask=True,
+                                      positions=positions,
                                       output_path=profile_plotter_path, output_format='png')
     
     assert profile_plotter_path + 'intensities.png' in plot_patch.paths
@@ -42,7 +43,8 @@ def test__intensities_is_output(light_profile, grid_stack, mask, positions, prof
 def test__surface_density_is_output(mass_profile, grid_stack, mask, positions, profile_plotter_path, plot_patch):
     
     profile_plotters.plot_surface_density(mass_profile=mass_profile, grid=grid_stack.regular,
-                                          mask=mask, zoom_around_mask=True, positions=positions,
+                                          mask=mask, extract_array_from_mask=True, zoom_around_mask=True,
+                                          positions=positions,
                                           output_path=profile_plotter_path, output_format='png')
     
     assert profile_plotter_path + 'surface_density.png' in plot_patch.paths
@@ -51,7 +53,8 @@ def test__surface_density_is_output(mass_profile, grid_stack, mask, positions, p
 def test__potential_is_output(mass_profile, grid_stack, mask, positions, profile_plotter_path, plot_patch):
     
     profile_plotters.plot_potential(mass_profile=mass_profile, grid=grid_stack.regular,
-                                    mask=mask, zoom_around_mask=True, positions=positions,
+                                    mask=mask, extract_array_from_mask=True, zoom_around_mask=True,
+                                    positions=positions,
                                     output_path=profile_plotter_path, output_format='png')
     
     assert profile_plotter_path + 'potential.png' in plot_patch.paths
@@ -60,7 +63,8 @@ def test__potential_is_output(mass_profile, grid_stack, mask, positions, profile
 def test__deflections_y_is_output(mass_profile, grid_stack, mask, positions, profile_plotter_path, plot_patch):
     
     profile_plotters.plot_deflections_y(mass_profile=mass_profile, grid=grid_stack.regular,
-                                        mask=mask, zoom_around_mask=True, positions=positions,
+                                        mask=mask, extract_array_from_mask=True, zoom_around_mask=True,
+                                        positions=positions,
                                         output_path=profile_plotter_path, output_format='png')
     
     assert profile_plotter_path + 'deflections_y.png' in plot_patch.paths
@@ -69,7 +73,8 @@ def test__deflections_y_is_output(mass_profile, grid_stack, mask, positions, pro
 def test__deflections_x_is_output(mass_profile, grid_stack, mask, positions, profile_plotter_path, plot_patch):
     
     profile_plotters.plot_deflections_x(mass_profile=mass_profile, grid=grid_stack.regular,
-                                        mask=mask, zoom_around_mask=True, positions=positions,
+                                        mask=mask, extract_array_from_mask=True, zoom_around_mask=True,
+                                        positions=positions,
                                         output_path=profile_plotter_path, output_format='png')
     
     assert profile_plotter_path + 'deflections_x.png' in plot_patch.paths

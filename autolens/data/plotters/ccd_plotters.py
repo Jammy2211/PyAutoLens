@@ -6,7 +6,8 @@ from autolens.data.array.plotters import plotter_util
 
 
 def plot_ccd_subplot(
-        ccd_data, plot_origin=True, mask=None, zoom_around_mask=False, should_plot_border=False, positions=None,
+        ccd_data, plot_origin=True, mask=None, extract_array_from_mask=False, zoom_around_mask=False,
+        should_plot_border=False, positions=None,
         units='arcsec', kpc_per_arcsec=None, figsize=None, aspect='equal',
         cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
         cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
@@ -41,8 +42,8 @@ def plot_ccd_subplot(
     plt.subplot(rows, columns, 1)
 
     plot_image(
-        ccd_data=ccd_data, plot_origin=plot_origin, mask=mask, zoom_around_mask=zoom_around_mask,
-        should_plot_border=should_plot_border, positions=positions, as_subplot=True,
+        ccd_data=ccd_data, plot_origin=plot_origin, mask=mask, extract_array_from_mask=extract_array_from_mask,
+        zoom_around_mask=zoom_around_mask, should_plot_border=should_plot_border, positions=positions, as_subplot=True,
         units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
         cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
         cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
@@ -53,8 +54,8 @@ def plot_ccd_subplot(
     plt.subplot(rows, columns, 2)
 
     plot_noise_map(
-        ccd_data=ccd_data, plot_origin=plot_origin, mask=mask, zoom_around_mask=zoom_around_mask,
-        as_subplot=True,
+        ccd_data=ccd_data, plot_origin=plot_origin, mask=mask, extract_array_from_mask=extract_array_from_mask,
+        zoom_around_mask=zoom_around_mask, as_subplot=True,
         units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
         cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
         cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
@@ -75,8 +76,8 @@ def plot_ccd_subplot(
     plt.subplot(rows, columns, 4)
 
     plot_signal_to_noise_map(
-        ccd_data=ccd_data, plot_origin=plot_origin, mask=mask, zoom_around_mask=zoom_around_mask,
-        as_subplot=True,
+        ccd_data=ccd_data, plot_origin=plot_origin, mask=mask, extract_array_from_mask=extract_array_from_mask,
+        zoom_around_mask=zoom_around_mask, as_subplot=True,
         units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
         cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
         cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
@@ -91,7 +92,7 @@ def plot_ccd_subplot(
 
 
 def plot_ccd_individual(
-        ccd_data, plot_origin=True, mask=None, zoom_around_mask=False, positions=None,
+        ccd_data, plot_origin=True, mask=None, extract_array_from_mask=False, zoom_around_mask=False, positions=None,
         should_plot_image=False,
         should_plot_noise_map=False,
         should_plot_psf=False,
@@ -114,15 +115,16 @@ def plot_ccd_individual(
     if should_plot_image:
 
         plot_image(
-            ccd_data=ccd_data, plot_origin=plot_origin, mask=mask, zoom_around_mask=zoom_around_mask,
-            positions=positions,
+            ccd_data=ccd_data, plot_origin=plot_origin, mask=mask, extract_array_from_mask=extract_array_from_mask,
+            zoom_around_mask=zoom_around_mask, positions=positions,
             units=units,
             output_path=output_path, output_format=output_format)
 
     if should_plot_noise_map:
 
         plot_noise_map(
-            ccd_data=ccd_data, plot_origin=plot_origin, mask=mask, zoom_around_mask=zoom_around_mask,
+            ccd_data=ccd_data, plot_origin=plot_origin, mask=mask, extract_array_from_mask=extract_array_from_mask,
+            zoom_around_mask=zoom_around_mask,
             units=units,
             output_path=output_path, output_format=output_format)
 
@@ -135,13 +137,15 @@ def plot_ccd_individual(
     if should_plot_signal_to_noise_map:
 
         plot_signal_to_noise_map(
-            ccd_data=ccd_data, plot_origin=plot_origin, mask=mask, zoom_around_mask=zoom_around_mask,
+            ccd_data=ccd_data, plot_origin=plot_origin, mask=mask, extract_array_from_mask=extract_array_from_mask,
+            zoom_around_mask=zoom_around_mask,
             units=units,
             output_path=output_path, output_format=output_format)
 
 
 def plot_image(
-        ccd_data, plot_origin=True, mask=None, zoom_around_mask=False, should_plot_border=False, positions=None,
+        ccd_data, plot_origin=True, mask=None, extract_array_from_mask=False, zoom_around_mask=False,
+        should_plot_border=False, positions=None,
         as_subplot=False,
         units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
         cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
@@ -164,8 +168,9 @@ def plot_image(
         over the immage.
     """
     data_plotters.plot_image(
-        image=ccd_data.image, plot_origin=plot_origin, mask=mask, zoom_around_mask=zoom_around_mask,
-        should_plot_border=should_plot_border, positions=positions, as_subplot=as_subplot,
+        image=ccd_data.image, plot_origin=plot_origin, mask=mask, extract_array_from_mask=extract_array_from_mask,
+        zoom_around_mask=zoom_around_mask, should_plot_border=should_plot_border, positions=positions,
+        as_subplot=as_subplot,
         units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
         cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
         cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
@@ -175,7 +180,7 @@ def plot_image(
 
 
 def plot_noise_map(
-        ccd_data, plot_origin=True, mask=None, zoom_around_mask=False, as_subplot=False,
+        ccd_data, plot_origin=True, mask=None, extract_array_from_mask=False, zoom_around_mask=False, as_subplot=False,
         units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
         cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
         cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
@@ -194,8 +199,8 @@ def plot_noise_map(
     """
 
     data_plotters.plot_noise_map(
-        noise_map=ccd_data.noise_map, plot_origin=plot_origin, mask=mask, zoom_around_mask=zoom_around_mask,
-        as_subplot=as_subplot,
+        noise_map=ccd_data.noise_map, plot_origin=plot_origin, mask=mask, extract_array_from_mask=extract_array_from_mask,
+        zoom_around_mask=zoom_around_mask, as_subplot=as_subplot,
         units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
         cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
         cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
@@ -233,7 +238,7 @@ def plot_psf(
 
 
 def plot_signal_to_noise_map(
-        ccd_data, plot_origin=True, mask=None, zoom_around_mask=False, as_subplot=False,
+        ccd_data, plot_origin=True, mask=None, extract_array_from_mask=False, zoom_around_mask=False, as_subplot=False,
         units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
         cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
         cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
@@ -254,7 +259,7 @@ def plot_signal_to_noise_map(
 
     data_plotters.plot_signal_to_noise_map(
         signal_to_noise_map=ccd_data.signal_to_noise_map, plot_origin=plot_origin, mask=mask,
-        zoom_around_mask=zoom_around_mask, as_subplot=as_subplot,
+        extract_array_from_mask=extract_array_from_mask, zoom_around_mask=zoom_around_mask, as_subplot=as_subplot,
         units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
         cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
         cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,

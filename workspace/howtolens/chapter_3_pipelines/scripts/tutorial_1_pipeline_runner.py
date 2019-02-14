@@ -96,7 +96,7 @@ ccd_plotters.plot_ccd_subplot(ccd_data=ccd_data)
 from workspace.howtolens.chapter_3_pipelines import tutorial_1_pipeline_lens_and_source
 
 pipeline_lens_and_source = tutorial_1_pipeline_lens_and_source.make_pipeline(
-    pipeline_path='howtolens/c3_t1_lens_and_source')
+    pipeline_path='howtolens/c3_t1_lens_and_source/')
 
 # To run a pipeline, we simply use its 'run' function, passing it the data we want to run the pipeline on. Simple, huh?
 pipeline_lens_and_source.run(data=ccd_data)

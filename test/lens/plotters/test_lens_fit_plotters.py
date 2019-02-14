@@ -71,14 +71,16 @@ def make_fit_source_and_lens(lens_data, galaxy_light, galaxy_mass):
 
 
 def test__fit_sub_plot_lens_only(fit_lens_only, lens_fit_plotter_path, plot_patch):
-    lens_fit_plotters.plot_fit_subplot(fit=fit_lens_only, should_plot_mask=True, zoom_around_mask=True,
+    lens_fit_plotters.plot_fit_subplot(fit=fit_lens_only, should_plot_mask=True, extract_array_from_mask=True,
+                                       zoom_around_mask=True,
                                        output_path=lens_fit_plotter_path, output_format='png')
     assert lens_fit_plotter_path + 'lens_fit.png' in plot_patch.paths
 
 
 def test__fit_sub_plot_source_and_lens(fit_source_and_lens,
                                                                    lens_fit_plotter_path, plot_patch):
-    lens_fit_plotters.plot_fit_subplot(fit=fit_source_and_lens, should_plot_mask=True, zoom_around_mask=True,
+    lens_fit_plotters.plot_fit_subplot(fit=fit_source_and_lens, should_plot_mask=True, extract_array_from_mask=True,
+                                       zoom_around_mask=True,
                                        output_path=lens_fit_plotter_path, output_format='png')
     assert lens_fit_plotter_path + 'lens_fit.png' in plot_patch.paths
 
@@ -87,8 +89,18 @@ def test__fit_individuals__lens_only__depedent_on_input(fit_lens_only, lens_fit_
 
     lens_fit_plotters.plot_fit_individuals(
         fit=fit_lens_only,
-        should_plot_model_image=True, should_plot_chi_squared_map=True,
+        should_plot_image=True,
+        should_plot_noise_map=False,
+        should_plot_signal_to_noise_map=False,
+        should_plot_model_image=True,
+        should_plot_chi_squared_map=True,
         output_path=lens_fit_plotter_path, output_format='png')
+
+    assert lens_fit_plotter_path + 'fit_image.png' in plot_patch.paths
+
+    assert lens_fit_plotter_path + 'fit_noise_map.png' not in plot_patch.paths
+
+    assert lens_fit_plotter_path + 'fit_signal_to_noise_map.png' not in plot_patch.paths
 
     assert lens_fit_plotter_path + 'fit_model_image.png' in plot_patch.paths
 
@@ -102,9 +114,20 @@ def test__fit_individuals__source_and_lens__depedent_on_input(fit_source_and_len
 
     lens_fit_plotters.plot_fit_individuals(
         fit=fit_source_and_lens,
-        should_plot_model_image=True, should_plot_lens_subtracted_image=True,
-        should_plot_source_model_image=True, should_plot_chi_squared_map=True,
+        should_plot_image=True,
+        should_plot_noise_map=False,
+        should_plot_signal_to_noise_map=False,
+        should_plot_model_image=True,
+        should_plot_lens_subtracted_image=True,
+        should_plot_source_model_image=True,
+        should_plot_chi_squared_map=True,
         output_path=lens_fit_plotter_path, output_format='png')
+
+    assert lens_fit_plotter_path + 'fit_image.png' in plot_patch.paths
+
+    assert lens_fit_plotter_path + 'fit_noise_map.png' not in plot_patch.paths
+
+    assert lens_fit_plotter_path + 'fit_signal_to_noise_map.png' not in plot_patch.paths
 
     assert lens_fit_plotter_path + 'fit_model_image.png' in plot_patch.paths
 

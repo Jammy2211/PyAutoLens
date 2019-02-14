@@ -32,8 +32,8 @@ def make_pipeline(pipeline_path=''):
     # fit its light profile. Its important that light from the other lens galaxy and source galaxy don't contaminate
     # our fit.
 
-    def mask_function(img):
-        return msk.Mask.circular(img.shape, pixel_scale=img.pixel_scale, radius_arcsec=0.5, centre=(0.0, -1.0))
+    def mask_function(image):
+        return msk.Mask.circular(image.shape, pixel_scale=image.pixel_scale, radius_arcsec=0.5, centre=(0.0, -1.0))
 
     class LeftLensPhase(ph.LensPlanePhase):
 
@@ -61,8 +61,8 @@ def make_pipeline(pipeline_path=''):
 
     # Now do the exact same with the lens galaxy on the right at (0.0", 1.0")
 
-    def mask_function(img):
-        return msk.Mask.circular(img.shape, pixel_scale=img.pixel_scale, radius_arcsec=0.5, centre=(0.0, 1.0))
+    def mask_function(image):
+        return msk.Mask.circular(image.shape, pixel_scale=image.pixel_scale, radius_arcsec=0.5, centre=(0.0, 1.0))
 
     class RightLensPhase(ph.LensPlanePhase):
 
