@@ -194,30 +194,30 @@ class CCDData(object):
                                             psf=psf, background_sky_map=background_sky_map,
                                             add_noise=True, seed=seed)
 
-    def new_ccd_data_with_resized_arrays(self, new_shape, new_centre_pixels=None, new_centre_arc_seconds=None):
+    def new_ccd_data_with_resized_arrays(self, new_shape, new_centre_pixels=None, new_centre_arcsec=None):
         
         image = self.resize_scaled_array(scaled_array=self.image, new_shape=new_shape, new_centre_pixels=new_centre_pixels,
-                                         new_centre_arc_seconds=new_centre_arc_seconds)
+                                         new_centre_arcsec=new_centre_arcsec)
 
         noise_map = self.resize_scaled_array(scaled_array=self.noise_map, new_shape=new_shape,
                                              new_centre_pixels=new_centre_pixels,
-                                             new_centre_arc_seconds=new_centre_arc_seconds)
+                                             new_centre_arcsec=new_centre_arcsec)
 
         background_noise_map = self.resize_scaled_array(scaled_array=self.background_noise_map, new_shape=new_shape,
                                                         new_centre_pixels=new_centre_pixels,
-                                                        new_centre_arc_seconds=new_centre_arc_seconds)
+                                                        new_centre_arcsec=new_centre_arcsec)
 
         poisson_noise_map = self.resize_scaled_array(scaled_array=self.poisson_noise_map, new_shape=new_shape,
                                                      new_centre_pixels=new_centre_pixels,
-                                                     new_centre_arc_seconds=new_centre_arc_seconds)
+                                                     new_centre_arcsec=new_centre_arcsec)
 
         exposure_time_map = self.resize_scaled_array(scaled_array=self.exposure_time_map, new_shape=new_shape,
                                                      new_centre_pixels=new_centre_pixels,
-                                                     new_centre_arc_seconds=new_centre_arc_seconds)
+                                                     new_centre_arcsec=new_centre_arcsec)
 
         background_sky_map = self.resize_scaled_array(scaled_array=self.background_sky_map, new_shape=new_shape,
                                                       new_centre_pixels=new_centre_pixels,
-                                                      new_centre_arc_seconds=new_centre_arc_seconds)
+                                                      new_centre_arcsec=new_centre_arcsec)
 
         return CCDData(image=image, pixel_scale=self.pixel_scale, psf=self.psf, noise_map=noise_map,
                        background_noise_map=background_noise_map, poisson_noise_map=poisson_noise_map,
@@ -230,10 +230,10 @@ class CCDData(object):
                        exposure_time_map=self.exposure_time_map, background_sky_map=self.background_sky_map)
 
     @staticmethod
-    def resize_scaled_array(scaled_array, new_shape, new_centre_pixels=None, new_centre_arc_seconds=None):
+    def resize_scaled_array(scaled_array, new_shape, new_centre_pixels=None, new_centre_arcsec=None):
         if scaled_array is not None:
             return scaled_array.resized_scaled_array_from_array(new_shape=new_shape,
-                        new_centre_pixels=new_centre_pixels, new_centre_arc_seconds=new_centre_arc_seconds)
+                        new_centre_pixels=new_centre_pixels, new_centre_arcsec=new_centre_arcsec)
         else:
             return None
 
@@ -567,7 +567,7 @@ class PSF(ScaledSquarePixelArray):
         hdu : int
             The HDU the PSF is stored in the .fits file.
         """
-        return cls(array=array_util.numpy_array_from_fits(file_path, hdu), pixel_scale=pixel_scale)
+        return cls(array=array_util.numpy_array_2d_from_fits(file_path, hdu), pixel_scale=pixel_scale)
 
     def new_psf_with_renormalized_array(self):
         """Renormalize the PSF such that its data_vector values sum to unity."""
@@ -647,7 +647,7 @@ def generate_poisson_noise(image, exposure_time_map, seed=-1):
 
 def load_ccd_data_from_fits(image_path, pixel_scale, image_hdu=0,
                             resized_ccd_shape=None, resized_ccd_origin_pixels=None,
-                            resized_ccd_origin_arc_seconds=None,
+                            resized_ccd_origin_arcsec=None,
                             psf_path=None, psf_hdu=0, resized_psf_shape=None, renormalize_psf=True,
                             noise_map_path=None, noise_map_hdu=0,
                             noise_map_from_image_and_background_noise_map=False,
@@ -686,7 +686,7 @@ def load_ccd_data_from_fits(image_path, pixel_scale, image_hdu=0,
         If input, the ccd arrays that are image sized, e.g. the image, noise-maps) are resized to these dimensions.
     resized_ccd_origin_pixels : (int, int) | None
         If the ccd arrays are resized, this defines a new origin (in pixels) around which recentering occurs.
-    resized_ccd_origin_arc_seconds : (float, float) | None
+    resized_ccd_origin_arcsec : (float, float) | None
         If the ccd arrays are resized, this defines a new origin (in arc-seconds) around which recentering occurs.
     psf_path : str
         The path to the psf .fits file containing the psf (e.g. '/path/to/psf.fits')        
@@ -810,7 +810,7 @@ def load_ccd_data_from_fits(image_path, pixel_scale, image_hdu=0,
     if resized_ccd_shape is not None:
         image = image.new_ccd_data_with_resized_arrays(new_shape=resized_ccd_shape,
                                                        new_centre_pixels=resized_ccd_origin_pixels,
-                                                       new_centre_arc_seconds=resized_ccd_origin_arc_seconds)
+                                                       new_centre_arcsec=resized_ccd_origin_arcsec)
 
     if resized_psf_shape is not None:
         image = image.new_ccd_data_with_resized_psf(new_shape=resized_psf_shape)
@@ -1126,27 +1126,27 @@ def load_background_sky_map(background_sky_map_path, background_sky_map_hdu, pix
 def output_ccd_data_to_fits(ccd_data, image_path, psf_path, noise_map_path=None, background_noise_map_path=None,
                             poisson_noise_map_path=None, exposure_time_map_path=None, background_sky_map_path=None,
                             overwrite=False):
-    array_util.numpy_array_to_fits(array=ccd_data.image, file_path=image_path, overwrite=overwrite)
-    array_util.numpy_array_to_fits(array=ccd_data.psf, file_path=psf_path, overwrite=overwrite)
+    array_util.numpy_array_2d_to_fits(array_2d=ccd_data.image, file_path=image_path, overwrite=overwrite)
+    array_util.numpy_array_2d_to_fits(array_2d=ccd_data.psf, file_path=psf_path, overwrite=overwrite)
 
     if ccd_data.noise_map is not None and noise_map_path is not None:
-        array_util.numpy_array_to_fits(array=ccd_data.noise_map, file_path=noise_map_path, overwrite=overwrite)
+        array_util.numpy_array_2d_to_fits(array_2d=ccd_data.noise_map, file_path=noise_map_path, overwrite=overwrite)
 
     if ccd_data.background_noise_map is not None and background_noise_map_path is not None:
-        array_util.numpy_array_to_fits(array=ccd_data.background_noise_map, file_path=background_noise_map_path,
-                                       overwrite=overwrite)
+        array_util.numpy_array_2d_to_fits(array_2d=ccd_data.background_noise_map, file_path=background_noise_map_path,
+                                          overwrite=overwrite)
 
     if ccd_data.poisson_noise_map is not None and poisson_noise_map_path is not None:
-        array_util.numpy_array_to_fits(array=ccd_data.poisson_noise_map, file_path=poisson_noise_map_path,
-                                       overwrite=overwrite)
+        array_util.numpy_array_2d_to_fits(array_2d=ccd_data.poisson_noise_map, file_path=poisson_noise_map_path,
+                                          overwrite=overwrite)
 
     if ccd_data.exposure_time_map is not None and exposure_time_map_path is not None:
-        array_util.numpy_array_to_fits(array=ccd_data.exposure_time_map, file_path=exposure_time_map_path,
-                                       overwrite=overwrite)
+        array_util.numpy_array_2d_to_fits(array_2d=ccd_data.exposure_time_map, file_path=exposure_time_map_path,
+                                          overwrite=overwrite)
 
     if ccd_data.background_sky_map is not None and background_sky_map_path is not None:
-        array_util.numpy_array_to_fits(array=ccd_data.background_sky_map, file_path=background_sky_map_path,
-                                       overwrite=overwrite)
+        array_util.numpy_array_2d_to_fits(array_2d=ccd_data.background_sky_map, file_path=background_sky_map_path,
+                                          overwrite=overwrite)
 
 def load_positions(positions_path):
     """Load the positions of an image.
