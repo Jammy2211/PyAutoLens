@@ -139,9 +139,9 @@ def plot_array(array, origin=None, mask=None, extract_array_from_mask=False, zoo
     plot_mask(mask=mask, units=units, kpc_per_arcsec=kpc_per_arcsec, pointsize=mask_pointsize)
     plot_border(mask=mask, should_plot_border=should_plot_border, units=units, kpc_per_arcsec=kpc_per_arcsec,
                 pointsize=border_pointsize)
-    plot_points(points_arc_seconds=positions, array=array, units=units, kpc_per_arcsec=kpc_per_arcsec,
+    plot_points(points_arcsec=positions, array=array, units=units, kpc_per_arcsec=kpc_per_arcsec,
                 pointsize=position_pointsize)
-    plot_grid(grid_arc_seconds=grid, array=array, units=units, kpc_per_arcsec=kpc_per_arcsec, pointsize=grid_pointsize)
+    plot_grid(grid_arcsec=grid, array=array, units=units, kpc_per_arcsec=kpc_per_arcsec, pointsize=grid_pointsize)
     plotter_util.output_figure(array, as_subplot=as_subplot, output_path=output_path, output_filename=output_filename,
                                output_format=output_format)
     plotter_util.close_figure(as_subplot=as_subplot)
@@ -344,7 +344,7 @@ def set_colorbar(cb_ticksize, cb_fraction, cb_pad):
     cb = plt.colorbar(fraction=cb_fraction, pad=cb_pad)
     cb.ax.tick_params(labelsize=cb_ticksize)
 
-def convert_grid_units(array, grid_arc_seconds, units, kpc_per_arcsec):
+def convert_grid_units(array, grid_arcsec, units, kpc_per_arcsec):
     """Convert the grid from its input units (arc-seconds) to the input unit (e.g. retain arc-seconds) or convert to \
     another set of units (pixels or kilo parsecs).
 
@@ -352,7 +352,7 @@ def convert_grid_units(array, grid_arc_seconds, units, kpc_per_arcsec):
     -----------
     array : data.array.scaled_array.ScaledArray
         The 2D array of data which is plotted, the shape of which is used for converting the grid to units of pixels.
-    grid_arc_seconds : ndarray or data.array.grids.RegularGrid
+    grid_arcsec : ndarray or data.array.grids.RegularGrid
         The (y,x) coordinates of the grid in arc-seconds, in an array of shape (total_coordinates, 2).
     units : str
         The units of the y / x axis of the plots, in arc-seconds ('arcsec') or kiloparsecs ('kpc').
@@ -360,11 +360,11 @@ def convert_grid_units(array, grid_arc_seconds, units, kpc_per_arcsec):
         The conversion factor between arc-seconds and kiloparsecs, required to plot the units in kpc.
     """
     if units in 'pixels':
-        return array.grid_arc_seconds_to_grid_pixels(grid_arc_seconds=grid_arc_seconds)
+        return array.grid_arcsec_to_grid_pixels(grid_arcsec=grid_arcsec)
     elif units in 'arcsec' or kpc_per_arcsec is None:
-        return grid_arc_seconds
+        return grid_arcsec
     elif units in 'kpc':
-        return grid_arc_seconds * kpc_per_arcsec
+        return grid_arcsec * kpc_per_arcsec
     else:
         raise exc.PlottingException('The units supplied to the plotter are not a valid string (must be pixels | '
                                      'arcsec | kpc)')
@@ -386,7 +386,7 @@ def plot_origin(array, origin, units, kpc_per_arcsec):
     if origin is not None:
 
         origin_grid = np.asarray(origin)
-        origin_units = convert_grid_units(array=array, grid_arc_seconds=origin_grid, units=units,
+        origin_units = convert_grid_units(array=array, grid_arcsec=origin_grid, units=units,
                                           kpc_per_arcsec=kpc_per_arcsec)
         plt.scatter(y=origin_units[0], x=origin_units[1], s=80, c='k', marker='x')
 
@@ -409,8 +409,8 @@ def plot_mask(mask, units, kpc_per_arcsec, pointsize):
 
         plt.gca()
         edge_pixels = mask.masked_grid_index_to_pixel[mask.edge_pixels] + 0.5
-        edge_arc_seconds = mask.grid_pixels_to_grid_arc_seconds(grid_pixels=edge_pixels)
-        edge_units = convert_grid_units(array=mask, grid_arc_seconds=edge_arc_seconds, units=units,
+        edge_arcsec = mask.grid_pixels_to_grid_arcsec(grid_pixels=edge_pixels)
+        edge_units = convert_grid_units(array=mask, grid_arcsec=edge_arcsec, units=units,
                                           kpc_per_arcsec=kpc_per_arcsec)
 
         plt.scatter(y=edge_units[:,0], x=edge_units[:,1], s=pointsize, c='k')
@@ -435,13 +435,13 @@ def plot_border(mask, should_plot_border, units, kpc_per_arcsec, pointsize):
 
         plt.gca()
         border_pixels = mask.masked_grid_index_to_pixel[mask.border_pixels]
-        border_arc_seconds = mask.grid_pixels_to_grid_arc_seconds(grid_pixels=border_pixels)
-        border_units = convert_grid_units(array=mask, grid_arc_seconds=border_arc_seconds, units=units,
+        border_arcsec = mask.grid_pixels_to_grid_arcsec(grid_pixels=border_pixels)
+        border_units = convert_grid_units(array=mask, grid_arcsec=border_arcsec, units=units,
                                           kpc_per_arcsec=kpc_per_arcsec)
 
         plt.scatter(y=border_units[:,0], x=border_units[:,1], s=pointsize, c='y')
 
-def plot_points(points_arc_seconds, array, units, kpc_per_arcsec, pointsize):
+def plot_points(points_arcsec, array, units, kpc_per_arcsec, pointsize):
     """Plot a set of points over the array of data on the figure.
 
     Parameters
@@ -457,20 +457,20 @@ def plot_points(points_arc_seconds, array, units, kpc_per_arcsec, pointsize):
     pointsize : int
         The size of the points plotted to show the input positions.
     """
-    if points_arc_seconds is not None:
-        points_arc_seconds = list(map(lambda position_set: np.asarray(position_set), points_arc_seconds))
+    if points_arcsec is not None:
+        points_arcsec = list(map(lambda position_set: np.asarray(position_set), points_arcsec))
         point_colors = itertools.cycle(["m", "y", "r", "w", "c", "b", "g", "k"])
-        for point_set_arc_seconds in points_arc_seconds:
-            point_set_units = convert_grid_units(array=array, grid_arc_seconds=point_set_arc_seconds, units=units,
+        for point_set_arcsec in points_arcsec:
+            point_set_units = convert_grid_units(array=array, grid_arcsec=point_set_arcsec, units=units,
                                                  kpc_per_arcsec=kpc_per_arcsec)
             plt.scatter(y=point_set_units[:,0], x=point_set_units[:,1], color=next(point_colors), s=pointsize)
 
-def plot_grid(grid_arc_seconds, array, units, kpc_per_arcsec, pointsize):
+def plot_grid(grid_arcsec, array, units, kpc_per_arcsec, pointsize):
     """Plot a grid of points over the array of data on the figure.
 
      Parameters
      -----------.
-     grid_arc_seconds : ndarray or data.array.grids.RegularGrid
+     grid_arcsec : ndarray or data.array.grids.RegularGrid
          A grid of (y,x) coordinates in arc-seconds which may be plotted over the array.
      array : data.array.scaled_array.ScaledArray
         The 2D array of data which is plotted.
@@ -481,8 +481,8 @@ def plot_grid(grid_arc_seconds, array, units, kpc_per_arcsec, pointsize):
      grid_pointsize : int
          The size of the points plotted to show the grid.
      """
-    if grid_arc_seconds is not None:
-        grid_units = convert_grid_units(grid_arc_seconds=grid_arc_seconds, array=array, units=units,
+    if grid_arcsec is not None:
+        grid_units = convert_grid_units(grid_arcsec=grid_arcsec, array=array, units=units,
                                         kpc_per_arcsec=kpc_per_arcsec)
 
         plt.scatter(y=np.asarray(grid_units[:, 0]), x=np.asarray(grid_units[:, 1]), s=pointsize, c='k')

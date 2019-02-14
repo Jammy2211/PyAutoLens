@@ -153,12 +153,12 @@ class RectangularMapper(Mapper):
     @property
     def regular_to_pix(self):
         """The 1D index mappings between the regular grid's pixels and rectangular pixelization's pixels."""
-        return self.geometry.grid_arc_seconds_to_grid_pixel_indexes(grid_arc_seconds=self.grid_stack.regular)
+        return self.geometry.grid_arcsec_to_grid_pixel_indexes(grid_arcsec=self.grid_stack.regular)
 
     @property
     def sub_to_pix(self):
         """The 1D index mappings between the sub grid's pixels and rectangular pixelization's pixels"""
-        return self.geometry.grid_arc_seconds_to_grid_pixel_indexes(grid_arc_seconds=self.grid_stack.sub)
+        return self.geometry.grid_arcsec_to_grid_pixel_indexes(grid_arcsec=self.grid_stack.sub)
 
     def reconstructed_pixelization_from_solution_vector(self, solution_vector):
         """Given the solution vector of an inversion (see *inversions.Inversion*), determine the reconstructed \

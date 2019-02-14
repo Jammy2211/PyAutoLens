@@ -687,7 +687,7 @@ class SparseToRegularGrid(scaled_array.RectangularArrayGeometry):
         self.regular_grid = regular_grid
         self.unmasked_sparse_grid = self.grid_1d
         self.unmasked_sparse_grid_pixel_centres = \
-            regular_grid.mask.grid_arc_seconds_to_grid_pixel_centres(self.unmasked_sparse_grid)
+            regular_grid.mask.grid_arcsec_to_grid_pixel_centres(self.unmasked_sparse_grid)
 
         self.total_sparse_pixels = mask_util.total_sparse_pixels_from_mask(mask=self.regular_grid.mask,
                unmasked_sparse_grid_pixel_centres=self.unmasked_sparse_grid_pixel_centres)
@@ -709,7 +709,7 @@ class SparseToRegularGrid(scaled_array.RectangularArrayGeometry):
     @property
     def regular_to_unmasked_sparse(self):
         """The 1D index mapping between the regular-grid and unmasked sparse-grid."""
-        return self.grid_arc_seconds_to_grid_pixel_indexes(grid_arc_seconds=self.regular_grid)
+        return self.grid_arcsec_to_grid_pixel_indexes(grid_arcsec=self.regular_grid)
 
     @property
     def regular_to_sparse(self):

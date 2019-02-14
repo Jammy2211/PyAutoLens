@@ -123,7 +123,7 @@ def sub_to_regular_from_mask(mask, sub_grid_size):
     sub_to_regular = sub_to_regular_from_mask(mask=mask, sub_grid_size=2)
     """
 
-    total_sub_pixels = mask_util.total_sub_pixels_from_mask_and_sub_grid_size(mask, sub_grid_size)
+    total_sub_pixels = mask_util.total_sub_pixels_from_mask_and_sub_grid_size(mask=mask, sub_grid_size=sub_grid_size)
 
     sub_to_regular = np.zeros(shape=total_sub_pixels)
     regular_index = 0

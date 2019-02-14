@@ -26,7 +26,7 @@ def centres_from_shape_pixel_scales_and_origin(shape, pixel_scales, origin):
         
     Examples
     --------
-    centres_arc_seconds = centres_from_shape_pixel_scales_and_origin(shape=(5,5), pixel_scales=(0.5, 0.5), origin=(0.0, 0.0))
+    centres_arcsec = centres_from_shape_pixel_scales_and_origin(shape=(5,5), pixel_scales=(0.5, 0.5), origin=(0.0, 0.0))
     """
 
     y_centre_arcsec = float(shape[0] - 1) / 2 + (origin[0] / pixel_scales[0])
@@ -66,17 +66,17 @@ def regular_grid_2d_from_shape_pixel_scales_and_origin(shape, pixel_scales, orig
                                                                       origin=(0.0, 0.0))    
     """
 
-    grid_2d = np.zeros((shape[0], shape[1], 2))
+    regular_grid_2d = np.zeros((shape[0], shape[1], 2))
 
-    centres_arc_seconds = centres_from_shape_pixel_scales_and_origin(shape=shape, pixel_scales=pixel_scales, origin=origin)
+    centres_arcsec = centres_from_shape_pixel_scales_and_origin(shape=shape, pixel_scales=pixel_scales, origin=origin)
 
     for y in range(shape[0]):
         for x in range(shape[1]):
 
-            grid_2d[y, x, 0] = -(y - centres_arc_seconds[0]) * pixel_scales[0]
-            grid_2d[y, x, 1] = (x - centres_arc_seconds[1]) * pixel_scales[1]
+            regular_grid_2d[y, x, 0] = -(y - centres_arcsec[0]) * pixel_scales[0]
+            regular_grid_2d[y, x, 1] = (x - centres_arcsec[1]) * pixel_scales[1]
 
-    return grid_2d
+    return regular_grid_2d
 
 @decorator_util.jit()
 def regular_grid_1d_from_shape_pixel_scales_and_origin(shape, pixel_scales, origin=(0.0, 0.0)):
@@ -110,19 +110,19 @@ def regular_grid_1d_from_shape_pixel_scales_and_origin(shape, pixel_scales, orig
                                                                       origin=(0.0, 0.0))    
     """
 
-    grid_1d = np.zeros((shape[0]*shape[1], 2))
+    regular_grid_1d = np.zeros((shape[0]*shape[1], 2))
 
-    centres_arc_seconds = centres_from_shape_pixel_scales_and_origin(shape=shape, pixel_scales=pixel_scales, origin=origin)
+    centres_arcsec = centres_from_shape_pixel_scales_and_origin(shape=shape, pixel_scales=pixel_scales, origin=origin)
 
     i=0
     for y in range(shape[0]):
         for x in range(shape[1]):
 
-            grid_1d[i, 0] = -(y - centres_arc_seconds[0]) * pixel_scales[0]
-            grid_1d[i, 1] = (x - centres_arc_seconds[1]) * pixel_scales[1]
+            regular_grid_1d[i, 0] = -(y - centres_arcsec[0]) * pixel_scales[0]
+            regular_grid_1d[i, 1] = (x - centres_arcsec[1]) * pixel_scales[1]
             i += 1
 
-    return grid_1d
+    return regular_grid_1d
 
 @decorator_util.jit()
 def regular_grid_1d_masked_from_mask_pixel_scales_and_origin(mask, pixel_scales, origin=(0.0, 0.0)):
@@ -162,16 +162,16 @@ def regular_grid_1d_masked_from_mask_pixel_scales_and_origin(mask, pixel_scales,
     grid_2d = regular_grid_2d_from_shape_pixel_scales_and_origin(mask.shape, pixel_scales, origin)
 
     total_regular_pixels = mask_util.total_regular_pixels_from_mask(mask)
-    regular_grid = np.zeros(shape=(total_regular_pixels, 2))
+    regular_grid_1d = np.zeros(shape=(total_regular_pixels, 2))
     pixel_count = 0
 
     for y in range(mask.shape[0]):
         for x in range(mask.shape[1]):
             if not mask[y, x]:
-                regular_grid[pixel_count, :] = grid_2d[y, x]
+                regular_grid_1d[pixel_count, :] = grid_2d[y, x]
                 pixel_count += 1
 
-    return regular_grid
+    return regular_grid_1d
 
 @decorator_util.jit()
 def sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(mask, pixel_scales, sub_grid_size, origin=(0.0, 0.0)):
@@ -214,9 +214,9 @@ def sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(mask, pixel_scal
 
     total_sub_pixels = mask_util.total_sub_pixels_from_mask_and_sub_grid_size(mask, sub_grid_size)
 
-    sub_grid = np.zeros(shape=(total_sub_pixels, 2))
+    sub_grid_1d = np.zeros(shape=(total_sub_pixels, 2))
 
-    centres_arc_seconds = centres_from_shape_pixel_scales_and_origin(shape=mask.shape, pixel_scales=pixel_scales,
+    centres_arcsec = centres_from_shape_pixel_scales_and_origin(shape=mask.shape, pixel_scales=pixel_scales,
                                                                 origin=origin)
 
     sub_index = 0
@@ -232,20 +232,20 @@ def sub_grid_1d_masked_from_mask_pixel_scales_and_sub_grid_size(mask, pixel_scal
 
             if not mask[y, x]:
 
-                y_arcsec = (y - centres_arc_seconds[0]) * pixel_scales[0]
-                x_arcsec = (x - centres_arc_seconds[1]) * pixel_scales[1]
+                y_arcsec = (y - centres_arcsec[0]) * pixel_scales[0]
+                x_arcsec = (x - centres_arcsec[1]) * pixel_scales[1]
 
                 for y1 in range(sub_grid_size):
                     for x1 in range(sub_grid_size):
 
-                        sub_grid[sub_index, 0] = -(y_arcsec - y_sub_half + (y1 + 1) * y_sub_step)
-                        sub_grid[sub_index, 1] = x_arcsec - x_sub_half + (x1 + 1) * x_sub_step
+                        sub_grid_1d[sub_index, 0] = -(y_arcsec - y_sub_half + (y1 + 1) * y_sub_step)
+                        sub_grid_1d[sub_index, 1] = x_arcsec - x_sub_half + (x1 + 1) * x_sub_step
                         sub_index += 1
 
-    return sub_grid
+    return sub_grid_1d
 
 @decorator_util.jit()
-def grid_arc_seconds_1d_to_grid_pixels_1d(grid_arc_seconds_1d, shape, pixel_scales, origin=(0.0, 0.0)):
+def grid_arcsec_1d_to_grid_pixels_1d(grid_arcsec_1d, shape, pixel_scales, origin=(0.0, 0.0)):
     """ Convert a grid of (y,x) arc second coordinates to a grid of (y,x) pixel coordinate values. Pixel coordinates \ 
     are returned as floats such that they include the decimal offset from each pixel's top-left corner relative to \
     the input arc-second coordinate.
@@ -260,7 +260,7 @@ def grid_arc_seconds_1d_to_grid_pixels_1d(grid_arc_seconds_1d, shape, pixel_scal
 
     Parameters
     ----------
-    grid_arc_seconds_1d: ndarray
+    grid_arcsec_1d: ndarray
         The grid of (y,x) coordinates in arc seconds which is converted to pixel value coordinates.
     shape : (int, int)
         The (y,x) shape of the original 2D array the arc-second coordinates were computed on.
@@ -276,25 +276,24 @@ def grid_arc_seconds_1d_to_grid_pixels_1d(grid_arc_seconds_1d, shape, pixel_scal
 
     Examples
     --------
-    grid_arc_seconds_1d = np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]])
-    grid_pixels_1d = grid_arc_seconds_1d_to_grid_pixels_1d(grid_arc_seconds_1d=grid_arc_seconds_1d, shape=(2,2),
+    grid_arcsec_1d = np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]])
+    grid_pixels_1d = grid_arcsec_1d_to_grid_pixels_1d(grid_arcsec_1d=grid_arcsec_1d, shape=(2,2),
                                                            pixel_scales=(0.5, 0.5), origin=(0.0, 0.0))
     """
 
-    grid_pixels = np.zeros((grid_arc_seconds_1d.shape[0], 2))
+    grid_pixels_1d = np.zeros((grid_arcsec_1d.shape[0], 2))
 
-    centres_arc_seconds = centres_from_shape_pixel_scales_and_origin(shape=shape, pixel_scales=pixel_scales,
-                                                                     origin=origin)
+    centres_arcsec = centres_from_shape_pixel_scales_and_origin(shape=shape, pixel_scales=pixel_scales, origin=origin)
 
-    for i in range(grid_arc_seconds_1d.shape[0]):
+    for i in range(grid_arcsec_1d.shape[0]):
 
-        grid_pixels[i, 0] = (-grid_arc_seconds_1d[i, 0] / pixel_scales[0]) + centres_arc_seconds[0] + 0.5
-        grid_pixels[i, 1] = (grid_arc_seconds_1d[i, 1] / pixel_scales[1]) + centres_arc_seconds[1] + 0.5
+        grid_pixels_1d[i, 0] = (-grid_arcsec_1d[i, 0] / pixel_scales[0]) + centres_arcsec[0] + 0.5
+        grid_pixels_1d[i, 1] = (grid_arcsec_1d[i, 1] / pixel_scales[1]) + centres_arcsec[1] + 0.5
 
-    return grid_pixels
+    return grid_pixels_1d
 
 @decorator_util.jit()
-def grid_arc_seconds_1d_to_grid_pixel_centres_1d(grid_arc_seconds_1d, shape, pixel_scales, origin=(0.0, 0.0)):
+def grid_arcsec_1d_to_grid_pixel_centres_1d(grid_arcsec_1d, shape, pixel_scales, origin=(0.0, 0.0)):
     """ Convert a grid of (y,x) arc second coordinates to a grid of (y,x) pixel values. Pixel coordinates are \
     returned as integers such that they map directly to the pixel they are contained within.
 
@@ -308,7 +307,7 @@ def grid_arc_seconds_1d_to_grid_pixel_centres_1d(grid_arc_seconds_1d, shape, pix
 
     Parameters
     ----------
-    grid_arc_seconds_1d: ndarray
+    grid_arcsec_1d: ndarray
         The grid of (y,x) coordinates in arc seconds which is converted to pixel indexes.
     shape : (int, int)
         The (y,x) shape of the original 2D array the arc-second coordinates were computed on.
@@ -324,25 +323,24 @@ def grid_arc_seconds_1d_to_grid_pixel_centres_1d(grid_arc_seconds_1d, shape, pix
 
     Examples
     --------
-    grid_arc_seconds_1d = np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]])
-    grid_pixels_1d = grid_arc_seconds_1d_to_grid_pixel_centres_1d(grid_arc_seconds_1d=grid_arc_seconds_1d, shape=(2,2),
+    grid_arcsec_1d = np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]])
+    grid_pixels_1d = grid_arcsec_1d_to_grid_pixel_centres_1d(grid_arcsec_1d=grid_arcsec_1d, shape=(2,2),
                                                            pixel_scales=(0.5, 0.5), origin=(0.0, 0.0))
     """
 
-    grid_pixels = np.zeros((grid_arc_seconds_1d.shape[0], 2))
+    grid_pixels_1d = np.zeros((grid_arcsec_1d.shape[0], 2))
 
-    centres_arc_seconds = centres_from_shape_pixel_scales_and_origin(shape=shape, pixel_scales=pixel_scales,
-                                                                     origin=origin)
+    centres_arcsec = centres_from_shape_pixel_scales_and_origin(shape=shape, pixel_scales=pixel_scales, origin=origin)
 
-    for i in range(grid_arc_seconds_1d.shape[0]):
+    for i in range(grid_arcsec_1d.shape[0]):
 
-        grid_pixels[i, 0] = int((-grid_arc_seconds_1d[i, 0] / pixel_scales[0]) + centres_arc_seconds[0] + 0.5)
-        grid_pixels[i, 1] = int((grid_arc_seconds_1d[i, 1] / pixel_scales[1]) + centres_arc_seconds[1] + 0.5)
+        grid_pixels_1d[i, 0] = int((-grid_arcsec_1d[i, 0] / pixel_scales[0]) + centres_arcsec[0] + 0.5)
+        grid_pixels_1d[i, 1] = int((grid_arcsec_1d[i, 1] / pixel_scales[1]) + centres_arcsec[1] + 0.5)
 
-    return grid_pixels
+    return grid_pixels_1d
 
 @decorator_util.jit()
-def grid_arc_seconds_1d_to_grid_pixel_indexes_1d(grid_arc_seconds_1d, shape, pixel_scales, origin=(0.0, 0.0)):
+def grid_arcsec_1d_to_grid_pixel_indexes_1d(grid_arcsec_1d, shape, pixel_scales, origin=(0.0, 0.0)):
     """ Convert a grid of (y,x) arc second coordinates to a grid of (y,x) pixel 1D indexes. Pixel coordinates are \
     returned as integers such that they are the pixel from the top-left of the 2D grid going rights and then \
     downwards.
@@ -360,7 +358,7 @@ def grid_arc_seconds_1d_to_grid_pixel_indexes_1d(grid_arc_seconds_1d, shape, pix
 
     Parameters
     ----------
-    grid_arc_seconds_1d: ndarray
+    grid_arcsec_1d: ndarray
         The grid of (y,x) coordinates in arc seconds which is converted to 1D pixel indexes.
     shape : (int, int)
         The (y,x) shape of the original 2D array the arc-second coordinates were computed on.
@@ -376,24 +374,24 @@ def grid_arc_seconds_1d_to_grid_pixel_indexes_1d(grid_arc_seconds_1d, shape, pix
 
     Examples
     --------
-    grid_arc_seconds_1d = np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]])
-    grid_pixels_1d = grid_arc_seconds_1d_to_grid_pixel_indexes_1d(grid_arc_seconds_1d=grid_arc_seconds_1d, shape=(2,2),
+    grid_arcsec_1d = np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [4.0, 4.0]])
+    grid_pixels_1d = grid_arcsec_1d_to_grid_pixel_indexes_1d(grid_arcsec_1d=grid_arcsec_1d, shape=(2,2),
                                                            pixel_scales=(0.5, 0.5), origin=(0.0, 0.0))
     """
 
-    grid_pixels = grid_arc_seconds_1d_to_grid_pixel_centres_1d(grid_arc_seconds_1d=grid_arc_seconds_1d, shape=shape,
+    grid_pixels_1d = grid_arcsec_1d_to_grid_pixel_centres_1d(grid_arcsec_1d=grid_arcsec_1d, shape=shape,
                                                                pixel_scales=pixel_scales, origin=origin)
 
-    grid_pixel_indexes = np.zeros(grid_pixels.shape[0])
+    grid_pixel_indexes_1d = np.zeros(grid_pixels_1d.shape[0])
 
-    for i in range(grid_pixels.shape[0]):
+    for i in range(grid_pixels_1d.shape[0]):
 
-        grid_pixel_indexes[i] = int(grid_pixels[i,0] * shape[1] + grid_pixels[i,1])
+        grid_pixel_indexes_1d[i] = int(grid_pixels_1d[i,0] * shape[1] + grid_pixels_1d[i,1])
 
-    return grid_pixel_indexes
+    return grid_pixel_indexes_1d
 
 @decorator_util.jit()
-def grid_pixels_1d_to_grid_arc_seconds_1d(grid_pixels_1d, shape, pixel_scales, origin=(0.0, 0.0)):
+def grid_pixels_1d_to_grid_arcsec_1d(grid_pixels_1d, shape, pixel_scales, origin=(0.0, 0.0)):
     """ Convert a grid of (y,x) pixel coordinates to a grid of (y,x) arc second values.
 
     The pixel coordinate origin is at the top left corner of the grid, such that the pixel [0,0] corresponds to \
@@ -423,18 +421,17 @@ def grid_pixels_1d_to_grid_arc_seconds_1d(grid_pixels_1d, shape, pixel_scales, o
     Examples
     --------
     grid_pixels_1d = np.array([[0,0], [0,1], [1,0], [1,1])
-    grid_pixels_1d = grid_pixels_1d_to_grid_arc_seconds_1d(grid_pixels_1d=grid_pixels_1d, shape=(2,2),
+    grid_pixels_1d = grid_pixels_1d_to_grid_arcsec_1d(grid_pixels_1d=grid_pixels_1d, shape=(2,2),
                                                            pixel_scales=(0.5, 0.5), origin=(0.0, 0.0))
     """
 
-    grid_arc_seconds = np.zeros((grid_pixels_1d.shape[0], 2))
+    grid_arcsec_1d = np.zeros((grid_pixels_1d.shape[0], 2))
 
-    centres_arc_seconds = centres_from_shape_pixel_scales_and_origin(shape=shape, pixel_scales=pixel_scales,
-                                                                     origin=origin)
+    centres_arcsec = centres_from_shape_pixel_scales_and_origin(shape=shape, pixel_scales=pixel_scales, origin=origin)
 
-    for i in range(grid_arc_seconds.shape[0]):
+    for i in range(grid_arcsec_1d.shape[0]):
 
-        grid_arc_seconds[i, 0] = -(grid_pixels_1d[i, 0] - centres_arc_seconds[0] - 0.5) * pixel_scales[0]
-        grid_arc_seconds[i, 1] = (grid_pixels_1d[i, 1] - centres_arc_seconds[1] - 0.5) * pixel_scales[1]
+        grid_arcsec_1d[i, 0] = -(grid_pixels_1d[i, 0] - centres_arcsec[0] - 0.5) * pixel_scales[0]
+        grid_arcsec_1d[i, 1] = (grid_pixels_1d[i, 1] - centres_arcsec[1] - 0.5) * pixel_scales[1]
 
-    return grid_arc_seconds
+    return grid_arcsec_1d
