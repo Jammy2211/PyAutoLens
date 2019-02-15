@@ -43,7 +43,7 @@ class PipelineImaging(Pipeline):
         from autolens.pipeline import phase as ph
         results = []
         for i, phase in enumerate(self.phases):
-            logger.info("Running Phase {} (Number {})".format(phase.phase_name, i))
+            logger.info("Running Phase {} (Number {})".format(phase.optimizer.name, i))
             results.append(phase.run(data=data, previous_results=ph.ResultsCollection(results), mask=mask,
                                      positions=positions))
         return results
@@ -59,7 +59,7 @@ class PipelinePositions(Pipeline):
 
         results = []
         for i, phase in enumerate(self.phases):
-            logger.info("Running Phase {} (Number {})".format(phase.phase_name, i))
+            logger.info("Running Phase {} (Number {})".format(phase.optimizer.name, i))
             results.append(phase.run(positions=positions, pixel_scale=pixel_scale,
                                      previous_results=ph.ResultsCollection(results)))
         return results

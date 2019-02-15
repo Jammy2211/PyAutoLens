@@ -10,10 +10,13 @@ Rich:
 - pip release autocti.
 - Custommize how model.results appear (E.g. decimal places, lens paramnames).
 - Make it so paramames have no duplicates.
+- Implement hyper phase in CTI.
 
 Today:
 
 - CTI, make sure parallelization on COSMA works.
+- Iplement ordering of traps in NLO.
+- Only Core 0 shouold run the pipeline.
 
 Short term:
 

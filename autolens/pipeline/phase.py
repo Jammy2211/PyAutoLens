@@ -732,7 +732,7 @@ class PhaseImaging(Phase):
                         should_plot_surface_density=True,
                         should_plot_potential=True,
                         should_plot_deflections=True,
-                        output_path=image_path, output_format='fits')
+                        output_path=image_path + 'fits/', output_format='fits')
 
                 if self.plot_lens_fit_all_at_end_png:
                     lens_fit_plotters.plot_fit_individuals(
@@ -767,7 +767,7 @@ class PhaseImaging(Phase):
                         should_plot_source_plane_image=True,
                         should_plot_residual_map=True,
                         should_plot_chi_squared_map=True,
-                        output_path=image_path, output_format='fits')
+                        output_path=image_path + 'fits/', output_format='fits')
 
             return fit
 
@@ -815,6 +815,7 @@ class LensPlanePhase(PhaseImaging):
     def __init__(self, phase_name, lens_galaxies=None, optimizer_class=non_linear.MultiNest, sub_grid_size=2,
                  image_psf_shape=None, mask_function=None, inner_circular_mask_radii=None, cosmology=cosmo.Planck15,
                  auto_link_priors=False):
+
         super(LensPlanePhase, self).__init__(optimizer_class=optimizer_class,
                                              sub_grid_size=sub_grid_size,
                                              image_psf_shape=image_psf_shape,
