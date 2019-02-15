@@ -1462,12 +1462,6 @@ class SensitivityPhase(PhaseImaging):
                 "".format(instance.lens_galaxies, instance.source_galaxies, instance.sensitive_galaxies))
 
 
-class HyperAnalysis(object):
-
-    def __init__(self):
-        pass
-
-
 def make_path_if_does_not_exist(path):
     if not os.path.exists(path):
         os.makedirs(path)
