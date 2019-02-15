@@ -1,14 +1,13 @@
 import logging
 import os
-import warnings
 
 import numpy as np
 from astropy import cosmology as cosmo
+
 from autofit import conf
+from autofit.optimize import non_linear
 from autofit.tools import phase
 from autofit.tools.phase_property import PhasePropertyCollection
-from autofit.optimize import non_linear
-
 from autolens import exc
 from autolens.data.array import mask as msk
 from autolens.data.plotters import ccd_plotters
@@ -26,8 +25,8 @@ logger.level = logging.DEBUG
 def default_mask_function(image):
     return msk.Mask.circular(shape=image.shape, pixel_scale=image.pixel_scale, radius_arcsec=3.0)
 
-def setup_phase_mask(data, mask, mask_function, inner_circular_mask_radii):
 
+def setup_phase_mask(data, mask, mask_function, inner_circular_mask_radii):
     if mask_function is not None:
         mask = mask_function(image=data.image)
     elif mask is None and mask_function is None:
@@ -39,6 +38,7 @@ def setup_phase_mask(data, mask, mask_function, inner_circular_mask_radii):
         mask = mask + inner_mask
 
     return mask
+
 
 class ResultsCollection(list):
     def __init__(self, results):
@@ -307,7 +307,6 @@ class Phase(AbstractPhase):
     class Analysis(AbstractPhase.Analysis):
 
         def __init__(self, cosmology, phase_name, previous_results=None):
-
             super(Phase.Analysis, self).__init__(cosmology=cosmology, phase_name=phase_name,
                                                  previous_results=previous_results)
 
@@ -561,7 +560,6 @@ class PhaseImaging(Phase):
         file_phase_info = "{}/{}/{}".format(conf.instance.output_path, self.phase_name, 'phase.info')
 
         with open(file_phase_info, 'w') as phase_info:
-
             phase_info.write('Optimizer = {} \n'.format(type(self.optimizer).__name__))
             phase_info.write('Sub-grid size = {} \n'.format(self.sub_grid_size))
             phase_info.write('Image PSF shape = {} \n'.format(self.image_psf_shape))
@@ -587,7 +585,7 @@ class PhaseImaging(Phase):
             self.should_plot_image_plane_pix = \
                 conf.instance.general.get('output', 'plot_image_plane_adaptive_pixelization_grid', bool)
 
-            self.plot_data_as_subplot =\
+            self.plot_data_as_subplot = \
                 conf.instance.general.get('output', 'plot_data_as_subplot', bool)
             self.plot_data_image = \
                 conf.instance.general.get('output', 'plot_data_image', bool)
@@ -662,7 +660,6 @@ class PhaseImaging(Phase):
                 positions = None
 
             if self.plot_data_as_subplot:
-
                 ccd_plotters.plot_ccd_subplot(
                     ccd_data=self.lens_data.ccd_data, mask=mask, extract_array_from_mask=self.extract_array_from_mask,
                     zoom_around_mask=self.zoom_around_mask, positions=positions,
@@ -679,12 +676,10 @@ class PhaseImaging(Phase):
                 units=self.plot_units,
                 output_path=self.output_image_path, output_format='png')
 
-
             tracer = self.tracer_for_instance(instance)
             padded_tracer = self.padded_tracer_for_instance(instance)
 
             if self.plot_ray_tracing_as_subplot:
-
                 ray_tracing_plotters.plot_ray_tracing_subplot(
                     tracer=tracer, mask=mask, extract_array_from_mask=self.extract_array_from_mask,
                     zoom_around_mask=self.zoom_around_mask, positions=positions,
@@ -694,7 +689,6 @@ class PhaseImaging(Phase):
             fit = self.fit_for_tracers(tracer=tracer, padded_tracer=padded_tracer)
 
             if self.plot_lens_fit_as_subplot:
-
                 lens_fit_plotters.plot_fit_subplot(
                     fit=fit, should_plot_mask=self.should_plot_mask,
                     extract_array_from_mask=self.extract_array_from_mask, zoom_around_mask=self.zoom_around_mask,
@@ -717,7 +711,7 @@ class PhaseImaging(Phase):
 
                 lens_fit_plotters.plot_fit_individuals(
                     fit=fit, should_plot_mask=self.should_plot_mask,
-                    extract_array_from_mask=self.extract_array_from_mask,zoom_around_mask=self.zoom_around_mask,
+                    extract_array_from_mask=self.extract_array_from_mask, zoom_around_mask=self.zoom_around_mask,
                     positions=positions, should_plot_image_plane_pix=self.should_plot_image_plane_pix,
                     should_plot_image=self.plot_lens_fit_image,
                     should_plot_noise_map=self.plot_lens_fit_noise_map,
@@ -735,7 +729,6 @@ class PhaseImaging(Phase):
             elif not during_analysis:
 
                 if self.plot_ray_tracing_all_at_end_png:
-
                     ray_tracing_plotters.plot_ray_tracing_individual(
                         tracer=tracer, mask=mask, extract_array_from_mask=self.extract_array_from_mask,
                         zoom_around_mask=self.zoom_around_mask, positions=positions,
@@ -748,7 +741,6 @@ class PhaseImaging(Phase):
                         output_path=self.output_image_path, output_format='png')
 
                 if self.plot_ray_tracing_all_at_end_fits:
-
                     ray_tracing_plotters.plot_ray_tracing_individual(
                         tracer=tracer, mask=mask, extract_array_from_mask=self.extract_array_from_mask,
                         zoom_around_mask=self.zoom_around_mask, positions=positions,
@@ -760,7 +752,6 @@ class PhaseImaging(Phase):
                         output_path=self.output_fits_path, output_format='fits')
 
                 if self.plot_lens_fit_all_at_end_png:
-
                     lens_fit_plotters.plot_fit_individuals(
                         fit=fit, should_plot_mask=self.should_plot_mask,
                         extract_array_from_mask=self.extract_array_from_mask, zoom_around_mask=self.zoom_around_mask,
@@ -779,7 +770,6 @@ class PhaseImaging(Phase):
                         output_path=self.output_image_path, output_format='png')
 
                 if self.plot_lens_fit_all_at_end_fits:
-
                     lens_fit_plotters.plot_fit_individuals(
                         fit=fit, should_plot_mask=self.should_plot_mask,
                         extract_array_from_mask=self.extract_array_from_mask, zoom_around_mask=self.zoom_around_mask,
@@ -933,7 +923,6 @@ class LensSourcePlanePhase(PhaseImaging):
     class Analysis(PhaseImaging.Analysis):
 
         def __init__(self, lens_data, cosmology, phase_name, previous_results=None):
-
             super(LensSourcePlanePhase.Analysis, self).__init__(lens_data=lens_data, cosmology=cosmology,
                                                                 phase_name=phase_name,
                                                                 previous_results=previous_results)
@@ -994,10 +983,8 @@ class MultiPlanePhase(PhaseImaging):
 
         Parameters
         ----------
-        lens_galaxies : [g.Galaxy] | [gm.GalaxyModel]
-            A galaxy that acts as a gravitational lens
-        source_galaxies: [g.Galaxy] | [gm.GalaxyModel]
-            A galaxy that is being lensed
+        galaxies : [g.Galaxy] | [gm.GalaxyModel]
+            A galaxy that acts as a gravitational lens or is being lensed
         optimizer_class: class
             The class of a non-linear optimizer
         sub_grid_size: int
@@ -1038,7 +1025,6 @@ class MultiPlanePhase(PhaseImaging):
 
 
 class GalaxyFitPhase(AbstractPhase):
-
     galaxies = PhasePropertyCollection("galaxies")
 
     def __init__(self, phase_name, galaxies=None, use_intensities=False, use_surface_density=False, use_potential=False,
@@ -1050,7 +1036,6 @@ class GalaxyFitPhase(AbstractPhase):
 
         Parameters
         ----------
-        galaxy_data_class: class<gd.GalaxyData>
         optimizer_class: class
             The class of a non_linear optimizer
         sub_grid_size: int
@@ -1073,10 +1058,9 @@ class GalaxyFitPhase(AbstractPhase):
 
         Parameters
         ----------
+        galaxy_data
         mask: Mask
             The default masks passed in by the pipeline
-        noise_map
-        array
         previous_results: ResultsCollection
             An object describing the results of the last phase or None if no phase has been executed
 
@@ -1097,10 +1081,9 @@ class GalaxyFitPhase(AbstractPhase):
 
         Parameters
         ----------
+        galaxy_data
         mask: Mask
             The default masks passed in by the pipeline
-        array
-        noise_map
         previous_results: ResultsCollection
             The result from the previous phase
 
@@ -1148,7 +1131,6 @@ class GalaxyFitPhase(AbstractPhase):
     class Analysis(Phase.Analysis):
 
         def __init__(self, cosmology, phase_name, previous_results):
-
             super(GalaxyFitPhase.Analysis, self).__init__(cosmology=cosmology, phase_name=phase_name,
                                                           previous_results=previous_results)
 
@@ -1193,7 +1175,6 @@ class GalaxyFitPhase(AbstractPhase):
             fit = self.fit_for_instance(instance=instance)
 
             if self.plot_galaxy_fit_as_subplot:
-
                 galaxy_fit_plotters.plot_fit_subplot(
                     fit=fit, should_plot_mask=self.should_plot_mask, zoom_around_mask=self.zoom_around_mask,
                     units=self.plot_units,
@@ -1214,7 +1195,6 @@ class GalaxyFitPhase(AbstractPhase):
             elif not during_analysis:
 
                 if self.plot_ray_tracing_all_at_end_png:
-
                     galaxy_fit_plotters.plot_fit_individuals(
                         fit=fit, should_plot_mask=self.should_plot_mask, zoom_around_mask=self.zoom_around_mask,
                         should_plot_image=True,
@@ -1226,7 +1206,6 @@ class GalaxyFitPhase(AbstractPhase):
                         output_path=self.output_image_path, output_format='png')
 
                 if self.plot_ray_tracing_all_at_end_fits:
-
                     galaxy_fit_plotters.plot_fit_individuals(
                         fit=fit, should_plot_mask=self.should_plot_mask, zoom_around_mask=self.zoom_around_mask,
                         should_plot_image=True,
@@ -1276,12 +1255,10 @@ class GalaxyFitPhase(AbstractPhase):
 
         def visualize(self, instance, suffix, during_analysis):
 
-
             self.plot_count += 1
             fit_y, fit_x = self.fit_for_instance(instance=instance)
 
             if self.plot_galaxy_fit_as_subplot:
-
                 galaxy_fit_plotters.plot_fit_subplot(
                     fit=fit_y, should_plot_mask=self.should_plot_mask, zoom_around_mask=self.zoom_around_mask,
                     units=self.plot_units,
@@ -1317,7 +1294,6 @@ class GalaxyFitPhase(AbstractPhase):
             elif not during_analysis:
 
                 if self.plot_ray_tracing_all_at_end_png:
-
                     galaxy_fit_plotters.plot_fit_individuals(
                         fit=fit_y, should_plot_mask=self.should_plot_mask, zoom_around_mask=self.zoom_around_mask,
                         should_plot_image=True,
@@ -1339,7 +1315,6 @@ class GalaxyFitPhase(AbstractPhase):
                         output_path=self.output_image_x_path, output_format='png')
 
                 if self.plot_ray_tracing_all_at_end_fits:
-
                     galaxy_fit_plotters.plot_fit_individuals(
                         fit=fit_y, should_plot_mask=self.should_plot_mask, zoom_around_mask=self.zoom_around_mask,
                         should_plot_image=True,
@@ -1381,7 +1356,6 @@ class GalaxyFitPhase(AbstractPhase):
 
 
 class SensitivityPhase(PhaseImaging):
-
     lens_galaxies = PhasePropertyCollection("lens_galaxies")
     source_galaxies = PhasePropertyCollection("source_galaxies")
     sensitive_galaxies = PhasePropertyCollection("sensitive_galaxies")
@@ -1437,7 +1411,6 @@ class SensitivityPhase(PhaseImaging):
             return fit.figure_of_merit
 
         def visualize(self, instance, suffix, during_analysis):
-
             self.plot_count += 1
 
             tracer_normal = self.tracer_normal_for_instance(instance)
@@ -1492,7 +1465,6 @@ class SensitivityPhase(PhaseImaging):
 class HyperAnalysis(object):
 
     def __init__(self):
-
         pass
 
 
