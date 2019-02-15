@@ -345,13 +345,13 @@ class TestPhase(object):
 
         phase.use_positions = False
         analysis = phase.make_analysis(data=ccd_data, positions=[[[1.0, 1.0], [2.0, 2.0]]])
-        assert analysis.lens_data.positions == None
+        assert analysis.lens_data.positions is None
 
     def test__make_analysis__phase_info_is_made(self, phase, ccd_data):
 
-        analysis = phase.make_analysis(data=ccd_data)
+        phase.make_analysis(data=ccd_data)
 
-        file_phase_info = "{}/{}/{}".format(conf.instance.output_path, phase.phase_name, 'phase.info')
+        file_phase_info = "{}/{}/{}".format(conf.instance.output_path, phase.optimizer.name, 'phase.info')
 
         phase_info = open(file_phase_info, 'r')
 
