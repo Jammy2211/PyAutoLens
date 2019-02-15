@@ -732,7 +732,7 @@ class PhaseImaging(Phase):
                         should_plot_surface_density=True,
                         should_plot_potential=True,
                         should_plot_deflections=True,
-                        output_path=image_path, output_format='fits')
+                        output_path=image_path + 'fits/', output_format='fits')
 
                 if self.plot_lens_fit_all_at_end_png:
                     lens_fit_plotters.plot_fit_individuals(
@@ -767,7 +767,7 @@ class PhaseImaging(Phase):
                         should_plot_source_plane_image=True,
                         should_plot_residual_map=True,
                         should_plot_chi_squared_map=True,
-                        output_path=image_path, output_format='fits')
+                        output_path=image_path + 'fits/', output_format='fits')
 
             return fit
 
