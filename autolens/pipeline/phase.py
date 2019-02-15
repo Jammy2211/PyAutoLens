@@ -815,6 +815,7 @@ class LensPlanePhase(PhaseImaging):
     def __init__(self, phase_name, lens_galaxies=None, optimizer_class=non_linear.MultiNest, sub_grid_size=2,
                  image_psf_shape=None, mask_function=None, inner_circular_mask_radii=None, cosmology=cosmo.Planck15,
                  auto_link_priors=False):
+
         super(LensPlanePhase, self).__init__(optimizer_class=optimizer_class,
                                              sub_grid_size=sub_grid_size,
                                              image_psf_shape=image_psf_shape,
