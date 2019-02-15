@@ -21,6 +21,11 @@ class MockMask(object):
     pass
 
 
+class Optimizer(object):
+    def __init__(self):
+        self.name = "dummy_phase"
+
+
 class DummyPhaseImaging(object):
     def __init__(self):
         self.data = None
@@ -28,6 +33,8 @@ class DummyPhaseImaging(object):
         self.previous_results = None
         self.phase_name = "dummy_phase"
         self.mask = None
+
+        self.optimizer = Optimizer()
 
     def run(self, data, previous_results, mask=None, positions=None):
         self.data = data
@@ -60,6 +67,7 @@ class TestPassPositions(object):
         assert phase_1.positions == positions
         assert phase_2.positions == positions
 
+
 class TestPipelineImaging(object):
     def test_run_pipeline(self):
         phase_1 = DummyPhaseImaging()
@@ -88,6 +96,7 @@ class DummyPhasePositions(object):
         self.previous_results = None
         self.pixel_scale = None
         self.phase_name = "dummy_phase"
+        self.optimizer = Optimizer()
 
     def run(self, positions, pixel_scale, previous_results):
         self.positions = positions
