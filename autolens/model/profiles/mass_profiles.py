@@ -6,6 +6,7 @@ from numba.types import intc, CPointer, float64
 from scipy import LowLevelCallable
 from scipy import special
 from scipy.integrate import quad
+from astropy import constants
 
 from autolens import decorator_util
 from autolens.model.profiles import geometry_profiles
@@ -99,6 +100,10 @@ class PointMass(geometry_profiles.SphericalProfile, MassProfile):
     def deflections_from_grid(self, grid):
         grid_radii = self.grid_to_grid_radii(grid=grid)
         return self.grid_to_grid_cartesian(grid=grid/grid_radii[:, np.newaxis], radius=self.einstein_radius/grid_radii)
+
+    # @property
+    # def mass(self):
+    #     return (206265 * self.einstein_radius * (constants.c**2.0) / (4.0 * constants.G)) / 1.988e30
 
 # noinspection PyAbstractClass
 class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
