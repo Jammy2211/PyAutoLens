@@ -22,12 +22,13 @@ class MockMask(object):
 
 
 class DummyPhaseImaging(object):
+
     def __init__(self):
         self.data = None
         self.positions = None
         self.previous_results = None
-        self.phase_name = "dummy_phase"
         self.mask = None
+        self.optimizer = DummyImagingOptimizer()
 
     def run(self, data, previous_results, mask=None, positions=None):
         self.data = data
@@ -36,6 +37,11 @@ class DummyPhaseImaging(object):
         self.positions = positions
         return non_linear.Result(model_mapper.ModelInstance(), 1)
 
+class DummyImagingOptimizer(object):
+
+    @property
+    def name(self):
+        return 'dummy_phase'
 
 class TestPassMask(object):
     def test_pass_mask(self):
@@ -87,13 +93,20 @@ class DummyPhasePositions(object):
         self.positions = None
         self.previous_results = None
         self.pixel_scale = None
-        self.phase_name = "dummy_phase"
+        self.optimizer = DummyPositionsOptimizer()
 
     def run(self, positions, pixel_scale, previous_results):
+
         self.positions = positions
         self.pixel_scale = pixel_scale
         self.previous_results = previous_results
         return non_linear.Result(model_mapper.ModelInstance(), 1)
+
+class DummyPositionsOptimizer(object):
+
+    @property
+    def name(self):
+        return 'dummy_phase'
 
 
 class TestPipelinePositions(object):

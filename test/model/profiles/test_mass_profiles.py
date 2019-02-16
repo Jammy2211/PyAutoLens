@@ -55,6 +55,26 @@ class TestPointMass(object):
         assert deflections[0, 0] == pytest.approx(0.5, 1e-3)
         assert deflections[0, 1] == pytest.approx(0.5, 1e-3)
 
+    def test__deflections__change_geometry(self):
+        
+        point_mass_0 = mp.PointMass(centre=(0.0, 0.0))
+        point_mass_1 = mp.PointMass(centre=(1.0, 1.0))
+        defls_0 = point_mass_0.deflections_from_grid(grid=np.array([[1.0, 1.0]]))
+        defls_1 = point_mass_1.deflections_from_grid(grid=np.array([[0.0, 0.0]]))
+        assert defls_0[0, 0] == pytest.approx(-defls_1[0, 0], 1e-5)
+        assert defls_0[0, 1] == pytest.approx(-defls_1[0, 1], 1e-5)
+
+        point_mass_0 = mp.PointMass(centre=(0.0, 0.0))
+        point_mass_1 = mp.PointMass(centre=(0.0, 0.0))
+        defls_0 = point_mass_0.deflections_from_grid(grid=np.array([[1.0, 0.0]]))
+        defls_1 = point_mass_1.deflections_from_grid(grid=np.array([[0.0, 1.0]]))
+        assert defls_0[0, 0] == pytest.approx(defls_1[0, 1], 1e-5)
+        assert defls_0[0, 1] == pytest.approx(defls_1[0, 0], 1e-5)
+
+    def test__multiple_coordinates_in__multiple_coordinates_out(self):
+
+        point_mass = mp.PointMass(centre=(1.0, 2.0), einstein_radius=1.0)
+
         deflections = point_mass.deflections_from_grid(grid=np.array([[2.0, 3.0], [2.0, 3.0], [2.0, 3.0]]))
         assert deflections[0, 0] == pytest.approx(0.5, 1e-3)
         assert deflections[0, 1] == pytest.approx(0.5, 1e-3)
@@ -77,6 +97,14 @@ class TestPointMass(object):
 
         assert deflections[3, 0] == pytest.approx(0.25, 1e-3)
         assert deflections[3, 1] == pytest.approx(0.25, 1e-3)
+
+    # def test__mass(self):
+    #
+    #     point_mass = mp.PointMass(centre=(0.0, 0.0), einstein_radius=1.91716)
+    #
+    #     print(point_mass.mass)
+    #
+    #     assert point_mass.mass == pytest.approx(1.3332e11, 1e9)
 
 class TestCoredPowerLaw(object):
 
