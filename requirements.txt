@@ -1,4 +1,4 @@
-autofit==0.10.1
+autofit==0.11.0
 argh==0.26.2
 asteval==0.9.12
 astropy==3.0

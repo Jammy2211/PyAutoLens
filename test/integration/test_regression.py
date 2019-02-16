@@ -20,6 +20,21 @@ output_path = '{}/output'.format(dirpath)
 test_name = "test"
 
 
+class TestAdvancedModelMapper(object):
+    def test_fully_qualified_paramnames(self):
+        mapper = mm.ModelMapper()
+        galaxy_model = gm.GalaxyModel(light_profile=lp.EllipticalLightProfile)
+        light_profile = galaxy_model.light_profile
+        mapper.galaxy_model = galaxy_model
+
+        assert light_profile.name_for_prior(light_profile.axis_ratio) == "axis_ratio"
+        assert light_profile.name_for_prior(light_profile.centre.centre_0) == "centre_0"
+
+        assert galaxy_model.name_for_prior(light_profile.axis_ratio) == "light_profile_axis_ratio"
+
+        assert mapper.param_names[0] == "galaxy_model_light_profile_centre_0"
+
+
 class TestPhaseModelMapper(object):
 
     def test_pairing_works(self):
