@@ -8,6 +8,76 @@ from autolens.model.profiles import light_profiles as lp, mass_profiles as mp
 grid = np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [2.0, 4.0]])
 
 
+class TestPointMass(object):
+
+    def test_constructor(self):
+
+        point_mass = mp.PointMass(centre=(1.0, 1.0), einstein_radius=2.0)
+
+        assert point_mass.centre == (1.0, 1.0)
+        assert point_mass.einstein_radius == 2.0
+
+    def test__deflections__correct_values(self):
+
+        point_mass = mp.PointMass(centre=(0.0, 0.0), einstein_radius=1.0)
+
+        deflections = point_mass.deflections_from_grid(grid=np.array([[1.0, 1.0]]))
+        assert deflections[0, 0] == pytest.approx(0.5, 1e-3)
+        assert deflections[0, 1] == pytest.approx(0.5, 1e-3)
+
+        point_mass = mp.PointMass(centre=(0.0, 0.0), einstein_radius=2.0)
+
+        deflections = point_mass.deflections_from_grid(grid=np.array([[1.0, 1.0]]))
+        assert deflections[0, 0] == pytest.approx(1.0, 1e-3)
+        assert deflections[0, 1] == pytest.approx(1.0, 1e-3)
+
+        point_mass = mp.PointMass(centre=(0.0, 0.0), einstein_radius=1.0)
+
+        deflections = point_mass.deflections_from_grid(grid=np.array([[2.0, 2.0]]))
+        assert deflections[0, 0] == pytest.approx(0.25, 1e-3)
+        assert deflections[0, 1] == pytest.approx(0.25, 1e-3)
+
+        point_mass = mp.PointMass(centre=(0.0, 0.0), einstein_radius=1.0)
+
+        deflections = point_mass.deflections_from_grid(grid=np.array([[2.0, 1.0]]))
+        assert deflections[0, 0] == pytest.approx(0.4, 1e-3)
+        assert deflections[0, 1] == pytest.approx(0.2, 1e-3)
+
+        point_mass = mp.PointMass(centre=(0.0, 0.0), einstein_radius=2.0)
+
+        deflections = point_mass.deflections_from_grid(grid=np.array([[4.0, 9.0]]))
+        assert deflections[0, 0] == pytest.approx(8.0/97.0, 1e-3)
+        assert deflections[0, 1] == pytest.approx(18.0/97.0, 1e-3)
+
+        point_mass = mp.PointMass(centre=(1.0, 2.0), einstein_radius=1.0)
+
+        deflections = point_mass.deflections_from_grid(grid=np.array([[2.0, 3.0]]))
+        assert deflections[0, 0] == pytest.approx(0.5, 1e-3)
+        assert deflections[0, 1] == pytest.approx(0.5, 1e-3)
+
+        deflections = point_mass.deflections_from_grid(grid=np.array([[2.0, 3.0], [2.0, 3.0], [2.0, 3.0]]))
+        assert deflections[0, 0] == pytest.approx(0.5, 1e-3)
+        assert deflections[0, 1] == pytest.approx(0.5, 1e-3)
+        assert deflections[1, 0] == pytest.approx(0.5, 1e-3)
+        assert deflections[1, 1] == pytest.approx(0.5, 1e-3)
+        assert deflections[2, 0] == pytest.approx(0.5, 1e-3)
+        assert deflections[2, 1] == pytest.approx(0.5, 1e-3)
+
+        point_mass = mp.PointMass(centre=(0.0, 0.0), einstein_radius=1.0)
+
+        deflections = point_mass.deflections_from_grid(grid=np.array([[1.0, 1.0], [2.0, 2.0], [1.0, 1.0], [2.0, 2.0]]))
+        assert deflections[0, 0] == pytest.approx(0.5, 1e-3)
+        assert deflections[0, 1] == pytest.approx(0.5, 1e-3)
+
+        assert deflections[1, 0] == pytest.approx(0.25, 1e-3)
+        assert deflections[1, 1] == pytest.approx(0.25, 1e-3)
+
+        assert deflections[2, 0] == pytest.approx(0.5, 1e-3)
+        assert deflections[2, 1] == pytest.approx(0.5, 1e-3)
+
+        assert deflections[3, 0] == pytest.approx(0.25, 1e-3)
+        assert deflections[3, 1] == pytest.approx(0.25, 1e-3)
+
 class TestCoredPowerLaw(object):
 
     def test__constructor(self):
