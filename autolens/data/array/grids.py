@@ -1,5 +1,6 @@
 from functools import wraps
 import numpy as np
+import scipy.spatial.qhull as qhull
 from autolens import decorator_util
 
 from autolens.data.array import mask as msk, scaled_array
@@ -612,6 +613,38 @@ class SubGrid(RegularGrid):
         - sub_to_pixel[20] = 4 -  The twenty first sub-pixel is within the 5th regular pixel.
         """
         return mapping_util.sub_to_regular_from_mask(self.mask, self.sub_grid_size).astype('int')
+
+
+class InterpGrid(object):
+
+    def __init__(self, grid, interp_grid):
+        self.grid = grid
+        self.interp_grid = interp_grid
+
+        self.vtx, self.wts = self.interp_weights
+
+    @property
+    def interp_weights(self):
+        tri = qhull.Delaunay(self.interp_grid)
+        simplex = tri.find_simplex(self.grid)
+        vertices = np.take(tri.simplices, simplex, axis=0)
+        temp = np.take(tri.transform, simplex, axis=0)
+        delta = self.grid - temp[:, 2]
+        bary = np.einsum('njk,nk->nj', temp[:, :2, :], delta)
+        return vertices, np.hstack((bary, 1 - bary.sum(axis=1, keepdims=True)))
+
+    @classmethod
+    def from_mask_grid_and_interp_pixel_scales(cls, mask, grid, interp_pixel_scales):
+        interp_grid = grid_util.interp_grid_1d_from_mask_and_interp_pixel_scale(
+            mask=mask, mask_pixel_scales=mask.pixel_scales, mask_origin=mask.origin,
+            interp_pixel_scales=interp_pixel_scales)
+        return InterpGrid(grid=grid, interp_grid=interp_grid)
+
+    def interpolated_values_from_values(self, values):
+        return self.interpolate(values=values)
+
+    def interpolate(self, values):
+        return np.einsum('nj,nj->n', np.take(values, self.vtx), self.wts)
 
 
 class PixGrid(np.ndarray):
