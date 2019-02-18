@@ -7,6 +7,7 @@ from autolens.data.array.util import mapping_util, mask_util
 from autolens.data.array import mask as msk
 from autolens.data.array import grids
 
+from autolens.model.profiles import mass_profiles as mp
 
 @pytest.fixture(name="mask")
 def make_mask():
@@ -287,6 +288,107 @@ class TestSubGrid(object):
         assert sub_grid.sub_grid_size == 2
         assert sub_grid.sub_grid_fraction == (1.0 / 4.0)
         assert (sub_grid.sub_to_regular == sub_to_image_util).all()
+
+
+class TestInterpGrid:
+
+    def test__20x20_deflection_angles_no_central_pixels__interpolated_accurately(self):
+
+        shape = (20, 20)
+        pixel_scale = 1.0
+
+        mask = msk.Mask.circular_annular(shape=shape, pixel_scale=pixel_scale, inner_radius_arcsec=3.0,
+                                         outer_radius_arcsec=8.0)
+
+        grid = grids.RegularGrid.from_mask(mask=mask)
+
+        isothermal = mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=1.0)
+
+        true_deflections = isothermal.deflections_from_grid(grid=grid)
+
+        interpolator = grids.InterpGrid.from_mask_grid_and_interp_pixel_scales(
+            mask=mask, grid=grid, interp_pixel_scales=(1.0, 1.0))
+
+        interp_deflections_values = isothermal.deflections_from_grid(grid=interpolator.interp_grid)
+
+        interpolated_deflections_y = interpolator.interpolated_values_from_values(values=interp_deflections_values[:,0])
+        interpolated_deflections_x = interpolator.interpolated_values_from_values(values=interp_deflections_values[:, 1])
+
+        assert np.max(true_deflections[:,0] - interpolated_deflections_y) < 0.001
+        assert np.max(true_deflections[:,1] - interpolated_deflections_x) < 0.001
+
+    def test__move_centre_of_galaxy__interpolated_accurately(self):
+
+        shape = (24, 24)
+        pixel_scale = 1.0
+
+        mask = msk.Mask.circular_annular(shape=shape, pixel_scale=pixel_scale, inner_radius_arcsec=3.0,
+                                         outer_radius_arcsec=8.0, centre=(3.0, 3.0))
+
+        grid = grids.RegularGrid.from_mask(mask=mask)
+
+        isothermal = mp.SphericalIsothermal(centre=(3.0, 3.0), einstein_radius=1.0)
+
+        true_deflections = isothermal.deflections_from_grid(grid=grid)
+
+        interpolator = grids.InterpGrid.from_mask_grid_and_interp_pixel_scales(
+            mask=mask, grid=grid, interp_pixel_scales=(1.0, 1.0))
+
+        interp_deflections_values = isothermal.deflections_from_grid(grid=interpolator.interp_grid)
+
+        interpolated_deflections_y = interpolator.interpolated_values_from_values(values=interp_deflections_values[:,0])
+        interpolated_deflections_x = interpolator.interpolated_values_from_values(values=interp_deflections_values[:, 1])
+
+        assert np.max(true_deflections[:,0] - interpolated_deflections_y) < 0.001
+        assert np.max(true_deflections[:,1] - interpolated_deflections_x) < 0.001
+
+    def test__different_interpolation_pixel_scales_still_works(self):
+
+        shape = (28, 28)
+        pixel_scale = 1.0
+
+        mask = msk.Mask.circular_annular(shape=shape, pixel_scale=pixel_scale, inner_radius_arcsec=3.0,
+                                         outer_radius_arcsec=8.0, centre=(3.0, 3.0))
+
+        grid = grids.RegularGrid.from_mask(mask=mask)
+
+        isothermal = mp.SphericalIsothermal(centre=(3.0, 3.0), einstein_radius=1.0)
+
+        true_deflections = isothermal.deflections_from_grid(grid=grid)
+
+        interpolator = grids.InterpGrid.from_mask_grid_and_interp_pixel_scales(
+            mask=mask, grid=grid, interp_pixel_scales=(0.2, 0.2))
+
+        interp_deflections_values = isothermal.deflections_from_grid(grid=interpolator.interp_grid)
+
+        interpolated_deflections_y = interpolator.interpolated_values_from_values(values=interp_deflections_values[:,0])
+        interpolated_deflections_x = interpolator.interpolated_values_from_values(values=interp_deflections_values[:, 1])
+
+        assert np.max(true_deflections[:,0] - interpolated_deflections_y) < 0.001
+        assert np.max(true_deflections[:,1] - interpolated_deflections_x) < 0.001
+
+        interpolator = grids.InterpGrid.from_mask_grid_and_interp_pixel_scales(
+            mask=mask, grid=grid, interp_pixel_scales=(0.5, 0.5))
+
+        interp_deflections_values = isothermal.deflections_from_grid(grid=interpolator.interp_grid)
+
+        interpolated_deflections_y = interpolator.interpolated_values_from_values(values=interp_deflections_values[:,0])
+        interpolated_deflections_x = interpolator.interpolated_values_from_values(values=interp_deflections_values[:, 1])
+
+        assert np.max(true_deflections[:,0] - interpolated_deflections_y) < 0.001
+        assert np.max(true_deflections[:,1] - interpolated_deflections_x) < 0.001
+
+
+        interpolator = grids.InterpGrid.from_mask_grid_and_interp_pixel_scales(
+            mask=mask, grid=grid, interp_pixel_scales=(1.1, 1.1))
+
+        interp_deflections_values = isothermal.deflections_from_grid(grid=interpolator.interp_grid)
+
+        interpolated_deflections_y = interpolator.interpolated_values_from_values(values=interp_deflections_values[:,0])
+        interpolated_deflections_x = interpolator.interpolated_values_from_values(values=interp_deflections_values[:, 1])
+
+        assert np.max(true_deflections[:,0] - interpolated_deflections_y) < 0.1
+        assert np.max(true_deflections[:,1] - interpolated_deflections_x) < 0.1
 
 
 class TestPixGrid:

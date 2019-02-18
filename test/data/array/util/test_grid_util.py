@@ -453,7 +453,7 @@ class TestGridConversions(object):
                                          [2, 1], [2, 2], [2, 3],
                                          [3, 1], [3, 2], [3, 3]])).all()
 
-    def test__1d_arc_second_grid_to_1d_pixel_origind_grid__coordinates_in_origins_of_pixels(self):
+    def test__1d_arc_second_grid_to_1d_pixel_centre_grid__coordinates_in_origins_of_pixels(self):
 
         grid_arcsec = np.array([[1.0, -2.0], [1.0, 2.0],
                                      [-1.0, -2.0], [-1.0, 2.0]])
@@ -713,3 +713,261 @@ class TestGridConversions(object):
         assert grid_arcsec == pytest.approx(np.array([[2.0, -4.0], [2.0, 2.0], [2.0, 8.0],
                                                            [-1.0, -4.0], [-1.0, 2.0], [-1.0, 8.0],
                                                            [-4.0, -4.0], [-4.0, 2.0], [-4.0, 8.0]]), 1e-4)
+        
+    def test__2d_arc_second_grid_to_2d_pixel_centre_grid__coordinates_in_origins_of_pixels(self):
+
+        grid_arcsec = np.array([[[1.0, -2.0], [1.0, 2.0]],
+                                [[-1.0, -2.0], [-1.0, 2.0]]])
+
+        grid_pixels = grid_util.grid_arcsec_2d_to_grid_pixel_centres_2d(grid_arcsec_2d=grid_arcsec, shape=(2, 2),
+                                                                        pixel_scales=(2.0, 4.0))
+
+        assert (grid_pixels == np.array([[[0, 0], [0, 1]],
+                                         [[1, 0], [1, 1]]])).all()
+
+        grid_arcsec = np.array([[[3.0, -6.0], [3.0, 0.0], [3.0, 6.0]],
+                                [[0.0, -6.0], [0.0, 0.0], [0.0, 6.0]],
+                                [[-3.0, -6.0], [-3.0, 0.0], [-3.0, 6.0]]])
+
+        grid_pixels = grid_util.grid_arcsec_2d_to_grid_pixel_centres_2d(grid_arcsec_2d=grid_arcsec, shape=(3, 3),
+                                                                             pixel_scales=(3.0, 6.0))
+
+        assert (grid_pixels == np.array([[[0, 0], [0, 1], [0, 2]],
+                                         [[1, 0], [1, 1], [1, 2]],
+                                         [[2, 0], [2, 1], [2, 2]]])).all()
+
+    def test__2d_same_as_above_but_coordinates_are_top_left_of_each_pixel(self):
+
+        grid_arcsec = np.array([[[1.99, -3.99], [1.99, 0.01]],
+                                [[-0.01, -3.99], [-0.01, 0.01]]])
+
+        grid_pixels = grid_util.grid_arcsec_2d_to_grid_pixel_centres_2d(grid_arcsec_2d=grid_arcsec, shape=(2, 2),
+                                                                             pixel_scales=(2.0, 4.0))
+
+        assert (grid_pixels == np.array([[[0, 0], [0, 1]],
+                                         [[1, 0], [1, 1]]])).all()
+
+        grid_arcsec = np.array([[[4.49, -8.99], [4.49, -2.99], [4.49, 3.01]],
+                                     [[1.49, -8.99], [1.49, -2.99], [1.49, 3.01]],
+                                     [[-1.51, -8.99], [-1.51, -2.99], [-1.51, 3.01]]])
+
+        grid_pixels = grid_util.grid_arcsec_2d_to_grid_pixel_centres_2d(grid_arcsec_2d=grid_arcsec, shape=(3, 3),
+                                                                             pixel_scales=(3.0, 6.0))
+
+        assert (grid_pixels == np.array([[[0, 0], [0, 1], [0, 2]],
+                                         [[1, 0], [1, 1], [1, 2]],
+                                         [[2, 0], [2, 1], [2, 2]]])).all()
+
+    def test__2d_same_as_above_but_coordinates_are_bottom_right_of_each_pixel(self):
+
+        grid_arcsec = np.array([[[0.01, -0.01], [0.01, 3.99]],
+                                [[-1.99, -0.01], [-1.99, 3.99]]])
+
+        grid_pixels = grid_util.grid_arcsec_2d_to_grid_pixel_centres_2d(grid_arcsec_2d=grid_arcsec, shape=(2, 2),
+                                                                             pixel_scales=(2.0, 4.0))
+
+        assert (grid_pixels == np.array([[[0, 0], [0, 1]],
+                                         [[1, 0], [1, 1]]])).all()
+
+        grid_arcsec = np.array([[[1.51, -3.01], [1.51, 2.99], [1.51, 8.99]],
+                                 [[-1.49, -3.01], [-1.49, 2.99], [-1.49, 8.99]],
+                                 [[-4.49, -3.01], [-4.49, 2.99], [-4.49, 8.99]]])
+
+        grid_pixels = grid_util.grid_arcsec_2d_to_grid_pixel_centres_2d(grid_arcsec_2d=grid_arcsec, shape=(3, 3),
+                                                                             pixel_scales=(3.0, 6.0))
+
+        assert (grid_pixels == np.array([[[0, 0], [0, 1], [0, 2]],
+                                         [[1, 0], [1, 1], [1, 2]],
+                                         [[2, 0], [2, 1], [2, 2]]])).all()
+
+    def test__2d_same_as_above__arcsec_to_pixel_origin__but_nonzero_origin(self):
+
+        # +1.0 for all entries for a origin of (1.0, 1.0)
+        grid_arcsec = np.array([[[2.0, -1.0], [2.0, 3.0]],
+                                [[0.0, -1.0], [0.0, 3.0]]])
+
+        grid_pixels = grid_util.grid_arcsec_2d_to_grid_pixel_centres_2d(grid_arcsec_2d=grid_arcsec, shape=(2, 2),
+                                                                             pixel_scales=(2.0, 4.0), origin=(1.0, 1.0))
+
+        assert (grid_pixels == np.array([[[0, 0], [0, 1]],
+                                         [[1, 0], [1, 1]]])).all()
+
+        # +1.0, -2.0, for origin of (1.0, -2.0)
+        grid_arcsec = np.array([[[4.0, -8.0], [4.0, -2.0], [4.0, 4.0]],
+                                 [[1.0, -8.0], [1.0, -2.0], [1.0, 4.0]],
+                                 [[-2.0, -8.0], [-2.0, -2.0], [-2.0, 4.0]]])
+
+        grid_pixels = grid_util.grid_arcsec_2d_to_grid_pixel_centres_2d(grid_arcsec_2d=grid_arcsec, shape=(3, 3),
+                                                                             pixel_scales=(3.0, 6.0), origin=(1.0, -2.0))
+
+        assert (grid_pixels == np.array([[[0, 0], [0, 1], [0, 2]],
+                                         [[1, 0], [1, 1], [1, 2]],
+                                         [[2, 0], [2, 1], [2, 2]]])).all()
+
+
+class TestInterpGridFromMask(object):
+
+    def test__mask_3x3_central_pixel__same_pixel_scales__interp_grid_same_as_mask_grid(self):
+
+        mask = np.array([[True, True, True, True, True],
+                         [True, True, True, True, True],
+                         [True, True, False, True, True],
+                         [True, True, True, True, True],
+                         [True, True, True, True, True]])
+
+        interp_grid_1d = grid_util.interp_grid_1d_from_mask_and_interp_pixel_scale(
+            mask=mask, mask_pixel_scales=(1.0, 1.0), mask_origin=(0.0, 0.0), interp_pixel_scales=(1.0, 1.0))
+
+        assert (interp_grid_1d == np.array([[ 1.0, -1.0], [ 1.0, 0.0], [ 1.0, 1.0],
+                                            [ 0.0, -1.0], [ 0.0, 0.0], [ 0.0, 1.0],
+                                            [-1.0, -1.0], [-1.0, 0.0], [-1.0, 1.0]])).all()
+
+    def test__mask_3x3_central_pixel__interp_grid_half_pixel_scale__interp_grid_is_5x5(self):
+
+        mask = np.array([[True, True, True, True, True],
+                         [True, True, True, True, True],
+                         [True, True, False, True, True],
+                         [True, True, True, True, True],
+                         [True, True, True, True, True]])
+
+        interp_grid_1d = grid_util.interp_grid_1d_from_mask_and_interp_pixel_scale(
+            mask=mask, mask_pixel_scales=(1.0, 1.0), mask_origin=(0.0, 0.0), interp_pixel_scales=(0.5, 0.5))
+
+        assert (interp_grid_1d == np.array([[1.5, -1.5], [ 1.5, -1.0], [ 1.5, -0.5], [ 1.5, 0.0], [ 1.5, 0.5], [ 1.5, 1.0],
+                                            [1.0, -1.5], [ 1.0, -1.0], [ 1.0, -0.5], [ 1.0, 0.0], [ 1.0, 0.5], [ 1.0, 1.0],
+                                            [0.5, -1.5], [ 0.5, -1.0], [ 0.5, -0.5], [ 0.5, 0.0], [ 0.5, 0.5], [ 0.5, 1.0],
+                                            [-0.0, -1.5], [ 0.0, -1.0], [ 0.0, -0.5], [ 0.0, 0.0], [ 0.0, 0.5], [ 0.0, 1.0],
+                                            [-0.5, -1.5], [-0.5, -1.0], [-0.5, -0.5], [-0.5, 0.0], [-0.5, 0.5], [-0.5, 1.0],
+                                            [-1.0, -1.5], [-1.0, -1.0], [-1.0, -0.5], [-1.0, 0.0], [-1.0, 0.5], [-1.0, 1.0]])).all()
+
+    def test__mask_3x3_central_pixel__interp_grid_double_pixel_scale__interp_grid_is_2x2(self):
+
+        mask = np.array([[True, True, True, True, True, True, True],
+                         [True, True, True, True, True, True, True],
+                         [True, True, True, True, True, True, True],
+                         [True, True, True, False, True, True, True],
+                         [True, True, True, True, True, True, True],
+                         [True, True, True, True, True, True, True],
+                         [True, True, True, True, True, True, True]])
+
+        interp_grid_1d = grid_util.interp_grid_1d_from_mask_and_interp_pixel_scale(
+            mask=mask, mask_pixel_scales=(1.0, 1.0), mask_origin=(0.0, 0.0), interp_pixel_scales=(2.0, 2.0))
+
+        assert (interp_grid_1d == np.array([[ 1.0, -1.0], [ 1.0, 1.0],
+                                            [-1.0, -1.0], [-1.0, 1.0]])).all()
+
+    def test__mask_4x3_two_central_pixels__same_pixel_scales__interp_grid_is_4x3(self):
+
+        mask = np.array([[True, True, True, True, True],
+                         [True, True, True, True, True],
+                         [True, True, False, True, True],
+                         [True, True, False, True, True],
+                         [True, True, True, True, True],
+                         [True, True, True, True, True]])
+
+        interp_grid_1d = grid_util.interp_grid_1d_from_mask_and_interp_pixel_scale(
+            mask=mask, mask_pixel_scales=(1.0, 1.0), mask_origin=(0.0, 0.0), interp_pixel_scales=(1.0, 1.0))
+
+        assert (interp_grid_1d == np.array([[ 1.5, -1.0], [ 1.5, 0.0], [ 1.5, 1.0],
+                                            [ 0.5, -1.0], [ 0.5, 0.0], [ 0.5, 1.0],
+                                            [-0.5, -1.0], [-0.5, 0.0], [-0.5, 1.0],
+                                            [-1.5, -1.0], [-1.5, 0.0], [-1.5, 1.0]])).all()
+
+    def test__mask_3x4_two_central_pixels__same_pixel_scales__interp_grid_is_3x4(self):
+
+        mask = np.array([[True, True, True, True, True, True],
+                         [True, True, True, True, True, True],
+                         [True, True, False, False, True, True],
+                         [True, True, True, True, True, True],
+                         [True, True, True, True, True, True]])
+
+        interp_grid_1d = grid_util.interp_grid_1d_from_mask_and_interp_pixel_scale(
+            mask=mask, mask_pixel_scales=(1.0, 1.0), mask_origin=(0.0, 0.0), interp_pixel_scales=(1.0, 1.0))
+
+        assert (interp_grid_1d == np.array([[ 1.0, -1.5], [ 1.0, -0.5], [ 1.0, 0.5], [ 1.0, 1.5],
+                                            [ 0.0, -1.5], [ 0.0, -0.5], [ 0.0, 0.5], [ 0.0, 1.5],
+                                            [-1.0, -1.5], [-1.0, -0.5], [-1.0, 0.5], [-1.0, 1.5]])).all()
+
+    def test__mask_is_7x7_with_off_centre_pixels__same_pixel_scales____interp_grid_coordinates_correct(self):
+
+        mask = np.array([[True, True, True, True, True, True, True],
+                         [True, True, True, True, True, True, True],
+                         [True, True, False, True, True, True, True],
+                         [True, True, True, True, True, True, True],
+                         [True, True, True, True, True, True, True],
+                         [True, True, True, True, True, True, True],
+                         [True, True, True, True, True, True, True]])
+
+        interp_grid_1d = grid_util.interp_grid_1d_from_mask_and_interp_pixel_scale(
+            mask=mask, mask_pixel_scales=(1.0, 1.0), mask_origin=(0.0, 0.0), interp_pixel_scales=(1.0, 1.0))
+
+        assert (interp_grid_1d == np.array([[ 2.0, -2.0], [2.0, -1.0], [2.0, 0.0],
+                                            [ 1.0, -2.0], [1.0, -1.0], [1.0, 0.0],
+                                            [ 0.0, -2.0], [0.0, -1.0], [0.0, 0.0]])).all()
+
+        mask = np.array([[True, True, True, True, True, True, True],
+                         [True, True, True, True, True, True, True],
+                         [True, True, True, True, False, True, True],
+                         [True, True, True, True, True, True, True],
+                         [True, True, True, True, True, True, True],
+                         [True, True, True, True, True, True, True],
+                         [True, True, True, True, True, True, True]])
+
+        interp_grid_1d = grid_util.interp_grid_1d_from_mask_and_interp_pixel_scale(
+            mask=mask, mask_pixel_scales=(1.0, 1.0), mask_origin=(0.0, 0.0), interp_pixel_scales=(1.0, 1.0))
+
+        assert (interp_grid_1d == np.array([[ 2.0, 0.0], [ 2.0, 1.0], [ 2.0, 2.0],
+                                            [ 1.0, 0.0], [ 1.0, 1.0], [ 1.0, 2.0],
+                                            [ 0.0, 0.0], [0.0, 1.0], [0.0, 2.0]])).all()
+
+        mask = np.array([[True, True, True, True, True, True, True],
+                         [True, True, True, True, True, True, True],
+                         [True, True, True, True, True, True, True],
+                         [True, True, True, True, True, True, True],
+                         [True, True, False, True, True, True, True],
+                         [True, True, True, True, True, True, True],
+                         [True, True, True, True, True, True, True]])
+
+        interp_grid_1d = grid_util.interp_grid_1d_from_mask_and_interp_pixel_scale(
+            mask=mask, mask_pixel_scales=(1.0, 1.0), mask_origin=(0.0, 0.0), interp_pixel_scales=(1.0, 1.0))
+
+        assert (interp_grid_1d == np.array([[ 0.0, -2.0], [ 0.0, -1.0], [ 0.0, 0.0],
+                                            [-1.0, -2.0], [-1.0, -1.0], [-1.0, 0.0],
+                                            [-2.0, -2.0], [-2.0, -1.0], [-2.0, 0.0]])).all()
+
+        mask = np.array([[True, True, True, True, True, True, True],
+                         [True, True, True, True, True, True, True],
+                         [True, True, True, True, True, True, True],
+                         [True, True, True, True, True, True, True],
+                         [True, True, True, True, False, True, True],
+                         [True, True, True, True, True, True, True],
+                         [True, True, True, True, True, True, True]])
+
+        interp_grid_1d = grid_util.interp_grid_1d_from_mask_and_interp_pixel_scale(
+            mask=mask, mask_pixel_scales=(1.0, 1.0), mask_origin=(0.0, 0.0), interp_pixel_scales=(1.0, 1.0))
+
+        assert (interp_grid_1d == np.array([[ 0.0, 0.0], [ 0.0, 1.0], [ 0.0, 2.0],
+                                            [-1.0, 0.0], [-1.0, 1.0], [-1.0, 2.0],
+                                            [-2.0, 0.0], [-2.0, 1.0], [-2.0, 2.0]])).all()
+
+    def test__mask_3x3_central_pixel__same_pixel_scales__change_mask_origin_changes_interp_grid(self):
+
+        mask = np.array([[True, True, True, True, True],
+                         [True, True, True, True, True],
+                         [True, True, False, True, True],
+                         [True, True, True, True, True],
+                         [True, True, True, True, True]])
+
+        interp_grid_1d = grid_util.interp_grid_1d_from_mask_and_interp_pixel_scale(
+            mask=mask, mask_pixel_scales=(1.0, 1.0), mask_origin=(1.0, 0.0), interp_pixel_scales=(1.0, 1.0))
+
+        assert (interp_grid_1d == np.array([[ 2.0, -1.0], [ 2.0, 0.0], [ 2.0, 1.0],
+                                            [ 1.0, -1.0], [ 1.0, 0.0], [ 1.0, 1.0],
+                                            [ 0.0, -1.0], [ 0.0, 0.0], [ 0.0, 1.0]])).all()
+
+        interp_grid_1d = grid_util.interp_grid_1d_from_mask_and_interp_pixel_scale(
+            mask=mask, mask_pixel_scales=(1.0, 1.0), mask_origin=(1.0, 1.0), interp_pixel_scales=(1.0, 1.0))
+
+        assert (interp_grid_1d == np.array([[ 2.0, 0.0], [ 2.0, 1.0], [ 2.0, 2.0],
+                                            [ 1.0, 0.0], [ 1.0, 1.0], [ 1.0, 2.0],
+                                            [ 0.0, 0.0], [ 0.0, 1.0], [ 0.0, 2.0]])).all()
