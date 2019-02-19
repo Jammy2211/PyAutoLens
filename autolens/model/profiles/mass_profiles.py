@@ -8,6 +8,7 @@ from scipy import special
 from scipy.integrate import quad
 from astropy import constants
 
+from scipy.optimize import fsolve, root_scalar
 from autolens import decorator_util
 from autolens.model.profiles import geometry_profiles
 from autolens.model.profiles import light_profiles
@@ -185,6 +186,25 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
         return (self.mass_within_circle(radius=outer_annuli_radius, conversion_factor=conversion_factor) -
                 self.mass_within_circle(radius=inner_annuli_radius, conversion_factor=conversion_factor)) \
                / annuli_area
+
+    @property
+    def radius_of_average_critical_curve_in_circle(self):
+        """The radius a critical curve forms for this mass profile, e.g. where the mean convergence is equal to 1.0.
+
+         In case of ellipitical mass profiles, the 'average' critical curve is used, whereby the convergence is \
+         rescaled into a circle using the axis ratio.
+
+         This radius corresponds to the Einstein radius of the mass profile, and is a property of a number of \
+         mass profiles below.
+         """
+
+        def func(radius):
+            return self.mass_within_circle(radius=radius, conversion_factor=1.0) - \
+                   np.pi * radius ** 2.0
+
+        ellipticity_rescale = 1.0 - ((1.0 - self.axis_ratio) / 2.0)
+
+        return ellipticity_rescale * root_scalar(func, bracket=[1e-4, 1000.0]).root
 
 
 class EllipticalCoredPowerLaw(EllipticalMassProfile, MassProfile):
@@ -613,6 +633,9 @@ class AbstractEllipticalGeneralizedNFW(EllipticalMassProfile, MassProfile):
 
         return surface_density_grid
 
+    @property
+    def einstein_radius(self):
+        return self.radius_of_average_critical_curve_in_circle
 
 class EllipticalGeneralizedNFW(AbstractEllipticalGeneralizedNFW):
 
@@ -1038,6 +1061,9 @@ class AbstractEllipticalSersic(light_profiles.AbstractEllipticalSersic, Elliptic
     def surface_density_func(self, radius):
         return self.mass_to_light_ratio * self.intensity_at_radius(radius)
 
+    @property
+    def einstein_radius(self):
+        return self.radius_of_average_critical_curve_in_circle
 
 class EllipticalSersic(AbstractEllipticalSersic):
     @staticmethod
