@@ -486,6 +486,9 @@ class TracerImageSourcePlanes(Tracer):
 
         super(TracerImageSourcePlanes, self).__init__(planes=[image_plane, source_plane], cosmology=cosmology)
 
+    # @property
+    # def einstein_radius(self):
+
     @property
     def einstein_mass_of_lens_galaxy(self):
 
