@@ -235,6 +235,20 @@ class AbstractPlane(object):
         return list(map(lambda galaxy : galaxy.mass_within_ellipse(major_axis, conversion_factor),
                         self.galaxies))
 
+    @property
+    def einstein_radius_arcsec(self):
+        if self.has_mass_profile:
+            return sum(filter(None, list(map(lambda galaxy : galaxy.einstein_radius, self.galaxies))))
+        else:
+            return None
+
+    @property
+    @check_plane_for_redshift
+    def einstein_radius_kpc(self):
+        if self.has_mass_profile:
+            return self.kpc_per_arcsec_proper * self.einstein_radius_arcsec
+        else:
+            return None
 
 class Plane(AbstractPlane):
 

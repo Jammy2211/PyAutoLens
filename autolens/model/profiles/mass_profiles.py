@@ -637,6 +637,7 @@ class AbstractEllipticalGeneralizedNFW(EllipticalMassProfile, MassProfile):
     def einstein_radius(self):
         return self.radius_of_average_critical_curve_in_circle
 
+
 class EllipticalGeneralizedNFW(AbstractEllipticalGeneralizedNFW):
 
     @geometry_profiles.transform_grid
@@ -1065,11 +1066,14 @@ class AbstractEllipticalSersic(light_profiles.AbstractEllipticalSersic, Elliptic
     def einstein_radius(self):
         return self.radius_of_average_critical_curve_in_circle
 
+
 class EllipticalSersic(AbstractEllipticalSersic):
+
     @staticmethod
     @jit_integrand
     def deflection_func(u, y, x, npow, axis_ratio, intensity, sersic_index, effective_radius, mass_to_light_ratio,
                         sersic_constant):
+
         eta_u = np.sqrt(axis_ratio) * np.sqrt((u * ((x ** 2) + (y ** 2 / (1 - (1 - axis_ratio ** 2) * u)))))
 
         return mass_to_light_ratio * intensity * np.exp(
