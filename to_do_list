@@ -2,21 +2,19 @@ Hey, welcome to my PyAutoLens to-do. This should give you a sense of what we're 
 
 Let me know if you think anything is missing, or should be pushed up the to-do list ;)
 
-Rich:
+Interp:
 
-- Change AutoFit NLO grid search image folder.
-- Fix AutoFit grid search results output (grid search doesnt work, NLO grid search misses parameters).
-- Make it so workspace not part of pip install.
-- pip release autocti.
-- Custommize how model.results appear (E.g. decimal places, lens paramnames).
-- Make it so paramames have no duplicates.
+- Need to test origin changes are ok, including the 'flip' when the grid is made.
+- Make pixel scales main input parameters instead of interp shape.
+-
 
 Today:
 
-- CTI
+- CTI, make sure parallelization on COSMA works.
 
 Short term:
 
+- Double check that ellipticity of Sersic profiles is working.
 - Bug with errors on certain parameters.
 - Binning up speed up for pipelines.
 - Interpolation Scheme for fast deflection angles

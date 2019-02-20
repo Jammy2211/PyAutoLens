@@ -7,6 +7,7 @@ exclude profiling
 exclude results
 exclude scripts
 exclude output
+exclude workspace
 exclude .coverage
 exclude howtolens
 exclude .travis.yml
