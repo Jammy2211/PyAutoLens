@@ -7,10 +7,10 @@ from autolens import exc
 @decorator_util.jit()
 def mask_centres_from_shape_pixel_scale_and_centre(shape, pixel_scale, centre):
 
-    y_cen = (float(shape[0] - 1) / 2) - (centre[0] / pixel_scale)
-    x_cen = (float(shape[1] - 1) / 2) + (centre[1] / pixel_scale)
+    y_centre_arcsec = (float(shape[0] - 1) / 2) - (centre[0] / pixel_scale)
+    x_centre_arcsec = (float(shape[1] - 1) / 2) + (centre[1] / pixel_scale)
 
-    return y_cen, x_cen
+    return (y_centre_arcsec, x_centre_arcsec)
 
 @decorator_util.jit()
 def total_regular_pixels_from_mask(mask):
@@ -62,13 +62,13 @@ def mask_circular_from_shape_pixel_scale_and_radius(shape, pixel_scale, radius_a
 
     mask = np.full(shape, True)
 
-    y_cen, x_cen = mask_centres_from_shape_pixel_scale_and_centre(shape=mask.shape, pixel_scale=pixel_scale, centre=centre)
+    centres_arcsec = mask_centres_from_shape_pixel_scale_and_centre(shape=mask.shape, pixel_scale=pixel_scale, centre=centre)
 
     for y in range(mask.shape[0]):
         for x in range(mask.shape[1]):
 
-            y_arcsec = (y - y_cen) * pixel_scale
-            x_arcsec = (x - x_cen) * pixel_scale
+            y_arcsec = (y - centres_arcsec[0]) * pixel_scale
+            x_arcsec = (x - centres_arcsec[1]) * pixel_scale
 
             r_arcsec = np.sqrt(x_arcsec ** 2 + y_arcsec ** 2)
 
@@ -84,13 +84,13 @@ def mask_circular_annular_from_shape_pixel_scale_and_radii(shape, pixel_scale, i
 
     mask = np.full(shape, True)
 
-    y_cen, x_cen = mask_centres_from_shape_pixel_scale_and_centre(shape=mask.shape, pixel_scale=pixel_scale, centre=centre)
+    centres_arcsec = mask_centres_from_shape_pixel_scale_and_centre(shape=mask.shape, pixel_scale=pixel_scale, centre=centre)
 
     for y in range(mask.shape[0]):
         for x in range(mask.shape[1]):
 
-            y_arcsec = (y - y_cen) * pixel_scale
-            x_arcsec = (x - x_cen) * pixel_scale
+            y_arcsec = (y - centres_arcsec[0]) * pixel_scale
+            x_arcsec = (x - centres_arcsec[1]) * pixel_scale
 
             r_arcsec = np.sqrt(x_arcsec ** 2 + y_arcsec ** 2)
 
@@ -106,14 +106,14 @@ def mask_circular_anti_annular_from_shape_pixel_scale_and_radii(shape, pixel_sca
 
     mask = np.full(shape, True)
 
-    y_cen, x_cen = mask_centres_from_shape_pixel_scale_and_centre(shape=mask.shape, pixel_scale=pixel_scale,
+    centres_arcsec = mask_centres_from_shape_pixel_scale_and_centre(shape=mask.shape, pixel_scale=pixel_scale,
                                                                   centre=centre)
 
     for y in range(mask.shape[0]):
         for x in range(mask.shape[1]):
 
-            y_arcsec = (y - y_cen) * pixel_scale
-            x_arcsec = (x - x_cen) * pixel_scale
+            y_arcsec = (y - centres_arcsec[0]) * pixel_scale
+            x_arcsec = (x - centres_arcsec[1]) * pixel_scale
 
             r_arcsec = np.sqrt(x_arcsec ** 2 + y_arcsec ** 2)
 
@@ -140,14 +140,14 @@ def mask_elliptical_from_shape_pixel_scale_and_radius(shape, pixel_scale, major_
 
     mask = np.full(shape, True)
 
-    y_cen, x_cen = mask_centres_from_shape_pixel_scale_and_centre(shape=mask.shape, pixel_scale=pixel_scale,
+    centres_arcsec = mask_centres_from_shape_pixel_scale_and_centre(shape=mask.shape, pixel_scale=pixel_scale,
                                                                   centre=centre)
 
     for y in range(mask.shape[0]):
         for x in range(mask.shape[1]):
 
-            y_arcsec = (y - y_cen) * pixel_scale
-            x_arcsec = (x - x_cen) * pixel_scale
+            y_arcsec = (y - centres_arcsec[0]) * pixel_scale
+            x_arcsec = (x - centres_arcsec[1]) * pixel_scale
 
             r_arcsec_elliptical = elliptical_radius_from_y_x_phi_and_axis_ratio(y_arcsec, x_arcsec, phi, axis_ratio)
 
@@ -165,14 +165,14 @@ def mask_elliptical_annular_from_shape_pixel_scale_and_radius(shape, pixel_scale
 
     mask = np.full(shape, True)
 
-    y_cen, x_cen = mask_centres_from_shape_pixel_scale_and_centre(shape=mask.shape, pixel_scale=pixel_scale,
+    centres_arcsec = mask_centres_from_shape_pixel_scale_and_centre(shape=mask.shape, pixel_scale=pixel_scale,
                                                                   centre=centre)
 
     for y in range(mask.shape[0]):
         for x in range(mask.shape[1]):
 
-            y_arcsec = (y - y_cen) * pixel_scale
-            x_arcsec = (x - x_cen) * pixel_scale
+            y_arcsec = (y - centres_arcsec[0]) * pixel_scale
+            x_arcsec = (x - centres_arcsec[1]) * pixel_scale
 
             inner_r_arcsec_elliptical = elliptical_radius_from_y_x_phi_and_axis_ratio(y_arcsec, x_arcsec,
                                                                                       inner_phi, inner_axis_ratio)

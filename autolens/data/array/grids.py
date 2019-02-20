@@ -1,5 +1,6 @@
 from functools import wraps
 import numpy as np
+import scipy.spatial.qhull as qhull
 from autolens import decorator_util
 
 from autolens.data.array import mask as msk, scaled_array
@@ -687,7 +688,7 @@ class SparseToRegularGrid(scaled_array.RectangularArrayGeometry):
         self.regular_grid = regular_grid
         self.unmasked_sparse_grid = self.grid_1d
         self.unmasked_sparse_grid_pixel_centres = \
-            regular_grid.mask.grid_arc_seconds_to_grid_pixel_centres(self.unmasked_sparse_grid)
+            regular_grid.mask.grid_arcsec_to_grid_pixel_centres(self.unmasked_sparse_grid)
 
         self.total_sparse_pixels = mask_util.total_sparse_pixels_from_mask(mask=self.regular_grid.mask,
                unmasked_sparse_grid_pixel_centres=self.unmasked_sparse_grid_pixel_centres)
@@ -709,7 +710,7 @@ class SparseToRegularGrid(scaled_array.RectangularArrayGeometry):
     @property
     def regular_to_unmasked_sparse(self):
         """The 1D index mapping between the regular-grid and unmasked sparse-grid."""
-        return self.grid_arc_seconds_to_grid_pixel_indexes(grid_arc_seconds=self.regular_grid)
+        return self.grid_arcsec_to_grid_pixel_indexes(grid_arcsec=self.regular_grid)
 
     @property
     def regular_to_sparse(self):
@@ -989,3 +990,35 @@ class RegularGridBorder(np.ndarray):
         for key, value in state[-1].items():
             setattr(self, key, value)
         super(RegularGridBorder, self).__setstate__(state[0:-1])
+
+
+class Interpolator(object):
+
+    def __init__(self, grid, interp_grid):
+        self.grid = grid
+        self.interp_grid = interp_grid
+
+        self.vtx, self.wts = self.interp_weights
+
+    @property
+    def interp_weights(self):
+        tri = qhull.Delaunay(self.interp_grid)
+        simplex = tri.find_simplex(self.grid)
+        vertices = np.take(tri.simplices, simplex, axis=0)
+        temp = np.take(tri.transform, simplex, axis=0)
+        delta = self.grid - temp[:, 2]
+        bary = np.einsum('njk,nk->nj', temp[:, :2, :], delta)
+        return vertices, np.hstack((bary, 1 - bary.sum(axis=1, keepdims=True)))
+
+    @classmethod
+    def from_mask_grid_and_interp_pixel_scales(cls, mask, grid, interp_pixel_scales):
+        interp_grid = grid_util.interp_grid_1d_from_mask_and_interp_pixel_scale(
+            mask=mask, mask_pixel_scales=mask.pixel_scales, mask_origin=mask.origin,
+            interp_pixel_scales=interp_pixel_scales)
+        return Interpolator(grid=grid, interp_grid=interp_grid)
+
+    def interpolated_values_from_values(self, values):
+        return self.interpolate(values=values)
+
+    def interpolate(self, values):
+        return np.einsum('nj,nj->n', np.take(values, self.vtx), self.wts)

@@ -264,6 +264,19 @@ class AbstractTracer(object):
     def critical_density_arcsec(self):
         return self.critical_density_kpc * self.image_plane.kpc_per_arcsec_proper ** 2.0
 
+    @property
+    def einstein_radii_arcsec_of_planes(self):
+        return [plane.einstein_radius_arcsec for plane in self.planes]
+
+    @property
+    def einstein_radii_kpc_of_planes(self):
+        return [plane.einstein_radius_kpc for plane in self.planes]
+
+    @property
+    @check_tracer_for_redshifts
+    def einstein_masses_of_planes(self):
+        return [plane.einstein_mass(critical_density_arcsec=self.critical_density_arcsec) for plane in self.planes]
+
     def grid_at_redshift_from_image_plane_grid_and_redshift(self, image_plane_grid, redshift):
         """For an input grid of (y,x) arc-second image-plane coordinates, ray-trace the coordinates to any redshift in \
         the strong lens configuration.
@@ -338,11 +351,8 @@ class AbstractTracer(object):
         radius : float
             The radius of the circle to compute the dimensionless mass within.
         """
-        if self.cosmology is not None:
-            return self.image_plane.masses_of_galaxies_within_circles(radius=radius,
-                                                                      conversion_factor=self.critical_density_arcsec)
-        else:
-            return None
+        return self.image_plane.masses_of_galaxies_within_circles(radius=radius,
+                                                                  conversion_factor=self.critical_density_arcsec)
 
     def masses_of_image_plane_galaxies_within_ellipses(self, major_axis):
         """
@@ -363,11 +373,8 @@ class AbstractTracer(object):
         major_axis : float
             The major-axis of the ellipse to compute the dimensionless mass within.
         """
-        if self.cosmology is not None:
-            return self.image_plane.masses_of_galaxies_within_ellipses(major_axis=major_axis,
-                                                                       conversion_factor=self.critical_density_arcsec)
-        else:
-            return None
+        return self.image_plane.masses_of_galaxies_within_ellipses(major_axis=major_axis,
+                                                                   conversion_factor=self.critical_density_arcsec)
 
 
 class Tracer(AbstractTracer):
@@ -486,17 +493,6 @@ class TracerImageSourcePlanes(Tracer):
 
         super(TracerImageSourcePlanes, self).__init__(planes=[image_plane, source_plane], cosmology=cosmology)
 
-    @property
-    def einstein_mass_of_lens_galaxy(self):
-
-        if self.cosmology is not None and self.all_planes_have_redshifts:
-            if len(self.galaxies_in_planes[0]) == 1:
-                if len(self.galaxies_in_planes[0][0].mass_profiles) == 1:
-                    if isinstance(self.galaxies_in_planes[0][0].mass_profiles[0], mp.EllipticalCoredPowerLaw):
-                        einstein_radius = self.galaxies_in_planes[0][0].mass_profiles[0].einstein_radius
-                        return self.masses_of_image_plane_galaxies_within_circles(radius=einstein_radius)[0]
-
-        return None
 
 
 class TracerMultiPlanes(Tracer):

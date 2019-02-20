@@ -3,7 +3,7 @@ import inspect
 
 from autofit import exc
 from autofit.mapper import model_mapper
-from autofit.mapper import prior
+from autofit.mapper import prior as p
 from autofit.mapper.prior import PriorNameValue, ConstantNameValue, cast_collection
 from autolens.model.galaxy import galaxy
 from autolens.model.profiles import light_profiles, mass_profiles
@@ -129,10 +129,10 @@ class GalaxyModel(model_mapper.AbstractPriorModel):
                     profile_model.phi = phi
 
         if redshift is not None:
-            self.redshift = prior.Constant(
+            self.redshift = p.Constant(
                 redshift.redshift if isinstance(redshift, galaxy.Redshift) else redshift)
         else:
-            self.redshift = model_mapper.PriorModel(galaxy.Redshift) if variable_redshift else prior.Constant(1)
+            self.redshift = model_mapper.PriorModel(galaxy.Redshift) if variable_redshift else p.Constant(1)
 
         if pixelization is not None and regularization is None:
             raise exc.PriorException('If the galaxy prior has a pixelization, it must also have a regularization.')
@@ -150,8 +150,8 @@ class GalaxyModel(model_mapper.AbstractPriorModel):
         if key == "redshift" \
                 and (isinstance(value, float)
                      or isinstance(value, int)
-                     or isinstance(value, prior.Prior)
-                     or isinstance(value, prior.Constant)):
+                     or isinstance(value, p.Prior)
+                     or isinstance(value, p.Constant)):
             value = galaxy.Redshift(value)
         super(GalaxyModel, self).__setattr__(key, value)
 
