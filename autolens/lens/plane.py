@@ -250,6 +250,15 @@ class AbstractPlane(object):
         else:
             return None
 
+    def einstein_mass(self, critical_density_arcsec):
+        if self.has_mass_profile:
+            return sum(filter(None, list(map(lambda galaxy :
+                                         galaxy.mass_within_circle(radius=galaxy.einstein_radius,
+                                                                   conversion_factor=critical_density_arcsec),
+                                         self.galaxies))))
+        else:
+            return None
+
 class Plane(AbstractPlane):
 
     def __init__(self, galaxies, grid_stack, border=None, compute_deflections=True, cosmology=cosmo.Planck15):

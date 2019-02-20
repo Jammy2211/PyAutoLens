@@ -1374,6 +1374,16 @@ class ExternalShear(geometry_profiles.EllipticalProfile, MassProfile):
         super(ExternalShear, self).__init__(centre=(0.0, 0.0), phi=phi, axis_ratio=1.0)
         self.magnitude = magnitude
 
+    @property
+    def einstein_radius(self):
+        return 0.0
+
+    def mass_within_circle(self, radius, conversion_factor):
+        return 0.0
+
+    def mass_within_ellipse(self, radius, conversion_factor):
+        return 0.0
+
     def surface_density_from_grid(self, grid):
         return np.zeros((grid.shape[0],))
 
