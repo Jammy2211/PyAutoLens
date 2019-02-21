@@ -494,8 +494,69 @@ class TracerImageSourcePlanes(Tracer):
         super(TracerImageSourcePlanes, self).__init__(planes=[image_plane, source_plane], cosmology=cosmology)
 
 
-
 class TracerMultiPlanes(Tracer):
+
+    def __init__(self, galaxies, image_plane_grid_stack, border=None, cosmology=cosmo.Planck15):
+        """Ray-tracer for a lens system with any number of planes.
+
+        To perform multi-plane ray-tracing, a cosmology must be supplied so that deflection-angles can be rescaled \
+        according to the lens-geometry of the multi-plane system. All galaxies input to the tracer must therefore \
+        have redshifts.
+
+        This tracer has only one grid-stack (see grid_stack.GridStack) which is used for ray-tracing.
+
+        Parameters
+        ----------
+        galaxies : [Galaxy]
+            The list of galaxies in the ray-tracing calculation.
+        image_plane_grid_stack : grid_stacks.GridStack
+            The image-plane grid stack which is traced. (includes the regular-grid, sub-grid, blurring-grid, etc.).
+        border : masks.RegularGridBorder
+            The border of the regular-grid, which is used to relocate demagnified traced pixels to the \
+            source-plane borders.
+        cosmology : astropy.cosmology
+            The cosmology of the ray-tracing calculation.
+        """
+
+        plane_redshifts = lens_util.ordered_plane_redshifts_from_galaxies(galaxies=galaxies)
+
+        galaxies_in_planes = \
+            lens_util.galaxies_in_redshift_ordered_planes_from_galaxies(galaxies=galaxies,
+                                                                        plane_redshifts=plane_redshifts)
+
+        image_plane_grid_stack = pix.setup_image_plane_pixelization_grid_from_galaxies_and_grid_stack(
+            galaxies=galaxies, grid_stack=image_plane_grid_stack)
+
+        planes = []
+
+        for plane_index in range(0, len(plane_redshifts)):
+
+            compute_deflections = lens_util.compute_deflections_at_next_plane(plane_index=plane_index,
+                                                                              total_planes=len(plane_redshifts))
+
+            new_grid_stack = image_plane_grid_stack
+
+            if plane_index > 0:
+                for previous_plane_index in range(plane_index):
+
+                    scaling_factor = lens_util.scaling_factor_between_redshifts_for_cosmology(
+                        z1=plane_redshifts[previous_plane_index], z2=plane_redshifts[plane_index],
+                        z_final=plane_redshifts[-1], cosmology=cosmology)
+
+                    scaled_deflection_stack = lens_util.scaled_deflection_stack_from_plane_and_scaling_factor(
+                        plane=planes[previous_plane_index], scaling_factor=scaling_factor)
+
+                    new_grid_stack = \
+                        lens_util.grid_stack_from_deflection_stack(grid_stack=new_grid_stack,
+                                                                          deflection_stack=scaled_deflection_stack)
+
+            planes.append(pl.Plane(galaxies=galaxies_in_planes[plane_index], grid_stack=new_grid_stack,
+                                   border=border, compute_deflections=compute_deflections, cosmology=cosmology))
+
+        super(TracerMultiPlanes, self).__init__(planes=planes, cosmology=cosmology)
+
+
+class TracerMultiPlanesFixedIntervals(Tracer):
 
     def __init__(self, galaxies, image_plane_grid_stack, border=None, cosmology=cosmo.Planck15):
         """Ray-tracer for a lens system with any number of planes.
@@ -554,7 +615,7 @@ class TracerMultiPlanes(Tracer):
             planes.append(pl.Plane(galaxies=galaxies_in_planes[plane_index], grid_stack=new_grid_stack,
                                    border=border, compute_deflections=compute_deflections, cosmology=cosmology))
 
-        super(TracerMultiPlanes, self).__init__(planes=planes, cosmology=cosmology)
+        super(TracerMultiPlanesFixedIntervals, self).__init__(planes=planes, cosmology=cosmology)
 
 
 class TracerImageSourcePlanesPositions(AbstractTracer):
