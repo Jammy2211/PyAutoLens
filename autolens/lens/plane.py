@@ -45,43 +45,29 @@ def check_plane_for_redshift(func):
 
 class AbstractPlane(object):
 
-    def __init__(self, galaxies, cosmology):
-        """An abstract plane which represents a set of galaxies at a given redshift.
+    def __init__(self, redshift, galaxies, cosmology=cosmo.Planck15):
+        """An abstract plane which represents a set of galaxies that are close to one another in redshift-space.
 
-        From a plane, the surface-density, potential and deflection angles of the galaxies can be computed, as well as \
-        cosmological quantities like angular diameter distances..
+        From an abstract plane, cosmological quantities like angular diameter distances can be computed. If the  \
+        redshift of the plane is input as *None*, quantities that depend on a redshift are returned as *None*.
 
         Parameters
         -----------
+        redshift : float or None
+            The redshift of the plane.
         galaxies : [Galaxy]
-            The list of lens galaxies in this plane.
+            The list of galaxies in this plane.
         cosmology : astropy.cosmology
             The cosmology associated with the plane, used to convert arc-second coordinates to physical values.
         """
 
+        self.redshift = redshift
         self.galaxies = galaxies
-
-        if not galaxies:
-            raise exc.RayTracingException('An empty list of galaxies was supplied to Plane')
-
-        if any([redshift is not None for redshift in self.galaxy_redshifts]):
-            if not all([galaxies[0].redshift == galaxy.redshift for galaxy in galaxies]):
-                raise exc.RayTracingException('The galaxies supplied to A Plane have different redshifts or one galaxy '
-                                              'does not have a redshift.')
-
         self.cosmology = cosmology
-
-    @property
-    def primary_grid_stack(self):
-        return NotImplementedError()
 
     @property
     def galaxy_redshifts(self):
         return [galaxy.redshift for galaxy in self.galaxies]
-
-    @property
-    def redshift(self):
-        return self.galaxies[0].redshift
 
     @property
     def constant_kpc(self):
@@ -128,29 +114,16 @@ class AbstractPlane(object):
         return [galaxy.hyper_galaxy for galaxy in self.galaxies]
 
     @property
-    def surface_density(self):
-        surface_density_1d = galaxy_util.surface_density_of_galaxies_from_grid(
-            grid=self.primary_grid_stack.sub.unlensed_grid, galaxies=self.galaxies)
-        return self.primary_grid_stack.regular.scaled_array_from_array_1d(array_1d=surface_density_1d)
+    def regularization(self):
 
-    @property
-    def potential(self):
-        potential_1d = galaxy_util.potential_of_galaxies_from_grid(grid=self.primary_grid_stack.sub.unlensed_grid,
-                                                                  galaxies=self.galaxies)
-        return self.primary_grid_stack.regular.scaled_array_from_array_1d(array_1d=potential_1d)
+        galaxies_with_regularization = list(filter(lambda galaxy: galaxy.has_regularization, self.galaxies))
 
-    @property
-    def deflections_y(self):
-        return self.primary_grid_stack.regular.scaled_array_from_array_1d(self.deflections_1d[:, 0])
-
-    @property
-    def deflections_x(self):
-        return self.primary_grid_stack.regular.scaled_array_from_array_1d(self.deflections_1d[:, 1])
-
-    @property
-    def deflections_1d(self):
-        return galaxy_util.deflections_of_galaxies_from_grid(grid=self.primary_grid_stack.sub.unlensed_grid,
-                                                            galaxies=self.galaxies)
+        if len(galaxies_with_regularization) == 0:
+            return None
+        if len(galaxies_with_regularization) == 1:
+            return galaxies_with_regularization[0].regularization
+        elif len(galaxies_with_regularization) > 1:
+            raise exc.PixelizationException('The number of galaxies with regularizations in one plane is above 1')
 
     def luminosities_of_galaxies_within_circles(self, radius, conversion_factor=1.0):
         """Compute the total luminosity of all galaxies in this plane within a circle of specified radius.
@@ -259,10 +232,150 @@ class AbstractPlane(object):
         else:
             return None
 
-class Plane(AbstractPlane):
+
+class AbstractGriddedPlane(AbstractPlane):
+
+    def __init__(self, redshift, galaxies, grid_stack, border, compute_deflections, cosmology=cosmo.Planck15):
+        """An abstract plane which represents a set of galaxies that are close to one another in redshift-space and \
+        have an associated grid on which lensing calcuations are performed.
+
+        From an abstract plane grid, the surface-density, potential and deflection angles of the galaxies can be \
+        computed.
+
+        Parameters
+        -----------
+        redshift : float or None
+            The redshift of the plane.
+        galaxies : [Galaxy]
+            The list of lens galaxies in this plane.
+        grid_stack : masks.GridStack
+            The stack of grid_stacks of (y,x) arc-second coordinates of this plane.
+        border : masks.RegularGridBorder
+            The borders of the regular-grid, which is used to relocate demagnified traced regular-pixel to the \
+            source-plane borders.
+        compute_deflections : bool
+            If true, the deflection-angles of this plane's coordinates are calculated use its galaxy's mass-profiles.
+        cosmology : astropy.cosmology
+            The cosmology associated with the plane, used to convert arc-second coordinates to physical values.
+        """
+
+        super(AbstractGriddedPlane, self).__init__(redshift=redshift, galaxies=galaxies, cosmology=cosmology)
+
+        self.grid_stack = grid_stack
+        self.border = border
+
+        if compute_deflections:
+
+            def calculate_deflections(grid):
+                if galaxies:
+                    return sum(map(lambda galaxy: galaxy.deflections_from_grid(grid), galaxies))
+                else:
+                    return np.full((grid.shape[0], 2), 0.0)
+
+            self.deflection_stack = self.grid_stack.apply_function(calculate_deflections)
+
+        else:
+
+            self.deflection_stack = None
+
+    def trace_grid_stack_to_next_plane(self):
+        """Trace this plane's grid_stacks to the next plane, using its deflection angles."""
+
+        def minus(grid, deflections):
+            return grid - deflections
+
+        return self.grid_stack.map_function(minus, self.deflection_stack)
+
+    @property
+    def image_plane_image(self):
+        return self.grid_stack.regular.scaled_array_from_array_1d(self.image_plane_image_1d)
+
+    @property
+    def image_plane_image_for_simulation(self):
+        if not self.has_padded_grid_stack:
+            raise exc.RayTracingException(
+                'To retrieve an image plane image for the simulation, the grid_stacks in the tracer_normal'
+                'must be padded grid_stacks')
+        return self.grid_stack.regular.map_to_2d_keep_padded(padded_array_1d=self.image_plane_image_1d)
+
+    @property
+    def image_plane_image_1d(self):
+        return galaxy_util.intensities_of_galaxies_from_grid(grid=self.grid_stack.sub, galaxies=self.galaxies)
+
+    @property
+    def image_plane_image_1d_of_galaxies(self):
+        return [galaxy_util.intensities_of_galaxies_from_grid(grid=self.grid_stack.sub, galaxies=[galaxy])
+                for galaxy in self.galaxies]
+
+    @property
+    def image_plane_blurring_image_1d(self):
+        return galaxy_util.intensities_of_galaxies_from_grid(grid=self.grid_stack.blurring, galaxies=self.galaxies)
+
+    @property
+    def surface_density(self):
+        surface_density_1d = galaxy_util.surface_density_of_galaxies_from_grid(
+            grid=self.grid_stack.sub.unlensed_grid, galaxies=self.galaxies)
+        return self.grid_stack.regular.scaled_array_from_array_1d(array_1d=surface_density_1d)
+
+    @property
+    def potential(self):
+        potential_1d = galaxy_util.potential_of_galaxies_from_grid(grid=self.grid_stack.sub.unlensed_grid,
+                                                                  galaxies=self.galaxies)
+        return self.grid_stack.regular.scaled_array_from_array_1d(array_1d=potential_1d)
+
+    @property
+    def deflections_y(self):
+        return self.grid_stack.regular.scaled_array_from_array_1d(self.deflections_1d[:, 0])
+
+    @property
+    def deflections_x(self):
+        return self.grid_stack.regular.scaled_array_from_array_1d(self.deflections_1d[:, 1])
+
+    @property
+    def deflections_1d(self):
+        return galaxy_util.deflections_of_galaxies_from_grid(grid=self.grid_stack.sub.unlensed_grid,
+                                                            galaxies=self.galaxies)
+
+    @property
+    def has_padded_grid_stack(self):
+        return isinstance(self.grid_stack.regular, grids.PaddedRegularGrid)
+
+    @property
+    def plane_image(self):
+        return lens_util.plane_image_of_galaxies_from_grid(shape=self.grid_stack.regular.mask.shape,
+                                                            grid=self.grid_stack.regular,
+                                                            galaxies=self.galaxies)
+
+    @property
+    def mapper(self):
+
+        galaxies_with_pixelization = list(filter(lambda galaxy: galaxy.has_pixelization, self.galaxies))
+
+        if len(galaxies_with_pixelization) == 0:
+            return None
+        if len(galaxies_with_pixelization) == 1:
+            pixelization = galaxies_with_pixelization[0].pixelization
+            return pixelization.mapper_from_grid_stack_and_border(grid_stack=self.grid_stack, border=self.border)
+        elif len(galaxies_with_pixelization) > 1:
+            raise exc.PixelizationException('The number of galaxies with pixelizations in one plane is above 1')
+
+    @property
+    def yticks(self):
+        """Compute the yticks labels of this grid_stack, used for plotting the y-axis ticks when visualizing an image \
+        """
+        return np.linspace(np.amin(self.grid_stack.regular[:, 0]), np.amax(self.grid_stack.regular[:, 0]), 4)
+
+    @property
+    def xticks(self):
+        """Compute the xticks labels of this grid_stack, used for plotting the x-axis ticks when visualizing an \
+        image"""
+        return np.linspace(np.amin(self.grid_stack.regular[:, 1]), np.amax(self.grid_stack.regular[:, 1]), 4)
+
+
+class Plane(AbstractGriddedPlane):
 
     def __init__(self, galaxies, grid_stack, border=None, compute_deflections=True, cosmology=cosmo.Planck15):
-        """A plane which uses one grid-stack of (y,x) grid_stack (e.g. a regular-grid, sub-grid, etc.)
+        """A plane of galaxies where all galaxies are at the same redshift.
 
         Parameters
         -----------
@@ -279,112 +392,47 @@ class Plane(AbstractPlane):
             The cosmology associated with the plane, used to convert arc-second coordinates to physical values.
         """
 
-        super(Plane, self).__init__(galaxies=galaxies, cosmology=cosmology)
+        if not galaxies:
+            raise exc.RayTracingException('An empty list of galaxies was supplied to Plane')
 
-        self.grid_stack = grid_stack
-        self.border = border
+        galaxy_redshifts = [galaxy.redshift for galaxy in galaxies]
 
-        if compute_deflections:
+        if any([redshift is not None for redshift in galaxy_redshifts]):
+            if not all([galaxies[0].redshift == galaxy.redshift for galaxy in galaxies]):
+                raise exc.RayTracingException('The galaxies supplied to A Plane have different redshifts or one galaxy '
+                                              'does not have a redshift.')
 
-            def calculate_deflections(grid):
-                return sum(map(lambda galaxy: galaxy.deflections_from_grid(grid), galaxies))
+        super(Plane, self).__init__(redshift=galaxies[0].redshift, galaxies=galaxies, grid_stack=grid_stack,
+                                    border=border, compute_deflections=compute_deflections, cosmology=cosmology)
 
-            self.deflection_stack = self.grid_stack.apply_function(calculate_deflections)
 
-        else:
+class PlaneSlice(AbstractGriddedPlane):
 
-            self.deflection_stack = None
+    def __init__(self, galaxies, grid_stack, redshift, border=None, compute_deflections=True, cosmology=cosmo.Planck15):
+        """A plane of galaxies where the galaxies may be at different redshifts to the plane itself.
 
-        self.cosmology = cosmology
-
-    def trace_grid_stack_to_next_plane(self):
-        """Trace this plane's grid_stacks to the next plane, using its deflection angles."""
-
-        def minus(grid, deflections):
-            return grid - deflections
-
-        return self.grid_stack.map_function(minus, self.deflection_stack)
-
-    @property
-    def primary_grid_stack(self):
-        return self.grid_stack
-
-    @property
-    def has_padded_grid_stack(self):
-        return isinstance(self.grid_stack.regular, grids.PaddedRegularGrid)
-
-    @property
-    def mapper(self):
-
-        galaxies_with_pixelization = list(filter(lambda galaxy: galaxy.has_pixelization, self.galaxies))
-
-        if len(galaxies_with_pixelization) == 0:
-            return None
-        if len(galaxies_with_pixelization) == 1:
-            pixelization = galaxies_with_pixelization[0].pixelization
-            return pixelization.mapper_from_grid_stack_and_border(grid_stack=self.grid_stack, border=self.border)
-        elif len(galaxies_with_pixelization) > 1:
-            raise exc.PixelizationException('The number of galaxies with pixelizations in one plane is above 1')
-
-    @property
-    def regularization(self):
-
-        galaxies_with_regularization = list(filter(lambda galaxy: galaxy.has_regularization, self.galaxies))
-
-        if len(galaxies_with_regularization) == 0:
-            return None
-        if len(galaxies_with_regularization) == 1:
-            return galaxies_with_regularization[0].regularization
-        elif len(galaxies_with_regularization) > 1:
-            raise exc.PixelizationException('The number of galaxies with regularizations in one plane is above 1')
-
-    @property
-    def image_plane_image(self):
-        return self.grid_stack.regular.scaled_array_from_array_1d(self.image_plane_image_1d)
-
-    @property
-    def image_plane_image_for_simulation(self):
-        if not self.has_padded_grid_stack:
-            raise exc.RayTracingException(
-                'To retrieve an image plane image for the simulation, the grid_stacks in the tracer_normal'
-                'must be padded grid_stacks')
-        return self.grid_stack.regular.map_to_2d_keep_padded(padded_array_1d=self.image_plane_image_1d)
-
-    @property
-    def image_plane_image_1d(self):
-        return galaxy_util.intensities_of_galaxies_from_grid(grid=self.primary_grid_stack.sub, galaxies=self.galaxies)
-
-    @property
-    def image_plane_image_1d_of_galaxies(self):
-        return [galaxy_util.intensities_of_galaxies_from_grid(grid=self.grid_stack.sub, galaxies=[galaxy]) 
-                for galaxy in self.galaxies]
-
-    @property
-    def image_plane_blurring_image_1d(self):
-        return galaxy_util.intensities_of_galaxies_from_grid(grid=self.primary_grid_stack.blurring, galaxies=self.galaxies)
-
-    @property
-    def plane_image(self):
-        return lens_util.plane_image_of_galaxies_from_grid(shape=self.grid_stack.regular.mask.shape,
-                                                            grid=self.grid_stack.regular,
-                                                            galaxies=self.galaxies)
-
-    @property
-    def yticks(self):
-        """Compute the yticks labels of this grid_stack, used for plotting the y-axis ticks when visualizing an image \
+        Parameters
+        -----------
+        galaxies : [Galaxy]
+            The list of lens galaxies in this plane.
+        grid_stack : masks.GridStack
+            The stack of grid_stacks of (y,x) arc-second coordinates of this plane.
+        border : masks.RegularGridBorder
+            The borders of the regular-grid, which is used to relocate demagnified traced regular-pixel to the \
+            source-plane borders.
+        compute_deflections : bool
+            If true, the deflection-angles of this plane's coordinates are calculated use its galaxy's mass-profiles.
+        cosmology : astropy.cosmology
+            The cosmology associated with the plane, used to convert arc-second coordinates to physical values.
         """
-        return np.linspace(np.amin(self.grid_stack.regular[:, 0]), np.amax(self.grid_stack.regular[:, 0]), 4)
 
-    @property
-    def xticks(self):
-        """Compute the xticks labels of this grid_stack, used for plotting the x-axis ticks when visualizing an \
-        image"""
-        return np.linspace(np.amin(self.grid_stack.regular[:, 1]), np.amax(self.grid_stack.regular[:, 1]), 4)
+        super(PlaneSlice, self).__init__(redshift=redshift, galaxies=galaxies, grid_stack=grid_stack, border=border,
+                                         compute_deflections=compute_deflections, cosmology=cosmology)
 
 
 class PlanePositions(object):
 
-    def __init__(self, galaxies, positions, compute_deflections=True, cosmology=None):
+    def __init__(self, redshift, galaxies, positions, compute_deflections=True, cosmology=None):
         """A plane represents a set of galaxies at a given redshift in a ray-tracer_normal and the positions of image-plane \
         coordinates which mappers close to one another in the source-plane.
 
@@ -399,6 +447,7 @@ class PlanePositions(object):
             If true, the deflection-angles of this plane's coordinates are calculated use its galaxy's mass-profiles.
         """
 
+        self.redshift = redshift
         self.galaxies = galaxies
         self.positions = positions
 
