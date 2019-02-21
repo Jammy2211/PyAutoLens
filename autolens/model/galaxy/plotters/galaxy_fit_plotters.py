@@ -11,7 +11,7 @@ def plot_fit_subplot(
         fit, should_plot_mask=True, extract_array_from_mask=False, zoom_around_mask=False, positions=None,
         units='arcsec', kpc_per_arcsec=None, figsize=None, aspect='equal',
         cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
-        cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
+        cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
         titlesize=10, xlabelsize=10, ylabelsize=10, xyticksize=10,
         mask_pointsize=10, position_pointsize=10.0, grid_pointsize=1,
         output_path=None, output_filename='galaxy_fit', output_format='show'):
@@ -31,7 +31,8 @@ def plot_fit_subplot(
         zoom_around_mask=zoom_around_mask, positions=positions, as_subplot=True,
         units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
         cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
-        cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
+        cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad, 
+        cb_tick_values=cb_tick_values, cb_tick_labels=cb_tick_labels,
         titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize, xyticksize=xyticksize,
         grid_pointsize=grid_pointsize, position_pointsize=position_pointsize, mask_pointsize=mask_pointsize,
         output_path=output_path, output_filename=output_filename, output_format=output_format)
@@ -43,7 +44,8 @@ def plot_fit_subplot(
         positions=positions, as_subplot=True,
         units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
         cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
-        cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
+        cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad, 
+        cb_tick_values=cb_tick_values, cb_tick_labels=cb_tick_labels,
         title='Model Galaxy', titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize, xyticksize=xyticksize,
         position_pointsize=position_pointsize, mask_pointsize=mask_pointsize,
         output_path=output_path, output_filename='', output_format=output_format)
@@ -55,7 +57,8 @@ def plot_fit_subplot(
         as_subplot=True,
         units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
         cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
-        cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
+        cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad, 
+        cb_tick_values=cb_tick_values, cb_tick_labels=cb_tick_labels,
         titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize, xyticksize=xyticksize,
         position_pointsize=position_pointsize, mask_pointsize=mask_pointsize,
         output_path=output_path, output_filename='', output_format=output_format)
@@ -67,7 +70,8 @@ def plot_fit_subplot(
         as_subplot=True,
         units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
         cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
-        cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
+        cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad, 
+        cb_tick_values=cb_tick_values, cb_tick_labels=cb_tick_labels,
         titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize, xyticksize=xyticksize,
         position_pointsize=position_pointsize, mask_pointsize=mask_pointsize,
         output_path=output_path, output_filename='', output_format=output_format)
@@ -133,7 +137,7 @@ def plot_galaxy_data_array(
         galaxy_data, mask=None, extract_array_from_mask=False, zoom_around_mask=False, positions=None, as_subplot=False,
         units='arcsec', kpc_per_arcsec=None, figsize=None, aspect='equal',
         cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
-        cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
+        cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
         titlesize=10, xlabelsize=10, ylabelsize=10, xyticksize=10,
         mask_pointsize=10, position_pointsize=10.0, grid_pointsize=1,
         output_path=None, output_filename='galaxy_data', output_format='show'):
@@ -157,7 +161,8 @@ def plot_galaxy_data_array(
         as_subplot=as_subplot,
         units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
         cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
-        cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
+        cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad, 
+        cb_tick_values=cb_tick_values, cb_tick_labels=cb_tick_labels,
         title=title, titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize, xyticksize=xyticksize,
         mask_pointsize=mask_pointsize, position_pointsize=position_pointsize, grid_pointsize=grid_pointsize,
         output_path=output_path, output_format=output_format, output_filename=output_filename)
