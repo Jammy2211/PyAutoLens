@@ -12,7 +12,7 @@ def plot_fit_subplot(
         should_plot_image_plane_pix=False,
         units='arcsec', figsize=None, aspect='equal',
         cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
-        cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
+        cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
         titlesize=10, xlabelsize=10, ylabelsize=10, xyticksize=10,
         mask_pointsize=10, position_pointsize=10, grid_pointsize=1,
         output_path=None, output_filename='lens_fit', output_format='show'):
@@ -24,7 +24,8 @@ def plot_fit_subplot(
             should_plot_image_plane_pix=should_plot_image_plane_pix,
             units=units, figsize=figsize, aspect=aspect,
             cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
-            cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
+            cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad, 
+        cb_tick_values=cb_tick_values, cb_tick_labels=cb_tick_labels,
             titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize, xyticksize=xyticksize,
             mask_pointsize=mask_pointsize, position_pointsize=position_pointsize, grid_pointsize=grid_pointsize,
             output_path=output_path, output_filename=output_filename, output_format=output_format)
@@ -36,7 +37,8 @@ def plot_fit_subplot(
             should_plot_image_plane_pix=should_plot_image_plane_pix,
             units=units, figsize=figsize, aspect=aspect,
             cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
-            cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
+            cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad, 
+        cb_tick_values=cb_tick_values, cb_tick_labels=cb_tick_labels,
             titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize, xyticksize=xyticksize,
             mask_pointsize=mask_pointsize, position_pointsize=position_pointsize, grid_pointsize=grid_pointsize,
             output_path=output_path, output_filename=output_filename, output_format=output_format)
@@ -46,7 +48,7 @@ def plot_fit_subplot_lens_plane_only(
         should_plot_image_plane_pix=False,
         units='arcsec', figsize=None, aspect='equal',
         cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
-        cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
+        cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
         titlesize=10, xlabelsize=10, ylabelsize=10, xyticksize=10,
         mask_pointsize=10, position_pointsize=10, grid_pointsize=1,
         output_path=None, output_filename='lens_fit', output_format='show'):
@@ -86,7 +88,8 @@ def plot_fit_subplot_lens_plane_only(
         positions=positions, image_plane_pix_grid=image_plane_pix_grid, as_subplot=True,
         units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
         cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
-        cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
+        cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad, 
+        cb_tick_values=cb_tick_values, cb_tick_labels=cb_tick_labels,
         titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize, xyticksize=xyticksize,
         grid_pointsize=grid_pointsize, position_pointsize=position_pointsize, mask_pointsize=mask_pointsize,
         output_path=output_path, output_filename='', output_format=output_format)
@@ -98,7 +101,8 @@ def plot_fit_subplot_lens_plane_only(
         positions=positions, as_subplot=True,
         units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
         cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
-        cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
+        cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad, 
+        cb_tick_values=cb_tick_values, cb_tick_labels=cb_tick_labels,
         titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize, xyticksize=xyticksize,
         position_pointsize=position_pointsize, mask_pointsize=mask_pointsize,
         output_path=output_path, output_filename='', output_format=output_format)
@@ -110,7 +114,8 @@ def plot_fit_subplot_lens_plane_only(
         positions=positions, as_subplot=True,
         units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
         cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
-        cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
+        cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad, 
+        cb_tick_values=cb_tick_values, cb_tick_labels=cb_tick_labels,
         titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize, xyticksize=xyticksize,
         position_pointsize=position_pointsize, mask_pointsize=mask_pointsize,
         output_path=output_path, output_filename='', output_format=output_format)
@@ -121,7 +126,8 @@ def plot_fit_subplot_lens_plane_only(
         fit=fit, mask=mask, extract_array_from_mask=extract_array_from_mask, zoom_around_mask=zoom_around_mask, as_subplot=True,
         units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
         cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
-        cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
+        cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad, 
+        cb_tick_values=cb_tick_values, cb_tick_labels=cb_tick_labels,
         titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize, xyticksize=xyticksize,
         output_path=output_path, output_filename='', output_format=output_format)
 
@@ -131,7 +137,8 @@ def plot_fit_subplot_lens_plane_only(
         fit=fit, mask=mask, extract_array_from_mask=extract_array_from_mask, zoom_around_mask=zoom_around_mask, as_subplot=True,
         units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
         cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
-        cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
+        cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad, 
+        cb_tick_values=cb_tick_values, cb_tick_labels=cb_tick_labels,
         titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize, xyticksize=xyticksize,
         output_path=output_path, output_filename='', output_format=output_format)
 
@@ -141,7 +148,8 @@ def plot_fit_subplot_lens_plane_only(
         fit=fit, mask=mask, extract_array_from_mask=extract_array_from_mask, zoom_around_mask=zoom_around_mask, as_subplot=True,
         units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
         cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
-        cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
+        cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad, 
+        cb_tick_values=cb_tick_values, cb_tick_labels=cb_tick_labels,
         titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize, xyticksize=xyticksize,
         output_path=output_path, output_filename='', output_format=output_format)
 
@@ -155,7 +163,7 @@ def plot_fit_subplot_lens_and_source_planes(
         should_plot_source_grid=False, positions=None, should_plot_image_plane_pix=False,
         units='arcsec', figsize=None, aspect='equal',
         cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
-        cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
+        cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
         titlesize=10, xlabelsize=10, ylabelsize=10, xyticksize=10,
         mask_pointsize=10, position_pointsize=10, grid_pointsize=1,
         output_path=None, output_filename='lens_fit', output_format='show'):
@@ -196,7 +204,8 @@ def plot_fit_subplot_lens_and_source_planes(
         image_plane_pix_grid=image_plane_pix_grid, as_subplot=True,
         units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
         cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
-        cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
+        cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad, 
+        cb_tick_values=cb_tick_values, cb_tick_labels=cb_tick_labels,
         titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize, xyticksize=xyticksize,
         grid_pointsize=grid_pointsize, position_pointsize=position_pointsize, mask_pointsize=mask_pointsize,
         output_path=output_path, output_filename='', output_format=output_format)
@@ -207,7 +216,8 @@ def plot_fit_subplot_lens_and_source_planes(
         fit=fit, mask=mask, extract_array_from_mask=extract_array_from_mask, zoom_around_mask=zoom_around_mask, positions=None, as_subplot=True,
         units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
         cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
-        cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
+        cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad, 
+        cb_tick_values=cb_tick_values, cb_tick_labels=cb_tick_labels,
         titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize, xyticksize=xyticksize,
         position_pointsize=position_pointsize, mask_pointsize=mask_pointsize,
         output_path=output_path, output_filename='', output_format=output_format)
@@ -218,7 +228,8 @@ def plot_fit_subplot_lens_and_source_planes(
         fit=fit, mask=mask, extract_array_from_mask=extract_array_from_mask, zoom_around_mask=zoom_around_mask, positions=None, as_subplot=True,
         units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
         cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
-        cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
+        cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad, 
+        cb_tick_values=cb_tick_values, cb_tick_labels=cb_tick_labels,
         titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize, xyticksize=xyticksize,
         position_pointsize=position_pointsize, mask_pointsize=mask_pointsize,
         output_path=output_path, output_filename='', output_format=output_format)
@@ -229,7 +240,8 @@ def plot_fit_subplot_lens_and_source_planes(
         fit=fit, mask=mask, extract_array_from_mask=extract_array_from_mask, zoom_around_mask=zoom_around_mask, positions=positions, as_subplot=True,
         units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
         cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
-        cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
+        cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad, 
+        cb_tick_values=cb_tick_values, cb_tick_labels=cb_tick_labels,
         title='Fit Lens Subtracted Image', titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize,
         position_pointsize=position_pointsize, xyticksize=xyticksize,
         output_path=output_path, output_filename='', output_format=output_format)
@@ -242,7 +254,8 @@ def plot_fit_subplot_lens_and_source_planes(
             fit=fit, plot_foreground=True, mask=mask, extract_array_from_mask=extract_array_from_mask, zoom_around_mask=zoom_around_mask, as_subplot=True,
             units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
             cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
-            cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
+            cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad, 
+        cb_tick_values=cb_tick_values, cb_tick_labels=cb_tick_labels,
             title='Fit Image-Plane Model Image', titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize,
             xyticksize=xyticksize,
             output_path=output_path, output_filename='', output_format=output_format)
@@ -253,7 +266,8 @@ def plot_fit_subplot_lens_and_source_planes(
         fit=fit, plot_source=True, mask=mask, extract_array_from_mask=extract_array_from_mask, zoom_around_mask=zoom_around_mask, as_subplot=True,
         units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
         cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
-        cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
+        cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad, 
+        cb_tick_values=cb_tick_values, cb_tick_labels=cb_tick_labels,
         title='Fit Source-Plane Model Image', titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize,
         xyticksize=xyticksize,
         output_path=output_path, output_filename='lens_subtracted_image', output_format=output_format)
@@ -266,7 +280,8 @@ def plot_fit_subplot_lens_and_source_planes(
             plane=fit.tracer.source_plane, positions=None, plot_grid=should_plot_source_grid, as_subplot=True,
             units=units, figsize=figsize, aspect=aspect,
             cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
-            cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
+            cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad, 
+        cb_tick_values=cb_tick_values, cb_tick_labels=cb_tick_labels,
             titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize, xyticksize=xyticksize,
             grid_pointsize=grid_pointsize, position_pointsize=position_pointsize,
             output_path=output_path, output_filename='', output_format=output_format)
@@ -277,7 +292,8 @@ def plot_fit_subplot_lens_and_source_planes(
             inversion=fit.inversion, positions=None, should_plot_grid=False, should_plot_centres=False, as_subplot=True,
             units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
             cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
-            cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
+            cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad, 
+        cb_tick_values=cb_tick_values, cb_tick_labels=cb_tick_labels,
             titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize, xyticksize=xyticksize,
             output_path=output_path, output_filename=None, output_format=output_format)
 
@@ -287,7 +303,8 @@ def plot_fit_subplot_lens_and_source_planes(
         fit=fit, mask=mask, extract_array_from_mask=extract_array_from_mask, zoom_around_mask=zoom_around_mask, as_subplot=True,
         units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
         cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
-        cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
+        cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad, 
+        cb_tick_values=cb_tick_values, cb_tick_labels=cb_tick_labels,
         titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize, xyticksize=xyticksize,
         output_path=output_path, output_filename='', output_format=output_format)
 
@@ -297,7 +314,8 @@ def plot_fit_subplot_lens_and_source_planes(
         fit=fit, mask=mask, extract_array_from_mask=extract_array_from_mask, zoom_around_mask=zoom_around_mask, as_subplot=True,
         units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
         cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
-        cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
+        cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad, 
+        cb_tick_values=cb_tick_values, cb_tick_labels=cb_tick_labels,
         titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize, xyticksize=xyticksize,
         output_path=output_path, output_filename='', output_format=output_format)
 

@@ -45,6 +45,44 @@ def ordered_plane_redshifts_from_galaxies(galaxies):
     galaxy_redshifts = list(map(lambda galaxy: galaxy.redshift, ordered_galaxies))
     return [redshift for i, redshift in enumerate(galaxy_redshifts) if redshift not in galaxy_redshifts[:i]]
 
+def ordered_plane_redshifts_from_main_plane_redshifts_and_bin_sizes(main_plane_redshifts, slices_between_main_planes):
+    """Given a set of main plane redshifts and the number of slices between each main plane, setup the plane redshits \
+    using these values.
+
+    For example, if the main plane redshifts are [1.0, 2.0], and the bin sizes are [1,3], the following redshift \
+    slices for planes will be used:
+
+    z=0.5
+    z=1.0
+    z=1.25
+    z=1.5
+    z=1.75
+    z=2.0
+
+    Parameters
+    -----------
+    main_plane_redshifts : [float]
+        The redshifts of the main-planes (e.g. the lens galaxy), which determine where redshift intervals are placed.
+    slices_between_main_planes : [int]
+        The number of slices between each main plane. The first entry in this list determines the number of slices \
+        between Earth (redshift 0.0) and main plane 0, the next between main planes 0 and 1, etc.
+    """
+
+    plane_redshifts = []
+
+    for main_plane_index in range(len(main_plane_redshifts)):
+
+        if main_plane_index == 0:
+            previous_plane_redshift = 0.0
+        else:
+            previous_plane_redshift = main_plane_redshifts[main_plane_index - 1]
+
+        plane_redshift = main_plane_redshifts[main_plane_index]
+        slice_total = slices_between_main_planes[main_plane_index]
+        plane_redshifts += list(np.linspace(previous_plane_redshift, plane_redshift, slice_total+2))[1:]
+
+    return plane_redshifts
+
 def galaxies_in_redshift_ordered_planes_from_galaxies(galaxies, plane_redshifts):
     """Given a list of galaxies (with redshifts), return a list of the galaxies where each entry contains a list \
     of galaxies at the same redshift in ascending redshift order.
@@ -54,18 +92,14 @@ def galaxies_in_redshift_ordered_planes_from_galaxies(galaxies, plane_redshifts)
     galaxies : [Galaxy]
         The list of galaxies in the ray-tracing calculation.
     """
-    ordered_galaxies = sorted(galaxies, key=lambda galaxy: galaxy.redshift, reverse=False)
 
-    galaxies_in_redshift_ordered_planes = []
+    galaxies_in_redshift_ordered_planes =  [[] for i in range(len(plane_redshifts))]
 
-    for (plane_index, redshift) in enumerate(plane_redshifts):
+    for galaxy in galaxies:
 
-        galaxies_in_redshift_ordered_planes.append(list(map(lambda galaxy:
-                                                            galaxy if galaxy.redshift == redshift else None,
-                                                            ordered_galaxies)))
+        index = (np.abs(np.asarray(plane_redshifts) - galaxy.redshift)).argmin()
 
-        galaxies_in_redshift_ordered_planes[plane_index] = \
-            list(filter(None, galaxies_in_redshift_ordered_planes[plane_index]))
+        galaxies_in_redshift_ordered_planes[index].append(galaxy)
 
     return galaxies_in_redshift_ordered_planes
 
