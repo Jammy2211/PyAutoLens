@@ -1072,7 +1072,7 @@ class AbstractEllipticalSersic(light_profiles.AbstractEllipticalSersic, Elliptic
 
     @property
     def ellipticity_rescale(self):
-        return 1.0
+        return (1.0 - ((1.0 - self.axis_ratio) / 2.0))
 
     @property
     def einstein_radius(self):
