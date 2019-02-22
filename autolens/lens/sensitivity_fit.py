@@ -11,7 +11,7 @@ def fit_lens_data_with_sensitivity_tracers(lens_data, tracer_normal, tracer_sens
     -----------
     lens_data : lens_data.LensData or lens_data.LensDataHyper
         The lens-images that is fitted.
-    tracer_normal : ray_tracing.Tracer
+    tracer_normal : ray_tracing.AbstractTracer
         A tracer whose galaxies have the same model components (e.g. light profiles, mass profiles) as the \
         lens data that we are fitting.
     tracer_sensitive : ray_tracing.AbstractTracerNonStack
@@ -63,7 +63,7 @@ class SensitivityProfileFit(AbstractSensitivityFit):
         ----------
         lens_data: lens_data.LensData
             A simulated lens data which is used to determine our sensitiivity to specific model components.
-        tracer_normal : ray_tracing.Tracer
+        tracer_normal : ray_tracing.AbstractTracer
             A tracer whose galaxies have the same model components (e.g. light profiles, mass profiles) as the \
             lens data that we are fitting.
        tracer_sensitive : ray_tracing.AbstractTracerNonStack
@@ -100,7 +100,7 @@ class SensitivityInversionFit(AbstractSensitivityFit):
         ----------
         lens_data: lens_data.LensData
             A simulated lens data which is used to determine our sensitiivity to specific model components.
-        tracer_normal : ray_tracing.Tracer
+        tracer_normal : ray_tracing.AbstractTracer
             A tracer whose galaxies have the same model components (e.g. light profiles, mass profiles) as the \
             lens data that we are fitting.
        tracer_sensitive : ray_tracing.AbstractTracerNonStack

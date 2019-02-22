@@ -6,7 +6,9 @@ from numba.types import intc, CPointer, float64
 from scipy import LowLevelCallable
 from scipy import special
 from scipy.integrate import quad
+from astropy import constants
 
+from scipy.optimize import fsolve, root_scalar
 from autolens import decorator_util
 from autolens.model.profiles import geometry_profiles
 from autolens.model.profiles import light_profiles
@@ -78,6 +80,31 @@ class MassProfile(object):
     def mass_within_ellipse(self, major_axis, conversion_factor):
         raise NotImplementedError()
 
+
+class PointMass(geometry_profiles.SphericalProfile, MassProfile):
+
+    def __init__(self, centre=(0.0, 0.0), einstein_radius=1.0):
+        """
+        Represents a point-mass.
+
+        Parameters
+        ----------
+        centre: (float, float)
+            The (y,x) arc-second coordinates of the profile centre.
+        einstein_radius : float
+            The arc-second Einstein radius of the point-mass.
+        """
+        super(PointMass, self).__init__(centre=centre)
+        self.einstein_radius = einstein_radius
+
+    @geometry_profiles.transform_grid
+    def deflections_from_grid(self, grid):
+        grid_radii = self.grid_to_grid_radii(grid=grid)
+        return self.grid_to_grid_cartesian(grid=grid/grid_radii[:, np.newaxis], radius=self.einstein_radius/grid_radii)
+
+    # @property
+    # def mass(self):
+    #     return (206265 * self.einstein_radius * (constants.c**2.0) / (4.0 * constants.G)) / 1.988e30
 
 # noinspection PyAbstractClass
 class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
@@ -159,6 +186,25 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
         return (self.mass_within_circle(radius=outer_annuli_radius, conversion_factor=conversion_factor) -
                 self.mass_within_circle(radius=inner_annuli_radius, conversion_factor=conversion_factor)) \
                / annuli_area
+
+    @property
+    def radius_of_average_critical_curve_in_circle(self):
+        """The radius a critical curve forms for this mass profile, e.g. where the mean convergence is equal to 1.0.
+
+         In case of ellipitical mass profiles, the 'average' critical curve is used, whereby the convergence is \
+         rescaled into a circle using the axis ratio.
+
+         This radius corresponds to the Einstein radius of the mass profile, and is a property of a number of \
+         mass profiles below.
+         """
+
+        def func(radius):
+            return self.mass_within_circle(radius=radius, conversion_factor=1.0) - \
+                   np.pi * radius ** 2.0
+
+        ellipticity_rescale = 1.0 - ((1.0 - self.axis_ratio) / 2.0)
+
+        return ellipticity_rescale * root_scalar(func, bracket=[1e-4, 1000.0]).root
 
 
 class EllipticalCoredPowerLaw(EllipticalMassProfile, MassProfile):
@@ -308,11 +354,11 @@ class SphericalCoredPowerLaw(EllipticalCoredPowerLaw):
         grid : grids.RegularGrid
             The grid of (y,x) arc-second coordinates the deflection angles are computed on.
         """
-        eta = self.grid_to_radius(grid)
+        eta = self.grid_to_grid_radii(grid=grid)
         deflection = np.multiply(2. * self.einstein_radius_rescaled, np.divide(
             np.add(np.power(np.add(self.core_radius ** 2, np.square(eta)), (3. - self.slope) / 2.),
                    -self.core_radius ** (3 - self.slope)), np.multiply((3. - self.slope), eta)))
-        return self.grid_radius_to_cartesian(grid, deflection)
+        return self.grid_to_grid_cartesian(grid=grid, radius=deflection)
 
 
 class EllipticalPowerLaw(EllipticalCoredPowerLaw):
@@ -377,10 +423,10 @@ class SphericalPowerLaw(EllipticalPowerLaw):
 
     @geometry_profiles.transform_grid
     def deflections_from_grid(self, grid):
-        eta = self.grid_to_radius(grid)
+        eta = self.grid_to_grid_radii(grid)
         deflection_r = 2.0 * self.einstein_radius_rescaled * np.divide(np.power(eta, (3.0 - self.slope)),
                                                                        np.multiply((3.0 - self.slope), eta))
-        return self.grid_radius_to_cartesian(grid, deflection_r)
+        return self.grid_to_grid_cartesian(grid, deflection_r)
 
 
 class EllipticalCoredIsothermal(EllipticalCoredPowerLaw):
@@ -471,7 +517,7 @@ class EllipticalIsothermal(EllipticalPowerLaw):
             deflection_x = np.arctan(np.divide(np.multiply(np.sqrt(1 - self.axis_ratio ** 2), grid[:, 1]), psi))
             return self.rotate_grid_from_profile(np.multiply(factor, np.vstack((deflection_y, deflection_x)).T))
         except ZeroDivisionError:
-            return self.grid_radius_to_cartesian(grid, np.full(grid.shape[0], 2.0 * self.einstein_radius_rescaled))
+            return self.grid_to_grid_cartesian(grid, np.full(grid.shape[0], 2.0 * self.einstein_radius_rescaled))
 
 
 class SphericalIsothermal(EllipticalIsothermal):
@@ -513,7 +559,7 @@ class SphericalIsothermal(EllipticalIsothermal):
         grid : grids.RegularGrid
             The grid of (y,x) arc-second coordinates the deflection angles are computed on.
         """
-        return self.grid_radius_to_cartesian(grid, np.full(grid.shape[0], 2.0 * self.einstein_radius_rescaled))
+        return self.grid_to_grid_cartesian(grid=grid, radius=np.full(grid.shape[0], 2.0 * self.einstein_radius_rescaled))
 
 
 # noinspection PyAbstractClass
@@ -586,6 +632,10 @@ class AbstractEllipticalGeneralizedNFW(EllipticalMassProfile, MassProfile):
             surface_density_grid[i] = self.surface_density_func(grid_eta[i])
 
         return surface_density_grid
+
+    @property
+    def einstein_radius(self):
+        return self.radius_of_average_critical_curve_in_circle
 
 
 class EllipticalGeneralizedNFW(AbstractEllipticalGeneralizedNFW):
@@ -761,14 +811,14 @@ class SphericalGeneralizedNFW(EllipticalGeneralizedNFW):
             The grid of (y,x) arc-second coordinates the deflection angles are computed on.
         """
 
-        eta = np.multiply(1. / self.scale_radius, self.grid_to_radius(grid))
+        eta = np.multiply(1. / self.scale_radius, self.grid_to_grid_radii(grid))
 
         deflection_grid = np.zeros(grid.shape[0])
 
         for i in range(grid.shape[0]):
             deflection_grid[i] = np.multiply(4. * self.kappa_s * self.scale_radius, self.deflection_func_sph(eta[i]))
 
-        return self.grid_radius_to_cartesian(grid, deflection_grid)
+        return self.grid_to_grid_cartesian(grid, deflection_grid)
 
     @staticmethod
     def deflection_integrand(y, eta, inner_slope):
@@ -933,7 +983,7 @@ class SphericalNFW(EllipticalNFW):
         grid : grids.RegularGrid
             The grid of (y,x) arc-second coordinates the deflection angles are computed on.
         """
-        eta = (1.0 / self.scale_radius) * self.grid_to_radius(grid)
+        eta = (1.0 / self.scale_radius) * self.grid_to_grid_radii(grid)
         return 2.0 * self.scale_radius * self.kappa_s * self.potential_func_sph(eta)
 
     @geometry_profiles.transform_grid
@@ -946,10 +996,10 @@ class SphericalNFW(EllipticalNFW):
         grid : grids.RegularGrid
             The grid of (y,x) arc-second coordinates the deflection angles are computed on.
         """
-        eta = np.multiply(1. / self.scale_radius, self.grid_to_radius(grid))
+        eta = np.multiply(1. / self.scale_radius, self.grid_to_grid_radii(grid=grid))
         deflection_r = np.multiply(4. * self.kappa_s * self.scale_radius, self.deflection_func_sph(eta))
 
-        return self.grid_radius_to_cartesian(grid, deflection_r)
+        return self.grid_to_grid_cartesian(grid, deflection_r)
 
     @staticmethod
     def potential_func_sph(eta):
@@ -1012,12 +1062,18 @@ class AbstractEllipticalSersic(light_profiles.AbstractEllipticalSersic, Elliptic
     def surface_density_func(self, radius):
         return self.mass_to_light_ratio * self.intensity_at_radius(radius)
 
+    @property
+    def einstein_radius(self):
+        return self.radius_of_average_critical_curve_in_circle
+
 
 class EllipticalSersic(AbstractEllipticalSersic):
+
     @staticmethod
     @jit_integrand
     def deflection_func(u, y, x, npow, axis_ratio, intensity, sersic_index, effective_radius, mass_to_light_ratio,
                         sersic_constant):
+
         eta_u = np.sqrt(axis_ratio) * np.sqrt((u * ((x ** 2) + (y ** 2 / (1 - (1 - axis_ratio ** 2) * u)))))
 
         return mass_to_light_ratio * intensity * np.exp(
@@ -1317,6 +1373,16 @@ class ExternalShear(geometry_profiles.EllipticalProfile, MassProfile):
 
         super(ExternalShear, self).__init__(centre=(0.0, 0.0), phi=phi, axis_ratio=1.0)
         self.magnitude = magnitude
+
+    @property
+    def einstein_radius(self):
+        return 0.0
+
+    def mass_within_circle(self, radius, conversion_factor):
+        return 0.0
+
+    def mass_within_ellipse(self, radius, conversion_factor):
+        return 0.0
 
     def surface_density_from_grid(self, grid):
         return np.zeros((grid.shape[0],))
