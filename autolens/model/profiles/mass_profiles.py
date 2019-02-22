@@ -6,9 +6,8 @@ from numba.types import intc, CPointer, float64
 from scipy import LowLevelCallable
 from scipy import special
 from scipy.integrate import quad
-from astropy import constants
 
-from scipy.optimize import fsolve, root_scalar
+from scipy.optimize import root_scalar
 from autolens import decorator_util
 from autolens.model.profiles import geometry_profiles
 from autolens.model.profiles import light_profiles
@@ -202,9 +201,11 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
             return self.mass_within_circle(radius=radius, conversion_factor=1.0) - \
                    np.pi * radius ** 2.0
 
-        ellipticity_rescale = 1.0 - ((1.0 - self.axis_ratio) / 2.0)
+        return self.ellipticity_rescale * root_scalar(func, bracket=[1e-4, 1000.0]).root
 
-        return ellipticity_rescale * root_scalar(func, bracket=[1e-4, 1000.0]).root
+    @property
+    def ellipticity_rescale(self):
+        return NotImplementedError()
 
 
 class EllipticalCoredPowerLaw(EllipticalMassProfile, MassProfile):
@@ -324,6 +325,9 @@ class EllipticalCoredPowerLaw(EllipticalMassProfile, MassProfile):
         return einstein_radius_rescaled * (core_radius ** 2 + eta_u ** 2) ** (-(slope - 1) / 2.0) / (
                 (1 - (1 - axis_ratio ** 2) * u) ** (npow + 0.5))
 
+    @property
+    def ellipticity_rescale(self):
+        return 1.0 - ((1.0 - self.axis_ratio) / 2.0)
 
 class SphericalCoredPowerLaw(EllipticalCoredPowerLaw):
 
@@ -632,6 +636,10 @@ class AbstractEllipticalGeneralizedNFW(EllipticalMassProfile, MassProfile):
             surface_density_grid[i] = self.surface_density_func(grid_eta[i])
 
         return surface_density_grid
+
+    @property
+    def ellipticity_rescale(self):
+        return 1.0 - ((1.0 - self.axis_ratio) / 2.0)
 
     @property
     def einstein_radius(self):
@@ -1061,6 +1069,10 @@ class AbstractEllipticalSersic(light_profiles.AbstractEllipticalSersic, Elliptic
 
     def surface_density_func(self, radius):
         return self.mass_to_light_ratio * self.intensity_at_radius(radius)
+
+    @property
+    def ellipticity_rescale(self):
+        return 1.0
 
     @property
     def einstein_radius(self):
