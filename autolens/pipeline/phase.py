@@ -632,15 +632,8 @@ class PhaseImaging(Phase):
 
             self.plot_count += 1
 
-            if self.should_plot_mask:
-                mask = self.lens_data.mask
-            else:
-                mask = None
-
-            if self.should_plot_positions:
-                positions = self.lens_data.positions
-            else:
-                positions = None
+            mask = self.lens_data.mask if self.should_plot_mask else None
+            positions = self.lens_data.positions if self.should_plot_positions else None
 
             if self.plot_data_as_subplot:
                 ccd_plotters.plot_ccd_subplot(
