@@ -1,0 +1,8 @@
+Optimizer = MultiNest 
+Sub-grid size = 2 
+Image PSF shape = None 
+Pixelization PSF shape = None 
+Use positions = False 
+Positions Threshold = 0.5 
+Cosmology = FlatLambdaCDM(name="Planck15", H0=67.7 km / (Mpc s), Om0=0.307, Tcmb0=2.725 K, Neff=3.05, m_nu=[0.   0.   0.06] eV, Ob0=0.0486) 
+Auto Link Priors = False 
