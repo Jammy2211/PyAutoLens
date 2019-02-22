@@ -600,6 +600,21 @@ class TestIsothermal(object):
         assert elliptical.potential_from_grid(grid) == pytest.approx(spherical.potential_from_grid(grid), 1e-4)
         assert elliptical.deflections_from_grid(grid) == pytest.approx(spherical.deflections_from_grid(grid), 1e-4)
 
+    def test__radius_of_critical_curve(self):
+
+        sis = mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=2.0)
+
+        assert sis.radius_of_average_critical_curve_in_circle == pytest.approx(2.0, 1e-4)
+
+        sie = mp.EllipticalIsothermal(centre=(0.0, 0.0), einstein_radius=1.0, axis_ratio=0.8, phi=0.0)
+        assert sie.radius_of_average_critical_curve_in_circle == pytest.approx(1.0, 1e-4)
+
+        sie = mp.EllipticalIsothermal(centre=(0.0, 0.0), einstein_radius=3.0, axis_ratio=0.5, phi=0.0)
+        assert sie.radius_of_average_critical_curve_in_circle == pytest.approx(3.0, 1e-4)
+
+        sie = mp.EllipticalIsothermal(centre=(0.0, 0.0), einstein_radius=8.0, axis_ratio=0.2, phi=0.0)
+        assert sie.radius_of_average_critical_curve_in_circle == pytest.approx(8.0, 1e-4)
+
 
 class TestGeneralizedNFW(object):
 
@@ -945,43 +960,6 @@ class TestSersic(object):
         assert (elliptical.surface_density_from_grid(grid) == spherical.surface_density_from_grid(grid)).all()
         # assert elliptical.potential_from_grid(grid) == spherical.potential_from_grid(grid)
         np.testing.assert_almost_equal(elliptical.deflections_from_grid(grid), spherical.deflections_from_grid(grid))
-
-    # def test__radius_of_critical_curve_and_einstein_radius(self):
-    #
-    #     sersic = mp.SphericalSersic(centre=(0.0, 0.0), intensity=1.0, mass_to_light_ratio=1.0)
-    #     assert sersic.radius_of_average_critical_curve_in_circle == pytest.approx(1.37125, 1e-4)
-    #     assert sersic.einstein_radius == pytest.approx(1.37125, 1e-4)
-    #
-    #     sersic = mp.EllipticalSersic(centre=(0.0, 0.0), intensity=1.0, mass_to_light_ratio=0.2,
-    #                                  sersic_index=4.0, effective_radius=2.0, axis_ratio=0.8)
-    #
-    #     print(1.597)
-    #     print(sersic.einstein_radius)
-    #
-    #     print()
-    #
-    #     # assert sersic.radius_of_average_critical_curve_in_circle == pytest.approx(1.59790, 1e-4)
-    #     # assert sersic.einstein_radius == pytest.approx(1.59790, 1e-4)
-    #
-    #     sersic = mp.EllipticalSersic(centre=(0.0, 0.0), intensity=1.0, mass_to_light_ratio=0.4,
-    #                                  sersic_index=1.0, effective_radius=6.0, axis_ratio=0.5)
-    #
-    #     print(1.364)
-    #     print(sersic.einstein_radius)
-    #
-    #     # assert sersic.radius_of_average_critical_curve_in_circle == pytest.approx(1.36, 1e-4)
-    #     # assert sersic.einstein_radius == pytest.approx(1.38900, 1e-4)
-    #
-    #     sersic = mp.EllipticalSersic(centre=(0.0, 0.0), intensity=1.0, mass_to_light_ratio=0.1,
-    #                                  sersic_index=2.0, effective_radius=10.0, axis_ratio=0.2)
-    #
-    #     print()
-    #     print(1.838)
-    #     print(sersic.einstein_radius)
-    #
-    #
-    #     assert sersic.radius_of_average_critical_curve_in_circle == pytest.approx(1.838, 1e-4)
-    #     assert sersic.einstein_radius == pytest.approx(1.838, 1e-4)
 
 
 class TestExponential(object):
@@ -1413,27 +1391,6 @@ class TestMassIntegral(object):
 
         # Large errors required due to cusp at center of SIE - can get to errors of 0.01 for a 400 x 400 grid.
         assert dimensionless_mass_tot == pytest.approx(0.125 * mass_integral, 0.1)
-
-
-class TestEinsteinRadii(object):
-
-    def test__radius_of_circuar_critical_curves__give_einstein_radii_of_profiles(self):
-
-        sis = mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=2.0)
-
-        assert sis.radius_of_average_critical_curve_in_circle == pytest.approx(2.0, 1e-4)
-
-
-    def test__same_as_above__elliptical_profiles(self):
-
-        sie = mp.EllipticalIsothermal(centre=(0.0, 0.0), einstein_radius=1.0, axis_ratio=0.8, phi=0.0)
-        assert sie.radius_of_average_critical_curve_in_circle == pytest.approx(1.0, 1e-4)
-
-        sie = mp.EllipticalIsothermal(centre=(0.0, 0.0), einstein_radius=3.0, axis_ratio=0.5, phi=0.0)
-        assert sie.radius_of_average_critical_curve_in_circle == pytest.approx(3.0, 1e-4)
-
-        sie = mp.EllipticalIsothermal(centre=(0.0, 0.0), einstein_radius=8.0, axis_ratio=0.2, phi=0.0)
-        assert sie.radius_of_average_critical_curve_in_circle == pytest.approx(8.0, 1e-4)
 
 
 class TestDensityBetweenAnnuli(object):
