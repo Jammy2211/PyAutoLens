@@ -4,7 +4,7 @@ from autolens.data import ccd
 
 import os
 
-path = '{}/'.format(os.path.dirname(os.path.realpath(__file__)))
+path = '{}/../'.format(os.path.dirname(os.path.realpath(__file__)))
 
 def pixel_scale_from_image_type(image_type):
 

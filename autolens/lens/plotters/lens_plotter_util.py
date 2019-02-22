@@ -8,7 +8,7 @@ def plot_image(
         image_plane_pix_grid=None, as_subplot=False,
         units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
         cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
-        cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
+        cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
         title='Fit Image', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
         grid_pointsize=1, mask_pointsize=10, position_pointsize=10,
         output_path=None, output_format='show', output_filename='fit_image'):
@@ -30,7 +30,8 @@ def plot_image(
         positions=positions, as_subplot=as_subplot,
         units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
         cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
-        cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
+        cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad, 
+        cb_tick_values=cb_tick_values, cb_tick_labels=cb_tick_labels,
         title=title, titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize, xyticksize=xyticksize,
         grid_pointsize=grid_pointsize, mask_pointsize=mask_pointsize, position_pointsize=position_pointsize,
         output_path=output_path, output_format=output_format, output_filename=output_filename)
@@ -39,7 +40,7 @@ def plot_noise_map(
         fit, mask=None, extract_array_from_mask=False, zoom_around_mask=False, positions=None, as_subplot=False,
         units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
         cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
-        cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
+        cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
         title='Fit Noise-Map', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
         mask_pointsize=10, position_pointsize=10,
         output_path=None, output_format='show', output_filename='fit_noise_map'):
@@ -60,7 +61,8 @@ def plot_noise_map(
         positions=positions, as_subplot=as_subplot,
         units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
         cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
-        cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
+        cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad, 
+        cb_tick_values=cb_tick_values, cb_tick_labels=cb_tick_labels,
         title=title, titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize, xyticksize=xyticksize,
         mask_pointsize=mask_pointsize, position_pointsize=position_pointsize,
         output_path=output_path, output_format=output_format, output_filename=output_filename)
@@ -69,7 +71,7 @@ def plot_signal_to_noise_map(
         fit, mask=None, extract_array_from_mask=False, zoom_around_mask=False, positions=None, as_subplot=False,
         units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
         cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
-        cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
+        cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
         title='Fit Signal-to-Noise-Map', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
         mask_pointsize=10, position_pointsize=10,
         output_path=None, output_format='show', output_filename='fit_signal_to_noise_map'):
@@ -90,7 +92,8 @@ def plot_signal_to_noise_map(
         units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
         cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max,
         linthresh=linthresh, linscale=linscale,
-        cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
+        cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad, 
+        cb_tick_values=cb_tick_values, cb_tick_labels=cb_tick_labels,
         title=title, titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize, xyticksize=xyticksize,
         mask_pointsize=mask_pointsize, position_pointsize=position_pointsize,
         output_path=output_path, output_format=output_format, output_filename=output_filename)
@@ -99,7 +102,7 @@ def plot_model_data(
         fit, mask=None, extract_array_from_mask=False, zoom_around_mask=False, positions=None, as_subplot=False,
         units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
         cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
-        cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
+        cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
         title='Fit Model Image', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
         mask_pointsize=10, position_pointsize=10,
         output_path=None, output_format='show', output_filename='fit_model_image'):
@@ -119,7 +122,8 @@ def plot_model_data(
         zoom_around_mask=zoom_around_mask, positions=positions, as_subplot=as_subplot,
         units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
         cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
-        cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
+        cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad, 
+        cb_tick_values=cb_tick_values, cb_tick_labels=cb_tick_labels,
         title=title, titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize, xyticksize=xyticksize,
         mask_pointsize=mask_pointsize, position_pointsize=position_pointsize,
         output_path=output_path, output_format=output_format, output_filename=output_filename)
@@ -128,7 +132,7 @@ def plot_lens_subtracted_image(
         fit, mask=None, extract_array_from_mask=False, zoom_around_mask=False, positions=None, as_subplot=False,
         units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
         cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
-        cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
+        cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
         title='Fit Model Image', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
         mask_pointsize=10, position_pointsize=10,
         output_path=None, output_format='show', output_filename='fit_lens_subtracted_image'):
@@ -159,7 +163,8 @@ def plot_lens_subtracted_image(
         zoom_around_mask=zoom_around_mask, positions=positions, as_subplot=as_subplot,
         units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
         cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
-        cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
+        cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad, 
+        cb_tick_values=cb_tick_values, cb_tick_labels=cb_tick_labels,
         title=title, titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize, xyticksize=xyticksize,
         mask_pointsize=mask_pointsize, position_pointsize=position_pointsize,
         output_path=output_path, output_format=output_format, output_filename=output_filename)
@@ -169,7 +174,7 @@ def plot_model_image_of_planes(
         positions=None, as_subplot=False,
         units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
         cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
-        cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
+        cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
         title='Fit Model Image', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
         mask_pointsize=10, position_pointsize=10,
         output_path=None, output_format='show', output_filename='fit_model_image_of_plane'):
@@ -205,7 +210,8 @@ def plot_model_image_of_planes(
         zoom_around_mask=zoom_around_mask, positions=positions, as_subplot=as_subplot,
         units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
         cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
-        cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
+        cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad, 
+        cb_tick_values=cb_tick_values, cb_tick_labels=cb_tick_labels,
         title=title, titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize, xyticksize=xyticksize,
         mask_pointsize=mask_pointsize, position_pointsize=position_pointsize,
         output_path=output_path, output_format=output_format, output_filename=output_filename)
@@ -214,7 +220,7 @@ def plot_residual_map(
         fit, mask=None, extract_array_from_mask=False, zoom_around_mask=False, positions=None, as_subplot=False,
         units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
         cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
-        cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
+        cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
         title='Fit Residuals', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
         mask_pointsize=10, position_pointsize=10,
         output_path=None, output_format='show', output_filename='fit_residual_map'):
@@ -234,7 +240,8 @@ def plot_residual_map(
         zoom_around_mask=zoom_around_mask, positions=positions, as_subplot=as_subplot,
         units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
         cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
-        cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
+        cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad, 
+        cb_tick_values=cb_tick_values, cb_tick_labels=cb_tick_labels,
         title=title, titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize, xyticksize=xyticksize,
         mask_pointsize=mask_pointsize, position_pointsize=position_pointsize,
         output_path=output_path, output_format=output_format, output_filename=output_filename)
@@ -243,7 +250,7 @@ def plot_chi_squared_map(
         fit, mask=None, extract_array_from_mask=False, zoom_around_mask=False, positions=None, as_subplot=False,
         units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
         cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
-        cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
+        cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
         title='Fit Chi-Squareds', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
         mask_pointsize=10, position_pointsize=10,
         output_path=None, output_format='show', output_filename='fit_chi_squared_map'):
@@ -263,7 +270,8 @@ def plot_chi_squared_map(
         zoom_around_mask=zoom_around_mask, positions=positions, as_subplot=as_subplot,
         units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
         cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
-        cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
+        cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad, 
+        cb_tick_values=cb_tick_values, cb_tick_labels=cb_tick_labels,
         title=title, titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize, xyticksize=xyticksize,
         mask_pointsize=mask_pointsize, position_pointsize=position_pointsize,
         output_path=output_path, output_format=output_format, output_filename=output_filename)
@@ -272,7 +280,7 @@ def plot_contribution_maps(
         fit, mask=None, extract_array_from_mask=False, zoom_around_mask=False, positions=None, as_subplot=False,
         units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
         cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
-        cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
+        cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
         title='Contributions', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
         mask_pointsize=10, position_pointsize=10,
         output_path=None, output_format='show', output_filename='fit_contribution_maps'):
@@ -298,7 +306,8 @@ def plot_contribution_maps(
         zoom_around_mask=zoom_around_mask, positions=positions, as_subplot=as_subplot,
         units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
         cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
-        cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
+        cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad, 
+        cb_tick_values=cb_tick_values, cb_tick_labels=cb_tick_labels,
         title=title, titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize, xyticksize=xyticksize,
         mask_pointsize=mask_pointsize, position_pointsize=position_pointsize,
         output_path=output_path, output_format=output_format, output_filename=output_filename)

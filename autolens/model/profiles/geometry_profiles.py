@@ -83,8 +83,8 @@ class SphericalProfile(GeometryProfile):
         super(SphericalProfile, self).__init__(centre)
 
     @transform_grid
-    def grid_to_radius(self, grid):
-        """Convert a grid of (y, x) coordinates to their circular radii.
+    def grid_to_grid_radii(self, grid):
+        """Convert a grid of (y, x) coordinates to a grid of their circular radii.
 
         If the coordinates have not been transformed to the profile's centre, this is performed automatically.
 
@@ -105,7 +105,7 @@ class SphericalProfile(GeometryProfile):
         """
         return np.cos(grid_thetas), np.sin(grid_thetas)
 
-    def grid_radius_to_cartesian(self, grid, radius):
+    def grid_to_grid_cartesian(self, grid, radius):
         """
         Convert a grid of (y,x) coordinates with their specified circular radii to their original (y,x) Cartesian 
         coordinates.
@@ -118,7 +118,7 @@ class SphericalProfile(GeometryProfile):
             The circular radius of each coordinate from the profile center.
         """
         grid_thetas = np.arctan2(grid[:, 0], grid[:, 1])
-        cos_theta, sin_theta = self.grid_angle_to_profile(grid_thetas)
+        cos_theta, sin_theta = self.grid_angle_to_profile(grid_thetas=grid_thetas)
         return np.multiply(radius[:, None], np.vstack((sin_theta, cos_theta)).T)
 
     def transform_grid_to_reference_frame(self, grid):
