@@ -1,0 +1,33 @@
+VARIABLE:
+AbstractEllipticalSersic
+
+light_profile_0_centre_0                UniformPrior, lower_limit = -1.0, upper_limit = 1.0
+light_profile_0_centre_1                UniformPrior, lower_limit = -1.0, upper_limit = 1.0
+light_profile_0_axis_ratio              UniformPrior, lower_limit = 0.0, upper_limit = 1.0
+light_profile_0_phi                     UniformPrior, lower_limit = 0.0, upper_limit = 180.0
+light_profile_0_intensity               UniformPrior, lower_limit = 0.0, upper_limit = 1.0
+light_profile_0_effective_radius        UniformPrior, lower_limit = 0.0, upper_limit = 3.0
+light_profile_0_sersic_index            UniformPrior, lower_limit = 0.6, upper_limit = 8.0
+
+EllipticalExponential
+
+light_profile_1_centre_0                UniformPrior, lower_limit = 0.0, upper_limit = 1.0
+light_profile_1_centre_1                UniformPrior, lower_limit = 0.0, upper_limit = 0.5
+light_profile_1_axis_ratio              UniformPrior, lower_limit = 0.0, upper_limit = 0.5
+light_profile_1_phi                     UniformPrior, lower_limit = 0.0, upper_limit = 0.5
+light_profile_1_intensity               GaussianPrior, mean = 0.0, sigma = 0.5
+light_profile_1_effective_radius        UniformPrior, lower_limit = 0.0, upper_limit = 2.0
+
+SphericalIsothermal
+
+mass_profile_0_centre_0                 UniformPrior, lower_limit = 0.0, upper_limit = 1.0
+mass_profile_0_centre_1                 UniformPrior, lower_limit = 0.0, upper_limit = 0.5
+mass_profile_0_einstein_radius          UniformPrior, lower_limit = 0.0, upper_limit = 2.0
+
+SphericalNFW
+
+mass_profile_1_centre_0                 UniformPrior, lower_limit = 0.0, upper_limit = 1.0
+mass_profile_1_centre_1                 UniformPrior, lower_limit = 0.0, upper_limit = 0.5
+mass_profile_1_kappa_s                  UniformPrior, lower_limit = 0.0, upper_limit = 2.0
+mass_profile_1_scale_radius             UniformPrior, lower_limit = 0.0, upper_limit = 2.0
+

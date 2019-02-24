@@ -632,15 +632,8 @@ class PhaseImaging(Phase):
 
             self.plot_count += 1
 
-            if self.should_plot_mask:
-                mask = self.lens_data.mask
-            else:
-                mask = None
-
-            if self.should_plot_positions:
-                positions = self.lens_data.positions
-            else:
-                positions = None
+            mask = self.lens_data.mask if self.should_plot_mask else None
+            positions = self.lens_data.positions if self.should_plot_positions else None
 
             if self.plot_data_as_subplot:
                 ccd_plotters.plot_ccd_subplot(
@@ -1231,10 +1224,10 @@ class GalaxyFitPhase(AbstractPhase):
 
         def visualize(self, instance, image_path, during_analysis):
 
-            output_image_y_path = "{}/image/fit_y_".format(image_path)
-            output_fits_y_path = "{}/image/fits/fit_y".format(image_path)
-            output_image_x_path = "{}/image/fit_x_".format(image_path)
-            output_fits_x_path = "{}/image/fits/fit_x".format(image_path)
+            output_image_y_path = "{}/fit_y_".format(image_path)
+            output_fits_y_path = "{}/fits/fit_y".format(image_path)
+            output_image_x_path = "{}/fit_x_".format(image_path)
+            output_fits_x_path = "{}/fits/fit_x".format(image_path)
 
             self.plot_count += 1
             fit_y, fit_x = self.fit_for_instance(instance=instance)

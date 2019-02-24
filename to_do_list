@@ -14,6 +14,7 @@ Today:
 
 Short term:
 
+- Double check that ellipticity of Sersic profiles is working.
 - Bug with errors on certain parameters.
 - Binning up speed up for pipelines.
 - Interpolation Scheme for fast deflection angles
