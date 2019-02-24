@@ -11,7 +11,7 @@ def plot_array(array, origin=None, mask=None, extract_array_from_mask=False, zoo
                should_plot_border=False, positions=None, grid=None, as_subplot=False,
                units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
                cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
-               cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
+               cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
                title='Array', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
                mask_pointsize=10, border_pointsize=2, position_pointsize=30, grid_pointsize=1,
                xticks_manual=None, yticks_manual=None,
@@ -109,7 +109,7 @@ def plot_array(array, origin=None, mask=None, extract_array_from_mask=False, zoo
         should_plot_border=False, positions=[[1.0, 1.0], [2.0, 2.0]], grid=None, as_subplot=False,
         units='arcsec', kpc_per_arcsec=None, figsize=(7,7), aspect='auto',
         cmap='jet', norm='linear, norm_min=None, norm_max=None, linthresh=None, linscale=None,
-        cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01,
+        cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
         title='Image', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
         mask_pointsize=10, border_pointsize=2, position_pointsize=10, grid_pointsize=10,
         xticks_manual=None, yticks_manual=None,
@@ -134,7 +134,8 @@ def plot_array(array, origin=None, mask=None, extract_array_from_mask=False, zoo
     set_xy_labels_and_ticksize(units=units, kpc_per_arcsec=kpc_per_arcsec, xlabelsize=xlabelsize, ylabelsize=ylabelsize,
                                xyticksize=xyticksize)
 
-    set_colorbar(cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad)
+    set_colorbar(cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
+                 cb_tick_values=cb_tick_values, cb_tick_labels=cb_tick_labels)
     plot_origin(array=array, origin=origin, units=units, kpc_per_arcsec=kpc_per_arcsec)
     plot_mask(mask=mask, units=units, kpc_per_arcsec=kpc_per_arcsec, pointsize=mask_pointsize)
     plot_border(mask=mask, should_plot_border=should_plot_border, units=units, kpc_per_arcsec=kpc_per_arcsec,
@@ -329,7 +330,7 @@ def set_xy_labels_and_ticksize(units, kpc_per_arcsec, xlabelsize, ylabelsize, xy
 
     plt.tick_params(labelsize=xyticksize)
 
-def set_colorbar(cb_ticksize, cb_fraction, cb_pad):
+def set_colorbar(cb_ticksize, cb_fraction, cb_pad, cb_tick_values, cb_tick_labels):
     """Setup the colorbar of the figure, specifically its ticksize and the size is appears relative to the figure.
 
     Parameters
@@ -340,8 +341,21 @@ def set_colorbar(cb_ticksize, cb_fraction, cb_pad):
         The fraction of the figure that the colorbar takes up, which resizes the colorbar relative to the figure.
     cb_pad : float
         Pads the color bar in the figure, which resizes the colorbar relative to the figure.
+    cb_tick_values : [float]
+        Manually specified values of where the colorbar tick labels appear on the colorbar.
+    cb_tick_labels : [float]
+        Manually specified labels of the color bar tick labels, which appear where specified by cb_tick_values.
     """
-    cb = plt.colorbar(fraction=cb_fraction, pad=cb_pad)
+
+    if cb_tick_values is None and cb_tick_labels is None:
+        cb = plt.colorbar(fraction=cb_fraction, pad=cb_pad)
+    elif cb_tick_values is not None and cb_tick_labels is not None:
+        cb = plt.colorbar(fraction=cb_fraction, pad=cb_pad, ticks=cb_tick_values)
+        cb.ax.set_yticklabels(cb_tick_labels)
+    else:
+        raise exc.PlottingException('Only 1 entry of cb_tick_values or cb_tick_labels was input. You must either supply'
+                                    'both the values and labels, or neither.')
+
     cb.ax.tick_params(labelsize=cb_ticksize)
 
 def convert_grid_units(array, grid_arcsec, units, kpc_per_arcsec):

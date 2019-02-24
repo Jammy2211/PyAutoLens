@@ -1,6 +1,6 @@
 # PyAutoLens
 
-**PyAutoLens** makes it simple to model strong gravitational lenses, like this one: 
+When two or more galaxies are aligned perfectly down our line-of-sight, the background galaxy is strongly lensed and appears multiple times or as an Einstein ring of light. **PyAutoLens** makes it simple to model strong gravitational lenses, like this one: 
 
 ![alt text](https://raw.githubusercontent.com/Jammy2211/PyAutoLens/master/gitimage.png)
 

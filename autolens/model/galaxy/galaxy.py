@@ -1,5 +1,6 @@
 from itertools import count
 
+from scipy.optimize import root_scalar
 import numpy as np
 
 from autolens import exc
@@ -264,6 +265,18 @@ class Galaxy(object):
         """
         if self.has_mass_profile:
             return sum(map(lambda p: p.mass_within_ellipse(major_axis, conversion_factor), self.mass_profiles))
+        else:
+            return None
+
+    @property
+    def einstein_radius(self):
+        """The Einstein Radius of this galaxy, which is the sum of Einstein Radii of its mass profiles.
+
+        If the galaxy is composed of multiple ellipitcal profiles with different axis-ratios, this Einstein Radius \
+        may be inaccurate. This is because the differently oriented ellipses of each mass profile """
+
+        if self.has_mass_profile:
+            return sum(map(lambda p: p.einstein_radius, self.mass_profiles))
         else:
             return None
 

@@ -17,7 +17,7 @@ def fit_lens_data_with_tracer(lens_data, tracer, padded_tracer=None):
         The lens-images that is fitted.
     tracer : ray_tracing.AbstractTracerNonStack
         The tracer, which describes the ray-tracing and strong lens configuration.
-    padded_tracer : ray_tracing.Tracer or None
+    padded_tracer : ray_tracing.AbstractTracer or None
         A tracer with an identical strong lens configuration to the tracer above, but using the lens data's \
         padded grid_stack such that unmasked model-images can be computed.
     """
@@ -43,7 +43,7 @@ def hyper_fit_lens_data_with_tracer(lens_data_hyper, tracer, padded_tracer=None)
         The lens-images that is fitted.
     tracer : ray_tracing.AbstractTracerNonStack
         The tracer, which describes the ray-tracing and strong lens configuration.
-    padded_tracer : ray_tracing.Tracer or None
+    padded_tracer : ray_tracing.AbstractTracer or None
         A tracer with an identical strong lens configuration to the tracer above, but using the lens data's \
         padded grid_stack such that unmasked model-images can be computed.
     """
@@ -69,7 +69,7 @@ class AbstractLensFit(object):
 
         Parameters
         -----------
-        tracer : ray_tracing.Tracer
+        tracer : ray_tracing.AbstractTracer
             The tracer, which describes the ray-tracing and strong lens configuration.
         padded_tracer : ray_tracing.AbstractTracerNonStack or None
             A tracer with an identical strong lens configuration to the tracer above, but using the lens data's \
@@ -129,7 +129,7 @@ class AbstractLensProfileFit(AbstractLensFit):
             The lens-image that is fitted.
         tracer : ray_tracing.AbstractTracerNonStack
             The tracer, which describes the ray-tracing and strong lens configuration.
-        padded_tracer : ray_tracing.Tracer or None
+        padded_tracer : ray_tracing.AbstractTracer or None
             A tracer with an identical strong lens configuration to the tracer above, but using the lens data's \
             padded grid_stack such that unmasked model-images can be computed.
         """
@@ -167,7 +167,7 @@ class AbstractLensInversionFit(AbstractLensFit):
         noise_map_1d : ndarray
             The 1D noise_map map that is fitted, which is an input variable so a hyper-noise_map map can be used (see \
             *AbstractHyperFitter*).
-        tracer : ray_tracing.Tracer
+        tracer : ray_tracing.AbstractTracer
             The tracer, which describes the ray-tracing and strong lens configuration.
         """
         super(AbstractLensInversionFit, self).__init__(tracer=tracer, padded_tracer=None, psf=lens_data.psf,
@@ -201,7 +201,7 @@ class AbstractLensProfileInversionFit(AbstractLensFit):
         noise_map_1d : ndarray
             The 1D noise_map map that is fitted, which is an input variable so a hyper-noise_map map can be used (see \
             *AbstractHyperFitter*).
-        tracer : ray_tracing.Tracer
+        tracer : ray_tracing.AbstractTracer
             The tracer, which describes the ray-tracing and strong lens configuration.
         padded_tracer : ray_tracing.AbstractTracerNonStack or None
             A tracer with an identical strong lens configuration to the tracer above, but using the lens data's \
@@ -319,7 +319,7 @@ class LensProfileFit(LensDataFit, AbstractLensProfileFit):
             The lens-image that is fitted.
         tracer : ray_tracing.AbstractTracerNonStack
             The tracer, which describes the ray-tracing and strong lens configuration.
-        padded_tracer : ray_tracing.Tracer or None
+        padded_tracer : ray_tracing.AbstractTracer or None
             A tracer with an identical strong lens configuration to the tracer above, but using the lens data's \
             padded grid_stack such that unmasked model-images can be computed.
         """
@@ -343,7 +343,7 @@ class LensInversionFit(LensDataInversionFit, AbstractLensInversionFit):
         -----------
         lens_data : lens_data.LensData
             The lens-image that is fitted.
-        tracer : ray_tracing.Tracer
+        tracer : ray_tracing.AbstractTracer
             The tracer, which describes the ray-tracing and strong lens configuration.
         """
 
@@ -381,7 +381,7 @@ class LensProfileInversionFit(LensDataInversionFit, AbstractLensProfileInversion
             The lens-image that is fitted.
         tracer : ray_tracing.AbstractTracerNonStack
             The tracer, which describes the ray-tracing and strong lens configuration.
-        padded_tracer : ray_tracing.Tracer or None
+        padded_tracer : ray_tracing.AbstractTracer or None
             A tracer with an identical strong lens configuration to the tracer above, but using the lens data's \
             padded grid_stack such that unmasked model-images can be computed.
         """
@@ -465,7 +465,7 @@ class LensProfileHyperFit(LensDataFit, AbstractLensProfileFit, AbstractLensHyper
             The lens hyper image that is fitted, which includes the hyper-image used for scaling the noise-map.
         tracer : ray_tracing.AbstractTracerNonStack
             The tracer, which describes the ray-tracing of the strong lens configuration.
-        tracer : ray_tracing.Tracer or None
+        tracer : ray_tracing.AbstractTracer or None
             A tracer with an identical strong lens configuration to the tracer above, but using the lens data's \
             padded grid_stacks such that unmasked model-image can be computed.
         """
@@ -495,7 +495,7 @@ class LensInversionHyperFit(LensDataInversionFit, AbstractLensInversionFit, Abst
         ----------
         lens_data_hyper : lens_data.LensHyperImage
             The lens hyper image that is fitted, which includes the hyper-image used for scaling the noise-map.
-        tracer : ray_tracing.Tracer
+        tracer : ray_tracing.AbstractTracer
             The tracer, which describes the ray-tracing of the strong lens configuration.
         """
 
@@ -536,7 +536,7 @@ class LensProfileInversionHyperFit(LensDataInversionFit, AbstractLensProfileInve
         ----------
         lens_data_hyper : lens_data.LensHyperImage
             The lens hyper image that is fitted, which includes the hyper-image used for scaling the noise-map.
-        tracer : ray_tracing.Tracer
+        tracer : ray_tracing.AbstractTracer
             The tracer, which describes the ray-tracing of the strong lens configuration.
         padded_tracer : ray_tracing.AbstractTracerNonStack or None
             A tracer with an identical strong lens configuration to the tracer above, but using the lens data's \
