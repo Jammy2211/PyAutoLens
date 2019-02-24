@@ -58,6 +58,7 @@ py==1.5.2
 pycparser==2.19
 Pygments==2.2.0
 pymultinest==2.6
+pyquad==0.0.4.0
 pyparsing==2.2.0
 pytest==3.4.2
 pytest-watch==4.2.0

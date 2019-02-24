@@ -324,6 +324,7 @@ class EllipticalCoredPowerLaw(EllipticalMassProfile, MassProfile):
     def ellipticity_rescale(self):
         return 1.0 - ((1.0 - self.axis_ratio) / 2.0)
 
+
 class SphericalCoredPowerLaw(EllipticalCoredPowerLaw):
 
     def __init__(self, centre=(0.0, 0.0), einstein_radius=1.0, slope=2.0, core_radius=0.0):
@@ -705,19 +706,11 @@ class EllipticalGeneralizedNFW(AbstractEllipticalGeneralizedNFW):
 
         def calculate_deflection_component(npow, index):
 
-            deflection_grid = np.zeros(grid.shape[0])
-
-            for j in range(grid.shape[0]):
-                coeff = 2.0 * self.kappa_s * self.axis_ratio * grid[j, index]
-                deflection_grid[j] = coeff * quad(self.deflection_func, a=0.0, b=1.0, args=(
-                    grid[j, 0],
-                    grid[j, 1],
-                    npow,
-                    self.axis_ratio,
-                    minimum_log_eta,
-                    maximum_log_eta,
-                    tabulate_bins,
-                    surface_density_integral), epsrel=EllipticalGeneralizedNFW.epsrel)[0]
+            deflection_grid = 2.0 * self.kappa_s * self.axis_ratio * grid[:, index]
+            deflection_grid *= quad_grid(self.deflection_func, 0.0, 1.0,
+                                             grid, args=(npow, self.axis_ratio, minimum_log_eta, maximum_log_eta,
+                                                         tabulate_bins, surface_density_integral),
+                                         epsrel=EllipticalGeneralizedNFW.epsrel)[0]
 
             return deflection_grid
 
@@ -894,7 +887,7 @@ class EllipticalNFW(AbstractEllipticalGeneralizedNFW):
 
         def calculate_deflection_component(npow, index):
             deflection_grid = self.axis_ratio * grid[:, index]
-            deflection_grid *= quad(self.deflection_func, 0.0, 1.0, grid,
+            deflection_grid *= quad_grid(self.deflection_func, 0.0, 1.0, grid,
                                     args=(npow, self.axis_ratio, self.kappa_s,
                                           self.scale_radius))[0]
 
@@ -1281,7 +1274,7 @@ class EllipticalSersicRadialGradient(AbstractEllipticalSersic):
             sersic_constant = self.sersic_constant
 
             deflection_grid = self.axis_ratio * grid[:, index]
-            delfection_grid *= quad_grid(self.deflection_func, 0.0, 1.0, grid,
+            deflection_grid *= quad_grid(self.deflection_func, 0.0, 1.0, grid,
                                          args=(npow, self.axis_ratio, self.intensity,
                                                self.sersic_index, self.effective_radius,
                                                self.mass_to_light_ratio, self.mass_to_light_gradient,
