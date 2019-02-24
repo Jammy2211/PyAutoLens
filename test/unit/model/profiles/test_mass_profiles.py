@@ -617,150 +617,151 @@ class TestIsothermal(object):
         assert sie.radius_of_average_critical_curve_in_circle == pytest.approx(8.0, 1e-4)
 
 
-# class TestGeneralizedNFW(object):
-#
-#     def test__constructor(self):
-#         gnfw = mp.EllipticalGeneralizedNFW(centre=(0.7, 1.0), axis_ratio=0.7, phi=45.0,
-#                                            kappa_s=2.0, inner_slope=1.5, scale_radius=10.0)
-#
-#         assert gnfw.centre == (0.7, 1.0)
-#         assert gnfw.axis_ratio == 0.7
-#         assert gnfw.phi == 45.0
-#         assert gnfw.kappa_s == 2.0
-#         assert gnfw.inner_slope == 1.5
-#         assert gnfw.scale_radius == 10.0
-#
-#         gnfw = mp.SphericalGeneralizedNFW(centre=(0.7, 1.0),
-#                                           kappa_s=2.0, inner_slope=1.5, scale_radius=10.0)
-#
-#         assert gnfw.centre == (0.7, 1.0)
-#         assert gnfw.axis_ratio == 1.0
-#         assert gnfw.phi == 0.0
-#         assert gnfw.kappa_s == 2.0
-#         assert gnfw.inner_slope == 1.5
-#         assert gnfw.scale_radius == 10.0
-#
-#     def test__coord_func_x_above_1(self):
-#         assert mp.EllipticalNFW.coord_func(2.0) == pytest.approx(0.60459, 1e-3)
-#
-#         assert mp.EllipticalNFW.coord_func(0.5) == pytest.approx(1.5206919, 1e-3)
-#
-#         assert mp.EllipticalNFW.coord_func(1.0) == 1.0
-#
-#     def test__surface_density_correct_values(self):
-#         gnfw = mp.SphericalGeneralizedNFW(centre=(0.0, 0.0), kappa_s=1.0, inner_slope=1.5, scale_radius=1.0)
-#         assert gnfw.surface_density_from_grid(grid=np.array([[2.0, 0.0]])) == pytest.approx(0.30840, 1e-3)
-#
-#         gnfw = mp.SphericalGeneralizedNFW(centre=(0.0, 0.0), kappa_s=2.0, inner_slope=1.5, scale_radius=1.0)
-#         assert gnfw.surface_density_from_grid(grid=np.array([[2.0, 0.0]])) == pytest.approx(0.30840 * 2, 1e-3)
-#
-#         gnfw = mp.EllipticalGeneralizedNFW(centre=(0.0, 0.0), kappa_s=1.0, axis_ratio=0.5,
-#                                            phi=90.0, inner_slope=1.5, scale_radius=1.0)
-#         assert gnfw.surface_density_from_grid(grid=np.array([[0.0, 1.0]])) == pytest.approx(0.30840, 1e-3)
-#
-#         gnfw = mp.EllipticalGeneralizedNFW(centre=(0.0, 0.0), kappa_s=2.0, axis_ratio=0.5,
-#                                            phi=90.0, inner_slope=1.5, scale_radius=1.0)
-#         assert gnfw.surface_density_from_grid(grid=np.array([[0.0, 1.0]])) == pytest.approx(0.30840 * 2, 1e-3)
-#
-#     def test__potential_correct_values(self):
-#         gnfw = mp.SphericalGeneralizedNFW(centre=(0.0, 0.0), kappa_s=1.0, inner_slope=0.5, scale_radius=8.0)
-#         assert gnfw.potential_from_grid(grid=np.array([[0.1625, 0.1875]])) == pytest.approx(0.00920, 1e-3)
-#
-#         gnfw = mp.SphericalGeneralizedNFW(centre=(0.0, 0.0), kappa_s=1.0, inner_slope=1.5, scale_radius=8.0)
-#         assert gnfw.potential_from_grid(grid=np.array([[0.1625, 0.1875]])) == pytest.approx(0.17448, 1e-3)
-#
-#         gnfw = mp.EllipticalGeneralizedNFW(centre=(1.0, 1.0), kappa_s=5.0, axis_ratio=0.5,
-#                                            phi=100.0, inner_slope=1.0, scale_radius=10.0)
-#         assert gnfw.potential_from_grid(grid=np.array([[2.0, 2.0]])) == pytest.approx(2.4718, 1e-4)
-#
-#     def test__deflections_correct_values(self):
-#         gnfw = mp.SphericalGeneralizedNFW(centre=(0.0, 0.0), kappa_s=1.0, inner_slope=0.5, scale_radius=8.0)
-#         defls = gnfw.deflections_from_grid(grid=np.array([[0.1875, 0.1625]]))
-#         assert defls[0, 0] == pytest.approx(0.43501, 1e-3)
-#         assert defls[0, 1] == pytest.approx(0.37701, 1e-3)
-#
-#         gnfw = mp.SphericalGeneralizedNFW(centre=(0.3, 0.2), kappa_s=2.5, inner_slope=1.5, scale_radius=4.0)
-#         defls = gnfw.deflections_from_grid(grid=np.array([[0.1875, 0.1625]]))
-#         assert defls[0, 0] == pytest.approx(-9.31254, 1e-3)
-#         assert defls[0, 1] == pytest.approx(-3.10418, 1e-3)
-#
-#         gnfw = mp.EllipticalGeneralizedNFW(centre=(0.0, 0.0), kappa_s=1.0, axis_ratio=0.3,
-#                                            phi=100.0, inner_slope=0.5, scale_radius=8.0)
-#         defls = gnfw.deflections_from_grid(grid=np.array([[0.1875, 0.1625]]))
-#         assert defls[0, 0] == pytest.approx(0.26604, 1e-3)
-#         assert defls[0, 1] == pytest.approx(0.58988, 1e-3)
-#
-#         gnfw = mp.EllipticalGeneralizedNFW(centre=(0.3, 0.2), kappa_s=2.5, axis_ratio=0.5,
-#                                            phi=100.0, inner_slope=1.5, scale_radius=4.0)
-#         defls = gnfw.deflections_from_grid(grid=np.array([[0.1875, 0.1625]]))
-#         assert defls[0, 0] == pytest.approx(-5.99032, 1e-3)
-#         assert defls[0, 1] == pytest.approx(-4.02541, 1e-3)
-#
-#     def test__surfce_density__change_geometry(self):
-#         gnfw_0 = mp.SphericalGeneralizedNFW(centre=(0.0, 0.0))
-#         gnfw_1 = mp.SphericalGeneralizedNFW(centre=(1.0, 1.0))
-#         assert gnfw_0.surface_density_from_grid(grid=np.array([[1.0, 1.0]])) == gnfw_1.surface_density_from_grid(
-#             grid=np.array([[0.0, 0.0]]))
-#
-#         gnfw_0 = mp.SphericalGeneralizedNFW(centre=(0.0, 0.0))
-#         gnfw_1 = mp.SphericalGeneralizedNFW(centre=(0.0, 0.0))
-#         assert gnfw_0.surface_density_from_grid(grid=np.array([[1.0, 0.0]])) == gnfw_1.surface_density_from_grid(
-#             grid=np.array([[0.0, 1.0]]))
-#
-#         gnfw_0 = mp.EllipticalGeneralizedNFW(centre=(0.0, 0.0), axis_ratio=0.8, phi=0.0)
-#         gnfw_1 = mp.EllipticalGeneralizedNFW(centre=(0.0, 0.0), axis_ratio=0.8, phi=90.0)
-#         assert gnfw_0.surface_density_from_grid(grid=np.array([[1.0, 0.0]])) == gnfw_1.surface_density_from_grid(
-#             grid=np.array([[0.0, 1.0]]))
-#
-#     def test__potential__change_geometry(self):
-#         gnfw_0 = mp.SphericalGeneralizedNFW(centre=(0.0, 0.0))
-#         gnfw_1 = mp.SphericalGeneralizedNFW(centre=(1.0, 1.0))
-#         assert gnfw_0.potential_from_grid(grid=np.array([[1.0, 1.0]])) == gnfw_1.potential_from_grid(
-#             grid=np.array([[0.0, 0.0]]))
-#
-#         gnfw_0 = mp.SphericalGeneralizedNFW(centre=(0.0, 0.0))
-#         gnfw_1 = mp.SphericalGeneralizedNFW(centre=(0.0, 0.0))
-#         assert gnfw_0.potential_from_grid(grid=np.array([[1.0, 0.0]])) == gnfw_1.potential_from_grid(
-#             grid=np.array([[0.0, 1.0]]))
-#
-#         gnfw_0 = mp.EllipticalGeneralizedNFW(centre=(0.0, 0.0), axis_ratio=0.8, phi=0.0)
-#         gnfw_1 = mp.EllipticalGeneralizedNFW(centre=(0.0, 0.0), axis_ratio=0.8, phi=90.0)
-#         assert gnfw_0.potential_from_grid(grid=np.array([[1.0, 0.0]])) == gnfw_1.potential_from_grid(
-#             grid=np.array([[0.0, 1.0]]))
-#
-#     def test__deflections__change_geometry(self):
-#         gnfw_0 = mp.SphericalGeneralizedNFW(centre=(0.0, 0.0), kappa_s=1.0, inner_slope=1.5, scale_radius=1.0)
-#         gnfw_1 = mp.SphericalGeneralizedNFW(centre=(1.0, 1.0), kappa_s=1.0, inner_slope=1.5, scale_radius=1.0)
-#         defls_0 = gnfw_0.deflections_from_grid(grid=np.array([[1.0, 1.0]]))
-#         defls_1 = gnfw_1.deflections_from_grid(grid=np.array([[0.0, 0.0]]))
-#         assert defls_0[0, 0] == pytest.approx(-defls_1[0, 0], 1e-5)
-#         assert defls_0[0, 1] == pytest.approx(-defls_1[0, 1], 1e-5)
-#
-#         gnfw_0 = mp.SphericalGeneralizedNFW(centre=(0.0, 0.0), kappa_s=1.0, inner_slope=1.5, scale_radius=1.0)
-#         gnfw_1 = mp.SphericalGeneralizedNFW(centre=(0.0, 0.0), kappa_s=1.0, inner_slope=1.5, scale_radius=1.0)
-#         defls_0 = gnfw_0.deflections_from_grid(grid=np.array([[1.0, 0.0]]))
-#         defls_1 = gnfw_1.deflections_from_grid(grid=np.array([[0.0, 1.0]]))
-#         assert defls_0[0, 0] == pytest.approx(defls_1[0, 1], 1e-5)
-#         assert defls_0[0, 1] == pytest.approx(defls_1[0, 0], 1e-5)
-#
-#         gnfw_0 = mp.EllipticalGeneralizedNFW(centre=(0.0, 0.0), axis_ratio=0.8, phi=0.0, kappa_s=1.0,
-#                                              inner_slope=1.5, scale_radius=1.0)
-#         gnfw_1 = mp.EllipticalGeneralizedNFW(centre=(0.0, 0.0), axis_ratio=0.8, phi=90.0, kappa_s=1.0,
-#                                              inner_slope=1.5, scale_radius=1.0)
-#         defls_0 = gnfw_0.deflections_from_grid(grid=np.array([[1.0, 0.0]]))
-#         defls_1 = gnfw_1.deflections_from_grid(grid=np.array([[0.0, 1.0]]))
-#         assert defls_0[0, 0] == pytest.approx(defls_1[0, 1], 1e-5)
-#         assert defls_0[0, 1] == pytest.approx(defls_1[0, 0], 1e-5)
-#
-#     def test__compare_to_nfw(self):
-#         nfw = mp.EllipticalNFW(centre=(0.0, 0.0), axis_ratio=0.8, phi=0.0, kappa_s=1.0, scale_radius=5.0)
-#         gnfw = mp.EllipticalGeneralizedNFW(centre=(0.0, 0.0), axis_ratio=0.8, phi=0.0, kappa_s=1.0,
-#                                            inner_slope=1.0, scale_radius=5.0)
-#
-#         assert nfw.potential_from_grid(grid) == pytest.approx(gnfw.potential_from_grid(grid), 1e-3)
-#         assert nfw.potential_from_grid(grid) == pytest.approx(gnfw.potential_from_grid(grid), 1e-3)
-#         assert nfw.deflections_from_grid(grid) == pytest.approx(gnfw.deflections_from_grid(grid), 1e-3)
-#         assert nfw.deflections_from_grid(grid) == pytest.approx(gnfw.deflections_from_grid(grid), 1e-3)
+class TestGeneralizedNFW(object):
+
+    def test__constructor(self):
+
+        # gnfw = mp.EllipticalGeneralizedNFW(centre=(0.7, 1.0), axis_ratio=0.7, phi=45.0,
+        #                                    kappa_s=2.0, inner_slope=1.5, scale_radius=10.0)
+        #
+        # assert gnfw.centre == (0.7, 1.0)
+        # assert gnfw.axis_ratio == 0.7
+        # assert gnfw.phi == 45.0
+        # assert gnfw.kappa_s == 2.0
+        # assert gnfw.inner_slope == 1.5
+        # assert gnfw.scale_radius == 10.0
+
+        gnfw = mp.SphericalGeneralizedNFW(centre=(0.7, 1.0),
+                                          kappa_s=2.0, inner_slope=1.5, scale_radius=10.0)
+
+        assert gnfw.centre == (0.7, 1.0)
+        assert gnfw.axis_ratio == 1.0
+        assert gnfw.phi == 0.0
+        assert gnfw.kappa_s == 2.0
+        assert gnfw.inner_slope == 1.5
+        assert gnfw.scale_radius == 10.0
+
+    # def test__coord_func_x_above_1(self):
+    #     assert mp.EllipticalNFW.coord_func(2.0) == pytest.approx(0.60459, 1e-3)
+    #
+    #     assert mp.EllipticalNFW.coord_func(0.5) == pytest.approx(1.5206919, 1e-3)
+    #
+    #     assert mp.EllipticalNFW.coord_func(1.0) == 1.0
+
+    def test__surface_density_correct_values(self):
+        gnfw = mp.SphericalGeneralizedNFW(centre=(0.0, 0.0), kappa_s=1.0, inner_slope=1.5, scale_radius=1.0)
+        assert gnfw.surface_density_from_grid(grid=np.array([[2.0, 0.0]])) == pytest.approx(0.30840, 1e-3)
+
+        gnfw = mp.SphericalGeneralizedNFW(centre=(0.0, 0.0), kappa_s=2.0, inner_slope=1.5, scale_radius=1.0)
+        assert gnfw.surface_density_from_grid(grid=np.array([[2.0, 0.0]])) == pytest.approx(0.30840 * 2, 1e-3)
+
+        # gnfw = mp.EllipticalGeneralizedNFW(centre=(0.0, 0.0), kappa_s=1.0, axis_ratio=0.5,
+        #                                    phi=90.0, inner_slope=1.5, scale_radius=1.0)
+        # assert gnfw.surface_density_from_grid(grid=np.array([[0.0, 1.0]])) == pytest.approx(0.30840, 1e-3)
+        #
+        # gnfw = mp.EllipticalGeneralizedNFW(centre=(0.0, 0.0), kappa_s=2.0, axis_ratio=0.5,
+        #                                    phi=90.0, inner_slope=1.5, scale_radius=1.0)
+        # assert gnfw.surface_density_from_grid(grid=np.array([[0.0, 1.0]])) == pytest.approx(0.30840 * 2, 1e-3)
+
+    def test__potential_correct_values(self):
+        gnfw = mp.SphericalGeneralizedNFW(centre=(0.0, 0.0), kappa_s=1.0, inner_slope=0.5, scale_radius=8.0)
+        assert gnfw.potential_from_grid(grid=np.array([[0.1625, 0.1875]])) == pytest.approx(0.00920, 1e-3)
+
+        gnfw = mp.SphericalGeneralizedNFW(centre=(0.0, 0.0), kappa_s=1.0, inner_slope=1.5, scale_radius=8.0)
+        assert gnfw.potential_from_grid(grid=np.array([[0.1625, 0.1875]])) == pytest.approx(0.17448, 1e-3)
+
+        # gnfw = mp.EllipticalGeneralizedNFW(centre=(1.0, 1.0), kappa_s=5.0, axis_ratio=0.5,
+        #                                    phi=100.0, inner_slope=1.0, scale_radius=10.0)
+        # assert gnfw.potential_from_grid(grid=np.array([[2.0, 2.0]])) == pytest.approx(2.4718, 1e-4)
+
+    def test__deflections_correct_values(self):
+        gnfw = mp.SphericalGeneralizedNFW(centre=(0.0, 0.0), kappa_s=1.0, inner_slope=0.5, scale_radius=8.0)
+        defls = gnfw.deflections_from_grid(grid=np.array([[0.1875, 0.1625]]))
+        assert defls[0, 0] == pytest.approx(0.43501, 1e-3)
+        assert defls[0, 1] == pytest.approx(0.37701, 1e-3)
+
+        gnfw = mp.SphericalGeneralizedNFW(centre=(0.3, 0.2), kappa_s=2.5, inner_slope=1.5, scale_radius=4.0)
+        defls = gnfw.deflections_from_grid(grid=np.array([[0.1875, 0.1625]]))
+        assert defls[0, 0] == pytest.approx(-9.31254, 1e-3)
+        assert defls[0, 1] == pytest.approx(-3.10418, 1e-3)
+
+        # gnfw = mp.EllipticalGeneralizedNFW(centre=(0.0, 0.0), kappa_s=1.0, axis_ratio=0.3,
+        #                                    phi=100.0, inner_slope=0.5, scale_radius=8.0)
+        # defls = gnfw.deflections_from_grid(grid=np.array([[0.1875, 0.1625]]))
+        # assert defls[0, 0] == pytest.approx(0.26604, 1e-3)
+        # assert defls[0, 1] == pytest.approx(0.58988, 1e-3)
+        #
+        # gnfw = mp.EllipticalGeneralizedNFW(centre=(0.3, 0.2), kappa_s=2.5, axis_ratio=0.5,
+        #                                    phi=100.0, inner_slope=1.5, scale_radius=4.0)
+        # defls = gnfw.deflections_from_grid(grid=np.array([[0.1875, 0.1625]]))
+        # assert defls[0, 0] == pytest.approx(-5.99032, 1e-3)
+        # assert defls[0, 1] == pytest.approx(-4.02541, 1e-3)
+
+    def test__surfce_density__change_geometry(self):
+        gnfw_0 = mp.SphericalGeneralizedNFW(centre=(0.0, 0.0))
+        gnfw_1 = mp.SphericalGeneralizedNFW(centre=(1.0, 1.0))
+        assert gnfw_0.surface_density_from_grid(grid=np.array([[1.0, 1.0]])) == gnfw_1.surface_density_from_grid(
+            grid=np.array([[0.0, 0.0]]))
+
+        gnfw_0 = mp.SphericalGeneralizedNFW(centre=(0.0, 0.0))
+        gnfw_1 = mp.SphericalGeneralizedNFW(centre=(0.0, 0.0))
+        assert gnfw_0.surface_density_from_grid(grid=np.array([[1.0, 0.0]])) == gnfw_1.surface_density_from_grid(
+            grid=np.array([[0.0, 1.0]]))
+
+        # gnfw_0 = mp.EllipticalGeneralizedNFW(centre=(0.0, 0.0), axis_ratio=0.8, phi=0.0)
+        # gnfw_1 = mp.EllipticalGeneralizedNFW(centre=(0.0, 0.0), axis_ratio=0.8, phi=90.0)
+        # assert gnfw_0.surface_density_from_grid(grid=np.array([[1.0, 0.0]])) == gnfw_1.surface_density_from_grid(
+        #     grid=np.array([[0.0, 1.0]]))
+
+    def test__potential__change_geometry(self):
+        gnfw_0 = mp.SphericalGeneralizedNFW(centre=(0.0, 0.0))
+        gnfw_1 = mp.SphericalGeneralizedNFW(centre=(1.0, 1.0))
+        assert gnfw_0.potential_from_grid(grid=np.array([[1.0, 1.0]])) == gnfw_1.potential_from_grid(
+            grid=np.array([[0.0, 0.0]]))
+
+        gnfw_0 = mp.SphericalGeneralizedNFW(centre=(0.0, 0.0))
+        gnfw_1 = mp.SphericalGeneralizedNFW(centre=(0.0, 0.0))
+        assert gnfw_0.potential_from_grid(grid=np.array([[1.0, 0.0]])) == gnfw_1.potential_from_grid(
+            grid=np.array([[0.0, 1.0]]))
+
+        # gnfw_0 = mp.EllipticalGeneralizedNFW(centre=(0.0, 0.0), axis_ratio=0.8, phi=0.0)
+        # gnfw_1 = mp.EllipticalGeneralizedNFW(centre=(0.0, 0.0), axis_ratio=0.8, phi=90.0)
+        # assert gnfw_0.potential_from_grid(grid=np.array([[1.0, 0.0]])) == gnfw_1.potential_from_grid(
+        #     grid=np.array([[0.0, 1.0]]))
+
+    def test__deflections__change_geometry(self):
+        gnfw_0 = mp.SphericalGeneralizedNFW(centre=(0.0, 0.0), kappa_s=1.0, inner_slope=1.5, scale_radius=1.0)
+        gnfw_1 = mp.SphericalGeneralizedNFW(centre=(1.0, 1.0), kappa_s=1.0, inner_slope=1.5, scale_radius=1.0)
+        defls_0 = gnfw_0.deflections_from_grid(grid=np.array([[1.0, 1.0]]))
+        defls_1 = gnfw_1.deflections_from_grid(grid=np.array([[0.0, 0.0]]))
+        assert defls_0[0, 0] == pytest.approx(-defls_1[0, 0], 1e-5)
+        assert defls_0[0, 1] == pytest.approx(-defls_1[0, 1], 1e-5)
+
+        gnfw_0 = mp.SphericalGeneralizedNFW(centre=(0.0, 0.0), kappa_s=1.0, inner_slope=1.5, scale_radius=1.0)
+        gnfw_1 = mp.SphericalGeneralizedNFW(centre=(0.0, 0.0), kappa_s=1.0, inner_slope=1.5, scale_radius=1.0)
+        defls_0 = gnfw_0.deflections_from_grid(grid=np.array([[1.0, 0.0]]))
+        defls_1 = gnfw_1.deflections_from_grid(grid=np.array([[0.0, 1.0]]))
+        assert defls_0[0, 0] == pytest.approx(defls_1[0, 1], 1e-5)
+        assert defls_0[0, 1] == pytest.approx(defls_1[0, 0], 1e-5)
+
+        # gnfw_0 = mp.EllipticalGeneralizedNFW(centre=(0.0, 0.0), axis_ratio=0.8, phi=0.0, kappa_s=1.0,
+        #                                      inner_slope=1.5, scale_radius=1.0)
+        # gnfw_1 = mp.EllipticalGeneralizedNFW(centre=(0.0, 0.0), axis_ratio=0.8, phi=90.0, kappa_s=1.0,
+        #                                      inner_slope=1.5, scale_radius=1.0)
+        # defls_0 = gnfw_0.deflections_from_grid(grid=np.array([[1.0, 0.0]]))
+        # defls_1 = gnfw_1.deflections_from_grid(grid=np.array([[0.0, 1.0]]))
+        # assert defls_0[0, 0] == pytest.approx(defls_1[0, 1], 1e-5)
+        # assert defls_0[0, 1] == pytest.approx(defls_1[0, 0], 1e-5)
+
+    # def test__compare_to_nfw(self):
+    #     nfw = mp.EllipticalNFW(centre=(0.0, 0.0), axis_ratio=0.8, phi=0.0, kappa_s=1.0, scale_radius=5.0)
+    #     gnfw = mp.EllipticalGeneralizedNFW(centre=(0.0, 0.0), axis_ratio=0.8, phi=0.0, kappa_s=1.0,
+    #                                        inner_slope=1.0, scale_radius=5.0)
+    #
+    #     assert nfw.potential_from_grid(grid) == pytest.approx(gnfw.potential_from_grid(grid), 1e-3)
+    #     assert nfw.potential_from_grid(grid) == pytest.approx(gnfw.potential_from_grid(grid), 1e-3)
+    #     assert nfw.deflections_from_grid(grid) == pytest.approx(gnfw.deflections_from_grid(grid), 1e-3)
+    #     assert nfw.deflections_from_grid(grid) == pytest.approx(gnfw.deflections_from_grid(grid), 1e-3)
 
     # def test__spherical_and_elliptical_match(self):
     #     elliptical = mp.EllipticalGeneralizedNFW(centre=(0.1, 0.2), axis_ratio=1.0, phi=0.0, kappa_s=2.0,
