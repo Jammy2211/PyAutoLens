@@ -93,7 +93,18 @@ Included with **PyAutoLens** is the **HowToLens** eBook, which provides an intro
 
 ## Workspace
 
-**PyAutoLens** includes a workspace, which includes template scripts, examples and the **HowToLens** eBook. If you install **PyAutoLens** with conda or pip the workspace these should be included, however if not then workspace can be found on the master branch of this git repository.
+**PyAutoLens** comes with a workspace, which includes the following:
+
+- **Config** - Configuration files which customize the **PyAutoLens** analysis.
+- **Data** - Your data folder, including example data-sets distributed with **PyAutoLens**.
+- **HowToLens** - The **HowToLens** eBook.
+- **Output** - Where the **PyAutoLens** analysis and visualization are output.
+- **Pipelines** - Example pipelines to model a strong lens or use a template for your own pipeline.
+- **Plotting** - Scripts enabling customized figures and images.
+- **Runners** - Scripts for running a **PyAutoLens** pipeline and analysis.
+- **Tools** - Tools for simulating strong lens data, creating masks and using many other **PyAutoLens** features.
+
+If you install **PyAutoLens** with conda or pip the workspace will be included and the latest workspace can be found on the master branch of this git repository.
 
 If you install **PyAutoLens** with Docker a workspace will be generated for you in the home directory the first time you run the image. After the first time you run docker the workspace will persist any changes you make and won't be updated again.
 
