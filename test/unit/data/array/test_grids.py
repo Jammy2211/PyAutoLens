@@ -877,7 +877,7 @@ class TestPaddedGrids:
                                                   [5.0, 1.0]])).all()
 
 
-class TestDataGridStack(object):
+class TestGridStack(object):
 
     def test__grids(self, grid_stack):
         assert (grid_stack.regular == np.array([[0., 0.]])).all()
@@ -964,6 +964,13 @@ class TestDataGridStack(object):
         assert (padded_grids.blurring == np.array([0.0, 0.0])).all()
 
         assert (padded_grids.pix == np.array([[0.0, 0.0]])).all()
+
+    def test__scaled_array_from_array_1d(self, grid_stack):
+
+        scaled_array_from_grid_stack= grid_stack.scaled_array_from_array_1d(array_1d=np.ones(5))
+        scaled_array_from_regular = grid_stack.regular.scaled_array_from_array_1d(array_1d=np.ones(5))
+
+        assert (scaled_array_from_grid_stack == scaled_array_from_regular).all()
 
     def test__apply_function_retains_attributes(self, grid_stack):
 

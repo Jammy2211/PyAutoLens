@@ -87,7 +87,7 @@ class LensData(object):
 
     @property
     def map_to_scaled_array(self):
-        return self.grid_stack.regular.scaled_array_from_array_1d
+        return self.grid_stack.scaled_array_from_array_1d
 
     def __array_finalize__(self, obj):
         if isinstance(obj, LensData):

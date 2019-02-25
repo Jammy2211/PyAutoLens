@@ -16,7 +16,7 @@ radius_arcsec = 3.0
 print('sub grid size = ' + str(sub_grid_size))
 print('circular mask radius = ' + str(radius_arcsec) + '\n')
 
-for image_type in ['AO']:
+for image_type in ['LSST', 'Euclid', 'HST', 'HST_Up', 'AO']:
 
     ccd_data = tools.load_profiling_ccd_data(image_type=image_type, lens_name='no_lens_source_smooth', psf_shape=(3,3))
     mask = msk.Mask.circular(shape=ccd_data.shape, pixel_scale=ccd_data.pixel_scale, radius_arcsec=radius_arcsec)

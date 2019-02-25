@@ -244,7 +244,7 @@ class AbstractTracer(AbstractTracerCosmology):
     @property
     @check_tracer_for_light_profile
     def image_plane_image(self):
-        return  self.image_plane.grid_stack.regular.scaled_array_from_array_1d(self.image_plane_image_1d)
+        return  self.image_plane.grid_stack.scaled_array_from_array_1d(array_1d=self.image_plane_image_1d)
 
     @property
     @check_tracer_for_light_profile

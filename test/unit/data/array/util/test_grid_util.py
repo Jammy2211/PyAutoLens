@@ -816,7 +816,8 @@ class TestInterpGridFromMask(object):
                          [True, True, True, True, True]])
 
         interp_grid_1d = grid_util.interp_grid_1d_from_mask_and_interp_pixel_scale(
-            mask=mask, mask_pixel_scales=(1.0, 1.0), mask_origin=(0.0, 0.0), interp_pixel_scales=(1.0, 1.0))
+            mask=mask, mask_pixel_scales=(1.0, 1.0), mask_origin=(0.0, 0.0), interp_pixel_scales=(1.0, 1.0),
+            pix_neighbor_size=1)
 
         assert (interp_grid_1d == np.array([[ 1.0, -1.0], [ 1.0, 0.0], [ 1.0, 1.0],
                                             [ 0.0, -1.0], [ 0.0, 0.0], [ 0.0, 1.0],
@@ -831,7 +832,8 @@ class TestInterpGridFromMask(object):
                          [True, True, True, True, True]])
 
         interp_grid_1d = grid_util.interp_grid_1d_from_mask_and_interp_pixel_scale(
-            mask=mask, mask_pixel_scales=(1.0, 1.0), mask_origin=(0.0, 0.0), interp_pixel_scales=(0.5, 0.5))
+            mask=mask, mask_pixel_scales=(1.0, 1.0), mask_origin=(0.0, 0.0), interp_pixel_scales=(0.5, 0.5),
+            pix_neighbor_size=1)
 
         assert (interp_grid_1d == np.array([[1.5, -1.5], [ 1.5, -1.0], [ 1.5, -0.5], [ 1.5, 0.0], [ 1.5, 0.5], [ 1.5, 1.0],
                                             [1.0, -1.5], [ 1.0, -1.0], [ 1.0, -0.5], [ 1.0, 0.0], [ 1.0, 0.5], [ 1.0, 1.0],
@@ -851,7 +853,8 @@ class TestInterpGridFromMask(object):
                          [True, True, True, True, True, True, True]])
 
         interp_grid_1d = grid_util.interp_grid_1d_from_mask_and_interp_pixel_scale(
-            mask=mask, mask_pixel_scales=(1.0, 1.0), mask_origin=(0.0, 0.0), interp_pixel_scales=(2.0, 2.0))
+            mask=mask, mask_pixel_scales=(1.0, 1.0), mask_origin=(0.0, 0.0), interp_pixel_scales=(2.0, 2.0),
+            pix_neighbor_size=1)
 
         assert (interp_grid_1d == np.array([[ 1.0, -1.0], [ 1.0, 1.0],
                                             [-1.0, -1.0], [-1.0, 1.0]])).all()
@@ -866,7 +869,8 @@ class TestInterpGridFromMask(object):
                          [True, True, True, True, True]])
 
         interp_grid_1d = grid_util.interp_grid_1d_from_mask_and_interp_pixel_scale(
-            mask=mask, mask_pixel_scales=(1.0, 1.0), mask_origin=(0.0, 0.0), interp_pixel_scales=(1.0, 1.0))
+            mask=mask, mask_pixel_scales=(1.0, 1.0), mask_origin=(0.0, 0.0), interp_pixel_scales=(1.0, 1.0),
+            pix_neighbor_size=1)
 
         assert (interp_grid_1d == np.array([[ 1.5, -1.0], [ 1.5, 0.0], [ 1.5, 1.0],
                                             [ 0.5, -1.0], [ 0.5, 0.0], [ 0.5, 1.0],
@@ -882,7 +886,8 @@ class TestInterpGridFromMask(object):
                          [True, True, True, True, True, True]])
 
         interp_grid_1d = grid_util.interp_grid_1d_from_mask_and_interp_pixel_scale(
-            mask=mask, mask_pixel_scales=(1.0, 1.0), mask_origin=(0.0, 0.0), interp_pixel_scales=(1.0, 1.0))
+            mask=mask, mask_pixel_scales=(1.0, 1.0), mask_origin=(0.0, 0.0), interp_pixel_scales=(1.0, 1.0),
+            pix_neighbor_size=1)
 
         assert (interp_grid_1d == np.array([[ 1.0, -1.5], [ 1.0, -0.5], [ 1.0, 0.5], [ 1.0, 1.5],
                                             [ 0.0, -1.5], [ 0.0, -0.5], [ 0.0, 0.5], [ 0.0, 1.5],
@@ -899,7 +904,8 @@ class TestInterpGridFromMask(object):
                          [True, True, True, True, True, True, True]])
 
         interp_grid_1d = grid_util.interp_grid_1d_from_mask_and_interp_pixel_scale(
-            mask=mask, mask_pixel_scales=(1.0, 1.0), mask_origin=(0.0, 0.0), interp_pixel_scales=(1.0, 1.0))
+            mask=mask, mask_pixel_scales=(1.0, 1.0), mask_origin=(0.0, 0.0), interp_pixel_scales=(1.0, 1.0),
+            pix_neighbor_size=1)
 
         assert (interp_grid_1d == np.array([[ 2.0, -2.0], [2.0, -1.0], [2.0, 0.0],
                                             [ 1.0, -2.0], [1.0, -1.0], [1.0, 0.0],
@@ -914,7 +920,8 @@ class TestInterpGridFromMask(object):
                          [True, True, True, True, True, True, True]])
 
         interp_grid_1d = grid_util.interp_grid_1d_from_mask_and_interp_pixel_scale(
-            mask=mask, mask_pixel_scales=(1.0, 1.0), mask_origin=(0.0, 0.0), interp_pixel_scales=(1.0, 1.0))
+            mask=mask, mask_pixel_scales=(1.0, 1.0), mask_origin=(0.0, 0.0), interp_pixel_scales=(1.0, 1.0),
+            pix_neighbor_size=1)
 
         assert (interp_grid_1d == np.array([[ 2.0, 0.0], [ 2.0, 1.0], [ 2.0, 2.0],
                                             [ 1.0, 0.0], [ 1.0, 1.0], [ 1.0, 2.0],
@@ -929,7 +936,8 @@ class TestInterpGridFromMask(object):
                          [True, True, True, True, True, True, True]])
 
         interp_grid_1d = grid_util.interp_grid_1d_from_mask_and_interp_pixel_scale(
-            mask=mask, mask_pixel_scales=(1.0, 1.0), mask_origin=(0.0, 0.0), interp_pixel_scales=(1.0, 1.0))
+            mask=mask, mask_pixel_scales=(1.0, 1.0), mask_origin=(0.0, 0.0), interp_pixel_scales=(1.0, 1.0),
+            pix_neighbor_size=1)
 
         assert (interp_grid_1d == np.array([[ 0.0, -2.0], [ 0.0, -1.0], [ 0.0, 0.0],
                                             [-1.0, -2.0], [-1.0, -1.0], [-1.0, 0.0],
@@ -944,7 +952,8 @@ class TestInterpGridFromMask(object):
                          [True, True, True, True, True, True, True]])
 
         interp_grid_1d = grid_util.interp_grid_1d_from_mask_and_interp_pixel_scale(
-            mask=mask, mask_pixel_scales=(1.0, 1.0), mask_origin=(0.0, 0.0), interp_pixel_scales=(1.0, 1.0))
+            mask=mask, mask_pixel_scales=(1.0, 1.0), mask_origin=(0.0, 0.0), interp_pixel_scales=(1.0, 1.0),
+            pix_neighbor_size=1)
 
         assert (interp_grid_1d == np.array([[ 0.0, 0.0], [ 0.0, 1.0], [ 0.0, 2.0],
                                             [-1.0, 0.0], [-1.0, 1.0], [-1.0, 2.0],
@@ -959,14 +968,16 @@ class TestInterpGridFromMask(object):
                          [True, True, True, True, True]])
 
         interp_grid_1d = grid_util.interp_grid_1d_from_mask_and_interp_pixel_scale(
-            mask=mask, mask_pixel_scales=(1.0, 1.0), mask_origin=(1.0, 0.0), interp_pixel_scales=(1.0, 1.0))
+            mask=mask, mask_pixel_scales=(1.0, 1.0), mask_origin=(1.0, 0.0), interp_pixel_scales=(1.0, 1.0),
+            pix_neighbor_size=1)
 
         assert (interp_grid_1d == np.array([[ 2.0, -1.0], [ 2.0, 0.0], [ 2.0, 1.0],
                                             [ 1.0, -1.0], [ 1.0, 0.0], [ 1.0, 1.0],
                                             [ 0.0, -1.0], [ 0.0, 0.0], [ 0.0, 1.0]])).all()
 
         interp_grid_1d = grid_util.interp_grid_1d_from_mask_and_interp_pixel_scale(
-            mask=mask, mask_pixel_scales=(1.0, 1.0), mask_origin=(1.0, 1.0), interp_pixel_scales=(1.0, 1.0))
+            mask=mask, mask_pixel_scales=(1.0, 1.0), mask_origin=(1.0, 1.0), interp_pixel_scales=(1.0, 1.0),
+            pix_neighbor_size=1)
 
         assert (interp_grid_1d == np.array([[ 2.0, 0.0], [ 2.0, 1.0], [ 2.0, 2.0],
                                             [ 1.0, 0.0], [ 1.0, 1.0], [ 1.0, 2.0],
