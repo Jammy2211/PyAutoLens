@@ -8,10 +8,6 @@ Interp:
 - Make pixel scales main input parameters instead of interp shape.
 -
 
-Today:
-
-- CTI, make sure parallelization on COSMA works.
-
 Short term:
 
 - Double check that ellipticity of Sersic profiles is working.

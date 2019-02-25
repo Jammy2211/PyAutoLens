@@ -219,6 +219,9 @@ class GridStack(object):
         """Map a function to all grid_stack in a grid-stack"""
         return GridStack(*[func(*args) for args in zip(self, *arg_lists)])
 
+    def scaled_array_from_array_1d(self, array_1d):
+        return self.regular.scaled_array_from_array_1d(array_1d=array_1d)
+
     @property
     def sub_pixels(self):
         return self.sub.shape[0]
@@ -410,7 +413,8 @@ class RegularGrid(np.ndarray):
         array_1d : ndarray
             The 1D array of which is mapped to a 2D scaled array.
         """
-        return scaled_array.ScaledSquarePixelArray(array=self.array_2d_from_array_1d(array_1d), pixel_scale=self.mask.pixel_scale,
+        return scaled_array.ScaledSquarePixelArray(array=self.array_2d_from_array_1d(array_1d),
+                                                   pixel_scale=self.mask.pixel_scale,
                                                    origin=self.mask.origin)
 
     def __reduce__(self):

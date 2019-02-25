@@ -288,7 +288,7 @@ class AbstractGriddedPlane(AbstractPlane):
 
     @property
     def image_plane_image(self):
-        return self.grid_stack.regular.scaled_array_from_array_1d(self.image_plane_image_1d)
+        return self.grid_stack.scaled_array_from_array_1d(self.image_plane_image_1d)
 
     @property
     def image_plane_image_for_simulation(self):
@@ -315,21 +315,21 @@ class AbstractGriddedPlane(AbstractPlane):
     def surface_density(self):
         surface_density_1d = galaxy_util.surface_density_of_galaxies_from_grid(
             grid=self.grid_stack.sub.unlensed_grid, galaxies=self.galaxies)
-        return self.grid_stack.regular.scaled_array_from_array_1d(array_1d=surface_density_1d)
+        return self.grid_stack.scaled_array_from_array_1d(array_1d=surface_density_1d)
 
     @property
     def potential(self):
         potential_1d = galaxy_util.potential_of_galaxies_from_grid(grid=self.grid_stack.sub.unlensed_grid,
                                                                   galaxies=self.galaxies)
-        return self.grid_stack.regular.scaled_array_from_array_1d(array_1d=potential_1d)
+        return self.grid_stack.scaled_array_from_array_1d(array_1d=potential_1d)
 
     @property
     def deflections_y(self):
-        return self.grid_stack.regular.scaled_array_from_array_1d(self.deflections_1d[:, 0])
+        return self.grid_stack.scaled_array_from_array_1d(self.deflections_1d[:, 0])
 
     @property
     def deflections_x(self):
-        return self.grid_stack.regular.scaled_array_from_array_1d(self.deflections_1d[:, 1])
+        return self.grid_stack.scaled_array_from_array_1d(self.deflections_1d[:, 1])
 
     @property
     def deflections_1d(self):
