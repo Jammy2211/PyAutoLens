@@ -279,11 +279,14 @@ class RegularGrid(np.ndarray):
         """
         obj = arr.view(cls)
         obj.mask = mask
+        obj.interpolator = None
         return obj
 
     def __array_finalize__(self, obj):
         if hasattr(obj, "mask"):
             self.mask = obj.mask
+        if hasattr(obj, "interpolator"):
+            self.interpolator = obj.interpolator
 
     @property
     def masked_shape_arcsec(self):
@@ -650,11 +653,14 @@ class PixGrid(np.ndarray):
         """
         obj = arr.view(cls)
         obj.regular_to_nearest_pix = regular_to_nearest_pix
+        obj.interpolator = None
         return obj
 
     def __array_finalize__(self, obj):
         if hasattr(obj, "regular_to_nearest_pix"):
             self.regular_to_nearest_pix = obj.regular_to_nearest_pix
+        if hasattr(obj, "interpolator"):
+            self.interpolator = obj.interpolator
 
 
 class SparseToRegularGrid(scaled_array.RectangularArrayGeometry):
@@ -1035,3 +1041,15 @@ class Interpolator(object):
 
     def interpolate(self, values):
         return np.einsum('nj,nj->n', np.take(values, self.vtx), self.wts)
+
+
+def grid_interpolate(func):
+    @wraps(func)
+    def wrapper(profile, grid, *args, **kwargs):
+        if hasattr(grid, "interpolator"):
+            interpolator = grid.interpolator
+            if grid.interpolator is not None:
+                return interpolator.interpolate(func(profile, interpolator.interp_grid, *args, **kwargs))
+        return func(profile, grid, *args, **kwargs)
+
+    return wrapper
