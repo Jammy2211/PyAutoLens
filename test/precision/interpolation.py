@@ -38,7 +38,7 @@ for image_type in ['HST_Up']:
 
     interpolator = grids.Interpolator.from_mask_grid_and_interp_pixel_scales(mask=lens_data.mask,
                                                                              grid=lens_data.grid_stack.sub,
-                                                                             interp_pixel_scales=(0.05, 0.05))
+                                                                             interp_pixel_scale=1.0)
 
     print('Number of interpolation points = ' + str(interpolator.interp_grid.shape[0]) + '\n')
 

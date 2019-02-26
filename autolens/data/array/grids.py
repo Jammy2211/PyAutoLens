@@ -1013,6 +1013,7 @@ class RegularGridBorder(np.ndarray):
 class Interpolator(object):
 
     def __init__(self, grid, interp_grid):
+
         self.grid = grid
         self.interp_grid = interp_grid
 
@@ -1030,10 +1031,13 @@ class Interpolator(object):
         return vertices, np.hstack((bary, 1 - bary.sum(axis=1, keepdims=True)))
 
     @classmethod
-    def from_mask_grid_and_interp_pixel_scales(cls, mask, grid, interp_pixel_scales):
-        interp_grid = grid_util.interp_grid_1d_from_mask_and_interp_pixel_scale(
-            mask=mask, mask_pixel_scales=mask.pixel_scales, mask_origin=mask.origin,
-            interp_pixel_scales=interp_pixel_scales)
+    def from_mask_grid_and_interp_pixel_scales(cls, mask, grid, interp_pixel_scale):
+
+        rescale_factor = mask.pixel_scale / interp_pixel_scale
+        rescaled_mask = mask_util.rescaled_mask_from_mask_and_rescale_factor(mask=mask, rescale_factor=rescale_factor)
+        interp_mask = mask_util.edge_buffed_mask_from_mask(mask=rescaled_mask)
+        interp_grid = grid_util.regular_grid_1d_masked_from_mask_pixel_scales_and_origin(mask=interp_mask,
+                pixel_scales=(interp_pixel_scale, interp_pixel_scale), origin=mask.origin)
         return Interpolator(grid=grid, interp_grid=interp_grid)
 
     def interpolated_values_from_values(self, values):

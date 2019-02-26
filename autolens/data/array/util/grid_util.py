@@ -1,5 +1,6 @@
 from autolens import decorator_util
 import numpy as np
+from skimage.transform import rescale
 
 from autolens.data.array.util import mask_util
 
@@ -482,66 +483,3 @@ def grid_arcsec_2d_to_grid_pixel_centres_2d(grid_arcsec_2d, shape, pixel_scales,
             grid_pixels_2d[y, x, 1] = int((grid_arcsec_2d[y, x, 1] / pixel_scales[1]) + centres_arcsec[1] + 0.5)
 
     return grid_pixels_2d
-
-@decorator_util.jit()
-def interp_grid_1d_from_mask_and_interp_pixel_scale(mask, mask_pixel_scales, mask_origin, interp_pixel_scales,
-                                                    pix_neighbor_size=5):
-
-    mask_grid_2d = regular_grid_2d_from_shape_pixel_scales_and_origin(shape=mask.shape, pixel_scales=mask_pixel_scales,
-                                                                      origin=mask_origin)
-
-    interp_y_min = np.min(mask_grid_2d[:, :, 0])
-    interp_y_max = np.max(mask_grid_2d[:, :, 0])
-    interp_x_min = np.min(mask_grid_2d[:, :, 1])
-    interp_x_max = np.max(mask_grid_2d[:, :, 1])
-
-    interp_shape = (int((interp_y_max - interp_y_min) / interp_pixel_scales[0])+1,
-                    int((interp_x_max - interp_x_min) / interp_pixel_scales[1])+1)
-
-    interp_grid_2d = regular_grid_2d_from_shape_pixel_scales_and_origin(shape=interp_shape,
-                                                                        pixel_scales=interp_pixel_scales,
-                                                                        origin=mask_origin)
-
-    interp_to_mask_2d = grid_arcsec_2d_to_grid_pixel_centres_2d(grid_arcsec_2d=interp_grid_2d, shape=mask.shape,
-                                                                pixel_scales=mask_pixel_scales, origin=mask_origin)
-    interp_grid_pixels = 0
-
-    for interp_y in range(interp_shape[0]):
-        for interp_x in range(interp_shape[1]):
-            mask_y = int(interp_to_mask_2d[interp_x, interp_y, 1])
-            mask_x = int(interp_to_mask_2d[interp_x, interp_y, 0])
-            if mask_y > 0 and mask_x > 0 and mask_y < mask.shape[0]-1 and mask_x < mask.shape[1]-1:
-                for pix_neighbor in range(1, pix_neighbor_size+1):
-                    if not mask[mask_y, mask_x]:
-                        interp_grid_pixels += 1
-                        break
-                    elif not mask[mask_y + pix_neighbor, mask_x] or not  mask[mask_y - pix_neighbor, mask_x] or \
-                         not mask[mask_y, mask_x + pix_neighbor] or not mask[mask_y, mask_x - pix_neighbor] or \
-                        not mask[mask_y + pix_neighbor, mask_x + pix_neighbor] or not mask[mask_y + pix_neighbor, mask_x - pix_neighbor] or \
-                        not mask[mask_y - pix_neighbor, mask_x + pix_neighbor] or not mask[mask_y - pix_neighbor, mask_x - pix_neighbor]:
-                        interp_grid_pixels += 1
-                        break
-
-    interp_grid_1d = np.zeros((interp_grid_pixels, 2))
-
-    interp_index = 0
-
-    for interp_y in range(interp_shape[0]):
-        for interp_x in range(interp_shape[1]):
-            mask_y = int(interp_to_mask_2d[interp_x, interp_y, 1])
-            mask_x = int(interp_to_mask_2d[interp_x, interp_y, 0])
-            if mask_y > 0 and mask_x > 0 and mask_y < mask.shape[0]-1 and mask_x < mask.shape[1]-1:
-                for pix_neighbor in range(1, pix_neighbor_size+1):
-                    if not mask[mask_y, mask_x]:
-                        interp_grid_1d[interp_index,:] = interp_grid_2d[interp_y, interp_x,:]
-                        interp_index += 1
-                        break
-                    elif not mask[mask_y + pix_neighbor, mask_x] or not mask[mask_y - pix_neighbor, mask_x] or \
-                         not mask[mask_y, mask_x + pix_neighbor] or not mask[mask_y, mask_x - pix_neighbor] or \
-                         not mask[mask_y + pix_neighbor, mask_x + pix_neighbor] or not mask[mask_y + pix_neighbor, mask_x - pix_neighbor] or \
-                         not mask[mask_y - pix_neighbor, mask_x + pix_neighbor] or not mask[mask_y - pix_neighbor, mask_x - pix_neighbor]:
-                        interp_grid_1d[interp_index,:] = interp_grid_2d[interp_y, interp_x,:]
-                        interp_index += 1
-                        break
-
-    return interp_grid_1d
