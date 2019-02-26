@@ -39,12 +39,10 @@ class PipelineImaging(Pipeline):
         super(PipelineImaging, self).__init__(pipeline_name, *phases)
 
     def run(self, data, mask=None, positions=None):
-
-        from autolens.pipeline import phase as ph
-        results = []
+        results = ResultsCollection()
         for i, phase in enumerate(self.phases):
             logger.info("Running Phase {} (Number {})".format(phase.optimizer.name, i))
-            results.append(phase.run(data=data, previous_results=ph.ResultsCollection(results), mask=mask,
+            results.append(phase.run(data=data, previous_results=ResultsCollection(results), mask=mask,
                                      positions=positions))
         return results
 
@@ -55,11 +53,26 @@ class PipelinePositions(Pipeline):
         super(PipelinePositions, self).__init__(pipeline_name, *phases)
 
     def run(self, positions, pixel_scale):
-        from autolens.pipeline import phase as ph
-
-        results = []
+        results = ResultsCollection()
         for i, phase in enumerate(self.phases):
             logger.info("Running Phase {} (Number {})".format(phase.optimizer.name, i))
             results.append(phase.run(positions=positions, pixel_scale=pixel_scale,
-                                     previous_results=ph.ResultsCollection(results)))
+                                     previous_results=ResultsCollection(results)))
         return results
+
+
+class ResultsCollection(list):
+    def __init__(self, results=None):
+        super().__init__(results or [])
+
+    @property
+    def last(self):
+        if len(self) > 0:
+            return self[-1]
+        return None
+
+    @property
+    def first(self):
+        if len(self) > 0:
+            return self[0]
+        return None
