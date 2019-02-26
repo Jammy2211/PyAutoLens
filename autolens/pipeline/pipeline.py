@@ -34,30 +34,22 @@ class Pipeline(object):
 
 
 class PipelineImaging(Pipeline):
-
-    def __init__(self, pipeline_name, *phases):
-        super(PipelineImaging, self).__init__(pipeline_name, *phases)
-
     def run(self, data, mask=None, positions=None):
         results = ResultsCollection()
         for i, phase in enumerate(self.phases):
             logger.info("Running Phase {} (Number {})".format(phase.optimizer.name, i))
-            results.append(phase.run(data=data, previous_results=ResultsCollection(results), mask=mask,
+            results.append(phase.run(data=data, previous_results=results.copy(), mask=mask,
                                      positions=positions))
         return results
 
 
 class PipelinePositions(Pipeline):
-
-    def __init__(self, pipeline_name, *phases):
-        super(PipelinePositions, self).__init__(pipeline_name, *phases)
-
     def run(self, positions, pixel_scale):
         results = ResultsCollection()
         for i, phase in enumerate(self.phases):
             logger.info("Running Phase {} (Number {})".format(phase.optimizer.name, i))
             results.append(phase.run(positions=positions, pixel_scale=pixel_scale,
-                                     previous_results=ResultsCollection(results)))
+                                     previous_results=results.copy()))
         return results
 
 
