@@ -32,24 +32,11 @@ class Pipeline(object):
         """
         return self.__class__("{} + {}".format(self.pipeline_name, other.pipeline_name), *(self.phases + other.phases))
 
-
-class PipelineImaging(Pipeline):
-    def run(self, data, mask=None, positions=None):
+    def run_function(self, func):
         results = ResultsCollection()
         for i, phase in enumerate(self.phases):
             logger.info("Running Phase {} (Number {})".format(phase.optimizer.name, i))
-            results.append(phase.run(data=data, previous_results=results.copy(), mask=mask,
-                                     positions=positions))
-        return results
-
-
-class PipelinePositions(Pipeline):
-    def run(self, positions, pixel_scale):
-        results = ResultsCollection()
-        for i, phase in enumerate(self.phases):
-            logger.info("Running Phase {} (Number {})".format(phase.optimizer.name, i))
-            results.append(phase.run(positions=positions, pixel_scale=pixel_scale,
-                                     previous_results=results.copy()))
+            results.append(func(phase, results.copy()))
         return results
 
 
@@ -68,3 +55,19 @@ class ResultsCollection(list):
         if len(self) > 0:
             return self[0]
         return None
+
+
+class PipelineImaging(Pipeline):
+    def run(self, data, mask=None, positions=None):
+        def runner(phase, results):
+            return phase.run(data=data, previous_results=results, mask=mask, positions=positions)
+
+        return self.run_function(runner)
+
+
+class PipelinePositions(Pipeline):
+    def run(self, positions, pixel_scale):
+        def runner(phase, results):
+            return phase.run(positions=positions, pixel_scale=pixel_scale, previous_results=results)
+
+        return self.run_function(runner)
