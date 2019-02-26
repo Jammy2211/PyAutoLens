@@ -65,7 +65,7 @@ setup(
                       'numba',
                       'matplotlib',
                       'colorama',
-                      'autofit==0.11.0',
+                      'autofit==0.13.0',
                       'pyquad'
                       ],
     extras_require={
