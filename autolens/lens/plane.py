@@ -267,6 +267,7 @@ class AbstractGriddedPlane(AbstractPlane):
         if compute_deflections:
 
             def calculate_deflections(grid):
+
                 if galaxies:
                     return sum(map(lambda galaxy: galaxy.deflections_from_grid(grid), galaxies))
                 else:

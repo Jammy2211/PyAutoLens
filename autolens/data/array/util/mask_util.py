@@ -1,5 +1,6 @@
 from autolens import decorator_util
 import numpy as np
+from skimage.transform import rescale
 
 from autolens import exc
 
@@ -322,3 +323,32 @@ def border_pixels_from_mask(mask):
             border_pixel_index += 1
 
     return border_pixels
+
+@decorator_util.jit()
+def edge_buffed_mask_from_mask(mask):
+
+    edge_buffed_mask = mask.copy()
+
+    for y in range(mask.shape[0]):
+        for x in range(mask.shape[1]):
+            if not mask[y, x]:
+                edge_buffed_mask[y + 1, x] = False
+                edge_buffed_mask[y - 1, x] = False
+                edge_buffed_mask[y, x + 1] = False
+                edge_buffed_mask[y, x - 1] = False
+                edge_buffed_mask[y + 1, x + 1] = False
+                edge_buffed_mask[y + 1, x - 1] = False
+                edge_buffed_mask[y - 1, x + 1] = False
+                edge_buffed_mask[y - 1, x - 1] = False
+
+    return edge_buffed_mask
+
+
+def rescaled_mask_from_mask_and_rescale_factor(mask, rescale_factor):
+
+    rescaled_mask = rescale(image=mask, scale=rescale_factor, mode='edge')
+    rescaled_mask[0, :] = True
+    rescaled_mask[rescaled_mask.shape[0]-1, :] = True
+    rescaled_mask[:, 0] = True
+    rescaled_mask[:, rescaled_mask.shape[1]-1] = True
+    return rescaled_mask == 1
