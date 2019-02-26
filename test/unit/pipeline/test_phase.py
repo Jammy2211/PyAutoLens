@@ -6,7 +6,6 @@ import pytest
 from astropy import cosmology as cosmo
 
 import autofit.tools.pipeline
-import autolens.pipeline.pipeline
 from autofit import conf
 from autofit.mapper import model_mapper as mm
 from autofit.mapper import prior
@@ -133,7 +132,9 @@ def make_results():
 
 @pytest.fixture(name="results_collection")
 def make_results_collection(results):
-    return autofit.tools.pipeline.ResultsCollection([results])
+    results_collection = autofit.tools.pipeline.ResultsCollection()
+    results_collection.add("phase", results)
+    return results_collection
 
 
 class TestAutomaticPriorPassing(object):
@@ -385,7 +386,7 @@ class TestPhase(object):
         assert isinstance(result.constant.lens_galaxies[0], g.Galaxy)
         assert isinstance(result.constant.source_galaxies[0], g.Galaxy)
 
-    def test_customize(self, results, ccd_data):
+    def test_customize(self, results, results_collection, ccd_data):
         class MyPlanePhaseAnd(ph.LensSourcePlanePhase):
             def pass_priors(self, previous_results):
                 self.lens_galaxies = previous_results.last.constant.lens_galaxies
@@ -398,7 +399,7 @@ class TestPhase(object):
         setattr(results.variable, "source_galaxies", [galaxy_model])
 
         phase = MyPlanePhaseAnd(optimizer_class=NLO, phase_name='test_phase')
-        phase.make_analysis(data=ccd_data, previous_results=autofit.tools.pipeline.ResultsCollection([results]))
+        phase.make_analysis(data=ccd_data, previous_results=results_collection)
 
         assert phase.lens_galaxies == [galaxy]
         assert phase.source_galaxies == [galaxy_model]
@@ -608,36 +609,7 @@ class TestPhase(object):
         assert instance.lens_galaxies[1].redshift == 0.8
 
 
-# class TestPixelizedPhase(object):
-#     def test_constructor(self):
-#         phase = ph.PixelizedSourceLensAndPhase()
-#         assert isinstance(phase.source_galaxies, gm.GalaxyModel)
-#         assert phase.lens_galaxies is None
-
-
-# class TestAnalysis(object):
-#     def test_model_image(self, results_collection, lens_data):
-#         lens = ph.LensPlanePhase.Analysis(results_collection, lens_data, "analysis_path")
-#         assert (results_collection[0].model_image == lens.last_results.model_image).all()
-
-
 class TestResult(object):
-
-    # def test_hyper_galaxy_and_model_images(self):
-    #
-    #     lens = MockAnalysis(number_galaxies=2, value=1.0)
-    #
-    # result = ph.LensSourcePlanePhase.Result(constant=mm.ModelInstance(), likelihood=1,
-    # variable=mm.ModelMapper(), lens=lens) assert (result.image_plane_source_images[0] == np.array([
-    # 1.0])).all() assert (result.image_plane_source_images[1] == np.array([1.0])).all() assert (
-    # result.image_ == np.array([2.0])).all()
-
-    def test_results(self):
-        results = autofit.tools.pipeline.ResultsCollection([1, 2, 3])
-        assert results == [1, 2, 3]
-        assert results.last == 3
-        assert results.first == 1
-
     def test__results_of_phase_are_available_as_properties(self, ccd_data):
         clean_images()
 
