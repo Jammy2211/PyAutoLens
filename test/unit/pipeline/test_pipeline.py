@@ -27,11 +27,11 @@ class Optimizer(object):
 
 
 class DummyPhaseImaging(object):
-    def __init__(self):
+    def __init__(self, name):
         self.data = None
         self.positions = None
         self.previous_results = None
-        self.phase_name = "dummy_phase"
+        self.phase_name = name
         self.mask = None
 
         self.optimizer = Optimizer()
@@ -47,8 +47,8 @@ class DummyPhaseImaging(object):
 class TestPassMask(object):
     def test_pass_mask(self):
         mask = MockMask()
-        phase_1 = DummyPhaseImaging()
-        phase_2 = DummyPhaseImaging()
+        phase_1 = DummyPhaseImaging("one")
+        phase_2 = DummyPhaseImaging("two")
         pipeline = pl.PipelineImaging("", phase_1, phase_2)
         pipeline.run(data=None, mask=mask)
 
@@ -59,8 +59,8 @@ class TestPassMask(object):
 class TestPassPositions(object):
     def test_pass_positions(self):
         positions = [[[1.0, 1.0], [2.0, 2.0]]]
-        phase_1 = DummyPhaseImaging()
-        phase_2 = DummyPhaseImaging()
+        phase_1 = DummyPhaseImaging("one")
+        phase_2 = DummyPhaseImaging("two")
         pipeline = pl.PipelineImaging("", phase_1, phase_2)
         pipeline.run(data=None, positions=positions)
 
@@ -70,19 +70,18 @@ class TestPassPositions(object):
 
 class TestPipelineImaging(object):
     def test_run_pipeline(self):
-        phase_1 = DummyPhaseImaging()
-        phase_2 = DummyPhaseImaging()
+        phase_1 = DummyPhaseImaging("one")
+        phase_2 = DummyPhaseImaging("two")
         pipeline = pl.PipelineImaging("", phase_1, phase_2)
 
         pipeline.run(None)
 
-        assert len(phase_1.previous_results) == 0
-        assert len(phase_2.previous_results) == 1
+        assert len(phase_2.previous_results) == 2
 
     def test_addition(self):
-        phase_1 = DummyPhaseImaging()
-        phase_2 = DummyPhaseImaging()
-        phase_3 = DummyPhaseImaging()
+        phase_1 = DummyPhaseImaging("one")
+        phase_2 = DummyPhaseImaging("two")
+        phase_3 = DummyPhaseImaging("three")
 
         pipeline1 = pl.PipelineImaging("", phase_1, phase_2)
         pipeline2 = pl.PipelineImaging("", phase_3)
@@ -91,11 +90,11 @@ class TestPipelineImaging(object):
 
 
 class DummyPhasePositions(object):
-    def __init__(self):
+    def __init__(self, name):
         self.positions = None
         self.previous_results = None
         self.pixel_scale = None
-        self.phase_name = "dummy_phase"
+        self.phase_name = name
         self.optimizer = Optimizer()
 
     def run(self, positions, pixel_scale, previous_results):
@@ -107,19 +106,18 @@ class DummyPhasePositions(object):
 
 class TestPipelinePositions(object):
     def test_run_pipeline(self):
-        phase_1 = DummyPhasePositions()
-        phase_2 = DummyPhasePositions()
+        phase_1 = DummyPhasePositions("one")
+        phase_2 = DummyPhasePositions("two")
         pipeline = pl.PipelinePositions("", phase_1, phase_2)
 
         pipeline.run(None, None)
 
-        assert len(phase_1.previous_results) == 0
-        assert len(phase_2.previous_results) == 1
+        assert len(phase_2.previous_results) == 2
 
     def test_addition(self):
-        phase_1 = DummyPhasePositions()
-        phase_2 = DummyPhasePositions()
-        phase_3 = DummyPhasePositions()
+        phase_1 = DummyPhasePositions("one")
+        phase_2 = DummyPhasePositions("two")
+        phase_3 = DummyPhasePositions("three")
 
         pipeline1 = pl.PipelinePositions("", phase_1, phase_2)
         pipeline2 = pl.PipelinePositions("", phase_3)
