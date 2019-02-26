@@ -178,7 +178,7 @@ class AbstractPhase(phase.AbstractPhase):
 
         Parameters
         ----------
-        previous_results: autolens.pipeline.pipeline.ResultsCollection
+        previous_results: autofit.tools.pipeline.ResultsCollection
             The result of the previous phase
         """
         pass
@@ -192,7 +192,7 @@ class AbstractPhase(phase.AbstractPhase):
 
             Parameters
             ----------
-            previous_results: autolens.pipeline.pipeline.ResultsCollection
+            previous_results: autofit.tools.pipeline.ResultsCollection
                 The results of all previous phases
             """
 
@@ -322,7 +322,7 @@ class PhasePositions(AbstractPhase):
         ----------
         pixel_scale
         positions
-        previous_results: autolens.pipeline.pipeline.ResultsCollection
+        previous_results: autofit.tools.pipeline.ResultsCollection
             An object describing the results of the last phase or None if no phase has been executed
 
         Returns
@@ -343,7 +343,7 @@ class PhasePositions(AbstractPhase):
         ----------
         pixel_scale
         positions
-        previous_results: autolens.pipeline.pipeline.ResultsCollection
+        previous_results: autofit.tools.pipeline.ResultsCollection
             The result from the previous phase
 
         Returns
@@ -436,7 +436,7 @@ class PhaseImaging(Phase):
         ----------
         image: scaled_array.ScaledSquarePixelArray
             An lens_data that has been masked
-        previous_results: autolens.pipeline.pipeline.ResultsCollection
+        previous_results: autofit.tools.pipeline.ResultsCollection
             The result of the previous lens
 
         Returns
@@ -455,7 +455,7 @@ class PhaseImaging(Phase):
         positions
         mask: Mask
             The default masks passed in by the pipeline
-        previous_results: autolens.pipeline.pipeline.ResultsCollection
+        previous_results: autofit.tools.pipeline.ResultsCollection
             An object describing the results of the last phase or None if no phase has been executed
         data: scaled_array.ScaledSquarePixelArray
             An lens_data that has been masked
@@ -483,7 +483,7 @@ class PhaseImaging(Phase):
             The default masks passed in by the pipeline
         data: im.CCD
             An lens_data that has been masked
-        previous_results: autolens.pipeline.pipeline.ResultsCollection
+        previous_results: autofit.tools.pipeline.ResultsCollection
             The result from the previous phase
 
         Returns
@@ -1012,7 +1012,7 @@ class GalaxyFitPhase(AbstractPhase):
         galaxy_data
         mask: Mask
             The default masks passed in by the pipeline
-        previous_results: autolens.pipeline.pipeline.ResultsCollection
+        previous_results: autofit.tools.pipeline.ResultsCollection
             An object describing the results of the last phase or None if no phase has been executed
 
         Returns
@@ -1035,7 +1035,7 @@ class GalaxyFitPhase(AbstractPhase):
         galaxy_data
         mask: Mask
             The default masks passed in by the pipeline
-        previous_results: autolens.pipeline.pipeline.ResultsCollection
+        previous_results: autofit.tools.pipeline.ResultsCollection
             The result from the previous phase
 
         Returns

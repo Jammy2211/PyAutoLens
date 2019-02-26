@@ -5,6 +5,7 @@ import numpy as np
 import pytest
 from astropy import cosmology as cosmo
 
+import autofit.tools.pipeline
 import autolens.pipeline.pipeline
 from autofit import conf
 from autofit.mapper import model_mapper as mm
@@ -132,7 +133,7 @@ def make_results():
 
 @pytest.fixture(name="results_collection")
 def make_results_collection(results):
-    return autolens.pipeline.pipeline.ResultsCollection([results])
+    return autofit.tools.pipeline.ResultsCollection([results])
 
 
 class TestAutomaticPriorPassing(object):
@@ -397,7 +398,7 @@ class TestPhase(object):
         setattr(results.variable, "source_galaxies", [galaxy_model])
 
         phase = MyPlanePhaseAnd(optimizer_class=NLO, phase_name='test_phase')
-        phase.make_analysis(data=ccd_data, previous_results=autolens.pipeline.pipeline.ResultsCollection([results]))
+        phase.make_analysis(data=ccd_data, previous_results=autofit.tools.pipeline.ResultsCollection([results]))
 
         assert phase.lens_galaxies == [galaxy]
         assert phase.source_galaxies == [galaxy_model]
@@ -632,7 +633,7 @@ class TestResult(object):
     # result.image_ == np.array([2.0])).all()
 
     def test_results(self):
-        results = autolens.pipeline.pipeline.ResultsCollection([1, 2, 3])
+        results = autofit.tools.pipeline.ResultsCollection([1, 2, 3])
         assert results == [1, 2, 3]
         assert results.last == 3
         assert results.first == 1
