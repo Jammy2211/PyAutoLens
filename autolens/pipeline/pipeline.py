@@ -1,8 +1,4 @@
-import logging
-
 from autofit.tools.pipeline import Pipeline
-
-logger = logging.getLogger(__name__)
 
 
 class PipelineImaging(Pipeline):
