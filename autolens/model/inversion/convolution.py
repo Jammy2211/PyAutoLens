@@ -1,7 +1,7 @@
-import numba
+from autolens import decorator_util
 import numpy as np
 
-from autolens.data.imaging import convolution
+from autolens.data import convolution
 
 
 class ConvolverMappingMatrix(convolution.Convolver):
@@ -95,7 +95,7 @@ class ConvolverMappingMatrix(convolution.Convolver):
                                         self.image_frame_psfs, self.image_frame_lengths)
 
     @staticmethod
-    @numba.jit(nopython=True, parallel=True)
+    @decorator_util.jit()
     def convolve_matrix_jit(mapping_matrix, image_frame_indexes, image_frame_kernels, image_frame_lengths):
 
         blurred_mapping_matrix = np.zeros(mapping_matrix.shape)

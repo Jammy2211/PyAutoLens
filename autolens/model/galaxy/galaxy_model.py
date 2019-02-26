@@ -1,9 +1,10 @@
+import copy
 import inspect
 
 from autofit import exc
-from autofit.core import model_mapper
-from autofit.core.model_mapper import PriorNameValue, ConstantNameValue, cast_collection
-
+from autofit.mapper import model_mapper
+from autofit.mapper import prior as p
+from autofit.mapper.prior import PriorNameValue, ConstantNameValue, cast_collection
 from autolens.model.galaxy import galaxy
 from autolens.model.profiles import light_profiles, mass_profiles
 
@@ -94,7 +95,7 @@ class GalaxyModel(model_mapper.AbstractPriorModel):
             The regularization-scheme used to regularization reconstruct the galaxy light when fitting the observed \
             regular if using an inversion.
         hyper_galaxy : HyperGalaxy
-            A model hyper-galaxy used for scaling the observed regular's noise.
+            A model hyper-galaxy used for scaling the observed regular's noise_map.
         """
 
         self.align_centres = align_centres
@@ -128,10 +129,10 @@ class GalaxyModel(model_mapper.AbstractPriorModel):
                     profile_model.phi = phi
 
         if redshift is not None:
-            self.redshift = model_mapper.Constant(
+            self.redshift = p.Constant(
                 redshift.redshift if isinstance(redshift, galaxy.Redshift) else redshift)
         else:
-            self.redshift = model_mapper.PriorModel(galaxy.Redshift) if variable_redshift else model_mapper.Constant(1)
+            self.redshift = model_mapper.PriorModel(galaxy.Redshift) if variable_redshift else p.Constant(1)
 
         if pixelization is not None and regularization is None:
             raise exc.PriorException('If the galaxy prior has a pixelization, it must also have a regularization.')
@@ -149,8 +150,8 @@ class GalaxyModel(model_mapper.AbstractPriorModel):
         if key == "redshift" \
                 and (isinstance(value, float)
                      or isinstance(value, int)
-                     or isinstance(value, model_mapper.Prior)
-                     or isinstance(value, model_mapper.Constant)):
+                     or isinstance(value, p.Prior)
+                     or isinstance(value, p.Constant)):
             value = galaxy.Redshift(value)
         super(GalaxyModel, self).__setattr__(key, value)
 
@@ -284,9 +285,9 @@ class GalaxyModel(model_mapper.AbstractPriorModel):
                        in self.profile_prior_model_dict.items()}, **self.constant_profile_dict}
 
         if isinstance(self.redshift, galaxy.Redshift):
-            redshift = self.redshift
+            redshift = self.redshift.value
         else:
-            redshift = self.redshift.instance_for_arguments(arguments)
+            redshift = self.redshift.instance_for_arguments(arguments).value
         pixelization = self.pixelization.instance_for_arguments(arguments) \
             if isinstance(self.pixelization, model_mapper.PriorModel) \
             else self.pixelization
@@ -297,7 +298,7 @@ class GalaxyModel(model_mapper.AbstractPriorModel):
             if isinstance(self.hyper_galaxy, model_mapper.PriorModel) \
             else self.hyper_galaxy
 
-        return galaxy.Galaxy(redshift=redshift.redshift, pixelization=pixelization, regularization=regularization,
+        return galaxy.Galaxy(redshift=redshift, pixelization=pixelization, regularization=regularization,
                              hyper_galaxy=hyper_galaxy, **profiles)
 
     def gaussian_prior_model_for_arguments(self, arguments):
@@ -315,8 +316,7 @@ class GalaxyModel(model_mapper.AbstractPriorModel):
         new_model: GalaxyModel
             A model with some or all priors replaced.
         """
-        new_model = GalaxyModel(align_centres=self.align_centres, align_axis_ratios=self.align_axis_ratios,
-                                align_orientations=self.align_orientations)
+        new_model = copy.deepcopy(self)
 
         for key, value in filter(lambda t: isinstance(t[1], model_mapper.PriorModel), self.__dict__.items()):
             setattr(new_model, key, value.gaussian_prior_model_for_arguments(arguments))

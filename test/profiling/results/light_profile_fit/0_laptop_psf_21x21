@@ -1,0 +1,64 @@
+26/01/19 - Numba jitted integrands
+
+NOTES:
+
+Super fast up to AO, but convolution becomes slow for AO.
+
+RESULTS
+
+Number of repeats = 10
+
+sub grid size = 4
+circular mask radius = 3.0
+
+psf shape = (21, 21)
+
+Light profile fit run times for image type LSST
+
+Number of points = 11456
+
+Time to Setup Tracer = 0.0034020662307739256
+Time to perform PSF convolution = 0.006302142143249511
+Time to perform fit (1D) = 7.917881011962891e-05
+Time to perform fit (2D) = 0.00015938282012939453
+Time to perform complete fit = 0.007959532737731933
+
+Light profile fit run times for image type Euclid
+
+Number of points = 45248
+
+Time to Setup Tracer = 0.008914566040039063
+Time to perform PSF convolution = 0.01966104507446289
+Time to perform fit (1D) = 0.00015676021575927734
+Time to perform fit (2D) = 0.00029540061950683594
+Time to perform complete fit = 0.01880624294281006
+
+Light profile fit run times for image type HST
+
+Number of points = 180864
+
+Time to Setup Tracer = 0.03394734859466553
+Time to perform PSF convolution = 0.06716525554656982
+Time to perform fit (1D) = 0.00042259693145751953
+Time to perform fit (2D) = 0.0006721735000610352
+Time to perform complete fit = 0.06727304458618164
+
+Light profile fit run times for image type HST_Up
+
+Number of points = 502848
+
+Time to Setup Tracer = 0.10622327327728272
+Time to perform PSF convolution = 0.18332254886627197
+Time to perform fit (1D) = 0.0011089086532592774
+Time to perform fit (2D) = 0.0016389608383178711
+Time to perform complete fit = 0.18550209999084472
+
+Light profile fit run times for image type AO
+
+Number of points = 4524672
+
+Time to Setup Tracer = 1.2041904211044312
+Time to perform PSF convolution = 2.279505491256714
+Time to perform fit (1D) = 0.01164572238922119
+Time to perform fit (2D) = 0.013609790802001953
+Time to perform complete fit = 2.4771172761917115

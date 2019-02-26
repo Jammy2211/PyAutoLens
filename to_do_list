@@ -1,0 +1,61 @@
+Hey, welcome to my PyAutoLens to-do. This should give you a sense of what we're working on.
+
+Let me know if you think anything is missing, or should be pushed up the to-do list ;)
+
+Interp:
+
+- Need to test origin changes are ok, including the 'flip' when the grid is made.
+- Make pixel scales main input parameters instead of interp shape.
+-
+
+Short term:
+
+- Double check that ellipticity of Sersic profiles is working.
+- Bug with errors on certain parameters.
+- Binning up speed up for pipelines.
+- Interpolation Scheme for fast deflection angles
+- pyquad integration.
+- Inclusion of lens / source redshifts for analysis.
+- Quantitive output of lens model results (e.g. einstein mass, magnification), include otf output
+- Add feature to remove astropy bug.
+- Add colorbar / features to pixelization plots, fix rectangular plot bug.
+
+Mid term:
+
+- Include output of data for a simulation (galaxies, ccd settings, etc).
+- Write Adaptive Grid howtolens.
+- Magnification + Caustic + Critical curves
+- CCD loading sanity checks
+- SLACS Database (Cristoph)
+- Parallelize MultiNest
+- Elegent handling of model image generation in lens_fit module, by building model image generation into
+  lens_fit_util, in an analogous fashion to unmasked image generation. The key point here is we can make it so
+  the fit module does not 'know' whether it is a lens + source plane system, or a multi-plane system. It should
+  just generate lists of model images across all planes and for all galaxies.
+
+Long Term:
+
+Feb/Mar) Automated Prior Linking
+Feb/Mar) Pixelization which Adapts to source's light (not magnification).
+Feb/Mar) Hyper Analysis intergration at high level (e.g. phase).
+Feb/Mar) Write hyper analysis howtolens
+
+April) Multi-plane analysis.
+
+2019) Quasar modeling (time-delays, variable cosmology, PSF refinement)
+2019) UV-plane
+2019) Multi-CCD analysis.
+
+
+Possible:
+
+- position updating / thresholding.
+
+Bugs:
+
+- Error message where some adaptive mappers lead to a qhull.Voronoi error
+- Rectangular plots of source recons are still skewing.
+
+
+
+Notes:

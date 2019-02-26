@@ -1,15 +1,14 @@
 import numpy as np
 
+from autolens import exc
 from autolens.data.array import grids, mask as msk, scaled_array
+from autolens.model.galaxy.util import galaxy_util
 
 
-class GalaxyData(scaled_array.ScaledSquarePixelArray):
+class GalaxyData(object):
 
-    def __new__(cls, array, noise_map, mask, sub_grid_size=2):
-        return np.array(mask.map_2d_array_to_masked_1d_array(array)).view(cls)
-
-    def __init__(self, array, noise_map, mask, sub_grid_size=2):
-        """ A galaxy-data is a collection of data components which are used to fit a galaxy to another galaxy. \
+    def __init__(self, image, noise_map, pixel_scale):
+        """ A galaxy-fit data is a collection of fit data components which are used to fit a galaxy to another galaxy. \
         This is where a component of a galaxy's light profiles (e.g. intensities) or mass profiles (e.g. surface \
         density, potential or deflection angles) are fitted to one another.
 
@@ -17,114 +16,118 @@ class GalaxyData(scaled_array.ScaledSquarePixelArray):
         using one inferred parametrization of light or mass profiles to a new galaxy with a different parametrization \
         of light or mass profiles.
 
-        This omits a number of the data components typically used when fitting an regular (e.g. the observed regular, PSF, \
-        exposure time map), but still has a number of the other components (e.g. an effective noise-map, grids).
+        This omits a number of the fit data components typically used when fitting an image (e.g. the observed image, PSF, \
+        exposure time map), but still has a number of the other components (e.g. an effective noise_map-map, grid_stacks).
 
         Parameters
         ----------
-        array : scaled_array.ScaledSquarePixelArray
-            An array of the quantity of the galaxy that is being fitted (e.g. its intensities, surface density, etc.).
+        image : scaled_array.ScaledSquarePixelArray
+            An image of the quantity of the galaxy that is being fitted (e.g. its intensities, surface density, etc.).
         noise_map : scaled_array.ScaledSquarePixelArray
-            The noise-map used for computing the likelihood of each fit. This can be chosen arbritarily.
+            The noise_map-map used for computing the likelihood of each fit. This can be chosen arbritarily.
+        """
+        self.image = image
+        self.noise_map = noise_map
+        self.pixel_scale = pixel_scale
+
+
+class GalaxyFitData(object):
+
+    def __init__(self, galaxy_data, mask, sub_grid_size=2, use_intensities=False, use_surface_density=False,
+                 use_potential=False, use_deflections_y=False, use_deflections_x=False):
+        """ A galaxy-fit data is a collection of fit data components which are used to fit a galaxy to another galaxy. \
+        This is where a component of a galaxy's light profiles (e.g. intensities) or mass profiles (e.g. surface \
+        density, potential or deflection angles) are fitted to one another.
+
+        This is primarily performed for automatic prior linking, as a means to efficiently link the priors of a galaxy \
+        using one inferred parametrization of light or mass profiles to a new galaxy with a different parametrization \
+        of light or mass profiles.
+
+        This omits a number of the fit data components typically used when fitting an image (e.g. the observed image, PSF, \
+        exposure time map), but still has a number of the other components (e.g. an effective noise_map-map, grid_stacks).
+
+        Parameters
+        ----------
+        galaxy_data : GalaxyData
+            The collection of data about the galaxy (image of its profile map, noise-map, etc.) that is fitted.
         mask: msk.Mask
-            The 2D mask that is applied to regular data.
+            The 2D masks that is applied to image fit data.
         sub_grid_size : int
-            The size of the sub-grid used for computing the SubGrid (see imaging.mask.SubGrid).
+            The size of the sub-grid used for computing the SubGrid (see ccd.masks.SubGrid).
 
         Attributes
         ----------
-        noise_map_ : ndarray
-            The masked 1D array of the noise-map
-        grids : imaging.mask.DataGrids
-            Grids of (y,x) Cartesian coordinates which map over the masked 1D data array's pixels (includes an \
+        noise_map_1d : ndarray
+            The masked 1D array of the noise_map-map
+        grid_stacks : ccd.masks.GridStack
+            Grids of (y,x) Cartesian coordinates which map over the masked 1D fit data array's pixels (includes an \
             regular-grid, sub-grid, etc.)
-        padded_grids : imaging.mask.DataGrids
-            Grids of padded (y,x) Cartesian coordinates which map over the every data array's pixel in 1D and a \
+        padded_grid_stack : ccd.masks.GridStack
+            Grids of padded (y,x) Cartesian coordinates which map over the every fit data array's pixel in 1D and a \
             padded regioon to include edge's for accurate PSF convolution (includes an regular-grid, sub-grid, etc.)
         """
-
-        super().__init__(array=array, pixel_scale=array.pixel_scale)
-
-        self.array = array
+        self.image = galaxy_data.image
+        self.pixel_scale = galaxy_data.pixel_scale
+        self.noise_map = galaxy_data.noise_map
         self.mask = mask
-        self.noise_map = noise_map
-        self.noise_map_ = mask.map_2d_array_to_masked_1d_array(array_2d=noise_map)
+
+        self.image_1d = mask.map_2d_array_to_masked_1d_array(array_2d=self.image)
+        self.noise_map_1d = mask.map_2d_array_to_masked_1d_array(array_2d=self.noise_map)
+        self.mask_1d = mask.map_2d_array_to_masked_1d_array(array_2d=mask)
         self.sub_grid_size = sub_grid_size
 
-        self.grids = grids.DataGrids.grids_from_mask_sub_grid_size_and_psf_shape(mask=mask,
-                                                                                 sub_grid_size=sub_grid_size,
-                                                                                 psf_shape=(1, 1))
+        self.grid_stack = grids.GridStack.grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=mask,
+                                                                                           sub_grid_size=sub_grid_size,
+                                                                                           psf_shape=(1, 1))
 
-        self.padded_grids = grids.DataGrids.padded_grids_from_mask_sub_grid_size_and_psf_shape(
+        self.padded_grid_stack = grids.GridStack.padded_grid_stack_from_mask_sub_grid_size_and_psf_shape(
             mask=mask, sub_grid_size=sub_grid_size, psf_shape=(1, 1))
 
+        if all(not element for element in [use_intensities, use_surface_density, use_potential,
+                                           use_deflections_y, use_deflections_x]):
+            raise exc.GalaxyException('The galaxy fit data has not been supplied with a use_ method.')
+
+        if sum([use_intensities, use_surface_density, use_potential, use_deflections_y, use_deflections_x]) > 1:
+            raise exc.GalaxyException('The galaxy fit data has not been supplied with multiple use_ methods, only supply '
+                                      'one.')
+
+        self.use_intensities = use_intensities
+        self.use_surface_density = use_surface_density
+        self.use_potential = use_potential
+        self.use_deflections_y = use_deflections_y
+        self.use_deflections_x = use_deflections_x
+
     def __array_finalize__(self, obj):
-        super(GalaxyData, self).__array_finalize__(obj)
-        if isinstance(obj, GalaxyData):
-            self.array = obj.array
+        super(GalaxyFitData, self).__array_finalize__(obj)
+        if isinstance(obj, GalaxyFitData):
+            self.image = obj.image
+            self.pixel_scale = obj.pixel_scale
             self.mask = obj.mask
             self.noise_map = obj.noise_map
-            self.noise_map_ = obj.noise_map_
+            self.image_1d = obj.image_1d
+            self.noise_map_1d = obj.noise_map_1d
+            self.mask_1d = obj.mask_1d
             self.sub_grid_size = obj.sub_grid_size
-            self.grids = obj.grids
-            self.padded_grids = obj.padded_grids
+            self.grid_stack = obj.grid_stack
+            self.padded_grid_stack = obj.padded_grid_stack
+            self.use_intensities = obj.use_intensities
+            self.use_surface_density = obj.use_surface_density
+            self.use_potential = obj.use_potential
+            self.use_deflections_y = obj.use_deflections_y
+            self.use_deflections_x = obj.use_deflections_x
 
-    def profile_quantity_from_galaxy_and_sub_grid(self, galaxy, sub_grid):
-        raise NotImplementedError()
+    def map_to_scaled_array(self, array_1d):
+        return self.grid_stack.regular.scaled_array_from_array_1d(array_1d=array_1d)
 
+    def profile_quantity_from_galaxy_and_sub_grid(self, galaxies, sub_grid):
 
-class GalaxyDataIntensities(GalaxyData):
-    """ A galaxy-data collection for fitting two galaxies based on their light-profile intensities."""
-
-    def profile_quantity_from_galaxy_and_sub_grid(self, galaxy, sub_grid):
-        """Generic function so that this galaxy-data type computes the correct profile quantity for the fitting.
-
-        In this case, the light profile intensities are computed."""
-        intensities = galaxy.intensities_from_grid(grid=sub_grid)
-        return sub_grid.sub_data_to_regular_data(sub_array=intensities)
-
-
-class GalaxyDataSurfaceDensity(GalaxyData):
-    """ A galaxy-data collection for fitting two galaxies based on their mass-profile surface densities."""
-
-    def profile_quantity_from_galaxy_and_sub_grid(self, galaxy, sub_grid):
-        """Generic function so that this galaxy-data type computes the correct profile quantity for the fitting.
-
-        In this case, the mass profile surface density is computed."""
-        surface_density = galaxy.surface_density_from_grid(grid=sub_grid)
-        return sub_grid.sub_data_to_regular_data(sub_array=surface_density)
-
-
-class GalaxyDataPotential(GalaxyData):
-    """ A galaxy-data collection for fitting two galaxies based on their mass-profile potentials."""
-
-    def profile_quantity_from_galaxy_and_sub_grid(self, galaxy, sub_grid):
-        """Generic function so that this galaxy-data type computes the correct profile quantity for the fitting.
-
-        In this case, the mass profile potential is computed."""
-        potential = galaxy.potential_from_grid(grid=sub_grid)
-        return sub_grid.sub_data_to_regular_data(sub_array=potential)
-
-
-class GalaxyDataDeflectionsY(GalaxyData):
-    """ A galaxy-data collection for fitting two galaxies based on their mass-profile (y) deflection angles."""
-
-    def profile_quantity_from_galaxy_and_sub_grid(self, galaxy, sub_grid):
-        """Generic function so that this galaxy-data type computes the correct profile quantity for the fitting.
-
-        In this case, the mass profile deflection angles are computed."""
-        deflections = galaxy.deflections_from_grid(grid=sub_grid)
-        return np.asarray([sub_grid.sub_data_to_regular_data(deflections[:, 0]),
-                           sub_grid.sub_data_to_regular_data(deflections[:, 1])]).T
-
-
-class GalaxyDataDeflectionsX(GalaxyData):
-    """ A galaxy-data collection for fitting two galaxies based on their mass-profile (x) deflection angles."""
-
-    def profile_quantity_from_galaxy_and_sub_grid(self, galaxy, sub_grid):
-        """Generic function so that this galaxy-data type computes the correct profile quantity for the fitting.
-
-        In this case, the mass profile deflection angles are computed."""
-        deflections = galaxy.deflections_from_grid(grid=sub_grid)
-        return np.asarray([sub_grid.sub_data_to_regular_data(deflections[:, 0]),
-                           sub_grid.sub_data_to_regular_data(deflections[:, 1])]).T
+        if self.use_intensities:
+            return galaxy_util.intensities_of_galaxies_from_grid(galaxies=galaxies, grid=sub_grid)
+        elif self.use_surface_density:
+            return galaxy_util.surface_density_of_galaxies_from_grid(galaxies=galaxies, grid=sub_grid)
+        elif self.use_potential:
+            return galaxy_util.potential_of_galaxies_from_grid(galaxies=galaxies, grid=sub_grid)
+        elif self.use_deflections_y:
+            return galaxy_util.deflections_of_galaxies_from_grid(galaxies=galaxies, grid=sub_grid)[:, 0]
+        elif self.use_deflections_x:
+            return galaxy_util.deflections_of_galaxies_from_grid(galaxies=galaxies, grid=sub_grid)[:, 1]
