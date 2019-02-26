@@ -1,6 +1,10 @@
 from autofit import exc
 
 
+class ScaledArrayException(Exception):
+    pass
+
+
 class ImagingException(Exception):
     pass
 
@@ -34,4 +38,8 @@ class FittingException(Exception):
 
 
 class PlottingException(Exception):
+    pass
+
+
+class PhaseException(Exception):
     pass

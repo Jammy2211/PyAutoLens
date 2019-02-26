@@ -1,7 +1,7 @@
 import numpy as np
-import numba
+from autolens import decorator_util
 
-@numba.jit(nopython=True, parallel=True)
+@decorator_util.jit()
 def mapping_matrix_from_sub_to_pix(sub_to_pix, pixels, regular_pixels, sub_to_regular, sub_grid_fraction):
     """Computes the mapping matrix, by iterating over the known mappings between the sub-grid and pixelization.
 
@@ -12,7 +12,7 @@ def mapping_matrix_from_sub_to_pix(sub_to_pix, pixels, regular_pixels, sub_to_re
     pixels : int
         The number of pixels in the pixelization.
     regular_pixels : int
-        The number of image pixels in the observed image and thus on the regular grid.
+        The number of datas pixels in the observed datas and thus on the regular grid.
     sub_to_regular : ndarray
         The mappings between the observed regular's sub-pixels and observed regular's pixels.
     sub_grid_fraction : float
@@ -26,42 +26,40 @@ def mapping_matrix_from_sub_to_pix(sub_to_pix, pixels, regular_pixels, sub_to_re
 
     return mapping_matrix
 
-@numba.jit(nopython=True, parallel=True)
-def voronoi_regular_to_pix_from_grids_and_geometry(regular_grid, regular_to_nearest_regular_pix, pixel_centres,
+@decorator_util.jit()
+def voronoi_regular_to_pix_from_grids_and_geometry(regular_grid, regular_to_nearest_pix, pixel_centres,
                                                    pixel_neighbors, pixel_neighbors_size):
-    """ Compute the mappings between a set of sub-maskedimage pixels and pixels, using the maskedimage's traced \
-    pix-plane sub-grid and the pixel centers. This uses the pix-neighbors to perform a graph \
-    search when pairing pixels, for efficiency.
+    """ Compute the mappings between a set of regular-grid pixels and pixelization pixels, using information on \
+    how regular pixels map to their closest pixelization pixel on the image-plane pix-grid and the pixelization's \
+    pixel centres.
 
-    For the Voronoi pixelizations, a cluster set of 'cluster-pixels' are used to determine the pixelization. \
-    These provide the mappings between only a sub-set of sub-pixels / maskedimage-pixels and pixels.
-
-    To determine the complete set of sub-pixel to pixel mappings, we must therefore pair every sub-pixel to \
-    its nearest pixel (using the sub-pixel's pix-plane coordinate and pixel center). Using a full \
-    nearest neighbor search to do this is slow, thus the pixel neighbors (derived via the Voronoi grid) \
-    is used to localize each nearest neighbor search.
-
-    In this routine, some variables and function names refer to a 'cluster_pix_'. This term describes a \
-    pixel that we have paired to a sub_coordinate using the cluster_coordinate of an maskedimage coordinate. \
-    Thus, it may not actually be that sub_coordinate's closest pixel (the routine will eventually
-    determine this).
+    To determine the complete set of regular-pixel to pixelization pixel mappings, we must pair every regular-pixel to \
+    its nearest pixel. Using a full nearest neighbor search to do this is slow, thus the pixel neighbors (derived via \
+    the Voronoi grid) are used to localize each nearest neighbor search via a graph search.
 
     Parameters
     ----------
-    coordinate : [float, float]
-        The x and y pix sub-grid grid which are to be matched with their closest pixels.
-    nearest_pixel : int
-        The nearest pixel defined on the cluster-pixel grid.
-    cluster_to_pixelization : [int]
-        The mapping_matrix between every cluster-pixel and pixel (e.g. if the fifth pixel maps to \
-        the 3rd cluster_pixel, cluster_to_pix[4] = 2).
+    regular_grid : RegularGrid
+        The grid of (y,x) arc-second coordinates at the centre of every unmasked pixel, which has been traced to \
+        to an irregular grid via lens.
+    regular_to_nearest_pix : ndarray
+        A 1D array that maps every regular-grid pixel to its nearest pix-grid pixel (as determined on the unlensed \
+        2D array).
+    pixel_centres : ndarray
+        The (y,x) centre of every Voronoi pixel in arc-seconds.
+    pixel_neighbors : ndarray
+        An array of length (voronoi_pixels) which provides the index of all neighbors of every pixel in \
+        the Voronoi grid (entries of -1 correspond to no neighbor).
+    pixel_neighbors_size : ndarray
+        An array of length (voronoi_pixels) which gives the number of neighbors of every pixel in the \
+        Voronoi grid.
      """
 
     regular_to_pix = np.zeros((regular_grid.shape[0]))
 
     for regular_index in range(regular_grid.shape[0]):
 
-        nearest_pix_pixel_index = regular_to_nearest_regular_pix[regular_index]
+        nearest_pix_pixel_index = regular_to_nearest_pix[regular_index]
 
         while True:
 
@@ -80,6 +78,7 @@ def voronoi_regular_to_pix_from_grids_and_geometry(regular_grid, regular_to_near
                                            (regular_grid[regular_index, 1] - pixel_centres[neighbor, 1]) ** 2
 
                 if separation_from_neighbor < closest_separation_from_pix_neighbor:
+
                     closest_separation_from_pix_neighbor = separation_from_neighbor
                     closest_neighbor_index = neighbor_index
 
@@ -94,42 +93,40 @@ def voronoi_regular_to_pix_from_grids_and_geometry(regular_grid, regular_to_near
 
     return regular_to_pix
 
-@numba.jit(nopython=True, parallel=True)
-def voronoi_sub_to_pix_from_grids_and_geometry(sub_grid, regular_to_nearest_regular_pix, sub_to_regular, pixel_centres,
+@decorator_util.jit()
+def voronoi_sub_to_pix_from_grids_and_geometry(sub_grid, regular_to_nearest_pix, sub_to_regular, pixel_centres,
                                                pixel_neighbors, pixel_neighbors_size):
-    """ Compute the mappings between a set of sub-maskedimage pixels and pixels, using the maskedimage's traced \
-    pix-plane sub-grid and the pixel centers. This uses the pix-neighbors to perform a graph \
-    search when pairing pixels, for efficiency.
+    """ Compute the mappings between a set of sub-grid pixels and pixelization pixels, using information on \
+    how the regular pixels hosting each sub-pixel map to their closest pixelization pixel on the image-plane pix-grid \
+    and the pixelization's pixel centres.
 
-    For the Voronoi pixelizations, a cluster set of 'cluster-pixels' are used to determine the pixelization. \
-    These provide the mappings between only a sub-set of sub-pixels / maskedimage-pixels and pixels.
-
-    To determine the complete set of sub-pixel to pixel mappings, we must therefore pair every sub-pixel to \
-    its nearest pixel (using the sub-pixel's pix-plane coordinate and pixel center). Using a full \
-    nearest neighbor search to do this is slow, thus the pixel neighbors (derived via the Voronoi grid) \
-    is used to localize each nearest neighbor search.
-
-    In this routine, some variables and function names refer to a 'cluster_pix_'. This term describes a \
-    pixel that we have paired to a sub_coordinate using the cluster_coordinate of an maskedimage coordinate. \
-    Thus, it may not actually be that sub_coordinate's closest pixel (the routine will eventually
-    determine this).
+    To determine the complete set of sub-pixel to pixelization pixel mappings, we must pair every sub-pixel to \
+    its nearest pixel. Using a full nearest neighbor search to do this is slow, thus the pixel neighbors (derived via \
+    the Voronoi grid) are used to localize each nearest neighbor search by using a graph search.
 
     Parameters
     ----------
-    coordinate : [float, float]
-        The x and y pix sub-grid grid which are to be matched with their closest pixels.
-    nearest_pixel : int
-        The nearest pixel defined on the cluster-pixel grid.
-    cluster_to_pixelization : [int]
-        The mapping_matrix between every cluster-pixel and pixel (e.g. if the fifth pixel maps to \
-        the 3rd cluster_pixel, cluster_to_pix[4] = 2).
+    regular_grid : RegularGrid
+        The grid of (y,x) arc-second coordinates at the centre of every unmasked pixel, which has been traced to \
+        to an irregular grid via lens.
+    regular_to_nearest_pix : ndarray
+        A 1D array that maps every regular-grid pixel to its nearest pix-grid pixel (as determined on the unlensed \
+        2D array).
+    pixel_centres : (float, float)
+        The (y,x) centre of every Voronoi pixel in arc-seconds.
+    pixel_neighbors : ndarray
+        An array of length (voronoi_pixels) which provides the index of all neighbors of every pixel in \
+        the Voronoi grid (entries of -1 correspond to no neighbor).
+    pixel_neighbors_size : ndarray
+        An array of length (voronoi_pixels) which gives the number of neighbors of every pixel in the \
+        Voronoi grid.
      """
 
     sub_to_pix = np.zeros((sub_grid.shape[0]))
 
     for sub_index in range(sub_grid.shape[0]):
 
-        nearest_pix_pixel_index = regular_to_nearest_regular_pix[sub_to_regular[sub_index]]
+        nearest_pix_pixel_index = regular_to_nearest_pix[sub_to_regular[sub_index]]
 
         while True:
 

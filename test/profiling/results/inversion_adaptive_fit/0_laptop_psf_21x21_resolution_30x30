@@ -1,0 +1,116 @@
+26/01/19 - Numba jitted integrands
+
+NOTES:
+
+Supe fast up to AO, AO is slow as expected.
+
+RESULTS:
+
+Number of repeats = 10
+
+sub grid size = 4
+circular mask radius = 3.0
+
+psf shape = (21, 21)
+
+pixelization shape = (30, 30)
+
+AdaptiveMagnification Inversion fit run times for image type LSST
+
+Number of points = 11456
+
+Time to Setup Tracer = 0.005105757713317871
+Time to perform border relocation = 0.0009343862533569336
+Time to create Voronoi grid = 0.005002903938293457
+Time to compute pixel neighbors = 0.0003139495849609375
+Time to compute geometry of pixelization = 0.00012552738189697266
+Time to create mapper = 0.009359645843505859
+Time to compute mapping matrix = 0.0030126333236694335
+Time to compute blurred mapping matrix = 0.004803705215454102
+Time to compute data vector = 0.0010564804077148437
+Time to compute curvature matrix = 0.43180336952209475
+Time to compute reguarization matrix = 0.0004906177520751954
+Time to compute curvature reguarization Matrix = 0.000641322135925293
+Time to compute solution vector = 0.008177638053894043
+Time to compute reconstructed data vector = 0.0009632587432861328
+Time to perform complete fit = 0.5076256513595581
+
+AdaptiveMagnification Inversion fit run times for image type Euclid
+
+Number of points = 45248
+
+Time to Setup Tracer = 0.009411287307739259
+Time to perform border relocation = 0.0029226303100585937
+Time to create Voronoi grid = 0.004703021049499512
+Time to compute pixel neighbors = 3.2782554626464844e-05
+Time to compute geometry of pixelization = 0.0002210855484008789
+Time to create mapper = 0.009041786193847656
+Time to compute mapping matrix = 0.006458568572998047
+Time to compute blurred mapping matrix = 0.02862365245819092
+Time to compute data vector = 0.0032823801040649412
+Time to compute curvature matrix = 0.4211068391799927
+Time to compute reguarization matrix = 0.00016875267028808593
+Time to compute curvature reguarization Matrix = 0.0005888938903808594
+Time to compute solution vector = 0.00842440128326416
+Time to compute reconstructed data vector = 0.0027432680130004884
+Time to perform complete fit = 0.5233160018920898
+
+AdaptiveMagnification Inversion fit run times for image type HST
+
+Number of points = 180864
+
+Time to Setup Tracer = 0.035422754287719724
+Time to perform border relocation = 0.015296316146850586
+Time to create Voronoi grid = 0.008135080337524414
+Time to compute pixel neighbors = 4.220008850097656e-05
+Time to compute geometry of pixelization = 0.0010236978530883789
+Time to create mapper = 0.022358155250549315
+Time to compute mapping matrix = 0.034351348876953125
+Time to compute blurred mapping matrix = 0.11651337146759033
+Time to compute data vector = 0.011701655387878419
+Time to compute curvature matrix = 0.21248044967651367
+Time to compute reguarization matrix = 0.00017304420471191405
+Time to compute curvature reguarization Matrix = 0.0005239248275756836
+Time to compute solution vector = 0.008687043190002441
+Time to compute reconstructed data vector = 0.01062338352203369
+Time to perform complete fit = 0.43745505809783936
+
+AdaptiveMagnification Inversion fit run times for image type HST_Up
+
+Number of points = 502848
+
+Time to Setup Tracer = 0.103580641746521
+Time to perform border relocation = 0.06058931350708008
+Time to create Voronoi grid = 0.005223512649536133
+Time to compute pixel neighbors = 5.323886871337891e-05
+Time to compute geometry of pixelization = 0.001974654197692871
+Time to create mapper = 0.0676579475402832
+Time to compute mapping matrix = 0.09229710102081298
+Time to compute blurred mapping matrix = 0.3220261573791504
+Time to compute data vector = 0.030761122703552246
+Time to compute curvature matrix = 0.14293723106384276
+Time to compute reguarization matrix = 0.00019261837005615234
+Time to compute curvature reguarization Matrix = 0.0005447626113891602
+Time to compute solution vector = 0.00926070213317871
+Time to compute reconstructed data vector = 0.028932976722717284
+Time to perform complete fit = 0.6788107395172119
+
+AdaptiveMagnification Inversion fit run times for image type AO
+
+Number of points = 4524672
+
+Time to Setup Tracer = 1.1722411870956422
+Time to perform border relocation = 1.3442941904067993
+Time to create Voronoi grid = 0.004888510704040528
+Time to compute pixel neighbors = 3.786087036132813e-05
+Time to compute geometry of pixelization = 0.01723787784576416
+Time to create mapper = 1.3635396003723144
+Time to compute mapping matrix = 0.8710792541503907
+Time to compute blurred mapping matrix = 3.9264608144760134
+Time to compute data vector = 0.2654550552368164
+Time to compute curvature matrix = 0.22303740978240966
+Time to compute reguarization matrix = 0.00017750263214111328
+Time to compute curvature reguarization Matrix = 0.0005204677581787109
+Time to compute solution vector = 0.015187358856201172
+Time to compute reconstructed data vector = 0.27137634754180906
+Time to perform complete fit = 5.797501420974731

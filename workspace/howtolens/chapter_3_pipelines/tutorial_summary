@@ -1,0 +1,30 @@
+Congratulations, you can now write and use pipelines in PyAutoLens!
+
+At this point, I would like you to take a look at the 'workspace/pipelines/examples' folder. Here, you'll find lots of
+template pipelines that perform a range of different lens model fits. In general, I would recommend that you check to
+see if a template exists for what you want to do with PyAutoLens, before attempting to write a pipeline from scratch.
+Of course, many of these templates probably require only minor tweaking to meet your scientific needs.
+
+
+If a pipeline isn't available for what you need to do, and you go on to write your own, feel free to get in contact
+with me to add it to the examples. We really have no idea what science people are ultimately going to do with
+PyAutoLens, so we have no idea of the weird and wonderful pipelines people will craft along the way!
+
+You should also checkout the 'workspace/runners' folder, where the corresponding runners which import and run these
+pipeines are found. The example runners come as both a Python scripts and Juypter notebooks. I personally prefer to use
+runners as Python scripts, but others prefer notebooks. You should experiment with using both, and figure out your own
+personal preference.Its nice to keep pipelines and runners separate, as it encourages one to separate the analysis
+(which the pipeline defines) from the data that analysis is run on (which the runner loads).
+
+Before moving onto chapter 4, there's one more thing I'd like you to do. At this point, you're probably a bit bored of
+fitting simulated images. Sure, they're informative, and look pretty, but I think its time you model a real strong lens,
+Don't you? The pipeline runner and example pipelines are all setup to initial model a real strong lens -
+'slacs_1430+4105' - which comes distributed with PyAutoLens. Thus, if you run the pipeline runner, you can quickly get
+modeling your first real strong lens - its about time after 3 chapters of HowTolens!
+
+***FOR DOCKER USERS *** - If you are running PyAutoLens in Docker, the way to run a python script is as follows:
+
+1) Go to the main docker page (where you can see 'config', 'data', 'output', etc.)
+2) On the right hand side, click 'New', and on the drop down menu 'Terminal'.
+3) Navigate to the directory of your pipeline (e.g. cd howtolens/chapter_3_pipelines).
+4) Run the pipeline by using the python command (e.g. python tutorial_1_lens_and_source.py).

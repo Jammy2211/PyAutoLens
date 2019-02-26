@@ -1,5 +1,6 @@
 from itertools import count
 
+from scipy.optimize import root_scalar
 import numpy as np
 
 from autolens import exc
@@ -20,9 +21,8 @@ class Galaxy(object):
     """
 
     def __init__(self, redshift=None, pixelization=None, regularization=None, hyper_galaxy=None, **kwargs):
-        """
-        Class representing a galaxy, which is composed of attributes used for fitting data (e.g. light profiles, mass
-        profiles, pixelizations, etc.).
+        """Class representing a galaxy, which is composed of attributes used for fitting hyper (e.g. light profiles, \ 
+        mass profiles, pixelizations, etc.).
         
         All *has_* methods retun *True* if galaxy has that attribute, *False* if not.
 
@@ -35,14 +35,14 @@ class Galaxy(object):
         mass_profiles: [mp.MassProfile]
             A list of the galaxy's mass profiles.
         hyper_galaxy : HyperGalaxy
-            The hyper-parameters of the hyper-galaxy, if is used to scale the regular's noise-map.
+            The hyper-parameters of the hyper-galaxy, which is used for performing a hyper-analysis on the noise-map.
             
         Attributes
         ----------
         pixelization : inversion.Pixelization
-            The pixelization of the galaxy used to reconstruct an observed regular using an inversion.
+            The pixelization of the galaxy used to reconstruct an observed image using an inversion.
         regularization : inversion.Regularization
-            The regularization of the pixel-grid used to reconstruct an observed regular using an inversion.
+            The imageization of the pixel-grid used to reconstruct an observed regular using an inversion.
         """
         self.redshift = redshift
 
@@ -110,7 +110,7 @@ class Galaxy(object):
         return string
 
     def intensities_from_grid(self, grid):
-        """Calculate the summed intensities of all of the galaxy's light profiles using a grid of Cartesian (y,x) 
+        """Calculate the summed intensities of all of the galaxy's light profiles using a grid of Cartesian (y,x) \
         coordinates.
         
         If the galaxy has no light profiles, a grid of zeros is returned.
@@ -140,6 +140,9 @@ class Galaxy(object):
         ----------
         radius : float
             The radius of the circle to compute the luminosity within.
+        conversion_factor : float
+            Factor the dimensionless luminosity is multiplied by to convert it to a physical luminosity \
+            (e.g. a photometric zeropoint).
         """
         if self.has_light_profile:
             return sum(map(lambda p: p.luminosity_within_circle(radius, conversion_factor), self.light_profiles))
@@ -160,6 +163,9 @@ class Galaxy(object):
         ----------
         major_axis: float
             The major-axis of the ellipse to compute the luminosity within.
+        conversion_factor : float
+            Factor the dimensionless luminosity is multiplied by to convert it to a physical luminosity \
+            (e.g. a photometric zeropoint).
         """
         if self.has_light_profile:
             return sum(map(lambda p: p.luminosity_within_ellipse(major_axis, conversion_factor), self.light_profiles))
@@ -167,7 +173,7 @@ class Galaxy(object):
             return None
 
     def surface_density_from_grid(self, grid):
-        """Compute the summed surface density of the galaxy's mass profiles using a grid of Cartesian (y,x)
+        """Compute the summed surface density of the galaxy's mass profiles using a grid of Cartesian (y,x) \
         coordinates.
 
         If the galaxy has no mass profiles, a grid of zeros is returned.
@@ -185,8 +191,7 @@ class Galaxy(object):
             return np.zeros((grid.shape[0],))
 
     def potential_from_grid(self, grid):
-        """
-        Compute the summed gravitational potential of the galaxy's mass profiles using a grid of Cartesian (y,x)
+        """Compute the summed gravitational potential of the galaxy's mass profiles using a grid of Cartesian (y,x) \
         coordinates.
 
         If the galaxy has no mass profiles, a grid of zeros is returned.
@@ -204,8 +209,7 @@ class Galaxy(object):
             return np.zeros((grid.shape[0],))
 
     def deflections_from_grid(self, grid):
-        """
-        Compute the summed (y,x) deflection angles of the galaxy's mass profiles using a grid of Cartesian (y,x)
+        """Compute the summed (y,x) deflection angles of the galaxy's mass profiles using a grid of Cartesian (y,x) \
         coordinates.
 
         If the galaxy has no mass profiles, two grid of zeros are returned.
@@ -235,7 +239,8 @@ class Galaxy(object):
         radius : float
             The radius of the circle to compute the dimensionless mass within.
         conversion_factor : float
-            The factor the dimensionless mass is multiplied by to convert it to a physical mass.
+            Factor the dimensionless mass is multiplied by to convert it to a physical mass (e.g. the critical surface \
+            mass density).
         """
         if self.has_mass_profile:
             return sum(map(lambda p: p.mass_within_circle(radius, conversion_factor), self.mass_profiles))
@@ -255,10 +260,23 @@ class Galaxy(object):
         major_axis : float
             The major axis of the ellipse
         conversion_factor : float
-            The factor the dimensionless mass is multiplied by to convert it to a physical mass.
+            Factor the dimensionless mass is multiplied by to convert it to a physical mass (e.g. the critical surface \
+            mass density).
         """
         if self.has_mass_profile:
             return sum(map(lambda p: p.mass_within_ellipse(major_axis, conversion_factor), self.mass_profiles))
+        else:
+            return None
+
+    @property
+    def einstein_radius(self):
+        """The Einstein Radius of this galaxy, which is the sum of Einstein Radii of its mass profiles.
+
+        If the galaxy is composed of multiple ellipitcal profiles with different axis-ratios, this Einstein Radius \
+        may be inaccurate. This is because the differently oriented ellipses of each mass profile """
+
+        if self.has_mass_profile:
+            return sum(map(lambda p: p.einstein_radius, self.mass_profiles))
         else:
             return None
 
@@ -267,12 +285,12 @@ class HyperGalaxy(object):
     _ids = count()
 
     def __init__(self, contribution_factor=0.0, noise_factor=0.0, noise_power=1.0):
-        """ If a *Galaxy* is given a *HyperGalaxy* as an attribute, the noise-map in the regions of the regular that the \
+        """ If a *Galaxy* is given a *HyperGalaxy* as an attribute, the noise-map in the regions of the image that the \
         galaxy is located will be scaled, to prevent over-fitting of the galaxy. 
         
         This is performed by first computing the hyper-galalxy's 'contribution-map', which determines the fraction of \ 
-        flux in every pixel of the regular that can be associated with this particular hyper-galaxy. This is computed \
-        using  hyper-data set (e.g. fitting.fitting_data.FittingHyperData), which includes  best-fit images of the \ 
+        flux in every pixel of the image that can be associated with this particular hyper-galaxy. This is computed \
+        using  hyper-hyper set (e.g. fitting.fit_data.FitDataHyper), which includes  best-fit unblurred_image_1d of the \
         galaxy's light from a previous analysis phase. 
          
         The *HyperGalaxy* class contains the hyper-parameters which are associated with this galaxy for scaling the \
@@ -283,9 +301,9 @@ class HyperGalaxy(object):
         contribution_factor : float
             Factor that adjusts how much of the galaxy's light is attributed to the contribution map.
         noise_factor : float
-            Factor by which the noise_map is increased in the regions of the galaxy's contribution map.
+            Factor by which the noise-map is increased in the regions of the galaxy's contribution map.
         noise_power : float
-            The power to which the contribution map is raised when scaling the noise_map.
+            The power to which the contribution map is raised when scaling the noise-map.
         """
         self.contribution_factor = contribution_factor
         self.noise_factor = noise_factor
@@ -293,7 +311,7 @@ class HyperGalaxy(object):
 
         self.component_number = next(self._ids)
 
-    def contributions_from_hyper_images(self, hyper_model_image, hyper_galaxy_image, minimum_value):
+    def contributions_from_hyper_images(self, hyper_model_image, hyper_galaxy_image, hyper_minimum_value):
         """Compute the contribution map of a galaxy, which represents the fraction of flux in each pixel that the \
         galaxy is attributed to contain, scaled to the *contribution_factor* hyper-parameter.
 
@@ -303,27 +321,27 @@ class HyperGalaxy(object):
         Parameters
         -----------
         hyper_model_image : ndarray
-            The best-fit model regular to the observed regular from a previous analysis phase. This provides the \
-            total light attributed to each regular pixel by the model.
+            The best-fit model image to the observed image from a previous analysis phase. This provides the \
+            total light attributed to each image pixel by the model.
         hyper_galaxy_image : ndarray
-            A model regular of the galaxy (from light profiles or an inversion) from a previous analysis phase.
-        minimum_value : float
+            A model image of the galaxy (from light profiles or an inversion) from a previous analysis phase.
+        hyper_minimum_value : float
             The minimum contribution value a pixel must contain to not be rounded to 0.
         """
         contributions = np.divide(hyper_galaxy_image, np.add(hyper_model_image, self.contribution_factor))
         contributions = np.divide(contributions, np.max(contributions))
-        contributions[contributions < minimum_value] = 0.0
+        contributions[contributions < hyper_minimum_value] = 0.0
         return contributions
 
-    def scaled_noise_from_contributions(self, noise_map, contributions):
-        """Compute a scaled galaxy noise map from a baseline noise map.
+    def hyper_noise_from_contributions(self, noise_map, contributions):
+        """Compute a scaled galaxy hyper noise-map from a baseline noise-map.
 
         This uses the galaxy contribution map and the *noise_factor* and *noise_power* hyper-parameters.
 
         Parameters
         -----------
         noise_map : ndarray
-            The observed noise_map (before scaling).
+            The observed noise-map (before scaling).
         contributions : ndarray
             The galaxy contribution map.
         """
@@ -343,6 +361,13 @@ class HyperGalaxy(object):
 class Redshift(object):
     def __init__(self, redshift):
         self.redshift = redshift
+
+    @property
+    def value(self):
+        try:
+            return self.redshift.value
+        except AttributeError:
+            return self.redshift
 
     def __str__(self):
         return str(self.redshift)

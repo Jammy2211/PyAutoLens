@@ -1,43 +1,17 @@
-You are now familiar with PyAutoLens and have a basic understanding of lens modeling. In this chapter, we'll
-introduce pipelines, a concept we not so subtly hinted at towards the end of the last chapter. Pipelines allow us to
-generically link phases together, so that we can seamlessly navigate the complex non-linear parameter spaces that come
-when fitting realistic lens models.
+You are now familiar with PyAutoLens and have a clear understanding of lens modeling. In this chapter, we'll
+introduce pipelines, a concept we mentioned many times in the previous chapter. Pipelines allow us to generically link
+phases together, so that we can seamlessly navigate the complex non-linear parameter spaces that come when fitting
+realistic lens models.
 
-The interface for writing pipelines doesn't mesh nicely with Juypter notebooks. Pipelines are a fairly long block of
-code, which runs all at once. Breaking it down into notebook cells obfuscates this interface, and running
-each cell by itself does nothing.
+In this chapter, every tutorial will come as two files, a Juypter notebook 'pipeline_runner' and a python script which
+is the pipeline itself. For each tutorial, begin with the pipeline runner file. Midway through the tutorial, you'll be
+told to checkout the pipeline script itself, before finishing the tutorial by returning to the pipeline runner.
 
-Therefore, I recommend you do these tutorials using python scripts. Whereas these scripts were in a sub-directory
-previously, I've relegated the Jupyter notebooks to that directory for this chapter. If you want, you can completely
-ignore my advise and use notebacks them - I won't take it personally - but you've been warned!
-
-In general, when using PyAutoLens, my advise is to write pipelines as scripts, and run them as Juypter notebooks.
-Your code will be a lot cleaner and you'll make fewer mistakes. Once we've written a few pipelines, I'll give an
-example of how I recommend that you setup your workspace.
-
-Also, in the last chapter, I preloaded config files so that your non-linear searches ran in a relatively short space
+In the previous chapter, I preloaded config files so that your non-linear searches ran in a relatively short space
 of time. In this chapter, I'm not going to do that. Writing pipelines is all about understanding how to balance
-non-linear parameter space complexity with run-time. So unfortunately, the non-linear searches in this chapter may take
-a while to run, but that's the point, its time you get an intuition for when lens modeling starts to become slow, and
-how one can go about speeding it up.
+non-linear parameter space complexity with run-time. So, unfortunately, the non-linear searches in this chapter may take
+a while to run, but that's the point. Its time you get an intuition for when lens modeling starts to become slow, and
+how one can go about speeding it up (we will, of course, be using the tricks I disucssed in the previous chapter).
 
-You may find that you run a pipeline and then leave it for an hour or so before inspecting the results to see if your
-non-linear search is going in the 'right direction'. Unfortunately, that's the nature of strong lens modeling. However,
-if you can build a general pipeline that works on a couple of lenses, you can probably apply that pipeline to 100
-lenses, so the automated lens modeling dream is still in our sights!
-
-
-
--------------
- WARNING BUG
- ------------
-
- Currently, the 'previous results' passed to each phase use an old syntax whereby lens_galaxies and source galaxies
- were stored as lists. This means when we pass priors, there are lines like:
-
-self.lens_galaxies.left_lens.mass.centre_0 = phase_3_results.variable.lens_galaxies[0].mass.centre_0
-
-Where the right hand side doesn't use 'lens_galaxies.left_lens' but 'lens_galaxies[0]'. This will be fixed as soon
-as possible, but bare in mind that soon the correct syntax will be
-
-self.lens_galaxies.left_lens.mass.centre_0 = phase_3_results.variable.lens_galaxies.left_lens.mass.centre_0
+Also, be sure to checkout the on-the-fly output I discussed in the summary of chapter 2 (checkout this summary now
+if you skipped it!)

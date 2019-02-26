@@ -4,6 +4,13 @@ import os
 
 path = '{}/../test_files/array/'.format(os.path.dirname(os.path.realpath(__file__)))
 
+array = np.array([[1.0, 1.0, 1.0],
+                  [1.0, 2.0, 1.0],
+                  [1.0, 1.0, 1.0]])
+
+fits.writeto(data=array, filename=path + '3x3_ones_central_two.fits')
+stop
+
 array1 = np.ones((3,3))
 array2 = 2.0*np.ones((3,3))
 array3 = 3.0*np.ones((3,3))
