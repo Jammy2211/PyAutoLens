@@ -10,7 +10,6 @@ from autofit import conf
 from autofit.mapper import model_mapper as mm
 from autofit.mapper import prior
 from autofit.optimize import non_linear
-
 from autolens import exc
 from autolens.data import ccd
 from autolens.data.array import grids, mask as msk
@@ -255,7 +254,6 @@ class TestPhase(object):
         assert analysis.lens_data.noise_map == lens_data.noise_map
 
     def test_make_analysis__mask_input_uses_mask__no_mask_uses_mask_function(self, phase, ccd_data):
-
         # If an input mask is supplied and there is no mask function, we use mask input.
 
         phase.mask_function = None
@@ -286,7 +284,6 @@ class TestPhase(object):
         assert (analysis.lens_data.mask == mask_default).all()
 
     def test_make_analysis__mask_input_uses_mask__inner_mask_radius_included_which_masks_centre(self, phase, ccd_data):
-
         # If an input mask is supplied and there is no mask function, we use mask input.
 
         phase.mask_function = None
@@ -328,7 +325,6 @@ class TestPhase(object):
         assert (analysis.lens_data.mask == mask_default).all()
 
     def test_make_analysis__positions_are_input__are_used_in_analysis(self, phase, ccd_data):
-
         # If use positions is true and positions are input, make the positions part of the lens data.
 
         phase.use_positions = True
@@ -340,8 +336,8 @@ class TestPhase(object):
         # If use positions is true but no positions are supplied, raise an error
 
         with pytest.raises(exc.PhaseException):
-           phase.make_analysis(data=ccd_data, positions=None)
-           phase.make_analysis(data=ccd_data)
+            phase.make_analysis(data=ccd_data, positions=None)
+            phase.make_analysis(data=ccd_data)
 
         # If use positions is False, positions should always be None.
 
@@ -350,7 +346,6 @@ class TestPhase(object):
         assert analysis.lens_data.positions is None
 
     def test__make_analysis__phase_info_is_made(self, phase, ccd_data):
-
         phase.make_analysis(data=ccd_data)
 
         file_phase_info = "{}/{}/{}".format(conf.instance.output_path, phase.optimizer.name, 'phase.info')
@@ -424,13 +419,13 @@ class TestPhase(object):
         class MyPhase(ph.PhaseImaging):
             def modify_image(self, image, previous_results):
                 assert ccd_data.image.shape == image.shape
-                image = 20.0*np.ones(shape=shape)
+                image = 20.0 * np.ones(shape=shape)
                 return image
 
         phase = MyPhase(phase_name='phase')
         analysis = phase.make_analysis(data=ccd_data)
-        assert (analysis.lens_data.image == 20.0*np.ones(shape=shape)).all()
-        assert (analysis.lens_data.image_1d == 20.0*np.ones(shape=32)).all()
+        assert (analysis.lens_data.image == 20.0 * np.ones(shape=shape)).all()
+        assert (analysis.lens_data.image_1d == 20.0 * np.ones(shape=32)).all()
 
     def test__tracer_for_instance__includes_cosmology(self, ccd_data):
         lens_galaxy = g.Galaxy()
@@ -482,7 +477,6 @@ class TestPhase(object):
         assert padded_tracer.cosmology == cosmo.WMAP7
 
     def test__fit_figure_of_merit__matches_correct_fit_given_galaxy_profiles(self, ccd_data):
-
         lens_galaxy = g.Galaxy(light=lp.EllipticalSersic(intensity=0.1))
         source_galaxy = g.Galaxy(pixelization=pix.Rectangular(shape=(4, 4)),
                                  regularization=reg.Constant(coefficients=(1.0,)))
@@ -660,7 +654,6 @@ class TestResult(object):
         assert hasattr(result, "unmasked_model_image_of_planes_and_galaxies")
 
     def test__fit_figure_of_merit__matches_correct_fit_given_galaxy_profiles(self, ccd_data):
-
         lens_galaxy = g.Galaxy(light=lp.EllipticalSersic(intensity=0.1))
         source_galaxy = g.Galaxy(pixelization=pix.Rectangular(shape=(4, 4)),
                                  regularization=reg.Constant(coefficients=(1.0,)))
