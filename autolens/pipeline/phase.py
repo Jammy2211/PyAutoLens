@@ -52,9 +52,7 @@ class AbstractPhase(autofit_phase.AbstractPhase):
 
         super().__init__(optimizer_class=optimizer_class, phase_name=phase_name, auto_link_priors=auto_link_priors)
 
-        self.optimizer = optimizer_class(name=phase_name)
         self.cosmology = cosmology
-        self.auto_link_priors = auto_link_priors
 
     @property
     def constant(self):
