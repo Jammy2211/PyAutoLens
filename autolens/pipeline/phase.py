@@ -1382,3 +1382,29 @@ class SensitivityPhase(PhaseImaging):
             return "\nRunning lens/source lens for... \n\nLens Galaxy:\n{}\n\nSource Galaxy:\n{}\n\n Sensitive " \
                    "Galaxy\n{}\n\n ".format(instance.lens_galaxies, instance.source_galaxies,
                                             instance.sensitive_galaxies)
+
+
+def as_hyper_galaxy_phase(cls):
+    class HyperGalaxyPhase(cls):
+        def run(self, data, previous_results=None, mask=None, positions=None):
+            model_image = previous_results.unmasked_model_image
+            component_images = previous_results.unmasked_model_image_of_planes
+
+            self.optimizer.variable.hyper_galaxy = g.HyperGalaxy
+
+            class Analysis(cls.Analysis):
+                def __init__(self, image):
+                    self.image = image
+
+                def fit(self, instance):
+                    pass
+
+                def visualize(self, instance, image_path, during_analysis):
+                    pass
+
+                # noinspection PyMethodMayBeStatic
+                def describe(self, instance):
+                    return ""
+
+            for component in component_images:
+                result = self.optimizer.fit(Analysis(component))
