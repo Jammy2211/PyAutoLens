@@ -85,7 +85,7 @@ class GridStack(object):
         -----------
         regular : RegularGrid
             The grid of (y,x) arc-second coordinates at the centre of every unmasked pixel.
-        sub : SubGrid
+        sub : SubGrid | np.ndarray
             The grid of (y,x) arc-second coordinates at the centre of every unmasked pixel's sub-pixels.
         blurring : RegularGrid | ndarray | None
             The grid of (y,x) arc-second coordinates at the centre of every blurring-mask pixel.
