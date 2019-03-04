@@ -1,6 +1,5 @@
 from itertools import count
 
-from scipy.optimize import root_scalar
 import numpy as np
 
 from autolens import exc
@@ -42,7 +41,7 @@ class Galaxy(object):
         pixelization : inversion.Pixelization
             The pixelization of the galaxy used to reconstruct an observed image using an inversion.
         regularization : inversion.Regularization
-            The imageization of the pixel-grid used to reconstruct an observed regular using an inversion.
+            The regularization of the pixel-grid used to reconstruct an observed regular using an inversion.
         """
         self.redshift = redshift
 
