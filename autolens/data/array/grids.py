@@ -187,7 +187,13 @@ class GridStack(object):
                                                                            sub_grid_size=sub_grid_size,
                                                                            psf_shape=psf_shape)
 
-    def grid_stack_with_pix_grid_added(self, pix_grid, regular_to_nearest_pix):
+    def new_grid_stack_with_interpolator_added_to_each_grid(self, interp_pixel_scale):
+        regular = self.regular.new_grid_with_interpolator(interp_pixel_scale=interp_pixel_scale)
+        sub = self.sub.new_grid_with_interpolator(interp_pixel_scale=interp_pixel_scale)
+        blurring = self.blurring.new_grid_with_interpolator(interp_pixel_scale=interp_pixel_scale)
+        return GridStack(regular=regular, sub=sub, blurring=blurring, pix=self.pix)
+
+    def new_grid_stack_with_pix_grid_added(self, pix_grid, regular_to_nearest_pix):
         """Setup a grid-stack of grid_stack using an existing grid-stack.
         
         The new grid-stack has the same grid_stack (regular, sub, blurring, etc.) as before, but adds a pix-grid as a \
@@ -400,6 +406,11 @@ class RegularGrid(np.ndarray):
         """
         blurring_mask = mask.blurring_mask_for_psf_shape(psf_shape)
         return RegularGrid.from_mask(blurring_mask)
+
+    def new_grid_with_interpolator(self, interp_pixel_scale):
+        self.interpolator = Interpolator.from_mask_grid_and_interp_pixel_scales(mask=self.mask, grid=self[:,:],
+                                                                           interp_pixel_scale=interp_pixel_scale)
+        return self
 
     def array_2d_from_array_1d(self, array_1d):
         """ Map a 1D array the same dimension as the grid to its original masked 2D array.
