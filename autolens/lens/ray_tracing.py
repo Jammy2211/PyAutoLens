@@ -29,8 +29,6 @@ def check_tracer_for_redshifts(func):
         Parameters
         ----------
         self
-        args
-        kwargs
 
         Returns
         -------
@@ -62,8 +60,6 @@ def check_tracer_for_light_profile(func):
         Parameters
         ----------
         self
-        args
-        kwargs
 
         Returns
         -------
