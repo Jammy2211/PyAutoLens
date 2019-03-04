@@ -2,9 +2,9 @@ import numpy as np
 
 from autofit.tools import fit
 from autolens import exc
-from autolens.model.inversion import inversions
-from autolens.lens.util import lens_fit_util as util
 from autolens.lens import ray_tracing
+from autolens.lens.util import lens_fit_util as util
+from autolens.model.inversion import inversions
 
 
 def fit_lens_data_with_tracer(lens_data, tracer, padded_tracer=None):
@@ -28,17 +28,19 @@ def fit_lens_data_with_tracer(lens_data, tracer, padded_tracer=None):
         return LensInversionFit(lens_data=lens_data, tracer=tracer)
     elif tracer.has_light_profile and tracer.has_pixelization:
         return LensProfileInversionFit(lens_data=lens_data, tracer=tracer,
-                                           padded_tracer=padded_tracer)
+                                       padded_tracer=padded_tracer)
     else:
         raise exc.FittingException('The fit routine did not call a Fit class - check the '
                                    'properties of the tracer')
 
-def hyper_fit_lens_data_with_tracer(lens_data_hyper, tracer, padded_tracer=None):
+
+def hyper_fit_lens_data_with_tracer(lens_data_hyper, tracer, hyper_galaxies, padded_tracer=None):
     """Fit lens data with a model tracer, automatically determining the type of fit based on the \
     properties of the galaxies in the tracer.
 
     Parameters
     -----------
+    hyper_galaxies
     lens_data_hyper : lens_data.LensData or lens_data.LensDataHyper
         The lens-images that is fitted.
     tracer : ray_tracing.AbstractTracerNonStack
@@ -49,17 +51,20 @@ def hyper_fit_lens_data_with_tracer(lens_data_hyper, tracer, padded_tracer=None)
     """
 
     if tracer.has_light_profile and not tracer.has_pixelization:
-        return LensProfileHyperFit(lens_data_hyper=lens_data_hyper, tracer=tracer, padded_tracer=padded_tracer)
+        return LensProfileHyperFit(lens_data_hyper=lens_data_hyper, tracer=tracer, hyper_galaxies=hyper_galaxies,
+                                   padded_tracer=padded_tracer)
 
     elif not tracer.has_light_profile and tracer.has_pixelization:
-        return LensInversionHyperFit(lens_data_hyper=lens_data_hyper, tracer=tracer)
+        return LensInversionHyperFit(lens_data_hyper=lens_data_hyper, tracer=tracer, hyper_galaxies=hyper_galaxies)
 
     elif tracer.has_light_profile and tracer.has_pixelization:
         return LensProfileInversionHyperFit(lens_data_hyper=lens_data_hyper, tracer=tracer,
+                                            hyper_galaxies=hyper_galaxies,
                                             padded_tracer=padded_tracer)
     else:
         raise exc.FittingException('The hyper fit routine did not call a Fit class - check the '
                                    'properties of the tracer')
+
 
 class AbstractLensFit(object):
 
@@ -146,10 +151,12 @@ class AbstractLensProfileFit(AbstractLensFit):
 
     @property
     def model_image_of_planes(self):
-        return util.blurred_image_of_planes_from_1d_images_and_convolver(total_planes=self.tracer.total_planes,
-                image_plane_image_1d_of_planes=self.tracer.image_plane_image_1d_of_planes,
-                image_plane_blurring_image_1d_of_planes=self.tracer.image_plane_blurring_image_1d_of_planes,
-                convolver=self.convolver_image, map_to_scaled_array=self.map_to_scaled_array)
+        return util.blurred_image_of_planes_from_1d_images_and_convolver(
+            total_planes=self.tracer.total_planes,
+            image_plane_image_1d_of_planes=self.tracer.image_plane_image_1d_of_planes,
+            image_plane_blurring_image_1d_of_planes=self.tracer.image_plane_blurring_image_1d_of_planes,
+            convolver=self.convolver_image,
+            map_to_scaled_array=self.map_to_scaled_array)
 
 
 class AbstractLensInversionFit(AbstractLensFit):
@@ -246,8 +253,8 @@ class LensDataFit(fit.DataFit):
             The noise-map of the observed image.
         mask: msk.Mask
             The mask that is applied to the image.
-        model_data : ndarray
-            The model image the oberved image is fitted with.
+        model_image : ndarray
+            The model image the observed image is fitted with.
         """
         super(LensDataFit, self).__init__(data=image, noise_map=noise_map, mask=mask, model_data=model_image)
 
@@ -277,24 +284,25 @@ class LensDataInversionFit(LensDataFit):
             The noise-map of the observed image.
         mask: msk.Mask
             The mask that is applied to the image.
-        model_data : ndarray
-            The model image the oberved image is fitted with.
+        model_image : ndarray
+            The model image the observed image is fitted with.
         inversion : inversions.Inversion
-            The inversion used to ofit the image.
+            The inversion used to fit the image.
         """
         super(LensDataInversionFit, self).__init__(image=image, noise_map=noise_map,
                                                    mask=mask, model_image=model_image)
 
         self.likelihood_with_regularization = \
             util.likelihood_with_regularization_from_chi_squared_regularization_term_and_noise_normalization(
-            chi_squared=self.chi_squared, regularization_term=inversion.regularization_term,
-            noise_normalization=self.noise_normalization)
+                chi_squared=self.chi_squared, regularization_term=inversion.regularization_term,
+                noise_normalization=self.noise_normalization)
 
-        self.evidence = util.evidence_from_inversion_terms(chi_squared=self.chi_squared,
-                                                                   regularization_term=inversion.regularization_term,
-                                                                   log_curvature_regularization_term=inversion.log_det_curvature_reg_matrix_term,
-                                                                   log_regularization_term=inversion.log_det_regularization_matrix_term,
-                                                                   noise_normalization=self.noise_normalization)
+        self.evidence = util.evidence_from_inversion_terms(
+            chi_squared=self.chi_squared,
+            regularization_term=inversion.regularization_term,
+            log_curvature_regularization_term=inversion.log_det_curvature_reg_matrix_term,
+            log_regularization_term=inversion.log_det_regularization_matrix_term,
+            noise_normalization=self.noise_normalization)
 
     @property
     def figure_of_merit(self):
@@ -400,6 +408,7 @@ class LensProfileInversionFit(LensDataInversionFit, AbstractLensProfileInversion
 class AbstractLensHyperFit(object):
 
     def __init__(self, lens_data_hyper, hyper_galaxies):
+        # noinspection PyUnresolvedReferences
         """Abstract base class of a hyper-fit.
 
         A hyper-fit is a fit which performs the fit  described in the *AbstractFitter*, but also includes a set of \
@@ -434,11 +443,11 @@ class AbstractLensHyperFit(object):
                 hyper_galaxy_images_1d=lens_data_hyper.hyper_galaxy_images_1d,
                 hyper_galaxies=hyper_galaxies, hyper_minimum_values=lens_data_hyper.hyper_minimum_values)
 
-        self.contribution_maps = list(map(lambda contribution_map_1d :
+        self.contribution_maps = list(map(lambda contribution_map_1d:
                                           lens_data_hyper.map_to_scaled_array(array_1d=contribution_map_1d),
                                           contribution_maps_1d))
 
-        self.hyper_noise_map_1d =\
+        self.hyper_noise_map_1d = \
             util.scaled_noise_map_from_hyper_galaxies_and_contribution_maps(
                 contribution_maps=contribution_maps_1d, hyper_galaxies=hyper_galaxies,
                 noise_map=lens_data_hyper.noise_map_1d)
@@ -448,7 +457,7 @@ class AbstractLensHyperFit(object):
 
 class LensProfileHyperFit(LensDataFit, AbstractLensProfileFit, AbstractLensHyperFit):
 
-    def __init__(self, lens_data_hyper, tracer, padded_tracer=None):
+    def __init__(self, lens_data_hyper, tracer, hyper_galaxies, padded_tracer=None):
         """ Fit a lens hyper-image with galaxy light-profiles, as follows:
 
         1) Use the hyper-image and tracer's hyper-galaxies to generate a hyper noise-map.
@@ -471,7 +480,7 @@ class LensProfileHyperFit(LensDataFit, AbstractLensProfileFit, AbstractLensHyper
         """
 
         AbstractLensHyperFit.__init__(self=self, lens_data_hyper=lens_data_hyper,
-                                      hyper_galaxies=tracer.hyper_galaxies)
+                                      hyper_galaxies=hyper_galaxies)
 
         AbstractLensProfileFit.__init__(self=self, lens_data=lens_data_hyper, tracer=tracer,
                                         padded_tracer=padded_tracer)
@@ -482,7 +491,7 @@ class LensProfileHyperFit(LensDataFit, AbstractLensProfileFit, AbstractLensHyper
 
 class LensInversionHyperFit(LensDataInversionFit, AbstractLensInversionFit, AbstractLensHyperFit):
 
-    def __init__(self, lens_data_hyper, tracer):
+    def __init__(self, lens_data_hyper, tracer, hyper_galaxies):
         """ Fit a lens hyper-image with an inversion, as follows:
 
         1) Use the hyper-image and tracer's hyper-galaxies to generate a hyper noise-map.
@@ -500,7 +509,7 @@ class LensInversionHyperFit(LensDataInversionFit, AbstractLensInversionFit, Abst
         """
 
         AbstractLensHyperFit.__init__(self=self, lens_data_hyper=lens_data_hyper,
-                                      hyper_galaxies=tracer.hyper_galaxies)
+                                      hyper_galaxies=hyper_galaxies)
 
         AbstractLensInversionFit.__init__(self=self, lens_data=lens_data_hyper,
                                           noise_map_1d=self.hyper_noise_map_1d, tracer=tracer)
@@ -513,7 +522,7 @@ class LensInversionHyperFit(LensDataInversionFit, AbstractLensInversionFit, Abst
 
 class LensProfileInversionHyperFit(LensDataInversionFit, AbstractLensProfileInversionFit, AbstractLensHyperFit):
 
-    def __init__(self, lens_data_hyper, tracer, padded_tracer=None):
+    def __init__(self, lens_data_hyper, tracer, hyper_galaxies, padded_tracer=None):
         """Fit a lens hyper-image with galaxy light-profiles and an inversion, as follows:
 
         1) Use the hyper-image and tracer's hyper-galaxies to generate a hyper noise-map.
@@ -544,7 +553,7 @@ class LensProfileInversionHyperFit(LensDataInversionFit, AbstractLensProfileInve
         """
 
         AbstractLensHyperFit.__init__(self=self, lens_data_hyper=lens_data_hyper,
-                                      hyper_galaxies=tracer.hyper_galaxies)
+                                      hyper_galaxies=hyper_galaxies)
 
         AbstractLensProfileInversionFit.__init__(self=self, lens_data=lens_data_hyper,
                                                  noise_map_1d=self.hyper_noise_map_1d, tracer=tracer,
@@ -567,8 +576,8 @@ class LensPositionFit(object):
         Parameters
         -----------
         positions : [[]]
-            The (y,x) arc-second coordinates of pisitions which the maximum distance and likelihood is computed using.
-        noise_map : ndarray
+            The (y,x) arc-second coordinates of positions which the maximum distance and likelihood is computed using.
+        noise_map : ndarray | float
             The noise-value assumed when computing the likelihood.
         """
         self.positions = positions
@@ -592,17 +601,14 @@ class LensPositionFit(object):
     def maximum_separations(self):
         return list(map(lambda positions: self.max_separation_of_grid(positions), self.positions))
 
-    def max_separation_of_grid(self, grid):
+    @staticmethod
+    def max_separation_of_grid(grid):
         rdist_max = np.zeros((grid.shape[0]))
         for i in range(grid.shape[0]):
             xdists = np.square(np.subtract(grid[i, 0], grid[:, 0]))
             ydists = np.square(np.subtract(grid[i, 1], grid[:, 1]))
             rdist_max[i] = np.max(np.add(xdists, ydists))
         return np.max(np.sqrt(rdist_max))
-
-
-
-
 
 # TODO : The [plane_index][galaxy_index] datas structure is going to be key to tracking galaxies / hyper galaxies in
 # TODO : Multi-plane ray tracing. I never felt it was easy to follow using list comprehensions from ray_tracing.
