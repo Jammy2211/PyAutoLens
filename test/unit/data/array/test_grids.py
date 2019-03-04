@@ -1277,7 +1277,7 @@ class TestImageGridBorder(object):
 
 class TestInterpolator:
 
-    def test_decorated_function(self):
+    def test_decorated_function__values_from_function_has_1_dimensions__returns_1d_result(self):
 
         # noinspection PyUnusedLocal
         @grids.grid_interpolate
@@ -1288,17 +1288,56 @@ class TestInterpolator:
 
         regular = grids.RegularGrid.from_mask(mask=msk.Mask.unmasked_for_shape_and_pixel_scale((3, 3), 1))
 
-        assert (func(None, regular) == np.array([[1, 0, 0,
-                                                  0, 0, 0,
-                                                  0, 0, 0], ])).all()
+        values = func(None, regular)
+
+        assert values.ndim == 1
+        assert values.shape == (9,)
+        assert (values == np.array([[1, 0, 0,
+                                     0, 0, 0,
+                                     0, 0, 0], ])).all()
+
+        regular = grids.RegularGrid.from_mask(mask=msk.Mask.unmasked_for_shape_and_pixel_scale((3, 3), 1))
+        regular.interpolator = grids.Interpolator.from_mask_grid_and_interp_pixel_scales(regular.mask, regular,
+                                                                                         interp_pixel_scale=0.5)
+        interp_values = func(None, regular)
+        assert interp_values.ndim == 1
+        assert interp_values.shape == (9,)
+        assert (interp_values != np.array([[1, 0, 0,
+                                            0, 0, 0,
+                                            0, 0, 0]])).any()
+
+    def test_decorated_function__values_from_function_has_2_dimensions__returns_2d_result(self):
+
+        # noinspection PyUnusedLocal
+        @grids.grid_interpolate
+        def func(profile, grid):
+            result = np.zeros((grid.shape[0], 2))
+            result[0,:] = 1
+            return result
+
+        regular = grids.RegularGrid.from_mask(mask=msk.Mask.unmasked_for_shape_and_pixel_scale((3, 3), 1))
+
+        values = func(None, regular)
+
+        print(func(None, regular))
+
+        assert values.ndim == 2
+        assert values.shape == (9, 2)
+        assert (values == np.array([[1,1], [0,0], [0,0],
+                                    [0,0], [0,0], [0,0],
+                                    [0,0], [0,0], [0,0]])).all()
 
         regular = grids.RegularGrid.from_mask(mask=msk.Mask.unmasked_for_shape_and_pixel_scale((3, 3), 1))
         regular.interpolator = grids.Interpolator.from_mask_grid_and_interp_pixel_scales(regular.mask, regular,
                                                                                          interp_pixel_scale=0.5)
 
-        assert (func(None, regular) != np.array([[1, 0, 0,
-                                                  0, 0, 0,
-                                                  0, 0, 0], ])).any()
+        print(func(None, regular))
+        interp_values = func(None, regular)
+        assert interp_values.ndim == 2
+        assert interp_values.shape == (9, 2)
+        assert (interp_values != np.array(np.array([[1,1], [0,0], [0,0],
+                                                    [0,0], [0,0], [0,0],
+                                                    [0,0], [0,0], [0,0]]))).any()
 
     def test__20x20_deflection_angles_no_central_pixels__interpolated_accurately(self):
 

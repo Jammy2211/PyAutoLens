@@ -3,7 +3,9 @@ import math
 import numpy as np
 import pytest
 
-from autolens.model.profiles import light_profiles as lp, mass_profiles as mp
+from autolens.data.array import mask as msk
+from autolens.data.array import grids
+from autolens.model.profiles import mass_profiles as mp
 
 grid = np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [2.0, 4.0]])
 
@@ -161,6 +163,7 @@ class TestCoredPowerLaw(object):
         assert cored_power_law.potential_from_grid(grid=np.array([[0.1625, 0.1625]])) == pytest.approx(0.71185, 1e-3)
 
     def test__deflections__correct_values(self):
+
         power_law = mp.SphericalCoredPowerLaw(centre=(-0.7, 0.5), einstein_radius=1.0,
                                               slope=1.8, core_radius=0.2)
         deflections = power_law.deflections_from_grid(grid=np.array([[0.1875, 0.1625]]))
@@ -273,6 +276,24 @@ class TestCoredPowerLaw(object):
                                                                            1e-4)
         assert elliptical.potential_from_grid(grid) == pytest.approx(spherical.potential_from_grid(grid), 1e-4)
         assert elliptical.deflections_from_grid(grid) == pytest.approx(spherical.deflections_from_grid(grid), 1e-4)
+
+    # def test__deflections_of_elliptical_profile__use_interpolate_and_cache_decorators(self):
+    #
+    #     cored_power_law = mp.EllipticalCoredPowerLaw(centre=(-0.7, 0.5), axis_ratio=0.7, phi=60.0,
+    #                                                  einstein_radius=1.3, slope=1.8, core_radius=0.2)
+    #
+    #     regular = grids.RegularGrid.from_mask(mask=msk.Mask.unmasked_for_shape_and_pixel_scale((3, 3), 1))
+    #
+    #     deflections_normal = cored_power_law.deflections_from_grid(grid=regular)
+    #
+    #     print(deflections_normal)
+    #
+    #     regular.interpolator = grids.Interpolator.from_mask_grid_and_interp_pixel_scales(regular.mask, regular,
+    #                                                                                      interp_pixel_scale=0.5)
+    #
+    #     deflections_interp = cored_power_law.deflections_from_grid(grid=regular)
+    #
+    #     print(deflections_interp)
 
 
 class TestPowerLaw(object):

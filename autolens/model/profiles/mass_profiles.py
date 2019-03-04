@@ -11,6 +11,7 @@ from astropy import constants
 
 from scipy.optimize import root_scalar
 from autolens import decorator_util
+from autolens.data.array import grids
 from autolens.model.profiles import geometry_profiles
 from autolens.model.profiles import light_profiles
 
@@ -277,6 +278,8 @@ class EllipticalCoredPowerLaw(EllipticalMassProfile, MassProfile):
 
         return self.einstein_radius_rescaled * self.axis_ratio * potential_grid
 
+    @grids.grid_interpolate
+    @geometry_profiles.cache
     @geometry_profiles.transform_grid
     def deflections_from_grid(self, grid):
         """
