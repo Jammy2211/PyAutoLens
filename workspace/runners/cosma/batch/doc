@@ -1,0 +1,62 @@
+The batch script is the script we pass to Cosma, to tell it the code and analysis we want to run with PyAutoLens. Lets
+go through each line, and note where we might need to make changes.
+
+#!/bin/bash -l
+
+This sets up the Cosma command line of the job, so we can run command line calls like we normally do in a terminal.
+
+#SBATCH --ntasks 1
+
+This describes the number of tasks we're going to run on Cosma. A
+
+#SBATCH -J pipeline_runner_cosma
+
+This specifies the name of the job, which I generally make sure matches the name of the runner.
+
+#SBATCH --array=1-17
+
+This specieis the range of arrays we'll run on, and thus the range of array_ids we'll pass the code. You can tell Cosma
+to run just one job on a specif array by writing e.g.
+
+#SBATCH --array=2
+
+You will want to edit this line of the batch script depending on the number lenses you are analysing.
+
+#SBATCH -o ../output/pipeline_runner_cosma_output.%A.%a.out
+
+The Python output of the job is sent to a .out file, which I by default put in the folder
+/workspace/runners/cosma/output/ and name after your runner, e.g. pipeine_runner_cosma_output.out
+
+#SBATCH -e ../output/pipeline_runner_cosma_error.%A.%a.err
+
+If there is an error during the job, the error is output to .err file which is setup analogously to the output file above.
+
+#SBATCH -p cosma # also cordelia
+
+You shouldn't need to change this, its telling Cosma which queue on the super computer we want to send our job too.
+
+#SBATCH -A durham
+
+Again, don't change this, its just letting Cosma know this is a Durham job.
+
+#SBATCH -t 1:00:00   # longest job
+
+This is the anticipated run time of your entire batch of jobs. All jobs will end when this timer is reached, thus you
+should put run time of the job you expect to last the longest. The limit on run-times on Cosma is 72 hours, but if this
+isn't enough you can just keep resubmitting jobs after they end and PyAutoLens will resume.
+
+#SBATCH --mail-type=END                          # notifications for job done & fail
+
+This species when we want a notification on the job, with the line above saying we want it when the job ends.
+
+#SBATCH --mail-user=username@durham.ac.uk
+
+This specifies the notifcation type, and I find an email is useful.
+
+module purge
+module load python/3.6.5
+source /cosma/home/durham/pdtw24/PyAutoLens/bin/activate
+python3 $HOME/workspace/runners/cosma/pipeline_runner_cosma.py
+
+The remaining four lines are the same ones you used when you setup yourself on Cosma. These lines basically do the same
+thing but for each job.
