@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib.cm as cm
 import itertools
 from scipy.spatial import Voronoi
 
@@ -102,20 +103,25 @@ def plot_voronoi_mapper(mapper, solution_vector, should_plot_centres=True, shoul
                         units='arcsec', kpc_per_arcsec=None,
                         xyticksize=16, figsize=(7, 7),
                         title='Rectangular Mapper', titlesize=16, xlabelsize=16, ylabelsize=16,
+                        cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
                         output_path=None, output_filename='voronoi_mapper', output_format='show'):
 
     plotter_util.setup_figure(figsize=figsize, as_subplot=as_subplot)
+ #   plt.figaspect(1)
 
     set_axis_limits(mapper=mapper, units=units, kpc_per_arcsec=kpc_per_arcsec)
 
     regions_SP, vertices_SP = voronoi_finite_polygons_2d(mapper.voronoi)
 
     color_values = solution_vector[:] / np.max(solution_vector)
-    clbar = plt.get_cmap('jet')
+    cmap = plt.get_cmap('jet')
+
+    set_colorbar(cmap=cmap, color_values=color_values, cb_fraction=cb_fraction, cb_pad=cb_pad,
+                 cb_tick_values=cb_tick_values, cb_tick_labels=cb_tick_labels)
 
     for region, index in zip(regions_SP, range(mapper.pixels)):
         polygon = vertices_SP[region]
-        col = clbar(color_values[index])
+        col = cmap(color_values[index])
         plt.fill(*zip(*polygon), alpha=0.7, facecolor=col, lw=0.0)
 
     plotter_util.set_title(title=title, titlesize=titlesize)
@@ -258,6 +264,17 @@ def set_axis_limits(mapper, units, kpc_per_arcsec):
                                                               mapper.geometry.arc_second_maxima[1] * kpc_per_arcsec,
                                                               mapper.geometry.arc_second_minima[0] * kpc_per_arcsec,
                                                               mapper.geometry.arc_second_maxima[0] * kpc_per_arcsec]))
+
+def set_colorbar(cmap, color_values, cb_fraction, cb_pad, cb_tick_values, cb_tick_labels):
+
+    cax = cm.ScalarMappable(cmap=cmap)
+    cax.set_array(color_values)
+
+    if cb_tick_values is None and cb_tick_labels is None:
+        plt.colorbar(mappable=cax, fraction=cb_fraction, pad=cb_pad)
+    elif cb_tick_values is not None and cb_tick_labels is not None:
+        cb = plt.colorbar(mappable=cax, fraction=cb_fraction, pad=cb_pad, ticks=cb_tick_values)
+        cb.ax.set_yticklabels(cb_tick_labels)
 
 def plot_centres(should_plot_centres, mapper, units, kpc_per_arcsec):
 
