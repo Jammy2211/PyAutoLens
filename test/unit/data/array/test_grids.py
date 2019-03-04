@@ -1076,7 +1076,7 @@ class TestGridStack(object):
         assert (grid_stack.pix == np.array([[5.0, 5.0], [6.0, 7.0]])).all()
         assert (grid_stack.pix.regular_to_nearest_pix == np.array([0, 1])).all()
 
-    def test__new_gri_stack_with_interpolator_added_to_each_grid(self):
+    def test__new_grid_stack_with_interpolator_added_to_each_grid(self):
 
         mask = np.array([[True, True, True, True, True, True],
                          [True, True, True, False, False, True],
@@ -1087,6 +1087,8 @@ class TestGridStack(object):
 
         grid_stack = grids.GridStack.grid_stack_from_mask_sub_grid_size_and_psf_shape(
                         mask=mask, sub_grid_size=2, psf_shape=(3, 3))
+
+        print(grid_stack.blurring)
         new_grid_stack = grid_stack.new_grid_stack_with_interpolator_added_to_each_grid(interp_pixel_scale=1.0)
 
         regular_grid_manual = grids.RegularGrid.from_mask(mask=mask)
@@ -1095,6 +1097,9 @@ class TestGridStack(object):
 
         assert (new_grid_stack.regular == regular_grid_manual).all()
         np.testing.assert_almost_equal(new_grid_stack.sub, sub_grid_manual)
+
+        print(new_grid_stack.blurring)
+
         assert (new_grid_stack.blurring == blurring_grid_manual).all()
 
         regular_interpolator_manual = grids.Interpolator.from_mask_grid_and_interp_pixel_scales(
@@ -1112,6 +1117,40 @@ class TestGridStack(object):
 
         assert (new_grid_stack.blurring.interpolator.vtx == blurring_interpolator_manual.vtx).all()
         assert (new_grid_stack.blurring.interpolator.wts == blurring_interpolator_manual.wts).all()
+
+    def test__same_as_above_for_padded_grid_stack__blurring_grid_is_zeros__has_no_interpolator(self):
+
+        mask = np.array([[True, True, True, True, True, True],
+                         [True, True, True, False, False, True],
+                         [True, False, True, True, True, True],
+                         [True, True, True, False, False, True],
+                         [True, True, True, True, True, True]])
+        mask = msk.Mask(array=mask, pixel_scale=2.0)
+
+        padded_grid_stack = grids.GridStack.padded_grid_stack_from_mask_sub_grid_size_and_psf_shape(
+                        mask=mask, sub_grid_size=2, psf_shape=(3, 3))
+        new_padded_grid_stack = padded_grid_stack.new_grid_stack_with_interpolator_added_to_each_grid(interp_pixel_scale=1.0)
+
+        regular_grid_manual = grids.PaddedRegularGrid.padded_grid_from_shape_psf_shape_and_pixel_scale(
+            shape=mask.shape, pixel_scale=mask.pixel_scale, psf_shape=(3,3))
+        sub_grid_manual = grids.PaddedSubGrid.padded_grid_from_mask_sub_grid_size_and_psf_shape(
+            mask=mask, sub_grid_size=2, psf_shape=(3,3))
+
+        assert (new_padded_grid_stack.regular == regular_grid_manual).all()
+        np.testing.assert_almost_equal(new_padded_grid_stack.sub, sub_grid_manual)
+
+        regular_interpolator_manual = grids.Interpolator.from_mask_grid_and_interp_pixel_scales(
+            mask=regular_grid_manual.mask, grid=regular_grid_manual, interp_pixel_scale=1.0)
+        sub_interpolator_manual = grids.Interpolator.from_mask_grid_and_interp_pixel_scales(
+            mask=sub_grid_manual.mask, grid=sub_grid_manual, interp_pixel_scale=1.0)
+
+        assert (new_padded_grid_stack.regular.interpolator.vtx == regular_interpolator_manual.vtx).all()
+        assert (new_padded_grid_stack.regular.interpolator.wts == regular_interpolator_manual.wts).all()
+
+        assert (new_padded_grid_stack.sub.interpolator.vtx == sub_interpolator_manual.vtx).all()
+        assert (new_padded_grid_stack.sub.interpolator.wts == sub_interpolator_manual.wts).all()
+
+        assert (new_padded_grid_stack.blurring == np.array([[0.0, 0.0]])).all()
 
 
 class TestImageGridBorder(object):

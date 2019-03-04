@@ -7,7 +7,7 @@ from autolens.model.inversion import convolution as inversion_convolution
 class LensData(object):
 
     def __init__(self, ccd_data, mask, sub_grid_size=2, image_psf_shape=None, mapping_matrix_psf_shape=None,
-                 positions=None):
+                 positions=None, interp_pixel_scale=None):
         """
         The lens data is the collection of data (image, noise-map, PSF), a mask, grid_stack, convolver \
         and other utilities that are used for modeling and fitting an image of a strong lens.
@@ -72,6 +72,14 @@ class LensData(object):
 
         self.padded_grid_stack = grids.GridStack.padded_grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=mask,
                                                             sub_grid_size=sub_grid_size, psf_shape=self.image_psf_shape)
+
+        if interp_pixel_scale is not None:
+
+            self.grid_stack = self.grid_stack.new_grid_stack_with_interpolator_added_to_each_grid(
+                interp_pixel_scale=interp_pixel_scale)
+
+            self.padded_grid_stack = self.padded_grid_stack.new_grid_stack_with_interpolator_added_to_each_grid(
+                interp_pixel_scale=interp_pixel_scale)
 
         self.border = grids.RegularGridBorder.from_mask(mask=mask)
 
