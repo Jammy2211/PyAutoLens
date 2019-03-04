@@ -1,5 +1,4 @@
 import numpy as np
-import shutil
 from astropy import cosmology as cosmo
 
 from autolens.data import ccd as im
@@ -49,7 +48,7 @@ def make_positions():
 
 @pytest.fixture(name='mask')
 def make_mask():
-    return msk.Mask.circular(shape=((3, 3)), pixel_scale=0.1, radius_arcsec=0.1)
+    return msk.Mask.circular(shape=(3, 3), pixel_scale=0.1, radius_arcsec=0.1)
 
 
 @pytest.fixture(name='lens_data')
@@ -104,12 +103,12 @@ def make_lens_hyper_image(image, mask, hyper):
 def make_fit_hyper_lens_only(lens_hyper_image, hyper):
     tracer = ray_tracing.TracerImagePlane(lens_galaxies=[hyper.hyper_galaxy],
                                           image_plane_grid_stack=lens_hyper_image.grid_stack)
-    return lens_fit.hyper_fit_lens_data_with_tracer(lens_data_hyper=lens_hyper_image, tracer=tracer)
+    return lens_fit.hyper_fit_lens_data_with_tracer(lens_data_hyper=lens_hyper_image, tracer=tracer,
+                                                    hyper_galaxies=[hyper.hyper_galaxy.hyper_galaxy])
 
 
 def test__fit_sub_plot_hyper_lens_only(fit_lens_only, fit_hyper_lens_only, plot_patch,
-                                                                   lens_fit_plotter_path):
-
+                                       lens_fit_plotter_path):
     lens_fit_hyper_plotters.plot_fit_subplot(fit_hyper=fit_hyper_lens_only, fit=fit_lens_only, should_plot_mask=True,
                                              extract_array_from_mask=True, zoom_around_mask=True,
                                              cb_tick_values=[1.0], cb_tick_labels=['1.0'],
@@ -120,8 +119,7 @@ def test__fit_sub_plot_hyper_lens_only(fit_lens_only, fit_hyper_lens_only, plot_
 
 
 def test__fit_individuals__hyper_lens_only__depedent_on_input(fit_hyper_lens_only, fit_lens_only, plot_patch,
-                                                               lens_fit_plotter_path):
-
+                                                              lens_fit_plotter_path):
     lens_fit_hyper_plotters.plot_fit_individuals(fit_hyper=fit_hyper_lens_only, fit=fit_lens_only,
                                                  should_plot_mask=True, extract_array_from_mask=True,
                                                  zoom_around_mask=True,
