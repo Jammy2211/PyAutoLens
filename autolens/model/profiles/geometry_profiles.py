@@ -42,13 +42,25 @@ def transform_grid(func):
 
 
 def cache(func):
+    """
+    Cache
+
+    Parameters
+    ----------
+    func
+
+    Returns
+    -------
+
+    """
+
     def wrapper(instance: GeometryProfile, grid: np.ndarray):
         if not hasattr(instance, "cache"):
             instance.cache = {}
-        grid_bytes = grid.tobytes()
-        if grid_bytes not in instance.cache:
-            instance.cache[grid_bytes] = func(instance, grid)
-        return instance.cache[grid_bytes]
+        key = (func.__name__, grid.tobytes())
+        if key not in instance.cache:
+            instance.cache[key] = func(instance, grid)
+        return instance.cache[key]
 
     return wrapper
 

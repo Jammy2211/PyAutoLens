@@ -47,6 +47,23 @@ class TestMemoize(object):
         assert profile.my_method(np.array([0])) == 1
         assert profile.my_method(np.array([1])) == 2
 
+    def test_multiple_cached_methods(self):
+        class MultiMethodProfile(object):
+            @gp.cache
+            def method_one(self, grid):
+                return grid
+
+            @gp.cache
+            def method_two(self, grid):
+                return grid
+
+        profile = MultiMethodProfile()
+
+        array = np.array([0])
+        profile.method_one(array)
+        assert profile.method_one(array) is array
+        assert profile.method_two(np.array([0])) is not array
+
 
 class TestEllipticalProfile(object):
     class TestAnglesFromXAxis(object):
