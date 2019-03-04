@@ -288,10 +288,10 @@ class HyperGalaxy(object):
         """ If a *Galaxy* is given a *HyperGalaxy* as an attribute, the noise-map in the regions of the image that the \
         galaxy is located will be scaled, to prevent over-fitting of the galaxy. 
         
-        This is performed by first computing the hyper-galalxy's 'contribution-map', which determines the fraction of \ 
+        This is performed by first computing the hyper-galaxy's 'contribution-map', which determines the fraction of \
         flux in every pixel of the image that can be associated with this particular hyper-galaxy. This is computed \
-        using  hyper-hyper set (e.g. fitting.fit_data.FitDataHyper), which includes  best-fit unblurred_image_1d of the \
-        galaxy's light from a previous analysis phase. 
+        using  hyper-hyper set (e.g. fitting.fit_data.FitDataHyper), which includes  best-fit unblurred_image_1d of \
+        the galaxy's light from a previous analysis phase.
          
         The *HyperGalaxy* class contains the hyper-parameters which are associated with this galaxy for scaling the \
         noise-map.
