@@ -1041,9 +1041,6 @@ class Interpolator(object):
         return Interpolator(grid=grid, interp_grid=interp_grid)
 
     def interpolated_values_from_values(self, values):
-        return self.interpolate(values=values)
-
-    def interpolate(self, values):
         return np.einsum('nj,nj->n', np.take(values, self.vtx), self.wts)
 
 
@@ -1072,7 +1069,13 @@ def grid_interpolate(func):
         if hasattr(grid, "interpolator"):
             interpolator = grid.interpolator
             if grid.interpolator is not None:
-                return interpolator.interpolate(func(profile, interpolator.interp_grid, *args, **kwargs))
+                values = func(profile, interpolator.interp_grid, *args, **kwargs)
+                if values.ndim == 1:
+                    return interpolator.interpolated_values_from_values(values=values)
+                elif values.ndim == 2:
+                    y_values = interpolator.interpolated_values_from_values(values=values[:,0])
+                    x_values = interpolator.interpolated_values_from_values(values=values[:,1])
+                    return np.asarray([y_values, x_values]).T
         return func(profile, grid, *args, **kwargs)
 
     return wrapper
