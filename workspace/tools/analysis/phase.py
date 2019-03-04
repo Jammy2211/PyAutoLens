@@ -37,7 +37,7 @@ ccd_data = ccd.load_ccd_data_from_fits(image_path=path + '/data/example/' + lens
 mask = msk.Mask.circular(shape=ccd_data.shape, pixel_scale=ccd_data.pixel_scale, radius_arcsec=3.0)
 
 # We can also specify a set of positions, which must be traced within a threshold value or else the mass model is
-positions = ccd.load_positions(positions_path=path + '/data/' + lens_name + '/positions.dat')
+positions = ccd.load_positions(positions_path=path + '/data/example/' + lens_name + '/positions.dat')
 
 # resampled (see howtolens/chapter_2_lens_modeling/tutorial_7_masking_and_positions.ipynb)
 ccd_plotters.plot_ccd_subplot(ccd_data=ccd_data, mask=mask, positions=positions)
