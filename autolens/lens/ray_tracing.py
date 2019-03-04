@@ -1,16 +1,16 @@
-from functools import wraps
 import math
 
 import numpy as np
 from astropy import constants
 from astropy import cosmology as cosmo
+from functools import wraps
 
 from autolens import exc
 from autolens.data.array import grids
-from autolens.lens.util import lens_util
 from autolens.lens import plane as pl
-from autolens.model.profiles import mass_profiles as mp
+from autolens.lens.util import lens_util
 from autolens.model.inversion import pixelizations as pix
+
 
 def check_tracer_for_redshifts(func):
     """If a tracer's galaxies do not have redshifts, its cosmological quantities cannot be computed. This wrapper \
@@ -159,7 +159,9 @@ class AbstractTracerCosmology(object):
 
     def scaling_factor_between_planes(self, i, j):
         return lens_util.scaling_factor_between_redshifts_for_cosmology(z1=self.plane_redshifts[i],
-                z2=self.plane_redshifts[j], z_final=self.plane_redshifts[-1], cosmology=self.cosmology)
+                                                                        z2=self.plane_redshifts[j],
+                                                                        z_final=self.plane_redshifts[-1],
+                                                                        cosmology=self.cosmology)
 
     @property
     @check_tracer_for_redshifts
@@ -238,7 +240,7 @@ class AbstractTracer(AbstractTracerCosmology):
     @property
     @check_tracer_for_light_profile
     def image_plane_image(self):
-        return  self.image_plane.grid_stack.scaled_array_from_array_1d(array_1d=self.image_plane_image_1d)
+        return self.image_plane.grid_stack.scaled_array_from_array_1d(array_1d=self.image_plane_image_1d)
 
     @property
     @check_tracer_for_light_profile
@@ -534,7 +536,6 @@ class TracerMultiPlanes(AbstractTracer):
 
             if plane_index > 0:
                 for previous_plane_index in range(plane_index):
-
                     scaling_factor = lens_util.scaling_factor_between_redshifts_for_cosmology(
                         z1=plane_redshifts[previous_plane_index], z2=plane_redshifts[plane_index],
                         z_final=plane_redshifts[-1], cosmology=cosmology)
@@ -544,7 +545,7 @@ class TracerMultiPlanes(AbstractTracer):
 
                     new_grid_stack = \
                         lens_util.grid_stack_from_deflection_stack(grid_stack=new_grid_stack,
-                                                                          deflection_stack=scaled_deflection_stack)
+                                                                   deflection_stack=scaled_deflection_stack)
 
             planes.append(pl.Plane(galaxies=galaxies_in_planes[plane_index], grid_stack=new_grid_stack,
                                    border=border, compute_deflections=compute_deflections, cosmology=cosmology))
@@ -573,8 +574,6 @@ class TracerMultiPlanesSliced(AbstractTracer):
             The list of galaxies in the ray-tracing calculation.
         image_plane_grid_stack : grid_stacks.GridStack
             The image-plane grid stack which is traced. (includes the regular-grid, sub-grid, blurring-grid, etc.).
-        lens_redshifts : [float]
-            The redshifts of the main-planes (e.g. the lens galaxy), which determine where redshift intervals are placed.
         planes_between_lenses : [int]
             The number of slices between each main plane. The first entry in this list determines the number of slices \
             between Earth (redshift 0.0) and main plane 0, the next between main planes 0 and 1, etc.
@@ -595,7 +594,6 @@ class TracerMultiPlanesSliced(AbstractTracer):
             lens_util.galaxies_in_redshift_ordered_planes_from_galaxies(galaxies=lens_galaxies + line_of_sight_galaxies,
                                                                         plane_redshifts=plane_redshifts)
 
-
         plane_redshifts.append(source_galaxies[0].redshift)
         galaxies_in_planes.append(source_galaxies)
 
@@ -607,14 +605,13 @@ class TracerMultiPlanesSliced(AbstractTracer):
         for plane_index in range(0, len(plane_redshifts)):
 
             compute_deflections = lens_util.compute_deflections_at_next_plane(plane_index=plane_index,
-                                                                                     total_planes=len(plane_redshifts))
+                                                                              total_planes=len(plane_redshifts))
 
             new_grid_stack = image_plane_grid_stack
 
             if plane_index > 0:
                 print()
                 for previous_plane_index in range(plane_index):
-
                     scaling_factor = lens_util.scaling_factor_between_redshifts_for_cosmology(
                         z1=plane_redshifts[previous_plane_index], z2=plane_redshifts[plane_index],
                         z_final=plane_redshifts[-1], cosmology=cosmology)
@@ -624,7 +621,7 @@ class TracerMultiPlanesSliced(AbstractTracer):
 
                     new_grid_stack = \
                         lens_util.grid_stack_from_deflection_stack(grid_stack=new_grid_stack,
-                                                                          deflection_stack=scaled_deflection_stack)
+                                                                   deflection_stack=scaled_deflection_stack)
 
             planes.append(pl.PlaneSlice(redshift=plane_redshifts[plane_index], galaxies=galaxies_in_planes[plane_index],
                                         grid_stack=new_grid_stack, border=border,
@@ -637,8 +634,8 @@ class TracerImageSourcePlanesPositions(AbstractTracer):
 
     def __init__(self, lens_galaxies, image_plane_positions, cosmology=cosmo.Planck15):
         """Positional ray-tracer for a lens system with two planes, an image-plane and source-plane (source-plane \
-        galaxies are not input for the positional ray-tracer, as it is only the proximity that image_plane_positions trace to \
-        within one another that needs to be computed).
+        galaxies are not input for the positional ray-tracer, as it is only the proximity that image_plane_positions \
+        trace to within one another that needs to be computed).
 
         By default, this has no associated cosmology, thus all calculations are performed in arc seconds and galaxies \
         do not need input redshifts. If a cosmology is supplied, the plane's angular diameter distances, \
@@ -649,8 +646,8 @@ class TracerImageSourcePlanesPositions(AbstractTracer):
         lens_galaxies : [Galaxy]
             The list of lens galaxies in the image-plane.
         image_plane_positions : [[[]]]
-            The (y,x) arc-second coordinates of image-plane pixels which (are expected to) mappers to the same location(s) \
-            in the source-plane.
+            The (y,x) arc-second coordinates of image-plane pixels which (are expected to) mappers to the same \
+            location(s) in the source-plane.
         cosmology : astropy.cosmology.Planck15
             The cosmology of the ray-tracing calculation.
         """
@@ -679,8 +676,8 @@ class TracerMultiPlanesPositions(AbstractTracer):
         galaxies : [Galaxy]
             The list of galaxies in the ray-tracing calculation.
         image_plane_positions : [[[]]]
-            The (y,x) arc-second coordinates of image-plane pixels which (are expected to) mappers to the same location(s) \
-            in the final source-plane.
+            The (y,x) arc-second coordinates of image-plane pixels which (are expected to) mappers to the same \
+            location(s) in the final source-plane.
         cosmology : astropy.cosmology
             The cosmology of the ray-tracing calculation.
         """
@@ -689,7 +686,7 @@ class TracerMultiPlanesPositions(AbstractTracer):
 
         galaxies_in_redshift_ordered_lists = \
             lens_util.galaxies_in_redshift_ordered_planes_from_galaxies(galaxies=galaxies,
-                                                                               plane_redshifts=plane_redshifts)
+                                                                        plane_redshifts=plane_redshifts)
 
         if not galaxies:
             raise exc.RayTracingException('No galaxies have been input into the Tracer (TracerImageSourcePlanes)')
@@ -709,7 +706,6 @@ class TracerMultiPlanesPositions(AbstractTracer):
 
             if plane_index > 0:
                 for previous_plane_index in range(plane_index):
-
                     scaling_factor = lens_util.scaling_factor_between_redshifts_for_cosmology(
                         z1=plane_redshifts[previous_plane_index], z2=plane_redshifts[plane_index],
                         z_final=plane_redshifts[-1], cosmology=cosmology)
