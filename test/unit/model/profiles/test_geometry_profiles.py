@@ -6,8 +6,31 @@ import pytest
 from autolens.model.profiles import geometry_profiles as gp
 
 
-class TestEllipticalProfile(object):
+class TestMemoize(object):
+    def test_add_to_cache(self):
+        class MyProfile(object):
+            # noinspection PyMethodMayBeStatic
+            @gp.cache
+            def my_method(self, grid):
+                return grid
 
+        profile = MyProfile()
+        other_profile = MyProfile()
+        assert not hasattr(profile, "cache")
+
+        profile.my_method(np.array([0]))
+        assert hasattr(profile, "cache")
+        assert not hasattr(other_profile, "cache")
+        assert len(profile.cache) == 1
+
+        profile.my_method(np.array([0]))
+        assert len(profile.cache) == 1
+
+        profile.my_method(np.array([1]))
+        assert len(profile.cache) == 2
+
+
+class TestEllipticalProfile(object):
     class TestAnglesFromXAxis(object):
 
         def test__profile_angle_phi_is_0__cosine_and_sin_of_phi_is_1_and_0(self):
@@ -45,7 +68,6 @@ class TestEllipticalProfile(object):
     class TestTransformGrid(object):
 
         def test__profile_angle_phi_is_0__grid_x_1_y_1__returns_same_grid_so_x_1_y_1(self):
-
             elliptical_profile = gp.EllipticalProfile(axis_ratio=1.0, phi=0.0)
 
             transformed_grid = elliptical_profile.transform_grid_to_reference_frame(grid=np.array([[1.0, 1.0]]))
@@ -59,7 +81,6 @@ class TestEllipticalProfile(object):
             assert transformed_back_grid[0, 1] == pytest.approx(1.0, 1e-3)
 
         def test___profile_angle_phi_45__grid_y_1_x_1__rotated_counter_clockwise_to_y_0_x_root_2(self):
-
             elliptical_profile = gp.EllipticalProfile(axis_ratio=1.0, phi=315.0)
 
             transformed_grid = elliptical_profile.transform_grid_to_reference_frame(grid=np.array([[1.0, 1.0]]))
@@ -138,7 +159,6 @@ class TestEllipticalProfile(object):
             assert transformed_back_grid[0, 1] == pytest.approx(1.0, 1e-3)
 
         def test__profile_angle_phi_315__grid_y_1_x_1__rotated_grid_clockwise_so_y_0_x_root_2(self):
-
             elliptical_profile = gp.EllipticalProfile(axis_ratio=1.0, phi=315.0)
 
             transformed_grid = elliptical_profile.transform_grid_to_reference_frame(grid=np.array([[1.0, 1.0]]))
@@ -165,7 +185,6 @@ class TestEllipticalProfile(object):
             assert transformed_back_grid[0, 1] == pytest.approx(4.0, 1e-3)
 
         def test__random_values__grid_are_transformed_to_and_from_reference_frame__equal_to_original_values(self):
-
             elliptical_profile = gp.EllipticalProfile(axis_ratio=1.0, phi=45.0)
 
             grid_original = np.array([[5.2221, 2.6565]])
@@ -231,7 +250,6 @@ class TestEllipticalProfile(object):
 
 
 class TestSphericalProfile(object):
-
     class TestCoordinatesMovement(object):
 
         def test__profile_cenre_y_0_x_0__grid_y_1_x_1__no_coordinate_movement_so_y_1_x_1(self):
@@ -254,7 +272,6 @@ class TestSphericalProfile(object):
             assert grid1[0, 1] == grid2[0, 1]
 
         def test__grid_are_again_the_same_after_centre_shift__grid_equivalent(self):
-
             spherical_profile1 = gp.SphericalProfile(centre=(1, 1))
             grid1 = spherical_profile1.transform_grid_to_reference_frame(grid=np.array([[1.0, 1.0]]))
 

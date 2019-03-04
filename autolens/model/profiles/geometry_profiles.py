@@ -1,7 +1,5 @@
-import inspect
-from functools import wraps
-
 import numpy as np
+from functools import wraps
 
 
 def transform_grid(func):
@@ -39,6 +37,18 @@ def transform_grid(func):
             return func(profile, profile.transform_grid_to_reference_frame(grid), *args, **kwargs)
         else:
             return func(profile, grid, *args, **kwargs)
+
+    return wrapper
+
+
+def cache(func):
+    def wrapper(instance: GeometryProfile, grid: np.ndarray):
+        if not hasattr(instance, "cache"):
+            instance.cache = {}
+        grid_bytes = grid.tobytes()
+        if grid_bytes not in instance.cache:
+            instance.cache[grid_bytes] = func(instance, grid)
+        return instance.cache[grid_bytes]
 
     return wrapper
 
