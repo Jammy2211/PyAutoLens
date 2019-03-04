@@ -443,10 +443,10 @@ class PlanePositions(object):
         self.positions = positions
 
         if compute_deflections:
-            def calculate_deflections(positions):
-                return sum(map(lambda galaxy: galaxy.deflections_from_grid(positions), galaxies))
+            def calculate_deflections(pos):
+                return sum(map(lambda galaxy: galaxy.deflections_from_grid(pos), galaxies))
 
-            self.deflections = list(map(lambda positions: calculate_deflections(positions), self.positions))
+            self.deflections = list(map(lambda pos: calculate_deflections(pos), self.positions))
 
         self.cosmology = cosmology
 
