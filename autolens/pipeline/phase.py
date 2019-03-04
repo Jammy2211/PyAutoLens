@@ -762,15 +762,6 @@ class PhaseImaging(Phase):
             """Convenience method"""
             return self.lens_data.mask.map_2d_array_to_masked_1d_array(data)
 
-    class Result(Phase.Result):
-
-        def __init__(self, constant, figure_of_merit, variable, analysis, optimizer):
-            """
-            The result of a phase
-            """
-            super(PhaseImaging.Result, self).__init__(constant=constant, figure_of_merit=figure_of_merit,
-                                                      variable=variable, analysis=analysis, optimizer=optimizer)
-
 
 class LensPlanePhase(PhaseImaging):
     """
