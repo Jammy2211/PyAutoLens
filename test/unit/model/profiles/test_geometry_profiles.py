@@ -29,6 +29,24 @@ class TestMemoize(object):
         profile.my_method(np.array([1]))
         assert len(profile.cache) == 2
 
+    def test_get_from_cache(self):
+        class CountingProfile(object):
+            def __init__(self):
+                self.count = 0
+
+            @gp.cache
+            def my_method(self, grid):
+                self.count += 1
+                return self.count
+
+        profile = CountingProfile()
+
+        assert profile.my_method(np.array([0])) == 1
+        assert profile.my_method(np.array([1])) == 2
+        assert profile.my_method(np.array([2])) == 3
+        assert profile.my_method(np.array([0])) == 1
+        assert profile.my_method(np.array([1])) == 2
+
 
 class TestEllipticalProfile(object):
     class TestAnglesFromXAxis(object):
