@@ -177,49 +177,6 @@ class TestAbstractTracer(object):
             assert ray_tracing.TracerImageSourcePlanes \
                        ([gal_reg], [gal_lp], image_plane_grid_stack=grid_stack).has_regularization is True
 
-        def test__has_hyper_galaxy(self, grid_stack):
-            gal = g.Galaxy()
-            gal_lp = g.Galaxy(light_profile=lp.LightProfile())
-            gal_hyper = g.Galaxy(hyper_galaxy=g.HyperGalaxy())
-
-            assert ray_tracing.TracerImageSourcePlanes \
-                       ([gal], [gal], image_plane_grid_stack=grid_stack).has_hyper_galaxy is False
-            assert ray_tracing.TracerImageSourcePlanes \
-                       ([gal_lp], [gal_lp], image_plane_grid_stack=grid_stack).has_hyper_galaxy is False
-            assert ray_tracing.TracerImageSourcePlanes \
-                       ([gal_hyper], [gal_hyper], image_plane_grid_stack=grid_stack).has_hyper_galaxy is True
-            assert ray_tracing.TracerImageSourcePlanes \
-                       ([gal_hyper], [gal], image_plane_grid_stack=grid_stack).has_hyper_galaxy is True
-            assert ray_tracing.TracerImageSourcePlanes \
-                       ([gal_hyper], [gal_lp], image_plane_grid_stack=grid_stack).has_hyper_galaxy is True
-
-        def test_hyper_galaxies_list(self, grid_stack):
-            tracer = ray_tracing.TracerImageSourcePlanes([g.Galaxy(hyper_galaxy=g.HyperGalaxy())],
-                                                         [g.Galaxy(hyper_galaxy=g.HyperGalaxy())],
-                                                         image_plane_grid_stack=grid_stack)
-
-            assert tracer.image_plane.hyper_galaxies == [g.HyperGalaxy()]
-            assert tracer.source_plane.hyper_galaxies == [g.HyperGalaxy()]
-
-            assert tracer.hyper_galaxies == [g.HyperGalaxy(), g.HyperGalaxy()]
-
-            tracer = ray_tracing.TracerMultiPlanes(galaxies=[g.Galaxy(hyper_galaxy=g.HyperGalaxy(2), redshift=2),
-                                                             g.Galaxy(hyper_galaxy=g.HyperGalaxy(1), redshift=1)],
-                                                   image_plane_grid_stack=grid_stack, cosmology=cosmo.Planck15)
-
-            assert tracer.hyper_galaxies == [g.HyperGalaxy(1), g.HyperGalaxy(2)]
-
-        def test_tracer__hyper_galaxies_with_none_are_filtered(self, grid_stack):
-            tracer = ray_tracing.TracerImageSourcePlanes([g.Galaxy(hyper_galaxy=g.HyperGalaxy()), g.Galaxy()],
-                                                         [g.Galaxy(hyper_galaxy=g.HyperGalaxy()), g.Galaxy(),
-                                                          g.Galaxy()],
-                                                         image_plane_grid_stack=grid_stack)
-
-            assert tracer.image_plane.hyper_galaxies == [g.HyperGalaxy(), None]
-            assert tracer.source_plane.hyper_galaxies == [g.HyperGalaxy(), None, None]
-
-            assert tracer.hyper_galaxies == [g.HyperGalaxy(), g.HyperGalaxy()]
-
     class TestImages:
 
         def test__no_galaxy_has_light_profile__image_plane_is_returned_as_none(self, grid_stack):
