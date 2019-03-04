@@ -222,20 +222,12 @@ class AbstractTracer(AbstractTracerCosmology):
         return isinstance(self.planes[0].grids.regular, grids.PaddedRegularGrid)
 
     @property
-    def has_hyper_galaxy(self):
-        return any(list(map(lambda plane: plane.has_hyper_galaxy, self.planes)))
-
-    @property
     def galaxies(self):
         return list([galaxy for plane in self.planes for galaxy in plane.galaxies])
 
     @property
     def galaxies_in_planes(self):
         return list([plane.galaxies for plane in self.planes])
-
-    @property
-    def hyper_galaxies(self):
-        return list(filter(None, [hyper_galaxy for plane in self.planes for hyper_galaxy in plane.hyper_galaxies]))
 
     @property
     @check_tracer_for_light_profile
