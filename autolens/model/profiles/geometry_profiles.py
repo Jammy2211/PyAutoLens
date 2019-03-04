@@ -1,7 +1,5 @@
-import inspect
-from functools import wraps
-
 import numpy as np
+from functools import wraps
 
 
 def transform_grid(func):
@@ -39,6 +37,33 @@ def transform_grid(func):
             return func(profile, profile.transform_grid_to_reference_frame(grid), *args, **kwargs)
         else:
             return func(profile, grid, *args, **kwargs)
+
+    return wrapper
+
+
+def cache(func):
+    """
+    Caches results of a call to a grid function. If a grid that evaluates to the same byte value is passed into the same
+    function of the same instance as previously then the cached result is returned.
+
+    Parameters
+    ----------
+    func
+        Some instance method that takes a grid as its argument
+
+    Returns
+    -------
+    result
+        Some result, either newly calculated or recovered from the cache
+    """
+
+    def wrapper(instance: GeometryProfile, grid: np.ndarray):
+        if not hasattr(instance, "cache"):
+            instance.cache = {}
+        key = (func.__name__, grid.tobytes())
+        if key not in instance.cache:
+            instance.cache[key] = func(instance, grid)
+        return instance.cache[key]
 
     return wrapper
 
