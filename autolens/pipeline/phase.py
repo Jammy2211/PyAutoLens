@@ -789,11 +789,6 @@ class LensPlanePhase(PhaseImaging):
         self.lens_galaxies = lens_galaxies
 
     class Analysis(PhaseImaging.Analysis):
-
-        def __init__(self, lens_data, cosmology, previous_results=None):
-            super(LensPlanePhase.Analysis, self).__init__(lens_data=lens_data, cosmology=cosmology,
-                                                          previous_results=previous_results)
-
         def tracer_for_instance(self, instance):
             return ray_tracing.TracerImagePlane(lens_galaxies=instance.lens_galaxies,
                                                 image_plane_grid_stack=self.lens_data.grid_stack,
@@ -866,11 +861,6 @@ class LensSourcePlanePhase(PhaseImaging):
         self.source_galaxies = source_galaxies or []
 
     class Analysis(PhaseImaging.Analysis):
-
-        def __init__(self, lens_data, cosmology, previous_results=None):
-            super(LensSourcePlanePhase.Analysis, self).__init__(lens_data=lens_data, cosmology=cosmology,
-                                                                previous_results=previous_results)
-
         def tracer_for_instance(self, instance):
             return ray_tracing.TracerImageSourcePlanes(lens_galaxies=instance.lens_galaxies,
                                                        source_galaxies=instance.source_galaxies,

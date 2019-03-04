@@ -102,9 +102,7 @@ class AbstractLensFit(object):
 
     @property
     def unmasked_model_image_of_planes(self):
-        if self.padded_tracer is None:
-            return None
-        elif self.padded_tracer is not None:
+        if self.padded_tracer is not None:
             return util.unmasked_blurred_image_of_planes_from_padded_grid_stack_and_psf(
                 planes=self.padded_tracer.planes, padded_grid_stack=self.padded_tracer.image_plane.grid_stack,
                 psf=self.psf)
