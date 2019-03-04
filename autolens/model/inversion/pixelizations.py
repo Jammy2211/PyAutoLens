@@ -33,8 +33,8 @@ def setup_image_plane_pixelization_grid_from_galaxies_and_grid_stack(galaxies, g
 
                     image_plane_pix_grid = galaxy.pixelization.image_plane_pix_grid_from_regular_grid(
                         regular_grid=grid_stack.regular)
-                    return grid_stack.grid_stack_with_pix_grid_added(pix_grid=image_plane_pix_grid.sparse_grid,
-                                                                     regular_to_nearest_pix=image_plane_pix_grid.regular_to_sparse)
+                    return grid_stack.new_grid_stack_with_pix_grid_added(pix_grid=image_plane_pix_grid.sparse_grid,
+                                                                         regular_to_nearest_pix=image_plane_pix_grid.regular_to_sparse)
 
     return grid_stack
 
