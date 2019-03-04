@@ -190,7 +190,13 @@ class GridStack(object):
     def new_grid_stack_with_interpolator_added_to_each_grid(self, interp_pixel_scale):
         regular = self.regular.new_grid_with_interpolator(interp_pixel_scale=interp_pixel_scale)
         sub = self.sub.new_grid_with_interpolator(interp_pixel_scale=interp_pixel_scale)
-        blurring = self.blurring.new_grid_with_interpolator(interp_pixel_scale=interp_pixel_scale)
+
+        # TODO : Like the TODO above, we need to elegently handle a blurring grid of None.
+
+        if self.blurring.shape != (1,2):
+            blurring = self.blurring.new_grid_with_interpolator(interp_pixel_scale=interp_pixel_scale)
+        else:
+            blurring = np.array([[0.0, 0.0]])
         return GridStack(regular=regular, sub=sub, blurring=blurring, pix=self.pix)
 
     def new_grid_stack_with_pix_grid_added(self, pix_grid, regular_to_nearest_pix):

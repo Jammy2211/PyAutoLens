@@ -3,6 +3,7 @@ import pytest
 
 from autolens.data import ccd, convolution
 from autolens.data.array.util import grid_util
+from autolens.data.array import grids
 from autolens.data.array import scaled_array
 from autolens.data.array import mask as msk
 from autolens.lens import lens_data as ld
@@ -38,7 +39,7 @@ def make_lens_ccd(ccd, mask):
 
 class TestLensData(object):
 
-    def test_attributes(self, ccd, lens_data):
+    def test__attributes(self, ccd, lens_data):
 
         assert lens_data.pixel_scale == ccd.pixel_scale
         assert lens_data.pixel_scale == 3.0
@@ -55,13 +56,13 @@ class TestLensData(object):
         assert lens_data.image_psf_shape == (3,3)
         assert lens_data.mapping_matrix_psf_shape == (3,3)
 
-    def test_masking(self, lens_data):
+    def test__masking(self, lens_data):
 
         assert (lens_data.image_1d == np.ones(4)).all()
         assert (lens_data.noise_map_1d == 2.0*np.ones(4)).all()
         assert (lens_data.mask_1d == np.array([False, False, False, False])).all()
 
-    def test_grids(self, lens_data):
+    def test__grid_stack(self, lens_data):
 
         assert (lens_data.grid_stack.regular == np.array([[1.5, -1.5], [1.5, 1.5], [-1.5, -1.5], [-1.5, 1.5]])).all()
         assert (lens_data.grid_stack.sub == np.array([[2.0, -2.0], [2.0, -1.0], [1.0, -2.0], [1.0, -1.0],
@@ -72,7 +73,7 @@ class TestLensData(object):
                                                           [1.5, -4.5], [1.5, 4.5], [-1.5, -4.5], [-1.5, 4.5],
                                                           [-4.5, -4.5], [-4.5, -1.5], [-4.5, 1.5], [-4.5, 4.5]])).all()
 
-    def test_padded_grid_stack(self, lens_data):
+    def test__padded_grid_stack(self, lens_data):
 
         padded_image_util = grid_util.regular_grid_1d_masked_from_mask_pixel_scales_and_origin(mask=np.full((6, 6), False),
                                                                         pixel_scales=lens_data.image.pixel_scales)
@@ -91,10 +92,46 @@ class TestLensData(object):
 
         assert (lens_data.padded_grid_stack.blurring == np.array([[0.0, 0.0]])).all()
 
-    def test_border(self, lens_data):
+    def test__interp_pixel_scale_input__grid_stack_and_padded_grid_stack_include_interpolators(self, ccd, mask):
+
+        lens_data = ld.LensData(ccd_data=ccd, mask=mask, interp_pixel_scale=1.0)
+
+        grid_stack = grids.GridStack.grid_stack_from_mask_sub_grid_size_and_psf_shape(
+                        mask=mask, sub_grid_size=2, psf_shape=(3, 3))
+        new_grid_stack = grid_stack.new_grid_stack_with_interpolator_added_to_each_grid(interp_pixel_scale=1.0)
+
+        assert (lens_data.grid_stack.regular == new_grid_stack.regular).all()
+        assert (lens_data.grid_stack.regular.interpolator.vtx == new_grid_stack.regular.interpolator.vtx).all()
+        assert (lens_data.grid_stack.regular.interpolator.wts == new_grid_stack.regular.interpolator.wts).all()
+
+        assert (lens_data.grid_stack.sub == new_grid_stack.sub).all()
+        assert (lens_data.grid_stack.sub.interpolator.vtx == new_grid_stack.sub.interpolator.vtx).all()
+        assert (lens_data.grid_stack.sub.interpolator.wts == new_grid_stack.sub.interpolator.wts).all()
+        
+        assert (lens_data.grid_stack.blurring == new_grid_stack.blurring).all()
+        assert (lens_data.grid_stack.blurring.interpolator.vtx == new_grid_stack.blurring.interpolator.vtx).all()
+        assert (lens_data.grid_stack.blurring.interpolator.wts == new_grid_stack.blurring.interpolator.wts).all()
+
+        padded_grid_stack = grids.GridStack.padded_grid_stack_from_mask_sub_grid_size_and_psf_shape(
+                        mask=mask, sub_grid_size=2, psf_shape=(3, 3))
+        new_padded_grid_stack = \
+            padded_grid_stack.new_grid_stack_with_interpolator_added_to_each_grid(interp_pixel_scale=1.0)
+
+        assert (lens_data.padded_grid_stack.regular == new_padded_grid_stack.regular).all()
+        assert (lens_data.padded_grid_stack.regular.interpolator.vtx == new_padded_grid_stack.regular.interpolator.vtx).all()
+        assert (lens_data.padded_grid_stack.regular.interpolator.wts == new_padded_grid_stack.regular.interpolator.wts).all()
+
+        assert (lens_data.padded_grid_stack.sub == new_padded_grid_stack.sub).all()
+        assert (lens_data.padded_grid_stack.sub.interpolator.vtx == new_padded_grid_stack.sub.interpolator.vtx).all()
+        assert (lens_data.padded_grid_stack.sub.interpolator.wts == new_padded_grid_stack.sub.interpolator.wts).all()
+
+        assert (lens_data.padded_grid_stack.blurring == np.array([[0.0, 0.0]])).all()
+
+
+    def test__border(self, lens_data):
         assert (lens_data.border == np.array([0, 1, 2, 3])).all()
 
-    def test_convolvers(self, lens_data):
+    def test__convolvers(self, lens_data):
         assert type(lens_data.convolver_image) == convolution.ConvolverImage
         assert type(lens_data.convolver_mapping_matrix) == inversion_convolution.ConvolverMappingMatrix
 
@@ -116,7 +153,7 @@ class TestLensData(object):
         assert lens_data.image_psf_shape == (5,5)
         assert lens_data.mapping_matrix_psf_shape == (3,3)
 
-    def test_lens_data_with_modified_image(self, lens_data):
+    def test__lens_data_with_modified_image(self, lens_data):
 
         lens_data = lens_data.new_lens_data_with_modified_image(modified_image=8.0 * np.ones((4, 4)))
 
@@ -133,7 +170,7 @@ def make_lens_hyper_image(ccd, mask):
 
 class TestLensDataHyper(object):
 
-    def test_attributes(self, ccd, lens_data_hyper):
+    def test__attributes(self, ccd, lens_data_hyper):
 
         assert lens_data_hyper.pixel_scale == ccd.pixel_scale
 
@@ -152,7 +189,7 @@ class TestLensDataHyper(object):
 
         assert lens_data_hyper.hyper_minimum_values == [0.1, 0.2]
 
-    def test_masking(self, lens_data_hyper):
+    def test__masking(self, lens_data_hyper):
 
         assert (lens_data_hyper.image_1d == np.ones(4)).all()
         assert (lens_data_hyper.noise_map_1d == 2.0*np.ones(4)).all()
