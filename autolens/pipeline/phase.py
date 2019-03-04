@@ -3,7 +3,7 @@ from astropy import cosmology as cosmo
 
 from autofit import conf
 from autofit.optimize import non_linear
-from autofit.tools import phase
+from autofit.tools import phase as autofit_phase
 from autofit.tools.phase_property import PhasePropertyCollection
 from autolens import exc
 from autolens.data.array import mask as msk
@@ -34,7 +34,7 @@ def setup_phase_mask(data, mask, mask_function, inner_circular_mask_radii):
     return mask
 
 
-class AbstractPhase(phase.AbstractPhase):
+class AbstractPhase(autofit_phase.AbstractPhase):
 
     def __init__(self, phase_name, optimizer_class=non_linear.MultiNest, cosmology=cosmo.Planck15,
                  auto_link_priors=False):
@@ -49,9 +49,10 @@ class AbstractPhase(phase.AbstractPhase):
         phase_name: str
             The name of this phase
         """
-        self.optimizer = optimizer_class(name=phase_name)
+
+        super().__init__(optimizer_class=optimizer_class, phase_name=phase_name, auto_link_priors=auto_link_priors)
+
         self.cosmology = cosmology
-        self.auto_link_priors = auto_link_priors
 
     @property
     def constant(self):
