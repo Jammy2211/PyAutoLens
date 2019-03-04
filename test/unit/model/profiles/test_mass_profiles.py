@@ -100,6 +100,35 @@ class TestPointMass(object):
         assert deflections[3, 0] == pytest.approx(0.25, 1e-3)
         assert deflections[3, 1] == pytest.approx(0.25, 1e-3)
 
+    def test__deflections_of_profile__dont_use_interpolate_and_cache_decorators(self):
+
+        point_mass = mp.PointMass(centre=(-0.3, 0.2), einstein_radius=1.0)
+
+        mask = np.array([[True, True, True, True, True],
+                         [True, False, False, False, True],
+                         [True, False, True, False, True],
+                         [True, False, False, False, True],
+                         [True, True, True, True, True]])
+
+        mask = msk.Mask(mask, pixel_scale=1.0)
+
+        regular = grids.RegularGrid.from_mask(mask=mask)
+
+        regular_with_interp = regular.new_grid_with_interpolator(interp_pixel_scale=0.5)
+        interp_deflections = point_mass.deflections_from_grid(grid=regular_with_interp)
+
+        interpolator = grids.Interpolator.from_mask_grid_and_interp_pixel_scales(
+            mask=mask, grid=regular, interp_pixel_scale=0.5)
+
+        interp_deflections_values = point_mass.deflections_from_grid(grid=interpolator.interp_grid)
+
+        interp_deflections_manual_y = \
+            interpolator.interpolated_values_from_values(values=interp_deflections_values[:, 0])
+        interp_deflections_manual_x = \
+            interpolator.interpolated_values_from_values(values=interp_deflections_values[:, 1])
+
+        assert (interp_deflections_manual_y != interp_deflections[:,0]).all()
+        assert (interp_deflections_manual_x != interp_deflections[:,1]).all()
     # def test__mass(self):
     #
     #     point_mass = mp.PointMass(centre=(0.0, 0.0), einstein_radius=1.91716)
@@ -277,23 +306,72 @@ class TestCoredPowerLaw(object):
         assert elliptical.potential_from_grid(grid) == pytest.approx(spherical.potential_from_grid(grid), 1e-4)
         assert elliptical.deflections_from_grid(grid) == pytest.approx(spherical.deflections_from_grid(grid), 1e-4)
 
-    # def test__deflections_of_elliptical_profile__use_interpolate_and_cache_decorators(self):
-    #
-    #     cored_power_law = mp.EllipticalCoredPowerLaw(centre=(-0.7, 0.5), axis_ratio=0.7, phi=60.0,
-    #                                                  einstein_radius=1.3, slope=1.8, core_radius=0.2)
-    #
-    #     regular = grids.RegularGrid.from_mask(mask=msk.Mask.unmasked_for_shape_and_pixel_scale((3, 3), 1))
-    #
-    #     deflections_normal = cored_power_law.deflections_from_grid(grid=regular)
-    #
-    #     print(deflections_normal)
-    #
-    #     regular.interpolator = grids.Interpolator.from_mask_grid_and_interp_pixel_scales(regular.mask, regular,
-    #                                                                                      interp_pixel_scale=0.5)
-    #
-    #     deflections_interp = cored_power_law.deflections_from_grid(grid=regular)
-    #
-    #     print(deflections_interp)
+    def test__deflections_of_elliptical_profile__use_interpolate_and_cache_decorators(self):
+
+        cored_power_law = mp.EllipticalCoredPowerLaw(centre=(-0.7, 0.5), axis_ratio=0.7, phi=60.0,
+                                                     einstein_radius=1.3, slope=1.8, core_radius=0.2)
+
+        mask = np.array([[True, True, True, True, True],
+                         [True, False, False, False, True],
+                         [True, False, True, False, True],
+                         [True, False, False, False, True],
+                         [True, True, True, True, True]])
+
+        mask = msk.Mask(mask, pixel_scale=1.0)
+
+        regular = grids.RegularGrid.from_mask(mask=mask)
+        true_deflections = cored_power_law.deflections_from_grid(grid=regular)
+
+        regular_with_interp = regular.new_grid_with_interpolator(interp_pixel_scale=0.5)
+        interp_deflections = cored_power_law.deflections_from_grid(grid=regular_with_interp)
+        assert np.max(true_deflections[:, 0] - interp_deflections[:, 0]) < 0.1
+        assert np.max(true_deflections[:, 1] - interp_deflections[:, 1]) < 0.1
+
+        interpolator = grids.Interpolator.from_mask_grid_and_interp_pixel_scales(
+            mask=mask, grid=regular, interp_pixel_scale=0.5)
+
+        interp_deflections_values = cored_power_law.deflections_from_grid(grid=interpolator.interp_grid)
+
+        interp_deflections_manual_y = \
+            interpolator.interpolated_values_from_values(values=interp_deflections_values[:, 0])
+        interp_deflections_manual_x = \
+            interpolator.interpolated_values_from_values(values=interp_deflections_values[:, 1])
+
+        assert (interp_deflections_manual_y == interp_deflections[:,0]).all()
+        assert (interp_deflections_manual_x == interp_deflections[:,1]).all()
+
+    def test__deflections_of_spherical_profile__dont_use_interpolate_and_cache_decorators(self):
+
+        cored_power_law = mp.SphericalCoredPowerLaw(centre=(-0.7, 0.5), einstein_radius=1.3, slope=1.8, core_radius=0.2)
+
+        mask = np.array([[True, True, True, True, True],
+                         [True, False, False, False, True],
+                         [True, False, True, False, True],
+                         [True, False, False, False, True],
+                         [True, True, True, True, True]])
+
+        mask = msk.Mask(mask, pixel_scale=1.0)
+
+        regular = grids.RegularGrid.from_mask(mask=mask)
+        true_deflections = cored_power_law.deflections_from_grid(grid=regular)
+
+        regular_with_interp = regular.new_grid_with_interpolator(interp_pixel_scale=0.5)
+        interp_deflections = cored_power_law.deflections_from_grid(grid=regular_with_interp)
+        assert np.max(true_deflections[:, 0] - interp_deflections[:, 0]) < 0.1
+        assert np.max(true_deflections[:, 1] - interp_deflections[:, 1]) < 0.1
+
+        interpolator = grids.Interpolator.from_mask_grid_and_interp_pixel_scales(
+            mask=mask, grid=regular, interp_pixel_scale=0.5)
+
+        interp_deflections_values = cored_power_law.deflections_from_grid(grid=interpolator.interp_grid)
+
+        interp_deflections_manual_y = \
+            interpolator.interpolated_values_from_values(values=interp_deflections_values[:, 0])
+        interp_deflections_manual_x = \
+            interpolator.interpolated_values_from_values(values=interp_deflections_values[:, 1])
+
+        assert (interp_deflections_manual_y != interp_deflections[:,0]).all()
+        assert (interp_deflections_manual_x != interp_deflections[:,1]).all()
 
 
 class TestPowerLaw(object):
@@ -408,6 +486,66 @@ class TestPowerLaw(object):
                                                                            1e-4)
         assert elliptical.potential_from_grid(grid) == pytest.approx(spherical.potential_from_grid(grid), 1e-4)
         assert elliptical.deflections_from_grid(grid) == pytest.approx(spherical.deflections_from_grid(grid), 1e-4)
+
+    def test__deflections_of_elliptical_profile__use_interpolate_and_cache_decorators(self):
+
+        power_law = mp.EllipticalPowerLaw(centre=(-0.7, 0.5), axis_ratio=0.7, phi=60.0, einstein_radius=1.3, slope=1.8)
+
+        mask = np.array([[True, True, True, True, True],
+                         [True, False, False, False, True],
+                         [True, False, True, False, True],
+                         [True, False, False, False, True],
+                         [True, True, True, True, True]])
+
+        mask = msk.Mask(mask, pixel_scale=1.0)
+
+        regular = grids.RegularGrid.from_mask(mask=mask)
+
+        regular_with_interp = regular.new_grid_with_interpolator(interp_pixel_scale=0.5)
+        interp_deflections = power_law.deflections_from_grid(grid=regular_with_interp)
+
+        interpolator = grids.Interpolator.from_mask_grid_and_interp_pixel_scales(
+            mask=mask, grid=regular, interp_pixel_scale=0.5)
+
+        interp_deflections_values = power_law.deflections_from_grid(grid=interpolator.interp_grid)
+
+        interp_deflections_manual_y = \
+            interpolator.interpolated_values_from_values(values=interp_deflections_values[:, 0])
+        interp_deflections_manual_x = \
+            interpolator.interpolated_values_from_values(values=interp_deflections_values[:, 1])
+
+        assert (interp_deflections_manual_y == interp_deflections[:,0]).all()
+        assert (interp_deflections_manual_x == interp_deflections[:,1]).all()
+
+    def test__deflections_of_spherical_profile__dont_use_interpolate_and_cache_decorators(self):
+
+        power_law = mp.SphericalPowerLaw(centre=(-0.7, 0.5), einstein_radius=1.3, slope=1.8)
+
+        mask = np.array([[True, True, True, True, True],
+                         [True, False, False, False, True],
+                         [True, False, True, False, True],
+                         [True, False, False, False, True],
+                         [True, True, True, True, True]])
+
+        mask = msk.Mask(mask, pixel_scale=1.0)
+
+        regular = grids.RegularGrid.from_mask(mask=mask)
+
+        regular_with_interp = regular.new_grid_with_interpolator(interp_pixel_scale=0.5)
+        interp_deflections = power_law.deflections_from_grid(grid=regular_with_interp)
+
+        interpolator = grids.Interpolator.from_mask_grid_and_interp_pixel_scales(
+            mask=mask, grid=regular, interp_pixel_scale=0.5)
+
+        interp_deflections_values = power_law.deflections_from_grid(grid=interpolator.interp_grid)
+
+        interp_deflections_manual_y = \
+            interpolator.interpolated_values_from_values(values=interp_deflections_values[:, 0])
+        interp_deflections_manual_x = \
+            interpolator.interpolated_values_from_values(values=interp_deflections_values[:, 1])
+
+        assert (interp_deflections_manual_y != interp_deflections[:,0]).all()
+        assert (interp_deflections_manual_x != interp_deflections[:,1]).all()
 
 
 class TestCoredIsothermal(object):
@@ -533,6 +671,65 @@ class TestCoredIsothermal(object):
         assert elliptical.potential_from_grid(grid) == pytest.approx(spherical.potential_from_grid(grid), 1e-4)
         assert elliptical.deflections_from_grid(grid) == pytest.approx(spherical.deflections_from_grid(grid), 1e-4)
 
+    def test__deflections_of_elliptical_profile__use_interpolate_and_cache_decorators(self):
+
+        cored_isothermal = mp.EllipticalCoredIsothermal(centre=(-0.7, 0.5), axis_ratio=0.7, phi=60.0,
+                                                      einstein_radius=1.3, core_radius=0.2)
+
+        mask = np.array([[True, True, True, True, True],
+                         [True, False, False, False, True],
+                         [True, False, True, False, True],
+                         [True, False, False, False, True],
+                         [True, True, True, True, True]])
+
+        mask = msk.Mask(mask, pixel_scale=1.0)
+
+        regular = grids.RegularGrid.from_mask(mask=mask)
+
+        regular_with_interp = regular.new_grid_with_interpolator(interp_pixel_scale=0.5)
+        interp_deflections = cored_isothermal.deflections_from_grid(grid=regular_with_interp)
+        interpolator = grids.Interpolator.from_mask_grid_and_interp_pixel_scales(
+            mask=mask, grid=regular, interp_pixel_scale=0.5)
+
+        interp_deflections_values = cored_isothermal.deflections_from_grid(grid=interpolator.interp_grid)
+
+        interp_deflections_manual_y = \
+            interpolator.interpolated_values_from_values(values=interp_deflections_values[:, 0])
+        interp_deflections_manual_x = \
+            interpolator.interpolated_values_from_values(values=interp_deflections_values[:, 1])
+
+        assert (interp_deflections_manual_y == interp_deflections[:,0]).all()
+        assert (interp_deflections_manual_x == interp_deflections[:,1]).all()
+
+    def test__deflections_of_spherical_profile__dont_use_interpolate_and_cache_decorators(self):
+
+        cored_isothermal = mp.SphericalCoredIsothermal(centre=(-0.7, 0.5), einstein_radius=1.3, core_radius=0.2)
+
+        mask = np.array([[True, True, True, True, True],
+                         [True, False, False, False, True],
+                         [True, False, True, False, True],
+                         [True, False, False, False, True],
+                         [True, True, True, True, True]])
+
+        mask = msk.Mask(mask, pixel_scale=1.0)
+
+        regular = grids.RegularGrid.from_mask(mask=mask)
+
+        regular_with_interp = regular.new_grid_with_interpolator(interp_pixel_scale=0.5)
+        interp_deflections = cored_isothermal.deflections_from_grid(grid=regular_with_interp)
+        interpolator = grids.Interpolator.from_mask_grid_and_interp_pixel_scales(
+            mask=mask, grid=regular, interp_pixel_scale=0.5)
+
+        interp_deflections_values = cored_isothermal.deflections_from_grid(grid=interpolator.interp_grid)
+
+        interp_deflections_manual_y = \
+            interpolator.interpolated_values_from_values(values=interp_deflections_values[:, 0])
+        interp_deflections_manual_x = \
+            interpolator.interpolated_values_from_values(values=interp_deflections_values[:, 1])
+
+        assert (interp_deflections_manual_y != interp_deflections[:,0]).all()
+        assert (interp_deflections_manual_x != interp_deflections[:,1]).all()
+
 
 class TestIsothermal(object):
 
@@ -636,6 +833,64 @@ class TestIsothermal(object):
 
         sie = mp.EllipticalIsothermal(centre=(0.0, 0.0), einstein_radius=8.0, axis_ratio=0.2, phi=0.0)
         assert sie.radius_of_average_critical_curve_in_circle == pytest.approx(8.0, 1e-4)
+
+    def test__deflections_of_elliptical_profile__dont_use_interpolate_and_cache_decorators(self):
+
+        isothermal = mp.EllipticalIsothermal(centre=(-0.7, 0.5), axis_ratio=0.7, phi=60.0, einstein_radius=1.3)
+
+        mask = np.array([[True, True, True, True, True],
+                         [True, False, False, False, True],
+                         [True, False, True, False, True],
+                         [True, False, False, False, True],
+                         [True, True, True, True, True]])
+
+        mask = msk.Mask(mask, pixel_scale=1.0)
+
+        regular = grids.RegularGrid.from_mask(mask=mask)
+
+        regular_with_interp = regular.new_grid_with_interpolator(interp_pixel_scale=0.5)
+        interp_deflections = isothermal.deflections_from_grid(grid=regular_with_interp)
+        interpolator = grids.Interpolator.from_mask_grid_and_interp_pixel_scales(
+            mask=mask, grid=regular, interp_pixel_scale=0.5)
+
+        interp_deflections_values = isothermal.deflections_from_grid(grid=interpolator.interp_grid)
+
+        interp_deflections_manual_y = \
+            interpolator.interpolated_values_from_values(values=interp_deflections_values[:, 0])
+        interp_deflections_manual_x = \
+            interpolator.interpolated_values_from_values(values=interp_deflections_values[:, 1])
+
+        assert (interp_deflections_manual_y != interp_deflections[:,0]).all()
+        assert (interp_deflections_manual_x != interp_deflections[:,1]).all()
+
+    def test__deflections_of_spherical_profile__dont_use_interpolate_and_cache_decorators(self):
+
+        isothermal = mp.SphericalIsothermal(centre=(-0.7, 0.5), einstein_radius=1.3)
+
+        mask = np.array([[True, True, True, True, True],
+                         [True, False, False, False, True],
+                         [True, False, True, False, True],
+                         [True, False, False, False, True],
+                         [True, True, True, True, True]])
+
+        mask = msk.Mask(mask, pixel_scale=1.0)
+
+        regular = grids.RegularGrid.from_mask(mask=mask)
+
+        regular_with_interp = regular.new_grid_with_interpolator(interp_pixel_scale=0.5)
+        interp_deflections = isothermal.deflections_from_grid(grid=regular_with_interp)
+        interpolator = grids.Interpolator.from_mask_grid_and_interp_pixel_scales(
+            mask=mask, grid=regular, interp_pixel_scale=0.5)
+
+        interp_deflections_values = isothermal.deflections_from_grid(grid=interpolator.interp_grid)
+
+        interp_deflections_manual_y = \
+            interpolator.interpolated_values_from_values(values=interp_deflections_values[:, 0])
+        interp_deflections_manual_x = \
+            interpolator.interpolated_values_from_values(values=interp_deflections_values[:, 1])
+
+        assert (interp_deflections_manual_y != interp_deflections[:,0]).all()
+        assert (interp_deflections_manual_x != interp_deflections[:,1]).all()
 
 
 class TestGeneralizedNFW(object):
@@ -774,6 +1029,36 @@ class TestGeneralizedNFW(object):
         # assert defls_0[0, 0] == pytest.approx(defls_1[0, 1], 1e-5)
         # assert defls_0[0, 1] == pytest.approx(defls_1[0, 0], 1e-5)
 
+    def test__deflections_of_spherical_profile__use_interpolate_and_cache_decorators(self):
+
+        gNFW = mp.SphericalGeneralizedNFW(centre=(-0.7, 0.5), kappa_s=1.0, inner_slope=0.5, scale_radius=8.0)
+
+        mask = np.array([[True, True, True, True, True],
+                         [True, False, False, False, True],
+                         [True, False, True, False, True],
+                         [True, False, False, False, True],
+                         [True, True, True, True, True]])
+
+        mask = msk.Mask(mask, pixel_scale=1.0)
+
+        regular = grids.RegularGrid.from_mask(mask=mask)
+
+        regular_with_interp = regular.new_grid_with_interpolator(interp_pixel_scale=0.5)
+        interp_deflections = gNFW.deflections_from_grid(grid=regular_with_interp)
+
+        interpolator = grids.Interpolator.from_mask_grid_and_interp_pixel_scales(
+            mask=mask, grid=regular, interp_pixel_scale=0.5)
+
+        interp_deflections_values = gNFW.deflections_from_grid(grid=interpolator.interp_grid)
+
+        interp_deflections_manual_y = \
+            interpolator.interpolated_values_from_values(values=interp_deflections_values[:, 0])
+        interp_deflections_manual_x = \
+            interpolator.interpolated_values_from_values(values=interp_deflections_values[:, 1])
+
+        assert (interp_deflections_manual_y == interp_deflections[:,0]).all()
+        assert (interp_deflections_manual_x == interp_deflections[:,1]).all()
+
     # def test__compare_to_nfw(self):
     #     nfw = mp.EllipticalNFW(centre=(0.0, 0.0), axis_ratio=0.8, phi=0.0, kappa_s=1.0, scale_radius=5.0)
     #     gnfw = mp.EllipticalGeneralizedNFW(centre=(0.0, 0.0), axis_ratio=0.8, phi=0.0, kappa_s=1.0,
@@ -872,6 +1157,66 @@ class TestNFW(object):
         nfw = mp.EllipticalNFW(centre=(0.0, 0.0), kappa_s=0.5, scale_radius=5.0, axis_ratio=0.8)
         assert nfw.radius_of_average_critical_curve_in_circle == pytest.approx(2.48747, 1e-4)
         assert nfw.einstein_radius == pytest.approx(2.48747, 1e-4)
+
+    def test__deflections_of_elliptical_profile__use_interpolate_and_cache_decorators(self):
+
+        nfw = mp.EllipticalNFW(centre=(-0.7, 0.5), axis_ratio=0.9, phi=45.0, kappa_s=1.0, scale_radius=8.0)
+
+        mask = np.array([[True, True, True, True, True],
+                         [True, False, False, False, True],
+                         [True, False, True, False, True],
+                         [True, False, False, False, True],
+                         [True, True, True, True, True]])
+
+        mask = msk.Mask(mask, pixel_scale=1.0)
+
+        regular = grids.RegularGrid.from_mask(mask=mask)
+
+        regular_with_interp = regular.new_grid_with_interpolator(interp_pixel_scale=0.5)
+        interp_deflections = nfw.deflections_from_grid(grid=regular_with_interp)
+
+        interpolator = grids.Interpolator.from_mask_grid_and_interp_pixel_scales(
+            mask=mask, grid=regular, interp_pixel_scale=0.5)
+
+        interp_deflections_values = nfw.deflections_from_grid(grid=interpolator.interp_grid)
+
+        interp_deflections_manual_y = \
+            interpolator.interpolated_values_from_values(values=interp_deflections_values[:, 0])
+        interp_deflections_manual_x = \
+            interpolator.interpolated_values_from_values(values=interp_deflections_values[:, 1])
+
+        assert (interp_deflections_manual_y == interp_deflections[:,0]).all()
+        assert (interp_deflections_manual_x == interp_deflections[:,1]).all()
+
+    def test__deflections_of_spherical_profile__dont_use_interpolate_and_cache_decorators(self):
+
+        nfw = mp.SphericalNFW(centre=(-0.7, 0.5), kappa_s=1.0, scale_radius=8.0)
+
+        mask = np.array([[True, True, True, True, True],
+                         [True, False, False, False, True],
+                         [True, False, True, False, True],
+                         [True, False, False, False, True],
+                         [True, True, True, True, True]])
+
+        mask = msk.Mask(mask, pixel_scale=1.0)
+
+        regular = grids.RegularGrid.from_mask(mask=mask)
+
+        regular_with_interp = regular.new_grid_with_interpolator(interp_pixel_scale=0.5)
+        interp_deflections = nfw.deflections_from_grid(grid=regular_with_interp)
+
+        interpolator = grids.Interpolator.from_mask_grid_and_interp_pixel_scales(
+            mask=mask, grid=regular, interp_pixel_scale=0.5)
+
+        interp_deflections_values = nfw.deflections_from_grid(grid=interpolator.interp_grid)
+
+        interp_deflections_manual_y = \
+            interpolator.interpolated_values_from_values(values=interp_deflections_values[:, 0])
+        interp_deflections_manual_x = \
+            interpolator.interpolated_values_from_values(values=interp_deflections_values[:, 1])
+
+        assert (interp_deflections_manual_y != interp_deflections[:,0]).all()
+        assert (interp_deflections_manual_x != interp_deflections[:,1]).all()
 
 
 class TestSersic(object):
@@ -985,6 +1330,68 @@ class TestSersic(object):
         # assert elliptical.potential_from_grid(grid) == spherical.potential_from_grid(grid)
         np.testing.assert_almost_equal(elliptical.deflections_from_grid(grid), spherical.deflections_from_grid(grid))
 
+    def test__deflections_of_elliptical_profile__use_interpolate_and_cache_decorators(self):
+
+        sersic = mp.EllipticalSersic(centre=(-0.7, 0.5), axis_ratio=0.8, phi=110.0, intensity=5.0,
+                                  effective_radius=0.2, sersic_index=2.0, mass_to_light_ratio=1.0)
+
+        mask = np.array([[True, True, True, True, True],
+                         [True, False, False, False, True],
+                         [True, False, True, False, True],
+                         [True, False, False, False, True],
+                         [True, True, True, True, True]])
+
+        mask = msk.Mask(mask, pixel_scale=1.0)
+
+        regular = grids.RegularGrid.from_mask(mask=mask)
+
+        regular_with_interp = regular.new_grid_with_interpolator(interp_pixel_scale=0.5)
+        interp_deflections = sersic.deflections_from_grid(grid=regular_with_interp)
+
+        interpolator = grids.Interpolator.from_mask_grid_and_interp_pixel_scales(
+            mask=mask, grid=regular, interp_pixel_scale=0.5)
+
+        interp_deflections_values = sersic.deflections_from_grid(grid=interpolator.interp_grid)
+
+        interp_deflections_manual_y = \
+            interpolator.interpolated_values_from_values(values=interp_deflections_values[:, 0])
+        interp_deflections_manual_x = \
+            interpolator.interpolated_values_from_values(values=interp_deflections_values[:, 1])
+
+        assert (interp_deflections_manual_y == interp_deflections[:,0]).all()
+        assert (interp_deflections_manual_x == interp_deflections[:,1]).all()
+
+    def test__deflections_of_spherical_profile__use_interpolate_and_cache_decorators(self):
+
+        sersic = mp.SphericalSersic(centre=(-0.7, 0.5), intensity=5.0, effective_radius=0.2, sersic_index=2.0,
+                                 mass_to_light_ratio=1.0)
+
+        mask = np.array([[True, True, True, True, True],
+                         [True, False, False, False, True],
+                         [True, False, True, False, True],
+                         [True, False, False, False, True],
+                         [True, True, True, True, True]])
+
+        mask = msk.Mask(mask, pixel_scale=1.0)
+
+        regular = grids.RegularGrid.from_mask(mask=mask)
+
+        regular_with_interp = regular.new_grid_with_interpolator(interp_pixel_scale=0.5)
+        interp_deflections = sersic.deflections_from_grid(grid=regular_with_interp)
+
+        interpolator = grids.Interpolator.from_mask_grid_and_interp_pixel_scales(
+            mask=mask, grid=regular, interp_pixel_scale=0.5)
+
+        interp_deflections_values = sersic.deflections_from_grid(grid=interpolator.interp_grid)
+
+        interp_deflections_manual_y = \
+            interpolator.interpolated_values_from_values(values=interp_deflections_values[:, 0])
+        interp_deflections_manual_x = \
+            interpolator.interpolated_values_from_values(values=interp_deflections_values[:, 1])
+
+        assert (interp_deflections_manual_y == interp_deflections[:,0]).all()
+        assert (interp_deflections_manual_x == interp_deflections[:,1]).all()
+
 
 class TestExponential(object):
 
@@ -1060,6 +1467,68 @@ class TestExponential(object):
         # assert elliptical.potential_from_grid(grid) == spherical.potential_from_grid(grid)
         np.testing.assert_almost_equal(elliptical.deflections_from_grid(grid), spherical.deflections_from_grid(grid))
 
+    def test__deflections_of_elliptical_profile__use_interpolate_and_cache_decorators(self):
+
+        exponential = mp.EllipticalExponential(centre=(-0.7, 0.5), axis_ratio=0.8, phi=110.0, intensity=5.0,
+                                               effective_radius=0.2, mass_to_light_ratio=1.0)
+
+        mask = np.array([[True, True, True, True, True],
+                         [True, False, False, False, True],
+                         [True, False, True, False, True],
+                         [True, False, False, False, True],
+                         [True, True, True, True, True]])
+
+        mask = msk.Mask(mask, pixel_scale=1.0)
+
+        regular = grids.RegularGrid.from_mask(mask=mask)
+
+        regular_with_interp = regular.new_grid_with_interpolator(interp_pixel_scale=0.5)
+        interp_deflections = exponential.deflections_from_grid(grid=regular_with_interp)
+
+        interpolator = grids.Interpolator.from_mask_grid_and_interp_pixel_scales(
+            mask=mask, grid=regular, interp_pixel_scale=0.5)
+
+        interp_deflections_values = exponential.deflections_from_grid(grid=interpolator.interp_grid)
+
+        interp_deflections_manual_y = \
+            interpolator.interpolated_values_from_values(values=interp_deflections_values[:, 0])
+        interp_deflections_manual_x = \
+            interpolator.interpolated_values_from_values(values=interp_deflections_values[:, 1])
+
+        assert (interp_deflections_manual_y == interp_deflections[:,0]).all()
+        assert (interp_deflections_manual_x == interp_deflections[:,1]).all()
+
+    def test__deflections_of_spherical_profile__use_interpolate_and_cache_decorators(self):
+
+        exponential = mp.SphericalExponential(centre=(-0.7, 0.5), intensity=5.0, effective_radius=0.2,
+                                              mass_to_light_ratio=1.0)
+
+        mask = np.array([[True, True, True, True, True],
+                         [True, False, False, False, True],
+                         [True, False, True, False, True],
+                         [True, False, False, False, True],
+                         [True, True, True, True, True]])
+
+        mask = msk.Mask(mask, pixel_scale=1.0)
+
+        regular = grids.RegularGrid.from_mask(mask=mask)
+
+        regular_with_interp = regular.new_grid_with_interpolator(interp_pixel_scale=0.5)
+        interp_deflections = exponential.deflections_from_grid(grid=regular_with_interp)
+
+        interpolator = grids.Interpolator.from_mask_grid_and_interp_pixel_scales(
+            mask=mask, grid=regular, interp_pixel_scale=0.5)
+
+        interp_deflections_values = exponential.deflections_from_grid(grid=interpolator.interp_grid)
+
+        interp_deflections_manual_y = \
+            interpolator.interpolated_values_from_values(values=interp_deflections_values[:, 0])
+        interp_deflections_manual_x = \
+            interpolator.interpolated_values_from_values(values=interp_deflections_values[:, 1])
+
+        assert (interp_deflections_manual_y == interp_deflections[:,0]).all()
+        assert (interp_deflections_manual_x == interp_deflections[:,1]).all()
+
 
 class TestDevVaucouleurs(object):
 
@@ -1130,6 +1599,68 @@ class TestDevVaucouleurs(object):
         # assert elliptical.potential_from_grid(grid) == spherical.potential_from_grid(grid)
 
         np.testing.assert_almost_equal(elliptical.deflections_from_grid(grid), spherical.deflections_from_grid(grid))
+
+    def test__deflections_of_elliptical_profile__use_interpolate_and_cache_decorators(self):
+
+        dev = mp.EllipticalDevVaucouleurs(centre=(-0.7, 0.5), axis_ratio=0.8, phi=110.0, intensity=5.0,
+                                  effective_radius=0.2, mass_to_light_ratio=1.0)
+
+        mask = np.array([[True, True, True, True, True],
+                         [True, False, False, False, True],
+                         [True, False, True, False, True],
+                         [True, False, False, False, True],
+                         [True, True, True, True, True]])
+
+        mask = msk.Mask(mask, pixel_scale=1.0)
+
+        regular = grids.RegularGrid.from_mask(mask=mask)
+
+        regular_with_interp = regular.new_grid_with_interpolator(interp_pixel_scale=0.5)
+        interp_deflections = dev.deflections_from_grid(grid=regular_with_interp)
+
+        interpolator = grids.Interpolator.from_mask_grid_and_interp_pixel_scales(
+            mask=mask, grid=regular, interp_pixel_scale=0.5)
+
+        interp_deflections_values = dev.deflections_from_grid(grid=interpolator.interp_grid)
+
+        interp_deflections_manual_y = \
+            interpolator.interpolated_values_from_values(values=interp_deflections_values[:, 0])
+        interp_deflections_manual_x = \
+            interpolator.interpolated_values_from_values(values=interp_deflections_values[:, 1])
+
+        assert (interp_deflections_manual_y == interp_deflections[:,0]).all()
+        assert (interp_deflections_manual_x == interp_deflections[:,1]).all()
+
+    def test__deflections_of_spherical_profile__use_interpolate_and_cache_decorators(self):
+
+        dev = mp.SphericalDevVaucouleurs(centre=(-0.7, 0.5), intensity=5.0, effective_radius=0.2,
+                                         mass_to_light_ratio=1.0)
+
+        mask = np.array([[True, True, True, True, True],
+                         [True, False, False, False, True],
+                         [True, False, True, False, True],
+                         [True, False, False, False, True],
+                         [True, True, True, True, True]])
+
+        mask = msk.Mask(mask, pixel_scale=1.0)
+
+        regular = grids.RegularGrid.from_mask(mask=mask)
+
+        regular_with_interp = regular.new_grid_with_interpolator(interp_pixel_scale=0.5)
+        interp_deflections = dev.deflections_from_grid(grid=regular_with_interp)
+
+        interpolator = grids.Interpolator.from_mask_grid_and_interp_pixel_scales(
+            mask=mask, grid=regular, interp_pixel_scale=0.5)
+
+        interp_deflections_values = dev.deflections_from_grid(grid=interpolator.interp_grid)
+
+        interp_deflections_manual_y = \
+            interpolator.interpolated_values_from_values(values=interp_deflections_values[:, 0])
+        interp_deflections_manual_x = \
+            interpolator.interpolated_values_from_values(values=interp_deflections_values[:, 1])
+
+        assert (interp_deflections_manual_y == interp_deflections[:,0]).all()
+        assert (interp_deflections_manual_x == interp_deflections[:,1]).all()
 
 
 class TestSersicMassRadialGradient(object):
@@ -1260,6 +1791,69 @@ class TestSersicMassRadialGradient(object):
         assert (elliptical.surface_density_from_grid(grid) == spherical.surface_density_from_grid(grid)).all()
         # assert elliptical.potential_from_grid(grid) == spherical.potential_from_grid(grid)
         assert (elliptical.deflections_from_grid(grid) == spherical.deflections_from_grid(grid)).all()
+
+    def test__deflections_of_elliptical_profile__use_interpolate_and_cache_decorators(self):
+
+        sersic = mp.EllipticalSersicRadialGradient(centre=(-0.7, 0.5), axis_ratio=0.8, phi=110.0, intensity=5.0,
+                                                   effective_radius=0.2, sersic_index=2.0, mass_to_light_ratio=1.0, 
+                                                   mass_to_light_gradient=1.5)
+
+        mask = np.array([[True, True, True, True, True],
+                         [True, False, False, False, True],
+                         [True, False, True, False, True],
+                         [True, False, False, False, True],
+                         [True, True, True, True, True]])
+
+        mask = msk.Mask(mask, pixel_scale=1.0)
+
+        regular = grids.RegularGrid.from_mask(mask=mask)
+
+        regular_with_interp = regular.new_grid_with_interpolator(interp_pixel_scale=0.5)
+        interp_deflections = sersic.deflections_from_grid(grid=regular_with_interp)
+
+        interpolator = grids.Interpolator.from_mask_grid_and_interp_pixel_scales(
+            mask=mask, grid=regular, interp_pixel_scale=0.5)
+
+        interp_deflections_values = sersic.deflections_from_grid(grid=interpolator.interp_grid)
+
+        interp_deflections_manual_y = \
+            interpolator.interpolated_values_from_values(values=interp_deflections_values[:, 0])
+        interp_deflections_manual_x = \
+            interpolator.interpolated_values_from_values(values=interp_deflections_values[:, 1])
+
+        assert (interp_deflections_manual_y == interp_deflections[:,0]).all()
+        assert (interp_deflections_manual_x == interp_deflections[:,1]).all()
+
+    def test__deflections_of_spherical_profile__use_interpolate_and_cache_decorators(self):
+
+        sersic = mp.SphericalSersicRadialGradient(centre=(-0.7, 0.5), intensity=5.0, effective_radius=0.2, sersic_index=2.0,
+                                 mass_to_light_ratio=1.0, mass_to_light_gradient=1.5)
+
+        mask = np.array([[True, True, True, True, True],
+                         [True, False, False, False, True],
+                         [True, False, True, False, True],
+                         [True, False, False, False, True],
+                         [True, True, True, True, True]])
+
+        mask = msk.Mask(mask, pixel_scale=1.0)
+
+        regular = grids.RegularGrid.from_mask(mask=mask)
+
+        regular_with_interp = regular.new_grid_with_interpolator(interp_pixel_scale=0.5)
+        interp_deflections = sersic.deflections_from_grid(grid=regular_with_interp)
+
+        interpolator = grids.Interpolator.from_mask_grid_and_interp_pixel_scales(
+            mask=mask, grid=regular, interp_pixel_scale=0.5)
+
+        interp_deflections_values = sersic.deflections_from_grid(grid=interpolator.interp_grid)
+
+        interp_deflections_manual_y = \
+            interpolator.interpolated_values_from_values(values=interp_deflections_values[:, 0])
+        interp_deflections_manual_x = \
+            interpolator.interpolated_values_from_values(values=interp_deflections_values[:, 1])
+
+        assert (interp_deflections_manual_y == interp_deflections[:,0]).all()
+        assert (interp_deflections_manual_x == interp_deflections[:,1]).all()
 
 
 class TestExternalShear(object):
