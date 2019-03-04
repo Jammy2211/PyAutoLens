@@ -1,14 +1,14 @@
-from functools import wraps
-
 import numpy as np
 from astropy import constants
 from astropy import cosmology as cosmo
+from functools import wraps
 
 from autolens import exc
-from autolens.data.array import scaled_array
 from autolens.data.array import grids
-from autolens.model.galaxy.util import galaxy_util
+from autolens.data.array import scaled_array
 from autolens.lens.util import lens_util
+from autolens.model.galaxy.util import galaxy_util
+
 
 def check_plane_for_redshift(func):
     """If a plane's galaxies do not have redshifts, its cosmological quantities cannot be computed. This wrapper \
@@ -27,8 +27,6 @@ def check_plane_for_redshift(func):
         Parameters
         ----------
         self
-        args
-        kwargs
 
         Returns
         -------
@@ -106,14 +104,6 @@ class AbstractPlane(object):
         return any(list(map(lambda galaxy: galaxy.has_regularization, self.galaxies)))
 
     @property
-    def has_hyper_galaxy(self):
-        return any(list(map(lambda galaxy: galaxy.has_hyper_galaxy, self.galaxies)))
-
-    @property
-    def hyper_galaxies(self):
-        return [galaxy.hyper_galaxy for galaxy in self.galaxies]
-
-    @property
     def regularization(self):
 
         galaxies_with_regularization = list(filter(lambda galaxy: galaxy.has_regularization, self.galaxies))
@@ -142,7 +132,7 @@ class AbstractPlane(object):
             Factor the dimensionless luminosity is multiplied by to convert it to a physical luminosity \ 
             (e.g. a photometric zeropoint).                
         """
-        return list(map(lambda galaxy : galaxy.luminosity_within_circle(radius, conversion_factor),
+        return list(map(lambda galaxy: galaxy.luminosity_within_circle(radius, conversion_factor),
                         self.galaxies))
 
     def luminosities_of_galaxies_within_ellipses(self, major_axis, conversion_factor=1.0):
@@ -163,7 +153,7 @@ class AbstractPlane(object):
             Factor the dimensionless luminosity is multiplied by to convert it to a physical luminosity \ 
             (e.g. a photometric zeropoint).            
         """
-        return list(map(lambda galaxy : galaxy.luminosity_within_ellipse(major_axis, conversion_factor),
+        return list(map(lambda galaxy: galaxy.luminosity_within_ellipse(major_axis, conversion_factor),
                         self.galaxies))
 
     def masses_of_galaxies_within_circles(self, radius, conversion_factor=1.0):
@@ -184,7 +174,7 @@ class AbstractPlane(object):
             Factor the dimensionless mass is multiplied by to convert it to a physical mass (e.g. the critical surface \
             mass density).            
         """
-        return list(map(lambda galaxy : galaxy.mass_within_circle(radius, conversion_factor),
+        return list(map(lambda galaxy: galaxy.mass_within_circle(radius, conversion_factor),
                         self.galaxies))
 
     def masses_of_galaxies_within_ellipses(self, major_axis, conversion_factor=1.0):
@@ -205,13 +195,13 @@ class AbstractPlane(object):
             Factor the dimensionless mass is multiplied by to convert it to a physical mass (e.g. the critical surface \
             mass density).            
         """
-        return list(map(lambda galaxy : galaxy.mass_within_ellipse(major_axis, conversion_factor),
+        return list(map(lambda galaxy: galaxy.mass_within_ellipse(major_axis, conversion_factor),
                         self.galaxies))
 
     @property
     def einstein_radius_arcsec(self):
         if self.has_mass_profile:
-            return sum(filter(None, list(map(lambda galaxy : galaxy.einstein_radius, self.galaxies))))
+            return sum(filter(None, list(map(lambda galaxy: galaxy.einstein_radius, self.galaxies))))
         else:
             return None
 
@@ -225,10 +215,10 @@ class AbstractPlane(object):
 
     def einstein_mass(self, critical_density_arcsec):
         if self.has_mass_profile:
-            return sum(filter(None, list(map(lambda galaxy :
-                                         galaxy.mass_within_circle(radius=galaxy.einstein_radius,
-                                                                   conversion_factor=critical_density_arcsec),
-                                         self.galaxies))))
+            return sum(filter(None, list(map(lambda galaxy:
+                                             galaxy.mass_within_circle(radius=galaxy.einstein_radius,
+                                                                       conversion_factor=critical_density_arcsec),
+                                             self.galaxies))))
         else:
             return None
 
@@ -321,7 +311,7 @@ class AbstractGriddedPlane(AbstractPlane):
     @property
     def potential(self):
         potential_1d = galaxy_util.potential_of_galaxies_from_grid(grid=self.grid_stack.sub.unlensed_grid,
-                                                                  galaxies=self.galaxies)
+                                                                   galaxies=self.galaxies)
         return self.grid_stack.scaled_array_from_array_1d(array_1d=potential_1d)
 
     @property
@@ -335,7 +325,7 @@ class AbstractGriddedPlane(AbstractPlane):
     @property
     def deflections_1d(self):
         return galaxy_util.deflections_of_galaxies_from_grid(grid=self.grid_stack.sub.unlensed_grid,
-                                                            galaxies=self.galaxies)
+                                                             galaxies=self.galaxies)
 
     @property
     def has_padded_grid_stack(self):
@@ -344,8 +334,8 @@ class AbstractGriddedPlane(AbstractPlane):
     @property
     def plane_image(self):
         return lens_util.plane_image_of_galaxies_from_grid(shape=self.grid_stack.regular.mask.shape,
-                                                            grid=self.grid_stack.regular,
-                                                            galaxies=self.galaxies)
+                                                           grid=self.grid_stack.regular,
+                                                           galaxies=self.galaxies)
 
     @property
     def mapper(self):
