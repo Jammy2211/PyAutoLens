@@ -91,8 +91,6 @@ def check_tracer_for_mass_profile(func):
         Parameters
         ----------
         self
-        args
-        kwargs
 
         Returns
         -------
@@ -117,7 +115,7 @@ class AbstractTracerCosmology(object):
 
         Parameters
         ----------
-        planes : [pl.Plane] or [pl.PlaneStack]
+        plane_redshifts : [pl.Plane] or [pl.PlaneStack]
             The list of the tracer's planes in ascending redshift order.
         cosmology : astropy.cosmology
             The cosmology of the ray-tracing calculation.
@@ -199,7 +197,7 @@ class AbstractTracer(AbstractTracerCosmology):
 
     @property
     def all_planes_have_redshifts(self):
-        return not None in self.plane_redshifts
+        return None not in self.plane_redshifts
 
     @property
     def has_light_profile(self):
