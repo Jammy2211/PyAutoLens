@@ -16,7 +16,7 @@ import matplotlib.pyplot as plt
 # set this test up using an image and mask. This gives run-time numbers that can be easily related to an actual lens
 # analysis
 
-sub_grid_size = 1
+sub_grid_size = 2
 inner_radius_arcsec = 0.0
 outer_radius_arcsec = 4.0
 
@@ -44,8 +44,7 @@ for image_type in ['HST_Up']:
 
     ### EllipticalIsothermal ###
 
-    mass_profile = mp.EllipticalCoredIsothermal(centre=(0.01, 0.01), axis_ratio=0.8, phi=45.0, einstein_radius=0.5,
-                                                core_radius=0.2)
+    mass_profile = mp.EllipticalIsothermal(centre=(0.01, 0.01), axis_ratio=0.8, phi=45.0, einstein_radius=0.5)
 
     interp_deflections = mass_profile.deflections_from_grid(grid=interpolator.interp_grid)
     deflections = np.zeros((lens_data.grid_stack.sub.shape[0], 2))

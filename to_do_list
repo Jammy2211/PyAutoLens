@@ -10,11 +10,11 @@ Interp:
 
 Short term:
 
+- Bug with NFW potentials for MultiNest
 - Double check that ellipticity of Sersic profiles is working.
 - Bug with errors on certain parameters.
 - Binning up speed up for pipelines.
 - Interpolation Scheme for fast deflection angles
-- pyquad integration.
 - Inclusion of lens / source redshifts for analysis.
 - Quantitive output of lens model results (e.g. einstein mass, magnification), include otf output
 - Add feature to remove astropy bug.

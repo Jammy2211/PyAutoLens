@@ -213,6 +213,10 @@ class Mask(scaled_array.ScaledSquarePixelArray):
         """A 1D array of mappings between every unmasked pixel and its 2D pixel coordinates."""
         return mask_util.masked_grid_1d_index_to_2d_pixel_index_from_mask(self).astype('int')
 
+    def masked_sub_grid_index_to_sub_pixel(self, sub_grid_size):
+        """A 1D array of mappings between every unmasked pixel and its 2D pixel coordinates."""
+        return mask_util.masked_grid_1d_index_to_2d_pixel_index_from_mask(self).astype('int')
+
     def map_2d_array_to_masked_1d_array(self, array_2d):
         """For a 2D array (e.g. an image, noise_map, etc.) map it to a masked 1D array of valuees using this mask.
 

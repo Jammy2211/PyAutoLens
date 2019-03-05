@@ -424,12 +424,10 @@ class RegularGrid(np.ndarray):
         Parameters
         -----------
         array_1d : ndarray
-            The 1D array of which is mapped to its masked 2D array.
+            The 1D array which is mapped to its masked 2D array.
         """
         return mapping_util.map_masked_1d_array_to_2d_array_from_array_1d_shape_and_one_to_two(
-            array_1d,
-            self.mask.shape,
-            self.mask.masked_grid_index_to_pixel)
+            array_1d=array_1d, shape=self.mask.shape, one_to_two=self.mask.masked_grid_index_to_pixel)
 
     def scaled_array_from_array_1d(self, array_1d):
         """ Map a 1D array the same dimension as the grid to its original masked 2D array and return it as a scaled \
@@ -613,6 +611,32 @@ class SubGrid(RegularGrid):
                                                                                          pixel_scales=mask.pixel_scales,
                                                                                          sub_grid_size=sub_grid_size)
         return SubGrid(sub_grid, mask, sub_grid_size)
+
+    def sub_array_2d_from_sub_array_1d(self, sub_array_1d):
+        """ Map a 1D sub-array the same dimension as the sub-grid (e.g. including sub-pixels) to its original masked
+        2D sub array.
+
+        Parameters
+        -----------
+        sub_array_1d : ndarray
+            The 1D sub_array which is mapped to its masked 2D sub-array.
+        """
+        sub_shape = (self.mask.shape[0]*self.sub_grid_size, self.mask.shape[1]*self.sub_grid_size)
+        return mapping_util.map_masked_1d_array_to_2d_array_from_array_1d_shape_and_one_to_two(
+            array_1d=sub_array_1d, shape=sub_shape, one_to_two=self.mask.masked_grid_index_to_pixel)
+
+    # def scaled_array_from_sub_array_1d(self, sub_array_1d):
+    #     """ Map a 1D array the same dimension as the grid to its original masked 2D array and return it as a scaled \
+    #     array.
+    #
+    #     Parameters
+    #     -----------
+    #     array_1d : ndarray
+    #         The 1D array of which is mapped to a 2D scaled array.
+    #     """
+    #     return scaled_array.ScaledSquarePixelArray(array=self.array_2d_from_array_1d(array_1d),
+    #                                                pixel_scale=self.mask.pixel_scale,
+    #                                                origin=self.mask.origin)
 
     def __array_finalize__(self, obj):
         super().__array_finalize__(obj)
