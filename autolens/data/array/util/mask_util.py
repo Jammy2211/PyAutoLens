@@ -366,7 +366,7 @@ def edge_buffed_mask_from_mask(mask):
 
 def rescaled_mask_from_mask_and_rescale_factor(mask, rescale_factor):
 
-    rescaled_mask = rescale(image=mask, scale=rescale_factor, mode='edge')
+    rescaled_mask = rescale(image=mask, scale=rescale_factor, mode='edge', anti_aliasing=False, multichannel=False)
     rescaled_mask[0, :] = True
     rescaled_mask[rescaled_mask.shape[0]-1, :] = True
     rescaled_mask[:, 0] = True
