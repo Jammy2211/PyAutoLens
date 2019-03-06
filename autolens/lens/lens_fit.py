@@ -61,6 +61,7 @@ def hyper_fit_lens_data_with_tracer(lens_data_hyper, tracer, padded_tracer=None)
         raise exc.FittingException('The hyper fit routine did not call a Fit class - check the '
                                    'properties of the tracer')
 
+
 class AbstractLensFit(object):
 
     def __init__(self, tracer, padded_tracer, psf, map_to_scaled_array):
