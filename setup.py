@@ -31,7 +31,7 @@ class RunTests(Command):
 setup(
     name='autolens',
     version=__version__,
-    description='Strong Gravitational Lensing for the masses',
+    description='Automated Strong Gravitational Lens Modeling',
     long_description=long_description,
     long_description_content_type='text/markdown',
     url='https://github.com/Jammy2211/PyAutoLens',
@@ -54,7 +54,7 @@ setup(
         'Programming Language :: Python :: 3.7'
     ],
     keywords='cli',
-    packages=find_packages(exclude=['docs', 'tests*']),
+    packages=find_packages(exclude=['docs', 'tests*', 'workspace']),
     install_requires=['docopt',
                       'numpy',
                       'astropy',
@@ -62,6 +62,7 @@ setup(
                       'GetDist',
                       'pymultinest',
                       'scikit-learn',
+                      'scikit-image==0.14.2',
                       'numba',
                       'matplotlib',
                       'colorama',
