@@ -36,6 +36,7 @@ def make_grid_stack(centre_mask):
 class TestRegularGrid:
 
     def test__regular_grid_from_mask__compare_to_array_util(self):
+
         mask = np.array([[True, True, False, False],
                          [True, False, True, True],
                          [True, True, False, False]])
@@ -44,12 +45,13 @@ class TestRegularGrid:
         regular_grid_util = grid_util.regular_grid_1d_masked_from_mask_pixel_scales_and_origin(mask=mask,
                                                                                                pixel_scales=(2.0, 2.0))
 
-        regular_grid = grids.RegularGrid.from_mask(mask)
+        regular_grid = grids.RegularGrid.from_mask(mask=mask)
 
         assert type(regular_grid) == grids.RegularGrid
         assert regular_grid == pytest.approx(regular_grid_util, 1e-4)
         assert regular_grid.pixel_scale == 2.0
         assert (regular_grid.mask.masked_grid_index_to_pixel == mask.masked_grid_index_to_pixel).all()
+        assert regular_grid.interpolator == None
 
     def test__regular_grid_unlensed_grid_properties_compare_to_array_util(self):
         mask = np.array([[True, True, False, False],
@@ -149,6 +151,25 @@ class TestRegularGrid:
         assert scaled_array_2d.shape_arcsec == (9.0, 12.0)
         assert scaled_array_2d.pixel_scale == 3.0
         assert scaled_array_2d.origin == (0.0, 0.0)
+
+    def test__new_grid_with_interpolator__returns_grid_with_interpolator(self):
+
+        mask = np.array([[True, True, False, False],
+                         [True, False, True, True],
+                         [True, True, False, False]])
+        mask = msk.Mask(array=mask, pixel_scale=2.0)
+
+        regular_grid = grids.RegularGrid.from_mask(mask=mask)
+
+        regular_grid_with_interp = regular_grid.new_grid_with_interpolator(interp_pixel_scale=1.0)
+
+        assert (regular_grid[:,:] == regular_grid_with_interp[:,:]).all()
+        assert regular_grid.mask == regular_grid_with_interp.mask
+
+        interpolator_manual = grids.Interpolator.from_mask_grid_and_interp_pixel_scales(mask=mask, grid=regular_grid,
+                                                                                  interp_pixel_scale=1.0)
+        assert (regular_grid.interpolator.vtx == interpolator_manual.vtx).all()
+        assert (regular_grid.interpolator.wts == interpolator_manual.wts).all()
 
     def test__yticks(self):
         sca = grids.RegularGrid(arr=np.array([[1.5, 1.0], [-1.5, -1.0]]), mask=None)
@@ -1035,9 +1056,9 @@ class TestGridStack(object):
 
         assert (new_collection.pix == np.add(1, np.array([[0., 0.]]))).all()
 
-    def test__grid_stack_with_pix_grid(self, grid_stack):
-        grid_stack = grid_stack.grid_stack_with_pix_grid_added(pix_grid=np.array([[5.0, 5.0], [6.0, 7.0]]),
-                                                               regular_to_nearest_pix=np.array([0, 1]))
+    def test__new_grid_stack_with_pix_grid(self, grid_stack):
+        grid_stack = grid_stack.new_grid_stack_with_pix_grid_added(pix_grid=np.array([[5.0, 5.0], [6.0, 7.0]]),
+                                                                   regular_to_nearest_pix=np.array([0, 1]))
 
         assert (grid_stack.regular == np.array([[0., 0.]])).all()
         np.testing.assert_almost_equal(grid_stack.sub, np.array([[0.16666667, -0.16666667],
@@ -1054,6 +1075,82 @@ class TestGridStack(object):
                                                  [-1., 1.]])).all()
         assert (grid_stack.pix == np.array([[5.0, 5.0], [6.0, 7.0]])).all()
         assert (grid_stack.pix.regular_to_nearest_pix == np.array([0, 1])).all()
+
+    def test__new_grid_stack_with_interpolator_added_to_each_grid(self):
+
+        mask = np.array([[True, True, True, True, True, True],
+                         [True, True, True, False, False, True],
+                         [True, False, True, True, True, True],
+                         [True, True, True, False, False, True],
+                         [True, True, True, True, True, True]])
+        mask = msk.Mask(array=mask, pixel_scale=2.0)
+
+        grid_stack = grids.GridStack.grid_stack_from_mask_sub_grid_size_and_psf_shape(
+                        mask=mask, sub_grid_size=2, psf_shape=(3, 3))
+
+        print(grid_stack.blurring)
+        new_grid_stack = grid_stack.new_grid_stack_with_interpolator_added_to_each_grid(interp_pixel_scale=1.0)
+
+        regular_grid_manual = grids.RegularGrid.from_mask(mask=mask)
+        sub_grid_manual = grids.SubGrid.from_mask_and_sub_grid_size(mask=mask, sub_grid_size=2)
+        blurring_grid_manual = grids.RegularGrid.blurring_grid_from_mask_and_psf_shape(mask=mask, psf_shape=(3,3))
+
+        assert (new_grid_stack.regular == regular_grid_manual).all()
+        np.testing.assert_almost_equal(new_grid_stack.sub, sub_grid_manual)
+
+        print(new_grid_stack.blurring)
+
+        assert (new_grid_stack.blurring == blurring_grid_manual).all()
+
+        regular_interpolator_manual = grids.Interpolator.from_mask_grid_and_interp_pixel_scales(
+            mask=mask, grid=regular_grid_manual, interp_pixel_scale=1.0)
+        sub_interpolator_manual = grids.Interpolator.from_mask_grid_and_interp_pixel_scales(
+            mask=mask, grid=sub_grid_manual, interp_pixel_scale=1.0)
+        blurring_interpolator_manual = grids.Interpolator.from_mask_grid_and_interp_pixel_scales(
+            mask=blurring_grid_manual.mask, grid=blurring_grid_manual, interp_pixel_scale=1.0)
+
+        assert (new_grid_stack.regular.interpolator.vtx == regular_interpolator_manual.vtx).all()
+        assert (new_grid_stack.regular.interpolator.wts == regular_interpolator_manual.wts).all()
+
+        assert (new_grid_stack.sub.interpolator.vtx == sub_interpolator_manual.vtx).all()
+        assert (new_grid_stack.sub.interpolator.wts == sub_interpolator_manual.wts).all()
+
+        assert (new_grid_stack.blurring.interpolator.vtx == blurring_interpolator_manual.vtx).all()
+        assert (new_grid_stack.blurring.interpolator.wts == blurring_interpolator_manual.wts).all()
+
+    def test__same_as_above_for_padded_grid_stack__blurring_grid_is_zeros__has_no_interpolator(self):
+
+        mask = np.array([[True, True, True, True, True, True],
+                         [True, True, True, False, False, True],
+                         [True, False, True, True, True, True],
+                         [True, True, True, False, False, True],
+                         [True, True, True, True, True, True]])
+        mask = msk.Mask(array=mask, pixel_scale=2.0)
+
+        padded_grid_stack = grids.GridStack.padded_grid_stack_from_mask_sub_grid_size_and_psf_shape(
+                        mask=mask, sub_grid_size=2, psf_shape=(3, 3))
+        new_padded_grid_stack = padded_grid_stack.new_grid_stack_with_interpolator_added_to_each_grid(interp_pixel_scale=1.0)
+
+        regular_grid_manual = grids.PaddedRegularGrid.padded_grid_from_shape_psf_shape_and_pixel_scale(
+            shape=mask.shape, pixel_scale=mask.pixel_scale, psf_shape=(3,3))
+        sub_grid_manual = grids.PaddedSubGrid.padded_grid_from_mask_sub_grid_size_and_psf_shape(
+            mask=mask, sub_grid_size=2, psf_shape=(3,3))
+
+        assert (new_padded_grid_stack.regular == regular_grid_manual).all()
+        np.testing.assert_almost_equal(new_padded_grid_stack.sub, sub_grid_manual)
+
+        regular_interpolator_manual = grids.Interpolator.from_mask_grid_and_interp_pixel_scales(
+            mask=regular_grid_manual.mask, grid=regular_grid_manual, interp_pixel_scale=1.0)
+        sub_interpolator_manual = grids.Interpolator.from_mask_grid_and_interp_pixel_scales(
+            mask=sub_grid_manual.mask, grid=sub_grid_manual, interp_pixel_scale=1.0)
+
+        assert (new_padded_grid_stack.regular.interpolator.vtx == regular_interpolator_manual.vtx).all()
+        assert (new_padded_grid_stack.regular.interpolator.wts == regular_interpolator_manual.wts).all()
+
+        assert (new_padded_grid_stack.sub.interpolator.vtx == sub_interpolator_manual.vtx).all()
+        assert (new_padded_grid_stack.sub.interpolator.wts == sub_interpolator_manual.wts).all()
+
+        assert (new_padded_grid_stack.blurring == np.array([[0.0, 0.0]])).all()
 
 
 class TestImageGridBorder(object):
@@ -1277,7 +1374,7 @@ class TestImageGridBorder(object):
 
 class TestInterpolator:
 
-    def test_decorated_function(self):
+    def test_decorated_function__values_from_function_has_1_dimensions__returns_1d_result(self):
 
         # noinspection PyUnusedLocal
         @grids.grid_interpolate
@@ -1288,17 +1385,53 @@ class TestInterpolator:
 
         regular = grids.RegularGrid.from_mask(mask=msk.Mask.unmasked_for_shape_and_pixel_scale((3, 3), 1))
 
-        assert (func(None, regular) == np.array([[1, 0, 0,
-                                                  0, 0, 0,
-                                                  0, 0, 0], ])).all()
+        values = func(None, regular)
+
+        assert values.ndim == 1
+        assert values.shape == (9,)
+        assert (values == np.array([[1, 0, 0,
+                                     0, 0, 0,
+                                     0, 0, 0], ])).all()
+
+        regular = grids.RegularGrid.from_mask(mask=msk.Mask.unmasked_for_shape_and_pixel_scale((3, 3), 1))
+        regular.interpolator = grids.Interpolator.from_mask_grid_and_interp_pixel_scales(regular.mask, regular,
+                                                                                         interp_pixel_scale=0.5)
+        interp_values = func(None, regular)
+        assert interp_values.ndim == 1
+        assert interp_values.shape == (9,)
+        assert (interp_values != np.array([[1, 0, 0,
+                                            0, 0, 0,
+                                            0, 0, 0]])).any()
+
+    def test_decorated_function__values_from_function_has_2_dimensions__returns_2d_result(self):
+
+        # noinspection PyUnusedLocal
+        @grids.grid_interpolate
+        def func(profile, grid):
+            result = np.zeros((grid.shape[0], 2))
+            result[0,:] = 1
+            return result
+
+        regular = grids.RegularGrid.from_mask(mask=msk.Mask.unmasked_for_shape_and_pixel_scale((3, 3), 1))
+
+        values = func(None, regular)
+
+        assert values.ndim == 2
+        assert values.shape == (9, 2)
+        assert (values == np.array([[1,1], [0,0], [0,0],
+                                    [0,0], [0,0], [0,0],
+                                    [0,0], [0,0], [0,0]])).all()
 
         regular = grids.RegularGrid.from_mask(mask=msk.Mask.unmasked_for_shape_and_pixel_scale((3, 3), 1))
         regular.interpolator = grids.Interpolator.from_mask_grid_and_interp_pixel_scales(regular.mask, regular,
                                                                                          interp_pixel_scale=0.5)
 
-        assert (func(None, regular) != np.array([[1, 0, 0,
-                                                  0, 0, 0,
-                                                  0, 0, 0], ])).any()
+        interp_values = func(None, regular)
+        assert interp_values.ndim == 2
+        assert interp_values.shape == (9, 2)
+        assert (interp_values != np.array(np.array([[1,1], [0,0], [0,0],
+                                                    [0,0], [0,0], [0,0],
+                                                    [0,0], [0,0], [0,0]]))).any()
 
     def test__20x20_deflection_angles_no_central_pixels__interpolated_accurately(self):
 

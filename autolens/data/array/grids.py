@@ -187,7 +187,19 @@ class GridStack(object):
                                                                            sub_grid_size=sub_grid_size,
                                                                            psf_shape=psf_shape)
 
-    def grid_stack_with_pix_grid_added(self, pix_grid, regular_to_nearest_pix):
+    def new_grid_stack_with_interpolator_added_to_each_grid(self, interp_pixel_scale):
+        regular = self.regular.new_grid_with_interpolator(interp_pixel_scale=interp_pixel_scale)
+        sub = self.sub.new_grid_with_interpolator(interp_pixel_scale=interp_pixel_scale)
+
+        # TODO : Like the TODO above, we need to elegently handle a blurring grid of None.
+
+        if self.blurring.shape != (1,2):
+            blurring = self.blurring.new_grid_with_interpolator(interp_pixel_scale=interp_pixel_scale)
+        else:
+            blurring = np.array([[0.0, 0.0]])
+        return GridStack(regular=regular, sub=sub, blurring=blurring, pix=self.pix)
+
+    def new_grid_stack_with_pix_grid_added(self, pix_grid, regular_to_nearest_pix):
         """Setup a grid-stack of grid_stack using an existing grid-stack.
         
         The new grid-stack has the same grid_stack (regular, sub, blurring, etc.) as before, but adds a pix-grid as a \
@@ -401,18 +413,21 @@ class RegularGrid(np.ndarray):
         blurring_mask = mask.blurring_mask_for_psf_shape(psf_shape)
         return RegularGrid.from_mask(blurring_mask)
 
+    def new_grid_with_interpolator(self, interp_pixel_scale):
+        self.interpolator = Interpolator.from_mask_grid_and_interp_pixel_scales(mask=self.mask, grid=self[:,:],
+                                                                           interp_pixel_scale=interp_pixel_scale)
+        return self
+
     def array_2d_from_array_1d(self, array_1d):
         """ Map a 1D array the same dimension as the grid to its original masked 2D array.
 
         Parameters
         -----------
         array_1d : ndarray
-            The 1D array of which is mapped to its masked 2D array.
+            The 1D array which is mapped to its masked 2D array.
         """
         return mapping_util.map_masked_1d_array_to_2d_array_from_array_1d_shape_and_one_to_two(
-            array_1d,
-            self.mask.shape,
-            self.mask.masked_grid_index_to_pixel)
+            array_1d=array_1d, shape=self.mask.shape, one_to_two=self.mask.masked_grid_index_to_pixel)
 
     def scaled_array_from_array_1d(self, array_1d):
         """ Map a 1D array the same dimension as the grid to its original masked 2D array and return it as a scaled \
@@ -596,6 +611,32 @@ class SubGrid(RegularGrid):
                                                                                          pixel_scales=mask.pixel_scales,
                                                                                          sub_grid_size=sub_grid_size)
         return SubGrid(sub_grid, mask, sub_grid_size)
+
+    def sub_array_2d_from_sub_array_1d(self, sub_array_1d):
+        """ Map a 1D sub-array the same dimension as the sub-grid (e.g. including sub-pixels) to its original masked
+        2D sub array.
+
+        Parameters
+        -----------
+        sub_array_1d : ndarray
+            The 1D sub_array which is mapped to its masked 2D sub-array.
+        """
+        sub_shape = (self.mask.shape[0]*self.sub_grid_size, self.mask.shape[1]*self.sub_grid_size)
+        return mapping_util.map_masked_1d_array_to_2d_array_from_array_1d_shape_and_one_to_two(
+            array_1d=sub_array_1d, shape=sub_shape, one_to_two=self.mask.masked_grid_index_to_pixel)
+
+    # def scaled_array_from_sub_array_1d(self, sub_array_1d):
+    #     """ Map a 1D array the same dimension as the grid to its original masked 2D array and return it as a scaled \
+    #     array.
+    #
+    #     Parameters
+    #     -----------
+    #     array_1d : ndarray
+    #         The 1D array of which is mapped to a 2D scaled array.
+    #     """
+    #     return scaled_array.ScaledSquarePixelArray(array=self.array_2d_from_array_1d(array_1d),
+    #                                                pixel_scale=self.mask.pixel_scale,
+    #                                                origin=self.mask.origin)
 
     def __array_finalize__(self, obj):
         super().__array_finalize__(obj)
@@ -1041,9 +1082,6 @@ class Interpolator(object):
         return Interpolator(grid=grid, interp_grid=interp_grid)
 
     def interpolated_values_from_values(self, values):
-        return self.interpolate(values=values)
-
-    def interpolate(self, values):
         return np.einsum('nj,nj->n', np.take(values, self.vtx), self.wts)
 
 
@@ -1072,7 +1110,13 @@ def grid_interpolate(func):
         if hasattr(grid, "interpolator"):
             interpolator = grid.interpolator
             if grid.interpolator is not None:
-                return interpolator.interpolate(func(profile, interpolator.interp_grid, *args, **kwargs))
+                values = func(profile, interpolator.interp_grid, *args, **kwargs)
+                if values.ndim == 1:
+                    return interpolator.interpolated_values_from_values(values=values)
+                elif values.ndim == 2:
+                    y_values = interpolator.interpolated_values_from_values(values=values[:,0])
+                    x_values = interpolator.interpolated_values_from_values(values=values[:,1])
+                    return np.asarray([y_values, x_values]).T
         return func(profile, grid, *args, **kwargs)
 
     return wrapper

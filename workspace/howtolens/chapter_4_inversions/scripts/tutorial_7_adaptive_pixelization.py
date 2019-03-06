@@ -56,8 +56,8 @@ lens_data = ld.LensData(ccd_data=ccd_data, mask=mask)
 adaptive = pix.AdaptiveMagnification(shape=(10, 20))
 image_plane_pix_grid = adaptive.image_plane_pix_grid_from_regular_grid(regular_grid=lens_data.grid_stack.regular)
 
-image_plane_grid_stack = lens_data.grid_stack.grid_stack_with_pix_grid_added(pix_grid=image_plane_pix_grid.sparse_grid,
-                                                        regular_to_nearest_pix=image_plane_pix_grid.regular_to_sparse)
+image_plane_grid_stack = lens_data.grid_stack.new_grid_stack_with_pix_grid_added(pix_grid=image_plane_pix_grid.sparse_grid,
+                                                                                 regular_to_nearest_pix=image_plane_pix_grid.regular_to_sparse)
 
 image_plane = pl.Plane(grid_stack=image_plane_grid_stack, galaxies=[lens_galaxy])
 source_plane_grid_stack = image_plane.trace_grid_stack_to_next_plane()
