@@ -149,8 +149,8 @@ export PYTHONPATH=/path/to/lib/python3.6/site-packages/autolens/
 
 Move workspace and set WORKSPACE enviroment variable:
 ```
-mv /path/to/lib/python3.6/site-packages/autolens/workspace /new/path/to/workspace/
-export PYTHONPATH=/new/path/to/workspace/
+mv /path/to/lib/python3.6/site-packages/workspace /new/path/to/workspace/
+export WORKSPACE=/new/path/to/workspace/
 ```
 
 ## Installation with pip
