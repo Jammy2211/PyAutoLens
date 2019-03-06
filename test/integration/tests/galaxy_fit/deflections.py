@@ -32,8 +32,8 @@ def phase():
     galaxy = g.Galaxy(mass=mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=1.0))
 
     deflections = galaxy_util.deflections_of_galaxies_from_grid(galaxies=[galaxy], grid=grid_stack.sub)
-    deflections_y = grid_stack.regular.scaled_array_from_array_1d(array_1d=deflections[:,0])
-    deflections_x = grid_stack.regular.scaled_array_from_array_1d(array_1d=deflections[:,1])
+    deflections_y = grid_stack.regular.scaled_array_2d_from_array_1d(array_1d=deflections[:, 0])
+    deflections_x = grid_stack.regular.scaled_array_2d_from_array_1d(array_1d=deflections[:, 1])
 
     noise_map = scaled_array.ScaledSquarePixelArray(array=np.ones(deflections_y.shape), pixel_scale=pixel_scale)
 

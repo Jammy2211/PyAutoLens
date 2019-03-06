@@ -97,7 +97,7 @@ class TestGalaxyFitData(object):
         galaxy = g.Galaxy(light=lp.SphericalSersic(intensity=1.0))
 
         intensities_gal = galaxy.intensities_from_grid(grid=galaxy_fit_data.grid_stack.sub)
-        intensities_gal = galaxy_fit_data.grid_stack.sub.sub_data_to_regular_data(sub_array=intensities_gal)
+        intensities_gal = galaxy_fit_data.grid_stack.sub.regular_data_1d_from_sub_data_1d(sub_array_1d=intensities_gal)
 
         intensities_gd = galaxy_fit_data.profile_quantity_from_galaxy_and_sub_grid(galaxies=[galaxy],
                                                                                    sub_grid=galaxy_fit_data.grid_stack.sub)
@@ -131,7 +131,7 @@ class TestGalaxyFitData(object):
         galaxy = g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=1.0))
 
         surface_density_gal = galaxy.surface_density_from_grid(grid=galaxy_fit_data.grid_stack.sub)
-        surface_density_gal = galaxy_fit_data.grid_stack.sub.sub_data_to_regular_data(sub_array=surface_density_gal)
+        surface_density_gal = galaxy_fit_data.grid_stack.sub.regular_data_1d_from_sub_data_1d(sub_array_1d=surface_density_gal)
 
         surface_density_gd = galaxy_fit_data.profile_quantity_from_galaxy_and_sub_grid(galaxies=[galaxy],
                                                                                        sub_grid=galaxy_fit_data.grid_stack.sub)
@@ -165,7 +165,7 @@ class TestGalaxyFitData(object):
         galaxy = g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=1.0))
 
         potential_gal = galaxy.potential_from_grid(grid=galaxy_fit_data.grid_stack.sub)
-        potential_gal = galaxy_fit_data.grid_stack.sub.sub_data_to_regular_data(sub_array=potential_gal)
+        potential_gal = galaxy_fit_data.grid_stack.sub.regular_data_1d_from_sub_data_1d(sub_array_1d=potential_gal)
 
         potential_gd = galaxy_fit_data.profile_quantity_from_galaxy_and_sub_grid(galaxies=[galaxy],
                                                                                  sub_grid=galaxy_fit_data.grid_stack.sub)
@@ -199,8 +199,8 @@ class TestGalaxyFitData(object):
         galaxy = g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=1.0))
 
         deflections_gal = galaxy.deflections_from_grid(grid=galaxy_fit_data.grid_stack.sub)
-        deflections_gal = np.asarray([galaxy_fit_data.grid_stack.sub.sub_data_to_regular_data(deflections_gal[:, 0]),
-                                      galaxy_fit_data.grid_stack.sub.sub_data_to_regular_data(deflections_gal[:, 1])]).T
+        deflections_gal = np.asarray([galaxy_fit_data.grid_stack.sub.regular_data_1d_from_sub_data_1d(deflections_gal[:, 0]),
+                                      galaxy_fit_data.grid_stack.sub.regular_data_1d_from_sub_data_1d(deflections_gal[:, 1])]).T
 
         deflections_gd = galaxy_fit_data.profile_quantity_from_galaxy_and_sub_grid(galaxies=[galaxy],
                                                                                    sub_grid=galaxy_fit_data.grid_stack.sub)
@@ -234,8 +234,8 @@ class TestGalaxyFitData(object):
         galaxy = g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=1.0))
 
         deflections_gal = galaxy.deflections_from_grid(grid=galaxy_fit_data.grid_stack.sub)
-        deflections_gal = np.asarray([galaxy_fit_data.grid_stack.sub.sub_data_to_regular_data(deflections_gal[:, 0]),
-                                      galaxy_fit_data.grid_stack.sub.sub_data_to_regular_data(deflections_gal[:, 1])]).T
+        deflections_gal = np.asarray([galaxy_fit_data.grid_stack.sub.regular_data_1d_from_sub_data_1d(deflections_gal[:, 0]),
+                                      galaxy_fit_data.grid_stack.sub.regular_data_1d_from_sub_data_1d(deflections_gal[:, 1])]).T
 
         deflections_gd = galaxy_fit_data.profile_quantity_from_galaxy_and_sub_grid(galaxies=[galaxy],
                                                                                    sub_grid=galaxy_fit_data.grid_stack.sub)
