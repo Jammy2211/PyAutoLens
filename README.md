@@ -104,7 +104,7 @@ Included with **PyAutoLens** is the **HowToLens** eBook, which provides an intro
 - **Runners** - Scripts for running a **PyAutoLens** pipeline and analysis.
 - **Tools** - Tools for simulating strong lens data, creating masks and using many other **PyAutoLens** features.
 
-If you install **PyAutoLens** with conda or pip, you will need to download the workspace from the [autolens_workspace](https://github.com/Jammy2211/autolens_workspace) repository, which is described in the isntallation instructions below.
+If you install **PyAutoLens** with conda or pip, you will need to download the workspace from the [autolens_workspace](https://github.com/Jammy2211/autolens_workspace) repository, which is described in the installation instructions below.
 
 ## Depedencies
 
