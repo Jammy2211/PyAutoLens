@@ -127,7 +127,6 @@ class TestLensData(object):
 
         assert (lens_data.padded_grid_stack.blurring == np.array([[0.0, 0.0]])).all()
 
-
     def test__border(self, lens_data):
         assert (lens_data.border == np.array([0, 1, 2, 3])).all()
 
