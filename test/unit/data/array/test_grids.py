@@ -126,7 +126,7 @@ class TestRegularGrid:
 
         mask = msk.Mask(array=mask, pixel_scale=2.0)
         regular_grid = grids.RegularGrid.from_mask(mask)
-        array_2d_grid = regular_grid.scaled_array_from_array_1d(array_1d)
+        array_2d_grid = regular_grid.scaled_array_2d_from_array_1d(array_1d)
 
         assert (array_2d_util == array_2d_grid).all()
         assert array_2d_grid.pixel_scale == 2.0
@@ -143,7 +143,7 @@ class TestRegularGrid:
 
         mask = msk.Mask(array=mask, pixel_scale=3.0)
         regular_grid = grids.RegularGrid.from_mask(mask)
-        scaled_array_2d = regular_grid.scaled_array_from_array_1d(array_1d)
+        scaled_array_2d = regular_grid.scaled_array_2d_from_array_1d(array_1d)
 
         assert (scaled_array_2d == array_2d_util).all()
         assert (scaled_array_2d.xticks == np.array([-6.0, -2.0, 2.0, 6.0])).all()
@@ -322,7 +322,7 @@ class TestSubGrid(object):
 
         sub_grid = grids.SubGrid.from_mask_and_sub_grid_size(mask, sub_grid_size=2)
 
-        scaled_sub_array_2d = sub_grid.scaled_sub_array_from_sub_array_1d(sub_array_1d=sub_array_1d)
+        scaled_sub_array_2d = sub_grid.scaled_array_2d_with_sub_dimensions_from_sub_array_1d(sub_array_1d=sub_array_1d)
 
         assert (scaled_sub_array_2d == np.array([[1.0, 1.0, 2.0, 2.0, 0.0, 0.0],
                                                  [1.0, 1.0, 2.0, 2.0, 0.0, 0.0],
@@ -331,6 +331,28 @@ class TestSubGrid(object):
 
         assert scaled_sub_array_2d.pixel_scales == (1.5, 1.5)
         assert scaled_sub_array_2d.origin == (0.0, 0.0)
+
+    def test__scaled_array_from_sub_array_1d_by_binning_up(self):
+
+        mask = np.array([[False, False, True],
+                         [False, True, False]])
+
+        mask = msk.Mask(mask, pixel_scale=3.0)
+
+        sub_array_1d = np.array([1.0, 10.0, 2.0, 1.0,
+                                 2.0, 2.0, 2.0, 2.0,
+                                 3.0, 3.0, 3.0, 3.0,
+                                 4.0, 0.0, 0.0, 4.0])
+
+        sub_grid = grids.SubGrid.from_mask_and_sub_grid_size(mask, sub_grid_size=2)
+
+        scaled_array_2d = sub_grid.scaled_array_2d_with_regular_dimensions_from_binned_up_sub_array_1d(sub_array_1d=sub_array_1d)
+
+        assert (scaled_array_2d == np.array([[3.5, 2.0, 0.0],
+                                             [3.0, 0.0, 2.0]])).all()
+
+        assert scaled_array_2d.pixel_scales == (3.0, 3.0)
+        assert scaled_array_2d.origin == (0.0, 0.0)
 
     def test__map_to_2d__compare_to_util(self):
         mask = np.array([[True, True, False, False],
@@ -344,14 +366,14 @@ class TestSubGrid(object):
 
         mask = msk.Mask(array=mask, pixel_scale=2.0)
         regular_grid = grids.SubGrid.from_mask_and_sub_grid_size(mask, sub_grid_size=2)
-        array_2d_grid = regular_grid.scaled_array_from_array_1d(array_1d)
+        array_2d_grid = regular_grid.scaled_array_2d_from_array_1d(array_1d)
 
         assert (array_2d_util == array_2d_grid).all()
         assert array_2d_grid.pixel_scale == 2.0
         assert array_2d_grid.origin == (0.0, 0.0)
 
     def test_sub_data_to_image(self, sub_grid):
-        assert (sub_grid.sub_data_to_regular_data(np.array(range(5))) == np.array(range(5))).all()
+        assert (sub_grid.regular_data_1d_from_sub_data_1d(np.array(range(5))) == np.array(range(5))).all()
 
     def test_sub_to_image__compare_to_array_util(self):
         mask = np.array([[True, False, True],
@@ -1043,8 +1065,8 @@ class TestGridStack(object):
         assert (padded_grids.pix == np.array([[0.0, 0.0]])).all()
 
     def test__scaled_array_from_array_1d(self, grid_stack):
-        scaled_array_from_grid_stack = grid_stack.scaled_array_from_array_1d(array_1d=np.ones(5))
-        scaled_array_from_regular = grid_stack.regular.scaled_array_from_array_1d(array_1d=np.ones(5))
+        scaled_array_from_grid_stack = grid_stack.scaled_array_2d_from_array_1d(array_1d=np.ones(5))
+        scaled_array_from_regular = grid_stack.regular.scaled_array_2d_from_array_1d(array_1d=np.ones(5))
 
         assert (scaled_array_from_grid_stack == scaled_array_from_regular).all()
 
