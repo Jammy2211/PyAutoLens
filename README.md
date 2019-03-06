@@ -147,9 +147,9 @@ git clone https://github.com/Jammy2211/autolens_workspace
 export WORKSPACE=/path/to/autolens_workspace/
 ```
 
-Set PYTHONPATH to autolens installation directory and autolens_workspace directories:
+Set PYTHONPATH to include the autolens_workspace directory:
 ```
-export PYTHONPATH=/path/to/lib/python3.6/site-packages/:/path/to/autolens_workspace/
+export PYTHONPATH=/path/to/autolens_workspace/
 ```
 
 You can test everything is working by running the example pipeline runner in the autolens_workspace
@@ -172,9 +172,9 @@ git clone https://github.com/Jammy2211/autolens_workspace
 export WORKSPACE=/path/to/autolens_workspace/
 ```
 
-Set PYTHONPATH to autolens installation directory and autolens_workspace directories:
+Set PYTHONPATH to include the autolens_workspace directory:
 ```
-export PYTHONPATH=/path/to/lib/python3.6/site-packages/:/path/to/autolens_workspace/
+export PYTHONPATH=/path/to/autolens_workspace/
 ```
 
 You can test everything is working by running the example pipeline runner in the autolens_workspace
