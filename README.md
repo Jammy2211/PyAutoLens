@@ -142,6 +142,17 @@ Install autolens:
 pip install autolens
 ```
 
+Set PYTHONPATH to autolens:
+```
+export PYTHONPATH=/path/to/lib/python3.6/site-packages/autolens/
+```
+
+Move workspace and set WORKSPACE enviroment variable:
+```
+mv /path/to/lib/python3.6/site-packages/autolens/workspace /new/path/to/workspace/
+export PYTHONPATH=/new/path/to/workspace/
+```
+
 ## Installation with pip
 
 Installation is also available via pip, however there are reported issues with installing **PyMultiNest** that can make installation difficult, see the file [INSTALL.notes](https://github.com/Jammy2211/PyAutoLens/blob/master/INSTALL.notes)
