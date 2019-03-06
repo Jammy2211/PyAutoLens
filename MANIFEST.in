@@ -8,8 +8,6 @@ exclude results
 exclude scripts
 exclude output
 exclude workspace
-exclude workspace/
-exclude workspace/*
 exclude .coverage
 exclude howtolens
 exclude .travis.yml
