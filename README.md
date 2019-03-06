@@ -93,7 +93,7 @@ Included with **PyAutoLens** is the **HowToLens** eBook, which provides an intro
 
 ## Workspace
 
-**PyAutoLens** comes with a workspace, which includes the following:
+**PyAutoLens** comes with a workspace, which can be found [here](https://github.com/Jammy2211/autolens_workspace) and includes the following:
 
 - **Config** - Configuration files which customize the **PyAutoLens** analysis.
 - **Data** - Your data folder, including example data-sets distributed with **PyAutoLens**.
@@ -104,9 +104,7 @@ Included with **PyAutoLens** is the **HowToLens** eBook, which provides an intro
 - **Runners** - Scripts for running a **PyAutoLens** pipeline and analysis.
 - **Tools** - Tools for simulating strong lens data, creating masks and using many other **PyAutoLens** features.
 
-If you install **PyAutoLens** with conda or pip the workspace will be included and the latest workspace can be found on the master branch of this git repository.
-
-If you install **PyAutoLens** with Docker a workspace will be generated for you in the home directory the first time you run the image. After the first time you run docker the workspace will persist any changes you make and won't be updated again.
+If you install **PyAutoLens** with conda or pip, you will need to download the workspace from the [autolens_workspace](https://github.com/Jammy2211/autolens_workspace) repository, which is described in the installation instructions below.
 
 ## Depedencies
 
@@ -142,15 +140,21 @@ Install autolens:
 pip install autolens
 ```
 
-Set PYTHONPATH to autolens installation directory:
+Clone autolens workspace and set WORKSPACE enviroment variable:
 ```
-export PYTHONPATH=/path/to/lib/python3.6/site-packages/
+cd /path/where/you/want/autolens_workspace
+git clone https://github.com/Jammy2211/autolens_workspace
+export WORKSPACE=/path/to/autolens_workspace/
 ```
 
-Move workspace and set WORKSPACE enviroment variable:
+Set PYTHONPATH to autolens installation directory and autolens_workspace directories:
 ```
-mv /path/to/lib/python3.6/site-packages/workspace /new/path/to/workspace/
-export WORKSPACE=/new/path/to/workspace/
+export PYTHONPATH=/path/to/lib/python3.6/site-packages/:/path/to/autolens_workspace/
+```
+
+You can test everything is working by running the example pipeline runner in the autolens_workspace
+```
+python3 /path/to/autolens_workspace/runners/pipeline_runner.py
 ```
 
 ## Installation with pip
@@ -161,29 +165,22 @@ Installation is also available via pip, however there are reported issues with i
 $ pip install autolens
 ```
 
-## Installation with Docker
-
-An alternative to conda and pip is Docker, which makes installation easier by containerising the project.
-
-If you don't have Docker then you can install it by following the guide [here](https://docs.docker.com/install/).
-
-Once you have Docker installed you can download the **PyAutoLens** Docker project with the command:
-
+Clone autolens workspace and set WORKSPACE enviroment variable:
 ```
-docker pull autolens/autolens
+cd /path/where/you/want/autolens_workspace
+git clone https://github.com/Jammy2211/autolens_workspace
+export WORKSPACE=/path/to/autolens_workspace/
 ```
 
-This command can also be used to update the project.
-
-The project can be run using:
-
+Set PYTHONPATH to autolens installation directory and autolens_workspace directories:
 ```
-docker run -it -e LOCAL_USER_ID=`id -u $USER` -h autolens -p 8888:8888 -p 6006:6006 -v $HOME/autolens_workspace:/home/user/workspace autolens/autolens
+export PYTHONPATH=/path/to/lib/python3.6/site-packages/:/path/to/autolens_workspace/
 ```
 
-Once the project is running Docker will provide you with a URL. Copy and paste this URL into your browser, making sure you replace '(PyAutoLens or 127.0.0.1)' with '127.0.0.1'. This will bring up a Jupyter notebook including the 'howtolens' directory which is full of tutorials.
-
-Any changes you make inside the Docker workspace will be saved in the autolens_workspace in your home directory.
+You can test everything is working by running the example pipeline runner in the autolens_workspace
+```
+python3 /path/to/autolens_workspace/runners/pipeline_runner.py
+```
 
 ## Support & Discussion
 
@@ -200,6 +197,8 @@ The following papers use **PyAutoLens**:
 [Galaxy structure with strong gravitational lensing: decomposing the internal mass distribution of massive elliptical galaxies](https://arxiv.org/abs/1901.07801)
 
 [Novel Substructure and Superfluid Dark Matter](https://arxiv.org/abs/1901.03694)
+
+[CO, H2O, H2O+ line and dust emission in a z = 3.63 strongly lensed starburst merger at sub-kiloparsec scales](https://arxiv.org/abs/1903.00273)
 
 ## Credits
 
