@@ -64,7 +64,7 @@ setup(
                       'scikit-learn',
                       'scikit-image==0.14.2',
                       'numba',
-                      'matplotlib',
+                      'matplotlib==3.0.3',
                       'colorama',
                       'autofit==0.13.0',
                       'Cython==0.28.0',
