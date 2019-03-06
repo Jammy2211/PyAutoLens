@@ -38,13 +38,14 @@ for image_type in ['HST_Up']:
 
     interpolator = grids.Interpolator.from_mask_grid_and_interp_pixel_scales(mask=lens_data.mask,
                                                                              grid=lens_data.grid_stack.sub,
-                                                                             interp_pixel_scale=1.0)
+                                                                             interp_pixel_scale=0.1)
 
     print('Number of interpolation points = ' + str(interpolator.interp_grid.shape[0]) + '\n')
 
     ### EllipticalIsothermal ###
 
-    mass_profile = mp.EllipticalIsothermal(centre=(0.01, 0.01), axis_ratio=0.8, phi=45.0, einstein_radius=0.5)
+    mass_profile = mp.EllipticalCoredIsothermal(centre=(0.0, 0.0), axis_ratio=0.8, phi=45.0, einstein_radius=0.5,
+                                                core_radius=0.3)
 
     interp_deflections = mass_profile.deflections_from_grid(grid=interpolator.interp_grid)
     deflections = np.zeros((lens_data.grid_stack.sub.shape[0], 2))
@@ -63,7 +64,9 @@ for image_type in ['HST_Up']:
     print("interpolation x uncertainty: ", np.std(difference_x))
     print("interpolation x max error: ", np.max(difference_x))
 
-    difference_y_2d = lens_data.grid_stack.regular.scaled_array_2d_from_array_1d(array_1d=difference_y)
-    difference_x_2d = lens_data.grid_stack.regular.scaled_array_2d_from_array_1d(array_1d=difference_x)
+    difference_y_2d = lens_data.grid_stack.sub.scaled_array_2d_with_sub_dimensions_from_sub_array_1d(
+        sub_array_1d=difference_y)
+    difference_x_2d = lens_data.grid_stack.sub.scaled_array_2d_with_sub_dimensions_from_sub_array_1d(
+        sub_array_1d=difference_x)
 
-    array_plotters.plot_array(array=difference_y_2d)#, grid=interpolator.interp_grid)
+    array_plotters.plot_array(array=difference_y_2d)
