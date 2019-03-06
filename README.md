@@ -198,6 +198,8 @@ The following papers use **PyAutoLens**:
 
 [Novel Substructure and Superfluid Dark Matter](https://arxiv.org/abs/1901.03694)
 
+[CO, H2O, H2O+ line and dust emission in a z = 3.63 strongly lensed starburst merger at sub-kiloparsec scales](https://arxiv.org/abs/1903.00273
+
 ## Credits
 
 [James Nightingale](https://github.com/Jammy2211) - Lead developer and PyAutoLens guru.
