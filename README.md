@@ -142,9 +142,9 @@ Install autolens:
 pip install autolens
 ```
 
-Set PYTHONPATH to autolens:
+Set PYTHONPATH to autolens installation directory:
 ```
-export PYTHONPATH=/path/to/lib/python3.6/site-packages/autolens/
+export PYTHONPATH=/path/to/lib/python3.6/site-packages/
 ```
 
 Move workspace and set WORKSPACE enviroment variable:
