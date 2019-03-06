@@ -307,6 +307,31 @@ class TestSubGrid(object):
                                           [3.0, 3.0, 0.0, 0.0, 4.0, 4.0],
                                           [3.0, 3.0, 0.0, 0.0, 4.0, 4.0]])).all()
 
+
+    def test__scaled_sub_array_from_sub_array_1d(self):
+
+        mask = np.array([[False, False, True],
+                         [False, True, False]])
+
+        mask = msk.Mask(mask, pixel_scale=3.0)
+
+        sub_array_1d = np.array([1.0, 1.0, 1.0, 1.0,
+                                 2.0, 2.0, 2.0, 2.0,
+                                 3.0, 3.0, 3.0, 3.0,
+                                 4.0, 4.0, 4.0, 4.0])
+
+        sub_grid = grids.SubGrid.from_mask_and_sub_grid_size(mask, sub_grid_size=2)
+
+        scaled_sub_array_2d = sub_grid.scaled_sub_array_from_sub_array_1d(sub_array_1d=sub_array_1d)
+
+        assert (scaled_sub_array_2d == np.array([[1.0, 1.0, 2.0, 2.0, 0.0, 0.0],
+                                                 [1.0, 1.0, 2.0, 2.0, 0.0, 0.0],
+                                                 [3.0, 3.0, 0.0, 0.0, 4.0, 4.0],
+                                                 [3.0, 3.0, 0.0, 0.0, 4.0, 4.0]])).all()
+
+        assert scaled_sub_array_2d.pixel_scales == (1.5, 1.5)
+        assert scaled_sub_array_2d.origin == (0.0, 0.0)
+
     def test__map_to_2d__compare_to_util(self):
         mask = np.array([[True, True, False, False],
                          [True, False, True, True],
