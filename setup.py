@@ -67,6 +67,7 @@ setup(
                       'matplotlib',
                       'colorama',
                       'autofit==0.13.0',
+                      'Cython==0.28.0',
                       'pyquad'
                       ],
     extras_require={
