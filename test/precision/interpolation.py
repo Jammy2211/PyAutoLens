@@ -63,7 +63,7 @@ for image_type in ['HST_Up']:
     print("interpolation x uncertainty: ", np.std(difference_x))
     print("interpolation x max error: ", np.max(difference_x))
 
-    difference_y_2d = lens_data.grid_stack.regular.scaled_array_from_array_1d(array_1d=difference_y)
-    difference_x_2d = lens_data.grid_stack.regular.scaled_array_from_array_1d(array_1d=difference_x)
+    difference_y_2d = lens_data.grid_stack.regular.scaled_array_2d_from_array_1d(array_1d=difference_y)
+    difference_x_2d = lens_data.grid_stack.regular.scaled_array_2d_from_array_1d(array_1d=difference_x)
 
     array_plotters.plot_array(array=difference_y_2d)#, grid=interpolator.interp_grid)
