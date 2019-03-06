@@ -35,7 +35,7 @@ kiwisolver==1.0.1
 llvmlite==0.27.0
 lmfit==0.9.10
 MarkupSafe==1.0
-matplotlib==2.2.0
+matplotlib==3.0.3
 mistune==0.8.3
 nbconvert==5.3.1
 nbformat==4.4.0

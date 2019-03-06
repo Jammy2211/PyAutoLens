@@ -153,11 +153,11 @@ class TestBlurredImageOfPlanes:
 
         blurred_lens_image = convolver_blur.convolve_image(image_array=tracer.image_plane.image_plane_image_1d,
                                                            blurring_array=tracer.image_plane.image_plane_blurring_image_1d)
-        blurred_lens_image = data_grid_stack.regular.scaled_array_from_array_1d(array_1d=blurred_lens_image)
+        blurred_lens_image = data_grid_stack.regular.scaled_array_2d_from_array_1d(array_1d=blurred_lens_image)
 
         blurred_source_image = convolver_blur.convolve_image(image_array=tracer.source_plane.image_plane_image_1d,
                                                              blurring_array=tracer.source_plane.image_plane_blurring_image_1d)
-        blurred_source_image = data_grid_stack.regular.scaled_array_from_array_1d(array_1d=blurred_source_image)
+        blurred_source_image = data_grid_stack.regular.scaled_array_2d_from_array_1d(array_1d=blurred_source_image)
 
         blurred_image_of_planes = util.blurred_image_of_planes_from_1d_images_and_convolver(
             total_planes=tracer.total_planes, image_plane_image_1d_of_planes=tracer.image_plane_image_1d_of_planes,
@@ -188,9 +188,9 @@ class TestBlurredImageOfPlanes:
         blurred_plane_image_2 = convolver_blur.convolve_image(tracer.planes[2].image_plane_image_1d,
                                                               tracer.planes[2].image_plane_blurring_image_1d)
 
-        blurred_plane_image_0 = data_grid_stack.regular.scaled_array_from_array_1d(blurred_plane_image_0)
-        blurred_plane_image_1 = data_grid_stack.regular.scaled_array_from_array_1d(blurred_plane_image_1)
-        blurred_plane_image_2 = data_grid_stack.regular.scaled_array_from_array_1d(blurred_plane_image_2)
+        blurred_plane_image_0 = data_grid_stack.regular.scaled_array_2d_from_array_1d(blurred_plane_image_0)
+        blurred_plane_image_1 = data_grid_stack.regular.scaled_array_2d_from_array_1d(blurred_plane_image_1)
+        blurred_plane_image_2 = data_grid_stack.regular.scaled_array_2d_from_array_1d(blurred_plane_image_2)
 
         blurred_image_of_planes = util.blurred_image_of_planes_from_1d_images_and_convolver(
             total_planes=tracer.total_planes, image_plane_image_1d_of_planes=tracer.image_plane_image_1d_of_planes,
@@ -210,7 +210,7 @@ class TestBlurredImageOfPlanes:
         g0_image = galaxy_util.intensities_of_galaxies_from_grid(grid=data_grid_stack.sub, galaxies=[g0])
         g0_blurring_image = galaxy_util.intensities_of_galaxies_from_grid(grid=data_grid_stack.blurring, galaxies=[g0])
         g0_blurred_image_1d = convolver_blur.convolve_image(image_array=g0_image, blurring_array=g0_blurring_image)
-        g0_blurred_image = data_grid_stack.regular.scaled_array_from_array_1d(array_1d=g0_blurred_image_1d)
+        g0_blurred_image = data_grid_stack.regular.scaled_array_2d_from_array_1d(array_1d=g0_blurred_image_1d)
 
         tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g0],
                                                      image_plane_grid_stack=data_grid_stack)

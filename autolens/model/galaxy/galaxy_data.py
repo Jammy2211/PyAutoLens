@@ -117,7 +117,7 @@ class GalaxyFitData(object):
             self.use_deflections_x = obj.use_deflections_x
 
     def map_to_scaled_array(self, array_1d):
-        return self.grid_stack.regular.scaled_array_from_array_1d(array_1d=array_1d)
+        return self.grid_stack.regular.scaled_array_2d_from_array_1d(array_1d=array_1d)
 
     def profile_quantity_from_galaxy_and_sub_grid(self, galaxies, sub_grid):
 
