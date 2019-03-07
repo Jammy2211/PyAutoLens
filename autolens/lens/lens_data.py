@@ -96,7 +96,7 @@ class LensData(object):
 
         return LensData(ccd_data=ccd_data_with_modified_image, mask=self.mask, sub_grid_size=self.sub_grid_size,
                         image_psf_shape=self.image_psf_shape, mapping_matrix_psf_shape=self.mapping_matrix_psf_shape,
-                        positions=self.positions)
+                        positions=self.positions, interp_pixel_scale=self.interp_pixel_scale)
 
     @property
     def map_to_scaled_array(self):
@@ -119,6 +119,7 @@ class LensData(object):
             self.padded_grid_stack = obj.padded_grid_stack
             self.border = obj.border
             self.positions = obj.positions
+            self.interp_pixel_scale = obj.interp_pixel_scale
 
 
 class LensDataHyper(LensData):

@@ -7,7 +7,8 @@ from autolens.model.galaxy import galaxy, galaxy_model as gm
 from autolens.pipeline import phase as ph
 from autolens.pipeline import pipeline as pl
 from autolens.model.profiles import light_profiles as lp, mass_profiles as mp
-from test.integration import tools
+from test.integration import integration_util
+from test.simultation import simulation_util
 
 test_type = 'lens_and_source'
 test_name = "lens_light_and_mass_x1_source_x1"
@@ -19,23 +20,7 @@ conf.instance = conf.Config(config_path=config_path, output_path=output_path)
 
 def pipeline():
 
-    tools.reset_paths(test_name=test_name, output_path=output_path)
-
-    lens_light = lp.SphericalDevVaucouleurs(centre=(0.0, 0.0), intensity=0.1, effective_radius=0.5)
-    lens_mass = mp.EllipticalIsothermal(centre=(0.0, 0.0), axis_ratio=0.8, phi=80.0, einstein_radius=1.6)
-    source_light = lp.EllipticalSersic(centre=(0.0, 0.0), axis_ratio=0.6, phi=90.0, intensity=1.0,
-                                       effective_radius=0.5, sersic_index=1.0)
-
-    lens_galaxy = galaxy.Galaxy(dev=lens_light, sie=lens_mass)
-    source_galaxy = galaxy.Galaxy(sersic=source_light)
-
-    tools.simulate_integration_image(test_name=test_name, pixel_scale=0.1, lens_galaxies=[lens_galaxy],
-                                     source_galaxies=[source_galaxy], target_signal_to_noise=30.0)
-
-    ccd_data = ccd.load_ccd_data_from_fits(image_path=path + '/data/' + test_name + '/image.fits',
-                                        psf_path=path + '/data/' + test_name + '/psf.fits',
-                                        noise_map_path=path + '/data/' + test_name + '/noise_map.fits',
-                                        pixel_scale=0.1)
+    integration_util.reset_paths(test_name=test_name, output_path=output_path)
 
     pipeline = make_pipeline(test_name=test_name)
     pipeline.run(data=ccd_data)

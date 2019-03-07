@@ -2,23 +2,14 @@ Hey, welcome to my PyAutoLens to-do. This should give you a sense of what we're 
 
 Let me know if you think anything is missing, or should be pushed up the to-do list ;)
 
-Interp:
-
-- Need to test origin changes are ok, including the 'flip' when the grid is made.
-- Make pixel scales main input parameters instead of interp shape.
--
-
 Short term:
 
-- Bug with NFW potentials for MultiNest
-- Double check that ellipticity of Sersic profiles is working.
-- Bug with errors on certain parameters.
+- Bug with NFW potentials for MultiNest.
 - Binning up speed up for pipelines.
-- Interpolation Scheme for fast deflection angles
 - Inclusion of lens / source redshifts for analysis.
 - Quantitive output of lens model results (e.g. einstein mass, magnification), include otf output
 - Add feature to remove astropy bug.
-- Add colorbar / features to pixelization plots, fix rectangular plot bug.
+- Fix rectangular plot bug.
 
 Mid term:
 
@@ -53,9 +44,7 @@ Possible:
 
 Bugs:
 
-- Error message where some adaptive mappers lead to a qhull.Voronoi error
 - Rectangular plots of source recons are still skewing.
-
 
 
 Notes:

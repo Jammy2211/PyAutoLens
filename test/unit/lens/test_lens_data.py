@@ -159,6 +159,7 @@ class TestLensData(object):
         assert (lens_data.image == 8.0*np.ones((4,4))).all()
         assert (lens_data.image_1d == 8.0*np.ones(4)).all()
 
+
 @pytest.fixture(name="lens_data_hyper")
 def make_lens_hyper_image(ccd, mask):
 
