@@ -6,7 +6,7 @@ from autolens.model.galaxy import galaxy_model as gm
 from autolens.pipeline import phase as ph
 from autolens.pipeline import pipeline as pl
 from autolens.model.profiles import mass_profiles as mp
-from test.integration import tools
+from test.integration import integration_util
 
 test_type = 'positions'
 test_name = "positions_phase"
@@ -18,7 +18,7 @@ conf.instance = conf.Config(config_path=config_path, output_path=output_path)
 
 def pipeline():
 
-    tools.reset_paths(test_name=test_name, output_path=output_path)
+    integration_util.reset_paths(test_name=test_name, output_path=output_path)
 
     pipeline = make_pipeline(test_name=test_name)
 

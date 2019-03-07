@@ -404,7 +404,7 @@ class PhaseImaging(Phase):
 
     def __init__(self, phase_name, optimizer_class=non_linear.MultiNest, sub_grid_size=2, image_psf_shape=None,
                  pixelization_psf_shape=None, use_positions=False, mask_function=None, inner_circular_mask_radii=None,
-                 cosmology=cosmo.Planck15, auto_link_priors=False):
+                 interp_pixel_scale=None, cosmology=cosmo.Planck15, auto_link_priors=False):
 
         """
 
@@ -427,6 +427,7 @@ class PhaseImaging(Phase):
         self.use_positions = use_positions
         self.mask_function = mask_function
         self.inner_circular_mask_radii = inner_circular_mask_radii
+        self.interp_pixel_scale = interp_pixel_scale
 
     # noinspection PyMethodMayBeStatic,PyUnusedLocal
     def modify_image(self, image, previous_results):
@@ -505,7 +506,8 @@ class PhaseImaging(Phase):
                                      'pipeline when you ran it.')
 
         lens_data = li.LensData(ccd_data=data, mask=mask, sub_grid_size=self.sub_grid_size,
-                                image_psf_shape=self.image_psf_shape, positions=positions)
+                                image_psf_shape=self.image_psf_shape, positions=positions,
+                                interp_pixel_scale=self.interp_pixel_scale)
 
         modified_image = self.modify_image(image=lens_data.image, previous_results=previous_results)
         lens_data = lens_data.new_lens_data_with_modified_image(modified_image=modified_image)
@@ -777,7 +779,7 @@ class LensPlanePhase(PhaseImaging):
 
     def __init__(self, phase_name, lens_galaxies=None, optimizer_class=non_linear.MultiNest, sub_grid_size=2,
                  image_psf_shape=None, mask_function=None, inner_circular_mask_radii=None, cosmology=cosmo.Planck15,
-                 auto_link_priors=False):
+                 interp_pixel_scale=None, auto_link_priors=False):
         super(LensPlanePhase, self).__init__(optimizer_class=optimizer_class,
                                              sub_grid_size=sub_grid_size,
                                              image_psf_shape=image_psf_shape,
@@ -837,7 +839,8 @@ class LensSourcePlanePhase(PhaseImaging):
 
     def __init__(self, phase_name, lens_galaxies=None, source_galaxies=None, optimizer_class=non_linear.MultiNest,
                  sub_grid_size=2, image_psf_shape=None, use_positions=False, mask_function=None,
-                 inner_circular_mask_radii=None, cosmology=cosmo.Planck15, auto_link_priors=False):
+                 interp_pixel_scale=None, inner_circular_mask_radii=None, cosmology=cosmo.Planck15,
+                 auto_link_priors=False):
         """
         A phase with a simple source/lens model
 

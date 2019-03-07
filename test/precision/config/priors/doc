@@ -1,0 +1,61 @@
+The priors config files are used for customizing different aspects of the priors assigned to parameters for non-linear
+sampling. The three categories of prior configs are:
+
+default - the default priors (e.g. Uniform, Gaussian) assigned to every parameter of every light-profile,
+          mass-profile, etc.
+
+limit - the hard lower and upper limits allowed for the value of every parameter of every light-profile, mass-profile,
+        etc.
+
+width - the width of the Gaussian prior assumed for evey parameter of every light-profile, mass-profile, etc. when
+        linking their priors between two phases of a pipeline.
+
+More details on each prior config can be found in the 'doc' file of their associated directory.
+
+The following profiles are available in PyAutoLens:
+
+### Light Profiles ###
+
+SphericalSersic
+EllipticalSersic
+SphericalExponential
+EllipticalExponential
+SphericalDevVaucouleurs
+EllipticalDevVaucouleurs
+SphericalCoreSersic
+EllipticalCoreSersic
+SphericalGaussian
+EllipticalGaussian
+
+## Mass Profiles ##
+
+ExternalShear
+SphericalIsothermal
+EllipticalIsothermal
+SphericalCoredIsothermal
+EllipticalCoredIsothermal
+SphericalPowerLaw
+EllipticalPowerLaw
+SphericalCoredPowerLaw
+EllipticalCoredPowerLaw
+SphericalNFW
+EllipticalNFW
+SphericalGeneralizedNFW
+EllipticalGeneralizedNFW
+SphericalSersic
+EllipticalSersic
+SphericalExponential
+EllipticalExponential
+SphericalDevVaucouleurs
+EllipticalDevVaucouleurs
+SphericalSersicRadialGradient
+EllipticalSersicRadialGradient
+
+## Pixelizations ##
+
+Retangular
+AdaptiveMagnification
+
+## Regularization ##
+
+Constant

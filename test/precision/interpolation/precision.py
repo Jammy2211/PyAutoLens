@@ -7,7 +7,7 @@ from autolens.data.array import mask as msk
 
 from autolens.data.array.plotters import array_plotters
 
-from test.profiling import tools
+from test.simulation import simulation_util
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -24,16 +24,17 @@ print('sub grid size = ' + str(sub_grid_size))
 print('annular inner mask radius = ' + str(inner_radius_arcsec) + '\n')
 print('annular outer mask radius = ' + str(outer_radius_arcsec) + '\n')
 
-for image_type in ['HST_Up']:
+for data_type in ['HST_Up']:
 
     print()
 
-    ccd_data = tools.load_profiling_ccd_data(image_type=image_type, lens_name='no_lens_source_smooth', psf_shape=(3,3))
+    ccd_data = simulation_util.load_test_ccd_data(data_type=data_type, data_name='no_lens_source_smooth',
+                                                  psf_shape=(3, 3))
     mask = msk.Mask.circular_annular(shape=ccd_data.shape, pixel_scale=ccd_data.pixel_scale,
                                      inner_radius_arcsec=inner_radius_arcsec, outer_radius_arcsec=outer_radius_arcsec)
     lens_data = ld.LensData(ccd_data=ccd_data, mask=mask, sub_grid_size=sub_grid_size)
 
-    print('Deflection angle run times for image type ' + image_type + '\n')
+    print('Deflection angle run times for image type ' + data_type + '\n')
     print('Number of points = ' + str(lens_data.grid_stack.regular.shape[0]) + '\n')
 
     interpolator = grids.Interpolator.from_mask_grid_and_interp_pixel_scales(mask=lens_data.mask,
