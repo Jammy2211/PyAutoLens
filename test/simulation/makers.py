@@ -38,20 +38,17 @@ def simulate_image_from_galaxies_and_output_to_fits(data_type, data_name, sub_gr
                                               pixel_scale=pixel_scale, psf=psf, exposure_time=exposure_time,
                                               background_sky_level=background_sky_level, add_noise=True)
 
-    # Now, lets output this simulated ccd-data to the test/profiling/data folder.
+    # Now, lets output this simulated ccd-data to the test/data folder.
     path = '{}/../'.format(os.path.dirname(os.path.realpath(__file__)))
 
-    # The data_type tag tells us whether we are outputting an image at LSST, Euclid, HST or AO resolution.
-    data_type = simulation_util.data_type_from_pixel_scale(pixel_scale=pixel_scale)
-
-    data_path = path + '/data/' + data_name
+    data_path = path + 'data/' + data_name
 
     # Check a folder of the lens name and within that of the pixel scale tag exist in the data folder for the images to
     # be output. If it doesn't make it.
     if not os.path.exists(data_path):
         os.makedirs(data_path)
 
-    data_path = data_path + '/' + data_type + '/'
+    data_path += '/' + data_type + '/'
 
     if not os.path.exists(data_path):
         os.makedirs(data_path)
@@ -111,7 +108,6 @@ def make_lens_only_bulge_and_disk(data_types, sub_grid_size):
                                                         sub_grid_size=sub_grid_size, lens_galaxies=[lens_galaxy],
                                                         source_galaxies=[g.Galaxy()])
 
-
 def make_lens_only_x2_galaxies(data_types, sub_grid_size):
 
     # This source-only system has two Sersic bulges separated by 2.0"
@@ -145,7 +141,6 @@ def make_no_lens_light_and_source_smooth(data_types, sub_grid_size):
                                                         sub_grid_size=sub_grid_size,
                                                         lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy])
 
-
 def make_no_lens_light_and_source_cuspy(data_types, sub_grid_size):
 
     # This source-only system has a smooth source (low Sersic Index) and simple SIE mass profile.
@@ -161,7 +156,6 @@ def make_no_lens_light_and_source_cuspy(data_types, sub_grid_size):
         simulate_image_from_galaxies_and_output_to_fits(data_type=data_type, data_name='no_lens_light_and_source_cuspy',
                                                         sub_grid_size=sub_grid_size,
                                                         lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy])
-
 
 def make_lens_and_source_smooth(data_types, sub_grid_size):
 
@@ -180,7 +174,6 @@ def make_lens_and_source_smooth(data_types, sub_grid_size):
         simulate_image_from_galaxies_and_output_to_fits(data_type=data_type, data_name='lens_and_source_smooth',
                                                         sub_grid_size=sub_grid_size,
                                                         lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy])
-
 
 def make_lens_and_source_cuspy(data_types, sub_grid_size):
 
