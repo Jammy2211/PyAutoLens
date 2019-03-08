@@ -9,7 +9,7 @@ from autolens.pipeline import pipeline as pl
 from autolens.model.profiles import light_profiles as lp
 from autolens.model.profiles import mass_profiles as mp
 from test.integration import integration_util
-from test.simultation import simulation_util
+from test.simulation import simulation_util
 
 test_type = 'sensitivity'
 test_name = "sensitivity_profile_via_grid_search"
@@ -23,7 +23,7 @@ conf.instance = conf.Config(config_path=config_path, output_path=output_path)
 def pipeline():
 
     integration_util.reset_paths(test_name=test_name, output_path=output_path)
-    ccd_data = simulation_util.load_test_ccd_data(data_type='Euclid', data_name='no_lens_light_and_source_smooth')
+    ccd_data = simulation_util.load_test_ccd_data(data_resolution='Euclid', data_name='no_lens_light_and_source_smooth')
     pipeline = make_pipeline(test_name=test_name)
     result = pipeline.run(data=ccd_data)
 
