@@ -8,7 +8,7 @@ from autolens.model.profiles import light_profiles as lp
 from autolens.pipeline import phase as ph
 from autolens.pipeline import pipeline as pl
 from test.integration import integration_util
-from test.simultation import simulation_util
+from test.simulation import simulation_util
 
 test_type = 'grid_search'
 test_name = "normal_grid_sersic"
@@ -22,7 +22,7 @@ conf.instance = conf.Config(config_path=config_path, output_path=output_path)
 def pipeline():
                                 
     integration_util.reset_paths(test_name=test_name, output_path=output_path)
-    ccd_data = simulation_util.load_test_ccd_data(data_type='Euclid', data_name='lens_only_dev_vaucouleurs')
+    ccd_data = simulation_util.load_test_ccd_data(data_resolution='Euclid', data_name='lens_only_dev_vaucouleurs')
     pipeline = make_pipeline(test_name=test_name)
     pipeline.run(data=ccd_data)
 

@@ -28,7 +28,7 @@ for data_type in ['HST_Up']:
 
     print()
 
-    ccd_data = simulation_util.load_test_ccd_data(data_type=data_type, data_name='no_lens_source_smooth',
+    ccd_data = simulation_util.load_test_ccd_data(data_resolution=data_type, data_name='no_lens_source_smooth',
                                                   psf_shape=(3, 3))
     mask = msk.Mask.circular_annular(shape=ccd_data.shape, pixel_scale=ccd_data.pixel_scale,
                                      inner_radius_arcsec=inner_radius_arcsec, outer_radius_arcsec=outer_radius_arcsec)

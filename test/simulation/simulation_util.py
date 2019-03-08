@@ -6,37 +6,37 @@ import os
 
 path = '{}/../'.format(os.path.dirname(os.path.realpath(__file__)))
 
-def pixel_scale_from_data_type(data_type):
+def pixel_scale_from_data_resolution(data_resolution):
 
-    if data_type == 'LSST':
+    if data_resolution == 'LSST':
         return 0.2
-    elif data_type == 'Euclid':
+    elif data_resolution == 'Euclid':
         return 0.1
-    elif data_type == 'HST':
+    elif data_resolution == 'HST':
         return 0.05
-    elif data_type == 'HST_Up':
+    elif data_resolution == 'HST_Up':
         return 0.03
-    elif data_type == 'AO':
+    elif data_resolution == 'AO':
         return 0.01
     else:
-        raise ValueError('An invalid data-type was entered when generating the test-data suite - ', data_type)
+        raise ValueError('An invalid data resolution was entered - ', data_resolution)
 
-def shape_from_data_type(data_type):
+def shape_from_data_resolution(data_resolution):
 
-    if data_type == 'LSST':
+    if data_resolution == 'LSST':
         return (100, 100)
-    elif data_type == 'Euclid':
+    elif data_resolution == 'Euclid':
         return (150, 150)
-    elif data_type == 'HST':
+    elif data_resolution == 'HST':
         return (250, 250)
-    elif data_type == 'HST_Up':
+    elif data_resolution == 'HST_Up':
         return (320, 320)
-    elif data_type == 'AO':
+    elif data_resolution == 'AO':
         return (750, 750)
     else:
-        raise ValueError('An invalid data-type was entered when generating the test-data suite - ', data_type)
+        raise ValueError('An invalid data-type was entered - ', data_resolution)
 
-def data_type_from_pixel_scale(pixel_scale):
+def data_resolution_from_pixel_scale(pixel_scale):
 
     if pixel_scale == 0.2:
         return 'LSST'
@@ -49,13 +49,15 @@ def data_type_from_pixel_scale(pixel_scale):
     elif pixel_scale == 0.01:
         return 'AO'
     else:
-        raise ValueError('An invalid pixel-scale was entered when generating the data-type - ', pixel_scale)
+        raise ValueError('An invalid pixel-scale was entered - ', pixel_scale)
 
-def load_test_ccd_data(data_type, data_name, psf_shape=(11, 11)):
+def load_test_ccd_data(data_resolution, data_name, psf_shape=(11, 11)):
 
-    pixel_scale = pixel_scale_from_data_type(data_type=data_type)
+    pixel_scale = pixel_scale_from_data_resolution(data_resolution=data_resolution)
 
-    return ccd.load_ccd_data_from_fits(image_path=path + '/data/' + data_name + '/' + data_type + '/image.fits',
-                                       psf_path=path + '/data/' + data_name + '/' + data_type + '/psf.fits',
-                                       noise_map_path=path + '/data/' + data_name + '/' + data_type + '/noise_map.fits',
+    data_path = path + '/data/' + data_name + '/' + data_resolution
+
+    return ccd.load_ccd_data_from_fits(image_path= data_path + '/image.fits',
+                                       psf_path= data_path + '/psf.fits',
+                                       noise_map_path= data_path + '/noise_map.fits',
                                        pixel_scale=pixel_scale, resized_psf_shape=psf_shape)
