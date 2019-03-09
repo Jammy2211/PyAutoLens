@@ -265,3 +265,38 @@ def numpy_array_2d_from_fits(file_path, hdu):
     """
     hdu_list = fits.open(file_path)
     return np.flipud(np.array(hdu_list[hdu].data))
+
+def make_and_return_path(path, folder_names):
+    """ For a given path, create a directory structure composed of a set of folders and return the path to the \
+    inner-most folder.
+
+    For example, if path='/path/to/folders', and folder_names=['folder1', 'folder2'], the directory created will be
+    '/path/to/folders/folder1/folder2/' and the returned path will be '/path/to/folders/folder1/folder2/'.
+
+    If the folders already exist, routine continues as normal.
+
+    Parameters
+    ----------
+    path : str
+        The path where the directories are created.
+    folder_names : [str]
+        The names of the folders which are created in the path directory.
+
+    Returns
+    -------
+    path
+        A string specifying the path to the inner-most folder created.
+
+    Examples
+    --------
+    path = '/path/to/folders'
+    path = make_and_return_path(path=path, folder_names=['folder1', 'folder2'].
+    """
+    for folder_name in folder_names:
+
+        path += folder_name + '/'
+
+        if not os.path.exists(path):
+            os.makedirs(path)
+
+    return path
