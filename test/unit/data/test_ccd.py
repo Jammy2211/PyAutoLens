@@ -2466,17 +2466,17 @@ class TestCCDFromFits(object):
         os.makedirs(output_data_dir)
 
         ccd.output_ccd_data_to_fits(ccd_data=ccd_data,
-                                    image_path=output_data_dir + 'regular.fits',
+                                    image_path=output_data_dir + 'image.fits',
                                     psf_path=output_data_dir + 'psf.fits',
-                                    noise_map_path=output_data_dir + 'noise_maps.fits',
+                                    noise_map_path=output_data_dir + 'noise_map.fits',
                                     background_noise_map_path=output_data_dir + 'background_noise_map.fits',
                                     poisson_noise_map_path=output_data_dir + 'poisson_noise_map.fits',
                                     exposure_time_map_path=output_data_dir + 'exposure_time_map.fits',
                                     background_sky_map_path=output_data_dir + 'background_sky_map.fits')
 
-        ccd_data = ccd.load_ccd_data_from_fits(image_path=output_data_dir + 'regular.fits', pixel_scale=0.1,
+        ccd_data = ccd.load_ccd_data_from_fits(image_path=output_data_dir + 'image.fits', pixel_scale=0.1,
                                                psf_path=output_data_dir + 'psf.fits',
-                                               noise_map_path=output_data_dir + 'noise_maps.fits',
+                                               noise_map_path=output_data_dir + 'noise_map.fits',
                                                background_noise_map_path=output_data_dir + 'background_noise_map.fits',
                                                poisson_noise_map_path=output_data_dir + 'poisson_noise_map.fits',
                                                exposure_time_map_path=output_data_dir + 'exposure_time_map.fits',

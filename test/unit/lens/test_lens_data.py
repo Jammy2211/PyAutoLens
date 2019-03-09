@@ -127,7 +127,6 @@ class TestLensData(object):
 
         assert (lens_data.padded_grid_stack.blurring == np.array([[0.0, 0.0]])).all()
 
-
     def test__border(self, lens_data):
         assert (lens_data.border == np.array([0, 1, 2, 3])).all()
 
@@ -159,6 +158,7 @@ class TestLensData(object):
 
         assert (lens_data.image == 8.0*np.ones((4,4))).all()
         assert (lens_data.image_1d == 8.0*np.ones(4)).all()
+
 
 @pytest.fixture(name="lens_data_hyper")
 def make_lens_hyper_image(ccd, mask):
