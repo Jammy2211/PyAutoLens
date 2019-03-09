@@ -9,7 +9,7 @@ from autolens.model.galaxy.util import galaxy_util
 from autolens.data.array import grids, scaled_array
 from autolens.pipeline import phase as ph
 from autolens.model.profiles import mass_profiles as mp
-from test.integration import tools
+from test.integration import integration_util
 
 test_type = 'galaxy_fit'
 test_name = "surface_density"
@@ -24,7 +24,7 @@ def phase():
     pixel_scale = 0.1
     image_shape = (150, 150)
 
-    tools.reset_paths(test_name=test_name, output_path=output_path)
+    integration_util.reset_paths(test_name=test_name, output_path=output_path)
 
     grid_stack = grids.GridStack.from_shape_pixel_scale_and_sub_grid_size(shape=image_shape, pixel_scale=pixel_scale,
                                                                           sub_grid_size=4)

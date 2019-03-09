@@ -4,7 +4,7 @@ from autolens.model.profiles import mass_profiles as mp
 from autolens.lens import lens_data as ld
 from autolens.data.array import mask as msk
 
-from test.profiling import tools
+from test.data_making import data_util
 
 # Although we could test the deflection angles without using an image (e.g. by just making a grid), we have chosen to
 # set this test up using an image and mask. This gives run-time numbers that can be easily related to an actual lens
@@ -18,7 +18,7 @@ print('circular mask radius = ' + str(radius_arcsec) + '\n')
 
 for image_type in ['LSST', 'Euclid', 'HST', 'HST_Up', 'AO']:
 
-    ccd_data = tools.load_profiling_ccd_data(image_type=image_type, lens_name='no_lens_source_smooth', psf_shape=(3,3))
+    ccd_data = data_util.load_test_ccd_data(image_type=image_type, lens_name='no_lens_source_smooth', psf_shape=(3, 3))
     mask = msk.Mask.circular(shape=ccd_data.shape, pixel_scale=ccd_data.pixel_scale, radius_arcsec=radius_arcsec)
     lens_data = ld.LensData(ccd_data=ccd_data, mask=mask, sub_grid_size=sub_grid_size)
 
@@ -109,13 +109,13 @@ for image_type in ['LSST', 'Euclid', 'HST', 'HST_Up', 'AO']:
     
     ### EllipticalGeneralizedNFW (inner_slope = 0.5) ###
     
-    mass_profile = mp.EllipticalGeneralizedNFW(centre=(0.0, 0.0), axis_ratio=0.8, phi=45.0, kappa_s=0.1,
-                                               scale_radius=10.0, inner_slope=0.5)
-    
-    start = time.time()
-    mass_profile.deflections_from_grid(grid=lens_data.grid_stack.sub)
-    diff = time.time() - start
-    print("EllipticalGeneralizedNFW (inner_slope = 1.0) time = {}".format(diff))
+    # mass_profile = mp.EllipticalGeneralizedNFW(centre=(0.0, 0.0), axis_ratio=0.8, phi=45.0, kappa_s=0.1,
+    #                                            scale_radius=10.0, inner_slope=0.5)
+    #
+    # start = time.time()
+    # mass_profile.deflections_from_grid(grid=lens_data.grid_stack.sub)
+    # diff = time.time() - start
+    # print("EllipticalGeneralizedNFW (inner_slope = 1.0) time = {}".format(diff))
     
     
     ### SphericalGeneralizedNFW (inner_slope = 0.5) ###

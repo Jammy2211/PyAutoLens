@@ -33,6 +33,9 @@ class LensData(object):
         positions : [[]]
             Lists of image-pixel coordinates (arc-seconds) that mappers close to one another in the source-plane(s), \
             used to speed up the non-linear sampling.
+        interp_pixel_scale : float
+            If *True*, expensive to compute mass profile deflection angles will be computed on a sparse grid and \
+            interpolated to the regular, sub and blurring grids.
         """
 
         self.ccd_data = ccd_data
@@ -73,6 +76,8 @@ class LensData(object):
         self.padded_grid_stack = grids.GridStack.padded_grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=mask,
                                                             sub_grid_size=sub_grid_size, psf_shape=self.image_psf_shape)
 
+        self.interp_pixel_scale = interp_pixel_scale
+
         if interp_pixel_scale is not None:
 
             self.grid_stack = self.grid_stack.new_grid_stack_with_interpolator_added_to_each_grid(
@@ -91,7 +96,7 @@ class LensData(object):
 
         return LensData(ccd_data=ccd_data_with_modified_image, mask=self.mask, sub_grid_size=self.sub_grid_size,
                         image_psf_shape=self.image_psf_shape, mapping_matrix_psf_shape=self.mapping_matrix_psf_shape,
-                        positions=self.positions)
+                        positions=self.positions, interp_pixel_scale=self.interp_pixel_scale)
 
     @property
     def map_to_scaled_array(self):
@@ -114,12 +119,13 @@ class LensData(object):
             self.padded_grid_stack = obj.padded_grid_stack
             self.border = obj.border
             self.positions = obj.positions
+            self.interp_pixel_scale = obj.interp_pixel_scale
 
 
 class LensDataHyper(LensData):
 
     def __init__(self, ccd_data, mask, hyper_model_image, hyper_galaxy_images, hyper_minimum_values, sub_grid_size=2,
-                 image_psf_shape=None, mapping_matrix_psf_shape=None, positions=None):
+                 image_psf_shape=None, mapping_matrix_psf_shape=None, positions=None, interp_pixel_scale=None):
         """
         The lens data is the collection of data (image, noise-map, PSF), a mask, grid_stack, convolver \
         and other utilities that are used for modeling and fitting an image of a strong lens.
@@ -148,9 +154,13 @@ class LensDataHyper(LensData):
         positions : [[]]
             Lists of image-pixel coordinates (arc-seconds) that mappers close to one another in the source-plane(s), used \
             to speed up the non-linear sampling.
+        interp_pixel_scale : float
+            If *True*, expensive to compute mass profile deflection angles will be computed on a sparse grid and \
+            interpolated to the regular, sub and blurring grids.
         """
         super().__init__(ccd_data=ccd_data, mask=mask, sub_grid_size=sub_grid_size, image_psf_shape=image_psf_shape,
-                         mapping_matrix_psf_shape=mapping_matrix_psf_shape, positions=positions)
+                         mapping_matrix_psf_shape=mapping_matrix_psf_shape, positions=positions,
+                         interp_pixel_scale=interp_pixel_scale)
 
         self.hyper_model_image = hyper_model_image
         self.hyper_galaxy_images = hyper_galaxy_images
