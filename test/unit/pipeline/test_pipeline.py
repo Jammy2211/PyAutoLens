@@ -23,15 +23,15 @@ class MockMask(object):
 
 class Optimizer(object):
     def __init__(self):
-        self.name = "dummy_phase"
+        self.phase_name = "dummy_phase"
 
 
 class DummyPhaseImaging(object):
-    def __init__(self, name):
+    def __init__(self, phase_name):
         self.data = None
         self.positions = None
         self.previous_results = None
-        self.phase_name = name
+        self.phase_name = phase_name
         self.mask = None
 
         self.optimizer = Optimizer()
@@ -90,11 +90,11 @@ class TestPipelineImaging(object):
 
 
 class DummyPhasePositions(object):
-    def __init__(self, name):
+    def __init__(self, phase_name):
         self.positions = None
         self.previous_results = None
         self.pixel_scale = None
-        self.phase_name = name
+        self.phase_name = phase_name
         self.optimizer = Optimizer()
 
     def run(self, positions, pixel_scale, previous_results):

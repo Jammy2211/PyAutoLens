@@ -12,15 +12,15 @@ from test.simulation import simulation_util
 test_type = 'lens_and_source'
 test_name = "lens_light_and_mass_x1_source_x1"
 
-path = '{}/../../'.format(os.path.dirname(os.path.realpath(__file__)))
-output_path = path+'output/'+test_type
-config_path = path+'config'
+test_path = '{}/../../'.format(os.path.dirname(os.path.realpath(__file__)))
+output_path = test_path + 'output/' + test_type
+config_path = test_path + 'config'
 conf.instance = conf.Config(config_path=config_path, output_path=output_path)
 
 def pipeline():
 
     integration_util.reset_paths(test_name=test_name, output_path=output_path)
-    ccd_data = simulation_util.load_test_ccd_data(data_resolution='LSST', data_name='lens_light_and_source_smooth')
+    ccd_data = simulation_util.load_test_ccd_data(data_resolution='LSST', data_type='lens_light_and_source_smooth')
     pipeline = make_pipeline(test_name=test_name)
     pipeline.run(data=ccd_data)
 

@@ -363,7 +363,7 @@ class TestPhase(object):
     def test__make_analysis__phase_info_is_made(self, phase, ccd_data):
         phase.make_analysis(data=ccd_data)
 
-        file_phase_info = "{}/{}/{}".format(conf.instance.output_path, phase.optimizer.name, 'phase.info')
+        file_phase_info = "{}/{}".format(phase.optimizer.phase_output_path, 'phase.info')
 
         phase_info = open(file_phase_info, 'r')
 
