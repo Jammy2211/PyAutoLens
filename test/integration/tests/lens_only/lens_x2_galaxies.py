@@ -13,16 +13,16 @@ from test.simulation import simulation_util
 test_type = 'lens_only'
 test_name = "lens_x2_galaxies"
 
-path = '{}/../../'.format(os.path.dirname(os.path.realpath(__file__)))
-output_path = path+'output/'+test_type
-config_path = path+'config'
+test_path = '{}/../../'.format(os.path.dirname(os.path.realpath(__file__)))
+output_path = test_path + 'output/' + test_type
+config_path = test_path + 'config'
 conf.instance = conf.Config(config_path=config_path, output_path=output_path)
 
 
 def pipeline():
 
     integration_util.reset_paths(test_name=test_name, output_path=output_path)
-    ccd_data = simulation_util.load_test_ccd_data(data_resolution='LSST', data_name='lens_only_x2_galaxies')
+    ccd_data = simulation_util.load_test_ccd_data(data_resolution='LSST', data_type='lens_only_x2_galaxies')
     pipeline = make_pipeline(test_name=test_name)
     pipeline.run(data=ccd_data)
 
