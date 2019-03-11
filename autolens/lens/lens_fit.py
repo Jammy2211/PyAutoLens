@@ -2,7 +2,6 @@ import numpy as np
 
 from autofit.tools import fit
 from autolens import exc
-from autolens.lens import ray_tracing
 from autolens.lens.util import lens_fit_util as util
 from autolens.model.inversion import inversions
 
@@ -15,9 +14,9 @@ def fit_lens_data_with_tracer(lens_data, tracer, padded_tracer=None):
     -----------
     lens_data : lens_data.LensData or lens_data.LensDataHyper
         The lens-images that is fitted.
-    tracer : ray_tracing.AbstractTracerNonStack
+    tracer : ray_tracing.TracerNonStack
         The tracer, which describes the ray-tracing and strong lens configuration.
-    padded_tracer : ray_tracing.AbstractTracer or None
+    padded_tracer : ray_tracing.Tracer or None
         A tracer with an identical strong lens configuration to the tracer above, but using the lens data's \
         padded grid_stack such that unmasked model-images can be computed.
     """
@@ -34,22 +33,23 @@ def fit_lens_data_with_tracer(lens_data, tracer, padded_tracer=None):
                                    'properties of the tracer')
 
 
-class AbstractLensFit(object):
+class LensFit(fit.DataFit):
 
-    def __init__(self, tracer, padded_tracer, psf, map_to_scaled_array):
-        """ An abstract lens fitter, which contains the tracer's used to perform the fit and functions to manipulate \
+    def __init__(self, image, noise_map, mask, model_image, tracer, psf, map_to_scaled_array, padded_tracer=None):
+        """ An  lens fitter, which contains the tracer's used to perform the fit and functions to manipulate \
         the lens data's hyper.
 
         Parameters
         -----------
-        tracer : ray_tracing.AbstractTracer
+        tracer : ray_tracing.Tracer
             The tracer, which describes the ray-tracing and strong lens configuration.
-        padded_tracer : ray_tracing.AbstractTracerNonStack or None
+        padded_tracer : ray_tracing.TracerNonStack or None
             A tracer with an identical strong lens configuration to the tracer above, but using the lens data's \
             padded grid_stack such that unmasked model-images can be computed.
         map_to_scaled_array : func
             A function which maps the 1D lens hyper to its unmasked 2D array.
         """
+        super().__init__(data=image, noise_map=noise_map, mask=mask, model_data=model_image)
         self.tracer = tracer
         self.padded_tracer = padded_tracer
         self.psf = psf
@@ -85,10 +85,10 @@ class AbstractLensFit(object):
                 psf=self.psf)
 
 
-class AbstractLensProfileFit(AbstractLensFit):
+class LensProfileFit(LensFit):
 
-    def __init__(self, lens_data, tracer, padded_tracer):
-        """ An abstract lens profile fitter, which generates the image-plane image of all galaxies (with light \
+    def __init__(self, lens_data, tracer, padded_tracer=None):
+        """ An  lens profile fitter, which generates the image-plane image of all galaxies (with light \
         profiles) in the tracer and blurs it with the lens data's PSF.
 
         If a padded tracer is supplied, the blurred profile image's can be generated over the entire image and thus \
@@ -98,22 +98,23 @@ class AbstractLensProfileFit(AbstractLensFit):
         -----------
         lens_data : lens_data.LensData
             The lens-image that is fitted.
-        tracer : ray_tracing.AbstractTracerNonStack
+        tracer : ray_tracing.TracerNonStack
             The tracer, which describes the ray-tracing and strong lens configuration.
-        padded_tracer : ray_tracing.AbstractTracer or None
+        padded_tracer : ray_tracing.Tracer or None
             A tracer with an identical strong lens configuration to the tracer above, but using the lens data's \
             padded grid_stack such that unmasked model-images can be computed.
         """
-        super(AbstractLensProfileFit, self).__init__(tracer=tracer, padded_tracer=padded_tracer, psf=lens_data.psf,
-                                                     map_to_scaled_array=lens_data.map_to_scaled_array)
-
-        self.convolver_image = lens_data.convolver_image
-
         blurred_profile_image_1d = util.blurred_image_1d_from_1d_unblurred_and_blurring_images(
             unblurred_image_1d=tracer.image_plane_image_1d, blurring_image_1d=tracer.image_plane_blurring_image_1d,
-            convolver=self.convolver_image)
+            convolver=lens_data.convolver_image)
+        super(LensProfileFit, self).__init__(
+            image=lens_data.image, noise_map=lens_data.noise_map,
+            mask=lens_data.mask, model_image=lens_data.map_to_scaled_array(
+                array_1d=blurred_profile_image_1d),
+            tracer=tracer, padded_tracer=padded_tracer, psf=lens_data.psf,
+            map_to_scaled_array=lens_data.map_to_scaled_array)
 
-        self.blurred_profile_image = self.map_to_scaled_array(array_1d=blurred_profile_image_1d)
+        self.convolver_image = lens_data.convolver_image
 
     @property
     def model_image_of_planes(self):
@@ -125,10 +126,10 @@ class AbstractLensProfileFit(AbstractLensFit):
             map_to_scaled_array=self.map_to_scaled_array)
 
 
-class AbstractLensInversionFit(AbstractLensFit):
+class LensInversionFit(LensFit):
 
-    def __init__(self, lens_data, noise_map_1d, tracer):
-        """ An abstract lens inversion fitter, which fits the lens data an inversion using the mapper(s) and \
+    def __init__(self, lens_data, tracer):
+        """ An  lens inversion fitter, which fits the lens data an inversion using the mapper(s) and \
         regularization(s) in the galaxies of the tracer.
 
         This inversion use's the lens-image, its PSF and an input noise-map.
@@ -137,127 +138,21 @@ class AbstractLensInversionFit(AbstractLensFit):
         -----------
         lens_data : lens_data.LensData
             The lens-image that is fitted.
-        noise_map_1d : ndarray
-            The 1D noise_map map that is fitted, which is an input variable so a hyper-noise_map map can be used (see \
-            *AbstractHyperFitter*).
-        tracer : ray_tracing.AbstractTracer
+        tracer : ray_tracing.Tracer
             The tracer, which describes the ray-tracing and strong lens configuration.
         """
-        super(AbstractLensInversionFit, self).__init__(tracer=tracer, padded_tracer=None, psf=lens_data.psf,
-                                                       map_to_scaled_array=lens_data.map_to_scaled_array)
 
-        self.inversion = inversions.inversion_from_image_mapper_and_regularization(
-            image_1d=lens_data.image_1d, noise_map_1d=noise_map_1d, convolver=lens_data.convolver_mapping_matrix,
+        inversion = inversions.inversion_from_image_mapper_and_regularization(
+            image_1d=lens_data.image_1d, noise_map_1d=lens_data.noise_map, convolver=lens_data.convolver_mapping_matrix,
             mapper=tracer.mappers_of_planes[-1], regularization=tracer.regularizations_of_planes[-1])
+        super().__init__(image=lens_data.image, noise_map=lens_data.noise_map,
+                         mask=lens_data.mask,
+                         model_image=inversion.reconstructed_data,
+                         psf=lens_data.psf,
+                         tracer=tracer,
+                         map_to_scaled_array=lens_data.map_to_scaled_array)
 
-    @property
-    def model_image_of_planes(self):
-        return [None, self.inversion.reconstructed_data]
-
-
-class AbstractLensProfileInversionFit(AbstractLensFit):
-
-    def __init__(self, lens_data, noise_map_1d, tracer, padded_tracer):
-        """ An abstract lens profile and inversion fitter, which first generates and subtracts the image-plane \
-        image of all galaxies (with light profiles) in the tracer, blurs it with the PSF and fits the residual image \
-        with an inversion using the mapper(s) and regularization(s) in the galaxy's of the tracer.
-
-        This inversion use's the lens-image, its PSF and an input noise-map.
-
-        If a padded tracer is supplied, the blurred profile image's can be generated over the entire image and thus \
-        without the mask.
-
-        Parameters
-        -----------
-        lens_data : lens_data.LensData
-            The lens-image that is fitted.
-        noise_map_1d : ndarray
-            The 1D noise_map map that is fitted, which is an input variable so a hyper-noise_map map can be used (see \
-            *AbstractHyperFitter*).
-        tracer : ray_tracing.AbstractTracer
-            The tracer, which describes the ray-tracing and strong lens configuration.
-        padded_tracer : ray_tracing.AbstractTracerNonStack or None
-            A tracer with an identical strong lens configuration to the tracer above, but using the lens data's \
-            padded grid_stack such that unmasked model-images can be computed.
-        """
-        super(AbstractLensProfileInversionFit, self).__init__(tracer=tracer, padded_tracer=padded_tracer,
-                                                              psf=lens_data.psf,
-                                                              map_to_scaled_array=lens_data.map_to_scaled_array)
-
-        self.psf = lens_data.psf
-        self.convolver_image = lens_data.convolver_image
-
-        blurred_profile_image_1d = util.blurred_image_1d_from_1d_unblurred_and_blurring_images(
-            unblurred_image_1d=tracer.image_plane_image_1d, blurring_image_1d=tracer.image_plane_blurring_image_1d,
-            convolver=lens_data.convolver_image)
-
-        self.blurred_profile_image = self.map_to_scaled_array(array_1d=blurred_profile_image_1d)
-
-        profile_subtracted_image_1d = lens_data.image_1d - blurred_profile_image_1d
-        self.profile_subtracted_image = lens_data.image - self.blurred_profile_image
-
-        self.inversion = inversions.inversion_from_image_mapper_and_regularization(
-            image_1d=profile_subtracted_image_1d, noise_map_1d=noise_map_1d,
-            convolver=lens_data.convolver_mapping_matrix, mapper=tracer.mappers_of_planes[-1],
-            regularization=tracer.regularizations_of_planes[-1])
-
-    @property
-    def model_image_of_planes(self):
-        return [self.blurred_profile_image, self.inversion.reconstructed_data]
-
-
-class LensDataFit(fit.DataFit):
-
-    def __init__(self, image, noise_map, mask, model_image):
-        """Class to fit lens data with a model image.
-
-        Parameters
-        -----------
-        image : ndarray
-            The observed image that is fitted.
-        noise_map : ndarray
-            The noise-map of the observed image.
-        mask: msk.Mask
-            The mask that is applied to the image.
-        model_image : ndarray
-            The model image the observed image is fitted with.
-        """
-        super(LensDataFit, self).__init__(data=image, noise_map=noise_map, mask=mask, model_data=model_image)
-
-    @property
-    def image(self):
-        return self.data
-
-    @property
-    def model_image(self):
-        return self.model_data
-
-    @property
-    def figure_of_merit(self):
-        return self.likelihood
-
-
-class LensDataInversionFit(LensDataFit):
-
-    def __init__(self, image, noise_map, mask, model_image, inversion):
-        """Class to fit lens data with a inversion model image.
-
-        Parameters
-        -----------
-        image : ndarray
-            The observed image that is fitted.
-        noise_map : ndarray
-            The noise-map of the observed image.
-        mask: msk.Mask
-            The mask that is applied to the image.
-        model_image : ndarray
-            The model image the observed image is fitted with.
-        inversion : inversions.Inversion
-            The inversion used to fit the image.
-        """
-        super(LensDataInversionFit, self).__init__(image=image, noise_map=noise_map,
-                                                   mask=mask, model_image=model_image)
-
+        self.inversion = inversion
         self.likelihood_with_regularization = \
             util.likelihood_with_regularization_from_chi_squared_regularization_term_and_noise_normalization(
                 chi_squared=self.chi_squared, regularization_term=inversion.regularization_term,
@@ -274,77 +169,19 @@ class LensDataInversionFit(LensDataFit):
     def figure_of_merit(self):
         return self.evidence
 
-
-class LensProfileFit(LensDataFit, AbstractLensProfileFit):
-
-    def __init__(self, lens_data, tracer, padded_tracer=None):
-        """ Fit lens data with galaxy light-profiles, as follows:
-
-        1) Generates the image-plane image of all galaxies with light profiles in the tracer.
-        2) Blur this image-plane image with the lens data's PSF to generate the model-image.
-        3) Fit the observed with this model-image.
-
-        If a padded tracer is supplied, the blurred profile image's can be generated over the entire image and thus \
-        without the mask.
-
-        Parameters
-        -----------
-        lens_data : lens_data.LensData
-            The lens-image that is fitted.
-        tracer : ray_tracing.AbstractTracerNonStack
-            The tracer, which describes the ray-tracing and strong lens configuration.
-        padded_tracer : ray_tracing.AbstractTracer or None
-            A tracer with an identical strong lens configuration to the tracer above, but using the lens data's \
-            padded grid_stack such that unmasked model-images can be computed.
-        """
-        AbstractLensProfileFit.__init__(self=self, lens_data=lens_data, tracer=tracer,
-                                        padded_tracer=padded_tracer)
-
-        super(LensProfileFit, self).__init__(image=lens_data.image, noise_map=lens_data.noise_map,
-                                             mask=lens_data.mask, model_image=self.blurred_profile_image)
+    @property
+    def model_image_of_planes(self):
+        return [None, self.inversion.reconstructed_data]
 
 
-class LensInversionFit(LensDataInversionFit, AbstractLensInversionFit):
+class LensProfileInversionFit(LensFit):
 
-    def __init__(self, lens_data, tracer):
-        """ Fit lens data with an inversion, as follows:
+    def __init__(self, lens_data, tracer, padded_tracer):
+        """ An  lens profile and inversion fitter, which first generates and subtracts the image-plane \
+        image of all galaxies (with light profiles) in the tracer, blurs it with the PSF and fits the residual image \
+        with an inversion using the mapper(s) and regularization(s) in the galaxy's of the tracer.
 
-        1) Extract the mapper(s) and regularization(s) of galaxies in the tracer.
-        2) Use these to perform an inversion on the lens data (including PSF blurring) and generate the model-image.
-        3) Fit the observed with this model-image.
-
-        Parameters
-        -----------
-        lens_data : lens_data.LensData
-            The lens-image that is fitted.
-        tracer : ray_tracing.AbstractTracer
-            The tracer, which describes the ray-tracing and strong lens configuration.
-        """
-
-        AbstractLensInversionFit.__init__(self=self, lens_data=lens_data,
-                                          noise_map_1d=lens_data.noise_map_1d, tracer=tracer)
-
-        super(LensInversionFit, self).__init__(image=lens_data.image, noise_map=lens_data.noise_map,
-                                               mask=lens_data.mask,
-                                               model_image=self.inversion.reconstructed_data,
-                                               inversion=self.inversion)
-
-
-class LensProfileInversionFit(LensDataInversionFit, AbstractLensProfileInversionFit):
-
-    def __init__(self, lens_data, tracer, padded_tracer=None):
-        """ Fit lens data with galaxy light-profiles and an inversion, as follows:
-
-        1) Generates the image-plane image of all galaxies with light profiles in the tracer.
-        2) Blur this image-plane image with the lens data's PSF to generate the model-image.
-        3) Subtract this image from the observed image to generate a profile subtracted image.
-        4) Extract the mapper(s) and regularization(s) of galaxies in the tracer.
-        5) Use these to perform an inversion on the profile subtracted image (including PSF blurring).
-        6) Add the blurred profile image and reconstructed inversion image together to generate the model-image.
-        7) Fit the observed with this model-image.
-
-        Typically, this fit is used to subtract the foreground lens's light using light profiles \
-        and then fit the source galaxy with an inversion, however the fitting routine in general
+        This inversion use's the lens-image, its PSF and an input noise-map.
 
         If a padded tracer is supplied, the blurred profile image's can be generated over the entire image and thus \
         without the mask.
@@ -353,22 +190,42 @@ class LensProfileInversionFit(LensDataInversionFit, AbstractLensProfileInversion
         -----------
         lens_data : lens_data.LensData
             The lens-image that is fitted.
-        tracer : ray_tracing.AbstractTracerNonStack
+        tracer : ray_tracing.Tracer
             The tracer, which describes the ray-tracing and strong lens configuration.
-        padded_tracer : ray_tracing.AbstractTracer or None
+        padded_tracer : ray_tracing.TracerNonStack or None
             A tracer with an identical strong lens configuration to the tracer above, but using the lens data's \
             padded grid_stack such that unmasked model-images can be computed.
         """
+        blurred_profile_image_1d = util.blurred_image_1d_from_1d_unblurred_and_blurring_images(
+            unblurred_image_1d=tracer.image_plane_image_1d, blurring_image_1d=tracer.image_plane_blurring_image_1d,
+            convolver=lens_data.convolver_image)
 
-        AbstractLensProfileInversionFit.__init__(self=self, lens_data=lens_data,
-                                                 noise_map_1d=lens_data.noise_map_1d, tracer=tracer,
-                                                 padded_tracer=padded_tracer)
+        blurred_profile_image = lens_data.map_to_scaled_array(array_1d=blurred_profile_image_1d)
+        profile_subtracted_image_1d = lens_data.image_1d - blurred_profile_image_1d
+        inversion = inversions.inversion_from_image_mapper_and_regularization(
+            image_1d=profile_subtracted_image_1d, noise_map_1d=lens_data.noise_map_1d,
+            convolver=lens_data.convolver_mapping_matrix, mapper=tracer.mappers_of_planes[-1],
+            regularization=tracer.regularizations_of_planes[-1])
 
-        model_image = self.blurred_profile_image + self.inversion.reconstructed_data
+        model_image = blurred_profile_image + inversion.reconstructed_data
+        super(LensProfileInversionFit, self).__init__(tracer=tracer, padded_tracer=padded_tracer,
+                                                      psf=lens_data.psf,
+                                                      map_to_scaled_array=lens_data.map_to_scaled_array,
+                                                      image=lens_data.image, noise_map=lens_data.noise_map,
+                                                      mask=lens_data.mask, model_image=model_image)
 
-        super(LensProfileInversionFit, self).__init__(image=lens_data.image, noise_map=lens_data.noise_map,
-                                                      mask=lens_data.mask, model_image=model_image,
-                                                      inversion=self.inversion)
+        self.psf = lens_data.psf
+        self.convolver_image = lens_data.convolver_image
+
+        self.blurred_profile_image = blurred_profile_image
+        self.profile_subtracted_image = lens_data.image - self.blurred_profile_image
+        self.model_image = model_image
+
+        self.inversion = inversion
+
+    @property
+    def model_image_of_planes(self):
+        return [self.blurred_profile_image, self.inversion.reconstructed_data]
 
 
 class LensPositionFit(object):
