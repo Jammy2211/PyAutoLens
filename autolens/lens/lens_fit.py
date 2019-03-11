@@ -56,6 +56,10 @@ class LensFit(fit.DataFit):
         self.map_to_scaled_array = map_to_scaled_array
 
     @property
+    def model_image(self):
+        return self.model_data
+
+    @property
     def total_inversions(self):
         return len(self.tracer.mappers_of_planes)
 
@@ -124,6 +128,10 @@ class LensProfileFit(LensFit):
             image_plane_blurring_image_1d_of_planes=self.tracer.image_plane_blurring_image_1d_of_planes,
             convolver=self.convolver_image,
             map_to_scaled_array=self.map_to_scaled_array)
+
+    @property
+    def figure_of_merit(self):
+        return self.likelihood
 
 
 class LensInversionFit(LensFit):
@@ -220,7 +228,6 @@ class LensProfileInversionFit(LensFit):
 
         self.blurred_profile_image = blurred_profile_image
         self.profile_subtracted_image = lens_data.image - self.blurred_profile_image
-        self.model_image = model_image
 
         self.inversion = inversion
 
