@@ -2,7 +2,6 @@ import numpy as np
 from astropy import cosmology as cosmo
 
 from autofit import conf
-from autofit.mapper import model_mapper as mm
 from autofit.optimize import non_linear
 from autofit.tools import fit
 from autofit.tools import phase as autofit_phase
@@ -1387,7 +1386,6 @@ class SensitivityPhase(PhaseImaging):
 
 
 class HyperGalaxyPhase(Phase):
-
     hyper_galaxy = PhaseProperty("hyper_galaxy")
 
     def __init__(self, phase_name):
@@ -1437,11 +1435,13 @@ class HyperGalaxyPhase(Phase):
             -------
             fit: float
             """
-            hyper_galaxy = instance.hyper_galaxy
+            return self.fit_hyper_galaxy(instance.hyper_galaxy)
+
+        def fit_hyper_galaxy(self, hyper_galaxy):
             hyper_noise = hyper_galaxy.hyper_noise_from_model_image_galaxy_image_and_noise_map(self.model_image,
                                                                                                self.galaxy_image,
                                                                                                self.lens_data.noise_map)
-            return fit.DataFit(self.lens_data.ccd_data, hyper_noise, self.lens_data.mask, self.model_image)
+            return fit.DataFit(self.lens_data.ccd_data, hyper_noise, self.lens_data.mask, self.model_image).likelihood
 
         @classmethod
         def describe(cls, instance):
