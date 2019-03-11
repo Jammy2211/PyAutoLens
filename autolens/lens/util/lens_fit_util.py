@@ -129,7 +129,7 @@ def unmasked_blurred_image_from_padded_grid_stack_psf_and_unmasked_image(padded_
     blurred_image_1d = padded_grid_stack.regular.convolve_array_1d_with_psf(padded_array_1d=unmasked_image_1d,
                                                                             psf=psf)
 
-    return padded_grid_stack.regular.scaled_array_from_array_1d(array_1d=blurred_image_1d)
+    return padded_grid_stack.regular.scaled_array_2d_from_array_1d(array_1d=blurred_image_1d)
 
 
 def unmasked_blurred_image_of_planes_from_padded_grid_stack_and_psf(planes, padded_grid_stack, psf):

@@ -11,7 +11,7 @@ from autolens.model.inversion import regularization as reg
 from autolens.model.inversion.util import inversion_util
 from autolens.model.inversion.util import regularization_util
 
-from test.profiling import tools
+from test.data_making import data_util
 
 import numpy as np
 
@@ -39,8 +39,8 @@ source_galaxy = g.Galaxy(pixelization=pixelization, regularization=reg.Constant(
 
 for image_type in ['LSST', 'Euclid', 'HST', 'HST_Up', 'AO']:
 
-    ccd_data = tools.load_profiling_ccd_data(image_type=image_type, lens_name='no_lens_source_smooth',
-                                             psf_shape=psf_shape)
+    ccd_data = data_util.load_test_ccd_data(image_type=image_type, lens_name='no_lens_source_smooth',
+                                            psf_shape=psf_shape)
     mask = msk.Mask.circular(shape=ccd_data.shape, pixel_scale=ccd_data.pixel_scale, radius_arcsec=radius_arcsec)
     lens_data = ld.LensData(ccd_data=ccd_data, mask=mask, sub_grid_size=sub_grid_size)
 

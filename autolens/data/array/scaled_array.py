@@ -38,6 +38,7 @@ class ArrayGeometry(object):
         """Compute the xticks labels of this grid, used for plotting the x-axis ticks when visualizing an image-grid"""
         return np.linspace(self.arc_second_minima[1], self.arc_second_maxima[1], 4)
 
+
 # noinspection PyUnresolvedReferences
 class RectangularArrayGeometry(ArrayGeometry):
 

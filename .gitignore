@@ -47,3 +47,5 @@ test/integration/hyper/
 test/integration/image/
 test/integration/hyper/
 workspace/runners/cosma/
+workspace
+workspace/
