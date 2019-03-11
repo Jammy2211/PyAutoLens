@@ -22,7 +22,7 @@ conf.instance = conf.Config(config_path=config_path, output_path=output_path)
 def pipeline():
 
     integration_util.reset_paths(test_name=test_name, output_path=output_path)
-    ccd_data = simulation_util.load_test_ccd_data(data_resolution='LSST', data_type='lens_only_x2_galaxies')
+    ccd_data = simulation_util.load_test_ccd_data(data_type='lens_only_x2_galaxies', data_resolution='LSST')
     pipeline = make_pipeline(test_name=test_name)
     pipeline.run(data=ccd_data)
 
@@ -38,9 +38,9 @@ def make_pipeline(test_name):
             self.lens_galaxies.lens_0.sersic.centre_0 = -1.0
             self.lens_galaxies.lens_0.sersic.centre_1 = -1.0
 
-    phase1 = LensPlaneGalaxy0Phase(lens_galaxies=dict(lens_0=gm.GalaxyModel(sersic=lp.EllipticalSersic)),
-                                   mask_function=modify_mask_function, optimizer_class=nl.MultiNest,
-                                   phase_name="{}/phase1".format(test_name))
+    phase1 = LensPlaneGalaxy0Phase(phase_name="phase1", phase_folders=[test_name],
+                                   lens_galaxies=dict(lens_0=gm.GalaxyModel(sersic=lp.EllipticalSersic)),
+                                   mask_function=modify_mask_function, optimizer_class=nl.MultiNest)
 
     phase1.optimizer.const_efficiency_mode = True
     phase1.optimizer.n_live_points = 40
@@ -54,10 +54,10 @@ def make_pipeline(test_name):
             self.lens_galaxies.lens_1.sersic.centre_0 = 1.0
             self.lens_galaxies.lens_1.sersic.centre_1 = 1.0
 
-    phase2 = LensPlaneGalaxy1Phase(lens_galaxies=dict(lens_0=gm.GalaxyModel(sersic=lp.EllipticalSersic),
+    phase2 = LensPlaneGalaxy1Phase(phase_name="phase2", phase_folders=[test_name],
+                                   lens_galaxies=dict(lens_0=gm.GalaxyModel(sersic=lp.EllipticalSersic),
                                                       lens_1=gm.GalaxyModel(sersic=lp.EllipticalSersic)),
-                                   mask_function=modify_mask_function, optimizer_class=nl.MultiNest,
-                                   phase_name="{}/phase2".format(test_name))
+                                   mask_function=modify_mask_function, optimizer_class=nl.MultiNest)
 
     phase2.optimizer.const_efficiency_mode = True
     phase2.optimizer.n_live_points = 40
@@ -74,10 +74,10 @@ def make_pipeline(test_name):
             self.lens_galaxies.lens_1.sersic.centre_0 = 1.0
             self.lens_galaxies.lens_1.sersic.centre_1 = 1.0
 
-    phase3 = LensPlaneBothGalaxyPhase(lens_galaxies=dict(lens_0=gm.GalaxyModel(sersic=lp.EllipticalSersic),
+    phase3 = LensPlaneBothGalaxyPhase(phase_name="phase3", phase_folders=[test_name],
+                                      lens_galaxies=dict(lens_0=gm.GalaxyModel(sersic=lp.EllipticalSersic),
                                                          lens_1=gm.GalaxyModel(sersic=lp.EllipticalSersic)),
-                                      mask_function=modify_mask_function, optimizer_class=nl.MultiNest,
-                                      phase_name="{}/phase3".format(test_name))
+                                      mask_function=modify_mask_function, optimizer_class=nl.MultiNest)
 
     phase3.optimizer.const_efficiency_mode = True
     phase3.optimizer.n_live_points = 60

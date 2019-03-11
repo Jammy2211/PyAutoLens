@@ -22,62 +22,24 @@ conf.instance = conf.Config(config_path=config_path, output_path=output_path)
 def pipeline():
 
     integration_util.reset_paths(test_name=test_name, output_path=output_path)
-    ccd_data = simulation_util.load_test_ccd_data(data_resolution='LSST', data_type='no_lens_light_and_source_smooth')
+    ccd_data = simulation_util.load_test_ccd_data(data_type='no_lens_light_and_source_smooth', data_resolution='LSST')
     pipeline = make_pipeline(test_name=test_name)
     pipeline.run(data=ccd_data)
 
 def make_pipeline(test_name):
     
-    phase1 = ph.LensSourcePlanePhase(lens_galaxies=dict(lens=gm.GalaxyModel(mass=mp.EllipticalIsothermal)),
+    phase1 = ph.LensSourcePlanePhase(phase_name="phase1", phase_folders=[test_name],
+                                     lens_galaxies=dict(lens=gm.GalaxyModel(mass=mp.EllipticalIsothermal)),
                                      source_galaxies=dict(source_0=gm.GalaxyModel(sersic=lp.EllipticalSersic)),
-                                     optimizer_class=nl.MultiNest, phase_name="{}/phase1".format(test_name))
+                                     optimizer_class=nl.MultiNest)
 
     phase1.optimizer.const_efficiency_mode = True
     phase1.optimizer.n_live_points = 60
     phase1.optimizer.sampling_efficiency = 0.7
 
-    phase1h = ph.LensMassAndSourceProfileHyperOnlyPhase(optimizer_class=nl.MultiNest,
-                                                        phase_name="{}/phase1h".format(test_name))
+    phase2 = ph.HyperGalaxyPhase(phase_name="phase_2_hyper", phase_folders=[test_name])
 
-    class AddSourceGalaxyPhase(ph.LensSourcePlaneHyperPhase):
-        
-        def pass_priors(self, previous_results):
-            phase1_results = previous_results[-1]
-            phase1h_results = previous_results[-1].hyper
-            self.lens_galaxies.lens = phase1_results.variable.lens
-            self.source_galaxies.source_0 = phase1_results.variable.source_0
-            self.source_galaxies.source_0.hyper_galaxy = phase1h_results.constant.source_0.hyper_galaxy
-
-    phase2 = AddSourceGalaxyPhase(lens_galaxies=dict(lens=gm.GalaxyModel(mass=mp.EllipticalIsothermal)),
-                                  source_galaxies=dict(source_0=gm.GalaxyModel(sersic=lp.EllipticalSersic),
-                                                       source_1=gm.GalaxyModel(sersic=lp.EllipticalSersic)),
-                                  optimizer_class=nl.MultiNest, phase_name="{}/phase2".format(test_name))
-
-    phase2.optimizer.const_efficiency_mode = True
-    phase2.optimizer.n_live_points = 60
-    phase2.optimizer.sampling_efficiency = 0.7
-
-    phase2h = ph.LensMassAndSourceProfileHyperOnlyPhase(optimizer_class=nl.MultiNest,
-                                                        phase_name="{}/phase1h".format(test_name))
-
-    class BothSourceGalaxiesPhase(ph.LensSourcePlaneHyperPhase):
-
-        def pass_priors(self, previous_results):
-
-            phase2_results = previous_results[1]
-            phase2h_results = previous_results[1].hyper
-            self.lens_galaxies.lens = phase2_results.variable.lens
-            self.source_galaxies.source_0 = phase2_results.variable.source_0
-            self.source_galaxies.source_1 = phase2_results.variable.source_1
-            self.source_galaxies.source_0.hyper_galaxy = phase2h_results.constant.source_0.hyper_galaxy
-            self.source_galaxies.source_1.hyper_galaxy = phase2h_results.constant.source_1.hyper_galaxy
-
-    phase3 = BothSourceGalaxiesPhase(lens_galaxies=dict(lens=gm.GalaxyModel(mass=mp.EllipticalIsothermal)),
-                                     source_galaxies=dict(source_0=gm.GalaxyModel(sersic=lp.EllipticalSersic),
-                                                          source_1=gm.GalaxyModel(sersic=lp.EllipticalSersic)),
-                                     optimizer_class=nl.MultiNest, phase_name="{}/phase3".format(test_name))
-
-    return pl.PipelineImaging(test_name, phase1, phase1h, phase2, phase2h, phase3)
+    return pl.PipelineImaging(test_name, phase1, phase2)
 
 
 if __name__ == "__main__":

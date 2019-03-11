@@ -21,40 +21,24 @@ conf.instance = conf.Config(config_path=config_path, output_path=output_path)
 def pipeline():
 
     integration_util.reset_paths(test_name=test_name, output_path=output_path)
-    ccd_data = simulation_util.load_test_ccd_data(data_resolution='LSST', data_type='no_lens_light_and_source_smooth')
+    ccd_data = simulation_util.load_test_ccd_data(data_type='no_lens_light_and_source_smooth', data_resolution='LSST')
     pipeline = make_pipeline(test_name=test_name)
     pipeline.run(data=ccd_data)
 
 def make_pipeline(test_name):
 
-    phase1 = ph.LensSourcePlanePhase(lens_galaxies=[gm.GalaxyModel(sie=mp.EllipticalIsothermal)],
+    phase1 = ph.LensSourcePlanePhase(phase_name="phase1", phase_folders=[test_name],
+                                     lens_galaxies=[gm.GalaxyModel(sie=mp.EllipticalIsothermal)],
                                      source_galaxies=[gm.GalaxyModel(sersic=lp.EllipticalSersic)],
-                                     optimizer_class=nl.MultiNest, phase_name="{}/phase1".format(test_name))
+                                     optimizer_class=nl.MultiNest)
 
     phase1.optimizer.const_efficiency_mode = True
     phase1.optimizer.n_live_points = 60
     phase1.optimizer.sampling_efficiency = 0.8
 
-    phase1h = ph.LensMassAndSourceProfileHyperOnlyPhase(optimizer_class=nl.MultiNest,
-                                                        phase_name="{}/phase1h".format(test_name))
+    phase2 = ph.HyperGalaxyPhase(phase_name="phase_2_hyper", phase_folders=[test_name])
 
-    class SourceHyperPhase(ph.LensSourcePlaneHyperPhase):
-        def pass_priors(self, previous_results):
-            phase1_results = previous_results[-1]
-            phase1h_results = previous_results[-1].hyper
-            #        self.lens_galaxies[0] = previous_results[-1].variable.lens_galaxies[0]
-            self.source_galaxies = phase1_results.variable.source_galaxies
-            self.source_galaxies[0].hyper_galaxy = phase1h_results.constant.source_galaxies[0].hyper_galaxy
-
-    phase2 = SourceHyperPhase(lens_galaxies=dict(lens=gm.GalaxyModel(mass=mp.EllipticalIsothermal)),
-                              source_galaxies=dict(source=gm.GalaxyModel(light=lp.EllipticalSersic)),
-                              optimizer_class=nl.MultiNest, phase_name="{}/phase2".format(test_name))
-
-    phase2.optimizer.const_efficiency_mode = True
-    phase2.optimizer.n_live_points = 40
-    phase2.optimizer.sampling_efficiency = 0.8
-
-    return pl.PipelineImaging(test_name, phase1, phase1h, phase2)
+    return pl.PipelineImaging(test_name, phase1, phase2)
 
 
 if __name__ == "__main__":
