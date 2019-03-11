@@ -93,14 +93,6 @@ def make_lens_hyper_image(image, mask, hyper):
                             hyper_minimum_values=hyper.hyper_minimum_values)
 
 
-@pytest.fixture(name='fit_hyper')
-def make_fit_hyper(lens_hyper_image, hyper):
-    tracer = ray_tracing.TracerImagePlane(lens_galaxies=[hyper.hyper_galaxy],
-                                          image_plane_grid_stack=lens_hyper_image.grid_stack)
-    return lens_fit.hyper_fit_lens_data_with_tracer(lens_data_hyper=lens_hyper_image, tracer=tracer,
-                                                    hyper_galaxies=[hyper.hyper_galaxy.hyper_galaxy])
-
-
 def test__image_is_output(fit, lens_plotter_util_path, plot_patch):
     lens_plotter_util.plot_image(fit=fit, mask=fit.mask, extract_array_from_mask=True, zoom_around_mask=True,
                                  cb_tick_values=[1.0], cb_tick_labels=['1.0'],
@@ -147,11 +139,3 @@ def test__chi_squared_map_is_output(fit, lens_plotter_util_path, plot_patch):
                                            output_path=lens_plotter_util_path, output_format='png')
 
     assert lens_plotter_util_path + 'fit_chi_squared_map.png' in plot_patch.paths
-
-
-def test__contribution_map_is_output(fit_hyper, lens_plotter_util_path, plot_patch):
-    lens_plotter_util.plot_contribution_maps(fit=fit_hyper, mask=fit_hyper.mask, extract_array_from_mask=True,
-                                             zoom_around_mask=True, cb_tick_values=[1.0], cb_tick_labels=['1.0'],
-                                             output_path=lens_plotter_util_path, output_format='png')
-
-    assert lens_plotter_util_path + 'fit_contribution_maps.png' in plot_patch.paths
