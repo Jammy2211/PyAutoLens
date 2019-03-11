@@ -2,6 +2,7 @@ import numpy as np
 from astropy import cosmology as cosmo
 
 from autofit import conf
+from autofit.mapper import model_mapper as mm
 from autofit.optimize import non_linear
 from autofit.tools import phase as autofit_phase
 from autofit.tools.phase_property import PhasePropertyCollection
@@ -1384,27 +1385,32 @@ class SensitivityPhase(PhaseImaging):
                                             instance.sensitive_galaxies)
 
 
-def as_hyper_galaxy_phase(cls):
-    class HyperGalaxyPhase(cls):
-        def run(self, data, previous_results=None, mask=None, positions=None):
-            model_image = previous_results.unmasked_model_image
-            component_images = previous_results.unmasked_model_image_of_planes
+class HyperGalaxyPhase(Phase):
+    def __init__(self, phase_name):
+        super().__init__(phase_name)
+        self.optimizer.variable = mm.ModelMapper()
+        self.optimizer.variable.hyper_galaxy = g.HyperGalaxy
 
-            self.optimizer.variable.hyper_galaxy = g.HyperGalaxy
+    def run(self, data, previous_results=None, mask=None, positions=None):
+        model_image = previous_results.unmasked_model_image
+        component_images = previous_results.unmasked_model_image_of_planes
 
-            class Analysis(cls.Analysis):
-                def __init__(self, image):
-                    self.image = image
+        class Analysis(non_linear.Analysis):
+            def visualize(self, instance, image_path, during_analysis):
+                # TODO: I'm guessing you have an idea of what you want here?
+                pass
 
-                def fit(self, instance):
-                    pass
+            def __init__(self, image):
+                self.image = image
 
-                def visualize(self, instance, image_path, during_analysis):
-                    pass
+            def fit(self, instance):
+                instance.hyper_galaxy.hyper_noise_map
 
-                # noinspection PyMethodMayBeStatic
-                def describe(self, instance):
-                    return ""
+            @classmethod
+            def describe(cls, instance):
+                return ""
 
-            for component in component_images:
-                result = self.optimizer.fit(Analysis(component))
+        results = []
+
+        for component in component_images:
+            results.append(self.optimizer.fit(Analysis(component)))
