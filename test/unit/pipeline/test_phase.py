@@ -154,9 +154,13 @@ def make_hyper_galaxy():
     return g.HyperGalaxy(1.0, 1.0, 1.0)
 
 
+@pytest.fixture(name="hyper_phase")
+def make_hyper_phase():
+    return ph.HyperGalaxyPhase("hyper_galaxy_phase")
+
+
 class TestHyperGalaxyPhase(object):
-    def test_init(self):
-        hyper_phase = ph.HyperGalaxyPhase("hyper_galaxy_phase")
+    def test_init(self, hyper_phase):
         assert hyper_phase.optimizer.variable.prior_count == 3
 
     def test_analysis(self, hyper_lens_data, hyper_galaxy):
@@ -165,8 +169,27 @@ class TestHyperGalaxyPhase(object):
 
         assert isinstance(result, float)
 
-    def test_run(self):
-        pass
+    def test_run(self, hyper_galaxy, hyper_phase, hyper_lens_data):
+        class MockOptimizer(object):
+            @classmethod
+            def fit(cls, analysis):
+                instance = mm.ModelInstance()
+                instance.hyper_galaxy = hyper_galaxy
+                return analysis.fit(instance)
+
+        hyper_phase.optimizer = MockOptimizer()
+
+        class PreviousResults(object):
+            class Last(object):
+                unmasked_model_image = np.ones(5)
+                unmasked_model_image_of_planes = 3 * [np.ones(5)]
+
+            last = Last
+
+        results = hyper_phase.run(hyper_lens_data, PreviousResults)
+
+        assert isinstance(results, ph.HyperGalaxyPhase.HyperGalaxyResults)
+        assert len(results.results) == 3
 
 
 class TestAutomaticPriorPassing(object):
