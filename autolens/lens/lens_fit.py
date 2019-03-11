@@ -147,9 +147,21 @@ class LensProfileFit(LensTracerFit):
         return self.likelihood
 
 
-class LensInversionFit(LensTracerFit):
+class InversionFit(LensTracerFit):
+    def __init__(self, lens_data, model_image, tracer, inversion, padded_tracer=None):
+        super().__init__(image=lens_data.image, noise_map=lens_data.noise_map,
+                         mask=lens_data.mask,
+                         model_image=model_image,
+                         psf=lens_data.psf,
+                         tracer=tracer,
+                         padded_tracer=padded_tracer,
+                         map_to_scaled_array=lens_data.map_to_scaled_array)
+        self.inversion = inversion
 
-    def __init__(self, lens_data, tracer):
+
+class LensInversionFit(InversionFit):
+
+    def __init__(self, lens_data, tracer, padded_tracer=None):
         """ An  lens inversion fitter, which fits the lens data an inversion using the mapper(s) and \
         regularization(s) in the galaxies of the tracer.
 
@@ -167,14 +179,12 @@ class LensInversionFit(LensTracerFit):
             image_1d=lens_data.image_1d, noise_map_1d=lens_data.noise_map_1d,
             convolver=lens_data.convolver_mapping_matrix,
             mapper=tracer.mappers_of_planes[-1], regularization=tracer.regularizations_of_planes[-1])
-        super().__init__(image=lens_data.image, noise_map=lens_data.noise_map,
-                         mask=lens_data.mask,
+        super().__init__(lens_data=lens_data,
                          model_image=inversion.reconstructed_data,
-                         psf=lens_data.psf,
                          tracer=tracer,
-                         map_to_scaled_array=lens_data.map_to_scaled_array)
+                         inversion=inversion,
+                         padded_tracer=padded_tracer)
 
-        self.inversion = inversion
         self.likelihood_with_regularization = \
             util.likelihood_with_regularization_from_chi_squared_regularization_term_and_noise_normalization(
                 chi_squared=self.chi_squared, regularization_term=inversion.regularization_term,
@@ -196,7 +206,7 @@ class LensInversionFit(LensTracerFit):
         return [None, self.inversion.reconstructed_data]
 
 
-class LensProfileInversionFit(LensTracerFit):
+class LensProfileInversionFit(InversionFit):
 
     def __init__(self, lens_data, tracer, padded_tracer=None):
         """ An  lens profile and inversion fitter, which first generates and subtracts the image-plane \
@@ -230,19 +240,16 @@ class LensProfileInversionFit(LensTracerFit):
             regularization=tracer.regularizations_of_planes[-1])
 
         model_image = blurred_profile_image + inversion.reconstructed_data
-        super(LensProfileInversionFit, self).__init__(tracer=tracer, padded_tracer=padded_tracer,
-                                                      psf=lens_data.psf,
-                                                      map_to_scaled_array=lens_data.map_to_scaled_array,
-                                                      image=lens_data.image, noise_map=lens_data.noise_map,
-                                                      mask=lens_data.mask, model_image=model_image)
+        super(LensProfileInversionFit, self).__init__(tracer=tracer,
+                                                      padded_tracer=padded_tracer,
+                                                      lens_data=lens_data,
+                                                      model_image=model_image,
+                                                      inversion=inversion)
 
-        self.psf = lens_data.psf
         self.convolver_image = lens_data.convolver_image
 
         self.blurred_profile_image = blurred_profile_image
         self.profile_subtracted_image = lens_data.image - self.blurred_profile_image
-
-        self.inversion = inversion
 
         self.likelihood_with_regularization = \
             util.likelihood_with_regularization_from_chi_squared_regularization_term_and_noise_normalization(
