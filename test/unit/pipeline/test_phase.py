@@ -402,10 +402,23 @@ class TestPhase(object):
         analysis = phase.make_analysis(data=ccd_data, positions=[[[1.0, 1.0], [2.0, 2.0]]])
         assert analysis.lens_data.positions is None
 
+    def test_make_analysis__interp_pixel_scale_is_input__interp_grid_used_in_analysis(self, phase, ccd_data):
+        # If use positions is true and positions are input, make the positions part of the lens data.
+
+        phase.interp_pixel_scale = 0.1
+
+        analysis = phase.make_analysis(data=ccd_data)
+        assert analysis.lens_data.interp_pixel_scale == 0.1
+        assert hasattr(analysis.lens_data.grid_stack.regular, 'interpolator')
+        assert hasattr(analysis.lens_data.grid_stack.sub, 'interpolator')
+        assert hasattr(analysis.lens_data.grid_stack.blurring, 'interpolator')
+        assert hasattr(analysis.lens_data.padded_grid_stack.regular, 'interpolator')
+        assert hasattr(analysis.lens_data.padded_grid_stack.sub, 'interpolator')
+
     def test__make_analysis__phase_info_is_made(self, phase, ccd_data):
         phase.make_analysis(data=ccd_data)
 
-        file_phase_info = "{}/{}/{}".format(conf.instance.output_path, phase.optimizer.name, 'phase.info')
+        file_phase_info = "{}/{}".format(phase.optimizer.phase_output_path, 'phase.info')
 
         phase_info = open(file_phase_info, 'r')
 

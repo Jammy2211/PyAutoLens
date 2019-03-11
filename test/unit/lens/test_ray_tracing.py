@@ -229,9 +229,9 @@ class TestAbstractTracer(object):
             g2_surface_density = galaxy_util.surface_density_of_galaxies_from_grid(grid_stack.sub.unlensed_grid,
                                                                                    galaxies=[g2])
 
-            g0_surface_density = grid_stack.regular.scaled_array_from_array_1d(g0_surface_density)
-            g1_surface_density = grid_stack.regular.scaled_array_from_array_1d(g1_surface_density)
-            g2_surface_density = grid_stack.regular.scaled_array_from_array_1d(g2_surface_density)
+            g0_surface_density = grid_stack.regular.scaled_array_2d_from_array_1d(g0_surface_density)
+            g1_surface_density = grid_stack.regular.scaled_array_2d_from_array_1d(g1_surface_density)
+            g2_surface_density = grid_stack.regular.scaled_array_2d_from_array_1d(g2_surface_density)
 
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0, g1], source_galaxies=[g2],
                                                          image_plane_grid_stack=grid_stack)
@@ -287,9 +287,9 @@ class TestAbstractTracer(object):
             g1_potential = galaxy_util.potential_of_galaxies_from_grid(grid_stack.sub.unlensed_grid, galaxies=[g1])
             g2_potential = galaxy_util.potential_of_galaxies_from_grid(grid_stack.sub.unlensed_grid, galaxies=[g2])
 
-            g0_potential = grid_stack.regular.scaled_array_from_array_1d(g0_potential)
-            g1_potential = grid_stack.regular.scaled_array_from_array_1d(g1_potential)
-            g2_potential = grid_stack.regular.scaled_array_from_array_1d(g2_potential)
+            g0_potential = grid_stack.regular.scaled_array_2d_from_array_1d(g0_potential)
+            g1_potential = grid_stack.regular.scaled_array_2d_from_array_1d(g1_potential)
+            g2_potential = grid_stack.regular.scaled_array_2d_from_array_1d(g2_potential)
 
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0, g1], source_galaxies=[g2],
                                                          image_plane_grid_stack=grid_stack)
@@ -349,13 +349,13 @@ class TestAbstractTracer(object):
             g2_deflections = galaxy_util.deflections_of_galaxies_from_grid(grid=grid_stack.sub.unlensed_grid,
                                                                            galaxies=[g2])
 
-            g0_deflections_y = grid_stack.regular.scaled_array_from_array_1d(g0_deflections[:, 0])
-            g1_deflections_y = grid_stack.regular.scaled_array_from_array_1d(g1_deflections[:, 0])
-            g2_deflections_y = grid_stack.regular.scaled_array_from_array_1d(g2_deflections[:, 0])
+            g0_deflections_y = grid_stack.regular.scaled_array_2d_from_array_1d(g0_deflections[:, 0])
+            g1_deflections_y = grid_stack.regular.scaled_array_2d_from_array_1d(g1_deflections[:, 0])
+            g2_deflections_y = grid_stack.regular.scaled_array_2d_from_array_1d(g2_deflections[:, 0])
 
-            g0_deflections_x = grid_stack.regular.scaled_array_from_array_1d(g0_deflections[:, 1])
-            g1_deflections_x = grid_stack.regular.scaled_array_from_array_1d(g1_deflections[:, 1])
-            g2_deflections_x = grid_stack.regular.scaled_array_from_array_1d(g2_deflections[:, 1])
+            g0_deflections_x = grid_stack.regular.scaled_array_2d_from_array_1d(g0_deflections[:, 1])
+            g1_deflections_x = grid_stack.regular.scaled_array_2d_from_array_1d(g1_deflections[:, 1])
+            g2_deflections_x = grid_stack.regular.scaled_array_2d_from_array_1d(g2_deflections[:, 1])
 
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0, g1], source_galaxies=[g2],
                                                          image_plane_grid_stack=grid_stack)
@@ -853,7 +853,7 @@ class TestTracerImagePlane(object):
 
             assert (tracer.image_plane_image_1d == image_plane.image_plane_image_1d).all()
 
-            image_plane_image_2d = grid_stack.regular.scaled_array_from_array_1d(image_plane.image_plane_image_1d)
+            image_plane_image_2d = grid_stack.regular.scaled_array_2d_from_array_1d(image_plane.image_plane_image_1d)
             assert image_plane_image_2d.shape == (3, 4)
             assert (image_plane_image_2d == tracer.image_plane_image).all()
 
@@ -983,8 +983,8 @@ class TestTracerImageSourcePlanes(object):
 
             assert (image_plane_image_1d == tracer.image_plane_image_1d).all()
 
-            image_plane_image_2d = grid_stack.regular.scaled_array_from_array_1d(image_plane.image_plane_image_1d) + \
-                                   grid_stack.regular.scaled_array_from_array_1d(source_plane.image_plane_image_1d)
+            image_plane_image_2d = grid_stack.regular.scaled_array_2d_from_array_1d(image_plane.image_plane_image_1d) + \
+                                   grid_stack.regular.scaled_array_2d_from_array_1d(source_plane.image_plane_image_1d)
             assert image_plane_image_2d.shape == (3, 4)
             assert (image_plane_image_2d == tracer.image_plane_image).all()
 
@@ -1005,8 +1005,8 @@ class TestTracerImageSourcePlanes(object):
             image_plane_image_1d = image_plane.image_plane_image_1d + source_plane.image_plane_image_1d
             assert (image_plane_image_1d == tracer.image_plane_image_1d).all()
 
-            image_plane_image_2d = grid_stack.regular.scaled_array_from_array_1d(image_plane.image_plane_image_1d) + \
-                                   grid_stack.regular.scaled_array_from_array_1d(source_plane.image_plane_image_1d)
+            image_plane_image_2d = grid_stack.regular.scaled_array_2d_from_array_1d(image_plane.image_plane_image_1d) + \
+                                   grid_stack.regular.scaled_array_2d_from_array_1d(source_plane.image_plane_image_1d)
             assert image_plane_image_2d.shape == (3, 4)
             assert (image_plane_image_2d == tracer.image_plane_image).all()
 
@@ -1024,10 +1024,11 @@ class TestTracerImageSourcePlanes(object):
 
             assert tracer.image_plane_image_1d == pytest.approx(g0_image + g1_image + g2_image, 1.0e-4)
 
-            assert tracer.image_plane_image == pytest.approx(grid_stack.regular.scaled_array_from_array_1d(g0_image) +
-                                                             grid_stack.regular.scaled_array_from_array_1d(g1_image) +
-                                                             grid_stack.regular.scaled_array_from_array_1d(g2_image),
-                                                             1.0e-4)
+            assert tracer.image_plane_image == pytest.approx(
+                grid_stack.regular.scaled_array_2d_from_array_1d(g0_image) +
+                grid_stack.regular.scaled_array_2d_from_array_1d(g1_image) +
+                grid_stack.regular.scaled_array_2d_from_array_1d(g2_image),
+                1.0e-4)
 
         def test__2_planes__returns_image_plane_image_of_each_plane(self, grid_stack):
             g0 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=1.0),
@@ -1043,8 +1044,8 @@ class TestTracerImageSourcePlanes(object):
             assert (tracer.image_plane_image_1d == image_plane.image_plane_image_1d +
                     source_plane.image_plane_image_1d).all()
 
-            image_plane_image_2d = grid_stack.regular.scaled_array_from_array_1d(image_plane.image_plane_image_1d) + \
-                                   grid_stack.regular.scaled_array_from_array_1d(source_plane.image_plane_image_1d)
+            image_plane_image_2d = grid_stack.regular.scaled_array_2d_from_array_1d(image_plane.image_plane_image_1d) + \
+                                   grid_stack.regular.scaled_array_2d_from_array_1d(source_plane.image_plane_image_1d)
             assert image_plane_image_2d.shape == (3, 4)
             assert (image_plane_image_2d == tracer.image_plane_image).all()
 
@@ -1053,9 +1054,9 @@ class TestTracerImageSourcePlanes(object):
                                                          source_galaxies=[galaxy_light],
                                                          image_plane_grid_stack=padded_grid_stack)
 
-            image_plane_image_2d = padded_grid_stack.regular.scaled_array_from_array_1d(
+            image_plane_image_2d = padded_grid_stack.regular.scaled_array_2d_from_array_1d(
                 tracer.image_plane.image_plane_image_1d) + \
-                                   padded_grid_stack.regular.scaled_array_from_array_1d(
+                                   padded_grid_stack.regular.scaled_array_2d_from_array_1d(
                                        tracer.source_plane.image_plane_image_1d)
 
             assert image_plane_image_2d.shape == (1, 2)

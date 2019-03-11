@@ -95,14 +95,14 @@ def deflections_of_galaxies_from_grid(grid, galaxies):
     if galaxies:
         deflections = sum(map(lambda galaxy: galaxy.deflections_from_grid(grid), galaxies))
         if isinstance(grid, grids.SubGrid):
-            return np.asarray([grid.sub_data_to_regular_data(deflections[:, 0]),
-                               grid.sub_data_to_regular_data(deflections[:, 1])]).T
+            return np.asarray([grid.regular_data_1d_from_sub_data_1d(deflections[:, 0]),
+                               grid.regular_data_1d_from_sub_data_1d(deflections[:, 1])]).T
         return sum(map(lambda galaxy: galaxy.deflections_from_grid(grid), galaxies))
     else:
         deflections = np.full((grid.shape[0], 2), 0.0)
         if isinstance(grid, grids.SubGrid):
-            return np.asarray([grid.sub_data_to_regular_data(deflections[:, 0]),
-                               grid.sub_data_to_regular_data(deflections[:, 1])]).T
+            return np.asarray([grid.regular_data_1d_from_sub_data_1d(deflections[:, 0]),
+                               grid.regular_data_1d_from_sub_data_1d(deflections[:, 1])]).T
         return deflections
 
 

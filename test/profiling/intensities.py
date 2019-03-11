@@ -4,7 +4,7 @@ from autolens.model.profiles import light_profiles as lp
 from autolens.data.array import mask as msk
 from autolens.lens import lens_data as ld
 
-from test.profiling import tools
+from test.data_making import data_util
 
 # Although we could test the intensities without using an image (e.g. by just making a grid), we have chosen to
 # set this test up using an image and mask. This gives run-time numbers that can be easily related to an actual lens
@@ -18,7 +18,7 @@ print('circular mask radius = ' + str(radius_arcsec) + '\n')
 
 for image_type in ['LSST', 'Euclid', 'HST', 'HST_Up', 'AO']:
 
-    ccd_data = tools.load_profiling_ccd_data(image_type=image_type, lens_name='no_lens_source_smooth', psf_shape=(3,3))
+    ccd_data = data_util.load_test_ccd_data(image_type=image_type, lens_name='no_lens_source_smooth', psf_shape=(3, 3))
     mask = msk.Mask.circular(shape=ccd_data.shape, pixel_scale=ccd_data.pixel_scale, radius_arcsec=radius_arcsec)
     lens_data = ld.LensData(ccd_data=ccd_data, mask=mask, sub_grid_size=sub_grid_size)
 

@@ -3,43 +3,26 @@ import shutil
 
 from autofit import conf
 from autofit.optimize import non_linear as nl
-from autolens.data import ccd
-from autolens.model.galaxy import galaxy, galaxy_model as gm
+from autolens.model.galaxy import galaxy_model as gm
 from autolens.pipeline import phase as ph
 from autolens.pipeline import pipeline as pl
 from autolens.model.profiles import light_profiles as lp, mass_profiles as mp
-from test.integration import tools
+from test.integration import integration_util
+from test.simulation import simulation_util
 
 test_type = 'lens_and_source'
 test_name = "lens_mass_x1_source_x2_hyper"
 
-path = '{}/../../'.format(os.path.dirname(os.path.realpath(__file__)))
-output_path = path+'output/'+test_type
-config_path = path+'config'
+test_path = '{}/../../'.format(os.path.dirname(os.path.realpath(__file__)))
+output_path = test_path + 'output/' + test_type
+config_path = test_path + 'config'
 conf.instance = conf.Config(config_path=config_path, output_path=output_path)
 
 
 def pipeline():
 
-    lens_mass = mp.EllipticalIsothermal(centre=(0.01, 0.01), axis_ratio=0.8, phi=80.0, einstein_radius=1.6)
-    source_light_0 = lp.EllipticalSersic(centre=(-0.6, 0.5), axis_ratio=0.6, phi=60.0, intensity=1.0,
-                                         effective_radius=0.5, sersic_index=1.0)
-    source_light_1 = lp.EllipticalSersic(centre=(0.2, 0.3), axis_ratio=0.6, phi=90.0, intensity=1.0,
-                                         effective_radius=0.5, sersic_index=1.0)
-
-    lens_galaxy = galaxy.Galaxy(sie=lens_mass)
-    source_galaxy_0 = galaxy.Galaxy(sersic=source_light_0)
-    source_galaxy_1 = galaxy.Galaxy(sersic=source_light_1)
-
-    tools.reset_paths(test_name=test_name, output_path=output_path)
-    tools.simulate_integration_image(test_name=test_name, pixel_scale=0.1, lens_galaxies=[lens_galaxy],
-                                     source_galaxies=[source_galaxy_0, source_galaxy_1], target_signal_to_noise=30.0)
-
-    ccd_data = ccd.load_ccd_data_from_fits(image_path=path + '/data/' + test_name + '/image.fits',
-                                        psf_path=path + '/data/' + test_name + '/psf.fits',
-                                        noise_map_path=path + '/data/' + test_name + '/noise_map.fits',
-                                        pixel_scale=0.1)
-
+    integration_util.reset_paths(test_name=test_name, output_path=output_path)
+    ccd_data = simulation_util.load_test_ccd_data(data_resolution='LSST', data_type='no_lens_light_and_source_smooth')
     pipeline = make_pipeline(test_name=test_name)
     pipeline.run(data=ccd_data)
 

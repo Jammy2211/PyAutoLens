@@ -37,7 +37,7 @@ def setup_phase_mask(data, mask, mask_function, inner_circular_mask_radii):
 
 class AbstractPhase(autofit_phase.AbstractPhase):
 
-    def __init__(self, phase_name, optimizer_class=non_linear.MultiNest, cosmology=cosmo.Planck15,
+    def __init__(self, phase_name, phase_folders=None, optimizer_class=non_linear.MultiNest, cosmology=cosmo.Planck15,
                  auto_link_priors=False):
         """
         A phase in an lens pipeline. Uses the set non_linear optimizer to try to fit models and hyper
@@ -51,7 +51,8 @@ class AbstractPhase(autofit_phase.AbstractPhase):
             The name of this phase
         """
 
-        super().__init__(optimizer_class=optimizer_class, phase_name=phase_name, auto_link_priors=auto_link_priors)
+        super().__init__(phase_name=phase_name, phase_folders=phase_folders,
+                         optimizer_class=optimizer_class, auto_link_priors=auto_link_priors)
 
         self.cosmology = cosmology
 
@@ -310,10 +311,10 @@ class PhasePositions(AbstractPhase):
     def phase_property_collections(self):
         return [self.lens_galaxies]
 
-    def __init__(self, phase_name, lens_galaxies=None, optimizer_class=non_linear.MultiNest, cosmology=cosmo.Planck15,
-                 auto_link_priors=False):
-        super().__init__(optimizer_class=optimizer_class, cosmology=cosmology,
-                         phase_name=phase_name, auto_link_priors=auto_link_priors)
+    def __init__(self, phase_name, phase_folders=None, lens_galaxies=None, optimizer_class=non_linear.MultiNest,
+                 cosmology=cosmo.Planck15, auto_link_priors=False):
+        super().__init__(phase_name=phase_name, phase_folders=phase_folders,
+                         optimizer_class=optimizer_class, cosmology=cosmology, auto_link_priors=auto_link_priors)
         self.lens_galaxies = lens_galaxies
 
     def run(self, positions, pixel_scale, previous_results=None):
@@ -403,9 +404,10 @@ class PhasePositions(AbstractPhase):
 
 class PhaseImaging(Phase):
 
-    def __init__(self, phase_name, optimizer_class=non_linear.MultiNest, sub_grid_size=2, image_psf_shape=None,
+    def __init__(self, phase_name, phase_folders=None, optimizer_class=non_linear.MultiNest,
+                 sub_grid_size=2, image_psf_shape=None,
                  pixelization_psf_shape=None, use_positions=False, mask_function=None, inner_circular_mask_radii=None,
-                 cosmology=cosmo.Planck15, auto_link_priors=False):
+                 interp_pixel_scale=None, cosmology=cosmo.Planck15, auto_link_priors=False):
 
         """
 
@@ -420,14 +422,16 @@ class PhaseImaging(Phase):
             The side length of the subgrid
         """
 
-        super(PhaseImaging, self).__init__(optimizer_class=optimizer_class, cosmology=cosmology,
-                                           phase_name=phase_name, auto_link_priors=auto_link_priors)
+        super(PhaseImaging, self).__init__(phase_name=phase_name, phase_folders=phase_folders,
+                                           optimizer_class=optimizer_class, cosmology=cosmology,
+                                           auto_link_priors=auto_link_priors)
         self.sub_grid_size = sub_grid_size
         self.image_psf_shape = image_psf_shape
         self.pixelization_psf_shape = pixelization_psf_shape
         self.use_positions = use_positions
         self.mask_function = mask_function
         self.inner_circular_mask_radii = inner_circular_mask_radii
+        self.interp_pixel_scale = interp_pixel_scale
 
     # noinspection PyMethodMayBeStatic,PyUnusedLocal
     def modify_image(self, image, previous_results):
@@ -506,7 +510,8 @@ class PhaseImaging(Phase):
                                      'pipeline when you ran it.')
 
         lens_data = li.LensData(ccd_data=data, mask=mask, sub_grid_size=self.sub_grid_size,
-                                image_psf_shape=self.image_psf_shape, positions=positions)
+                                image_psf_shape=self.image_psf_shape, positions=positions,
+                                interp_pixel_scale=self.interp_pixel_scale)
 
         modified_image = self.modify_image(image=lens_data.image, previous_results=previous_results)
         lens_data = lens_data.new_lens_data_with_modified_image(modified_image=modified_image)
@@ -521,7 +526,7 @@ class PhaseImaging(Phase):
 
     def output_phase_info(self):
 
-        file_phase_info = "{}/{}/{}".format(conf.instance.output_path, self.optimizer.name, 'phase.info')
+        file_phase_info = "{}/{}".format(self.optimizer.phase_output_path, 'phase.info')
 
         with open(file_phase_info, 'w') as phase_info:
             phase_info.write('Optimizer = {} \n'.format(type(self.optimizer).__name__))
@@ -776,16 +781,18 @@ class LensPlanePhase(PhaseImaging):
     def phase_property_collections(self):
         return [self.lens_galaxies]
 
-    def __init__(self, phase_name, lens_galaxies=None, optimizer_class=non_linear.MultiNest, sub_grid_size=2,
+    def __init__(self, phase_name, phase_folders=None, lens_galaxies=None, optimizer_class=non_linear.MultiNest, sub_grid_size=2,
                  image_psf_shape=None, mask_function=None, inner_circular_mask_radii=None, cosmology=cosmo.Planck15,
-                 auto_link_priors=False):
-        super(LensPlanePhase, self).__init__(optimizer_class=optimizer_class,
+                 interp_pixel_scale=None, auto_link_priors=False):
+        super(LensPlanePhase, self).__init__(phase_name=phase_name,
+                                             phase_folders=phase_folders,
+                                             optimizer_class=optimizer_class,
                                              sub_grid_size=sub_grid_size,
                                              image_psf_shape=image_psf_shape,
                                              mask_function=mask_function,
                                              inner_circular_mask_radii=inner_circular_mask_radii,
                                              cosmology=cosmology,
-                                             phase_name=phase_name,
+                                             interp_pixel_scale=interp_pixel_scale,
                                              auto_link_priors=auto_link_priors)
         self.lens_galaxies = lens_galaxies
 
@@ -831,9 +838,11 @@ class LensSourcePlanePhase(PhaseImaging):
     def phase_property_collections(self):
         return [self.lens_galaxies, self.source_galaxies]
 
-    def __init__(self, phase_name, lens_galaxies=None, source_galaxies=None, optimizer_class=non_linear.MultiNest,
+    def __init__(self, phase_name, phase_folders=None,
+                 lens_galaxies=None, source_galaxies=None, optimizer_class=non_linear.MultiNest,
                  sub_grid_size=2, image_psf_shape=None, use_positions=False, mask_function=None,
-                 inner_circular_mask_radii=None, cosmology=cosmo.Planck15, auto_link_priors=False):
+                 interp_pixel_scale=None, inner_circular_mask_radii=None, cosmology=cosmo.Planck15,
+                 auto_link_priors=False):
         """
         A phase with a simple source/lens model
 
@@ -849,14 +858,16 @@ class LensSourcePlanePhase(PhaseImaging):
             The side length of the subgrid
         """
 
-        super(LensSourcePlanePhase, self).__init__(optimizer_class=optimizer_class,
+        super(LensSourcePlanePhase, self).__init__(phase_name=phase_name,
+                                                   phase_folders=phase_folders,
+                                                   optimizer_class=optimizer_class,
                                                    sub_grid_size=sub_grid_size,
                                                    image_psf_shape=image_psf_shape,
                                                    use_positions=use_positions,
                                                    mask_function=mask_function,
+                                                   interp_pixel_scale=interp_pixel_scale,
                                                    inner_circular_mask_radii=inner_circular_mask_radii,
                                                    cosmology=cosmology,
-                                                   phase_name=phase_name,
                                                    auto_link_priors=auto_link_priors)
         self.lens_galaxies = lens_galaxies or []
         self.source_galaxies = source_galaxies or []
@@ -909,7 +920,7 @@ class MultiPlanePhase(PhaseImaging):
     def phase_property_collections(self):
         return [self.galaxies]
 
-    def __init__(self, phase_name, galaxies=None, optimizer_class=non_linear.MultiNest,
+    def __init__(self, phase_name, phase_folders=None, galaxies=None, optimizer_class=non_linear.MultiNest,
                  sub_grid_size=2, image_psf_shape=None, use_positions=False, mask_function=None,
                  inner_circular_mask_radii=None, cosmology=cosmo.Planck15, auto_link_priors=False):
         """
@@ -925,14 +936,15 @@ class MultiPlanePhase(PhaseImaging):
             The side length of the subgrid
         """
 
-        super(MultiPlanePhase, self).__init__(optimizer_class=optimizer_class,
+        super(MultiPlanePhase, self).__init__(phase_name=phase_name,
+                                              phase_folders=phase_folders,
+                                              optimizer_class=optimizer_class,
                                               sub_grid_size=sub_grid_size,
                                               image_psf_shape=image_psf_shape,
                                               use_positions=use_positions,
                                               mask_function=mask_function,
                                               inner_circular_mask_radii=inner_circular_mask_radii,
                                               cosmology=cosmology,
-                                              phase_name=phase_name,
                                               auto_link_priors=auto_link_priors)
         self.galaxies = galaxies
 
@@ -961,7 +973,7 @@ class MultiPlanePhase(PhaseImaging):
 class GalaxyFitPhase(AbstractPhase):
     galaxies = PhasePropertyCollection("galaxies")
 
-    def __init__(self, phase_name, galaxies=None, use_intensities=False, use_surface_density=False, use_potential=False,
+    def __init__(self, phase_name, phase_folders=None, galaxies=None, use_intensities=False, use_surface_density=False, use_potential=False,
                  use_deflections=False, optimizer_class=non_linear.MultiNest, sub_grid_size=2,
                  mask_function=None, cosmology=cosmo.Planck15):
         """
@@ -976,8 +988,8 @@ class GalaxyFitPhase(AbstractPhase):
             The side length of the subgrid
         """
 
-        super(GalaxyFitPhase, self).__init__(optimizer_class=optimizer_class, cosmology=cosmology,
-                                             phase_name=phase_name)
+        super(GalaxyFitPhase, self).__init__(phase_name=phase_name, phase_folders=phase_folders,
+                                             optimizer_class=optimizer_class, cosmology=cosmology)
         self.use_intensities = use_intensities
         self.use_surface_density = use_surface_density
         self.use_potential = use_potential
@@ -1284,7 +1296,7 @@ class SensitivityPhase(PhaseImaging):
     source_galaxies = PhasePropertyCollection("source_galaxies")
     sensitive_galaxies = PhasePropertyCollection("sensitive_galaxies")
 
-    def __init__(self, phase_name, lens_galaxies=None, source_galaxies=None, sensitive_galaxies=None,
+    def __init__(self, phase_name, phase_folders=None, lens_galaxies=None, source_galaxies=None, sensitive_galaxies=None,
                  optimizer_class=non_linear.MultiNest, sub_grid_size=2, mask_function=None,
                  cosmology=cosmo.Planck15):
         """
@@ -1299,9 +1311,9 @@ class SensitivityPhase(PhaseImaging):
             The side length of the subgrid
         """
 
-        super(SensitivityPhase, self).__init__(optimizer_class=optimizer_class, sub_grid_size=sub_grid_size,
-                                               mask_function=mask_function, cosmology=cosmology,
-                                               phase_name=phase_name)
+        super(SensitivityPhase, self).__init__(phase_name=phase_name, phase_folders=phase_folders,
+                                               optimizer_class=optimizer_class, sub_grid_size=sub_grid_size,
+                                               mask_function=mask_function, cosmology=cosmology)
 
         self.lens_galaxies = lens_galaxies or []
         self.source_galaxies = source_galaxies or []

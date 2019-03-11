@@ -24,7 +24,7 @@ def plot_intensities(
         The (y,x) coordinates of the grid, in an array of shape (total_coordinates, 2)
     """
     intensities = galaxy.intensities_from_grid(grid=grid)
-    intensities = grid.scaled_array_from_array_1d(intensities)
+    intensities = grid.scaled_array_2d_from_array_1d(intensities)
 
     array_plotters.plot_array(
         array=intensities, mask=mask, extract_array_from_mask=extract_array_from_mask,
@@ -57,7 +57,7 @@ def plot_surface_density(
         The (y,x) coordinates of the grid, in an array of shape (total_coordinates, 2)
     """
     surface_density = galaxy.surface_density_from_grid(grid=grid)
-    surface_density = grid.scaled_array_from_array_1d(surface_density)
+    surface_density = grid.scaled_array_2d_from_array_1d(surface_density)
 
     array_plotters.plot_array(
         array=surface_density, mask=mask, extract_array_from_mask=extract_array_from_mask,
@@ -90,7 +90,7 @@ def plot_potential(
          The (y,x) coordinates of the grid, in an array of shape (total_coordinates, 2)
      """
     potential = galaxy.potential_from_grid(grid=grid)
-    potential = grid.scaled_array_from_array_1d(potential)
+    potential = grid.scaled_array_2d_from_array_1d(potential)
 
     array_plotters.plot_array(
         array=potential, mask=mask, extract_array_from_mask=extract_array_from_mask,
@@ -123,7 +123,7 @@ def plot_deflections_y(
         The (y,x) coordinates of the grid, in an array of shape (total_coordinates, 2)
     """
     deflections = galaxy.deflections_from_grid(grid)
-    deflections_y = grid.scaled_array_from_array_1d(deflections[:,0])
+    deflections_y = grid.scaled_array_2d_from_array_1d(deflections[:, 0])
 
     array_plotters.plot_array(
         array=deflections_y, mask=mask, extract_array_from_mask=extract_array_from_mask,
@@ -156,7 +156,7 @@ def plot_deflections_x(
          The (y,x) coordinates of the grid, in an array of shape (total_coordinates, 2)
      """
     deflections = galaxy.deflections_from_grid(grid)
-    deflections_x = grid.scaled_array_from_array_1d(deflections[:,1])
+    deflections_x = grid.scaled_array_2d_from_array_1d(deflections[:, 1])
 
     array_plotters.plot_array(
         array=deflections_x, mask=mask, extract_array_from_mask=extract_array_from_mask,

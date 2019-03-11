@@ -585,6 +585,7 @@ class TestMassAndLightProfiles(object):
 
 
 class TestHyperGalaxy(object):
+
     class TestContributionMaps(object):
 
         def test__model_image_all_1s__factor_is_0__contributions_all_1s(self):
