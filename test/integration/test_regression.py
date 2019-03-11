@@ -107,7 +107,7 @@ class TestPhaseModelMapper(object):
 
         class MMPhase(ph.LensPlanePhase):
 
-            def pass_priors(self, previous_results):
+            def pass_priors(self, results):
                 self.lens_galaxies.lens.sersic.intensity = self.lens_galaxies.lens.sersic.axis_ratio
 
         phase = MMPhase(lens_galaxies=dict(lens=gm.GalaxyModel(sersic=lp.EllipticalSersic)),
@@ -155,7 +155,7 @@ class TestPhaseModelMapper(object):
 
         class MMPhase(ph.LensPlanePhase):
 
-            def pass_priors(self, previous_results):
+            def pass_priors(self, results):
                 self.lens_galaxies.lens.sersic.axis_ratio = 0.2
                 self.lens_galaxies.lens.sersic.phi = 90.0
                 self.lens_galaxies.lens.sersic.intensity = 1.0

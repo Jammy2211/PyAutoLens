@@ -30,7 +30,7 @@ def make_pipeline(test_name):
     
     class MMPhase(ph.LensPlanePhase):
 
-        def pass_priors(self, previous_results):
+        def pass_priors(self, results):
             self.lens_galaxies.lens.light.centre_0 = 1.0
             self.lens_galaxies.lens.light.centre_1 = 2.0
             self.lens_galaxies.lens.light.axis_ratio = 0.2

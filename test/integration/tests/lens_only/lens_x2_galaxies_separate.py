@@ -33,7 +33,7 @@ def make_pipeline(test_name):
 
     class LensPlaneGalaxy0Phase(ph.LensPlanePhase):
 
-        def pass_priors(self, previous_results):
+        def pass_priors(self, results):
 
             self.lens_galaxies.lens_0.sersic.centre_0 = -1.0
             self.lens_galaxies.lens_0.sersic.centre_1 = -1.0
@@ -48,7 +48,7 @@ def make_pipeline(test_name):
 
     class LensPlaneGalaxy1Phase(ph.LensPlanePhase):
 
-        def pass_priors(self, previous_results):
+        def pass_priors(self, results):
 
             self.lens_galaxies.lens_0 = previous_results[-1].constant.lens_0
             self.lens_galaxies.lens_1.sersic.centre_0 = 1.0
@@ -65,7 +65,7 @@ def make_pipeline(test_name):
 
     class LensPlaneBothGalaxyPhase(ph.LensPlanePhase):
 
-        def pass_priors(self, previous_results):
+        def pass_priors(self, results):
 
             self.lens_galaxies.lens_0 = previous_results[0].variable.lens_0
             self.lens_galaxies.lens_1 = previous_results[1].variable.lens_0

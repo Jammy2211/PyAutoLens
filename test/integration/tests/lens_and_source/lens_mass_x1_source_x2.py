@@ -39,7 +39,7 @@ def make_pipeline(test_name):
 
     class AddSourceGalaxyPhase(ph.LensSourcePlanePhase):
 
-        def pass_priors(self, previous_results):
+        def pass_priors(self, results):
 
             self.lens_galaxies_lens = previous_results[0].variable.lens
             self.source_galaxies_source_0 = previous_results[0].variable.source_0

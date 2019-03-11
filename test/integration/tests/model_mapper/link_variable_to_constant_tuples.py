@@ -29,7 +29,7 @@ def make_pipeline(test_name):
 
     class MMPhase(ph.LensPlanePhase):
 
-        def pass_priors(self, previous_results):
+        def pass_priors(self, results):
 
             self.lens_galaxies.lens.light.centre_0 = 1.0
             self.lens_galaxies.lens.light.centre_1 = 2.0
@@ -44,7 +44,7 @@ def make_pipeline(test_name):
 
     class MMPhase2(ph.LensPlanePhase):
 
-        def pass_priors(self, previous_results):
+        def pass_priors(self, results):
 
             self.lens_galaxies.lens = previous_results[0].constant.lens
 

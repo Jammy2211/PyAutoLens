@@ -542,9 +542,9 @@ class TestPhase(object):
 
     def test_customize(self, results, results_collection, ccd_data):
         class MyPlanePhaseAnd(ph.LensSourcePlanePhase):
-            def pass_priors(self, previous_results):
-                self.lens_galaxies = previous_results.last.constant.lens_galaxies
-                self.source_galaxies = previous_results.last.variable.source_galaxies
+            def pass_priors(self, results):
+                self.lens_galaxies = results.last.constant.lens_galaxies
+                self.source_galaxies = results.last.variable.source_galaxies
 
         galaxy = g.Galaxy()
         galaxy_model = gm.GalaxyModel()
@@ -553,7 +553,7 @@ class TestPhase(object):
         setattr(results.variable, "source_galaxies", [galaxy_model])
 
         phase = MyPlanePhaseAnd(optimizer_class=NLO, phase_name='test_phase')
-        phase.make_analysis(data=ccd_data, previous_results=results_collection)
+        phase.make_analysis(data=ccd_data, results=results_collection)
 
         assert phase.lens_galaxies == [galaxy]
         assert phase.source_galaxies == [galaxy_model]
@@ -573,7 +573,7 @@ class TestPhase(object):
 
     def test_modify_image(self, ccd_data):
         class MyPhase(ph.PhaseImaging):
-            def modify_image(self, image, previous_results):
+            def modify_image(self, image, results):
                 assert ccd_data.image.shape == image.shape
                 image = 20.0 * np.ones(shape=shape)
                 return image
@@ -734,7 +734,7 @@ class TestPhase(object):
 
         class LensPlanePhase2(ph.LensPlanePhase):
             # noinspection PyUnusedLocal
-            def pass_models(self, previous_results):
+            def pass_models(self, results):
                 self.lens_galaxies[0].sis.einstein_radius = prior.Constant(10.0)
 
         phase = LensPlanePhase2(lens_galaxies=[gm.GalaxyModel(sersic=lp.EllipticalSersic,
