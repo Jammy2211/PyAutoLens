@@ -3,8 +3,9 @@ from astropy import cosmology as cosmo
 
 from autofit import conf
 from autofit.optimize import non_linear
+from autofit.tools import fit
 from autofit.tools import phase as autofit_phase
-from autofit.tools.phase_property import PhasePropertyCollection
+from autofit.tools.phase_property import PhasePropertyCollection, PhaseProperty
 from autolens import exc
 from autolens.data.array import mask as msk
 from autolens.data.plotters import ccd_plotters
@@ -796,11 +797,6 @@ class LensPlanePhase(PhaseImaging):
         self.lens_galaxies = lens_galaxies
 
     class Analysis(PhaseImaging.Analysis):
-
-        def __init__(self, lens_data, cosmology, previous_results=None):
-            super(LensPlanePhase.Analysis, self).__init__(lens_data=lens_data, cosmology=cosmology,
-                                                          previous_results=previous_results)
-
         def tracer_for_instance(self, instance):
             return ray_tracing.TracerImagePlane(lens_galaxies=instance.lens_galaxies,
                                                 image_plane_grid_stack=self.lens_data.grid_stack,
@@ -877,11 +873,6 @@ class LensSourcePlanePhase(PhaseImaging):
         self.source_galaxies = source_galaxies or []
 
     class Analysis(PhaseImaging.Analysis):
-
-        def __init__(self, lens_data, cosmology, previous_results=None):
-            super(LensSourcePlanePhase.Analysis, self).__init__(lens_data=lens_data, cosmology=cosmology,
-                                                                previous_results=previous_results)
-
         def tracer_for_instance(self, instance):
             return ray_tracing.TracerImageSourcePlanes(lens_galaxies=instance.lens_galaxies,
                                                        source_galaxies=instance.source_galaxies,
@@ -1404,3 +1395,99 @@ class SensitivityPhase(PhaseImaging):
             return "\nRunning lens/source lens for... \n\nLens Galaxy:\n{}\n\nSource Galaxy:\n{}\n\n Sensitive " \
                    "Galaxy\n{}\n\n ".format(instance.lens_galaxies, instance.source_galaxies,
                                             instance.sensitive_galaxies)
+
+
+class HyperGalaxyPhase(Phase):
+    hyper_galaxy = PhaseProperty("hyper_galaxy")
+
+    def __init__(self, phase_name):
+        """
+        Scales the noise associated with each galaxy to reduce overfitting.
+
+        Parameters
+        ----------
+        phase_name: str
+            The name of phase
+        """
+        super().__init__(phase_name)
+        self.hyper_galaxy = g.HyperGalaxy
+
+    class Analysis(non_linear.Analysis):
+        def visualize(self, instance, image_path, during_analysis):
+            # TODO: I'm guessing you have an idea of what you want here?
+            pass
+
+        def __init__(self, lens_data, model_image, galaxy_image):
+            """
+            An analysis to fit the noise for a single galaxy image.
+
+            Parameters
+            ----------
+            lens_data: LensData
+                Lens data, including an image and noise
+            model_image: ndarray
+                An image produce of the overall system by a model
+            galaxy_image: ndarray
+                The contribution of one galaxy to the model image
+            """
+            self.lens_data = lens_data
+            self.model_image = model_image
+            self.galaxy_image = galaxy_image
+
+        def fit(self, instance):
+            """
+            Fit the model image to the real image by scaling the hyper noise.
+
+            Parameters
+            ----------
+            instance: ModelInstance
+                A model instance with a hyper galaxy property
+
+            Returns
+            -------
+            fit: float
+            """
+            return self.fit_hyper_galaxy(instance.hyper_galaxy)
+
+        def fit_hyper_galaxy(self, hyper_galaxy):
+            hyper_noise = hyper_galaxy.hyper_noise_from_model_image_galaxy_image_and_noise_map(self.model_image,
+                                                                                               self.galaxy_image,
+                                                                                               self.lens_data.noise_map)
+            return fit.DataFit(self.lens_data.ccd_data, hyper_noise, self.lens_data.mask, self.model_image).likelihood
+
+        @classmethod
+        def describe(cls, instance):
+            return "Running hyper galaxy fit for HyperGalaxy:\n{}".format(instance.hyper_galaxy)
+
+    class HyperGalaxyResults(object):
+        def __init__(self, results):
+            self.results = results
+
+    def run(self, data, previous_results=None, mask=None, positions=None):
+        """
+        Run a fit for each galaxy from the previous phase.
+
+        Parameters
+        ----------
+        data: LensData
+        previous_results: ResultsCollection
+            Results from all previous phases
+        mask: Mask
+            The mask
+        positions
+
+        Returns
+        -------
+        results: HyperGalaxyResults
+            A collection of results, with one item per a galaxy
+        """
+        model_image = previous_results.last.unmasked_model_image
+        galaxy_images = previous_results.last.unmasked_model_image_of_planes
+
+        results = []
+
+        for i, galaxy_image in enumerate(galaxy_images):
+            optimizer = self.optimizer.copy_with_name_extension(str(i))
+            results.append(optimizer.fit(self.__class__.Analysis(data, model_image, galaxy_image)))
+
+        return self.__class__.HyperGalaxyResults(results)

@@ -19,7 +19,8 @@ from test.simulation import makers
 makers.make_lens_only_dev_vaucouleurs(data_resolutions=['LSST', 'Euclid'], sub_grid_size=16)
 makers.make_lens_only_bulge_and_disk(data_resolutions=['LSST', 'Euclid'], sub_grid_size=16)
 makers.make_lens_only_x2_galaxies(data_resolutions=['LSST', 'Euclid'], sub_grid_size=16)
-makers.make_no_lens_light_and_source_smooth(data_resolutions=['LSST', 'Euclid', 'HST', 'HST_Up', 'AO'], sub_grid_size=16)
+makers.make_no_lens_light_and_source_smooth(data_resolutions=['LSST', 'Euclid', 'HST', 'HST_Up', 'AO'],
+                                            sub_grid_size=16)
 makers.make_no_lens_light_and_source_cuspy(data_resolutions=['LSST', 'Euclid', 'HST', 'HST_Up', 'AO'], sub_grid_size=16)
 makers.make_lens_and_source_smooth(data_resolutions=['LSST', 'Euclid', 'HST', 'HST_Up', 'AO'], sub_grid_size=16)
 makers.make_lens_and_source_cuspy(data_resolutions=['LSST', 'Euclid', 'HST', 'HST_Up', 'AO'], sub_grid_size=16)

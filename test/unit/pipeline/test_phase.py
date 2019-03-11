@@ -137,6 +137,70 @@ def make_results_collection(results):
     return results_collection
 
 
+class MockLensData(object):
+    def __init__(self, ccd_data, noise_map, mask):
+        self.ccd_data = ccd_data
+        self.noise_map = noise_map
+        self.mask = mask
+
+
+@pytest.fixture(name="hyper_lens_data")
+def make_lens_data():
+    return MockLensData(np.ones(5), np.ones(5), np.full(5, True))
+
+
+@pytest.fixture(name="hyper_galaxy")
+def make_hyper_galaxy():
+    return g.HyperGalaxy(1.0, 1.0, 1.0)
+
+
+@pytest.fixture(name="hyper_phase")
+def make_hyper_phase():
+    return ph.HyperGalaxyPhase("hyper_galaxy_phase")
+
+
+class TestHyperGalaxyPhase(object):
+    def test_init(self, hyper_phase):
+        assert hyper_phase.optimizer.variable.prior_count == 3
+
+    def test_analysis(self, hyper_lens_data, hyper_galaxy):
+        analysis = ph.HyperGalaxyPhase.Analysis(hyper_lens_data, np.ones(5), np.ones(5))
+        result = analysis.fit_hyper_galaxy(hyper_galaxy)
+
+        assert isinstance(result, float)
+
+    def test_run(self, hyper_galaxy, hyper_phase, hyper_lens_data):
+        class MockOptimizer(object):
+            def __init__(self):
+                self.extensions = []
+
+            @classmethod
+            def fit(cls, analysis):
+                instance = mm.ModelInstance()
+                instance.hyper_galaxy = hyper_galaxy
+                return analysis.fit(instance)
+
+            def copy_with_name_extension(self, name):
+                self.extensions.append(name)
+                return self
+
+        optimizer = MockOptimizer()
+        hyper_phase.optimizer = optimizer
+
+        class PreviousResults(object):
+            class Last(object):
+                unmasked_model_image = np.ones(5)
+                unmasked_model_image_of_planes = 3 * [np.ones(5)]
+
+            last = Last
+
+        results = hyper_phase.run(hyper_lens_data, PreviousResults)
+
+        assert isinstance(results, ph.HyperGalaxyPhase.HyperGalaxyResults)
+        assert len(results.results) == 3
+        assert optimizer.extensions == ["0", "1", "2"]
+
+
 class TestAutomaticPriorPassing(object):
 
     def test_galaxy_model_dict(self, phase, galaxy_model):
