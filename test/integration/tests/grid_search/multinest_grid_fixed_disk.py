@@ -23,7 +23,7 @@ conf.instance = conf.Config(config_path=config_path, output_path=output_path)
 def pipeline():
 
     integration_util.reset_paths(test_name=test_name, output_path=output_path)
-    ccd_data = simulation_util.load_test_ccd_data(data_resolution='Euclid', data_type='lens_only_dev_vaucouleurs')
+    ccd_data = simulation_util.load_test_ccd_data(data_type='lens_only_dev_vaucouleurs', data_resolution='Euclid')
     pipeline = make_pipeline(test_name=test_name)
     pipeline.run(data=ccd_data)
 
@@ -48,9 +48,10 @@ def make_pipeline(test_name):
             self.lens_galaxies.lens.disk.intensity = prior.UniformPrior(lower_limit=1.99, upper_limit=2.01)
             self.lens_galaxies.lens.disk.effective_radius = prior.UniformPrior(lower_limit=1.95, upper_limit=2.05)
 
-    phase1 = QuickPhase(lens_galaxies=dict(lens=gm.GalaxyModel(bulge=lp.EllipticalSersic,
+    phase1 = QuickPhase(phase_name="phase1", phase_folders=[test_name], 
+                        lens_galaxies=dict(lens=gm.GalaxyModel(bulge=lp.EllipticalSersic,
                                                                disk=lp.EllipticalExponential)),
-                        optimizer_class=nl.MultiNest, phase_name="{}/phase1".format(test_name))
+                        optimizer_class=nl.MultiNest)
 
     phase1.optimizer.const_efficiency_mode = True
     phase1.optimizer.n_live_points = 40
@@ -73,10 +74,10 @@ def make_pipeline(test_name):
             self.lens_galaxies.lens.bulge.intensity = prior.UniformPrior(lower_limit=0.99, upper_limit=1.01)
             self.lens_galaxies.lens.bulge.effective_radius = prior.UniformPrior(lower_limit=1.25, upper_limit=1.35)
 
-    phase2 = GridPhase(lens_galaxies=dict(lens=gm.GalaxyModel(bulge=lp.EllipticalSersic,
+    phase2 = GridPhase(phase_name="phase2", phase_folders=[test_name], 
+                       lens_galaxies=dict(lens=gm.GalaxyModel(bulge=lp.EllipticalSersic,
                                                               disk=lp.EllipticalExponential)),
-                       number_of_steps=2, optimizer_class=nl.MultiNest,
-                       phase_name=test_name + '/phase2')
+                       number_of_steps=2, optimizer_class=nl.MultiNest)
 
     phase2.optimizer.const_efficiency_mode = True
 

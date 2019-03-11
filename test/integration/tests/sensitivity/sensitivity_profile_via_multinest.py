@@ -23,7 +23,7 @@ conf.instance = conf.Config(config_path=config_path, output_path=output_path)
 def pipeline():
 
     integration_util.reset_paths(test_name=test_name, output_path=output_path)
-    ccd_data = simulation_util.load_test_ccd_data(data_resolution='Euclid', data_type='no_lens_light_and_source_smooth')
+    ccd_data = simulation_util.load_test_ccd_data(data_type='no_lens_light_and_source_smooth', data_resolution='Euclid')
     pipeline = make_pipeline(test_name=test_name)
     pipeline.run(data=ccd_data)
 
@@ -49,10 +49,11 @@ def make_pipeline(test_name):
             self.sensitive_galaxies.subhalo.mass.kappa_s = 0.1
             self.sensitive_galaxies.subhalo.mass.scale_radius = 5.0
 
-    phase1 = SensitivePhase(lens_galaxies=dict(lens=gm.GalaxyModel(mass=mp.SphericalIsothermal)),
+    phase1 = SensitivePhase(phase_name="phase1", phase_folders=[test_name],
+                            lens_galaxies=dict(lens=gm.GalaxyModel(mass=mp.SphericalIsothermal)),
                             source_galaxies=dict(source=gm.GalaxyModel(light=lp.SphericalSersic)),
                             sensitive_galaxies=dict(subhalo=gm.GalaxyModel(mass=mp.SphericalNFW)),
-                            optimizer_class=nl.MultiNest, phase_name="{}/phase1".format(test_name))
+                            optimizer_class=nl.MultiNest)
 
     phase1.optimizer.const_efficiency_mode = True
 
