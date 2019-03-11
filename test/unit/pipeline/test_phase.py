@@ -425,6 +425,7 @@ class TestPhase(object):
         assert hasattr(analysis.lens_data.padded_grid_stack.sub, 'interpolator')
 
     def test__make_analysis__phase_info_is_made(self, phase, ccd_data):
+
         phase.make_analysis(data=ccd_data)
 
         file_phase_info = "{}/{}".format(phase.optimizer.phase_output_path, 'phase.info')
