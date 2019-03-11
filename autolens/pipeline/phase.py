@@ -3,7 +3,6 @@ from astropy import cosmology as cosmo
 
 from autofit import conf
 from autofit.optimize import non_linear
-from autofit.tools import fit
 from autofit.tools import phase as autofit_phase
 from autofit.tools.phase_property import PhasePropertyCollection, PhaseProperty
 from autolens import exc
@@ -781,7 +780,8 @@ class LensPlanePhase(PhaseImaging):
     def phase_property_collections(self):
         return [self.lens_galaxies]
 
-    def __init__(self, phase_name, phase_folders=None, lens_galaxies=None, optimizer_class=non_linear.MultiNest, sub_grid_size=2,
+    def __init__(self, phase_name, phase_folders=None, lens_galaxies=None, optimizer_class=non_linear.MultiNest,
+                 sub_grid_size=2,
                  image_psf_shape=None, mask_function=None, inner_circular_mask_radii=None, cosmology=cosmo.Planck15,
                  interp_pixel_scale=None, auto_link_priors=False):
         super(LensPlanePhase, self).__init__(phase_name=phase_name,
@@ -973,7 +973,8 @@ class MultiPlanePhase(PhaseImaging):
 class GalaxyFitPhase(AbstractPhase):
     galaxies = PhasePropertyCollection("galaxies")
 
-    def __init__(self, phase_name, phase_folders=None, galaxies=None, use_intensities=False, use_surface_density=False, use_potential=False,
+    def __init__(self, phase_name, phase_folders=None, galaxies=None, use_intensities=False, use_surface_density=False,
+                 use_potential=False,
                  use_deflections=False, optimizer_class=non_linear.MultiNest, sub_grid_size=2,
                  mask_function=None, cosmology=cosmo.Planck15):
         """
@@ -1296,7 +1297,8 @@ class SensitivityPhase(PhaseImaging):
     source_galaxies = PhasePropertyCollection("source_galaxies")
     sensitive_galaxies = PhasePropertyCollection("sensitive_galaxies")
 
-    def __init__(self, phase_name, phase_folders=None, lens_galaxies=None, source_galaxies=None, sensitive_galaxies=None,
+    def __init__(self, phase_name, phase_folders=None, lens_galaxies=None, source_galaxies=None,
+                 sensitive_galaxies=None,
                  optimizer_class=non_linear.MultiNest, sub_grid_size=2, mask_function=None,
                  cosmology=cosmo.Planck15):
         """
@@ -1398,7 +1400,6 @@ class SensitivityPhase(PhaseImaging):
 
 
 class HyperGalaxyPhase(Phase):
-
     hyper_galaxy = PhaseProperty("hyper_galaxy")
 
     def __init__(self, phase_name, phase_folders=None):
@@ -1458,7 +1459,7 @@ class HyperGalaxyPhase(Phase):
                                                                                                self.lens_data.noise_map)
             hyper_noise_map = self.lens_data.noise_map + hyper_noise
             return lens_fit.LensDataFit(image=self.lens_data.image, noise_map=hyper_noise_map,
-                               mask=self.lens_data.mask, model_image=self.model_image)
+                                        mask=np.full(self.lens_data.image.shape, False), model_image=self.model_image)
 
         @classmethod
         def describe(cls, instance):
