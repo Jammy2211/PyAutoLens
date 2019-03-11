@@ -61,7 +61,7 @@ def make_lens_image(image, mask):
 def make_fit(lens_data, galaxy_light, galaxy_mass):
     tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[galaxy_mass], source_galaxies=[galaxy_light],
                                                  image_plane_grid_stack=lens_data.grid_stack, cosmology=cosmo.Planck15)
-    return lens_fit.fit_lens_data_with_tracer(lens_data=lens_data, tracer=tracer)
+    return lens_fit.LensDataFit.for_data_and_tracer(lens_data=lens_data, tracer=tracer)
 
 
 @pytest.fixture(name='hyper')
