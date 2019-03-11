@@ -171,13 +171,21 @@ class TestHyperGalaxyPhase(object):
 
     def test_run(self, hyper_galaxy, hyper_phase, hyper_lens_data):
         class MockOptimizer(object):
+            def __init__(self):
+                self.extensions = []
+
             @classmethod
             def fit(cls, analysis):
                 instance = mm.ModelInstance()
                 instance.hyper_galaxy = hyper_galaxy
                 return analysis.fit(instance)
 
-        hyper_phase.optimizer = MockOptimizer()
+            def copy_with_name_extension(self, name):
+                self.extensions.append(name)
+                return self
+
+        optimizer = MockOptimizer()
+        hyper_phase.optimizer = optimizer
 
         class PreviousResults(object):
             class Last(object):
@@ -190,6 +198,7 @@ class TestHyperGalaxyPhase(object):
 
         assert isinstance(results, ph.HyperGalaxyPhase.HyperGalaxyResults)
         assert len(results.results) == 3
+        assert optimizer.extensions == ["0", "1", "2"]
 
 
 class TestAutomaticPriorPassing(object):
