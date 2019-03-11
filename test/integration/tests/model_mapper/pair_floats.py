@@ -30,7 +30,7 @@ def make_pipeline(test_name):
 
     class MMPhase(ph.LensPlanePhase):
 
-        def pass_priors(self, previous_results):
+        def pass_priors(self, results):
             self.lens_galaxies.lens.light.intensity = self.lens_galaxies.lens.mass.einstein_radius
 
     phase1 = MMPhase(phase_name="phase1", phase_folders=[test_name],

@@ -32,7 +32,7 @@ def make_pipeline(test_name):
 
     class LensPlaneGalaxy0Phase(ph.LensPlanePhase):
         
-        def pass_priors(self, previous_results):
+        def pass_priors(self, results):
             
             self.lens_galaxies.lens_0.light.centre_0 = -1.0
             self.lens_galaxies.lens_0.light.centre_1 = -1.0

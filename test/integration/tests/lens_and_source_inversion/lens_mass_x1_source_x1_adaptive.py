@@ -30,7 +30,7 @@ def make_pipeline(test_name):
 
     class SourcePix(ph.LensSourcePlanePhase):
 
-        def pass_priors(self, previous_results):
+        def pass_priors(self, results):
 
             self.lens_galaxies.lens.mass.centre.centre_0 = 0.0
             self.lens_galaxies.lens.mass.centre.centre_1 = 0.0

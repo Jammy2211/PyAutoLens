@@ -31,7 +31,7 @@ def pipeline():
 def make_pipeline(test_name):
     class QuickPhase(ph.LensPlanePhase):
 
-        def pass_priors(self, previous_results):
+        def pass_priors(self, results):
 
             self.lens_galaxies.lens.bulge.centre_0 = prior.UniformPrior(lower_limit=-0.01, upper_limit=0.01)
             self.lens_galaxies.lens.bulge.centre_1 = prior.UniformPrior(lower_limit=-0.01, upper_limit=0.01)

@@ -41,7 +41,7 @@ def make_pipeline(test_name):
 
     class MMPhase2(ph.LensPlanePhase):
 
-        def pass_priors(self, previous_results):
+        def pass_priors(self, results):
             self.lens_galaxies = previous_results[0].variable.lens_galaxies
 
     phase2 = MMPhase2(phase_name="phase2", phase_folders=[test_name],

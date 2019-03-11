@@ -30,15 +30,15 @@ class DummyPhaseImaging(object):
     def __init__(self, phase_name):
         self.data = None
         self.positions = None
-        self.previous_results = None
+        self.results = None
         self.phase_name = phase_name
         self.mask = None
 
         self.optimizer = Optimizer()
 
-    def run(self, data, previous_results, mask=None, positions=None):
+    def run(self, data, results, mask=None, positions=None):
         self.data = data
-        self.previous_results = previous_results
+        self.results = results
         self.mask = mask
         self.positions = positions
         return non_linear.Result(model_mapper.ModelInstance(), 1)
@@ -76,7 +76,7 @@ class TestPipelineImaging(object):
 
         pipeline.run(None)
 
-        assert len(phase_2.previous_results) == 2
+        assert len(phase_2.results) == 2
 
     def test_addition(self):
         phase_1 = DummyPhaseImaging("one")
@@ -92,15 +92,15 @@ class TestPipelineImaging(object):
 class DummyPhasePositions(object):
     def __init__(self, phase_name):
         self.positions = None
-        self.previous_results = None
+        self.results = None
         self.pixel_scale = None
         self.phase_name = phase_name
         self.optimizer = Optimizer()
 
-    def run(self, positions, pixel_scale, previous_results):
+    def run(self, positions, pixel_scale, results):
         self.positions = positions
         self.pixel_scale = pixel_scale
-        self.previous_results = previous_results
+        self.results = results
         return non_linear.Result(model_mapper.ModelInstance(), 1)
 
 
@@ -112,7 +112,7 @@ class TestPipelinePositions(object):
 
         pipeline.run(None, None)
 
-        assert len(phase_2.previous_results) == 2
+        assert len(phase_2.results) == 2
 
     def test_addition(self):
         phase_1 = DummyPhasePositions("one")

@@ -34,7 +34,7 @@ def make_pipeline(test_name):
 
     class SensitivePhase(ph.SensitivityPhase):
 
-        def pass_priors(self, previous_results):
+        def pass_priors(self, results):
 
             self.lens_galaxies.lens.mass.centre_0 = 0.0
             self.lens_galaxies.lens.mass.centre_1 = 0.0
