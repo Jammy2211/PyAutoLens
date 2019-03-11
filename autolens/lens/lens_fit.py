@@ -33,6 +33,7 @@ def fit_lens_data_with_tracer(lens_data, tracer, padded_tracer=None):
         raise exc.FittingException('The fit routine did not call a Fit class - check the '
                                    'properties of the tracer')
 
+
 class AbstractLensFit(object):
 
     def __init__(self, tracer, padded_tracer, psf, map_to_scaled_array):
@@ -395,10 +396,7 @@ class LensPositionFit(object):
         return -0.5 * sum(self.chi_squared_map)
 
     def maximum_separation_within_threshold(self, threshold):
-        if max(self.maximum_separations) > threshold:
-            return False
-        else:
-            return True
+        return max(self.maximum_separations) <= threshold
 
     @property
     def maximum_separations(self):
