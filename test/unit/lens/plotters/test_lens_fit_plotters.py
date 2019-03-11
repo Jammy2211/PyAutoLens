@@ -60,14 +60,14 @@ def make_lens_image(image, mask):
 def make_fit_lens_only(lens_data, galaxy_light):
     tracer = ray_tracing.TracerImagePlane(lens_galaxies=[galaxy_light], image_plane_grid_stack=lens_data.grid_stack,
                                           cosmology=cosmo.Planck15)
-    return lens_fit.fit_lens_data_with_tracer(lens_data=lens_data, tracer=tracer)
+    return lens_fit.LensDataFit.for_data_and_tracer(lens_data=lens_data, tracer=tracer)
 
 
 @pytest.fixture(name='fit_source_and_lens')
 def make_fit_source_and_lens(lens_data, galaxy_light, galaxy_mass):
     tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[galaxy_mass], source_galaxies=[galaxy_light],
                                                  image_plane_grid_stack=lens_data.grid_stack, cosmology=cosmo.Planck15)
-    return lens_fit.fit_lens_data_with_tracer(lens_data=lens_data, tracer=tracer)
+    return lens_fit.LensDataFit.for_data_and_tracer(lens_data=lens_data, tracer=tracer)
 
 
 def test__fit_sub_plot_lens_only(fit_lens_only, lens_fit_plotter_path, plot_patch):
