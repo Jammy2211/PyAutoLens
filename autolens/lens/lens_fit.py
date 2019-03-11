@@ -158,6 +158,18 @@ class InversionFit(LensTracerFit):
                          map_to_scaled_array=lens_data.map_to_scaled_array)
         self.inversion = inversion
 
+        self.likelihood_with_regularization = \
+            util.likelihood_with_regularization_from_chi_squared_regularization_term_and_noise_normalization(
+                chi_squared=self.chi_squared, regularization_term=inversion.regularization_term,
+                noise_normalization=self.noise_normalization)
+
+        self.evidence = util.evidence_from_inversion_terms(
+            chi_squared=self.chi_squared,
+            regularization_term=inversion.regularization_term,
+            log_curvature_regularization_term=inversion.log_det_curvature_reg_matrix_term,
+            log_regularization_term=inversion.log_det_regularization_matrix_term,
+            noise_normalization=self.noise_normalization)
+
 
 class LensInversionFit(InversionFit):
 
@@ -184,18 +196,6 @@ class LensInversionFit(InversionFit):
                          tracer=tracer,
                          inversion=inversion,
                          padded_tracer=padded_tracer)
-
-        self.likelihood_with_regularization = \
-            util.likelihood_with_regularization_from_chi_squared_regularization_term_and_noise_normalization(
-                chi_squared=self.chi_squared, regularization_term=inversion.regularization_term,
-                noise_normalization=self.noise_normalization)
-
-        self.evidence = util.evidence_from_inversion_terms(
-            chi_squared=self.chi_squared,
-            regularization_term=inversion.regularization_term,
-            log_curvature_regularization_term=inversion.log_det_curvature_reg_matrix_term,
-            log_regularization_term=inversion.log_det_regularization_matrix_term,
-            noise_normalization=self.noise_normalization)
 
     @property
     def figure_of_merit(self):
@@ -250,18 +250,6 @@ class LensProfileInversionFit(InversionFit):
 
         self.blurred_profile_image = blurred_profile_image
         self.profile_subtracted_image = lens_data.image - self.blurred_profile_image
-
-        self.likelihood_with_regularization = \
-            util.likelihood_with_regularization_from_chi_squared_regularization_term_and_noise_normalization(
-                chi_squared=self.chi_squared, regularization_term=inversion.regularization_term,
-                noise_normalization=self.noise_normalization)
-
-        self.evidence = util.evidence_from_inversion_terms(
-            chi_squared=self.chi_squared,
-            regularization_term=inversion.regularization_term,
-            log_curvature_regularization_term=inversion.log_det_curvature_reg_matrix_term,
-            log_regularization_term=inversion.log_det_regularization_matrix_term,
-            noise_normalization=self.noise_normalization)
 
     @property
     def model_image_of_planes(self):
