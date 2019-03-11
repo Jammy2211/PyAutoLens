@@ -1486,7 +1486,8 @@ class HyperGalaxyPhase(Phase):
 
         results = []
 
-        for galaxy_image in galaxy_images:
-            results.append(self.optimizer.fit(self.__class__.Analysis(data, model_image, galaxy_image)))
+        for i, galaxy_image in enumerate(galaxy_images):
+            optimizer = self.optimizer.copy_with_name_extension(str(i))
+            results.append(optimizer.fit(self.__class__.Analysis(data, model_image, galaxy_image)))
 
         return self.__class__.HyperGalaxyResults(results)
