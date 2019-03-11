@@ -4,6 +4,7 @@ from astropy import cosmology as cosmo
 from autofit import conf
 from autofit.mapper import model_mapper as mm
 from autofit.optimize import non_linear
+from autofit.tools import fit
 from autofit.tools import phase as autofit_phase
 from autofit.tools.phase_property import PhasePropertyCollection
 from autolens import exc
@@ -1391,26 +1392,38 @@ class HyperGalaxyPhase(Phase):
         self.optimizer.variable = mm.ModelMapper()
         self.optimizer.variable.hyper_galaxy = g.HyperGalaxy
 
+    class Analysis(non_linear.Analysis):
+        def visualize(self, instance, image_path, during_analysis):
+            # TODO: I'm guessing you have an idea of what you want here?
+            pass
+
+        def __init__(self, lens_data, model_image, galaxy_image):
+            self.lens_data = lens_data
+            self.model_image = model_image
+            self.galaxy_image = galaxy_image
+
+        def fit(self, instance):
+            hyper_galaxy = instance.hyper_galaxy
+            hyper_noise = hyper_galaxy.hyper_noise_from_model_image_galaxy_image_and_noise_map(self.model_image,
+                                                                                               self.galaxy_image,
+                                                                                               self.lens_data.noise_map)
+            return fit.DataFit(self.lens_data.ccd_data, hyper_noise, self.lens_data.mask, self.model_image)
+
+        @classmethod
+        def describe(cls, instance):
+            return ""
+
+    class HyperGalaxyResults(object):
+        def __init__(self, results):
+            self.results = results
+
     def run(self, data, previous_results=None, mask=None, positions=None):
         model_image = previous_results.unmasked_model_image
-        component_images = previous_results.unmasked_model_image_of_planes
-
-        class Analysis(non_linear.Analysis):
-            def visualize(self, instance, image_path, during_analysis):
-                # TODO: I'm guessing you have an idea of what you want here?
-                pass
-
-            def __init__(self, image):
-                self.image = image
-
-            def fit(self, instance):
-                instance.hyper_galaxy.hyper_noise_map
-
-            @classmethod
-            def describe(cls, instance):
-                return ""
+        galaxy_images = previous_results.unmasked_model_image_of_planes
 
         results = []
 
-        for component in component_images:
-            results.append(self.optimizer.fit(Analysis(component)))
+        for galaxy_image in galaxy_images:
+            results.append(self.optimizer.fit(self.__class__.Analysis(data, model_image, galaxy_image)))
+
+        return self.__class__.HyperGalaxyResults(results)
