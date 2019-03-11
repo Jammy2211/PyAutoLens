@@ -20,16 +20,17 @@ conf.instance = conf.Config(config_path=config_path, output_path=output_path)
 def pipeline():
 
     integration_util.reset_paths(test_name=test_name, output_path=output_path)
-    ccd_data = simulation_util.load_test_ccd_data(data_resolution='LSST', data_type='no_lens_light_and_source_smooth')
+    ccd_data = simulation_util.load_test_ccd_data(data_type='no_lens_light_and_source_smooth', data_resolution='LSST')
     pipeline = make_pipeline(test_name=test_name)
     pipeline.run(data=ccd_data)
 
 
 def make_pipeline(test_name):
 
-    phase1 = ph.LensSourcePlanePhase(lens_galaxies=dict(lens=gm.GalaxyModel(mass=mp.EllipticalIsothermal)),
+    phase1 = ph.LensSourcePlanePhase(phase_name="phase1", phase_folders=[test_name],
+                                     lens_galaxies=dict(lens=gm.GalaxyModel(mass=mp.EllipticalIsothermal)),
                                      source_galaxies=dict(source=gm.GalaxyModel(light=lp.EllipticalSersic)),
-                                     optimizer_class=nl.MultiNest, phase_name="{}/phase1".format(test_name))
+                                     optimizer_class=nl.MultiNest)
 
     phase1.optimizer.const_efficiency_mode = True
     phase1.optimizer.n_live_points = 60

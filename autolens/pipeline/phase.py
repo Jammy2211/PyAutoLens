@@ -1398,9 +1398,10 @@ class SensitivityPhase(PhaseImaging):
 
 
 class HyperGalaxyPhase(Phase):
+
     hyper_galaxy = PhaseProperty("hyper_galaxy")
 
-    def __init__(self, phase_name, phase_folers=None):
+    def __init__(self, phase_name, phase_folders=None):
         """
         Scales the noise associated with each galaxy to reduce overfitting.
 
@@ -1409,7 +1410,7 @@ class HyperGalaxyPhase(Phase):
         phase_name: str
             The name of phase
         """
-        super().__init__(phase_name=phase_name, phase_folders=phase_folers)
+        super().__init__(phase_name=phase_name, phase_folders=phase_folders)
         self.hyper_galaxy = g.HyperGalaxy
 
     class Analysis(non_linear.Analysis):
