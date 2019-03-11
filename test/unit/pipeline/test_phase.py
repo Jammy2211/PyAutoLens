@@ -137,24 +137,36 @@ def make_results_collection(results):
     return results_collection
 
 
+class MockLensData(object):
+    def __init__(self, ccd_data, noise_map, mask):
+        self.ccd_data = ccd_data
+        self.noise_map = noise_map
+        self.mask = mask
+
+
+@pytest.fixture(name="hyper_lens_data")
+def make_lens_data():
+    return MockLensData(np.ones(5), np.ones(5), np.full(5, True))
+
+
+@pytest.fixture(name="hyper_galaxy")
+def make_hyper_galaxy():
+    return g.HyperGalaxy(1.0, 1.0, 1.0)
+
+
 class TestHyperGalaxyPhase(object):
     def test_init(self):
         hyper_phase = ph.HyperGalaxyPhase("hyper_galaxy_phase")
         assert hyper_phase.optimizer.variable.prior_count == 3
 
-    def test_analysis(self):
-        class MockLensData(object):
-            def __init__(self, ccd_data, noise_map, mask):
-                self.ccd_data = ccd_data
-                self.noise_map = noise_map
-                self.mask = mask
-
-        lens_data = MockLensData(np.ones(5), np.ones(5), np.full(5, True))
-        analysis = ph.HyperGalaxyPhase.Analysis(lens_data, np.ones(5), np.ones(5))
-        hyper_galaxy = g.HyperGalaxy(1.0, 1.0, 1.0)
+    def test_analysis(self, hyper_lens_data, hyper_galaxy):
+        analysis = ph.HyperGalaxyPhase.Analysis(hyper_lens_data, np.ones(5), np.ones(5))
         result = analysis.fit_hyper_galaxy(hyper_galaxy)
 
         assert isinstance(result, float)
+
+    def test_run(self):
+        pass
 
 
 class TestAutomaticPriorPassing(object):
