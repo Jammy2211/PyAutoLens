@@ -137,6 +137,11 @@ def make_results_collection(results):
     return results_collection
 
 
+class TestHyperGalaxyPhase(object):
+    def test_hyper_galaxy_phase(self):
+        pass
+
+
 class TestAutomaticPriorPassing(object):
 
     def test_galaxy_model_dict(self, phase, galaxy_model):
