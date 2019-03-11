@@ -33,7 +33,24 @@ def fit_lens_data_with_tracer(lens_data, tracer, padded_tracer=None):
                                    'properties of the tracer')
 
 
-class LensFit(fit.DataFit):
+class LensDataFit(fit.DataFit):
+    def __init__(self, image, noise_map, mask, model_image):
+        super().__init__(data=image, noise_map=noise_map, mask=mask, model_data=model_image)
+
+    @property
+    def model_image(self):
+        return self.model_data
+
+    @property
+    def image(self):
+        return self.data
+
+    @property
+    def figure_of_merit(self):
+        return self.likelihood
+
+
+class LensTracerFit(LensDataFit):
 
     def __init__(self, image, noise_map, mask, model_image, tracer, psf, map_to_scaled_array, padded_tracer=None):
         """ An  lens fitter, which contains the tracer's used to perform the fit and functions to manipulate \
@@ -49,15 +66,11 @@ class LensFit(fit.DataFit):
         map_to_scaled_array : func
             A function which maps the 1D lens hyper to its unmasked 2D array.
         """
-        super().__init__(data=image, noise_map=noise_map, mask=mask, model_data=model_image)
+        super().__init__(image=image, noise_map=noise_map, mask=mask, model_image=model_image)
         self.tracer = tracer
         self.padded_tracer = padded_tracer
         self.psf = psf
         self.map_to_scaled_array = map_to_scaled_array
-
-    @property
-    def model_image(self):
-        return self.model_data
 
     @property
     def total_inversions(self):
@@ -89,7 +102,7 @@ class LensFit(fit.DataFit):
                 psf=self.psf)
 
 
-class LensProfileFit(LensFit):
+class LensProfileFit(LensTracerFit):
 
     def __init__(self, lens_data, tracer, padded_tracer=None):
         """ An  lens profile fitter, which generates the image-plane image of all galaxies (with light \
@@ -134,7 +147,7 @@ class LensProfileFit(LensFit):
         return self.likelihood
 
 
-class LensInversionFit(LensFit):
+class LensInversionFit(LensTracerFit):
 
     def __init__(self, lens_data, tracer):
         """ An  lens inversion fitter, which fits the lens data an inversion using the mapper(s) and \
@@ -183,9 +196,9 @@ class LensInversionFit(LensFit):
         return [None, self.inversion.reconstructed_data]
 
 
-class LensProfileInversionFit(LensFit):
+class LensProfileInversionFit(LensTracerFit):
 
-    def __init__(self, lens_data, tracer, padded_tracer):
+    def __init__(self, lens_data, tracer, padded_tracer=None):
         """ An  lens profile and inversion fitter, which first generates and subtracts the image-plane \
         image of all galaxies (with light profiles) in the tracer, blurs it with the PSF and fits the residual image \
         with an inversion using the mapper(s) and regularization(s) in the galaxy's of the tracer.
