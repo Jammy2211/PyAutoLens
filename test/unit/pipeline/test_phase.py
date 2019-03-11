@@ -140,6 +140,7 @@ def make_results_collection(results):
 class MockLensData(object):
     def __init__(self, ccd_data, noise_map, mask):
         self.ccd_data = ccd_data
+        self.image = ccd_data
         self.noise_map = noise_map
         self.mask = mask
 
@@ -151,7 +152,7 @@ def make_lens_data():
 
 @pytest.fixture(name="hyper_galaxy")
 def make_hyper_galaxy():
-    return g.HyperGalaxy(1.0, 1.0, 1.0)
+    return g.HyperGalaxy(contribution_factor=1.0, noise_factor=1.0, noise_power=1.0)
 
 
 @pytest.fixture(name="hyper_phase")
@@ -160,14 +161,15 @@ def make_hyper_phase():
 
 
 class TestHyperGalaxyPhase(object):
+
     def test_init(self, hyper_phase):
         assert hyper_phase.optimizer.variable.prior_count == 3
 
     def test_analysis(self, hyper_lens_data, hyper_galaxy):
         analysis = ph.HyperGalaxyPhase.Analysis(hyper_lens_data, np.ones(5), np.ones(5))
-        result = analysis.fit_hyper_galaxy(hyper_galaxy)
+        result = analysis.fit_for_hyper_galaxy(hyper_galaxy=hyper_galaxy)
 
-        assert isinstance(result, float)
+        assert isinstance(result, lens_fit.LensDataFit)
 
     def test_run(self, hyper_galaxy, hyper_phase, hyper_lens_data):
         class MockOptimizer(object):
@@ -200,6 +202,80 @@ class TestHyperGalaxyPhase(object):
         assert len(results.results) == 3
         assert optimizer.extensions == ["0", "1", "2"]
 
+    def test__figure_of_merit_of_fit__noise_factor_0_so_no_noise_scaling(self, hyper_phase):
+
+        hyper_lens_data = MockLensData(ccd_data=np.ones(3), noise_map=np.ones(3), mask=np.full(3, False))
+        analysis = ph.HyperGalaxyPhase.Analysis(lens_data=hyper_lens_data, model_image=np.ones(3),
+                                                galaxy_image=np.ones(3))
+        hyper_galaxy = g.HyperGalaxy(contribution_factor=1.0, noise_factor=0.0, noise_power=1.0)
+        fit = analysis.fit_for_hyper_galaxy(hyper_galaxy=hyper_galaxy)
+        assert (fit.residual_map == np.zeros(3)).all()
+        assert (fit.chi_squared_map == np.zeros(3)).all()
+        assert (fit.noise_map == hyper_lens_data.noise_map).all()
+
+        chi_squared = 0.0
+        noise_normalization = 3.0 * np.log(2 * np.pi * 1.0 ** 2.0)
+
+        assert fit.figure_of_merit == -0.5*(chi_squared + noise_normalization)
+
+        hyper_lens_data = MockLensData(ccd_data=np.ones(3), noise_map=2.0*np.ones(3), mask=np.full(3, False))
+        analysis = ph.HyperGalaxyPhase.Analysis(lens_data=hyper_lens_data, model_image=np.ones(3),
+                                                galaxy_image=np.ones(3))
+        hyper_galaxy = g.HyperGalaxy(contribution_factor=1.0, noise_factor=0.0, noise_power=1.0)
+        fit = analysis.fit_for_hyper_galaxy(hyper_galaxy=hyper_galaxy)
+        assert (fit.residual_map == np.zeros(3)).all()
+        assert (fit.chi_squared_map == np.zeros(3)).all()
+        assert (fit.noise_map == hyper_lens_data.noise_map).all()
+
+        chi_squared = 0.0
+        noise_normalization = 3.0 * np.log(2 * np.pi * 2.0 ** 2.0)
+
+        assert fit.figure_of_merit == -0.5*(chi_squared + noise_normalization)
+
+
+        hyper_lens_data = MockLensData(ccd_data=2.0*np.ones(3), noise_map=2.0*np.ones(3), mask=np.full(3, False))
+        analysis = ph.HyperGalaxyPhase.Analysis(lens_data=hyper_lens_data, model_image=np.ones(3),
+                                                galaxy_image=np.ones(3))
+        hyper_galaxy = g.HyperGalaxy(contribution_factor=1.0, noise_factor=0.0, noise_power=1.0)
+        fit = analysis.fit_for_hyper_galaxy(hyper_galaxy=hyper_galaxy)
+        assert (fit.residual_map == np.ones(3)).all()
+        assert (fit.chi_squared_map == 0.25*np.ones(3)).all()
+        assert (fit.noise_map == hyper_lens_data.noise_map).all()
+
+        chi_squared = 0.75
+        noise_normalization = 3.0 * np.log(2 * np.pi * 2.0 ** 2.0)
+
+        assert fit.figure_of_merit == -0.5*(chi_squared + noise_normalization)
+
+    def test__figure_of_merit_of_fit__hyper_galaxy_params_scale_noise_as_expected(self, hyper_phase):
+
+        hyper_lens_data = MockLensData(ccd_data=np.ones(3), noise_map=np.ones(3), mask=np.full(3, False))
+        analysis = ph.HyperGalaxyPhase.Analysis(lens_data=hyper_lens_data, model_image=np.ones(3),
+                                                galaxy_image=np.ones(3))
+        hyper_galaxy = g.HyperGalaxy(contribution_factor=1.0, noise_factor=1.0, noise_power=1.0)
+        fit = analysis.fit_for_hyper_galaxy(hyper_galaxy=hyper_galaxy)
+        assert (fit.residual_map == np.zeros(3)).all()
+        assert (fit.chi_squared_map == np.zeros(3)).all()
+        assert (fit.noise_map == hyper_lens_data.noise_map + np.ones(3)).all()
+
+        chi_squared = 0.0
+        noise_normalization = 3.0 * np.log(2 * np.pi * 2.0 ** 2.0)
+
+        assert fit.figure_of_merit == -0.5*(chi_squared + noise_normalization)
+
+        hyper_lens_data = MockLensData(ccd_data=np.ones(3), noise_map=2.0*np.ones(3), mask=np.full(3, False))
+        analysis = ph.HyperGalaxyPhase.Analysis(lens_data=hyper_lens_data, model_image=np.ones(3),
+                                                galaxy_image=2.0*np.ones(3))
+        hyper_galaxy = g.HyperGalaxy(contribution_factor=1.0, noise_factor=1.0, noise_power=2.0)
+        fit = analysis.fit_for_hyper_galaxy(hyper_galaxy=hyper_galaxy)
+        assert (fit.residual_map == np.zeros(3)).all()
+        assert (fit.chi_squared_map == np.zeros(3)).all()
+        assert (fit.noise_map == hyper_lens_data.noise_map + ((2.0*np.ones(3))**2.0)).all()
+
+        chi_squared = 0.0
+        noise_normalization = 3.0 * np.log(2 * np.pi * 6.0 ** 2.0)
+
+        assert fit.figure_of_merit == -0.5*(chi_squared + noise_normalization)
 
 class TestAutomaticPriorPassing(object):
 

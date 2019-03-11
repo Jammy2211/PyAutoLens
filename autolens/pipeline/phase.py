@@ -1413,9 +1413,6 @@ class HyperGalaxyPhase(Phase):
         self.hyper_galaxy = g.HyperGalaxy
 
     class Analysis(non_linear.Analysis):
-        def visualize(self, instance, image_path, during_analysis):
-            # TODO: I'm guessing you have an idea of what you want here?
-            pass
 
         def __init__(self, lens_data, model_image, galaxy_image):
             """
@@ -1434,6 +1431,10 @@ class HyperGalaxyPhase(Phase):
             self.model_image = model_image
             self.galaxy_image = galaxy_image
 
+        def visualize(self, instance, image_path, during_analysis):
+            # TODO: I'm guessing you have an idea of what you want here?
+            pass
+
         def fit(self, instance):
             """
             Fit the model image to the real image by scaling the hyper noise.
@@ -1447,13 +1448,16 @@ class HyperGalaxyPhase(Phase):
             -------
             fit: float
             """
-            return self.fit_hyper_galaxy(instance.hyper_galaxy)
+            fit = self.fit_for_hyper_galaxy(hyper_galaxy=instance.hyper_galaxy)
+            return fit.figure_of_merit
 
-        def fit_hyper_galaxy(self, hyper_galaxy):
+        def fit_for_hyper_galaxy(self, hyper_galaxy):
             hyper_noise = hyper_galaxy.hyper_noise_from_model_image_galaxy_image_and_noise_map(self.model_image,
                                                                                                self.galaxy_image,
                                                                                                self.lens_data.noise_map)
-            return fit.DataFit(self.lens_data.ccd_data, hyper_noise, self.lens_data.mask, self.model_image).likelihood
+            hyper_noise_map = self.lens_data.noise_map + hyper_noise
+            return lens_fit.LensDataFit(image=self.lens_data.image, noise_map=hyper_noise_map,
+                               mask=self.lens_data.mask, model_image=self.model_image)
 
         @classmethod
         def describe(cls, instance):
