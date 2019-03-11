@@ -24,17 +24,17 @@ print('sub grid size = ' + str(sub_grid_size))
 print('annular inner mask radius = ' + str(inner_radius_arcsec) + '\n')
 print('annular outer mask radius = ' + str(outer_radius_arcsec) + '\n')
 
-for data_type in ['HST_Up']:
+for data_resolution in ['HST_Up']:
 
     print()
 
-    ccd_data = simulation_util.load_test_ccd_data(data_resolution=data_type, data_type='no_lens_source_smooth',
+    ccd_data = simulation_util.load_test_ccd_data(data_type='no_lens_source_smooth', data_resolution=data_resolution,
                                                   psf_shape=(3, 3))
     mask = msk.Mask.circular_annular(shape=ccd_data.shape, pixel_scale=ccd_data.pixel_scale,
                                      inner_radius_arcsec=inner_radius_arcsec, outer_radius_arcsec=outer_radius_arcsec)
     lens_data = ld.LensData(ccd_data=ccd_data, mask=mask, sub_grid_size=sub_grid_size)
 
-    print('Deflection angle run times for image type ' + data_type + '\n')
+    print('Deflection angle run times for image type ' + data_resolution + '\n')
     print('Number of points = ' + str(lens_data.grid_stack.regular.shape[0]) + '\n')
 
     interpolator = grids.Interpolator.from_mask_grid_and_interp_pixel_scales(mask=lens_data.mask,
