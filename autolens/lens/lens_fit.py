@@ -143,7 +143,8 @@ class LensInversionFit(LensFit):
         """
 
         inversion = inversions.inversion_from_image_mapper_and_regularization(
-            image_1d=lens_data.image_1d, noise_map_1d=lens_data.noise_map, convolver=lens_data.convolver_mapping_matrix,
+            image_1d=lens_data.image_1d, noise_map_1d=lens_data.noise_map_1d,
+            convolver=lens_data.convolver_mapping_matrix,
             mapper=tracer.mappers_of_planes[-1], regularization=tracer.regularizations_of_planes[-1])
         super().__init__(image=lens_data.image, noise_map=lens_data.noise_map,
                          mask=lens_data.mask,
@@ -223,9 +224,25 @@ class LensProfileInversionFit(LensFit):
 
         self.inversion = inversion
 
+        self.likelihood_with_regularization = \
+            util.likelihood_with_regularization_from_chi_squared_regularization_term_and_noise_normalization(
+                chi_squared=self.chi_squared, regularization_term=inversion.regularization_term,
+                noise_normalization=self.noise_normalization)
+
+        self.evidence = util.evidence_from_inversion_terms(
+            chi_squared=self.chi_squared,
+            regularization_term=inversion.regularization_term,
+            log_curvature_regularization_term=inversion.log_det_curvature_reg_matrix_term,
+            log_regularization_term=inversion.log_det_regularization_matrix_term,
+            noise_normalization=self.noise_normalization)
+
     @property
     def model_image_of_planes(self):
         return [self.blurred_profile_image, self.inversion.reconstructed_data]
+
+    @property
+    def figure_of_merit(self):
+        return self.evidence
 
 
 class LensPositionFit(object):
