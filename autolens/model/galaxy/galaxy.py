@@ -310,10 +310,12 @@ class HyperGalaxy(object):
 
         self.component_number = next(self._ids)
 
-    def hyper_noise_from_model_image_and_galaxy_image(self, model_image, galaxy_image, minimum_value=0.0 ):
-        pass
+    def hyper_noise_from_model_image_galaxy_image_and_noise_map(self, model_image, galaxy_image, noise_map,
+                                                                minimum_value=0.0):
+        contributions = self.contributions_from_model_image_and_galaxy_image(model_image, galaxy_image, minimum_value)
+        return self.hyper_noise_from_contributions(noise_map, contributions)
 
-    def contributions_from_model_image_and_galaxy_image(self, model_image, galaxy_image, minimum_value=0.0 ):
+    def contributions_from_model_image_and_galaxy_image(self, model_image, galaxy_image, minimum_value=0.0):
         """Compute the contribution map of a galaxy, which represents the fraction of flux in each pixel that the \
         galaxy is attributed to contain, scaled to the *contribution_factor* hyper-parameter.
 
