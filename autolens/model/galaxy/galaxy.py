@@ -1,6 +1,5 @@
 from itertools import count
 
-from scipy.optimize import root_scalar
 import numpy as np
 
 from autolens import exc
@@ -42,7 +41,7 @@ class Galaxy(object):
         pixelization : inversion.Pixelization
             The pixelization of the galaxy used to reconstruct an observed image using an inversion.
         regularization : inversion.Regularization
-            The imageization of the pixel-grid used to reconstruct an observed regular using an inversion.
+            The regularization of the pixel-grid used to reconstruct an observed regular using an inversion.
         """
         self.redshift = redshift
 
@@ -288,10 +287,10 @@ class HyperGalaxy(object):
         """ If a *Galaxy* is given a *HyperGalaxy* as an attribute, the noise-map in the regions of the image that the \
         galaxy is located will be scaled, to prevent over-fitting of the galaxy. 
         
-        This is performed by first computing the hyper-galalxy's 'contribution-map', which determines the fraction of \ 
+        This is performed by first computing the hyper-galaxy's 'contribution-map', which determines the fraction of \
         flux in every pixel of the image that can be associated with this particular hyper-galaxy. This is computed \
-        using  hyper-hyper set (e.g. fitting.fit_data.FitDataHyper), which includes  best-fit unblurred_image_1d of the \
-        galaxy's light from a previous analysis phase. 
+        using  hyper-hyper set (e.g. fitting.fit_data.FitDataHyper), which includes  best-fit unblurred_image_1d of \
+        the galaxy's light from a previous analysis phase.
          
         The *HyperGalaxy* class contains the hyper-parameters which are associated with this galaxy for scaling the \
         noise-map.
@@ -311,7 +310,12 @@ class HyperGalaxy(object):
 
         self.component_number = next(self._ids)
 
-    def contributions_from_hyper_images(self, hyper_model_image, hyper_galaxy_image, hyper_minimum_value):
+    def hyper_noise_from_model_image_galaxy_image_and_noise_map(self, model_image, galaxy_image, noise_map,
+                                                                minimum_value=0.0):
+        contributions = self.contributions_from_model_image_and_galaxy_image(model_image, galaxy_image, minimum_value)
+        return self.hyper_noise_from_contributions(noise_map, contributions)
+
+    def contributions_from_model_image_and_galaxy_image(self, model_image, galaxy_image, minimum_value=0.0):
         """Compute the contribution map of a galaxy, which represents the fraction of flux in each pixel that the \
         galaxy is attributed to contain, scaled to the *contribution_factor* hyper-parameter.
 
@@ -320,17 +324,17 @@ class HyperGalaxy(object):
 
         Parameters
         -----------
-        hyper_model_image : ndarray
+        model_image : ndarray
             The best-fit model image to the observed image from a previous analysis phase. This provides the \
             total light attributed to each image pixel by the model.
-        hyper_galaxy_image : ndarray
+        galaxy_image : ndarray
             A model image of the galaxy (from light profiles or an inversion) from a previous analysis phase.
-        hyper_minimum_value : float
+        minimum_value : float
             The minimum contribution value a pixel must contain to not be rounded to 0.
         """
-        contributions = np.divide(hyper_galaxy_image, np.add(hyper_model_image, self.contribution_factor))
+        contributions = np.divide(galaxy_image, np.add(model_image, self.contribution_factor))
         contributions = np.divide(contributions, np.max(contributions))
-        contributions[contributions < hyper_minimum_value] = 0.0
+        contributions[contributions < minimum_value] = 0.0
         return contributions
 
     def hyper_noise_from_contributions(self, noise_map, contributions):
