@@ -155,7 +155,7 @@ def unmasked_blurred_image_of_planes_from_padded_grid_stack_and_psf(planes, padd
     """
     unmasked_blurred_image_of_planes = []
 
-    for plane_index, plane in enumerate(planes):
+    for plane in planes:
 
         if plane.has_pixelization:
             unmasked_blurred_image_of_plane = None
