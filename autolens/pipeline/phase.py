@@ -14,6 +14,7 @@ from autolens.lens import sensitivity_fit
 from autolens.lens.plotters import sensitivity_fit_plotters, ray_tracing_plotters, lens_fit_plotters
 from autolens.model.galaxy import galaxy as g, galaxy_model as gm, galaxy_fit, galaxy_data as gd
 from autolens.model.galaxy.plotters import galaxy_fit_plotters
+import copy
 
 
 def default_mask_function(image):
@@ -1403,20 +1404,6 @@ class SensitivityPhase(PhaseImaging):
 
 
 class HyperGalaxyPhase(Phase):
-    hyper_galaxy = PhaseProperty("hyper_galaxy")
-
-    def __init__(self, phase_name, phase_folders=None):
-        """
-        Scales the noise associated with each galaxy to reduce overfitting.
-
-        Parameters
-        ----------
-        phase_name: str
-            The name of phase
-        """
-        super().__init__(phase_name=phase_name, phase_folders=phase_folders)
-        self.hyper_galaxy = g.HyperGalaxy
-
     class Analysis(non_linear.Analysis):
 
         def __init__(self, lens_data, model_image, galaxy_image):
@@ -1468,10 +1455,6 @@ class HyperGalaxyPhase(Phase):
         def describe(cls, instance):
             return "Running hyper galaxy fit for HyperGalaxy:\n{}".format(instance.hyper_galaxy)
 
-    class HyperGalaxyResults(object):
-        def __init__(self, results):
-            self.results = results
-
     def run(self, data, results=None, mask=None, positions=None):
         """
         Run a fit for each galaxy from the previous phase.
@@ -1491,12 +1474,17 @@ class HyperGalaxyPhase(Phase):
             A collection of results, with one item per a galaxy
         """
         model_image = results.last.unmasked_model_image
-        galaxy_images = results.last.unmasked_model_image_of_planes
+        galaxy_tuples = results.last.instance.name_instance_tuples_for_class(g.Galaxy)
 
-        results = []
+        results_copy = copy.deepcopy(results.last)
 
-        for i, galaxy_image in enumerate(galaxy_images):
-            optimizer = self.optimizer.copy_with_name_extension(str(i))
-            results.append(optimizer.fit(self.__class__.Analysis(data, model_image, galaxy_image)))
+        for name, galaxy in galaxy_tuples:
+            optimizer = self.optimizer.copy_with_name_extension(name)
+            optimizer.variable.hyper_galaxy = g.HyperGalaxy
+            galaxy_image = results.last.unmasked_image_for_galaxy(galaxy)
+            optimizer.fit(self.__class__.Analysis(data, model_image, galaxy_image))
 
-        return self.__class__.HyperGalaxyResults(results)
+            getattr(results_copy.variable, name).hyper_galaxy = optimizer.variable.hyper_galaxy
+            getattr(results_copy.instance, name).hyper_galaxy = optimizer.instance.hyper_galaxy
+
+        return results_copy
