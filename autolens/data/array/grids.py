@@ -193,7 +193,7 @@ class GridStack(object):
 
         # TODO : Like the TODO above, we need to elegently handle a blurring grid of None.
 
-        if self.blurring.shape != (1,2):
+        if self.blurring.shape != (1, 2):
             blurring = self.blurring.new_grid_with_interpolator(interp_pixel_scale=interp_pixel_scale)
         else:
             blurring = np.array([[0.0, 0.0]])
@@ -414,8 +414,11 @@ class RegularGrid(np.ndarray):
         return RegularGrid.from_mask(blurring_mask)
 
     def new_grid_with_interpolator(self, interp_pixel_scale):
-        self.interpolator = Interpolator.from_mask_grid_and_interp_pixel_scales(mask=self.mask, grid=self[:,:],
-                                                                           interp_pixel_scale=interp_pixel_scale)
+        # noinspection PyAttributeOutsideInit
+        # TODO: This function doesn't do what it says on the tin. The returned grid would be the same as the grid
+        # TODO: on which the function was called but with a new interpolator set.
+        self.interpolator = Interpolator.from_mask_grid_and_interp_pixel_scales(mask=self.mask, grid=self[:, :],
+                                                                                interp_pixel_scale=interp_pixel_scale)
         return self
 
     def array_2d_from_array_1d(self, array_1d):
@@ -621,7 +624,7 @@ class SubGrid(RegularGrid):
         sub_array_1d : ndarray
             The 1D sub_array which is mapped to its masked 2D sub-array.
         """
-        sub_shape = (self.mask.shape[0]*self.sub_grid_size, self.mask.shape[1]*self.sub_grid_size)
+        sub_shape = (self.mask.shape[0] * self.sub_grid_size, self.mask.shape[1] * self.sub_grid_size)
         sub_one_to_two = self.mask.masked_sub_grid_index_to_sub_pixel(sub_grid_size=self.sub_grid_size)
         return mapping_util.map_masked_1d_array_to_2d_array_from_array_1d_shape_and_one_to_two(
             array_1d=sub_array_1d, shape=sub_shape, one_to_two=sub_one_to_two)
@@ -1069,7 +1072,6 @@ class RegularGridBorder(np.ndarray):
 class Interpolator(object):
 
     def __init__(self, grid, interp_grid):
-
         self.grid = grid
         self.interp_grid = interp_grid
 
@@ -1088,12 +1090,15 @@ class Interpolator(object):
 
     @classmethod
     def from_mask_grid_and_interp_pixel_scales(cls, mask, grid, interp_pixel_scale):
-
         rescale_factor = mask.pixel_scale / interp_pixel_scale
         rescaled_mask = mask_util.rescaled_mask_from_mask_and_rescale_factor(mask=mask, rescale_factor=rescale_factor)
         interp_mask = mask_util.edge_buffed_mask_from_mask(mask=rescaled_mask)
-        interp_grid = grid_util.regular_grid_1d_masked_from_mask_pixel_scales_and_origin(mask=interp_mask,
-                pixel_scales=(interp_pixel_scale, interp_pixel_scale), origin=mask.origin)
+        interp_grid = grid_util.regular_grid_1d_masked_from_mask_pixel_scales_and_origin(
+            mask=interp_mask,
+            pixel_scales=(
+                interp_pixel_scale,
+                interp_pixel_scale),
+            origin=mask.origin)
         return Interpolator(grid=grid, interp_grid=interp_grid)
 
     def interpolated_values_from_values(self, values):
@@ -1129,8 +1134,8 @@ def grid_interpolate(func):
                 if values.ndim == 1:
                     return interpolator.interpolated_values_from_values(values=values)
                 elif values.ndim == 2:
-                    y_values = interpolator.interpolated_values_from_values(values=values[:,0])
-                    x_values = interpolator.interpolated_values_from_values(values=values[:,1])
+                    y_values = interpolator.interpolated_values_from_values(values=values[:, 0])
+                    x_values = interpolator.interpolated_values_from_values(values=values[:, 1])
                     return np.asarray([y_values, x_values]).T
         return func(profile, grid, *args, **kwargs)
 
