@@ -224,14 +224,14 @@ def unmasked_blurred_image_of_galaxies_from_psf_and_unmasked_1d_galaxy_images(ga
 
     unmasked_blurred_image_of_galaxies = []
 
-    for galaxy_index, galaxy in enumerate(galaxies):
+    for galaxy, image in zip(galaxies, image_plane_image_1d_of_galaxies):
 
         if galaxy.has_pixelization:
             unmasked_blurred_image_of_galaxy = None
         else:
             unmasked_blurred_image_of_galaxy = unmasked_blurred_image_from_padded_grid_stack_psf_and_unmasked_image(
                 padded_grid_stack=padded_grid_stack, psf=psf,
-                unmasked_image_1d=image_plane_image_1d_of_galaxies[galaxy_index])
+                unmasked_image_1d=image)
 
         unmasked_blurred_image_of_galaxies.append(unmasked_blurred_image_of_galaxy)
 
