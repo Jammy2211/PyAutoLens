@@ -74,6 +74,8 @@ def simulate_image_from_galaxies_and_output_to_fits(data_resolution, data_type, 
 
 def make_lens_only_dev_vaucouleurs(data_resolutions, sub_grid_size):
 
+    data_type = 'lens_only_dev_vaucouleurs'
+
     # This lens-only system has a Dev Vaucouleurs spheroid / bulge.
 
     lens_galaxy = g.Galaxy(bulge=lp.EllipticalDevVaucouleurs(centre=(0.0, 0.0), axis_ratio=0.9, phi=45.0, intensity=0.1,
@@ -81,11 +83,13 @@ def make_lens_only_dev_vaucouleurs(data_resolutions, sub_grid_size):
 
     for data_resolution in data_resolutions:
 
-        simulate_image_from_galaxies_and_output_to_fits(data_resolution=data_resolution, data_type='lens_only_dev_vaucouleurs',
+        simulate_image_from_galaxies_and_output_to_fits(data_resolution=data_resolution,
                                                         sub_grid_size=sub_grid_size, lens_galaxies=[lens_galaxy],
                                                         source_galaxies=[g.Galaxy()])
 
 def make_lens_only_bulge_and_disk(data_resolutions, sub_grid_size):
+
+    data_type = 'lens_only_bulge_and_disk'
 
     # This source-only system has a Dev Vaucouleurs spheroid / bulge and surrounding Exponential envelope
 
@@ -96,11 +100,13 @@ def make_lens_only_bulge_and_disk(data_resolutions, sub_grid_size):
 
     for data_resolution in data_resolutions:
 
-        simulate_image_from_galaxies_and_output_to_fits(data_resolution=data_resolution, data_type='lens_only_bulge_and_disk',
+        simulate_image_from_galaxies_and_output_to_fits(data_resolution=data_resolution,
                                                         sub_grid_size=sub_grid_size, lens_galaxies=[lens_galaxy],
                                                         source_galaxies=[g.Galaxy()])
 
 def make_lens_only_x2_galaxies(data_resolutions, sub_grid_size):
+
+    data_type = 'lens_only_x2_galaxies'
 
     # This source-only system has two Sersic bulges separated by 2.0"
 
@@ -112,13 +118,15 @@ def make_lens_only_x2_galaxies(data_resolutions, sub_grid_size):
 
     for data_resolution in data_resolutions:
 
-        simulate_image_from_galaxies_and_output_to_fits(data_resolution=data_resolution, data_type='lens_only_x2_galaxies',
+        simulate_image_from_galaxies_and_output_to_fits(data_resolution=data_resolution,
                                                         sub_grid_size=sub_grid_size,
                                                         lens_galaxies=[lens_galaxy_0, lens_galaxy_1],
                                                         source_galaxies=[g.Galaxy()])
 
 def make_no_lens_light_and_source_smooth(data_resolutions, sub_grid_size):
 
+    data_type = 'no_lens_light_and_source_smooth'
+
     # This source-only system has a smooth source (low Sersic Index) and simple SIE mass profile.
 
     lens_galaxy = g.Galaxy(mass=mp.EllipticalIsothermal(centre=(0.0, 0.0), einstein_radius=1.6,
@@ -129,12 +137,14 @@ def make_no_lens_light_and_source_smooth(data_resolutions, sub_grid_size):
 
     for data_resolution in data_resolutions:
 
-        simulate_image_from_galaxies_and_output_to_fits(data_resolution=data_resolution, data_type='no_lens_light_and_source_smooth',
+        simulate_image_from_galaxies_and_output_to_fits(data_resolution=data_resolution,
                                                         sub_grid_size=sub_grid_size,
                                                         lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy])
 
 def make_no_lens_light_and_source_cuspy(data_resolutions, sub_grid_size):
 
+    data_type = 'no_lens_light_and_source_cuspy'
+
     # This source-only system has a smooth source (low Sersic Index) and simple SIE mass profile.
 
     lens_galaxy = g.Galaxy(mass=mp.EllipticalIsothermal(centre=(0.0, 0.0), einstein_radius=1.6,
@@ -145,11 +155,13 @@ def make_no_lens_light_and_source_cuspy(data_resolutions, sub_grid_size):
 
     for data_resolution in data_resolutions:
 
-        simulate_image_from_galaxies_and_output_to_fits(data_resolution=data_resolution, data_type='no_lens_light_and_source_cuspy',
+        simulate_image_from_galaxies_and_output_to_fits(data_resolution=data_resolution,
                                                         sub_grid_size=sub_grid_size,
                                                         lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy])
 
 def make_lens_and_source_smooth(data_resolutions, sub_grid_size):
+
+    data_type = 'lens_and_source_smooth'
 
     # This source-only system has a smooth source (low Sersic Index) and simple SIE mass profile.
 
@@ -163,11 +175,13 @@ def make_lens_and_source_smooth(data_resolutions, sub_grid_size):
 
     for data_resolution in data_resolutions:
 
-        simulate_image_from_galaxies_and_output_to_fits(data_resolution=data_resolution, data_type='lens_and_source_smooth',
+        simulate_image_from_galaxies_and_output_to_fits(data_resolution=data_resolution,
                                                         sub_grid_size=sub_grid_size,
                                                         lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy])
 
 def make_lens_and_source_cuspy(data_resolutions, sub_grid_size):
+
+    data_type = 'lens_and_source_cuspy'
 
     # This source-only system has a smooth source (low Sersic Index) and simple SIE mass profile.
 
@@ -181,6 +195,6 @@ def make_lens_and_source_cuspy(data_resolutions, sub_grid_size):
 
     for data_resolution in data_resolutions:
 
-        simulate_image_from_galaxies_and_output_to_fits(data_resolution=data_resolution, data_type='lens_and_source_cuspy',
+        simulate_image_from_galaxies_and_output_to_fits(data_resolution=data_resolution,
                                                         sub_grid_size=sub_grid_size,
                                                         lens_galaxies=[lens_galaxy], source_galaxies=[source_galaxy])
