@@ -15,7 +15,7 @@ test_type = 'sensitivity'
 test_name = "sensitivity_profile_via_grid_search"
 
 test_path = '{}/../../'.format(os.path.dirname(os.path.realpath(__file__)))
-output_path = test_path + 'output/' + test_type
+output_path = test_path + 'output/'
 config_path = test_path + 'config'
 conf.instance = conf.Config(config_path=config_path, output_path=output_path)
 
@@ -34,7 +34,7 @@ def make_pipeline(test_name):
 
     class SensitivePhase(ph.SensitivityPhase):
 
-        def pass_priors(self, previous_results):
+        def pass_priors(self, results):
 
             self.lens_galaxies.lens.mass.centre_0 = 0.0
             self.lens_galaxies.lens.mass.centre_1 = 0.0
@@ -51,7 +51,7 @@ def make_pipeline(test_name):
             self.sensitive_galaxies.subhalo.mass.kappa_s = 0.1
             self.sensitive_galaxies.subhalo.mass.scale_radius = 5.0
 
-    phase1 = SensitivePhase(phase_name="phase1", phase_folders=[test_name],
+    phase1 = SensitivePhase(phase_name="phase1", phase_folders=[test_type, test_name],
                             lens_galaxies=dict(lens=gm.GalaxyModel(mass=mp.SphericalIsothermal)),
                             source_galaxies=dict(source=gm.GalaxyModel(light=lp.SphericalSersic)),
                             sensitive_galaxies=dict(subhalo=gm.GalaxyModel(mass=mp.SphericalNFW)),

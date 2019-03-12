@@ -13,7 +13,7 @@ test_type = 'model_mapper'
 test_name = "constants_x2_galaxy"
 
 test_path = '{}/../../'.format(os.path.dirname(os.path.realpath(__file__)))
-output_path = test_path + 'output/' + test_type
+output_path = test_path + 'output/'
 config_path = test_path + 'config'
 conf.instance = conf.Config(config_path=config_path, output_path=output_path)
 
@@ -29,7 +29,7 @@ def make_pipeline(test_name):
 
     class MMPhase(ph.LensPlanePhase):
 
-        def pass_priors(self, previous_results):
+        def pass_priors(self, results):
             self.lens_galaxies.lens_0.light.axis_ratio = 0.2
             self.lens_galaxies.lens_0.light.phi = 90.0
             self.lens_galaxies.lens_0.light.centre_0 = 1.0
@@ -39,7 +39,7 @@ def make_pipeline(test_name):
             self.lens_galaxies.lens_1.light.centre_0 = 1.0
             self.lens_galaxies.lens_1.light.centre_1 = 2.0
 
-    phase1 = MMPhase(phase_name="phase1", phase_folders=[test_name],
+    phase1 = MMPhase(phase_name='phase_1', phase_folders=[test_type, test_name],
                      lens_galaxies=dict(lens_0=gm.GalaxyModel(light=lp.EllipticalSersic),
                                         lens_1=gm.GalaxyModel(light=lp.EllipticalSersic)),
                      optimizer_class=nl.MultiNest)

@@ -14,7 +14,7 @@ test_type = 'lens_only'
 test_name = "lens_x2_galaxies"
 
 test_path = '{}/../../'.format(os.path.dirname(os.path.realpath(__file__)))
-output_path = test_path + 'output/' + test_type
+output_path = test_path + 'output/'
 config_path = test_path + 'config'
 conf.instance = conf.Config(config_path=config_path, output_path=output_path)
 
@@ -30,7 +30,7 @@ def make_pipeline(test_name):
     
     class LensPlanex2GalPhase(ph.LensPlanePhase):
 
-        def pass_priors(self, previous_results):
+        def pass_priors(self, results):
 
             self.lens_galaxies.lens_0.light.centre_0 = -1.0
             self.lens_galaxies.lens_0.light.centre_1 = -1.0
@@ -40,7 +40,7 @@ def make_pipeline(test_name):
     def mask_function(image):
         return msk.Mask.circular(shape=image.shape, pixel_scale=image.pixel_scale, radius_arcsec=5.)
 
-    phase1 = LensPlanex2GalPhase(phase_name="phase1", phase_folders=[test_name],
+    phase1 = LensPlanex2GalPhase(phase_name='phase_1', phase_folders=[test_type, test_name],
                                  lens_galaxies=dict(lens_0=gm.GalaxyModel(light=lp.EllipticalSersic),
                                                     lens_1=gm.GalaxyModel(light=lp.EllipticalSersic)),
                                  mask_function=mask_function, optimizer_class=nl.MultiNest)
