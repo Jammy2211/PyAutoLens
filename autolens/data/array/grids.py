@@ -101,7 +101,7 @@ class GridStack(object):
         else:
             self.pix = pix
 
-    def unmasked_blurred_image_from_padded_grid_stack_psf_and_unmasked_image(self, psf, unmasked_image_1d):
+    def unmasked_blurred_image_from_psf_and_unmasked_image(self, psf, unmasked_image_1d):
         """For a padded grid-stack and psf, compute an unmasked blurred image from an unmasked unblurred image.
 
         This relies on using the lens data's padded-grid, which is a grid of (y,x) coordinates which extends over the \
