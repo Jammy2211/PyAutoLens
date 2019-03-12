@@ -108,6 +108,14 @@ class Galaxy(object):
             string += "\nMass Profiles:\n{}".format("\n".join(map(str, self.mass_profiles)))
         return string
 
+    def __eq__(self, other):
+        return all((isinstance(other, Galaxy),
+                    self.pixelization == other.pixelization,
+                    self.redshift == other.redshift,
+                    self.hyper_galaxy == other.hyper_galaxy,
+                    self.light_profiles == other.light_profiles,
+                    self.mass_profiles == other.mass_profiles))
+
     def intensities_from_grid(self, grid):
         """Calculate the summed intensities of all of the galaxy's light profiles using a grid of Cartesian (y,x) \
         coordinates.
