@@ -400,21 +400,9 @@ class Plane(AbstractGriddedPlane):
         psf : ccd.PSF
             The PSF of the image used for convolution.
         """
-
-        unmasked_blurred_image_of_galaxies = []
-
-        for galaxy, image in zip(self.galaxies, self.image_plane_image_1d_of_galaxies):
-
-            if galaxy.has_pixelization:
-                unmasked_blurred_image_of_galaxy = None
-            else:
-                unmasked_blurred_image_of_galaxy = padded_grid_stack.unmasked_blurred_image_from_psf_and_unmasked_image(
-                    psf=psf,
-                    unmasked_image_1d=image)
-
-            unmasked_blurred_image_of_galaxies.append(unmasked_blurred_image_of_galaxy)
-
-        return unmasked_blurred_image_of_galaxies
+        return [padded_grid_stack.unmasked_blurred_image_from_psf_and_unmasked_image(
+            psf, image) if not galaxy.has_pixelization else None for galaxy, image in
+                zip(self.galaxies, self.image_plane_image_1d_of_galaxies)]
 
 
 class PlaneSlice(AbstractGriddedPlane):

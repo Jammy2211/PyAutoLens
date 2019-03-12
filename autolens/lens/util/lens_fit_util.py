@@ -171,16 +171,7 @@ def unmasked_blurred_image_of_planes_and_galaxies_from_padded_grid_stack_and_psf
     psf : ccd.PSF
         The PSF of the image used for convolution.
     """
-    unmasked_blurred_image_of_planes_and_galaxies = []
-
-    for plane in planes:
-        unmasked_blurred_image_of_galaxies = plane.unmasked_blurred_image_of_galaxies_from_psf(
-            padded_grid_stack=padded_grid_stack,
-            psf=psf)
-
-        unmasked_blurred_image_of_planes_and_galaxies.append(unmasked_blurred_image_of_galaxies)
-
-    return unmasked_blurred_image_of_planes_and_galaxies
+    return [plane.unmasked_blurred_image_of_galaxies_from_psf(padded_grid_stack, psf) for plane in planes]
 
 
 def contribution_maps_1d_from_hyper_images_and_galaxies(hyper_model_image_1d, hyper_galaxy_images_1d, hyper_galaxies,
