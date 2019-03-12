@@ -14,7 +14,7 @@ test_type = 'lens_and_source'
 test_name = "lens_x1_source_x2"
 
 test_path = '{}/../../'.format(os.path.dirname(os.path.realpath(__file__)))
-output_path = test_path + 'output/' + test_type
+output_path = test_path + 'output/'
 config_path = test_path + 'config'
 conf.instance = conf.Config(config_path=config_path, output_path=output_path)
 
@@ -28,7 +28,7 @@ def pipeline():
 
 def make_pipeline(test_name):
 
-    phase1 = ph.LensSourcePlanePhase(phase_name="phase1", phase_folders=[test_name],
+    phase1 = ph.LensSourcePlanePhase(phase_name='phase_1', phase_folders=[test_type, test_name],
                                       lens_galaxies=dict(lens=gm.GalaxyModel(mass=mp.EllipticalIsothermal)),
                                      source_galaxies=dict(source_0=gm.GalaxyModel(sersic=lp.EllipticalSersic)),
                                      optimizer_class=nl.MultiNest)
@@ -44,7 +44,7 @@ def make_pipeline(test_name):
             self.lens_galaxies_lens = previous_results[0].variable.lens
             self.source_galaxies_source_0 = previous_results[0].variable.source_0
 
-    phase2 = AddSourceGalaxyPhase(phase_name="phase2", phase_folders=[test_name],
+    phase2 = AddSourceGalaxyPhase(phase_name='phase_2', phase_folders=[test_type, test_name],
                                   lens_galaxies=dict(lens=gm.GalaxyModel(mass=mp.EllipticalIsothermal)),
                                   source_galaxies=dict(source_0=gm.GalaxyModel(sersic=lp.EllipticalSersic),
                                                        source_1=gm.GalaxyModel(sersic=lp.EllipticalSersic)),

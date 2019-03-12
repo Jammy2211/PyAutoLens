@@ -14,7 +14,7 @@ test_type = 'model_mapper'
 test_name = "pair_floats"
 
 test_path = '{}/../../'.format(os.path.dirname(os.path.realpath(__file__)))
-output_path = test_path + 'output/' + test_type
+output_path = test_path + 'output/'
 config_path = test_path + 'config'
 conf.instance = conf.Config(config_path=config_path, output_path=output_path)
 
@@ -33,7 +33,7 @@ def make_pipeline(test_name):
         def pass_priors(self, results):
             self.lens_galaxies.lens.light.intensity = self.lens_galaxies.lens.mass.einstein_radius
 
-    phase1 = MMPhase(phase_name="phase1", phase_folders=[test_name],
+    phase1 = MMPhase(phase_name='phase_1', phase_folders=[test_type, test_name],
                      lens_galaxies=dict(lens=gm.GalaxyModel(light=lp.EllipticalSersic,
                                                             mass=mp.SphericalIsothermal)),
                      optimizer_class=nl.MultiNest)

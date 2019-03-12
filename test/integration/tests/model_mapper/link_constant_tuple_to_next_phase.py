@@ -35,7 +35,7 @@ def make_pipeline(test_name):
             self.lens_galaxies.lens.light.centre_0 = 1.0
             self.lens_galaxies.lens.light.centre_1 = 2.0
 
-    phase1 = MMPhase(phase_name="phase1", phase_folders=[test_name],
+    phase1 = MMPhase(phase_name='phase_1', phase_folders=[test_type, test_name],
                      lens_galaxies=dict(lens=gm.GalaxyModel(light=lp.EllipticalSersic)),
                      optimizer_class=nl.MultiNest)
 
@@ -47,10 +47,10 @@ def make_pipeline(test_name):
 
         def pass_priors(self, results):
 
-            self.lens_galaxies.lens.light.centre_0 = previous_results[0].variable.lens.light.centre_0
-            self.lens_galaxies.lens.light.centre_1 = previous_results[0].variable.lens.light.centre_1
+            self.lens_galaxies.lens.light.centre_0 = results.from_phase('phase_1').variable.lens.light.centre_0
+            self.lens_galaxies.lens.light.centre_1 = results.from_phase('phase_1').variable.lens.light.centre_1
 
-    phase2 = MMPhase2(phase_name="phase2", phase_folders=[test_name],
+    phase2 = MMPhase2(phase_name='phase_2', phase_folders=[test_type, test_name],
                       lens_galaxies=dict(lens=gm.GalaxyModel(light=lp.EllipticalSersic)),
                       optimizer_class=nl.MultiNest)
 
