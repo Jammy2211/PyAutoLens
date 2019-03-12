@@ -202,9 +202,6 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
             return self.mass_within_circle(radius=radius, conversion_factor=1.0) - \
                    np.pi * radius ** 2.0
 
-        def func(radius, mass):
-            return mass - self.mass_within_circle(radius=radius, conversion_factor=1.0)
-
         return self.ellipticity_rescale * root_scalar(func, bracket=[1e-4, 1000.0]).root
 
     @property
