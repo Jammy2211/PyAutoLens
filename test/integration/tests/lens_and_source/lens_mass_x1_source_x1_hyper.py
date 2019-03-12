@@ -14,7 +14,7 @@ test_type = 'lens_and_source'
 test_name = "lens_mass_x1_source_x1_hyper"
 
 test_path = '{}/../../'.format(os.path.dirname(os.path.realpath(__file__)))
-output_path = test_path + 'output/' + test_type
+output_path = test_path + 'output/'
 config_path = test_path + 'config'
 conf.instance = conf.Config(config_path=config_path, output_path=output_path)
 
@@ -27,7 +27,7 @@ def pipeline():
 
 def make_pipeline(test_name):
 
-    phase1 = ph.LensSourcePlanePhase(phase_name="phase1", phase_folders=[test_name],
+    phase1 = ph.LensSourcePlanePhase(phase_name='phase_1', phase_folders=[test_type, test_name],
                                      lens_galaxies=[gm.GalaxyModel(sie=mp.EllipticalIsothermal)],
                                      source_galaxies=[gm.GalaxyModel(sersic=lp.EllipticalSersic)],
                                      optimizer_class=nl.MultiNest)
@@ -36,7 +36,7 @@ def make_pipeline(test_name):
     phase1.optimizer.n_live_points = 60
     phase1.optimizer.sampling_efficiency = 0.8
 
-    phase2 = ph.HyperGalaxyPhase(phase_name="phase_2_hyper", phase_folders=[test_name])
+    phase2 = ph.HyperGalaxyPhase(phase_name='phase_2_hyper', phase_folders=[test_type, test_name])
 
     return pl.PipelineImaging(test_name, phase1, phase2)
 

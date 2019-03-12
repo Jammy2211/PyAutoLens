@@ -14,7 +14,7 @@ test_type = 'lens_and_source_inversion'
 test_name = "lens_mass_x1_source_x1_adaptive"
 
 test_path = '{}/../../'.format(os.path.dirname(os.path.realpath(__file__)))
-output_path = test_path + 'output/' + test_type
+output_path = test_path + 'output/'
 config_path = test_path + 'config'
 conf.instance = conf.Config(config_path=config_path, output_path=output_path)
 
@@ -38,7 +38,7 @@ def make_pipeline(test_name):
             self.source_galaxies.source.pixelization.shape_0 = 20.0
             self.source_galaxies.source.pixelization.shape_1 = 20.0
 
-    phase1 = SourcePix(phase_name="phase1", phase_folders=[test_name],
+    phase1 = SourcePix(phase_name='phase_1', phase_folders=[test_type, test_name],
                        lens_galaxies=dict(lens=gm.GalaxyModel(mass=mp.EllipticalIsothermal)),
                        source_galaxies=dict(source=gm.GalaxyModel(pixelization=pix.AdaptiveMagnification,
                                                                   regularization=reg.Constant)),

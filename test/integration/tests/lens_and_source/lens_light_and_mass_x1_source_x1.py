@@ -13,7 +13,7 @@ test_type = 'lens_and_source'
 test_name = "lens_light_and_mass_x1_source_x1"
 
 test_path = '{}/../../'.format(os.path.dirname(os.path.realpath(__file__)))
-output_path = test_path + 'output/' + test_type
+output_path = test_path + 'output/'
 config_path = test_path + 'config'
 conf.instance = conf.Config(config_path=config_path, output_path=output_path)
 
@@ -27,7 +27,7 @@ def pipeline():
 
 def make_pipeline(test_name):
 
-    phase1 = ph.LensSourcePlanePhase(phase_name="phase1", phase_folders=[test_name],
+    phase1 = ph.LensSourcePlanePhase(phase_name='phase_1', phase_folders=[test_type, test_name],
                                      lens_galaxies=dict(lens=gm.GalaxyModel(light=lp.SphericalDevVaucouleurs,
                                                                             mass=mp.EllipticalIsothermal)),
                                      source_galaxies=dict(source=gm.GalaxyModel(light=lp.EllipticalSersic)),
