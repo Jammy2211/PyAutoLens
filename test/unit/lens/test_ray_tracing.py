@@ -129,6 +129,15 @@ class TestAbstractTracer(object):
             assert ray_tracing.TracerImageSourcePlanes([gal_lp], [gal_mp],
                                                        image_plane_grid_stack=grid_stack).has_light_profile is True
 
+        def test_plane_with_galaxy(self, grid_stack):
+            g1 = g.Galaxy(redshift=1)
+            g2 = g.Galaxy(redshift=2)
+
+            tracer = ray_tracing.TracerImageSourcePlanes([g1], [g2], grid_stack)
+
+            assert tracer.plane_with_galaxy(g1).galaxies == [g1]
+            assert tracer.plane_with_galaxy(g2).galaxies == [g2]
+
         def test__has_galaxy_with_mass_profile(self, grid_stack):
             gal = g.Galaxy()
             gal_lp = g.Galaxy(light_profile=lp.LightProfile())

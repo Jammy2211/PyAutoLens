@@ -189,6 +189,9 @@ class AbstractTracer(AbstractTracerCosmology):
         super(AbstractTracer, self).__init__(plane_redshifts=[plane.redshift for plane in self.planes],
                                              cosmology=cosmology)
 
+    def plane_with_galaxy(self, galaxy):
+        return [plane for plane in self.planes if galaxy in plane.galaxies][0]
+
     @property
     def image_plane(self):
         return self.planes[0]
