@@ -194,12 +194,12 @@ def unmasked_blurred_image_of_planes_and_galaxies_from_padded_grid_stack_and_psf
     """
     unmasked_blurred_image_of_planes_and_galaxies = []
 
-    for plane_index, plane in enumerate(planes):
-        unmasked_blurred_image_of_galaxies = \
-            unmasked_blurred_image_of_galaxies_from_psf_and_unmasked_1d_galaxy_images(galaxies=plane.galaxies,
-                                                                                      image_plane_image_1d_of_galaxies=plane.image_plane_image_1d_of_galaxies,
-                                                                                      padded_grid_stack=padded_grid_stack,
-                                                                                      psf=psf)
+    for plane in planes:
+        unmasked_blurred_image_of_galaxies = unmasked_blurred_image_of_galaxies_from_psf_and_unmasked_1d_galaxy_images(
+            galaxies=plane.galaxies,
+            image_plane_image_1d_of_galaxies=plane.image_plane_image_1d_of_galaxies,
+            padded_grid_stack=padded_grid_stack,
+            psf=psf)
 
         unmasked_blurred_image_of_planes_and_galaxies.append(unmasked_blurred_image_of_galaxies)
 
