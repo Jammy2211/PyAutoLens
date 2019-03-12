@@ -289,8 +289,10 @@ class AbstractGriddedPlane(AbstractPlane):
 
     @property
     def image_plane_image_1d_of_galaxies(self):
-        return [galaxy_util.intensities_of_galaxies_from_grid(grid=self.grid_stack.sub, galaxies=[galaxy])
-                for galaxy in self.galaxies]
+        return list(map(self.image_plane_image_1d_of_galaxy, self.galaxies))
+
+    def image_plane_image_1d_of_galaxy(self, galaxy):
+        return galaxy_util.intensities_of_galaxies_from_grid(grid=self.grid_stack.sub, galaxies=[galaxy])
 
     @property
     def image_plane_blurring_image_1d(self):

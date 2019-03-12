@@ -564,6 +564,12 @@ class TestAbstractPlaneGridded(object):
 
             assert plane.image_plane_image == pytest.approx(image_plane_image, 1.0e-4)
 
+        def test_single_multiple_intensity(self, grid_stack):
+            g0 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=1.0))
+            plane = pl.AbstractGriddedPlane(galaxies=[g0], grid_stack=grid_stack, border=None,
+                                            compute_deflections=False, redshift=None)
+            assert (plane.image_plane_image_1d_of_galaxies[0] == plane.image_plane_image_1d_of_galaxy(g0)).all()
+
         def test__image_plane_image_of_galaxies(self, grid_stack):
             # Overwrite one value so intensity in each pixel is different
             grid_stack.sub[5] = np.array([2.0, 2.0])
