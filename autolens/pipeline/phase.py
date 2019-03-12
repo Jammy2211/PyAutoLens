@@ -1,10 +1,12 @@
+import copy
+
 import numpy as np
 from astropy import cosmology as cosmo
 
 from autofit import conf
 from autofit.optimize import non_linear
 from autofit.tools import phase as autofit_phase
-from autofit.tools.phase_property import PhasePropertyCollection, PhaseProperty
+from autofit.tools.phase_property import PhasePropertyCollection
 from autolens import exc
 from autolens.data.array import mask as msk
 from autolens.data.plotters import ccd_plotters
@@ -14,7 +16,6 @@ from autolens.lens import sensitivity_fit
 from autolens.lens.plotters import sensitivity_fit_plotters, ray_tracing_plotters, lens_fit_plotters
 from autolens.model.galaxy import galaxy as g, galaxy_model as gm, galaxy_fit, galaxy_data as gd
 from autolens.model.galaxy.plotters import galaxy_fit_plotters
-import copy
 
 
 def default_mask_function(image):
