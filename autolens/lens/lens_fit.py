@@ -89,6 +89,9 @@ class LensTracerFit(LensDataFit):
                 planes=self.padded_tracer.planes, padded_grid_stack=self.padded_tracer.image_plane.grid_stack,
                 psf=self.psf)
 
+    # def unmasked_model_image_for_galaxy(self):
+    #     return self.padded_tracer
+
     @property
     def unmasked_model_image_of_planes_and_galaxies(self):
         if self.padded_tracer is not None:
