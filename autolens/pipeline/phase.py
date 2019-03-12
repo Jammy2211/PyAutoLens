@@ -261,6 +261,9 @@ class AbstractPhase(autofit_phase.AbstractPhase):
         def unmasked_model_image_of_planes_and_galaxies(self):
             return self.most_likely_fit.unmasked_model_image_of_planes_and_galaxies
 
+        def unmasked_image_for_galaxy(self, galaxy):
+            return self.most_likely_fit.unmasked_model_image_for_galaxy(galaxy)
+
 
 class Phase(AbstractPhase):
 
@@ -750,7 +753,7 @@ class PhaseImaging(Phase):
 
         def fit_for_tracers(self, tracer, padded_tracer):
             return lens_fit.LensDataFit.for_data_and_tracer(lens_data=self.lens_data, tracer=tracer,
-                                                      padded_tracer=padded_tracer)
+                                                            padded_tracer=padded_tracer)
 
         def check_positions_trace_within_threshold(self, instance):
 
