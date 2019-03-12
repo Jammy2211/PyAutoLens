@@ -7,7 +7,6 @@ from scipy import LowLevelCallable
 from scipy import special
 from scipy.integrate import quad
 from pyquad import quad_grid
-from astropy import constants
 
 from scipy.optimize import root_scalar
 from autolens import decorator_util
@@ -190,7 +189,7 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
                / annuli_area
 
     @property
-    def radius_of_average_critical_curve_in_circle(self):
+    def radius_where_average_convergence_in_circle_is_one(self):
         """The radius a critical curve forms for this mass profile, e.g. where the mean convergence is equal to 1.0.
 
          In case of ellipitical mass profiles, the 'average' critical curve is used, whereby the convergence is \
@@ -199,10 +198,12 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
          This radius corresponds to the Einstein radius of the mass profile, and is a property of a number of \
          mass profiles below.
          """
-
         def func(radius):
             return self.mass_within_circle(radius=radius, conversion_factor=1.0) - \
                    np.pi * radius ** 2.0
+
+        def func(radius, mass):
+            return mass - self.mass_within_circle(radius=radius, conversion_factor=1.0)
 
         return self.ellipticity_rescale * root_scalar(func, bracket=[1e-4, 1000.0]).root
 
@@ -640,7 +641,7 @@ class AbstractEllipticalGeneralizedNFW(EllipticalMassProfile, MassProfile):
 
     @property
     def einstein_radius(self):
-        return self.radius_of_average_critical_curve_in_circle
+        return self.radius_where_average_convergence_in_circle_is_one
 
 
 class EllipticalGeneralizedNFW(AbstractEllipticalGeneralizedNFW):
@@ -1060,7 +1061,7 @@ class AbstractEllipticalSersic(light_profiles.AbstractEllipticalSersic, Elliptic
 
     @property
     def einstein_radius(self):
-        return self.radius_of_average_critical_curve_in_circle
+        return self.radius_where_average_convergence_in_circle_is_one
 
 
 class EllipticalSersic(AbstractEllipticalSersic):

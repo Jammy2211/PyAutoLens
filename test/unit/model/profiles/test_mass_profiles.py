@@ -823,16 +823,16 @@ class TestIsothermal(object):
 
         sis = mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=2.0)
 
-        assert sis.radius_of_average_critical_curve_in_circle == pytest.approx(2.0, 1e-4)
+        assert sis.radius_where_average_convergence_in_circle_is_one == pytest.approx(2.0, 1e-4)
 
         sie = mp.EllipticalIsothermal(centre=(0.0, 0.0), einstein_radius=1.0, axis_ratio=0.8, phi=0.0)
-        assert sie.radius_of_average_critical_curve_in_circle == pytest.approx(1.0, 1e-4)
+        assert sie.radius_where_average_convergence_in_circle_is_one == pytest.approx(1.0, 1e-4)
 
         sie = mp.EllipticalIsothermal(centre=(0.0, 0.0), einstein_radius=3.0, axis_ratio=0.5, phi=0.0)
-        assert sie.radius_of_average_critical_curve_in_circle == pytest.approx(3.0, 1e-4)
+        assert sie.radius_where_average_convergence_in_circle_is_one == pytest.approx(3.0, 1e-4)
 
         sie = mp.EllipticalIsothermal(centre=(0.0, 0.0), einstein_radius=8.0, axis_ratio=0.2, phi=0.0)
-        assert sie.radius_of_average_critical_curve_in_circle == pytest.approx(8.0, 1e-4)
+        assert sie.radius_where_average_convergence_in_circle_is_one == pytest.approx(8.0, 1e-4)
 
     def test__deflections_of_elliptical_profile__dont_use_interpolate_and_cache_decorators(self):
 
@@ -1151,11 +1151,11 @@ class TestNFW(object):
     def test__radius_of_critical_curve_and_einstein_radius(self):
 
         nfw = mp.SphericalNFW(centre=(0.0, 0.0), kappa_s=0.5, scale_radius=5.0)
-        assert nfw.radius_of_average_critical_curve_in_circle == pytest.approx(2.76386, 1e-4)
+        assert nfw.radius_where_average_convergence_in_circle_is_one == pytest.approx(2.76386, 1e-4)
         assert nfw.einstein_radius == pytest.approx(2.76386, 1e-4)
 
         nfw = mp.EllipticalNFW(centre=(0.0, 0.0), kappa_s=0.5, scale_radius=5.0, axis_ratio=0.8)
-        assert nfw.radius_of_average_critical_curve_in_circle == pytest.approx(2.48747, 1e-4)
+        assert nfw.radius_where_average_convergence_in_circle_is_one == pytest.approx(2.48747, 1e-4)
         assert nfw.einstein_radius == pytest.approx(2.48747, 1e-4)
 
     def test__deflections_of_elliptical_profile__use_interpolate_and_cache_decorators(self):
