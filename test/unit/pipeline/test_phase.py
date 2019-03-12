@@ -161,10 +161,6 @@ def make_hyper_phase():
 
 
 class TestHyperGalaxyPhase(object):
-
-    def test_init(self, hyper_phase):
-        assert hyper_phase.optimizer.variable.prior_count == 3
-
     def test_analysis(self, hyper_lens_data, hyper_galaxy):
         analysis = ph.HyperGalaxyPhase.Analysis(hyper_lens_data, np.ones(5), np.ones(5))
         result = analysis.fit_for_hyper_galaxy(hyper_galaxy=hyper_galaxy)
@@ -172,9 +168,22 @@ class TestHyperGalaxyPhase(object):
         assert isinstance(result, lens_fit.LensDataFit)
 
     def test_run(self, hyper_galaxy, hyper_phase, hyper_lens_data):
+        class Instance(object):
+            def __init__(self):
+                self.hyper_galaxy = "hyper_galaxy"
+                self.one = g.Galaxy()
+                self.two = g.Galaxy()
+                self.three = g.Galaxy()
+
+            @staticmethod
+            def name_instance_tuples_for_class(cls):
+                return [("one", None), ("two", None), ("three", None)]
+
         class MockOptimizer(object):
             def __init__(self):
                 self.extensions = []
+                self.instance = Instance()
+                self.variable = Instance()
 
             @classmethod
             def fit(cls, analysis):
@@ -189,18 +198,29 @@ class TestHyperGalaxyPhase(object):
         optimizer = MockOptimizer()
         hyper_phase.optimizer = optimizer
 
+        class Result(object):
+            def __init__(self):
+                self.instance = Instance()
+                self.variable = Instance()
+
+            def unmasked_image_for_galaxy(self, galaxy):
+                return np.ones(5)
+
+            @property
+            def unmasked_model_image(self):
+                return np.ones(5)
+
         class PreviousResults(object):
-            class Last(object):
-                unmasked_model_image = np.ones(5)
-                unmasked_model_image_of_planes = 3 * [np.ones(5)]
+            @property
+            def last(self):
+                return Result()
 
-            last = Last
+        results = hyper_phase.run(hyper_lens_data, PreviousResults())
 
-        results = hyper_phase.run(hyper_lens_data, PreviousResults)
-
-        assert isinstance(results, ph.HyperGalaxyPhase.HyperGalaxyResults)
-        assert len(results.results) == 3
-        assert optimizer.extensions == ["0", "1", "2"]
+        assert isinstance(results, Result)
+        assert optimizer.extensions == ["one", "two", "three"]
+        assert results.variable.one.hyper_galaxy == g.HyperGalaxy
+        assert results.instance.one.hyper_galaxy == "hyper_galaxy"
 
     def test__figure_of_merit_of_fit__noise_factor_0_so_no_noise_scaling(self, hyper_phase):
         hyper_lens_data = MockLensData(ccd_data=np.ones(3), noise_map=np.ones(3), mask=np.full(3, False))
