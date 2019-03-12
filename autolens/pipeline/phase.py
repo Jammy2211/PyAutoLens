@@ -173,14 +173,14 @@ class AbstractPhase(autofit_phase.AbstractPhase):
         if self.__doc__ is not None:
             return self.__doc__.replace("  ", "").replace("\n", " ")
 
-    def pass_priors(self, previous_results):
+    def pass_priors(self, results):
         """
         Perform any prior or constant passing. This could involve setting model attributes equal to priors or constants
         from a previous phase.
 
         Parameters
         ----------
-        previous_results: autofit.tools.pipeline.ResultsCollection
+        results: autofit.tools.pipeline.ResultsCollection
             The result of the previous phase
         """
         pass
@@ -188,17 +188,17 @@ class AbstractPhase(autofit_phase.AbstractPhase):
     # noinspection PyAbstractClass
     class Analysis(non_linear.Analysis):
 
-        def __init__(self, cosmology, previous_results=None):
+        def __init__(self, cosmology, results=None):
             """
             An lens object
 
             Parameters
             ----------
-            previous_results: autofit.tools.pipeline.ResultsCollection
+            results: autofit.tools.pipeline.ResultsCollection
                 The results of all previous phases
             """
 
-            self.previous_results = previous_results
+            self.results = results
             self.cosmology = cosmology
 
             self.position_threshold = conf.instance.general.get('positions', 'position_threshold', float)
@@ -206,8 +206,8 @@ class AbstractPhase(autofit_phase.AbstractPhase):
 
         @property
         def last_results(self):
-            if self.previous_results is not None:
-                return self.previous_results.last
+            if self.results is not None:
+                return self.results.last
 
         def tracer_for_instance(self, instance):
             raise NotImplementedError()
@@ -264,14 +264,14 @@ class AbstractPhase(autofit_phase.AbstractPhase):
 
 class Phase(AbstractPhase):
 
-    def run(self, image, previous_results=None, mask=None):
+    def run(self, image, results=None, mask=None):
         raise NotImplementedError()
 
     # noinspection PyAbstractClass
     class Analysis(AbstractPhase.Analysis):
 
-        def __init__(self, cosmology, previous_results=None):
-            super(Phase.Analysis, self).__init__(cosmology=cosmology, previous_results=previous_results)
+        def __init__(self, cosmology, results=None):
+            super(Phase.Analysis, self).__init__(cosmology=cosmology, results=results)
 
             self.should_plot_mask = \
                 conf.instance.general.get('output', 'plot_mask_on_images', bool)
@@ -316,7 +316,7 @@ class PhasePositions(AbstractPhase):
                          optimizer_class=optimizer_class, cosmology=cosmology, auto_link_priors=auto_link_priors)
         self.lens_galaxies = lens_galaxies
 
-    def run(self, positions, pixel_scale, previous_results=None):
+    def run(self, positions, pixel_scale, results=None):
         """
         Run this phase.
 
@@ -324,7 +324,7 @@ class PhasePositions(AbstractPhase):
         ----------
         pixel_scale
         positions
-        previous_results: autofit.tools.pipeline.ResultsCollection
+        results: autofit.tools.pipeline.ResultsCollection
             An object describing the results of the last phase or None if no phase has been executed
 
         Returns
@@ -332,11 +332,11 @@ class PhasePositions(AbstractPhase):
         result: AbstractPhase.Result
             A result object comprising the best fit model and other hyper.
         """
-        analysis = self.make_analysis(positions=positions, pixel_scale=pixel_scale, previous_results=previous_results)
+        analysis = self.make_analysis(positions=positions, pixel_scale=pixel_scale, results=results)
         result = self.run_analysis(analysis)
         return self.make_result(result, analysis)
 
-    def make_analysis(self, positions, pixel_scale, previous_results=None):
+    def make_analysis(self, positions, pixel_scale, results=None):
         """
         Create an lens object. Also calls the prior passing and lens_data modifying functions to allow child
         classes to change the behaviour of the phase.
@@ -345,7 +345,7 @@ class PhasePositions(AbstractPhase):
         ----------
         pixel_scale
         positions
-        previous_results: autofit.tools.pipeline.ResultsCollection
+        results: autofit.tools.pipeline.ResultsCollection
             The result from the previous phase
 
         Returns
@@ -353,16 +353,16 @@ class PhasePositions(AbstractPhase):
         lens: Analysis
             An lens object that the non-linear optimizer calls to determine the fit of a set of values
         """
-        self.pass_priors(previous_results)
+        self.pass_priors(results)
         analysis = self.__class__.Analysis(positions=positions, pixel_scale=pixel_scale, cosmology=self.cosmology,
-                                           previous_results=previous_results)
+                                           results=results)
         return analysis
 
     # noinspection PyAbstractClass
     class Analysis(Phase.Analysis):
 
-        def __init__(self, positions, pixel_scale, cosmology, previous_results=None):
-            super().__init__(cosmology=cosmology, previous_results=previous_results)
+        def __init__(self, positions, pixel_scale, cosmology, results=None):
+            super().__init__(cosmology=cosmology, results=results)
 
             self.positions = list(map(lambda position_set: np.asarray(position_set), positions))
             self.pixel_scale = pixel_scale
@@ -433,7 +433,7 @@ class PhaseImaging(Phase):
         self.interp_pixel_scale = interp_pixel_scale
 
     # noinspection PyMethodMayBeStatic,PyUnusedLocal
-    def modify_image(self, image, previous_results):
+    def modify_image(self, image, results):
         """
         Customize an lens_data. e.g. removing lens light.
 
@@ -441,7 +441,7 @@ class PhaseImaging(Phase):
         ----------
         image: scaled_array.ScaledSquarePixelArray
             An lens_data that has been masked
-        previous_results: autofit.tools.pipeline.ResultsCollection
+        results: autofit.tools.pipeline.ResultsCollection
             The result of the previous lens
 
         Returns
@@ -451,7 +451,7 @@ class PhaseImaging(Phase):
         """
         return image
 
-    def run(self, data, previous_results=None, mask=None, positions=None):
+    def run(self, data, results=None, mask=None, positions=None):
         """
         Run this phase.
 
@@ -460,7 +460,7 @@ class PhaseImaging(Phase):
         positions
         mask: Mask
             The default masks passed in by the pipeline
-        previous_results: autofit.tools.pipeline.ResultsCollection
+        results: autofit.tools.pipeline.ResultsCollection
             An object describing the results of the last phase or None if no phase has been executed
         data: scaled_array.ScaledSquarePixelArray
             An lens_data that has been masked
@@ -470,13 +470,13 @@ class PhaseImaging(Phase):
         result: AbstractPhase.Result
             A result object comprising the best fit model and other hyper.
         """
-        analysis = self.make_analysis(data=data, previous_results=previous_results, mask=mask, positions=positions)
+        analysis = self.make_analysis(data=data, results=results, mask=mask, positions=positions)
 
         result = self.run_analysis(analysis)
 
         return self.make_result(result, analysis)
 
-    def make_analysis(self, data, previous_results=None, mask=None, positions=None):
+    def make_analysis(self, data, results=None, mask=None, positions=None):
         """
         Create an lens object. Also calls the prior passing and lens_data modifying functions to allow child
         classes to change the behaviour of the phase.
@@ -488,7 +488,7 @@ class PhaseImaging(Phase):
             The default masks passed in by the pipeline
         data: im.CCD
             An lens_data that has been masked
-        previous_results: autofit.tools.pipeline.ResultsCollection
+        results: autofit.tools.pipeline.ResultsCollection
             The result from the previous phase
 
         Returns
@@ -512,15 +512,15 @@ class PhaseImaging(Phase):
                                 image_psf_shape=self.image_psf_shape, positions=positions,
                                 interp_pixel_scale=self.interp_pixel_scale)
 
-        modified_image = self.modify_image(image=lens_data.image, previous_results=previous_results)
+        modified_image = self.modify_image(image=lens_data.image, results=results)
         lens_data = lens_data.new_lens_data_with_modified_image(modified_image=modified_image)
 
-        self.pass_priors(previous_results)
+        self.pass_priors(results)
 
         self.output_phase_info()
 
         analysis = self.__class__.Analysis(lens_data=lens_data, cosmology=self.cosmology,
-                                           previous_results=previous_results)
+                                           results=results)
         return analysis
 
     def output_phase_info(self):
@@ -543,9 +543,9 @@ class PhaseImaging(Phase):
     # noinspection PyAbstractClass
     class Analysis(Phase.Analysis):
 
-        def __init__(self, lens_data, cosmology, previous_results=None):
+        def __init__(self, lens_data, cosmology, results=None):
 
-            super(PhaseImaging.Analysis, self).__init__(cosmology=cosmology, previous_results=previous_results)
+            super(PhaseImaging.Analysis, self).__init__(cosmology=cosmology, results=results)
 
             self.lens_data = lens_data
 
@@ -950,10 +950,10 @@ class MultiPlanePhase(PhaseImaging):
 
     class Analysis(PhaseImaging.Analysis):
 
-        def __init__(self, lens_data, cosmology, previous_results=None):
+        def __init__(self, lens_data, cosmology, results=None):
             self.lens_data = lens_data
             super(MultiPlanePhase.Analysis, self).__init__(lens_data=lens_data, cosmology=cosmology,
-                                                           previous_results=previous_results)
+                                                           results=results)
 
         def tracer_for_instance(self, instance):
             return ray_tracing.TracerMultiPlanes(galaxies=instance.galaxies,
@@ -999,7 +999,7 @@ class GalaxyFitPhase(AbstractPhase):
         self.sub_grid_size = sub_grid_size
         self.mask_function = mask_function
 
-    def run(self, galaxy_data, previous_results=None, mask=None):
+    def run(self, galaxy_data, results=None, mask=None):
         """
         Run this phase.
 
@@ -1008,7 +1008,7 @@ class GalaxyFitPhase(AbstractPhase):
         galaxy_data
         mask: Mask
             The default masks passed in by the pipeline
-        previous_results: autofit.tools.pipeline.ResultsCollection
+        results: autofit.tools.pipeline.ResultsCollection
             An object describing the results of the last phase or None if no phase has been executed
 
         Returns
@@ -1016,12 +1016,12 @@ class GalaxyFitPhase(AbstractPhase):
         result: AbstractPhase.Result
             A result object comprising the best fit model and other hyper.
         """
-        analysis = self.make_analysis(galaxy_data=galaxy_data, previous_results=previous_results, mask=mask)
+        analysis = self.make_analysis(galaxy_data=galaxy_data, results=results, mask=mask)
         result = self.run_analysis(analysis)
 
         return self.make_result(result, analysis)
 
-    def make_analysis(self, galaxy_data, previous_results=None, mask=None):
+    def make_analysis(self, galaxy_data, results=None, mask=None):
         """
         Create an lens object. Also calls the prior passing and lens_data modifying functions to allow child
         classes to change the behaviour of the phase.
@@ -1031,7 +1031,7 @@ class GalaxyFitPhase(AbstractPhase):
         galaxy_data
         mask: Mask
             The default masks passed in by the pipeline
-        previous_results: autofit.tools.pipeline.ResultsCollection
+        results: autofit.tools.pipeline.ResultsCollection
             The result from the previous phase
 
         Returns
@@ -1043,7 +1043,7 @@ class GalaxyFitPhase(AbstractPhase):
         mask = setup_phase_mask(data=galaxy_data[0], mask=mask, mask_function=self.mask_function,
                                 inner_circular_mask_radii=None)
 
-        self.pass_priors(previous_results)
+        self.pass_priors(results)
 
         if self.use_intensities or self.use_surface_density or self.use_potential:
 
@@ -1056,7 +1056,7 @@ class GalaxyFitPhase(AbstractPhase):
 
             return self.__class__.AnalysisSingle(galaxy_data=galaxy_data,
                                                  cosmology=self.cosmology,
-                                                 previous_results=previous_results)
+                                                 results=results)
 
         elif self.use_deflections:
 
@@ -1074,13 +1074,13 @@ class GalaxyFitPhase(AbstractPhase):
 
             return self.__class__.AnalysisDeflections(galaxy_data_y=galaxy_data_y, galaxy_data_x=galaxy_data_x,
                                                       cosmology=self.cosmology,
-                                                      previous_results=previous_results)
+                                                      results=results)
 
     class Analysis(Phase.Analysis):
 
-        def __init__(self, cosmology, previous_results):
+        def __init__(self, cosmology, results):
             super(GalaxyFitPhase.Analysis, self).__init__(cosmology=cosmology,
-                                                          previous_results=previous_results)
+                                                          results=results)
 
             self.plot_galaxy_fit_all_at_end_png = \
                 conf.instance.general.get('output', 'plot_galaxy_fit_all_at_end_png', bool)
@@ -1106,9 +1106,9 @@ class GalaxyFitPhase(AbstractPhase):
     # noinspection PyAbstractClass
     class AnalysisSingle(Analysis):
 
-        def __init__(self, galaxy_data, cosmology, previous_results=None):
+        def __init__(self, galaxy_data, cosmology, results=None):
             super(GalaxyFitPhase.AnalysisSingle, self).__init__(cosmology=cosmology,
-                                                                previous_results=previous_results)
+                                                                results=results)
 
             self.galaxy_data = galaxy_data
 
@@ -1184,9 +1184,9 @@ class GalaxyFitPhase(AbstractPhase):
     # noinspection PyAbstractClass
     class AnalysisDeflections(Analysis):
 
-        def __init__(self, galaxy_data_y, galaxy_data_x, cosmology, previous_results=None):
+        def __init__(self, galaxy_data_y, galaxy_data_x, cosmology, results=None):
             super(GalaxyFitPhase.AnalysisDeflections, self).__init__(cosmology=cosmology,
-                                                                     previous_results=previous_results)
+                                                                     results=results)
 
             self.galaxy_data_y = galaxy_data_y
             self.galaxy_data_x = galaxy_data_x
@@ -1324,10 +1324,10 @@ class SensitivityPhase(PhaseImaging):
     # noinspection PyAbstractClass
     class Analysis(PhaseImaging.Analysis):
 
-        def __init__(self, lens_data, cosmology, phase_name, previous_results=None):
+        def __init__(self, lens_data, cosmology, phase_name, results=None):
             self.lens_data = lens_data
             super(PhaseImaging.Analysis, self).__init__(cosmology=cosmology,
-                                                        previous_results=previous_results)
+                                                        results=results)
 
         def fit(self, instance):
             """
@@ -1469,14 +1469,14 @@ class HyperGalaxyPhase(Phase):
         def __init__(self, results):
             self.results = results
 
-    def run(self, data, previous_results=None, mask=None, positions=None):
+    def run(self, data, results=None, mask=None, positions=None):
         """
         Run a fit for each galaxy from the previous phase.
 
         Parameters
         ----------
         data: LensData
-        previous_results: ResultsCollection
+        results: ResultsCollection
             Results from all previous phases
         mask: Mask
             The mask
@@ -1487,8 +1487,8 @@ class HyperGalaxyPhase(Phase):
         results: HyperGalaxyResults
             A collection of results, with one item per a galaxy
         """
-        model_image = previous_results.last.unmasked_model_image
-        galaxy_images = previous_results.last.unmasked_model_image_of_planes
+        model_image = results.last.unmasked_model_image
+        galaxy_images = results.last.unmasked_model_image_of_planes
 
         results = []
 

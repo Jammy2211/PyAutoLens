@@ -14,7 +14,7 @@ test_type = 'grid_search'
 test_name = "normal_grid_sersic"
 
 test_path = '{}/../../'.format(os.path.dirname(os.path.realpath(__file__)))
-output_path = test_path + 'output/' + test_type
+output_path = test_path + 'output/'
 config_path = test_path + 'config'
 conf.instance = conf.Config(config_path=config_path, output_path=output_path)
 
@@ -31,7 +31,7 @@ def make_pipeline(test_name):
     
     class QuickPhase(ph.LensPlanePhase):
 
-        def pass_priors(self, previous_results):
+        def pass_priors(self, results):
 
             self.lens_galaxies.lens.light.centre_0 = prior.UniformPrior(lower_limit=-0.01, upper_limit=0.01)
             self.lens_galaxies.lens.light.centre_1 = prior.UniformPrior(lower_limit=-0.01, upper_limit=0.01)
@@ -41,7 +41,7 @@ def make_pipeline(test_name):
             self.lens_galaxies.lens.light.effective_radius = prior.UniformPrior(lower_limit=1.25, upper_limit=1.35)
             self.lens_galaxies.lens.light.sersic_index = prior.UniformPrior(lower_limit=3.95, upper_limit=4.05)
 
-    phase1 = QuickPhase(phase_name="phase1", phase_folders=[test_name], 
+    phase1 = QuickPhase(phase_name='phase_1', phase_folders=[test_type, test_name],
                         lens_galaxies=dict(lens=gm.GalaxyModel(light=lp.EllipticalSersic)),
                         optimizer_class=nl.MultiNest)
 
@@ -51,18 +51,18 @@ def make_pipeline(test_name):
 
     class GridPhase(ph.LensPlanePhase):
 
-        def pass_priors(self, previous_results):
+        def pass_priors(self, results):
 
             self.lens_galaxies.lens.light.centre_0 = 0.0
             self.lens_galaxies.lens.light.centre_1 = 0.0
-            self.lens_galaxies.lens.light.axis_ratio = previous_results[0].constant.lens.light.axis_ratio
-            self.lens_galaxies.lens.light.phi = previous_results[0].constant.lens.light.phi
-            self.lens_galaxies.lens.light.intensity = previous_results[0].constant.lens.light.intensity
+            self.lens_galaxies.lens.light.axis_ratio = results.from_phase('phase_1').constant.lens.light.axis_ratio
+            self.lens_galaxies.lens.light.phi = results.from_phase('phase_1').constant.lens.light.phi
+            self.lens_galaxies.lens.light.intensity = results.from_phase('phase_1').constant.lens.light.intensity
 
             self.lens_galaxies.lens.light.effective_radius = prior.UniformPrior(lower_limit=0.0, upper_limit=4.0)
             self.lens_galaxies.lens.light.sersic_index = prior.UniformPrior(lower_limit=1.0, upper_limit=8.0)
 
-    phase2 = GridPhase(phase_name="phase1", phase_folders=[test_name], 
+    phase2 = GridPhase(phase_name='phase_2', phase_folders=[test_type, test_name],
                        lens_galaxies=dict(lens=gm.GalaxyModel(light=lp.EllipticalSersic)),
                        optimizer_class=nl.GridSearch)
 

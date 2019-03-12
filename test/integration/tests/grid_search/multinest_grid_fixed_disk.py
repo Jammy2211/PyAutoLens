@@ -15,7 +15,7 @@ test_type = 'grid_search'
 test_name = "multinest_grid_fixed_disk"
 
 test_path = '{}/../../'.format(os.path.dirname(os.path.realpath(__file__)))
-output_path = test_path + 'output/' + test_type
+output_path = test_path + 'output/'
 config_path = test_path + 'config'
 conf.instance = conf.Config(config_path=config_path, output_path=output_path)
 
@@ -31,7 +31,7 @@ def pipeline():
 def make_pipeline(test_name):
     class QuickPhase(ph.LensPlanePhase):
 
-        def pass_priors(self, previous_results):
+        def pass_priors(self, results):
 
             self.lens_galaxies.lens.bulge.centre_0 = prior.UniformPrior(lower_limit=-0.01, upper_limit=0.01)
             self.lens_galaxies.lens.bulge.centre_1 = prior.UniformPrior(lower_limit=-0.01, upper_limit=0.01)
@@ -48,7 +48,7 @@ def make_pipeline(test_name):
             self.lens_galaxies.lens.disk.intensity = prior.UniformPrior(lower_limit=1.99, upper_limit=2.01)
             self.lens_galaxies.lens.disk.effective_radius = prior.UniformPrior(lower_limit=1.95, upper_limit=2.05)
 
-    phase1 = QuickPhase(phase_name="phase1", phase_folders=[test_name], 
+    phase1 = QuickPhase(phase_name='phase_1', phase_folders=[test_type, test_name],
                         lens_galaxies=dict(lens=gm.GalaxyModel(bulge=lp.EllipticalSersic,
                                                                disk=lp.EllipticalExponential)),
                         optimizer_class=nl.MultiNest)
@@ -63,9 +63,9 @@ def make_pipeline(test_name):
         def grid_priors(self):
             return [self.variable.lens.bulge.sersic_index]
 
-        def pass_priors(self, previous_results):
+        def pass_priors(self, results):
 
-            self.lens_galaxies.lens.disk = previous_results[0].constant.lens.disk
+            self.lens_galaxies.lens.disk = results.from_phase('phase_1').constant.lens.disk
 
             self.lens_galaxies.lens.bulge.centre_0 = prior.UniformPrior(lower_limit=-0.01, upper_limit=0.01)
             self.lens_galaxies.lens.bulge.centre_1 = prior.UniformPrior(lower_limit=-0.01, upper_limit=0.01)
@@ -74,7 +74,7 @@ def make_pipeline(test_name):
             self.lens_galaxies.lens.bulge.intensity = prior.UniformPrior(lower_limit=0.99, upper_limit=1.01)
             self.lens_galaxies.lens.bulge.effective_radius = prior.UniformPrior(lower_limit=1.25, upper_limit=1.35)
 
-    phase2 = GridPhase(phase_name="phase2", phase_folders=[test_name], 
+    phase2 = GridPhase(phase_name='phase_2', phase_folders=[test_type, test_name],
                        lens_galaxies=dict(lens=gm.GalaxyModel(bulge=lp.EllipticalSersic,
                                                               disk=lp.EllipticalExponential)),
                        number_of_steps=2, optimizer_class=nl.MultiNest)

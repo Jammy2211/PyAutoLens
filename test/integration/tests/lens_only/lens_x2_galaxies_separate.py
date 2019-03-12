@@ -14,7 +14,7 @@ test_type = 'lens_only'
 test_name = "lens_x2_galaxies_separate"
 
 test_path = '{}/../../'.format(os.path.dirname(os.path.realpath(__file__)))
-output_path = test_path + 'output/' + test_type
+output_path = test_path + 'output/'
 config_path = test_path + 'config'
 conf.instance = conf.Config(config_path=config_path, output_path=output_path)
 
@@ -33,12 +33,12 @@ def make_pipeline(test_name):
 
     class LensPlaneGalaxy0Phase(ph.LensPlanePhase):
 
-        def pass_priors(self, previous_results):
+        def pass_priors(self, results):
 
             self.lens_galaxies.lens_0.sersic.centre_0 = -1.0
             self.lens_galaxies.lens_0.sersic.centre_1 = -1.0
 
-    phase1 = LensPlaneGalaxy0Phase(phase_name="phase1", phase_folders=[test_name],
+    phase1 = LensPlaneGalaxy0Phase(phase_name='phase_1', phase_folders=[test_type, test_name],
                                    lens_galaxies=dict(lens_0=gm.GalaxyModel(sersic=lp.EllipticalSersic)),
                                    mask_function=modify_mask_function, optimizer_class=nl.MultiNest)
 
@@ -48,13 +48,13 @@ def make_pipeline(test_name):
 
     class LensPlaneGalaxy1Phase(ph.LensPlanePhase):
 
-        def pass_priors(self, previous_results):
+        def pass_priors(self, results):
 
-            self.lens_galaxies.lens_0 = previous_results[-1].constant.lens_0
+            self.lens_galaxies.lens_0 = results.from_phase('phase_1').constant.lens_0
             self.lens_galaxies.lens_1.sersic.centre_0 = 1.0
             self.lens_galaxies.lens_1.sersic.centre_1 = 1.0
 
-    phase2 = LensPlaneGalaxy1Phase(phase_name="phase2", phase_folders=[test_name],
+    phase2 = LensPlaneGalaxy1Phase(phase_name='phase_2', phase_folders=[test_type, test_name],
                                    lens_galaxies=dict(lens_0=gm.GalaxyModel(sersic=lp.EllipticalSersic),
                                                       lens_1=gm.GalaxyModel(sersic=lp.EllipticalSersic)),
                                    mask_function=modify_mask_function, optimizer_class=nl.MultiNest)
@@ -65,16 +65,16 @@ def make_pipeline(test_name):
 
     class LensPlaneBothGalaxyPhase(ph.LensPlanePhase):
 
-        def pass_priors(self, previous_results):
+        def pass_priors(self, results):
 
-            self.lens_galaxies.lens_0 = previous_results[0].variable.lens_0
-            self.lens_galaxies.lens_1 = previous_results[1].variable.lens_0
+            self.lens_galaxies.lens_0 = results.from_phase('phase_1').variable.lens_0
+            self.lens_galaxies.lens_1 = results.from_phase('phase_2').variable.lens_0
             self.lens_galaxies.lens_0.sersic.centre_0 = -1.0
             self.lens_galaxies.lens_0.sersic.centre_1 = -1.0
             self.lens_galaxies.lens_1.sersic.centre_0 = 1.0
             self.lens_galaxies.lens_1.sersic.centre_1 = 1.0
 
-    phase3 = LensPlaneBothGalaxyPhase(phase_name="phase3", phase_folders=[test_name],
+    phase3 = LensPlaneBothGalaxyPhase(phase_name='phase_3', phase_folders=[test_type, test_name],
                                       lens_galaxies=dict(lens_0=gm.GalaxyModel(sersic=lp.EllipticalSersic),
                                                          lens_1=gm.GalaxyModel(sersic=lp.EllipticalSersic)),
                                       mask_function=modify_mask_function, optimizer_class=nl.MultiNest)
