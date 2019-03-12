@@ -11,7 +11,7 @@ from autolens.model.inversion import regularization as reg
 from autolens.model.inversion.util import inversion_util
 from autolens.model.inversion.util import regularization_util
 
-from test.data_making import data_util
+from test.simulation import simulation_util
 
 import numpy as np
 
@@ -37,14 +37,14 @@ pixelization = pix.AdaptiveMagnification(shape=pixelization_shape)
 
 source_galaxy = g.Galaxy(pixelization=pixelization, regularization=reg.Constant(coefficients=(1.0,)))
 
-for image_type in ['LSST', 'Euclid', 'HST', 'HST_Up', 'AO']:
+for data_resolution in ['LSST', 'Euclid', 'HST', 'HST_Up', 'AO']:
 
-    ccd_data = data_util.load_test_ccd_data(image_type=image_type, lens_name='no_lens_source_smooth',
-                                            psf_shape=psf_shape)
+    ccd_data = simulation_util.load_test_ccd_data(data_type='no_lens_source_smooth', data_resolution=data_resolution,
+                                                  psf_shape=psf_shape)
     mask = msk.Mask.circular(shape=ccd_data.shape, pixel_scale=ccd_data.pixel_scale, radius_arcsec=radius_arcsec)
     lens_data = ld.LensData(ccd_data=ccd_data, mask=mask, sub_grid_size=sub_grid_size)
 
-    print('AdaptiveMagnification Inversion fit run times for image type ' + image_type + '\n')
+    print('AdaptiveMagnification Inversion fit run times for image type ' + data_resolution + '\n')
     print('Number of points = ' + str(lens_data.grid_stack.sub.shape[0]) + '\n')
 
     start_overall = time.time()
