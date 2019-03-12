@@ -37,6 +37,10 @@ def make_pipeline():
 
     phase2 = ph.HyperGalaxyPhase(phase_name='phase_2_hyper', phase_folders=[test_type, test_name])
 
+    phase2.optimizer.const_efficiency_mode = True
+    phase2.optimizer.n_live_points = 60
+    phase2.optimizer.sampling_efficiency = 0.7
+
     return pl.PipelineImaging(test_name, phase1, phase2)
 
 

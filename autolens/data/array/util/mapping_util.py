@@ -1,12 +1,13 @@
 import logging
 
-from autolens import decorator_util
 import numpy as np
 
+from autolens import decorator_util
 from autolens.data.array.util import mask_util
 
 logger = logging.getLogger(__name__)
 logger.level = logging.DEBUG
+
 
 @decorator_util.jit()
 def map_1d_indexes_to_2d_indexes_for_shape(indexes_1d, shape):
@@ -42,11 +43,11 @@ def map_1d_indexes_to_2d_indexes_for_shape(indexes_1d, shape):
     indexes_2d = np.zeros((indexes_1d.shape[0], 2))
 
     for i, index_1d in enumerate(indexes_1d):
-
-        indexes_2d[i,0] = int(index_1d / shape[1])
-        indexes_2d[i,1] = int(index_1d % shape[1])
+        indexes_2d[i, 0] = int(index_1d / shape[1])
+        indexes_2d[i, 1] = int(index_1d % shape[1])
 
     return indexes_2d
+
 
 @decorator_util.jit()
 def map_2d_indexes_to_1d_indexes_for_shape(indexes_2d, shape):
@@ -82,10 +83,10 @@ def map_2d_indexes_to_1d_indexes_for_shape(indexes_2d, shape):
     indexes_1d = np.zeros(indexes_2d.shape[0])
 
     for i in range(indexes_2d.shape[0]):
-
-        indexes_1d[i] = int((indexes_2d[i,0])*shape[1] + indexes_2d[i,1])
+        indexes_1d[i] = int((indexes_2d[i, 0]) * shape[1] + indexes_2d[i, 1])
 
     return indexes_1d
+
 
 @decorator_util.jit()
 def sub_to_regular_from_mask(mask, sub_grid_size):
@@ -141,6 +142,7 @@ def sub_to_regular_from_mask(mask, sub_grid_size):
 
     return sub_to_regular
 
+
 @decorator_util.jit()
 def map_2d_array_to_masked_1d_array_from_array_2d_and_mask(mask, array_2d):
     """For a 2D array and mask, map the values of all unmasked pixels to a 1D array.
@@ -190,6 +192,7 @@ def map_2d_array_to_masked_1d_array_from_array_2d_and_mask(mask, array_2d):
 
     return array_1d
 
+
 @decorator_util.jit()
 def map_masked_1d_array_to_2d_array_from_array_1d_shape_and_one_to_two(array_1d, shape, one_to_two):
     """For a 1D array that was computed by mapping unmasked values from a 2D array of shape (rows, columns), map its \
@@ -232,6 +235,7 @@ def map_masked_1d_array_to_2d_array_from_array_1d_shape_and_one_to_two(array_1d,
         array_2d[one_to_two[index, 0], one_to_two[index, 1]] = array_1d[index]
 
     return array_2d
+
 
 @decorator_util.jit()
 def map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(array_1d, shape):
@@ -277,8 +281,10 @@ def map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(array_1d, shape):
 
     return array_2d
 
+
 @decorator_util.jit()
-def sparse_to_unmasked_sparse_from_mask_and_pixel_centres(total_sparse_pixels, mask, unmasked_sparse_grid_pixel_centres):
+def sparse_to_unmasked_sparse_from_mask_and_pixel_centres(total_sparse_pixels, mask,
+                                                          unmasked_sparse_grid_pixel_centres):
     """Determine the mapping between every masked pixelization-grid pixel and pixelization-grid pixel. This is
     performed by checking whether each pixelization-grid pixel is within the regular-masks, and mapping the indexes.
 
@@ -302,14 +308,15 @@ def sparse_to_unmasked_sparse_from_mask_and_pixel_centres(total_sparse_pixels, m
         x = unmasked_sparse_grid_pixel_centres[full_pixel_index, 1]
 
         if not mask[y, x]:
-
             pix_to_full_pix[pixel_index] = full_pixel_index
             pixel_index += 1
 
     return pix_to_full_pix
 
+
 @decorator_util.jit()
-def unmasked_sparse_to_sparse_from_mask_and_pixel_centres(mask, unmasked_sparse_grid_pixel_centres, total_sparse_pixels):
+def unmasked_sparse_to_sparse_from_mask_and_pixel_centres(mask, unmasked_sparse_grid_pixel_centres,
+                                                          total_sparse_pixels):
     """Determine the mapping between every pixelization-grid pixel and masked pixelization-grid pixel. This is
     performed by checking whether each pixelization-grid pixel is within the regular-masks, and mapping the indexes.
 
@@ -319,7 +326,7 @@ def unmasked_sparse_to_sparse_from_mask_and_pixel_centres(mask, unmasked_sparse_
 
     Parameters
     -----------
-    total_pix_pixels : int
+    total_sparse_pixels : int
         The total number of pixels in the pixelization grid which fall within the regular-masks.
     mask : ccd.masks.Mask
         The regular-masks within which pixelization pixels must be inside
@@ -340,10 +347,11 @@ def unmasked_sparse_to_sparse_from_mask_and_pixel_centres(mask, unmasked_sparse_
         unmasked_sparse_to_sparse[unmasked_sparse_pixel_index] = pixel_index
 
         if not mask[y, x]:
-            if pixel_index < total_sparse_pixels-1:
+            if pixel_index < total_sparse_pixels - 1:
                 pixel_index += 1
 
     return unmasked_sparse_to_sparse
+
 
 @decorator_util.jit()
 def regular_to_sparse_from_sparse_mappings(regular_to_unmasked_sparse, unmasked_sparse_to_sparse):
@@ -362,10 +370,10 @@ def regular_to_sparse_from_sparse_mappings(regular_to_unmasked_sparse, unmasked_
     regular_to_sparse = np.zeros(total_regular_pixels)
 
     for regular_index in range(total_regular_pixels):
-
         regular_to_sparse[regular_index] = unmasked_sparse_to_sparse[regular_to_unmasked_sparse[regular_index]]
 
     return regular_to_sparse
+
 
 @decorator_util.jit()
 def sparse_grid_from_unmasked_sparse_grid(unmasked_sparse_grid, sparse_to_unmasked_sparse):
@@ -385,7 +393,6 @@ def sparse_grid_from_unmasked_sparse_grid(unmasked_sparse_grid, sparse_to_unmask
     pix_grid = np.zeros((total_pix_pixels, 2))
 
     for pixel_index in range(total_pix_pixels):
-
         pix_grid[pixel_index, 0] = unmasked_sparse_grid[sparse_to_unmasked_sparse[pixel_index], 0]
         pix_grid[pixel_index, 1] = unmasked_sparse_grid[sparse_to_unmasked_sparse[pixel_index], 1]
 
