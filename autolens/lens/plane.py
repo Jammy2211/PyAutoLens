@@ -202,16 +202,12 @@ class AbstractPlane(object):
     def einstein_radius_arcsec(self):
         if self.has_mass_profile:
             return sum(filter(None, list(map(lambda galaxy: galaxy.einstein_radius, self.galaxies))))
-        else:
-            return None
 
     @property
     @check_plane_for_redshift
     def einstein_radius_kpc(self):
         if self.has_mass_profile:
             return self.kpc_per_arcsec_proper * self.einstein_radius_arcsec
-        else:
-            return None
 
     def einstein_mass(self, critical_density_arcsec):
         if self.has_mass_profile:
@@ -219,8 +215,6 @@ class AbstractPlane(object):
                                              galaxy.mass_within_circle(radius=galaxy.einstein_radius,
                                                                        conversion_factor=critical_density_arcsec),
                                              self.galaxies))))
-        else:
-            return None
 
 
 class AbstractGriddedPlane(AbstractPlane):
@@ -295,8 +289,10 @@ class AbstractGriddedPlane(AbstractPlane):
 
     @property
     def image_plane_image_1d_of_galaxies(self):
-        return [galaxy_util.intensities_of_galaxies_from_grid(grid=self.grid_stack.sub, galaxies=[galaxy])
-                for galaxy in self.galaxies]
+        return list(map(self.image_plane_image_1d_of_galaxy, self.galaxies))
+
+    def image_plane_image_1d_of_galaxy(self, galaxy):
+        return galaxy_util.intensities_of_galaxies_from_grid(grid=self.grid_stack.sub, galaxies=[galaxy])
 
     @property
     def image_plane_blurring_image_1d(self):
@@ -395,6 +391,26 @@ class Plane(AbstractGriddedPlane):
 
         super(Plane, self).__init__(redshift=galaxies[0].redshift, galaxies=galaxies, grid_stack=grid_stack,
                                     border=border, compute_deflections=compute_deflections, cosmology=cosmology)
+
+    def unmasked_blurred_image_of_galaxies_from_psf(self, padded_grid_stack, psf):
+        """This is a utility function for the function above, which performs the iteration over each plane's galaxies \
+        and computes each galaxy's unmasked blurred image.
+
+        Parameters
+        ----------
+        padded_grid_stack
+        psf : ccd.PSF
+            The PSF of the image used for convolution.
+        """
+        return [padded_grid_stack.unmasked_blurred_image_from_psf_and_unmasked_image(
+            psf, image) if not galaxy.has_pixelization else None for galaxy, image in
+                zip(self.galaxies, self.image_plane_image_1d_of_galaxies)]
+
+    def unmasked_blurred_image_of_galaxy_with_grid_stack_psf(self, galaxy, padded_grid_stack, psf):
+        return padded_grid_stack.unmasked_blurred_image_from_psf_and_unmasked_image(
+            psf,
+            self.image_plane_image_1d_of_galaxy(
+                galaxy))
 
 
 class PlaneSlice(AbstractGriddedPlane):

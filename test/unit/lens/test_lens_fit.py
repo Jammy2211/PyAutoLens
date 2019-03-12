@@ -126,6 +126,23 @@ def make_li_hyper_manual(hyper):
                             hyper_minimum_values=hyper.hyper_minimum_values, sub_grid_size=1)
 
 
+class TestImageForGalaxy(object):
+    def test_basic(self, lens_data_manual):
+        g0 = g.Galaxy(light_profile=lp.EllipticalSersic(intensity=1.0))
+        g1 = g.Galaxy(mass_profile=mp.SphericalIsothermal(einstein_radius=1.0))
+
+        tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0, g1], source_galaxies=[g0],
+                                                     image_plane_grid_stack=lens_data_manual.grid_stack)
+
+        padded_tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0, g1], source_galaxies=[g0],
+                                                            image_plane_grid_stack=lens_data_manual.padded_grid_stack)
+
+        fit = lens_fit.LensDataFit.for_data_and_tracer(lens_data=lens_data_manual, tracer=tracer,
+                                                       padded_tracer=padded_tracer)
+
+        assert fit.unmasked_model_image_of_planes_and_galaxies[0][0] == fit.unmasked_model_image_for_galaxy(g0)
+
+
 class TestLensProfileFit:
     class TestLikelihood:
 
@@ -181,11 +198,12 @@ class TestLensProfileFit:
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0, g1], source_galaxies=[g0],
                                                          image_plane_grid_stack=lens_data_manual.grid_stack)
 
-            padded_tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0, g1], source_galaxies=[g0],
-                                                                image_plane_grid_stack=lens_data_manual.padded_grid_stack)
+            padded_tracer = ray_tracing.TracerImageSourcePlanes(
+                lens_galaxies=[g0, g1], source_galaxies=[g0],
+                image_plane_grid_stack=lens_data_manual.padded_grid_stack)
 
             fit = lens_fit.LensDataFit.for_data_and_tracer(lens_data=lens_data_manual, tracer=tracer,
-                                                     padded_tracer=padded_tracer)
+                                                           padded_tracer=padded_tracer)
 
             assert lens_data_manual.noise_map == pytest.approx(fit.noise_map, 1e-4)
 
@@ -203,9 +221,10 @@ class TestLensProfileFit:
 
             assert residual_map == pytest.approx(fit.residual_map, 1e-4)
 
-            chi_squared_map = fit_util.chi_squared_map_from_residual_map_noise_map_and_mask(residual_map=residual_map,
-                                                                                            mask=lens_data_manual.mask,
-                                                                                            noise_map=lens_data_manual.noise_map)
+            chi_squared_map = fit_util.chi_squared_map_from_residual_map_noise_map_and_mask(
+                residual_map=residual_map,
+                mask=lens_data_manual.mask,
+                noise_map=lens_data_manual.noise_map)
 
             assert chi_squared_map == pytest.approx(fit.chi_squared_map, 1e-4)
 
@@ -214,8 +233,9 @@ class TestLensProfileFit:
             noise_normalization = fit_util.noise_normalization_from_noise_map_and_mask(
                 noise_map=lens_data_manual.noise_map,
                 mask=lens_data_manual.mask, )
-            likelihood = fit_util.likelihood_from_chi_squared_and_noise_normalization(chi_squared=chi_squared,
-                                                                                      noise_normalization=noise_normalization)
+            likelihood = fit_util.likelihood_from_chi_squared_and_noise_normalization(
+                chi_squared=chi_squared,
+                noise_normalization=noise_normalization)
 
             assert likelihood == pytest.approx(fit.likelihood, 1e-4)
             assert likelihood == fit.figure_of_merit
@@ -229,8 +249,8 @@ class TestLensProfileFit:
             assert (blurred_image_of_planes[1] == fit.model_image_of_planes[1]).all()
 
             unmasked_blurred_image = \
-                util.unmasked_blurred_image_from_padded_grid_stack_psf_and_unmasked_image(
-                    padded_grid_stack=lens_data_manual.padded_grid_stack, psf=lens_data_manual.psf,
+                lens_data_manual.padded_grid_stack.unmasked_blurred_image_from_psf_and_unmasked_image(
+                    psf=lens_data_manual.psf,
                     unmasked_image_1d=padded_tracer.image_plane_image_1d)
 
             assert (unmasked_blurred_image == fit.unmasked_model_image).all()
@@ -270,11 +290,12 @@ class TestLensInversionFit:
             fit = lens_fit.LensDataFit.for_data_and_tracer(lens_data=lens_data_manual, tracer=tracer)
 
             mapper = pix.mapper_from_grid_stack_and_border(grid_stack=lens_data_manual.grid_stack, border=None)
-            inversion = inversions.inversion_from_image_mapper_and_regularization(mapper=mapper,
-                                                                                  regularization=reg,
-                                                                                  image_1d=lens_data_manual.image_1d,
-                                                                                  noise_map_1d=lens_data_manual.noise_map_1d,
-                                                                                  convolver=lens_data_manual.convolver_mapping_matrix)
+            inversion = inversions.inversion_from_image_mapper_and_regularization(
+                mapper=mapper,
+                regularization=reg,
+                image_1d=lens_data_manual.image_1d,
+                noise_map_1d=lens_data_manual.noise_map_1d,
+                convolver=lens_data_manual.convolver_mapping_matrix)
 
             assert inversion.reconstructed_data == pytest.approx(fit.model_image, 1e-4)
 
@@ -284,20 +305,23 @@ class TestLensInversionFit:
 
             assert residual_map == pytest.approx(fit.residual_map, 1e-4)
 
-            chi_squared_map = fit_util.chi_squared_map_from_residual_map_noise_map_and_mask(residual_map=residual_map,
-                                                                                            mask=lens_data_manual.mask,
-                                                                                            noise_map=lens_data_manual.noise_map)
+            chi_squared_map = fit_util.chi_squared_map_from_residual_map_noise_map_and_mask(
+                residual_map=residual_map,
+                mask=lens_data_manual.mask,
+                noise_map=lens_data_manual.noise_map)
 
             assert chi_squared_map == pytest.approx(fit.chi_squared_map, 1e-4)
 
             chi_squared = fit_util.chi_squared_from_chi_squared_map_and_mask(chi_squared_map=chi_squared_map,
                                                                              mask=lens_data_manual.mask)
 
-            noise_normalization = fit_util.noise_normalization_from_noise_map_and_mask(mask=lens_data_manual.mask,
-                                                                                       noise_map=lens_data_manual.noise_map)
+            noise_normalization = fit_util.noise_normalization_from_noise_map_and_mask(
+                mask=lens_data_manual.mask,
+                noise_map=lens_data_manual.noise_map)
 
-            likelihood = fit_util.likelihood_from_chi_squared_and_noise_normalization(chi_squared=chi_squared,
-                                                                                      noise_normalization=noise_normalization)
+            likelihood = fit_util.likelihood_from_chi_squared_and_noise_normalization(
+                chi_squared=chi_squared,
+                noise_normalization=noise_normalization)
 
             assert likelihood == pytest.approx(fit.likelihood, 1e-4)
 
@@ -308,11 +332,12 @@ class TestLensInversionFit:
 
             assert likelihood_with_regularization == pytest.approx(fit.likelihood_with_regularization, 1e-4)
 
-            evidence = util.evidence_from_inversion_terms(chi_squared=chi_squared,
-                                                          regularization_term=inversion.regularization_term,
-                                                          log_curvature_regularization_term=inversion.log_det_curvature_reg_matrix_term,
-                                                          log_regularization_term=inversion.log_det_regularization_matrix_term,
-                                                          noise_normalization=noise_normalization)
+            evidence = util.evidence_from_inversion_terms(
+                chi_squared=chi_squared,
+                regularization_term=inversion.regularization_term,
+                log_curvature_regularization_term=inversion.log_det_curvature_reg_matrix_term,
+                log_regularization_term=inversion.log_det_regularization_matrix_term,
+                noise_normalization=noise_normalization)
 
             assert evidence == fit.evidence
             assert evidence == fit.figure_of_merit
@@ -368,19 +393,22 @@ class TestLensProfileInversionFit:
 
             assert residual_map == pytest.approx(fit.residual_map, 1e-4)
 
-            chi_squared_map = fit_util.chi_squared_map_from_residual_map_noise_map_and_mask(residual_map=residual_map,
-                                                                                            mask=lens_data_manual.mask,
-                                                                                            noise_map=lens_data_manual.noise_map)
+            chi_squared_map = fit_util.chi_squared_map_from_residual_map_noise_map_and_mask(
+                residual_map=residual_map,
+                mask=lens_data_manual.mask,
+                noise_map=lens_data_manual.noise_map)
 
             assert chi_squared_map == pytest.approx(fit.chi_squared_map, 1e-4)
 
             chi_squared = fit_util.chi_squared_from_chi_squared_map_and_mask(chi_squared_map=chi_squared_map,
                                                                              mask=lens_data_manual.mask)
-            noise_normalization = fit_util.noise_normalization_from_noise_map_and_mask(mask=lens_data_manual.mask,
-                                                                                       noise_map=lens_data_manual.noise_map)
+            noise_normalization = fit_util.noise_normalization_from_noise_map_and_mask(
+                mask=lens_data_manual.mask,
+                noise_map=lens_data_manual.noise_map)
 
-            likelihood = fit_util.likelihood_from_chi_squared_and_noise_normalization(chi_squared=chi_squared,
-                                                                                      noise_normalization=noise_normalization)
+            likelihood = fit_util.likelihood_from_chi_squared_and_noise_normalization(
+                chi_squared=chi_squared,
+                noise_normalization=noise_normalization)
 
             assert likelihood == pytest.approx(fit.likelihood, 1e-4)
 
@@ -391,11 +419,12 @@ class TestLensProfileInversionFit:
 
             assert likelihood_with_regularization == pytest.approx(fit.likelihood_with_regularization, 1e-4)
 
-            evidence = util.evidence_from_inversion_terms(chi_squared=chi_squared,
-                                                          regularization_term=inversion.regularization_term,
-                                                          log_curvature_regularization_term=inversion.log_det_curvature_reg_matrix_term,
-                                                          log_regularization_term=inversion.log_det_regularization_matrix_term,
-                                                          noise_normalization=noise_normalization)
+            evidence = util.evidence_from_inversion_terms(
+                chi_squared=chi_squared,
+                regularization_term=inversion.regularization_term,
+                log_curvature_regularization_term=inversion.log_det_curvature_reg_matrix_term,
+                log_regularization_term=inversion.log_det_regularization_matrix_term,
+                noise_normalization=noise_normalization)
 
             assert evidence == fit.evidence
             assert evidence == fit.figure_of_merit

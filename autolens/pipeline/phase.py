@@ -1,10 +1,12 @@
+import copy
+
 import numpy as np
 from astropy import cosmology as cosmo
 
 from autofit import conf
 from autofit.optimize import non_linear
 from autofit.tools import phase as autofit_phase
-from autofit.tools.phase_property import PhasePropertyCollection, PhaseProperty
+from autofit.tools.phase_property import PhasePropertyCollection
 from autolens import exc
 from autolens.data.array import mask as msk
 from autolens.data.plotters import ccd_plotters
@@ -260,6 +262,9 @@ class AbstractPhase(autofit_phase.AbstractPhase):
         @property
         def unmasked_model_image_of_planes_and_galaxies(self):
             return self.most_likely_fit.unmasked_model_image_of_planes_and_galaxies
+
+        def unmasked_image_for_galaxy(self, galaxy):
+            return self.most_likely_fit.unmasked_model_image_for_galaxy(galaxy)
 
 
 class Phase(AbstractPhase):
@@ -750,7 +755,7 @@ class PhaseImaging(Phase):
 
         def fit_for_tracers(self, tracer, padded_tracer):
             return lens_fit.LensDataFit.for_data_and_tracer(lens_data=self.lens_data, tracer=tracer,
-                                                      padded_tracer=padded_tracer)
+                                                            padded_tracer=padded_tracer)
 
         def check_positions_trace_within_threshold(self, instance):
 
@@ -1400,20 +1405,6 @@ class SensitivityPhase(PhaseImaging):
 
 
 class HyperGalaxyPhase(Phase):
-    hyper_galaxy = PhaseProperty("hyper_galaxy")
-
-    def __init__(self, phase_name, phase_folders=None):
-        """
-        Scales the noise associated with each galaxy to reduce overfitting.
-
-        Parameters
-        ----------
-        phase_name: str
-            The name of phase
-        """
-        super().__init__(phase_name=phase_name, phase_folders=phase_folders)
-        self.hyper_galaxy = g.HyperGalaxy
-
     class Analysis(non_linear.Analysis):
 
         def __init__(self, lens_data, model_image, galaxy_image):
@@ -1465,10 +1456,6 @@ class HyperGalaxyPhase(Phase):
         def describe(cls, instance):
             return "Running hyper galaxy fit for HyperGalaxy:\n{}".format(instance.hyper_galaxy)
 
-    class HyperGalaxyResults(object):
-        def __init__(self, results):
-            self.results = results
-
     def run(self, data, results=None, mask=None, positions=None):
         """
         Run a fit for each galaxy from the previous phase.
@@ -1488,12 +1475,17 @@ class HyperGalaxyPhase(Phase):
             A collection of results, with one item per a galaxy
         """
         model_image = results.last.unmasked_model_image
-        galaxy_images = results.last.unmasked_model_image_of_planes
+        galaxy_tuples = results.last.constant.name_instance_tuples_for_class(g.Galaxy)
 
-        results = []
+        results_copy = copy.copy(results.last)
 
-        for i, galaxy_image in enumerate(galaxy_images):
-            optimizer = self.optimizer.copy_with_name_extension(str(i))
-            results.append(optimizer.fit(self.__class__.Analysis(data, model_image, galaxy_image)))
+        for name, galaxy in galaxy_tuples:
+            optimizer = self.optimizer.copy_with_name_extension(name)
+            optimizer.variable.hyper_galaxy = g.HyperGalaxy
+            galaxy_image = results.last.unmasked_image_for_galaxy(galaxy)
+            optimizer.fit(self.__class__.Analysis(data, model_image, galaxy_image))
 
-        return self.__class__.HyperGalaxyResults(results)
+            getattr(results_copy.variable, name).hyper_galaxy = optimizer.variable.hyper_galaxy
+            getattr(results_copy.constant, name).hyper_galaxy = optimizer.constant.hyper_galaxy
+
+        return results_copy
