@@ -78,8 +78,8 @@ class LensTracerFit(LensDataFit):
     @property
     def unmasked_model_image(self):
         if self.padded_tracer is not None and not self.padded_tracer.has_pixelization:
-            return util.unmasked_blurred_image_from_padded_grid_stack_psf_and_unmasked_image(
-                padded_grid_stack=self.padded_tracer.image_plane.grid_stack, psf=self.psf,
+            return self.padded_tracer.image_plane.grid_stack.unmasked_blurred_image_from_padded_grid_stack_psf_and_unmasked_image(
+                psf=self.psf,
                 unmasked_image_1d=self.padded_tracer.image_plane_image_1d)
 
     @property

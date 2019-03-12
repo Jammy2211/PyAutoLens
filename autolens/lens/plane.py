@@ -390,6 +390,35 @@ class Plane(AbstractGriddedPlane):
         super(Plane, self).__init__(redshift=galaxies[0].redshift, galaxies=galaxies, grid_stack=grid_stack,
                                     border=border, compute_deflections=compute_deflections, cosmology=cosmology)
 
+    def unmasked_blurred_image_of_galaxies_from_psf_and_unmasked_1d_galaxy_images(self, padded_grid_stack, psf):
+        """This is a utility function for the function above, which performs the iteration over each plane's galaxies and \
+        computes each galaxy's unmasked blurred image.
+
+        Parameters
+        ----------
+        galaxies : [galaxy.Galaxy]
+            The list of galaxies the unmasked blurred images are computed using.
+        image_plane_image_1d_of_galaxies : [ndarray]
+            The list of each galaxies 1d image-plane image.
+        psf : ccd.PSF
+            The PSF of the image used for convolution.
+        """
+
+        unmasked_blurred_image_of_galaxies = []
+
+        for galaxy, image in zip(self.galaxies, self.image_plane_image_1d_of_galaxies):
+
+            if galaxy.has_pixelization:
+                unmasked_blurred_image_of_galaxy = None
+            else:
+                unmasked_blurred_image_of_galaxy = padded_grid_stack.unmasked_blurred_image_from_padded_grid_stack_psf_and_unmasked_image(
+                    psf=psf,
+                    unmasked_image_1d=image)
+
+            unmasked_blurred_image_of_galaxies.append(unmasked_blurred_image_of_galaxy)
+
+        return unmasked_blurred_image_of_galaxies
+
 
 class PlaneSlice(AbstractGriddedPlane):
 
