@@ -101,6 +101,24 @@ class GridStack(object):
         else:
             self.pix = pix
 
+    def unmasked_blurred_image_from_padded_grid_stack_psf_and_unmasked_image(self, psf, unmasked_image_1d):
+        """For a padded grid-stack and psf, compute an unmasked blurred image from an unmasked unblurred image.
+
+        This relies on using the lens data's padded-grid, which is a grid of (y,x) coordinates which extends over the \
+        entire image as opposed to just the masked region.
+
+        Parameters
+        ----------
+        psf : ccd.PSF
+            The PSF of the image used for convolution.
+        unmasked_image_1d : ndarray
+            The 1D unmasked image which is blurred.
+        """
+        blurred_image_1d = self.regular.convolve_array_1d_with_psf(padded_array_1d=unmasked_image_1d,
+                                                                   psf=psf)
+
+        return self.regular.scaled_array_2d_from_array_1d(array_1d=blurred_image_1d)
+
     @classmethod
     def grid_stack_from_mask_sub_grid_size_and_psf_shape(cls, mask, sub_grid_size, psf_shape):
         """Setup a grid-stack of grid_stack from a mask, sub-grid size and psf-shape.
@@ -317,6 +335,24 @@ class RegularGrid(np.ndarray):
             shape=self.mask.shape,
             pixel_scales=self.mask.pixel_scales),
             mask=self.mask)
+
+    def convolve_array_1d_with_psf(self, padded_array_1d, psf):
+        """Convolve a 1d padded array of values (e.g. intensities before PSF blurring) with a PSF, and then trim \
+        the convolved array to its original 2D shape.
+
+        Parameters
+        -----------
+        padded_array_1d: ndarray
+            A 1D array of values which were computed using the *PaddedRegularGrid*.
+        psf : ndarray
+            An array describing the PSF kernel of the image.
+        """
+        padded_array_2d = mapping_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(
+            array_1d=padded_array_1d, shape=self.mask.shape)
+        # noinspection PyUnresolvedReferences
+        blurred_padded_array_2d = psf.convolve(array=padded_array_2d)
+        return mapping_util.map_2d_array_to_masked_1d_array_from_array_2d_and_mask(array_2d=blurred_padded_array_2d,
+                                                                                   mask=np.full(self.mask.shape, False))
 
     @classmethod
     def from_mask(cls, mask):
@@ -865,24 +901,6 @@ class PaddedRegularGrid(RegularGrid):
         """
         padded_model_image_1d = self.convolve_array_1d_with_psf(padded_array_1d=padded_image_1d, psf=psf)
         return self.scaled_array_2d_from_array_1d(array_1d=padded_model_image_1d)
-
-    def convolve_array_1d_with_psf(self, padded_array_1d, psf):
-        """Convolve a 1d padded array of values (e.g. intensities before PSF blurring) with a PSF, and then trim \
-        the convolved array to its original 2D shape.
-
-        Parameters
-        -----------
-        padded_array_1d: ndarray
-            A 1D array of values which were computed using the *PaddedRegularGrid*.
-        psf : ndarray
-            An array describing the PSF kernel of the image.
-        """
-        padded_array_2d = mapping_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(
-            array_1d=padded_array_1d, shape=self.mask.shape)
-        # noinspection PyUnresolvedReferences
-        blurred_padded_array_2d = psf.convolve(array=padded_array_2d)
-        return mapping_util.map_2d_array_to_masked_1d_array_from_array_2d_and_mask(array_2d=blurred_padded_array_2d,
-                                                                                   mask=np.full(self.mask.shape, False))
 
     def array_2d_from_array_1d(self, padded_array_1d):
         """ Map a padded 1D array of values to its original 2D array, trimming all edge values.
