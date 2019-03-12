@@ -271,7 +271,7 @@ class TestUnmaskedModelImage:
                                                                                                     sub_grid_size=1,
                                                                                                     psf_shape=(3, 3))
 
-        unmasked_blurred_image = padded_grid_stack.unmasked_blurred_image_from_padded_grid_stack_psf_and_unmasked_image(
+        unmasked_blurred_image = padded_grid_stack.unmasked_blurred_image_from_psf_and_unmasked_image(
             psf=psf, unmasked_image_1d=np.ones(25))
 
         assert (unmasked_blurred_image == np.ones((3, 3))).all()
@@ -289,7 +289,7 @@ class TestUnmaskedModelImage:
                                                                                                     sub_grid_size=1,
                                                                                                     psf_shape=(3, 3))
 
-        unmasked_blurred_image = padded_grid_stack.unmasked_blurred_image_from_padded_grid_stack_psf_and_unmasked_image(
+        unmasked_blurred_image = padded_grid_stack.unmasked_blurred_image_from_psf_and_unmasked_image(
             psf=psf, unmasked_image_1d=np.ones(25))
 
         assert (unmasked_blurred_image == 3.0 * np.ones((3, 3))).all()
@@ -310,7 +310,7 @@ class TestUnmaskedModelImage:
         unmasked_image_1d = np.zeros(25)
         unmasked_image_1d[12] = 1.0
 
-        unmasked_blurred_image = padded_grid_stack.unmasked_blurred_image_from_padded_grid_stack_psf_and_unmasked_image(
+        unmasked_blurred_image = padded_grid_stack.unmasked_blurred_image_from_psf_and_unmasked_image(
             psf=psf, unmasked_image_1d=unmasked_image_1d)
 
         assert (unmasked_blurred_image == np.array([[0.0, 3.0, 0.0],

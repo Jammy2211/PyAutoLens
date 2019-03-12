@@ -140,7 +140,7 @@ def unmasked_blurred_image_of_planes_from_padded_grid_stack_and_psf(planes, padd
             unmasked_blurred_image_of_plane = None
         else:
             unmasked_blurred_image_of_plane = \
-                padded_grid_stack.unmasked_blurred_image_from_padded_grid_stack_psf_and_unmasked_image(
+                padded_grid_stack.unmasked_blurred_image_from_psf_and_unmasked_image(
 
                     psf=psf, unmasked_image_1d=plane.image_plane_image_1d)
 
@@ -174,7 +174,7 @@ def unmasked_blurred_image_of_planes_and_galaxies_from_padded_grid_stack_and_psf
     unmasked_blurred_image_of_planes_and_galaxies = []
 
     for plane in planes:
-        unmasked_blurred_image_of_galaxies = plane.unmasked_blurred_image_of_galaxies_from_psf_and_unmasked_1d_galaxy_images(
+        unmasked_blurred_image_of_galaxies = plane.unmasked_blurred_image_of_galaxies_from_psf(
             padded_grid_stack=padded_grid_stack,
             psf=psf)
 

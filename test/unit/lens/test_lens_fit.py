@@ -253,7 +253,7 @@ class TestLensProfileFit:
             assert (blurred_image_of_planes[1] == fit.model_image_of_planes[1]).all()
 
             unmasked_blurred_image = \
-                lens_data_manual.padded_grid_stack.unmasked_blurred_image_from_padded_grid_stack_psf_and_unmasked_image(
+                lens_data_manual.padded_grid_stack.unmasked_blurred_image_from_psf_and_unmasked_image(
                     psf=lens_data_manual.psf,
                     unmasked_image_1d=padded_tracer.image_plane_image_1d)
 
