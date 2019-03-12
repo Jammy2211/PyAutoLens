@@ -1474,9 +1474,9 @@ class HyperGalaxyPhase(Phase):
             A collection of results, with one item per a galaxy
         """
         model_image = results.last.unmasked_model_image
-        galaxy_tuples = results.last.instance.name_instance_tuples_for_class(g.Galaxy)
+        galaxy_tuples = results.last.constant.name_instance_tuples_for_class(g.Galaxy)
 
-        results_copy = copy.deepcopy(results.last)
+        results_copy = copy.copy(results.last)
 
         for name, galaxy in galaxy_tuples:
             optimizer = self.optimizer.copy_with_name_extension(name)
@@ -1485,6 +1485,6 @@ class HyperGalaxyPhase(Phase):
             optimizer.fit(self.__class__.Analysis(data, model_image, galaxy_image))
 
             getattr(results_copy.variable, name).hyper_galaxy = optimizer.variable.hyper_galaxy
-            getattr(results_copy.instance, name).hyper_galaxy = optimizer.instance.hyper_galaxy
+            getattr(results_copy.constant, name).hyper_galaxy = optimizer.constant.hyper_galaxy
 
         return results_copy

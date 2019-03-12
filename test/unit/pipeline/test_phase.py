@@ -182,7 +182,7 @@ class TestHyperGalaxyPhase(object):
         class MockOptimizer(object):
             def __init__(self):
                 self.extensions = []
-                self.instance = Instance()
+                self.constant = Instance()
                 self.variable = Instance()
 
             @classmethod
@@ -200,7 +200,8 @@ class TestHyperGalaxyPhase(object):
 
         class Result(object):
             def __init__(self):
-                self.instance = Instance()
+                self.constant\
+                    = Instance()
                 self.variable = Instance()
 
             def unmasked_image_for_galaxy(self, galaxy):
@@ -220,7 +221,7 @@ class TestHyperGalaxyPhase(object):
         assert isinstance(results, Result)
         assert optimizer.extensions == ["one", "two", "three"]
         assert results.variable.one.hyper_galaxy == g.HyperGalaxy
-        assert results.instance.one.hyper_galaxy == "hyper_galaxy"
+        assert results.constant.one.hyper_galaxy == "hyper_galaxy"
 
     def test__figure_of_merit_of_fit__noise_factor_0_so_no_noise_scaling(self, hyper_phase):
         hyper_lens_data = MockLensData(ccd_data=np.ones(3), noise_map=np.ones(3), mask=np.full(3, False))
