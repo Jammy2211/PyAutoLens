@@ -406,7 +406,7 @@ class Plane(AbstractGriddedPlane):
             psf, image) if not galaxy.has_pixelization else None for galaxy, image in
                 zip(self.galaxies, self.image_plane_image_1d_of_galaxies)]
 
-    def unmasked_blurred_image_of_galaxy_with_psf(self, padded_grid_stack, galaxy, psf):
+    def unmasked_blurred_image_of_galaxy_with_grid_stack_psf(self, galaxy, padded_grid_stack, psf):
         return padded_grid_stack.unmasked_blurred_image_from_psf_and_unmasked_image(
             psf,
             self.image_plane_image_1d_of_galaxy(

@@ -140,11 +140,7 @@ class TestImageForGalaxy(object):
         fit = lens_fit.LensDataFit.for_data_and_tracer(lens_data=lens_data_manual, tracer=tracer,
                                                        padded_tracer=padded_tracer)
 
-        print(len(fit.unmasked_model_image_of_planes_and_galaxies))
-        print(len(fit.unmasked_model_image_of_planes_and_galaxies[0]))
-        print(fit.unmasked_model_image_of_planes_and_galaxies[0])
-
-        # print(fit.)
+        assert fit.unmasked_model_image_of_planes_and_galaxies[0][0] == fit.unmasked_model_image_for_galaxy(g0)
 
 
 class TestLensProfileFit:
