@@ -36,31 +36,31 @@ def plot_intensities(
         mask_pointsize=mask_pointsize, position_pointsize=position_pointsize, grid_pointsize=grid_pointsize,
         output_path=output_path, output_format=output_format, output_filename=output_filename)
 
-def plot_surface_density(
+def plot_convergence(
         mass_profile, grid, mask=None, extract_array_from_mask=False, zoom_around_mask=False, positions=None, 
         as_subplot=False,
         units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
         cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
         cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
-        title='Surface Density', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
+        title='Convergence', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
         mask_pointsize=10, position_pointsize=10.0, grid_pointsize=1,
-        output_path=None, output_format='show', output_filename='surface_density'):
-    """Plot the surface density of a mass profile, on a regular grid of (y,x) coordinates.
+        output_path=None, output_format='show', output_filename='convergence'):
+    """Plot the convergence of a mass profile, on a regular grid of (y,x) coordinates.
 
     Set *autolens.hyper.array.plotters.array_plotters* for a description of all innput parameters not described below.
 
     Parameters
     -----------
     mass_profile : model.profiles.mass_profiles.MassProfile
-        The mass profile whose surface density is plotted.
+        The mass profile whose convergence is plotted.
     grid : ndarray or hyper.array.grid_stacks.RegularGrid
         The (y,x) coordinates of the grid, in an array of shape (total_coordinates, 2)
     """
-    surface_density = mass_profile.surface_density_from_grid(grid=grid)
-    surface_density = grid.scaled_array_2d_from_array_1d(surface_density)
+    convergence = mass_profile.convergence_from_grid(grid=grid)
+    convergence = grid.scaled_array_2d_from_array_1d(convergence)
 
     array_plotters.plot_array(
-        array=surface_density, mask=mask, extract_array_from_mask=extract_array_from_mask,
+        array=convergence, mask=mask, extract_array_from_mask=extract_array_from_mask,
         zoom_around_mask=zoom_around_mask, positions=positions, as_subplot=as_subplot,
         units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
         cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
