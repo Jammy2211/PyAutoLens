@@ -28,11 +28,11 @@ def intensities_of_galaxies_from_grid(grid, galaxies):
 
 
 @grids.sub_to_image_grid
-def surface_density_of_galaxies_from_grid(grid, galaxies):
-    """Compute the surface density of a list of galaxies from an input grid, by summing the individual surface density \
+def convergence_of_galaxies_from_grid(grid, galaxies):
+    """Compute the convergence of a list of galaxies from an input grid, by summing the individual convergence \
     of each galaxy's mass profile.
 
-    If the input grid is a *grids.SubGrid*, the surface-density is calculated on the sub-grid and binned-up to the \
+    If the input grid is a *grids.SubGrid*, the convergence is calculated on the sub-grid and binned-up to the \
     original regular grid by taking the mean value of every set of sub-pixels.
 
     If no galaxies are entered into the function, an array of all zeros is returned.
@@ -41,12 +41,12 @@ def surface_density_of_galaxies_from_grid(grid, galaxies):
     -----------
     grid : RegularGrid
         The grid (regular or sub) of (y,x) arc-second coordinates at the centre of every unmasked pixel which the \
-        surface density is calculated on.
+        convergence is calculated on.
     galaxies : [galaxy.Galaxy]
-        The galaxies whose mass profiles are used to compute the surface densities.
+        The galaxies whose mass profiles are used to compute the convergence.
     """
     if galaxies:
-        return sum(map(lambda g: g.surface_density_from_grid(grid), galaxies))
+        return sum(map(lambda g: g.convergence_from_grid(grid), galaxies))
     else:
         return np.full((grid.shape[0]), 0.0)
 
@@ -92,18 +92,16 @@ def deflections_of_galaxies_from_grid(grid, galaxies):
     galaxies : [galaxy.Galaxy]
         The galaxies whose mass profiles are used to compute the surface densities.
     """
-    if galaxies:
+    if len(galaxies) > 0:
         deflections = sum(map(lambda galaxy: galaxy.deflections_from_grid(grid), galaxies))
-        if isinstance(grid, grids.SubGrid):
-            return np.asarray([grid.regular_data_1d_from_sub_data_1d(deflections[:, 0]),
-                               grid.regular_data_1d_from_sub_data_1d(deflections[:, 1])]).T
-        return sum(map(lambda galaxy: galaxy.deflections_from_grid(grid), galaxies))
     else:
         deflections = np.full((grid.shape[0], 2), 0.0)
-        if isinstance(grid, grids.SubGrid):
-            return np.asarray([grid.regular_data_1d_from_sub_data_1d(deflections[:, 0]),
-                               grid.regular_data_1d_from_sub_data_1d(deflections[:, 1])]).T
-        return deflections
+
+    if isinstance(grid, grids.SubGrid):
+        return np.asarray([grid.regular_data_1d_from_sub_data_1d(deflections[:, 0]),
+                           grid.regular_data_1d_from_sub_data_1d(deflections[:, 1])]).T
+
+    return deflections
 
 
 def deflections_of_galaxies_from_sub_grid(sub_grid, galaxies):

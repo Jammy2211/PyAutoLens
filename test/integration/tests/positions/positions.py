@@ -11,9 +11,9 @@ from test.integration import integration_util
 test_type = 'positions'
 test_name = "positions_phase"
 
-path = '{}/../../'.format(os.path.dirname(os.path.realpath(__file__)))
-output_path = path+'output/'+test_type
-config_path = path+'config'
+test_path = '{}/../../'.format(os.path.dirname(os.path.realpath(__file__)))
+output_path = test_path + 'output/'
+config_path = test_path + 'config'
 conf.instance = conf.Config(config_path=config_path, output_path=output_path)
 
 def pipeline():
@@ -27,8 +27,9 @@ def pipeline():
 
 def make_pipeline(test_name):
 
-    phase1 = ph.PhasePositions(lens_galaxies=dict(lens=gm.GalaxyModel(mass=mp.SphericalIsothermal)),
-                               optimizer_class=nl.MultiNest, phase_name="{}/phase1".format(test_name))
+    phase1 = ph.PhasePositions(phase_name="phase1", phase_folders=[test_type, test_name],
+                               lens_galaxies=dict(lens=gm.GalaxyModel(mass=mp.SphericalIsothermal)),
+                               optimizer_class=nl.MultiNest)
 
     phase1.optimizer.const_efficiency_mode = True
     phase1.optimizer.n_live_points = 20

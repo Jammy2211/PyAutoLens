@@ -1,5 +1,6 @@
 import numpy as np
 
+
 class MockGalaxy(object):
 
     def __init__(self, value, shape=1):
@@ -9,7 +10,7 @@ class MockGalaxy(object):
     def intensities_from_grid(self, grid):
         return np.full(shape=self.shape, fill_value=self.value)
 
-    def surface_density_from_grid(self, grid):
+    def convergence_from_grid(self, grid):
         return np.full(shape=self.shape, fill_value=self.value)
 
     def potential_from_grid(self, grid):
@@ -26,10 +27,10 @@ class MockHyperGalaxy(object):
         self.noise_factor = noise_factor
         self.noise_power = noise_power
 
-    def contributions_from_hyper_images(self, hyper_model_image, hyper_galaxy_image, hyper_minimum_value):
-        contributions = hyper_galaxy_image / (hyper_model_image + self.contribution_factor)
+    def contributions_from_model_image_and_galaxy_image(self, model_image, galaxy_image, minimum_value):
+        contributions = galaxy_image / (model_image + self.contribution_factor)
         contributions = contributions / np.max(contributions)
-        contributions[contributions < hyper_minimum_value] = 0.0
+        contributions[contributions < minimum_value] = 0.0
         return contributions
 
     def hyper_noise_from_contributions(self, noise_map, contributions):

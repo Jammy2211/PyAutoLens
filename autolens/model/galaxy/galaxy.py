@@ -1,6 +1,5 @@
 from itertools import count
 
-from scipy.optimize import root_scalar
 import numpy as np
 
 from autolens import exc
@@ -42,7 +41,7 @@ class Galaxy(object):
         pixelization : inversion.Pixelization
             The pixelization of the galaxy used to reconstruct an observed image using an inversion.
         regularization : inversion.Regularization
-            The imageization of the pixel-grid used to reconstruct an observed regular using an inversion.
+            The regularization of the pixel-grid used to reconstruct an observed regular using an inversion.
         """
         self.redshift = redshift
 
@@ -109,6 +108,14 @@ class Galaxy(object):
             string += "\nMass Profiles:\n{}".format("\n".join(map(str, self.mass_profiles)))
         return string
 
+    def __eq__(self, other):
+        return all((isinstance(other, Galaxy),
+                    self.pixelization == other.pixelization,
+                    self.redshift == other.redshift,
+                    self.hyper_galaxy == other.hyper_galaxy,
+                    self.light_profiles == other.light_profiles,
+                    self.mass_profiles == other.mass_profiles))
+
     def intensities_from_grid(self, grid):
         """Calculate the summed intensities of all of the galaxy's light profiles using a grid of Cartesian (y,x) \
         coordinates.
@@ -172,8 +179,8 @@ class Galaxy(object):
         else:
             return None
 
-    def surface_density_from_grid(self, grid):
-        """Compute the summed surface density of the galaxy's mass profiles using a grid of Cartesian (y,x) \
+    def convergence_from_grid(self, grid):
+        """Compute the summed convergence of the galaxy's mass profiles using a grid of Cartesian (y,x) \
         coordinates.
 
         If the galaxy has no mass profiles, a grid of zeros is returned.
@@ -186,7 +193,7 @@ class Galaxy(object):
             The (y, x) coordinates in the original reference frame of the grid.
         """
         if self.has_mass_profile:
-            return sum(map(lambda p: p.surface_density_from_grid(grid), self.mass_profiles))
+            return sum(map(lambda p: p.convergence_from_grid(grid), self.mass_profiles))
         else:
             return np.zeros((grid.shape[0],))
 
@@ -226,13 +233,13 @@ class Galaxy(object):
         else:
             return np.full((grid.shape[0], 2), 0.0)
 
-    def mass_within_circle(self, radius, conversion_factor=1.0):
-        """Compute the total mass of the galaxy's mass profiles within a circle of specified radius.
+    def angular_mass_within_circle(self, radius, conversion_factor=1.0):
+        """Compute the total angular mass of the galaxy's mass profiles within a circle of specified radius.
 
-        The value returned by this integral is dimensionless, and a conversion factor can be specified to convert it \
-        to a physical value (e.g. the critical surface mass density).
+        The value returned by this integral is in angular units, however a conversion factor can be specified to \
+        convert it to a physical value (e.g. the critical surface mass density).
 
-        See *profiles.mass_profiles.mass_within_circle* for details of how this is performed.
+        See *profiles.mass_profiles.angular_mass_within_circle* for details of how this is performed.
 
         Parameters
         ----------
@@ -243,17 +250,17 @@ class Galaxy(object):
             mass density).
         """
         if self.has_mass_profile:
-            return sum(map(lambda p: p.mass_within_circle(radius, conversion_factor), self.mass_profiles))
+            return sum(map(lambda p: p.angular_mass_within_circle(radius, conversion_factor), self.mass_profiles))
         else:
             return None
 
-    def mass_within_ellipse(self, major_axis, conversion_factor=1.0):
-        """Compute the total mass of the galaxy's mass profiles within an ellipse of specified major_axis.
+    def angular_mass_within_ellipse(self, major_axis, conversion_factor=1.0):
+        """Compute the total angular mass of the galaxy's mass profiles within an ellipse of specified major_axis.
 
-        The value returned by this integral is dimensionless, and a conversion factor can be specified to convert it \
-        to a physical value (e.g. the critical surface mass density).
+        The value returned by this integral is in angular units, however a conversion factor can be specified to \
+        convert it to a physical value (e.g. the critical surface mass density).
 
-        See *profiles.mass_profiles.mass_within_ellipses* for details of how this is performed.
+        See *profiles.mass_profiles.angualr_mass_within_ellipse* for details of how this is performed.
 
         Parameters
         ----------
@@ -264,7 +271,7 @@ class Galaxy(object):
             mass density).
         """
         if self.has_mass_profile:
-            return sum(map(lambda p: p.mass_within_ellipse(major_axis, conversion_factor), self.mass_profiles))
+            return sum(map(lambda p: p.angular_mass_within_ellipse(major_axis, conversion_factor), self.mass_profiles))
         else:
             return None
 
@@ -288,10 +295,10 @@ class HyperGalaxy(object):
         """ If a *Galaxy* is given a *HyperGalaxy* as an attribute, the noise-map in the regions of the image that the \
         galaxy is located will be scaled, to prevent over-fitting of the galaxy. 
         
-        This is performed by first computing the hyper-galalxy's 'contribution-map', which determines the fraction of \ 
+        This is performed by first computing the hyper-galaxy's 'contribution-map', which determines the fraction of \
         flux in every pixel of the image that can be associated with this particular hyper-galaxy. This is computed \
-        using  hyper-hyper set (e.g. fitting.fit_data.FitDataHyper), which includes  best-fit unblurred_image_1d of the \
-        galaxy's light from a previous analysis phase. 
+        using  hyper-hyper set (e.g. fitting.fit_data.FitDataHyper), which includes  best-fit unblurred_image_1d of \
+        the galaxy's light from a previous analysis phase.
          
         The *HyperGalaxy* class contains the hyper-parameters which are associated with this galaxy for scaling the \
         noise-map.
@@ -311,7 +318,12 @@ class HyperGalaxy(object):
 
         self.component_number = next(self._ids)
 
-    def contributions_from_hyper_images(self, hyper_model_image, hyper_galaxy_image, hyper_minimum_value):
+    def hyper_noise_from_model_image_galaxy_image_and_noise_map(self, model_image, galaxy_image, noise_map,
+                                                                minimum_value=0.0):
+        contributions = self.contributions_from_model_image_and_galaxy_image(model_image, galaxy_image, minimum_value)
+        return self.hyper_noise_from_contributions(noise_map, contributions)
+
+    def contributions_from_model_image_and_galaxy_image(self, model_image, galaxy_image, minimum_value=0.0):
         """Compute the contribution map of a galaxy, which represents the fraction of flux in each pixel that the \
         galaxy is attributed to contain, scaled to the *contribution_factor* hyper-parameter.
 
@@ -320,17 +332,17 @@ class HyperGalaxy(object):
 
         Parameters
         -----------
-        hyper_model_image : ndarray
+        model_image : ndarray
             The best-fit model image to the observed image from a previous analysis phase. This provides the \
             total light attributed to each image pixel by the model.
-        hyper_galaxy_image : ndarray
+        galaxy_image : ndarray
             A model image of the galaxy (from light profiles or an inversion) from a previous analysis phase.
-        hyper_minimum_value : float
+        minimum_value : float
             The minimum contribution value a pixel must contain to not be rounded to 0.
         """
-        contributions = np.divide(hyper_galaxy_image, np.add(hyper_model_image, self.contribution_factor))
+        contributions = np.divide(galaxy_image, np.add(model_image, self.contribution_factor))
         contributions = np.divide(contributions, np.max(contributions))
-        contributions[contributions < hyper_minimum_value] = 0.0
+        contributions[contributions < minimum_value] = 0.0
         return contributions
 
     def hyper_noise_from_contributions(self, noise_map, contributions):

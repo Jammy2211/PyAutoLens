@@ -94,6 +94,9 @@ class GeometryProfile(object):
         return '{}\n{}'.format(self.__class__.__name__,
                                '\n'.join(["{}: {}".format(k, v) for k, v in self.__dict__.items()]))
 
+    def __eq__(self, other):
+        return self.__dict__ == other.__dict__
+
 
 class SphericalProfile(GeometryProfile):
 

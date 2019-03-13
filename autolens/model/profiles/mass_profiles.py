@@ -7,7 +7,6 @@ from scipy import LowLevelCallable
 from scipy import special
 from scipy.integrate import quad
 from pyquad import quad_grid
-from astropy import constants
 
 from scipy.optimize import root_scalar
 from autolens import decorator_util
@@ -62,10 +61,10 @@ def jit_integrand(integrand_function):
 
 class MassProfile(object):
 
-    def surface_density_func(self, eta):
+    def convergence_func(self, eta):
         raise NotImplementedError("surface_density_func should be overridden")
 
-    def surface_density_from_grid(self, grid):
+    def convergence_from_grid(self, grid):
         pass
         # raise NotImplementedError("surface_density_from_grid should be overridden")
 
@@ -76,10 +75,10 @@ class MassProfile(object):
     def deflections_from_grid(self, grid):
         raise NotImplementedError("deflections_from_grid should be overridden")
 
-    def mass_within_circle(self, radius, conversion_factor):
+    def angular_mass_within_circle(self, radius, conversion_factor):
         raise NotImplementedError()
 
-    def mass_within_ellipse(self, major_axis, conversion_factor):
+    def angular_mass_within_ellipse(self, major_axis, conversion_factor):
         raise NotImplementedError()
 
 
@@ -128,12 +127,12 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
         self.axis_ratio = axis_ratio
         self.phi = phi
 
-    def mass_within_circle(self, radius, conversion_factor=1.0):
-        """ Compute the mass profiles's total mass within a circle of specified radius. This is performed via \
-        integration of the surface density profiles and is centred on the mass profile.
+    def angular_mass_within_circle(self, radius, conversion_factor=1.0):
+        """ Integrate the mass profiles's convergence profile to compute the total angular mass within a circle of \
+        specified radius. This is centred on the mass profile.
 
-        The value returned by this integral is dimensionless, and a conversion factor can be specified to convert it \
-        to a physical value (e.g. the critical surface mass density).
+        The value returned by this integral is in angular units, however a conversion factor can be specified to \
+        convert it to a physical value (e.g. the critical surface mass density).
 
         Parameters
         ----------
@@ -145,13 +144,12 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
         """
         return conversion_factor * quad(self.mass_integral, a=0.0, b=radius, args=(1.0,))[0]
 
-    def mass_within_ellipse(self, major_axis, conversion_factor=1.0):
-        """ Compute the mass profiles's total dimensionless mass within an ellipse of specified radius. This is \
-        performed via integration of the surface density profiles and is centred and rotationally aligned with the \
-        mass profile.
+    def angular_mass_within_ellipse(self, major_axis, conversion_factor=1.0):
+        """ Integrate the mass profiles's convergence profile to compute the total angular mass within an ellipse of \
+        specified major axis. This is centred on the mass profile.
 
-        The value returned by this integral is dimensionless, and a conversion factor can be specified to convert it \
-        to a physical value (e.g. the critical surface mass density).
+        The value returned by this integral is in angular units, however a conversion factor can be specified to \
+        convert it to a physical value (e.g. the critical surface mass density).
 
         Parameters
         ----------
@@ -167,7 +165,7 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
         """Routine to integrate an elliptical light profiles - set axis ratio to 1 to compute the luminosity within a \
         circle"""
         r = x * axis_ratio
-        return 2 * np.pi * r * self.surface_density_func(x)
+        return 2 * np.pi * r * self.convergence_func(x)
 
     def density_between_circular_annuli(self, inner_annuli_radius, outer_annuli_radius, conversion_factor=1.0):
         """Calculate the mass between two circular annuli and compute the density by dividing by the annuli surface
@@ -185,12 +183,12 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
             The radius of the outer annulus inside of which the density is estimated.
         """
         annuli_area = (np.pi * outer_annuli_radius ** 2.0) - (np.pi * inner_annuli_radius ** 2.0)
-        return (self.mass_within_circle(radius=outer_annuli_radius, conversion_factor=conversion_factor) -
-                self.mass_within_circle(radius=inner_annuli_radius, conversion_factor=conversion_factor)) \
+        return (self.angular_mass_within_circle(radius=outer_annuli_radius, conversion_factor=conversion_factor) -
+                self.angular_mass_within_circle(radius=inner_annuli_radius, conversion_factor=conversion_factor)) \
                / annuli_area
 
     @property
-    def radius_of_average_critical_curve_in_circle(self):
+    def radius_where_average_convergence_in_circle_is_one(self):
         """The radius a critical curve forms for this mass profile, e.g. where the mean convergence is equal to 1.0.
 
          In case of ellipitical mass profiles, the 'average' critical curve is used, whereby the convergence is \
@@ -199,9 +197,8 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
          This radius corresponds to the Einstein radius of the mass profile, and is a property of a number of \
          mass profiles below.
          """
-
         def func(radius):
-            return self.mass_within_circle(radius=radius, conversion_factor=1.0) - \
+            return self.angular_mass_within_circle(radius=radius, conversion_factor=1.0) - \
                    np.pi * radius ** 2.0
 
         return self.ellipticity_rescale * root_scalar(func, bracket=[1e-4, 1000.0]).root
@@ -244,8 +241,8 @@ class EllipticalCoredPowerLaw(EllipticalMassProfile, MassProfile):
         return ((3 - self.slope) / (1 + self.axis_ratio)) * self.einstein_radius ** (self.slope - 1)
 
     @geometry_profiles.transform_grid
-    def surface_density_from_grid(self, grid):
-        """ Calculate the projected surface density in dimensionless units at a given set of gridded coordinates.
+    def convergence_from_grid(self, grid):
+        """ Calculate the projected convergence at a given set of arc-second gridded coordinates.
 
         Parameters
         ----------
@@ -258,14 +255,14 @@ class EllipticalCoredPowerLaw(EllipticalMassProfile, MassProfile):
         grid_eta = self.grid_to_elliptical_radii(grid)
 
         for i in range(grid.shape[0]):
-            surface_density_grid[i] = self.surface_density_func(grid_eta[i])
+            surface_density_grid[i] = self.convergence_func(grid_eta[i])
 
         return surface_density_grid
 
     @geometry_profiles.transform_grid
     def potential_from_grid(self, grid):
         """
-        Calculate the potential at a given set of gridded coordinates.
+        Calculate the potential at a given set of arc-second gridded coordinates.
 
         Parameters
         ----------
@@ -283,7 +280,7 @@ class EllipticalCoredPowerLaw(EllipticalMassProfile, MassProfile):
     @geometry_profiles.transform_grid
     def deflections_from_grid(self, grid):
         """
-        Calculate the deflection angles at a given set of gridded coordinates.
+        Calculate the deflection angles at a given set of arc-second gridded coordinates.
 
         Parameters
         ----------
@@ -307,7 +304,7 @@ class EllipticalCoredPowerLaw(EllipticalMassProfile, MassProfile):
 
         return self.rotate_grid_from_profile(np.multiply(1.0, np.vstack((deflection_y, deflection_x)).T))
 
-    def surface_density_func(self, radius):
+    def convergence_func(self, radius):
         return self.einstein_radius_rescaled * (self.core_radius ** 2 + radius ** 2) ** (-(self.slope - 1) / 2.0)
 
     @staticmethod
@@ -350,7 +347,7 @@ class SphericalCoredPowerLaw(EllipticalCoredPowerLaw):
     @geometry_profiles.transform_grid
     def deflections_from_grid(self, grid):
         """
-        Calculate the deflection angles at a given set of gridded coordinates.
+        Calculate the deflection angles at a given set of arc-second gridded coordinates.
 
         Parameters
         ----------
@@ -386,7 +383,7 @@ class EllipticalPowerLaw(EllipticalCoredPowerLaw):
 
         super(EllipticalPowerLaw, self).__init__(centre, axis_ratio, phi, einstein_radius, slope, 0.0)
 
-    def surface_density_func(self, radius):
+    def convergence_func(self, radius):
         if radius > 0.0:
             return self.einstein_radius_rescaled * radius ** (-(self.slope - 1))
         else:
@@ -496,7 +493,7 @@ class EllipticalIsothermal(EllipticalPowerLaw):
     @geometry_profiles.transform_grid
     def deflections_from_grid(self, grid):
         """
-        Calculate the deflection angles at a given set of gridded coordinates.
+        Calculate the deflection angles at a given set of arc-second gridded coordinates.
 
         For coordinates (0.0, 0.0) the analytic calculation of the deflection angle gives a NaN. Therefore, \
         coordinates at (0.0, 0.0) are shifted slightly to (1.0e-8, 1.0e-8).
@@ -540,7 +537,7 @@ class SphericalIsothermal(EllipticalIsothermal):
     @geometry_profiles.transform_grid
     def potential_from_grid(self, grid):
         """
-        Calculate the potential at a given set of gridded coordinates.
+        Calculate the potential at a given set of arc-second gridded coordinates.
 
         Parameters
         ----------
@@ -553,7 +550,7 @@ class SphericalIsothermal(EllipticalIsothermal):
     @geometry_profiles.transform_grid
     def deflections_from_grid(self, grid):
         """
-        Calculate the deflection angles at a given set of gridded coordinates.
+        Calculate the deflection angles at a given set of arc-second gridded coordinates.
 
         Parameters
         ----------
@@ -616,8 +613,8 @@ class AbstractEllipticalGeneralizedNFW(EllipticalMassProfile, MassProfile):
         return eta_min, eta_max, minimum_log_eta, maximum_log_eta, bin_size
 
     @geometry_profiles.transform_grid
-    def surface_density_from_grid(self, grid):
-        """ Calculate the projected surface density in dimensionless units at a given set of gridded coordinates.
+    def convergence_from_grid(self, grid):
+        """ Calculate the projected convergence at a given set of arc-second gridded coordinates.
 
         Parameters
         ----------
@@ -630,7 +627,7 @@ class AbstractEllipticalGeneralizedNFW(EllipticalMassProfile, MassProfile):
         grid_eta = self.grid_to_elliptical_radii(grid)
 
         for i in range(grid.shape[0]):
-            surface_density_grid[i] = self.surface_density_func(grid_eta[i])
+            surface_density_grid[i] = self.convergence_func(grid_eta[i])
 
         return surface_density_grid
 
@@ -640,7 +637,7 @@ class AbstractEllipticalGeneralizedNFW(EllipticalMassProfile, MassProfile):
 
     @property
     def einstein_radius(self):
-        return self.radius_of_average_critical_curve_in_circle
+        return self.radius_where_average_convergence_in_circle_is_one
 
 
 class EllipticalGeneralizedNFW(AbstractEllipticalGeneralizedNFW):
@@ -648,7 +645,7 @@ class EllipticalGeneralizedNFW(AbstractEllipticalGeneralizedNFW):
     @geometry_profiles.transform_grid
     def potential_from_grid(self, grid, tabulate_bins=1000):
         """
-        Calculate the potential at a given set of gridded coordinates.
+        Calculate the potential at a given set of arc-second gridded coordinates.
 
         Parameters
         ----------
@@ -695,7 +692,7 @@ class EllipticalGeneralizedNFW(AbstractEllipticalGeneralizedNFW):
     @geometry_profiles.transform_grid
     def deflections_from_grid(self, grid, tabulate_bins=1000):
         """
-        Calculate the deflection angles at a given set of gridded coordinates.
+        Calculate the deflection angles at a given set of arc-second gridded coordinates.
 
         Parameters
         ----------
@@ -738,7 +735,7 @@ class EllipticalGeneralizedNFW(AbstractEllipticalGeneralizedNFW):
 
         return self.rotate_grid_from_profile(np.multiply(1.0, np.vstack((deflection_y, deflection_x)).T))
 
-    def surface_density_func(self, radius):
+    def convergence_func(self, radius):
 
         def integral_y(y, eta):
             return (y + eta) ** (self.inner_slope - 4) * (1 - np.sqrt(1 - y ** 2))
@@ -804,7 +801,7 @@ class SphericalGeneralizedNFW(EllipticalGeneralizedNFW):
     @geometry_profiles.transform_grid
     def deflections_from_grid(self, grid, **kwargs):
         """
-        Calculate the deflection angles at a given set of gridded coordinates.
+        Calculate the deflection angles at a given set of arc-second gridded coordinates.
 
         Parameters
         ----------
@@ -868,7 +865,7 @@ class EllipticalNFW(AbstractEllipticalGeneralizedNFW):
     @geometry_profiles.transform_grid
     def potential_from_grid(self, grid):
         """
-        Calculate the potential at a given set of gridded coordinates.
+        Calculate the potential at a given set of arc-second gridded coordinates.
 
         Parameters
         ----------
@@ -886,7 +883,7 @@ class EllipticalNFW(AbstractEllipticalGeneralizedNFW):
     @geometry_profiles.transform_grid
     def deflections_from_grid(self, grid):
         """
-        Calculate the deflection angles at a given set of gridded coordinates.
+        Calculate the deflection angles at a given set of arc-second gridded coordinates.
 
         Parameters
         ----------
@@ -907,7 +904,7 @@ class EllipticalNFW(AbstractEllipticalGeneralizedNFW):
 
         return self.rotate_grid_from_profile(np.multiply(1.0, np.vstack((deflection_y, deflection_x)).T))
 
-    def surface_density_func(self, radius):
+    def convergence_func(self, radius):
         radius = (1.0 / self.scale_radius) * radius
         return 2.0 * self.kappa_s * (1 - self.coord_func(radius)) / (radius ** 2 - 1)
 
@@ -968,7 +965,7 @@ class SphericalNFW(EllipticalNFW):
     @geometry_profiles.transform_grid
     def potential_from_grid(self, grid):
         """
-        Calculate the potential at a given set of gridded coordinates.
+        Calculate the potential at a given set of arc-second gridded coordinates.
 
         Parameters
         ----------
@@ -981,7 +978,7 @@ class SphericalNFW(EllipticalNFW):
     @geometry_profiles.transform_grid
     def deflections_from_grid(self, grid):
         """
-        Calculate the deflection angles at a given set of gridded coordinates.
+        Calculate the deflection angles at a given set of arc-second gridded coordinates.
 
         Parameters
         ----------
@@ -1041,17 +1038,17 @@ class AbstractEllipticalSersic(light_profiles.AbstractEllipticalSersic, Elliptic
         self.mass_to_light_ratio = mass_to_light_ratio
 
     @geometry_profiles.transform_grid
-    def surface_density_from_grid(self, grid):
-        """ Calculate the projected surface density in dimensionless units at a given set of gridded coordinates.
+    def convergence_from_grid(self, grid):
+        """ Calculate the projected convergence at a given set of arc-second gridded coordinates.
 
         Parameters
         ----------
         grid : grids.RegularGrid
             The grid of (y,x) arc-second coordinates the surface density is computed on.
         """
-        return self.surface_density_func(self.grid_to_eccentric_radii(grid))
+        return self.convergence_func(self.grid_to_eccentric_radii(grid))
 
-    def surface_density_func(self, radius):
+    def convergence_func(self, radius):
         return self.mass_to_light_ratio * self.intensity_at_radius(radius)
 
     @property
@@ -1060,7 +1057,7 @@ class AbstractEllipticalSersic(light_profiles.AbstractEllipticalSersic, Elliptic
 
     @property
     def einstein_radius(self):
-        return self.radius_of_average_critical_curve_in_circle
+        return self.radius_where_average_convergence_in_circle_is_one
 
 
 class EllipticalSersic(AbstractEllipticalSersic):
@@ -1080,7 +1077,7 @@ class EllipticalSersic(AbstractEllipticalSersic):
     @geometry_profiles.transform_grid
     def deflections_from_grid(self, grid):
         """
-        Calculate the deflection angles at a given set of gridded coordinates.
+        Calculate the deflection angles at a given set of arc-second gridded coordinates.
 
         Parameters
         ----------
@@ -1260,22 +1257,22 @@ class EllipticalSersicRadialGradient(AbstractEllipticalSersic):
         self.mass_to_light_gradient = mass_to_light_gradient
 
     @geometry_profiles.transform_grid
-    def surface_density_from_grid(self, grid):
-        """ Calculate the projected surface density in dimensionless units at a given set of gridded coordinates.
+    def convergence_from_grid(self, grid):
+        """ Calculate the projected convergence at a given set of arc-second gridded coordinates.
 
         Parameters
         ----------
         grid : grids.RegularGrid
             The grid of (y,x) arc-second coordinates the surface density is computed on.
         """
-        return self.surface_density_func(self.grid_to_eccentric_radii(grid))
+        return self.convergence_func(self.grid_to_eccentric_radii(grid))
 
     @grids.grid_interpolate
     #@geometry_profiles.cache
     @geometry_profiles.transform_grid
     def deflections_from_grid(self, grid):
         """
-        Calculate the deflection angles at a given set of gridded coordinates.
+        Calculate the deflection angles at a given set of arc-second gridded coordinates.
 
         Parameters
         ----------
@@ -1299,7 +1296,7 @@ class EllipticalSersicRadialGradient(AbstractEllipticalSersic):
 
         return self.rotate_grid_from_profile(np.multiply(1.0, np.vstack((deflection_y, deflection_x)).T))
 
-    def surface_density_func(self, radius):
+    def convergence_func(self, radius):
         return (self.mass_to_light_ratio * (
                 ((self.axis_ratio *
                   radius) /
@@ -1365,13 +1362,13 @@ class ExternalShear(geometry_profiles.EllipticalProfile, MassProfile):
     def einstein_radius(self):
         return 0.0
 
-    def mass_within_circle(self, radius, conversion_factor):
+    def angular_mass_within_circle(self, radius, conversion_factor):
         return 0.0
 
-    def mass_within_ellipse(self, radius, conversion_factor):
+    def angular_mass_within_ellipse(self, radius, conversion_factor):
         return 0.0
 
-    def surface_density_from_grid(self, grid):
+    def convergence_from_grid(self, grid):
         return np.zeros((grid.shape[0],))
 
     def potential_from_grid(self, grid):
@@ -1380,7 +1377,7 @@ class ExternalShear(geometry_profiles.EllipticalProfile, MassProfile):
     @geometry_profiles.transform_grid
     def deflections_from_grid(self, grid):
         """
-        Calculate the deflection angles at a given set of gridded coordinates.
+        Calculate the deflection angles at a given set of arc-second gridded coordinates.
 
         Parameters
         ----------

@@ -14,9 +14,9 @@ from test.integration import integration_util
 test_type = 'galaxy_fit'
 test_name = "potential"
 
-path = '{}/../../'.format(os.path.dirname(os.path.realpath(__file__)))
-output_path = path+'output/'+test_type
-config_path = path+'config'
+test_path = '{}/../../'.format(os.path.dirname(os.path.realpath(__file__)))
+output_path = test_path + 'output/'
+config_path = test_path + 'config'
 conf.instance = conf.Config(config_path=config_path, output_path=output_path)
 
 def phase():

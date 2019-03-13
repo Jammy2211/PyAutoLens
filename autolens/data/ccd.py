@@ -30,7 +30,7 @@ class CCDData(object):
             The size of each pixel in arc seconds.
         psf : PSF
             An array describing the PSF kernel of the image.
-        noise_map : NoiseMap
+        noise_map : NoiseMap | float | ndarray
             An array describing the RMS standard deviation error in each pixel, preferably in units of electrons per
             second.
         background_noise_map : NoiseMap

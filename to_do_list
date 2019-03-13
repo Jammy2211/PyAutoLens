@@ -2,6 +2,12 @@ Hey, welcome to my PyAutoLens to-do. This should give you a sense of what we're 
 
 Let me know if you think anything is missing, or should be pushed up the to-do list ;)
 
+Tomorrow:
+
+Pipelines use new path_util
+Integration tests use phase folders syntax.
+Use new featres in howtolens tutorials.
+
 Short term:
 
 - Bug with NFW potentials for MultiNest.

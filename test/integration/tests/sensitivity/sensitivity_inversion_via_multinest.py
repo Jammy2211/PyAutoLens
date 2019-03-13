@@ -14,16 +14,16 @@ from test.simulation import simulation_util
 test_type = 'sensitivity'
 test_name = "sensitivity_inversion_via_multinest"
 
-path = '{}/../../'.format(os.path.dirname(os.path.realpath(__file__)))
-output_path = path+'output/'+test_type
-config_path = path+'config'
+test_path = '{}/../../'.format(os.path.dirname(os.path.realpath(__file__)))
+output_path = test_path + 'output/'
+config_path = test_path + 'config'
 conf.instance = conf.Config(config_path=config_path, output_path=output_path)
 
 
 def pipeline():
 
     integration_util.reset_paths(test_name=test_name, output_path=output_path)
-    ccd_data = simulation_util.load_test_ccd_data(data_resolution='Euclid', data_name='no_lens_light_and_source_smooth')
+    ccd_data = simulation_util.load_test_ccd_data(data_type='no_lens_light_and_source_smooth', data_resolution='Euclid')
     pipeline = make_pipeline(test_name=test_name)
     pipeline.run(data=ccd_data)
 
@@ -32,7 +32,7 @@ def make_pipeline(test_name):
 
     class SensitivePhase(ph.SensitivityPhase):
 
-        def pass_priors(self, previous_results):
+        def pass_priors(self, results):
 
             self.lens_galaxies.lens.mass.centre_0 = 0.0
             self.lens_galaxies.lens.mass.centre_1 = 0.0
@@ -47,11 +47,12 @@ def make_pipeline(test_name):
             self.sensitive_galaxies.subhalo.mass.kappa_s = 0.1
             self.sensitive_galaxies.subhalo.mass.scale_radius = 5.0
 
-    phase1 = SensitivePhase(lens_galaxies=dict(lens=gm.GalaxyModel(mass=mp.SphericalIsothermal)),
+    phase1 = SensitivePhase(phase_name="phase1", phase_folders=[test_type, test_name],
+                            lens_galaxies=dict(lens=gm.GalaxyModel(mass=mp.SphericalIsothermal)),
                             source_galaxies=dict(source=gm.GalaxyModel(pixelization=pix.Rectangular,
                                                                        regularization=reg.Constant)),
                             sensitive_galaxies=dict(subhalo=gm.GalaxyModel(mass=mp.SphericalNFW)),
-                            optimizer_class=nl.MultiNest, phase_name="{}/phase1".format(test_name))
+                            optimizer_class=nl.MultiNest)
 
     phase1.optimizer.const_efficiency_mode = True
 

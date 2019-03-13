@@ -12,25 +12,25 @@ from test.simulation import simulation_util
 test_type = 'lens_and_source'
 test_name = "lens_mass_x1_source_x1_use_interp_pixel_scale"
 
-path = '{}/../../'.format(os.path.dirname(os.path.realpath(__file__)))
-output_path = path+'output/'+test_type
-config_path = path+'config'
+test_path = '{}/../../'.format(os.path.dirname(os.path.realpath(__file__)))
+output_path = test_path + 'output/'
+config_path = test_path + 'config'
 conf.instance = conf.Config(config_path=config_path, output_path=output_path)
 
 def pipeline():
 
     integration_util.reset_paths(test_name=test_name, output_path=output_path)
-    ccd_data = simulation_util.load_test_ccd_data(data_resolution='LSST', data_name='no_lens_light_and_source_smooth')
+    ccd_data = simulation_util.load_test_ccd_data(data_type='no_lens_light_and_source_smooth', data_resolution='LSST')
     pipeline = make_pipeline(test_name=test_name)
     pipeline.run(data=ccd_data)
 
 
 def make_pipeline(test_name):
 
-    phase1 = ph.LensSourcePlanePhase(lens_galaxies=dict(lens=gm.GalaxyModel(mass=mp.EllipticalPowerLaw)),
+    phase1 = ph.LensSourcePlanePhase(phase_name='phase_1', phase_folders=[test_type, test_name],
+                                     lens_galaxies=dict(lens=gm.GalaxyModel(mass=mp.EllipticalPowerLaw)),
                                      source_galaxies=dict(source=gm.GalaxyModel(light=lp.EllipticalSersic)),
-                                     optimizer_class=nl.MultiNest, interp_pixel_scale=0.3,
-                                     phase_name="{}/phase1".format(test_name))
+                                     optimizer_class=nl.MultiNest, interp_pixel_scale=0.3)
 
     phase1.optimizer.const_efficiency_mode = True
     phase1.optimizer.n_live_points = 60

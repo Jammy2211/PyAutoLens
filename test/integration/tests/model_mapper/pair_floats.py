@@ -13,15 +13,15 @@ from test.simulation import simulation_util
 test_type = 'model_mapper'
 test_name = "pair_floats"
 
-path = '{}/../../'.format(os.path.dirname(os.path.realpath(__file__)))
-output_path = path+'output/'+test_type
-config_path = path+'config'
+test_path = '{}/../../'.format(os.path.dirname(os.path.realpath(__file__)))
+output_path = test_path + 'output/'
+config_path = test_path + 'config'
 conf.instance = conf.Config(config_path=config_path, output_path=output_path)
 
 def pipeline():
 
     integration_util.reset_paths(test_name=test_name, output_path=output_path)
-    ccd_data = simulation_util.load_test_ccd_data(data_resolution='LSST', data_name='lens_only_dev_vaucouleurs')
+    ccd_data = simulation_util.load_test_ccd_data(data_type='lens_only_dev_vaucouleurs', data_resolution='LSST')
     pipeline = make_pipeline(test_name=test_name)
     pipeline.run(data=ccd_data)
 
@@ -30,12 +30,13 @@ def make_pipeline(test_name):
 
     class MMPhase(ph.LensPlanePhase):
 
-        def pass_priors(self, previous_results):
+        def pass_priors(self, results):
             self.lens_galaxies.lens.light.intensity = self.lens_galaxies.lens.mass.einstein_radius
 
-    phase1 = MMPhase(lens_galaxies=dict(lens=gm.GalaxyModel(light=lp.EllipticalSersic,
+    phase1 = MMPhase(phase_name='phase_1', phase_folders=[test_type, test_name],
+                     lens_galaxies=dict(lens=gm.GalaxyModel(light=lp.EllipticalSersic,
                                                             mass=mp.SphericalIsothermal)),
-                     optimizer_class=nl.MultiNest, phase_name="{}/phase1".format(test_name))
+                     optimizer_class=nl.MultiNest)
 
     phase1.optimizer.const_efficiency_mode = True
     phase1.optimizer.n_live_points = 20
