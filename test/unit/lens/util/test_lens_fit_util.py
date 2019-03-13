@@ -2,50 +2,53 @@ import numpy as np
 import pytest
 from astropy import cosmology as cosmo
 
-from autolens.data.array import scaled_array
-from autolens.data.array import mask as msk
-from autolens.data.array import grids
 from autolens.data import ccd as im, convolution
-from autolens.model.profiles import light_profiles as lp
-from autolens.model.galaxy.util import galaxy_util
-from autolens.lens.util import lens_fit_util as util
+from autolens.data.array import grids
+from autolens.data.array import mask as msk
+from autolens.data.array import scaled_array
 from autolens.lens import ray_tracing
+from autolens.lens.util import lens_fit_util as util
 from autolens.model.galaxy import galaxy as g
+from autolens.model.galaxy.util import galaxy_util
 from autolens.model.inversion import pixelizations as pix
 from autolens.model.inversion import regularization as reg
+from autolens.model.profiles import light_profiles as lp
 from test.unit.mock.mock_galaxy import MockHyperGalaxy
+
 
 @pytest.fixture(name='mask')
 def make_mask():
     return msk.Mask(array=np.array([[True, True, True, True],
-                                     [True, False, False, True],
-                                     [True, False, False, True],
-                                     [True, True, True, True]]), pixel_scale=1.0)
+                                    [True, False, False, True],
+                                    [True, False, False, True],
+                                    [True, True, True, True]]), pixel_scale=1.0)
+
 
 @pytest.fixture(name='blurring_mask')
 def make_blurring_mask():
     return msk.Mask(array=np.array([[False, False, False, False],
-                                     [False, True, True, False],
-                                     [False, True, True, False],
-                                     [False, False, False, False]]), pixel_scale=1.0)
+                                    [False, True, True, False],
+                                    [False, True, True, False],
+                                    [False, False, False, False]]), pixel_scale=1.0)
+
 
 @pytest.fixture(name='convolver_no_blur')
 def make_convolver_no_blur(mask, blurring_mask):
-
     psf = np.array([[0.0, 0.0, 0.0],
                     [0.0, 1.0, 0.0],
                     [0.0, 0.0, 0.0]])
 
     return convolution.ConvolverImage(mask=mask, blurring_mask=blurring_mask, psf=psf)
 
+
 @pytest.fixture(name='convolver_blur')
 def make_convolver_blur(mask, blurring_mask):
-
     psf = np.array([[1.0, 1.0, 1.0],
                     [1.0, 1.0, 1.0],
                     [1.0, 1.0, 1.0]])
 
     return convolution.ConvolverImage(mask=mask, blurring_mask=blurring_mask, psf=psf)
+
 
 @pytest.fixture(name="galaxy_light")
 def make_galaxy_light():
@@ -60,8 +63,8 @@ class TestBlurImages:
         blurring_image_1d = np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
 
         blurred_image_1d = util.blurred_image_1d_from_1d_unblurred_and_blurring_images(unblurred_image_1d=image_1d,
-                                                                                             blurring_image_1d=blurring_image_1d,
-                                                                                             convolver=convolver_no_blur)
+                                                                                       blurring_image_1d=blurring_image_1d,
+                                                                                       convolver=convolver_no_blur)
 
         assert (blurred_image_1d == np.array([1.0, 1.0, 1.0, 1.0])).all()
 
@@ -70,13 +73,11 @@ class TestBlurImages:
         blurring_image_1d = np.array([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])
 
         blurred_image_1d = util.blurred_image_1d_from_1d_unblurred_and_blurring_images(unblurred_image_1d=image_1d,
-                                                                                             blurring_image_1d=blurring_image_1d,
-                                                                                             convolver=convolver_blur)
+                                                                                       blurring_image_1d=blurring_image_1d,
+                                                                                       convolver=convolver_blur)
         assert (blurred_image_1d == np.array([4.0, 4.0, 4.0, 4.0])).all()
 
-
     def test__2x2_unblurred_image_all_1s__3x3_psf_no_blurring__image_blurs_to_itself(self, convolver_no_blur):
-
         unblurred_image_1d = np.array([1.0, 1.0, 1.0, 1.0])
         blurring_image_1d = np.array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0])
 
@@ -86,17 +87,15 @@ class TestBlurImages:
         assert (blurred_image == np.array([1.0, 1.0, 1.0, 1.0])).all()
 
     def test__2x2_unblurred_image_all_1s__3x3_psf_all_1s__image_blurs_to_9s(self, convolver_blur):
-
         unblurred_image_1d = np.array([1.0, 1.0, 1.0, 1.0])
         blurring_image_1d = np.array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0])
 
         blurred_image = util.blurred_image_1d_from_1d_unblurred_and_blurring_images(
             unblurred_image_1d=unblurred_image_1d, blurring_image_1d=blurring_image_1d, convolver=convolver_blur)
 
-        assert (blurred_image == np.array([ 9.0, 9.0, 9.0, 9.0])).all()
+        assert (blurred_image == np.array([9.0, 9.0, 9.0, 9.0])).all()
 
     def test__2x2_image__psf_is_non_symmetric_producing_l_shape(self, mask, blurring_mask):
-
         psf = np.array([[0.0, 3.0, 0.0],
                         [0.0, 2.0, 1.0],
                         [0.0, 0.0, 0.0]])
@@ -132,8 +131,8 @@ class TestInversionEvidence:
         assert likelihood_with_regularization_terms == -0.5 * (3.0 + 6.0 + 2.0)
 
         evidences = util.evidence_from_inversion_terms(chi_squared=3.0, regularization_term=6.0,
-                                                               log_curvature_regularization_term=9.0,
-                                                               log_regularization_term=10.0, noise_normalization=30.0)
+                                                       log_curvature_regularization_term=9.0,
+                                                       log_regularization_term=10.0, noise_normalization=30.0)
 
         assert evidences == -0.5 * (3.0 + 6.0 + 9.0 - 10.0 + 30.0)
 
@@ -229,7 +228,7 @@ class TestBlurredImageOfPlanes:
         blurred_image_of_planes = util.blurred_image_of_planes_from_1d_images_and_convolver(
             total_planes=tracer.total_planes, image_plane_image_1d_of_planes=tracer.image_plane_image_1d_of_planes,
             image_plane_blurring_image_1d_of_planes=tracer.image_plane_blurring_image_1d_of_planes,
-            convolver=convolver_blur,  map_to_scaled_array=data_grid_stack.regular.array_2d_from_array_1d)
+            convolver=convolver_blur, map_to_scaled_array=data_grid_stack.regular.array_2d_from_array_1d)
 
         assert (blurred_image_of_planes[0] == g0_blurred_image).all()
         assert blurred_image_of_planes[1] == None
@@ -272,8 +271,8 @@ class TestUnmaskedModelImage:
                                                                                                     sub_grid_size=1,
                                                                                                     psf_shape=(3, 3))
 
-        unmasked_blurred_image = util.unmasked_blurred_image_from_padded_grid_stack_psf_and_unmasked_image(
-            padded_grid_stack=padded_grid_stack, psf=psf, unmasked_image_1d=np.ones(25))
+        unmasked_blurred_image = padded_grid_stack.unmasked_blurred_image_from_psf_and_unmasked_image(
+            psf=psf, unmasked_image_1d=np.ones(25))
 
         assert (unmasked_blurred_image == np.ones((3, 3))).all()
 
@@ -290,8 +289,8 @@ class TestUnmaskedModelImage:
                                                                                                     sub_grid_size=1,
                                                                                                     psf_shape=(3, 3))
 
-        unmasked_blurred_image = util.unmasked_blurred_image_from_padded_grid_stack_psf_and_unmasked_image(
-            padded_grid_stack=padded_grid_stack, psf=psf, unmasked_image_1d=np.ones(25))
+        unmasked_blurred_image = padded_grid_stack.unmasked_blurred_image_from_psf_and_unmasked_image(
+            psf=psf, unmasked_image_1d=np.ones(25))
 
         assert (unmasked_blurred_image == 3.0 * np.ones((3, 3))).all()
 
@@ -311,8 +310,8 @@ class TestUnmaskedModelImage:
         unmasked_image_1d = np.zeros(25)
         unmasked_image_1d[12] = 1.0
 
-        unmasked_blurred_image = util.unmasked_blurred_image_from_padded_grid_stack_psf_and_unmasked_image(
-            padded_grid_stack=padded_grid_stack, psf=psf, unmasked_image_1d=unmasked_image_1d)
+        unmasked_blurred_image = padded_grid_stack.unmasked_blurred_image_from_psf_and_unmasked_image(
+            psf=psf, unmasked_image_1d=unmasked_image_1d)
 
         assert (unmasked_blurred_image == np.array([[0.0, 3.0, 0.0],
                                                     [0.0, 1.0, 2.0],
@@ -322,7 +321,6 @@ class TestUnmaskedModelImage:
 class TestUnmaskedModelImageOfPlanes:
 
     def test___3x3_padded_image__no_psf_blurring(self, galaxy_light):
-
         psf = im.PSF(array=(np.array([[0.0, 0.0, 0.0],
                                       [0.0, 1.0, 0.0],
                                       [0.0, 0.0, 0.0]])), pixel_scale=1.0)
@@ -343,12 +341,12 @@ class TestUnmaskedModelImageOfPlanes:
 
         unmasked_blurred_image_of_planes = \
             util.unmasked_blurred_image_of_planes_from_padded_grid_stack_and_psf(planes=tracer.planes,
-                                                                    padded_grid_stack=padded_grid_stack, psf=psf)
+                                                                                 padded_grid_stack=padded_grid_stack,
+                                                                                 psf=psf)
 
         assert (unmasked_blurred_image_of_planes[0] == manual_blurred_image_0[1:4, 1:4]).all()
 
     def test___x1_galaxy__3x3_padded_image__asymetric_psf_blurring(self, galaxy_light):
-
         psf = im.PSF(array=(np.array([[0.0, 3.0, 0.0],
                                       [0.0, 1.0, 2.0],
                                       [0.0, 0.0, 0.0]])), pixel_scale=1.0)
@@ -370,12 +368,12 @@ class TestUnmaskedModelImageOfPlanes:
 
         unmasked_blurred_image_of_planes = \
             util.unmasked_blurred_image_of_planes_from_padded_grid_stack_and_psf(planes=tracer.planes,
-                                                                    padded_grid_stack=padded_grid_stack, psf=psf)
+                                                                                 padded_grid_stack=padded_grid_stack,
+                                                                                 psf=psf)
 
         assert (unmasked_blurred_image_of_planes[0] == manual_blurred_image_0[1:4, 1:4]).all()
 
     def test___x2_galaxies__3x3_padded_image__asymetric_psf_blurring(self):
-
         psf = im.PSF(array=(np.array([[0.0, 3.0, 0.0],
                                       [0.0, 1.0, 2.0],
                                       [0.0, 0.0, 0.0]])), pixel_scale=1.0)
@@ -399,13 +397,13 @@ class TestUnmaskedModelImageOfPlanes:
 
         unmasked_blurred_image_of_planes = \
             util.unmasked_blurred_image_of_planes_from_padded_grid_stack_and_psf(planes=tracer.planes,
-                                                                padded_grid_stack=padded_grid_stack, psf=psf)
+                                                                                 padded_grid_stack=padded_grid_stack,
+                                                                                 psf=psf)
 
         assert unmasked_blurred_image_of_planes[0] == \
                pytest.approx(manual_blurred_image_0[1:4, 1:4], 1.0e-4)
 
     def test___same_as_above_but_image_and_souce_plane(self):
-
         psf = im.PSF(array=(np.array([[0.0, 3.0, 0.0],
                                       [0.0, 1.0, 2.0],
                                       [0.0, 0.0, 0.0]])), pixel_scale=1.0)
@@ -436,13 +434,13 @@ class TestUnmaskedModelImageOfPlanes:
 
         unmasked_blurred_image_of_planes = \
             util.unmasked_blurred_image_of_planes_from_padded_grid_stack_and_psf(planes=tracer.planes,
-                                                        padded_grid_stack=padded_grid_stack, psf=psf)
+                                                                                 padded_grid_stack=padded_grid_stack,
+                                                                                 psf=psf)
 
         assert unmasked_blurred_image_of_planes[0] == pytest.approx(manual_blurred_image_0[1:4, 1:4], 1.0e-4)
         assert unmasked_blurred_image_of_planes[1] == pytest.approx(manual_blurred_image_1[1:4, 1:4], 1.0e-4)
 
     def test___same_as_above_but_image_and_souce_plane__compare_to_images_of_galaxies(self):
-
         psf = im.PSF(array=(np.array([[0.0, 3.0, 0.0],
                                       [0.0, 1.0, 2.0],
                                       [0.0, 0.0, 0.0]])), pixel_scale=1.0)
@@ -481,7 +479,8 @@ class TestUnmaskedModelImageOfPlanes:
 
         unmasked_blurred_image_of_planes = \
             util.unmasked_blurred_image_of_planes_from_padded_grid_stack_and_psf(planes=tracer.planes,
-                                                        padded_grid_stack=padded_grid_stack, psf=psf)
+                                                                                 padded_grid_stack=padded_grid_stack,
+                                                                                 psf=psf)
 
         assert unmasked_blurred_image_of_planes[0] == \
                pytest.approx(manual_blurred_image_0[1:4, 1:4] + manual_blurred_image_1[1:4, 1:4], 1.0e-4)
@@ -489,7 +488,6 @@ class TestUnmaskedModelImageOfPlanes:
                pytest.approx(manual_blurred_image_2[1:4, 1:4] + manual_blurred_image_3[1:4, 1:4], 1.0e-4)
 
     def test__if_plane_has_pixelization__unmasked_image_returns_none(self):
-
         psf = im.PSF(array=(np.array([[0.0, 3.0, 0.0],
                                       [0.0, 1.0, 2.0],
                                       [0.0, 0.0, 0.0]])), pixel_scale=1.0)
@@ -511,7 +509,8 @@ class TestUnmaskedModelImageOfPlanes:
 
         unmasked_blurred_image_of_planes = \
             util.unmasked_blurred_image_of_planes_from_padded_grid_stack_and_psf(planes=tracer.planes,
-                                                        padded_grid_stack=padded_grid_stack, psf=psf)
+                                                                                 padded_grid_stack=padded_grid_stack,
+                                                                                 psf=psf)
 
         assert type(unmasked_blurred_image_of_planes[0]) == scaled_array.ScaledSquarePixelArray
         assert unmasked_blurred_image_of_planes[1] == None
@@ -521,7 +520,8 @@ class TestUnmaskedModelImageOfPlanes:
 
         unmasked_blurred_image_of_planes = \
             util.unmasked_blurred_image_of_planes_from_padded_grid_stack_and_psf(planes=tracer.planes,
-                                                        padded_grid_stack=padded_grid_stack, psf=psf)
+                                                                                 padded_grid_stack=padded_grid_stack,
+                                                                                 psf=psf)
 
         assert unmasked_blurred_image_of_planes[0] == None
         assert type(unmasked_blurred_image_of_planes[1]) == scaled_array.ScaledSquarePixelArray
@@ -531,7 +531,8 @@ class TestUnmaskedModelImageOfPlanes:
 
         unmasked_blurred_image_of_planes = \
             util.unmasked_blurred_image_of_planes_from_padded_grid_stack_and_psf(planes=tracer.planes,
-                                                        padded_grid_stack=padded_grid_stack, psf=psf)
+                                                                                 padded_grid_stack=padded_grid_stack,
+                                                                                 psf=psf)
 
         assert unmasked_blurred_image_of_planes[0] == None
         assert unmasked_blurred_image_of_planes[1] == None
@@ -540,7 +541,6 @@ class TestUnmaskedModelImageOfPlanes:
 class TestUnmaskedModelImageOfPlanesAndGalaxies:
 
     def test___3x3_padded_image__no_psf_blurring(self, galaxy_light):
-
         psf = im.PSF(array=(np.array([[0.0, 0.0, 0.0],
                                       [0.0, 1.0, 0.0],
                                       [0.0, 0.0, 0.0]])), pixel_scale=1.0)
@@ -561,7 +561,8 @@ class TestUnmaskedModelImageOfPlanesAndGalaxies:
 
         unmasked_blurred_image_of_planes_and_galaxies = \
             util.unmasked_blurred_image_of_planes_and_galaxies_from_padded_grid_stack_and_psf(planes=tracer.planes,
-                                                                                              padded_grid_stack=padded_grid_stack, psf=psf)
+                                                                                              padded_grid_stack=padded_grid_stack,
+                                                                                              psf=psf)
 
         assert (unmasked_blurred_image_of_planes_and_galaxies[0][0] == manual_blurred_image_0[1:4, 1:4]).all()
 
@@ -587,7 +588,8 @@ class TestUnmaskedModelImageOfPlanesAndGalaxies:
 
         unmasked_blurred_image_of_planes_and_galaxies = \
             util.unmasked_blurred_image_of_planes_and_galaxies_from_padded_grid_stack_and_psf(planes=tracer.planes,
-                                                                                              padded_grid_stack=padded_grid_stack, psf=psf)
+                                                                                              padded_grid_stack=padded_grid_stack,
+                                                                                              psf=psf)
 
         assert (unmasked_blurred_image_of_planes_and_galaxies[0][0] == manual_blurred_image_0[1:4, 1:4]).all()
 
@@ -619,13 +621,13 @@ class TestUnmaskedModelImageOfPlanesAndGalaxies:
 
         unmasked_blurred_image_of_planes_and_galaxies = \
             util.unmasked_blurred_image_of_planes_and_galaxies_from_padded_grid_stack_and_psf(planes=tracer.planes,
-                                                                                              padded_grid_stack=padded_grid_stack, psf=psf)
+                                                                                              padded_grid_stack=padded_grid_stack,
+                                                                                              psf=psf)
 
         assert (unmasked_blurred_image_of_planes_and_galaxies[0][0] == manual_blurred_image_0[1:4, 1:4]).all()
         assert (unmasked_blurred_image_of_planes_and_galaxies[0][1] == manual_blurred_image_1[1:4, 1:4]).all()
 
     def test___same_as_above_but_image_and_souce_plane(self):
-
         psf = im.PSF(array=(np.array([[0.0, 3.0, 0.0],
                                       [0.0, 1.0, 2.0],
                                       [0.0, 0.0, 0.0]])), pixel_scale=1.0)
@@ -664,7 +666,8 @@ class TestUnmaskedModelImageOfPlanesAndGalaxies:
 
         unmasked_blurred_image_of_planes_and_galaxies = \
             util.unmasked_blurred_image_of_planes_and_galaxies_from_padded_grid_stack_and_psf(planes=tracer.planes,
-                                                                                              padded_grid_stack=padded_grid_stack, psf=psf)
+                                                                                              padded_grid_stack=padded_grid_stack,
+                                                                                              psf=psf)
 
         assert (unmasked_blurred_image_of_planes_and_galaxies[0][0] == manual_blurred_image_0[1:4, 1:4]).all()
         assert (unmasked_blurred_image_of_planes_and_galaxies[0][1] == manual_blurred_image_1[1:4, 1:4]).all()
@@ -672,7 +675,6 @@ class TestUnmaskedModelImageOfPlanesAndGalaxies:
         assert (unmasked_blurred_image_of_planes_and_galaxies[1][1] == manual_blurred_image_3[1:4, 1:4]).all()
 
     def test___if_galaxy_has_pixelization__unmasked_image_is_none(self):
-
         psf = im.PSF(array=(np.array([[0.0, 3.0, 0.0],
                                       [0.0, 1.0, 2.0],
                                       [0.0, 0.0, 0.0]])), pixel_scale=1.0)
@@ -696,7 +698,8 @@ class TestUnmaskedModelImageOfPlanesAndGalaxies:
 
         unmasked_blurred_image_of_planes_and_galaxies = \
             util.unmasked_blurred_image_of_planes_and_galaxies_from_padded_grid_stack_and_psf(planes=tracer.planes,
-                                                                      padded_grid_stack=padded_grid_stack, psf=psf)
+                                                                                              padded_grid_stack=padded_grid_stack,
+                                                                                              psf=psf)
 
         assert unmasked_blurred_image_of_planes_and_galaxies[0][0] == None
         assert type(unmasked_blurred_image_of_planes_and_galaxies[0][1]) == scaled_array.ScaledSquarePixelArray
@@ -715,7 +718,8 @@ class TestUnmaskedModelImageOfPlanesAndGalaxies:
 
         unmasked_blurred_image_of_planes_and_galaxies = \
             util.unmasked_blurred_image_of_planes_and_galaxies_from_padded_grid_stack_and_psf(planes=tracer.planes,
-                                                                      padded_grid_stack=padded_grid_stack, psf=psf)
+                                                                                              padded_grid_stack=padded_grid_stack,
+                                                                                              psf=psf)
 
         assert type(unmasked_blurred_image_of_planes_and_galaxies[0][0]) == scaled_array.ScaledSquarePixelArray
         assert unmasked_blurred_image_of_planes_and_galaxies[0][1] == None

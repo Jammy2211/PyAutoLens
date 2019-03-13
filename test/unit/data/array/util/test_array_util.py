@@ -295,26 +295,3 @@ class TestFits:
         array_load = array_util.numpy_array_2d_from_fits(file_path=test_data_path + 'test.fits', hdu=0)
 
         assert (arr == array_load).all()
-        
-        
-class TestDirectories:
-
-    def test__1_directory_input__makes_directory__returns_path(self):
-
-        path = array_util.make_and_return_path(path=test_data_path, folder_names=['test1'])
-
-        assert path == test_data_path + 'test1/'
-        assert os.path.exists(path=test_data_path+'test1')
-
-        shutil.rmtree(test_data_path+'test1')
-
-    def test__multiple_directories_input__makes_directory_structure__returns_full_path(self):
-
-        path = array_util.make_and_return_path(path=test_data_path, folder_names=['test1', 'test2', 'test3'])
-
-        assert path == test_data_path + 'test1/test2/test3/'
-        assert os.path.exists(path=test_data_path+'test1')
-        assert os.path.exists(path=test_data_path+'test1/test2')
-        assert os.path.exists(path=test_data_path+'test1/test2/test3')
-
-        shutil.rmtree(test_data_path+'test1')

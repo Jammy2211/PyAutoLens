@@ -1,14 +1,14 @@
-from functools import wraps
-
 import numpy as np
 from astropy import constants
 from astropy import cosmology as cosmo
+from functools import wraps
 
 from autolens import exc
-from autolens.data.array import scaled_array
 from autolens.data.array import grids
-from autolens.model.galaxy.util import galaxy_util
+from autolens.data.array import scaled_array
 from autolens.lens.util import lens_util
+from autolens.model.galaxy.util import galaxy_util
+
 
 def check_plane_for_redshift(func):
     """If a plane's galaxies do not have redshifts, its cosmological quantities cannot be computed. This wrapper \
@@ -27,8 +27,6 @@ def check_plane_for_redshift(func):
         Parameters
         ----------
         self
-        args
-        kwargs
 
         Returns
         -------
@@ -106,14 +104,6 @@ class AbstractPlane(object):
         return any(list(map(lambda galaxy: galaxy.has_regularization, self.galaxies)))
 
     @property
-    def has_hyper_galaxy(self):
-        return any(list(map(lambda galaxy: galaxy.has_hyper_galaxy, self.galaxies)))
-
-    @property
-    def hyper_galaxies(self):
-        return [galaxy.hyper_galaxy for galaxy in self.galaxies]
-
-    @property
     def regularization(self):
 
         galaxies_with_regularization = list(filter(lambda galaxy: galaxy.has_regularization, self.galaxies))
@@ -142,7 +132,7 @@ class AbstractPlane(object):
             Factor the dimensionless luminosity is multiplied by to convert it to a physical luminosity \ 
             (e.g. a photometric zeropoint).                
         """
-        return list(map(lambda galaxy : galaxy.luminosity_within_circle(radius, conversion_factor),
+        return list(map(lambda galaxy: galaxy.luminosity_within_circle(radius, conversion_factor),
                         self.galaxies))
 
     def luminosities_of_galaxies_within_ellipses(self, major_axis, conversion_factor=1.0):
@@ -163,17 +153,17 @@ class AbstractPlane(object):
             Factor the dimensionless luminosity is multiplied by to convert it to a physical luminosity \ 
             (e.g. a photometric zeropoint).            
         """
-        return list(map(lambda galaxy : galaxy.luminosity_within_ellipse(major_axis, conversion_factor),
+        return list(map(lambda galaxy: galaxy.luminosity_within_ellipse(major_axis, conversion_factor),
                         self.galaxies))
 
-    def masses_of_galaxies_within_circles(self, radius, conversion_factor=1.0):
+    def angular_masses_of_galaxies_within_circles(self, radius, conversion_factor=1.0):
         """
-        Compute the total mass of all galaxies in this plane within a circle of specified radius.
+        Compute the total angular mass of all galaxies in this plane within a circle of specified radius.
 
-        The value returned by this integral is dimensionless, and a conversion factor can be specified to convert it \
-        to a physical value (e.g. the critical surface mass density).
+        The value returned by this integral is in angular units, however a conversion factor can be specified to \
+        convert it to a physical value (e.g. the critical surface mass density).
 
-        See *galaxy.mass_within_circle* and *mass_profiles.mass_within_circle* for details
+        See *galaxy.angular_mass_within_circle* and *mass_profiles.angular_mass_within_circle* for details
         of how this is performed.
 
         Parameters
@@ -184,17 +174,17 @@ class AbstractPlane(object):
             Factor the dimensionless mass is multiplied by to convert it to a physical mass (e.g. the critical surface \
             mass density).            
         """
-        return list(map(lambda galaxy : galaxy.mass_within_circle(radius, conversion_factor),
+        return list(map(lambda galaxy: galaxy.angular_mass_within_circle(radius, conversion_factor),
                         self.galaxies))
 
-    def masses_of_galaxies_within_ellipses(self, major_axis, conversion_factor=1.0):
+    def angular_masses_of_galaxies_within_ellipses(self, major_axis, conversion_factor=1.0):
         """
-        Compute the total mass of all galaxies in this plane within a ellipse of specified major-axis.
+        Compute the total angular mass of all galaxies in this plane within a ellipse of specified major-axis.
 
-        The value returned by this integral is dimensionless, and a conversion factor can be specified to convert it \
-        to a physical value (e.g. the critical surface mass density).
+        The value returned by this integral is in angular units, however a conversion factor can be specified to \
+        convert it to a physical value (e.g. the critical surface mass density).
 
-        See *galaxy.mass_within_ellipse* and *mass_profiles.mass_within_ellipse* for details
+        See *galaxy.angular_mass_within_ellipse* and *mass_profiles.angular_mass_within_ellipse* for details
         of how this is performed.
 
         Parameters
@@ -205,32 +195,26 @@ class AbstractPlane(object):
             Factor the dimensionless mass is multiplied by to convert it to a physical mass (e.g. the critical surface \
             mass density).            
         """
-        return list(map(lambda galaxy : galaxy.mass_within_ellipse(major_axis, conversion_factor),
+        return list(map(lambda galaxy: galaxy.angular_mass_within_ellipse(major_axis, conversion_factor),
                         self.galaxies))
 
     @property
     def einstein_radius_arcsec(self):
         if self.has_mass_profile:
-            return sum(filter(None, list(map(lambda galaxy : galaxy.einstein_radius, self.galaxies))))
-        else:
-            return None
+            return sum(filter(None, list(map(lambda galaxy: galaxy.einstein_radius, self.galaxies))))
 
     @property
     @check_plane_for_redshift
     def einstein_radius_kpc(self):
         if self.has_mass_profile:
             return self.kpc_per_arcsec_proper * self.einstein_radius_arcsec
-        else:
-            return None
 
-    def einstein_mass(self, critical_density_arcsec):
+    def angular_einstein_mass(self, critical_density_arcsec):
         if self.has_mass_profile:
-            return sum(filter(None, list(map(lambda galaxy :
-                                         galaxy.mass_within_circle(radius=galaxy.einstein_radius,
-                                                                   conversion_factor=critical_density_arcsec),
-                                         self.galaxies))))
-        else:
-            return None
+            return sum(filter(None, list(map(lambda galaxy:
+                                             galaxy.angular_mass_within_circle(radius=galaxy.einstein_radius,
+                                                                               conversion_factor=critical_density_arcsec),
+                                             self.galaxies))))
 
 
 class AbstractGriddedPlane(AbstractPlane):
@@ -305,23 +289,25 @@ class AbstractGriddedPlane(AbstractPlane):
 
     @property
     def image_plane_image_1d_of_galaxies(self):
-        return [galaxy_util.intensities_of_galaxies_from_grid(grid=self.grid_stack.sub, galaxies=[galaxy])
-                for galaxy in self.galaxies]
+        return list(map(self.image_plane_image_1d_of_galaxy, self.galaxies))
+
+    def image_plane_image_1d_of_galaxy(self, galaxy):
+        return galaxy_util.intensities_of_galaxies_from_grid(grid=self.grid_stack.sub, galaxies=[galaxy])
 
     @property
     def image_plane_blurring_image_1d(self):
         return galaxy_util.intensities_of_galaxies_from_grid(grid=self.grid_stack.blurring, galaxies=self.galaxies)
 
     @property
-    def surface_density(self):
-        surface_density_1d = galaxy_util.surface_density_of_galaxies_from_grid(
+    def convergence(self):
+        convergence_1d = galaxy_util.convergence_of_galaxies_from_grid(
             grid=self.grid_stack.sub.unlensed_grid, galaxies=self.galaxies)
-        return self.grid_stack.scaled_array_2d_from_array_1d(array_1d=surface_density_1d)
+        return self.grid_stack.scaled_array_2d_from_array_1d(array_1d=convergence_1d)
 
     @property
     def potential(self):
         potential_1d = galaxy_util.potential_of_galaxies_from_grid(grid=self.grid_stack.sub.unlensed_grid,
-                                                                  galaxies=self.galaxies)
+                                                                   galaxies=self.galaxies)
         return self.grid_stack.scaled_array_2d_from_array_1d(array_1d=potential_1d)
 
     @property
@@ -335,7 +321,7 @@ class AbstractGriddedPlane(AbstractPlane):
     @property
     def deflections_1d(self):
         return galaxy_util.deflections_of_galaxies_from_grid(grid=self.grid_stack.sub.unlensed_grid,
-                                                            galaxies=self.galaxies)
+                                                             galaxies=self.galaxies)
 
     @property
     def has_padded_grid_stack(self):
@@ -344,8 +330,8 @@ class AbstractGriddedPlane(AbstractPlane):
     @property
     def plane_image(self):
         return lens_util.plane_image_of_galaxies_from_grid(shape=self.grid_stack.regular.mask.shape,
-                                                            grid=self.grid_stack.regular,
-                                                            galaxies=self.galaxies)
+                                                           grid=self.grid_stack.regular,
+                                                           galaxies=self.galaxies)
 
     @property
     def mapper(self):
@@ -406,6 +392,26 @@ class Plane(AbstractGriddedPlane):
         super(Plane, self).__init__(redshift=galaxies[0].redshift, galaxies=galaxies, grid_stack=grid_stack,
                                     border=border, compute_deflections=compute_deflections, cosmology=cosmology)
 
+    def unmasked_blurred_image_of_galaxies_from_psf(self, padded_grid_stack, psf):
+        """This is a utility function for the function above, which performs the iteration over each plane's galaxies \
+        and computes each galaxy's unmasked blurred image.
+
+        Parameters
+        ----------
+        padded_grid_stack
+        psf : ccd.PSF
+            The PSF of the image used for convolution.
+        """
+        return [padded_grid_stack.unmasked_blurred_image_from_psf_and_unmasked_image(
+            psf, image) if not galaxy.has_pixelization else None for galaxy, image in
+                zip(self.galaxies, self.image_plane_image_1d_of_galaxies)]
+
+    def unmasked_blurred_image_of_galaxy_with_grid_stack_psf(self, galaxy, padded_grid_stack, psf):
+        return padded_grid_stack.unmasked_blurred_image_from_psf_and_unmasked_image(
+            psf,
+            self.image_plane_image_1d_of_galaxy(
+                galaxy))
+
 
 class PlaneSlice(AbstractGriddedPlane):
 
@@ -453,10 +459,10 @@ class PlanePositions(object):
         self.positions = positions
 
         if compute_deflections:
-            def calculate_deflections(positions):
-                return sum(map(lambda galaxy: galaxy.deflections_from_grid(positions), galaxies))
+            def calculate_deflections(pos):
+                return sum(map(lambda galaxy: galaxy.deflections_from_grid(pos), galaxies))
 
-            self.deflections = list(map(lambda positions: calculate_deflections(positions), self.positions))
+            self.deflections = list(map(lambda pos: calculate_deflections(pos), self.positions))
 
         self.cosmology = cosmology
 

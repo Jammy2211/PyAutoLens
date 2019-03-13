@@ -179,7 +179,7 @@ class Rectangular(Pixelization):
         ----------
         grid_stack : grids.GridStack
             A stack of grid describing the observed image's pixel coordinates (e.g. an image-grid, sub-grid, etc.).
-        border : grids.RegularGridBorder
+        border : grids.RegularGridBorder | None
             The border of the grid-stack's regular-grid.
         """
 

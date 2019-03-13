@@ -16,7 +16,7 @@ class TestSersic(object):
                                           sersic_index=2.0, mass_to_light_ratio=2.0)
 
         assert (sersic_lp.intensities_from_grid(grid) == sersic_lmp.intensities_from_grid(grid)).all()
-        assert (sersic_mp.surface_density_from_grid(grid) == sersic_lmp.surface_density_from_grid(grid)).all()
+        assert (sersic_mp.convergence_from_grid(grid) == sersic_lmp.convergence_from_grid(grid)).all()
         #    assert (sersic_mp.potential_from_grid(grid) == sersic_lmp.potential_from_grid(grid)).all()
         assert (sersic_mp.deflections_from_grid(grid) == sersic_lmp.deflections_from_grid(grid)).all()
 
@@ -27,7 +27,7 @@ class TestSersic(object):
                                         mass_to_light_ratio=2.0)
 
         assert (elliptical.intensities_from_grid(grid) == spherical.intensities_from_grid(grid)).all()
-        assert (elliptical.surface_density_from_grid(grid) == spherical.surface_density_from_grid(grid)).all()
+        assert (elliptical.convergence_from_grid(grid) == spherical.convergence_from_grid(grid)).all()
         # assert (elliptical.potential_from_grid(grid) == spherical.potential_from_grid(grid)).all()
         np.testing.assert_almost_equal(elliptical.deflections_from_grid(grid), spherical.deflections_from_grid(grid))
 
@@ -42,7 +42,7 @@ class TestExponential(object):
                                                mass_to_light_ratio=2.0)
 
         assert (sersic_lp.intensities_from_grid(grid) == sersic_lmp.intensities_from_grid(grid)).all()
-        assert (sersic_mp.surface_density_from_grid(grid) == sersic_lmp.surface_density_from_grid(grid)).all()
+        assert (sersic_mp.convergence_from_grid(grid) == sersic_lmp.convergence_from_grid(grid)).all()
         #    assert (sersic_mp.potential_from_grid(grid) == sersic_lmp.potential_from_grid(grid)).all()
         assert (sersic_mp.deflections_from_grid(grid) == sersic_lmp.deflections_from_grid(grid)).all()
 
@@ -52,7 +52,7 @@ class TestExponential(object):
         spherical = lmp.SphericalExponential(centre=(0.0, 0.0), intensity=1.0, effective_radius=1.0)
 
         assert (elliptical.intensities_from_grid(grid) == spherical.intensities_from_grid(grid)).all()
-        assert (elliptical.surface_density_from_grid(grid) == spherical.surface_density_from_grid(grid)).all()
+        assert (elliptical.convergence_from_grid(grid) == spherical.convergence_from_grid(grid)).all()
         # assert elliptical.potential_from_grid(grid) == spherical.potential_from_grid(grid)
         np.testing.assert_almost_equal(elliptical.deflections_from_grid(grid), spherical.deflections_from_grid(grid))
 
@@ -67,7 +67,7 @@ class TestDevVaucouleurs(object):
                                                   mass_to_light_ratio=2.0)
 
         assert (sersic_lp.intensities_from_grid(grid) == sersic_lmp.intensities_from_grid(grid)).all()
-        assert (sersic_mp.surface_density_from_grid(grid) == sersic_lmp.surface_density_from_grid(grid)).all()
+        assert (sersic_mp.convergence_from_grid(grid) == sersic_lmp.convergence_from_grid(grid)).all()
         #    assert (sersic_mp.potential_from_grid(grid) == sersic_lmp.potential_from_grid(grid)).all()
         assert (sersic_mp.deflections_from_grid(grid) == sersic_lmp.deflections_from_grid(grid)).all()
 
@@ -77,7 +77,7 @@ class TestDevVaucouleurs(object):
         spherical = lmp.SphericalDevVaucouleurs(centre=(0.0, 0.0), intensity=1.0, effective_radius=1.0)
 
         assert (elliptical.intensities_from_grid(grid) == spherical.intensities_from_grid(grid)).all()
-        assert (elliptical.surface_density_from_grid(grid) == spherical.surface_density_from_grid(grid)).all()
+        assert (elliptical.convergence_from_grid(grid) == spherical.convergence_from_grid(grid)).all()
         # assert elliptical.potential_from_grid(grid) == spherical.potential_from_grid(grid)
         np.testing.assert_almost_equal(elliptical.deflections_from_grid(grid), spherical.deflections_from_grid(grid))
 
@@ -95,7 +95,7 @@ class TestSersicRadialGradient(object):
                                                         mass_to_light_gradient=0.5)
 
         assert (sersic_lp.intensities_from_grid(grid) == sersic_lmp.intensities_from_grid(grid)).all()
-        assert (sersic_mp.surface_density_from_grid(grid) == sersic_lmp.surface_density_from_grid(grid)).all()
+        assert (sersic_mp.convergence_from_grid(grid) == sersic_lmp.convergence_from_grid(grid)).all()
         #    assert (sersic_mp.potential_from_grid(grid) == sersic_lmp.potential_from_grid(grid)).all()
         assert (sersic_mp.deflections_from_grid(grid) == sersic_lmp.deflections_from_grid(grid)).all()
 
@@ -105,6 +105,6 @@ class TestSersicRadialGradient(object):
         spherical = lmp.SphericalSersicRadialGradient(centre=(0.0, 0.0), intensity=1.0, effective_radius=1.0)
 
         assert (elliptical.intensities_from_grid(grid) == spherical.intensities_from_grid(grid)).all()
-        assert (elliptical.surface_density_from_grid(grid) == spherical.surface_density_from_grid(grid)).all()
+        assert (elliptical.convergence_from_grid(grid) == spherical.convergence_from_grid(grid)).all()
         # assert elliptical.potential_from_grid(grid) == spherical.potential_from_grid(grid)
         np.testing.assert_almost_equal(elliptical.deflections_from_grid(grid), spherical.deflections_from_grid(grid))

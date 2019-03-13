@@ -1,10 +1,9 @@
-import time
+from autofit.tools import path_util
 from autolens.data import ccd
-
 
 import os
 
-path = '{}/../'.format(os.path.dirname(os.path.realpath(__file__)))
+test_path = '{}/../'.format(os.path.dirname(os.path.realpath(__file__)))
 
 def pixel_scale_from_data_resolution(data_resolution):
 
@@ -51,11 +50,12 @@ def data_resolution_from_pixel_scale(pixel_scale):
     else:
         raise ValueError('An invalid pixel-scale was entered - ', pixel_scale)
 
-def load_test_ccd_data(data_resolution, data_name, psf_shape=(11, 11)):
+def load_test_ccd_data(data_type, data_resolution, psf_shape=(11, 11)):
 
     pixel_scale = pixel_scale_from_data_resolution(data_resolution=data_resolution)
 
-    data_path = path + '/data/' + data_name + '/' + data_resolution
+    data_path = path_util.make_and_return_path_from_path_and_folder_names(
+                path=test_path, folder_names=['data', data_type, data_resolution])
 
     return ccd.load_ccd_data_from_fits(image_path= data_path + '/image.fits',
                                        psf_path= data_path + '/psf.fits',

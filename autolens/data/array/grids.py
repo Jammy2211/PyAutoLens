@@ -85,7 +85,7 @@ class GridStack(object):
         -----------
         regular : RegularGrid
             The grid of (y,x) arc-second coordinates at the centre of every unmasked pixel.
-        sub : SubGrid
+        sub : SubGrid | np.ndarray
             The grid of (y,x) arc-second coordinates at the centre of every unmasked pixel's sub-pixels.
         blurring : RegularGrid | ndarray | None
             The grid of (y,x) arc-second coordinates at the centre of every blurring-mask pixel.
@@ -100,6 +100,24 @@ class GridStack(object):
             self.pix = np.array([[0.0, 0.0]])
         else:
             self.pix = pix
+
+    def unmasked_blurred_image_from_psf_and_unmasked_image(self, psf, unmasked_image_1d):
+        """For a padded grid-stack and psf, compute an unmasked blurred image from an unmasked unblurred image.
+
+        This relies on using the lens data's padded-grid, which is a grid of (y,x) coordinates which extends over the \
+        entire image as opposed to just the masked region.
+
+        Parameters
+        ----------
+        psf : ccd.PSF
+            The PSF of the image used for convolution.
+        unmasked_image_1d : ndarray
+            The 1D unmasked image which is blurred.
+        """
+        blurred_image_1d = self.regular.convolve_array_1d_with_psf(padded_array_1d=unmasked_image_1d,
+                                                                   psf=psf)
+
+        return self.regular.scaled_array_2d_from_array_1d(array_1d=blurred_image_1d)
 
     @classmethod
     def grid_stack_from_mask_sub_grid_size_and_psf_shape(cls, mask, sub_grid_size, psf_shape):
@@ -193,7 +211,7 @@ class GridStack(object):
 
         # TODO : Like the TODO above, we need to elegently handle a blurring grid of None.
 
-        if self.blurring.shape != (1,2):
+        if self.blurring.shape != (1, 2):
             blurring = self.blurring.new_grid_with_interpolator(interp_pixel_scale=interp_pixel_scale)
         else:
             blurring = np.array([[0.0, 0.0]])
@@ -318,6 +336,24 @@ class RegularGrid(np.ndarray):
             pixel_scales=self.mask.pixel_scales),
             mask=self.mask)
 
+    def convolve_array_1d_with_psf(self, padded_array_1d, psf):
+        """Convolve a 1d padded array of values (e.g. intensities before PSF blurring) with a PSF, and then trim \
+        the convolved array to its original 2D shape.
+
+        Parameters
+        -----------
+        padded_array_1d: ndarray
+            A 1D array of values which were computed using the *PaddedRegularGrid*.
+        psf : ndarray
+            An array describing the PSF kernel of the image.
+        """
+        padded_array_2d = mapping_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(
+            array_1d=padded_array_1d, shape=self.mask.shape)
+        # noinspection PyUnresolvedReferences
+        blurred_padded_array_2d = psf.convolve(array=padded_array_2d)
+        return mapping_util.map_2d_array_to_masked_1d_array_from_array_2d_and_mask(array_2d=blurred_padded_array_2d,
+                                                                                   mask=np.full(self.mask.shape, False))
+
     @classmethod
     def from_mask(cls, mask):
         """Setup a regular-grid from a mask, wehere the center of every unmasked pixel gives the grid's (y,x) \
@@ -414,8 +450,11 @@ class RegularGrid(np.ndarray):
         return RegularGrid.from_mask(blurring_mask)
 
     def new_grid_with_interpolator(self, interp_pixel_scale):
-        self.interpolator = Interpolator.from_mask_grid_and_interp_pixel_scales(mask=self.mask, grid=self[:,:],
-                                                                           interp_pixel_scale=interp_pixel_scale)
+        # noinspection PyAttributeOutsideInit
+        # TODO: This function doesn't do what it says on the tin. The returned grid would be the same as the grid
+        # TODO: on which the function was called but with a new interpolator set.
+        self.interpolator = Interpolator.from_mask_grid_and_interp_pixel_scales(mask=self.mask, grid=self[:, :],
+                                                                                interp_pixel_scale=interp_pixel_scale)
         return self
 
     def array_2d_from_array_1d(self, array_1d):
@@ -621,7 +660,7 @@ class SubGrid(RegularGrid):
         sub_array_1d : ndarray
             The 1D sub_array which is mapped to its masked 2D sub-array.
         """
-        sub_shape = (self.mask.shape[0]*self.sub_grid_size, self.mask.shape[1]*self.sub_grid_size)
+        sub_shape = (self.mask.shape[0] * self.sub_grid_size, self.mask.shape[1] * self.sub_grid_size)
         sub_one_to_two = self.mask.masked_sub_grid_index_to_sub_pixel(sub_grid_size=self.sub_grid_size)
         return mapping_util.map_masked_1d_array_to_2d_array_from_array_1d_shape_and_one_to_two(
             array_1d=sub_array_1d, shape=sub_shape, one_to_two=sub_one_to_two)
@@ -863,24 +902,6 @@ class PaddedRegularGrid(RegularGrid):
         padded_model_image_1d = self.convolve_array_1d_with_psf(padded_array_1d=padded_image_1d, psf=psf)
         return self.scaled_array_2d_from_array_1d(array_1d=padded_model_image_1d)
 
-    def convolve_array_1d_with_psf(self, padded_array_1d, psf):
-        """Convolve a 1d padded array of values (e.g. intensities before PSF blurring) with a PSF, and then trim \
-        the convolved array to its original 2D shape.
-
-        Parameters
-        -----------
-        padded_array_1d: ndarray
-            A 1D array of values which were computed using the *PaddedRegularGrid*.
-        psf : ndarray
-            An array describing the PSF kernel of the image.
-        """
-        padded_array_2d = mapping_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(
-            array_1d=padded_array_1d, shape=self.mask.shape)
-        # noinspection PyUnresolvedReferences
-        blurred_padded_array_2d = psf.convolve(array=padded_array_2d)
-        return mapping_util.map_2d_array_to_masked_1d_array_from_array_2d_and_mask(array_2d=blurred_padded_array_2d,
-                                                                                   mask=np.full(self.mask.shape, False))
-
     def array_2d_from_array_1d(self, padded_array_1d):
         """ Map a padded 1D array of values to its original 2D array, trimming all edge values.
 
@@ -1069,7 +1090,6 @@ class RegularGridBorder(np.ndarray):
 class Interpolator(object):
 
     def __init__(self, grid, interp_grid):
-
         self.grid = grid
         self.interp_grid = interp_grid
 
@@ -1088,12 +1108,15 @@ class Interpolator(object):
 
     @classmethod
     def from_mask_grid_and_interp_pixel_scales(cls, mask, grid, interp_pixel_scale):
-
         rescale_factor = mask.pixel_scale / interp_pixel_scale
         rescaled_mask = mask_util.rescaled_mask_from_mask_and_rescale_factor(mask=mask, rescale_factor=rescale_factor)
         interp_mask = mask_util.edge_buffed_mask_from_mask(mask=rescaled_mask)
-        interp_grid = grid_util.regular_grid_1d_masked_from_mask_pixel_scales_and_origin(mask=interp_mask,
-                pixel_scales=(interp_pixel_scale, interp_pixel_scale), origin=mask.origin)
+        interp_grid = grid_util.regular_grid_1d_masked_from_mask_pixel_scales_and_origin(
+            mask=interp_mask,
+            pixel_scales=(
+                interp_pixel_scale,
+                interp_pixel_scale),
+            origin=mask.origin)
         return Interpolator(grid=grid, interp_grid=interp_grid)
 
     def interpolated_values_from_values(self, values):
@@ -1129,8 +1152,8 @@ def grid_interpolate(func):
                 if values.ndim == 1:
                     return interpolator.interpolated_values_from_values(values=values)
                 elif values.ndim == 2:
-                    y_values = interpolator.interpolated_values_from_values(values=values[:,0])
-                    x_values = interpolator.interpolated_values_from_values(values=values[:,1])
+                    y_values = interpolator.interpolated_values_from_values(values=values[:, 0])
+                    x_values = interpolator.interpolated_values_from_values(values=values[:, 1])
                     return np.asarray([y_values, x_values]).T
         return func(profile, grid, *args, **kwargs)
 

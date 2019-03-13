@@ -300,22 +300,22 @@ def make_gal_sie_x2(sie_0, sie_1):
 
 class TestMassProfiles(object):
 
-    class TestSurfaceDensity:
+    class TestConvergence:
 
-        def test__one_profile_gal__surface_density_is_same_individual_profile(self, sie_0, gal_sie_x1):
-            sie_surface_density = sie_0.surface_density_from_grid(np.array([[1.05, -0.55]]))
+        def test__one_profile_gal__convergence_is_same_individual_profile(self, sie_0, gal_sie_x1):
+            sie_convergence = sie_0.convergence_from_grid(np.array([[1.05, -0.55]]))
 
-            gal_sie_surface_density = gal_sie_x1.surface_density_from_grid(np.array([[1.05, -0.55]]))
+            gal_sie_convergence = gal_sie_x1.convergence_from_grid(np.array([[1.05, -0.55]]))
 
-            assert sie_surface_density == gal_sie_surface_density
+            assert sie_convergence == gal_sie_convergence
 
-        def test__two_profile_gal__surface_density_is_sum_of_individual_profiles(self, sie_0, sie_1, gal_sie_x2):
-            surface_density = sie_0.surface_density_from_grid(np.array([[1.05, -0.55]]))
-            surface_density += sie_1.surface_density_from_grid(np.array([[1.05, -0.55]]))
+        def test__two_profile_gal__convergence_is_sum_of_individual_profiles(self, sie_0, sie_1, gal_sie_x2):
+            convergence = sie_0.convergence_from_grid(np.array([[1.05, -0.55]]))
+            convergence += sie_1.convergence_from_grid(np.array([[1.05, -0.55]]))
 
-            gal_surface_density = gal_sie_x2.surface_density_from_grid(np.array([[1.05, -0.55]]))
+            gal_convergence = gal_sie_x2.convergence_from_grid(np.array([[1.05, -0.55]]))
 
-            assert surface_density == gal_surface_density
+            assert convergence == gal_convergence
 
     class TestPotential:
 
@@ -360,9 +360,9 @@ class TestMassProfiles(object):
         def test__within_circle__no_conversion_factor__one_profile_gal__integral_is_same_as_individual_profile(self, sie_0, gal_sie_x1):
             integral_radius = 5.5
 
-            mass_integral = sie_0.mass_within_circle(radius=integral_radius)
+            mass_integral = sie_0.angular_mass_within_circle(radius=integral_radius)
 
-            gal_mass_integral = gal_sie_x1.mass_within_circle(radius=integral_radius)
+            gal_mass_integral = gal_sie_x1.angular_mass_within_circle(radius=integral_radius)
 
             assert mass_integral == gal_mass_integral
 
@@ -373,8 +373,8 @@ class TestMassProfiles(object):
 
             integral_radius = 5.5
 
-            mass_integral = sie_0.mass_within_circle(radius=integral_radius)
-            mass_integral += sie_1.mass_within_circle(radius=integral_radius)
+            mass_integral = sie_0.angular_mass_within_circle(radius=integral_radius)
+            mass_integral += sie_1.angular_mass_within_circle(radius=integral_radius)
 
             gal_sie = g.Galaxy(redshift=0.5,
                                mass_profile_1=mp.EllipticalIsothermal(axis_ratio=0.8, phi=10.0,
@@ -382,7 +382,7 @@ class TestMassProfiles(object):
                                mass_profile_2=mp.EllipticalIsothermal(axis_ratio=0.6, phi=30.0,
                                                                       einstein_radius=1.2))
 
-            gal_mass_integral = gal_sie.mass_within_circle(radius=integral_radius)
+            gal_mass_integral = gal_sie.angular_mass_within_circle(radius=integral_radius)
 
             assert mass_integral == gal_mass_integral
 
@@ -390,18 +390,18 @@ class TestMassProfiles(object):
 
             integral_radius = 5.5
 
-            mass_integral = sie_0.mass_within_circle(radius=integral_radius, conversion_factor=2.0)
+            mass_integral = sie_0.angular_mass_within_circle(radius=integral_radius, conversion_factor=2.0)
 
-            gal_mass_integral = gal_sie_x1.mass_within_circle(radius=integral_radius, conversion_factor=2.0)
+            gal_mass_integral = gal_sie_x1.angular_mass_within_circle(radius=integral_radius, conversion_factor=2.0)
 
             assert mass_integral == gal_mass_integral
 
         def test__within_ellipse__no_conversion_factor__one_profile_gal__integral_is_same_as_individual_profile(self, sie_0, gal_sie_x1):
             integral_radius = 0.5
 
-            dimensionless_mass_integral = sie_0.mass_within_ellipse(major_axis=integral_radius)
+            dimensionless_mass_integral = sie_0.angular_mass_within_ellipse(major_axis=integral_radius)
 
-            gal_dimensionless_mass_integral = gal_sie_x1.mass_within_ellipse(
+            gal_dimensionless_mass_integral = gal_sie_x1.angular_mass_within_ellipse(
                 major_axis=integral_radius)
 
             assert dimensionless_mass_integral == gal_dimensionless_mass_integral
@@ -410,10 +410,10 @@ class TestMassProfiles(object):
                                                                                           gal_sie_x2):
             integral_radius = 5.5
 
-            dimensionless_mass_integral = sie_0.mass_within_ellipse(major_axis=integral_radius)
-            dimensionless_mass_integral += sie_1.mass_within_ellipse(major_axis=integral_radius)
+            dimensionless_mass_integral = sie_0.angular_mass_within_ellipse(major_axis=integral_radius)
+            dimensionless_mass_integral += sie_1.angular_mass_within_ellipse(major_axis=integral_radius)
 
-            gal_dimensionless_mass_integral = gal_sie_x2.mass_within_ellipse(
+            gal_dimensionless_mass_integral = gal_sie_x2.angular_mass_within_ellipse(
                 major_axis=integral_radius)
 
             assert dimensionless_mass_integral == gal_dimensionless_mass_integral
@@ -421,11 +421,11 @@ class TestMassProfiles(object):
         def test__same_as_above_ellipse_but_physical_mass__uses_conversion_factor(self, sie_0, gal_sie_x1):
             integral_radius = 0.5
 
-            dimensionless_mass_integral = sie_0.mass_within_ellipse(major_axis=integral_radius,
-                                                                    conversion_factor=2.0)
+            dimensionless_mass_integral = sie_0.angular_mass_within_ellipse(major_axis=integral_radius,
+                                                                            conversion_factor=2.0)
 
-            gal_dimensionless_mass_integral = gal_sie_x1.mass_within_ellipse(major_axis=integral_radius,
-                                                                             conversion_factor=2.0)
+            gal_dimensionless_mass_integral = gal_sie_x1.angular_mass_within_ellipse(major_axis=integral_radius,
+                                                                                     conversion_factor=2.0)
 
             assert dimensionless_mass_integral == gal_dimensionless_mass_integral
 
@@ -433,8 +433,8 @@ class TestMassProfiles(object):
 
             gal = g.Galaxy(redshift=0.5, light=lp.SphericalSersic())
 
-            assert gal.mass_within_circle(radius=1.0, conversion_factor=1.0) == None
-            assert gal.mass_within_ellipse(major_axis=1.0, conversion_factor=1.0) == None
+            assert gal.angular_mass_within_circle(radius=1.0, conversion_factor=1.0) == None
+            assert gal.angular_mass_within_ellipse(major_axis=1.0, conversion_factor=1.0) == None
 
     class TestSymmetricProfiles:
 
@@ -447,11 +447,11 @@ class TestMassProfiles(object):
 
             gal_isothermal = g.Galaxy(redshift=0.5, mass_profile_1=isothermal_1, mass_profile_2=isothermal_2)
 
-            assert gal_isothermal.surface_density_from_grid(
-                np.array([[1.0, 0.0]])) == gal_isothermal.surface_density_from_grid(np.array([[99.0, 0.0]]))
+            assert gal_isothermal.convergence_from_grid(
+                np.array([[1.0, 0.0]])) == gal_isothermal.convergence_from_grid(np.array([[99.0, 0.0]]))
 
-            assert gal_isothermal.surface_density_from_grid(
-                np.array([[49.0, 0.0]])) == gal_isothermal.surface_density_from_grid(np.array([[51.0, 0.0]]))
+            assert gal_isothermal.convergence_from_grid(
+                np.array([[49.0, 0.0]])) == gal_isothermal.convergence_from_grid(np.array([[51.0, 0.0]]))
 
             assert gal_isothermal.potential_from_grid(np.array([[1.0, 0.0]])) == pytest.approx(
                 gal_isothermal.potential_from_grid(np.array([[99.0, 0.0]])), 1e-6)
@@ -478,17 +478,17 @@ class TestMassProfiles(object):
                                       mass_profile_1=isothermal_1, mass_profile_2=isothermal_2,
                                       mass_profile_3=isothermal_3, mass_profile_4=isothermal_4)
 
-            assert gal_isothermal.surface_density_from_grid(np.array([[49.0, 0.0]])) == pytest.approx(
-                gal_isothermal.surface_density_from_grid(np.array([[51.0, 0.0]])), 1e-5)
+            assert gal_isothermal.convergence_from_grid(np.array([[49.0, 0.0]])) == pytest.approx(
+                gal_isothermal.convergence_from_grid(np.array([[51.0, 0.0]])), 1e-5)
 
-            assert gal_isothermal.surface_density_from_grid(np.array([[0.0, 49.0]])) == pytest.approx(
-                gal_isothermal.surface_density_from_grid(np.array([[0.0, 51.0]])), 1e-5)
+            assert gal_isothermal.convergence_from_grid(np.array([[0.0, 49.0]])) == pytest.approx(
+                gal_isothermal.convergence_from_grid(np.array([[0.0, 51.0]])), 1e-5)
 
-            assert gal_isothermal.surface_density_from_grid(np.array([[100.0, 49.0]])) == pytest.approx(
-                gal_isothermal.surface_density_from_grid(np.array([[100.0, 51.0]])), 1e-5)
+            assert gal_isothermal.convergence_from_grid(np.array([[100.0, 49.0]])) == pytest.approx(
+                gal_isothermal.convergence_from_grid(np.array([[100.0, 51.0]])), 1e-5)
 
-            assert gal_isothermal.surface_density_from_grid(np.array([[49.0, 49.0]])) == pytest.approx(
-                gal_isothermal.surface_density_from_grid(np.array([[51.0, 51.0]])), 1e-5)
+            assert gal_isothermal.convergence_from_grid(np.array([[49.0, 49.0]])) == pytest.approx(
+                gal_isothermal.convergence_from_grid(np.array([[51.0, 51.0]])), 1e-5)
 
             assert gal_isothermal.potential_from_grid(np.array([[49.0, 0.0]])) == pytest.approx(
                 gal_isothermal.potential_from_grid(np.array([[51.0, 0.0]])), 1e-5)
@@ -592,9 +592,9 @@ class TestHyperGalaxy(object):
             gal_image = np.ones((3,))
 
             hyp = g.HyperGalaxy(contribution_factor=0.0)
-            contributions = hyp.contributions_from_hyper_images(hyper_model_image=gal_image,
-                                                                hyper_galaxy_image=gal_image,
-                                                                hyper_minimum_value=0.0)
+            contributions = hyp.contributions_from_model_image_and_galaxy_image(model_image=gal_image,
+                                                                                galaxy_image=gal_image,
+                                                                                minimum_value=0.0)
 
             assert (contributions == np.ones((3,))).all()
 
@@ -602,9 +602,9 @@ class TestHyperGalaxy(object):
             gal_image = np.array([0.5, 1.0, 1.5])
 
             hyp = g.HyperGalaxy(contribution_factor=1.0)
-            contributions = hyp.contributions_from_hyper_images(hyper_model_image=gal_image,
-                                                                hyper_galaxy_image=gal_image,
-                                                                hyper_minimum_value=0.0)
+            contributions = hyp.contributions_from_model_image_and_galaxy_image(model_image=gal_image,
+                                                                                galaxy_image=gal_image,
+                                                                                minimum_value=0.0)
 
             assert (contributions == np.array([(0.5 / 1.5) / (1.5 / 2.5), (1.0 / 2.0) / (1.5 / 2.5), 1.0])).all()
 
@@ -612,9 +612,9 @@ class TestHyperGalaxy(object):
             gal_image = np.array([0.5, 1.0, 1.5])
 
             hyp = g.HyperGalaxy(contribution_factor=1.0)
-            contributions = hyp.contributions_from_hyper_images(hyper_model_image=gal_image,
-                                                                hyper_galaxy_image=gal_image,
-                                                                hyper_minimum_value=0.6)
+            contributions = hyp.contributions_from_model_image_and_galaxy_image(model_image=gal_image,
+                                                                                galaxy_image=gal_image,
+                                                                                minimum_value=0.6)
 
             assert (contributions == np.array([0.0, (1.0 / 2.0) / (1.5 / 2.5), 1.0])).all()
 

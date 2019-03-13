@@ -4,7 +4,7 @@ from autolens.model.profiles import light_profiles as lp
 from autolens.data.array import mask as msk
 from autolens.lens import lens_data as ld
 
-from test.data_making import data_util
+from test.simulation import simulation_util
 
 # Although we could test the intensities without using an image (e.g. by just making a grid), we have chosen to
 # set this test up using an image and mask. This gives run-time numbers that can be easily related to an actual lens
@@ -16,13 +16,13 @@ radius_arcsec = 3.0
 print('sub grid size = ' + str(sub_grid_size))
 print('circular mask radius = ' + str(radius_arcsec) + '\n')
 
-for image_type in ['LSST', 'Euclid', 'HST', 'HST_Up', 'AO']:
+for data_resolution in ['LSST', 'Euclid', 'HST', 'HST_Up', 'AO']:
 
-    ccd_data = data_util.load_test_ccd_data(image_type=image_type, lens_name='no_lens_source_smooth', psf_shape=(3, 3))
+    ccd_data = simulation_util.load_test_ccd_data(data_type='no_lens_source_smooth', data_resolution=data_resolution, psf_shape=(3, 3))
     mask = msk.Mask.circular(shape=ccd_data.shape, pixel_scale=ccd_data.pixel_scale, radius_arcsec=radius_arcsec)
     lens_data = ld.LensData(ccd_data=ccd_data, mask=mask, sub_grid_size=sub_grid_size)
 
-    print('Deflection angle run times for image type ' + image_type + '\n')
+    print('Deflection angle run times for image type ' + data_resolution + '\n')
     print('Number of points = ' + str(lens_data.grid_stack.sub.shape[0]) + '\n')
 
     ### EllipticalGaussian ###

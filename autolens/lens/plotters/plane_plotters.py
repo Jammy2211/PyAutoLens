@@ -53,16 +53,16 @@ def plot_plane_image(
         position_pointsize=position_pointsize, grid_pointsize=grid_pointsize,
         output_path=output_path, output_format=output_format, output_filename=output_filename)
 
-def plot_surface_density(
+def plot_convergence(
         plane, mask=None, extract_array_from_mask=False, zoom_around_mask=False, as_subplot=False,
         units='arcsec', figsize=(7, 7), aspect='equal',
         cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
         cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
-        title='Plane Surface Density', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
-        output_path=None, output_format='show', output_filename='plane_surface_density'):
+        title='Plane Convergence', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
+        output_path=None, output_format='show', output_filename='plane_convergence'):
 
     array_plotters.plot_array(
-        array=plane.surface_density, mask=mask, extract_array_from_mask=extract_array_from_mask,
+        array=plane.convergence, mask=mask, extract_array_from_mask=extract_array_from_mask,
         zoom_around_mask=zoom_around_mask, as_subplot=as_subplot,
         units=units, kpc_per_arcsec=plane.kpc_per_arcsec_proper, figsize=figsize, aspect=aspect,
         cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
