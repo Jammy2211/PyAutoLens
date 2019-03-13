@@ -179,8 +179,8 @@ class Galaxy(object):
         else:
             return None
 
-    def surface_density_from_grid(self, grid):
-        """Compute the summed surface density of the galaxy's mass profiles using a grid of Cartesian (y,x) \
+    def convergence_from_grid(self, grid):
+        """Compute the summed convergence of the galaxy's mass profiles using a grid of Cartesian (y,x) \
         coordinates.
 
         If the galaxy has no mass profiles, a grid of zeros is returned.
@@ -193,7 +193,7 @@ class Galaxy(object):
             The (y, x) coordinates in the original reference frame of the grid.
         """
         if self.has_mass_profile:
-            return sum(map(lambda p: p.surface_density_from_grid(grid), self.mass_profiles))
+            return sum(map(lambda p: p.convergence_from_grid(grid), self.mass_profiles))
         else:
             return np.zeros((grid.shape[0],))
 
@@ -233,13 +233,13 @@ class Galaxy(object):
         else:
             return np.full((grid.shape[0], 2), 0.0)
 
-    def mass_within_circle(self, radius, conversion_factor=1.0):
-        """Compute the total mass of the galaxy's mass profiles within a circle of specified radius.
+    def angular_mass_within_circle(self, radius, conversion_factor=1.0):
+        """Compute the total angular mass of the galaxy's mass profiles within a circle of specified radius.
 
-        The value returned by this integral is dimensionless, and a conversion factor can be specified to convert it \
-        to a physical value (e.g. the critical surface mass density).
+        The value returned by this integral is in angular units, however a conversion factor can be specified to \
+        convert it to a physical value (e.g. the critical surface mass density).
 
-        See *profiles.mass_profiles.mass_within_circle* for details of how this is performed.
+        See *profiles.mass_profiles.angular_mass_within_circle* for details of how this is performed.
 
         Parameters
         ----------
@@ -250,17 +250,17 @@ class Galaxy(object):
             mass density).
         """
         if self.has_mass_profile:
-            return sum(map(lambda p: p.mass_within_circle(radius, conversion_factor), self.mass_profiles))
+            return sum(map(lambda p: p.angular_mass_within_circle(radius, conversion_factor), self.mass_profiles))
         else:
             return None
 
-    def mass_within_ellipse(self, major_axis, conversion_factor=1.0):
-        """Compute the total mass of the galaxy's mass profiles within an ellipse of specified major_axis.
+    def angular_mass_within_ellipse(self, major_axis, conversion_factor=1.0):
+        """Compute the total angular mass of the galaxy's mass profiles within an ellipse of specified major_axis.
 
-        The value returned by this integral is dimensionless, and a conversion factor can be specified to convert it \
-        to a physical value (e.g. the critical surface mass density).
+        The value returned by this integral is in angular units, however a conversion factor can be specified to \
+        convert it to a physical value (e.g. the critical surface mass density).
 
-        See *profiles.mass_profiles.mass_within_ellipses* for details of how this is performed.
+        See *profiles.mass_profiles.angualr_mass_within_ellipse* for details of how this is performed.
 
         Parameters
         ----------
@@ -271,7 +271,7 @@ class Galaxy(object):
             mass density).
         """
         if self.has_mass_profile:
-            return sum(map(lambda p: p.mass_within_ellipse(major_axis, conversion_factor), self.mass_profiles))
+            return sum(map(lambda p: p.angular_mass_within_ellipse(major_axis, conversion_factor), self.mass_profiles))
         else:
             return None
 

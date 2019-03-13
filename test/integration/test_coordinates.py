@@ -50,28 +50,28 @@ def test__centre_mass_profile_on_grid_coordinate__peak_density_is_correct_index(
     image_grid = grids.RegularGrid.from_shape_and_pixel_scale(shape=(5, 5), pixel_scale=1.0)
 
     sis = mp.SphericalIsothermal(centre=(2.0, -2.0))
-    density_1d = sis.surface_density_from_grid(grid=image_grid)
+    density_1d = sis.convergence_from_grid(grid=image_grid)
     density_2d = image_grid.array_2d_from_array_1d(array_1d=density_1d)
 
     assert density_1d.argmax() == 0
     assert np.unravel_index(density_2d.argmax(), density_2d.shape) == (0, 0)
 
     sis = mp.SphericalIsothermal(centre=(2.0, 2.0))
-    density_1d = sis.surface_density_from_grid(grid=image_grid)
+    density_1d = sis.convergence_from_grid(grid=image_grid)
     density_2d = image_grid.array_2d_from_array_1d(array_1d=density_1d)
 
     assert density_1d.argmax() == 4
     assert np.unravel_index(density_2d.argmax(), density_2d.shape) == (0, 4)
 
     sis = mp.SphericalIsothermal(centre=(-2.0, -2.0))
-    density_1d = sis.surface_density_from_grid(grid=image_grid)
+    density_1d = sis.convergence_from_grid(grid=image_grid)
     density_2d = image_grid.array_2d_from_array_1d(array_1d=density_1d)
 
     assert density_1d.argmax() == 20
     assert np.unravel_index(density_2d.argmax(), density_2d.shape) == (4, 0)
 
     sis =  mp.SphericalIsothermal(centre=(-2.0, 2.0))
-    density_1d = sis.surface_density_from_grid(grid=image_grid)
+    density_1d = sis.convergence_from_grid(grid=image_grid)
     density_2d = image_grid.array_2d_from_array_1d(array_1d=density_1d)
 
     assert density_1d.argmax() == 24

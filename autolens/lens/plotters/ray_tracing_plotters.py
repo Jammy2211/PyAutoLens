@@ -52,7 +52,7 @@ def plot_ray_tracing_subplot(
 
         plt.subplot(rows, columns, 2)
 
-        plot_surface_density(
+        plot_convergence(
             tracer=tracer, mask=mask, extract_array_from_mask=extract_array_from_mask,
             zoom_around_mask=zoom_around_mask, as_subplot=True,
             units=units, figsize=figsize, aspect=aspect,
@@ -120,7 +120,7 @@ def plot_ray_tracing_individual(
         tracer, mask=None, extract_array_from_mask=False, zoom_around_mask=False, positions=None,
         should_plot_image_plane_image=False,
         should_plot_source_plane=False,
-        should_plot_surface_density=False,
+        should_plot_convergence=False,
         should_plot_potential=False,
         should_plot_deflections=False,
         units='arcsec',
@@ -149,9 +149,9 @@ def plot_ray_tracing_individual(
             units=units,
             output_path=output_path, output_format=output_format)
 
-    if should_plot_surface_density:
+    if should_plot_convergence:
 
-        plot_surface_density(
+        plot_convergence(
             tracer=tracer, mask=mask, extract_array_from_mask=extract_array_from_mask,
             zoom_around_mask=zoom_around_mask,
             units=units,
@@ -210,16 +210,16 @@ def plot_image_plane_image(
         mask_pointsize=mask_pointsize, position_pointsize=position_pointsize,
         output_path=output_path, output_format=output_format, output_filename=output_filename)
 
-def plot_surface_density(
+def plot_convergence(
         tracer, mask=None, extract_array_from_mask=False, zoom_around_mask=False, as_subplot=False,
         units='arcsec', figsize=(7, 7), aspect='equal',
         cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
         cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
-        title='Tracer Surface Density', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
-        output_path=None, output_format='show', output_filename='tracer_surface_density'):
+        title='Tracer Convergence', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
+        output_path=None, output_format='show', output_filename='tracer_convergence'):
 
     array_plotters.plot_array(
-        array=tracer.surface_density, mask=mask, extract_array_from_mask=extract_array_from_mask,
+        array=tracer.convergence, mask=mask, extract_array_from_mask=extract_array_from_mask,
         zoom_around_mask=zoom_around_mask, as_subplot=as_subplot,
         units=units, kpc_per_arcsec=tracer.image_plane.kpc_per_arcsec_proper, figsize=figsize, aspect=aspect,
         cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,

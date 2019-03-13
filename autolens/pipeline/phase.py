@@ -300,8 +300,8 @@ class Phase(AbstractPhase):
                 conf.instance.general.get('output', 'plot_ray_tracing_image_plane_image', bool)
             self.plot_ray_tracing_source_plane = \
                 conf.instance.general.get('output', 'plot_ray_tracing_source_plane_image', bool)
-            self.plot_ray_tracing_surface_density = \
-                conf.instance.general.get('output', 'plot_ray_tracing_surface_density', bool)
+            self.plot_ray_tracing_convergence = \
+                conf.instance.general.get('output', 'plot_ray_tracing_convergence', bool)
             self.plot_ray_tracing_potential = \
                 conf.instance.general.get('output', 'plot_ray_tracing_potential', bool)
             self.plot_ray_tracing_deflections = \
@@ -668,7 +668,7 @@ class PhaseImaging(Phase):
                     zoom_around_mask=self.zoom_around_mask, positions=positions,
                     should_plot_image_plane_image=self.plot_ray_tracing_image_plane_image,
                     should_plot_source_plane=self.plot_ray_tracing_source_plane,
-                    should_plot_surface_density=self.plot_ray_tracing_surface_density,
+                    should_plot_convergence=self.plot_ray_tracing_convergence,
                     should_plot_potential=self.plot_ray_tracing_potential,
                     should_plot_deflections=self.plot_ray_tracing_deflections,
                     units=self.plot_units,
@@ -699,7 +699,7 @@ class PhaseImaging(Phase):
                         zoom_around_mask=self.zoom_around_mask, positions=positions,
                         should_plot_image_plane_image=True,
                         should_plot_source_plane=True,
-                        should_plot_surface_density=True,
+                        should_plot_convergence=True,
                         should_plot_potential=True,
                         should_plot_deflections=True,
                         units=self.plot_units,
@@ -711,7 +711,7 @@ class PhaseImaging(Phase):
                         zoom_around_mask=self.zoom_around_mask, positions=positions,
                         should_plot_image_plane_image=True,
                         should_plot_source_plane=True,
-                        should_plot_surface_density=True,
+                        should_plot_convergence=True,
                         should_plot_potential=True,
                         should_plot_deflections=True,
                         output_path=image_path + 'fits/', output_format='fits')
@@ -978,7 +978,7 @@ class MultiPlanePhase(PhaseImaging):
 class GalaxyFitPhase(AbstractPhase):
     galaxies = PhasePropertyCollection("galaxies")
 
-    def __init__(self, phase_name, phase_folders=None, galaxies=None, use_intensities=False, use_surface_density=False,
+    def __init__(self, phase_name, phase_folders=None, galaxies=None, use_intensities=False, use_convergence=False,
                  use_potential=False,
                  use_deflections=False, optimizer_class=non_linear.MultiNest, sub_grid_size=2,
                  mask_function=None, cosmology=cosmo.Planck15):
@@ -997,7 +997,7 @@ class GalaxyFitPhase(AbstractPhase):
         super(GalaxyFitPhase, self).__init__(phase_name=phase_name, phase_folders=phase_folders,
                                              optimizer_class=optimizer_class, cosmology=cosmology)
         self.use_intensities = use_intensities
-        self.use_surface_density = use_surface_density
+        self.use_convergence = use_convergence
         self.use_potential = use_potential
         self.use_deflections = use_deflections
         self.galaxies = galaxies
@@ -1050,11 +1050,11 @@ class GalaxyFitPhase(AbstractPhase):
 
         self.pass_priors(results)
 
-        if self.use_intensities or self.use_surface_density or self.use_potential:
+        if self.use_intensities or self.use_convergence or self.use_potential:
 
             galaxy_data = gd.GalaxyFitData(galaxy_data=galaxy_data[0], mask=mask, sub_grid_size=self.sub_grid_size,
                                            use_intensities=self.use_intensities,
-                                           use_surface_density=self.use_surface_density,
+                                           use_convergence=self.use_convergence,
                                            use_potential=self.use_potential,
                                            use_deflections_y=self.use_deflections,
                                            use_deflections_x=self.use_deflections)
@@ -1067,13 +1067,13 @@ class GalaxyFitPhase(AbstractPhase):
 
             galaxy_data_y = gd.GalaxyFitData(galaxy_data=galaxy_data[0], mask=mask, sub_grid_size=self.sub_grid_size,
                                              use_intensities=self.use_intensities,
-                                             use_surface_density=self.use_surface_density,
+                                             use_convergence=self.use_convergence,
                                              use_potential=self.use_potential,
                                              use_deflections_y=self.use_deflections, use_deflections_x=False)
 
             galaxy_data_x = gd.GalaxyFitData(galaxy_data=galaxy_data[1], mask=mask, sub_grid_size=self.sub_grid_size,
                                              use_intensities=self.use_intensities,
-                                             use_surface_density=self.use_surface_density,
+                                             use_convergence=self.use_convergence,
                                              use_potential=self.use_potential,
                                              use_deflections_y=False, use_deflections_x=self.use_deflections)
 

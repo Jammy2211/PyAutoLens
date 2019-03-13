@@ -156,14 +156,14 @@ class AbstractPlane(object):
         return list(map(lambda galaxy: galaxy.luminosity_within_ellipse(major_axis, conversion_factor),
                         self.galaxies))
 
-    def masses_of_galaxies_within_circles(self, radius, conversion_factor=1.0):
+    def angular_masses_of_galaxies_within_circles(self, radius, conversion_factor=1.0):
         """
-        Compute the total mass of all galaxies in this plane within a circle of specified radius.
+        Compute the total angular mass of all galaxies in this plane within a circle of specified radius.
 
-        The value returned by this integral is dimensionless, and a conversion factor can be specified to convert it \
-        to a physical value (e.g. the critical surface mass density).
+        The value returned by this integral is in angular units, however a conversion factor can be specified to \
+        convert it to a physical value (e.g. the critical surface mass density).
 
-        See *galaxy.mass_within_circle* and *mass_profiles.mass_within_circle* for details
+        See *galaxy.angular_mass_within_circle* and *mass_profiles.angular_mass_within_circle* for details
         of how this is performed.
 
         Parameters
@@ -174,17 +174,17 @@ class AbstractPlane(object):
             Factor the dimensionless mass is multiplied by to convert it to a physical mass (e.g. the critical surface \
             mass density).            
         """
-        return list(map(lambda galaxy: galaxy.mass_within_circle(radius, conversion_factor),
+        return list(map(lambda galaxy: galaxy.angular_mass_within_circle(radius, conversion_factor),
                         self.galaxies))
 
-    def masses_of_galaxies_within_ellipses(self, major_axis, conversion_factor=1.0):
+    def angular_masses_of_galaxies_within_ellipses(self, major_axis, conversion_factor=1.0):
         """
-        Compute the total mass of all galaxies in this plane within a ellipse of specified major-axis.
+        Compute the total angular mass of all galaxies in this plane within a ellipse of specified major-axis.
 
-        The value returned by this integral is dimensionless, and a conversion factor can be specified to convert it \
-        to a physical value (e.g. the critical surface mass density).
+        The value returned by this integral is in angular units, however a conversion factor can be specified to \
+        convert it to a physical value (e.g. the critical surface mass density).
 
-        See *galaxy.mass_within_ellipse* and *mass_profiles.mass_within_ellipse* for details
+        See *galaxy.angular_mass_within_ellipse* and *mass_profiles.angular_mass_within_ellipse* for details
         of how this is performed.
 
         Parameters
@@ -195,7 +195,7 @@ class AbstractPlane(object):
             Factor the dimensionless mass is multiplied by to convert it to a physical mass (e.g. the critical surface \
             mass density).            
         """
-        return list(map(lambda galaxy: galaxy.mass_within_ellipse(major_axis, conversion_factor),
+        return list(map(lambda galaxy: galaxy.angular_mass_within_ellipse(major_axis, conversion_factor),
                         self.galaxies))
 
     @property
@@ -209,11 +209,11 @@ class AbstractPlane(object):
         if self.has_mass_profile:
             return self.kpc_per_arcsec_proper * self.einstein_radius_arcsec
 
-    def einstein_mass(self, critical_density_arcsec):
+    def angular_einstein_mass(self, critical_density_arcsec):
         if self.has_mass_profile:
             return sum(filter(None, list(map(lambda galaxy:
-                                             galaxy.mass_within_circle(radius=galaxy.einstein_radius,
-                                                                       conversion_factor=critical_density_arcsec),
+                                             galaxy.angular_mass_within_circle(radius=galaxy.einstein_radius,
+                                                                               conversion_factor=critical_density_arcsec),
                                              self.galaxies))))
 
 
@@ -299,10 +299,10 @@ class AbstractGriddedPlane(AbstractPlane):
         return galaxy_util.intensities_of_galaxies_from_grid(grid=self.grid_stack.blurring, galaxies=self.galaxies)
 
     @property
-    def surface_density(self):
-        surface_density_1d = galaxy_util.surface_density_of_galaxies_from_grid(
+    def convergence(self):
+        convergence_1d = galaxy_util.convergence_of_galaxies_from_grid(
             grid=self.grid_stack.sub.unlensed_grid, galaxies=self.galaxies)
-        return self.grid_stack.scaled_array_2d_from_array_1d(array_1d=surface_density_1d)
+        return self.grid_stack.scaled_array_2d_from_array_1d(array_1d=convergence_1d)
 
     @property
     def potential(self):
