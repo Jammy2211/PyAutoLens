@@ -175,7 +175,17 @@ def resized_array_2d_from_array_2d_and_resized_shape(array_2d, resized_shape, or
 
     return resized_array
 
+@decorator_util.jit()
+def replace_noise_map_2d_values_where_image_2d_values_are_negative(image_2d, noise_map_2d, target_signal_to_noise=2.0):
 
+    for y in range(image_2d.shape[0]):
+        for x in range(image_2d.shape[1]):
+            if image_2d[y, x] < 0.0:
+                absolute_signal_to_noise = np.abs(image_2d[y, x]) / noise_map_2d[y, x]
+                if absolute_signal_to_noise >= target_signal_to_noise:
+                    noise_map_2d[y,x] = np.abs(image_2d[y, x]) / target_signal_to_noise
+
+    return noise_map_2d
 
 def bin_up_array_2d_using_mean(array_2d):
     """Bin up an array to coarser resolution, by binning up groups of pixels and using their mean value to determine \
