@@ -292,6 +292,18 @@ class CCDData(object):
         """The maximum value of signal-to-noise_maps in an image pixel in the image's signal-to-noise_maps mappers"""
         return np.max(self.signal_to_noise_map)
 
+    @property
+    def absolute_signal_to_noise_map(self):
+        """The estimated absolute_signal-to-noise_maps mappers of the image."""
+        return np.divide(np.abs(self.image), self.noise_map)
+
+    @property
+    def absolute_signal_to_noise_max(self):
+        """The maximum value of absolute signal-to-noise_map in an image pixel in the image's signal-to-noise_maps mappers"""
+        return np.max(self.absolute_signal_to_noise_map)
+
+
+
     @staticmethod
     def trim_psf_edges(array, psf):
         if psf is not None:
