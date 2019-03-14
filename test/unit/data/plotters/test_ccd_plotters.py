@@ -41,8 +41,11 @@ def test__ccd_sub_plot_output(ccd_data, general_config, ccd_plotter_path, plot_p
 
 
 def test__ccd_individuals__output_dependent_on_input(ccd_data, general_config, ccd_plotter_path, plot_patch):
+
     ccd_plotters.plot_ccd_individual(ccd_data=ccd_data,
-                                     should_plot_image=True, should_plot_psf=True,
+                                     should_plot_image=True,
+                                     should_plot_psf=True,
+                                     should_plot_absolute_signal_to_noise_map=True,
                                      output_path=ccd_plotter_path, output_format='png')
 
     assert ccd_plotter_path + 'ccd_image.png' in plot_patch.paths
@@ -53,6 +56,9 @@ def test__ccd_individuals__output_dependent_on_input(ccd_data, general_config, c
 
     assert not ccd_plotter_path + 'ccd_signal_to_noise_map.png' in plot_patch.paths
 
+    assert ccd_plotter_path + 'ccd_absolute_signal_to_noise_map.png' in plot_patch.paths
+
+    assert not ccd_plotter_path + 'ccd_potential_chi_squared_map.png' in plot_patch.paths
 
 def test__image_is_output(ccd_data, positions, mask, ccd_plotter_path, plot_patch):
     ccd_plotters.plot_image(ccd_data=ccd_data, positions=positions, mask=mask, extract_array_from_mask=True,
