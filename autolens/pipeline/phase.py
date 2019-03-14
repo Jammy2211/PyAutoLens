@@ -567,6 +567,10 @@ class PhaseImaging(Phase):
                 conf.instance.general.get('output', 'plot_data_psf', bool)
             self.plot_data_signal_to_noise_map = \
                 conf.instance.general.get('output', 'plot_data_signal_to_noise_map', bool)
+            self.plot_data_absolute_signal_to_noise_map = \
+                conf.instance.general.get('output', 'plot_data_absolute_signal_to_noise_map', bool)
+            self.plot_data_potential_chi_squared_map = \
+                conf.instance.general.get('output', 'plot_data_potential_chi_squared_map', bool)
 
             self.plot_lens_fit_all_at_end_png = \
                 conf.instance.general.get('output', 'plot_lens_fit_all_at_end_png', bool)
@@ -638,6 +642,8 @@ class PhaseImaging(Phase):
                 should_plot_noise_map=self.plot_data_noise_map,
                 should_plot_psf=self.plot_data_psf,
                 should_plot_signal_to_noise_map=self.plot_data_signal_to_noise_map,
+                should_plot_absolute_signal_to_noise_map=self.plot_data_absolute_signal_to_noise_map,
+                should_plot_potential_chi_squared_map=self.plot_data_potential_chi_squared_map,
                 units=self.plot_units,
                 output_path=image_path, output_format='png')
 
