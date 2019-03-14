@@ -717,6 +717,56 @@ class TestCCDData:
                                                          [0.1, 1.0]])).all()
             assert ccd_data.signal_to_noise_max == 1.0
 
+
+        def test__same_as_above__but_image_has_negative_values__replaced_with_zeros(self):
+
+            array = np.array([[-1.0, 2.0],
+                              [3.0, -4.0]])
+
+            noise = np.array([[10.0, 10.0],
+                              [30.0, 4.0]])
+
+            ccd_data = ccd.CCDData(image=array, pixel_scale=1.0,
+                                   psf=ccd.PSF(array=np.ones((2, 2)), pixel_scale=1.0), noise_map=noise)
+
+            assert (ccd_data.signal_to_noise_map == np.array([[0.0, 0.2],
+                                                              [0.1, 0.0]])).all()
+            assert ccd_data.signal_to_noise_max == 0.2
+
+    class TestAbsoluteSignalToNoise:
+
+        def test__image_and_noise_are_values__signal_to_noise_is_absolute_image_value_over_noise(self):
+
+            array = np.array([[-1.0, 2.0],
+                              [3.0, -4.0]])
+
+            noise = np.array([[10.0, 10.0],
+                              [30.0, 4.0]])
+
+            ccd_data = ccd.CCDData(image=array, pixel_scale=1.0,
+                                   psf=ccd.PSF(array=np.ones((2, 2)), pixel_scale=1.0), noise_map=noise)
+
+            assert (ccd_data.absolute_signal_to_noise_map == np.array([[0.1, 0.2],
+                                                         [0.1, 1.0]])).all()
+            assert ccd_data.absolute_signal_to_noise_max == 1.0
+
+    class TestPotentialChiSquaredMap:
+
+        def test__image_and_noise_are_values__signal_to_noise_is_absolute_image_value_over_noise(self):
+
+            array = np.array([[-1.0, 2.0],
+                              [3.0, -4.0]])
+
+            noise = np.array([[10.0, 10.0],
+                              [30.0, 4.0]])
+
+            ccd_data = ccd.CCDData(image=array, pixel_scale=1.0,
+                                   psf=ccd.PSF(array=np.ones((2, 2)), pixel_scale=1.0), noise_map=noise)
+
+            assert (ccd_data.potential_chi_squared_map == np.array([[0.1**2.0, 0.2**2.0],
+                                                                    [0.1**2.0, 1.0**2.0]])).all()
+            assert ccd_data.potential_chi_squared_max == 1.0
+
     class testNewCCDModifiedImage:
 
         def test__image_is_changed__other_components_are_not(self):
