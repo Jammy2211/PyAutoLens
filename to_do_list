@@ -2,12 +2,6 @@ Hey, welcome to my PyAutoLens to-do. This should give you a sense of what we're 
 
 Let me know if you think anything is missing, or should be pushed up the to-do list ;)
 
-Tomorrow:
-
-Pipelines use new path_util
-Integration tests use phase folders syntax.
-Use new featres in howtolens tutorials.
-
 Short term:
 
 - Bug with NFW potentials for MultiNest.
@@ -34,10 +28,10 @@ Long Term:
 
 Feb/Mar) Automated Prior Linking
 Feb/Mar) Pixelization which Adapts to source's light (not magnification).
-Feb/Mar) Hyper Analysis intergration at high level (e.g. phase).
-Feb/Mar) Write hyper analysis howtolens
+April) Hyper Analysis intergration at high level (e.g. phase).
+April) Write hyper analysis howtolens
 
-April) Multi-plane analysis.
+May) Multi-plane analysis.
 
 2019) Quasar modeling (time-delays, variable cosmology, PSF refinement)
 2019) UV-plane
