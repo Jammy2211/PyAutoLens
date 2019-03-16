@@ -1101,15 +1101,15 @@ class TestTruncatedNFW(object):
 
         # r > 1
 
-        assert truncated_nfw.coord_func_f(r=2.0) == pytest.approx(0.604599, 1.0e-4)
-        assert truncated_nfw.coord_func_f(r=3.0) == pytest.approx(0.435209, 1.0e-4)
+        assert truncated_nfw.coord_func_f(grid_radius=np.array([2.0, 3.0])) == \
+               pytest.approx(np.array([0.604599, 0.435209]), 1.0e-4)
 
         # r < 1
-        assert truncated_nfw.coord_func_f(r=0.5) == pytest.approx(1.52069, 1.0e-4)
-        assert truncated_nfw.coord_func_f(r=1.0 / 3.0) == pytest.approx(1.86967, 1.0e-4)
-
+        assert truncated_nfw.coord_func_f(grid_radius=np.array([0.5, 1.0/3.0])) == \
+               pytest.approx(1.52069, 1.86967, 1.0e-4)
+        #
         # r == 1
-        assert truncated_nfw.coord_func_f(r=1.0) == 1.0
+        assert (truncated_nfw.coord_func_f(grid_radius=np.array([1.0, 1.0])) == np.array([1.0, 1.0])).all()
 
     def test__coord_function_g__correct_values(self):
 
@@ -1118,38 +1118,38 @@ class TestTruncatedNFW(object):
 
         # r > 1
 
-        assert truncated_nfw.coord_func_g(r=2.0) == pytest.approx(0.13180, 1.0e-4)
-        assert truncated_nfw.coord_func_g(r=3.0) == pytest.approx(0.070598, 1.0e-4)
+        assert truncated_nfw.coord_func_g(grid_radius=np.array([2.0, 3.0])) == \
+               pytest.approx(np.array([0.13180, 0.070598]), 1.0e-4)
 
         # r < 1
 
-        assert truncated_nfw.coord_func_g(r=0.5) == pytest.approx(0.69425, 1.0e-4)
-        assert truncated_nfw.coord_func_g(r=1.0 / 3.0) == pytest.approx(0.97838, 1.0e-4)
+        assert truncated_nfw.coord_func_g(grid_radius=np.array([0.5, 1.0/3.0])) == \
+               pytest.approx(np.array([0.69425, 0.97838]), 1.0e-4)
 
         # r == 1
-        assert truncated_nfw.coord_func_g(r=1.0) == 1.0 / 3.0
+        assert (truncated_nfw.coord_func_g(grid_radius=np.array([1.0, 1.0])) == np.array([1.0/3.0, 1.0/3.0])).all()
 
     def test__coord_function_h__correct_values(self):
 
         truncated_nfw = mp.SphericalTruncatedNFW(centre=(0.0, 0.0), kappa_s=2.0, scale_radius=10.0,
                                                  truncation_radius=3.0)
 
-        assert truncated_nfw.coord_func_h(r=0.5) == pytest.approx(0.134395, 1.0e-4)
-        assert truncated_nfw.coord_func_h(r=3.0) == pytest.approx(0.840674, 1.0e-4)
+        assert truncated_nfw.coord_func_h(grid_radius=np.array([0.5, 3.0])) == \
+               pytest.approx(np.array([0.134395, 0.840674]), 1.0e-4)
 
     def test__coord_function_k__correct_values(self):
 
         truncated_nfw = mp.SphericalTruncatedNFW(centre=(0.0, 0.0), kappa_s=2.0, scale_radius=10.0,
                                                  truncation_radius=2.0)
 
-        assert truncated_nfw.coord_func_k(r=2.0) == pytest.approx(-0.88137, 1.0e-4)
-        assert truncated_nfw.coord_func_k(r=3.0) == pytest.approx(-0.62514, 1.0e-4)
+        assert truncated_nfw.coord_func_k(grid_radius=np.array([2.0, 3.0])) == \
+               pytest.approx(np.array([-0.88137, -0.62514]), 1.0e-4)
 
         truncated_nfw = mp.SphericalTruncatedNFW(centre=(0.0, 0.0), kappa_s=2.0, scale_radius=10.0,
                                                  truncation_radius=4.0)
 
-        assert truncated_nfw.coord_func_k(r=2.0) == pytest.approx(-1.44363, 1.0e-4)
-        assert truncated_nfw.coord_func_k(r=3.0) == pytest.approx(-1.09861, 1.0e-4)
+        assert truncated_nfw.coord_func_k(grid_radius=np.array([2.0, 3.0])) == \
+               pytest.approx(np.array([-1.44363, -1.09861]), 1.0e-4)
 
     def test__coord_function_l__correct_values(self):
 
@@ -1175,7 +1175,8 @@ class TestTruncatedNFW(object):
 
         value = coeff*(term_1 + term_2 - term_3 + term_4)
 
-        assert truncated_nfw.coord_func_l(r=2.0) == pytest.approx(value, 1.0e-4)
+        assert truncated_nfw.coord_func_l(grid_radius=np.array([2.0, 2.0])) == \
+               pytest.approx(np.array([value, value]), 1.0e-4)
 
         truncated_nfw = mp.SphericalTruncatedNFW(centre=(0.0, 0.0), kappa_s=2.0, scale_radius=10.0,
                                                  truncation_radius=3.0)
@@ -1188,7 +1189,8 @@ class TestTruncatedNFW(object):
 
         value = coeff*(term_1 + term_2 - term_3 + term_4)
 
-        assert truncated_nfw.coord_func_l(r=2.0) == pytest.approx(value, 1.0e-4)
+        assert truncated_nfw.coord_func_l(grid_radius=np.array([2.0, 2.0])) == \
+               pytest.approx(np.array([value, value]), 1.0e-4)
 
         truncated_nfw = mp.SphericalTruncatedNFW(centre=(0.0, 0.0), kappa_s=2.0, scale_radius=10.0,
                                                  truncation_radius=3.0)
@@ -1200,7 +1202,8 @@ class TestTruncatedNFW(object):
 
         value = coeff*(term_1 + term_2 - term_3 + term_4)
 
-        assert truncated_nfw.coord_func_l(r=3.0) == pytest.approx(value, 1.0e-4)
+        assert truncated_nfw.coord_func_l(grid_radius=np.array([3.0, 3.0])) == \
+               pytest.approx(np.array([value, value]), 1.0e-4)
 
     def test__coord_function_m__correct_values(self):
 
@@ -1225,7 +1228,8 @@ class TestTruncatedNFW(object):
 
         value = coeff*(term_1 + term_2 + term_3 + term_4)
 
-        assert truncated_nfw.coord_func_m(r=2.0) == pytest.approx(value, 1.0e-4)
+        assert truncated_nfw.coord_func_m(grid_radius=np.array([2.0, 2.0])) == \
+               pytest.approx(np.array([value, value]), 1.0e-4)
 
         truncated_nfw = mp.SphericalTruncatedNFW(centre=(0.0, 0.0), kappa_s=2.0, scale_radius=10.0,
                                                  truncation_radius=3.0)
@@ -1238,15 +1242,11 @@ class TestTruncatedNFW(object):
 
         value = coeff*(term_1 + term_2 + term_3 + term_4)
 
-        assert truncated_nfw.coord_func_m(r=2.0) == pytest.approx(value, 1.0e-4)
+        assert truncated_nfw.coord_func_m(grid_radius=np.array([2.0, 2.0])) == \
+               pytest.approx(np.array([value, value]), 1.0e-4)
 
         truncated_nfw = mp.SphericalTruncatedNFW(centre=(0.0, 0.0), kappa_s=2.0, scale_radius=10.0,
                                                  truncation_radius=3.0)
-
-        print()
-        print(truncated_nfw.coord_func_f(r=3.0))
-        print(truncated_nfw.coord_func_k(r=3.0))
-        print()
 
         coeff = 0.09
         term_1 = 11.31545
@@ -1256,13 +1256,123 @@ class TestTruncatedNFW(object):
 
         value = coeff*(term_1 + term_2 + term_3 + term_4)
 
-        assert truncated_nfw.coord_func_m(r=3.0) == pytest.approx(value, 1.0e-4)
-
+        assert truncated_nfw.coord_func_m(grid_radius=np.array([3.0, 3.0])) == \
+               pytest.approx(np.array([value, value]), 1.0e-4)
 
     def test__convergence_correct_values(self):
 
-        pass
+        truncated_nfw = mp.SphericalTruncatedNFW(centre=(0.0, 0.0), kappa_s=1.0, scale_radius=1.0,
+                                                 truncation_radius=2.0)
 
+        assert truncated_nfw.convergence_from_grid(grid=np.array([[2.0, 0.0]])) == \
+               pytest.approx(2.0*0.046409642, 1.0e-4)
+
+        assert truncated_nfw.convergence_from_grid(grid=np.array([[1.0, 1.0]])) == \
+               pytest.approx(2.0*0.10549515, 1.0e-4)
+
+        truncated_nfw = mp.SphericalTruncatedNFW(centre=(0.0, 0.0), kappa_s=3.0, scale_radius=1.0,
+                                                 truncation_radius=2.0)
+
+        assert truncated_nfw.convergence_from_grid(grid=np.array([[2.0, 0.0]])) == \
+               pytest.approx(6.0*0.046409642, 1.0e-4)
+
+        truncated_nfw = mp.SphericalTruncatedNFW(centre=(0.0, 0.0), kappa_s=3.0, scale_radius=5.0,
+                                                 truncation_radius=2.0)
+
+        assert truncated_nfw.convergence_from_grid(grid=np.array([[2.0, 0.0]])) == \
+               pytest.approx(6.0*0.7042266, 1.0e-4)
+
+    def test__deflections_correct_values(self):
+
+        truncated_nfw = mp.SphericalTruncatedNFW(centre=(0.0, 0.0), kappa_s=1.0, scale_radius=1.0,
+                                                 truncation_radius=2.0)
+
+        # factor = (4.0 * kappa_s * scale_radius / (r / scale_radius))
+
+        deflections = truncated_nfw.deflections_from_grid(grid=np.array([[2.0, 0.0]]))
+
+        factor = (4.0 * 1.0 * 1.0) / (2.0 / 1.0)
+        assert deflections[0,0] == pytest.approx(factor*0.38209715, 1.0e-4)
+        assert deflections[0,1] == pytest.approx(0.0, 1.0e-4)
+
+        deflections = truncated_nfw.deflections_from_grid(grid=np.array([[0.0, 2.0]]))
+
+        assert deflections[0,0] == pytest.approx(0.0, 1.0e-4)
+        assert deflections[0,1] == pytest.approx(factor*0.38209715, 1.0e-4)
+
+        deflections = truncated_nfw.deflections_from_grid(grid=np.array([[1.0, 1.0]]))
+
+        factor = (4.0 * 1.0 * 1.0) / (np.sqrt(2) / 1.0)
+        assert deflections[0,0] == pytest.approx((1.0/np.sqrt(2))*factor*0.3125838, 1.0e-4)
+        assert deflections[0,1] == pytest.approx((1.0/np.sqrt(2))*factor*0.3125838, 1.0e-4)
+
+        truncated_nfw = mp.SphericalTruncatedNFW(centre=(0.0, 0.0), kappa_s=2.0, scale_radius=1.0,
+                                                 truncation_radius=2.0)
+
+        deflections = truncated_nfw.deflections_from_grid(grid=np.array([[2.0, 0.0]]))
+
+        factor = (4.0 * 2.0 * 1.0) / (2.0 / 1.0)
+        assert deflections[0,0] == pytest.approx(factor*0.38209715, 1.0e-4)
+        assert deflections[0,1] == pytest.approx(0.0, 1.0e-4)
+
+        truncated_nfw = mp.SphericalTruncatedNFW(centre=(0.0, 0.0), kappa_s=1.0, scale_radius=4.0,
+                                                 truncation_radius=2.0)
+
+        deflections = truncated_nfw.deflections_from_grid(grid=np.array([[2.0, 0.0]]))
+
+        factor = (4.0 * 1.0 * 4.0) / (2.0 / 4.0)
+        assert deflections[0,0] == pytest.approx(factor*0.116951813, 1.0e-4)
+        assert deflections[0,1] == pytest.approx(0.0, 1.0e-4)
+
+    def test__compare_nfw_and_truncated_nfw_with_large_truncation_radius__convergence_and_deflections_identical(self):
+
+        truncated_nfw = mp.SphericalTruncatedNFW(centre=(0.0, 0.0), kappa_s=1.0, scale_radius=4.0,
+                                                 truncation_radius=50000.0)
+
+        nfw = mp.SphericalNFW(centre=(0.0, 0.0), kappa_s=1.0, scale_radius=4.0)
+
+        truncated_nfw_convergence = truncated_nfw.convergence_from_grid(grid=np.array([[2.0, 2.0], [3.0, 1.0],
+                                                                                       [-1.0, -9.0]]))
+        nfw_convergence = nfw.convergence_from_grid(grid=np.array([[2.0, 2.0], [3.0, 1.0], [-1.0, -9.0]]))
+
+        assert truncated_nfw_convergence == pytest.approx(nfw_convergence, 1.0e-4)
+
+        truncated_nfw_deflections = truncated_nfw.deflections_from_grid(grid=np.array([[2.0, 2.0], [3.0, 1.0],
+                                                                                       [-1.0, -9.0]]))
+        nfw_deflections = nfw.deflections_from_grid(grid=np.array([[2.0, 2.0], [3.0, 1.0], [-1.0, -9.0]]))
+
+        assert truncated_nfw_deflections == pytest.approx(nfw_deflections, 1.0e-4)
+
+    def test__deflections_of_spherical_profile__dont_use_interpolate_and_cache_decorators(self):
+
+        truncated_nfw = mp.SphericalTruncatedNFW(centre=(-0.7, 0.5), kappa_s=1.0, scale_radius=8.0,
+                                                 truncation_radius=2.0)
+
+        mask = np.array([[True, True, True, True, True],
+                         [True, False, False, False, True],
+                         [True, False, True, False, True],
+                         [True, False, False, False, True],
+                         [True, True, True, True, True]])
+
+        mask = msk.Mask(mask, pixel_scale=1.0)
+
+        regular = grids.RegularGrid.from_mask(mask=mask)
+
+        regular_with_interp = regular.new_grid_with_interpolator(interp_pixel_scale=0.5)
+        interp_deflections = truncated_nfw.deflections_from_grid(grid=regular_with_interp)
+
+        interpolator = grids.Interpolator.from_mask_grid_and_interp_pixel_scales(
+            mask=mask, grid=regular, interp_pixel_scale=0.5)
+
+        interp_deflections_values = truncated_nfw.deflections_from_grid(grid=interpolator.interp_grid)
+
+        interp_deflections_manual_y = \
+            interpolator.interpolated_values_from_values(values=interp_deflections_values[:, 0])
+        interp_deflections_manual_x = \
+            interpolator.interpolated_values_from_values(values=interp_deflections_values[:, 1])
+
+        assert (interp_deflections_manual_y != interp_deflections[:,0]).all()
+        assert (interp_deflections_manual_x != interp_deflections[:,1]).all()
 
 
 class TestNFW(object):

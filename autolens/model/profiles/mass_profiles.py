@@ -640,25 +640,26 @@ class AbstractEllipticalGeneralizedNFW(EllipticalMassProfile, MassProfile):
         return self.radius_where_average_convergence_in_circle_is_one
 
     @staticmethod
-    def coord_func_f(r):
-        if r > 1.0:
-            return (1.0 / np.sqrt(np.square(r) - 1.0)) * np.arccos(np.divide(1.0, r))
-        elif r < 1.0:
-            return (1.0 / np.sqrt(1.0 - np.square(r))) * np.arccosh(np.divide(1.0, r))
-        elif r == 1.0:
-            return 1.0
+    def coord_func_f(grid_radius):
+        f = np.where(grid_radius > 1.0,
+                     (1.0 / np.sqrt(np.square(grid_radius) - 1.0)) * np.arccos(np.divide(1.0, grid_radius)),
+                     (1.0 / np.sqrt(1.0 - np.square(grid_radius))) * np.arccosh(np.divide(1.0, grid_radius)))
+        f[np.isnan(f)] = 1.0
+        return f
 
-    def coord_func_g(self, r):
-        f_r = self.coord_func_f(r=r)
-        if r > 1.0:
-            return (1.0 - f_r) / (np.square(r) - 1.0)
-        elif r < 1.0:
-            return (f_r - 1.0) / (1.0 - np.square(r))
-        elif r == 1.0:
-            return 1.0 / 3.0
+    def coord_func_g(self, grid_radius):
 
-    def coord_func_h(self, r):
-        return np.log(r / 2.0) + self.coord_func_f(r=r)
+        f_r = self.coord_func_f(grid_radius=grid_radius)
+
+        g = np.where(grid_radius > 1.0,
+                     (1.0 - f_r) / (np.square(grid_radius) - 1.0),
+                     (f_r - 1.0) / (1.0 - np.square(grid_radius)))
+        g[np.isnan(g)] = 1.0 / 3.0
+        return g
+
+    def coord_func_h(self, grid_radius):
+        return np.log(grid_radius / 2.0) + self.coord_func_f(grid_radius=grid_radius)
+
 
 class EllipticalGeneralizedNFW(AbstractEllipticalGeneralizedNFW):
 
@@ -859,37 +860,58 @@ class SphericalTruncatedNFW(AbstractEllipticalGeneralizedNFW):
 
         self.truncation_radius = truncation_radius
 
-    def coord_func_k(self, r):
-        return np.log(np.divide(r, np.sqrt(np.square(r) + np.square(self.truncation_radius)) +
+    def coord_func_k(self, grid_radius):
+        return np.log(np.divide(grid_radius, np.sqrt(np.square(grid_radius) + np.square(self.truncation_radius)) +
                                 self.truncation_radius))
 
-    def coord_func_l(self, r):
+    def coord_func_l(self, grid_radius):
 
-        f_r = self.coord_func_f(r=r)
-        g_r = self.coord_func_g(r=r)
-        k_r = self.coord_func_k(r=r)
+        f_r = self.coord_func_f(grid_radius=grid_radius)
+        g_r = self.coord_func_g(grid_radius=grid_radius)
+        k_r = self.coord_func_k(grid_radius=grid_radius)
 
         return np.divide(self.truncation_radius**2.0, (self.truncation_radius**2.0 + 1.0)**2.0)*(
                 ((self.truncation_radius**2.0 + 1.0)*g_r) +
-                 (2*f_r) -
-                (np.pi/(np.sqrt(self.truncation_radius ** 2.0 + r ** 2.0))) +
+                (2*f_r) -
+                (np.pi / (np.sqrt(self.truncation_radius ** 2.0 + grid_radius ** 2.0))) +
                 (((self.truncation_radius**2.0 - 1.0) / (self.truncation_radius *
-                 (np.sqrt(self.truncation_radius ** 2.0 + r ** 2.0)))) * k_r))
+                                                         (np.sqrt(self.truncation_radius ** 2.0 + grid_radius ** 2.0)))) * k_r))
 
-    def coord_func_m(self, r):
+    def coord_func_m(self, grid_radius):
 
-        f_r = self.coord_func_f(r=r)
-        k_r = self.coord_func_k(r=r)
+        f_r = self.coord_func_f(grid_radius=grid_radius)
+        k_r = self.coord_func_k(grid_radius=grid_radius)
 
         return (self.truncation_radius**2.0 / (self.truncation_radius**2.0 + 1.0) ** 2.0) * (
-               ((self.truncation_radius ** 2.0 + 2.0 * r ** 2.0 - 1.0) * f_r) +
-               (np.pi * self.truncation_radius) +
-               ((self.truncation_radius ** 2.0 - 1.0) * np.log(self.truncation_radius)) +
-               (np.sqrt(r ** 2.0 + self.truncation_radius ** 2.0) * (
+                ((self.truncation_radius ** 2.0 + 2.0 * grid_radius ** 2.0 - 1.0) * f_r) +
+                (np.pi * self.truncation_radius) +
+                ((self.truncation_radius ** 2.0 - 1.0) * np.log(self.truncation_radius)) +
+                (np.sqrt(grid_radius ** 2.0 + self.truncation_radius ** 2.0) * (
                 ((self.truncation_radius ** 2.0 - 1.0) / self.truncation_radius) * k_r - np.pi)))
 
-  #  def convergence_func(self, radius):
+    def convergence_func(self, grid_radius):
+        grid_radius = (1.0 / self.scale_radius) * grid_radius
+        return 2.0 * self.kappa_s * self.coord_func_l(grid_radius=grid_radius)
 
+    def deflection_func_sph(self, grid_radius):
+        return self.coord_func_m(grid_radius=grid_radius)
+
+    @geometry_profiles.transform_grid
+    def deflections_from_grid(self, grid, **kwargs):
+        """
+        Calculate the deflection angles at a given set of arc-second gridded coordinates.
+
+        Parameters
+        ----------
+        grid : grids.RegularGrid
+            The grid of (y,x) arc-second coordinates the deflection angles are computed on.
+        """
+
+        eta = np.multiply(1. / self.scale_radius, self.grid_to_grid_radii(grid))
+
+        deflection_grid = np.multiply((4. * self.kappa_s * self.scale_radius / eta), self.deflection_func_sph(eta))
+
+        return self.grid_to_grid_cartesian(grid, deflection_grid)
 
 
 
@@ -969,9 +991,9 @@ class EllipticalNFW(AbstractEllipticalGeneralizedNFW):
 
         return self.rotate_grid_from_profile(np.multiply(1.0, np.vstack((deflection_y, deflection_x)).T))
 
-    def convergence_func(self, radius):
-        radius = (1.0 / self.scale_radius) * radius
-        return 2.0 * self.kappa_s * self.coord_func_g(r=radius)
+    def convergence_func(self, grid_radius):
+        grid_radius = (1.0 / self.scale_radius) * grid_radius
+        return 2.0 * self.kappa_s * self.coord_func_g(grid_radius=grid_radius)
 
     @staticmethod
     def potential_func(u, y, x, axis_ratio, kappa_s, scale_radius):
