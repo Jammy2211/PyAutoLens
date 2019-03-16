@@ -639,6 +639,26 @@ class AbstractEllipticalGeneralizedNFW(EllipticalMassProfile, MassProfile):
     def einstein_radius(self):
         return self.radius_where_average_convergence_in_circle_is_one
 
+    @staticmethod
+    def coord_func_f(r):
+        if r > 1.0:
+            return (1.0 / np.sqrt(np.square(r) - 1.0)) * np.arccos(np.divide(1.0, r))
+        elif r < 1.0:
+            return (1.0 / np.sqrt(1.0 - np.square(r))) * np.arccosh(np.divide(1.0, r))
+        elif r == 1.0:
+            return 1.0
+
+    def coord_func_g(self, r):
+        f_r = self.coord_func_f(r=r)
+        if r > 1.0:
+            return (1.0 - f_r) / (np.square(r) - 1.0)
+        elif r < 1.0:
+            return (f_r - 1.0) / (1.0 - np.square(r))
+        elif r == 1.0:
+            return 1.0 / 3.0
+
+    def coord_func_h(self, r):
+        return np.log(r / 2.0) + self.coord_func_f(r=r)
 
 class EllipticalGeneralizedNFW(AbstractEllipticalGeneralizedNFW):
 
@@ -794,7 +814,8 @@ class SphericalGeneralizedNFW(EllipticalGeneralizedNFW):
             the Universe..
         """
 
-        super(SphericalGeneralizedNFW, self).__init__(centre, 1.0, 0.0, kappa_s, inner_slope, scale_radius)
+        super(SphericalGeneralizedNFW, self).__init__(centre=centre, axis_ratio=1.0, phi=0.0, kappa_s=kappa_s,
+                                                      inner_slope=inner_slope, scale_radius=scale_radius)
 
     @grids.grid_interpolate
     #@geometry_profiles.cache
@@ -827,6 +848,50 @@ class SphericalGeneralizedNFW(EllipticalGeneralizedNFW):
         return eta ** (2 - self.inner_slope) * ((1.0 / (3 - self.inner_slope)) *
                                                 special.hyp2f1(3 - self.inner_slope, 3 - self.inner_slope,
                                                                4 - self.inner_slope, -eta) + integral_y_2)
+
+
+class SphericalTruncatedNFW(AbstractEllipticalGeneralizedNFW):
+
+    def __init__(self, centre=(0.0, 0.0), kappa_s=0.05, scale_radius=5.0, truncation_radius=2.0):
+
+        super(SphericalTruncatedNFW, self).__init__(centre=centre, axis_ratio=1.0, phi=0.0, kappa_s=kappa_s,
+                                                    inner_slope=1.0, scale_radius=scale_radius)
+
+        self.truncation_radius = truncation_radius
+
+    def coord_func_k(self, r):
+        return np.log(np.divide(r, np.sqrt(np.square(r) + np.square(self.truncation_radius)) +
+                                self.truncation_radius))
+
+    def coord_func_l(self, r):
+
+        f_r = self.coord_func_f(r=r)
+        g_r = self.coord_func_g(r=r)
+        k_r = self.coord_func_k(r=r)
+
+        return np.divide(self.truncation_radius**2.0, (self.truncation_radius**2.0 + 1.0)**2.0)*(
+                ((self.truncation_radius**2.0 + 1.0)*g_r) +
+                 (2*f_r) -
+                (np.pi/(np.sqrt(self.truncation_radius ** 2.0 + r ** 2.0))) +
+                (((self.truncation_radius**2.0 - 1.0) / (self.truncation_radius *
+                 (np.sqrt(self.truncation_radius ** 2.0 + r ** 2.0)))) * k_r))
+
+    def coord_func_m(self, r):
+
+        f_r = self.coord_func_f(r=r)
+        k_r = self.coord_func_k(r=r)
+
+        return (self.truncation_radius**2.0 / (self.truncation_radius**2.0 + 1.0) ** 2.0) * (
+               ((self.truncation_radius ** 2.0 + 2.0 * r ** 2.0 - 1.0) * f_r) +
+               (np.pi * self.truncation_radius) +
+               ((self.truncation_radius ** 2.0 - 1.0) * np.log(self.truncation_radius)) +
+               (np.sqrt(r ** 2.0 + self.truncation_radius ** 2.0) * (
+                ((self.truncation_radius ** 2.0 - 1.0) / self.truncation_radius) * k_r - np.pi)))
+
+  #  def convergence_func(self, radius):
+
+
+
 
 
 class EllipticalNFW(AbstractEllipticalGeneralizedNFW):
@@ -906,7 +971,7 @@ class EllipticalNFW(AbstractEllipticalGeneralizedNFW):
 
     def convergence_func(self, radius):
         radius = (1.0 / self.scale_radius) * radius
-        return 2.0 * self.kappa_s * (1 - self.coord_func(radius)) / (radius ** 2 - 1)
+        return 2.0 * self.kappa_s * self.coord_func_g(r=radius)
 
     @staticmethod
     def potential_func(u, y, x, axis_ratio, kappa_s, scale_radius):
