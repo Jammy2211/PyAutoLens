@@ -159,6 +159,16 @@ class TestLensData(object):
         assert (lens_data.image == 8.0*np.ones((4,4))).all()
         assert (lens_data.image_1d == 8.0*np.ones(4)).all()
 
+    def test__lens_data_with_binned_up_ccd_data(self, lens_data):
+
+        lens_data = lens_data.new_lens_data_with_binned_up_ccd_data(bin_up_factor=2)
+
+        assert (lens_data.image == np.ones((2,2))).all()
+        assert (lens_data.noise_map == np.ones((2,2))).all()
+        assert (lens_data.ccd_data.background_noise_map == (np.sqrt(36)/4.0)*np.ones((2,2))).all()
+        assert (lens_data.ccd_data.poisson_noise_map == (np.sqrt(64)/4.0)*np.ones((2,2))).all()
+        assert (lens_data.ccd_data.exposure_time_map == 20.0*np.ones((2,2))).all()
+        assert (lens_data.ccd_data.background_sky_map == 6.0*np.ones((2,2))).all()
 
 @pytest.fixture(name="lens_data_hyper")
 def make_lens_hyper_image(ccd, mask):
