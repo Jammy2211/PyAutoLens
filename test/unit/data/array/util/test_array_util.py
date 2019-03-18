@@ -561,3 +561,270 @@ class TestBinUpPadding:
                                              [1.0, 1.0],
                                              [1.0, 2.0],
                                              [1.0, 1.0]])).all()
+
+
+class TestBinUpArrays2d:
+
+    def test__bin_using_mean__array_4x4_to_2x2__uses_mean_correctly(self):
+
+        array_2d = np.array([[1.0, 1.0, 2.0, 2.0],
+                             [1.0, 1.0, 2.0, 2.0],
+                             [3.0, 3.0, 4.0, 4.0],
+                             [3.0, 3.0, 4.0, 4.0]])
+
+        binned_array_2d = array_util.bin_up_array_2d_using_mean(array_2d=array_2d, bin_up_factor=2)
+
+        assert (binned_array_2d == np.array([[1.0, 2.0],
+                                             [3.0, 4.0]])).all()
+
+        array_2d = np.array([[1.0, 2.0, 2.0, 2.0],
+                             [1.0, 6.0, 2.0, 10.0],
+                             [9.0, 3.0, 4.0, 0.0],
+                             [3.0, 3.0, 4.0, 4.0]])
+
+        binned_array_2d = array_util.bin_up_array_2d_using_mean(array_2d=array_2d, bin_up_factor=2)
+
+        assert (binned_array_2d == np.array([[2.5, 4.0],
+                                             [4.5, 3.0]])).all()
+
+    def test__bin_using_mean__array_6x3_to_2x1_and_3x6_to_1x2__uses_mean_correctly(self):
+
+        array_2d = np.array([[1.0, 1.0, 1.0],
+                             [1.0, 1.0, 1.0],
+                             [1.0, 1.0, 1.0],
+                             [2.0, 2.0, 2.0],
+                             [2.0, 2.0, 2.0],
+                             [2.0, 2.0, 2.0]])
+
+        binned_array_2d = array_util.bin_up_array_2d_using_mean(array_2d=array_2d, bin_up_factor=3)
+
+        assert (binned_array_2d == np.array([[1.0],
+                                             [2.0]])).all()
+
+        array_2d = np.array([[1.0, 1.0, 1.0],
+                             [1.0, 10.0, 1.0],
+                             [1.0, 1.0, 1.0],
+                             [2.0, 11.0, 2.0],
+                             [2.0, 2.0, 2.0],
+                             [2.0, 2.0, 2.0]])
+
+        binned_array_2d = array_util.bin_up_array_2d_using_mean(array_2d=array_2d, bin_up_factor=3)
+        assert (binned_array_2d == np.array([[2.0],
+                                             [3.0]])).all()
+
+        array_2d = np.array([[1.0, 1.0, 1.0, 2.0, 2.0, 2.0],
+                             [1.0, 1.0, 1.0, 2.0, 2.0, 2.0],
+                             [1.0, 1.0, 1.0, 2.0, 2.0, 2.0]])
+
+        binned_array_2d = array_util.bin_up_array_2d_using_mean(array_2d=array_2d, bin_up_factor=3)
+        assert (binned_array_2d == np.array([[1.0, 2.0]])).all()
+
+        array_2d = np.array([[1.0, 1.0, 1.0, 2.0, 2.0, 2.0],
+                             [1.0, 10.0, 1.0, 11.0, 2.0, 2.0],
+                             [1.0, 1.0, 1.0, 2.0, 2.0, 2.0]])
+
+        binned_array_2d = array_util.bin_up_array_2d_using_mean(array_2d=array_2d, bin_up_factor=3)
+        assert (binned_array_2d == np.array([[2.0, 3.0]])).all()
+
+    def test__bin_using_mean__bin_includes_padding_image_with_zeros(self):
+
+        # Padded array:
+
+        # [[0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        #  [0.0, 1.0, 1.0, 1.0, 1.0, 0.0],
+        #  [0.0, 1.0, 2.0, 1.0, 1.0, 0.0],
+        #  [0.0, 1.0, 1.0, 1.0, 1.0, 0.0],
+        #  [0.0, 1.0, 1.0, 1.0, 1.0, 0.0],
+        #  [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]]
+
+        array_2d = np.ones(shape=(4, 4))
+        array_2d[1,1] = 2.0
+        binned_array_2d = array_util.bin_up_array_2d_using_mean(array_2d=array_2d, bin_up_factor=3)
+        assert (binned_array_2d == np.array([[(5.0 / 9.0), (4.0 / 9.0)],
+                                             [(4.0 / 9.0), (4.0 / 9.0)]])).all()
+
+        # Padded Array:
+
+        # np.array([[0.0, 1.0, 1.0, 1.0],
+        #           [0.0, 1.0, 2.0, 1.0]]
+
+        array_2d = np.ones(shape=(2, 3))
+        array_2d[1,1] = 2.0
+        binned_2d_array = array_util.bin_up_array_2d_using_mean(array_2d=array_2d, bin_up_factor=2)
+        assert (binned_2d_array == np.array([[0.5, 1.25]])).all()
+        
+    def test__bin_using_quadrature__array_4x4_to_2x2__uses_quadrature_correctly(self):
+
+        array_2d = np.array([[1.0, 1.0, 2.0, 2.0],
+                             [1.0, 1.0, 2.0, 2.0],
+                             [3.0, 3.0, 4.0, 4.0],
+                             [3.0, 3.0, 4.0, 4.0]])
+
+        binned_array_2d = array_util.bin_up_array_2d_using_quadrature(array_2d=array_2d, bin_up_factor=2)
+
+        assert (binned_array_2d == np.array([[np.sqrt(4.0) / 4.0, np.sqrt(16.0) / 4.0],
+                                             [np.sqrt(36.0) / 4.0, np.sqrt(64.0) / 4.0]])).all()
+
+        array_2d = np.array([[1.0, 2.0, 2.0, 2.0],
+                             [1.0, 6.0, 2.0, 10.0],
+                             [9.0, 3.0, 4.0, 0.0],
+                             [3.0, 3.0, 4.0, 4.0]])
+
+        binned_array_2d = array_util.bin_up_array_2d_using_quadrature(array_2d=array_2d, bin_up_factor=2)
+
+        assert (binned_array_2d == np.array([[np.sqrt(42.0) / 4.0, np.sqrt(112.0) / 4.0],
+                                             [np.sqrt(108.0) / 4.0, np.sqrt(48.0) / 4.0]])).all()
+
+    def test__bin_using_quadrature__array_6x3_to_2x1_and_3x6_to_1x2__uses_quadrature_correctly(self):
+
+        array_2d = np.array([[1.0, 1.0, 1.0],
+                             [1.0, 1.0, 1.0],
+                             [1.0, 1.0, 1.0],
+                             [2.0, 2.0, 2.0],
+                             [2.0, 2.0, 2.0],
+                             [2.0, 2.0, 2.0]])
+
+        binned_array_2d = array_util.bin_up_array_2d_using_quadrature(array_2d=array_2d, bin_up_factor=3)
+
+        assert (binned_array_2d == np.array([[np.sqrt(9.0) / 9.0],
+                                             [np.sqrt(36.0) / 9.0]])).all()
+
+        array_2d = np.array([[1.0, 1.0, 1.0],
+                             [1.0, 10.0, 1.0],
+                             [1.0, 1.0, 1.0],
+                             [2.0, 4.0, 2.0],
+                             [2.0, 2.0, 2.0],
+                             [2.0, 2.0, 2.0]])
+
+        binned_array_2d = array_util.bin_up_array_2d_using_quadrature(array_2d=array_2d, bin_up_factor=3)
+        assert (binned_array_2d == np.array([[np.sqrt(108.0) / 9.0],
+                                             [np.sqrt(48.0) / 9.0]])).all()
+
+        array_2d = np.array([[1.0, 1.0, 1.0, 2.0, 2.0, 2.0],
+                             [1.0, 1.0, 1.0, 2.0, 2.0, 2.0],
+                             [1.0, 1.0, 1.0, 2.0, 2.0, 2.0]])
+
+        binned_array_2d = array_util.bin_up_array_2d_using_quadrature(array_2d=array_2d, bin_up_factor=3)
+        assert (binned_array_2d == np.array([[np.sqrt(9.0) / 9.0, np.sqrt(36.0) / 9.0]])).all()
+
+        array_2d = np.array([[1.0, 1.0, 1.0, 2.0, 2.0, 2.0],
+                             [1.0, 10.0, 1.0, 4.0, 2.0, 2.0],
+                             [1.0, 1.0, 1.0, 2.0, 2.0, 2.0]])
+
+        binned_array_2d = array_util.bin_up_array_2d_using_quadrature(array_2d=array_2d, bin_up_factor=3)
+        assert (binned_array_2d == np.array([[np.sqrt(108.0) / 9.0, np.sqrt(48.0) / 9.0]])).all()
+
+    def test__bin_using_quadrature__bin_includes_padding_image_with_zeros(self):
+
+        # Padded array:
+
+        # [[0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        #  [0.0, 1.0, 1.0, 1.0, 1.0, 0.0],
+        #  [0.0, 1.0, 2.0, 1.0, 1.0, 0.0],
+        #  [0.0, 1.0, 1.0, 1.0, 1.0, 0.0],
+        #  [0.0, 1.0, 1.0, 1.0, 1.0, 0.0],
+        #  [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]]
+
+        array_2d = np.ones(shape=(4, 4))
+        array_2d[1,1] = 2.0
+        binned_array_2d = array_util.bin_up_array_2d_using_quadrature(array_2d=array_2d, bin_up_factor=3)
+        assert (binned_array_2d == np.array([[np.sqrt(7.0) / 9.0, np.sqrt(4.0) / 9.0],
+                                             [np.sqrt(4.0) / 9.0, np.sqrt(4.0) / 9.0]])).all()
+
+        # Padded Array:
+
+        # np.array([[0.0, 1.0, 1.0, 1.0],
+        #           [0.0, 1.0, 2.0, 1.0]]
+
+        array_2d = np.ones(shape=(2, 3))
+        array_2d[1,1] = 2.0
+        binned_2d_array = array_util.bin_up_array_2d_using_quadrature(array_2d=array_2d, bin_up_factor=2)
+        assert (binned_2d_array == np.array([[np.sqrt(2.0) / 4.0, np.sqrt(7.0) / 4.0]])).all()
+        
+    def test__bin_using_sum__array_4x4_to_2x2__uses_sum_correctly(self):
+
+        array_2d = np.array([[1.0, 1.0, 2.0, 2.0],
+                             [1.0, 1.0, 2.0, 2.0],
+                             [3.0, 3.0, 4.0, 4.0],
+                             [3.0, 3.0, 4.0, 4.0]])
+
+        binned_array_2d = array_util.bin_up_array_2d_using_sum(array_2d=array_2d, bin_up_factor=2)
+
+        assert (binned_array_2d == np.array([[4.0, 8.0],
+                                             [12.0, 16.0]])).all()
+
+        array_2d = np.array([[1.0, 2.0, 2.0, 2.0],
+                             [1.0, 6.0, 2.0, 10.0],
+                             [9.0, 3.0, 4.0, 0.0],
+                             [3.0, 3.0, 4.0, 4.0]])
+
+        binned_array_2d = array_util.bin_up_array_2d_using_sum(array_2d=array_2d, bin_up_factor=2)
+
+        assert (binned_array_2d == np.array([[10.0, 16.0],
+                                             [18.0, 12.0]])).all()
+
+    def test__bin_using_sum__array_6x3_to_2x1_and_3x6_to_1x2__uses_sum_correctly(self):
+
+        array_2d = np.array([[1.0, 1.0, 1.0],
+                             [1.0, 1.0, 1.0],
+                             [1.0, 1.0, 1.0],
+                             [2.0, 2.0, 2.0],
+                             [2.0, 2.0, 2.0],
+                             [2.0, 2.0, 2.0]])
+
+        binned_array_2d = array_util.bin_up_array_2d_using_sum(array_2d=array_2d, bin_up_factor=3)
+
+        assert (binned_array_2d == np.array([[9.0],
+                                             [18.0]])).all()
+
+        array_2d = np.array([[1.0, 1.0, 1.0],
+                             [1.0, 10.0, 1.0],
+                             [1.0, 1.0, 1.0],
+                             [2.0, 11.0, 2.0],
+                             [2.0, 2.0, 2.0],
+                             [2.0, 2.0, 2.0]])
+
+        binned_array_2d = array_util.bin_up_array_2d_using_sum(array_2d=array_2d, bin_up_factor=3)
+        assert (binned_array_2d == np.array([[18.0],
+                                             [27.0]])).all()
+
+        array_2d = np.array([[1.0, 1.0, 1.0, 2.0, 2.0, 2.0],
+                             [1.0, 1.0, 1.0, 2.0, 2.0, 2.0],
+                             [1.0, 1.0, 1.0, 2.0, 2.0, 2.0]])
+
+        binned_array_2d = array_util.bin_up_array_2d_using_sum(array_2d=array_2d, bin_up_factor=3)
+        assert (binned_array_2d == np.array([[9.0, 18.0]])).all()
+
+        array_2d = np.array([[1.0, 1.0, 1.0, 2.0, 2.0, 2.0],
+                             [1.0, 10.0, 1.0, 11.0, 2.0, 2.0],
+                             [1.0, 1.0, 1.0, 2.0, 2.0, 2.0]])
+
+        binned_array_2d = array_util.bin_up_array_2d_using_sum(array_2d=array_2d, bin_up_factor=3)
+        assert (binned_array_2d == np.array([[18.0, 27.0]])).all()
+
+    def test__bin_using_sum__bin_includes_padding_image_with_zeros(self):
+
+        # Padded array:
+
+        # [[0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        #  [0.0, 1.0, 1.0, 1.0, 1.0, 0.0],
+        #  [0.0, 1.0, 2.0, 1.0, 1.0, 0.0],
+        #  [0.0, 1.0, 1.0, 1.0, 1.0, 0.0],
+        #  [0.0, 1.0, 1.0, 1.0, 1.0, 0.0],
+        #  [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]]
+
+        array_2d = np.ones(shape=(4, 4))
+        array_2d[1,1] = 2.0
+        binned_array_2d = array_util.bin_up_array_2d_using_sum(array_2d=array_2d, bin_up_factor=3)
+        assert (binned_array_2d == np.array([[5.0, 4.0],
+                                             [4.0, 4.0]])).all()
+
+        # Padded Array:
+
+        # np.array([[0.0, 1.0, 1.0, 1.0],
+        #           [0.0, 1.0, 2.0, 1.0]]
+
+        array_2d = np.ones(shape=(2, 3))
+        array_2d[1,1] = 2.0
+        binned_2d_array = array_util.bin_up_array_2d_using_sum(array_2d=array_2d, bin_up_factor=2)
+        assert (binned_2d_array == np.array([[2.0, 5.0]])).all()
