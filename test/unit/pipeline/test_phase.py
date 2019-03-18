@@ -600,6 +600,16 @@ class TestPhase(object):
         assert (analysis.lens_data.image == 20.0 * np.ones(shape=shape)).all()
         assert (analysis.lens_data.image_1d == 20.0 * np.ones(shape=32)).all()
 
+    def test__lens_data_is_binned_up(self, ccd_data):
+
+        binned_up_ccd_data = ccd_data.new_ccd_data_with_binned_up_arrays(bin_up_factor=2)
+
+        phase = ph.PhaseImaging(phase_name='phase', bin_up_factor=2)
+        analysis = phase.make_analysis(data=ccd_data)
+        assert (analysis.lens_data.image == binned_up_ccd_data.image).all()
+        assert (analysis.lens_data.psf == binned_up_ccd_data.psf).all()
+        assert (analysis.lens_data.noise_map == binned_up_ccd_data.noise_map).all()
+
     def test__tracer_for_instance__includes_cosmology(self, ccd_data):
         lens_galaxy = g.Galaxy()
         source_galaxy = g.Galaxy()
