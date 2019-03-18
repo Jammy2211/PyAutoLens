@@ -522,7 +522,7 @@ class PhaseImaging(Phase):
         lens_data = lens_data.new_lens_data_with_modified_image(modified_image=modified_image)
 
         if self.bin_up_factor is not None:
-            lens_data = lens_data.new_lens_data_with_binned_up_ccd_data(bin_up_factor=self.bin_up_factor)
+            lens_data = lens_data.new_lens_data_with_binned_up_ccd_data_and_mask(bin_up_factor=self.bin_up_factor)
 
         self.pass_priors(results)
 

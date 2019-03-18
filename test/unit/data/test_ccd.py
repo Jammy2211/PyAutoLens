@@ -770,29 +770,29 @@ class TestCCDData:
 
     class TestNewCCDModifiedImage:
 
-        def test__images_are_binned_up_according_to_array_util(self):
+        def test__ccd_data_returns_with_modified_image(self):
 
-            image_array = scaled_array.ScaledSquarePixelArray(np.ones((6, 6)), pixel_scale=1.0)
-            image_array[3, 3] = 2.0
+            image_array = scaled_array.ScaledSquarePixelArray(np.ones((4, 4)), pixel_scale=1.0)
+            image_array[2, 2] = 2.0
 
-            noise_map_array = scaled_array.ScaledSquarePixelArray(np.ones((6, 6)), pixel_scale=1.0)
-            noise_map_array[3,3] = 3.0
+            noise_map_array = scaled_array.ScaledSquarePixelArray(np.ones((4, 4)), pixel_scale=1.0)
+            noise_map_array[2,2] = 3.0
 
-            background_noise_map_array = scaled_array.ScaledSquarePixelArray(np.ones((6, 6)), pixel_scale=1.0)
-            background_noise_map_array[3,3] = 4.0
+            background_noise_map_array = scaled_array.ScaledSquarePixelArray(np.ones((4, 4)), pixel_scale=1.0)
+            background_noise_map_array[2,2] = 4.0
 
-            exposure_time_map_array = scaled_array.ScaledSquarePixelArray(np.ones((6, 6)), pixel_scale=1.0)
-            exposure_time_map_array[3,3] = 5.0
+            exposure_time_map_array = scaled_array.ScaledSquarePixelArray(np.ones((4, 4)), pixel_scale=1.0)
+            exposure_time_map_array[2,2] = 5.0
 
-            background_sky_map_array = scaled_array.ScaledSquarePixelArray(np.ones((6, 6)), pixel_scale=1.0)
-            background_sky_map_array[3,3] = 6.0
+            background_sky_map_array = scaled_array.ScaledSquarePixelArray(np.ones((4, 4)), pixel_scale=1.0)
+            background_sky_map_array[2,2] = 6.0
 
             ccd_data = ccd.CCDData(image=image_array, pixel_scale=1.0, psf=ccd.PSF(np.zeros((3, 3)), pixel_scale=1.0),
                                    noise_map=noise_map_array, background_noise_map=background_noise_map_array,
                                    exposure_time_map=exposure_time_map_array, background_sky_map=background_sky_map_array)
 
-            modified_image = scaled_array.ScaledSquarePixelArray(np.ones((6, 6)), pixel_scale=1.0)
-            modified_image[3, 3] = 10.0
+            modified_image = scaled_array.ScaledSquarePixelArray(np.ones((4, 4)), pixel_scale=1.0)
+            modified_image[2, 2] = 10.0
 
             ccd_data = ccd_data.new_ccd_data_with_modified_image(modified_image=modified_image)
 
