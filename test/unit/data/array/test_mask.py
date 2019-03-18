@@ -369,7 +369,31 @@ class TestParse:
         assert (mask == np.ones((3,3))).all()
         assert mask.pixel_scale == 0.1
         
-        
+
+class TestBinnedMaskFromMask:
+
+    def test__compare_to_mask_util(self):
+
+        mask = np.full(shape=(14, 19), fill_value=True)
+        mask[1, 5] = False
+        mask[6, 5] = False
+        mask[4, 9] = False
+        mask[11, 10] = False
+
+        binned_up_mask_util = util.bin_up_mask_2d(mask_2d=mask, bin_up_factor=2)
+
+        mask = msk.Mask(array=mask, pixel_scale=1.0)
+        mask = mask.binned_up_mask_from_mask(bin_up_factor=2)
+        assert (mask == binned_up_mask_util).all()
+        assert mask.pixel_scale == 2.0
+
+        binned_up_mask_util = util.bin_up_mask_2d(mask_2d=mask, bin_up_factor=3)
+
+        mask = msk.Mask(array=mask, pixel_scale=2.0)
+        mask = mask.binned_up_mask_from_mask(bin_up_factor=3)
+        assert (mask == binned_up_mask_util).all()
+        assert mask.pixel_scale == 6.0
+
 class TestRescaledMaskFromMask(object):
 
     def test__mask_5x5_central_pixel__rescale_factor_is_1__returns_same_mask(self):

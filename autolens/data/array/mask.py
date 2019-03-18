@@ -204,6 +204,10 @@ class Mask(scaled_array.ScaledSquarePixelArray):
         if invert: mask = np.invert(mask)
         return cls(array=mask.astype('bool'), pixel_scale=pixel_scale, centre=centre)
 
+    def binned_up_mask_from_mask(self, bin_up_factor):
+        return Mask(array=mask_util.bin_up_mask_2d(mask_2d=self, bin_up_factor=bin_up_factor),
+                    pixel_scale=self.pixel_scale*bin_up_factor, centre=self.centre, origin=self.origin)
+
     @property
     def pixels_in_mask(self):
         return int(np.size(self) - np.sum(self))

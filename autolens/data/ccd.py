@@ -268,7 +268,8 @@ class CCDData(object):
 
         return CCDData(image=modified_image, pixel_scale=self.pixel_scale, psf=self.psf,
                        noise_map=self.noise_map, background_noise_map=self.background_noise_map,
-                       poisson_noise_map=self.poisson_noise_map)
+                       poisson_noise_map=self.poisson_noise_map, exposure_time_map=self.exposure_time_map,
+                       background_sky_map=self.background_sky_map)
 
     def new_ccd_data_with_poisson_noise_added(self, seed=-1):
 
