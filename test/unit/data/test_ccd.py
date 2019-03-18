@@ -1358,6 +1358,87 @@ class TestPSF(object):
 
             assert psf == pytest.approx(np.ones((3, 3)), 1e-3)
 
+    class TestBinnedUp(object):
+
+        def test__psf_is_even_x_even__rescaled_to_odd_x_odd__no_use_of_dimension_trimming(self):
+
+            array_2d = np.ones((6, 6))
+            psf = ccd.PSF(array=array_2d, pixel_scale=1.0, renormalize=False)
+            psf = psf.new_psf_with_rescaled_odd_dimensioned_array(rescale_factor=0.5, renormalize=True)
+            assert psf.pixel_scale == 2.0
+            assert psf == (1.0/9.0)*np.ones((3,3))
+
+            array_2d = np.ones((9, 9))
+            psf = ccd.PSF(array=array_2d, pixel_scale=1.0, renormalize=False)
+            psf = psf.new_psf_with_rescaled_odd_dimensioned_array(rescale_factor=0.333333333333333, renormalize=True)
+            assert psf.pixel_scale == 3.0
+            assert psf == (1.0/9.0)*np.ones((3,3))
+
+            array_2d = np.ones((18, 6))
+            psf = ccd.PSF(array=array_2d, pixel_scale=1.0, renormalize=False)
+            psf = psf.new_psf_with_rescaled_odd_dimensioned_array(rescale_factor=0.5, renormalize=True)
+            assert psf.pixel_scale == 2.0
+            assert psf == (1.0/27.0)*np.ones((9,3))
+
+            array_2d = np.ones((6, 18))
+            psf = ccd.PSF(array=array_2d, pixel_scale=1.0, renormalize=False)
+            psf = psf.new_psf_with_rescaled_odd_dimensioned_array(rescale_factor=0.5, renormalize=True)
+            assert psf.pixel_scale == 2.0
+            assert psf == (1.0/27.0)*np.ones((3,9))
+
+        def test__psf_is_even_x_even_after_binning_up__resized_to_odd_x_odd_with_shape_plus_one(self):
+
+            array_2d = np.ones((2,2))
+            psf = ccd.PSF(array=array_2d, pixel_scale=1.0, renormalize=False)
+            psf = psf.new_psf_with_rescaled_odd_dimensioned_array(rescale_factor=2.0, renormalize=True)
+            assert psf.pixel_scale == 0.4
+            assert psf == (1.0/25.0)*np.ones((5,5))
+
+            array_2d = np.ones((40, 40))
+            psf = ccd.PSF(array=array_2d, pixel_scale=1.0, renormalize=False)
+            psf = psf.new_psf_with_rescaled_odd_dimensioned_array(rescale_factor=0.1, renormalize=True)
+            assert psf.pixel_scale == 8.0
+            assert psf == (1.0/25.0)*np.ones((5,5))
+
+            array_2d = np.ones((2,4))
+            psf = ccd.PSF(array=array_2d, pixel_scale=1.0, renormalize=False)
+            psf = psf.new_psf_with_rescaled_odd_dimensioned_array(rescale_factor=2.0, renormalize=True)
+            assert psf.pixel_scale == pytest.approx(0.4444444, 1.0e-4)
+            assert psf == (1.0/45.0)*np.ones((5,9))
+
+            array_2d = np.ones((4,2))
+            psf = ccd.PSF(array=array_2d, pixel_scale=1.0, renormalize=False)
+            psf = psf.new_psf_with_rescaled_odd_dimensioned_array(rescale_factor=2.0, renormalize=True)
+            assert psf.pixel_scale == pytest.approx(0.4444444, 1.0e-4)
+            assert psf == (1.0/45.0)*np.ones((9,5))
+
+        def test__psf_is_odd_and_even_after_binning_up__resized_to_odd_and_odd_with_shape_plus_one(self):
+
+            array_2d = np.ones((6,4))
+            psf = ccd.PSF(array=array_2d, pixel_scale=1.0, renormalize=False)
+            psf = psf.new_psf_with_rescaled_odd_dimensioned_array(rescale_factor=0.5, renormalize=True)
+            assert psf.pixel_scale == pytest.approx(2.0, 1.0e-4)
+            assert psf == (1.0/9.0)*np.ones((3,3))
+
+            array_2d = np.ones((9, 12))
+            psf = ccd.PSF(array=array_2d, pixel_scale=1.0, renormalize=False)
+            psf = psf.new_psf_with_rescaled_odd_dimensioned_array(rescale_factor=0.33333333333, renormalize=True)
+            assert psf.pixel_scale == pytest.approx(3.0, 1.0e-4)
+            assert psf == (1.0 / 15.0) * np.ones((3, 5))
+
+            array_2d = np.ones((4,6))
+            psf = ccd.PSF(array=array_2d, pixel_scale=1.0, renormalize=False)
+            psf = psf.new_psf_with_rescaled_odd_dimensioned_array(rescale_factor=0.5, renormalize=True)
+            assert psf.pixel_scale == pytest.approx(2.0, 1.0e-4)
+            assert psf == (1.0/9.0)*np.ones((3,3))
+
+            array_2d = np.ones((12, 9))
+            psf = ccd.PSF(array=array_2d, pixel_scale=1.0, renormalize=False)
+            psf = psf.new_psf_with_rescaled_odd_dimensioned_array(rescale_factor=0.33333333333, renormalize=True)
+            assert psf.pixel_scale == pytest.approx(3.0, 1.0e-4)
+            assert psf == (1.0 / 15.0) * np.ones((5, 3))
+
+
     class TestNewRenormalizedPsf(object):
 
         def test__input_is_already_normalized__no_change(self):
@@ -1379,7 +1460,6 @@ class TestPSF(object):
             psf_new = psf.new_psf_with_renormalized_array()
 
             assert psf_new == pytest.approx(np.ones((3, 3)) / 9.0, 1e-3)
-
 
     class TestConvolve(object):
 

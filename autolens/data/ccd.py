@@ -3,6 +3,7 @@ import scipy.signal
 from scipy.stats import norm
 from astropy import units
 import ast
+from skimage.transform import resize, rescale
 
 from autolens import exc
 from autolens.data.array.util import grid_util
@@ -194,6 +195,20 @@ class CCDData(object):
                                             psf=psf, background_sky_map=background_sky_map,
                                             add_noise=True, seed=seed)
 
+    def new_ccd_data_with_binned_up_array(self, bin_up_factor):
+
+        image = self.bin_up_scaled_array(scaled_array=self.image, method='mean')
+
+        noise_map = self.bin_up_scaled_array(scaled_array=self.noise_map, method='quadrature')
+        background_noise_map = self.bin_up_scaled_array(scaled_array=self.background_noise_map, method='quadrature')
+        poisson_noise_map = self.bin_up_scaled_array(scaled_array=self.poisson_noise_map, method='quadrature')
+        exposure_time_map = self.bin_up_scaled_array(scaled_array=self.exposure_time_map, method='quadrature')
+        background_sky_map = self.bin_up_scaled_array(scaled_array=self.background_sky_map, method='quadrature')
+
+        return CCDData(image=image, pixel_scale=self.pixel_scale, psf=self.psf, noise_map=noise_map,
+                       background_noise_map=background_noise_map, poisson_noise_map=poisson_noise_map,
+                       exposure_time_map=exposure_time_map, background_sky_map=background_sky_map)
+
     def new_ccd_data_with_resized_arrays(self, new_shape, new_centre_pixels=None, new_centre_arcsec=None):
         
         image = self.resize_scaled_array(scaled_array=self.image, new_shape=new_shape, new_centre_pixels=new_centre_pixels,
@@ -228,6 +243,13 @@ class CCDData(object):
         return CCDData(image=self.image, pixel_scale=self.pixel_scale, psf=psf, noise_map=self.noise_map,
                        background_noise_map=self.background_noise_map, poisson_noise_map=self.poisson_noise_map,
                        exposure_time_map=self.exposure_time_map, background_sky_map=self.background_sky_map)
+
+    @staticmethod
+    def bin_up_scaled_array(scaled_array, bin_up_factor, method):
+        if scaled_array is not None:
+            return scaled_array.binned_up_array_from_array(bin_up_factor=bin_up_factor, method=method)
+        else:
+            return None
 
     @staticmethod
     def resize_scaled_array(scaled_array, new_shape, new_centre_pixels=None, new_centre_arcsec=None):
@@ -589,6 +611,24 @@ class PSF(ScaledSquarePixelArray):
             The HDU the PSF is stored in the .fits file.
         """
         return cls(array=array_util.numpy_array_2d_from_fits(file_path, hdu), pixel_scale=pixel_scale)
+
+    def new_psf_with_rescaled_odd_dimensioned_array(self, rescale_factor, renormalize=True):
+        psf_rescaled = rescale(self, rescale_factor, anti_aliasing=False, mode='constant', multichannel=False)
+
+        if psf_rescaled.shape[0] % 2 == 0 and psf_rescaled.shape[1] % 2 == 0:
+            psf_rescaled = resize(psf_rescaled, output_shape=(psf_rescaled.shape[0] + 1, psf_rescaled.shape[1] + 1),
+                                  anti_aliasing=False, mode='constant')
+        elif psf_rescaled.shape[0] % 2 == 0 and psf_rescaled.shape[1] % 2 != 0:
+            psf_rescaled = resize(psf_rescaled, output_shape=(psf_rescaled.shape[0] + 1, psf_rescaled.shape[1]),
+                                  anti_aliasing=False, mode='constant')
+        elif psf_rescaled.shape[0] % 2 != 0 and psf_rescaled.shape[1] % 2 == 0:
+            psf_rescaled = resize(psf_rescaled, output_shape=(psf_rescaled.shape[0], psf_rescaled.shape[1] + 1),
+                                  anti_aliasing=False, mode='constant')
+
+        pixel_scale_factors = (self.shape[0] / psf_rescaled.shape[0], self.shape[1] / psf_rescaled.shape[1])
+        pixel_scale = (self.pixel_scale * pixel_scale_factors[0], self.pixel_scale * pixel_scale_factors[1])
+        return PSF(array=psf_rescaled, pixel_scale=np.max(pixel_scale), renormalize=renormalize)
+
 
     def new_psf_with_renormalized_array(self):
         """Renormalize the PSF such that its data_vector values sum to unity."""

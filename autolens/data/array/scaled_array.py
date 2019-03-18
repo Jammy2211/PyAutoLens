@@ -369,11 +369,23 @@ class ScaledSquarePixelArray(ScaledArray):
         return self.new_with_array(array=array_util.resized_array_2d_from_array_2d_and_resized_shape(array_2d=self, resized_shape=new_shape,
                                                                                                      origin=new_centre))
 
-    def binned_up_array_from_array(self, bin_up_factor):
+    def binned_up_array_from_array(self, bin_up_factor, method):
 
-        pass
-
-
+        if method is 'mean':
+            return ScaledSquarePixelArray(array=array_util.bin_up_array_2d_using_mean(array_2d=self,
+                                                                                   bin_up_factor=bin_up_factor),
+                                          pixel_scale=self.pixel_scale*bin_up_factor)
+        elif method is 'quadrature':
+            return ScaledSquarePixelArray(array=array_util.bin_up_array_2d_using_quadrature(array_2d=self,
+                                                                                   bin_up_factor=bin_up_factor),
+                                          pixel_scale=self.pixel_scale*bin_up_factor)
+        elif method is 'sum':
+            return ScaledSquarePixelArray(array=array_util.bin_up_array_2d_using_sum(array_2d=self,
+                                                                                     bin_up_factor=bin_up_factor),
+                                          pixel_scale=self.pixel_scale*bin_up_factor)
+        else:
+            raise exc.ImagingException('The method used in binned_up_array_from_array is not a valid method '
+                                       '[mean | quadrature | sum]')
 
 
 
