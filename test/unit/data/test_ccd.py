@@ -10,6 +10,7 @@ from astropy.coordinates import Angle
 from autolens import exc
 from autolens.data.array import scaled_array
 from autolens.data import ccd
+from autolens.data.array.util import array_util
 from autolens.data.array.util import grid_util
 from autolens.data.array.util import mapping_util
 
@@ -767,31 +768,31 @@ class TestCCDData:
                                                                     [0.1**2.0, 1.0**2.0]])).all()
             assert ccd_data.potential_chi_squared_max == 1.0
 
-    class testNewCCDModifiedImage:
+    class TestNewCCDModifiedImage:
 
-        def test__image_is_changed__other_components_are_not(self):
+        def test__ccd_data_returns_with_modified_image(self):
 
-            image_array = scaled_array.ScaledSquarePixelArray(np.ones((6, 6)), pixel_scale=1.0)
-            image_array[3, 3] = 2.0
+            image_array = scaled_array.ScaledSquarePixelArray(np.ones((4, 4)), pixel_scale=1.0)
+            image_array[2, 2] = 2.0
 
-            noise_map_array = scaled_array.ScaledSquarePixelArray(np.ones((6, 6)), pixel_scale=1.0)
-            noise_map_array[3,3] = 3.0
+            noise_map_array = scaled_array.ScaledSquarePixelArray(np.ones((4, 4)), pixel_scale=1.0)
+            noise_map_array[2,2] = 3.0
 
-            background_noise_map_array = scaled_array.ScaledSquarePixelArray(np.ones((6, 6)), pixel_scale=1.0)
-            background_noise_map_array[3,3] = 4.0
+            background_noise_map_array = scaled_array.ScaledSquarePixelArray(np.ones((4, 4)), pixel_scale=1.0)
+            background_noise_map_array[2,2] = 4.0
 
-            exposure_time_map_array = scaled_array.ScaledSquarePixelArray(np.ones((6, 6)), pixel_scale=1.0)
-            exposure_time_map_array[3,3] = 5.0
+            exposure_time_map_array = scaled_array.ScaledSquarePixelArray(np.ones((4, 4)), pixel_scale=1.0)
+            exposure_time_map_array[2,2] = 5.0
 
-            background_sky_map_array = scaled_array.ScaledSquarePixelArray(np.ones((6, 6)), pixel_scale=1.0)
-            background_sky_map_array[3,3] = 6.0
+            background_sky_map_array = scaled_array.ScaledSquarePixelArray(np.ones((4, 4)), pixel_scale=1.0)
+            background_sky_map_array[2,2] = 6.0
 
             ccd_data = ccd.CCDData(image=image_array, pixel_scale=1.0, psf=ccd.PSF(np.zeros((3, 3)), pixel_scale=1.0),
                                    noise_map=noise_map_array, background_noise_map=background_noise_map_array,
                                    exposure_time_map=exposure_time_map_array, background_sky_map=background_sky_map_array)
 
-            modified_image = scaled_array.ScaledSquarePixelArray(np.ones((6, 6)), pixel_scale=1.0)
-            modified_image[3, 3] = 10.0
+            modified_image = scaled_array.ScaledSquarePixelArray(np.ones((4, 4)), pixel_scale=1.0)
+            modified_image[2, 2] = 10.0
 
             ccd_data = ccd_data.new_ccd_data_with_modified_image(modified_image=modified_image)
 
@@ -820,6 +821,61 @@ class TestCCDData:
 
             assert ccd_data.pixel_scale == 1.0
             assert (ccd_data.psf == np.zeros((3,3))).all()
+            assert ccd_data.origin == (0.0, 0.0)
+
+    class TestNewCCDBinnedUp:
+
+        def test__all_components_binned_up_correct(self):
+
+            image_array = scaled_array.ScaledSquarePixelArray(np.ones((6, 6)), pixel_scale=1.0)
+            image_array[3:5, 3] = 2.0
+            binned_image_util = array_util.bin_up_array_2d_using_mean(array_2d=image_array, bin_up_factor=2)
+
+            noise_map_array = scaled_array.ScaledSquarePixelArray(np.ones((6, 6)), pixel_scale=1.0)
+            noise_map_array[3,3:5] = 3.0
+            binned_noise_map_util = array_util.bin_up_array_2d_using_quadrature(array_2d=noise_map_array,
+                                                                                      bin_up_factor=2)
+
+            background_noise_map_array = scaled_array.ScaledSquarePixelArray(np.ones((6, 6)), pixel_scale=1.0)
+            background_noise_map_array[3:5,3] = 4.0
+            binned_background_noise_map_util = array_util.bin_up_array_2d_using_quadrature(
+                array_2d=background_noise_map_array, bin_up_factor=2)
+
+            exposure_time_map_array = scaled_array.ScaledSquarePixelArray(np.ones((6, 6)), pixel_scale=1.0)
+            exposure_time_map_array[3,3:5] = 5.0
+            binned_exposure_time_map_util = array_util.bin_up_array_2d_using_sum(array_2d=exposure_time_map_array,
+                                                                                       bin_up_factor=2)
+
+            background_sky_map_array = scaled_array.ScaledSquarePixelArray(np.ones((6, 6)), pixel_scale=1.0)
+            background_sky_map_array[3,3:5] = 6.0
+            binned_background_sky_map_util = array_util.bin_up_array_2d_using_mean(
+                array_2d=background_sky_map_array, bin_up_factor=2)
+
+            psf = ccd.PSF(array=np.ones((3,5)), pixel_scale=1.0)
+            psf_util = psf.new_psf_with_rescaled_odd_dimensioned_array(rescale_factor=0.5)
+
+            ccd_data = ccd.CCDData(image=image_array, pixel_scale=1.0, psf=psf,
+                                   noise_map=noise_map_array, background_noise_map=background_noise_map_array,
+                                   exposure_time_map=exposure_time_map_array, background_sky_map=background_sky_map_array)
+
+            ccd_data = ccd_data.new_ccd_data_with_binned_up_arrays(bin_up_factor=2)
+
+            assert (ccd_data.image == binned_image_util).all()
+            assert (ccd_data.psf == psf_util).all()
+            assert (ccd_data.noise_map == binned_noise_map_util).all()
+            assert (ccd_data.background_noise_map == binned_background_noise_map_util).all()
+            assert (ccd_data.exposure_time_map == binned_exposure_time_map_util).all()
+            assert (ccd_data.background_sky_map == binned_background_sky_map_util).all()
+            assert (ccd_data.poisson_noise_map == None)
+
+            assert ccd_data.pixel_scale == 2.0
+            assert ccd_data.image.pixel_scale == 2.0
+            assert ccd_data.psf.pixel_scale == pytest.approx(1.66666666666, 1.0e-4)
+            assert ccd_data.noise_map.pixel_scale == 2.0
+            assert ccd_data.background_noise_map.pixel_scale == 2.0
+            assert ccd_data.exposure_time_map.pixel_scale == 2.0
+            assert ccd_data.background_sky_map.pixel_scale == 2.0
+
             assert ccd_data.origin == (0.0, 0.0)
 
     class TestNewImageResize:
@@ -1358,6 +1414,87 @@ class TestPSF(object):
 
             assert psf == pytest.approx(np.ones((3, 3)), 1e-3)
 
+    class TestBinnedUp(object):
+
+        def test__psf_is_even_x_even__rescaled_to_odd_x_odd__no_use_of_dimension_trimming(self):
+
+            array_2d = np.ones((6, 6))
+            psf = ccd.PSF(array=array_2d, pixel_scale=1.0, renormalize=False)
+            psf = psf.new_psf_with_rescaled_odd_dimensioned_array(rescale_factor=0.5, renormalize=True)
+            assert psf.pixel_scale == 2.0
+            assert psf == (1.0/9.0)*np.ones((3,3))
+
+            array_2d = np.ones((9, 9))
+            psf = ccd.PSF(array=array_2d, pixel_scale=1.0, renormalize=False)
+            psf = psf.new_psf_with_rescaled_odd_dimensioned_array(rescale_factor=0.333333333333333, renormalize=True)
+            assert psf.pixel_scale == 3.0
+            assert psf == (1.0/9.0)*np.ones((3,3))
+
+            array_2d = np.ones((18, 6))
+            psf = ccd.PSF(array=array_2d, pixel_scale=1.0, renormalize=False)
+            psf = psf.new_psf_with_rescaled_odd_dimensioned_array(rescale_factor=0.5, renormalize=True)
+            assert psf.pixel_scale == 2.0
+            assert psf == (1.0/27.0)*np.ones((9,3))
+
+            array_2d = np.ones((6, 18))
+            psf = ccd.PSF(array=array_2d, pixel_scale=1.0, renormalize=False)
+            psf = psf.new_psf_with_rescaled_odd_dimensioned_array(rescale_factor=0.5, renormalize=True)
+            assert psf.pixel_scale == 2.0
+            assert psf == (1.0/27.0)*np.ones((3,9))
+
+        def test__psf_is_even_x_even_after_binning_up__resized_to_odd_x_odd_with_shape_plus_one(self):
+
+            array_2d = np.ones((2,2))
+            psf = ccd.PSF(array=array_2d, pixel_scale=1.0, renormalize=False)
+            psf = psf.new_psf_with_rescaled_odd_dimensioned_array(rescale_factor=2.0, renormalize=True)
+            assert psf.pixel_scale == 0.4
+            assert psf == (1.0/25.0)*np.ones((5,5))
+
+            array_2d = np.ones((40, 40))
+            psf = ccd.PSF(array=array_2d, pixel_scale=1.0, renormalize=False)
+            psf = psf.new_psf_with_rescaled_odd_dimensioned_array(rescale_factor=0.1, renormalize=True)
+            assert psf.pixel_scale == 8.0
+            assert psf == (1.0/25.0)*np.ones((5,5))
+
+            array_2d = np.ones((2,4))
+            psf = ccd.PSF(array=array_2d, pixel_scale=1.0, renormalize=False)
+            psf = psf.new_psf_with_rescaled_odd_dimensioned_array(rescale_factor=2.0, renormalize=True)
+            assert psf.pixel_scale == pytest.approx(0.4444444, 1.0e-4)
+            assert psf == (1.0/45.0)*np.ones((5,9))
+
+            array_2d = np.ones((4,2))
+            psf = ccd.PSF(array=array_2d, pixel_scale=1.0, renormalize=False)
+            psf = psf.new_psf_with_rescaled_odd_dimensioned_array(rescale_factor=2.0, renormalize=True)
+            assert psf.pixel_scale == pytest.approx(0.4444444, 1.0e-4)
+            assert psf == (1.0/45.0)*np.ones((9,5))
+
+        def test__psf_is_odd_and_even_after_binning_up__resized_to_odd_and_odd_with_shape_plus_one(self):
+
+            array_2d = np.ones((6,4))
+            psf = ccd.PSF(array=array_2d, pixel_scale=1.0, renormalize=False)
+            psf = psf.new_psf_with_rescaled_odd_dimensioned_array(rescale_factor=0.5, renormalize=True)
+            assert psf.pixel_scale == pytest.approx(2.0, 1.0e-4)
+            assert psf == (1.0/9.0)*np.ones((3,3))
+
+            array_2d = np.ones((9, 12))
+            psf = ccd.PSF(array=array_2d, pixel_scale=1.0, renormalize=False)
+            psf = psf.new_psf_with_rescaled_odd_dimensioned_array(rescale_factor=0.33333333333, renormalize=True)
+            assert psf.pixel_scale == pytest.approx(3.0, 1.0e-4)
+            assert psf == (1.0 / 15.0) * np.ones((3, 5))
+
+            array_2d = np.ones((4,6))
+            psf = ccd.PSF(array=array_2d, pixel_scale=1.0, renormalize=False)
+            psf = psf.new_psf_with_rescaled_odd_dimensioned_array(rescale_factor=0.5, renormalize=True)
+            assert psf.pixel_scale == pytest.approx(2.0, 1.0e-4)
+            assert psf == (1.0/9.0)*np.ones((3,3))
+
+            array_2d = np.ones((12, 9))
+            psf = ccd.PSF(array=array_2d, pixel_scale=1.0, renormalize=False)
+            psf = psf.new_psf_with_rescaled_odd_dimensioned_array(rescale_factor=0.33333333333, renormalize=True)
+            assert psf.pixel_scale == pytest.approx(3.0, 1.0e-4)
+            assert psf == (1.0 / 15.0) * np.ones((5, 3))
+
+
     class TestNewRenormalizedPsf(object):
 
         def test__input_is_already_normalized__no_change(self):
@@ -1379,7 +1516,6 @@ class TestPSF(object):
             psf_new = psf.new_psf_with_renormalized_array()
 
             assert psf_new == pytest.approx(np.ones((3, 3)) / 9.0, 1e-3)
-
 
     class TestConvolve(object):
 

@@ -409,7 +409,7 @@ class PhasePositions(AbstractPhase):
 class PhaseImaging(Phase):
 
     def __init__(self, phase_name, phase_folders=None, optimizer_class=non_linear.MultiNest,
-                 sub_grid_size=2, image_psf_shape=None,
+                 sub_grid_size=2, bin_up_factor=None, image_psf_shape=None,
                  pixelization_psf_shape=None, use_positions=False, mask_function=None, inner_circular_mask_radii=None,
                  interp_pixel_scale=None, cosmology=cosmo.Planck15, auto_link_priors=False):
 
@@ -430,6 +430,7 @@ class PhaseImaging(Phase):
                                            optimizer_class=optimizer_class, cosmology=cosmology,
                                            auto_link_priors=auto_link_priors)
         self.sub_grid_size = sub_grid_size
+        self.bin_up_factor = bin_up_factor
         self.image_psf_shape = image_psf_shape
         self.pixelization_psf_shape = pixelization_psf_shape
         self.use_positions = use_positions
@@ -519,6 +520,9 @@ class PhaseImaging(Phase):
 
         modified_image = self.modify_image(image=lens_data.image, results=results)
         lens_data = lens_data.new_lens_data_with_modified_image(modified_image=modified_image)
+
+        if self.bin_up_factor is not None:
+            lens_data = lens_data.new_lens_data_with_binned_up_ccd_data_and_mask(bin_up_factor=self.bin_up_factor)
 
         self.pass_priors(results)
 
@@ -792,13 +796,14 @@ class LensPlanePhase(PhaseImaging):
         return [self.lens_galaxies]
 
     def __init__(self, phase_name, phase_folders=None, lens_galaxies=None, optimizer_class=non_linear.MultiNest,
-                 sub_grid_size=2,
+                 sub_grid_size=2, bin_up_factor=None,
                  image_psf_shape=None, mask_function=None, inner_circular_mask_radii=None, cosmology=cosmo.Planck15,
                  interp_pixel_scale=None, auto_link_priors=False):
         super(LensPlanePhase, self).__init__(phase_name=phase_name,
                                              phase_folders=phase_folders,
                                              optimizer_class=optimizer_class,
                                              sub_grid_size=sub_grid_size,
+                                             bin_up_factor=bin_up_factor,
                                              image_psf_shape=image_psf_shape,
                                              mask_function=mask_function,
                                              inner_circular_mask_radii=inner_circular_mask_radii,
@@ -851,7 +856,7 @@ class LensSourcePlanePhase(PhaseImaging):
 
     def __init__(self, phase_name, phase_folders=None,
                  lens_galaxies=None, source_galaxies=None, optimizer_class=non_linear.MultiNest,
-                 sub_grid_size=2, image_psf_shape=None, use_positions=False, mask_function=None,
+                 sub_grid_size=2, bin_up_factor=None, image_psf_shape=None, use_positions=False, mask_function=None,
                  interp_pixel_scale=None, inner_circular_mask_radii=None, cosmology=cosmo.Planck15,
                  auto_link_priors=False):
         """
@@ -873,6 +878,7 @@ class LensSourcePlanePhase(PhaseImaging):
                                                    phase_folders=phase_folders,
                                                    optimizer_class=optimizer_class,
                                                    sub_grid_size=sub_grid_size,
+                                                   bin_up_factor=bin_up_factor,
                                                    image_psf_shape=image_psf_shape,
                                                    use_positions=use_positions,
                                                    mask_function=mask_function,
@@ -932,7 +938,7 @@ class MultiPlanePhase(PhaseImaging):
         return [self.galaxies]
 
     def __init__(self, phase_name, phase_folders=None, galaxies=None, optimizer_class=non_linear.MultiNest,
-                 sub_grid_size=2, image_psf_shape=None, use_positions=False, mask_function=None,
+                 sub_grid_size=2, bin_up_factor=None, image_psf_shape=None, use_positions=False, mask_function=None,
                  inner_circular_mask_radii=None, cosmology=cosmo.Planck15, auto_link_priors=False):
         """
         A phase with a simple source/lens model
@@ -951,6 +957,7 @@ class MultiPlanePhase(PhaseImaging):
                                               phase_folders=phase_folders,
                                               optimizer_class=optimizer_class,
                                               sub_grid_size=sub_grid_size,
+                                              bin_up_factor=bin_up_factor,
                                               image_psf_shape=image_psf_shape,
                                               use_positions=use_positions,
                                               mask_function=mask_function,
@@ -1310,7 +1317,7 @@ class SensitivityPhase(PhaseImaging):
 
     def __init__(self, phase_name, phase_folders=None, lens_galaxies=None, source_galaxies=None,
                  sensitive_galaxies=None,
-                 optimizer_class=non_linear.MultiNest, sub_grid_size=2, mask_function=None,
+                 optimizer_class=non_linear.MultiNest, sub_grid_size=2, bin_up_factor=None, mask_function=None,
                  cosmology=cosmo.Planck15):
         """
         A phase in an lens pipeline. Uses the set non_linear optimizer to try to fit models and hyper
@@ -1326,7 +1333,8 @@ class SensitivityPhase(PhaseImaging):
 
         super(SensitivityPhase, self).__init__(phase_name=phase_name, phase_folders=phase_folders,
                                                optimizer_class=optimizer_class, sub_grid_size=sub_grid_size,
-                                               mask_function=mask_function, cosmology=cosmology)
+                                               bin_up_factor=bin_up_factor, mask_function=mask_function,
+                                               cosmology=cosmology)
 
         self.lens_galaxies = lens_galaxies or []
         self.source_galaxies = source_galaxies or []
