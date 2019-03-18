@@ -187,6 +187,23 @@ def replace_noise_map_2d_values_where_image_2d_values_are_negative(image_2d, noi
 
     return noise_map_2d
 
+def pad_2d_array_for_binning_up_with_bin_up_factor(array_2d, bin_up_factor):
+
+    shape = array_2d.shape
+    shape_remainder = (shape[0] % bin_up_factor, shape[1] % bin_up_factor)
+
+    if shape_remainder[0] != 0 and shape_remainder[1] != 0:
+        shape_pad = (bin_up_factor - shape_remainder[0], bin_up_factor - shape_remainder[1])
+    elif shape_remainder[0] != 0 and shape_remainder[1] == 0:
+        shape_pad = (bin_up_factor - shape_remainder[0], 0)
+    elif shape_remainder[0] == 0 and shape_remainder[1] != 0:
+        shape_pad = (0, bin_up_factor - shape_remainder[1])
+    else:
+        shape_pad = (0, 0)
+
+    binned_up_shape = (shape[0] + shape_pad[0], shape[1] + shape_pad[1])
+    return resized_array_2d_from_array_2d_and_resized_shape(array_2d=array_2d, resized_shape=binned_up_shape)
+
 def bin_up_array_2d_using_mean(array_2d):
     """Bin up an array to coarser resolution, by binning up groups of pixels and using their mean value to determine \
      the value of the new pixel.
@@ -217,6 +234,8 @@ def bin_up_array_2d_using_mean(array_2d):
     array_2d = np.ones((5,5))
     resize_array = resize_array_2d(array_2d=array_2d, new_shape=(2,2), origin=(2, 2))
     """
+
+
 
 def numpy_array_2d_to_fits(array_2d, file_path, overwrite=False):
     """Write a 2D NumPy array to a .fits file.

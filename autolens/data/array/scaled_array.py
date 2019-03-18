@@ -4,6 +4,7 @@ import numpy as np
 
 from autolens import exc
 from autolens.data.array.util import array_util, grid_util
+from skimage.transform import rescale
 
 logging.basicConfig()
 logger = logging.getLogger(__name__)
@@ -368,7 +369,11 @@ class ScaledSquarePixelArray(ScaledArray):
         return self.new_with_array(array=array_util.resized_array_2d_from_array_2d_and_resized_shape(array_2d=self, resized_shape=new_shape,
                                                                                                      origin=new_centre))
 
-  #  def binned_up_array_from_array(self, bin_up_size):
+    def binned_up_array_from_array(self, bin_up_factor):
+
+        pass
+
+
 
 
 
