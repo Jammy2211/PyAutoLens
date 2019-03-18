@@ -10,6 +10,7 @@ from astropy.coordinates import Angle
 from autolens import exc
 from autolens.data.array import scaled_array
 from autolens.data import ccd
+from autolens.data.array.util import array_util
 from autolens.data.array.util import grid_util
 from autolens.data.array.util import mapping_util
 
@@ -767,9 +768,9 @@ class TestCCDData:
                                                                     [0.1**2.0, 1.0**2.0]])).all()
             assert ccd_data.potential_chi_squared_max == 1.0
 
-    class testNewCCDModifiedImage:
+    class TestNewCCDModifiedImage:
 
-        def test__image_is_changed__other_components_are_not(self):
+        def test__images_are_binned_up_according_to_array_util(self):
 
             image_array = scaled_array.ScaledSquarePixelArray(np.ones((6, 6)), pixel_scale=1.0)
             image_array[3, 3] = 2.0
@@ -820,6 +821,61 @@ class TestCCDData:
 
             assert ccd_data.pixel_scale == 1.0
             assert (ccd_data.psf == np.zeros((3,3))).all()
+            assert ccd_data.origin == (0.0, 0.0)
+
+    class TestNewCCDBinnedUp:
+
+        def test__all_components_binned_up_correct(self):
+
+            image_array = scaled_array.ScaledSquarePixelArray(np.ones((6, 6)), pixel_scale=1.0)
+            image_array[3:5, 3] = 2.0
+            binned_image_util = array_util.bin_up_array_2d_using_mean(array_2d=image_array, bin_up_factor=2)
+
+            noise_map_array = scaled_array.ScaledSquarePixelArray(np.ones((6, 6)), pixel_scale=1.0)
+            noise_map_array[3,3:5] = 3.0
+            binned_noise_map_util = array_util.bin_up_array_2d_using_quadrature(array_2d=noise_map_array,
+                                                                                      bin_up_factor=2)
+
+            background_noise_map_array = scaled_array.ScaledSquarePixelArray(np.ones((6, 6)), pixel_scale=1.0)
+            background_noise_map_array[3:5,3] = 4.0
+            binned_background_noise_map_util = array_util.bin_up_array_2d_using_quadrature(
+                array_2d=background_noise_map_array, bin_up_factor=2)
+
+            exposure_time_map_array = scaled_array.ScaledSquarePixelArray(np.ones((6, 6)), pixel_scale=1.0)
+            exposure_time_map_array[3,3:5] = 5.0
+            binned_exposure_time_map_util = array_util.bin_up_array_2d_using_sum(array_2d=exposure_time_map_array,
+                                                                                       bin_up_factor=2)
+
+            background_sky_map_array = scaled_array.ScaledSquarePixelArray(np.ones((6, 6)), pixel_scale=1.0)
+            background_sky_map_array[3,3:5] = 6.0
+            binned_background_sky_map_util = array_util.bin_up_array_2d_using_mean(
+                array_2d=background_sky_map_array, bin_up_factor=2)
+
+            psf = ccd.PSF(array=np.ones((3,5)), pixel_scale=1.0)
+            psf_util = psf.new_psf_with_rescaled_odd_dimensioned_array(rescale_factor=0.5)
+
+            ccd_data = ccd.CCDData(image=image_array, pixel_scale=1.0, psf=psf,
+                                   noise_map=noise_map_array, background_noise_map=background_noise_map_array,
+                                   exposure_time_map=exposure_time_map_array, background_sky_map=background_sky_map_array)
+
+            ccd_data = ccd_data.new_ccd_data_with_binned_up_arrays(bin_up_factor=2)
+
+            assert (ccd_data.image == binned_image_util).all()
+            assert (ccd_data.psf == psf_util).all()
+            assert (ccd_data.noise_map == binned_noise_map_util).all()
+            assert (ccd_data.background_noise_map == binned_background_noise_map_util).all()
+            assert (ccd_data.exposure_time_map == binned_exposure_time_map_util).all()
+            assert (ccd_data.background_sky_map == binned_background_sky_map_util).all()
+            assert (ccd_data.poisson_noise_map == None)
+
+            assert ccd_data.pixel_scale == 2.0
+            assert ccd_data.image.pixel_scale == 2.0
+            assert ccd_data.psf.pixel_scale == pytest.approx(1.66666666666, 1.0e-4)
+            assert ccd_data.noise_map.pixel_scale == 2.0
+            assert ccd_data.background_noise_map.pixel_scale == 2.0
+            assert ccd_data.exposure_time_map.pixel_scale == 2.0
+            assert ccd_data.background_sky_map.pixel_scale == 2.0
+
             assert ccd_data.origin == (0.0, 0.0)
 
     class TestNewImageResize:
