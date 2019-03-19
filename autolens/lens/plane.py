@@ -156,7 +156,7 @@ class AbstractPlane(object):
         return list(map(lambda galaxy: galaxy.luminosity_within_ellipse(major_axis, conversion_factor),
                         self.galaxies))
 
-    def angular_masses_of_galaxies_within_circles(self, radius, conversion_factor=1.0):
+    def masses_of_galaxies_within_circles_in_angular_units(self, radius):
         """
         Compute the total angular mass of all galaxies in this plane within a circle of specified radius.
 
@@ -174,10 +174,10 @@ class AbstractPlane(object):
             Factor the dimensionless mass is multiplied by to convert it to a physical mass (e.g. the critical surface \
             mass density).            
         """
-        return list(map(lambda galaxy: galaxy.angular_mass_within_circle(radius, conversion_factor),
+        return list(map(lambda galaxy: galaxy.mass_within_circle_in_angular_units(radius),
                         self.galaxies))
 
-    def angular_masses_of_galaxies_within_ellipses(self, major_axis, conversion_factor=1.0):
+    def masses_of_galaxies_within_ellipses_in_angular_units(self, major_axis):
         """
         Compute the total angular mass of all galaxies in this plane within a ellipse of specified major-axis.
 
@@ -193,9 +193,51 @@ class AbstractPlane(object):
             The major-axis of the ellipse to compute the dimensionless mass within.
         conversion_factor : float
             Factor the dimensionless mass is multiplied by to convert it to a physical mass (e.g. the critical surface \
+            mass density).
+        """
+        return list(map(lambda galaxy: galaxy.mass_within_ellipse_in_angular_units(major_axis),
+                        self.galaxies))
+
+    def masses_of_galaxies_within_circles_in_mass_units(self, radius, critical_surface_mass_density):
+        """
+        Compute the total angular mass of all galaxies in this plane within a circle of specified radius.
+
+        The value returned by this integral is in angular units, however a conversion factor can be specified to \
+        convert it to a physical value (e.g. the critical surface mass density).
+
+        See *galaxy.angular_mass_within_circle* and *mass_profiles.angular_mass_within_circle* for details
+        of how this is performed.
+
+        Parameters
+        ----------
+        radius : float
+            The radius of the circle to compute the dimensionless mass within.
+        critical_surface_mass_density : float
+            Factor the dimensionless mass is multiplied by to convert it to a physical mass (e.g. the critical surface \
             mass density).            
         """
-        return list(map(lambda galaxy: galaxy.angular_mass_within_ellipse(major_axis, conversion_factor),
+        return list(map(lambda galaxy: galaxy.mass_within_circle_in_mass_units(radius, critical_surface_mass_density),
+                        self.galaxies))
+
+    def masses_of_galaxies_within_ellipses_in_mass_units(self, major_axis, critical_surface_mass_density):
+        """
+        Compute the total angular mass of all galaxies in this plane within a ellipse of specified major-axis.
+
+        The value returned by this integral is in angular units, however a conversion factor can be specified to \
+        convert it to a physical value (e.g. the critical surface mass density).
+
+        See *galaxy.angular_mass_within_ellipse* and *mass_profiles.angular_mass_within_ellipse* for details
+        of how this is performed.
+
+        Parameters
+        ----------
+        major_axis : float
+            The major-axis of the ellipse to compute the dimensionless mass within.
+        critical_surface_mass_density : float
+            Factor the dimensionless mass is multiplied by to convert it to a physical mass (e.g. the critical surface \
+            mass density).            
+        """
+        return list(map(lambda galaxy: galaxy.mass_within_ellipse_in_mass_units(major_axis, critical_surface_mass_density),
                         self.galaxies))
 
     @property
@@ -209,11 +251,12 @@ class AbstractPlane(object):
         if self.has_mass_profile:
             return self.kpc_per_arcsec_proper * self.einstein_radius_arcsec
 
-    def angular_einstein_mass(self, critical_density_arcsec):
+    def einstein_mass_in_mass_units(self, critical_surface_mass_density_arcsec):
         if self.has_mass_profile:
             return sum(filter(None, list(map(lambda galaxy:
-                                             galaxy.angular_mass_within_circle(radius=galaxy.einstein_radius,
-                                                                               conversion_factor=critical_density_arcsec),
+                                             galaxy.mass_within_circle_in_mass_units(
+                                                 radius=galaxy.einstein_radius,
+                                                 critical_surface_mass_density=critical_surface_mass_density_arcsec),
                                              self.galaxies))))
 
 

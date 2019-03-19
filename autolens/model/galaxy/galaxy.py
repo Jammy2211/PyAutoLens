@@ -233,7 +233,7 @@ class Galaxy(object):
         else:
             return np.full((grid.shape[0], 2), 0.0)
 
-    def angular_mass_within_circle(self, radius, conversion_factor=1.0):
+    def mass_within_circle_in_angular_units(self, radius):
         """Compute the total angular mass of the galaxy's mass profiles within a circle of specified radius.
 
         The value returned by this integral is in angular units, however a conversion factor can be specified to \
@@ -250,11 +250,11 @@ class Galaxy(object):
             mass density).
         """
         if self.has_mass_profile:
-            return sum(map(lambda p: p.angular_mass_within_circle(radius, conversion_factor), self.mass_profiles))
+            return sum(map(lambda p: p.mass_within_circle_in_angular_units(radius), self.mass_profiles))
         else:
             return None
 
-    def angular_mass_within_ellipse(self, major_axis, conversion_factor=1.0):
+    def mass_within_ellipse_in_angular_units(self, major_axis):
         """Compute the total angular mass of the galaxy's mass profiles within an ellipse of specified major_axis.
 
         The value returned by this integral is in angular units, however a conversion factor can be specified to \
@@ -271,7 +271,49 @@ class Galaxy(object):
             mass density).
         """
         if self.has_mass_profile:
-            return sum(map(lambda p: p.angular_mass_within_ellipse(major_axis, conversion_factor), self.mass_profiles))
+            return sum(map(lambda p: p.mass_within_ellipse_in_angular_units(major_axis), self.mass_profiles))
+        else:
+            return None
+
+    def mass_within_circle_in_mass_units(self, radius, critical_surface_mass_density):
+        """Compute the total angular mass of the galaxy's mass profiles within a circle of specified radius.
+
+        The value returned by this integral is in angular units, however a conversion factor can be specified to \
+        convert it to a physical value (e.g. the critical surface mass density).
+
+        See *profiles.mass_profiles.angular_mass_within_circle* for details of how this is performed.
+
+        Parameters
+        ----------
+        radius : float
+            The radius of the circle to compute the dimensionless mass within.
+        conversion_factor : float
+            Factor the dimensionless mass is multiplied by to convert it to a physical mass (e.g. the critical surface \
+            mass density).
+        """
+        if self.has_mass_profile:
+            return critical_surface_mass_density * self.mass_within_circle_in_angular_units(radius=radius)
+        else:
+            return None
+
+    def mass_within_ellipse_in_mass_units(self, major_axis, critical_surface_mass_density):
+        """Compute the total angular mass of the galaxy's mass profiles within an ellipse of specified major_axis.
+
+        The value returned by this integral is in angular units, however a conversion factor can be specified to \
+        convert it to a physical value (e.g. the critical surface mass density).
+
+        See *profiles.mass_profiles.angualr_mass_within_ellipse* for details of how this is performed.
+
+        Parameters
+        ----------
+        major_axis : float
+            The major axis of the ellipse
+        conversion_factor : float
+            Factor the dimensionless mass is multiplied by to convert it to a physical mass (e.g. the critical surface \
+            mass density).
+        """
+        if self.has_mass_profile:
+            return critical_surface_mass_density * self.mass_within_ellipse_in_angular_units(major_axis=major_axis)
         else:
             return None
 
