@@ -6,6 +6,7 @@ from numba.types import intc, CPointer, float64
 from scipy import LowLevelCallable
 from scipy import special
 from scipy.integrate import quad
+from scipy.optimize import fsolve
 from pyquad import quad_grid
 
 from scipy.optimize import root_scalar
@@ -1120,6 +1121,31 @@ class SphericalNFW(EllipticalNFW):
 
     def rho_scale_radius(self, critical_surface_mass_density_arcsec):
         return self.kappa_s * critical_surface_mass_density_arcsec / self.scale_radius
+
+    def delta_concentration(self, critical_surface_mass_density_arcsec, cosmic_average_mass_density_arcsec):
+        rho_scale_radius = self.rho_scale_radius(critical_surface_mass_density_arcsec=
+                                                 critical_surface_mass_density_arcsec)
+        return rho_scale_radius / cosmic_average_mass_density_arcsec
+
+    def concentration(self, critical_surface_mass_density_arcsec, cosmic_average_mass_density_arcsec):
+        delta_concentration = self.delta_concentration(
+            critical_surface_mass_density_arcsec=critical_surface_mass_density_arcsec,
+            cosmic_average_mass_density_arcsec=cosmic_average_mass_density_arcsec)
+        return fsolve(func=self.concentration_func, x0=10.0, args=(delta_concentration,))
+
+    def concentration_func(self, concentration, delta_concentration):
+        return 200.0 / 3.0 * (concentration * concentration * concentration /
+                              (np.log(1 + concentration) - concentration / (1 + concentration))) - delta_concentration
+
+    def radius_at_200(self, critical_surface_mass_density_arcsec, cosmic_average_mass_density_arcsec):
+        concentration = self.concentration(critical_surface_mass_density_arcsec=critical_surface_mass_density_arcsec,
+                                           cosmic_average_mass_density_arcsec=cosmic_average_mass_density_arcsec)
+        return concentration * self.scale_radius
+
+    def mass_at_200(self, critical_surface_mass_density_arcsec, cosmic_average_mass_density_arcsec):
+        radius_at_200 = self.radius_at_200(critical_surface_mass_density_arcsec=critical_surface_mass_density_arcsec,
+                                           cosmic_average_mass_density_arcsec=cosmic_average_mass_density_arcsec)
+        return 200.0 * ((4.0/3.0)*np.pi) * cosmic_average_mass_density_arcsec * (radius_at_200**3.0)
 
  #   def characteristic_over_density(self, cosmic_average_density):
 
