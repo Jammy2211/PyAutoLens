@@ -1505,6 +1505,9 @@ class MassSheet(geometry_profiles.SphericalProfile, MassProfile):
         super(MassSheet, self).__init__(centre=centre)
         self.kappa = kappa
 
+    def convergence_from_grid(self, grid):
+        return np.full(shape=grid.shape[0], fill_value=self.kappa)
+
     @geometry_profiles.transform_grid
     def deflections_from_grid(self, grid):
         grid_radii = self.grid_to_grid_radii(grid=grid)

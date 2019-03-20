@@ -2286,6 +2286,28 @@ class TestMassSheet(object):
         assert mass_sheet.centre == (1.0, 1.0)
         assert mass_sheet.kappa == 2.0
 
+    def test__convergence__correct_values(self):
+
+        mass_sheet = mp.MassSheet(centre=(0.0, 0.0), kappa=1.0)
+
+        convergence = mass_sheet.convergence_from_grid(grid=np.array([[1.0, 0.0]]))
+
+        assert convergence[0] == pytest.approx(1.0, 1e-3)
+
+        convergence = mass_sheet.convergence_from_grid(grid=np.array([[1.0, 0.0], [3.0, 3.0], [5.0, -9.0]]))
+
+        assert convergence[0] == pytest.approx(1.0, 1e-3)
+        assert convergence[1] == pytest.approx(1.0, 1e-3)
+        assert convergence[2] == pytest.approx(1.0, 1e-3)
+
+        mass_sheet = mp.MassSheet(centre=(0.0, 0.0), kappa=-3.0)
+
+        convergence = mass_sheet.convergence_from_grid(grid=np.array([[1.0, 0.0], [3.0, 3.0], [5.0, -9.0]]))
+
+        assert convergence[0] == pytest.approx(-3.0, 1e-3)
+        assert convergence[1] == pytest.approx(-3.0, 1e-3)
+        assert convergence[2] == pytest.approx(-3.0, 1e-3)
+
     def test__deflections__correct_values(self):
 
         mass_sheet = mp.MassSheet(centre=(0.0, 0.0), kappa=1.0)
