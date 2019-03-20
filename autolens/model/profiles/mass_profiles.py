@@ -108,7 +108,7 @@ class PointMass(geometry_profiles.SphericalProfile, MassProfile):
     @geometry_profiles.transform_grid
     def deflections_from_grid(self, grid):
         grid_radii = self.grid_to_grid_radii(grid=grid)
-        return self.grid_to_grid_cartesian(grid=grid/grid_radii[:, np.newaxis], radius=self.einstein_radius/grid_radii)
+        return self.grid_to_grid_cartesian(grid=grid, radius=self.einstein_radius/grid_radii)
 
     # @property
     # def mass(self):
@@ -1487,6 +1487,28 @@ class SphericalSersicRadialGradient(EllipticalSersicRadialGradient):
         """
         super(SphericalSersicRadialGradient, self).__init__(centre, 1.0, 0.0, intensity, effective_radius,
                                                             sersic_index, mass_to_light_ratio, mass_to_light_gradient)
+
+
+class MassSheet(geometry_profiles.SphericalProfile, MassProfile):
+
+    def __init__(self, centre=(0.0, 0.0), kappa=0.0):
+        """
+        Represents a mass-sheet
+
+        Parameters
+        ----------
+        centre: (float, float)
+            The (y,x) arc-second coordinates of the profile centre.
+        kappa : float
+            The magnitude of the convergence of the mass-sheet.
+        """
+        super(MassSheet, self).__init__(centre=centre)
+        self.kappa = kappa
+
+    @geometry_profiles.transform_grid
+    def deflections_from_grid(self, grid):
+        grid_radii = self.grid_to_grid_radii(grid=grid)
+        return self.grid_to_grid_cartesian(grid=grid, radius=self.kappa*grid_radii)
 
 
 # noinspection PyAbstractClass
