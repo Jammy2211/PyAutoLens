@@ -5,7 +5,6 @@ Let me know if you think anything is missing, or should be pushed up the to-do l
 Short term:
 
 - Bug with NFW potentials for MultiNest.
-- Binning up speed up for pipelines.
 - Inclusion of lens / source redshifts for analysis.
 - Quantitive output of lens model results (e.g. einstein mass, magnification), include otf output
 - Add feature to remove astropy bug.

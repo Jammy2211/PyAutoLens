@@ -2,6 +2,7 @@ import math
 
 import numpy as np
 import pytest
+from astropy import cosmology
 
 from autolens.data.array import mask as msk
 from autolens.data.array import grids
@@ -20,6 +21,10 @@ class TestPointMass(object):
         assert point_mass.einstein_radius == 2.0
 
     def test__deflections__correct_values(self):
+
+        # The radial coordinate at (1.0, 1.0) is sqrt(2)
+        # This is decomposed into (y,x) angles of sin(45) = cos(45) = sqrt(2) / 2.0
+        # Thus, for an EinR of 1.0, the deflection angle is (1.0 / sqrt(2)) * (sqrt(2) / 2.0)
 
         point_mass = mp.PointMass(centre=(0.0, 0.0), einstein_radius=1.0)
 
@@ -1514,6 +1519,126 @@ class TestNFW(object):
         assert (interp_deflections_manual_y != interp_deflections[:,0]).all()
         assert (interp_deflections_manual_x != interp_deflections[:,1]).all()
 
+    def test__rho_scale_radius_value(self):
+
+        nfw = mp.SphericalNFW(centre=(0.0, 0.0), kappa_s=1.0, scale_radius=1.0)
+        assert nfw.rho_scale_radius(critical_surface_mass_density_arcsec=1.0) == pytest.approx(1.0, 1e-3)
+
+        nfw = mp.SphericalNFW(centre=(0.0, 0.0), kappa_s=3.0, scale_radius=1.0)
+        assert nfw.rho_scale_radius(critical_surface_mass_density_arcsec=1.0) == pytest.approx(3.0, 1e-3)
+
+        nfw = mp.SphericalNFW(centre=(0.0, 0.0), kappa_s=1.0, scale_radius=4.0)
+        assert nfw.rho_scale_radius(critical_surface_mass_density_arcsec=1.0) == pytest.approx(0.25, 1e-3)
+
+        nfw = mp.SphericalNFW(centre=(0.0, 0.0), kappa_s=1.0, scale_radius=1.0)
+        assert nfw.rho_scale_radius(critical_surface_mass_density_arcsec=5.0) == pytest.approx(5.0, 1e-3)
+
+        nfw = mp.SphericalNFW(centre=(0.0, 0.0), kappa_s=2.0, scale_radius=3.0)
+        assert nfw.rho_scale_radius(critical_surface_mass_density_arcsec=6.0) == pytest.approx(4.0, 1e-3)
+
+    def test__delta_concentration_value(self):
+
+        nfw = mp.SphericalNFW(centre=(0.0, 0.0), kappa_s=1.0, scale_radius=1.0)
+        assert nfw.delta_concentration(critical_surface_mass_density_arcsec=1.0,
+                                       cosmic_average_mass_density_arcsec=1.0) == pytest.approx(1.0, 1e-3)
+
+        nfw = mp.SphericalNFW(centre=(0.0, 0.0), kappa_s=3.0, scale_radius=1.0)
+        assert nfw.delta_concentration(critical_surface_mass_density_arcsec=1.0,
+                                       cosmic_average_mass_density_arcsec=1.0) == pytest.approx(3.0, 1e-3)
+
+        nfw = mp.SphericalNFW(centre=(0.0, 0.0), kappa_s=1.0, scale_radius=4.0)
+        assert nfw.delta_concentration(critical_surface_mass_density_arcsec=1.0,
+                                       cosmic_average_mass_density_arcsec=1.0) == pytest.approx(0.25, 1e-3)
+
+        nfw = mp.SphericalNFW(centre=(0.0, 0.0), kappa_s=1.0, scale_radius=1.0)
+        assert nfw.delta_concentration(critical_surface_mass_density_arcsec=5.0,
+                                       cosmic_average_mass_density_arcsec=1.0) == pytest.approx(5.0, 1e-3)
+
+        nfw = mp.SphericalNFW(centre=(0.0, 0.0), kappa_s=2.0, scale_radius=1.0)
+        assert nfw.delta_concentration(critical_surface_mass_density_arcsec=5.0,
+                                       cosmic_average_mass_density_arcsec=1.0) == pytest.approx(10.0, 1e-3)
+
+        nfw = mp.SphericalNFW(centre=(0.0, 0.0), kappa_s=2.0, scale_radius=20.0)
+        assert nfw.delta_concentration(critical_surface_mass_density_arcsec=5.0,
+                                       cosmic_average_mass_density_arcsec=1.0) == pytest.approx(0.5, 1e-3)
+
+        nfw = mp.SphericalNFW(centre=(0.0, 0.0), kappa_s=1.0, scale_radius=1.0)
+        assert nfw.delta_concentration(critical_surface_mass_density_arcsec=5.0,
+                                       cosmic_average_mass_density_arcsec=2.0) == pytest.approx(2.5, 1e-3)
+
+        nfw = mp.SphericalNFW(centre=(0.0, 0.0), kappa_s=2.0, scale_radius=1.0)
+        assert nfw.delta_concentration(critical_surface_mass_density_arcsec=5.0,
+                                       cosmic_average_mass_density_arcsec=5.0) == pytest.approx(2.0, 1e-3)
+
+        nfw = mp.SphericalNFW(centre=(0.0, 0.0), kappa_s=2.0, scale_radius=20.0)
+        assert nfw.delta_concentration(critical_surface_mass_density_arcsec=5.0,
+                                       cosmic_average_mass_density_arcsec=5.0) == pytest.approx(0.1, 1e-3)
+
+    def test__solve_concentration(self):
+
+        nfw = mp.SphericalNFW(centre=(0.0, 0.0), kappa_s=1.0, scale_radius=1.0)
+
+        critical_surface_mass_density_arcsec = 1.0
+        cosmic_average_mass_density_arcsec = 1.0
+
+        concentration = nfw.concentration(critical_surface_mass_density_arcsec, cosmic_average_mass_density_arcsec)
+
+        assert concentration == pytest.approx(0.0074263, 1.0e-4)
+
+    def test__radius_at_200_times_cosmic_average_density(self):
+
+        nfw = mp.SphericalNFW(centre=(0.0, 0.0), kappa_s=1.0, scale_radius=1.0)
+
+        concentration = nfw.concentration(critical_surface_mass_density_arcsec=5.0,
+                                          cosmic_average_mass_density_arcsec=5.0)
+
+        radius_200 = nfw.radius_at_200(critical_surface_mass_density_arcsec=5.0,
+                                       cosmic_average_mass_density_arcsec=5.0)
+
+        assert radius_200 == concentration * 1.0
+
+        nfw = mp.SphericalNFW(centre=(0.0, 0.0), kappa_s=1.0, scale_radius=3.0)
+
+        concentration = nfw.concentration(critical_surface_mass_density_arcsec=5.0,
+                                          cosmic_average_mass_density_arcsec=8.0)
+
+        radius_200 = nfw.radius_at_200(critical_surface_mass_density_arcsec=5.0,
+                                       cosmic_average_mass_density_arcsec=8.0)
+
+        assert radius_200 == concentration * 3.0
+
+        nfw = mp.SphericalNFW(centre=(0.0, 0.0), kappa_s=6.0, scale_radius=2.0)
+
+        concentration = nfw.concentration(critical_surface_mass_density_arcsec=5.0,
+                                          cosmic_average_mass_density_arcsec=2.0)
+
+        radius_200 = nfw.radius_at_200(critical_surface_mass_density_arcsec=5.0,
+                                       cosmic_average_mass_density_arcsec=2.0)
+
+        assert radius_200 == concentration * 2.0
+
+    def test__mass_at_200(self):
+
+        nfw = mp.SphericalNFW(centre=(0.0, 0.0), kappa_s=1.0, scale_radius=1.0)
+
+        mass_at_200 = nfw.mass_at_200(critical_surface_mass_density_arcsec=5.0,
+                                      cosmic_average_mass_density_arcsec=8.0)
+
+        # radius_200 = 0.004658
+        # mass_200 = 200.0 * ((4*pi)/3)  * (0.004658 ** 3.0)
+
+        assert mass_at_200 == pytest.approx(0.00067757, 1.0e-5)
+
+        nfw = mp.SphericalNFW(centre=(0.0, 0.0), kappa_s=2.0, scale_radius=4.0)
+
+        mass_at_200 = nfw.mass_at_200(critical_surface_mass_density_arcsec=50.0,
+                                      cosmic_average_mass_density_arcsec=4.0)
+
+        # radius_200 = 0.004658
+        # mass_200 = 200.0 * ((4*pi)/3)  * (0.004658 ** 3.0)
+
+        assert mass_at_200 == pytest.approx(18.57133, 1.0e-5)
+
 
 class TestSersic(object):
 
@@ -2152,6 +2277,145 @@ class TestSersicMassRadialGradient(object):
         assert (interp_deflections_manual_x == interp_deflections[:,1]).all()
 
 
+class TestMassSheet(object):
+
+    def test_constructor(self):
+
+        mass_sheet = mp.MassSheet(centre=(1.0, 1.0), kappa=2.0)
+
+        assert mass_sheet.centre == (1.0, 1.0)
+        assert mass_sheet.kappa == 2.0
+
+    def test__convergence__correct_values(self):
+
+        mass_sheet = mp.MassSheet(centre=(0.0, 0.0), kappa=1.0)
+
+        convergence = mass_sheet.convergence_from_grid(grid=np.array([[1.0, 0.0]]))
+
+        assert convergence[0] == pytest.approx(1.0, 1e-3)
+
+        convergence = mass_sheet.convergence_from_grid(grid=np.array([[1.0, 0.0], [3.0, 3.0], [5.0, -9.0]]))
+
+        assert convergence[0] == pytest.approx(1.0, 1e-3)
+        assert convergence[1] == pytest.approx(1.0, 1e-3)
+        assert convergence[2] == pytest.approx(1.0, 1e-3)
+
+        mass_sheet = mp.MassSheet(centre=(0.0, 0.0), kappa=-3.0)
+
+        convergence = mass_sheet.convergence_from_grid(grid=np.array([[1.0, 0.0], [3.0, 3.0], [5.0, -9.0]]))
+
+        assert convergence[0] == pytest.approx(-3.0, 1e-3)
+        assert convergence[1] == pytest.approx(-3.0, 1e-3)
+        assert convergence[2] == pytest.approx(-3.0, 1e-3)
+
+    def test__deflections__correct_values(self):
+
+        mass_sheet = mp.MassSheet(centre=(0.0, 0.0), kappa=1.0)
+
+        deflections = mass_sheet.deflections_from_grid(grid=np.array([[1.0, 0.0]]))
+
+        assert deflections[0, 0] == pytest.approx(1.0, 1e-3)
+        assert deflections[0, 1] == pytest.approx(0.0, 1e-3)
+
+        deflections = mass_sheet.deflections_from_grid(grid=np.array([[2.0, 0.0]]))
+
+        assert deflections[0, 0] == pytest.approx(2.0, 1e-3)
+        assert deflections[0, 1] == pytest.approx(0.0, 1e-3)
+
+        mass_sheet = mp.MassSheet(centre=(0.0, 0.0), kappa=2.0)
+
+        deflections = mass_sheet.deflections_from_grid(grid=np.array([[2.0, 0.0]]))
+
+        assert deflections[0, 0] == pytest.approx(4.0, 1e-3)
+        assert deflections[0, 1] == pytest.approx(0.0, 1e-3)
+
+        mass_sheet = mp.MassSheet(centre=(0.0, 0.0), kappa=1.0)
+
+        # The radial coordinate at (1.0, 1.0) is sqrt(2)
+        # This is decomposed into (y,x) angles of sin(45) = cos(45) = sqrt(2) / 2.0
+        # Thus, for a mass sheet, the deflection angle is (sqrt(2) * sqrt(2) / 2.0) = 1.0
+
+        deflections = mass_sheet.deflections_from_grid(grid=np.array([[1.0, 1.0]]))
+        assert deflections[0, 0] == pytest.approx(1.0, 1e-3)
+        assert deflections[0, 1] == pytest.approx(1.0, 1e-3)
+        
+        mass_sheet = mp.MassSheet(centre=(0.0, 0.0), kappa=2.0)
+
+        deflections = mass_sheet.deflections_from_grid(grid=np.array([[1.0, 1.0]]))
+        assert deflections[0, 0] == pytest.approx(2.0, 1e-3)
+        assert deflections[0, 1] == pytest.approx(2.0, 1e-3)
+
+        mass_sheet = mp.MassSheet(centre=(0.0, 0.0), kappa=2.0)
+
+        deflections = mass_sheet.deflections_from_grid(grid=np.array([[2.0, 2.0]]))
+        assert deflections[0, 0] == pytest.approx(4.0, 1e-3)
+        assert deflections[0, 1] == pytest.approx(4.0, 1e-3)
+
+        mass_sheet = mp.MassSheet(centre=(0.0, 0.0), kappa=1.0)
+
+        # The radial coordinate at (2.0, 1.0) is sqrt(5)
+        # This gives an angle of 26.5650512 degrees between the 1.0 and np.sqrt(5) of the triangle
+        # This is decomposed into y angle of cos(26.5650512 degrees) = 0.8944271
+        # This is decomposed into x angle of sin(26.5650512 degrees) = 0.4472135
+        # Thus, for a mass sheet, the deflection angles are:
+        deflections = mass_sheet.deflections_from_grid(grid=np.array([[2.0, 1.0]]))
+        assert deflections[0, 0] == pytest.approx(0.8944271 * np.sqrt(5), 1e-3)
+        assert deflections[0, 1] == pytest.approx(0.4472135 * np.sqrt(5), 1e-3)
+
+        deflections = mass_sheet.deflections_from_grid(grid=np.array([[-1.0, -1.0]]))
+        assert deflections[0, 0] == pytest.approx(-1.0, 1e-3)
+        assert deflections[0, 1] == pytest.approx(-1.0, 1e-3)
+
+        mass_sheet = mp.MassSheet(centre=(1.0, 2.0), kappa=1.0)
+
+        deflections = mass_sheet.deflections_from_grid(grid=np.array([[2.0, 3.0]]))
+        assert deflections[0, 0] == pytest.approx(1.0, 1e-3)
+        assert deflections[0, 1] == pytest.approx(1.0, 1e-3)
+
+    def test__deflections__change_geometry(self):
+
+        mass_sheet_0 = mp.MassSheet(centre=(0.0, 0.0))
+        mass_sheet_1 = mp.MassSheet(centre=(1.0, 1.0))
+        defls_0 = mass_sheet_0.deflections_from_grid(grid=np.array([[1.0, 1.0]]))
+        defls_1 = mass_sheet_1.deflections_from_grid(grid=np.array([[0.0, 0.0]]))
+        assert defls_0[0, 0] == pytest.approx(-defls_1[0, 0], 1e-5)
+        assert defls_0[0, 1] == pytest.approx(-defls_1[0, 1], 1e-5)
+
+        mass_sheet_0 = mp.MassSheet(centre=(0.0, 0.0))
+        mass_sheet_1 = mp.MassSheet(centre=(0.0, 0.0))
+        defls_0 = mass_sheet_0.deflections_from_grid(grid=np.array([[1.0, 0.0]]))
+        defls_1 = mass_sheet_1.deflections_from_grid(grid=np.array([[0.0, 1.0]]))
+        assert defls_0[0, 0] == pytest.approx(defls_1[0, 1], 1e-5)
+        assert defls_0[0, 1] == pytest.approx(defls_1[0, 0], 1e-5)
+
+    def test__multiple_coordinates_in__multiple_coordinates_out(self):
+
+        mass_sheet = mp.MassSheet(centre=(1.0, 2.0), kappa=1.0)
+
+        deflections = mass_sheet.deflections_from_grid(grid=np.array([[2.0, 3.0], [2.0, 3.0], [2.0, 3.0]]))
+        assert deflections[0, 0] == pytest.approx(1.0, 1e-3)
+        assert deflections[0, 1] == pytest.approx(1.0, 1e-3)
+        assert deflections[1, 0] == pytest.approx(1.0, 1e-3)
+        assert deflections[1, 1] == pytest.approx(1.0, 1e-3)
+        assert deflections[2, 0] == pytest.approx(1.0, 1e-3)
+        assert deflections[2, 1] == pytest.approx(1.0, 1e-3)
+
+        mass_sheet = mp.MassSheet(centre=(0.0, 0.0), kappa=1.0)
+
+        deflections = mass_sheet.deflections_from_grid(grid=np.array([[1.0, 1.0], [2.0, 2.0], [1.0, 1.0], [2.0, 2.0]]))
+        assert deflections[0, 0] == pytest.approx(1.0, 1e-3)
+        assert deflections[0, 1] == pytest.approx(1.0, 1e-3)
+
+        assert deflections[1, 0] == pytest.approx(2.0, 1e-3)
+        assert deflections[1, 1] == pytest.approx(2.0, 1e-3)
+
+        assert deflections[2, 0] == pytest.approx(1.0, 1e-3)
+        assert deflections[2, 1] == pytest.approx(1.0, 1e-3)
+
+        assert deflections[3, 0] == pytest.approx(2.0, 1e-3)
+        assert deflections[3, 1] == pytest.approx(2.0, 1e-3)
+
+
 class TestExternalShear(object):
 
     def test__convergence_returns_zeros(self):
@@ -2186,19 +2450,19 @@ class TestExternalShear(object):
 
 class TestMassIntegral(object):
 
-    def test__within_circle__no_conversion_factor__singular_isothermal_sphere__compare_to_analytic(self):
+    def test__within_circle__no_critical_surface_mass_density__singular_isothermal_sphere__compare_to_analytic(self):
 
         sis = mp.SphericalIsothermal(einstein_radius=2.0)
         integral_radius = 2.0
-        dimensionless_mass_integral = sis.angular_mass_within_circle(radius=integral_radius)
+        dimensionless_mass_integral = sis.mass_within_circle_in_angular_units(radius=integral_radius)
         assert math.pi * sis.einstein_radius * integral_radius == pytest.approx(dimensionless_mass_integral, 1e-3)
 
         sis = mp.SphericalIsothermal(einstein_radius=4.0)
         integral_radius = 4.0
-        dimensionless_mass_integral = sis.angular_mass_within_circle(radius=integral_radius)
+        dimensionless_mass_integral = sis.mass_within_circle_in_angular_units(radius=integral_radius)
         assert math.pi * sis.einstein_radius * integral_radius == pytest.approx(dimensionless_mass_integral, 1e-3)
 
-    def test__within_circle__no_conversion_factor__singular_isothermal__compare_to_grid(self):
+    def test__within_circle__no_critical_surface_mass_density__singular_isothermal__compare_to_grid(self):
 
         sis = mp.SphericalIsothermal(einstein_radius=2.0)
 
@@ -2219,37 +2483,37 @@ class TestMassIntegral(object):
                 if eta < integral_radius:
                     dimensionless_mass_total += sis.convergence_func(eta) * area
 
-        dimensionless_mass_integral = sis.angular_mass_within_circle(radius=integral_radius)
+        dimensionless_mass_integral = sis.mass_within_circle_in_angular_units(radius=integral_radius)
 
         assert dimensionless_mass_total == pytest.approx(dimensionless_mass_integral, 0.02)
 
-    def test__mass_within_circle__conversion_factor_multiplies(self):
+    def test__mass_within_circle__critical_surface_mass_density_factor_multiplies(self):
 
         sis = mp.SphericalIsothermal(einstein_radius=2.0)
         integral_radius = 2.0
-        mass_integral = sis.angular_mass_within_circle(radius=integral_radius, conversion_factor=2.0)
+        mass_integral = sis.mass_within_circle_in_mass_units(radius=integral_radius, critical_surface_mass_density=2.0)
         assert 2.0 * math.pi * sis.einstein_radius * integral_radius == pytest.approx(mass_integral, 1e-3)
 
         sis = mp.SphericalIsothermal(einstein_radius=2.0)
         integral_radius = 4.0
-        mass_integral = sis.angular_mass_within_circle(radius=integral_radius, conversion_factor=8.0)
+        mass_integral = sis.mass_within_circle_in_mass_units(radius=integral_radius, critical_surface_mass_density=8.0)
         assert 8.0 * math.pi * sis.einstein_radius * integral_radius == pytest.approx(mass_integral, 1e-3)
 
-    def test__within_ellipse__no_conversion_factor__singular_isothermal_sphere__compare_circle_and_ellipse(self):
+    def test__within_ellipse__no_critical_surface_mass_density__singular_isothermal_sphere__compare_circle_and_ellipse(self):
 
         sis = mp.SphericalIsothermal(einstein_radius=2.0)
         integral_radius = 2.0
-        dimensionless_mass_integral_circle = sis.angular_mass_within_circle(radius=integral_radius)
-        dimensionless_mass_integral_ellipse = sis.angular_mass_within_ellipse(major_axis=integral_radius)
+        dimensionless_mass_integral_circle = sis.mass_within_circle_in_angular_units(radius=integral_radius)
+        dimensionless_mass_integral_ellipse = sis.mass_within_ellipse_in_angular_units(major_axis=integral_radius)
         assert dimensionless_mass_integral_circle == dimensionless_mass_integral_ellipse
 
         sie = mp.EllipticalIsothermal(einstein_radius=2.0, axis_ratio=0.5, phi=0.0)
         integral_radius = 2.0
-        dimensionless_mass_integral_circle = sie.angular_mass_within_circle(radius=integral_radius)
-        dimensionless_mass_integral_ellipse = sie.angular_mass_within_ellipse(major_axis=integral_radius)
+        dimensionless_mass_integral_circle = sie.mass_within_circle_in_angular_units(radius=integral_radius)
+        dimensionless_mass_integral_ellipse = sie.mass_within_ellipse_in_angular_units(major_axis=integral_radius)
         assert dimensionless_mass_integral_circle == dimensionless_mass_integral_ellipse * 2.0
 
-    def test__within_ellipse__no_conversion_factor__singular_isothermal_ellipsoid__compare_to_grid(self):
+    def test__within_ellipse__no_critical_surface_mass_density__singular_isothermal_ellipsoid__compare_to_grid(self):
 
         sie = mp.EllipticalIsothermal(einstein_radius=2.0, axis_ratio=0.5, phi=0.0)
 
@@ -2270,12 +2534,12 @@ class TestMassIntegral(object):
                 if eta < integral_radius:
                     dimensionless_mass_tot += sie.convergence_func(eta) * area
 
-        dimensionless_mass_integral = sie.angular_mass_within_ellipse(major_axis=integral_radius)
+        dimensionless_mass_integral = sie.mass_within_ellipse_in_angular_units(major_axis=integral_radius)
 
         # Large errors required due to cusp at center of SIE - can get to errors of 0.01 for a 400 x 400 grid.
         assert dimensionless_mass_tot == pytest.approx(dimensionless_mass_integral, 0.1)
 
-    def test__mass_within_ellipse__compare_to_grid__uses_conversion_factor(self):
+    def test__mass_within_ellipse__compare_to_grid__uses_critical_surface_mass_density(self):
 
         sie = mp.EllipticalIsothermal(einstein_radius=2.0, axis_ratio=0.5, phi=0.0)
 
@@ -2296,12 +2560,14 @@ class TestMassIntegral(object):
                 if eta < integral_radius:
                     dimensionless_mass_tot += sie.convergence_func(eta) * area
 
-        mass_integral = sie.angular_mass_within_ellipse(major_axis=integral_radius, conversion_factor=2.0)
+        mass_integral = sie.mass_within_ellipse_in_mass_units(major_axis=integral_radius,
+                                                              critical_surface_mass_density=2.0)
 
         # Large errors required due to cusp at center of SIE - can get to errors of 0.01 for a 400 x 400 grid.
         assert dimensionless_mass_tot == pytest.approx(0.5 * mass_integral, 0.1)
 
-        mass_integral = sie.angular_mass_within_ellipse(major_axis=integral_radius, conversion_factor=8.0)
+        mass_integral = sie.mass_within_ellipse_in_mass_units(major_axis=integral_radius,
+                                                              critical_surface_mass_density=8.0)
 
         # Large errors required due to cusp at center of SIE - can get to errors of 0.01 for a 400 x 400 grid.
         assert dimensionless_mass_tot == pytest.approx(0.125 * mass_integral, 0.1)
@@ -2319,8 +2585,8 @@ class TestDensityBetweenAnnuli(object):
         outer_annuli_radius = 3.0
         outer_mass = math.pi * einstein_radius * outer_annuli_radius
 
-        density_between_annuli = sis.density_between_circular_annuli(inner_annuli_radius=inner_annuli_radius,
-                                                                     outer_annuli_radius=outer_annuli_radius)
+        density_between_annuli = sis.density_between_circular_annuli_in_angular_units(
+            inner_annuli_radius=inner_annuli_radius, outer_annuli_radius=outer_annuli_radius)
 
         annuli_area = (np.pi * outer_annuli_radius ** 2.0) - (np.pi * inner_annuli_radius **2.0)
 
@@ -2330,25 +2596,11 @@ class TestDensityBetweenAnnuli(object):
 
         nfw = mp.EllipticalNFW(centre=(0.0, 0.0), axis_ratio=0.8, phi=45.0, kappa_s=1.0)
 
-        inner_mass = nfw.angular_mass_within_circle(radius=1.0)
-        outer_mass = nfw.angular_mass_within_circle(radius=2.0)
+        inner_mass = nfw.mass_within_circle_in_angular_units(radius=1.0)
+        outer_mass = nfw.mass_within_circle_in_angular_units(radius=2.0)
 
-        density_between_annuli = nfw.density_between_circular_annuli(inner_annuli_radius=1.0, outer_annuli_radius=2.0)
+        density_between_annuli = nfw.density_between_circular_annuli_in_angular_units(inner_annuli_radius=1.0, outer_annuli_radius=2.0)
 
         annuli_area = (np.pi * 2.0 ** 2.0) - (np.pi * 1.0 **2.0)
 
         assert (outer_mass - inner_mass) / annuli_area == pytest.approx(density_between_annuli, 1e-4)
-
-    def test__same_as_above__include_conversion_factor(self):
-
-        nfw = mp.EllipticalNFW(centre=(0.0, 0.0), axis_ratio=0.8, phi=45.0, kappa_s=1.0)
-
-        inner_mass = nfw.angular_mass_within_circle(radius=1.0)
-        outer_mass = nfw.angular_mass_within_circle(radius=2.0)
-
-        density_between_annuli = nfw.density_between_circular_annuli(inner_annuli_radius=1.0, outer_annuli_radius=2.0,
-                                                                     conversion_factor=2.0)
-
-        annuli_area = (np.pi * 2.0 ** 2.0) - (np.pi * 1.0 ** 2.0)
-
-        assert 2.0*(outer_mass - inner_mass) / annuli_area == pytest.approx(density_between_annuli, 1e-4)
