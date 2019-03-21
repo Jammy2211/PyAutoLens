@@ -9,6 +9,7 @@ Short term:
 - Quantitive output of lens model results (e.g. einstein mass, magnification), include otf output
 - Add feature to remove astropy bug.
 - Fix rectangular plot bug.
+- plot_centres_of_galaxies / profiles in plotters.
 
 Mid term:
 
