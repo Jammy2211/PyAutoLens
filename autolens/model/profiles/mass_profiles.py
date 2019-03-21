@@ -6,6 +6,7 @@ from numba.types import intc, CPointer, float64
 from scipy import LowLevelCallable
 from scipy import special
 from scipy.integrate import quad
+from scipy.optimize import fsolve
 from pyquad import quad_grid
 
 from scipy.optimize import root_scalar
@@ -75,10 +76,16 @@ class MassProfile(object):
     def deflections_from_grid(self, grid):
         raise NotImplementedError("deflections_from_grid should be overridden")
 
-    def angular_mass_within_circle(self, radius, conversion_factor):
+    def mass_within_circle_in_angular_units(self, radius):
         raise NotImplementedError()
 
-    def angular_mass_within_ellipse(self, major_axis, conversion_factor):
+    def mass_within_ellipse_in_angular_units(self, major_axis):
+        raise NotImplementedError()
+
+    def mass_within_circle_in_mass_units(self, radius, critical_surface_mass_density):
+        raise NotImplementedError()
+
+    def mass_within_ellipse_in_mass_units(self, major_axis, critical_surface_mass_density):
         raise NotImplementedError()
 
 
@@ -101,7 +108,7 @@ class PointMass(geometry_profiles.SphericalProfile, MassProfile):
     @geometry_profiles.transform_grid
     def deflections_from_grid(self, grid):
         grid_radii = self.grid_to_grid_radii(grid=grid)
-        return self.grid_to_grid_cartesian(grid=grid/grid_radii[:, np.newaxis], radius=self.einstein_radius/grid_radii)
+        return self.grid_to_grid_cartesian(grid=grid, radius=self.einstein_radius/grid_radii)
 
     # @property
     # def mass(self):
@@ -127,24 +134,18 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
         self.axis_ratio = axis_ratio
         self.phi = phi
 
-    def angular_mass_within_circle(self, radius, conversion_factor=1.0):
+    def mass_within_circle_in_angular_units(self, radius):
         """ Integrate the mass profiles's convergence profile to compute the total angular mass within a circle of \
         specified radius. This is centred on the mass profile.
-
-        The value returned by this integral is in angular units, however a conversion factor can be specified to \
-        convert it to a physical value (e.g. the critical surface mass density).
 
         Parameters
         ----------
         radius : float
             The radius of the circle to compute the dimensionless mass within.
-        conversion_factor : float
-            Factor the dimensionless mass is multiplied by to convert it to a physical mass (e.g. the critical surface \
-            mass density).
         """
-        return conversion_factor * quad(self.mass_integral, a=0.0, b=radius, args=(1.0,))[0]
+        return quad(self.mass_integral, a=0.0, b=radius, args=(1.0,))[0]
 
-    def angular_mass_within_ellipse(self, major_axis, conversion_factor=1.0):
+    def mass_within_ellipse_in_angular_units(self, major_axis):
         """ Integrate the mass profiles's convergence profile to compute the total angular mass within an ellipse of \
         specified major axis. This is centred on the mass profile.
 
@@ -155,11 +156,40 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
         ----------
         major_axis : float
             The major-axis radius of the ellipse.
-        conversion_factor : float
-            Factor the dimensionless mass is multiplied by to convert it to a physical mass (e.g. the critical surface \
-            mass density).
         """
-        return conversion_factor * quad(self.mass_integral, a=0.0, b=major_axis, args=(self.axis_ratio,))[0]
+        return quad(self.mass_integral, a=0.0, b=major_axis, args=(self.axis_ratio,))[0]
+
+    def mass_within_circle_in_mass_units(self, radius, critical_surface_mass_density):
+        """ Integrate the mass profiles's convergence profile to compute the total angular mass within a circle of \
+        specified radius. This is centred on the mass profile.
+
+        The value returned by this integral is in angular units and converted to solar masses using the critical \
+        surface mass density).
+
+        Parameters
+        ----------
+        radius : float
+            The radius of the circle to compute the dimensionless mass within.
+        critical_surface_mass_density : float
+            Factor the dimensionless mass is multiplied by to convert it to a physical mass.
+        """
+        return critical_surface_mass_density * self.mass_within_circle_in_angular_units(radius=radius)
+
+    def mass_within_ellipse_in_mass_units(self, major_axis, critical_surface_mass_density):
+        """ Integrate the mass profiles's convergence profile to compute the total angular mass within an ellipse of \
+        specified major axis. This is centred on the mass profile.
+
+        The value returned by this integral is in angular units and converted to solar masses using the critical \
+        surface mass density).
+
+        Parameters
+        ----------
+        radius : float
+            The radius of the circle to compute the dimensionless mass within.
+        critical_surface_mass_density : float
+            Factor the dimensionless mass is multiplied by to convert it to a physical mass.
+        """
+        return critical_surface_mass_density * self.mass_within_ellipse_in_angular_units(major_axis=major_axis)
 
     def mass_integral(self, x, axis_ratio):
         """Routine to integrate an elliptical light profiles - set axis ratio to 1 to compute the luminosity within a \
@@ -167,7 +197,7 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
         r = x * axis_ratio
         return 2 * np.pi * r * self.convergence_func(x)
 
-    def density_between_circular_annuli(self, inner_annuli_radius, outer_annuli_radius, conversion_factor=1.0):
+    def density_between_circular_annuli_in_angular_units(self, inner_annuli_radius, outer_annuli_radius):
         """Calculate the mass between two circular annuli and compute the density by dividing by the annuli surface
         area.
 
@@ -183,8 +213,8 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
             The radius of the outer annulus inside of which the density is estimated.
         """
         annuli_area = (np.pi * outer_annuli_radius ** 2.0) - (np.pi * inner_annuli_radius ** 2.0)
-        return (self.angular_mass_within_circle(radius=outer_annuli_radius, conversion_factor=conversion_factor) -
-                self.angular_mass_within_circle(radius=inner_annuli_radius, conversion_factor=conversion_factor)) \
+        return (self.mass_within_circle_in_angular_units(radius=outer_annuli_radius) -
+                self.mass_within_circle_in_angular_units(radius=inner_annuli_radius)) \
                / annuli_area
 
     @property
@@ -198,7 +228,7 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
          mass profiles below.
          """
         def func(radius):
-            return self.angular_mass_within_circle(radius=radius, conversion_factor=1.0) - \
+            return self.mass_within_circle_in_angular_units(radius=radius) - \
                    np.pi * radius ** 2.0
 
         return self.ellipticity_rescale * root_scalar(func, bracket=[1e-4, 1000.0]).root
@@ -914,8 +944,6 @@ class SphericalTruncatedNFW(AbstractEllipticalGeneralizedNFW):
         return self.grid_to_grid_cartesian(grid, deflection_grid)
 
 
-
-
 class EllipticalNFW(AbstractEllipticalGeneralizedNFW):
 
     def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, kappa_s=0.05, scale_radius=5.0):
@@ -1090,6 +1118,40 @@ class SphericalNFW(EllipticalNFW):
                                                np.arctanh(np.sqrt(np.add(1, - np.square(eta[eta < 1])))))
 
         return np.divide(np.add(np.log(np.divide(eta, 2.)), conditional_eta), eta)
+
+    def rho_scale_radius(self, critical_surface_mass_density_arcsec):
+        return self.kappa_s * critical_surface_mass_density_arcsec / self.scale_radius
+
+    def delta_concentration(self, critical_surface_mass_density_arcsec, cosmic_average_mass_density_arcsec):
+        rho_scale_radius = self.rho_scale_radius(critical_surface_mass_density_arcsec=
+                                                 critical_surface_mass_density_arcsec)
+        return rho_scale_radius / cosmic_average_mass_density_arcsec
+
+    def concentration(self, critical_surface_mass_density_arcsec, cosmic_average_mass_density_arcsec):
+        delta_concentration = self.delta_concentration(
+            critical_surface_mass_density_arcsec=critical_surface_mass_density_arcsec,
+            cosmic_average_mass_density_arcsec=cosmic_average_mass_density_arcsec)
+        return fsolve(func=self.concentration_func, x0=10.0, args=(delta_concentration,))
+
+    def concentration_func(self, concentration, delta_concentration):
+        return 200.0 / 3.0 * (concentration * concentration * concentration /
+                              (np.log(1 + concentration) - concentration / (1 + concentration))) - delta_concentration
+
+    def radius_at_200(self, critical_surface_mass_density_arcsec, cosmic_average_mass_density_arcsec):
+        concentration = self.concentration(critical_surface_mass_density_arcsec=critical_surface_mass_density_arcsec,
+                                           cosmic_average_mass_density_arcsec=cosmic_average_mass_density_arcsec)
+        return concentration * self.scale_radius
+
+    def mass_at_200(self, critical_surface_mass_density_arcsec, cosmic_average_mass_density_arcsec):
+        radius_at_200 = self.radius_at_200(critical_surface_mass_density_arcsec=critical_surface_mass_density_arcsec,
+                                           cosmic_average_mass_density_arcsec=cosmic_average_mass_density_arcsec)
+        return 200.0 * ((4.0/3.0)*np.pi) * cosmic_average_mass_density_arcsec * (radius_at_200**3.0)
+
+ #   def characteristic_over_density(self, cosmic_average_density):
+
+
+ #   def radius_at_200_times_critical_density(self):
+
 
 
 # noinspection PyAbstractClass
@@ -1427,6 +1489,31 @@ class SphericalSersicRadialGradient(EllipticalSersicRadialGradient):
                                                             sersic_index, mass_to_light_ratio, mass_to_light_gradient)
 
 
+class MassSheet(geometry_profiles.SphericalProfile, MassProfile):
+
+    def __init__(self, centre=(0.0, 0.0), kappa=0.0):
+        """
+        Represents a mass-sheet
+
+        Parameters
+        ----------
+        centre: (float, float)
+            The (y,x) arc-second coordinates of the profile centre.
+        kappa : float
+            The magnitude of the convergence of the mass-sheet.
+        """
+        super(MassSheet, self).__init__(centre=centre)
+        self.kappa = kappa
+
+    def convergence_from_grid(self, grid):
+        return np.full(shape=grid.shape[0], fill_value=self.kappa)
+
+    @geometry_profiles.transform_grid
+    def deflections_from_grid(self, grid):
+        grid_radii = self.grid_to_grid_radii(grid=grid)
+        return self.grid_to_grid_cartesian(grid=grid, radius=self.kappa*grid_radii)
+
+
 # noinspection PyAbstractClass
 class ExternalShear(geometry_profiles.EllipticalProfile, MassProfile):
 
@@ -1449,10 +1536,16 @@ class ExternalShear(geometry_profiles.EllipticalProfile, MassProfile):
     def einstein_radius(self):
         return 0.0
 
-    def angular_mass_within_circle(self, radius, conversion_factor):
+    def mass_within_circle_in_angular_units(self, radius):
         return 0.0
 
-    def angular_mass_within_ellipse(self, radius, conversion_factor):
+    def mass_within_ellipse_in_angular_units(self, radius):
+        return 0.0
+
+    def mass_within_circle_in_mass_units(self, radius, critical_surface_mass_density):
+        return 0.0
+
+    def mass_within_ellipse_in_mass_units(self, radius, critical_surface_mass_density):
         return 0.0
 
     def convergence_from_grid(self, grid):
