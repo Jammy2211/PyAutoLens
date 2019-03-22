@@ -45,3 +45,13 @@ class Aggregator(object):
     def model_results(self, **kwargs):
         return "\n\n".join("{}\n\n{}".format(aggregation.header, aggregation.model_results) for aggregation in
                            self.aggregations_with(**kwargs))
+
+
+if __name__ == "__main__":
+    from sys import argv
+
+    root_directory = argv[1]
+    filter_dict = {pair[0]: pair[1] for pair in [line.split("=") for line in argv[2:]]}
+
+    with open("model.results") as out:
+        out.write(Aggregator(root_directory).model_results(**filter_dict))
