@@ -1,7 +1,7 @@
 import os
 
 
-class Aggregation(object):
+class PhaseOutput(object):
     def __init__(self, directory):
         self.directory = directory
         self.file_path = os.path.join(directory, ".metadata")
@@ -32,19 +32,19 @@ class Aggregation(object):
 class Aggregator(object):
     def __init__(self, directory):
         self.directory = directory
-        self.aggregations = []
+        self.phases = []
 
         for root, _, filenames in os.walk(directory):
             if ".metadata" in filenames:
-                self.aggregations.append(Aggregation(root))
+                self.phases.append(PhaseOutput(root))
 
-    def aggregations_with(self, **kwargs):
-        return [aggregation for aggregation in self.aggregations if
-                all([getattr(aggregation, key) == value for key, value in kwargs.items()])]
+    def phases_with(self, **kwargs):
+        return [phase for phase in self.phases if
+                all([getattr(phase, key) == value for key, value in kwargs.items()])]
 
     def model_results(self, **kwargs):
-        return "\n\n".join("{}\n\n{}".format(aggregation.header, aggregation.model_results) for aggregation in
-                           self.aggregations_with(**kwargs))
+        return "\n\n".join("{}\n\n{}".format(phase.header, phase.model_results) for phase in
+                           self.phases_with(**kwargs))
 
 
 if __name__ == "__main__":
