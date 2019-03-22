@@ -16,3 +16,6 @@ def make_aggregator():
 class TestCase(object):
     def test_aggregations(self, aggregator):
         assert len(aggregator.aggregations) == 3
+        assert aggregator.aggregations[0].file_path == "{}/three/.metadata".format(aggregator_directory)
+        assert aggregator.aggregations[1].file_path == "{}/one/.metadata".format(aggregator_directory)
+        assert aggregator.aggregations[2].file_path == "{}/two/.metadata".format(aggregator_directory)
