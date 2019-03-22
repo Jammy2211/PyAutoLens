@@ -72,3 +72,8 @@ class TestCase(object):
 
         result = aggregator.aggregations_with(pipeline="pipeline_2", phase="phase_1")
         assert [two] == result
+
+    def test_model_results(self, one, two, three):
+        assert one.model_results == "results_one"
+        assert two.model_results == "results_two"
+        assert three.model_results == "results_three"
