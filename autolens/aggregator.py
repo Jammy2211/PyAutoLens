@@ -50,8 +50,13 @@ class Aggregator(object):
 if __name__ == "__main__":
     from sys import argv
 
-    root_directory = argv[1]
+    root_directory = None
+    try:
+        root_directory = argv[1]
+    except IndexError:
+        print("Usage\n\naggregator.py (root_directory) [pipeline=pipeline phase=phase lens=lens]")
+        exit(1)
     filter_dict = {pair[0]: pair[1] for pair in [line.split("=") for line in argv[2:]]}
 
-    with open("model.results") as out:
+    with open("model.results", "w+") as out:
         out.write(Aggregator(root_directory).model_results(**filter_dict))
