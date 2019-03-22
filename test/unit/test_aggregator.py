@@ -36,7 +36,12 @@ class TestCase(object):
     def test_total_aggregations(self, aggregator):
         assert len(aggregator.aggregations) == 3
 
-    def test_individual_aggregations(self, one, two, three):
+    def test_file_paths(self, one, two, three):
         assert three.file_path == "{}/three/.metadata".format(aggregator_directory)
         assert one.file_path == "{}/one/.metadata".format(aggregator_directory)
         assert two.file_path == "{}/two/.metadata".format(aggregator_directory)
+
+    def test_attributes(self, one, two, three):
+        assert one.pipeline == "pipeline_1"
+        assert one.phase == "phase_1"
+        assert one.lens == "lens_1"
