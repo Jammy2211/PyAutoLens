@@ -13,28 +13,28 @@ def make_aggregator():
     return a.Aggregator(aggregator_directory)
 
 
-def filter_aggregations(aggregator, folder):
-    return list(filter(lambda ag: "/{}/.metadata".format(folder) in ag.file_path, aggregator.aggregations))[0]
+def filter_phases(aggregator, folder):
+    return list(filter(lambda ag: "/{}/.metadata".format(folder) in ag.file_path, aggregator.phases))[0]
 
 
 @pytest.fixture(name="one")
 def make_one(aggregator):
-    return filter_aggregations(aggregator, "one")
+    return filter_phases(aggregator, "one")
 
 
 @pytest.fixture(name="two")
 def make_two(aggregator):
-    return filter_aggregations(aggregator, "two")
+    return filter_phases(aggregator, "two")
 
 
 @pytest.fixture(name="three")
 def make_three(aggregator):
-    return filter_aggregations(aggregator, "three")
+    return filter_phases(aggregator, "three")
 
 
 class TestCase(object):
-    def test_total_aggregations(self, aggregator):
-        assert len(aggregator.aggregations) == 3
+    def test_total_phases(self, aggregator):
+        assert len(aggregator.phases) == 3
 
     def test_file_paths(self, one, two, three):
         assert three.file_path == "{}/three/.metadata".format(aggregator_directory)
@@ -54,26 +54,26 @@ class TestCase(object):
         assert three.phase == "phase_2"
         assert three.lens == "lens_2"
 
-    def test_filter_aggregations(self, aggregator, one, two, three):
-        result = aggregator.aggregations_with()
+    def test_filter_phases(self, aggregator, one, two, three):
+        result = aggregator.phases_with()
 
         assert len(result) == 3
         assert one in result
         assert two in result
         assert three in result
 
-        result = aggregator.aggregations_with(pipeline="pipeline_1")
+        result = aggregator.phases_with(pipeline="pipeline_1")
         assert len(result) == 2
         assert one in result
         assert three in result
 
-        result = aggregator.aggregations_with(lens="lens_2")
+        result = aggregator.phases_with(lens="lens_2")
         assert [three] == result
 
-        result = aggregator.aggregations_with(pipeline="pipeline_2", phase="phase_1")
+        result = aggregator.phases_with(pipeline="pipeline_2", phase="phase_1")
         assert [two] == result
 
-    def test_aggregation_model_results(self, one, two, three):
+    def test_phase_model_results(self, one, two, three):
         assert one.model_results == "results_one"
         assert two.model_results == "results_two"
         assert three.model_results == "results_three"
