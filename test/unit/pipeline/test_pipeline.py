@@ -3,6 +3,7 @@ import numpy as np
 from autofit.mapper import model_mapper
 from autofit.optimize import non_linear
 from autolens.pipeline import pipeline as pl
+import builtins
 
 
 class MockAnalysis(object):
@@ -27,11 +28,12 @@ class Optimizer(object):
 
 
 class DummyPhaseImaging(object):
-    def __init__(self, phase_name):
+    def __init__(self, phase_name, phase_path=None):
         self.data = None
         self.positions = None
         self.results = None
         self.phase_name = phase_name
+        self.phase_path = phase_path
         self.mask = None
 
         self.optimizer = Optimizer()
@@ -42,6 +44,42 @@ class DummyPhaseImaging(object):
         self.mask = mask
         self.positions = positions
         return non_linear.Result(model_mapper.ModelInstance(), 1)
+
+
+class MockCCDData(object):
+    def __init__(self, name):
+        self.name = name
+
+
+class MockFile(object):
+    def __init__(self):
+        self.text = None
+
+    def write(self, text):
+        self.text = text
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *args):
+        pass
+
+
+class TestMetaData(object):
+    def test_name(self, monkeypatch):
+        file = MockFile()
+
+        def mock_open(filename, flag):
+            assert filename == "phase_path/.metadata"
+            assert flag == "w+"
+            return file
+
+        monkeypatch.setattr(builtins, 'open', mock_open)
+
+        pipeline = pl.PipelineImaging("pipeline_name", DummyPhaseImaging("phase_name", "phase_path"))
+        pipeline.run(MockCCDData("data_name"))
+
+        assert file.text == "pipeline=pipeline_name\nphase=phase_name\nlens=data_name"
 
 
 class TestPassMask(object):
