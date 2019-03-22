@@ -71,5 +71,4 @@ class TestCase(object):
         assert [three] == result
 
         result = aggregator.aggregations_with(pipeline="pipeline_2", phase="phase_1")
-        print(result)
         assert [two] == result
