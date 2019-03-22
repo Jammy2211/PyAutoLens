@@ -1292,3 +1292,92 @@ class TestBorderPixels(object):
 
         assert (border_pixels == np.array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 13, 14, 17, 18, 22, 23, 24, 25,
                                            26, 27, 28, 29, 30, 31])).all()
+
+
+class TestBinUpMask2d:
+
+    def test__mask_4x4_to_2x2__creates_correct_binned_up_mask(self):
+        mask_2d = np.array([[True, False, True, True],
+                            [True, True, True, True],
+                            [True, True, False, False],
+                            [False, True, True, True]])
+
+        binned_mask_2d = mask_util.bin_up_mask_2d(mask_2d=mask_2d, bin_up_factor=2)
+
+        assert (binned_mask_2d == np.array([[False, True],
+                                            [False, False]])).all()
+
+        mask_2d = np.array([[True, True, True, True],
+                            [True, True, True, True],
+                            [True, True, False, False],
+                            [True, True, True, True]])
+
+        binned_mask_2d = mask_util.bin_up_mask_2d(mask_2d=mask_2d, bin_up_factor=2)
+
+        assert (binned_mask_2d == np.array([[True, True],
+                                            [True, False]])).all()
+
+    def test__mask_6x3_to_2x1_and_3x6_to_1x2__sets_up_correct_mask(self):
+        mask_2d = np.array([[True, True, True],
+                            [True, True, True],
+                            [True, True, True],
+                            [True, True, True],
+                            [True, True, True],
+                            [True, True, True]])
+
+        binned_mask_2d = mask_util.bin_up_mask_2d(mask_2d=mask_2d, bin_up_factor=3)
+
+        assert (binned_mask_2d == np.array([[True],
+                                            [True]])).all()
+
+        mask_2d = np.array([[True, True, True],
+                            [True, True, False],
+                            [True, True, True],
+                            [True, True, True],
+                            [True, True, True],
+                            [True, True, True]])
+
+        binned_mask_2d = mask_util.bin_up_mask_2d(mask_2d=mask_2d, bin_up_factor=3)
+        assert (binned_mask_2d == np.array([[False],
+                                            [True]])).all()
+
+        mask_2d = np.array([[True, True, True, True, True, True],
+                            [True, True, True, True, True, True],
+                            [True, True, True, True, True, True]])
+
+        binned_mask_2d = mask_util.bin_up_mask_2d(mask_2d=mask_2d, bin_up_factor=3)
+        assert (binned_mask_2d == np.array([[True, True]])).all()
+
+        mask_2d = np.array([[True, True, True, True, True, True],
+                            [True, True, True, True, True, True],
+                            [True, True, True, True, True, False]])
+
+        binned_mask_2d = mask_util.bin_up_mask_2d(mask_2d=mask_2d, bin_up_factor=3)
+        assert (binned_mask_2d == np.array([[True, False]])).all()
+
+    def test__bin_includes_padding_image_with_zeros(self):
+        # Padded mask:
+
+        # [[0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        #  [0.0, 1.0, 1.0, 1.0, 1.0, 0.0],
+        #  [0.0, 1.0, 2.0, 1.0, 1.0, 0.0],
+        #  [0.0, 1.0, 1.0, 1.0, 1.0, 0.0],
+        #  [0.0, 1.0, 1.0, 1.0, 1.0, 0.0],
+        #  [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]]
+
+        mask_2d = np.full(shape=(4, 4), fill_value=True)
+        mask_2d[1, 1] = False
+        mask_2d[3, 3] = False
+        binned_mask_2d = mask_util.bin_up_mask_2d(mask_2d=mask_2d, bin_up_factor=3)
+        assert (binned_mask_2d == np.array([[False, True],
+                                            [True, False]])).all()
+
+        # Padded Array:
+
+        # np.array([[0.0, 1.0, 1.0, 1.0],
+        #           [0.0, 1.0, 2.0, 1.0]]
+
+        mask_2d = np.full(shape=(2, 3), fill_value=True)
+        mask_2d[1, 2] = False
+        binned_2d_mask = mask_util.bin_up_mask_2d(mask_2d=mask_2d, bin_up_factor=2)
+        assert (binned_2d_mask == np.array([[True, False]])).all()

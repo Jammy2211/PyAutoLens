@@ -40,14 +40,14 @@ def test__intensities_is_output(light_profile, grid_stack, mask, positions, prof
     assert profile_plotter_path + 'intensities.png' in plot_patch.paths
 
 
-def test__surface_density_is_output(mass_profile, grid_stack, mask, positions, profile_plotter_path, plot_patch):
+def test__convergence_is_output(mass_profile, grid_stack, mask, positions, profile_plotter_path, plot_patch):
     
-    profile_plotters.plot_surface_density(mass_profile=mass_profile, grid=grid_stack.regular,
-                                          mask=mask, extract_array_from_mask=True, zoom_around_mask=True,
-                                          positions=positions, cb_tick_values=[1.0], cb_tick_labels=['1.0'],
-                                          output_path=profile_plotter_path, output_format='png')
+    profile_plotters.plot_convergence(mass_profile=mass_profile, grid=grid_stack.regular,
+                                      mask=mask, extract_array_from_mask=True, zoom_around_mask=True,
+                                      positions=positions, cb_tick_values=[1.0], cb_tick_labels=['1.0'],
+                                      output_path=profile_plotter_path, output_format='png')
     
-    assert profile_plotter_path + 'surface_density.png' in plot_patch.paths
+    assert profile_plotter_path + 'convergence.png' in plot_patch.paths
 
 
 def test__potential_is_output(mass_profile, grid_stack, mask, positions, profile_plotter_path, plot_patch):

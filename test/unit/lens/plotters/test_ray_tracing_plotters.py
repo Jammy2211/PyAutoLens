@@ -57,7 +57,7 @@ def test__tracer_individuals__dependent_on_input(tracer, mask, ray_tracing_plott
 
     assert ray_tracing_plotter_path + 'tracer_source_plane.png' in plot_patch.paths
 
-    assert ray_tracing_plotter_path + 'tracer_surface_density.png' not in plot_patch.paths
+    assert ray_tracing_plotter_path + 'tracer_convergence.png' not in plot_patch.paths
 
     assert ray_tracing_plotter_path + 'tracer_potential.png' in plot_patch.paths
 
@@ -75,13 +75,13 @@ def test__image_plane_image_is_output(tracer, mask, ray_tracing_plotter_path, pl
     assert ray_tracing_plotter_path + 'tracer_image_plane_image.png' in plot_patch.paths
 
 
-def test__surface_density_is_output(tracer, mask, ray_tracing_plotter_path, plot_patch):
+def test__convergence_is_output(tracer, mask, ray_tracing_plotter_path, plot_patch):
 
-    ray_tracing_plotters.plot_surface_density(tracer=tracer, mask=mask, extract_array_from_mask=True,
-                                              zoom_around_mask=True, cb_tick_values=[1.0], cb_tick_labels=['1.0'],
-                                              output_path=ray_tracing_plotter_path, output_format='png')
+    ray_tracing_plotters.plot_convergence(tracer=tracer, mask=mask, extract_array_from_mask=True,
+                                          zoom_around_mask=True, cb_tick_values=[1.0], cb_tick_labels=['1.0'],
+                                          output_path=ray_tracing_plotter_path, output_format='png')
 
-    assert ray_tracing_plotter_path + 'tracer_surface_density.png' in plot_patch.paths
+    assert ray_tracing_plotter_path + 'tracer_convergence.png' in plot_patch.paths
 
 
 def test__potential_is_output(tracer, mask, ray_tracing_plotter_path, plot_patch):

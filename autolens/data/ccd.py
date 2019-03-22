@@ -3,6 +3,7 @@ import scipy.signal
 from scipy.stats import norm
 from astropy import units
 import ast
+from skimage.transform import resize, rescale
 
 from autolens import exc
 from autolens.data.array.util import grid_util
@@ -194,6 +195,25 @@ class CCDData(object):
                                             psf=psf, background_sky_map=background_sky_map,
                                             add_noise=True, seed=seed)
 
+    def new_ccd_data_with_binned_up_arrays(self, bin_up_factor):
+
+        image = self.bin_up_scaled_array(scaled_array=self.image, bin_up_factor=bin_up_factor, method='mean')
+        psf = self.psf.new_psf_with_rescaled_odd_dimensioned_array(rescale_factor=1.0/bin_up_factor, renormalize=True)
+        noise_map = self.bin_up_scaled_array(scaled_array=self.noise_map, bin_up_factor=bin_up_factor,
+                                             method='quadrature')
+        background_noise_map = self.bin_up_scaled_array(scaled_array=self.background_noise_map,
+                                                        bin_up_factor=bin_up_factor, method='quadrature')
+        poisson_noise_map = self.bin_up_scaled_array(scaled_array=self.poisson_noise_map,
+                                                     bin_up_factor=bin_up_factor, method='quadrature')
+        exposure_time_map = self.bin_up_scaled_array(scaled_array=self.exposure_time_map,
+                                                     bin_up_factor=bin_up_factor, method='sum')
+        background_sky_map = self.bin_up_scaled_array(scaled_array=self.background_sky_map,
+                                                      bin_up_factor=bin_up_factor, method='mean')
+
+        return CCDData(image=image, pixel_scale=self.pixel_scale*bin_up_factor, psf=psf, noise_map=noise_map,
+                       background_noise_map=background_noise_map, poisson_noise_map=poisson_noise_map,
+                       exposure_time_map=exposure_time_map, background_sky_map=background_sky_map)
+
     def new_ccd_data_with_resized_arrays(self, new_shape, new_centre_pixels=None, new_centre_arcsec=None):
         
         image = self.resize_scaled_array(scaled_array=self.image, new_shape=new_shape, new_centre_pixels=new_centre_pixels,
@@ -230,6 +250,13 @@ class CCDData(object):
                        exposure_time_map=self.exposure_time_map, background_sky_map=self.background_sky_map)
 
     @staticmethod
+    def bin_up_scaled_array(scaled_array, bin_up_factor, method):
+        if scaled_array is not None:
+            return scaled_array.binned_up_array_from_array(bin_up_factor=bin_up_factor, method=method)
+        else:
+            return None
+
+    @staticmethod
     def resize_scaled_array(scaled_array, new_shape, new_centre_pixels=None, new_centre_arcsec=None):
         if scaled_array is not None:
             return scaled_array.resized_scaled_array_from_array(new_shape=new_shape,
@@ -241,7 +268,8 @@ class CCDData(object):
 
         return CCDData(image=modified_image, pixel_scale=self.pixel_scale, psf=self.psf,
                        noise_map=self.noise_map, background_noise_map=self.background_noise_map,
-                       poisson_noise_map=self.poisson_noise_map)
+                       poisson_noise_map=self.poisson_noise_map, exposure_time_map=self.exposure_time_map,
+                       background_sky_map=self.background_sky_map)
 
     def new_ccd_data_with_poisson_noise_added(self, seed=-1):
 
@@ -291,6 +319,27 @@ class CCDData(object):
     def signal_to_noise_max(self):
         """The maximum value of signal-to-noise_maps in an image pixel in the image's signal-to-noise_maps mappers"""
         return np.max(self.signal_to_noise_map)
+
+    @property
+    def absolute_signal_to_noise_map(self):
+        """The estimated absolute_signal-to-noise_maps mappers of the image."""
+        return np.divide(np.abs(self.image), self.noise_map)
+
+    @property
+    def absolute_signal_to_noise_max(self):
+        """The maximum value of absolute signal-to-noise_map in an image pixel in the image's signal-to-noise_maps mappers"""
+        return np.max(self.absolute_signal_to_noise_map)
+
+    @property
+    def potential_chi_squared_map(self):
+        """The potential chi-squared map of the ccd data. This represents how much each pixel can contribute to \
+        the chi-squared map, assuming the model fails to fit it at all (e.g. model value = 0.0)."""
+        return np.square(self.absolute_signal_to_noise_map)
+
+    @property
+    def potential_chi_squared_max(self):
+        """The maximum value of the potential chi-squared map"""
+        return np.max(self.potential_chi_squared_map)
 
     @staticmethod
     def trim_psf_edges(array, psf):
@@ -568,6 +617,24 @@ class PSF(ScaledSquarePixelArray):
             The HDU the PSF is stored in the .fits file.
         """
         return cls(array=array_util.numpy_array_2d_from_fits(file_path, hdu), pixel_scale=pixel_scale)
+
+    def new_psf_with_rescaled_odd_dimensioned_array(self, rescale_factor, renormalize=True):
+        psf_rescaled = rescale(self, rescale_factor, anti_aliasing=False, mode='constant', multichannel=False)
+
+        if psf_rescaled.shape[0] % 2 == 0 and psf_rescaled.shape[1] % 2 == 0:
+            psf_rescaled = resize(psf_rescaled, output_shape=(psf_rescaled.shape[0] + 1, psf_rescaled.shape[1] + 1),
+                                  anti_aliasing=False, mode='constant')
+        elif psf_rescaled.shape[0] % 2 == 0 and psf_rescaled.shape[1] % 2 != 0:
+            psf_rescaled = resize(psf_rescaled, output_shape=(psf_rescaled.shape[0] + 1, psf_rescaled.shape[1]),
+                                  anti_aliasing=False, mode='constant')
+        elif psf_rescaled.shape[0] % 2 != 0 and psf_rescaled.shape[1] % 2 == 0:
+            psf_rescaled = resize(psf_rescaled, output_shape=(psf_rescaled.shape[0], psf_rescaled.shape[1] + 1),
+                                  anti_aliasing=False, mode='constant')
+
+        pixel_scale_factors = (self.shape[0] / psf_rescaled.shape[0], self.shape[1] / psf_rescaled.shape[1])
+        pixel_scale = (self.pixel_scale * pixel_scale_factors[0], self.pixel_scale * pixel_scale_factors[1])
+        return PSF(array=psf_rescaled, pixel_scale=np.max(pixel_scale), renormalize=renormalize)
+
 
     def new_psf_with_renormalized_array(self):
         """Renormalize the PSF such that its data_vector values sum to unity."""

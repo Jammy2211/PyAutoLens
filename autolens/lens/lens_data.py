@@ -98,6 +98,16 @@ class LensData(object):
                         image_psf_shape=self.image_psf_shape, mapping_matrix_psf_shape=self.mapping_matrix_psf_shape,
                         positions=self.positions, interp_pixel_scale=self.interp_pixel_scale)
 
+    def new_lens_data_with_binned_up_ccd_data_and_mask(self, bin_up_factor):
+
+        binned_up_ccd_data = self.ccd_data.new_ccd_data_with_binned_up_arrays(bin_up_factor=bin_up_factor)
+        binned_up_mask = self.mask.binned_up_mask_from_mask(bin_up_factor=bin_up_factor)
+
+        return LensData(ccd_data=binned_up_ccd_data, mask=binned_up_mask, sub_grid_size=self.sub_grid_size,
+                        image_psf_shape=self.image_psf_shape, mapping_matrix_psf_shape=self.mapping_matrix_psf_shape,
+                        positions=self.positions, interp_pixel_scale=self.interp_pixel_scale)
+
+
     @property
     def map_to_scaled_array(self):
         return self.grid_stack.scaled_array_2d_from_array_1d

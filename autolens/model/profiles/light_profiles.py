@@ -60,12 +60,12 @@ class EllipticalLightProfile(geometry_profiles.EllipticalProfile, LightProfile):
         super(EllipticalLightProfile, self).__init__(centre, axis_ratio, phi)
 
     def luminosity_within_circle(self, radius, conversion_factor=1.0):
-        """
-        Compute the light profiles's total luminosity within a circle of specified radius. This is performed via \
-        numerical integration and is centred on the light profile's centre.
+        """Integrate the light profiles to compute the total luminosity within a circle of specified radius. This is \
+        centred on the light profile's centre.
 
-        The value returned by this integral is dimensionless, and a conversion factor can be specified to convert it \
-        to a physical value (e.g. the photometric zeropoint).
+        The value returned by this integral is in the units of the intensity parameter of the light profile, which \
+        should be electrons per second. A conversion factor can be specified to convert it to a physical value \
+        (e.g. the photometric zeropoint).
 
         Parameters
         ----------
@@ -77,12 +77,12 @@ class EllipticalLightProfile(geometry_profiles.EllipticalProfile, LightProfile):
         return conversion_factor*quad(self.luminosity_integral, a=0.0, b=radius, args=(1.0,))[0]
 
     def luminosity_within_ellipse(self, major_axis, conversion_factor=1.0):
-        """
-        Compute the light profiles's total luminosity within an ellipse of specified major axis. This is performed via\
-        numerical integration and is centred and oriented withthe ellipitical light profile.
+        """Integrate the light profiles to compute the total luminosity within an ellipse of specified major axis. \
+        This is centred on the light profile's centre.
 
-        The value returned by this integral is dimensionless, and a conversion factor can be specified to convert it \
-        to a physical value (e.g. the photometric zeropoint).
+        The value returned by this integral is in the units of the intensity parameter of the light profile, which \
+        should be electrons per second. A conversion factor can be specified to convert it to a physical value \
+        (e.g. the photometric zeropoint).
 
         Parameters
         ----------

@@ -64,3 +64,20 @@ def test__signal_to_noise_map_is_output(image, noise_map, mask, data_plotter_pat
                                            zoom_around_mask=True, cb_tick_values=[1.0], cb_tick_labels=['1.0'],
                                            output_path=data_plotter_path, output_format='png')
     assert data_plotter_path + 'signal_to_noise_map.png' in plot_patch.paths
+
+
+def test__absolute_signal_to_noise_map_is_output(image, noise_map, mask, data_plotter_path, plot_patch):
+    data_plotters.plot_absolute_signal_to_noise_map(absolute_signal_to_noise_map=image / noise_map, mask=mask,
+                                           extract_array_from_mask=True,
+                                           zoom_around_mask=True, cb_tick_values=[1.0], cb_tick_labels=['1.0'],
+                                           output_path=data_plotter_path, output_format='png')
+    assert data_plotter_path + 'absolute_signal_to_noise_map.png' in plot_patch.paths
+    
+    
+def test__potential_chi_squared_map_is_output(image, noise_map, mask, data_plotter_path, plot_patch):
+    
+    data_plotters.plot_potential_chi_squared_map(potential_chi_squared_map=image / noise_map, mask=mask,
+                                           extract_array_from_mask=True,
+                                           zoom_around_mask=True, cb_tick_values=[1.0], cb_tick_labels=['1.0'],
+                                           output_path=data_plotter_path, output_format='png')
+    assert data_plotter_path + 'potential_chi_squared_map.png' in plot_patch.paths
