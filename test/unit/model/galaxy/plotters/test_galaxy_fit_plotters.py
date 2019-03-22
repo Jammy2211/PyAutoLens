@@ -42,9 +42,9 @@ def make_galaxy_data(image, noise_map):
 def make_galaxy_data_intensities(galaxy_data, mask):
     return gd.GalaxyFitData(galaxy_data=galaxy_data, mask=mask, sub_grid_size=2, use_intensities=True)
 
-@pytest.fixture(name='galaxy_data_surface_density')
-def make_galaxy_data_surface_density(galaxy_data, mask):
-    return gd.GalaxyFitData(galaxy_data=galaxy_data, mask=mask, sub_grid_size=2, use_surface_density=True)
+@pytest.fixture(name='galaxy_data_convergence')
+def make_galaxy_data_convergence(galaxy_data, mask):
+    return gd.GalaxyFitData(galaxy_data=galaxy_data, mask=mask, sub_grid_size=2, use_convergence=True)
 
 @pytest.fixture(name='galaxy_data_potential')
 def make_galaxy_data_potential(galaxy_data, mask):
@@ -62,9 +62,9 @@ def make_galaxy_data_deflections_x(galaxy_data, mask):
 def make_galaxy_fitting_intensities(galaxy_data_intensities, galaxy):
     return galaxy_fit.GalaxyFit(galaxy_data=galaxy_data_intensities, model_galaxies=[galaxy])
 
-@pytest.fixture(name='fit_surface_density')
-def make_galaxy_fitting_surface_density(galaxy_data_surface_density, galaxy):
-    return galaxy_fit.GalaxyFit(galaxy_data=galaxy_data_surface_density, model_galaxies=[galaxy])
+@pytest.fixture(name='fit_convergence')
+def make_galaxy_fitting_convergence(galaxy_data_convergence, galaxy):
+    return galaxy_fit.GalaxyFit(galaxy_data=galaxy_data_convergence, model_galaxies=[galaxy])
 
 @pytest.fixture(name='fit_potential')
 def make_galaxy_fitting_potential(galaxy_data_potential, galaxy):
@@ -90,11 +90,11 @@ def test__fit_sub_plot__galaxy_intensities(fit_intensities, positions, plot_patc
     assert galaxy_fitting_plotter_path + 'galaxy_fit.png' in plot_patch.paths
 
 
-def test__fit_sub_plot__galaxy_surface_density(fit_surface_density, mask, positions,
+def test__fit_sub_plot__galaxy_convergence(fit_convergence, mask, positions,
                                                                            plot_patch,
                                                                            galaxy_fitting_plotter_path):
 
-    galaxy_fit_plotters.plot_fit_subplot(fit=fit_surface_density,
+    galaxy_fit_plotters.plot_fit_subplot(fit=fit_convergence,
                                          should_plot_mask=True, extract_array_from_mask=True, zoom_around_mask=True,
                                          positions=positions, cb_tick_values=[1.0], cb_tick_labels=['1.0'],
                                          output_path=galaxy_fitting_plotter_path, output_format='png')

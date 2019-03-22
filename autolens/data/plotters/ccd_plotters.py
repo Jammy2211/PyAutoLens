@@ -33,7 +33,7 @@ def plot_ccd_subplot(
         config file is ignored.
     """
 
-    rows, columns, figsize_tool = plotter_util.get_subplot_rows_columns_figsize(number_subplots=4)
+    rows, columns, figsize_tool = plotter_util.get_subplot_rows_columns_figsize(number_subplots=6)
 
     if figsize is None:
         figsize = figsize_tool
@@ -89,6 +89,32 @@ def plot_ccd_subplot(
         mask_pointsize=mask_pointsize,
         output_path=output_path, output_format=output_format)
 
+    plt.subplot(rows, columns, 5)
+
+    plot_absolute_signal_to_noise_map(
+        ccd_data=ccd_data, plot_origin=plot_origin, mask=mask, extract_array_from_mask=extract_array_from_mask,
+        zoom_around_mask=zoom_around_mask, as_subplot=True,
+        units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
+        cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
+        cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
+        cb_tick_values=cb_tick_values, cb_tick_labels=cb_tick_labels,
+        titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize, xyticksize=xyticksize,
+        mask_pointsize=mask_pointsize,
+        output_path=output_path, output_format=output_format)
+
+    plt.subplot(rows, columns, 6)
+
+    plot_potential_chi_squared_map(
+        ccd_data=ccd_data, plot_origin=plot_origin, mask=mask, extract_array_from_mask=extract_array_from_mask,
+        zoom_around_mask=zoom_around_mask, as_subplot=True,
+        units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
+        cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
+        cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
+        cb_tick_values=cb_tick_values, cb_tick_labels=cb_tick_labels,
+        titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize, xyticksize=xyticksize,
+        mask_pointsize=mask_pointsize,
+        output_path=output_path, output_format=output_format)
+
     plotter_util.output_subplot_array(output_path=output_path, output_filename=output_filename,
                                       output_format=output_format)
 
@@ -101,6 +127,8 @@ def plot_ccd_individual(
         should_plot_noise_map=False,
         should_plot_psf=False,
         should_plot_signal_to_noise_map=False,
+        should_plot_absolute_signal_to_noise_map=False,
+        should_plot_potential_chi_squared_map=False,
         units='arcsec',
         output_path=None, output_format='png'):
     """Plot each attribute of the ccd data as individual figures one by one (e.g. the data, noise_map-map, PSF, \
@@ -146,6 +174,21 @@ def plot_ccd_individual(
             units=units,
             output_path=output_path, output_format=output_format)
 
+    if should_plot_absolute_signal_to_noise_map:
+
+        plot_absolute_signal_to_noise_map(
+            ccd_data=ccd_data, plot_origin=plot_origin, mask=mask, extract_array_from_mask=extract_array_from_mask,
+            zoom_around_mask=zoom_around_mask,
+            units=units,
+            output_path=output_path, output_format=output_format)
+    
+    if should_plot_potential_chi_squared_map:
+
+        plot_potential_chi_squared_map(
+            ccd_data=ccd_data, plot_origin=plot_origin, mask=mask, extract_array_from_mask=extract_array_from_mask,
+            zoom_around_mask=zoom_around_mask,
+            units=units,
+            output_path=output_path, output_format=output_format)
 
 def plot_image(
         ccd_data, plot_origin=True, mask=None, extract_array_from_mask=False, zoom_around_mask=False,
@@ -266,6 +309,70 @@ def plot_signal_to_noise_map(
 
     data_plotters.plot_signal_to_noise_map(
         signal_to_noise_map=ccd_data.signal_to_noise_map, plot_origin=plot_origin, mask=mask,
+        extract_array_from_mask=extract_array_from_mask, zoom_around_mask=zoom_around_mask, as_subplot=as_subplot,
+        units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
+        cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
+        cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad, 
+        cb_tick_values=cb_tick_values, cb_tick_labels=cb_tick_labels,
+        title=title, titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize, xyticksize=xyticksize,
+        mask_pointsize=mask_pointsize,
+        output_path=output_path, output_format=output_format, output_filename=output_filename)
+
+
+def plot_absolute_signal_to_noise_map(
+        ccd_data, plot_origin=True, mask=None, extract_array_from_mask=False, zoom_around_mask=False, as_subplot=False,
+        units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
+        cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
+        cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
+        title='CCD Absolute Signal-To-Noise-Map', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
+        mask_pointsize=10,
+        output_path=None, output_format='show', output_filename='ccd_absolute_signal_to_noise_map'):
+    """Plot the signal-to-noise_map-map of the ccd data.
+
+    Set *autolens.data.array.plotters.array_plotters* for a description of all innput parameters not described below.
+
+    Parameters
+    -----------
+    image : data.CCDData
+        The ccd data, which includes the observed image, noise_map-map, PSF, signal-to-noise_map-map, etc.
+    plot_origin : True
+        If true, the origin of the data's coordinate system is plotted as a 'x'.
+    """
+
+    data_plotters.plot_absolute_signal_to_noise_map(
+        absolute_signal_to_noise_map=ccd_data.absolute_signal_to_noise_map, plot_origin=plot_origin, mask=mask,
+        extract_array_from_mask=extract_array_from_mask, zoom_around_mask=zoom_around_mask, as_subplot=as_subplot,
+        units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
+        cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
+        cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad, 
+        cb_tick_values=cb_tick_values, cb_tick_labels=cb_tick_labels,
+        title=title, titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize, xyticksize=xyticksize,
+        mask_pointsize=mask_pointsize,
+        output_path=output_path, output_format=output_format, output_filename=output_filename)
+
+
+def plot_potential_chi_squared_map(
+        ccd_data, plot_origin=True, mask=None, extract_array_from_mask=False, zoom_around_mask=False, as_subplot=False,
+        units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
+        cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
+        cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
+        title='CCD Potential Chi-Squared Map', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
+        mask_pointsize=10,
+        output_path=None, output_format='show', output_filename='ccd_potential_chi_squared_map'):
+    """Plot the signal-to-noise_map-map of the ccd data.
+
+    Set *autolens.data.array.plotters.array_plotters* for a description of all innput parameters not described below.
+
+    Parameters
+    -----------
+    image : data.CCDData
+        The ccd data, which includes the observed image, noise_map-map, PSF, signal-to-noise_map-map, etc.
+    plot_origin : True
+        If true, the origin of the data's coordinate system is plotted as a 'x'.
+    """
+
+    data_plotters.plot_potential_chi_squared_map(
+        potential_chi_squared_map=ccd_data.potential_chi_squared_map, plot_origin=plot_origin, mask=mask,
         extract_array_from_mask=extract_array_from_mask, zoom_around_mask=zoom_around_mask, as_subplot=as_subplot,
         units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
         cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,

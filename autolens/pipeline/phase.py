@@ -300,8 +300,8 @@ class Phase(AbstractPhase):
                 conf.instance.general.get('output', 'plot_ray_tracing_image_plane_image', bool)
             self.plot_ray_tracing_source_plane = \
                 conf.instance.general.get('output', 'plot_ray_tracing_source_plane_image', bool)
-            self.plot_ray_tracing_surface_density = \
-                conf.instance.general.get('output', 'plot_ray_tracing_surface_density', bool)
+            self.plot_ray_tracing_convergence = \
+                conf.instance.general.get('output', 'plot_ray_tracing_convergence', bool)
             self.plot_ray_tracing_potential = \
                 conf.instance.general.get('output', 'plot_ray_tracing_potential', bool)
             self.plot_ray_tracing_deflections = \
@@ -409,7 +409,7 @@ class PhasePositions(AbstractPhase):
 class PhaseImaging(Phase):
 
     def __init__(self, phase_name, phase_folders=None, optimizer_class=non_linear.MultiNest,
-                 sub_grid_size=2, image_psf_shape=None,
+                 sub_grid_size=2, bin_up_factor=None, image_psf_shape=None,
                  pixelization_psf_shape=None, use_positions=False, mask_function=None, inner_circular_mask_radii=None,
                  interp_pixel_scale=None, cosmology=cosmo.Planck15, auto_link_priors=False):
 
@@ -430,6 +430,7 @@ class PhaseImaging(Phase):
                                            optimizer_class=optimizer_class, cosmology=cosmology,
                                            auto_link_priors=auto_link_priors)
         self.sub_grid_size = sub_grid_size
+        self.bin_up_factor = bin_up_factor
         self.image_psf_shape = image_psf_shape
         self.pixelization_psf_shape = pixelization_psf_shape
         self.use_positions = use_positions
@@ -520,6 +521,9 @@ class PhaseImaging(Phase):
         modified_image = self.modify_image(image=lens_data.image, results=results)
         lens_data = lens_data.new_lens_data_with_modified_image(modified_image=modified_image)
 
+        if self.bin_up_factor is not None:
+            lens_data = lens_data.new_lens_data_with_binned_up_ccd_data_and_mask(bin_up_factor=self.bin_up_factor)
+
         self.pass_priors(results)
 
         self.output_phase_info()
@@ -567,6 +571,10 @@ class PhaseImaging(Phase):
                 conf.instance.general.get('output', 'plot_data_psf', bool)
             self.plot_data_signal_to_noise_map = \
                 conf.instance.general.get('output', 'plot_data_signal_to_noise_map', bool)
+            self.plot_data_absolute_signal_to_noise_map = \
+                conf.instance.general.get('output', 'plot_data_absolute_signal_to_noise_map', bool)
+            self.plot_data_potential_chi_squared_map = \
+                conf.instance.general.get('output', 'plot_data_potential_chi_squared_map', bool)
 
             self.plot_lens_fit_all_at_end_png = \
                 conf.instance.general.get('output', 'plot_lens_fit_all_at_end_png', bool)
@@ -638,6 +646,8 @@ class PhaseImaging(Phase):
                 should_plot_noise_map=self.plot_data_noise_map,
                 should_plot_psf=self.plot_data_psf,
                 should_plot_signal_to_noise_map=self.plot_data_signal_to_noise_map,
+                should_plot_absolute_signal_to_noise_map=self.plot_data_absolute_signal_to_noise_map,
+                should_plot_potential_chi_squared_map=self.plot_data_potential_chi_squared_map,
                 units=self.plot_units,
                 output_path=image_path, output_format='png')
 
@@ -668,7 +678,7 @@ class PhaseImaging(Phase):
                     zoom_around_mask=self.zoom_around_mask, positions=positions,
                     should_plot_image_plane_image=self.plot_ray_tracing_image_plane_image,
                     should_plot_source_plane=self.plot_ray_tracing_source_plane,
-                    should_plot_surface_density=self.plot_ray_tracing_surface_density,
+                    should_plot_convergence=self.plot_ray_tracing_convergence,
                     should_plot_potential=self.plot_ray_tracing_potential,
                     should_plot_deflections=self.plot_ray_tracing_deflections,
                     units=self.plot_units,
@@ -699,7 +709,7 @@ class PhaseImaging(Phase):
                         zoom_around_mask=self.zoom_around_mask, positions=positions,
                         should_plot_image_plane_image=True,
                         should_plot_source_plane=True,
-                        should_plot_surface_density=True,
+                        should_plot_convergence=True,
                         should_plot_potential=True,
                         should_plot_deflections=True,
                         units=self.plot_units,
@@ -711,7 +721,7 @@ class PhaseImaging(Phase):
                         zoom_around_mask=self.zoom_around_mask, positions=positions,
                         should_plot_image_plane_image=True,
                         should_plot_source_plane=True,
-                        should_plot_surface_density=True,
+                        should_plot_convergence=True,
                         should_plot_potential=True,
                         should_plot_deflections=True,
                         output_path=image_path + 'fits/', output_format='fits')
@@ -786,13 +796,14 @@ class LensPlanePhase(PhaseImaging):
         return [self.lens_galaxies]
 
     def __init__(self, phase_name, phase_folders=None, lens_galaxies=None, optimizer_class=non_linear.MultiNest,
-                 sub_grid_size=2,
+                 sub_grid_size=2, bin_up_factor=None,
                  image_psf_shape=None, mask_function=None, inner_circular_mask_radii=None, cosmology=cosmo.Planck15,
                  interp_pixel_scale=None, auto_link_priors=False):
         super(LensPlanePhase, self).__init__(phase_name=phase_name,
                                              phase_folders=phase_folders,
                                              optimizer_class=optimizer_class,
                                              sub_grid_size=sub_grid_size,
+                                             bin_up_factor=bin_up_factor,
                                              image_psf_shape=image_psf_shape,
                                              mask_function=mask_function,
                                              inner_circular_mask_radii=inner_circular_mask_radii,
@@ -845,7 +856,7 @@ class LensSourcePlanePhase(PhaseImaging):
 
     def __init__(self, phase_name, phase_folders=None,
                  lens_galaxies=None, source_galaxies=None, optimizer_class=non_linear.MultiNest,
-                 sub_grid_size=2, image_psf_shape=None, use_positions=False, mask_function=None,
+                 sub_grid_size=2, bin_up_factor=None, image_psf_shape=None, use_positions=False, mask_function=None,
                  interp_pixel_scale=None, inner_circular_mask_radii=None, cosmology=cosmo.Planck15,
                  auto_link_priors=False):
         """
@@ -867,6 +878,7 @@ class LensSourcePlanePhase(PhaseImaging):
                                                    phase_folders=phase_folders,
                                                    optimizer_class=optimizer_class,
                                                    sub_grid_size=sub_grid_size,
+                                                   bin_up_factor=bin_up_factor,
                                                    image_psf_shape=image_psf_shape,
                                                    use_positions=use_positions,
                                                    mask_function=mask_function,
@@ -918,7 +930,7 @@ class MultiPlanePhase(PhaseImaging):
         return [self.galaxies]
 
     def __init__(self, phase_name, phase_folders=None, galaxies=None, optimizer_class=non_linear.MultiNest,
-                 sub_grid_size=2, image_psf_shape=None, use_positions=False, mask_function=None,
+                 sub_grid_size=2, bin_up_factor=None, image_psf_shape=None, use_positions=False, mask_function=None,
                  inner_circular_mask_radii=None, cosmology=cosmo.Planck15, auto_link_priors=False):
         """
         A phase with a simple source/lens model
@@ -937,6 +949,7 @@ class MultiPlanePhase(PhaseImaging):
                                               phase_folders=phase_folders,
                                               optimizer_class=optimizer_class,
                                               sub_grid_size=sub_grid_size,
+                                              bin_up_factor=bin_up_factor,
                                               image_psf_shape=image_psf_shape,
                                               use_positions=use_positions,
                                               mask_function=mask_function,
@@ -970,7 +983,7 @@ class MultiPlanePhase(PhaseImaging):
 class GalaxyFitPhase(AbstractPhase):
     galaxies = PhasePropertyCollection("galaxies")
 
-    def __init__(self, phase_name, phase_folders=None, galaxies=None, use_intensities=False, use_surface_density=False,
+    def __init__(self, phase_name, phase_folders=None, galaxies=None, use_intensities=False, use_convergence=False,
                  use_potential=False,
                  use_deflections=False, optimizer_class=non_linear.MultiNest, sub_grid_size=2,
                  mask_function=None, cosmology=cosmo.Planck15):
@@ -989,7 +1002,7 @@ class GalaxyFitPhase(AbstractPhase):
         super(GalaxyFitPhase, self).__init__(phase_name=phase_name, phase_folders=phase_folders,
                                              optimizer_class=optimizer_class, cosmology=cosmology)
         self.use_intensities = use_intensities
-        self.use_surface_density = use_surface_density
+        self.use_convergence = use_convergence
         self.use_potential = use_potential
         self.use_deflections = use_deflections
         self.galaxies = galaxies
@@ -1042,11 +1055,11 @@ class GalaxyFitPhase(AbstractPhase):
 
         self.pass_priors(results)
 
-        if self.use_intensities or self.use_surface_density or self.use_potential:
+        if self.use_intensities or self.use_convergence or self.use_potential:
 
             galaxy_data = gd.GalaxyFitData(galaxy_data=galaxy_data[0], mask=mask, sub_grid_size=self.sub_grid_size,
                                            use_intensities=self.use_intensities,
-                                           use_surface_density=self.use_surface_density,
+                                           use_convergence=self.use_convergence,
                                            use_potential=self.use_potential,
                                            use_deflections_y=self.use_deflections,
                                            use_deflections_x=self.use_deflections)
@@ -1059,13 +1072,13 @@ class GalaxyFitPhase(AbstractPhase):
 
             galaxy_data_y = gd.GalaxyFitData(galaxy_data=galaxy_data[0], mask=mask, sub_grid_size=self.sub_grid_size,
                                              use_intensities=self.use_intensities,
-                                             use_surface_density=self.use_surface_density,
+                                             use_convergence=self.use_convergence,
                                              use_potential=self.use_potential,
                                              use_deflections_y=self.use_deflections, use_deflections_x=False)
 
             galaxy_data_x = gd.GalaxyFitData(galaxy_data=galaxy_data[1], mask=mask, sub_grid_size=self.sub_grid_size,
                                              use_intensities=self.use_intensities,
-                                             use_surface_density=self.use_surface_density,
+                                             use_convergence=self.use_convergence,
                                              use_potential=self.use_potential,
                                              use_deflections_y=False, use_deflections_x=self.use_deflections)
 
@@ -1296,7 +1309,7 @@ class SensitivityPhase(PhaseImaging):
 
     def __init__(self, phase_name, phase_folders=None, lens_galaxies=None, source_galaxies=None,
                  sensitive_galaxies=None,
-                 optimizer_class=non_linear.MultiNest, sub_grid_size=2, mask_function=None,
+                 optimizer_class=non_linear.MultiNest, sub_grid_size=2, bin_up_factor=None, mask_function=None,
                  cosmology=cosmo.Planck15):
         """
         A phase in an lens pipeline. Uses the set non_linear optimizer to try to fit models and hyper
@@ -1312,7 +1325,8 @@ class SensitivityPhase(PhaseImaging):
 
         super(SensitivityPhase, self).__init__(phase_name=phase_name, phase_folders=phase_folders,
                                                optimizer_class=optimizer_class, sub_grid_size=sub_grid_size,
-                                               mask_function=mask_function, cosmology=cosmology)
+                                               bin_up_factor=bin_up_factor, mask_function=mask_function,
+                                               cosmology=cosmology)
 
         self.lens_galaxies = lens_galaxies or []
         self.source_galaxies = source_galaxies or []

@@ -18,7 +18,7 @@ print('circular mask radius = ' + str(radius_arcsec) + '\n')
 
 for data_resolution in ['LSST', 'Euclid', 'HST', 'HST_Up', 'AO']:
 
-    ccd_data = simulation_util.load_test_ccd_data(data_type='no_lens_source_smooth', data_resolution=data_resolution,
+    ccd_data = simulation_util.load_test_ccd_data(data_type='no_lens_light_and_source_smooth', data_resolution=data_resolution,
                                                   psf_shape=(3, 3))
     mask = msk.Mask.circular(shape=ccd_data.shape, pixel_scale=ccd_data.pixel_scale, radius_arcsec=radius_arcsec)
     lens_data = ld.LensData(ccd_data=ccd_data, mask=mask, sub_grid_size=sub_grid_size)
@@ -149,7 +149,17 @@ for data_resolution in ['LSST', 'Euclid', 'HST', 'HST_Up', 'AO']:
     mass_profile.deflections_from_grid(grid=lens_data.grid_stack.sub)
     diff = time.time() - start
     print("SphericalNFW time = {}".format(diff))
-    
+
+
+    ### SphericalNFW ###
+
+    mass_profile = mp.SphericalTruncatedNFW(centre=(0.0, 0.0), kappa_s=0.1, scale_radius=10.0, truncation_radius=5.0)
+
+    start = time.time()
+    mass_profile.deflections_from_grid(grid=lens_data.grid_stack.sub)
+    diff = time.time() - start
+    print("SphericalTruncatedNFW time = {}".format(diff))
+
     
     ### EllipticalExponential ###
     

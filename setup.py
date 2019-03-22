@@ -54,7 +54,7 @@ setup(
         'Programming Language :: Python :: 3.7'
     ],
     keywords='cli',
-    packages=find_packages(exclude=['docs', 'tests*', 'workspace']),
+    packages=find_packages(exclude=['docs', 'tests*', 'workspace', 'workspace_jam']),
     install_requires=['docopt',
                       'numpy==1.16.2',
                       'astropy',
@@ -66,7 +66,7 @@ setup(
                       'numba',
                       'matplotlib==3.0.3',
                       'colorama',
-                      'autofit==0.16.0',
+                      'autofit',
                       'Cython==0.28.0',
                       'pyquad'
                       ],

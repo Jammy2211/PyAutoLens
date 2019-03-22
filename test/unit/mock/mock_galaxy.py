@@ -10,7 +10,7 @@ class MockGalaxy(object):
     def intensities_from_grid(self, grid):
         return np.full(shape=self.shape, fill_value=self.value)
 
-    def surface_density_from_grid(self, grid):
+    def convergence_from_grid(self, grid):
         return np.full(shape=self.shape, fill_value=self.value)
 
     def potential_from_grid(self, grid):

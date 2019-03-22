@@ -274,8 +274,8 @@ class AbstractTracer(AbstractTracerCosmology):
 
     @property
     @check_tracer_for_mass_profile
-    def surface_density(self):
-        return sum([plane.surface_density for plane in self.planes])
+    def convergence(self):
+        return sum([plane.convergence for plane in self.planes])
 
     @property
     @check_tracer_for_mass_profile
@@ -294,15 +294,15 @@ class AbstractTracer(AbstractTracerCosmology):
 
     @property
     @check_tracer_for_redshifts
-    def critical_density_kpc(self):
+    def critical_surface_mass_density_kpc(self):
         return self.constant_kpc * self.source_plane.angular_diameter_distance_to_earth / \
                (self.angular_diameter_distance_from_image_to_source_plane *
                 self.image_plane.angular_diameter_distance_to_earth)
 
     @property
     @check_tracer_for_redshifts
-    def critical_density_arcsec(self):
-        return self.critical_density_kpc * self.image_plane.kpc_per_arcsec_proper ** 2.0
+    def critical_surface_mass_density_arcsec(self):
+        return self.critical_surface_mass_density_kpc * self.image_plane.kpc_per_arcsec_proper ** 2.0
 
     @property
     def einstein_radii_arcsec_of_planes(self):
@@ -314,8 +314,9 @@ class AbstractTracer(AbstractTracerCosmology):
 
     @property
     @check_tracer_for_redshifts
-    def einstein_masses_of_planes(self):
-        return [plane.einstein_mass(critical_density_arcsec=self.critical_density_arcsec) for plane in self.planes]
+    def einstein_masses_in_solar_masses_of_planes(self):
+        return [plane.einstein_mass_in_mass_units(
+            critical_surface_mass_density_arcsec=self.critical_surface_mass_density_arcsec) for plane in self.planes]
 
     def grid_at_redshift_from_image_plane_grid_and_redshift(self, image_plane_grid, redshift):
         """For an input grid of (y,x) arc-second image-plane coordinates, ray-trace the coordinates to any redshift in \
@@ -370,7 +371,7 @@ class AbstractTracer(AbstractTracerCosmology):
 
                 return new_grid_stack.regular
 
-    def masses_of_image_plane_galaxies_within_circles(self, radius):
+    def masses_of_image_plane_galaxies_within_circles_in_mass_units(self, radius):
         """
         Compute the total mass of all galaxies in the image-plane within a circle of specified radius, using the \
         plane's critical surface density to convert this to physical units.
@@ -390,10 +391,10 @@ class AbstractTracer(AbstractTracerCosmology):
         radius : float
             The radius of the circle to compute the dimensionless mass within.
         """
-        return self.image_plane.masses_of_galaxies_within_circles(radius=radius,
-                                                                  conversion_factor=self.critical_density_arcsec)
+        return self.image_plane.masses_of_galaxies_within_circles_in_mass_units(radius=radius,
+                        critical_surface_mass_density=self.critical_surface_mass_density_arcsec)
 
-    def masses_of_image_plane_galaxies_within_ellipses(self, major_axis):
+    def masses_of_image_plane_galaxies_within_ellipses_in_mass_units(self, major_axis):
         """
         Compute the total mass of all galaxies in this plane within a ellipse of specified major-axis.
 
@@ -412,8 +413,8 @@ class AbstractTracer(AbstractTracerCosmology):
         major_axis : float
             The major-axis of the ellipse to compute the dimensionless mass within.
         """
-        return self.image_plane.masses_of_galaxies_within_ellipses(major_axis=major_axis,
-                                                                   conversion_factor=self.critical_density_arcsec)
+        return self.image_plane.masses_of_galaxies_within_ellipses_in_mass_units(major_axis=major_axis,
+                                 critical_surface_mass_density=self.critical_surface_mass_density_arcsec)
 
 
 class TracerImagePlane(AbstractTracer):

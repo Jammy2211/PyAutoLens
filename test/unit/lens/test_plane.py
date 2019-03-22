@@ -274,10 +274,10 @@ class TestAbstractPlane(object):
             g0 = g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=1.0))
             g1 = g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=2.0))
 
-            g0_mass = g0.mass_within_circle(radius=1.0)
-            g1_mass = g1.mass_within_circle(radius=1.0)
+            g0_mass = g0.mass_within_circle_in_angular_units(radius=1.0)
+            g1_mass = g1.mass_within_circle_in_angular_units(radius=1.0)
             plane = pl.AbstractPlane(galaxies=[g0, g1], redshift=None)
-            plane_masses = plane.masses_of_galaxies_within_circles(radius=1.0)
+            plane_masses = plane.masses_of_galaxies_within_circles_in_angular_units(radius=1.0)
 
             assert plane_masses[0] == g0_mass
             assert plane_masses[1] == g1_mass
@@ -285,22 +285,24 @@ class TestAbstractPlane(object):
             g0 = g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=3.0))
             g1 = g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=4.0))
 
-            g0_mass = g0.mass_within_circle(radius=2.0)
-            g1_mass = g1.mass_within_circle(radius=2.0)
+            g0_mass = g0.mass_within_circle_in_angular_units(radius=2.0)
+            g1_mass = g1.mass_within_circle_in_angular_units(radius=2.0)
             plane = pl.AbstractPlane(galaxies=[g0, g1], redshift=None)
-            plane_masses = plane.masses_of_galaxies_within_circles(radius=2.0)
+            plane_masses = plane.masses_of_galaxies_within_circles_in_angular_units(radius=2.0)
 
             assert plane_masses[0] == g0_mass
             assert plane_masses[1] == g1_mass
 
         def test__mass_within_circle__same_as_galaxy_masses(self):
+
             g0 = g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=1.0))
             g1 = g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=2.0))
 
-            g0_mass = g0.mass_within_circle(radius=1.0, conversion_factor=3.0)
-            g1_mass = g1.mass_within_circle(radius=1.0, conversion_factor=3.0)
+            g0_mass = g0.mass_within_circle_in_mass_units(radius=1.0, critical_surface_mass_density=3.0)
+            g1_mass = g1.mass_within_circle_in_mass_units(radius=1.0, critical_surface_mass_density=3.0)
             plane = pl.AbstractPlane(galaxies=[g0, g1], redshift=None)
-            plane_masses = plane.masses_of_galaxies_within_circles(radius=1.0, conversion_factor=3.0)
+            plane_masses = plane.masses_of_galaxies_within_circles_in_mass_units(radius=1.0,
+                                                                                    critical_surface_mass_density=3.0)
 
             assert plane_masses[0] == g0_mass
             assert plane_masses[1] == g1_mass
@@ -308,10 +310,11 @@ class TestAbstractPlane(object):
             g0 = g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=3.0))
             g1 = g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=4.0))
 
-            g0_mass = g0.mass_within_circle(radius=2.0, conversion_factor=6.0)
-            g1_mass = g1.mass_within_circle(radius=2.0, conversion_factor=6.0)
+            g0_mass = g0.mass_within_circle_in_mass_units(radius=2.0, critical_surface_mass_density=6.0)
+            g1_mass = g1.mass_within_circle_in_mass_units(radius=2.0, critical_surface_mass_density=6.0)
             plane = pl.AbstractPlane(galaxies=[g0, g1], redshift=None)
-            plane_masses = plane.masses_of_galaxies_within_circles(radius=2.0, conversion_factor=6.0)
+            plane_masses = plane.masses_of_galaxies_within_circles_in_mass_units(radius=2.0,
+                                                                                    critical_surface_mass_density=6.0)
 
             assert plane_masses[0] == g0_mass
             assert plane_masses[1] == g1_mass
@@ -320,10 +323,10 @@ class TestAbstractPlane(object):
             g0 = g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=1.0))
             g1 = g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=2.0))
 
-            g0_mass = g0.mass_within_ellipse(major_axis=0.8)
-            g1_mass = g1.mass_within_ellipse(major_axis=0.8)
+            g0_mass = g0.mass_within_ellipse_in_angular_units(major_axis=0.8)
+            g1_mass = g1.mass_within_ellipse_in_angular_units(major_axis=0.8)
             plane = pl.AbstractPlane(galaxies=[g0, g1], redshift=None)
-            plane_masses = plane.masses_of_galaxies_within_ellipses(major_axis=0.8)
+            plane_masses = plane.masses_of_galaxies_within_ellipses_in_angular_units(major_axis=0.8)
 
             assert plane_masses[0] == g0_mass
             assert plane_masses[1] == g1_mass
@@ -331,22 +334,24 @@ class TestAbstractPlane(object):
             g0 = g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=3.0))
             g1 = g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=4.0))
 
-            g0_mass = g0.mass_within_ellipse(major_axis=0.6)
-            g1_mass = g1.mass_within_ellipse(major_axis=0.6)
+            g0_mass = g0.mass_within_ellipse_in_angular_units(major_axis=0.6)
+            g1_mass = g1.mass_within_ellipse_in_angular_units(major_axis=0.6)
             plane = pl.AbstractPlane(galaxies=[g0, g1], redshift=None)
-            plane_masses = plane.masses_of_galaxies_within_ellipses(major_axis=0.6)
+            plane_masses = plane.masses_of_galaxies_within_ellipses_in_angular_units(major_axis=0.6)
 
             assert plane_masses[0] == g0_mass
             assert plane_masses[1] == g1_mass
 
         def test__mass_within_ellipse__same_as_galaxy_masses(self):
+
             g0 = g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=1.0))
             g1 = g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=2.0))
 
-            g0_mass = g0.mass_within_ellipse(major_axis=0.8, conversion_factor=3.0)
-            g1_mass = g1.mass_within_ellipse(major_axis=0.8, conversion_factor=3.0)
+            g0_mass = g0.mass_within_ellipse_in_mass_units(major_axis=0.8, critical_surface_mass_density=3.0)
+            g1_mass = g1.mass_within_ellipse_in_mass_units(major_axis=0.8, critical_surface_mass_density=3.0)
             plane = pl.AbstractPlane(galaxies=[g0, g1], redshift=None)
-            plane_masses = plane.masses_of_galaxies_within_ellipses(major_axis=0.8, conversion_factor=3.0)
+            plane_masses = plane.masses_of_galaxies_within_ellipses_in_mass_units(major_axis=0.8,
+                                                                                  critical_surface_mass_density=3.0)
 
             assert plane_masses[0] == g0_mass
             assert plane_masses[1] == g1_mass
@@ -354,10 +359,11 @@ class TestAbstractPlane(object):
             g0 = g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=3.0))
             g1 = g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=4.0))
 
-            g0_mass = g0.mass_within_ellipse(major_axis=0.6, conversion_factor=6.0)
-            g1_mass = g1.mass_within_ellipse(major_axis=0.6, conversion_factor=6.0)
+            g0_mass = g0.mass_within_ellipse_in_mass_units(major_axis=0.6, critical_surface_mass_density=6.0)
+            g1_mass = g1.mass_within_ellipse_in_mass_units(major_axis=0.6, critical_surface_mass_density=6.0)
             plane = pl.AbstractPlane(galaxies=[g0, g1], redshift=None)
-            plane_masses = plane.masses_of_galaxies_within_ellipses(major_axis=0.6, conversion_factor=6.0)
+            plane_masses = plane.masses_of_galaxies_within_ellipses_in_mass_units(major_axis=0.6,
+                                                                                  critical_surface_mass_density=6.0)
 
             assert plane_masses[0] == g0_mass
             assert plane_masses[1] == g1_mass
@@ -430,42 +436,48 @@ class TestAbstractPlane(object):
             assert plane.einstein_radius_kpc is None
 
         def test__einstein_mass_of_plane__equal_to_einstein_mass_of_galaxies_summed(self):
+
             sis_0 = g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=1.0))
             sis_1 = g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=2.0))
 
-            einstein_mass = sis_0.mass_within_circle(radius=sis_0.einstein_radius, conversion_factor=2.0)
+            einstein_mass = sis_0.mass_within_circle_in_mass_units(radius=sis_0.einstein_radius,
+                                                                   critical_surface_mass_density=2.0)
 
             plane = pl.AbstractPlane(galaxies=[sis_0], redshift=None)
 
-            assert plane.einstein_mass(critical_density_arcsec=2.0) == einstein_mass
+            assert plane.einstein_mass_in_mass_units(critical_surface_mass_density_arcsec=2.0) == einstein_mass
 
-            einstein_mass = sis_1.mass_within_circle(radius=sis_1.einstein_radius, conversion_factor=2.0)
+            einstein_mass = sis_1.mass_within_circle_in_mass_units(radius=sis_1.einstein_radius,
+                                                                   critical_surface_mass_density=2.0)
 
             plane = pl.AbstractPlane(galaxies=[sis_1], redshift=None)
 
-            assert plane.einstein_mass(critical_density_arcsec=2.0) == einstein_mass
+            assert plane.einstein_mass_in_mass_units(critical_surface_mass_density_arcsec=2.0) == einstein_mass
 
-            einstein_mass = sis_0.mass_within_circle(radius=sis_0.einstein_radius,
-                                                     conversion_factor=2.0) + sis_1.mass_within_circle(
-                radius=sis_1.einstein_radius, conversion_factor=2.0)
+            einstein_mass = sis_0.mass_within_circle_in_mass_units(radius=sis_0.einstein_radius,
+                                                                   critical_surface_mass_density=2.0) + \
+                            sis_1.mass_within_circle_in_mass_units(radius=sis_1.einstein_radius,
+                                                                   critical_surface_mass_density=2.0)
 
             plane = pl.AbstractPlane(galaxies=[sis_0, sis_1], redshift=None)
 
-            assert plane.einstein_mass(critical_density_arcsec=2.0) == einstein_mass
+            assert plane.einstein_mass_in_mass_units(critical_surface_mass_density_arcsec=2.0) == einstein_mass
 
         def test__include_galaxy_with_no_mass_profiles__doesnt_impact_calc(self):
+
             sis_0 = g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=1.0))
             g0 = g.Galaxy()
 
-            einstein_mass = sis_0.mass_within_circle(radius=sis_0.einstein_radius, conversion_factor=2.0)
+            einstein_mass = sis_0.mass_within_circle_in_mass_units(radius=sis_0.einstein_radius,
+                                                                      critical_surface_mass_density=2.0)
 
             plane = pl.AbstractPlane(galaxies=[sis_0, g0], redshift=None)
 
-            assert plane.einstein_mass(critical_density_arcsec=2.0) == einstein_mass
+            assert plane.einstein_mass_in_mass_units(critical_surface_mass_density_arcsec=2.0) == einstein_mass
 
             plane = pl.AbstractPlane(galaxies=[g0], redshift=None)
 
-            assert plane.einstein_mass(critical_density_arcsec=2.0) is None
+            assert plane.einstein_mass_in_mass_units(critical_surface_mass_density_arcsec=2.0) is None
 
 
 class TestAbstractPlaneGridded(object):
@@ -721,25 +733,25 @@ class TestAbstractPlaneGridded(object):
 
             assert (plane.image_plane_blurring_image_1d == g0_image + g1_image).all()
 
-    class TestSurfaceDensity:
+    class TestConvergence:
 
-        def test__surface_density_from_plane__same_as_its_mass_profile(self, grid_stack, galaxy_mass):
+        def test__convergence_from_plane__same_as_its_mass_profile(self, grid_stack, galaxy_mass):
             mass_profile = galaxy_mass.mass_profiles[0]
 
-            mp_sub_surface_density = mass_profile.surface_density_from_grid(grid_stack.sub.unlensed_grid)
+            mp_sub_convergence = mass_profile.convergence_from_grid(grid_stack.sub.unlensed_grid)
 
             # Perform sub gridding average manually
-            mp_surface_density_pixel_0 = (mp_sub_surface_density[0] + mp_sub_surface_density[1] +
-                                          mp_sub_surface_density[2] + mp_sub_surface_density[3]) / 4
-            mp_surface_density_pixel_1 = (mp_sub_surface_density[4] + mp_sub_surface_density[5] +
-                                          mp_sub_surface_density[6] + mp_sub_surface_density[7]) / 4
+            mp_convergence_pixel_0 = (mp_sub_convergence[0] + mp_sub_convergence[1] +
+                                          mp_sub_convergence[2] + mp_sub_convergence[3]) / 4
+            mp_convergence_pixel_1 = (mp_sub_convergence[4] + mp_sub_convergence[5] +
+                                          mp_sub_convergence[6] + mp_sub_convergence[7]) / 4
 
             plane = pl.AbstractGriddedPlane(galaxies=[galaxy_mass], grid_stack=grid_stack, border=None,
                                             compute_deflections=False, redshift=None)
 
-            assert plane.surface_density.shape == (3, 4)
-            assert (plane.surface_density[1, 1] == mp_surface_density_pixel_0).all()
-            assert (plane.surface_density[1, 2] == mp_surface_density_pixel_1).all()
+            assert plane.convergence.shape == (3, 4)
+            assert (plane.convergence[1, 1] == mp_convergence_pixel_0).all()
+            assert (plane.convergence[1, 2] == mp_convergence_pixel_1).all()
 
         def test__same_as_above__use_multiple_galaxies(self, grid_stack):
             # Overwrite one value so intensity in each pixel is different
@@ -751,82 +763,82 @@ class TestAbstractPlaneGridded(object):
             mp0 = g0.mass_profiles[0]
             mp1 = g1.mass_profiles[0]
 
-            mp0_sub_surface_density = mp0.surface_density_from_grid(grid=grid_stack.sub.unlensed_grid)
-            mp1_sub_surface_density = mp1.surface_density_from_grid(grid=grid_stack.sub.unlensed_grid)
+            mp0_sub_convergence = mp0.convergence_from_grid(grid=grid_stack.sub.unlensed_grid)
+            mp1_sub_convergence = mp1.convergence_from_grid(grid=grid_stack.sub.unlensed_grid)
 
             # Perform sub gridding average manually
-            mp0_surface_density_pixel_0 = (mp0_sub_surface_density[0] + mp0_sub_surface_density[1] +
-                                           mp0_sub_surface_density[2] + mp0_sub_surface_density[3]) / 4
-            mp0_surface_density_pixel_1 = (mp0_sub_surface_density[4] + mp0_sub_surface_density[5] +
-                                           mp0_sub_surface_density[6] + mp0_sub_surface_density[7]) / 4
-            mp1_surface_density_pixel_0 = (mp1_sub_surface_density[0] + mp1_sub_surface_density[1] +
-                                           mp1_sub_surface_density[2] + mp1_sub_surface_density[3]) / 4
-            mp1_surface_density_pixel_1 = (mp1_sub_surface_density[4] + mp1_sub_surface_density[5] +
-                                           mp1_sub_surface_density[6] + mp1_sub_surface_density[7]) / 4
+            mp0_convergence_pixel_0 = (mp0_sub_convergence[0] + mp0_sub_convergence[1] +
+                                           mp0_sub_convergence[2] + mp0_sub_convergence[3]) / 4
+            mp0_convergence_pixel_1 = (mp0_sub_convergence[4] + mp0_sub_convergence[5] +
+                                           mp0_sub_convergence[6] + mp0_sub_convergence[7]) / 4
+            mp1_convergence_pixel_0 = (mp1_sub_convergence[0] + mp1_sub_convergence[1] +
+                                           mp1_sub_convergence[2] + mp1_sub_convergence[3]) / 4
+            mp1_convergence_pixel_1 = (mp1_sub_convergence[4] + mp1_sub_convergence[5] +
+                                           mp1_sub_convergence[6] + mp1_sub_convergence[7]) / 4
 
             plane = pl.AbstractGriddedPlane(galaxies=[g0, g1], grid_stack=grid_stack, border=None,
                                             compute_deflections=False, redshift=None)
 
-            assert plane.surface_density[1, 1] == pytest.approx(mp0_surface_density_pixel_0 +
-                                                                mp1_surface_density_pixel_0, 1.0e-4)
-            assert plane.surface_density[1, 2] == pytest.approx(mp0_surface_density_pixel_1 +
-                                                                mp1_surface_density_pixel_1, 1.0e-4)
+            assert plane.convergence[1, 1] == pytest.approx(mp0_convergence_pixel_0 +
+                                                            mp1_convergence_pixel_0, 1.0e-4)
+            assert plane.convergence[1, 2] == pytest.approx(mp0_convergence_pixel_1 +
+                                                            mp1_convergence_pixel_1, 1.0e-4)
 
-        def test__surface_density__same_as_its_galaxy(self, grid_stack, galaxy_mass):
-            galaxy_surface_density = galaxy_util.surface_density_of_galaxies_from_grid(grid_stack.sub.unlensed_grid,
-                                                                                       galaxies=[galaxy_mass])
+        def test__convergence__same_as_its_galaxy(self, grid_stack, galaxy_mass):
+            galaxy_convergence = galaxy_util.convergence_of_galaxies_from_grid(grid_stack.sub.unlensed_grid,
+                                                                                   galaxies=[galaxy_mass])
 
-            galaxy_surface_density = grid_stack.regular.scaled_array_2d_from_array_1d(galaxy_surface_density)
+            galaxy_convergence = grid_stack.regular.scaled_array_2d_from_array_1d(galaxy_convergence)
 
             plane = pl.AbstractGriddedPlane(galaxies=[galaxy_mass], grid_stack=grid_stack, border=None,
                                             compute_deflections=False, redshift=None)
 
-            assert (plane.surface_density == galaxy_surface_density).all()
+            assert (plane.convergence == galaxy_convergence).all()
 
         def test__same_as_above_galaxies___use_multiple_galaxies(self, grid_stack):
             g0 = g.Galaxy(mass_profile=mp.SphericalIsothermal(einstein_radius=1.0))
             g1 = g.Galaxy(mass_profile=mp.SphericalIsothermal(einstein_radius=2.0))
 
-            g0_surface_density = galaxy_util.surface_density_of_galaxies_from_grid(grid_stack.sub.unlensed_grid,
-                                                                                   galaxies=[g0])
-            g1_surface_density = galaxy_util.surface_density_of_galaxies_from_grid(grid_stack.sub.unlensed_grid,
-                                                                                   galaxies=[g1])
+            g0_convergence = galaxy_util.convergence_of_galaxies_from_grid(grid_stack.sub.unlensed_grid,
+                                                                               galaxies=[g0])
+            g1_convergence = galaxy_util.convergence_of_galaxies_from_grid(grid_stack.sub.unlensed_grid,
+                                                                               galaxies=[g1])
 
-            g0_surface_density = grid_stack.regular.scaled_array_2d_from_array_1d(g0_surface_density)
-            g1_surface_density = grid_stack.regular.scaled_array_2d_from_array_1d(g1_surface_density)
+            g0_convergence = grid_stack.regular.scaled_array_2d_from_array_1d(g0_convergence)
+            g1_convergence = grid_stack.regular.scaled_array_2d_from_array_1d(g1_convergence)
 
             plane = pl.AbstractGriddedPlane(galaxies=[g0, g1], grid_stack=grid_stack, border=None,
                                             compute_deflections=False, redshift=None)
 
-            assert (plane.surface_density == g0_surface_density + g1_surface_density).all()
+            assert (plane.convergence == g0_convergence + g1_convergence).all()
 
-        def test__surface_density_from_plane__same_as_its_mass_profile__use_padded_grid_stack(self, padded_grid_stack,
+        def test__convergence_from_plane__same_as_its_mass_profile__use_padded_grid_stack(self, padded_grid_stack,
                                                                                               galaxy_mass):
             mass_profile = galaxy_mass.mass_profiles[0]
 
-            mp_sub_surface_density = mass_profile.surface_density_from_grid(padded_grid_stack.sub.unlensed_grid)
+            mp_sub_convergence = mass_profile.convergence_from_grid(padded_grid_stack.sub.unlensed_grid)
 
             # The padded sub-grid adds 5 pixels around the mask from the top-left which we skip over, thus our
             # first sub-pixel index is 20.
-            mp_surface_density_pixel_0 = (mp_sub_surface_density[20] + mp_sub_surface_density[21] +
-                                          mp_sub_surface_density[22] + mp_sub_surface_density[23]) / 4
-            mp_surface_density_pixel_1 = (mp_sub_surface_density[24] + mp_sub_surface_density[25] +
-                                          mp_sub_surface_density[26] + mp_sub_surface_density[27]) / 4
+            mp_convergence_pixel_0 = (mp_sub_convergence[20] + mp_sub_convergence[21] +
+                                          mp_sub_convergence[22] + mp_sub_convergence[23]) / 4
+            mp_convergence_pixel_1 = (mp_sub_convergence[24] + mp_sub_convergence[25] +
+                                          mp_sub_convergence[26] + mp_sub_convergence[27]) / 4
 
             plane = pl.AbstractGriddedPlane(galaxies=[galaxy_mass], grid_stack=padded_grid_stack, border=None,
                                             compute_deflections=False, redshift=None)
 
             # The padded array is trimmed to the same size as the original mask (1x2).
-            assert plane.surface_density[0, 0] == pytest.approx(mp_surface_density_pixel_0, 1.0e-4)
-            assert plane.surface_density[0, 1] == pytest.approx(mp_surface_density_pixel_1, 1.0e-4)
+            assert plane.convergence[0, 0] == pytest.approx(mp_convergence_pixel_0, 1.0e-4)
+            assert plane.convergence[0, 1] == pytest.approx(mp_convergence_pixel_1, 1.0e-4)
 
-        def test__plane_has_no_galaxies__surface_density_is_zeros_size_of_unlensed_regular_grid(self, grid_stack):
+        def test__plane_has_no_galaxies__convergence_is_zeros_size_of_unlensed_regular_grid(self, grid_stack):
             plane = pl.AbstractGriddedPlane(galaxies=[], grid_stack=grid_stack, border=None,
                                             compute_deflections=False, redshift=None)
 
-            assert plane.surface_density.shape == (3, 4)
-            assert (plane.surface_density[1, 1] == 0.0).all()
-            assert (plane.surface_density[1, 2] == 0.0).all()
+            assert plane.convergence.shape == (3, 4)
+            assert (plane.convergence[1, 1] == 0.0).all()
+            assert (plane.convergence[1, 2] == 0.0).all()
 
     class TestPotential:
 

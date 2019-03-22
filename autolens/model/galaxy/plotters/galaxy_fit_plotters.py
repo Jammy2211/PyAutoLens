@@ -144,8 +144,8 @@ def plot_galaxy_data_array(
 
     if galaxy_data.use_intensities:
         title='Galaxy Data Intensities'
-    elif galaxy_data.use_surface_density:
-        title='Galaxy Data Surface Density'
+    elif galaxy_data.use_convergence:
+        title='Galaxy Data Convergence'
     elif galaxy_data.use_potential:
         title='Galaxy Data Potential'
     elif galaxy_data.use_deflections_y:
