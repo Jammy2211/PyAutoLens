@@ -45,3 +45,11 @@ class TestCase(object):
         assert one.pipeline == "pipeline_1"
         assert one.phase == "phase_1"
         assert one.lens == "lens_1"
+
+        assert two.pipeline == "pipeline_2"
+        assert two.phase == "phase_1"
+        assert two.lens == "lens_1"
+
+        assert three.pipeline == "pipeline_1"
+        assert three.phase == "phase_2"
+        assert three.lens == "lens_2"
