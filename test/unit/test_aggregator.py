@@ -13,9 +13,30 @@ def make_aggregator():
     return a.Aggregator(aggregator_directory)
 
 
+def filter_aggregations(aggregator, folder):
+    return list(filter(lambda ag: "/{}/.metadata".format(folder) in ag.file_path, aggregator.aggregations))[0]
+
+
+@pytest.fixture(name="one")
+def make_one(aggregator):
+    return filter_aggregations(aggregator, "one")
+
+
+@pytest.fixture(name="two")
+def make_two(aggregator):
+    return filter_aggregations(aggregator, "two")
+
+
+@pytest.fixture(name="three")
+def make_three(aggregator):
+    return filter_aggregations(aggregator, "three")
+
+
 class TestCase(object):
-    def test_aggregations(self, aggregator):
+    def test_total_aggregations(self, aggregator):
         assert len(aggregator.aggregations) == 3
-        assert aggregator.aggregations[0].file_path == "{}/three/.metadata".format(aggregator_directory)
-        assert aggregator.aggregations[1].file_path == "{}/one/.metadata".format(aggregator_directory)
-        assert aggregator.aggregations[2].file_path == "{}/two/.metadata".format(aggregator_directory)
+
+    def test_individual_aggregations(self, one, two, three):
+        assert three.file_path == "{}/three/.metadata".format(aggregator_directory)
+        assert one.file_path == "{}/one/.metadata".format(aggregator_directory)
+        assert two.file_path == "{}/two/.metadata".format(aggregator_directory)
