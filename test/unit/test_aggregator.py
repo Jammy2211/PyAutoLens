@@ -53,3 +53,23 @@ class TestCase(object):
         assert three.pipeline == "pipeline_1"
         assert three.phase == "phase_2"
         assert three.lens == "lens_2"
+
+    def test_filter_aggregations(self, aggregator, one, two, three):
+        result = aggregator.aggregations_with()
+
+        assert len(result) == 3
+        assert one in result
+        assert two in result
+        assert three in result
+
+        result = aggregator.aggregations_with(pipeline="pipeline_1")
+        assert len(result) == 2
+        assert one in result
+        assert three in result
+
+        result = aggregator.aggregations_with(lens="lens_2")
+        assert [three] == result
+
+        result = aggregator.aggregations_with(pipeline="pipeline_2", phase="phase_1")
+        print(result)
+        assert [two] == result
