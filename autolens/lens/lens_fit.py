@@ -65,6 +65,27 @@ class LensTracerFit(LensDataFit):
         map_to_scaled_array : func
             A function which maps the 1D lens hyper to its unmasked 2D array.
         """
+        # Add hyper noise if these is a padded tracer...
+        if padded_tracer is not None:
+            original_noise_map = noise_map.copy()
+            unmasked_model_image = padded_tracer.image_plane.grid_stack. \
+                unmasked_blurred_image_from_psf_and_unmasked_image(psf=psf,
+                                                                   unmasked_image_1d=padded_tracer.
+                                                                   image_plane_image_1d)
+            # ...to any galaxy with a corresponding HyperGalaxy
+            for galaxy in tracer.galaxies:
+                if galaxy.hyper_galaxy is not None:
+                    plane = padded_tracer.plane_with_galaxy(galaxy)
+                    unmasked_galaxy_image = plane.unmasked_blurred_image_of_galaxy_with_grid_stack_psf(
+                        galaxy,
+                        padded_tracer.image_plane.grid_stack,
+                        psf)
+                    hyper_galaxy = galaxy.hyper_galaxy
+                    hyper_noise = hyper_galaxy.hyper_noise_from_model_image_galaxy_image_and_noise_map(
+                        unmasked_model_image,
+                        unmasked_galaxy_image,
+                        original_noise_map)
+                    noise_map += hyper_noise
         super().__init__(image=image, noise_map=noise_map, mask=mask, model_image=model_image)
         self.tracer = tracer
         self.padded_tracer = padded_tracer
