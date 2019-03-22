@@ -73,7 +73,21 @@ class TestCase(object):
         result = aggregator.aggregations_with(pipeline="pipeline_2", phase="phase_1")
         assert [two] == result
 
-    def test_model_results(self, one, two, three):
+    def test_aggregation_model_results(self, one, two, three):
         assert one.model_results == "results_one"
         assert two.model_results == "results_two"
         assert three.model_results == "results_three"
+
+    def test_header(self, one, two, three):
+        assert one.header == "pipeline_1/phase_1/lens_1"
+        assert two.header == "pipeline_2/phase_1/lens_1"
+        assert three.header == "pipeline_1/phase_2/lens_2"
+
+    def test_aggregator_model_results(self, aggregator):
+        print(aggregator.model_results())
+        assert aggregator.model_results() == "pipeline_1/phase_2/lens_2\n\n" \
+                                             "results_three\n\n" \
+                                             "pipeline_1/phase_1/lens_1\n\n" \
+                                             "results_one\n\n" \
+                                             "pipeline_2/phase_1/lens_1\n\n" \
+                                             "results_two"

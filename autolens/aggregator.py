@@ -18,6 +18,10 @@ class Aggregation(object):
         with open(os.path.join(self.directory, "model.results")) as f:
             return f.read()
 
+    @property
+    def header(self):
+        return "/".join((self.pipeline, self.phase, self.lens))
+
     def __str__(self):
         return self.text
 
@@ -37,3 +41,7 @@ class Aggregator(object):
     def aggregations_with(self, **kwargs):
         return [aggregation for aggregation in self.aggregations if
                 all([getattr(aggregation, key) == value for key, value in kwargs.items()])]
+
+    def model_results(self, **kwargs):
+        return "\n\n".join("{}\n\n{}".format(aggregation.header, aggregation.model_results) for aggregation in
+                           self.aggregations_with(**kwargs))
