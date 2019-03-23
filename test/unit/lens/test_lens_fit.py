@@ -161,8 +161,26 @@ class TestLensProfileFit:
             g0 = g.Galaxy(light_profile=MockLightProfile(value=1.0))
             tracer = ray_tracing.TracerImagePlane(lens_galaxies=[g0], image_plane_grid_stack=lens_data.grid_stack)
 
-            fit = lens_fit.LensProfileFit(lens_data=lens_data, tracer=tracer)
+            fit = lens_fit.LensProfileFit(lens_data=lens_data, tracer=tracer, padded_tracer=tracer)
             assert fit.likelihood == -0.5 * np.log(2 * np.pi * 1.0)
+
+        def test_hyper_galaxy_changes_fit(self):
+            psf = ccd.PSF(array=(np.array([[0.0, 0.0, 0.0],
+                                           [0.0, 1.0, 0.0],
+                                           [0.0, 0.0, 0.0]])), pixel_scale=1.0)
+
+            ccd_data = ccd.CCDData(image=np.ones((3, 3)), pixel_scale=1.0, psf=psf, noise_map=np.ones((3, 3)))
+
+            mask = msk.Mask(array=np.array([[True, True, True],
+                                            [True, False, True],
+                                            [True, True, True]]), pixel_scale=1.0)
+            lens_data = ld.LensData(ccd_data=ccd_data, mask=mask, sub_grid_size=1)
+
+            g0 = g.Galaxy(light_profile=MockLightProfile(value=1.0), hyper_galaxy=g.HyperGalaxy(1.0, 1.0))
+            tracer = ray_tracing.TracerImagePlane(lens_galaxies=[g0], image_plane_grid_stack=lens_data.grid_stack)
+
+            fit = lens_fit.LensProfileFit(lens_data=lens_data, tracer=tracer, padded_tracer=tracer)
+            assert fit.likelihood < -0.5 * np.log(2 * np.pi * 1.0)
 
         def test__1x2_image__tracing_fits_data_with_chi_sq_5(self):
             psf = ccd.PSF(array=(np.array([[0.0, 0.0, 0.0],
