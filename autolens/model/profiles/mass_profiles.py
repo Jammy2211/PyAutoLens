@@ -980,6 +980,17 @@ class SphericalTruncatedNFW(AbstractEllipticalGeneralizedNFW):
         return mass_at_200 * (self.tau**2.0 / (self.tau**2.0 + 1.0) ** 2.0) * \
                              (((self.tau**2.0 - 1) * np.log(self.tau)) + (self.tau*np.pi) - (self.tau**2.0 + 1))
 
+
+class SphericalTruncatedNFWChallenge(SphericalTruncatedNFW):
+
+    def __init__(self, centre=(0.0, 0.0), kappa_s=0.05, scale_radius=5.0):
+
+        truncation_radius = 2.0 * self.radius_at_200(critical_surface_mass_density_arcsec=1942853712.6850429,
+                                                     cosmic_average_mass_density_arcsec=135.95872056316026)
+
+        super(SphericalTruncatedNFWChallenge, self).__init__(centre=centre, kappa_s=kappa_s, scale_radius=scale_radius,
+                                                             truncation_radius=truncation_radius)
+
 class EllipticalNFW(AbstractEllipticalGeneralizedNFW):
 
     def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, kappa_s=0.05, scale_radius=5.0):
