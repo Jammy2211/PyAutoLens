@@ -1379,6 +1379,48 @@ class TestTruncatedNFW(object):
         assert (interp_deflections_manual_y != interp_deflections[:,0]).all()
         assert (interp_deflections_manual_x != interp_deflections[:,1]).all()
 
+    def test__mass_at_truncation_radius__values(self):
+
+        truncated_nfw = mp.SphericalTruncatedNFW(centre=(0.0, 0.0), kappa_s=1.0, scale_radius=1.0,
+                                                 truncation_radius=1.0)
+
+        mass_at_truncation_radius = truncated_nfw.mass_at_truncation_radius(critical_surface_mass_density_arcsec=1.0,
+                                                                            cosmic_average_mass_density_arcsec=1.0)
+
+        assert mass_at_truncation_radius == pytest.approx(0.00009792581, 1.0e-5)
+
+        truncated_nfw = mp.SphericalTruncatedNFW(centre=(0.0, 0.0), kappa_s=1.0, scale_radius=1.0,
+                                                 truncation_radius=1.0)
+
+        mass_at_truncation_radius = truncated_nfw.mass_at_truncation_radius(critical_surface_mass_density_arcsec=2.0,
+                                                                            cosmic_average_mass_density_arcsec=3.0)
+
+        assert mass_at_truncation_radius == pytest.approx(0.00008789978, 1.0e-5)
+
+        truncated_nfw = mp.SphericalTruncatedNFW(centre=(0.0, 0.0), kappa_s=1.0, scale_radius=2.0,
+                                                 truncation_radius=1.0)
+
+        mass_at_truncation_radius = truncated_nfw.mass_at_truncation_radius(critical_surface_mass_density_arcsec=2.0,
+                                                                            cosmic_average_mass_density_arcsec=3.0)
+
+        assert mass_at_truncation_radius == pytest.approx(0.0000418378, 1.0e-5)
+
+        truncated_nfw = mp.SphericalTruncatedNFW(centre=(0.0, 0.0), kappa_s=1.0, scale_radius=8.0,
+                                                 truncation_radius=4.0)
+
+        mass_at_truncation_radius = truncated_nfw.mass_at_truncation_radius(critical_surface_mass_density_arcsec=2.0,
+                                                                            cosmic_average_mass_density_arcsec=3.0)
+
+        assert mass_at_truncation_radius == pytest.approx(0.0000421512, 1.0e-4)
+
+        truncated_nfw = mp.SphericalTruncatedNFW(centre=(0.0, 0.0), kappa_s=2.0, scale_radius=8.0,
+                                                 truncation_radius=4.0)
+
+        mass_at_truncation_radius = truncated_nfw.mass_at_truncation_radius(critical_surface_mass_density_arcsec=2.0,
+                                                                            cosmic_average_mass_density_arcsec=3.0)
+
+        assert mass_at_truncation_radius == pytest.approx(0.00033636625, 1.0e-4)
+
 
 class TestNFW(object):
 

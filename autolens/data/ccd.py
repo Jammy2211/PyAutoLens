@@ -1,18 +1,17 @@
+import ast
+import logging
+
 import numpy as np
 import scipy.signal
-from scipy.stats import norm
 from astropy import units
-import ast
+from scipy.stats import norm
 from skimage.transform import resize, rescale
 
 from autolens import exc
+from autolens.data.array.scaled_array import ScaledSquarePixelArray, Array
 from autolens.data.array.util import grid_util
 from autolens.data.array.util import mapping_util, array_util
-from autolens.data.array.scaled_array import ScaledSquarePixelArray, Array
 from autolens.model.profiles.light_profiles import EllipticalGaussian
-
-import logging
-
 
 logger = logging.getLogger(__name__)
 
@@ -20,7 +19,7 @@ logger = logging.getLogger(__name__)
 class CCDData(object):
 
     def __init__(self, image, pixel_scale, psf, noise_map=None, background_noise_map=None, poisson_noise_map=None,
-                 exposure_time_map=None, background_sky_map=None, **kwargs):
+                 exposure_time_map=None, background_sky_map=None, name=None, **kwargs):
         """A collection of 2D CCD data (an image, noise-map, psf, etc.)
 
         Parameters
@@ -45,6 +44,7 @@ class CCDData(object):
         background_sky_map : scaled_array.ScaledSquarePixelArray
             An array describing the background sky.
         """
+        self.name = name
         self.image = image
         self.pixel_scale = pixel_scale
         self.psf = psf
@@ -61,10 +61,10 @@ class CCDData(object):
 
     @classmethod
     def simulate(cls, array, pixel_scale, exposure_time, psf=None, background_sky_level=None,
-                 add_noise=False, seed=-1):
+                 add_noise=False, seed=-1, name=None):
 
         exposure_time_map = ScaledSquarePixelArray.single_value(value=exposure_time, shape=array.shape,
-                                                                     pixel_scale=pixel_scale)
+                                                                pixel_scale=pixel_scale)
         if background_sky_level is not None:
             background_sky_map = ScaledSquarePixelArray.single_value(value=background_sky_level, shape=array.shape,
                                                                      pixel_scale=pixel_scale)
@@ -74,16 +74,17 @@ class CCDData(object):
         return cls.simulate_variable_arrays(array=array, pixel_scale=pixel_scale,
                                             exposure_time_map=exposure_time_map, psf=psf,
                                             background_sky_map=background_sky_map,
-                                            add_noise=add_noise, seed=seed)
+                                            add_noise=add_noise, seed=seed, name=name)
 
     @classmethod
     def simulate_variable_arrays(cls, array, pixel_scale, exposure_time_map, psf=None, background_sky_map=None,
-                                 add_noise=True, seed=-1):
+                                 add_noise=True, seed=-1, name=None):
         """
         Create a realistic simulated image by applying effects to a plain simulated image.
 
         Parameters
         ----------
+        name
         array : ndarray
             The image before simulating (e.g. the lens and source galaxies before optics blurring and CCD read-out).
         pixel_scale: float
@@ -145,7 +146,7 @@ class CCDData(object):
 
         return CCDData(array, pixel_scale=pixel_scale, psf=psf, noise_map=noise_map,
                        background_noise_map=background_noise_map, poisson_noise_map=poisson_noise_map,
-                       exposure_time_map=exposure_time_map, background_sky_map=background_sky_map)
+                       exposure_time_map=exposure_time_map, background_sky_map=background_sky_map, name=name)
 
     @classmethod
     def simulate_to_target_signal_to_noise(cls, array, pixel_scale, target_signal_to_noise, exposure_time_map,
@@ -198,7 +199,7 @@ class CCDData(object):
     def new_ccd_data_with_binned_up_arrays(self, bin_up_factor):
 
         image = self.bin_up_scaled_array(scaled_array=self.image, bin_up_factor=bin_up_factor, method='mean')
-        psf = self.psf.new_psf_with_rescaled_odd_dimensioned_array(rescale_factor=1.0/bin_up_factor, renormalize=True)
+        psf = self.psf.new_psf_with_rescaled_odd_dimensioned_array(rescale_factor=1.0 / bin_up_factor, renormalize=True)
         noise_map = self.bin_up_scaled_array(scaled_array=self.noise_map, bin_up_factor=bin_up_factor,
                                              method='quadrature')
         background_noise_map = self.bin_up_scaled_array(scaled_array=self.background_noise_map,
@@ -210,13 +211,14 @@ class CCDData(object):
         background_sky_map = self.bin_up_scaled_array(scaled_array=self.background_sky_map,
                                                       bin_up_factor=bin_up_factor, method='mean')
 
-        return CCDData(image=image, pixel_scale=self.pixel_scale*bin_up_factor, psf=psf, noise_map=noise_map,
+        return CCDData(image=image, pixel_scale=self.pixel_scale * bin_up_factor, psf=psf, noise_map=noise_map,
                        background_noise_map=background_noise_map, poisson_noise_map=poisson_noise_map,
-                       exposure_time_map=exposure_time_map, background_sky_map=background_sky_map)
+                       exposure_time_map=exposure_time_map, background_sky_map=background_sky_map, name=self.name)
 
     def new_ccd_data_with_resized_arrays(self, new_shape, new_centre_pixels=None, new_centre_arcsec=None):
-        
-        image = self.resize_scaled_array(scaled_array=self.image, new_shape=new_shape, new_centre_pixels=new_centre_pixels,
+
+        image = self.resize_scaled_array(scaled_array=self.image, new_shape=new_shape,
+                                         new_centre_pixels=new_centre_pixels,
                                          new_centre_arcsec=new_centre_arcsec)
 
         noise_map = self.resize_scaled_array(scaled_array=self.noise_map, new_shape=new_shape,
@@ -241,13 +243,14 @@ class CCDData(object):
 
         return CCDData(image=image, pixel_scale=self.pixel_scale, psf=self.psf, noise_map=noise_map,
                        background_noise_map=background_noise_map, poisson_noise_map=poisson_noise_map,
-                       exposure_time_map=exposure_time_map, background_sky_map=background_sky_map)
+                       exposure_time_map=exposure_time_map, background_sky_map=background_sky_map, name=self.name)
 
     def new_ccd_data_with_resized_psf(self, new_shape):
         psf = self.resize_scaled_array(scaled_array=self.psf, new_shape=new_shape)
         return CCDData(image=self.image, pixel_scale=self.pixel_scale, psf=psf, noise_map=self.noise_map,
                        background_noise_map=self.background_noise_map, poisson_noise_map=self.poisson_noise_map,
-                       exposure_time_map=self.exposure_time_map, background_sky_map=self.background_sky_map)
+                       exposure_time_map=self.exposure_time_map, background_sky_map=self.background_sky_map,
+                       name=self.name)
 
     @staticmethod
     def bin_up_scaled_array(scaled_array, bin_up_factor, method):
@@ -260,7 +263,8 @@ class CCDData(object):
     def resize_scaled_array(scaled_array, new_shape, new_centre_pixels=None, new_centre_arcsec=None):
         if scaled_array is not None:
             return scaled_array.resized_scaled_array_from_array(new_shape=new_shape,
-                        new_centre_pixels=new_centre_pixels, new_centre_arcsec=new_centre_arcsec)
+                                                                new_centre_pixels=new_centre_pixels,
+                                                                new_centre_arcsec=new_centre_arcsec)
         else:
             return None
 
@@ -269,20 +273,21 @@ class CCDData(object):
         return CCDData(image=modified_image, pixel_scale=self.pixel_scale, psf=self.psf,
                        noise_map=self.noise_map, background_noise_map=self.background_noise_map,
                        poisson_noise_map=self.poisson_noise_map, exposure_time_map=self.exposure_time_map,
-                       background_sky_map=self.background_sky_map)
+                       background_sky_map=self.background_sky_map, name=self.name)
 
     def new_ccd_data_with_poisson_noise_added(self, seed=-1):
 
         image_with_sky = self.image + self.background_sky_map
 
         image_with_sky_and_noise = image_with_sky + generate_poisson_noise(image=image_with_sky,
-                                            exposure_time_map=self.exposure_time_map, seed=seed)
+                                                                           exposure_time_map=self.exposure_time_map,
+                                                                           seed=seed)
 
         image_with_noise = image_with_sky_and_noise - self.background_sky_map
 
         return CCDData(image=image_with_noise, pixel_scale=self.pixel_scale, psf=self.psf,
                        noise_map=self.noise_map, background_noise_map=self.background_noise_map,
-                       poisson_noise_map=self.poisson_noise_map)
+                       poisson_noise_map=self.poisson_noise_map, name=self.name)
 
     def new_ccd_data_converted_from_electrons(self):
 
@@ -294,7 +299,8 @@ class CCDData(object):
 
         return CCDData(image=image, pixel_scale=self.pixel_scale, psf=self.psf, noise_map=noise_map,
                        background_noise_map=background_noise_map, poisson_noise_map=poisson_noise_map,
-                       exposure_time_map=self.exposure_time_map, background_sky_map=background_sky_map)
+                       exposure_time_map=self.exposure_time_map, background_sky_map=background_sky_map,
+                       name=self.name)
 
     def new_ccd_data_converted_from_adus(self, gain):
 
@@ -306,7 +312,8 @@ class CCDData(object):
 
         return CCDData(image=image, pixel_scale=self.pixel_scale, psf=self.psf, noise_map=noise_map,
                        background_noise_map=background_noise_map, poisson_noise_map=poisson_noise_map,
-                       exposure_time_map=self.exposure_time_map, background_sky_map=background_sky_map)
+                       exposure_time_map=self.exposure_time_map, background_sky_map=background_sky_map,
+                       name=self.name)
 
     @property
     def signal_to_noise_map(self):
@@ -387,7 +394,7 @@ class CCDData(object):
             The array the values are to be converted from counts to electrons per second.
         """
         if array is not None:
-            return np.divide(gain*array, self.exposure_time_map)
+            return np.divide(gain * array, self.exposure_time_map)
         else:
             return None
 
@@ -508,13 +515,13 @@ class NoiseMap(ScaledSquarePixelArray):
                                             convert_from_electrons=False, convert_from_adus=False):
 
         if not convert_from_electrons and not convert_from_adus:
-            return NoiseMap(array=np.sqrt(np.abs(((background_noise_map)*exposure_time_map)**2.0 +
-                                                 (image)*exposure_time_map)) / (exposure_time_map),
+            return NoiseMap(array=np.sqrt(np.abs(((background_noise_map) * exposure_time_map) ** 2.0 +
+                                                 (image) * exposure_time_map)) / (exposure_time_map),
                             pixel_scale=pixel_scale)
         elif convert_from_electrons:
-            return NoiseMap(array=np.sqrt(np.abs(background_noise_map**2.0 + image)), pixel_scale=pixel_scale)
+            return NoiseMap(array=np.sqrt(np.abs(background_noise_map ** 2.0 + image)), pixel_scale=pixel_scale)
         elif convert_from_adus:
-            return NoiseMap(array=np.sqrt(np.abs((gain*background_noise_map)**2.0 + gain*image)) / gain,
+            return NoiseMap(array=np.sqrt(np.abs((gain * background_noise_map) ** 2.0 + gain * image)) / gain,
                             pixel_scale=pixel_scale)
 
 
@@ -524,12 +531,12 @@ class PoissonNoiseMap(NoiseMap):
     def from_image_and_exposure_time_map(cls, pixel_scale, image, exposure_time_map, gain=None,
                                          convert_from_electrons=False, convert_from_adus=False):
         if not convert_from_electrons and not convert_from_adus:
-            return PoissonNoiseMap(array=np.sqrt(np.abs(image)*exposure_time_map) / (exposure_time_map),
+            return PoissonNoiseMap(array=np.sqrt(np.abs(image) * exposure_time_map) / (exposure_time_map),
                                    pixel_scale=pixel_scale)
         elif convert_from_electrons:
             return PoissonNoiseMap(array=np.sqrt(np.abs(image)), pixel_scale=pixel_scale)
         elif convert_from_adus:
-            return NoiseMap(array=np.sqrt(gain*np.abs(image)) / gain, pixel_scale=pixel_scale)
+            return NoiseMap(array=np.sqrt(gain * np.abs(image)) / gain, pixel_scale=pixel_scale)
 
 
 class PSF(ScaledSquarePixelArray):
@@ -550,7 +557,7 @@ class PSF(ScaledSquarePixelArray):
         # noinspection PyArgumentList
         super().__init__(array=array, pixel_scale=pixel_scale)
         if renormalize:
-            self[:,:] = np.divide(self, np.sum(self))
+            self[:, :] = np.divide(self, np.sum(self))
 
     @classmethod
     def simulate_as_gaussian(cls, shape, pixel_scale, sigma, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0):
@@ -558,7 +565,8 @@ class PSF(ScaledSquarePixelArray):
         from autolens.model.profiles.light_profiles import EllipticalGaussian
         gaussian = EllipticalGaussian(centre=centre, axis_ratio=axis_ratio, phi=phi, intensity=1.0, sigma=sigma)
         grid_1d = grid_util.regular_grid_1d_masked_from_mask_pixel_scales_and_origin(mask=np.full(shape, False),
-                                                                                     pixel_scales=(pixel_scale, pixel_scale))
+                                                                                     pixel_scales=(
+                                                                                         pixel_scale, pixel_scale))
         gaussian_1d = gaussian.intensities_from_grid(grid=grid_1d)
         gaussian_2d = mapping_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(array_1d=gaussian_1d,
                                                                                              shape=shape)
@@ -573,10 +581,12 @@ class PSF(ScaledSquarePixelArray):
 
         axis_ratio = x_stddev / y_stddev
 
-        gaussian = EllipticalGaussian(centre=centre, axis_ratio=axis_ratio, phi=90.0-theta, intensity=1.0, sigma=y_stddev)
+        gaussian = EllipticalGaussian(centre=centre, axis_ratio=axis_ratio, phi=90.0 - theta, intensity=1.0,
+                                      sigma=y_stddev)
 
         grid_1d = grid_util.regular_grid_1d_masked_from_mask_pixel_scales_and_origin(mask=np.full(shape, False),
-                                                                                     pixel_scales=(pixel_scale, pixel_scale))
+                                                                                     pixel_scales=(
+                                                                                         pixel_scale, pixel_scale))
         gaussian_1d = gaussian.intensities_from_grid(grid=grid_1d)
         gaussian_2d = mapping_util.map_unmasked_1d_array_to_2d_array_from_array_1d_and_shape(array_1d=gaussian_1d,
                                                                                              shape=shape)
@@ -600,7 +610,7 @@ class PSF(ScaledSquarePixelArray):
             A renormalized PSF instance
         """
         psf = PSF.from_fits_with_scale(file_path, hdu, pixel_scale)
-        psf[:,:] = np.divide(psf, np.sum(psf))
+        psf[:, :] = np.divide(psf, np.sum(psf))
         return psf
 
     @classmethod
@@ -634,7 +644,6 @@ class PSF(ScaledSquarePixelArray):
         pixel_scale_factors = (self.shape[0] / psf_rescaled.shape[0], self.shape[1] / psf_rescaled.shape[1])
         pixel_scale = (self.pixel_scale * pixel_scale_factors[0], self.pixel_scale * pixel_scale_factors[1])
         return PSF(array=psf_rescaled, pixel_scale=np.max(pixel_scale), renormalize=renormalize)
-
 
     def new_psf_with_renormalized_array(self):
         """Renormalize the PSF such that its data_vector values sum to unity."""
@@ -732,7 +741,7 @@ def load_ccd_data_from_fits(image_path, pixel_scale, image_hdu=0,
                             exposure_time_map_from_inverse_noise_map=False,
                             background_sky_map_path=None, background_sky_map_hdu=0,
                             convert_from_electrons=False,
-                            gain=None, convert_from_adus=False):
+                            gain=None, convert_from_adus=False, lens_name=None):
     """Factory for loading the ccd data from .fits files, as well as computing properties like the noise-map,
     exposure-time map, etc. from the ccd-data.
 
@@ -741,6 +750,7 @@ def load_ccd_data_from_fits(image_path, pixel_scale, image_hdu=0,
 
     Parameters
     ----------
+    lens_name
     image_path : str
         The path to the image .fits file containing the image (e.g. '/path/to/image.fits')
     pixel_scale : float
@@ -829,10 +839,10 @@ def load_ccd_data_from_fits(image_path, pixel_scale, image_hdu=0,
     image = load_image(image_path=image_path, image_hdu=image_hdu, pixel_scale=pixel_scale)
 
     background_noise_map = load_background_noise_map(background_noise_map_path=background_noise_map_path,
-             background_noise_map_hdu=background_noise_map_hdu,
-             pixel_scale=pixel_scale,
-             convert_background_noise_map_from_weight_map=convert_background_noise_map_from_weight_map,
-             convert_background_noise_map_from_inverse_noise_map=convert_background_noise_map_from_inverse_noise_map)
+                                                     background_noise_map_hdu=background_noise_map_hdu,
+                                                     pixel_scale=pixel_scale,
+                                                     convert_background_noise_map_from_weight_map=convert_background_noise_map_from_weight_map,
+                                                     convert_background_noise_map_from_inverse_noise_map=convert_background_noise_map_from_inverse_noise_map)
 
     if background_noise_map is not None:
         inverse_noise_map = 1.0 / background_noise_map
@@ -862,7 +872,8 @@ def load_ccd_data_from_fits(image_path, pixel_scale, image_hdu=0,
                                convert_noise_map_from_weight_map=convert_noise_map_from_weight_map,
                                convert_noise_map_from_inverse_noise_map=convert_noise_map_from_inverse_noise_map,
                                noise_map_from_image_and_background_noise_map=noise_map_from_image_and_background_noise_map,
-                               convert_from_electrons=convert_from_electrons, gain=gain, convert_from_adus=convert_from_adus)
+                               convert_from_electrons=convert_from_electrons, gain=gain,
+                               convert_from_adus=convert_from_adus)
 
     psf = load_psf(psf_path=psf_path, psf_hdu=psf_hdu, pixel_scale=pixel_scale, renormalize=renormalize_psf)
 
@@ -872,7 +883,8 @@ def load_ccd_data_from_fits(image_path, pixel_scale, image_hdu=0,
 
     image = CCDData(image=image, pixel_scale=pixel_scale, psf=psf, noise_map=noise_map,
                     background_noise_map=background_noise_map, poisson_noise_map=poisson_noise_map,
-                    exposure_time_map=exposure_time_map, background_sky_map=background_sky_map, gain=gain)
+                    exposure_time_map=exposure_time_map, background_sky_map=background_sky_map, gain=gain,
+                    name=lens_name)
 
     if resized_ccd_shape is not None:
         image = image.new_ccd_data_with_resized_arrays(new_shape=resized_ccd_shape,
@@ -889,6 +901,7 @@ def load_ccd_data_from_fits(image_path, pixel_scale, image_hdu=0,
 
     return image
 
+
 def load_image(image_path, image_hdu, pixel_scale):
     """Factory for loading the image from a .fits file
 
@@ -903,6 +916,7 @@ def load_image(image_path, image_hdu, pixel_scale):
     """
     return ScaledSquarePixelArray.from_fits_with_pixel_scale(file_path=image_path, hdu=image_hdu,
                                                              pixel_scale=pixel_scale)
+
 
 def load_noise_map(noise_map_path, noise_map_hdu, pixel_scale, image, background_noise_map, exposure_time_map,
                    convert_noise_map_from_weight_map, convert_noise_map_from_inverse_noise_map,
@@ -964,7 +978,6 @@ def load_noise_map(noise_map_path, noise_map_hdu, pixel_scale, image, background
                                    'convert_noise_map_from_inverse_noise_map |'
                                    'noise_map_from_image_and_background_noise_map')
 
-
     if noise_map_options == 0 and noise_map_path is not None:
         return NoiseMap.from_fits_with_pixel_scale(file_path=noise_map_path, hdu=noise_map_hdu, pixel_scale=pixel_scale)
     elif convert_noise_map_from_weight_map and noise_map_path is not None:
@@ -993,7 +1006,9 @@ def load_noise_map(noise_map_path, noise_map_hdu, pixel_scale, image, background
                                                             convert_from_electrons=convert_from_electrons,
                                                             gain=gain, convert_from_adus=convert_from_adus)
     else:
-        raise exc.ImagingException('A noise_map map was not loaded, specify a noise_map_path or option to compute a noise_map map.')
+        raise exc.ImagingException(
+            'A noise_map map was not loaded, specify a noise_map_path or option to compute a noise_map map.')
+
 
 def load_background_noise_map(background_noise_map_path, background_noise_map_hdu, pixel_scale,
                               convert_background_noise_map_from_weight_map,
@@ -1023,7 +1038,8 @@ def load_background_noise_map(background_noise_map_path, background_noise_map_hd
                                         convert_background_noise_map_from_inverse_noise_map])
 
     if background_noise_map_options == 0 and background_noise_map_path is not None:
-        return NoiseMap.from_fits_with_pixel_scale(file_path=background_noise_map_path, hdu=background_noise_map_hdu, pixel_scale=pixel_scale)
+        return NoiseMap.from_fits_with_pixel_scale(file_path=background_noise_map_path, hdu=background_noise_map_hdu,
+                                                   pixel_scale=pixel_scale)
     elif convert_background_noise_map_from_weight_map and background_noise_map_path is not None:
         weight_map = Array.from_fits(file_path=background_noise_map_path, hdu=background_noise_map_hdu)
         return NoiseMap.from_weight_map(weight_map=weight_map, pixel_scale=pixel_scale)
@@ -1032,6 +1048,7 @@ def load_background_noise_map(background_noise_map_path, background_noise_map_hd
         return NoiseMap.from_inverse_noise_map(inverse_noise_map=inverse_noise_map, pixel_scale=pixel_scale)
     else:
         return None
+
 
 def load_poisson_noise_map(poisson_noise_map_path, poisson_noise_map_hdu, pixel_scale,
                            convert_poisson_noise_map_from_weight_map,
@@ -1094,7 +1111,8 @@ def load_poisson_noise_map(poisson_noise_map_path, poisson_noise_map_hdu, pixel_
 
         return PoissonNoiseMap.from_image_and_exposure_time_map(pixel_scale=pixel_scale, image=image,
                                                                 exposure_time_map=exposure_time_map,
-                                                                convert_from_electrons=convert_from_electrons, gain=gain,
+                                                                convert_from_electrons=convert_from_electrons,
+                                                                gain=gain,
                                                                 convert_from_adus=convert_from_adus)
 
     elif convert_poisson_noise_map_from_weight_map and poisson_noise_map_path is not None:
@@ -1105,6 +1123,7 @@ def load_poisson_noise_map(poisson_noise_map_path, poisson_noise_map_hdu, pixel_
         return PoissonNoiseMap.from_inverse_noise_map(inverse_noise_map=inverse_noise_map, pixel_scale=pixel_scale)
     else:
         return None
+
 
 def load_psf(psf_path, psf_hdu, pixel_scale, renormalize=False):
     """Factory for loading the psf from a .fits file.
@@ -1124,6 +1143,7 @@ def load_psf(psf_path, psf_hdu, pixel_scale, renormalize=False):
         return PSF.from_fits_renormalized(file_path=psf_path, hdu=psf_hdu, pixel_scale=pixel_scale)
     if not renormalize:
         return PSF.from_fits_with_scale(file_path=psf_path, hdu=psf_hdu, pixel_scale=pixel_scale)
+
 
 def load_exposure_time_map(exposure_time_map_path, exposure_time_map_hdu, pixel_scale, shape, exposure_time,
                            exposure_time_map_from_inverse_noise_map, inverse_noise_map):
@@ -1154,15 +1174,17 @@ def load_exposure_time_map(exposure_time_map_path, exposure_time_map_hdu, pixel_
     exposure_time_map_options = sum([exposure_time_map_from_inverse_noise_map])
 
     if exposure_time is not None and exposure_time_map_path is not None:
-        raise exc.ImagingException('You have supplied both a exposure_time_map_path to an exposure time map and an exposure time. Only'
-                                   'one quantity should be supplied.')
+        raise exc.ImagingException(
+            'You have supplied both a exposure_time_map_path to an exposure time map and an exposure time. Only'
+            'one quantity should be supplied.')
 
     if exposure_time_map_options == 0:
 
         if exposure_time is not None and exposure_time_map_path is None:
             return ExposureTimeMap.single_value(value=exposure_time, pixel_scale=pixel_scale, shape=shape)
         elif exposure_time is None and exposure_time_map_path is not None:
-            return ExposureTimeMap.from_fits_with_pixel_scale(file_path=exposure_time_map_path, hdu=exposure_time_map_hdu, pixel_scale=pixel_scale)
+            return ExposureTimeMap.from_fits_with_pixel_scale(file_path=exposure_time_map_path,
+                                                              hdu=exposure_time_map_hdu, pixel_scale=pixel_scale)
 
     else:
 
@@ -1170,6 +1192,7 @@ def load_exposure_time_map(exposure_time_map_path, exposure_time_map_hdu, pixel_
             return ExposureTimeMap.from_exposure_time_and_inverse_noise_map(pixel_scale=pixel_scale,
                                                                             exposure_time=exposure_time,
                                                                             inverse_noise_map=inverse_noise_map)
+
 
 def load_background_sky_map(background_sky_map_path, background_sky_map_hdu, pixel_scale):
     """Factory for loading the background sky from a .fits file.
@@ -1189,6 +1212,7 @@ def load_background_sky_map(background_sky_map_path, background_sky_map_hdu, pix
                                                                  hdu=background_sky_map_hdu, pixel_scale=pixel_scale)
     else:
         return None
+
 
 def output_ccd_data_to_fits(ccd_data, image_path, psf_path, noise_map_path=None, background_noise_map_path=None,
                             poisson_noise_map_path=None, exposure_time_map_path=None, background_sky_map_path=None,
@@ -1214,6 +1238,7 @@ def output_ccd_data_to_fits(ccd_data, image_path, psf_path, noise_map_path=None,
     if ccd_data.background_sky_map is not None and background_sky_map_path is not None:
         array_util.numpy_array_2d_to_fits(array_2d=ccd_data.background_sky_map, file_path=background_sky_map_path,
                                           overwrite=overwrite)
+
 
 def load_positions(positions_path):
     """Load the positions of an image.
@@ -1241,6 +1266,7 @@ def load_positions(positions_path):
         positions.append(position_list)
 
     return positions
+
 
 def output_positions(positions, positions_path):
     """Output the positions of an image to a positions.dat file.
