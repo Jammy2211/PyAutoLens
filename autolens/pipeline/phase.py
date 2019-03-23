@@ -909,14 +909,6 @@ class LensSourcePlanePhase(PhaseImaging):
 
     class Result(PhaseImaging.Result):
 
-        def __init__(self, constant, figure_of_merit, variable, analysis, optimizer):
-            """
-            The result of a phase
-            """
-
-            super(LensSourcePlanePhase.Result, self).__init__(constant=constant, figure_of_merit=figure_of_merit,
-                                                              variable=variable, analysis=analysis, optimizer=optimizer)
-
         @property
         def unmasked_lens_plane_model_image(self):
             return self.most_likely_fit.unmasked_model_image_of_planes[0]
