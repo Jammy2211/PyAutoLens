@@ -690,6 +690,34 @@ class AbstractEllipticalGeneralizedNFW(EllipticalMassProfile, MassProfile):
     def coord_func_h(self, grid_radius):
         return np.log(grid_radius / 2.0) + self.coord_func_f(grid_radius=grid_radius)
 
+    def rho_scale_radius(self, critical_surface_mass_density_arcsec):
+        return self.kappa_s * critical_surface_mass_density_arcsec / self.scale_radius
+
+    def delta_concentration(self, critical_surface_mass_density_arcsec, cosmic_average_mass_density_arcsec):
+        rho_scale_radius = self.rho_scale_radius(critical_surface_mass_density_arcsec=
+                                                 critical_surface_mass_density_arcsec)
+        return rho_scale_radius / cosmic_average_mass_density_arcsec
+
+    def concentration(self, critical_surface_mass_density_arcsec, cosmic_average_mass_density_arcsec):
+        delta_concentration = self.delta_concentration(
+            critical_surface_mass_density_arcsec=critical_surface_mass_density_arcsec,
+            cosmic_average_mass_density_arcsec=cosmic_average_mass_density_arcsec)
+        return fsolve(func=self.concentration_func, x0=10.0, args=(delta_concentration,))
+
+    def concentration_func(self, concentration, delta_concentration):
+        return 200.0 / 3.0 * (concentration * concentration * concentration /
+                              (np.log(1 + concentration) - concentration / (1 + concentration))) - delta_concentration
+
+    def radius_at_200(self, critical_surface_mass_density_arcsec, cosmic_average_mass_density_arcsec):
+        concentration = self.concentration(critical_surface_mass_density_arcsec=critical_surface_mass_density_arcsec,
+                                           cosmic_average_mass_density_arcsec=cosmic_average_mass_density_arcsec)
+        return concentration * self.scale_radius
+
+    def mass_at_200(self, critical_surface_mass_density_arcsec, cosmic_average_mass_density_arcsec):
+        radius_at_200 = self.radius_at_200(critical_surface_mass_density_arcsec=critical_surface_mass_density_arcsec,
+                                           cosmic_average_mass_density_arcsec=cosmic_average_mass_density_arcsec)
+        return 200.0 * ((4.0/3.0)*np.pi) * cosmic_average_mass_density_arcsec * (radius_at_200**3.0)
+
 
 class EllipticalGeneralizedNFW(AbstractEllipticalGeneralizedNFW):
 
@@ -889,6 +917,7 @@ class SphericalTruncatedNFW(AbstractEllipticalGeneralizedNFW):
                                                     inner_slope=1.0, scale_radius=scale_radius)
 
         self.truncation_radius = truncation_radius
+        self.tau = self.truncation_radius / self.scale_radius
 
     def coord_func_k(self, grid_radius):
         return np.log(np.divide(grid_radius, np.sqrt(np.square(grid_radius) + np.square(self.truncation_radius)) +
@@ -943,6 +972,13 @@ class SphericalTruncatedNFW(AbstractEllipticalGeneralizedNFW):
 
         return self.grid_to_grid_cartesian(grid, deflection_grid)
 
+    def mass_at_truncation_radius(self, critical_surface_mass_density_arcsec, cosmic_average_mass_density_arcsec):
+
+        mass_at_200 = self.mass_at_200(critical_surface_mass_density_arcsec=critical_surface_mass_density_arcsec,
+                                       cosmic_average_mass_density_arcsec=cosmic_average_mass_density_arcsec)
+
+        return mass_at_200 * (self.tau**2.0 / (self.tau**2.0 + 1.0) ** 2.0) * \
+                             (((self.tau**2.0 - 1) * np.log(self.tau)) + (self.tau*np.pi) - (self.tau**2.0 + 1))
 
 class EllipticalNFW(AbstractEllipticalGeneralizedNFW):
 
@@ -1118,34 +1154,6 @@ class SphericalNFW(EllipticalNFW):
                                                np.arctanh(np.sqrt(np.add(1, - np.square(eta[eta < 1])))))
 
         return np.divide(np.add(np.log(np.divide(eta, 2.)), conditional_eta), eta)
-
-    def rho_scale_radius(self, critical_surface_mass_density_arcsec):
-        return self.kappa_s * critical_surface_mass_density_arcsec / self.scale_radius
-
-    def delta_concentration(self, critical_surface_mass_density_arcsec, cosmic_average_mass_density_arcsec):
-        rho_scale_radius = self.rho_scale_radius(critical_surface_mass_density_arcsec=
-                                                 critical_surface_mass_density_arcsec)
-        return rho_scale_radius / cosmic_average_mass_density_arcsec
-
-    def concentration(self, critical_surface_mass_density_arcsec, cosmic_average_mass_density_arcsec):
-        delta_concentration = self.delta_concentration(
-            critical_surface_mass_density_arcsec=critical_surface_mass_density_arcsec,
-            cosmic_average_mass_density_arcsec=cosmic_average_mass_density_arcsec)
-        return fsolve(func=self.concentration_func, x0=10.0, args=(delta_concentration,))
-
-    def concentration_func(self, concentration, delta_concentration):
-        return 200.0 / 3.0 * (concentration * concentration * concentration /
-                              (np.log(1 + concentration) - concentration / (1 + concentration))) - delta_concentration
-
-    def radius_at_200(self, critical_surface_mass_density_arcsec, cosmic_average_mass_density_arcsec):
-        concentration = self.concentration(critical_surface_mass_density_arcsec=critical_surface_mass_density_arcsec,
-                                           cosmic_average_mass_density_arcsec=cosmic_average_mass_density_arcsec)
-        return concentration * self.scale_radius
-
-    def mass_at_200(self, critical_surface_mass_density_arcsec, cosmic_average_mass_density_arcsec):
-        radius_at_200 = self.radius_at_200(critical_surface_mass_density_arcsec=critical_surface_mass_density_arcsec,
-                                           cosmic_average_mass_density_arcsec=cosmic_average_mass_density_arcsec)
-        return 200.0 * ((4.0/3.0)*np.pi) * cosmic_average_mass_density_arcsec * (radius_at_200**3.0)
 
  #   def characteristic_over_density(self, cosmic_average_density):
 
