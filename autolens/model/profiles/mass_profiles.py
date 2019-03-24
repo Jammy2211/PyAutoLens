@@ -955,9 +955,6 @@ class SphericalTruncatedNFW(AbstractEllipticalGeneralizedNFW):
     def deflection_func_sph(self, grid_radius):
         return self.coord_func_m(grid_radius=grid_radius)
 
-    def convergence_from_grid(self, grid):
-        return np.zeros((grid.shape[0],))
-
     def potential_from_grid(self, grid):
         return np.zeros((grid.shape[0],))
 
