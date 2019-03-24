@@ -423,6 +423,8 @@ def plot_mask(mask, units, kpc_per_arcsec, pointsize):
 
         plt.gca()
         edge_pixels = mask.masked_grid_index_to_pixel[mask.edge_pixels] + 0.5
+        edge_pixels[:,0] -= mask.extraction_offset[0] + 1
+        edge_pixels[:,1] -= mask.extraction_offset[1] + 1
         edge_arcsec = mask.grid_pixels_to_grid_arcsec(grid_pixels=edge_pixels)
         edge_units = convert_grid_units(array=mask, grid_arcsec=edge_arcsec, units=units,
                                           kpc_per_arcsec=kpc_per_arcsec)

@@ -6,8 +6,10 @@ import pytest
 from autolens.data.array.util import mask_util as util
 from autolens.data.array.util import mapping_util
 from autolens.data.array import mask as msk
+from autolens.data.array.util import grid_util
 
 test_data_dir = "{}/../../test_files/array/".format(os.path.dirname(os.path.realpath(__file__)))
+
 
 class TestMask:
 
@@ -303,6 +305,206 @@ class TestMaskRegions:
         assert mask.border_pixels == pytest.approx(border_pixels_util, 1e-4)
 
 
+class TestMaskedGrid1d:
+
+    def test__simple_grids(self):
+
+        mask = msk.Mask.unmasked_for_shape_and_pixel_scale(shape=(3,3), pixel_scale=1.0)
+
+        assert (mask.masked_grid_1d == np.array([[1., -1.], [1., 0.], [1., 1.],
+                                                [0., -1.], [0., 0.], [0., 1.],
+                                                [-1., -1.], [-1., 0.], [-1., 1.]])).all()
+
+        mask = msk.Mask.unmasked_for_shape_and_pixel_scale(shape=(3,3), pixel_scale=1.0)
+        mask[1,1] = True
+
+        assert (mask.masked_grid_1d == np.array([[1., -1.], [1., 0.], [1., 1.],
+                                                [0., -1.],            [0., 1.],
+                                                [-1., -1.], [-1., 0.], [-1., 1.]])).all()
+
+        mask = msk.Mask(array=np.array([[False, True],
+                                        [True, False],
+                                        [True, False]]), pixel_scale=1.0, origin=(3.0, -2.0))
+
+        assert (mask.masked_grid_1d == np.array([[4., -2.5],
+                                                             [3., -1.5],
+                                                             [2., -1.5]])).all()
+
+    def test__compare_to_grid_util(self):
+
+        mask = msk.Mask.circular(shape=(4,7), radius_arcsec=4.0, pixel_scale=2.0, centre=(1.0, 5.0))
+
+        masked_grid_1d_util = grid_util.regular_grid_1d_masked_from_mask_pixel_scales_and_origin(mask=mask,
+                                                                                                 pixel_scales=(2.0, 2.0))
+
+        assert (mask.masked_grid_1d == masked_grid_1d_util).all()
+
+
+class TestExtractionCentreAndOffet:
+
+    def test__odd_sized_false_mask__centre_is_0_0__pixels_from_centre_are_0_0(self):
+
+        mask = msk.Mask.unmasked_for_shape_and_pixel_scale(shape=(3,3), pixel_scale=1.0)
+        assert mask.extraction_centre == (1, 1)
+        assert mask.extraction_offset == (0, 0)
+
+        mask = msk.Mask.unmasked_for_shape_and_pixel_scale(shape=(5,5), pixel_scale=1.0)
+        assert mask.extraction_centre == (2, 2)
+        assert mask.extraction_offset == (0, 0)
+
+        mask = msk.Mask.unmasked_for_shape_and_pixel_scale(shape=(3,5), pixel_scale=1.0)
+        assert mask.extraction_centre == (1, 2)
+        assert mask.extraction_offset == (0, 0)
+
+        mask = msk.Mask.unmasked_for_shape_and_pixel_scale(shape=(5,3), pixel_scale=1.0)
+        assert mask.extraction_centre == (2, 1)
+        assert mask.extraction_offset == (0, 0)
+
+    def test__even_sized_false_mask__centre_is_0_0__pixels_from_centre_are_0_0(self):
+
+        mask = msk.Mask.unmasked_for_shape_and_pixel_scale(shape=(4,4), pixel_scale=1.0)
+        assert mask.extraction_centre == (2, 2)
+        assert mask.extraction_offset == (0, 0)
+
+        mask = msk.Mask.unmasked_for_shape_and_pixel_scale(shape=(6,6), pixel_scale=1.0)
+        assert mask.extraction_centre == (2, 2)
+        assert mask.extraction_offset == (0, 0)
+
+        mask = msk.Mask.unmasked_for_shape_and_pixel_scale(shape=(4,6), pixel_scale=1.0)
+        assert mask.extraction_centre == (2, 2)
+        assert mask.extraction_offset == (0, 0)
+
+        mask = msk.Mask.unmasked_for_shape_and_pixel_scale(shape=(6,4), pixel_scale=1.0)
+        assert mask.extraction_centre == (2, 2)
+        assert mask.extraction_offset == (0, 0)
+
+    def test__mask_is_single_false__extraction_centre_is_central_pixel(self):
+
+        mask = msk.Mask(array=np.array([[False, True, True],
+                                        [True, True, True],
+                                        [True, True, True]]), pixel_scale=1.0)
+        assert mask.extraction_centre == (0, 0)
+        assert mask.extraction_offset == (-1, -1)
+
+        mask = msk.Mask(array=np.array([[True, True, False],
+                                        [True, True, True],
+                                        [True, True, True]]), pixel_scale=1.0)
+        assert mask.extraction_centre == (0, 2)
+        assert mask.extraction_offset == (-1, 1)
+
+        mask = msk.Mask(array=np.array([[True, True, True],
+                                        [True, True, True],
+                                        [False, True, True]]), pixel_scale=1.0)
+        assert mask.extraction_centre == (2, 0)
+        assert mask.extraction_offset == (1, -1)
+
+        mask = msk.Mask(array=np.array([[True, True, True],
+                                        [True, True, True],
+                                        [True, True, False]]), pixel_scale=1.0)
+        assert mask.extraction_centre == (2, 2)
+        assert mask.extraction_offset == (1, 1)
+
+        mask = msk.Mask(array=np.array([[True, False, True],
+                                        [True, True, True],
+                                        [True, True, True]]), pixel_scale=1.0)
+        assert mask.extraction_centre == (0, 1)
+        assert mask.extraction_offset == (-1, 0)
+
+        mask = msk.Mask(array=np.array([[True, True, True],
+                                        [False, True, True],
+                                        [True, True, True]]), pixel_scale=1.0)
+        assert mask.extraction_centre == (1, 0)
+        assert mask.extraction_offset == (0, -1)
+
+        mask = msk.Mask(array=np.array([[True, True, True],
+                                        [True, True, False],
+                                        [True, True, True]]), pixel_scale=1.0)
+        assert mask.extraction_centre == (1, 2)
+        assert mask.extraction_offset == (0, 1)
+
+        mask = msk.Mask(array=np.array([[True, True, True],
+                                        [True, True, True],
+                                        [True, False, True]]), pixel_scale=1.0)
+        assert mask.extraction_centre == (2, 1)
+        assert mask.extraction_offset == (1, 0)
+
+    def test__mask_is_x2_false__extraction_centre_is_central_pixel(self):
+
+        mask = msk.Mask(array=np.array([[False, True, True],
+                                        [True, True, True],
+                                        [True, True, False]]), pixel_scale=1.0)
+        assert mask.extraction_centre == (1, 1)
+        assert mask.extraction_offset == (0, 0)
+
+        mask = msk.Mask(array=np.array([[False, True, True],
+                                        [True, True, True],
+                                        [False, True, True]]), pixel_scale=1.0)
+        assert mask.extraction_centre == (1, 0)
+        assert mask.extraction_offset == (0, -1)
+
+        mask = msk.Mask(array=np.array([[False, True, False],
+                                        [True, True, True],
+                                        [True, True, True]]), pixel_scale=1.0)
+        assert mask.extraction_centre == (0, 1)
+        assert mask.extraction_offset == (-1, 0)
+
+        mask = msk.Mask(array=np.array([[False, False, True],
+                                        [True, True, True],
+                                        [True, True, True]]), pixel_scale=1.0)
+        assert mask.extraction_centre == (0, 0)
+        assert mask.extraction_offset == (-1, -1)
+
+    def test__rectangular_mask(self):
+
+        mask = msk.Mask(array=np.array([[False, True, True, True],
+                                        [True, True, True, True],
+                                        [True, True, True, True]]), pixel_scale=1.0)
+
+        assert mask.extraction_centre == (0, 0)
+        assert mask.extraction_offset == (-1, -2)
+
+        mask = msk.Mask(array=np.array([[True, True, True, True],
+                                        [True, True, True, True],
+                                        [True, True, True, False]]), pixel_scale=1.0)
+
+        assert mask.extraction_centre == (2, 3)
+        assert mask.extraction_offset == (1, 1)
+
+        mask = msk.Mask(array=np.array([[True, True, True, True, True],
+                                        [True, True, True, True, True],
+                                        [True, True, True, True, False]]), pixel_scale=1.0)
+
+        assert mask.extraction_centre == (2, 4)
+        assert mask.extraction_offset == (1, 2)
+
+        mask = msk.Mask(array=np.array([[True, True, True, True, True, True, True],
+                                        [True, True, True, True, True, True, True],
+                                        [True, True, True, True, True, True, False]]), pixel_scale=1.0)
+
+        assert mask.extraction_centre == (2, 6)
+        assert mask.extraction_offset == (1, 3)
+
+        mask = msk.Mask(array=np.array([[True, True, True],
+                                        [True, True, True],
+                                        [True, True, True],
+                                        [True, True, True],
+                                        [True, True, False]]), pixel_scale=1.0)
+
+        assert mask.extraction_centre == (4, 2)
+        assert mask.extraction_offset == (2, 1)
+
+        mask = msk.Mask(array=np.array([[True, True, True],
+                                        [True, True, True],
+                                        [True, True, True],
+                                        [True, True, True],
+                                        [True, True, True],
+                                        [True, True, True],
+                                        [True, True, False]]), pixel_scale=1.0)
+
+        assert mask.extraction_centre == (6, 2)
+        assert mask.extraction_offset == (3, 1)
+
+
 class TestMaskExtractor:
 
     def test__mask_extract_region__uses_the_limits_of_the_mask(self):
@@ -327,6 +529,7 @@ class TestMaskExtractor:
                                         [True,  True, False, True]]), pixel_scale=1.0)
 
         assert mask.extraction_region == [1,4,1,3]
+
 
         mask = msk.Mask(array=np.array([[True,  True,   True, True],
                                         [True, False,  False, True],
@@ -368,7 +571,7 @@ class TestParse:
 
         assert (mask == np.ones((3,3))).all()
         assert mask.pixel_scale == 0.1
-        
+
 
 class TestBinnedMaskFromMask:
 
@@ -393,6 +596,7 @@ class TestBinnedMaskFromMask:
         mask = mask.binned_up_mask_from_mask(bin_up_factor=3)
         assert (mask == binned_up_mask_util).all()
         assert mask.pixel_scale == 6.0
+
 
 class TestRescaledMaskFromMask(object):
 
