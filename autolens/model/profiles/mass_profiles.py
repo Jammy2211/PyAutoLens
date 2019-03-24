@@ -702,7 +702,7 @@ class AbstractEllipticalGeneralizedNFW(EllipticalMassProfile, MassProfile):
         delta_concentration = self.delta_concentration(
             critical_surface_mass_density_arcsec=critical_surface_mass_density_arcsec,
             cosmic_average_mass_density_arcsec=cosmic_average_mass_density_arcsec)
-        return fsolve(func=self.concentration_func, x0=10.0, args=(delta_concentration,))
+        return fsolve(func=self.concentration_func, x0=10.0, args=(delta_concentration,))[0]
 
     def concentration_func(self, concentration, delta_concentration):
         return 200.0 / 3.0 * (concentration * concentration * concentration /
@@ -993,6 +993,7 @@ class SphericalTruncatedNFWChallenge(SphericalTruncatedNFW):
 
         super(SphericalTruncatedNFWChallenge, self).__init__(centre=centre, kappa_s=kappa_s, scale_radius=scale_radius,
                                                              truncation_radius=truncation_radius)
+
 
 class EllipticalNFW(AbstractEllipticalGeneralizedNFW):
 
