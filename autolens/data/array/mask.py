@@ -3,7 +3,7 @@ import logging
 import numpy as np
 
 from autolens import exc
-from autolens.data.array.util import mapping_util, array_util, mask_util
+from autolens.data.array.util import grid_util, mapping_util, array_util, mask_util
 from autolens.data.array import scaled_array
 
 logging.basicConfig()
@@ -266,6 +266,26 @@ class Mask(scaled_array.ScaledSquarePixelArray):
         an annulus mask).
         """
         return mask_util.border_pixels_from_mask(self).astype('int')
+
+    @property
+    def masked_grid_1d(self):
+        return grid_util.regular_grid_1d_masked_from_mask_pixel_scales_and_origin(mask=self,
+                                                                                  pixel_scales=self.pixel_scales,
+                                                                                  origin=self.origin)
+
+    @property
+    def extraction_centre(self):
+        extraction_grid_1d = self.grid_arcsec_to_grid_pixel_centres(grid_arcsec=self.masked_grid_1d)
+        y_pixels_max = np.max(extraction_grid_1d[:,0])
+        y_pixels_min = np.min(extraction_grid_1d[:,0])
+        x_pixels_max = np.max(extraction_grid_1d[:,1])
+        x_pixels_min = np.min(extraction_grid_1d[:,1])
+        return (round((y_pixels_max + y_pixels_min) / 2.0), round((x_pixels_max + x_pixels_min) / 2.0))
+
+    @property
+    def extraction_offset(self):
+        return (int(self.extraction_centre[0] - round(self.central_pixel_coordinates[0])),
+                int(self.extraction_centre[1] - round(self.central_pixel_coordinates[1])))
 
     @property
     def extraction_region(self):
