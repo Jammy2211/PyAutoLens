@@ -388,7 +388,6 @@ class ScaledSquarePixelArray(ScaledArray):
                                        '[mean | quadrature | sum]')
 
 
-
 class ScaledRectangularPixelArray(ScaledArray):
     """
     Class storing the grid_stacks for 2D pixel grid_stacks (e.g. image, PSF, signal_to_noise_ratio).
