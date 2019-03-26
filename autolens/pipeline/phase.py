@@ -203,7 +203,6 @@ class AbstractPhase(autofit_phase.AbstractPhase):
             self.results = results
             self.cosmology = cosmology
 
-            self.position_threshold = conf.instance.general.get('positions', 'position_threshold', float)
             self.plot_count = 0
 
         @property
@@ -410,7 +409,7 @@ class PhaseImaging(Phase):
 
     def __init__(self, phase_name, phase_folders=None, optimizer_class=non_linear.MultiNest,
                  sub_grid_size=2, bin_up_factor=None, image_psf_shape=None,
-                 pixelization_psf_shape=None, use_positions=False, mask_function=None, inner_circular_mask_radii=None,
+                 pixelization_psf_shape=None, positions_threshold=None, mask_function=None, inner_circular_mask_radii=None,
                  interp_pixel_scale=None, cosmology=cosmo.Planck15, auto_link_priors=False):
 
         """
@@ -433,7 +432,7 @@ class PhaseImaging(Phase):
         self.bin_up_factor = bin_up_factor
         self.image_psf_shape = image_psf_shape
         self.pixelization_psf_shape = pixelization_psf_shape
-        self.use_positions = use_positions
+        self.positions_threshold = positions_threshold
         self.mask_function = mask_function
         self.inner_circular_mask_radii = inner_circular_mask_radii
         self.interp_pixel_scale = interp_pixel_scale
@@ -506,11 +505,11 @@ class PhaseImaging(Phase):
         mask = setup_phase_mask(data=data, mask=mask, mask_function=self.mask_function,
                                 inner_circular_mask_radii=self.inner_circular_mask_radii)
 
-        if self.use_positions and positions is not None:
+        if self.positions_threshold is not None and positions is not None:
             positions = list(map(lambda position_set: np.asarray(position_set), positions))
-        elif not self.use_positions:
+        elif self.positions_threshold is None:
             positions = None
-        elif self.use_positions and positions is None:
+        elif self.positions_threshold is not None and positions is None:
             raise exc.PhaseException('You have specified for a phase to use positions, but not input positions to the '
                                      'pipeline when you ran it.')
 
@@ -541,9 +540,7 @@ class PhaseImaging(Phase):
             phase_info.write('Sub-grid size = {} \n'.format(self.sub_grid_size))
             phase_info.write('Image PSF shape = {} \n'.format(self.image_psf_shape))
             phase_info.write('Pixelization PSF shape = {} \n'.format(self.pixelization_psf_shape))
-            phase_info.write('Use positions = {} \n'.format(self.use_positions))
-            position_threshold = conf.instance.general.get('positions', 'position_threshold', float)
-            phase_info.write('Positions Threshold = {} \n'.format(position_threshold))
+            phase_info.write('Positions Threshold = {} \n'.format(self.positions_threshold))
             phase_info.write('Cosmology = {} \n'.format(self.cosmology))
             phase_info.write('Auto Link Priors = {} \n'.format(self.auto_link_priors))
 
@@ -856,7 +853,7 @@ class LensSourcePlanePhase(PhaseImaging):
 
     def __init__(self, phase_name, phase_folders=None,
                  lens_galaxies=None, source_galaxies=None, optimizer_class=non_linear.MultiNest,
-                 sub_grid_size=2, bin_up_factor=None, image_psf_shape=None, use_positions=False, mask_function=None,
+                 sub_grid_size=2, bin_up_factor=None, image_psf_shape=None, positions_threshold=None, mask_function=None,
                  interp_pixel_scale=None, inner_circular_mask_radii=None, cosmology=cosmo.Planck15,
                  auto_link_priors=False):
         """
@@ -880,7 +877,7 @@ class LensSourcePlanePhase(PhaseImaging):
                                                    sub_grid_size=sub_grid_size,
                                                    bin_up_factor=bin_up_factor,
                                                    image_psf_shape=image_psf_shape,
-                                                   use_positions=use_positions,
+                                                   positions_threshold=positions_threshold,
                                                    mask_function=mask_function,
                                                    interp_pixel_scale=interp_pixel_scale,
                                                    inner_circular_mask_radii=inner_circular_mask_radii,
@@ -930,7 +927,7 @@ class MultiPlanePhase(PhaseImaging):
         return [self.galaxies]
 
     def __init__(self, phase_name, phase_folders=None, galaxies=None, optimizer_class=non_linear.MultiNest,
-                 sub_grid_size=2, bin_up_factor=None, image_psf_shape=None, use_positions=False, mask_function=None,
+                 sub_grid_size=2, bin_up_factor=None, image_psf_shape=None, positions_threshold=None, mask_function=None,
                  inner_circular_mask_radii=None, cosmology=cosmo.Planck15, auto_link_priors=False):
         """
         A phase with a simple source/lens model
@@ -951,7 +948,7 @@ class MultiPlanePhase(PhaseImaging):
                                               sub_grid_size=sub_grid_size,
                                               bin_up_factor=bin_up_factor,
                                               image_psf_shape=image_psf_shape,
-                                              use_positions=use_positions,
+                                              positions_threshold=positions_threshold,
                                               mask_function=mask_function,
                                               inner_circular_mask_radii=inner_circular_mask_radii,
                                               cosmology=cosmology,
