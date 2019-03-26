@@ -41,9 +41,9 @@ class LensDataFit(fit.DataFit):
         if tracer.has_light_profile and not tracer.has_pixelization:
             return LensProfileFit(lens_data=lens_data, tracer=tracer, padded_tracer=padded_tracer)
         elif not tracer.has_light_profile and tracer.has_pixelization:
-            return LensInversionFit(lens_data=lens_data, tracer=tracer, padded_tracer=padded_tracer)
+            return LensInversionFit(lens_data=lens_data, tracer=tracer, padded_tracer=None)
         elif tracer.has_light_profile and tracer.has_pixelization:
-            return LensProfileInversionFit(lens_data=lens_data, tracer=tracer, padded_tracer=padded_tracer)
+            return LensProfileInversionFit(lens_data=lens_data, tracer=tracer, padded_tracer=None)
         else:
             raise exc.FittingException('The fit routine did not call a Fit class - check the '
                                        'properties of the tracer')
