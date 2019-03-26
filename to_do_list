@@ -2,17 +2,31 @@ Hey, welcome to my PyAutoLens to-do. This should give you a sense of what we're 
 
 Let me know if you think anything is missing, or should be pushed up the to-do list ;)
 
+Paper tasks:
+
+- Summary of grant proposal data / analysis vision.
+- RJLens pipelines.
+- CTI prep and scripts.
+- CTI Results section.
+
+Task list:
+
+- hot fix on amy.
+- Check negative kappa for mass-sheet.
+- challenge halo info output.
+- plot_centres_of_galaxies / profiles in plotters.
+- hyper galaxy phase stuff.
+- redshifts into pipeline.
+- Expanded visualization libbrary and fix rectangular plot bug.
+- Expand intepolation tests and write tutorial.
+
 Short term:
 
-- Truncated NFW profile.
 - Quantitive output of lens model results (e.g. einstein mass, magnification), include otf output
-- plot_centres_of_galaxies / profiles in plotters.
+- Inclusion of lens / source redshifts for analysis.
 - Bug with NFW potentials for MultiNest.
 - Ray tracing refactor.
 - Add feature to remove astropy bug.
-
-- Inclusion of lens / source redshifts for analysis.
-- Fix rectangular plot bug.
 
 Mid term:
 

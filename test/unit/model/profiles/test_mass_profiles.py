@@ -1564,19 +1564,19 @@ class TestNFW(object):
     def test__rho_scale_radius_value(self):
 
         nfw = mp.SphericalNFW(centre=(0.0, 0.0), kappa_s=1.0, scale_radius=1.0)
-        assert nfw.rho_scale_radius(critical_surface_mass_density_arcsec=1.0) == pytest.approx(1.0, 1e-3)
+        assert nfw.rho_at_scale_radius(critical_surface_mass_density_arcsec=1.0) == pytest.approx(1.0, 1e-3)
 
         nfw = mp.SphericalNFW(centre=(0.0, 0.0), kappa_s=3.0, scale_radius=1.0)
-        assert nfw.rho_scale_radius(critical_surface_mass_density_arcsec=1.0) == pytest.approx(3.0, 1e-3)
+        assert nfw.rho_at_scale_radius(critical_surface_mass_density_arcsec=1.0) == pytest.approx(3.0, 1e-3)
 
         nfw = mp.SphericalNFW(centre=(0.0, 0.0), kappa_s=1.0, scale_radius=4.0)
-        assert nfw.rho_scale_radius(critical_surface_mass_density_arcsec=1.0) == pytest.approx(0.25, 1e-3)
+        assert nfw.rho_at_scale_radius(critical_surface_mass_density_arcsec=1.0) == pytest.approx(0.25, 1e-3)
 
         nfw = mp.SphericalNFW(centre=(0.0, 0.0), kappa_s=1.0, scale_radius=1.0)
-        assert nfw.rho_scale_radius(critical_surface_mass_density_arcsec=5.0) == pytest.approx(5.0, 1e-3)
+        assert nfw.rho_at_scale_radius(critical_surface_mass_density_arcsec=5.0) == pytest.approx(5.0, 1e-3)
 
         nfw = mp.SphericalNFW(centre=(0.0, 0.0), kappa_s=2.0, scale_radius=3.0)
-        assert nfw.rho_scale_radius(critical_surface_mass_density_arcsec=6.0) == pytest.approx(4.0, 1e-3)
+        assert nfw.rho_at_scale_radius(critical_surface_mass_density_arcsec=6.0) == pytest.approx(4.0, 1e-3)
 
     def test__delta_concentration_value(self):
 

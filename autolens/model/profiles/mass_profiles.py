@@ -690,11 +690,11 @@ class AbstractEllipticalGeneralizedNFW(EllipticalMassProfile, MassProfile):
     def coord_func_h(self, grid_radius):
         return np.log(grid_radius / 2.0) + self.coord_func_f(grid_radius=grid_radius)
 
-    def rho_scale_radius(self, critical_surface_mass_density_arcsec):
+    def rho_at_scale_radius(self, critical_surface_mass_density_arcsec):
         return self.kappa_s * critical_surface_mass_density_arcsec / self.scale_radius
 
     def delta_concentration(self, critical_surface_mass_density_arcsec, cosmic_average_mass_density_arcsec):
-        rho_scale_radius = self.rho_scale_radius(critical_surface_mass_density_arcsec=
+        rho_scale_radius = self.rho_at_scale_radius(critical_surface_mass_density_arcsec=
                                                  critical_surface_mass_density_arcsec)
         return rho_scale_radius / cosmic_average_mass_density_arcsec
 
