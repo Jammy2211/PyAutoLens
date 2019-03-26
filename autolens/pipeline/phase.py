@@ -528,7 +528,7 @@ class PhaseImaging(Phase):
         self.output_phase_info()
 
         analysis = self.__class__.Analysis(lens_data=lens_data, cosmology=self.cosmology,
-                                           results=results)
+                                           positions_threshold=self.positions_threshold, results=results)
         return analysis
 
     def output_phase_info(self):
@@ -549,11 +549,13 @@ class PhaseImaging(Phase):
     # noinspection PyAbstractClass
     class Analysis(Phase.Analysis):
 
-        def __init__(self, lens_data, cosmology, results=None):
+        def __init__(self, lens_data, cosmology, positions_threshold, results=None):
 
             super(PhaseImaging.Analysis, self).__init__(cosmology=cosmology, results=results)
 
             self.lens_data = lens_data
+
+            self.positions_threshold = positions_threshold
 
             self.should_plot_image_plane_pix = \
                 conf.instance.general.get('output', 'plot_image_plane_adaptive_pixelization_grid', bool)
@@ -773,7 +775,7 @@ class PhaseImaging(Phase):
                 fit = lens_fit.LensPositionFit(positions=tracer.source_plane.positions,
                                                noise_map=self.lens_data.pixel_scale)
 
-                if not fit.maximum_separation_within_threshold(self.position_threshold):
+                if not fit.maximum_separation_within_threshold(self.positions_threshold):
                     return exc.RayTracingException
 
         def map_to_1d(self, data):
