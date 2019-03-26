@@ -488,23 +488,24 @@ class TestPhase(object):
         assert (analysis.lens_data.mask == mask_default).all()
 
     def test_make_analysis__positions_are_input__are_used_in_analysis(self, phase, ccd_data):
-        # If use positions is true and positions are input, make the positions part of the lens data.
 
-        phase.use_positions = True
+        # If position threshold is input (not None) and positions are input, make the positions part of the lens data.
+
+        phase.positions_threshold = 0.2
 
         analysis = phase.make_analysis(data=ccd_data, positions=[[[1.0, 1.0], [2.0, 2.0]]])
         assert (analysis.lens_data.positions[0][0] == np.array([1.0, 1.0])).all()
         assert (analysis.lens_data.positions[0][1] == np.array([2.0, 2.0])).all()
 
-        # If use positions is true but no positions are supplied, raise an error
+        # If position threshold is input (not None) and but no positions are supplied, raise an error
 
         with pytest.raises(exc.PhaseException):
             phase.make_analysis(data=ccd_data, positions=None)
             phase.make_analysis(data=ccd_data)
 
-        # If use positions is False, positions should always be None.
+        # If positions threshold is None, positions should always be None.
 
-        phase.use_positions = False
+        phase.positions_threshold = None
         analysis = phase.make_analysis(data=ccd_data, positions=[[[1.0, 1.0], [2.0, 2.0]]])
         assert analysis.lens_data.positions is None
 
@@ -522,6 +523,7 @@ class TestPhase(object):
         assert hasattr(analysis.lens_data.padded_grid_stack.sub, 'interpolator')
 
     def test__make_analysis__phase_info_is_made(self, phase, ccd_data):
+
         phase.make_analysis(data=ccd_data)
 
         file_phase_info = "{}/{}".format(phase.optimizer.phase_output_path, 'phase.info')
@@ -532,7 +534,6 @@ class TestPhase(object):
         sub_grid_size = phase_info.readline()
         image_psf_shape = phase_info.readline()
         pixelization_psf_shape = phase_info.readline()
-        use_positions = phase_info.readline()
         positions_threshold = phase_info.readline()
         cosmology = phase_info.readline()
         auto_link_priors = phase_info.readline()
@@ -543,8 +544,7 @@ class TestPhase(object):
         assert sub_grid_size == 'Sub-grid size = 2 \n'
         assert image_psf_shape == 'Image PSF shape = None \n'
         assert pixelization_psf_shape == 'Pixelization PSF shape = None \n'
-        assert use_positions == 'Use positions = False \n'
-        assert positions_threshold == 'Positions Threshold = 0.5 \n'
+        assert positions_threshold == 'Positions Threshold = None \n'
         assert cosmology == 'Cosmology = FlatLambdaCDM(name="Planck15", H0=67.7 km / (Mpc s), Om0=0.307, Tcmb0=2.725 K, ' \
                             'Neff=3.05, m_nu=[0.   0.   0.06] eV, Ob0=0.0486) \n'
         assert auto_link_priors == 'Auto Link Priors = False \n'
