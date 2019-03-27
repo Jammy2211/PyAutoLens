@@ -88,6 +88,12 @@ class AbstractPlane(object):
         return self.cosmology.angular_diameter_distance(self.redshift).to('kpc').value
 
     @property
+    @check_plane_for_redshift
+    def cosmic_average_mass_density_arcsec(self):
+        return self.cosmology.critical_density(z=self.redshift).to('solMass / kpc^3').value / \
+               self.arcsec_per_kpc_proper**3.0
+
+    @property
     def has_light_profile(self):
         return any(list(map(lambda galaxy: galaxy.has_light_profile, self.galaxies)))
 

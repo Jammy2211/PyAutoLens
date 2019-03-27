@@ -5,7 +5,7 @@ from autolens.data.array.plotters import array_plotters
 def plot_image(
         image, plot_origin=True, mask=None, extract_array_from_mask=False, zoom_around_mask=False,
         should_plot_border=False, positions=None, as_subplot=False,
-        units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
+        units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='square',
         cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
         cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
         title='Image', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
@@ -42,7 +42,7 @@ def plot_image(
 
 def plot_noise_map(
         noise_map, plot_origin=True, mask=None, extract_array_from_mask=False, zoom_around_mask=False, as_subplot=False,
-        units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
+        units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='square',
         cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
         cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
         title='Noise-Map', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
@@ -75,7 +75,7 @@ def plot_noise_map(
 
 def plot_psf(
         psf, plot_origin=True, as_subplot=False,
-        units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
+        units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='square',
         cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
         cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
         title='PSF', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
@@ -106,7 +106,7 @@ def plot_psf(
 def plot_signal_to_noise_map(
         signal_to_noise_map, plot_origin=True, mask=None, extract_array_from_mask=False, zoom_around_mask=False,
         as_subplot=False,
-        units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
+        units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='square',
         cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
         cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
         title='Signal-To-Noise-Map', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
@@ -140,7 +140,7 @@ def plot_signal_to_noise_map(
 def plot_absolute_signal_to_noise_map(
         absolute_signal_to_noise_map, plot_origin=True, mask=None, extract_array_from_mask=False, zoom_around_mask=False,
         as_subplot=False,
-        units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
+        units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='square',
         cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
         cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
         title='Absolute Signal-To-Noise-Map', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
@@ -175,7 +175,7 @@ def plot_absolute_signal_to_noise_map(
 def plot_potential_chi_squared_map(
         potential_chi_squared_map, plot_origin=True, mask=None, extract_array_from_mask=False, zoom_around_mask=False,
         as_subplot=False,
-        units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
+        units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='square',
         cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
         cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
         title='Potential Chi-Squared Map', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,

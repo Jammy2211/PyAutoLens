@@ -592,6 +592,7 @@ class SphericalIsothermal(EllipticalIsothermal):
 
 # noinspection PyAbstractClass
 class AbstractEllipticalGeneralizedNFW(EllipticalMassProfile, MassProfile):
+
     epsrel = 1.49e-5
 
     def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, kappa_s=0.05, inner_slope=1.0, scale_radius=5.0):

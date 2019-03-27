@@ -8,7 +8,7 @@ from autolens.data.array.plotters import plotter_util
 def plot_ccd_subplot(
         ccd_data, plot_origin=True, mask=None, extract_array_from_mask=False, zoom_around_mask=False,
         should_plot_border=False, positions=None,
-        units='arcsec', kpc_per_arcsec=None, figsize=None, aspect='equal',
+        units='arcsec', kpc_per_arcsec=None, figsize=None, aspect='square',
         cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
         cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
         titlesize=10, xlabelsize=10, ylabelsize=10, xyticksize=10,
@@ -194,7 +194,7 @@ def plot_image(
         ccd_data, plot_origin=True, mask=None, extract_array_from_mask=False, zoom_around_mask=False,
         should_plot_border=False, positions=None,
         as_subplot=False,
-        units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
+        units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='square',
         cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
         cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
         title='CCD Image', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
@@ -229,7 +229,7 @@ def plot_image(
 
 def plot_noise_map(
         ccd_data, plot_origin=True, mask=None, extract_array_from_mask=False, zoom_around_mask=False, as_subplot=False,
-        units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
+        units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='square',
         cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
         cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
         title='CCD Noise-Map', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16, mask_pointsize=10,
@@ -260,7 +260,7 @@ def plot_noise_map(
 
 def plot_psf(
         ccd_data, plot_origin=True, as_subplot=False,
-        units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
+        units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='square',
         cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
         cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
         title='CCD PSF', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
@@ -289,7 +289,7 @@ def plot_psf(
 
 def plot_signal_to_noise_map(
         ccd_data, plot_origin=True, mask=None, extract_array_from_mask=False, zoom_around_mask=False, as_subplot=False,
-        units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
+        units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='square',
         cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
         cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
         title='CCD Signal-To-Noise-Map', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
@@ -321,7 +321,7 @@ def plot_signal_to_noise_map(
 
 def plot_absolute_signal_to_noise_map(
         ccd_data, plot_origin=True, mask=None, extract_array_from_mask=False, zoom_around_mask=False, as_subplot=False,
-        units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
+        units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='square',
         cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
         cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
         title='CCD Absolute Signal-To-Noise-Map', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
@@ -353,7 +353,7 @@ def plot_absolute_signal_to_noise_map(
 
 def plot_potential_chi_squared_map(
         ccd_data, plot_origin=True, mask=None, extract_array_from_mask=False, zoom_around_mask=False, as_subplot=False,
-        units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
+        units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='square',
         cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
         cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
         title='CCD Potential Chi-Squared Map', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,

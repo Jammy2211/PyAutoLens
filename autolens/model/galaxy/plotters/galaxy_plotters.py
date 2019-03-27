@@ -6,7 +6,7 @@ from autolens.model.profiles.plotters import profile_plotters
 
 def plot_intensities(
         galaxy, grid, mask=None, extract_array_from_mask=False, zoom_around_mask=False, positions=None, as_subplot=False,
-        units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
+        units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='square',
         cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
         cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
         title='Galaxy Intensities', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
@@ -39,7 +39,7 @@ def plot_intensities(
 
 def plot_convergence(
         galaxy, grid, mask=None, extract_array_from_mask=False, zoom_around_mask=False, positions=None, as_subplot=False,
-        units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
+        units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='square',
         cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
         cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
         title='Galaxy Convergence', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
@@ -72,7 +72,7 @@ def plot_convergence(
 
 def plot_potential(
         galaxy, grid, mask=None, extract_array_from_mask=False, zoom_around_mask=False, positions=None, as_subplot=False,
-        units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
+        units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='square',
         cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
         cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
         title='Galaxy Potential', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
@@ -105,7 +105,7 @@ def plot_potential(
 
 def plot_deflections_y(
         galaxy, grid, mask=None, extract_array_from_mask=False, zoom_around_mask=False, positions=None, as_subplot=False,
-        units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
+        units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='square',
         cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
         cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
         title='Galaxy Deflections (y)', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
@@ -138,7 +138,7 @@ def plot_deflections_y(
 
 def plot_deflections_x(
         galaxy, grid, mask=None, extract_array_from_mask=False, zoom_around_mask=False, positions=None, as_subplot=False,
-        units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
+        units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='square',
         cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
         cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
         title='Galaxy Deflections (x)', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
@@ -171,7 +171,7 @@ def plot_deflections_x(
 
 def plot_intensities_subplot(
         galaxy, grid, mask=None, extract_array_from_mask=False, zoom_around_mask=False, positions=None,
-        units='arcsec', kpc_per_arcsec=None, figsize=None, aspect='equal',
+        units='arcsec', kpc_per_arcsec=None, figsize=None, aspect='square',
         cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
         cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
         titlesize=10, xlabelsize=10, ylabelsize=10, xyticksize=10,
@@ -208,7 +208,7 @@ def plot_intensities_subplot(
     
 def plot_convergence_subplot(
         galaxy, grid, mask=None, extract_array_from_mask=False, zoom_around_mask=False, positions=None,
-        units='arcsec', kpc_per_arcsec=None, figsize=None, aspect='equal',
+        units='arcsec', kpc_per_arcsec=None, figsize=None, aspect='square',
         cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
         cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
         titlesize=10, xlabelsize=10, ylabelsize=10, xyticksize=10,
@@ -245,7 +245,7 @@ def plot_convergence_subplot(
     
 def plot_potential_subplot(
         galaxy, grid, mask=None, extract_array_from_mask=False, zoom_around_mask=False, positions=None,
-        units='arcsec', kpc_per_arcsec=None, figsize=None, aspect='equal',
+        units='arcsec', kpc_per_arcsec=None, figsize=None, aspect='square',
         cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
         cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
         titlesize=10, xlabelsize=10, ylabelsize=10, xyticksize=10,
@@ -283,7 +283,7 @@ def plot_potential_subplot(
     
 def plot_deflections_y_subplot(
         galaxy, grid, mask=None, extract_array_from_mask=False, zoom_around_mask=False, positions=None,
-        units='arcsec', kpc_per_arcsec=None, figsize=None, aspect='equal',
+        units='arcsec', kpc_per_arcsec=None, figsize=None, aspect='square',
         cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
         cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
         titlesize=10, xlabelsize=10, ylabelsize=10, xyticksize=10,
@@ -321,7 +321,7 @@ def plot_deflections_y_subplot(
 
 def plot_deflections_x_subplot(
         galaxy, grid, mask=None, extract_array_from_mask=False, zoom_around_mask=False, positions=None,
-        units='arcsec', kpc_per_arcsec=None, figsize=None, aspect='equal',
+        units='arcsec', kpc_per_arcsec=None, figsize=None, aspect='square',
         cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
         cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
         titlesize=10, xlabelsize=10, ylabelsize=10, xyticksize=10,
