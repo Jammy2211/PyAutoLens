@@ -6,7 +6,7 @@ from autolens.data.array.plotters import plotter_util, grid_plotters, array_plot
 def plot_image_plane_image(
         plane, mask=None, extract_array_from_mask=False, zoom_around_mask=False, positions=None, grid=None,
         as_subplot=False,
-        units='arcsec', figsize=(7, 7), aspect='equal',
+        units='arcsec', figsize=(7, 7), aspect='square',
         cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
         cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
         title='Plane CCD-Plane CCD', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
@@ -26,7 +26,7 @@ def plot_image_plane_image(
 
 def plot_plane_image(
         plane, plot_origin=True, positions=None, plot_grid=True, as_subplot=False,
-        units='arcsec', figsize=(7, 7), aspect='equal',
+        units='arcsec', figsize=(7, 7), aspect='square',
         cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
         cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
         title='Plane CCD', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
@@ -55,7 +55,7 @@ def plot_plane_image(
 
 def plot_convergence(
         plane, mask=None, extract_array_from_mask=False, zoom_around_mask=False, as_subplot=False,
-        units='arcsec', figsize=(7, 7), aspect='equal',
+        units='arcsec', figsize=(7, 7), aspect='square',
         cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
         cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
         title='Plane Convergence', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
@@ -73,7 +73,7 @@ def plot_convergence(
 
 def plot_potential(
         plane, mask=None, extract_array_from_mask=False, zoom_around_mask=False, as_subplot=False,
-        units='arcsec', figsize=(7, 7), aspect='equal',
+        units='arcsec', figsize=(7, 7), aspect='square',
         cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
         cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
         title='Plane Potential', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
@@ -91,7 +91,7 @@ def plot_potential(
 
 def plot_deflections_y(
         plane, mask=None, extract_array_from_mask=False, zoom_around_mask=False, as_subplot=False,
-        units='arcsec', figsize=(7, 7), aspect='equal',
+        units='arcsec', figsize=(7, 7), aspect='square',
         cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
         cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
         title='Plane Deflections (y)', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
@@ -109,7 +109,7 @@ def plot_deflections_y(
 
 def plot_deflections_x(
         plane, mask=None, extract_array_from_mask=False, zoom_around_mask=False, as_subplot=False,
-        units='arcsec', figsize=(7, 7), aspect='equal',
+        units='arcsec', figsize=(7, 7), aspect='square',
         cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
         cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
         title='Plane Deflections (x)', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,

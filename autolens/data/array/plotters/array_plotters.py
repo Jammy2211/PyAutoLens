@@ -130,6 +130,9 @@ def plot_array(array, origin=None, mask=None, extract_array_from_mask=False, zoo
         zoom_offset_pixels = None
         zoom_offset_arcsec = None
 
+    if aspect is 'square':
+        aspect = float(array.shape_arcsec[1]) / float(array.shape_arcsec[0])
+
     plot_figure(array=array, as_subplot=as_subplot, units=units, kpc_per_arcsec=kpc_per_arcsec,
                 figsize=figsize, aspect=aspect, cmap=cmap, norm=norm,
                 norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,

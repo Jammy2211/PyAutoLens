@@ -6,7 +6,7 @@ import numpy as np
 def plot_image(
         fit, mask=None, extract_array_from_mask=False, zoom_around_mask=False, positions=None,
         image_plane_pix_grid=None, as_subplot=False,
-        units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
+        units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='square',
         cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
         cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
         title='Fit Image', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
@@ -38,7 +38,7 @@ def plot_image(
 
 def plot_noise_map(
         fit, mask=None, extract_array_from_mask=False, zoom_around_mask=False, positions=None, as_subplot=False,
-        units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
+        units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='square',
         cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
         cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
         title='Fit Noise-Map', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
@@ -69,7 +69,7 @@ def plot_noise_map(
 
 def plot_signal_to_noise_map(
         fit, mask=None, extract_array_from_mask=False, zoom_around_mask=False, positions=None, as_subplot=False,
-        units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
+        units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='square',
         cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
         cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
         title='Fit Signal-to-Noise-Map', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
@@ -100,7 +100,7 @@ def plot_signal_to_noise_map(
 
 def plot_model_data(
         fit, mask=None, extract_array_from_mask=False, zoom_around_mask=False, positions=None, as_subplot=False,
-        units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
+        units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='square',
         cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
         cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
         title='Fit Model Image', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
@@ -130,7 +130,7 @@ def plot_model_data(
 
 def plot_lens_subtracted_image(
         fit, mask=None, extract_array_from_mask=False, zoom_around_mask=False, positions=None, as_subplot=False,
-        units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
+        units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='square',
         cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
         cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
         title='Fit Model Image', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
@@ -172,7 +172,7 @@ def plot_lens_subtracted_image(
 def plot_model_image_of_planes(
         fit, plot_foreground=False, plot_source=False, mask=None, extract_array_from_mask=False, zoom_around_mask=False,
         positions=None, as_subplot=False,
-        units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
+        units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='square',
         cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
         cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
         title='Fit Model Image', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
@@ -218,7 +218,7 @@ def plot_model_image_of_planes(
 
 def plot_residual_map(
         fit, mask=None, extract_array_from_mask=False, zoom_around_mask=False, positions=None, as_subplot=False,
-        units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
+        units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='square',
         cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
         cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
         title='Fit Residuals', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
@@ -248,7 +248,7 @@ def plot_residual_map(
 
 def plot_chi_squared_map(
         fit, mask=None, extract_array_from_mask=False, zoom_around_mask=False, positions=None, as_subplot=False,
-        units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
+        units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='square',
         cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
         cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
         title='Fit Chi-Squareds', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
@@ -278,7 +278,7 @@ def plot_chi_squared_map(
 
 def plot_contribution_maps(
         fit, mask=None, extract_array_from_mask=False, zoom_around_mask=False, positions=None, as_subplot=False,
-        units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
+        units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='square',
         cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
         cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
         title='Contributions', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,

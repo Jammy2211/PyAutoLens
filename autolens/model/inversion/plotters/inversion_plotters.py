@@ -4,7 +4,7 @@ from autolens.model.inversion.plotters import mapper_plotters
 from autolens.model.inversion import mappers
 
 def plot_reconstructed_image(inversion, mask=None, positions=None, grid=None, as_subplot=False,
-                             units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
+                             units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='square',
                              cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
                              cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
                              title='Reconstructed CCD', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
@@ -24,7 +24,7 @@ def plot_reconstructed_image(inversion, mask=None, positions=None, grid=None, as
 def plot_reconstructed_pixelization(inversion, plot_origin=True, positions=None, should_plot_centres=False,
                                     should_plot_grid=False, should_plot_border=False, image_pixels=None,
                                     source_pixels=None, as_subplot=False,
-                                    units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
+                                    units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='square',
                                     cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05,
                                     linscale=0.01,
                                     cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
