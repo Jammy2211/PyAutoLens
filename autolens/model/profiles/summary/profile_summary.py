@@ -1,3 +1,19 @@
+from autolens.model.profiles import mass_profiles as mp
+
+def summarize_mass_profile(summary_file, mass_profile, critical_surface_mass_density,
+                           cosmic_average_mass_density_arcsec, radii):
+
+    summary_file.write('Mass Profile = ' + mass_profile.__class__.__name__ + ' \n\n')
+    summarize_einstein_radius_and_mass(summary_file=summary_file, mass_profile=mass_profile,
+                                       critical_surface_mass_density=critical_surface_mass_density)
+    summarize_mass_within_radii(summary_file=summary_file, mass_profile=mass_profile,
+                                critical_surface_mass_density=critical_surface_mass_density,
+                                radii=radii)
+
+    if isinstance(mass_profile, mp.SphericalTruncatedNFWChallenge):
+        summarize_truncated_nfw_challenge_mass_profile(summary_file=summary_file, truncated_nfw_challenge=mass_profile)
+
+
 
 def summarize_einstein_radius_and_mass(summary_file, mass_profile, critical_surface_mass_density):
     """ Summarize the mass at the Einstein radius of the mass profile.
@@ -18,7 +34,7 @@ def summarize_einstein_radius_and_mass(summary_file, mass_profile, critical_surf
     summary_file.write('Einstein Radius = {:.2f}" \n'.format(mass_profile.einstein_radius))
     summary_file.write('Mass within Einstein Radius = {:.4e} solMass \n'.format(einstein_mass))
 
-def summarize_mass_within_radii(summary_file, mass_profile, radii, critical_surface_mass_density):
+def summarize_mass_within_radii(summary_file, mass_profile, critical_surface_mass_density, radii):
     """ Summarize the mass within a set of input radii of a given mass profile.
 
     Parameters
@@ -77,3 +93,9 @@ def summarize_truncated_nfw_mass_profile(summary_file, truncated_nfw, critical_s
         cosmic_average_mass_density_arcsec=cosmic_average_mass_density_arcsec)
 
     summary_file.write('Mass at truncation radius = {:.2f} solMass \n'.format(mass_at_truncation_radius))
+
+def summarize_truncated_nfw_challenge_mass_profile(summary_file, truncated_nfw_challenge):
+
+    summarize_truncated_nfw_mass_profile(summary_file=summary_file, truncated_nfw=truncated_nfw_challenge,
+                                         critical_surface_mass_density_arcsec=1940654909.4133248,
+                                         cosmic_average_mass_density_arcsec=262.30319684750657)
