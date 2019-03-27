@@ -6,7 +6,7 @@ def summarize_galaxy(summary_file, galaxy, critical_surface_mass_density, cosmic
     # TODO : profiles, redshifts. For now, we'll just iterate over all mass profiles and output the mass profile info.
     # TODO : Also not sure how to access the Galaxy name...
 
-    summary_file.write('Galaxy = lol \n\n')# + galaxy.name)
+    summary_file.write('Galaxy = lol\n\n')# + galaxy.name)
 
     for mass_profile in galaxy.mass_profiles:
 

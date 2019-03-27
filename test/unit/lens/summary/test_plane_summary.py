@@ -4,7 +4,7 @@ from test.unit.mock.mock_summary import MockPlane, MockGalaxy, MockTruncatedNFW
 
 import os
 
-test_summary_dir = "{}/../../../test_files/summary/".format(os.path.dirname(os.path.realpath(__file__)))
+test_summary_dir = "{}/../../test_files/summary/".format(os.path.dirname(os.path.realpath(__file__)))
 
 class TestSummarizePlane:
 
@@ -22,22 +22,25 @@ class TestSummarizePlane:
         summary_file_read = open(test_summary_dir + 'model.summary', mode="r")
         summary_text = summary_file_read.readlines()
 
-        assert summary_text[0] == 'Plane Redshift = 0.5 \n'
-        assert summary_text[1] == '\n'
-        assert summary_text[2] == 'Galaxy = lol \n'
-        assert summary_text[3] == '\n'
-        assert summary_text[4] == 'Mass Profile = MockTruncatedNFW \n'
-        assert summary_text[5] == '\n'
-        assert summary_text[6] == 'Einstein Radius = 10.00" \n'
-        assert summary_text[7] == 'Mass within Einstein Radius = 1.0000e+03 solMass \n'
-        assert summary_text[8] == 'Mass within 10.00" = 1.0000e+03 solMass \n'
-        assert summary_text[9] == 'Mass within 500.00" = 1.0000e+03 solMass \n'
-        assert summary_text[10] == 'Rho at scale radius = 100.00 \n'
-        assert summary_text[11] == 'Delta concentration = 200.00 \n'
-        assert summary_text[12] == 'Concentration = 300.00 \n'
-        assert summary_text[13] == 'Radius at 200x cosmic average density = 400.00" \n'
-        assert summary_text[14] == 'Mass at 200x cosmic average density = 500.00 solMass \n'
-        assert summary_text[15] == 'Mass at truncation radius = 600.00 solMass \n'
+        print(summary_text[1])
+
+        assert summary_text == ['Plane Redshift = 0.5\n',
+                                'Plane Critical Surface Mass Density (solMass / arcsec^2) = 1.0\n',
+                                '\n',
+                                'Galaxy = lol\n',
+                                '\n',
+                                'Mass Profile = MockTruncatedNFW\n',
+                                '\n',
+                                'Einstein Radius = 10.00"\n',
+                                'Mass within Einstein Radius = 1.0000e+03 solMass\n',
+                                'Mass within 10.00" = 1.0000e+03 solMass\n',
+                                'Mass within 500.00" = 1.0000e+03 solMass\n',
+                                'Rho at scale radius = 100.00\n',
+                                'Delta concentration = 200.00\n',
+                                'Concentration = 300.00\n',
+                                'Radius at 200x cosmic average density = 400.00"\n',
+                                'Mass at 200x cosmic average density = 500.00 solMass\n',
+                                'Mass at truncation radius = 600.00 solMass\n']
 
         summary_file.close()
 
