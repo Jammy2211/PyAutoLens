@@ -78,9 +78,11 @@ def make_galaxy_mass_x2():
 
 
 class TestAbstractPlane(object):
+
     class TestCosmology:
 
-        def test__arcsec_to_kpc_conversion_and_anguar_diameter_distance_to_earth(self):
+        def test__arcsec_to_kpc_conversion_and_angular_diameter_distance_to_earth(self):
+
             plane = pl.AbstractPlane(redshift=0.1, galaxies=None)
             assert plane.arcsec_per_kpc_proper == pytest.approx(0.525060, 1e-5)
             assert plane.kpc_per_arcsec_proper == pytest.approx(1.904544, 1e-5)
@@ -90,6 +92,11 @@ class TestAbstractPlane(object):
             assert plane.arcsec_per_kpc_proper == pytest.approx(0.1214785, 1e-5)
             assert plane.kpc_per_arcsec_proper == pytest.approx(8.231907, 1e-5)
             assert plane.angular_diameter_distance_to_earth == pytest.approx(1697952, 1e-5)
+
+        def test__cosmic_average_mass_density_arcsec(self):
+
+            plane = pl.AbstractPlane(redshift=0.6, galaxies=None)
+            assert plane.cosmic_average_mass_density_arcsec == pytest.approx(81280.09116133313, 1.0e-4)
 
     class TestProperties:
 

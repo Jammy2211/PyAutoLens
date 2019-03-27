@@ -676,7 +676,7 @@ class TestScaledSquarePixelArray:
                                             [True, False, False, True],
                                             [True,  True,  True, True]]), pixel_scale=1.0)
 
-            array_extracted = array.extract_scaled_array_around_mask(mask=mask, buffer=0)
+            array_extracted = array.zoomed_scaled_array_around_mask(mask=mask, buffer=0)
             assert (array_extracted == np.array([[6.0,   7.0],
                                                  [10.0, 11.0]])).all()
 
@@ -685,7 +685,7 @@ class TestScaledSquarePixelArray:
                                             [True, False, False, False],
                                             [True,  True,  True, True]]), pixel_scale=1.0)
 
-            array_extracted = array.extract_scaled_array_around_mask(mask=mask, buffer=0)
+            array_extracted = array.zoomed_scaled_array_around_mask(mask=mask, buffer=0)
             assert (array_extracted == np.array([[6.0,   7.0,  8.0],
                                                  [10.0, 11.0, 12.0]])).all()
 
@@ -694,7 +694,7 @@ class TestScaledSquarePixelArray:
                                             [True, False, False, True],
                                             [True,  True, False, True]]), pixel_scale=1.0)
 
-            array_extracted = array.extract_scaled_array_around_mask(mask=mask, buffer=0)
+            array_extracted = array.zoomed_scaled_array_around_mask(mask=mask, buffer=0)
             assert (array_extracted == np.array([[6.0,   7.0],
                                                  [10.0, 11.0],
                                                  [14.0, 15.0]])).all()
@@ -704,7 +704,7 @@ class TestScaledSquarePixelArray:
                                             [False, False, False, True],
                                             [True,  True,  True, True]]), pixel_scale=1.0)
 
-            array_extracted = array.extract_scaled_array_around_mask(mask=mask, buffer=0)
+            array_extracted = array.zoomed_scaled_array_around_mask(mask=mask, buffer=0)
             print(array_extracted)
             assert (array_extracted == np.array([[5.0,  6.0,  7.0],
                                                  [9.0, 10.0, 11.0]])).all()
@@ -714,7 +714,7 @@ class TestScaledSquarePixelArray:
                                             [True, False, False, True],
                                             [True,  True,  True, True]]), pixel_scale=1.0)
     
-            array_extracted = array.extract_scaled_array_around_mask(mask=mask, buffer=0)
+            array_extracted = array.zoomed_scaled_array_around_mask(mask=mask, buffer=0)
             assert (array_extracted == np.array([[2.0,   3.0],
                                                  [6.0,   7.0],
                                                  [10.0, 11.0]])).all()
@@ -724,7 +724,7 @@ class TestScaledSquarePixelArray:
                                             [True, False, False, True],
                                             [True,  True,  True, True]]), pixel_scale=1.0)
 
-            array_extracted = array.extract_scaled_array_around_mask(mask=mask, buffer=1)
+            array_extracted = array.zoomed_scaled_array_around_mask(mask=mask, buffer=1)
             assert (array_extracted == np.array([[ 1.0,  2.0,  3.0,  4.0],
                                                  [ 5.0,  6.0,  7.0,  8.0],
                                                  [ 9.0, 10.0, 11.0, 12.0],

@@ -41,8 +41,8 @@ def make_pipeline(test_name):
 
         def pass_priors(self, results):
 
-            self.lens_galaxies_lens = previous_results[0].variable.lens
-            self.source_galaxies_source_0 = previous_results[0].variable.source_0
+            self.lens_galaxies_lens = results.from_phase('phase_1').variable.lens
+            self.source_galaxies_source_0 = results.from_phase('phase_1').variable.source_0
 
     phase2 = AddSourceGalaxyPhase(phase_name='phase_2', phase_folders=[test_type, test_name],
                                   lens_galaxies=dict(lens=gm.GalaxyModel(mass=mp.EllipticalIsothermal)),

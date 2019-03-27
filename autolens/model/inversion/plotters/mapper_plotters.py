@@ -22,7 +22,7 @@ def plot_image_and_mapper(ccd_data, mapper, mask=None, positions=None, should_pl
     ccd_plotters.plot_image(ccd_data=ccd_data, mask=mask, positions=positions, as_subplot=True,
                             units=units, kpc_per_arcsec=None, xyticksize=16,
                             norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
-                            figsize=None, aspect='equal', cmap='jet', cb_ticksize=10,
+                            figsize=None, aspect='square', cmap='jet', cb_ticksize=10,
                             titlesize=10, xlabelsize=10, ylabelsize=10,
                             output_path=output_path, output_format=output_format)
 
@@ -107,7 +107,6 @@ def plot_voronoi_mapper(mapper, solution_vector, should_plot_centres=True, shoul
                         output_path=None, output_filename='voronoi_mapper', output_format='show'):
 
     plotter_util.setup_figure(figsize=figsize, as_subplot=as_subplot)
- #   plt.figaspect(1)
 
     set_axis_limits(mapper=mapper, units=units, kpc_per_arcsec=kpc_per_arcsec)
 

@@ -8,6 +8,8 @@ from test.simulation import makers
 # A lens only image, where there are two lens galaxies both composed of Sersic bules.
 # A source-only image, where the lens mass is an SIE and the source light is a smooth Exponential.
 # A source-only image, where the lens mass is an SIE and source light a cuspy Sersic (sersic_index=3).
+# The same smooth source image above, but with an offset lens / source centre such that the lens / source galaxy images
+# are not as the centre of the image.
 # A lens + source image, where the lens light is a Dev Vaucouleurs, mass is an SIE and the source light is a smooth
 # Exponential.
 # A lens + source image, where the lens light is a Dev Vaucouleurs, mass is an SIE and source light a cuspy Sersic
@@ -24,5 +26,6 @@ makers.make_lens_only_bulge_and_disk(data_resolutions=data_resolutions, sub_grid
 makers.make_lens_only_x2_galaxies(data_resolutions=data_resolutions, sub_grid_size=sub_grid_size)
 makers.make_no_lens_light_and_source_smooth(data_resolutions=data_resolutions, sub_grid_size=sub_grid_size)
 makers.make_no_lens_light_and_source_cuspy(data_resolutions=data_resolutions, sub_grid_size=sub_grid_size)
+makers.make_no_lens_light_and_source_smooth_offset_centre(data_resolutions=data_resolutions, sub_grid_size=sub_grid_size)
 makers.make_lens_and_source_smooth(data_resolutions=data_resolutions, sub_grid_size=sub_grid_size)
 makers.make_lens_and_source_cuspy(data_resolutions=data_resolutions, sub_grid_size=sub_grid_size)
