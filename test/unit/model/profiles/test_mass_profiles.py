@@ -1463,11 +1463,36 @@ class TestNFW(object):
         assert nfw.convergence_from_grid(grid=np.array([[0.25, 0.0]])) == pytest.approx(1.388511, 1e-3)
 
     def test__potential_correct_values(self):
+
+        nfw = mp.SphericalNFW(centre=(0.3, 0.2), kappa_s=2.5, scale_radius=4.0)
+        assert nfw.potential_from_grid(grid=np.array([[0.1875, 0.1625]])) == pytest.approx(0.03702, 1e-3)
+
         nfw = mp.SphericalNFW(centre=(0.3, 0.2), kappa_s=2.5, scale_radius=4.0)
         assert nfw.potential_from_grid(grid=np.array([[0.1875, 0.1625]])) == pytest.approx(0.03702, 1e-3)
 
         nfw = mp.EllipticalNFW(centre=(0.3, 0.2), axis_ratio=0.7, phi=6.0, kappa_s=2.5, scale_radius=4.0)
         assert nfw.potential_from_grid(grid=np.array([[0.1625, 0.1625]])) == pytest.approx(0.05380, 1e-3)
+
+    def test__potential__spherical_and_elliptical_are_same(self):
+
+        nfw_spherical = mp.SphericalNFW(centre=(0.3, 0.2), kappa_s=2.5, scale_radius=4.0)
+        nfw_elliptical = mp.EllipticalNFW(centre=(0.3, 0.2), axis_ratio=1.0, phi=0.0, kappa_s=2.5, scale_radius=4.0)
+
+        potential_spherical = nfw_spherical.potential_from_grid(grid=np.array([[0.1875, 0.1625]]))
+        potential_elliptical = nfw_elliptical.potential_from_grid(grid=np.array([[0.1875, 0.1625]]))
+
+        assert potential_spherical == pytest.approx(potential_elliptical, 1e-3)
+
+        potential_spherical = nfw_spherical.potential_from_grid(grid=np.array([[50.0, 50.0]]))
+        potential_elliptical = nfw_elliptical.potential_from_grid(grid=np.array([[50.0, 50.0]]))
+
+        assert potential_spherical == pytest.approx(potential_elliptical, 1e-3)
+
+
+        potential_spherical = nfw_spherical.potential_from_grid(grid=np.array([[-50.0, -50.0]]))
+        potential_elliptical = nfw_elliptical.potential_from_grid(grid=np.array([[-50.0, -50.0]]))
+
+        assert potential_spherical == pytest.approx(potential_elliptical, 1e-3)
 
     def test__deflections_correct_values(self):
 
