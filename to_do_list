@@ -4,28 +4,29 @@ Let me know if you think anything is missing, or should be pushed up the to-do l
 
 Big Picture:
 
-- Summary of grant proposal data / analysis vision.
 - RJLens pipelines.
-- CTI prep and scripts.
 - CTI Results images / requirement code.
 - CTI Results section.
 
 Small Picture:
 
+- Check units / conversion on cosomic average density in plane.
 - challenge halo info output.
+- Mass sheet low kappa value bug thing.
 - plot_centres_of_galaxies / profiles in plotters.
-- Expand intepolation tests and write tutorial.
 - hyper galaxy phase stuff.
+- Expand intepolation tests and write tutorial.
 - redshifts into pipeline.
 - Expanded visualization testing library and fix rectangular plot bug.
+- Bug with NFW potentials for MultiNest.
 
 Short term:
 
 - Quantitive output of lens model results (e.g. einstein mass, magnification), include otf output
 - Inclusion of lens / source redshifts for analysis.
-- Bug with NFW potentials for MultiNest.
 - Ray tracing refactor.
 - Add feature to remove astropy bug.
+- classmethods to generate profiles from physical values (e.g. magnitudes, velocity dispersion, stellar mass, halo mass)
 
 Mid term:
 
@@ -42,13 +43,15 @@ Mid term:
 
 Long Term:
 
-Feb/Mar) Automated Prior Linking
-Feb/Mar) Pixelization which Adapts to source's light (not magnification).
-April) Hyper Analysis intergration at high level (e.g. phase).
-April) Write hyper analysis howtolens
+- Automated Prior Linking
+- Pixelization which Adapts to source's light (not magnification).
+- Hyper Analysis intergration at high level (e.g. phase).
+- Write hyper analysis howtolens
+- Multi-plane analysis.
 
-May) Multi-plane analysis.
+Future:
 
+2019) Population module for simulating large suites of 'realistic' lenses.
 2019) Quasar modeling (time-delays, variable cosmology, PSF refinement)
 2019) UV-plane
 2019) Multi-CCD analysis.

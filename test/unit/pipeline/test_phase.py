@@ -629,6 +629,7 @@ class TestPhase(object):
         assert (analysis.lens_data.noise_map_1d == binned_up_lens_data.noise_map_1d).all()
 
     def test__tracer_for_instance__includes_cosmology(self, ccd_data):
+
         lens_galaxy = g.Galaxy()
         source_galaxy = g.Galaxy()
 
@@ -663,7 +664,7 @@ class TestPhase(object):
 
         phase = ph.MultiPlanePhase(galaxies=[galaxy_0, galaxy_1, galaxy_2], cosmology=cosmo.WMAP7,
                                    phase_name='test_phase')
-        analysis = phase.make_analysis(ccd_data)
+        analysis = phase.make_analysis(data=ccd_data)
         instance = phase.constant
         tracer = analysis.tracer_for_instance(instance)
         padded_tracer = analysis.padded_tracer_for_instance(instance)

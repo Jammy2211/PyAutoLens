@@ -776,7 +776,7 @@ class PhaseImaging(Phase):
                                                noise_map=self.lens_data.pixel_scale)
 
                 if not fit.maximum_separation_within_threshold(self.positions_threshold):
-                    return exc.RayTracingException
+                    raise exc.RayTracingException
 
         def map_to_1d(self, data):
             """Convenience method"""
@@ -959,10 +959,10 @@ class MultiPlanePhase(PhaseImaging):
 
     class Analysis(PhaseImaging.Analysis):
 
-        def __init__(self, lens_data, cosmology, results=None):
+        def __init__(self, lens_data, cosmology, positions_threshold, results=None):
             self.lens_data = lens_data
             super(MultiPlanePhase.Analysis, self).__init__(lens_data=lens_data, cosmology=cosmology,
-                                                           results=results)
+                                                           positions_threshold=positions_threshold, results=results)
 
         def tracer_for_instance(self, instance):
             return ray_tracing.TracerMultiPlanes(galaxies=instance.galaxies,

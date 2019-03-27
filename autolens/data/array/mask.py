@@ -274,24 +274,29 @@ class Mask(scaled_array.ScaledSquarePixelArray):
                                                                                   origin=self.origin)
 
     @property
-    def extraction_centre(self):
-        extraction_grid_1d = self.grid_arcsec_to_grid_pixel_centres(grid_arcsec=self.masked_grid_1d)
+    def zoom_centre(self):
+        extraction_grid_1d = self.grid_arcsec_to_grid_pixels(grid_arcsec=self.masked_grid_1d)
         y_pixels_max = np.max(extraction_grid_1d[:,0])
         y_pixels_min = np.min(extraction_grid_1d[:,0])
         x_pixels_max = np.max(extraction_grid_1d[:,1])
         x_pixels_min = np.min(extraction_grid_1d[:,1])
-        return (round((y_pixels_max + y_pixels_min) / 2.0), round((x_pixels_max + x_pixels_min) / 2.0))
+        return (((y_pixels_max + y_pixels_min - 1.0) / 2.0), ((x_pixels_max + x_pixels_min - 1.0) / 2.0))
 
     @property
-    def extraction_offset(self):
-        return (int(self.extraction_centre[0] - round(self.central_pixel_coordinates[0])),
-                int(self.extraction_centre[1] - round(self.central_pixel_coordinates[1])))
+    def zoom_offset_pixels(self):
+        return (self.zoom_centre[0] - self.central_pixel_coordinates[0],
+                self.zoom_centre[1] - self.central_pixel_coordinates[1])
 
     @property
-    def extraction_region(self):
-        """The rectangular region corresponding to the rectangle encompassing all unmasked values.
+    def zoom_offset_arcsec(self):
+        return (-self.pixel_scale*self.zoom_offset_pixels[0], self.pixel_scale*self.zoom_offset_pixels[1])
 
-        This is used to extract and visualize only the region of an image that is used in an analysis."""
+    @property
+    def zoom_region(self):
+        """The zoomed rectangular region corresponding to the rectangle encompassing all unmasked values.
+
+        This is used to zoom in on the region of an image that is used in an analysis for visualization."""
+
         # Have to convert mask to bool for invert function to work.
         where = np.array(np.where(np.invert(self.astype('bool'))))
         y0, x0 = np.amin(where, axis=1)

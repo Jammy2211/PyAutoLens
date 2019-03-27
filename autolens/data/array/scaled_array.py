@@ -330,7 +330,7 @@ class ScaledSquarePixelArray(ScaledArray):
         except AttributeError:
             return super_result
 
-    def extract_scaled_array_around_mask(self, mask, buffer=1):
+    def zoomed_scaled_array_around_mask(self, mask, buffer=1):
         """Extract the 2D region of an array corresponding to the rectangle encompassing all unmasked values.
 
         This is used to extract and visualize only the region of an image that is used in an analysis.
@@ -342,10 +342,9 @@ class ScaledSquarePixelArray(ScaledArray):
         buffer : int
             The buffer of pixels around the extraction.
         """
-        region = mask.extraction_region
-        return self.new_with_array(array=array_util.extracted_array_2d_from_array_2d_and_coordinates(array_2d=self,
-                                                                                                     y0=region[0]-buffer, y1=region[1]+buffer,
-                                                                                                     x0=region[2]-buffer, x1=region[3]+buffer))
+        return self.new_with_array(array=array_util.extracted_array_2d_from_array_2d_and_coordinates(
+            array_2d=self,  y0=mask.zoom_region[0]-buffer, y1=mask.zoom_region[1]+buffer,
+            x0=mask.zoom_region[2]-buffer, x1=mask.zoom_region[3]+buffer))
 
     def resized_scaled_array_from_array(self, new_shape, new_centre_pixels=None, new_centre_arcsec=None):
         """resized the array to a new shape and at a new origin.
