@@ -10,7 +10,7 @@ from autolens.model.inversion.plotters import inversion_plotters
 def plot_fit_subplot(
         fit, should_plot_mask=True, extract_array_from_mask=False, zoom_around_mask=False, positions=None,
         should_plot_image_plane_pix=False,
-        units='arcsec', figsize=None, aspect='equal',
+        units='arcsec', figsize=None, aspect='square',
         cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
         cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
         titlesize=10, xlabelsize=10, ylabelsize=10, xyticksize=10,
@@ -46,7 +46,7 @@ def plot_fit_subplot(
 def plot_fit_subplot_lens_plane_only(
         fit, should_plot_mask=True, extract_array_from_mask=False, zoom_around_mask=False, positions=None,
         should_plot_image_plane_pix=False,
-        units='arcsec', figsize=None, aspect='equal',
+        units='arcsec', figsize=None, aspect='square',
         cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
         cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
         titlesize=10, xlabelsize=10, ylabelsize=10, xyticksize=10,
@@ -161,7 +161,7 @@ def plot_fit_subplot_lens_plane_only(
 def plot_fit_subplot_lens_and_source_planes(
         fit, should_plot_mask=True, extract_array_from_mask=False, zoom_around_mask=False,
         should_plot_source_grid=False, positions=None, should_plot_image_plane_pix=False,
-        units='arcsec', figsize=None, aspect='equal',
+        units='arcsec', figsize=None, aspect='square',
         cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
         cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
         titlesize=10, xlabelsize=10, ylabelsize=10, xyticksize=10,
@@ -272,25 +272,37 @@ def plot_fit_subplot_lens_and_source_planes(
         xyticksize=xyticksize,
         output_path=output_path, output_filename='lens_subtracted_image', output_format=output_format)
 
-    plt.subplot(rows, columns, 7, aspect=1)
-
     if fit.total_inversions == 0:
+
+        plt.subplot(rows, columns, 7)
 
         plane_plotters.plot_plane_image(
             plane=fit.tracer.source_plane, positions=None, plot_grid=should_plot_source_grid, as_subplot=True,
-            units=units, figsize=figsize, aspect=1,
+            units=units, figsize=figsize, aspect=aspect,
             cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
             cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
-        cb_tick_values=cb_tick_values, cb_tick_labels=cb_tick_labels,
+            cb_tick_values=cb_tick_values, cb_tick_labels=cb_tick_labels,
             titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize, xyticksize=xyticksize,
             grid_pointsize=grid_pointsize, position_pointsize=position_pointsize,
             output_path=output_path, output_filename='', output_format=output_format)
 
     elif fit.total_inversions == 1:
+        
+        ratio = float((fit.inversion.mapper.geometry.arc_second_maxima[1] - fit.inversion.mapper.geometry.arc_second_minima[1]) / \
+                (fit.inversion.mapper.geometry.arc_second_maxima[0] - fit.inversion.mapper.geometry.arc_second_minima[0]))
+
+        if aspect is 'square':
+            aspect_inv = ratio
+        elif aspect is 'auto':
+            aspect_inv = 1.0 / ratio
+        elif aspect is 'equal':
+            aspect_inv = 1.0
+
+        plt.subplot(rows, columns, 7, aspect=float(aspect_inv))
 
         inversion_plotters.plot_reconstructed_pixelization(
             inversion=fit.inversion, positions=None, should_plot_grid=False, should_plot_centres=False, as_subplot=True,
-            units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=1,
+            units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=None,
             cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
             cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
         cb_tick_values=cb_tick_values, cb_tick_labels=cb_tick_labels,
@@ -301,9 +313,9 @@ def plot_fit_subplot_lens_and_source_planes(
 
     lens_plotter_util.plot_residual_map(
         fit=fit, mask=mask, extract_array_from_mask=extract_array_from_mask, zoom_around_mask=zoom_around_mask, as_subplot=True,
-        units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=None,
+        units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
         cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
-        cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad, 
+        cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
         cb_tick_values=cb_tick_values, cb_tick_labels=cb_tick_labels,
         titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize, xyticksize=xyticksize,
         output_path=output_path, output_filename='', output_format=output_format)
@@ -314,7 +326,7 @@ def plot_fit_subplot_lens_and_source_planes(
         fit=fit, mask=mask, extract_array_from_mask=extract_array_from_mask, zoom_around_mask=zoom_around_mask, as_subplot=True,
         units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
         cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
-        cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad, 
+        cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad,
         cb_tick_values=cb_tick_values, cb_tick_labels=cb_tick_labels,
         titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize, xyticksize=xyticksize,
         output_path=output_path, output_filename='', output_format=output_format)

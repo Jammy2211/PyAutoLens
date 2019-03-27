@@ -7,7 +7,7 @@ from autolens.lens.plotters import lens_plotter_util
 def plot_fit_subplot(
         fit, should_plot_mask=True, extract_array_from_mask=False, zoom_around_mask=False, positions=None,
         should_plot_image_plane_pix=True,
-        units='arcsec', figsize=None, aspect='equal',
+        units='arcsec', figsize=None, aspect='square',
         cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
         cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
         titlesize=10, xlabelsize=10, ylabelsize=10, xyticksize=10,

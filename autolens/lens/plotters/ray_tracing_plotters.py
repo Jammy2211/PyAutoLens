@@ -7,7 +7,7 @@ from autolens.lens.plotters import plane_plotters
 
 def plot_ray_tracing_subplot(
         tracer, mask=None, extract_array_from_mask=False, zoom_around_mask=False, positions=None,
-        units='arcsec', figsize=None, aspect='equal',
+        units='arcsec', figsize=None, aspect='square',
         cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
         cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
         titlesize=10, xlabelsize=10, ylabelsize=10, xyticksize=10,
@@ -191,7 +191,7 @@ def plot_ray_tracing_individual(
 
 def plot_image_plane_image(
         tracer, mask=None, extract_array_from_mask=False, zoom_around_mask=False, positions=None, as_subplot=False,
-        units='arcsec', figsize=(7, 7), aspect='equal',
+        units='arcsec', figsize=(7, 7), aspect='square',
         cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
         cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
         title='Tracer CCD-Plane CCD', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
@@ -212,7 +212,7 @@ def plot_image_plane_image(
 
 def plot_convergence(
         tracer, mask=None, extract_array_from_mask=False, zoom_around_mask=False, as_subplot=False,
-        units='arcsec', figsize=(7, 7), aspect='equal',
+        units='arcsec', figsize=(7, 7), aspect='square',
         cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
         cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
         title='Tracer Convergence', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
@@ -230,7 +230,7 @@ def plot_convergence(
 
 def plot_potential(
         tracer, mask=None, extract_array_from_mask=False, zoom_around_mask=False, as_subplot=False,
-       units='arcsec', figsize=(7, 7), aspect='equal',
+       units='arcsec', figsize=(7, 7), aspect='square',
        cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
        cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
        title='Tracer Potential', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
@@ -248,7 +248,7 @@ def plot_potential(
 
 def plot_deflections_y(
         tracer, mask=None, extract_array_from_mask=False, zoom_around_mask=False, as_subplot=False,
-        units='arcsec', figsize=(7, 7), aspect='equal',
+        units='arcsec', figsize=(7, 7), aspect='square',
         cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
         cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
         title='Tracer Deflections (y)', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
@@ -266,7 +266,7 @@ def plot_deflections_y(
 
 def plot_deflections_x(
         tracer, mask=None, extract_array_from_mask=False, zoom_around_mask=False, as_subplot=False,
-        units='arcsec', figsize=(7, 7), aspect='equal',
+        units='arcsec', figsize=(7, 7), aspect='square',
         cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
         cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
         title='Tracer Deflections (x)', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,

@@ -5,7 +5,7 @@ from autolens.data.array.plotters import array_plotters
 def plot_intensities(
         light_profile, grid, mask=None, extract_array_from_mask=False, zoom_around_mask=False, positions=None, 
         as_subplot=False,
-        units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
+        units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='square',
         cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
         cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
         title='Intensities', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
@@ -39,7 +39,7 @@ def plot_intensities(
 def plot_convergence(
         mass_profile, grid, mask=None, extract_array_from_mask=False, zoom_around_mask=False, positions=None, 
         as_subplot=False,
-        units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
+        units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='square',
         cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
         cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
         title='Convergence', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
@@ -73,7 +73,7 @@ def plot_convergence(
 def plot_potential(
         mass_profile, grid, mask=None, extract_array_from_mask=False, zoom_around_mask=False, positions=None, 
         as_subplot=False,
-        units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
+        units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='square',
         cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
         cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
         title='Potential', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
@@ -108,7 +108,7 @@ def plot_potential(
 def plot_deflections_y(
         mass_profile, grid, mask=None, extract_array_from_mask=False, zoom_around_mask=False, positions=None, 
         as_subplot=False,
-        units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
+        units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='square',
         cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
         cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
         title='Deflections (y)', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
@@ -143,7 +143,7 @@ def plot_deflections_y(
 def plot_deflections_x(
         mass_profile, grid, mask=None, extract_array_from_mask=False, zoom_around_mask=False, positions=None, 
         as_subplot=False,
-        units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
+        units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='square',
         cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
         cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
         title='Deflections (x)', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
