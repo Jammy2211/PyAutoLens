@@ -48,3 +48,15 @@ class MockGalaxy(object):
     def __init__(self, mass_profiles):
 
         self.mass_profiles = mass_profiles
+
+
+class MockPlane(object):
+
+    def __init__(self, galaxies):
+
+        self.redshift = 0.5
+        self.galaxies = galaxies
+
+    @property
+    def cosmic_average_mass_density_arcsec(self):
+        return 1.0
