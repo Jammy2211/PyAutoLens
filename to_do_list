@@ -17,7 +17,6 @@ Small Picture:
 - hyper galaxy phase stuff.
 - Expand intepolation tests and write tutorial.
 - redshifts into pipeline.
-- Expanded visualization testing library and fix rectangular plot bug.
 - Bug with NFW potentials for MultiNest.
 
 Short term:
