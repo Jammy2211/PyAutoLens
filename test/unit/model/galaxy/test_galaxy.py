@@ -694,3 +694,4 @@ class TestBooleanProperties(object):
     def test__only_regularization_raises_error(self):
         with pytest.raises(exc.GalaxyException):
             g.Galaxy(regularization=object())
+

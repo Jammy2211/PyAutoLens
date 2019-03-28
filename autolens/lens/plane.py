@@ -121,6 +121,20 @@ class AbstractPlane(object):
         elif len(galaxies_with_regularization) > 1:
             raise exc.PixelizationException('The number of galaxies with regularizations in one plane is above 1')
 
+    @property
+    def mass_profile_centres(self):
+
+        # TODO : Make list comprehension?
+
+        if self.has_mass_profile:
+            mass_profile_centres = []
+            for galaxy in self.galaxies:
+                for mass_profile in galaxy.mass_profiles:
+                    mass_profile_centres.append(mass_profile.centre)
+            return mass_profile_centres
+        else:
+            return None
+
     def luminosities_of_galaxies_within_circles(self, radius, conversion_factor=1.0):
         """Compute the total luminosity of all galaxies in this plane within a circle of specified radius.
 
