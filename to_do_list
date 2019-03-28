@@ -14,7 +14,7 @@ Small Picture:
 - challenge halo info output.
 - Challenge mass errors.
 - redshifts into pipeline.
-- plot_centres_of_galaxies / profiles in plotters.
+- clean up plotting_centres of profiles in plotters (dodgy if loop in plotter, color by galaxy).
 - hyper galaxy phase stuff.
 - Expand intepolation tests and write tutorial.
 
