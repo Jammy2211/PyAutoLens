@@ -9,7 +9,7 @@ from autolens.model.inversion.plotters import inversion_plotters
 
 def plot_fit_subplot(
         fit, should_plot_mask=True, extract_array_from_mask=False, zoom_around_mask=False, positions=None,
-        should_plot_image_plane_pix=False,
+        should_plot_image_plane_pix=False, plot_mass_profile_centres=True,
         units='arcsec', figsize=None, aspect='square',
         cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
         cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
@@ -34,7 +34,7 @@ def plot_fit_subplot(
 
         plot_fit_subplot_lens_and_source_planes(
             fit=fit, should_plot_mask=should_plot_mask, extract_array_from_mask=extract_array_from_mask, zoom_around_mask=zoom_around_mask, positions=positions,
-            should_plot_image_plane_pix=should_plot_image_plane_pix,
+            should_plot_image_plane_pix=should_plot_image_plane_pix, plot_mass_profile_centres=plot_mass_profile_centres,
             units=units, figsize=figsize, aspect=aspect,
             cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
             cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad, 
@@ -160,7 +160,7 @@ def plot_fit_subplot_lens_plane_only(
 
 def plot_fit_subplot_lens_and_source_planes(
         fit, should_plot_mask=True, extract_array_from_mask=False, zoom_around_mask=False,
-        should_plot_source_grid=False, positions=None, should_plot_image_plane_pix=False,
+        should_plot_source_grid=False, positions=None, should_plot_image_plane_pix=False, plot_mass_profile_centres=True,
         units='arcsec', figsize=None, aspect='square',
         cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
         cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
@@ -251,7 +251,8 @@ def plot_fit_subplot_lens_and_source_planes(
         plt.subplot(rows, columns, 5)
 
         lens_plotter_util.plot_model_image_of_planes(
-            fit=fit, plot_foreground=True, mask=mask, extract_array_from_mask=extract_array_from_mask, zoom_around_mask=zoom_around_mask, as_subplot=True,
+            fit=fit, plot_foreground=True, mask=mask, extract_array_from_mask=extract_array_from_mask,
+            zoom_around_mask=zoom_around_mask, plot_mass_profile_centres=plot_mass_profile_centres, as_subplot=True,
             units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
             cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
             cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad, 
@@ -263,7 +264,8 @@ def plot_fit_subplot_lens_and_source_planes(
     plt.subplot(rows, columns, 6)
 
     lens_plotter_util.plot_model_image_of_planes(
-        fit=fit, plot_source=True, mask=mask, extract_array_from_mask=extract_array_from_mask, zoom_around_mask=zoom_around_mask, as_subplot=True,
+        fit=fit, plot_source=True, mask=mask, extract_array_from_mask=extract_array_from_mask,
+        zoom_around_mask=zoom_around_mask, plot_mass_profile_centres=plot_mass_profile_centres, as_subplot=True,
         units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, aspect=aspect,
         cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
         cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad, 

@@ -8,7 +8,7 @@ from autolens.data.array.plotters import plotter_util
 
 
 def plot_array(array, origin=None, mask=None, extract_array_from_mask=False, zoom_around_mask=False,
-               should_plot_border=False, positions=None, grid=None, as_subplot=False,
+               should_plot_border=False, positions=None, centres=None, grid=None, as_subplot=False,
                units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
                cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
                cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
@@ -154,6 +154,8 @@ def plot_array(array, origin=None, mask=None, extract_array_from_mask=False, zoo
                 pointsize=position_pointsize, zoom_offset_arcsec=zoom_offset_arcsec)
     plot_grid(grid_arcsec=grid, array=array, units=units, kpc_per_arcsec=kpc_per_arcsec, pointsize=grid_pointsize,
               zoom_offset_arcsec=zoom_offset_arcsec)
+    plot_centres(array=array, centres=centres, units=units, kpc_per_arcsec=kpc_per_arcsec,
+                zoom_offset_arcsec=zoom_offset_arcsec)
     plotter_util.output_figure(array, as_subplot=as_subplot, output_path=output_path, output_filename=output_filename,
                                output_format=output_format)
     plotter_util.close_figure(as_subplot=as_subplot)
@@ -418,6 +420,32 @@ def plot_origin(array, origin, units, kpc_per_arcsec, zoom_offset_arcsec):
         origin_units = convert_grid_units(array=array, grid_arcsec=origin_grid, units=units,
                                           kpc_per_arcsec=kpc_per_arcsec)
         plt.scatter(y=origin_units[0], x=origin_units[1], s=80, c='k', marker='x')
+
+def plot_centres(array, centres, units, kpc_per_arcsec, zoom_offset_arcsec):
+    """Plot the (y,x) origin ofo the array's coordinates as a 'x'.
+
+    Parameters
+    -----------
+    array : data.array.scaled_array.ScaledArray
+        The 2D array of data which is plotted.
+    origin : (float, float).
+        The origin of the coordinate system of the array, which is plotted as an 'x' on the image if input.
+    units : str
+        The units of the y / x axis of the plots, in arc-seconds ('arcsec') or kiloparsecs ('kpc').
+    kpc_per_arcsec : float or None
+        The conversion factor between arc-seconds and kiloparsecs, required to plot the units in kpc.
+    """
+    if centres is not None:
+
+        centres = list(map(lambda centres_set : np.asarray(centres_set), centres))
+        for centre in centres:
+
+            if zoom_offset_arcsec is not None:
+                centre -= zoom_offset_arcsec
+
+            centre_units = convert_grid_units(array=array, grid_arcsec=centre, units=units,
+                                              kpc_per_arcsec=kpc_per_arcsec)
+            plt.scatter(y=centre_units[0], x=centre_units[1], s=300, c='r', marker='x')
 
 def plot_mask(mask, units, kpc_per_arcsec, pointsize, zoom_offset_pixels):
     """Plot the mask of the array on the figure.

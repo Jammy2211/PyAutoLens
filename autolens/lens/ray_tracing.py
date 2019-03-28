@@ -448,6 +448,14 @@ class TracerImagePlane(AbstractTracer):
 
         super(TracerImagePlane, self).__init__(planes=[image_plane], cosmology=cosmology)
 
+    @property
+    def critical_surface_mass_density_kpc(self):
+        return 0.0
+
+    @property
+    def critical_surface_mass_density_arcsec(self):
+        return 0.0
+
 
 class TracerImageSourcePlanes(AbstractTracer):
 

@@ -5,24 +5,21 @@ Let me know if you think anything is missing, or should be pushed up the to-do l
 Big Picture:
 
 - RJLens pipelines.
+- Requirements errors.
 - CTI Results images / requirement code.
 - CTI Results section.
 
 Small Picture:
 
-- Check units / conversion on cosomic average density in plane.
 - challenge halo info output.
-- Mass sheet low kappa value bug thing.
-- plot_centres_of_galaxies / profiles in plotters.
+- Challenge mass errors.
+- redshifts into pipeline.
+- clean up plotting_centres of profiles in plotters (dodgy if loop in plotter, color by galaxy).
 - hyper galaxy phase stuff.
 - Expand intepolation tests and write tutorial.
-- redshifts into pipeline.
-- Expanded visualization testing library and fix rectangular plot bug.
-- Bug with NFW potentials for MultiNest.
 
 Short term:
 
-- Quantitive output of lens model results (e.g. einstein mass, magnification), include otf output
 - Inclusion of lens / source redshifts for analysis.
 - Ray tracing refactor.
 - Add feature to remove astropy bug.

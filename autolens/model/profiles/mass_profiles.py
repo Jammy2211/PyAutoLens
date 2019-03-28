@@ -306,7 +306,7 @@ class EllipticalCoredPowerLaw(EllipticalMassProfile, MassProfile):
         return self.einstein_radius_rescaled * self.axis_ratio * potential_grid
 
     @grids.grid_interpolate
-    #@geometry_profiles.cache
+    @geometry_profiles.cache
     @geometry_profiles.transform_grid
     def deflections_from_grid(self, grid):
         """
@@ -768,7 +768,7 @@ class EllipticalGeneralizedNFW(AbstractEllipticalGeneralizedNFW):
         return potential_grid
 
     @grids.grid_interpolate
-    #@geometry_profiles.cache
+    @geometry_profiles.cache
     @geometry_profiles.transform_grid
     def deflections_from_grid(self, grid, tabulate_bins=1000):
         """
@@ -878,7 +878,7 @@ class SphericalGeneralizedNFW(EllipticalGeneralizedNFW):
                                                       inner_slope=inner_slope, scale_radius=scale_radius)
 
     @grids.grid_interpolate
-    #@geometry_profiles.cache
+    @geometry_profiles.cache
     @geometry_profiles.transform_grid
     def deflections_from_grid(self, grid, **kwargs):
         """
@@ -1049,7 +1049,7 @@ class EllipticalNFW(AbstractEllipticalGeneralizedNFW):
         return potential_grid
 
     @grids.grid_interpolate
-    #@geometry_profiles.cache
+    @geometry_profiles.cache
     @geometry_profiles.transform_grid
     def deflections_from_grid(self, grid):
         """
@@ -1142,8 +1142,8 @@ class SphericalNFW(EllipticalNFW):
         grid : grids.RegularGrid
             The grid of (y,x) arc-second coordinates the deflection angles are computed on.
         """
-        eta = (1.0 / self.scale_radius) * self.grid_to_grid_radii(grid)
-        return 2.0 * self.scale_radius * self.kappa_s * self.potential_func_sph(eta)
+        eta = (1.0 / self.scale_radius) * self.grid_to_grid_radii(grid) + 0j
+        return np.real(2.0 * self.scale_radius * self.kappa_s * self.potential_func_sph(eta))
 
     @geometry_profiles.transform_grid
     def deflections_from_grid(self, grid):
@@ -1249,7 +1249,7 @@ class EllipticalSersic(AbstractEllipticalSersic):
                        (1 - (1 - axis_ratio ** 2) * u) ** (npow + 0.5))
 
     @grids.grid_interpolate
-    #@geometry_profiles.cache
+    @geometry_profiles.cache
     @geometry_profiles.transform_grid
     def deflections_from_grid(self, grid):
         """
@@ -1444,7 +1444,7 @@ class EllipticalSersicRadialGradient(AbstractEllipticalSersic):
         return self.convergence_func(self.grid_to_eccentric_radii(grid))
 
     @grids.grid_interpolate
-    #@geometry_profiles.cache
+    @geometry_profiles.cache
     @geometry_profiles.transform_grid
     def deflections_from_grid(self, grid):
         """
@@ -1534,6 +1534,9 @@ class MassSheet(geometry_profiles.SphericalProfile, MassProfile):
 
     def convergence_from_grid(self, grid):
         return np.full(shape=grid.shape[0], fill_value=self.kappa)
+
+    def potential_from_grid(self, grid):
+        return np.zeros((grid.shape[0],))
 
     @geometry_profiles.transform_grid
     def deflections_from_grid(self, grid):

@@ -1,6 +1,6 @@
-from autolens.lens.summary import plane_summary
+from autolens.lens.summary import tracer_summary
 
-from test.unit.mock.mock_summary import MockPlane, MockGalaxy, MockTruncatedNFW
+from test.unit.mock.mock_summary import MockTracer, MockPlane, MockGalaxy, MockTruncatedNFW
 
 import os
 
@@ -8,24 +8,25 @@ test_summary_dir = "{}/../../test_files/summary/".format(os.path.dirname(os.path
 
 class TestSummarizePlane:
 
-    def test__summarize_plane_with_galaxy_with_nfw_mass_profile(self):
+    def test__summarize_tracer_with_galaxy_with_nfw_mass_profile(self):
 
         summary_file = open(file=test_summary_dir + 'model.summary', mode="w+")
 
-        mock_galaxy = MockGalaxy(mass_profiles=[MockTruncatedNFW()])
+        mock_plane = MockPlane(galaxies=[MockGalaxy(mass_profiles=[MockTruncatedNFW()])])
 
-        plane_summary.summarize_plane(summary_file=summary_file, plane=MockPlane(galaxies=[mock_galaxy]),
-                                        critical_surface_mass_density=1.0, radii=[10.0, 500.0])
+        tracer_summary.summarize_tracer(summary_file=summary_file, tracer=MockTracer(planes=[mock_plane]),
+                                        radii=[10.0, 500.0])
 
         summary_file.close()
 
         summary_file_read = open(test_summary_dir + 'model.summary', mode="r")
         summary_text = summary_file_read.readlines()
 
-        print(summary_text[1])
-
-        assert summary_text == ['Plane Redshift = 0.5\n',
-                                'Plane Critical Surface Mass Density (solMass / arcsec^2) = 1.0\n',
+        assert summary_text == ['Tracer Cosmology = FlatLambdaCDM(name="Planck15", H0=67.7 km / (Mpc s), Om0=0.307, Tcmb0=2.725 K, Neff=3.05, m_nu=[0.   0.   0.06] eV, Ob0=0.0486)\n',
+                                'Tracer Redshifts = [0.5]\n',
+                                '\n',
+                                'Plane Redshift = 0.5\n',
+                                'Plane Critical Surface Mass Density (solMass / arcsec^2) = 2.0\n',
                                 '\n',
                                 'Galaxy = lol\n',
                                 '\n',
