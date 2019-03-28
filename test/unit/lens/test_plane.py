@@ -486,6 +486,27 @@ class TestAbstractPlane(object):
 
             assert plane.einstein_mass_in_mass_units(critical_surface_mass_density_arcsec=2.0) is None
 
+    class TestMassProfileCentres:
+
+        def test__extracts_centres_of_all_mass_profiles_of_all_galaxies(self):
+
+            g0 = g.Galaxy(mass=mp.SphericalIsothermal(centre=(1.0, 1.0)))
+            g1 = g.Galaxy(mass=mp.SphericalIsothermal(centre=(2.0, 2.0)))
+
+            plane = pl.AbstractPlane(galaxies=[g0], redshift=None)
+            assert plane.mass_profile_centres == [(1.0, 1.0)]
+
+            plane = pl.AbstractPlane(galaxies=[g1], redshift=None)
+            assert plane.mass_profile_centres == [(2.0, 2.0)]
+
+            plane = pl.AbstractPlane(galaxies=[g0, g1], redshift=None)
+            assert plane.mass_profile_centres == [(1.0, 1.0), (2.0, 2.0)]
+
+            plane = pl.AbstractPlane(galaxies=[g1, g0], redshift=None)
+            assert plane.mass_profile_centres == [(2.0, 2.0), (1.0, 1.0)]
+
+            plane = pl.AbstractPlane(galaxies=[g0, g.Galaxy(), g1, g.Galaxy()], redshift=None)
+            assert plane.mass_profile_centres == [(1.0, 1.0), (2.0, 2.0)]
 
 class TestAbstractPlaneGridded(object):
     class TestGridLensing:
@@ -1181,6 +1202,7 @@ class TestAbstractPlaneGridded(object):
 
 
 class TestPlane(object):
+
     class TestGalaxies:
 
         def test__no_galaxies__raises_exception(self):

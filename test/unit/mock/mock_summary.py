@@ -1,3 +1,4 @@
+from astropy import cosmology as cosmo
 from autolens.model.profiles import mass_profiles as mp
 
 class MockMassProfile(object):
@@ -48,3 +49,31 @@ class MockGalaxy(object):
     def __init__(self, mass_profiles):
 
         self.mass_profiles = mass_profiles
+
+
+class MockPlane(object):
+
+    def __init__(self, galaxies):
+
+        self.redshift = 0.5
+        self.galaxies = galaxies
+
+    @property
+    def cosmic_average_mass_density_arcsec(self):
+        return 1.0
+
+
+class MockTracer(object):
+
+    def __init__(self, planes):
+
+        self.planes = planes
+        self.plane_redshifts = [0.5]
+
+    @property
+    def critical_surface_mass_density_arcsec(self):
+        return 2.0
+
+    @property
+    def cosmology(self):
+        return cosmo.Planck15
