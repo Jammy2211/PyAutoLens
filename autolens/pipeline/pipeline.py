@@ -2,11 +2,11 @@ from autofit.tools.pipeline import Pipeline
 
 
 class PipelineImaging(Pipeline):
-    def run(self, data, mask=None, positions=None):
+    def run(self, data, mask=None, positions=None, data_name=None):
         def runner(phase, results):
             return phase.run(data=data, results=results, mask=mask, positions=positions)
 
-        return self.run_function(runner, data.name)
+        return self.run_function(runner, data_name)
 
 
 class PipelinePositions(Pipeline):
