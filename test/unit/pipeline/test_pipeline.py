@@ -88,7 +88,7 @@ class TestMetaData(object):
         pipeline.run(MockCCDData("data_name"))
 
         assert "phase_name/.metadata" in mock_files[0].filename
-        assert mock_files[0].text == "pipeline=pipeline_name\nphase=phase_name\nlens=data_name"
+        assert mock_files[0].text == "pipeline=pipeline_name\nphase=phase_name\ndata=data_name"
 
         assert "phase_name/.optimizer.pickle" in mock_files[1].filename
 
