@@ -56,6 +56,9 @@ class PhaseOutput(object):
 
     @property
     def optimizer(self) -> non_linear.NonLinearOptimizer:
+        """
+        The optimizer object that was used in this phase
+        """
         if self.__optimizer is None:
             with open(os.path.join(self.directory, ".optimizer.pickle"), "r+b") as f:
                 self.__optimizer = pickle.loads(f.read())
@@ -101,6 +104,19 @@ class Aggregator(object):
                 all([getattr(phase, key) == value for key, value in kwargs.items()])]
 
     def optimizers_with(self, **kwargs) -> [non_linear.NonLinearOptimizer]:
+        """
+        Load a list of optimizers for phases in the directory with zero or more filters applied.
+
+        Parameters
+        ----------
+        kwargs
+            Filters, e.g. pipeline=pipeline1
+
+        Returns
+        -------
+        optimizers
+            A list of optimizers, one for each phase in the directory that matches the filters.
+        """
         return [phase.optimizer for phase in self.phases_with(**kwargs)]
 
     def model_results(self, **kwargs) -> str:
