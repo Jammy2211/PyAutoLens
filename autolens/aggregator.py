@@ -13,6 +13,9 @@ Example:
 """
 
 import os
+import pickle
+
+from autofit.optimize import non_linear
 
 
 class PhaseOutput(object):
@@ -49,6 +52,11 @@ class PhaseOutput(object):
         A header created by joining the pipeline, phase and lens names
         """
         return "/".join((self.pipeline, self.phase, self.lens))
+
+    @property
+    def optimizer(self) -> non_linear.NonLinearOptimizer:
+        with open(os.path.join(self.directory, ".optimizer.pickle"), "r+b") as f:
+            return pickle.loads(f.read())
 
     def __str__(self):
         return self.text
