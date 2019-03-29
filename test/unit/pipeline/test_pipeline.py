@@ -72,7 +72,7 @@ def make_mock_file(monkeypatch):
     files = []
 
     def mock_open(filename, flag):
-        assert flag == "w+"
+        assert flag in ("w+", "w+b")
         file = MockFile()
         file.filename = filename
         files.append(file)
