@@ -15,7 +15,7 @@ class PipelineImaging(Pipeline):
                 f.write(pickle.dumps(phase.optimizer))
             return phase.run(data=data, results=results, mask=mask, positions=positions)
 
-        return self.run_function(runner)
+        return self.run_function(runner, data)
 
 
 class PipelinePositions(Pipeline):
