@@ -2,7 +2,7 @@ from os import path
 
 import pytest
 
-from autolens import aggregator as a
+from autofit import aggregator as a
 
 directory = path.dirname(path.realpath(__file__))
 aggregator_directory = "{}/test_files/aggregator".format(directory)
