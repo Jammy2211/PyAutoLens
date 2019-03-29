@@ -67,26 +67,30 @@ class MockFile(object):
         pass
 
 
-@pytest.fixture(name="mock_file", autouse=True)
+@pytest.fixture(name="mock_files", autouse=True)
 def make_mock_file(monkeypatch):
-    file = MockFile()
+    files = []
 
     def mock_open(filename, flag):
-        assert flag == "w+"
+        assert flag in ("w+", "w+b")
+        file = MockFile()
         file.filename = filename
+        files.append(file)
         return file
 
     monkeypatch.setattr(builtins, 'open', mock_open)
-    return file
+    return files
 
 
 class TestMetaData(object):
-    def test_name(self, mock_file):
+    def test_files(self, mock_files):
         pipeline = pl.PipelineImaging("pipeline_name", DummyPhaseImaging("phase_name", "phase_path"))
         pipeline.run(MockCCDData("data_name"))
 
-        assert "phase_name/.metadata" in mock_file.filename
-        assert mock_file.text == "pipeline=pipeline_name\nphase=phase_name\nlens=data_name"
+        assert "phase_name/.metadata" in mock_files[0].filename
+        assert mock_files[0].text == "pipeline=pipeline_name\nphase=phase_name\nlens=data_name"
+
+        assert "phase_name/.optimizer.pickle" in mock_files[1].filename
 
 
 class TestPassMask(object):
