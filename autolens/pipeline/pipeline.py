@@ -6,7 +6,7 @@ class PipelineImaging(Pipeline):
         def runner(phase, results):
             return phase.run(data=data, results=results, mask=mask, positions=positions)
 
-        return self.run_function(runner, data)
+        return self.run_function(runner, data.name)
 
 
 class PipelinePositions(Pipeline):
