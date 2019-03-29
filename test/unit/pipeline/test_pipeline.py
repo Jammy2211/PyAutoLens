@@ -144,6 +144,7 @@ class DummyPhasePositions(object):
         self.results = None
         self.pixel_scale = None
         self.phase_name = phase_name
+        self.phase_path = phase_name
         self.optimizer = Optimizer()
 
     def run(self, positions, pixel_scale, results):
