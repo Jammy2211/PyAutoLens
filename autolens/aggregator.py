@@ -29,6 +29,7 @@ class PhaseOutput(object):
             The directory of the phase
         """
         self.directory = directory
+        self.__optimizer = None
         self.file_path = os.path.join(directory, ".metadata")
         with open(self.file_path) as f:
             self.text = f.read()
@@ -55,8 +56,10 @@ class PhaseOutput(object):
 
     @property
     def optimizer(self) -> non_linear.NonLinearOptimizer:
-        with open(os.path.join(self.directory, ".optimizer.pickle"), "r+b") as f:
-            return pickle.loads(f.read())
+        if self.__optimizer is None:
+            with open(os.path.join(self.directory, ".optimizer.pickle"), "r+b") as f:
+                self.__optimizer = pickle.loads(f.read())
+        return self.__optimizer
 
     def __str__(self):
         return self.text
@@ -96,6 +99,9 @@ class Aggregator(object):
         """
         return [phase for phase in self.phases if
                 all([getattr(phase, key) == value for key, value in kwargs.items()])]
+
+    def optimizers_with(self, **kwargs) -> [non_linear.NonLinearOptimizer]:
+        return [phase.optimizer for phase in self.phases_with(**kwargs)]
 
     def model_results(self, **kwargs) -> str:
         """
