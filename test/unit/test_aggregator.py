@@ -95,3 +95,10 @@ class TestCase(object):
                                                             "results_one\n\n" \
                                                             "pipeline_2/phase_1/lens_1\n\n" \
                                                             "results_two"
+
+    def test_nlo(self, one, two, three):
+        assert one.optimizer is not None
+        assert two.optimizer is not None
+        assert three.optimizer is not None
+
+        assert one.optimizer.variable.priors == two.optimizer.variable.priors
