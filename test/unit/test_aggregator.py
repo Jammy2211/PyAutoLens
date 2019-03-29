@@ -44,15 +44,15 @@ class TestCase(object):
     def test_attributes(self, one, two, three):
         assert one.pipeline == "pipeline_1"
         assert one.phase == "phase_1"
-        assert one.lens == "lens_1"
+        assert one.data == "lens_1"
 
         assert two.pipeline == "pipeline_2"
         assert two.phase == "phase_1"
-        assert two.lens == "lens_1"
+        assert two.data == "lens_1"
 
         assert three.pipeline == "pipeline_1"
         assert three.phase == "phase_2"
-        assert three.lens == "lens_2"
+        assert three.data == "lens_2"
 
     def test_filter_phases(self, aggregator, one, two, three):
         result = aggregator.phases_with()
@@ -67,7 +67,7 @@ class TestCase(object):
         assert one in result
         assert three in result
 
-        result = aggregator.phases_with(lens="lens_2")
+        result = aggregator.phases_with(data="lens_2")
         assert [three] == result
 
         result = aggregator.phases_with(pipeline="pipeline_2", phase="phase_1")
