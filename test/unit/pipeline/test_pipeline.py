@@ -83,12 +83,14 @@ def make_mock_file(monkeypatch):
 
 
 class TestMetaData(object):
-    def test_name(self, mock_files):
+    def test_files(self, mock_files):
         pipeline = pl.PipelineImaging("pipeline_name", DummyPhaseImaging("phase_name", "phase_path"))
         pipeline.run(MockCCDData("data_name"))
 
         assert "phase_name/.metadata" in mock_files[0].filename
         assert mock_files[0].text == "pipeline=pipeline_name\nphase=phase_name\nlens=data_name"
+
+        assert "phase_name/.optimizer.pickle" in mock_files[1].filename
 
 
 class TestPassMask(object):
