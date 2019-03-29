@@ -11,7 +11,7 @@ class PipelineImaging(Pipeline):
             with open("{}/.metadata".format(path),
                       "w+") as f:
                 f.write("pipeline={}\nphase={}\nlens={}".format(self.pipeline_name, phase.phase_name, data.name))
-            with open("{}/.optimizer.pickle".format(path), "w+") as f:
+            with open("{}/.optimizer.pickle".format(path), "w+b") as f:
                 f.write(pickle.dumps(phase.optimizer))
             return phase.run(data=data, results=results, mask=mask, positions=positions)
 
