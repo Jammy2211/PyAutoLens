@@ -20,10 +20,9 @@ conf.instance = conf.Config(config_path=config_path, output_path=output_path)
 
 def pipeline():
     integration_util.reset_paths(test_name=test_name, output_path=output_path)
-    ccd_data = simulation_util.load_test_ccd_data(data_type='lens_and_source_smooth', data_resolution='LSST',
-                                                  lens_name=test_name)
+    ccd_data = simulation_util.load_test_ccd_data(data_type='lens_and_source_smooth', data_resolution='LSST')
     pipeline = make_pipeline(test_name=test_name)
-    pipeline.run(data=ccd_data)
+    pipeline.run(data=ccd_data, data_name=test_name)
 
 
 def make_pipeline(test_name):

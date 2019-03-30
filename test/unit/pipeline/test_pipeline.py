@@ -48,8 +48,7 @@ class DummyPhaseImaging(object):
 
 
 class MockCCDData(object):
-    def __init__(self, name):
-        self.name = name
+    pass
 
 
 class MockFile(object):
@@ -67,26 +66,30 @@ class MockFile(object):
         pass
 
 
-@pytest.fixture(name="mock_file", autouse=True)
+@pytest.fixture(name="mock_files", autouse=True)
 def make_mock_file(monkeypatch):
-    file = MockFile()
+    files = []
 
     def mock_open(filename, flag):
-        assert flag == "w+"
+        assert flag in ("w+", "w+b")
+        file = MockFile()
         file.filename = filename
+        files.append(file)
         return file
 
     monkeypatch.setattr(builtins, 'open', mock_open)
-    return file
+    return files
 
 
 class TestMetaData(object):
-    def test_name(self, mock_file):
+    def test_files(self, mock_files):
         pipeline = pl.PipelineImaging("pipeline_name", DummyPhaseImaging("phase_name", "phase_path"))
-        pipeline.run(MockCCDData("data_name"))
+        pipeline.run(MockCCDData(), data_name="data_name")
 
-        assert "phase_name/.metadata" in mock_file.filename
-        assert mock_file.text == "pipeline=pipeline_name\nphase=phase_name\nlens=data_name"
+        assert "phase_name/.metadata" in mock_files[0].filename
+        assert mock_files[0].text == "pipeline=pipeline_name\nphase=phase_name\ndata=data_name"
+
+        assert "phase_name/.optimizer.pickle" in mock_files[1].filename
 
 
 class TestPassMask(object):
@@ -95,7 +98,7 @@ class TestPassMask(object):
         phase_1 = DummyPhaseImaging("one")
         phase_2 = DummyPhaseImaging("two")
         pipeline = pl.PipelineImaging("", phase_1, phase_2)
-        pipeline.run(data=MockCCDData(""), mask=mask)
+        pipeline.run(data=MockCCDData(), mask=mask)
 
         assert phase_1.mask is mask
         assert phase_2.mask is mask
@@ -107,7 +110,7 @@ class TestPassPositions(object):
         phase_1 = DummyPhaseImaging("one")
         phase_2 = DummyPhaseImaging("two")
         pipeline = pl.PipelineImaging("", phase_1, phase_2)
-        pipeline.run(data=MockCCDData(""), positions=positions)
+        pipeline.run(data=MockCCDData(), positions=positions)
 
         assert phase_1.positions == positions
         assert phase_2.positions == positions
@@ -119,7 +122,7 @@ class TestPipelineImaging(object):
         phase_2 = DummyPhaseImaging("two")
         pipeline = pl.PipelineImaging("", phase_1, phase_2)
 
-        pipeline.run(MockCCDData(""))
+        pipeline.run(MockCCDData())
 
         assert len(phase_2.results) == 2
 
@@ -140,6 +143,7 @@ class DummyPhasePositions(object):
         self.results = None
         self.pixel_scale = None
         self.phase_name = phase_name
+        self.phase_path = phase_name
         self.optimizer = Optimizer()
 
     def run(self, positions, pixel_scale, results):

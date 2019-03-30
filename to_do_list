@@ -2,6 +2,11 @@ Hey, welcome to my PyAutoLens to-do. This should give you a sense of what we're 
 
 Let me know if you think anything is missing, or should be pushed up the to-do list ;)
 
+Git Issues:
+
+- include sigma in variable prior links
+- non linear grid search stil not using input prams (check)
+
 Big Picture:
 
 - RJLens pipelines.
@@ -64,3 +69,11 @@ Bugs:
 
 
 Notes:
+
+Useful stats for a fit:
+
+Residual Flux total
+Residual Flux Fraction
+Reduced Chi Squared
+Summed regularization
+Stuff combining chi squared with regularization
