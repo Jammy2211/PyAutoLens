@@ -83,18 +83,18 @@ class TestCase(object):
         assert two.header == "pipeline_2/phase_1/lens_1"
         assert three.header == "pipeline_1/phase_2/lens_2"
 
-    def test_aggregator_model_results(self, aggregator):
-        assert aggregator.model_results() == "pipeline_1/phase_2/lens_2\n\n" \
-                                             "results_three\n\n" \
-                                             "pipeline_1/phase_1/lens_1\n\n" \
-                                             "results_one\n\n" \
-                                             "pipeline_2/phase_1/lens_1\n\n" \
-                                             "results_two"
-
-        assert aggregator.model_results(phase="phase_1") == "pipeline_1/phase_1/lens_1\n\n" \
-                                                            "results_one\n\n" \
-                                                            "pipeline_2/phase_1/lens_1\n\n" \
-                                                            "results_two"
+    # def test_aggregator_model_results(self, aggregator):
+    #     assert aggregator.model_results() == "pipeline_1/phase_2/lens_2\n\n" \
+    #                                          "results_three\n\n" \
+    #                                          "pipeline_1/phase_1/lens_1\n\n" \
+    #                                          "results_one\n\n" \
+    #                                          "pipeline_2/phase_1/lens_1\n\n" \
+    #                                          "results_two"
+    #
+    #     assert aggregator.model_results(phase="phase_1") == "pipeline_1/phase_1/lens_1\n\n" \
+    #                                                         "results_one\n\n" \
+    #                                                         "pipeline_2/phase_1/lens_1\n\n" \
+    #                                                         "results_two"
 
     def test_nlo(self, one, two, three):
         assert one.optimizer is not None
