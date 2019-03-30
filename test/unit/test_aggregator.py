@@ -2,7 +2,7 @@ from os import path
 
 import pytest
 
-from autolens import aggregator as a
+from autofit import aggregator as a
 
 directory = path.dirname(path.realpath(__file__))
 aggregator_directory = "{}/test_files/aggregator".format(directory)
@@ -44,15 +44,15 @@ class TestCase(object):
     def test_attributes(self, one, two, three):
         assert one.pipeline == "pipeline_1"
         assert one.phase == "phase_1"
-        assert one.lens == "lens_1"
+        assert one.data == "lens_1"
 
         assert two.pipeline == "pipeline_2"
         assert two.phase == "phase_1"
-        assert two.lens == "lens_1"
+        assert two.data == "lens_1"
 
         assert three.pipeline == "pipeline_1"
         assert three.phase == "phase_2"
-        assert three.lens == "lens_2"
+        assert three.data == "lens_2"
 
     def test_filter_phases(self, aggregator, one, two, three):
         result = aggregator.phases_with()
@@ -67,7 +67,7 @@ class TestCase(object):
         assert one in result
         assert three in result
 
-        result = aggregator.phases_with(lens="lens_2")
+        result = aggregator.phases_with(data="lens_2")
         assert [three] == result
 
         result = aggregator.phases_with(pipeline="pipeline_2", phase="phase_1")
@@ -95,3 +95,23 @@ class TestCase(object):
     #                                                         "results_one\n\n" \
     #                                                         "pipeline_2/phase_1/lens_1\n\n" \
     #                                                         "results_two"
+
+    def test_nlo(self, one, two, three):
+        assert one.optimizer is not None
+        assert two.optimizer is not None
+        assert three.optimizer is not None
+
+        assert one.optimizer.variable.priors == two.optimizer.variable.priors
+
+    def test_filter_optimizers(self, aggregator, one, two, three):
+        result = aggregator.optimizers_with()
+
+        assert len(result) == 3
+        assert one.optimizer in result
+        assert two.optimizer in result
+        assert three.optimizer in result
+
+        result = aggregator.optimizers_with(pipeline="pipeline_1")
+        assert len(result) == 2
+        assert one.optimizer in result
+        assert three.optimizer in result
