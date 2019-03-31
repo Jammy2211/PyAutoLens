@@ -17,11 +17,14 @@ Big Picture:
 Small Picture:
 
 - challenge halo info output.
+- MultiNest MPI
 - Challenge mass errors.
 - redshifts into pipeline.
 - clean up plotting_centres of profiles in plotters (dodgy if loop in plotter, color by galaxy).
 - hyper galaxy phase stuff.
+- Expanded visualization tests.
 - Expand intepolation tests and write tutorial.
+- memory lite mode
 
 Short term:
 
