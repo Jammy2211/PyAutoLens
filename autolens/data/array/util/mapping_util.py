@@ -370,7 +370,9 @@ def regular_to_sparse_from_sparse_mappings(regular_to_unmasked_sparse, unmasked_
     regular_to_sparse = np.zeros(total_regular_pixels)
 
     for regular_index in range(total_regular_pixels):
+    #    print(regular_index, regular_to_unmasked_sparse[regular_index], unmasked_sparse_to_sparse.shape[0])
         regular_to_sparse[regular_index] = unmasked_sparse_to_sparse[regular_to_unmasked_sparse[regular_index]]
+
 
     return regular_to_sparse
 

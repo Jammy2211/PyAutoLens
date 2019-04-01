@@ -85,7 +85,7 @@ class TestImagePlanePixelization:
                                        [True, True, False, False, False],
                                        [True, True, False, False, False],
                                        [True,  True, True,  True,  True],
-                                       [True,  True, True,  True,  True]]), pixel_scale=1.0, centre=(1.0, 1.0))
+                                       [True,  True, True,  True,  True]]), pixel_scale=1.0)
 
         regular_grid = grids.RegularGrid.from_mask(mask=ma)
 
