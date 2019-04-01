@@ -200,6 +200,8 @@ class Array(np.ndarray):
         """
         arguments = vars(self)
         arguments.update({"array": array})
+        if 'centre' in arguments:
+            arguments.pop("centre")
         return self.__class__(**arguments)
 
     @classmethod
@@ -365,8 +367,8 @@ class ScaledSquarePixelArray(ScaledArray):
             raise exc.ImagingException('You have supplied two centres (pixels and arc-seconds) to the resize scaled'
                                        'array function')
 
-        return self.new_with_array(array=array_util.resized_array_2d_from_array_2d_and_resized_shape(array_2d=self, resized_shape=new_shape,
-                                                                                                     origin=new_centre))
+        return self.new_with_array(array=array_util.resized_array_2d_from_array_2d_and_resized_shape(
+            array_2d=self, resized_shape=new_shape, origin=new_centre))
 
     def binned_up_array_from_array(self, bin_up_factor, method):
 
