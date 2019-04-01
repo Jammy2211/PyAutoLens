@@ -16,7 +16,7 @@ class Mask(scaled_array.ScaledSquarePixelArray):
     """
 
     # noinspection PyUnusedLocal
-    def __init__(self, array, pixel_scale, centre=(0.0, 0.0), origin=(0.0, 0.0)):
+    def __init__(self, array, pixel_scale, origin=(0.0, 0.0)):
         """ A mask, which is applied to a 2D array of hyper to extract a set of unmasked image pixels (i.e. mask entry \
         is *False* or 0) which are then fitted in an analysis.
         
@@ -34,14 +34,13 @@ class Mask(scaled_array.ScaledSquarePixelArray):
             The (y,x) arc-second centre of the mask provided it is a standard geometric shape (e.g. a circle).
         """
         # noinspection PyArgumentList
-        self.centre = centre
         super(Mask, self).__init__(array=array, pixel_scale=pixel_scale, origin=origin)
 
     def __array_finalize__(self, obj):
         if hasattr(obj, "pixel_scale"):
             self.pixel_scale = obj.pixel_scale
-        if hasattr(obj, "centre"):
-            self.centre = obj.centre
+        if hasattr(obj, 'origin'):
+            self.origin = obj.origin
         if hasattr(obj, 'origin'):
             self.origin = obj.origin
 
@@ -84,7 +83,7 @@ class Mask(scaled_array.ScaledSquarePixelArray):
         mask = mask_util.mask_circular_from_shape_pixel_scale_and_radius(shape, pixel_scale, radius_arcsec,
                                                                          centre)
         if invert: mask = np.invert(mask)
-        return cls(array=mask.astype('bool'), pixel_scale=pixel_scale, centre=centre)
+        return cls(array=mask.astype('bool'), pixel_scale=pixel_scale)
 
     @classmethod
     def circular_annular(cls, shape, pixel_scale, inner_radius_arcsec, outer_radius_arcsec, centre=(0., 0.),
@@ -108,7 +107,7 @@ class Mask(scaled_array.ScaledSquarePixelArray):
         mask = mask_util.mask_circular_annular_from_shape_pixel_scale_and_radii(shape, pixel_scale, inner_radius_arcsec,
                                                                                 outer_radius_arcsec, centre)
         if invert: mask = np.invert(mask)
-        return cls(array=mask.astype('bool'), pixel_scale=pixel_scale, centre=centre)
+        return cls(array=mask.astype('bool'), pixel_scale=pixel_scale)
 
     @classmethod
     def circular_anti_annular(cls, shape, pixel_scale, inner_radius_arcsec, outer_radius_arcsec, outer_radius_2_arcsec,
@@ -140,7 +139,7 @@ class Mask(scaled_array.ScaledSquarePixelArray):
                                                                                      outer_radius_arcsec,
                                                                                      outer_radius_2_arcsec, centre)
         if invert: mask = np.invert(mask)
-        return cls(array=mask.astype('bool'), pixel_scale=pixel_scale, centre=centre)
+        return cls(array=mask.astype('bool'), pixel_scale=pixel_scale)
 
     @classmethod
     def elliptical(cls, shape, pixel_scale, major_axis_radius_arcsec, axis_ratio, phi, centre=(0., 0.),
@@ -166,7 +165,7 @@ class Mask(scaled_array.ScaledSquarePixelArray):
         mask = mask_util.mask_elliptical_from_shape_pixel_scale_and_radius(shape, pixel_scale, major_axis_radius_arcsec,
                                                                           axis_ratio, phi, centre)
         if invert: mask = np.invert(mask)
-        return cls(array=mask.astype('bool'), pixel_scale=pixel_scale, centre=centre)
+        return cls(array=mask.astype('bool'), pixel_scale=pixel_scale)
 
     @classmethod
     def elliptical_annular(cls, shape, pixel_scale,inner_major_axis_radius_arcsec, inner_axis_ratio, inner_phi,
@@ -202,11 +201,18 @@ class Mask(scaled_array.ScaledSquarePixelArray):
                            inner_major_axis_radius_arcsec, inner_axis_ratio, inner_phi,
                            outer_major_axis_radius_arcsec, outer_axis_ratio, outer_phi, centre)
         if invert: mask = np.invert(mask)
-        return cls(array=mask.astype('bool'), pixel_scale=pixel_scale, centre=centre)
+        return cls(array=mask.astype('bool'), pixel_scale=pixel_scale)
 
     def binned_up_mask_from_mask(self, bin_up_factor):
         return Mask(array=mask_util.bin_up_mask_2d(mask_2d=self, bin_up_factor=bin_up_factor),
-                    pixel_scale=self.pixel_scale*bin_up_factor, centre=self.centre, origin=self.origin)
+                    pixel_scale=self.pixel_scale*bin_up_factor, origin=self.origin)
+
+    @property
+    @array_util.Memoizer()
+    def centre(self):
+        centre_y = (np.max(self.masked_grid_1d[:,0]) + np.min(self.masked_grid_1d[:,0]))/2.0
+        centre_x = (np.max(self.masked_grid_1d[:,1]) + np.min(self.masked_grid_1d[:,1]))/2.0
+        return (centre_y, centre_x)
 
     @property
     def pixels_in_mask(self):
