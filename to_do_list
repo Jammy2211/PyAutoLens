@@ -16,9 +16,11 @@ Big Picture:
 
 Small Picture:
 
+- Add phase options into phase tag lines.
+- split inversion scripts into small and big.
 - challenge halo info output.
-- MultiNest MPI
 - Challenge mass errors.
+- MultiNest MPI
 - redshifts into pipeline.
 - clean up plotting_centres of profiles in plotters (dodgy if loop in plotter, color by galaxy).
 - hyper galaxy phase stuff.

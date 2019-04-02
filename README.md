@@ -154,7 +154,7 @@ export PYTHONPATH=/path/to/autolens_workspace/
 
 You can test everything is working by running the example pipeline runner in the autolens_workspace
 ```
-python3 /path/to/autolens_workspace/runners/pipeline_runner.py
+python3 /path/to/autolens_workspace/runners/runner.py
 ```
 
 ## Installation with pip
@@ -179,7 +179,7 @@ export PYTHONPATH=/path/to/autolens_workspace/
 
 You can test everything is working by running the example pipeline runner in the autolens_workspace
 ```
-python3 /path/to/autolens_workspace/runners/pipeline_runner.py
+python3 /path/to/autolens_workspace/runners/runner.py
 ```
 
 ## Support & Discussion
@@ -193,6 +193,8 @@ If you have any suggestions or would like to contribute please get in touch.
 ## Publications
 
 The following papers use **PyAutoLens**:
+
+[The molecular-gas properties in the gravitationally lensed merger HATLAS J142935.3-002836][https://arxiv.org/abs/1904.00307]
 
 [Galaxy structure with strong gravitational lensing: decomposing the internal mass distribution of massive elliptical galaxies](https://arxiv.org/abs/1901.07801)
 
