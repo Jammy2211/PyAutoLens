@@ -54,7 +54,7 @@ setup(
         'Programming Language :: Python :: 3.7'
     ],
     keywords='cli',
-    packages=find_packages(exclude=['docs', 'tests*', 'workspace', 'workspace_jam']),
+    packages=find_packages(exclude=['docs', 'tests*']),
     install_requires=['docopt',
                       'numpy==1.16.2',
                       'astropy',
