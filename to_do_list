@@ -16,8 +16,6 @@ Big Picture:
 
 Small Picture:
 
-- Add phase options into phase tag lines.
-- split inversion scripts into small and big.
 - challenge halo info output.
 - Challenge mass errors.
 - MultiNest MPI

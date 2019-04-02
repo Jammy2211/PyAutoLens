@@ -48,7 +48,7 @@ def make_pipeline(test_name):
             self.lens_galaxies.lens.disk.intensity = prior.UniformPrior(lower_limit=1.99, upper_limit=2.01)
             self.lens_galaxies.lens.disk.effective_radius = prior.UniformPrior(lower_limit=1.95, upper_limit=2.05)
 
-    phase1 = QuickPhase(phase_name='phase_1', phase_folders=[test_type, test_name],
+    phase1 = QuickPhase(phase_name='phase_1', phase_tag=None, phase_folders=[test_type, test_name],
                         lens_galaxies=dict(lens=gm.GalaxyModel(bulge=lp.EllipticalSersic,
                                                                disk=lp.EllipticalExponential)),
                         optimizer_class=nl.MultiNest)
