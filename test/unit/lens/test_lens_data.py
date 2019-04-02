@@ -56,7 +56,7 @@ class TestLensData(object):
         assert (lens_data.noise_map == 2.0*np.ones((6,6))).all()
 
         assert lens_data.image_psf_shape == (3,3)
-        assert lens_data.mapping_matrix_psf_shape == (3,3)
+        assert lens_data.inversion_psf_shape == (3,3)
 
     def test__masking(self, lens_data):
 
