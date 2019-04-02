@@ -6,6 +6,9 @@ Git Issues:
 
 - include sigma in variable prior links
 - non linear grid search stil not using input prams (check)
+- Raise error if multinest pickle changed.
+
+ overwrite model.info et al.
 
 Big Picture:
 

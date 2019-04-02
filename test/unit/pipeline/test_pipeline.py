@@ -176,24 +176,3 @@ class TestPipelinePositions(object):
         assert (phase_1, phase_2, phase_3) == (pipeline1 + pipeline2).phases
 
 
-class TestTaggers:
-
-    def test__bin_up_factor_tagger(self):
-
-        tag = pl.bin_up_factor_tag_from_bin_up_factor(bin_up_factor=1)
-        assert tag == ''
-        tag = pl.bin_up_factor_tag_from_bin_up_factor(bin_up_factor=2)
-        assert tag == '_bin_up_factor_2'
-        tag = pl.bin_up_factor_tag_from_bin_up_factor(bin_up_factor=3)
-        assert tag == '_bin_up_factor_3'
-        
-    def test__interp_pixel_scale_tagger(self):
-
-        tag = pl.interp_pixel_scale_tag_from_interp_pixel_scale(interp_pixel_scale=None)
-        assert tag == ''
-        tag = pl.interp_pixel_scale_tag_from_interp_pixel_scale(interp_pixel_scale=0.5)
-        assert tag == '_interp_pixel_scale_0.5'
-        tag = pl.interp_pixel_scale_tag_from_interp_pixel_scale(interp_pixel_scale=0.2)
-        assert tag == '_interp_pixel_scale_0.2'
-        tag = pl.interp_pixel_scale_tag_from_interp_pixel_scale(interp_pixel_scale=0.1)
-        assert tag == '_interp_pixel_scale_0.1'
