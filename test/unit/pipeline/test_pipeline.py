@@ -29,11 +29,12 @@ class Optimizer(object):
 
 
 class DummyPhaseImaging(object):
-    def __init__(self, phase_name, phase_path=None):
+    def __init__(self, phase_name, phase_tag='', phase_path=None):
         self.data = None
         self.positions = None
         self.results = None
         self.phase_name = phase_name
+        self.phase_tag = phase_tag
         self.phase_path = phase_path or phase_name
         self.mask = None
 
@@ -83,7 +84,7 @@ def make_mock_file(monkeypatch):
 
 class TestMetaData(object):
     def test_files(self, mock_files):
-        pipeline = pl.PipelineImaging("pipeline_name", DummyPhaseImaging("phase_name", "phase_path"))
+        pipeline = pl.PipelineImaging("pipeline_name", DummyPhaseImaging(phase_name="phase_name", phase_path="phase_path"))
         pipeline.run(MockCCDData(), data_name="data_name")
 
         assert "phase_name/.metadata" in mock_files[0].filename
@@ -143,6 +144,7 @@ class DummyPhasePositions(object):
         self.results = None
         self.pixel_scale = None
         self.phase_name = phase_name
+        self.phase_tag = ''
         self.phase_path = phase_name
         self.optimizer = Optimizer()
 
@@ -155,8 +157,8 @@ class DummyPhasePositions(object):
 
 class TestPipelinePositions(object):
     def test_run_pipeline(self):
-        phase_1 = DummyPhasePositions("one")
-        phase_2 = DummyPhasePositions("two")
+        phase_1 = DummyPhasePositions(phase_name="one")
+        phase_2 = DummyPhasePositions(phase_name="two")
         pipeline = pl.PipelinePositions("", phase_1, phase_2)
 
         pipeline.run(None, None)
