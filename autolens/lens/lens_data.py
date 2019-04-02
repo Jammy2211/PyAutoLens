@@ -6,7 +6,7 @@ from autolens.model.inversion import convolution as inversion_convolution
 
 class LensData(object):
 
-    def __init__(self, ccd_data, mask, sub_grid_size=2, image_psf_shape=None, mapping_matrix_psf_shape=None,
+    def __init__(self, ccd_data, mask, sub_grid_size=2, image_psf_shape=None, inversion_psf_shape=None,
                  positions=None, interp_pixel_scale=None):
         """
         The lens data is the collection of data (image, noise-map, PSF), a mask, grid_stack, convolver \
@@ -27,7 +27,7 @@ class LensData(object):
         image_psf_shape : (int, int)
             The shape of the PSF used for convolving model image generated using analytic light profiles. A smaller \
             shape will trim the PSF relative to the input image PSF, giving a faster analysis run-time.
-        mapping_matrix_psf_shape : (int, int)
+        inversion_psf_shape : (int, int)
             The shape of the PSF used for convolving the inversion mapping matrix. A smaller \
             shape will trim the PSF relative to the input image PSF, giving a faster analysis run-time.
         positions : [[]]
@@ -62,13 +62,13 @@ class LensData(object):
                                         blurring_mask=mask.blurring_mask_for_psf_shape(psf_shape=self.image_psf_shape),
                                         psf=self.psf.resized_scaled_array_from_array(new_shape=self.image_psf_shape))
 
-        if mapping_matrix_psf_shape is None:
-            self.mapping_matrix_psf_shape = self.psf.shape
+        if inversion_psf_shape is None:
+            self.inversion_psf_shape = self.psf.shape
         else:
-            self.mapping_matrix_psf_shape = mapping_matrix_psf_shape
+            self.inversion_psf_shape = inversion_psf_shape
 
-        self.convolver_mapping_matrix = inversion_convolution.ConvolverMappingMatrix(self.mask,
-                      self.psf.resized_scaled_array_from_array(new_shape=self.mapping_matrix_psf_shape))
+        self.convolver_mapping_matrix = inversion_convolution.ConvolverMappingMatrix(
+            self.mask, self.psf.resized_scaled_array_from_array(new_shape=self.inversion_psf_shape))
 
         self.grid_stack = grids.GridStack.grid_stack_from_mask_sub_grid_size_and_psf_shape(mask=mask,
                                               sub_grid_size=sub_grid_size, psf_shape=self.image_psf_shape)
@@ -95,7 +95,7 @@ class LensData(object):
         ccd_data_with_modified_image = self.ccd_data.new_ccd_data_with_modified_image(modified_image=modified_image)
 
         return LensData(ccd_data=ccd_data_with_modified_image, mask=self.mask, sub_grid_size=self.sub_grid_size,
-                        image_psf_shape=self.image_psf_shape, mapping_matrix_psf_shape=self.mapping_matrix_psf_shape,
+                        image_psf_shape=self.image_psf_shape, inversion_psf_shape=self.inversion_psf_shape,
                         positions=self.positions, interp_pixel_scale=self.interp_pixel_scale)
 
     def new_lens_data_with_binned_up_ccd_data_and_mask(self, bin_up_factor):
@@ -104,7 +104,7 @@ class LensData(object):
         binned_up_mask = self.mask.binned_up_mask_from_mask(bin_up_factor=bin_up_factor)
 
         return LensData(ccd_data=binned_up_ccd_data, mask=binned_up_mask, sub_grid_size=self.sub_grid_size,
-                        image_psf_shape=self.image_psf_shape, mapping_matrix_psf_shape=self.mapping_matrix_psf_shape,
+                        image_psf_shape=self.image_psf_shape, inversion_psf_shape=self.inversion_psf_shape,
                         positions=self.positions, interp_pixel_scale=self.interp_pixel_scale)
 
 
@@ -135,7 +135,7 @@ class LensData(object):
 class LensDataHyper(LensData):
 
     def __init__(self, ccd_data, mask, hyper_model_image, hyper_galaxy_images, hyper_minimum_values, sub_grid_size=2,
-                 image_psf_shape=None, mapping_matrix_psf_shape=None, positions=None, interp_pixel_scale=None):
+                 image_psf_shape=None, inversion_psf_shape=None, positions=None, interp_pixel_scale=None):
         """
         The lens data is the collection of data (image, noise-map, PSF), a mask, grid_stack, convolver \
         and other utilities that are used for modeling and fitting an image of a strong lens.
@@ -158,7 +158,7 @@ class LensDataHyper(LensData):
         image_psf_shape : (int, int)
             The shape of the PSF used for convolving model image generated using analytic light profiles. A smaller \
             shape will trim the PSF relative to the input image PSF, giving a faster analysis run-time.
-        mapping_matrix_psf_shape : (int, int)
+        inversion_psf_shape : (int, int)
             The shape of the PSF used for convolving the inversion mapping matrix. A smaller \
             shape will trim the PSF relative to the input image PSF, giving a faster analysis run-time.
         positions : [[]]
@@ -169,7 +169,7 @@ class LensDataHyper(LensData):
             interpolated to the regular, sub and blurring grids.
         """
         super().__init__(ccd_data=ccd_data, mask=mask, sub_grid_size=sub_grid_size, image_psf_shape=image_psf_shape,
-                         mapping_matrix_psf_shape=mapping_matrix_psf_shape, positions=positions,
+                         inversion_psf_shape=inversion_psf_shape, positions=positions,
                          interp_pixel_scale=interp_pixel_scale)
 
         self.hyper_model_image = hyper_model_image
