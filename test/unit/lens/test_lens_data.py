@@ -56,7 +56,7 @@ class TestLensData(object):
         assert (lens_data.noise_map == 2.0*np.ones((6,6))).all()
 
         assert lens_data.image_psf_shape == (3,3)
-        assert lens_data.mapping_matrix_psf_shape == (3,3)
+        assert lens_data.inversion_psf_shape == (3,3)
 
     def test__masking(self, lens_data):
 
@@ -144,7 +144,7 @@ class TestLensData(object):
         mask[26, 26] = False
 
         lens_data = ld.LensData(image, mask, sub_grid_size=8, image_psf_shape=(5, 5),
-                                 mapping_matrix_psf_shape=(3, 3), positions=[np.array([[1.0, 1.0]])])
+                                inversion_psf_shape=(3, 3), positions=[np.array([[1.0, 1.0]])])
 
         assert lens_data.sub_grid_size == 8
         assert lens_data.convolver_image.psf_shape == (5, 5)
@@ -152,7 +152,7 @@ class TestLensData(object):
         assert (lens_data.positions[0] == np.array([[1.0, 1.0]])).all()
 
         assert lens_data.image_psf_shape == (5,5)
-        assert lens_data.mapping_matrix_psf_shape == (3,3)
+        assert lens_data.inversion_psf_shape == (3, 3)
 
     def test__lens_data_with_modified_image(self, lens_data):
 
