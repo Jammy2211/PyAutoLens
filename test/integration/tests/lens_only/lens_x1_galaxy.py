@@ -27,7 +27,7 @@ def pipeline():
 
 def make_pipeline(test_name):
 
-    phase1 = ph.LensPlanePhase(phase_name='phase_1', phase_folders=[test_type, test_name],
+    phase1 = ph.LensPlanePhase(phase_name='phase_1', phase_tag='tag', phase_folders=[test_type, test_name],
                                lens_galaxies=dict(lens=gm.GalaxyModel(sersic=lp.EllipticalSersic)),
                                optimizer_class=nl.MultiNest)
 
