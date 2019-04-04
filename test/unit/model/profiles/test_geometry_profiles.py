@@ -7,11 +7,13 @@ from autolens.model.profiles import geometry_profiles as gp
 
 
 class TestMemoize(object):
+
     def test_add_to_cache(self):
+
         class MyProfile(object):
             # noinspection PyMethodMayBeStatic
             @gp.cache
-            def my_method(self, grid):
+            def my_method(self, grid, grid_radial_minimum=None):
                 return grid
 
         profile = MyProfile()
@@ -35,26 +37,26 @@ class TestMemoize(object):
                 self.count = 0
 
             @gp.cache
-            def my_method(self, grid):
+            def my_method(self, grid, grid_radial_minimum=None):
                 self.count += 1
                 return self.count
 
         profile = CountingProfile()
 
-        assert profile.my_method(np.array([0])) == 1
-        assert profile.my_method(np.array([1])) == 2
-        assert profile.my_method(np.array([2])) == 3
-        assert profile.my_method(np.array([0])) == 1
-        assert profile.my_method(np.array([1])) == 2
+        assert profile.my_method(grid=np.array([0]), grid_radial_minimum=None) == 1
+        assert profile.my_method(grid=np.array([1]), grid_radial_minimum=None) == 2
+        assert profile.my_method(grid=np.array([2]), grid_radial_minimum=None) == 3
+        assert profile.my_method(grid=np.array([0]), grid_radial_minimum=None) == 1
+        assert profile.my_method(grid=np.array([1]), grid_radial_minimum=None) == 2
 
     def test_multiple_cached_methods(self):
         class MultiMethodProfile(object):
             @gp.cache
-            def method_one(self, grid):
+            def method_one(self, grid, grid_radial_minimum=None):
                 return grid
 
             @gp.cache
-            def method_two(self, grid):
+            def method_two(self, grid, grid_radial_minimum=None):
                 return grid
 
         profile = MultiMethodProfile()
@@ -66,6 +68,7 @@ class TestMemoize(object):
 
 
 class TestEllipticalProfile(object):
+
     class TestAnglesFromXAxis(object):
 
         def test__profile_angle_phi_is_0__cosine_and_sin_of_phi_is_1_and_0(self):
@@ -339,3 +342,72 @@ class TestSphericalProfile(object):
 
             assert transformed_grid[0, 0] == pytest.approx(grid_original[0, 0], 1e-5)
             assert transformed_grid[0, 1] == pytest.approx(grid_original[0, 1], 1e-5)
+
+
+class MockGridRadialMinimum(object):
+
+    def __init__(self):
+
+        pass
+
+    def grid_to_grid_radii(self, grid):
+        return np.sqrt(np.add(np.square(grid[:, 0]), np.square(grid[:, 1])))
+
+    @gp.move_grid_to_radial_minimum
+    def deflections_from_grid(self, grid, grid_radial_minimum):
+        return grid
+
+
+class TestGridRadialMinimum(object):
+
+    def test__mock_profile__grid_radial_minimum_is_0_or_below_radial_coordinates__no_changes(self):
+
+        grid = np.array([[2.0, 0.0], [4.0, 0.0], [6.0, 0.0]])
+        mock_profile = MockGridRadialMinimum()
+
+        deflections = mock_profile.deflections_from_grid(grid=grid, grid_radial_minimum=0.0)
+        assert (deflections == grid).all()
+
+        deflections = mock_profile.deflections_from_grid(grid=grid, grid_radial_minimum=0.5)
+        assert (deflections == grid).all()
+
+        deflections = mock_profile.deflections_from_grid(grid=grid, grid_radial_minimum=0.9)
+        assert (deflections == grid).all()
+
+    def test__mock_profile__grid_radial_minimum_is_above_some_radial_coordinates__moves_them_grid_radial_minimum(self):
+
+        grid = np.array([[2.0, 0.0], [4.0, 0.0], [6.0, 0.0]])
+        mock_profile = MockGridRadialMinimum()
+
+        deflections = mock_profile.deflections_from_grid(grid=grid, grid_radial_minimum=2.5)
+        deflections_radial = mock_profile.grid_to_grid_radii(grid=deflections)
+        assert (deflections_radial ==  np.array([2.5, 4.0, 6.0])).all()
+        assert (deflections ==  np.array([[2.5, 0.0], [4.0, 0.0], [6.0, 0.0]])).all()
+
+        deflections = mock_profile.deflections_from_grid(grid=grid, grid_radial_minimum=4.5)
+        deflections_radial = mock_profile.grid_to_grid_radii(grid=deflections)
+        assert (deflections_radial ==  np.array([4.5, 4.5, 6.0])).all()
+        assert (deflections ==  np.array([[4.5, 0.0], [4.5, 0.0], [6.0, 0.0]])).all()
+
+        deflections = mock_profile.deflections_from_grid(grid=grid, grid_radial_minimum=6.5)
+        deflections_radial = mock_profile.grid_to_grid_radii(grid=deflections)
+        assert (deflections_radial ==  np.array([6.5, 6.5, 6.5])).all()
+        assert (deflections ==  np.array([[6.5, 0.0], [6.5, 0.0], [6.5, 0.0]])).all()
+
+    def test__mock_profile__same_as_above_but_diagonal_coordinates(self):
+
+        grid = np.array([[np.sqrt(2.0), np.sqrt(2.0)], [1.0, np.sqrt(8.0)], [np.sqrt(8.0), np.sqrt(8.0)]])
+
+        mock_profile = MockGridRadialMinimum()
+
+        deflections = mock_profile.deflections_from_grid(grid=grid, grid_radial_minimum=2.5)
+        deflections_radial = mock_profile.grid_to_grid_radii(grid=deflections)
+        assert deflections == pytest.approx(np.array([[1.7677, 1.7677], [1.0, np.sqrt(8.0)],
+                                                      [np.sqrt(8), np.sqrt(8.0)]]), 1.0e-4)
+        assert deflections_radial ==  pytest.approx(np.array([2.5, 3.0, 4.0]), 1.0e-4)
+
+        deflections = mock_profile.deflections_from_grid(grid=grid, grid_radial_minimum=3.5)
+        deflections_radial = mock_profile.grid_to_grid_radii(grid=deflections)
+        assert deflections == pytest.approx(np.array([[2.47487373, 2.47487373], [1.16666667, 3.29983165],
+                                                      [np.sqrt(8), np.sqrt(8.0)]]), 1.0e-4)
+        assert deflections_radial ==  pytest.approx(np.array([3.5, 3.5, 4.0]), 1.0e-4)
