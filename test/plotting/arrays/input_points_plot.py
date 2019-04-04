@@ -4,6 +4,5 @@ import numpy as np
 
 array = scaled_array.ScaledSquarePixelArray(array=np.ones((50, 50)), pixel_scale=0.1)
 
-centres = [(1.0, 1.0), (-1.0, 1.0), (-2.0, -2.0)]
-
-array_plotters.plot_array(array=array, centres=centres)
+array_plotters.plot_array(array=array, centres=[[(1.0, 1.0)], [(-1.0, 1.0)], [(-2.0, -2.0), (-3.0, -3.0)]])
+array_plotters.plot_array(array=array, positions=[[[1.0, 1.0], [2.0, 2.0]], [[-1.0, -1.0]]])

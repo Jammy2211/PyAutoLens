@@ -1,4 +1,3 @@
-from autolens.data import ccd
 from autolens.data.array import mask as msk
 from autolens.model.profiles import mass_profiles as mp
 from autolens.model.inversion import pixelizations as pix
@@ -7,7 +6,6 @@ from autolens.model.galaxy import galaxy as g
 from autolens.lens import ray_tracing
 from autolens.lens import lens_fit
 from autolens.lens import lens_data as ld
-from autolens.data.plotters import ccd_plotters
 from autolens.lens.plotters import lens_fit_plotters
 from test.simulation import simulation_util
 

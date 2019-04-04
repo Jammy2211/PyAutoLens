@@ -492,21 +492,26 @@ class TestAbstractPlane(object):
 
             g0 = g.Galaxy(mass=mp.SphericalIsothermal(centre=(1.0, 1.0)))
             g1 = g.Galaxy(mass=mp.SphericalIsothermal(centre=(2.0, 2.0)))
+            g2 = g.Galaxy(mass0=mp.SphericalIsothermal(centre=(3.0, 3.0)),
+                          mass1=mp.SphericalIsothermal(centre=(4.0, 4.0)))
 
             plane = pl.AbstractPlane(galaxies=[g0], redshift=None)
-            assert plane.mass_profile_centres == [(1.0, 1.0)]
+            assert plane.mass_profile_centres == [[(1.0, 1.0)]]
 
             plane = pl.AbstractPlane(galaxies=[g1], redshift=None)
-            assert plane.mass_profile_centres == [(2.0, 2.0)]
+            assert plane.mass_profile_centres == [[(2.0, 2.0)]]
 
             plane = pl.AbstractPlane(galaxies=[g0, g1], redshift=None)
-            assert plane.mass_profile_centres == [(1.0, 1.0), (2.0, 2.0)]
+            assert plane.mass_profile_centres == [[(1.0, 1.0)], [(2.0, 2.0)]]
 
             plane = pl.AbstractPlane(galaxies=[g1, g0], redshift=None)
-            assert plane.mass_profile_centres == [(2.0, 2.0), (1.0, 1.0)]
+            assert plane.mass_profile_centres == [[(2.0, 2.0)], [(1.0, 1.0)]]
 
             plane = pl.AbstractPlane(galaxies=[g0, g.Galaxy(), g1, g.Galaxy()], redshift=None)
-            assert plane.mass_profile_centres == [(1.0, 1.0), (2.0, 2.0)]
+            assert plane.mass_profile_centres == [[(1.0, 1.0)], [(2.0, 2.0)]]
+
+            plane = pl.AbstractPlane(galaxies=[g0, g.Galaxy(), g1, g.Galaxy(), g2], redshift=None)
+            assert plane.mass_profile_centres == [[(1.0, 1.0)], [(2.0, 2.0)], [(3.0, 3.0), (4.0, 4.0)]]
 
 class TestAbstractPlaneGridded(object):
     class TestGridLensing:
