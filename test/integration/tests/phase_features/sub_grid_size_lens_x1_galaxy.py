@@ -9,8 +9,8 @@ from autolens.model.profiles import light_profiles as lp
 from test.integration import integration_util
 from test.simulation import simulation_util
 
-test_type = 'lens_only'
-test_name = "lens_x1_galaxy"
+test_type = 'phase_features'
+test_name = "sub_grid_size_lens_x1_galaxy"
 
 test_path = '{}/../../'.format(os.path.dirname(os.path.realpath(__file__)))
 output_path = test_path + 'output/'
@@ -29,6 +29,8 @@ def make_pipeline(test_name):
 
     phase1 = ph.LensPlanePhase(phase_name='phase_1', phase_folders=[test_type, test_name],
                                lens_galaxies=dict(lens=gm.GalaxyModel(sersic=lp.EllipticalSersic)),
+                               sub_grid_size=2,
+                               bin_up_factor=2,
                                optimizer_class=nl.MultiNest)
 
     phase1.optimizer.const_efficiency_mode = True
