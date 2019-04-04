@@ -437,15 +437,18 @@ def plot_centres(array, centres, units, kpc_per_arcsec, zoom_offset_arcsec):
     """
     if centres is not None:
 
-        centres = list(map(lambda centres_set : np.asarray(centres_set), centres))
-        for centre in centres:
+        centre_colors = itertools.cycle(["m", "y", "r", "w", "c", "b", "g", "k"])
 
-            if zoom_offset_arcsec is not None:
-                centre -= zoom_offset_arcsec
+        for centres_of_galaxy in centres:
+            color = next(centre_colors)
+            for centre in centres_of_galaxy:
 
-            centre_units = convert_grid_units(array=array, grid_arcsec=centre, units=units,
-                                              kpc_per_arcsec=kpc_per_arcsec)
-            plt.scatter(y=centre_units[0], x=centre_units[1], s=300, c='r', marker='x')
+                if zoom_offset_arcsec is not None:
+                    centre -= zoom_offset_arcsec
+
+                centre_units = convert_grid_units(array=array, grid_arcsec=centre, units=units,
+                                                  kpc_per_arcsec=kpc_per_arcsec)
+                plt.scatter(y=centre_units[0], x=centre_units[1], s=300, c=color, marker='x')
 
 def plot_mask(mask, units, kpc_per_arcsec, pointsize, zoom_offset_pixels):
     """Plot the mask of the array on the figure.
