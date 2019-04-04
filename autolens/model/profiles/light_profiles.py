@@ -19,7 +19,7 @@ class LightProfile(object):
         raise NotImplementedError("intensity_at_radius should be overridden")
 
     # noinspection PyMethodMayBeStatic
-    def intensities_from_grid(self, grid):
+    def intensities_from_grid(self, grid, grid_radial_minimum=None):
         """
         Abstract method for obtaining intensity at a grid of Cartesian (y,x) coordinates.
 
@@ -137,7 +137,8 @@ class EllipticalGaussian(EllipticalLightProfile):
                            np.exp(-0.5 * np.square(np.divide(grid_radii, self.sigma))))
 
     @geometry_profiles.transform_grid
-    def intensities_from_grid(self, grid):
+    @geometry_profiles.move_grid_to_radial_minimum
+    def intensities_from_grid(self, grid, grid_radial_minimum=None):
         """
         Calculate the intensity of the light profile on a grid of Cartesian (y,x) coordinates.
 
@@ -267,7 +268,8 @@ class EllipticalSersic(AbstractEllipticalSersic, EllipticalLightProfile):
                         np.add(np.power(np.divide(grid_radii, self.effective_radius), 1. / self.sersic_index), -1))))
 
     @geometry_profiles.transform_grid
-    def intensities_from_grid(self, grid):
+    @geometry_profiles.move_grid_to_radial_minimum
+    def intensities_from_grid(self, grid, grid_radial_minimum=None):
         """ Calculate the intensity of the light profile on a grid of Cartesian (y,x) coordinates.
 
         If the coordinates have not been transformed to the profile's geometry, this is performed automatically.
