@@ -10,6 +10,8 @@ Git Issues:
 
  overwrite model.info et al.
 
+- finish testing move grid radial
+
 Big Picture:
 
 - RJLens pipelines.
@@ -19,6 +21,9 @@ Big Picture:
 
 Small Picture:
 
+- Extract square around mask, so no rectnagular pixels.
+- positions still plotting wrong?
+- Pyquad deflection errors (power-law)
 - challenge halo info output.
 - Challenge mass errors.
 - MultiNest MPI
