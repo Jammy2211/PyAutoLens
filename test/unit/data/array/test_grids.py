@@ -1466,7 +1466,7 @@ class TestInterpolator:
 
         # noinspection PyUnusedLocal
         @grids.grid_interpolate
-        def func(profile, grid):
+        def func(profile, grid, grid_radial_minimum=None):
             result = np.zeros(grid.shape[0])
             result[0] = 1
             return result
@@ -1495,7 +1495,7 @@ class TestInterpolator:
 
         # noinspection PyUnusedLocal
         @grids.grid_interpolate
-        def func(profile, grid):
+        def func(profile, grid, grid_radial_minimum=None):
             result = np.zeros((grid.shape[0], 2))
             result[0,:] = 1
             return result

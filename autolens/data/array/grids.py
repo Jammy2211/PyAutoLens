@@ -1146,17 +1146,17 @@ def grid_interpolate(func):
     """
 
     @wraps(func)
-    def wrapper(profile, grid, *args, **kwargs):
+    def wrapper(profile, grid, grid_radial_minimum=None, *args, **kwargs):
         if hasattr(grid, "interpolator"):
             interpolator = grid.interpolator
             if grid.interpolator is not None:
-                values = func(profile, interpolator.interp_grid, *args, **kwargs)
+                values = func(profile, interpolator.interp_grid, grid_radial_minimum, *args, **kwargs)
                 if values.ndim == 1:
                     return interpolator.interpolated_values_from_values(values=values)
                 elif values.ndim == 2:
                     y_values = interpolator.interpolated_values_from_values(values=values[:, 0])
                     x_values = interpolator.interpolated_values_from_values(values=values[:, 1])
                     return np.asarray([y_values, x_values]).T
-        return func(profile, grid, *args, **kwargs)
+        return func(profile, grid, grid_radial_minimum, *args, **kwargs)
 
     return wrapper
