@@ -42,7 +42,8 @@ def setup_figure(figsize, as_subplot):
         new figure and so that it can be output using the *output_subplot_array* function.
     """
     if not as_subplot:
-        plt.figure(figsize=figsize)
+        fig = plt.figure(figsize=figsize)
+        return fig
 
 
 def set_title(title, titlesize):

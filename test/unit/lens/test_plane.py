@@ -486,32 +486,91 @@ class TestAbstractPlane(object):
 
             assert plane.einstein_mass_in_mass_units(critical_surface_mass_density_arcsec=2.0) is None
 
-    class TestMassProfileCentres:
+    class TestMassProfileGeometry:
 
-        def test__extracts_centres_of_all_mass_profiles_of_all_galaxies(self):
+        def test__extract_centres_of_all_mass_profiles_of_all_galaxies(self):
 
             g0 = g.Galaxy(mass=mp.SphericalIsothermal(centre=(1.0, 1.0)))
             g1 = g.Galaxy(mass=mp.SphericalIsothermal(centre=(2.0, 2.0)))
             g2 = g.Galaxy(mass0=mp.SphericalIsothermal(centre=(3.0, 3.0)),
                           mass1=mp.SphericalIsothermal(centre=(4.0, 4.0)))
 
+            plane = pl.AbstractPlane(galaxies=[g.Galaxy()], redshift=None)
+            assert plane.centres_of_galaxy_mass_profiles == None
+
             plane = pl.AbstractPlane(galaxies=[g0], redshift=None)
-            assert plane.mass_profile_centres == [[(1.0, 1.0)]]
+            assert plane.centres_of_galaxy_mass_profiles == [[(1.0, 1.0)]]
 
             plane = pl.AbstractPlane(galaxies=[g1], redshift=None)
-            assert plane.mass_profile_centres == [[(2.0, 2.0)]]
+            assert plane.centres_of_galaxy_mass_profiles == [[(2.0, 2.0)]]
 
             plane = pl.AbstractPlane(galaxies=[g0, g1], redshift=None)
-            assert plane.mass_profile_centres == [[(1.0, 1.0)], [(2.0, 2.0)]]
+            assert plane.centres_of_galaxy_mass_profiles == [[(1.0, 1.0)], [(2.0, 2.0)]]
 
             plane = pl.AbstractPlane(galaxies=[g1, g0], redshift=None)
-            assert plane.mass_profile_centres == [[(2.0, 2.0)], [(1.0, 1.0)]]
+            assert plane.centres_of_galaxy_mass_profiles == [[(2.0, 2.0)], [(1.0, 1.0)]]
 
             plane = pl.AbstractPlane(galaxies=[g0, g.Galaxy(), g1, g.Galaxy()], redshift=None)
-            assert plane.mass_profile_centres == [[(1.0, 1.0)], [(2.0, 2.0)]]
+            assert plane.centres_of_galaxy_mass_profiles == [[(1.0, 1.0)], [(2.0, 2.0)]]
 
             plane = pl.AbstractPlane(galaxies=[g0, g.Galaxy(), g1, g.Galaxy(), g2], redshift=None)
-            assert plane.mass_profile_centres == [[(1.0, 1.0)], [(2.0, 2.0)], [(3.0, 3.0), (4.0, 4.0)]]
+            assert plane.centres_of_galaxy_mass_profiles == [[(1.0, 1.0)], [(2.0, 2.0)], [(3.0, 3.0), (4.0, 4.0)]]
+
+        def test__extracts_axis_ratio_of_all_mass_profiles_of_all_galaxies(self):
+
+            g0 = g.Galaxy(mass=mp.EllipticalIsothermal(axis_ratio=0.9))
+            g1 = g.Galaxy(mass=mp.EllipticalIsothermal(axis_ratio=0.8))
+            g2 = g.Galaxy(mass0=mp.EllipticalIsothermal(axis_ratio=0.7),
+                          mass1=mp.EllipticalIsothermal(axis_ratio=0.6))
+
+            plane = pl.AbstractPlane(galaxies=[g.Galaxy()], redshift=None)
+            assert plane.axis_ratios_of_galaxy_mass_profiles == None
+
+            plane = pl.AbstractPlane(galaxies=[g0], redshift=None)
+            assert plane.axis_ratios_of_galaxy_mass_profiles == [[0.9]]
+
+            plane = pl.AbstractPlane(galaxies=[g1], redshift=None)
+            assert plane.axis_ratios_of_galaxy_mass_profiles == [[0.8]]
+
+            plane = pl.AbstractPlane(galaxies=[g0, g1], redshift=None)
+            assert plane.axis_ratios_of_galaxy_mass_profiles == [[0.9], [0.8]]
+
+            plane = pl.AbstractPlane(galaxies=[g1, g0], redshift=None)
+            assert plane.axis_ratios_of_galaxy_mass_profiles == [[0.8], [0.9]]
+
+            plane = pl.AbstractPlane(galaxies=[g0, g.Galaxy(), g1, g.Galaxy()], redshift=None)
+            assert plane.axis_ratios_of_galaxy_mass_profiles == [[0.9], [0.8]]
+
+            plane = pl.AbstractPlane(galaxies=[g0, g.Galaxy(), g1, g.Galaxy(), g2], redshift=None)
+            assert plane.axis_ratios_of_galaxy_mass_profiles == [[0.9], [0.8], [0.7, 0.6]]
+            
+        def test__extracts_phi_of_all_mass_profiles_of_all_galaxies(self):
+
+            g0 = g.Galaxy(mass=mp.EllipticalIsothermal(phi=0.9))
+            g1 = g.Galaxy(mass=mp.EllipticalIsothermal(phi=0.8))
+            g2 = g.Galaxy(mass0=mp.EllipticalIsothermal(phi=0.7),
+                          mass1=mp.EllipticalIsothermal(phi=0.6))
+
+            plane = pl.AbstractPlane(galaxies=[g.Galaxy()], redshift=None)
+            assert plane.phis_of_galaxy_mass_profiles == None
+
+            plane = pl.AbstractPlane(galaxies=[g0], redshift=None)
+            assert plane.phis_of_galaxy_mass_profiles == [[0.9]]
+
+            plane = pl.AbstractPlane(galaxies=[g1], redshift=None)
+            assert plane.phis_of_galaxy_mass_profiles == [[0.8]]
+
+            plane = pl.AbstractPlane(galaxies=[g0, g1], redshift=None)
+            assert plane.phis_of_galaxy_mass_profiles == [[0.9], [0.8]]
+
+            plane = pl.AbstractPlane(galaxies=[g1, g0], redshift=None)
+            assert plane.phis_of_galaxy_mass_profiles == [[0.8], [0.9]]
+
+            plane = pl.AbstractPlane(galaxies=[g0, g.Galaxy(), g1, g.Galaxy()], redshift=None)
+            assert plane.phis_of_galaxy_mass_profiles == [[0.9], [0.8]]
+
+            plane = pl.AbstractPlane(galaxies=[g0, g.Galaxy(), g1, g.Galaxy(), g2], redshift=None)
+            assert plane.phis_of_galaxy_mass_profiles == [[0.9], [0.8], [0.7, 0.6]]
 
 class TestAbstractPlaneGridded(object):
     class TestGridLensing:

@@ -299,7 +299,7 @@ class Mask(scaled_array.ScaledSquarePixelArray):
 
     @property
     def zoom_region(self):
-        """The zoomed rectangular region corresponding to the rectangle encompassing all unmasked values.
+        """The zoomed rectangular region corresponding to the square encompassing all unmasked values.
 
         This is used to zoom in on the region of an image that is used in an analysis for visualization."""
 
