@@ -109,8 +109,8 @@ class TestPointMass(object):
 
         point_mass = mp.PointMass(centre=(0.0, 0.0), einstein_radius=1.0)
 
-        deflections_1 = point_mass.deflections_from_grid(grid=np.array([[1.0, 0.0]]))
-        deflections_0 = point_mass.deflections_from_grid(grid=np.array([[0.000000001, 0.0]]))
+        deflections_1 = point_mass.deflections_from_grid(grid=np.array([[1e-8, 0.0]]))
+        deflections_0 = point_mass.deflections_from_grid(grid=np.array([[1e-9, 0.0]]))
         assert deflections_0 == pytest.approx(deflections_1, 1.0e-4)
 
         point_mass = mp.PointMass(centre=(1.0, 1.0), einstein_radius=1.0)
@@ -329,75 +329,9 @@ class TestCoredPowerLaw(object):
         
         cored_power_law = mp.EllipticalCoredPowerLaw(centre=(0.0, 0.0), einstein_radius=1.0, slope=2.0)
 
-        convergence_1 = cored_power_law.convergence_from_grid(grid=np.array([[1.0, 0.0]]))
-        convergence_0 = cored_power_law.convergence_from_grid(grid=np.array([[0.000000001, 0.0]]))
+        convergence_1 = cored_power_law.convergence_from_grid(grid=np.array([[1e-8, 0.0]]))
+        convergence_0 = cored_power_law.convergence_from_grid(grid=np.array([[1e-9, 0.0]]))
         assert convergence_0 == pytest.approx(convergence_1, 1.0e-4)
-
-        cored_power_law = mp.EllipticalCoredPowerLaw(centre=(1.0, 1.0), einstein_radius=1.0, slope=2.0)
-
-        convergence_1 = cored_power_law.convergence_from_grid(grid=np.array([[2.0, 1.0]]))
-        convergence_0 = cored_power_law.convergence_from_grid(grid=np.array([[1.000000001, 1.0]]))
-        assert convergence_0 == pytest.approx(convergence_1, 1.0e-4)
-
-        cored_power_law = mp.SphericalCoredPowerLaw(centre=(0.0, 0.0), einstein_radius=1.0, slope=2.0)
-
-        convergence_1 = cored_power_law.convergence_from_grid(grid=np.array([[1.0, 0.0]]))
-        convergence_0 = cored_power_law.convergence_from_grid(grid=np.array([[0.000000001, 0.0]]))
-        assert convergence_0 == pytest.approx(convergence_1, 1.0e-4)
-
-        cored_power_law = mp.SphericalCoredPowerLaw(centre=(1.0, 1.0), einstein_radius=1.0, slope=2.0)
-
-        convergence_1 = cored_power_law.convergence_from_grid(grid=np.array([[2.0, 1.0]]))
-        convergence_0 = cored_power_law.convergence_from_grid(grid=np.array([[1.000000001, 1.0]]))
-        assert convergence_0 == pytest.approx(convergence_1, 1.0e-4)
-
-        cored_power_law = mp.EllipticalCoredPowerLaw(centre=(0.0, 0.0), einstein_radius=1.0, slope=2.0)
-
-        potential_1 = cored_power_law.potential_from_grid(grid=np.array([[1.0, 0.0]]))
-        potential_0 = cored_power_law.potential_from_grid(grid=np.array([[0.000000001, 0.0]]))
-        assert potential_0 == pytest.approx(potential_1, 1.0e-4)
-
-        cored_power_law = mp.EllipticalCoredPowerLaw(centre=(1.0, 1.0), einstein_radius=1.0, slope=2.0)
-
-        potential_1 = cored_power_law.potential_from_grid(grid=np.array([[2.0, 1.0]]))
-        potential_0 = cored_power_law.potential_from_grid(grid=np.array([[1.000000001, 1.0]]))
-        assert potential_0 == pytest.approx(potential_1, 1.0e-4)
-
-        cored_power_law = mp.SphericalCoredPowerLaw(centre=(0.0, 0.0), einstein_radius=1.0, slope=2.0)
-
-        potential_1 = cored_power_law.potential_from_grid(grid=np.array([[1.0, 0.0]]))
-        potential_0 = cored_power_law.potential_from_grid(grid=np.array([[0.000000001, 0.0]]))
-        assert potential_0 == pytest.approx(potential_1, 1.0e-4)
-
-        cored_power_law = mp.SphericalCoredPowerLaw(centre=(1.0, 1.0), einstein_radius=1.0, slope=2.0)
-
-        potential_1 = cored_power_law.potential_from_grid(grid=np.array([[2.0, 1.0]]))
-        potential_0 = cored_power_law.potential_from_grid(grid=np.array([[1.000000001, 1.0]]))
-        assert potential_0 == pytest.approx(potential_1, 1.0e-4)
-
-        cored_power_law = mp.EllipticalCoredPowerLaw(centre=(0.0, 0.0), einstein_radius=1.0, slope=2.0)
-
-        deflections_1 = cored_power_law.deflections_from_grid(grid=np.array([[1.0, 0.0]]))
-        deflections_0 = cored_power_law.deflections_from_grid(grid=np.array([[0.000000001, 0.0]]))
-        assert deflections_0 == pytest.approx(deflections_1, 1.0e-4)
-
-        cored_power_law = mp.EllipticalCoredPowerLaw(centre=(1.0, 1.0), einstein_radius=1.0, slope=2.0)
-
-        deflections_1 = cored_power_law.deflections_from_grid(grid=np.array([[2.0, 1.0]]))
-        deflections_0 = cored_power_law.deflections_from_grid(grid=np.array([[1.000000001, 1.0]]))
-        assert deflections_0 == pytest.approx(deflections_1, 1.0e-4)
-
-        cored_power_law = mp.SphericalCoredPowerLaw(centre=(0.0, 0.0), einstein_radius=1.0, slope=2.0)
-
-        deflections_1 = cored_power_law.deflections_from_grid(grid=np.array([[1.0, 0.0]]))
-        deflections_0 = cored_power_law.deflections_from_grid(grid=np.array([[0.000000001, 0.0]]))
-        assert deflections_0 == pytest.approx(deflections_1, 1.0e-4)
-
-        cored_power_law = mp.SphericalCoredPowerLaw(centre=(1.0, 1.0), einstein_radius=1.0, slope=2.0)
-
-        deflections_1 = cored_power_law.deflections_from_grid(grid=np.array([[2.0, 1.0]]))
-        deflections_0 = cored_power_law.deflections_from_grid(grid=np.array([[1.000000001, 1.0]]))
-        assert deflections_0 == pytest.approx(deflections_1, 1.0e-4)
 
     def test__deflections_of_elliptical_profile__use_interpolate_and_cache_decorators(self):
 
@@ -585,75 +519,9 @@ class TestPowerLaw(object):
         
         power_law = mp.EllipticalPowerLaw(centre=(0.0, 0.0), einstein_radius=1.0, slope=2.0)
 
-        convergence_1 = power_law.convergence_from_grid(grid=np.array([[1.0, 0.0]]))
-        convergence_0 = power_law.convergence_from_grid(grid=np.array([[0.000000001, 0.0]]))
+        convergence_1 = power_law.convergence_from_grid(grid=np.array([[1.0e-8, 0.0]]))
+        convergence_0 = power_law.convergence_from_grid(grid=np.array([[1.0e-9, 0.0]]))
         assert convergence_0 == pytest.approx(convergence_1, 1.0e-4)
-
-        power_law = mp.EllipticalPowerLaw(centre=(1.0, 1.0), einstein_radius=1.0, slope=2.0)
-
-        convergence_1 = power_law.convergence_from_grid(grid=np.array([[2.0, 1.0]]))
-        convergence_0 = power_law.convergence_from_grid(grid=np.array([[1.000000001, 1.0]]))
-        assert convergence_0 == pytest.approx(convergence_1, 1.0e-4)
-
-        power_law = mp.SphericalPowerLaw(centre=(0.0, 0.0), einstein_radius=1.0, slope=2.0)
-
-        convergence_1 = power_law.convergence_from_grid(grid=np.array([[1.0, 0.0]]))
-        convergence_0 = power_law.convergence_from_grid(grid=np.array([[0.000000001, 0.0]]))
-        assert convergence_0 == pytest.approx(convergence_1, 1.0e-4)
-
-        power_law = mp.SphericalPowerLaw(centre=(1.0, 1.0), einstein_radius=1.0, slope=2.0)
-
-        convergence_1 = power_law.convergence_from_grid(grid=np.array([[2.0, 1.0]]))
-        convergence_0 = power_law.convergence_from_grid(grid=np.array([[1.000000001, 1.0]]))
-        assert convergence_0 == pytest.approx(convergence_1, 1.0e-4)
-        
-        power_law = mp.EllipticalPowerLaw(centre=(0.0, 0.0), einstein_radius=1.0, slope=2.0)
-
-        potential_1 = power_law.potential_from_grid(grid=np.array([[1.0, 0.0]]))
-        potential_0 = power_law.potential_from_grid(grid=np.array([[0.000000001, 0.0]]))
-        assert potential_0 == pytest.approx(potential_1, 1.0e-4)
-
-        power_law = mp.EllipticalPowerLaw(centre=(1.0, 1.0), einstein_radius=1.0, slope=2.0)
-
-        potential_1 = power_law.potential_from_grid(grid=np.array([[2.0, 1.0]]))
-        potential_0 = power_law.potential_from_grid(grid=np.array([[1.000000001, 1.0]]))
-        assert potential_0 == pytest.approx(potential_1, 1.0e-4)
-
-        power_law = mp.SphericalPowerLaw(centre=(0.0, 0.0), einstein_radius=1.0, slope=2.0)
-
-        potential_1 = power_law.potential_from_grid(grid=np.array([[1.0, 0.0]]))
-        potential_0 = power_law.potential_from_grid(grid=np.array([[0.000000001, 0.0]]))
-        assert potential_0 == pytest.approx(potential_1, 1.0e-4)
-
-        power_law = mp.SphericalPowerLaw(centre=(1.0, 1.0), einstein_radius=1.0, slope=2.0)
-
-        potential_1 = power_law.potential_from_grid(grid=np.array([[2.0, 1.0]]))
-        potential_0 = power_law.potential_from_grid(grid=np.array([[1.000000001, 1.0]]))
-        assert potential_0 == pytest.approx(potential_1, 1.0e-4)
-
-        power_law = mp.EllipticalPowerLaw(centre=(0.0, 0.0), einstein_radius=1.0, slope=2.0)
-
-        deflections_1 = power_law.deflections_from_grid(grid=np.array([[1.0, 0.0]]))
-        deflections_0 = power_law.deflections_from_grid(grid=np.array([[0.000000001, 0.0]]))
-        assert deflections_0 == pytest.approx(deflections_1, 1.0e-4)
-
-        power_law = mp.EllipticalPowerLaw(centre=(1.0, 1.0), einstein_radius=1.0, slope=2.0)
-
-        deflections_1 = power_law.deflections_from_grid(grid=np.array([[2.0, 1.0]]))
-        deflections_0 = power_law.deflections_from_grid(grid=np.array([[1.000000001, 1.0]]))
-        assert deflections_0 == pytest.approx(deflections_1, 1.0e-4)
-
-        power_law = mp.SphericalPowerLaw(centre=(0.0, 0.0), einstein_radius=1.0, slope=2.0)
-
-        deflections_1 = power_law.deflections_from_grid(grid=np.array([[1.0, 0.0]]))
-        deflections_0 = power_law.deflections_from_grid(grid=np.array([[0.000000001, 0.0]]))
-        assert deflections_0 == pytest.approx(deflections_1, 1.0e-4)
-
-        power_law = mp.SphericalPowerLaw(centre=(1.0, 1.0), einstein_radius=1.0, slope=2.0)
-
-        deflections_1 = power_law.deflections_from_grid(grid=np.array([[2.0, 1.0]]))
-        deflections_0 = power_law.deflections_from_grid(grid=np.array([[1.000000001, 1.0]]))
-        assert deflections_0 == pytest.approx(deflections_1, 1.0e-4)
 
     def test__deflections_of_elliptical_profile__use_interpolate_and_cache_decorators(self):
 
@@ -3206,8 +3074,8 @@ class TestExternalShear(object):
 
         shear = mp.ExternalShear(magnitude=0.1, phi=45.0)
 
-        deflections_1 = shear.deflections_from_grid(grid=np.array([[1.0, 0.0]]))
-        deflections_0 = shear.deflections_from_grid(grid=np.array([[0.000000001, 0.0]]))
+        deflections_1 = shear.deflections_from_grid(grid=np.array([[1e-8, 0.0]]))
+        deflections_0 = shear.deflections_from_grid(grid=np.array([[1e-9, 0.0]]))
         assert deflections_0 == pytest.approx(deflections_1, 1.0e-4)
 
 
