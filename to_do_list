@@ -2,6 +2,11 @@ Hey, welcome to my PyAutoLens to-do. This should give you a sense of what we're 
 
 Let me know if you think anything is missing, or should be pushed up the to-do list ;)
 
+Pipeline notes:
+
+Dont vary source resolution + mass model for Adaptive Magnification.
+Add power-law to next inversion runs.
+
 Git Issues:
 
 - include sigma in variable prior links
