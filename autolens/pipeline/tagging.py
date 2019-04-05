@@ -1,17 +1,16 @@
-def phase_tag_from_phase_settings(sub_grid_size, bin_up_factor, image_psf_shape, inversion_psf_shape, 
-                                  positions_threshold, inner_circular_mask_radii, interp_pixel_scale):
+def phase_tag_from_phase_settings(sub_grid_size, bin_up_factor, image_psf_shape, inversion_psf_shape,
+                                  positions_threshold, inner_mask_radii, interp_pixel_scale):
     
     sub_grid_size_tag = sub_grid_size_tag_from_sub_grid_size(sub_grid_size=sub_grid_size)
     bin_up_factor_tag = bin_up_factor_tag_from_bin_up_factor(bin_up_factor=bin_up_factor)
     image_psf_shape_tag = image_psf_shape_tag_from_image_psf_shape(image_psf_shape=image_psf_shape)
     inversion_psf_shape_tag = inversion_psf_shape_tag_from_inversion_psf_shape(inversion_psf_shape=inversion_psf_shape)
     positions_threshold_tag = positions_threshold_tag_from_positions_threshold(positions_threshold=positions_threshold)
-    inner_circular_mask_radii_tag = \
-        inner_circular_mask_radii_tag_from_inner_circular_mask_radii(inner_circular_mask_radii=inner_circular_mask_radii)
+    inner_mask_radii_tag = inner_mask_radii_tag_from_inner_circular_mask_radii(inner_mask_radii=inner_mask_radii)
     interp_pixel_scale_tag = interp_pixel_scale_tag_from_interp_pixel_scale(interp_pixel_scale=interp_pixel_scale)
 
     return sub_grid_size_tag + bin_up_factor_tag + image_psf_shape_tag + inversion_psf_shape_tag + \
-           positions_threshold_tag + inner_circular_mask_radii_tag + interp_pixel_scale_tag
+           positions_threshold_tag + inner_mask_radii_tag + interp_pixel_scale_tag
 
 def positions_threshold_tag_from_positions_threshold(positions_threshold):
     """Generate a bin up tag, to customize phase names based on the bin up factor used in a pipeline. This changes
@@ -38,7 +37,7 @@ def sub_grid_size_tag_from_sub_grid_size(sub_grid_size):
     return '_sub_' + str(sub_grid_size)
 
 
-def inner_circular_mask_radii_tag_from_inner_circular_mask_radii(inner_circular_mask_radii):
+def inner_mask_radii_tag_from_inner_circular_mask_radii(inner_mask_radii):
     """Generate a bin up tag, to customize phase names based on the bin up factor used in a pipeline. This changes
     the phase name 'phase_name' as follows:
 
@@ -46,10 +45,10 @@ def inner_circular_mask_radii_tag_from_inner_circular_mask_radii(inner_circular_
     inner_circular_mask_radii = 2 -> phase_name_inner_circular_mask_radii_2
     inner_circular_mask_radii = 2 -> phase_name_inner_circular_mask_radii_2
     """
-    if inner_circular_mask_radii == None:
+    if inner_mask_radii == None:
         return ''
     else:
-        return '_inner_mask_{0:.2f}'.format(inner_circular_mask_radii)
+        return '_inner_mask_{0:.2f}'.format(inner_mask_radii)
 
 
 def image_psf_shape_tag_from_image_psf_shape(image_psf_shape):

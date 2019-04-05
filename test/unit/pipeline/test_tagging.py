@@ -8,7 +8,7 @@ class TestPhaseTag:
                                                           bin_up_factor=None,
                                                           image_psf_shape=None,
                                                           inversion_psf_shape=None,
-                                                          inner_circular_mask_radii=0.3,
+                                                          inner_mask_radii=0.3,
                                                           positions_threshold=2.0,
                                                           interp_pixel_scale=None)
 
@@ -19,7 +19,7 @@ class TestPhaseTag:
                                                           bin_up_factor=3,
                                                           image_psf_shape=(2, 2),
                                                           inversion_psf_shape=(3,3),
-                                                          inner_circular_mask_radii=None,
+                                                          inner_mask_radii=None,
                                                           positions_threshold=None,
                                                           interp_pixel_scale=0.2)
 
@@ -38,12 +38,12 @@ class TestTaggers:
 
     def test__inner_circular_mask_radii_tagger(self):
 
-        tag = tagging.inner_circular_mask_radii_tag_from_inner_circular_mask_radii(inner_circular_mask_radii=None)
+        tag = tagging.inner_mask_radii_tag_from_inner_circular_mask_radii(inner_mask_radii=None)
         assert tag == ''
-        tag = tagging.inner_circular_mask_radii_tag_from_inner_circular_mask_radii(inner_circular_mask_radii=0.2)
+        tag = tagging.inner_mask_radii_tag_from_inner_circular_mask_radii(inner_mask_radii=0.2)
         print(tag)
         assert tag == '_inner_mask_0.20'
-        tag = tagging.inner_circular_mask_radii_tag_from_inner_circular_mask_radii(inner_circular_mask_radii=3)
+        tag = tagging.inner_mask_radii_tag_from_inner_circular_mask_radii(inner_mask_radii=3)
         assert tag == '_inner_mask_3.00'
 
     def test__sub_grid_size_tagger(self):
