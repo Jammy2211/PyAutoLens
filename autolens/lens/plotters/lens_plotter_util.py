@@ -347,6 +347,6 @@ def get_mass_profile_centes(plot_mass_profile_centres, fit):
         return None
 
     if plot_mass_profile_centres:
-        return fit.tracer.image_plane.mass_profile_centres
+        return fit.tracer.image_plane.centres_of_galaxy_mass_profiles
     else:
         return None

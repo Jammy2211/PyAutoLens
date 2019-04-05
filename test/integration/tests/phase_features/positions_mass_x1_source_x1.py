@@ -9,8 +9,8 @@ from autolens.pipeline import pipeline as pl
 from test.integration import integration_util
 from test.simulation import simulation_util
 
-test_type = 'lens_and_source'
-test_name = "lens_mass_x1_source_x1_positions"
+test_type = 'phase_features'
+test_name = "positions_mass_x1_source_x1"
 
 test_path = '{}/../../'.format(os.path.dirname(os.path.realpath(__file__)))
 output_path = test_path + 'output/'

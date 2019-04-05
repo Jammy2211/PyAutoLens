@@ -2,6 +2,11 @@ Hey, welcome to my PyAutoLens to-do. This should give you a sense of what we're 
 
 Let me know if you think anything is missing, or should be pushed up the to-do list ;)
 
+Pipeline notes:
+
+Dont vary source resolution + mass model for Adaptive Magnification.
+Add power-law to next inversion runs.
+
 Git Issues:
 
 - include sigma in variable prior links
@@ -9,8 +14,6 @@ Git Issues:
 - Raise error if multinest pickle changed.
 
  overwrite model.info et al.
-
-- finish testing move grid radial
 
 Big Picture:
 
@@ -22,16 +25,15 @@ Big Picture:
 Small Picture:
 
 - Extract square around mask, so no rectnagular pixels.
+- clean up plotting_centres of profiles in plotters (dodgy if loop in plotter, color by galaxy).
+- Expanded visualization tests.
 - positions still plotting wrong?
-- Pyquad deflection errors (power-law)
+- Expand intepolation tests and write tutorial.
 - challenge halo info output.
 - Challenge mass errors.
 - MultiNest MPI
 - redshifts into pipeline.
-- clean up plotting_centres of profiles in plotters (dodgy if loop in plotter, color by galaxy).
 - hyper galaxy phase stuff.
-- Expanded visualization tests.
-- Expand intepolation tests and write tutorial.
 - memory lite mode
 
 Short term:
