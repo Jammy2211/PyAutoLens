@@ -69,7 +69,7 @@ def cache(func):
 
 
 def move_grid_to_radial_minimum(func):
-    """ Checks whethe any coordinates in the grid are radially near (0.0, 0.0), which can lead to numerical faults in \
+    """ Checks whether any coordinates in the grid are radially near (0.0, 0.0), which can lead to numerical faults in \
     the evaluation of a light or mass profiles. If any coordinates are radially within the the radial minimum \
     threshold, their (y,x) coordinates are shifted to that value to ensure they are evaluated correctly.
 
@@ -78,8 +78,8 @@ def move_grid_to_radial_minimum(func):
 
     Parameters
     ----------
-    func : (profiles, *args, **kwargs) -> Object
-        A function that moves the singularities
+    func : (profile, *args, **kwargs) -> Object
+        A function that takes a grid of coordinates which may have a singularity as (0.0, 0.0)
 
     Returns
     -------
