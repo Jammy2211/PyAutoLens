@@ -1,6 +1,10 @@
 import numpy as np
 from functools import wraps
 
+from autofit import conf
+
+radial_minimum_config = conf.NamedConfig(f"{conf.instance.config_path}/radial_minimum.ini")
+
 
 def transform_grid(func):
     """Wrap the function in a function that checks whether the coordinates have been transformed. If they have not \ 
@@ -87,12 +91,12 @@ def move_grid_to_radial_minimum(func):
     """
 
     @wraps(func)
-    def wrapper(mass_profile, grid, *args, **kwargs):
+    def wrapper(profile, grid, *args, **kwargs):
         """
 
         Parameters
         ----------
-        mass_profile : MassProfile
+        profile : SphericalProfile
             The profiles that owns the function
         grid : ndarray
             PlaneCoordinates in either cartesian or profiles coordinate system
@@ -103,13 +107,13 @@ def move_grid_to_radial_minimum(func):
         -------
             A value or coordinate in the same coordinate system as those passed in.
         """
-        grid_radial_minimum = 1.e-8
+        grid_radial_minimum = radial_minimum_config.get("radial_minimum", profile.__class__.__name__, float)
         with np.errstate(all='ignore'):  # Division by zero fixed via isnan
-            grid_radii = mass_profile.grid_to_grid_radii(grid=grid)
+            grid_radii = profile.grid_to_grid_radii(grid=grid)
             grid_radial_scale = np.where(grid_radii < grid_radial_minimum, grid_radial_minimum / grid_radii, 1.0)
             grid = np.multiply(grid, grid_radial_scale[:, None])
         grid[np.isnan(grid)] = grid_radial_minimum
-        return func(mass_profile, grid, *args, **kwargs)
+        return func(profile, grid, *args, **kwargs)
 
     return wrapper
 
