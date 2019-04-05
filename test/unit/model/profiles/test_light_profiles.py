@@ -108,35 +108,6 @@ class TestGaussian:
 
         assert (elliptical.intensities_from_grid(grid) == spherical.intensities_from_grid(grid)).all()
 
-    def test__transform_grid_wrapper_and_move_radial_minimum_wrappers(self):
-
-        gaussian = lp.EllipticalGaussian(centre=(0.0, 0.0))
-
-        intensities_1 = gaussian.intensities_from_grid(grid=np.array([[1.0, 0.0]]))
-        intensities_0 = gaussian.intensities_from_grid(grid=np.array([[0.000000001, 0.0]]),
-                                                     grid_radial_minimum=1.0)
-        assert intensities_0 == pytest.approx(intensities_1, 1.0e-4)
-
-        gaussian = lp.EllipticalGaussian(centre=(1.0, 1.0))
-
-        intensities_1 = gaussian.intensities_from_grid(grid=np.array([[2.0, 1.0]]))
-        intensities_0 = gaussian.intensities_from_grid(grid=np.array([[1.000000001, 1.0]]),
-                                                     grid_radial_minimum=1.0)
-        assert intensities_0 == pytest.approx(intensities_1, 1.0e-4)
-
-        gaussian = lp.SphericalGaussian(centre=(0.0, 0.0))
-
-        intensities_1 = gaussian.intensities_from_grid(grid=np.array([[1.0, 0.0]]))
-        intensities_0 = gaussian.intensities_from_grid(grid=np.array([[0.000000001, 0.0]]),
-                                                     grid_radial_minimum=1.0)
-        assert intensities_0 == pytest.approx(intensities_1, 1.0e-4)
-
-        gaussian = lp.SphericalGaussian(centre=(1.0, 1.0))
-
-        intensities_1 = gaussian.intensities_from_grid(grid=np.array([[2.0, 1.0]]))
-        intensities_0 = gaussian.intensities_from_grid(grid=np.array([[1.000000001, 1.0]]),
-                                                     grid_radial_minimum=1.0)
-        assert intensities_0 == pytest.approx(intensities_1, 1.0e-4)
 
 class TestSersic:
 
@@ -191,36 +162,6 @@ class TestSersic:
         spherical = lp.SphericalSersic(intensity=3.0, effective_radius=2.0, sersic_index=2.0)
 
         assert (elliptical.intensities_from_grid(grid) == spherical.intensities_from_grid(grid)).all()
-
-    def test__transform_grid_wrapper_and_move_radial_minimum_wrappers(self):
-        
-        sersic = lp.EllipticalSersic(centre=(0.0, 0.0))
-
-        intensities_1 = sersic.intensities_from_grid(grid=np.array([[1.0, 0.0]]))
-        intensities_0 = sersic.intensities_from_grid(grid=np.array([[0.000000001, 0.0]]),
-                                                     grid_radial_minimum=1.0)
-        assert intensities_0 == pytest.approx(intensities_1, 1.0e-4)
-
-        sersic = lp.EllipticalSersic(centre=(1.0, 1.0))
-
-        intensities_1 = sersic.intensities_from_grid(grid=np.array([[2.0, 1.0]]))
-        intensities_0 = sersic.intensities_from_grid(grid=np.array([[1.000000001, 1.0]]),
-                                                     grid_radial_minimum=1.0)
-        assert intensities_0 == pytest.approx(intensities_1, 1.0e-4)
-
-        sersic = lp.SphericalSersic(centre=(0.0, 0.0))
-
-        intensities_1 = sersic.intensities_from_grid(grid=np.array([[1.0, 0.0]]))
-        intensities_0 = sersic.intensities_from_grid(grid=np.array([[0.000000001, 0.0]]),
-                                                     grid_radial_minimum=1.0)
-        assert intensities_0 == pytest.approx(intensities_1, 1.0e-4)
-
-        sersic = lp.SphericalSersic(centre=(1.0, 1.0))
-
-        intensities_1 = sersic.intensities_from_grid(grid=np.array([[2.0, 1.0]]))
-        intensities_0 = sersic.intensities_from_grid(grid=np.array([[1.000000001, 1.0]]),
-                                                     grid_radial_minimum=1.0)
-        assert intensities_0 == pytest.approx(intensities_1, 1.0e-4)
 
 
 class TestExponential:
@@ -277,36 +218,6 @@ class TestExponential:
         spherical = lp.SphericalExponential(intensity=3.0, effective_radius=2.0)
 
         assert (elliptical.intensities_from_grid(grid) == spherical.intensities_from_grid(grid)).all()
-
-    def test__transform_grid_wrapper_and_move_radial_minimum_wrappers(self):
-        
-        exponential = lp.EllipticalExponential(centre=(0.0, 0.0))
-
-        intensities_1 = exponential.intensities_from_grid(grid=np.array([[1.0, 0.0]]))
-        intensities_0 = exponential.intensities_from_grid(grid=np.array([[0.000000001, 0.0]]),
-                                                     grid_radial_minimum=1.0)
-        assert intensities_0 == pytest.approx(intensities_1, 1.0e-4)
-
-        exponential = lp.EllipticalExponential(centre=(1.0, 1.0))
-
-        intensities_1 = exponential.intensities_from_grid(grid=np.array([[2.0, 1.0]]))
-        intensities_0 = exponential.intensities_from_grid(grid=np.array([[1.000000001, 1.0]]),
-                                                     grid_radial_minimum=1.0)
-        assert intensities_0 == pytest.approx(intensities_1, 1.0e-4)
-
-        exponential = lp.SphericalExponential(centre=(0.0, 0.0))
-
-        intensities_1 = exponential.intensities_from_grid(grid=np.array([[1.0, 0.0]]))
-        intensities_0 = exponential.intensities_from_grid(grid=np.array([[0.000000001, 0.0]]),
-                                                     grid_radial_minimum=1.0)
-        assert intensities_0 == pytest.approx(intensities_1, 1.0e-4)
-
-        exponential = lp.SphericalExponential(centre=(1.0, 1.0))
-
-        intensities_1 = exponential.intensities_from_grid(grid=np.array([[2.0, 1.0]]))
-        intensities_0 = exponential.intensities_from_grid(grid=np.array([[1.000000001, 1.0]]),
-                                                     grid_radial_minimum=1.0)
-        assert intensities_0 == pytest.approx(intensities_1, 1.0e-4)
 
 
 class TestDevVaucouleurs:
@@ -366,35 +277,6 @@ class TestDevVaucouleurs:
 
         assert (elliptical.intensities_from_grid(grid) == spherical.intensities_from_grid(grid)).all()
 
-    def test__transform_grid_wrapper_and_move_radial_minimum_wrappers(self):
-        dev_vaucouleurs = lp.EllipticalDevVaucouleurs(centre=(0.0, 0.0))
-
-        intensities_1 = dev_vaucouleurs.intensities_from_grid(grid=np.array([[1.0, 0.0]]))
-        intensities_0 = dev_vaucouleurs.intensities_from_grid(grid=np.array([[0.000000001, 0.0]]),
-                                                     grid_radial_minimum=1.0)
-        assert intensities_0 == pytest.approx(intensities_1, 1.0e-4)
-
-        dev_vaucouleurs = lp.EllipticalDevVaucouleurs(centre=(1.0, 1.0))
-
-        intensities_1 = dev_vaucouleurs.intensities_from_grid(grid=np.array([[2.0, 1.0]]))
-        intensities_0 = dev_vaucouleurs.intensities_from_grid(grid=np.array([[1.000000001, 1.0]]),
-                                                     grid_radial_minimum=1.0)
-        assert intensities_0 == pytest.approx(intensities_1, 1.0e-4)
-
-        dev_vaucouleurs = lp.SphericalDevVaucouleurs(centre=(0.0, 0.0))
-
-        intensities_1 = dev_vaucouleurs.intensities_from_grid(grid=np.array([[1.0, 0.0]]))
-        intensities_0 = dev_vaucouleurs.intensities_from_grid(grid=np.array([[0.000000001, 0.0]]),
-                                                     grid_radial_minimum=1.0)
-        assert intensities_0 == pytest.approx(intensities_1, 1.0e-4)
-
-        dev_vaucouleurs = lp.SphericalDevVaucouleurs(centre=(1.0, 1.0))
-
-        intensities_1 = dev_vaucouleurs.intensities_from_grid(grid=np.array([[2.0, 1.0]]))
-        intensities_0 = dev_vaucouleurs.intensities_from_grid(grid=np.array([[1.000000001, 1.0]]),
-                                                     grid_radial_minimum=1.0)
-        assert intensities_0 == pytest.approx(intensities_1, 1.0e-4)
-
 
 class TestCoreSersic(object):
 
@@ -434,35 +316,6 @@ class TestCoreSersic(object):
                                            intensity_break=0.1, gamma=1.0, alpha=1.0)
 
         assert (elliptical.intensities_from_grid(grid) == spherical.intensities_from_grid(grid)).all()
-
-    def test__transform_grid_wrapper_and_move_radial_minimum_wrappers(self):
-        core_sersic = lp.EllipticalCoreSersic(centre=(0.0, 0.0))
-
-        intensities_1 = core_sersic.intensities_from_grid(grid=np.array([[1.0, 0.0]]))
-        intensities_0 = core_sersic.intensities_from_grid(grid=np.array([[0.000000001, 0.0]]),
-                                                     grid_radial_minimum=1.0)
-        assert intensities_0 == pytest.approx(intensities_1, 1.0e-4)
-
-        core_sersic = lp.EllipticalCoreSersic(centre=(1.0, 1.0))
-
-        intensities_1 = core_sersic.intensities_from_grid(grid=np.array([[2.0, 1.0]]))
-        intensities_0 = core_sersic.intensities_from_grid(grid=np.array([[1.000000001, 1.0]]),
-                                                     grid_radial_minimum=1.0)
-        assert intensities_0 == pytest.approx(intensities_1, 1.0e-4)
-
-        core_sersic = lp.SphericalCoreSersic(centre=(0.0, 0.0))
-
-        intensities_1 = core_sersic.intensities_from_grid(grid=np.array([[1.0, 0.0]]))
-        intensities_0 = core_sersic.intensities_from_grid(grid=np.array([[0.000000001, 0.0]]),
-                                                     grid_radial_minimum=1.0)
-        assert intensities_0 == pytest.approx(intensities_1, 1.0e-4)
-
-        core_sersic = lp.SphericalCoreSersic(centre=(1.0, 1.0))
-
-        intensities_1 = core_sersic.intensities_from_grid(grid=np.array([[2.0, 1.0]]))
-        intensities_0 = core_sersic.intensities_from_grid(grid=np.array([[1.000000001, 1.0]]),
-                                                     grid_radial_minimum=1.0)
-        assert intensities_0 == pytest.approx(intensities_1, 1.0e-4)
 
 
 class TestLuminosityIntegral(object):

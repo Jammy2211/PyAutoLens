@@ -122,18 +122,56 @@ class AbstractPlane(object):
             raise exc.PixelizationException('The number of galaxies with regularizations in one plane is above 1')
 
     @property
-    def mass_profile_centres(self):
-
-        # TODO : Make list comprehension?
+    def centres_of_galaxy_mass_profiles(self):
 
         if self.has_mass_profile:
-            mass_profile_centres = []
-            for galaxy in self.galaxies:
-                for mass_profile in galaxy.mass_profiles:
-                    mass_profile_centres.append(mass_profile.centre)
+
+            galaxies_with_mass_profiles = [galaxy for galaxy in self.galaxies if galaxy.has_mass_profile]
+
+            mass_profile_centres = [[] for i in range(len(galaxies_with_mass_profiles))]
+
+            for galaxy_index, galaxy in enumerate(galaxies_with_mass_profiles):
+                mass_profile_centres[galaxy_index] = [profile.centre for profile in galaxy.mass_profiles]
             return mass_profile_centres
+
         else:
+
             return None
+
+    @property
+    def axis_ratios_of_galaxy_mass_profiles(self):
+
+        if self.has_mass_profile:
+
+            galaxies_with_mass_profiles = [galaxy for galaxy in self.galaxies if galaxy.has_mass_profile]
+
+            mass_profile_axis_ratios = [[] for i in range(len(galaxies_with_mass_profiles))]
+
+            for galaxy_index, galaxy in enumerate(galaxies_with_mass_profiles):
+                mass_profile_axis_ratios[galaxy_index] = [profile.axis_ratio for profile in galaxy.mass_profiles]
+            return mass_profile_axis_ratios
+
+        else:
+
+            return None
+        
+    @property
+    def phis_of_galaxy_mass_profiles(self):
+
+        if self.has_mass_profile:
+
+            galaxies_with_mass_profiles = [galaxy for galaxy in self.galaxies if galaxy.has_mass_profile]
+
+            mass_profile_phis = [[] for i in range(len(galaxies_with_mass_profiles))]
+
+            for galaxy_index, galaxy in enumerate(galaxies_with_mass_profiles):
+                mass_profile_phis[galaxy_index] = [profile.phi for profile in galaxy.mass_profiles]
+            return mass_profile_phis
+
+        else:
+
+            return None
+
 
     def luminosities_of_galaxies_within_circles(self, radius, conversion_factor=1.0):
         """Compute the total luminosity of all galaxies in this plane within a circle of specified radius.

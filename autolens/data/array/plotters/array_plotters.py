@@ -1,6 +1,7 @@
 from autolens import exc
 import matplotlib.pyplot as plt
 import matplotlib.colors as colors
+import matplotlib.patches as patches
 import numpy as np
 import itertools
 
@@ -8,7 +9,8 @@ from autolens.data.array.plotters import plotter_util
 
 
 def plot_array(array, origin=None, mask=None, extract_array_from_mask=False, zoom_around_mask=False,
-               should_plot_border=False, positions=None, centres=None, grid=None, as_subplot=False,
+               should_plot_border=False, positions=None, centres=None, axis_ratios=None, phis=None, grid=None,
+               as_subplot=False,
                units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), aspect='equal',
                cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
                cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
@@ -133,8 +135,8 @@ def plot_array(array, origin=None, mask=None, extract_array_from_mask=False, zoo
     if aspect is 'square':
         aspect = float(array.shape_arcsec[1]) / float(array.shape_arcsec[0])
 
-    plot_figure(array=array, as_subplot=as_subplot, units=units, kpc_per_arcsec=kpc_per_arcsec,
-                figsize=figsize, aspect=aspect, cmap=cmap, norm=norm,
+    fig = plot_figure(array=array, as_subplot=as_subplot, units=units, kpc_per_arcsec=kpc_per_arcsec,
+            figsize=figsize, aspect=aspect, cmap=cmap, norm=norm,
                 norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
                 xticks_manual=xticks_manual, yticks_manual=yticks_manual)
 
@@ -156,6 +158,8 @@ def plot_array(array, origin=None, mask=None, extract_array_from_mask=False, zoo
               zoom_offset_arcsec=zoom_offset_arcsec)
     plot_centres(array=array, centres=centres, units=units, kpc_per_arcsec=kpc_per_arcsec,
                 zoom_offset_arcsec=zoom_offset_arcsec)
+    plot_ellipses(fig=fig, array=array, centres=centres, axis_ratios=axis_ratios, phis=phis, units=units,
+                  kpc_per_arcsec=kpc_per_arcsec, zoom_offset_arcsec=zoom_offset_arcsec)
     plotter_util.output_figure(array, as_subplot=as_subplot, output_path=output_path, output_filename=output_filename,
                                output_format=output_format)
     plotter_util.close_figure(as_subplot=as_subplot)
@@ -200,7 +204,7 @@ def plot_figure(array, as_subplot, units, kpc_per_arcsec, figsize, aspect, cmap,
         If input, the yticks do not use the array's default yticks but instead overwrite them as these values.
     """
 
-    plotter_util.setup_figure(figsize=figsize, as_subplot=as_subplot)
+    fig = plotter_util.setup_figure(figsize=figsize, as_subplot=as_subplot)
 
     norm_min, norm_max = get_normalization_min_max(array=array, norm_min=norm_min, norm_max=norm_max)
     norm_scale = get_normalization_scale(norm=norm, norm_min=norm_min, norm_max=norm_max,
@@ -210,6 +214,7 @@ def plot_figure(array, as_subplot, units, kpc_per_arcsec, figsize, aspect, cmap,
                         xticks_manual=xticks_manual, yticks_manual=yticks_manual)
 
     plt.imshow(array, aspect=aspect, cmap=cmap, norm=norm_scale, extent=extent)
+    return fig
 
 def get_extent(array, units, kpc_per_arcsec, xticks_manual, yticks_manual):
     """Get the extent of the dimensions of the array in the units of the figure (e.g. arc-seconds or kpc).
@@ -422,14 +427,14 @@ def plot_origin(array, origin, units, kpc_per_arcsec, zoom_offset_arcsec):
         plt.scatter(y=origin_units[0], x=origin_units[1], s=80, c='k', marker='x')
 
 def plot_centres(array, centres, units, kpc_per_arcsec, zoom_offset_arcsec):
-    """Plot the (y,x) origin ofo the array's coordinates as a 'x'.
+    """Plot the (y,x) centres (e.g. of a mass profile) on the array as an 'x'.
 
     Parameters
     -----------
     array : data.array.scaled_array.ScaledArray
         The 2D array of data which is plotted.
-    origin : (float, float).
-        The origin of the coordinate system of the array, which is plotted as an 'x' on the image if input.
+    centres : [[tuple]]
+        The list of centres; centres in the same list entry are colored the same.
     units : str
         The units of the y / x axis of the plots, in arc-seconds ('arcsec') or kiloparsecs ('kpc').
     kpc_per_arcsec : float or None
@@ -437,15 +442,56 @@ def plot_centres(array, centres, units, kpc_per_arcsec, zoom_offset_arcsec):
     """
     if centres is not None:
 
-        centres = list(map(lambda centres_set : np.asarray(centres_set), centres))
-        for centre in centres:
+        colors = itertools.cycle(["m", "y", "r", "w", "c", "b", "g", "k"])
 
-            if zoom_offset_arcsec is not None:
-                centre -= zoom_offset_arcsec
+        for centres_of_galaxy in centres:
+            color = next(colors)
+            for centre in centres_of_galaxy:
 
-            centre_units = convert_grid_units(array=array, grid_arcsec=centre, units=units,
-                                              kpc_per_arcsec=kpc_per_arcsec)
-            plt.scatter(y=centre_units[0], x=centre_units[1], s=300, c='r', marker='x')
+                if zoom_offset_arcsec is not None:
+                    centre -= zoom_offset_arcsec
+
+                centre_units = convert_grid_units(array=array, grid_arcsec=centre, units=units,
+                                                  kpc_per_arcsec=kpc_per_arcsec)
+                plt.scatter(y=centre_units[0], x=centre_units[1], s=300, c=color, marker='x')
+
+def plot_ellipses(fig, array, centres, axis_ratios, phis, units, kpc_per_arcsec, zoom_offset_arcsec):
+    """Plot the (y,x) centres (e.g. of a mass profile) on the array as an 'x'.
+
+    Parameters
+    -----------
+    array : data.array.scaled_array.ScaledArray
+        The 2D array of data which is plotted.
+    centres : [[tuple]]
+        The list of centres; centres in the same list entry are colored the same.
+    units : str
+        The units of the y / x axis of the plots, in arc-seconds ('arcsec') or kiloparsecs ('kpc').
+    kpc_per_arcsec : float or None
+        The conversion factor between arc-seconds and kiloparsecs, required to plot the units in kpc.
+    """
+    if centres is not None and axis_ratios is not None and phis is not None:
+
+        colors = itertools.cycle(["m", "y", "r", "w", "c", "b", "g", "k"])
+
+        for set_index in range(len(centres)):
+            color = next(colors)
+            for geometry_index in range(len(centres[set_index])):
+
+                centre = centres[set_index][geometry_index]
+                axis_ratio = axis_ratios[set_index][geometry_index]
+                phi = phis[set_index][geometry_index]
+
+                if zoom_offset_arcsec is not None:
+                    centre -= zoom_offset_arcsec
+
+                centre_units = convert_grid_units(array=array, grid_arcsec=centre, units=units,
+                                                  kpc_per_arcsec=kpc_per_arcsec)
+
+                y = 1.0
+                x = 1.0*axis_ratio
+
+                t = np.linspace(0, 2*np.pi, 100)
+                plt.plot(centre_units[0] + y*np.cos(t), centre_units[1] + x*np.sin(t), color=color)
 
 def plot_mask(mask, units, kpc_per_arcsec, pointsize, zoom_offset_pixels):
     """Plot the mask of the array on the figure.
