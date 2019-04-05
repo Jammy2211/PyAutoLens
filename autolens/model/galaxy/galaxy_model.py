@@ -98,6 +98,7 @@ class GalaxyModel(model_mapper.AbstractPriorModel):
             A model hyper-galaxy used for scaling the observed regular's noise_map.
         """
 
+        super().__init__()
         self.align_centres = align_centres
         self.align_axis_ratios = align_axis_ratios
         self.align_orientations = align_orientations

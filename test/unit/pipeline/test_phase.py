@@ -59,6 +59,15 @@ class MockResults(object):
         self.optimizer = optimizer
 
 
+class MockResult:
+    def __init__(self, constant, figure_of_merit, variable=None):
+        self.constant = constant
+        self.figure_of_merit = figure_of_merit
+        self.variable = variable
+        self.previous_variable = variable
+        self.gaussian_tuples = None
+
+
 class NLO(non_linear.NonLinearOptimizer):
     def fit(self, analysis):
         class Fitness(object):
@@ -72,7 +81,7 @@ class NLO(non_linear.NonLinearOptimizer):
                 instance += self.constant
 
                 likelihood = analysis.fit(instance)
-                self.result = non_linear.Result(instance, likelihood)
+                self.result = MockResult(instance, likelihood)
 
                 # Return Chi squared
                 return -2 * likelihood
@@ -114,9 +123,11 @@ def make_ccd_data():
 
     return ccd.CCDData(image=image, pixel_scale=pixel_scale, psf=psf, noise_map=noise_map)
 
+
 @pytest.fixture(name='mask')
 def make_mask():
     return msk.Mask.circular(shape=shape, pixel_scale=1, radius_arcsec=3.0)
+
 
 @pytest.fixture(name="lens_data")
 def make_lens_image(mask):
@@ -202,7 +213,7 @@ class TestHyperGalaxyPhase(object):
 
         class Result(object):
             def __init__(self):
-                self.constant\
+                self.constant \
                     = Instance()
                 self.variable = Instance()
 
@@ -488,7 +499,6 @@ class TestPhase(object):
         assert (analysis.lens_data.mask == mask_default).all()
 
     def test_make_analysis__positions_are_input__are_used_in_analysis(self, phase, ccd_data):
-
         # If position threshold is input (not None) and positions are input, make the positions part of the lens data.
 
         phase.positions_threshold = 0.2
@@ -523,7 +533,6 @@ class TestPhase(object):
         assert hasattr(analysis.lens_data.padded_grid_stack.sub, 'interpolator')
 
     def test__make_analysis__phase_info_is_made(self, phase, ccd_data):
-
         phase.make_analysis(data=ccd_data)
 
         file_phase_info = "{}/{}".format(phase.optimizer.phase_output_path, 'phase.info')
@@ -604,7 +613,6 @@ class TestPhase(object):
         assert (analysis.lens_data.image_1d == 20.0 * np.ones(shape=32)).all()
 
     def test__lens_data_is_binned_up(self, ccd_data, mask):
-
         binned_up_ccd_data = ccd_data.new_ccd_data_with_binned_up_arrays(bin_up_factor=2)
         binned_up_mask = mask.binned_up_mask_from_mask(bin_up_factor=2)
 
@@ -618,7 +626,7 @@ class TestPhase(object):
 
         lens_data = ld.LensData(ccd_data=ccd_data, mask=mask)
         binned_up_lens_data = lens_data.new_lens_data_with_binned_up_ccd_data_and_mask(bin_up_factor=2)
-        
+
         assert (analysis.lens_data.image == binned_up_lens_data.image).all()
         assert (analysis.lens_data.psf == binned_up_lens_data.psf).all()
         assert (analysis.lens_data.noise_map == binned_up_lens_data.noise_map).all()
@@ -629,7 +637,6 @@ class TestPhase(object):
         assert (analysis.lens_data.noise_map_1d == binned_up_lens_data.noise_map_1d).all()
 
     def test__tracer_for_instance__includes_cosmology(self, ccd_data):
-
         lens_galaxy = g.Galaxy()
         source_galaxy = g.Galaxy()
 
