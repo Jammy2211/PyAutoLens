@@ -5,7 +5,6 @@ from autofit import conf
 
 radial_minimum_config = conf.NamedConfig(f"{conf.instance.config_path}/radial_minimum.ini")
 
-
 def transform_grid(func):
     """Wrap the function in a function that checks whether the coordinates have been transformed. If they have not \ 
     been transformed then they are transformed.
