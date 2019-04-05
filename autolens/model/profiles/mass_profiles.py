@@ -1,4 +1,5 @@
 import inspect
+from pyquad import quad_grid
 
 import numpy as np
 from numba import cfunc
@@ -7,10 +8,8 @@ from scipy import LowLevelCallable
 from scipy import special
 from scipy.integrate import quad
 from scipy.optimize import fsolve
-from functools import wraps
-from pyquad import quad_grid
-
 from scipy.optimize import root_scalar
+
 from autolens import decorator_util
 from autolens.data.array import grids
 from autolens.model.profiles import geometry_profiles
@@ -66,15 +65,15 @@ class MassProfile(object):
     def convergence_func(self, eta):
         raise NotImplementedError("surface_density_func should be overridden")
 
-    def convergence_from_grid(self, grid, grid_radial_minimum=None):
+    def convergence_from_grid(self, grid):
         pass
         # raise NotImplementedError("surface_density_from_grid should be overridden")
 
-    def potential_from_grid(self, grid, grid_radial_minimum=None):
+    def potential_from_grid(self, grid):
         pass
         # raise NotImplementedError("potential_from_grid should be overridden")
 
-    def deflections_from_grid(self, grid, grid_radial_minimum=None):
+    def deflections_from_grid(self, grid):
         raise NotImplementedError("deflections_from_grid should be overridden")
 
     def mass_within_circle_in_angular_units(self, radius):
@@ -108,13 +107,14 @@ class PointMass(geometry_profiles.SphericalProfile, MassProfile):
 
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
-    def deflections_from_grid(self, grid, grid_radial_minimum=None):
+    def deflections_from_grid(self, grid):
         grid_radii = self.grid_to_grid_radii(grid=grid)
-        return self.grid_to_grid_cartesian(grid=grid, radius=self.einstein_radius/grid_radii)
+        return self.grid_to_grid_cartesian(grid=grid, radius=self.einstein_radius / grid_radii)
 
     # @property
     # def mass(self):
     #     return (206265 * self.einstein_radius * (constants.c**2.0) / (4.0 * constants.G)) / 1.988e30
+
 
 # noinspection PyAbstractClass
 class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
@@ -229,6 +229,7 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
          This radius corresponds to the Einstein radius of the mass profile, and is a property of a number of \
          mass profiles below.
          """
+
         def func(radius):
             return self.mass_within_circle_in_angular_units(radius=radius) - \
                    np.pi * radius ** 2.0
@@ -274,7 +275,7 @@ class EllipticalCoredPowerLaw(EllipticalMassProfile, MassProfile):
 
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
-    def convergence_from_grid(self, grid, grid_radial_minimum=None):
+    def convergence_from_grid(self, grid):
         """ Calculate the projected convergence at a given set of arc-second gridded coordinates.
 
         Parameters
@@ -294,7 +295,7 @@ class EllipticalCoredPowerLaw(EllipticalMassProfile, MassProfile):
 
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
-    def potential_from_grid(self, grid, grid_radial_minimum=None):
+    def potential_from_grid(self, grid):
         """
         Calculate the potential at a given set of arc-second gridded coordinates.
 
@@ -313,7 +314,7 @@ class EllipticalCoredPowerLaw(EllipticalMassProfile, MassProfile):
     @geometry_profiles.cache
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
-    def deflections_from_grid(self, grid, grid_radial_minimum=1.0e-8):
+    def deflections_from_grid(self, grid):
         """
         Calculate the deflection angles at a given set of arc-second gridded coordinates.
 
@@ -381,7 +382,7 @@ class SphericalCoredPowerLaw(EllipticalCoredPowerLaw):
 
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
-    def deflections_from_grid(self, grid, grid_radial_minimum=None):
+    def deflections_from_grid(self, grid):
         """
         Calculate the deflection angles at a given set of arc-second gridded coordinates.
 
@@ -457,7 +458,7 @@ class SphericalPowerLaw(EllipticalPowerLaw):
 
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
-    def deflections_from_grid(self, grid, grid_radial_minimum=None):
+    def deflections_from_grid(self, grid):
         eta = self.grid_to_grid_radii(grid)
         deflection_r = 2.0 * self.einstein_radius_rescaled * np.divide(np.power(eta, (3.0 - self.slope)),
                                                                        np.multiply((3.0 - self.slope), eta))
@@ -529,7 +530,7 @@ class EllipticalIsothermal(EllipticalPowerLaw):
 
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
-    def deflections_from_grid(self, grid, grid_radial_minimum=1.0e-8):
+    def deflections_from_grid(self, grid):
         """
         Calculate the deflection angles at a given set of arc-second gridded coordinates.
 
@@ -568,7 +569,7 @@ class SphericalIsothermal(EllipticalIsothermal):
 
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
-    def potential_from_grid(self, grid, grid_radial_minimum=None):
+    def potential_from_grid(self, grid):
         """
         Calculate the potential at a given set of arc-second gridded coordinates.
 
@@ -582,7 +583,7 @@ class SphericalIsothermal(EllipticalIsothermal):
 
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
-    def deflections_from_grid(self, grid, grid_radial_minimum=None):
+    def deflections_from_grid(self, grid):
         """
         Calculate the deflection angles at a given set of arc-second gridded coordinates.
 
@@ -591,12 +592,12 @@ class SphericalIsothermal(EllipticalIsothermal):
         grid : grids.RegularGrid
             The grid of (y,x) arc-second coordinates the deflection angles are computed on.
         """
-        return self.grid_to_grid_cartesian(grid=grid, radius=np.full(grid.shape[0], 2.0 * self.einstein_radius_rescaled))
+        return self.grid_to_grid_cartesian(grid=grid,
+                                           radius=np.full(grid.shape[0], 2.0 * self.einstein_radius_rescaled))
 
 
 # noinspection PyAbstractClass
 class AbstractEllipticalGeneralizedNFW(EllipticalMassProfile, MassProfile):
-
     epsrel = 1.49e-5
 
     def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, kappa_s=0.05, inner_slope=1.0, scale_radius=5.0):
@@ -649,7 +650,7 @@ class AbstractEllipticalGeneralizedNFW(EllipticalMassProfile, MassProfile):
 
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
-    def convergence_from_grid(self, grid, grid_radial_minimum=None):
+    def convergence_from_grid(self, grid):
         """ Calculate the projected convergence at a given set of arc-second gridded coordinates.
 
         Parameters
@@ -684,7 +685,6 @@ class AbstractEllipticalGeneralizedNFW(EllipticalMassProfile, MassProfile):
         return f
 
     def coord_func_g(self, grid_radius):
-
         f_r = self.coord_func_f(grid_radius=grid_radius)
 
         g = np.where(grid_radius > 1.0,
@@ -701,7 +701,7 @@ class AbstractEllipticalGeneralizedNFW(EllipticalMassProfile, MassProfile):
 
     def delta_concentration(self, critical_surface_mass_density_arcsec, cosmic_average_mass_density_arcsec):
         rho_scale_radius = self.rho_at_scale_radius(critical_surface_mass_density_arcsec=
-                                                 critical_surface_mass_density_arcsec)
+                                                    critical_surface_mass_density_arcsec)
         return rho_scale_radius / cosmic_average_mass_density_arcsec
 
     def concentration(self, critical_surface_mass_density_arcsec, cosmic_average_mass_density_arcsec):
@@ -722,14 +722,14 @@ class AbstractEllipticalGeneralizedNFW(EllipticalMassProfile, MassProfile):
     def mass_at_200(self, critical_surface_mass_density_arcsec, cosmic_average_mass_density_arcsec):
         radius_at_200 = self.radius_at_200(critical_surface_mass_density_arcsec=critical_surface_mass_density_arcsec,
                                            cosmic_average_mass_density_arcsec=cosmic_average_mass_density_arcsec)
-        return 200.0 * ((4.0/3.0)*np.pi) * cosmic_average_mass_density_arcsec * (radius_at_200**3.0)
+        return 200.0 * ((4.0 / 3.0) * np.pi) * cosmic_average_mass_density_arcsec * (radius_at_200 ** 3.0)
 
 
 class EllipticalGeneralizedNFW(AbstractEllipticalGeneralizedNFW):
 
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
-    def potential_from_grid(self, grid, grid_radial_minimum=None, tabulate_bins=1000):
+    def potential_from_grid(self, grid, tabulate_bins=1000):
         """
         Calculate the potential at a given set of arc-second gridded coordinates.
 
@@ -777,7 +777,7 @@ class EllipticalGeneralizedNFW(AbstractEllipticalGeneralizedNFW):
     @geometry_profiles.cache
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
-    def deflections_from_grid(self, grid, grid_radial_minimum=None, tabulate_bins=1000):
+    def deflections_from_grid(self, grid, tabulate_bins=1000):
         """
         Calculate the deflection angles at a given set of arc-second gridded coordinates.
 
@@ -794,11 +794,10 @@ class EllipticalGeneralizedNFW(AbstractEllipticalGeneralizedNFW):
             return (3 - inner_slope) * (x + kappa_radius / scale_radius) ** (inner_slope - 4) * (1 - np.sqrt(1 - x * x))
 
         def calculate_deflection_component(npow, index):
-
             deflection_grid = 2.0 * self.kappa_s * self.axis_ratio * grid[:, index]
             deflection_grid *= quad_grid(self.deflection_func, 0.0, 1.0,
-                                             grid, args=(npow, self.axis_ratio, minimum_log_eta, maximum_log_eta,
-                                                         tabulate_bins, surface_density_integral),
+                                         grid, args=(npow, self.axis_ratio, minimum_log_eta, maximum_log_eta,
+                                                     tabulate_bins, surface_density_integral),
                                          epsrel=EllipticalGeneralizedNFW.epsrel)[0]
 
             return deflection_grid
@@ -888,7 +887,7 @@ class SphericalGeneralizedNFW(EllipticalGeneralizedNFW):
     @geometry_profiles.cache
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
-    def deflections_from_grid(self, grid, grid_radial_minimum=None, **kwargs):
+    def deflections_from_grid(self, grid, **kwargs):
         """
         Calculate the deflection angles at a given set of arc-second gridded coordinates.
 
@@ -921,7 +920,6 @@ class SphericalGeneralizedNFW(EllipticalGeneralizedNFW):
 class SphericalTruncatedNFW(AbstractEllipticalGeneralizedNFW):
 
     def __init__(self, centre=(0.0, 0.0), kappa_s=0.05, scale_radius=5.0, truncation_radius=2.0):
-
         super(SphericalTruncatedNFW, self).__init__(centre=centre, axis_ratio=1.0, phi=0.0, kappa_s=kappa_s,
                                                     inner_slope=1.0, scale_radius=scale_radius)
 
@@ -933,29 +931,28 @@ class SphericalTruncatedNFW(AbstractEllipticalGeneralizedNFW):
                                 self.truncation_radius))
 
     def coord_func_l(self, grid_radius):
-
         f_r = self.coord_func_f(grid_radius=grid_radius)
         g_r = self.coord_func_g(grid_radius=grid_radius)
         k_r = self.coord_func_k(grid_radius=grid_radius)
 
-        return np.divide(self.truncation_radius**2.0, (self.truncation_radius**2.0 + 1.0)**2.0)*(
-                ((self.truncation_radius**2.0 + 1.0)*g_r) +
-                (2*f_r) -
+        return np.divide(self.truncation_radius ** 2.0, (self.truncation_radius ** 2.0 + 1.0) ** 2.0) * (
+                ((self.truncation_radius ** 2.0 + 1.0) * g_r) +
+                (2 * f_r) -
                 (np.pi / (np.sqrt(self.truncation_radius ** 2.0 + grid_radius ** 2.0))) +
-                (((self.truncation_radius**2.0 - 1.0) / (self.truncation_radius *
-                                                         (np.sqrt(self.truncation_radius ** 2.0 + grid_radius ** 2.0)))) * k_r))
+                (((self.truncation_radius ** 2.0 - 1.0) / (self.truncation_radius *
+                                                           (np.sqrt(
+                                                               self.truncation_radius ** 2.0 + grid_radius ** 2.0)))) * k_r))
 
     def coord_func_m(self, grid_radius):
-
         f_r = self.coord_func_f(grid_radius=grid_radius)
         k_r = self.coord_func_k(grid_radius=grid_radius)
 
-        return (self.truncation_radius**2.0 / (self.truncation_radius**2.0 + 1.0) ** 2.0) * (
+        return (self.truncation_radius ** 2.0 / (self.truncation_radius ** 2.0 + 1.0) ** 2.0) * (
                 ((self.truncation_radius ** 2.0 + 2.0 * grid_radius ** 2.0 - 1.0) * f_r) +
                 (np.pi * self.truncation_radius) +
                 ((self.truncation_radius ** 2.0 - 1.0) * np.log(self.truncation_radius)) +
                 (np.sqrt(grid_radius ** 2.0 + self.truncation_radius ** 2.0) * (
-                ((self.truncation_radius ** 2.0 - 1.0) / self.truncation_radius) * k_r - np.pi)))
+                        ((self.truncation_radius ** 2.0 - 1.0) / self.truncation_radius) * k_r - np.pi)))
 
     def convergence_func(self, grid_radius):
         grid_radius = (1.0 / self.scale_radius) * grid_radius
@@ -964,12 +961,12 @@ class SphericalTruncatedNFW(AbstractEllipticalGeneralizedNFW):
     def deflection_func_sph(self, grid_radius):
         return self.coord_func_m(grid_radius=grid_radius)
 
-    def potential_from_grid(self, grid, grid_radial_minimum=None):
+    def potential_from_grid(self, grid):
         return np.zeros((grid.shape[0],))
 
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
-    def deflections_from_grid(self, grid, grid_radial_minimum=None, **kwargs):
+    def deflections_from_grid(self, grid, **kwargs):
         """
         Calculate the deflection angles at a given set of arc-second gridded coordinates.
 
@@ -986,18 +983,16 @@ class SphericalTruncatedNFW(AbstractEllipticalGeneralizedNFW):
         return self.grid_to_grid_cartesian(grid, deflection_grid)
 
     def mass_at_truncation_radius(self, critical_surface_mass_density_arcsec, cosmic_average_mass_density_arcsec):
-
         mass_at_200 = self.mass_at_200(critical_surface_mass_density_arcsec=critical_surface_mass_density_arcsec,
                                        cosmic_average_mass_density_arcsec=cosmic_average_mass_density_arcsec)
 
-        return mass_at_200 * (self.tau**2.0 / (self.tau**2.0 + 1.0) ** 2.0) * \
-                             (((self.tau**2.0 - 1) * np.log(self.tau)) + (self.tau*np.pi) - (self.tau**2.0 + 1))
+        return mass_at_200 * (self.tau ** 2.0 / (self.tau ** 2.0 + 1.0) ** 2.0) * \
+               (((self.tau ** 2.0 - 1) * np.log(self.tau)) + (self.tau * np.pi) - (self.tau ** 2.0 + 1))
 
 
 class SphericalTruncatedNFWChallenge(SphericalTruncatedNFW):
 
     def __init__(self, centre=(0.0, 0.0), kappa_s=0.05, scale_radius=5.0):
-
         self.kappa_s = kappa_s
         self.scale_radius = scale_radius * 6.68549148608755
 
@@ -1043,7 +1038,7 @@ class EllipticalNFW(AbstractEllipticalGeneralizedNFW):
 
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
-    def potential_from_grid(self, grid, grid_radial_minimum=None):
+    def potential_from_grid(self, grid):
         """
         Calculate the potential at a given set of arc-second gridded coordinates.
 
@@ -1053,8 +1048,8 @@ class EllipticalNFW(AbstractEllipticalGeneralizedNFW):
             The grid of (y,x) arc-second coordinates the deflection angles are computed on.
         """
         potential_grid = quad_grid(self.potential_func, 0.0, 1.0, grid,
-                                 args=(self.axis_ratio, self.kappa_s, self.scale_radius),
-                                 epsrel=1.49e-5)[0]
+                                   args=(self.axis_ratio, self.kappa_s, self.scale_radius),
+                                   epsrel=1.49e-5)[0]
 
         return potential_grid
 
@@ -1062,7 +1057,7 @@ class EllipticalNFW(AbstractEllipticalGeneralizedNFW):
     @geometry_profiles.cache
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
-    def deflections_from_grid(self, grid, grid_radial_minimum=None):
+    def deflections_from_grid(self, grid):
         """
         Calculate the deflection angles at a given set of arc-second gridded coordinates.
 
@@ -1075,8 +1070,8 @@ class EllipticalNFW(AbstractEllipticalGeneralizedNFW):
         def calculate_deflection_component(npow, index):
             deflection_grid = self.axis_ratio * grid[:, index]
             deflection_grid *= quad_grid(self.deflection_func, 0.0, 1.0, grid,
-                                    args=(npow, self.axis_ratio, self.kappa_s,
-                                          self.scale_radius))[0]
+                                         args=(npow, self.axis_ratio, self.kappa_s,
+                                               self.scale_radius))[0]
 
             return deflection_grid
 
@@ -1145,7 +1140,7 @@ class SphericalNFW(EllipticalNFW):
 
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
-    def potential_from_grid(self, grid, grid_radial_minimum=None):
+    def potential_from_grid(self, grid):
         """
         Calculate the potential at a given set of arc-second gridded coordinates.
 
@@ -1159,7 +1154,7 @@ class SphericalNFW(EllipticalNFW):
 
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
-    def deflections_from_grid(self, grid, grid_radial_minimum=None):
+    def deflections_from_grid(self, grid):
         """
         Calculate the deflection angles at a given set of arc-second gridded coordinates.
 
@@ -1187,11 +1182,11 @@ class SphericalNFW(EllipticalNFW):
 
         return np.divide(np.add(np.log(np.divide(eta, 2.)), conditional_eta), eta)
 
- #   def characteristic_over_density(self, cosmic_average_density):
+
+#   def characteristic_over_density(self, cosmic_average_density):
 
 
- #   def radius_at_200_times_critical_density(self):
-
+#   def radius_at_200_times_critical_density(self):
 
 
 # noinspection PyAbstractClass
@@ -1228,7 +1223,7 @@ class AbstractEllipticalSersic(light_profiles.AbstractEllipticalSersic, Elliptic
 
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
-    def convergence_from_grid(self, grid, grid_radial_minimum=None):
+    def convergence_from_grid(self, grid):
         """ Calculate the projected convergence at a given set of arc-second gridded coordinates.
 
         Parameters
@@ -1255,7 +1250,6 @@ class EllipticalSersic(AbstractEllipticalSersic):
     @staticmethod
     def deflection_func(u, y, x, npow, axis_ratio, intensity, sersic_index, effective_radius, mass_to_light_ratio,
                         sersic_constant):
-
         eta_u = np.sqrt(axis_ratio) * np.sqrt((u * ((x ** 2) + (y ** 2 / (1 - (1 - axis_ratio ** 2) * u)))))
 
         return mass_to_light_ratio * intensity * np.exp(
@@ -1266,7 +1260,7 @@ class EllipticalSersic(AbstractEllipticalSersic):
     @geometry_profiles.cache
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
-    def deflections_from_grid(self, grid, grid_radial_minimum=None):
+    def deflections_from_grid(self, grid):
         """
         Calculate the deflection angles at a given set of arc-second gridded coordinates.
 
@@ -1449,7 +1443,7 @@ class EllipticalSersicRadialGradient(AbstractEllipticalSersic):
 
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
-    def convergence_from_grid(self, grid, grid_radial_minimum=None):
+    def convergence_from_grid(self, grid):
         """ Calculate the projected convergence at a given set of arc-second gridded coordinates.
 
         Parameters
@@ -1463,7 +1457,7 @@ class EllipticalSersicRadialGradient(AbstractEllipticalSersic):
     @geometry_profiles.cache
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
-    def deflections_from_grid(self, grid, grid_radial_minimum=None):
+    def deflections_from_grid(self, grid):
         """
         Calculate the deflection angles at a given set of arc-second gridded coordinates.
 
@@ -1549,17 +1543,17 @@ class MassSheet(geometry_profiles.SphericalProfile, MassProfile):
         super(MassSheet, self).__init__(centre=centre)
         self.kappa = kappa
 
-    def convergence_from_grid(self, grid, grid_radial_minimum=None):
+    def convergence_from_grid(self, grid):
         return np.full(shape=grid.shape[0], fill_value=self.kappa)
 
-    def potential_from_grid(self, grid, grid_radial_minimum=None):
+    def potential_from_grid(self, grid):
         return np.zeros((grid.shape[0],))
 
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
-    def deflections_from_grid(self, grid, grid_radial_minimum=None):
+    def deflections_from_grid(self, grid):
         grid_radii = self.grid_to_grid_radii(grid=grid)
-        return self.grid_to_grid_cartesian(grid=grid, radius=self.kappa*grid_radii)
+        return self.grid_to_grid_cartesian(grid=grid, radius=self.kappa * grid_radii)
 
 
 # noinspection PyAbstractClass
@@ -1596,15 +1590,15 @@ class ExternalShear(geometry_profiles.EllipticalProfile, MassProfile):
     def mass_within_ellipse_in_mass_units(self, radius, critical_surface_mass_density):
         return 0.0
 
-    def convergence_from_grid(self, grid, grid_radial_minimum=None):
+    def convergence_from_grid(self, grid):
         return np.zeros((grid.shape[0],))
 
-    def potential_from_grid(self, grid, grid_radial_minimum=None):
+    def potential_from_grid(self, grid):
         return np.zeros((grid.shape[0],))
 
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
-    def deflections_from_grid(self, grid, grid_radial_minimum=None):
+    def deflections_from_grid(self, grid):
         """
         Calculate the deflection angles at a given set of arc-second gridded coordinates.
 

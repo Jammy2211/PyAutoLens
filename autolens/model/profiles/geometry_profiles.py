@@ -17,7 +17,7 @@ def transform_grid(func):
     """
 
     @wraps(func)
-    def wrapper(profile, grid, grid_radial_minimum=None, *args, **kwargs):
+    def wrapper(profile, grid, *args, **kwargs):
         """
 
         Parameters
@@ -34,9 +34,9 @@ def transform_grid(func):
             A value or coordinate in the same coordinate system as those passed in.
         """
         if not isinstance(grid, TransformedGrid):
-            return func(profile, profile.transform_grid_to_reference_frame(grid), grid_radial_minimum, *args, **kwargs)
+            return func(profile, profile.transform_grid_to_reference_frame(grid), *args, **kwargs)
         else:
-            return func(profile, grid, grid_radial_minimum, *args, **kwargs)
+            return func(profile, grid, *args, **kwargs)
 
     return wrapper
 
@@ -57,12 +57,12 @@ def cache(func):
         Some result, either newly calculated or recovered from the cache
     """
 
-    def wrapper(instance: GeometryProfile, grid: np.ndarray, grid_radial_minimum=None, *args, **kwargs):
+    def wrapper(instance: GeometryProfile, grid: np.ndarray, *args, **kwargs):
         if not hasattr(instance, "cache"):
             instance.cache = {}
         key = (func.__name__, grid.tobytes())
         if key not in instance.cache:
-            instance.cache[key] = func(instance, grid, grid_radial_minimum)
+            instance.cache[key] = func(instance, grid)
         return instance.cache[key]
 
     return wrapper
@@ -87,7 +87,7 @@ def move_grid_to_radial_minimum(func):
     """
 
     @wraps(func)
-    def wrapper(mass_profile, grid, grid_radial_minimum=None, *args, **kwargs):
+    def wrapper(mass_profile, grid, *args, **kwargs):
         """
 
         Parameters
@@ -103,15 +103,13 @@ def move_grid_to_radial_minimum(func):
         -------
             A value or coordinate in the same coordinate system as those passed in.
         """
-        if grid_radial_minimum is not None:
-            with np.errstate(all='ignore'): # Division by zero fixed via isnan
-                grid_radii = mass_profile.grid_to_grid_radii(grid=grid)
-                grid_radial_scale = np.where(grid_radii < grid_radial_minimum, grid_radial_minimum / grid_radii, 1.0)
-                grid = np.multiply(grid, grid_radial_scale[:, None])
-            grid[np.isnan(grid)] = grid_radial_minimum
-            return func(mass_profile, grid, grid_radial_minimum, *args, **kwargs)
-        else:
-            return func(mass_profile, grid, grid_radial_minimum, *args, **kwargs)
+        grid_radial_minimum = 1.e-8
+        with np.errstate(all='ignore'):  # Division by zero fixed via isnan
+            grid_radii = mass_profile.grid_to_grid_radii(grid=grid)
+            grid_radial_scale = np.where(grid_radii < grid_radial_minimum, grid_radial_minimum / grid_radii, 1.0)
+            grid = np.multiply(grid, grid_radial_scale[:, None])
+        grid[np.isnan(grid)] = grid_radial_minimum
+        return func(mass_profile, grid, *args, **kwargs)
 
     return wrapper
 
@@ -159,8 +157,7 @@ class SphericalProfile(GeometryProfile):
         super(SphericalProfile, self).__init__(centre)
 
     @transform_grid
-    @move_grid_to_radial_minimum
-    def grid_to_grid_radii(self, grid, grid_radial_minimum=None):
+    def grid_to_grid_radii(self, grid):
         """Convert a grid of (y, x) coordinates to a grid of their circular radii.
 
         If the coordinates have not been transformed to the profile's centre, this is performed automatically.
@@ -289,7 +286,7 @@ class EllipticalProfile(SphericalProfile):
 
     @transform_grid
     @move_grid_to_radial_minimum
-    def grid_to_elliptical_radii(self, grid, grid_radial_minimum=None):
+    def grid_to_elliptical_radii(self, grid):
         """ Convert a grid of (y,x) coordinates to an elliptical radius.
 
         If the coordinates have not been transformed to the profile's geometry, this is performed automatically.
@@ -303,7 +300,7 @@ class EllipticalProfile(SphericalProfile):
 
     @transform_grid
     @move_grid_to_radial_minimum
-    def grid_to_eccentric_radii(self, grid, grid_radial_minimum=None):
+    def grid_to_eccentric_radii(self, grid):
         """Convert a grid of (y,x) coordinates to an eccentric radius, which is (1.0/axis_ratio) * elliptical radius \
         and used to define light profile half-light radii using circular radii.
 
