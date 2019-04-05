@@ -16,6 +16,8 @@ from autolens.lens import sensitivity_fit
 from autolens.lens.plotters import sensitivity_fit_plotters, ray_tracing_plotters, lens_fit_plotters
 from autolens.model.galaxy import galaxy as g, galaxy_model as gm, galaxy_fit, galaxy_data as gd
 from autolens.model.galaxy.plotters import galaxy_fit_plotters
+
+
 # from autolens.lens.summary import tracer_summary
 
 def default_mask_function(image):
@@ -38,7 +40,8 @@ def setup_phase_mask(data, mask, mask_function, inner_circular_mask_radii):
 
 class AbstractPhase(autofit_phase.AbstractPhase):
 
-    def __init__(self, phase_name, phase_tag=None, phase_folders=None, optimizer_class=non_linear.MultiNest, cosmology=cosmo.Planck15,
+    def __init__(self, phase_name, phase_tag=None, phase_folders=None, optimizer_class=non_linear.MultiNest,
+                 cosmology=cosmo.Planck15,
                  auto_link_priors=False):
         """
         A phase in an lens pipeline. Uses the set non_linear optimizer to try to fit models and hyper
@@ -224,15 +227,17 @@ class AbstractPhase(autofit_phase.AbstractPhase):
 
     def make_result(self, result, analysis):
         return self.__class__.Result(constant=result.constant, figure_of_merit=result.figure_of_merit,
-                                     variable=result.variable, analysis=analysis, optimizer=self.optimizer)
+                                     previous_variable=result.previous_variable, gaussian_tuples=result.gaussian_tuples,
+                                     analysis=analysis, optimizer=self.optimizer)
 
     class Result(non_linear.Result):
 
-        def __init__(self, constant, figure_of_merit, variable, analysis, optimizer):
+        def __init__(self, constant, figure_of_merit, previous_variable, gaussian_tuples, analysis, optimizer):
             """
             The result of a phase
             """
-            super(Phase.Result, self).__init__(constant=constant, figure_of_merit=figure_of_merit, variable=variable)
+            super(Phase.Result, self).__init__(constant=constant, figure_of_merit=figure_of_merit,
+                                               previous_variable=previous_variable, gaussian_tuples=gaussian_tuples)
 
             self.analysis = analysis
             self.optimizer = optimizer
@@ -319,7 +324,8 @@ class PhasePositions(AbstractPhase):
     def phase_property_collections(self):
         return [self.lens_galaxies]
 
-    def __init__(self, phase_name, phase_tag=None, phase_folders=None, lens_galaxies=None, optimizer_class=non_linear.MultiNest,
+    def __init__(self, phase_name, phase_tag=None, phase_folders=None, lens_galaxies=None,
+                 optimizer_class=non_linear.MultiNest,
                  cosmology=cosmo.Planck15, auto_link_priors=False):
         super().__init__(phase_name=phase_name, phase_tag=phase_tag, phase_folders=phase_folders,
                          optimizer_class=optimizer_class, cosmology=cosmology, auto_link_priors=auto_link_priors)
@@ -414,7 +420,8 @@ class PhaseImaging(Phase):
 
     def __init__(self, phase_name, phase_tag=None, phase_folders=None, optimizer_class=non_linear.MultiNest,
                  sub_grid_size=2, bin_up_factor=None, image_psf_shape=None,
-                 pixelization_psf_shape=None, positions_threshold=None, mask_function=None, inner_circular_mask_radii=None,
+                 pixelization_psf_shape=None, positions_threshold=None, mask_function=None,
+                 inner_circular_mask_radii=None,
                  interp_pixel_scale=None, cosmology=cosmo.Planck15, auto_link_priors=False):
 
         """
@@ -799,7 +806,8 @@ class LensPlanePhase(PhaseImaging):
     def phase_property_collections(self):
         return [self.lens_galaxies]
 
-    def __init__(self, phase_name, phase_tag=None, phase_folders=None, lens_galaxies=None, optimizer_class=non_linear.MultiNest,
+    def __init__(self, phase_name, phase_tag=None, phase_folders=None, lens_galaxies=None,
+                 optimizer_class=non_linear.MultiNest,
                  sub_grid_size=2, bin_up_factor=None,
                  image_psf_shape=None, mask_function=None, inner_circular_mask_radii=None, cosmology=cosmo.Planck15,
                  interp_pixel_scale=None, auto_link_priors=False):
@@ -818,6 +826,9 @@ class LensPlanePhase(PhaseImaging):
         self.lens_galaxies = lens_galaxies
 
     class Analysis(PhaseImaging.Analysis):
+        def figure_of_merit_for_fit(self, tracer):
+            raise NotImplementedError()
+
         def tracer_for_instance(self, instance):
             return ray_tracing.TracerImagePlane(lens_galaxies=instance.lens_galaxies,
                                                 image_plane_grid_stack=self.lens_data.grid_stack,
@@ -833,15 +844,6 @@ class LensPlanePhase(PhaseImaging):
             return "\nRunning lens lens for... \n\nLens Galaxy::\n{}\n\n".format(instance.lens_galaxies)
 
     class Result(PhaseImaging.Result):
-
-        def __init__(self, constant, figure_of_merit, variable, analysis, optimizer):
-            """
-            The result of a phase
-            """
-
-            super(LensPlanePhase.Result, self).__init__(constant=constant, figure_of_merit=figure_of_merit,
-                                                        variable=variable, analysis=analysis, optimizer=optimizer)
-
         @property
         def unmasked_lens_plane_model_image(self):
             return self.most_likely_fit.unmasked_model_image_of_planes[0]
@@ -859,9 +861,10 @@ class LensSourcePlanePhase(PhaseImaging):
     def phase_property_collections(self):
         return [self.lens_galaxies, self.source_galaxies]
 
-    def __init__(self, phase_name, phase_tag=None,phase_folders=None,
+    def __init__(self, phase_name, phase_tag=None, phase_folders=None,
                  lens_galaxies=None, source_galaxies=None, optimizer_class=non_linear.MultiNest,
-                 sub_grid_size=2, bin_up_factor=None, image_psf_shape=None, positions_threshold=None, mask_function=None,
+                 sub_grid_size=2, bin_up_factor=None, image_psf_shape=None, positions_threshold=None,
+                 mask_function=None,
                  interp_pixel_scale=None, inner_circular_mask_radii=None, cosmology=cosmo.Planck15,
                  auto_link_priors=False):
         """
@@ -896,6 +899,9 @@ class LensSourcePlanePhase(PhaseImaging):
         self.source_galaxies = source_galaxies or []
 
     class Analysis(PhaseImaging.Analysis):
+        def figure_of_merit_for_fit(self, tracer):
+            raise NotImplementedError()
+
         def tracer_for_instance(self, instance):
             return ray_tracing.TracerImageSourcePlanes(lens_galaxies=instance.lens_galaxies,
                                                        source_galaxies=instance.source_galaxies,
@@ -935,8 +941,10 @@ class MultiPlanePhase(PhaseImaging):
     def phase_property_collections(self):
         return [self.galaxies]
 
-    def __init__(self, phase_name, phase_tag=None, phase_folders=None, galaxies=None, optimizer_class=non_linear.MultiNest,
-                 sub_grid_size=2, bin_up_factor=None, image_psf_shape=None, positions_threshold=None, mask_function=None,
+    def __init__(self, phase_name, phase_tag=None, phase_folders=None, galaxies=None,
+                 optimizer_class=non_linear.MultiNest,
+                 sub_grid_size=2, bin_up_factor=None, image_psf_shape=None, positions_threshold=None,
+                 mask_function=None,
                  inner_circular_mask_radii=None, cosmology=cosmo.Planck15, auto_link_priors=False):
         """
         A phase with a simple source/lens model
@@ -967,6 +975,9 @@ class MultiPlanePhase(PhaseImaging):
 
     class Analysis(PhaseImaging.Analysis):
 
+        def figure_of_merit_for_fit(self, tracer):
+            raise NotImplementedError()
+
         def __init__(self, lens_data, cosmology, positions_threshold, results=None):
             self.lens_data = lens_data
             super(MultiPlanePhase.Analysis, self).__init__(lens_data=lens_data, cosmology=cosmology,
@@ -990,7 +1001,8 @@ class MultiPlanePhase(PhaseImaging):
 class GalaxyFitPhase(AbstractPhase):
     galaxies = PhasePropertyCollection("galaxies")
 
-    def __init__(self, phase_name, phase_tag=None, phase_folders=None, galaxies=None, use_intensities=False, use_convergence=False,
+    def __init__(self, phase_name, phase_tag=None, phase_folders=None, galaxies=None, use_intensities=False,
+                 use_convergence=False,
                  use_potential=False,
                  use_deflections=False, optimizer_class=non_linear.MultiNest, sub_grid_size=2,
                  mask_function=None, cosmology=cosmo.Planck15):
