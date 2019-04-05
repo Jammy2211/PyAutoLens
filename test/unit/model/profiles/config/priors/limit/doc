@@ -1,8 +1,0 @@
-The priors/limit config files set hard limits on the values allowed for every parameter.
-
-For example, if the limits on a parameter are param = 0.0,2.0, only values between a lower limit of 0.0 and upper
-limit of 2.0 can be sampled during the non-linear search. If the non-linear optimizer assumes a value outside of these
-limits the model is resampled.
-
-Limits are applied to all types of priors, e.g. UniformPrior, GaussianPrior, LogUniformPrior. It is not desirable for
-the limits of a UniformPrior or LogUniformPrior to extend beyond the limits specified by these config files.
