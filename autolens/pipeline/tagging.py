@@ -98,8 +98,8 @@ def bin_up_factor_tag_from_bin_up_factor(bin_up_factor):
 
 
 def interp_pixel_scale_tag_from_interp_pixel_scale(interp_pixel_scale):
-    """Generate a bin up tag, to customize phase names based on the bin up factor used in a pipeline. This changes
-    the phase name 'phase_name' as follows:
+    """Generate an interpolation pixel scale tag, to customize phase names based on the bin up factor used in a \
+    pipeline. This changes the phase name 'phase_name' as follows:
 
     interp_pixel_scale = 1 -> phase_name
     interp_pixel_scale = 2 -> phase_name_interp_pixel_scale_2
@@ -109,3 +109,54 @@ def interp_pixel_scale_tag_from_interp_pixel_scale(interp_pixel_scale):
         return ''
     else:
         return '_interp_{0:.3f}'.format(interp_pixel_scale)
+
+
+def align_bulge_disk_centre_tag_from_align_bulge_disk_centre(align_bulge_disk_centre):
+    """Generate a tag for if the bulge and disk of a bulge-disk system are aligned or not, to customize phase names \
+    based on the bulge-disk model. This changee the phase name 'phase_name' as follows:
+
+    bd_align_centres = False -> phase_name
+    bd_align_centres = True -> phase_name_bd_align_centres
+    """
+    if not align_bulge_disk_centre:
+        return ''
+    elif align_bulge_disk_centre:
+        return '_bd_align_centre'
+
+def align_bulge_disk_axis_ratio_tag_from_align_bulge_disk_axis_ratio(align_bulge_disk_axis_ratio):
+    """Generate a tag for if the bulge and disk of a bulge-disk system are aligned or not, to customize phase names \
+    based on the bulge-disk model. This changes the phase name 'phase_name' as follows:
+
+    bd_align_axis_ratio = False -> phase_name
+    bd_align_axis_ratio = True -> phase_name_bd_align_axis_ratio
+    """
+    if not align_bulge_disk_axis_ratio:
+        return ''
+    elif align_bulge_disk_axis_ratio:
+        return '_bd_align_axis_ratio'
+
+def align_bulge_disk_phi_tag_from_align_bulge_disk_phi(align_bulge_disk_phi):
+    """Generate a tag for if the bulge and disk of a bulge-disk system are aligned or not, to customize phase names \
+    based on the bulge-disk model. This changes the phase name 'phase_name' as follows:
+
+    bd_align_phi = False -> phase_name
+    bd_align_phi = True -> phase_name_bd_align_phi
+    """
+    if not align_bulge_disk_phi:
+        return ''
+    elif align_bulge_disk_phi:
+        return '_bd_align_phi'
+
+def bulge_disk_tag_from_align_bulge_disks(align_bulge_disk_centre, align_bulge_disk_axis_ratio, align_bulge_disk_phi):
+    """Generate a tag for the alignment of the geometry of the bulge and disk of a bulge-disk system, to customize \ 
+    phase names based on the bulge-disk model. This adds together the bulge_disk tags generated in the 3 functions
+    above
+    """
+    align_bulge_disk_centre_tag = align_bulge_disk_centre_tag_from_align_bulge_disk_centre(
+        align_bulge_disk_centre=align_bulge_disk_centre)
+    align_bulge_disk_axis_ratio_tag = align_bulge_disk_axis_ratio_tag_from_align_bulge_disk_axis_ratio(
+        align_bulge_disk_axis_ratio=align_bulge_disk_axis_ratio)
+    align_bulge_disk_phi_tag = align_bulge_disk_phi_tag_from_align_bulge_disk_phi(
+        align_bulge_disk_phi=align_bulge_disk_phi)
+
+    return align_bulge_disk_centre_tag + align_bulge_disk_axis_ratio_tag + align_bulge_disk_phi_tag
