@@ -172,24 +172,21 @@ class AbstractPlane(object):
 
             return None
 
-
     def luminosities_of_galaxies_within_circles(self, radius, units_luminosity='electrons_per_second',
                                                 exposure_time=None):
         """Compute the total luminosity of all galaxies in this plane within a circle of specified radius.
 
-        The value returned by this integral is dimensionless, and a conversion factor can be specified to convert it \
-        to a physical value (e.g. the photometric zeropoint).
-
-        See *galaxy.light_within_circle* and *light_profiles.light_within_circle* for details
+        See *galaxy.light_within_circle* and *light_profiles.light_within_circle* for details \
         of how this is performed.
 
         Parameters
         ----------
         radius : float
-            The radius of the circle to compute the dimensionless luminosity within.
-        conversion_factor : float
-            Factor the dimensionless luminosity is multiplied by to convert it to a physical luminosity \ 
-            (e.g. a photometric zeropoint).                
+            The radius of the circle to compute the dimensionless mass within.
+        units_luminosity : str
+            The units the luminosity is returned in (electrons_per_second | counts).
+        exposure_time : float
+            The exposure time of the observation, which converts luminosity from electrons per second units to counts.
         """
         return list(map(lambda galaxy: galaxy.luminosity_within_circle(radius, units_luminosity=units_luminosity,
                                                                        exposure_time=exposure_time),
@@ -209,21 +206,18 @@ class AbstractPlane(object):
         Parameters
         ----------
         major_axis : float
-            The major-axis of the ellipse to compute the dimensionless luminosity within.
-        conversion_factor : float
-            Factor the dimensionless luminosity is multiplied by to convert it to a physical luminosity \ 
-            (e.g. a photometric zeropoint).            
+            The major-axis radius of the ellipse.
+        units_luminosity : str
+            The units the luminosity is returned in (electrons_per_second | counts).
+        exposure_time : float
+            The exposure time of the observation, which converts luminosity from electrons per second units to counts.
         """
         return list(map(lambda galaxy: galaxy.luminosity_within_ellipse(major_axis, units_luminosity=units_luminosity,
                                                                         exposure_time=exposure_time),
                         self.galaxies))
 
-    def masses_of_galaxies_within_circles_in_angular_units(self, radius):
-        """
-        Compute the total angular mass of all galaxies in this plane within a circle of specified radius.
-
-        The value returned by this integral is in angular units, however a conversion factor can be specified to \
-        convert it to a physical value (e.g. the critical surface mass density).
+    def masses_of_galaxies_within_circles(self, radius, units_mass='angular', critical_surface_mass_density=None):
+        """Compute the total mass of all galaxies in this plane within a circle of specified radius.
 
         See *galaxy.angular_mass_within_circle* and *mass_profiles.angular_mass_within_circle* for details
         of how this is performed.
@@ -232,74 +226,35 @@ class AbstractPlane(object):
         ----------
         radius : float
             The radius of the circle to compute the dimensionless mass within.
-        conversion_factor : float
-            Factor the dimensionless mass is multiplied by to convert it to a physical mass (e.g. the critical surface \
-            mass density).            
+        units_mass : str
+            The units the mass is returned in (angular | solMass).
+        critical_surface_mass_density : float
+            The critical surface mass density of the strong lens configuration, which converts mass from angulalr \
+            units to physical units (e.g. solar masses).
         """
-        return list(map(lambda galaxy: galaxy.mass_within_circle(radius),
+        return list(map(lambda galaxy: galaxy.mass_within_circle(
+                        radius=radius, units_mass=units_mass,
+                        critical_surface_mass_density=critical_surface_mass_density),
                         self.galaxies))
 
-    def masses_of_galaxies_within_ellipses_in_angular_units(self, major_axis):
-        """
-        Compute the total angular mass of all galaxies in this plane within a ellipse of specified major-axis.
+    def masses_of_galaxies_within_ellipses(self, major_axis, units_mass='angular', critical_surface_mass_density=None):
+        """Compute the total mass of all galaxies in this plane within a ellipse of specified major-axis.
 
-        The value returned by this integral is in angular units, however a conversion factor can be specified to \
-        convert it to a physical value (e.g. the critical surface mass density).
-
-        See *galaxy.angular_mass_within_ellipse* and *mass_profiles.angular_mass_within_ellipse* for details
+        See *galaxy.angular_mass_within_ellipse* and *mass_profiles.angular_mass_within_ellipse* for details \
         of how this is performed.
 
         Parameters
         ----------
         major_axis : float
-            The major-axis of the ellipse to compute the dimensionless mass within.
-        conversion_factor : float
-            Factor the dimensionless mass is multiplied by to convert it to a physical mass (e.g. the critical surface \
-            mass density).
+            The major-axis radius of the ellipse.
+        units_luminosity : str
+            The units the luminosity is returned in (electrons_per_second | counts).
+        exposure_time : float
+            The exposure time of the observation, which converts luminosity from electrons per second units to counts.
         """
-        return list(map(lambda galaxy: galaxy.mass_within_ellipse(major_axis),
-                        self.galaxies))
-
-    def masses_of_galaxies_within_circles_in_mass_units(self, radius, critical_surface_mass_density):
-        """
-        Compute the total angular mass of all galaxies in this plane within a circle of specified radius.
-
-        The value returned by this integral is in angular units, however a conversion factor can be specified to \
-        convert it to a physical value (e.g. the critical surface mass density).
-
-        See *galaxy.angular_mass_within_circle* and *mass_profiles.angular_mass_within_circle* for details
-        of how this is performed.
-
-        Parameters
-        ----------
-        radius : float
-            The radius of the circle to compute the dimensionless mass within.
-        critical_surface_mass_density : float
-            Factor the dimensionless mass is multiplied by to convert it to a physical mass (e.g. the critical surface \
-            mass density).            
-        """
-        return list(map(lambda galaxy: galaxy.mass_within_circle(radius, critical_surface_mass_density),
-                        self.galaxies))
-
-    def masses_of_galaxies_within_ellipses_in_mass_units(self, major_axis, critical_surface_mass_density):
-        """
-        Compute the total angular mass of all galaxies in this plane within a ellipse of specified major-axis.
-
-        The value returned by this integral is in angular units, however a conversion factor can be specified to \
-        convert it to a physical value (e.g. the critical surface mass density).
-
-        See *galaxy.angular_mass_within_ellipse* and *mass_profiles.angular_mass_within_ellipse* for details
-        of how this is performed.
-
-        Parameters
-        ----------
-        major_axis : float
-            The major-axis of the ellipse to compute the dimensionless mass within.
-        critical_surface_mass_density : float
-            Factor the dimensionless mass is multiplied by to convert it to a physical mass (e.g. the critical surface \
-            mass density).            
-        """
-        return list(map(lambda galaxy: galaxy.mass_within_ellipse(major_axis, critical_surface_mass_density),
+        return list(map(lambda galaxy: galaxy.mass_within_ellipse(
+                        major_axis=major_axis, units_mass=units_mass,
+                        critical_surface_mass_density=critical_surface_mass_density),
                         self.galaxies))
 
     @property
