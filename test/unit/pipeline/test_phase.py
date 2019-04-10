@@ -192,6 +192,17 @@ class TestRedshift(object):
         assert phase.source_galaxies[0].redshift == 1.0
         assert phase.source_galaxies[1].redshift == 1.0
 
+    def test_truthy_not_overridden(self):
+        phase = ph.LensSourcePlanePhase("lens source phase")
+        phase.lens_galaxies = [g.Galaxy(redshift=0.1), gm.GalaxyModel()]
+        phase.source_galaxies = [g.Galaxy(), gm.GalaxyModel(redshift=2.0)]
+
+        assert phase.lens_galaxies[0].redshift == 0.1
+        assert phase.lens_galaxies[1].redshift == 0.5
+
+        assert phase.source_galaxies[0].redshift == 1.0
+        assert phase.source_galaxies[1].redshift == 2.0
+
 
 class TestHyperGalaxyPhase(object):
     def test_analysis(self, hyper_lens_data, hyper_galaxy):
