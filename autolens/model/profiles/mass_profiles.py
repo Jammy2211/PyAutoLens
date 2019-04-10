@@ -151,7 +151,28 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
 
         return summary
 
-    def convert_mass_to_units(self, mass_angular, units_mass, critical_surface_mass_density):
+    def convert_mass_angular_to_units_mass(self, mass_angular, units_mass, critical_surface_mass_density):
+        """Convert the angular mass computed in the *mass_within_* method to the units specified by the units_mass
+        parameter.
+
+        This function first checks that the necessary input parameters are input before performing the conversion. \
+        For example, the mass cannot be converted to solar masses if the critical surface mass density is not input.
+
+        The following units for mass can be specified and output:
+
+        - Dimensionless angular units (default) - 'angular'.
+        - Solar masses - 'solMass' (multiplies the angular mass by the critical surface mass density).
+
+        Parameters
+        ----------
+        radius : float
+            The radius of the circle to compute the dimensionless mass within.
+        units_mass : str
+            The units the mass is returned in (angular | solMass).
+        critical_surface_mass_density : float
+            The critical surface mass density of the strong lens configuration, which converts mass from angulalr \
+            units to physical units (e.g. solar masses).
+        """
 
         if units_mass is 'solMass' and critical_surface_mass_density is None:
             raise exc.UnitsException('The mass for a mass profile has been requested in units of solMass, '
@@ -162,34 +183,51 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
         elif units_mass is 'solMass':
             return critical_surface_mass_density * mass_angular
 
-    def mass_within_circle(self, radius, mass_units='angular', critical_surface_mass_density=None):
-        """ Integrate the mass profiles's convergence profile to compute the total angular mass within a circle of \
+    def mass_within_circle(self, radius, units_mass='angular', critical_surface_mass_density=None):
+        """ Integrate the mass profiles's convergence profile to compute the total mass within a circle of \
         specified radius. This is centred on the mass profile.
+
+        The following units for mass can be specified and output:
+
+        - Dimensionless angular units (default) - 'angular'.
+        - Solar masses - 'solMass' (multiplies the angular mass by the critical surface mass density).
 
         Parameters
         ----------
         radius : float
             The radius of the circle to compute the dimensionless mass within.
+        units_mass : str
+            The units the mass is returned in (angular | solMass).
+        critical_surface_mass_density : float
+            The critical surface mass density of the strong lens configuration, which converts mass from angulalr \
+            units to phsical units (e.g. solar masses).
         """
         mass_angular = quad(self.mass_integral, a=0.0, b=radius, args=(1.0,))[0]
-        return self.convert_mass_to_units(mass_angular=mass_angular, units_mass=mass_units,
-                                          critical_surface_mass_density=critical_surface_mass_density)
+        return self.convert_mass_angular_to_units_mass(mass_angular=mass_angular, units_mass=units_mass,
+                                                       critical_surface_mass_density=critical_surface_mass_density)
 
-    def mass_within_ellipse(self, major_axis, mass_units='angular', critical_surface_mass_density=None):
+    def mass_within_ellipse(self, major_axis, units_mass='angular', critical_surface_mass_density=None):
         """ Integrate the mass profiles's convergence profile to compute the total angular mass within an ellipse of \
         specified major axis. This is centred on the mass profile.
 
-        The value returned by this integral is in angular units, however a conversion factor can be specified to \
-        convert it to a physical value (e.g. the critical surface mass density).
+        The following units for mass can be specified and output:
+
+        - Dimensionless angular units (default) - 'angular'.
+        - Solar masses - 'solMass' (multiplies the angular mass by the critical surface mass density)
 
         Parameters
         ----------
         major_axis : float
             The major-axis radius of the ellipse.
+        units_mass : str
+            The units the mass is returned in (angular | solMass).
+        critical_surface_mass_density : float
+            The critical surface mass density of the strong lens configuration, which converts mass from angular \
+            units to phsical units (e.g. solar masses).
         """
         mass_angular = quad(self.mass_integral, a=0.0, b=major_axis, args=(self.axis_ratio,))[0]
-        return self.convert_mass_to_units(mass_angular=mass_angular, units_mass=mass_units,
-                                          critical_surface_mass_density=critical_surface_mass_density)
+        return self.convert_mass_angular_to_units_mass(mass_angular=mass_angular, units_mass=units_mass,
+                                                       critical_surface_mass_density=critical_surface_mass_density)
 
     def mass_integral(self, x, axis_ratio):
         """Routine to integrate an elliptical light profiles - set axis ratio to 1 to compute the luminosity within a \

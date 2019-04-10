@@ -295,8 +295,8 @@ class TestAbstractPlane(object):
             g0 = g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=1.0))
             g1 = g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=2.0))
 
-            g0_mass = g0.mass_within_circle_in_angular_units(radius=1.0)
-            g1_mass = g1.mass_within_circle_in_angular_units(radius=1.0)
+            g0_mass = g0.mass_within_circle(radius=1.0)
+            g1_mass = g1.mass_within_circle(radius=1.0)
             plane = pl.AbstractPlane(galaxies=[g0, g1], redshift=None)
             plane_masses = plane.masses_of_galaxies_within_circles_in_angular_units(radius=1.0)
 
@@ -306,8 +306,8 @@ class TestAbstractPlane(object):
             g0 = g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=3.0))
             g1 = g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=4.0))
 
-            g0_mass = g0.mass_within_circle_in_angular_units(radius=2.0)
-            g1_mass = g1.mass_within_circle_in_angular_units(radius=2.0)
+            g0_mass = g0.mass_within_circle(radius=2.0)
+            g1_mass = g1.mass_within_circle(radius=2.0)
             plane = pl.AbstractPlane(galaxies=[g0, g1], redshift=None)
             plane_masses = plane.masses_of_galaxies_within_circles_in_angular_units(radius=2.0)
 
@@ -319,8 +319,8 @@ class TestAbstractPlane(object):
             g0 = g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=1.0))
             g1 = g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=2.0))
 
-            g0_mass = g0.mass_within_circle_in_mass_units(radius=1.0, critical_surface_mass_density=3.0)
-            g1_mass = g1.mass_within_circle_in_mass_units(radius=1.0, critical_surface_mass_density=3.0)
+            g0_mass = g0.mass_within_circle(radius=1.0, critical_surface_mass_density=3.0)
+            g1_mass = g1.mass_within_circle(radius=1.0, critical_surface_mass_density=3.0)
             plane = pl.AbstractPlane(galaxies=[g0, g1], redshift=None)
             plane_masses = plane.masses_of_galaxies_within_circles_in_mass_units(radius=1.0,
                                                                                     critical_surface_mass_density=3.0)
@@ -331,8 +331,8 @@ class TestAbstractPlane(object):
             g0 = g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=3.0))
             g1 = g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=4.0))
 
-            g0_mass = g0.mass_within_circle_in_mass_units(radius=2.0, critical_surface_mass_density=6.0)
-            g1_mass = g1.mass_within_circle_in_mass_units(radius=2.0, critical_surface_mass_density=6.0)
+            g0_mass = g0.mass_within_circle(radius=2.0, critical_surface_mass_density=6.0)
+            g1_mass = g1.mass_within_circle(radius=2.0, critical_surface_mass_density=6.0)
             plane = pl.AbstractPlane(galaxies=[g0, g1], redshift=None)
             plane_masses = plane.masses_of_galaxies_within_circles_in_mass_units(radius=2.0,
                                                                                     critical_surface_mass_density=6.0)
@@ -344,8 +344,8 @@ class TestAbstractPlane(object):
             g0 = g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=1.0))
             g1 = g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=2.0))
 
-            g0_mass = g0.mass_within_ellipse_in_angular_units(major_axis=0.8)
-            g1_mass = g1.mass_within_ellipse_in_angular_units(major_axis=0.8)
+            g0_mass = g0.mass_within_ellipse(major_axis=0.8)
+            g1_mass = g1.mass_within_ellipse(major_axis=0.8)
             plane = pl.AbstractPlane(galaxies=[g0, g1], redshift=None)
             plane_masses = plane.masses_of_galaxies_within_ellipses_in_angular_units(major_axis=0.8)
 
@@ -355,8 +355,8 @@ class TestAbstractPlane(object):
             g0 = g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=3.0))
             g1 = g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=4.0))
 
-            g0_mass = g0.mass_within_ellipse_in_angular_units(major_axis=0.6)
-            g1_mass = g1.mass_within_ellipse_in_angular_units(major_axis=0.6)
+            g0_mass = g0.mass_within_ellipse(major_axis=0.6)
+            g1_mass = g1.mass_within_ellipse(major_axis=0.6)
             plane = pl.AbstractPlane(galaxies=[g0, g1], redshift=None)
             plane_masses = plane.masses_of_galaxies_within_ellipses_in_angular_units(major_axis=0.6)
 
@@ -368,8 +368,8 @@ class TestAbstractPlane(object):
             g0 = g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=1.0))
             g1 = g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=2.0))
 
-            g0_mass = g0.mass_within_ellipse_in_mass_units(major_axis=0.8, critical_surface_mass_density=3.0)
-            g1_mass = g1.mass_within_ellipse_in_mass_units(major_axis=0.8, critical_surface_mass_density=3.0)
+            g0_mass = g0.mass_within_ellipse(major_axis=0.8, critical_surface_mass_density=3.0)
+            g1_mass = g1.mass_within_ellipse(major_axis=0.8, critical_surface_mass_density=3.0)
             plane = pl.AbstractPlane(galaxies=[g0, g1], redshift=None)
             plane_masses = plane.masses_of_galaxies_within_ellipses_in_mass_units(major_axis=0.8,
                                                                                   critical_surface_mass_density=3.0)
@@ -380,8 +380,8 @@ class TestAbstractPlane(object):
             g0 = g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=3.0))
             g1 = g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=4.0))
 
-            g0_mass = g0.mass_within_ellipse_in_mass_units(major_axis=0.6, critical_surface_mass_density=6.0)
-            g1_mass = g1.mass_within_ellipse_in_mass_units(major_axis=0.6, critical_surface_mass_density=6.0)
+            g0_mass = g0.mass_within_ellipse(major_axis=0.6, critical_surface_mass_density=6.0)
+            g1_mass = g1.mass_within_ellipse(major_axis=0.6, critical_surface_mass_density=6.0)
             plane = pl.AbstractPlane(galaxies=[g0, g1], redshift=None)
             plane_masses = plane.masses_of_galaxies_within_ellipses_in_mass_units(major_axis=0.6,
                                                                                   critical_surface_mass_density=6.0)
@@ -461,24 +461,24 @@ class TestAbstractPlane(object):
             sis_0 = g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=1.0))
             sis_1 = g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=2.0))
 
-            einstein_mass = sis_0.mass_within_circle_in_mass_units(radius=sis_0.einstein_radius,
-                                                                   critical_surface_mass_density=2.0)
+            einstein_mass = sis_0.mass_within_circle(radius=sis_0.einstein_radius,
+                                                     critical_surface_mass_density=2.0)
 
             plane = pl.AbstractPlane(galaxies=[sis_0], redshift=None)
 
             assert plane.einstein_mass_in_mass_units(critical_surface_mass_density_arcsec=2.0) == einstein_mass
 
-            einstein_mass = sis_1.mass_within_circle_in_mass_units(radius=sis_1.einstein_radius,
-                                                                   critical_surface_mass_density=2.0)
+            einstein_mass = sis_1.mass_within_circle(radius=sis_1.einstein_radius,
+                                                     critical_surface_mass_density=2.0)
 
             plane = pl.AbstractPlane(galaxies=[sis_1], redshift=None)
 
             assert plane.einstein_mass_in_mass_units(critical_surface_mass_density_arcsec=2.0) == einstein_mass
 
-            einstein_mass = sis_0.mass_within_circle_in_mass_units(radius=sis_0.einstein_radius,
-                                                                   critical_surface_mass_density=2.0) + \
-                            sis_1.mass_within_circle_in_mass_units(radius=sis_1.einstein_radius,
-                                                                   critical_surface_mass_density=2.0)
+            einstein_mass = sis_0.mass_within_circle(radius=sis_0.einstein_radius,
+                                                     critical_surface_mass_density=2.0) + \
+                            sis_1.mass_within_circle(radius=sis_1.einstein_radius,
+                                                     critical_surface_mass_density=2.0)
 
             plane = pl.AbstractPlane(galaxies=[sis_0, sis_1], redshift=None)
 
@@ -489,8 +489,8 @@ class TestAbstractPlane(object):
             sis_0 = g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=1.0))
             g0 = g.Galaxy()
 
-            einstein_mass = sis_0.mass_within_circle_in_mass_units(radius=sis_0.einstein_radius,
-                                                                      critical_surface_mass_density=2.0)
+            einstein_mass = sis_0.mass_within_circle(radius=sis_0.einstein_radius,
+                                                     critical_surface_mass_density=2.0)
 
             plane = pl.AbstractPlane(galaxies=[sis_0, g0], redshift=None)
 
