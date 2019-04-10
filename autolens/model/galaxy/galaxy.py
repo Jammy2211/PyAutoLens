@@ -254,7 +254,7 @@ class Galaxy(object):
             mass density).
         """
         if self.has_mass_profile:
-            return sum(map(lambda p: p.mass_within_circle_in_angular_units(radius), self.mass_profiles))
+            return sum(map(lambda p: p.mass_within_circle(radius), self.mass_profiles))
         else:
             return None
 
@@ -275,7 +275,7 @@ class Galaxy(object):
             mass density).
         """
         if self.has_mass_profile:
-            return sum(map(lambda p: p.mass_within_ellipse_in_angular_units(major_axis), self.mass_profiles))
+            return sum(map(lambda p: p.mass_within_ellipse(major_axis), self.mass_profiles))
         else:
             return None
 

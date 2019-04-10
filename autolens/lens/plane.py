@@ -236,7 +236,7 @@ class AbstractPlane(object):
             Factor the dimensionless mass is multiplied by to convert it to a physical mass (e.g. the critical surface \
             mass density).            
         """
-        return list(map(lambda galaxy: galaxy.mass_within_circle_in_angular_units(radius),
+        return list(map(lambda galaxy: galaxy.mass_within_circle(radius),
                         self.galaxies))
 
     def masses_of_galaxies_within_ellipses_in_angular_units(self, major_axis):
@@ -257,7 +257,7 @@ class AbstractPlane(object):
             Factor the dimensionless mass is multiplied by to convert it to a physical mass (e.g. the critical surface \
             mass density).
         """
-        return list(map(lambda galaxy: galaxy.mass_within_ellipse_in_angular_units(major_axis),
+        return list(map(lambda galaxy: galaxy.mass_within_ellipse(major_axis),
                         self.galaxies))
 
     def masses_of_galaxies_within_circles_in_mass_units(self, radius, critical_surface_mass_density):
@@ -278,7 +278,7 @@ class AbstractPlane(object):
             Factor the dimensionless mass is multiplied by to convert it to a physical mass (e.g. the critical surface \
             mass density).            
         """
-        return list(map(lambda galaxy: galaxy.mass_within_circle_in_mass_units(radius, critical_surface_mass_density),
+        return list(map(lambda galaxy: galaxy.mass_within_circle(radius, critical_surface_mass_density),
                         self.galaxies))
 
     def masses_of_galaxies_within_ellipses_in_mass_units(self, major_axis, critical_surface_mass_density):
@@ -299,7 +299,7 @@ class AbstractPlane(object):
             Factor the dimensionless mass is multiplied by to convert it to a physical mass (e.g. the critical surface \
             mass density).            
         """
-        return list(map(lambda galaxy: galaxy.mass_within_ellipse_in_mass_units(major_axis, critical_surface_mass_density),
+        return list(map(lambda galaxy: galaxy.mass_within_ellipse(major_axis, critical_surface_mass_density),
                         self.galaxies))
 
     @property
@@ -316,7 +316,7 @@ class AbstractPlane(object):
     def einstein_mass_in_mass_units(self, critical_surface_mass_density_arcsec):
         if self.has_mass_profile:
             return sum(filter(None, list(map(lambda galaxy:
-                                             galaxy.mass_within_circle_in_mass_units(
+                                             galaxy.mass_within_circle(
                                                  radius=galaxy.einstein_radius,
                                                  critical_surface_mass_density=critical_surface_mass_density_arcsec),
                                              self.galaxies))))

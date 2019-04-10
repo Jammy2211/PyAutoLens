@@ -369,9 +369,9 @@ class TestMassProfiles(object):
         def test__within_circle__no_critical_surface_mass_density__one_profile_gal__integral_is_same_as_individual_profile(self, sie_0, gal_sie_x1):
             integral_radius = 5.5
 
-            mass_integral = sie_0.mass_within_circle_in_angular_units(radius=integral_radius)
+            mass_integral = sie_0.mass_within_circle(radius=integral_radius)
 
-            gal_mass_integral = gal_sie_x1.mass_within_circle_in_angular_units(radius=integral_radius)
+            gal_mass_integral = gal_sie_x1.mass_within_circle(radius=integral_radius)
 
             assert mass_integral == gal_mass_integral
 
@@ -382,8 +382,8 @@ class TestMassProfiles(object):
 
             integral_radius = 5.5
 
-            mass_integral = sie_0.mass_within_circle_in_angular_units(radius=integral_radius)
-            mass_integral += sie_1.mass_within_circle_in_angular_units(radius=integral_radius)
+            mass_integral = sie_0.mass_within_circle(radius=integral_radius)
+            mass_integral += sie_1.mass_within_circle(radius=integral_radius)
 
             gal_sie = g.Galaxy(redshift=0.5,
                                mass_profile_1=mp.EllipticalIsothermal(axis_ratio=0.8, phi=10.0,
@@ -399,18 +399,18 @@ class TestMassProfiles(object):
 
             integral_radius = 5.5
 
-            mass_integral = sie_0.mass_within_circle_in_mass_units(radius=integral_radius, critical_surface_mass_density=2.0)
+            mass_integral = sie_0.mass_within_circle(radius=integral_radius, critical_surface_mass_density=2.0)
 
-            gal_mass_integral = gal_sie_x1.mass_within_circle_in_mass_units(radius=integral_radius, critical_surface_mass_density=2.0)
+            gal_mass_integral = gal_sie_x1.mass_within_circle(radius=integral_radius, critical_surface_mass_density=2.0)
 
             assert mass_integral == gal_mass_integral
 
         def test__within_ellipse__no_critical_surface_mass_density__one_profile_gal__integral_is_same_as_individual_profile(self, sie_0, gal_sie_x1):
             integral_radius = 0.5
 
-            dimensionless_mass_integral = sie_0.mass_within_ellipse_in_angular_units(major_axis=integral_radius)
+            dimensionless_mass_integral = sie_0.mass_within_ellipse(major_axis=integral_radius)
 
-            gal_dimensionless_mass_integral = gal_sie_x1.mass_within_ellipse_in_angular_units(
+            gal_dimensionless_mass_integral = gal_sie_x1.mass_within_ellipse(
                 major_axis=integral_radius)
 
             assert dimensionless_mass_integral == gal_dimensionless_mass_integral
@@ -419,10 +419,10 @@ class TestMassProfiles(object):
                                                                                           gal_sie_x2):
             integral_radius = 5.5
 
-            dimensionless_mass_integral = sie_0.mass_within_ellipse_in_angular_units(major_axis=integral_radius)
-            dimensionless_mass_integral += sie_1.mass_within_ellipse_in_angular_units(major_axis=integral_radius)
+            dimensionless_mass_integral = sie_0.mass_within_ellipse(major_axis=integral_radius)
+            dimensionless_mass_integral += sie_1.mass_within_ellipse(major_axis=integral_radius)
 
-            gal_dimensionless_mass_integral = gal_sie_x2.mass_within_ellipse_in_angular_units(
+            gal_dimensionless_mass_integral = gal_sie_x2.mass_within_ellipse(
                 major_axis=integral_radius)
 
             assert dimensionless_mass_integral == gal_dimensionless_mass_integral
@@ -430,11 +430,11 @@ class TestMassProfiles(object):
         def test__same_as_above_ellipse_but_physical_mass__uses_critical_surface_mass_density(self, sie_0, gal_sie_x1):
             integral_radius = 0.5
 
-            dimensionless_mass_integral = sie_0.mass_within_ellipse_in_mass_units(major_axis=integral_radius,
-                                                                                  critical_surface_mass_density=2.0)
+            dimensionless_mass_integral = sie_0.mass_within_ellipse(major_axis=integral_radius,
+                                                                    critical_surface_mass_density=2.0)
 
-            gal_dimensionless_mass_integral = gal_sie_x1.mass_within_ellipse_in_mass_units(major_axis=integral_radius,
-                                                                                           critical_surface_mass_density=2.0)
+            gal_dimensionless_mass_integral = gal_sie_x1.mass_within_ellipse(major_axis=integral_radius,
+                                                                             critical_surface_mass_density=2.0)
 
             assert dimensionless_mass_integral == gal_dimensionless_mass_integral
 

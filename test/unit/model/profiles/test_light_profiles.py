@@ -6,7 +6,6 @@ import numpy as np
 import pytest
 import scipy.special
 
-from autolens import exc
 from autofit import conf
 from autolens.model.profiles import light_profiles as lp
 
