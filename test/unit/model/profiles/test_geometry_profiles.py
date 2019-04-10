@@ -6,6 +6,7 @@ import pytest
 import os
 from os import path
 from autofit import conf
+from autolens import exc
 from autolens.model.profiles import geometry_profiles as gp
 
 directory = path.dirname(path.realpath(__file__))
@@ -75,6 +76,36 @@ class TestMemoize(object):
 
 
 class TestEllipticalProfile(object):
+
+    class TestConvertRadius(object):
+
+        def test__arcsec_to_kpc_conversions_correct(self):
+
+            profile = gp.GeometryProfile()
+
+            radius = profile.convert_radius_to_units(radius_arcsec=1.0, units_radius='arcsec')
+            assert radius == 1.0
+
+            radius = profile.convert_radius_to_units(radius_arcsec=2.0, units_radius='arcsec')
+            assert radius == 2.0
+
+            radius = profile.convert_radius_to_units(radius_arcsec=1.0, units_radius='kpc', kpc_per_arcsec=2.0)
+            assert radius == 2.0
+
+            radius = profile.convert_radius_to_units(radius_arcsec=2.0, units_radius='kpc', kpc_per_arcsec=2.0)
+            assert radius == 4.0
+
+        def test__raise_error_if_correct_units_and_conversion_not_supplied(self):
+
+            profile = gp.GeometryProfile()
+
+            profile.convert_radius_to_units(radius_arcsec=1.0, units_radius='arcsec')
+            profile.convert_radius_to_units(radius_arcsec=1.0, units_radius='kpc', kpc_per_arcsec=1.0)
+
+            with pytest.raises(exc.UnitsException):
+                profile.convert_radius_to_units(radius_arcsec=1.0, units_radius='kpc')
+
+
     class TestAnglesFromXAxis(object):
 
         def test__profile_angle_phi_is_0__cosine_and_sin_of_phi_is_1_and_0(self):
