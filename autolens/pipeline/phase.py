@@ -894,8 +894,26 @@ class LensSourcePlanePhase(PhaseImaging):
     Fit a simple source and lens system.
     """
 
-    lens_galaxies = PhasePropertyCollection("lens_galaxies")
-    source_galaxies = PhasePropertyCollection("source_galaxies")
+    _lens_galaxies = PhasePropertyCollection("lens_galaxies")
+    _source_galaxies = PhasePropertyCollection("source_galaxies")
+
+    @property
+    def lens_galaxies(self):
+        return self._lens_galaxies
+
+    @lens_galaxies.setter
+    @set_defaults("lens_default")
+    def lens_galaxies(self, new_value):
+        self._lens_galaxies = new_value
+
+    @property
+    def source_galaxies(self):
+        return self._source_galaxies
+
+    @source_galaxies.setter
+    @set_defaults("source_default")
+    def source_galaxies(self, new_value):
+        self._source_galaxies = new_value
 
     @property
     def phase_property_collections(self):
