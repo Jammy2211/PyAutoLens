@@ -1,5 +1,6 @@
 import copy
 
+import functools
 import numpy as np
 from astropy import cosmology as cosmo
 
@@ -810,6 +811,22 @@ class PhaseImaging(Phase):
             return self.lens_data.mask.map_2d_array_to_masked_1d_array(data)
 
 
+def set_defaults(key):
+    def decorator(func):
+        @functools.wraps(func)
+        def wrapper(phase, new_value):
+            new_value = new_value or []
+            for item in new_value:
+                # noinspection PyTypeChecker
+                galaxy = new_value[item] if isinstance(item, str) else item
+                galaxy.redshift = galaxy.redshift or conf.instance.general.get("redshift", key, float)
+            return func(phase, new_value)
+
+        return wrapper
+
+    return decorator
+
+
 class LensPlanePhase(PhaseImaging):
     """
     Fit only the lens galaxy light.
@@ -844,11 +861,8 @@ class LensPlanePhase(PhaseImaging):
         return self._lens_galaxies
 
     @lens_galaxies.setter
+    @set_defaults("lens_default")
     def lens_galaxies(self, new_value):
-        new_value = new_value or []
-        for item in new_value:
-            galaxy = new_value[item] if isinstance(item, str) else item
-            galaxy.redshift = galaxy.redshift or 0.5
         self._lens_galaxies = new_value
 
     class Analysis(PhaseImaging.Analysis):
