@@ -77,16 +77,10 @@ class MassProfile(object):
     def deflections_from_grid(self, grid):
         raise NotImplementedError("deflections_from_grid should be overridden")
 
-    def mass_within_circle(self, radius):
+    def mass_within_circle(self, radius, units_mass='angular', critical_surface_mass_density=None):
         raise NotImplementedError()
 
-    def mass_within_ellipse(self, major_axis):
-        raise NotImplementedError()
-
-    def mass_within_circle(self, radius, critical_surface_mass_density):
-        raise NotImplementedError()
-
-    def mass_within_ellipse(self, major_axis, critical_surface_mass_density):
+    def mass_within_ellipse(self, major_axis, units_mass='angular', critical_surface_mass_density=None):
         raise NotImplementedError()
 
     def summary(self, *args, **kwargs):
@@ -1674,16 +1668,10 @@ class ExternalShear(geometry_profiles.EllipticalProfile, MassProfile):
     def einstein_radius(self):
         return 0.0
 
-    def mass_within_circle(self, radius):
+    def mass_within_circle(self, radius, units_mass='angular', critical_surface_mass_density=None):
         return 0.0
 
-    def mass_within_ellipse(self, radius):
-        return 0.0
-
-    def mass_within_circle(self, radius, critical_surface_mass_density):
-        return 0.0
-
-    def mass_within_ellipse(self, radius, critical_surface_mass_density):
+    def mass_within_ellipse(self, radius, units_mass='angular', critical_surface_mass_density=None):
         return 0.0
 
     def convergence_from_grid(self, grid):

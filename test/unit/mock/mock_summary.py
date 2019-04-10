@@ -10,7 +10,7 @@ class MockMassProfile(object):
     def einstein_radius(self):
         return 10.0
 
-    def mass_within_circle_in_mass_units(self, radius, critical_surface_mass_density):
+    def mass_within_circle(self, radius, mass_units=None, critical_surface_mass_density=None):
         return 1000.0
 
 
@@ -18,6 +18,7 @@ class MockNFW(MockMassProfile):
 
     def __init__(self):
         super(MockNFW, self).__init__()
+        self.scale_radius = 1.0
 
     def rho_at_scale_radius(self, critical_surface_mass_density_arcsec):
         return 100.0
