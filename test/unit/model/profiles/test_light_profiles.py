@@ -6,7 +6,17 @@ import numpy as np
 import pytest
 import scipy.special
 
+from autofit import conf
 from autolens.model.profiles import light_profiles as lp
+
+
+@pytest.fixture(autouse=True)
+def reset_config():
+    """
+    Use configuration from the default path. You may want to change this to set a specific path.
+    """
+    conf.instance = conf.default
+
 
 grid = np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [2.0, 4.0]])
 
@@ -73,7 +83,6 @@ class TestGaussian:
         assert gaussian.intensities_from_grid(grid=np.array([[0.0, 3.0]])) == pytest.approx(0.0647, 1e-2)
 
     def test__intensity_from_grid__change_geometry(self):
-
         gaussian = lp.EllipticalGaussian(centre=(1.0, 1.0), axis_ratio=1.0, phi=0.0, intensity=1.0,
                                          sigma=1.0)
         assert gaussian.intensities_from_grid(grid=np.array([[1.0, 0.0]])) == pytest.approx(0.24197, 1e-2)
@@ -422,7 +431,7 @@ class TestLuminosityIntegral(object):
 
         intensity_integral = sersic.luminosity_within_circle(radius=integral_radius, conversion_factor=3.0)
 
-        assert 3.0*intensity_analytic == pytest.approx(intensity_integral, 1e-3)
+        assert 3.0 * intensity_analytic == pytest.approx(intensity_integral, 1e-3)
 
     def test__within_ellipse__elliptical_sersic_2__compare_to_grid(self):
 
@@ -474,7 +483,7 @@ class TestLuminosityIntegral(object):
 
         intensity_integral = sersic.luminosity_within_ellipse(major_axis=integral_radius, conversion_factor=3.0)
 
-        assert 3.0*luminosity_tot[0] == pytest.approx(intensity_integral, 0.02)
+        assert 3.0 * luminosity_tot[0] == pytest.approx(intensity_integral, 0.02)
 
 
 class TestGrids(object):

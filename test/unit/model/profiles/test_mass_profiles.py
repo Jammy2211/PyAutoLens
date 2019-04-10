@@ -2,26 +2,32 @@ import math
 
 import numpy as np
 import pytest
-from astropy import cosmology
 
-from autolens.data.array import mask as msk
+from autofit import conf
 from autolens.data.array import grids
+from autolens.data.array import mask as msk
 from autolens.model.profiles import mass_profiles as mp
 
 grid = np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [2.0, 4.0]])
 
 
+@pytest.fixture(autouse=True)
+def reset_config():
+    """
+    Use configuration from the default path. You may want to change this to set a specific path.
+    """
+    conf.instance = conf.default
+
+
 class TestPointMass(object):
 
     def test_constructor(self):
-
         point_mass = mp.PointMass(centre=(1.0, 1.0), einstein_radius=2.0)
 
         assert point_mass.centre == (1.0, 1.0)
         assert point_mass.einstein_radius == 2.0
 
     def test__deflections__correct_values(self):
-
         # The radial coordinate at (1.0, 1.0) is sqrt(2)
         # This is decomposed into (y,x) angles of sin(45) = cos(45) = sqrt(2) / 2.0
         # Thus, for an EinR of 1.0, the deflection angle is (1.0 / sqrt(2)) * (sqrt(2) / 2.0)
@@ -53,8 +59,8 @@ class TestPointMass(object):
         point_mass = mp.PointMass(centre=(0.0, 0.0), einstein_radius=2.0)
 
         deflections = point_mass.deflections_from_grid(grid=np.array([[4.0, 9.0]]))
-        assert deflections[0, 0] == pytest.approx(8.0/97.0, 1e-3)
-        assert deflections[0, 1] == pytest.approx(18.0/97.0, 1e-3)
+        assert deflections[0, 0] == pytest.approx(8.0 / 97.0, 1e-3)
+        assert deflections[0, 1] == pytest.approx(18.0 / 97.0, 1e-3)
 
         point_mass = mp.PointMass(centre=(1.0, 2.0), einstein_radius=1.0)
 
@@ -63,7 +69,6 @@ class TestPointMass(object):
         assert deflections[0, 1] == pytest.approx(0.5, 1e-3)
 
     def test__deflections__change_geometry(self):
-        
         point_mass_0 = mp.PointMass(centre=(0.0, 0.0))
         point_mass_1 = mp.PointMass(centre=(1.0, 1.0))
         defls_0 = point_mass_0.deflections_from_grid(grid=np.array([[1.0, 1.0]]))
@@ -79,7 +84,6 @@ class TestPointMass(object):
         assert defls_0[0, 1] == pytest.approx(defls_1[0, 0], 1e-5)
 
     def test__multiple_coordinates_in__multiple_coordinates_out(self):
-
         point_mass = mp.PointMass(centre=(1.0, 2.0), einstein_radius=1.0)
 
         deflections = point_mass.deflections_from_grid(grid=np.array([[2.0, 3.0], [2.0, 3.0], [2.0, 3.0]]))
@@ -106,7 +110,6 @@ class TestPointMass(object):
         assert deflections[3, 1] == pytest.approx(0.25, 1e-3)
 
     def test__deflections_of_profile__dont_use_interpolate_and_cache_decorators(self):
-
         point_mass = mp.PointMass(centre=(-0.3, 0.2), einstein_radius=1.0)
 
         mask = np.array([[True, True, True, True, True],
@@ -132,8 +135,8 @@ class TestPointMass(object):
         interp_deflections_manual_x = \
             interpolator.interpolated_values_from_values(values=interp_deflections_values[:, 1])
 
-        assert (interp_deflections_manual_y != interp_deflections[:,0]).all()
-        assert (interp_deflections_manual_x != interp_deflections[:,1]).all()
+        assert (interp_deflections_manual_y != interp_deflections[:, 0]).all()
+        assert (interp_deflections_manual_x != interp_deflections[:, 1]).all()
     # def test__mass(self):
     #
     #     point_mass = mp.PointMass(centre=(0.0, 0.0), einstein_radius=1.91716)
@@ -197,7 +200,6 @@ class TestCoredPowerLaw(object):
         assert cored_power_law.potential_from_grid(grid=np.array([[0.1625, 0.1625]])) == pytest.approx(0.71185, 1e-3)
 
     def test__deflections__correct_values(self):
-
         power_law = mp.SphericalCoredPowerLaw(centre=(-0.7, 0.5), einstein_radius=1.0,
                                               slope=1.8, core_radius=0.2)
         deflections = power_law.deflections_from_grid(grid=np.array([[0.1875, 0.1625]]))
@@ -312,7 +314,6 @@ class TestCoredPowerLaw(object):
         assert elliptical.deflections_from_grid(grid) == pytest.approx(spherical.deflections_from_grid(grid), 1e-4)
 
     def test__deflections_of_elliptical_profile__use_interpolate_and_cache_decorators(self):
-
         cored_power_law = mp.EllipticalCoredPowerLaw(centre=(-0.7, 0.5), axis_ratio=0.7, phi=60.0,
                                                      einstein_radius=1.3, slope=1.8, core_radius=0.2)
 
@@ -342,11 +343,10 @@ class TestCoredPowerLaw(object):
         interp_deflections_manual_x = \
             interpolator.interpolated_values_from_values(values=interp_deflections_values[:, 1])
 
-        assert (interp_deflections_manual_y == interp_deflections[:,0]).all()
-        assert (interp_deflections_manual_x == interp_deflections[:,1]).all()
+        assert (interp_deflections_manual_y == interp_deflections[:, 0]).all()
+        assert (interp_deflections_manual_x == interp_deflections[:, 1]).all()
 
     def test__deflections_of_spherical_profile__dont_use_interpolate_and_cache_decorators(self):
-
         cored_power_law = mp.SphericalCoredPowerLaw(centre=(-0.7, 0.5), einstein_radius=1.3, slope=1.8, core_radius=0.2)
 
         mask = np.array([[True, True, True, True, True],
@@ -375,8 +375,8 @@ class TestCoredPowerLaw(object):
         interp_deflections_manual_x = \
             interpolator.interpolated_values_from_values(values=interp_deflections_values[:, 1])
 
-        assert (interp_deflections_manual_y != interp_deflections[:,0]).all()
-        assert (interp_deflections_manual_x != interp_deflections[:,1]).all()
+        assert (interp_deflections_manual_y != interp_deflections[:, 0]).all()
+        assert (interp_deflections_manual_x != interp_deflections[:, 1]).all()
 
 
 class TestPowerLaw(object):
@@ -401,7 +401,6 @@ class TestPowerLaw(object):
         assert power_law.einstein_radius_rescaled == 0.5  # (3 - slope) / (1 + axis_ratio) = (3 - 2) / (1 + 1) = 0.5
 
     def test__convergence_correct_values(self):
-
         isothermal = mp.SphericalPowerLaw(centre=(0.0, 0.0), einstein_radius=1.0, slope=2.0)
         assert isothermal.convergence_from_grid(grid=np.array([[1.0, 0.0]])) == pytest.approx(0.5, 1e-3)
 
@@ -435,7 +434,6 @@ class TestPowerLaw(object):
         assert power_law.potential_from_grid(grid=np.array([[0.1625, 0.1625]])) == pytest.approx(0.96723, 1e-3)
 
     def test__deflections__correct_values(self):
-
         power_law = mp.SphericalPowerLaw(centre=(0.2, 0.2), einstein_radius=1.0, slope=2.0)
         defls = power_law.deflections_from_grid(grid=np.array([[0.1875, 0.1625]]))
         assert defls[0, 0] == pytest.approx(-0.31622, 1e-3)
@@ -494,7 +492,6 @@ class TestPowerLaw(object):
         assert elliptical.deflections_from_grid(grid) == pytest.approx(spherical.deflections_from_grid(grid), 1e-4)
 
     def test__deflections_of_elliptical_profile__use_interpolate_and_cache_decorators(self):
-
         power_law = mp.EllipticalPowerLaw(centre=(-0.7, 0.5), axis_ratio=0.7, phi=60.0, einstein_radius=1.3, slope=1.8)
 
         mask = np.array([[True, True, True, True, True],
@@ -520,11 +517,10 @@ class TestPowerLaw(object):
         interp_deflections_manual_x = \
             interpolator.interpolated_values_from_values(values=interp_deflections_values[:, 1])
 
-        assert (interp_deflections_manual_y == interp_deflections[:,0]).all()
-        assert (interp_deflections_manual_x == interp_deflections[:,1]).all()
+        assert (interp_deflections_manual_y == interp_deflections[:, 0]).all()
+        assert (interp_deflections_manual_x == interp_deflections[:, 1]).all()
 
     def test__deflections_of_spherical_profile__dont_use_interpolate_and_cache_decorators(self):
-
         power_law = mp.SphericalPowerLaw(centre=(-0.7, 0.5), einstein_radius=1.3, slope=1.8)
 
         mask = np.array([[True, True, True, True, True],
@@ -550,8 +546,8 @@ class TestPowerLaw(object):
         interp_deflections_manual_x = \
             interpolator.interpolated_values_from_values(values=interp_deflections_values[:, 1])
 
-        assert (interp_deflections_manual_y != interp_deflections[:,0]).all()
-        assert (interp_deflections_manual_x != interp_deflections[:,1]).all()
+        assert (interp_deflections_manual_y != interp_deflections[:, 0]).all()
+        assert (interp_deflections_manual_x != interp_deflections[:, 1]).all()
 
 
 class TestCoredIsothermal(object):
@@ -678,9 +674,8 @@ class TestCoredIsothermal(object):
         assert elliptical.deflections_from_grid(grid) == pytest.approx(spherical.deflections_from_grid(grid), 1e-4)
 
     def test__deflections_of_elliptical_profile__use_interpolate_and_cache_decorators(self):
-
         cored_isothermal = mp.EllipticalCoredIsothermal(centre=(-0.7, 0.5), axis_ratio=0.7, phi=60.0,
-                                                      einstein_radius=1.3, core_radius=0.2)
+                                                        einstein_radius=1.3, core_radius=0.2)
 
         mask = np.array([[True, True, True, True, True],
                          [True, False, False, False, True],
@@ -704,11 +699,10 @@ class TestCoredIsothermal(object):
         interp_deflections_manual_x = \
             interpolator.interpolated_values_from_values(values=interp_deflections_values[:, 1])
 
-        assert (interp_deflections_manual_y == interp_deflections[:,0]).all()
-        assert (interp_deflections_manual_x == interp_deflections[:,1]).all()
+        assert (interp_deflections_manual_y == interp_deflections[:, 0]).all()
+        assert (interp_deflections_manual_x == interp_deflections[:, 1]).all()
 
     def test__deflections_of_spherical_profile__dont_use_interpolate_and_cache_decorators(self):
-
         cored_isothermal = mp.SphericalCoredIsothermal(centre=(-0.7, 0.5), einstein_radius=1.3, core_radius=0.2)
 
         mask = np.array([[True, True, True, True, True],
@@ -733,8 +727,8 @@ class TestCoredIsothermal(object):
         interp_deflections_manual_x = \
             interpolator.interpolated_values_from_values(values=interp_deflections_values[:, 1])
 
-        assert (interp_deflections_manual_y != interp_deflections[:,0]).all()
-        assert (interp_deflections_manual_x != interp_deflections[:,1]).all()
+        assert (interp_deflections_manual_y != interp_deflections[:, 0]).all()
+        assert (interp_deflections_manual_x != interp_deflections[:, 1]).all()
 
 
 class TestIsothermal(object):
@@ -816,7 +810,6 @@ class TestIsothermal(object):
                                                                        1e-3)
 
     def test__spherical_and_elliptical_match(self):
-
         elliptical = mp.EllipticalIsothermal(centre=(1.1, 1.1), axis_ratio=0.9999, phi=0.0, einstein_radius=3.0)
         spherical = mp.SphericalIsothermal(centre=(1.1, 1.1), einstein_radius=3.0)
 
@@ -826,7 +819,6 @@ class TestIsothermal(object):
         assert elliptical.deflections_from_grid(grid) == pytest.approx(spherical.deflections_from_grid(grid), 1e-4)
 
     def test__radius_of_critical_curve(self):
-
         sis = mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=2.0)
 
         assert sis.radius_where_average_convergence_in_circle_is_one == pytest.approx(2.0, 1e-4)
@@ -841,7 +833,6 @@ class TestIsothermal(object):
         assert sie.radius_where_average_convergence_in_circle_is_one == pytest.approx(8.0, 1e-4)
 
     def test__deflections_of_elliptical_profile__dont_use_interpolate_and_cache_decorators(self):
-
         isothermal = mp.EllipticalIsothermal(centre=(-0.7, 0.5), axis_ratio=0.7, phi=60.0, einstein_radius=1.3)
 
         mask = np.array([[True, True, True, True, True],
@@ -866,11 +857,10 @@ class TestIsothermal(object):
         interp_deflections_manual_x = \
             interpolator.interpolated_values_from_values(values=interp_deflections_values[:, 1])
 
-        assert (interp_deflections_manual_y != interp_deflections[:,0]).all()
-        assert (interp_deflections_manual_x != interp_deflections[:,1]).all()
+        assert (interp_deflections_manual_y != interp_deflections[:, 0]).all()
+        assert (interp_deflections_manual_x != interp_deflections[:, 1]).all()
 
     def test__deflections_of_spherical_profile__dont_use_interpolate_and_cache_decorators(self):
-
         isothermal = mp.SphericalIsothermal(centre=(-0.7, 0.5), einstein_radius=1.3)
 
         mask = np.array([[True, True, True, True, True],
@@ -895,14 +885,13 @@ class TestIsothermal(object):
         interp_deflections_manual_x = \
             interpolator.interpolated_values_from_values(values=interp_deflections_values[:, 1])
 
-        assert (interp_deflections_manual_y != interp_deflections[:,0]).all()
-        assert (interp_deflections_manual_x != interp_deflections[:,1]).all()
+        assert (interp_deflections_manual_y != interp_deflections[:, 0]).all()
+        assert (interp_deflections_manual_x != interp_deflections[:, 1]).all()
 
 
 class TestGeneralizedNFW(object):
 
     def test__constructor(self):
-
         # gnfw = mp.EllipticalGeneralizedNFW(centre=(0.7, 1.0), axis_ratio=0.7, phi=45.0,
         #                                    kappa_s=2.0, inner_slope=1.5, scale_radius=10.0)
         #
@@ -1036,7 +1025,6 @@ class TestGeneralizedNFW(object):
         # assert defls_0[0, 1] == pytest.approx(defls_1[0, 0], 1e-5)
 
     def test__deflections_of_spherical_profile__use_interpolate_and_cache_decorators(self):
-
         gNFW = mp.SphericalGeneralizedNFW(centre=(-0.7, 0.5), kappa_s=1.0, inner_slope=0.5, scale_radius=8.0)
 
         mask = np.array([[True, True, True, True, True],
@@ -1062,8 +1050,8 @@ class TestGeneralizedNFW(object):
         interp_deflections_manual_x = \
             interpolator.interpolated_values_from_values(values=interp_deflections_values[:, 1])
 
-        assert (interp_deflections_manual_y == interp_deflections[:,0]).all()
-        assert (interp_deflections_manual_x == interp_deflections[:,1]).all()
+        assert (interp_deflections_manual_y == interp_deflections[:, 0]).all()
+        assert (interp_deflections_manual_x == interp_deflections[:, 1]).all()
 
     # def test__compare_to_nfw(self):
     #     nfw = mp.EllipticalNFW(centre=(0.0, 0.0), axis_ratio=0.8, phi=0.0, kappa_s=1.0, scale_radius=5.0)
@@ -1089,7 +1077,6 @@ class TestGeneralizedNFW(object):
 class TestTruncatedNFW(object):
 
     def test__constructor(self):
-
         truncated_nfw = mp.SphericalTruncatedNFW(centre=(0.7, 1.0), kappa_s=2.0, scale_radius=10.0,
                                                  truncation_radius=3.0)
 
@@ -1101,7 +1088,6 @@ class TestTruncatedNFW(object):
         assert truncated_nfw.truncation_radius == 3.0
 
     def test__coord_function_f__correct_values(self):
-
         truncated_nfw = mp.SphericalTruncatedNFW(centre=(0.0, 0.0), kappa_s=2.0, scale_radius=10.0,
                                                  truncation_radius=3.0)
 
@@ -1111,14 +1097,13 @@ class TestTruncatedNFW(object):
                pytest.approx(np.array([0.604599, 0.435209]), 1.0e-4)
 
         # r < 1
-        assert truncated_nfw.coord_func_f(grid_radius=np.array([0.5, 1.0/3.0])) == \
+        assert truncated_nfw.coord_func_f(grid_radius=np.array([0.5, 1.0 / 3.0])) == \
                pytest.approx(1.52069, 1.86967, 1.0e-4)
         #
         # r == 1
         assert (truncated_nfw.coord_func_f(grid_radius=np.array([1.0, 1.0])) == np.array([1.0, 1.0])).all()
 
     def test__coord_function_g__correct_values(self):
-
         truncated_nfw = mp.SphericalTruncatedNFW(centre=(0.0, 0.0), kappa_s=2.0, scale_radius=10.0,
                                                  truncation_radius=3.0)
 
@@ -1129,14 +1114,13 @@ class TestTruncatedNFW(object):
 
         # r < 1
 
-        assert truncated_nfw.coord_func_g(grid_radius=np.array([0.5, 1.0/3.0])) == \
+        assert truncated_nfw.coord_func_g(grid_radius=np.array([0.5, 1.0 / 3.0])) == \
                pytest.approx(np.array([0.69425, 0.97838]), 1.0e-4)
 
         # r == 1
-        assert (truncated_nfw.coord_func_g(grid_radius=np.array([1.0, 1.0])) == np.array([1.0/3.0, 1.0/3.0])).all()
+        assert (truncated_nfw.coord_func_g(grid_radius=np.array([1.0, 1.0])) == np.array([1.0 / 3.0, 1.0 / 3.0])).all()
 
     def test__coord_function_h__correct_values(self):
-
         truncated_nfw = mp.SphericalTruncatedNFW(centre=(0.0, 0.0), kappa_s=2.0, scale_radius=10.0,
                                                  truncation_radius=3.0)
 
@@ -1144,7 +1128,6 @@ class TestTruncatedNFW(object):
                pytest.approx(np.array([0.134395, 0.840674]), 1.0e-4)
 
     def test__coord_function_k__correct_values(self):
-
         truncated_nfw = mp.SphericalTruncatedNFW(centre=(0.0, 0.0), kappa_s=2.0, scale_radius=10.0,
                                                  truncation_radius=2.0)
 
@@ -1158,7 +1141,6 @@ class TestTruncatedNFW(object):
                pytest.approx(np.array([-1.44363, -1.09861]), 1.0e-4)
 
     def test__coord_function_l__correct_values(self):
-
         # f_r = self.coord_func_f(r=r)
         # g_r = self.coord_func_g(r=r)
         # k_r = self.coord_func_k(r=r)
@@ -1179,7 +1161,7 @@ class TestTruncatedNFW(object):
         term_3 = 1.1107207345
         term_4 = -0.4674189301
 
-        value = coeff*(term_1 + term_2 - term_3 + term_4)
+        value = coeff * (term_1 + term_2 - term_3 + term_4)
 
         assert truncated_nfw.coord_func_l(grid_radius=np.array([2.0, 2.0])) == \
                pytest.approx(np.array([value, value]), 1.0e-4)
@@ -1193,7 +1175,7 @@ class TestTruncatedNFW(object):
         term_3 = 0.87132
         term_4 = -0.883647
 
-        value = coeff*(term_1 + term_2 - term_3 + term_4)
+        value = coeff * (term_1 + term_2 - term_3 + term_4)
 
         assert truncated_nfw.coord_func_l(grid_radius=np.array([2.0, 2.0])) == \
                pytest.approx(np.array([value, value]), 1.0e-4)
@@ -1206,13 +1188,12 @@ class TestTruncatedNFW(object):
         term_3 = 0.74048
         term_4 = -0.553977
 
-        value = coeff*(term_1 + term_2 - term_3 + term_4)
+        value = coeff * (term_1 + term_2 - term_3 + term_4)
 
         assert truncated_nfw.coord_func_l(grid_radius=np.array([3.0, 3.0])) == \
                pytest.approx(np.array([value, value]), 1.0e-4)
 
     def test__coord_function_m__correct_values(self):
-
         # f_r = self.coord_func_f(r=r)
         # k_r = self.coord_func_k(r=r)
         #
@@ -1232,7 +1213,7 @@ class TestTruncatedNFW(object):
         term_3 = 2.079441
         term_4 = -12.62511
 
-        value = coeff*(term_1 + term_2 + term_3 + term_4)
+        value = coeff * (term_1 + term_2 + term_3 + term_4)
 
         assert truncated_nfw.coord_func_m(grid_radius=np.array([2.0, 2.0])) == \
                pytest.approx(np.array([value, value]), 1.0e-4)
@@ -1246,7 +1227,7 @@ class TestTruncatedNFW(object):
         term_3 = 8.788898
         term_4 = -22.81458
 
-        value = coeff*(term_1 + term_2 + term_3 + term_4)
+        value = coeff * (term_1 + term_2 + term_3 + term_4)
 
         assert truncated_nfw.coord_func_m(grid_radius=np.array([2.0, 2.0])) == \
                pytest.approx(np.array([value, value]), 1.0e-4)
@@ -1260,36 +1241,34 @@ class TestTruncatedNFW(object):
         term_3 = 8.788898
         term_4 = -23.30025
 
-        value = coeff*(term_1 + term_2 + term_3 + term_4)
+        value = coeff * (term_1 + term_2 + term_3 + term_4)
 
         assert truncated_nfw.coord_func_m(grid_radius=np.array([3.0, 3.0])) == \
                pytest.approx(np.array([value, value]), 1.0e-4)
 
     def test__convergence_correct_values(self):
-
         truncated_nfw = mp.SphericalTruncatedNFW(centre=(0.0, 0.0), kappa_s=1.0, scale_radius=1.0,
                                                  truncation_radius=2.0)
 
         assert truncated_nfw.convergence_from_grid(grid=np.array([[2.0, 0.0]])) == \
-               pytest.approx(2.0*0.046409642, 1.0e-4)
+               pytest.approx(2.0 * 0.046409642, 1.0e-4)
 
         assert truncated_nfw.convergence_from_grid(grid=np.array([[1.0, 1.0]])) == \
-               pytest.approx(2.0*0.10549515, 1.0e-4)
+               pytest.approx(2.0 * 0.10549515, 1.0e-4)
 
         truncated_nfw = mp.SphericalTruncatedNFW(centre=(0.0, 0.0), kappa_s=3.0, scale_radius=1.0,
                                                  truncation_radius=2.0)
 
         assert truncated_nfw.convergence_from_grid(grid=np.array([[2.0, 0.0]])) == \
-               pytest.approx(6.0*0.046409642, 1.0e-4)
+               pytest.approx(6.0 * 0.046409642, 1.0e-4)
 
         truncated_nfw = mp.SphericalTruncatedNFW(centre=(0.0, 0.0), kappa_s=3.0, scale_radius=5.0,
                                                  truncation_radius=2.0)
 
         assert truncated_nfw.convergence_from_grid(grid=np.array([[2.0, 0.0]])) == \
-               pytest.approx(6.0*0.7042266, 1.0e-4)
+               pytest.approx(6.0 * 0.7042266, 1.0e-4)
 
     def test__deflections_correct_values(self):
-
         truncated_nfw = mp.SphericalTruncatedNFW(centre=(0.0, 0.0), kappa_s=1.0, scale_radius=1.0,
                                                  truncation_radius=2.0)
 
@@ -1298,19 +1277,19 @@ class TestTruncatedNFW(object):
         deflections = truncated_nfw.deflections_from_grid(grid=np.array([[2.0, 0.0]]))
 
         factor = (4.0 * 1.0 * 1.0) / (2.0 / 1.0)
-        assert deflections[0,0] == pytest.approx(factor*0.38209715, 1.0e-4)
-        assert deflections[0,1] == pytest.approx(0.0, 1.0e-4)
+        assert deflections[0, 0] == pytest.approx(factor * 0.38209715, 1.0e-4)
+        assert deflections[0, 1] == pytest.approx(0.0, 1.0e-4)
 
         deflections = truncated_nfw.deflections_from_grid(grid=np.array([[0.0, 2.0]]))
 
-        assert deflections[0,0] == pytest.approx(0.0, 1.0e-4)
-        assert deflections[0,1] == pytest.approx(factor*0.38209715, 1.0e-4)
+        assert deflections[0, 0] == pytest.approx(0.0, 1.0e-4)
+        assert deflections[0, 1] == pytest.approx(factor * 0.38209715, 1.0e-4)
 
         deflections = truncated_nfw.deflections_from_grid(grid=np.array([[1.0, 1.0]]))
 
         factor = (4.0 * 1.0 * 1.0) / (np.sqrt(2) / 1.0)
-        assert deflections[0,0] == pytest.approx((1.0/np.sqrt(2))*factor*0.3125838, 1.0e-4)
-        assert deflections[0,1] == pytest.approx((1.0/np.sqrt(2))*factor*0.3125838, 1.0e-4)
+        assert deflections[0, 0] == pytest.approx((1.0 / np.sqrt(2)) * factor * 0.3125838, 1.0e-4)
+        assert deflections[0, 1] == pytest.approx((1.0 / np.sqrt(2)) * factor * 0.3125838, 1.0e-4)
 
         truncated_nfw = mp.SphericalTruncatedNFW(centre=(0.0, 0.0), kappa_s=2.0, scale_radius=1.0,
                                                  truncation_radius=2.0)
@@ -1318,8 +1297,8 @@ class TestTruncatedNFW(object):
         deflections = truncated_nfw.deflections_from_grid(grid=np.array([[2.0, 0.0]]))
 
         factor = (4.0 * 2.0 * 1.0) / (2.0 / 1.0)
-        assert deflections[0,0] == pytest.approx(factor*0.38209715, 1.0e-4)
-        assert deflections[0,1] == pytest.approx(0.0, 1.0e-4)
+        assert deflections[0, 0] == pytest.approx(factor * 0.38209715, 1.0e-4)
+        assert deflections[0, 1] == pytest.approx(0.0, 1.0e-4)
 
         truncated_nfw = mp.SphericalTruncatedNFW(centre=(0.0, 0.0), kappa_s=1.0, scale_radius=4.0,
                                                  truncation_radius=2.0)
@@ -1327,11 +1306,10 @@ class TestTruncatedNFW(object):
         deflections = truncated_nfw.deflections_from_grid(grid=np.array([[2.0, 0.0]]))
 
         factor = (4.0 * 1.0 * 4.0) / (2.0 / 4.0)
-        assert deflections[0,0] == pytest.approx(factor*0.116951813, 1.0e-4)
-        assert deflections[0,1] == pytest.approx(0.0, 1.0e-4)
+        assert deflections[0, 0] == pytest.approx(factor * 0.116951813, 1.0e-4)
+        assert deflections[0, 1] == pytest.approx(0.0, 1.0e-4)
 
     def test__compare_nfw_and_truncated_nfw_with_large_truncation_radius__convergence_and_deflections_identical(self):
-
         truncated_nfw = mp.SphericalTruncatedNFW(centre=(0.0, 0.0), kappa_s=1.0, scale_radius=4.0,
                                                  truncation_radius=50000.0)
 
@@ -1350,7 +1328,6 @@ class TestTruncatedNFW(object):
         assert truncated_nfw_deflections == pytest.approx(nfw_deflections, 1.0e-4)
 
     def test__deflections_of_spherical_profile__dont_use_interpolate_and_cache_decorators(self):
-
         truncated_nfw = mp.SphericalTruncatedNFW(centre=(-0.7, 0.5), kappa_s=1.0, scale_radius=8.0,
                                                  truncation_radius=2.0)
 
@@ -1377,11 +1354,10 @@ class TestTruncatedNFW(object):
         interp_deflections_manual_x = \
             interpolator.interpolated_values_from_values(values=interp_deflections_values[:, 1])
 
-        assert (interp_deflections_manual_y != interp_deflections[:,0]).all()
-        assert (interp_deflections_manual_x != interp_deflections[:,1]).all()
+        assert (interp_deflections_manual_y != interp_deflections[:, 0]).all()
+        assert (interp_deflections_manual_x != interp_deflections[:, 1]).all()
 
     def test__mass_at_truncation_radius__values(self):
-
         truncated_nfw = mp.SphericalTruncatedNFW(centre=(0.0, 0.0), kappa_s=1.0, scale_radius=1.0,
                                                  truncation_radius=1.0)
 
@@ -1426,7 +1402,6 @@ class TestTruncatedNFW(object):
 class TestNFW(object):
 
     def test__constructor(self):
-
         nfw = mp.EllipticalNFW(centre=(0.7, 1.0), axis_ratio=0.7, phi=60.0, kappa_s=2.0,
                                scale_radius=10.0)
 
@@ -1464,7 +1439,6 @@ class TestNFW(object):
         assert nfw.convergence_from_grid(grid=np.array([[0.25, 0.0]])) == pytest.approx(1.388511, 1e-3)
 
     def test__potential_correct_values(self):
-
         nfw = mp.SphericalNFW(centre=(0.3, 0.2), kappa_s=2.5, scale_radius=4.0)
         assert nfw.potential_from_grid(grid=np.array([[0.1875, 0.1625]])) == pytest.approx(0.03702, 1e-3)
 
@@ -1475,7 +1449,6 @@ class TestNFW(object):
         assert nfw.potential_from_grid(grid=np.array([[0.1625, 0.1625]])) == pytest.approx(0.05380, 1e-3)
 
     def test__potential__spherical_and_elliptical_are_same(self):
-
         nfw_spherical = mp.SphericalNFW(centre=(0.3, 0.2), kappa_s=2.5, scale_radius=4.0)
         nfw_elliptical = mp.EllipticalNFW(centre=(0.3, 0.2), axis_ratio=1.0, phi=0.0, kappa_s=2.5, scale_radius=4.0)
 
@@ -1489,14 +1462,12 @@ class TestNFW(object):
 
         assert potential_spherical == pytest.approx(potential_elliptical, 1e-3)
 
-
         potential_spherical = nfw_spherical.potential_from_grid(grid=np.array([[-50.0, -50.0]]))
         potential_elliptical = nfw_elliptical.potential_from_grid(grid=np.array([[-50.0, -50.0]]))
 
         assert potential_spherical == pytest.approx(potential_elliptical, 1e-3)
 
     def test__deflections_correct_values(self):
-
         nfw = mp.SphericalNFW(centre=(0.0, 0.0), kappa_s=1.0, scale_radius=1.0)
         defls = nfw.deflections_from_grid(grid=np.array([[0.1625, 0.1625]]))
         assert defls[0, 0] == pytest.approx(0.56194, 1e-3)
@@ -1518,7 +1489,6 @@ class TestNFW(object):
         assert defls[0, 1] == pytest.approx(-0.44204, 1e-3)
 
     def test__radius_of_critical_curve_and_einstein_radius(self):
-
         nfw = mp.SphericalNFW(centre=(0.0, 0.0), kappa_s=0.5, scale_radius=5.0)
         assert nfw.radius_where_average_convergence_in_circle_is_one == pytest.approx(2.76386, 1e-4)
         assert nfw.einstein_radius == pytest.approx(2.76386, 1e-4)
@@ -1528,7 +1498,6 @@ class TestNFW(object):
         assert nfw.einstein_radius == pytest.approx(2.48747, 1e-4)
 
     def test__deflections_of_elliptical_profile__use_interpolate_and_cache_decorators(self):
-
         nfw = mp.EllipticalNFW(centre=(-0.7, 0.5), axis_ratio=0.9, phi=45.0, kappa_s=1.0, scale_radius=8.0)
 
         mask = np.array([[True, True, True, True, True],
@@ -1554,11 +1523,10 @@ class TestNFW(object):
         interp_deflections_manual_x = \
             interpolator.interpolated_values_from_values(values=interp_deflections_values[:, 1])
 
-        assert (interp_deflections_manual_y == interp_deflections[:,0]).all()
-        assert (interp_deflections_manual_x == interp_deflections[:,1]).all()
+        assert (interp_deflections_manual_y == interp_deflections[:, 0]).all()
+        assert (interp_deflections_manual_x == interp_deflections[:, 1]).all()
 
     def test__deflections_of_spherical_profile__dont_use_interpolate_and_cache_decorators(self):
-
         nfw = mp.SphericalNFW(centre=(-0.7, 0.5), kappa_s=1.0, scale_radius=8.0)
 
         mask = np.array([[True, True, True, True, True],
@@ -1584,11 +1552,10 @@ class TestNFW(object):
         interp_deflections_manual_x = \
             interpolator.interpolated_values_from_values(values=interp_deflections_values[:, 1])
 
-        assert (interp_deflections_manual_y != interp_deflections[:,0]).all()
-        assert (interp_deflections_manual_x != interp_deflections[:,1]).all()
+        assert (interp_deflections_manual_y != interp_deflections[:, 0]).all()
+        assert (interp_deflections_manual_x != interp_deflections[:, 1]).all()
 
     def test__rho_scale_radius_value(self):
-
         nfw = mp.SphericalNFW(centre=(0.0, 0.0), kappa_s=1.0, scale_radius=1.0)
         assert nfw.rho_at_scale_radius(critical_surface_mass_density_arcsec=1.0) == pytest.approx(1.0, 1e-3)
 
@@ -1605,7 +1572,6 @@ class TestNFW(object):
         assert nfw.rho_at_scale_radius(critical_surface_mass_density_arcsec=6.0) == pytest.approx(4.0, 1e-3)
 
     def test__delta_concentration_value(self):
-
         nfw = mp.SphericalNFW(centre=(0.0, 0.0), kappa_s=1.0, scale_radius=1.0)
         assert nfw.delta_concentration(critical_surface_mass_density_arcsec=1.0,
                                        cosmic_average_mass_density_arcsec=1.0) == pytest.approx(1.0, 1e-3)
@@ -1643,7 +1609,6 @@ class TestNFW(object):
                                        cosmic_average_mass_density_arcsec=5.0) == pytest.approx(0.1, 1e-3)
 
     def test__solve_concentration(self):
-
         nfw = mp.SphericalNFW(centre=(0.0, 0.0), kappa_s=1.0, scale_radius=1.0)
 
         critical_surface_mass_density_arcsec = 1.0
@@ -1654,7 +1619,6 @@ class TestNFW(object):
         assert concentration == pytest.approx(0.0074263, 1.0e-4)
 
     def test__radius_at_200_times_cosmic_average_density(self):
-
         nfw = mp.SphericalNFW(centre=(0.0, 0.0), kappa_s=1.0, scale_radius=1.0)
 
         concentration = nfw.concentration(critical_surface_mass_density_arcsec=5.0,
@@ -1686,7 +1650,6 @@ class TestNFW(object):
         assert radius_200 == concentration * 2.0
 
     def test__mass_at_200(self):
-
         nfw = mp.SphericalNFW(centre=(0.0, 0.0), kappa_s=1.0, scale_radius=1.0)
 
         mass_at_200 = nfw.mass_at_200(critical_surface_mass_density_arcsec=5.0,
@@ -1820,9 +1783,8 @@ class TestSersic(object):
         np.testing.assert_almost_equal(elliptical.deflections_from_grid(grid), spherical.deflections_from_grid(grid))
 
     def test__deflections_of_elliptical_profile__use_interpolate_and_cache_decorators(self):
-
         sersic = mp.EllipticalSersic(centre=(-0.7, 0.5), axis_ratio=0.8, phi=110.0, intensity=5.0,
-                                  effective_radius=0.2, sersic_index=2.0, mass_to_light_ratio=1.0)
+                                     effective_radius=0.2, sersic_index=2.0, mass_to_light_ratio=1.0)
 
         mask = np.array([[True, True, True, True, True],
                          [True, False, False, False, True],
@@ -1847,13 +1809,12 @@ class TestSersic(object):
         interp_deflections_manual_x = \
             interpolator.interpolated_values_from_values(values=interp_deflections_values[:, 1])
 
-        assert (interp_deflections_manual_y == interp_deflections[:,0]).all()
-        assert (interp_deflections_manual_x == interp_deflections[:,1]).all()
+        assert (interp_deflections_manual_y == interp_deflections[:, 0]).all()
+        assert (interp_deflections_manual_x == interp_deflections[:, 1]).all()
 
     def test__deflections_of_spherical_profile__use_interpolate_and_cache_decorators(self):
-
         sersic = mp.SphericalSersic(centre=(-0.7, 0.5), intensity=5.0, effective_radius=0.2, sersic_index=2.0,
-                                 mass_to_light_ratio=1.0)
+                                    mass_to_light_ratio=1.0)
 
         mask = np.array([[True, True, True, True, True],
                          [True, False, False, False, True],
@@ -1878,8 +1839,8 @@ class TestSersic(object):
         interp_deflections_manual_x = \
             interpolator.interpolated_values_from_values(values=interp_deflections_values[:, 1])
 
-        assert (interp_deflections_manual_y == interp_deflections[:,0]).all()
-        assert (interp_deflections_manual_x == interp_deflections[:,1]).all()
+        assert (interp_deflections_manual_y == interp_deflections[:, 0]).all()
+        assert (interp_deflections_manual_x == interp_deflections[:, 1]).all()
 
 
 class TestExponential(object):
@@ -1957,7 +1918,6 @@ class TestExponential(object):
         np.testing.assert_almost_equal(elliptical.deflections_from_grid(grid), spherical.deflections_from_grid(grid))
 
     def test__deflections_of_elliptical_profile__use_interpolate_and_cache_decorators(self):
-
         exponential = mp.EllipticalExponential(centre=(-0.7, 0.5), axis_ratio=0.8, phi=110.0, intensity=5.0,
                                                effective_radius=0.2, mass_to_light_ratio=1.0)
 
@@ -1984,11 +1944,10 @@ class TestExponential(object):
         interp_deflections_manual_x = \
             interpolator.interpolated_values_from_values(values=interp_deflections_values[:, 1])
 
-        assert (interp_deflections_manual_y == interp_deflections[:,0]).all()
-        assert (interp_deflections_manual_x == interp_deflections[:,1]).all()
+        assert (interp_deflections_manual_y == interp_deflections[:, 0]).all()
+        assert (interp_deflections_manual_x == interp_deflections[:, 1]).all()
 
     def test__deflections_of_spherical_profile__use_interpolate_and_cache_decorators(self):
-
         exponential = mp.SphericalExponential(centre=(-0.7, 0.5), intensity=5.0, effective_radius=0.2,
                                               mass_to_light_ratio=1.0)
 
@@ -2015,8 +1974,8 @@ class TestExponential(object):
         interp_deflections_manual_x = \
             interpolator.interpolated_values_from_values(values=interp_deflections_values[:, 1])
 
-        assert (interp_deflections_manual_y == interp_deflections[:,0]).all()
-        assert (interp_deflections_manual_x == interp_deflections[:,1]).all()
+        assert (interp_deflections_manual_y == interp_deflections[:, 0]).all()
+        assert (interp_deflections_manual_x == interp_deflections[:, 1]).all()
 
 
 class TestDevVaucouleurs(object):
@@ -2090,9 +2049,8 @@ class TestDevVaucouleurs(object):
         np.testing.assert_almost_equal(elliptical.deflections_from_grid(grid), spherical.deflections_from_grid(grid))
 
     def test__deflections_of_elliptical_profile__use_interpolate_and_cache_decorators(self):
-
         dev = mp.EllipticalDevVaucouleurs(centre=(-0.7, 0.5), axis_ratio=0.8, phi=110.0, intensity=5.0,
-                                  effective_radius=0.2, mass_to_light_ratio=1.0)
+                                          effective_radius=0.2, mass_to_light_ratio=1.0)
 
         mask = np.array([[True, True, True, True, True],
                          [True, False, False, False, True],
@@ -2117,11 +2075,10 @@ class TestDevVaucouleurs(object):
         interp_deflections_manual_x = \
             interpolator.interpolated_values_from_values(values=interp_deflections_values[:, 1])
 
-        assert (interp_deflections_manual_y == interp_deflections[:,0]).all()
-        assert (interp_deflections_manual_x == interp_deflections[:,1]).all()
+        assert (interp_deflections_manual_y == interp_deflections[:, 0]).all()
+        assert (interp_deflections_manual_x == interp_deflections[:, 1]).all()
 
     def test__deflections_of_spherical_profile__use_interpolate_and_cache_decorators(self):
-
         dev = mp.SphericalDevVaucouleurs(centre=(-0.7, 0.5), intensity=5.0, effective_radius=0.2,
                                          mass_to_light_ratio=1.0)
 
@@ -2148,8 +2105,8 @@ class TestDevVaucouleurs(object):
         interp_deflections_manual_x = \
             interpolator.interpolated_values_from_values(values=interp_deflections_values[:, 1])
 
-        assert (interp_deflections_manual_y == interp_deflections[:,0]).all()
-        assert (interp_deflections_manual_x == interp_deflections[:,1]).all()
+        assert (interp_deflections_manual_y == interp_deflections[:, 0]).all()
+        assert (interp_deflections_manual_x == interp_deflections[:, 1]).all()
 
 
 class TestSersicMassRadialGradient(object):
@@ -2282,9 +2239,8 @@ class TestSersicMassRadialGradient(object):
         assert (elliptical.deflections_from_grid(grid) == spherical.deflections_from_grid(grid)).all()
 
     def test__deflections_of_elliptical_profile__use_interpolate_and_cache_decorators(self):
-
         sersic = mp.EllipticalSersicRadialGradient(centre=(-0.7, 0.5), axis_ratio=0.8, phi=110.0, intensity=5.0,
-                                                   effective_radius=0.2, sersic_index=2.0, mass_to_light_ratio=1.0, 
+                                                   effective_radius=0.2, sersic_index=2.0, mass_to_light_ratio=1.0,
                                                    mass_to_light_gradient=1.5)
 
         mask = np.array([[True, True, True, True, True],
@@ -2310,13 +2266,13 @@ class TestSersicMassRadialGradient(object):
         interp_deflections_manual_x = \
             interpolator.interpolated_values_from_values(values=interp_deflections_values[:, 1])
 
-        assert (interp_deflections_manual_y == interp_deflections[:,0]).all()
-        assert (interp_deflections_manual_x == interp_deflections[:,1]).all()
+        assert (interp_deflections_manual_y == interp_deflections[:, 0]).all()
+        assert (interp_deflections_manual_x == interp_deflections[:, 1]).all()
 
     def test__deflections_of_spherical_profile__use_interpolate_and_cache_decorators(self):
-
-        sersic = mp.SphericalSersicRadialGradient(centre=(-0.7, 0.5), intensity=5.0, effective_radius=0.2, sersic_index=2.0,
-                                 mass_to_light_ratio=1.0, mass_to_light_gradient=1.5)
+        sersic = mp.SphericalSersicRadialGradient(centre=(-0.7, 0.5), intensity=5.0, effective_radius=0.2,
+                                                  sersic_index=2.0,
+                                                  mass_to_light_ratio=1.0, mass_to_light_gradient=1.5)
 
         mask = np.array([[True, True, True, True, True],
                          [True, False, False, False, True],
@@ -2341,21 +2297,19 @@ class TestSersicMassRadialGradient(object):
         interp_deflections_manual_x = \
             interpolator.interpolated_values_from_values(values=interp_deflections_values[:, 1])
 
-        assert (interp_deflections_manual_y == interp_deflections[:,0]).all()
-        assert (interp_deflections_manual_x == interp_deflections[:,1]).all()
+        assert (interp_deflections_manual_y == interp_deflections[:, 0]).all()
+        assert (interp_deflections_manual_x == interp_deflections[:, 1]).all()
 
 
 class TestMassSheet(object):
 
     def test_constructor(self):
-
         mass_sheet = mp.MassSheet(centre=(1.0, 1.0), kappa=2.0)
 
         assert mass_sheet.centre == (1.0, 1.0)
         assert mass_sheet.kappa == 2.0
 
     def test__convergence__correct_values(self):
-
         mass_sheet = mp.MassSheet(centre=(0.0, 0.0), kappa=1.0)
 
         convergence = mass_sheet.convergence_from_grid(grid=np.array([[1.0, 0.0]]))
@@ -2377,7 +2331,6 @@ class TestMassSheet(object):
         assert convergence[2] == pytest.approx(-3.0, 1e-3)
 
     def test__deflections__correct_values(self):
-
         mass_sheet = mp.MassSheet(centre=(0.0, 0.0), kappa=1.0)
 
         deflections = mass_sheet.deflections_from_grid(grid=np.array([[1.0, 0.0]]))
@@ -2418,7 +2371,7 @@ class TestMassSheet(object):
         deflections = mass_sheet.deflections_from_grid(grid=np.array([[1.0, 1.0]]))
         assert deflections[0, 0] == pytest.approx(1.0, 1e-3)
         assert deflections[0, 1] == pytest.approx(1.0, 1e-3)
-        
+
         mass_sheet = mp.MassSheet(centre=(0.0, 0.0), kappa=2.0)
 
         deflections = mass_sheet.deflections_from_grid(grid=np.array([[1.0, 1.0]]))
@@ -2459,7 +2412,6 @@ class TestMassSheet(object):
         assert deflections[0, 1] == pytest.approx(-1.0, 1e-3)
 
     def test__deflections__change_geometry(self):
-
         mass_sheet_0 = mp.MassSheet(centre=(0.0, 0.0))
         mass_sheet_1 = mp.MassSheet(centre=(1.0, 1.0))
         defls_0 = mass_sheet_0.deflections_from_grid(grid=np.array([[1.0, 1.0]]))
@@ -2475,7 +2427,6 @@ class TestMassSheet(object):
         assert defls_0[0, 1] == pytest.approx(defls_1[0, 0], 1e-5)
 
     def test__multiple_coordinates_in__multiple_coordinates_out(self):
-
         mass_sheet = mp.MassSheet(centre=(1.0, 2.0), kappa=1.0)
 
         deflections = mass_sheet.deflections_from_grid(grid=np.array([[2.0, 3.0], [2.0, 3.0], [2.0, 3.0]]))
@@ -2585,7 +2536,8 @@ class TestMassIntegral(object):
         mass_integral = sis.mass_within_circle_in_mass_units(radius=integral_radius, critical_surface_mass_density=8.0)
         assert 8.0 * math.pi * sis.einstein_radius * integral_radius == pytest.approx(mass_integral, 1e-3)
 
-    def test__within_ellipse__no_critical_surface_mass_density__singular_isothermal_sphere__compare_circle_and_ellipse(self):
+    def test__within_ellipse__no_critical_surface_mass_density__singular_isothermal_sphere__compare_circle_and_ellipse(
+            self):
 
         sis = mp.SphericalIsothermal(einstein_radius=2.0)
         integral_radius = 2.0
@@ -2662,8 +2614,7 @@ class TestMassIntegral(object):
 class TestDensityBetweenAnnuli(object):
 
     def test__circular_annuli__sis__analyic_density_agrees(self):
-
-        einstein_radius=1.0
+        einstein_radius = 1.0
         sis = mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=einstein_radius)
 
         inner_annuli_radius = 2.0
@@ -2674,20 +2625,19 @@ class TestDensityBetweenAnnuli(object):
         density_between_annuli = sis.density_between_circular_annuli_in_angular_units(
             inner_annuli_radius=inner_annuli_radius, outer_annuli_radius=outer_annuli_radius)
 
-        annuli_area = (np.pi * outer_annuli_radius ** 2.0) - (np.pi * inner_annuli_radius **2.0)
+        annuli_area = (np.pi * outer_annuli_radius ** 2.0) - (np.pi * inner_annuli_radius ** 2.0)
 
         assert (outer_mass - inner_mass) / annuli_area == pytest.approx(density_between_annuli, 1e-4)
 
     def test__circular_annuli__nfw_profile__compare_to_manual_mass_integrals(self):
-
         nfw = mp.EllipticalNFW(centre=(0.0, 0.0), axis_ratio=0.8, phi=45.0, kappa_s=1.0)
 
         inner_mass = nfw.mass_within_circle_in_angular_units(radius=1.0)
         outer_mass = nfw.mass_within_circle_in_angular_units(radius=2.0)
 
-        density_between_annuli = nfw.density_between_circular_annuli_in_angular_units(inner_annuli_radius=1.0, outer_annuli_radius=2.0)
+        density_between_annuli = nfw.density_between_circular_annuli_in_angular_units(inner_annuli_radius=1.0,
+                                                                                      outer_annuli_radius=2.0)
 
-        annuli_area = (np.pi * 2.0 ** 2.0) - (np.pi * 1.0 **2.0)
+        annuli_area = (np.pi * 2.0 ** 2.0) - (np.pi * 1.0 ** 2.0)
 
         assert (outer_mass - inner_mass) / annuli_area == pytest.approx(density_between_annuli, 1e-4)
-
