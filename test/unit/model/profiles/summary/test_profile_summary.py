@@ -10,10 +10,9 @@ test_summary_dir = "{}/../../../test_files/summary/".format(os.path.dirname(os.p
 class TestSummarizeMassProfile:
 
     def test_summary(self):
-        profile = mp.SphericalTruncatedNFW()
+        profile = mp.SphericalTruncatedNFWChallenge()
         summary_text = "\n".join(
-            profile.summary(critical_surface_mass_density=1.0, cosmic_average_mass_density_arcsec=1.0,
-                            radii=[10.0, 500.0]))
+            profile.summary(critical_surface_mass_density=1.0, radii=[10.0, 500.0]))
         print(summary_text)
         assert summary_text == 'Mass Profile = SphericalTruncatedNFW\n' \
                                '\n' \
