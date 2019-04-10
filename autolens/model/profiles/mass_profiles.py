@@ -88,6 +88,9 @@ class MassProfile(object):
     def mass_within_ellipse_in_mass_units(self, major_axis, critical_surface_mass_density):
         raise NotImplementedError()
 
+    def summary(self, *args, **kwargs):
+        return ["Mass Profile = {}".format(self.__class__.__name__), ""]
+
 
 class PointMass(geometry_profiles.SphericalProfile, MassProfile):
 
@@ -135,6 +138,16 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
         super(EllipticalMassProfile, self).__init__(centre, axis_ratio, phi)
         self.axis_ratio = axis_ratio
         self.phi = phi
+
+    def summary(self, critical_surface_mass_density, cosmic_average_mass_density_arcsec, radii):
+        summary = super().summary(critical_surface_mass_density, cosmic_average_mass_density_arcsec, radii)
+        for radius in radii:
+            mass = self.mass_within_circle_in_mass_units(
+                radius=radius, critical_surface_mass_density=critical_surface_mass_density)
+
+            summary.append('Mass within {:.2f}" = {:.4e} solMass'.format(radius, mass))
+
+        return summary
 
     def mass_within_circle_in_angular_units(self, radius):
         """ Integrate the mass profiles's convergence profile to compute the total angular mass within a circle of \
@@ -266,6 +279,14 @@ class EllipticalCoredPowerLaw(EllipticalMassProfile, MassProfile):
         self.einstein_radius = einstein_radius
         self.slope = slope
         self.core_radius = core_radius
+
+    def summary(self, critical_surface_mass_density, cosmic_average_mass_density_arcsec, radii):
+        summary = super().summary()
+        einstein_mass = self.mass_within_circle_in_mass_units(
+            radius=self.einstein_radius, critical_surface_mass_density=critical_surface_mass_density)
+
+        return summary + ['Einstein Radius = {:.2f}"'.format(self.einstein_radius),
+                          'Mass within Einstein Radius = {:.4e} solMass'.format(einstein_mass)]
 
     @property
     def einstein_radius_rescaled(self):
@@ -988,6 +1009,9 @@ class SphericalTruncatedNFW(AbstractEllipticalGeneralizedNFW):
 
         return mass_at_200 * (self.tau ** 2.0 / (self.tau ** 2.0 + 1.0) ** 2.0) * \
                (((self.tau ** 2.0 - 1) * np.log(self.tau)) + (self.tau * np.pi) - (self.tau ** 2.0 + 1))
+
+    # def summary(self, critical_surface_mass_density, cosmic_average_mass_density_arcsec, radii):
+    #     summary = super().summary(critical_surface_mass_density, cosmic_average_mass_density_arcsec, radii)
 
 
 class SphericalTruncatedNFWChallenge(SphericalTruncatedNFW):
