@@ -412,16 +412,9 @@ class HyperGalaxy(object):
         return "\n".join(["{}: {}".format(k, v) for k, v in self.__dict__.items()])
 
 
-class Redshift(object):
+class Redshift(float):
+    def __new__(cls, redshift):
+        return float.__new__(cls, redshift)
+
     def __init__(self, redshift):
-        self.redshift = redshift
-
-    @property
-    def value(self):
-        try:
-            return self.redshift.value
-        except AttributeError:
-            return self.redshift
-
-    def __str__(self):
-        return str(self.redshift)
+        float.__init__(redshift)
