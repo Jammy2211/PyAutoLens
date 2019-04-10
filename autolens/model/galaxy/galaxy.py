@@ -134,7 +134,7 @@ class Galaxy(object):
         else:
             return np.zeros((grid.shape[0],))
 
-    def luminosity_within_circle_in_electrons_per_second(self, radius):
+    def luminosity_within_circle(self, radius, units_luminosity='electrons_per_second', exposure_time=None):
         """
         Compute the total luminosity of the galaxy's light profiles within a circle of specified radius.
 
@@ -152,11 +152,13 @@ class Galaxy(object):
             (e.g. a photometric zeropoint).
         """
         if self.has_light_profile:
-            return sum(map(lambda p: p.luminosity_within_circle(radius), self.light_profiles))
+            return sum(map(lambda p: p.luminosity_within_circle(radius=radius, units_luminosity=units_luminosity,
+                                                                exposure_time=exposure_time),
+                           self.light_profiles))
         else:
             return None
 
-    def luminosity_within_ellipse_in_electrons_per_second(self, major_axis):
+    def luminosity_within_ellipse(self, major_axis, units_luminosity='electrons_per_second', exposure_time=None):
         """Compute the total luminosity of the galaxy's light profiles, within an ellipse of specified major axis. This 
         is performed via integration of each light profile and is centred, oriented and aligned with each light
         model's individual geometry.
@@ -175,52 +177,9 @@ class Galaxy(object):
             (e.g. a photometric zeropoint).
         """
         if self.has_light_profile:
-            return sum(map(lambda p: p.luminosity_within_ellipse(major_axis), self.light_profiles))
-        else:
-            return None
-
-    def luminosity_within_circle_in_counts(self, radius, exposure_time=1.0):
-        """
-        Compute the total luminosity of the galaxy's light profiles within a circle of specified radius.
-
-        The value returned by this integral is dimensionless, and a conversion factor can be specified to convert it \
-        to a physical value (e.g. the photometric zeropoint).
-
-        See *light_profiles.luminosity_within_circle* for details of how this is performed.
-
-        Parameters
-        ----------
-        radius : float
-            The radius of the circle to compute the luminosity within.
-        conversion_factor : float
-            Factor the dimensionless luminosity is multiplied by to convert it to a physical luminosity \
-            (e.g. a photometric zeropoint).
-        """
-        if self.has_light_profile:
-            return exposure_time * self.luminosity_within_circle_in_electrons_per_second(radius=radius)
-        else:
-            return None
-
-    def luminosity_within_ellipse_in_counts(self, major_axis, exposure_time=1.0):
-        """Compute the total luminosity of the galaxy's light profiles, within an ellipse of specified major axis. This
-        is performed via integration of each light profile and is centred, oriented and aligned with each light
-        model's individual geometry.
-
-        The value returned by this integral is dimensionless, and a conversion factor can be specified to convert it \
-        to a physical value (e.g. the photometric zeropoint).
-
-        See *light_profiles.luminosity_within_ellipse* for details of how this is performed.
-
-        Parameters
-        ----------
-        major_axis: float
-            The major-axis of the ellipse to compute the luminosity within.
-        conversion_factor : float
-            Factor the dimensionless luminosity is multiplied by to convert it to a physical luminosity \
-            (e.g. a photometric zeropoint).
-        """
-        if self.has_light_profile:
-            return exposure_time * self.luminosity_within_ellipse_in_electrons_per_second(major_axis=major_axis)
+            return sum(map(lambda p: p.luminosity_within_ellipse(major_axis=major_axis, units_luminosity=units_luminosity,
+                                                                 exposure_time=exposure_time),
+                           self.light_profiles))
         else:
             return None
 
