@@ -2,7 +2,7 @@ import numpy as np
 from functools import wraps
 
 from autofit import conf
-
+from autolens import exc
 
 def transform_grid(func):
     """Wrap the function in a function that checks whether the coordinates have been transformed. If they have not \ 
@@ -132,6 +132,35 @@ class GeometryProfile(object):
             The (y,x) arc-second coordinates of the profile centre.
         """
         self.centre = centre
+
+    def convert_radius_to_units(self, radius_arcsec, units_radius='arcsec', kpc_per_arcsec=None):
+        """Convert  a radius in arcsec to the units specified by the units_radius parameter.
+
+        This function first checks that the necessary input parameters are input before performing the conversion. \
+        For example, the lradius cannot be converted to kpc if the kpc_per_arcsec parameter is not input.
+
+        The following units for radius can be specified:
+
+        - Arcsec (default) - 'arcsec'.
+        - Kiloparsecs - 'kpc' (multiplies the arcsec radius by the kpc_per_arcsec).
+
+        Parameters
+        ----------
+        radius_arcsec : float
+            The radius in arcsec to be converted to another set of units.
+        units_radius : str
+            The units the radius is converted to (arcsec | kpc).
+        kpc_per_arcsec : float
+            The exposure time of the observation, which converts luminosity from electrons per second units to counts.
+        """
+        if units_radius is 'kpc' and kpc_per_arcsec is None:
+            raise exc.UnitsException('The radius for a light or mmass profile has been input in units of kpc, '
+                                     'but a kpc per arcsec was not supplied.')
+
+        if units_radius is 'arcsec':
+            return radius_arcsec
+        elif units_radius is 'kpc':
+            return kpc_per_arcsec * radius_arcsec
 
     def transform_grid_to_reference_frame(self, grid):
         raise NotImplemented()
