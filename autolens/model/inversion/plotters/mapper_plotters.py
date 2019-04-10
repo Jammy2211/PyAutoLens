@@ -4,7 +4,7 @@ import matplotlib.cm as cm
 import itertools
 from scipy.spatial import Voronoi
 
-from autolens.data.array.plotters import plotter_util, grid_plotters
+from autolens.plotters import plotter_util, grid_plotters
 from autolens.model.inversion import mappers
 from autolens.data.plotters import ccd_plotters
 

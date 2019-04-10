@@ -1,7 +1,6 @@
 from matplotlib import pyplot as plt
 
-from autofit import conf
-from autolens.data.array.plotters import plotter_util, array_plotters
+from autolens.plotters import plotter_util, array_plotters
 from autolens.lens.plotters import plane_plotters
 
 

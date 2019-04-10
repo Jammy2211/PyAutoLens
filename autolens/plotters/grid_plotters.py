@@ -3,7 +3,7 @@ import numpy as np
 import itertools
 
 from autolens import exc
-from autolens.data.array.plotters import plotter_util
+from autolens.plotters import plotter_util
 
 
 def plot_grid(grid, axis_limits=None, points=None, as_subplot=False,

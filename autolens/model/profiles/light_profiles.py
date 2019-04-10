@@ -34,10 +34,10 @@ class LightProfile(object):
         """
         raise NotImplementedError("intensity_from_grid should be overridden")
 
-    def luminosity_within_circle(self, radius):
+    def luminosity_within_circle_in_electrons_per_second(self, radius):
         raise NotImplementedError()
 
-    def luminosity_within_ellipse(self, major_axis):
+    def luminosity_within_ellipse_in_electrons_per_second(self, major_axis):
         raise NotImplementedError()
 
 
@@ -59,12 +59,12 @@ class EllipticalLightProfile(geometry_profiles.EllipticalProfile, LightProfile):
         """
         super(EllipticalLightProfile, self).__init__(centre, axis_ratio, phi)
 
-    def luminosity_within_circle(self, radius, conversion_factor=1.0):
-        """Integrate the light profiles to compute the total luminosity within a circle of specified radius. This is \
+    def luminosity_within_circle_in_electrons_per_second(self, radius):
+        """Integrate the light profile to compute the total luminosity within a circle of specified radius. This is \
         centred on the light profile's centre.
 
         The value returned by this integral is in the units of the intensity parameter of the light profile, which \
-        should be electrons per second. A conversion factor can be specified to convert it to a physical value \
+        are electrons per second. A conversion factor can be specified to convert it to a physical value \
         (e.g. the photometric zeropoint).
 
         Parameters
@@ -74,14 +74,14 @@ class EllipticalLightProfile(geometry_profiles.EllipticalProfile, LightProfile):
         conversion_factor : float
             Factor which converts the computed dimensionless quantity to a physical one (e.g. a photometric zeropoint).
         """
-        return conversion_factor*quad(self.luminosity_integral, a=0.0, b=radius, args=(1.0,))[0]
+        return quad(self.luminosity_integral, a=0.0, b=radius, args=(1.0,))[0]
 
-    def luminosity_within_ellipse(self, major_axis, conversion_factor=1.0):
+    def luminosity_within_ellipse_in_electrons_per_second(self, major_axis):
         """Integrate the light profiles to compute the total luminosity within an ellipse of specified major axis. \
         This is centred on the light profile's centre.
 
         The value returned by this integral is in the units of the intensity parameter of the light profile, which \
-        should be electrons per second. A conversion factor can be specified to convert it to a physical value \
+        are electrons per second. A conversion factor can be specified to convert it to a physical value \
         (e.g. the photometric zeropoint).
 
         Parameters
@@ -92,7 +92,42 @@ class EllipticalLightProfile(geometry_profiles.EllipticalProfile, LightProfile):
             Factor the dimensionless luminosity is multiplied by to convert it to a physical luminosity \
             (e.g. a photometric zeropoint).
         """
-        return conversion_factor*quad(self.luminosity_integral, a=0.0, b=major_axis, args=(self.axis_ratio,))[0]
+        return quad(self.luminosity_integral, a=0.0, b=major_axis, args=(self.axis_ratio,))[0]
+
+    def luminosity_within_circle_in_counts(self, radius, exposure_time):
+        """Integrate the light profile to compute the total luminosity within a circle of specified radius. This is \
+        centred on the light profile's centre.
+
+        The value returned by this integral is in the units of the intensity parameter of the light profile, which \
+        are electrons per second. A conversion factor can be specified to convert it to a physical value \
+        (e.g. the photometric zeropoint).
+
+        Parameters
+        ----------
+        radius : float
+            The radius of the circle to compute the luminosity within.
+        conversion_factor : float
+            Factor which converts the computed dimensionless quantity to a physical one (e.g. a photometric zeropoint).
+        """
+        return exposure_time * self.luminosity_within_circle_in_electrons_per_second(radius=radius)
+
+    def luminosity_within_ellipse_in_counts(self, major_axis, exposure_time):
+        """Integrate the light profiles to compute the total luminosity within an ellipse of specified major axis. \
+        This is centred on the light profile's centre.
+
+        The value returned by this integral is in the units of the intensity parameter of the light profile, which \
+        are electrons per second. A conversion factor can be specified to convert it to a physical value \
+        (e.g. the photometric zeropoint).
+
+        Parameters
+        ----------
+        major_axis: float
+            The major-axis of the ellipse to compute the luminosity within.
+        conversion_factor : float
+            Factor the dimensionless luminosity is multiplied by to convert it to a physical luminosity \
+            (e.g. a photometric zeropoint).
+        """
+        return exposure_time * self.luminosity_within_ellipse_in_electrons_per_second(major_axis=major_axis)
 
     def luminosity_integral(self, x, axis_ratio):
         """Routine to integrate the luminosity of an elliptical light profile.
