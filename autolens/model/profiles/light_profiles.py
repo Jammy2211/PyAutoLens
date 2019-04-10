@@ -61,7 +61,26 @@ class EllipticalLightProfile(geometry_profiles.EllipticalProfile, LightProfile):
         super(EllipticalLightProfile, self).__init__(centre, axis_ratio, phi)
 
     def convert_luminosity_to_units(self, luminosity_electrons_per_second, units_luminosity, exposure_time):
+        """Convert the luminosity in electrons per second computed in the *luminosity_within_* method to the units \
+        specified by the units_luminosity parameter.
 
+        This function first checks that the necessary input parameters are input before performing the conversion. \
+        For example, the luminosity cannot be converted to counts if the exposure time is not input.
+
+        The following units for mass can be specified and output:
+
+        - Electrons per second (default) - 'electrons_per_second'.
+        - Counts - 'counts' (multiplies the luminosity in electrons per second by the exposure time).
+
+        Parameters
+        ----------
+        radius : float
+            The radius of the circle to compute the dimensionless mass within.
+        units_luminosity : str
+            The units the luminosity is returned in (electrons_per_second | counts).
+        exposure_time : float
+            The exposure time of the observation, which converts luminosity from electrons per second units to counts.
+        """
         if units_luminosity is 'counts' and exposure_time is None:
             raise exc.UnitsException('The luminosity for a light profile has been requested in units of counts, '
                                      'but an exposure time was not supplied.')
@@ -75,16 +94,19 @@ class EllipticalLightProfile(geometry_profiles.EllipticalProfile, LightProfile):
         """Integrate the light profile to compute the total luminosity within a circle of specified radius. This is \
         centred on the light profile's centre.
 
-        The value returned by this integral is in the units of the intensity parameter of the light profile, which \
-        are electrons per second. A conversion factor can be specified to convert it to a physical value \
-        (e.g. the photometric zeropoint).
+        The following units for mass can be specified and output:
+
+        - Electrons per second (default) - 'electrons_per_second'.
+        - Counts - 'counts' (multiplies the luminosity in electrons per second by the exposure time).
 
         Parameters
         ----------
         radius : float
-            The radius of the circle to compute the luminosity within.
-        conversion_factor : float
-            Factor which converts the computed dimensionless quantity to a physical one (e.g. a photometric zeropoint).
+            The radius of the circle to compute the dimensionless mass within.
+        units_luminosity : str
+            The units the luminosity is returned in (electrons_per_second | counts).
+        exposure_time : float
+            The exposure time of the observation, which converts luminosity from electrons per second units to counts.
         """
         luminosity_electrons_per_second = quad(self.luminosity_integral, a=0.0, b=radius, args=(1.0,))[0]
         return self.convert_luminosity_to_units(luminosity_electrons_per_second=luminosity_electrons_per_second,
@@ -94,17 +116,19 @@ class EllipticalLightProfile(geometry_profiles.EllipticalProfile, LightProfile):
         """Integrate the light profiles to compute the total luminosity within an ellipse of specified major axis. \
         This is centred on the light profile's centre.
 
-        The value returned by this integral is in the units of the intensity parameter of the light profile, which \
-        are electrons per second. A conversion factor can be specified to convert it to a physical value \
-        (e.g. the photometric zeropoint).
+        The following units for mass can be specified and output:
+
+        - Electrons per second (default) - 'electrons_per_second'.
+        - Counts - 'counts' (multiplies the luminosity in electrons per second by the exposure time).
 
         Parameters
         ----------
-        major_axis: float
-            The major-axis of the ellipse to compute the luminosity within.
-        conversion_factor : float
-            Factor the dimensionless luminosity is multiplied by to convert it to a physical luminosity \
-            (e.g. a photometric zeropoint).
+        major_axis : float
+            The major-axis radius of the ellipse.
+        units_luminosity : str
+            The units the luminosity is returned in (electrons_per_second | counts).
+        exposure_time : float
+            The exposure time of the observation, which converts luminosity from electrons per second units to counts.
         """
         luminosity_electrons_per_second = quad(self.luminosity_integral, a=0.0, b=major_axis, args=(self.axis_ratio,))[0]
         return self.convert_luminosity_to_units(luminosity_electrons_per_second=luminosity_electrons_per_second,

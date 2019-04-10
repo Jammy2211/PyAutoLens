@@ -18,6 +18,7 @@ Big Picture:
 
 Small Picture:
 
+- Sort out radial minima tests.
 - Extract square around mask, so no rectnagular pixels.
 - clean up plotting_centres of profiles in plotters (dodgy if loop in plotter, color by galaxy).
 - Expanded visualization tests.
