@@ -173,6 +173,17 @@ def make_hyper_phase():
     return ph.HyperGalaxyPhase("hyper_galaxy_phase")
 
 
+class TestRedshift(object):
+    def test_lens_phase(self):
+        phase = ph.LensPlanePhase("lens phase")
+        phase.lens_galaxies = [g.Galaxy(), gm.GalaxyModel()]
+
+        print(phase.lens_galaxies[1].redshift)
+
+        assert phase.lens_galaxies[0].redshift == 0.5
+        assert phase.lens_galaxies[1].redshift == 0.5
+
+
 class TestHyperGalaxyPhase(object):
     def test_analysis(self, hyper_lens_data, hyper_galaxy):
         analysis = ph.HyperGalaxyPhase.Analysis(hyper_lens_data, np.ones(5), np.ones(5))
@@ -766,9 +777,9 @@ class TestPhase(object):
     def test__phase_can_receive_list_of_galaxy_models(self):
         phase = ph.LensPlanePhase(lens_galaxies=[gm.GalaxyModel(sersic=lp.EllipticalSersic,
                                                                 sis=mp.SphericalIsothermal,
-                                                                variable_redshift=True),
+                                                                redshift=g.Redshift),
                                                  gm.GalaxyModel(sis=mp.SphericalIsothermal,
-                                                                variable_redshift=True)],
+                                                                redshift=g.Redshift)],
                                   optimizer_class=non_linear.MultiNest, phase_name='test_phase')
 
         instance = phase.optimizer.variable.instance_from_physical_vector(
@@ -792,9 +803,9 @@ class TestPhase(object):
 
         phase = LensPlanePhase2(lens_galaxies=[gm.GalaxyModel(sersic=lp.EllipticalSersic,
                                                               sis=mp.SphericalIsothermal,
-                                                              variable_redshift=True),
+                                                              redshift=g.Redshift),
                                                gm.GalaxyModel(sis=mp.SphericalIsothermal,
-                                                              variable_redshift=True)],
+                                                              redshift=g.Redshift)],
                                 optimizer_class=non_linear.MultiNest, phase_name='test_phase')
 
         # noinspection PyTypeChecker

@@ -3,7 +3,6 @@ import inspect
 
 from autofit import exc
 from autofit.mapper import model_mapper
-from autofit.mapper import prior as p
 from autofit.mapper.prior import PriorNameValue, ConstantNameValue, cast_collection
 from autolens.model.galaxy import galaxy
 from autolens.model.profiles import light_profiles, mass_profiles
@@ -65,7 +64,7 @@ class GalaxyModel(model_mapper.AbstractPriorModel):
                 prior_model.flat_prior_model_tuples]
 
     def __init__(self, align_centres=False, align_axis_ratios=False, align_orientations=False, redshift=None,
-                 variable_redshift=False, pixelization=None, regularization=None, hyper_galaxy=None, **kwargs):
+                 pixelization=None, regularization=None, hyper_galaxy=None, **kwargs):
         """Class to produce Galaxy instances from sets of profile classes and other model-fitting attributes (e.g. \
          pixelizations, regularization schemes, hyper-galaxyes) using the model mapper.
 
@@ -84,7 +83,7 @@ class GalaxyModel(model_mapper.AbstractPriorModel):
         align_orientations : bool
             If *True*, the same prior will be used for all the profiles rotation angles phi, such that all light \
             and / or mass profiles always share the same orientation.
-        redshift : float
+        redshift : float | Type[g.Redshift]
             The redshift of this model galaxy.
         variable_redshift : bool
             If *True*, the galaxy redshift will be treated as a free-parameter that is fitted for by the non-linear \
@@ -129,11 +128,7 @@ class GalaxyModel(model_mapper.AbstractPriorModel):
                 for profile_model in profile_models:
                     profile_model.phi = phi
 
-        if redshift is not None:
-            self.redshift = p.Constant(
-                redshift.redshift if isinstance(redshift, galaxy.Redshift) else redshift)
-        else:
-            self.redshift = model_mapper.PriorModel(galaxy.Redshift) if variable_redshift else p.Constant(1)
+        self.redshift = model_mapper.PriorModel(redshift) if inspect.isclass(redshift) else redshift
 
         if pixelization is not None and regularization is None:
             raise exc.PriorException('If the galaxy prior has a pixelization, it must also have a regularization.')
@@ -146,15 +141,6 @@ class GalaxyModel(model_mapper.AbstractPriorModel):
             regularization) else regularization
 
         self.hyper_galaxy = model_mapper.PriorModel(hyper_galaxy) if inspect.isclass(hyper_galaxy) else hyper_galaxy
-
-    def __setattr__(self, key, value):
-        if key == "redshift" \
-                and (isinstance(value, float)
-                     or isinstance(value, int)
-                     or isinstance(value, p.Prior)
-                     or isinstance(value, p.Constant)):
-            value = galaxy.Redshift(value)
-        super(GalaxyModel, self).__setattr__(key, value)
 
     def linked_model_for_classes(self, **classes):
         light_profile_class_tuples = [(name, cls) for name, cls in classes.items() if is_light_profile_class(cls)]
@@ -285,10 +271,10 @@ class GalaxyModel(model_mapper.AbstractPriorModel):
                        for key, value
                        in self.profile_prior_model_dict.items()}, **self.constant_profile_dict}
 
-        if isinstance(self.redshift, galaxy.Redshift):
-            redshift = self.redshift.value
-        else:
-            redshift = self.redshift.instance_for_arguments(arguments).value
+        try:
+            redshift = self.redshift.instance_for_arguments(arguments)
+        except AttributeError:
+            redshift = self.redshift
         pixelization = self.pixelization.instance_for_arguments(arguments) \
             if isinstance(self.pixelization, model_mapper.PriorModel) \
             else self.pixelization
