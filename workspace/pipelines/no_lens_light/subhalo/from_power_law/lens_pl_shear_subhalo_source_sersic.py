@@ -123,19 +123,19 @@ def make_pipeline(phase_folders=None, tag_phases=True, sub_grid_size=2, bin_up_f
                 results.from_phase('phase_1_lens_pl_shear_source_sersic').variable_absolute(a=0.3).source.light.centre
 
             self.source_galaxies.source.light.intensity = \
-                results.from_phase('phase_1_lens_pl_shear_source_sersic').variable.source.light.intensity
+                results.from_phase('phase_1_lens_pl_shear_source_sersic').variable_relative(r=0.5).source.light.intensity
 
             self.source_galaxies.source.light.effective_radius = \
-                results.from_phase('phase_1_lens_pl_shear_source_sersic').variable.source.light.effective_radius
+                results.from_phase('phase_1_lens_pl_shear_source_sersic').variable_absolute(a=1.0).source.light.effective_radius
 
             self.source_galaxies.source.light.sersic_index = \
-                results.from_phase('phase_1_lens_pl_shear_source_sersic').variable.source.light.sersic_index
+                results.from_phase('phase_1_lens_pl_shear_source_sersic').variable_absolute(a=1.5).source.light.sersic_index
 
             self.source_galaxies.source.light.axis_ratio = \
-                results.from_phase('phase_1_lens_pl_shear_source_sersic').variable.source.light.axis_ratio
+                results.from_phase('phase_1_lens_pl_shear_source_sersic').variable_absolute(a=0.1).source.light.axis_ratio
 
             self.source_galaxies.source.light.phi = \
-                results.from_phase('phase_1_lens_pl_shear_source_sersic').variable.source.light.phi
+                results.from_phase('phase_1_lens_pl_shear_source_sersic').variable_absolute(a=10.0).source.light.phi
 
 
     phase2 = GridPhase(phase_name='phase_2_subhalo_search', phase_folders=phase_folders,

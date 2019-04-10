@@ -377,6 +377,7 @@ class PhasePositions(AbstractPhase):
     class Analysis(Phase.Analysis):
 
         def __init__(self, positions, pixel_scale, cosmology, results=None):
+
             super().__init__(cosmology=cosmology, results=results)
 
             self.positions = list(map(lambda position_set: np.asarray(position_set), positions))

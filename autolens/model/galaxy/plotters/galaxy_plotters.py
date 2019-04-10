@@ -1,6 +1,6 @@
 from matplotlib import pyplot as plt
 
-from autolens.data.array.plotters import plotter_util, array_plotters
+from autolens.plotters import plotter_util, array_plotters
 from autolens.model.profiles.plotters import profile_plotters
 
 

@@ -187,8 +187,8 @@ class TestAbstractPlane(object):
             g0 = g.Galaxy(luminosity=lp.SphericalSersic(intensity=1.0))
             g1 = g.Galaxy(luminosity=lp.SphericalSersic(intensity=2.0))
 
-            g0_luminosity = g0.luminosity_within_circle(radius=1.0)
-            g1_luminosity = g1.luminosity_within_circle(radius=1.0)
+            g0_luminosity = g0.luminosity_within_circle_in_electrons_per_second(radius=1.0)
+            g1_luminosity = g1.luminosity_within_circle_in_electrons_per_second(radius=1.0)
             plane = pl.AbstractPlane(galaxies=[g0, g1], redshift=None)
             plane_luminosities = plane.luminosities_of_galaxies_within_circles(radius=1.0)
 
@@ -198,8 +198,8 @@ class TestAbstractPlane(object):
             g0 = g.Galaxy(luminosity=lp.SphericalSersic(intensity=3.0))
             g1 = g.Galaxy(luminosity=lp.SphericalSersic(intensity=4.0))
 
-            g0_luminosity = g0.luminosity_within_circle(radius=2.0)
-            g1_luminosity = g1.luminosity_within_circle(radius=2.0)
+            g0_luminosity = g0.luminosity_within_circle_in_electrons_per_second(radius=2.0)
+            g1_luminosity = g1.luminosity_within_circle_in_electrons_per_second(radius=2.0)
             plane = pl.AbstractPlane(galaxies=[g0, g1], redshift=None)
             plane_luminosities = plane.luminosities_of_galaxies_within_circles(radius=2.0)
 
@@ -207,11 +207,12 @@ class TestAbstractPlane(object):
             assert plane_luminosities[1] == g1_luminosity
 
         def test__luminosity_within_circle__same_as_galaxy_luminosities(self):
+
             g0 = g.Galaxy(luminosity=lp.SphericalSersic(intensity=1.0))
             g1 = g.Galaxy(luminosity=lp.SphericalSersic(intensity=2.0))
 
-            g0_luminosity = g0.luminosity_within_circle(radius=1.0, conversion_factor=3.0)
-            g1_luminosity = g1.luminosity_within_circle(radius=1.0, conversion_factor=3.0)
+            g0_luminosity = g0.luminosity_within_circle_in_electrons_per_second(radius=1.0, conversion_factor=3.0)
+            g1_luminosity = g1.luminosity_within_circle_in_electrons_per_second(radius=1.0, conversion_factor=3.0)
             plane = pl.AbstractPlane(galaxies=[g0, g1], redshift=None)
             plane_luminosities = plane.luminosities_of_galaxies_within_circles(radius=1.0, conversion_factor=3.0)
 
@@ -221,8 +222,8 @@ class TestAbstractPlane(object):
             g0 = g.Galaxy(luminosity=lp.SphericalSersic(intensity=3.0))
             g1 = g.Galaxy(luminosity=lp.SphericalSersic(intensity=4.0))
 
-            g0_luminosity = g0.luminosity_within_circle(radius=2.0, conversion_factor=6.0)
-            g1_luminosity = g1.luminosity_within_circle(radius=2.0, conversion_factor=6.0)
+            g0_luminosity = g0.luminosity_within_circle_in_electrons_per_second(radius=2.0, conversion_factor=6.0)
+            g1_luminosity = g1.luminosity_within_circle_in_electrons_per_second(radius=2.0, conversion_factor=6.0)
             plane = pl.AbstractPlane(galaxies=[g0, g1], redshift=None)
             plane_luminosities = plane.luminosities_of_galaxies_within_circles(radius=2.0, conversion_factor=6.0)
 
@@ -233,8 +234,8 @@ class TestAbstractPlane(object):
             g0 = g.Galaxy(luminosity=lp.SphericalSersic(intensity=1.0))
             g1 = g.Galaxy(luminosity=lp.SphericalSersic(intensity=2.0))
 
-            g0_luminosity = g0.luminosity_within_ellipse(major_axis=0.8)
-            g1_luminosity = g1.luminosity_within_ellipse(major_axis=0.8)
+            g0_luminosity = g0.luminosity_within_ellipse_in_electrons_per_second(major_axis=0.8)
+            g1_luminosity = g1.luminosity_within_ellipse_in_electrons_per_second(major_axis=0.8)
             plane = pl.AbstractPlane(galaxies=[g0, g1], redshift=None)
             plane_luminosities = plane.luminosities_of_galaxies_within_ellipses(major_axis=0.8)
 
@@ -244,8 +245,8 @@ class TestAbstractPlane(object):
             g0 = g.Galaxy(luminosity=lp.SphericalSersic(intensity=3.0))
             g1 = g.Galaxy(luminosity=lp.SphericalSersic(intensity=4.0))
 
-            g0_luminosity = g0.luminosity_within_ellipse(major_axis=0.6)
-            g1_luminosity = g1.luminosity_within_ellipse(major_axis=0.6)
+            g0_luminosity = g0.luminosity_within_ellipse_in_electrons_per_second(major_axis=0.6)
+            g1_luminosity = g1.luminosity_within_ellipse_in_electrons_per_second(major_axis=0.6)
             plane = pl.AbstractPlane(galaxies=[g0, g1], redshift=None)
             plane_luminosities = plane.luminosities_of_galaxies_within_ellipses(major_axis=0.6)
 
@@ -256,8 +257,8 @@ class TestAbstractPlane(object):
             g0 = g.Galaxy(luminosity=lp.SphericalSersic(intensity=1.0))
             g1 = g.Galaxy(luminosity=lp.SphericalSersic(intensity=2.0))
 
-            g0_luminosity = g0.luminosity_within_ellipse(major_axis=0.8, conversion_factor=3.0)
-            g1_luminosity = g1.luminosity_within_ellipse(major_axis=0.8, conversion_factor=3.0)
+            g0_luminosity = g0.luminosity_within_ellipse_in_electrons_per_second(major_axis=0.8, conversion_factor=3.0)
+            g1_luminosity = g1.luminosity_within_ellipse_in_electrons_per_second(major_axis=0.8, conversion_factor=3.0)
             plane = pl.AbstractPlane(galaxies=[g0, g1], redshift=None)
             plane_luminosities = plane.luminosities_of_galaxies_within_ellipses(major_axis=0.8, conversion_factor=3.0)
 
@@ -267,8 +268,8 @@ class TestAbstractPlane(object):
             g0 = g.Galaxy(luminosity=lp.SphericalSersic(intensity=3.0))
             g1 = g.Galaxy(luminosity=lp.SphericalSersic(intensity=4.0))
 
-            g0_luminosity = g0.luminosity_within_ellipse(major_axis=0.6, conversion_factor=6.0)
-            g1_luminosity = g1.luminosity_within_ellipse(major_axis=0.6, conversion_factor=6.0)
+            g0_luminosity = g0.luminosity_within_ellipse_in_electrons_per_second(major_axis=0.6, conversion_factor=6.0)
+            g1_luminosity = g1.luminosity_within_ellipse_in_electrons_per_second(major_axis=0.6, conversion_factor=6.0)
             plane = pl.AbstractPlane(galaxies=[g0, g1], redshift=None)
             plane_luminosities = plane.luminosities_of_galaxies_within_ellipses(major_axis=0.6, conversion_factor=6.0)
 

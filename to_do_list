@@ -2,18 +2,12 @@ Hey, welcome to my PyAutoLens to-do. This should give you a sense of what we're 
 
 Let me know if you think anything is missing, or should be pushed up the to-do list ;)
 
-Pipeline notes:
+Subhalo challenge:
 
-Dont vary source resolution + mass model for Adaptive Magnification.
-Add power-law to next inversion runs.
-
-Git Issues:
-
-- include sigma in variable prior links
-- non linear grid search stil not using input prams (check)
-- Raise error if multinest pickle changed.
-
- overwrite model.info et al.
+- Runs with slower NLO during grid phase.
+- Inversion on noise normal / psf.
+- Parametric source runs, no grid search? One big MN search?
+- Llevel 0 runs with fixed parameters, include a change in subhalo masses.
 
 Big Picture:
 

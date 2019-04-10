@@ -1,6 +1,6 @@
 from autolens.data.array import mask as msk
 from test.simulation import simulation_util
-from autolens.data.array.plotters import array_plotters
+from autolens.plotters import array_plotters
 
 # In this tutorial, we'll introduce a new pixelization, called an adaptive-pixelization. This pixelization doesn't use
 # uniform grid of rectangular pixels, but instead uses irregular 'Voronoi' pixels. So, why would we want to do that?

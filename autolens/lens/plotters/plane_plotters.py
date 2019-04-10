@@ -1,6 +1,6 @@
 from matplotlib import pyplot as plt
 
-from autolens.data.array.plotters import plotter_util, grid_plotters, array_plotters
+from autolens.plotters import plotter_util, grid_plotters, array_plotters
 
 
 def plot_image_plane_image(
