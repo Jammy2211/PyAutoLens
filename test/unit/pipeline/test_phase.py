@@ -178,10 +178,19 @@ class TestRedshift(object):
         phase = ph.LensPlanePhase("lens phase")
         phase.lens_galaxies = [g.Galaxy(), gm.GalaxyModel()]
 
-        print(phase.lens_galaxies[1].redshift)
+        assert phase.lens_galaxies[0].redshift == 0.5
+        assert phase.lens_galaxies[1].redshift == 0.5
+
+    def test_lens_source_phase(self):
+        phase = ph.LensSourcePlanePhase("lens source phase")
+        phase.lens_galaxies = [g.Galaxy(), gm.GalaxyModel()]
+        phase.source_galaxies = [g.Galaxy(), gm.GalaxyModel()]
 
         assert phase.lens_galaxies[0].redshift == 0.5
         assert phase.lens_galaxies[1].redshift == 0.5
+
+        assert phase.source_galaxies[0].redshift == 1.0
+        assert phase.source_galaxies[1].redshift == 1.0
 
 
 class TestHyperGalaxyPhase(object):
