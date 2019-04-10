@@ -19,7 +19,7 @@ class TestSummarizeMassProfile:
                         '\n' \
                         'Mass within 10.00" = 9.4959e+00 solMass\n' \
                         'Mass within 500.00" = 6.0316e+01 solMass\n' \
-                        'Mass within Einstein Radius = 1.0000e+03 solMass\n' \
+                        'Mass within Einstein Radius = 0.0000 solMass\n' \
                         'Einstein Radius = 0.00"\n' \
                         'Rho at scale radius = 19406549.09\n' \
                         'Delta concentration = 73985.18\n' \

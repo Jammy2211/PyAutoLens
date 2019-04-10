@@ -139,8 +139,9 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
         self.axis_ratio = axis_ratio
         self.phi = phi
 
-    def summary(self, critical_surface_mass_density, radii, **kwargs):
-        summary = super().summary(critical_surface_mass_density=critical_surface_mass_density, radii=radii, **kwargs)
+    def summary(self, critical_surface_mass_density_arcsec, critical_surface_mass_density, radii, **kwargs):
+        summary = super().summary(critical_surface_mass_density_arcsec=critical_surface_mass_density_arcsec,
+                                  critical_surface_mass_density=critical_surface_mass_density, radii=radii, **kwargs)
         for radius in radii:
             mass = self.mass_within_circle_in_mass_units(
                 radius=radius, critical_surface_mass_density=critical_surface_mass_density)
@@ -285,8 +286,8 @@ class EllipticalCoredPowerLaw(EllipticalMassProfile, MassProfile):
         einstein_mass = self.mass_within_circle_in_mass_units(
             radius=self.einstein_radius, critical_surface_mass_density=critical_surface_mass_density)
 
-        return summary + ['Einstein Radius = {:.2f}"'.format(self.einstein_radius),
-                          'Mass within Einstein Radius = {:.4e} solMass'.format(einstein_mass)]
+        return summary + ['Mass within Einstein Radius = {:.4e} solMass'.format(einstein_mass),
+                          'Einstein Radius = {:.2f}"'.format(self.einstein_radius)]
 
     @property
     def einstein_radius_rescaled(self):
@@ -621,8 +622,11 @@ class SphericalIsothermal(EllipticalIsothermal):
 class AbstractEllipticalGeneralizedNFW(EllipticalMassProfile, MassProfile):
     epsrel = 1.49e-5
 
-    def summary(self, critical_surface_mass_density_arcsec, cosmic_average_mass_density_arcsec, **kwargs):
-        summary = super().summary(cosmic_average_mass_density_arcsec=cosmic_average_mass_density_arcsec, **kwargs)
+    def summary(self, critical_surface_mass_density_arcsec, cosmic_average_mass_density_arcsec,
+                critical_surface_mass_density, **kwargs):
+        summary = super().summary(critical_surface_mass_density_arcsec=critical_surface_mass_density_arcsec,
+                                  cosmic_average_mass_density_arcsec=cosmic_average_mass_density_arcsec,
+                                  critical_surface_mass_density=critical_surface_mass_density, **kwargs)
 
         rho_at_scale_radius = \
             self.rho_at_scale_radius(critical_surface_mass_density_arcsec=critical_surface_mass_density_arcsec)
@@ -640,7 +644,11 @@ class AbstractEllipticalGeneralizedNFW(EllipticalMassProfile, MassProfile):
         mass_at_200 = self.mass_at_200(critical_surface_mass_density_arcsec=critical_surface_mass_density_arcsec,
                                        cosmic_average_mass_density_arcsec=cosmic_average_mass_density_arcsec)
 
-        return summary + ['Einstein Radius = {:.2f}"'.format(self.einstein_radius),
+        einstein_mass = self.mass_within_circle_in_mass_units(
+            radius=self.einstein_radius, critical_surface_mass_density=critical_surface_mass_density)
+
+        return summary + ['Mass within Einstein Radius = {:.4f} solMass'.format(einstein_mass),
+                          'Einstein Radius = {:.2f}"'.format(self.einstein_radius),
                           'Rho at scale radius = {:.2f}'.format(rho_at_scale_radius),
                           'Delta concentration = {:.2f}'.format(delta_concentration),
                           'Concentration = {:.2f}'.format(concentration),
@@ -980,7 +988,7 @@ class SphericalTruncatedNFW(AbstractEllipticalGeneralizedNFW):
             critical_surface_mass_density_arcsec=critical_surface_mass_density_arcsec,
             cosmic_average_mass_density_arcsec=cosmic_average_mass_density_arcsec)
 
-        return summary + ['Mass at truncation radius = {:.2f} solMass\n'.format(mass_at_truncation_radius)]
+        return summary + ['Mass at truncation radius = {:.2f} solMass'.format(mass_at_truncation_radius)]
 
     def coord_func_k(self, grid_radius):
         return np.log(np.divide(grid_radius, np.sqrt(np.square(grid_radius) + np.square(self.truncation_radius)) +
