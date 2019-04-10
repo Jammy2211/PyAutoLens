@@ -131,18 +131,21 @@ def close_figure(as_subplot):
 # def check_units_distance_can_be_plotted(units_distance, kpc_per_arcsec):
 
 
-def radii_bin_size_from_minimum_and_maximum_radii_and_radii_bins(minimum_radius, maximum_radius, radii_bins):
-    return (maximum_radius - minimum_radius) / radii_bins
+def radii_bin_size_from_minimum_and_maximum_radii_and_radii_points(minimum_radius, maximum_radius, radii_points):
+    return (maximum_radius - minimum_radius) / radii_points
 
 
-def quantity_radii_from_minimum_and_maximum_radii_and_radii_bins(minimum_radius, maximum_radius, radii_bins):
-    return list(np.linspace(start=minimum_radius, stop=maximum_radius, num=radii_bins+1))
+def quantity_radii_from_minimum_and_maximum_radii_and_radii_points(minimum_radius, maximum_radius, radii_points):
+    return list(np.linspace(start=minimum_radius, stop=maximum_radius, num=radii_points + 1))
 
 
-def annuli_radii_from_minimum_and_maximum_radii_and_radii_bins(minimum_radius, maximum_radius, radii_bins):
+def quantity_and_annuli_radii_from_minimum_and_maximum_radii_and_radii_points(minimum_radius, maximum_radius, radii_points):
 
-    radii_bin_size = radii_bin_size_from_minimum_and_maximum_radii_and_radii_bins(
-        minimum_radius=minimum_radius, maximum_radius=maximum_radius, radii_bins=radii_bins)
+    radii_bin_size = radii_bin_size_from_minimum_and_maximum_radii_and_radii_points(
+        minimum_radius=minimum_radius, maximum_radius=maximum_radius, radii_points=radii_points)
 
-    return np.linspace(start=minimum_radius - radii_bin_size / 2.0, stop=maximum_radius + radii_bin_size / 2.0,
-                       num=radii_bins + 2)
+    quantity_radii = list(np.linspace(start=minimum_radius + radii_bin_size/2.0, stop=maximum_radius - radii_bin_size/2.0,
+                                      num=radii_points))
+    annuli_radii = list(np.linspace(start=minimum_radius, stop=maximum_radius, num=radii_points + 1))
+
+    return quantity_radii, annuli_radii

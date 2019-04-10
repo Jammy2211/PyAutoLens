@@ -96,4 +96,4 @@ def set_xy_labels_and_ticksize(units, kpc_per_arcsec, ylabel, xlabelsize, ylabel
 
 def set_legend(plot_legend, legend_fontsize):
     if plot_legend:
-        plt.legend(fontsize=16)
+        plt.legend(fontsize=legend_fontsize)
