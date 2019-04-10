@@ -173,7 +173,8 @@ class AbstractPlane(object):
             return None
 
 
-    def luminosities_of_galaxies_within_circles(self, radius):
+    def luminosities_of_galaxies_within_circles(self, radius, units_luminosity='electrons_per_second',
+                                                exposure_time=None):
         """Compute the total luminosity of all galaxies in this plane within a circle of specified radius.
 
         The value returned by this integral is dimensionless, and a conversion factor can be specified to convert it \
@@ -190,10 +191,12 @@ class AbstractPlane(object):
             Factor the dimensionless luminosity is multiplied by to convert it to a physical luminosity \ 
             (e.g. a photometric zeropoint).                
         """
-        return list(map(lambda galaxy: galaxy.luminosity_within_circle(radius),
+        return list(map(lambda galaxy: galaxy.luminosity_within_circle(radius, units_luminosity=units_luminosity,
+                                                                       exposure_time=exposure_time),
                         self.galaxies))
 
-    def luminosities_of_galaxies_within_ellipses(self, major_axis):
+    def luminosities_of_galaxies_within_ellipses(self, major_axis, units_luminosity='electrons_per_second',
+                                                exposure_time=None):
         """
         Compute the total luminosity of all galaxies in this plane within a ellipse of specified major-axis.
 
@@ -211,7 +214,8 @@ class AbstractPlane(object):
             Factor the dimensionless luminosity is multiplied by to convert it to a physical luminosity \ 
             (e.g. a photometric zeropoint).            
         """
-        return list(map(lambda galaxy: galaxy.luminosity_within_ellipse(major_axis),
+        return list(map(lambda galaxy: galaxy.luminosity_within_ellipse(major_axis, units_luminosity=units_luminosity,
+                                                                        exposure_time=exposure_time),
                         self.galaxies))
 
     def masses_of_galaxies_within_circles_in_angular_units(self, radius):
