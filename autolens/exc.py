@@ -43,3 +43,7 @@ class PlottingException(Exception):
 
 class PhaseException(Exception):
     pass
+
+
+class UnitsException(Exception):
+    pass

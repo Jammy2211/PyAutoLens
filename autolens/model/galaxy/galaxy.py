@@ -152,7 +152,7 @@ class Galaxy(object):
             (e.g. a photometric zeropoint).
         """
         if self.has_light_profile:
-            return sum(map(lambda p: p.luminosity_within_circle_in_electrons_per_second(radius), self.light_profiles))
+            return sum(map(lambda p: p.luminosity_within_circle(radius), self.light_profiles))
         else:
             return None
 
@@ -175,7 +175,7 @@ class Galaxy(object):
             (e.g. a photometric zeropoint).
         """
         if self.has_light_profile:
-            return sum(map(lambda p: p.luminosity_within_ellipse_in_electrons_per_second(major_axis), self.light_profiles))
+            return sum(map(lambda p: p.luminosity_within_ellipse(major_axis), self.light_profiles))
         else:
             return None
 
