@@ -1,5 +1,6 @@
 import copy
 
+import functools
 import numpy as np
 from astropy import cosmology as cosmo
 
@@ -811,6 +812,35 @@ class PhaseImaging(Phase):
             return self.lens_data.mask.map_2d_array_to_masked_1d_array(data)
 
 
+def set_defaults(key):
+    """
+    Load a default value for redshift from config and set it as the redshift for source or lens galaxies that have
+    falsey redshifts
+
+    Parameters
+    ----------
+    key: str
+
+    Returns
+    -------
+    decorator
+        A decorator that wraps the setter function to set defaults
+    """
+    def decorator(func):
+        @functools.wraps(func)
+        def wrapper(phase, new_value):
+            new_value = new_value or []
+            for item in new_value:
+                # noinspection PyTypeChecker
+                galaxy = new_value[item] if isinstance(item, str) else item
+                galaxy.redshift = galaxy.redshift or conf.instance.general.get("redshift", key, float)
+            return func(phase, new_value)
+
+        return wrapper
+
+    return decorator
+
+
 class LensPlanePhase(PhaseImaging):
     """
     Fit only the lens galaxy light.
@@ -845,11 +875,8 @@ class LensPlanePhase(PhaseImaging):
         return self._lens_galaxies
 
     @lens_galaxies.setter
+    @set_defaults("lens_default")
     def lens_galaxies(self, new_value):
-        new_value = new_value or []
-        for item in new_value:
-            galaxy = new_value[item] if isinstance(item, str) else item
-            galaxy.redshift = galaxy.redshift or 0.5
         self._lens_galaxies = new_value
 
     class Analysis(PhaseImaging.Analysis):
@@ -881,8 +908,26 @@ class LensSourcePlanePhase(PhaseImaging):
     Fit a simple source and lens system.
     """
 
-    lens_galaxies = PhasePropertyCollection("lens_galaxies")
-    source_galaxies = PhasePropertyCollection("source_galaxies")
+    _lens_galaxies = PhasePropertyCollection("lens_galaxies")
+    _source_galaxies = PhasePropertyCollection("source_galaxies")
+
+    @property
+    def lens_galaxies(self):
+        return self._lens_galaxies
+
+    @lens_galaxies.setter
+    @set_defaults("lens_default")
+    def lens_galaxies(self, new_value):
+        self._lens_galaxies = new_value
+
+    @property
+    def source_galaxies(self):
+        return self._source_galaxies
+
+    @source_galaxies.setter
+    @set_defaults("source_default")
+    def source_galaxies(self, new_value):
+        self._source_galaxies = new_value
 
     @property
     def phase_property_collections(self):
