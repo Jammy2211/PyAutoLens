@@ -55,7 +55,7 @@ class TestLightProfiles(object):
 
             integral_radius = 5.5
 
-            intensity_integral = sersic.luminosity_within_circle_in_electrons_per_second(radius=integral_radius)
+            intensity_integral = sersic.luminosity_within_circle(radius=integral_radius)
 
             gal_sersic = g.Galaxy(redshift=0.5,
                                   light_profile_1=lp.EllipticalSersic, axis_ratio=1.0, phi=0.0,
@@ -79,8 +79,8 @@ class TestLightProfiles(object):
 
             integral_radius = 5.5
 
-            intensity_integral = sersic_1.luminosity_within_circle_in_electrons_per_second(radius=integral_radius)
-            intensity_integral += sersic_2.luminosity_within_circle_in_electrons_per_second(radius=integral_radius)
+            intensity_integral = sersic_1.luminosity_within_circle(radius=integral_radius)
+            intensity_integral += sersic_2.luminosity_within_circle(radius=integral_radius)
 
             gal_sersic = g.Galaxy(redshift=0.5,
                                   light_profile_1=lp.EllipticalSersic(
@@ -107,7 +107,7 @@ class TestLightProfiles(object):
 
             integral_radius = 0.5
 
-            intensity_integral = sersic.luminosity_within_ellipse_in_electrons_per_second(major_axis=integral_radius)
+            intensity_integral = sersic.luminosity_within_ellipse(major_axis=integral_radius)
 
             gal_sersic = g.Galaxy(redshift=0.5,
                                   light_profile_1=lp.EllipticalSersic(
@@ -132,8 +132,8 @@ class TestLightProfiles(object):
 
             integral_radius = 5.5
 
-            intensity_integral = sersic_1.luminosity_within_ellipse_in_electrons_per_second(major_axis=integral_radius)
-            intensity_integral += sersic_2.luminosity_within_ellipse_in_electrons_per_second(major_axis=integral_radius)
+            intensity_integral = sersic_1.luminosity_within_ellipse(major_axis=integral_radius)
+            intensity_integral += sersic_2.luminosity_within_ellipse(major_axis=integral_radius)
 
             gal_sersic = g.Galaxy(redshift=0.5,
                                   light_profile_1=lp.EllipticalSersic(

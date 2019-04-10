@@ -190,7 +190,7 @@ class AbstractPlane(object):
             Factor the dimensionless luminosity is multiplied by to convert it to a physical luminosity \ 
             (e.g. a photometric zeropoint).                
         """
-        return list(map(lambda galaxy: galaxy.luminosity_within_circle_in_electrons_per_second(radius),
+        return list(map(lambda galaxy: galaxy.luminosity_within_circle(radius),
                         self.galaxies))
 
     def luminosities_of_galaxies_within_ellipses(self, major_axis):
@@ -211,7 +211,7 @@ class AbstractPlane(object):
             Factor the dimensionless luminosity is multiplied by to convert it to a physical luminosity \ 
             (e.g. a photometric zeropoint).            
         """
-        return list(map(lambda galaxy: galaxy.luminosity_within_ellipse_in_electrons_per_second(major_axis),
+        return list(map(lambda galaxy: galaxy.luminosity_within_ellipse(major_axis),
                         self.galaxies))
 
     def masses_of_galaxies_within_circles_in_angular_units(self, radius):
