@@ -1,19 +1,42 @@
-from autolens.model.profiles.summary import profile_summary
-
-from test.unit.mock.mock_summary import MockMassProfile, MockNFW, MockTruncatedNFW
-
 import os
+
+from autolens.model.profiles import mass_profiles as mp
+from autolens.model.profiles.summary import profile_summary
+from test.unit.mock.mock_summary import MockMassProfile, MockNFW, MockTruncatedNFW
 
 test_summary_dir = "{}/../../../test_files/summary/".format(os.path.dirname(os.path.realpath(__file__)))
 
+
 class TestSummarizeMassProfile:
 
-    def test__summarize_mass_profile(self):
+    def test_summary(self):
+        profile = mp.SphericalTruncatedNFWChallenge()
+        summary_text = "\n".join(
+            profile.summary(critical_surface_mass_density=1.0, radii=[10.0, 500.0]))
+        print(summary_text)
 
+        expected_text = 'Mass Profile = SphericalTruncatedNFWChallenge\n' \
+                        '\n' \
+                        'Mass within 10.00" = 9.4959e+00 solMass\n' \
+                        'Mass within 500.00" = 6.0316e+01 solMass\n' \
+                        'Mass within Einstein Radius = 0.0000 solMass\n' \
+                        'Einstein Radius = 0.00"\n' \
+                        'Rho at scale radius = 19406549.09\n' \
+                        'Delta concentration = 73985.18\n' \
+                        'Concentration = 12.26\n' \
+                        'Radius at 200x cosmic average density = 61.30"\n' \
+                        'Mass at 200x cosmic average density = 50606064386.47 solMass\n' \
+                        'Mass at truncation radius = 169427236815.87 solMass'
+        print(expected_text)
+
+        assert summary_text == expected_text
+
+    def test__summarize_mass_profile(self):
         summary_file = open(file=test_summary_dir + 'model.summary', mode="w+")
 
         profile_summary.summarize_mass_profile(summary_file=summary_file, mass_profile=MockTruncatedNFW(),
-                                               critical_surface_mass_density=1.0, cosmic_average_mass_density_arcsec=1.0,
+                                               critical_surface_mass_density=1.0,
+                                               cosmic_average_mass_density_arcsec=1.0,
                                                radii=[10.0, 500.0])
 
         summary_file.close()
@@ -39,7 +62,6 @@ class TestSummarizeMassProfile:
         os.remove(path=test_summary_dir + 'model.summary')
 
     def test__summarize_einstein_radius_and_mass___multiple_radii_both_output(self):
-
         summary_file = open(file=test_summary_dir + 'model.summary', mode="w+")
 
         profile_summary.summarize_einstein_radius_and_mass(summary_file=summary_file, mass_profile=MockMassProfile(),
@@ -58,7 +80,6 @@ class TestSummarizeMassProfile:
         os.remove(path=test_summary_dir + 'model.summary')
 
     def test__summarize_mass_within_radii___multiple_radii_both_output(self):
-
         summary_file = open(file=test_summary_dir + 'model.summary', mode="w+")
 
         profile_summary.summarize_mass_within_radii(summary_file=summary_file, mass_profile=MockMassProfile(),
@@ -77,7 +98,6 @@ class TestSummarizeMassProfile:
         os.remove(path=test_summary_dir + 'model.summary')
 
     def test__summarize_nfw_mass_profile(self):
-
         summary_file = open(file=test_summary_dir + 'model.summary', mode="w+")
 
         profile_summary.summarize_nfw_mass_profile(summary_file=summary_file, nfw=MockNFW(),
@@ -100,10 +120,10 @@ class TestSummarizeMassProfile:
         os.remove(path=test_summary_dir + 'model.summary')
 
     def test__summarize_truncated_nfw_mass_profile(self):
-
         summary_file = open(file=test_summary_dir + 'model.summary', mode="w+")
 
-        profile_summary.summarize_truncated_nfw_mass_profile(summary_file=summary_file, truncated_nfw=MockTruncatedNFW(),
+        profile_summary.summarize_truncated_nfw_mass_profile(summary_file=summary_file,
+                                                             truncated_nfw=MockTruncatedNFW(),
                                                              critical_surface_mass_density_arcsec=1.0,
                                                              cosmic_average_mass_density_arcsec=1.0)
 
@@ -124,7 +144,6 @@ class TestSummarizeMassProfile:
         os.remove(path=test_summary_dir + 'model.summary')
 
     def test__summarize_truncated_nfw_challenge_mass_profile(self):
-
         summary_file = open(file=test_summary_dir + 'model.summary', mode="w+")
 
         profile_summary.summarize_truncated_nfw_challenge_mass_profile(summary_file=summary_file,

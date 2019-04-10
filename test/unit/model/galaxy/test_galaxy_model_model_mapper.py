@@ -2,6 +2,7 @@ import os
 
 from autofit import conf
 from autofit.mapper import model_mapper as mm
+from autolens.model.galaxy import galaxy as g
 from autolens.model.galaxy import galaxy_model as gm
 from autolens.model.profiles import light_profiles, mass_profiles
 
@@ -12,21 +13,18 @@ class TestCase:
 
         config = conf.DefaultPriorConfig(
             "{}/../../{}".format(directory,
-                              "test_files/configs/galaxy_model/priors/default"))
-
-        print(config.path)
+                                 "test_files/configs/galaxy_model/priors/default"))
 
         limit_config = conf.LimitConfig(
             "{}/../../{}".format(directory,
-                              "test_files/configs/galaxy_model/priors/limit"))
-
+                                 "test_files/configs/galaxy_model/priors/limit"))
 
         # Create a mapper. This can be used to convert values output by a non linear optimiser into class instances.
         mapper = mm.ModelMapper(config=config, limit_config=limit_config)
 
         # Create a model_galaxy prior for the source model_galaxy. Here we are describing only the light profile of
         # the source model_galaxy which comprises an elliptical exponential and elliptical sersic light profile.
-        source_galaxy_prior = gm.GalaxyModel(variable_redshift=True,
+        source_galaxy_prior = gm.GalaxyModel(redshift=g.Redshift,
                                              light_profile_one=light_profiles.EllipticalExponential,
                                              light_profile_2=light_profiles.EllipticalSersic, config=config,
                                              limit_config=limit_config)
@@ -34,7 +32,7 @@ class TestCase:
         # Create a model_galaxy prior for the source model_galaxy. Here we are describing both the light and mass
         # profiles. We've also stipulated that the centres of any galaxies generated using the model_galaxy prior
         # should match.
-        lens_galaxy_prior = gm.GalaxyModel(variable_redshift=True, light_profile=light_profiles.EllipticalExponential,
+        lens_galaxy_prior = gm.GalaxyModel(redshift=g.Redshift, light_profile=light_profiles.EllipticalExponential,
                                            mass_profile=mass_profiles.EllipticalExponential,
                                            align_centres=True, config=config, limit_config=limit_config)
 

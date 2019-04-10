@@ -7,7 +7,17 @@ import pytest
 import scipy.special
 
 from autolens import exc
+from autofit import conf
 from autolens.model.profiles import light_profiles as lp
+
+
+@pytest.fixture(autouse=True)
+def reset_config():
+    """
+    Use configuration from the default path. You may want to change this to set a specific path.
+    """
+    conf.instance = conf.default
+
 
 grid = np.array([[1.0, 1.0], [2.0, 2.0], [3.0, 3.0], [2.0, 4.0]])
 
@@ -319,23 +329,9 @@ class TestCoreSersic(object):
         assert (elliptical.intensities_from_grid(grid) == spherical.intensities_from_grid(grid)).all()
 
 
-class TestLuminosity(object):
+class TestLuminosityIntegral(object):
 
-    def test__check_luminosity_unit_conversions(self):
-
-        sersic = lp.SphericalSersic(intensity=3.0, effective_radius=2.0, sersic_index=1.0)
-
-        sersic.luminosity_within_circle(radius=1.0, units_luminosity='electrons_per_second')
-        sersic.luminosity_within_ellipse(major_axis=1.0, units_luminosity='electrons_per_second')
-
-        sersic.luminosity_within_circle(radius=1.0, units_luminosity='counts', exposure_time=1.0)
-        sersic.luminosity_within_ellipse(major_axis=1.0, units_luminosity='counts', exposure_time=1.0)
-
-        with pytest.raises(exc.UnitsException):
-            sersic.luminosity_within_circle(radius=1.0, units_luminosity='counts', exposure_time=None)
-            sersic.luminosity_within_ellipse(major_axis=1.0, units_luminosity='counts', exposure_time=None)
-
-    def test__within_circle_in_electrons_per_second__spherical_exponential__compare_to_analytic(self):
+    def test__within_circle__spherical_exponential__compare_to_analytic(self):
 
         sersic = lp.SphericalSersic(intensity=3.0, effective_radius=2.0, sersic_index=1.0)
 
@@ -372,7 +368,7 @@ class TestLuminosity(object):
                              scipy.special.gamma(2 * sersic.sersic_index) * scipy.special.gammainc(
             2 * sersic.sersic_index, x)
 
-        intensity_integral = sersic.luminosity_within_circle(radius=0.5, units_luminosity='electrons_per_second')
+        intensity_integral = sersic.luminosity_within_circle(radius=0.5)
 
         assert intensity_analytic == pytest.approx(intensity_integral, 1e-3)
 
@@ -392,7 +388,7 @@ class TestLuminosity(object):
                              scipy.special.gamma(2 * sersic.sersic_index) * scipy.special.gammainc(
             2 * sersic.sersic_index, x)
 
-        intensity_integral = sersic.luminosity_within_circle(radius=0.5, units_luminosity='electrons_per_second')
+        intensity_integral = sersic.luminosity_within_circle(radius=0.5)
 
         assert intensity_analytic == pytest.approx(intensity_integral, 1e-3)
 
@@ -416,8 +412,7 @@ class TestLuminosity(object):
                 if eta < integral_radius:
                     luminosity_tot += sersic.intensities_from_grid_radii(eta) * area
 
-        intensity_integral = sersic.luminosity_within_circle(radius=integral_radius,
-                                                             units_luminosity='electrons_per_second')
+        intensity_integral = sersic.luminosity_within_circle(radius=integral_radius)
 
         assert luminosity_tot == pytest.approx(intensity_integral, 0.02)
 

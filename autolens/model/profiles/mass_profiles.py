@@ -88,6 +88,9 @@ class MassProfile(object):
     def mass_within_ellipse_in_mass_units(self, major_axis, critical_surface_mass_density):
         raise NotImplementedError()
 
+    def summary(self, *args, **kwargs):
+        return ["Mass Profile = {}".format(self.__class__.__name__), ""]
+
 
 class PointMass(geometry_profiles.SphericalProfile, MassProfile):
 
@@ -135,6 +138,17 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
         super(EllipticalMassProfile, self).__init__(centre, axis_ratio, phi)
         self.axis_ratio = axis_ratio
         self.phi = phi
+
+    def summary(self, critical_surface_mass_density_arcsec, critical_surface_mass_density, radii, **kwargs):
+        summary = super().summary(critical_surface_mass_density_arcsec=critical_surface_mass_density_arcsec,
+                                  critical_surface_mass_density=critical_surface_mass_density, radii=radii, **kwargs)
+        for radius in radii:
+            mass = self.mass_within_circle_in_mass_units(
+                radius=radius, critical_surface_mass_density=critical_surface_mass_density)
+
+            summary.append('Mass within {:.2f}" = {:.4e} solMass'.format(radius, mass))
+
+        return summary
 
     def mass_within_circle_in_angular_units(self, radius):
         """ Integrate the mass profiles's convergence profile to compute the total angular mass within a circle of \
@@ -266,6 +280,14 @@ class EllipticalCoredPowerLaw(EllipticalMassProfile, MassProfile):
         self.einstein_radius = einstein_radius
         self.slope = slope
         self.core_radius = core_radius
+
+    def summary(self, critical_surface_mass_density, radii, **kwargs):
+        summary = super().summary(critical_surface_mass_density=critical_surface_mass_density, radii=radii, **kwargs)
+        einstein_mass = self.mass_within_circle_in_mass_units(
+            radius=self.einstein_radius, critical_surface_mass_density=critical_surface_mass_density)
+
+        return summary + ['Mass within Einstein Radius = {:.4e} solMass'.format(einstein_mass),
+                          'Einstein Radius = {:.2f}"'.format(self.einstein_radius)]
 
     @property
     def einstein_radius_rescaled(self):
@@ -600,6 +622,39 @@ class SphericalIsothermal(EllipticalIsothermal):
 class AbstractEllipticalGeneralizedNFW(EllipticalMassProfile, MassProfile):
     epsrel = 1.49e-5
 
+    def summary(self, critical_surface_mass_density_arcsec, cosmic_average_mass_density_arcsec,
+                critical_surface_mass_density, **kwargs):
+        summary = super().summary(critical_surface_mass_density_arcsec=critical_surface_mass_density_arcsec,
+                                  cosmic_average_mass_density_arcsec=cosmic_average_mass_density_arcsec,
+                                  critical_surface_mass_density=critical_surface_mass_density, **kwargs)
+
+        rho_at_scale_radius = \
+            self.rho_at_scale_radius(critical_surface_mass_density_arcsec=critical_surface_mass_density_arcsec)
+
+        delta_concentration = \
+            self.delta_concentration(critical_surface_mass_density_arcsec=critical_surface_mass_density_arcsec,
+                                     cosmic_average_mass_density_arcsec=cosmic_average_mass_density_arcsec)
+
+        concentration = self.concentration(critical_surface_mass_density_arcsec=critical_surface_mass_density_arcsec,
+                                           cosmic_average_mass_density_arcsec=cosmic_average_mass_density_arcsec)
+
+        radius_at_200 = self.radius_at_200(critical_surface_mass_density_arcsec=critical_surface_mass_density_arcsec,
+                                           cosmic_average_mass_density_arcsec=cosmic_average_mass_density_arcsec)
+
+        mass_at_200 = self.mass_at_200(critical_surface_mass_density_arcsec=critical_surface_mass_density_arcsec,
+                                       cosmic_average_mass_density_arcsec=cosmic_average_mass_density_arcsec)
+
+        einstein_mass = self.mass_within_circle_in_mass_units(
+            radius=self.einstein_radius, critical_surface_mass_density=critical_surface_mass_density)
+
+        return summary + ['Mass within Einstein Radius = {:.4f} solMass'.format(einstein_mass),
+                          'Einstein Radius = {:.2f}"'.format(self.einstein_radius),
+                          'Rho at scale radius = {:.2f}'.format(rho_at_scale_radius),
+                          'Delta concentration = {:.2f}'.format(delta_concentration),
+                          'Concentration = {:.2f}'.format(concentration),
+                          'Radius at 200x cosmic average density = {:.2f}"'.format(radius_at_200),
+                          'Mass at 200x cosmic average density = {:.2f} solMass'.format(mass_at_200)]
+
     def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, kappa_s=0.05, inner_slope=1.0, scale_radius=5.0):
         """
         The elliptical NFW profiles, used to fit the dark matter halo of the lens.
@@ -926,6 +981,15 @@ class SphericalTruncatedNFW(AbstractEllipticalGeneralizedNFW):
         self.truncation_radius = truncation_radius
         self.tau = self.truncation_radius / self.scale_radius
 
+    def summary(self, critical_surface_mass_density_arcsec, cosmic_average_mass_density_arcsec, **kwargs):
+        summary = super().summary(critical_surface_mass_density_arcsec=critical_surface_mass_density_arcsec,
+                                  cosmic_average_mass_density_arcsec=cosmic_average_mass_density_arcsec, **kwargs)
+        mass_at_truncation_radius = self.mass_at_truncation_radius(
+            critical_surface_mass_density_arcsec=critical_surface_mass_density_arcsec,
+            cosmic_average_mass_density_arcsec=cosmic_average_mass_density_arcsec)
+
+        return summary + ['Mass at truncation radius = {:.2f} solMass'.format(mass_at_truncation_radius)]
+
     def coord_func_k(self, grid_radius):
         return np.log(np.divide(grid_radius, np.sqrt(np.square(grid_radius) + np.square(self.truncation_radius)) +
                                 self.truncation_radius))
@@ -989,6 +1053,9 @@ class SphericalTruncatedNFW(AbstractEllipticalGeneralizedNFW):
         return mass_at_200 * (self.tau ** 2.0 / (self.tau ** 2.0 + 1.0) ** 2.0) * \
                (((self.tau ** 2.0 - 1) * np.log(self.tau)) + (self.tau * np.pi) - (self.tau ** 2.0 + 1))
 
+    # def summary(self, critical_surface_mass_density, cosmic_average_mass_density_arcsec, radii):
+    #     summary = super().summary(critical_surface_mass_density, cosmic_average_mass_density_arcsec, radii)
+
 
 class SphericalTruncatedNFWChallenge(SphericalTruncatedNFW):
 
@@ -1001,6 +1068,13 @@ class SphericalTruncatedNFWChallenge(SphericalTruncatedNFW):
 
         super(SphericalTruncatedNFWChallenge, self).__init__(centre=centre, kappa_s=kappa_s, scale_radius=scale_radius,
                                                              truncation_radius=truncation_radius)
+
+    def summary(self, critical_surface_mass_density, radii, **kwargs):
+        return super().summary(critical_surface_mass_density_arcsec=1940654909.4133248,
+                               cosmic_average_mass_density_arcsec=262.30319684750657,
+                               critical_surface_mass_density=critical_surface_mass_density,
+                               radii=radii,
+                               **kwargs)
 
 
 class EllipticalNFW(AbstractEllipticalGeneralizedNFW):
