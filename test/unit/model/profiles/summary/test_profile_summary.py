@@ -14,18 +14,22 @@ class TestSummarizeMassProfile:
         summary_text = "\n".join(
             profile.summary(critical_surface_mass_density=1.0, radii=[10.0, 500.0]))
         print(summary_text)
-        assert summary_text == 'Mass Profile = SphericalTruncatedNFW\n' \
-                               '\n' \
-                               'Einstein Radius = 10.00"\n' \
-                               'Mass within 10.00" = 1.0000e+03 solMass\n' \
-                               'Mass within 500.00" = 1.0000e+03 solMass\n' \
-                               'Mass within Einstein Radius = 1.0000e+03 solMass\n' \
-                               'Rho at scale radius = 100.00\n' \
-                               'Delta concentration = 200.00\n' \
-                               'Concentration = 300.00\n' \
-                               'Radius at 200x cosmic average density = 400.00"\n' \
-                               'Mass at 200x cosmic average density = 500.00 solMass\n' \
-                               'Mass at truncation radius = 600.00 solMass'
+
+        expected_text = 'Mass Profile = SphericalTruncatedNFWChallenge\n' \
+                        '\n' \
+                        'Mass within 10.00" = 9.4959e+00 solMass\n' \
+                        'Mass within 500.00" = 6.0316e+01 solMass\n' \
+                        'Mass within Einstein Radius = 1.0000e+03 solMass\n' \
+                        'Einstein Radius = 0.00"\n' \
+                        'Rho at scale radius = 19406549.09\n' \
+                        'Delta concentration = 73985.18\n' \
+                        'Concentration = 12.26\n' \
+                        'Radius at 200x cosmic average density = 61.30"\n' \
+                        'Mass at 200x cosmic average density = 50606064386.47 solMass\n' \
+                        'Mass at truncation radius = 169427236815.87 solMass'
+        print(expected_text)
+
+        assert summary_text == expected_text
 
     def test__summarize_mass_profile(self):
         summary_file = open(file=test_summary_dir + 'model.summary', mode="w+")
