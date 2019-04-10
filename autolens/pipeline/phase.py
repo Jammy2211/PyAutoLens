@@ -812,6 +812,19 @@ class PhaseImaging(Phase):
 
 
 def set_defaults(key):
+    """
+    Load a default value for redshift from config and set it as the redshift for source or lens galaxies that have
+    falsey redshifts
+
+    Parameters
+    ----------
+    key: str
+
+    Returns
+    -------
+    decorator
+        A decorator that wraps the setter function to set defaults
+    """
     def decorator(func):
         @functools.wraps(func)
         def wrapper(phase, new_value):
