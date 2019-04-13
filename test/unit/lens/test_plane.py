@@ -1,11 +1,13 @@
 import numpy as np
 import pytest
+from astropy import cosmology as cosmo
 
 from autolens import exc
 from autolens.data.array import grids
 from autolens.data.array import mask as msk
 from autolens.lens import plane as pl
 from autolens.lens.util import lens_util
+from autolens.model import cosmology_util
 from autolens.model.galaxy import galaxy as g
 from autolens.model.galaxy.util import galaxy_util
 from autolens.model.inversion import pixelizations, regularization
@@ -13,6 +15,7 @@ from autolens.model.profiles import light_profiles as lp, mass_profiles as mp
 from test.unit.mock.mock_imaging import MockBorders
 from test.unit.mock.mock_inversion import MockRegularization, MockPixelization
 
+planck = cosmo.Planck15
 
 @pytest.fixture(name="grid_stack")
 def make_grid_stack():
@@ -81,22 +84,36 @@ class TestAbstractPlane(object):
 
     class TestCosmology:
 
-        def test__arcsec_to_kpc_conversion_and_angular_diameter_distance_to_earth(self):
+        def test__all_cosmological_quantities_match_cosmology_util(self):
 
-            plane = pl.AbstractPlane(redshift=0.1, galaxies=None)
-            assert plane.arcsec_per_kpc_proper == pytest.approx(0.525060, 1e-5)
-            assert plane.kpc_per_arcsec_proper == pytest.approx(1.904544, 1e-5)
-            assert plane.angular_diameter_distance_to_earth == pytest.approx(392840, 1e-5)
+            plane = pl.AbstractPlane(redshift=0.1, galaxies=None, cosmology=planck)
 
-            plane = pl.AbstractPlane(redshift=1.0, galaxies=None)
-            assert plane.arcsec_per_kpc_proper == pytest.approx(0.1214785, 1e-5)
-            assert plane.kpc_per_arcsec_proper == pytest.approx(8.231907, 1e-5)
-            assert plane.angular_diameter_distance_to_earth == pytest.approx(1697952, 1e-5)
+            assert plane.arcsec_per_kpc_proper == cosmology_util.arcsec_per_kpc_proper_from_redshift_and_cosmology(
+                redshift=0.1, cosmology=planck)
 
-        def test__cosmic_average_mass_density_arcsec(self):
+            assert plane.kpc_per_arcsec_proper == \
+                   cosmology_util.kpc_per_arcsec_proper_from_redshift_and_cosmology(redshift=0.1, cosmology=planck)
+
+            assert plane.angular_diameter_distance_to_earth == \
+                   cosmology_util.angular_diameter_distance_to_earth_from_redshift_and_cosmology(redshift=0.1,
+                                                                                                 cosmology=planck)
+
+            plane = pl.AbstractPlane(redshift=1.0, galaxies=None, cosmology=planck)
+
+            assert plane.arcsec_per_kpc_proper == cosmology_util.arcsec_per_kpc_proper_from_redshift_and_cosmology(
+                redshift=1.0, cosmology=planck)
+
+            assert plane.kpc_per_arcsec_proper == \
+                   cosmology_util.kpc_per_arcsec_proper_from_redshift_and_cosmology(redshift=1.0, cosmology=planck)
+
+            assert plane.angular_diameter_distance_to_earth == \
+                   cosmology_util.angular_diameter_distance_to_earth_from_redshift_and_cosmology(redshift=1.0,
+                                                                                                 cosmology=planck)
 
             plane = pl.AbstractPlane(redshift=0.6, galaxies=None)
-            assert plane.cosmic_average_mass_density_arcsec == pytest.approx(81280.09116133313, 1.0e-4)
+            assert plane.cosmic_average_mass_density_arcsec == \
+                cosmology_util.cosmic_average_mass_density_arcsec_from_redshift_and_cosmology(redshift=0.6,
+                                                                                              cosmology=planck)
 
     class TestProperties:
 

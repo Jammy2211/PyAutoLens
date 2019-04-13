@@ -177,7 +177,6 @@ def grid_stack_from_deflection_stack(grid_stack, deflection_stack):
 
         return grid_stack.map_function(minus, deflection_stack)
 
-
 def traced_collection_for_deflections(grid_stack, deflections):
 
     def subtract_scaled_deflections(grid, scaled_deflection):
