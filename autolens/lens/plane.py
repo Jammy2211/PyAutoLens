@@ -7,6 +7,7 @@ from autolens import exc
 from autolens.data.array import grids
 from autolens.data.array import scaled_array
 from autolens.lens.util import lens_util
+from autolens.model import cosmology_util
 from autolens.model.galaxy.util import galaxy_util
 
 
@@ -70,12 +71,13 @@ class AbstractPlane(object):
     @property
     def constant_kpc(self):
         # noinspection PyUnresolvedReferences
-        return constants.c.to('kpc / s').value ** 2.0 / (4 * math.pi * constants.G.to('kpc3 / M_sun s2').value)
+        return cosmology_util.constant_kpc()
 
     @property
     @check_plane_for_redshift
     def arcsec_per_kpc_proper(self):
-        return self.cosmology.arcsec_per_kpc_proper(z=self.redshift).value
+        return cosmology_util.arcsec_per_kpc_proper_from_redshift_and_cosmology(redshift=self.redshift,
+                                                                           cosmology=self.cosmology)
 
     @property
     @check_plane_for_redshift
@@ -85,13 +87,14 @@ class AbstractPlane(object):
     @property
     @check_plane_for_redshift
     def angular_diameter_distance_to_earth(self):
-        return self.cosmology.angular_diameter_distance(self.redshift).to('kpc').value
+        return cosmology_util.angular_diameter_distance_to_earth_from_redshift_and_cosmology(redshift=self.redshift,
+                                                                                        cosmology=self.cosmology)
 
     @property
     @check_plane_for_redshift
     def cosmic_average_mass_density_arcsec(self):
-        return self.cosmology.critical_density(z=self.redshift).to('solMass / kpc^3').value / \
-               self.arcsec_per_kpc_proper**3.0
+        return cosmology_util.cosmic_average_mass_density_arcsec_from_redshift_and_cosmology(redshift=self.redshift,
+                                                                                             cosmology=self.cosmology)
 
     @property
     def has_light_profile(self):

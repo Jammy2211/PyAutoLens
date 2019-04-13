@@ -287,6 +287,8 @@ class Galaxy(object):
         else:
             return None
 
+#    @classmethod
+#    def lens_galaxy_no_lens_light_sie_massive_elliptical_with_mass_10_to_10_solar_masses
 
 class HyperGalaxy(object):
     _ids = count()

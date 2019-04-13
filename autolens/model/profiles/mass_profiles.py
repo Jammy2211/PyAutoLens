@@ -566,6 +566,16 @@ class EllipticalIsothermal(EllipticalPowerLaw):
         """
         super(EllipticalIsothermal, self).__init__(centre, axis_ratio, phi, einstein_radius, 2.0)
 
+    # @classmethod
+    # def from_mass_in_solar_masses(cls, redshift_lens=0.5, redshift_source=1.0, centre=(0.0, 0.0), axis_ratio_=0.9,
+    #                               phi=0.0, mass=10e10):
+    #
+    #     return self.constant_kpc * self.angular_diameter_distance_of_plane_to_earth(j) / \
+    #            (self.angular_diameter_distance_between_planes(i, j) *
+    #             self.angular_diameter_distance_of_plane_to_earth(i))
+
+   # critical_surface_mass_density =
+
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
     def deflections_from_grid(self, grid):

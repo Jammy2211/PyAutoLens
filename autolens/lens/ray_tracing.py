@@ -130,7 +130,7 @@ class AbstractTracerCosmology(object):
     @property
     def constant_kpc(self):
         # noinspection PyUnresolvedReferences
-        return constants.c.to('kpc / s').value ** 2.0 / (4 * math.pi * constants.G.to('kpc3 / M_sun s2').value)
+        return lens_util.constant_kpc()
 
     def arcsec_per_kpc_proper_of_plane(self, i):
         return self.cosmology.arcsec_per_kpc_proper(z=self.plane_redshifts[i]).value
