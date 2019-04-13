@@ -61,7 +61,7 @@ class CCDData(object):
 
     @classmethod
     def simulate(cls, array, pixel_scale, exposure_time, psf=None, background_sky_level=None,
-                 add_noise=False, seed=-1, name=None):
+                 add_noise=True, noise_if_add_noise_false=0.1, noise_seed=-1, name=None):
 
         exposure_time_map = ScaledSquarePixelArray.single_value(value=exposure_time, shape=array.shape,
                                                                 pixel_scale=pixel_scale)
@@ -71,14 +71,14 @@ class CCDData(object):
         else:
             background_sky_map = None
 
-        return cls.simulate_variable_arrays(array=array, pixel_scale=pixel_scale,
-                                            exposure_time_map=exposure_time_map, psf=psf,
-                                            background_sky_map=background_sky_map,
-                                            add_noise=add_noise, seed=seed, name=name)
+        return cls.simulate_variable_arrays(array=array, pixel_scale=pixel_scale, exposure_time_map=exposure_time_map,
+                                            psf=psf, background_sky_map=background_sky_map, add_noise=add_noise,
+                                            noise_seed=noise_seed, noise_if_add_noise_false=noise_if_add_noise_false,
+                                            name=name)
 
     @classmethod
     def simulate_variable_arrays(cls, array, pixel_scale, exposure_time_map, psf=None, background_sky_map=None,
-                                 add_noise=True, seed=-1, name=None):
+                                 add_noise=True, noise_if_add_noise_false=0.1, noise_seed=-1, name=None):
         """
         Create a realistic simulated image by applying effects to a plain simulated image.
 
@@ -98,7 +98,7 @@ class CCDData(object):
         add_noise: Bool
             If True poisson noise_maps is simulated and added to the image, based on the total counts in each image
             pixel
-        seed: int
+        noise_seed: int
             A seed for random noise_maps generation
         """
 
@@ -113,11 +113,15 @@ class CCDData(object):
                 background_sky_map = cls.trim_psf_edges(background_sky_map, psf)
 
         if add_noise is True:
-            array += generate_poisson_noise(array, exposure_time_map, seed)
+            array += generate_poisson_noise(array, exposure_time_map, noise_seed)
             array_counts = np.multiply(array, exposure_time_map)
             noise_map = np.divide(np.sqrt(array_counts), exposure_time_map)
         else:
-            noise_map = None
+            noise_map = noise_if_add_noise_false * np.ones(array.shape)
+
+        if np.isnan(noise_map).any():
+            raise exc.DataException('The noise-map has NaN values in it. This suggests your exposure time and / or'
+                                       'background sky levels are too low, create signal counts at or close to 0.0.')
 
         if background_sky_map is not None:
             array -= background_sky_map
@@ -194,7 +198,7 @@ class CCDData(object):
         return cls.simulate_variable_arrays(array=array, pixel_scale=pixel_scale,
                                             exposure_time_map=scaled_effective_exposure_time,
                                             psf=psf, background_sky_map=background_sky_map,
-                                            add_noise=True, seed=seed)
+                                            add_noise=True, noise_seed=seed)
 
     def new_ccd_data_with_binned_up_arrays(self, bin_up_factor):
 
@@ -973,7 +977,7 @@ def load_noise_map(noise_map_path, noise_map_hdu, pixel_scale, image, background
                              noise_map_from_image_and_background_noise_map])
 
     if noise_map_options > 1:
-        raise exc.ImagingException('You have specified more than one method to load the noise_map map, e.g.:'
+        raise exc.DataException('You have specified more than one method to load the noise_map map, e.g.:'
                                    'convert_noise_map_from_weight_map | '
                                    'convert_noise_map_from_inverse_noise_map |'
                                    'noise_map_from_image_and_background_noise_map')
@@ -989,15 +993,15 @@ def load_noise_map(noise_map_path, noise_map_hdu, pixel_scale, image, background
     elif noise_map_from_image_and_background_noise_map:
 
         if background_noise_map is None:
-            raise exc.ImagingException('Cannot compute the noise-map from the image and background noise_map map if a '
+            raise exc.DataException('Cannot compute the noise-map from the image and background noise_map map if a '
                                        'background noise_map map is not supplied.')
 
         if not (convert_from_electrons or convert_from_adus) and exposure_time_map is None:
-            raise exc.ImagingException('Cannot compute the noise-map from the image and background noise_map map if an '
+            raise exc.DataException('Cannot compute the noise-map from the image and background noise_map map if an '
                                        'exposure-time (or exposure time map) is not supplied to convert to adus')
 
         if convert_from_adus and gain is None:
-            raise exc.ImagingException('Cannot compute the noise-map from the image and background noise_map map if a'
+            raise exc.DataException('Cannot compute the noise-map from the image and background noise_map map if a'
                                        'gain is not supplied to convert from adus')
 
         return NoiseMap.from_image_and_background_noise_map(pixel_scale=pixel_scale, image=image,
@@ -1006,7 +1010,7 @@ def load_noise_map(noise_map_path, noise_map_hdu, pixel_scale, image, background
                                                             convert_from_electrons=convert_from_electrons,
                                                             gain=gain, convert_from_adus=convert_from_adus)
     else:
-        raise exc.ImagingException(
+        raise exc.DataException(
             'A noise_map map was not loaded, specify a noise_map_path or option to compute a noise_map map.')
 
 
@@ -1102,11 +1106,11 @@ def load_poisson_noise_map(poisson_noise_map_path, poisson_noise_map_hdu, pixel_
     elif poisson_noise_map_from_image:
 
         if not (convert_from_electrons or convert_from_adus) and exposure_time_map is None:
-            raise exc.ImagingException('Cannot compute the Poisson noise-map from the image if an '
+            raise exc.DataException('Cannot compute the Poisson noise-map from the image if an '
                                        'exposure-time (or exposure time map) is not supplied to convert to adus')
 
         if convert_from_adus and gain is None:
-            raise exc.ImagingException('Cannot compute the Poisson noise-map from the image if a'
+            raise exc.DataException('Cannot compute the Poisson noise-map from the image if a'
                                        'gain is not supplied to convert from adus')
 
         return PoissonNoiseMap.from_image_and_exposure_time_map(pixel_scale=pixel_scale, image=image,
@@ -1174,7 +1178,7 @@ def load_exposure_time_map(exposure_time_map_path, exposure_time_map_hdu, pixel_
     exposure_time_map_options = sum([exposure_time_map_from_inverse_noise_map])
 
     if exposure_time is not None and exposure_time_map_path is not None:
-        raise exc.ImagingException(
+        raise exc.DataException(
             'You have supplied both a exposure_time_map_path to an exposure time map and an exposure time. Only'
             'one quantity should be supplied.')
 

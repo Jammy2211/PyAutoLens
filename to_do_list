@@ -4,10 +4,7 @@ Let me know if you think anything is missing, or should be pushed up the to-do l
 
 Subhalo challenge:
 
-- Runs with slower NLO during grid phase.
 - Inversion on noise normal / psf.
-- Parametric source runs, no grid search? One big MN search?
-- Llevel 0 runs with fixed parameters, include a change in subhalo masses.
 
 Big Picture:
 
@@ -18,25 +15,32 @@ Big Picture:
 
 Small Picture:
 
+- Get Cosma runs going for lens, cti.
+- Lensing example test data suite.
+- Aggregator use and examples, for CTI and Lensing.
+- RJLens.
+- Integratioon test redshifts of lens, source.
+- model.summary info output (arcsec only).
+- hyper galaxy phase stuff.
+- unit conversions built into code.
+- classmethods to generate profiles from physical values (e.g. magnitudes, velocity dispersion, stellar mass, halo mass),
+  unit conversions.
+
 - Sort out radial minima tests.
 - Extract square around mask, so no rectnagular pixels.
 - clean up plotting_centres of profiles in plotters (dodgy if loop in plotter, color by galaxy).
 - Expanded visualization tests.
 - positions still plotting wrong?
 - Expand intepolation tests and write tutorial.
-- challenge halo info output.
 - Challenge mass errors.
 - MultiNest MPI
-- redshifts into pipeline.
-- hyper galaxy phase stuff.
+- redshifts into pipeline (integration tests).
 - memory lite mode
 
 Short term:
 
-- Inclusion of lens / source redshifts for analysis.
 - Ray tracing refactor.
 - Add feature to remove astropy bug.
-- classmethods to generate profiles from physical values (e.g. magnitudes, velocity dispersion, stellar mass, halo mass)
 
 Mid term:
 

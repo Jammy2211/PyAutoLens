@@ -58,7 +58,7 @@ class EllipticalLightProfile(geometry_profiles.EllipticalProfile, LightProfile):
         phi : float
             Rotational angle of profiles ellipse counter-clockwise from positive x-axis
         """
-        super(EllipticalLightProfile, self).__init__(centre, axis_ratio, phi)
+        super(EllipticalLightProfile, self).__init__(centre=centre, axis_ratio=axis_ratio, phi=phi)
 
     def convert_luminosity_to_units(self, luminosity_electrons_per_second, units_luminosity, exposure_time):
         """Convert the luminosity in electrons per second computed in the *luminosity_within_* method to the units \
@@ -78,7 +78,7 @@ class EllipticalLightProfile(geometry_profiles.EllipticalProfile, LightProfile):
             The radius of the circle to compute the dimensionless mass within.
         units_luminosity : str
             The units the luminosity is returned in (electrons_per_second | counts).
-        exposure_time : float
+        exposure_time : float or None
             The exposure time of the observation, which converts luminosity from electrons per second units to counts.
         """
         if units_luminosity is 'counts' and exposure_time is None:
@@ -105,7 +105,7 @@ class EllipticalLightProfile(geometry_profiles.EllipticalProfile, LightProfile):
             The radius of the circle to compute the dimensionless mass within.
         units_luminosity : str
             The units the luminosity is returned in (electrons_per_second | counts).
-        exposure_time : float
+        exposure_time : float or None
             The exposure time of the observation, which converts luminosity from electrons per second units to counts.
         """
         luminosity_electrons_per_second = quad(self.luminosity_integral, a=0.0, b=radius, args=(1.0,))[0]
@@ -127,7 +127,7 @@ class EllipticalLightProfile(geometry_profiles.EllipticalProfile, LightProfile):
             The major-axis radius of the ellipse.
         units_luminosity : str
             The units the luminosity is returned in (electrons_per_second | counts).
-        exposure_time : float
+        exposure_time : float or None
             The exposure time of the observation, which converts luminosity from electrons per second units to counts.
         """
         luminosity_electrons_per_second = quad(self.luminosity_integral, a=0.0, b=major_axis, args=(self.axis_ratio,))[0]
@@ -160,10 +160,29 @@ class EllipticalGaussian(EllipticalLightProfile):
         sigma : float
             The full-width half-maximum of the Gaussian.
         """
-        super(EllipticalGaussian, self).__init__(centre, axis_ratio, phi)
+        super(EllipticalGaussian, self).__init__(centre=centre, axis_ratio=axis_ratio, phi=phi)
 
         self.intensity = intensity
         self.sigma = sigma
+
+    def convert_profile_to_units(self, units_profile, kpc_per_arcsec=None):
+
+        if units_profile is not self.units and kpc_per_arcsec is None:
+            raise exc.UnitsException('The units_profile for a light profile has been input in different units '
+                                     'to the profile but a kpc per arcsec was not supplied.')
+
+        if self.units is units_profile:
+            return self
+        elif self.units is 'arcsec' and units_profile is 'kpc':
+            self.centre = (kpc_per_arcsec * self.centre[0], kpc_per_arcsec * self.centre[1])
+            self.sigma = kpc_per_arcsec * self.sigma
+            self.units = 'kpc'
+            return self
+        elif self.units is 'kpc' and units_profile is 'arcsec':
+            self.centre = (self.centre[0] / kpc_per_arcsec, self.centre[1] / kpc_per_arcsec)
+            self.sigma = self.sigma / kpc_per_arcsec
+            self.units = 'arcsec'
+            return self
 
     def intensities_from_grid_radii(self, grid_radii):
         """Calculate the intensity of the Gaussian light profile on a grid of radial coordinates.
@@ -206,7 +225,8 @@ class SphericalGaussian(EllipticalGaussian):
         sigma : float
             The full-width half-maximum of the Gaussian.
         """
-        super(SphericalGaussian, self).__init__(centre, 1.0, 0.0, intensity, sigma)
+        super(SphericalGaussian, self).__init__(centre=centre, axis_ratio=1.0, phi=0.0, intensity=intensity,
+                                                sigma=sigma)
 
 
 class AbstractEllipticalSersic(geometry_profiles.EllipticalProfile):
@@ -232,10 +252,29 @@ class AbstractEllipticalSersic(geometry_profiles.EllipticalProfile):
             Controls the concentration of the of the profile (lower value -> less concentrated, \
             higher value -> more concentrated).
         """
-        super(AbstractEllipticalSersic, self).__init__(centre, axis_ratio, phi)
+        super(AbstractEllipticalSersic, self).__init__(centre=centre, axis_ratio=axis_ratio, phi=phi)
         self.intensity = intensity
         self.effective_radius = effective_radius
         self.sersic_index = sersic_index
+
+    def convert_profile_to_units(self, units_profile, kpc_per_arcsec=None):
+
+        if units_profile is not self.units and kpc_per_arcsec is None:
+            raise exc.UnitsException('The units_profile for a light profile has been input in different units '
+                                     'to the profile but a kpc per arcsec was not supplied.')
+
+        if self.units is units_profile:
+            return self
+        elif self.units is 'arcsec' and units_profile is 'kpc':
+            self.centre = (kpc_per_arcsec*self.centre[0], kpc_per_arcsec*self.centre[1])
+            self.effective_radius = kpc_per_arcsec * self.effective_radius
+            self.units = 'kpc'
+            return self
+        elif self.units is 'kpc' and units_profile is 'arcsec':
+            self.centre = (self.centre[0]/kpc_per_arcsec, self.centre[1]/kpc_per_arcsec)
+            self.effective_radius = self.effective_radius / kpc_per_arcsec
+            self.units = 'arcsec'
+            return self
 
     @property
     def elliptical_effective_radius(self):
@@ -290,8 +329,8 @@ class EllipticalSersic(AbstractEllipticalSersic, EllipticalLightProfile):
             Controls the concentration of the of the profile (lower value -> less concentrated, \
             higher value -> more concentrated).
         """
-        super(EllipticalSersic, self).__init__(centre, axis_ratio, phi, intensity, effective_radius,
-                                               sersic_index)
+        super(EllipticalSersic, self).__init__(centre=centre, axis_ratio=axis_ratio, phi=phi, intensity=intensity,
+                                               effective_radius=effective_radius, sersic_index=sersic_index)
 
     def intensities_from_grid_radii(self, grid_radii):
         """
@@ -338,7 +377,8 @@ class SphericalSersic(EllipticalSersic):
         sersic_index : Int
             Controls the concentration of the of the light profile.
         """
-        super(SphericalSersic, self).__init__(centre, 1.0, 0.0, intensity, effective_radius, sersic_index)
+        super(SphericalSersic, self).__init__(centre=centre, axis_ratio=1.0, phi=0.0, intensity=intensity,
+                                              effective_radius=effective_radius, sersic_index=sersic_index)
 
 
 class EllipticalExponential(EllipticalSersic):
@@ -361,7 +401,8 @@ class EllipticalExponential(EllipticalSersic):
         effective_radius : float
             The circular radius containing half the light of this profile.
         """
-        super(EllipticalExponential, self).__init__(centre, axis_ratio, phi, intensity, effective_radius, 1.0)
+        super(EllipticalExponential, self).__init__(centre=centre, axis_ratio=axis_ratio, phi=phi, intensity=intensity,
+                                                    effective_radius=effective_radius, sersic_index=1.0)
 
 
 class SphericalExponential(EllipticalExponential):
@@ -380,7 +421,8 @@ class SphericalExponential(EllipticalExponential):
         effective_radius : float
             The circular radius containing half the light of this profile.
         """
-        super(SphericalExponential, self).__init__(centre, 1.0, 0.0, intensity, effective_radius)
+        super(SphericalExponential, self).__init__(centre=centre, axis_ratio=1.0, phi=0.0, intensity=intensity,
+                                                   effective_radius=effective_radius)
 
 
 class EllipticalDevVaucouleurs(EllipticalSersic):
@@ -403,7 +445,9 @@ class EllipticalDevVaucouleurs(EllipticalSersic):
         effective_radius : float
             The circular radius containing half the light of this profile.
         """
-        super(EllipticalDevVaucouleurs, self).__init__(centre, axis_ratio, phi, intensity, effective_radius, 4.0)
+        super(EllipticalDevVaucouleurs, self).__init__(centre=centre, axis_ratio=axis_ratio, phi=phi,
+                                                       intensity=intensity, effective_radius=effective_radius,
+                                                       sersic_index=4.0)
 
 
 class SphericalDevVaucouleurs(EllipticalDevVaucouleurs):
@@ -422,7 +466,8 @@ class SphericalDevVaucouleurs(EllipticalDevVaucouleurs):
         effective_radius : float
             The circular radius containing half the light of this profile.
         """
-        super(SphericalDevVaucouleurs, self).__init__(centre, 1.0, 0.0, intensity, effective_radius)
+        super(SphericalDevVaucouleurs, self).__init__(centre=centre, axis_ratio=1.0, phi=0.0, intensity=intensity,
+                                                      effective_radius=effective_radius)
 
 
 class EllipticalCoreSersic(EllipticalSersic):
@@ -455,11 +500,33 @@ class EllipticalCoreSersic(EllipticalSersic):
         alpha :
             Controls the sharpness of the transition between the inner core / outer Sersic profiles.
         """
-        super(EllipticalCoreSersic, self).__init__(centre, axis_ratio, phi, intensity, effective_radius, sersic_index)
+        super(EllipticalCoreSersic, self).__init__(centre=centre, axis_ratio=axis_ratio, phi=phi, intensity=intensity,
+                                                   effective_radius=effective_radius, sersic_index=sersic_index)
         self.radius_break = radius_break
         self.intensity_break = intensity_break
         self.alpha = alpha
         self.gamma = gamma
+
+    def convert_profile_to_units(self, units_profile, kpc_per_arcsec=None):
+
+        if units_profile is not self.units and kpc_per_arcsec is None:
+            raise exc.UnitsException('The units_profile for a light profile has been input in different units '
+                                     'to the profile but a kpc per arcsec was not supplied.')
+
+        if self.units is units_profile:
+            return self
+        elif self.units is 'arcsec' and units_profile is 'kpc':
+            self.centre = (kpc_per_arcsec*self.centre[0], kpc_per_arcsec*self.centre[1])
+            self.effective_radius = kpc_per_arcsec * self.effective_radius
+            self.radius_break = kpc_per_arcsec * self.radius_break
+            self.units = 'kpc'
+            return self
+        elif self.units is 'kpc' and units_profile is 'arcsec':
+            self.centre = (self.centre[0]/kpc_per_arcsec, self.centre[1]/kpc_per_arcsec)
+            self.effective_radius = self.effective_radius / kpc_per_arcsec
+            self.radius_break = self.radius_break / kpc_per_arcsec
+            self.units = 'arcsec'
+            return self
 
     @property
     def intensity_prime(self):
@@ -511,8 +578,10 @@ class SphericalCoreSersic(EllipticalCoreSersic):
         alpha :
             Controls the sharpness of the transition between the inner core / outer Sersic profiles.
         """
-        super(SphericalCoreSersic, self).__init__(centre, 1.0, 0.0, intensity, effective_radius, sersic_index,
-                                                  radius_break, intensity_break, gamma, alpha)
+        super(SphericalCoreSersic, self).__init__(centre=centre, axis_ratio=1.0, phi=0.0, intensity=intensity,
+                                                  effective_radius=effective_radius, sersic_index=sersic_index,
+                                                  radius_break=radius_break, intensity_break=intensity_break,
+                                                  gamma=gamma, alpha=alpha)
         self.radius_break = radius_break
         self.intensity_break = intensity_break
         self.alpha = alpha

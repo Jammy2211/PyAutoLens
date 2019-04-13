@@ -18,7 +18,7 @@ import os
 # Phase 1:
 
 # Description: Perform the sensitivity analysis for subhalo locations.
-# Lens Mass: EllipitcalIsothermal + ExternalShear
+# Lens Mass: EllipitcalPowerLaw + ExternalShear
 # Source Light: EllipticalSersic
 # Subhalo: SphericalTruncatedNFWChallenge
 # Previous Pipelines: initializers/lens_sie_shear_source_sersic_from_init.py
@@ -28,7 +28,7 @@ import os
 # Phase 2:
 
 # Description: Perform the subhalo detection analysis.
-# Lens Mass: EllipitcalIsothermal + ExternalShear
+# Lens Mass: EllipitcalPowerLaw + ExternalShear
 # Source Light: EllipticalSersic
 # Subhalo: SphericalTruncatedNFWChallenge
 # Previous Pipelines: initializers/lens_sie_shear_source_sersic_from_init.py
@@ -38,7 +38,7 @@ import os
 # Phase 3:
 
 # Description: Refine the best-fit detected subhalo from the previous phase, by varying also the lens mass model..
-# Lens Mass: EllipitcalIsothermal + ExternalShear
+# Lens Mass: EllipitcalPowerLaw + ExternalShear
 # Source Light: EllipticalSersic
 # Subhalo: SphericalTruncatedNFWChallenge
 # Previous Pipelines: initializers/lens_sie_shear_source_sersic_from_init.py
@@ -56,7 +56,7 @@ import os
 # Notes: Uses an interpolation pixel scale for fast power-law deflection angle calculations.
 
 def make_pipeline(phase_folders=None, tag_phases=True, sub_grid_size=2, bin_up_factor=None, positions_threshold=None,
-                  inner_mask_radii=None, interp_pixel_scale=None):
+                  inner_mask_radii=None, interp_pixel_scale=0.05):
 
     pipeline_name = 'pipeline_subhalo__lens_pl_shear_subhalo_source_sersic'
 
@@ -83,7 +83,7 @@ def make_pipeline(phase_folders=None, tag_phases=True, sub_grid_size=2, bin_up_f
     #         self.lens_galaxies.subhalo.mass.scale_radius = 5.0
     #
     # phase2 = GridPhase(phase_name='phase_2_sensitivity', phase_folders=phase_folders,
-    #                    lens_galaxies=dict(lens=gm.GalaxyModel(mass=mp.EllipticalIsothermal,
+    #                    lens_galaxies=dict(lens=gm.GalaxyModel(mass=mp.EllipticalPowerLaw,
     #                                                           shear=mp.ExternalShear),
     #                                       subhalo=gm.GalaxyModel(mass=mp.SphericalNFW)),
     #                    source_galaxies=dict(source=gm.GalaxyModel(light=lp.EllipticalSersic)),
