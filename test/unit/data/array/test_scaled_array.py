@@ -782,7 +782,7 @@ class TestScaledSquarePixelArray:
                                  [1.0, 2.0, 3.0, 4.0, 5.0, 6.0]])
 
             array_2d = scaled_array.ScaledSquarePixelArray(array=array_2d, pixel_scale=0.1)
-            with pytest.raises(exc.ImagingException):
+            with pytest.raises(exc.DataException):
                 array_2d.binned_up_array_from_array(bin_up_factor=4, method='wrong')
 
 

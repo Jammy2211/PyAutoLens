@@ -132,6 +132,24 @@ class GeometryProfile(object):
             The (y,x) arc-second coordinates of the profile centre.
         """
         self.centre = centre
+        self.units = 'arcsec'
+
+    def convert_profile_to_units(self, units_profile, kpc_per_arcsec=None):
+
+        if units_profile is not self.units and kpc_per_arcsec is None:
+            raise exc.UnitsException('The units_profile for a light or mass profile has been input in different units '
+                                     'to the profile but a kpc per arcsec was not supplied.')
+
+        if self.units is units_profile:
+            return self
+        elif self.units is 'arcsec' and units_profile is 'kpc':
+            self.centre = (kpc_per_arcsec*self.centre[0], kpc_per_arcsec*self.centre[1])
+            self.units = 'kpc'
+            return self
+        elif self.units is 'kpc' and units_profile is 'arcsec':
+            self.centre = (self.centre[0]/kpc_per_arcsec, self.centre[1]/kpc_per_arcsec)
+            self.units = 'arcsec'
+            return self
 
     def convert_radius_to_units(self, radius_arcsec, units_radius='arcsec', kpc_per_arcsec=None):
         """Convert  a radius in arcsec to the units specified by the units_radius parameter.
@@ -186,7 +204,7 @@ class SphericalProfile(GeometryProfile):
         centre: (float, float)
             The (y,x) arc-second coordinates of the profile centre.
         """
-        super(SphericalProfile, self).__init__(centre)
+        super(SphericalProfile, self).__init__(centre=centre)
 
     @transform_grid
     def grid_to_grid_radii(self, grid):
@@ -267,7 +285,7 @@ class EllipticalProfile(SphericalProfile):
         phi : float
             Rotation angle of profiles ellipse counter-clockwise from positive x-axis
         """
-        super(EllipticalProfile, self).__init__(centre)
+        super(EllipticalProfile, self).__init__(centre=centre)
         self.axis_ratio = axis_ratio
         self.phi = phi
 

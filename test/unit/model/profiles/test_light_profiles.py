@@ -36,15 +36,65 @@ def vertical_sersic():
 
 class TestGaussian:
 
-    def test__constructor(self):
-        gaussian = lp.EllipticalGaussian(centre=(1.0, 1.0), axis_ratio=0.5, phi=45.0, intensity=2.0,
-                                         sigma=0.1)
+    def test__constructor_and_unit_conversions(self):
+        
+        gaussian_arcsec = lp.EllipticalGaussian(centre=(1.0, 2.0), axis_ratio=0.5, phi=45.0, intensity=1.0, sigma=0.1)
 
-        assert gaussian.centre == (1.0, 1.0)
-        assert gaussian.axis_ratio == 0.5
-        assert gaussian.phi == 45.0
-        assert gaussian.intensity == 2.0
-        assert gaussian.sigma == 0.1
+        assert gaussian_arcsec.centre == (1.0, 2.0)
+        assert gaussian_arcsec.axis_ratio == 0.5
+        assert gaussian_arcsec.phi == 45.0
+        assert gaussian_arcsec.intensity == 1.0
+        assert gaussian_arcsec.sigma == 0.1
+        assert gaussian_arcsec.units == 'arcsec'
+
+        gaussian_arcsec = gaussian_arcsec.convert_profile_to_units(units_profile='arcsec')
+
+        assert gaussian_arcsec.centre == (1.0, 2.0)
+        assert gaussian_arcsec.axis_ratio == 0.5
+        assert gaussian_arcsec.phi == 45.0
+        assert gaussian_arcsec.intensity == 1.0
+        assert gaussian_arcsec.sigma == 0.1
+        assert gaussian_arcsec.units == 'arcsec'
+
+        gaussian_kpc = gaussian_arcsec.convert_profile_to_units(units_profile='kpc', kpc_per_arcsec=2.0)
+
+        assert gaussian_kpc.centre == (2.0, 4.0)
+        assert gaussian_kpc.axis_ratio == 0.5
+        assert gaussian_kpc.phi == 45.0
+        assert gaussian_kpc.intensity == 1.0
+        assert gaussian_arcsec.sigma == 0.2
+        assert gaussian_kpc.units == 'kpc'
+
+        gaussian_kpc = gaussian_kpc.convert_profile_to_units(units_profile='kpc')
+
+        assert gaussian_kpc.centre == (2.0, 4.0)
+        assert gaussian_kpc.axis_ratio == 0.5
+        assert gaussian_kpc.phi == 45.0
+        assert gaussian_kpc.intensity == 1.0
+        assert gaussian_arcsec.sigma == 0.2
+        assert gaussian_kpc.units == 'kpc'
+
+        gaussian_arcsec = gaussian_arcsec.convert_profile_to_units(units_profile='arcsec', kpc_per_arcsec=2.0)
+
+        assert gaussian_arcsec.centre == (1.0, 2.0)
+        assert gaussian_arcsec.axis_ratio == 0.5
+        assert gaussian_arcsec.phi == 45.0
+        assert gaussian_arcsec.intensity == 1.0
+        assert gaussian_arcsec.sigma == 0.1
+        assert gaussian_arcsec.units == 'arcsec'
+
+    def test__conversion_requires_kpc_per_arcsec_but_does_not_supply_it_raises_error(self):
+
+        gaussian_arcsec = lp.EllipticalGaussian(centre=(1.0, 2.0), axis_ratio=0.5, phi=45.0, intensity=1.0, sigma=0.1)
+
+        with pytest.raises(exc.UnitsException):
+            gaussian_arcsec.convert_profile_to_units(units_profile='kpc')
+
+        gaussian_kpc = lp.EllipticalGaussian(centre=(1.0, 2.0), axis_ratio=0.5, phi=45.0, intensity=1.0, sigma=0.1)
+        gaussian_kpc.units = 'kpc'
+
+        with pytest.raises(exc.UnitsException):
+            gaussian_kpc.convert_profile_to_units(units_profile='arcsec')
 
     def test__intensity_as_radius__correct_value(self):
         gaussian = lp.EllipticalGaussian(centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=1.0,
@@ -120,21 +170,87 @@ class TestGaussian:
         assert (elliptical.intensities_from_grid(grid) == spherical.intensities_from_grid(grid)).all()
 
 
+class TestAbstractSersic:
+
+    def test__constructor_and_unit_conversions(self):
+        
+        sersic_arcsec = lp.AbstractEllipticalSersic(centre=(1.0, 2.0), axis_ratio=0.5, phi=45.0, intensity=1.0,
+                                            effective_radius=0.6, sersic_index=4.0)
+
+        assert sersic_arcsec.centre == (1.0, 2.0)
+        assert sersic_arcsec.axis_ratio == 0.5
+        assert sersic_arcsec.phi == 45.0
+        assert sersic_arcsec.intensity == 1.0
+        assert sersic_arcsec.effective_radius == 0.6
+        assert sersic_arcsec.sersic_index == 4.0
+        assert sersic_arcsec.sersic_constant == pytest.approx(7.66925, 1e-3)
+        assert sersic_arcsec.elliptical_effective_radius == 0.6 / np.sqrt(0.5)
+        assert sersic_arcsec.units == 'arcsec'
+
+        sersic_arcsec = sersic_arcsec.convert_profile_to_units(units_profile='arcsec')
+
+        assert sersic_arcsec.centre == (1.0, 2.0)
+        assert sersic_arcsec.axis_ratio == 0.5
+        assert sersic_arcsec.phi == 45.0
+        assert sersic_arcsec.intensity == 1.0
+        assert sersic_arcsec.effective_radius == 0.6
+        assert sersic_arcsec.sersic_index == 4.0
+        assert sersic_arcsec.sersic_constant == pytest.approx(7.66925, 1e-3)
+        assert sersic_arcsec.elliptical_effective_radius == 0.6 / np.sqrt(0.5)
+        assert sersic_arcsec.units == 'arcsec'
+
+        sersic_kpc = sersic_arcsec.convert_profile_to_units(units_profile='kpc', kpc_per_arcsec=2.0)
+
+        assert sersic_kpc.centre == (2.0, 4.0)
+        assert sersic_kpc.axis_ratio == 0.5
+        assert sersic_kpc.phi == 45.0
+        assert sersic_kpc.intensity == 1.0
+        assert sersic_kpc.effective_radius == 1.2
+        assert sersic_kpc.sersic_index == 4.0
+        assert sersic_kpc.sersic_constant == pytest.approx(7.66925, 1e-3)
+        assert sersic_kpc.elliptical_effective_radius == 1.2 / np.sqrt(0.5)
+        assert sersic_kpc.units == 'kpc'
+
+        sersic_kpc = sersic_kpc.convert_profile_to_units(units_profile='kpc')
+
+        assert sersic_kpc.centre == (2.0, 4.0)
+        assert sersic_kpc.axis_ratio == 0.5
+        assert sersic_kpc.phi == 45.0
+        assert sersic_kpc.intensity == 1.0
+        assert sersic_kpc.effective_radius == 1.2
+        assert sersic_kpc.sersic_index == 4.0
+        assert sersic_kpc.sersic_constant == pytest.approx(7.66925, 1e-3)
+        assert sersic_kpc.elliptical_effective_radius == 1.2 / np.sqrt(0.5)
+        assert sersic_kpc.units == 'kpc'
+
+        sersic_arcsec = sersic_arcsec.convert_profile_to_units(units_profile='arcsec', kpc_per_arcsec=2.0)
+
+        assert sersic_arcsec.centre == (1.0, 2.0)
+        assert sersic_arcsec.axis_ratio == 0.5
+        assert sersic_arcsec.phi == 45.0
+        assert sersic_arcsec.intensity == 1.0
+        assert sersic_arcsec.effective_radius == 0.6
+        assert sersic_arcsec.sersic_index == 4.0
+        assert sersic_arcsec.sersic_constant == pytest.approx(7.66925, 1e-3)
+        assert sersic_arcsec.elliptical_effective_radius == 0.6 / np.sqrt(0.5)
+        assert sersic_arcsec.units == 'arcsec'
+
+    def test__conversion_requires_kpc_per_arcsec_but_does_not_supply_it_raises_error(self):
+        sersic_arcsec = lp.EllipticalSersic(centre=(1.0, 2.0), axis_ratio=1.0, phi=0.0, intensity=1.0,
+                                            effective_radius=0.6, sersic_index=4.0)
+
+        with pytest.raises(exc.UnitsException):
+            sersic_arcsec.convert_profile_to_units(units_profile='kpc')
+
+        sersic_kpc = lp.EllipticalSersic(centre=(1.0, 2.0), axis_ratio=1.0, phi=0.0, intensity=1.0,
+                                         effective_radius=0.6, sersic_index=4.0)
+        sersic_kpc.units = 'kpc'
+
+        with pytest.raises(exc.UnitsException):
+            sersic_kpc.convert_profile_to_units(units_profile='arcsec')
+
+
 class TestSersic:
-
-    def test__constructor(self):
-        sersic = lp.EllipticalSersic(axis_ratio=1.0, phi=0.0, intensity=1.0,
-                                     effective_radius=0.6,
-                                     sersic_index=4.0)
-
-        assert sersic.centre == (0.0, 0.0)
-        assert sersic.axis_ratio == 1.0
-        assert sersic.phi == 0.0
-        assert sersic.intensity == 1.0
-        assert sersic.effective_radius == 0.6
-        assert sersic.sersic_index == 4.0
-        assert sersic.sersic_constant == pytest.approx(7.66925, 1e-3)
-        assert sersic.elliptical_effective_radius == 0.6
 
     def test__intensity_at_radius__correct_value(self):
         sersic = lp.EllipticalSersic(axis_ratio=1.0, phi=0.0, intensity=1.0,
@@ -291,23 +407,89 @@ class TestDevVaucouleurs:
 
 class TestCoreSersic(object):
 
-    def test__constructor(self):
-        cored_sersic = lp.EllipticalCoreSersic(axis_ratio=0.5, phi=0.0, intensity=1.0,
-                                               effective_radius=5.0, sersic_index=4.0, radius_break=0.01,
-                                               intensity_break=0.1, gamma=1.0, alpha=1.0)
+    def test__constructor_and_unit_conversions(self):
 
-        assert cored_sersic.centre == (0.0, 0.0)
-        assert cored_sersic.axis_ratio == 0.5
-        assert cored_sersic.phi == 0.0
-        assert cored_sersic.intensity == 1.0
-        assert cored_sersic.effective_radius == 5.0
-        assert cored_sersic.sersic_index == 4.0
-        assert cored_sersic.sersic_constant == pytest.approx(7.66925, 1e-3)
-        assert cored_sersic.radius_break == 0.01
-        assert cored_sersic.intensity_break == 0.1
-        assert cored_sersic.gamma == 1.0
-        assert cored_sersic.alpha == 1.0
-        assert cored_sersic.elliptical_effective_radius == 5.0 / math.sqrt(0.5)
+        core_sersic_arcsec = lp.EllipticalCoreSersic(centre=(1.0, 2.0), axis_ratio=0.5, phi=45.0, intensity=1.0,
+                                                     effective_radius=0.6, sersic_index=4.0, radius_break=0.01,
+                                                      intensity_break=0.1, gamma=1.0, alpha=2.0)
+
+        assert core_sersic_arcsec.centre == (1.0, 2.0)
+        assert core_sersic_arcsec.axis_ratio == 0.5
+        assert core_sersic_arcsec.phi == 45.0
+        assert core_sersic_arcsec.intensity == 1.0
+        assert core_sersic_arcsec.effective_radius == 0.6
+        assert core_sersic_arcsec.sersic_index == 4.0
+        assert core_sersic_arcsec.sersic_constant == pytest.approx(7.66925, 1e-3)
+        assert core_sersic_arcsec.radius_break == 0.01
+        assert core_sersic_arcsec.intensity_break == 0.1
+        assert core_sersic_arcsec.gamma == 1.0
+        assert core_sersic_arcsec.alpha == 2.0
+        assert core_sersic_arcsec.elliptical_effective_radius == 0.6 / np.sqrt(0.5)
+        assert core_sersic_arcsec.units == 'arcsec'
+
+        core_sersic_arcsec = core_sersic_arcsec.convert_profile_to_units(units_profile='arcsec')
+
+        assert core_sersic_arcsec.centre == (1.0, 2.0)
+        assert core_sersic_arcsec.axis_ratio == 0.5
+        assert core_sersic_arcsec.phi == 45.0
+        assert core_sersic_arcsec.intensity == 1.0
+        assert core_sersic_arcsec.effective_radius == 0.6
+        assert core_sersic_arcsec.sersic_index == 4.0
+        assert core_sersic_arcsec.sersic_constant == pytest.approx(7.66925, 1e-3)
+        assert core_sersic_arcsec.radius_break == 0.01
+        assert core_sersic_arcsec.intensity_break == 0.1
+        assert core_sersic_arcsec.gamma == 1.0
+        assert core_sersic_arcsec.alpha == 2.0
+        assert core_sersic_arcsec.elliptical_effective_radius == 0.6 / np.sqrt(0.5)
+        assert core_sersic_arcsec.units == 'arcsec'
+
+        core_sersic_kpc = core_sersic_arcsec.convert_profile_to_units(units_profile='kpc', kpc_per_arcsec=2.0)
+
+        assert core_sersic_kpc.centre == (2.0, 4.0)
+        assert core_sersic_kpc.axis_ratio == 0.5
+        assert core_sersic_kpc.phi == 45.0
+        assert core_sersic_kpc.intensity == 1.0
+        assert core_sersic_kpc.effective_radius == 1.2
+        assert core_sersic_kpc.sersic_index == 4.0
+        assert core_sersic_kpc.sersic_constant == pytest.approx(7.66925, 1e-3)
+        assert core_sersic_kpc.radius_break == 0.02
+        assert core_sersic_kpc.intensity_break == 0.1
+        assert core_sersic_kpc.gamma == 1.0
+        assert core_sersic_kpc.alpha == 2.0
+        assert core_sersic_kpc.elliptical_effective_radius == 1.2 / np.sqrt(0.5)
+        assert core_sersic_kpc.units == 'kpc'
+
+        core_sersic_kpc = core_sersic_kpc.convert_profile_to_units(units_profile='kpc')
+
+        assert core_sersic_kpc.centre == (2.0, 4.0)
+        assert core_sersic_kpc.axis_ratio == 0.5
+        assert core_sersic_kpc.phi == 45.0
+        assert core_sersic_kpc.intensity == 1.0
+        assert core_sersic_kpc.effective_radius == 1.2
+        assert core_sersic_kpc.sersic_index == 4.0
+        assert core_sersic_kpc.sersic_constant == pytest.approx(7.66925, 1e-3)
+        assert core_sersic_kpc.radius_break == 0.02
+        assert core_sersic_kpc.intensity_break == 0.1
+        assert core_sersic_kpc.gamma == 1.0
+        assert core_sersic_kpc.alpha == 2.0
+        assert core_sersic_kpc.elliptical_effective_radius == 1.2 / np.sqrt(0.5)
+        assert core_sersic_kpc.units == 'kpc'
+
+        core_sersic_arcsec = core_sersic_arcsec.convert_profile_to_units(units_profile='arcsec', kpc_per_arcsec=2.0)
+
+        assert core_sersic_arcsec.centre == (1.0, 2.0)
+        assert core_sersic_arcsec.axis_ratio == 0.5
+        assert core_sersic_arcsec.phi == 45.0
+        assert core_sersic_arcsec.intensity == 1.0
+        assert core_sersic_arcsec.effective_radius == 0.6
+        assert core_sersic_arcsec.sersic_index == 4.0
+        assert core_sersic_arcsec.sersic_constant == pytest.approx(7.66925, 1e-3)
+        assert core_sersic_arcsec.radius_break == 0.01
+        assert core_sersic_arcsec.intensity_break == 0.1
+        assert core_sersic_arcsec.gamma == 1.0
+        assert core_sersic_arcsec.alpha == 2.0
+        assert core_sersic_arcsec.elliptical_effective_radius == 0.6 / np.sqrt(0.5)
+        assert core_sersic_arcsec.units == 'arcsec'
 
     def test__intensity_at_radius__correct_value(self):
         core_sersic = lp.EllipticalCoreSersic(axis_ratio=0.5, phi=0.0, intensity=1.0,

@@ -75,6 +75,41 @@ class TestMemoize(object):
         assert profile.method_two(np.array([0])) is not array
 
 
+class TestGeometryProfile(object):
+    
+    def test__constructor_and_unit_conversions(self):
+        
+        profile_arcsec = gp.GeometryProfile(centre=(1.0, 2.0))
+
+        profile_arcsec = profile_arcsec.convert_profile_to_units(units_profile='arcsec')
+        assert profile_arcsec.centre == (1.0, 2.0)
+        assert profile_arcsec.units == 'arcsec'
+
+        profile_kpc = profile_arcsec.convert_profile_to_units(units_profile='kpc', kpc_per_arcsec=2.0)
+        assert profile_kpc.centre == (2.0, 4.0)
+        assert profile_kpc.units == 'kpc'
+
+        profile_kpc = profile_kpc.convert_profile_to_units(units_profile='kpc')
+        assert profile_kpc.centre == (2.0, 4.0)
+        assert profile_kpc.units == 'kpc'
+
+        profile_arcsec = profile_kpc.convert_profile_to_units(units_profile='arcsec', kpc_per_arcsec=2.0)
+        assert profile_arcsec.centre == (1.0, 2.0)
+        assert profile_arcsec.units == 'arcsec'
+
+    def test__conversion_requires_kpc_per_arcsec_but_does_not_supply_it_raises_error(self):
+
+        profile_arcsec = gp.GeometryProfile(centre=(1.0, 1.0))
+
+        with pytest.raises(exc.UnitsException):
+            profile_arcsec.convert_profile_to_units(units_profile='kpc')
+
+        profile_kpc = profile_arcsec
+        profile_kpc.units = 'kpc'
+
+        with pytest.raises(exc.UnitsException):
+            profile_kpc.convert_profile_to_units(units_profile='arcsec')
+
 class TestEllipticalProfile(object):
 
     class TestConvertRadius(object):
@@ -104,7 +139,6 @@ class TestEllipticalProfile(object):
 
             with pytest.raises(exc.UnitsException):
                 profile.convert_radius_to_units(radius_arcsec=1.0, units_radius='kpc')
-
 
     class TestAnglesFromXAxis(object):
 

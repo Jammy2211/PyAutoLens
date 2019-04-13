@@ -5,7 +5,7 @@ class ScaledArrayException(Exception):
     pass
 
 
-class ImagingException(Exception):
+class DataException(Exception):
     pass
 
 
