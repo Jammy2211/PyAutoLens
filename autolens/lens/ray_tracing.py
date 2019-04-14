@@ -1,46 +1,15 @@
 import math
 
 import numpy as np
-from astropy import constants
 from astropy import cosmology as cosmo
 from functools import wraps
 
 from autolens import exc
+from autolens.model import cosmology_util
 from autolens.data.array import grids
 from autolens.lens import plane as pl
 from autolens.lens.util import lens_util
 from autolens.model.inversion import pixelizations as pix
-
-
-def check_tracer_for_redshifts(func):
-    """If a tracer's galaxies do not have redshifts, its cosmological quantities cannot be computed. This wrapper \
-    makes these functions return *None* if the galaxies do not have redshifts
-
-    Parameters
-    ----------
-    func : (self) -> Object
-        A property function that requires galaxies to have redshifts.
-    """
-
-    @wraps(func)
-    def wrapper(self):
-        """
-
-        Parameters
-        ----------
-        self
-
-        Returns
-        -------
-            A value or coordinate in the same coordinate system as those passed in.
-        """
-
-        if self.all_planes_have_redshifts is True:
-            return func(self)
-        else:
-            return None
-
-    return wrapper
 
 
 def check_tracer_for_light_profile(func):
@@ -107,7 +76,8 @@ def check_tracer_for_mass_profile(func):
 
 class AbstractTracerCosmology(object):
 
-    def __init__(self, plane_redshifts, cosmology):
+    def __init__(self, plane_redshifts, cosmology, units_distance='arcsec', units_luminosity='electons_per_second',
+                 units_mass='solMass'):
         """Abstract Ray tracer for lens systems with any number of planes.
 
         From the galaxies of the tracer's planes, their grid-stack(s) and the cosmology physically derived quantities \
@@ -122,56 +92,54 @@ class AbstractTracerCosmology(object):
         """
         self.plane_redshifts = plane_redshifts
         self.cosmology = cosmology
+        self.units_distance = units_distance
+        self.units_luminosity = units_luminosity
+        self.units_mass = units_mass
 
     @property
     def total_planes(self):
         return len(self.plane_redshifts)
 
-    @property
-    def constant_kpc(self):
-        # noinspection PyUnresolvedReferences
-        return lens_util.constant_kpc()
-
     def arcsec_per_kpc_proper_of_plane(self, i):
-        return self.cosmology.arcsec_per_kpc_proper(z=self.plane_redshifts[i]).value
+        return cosmology_util.arcsec_per_kpc_proper_from_redshift_and_cosmology(redshift=self.plane_redshifts[i],
+                                                                                cosmology=self.cosmology)
 
     def kpc_per_arcsec_proper_of_plane(self, i):
         return 1.0 / self.arcsec_per_kpc_proper_of_plane(i)
 
     def angular_diameter_distance_of_plane_to_earth(self, i):
-        return self.cosmology.angular_diameter_distance(self.plane_redshifts[i]).to('kpc').value
+        return cosmology_util.angular_diameter_distance_to_earth_from_redshift_and_cosmology(
+            redshift=self.plane_redshifts[i], cosmology=self.cosmology, units_distance=self.units_distance)
 
     def angular_diameter_distance_between_planes(self, i, j):
-        return self.cosmology.angular_diameter_distance_z1z2(self.plane_redshifts[i],
-                                                             self.plane_redshifts[j]).to('kpc').value
+        return cosmology_util.angular_diameter_distance_between_redshifts_from_redshifts_and_cosmlology(
+            redshift_0=self.plane_redshifts[i], redshift_1=self.plane_redshifts[j], cosmology=self.cosmology,
+            units_distance=self.units_distance)
 
     @property
     def angular_diameter_distance_to_source_plane(self):
-        return self.cosmology.angular_diameter_distance(self.plane_redshifts[-1]).to('kpc').value
+        return cosmology_util.angular_diameter_distance_to_earth_from_redshift_and_cosmology(
+            redshift=self.plane_redshifts[-1], cosmology=self.cosmology, units_distance=self.units_distance)
 
-    def critical_density_kpc_between_planes(self, i, j):
-        return self.constant_kpc * self.angular_diameter_distance_of_plane_to_earth(j) / \
-               (self.angular_diameter_distance_between_planes(i, j) *
-                self.angular_diameter_distance_of_plane_to_earth(i))
-
-    def critical_density_arcsec_between_planes(self, i, j):
-        return self.critical_density_kpc_between_planes(i=i, j=j) * self.kpc_per_arcsec_proper_of_plane(i=i) ** 2.0
+    def critical_surface_mass_density_between_planes(self, i, j):
+        return cosmology_util.critical_surface_mass_density_between_redshifts_from_redshifts_and_cosmology(
+            redshift_0=self.plane_redshifts[i], redshift_1=self.plane_redshifts[j], cosmology=self.cosmology,
+            units_mass=self.units_mass, units_distance=self.units_distance)
 
     def scaling_factor_between_planes(self, i, j):
-        return lens_util.scaling_factor_between_redshifts_for_cosmology(z1=self.plane_redshifts[i],
-                                                                        z2=self.plane_redshifts[j],
-                                                                        z_final=self.plane_redshifts[-1],
-                                                                        cosmology=self.cosmology)
+        return cosmology_util.scaling_factor_between_redshifts_from_redshifts_and_cosmology(
+            redshift_0=self.plane_redshifts[i],
+            redshift_1=self.plane_redshifts[j], redshift_final=self.plane_redshifts[-1], cosmology=self.cosmology)
 
     @property
-    @check_tracer_for_redshifts
     def angular_diameter_distance_from_image_to_source_plane(self):
         return self.angular_diameter_distance_between_planes(i=0, j=-1)
 
 
 class AbstractTracer(AbstractTracerCosmology):
 
-    def __init__(self, planes, cosmology):
+    def __init__(self, planes, cosmology, units_distance='arcsec', units_luminosity='electons_per_second',
+                 units_mass='solMass'):
         """Abstract Ray tracer for lens systems with any number of planes.
 
         From the galaxies of the tracer's planes, their grid-stack(s) and the cosmology physically derived quantities \
@@ -187,7 +155,8 @@ class AbstractTracer(AbstractTracerCosmology):
 
         self.planes = planes
         super(AbstractTracer, self).__init__(plane_redshifts=[plane.redshift for plane in self.planes],
-                                             cosmology=cosmology)
+                                             cosmology=cosmology, units_distance=units_distance,
+                                             units_luminosity=units_luminosity, units_mass=units_mass)
 
     def plane_with_galaxy(self, galaxy):
         return [plane for plane in self.planes if galaxy in plane.galaxies][0]
@@ -293,30 +262,17 @@ class AbstractTracer(AbstractTracerCosmology):
         return sum([plane.deflections_x for plane in self.planes])
 
     @property
-    @check_tracer_for_redshifts
-    def critical_surface_mass_density_kpc(self):
-        return self.constant_kpc * self.source_plane.angular_diameter_distance_to_earth / \
-               (self.angular_diameter_distance_from_image_to_source_plane *
-                self.image_plane.angular_diameter_distance_to_earth)
+    def critical_surface_mass_density(self):
+        return self.critical_surface_mass_density_between_planes(i=0, j=-1)
 
     @property
-    @check_tracer_for_redshifts
-    def critical_surface_mass_density_arcsec(self):
-        return self.critical_surface_mass_density_kpc * self.image_plane.kpc_per_arcsec_proper ** 2.0
+    def einstein_radii_of_planes(self):
+        return [plane.einstein_radius for plane in self.planes]
 
     @property
-    def einstein_radii_arcsec_of_planes(self):
-        return [plane.einstein_radius_arcsec for plane in self.planes]
-
-    @property
-    def einstein_radii_kpc_of_planes(self):
-        return [plane.einstein_radius_kpc for plane in self.planes]
-
-    @property
-    @check_tracer_for_redshifts
-    def einstein_masses_in_solar_masses_of_planes(self):
-        return [plane.einstein_mass_in_mass_units(
-            critical_surface_mass_density_arcsec=self.critical_surface_mass_density_arcsec) for plane in self.planes]
+    def einstein_masses_of_planes(self):
+        return [plane.einstein_mass(critical_surface_mass_density=self.critical_surface_mass_density)
+                for plane in self.planes]
 
     def grid_at_redshift_from_image_plane_grid_and_redshift(self, image_plane_grid, redshift):
         """For an input grid of (y,x) arc-second image-plane coordinates, ray-trace the coordinates to any redshift in \
@@ -352,9 +308,9 @@ class AbstractTracer(AbstractTracerCosmology):
 
                 if plane_index > 0:
                     for previous_plane_index in range(plane_index):
-                        scaling_factor = lens_util.scaling_factor_between_redshifts_for_cosmology(
-                            z1=tracer.plane_redshifts[previous_plane_index], z2=redshift,
-                            z_final=tracer.plane_redshifts[-1], cosmology=tracer.cosmology)
+                        scaling_factor = cosmology_util.scaling_factor_between_redshifts_from_redshifts_and_cosmology(
+                            redshift_0=tracer.plane_redshifts[previous_plane_index], redshift_1=redshift,
+                            redshift_final=tracer.plane_redshifts[-1], cosmology=tracer.cosmology)
 
                         scaled_deflection_stack = lens_util.scaled_deflection_stack_from_plane_and_scaling_factor(
                             plane=tracer.planes[previous_plane_index], scaling_factor=scaling_factor)
@@ -375,7 +331,8 @@ class AbstractTracer(AbstractTracerCosmology):
 
 class TracerImagePlane(AbstractTracer):
 
-    def __init__(self, lens_galaxies, image_plane_grid_stack, border=None, cosmology=cosmo.Planck15):
+    def __init__(self, lens_galaxies, image_plane_grid_stack, border=None, cosmology=cosmo.Planck15,
+                 units_distance='arcsec', units_luminosity='electons_per_second', units_mass='solMass'):
         """Ray tracer for a lens system with just an image-plane. 
         
         As there is only 1 plane, there are no ray-tracing calculations. This class is therefore only used for fitting \ 
@@ -400,22 +357,21 @@ class TracerImagePlane(AbstractTracer):
             raise exc.RayTracingException('No lens galaxies have been input into the Tracer')
 
         image_plane = pl.Plane(galaxies=lens_galaxies, grid_stack=image_plane_grid_stack, border=border,
-                               compute_deflections=True, cosmology=cosmology)
+                               compute_deflections=True, cosmology=cosmology, units_distance=units_distance,
+                               units_mass=units_mass)
 
-        super(TracerImagePlane, self).__init__(planes=[image_plane], cosmology=cosmology)
-
-    @property
-    def critical_surface_mass_density_kpc(self):
-        return 0.0
+        super(TracerImagePlane, self).__init__(planes=[image_plane], cosmology=cosmology, units_distance=units_distance,
+                                               units_luminosity=units_luminosity, units_mass=units_mass)
 
     @property
-    def critical_surface_mass_density_arcsec(self):
+    def critical_surface_mass_density(self):
         return 0.0
 
 
 class TracerImageSourcePlanes(AbstractTracer):
 
-    def __init__(self, lens_galaxies, source_galaxies, image_plane_grid_stack, border=None, cosmology=cosmo.Planck15):
+    def __init__(self, lens_galaxies, source_galaxies, image_plane_grid_stack, border=None, cosmology=cosmo.Planck15,
+                 units_distance='arcsec', units_luminosity='electons_per_second', units_mass='solMass'):
         """Ray-tracer for a lens system with two planes, an image-plane and source-plane.
 
         This tracer has only one grid-stack (see grid_stack.GridStack) which is used for ray-tracing.
@@ -439,19 +395,24 @@ class TracerImageSourcePlanes(AbstractTracer):
             galaxies=source_galaxies, grid_stack=image_plane_grid_stack)
 
         image_plane = pl.Plane(galaxies=lens_galaxies, grid_stack=image_plane_grid_stack, border=border,
-                               compute_deflections=True, cosmology=cosmology)
+                               compute_deflections=True, cosmology=cosmology, units_distance=units_distance,
+                               units_luminosity=units_luminosity, units_mass=units_mass)
 
         source_plane_grid_stack = image_plane.trace_grid_stack_to_next_plane()
 
         source_plane = pl.Plane(galaxies=source_galaxies, grid_stack=source_plane_grid_stack, border=border,
-                                compute_deflections=False, cosmology=cosmology)
+                                compute_deflections=False, cosmology=cosmology, units_distance=units_distance,
+                                units_luminosity=units_luminosity, units_mass=units_mass)
 
-        super(TracerImageSourcePlanes, self).__init__(planes=[image_plane, source_plane], cosmology=cosmology)
+        super(TracerImageSourcePlanes, self).__init__(planes=[image_plane, source_plane], cosmology=cosmology,
+                                                      units_distance=units_distance, units_luminosity=units_luminosity,
+                                                      units_mass=units_mass)
 
 
 class TracerMultiPlanes(AbstractTracer):
 
-    def __init__(self, galaxies, image_plane_grid_stack, border=None, cosmology=cosmo.Planck15):
+    def __init__(self, galaxies, image_plane_grid_stack, border=None, cosmology=cosmo.Planck15, units_distance='arcsec',
+                 units_luminosity='electons_per_second', units_mass='solMass'):
         """Ray-tracer for a lens system with any number of planes.
 
         The redshift of these planes are specified by the redshits of the galaxies; there is a unique plane redshift \
@@ -496,9 +457,9 @@ class TracerMultiPlanes(AbstractTracer):
 
             if plane_index > 0:
                 for previous_plane_index in range(plane_index):
-                    scaling_factor = lens_util.scaling_factor_between_redshifts_for_cosmology(
-                        z1=plane_redshifts[previous_plane_index], z2=plane_redshifts[plane_index],
-                        z_final=plane_redshifts[-1], cosmology=cosmology)
+                    scaling_factor = cosmology_util.scaling_factor_between_redshifts_from_redshifts_and_cosmology(
+                        redshift_0=plane_redshifts[previous_plane_index], redshift_1=plane_redshifts[plane_index],
+                        redshift_final=plane_redshifts[-1], cosmology=cosmology)
 
                     scaled_deflection_stack = lens_util.scaled_deflection_stack_from_plane_and_scaling_factor(
                         plane=planes[previous_plane_index], scaling_factor=scaling_factor)
@@ -508,15 +469,19 @@ class TracerMultiPlanes(AbstractTracer):
                                                                    deflection_stack=scaled_deflection_stack)
 
             planes.append(pl.Plane(galaxies=galaxies_in_planes[plane_index], grid_stack=new_grid_stack,
-                                   border=border, compute_deflections=compute_deflections, cosmology=cosmology))
+                                   border=border, compute_deflections=compute_deflections, cosmology=cosmology,
+                                   units_distance=units_distance, units_luminosity=units_luminosity,
+                                   units_mass=units_mass))
 
-        super(TracerMultiPlanes, self).__init__(planes=planes, cosmology=cosmology)
+        super(TracerMultiPlanes, self).__init__(planes=planes, cosmology=cosmology, units_distance=units_distance,
+                                                units_luminosity=units_luminosity, units_mass=units_mass)
 
 
 class TracerMultiPlanesSliced(AbstractTracer):
 
     def __init__(self, lens_galaxies, line_of_sight_galaxies, source_galaxies, planes_between_lenses,
-                 image_plane_grid_stack, border=None, cosmology=cosmo.Planck15):
+                 image_plane_grid_stack, border=None, cosmology=cosmo.Planck15, units_distance='arcsec',
+                 units_luminosity='electons_per_second', units_mass='solMass'):
         """Ray-tracer for a lens system with any number of planes.
 
         The redshift of these planes are specified by the input parameters *lens_redshifts* and \
@@ -572,9 +537,9 @@ class TracerMultiPlanesSliced(AbstractTracer):
             if plane_index > 0:
                 print()
                 for previous_plane_index in range(plane_index):
-                    scaling_factor = lens_util.scaling_factor_between_redshifts_for_cosmology(
-                        z1=plane_redshifts[previous_plane_index], z2=plane_redshifts[plane_index],
-                        z_final=plane_redshifts[-1], cosmology=cosmology)
+                    scaling_factor = cosmology_util.scaling_factor_between_redshifts_from_redshifts_and_cosmology(
+                        redshift_0=plane_redshifts[previous_plane_index], redshift_1=plane_redshifts[plane_index],
+                        redshift_final=plane_redshifts[-1], cosmology=cosmology)
 
                     scaled_deflection_stack = lens_util.scaled_deflection_stack_from_plane_and_scaling_factor(
                         plane=planes[previous_plane_index], scaling_factor=scaling_factor)
@@ -585,14 +550,18 @@ class TracerMultiPlanesSliced(AbstractTracer):
 
             planes.append(pl.PlaneSlice(redshift=plane_redshifts[plane_index], galaxies=galaxies_in_planes[plane_index],
                                         grid_stack=new_grid_stack, border=border,
-                                        compute_deflections=compute_deflections, cosmology=cosmology))
+                                        compute_deflections=compute_deflections, cosmology=cosmology,
+                                        units_luminosity=units_luminosity, units_distance=units_distance,
+                                        units_mass=units_mass))
 
-        super(TracerMultiPlanesSliced, self).__init__(planes=planes, cosmology=cosmology)
+        super(TracerMultiPlanesSliced, self).__init__(planes=planes, cosmology=cosmology, units_distance=units_distance,
+                                                      units_luminosity=units_luminosity, units_mass=units_mass)
 
 
 class TracerImageSourcePlanesPositions(AbstractTracer):
 
-    def __init__(self, lens_galaxies, image_plane_positions, cosmology=cosmo.Planck15):
+    def __init__(self, lens_galaxies, image_plane_positions, cosmology=cosmo.Planck15, units_distance='arcsec',
+                 units_luminosity='electons_per_second', units_mass='solMass'):
         """Positional ray-tracer for a lens system with two planes, an image-plane and source-plane (source-plane \
         galaxies are not input for the positional ray-tracer, as it is only the proximity that image_plane_positions \
         trace to within one another that needs to be computed).
@@ -613,19 +582,25 @@ class TracerImageSourcePlanesPositions(AbstractTracer):
         """
 
         image_plane = pl.PlanePositions(redshift=lens_galaxies[0].redshift, galaxies=lens_galaxies,
-                                        positions=image_plane_positions, compute_deflections=True, cosmology=cosmology)
+                                        positions=image_plane_positions, compute_deflections=True, cosmology=cosmology,
+                                        units_distance=units_distance, units_luminosity=units_luminosity,
+                                        units_mass=units_mass)
 
         source_plane_positions = image_plane.trace_to_next_plane()
 
         source_plane = pl.PlanePositions(redshift=None, galaxies=None, positions=source_plane_positions,
-                                         compute_deflections=False, cosmology=cosmology)
+                                         compute_deflections=False, cosmology=cosmology, units_distance=units_distance,
+                                         units_luminosity=units_luminosity, units_mass=units_mass)
 
-        super(TracerImageSourcePlanesPositions, self).__init__(planes=[image_plane, source_plane], cosmology=cosmology)
+        super(TracerImageSourcePlanesPositions, self).__init__(planes=[image_plane, source_plane], cosmology=cosmology,
+                                                               units_distance=units_distance,
+                                                               units_luminosity=units_luminosity, units_mass=units_mass)
 
 
 class TracerMultiPlanesPositions(AbstractTracer):
 
-    def __init__(self, galaxies, image_plane_positions, cosmology=cosmo.Planck15):
+    def __init__(self, galaxies, image_plane_positions, cosmology=cosmo.Planck15, units_distance='arcsec',
+                 units_luminosity='electons_per_second', units_mass='solMass'):
         """Positional ray-tracer for a lens system with any number of planes.
 
         To perform multi-plane ray-tracing, a cosmology must be supplied so that deflection-angles can be rescaled \
@@ -666,9 +641,9 @@ class TracerMultiPlanesPositions(AbstractTracer):
 
             if plane_index > 0:
                 for previous_plane_index in range(plane_index):
-                    scaling_factor = lens_util.scaling_factor_between_redshifts_for_cosmology(
-                        z1=plane_redshifts[previous_plane_index], z2=plane_redshifts[plane_index],
-                        z_final=plane_redshifts[-1], cosmology=cosmology)
+                    scaling_factor = cosmology_util.scaling_factor_between_redshifts_from_redshifts_and_cosmology(
+                        redshift_0=plane_redshifts[previous_plane_index], redshift_1=plane_redshifts[plane_index],
+                        redshift_final=plane_redshifts[-1], cosmology=cosmology)
 
                     scaled_deflections = list(map(lambda deflections:
                                                   np.multiply(scaling_factor, deflections),
@@ -679,6 +654,10 @@ class TracerMultiPlanesPositions(AbstractTracer):
 
             planes.append(pl.PlanePositions(redshift=plane_redshifts[plane_index],
                                             galaxies=galaxies_in_redshift_ordered_lists[plane_index],
-                                            positions=new_positions, compute_deflections=compute_deflections))
+                                            positions=new_positions, compute_deflections=compute_deflections,
+                                            units_distance=units_distance, units_luminosity=units_luminosity,
+                                            units_mass=units_mass))
 
-        super(TracerMultiPlanesPositions, self).__init__(planes=planes, cosmology=cosmology)
+        super(TracerMultiPlanesPositions, self).__init__(planes=planes, cosmology=cosmology,
+                                                         units_distance=units_distance, units_luminosity=units_luminosity,
+                                                         units_mass=units_mass)

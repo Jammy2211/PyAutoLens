@@ -12,5 +12,5 @@ def summarize_tracer(summary_file, tracer, radii):
     for plane in tracer.planes:
 
         plane_summary.summarize_plane(summary_file=summary_file, plane=plane,
-                                      critical_surface_mass_density=tracer.critical_surface_mass_density_arcsec,
+                                      critical_surface_mass_density=tracer.critical_surface_mass_density,
                                       radii=radii)

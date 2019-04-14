@@ -66,6 +66,7 @@ def make_galaxy_mass_x2():
 
 
 class TestAbstractTracer(object):
+
     class TestProperties:
 
         def test__total_planes(self, grid_stack):
@@ -468,25 +469,35 @@ class TestAbstractTracer(object):
     class TestCosmology:
 
         def test__2_planes__z01_and_z1(self, grid_stack):
+
             g0 = g.Galaxy(redshift=0.1)
             g1 = g.Galaxy(redshift=1.0)
 
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g1],
                                                          image_plane_grid_stack=grid_stack,
-                                                         cosmology=cosmo.Planck15)
+                                                         cosmology=cosmo.Planck15, units_mass='solMass',
+                                                         units_distance='kpc')
 
-            assert tracer.image_plane.arcsec_per_kpc_proper == pytest.approx(0.525060, 1e-5)
-            assert tracer.image_plane.kpc_per_arcsec_proper == pytest.approx(1.904544, 1e-5)
-            assert tracer.image_plane.angular_diameter_distance_to_earth == pytest.approx(392840, 1e-5)
+            assert tracer.image_plane.arcsec_per_kpc_proper.value == pytest.approx(0.525060, 1e-5)
+            assert tracer.image_plane.kpc_per_arcsec_proper.value == pytest.approx(1.904544, 1e-5)
+            assert tracer.image_plane.angular_diameter_distance_to_earth.value == \
+                   pytest.approx(392840, 1e-5)
 
-            assert tracer.source_plane.arcsec_per_kpc_proper == pytest.approx(0.1214785, 1e-5)
-            assert tracer.source_plane.kpc_per_arcsec_proper == pytest.approx(8.231907, 1e-5)
-            assert tracer.source_plane.angular_diameter_distance_to_earth == pytest.approx(1697952, 1e-5)
+            assert tracer.source_plane.arcsec_per_kpc_proper.value == pytest.approx(0.1214785, 1e-5)
+            assert tracer.source_plane.kpc_per_arcsec_proper.value == pytest.approx(8.231907, 1e-5)
+            assert tracer.source_plane.angular_diameter_distance_to_earth.value == \
+                   pytest.approx(1697952, 1e-5)
 
-            assert tracer.angular_diameter_distance_from_image_to_source_plane == pytest.approx(1481890.4, 1e-5)
+            assert tracer.angular_diameter_distance_from_image_to_source_plane.value == \
+                   pytest.approx(1481890.4, 1e-5)
 
-            assert tracer.critical_surface_mass_density_kpc == pytest.approx(4.85e9, 1e-2)
-            assert tracer.critical_surface_mass_density_arcsec == pytest.approx(17593241668, 1e-2)
+            assert tracer.critical_surface_mass_density.value == pytest.approx(4.85e9, 1e-2)
+
+            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g1],
+                                                         image_plane_grid_stack=grid_stack,
+                                                         cosmology=cosmo.Planck15, units_distance='arcsec')
+
+            assert tracer.critical_surface_mass_density.value == pytest.approx(17593241668, 1e-2)
 
     class TestGalaxyLists:
 
@@ -673,39 +684,41 @@ class TestAbstractTracer(object):
     class TestEinsteinRadiusAndMass:
 
         def test__x1_lens_galaxy__einstein_mass_is_correct(self, grid_stack):
+
             g0 = g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=1.0), redshift=1.0)
 
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0],
                                                          source_galaxies=[g.Galaxy(redshift=2.0)],
                                                          image_plane_grid_stack=grid_stack,
-                                                         cosmology=cosmo.Planck15)
+                                                         cosmology=cosmo.Planck15, units_distance='arcsec',
+                                                         units_mass='solMass')
 
-            g0_mass = g0.mass_within_circle(
-                radius=1.0, critical_surface_mass_density=tracer.critical_surface_mass_density_arcsec)
+            g0_mass = g0.mass_within_circle(radius=1.0,
+                                            critical_surface_mass_density=tracer.critical_surface_mass_density.value)
 
-            assert tracer.einstein_radii_arcsec_of_planes[0] == 1.0
-            assert tracer.einstein_radii_arcsec_of_planes[1] is None
-            assert tracer.einstein_radii_kpc_of_planes[0] == 1.0 * tracer.image_plane.kpc_per_arcsec_proper
-            assert tracer.einstein_radii_kpc_of_planes[1] is None
-            assert tracer.einstein_masses_in_solar_masses_of_planes[0] == g0_mass
-            assert tracer.einstein_masses_in_solar_masses_of_planes[1] is None
+            assert tracer.einstein_radii_of_planes[0] == 1.0
+            assert tracer.einstein_radii_of_planes[1] is None
+            assert tracer.einstein_radii_of_planes[0] == 1.0 * tracer.image_plane.kpc_per_arcsec_proper
+            assert tracer.einstein_radii_of_planes[1] is None
+            assert tracer.einstein_masses_of_planes[0] == g0_mass
+            assert tracer.einstein_masses_of_planes[1] is None
 
             g0 = g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=2.0), redshift=1.0)
 
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0],
                                                          source_galaxies=[g.Galaxy(redshift=2.0)],
                                                          image_plane_grid_stack=grid_stack,
-                                                         cosmology=cosmo.Planck15)
+                                                         cosmology=cosmo.Planck15, units_distance='arcsec')
 
-            g0_mass = g0.mass_within_circle(
-                radius=2.0, critical_surface_mass_density=tracer.critical_surface_mass_density_arcsec)
+            g0_mass = g0.mass_within_circle(radius=2.0,
+                                            critical_surface_mass_density=tracer.critical_surface_mass_density.value)
 
-            assert tracer.einstein_radii_arcsec_of_planes[0] == 2.0
-            assert tracer.einstein_radii_arcsec_of_planes[1] is None
-            assert tracer.einstein_radii_kpc_of_planes[0] == 2.0 * tracer.image_plane.kpc_per_arcsec_proper
-            assert tracer.einstein_radii_kpc_of_planes[1] is None
-            assert tracer.einstein_masses_in_solar_masses_of_planes[0] == g0_mass
-            assert tracer.einstein_masses_in_solar_masses_of_planes[1] is None
+            assert tracer.einstein_radii_of_planes[0] == 2.0
+            assert tracer.einstein_radii_of_planes[1] is None
+            assert tracer.einstein_radii_of_planes[0] == 2.0 * tracer.image_plane.kpc_per_arcsec_proper
+            assert tracer.einstein_radii_of_planes[1] is None
+            assert tracer.einstein_masses_of_planes[0] == g0_mass
+            assert tracer.einstein_masses_of_planes[1] is None
 
         def test__x2_lens_galaxies__values_are_sum_of_each_galaxy(self, grid_stack):
             g0 = g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=1.0), redshift=1.0)
@@ -717,16 +730,16 @@ class TestAbstractTracer(object):
                                                          cosmology=cosmo.Planck15)
 
             g0_mass = g0.mass_within_circle(
-                radius=1.0, critical_surface_mass_density=tracer.critical_surface_mass_density_arcsec)
+                radius=1.0, critical_surface_mass_density=tracer.critical_surface_mass_density)
             g1_mass = g1.mass_within_circle(
-                radius=2.0, critical_surface_mass_density=tracer.critical_surface_mass_density_arcsec)
+                radius=2.0, critical_surface_mass_density=tracer.critical_surface_mass_density)
 
-            assert tracer.einstein_radii_arcsec_of_planes[0] == 3.0
-            assert tracer.einstein_radii_arcsec_of_planes[1] is None
-            assert tracer.einstein_radii_kpc_of_planes[0] == 3.0 * tracer.image_plane.kpc_per_arcsec_proper
-            assert tracer.einstein_radii_kpc_of_planes[1] is None
-            assert tracer.einstein_masses_in_solar_masses_of_planes[0] == g0_mass + g1_mass
-            assert tracer.einstein_masses_in_solar_masses_of_planes[1] is None
+            assert tracer.einstein_radii_of_planes[0] == 3.0
+            assert tracer.einstein_radii_of_planes[1] is None
+            assert tracer.einstein_radii_of_planes[0] == 3.0 * tracer.image_plane.kpc_per_arcsec_proper
+            assert tracer.einstein_radii_of_planes[1] is None
+            assert tracer.einstein_masses_of_planes[0] == g0_mass + g1_mass
+            assert tracer.einstein_masses_of_planes[1] is None
 
         def test__same_as_above__include_shear__does_not_impact_calculations(self, grid_stack):
 
@@ -739,16 +752,16 @@ class TestAbstractTracer(object):
                                                          cosmology=cosmo.Planck15)
 
             g0_mass = g0.mass_within_circle(radius=1.0, units_mass='angular',
-                                            critical_surface_mass_density=tracer.critical_surface_mass_density_arcsec)
+                                            critical_surface_mass_density=tracer.critical_surface_mass_density)
             g1_mass = g1.mass_within_circle(radius=2.0, units_mass='angular',
-                                            critical_surface_mass_density=tracer.critical_surface_mass_density_arcsec)
+                                            critical_surface_mass_density=tracer.critical_surface_mass_density)
 
-            assert tracer.einstein_radii_arcsec_of_planes[0] == 3.0
-            assert tracer.einstein_radii_arcsec_of_planes[1] is None
-            assert tracer.einstein_radii_kpc_of_planes[0] == 3.0 * tracer.image_plane.kpc_per_arcsec_proper
-            assert tracer.einstein_radii_kpc_of_planes[1] is None
-            assert tracer.einstein_masses_in_solar_masses_of_planes[0] == g0_mass + g1_mass
-            assert tracer.einstein_masses_in_solar_masses_of_planes[1] is None
+            assert tracer.einstein_radii_of_planes[0] == 3.0
+            assert tracer.einstein_radii_of_planes[1] is None
+            assert tracer.einstein_radii_of_planes[0] == 3.0 * tracer.image_plane.kpc_per_arcsec_proper
+            assert tracer.einstein_radii_of_planes[1] is None
+            assert tracer.einstein_masses_of_planes[0] == g0_mass + g1_mass
+            assert tracer.einstein_masses_of_planes[1] is None
 
         def test__no_galaxy_redshifts__returns_none(self, grid_stack):
 
@@ -759,7 +772,7 @@ class TestAbstractTracer(object):
                                                          image_plane_grid_stack=grid_stack,
                                                          cosmology=cosmo.Planck15)
 
-            assert tracer.einstein_masses_in_solar_masses_of_planes is None
+            assert tracer.einstein_masses_of_planes is None
 
 
 class TestTracerImagePlane(object):
@@ -795,6 +808,7 @@ class TestTracerImagePlane(object):
 
 
 class TestTracerImageSourcePlanes(object):
+
     class TestSetup:
 
         def test__no_galaxy__image_and_source_planes_setup__same_coordinates(self, grid_stack, galaxy_non):
@@ -1160,8 +1174,8 @@ class TestMultiTracer(object):
             assert tracer.angular_diameter_distance_between_planes(i=2, j=1) == pytest.approx(-957816)
             assert tracer.angular_diameter_distance_between_planes(i=2, j=2) == 0.0
 
-            assert tracer.critical_density_kpc_between_planes(i=0, j=1) == pytest.approx(4.85e9, 1e-2)
-            assert tracer.critical_density_arcsec_between_planes(i=0, j=1) == pytest.approx(17593241668, 1e-2)
+            assert tracer.critical_surface_mass_density_between_planes(i=0, j=1) == pytest.approx(4.85e9, 1e-2)
+            assert tracer.critical_surface_mass_density_between_planes(i=0, j=1) == pytest.approx(17593241668, 1e-2)
 
             assert tracer.scaling_factor_between_planes(i=0, j=1) == pytest.approx(0.9500, 1e-4)
             assert tracer.scaling_factor_between_planes(i=0, j=2) == pytest.approx(1.0, 1e-4)
@@ -1222,8 +1236,8 @@ class TestMultiTracer(object):
                                                                                               1e-5)
             assert tracer.angular_diameter_distance_between_planes(i=3, j=3) == 0.0
 
-            assert tracer.critical_density_kpc_between_planes(i=0, j=1) == pytest.approx(4.85e9, 1e-2)
-            assert tracer.critical_density_arcsec_between_planes(i=0, j=1) == pytest.approx(17593241668, 1e-2)
+            assert tracer.critical_surface_mass_density_between_planes(i=0, j=1) == pytest.approx(4.85e9, 1e-2)
+            assert tracer.critical_surface_mass_density_between_planes(i=0, j=1) == pytest.approx(17593241668, 1e-2)
 
             assert tracer.scaling_factor_between_planes(i=0, j=1) == pytest.approx(0.9348, 1e-4)
             assert tracer.scaling_factor_between_planes(i=0, j=2) == pytest.approx(0.984, 1e-4)

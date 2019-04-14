@@ -77,10 +77,10 @@ class MassProfile(object):
     def deflections_from_grid(self, grid):
         raise NotImplementedError("deflections_from_grid should be overridden")
 
-    def mass_within_circle(self, radius, units_mass='angular', critical_surface_mass_density=None):
+    def mass_within_circle(self, radius, critical_surface_mass_density=None):
         raise NotImplementedError()
 
-    def mass_within_ellipse(self, major_axis, units_mass='angular', critical_surface_mass_density=None):
+    def mass_within_ellipse(self, major_axis, critical_surface_mass_density=None):
         raise NotImplementedError()
 
     def summary(self, *args, **kwargs):
@@ -102,6 +102,7 @@ class PointMass(geometry_profiles.SphericalProfile, MassProfile):
         """
         super(PointMass, self).__init__(centre=centre)
         self.einstein_radius = einstein_radius
+        self.units_mass = 'angular'
 
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
@@ -133,6 +134,7 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
         super(EllipticalMassProfile, self).__init__(centre, axis_ratio, phi)
         self.axis_ratio = axis_ratio
         self.phi = phi
+        self.units_mass = 'angular'
 
     def summary(self, critical_surface_mass_density_arcsec, critical_surface_mass_density, radii, **kwargs):
         summary = super().summary(critical_surface_mass_density_arcsec=critical_surface_mass_density_arcsec,
@@ -145,7 +147,7 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
 
         return summary
 
-    def convert_mass_angular_to_units_mass(self, mass_angular, units_mass, critical_surface_mass_density):
+    def convert_mass_angular_to_units_mass(self, mass_angular, critical_surface_mass_density):
         """Convert the angular mass computed in the *mass_within_* method to the units specified by the units_mass
         parameter.
 
@@ -168,16 +170,16 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
             units to physical units (e.g. solar masses).
         """
 
-        if units_mass is 'solMass' and critical_surface_mass_density is None:
+        if self.units_mass is 'solMass' and critical_surface_mass_density is None:
             raise exc.UnitsException('The mass for a mass profile has been requested in units of solMass, '
                                      'but a critical surface mass density was not supplied.')
 
-        if units_mass is 'angular':
+        if self.units_mass is 'angular':
             return mass_angular
-        elif units_mass is 'solMass':
+        elif self.units_mass is 'solMass':
             return critical_surface_mass_density * mass_angular
 
-    def mass_within_circle(self, radius, units_mass='angular', critical_surface_mass_density=None):
+    def mass_within_circle(self, radius, critical_surface_mass_density=None):
         """ Integrate the mass profiles's convergence profile to compute the total mass within a circle of \
         specified radius. This is centred on the mass profile.
 
@@ -197,10 +199,10 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
             units to phsical units (e.g. solar masses).
         """
         mass_angular = quad(self.mass_integral, a=0.0, b=radius, args=(1.0,))[0]
-        return self.convert_mass_angular_to_units_mass(mass_angular=mass_angular, units_mass=units_mass,
+        return self.convert_mass_angular_to_units_mass(mass_angular=mass_angular,
                                                        critical_surface_mass_density=critical_surface_mass_density)
 
-    def mass_within_ellipse(self, major_axis, units_mass='angular', critical_surface_mass_density=None):
+    def mass_within_ellipse(self, major_axis, critical_surface_mass_density=None):
         """ Integrate the mass profiles's convergence profile to compute the total angular mass within an ellipse of \
         specified major axis. This is centred on the mass profile.
 
@@ -220,7 +222,7 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
             units to phsical units (e.g. solar masses).
         """
         mass_angular = quad(self.mass_integral, a=0.0, b=major_axis, args=(self.axis_ratio,))[0]
-        return self.convert_mass_angular_to_units_mass(mass_angular=mass_angular, units_mass=units_mass,
+        return self.convert_mass_angular_to_units_mass(mass_angular=mass_angular,
                                                        critical_surface_mass_density=critical_surface_mass_density)
 
     def mass_integral(self, x, axis_ratio):
@@ -304,6 +306,38 @@ class EllipticalCoredPowerLaw(EllipticalMassProfile, MassProfile):
 
         return summary + ['Mass within Einstein Radius = {:.4e} solMass'.format(einstein_mass),
                           'Einstein Radius = {:.2f}"'.format(self.einstein_radius)]
+
+    def new_profile_with_units_mass_converted(self, units_mass):
+
+        if self.units_mass is units_mass:
+            return self
+        elif self.units_mass is 'angular' and units_mass is 'solMass':
+            self.units_mass = 'solMass'
+            return self
+        elif self.units_mass is 'solMass' and units_mass is 'angular':
+            self.units_mass = 'angular'
+            return self
+
+    def new_light_profile_with_units_distance_converted(self, units_distance, kpc_per_arcsec=None):
+
+        if units_distance is not self.units_distance and kpc_per_arcsec is None:
+            raise exc.UnitsException('The units_distance for a mass profile has been input in different units '
+                                     'to the profile but a kpc per arcsec was not supplied.')
+
+        if self.units_distance is units_distance:
+            return self
+        elif self.units_distance is 'arcsec' and units_distance is 'kpc':
+            self.centre = (kpc_per_arcsec * self.centre[0], kpc_per_arcsec * self.centre[1])
+            self.einstein_radius = kpc_per_arcsec * self.einstein_radius
+            self.core_radius = kpc_per_arcsec * self.core_radius
+            self.units_distance = 'kpc'
+            return self
+        elif self.units_distance is 'kpc' and units_distance is 'arcsec':
+            self.centre = (self.centre[0] / kpc_per_arcsec, self.centre[1] / kpc_per_arcsec)
+            self.einstein_radius = self.einstein_radius / kpc_per_arcsec
+            self.core_radius = self.core_radius / kpc_per_arcsec
+            self.units_distance = 'arcsec'
+            return self
 
     @property
     def einstein_radius_rescaled(self):
