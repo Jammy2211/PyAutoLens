@@ -17,6 +17,9 @@ class MaskException(Exception):
     pass
 
 
+class CosmologyException(Exception):
+    pass
+
 class GalaxyException(Exception):
     pass
 

@@ -86,7 +86,7 @@ class TestAbstractPlane(object):
 
         def test__all_cosmological_quantities_match_cosmology_util(self):
 
-            plane = pl.AbstractPlane(redshift=0.1, galaxies=None, cosmology=planck)
+            plane = pl.AbstractPlane(redshift=0.1, galaxies=None, cosmology=planck, units_distance='arcsec')
 
             assert plane.arcsec_per_kpc_proper == cosmology_util.arcsec_per_kpc_proper_from_redshift_and_cosmology(
                 redshift=0.1, cosmology=planck)
@@ -95,10 +95,17 @@ class TestAbstractPlane(object):
                    cosmology_util.kpc_per_arcsec_proper_from_redshift_and_cosmology(redshift=0.1, cosmology=planck)
 
             assert plane.angular_diameter_distance_to_earth == \
-                   cosmology_util.angular_diameter_distance_to_earth_from_redshift_and_cosmology(redshift=0.1,
-                                                                                                 cosmology=planck)
+                   cosmology_util.angular_diameter_distance_to_earth_from_redshift_and_cosmology(
+                       redshift=0.1, cosmology=planck, units_distance='arcsec')
 
-            plane = pl.AbstractPlane(redshift=1.0, galaxies=None, cosmology=planck)
+
+            plane = pl.AbstractPlane(redshift=0.1, galaxies=None, cosmology=planck, units_distance='kpc')
+
+            assert plane.angular_diameter_distance_to_earth == \
+                   cosmology_util.angular_diameter_distance_to_earth_from_redshift_and_cosmology(
+                       redshift=0.1, cosmology=planck, units_distance='kpc')
+
+            plane = pl.AbstractPlane(redshift=1.0, galaxies=None, cosmology=planck, units_distance='arcsec')
 
             assert plane.arcsec_per_kpc_proper == cosmology_util.arcsec_per_kpc_proper_from_redshift_and_cosmology(
                 redshift=1.0, cosmology=planck)
@@ -107,13 +114,27 @@ class TestAbstractPlane(object):
                    cosmology_util.kpc_per_arcsec_proper_from_redshift_and_cosmology(redshift=1.0, cosmology=planck)
 
             assert plane.angular_diameter_distance_to_earth == \
-                   cosmology_util.angular_diameter_distance_to_earth_from_redshift_and_cosmology(redshift=1.0,
-                                                                                                 cosmology=planck)
+                   cosmology_util.angular_diameter_distance_to_earth_from_redshift_and_cosmology(
+                       redshift=1.0, cosmology=planck, units_distance='arcsec')
 
-            plane = pl.AbstractPlane(redshift=0.6, galaxies=None)
-            assert plane.cosmic_average_mass_density_arcsec == \
-                cosmology_util.cosmic_average_mass_density_arcsec_from_redshift_and_cosmology(redshift=0.6,
-                                                                                              cosmology=planck)
+            plane = pl.AbstractPlane(redshift=1.0, galaxies=None, cosmology=planck, units_distance='kpc')
+
+            assert plane.angular_diameter_distance_to_earth == \
+                   cosmology_util.angular_diameter_distance_to_earth_from_redshift_and_cosmology(
+                       redshift=1.0, cosmology=planck, units_distance='kpc')
+
+            plane = pl.AbstractPlane(redshift=0.6, galaxies=None, units_distance='arcsec', units_mass='solMass')
+
+            assert plane.cosmic_average_mass_density == \
+                   cosmology_util.cosmic_average_mass_density_from_redshift_and_cosmology(
+                       redshift=0.6, cosmology=planck, units_mass='solMass', units_distance='arcsec')
+
+            plane = pl.AbstractPlane(redshift=0.6, galaxies=None, cosmology=planck, units_distance='kpc',
+                                     units_mass='solMass')
+
+            assert plane.cosmic_average_mass_density == \
+                   cosmology_util.cosmic_average_mass_density_from_redshift_and_cosmology(
+                       redshift=0.6, cosmology=planck, units_mass='solMass', units_distance='kpc')
 
     class TestProperties:
 
@@ -207,9 +228,8 @@ class TestAbstractPlane(object):
 
             g0_luminosity = g0.luminosity_within_circle(radius=1.0)
             g1_luminosity = g1.luminosity_within_circle(radius=1.0)
-            plane = pl.AbstractPlane(galaxies=[g0, g1], redshift=None)
-            plane_luminosities = \
-                plane.luminosities_of_galaxies_within_circles(radius=1.0, units_luminosity='electrons_per_second')
+            plane = pl.AbstractPlane(galaxies=[g0, g1], redshift=None, units_luminosity='electrons_per_second')
+            plane_luminosities = plane.luminosities_of_galaxies_within_circles(radius=1.0)
 
             assert plane_luminosities[0] == g0_luminosity
             assert plane_luminosities[1] == g1_luminosity
@@ -219,9 +239,9 @@ class TestAbstractPlane(object):
 
             g0_luminosity = g0.luminosity_within_circle(radius=2.0)
             g1_luminosity = g1.luminosity_within_circle(radius=2.0)
-            plane = pl.AbstractPlane(galaxies=[g0, g1], redshift=None)
+            plane = pl.AbstractPlane(galaxies=[g0, g1], redshift=None, units_luminosity='electrons_per_second')
             plane_luminosities = \
-                plane.luminosities_of_galaxies_within_circles(radius=2.0, units_luminosity='electrons_per_second')
+                plane.luminosities_of_galaxies_within_circles(radius=2.0)
 
             assert plane_luminosities[0] == g0_luminosity
             assert plane_luminosities[1] == g1_luminosity
@@ -233,9 +253,8 @@ class TestAbstractPlane(object):
 
             g0_luminosity = g0.luminosity_within_circle(radius=1.0, units_luminosity='counts', exposure_time=3.0)
             g1_luminosity = g1.luminosity_within_circle(radius=1.0, units_luminosity='counts', exposure_time=3.0)
-            plane = pl.AbstractPlane(galaxies=[g0, g1], redshift=None)
-            plane_luminosities = plane.luminosities_of_galaxies_within_circles(radius=1.0, units_luminosity='counts',
-                                                                               exposure_time=3.0)
+            plane = pl.AbstractPlane(galaxies=[g0, g1], redshift=None, units_luminosity='counts')
+            plane_luminosities = plane.luminosities_of_galaxies_within_circles(radius=1.0, exposure_time=3.0)
 
             assert plane_luminosities[0] == g0_luminosity
             assert plane_luminosities[1] == g1_luminosity
@@ -245,9 +264,8 @@ class TestAbstractPlane(object):
 
             g0_luminosity = g0.luminosity_within_circle(radius=2.0, units_luminosity='counts', exposure_time=6.0)
             g1_luminosity = g1.luminosity_within_circle(radius=2.0, units_luminosity='counts', exposure_time=6.0)
-            plane = pl.AbstractPlane(galaxies=[g0, g1], redshift=None)
-            plane_luminosities = plane.luminosities_of_galaxies_within_circles(radius=2.0, units_luminosity='counts',
-                                                                               exposure_time=6.0)
+            plane = pl.AbstractPlane(galaxies=[g0, g1], redshift=None, units_luminosity='counts')
+            plane_luminosities = plane.luminosities_of_galaxies_within_circles(radius=2.0, exposure_time=6.0)
 
             assert plane_luminosities[0] == g0_luminosity
             assert plane_luminosities[1] == g1_luminosity
@@ -259,9 +277,8 @@ class TestAbstractPlane(object):
 
             g0_luminosity = g0.luminosity_within_ellipse(major_axis=0.8)
             g1_luminosity = g1.luminosity_within_ellipse(major_axis=0.8)
-            plane = pl.AbstractPlane(galaxies=[g0, g1], redshift=None)
-            plane_luminosities = plane.luminosities_of_galaxies_within_ellipses(major_axis=0.8,
-                                                                                units_luminosity='electrons_per_second')
+            plane = pl.AbstractPlane(galaxies=[g0, g1], redshift=None, units_luminosity='electrons_per_second')
+            plane_luminosities = plane.luminosities_of_galaxies_within_ellipses(major_axis=0.8)
 
             assert plane_luminosities[0] == g0_luminosity
             assert plane_luminosities[1] == g1_luminosity
@@ -271,9 +288,8 @@ class TestAbstractPlane(object):
 
             g0_luminosity = g0.luminosity_within_ellipse(major_axis=0.6)
             g1_luminosity = g1.luminosity_within_ellipse(major_axis=0.6)
-            plane = pl.AbstractPlane(galaxies=[g0, g1], redshift=None)
-            plane_luminosities = plane.luminosities_of_galaxies_within_ellipses(major_axis=0.6,
-                                                                                units_luminosity='electrons_per_second')
+            plane = pl.AbstractPlane(galaxies=[g0, g1], redshift=None, units_luminosity='electrons_per_second')
+            plane_luminosities = plane.luminosities_of_galaxies_within_ellipses(major_axis=0.6)
 
             assert plane_luminosities[0] == g0_luminosity
             assert plane_luminosities[1] == g1_luminosity
@@ -285,10 +301,8 @@ class TestAbstractPlane(object):
 
             g0_luminosity = g0.luminosity_within_ellipse(major_axis=0.8, units_luminosity='counts', exposure_time=3.0)
             g1_luminosity = g1.luminosity_within_ellipse(major_axis=0.8, units_luminosity='counts', exposure_time=3.0)
-            plane = pl.AbstractPlane(galaxies=[g0, g1], redshift=None)
-            plane_luminosities = plane.luminosities_of_galaxies_within_ellipses(major_axis=0.8,
-                                                                                units_luminosity='counts',
-                                                                                exposure_time=3.0)
+            plane = pl.AbstractPlane(galaxies=[g0, g1], redshift=None, units_luminosity='counts')
+            plane_luminosities = plane.luminosities_of_galaxies_within_ellipses(major_axis=0.8, exposure_time=3.0)
 
             assert plane_luminosities[0] == g0_luminosity
             assert plane_luminosities[1] == g1_luminosity
@@ -298,10 +312,8 @@ class TestAbstractPlane(object):
 
             g0_luminosity = g0.luminosity_within_ellipse(major_axis=0.6, units_luminosity='counts', exposure_time=6.0)
             g1_luminosity = g1.luminosity_within_ellipse(major_axis=0.6, units_luminosity='counts', exposure_time=6.0)
-            plane = pl.AbstractPlane(galaxies=[g0, g1], redshift=None)
-            plane_luminosities = plane.luminosities_of_galaxies_within_ellipses(major_axis=0.6,
-                                                                                units_luminosity='counts',
-                                                                                exposure_time=6.0)
+            plane = pl.AbstractPlane(galaxies=[g0, g1], redshift=None, units_luminosity='counts')
+            plane_luminosities = plane.luminosities_of_galaxies_within_ellipses(major_axis=0.6, exposure_time=6.0)
 
             assert plane_luminosities[0] == g0_luminosity
             assert plane_luminosities[1] == g1_luminosity
@@ -315,8 +327,8 @@ class TestAbstractPlane(object):
 
             g0_mass = g0.mass_within_circle(radius=1.0, units_mass='angular')
             g1_mass = g1.mass_within_circle(radius=1.0, units_mass='angular')
-            plane = pl.AbstractPlane(galaxies=[g0, g1], redshift=None)
-            plane_masses = plane.masses_of_galaxies_within_circles(radius=1.0, units_mass='angular')
+            plane = pl.AbstractPlane(galaxies=[g0, g1], redshift=None, units_mass='angular')
+            plane_masses = plane.masses_of_galaxies_within_circles(radius=1.0)
 
             assert plane_masses[0] == g0_mass
             assert plane_masses[1] == g1_mass
@@ -326,8 +338,8 @@ class TestAbstractPlane(object):
 
             g0_mass = g0.mass_within_circle(radius=2.0, units_mass='angular')
             g1_mass = g1.mass_within_circle(radius=2.0, units_mass='angular')
-            plane = pl.AbstractPlane(galaxies=[g0, g1], redshift=None)
-            plane_masses = plane.masses_of_galaxies_within_circles(radius=2.0, units_mass='angular')
+            plane = pl.AbstractPlane(galaxies=[g0, g1], redshift=None, units_mass='angular')
+            plane_masses = plane.masses_of_galaxies_within_circles(radius=2.0)
 
             assert plane_masses[0] == g0_mass
             assert plane_masses[1] == g1_mass
@@ -339,9 +351,8 @@ class TestAbstractPlane(object):
 
             g0_mass = g0.mass_within_circle(radius=1.0, units_mass='solMass', critical_surface_mass_density=3.0)
             g1_mass = g1.mass_within_circle(radius=1.0, units_mass='solMass', critical_surface_mass_density=3.0)
-            plane = pl.AbstractPlane(galaxies=[g0, g1], redshift=None)
-            plane_masses = plane.masses_of_galaxies_within_circles(radius=1.0, units_mass='solMass',
-                                                                   critical_surface_mass_density=3.0)
+            plane = pl.AbstractPlane(galaxies=[g0, g1], redshift=None, units_mass='solMass')
+            plane_masses = plane.masses_of_galaxies_within_circles(radius=1.0, critical_surface_mass_density=3.0)
 
             assert plane_masses[0] == g0_mass
             assert plane_masses[1] == g1_mass
@@ -351,9 +362,8 @@ class TestAbstractPlane(object):
 
             g0_mass = g0.mass_within_circle(radius=2.0, units_mass='solMass', critical_surface_mass_density=6.0)
             g1_mass = g1.mass_within_circle(radius=2.0, units_mass='solMass', critical_surface_mass_density=6.0)
-            plane = pl.AbstractPlane(galaxies=[g0, g1], redshift=None)
-            plane_masses = plane.masses_of_galaxies_within_circles(radius=2.0, units_mass='solMass',
-                                                                   critical_surface_mass_density=6.0)
+            plane = pl.AbstractPlane(galaxies=[g0, g1], redshift=None, units_mass='solMass')
+            plane_masses = plane.masses_of_galaxies_within_circles(radius=2.0, critical_surface_mass_density=6.0)
 
             assert plane_masses[0] == g0_mass
             assert plane_masses[1] == g1_mass
@@ -364,7 +374,7 @@ class TestAbstractPlane(object):
 
             g0_mass = g0.mass_within_ellipse(major_axis=0.8, units_mass='angular')
             g1_mass = g1.mass_within_ellipse(major_axis=0.8, units_mass='angular')
-            plane = pl.AbstractPlane(galaxies=[g0, g1], redshift=None)
+            plane = pl.AbstractPlane(galaxies=[g0, g1], redshift=None, units_mass='angular')
             plane_masses = plane.masses_of_galaxies_within_ellipses(major_axis=0.8)
 
             assert plane_masses[0] == g0_mass
@@ -375,8 +385,8 @@ class TestAbstractPlane(object):
 
             g0_mass = g0.mass_within_ellipse(major_axis=0.6, units_mass='angular')
             g1_mass = g1.mass_within_ellipse(major_axis=0.6, units_mass='angular')
-            plane = pl.AbstractPlane(galaxies=[g0, g1], redshift=None)
-            plane_masses = plane.masses_of_galaxies_within_ellipses(major_axis=0.6, units_mass='angular')
+            plane = pl.AbstractPlane(galaxies=[g0, g1], redshift=None, units_mass='angular')
+            plane_masses = plane.masses_of_galaxies_within_ellipses(major_axis=0.6)
 
             assert plane_masses[0] == g0_mass
             assert plane_masses[1] == g1_mass
@@ -388,9 +398,8 @@ class TestAbstractPlane(object):
 
             g0_mass = g0.mass_within_ellipse(major_axis=0.8, units_mass='solMass', critical_surface_mass_density=3.0)
             g1_mass = g1.mass_within_ellipse(major_axis=0.8, units_mass='solMass', critical_surface_mass_density=3.0)
-            plane = pl.AbstractPlane(galaxies=[g0, g1], redshift=None)
-            plane_masses = plane.masses_of_galaxies_within_ellipses(major_axis=0.8, units_mass='solMass',
-                                                                    critical_surface_mass_density=3.0)
+            plane = pl.AbstractPlane(galaxies=[g0, g1], redshift=None, units_mass='solMass')
+            plane_masses = plane.masses_of_galaxies_within_ellipses(major_axis=0.8, critical_surface_mass_density=3.0)
 
             assert plane_masses[0] == g0_mass
             assert plane_masses[1] == g1_mass
@@ -400,9 +409,8 @@ class TestAbstractPlane(object):
 
             g0_mass = g0.mass_within_ellipse(major_axis=0.6, units_mass='solMass', critical_surface_mass_density=6.0)
             g1_mass = g1.mass_within_ellipse(major_axis=0.6, units_mass='solMass', critical_surface_mass_density=6.0)
-            plane = pl.AbstractPlane(galaxies=[g0, g1], redshift=None)
-            plane_masses = plane.masses_of_galaxies_within_ellipses(major_axis=0.6, units_mass='solMass',
-                                                                    critical_surface_mass_density=6.0)
+            plane = pl.AbstractPlane(galaxies=[g0, g1], redshift=None, units_mass='solMass')
+            plane_masses = plane.masses_of_galaxies_within_ellipses(major_axis=0.6, critical_surface_mass_density=6.0)
 
             assert plane_masses[0] == g0_mass
             assert plane_masses[1] == g1_mass
@@ -410,69 +418,65 @@ class TestAbstractPlane(object):
     class TestEinsteinRadiiAndMass:
 
         def test__plane_has_galaxies_with_sis_profiles__einstein_radius_sum_of_sis_profiles(self):
+
             sis_0 = g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=1.0))
             sis_1 = g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=2.0))
 
-            plane = pl.AbstractPlane(galaxies=[sis_0], redshift=None)
+            plane = pl.AbstractPlane(galaxies=[sis_0], redshift=None, units_distance='arcsec')
 
-            assert plane.einstein_radius_arcsec == 1.0
+            assert plane.einstein_radius == 1.0
 
-            plane = pl.AbstractPlane(galaxies=[sis_1], redshift=None)
+            plane = pl.AbstractPlane(galaxies=[sis_1], redshift=None, units_distance='arcsec')
 
-            assert plane.einstein_radius_arcsec == 2.0
+            assert plane.einstein_radius == 2.0
 
-            plane = pl.AbstractPlane(galaxies=[sis_0, sis_1], redshift=None)
+            plane = pl.AbstractPlane(galaxies=[sis_0, sis_1], redshift=None, units_distance='arcsec')
 
-            assert plane.einstein_radius_arcsec == 3.0
+            assert plane.einstein_radius == 3.0
 
         def test__include_galaxy_with_no_mass_profile__does_not_impact_einstein_radius(self):
+
             sis_0 = g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=1.0))
             sis_1 = g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=2.0))
             g0 = g.Galaxy()
 
-            plane = pl.AbstractPlane(galaxies=[sis_0, g0], redshift=None)
+            plane = pl.AbstractPlane(galaxies=[sis_0, g0], redshift=None, units_distance='arcsec')
 
-            assert plane.einstein_radius_arcsec == 1.0
+            assert plane.einstein_radius == 1.0
 
-            plane = pl.AbstractPlane(galaxies=[sis_1, g0], redshift=None)
+            plane = pl.AbstractPlane(galaxies=[sis_1, g0], redshift=None, units_distance='arcsec')
 
-            assert plane.einstein_radius_arcsec == 2.0
+            assert plane.einstein_radius == 2.0
 
-            plane = pl.AbstractPlane(galaxies=[sis_0, sis_1, g0], redshift=None)
+            plane = pl.AbstractPlane(galaxies=[sis_0, sis_1, g0], redshift=None, units_distance='arcsec')
 
-            assert plane.einstein_radius_arcsec == 3.0
+            assert plane.einstein_radius == 3.0
 
         def test__only_galaxies_without_mass_profiles__einstein_radius_is_none(self):
             g0 = g.Galaxy()
 
-            plane = pl.AbstractPlane(galaxies=[g0], redshift=None)
+            plane = pl.AbstractPlane(galaxies=[g0], redshift=None, units_distance='arcsec')
 
-            assert plane.einstein_radius_arcsec is None
+            assert plane.einstein_radius is None
 
-            plane = pl.AbstractPlane(galaxies=[g0, g0], redshift=None)
+            plane = pl.AbstractPlane(galaxies=[g0, g0], redshift=None, units_distance='arcsec')
 
-            assert plane.einstein_radius_arcsec is None
+            assert plane.einstein_radius is None
 
         def test__same_as_above__but_for_einsein_radius_in_kpc(self):
             sis_0 = g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=1.0), redshift=0.5)
             sis_1 = g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=2.0), redshift=0.5)
 
-            plane = pl.AbstractPlane(galaxies=[sis_0, sis_1], redshift=0.5)
+            plane = pl.AbstractPlane(galaxies=[sis_0, sis_1], redshift=0.5, units_distance='kpc')
 
-            assert plane.einstein_radius_kpc == 3.0 * plane.kpc_per_arcsec_proper
+            assert plane.einstein_radius == 3.0 * plane.kpc_per_arcsec_proper
 
         def test__einstein_radius_in_kpc__if_no_mass_profile_or_redshift_return_none(self):
             g0 = g.Galaxy()
 
-            plane = pl.AbstractPlane(galaxies=[g0], redshift=0.5)
+            plane = pl.AbstractPlane(galaxies=[g0], redshift=0.5, units_distance='kpc')
 
-            assert plane.einstein_radius_kpc is None
-
-            g0 = g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=1.0))
-
-            plane = pl.AbstractPlane(galaxies=[g0], redshift=None)
-
-            assert plane.einstein_radius_kpc is None
+            assert plane.einstein_radius is None
 
         def test__einstein_mass_of_plane__equal_to_einstein_mass_of_galaxies_summed(self):
 
@@ -484,14 +488,14 @@ class TestAbstractPlane(object):
 
             plane = pl.AbstractPlane(galaxies=[sis_0], redshift=None)
 
-            assert plane.einstein_mass_in_mass_units(critical_surface_mass_density_arcsec=2.0) == einstein_mass
+            assert plane.einstein_mass(critical_surface_mass_density=2.0) == einstein_mass
 
             einstein_mass = sis_1.mass_within_circle(radius=sis_1.einstein_radius,
                                                      critical_surface_mass_density=2.0)
 
             plane = pl.AbstractPlane(galaxies=[sis_1], redshift=None)
 
-            assert plane.einstein_mass_in_mass_units(critical_surface_mass_density_arcsec=2.0) == einstein_mass
+            assert plane.einstein_mass(critical_surface_mass_density=2.0) == einstein_mass
 
             einstein_mass = sis_0.mass_within_circle(radius=sis_0.einstein_radius,
                                                      critical_surface_mass_density=2.0) + \
@@ -500,7 +504,7 @@ class TestAbstractPlane(object):
 
             plane = pl.AbstractPlane(galaxies=[sis_0, sis_1], redshift=None)
 
-            assert plane.einstein_mass_in_mass_units(critical_surface_mass_density_arcsec=2.0) == einstein_mass
+            assert plane.einstein_mass(critical_surface_mass_density=2.0) == einstein_mass
 
         def test__include_galaxy_with_no_mass_profiles__doesnt_impact_calc(self):
 
@@ -512,11 +516,11 @@ class TestAbstractPlane(object):
 
             plane = pl.AbstractPlane(galaxies=[sis_0, g0], redshift=None)
 
-            assert plane.einstein_mass_in_mass_units(critical_surface_mass_density_arcsec=2.0) == einstein_mass
+            assert plane.einstein_mass(critical_surface_mass_density=2.0) == einstein_mass
 
             plane = pl.AbstractPlane(galaxies=[g0], redshift=None)
 
-            assert plane.einstein_mass_in_mass_units(critical_surface_mass_density_arcsec=2.0) is None
+            assert plane.einstein_mass(critical_surface_mass_density=2.0) is None
 
     class TestMassProfileGeometry:
 

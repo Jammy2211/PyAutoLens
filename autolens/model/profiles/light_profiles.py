@@ -8,6 +8,9 @@ from autolens.model.profiles import geometry_profiles
 class LightProfile(object):
     """Mixin class that implements functions common to all light profiles"""
 
+    def new_light_profile_with_units_distance_converted(self, units_distance, kpc_per_arcsec=None):
+        return NotImplementedError()
+
     def intensities_from_grid_radii(self, grid_radii):
         """
         Abstract method for obtaining intensity at on a grid of radii.
@@ -59,8 +62,24 @@ class EllipticalLightProfile(geometry_profiles.EllipticalProfile, LightProfile):
             Rotational angle of profiles ellipse counter-clockwise from positive x-axis
         """
         super(EllipticalLightProfile, self).__init__(centre=centre, axis_ratio=axis_ratio, phi=phi)
+        self.units_luminosity = 'electrons_per_second'
 
-    def convert_luminosity_to_units(self, luminosity_electrons_per_second, units_luminosity, exposure_time):
+    def new_light_profile_with_units_converted(self, units_distance=None, units_luminosity=None, kpc_per_arcsec=None,
+                                               exposure_time=None):
+
+        new_light_profile = self
+
+        if units_distance is not None:
+            new_light_profile = new_light_profile.new_light_profile_with_units_distance_converted(
+                units_distance=units_distance, kpc_per_arcsec=kpc_per_arcsec)
+
+        if units_luminosity is not None:
+            new_light_profile = new_light_profile.new_light_profile_with_units_luminosity_converted(
+                units_luminosity=units_luminosity, exposure_time=exposure_time)
+
+        return new_light_profile
+
+    def new_light_profile_with_units_luminosity_converted(self, units_luminosity, exposure_time=None):
         """Convert the luminosity in electrons per second computed in the *luminosity_within_* method to the units \
         specified by the units_luminosity parameter.
 
@@ -85,12 +104,18 @@ class EllipticalLightProfile(geometry_profiles.EllipticalProfile, LightProfile):
             raise exc.UnitsException('The luminosity for a light profile has been requested in units of counts, '
                                      'but an exposure time was not supplied.')
 
-        if units_luminosity is 'electrons_per_second':
-            return luminosity_electrons_per_second
-        elif units_luminosity is 'counts':
-            return exposure_time * luminosity_electrons_per_second
+        if self.units_luminosity is units_luminosity:
+            return self
+        elif self.units_luminosity is 'electrons_per_second' and units_luminosity is 'counts':
+            self.intensity = exposure_time * self.intensity
+            self.units_luminosity = 'counts'
+            return self
+        elif self.units_luminosity is 'counts' and units_luminosity is 'electrons_per_second':
+            self.intensity = self.intensity / exposure_time
+            self.units_luminosity = 'electrons_per_second'
+            return self
 
-    def luminosity_within_circle(self, radius, units_luminosity='electrons_per_second', exposure_time=None):
+    def luminosity_within_circle(self, radius):
         """Integrate the light profile to compute the total luminosity within a circle of specified radius. This is \
         centred on the light profile's centre.
 
@@ -108,11 +133,9 @@ class EllipticalLightProfile(geometry_profiles.EllipticalProfile, LightProfile):
         exposure_time : float or None
             The exposure time of the observation, which converts luminosity from electrons per second units to counts.
         """
-        luminosity_electrons_per_second = quad(self.luminosity_integral, a=0.0, b=radius, args=(1.0,))[0]
-        return self.convert_luminosity_to_units(luminosity_electrons_per_second=luminosity_electrons_per_second,
-                                                units_luminosity=units_luminosity, exposure_time=exposure_time)
+        return quad(self.luminosity_integral, a=0.0, b=radius, args=(1.0,))[0]
 
-    def luminosity_within_ellipse(self, major_axis, units_luminosity='electrons_per_second', exposure_time=None):
+    def luminosity_within_ellipse(self, major_axis):
         """Integrate the light profiles to compute the total luminosity within an ellipse of specified major axis. \
         This is centred on the light profile's centre.
 
@@ -130,9 +153,7 @@ class EllipticalLightProfile(geometry_profiles.EllipticalProfile, LightProfile):
         exposure_time : float or None
             The exposure time of the observation, which converts luminosity from electrons per second units to counts.
         """
-        luminosity_electrons_per_second = quad(self.luminosity_integral, a=0.0, b=major_axis, args=(self.axis_ratio,))[0]
-        return self.convert_luminosity_to_units(luminosity_electrons_per_second=luminosity_electrons_per_second,
-                                                units_luminosity=units_luminosity, exposure_time=exposure_time)
+        return quad(self.luminosity_integral, a=0.0, b=major_axis, args=(self.axis_ratio,))[0]
 
     def luminosity_integral(self, x, axis_ratio):
         """Routine to integrate the luminosity of an elliptical light profile.
@@ -165,23 +186,23 @@ class EllipticalGaussian(EllipticalLightProfile):
         self.intensity = intensity
         self.sigma = sigma
 
-    def convert_profile_to_units(self, units_profile, kpc_per_arcsec=None):
+    def new_light_profile_with_units_distance_converted(self, units_distance, kpc_per_arcsec=None):
 
-        if units_profile is not self.units and kpc_per_arcsec is None:
-            raise exc.UnitsException('The units_profile for a light profile has been input in different units '
+        if units_distance is not self.units_distance and kpc_per_arcsec is None:
+            raise exc.UnitsException('The units_distance for a light profile has been input in different units '
                                      'to the profile but a kpc per arcsec was not supplied.')
 
-        if self.units is units_profile:
+        if self.units_distance is units_distance:
             return self
-        elif self.units is 'arcsec' and units_profile is 'kpc':
+        elif self.units_distance is 'arcsec' and units_distance is 'kpc':
             self.centre = (kpc_per_arcsec * self.centre[0], kpc_per_arcsec * self.centre[1])
             self.sigma = kpc_per_arcsec * self.sigma
-            self.units = 'kpc'
+            self.units_distance = 'kpc'
             return self
-        elif self.units is 'kpc' and units_profile is 'arcsec':
+        elif self.units_distance is 'kpc' and units_distance is 'arcsec':
             self.centre = (self.centre[0] / kpc_per_arcsec, self.centre[1] / kpc_per_arcsec)
             self.sigma = self.sigma / kpc_per_arcsec
-            self.units = 'arcsec'
+            self.units_distance = 'arcsec'
             return self
 
     def intensities_from_grid_radii(self, grid_radii):
@@ -229,7 +250,7 @@ class SphericalGaussian(EllipticalGaussian):
                                                 sigma=sigma)
 
 
-class AbstractEllipticalSersic(geometry_profiles.EllipticalProfile):
+class AbstractEllipticalSersic(EllipticalLightProfile):
 
     def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=0.1, effective_radius=0.6,
                  sersic_index=4.0):
@@ -257,23 +278,23 @@ class AbstractEllipticalSersic(geometry_profiles.EllipticalProfile):
         self.effective_radius = effective_radius
         self.sersic_index = sersic_index
 
-    def convert_profile_to_units(self, units_profile, kpc_per_arcsec=None):
+    def new_light_profile_with_units_distance_converted(self, units_distance, kpc_per_arcsec=None):
 
-        if units_profile is not self.units and kpc_per_arcsec is None:
+        if units_distance is not self.units_distance and kpc_per_arcsec is None:
             raise exc.UnitsException('The units_profile for a light profile has been input in different units '
                                      'to the profile but a kpc per arcsec was not supplied.')
 
-        if self.units is units_profile:
+        if self.units_distance is units_distance:
             return self
-        elif self.units is 'arcsec' and units_profile is 'kpc':
+        elif self.units_distance is 'arcsec' and units_distance is 'kpc':
             self.centre = (kpc_per_arcsec*self.centre[0], kpc_per_arcsec*self.centre[1])
             self.effective_radius = kpc_per_arcsec * self.effective_radius
-            self.units = 'kpc'
+            self.units_distance = 'kpc'
             return self
-        elif self.units is 'kpc' and units_profile is 'arcsec':
+        elif self.units_distance is 'kpc' and units_distance is 'arcsec':
             self.centre = (self.centre[0]/kpc_per_arcsec, self.centre[1]/kpc_per_arcsec)
             self.effective_radius = self.effective_radius / kpc_per_arcsec
-            self.units = 'arcsec'
+            self.units_distance = 'arcsec'
             return self
 
     @property
@@ -507,25 +528,63 @@ class EllipticalCoreSersic(EllipticalSersic):
         self.alpha = alpha
         self.gamma = gamma
 
-    def convert_profile_to_units(self, units_profile, kpc_per_arcsec=None):
+    def new_light_profile_with_units_distance_converted(self, units_distance, kpc_per_arcsec=None):
 
-        if units_profile is not self.units and kpc_per_arcsec is None:
+        if units_distance is not self.units_distance and kpc_per_arcsec is None:
             raise exc.UnitsException('The units_profile for a light profile has been input in different units '
                                      'to the profile but a kpc per arcsec was not supplied.')
 
-        if self.units is units_profile:
+        if self.units_distance is units_distance:
             return self
-        elif self.units is 'arcsec' and units_profile is 'kpc':
+        elif self.units_distance is 'arcsec' and units_distance is 'kpc':
             self.centre = (kpc_per_arcsec*self.centre[0], kpc_per_arcsec*self.centre[1])
             self.effective_radius = kpc_per_arcsec * self.effective_radius
             self.radius_break = kpc_per_arcsec * self.radius_break
-            self.units = 'kpc'
+            self.units_distance = 'kpc'
             return self
-        elif self.units is 'kpc' and units_profile is 'arcsec':
+        elif self.units_distance is 'kpc' and units_distance is 'arcsec':
             self.centre = (self.centre[0]/kpc_per_arcsec, self.centre[1]/kpc_per_arcsec)
             self.effective_radius = self.effective_radius / kpc_per_arcsec
             self.radius_break = self.radius_break / kpc_per_arcsec
-            self.units = 'arcsec'
+            self.units_distance = 'arcsec'
+            return self
+
+    def new_light_profile_with_units_luminosity_converted(self, units_luminosity, exposure_time=None):
+        """Convert the luminosity in electrons per second computed in the *luminosity_within_* method to the units \
+        specified by the units_luminosity parameter.
+
+        This function first checks that the necessary input parameters are input before performing the conversion. \
+        For example, the luminosity cannot be converted to counts if the exposure time is not input.
+
+        The following units for mass can be specified and output:
+
+        - Electrons per second (default) - 'electrons_per_second'.
+        - Counts - 'counts' (multiplies the luminosity in electrons per second by the exposure time).
+
+        Parameters
+        ----------
+        radius : float
+            The radius of the circle to compute the dimensionless mass within.
+        units_luminosity : str
+            The units the luminosity is returned in (electrons_per_second | counts).
+        exposure_time : float or None
+            The exposure time of the observation, which converts luminosity from electrons per second units to counts.
+        """
+        if units_luminosity is 'counts' and exposure_time is None:
+            raise exc.UnitsException('The luminosity for a light profile has been requested in units of counts, '
+                                     'but an exposure time was not supplied.')
+
+        if self.units_luminosity is units_luminosity:
+            return self
+        elif self.units_luminosity is 'electrons_per_second' and units_luminosity is 'counts':
+            self.intensity = exposure_time * self.intensity
+            self.intensity_break = exposure_time * self.intensity_break
+            self.units_luminosity = 'counts'
+            return self
+        elif self.units_luminosity is 'counts' and units_luminosity is 'electrons_per_second':
+            self.intensity = self.intensity / exposure_time
+            self.intensity_break = self.intensity_break / exposure_time
+            self.units_luminosity = 'electrons_per_second'
             return self
 
     @property
