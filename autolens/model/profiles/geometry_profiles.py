@@ -2,6 +2,7 @@ import numpy as np
 from functools import wraps
 
 from autofit import conf
+from autolens.model.profiles import parameters as p
 from autolens import exc
 
 def transform_grid(func):
@@ -131,25 +132,13 @@ class GeometryProfile(object):
         centre : (float, float)
             The (y,x) arc-second coordinates of the profile centre.
         """
-        self.centre = centre
         self.units_distance = 'arcsec'
+        self.centre = p.ParameterTupleDistance(value=centre, unit=self.units_distance)
 
     def new_geometry_profile_with_units_distance_converted(self, units_distance, kpc_per_arcsec=None):
-
-        if units_distance is not self.units_distance and kpc_per_arcsec is None:
-            raise exc.UnitsException('The units_profile for a light or mass profile has been input in different units '
-                                     'to the profile but a kpc per arcsec was not supplied.')
-
-        if self.units_distance is units_distance:
-            return self
-        elif self.units_distance is 'arcsec' and units_distance is 'kpc':
-            self.centre = (kpc_per_arcsec*self.centre[0], kpc_per_arcsec*self.centre[1])
-            self.units_distance = 'kpc'
-            return self
-        elif self.units_distance is 'kpc' and units_distance is 'arcsec':
-            self.centre = (self.centre[0]/kpc_per_arcsec, self.centre[1]/kpc_per_arcsec)
-            self.units_distance = 'arcsec'
-            return self
+        self.units_distance = units_distance
+        self.centre = self.centre.convert(unit=units_distance, kpc_per_arcsec=kpc_per_arcsec)
+        return self
 
     def transform_grid_to_reference_frame(self, grid):
         raise NotImplemented()
@@ -257,8 +246,8 @@ class EllipticalProfile(SphericalProfile):
             Rotation angle of profiles ellipse counter-clockwise from positive x-axis
         """
         super(EllipticalProfile, self).__init__(centre=centre)
-        self.axis_ratio = axis_ratio
-        self.phi = phi
+        self.axis_ratio = p.ParameterNoUnit(value=axis_ratio, unit=None)
+        self.phi = p.ParameterNoUnit(value=phi, unit=None)
 
     @property
     def phi_radians(self):
@@ -372,3 +361,4 @@ class EllipticalProfile(SphericalProfile):
 
     def eta_u(self, u, coordinates):
         return np.sqrt((u * ((coordinates[1] ** 2) + (coordinates[0] ** 2 / (1 - (1 - self.axis_ratio ** 2) * u)))))
+
