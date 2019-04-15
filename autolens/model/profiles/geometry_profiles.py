@@ -124,7 +124,7 @@ class TransformedGrid(np.ndarray):
 
 class GeometryProfile(object):
 
-    def __init__(self, centre=(0.0, 0.0)):
+    def __init__(self, centre=(0.0, 0.0), units_distance='arcsec'):
         """An abstract geometry profile, which describes profiles with y and x centre Cartesian coordinates
         
         Parameters
@@ -132,7 +132,7 @@ class GeometryProfile(object):
         centre : (float, float)
             The (y,x) arc-second coordinates of the profile centre.
         """
-        self.units_distance = 'arcsec'
+        self.units_distance = units_distance
         self.centre = p.ParameterTupleDistance(value=centre, unit=self.units_distance)
 
     def new_geometry_profile_with_units_distance_converted(self, units_distance, kpc_per_arcsec=None):
@@ -156,7 +156,7 @@ class GeometryProfile(object):
 
 class SphericalProfile(GeometryProfile):
 
-    def __init__(self, centre=(0.0, 0.0)):
+    def __init__(self, centre=(0.0, 0.0), units_distance='arcsec'):
         """ A spherical profile, which describes profiles with y and x centre Cartesian coordinates.
 
         Parameters
@@ -164,7 +164,7 @@ class SphericalProfile(GeometryProfile):
         centre: (float, float)
             The (y,x) arc-second coordinates of the profile centre.
         """
-        super(SphericalProfile, self).__init__(centre=centre)
+        super(SphericalProfile, self).__init__(centre=centre, units_distance=units_distance)
 
     @transform_grid
     def grid_to_grid_radii(self, grid):
@@ -232,7 +232,7 @@ class SphericalProfile(GeometryProfile):
 
 class EllipticalProfile(SphericalProfile):
 
-    def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0):
+    def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, units_distance='arcsec'):
         """ An elliptical profile, which describes profiles with y and x centre Cartesian coordinates, an axis-ratio \
         and rotational angle phi.
 
@@ -245,9 +245,9 @@ class EllipticalProfile(SphericalProfile):
         phi : float
             Rotation angle of profiles ellipse counter-clockwise from positive x-axis
         """
-        super(EllipticalProfile, self).__init__(centre=centre)
-        self.axis_ratio = p.ParameterNoUnit(value=axis_ratio, unit=None)
-        self.phi = p.ParameterNoUnit(value=phi, unit=None)
+        super(EllipticalProfile, self).__init__(centre=centre, units_distance=units_distance)
+        self.axis_ratio = p.ParameterNoUnit(value=axis_ratio)
+        self.phi = p.ParameterNoUnit(value=phi)
 
     @property
     def phi_radians(self):
