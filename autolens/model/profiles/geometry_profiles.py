@@ -2,7 +2,7 @@ import numpy as np
 from functools import wraps
 
 from autofit import conf
-from autolens.model.profiles import parameters as p
+from autolens.model.profiles import units
 from autolens import exc
 
 def transform_grid(func):
@@ -133,9 +133,9 @@ class GeometryProfile(object):
             The (y,x) arc-second coordinates of the profile centre.
         """
         self.units_distance = units_distance
-        self.centre = p.ParameterTupleDistance(value=centre, unit=self.units_distance)
+        self.centre = units.TupleDistance(value=centre, unit=self.units_distance)
 
-    def new_geometry_profile_with_units_distance_converted(self, units_distance, kpc_per_arcsec=None):
+    def new_profile_with_units_distance_converted(self, units_distance, kpc_per_arcsec=None):
         self.units_distance = units_distance
         self.centre = self.centre.convert(unit=units_distance, kpc_per_arcsec=kpc_per_arcsec)
         return self
@@ -246,8 +246,8 @@ class EllipticalProfile(SphericalProfile):
             Rotation angle of profiles ellipse counter-clockwise from positive x-axis
         """
         super(EllipticalProfile, self).__init__(centre=centre, units_distance=units_distance)
-        self.axis_ratio = p.ParameterNoUnit(value=axis_ratio)
-        self.phi = p.ParameterNoUnit(value=phi)
+        self.axis_ratio = units.FloatNone(value=axis_ratio)
+        self.phi = units.FloatNone(value=phi)
 
     @property
     def phi_radians(self):

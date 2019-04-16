@@ -163,7 +163,7 @@ class TestCoredPowerLaw(object):
         assert power_law_arcsec.units_distance == 'arcsec'
         assert power_law_arcsec.units_mass == 'angular'
 
-        power_law_arcsec = power_law_arcsec.new_mass_profile_with_units_converted(units_distance='arcsec')
+        power_law_arcsec = power_law_arcsec.new_profile_with_units_converted(units_distance='arcsec')
 
         assert power_law_arcsec.centre == (1.0, 2.0)
         assert power_law_arcsec.axis_ratio == 0.5
@@ -174,8 +174,8 @@ class TestCoredPowerLaw(object):
         assert power_law_arcsec.units_distance == 'arcsec'
         assert power_law_arcsec.units_mass == 'angular'
 
-        power_law_kpc = power_law_arcsec.new_mass_profile_with_units_converted(units_distance='kpc',
-                                                                                         kpc_per_arcsec=2.0)
+        power_law_kpc = power_law_arcsec.new_profile_with_units_converted(units_distance='kpc',
+                                                                          kpc_per_arcsec=2.0)
 
         assert power_law_kpc.centre == (2.0, 4.0)
         assert power_law_kpc.axis_ratio == 0.5
@@ -186,7 +186,7 @@ class TestCoredPowerLaw(object):
         assert power_law_kpc.units_distance == 'kpc'
         assert power_law_kpc.units_mass == 'angular'
 
-        power_law_kpc = power_law_kpc.new_mass_profile_with_units_converted(units_distance='kpc')
+        power_law_kpc = power_law_kpc.new_profile_with_units_converted(units_distance='kpc')
 
         assert power_law_kpc.centre == (2.0, 4.0)
         assert power_law_kpc.axis_ratio == 0.5
@@ -197,8 +197,8 @@ class TestCoredPowerLaw(object):
         assert power_law_kpc.units_distance == 'kpc'
         assert power_law_kpc.units_mass == 'angular'
 
-        power_law_arcsec = power_law_arcsec.new_mass_profile_with_units_converted(units_distance='arcsec',
-                                                                                            kpc_per_arcsec=2.0)
+        power_law_arcsec = power_law_arcsec.new_profile_with_units_converted(units_distance='arcsec',
+                                                                             kpc_per_arcsec=2.0)
 
         assert power_law_arcsec.centre == (1.0, 2.0)
         assert power_law_arcsec.axis_ratio == 0.5
@@ -209,7 +209,7 @@ class TestCoredPowerLaw(object):
         assert power_law_arcsec.units_distance == 'arcsec'
         assert power_law_arcsec.units_mass == 'angular'
 
-        power_law_arcsec = power_law_arcsec.new_mass_profile_with_units_converted(units_mass='solMass')
+        power_law_arcsec = power_law_arcsec.new_profile_with_units_converted(units_mass='solMass')
 
         assert power_law_arcsec.centre == (1.0, 2.0)
         assert power_law_arcsec.axis_ratio == 0.5

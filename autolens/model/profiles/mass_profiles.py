@@ -13,7 +13,7 @@ from scipy.optimize import root_scalar
 from autolens import exc
 from autolens import decorator_util
 from autolens.data.array import grids
-from autolens.model.profiles import parameters as p
+from autolens.model.profiles import units
 from autolens.model.profiles import geometry_profiles
 from autolens.model.profiles import light_profiles
 
@@ -64,7 +64,7 @@ def jit_integrand(integrand_function):
 
 class MassProfile(object):
 
-    def new_mass_profile_with_units_distance_converted(self, units_distance, kpc_per_arcsec=None):
+    def new_profile_with_units_distance_converted(self, units_distance, kpc_per_arcsec=None):
         return NotImplementedError()
 
     def convergence_func(self, eta):
@@ -137,8 +137,8 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
         """
         super(EllipticalMassProfile, self).__init__(centre=centre, axis_ratio=axis_ratio, phi=phi,
                                                     units_distance=units_distance)
-        self.axis_ratio = p.ParameterNoUnit(value=axis_ratio)
-        self.phi = p.ParameterNoUnit(value=phi)
+        self.axis_ratio = units.FloatNone(value=axis_ratio)
+        self.phi = units.FloatNone(value=phi)
         self.units_mass = units_mass
 
     def summary(self, critical_surface_mass_density_arcsec, critical_surface_mass_density, radii, **kwargs):
@@ -152,20 +152,20 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
 
         return summary
 
-    def new_mass_profile_with_units_converted(self, units_distance=None, units_mass=None, kpc_per_arcsec=None):
+    def new_profile_with_units_converted(self, units_distance=None, units_mass=None, kpc_per_arcsec=None):
 
         new_mass_profile = self
 
         if units_distance is not None:
-            new_mass_profile = new_mass_profile.new_mass_profile_with_units_distance_converted(
+            new_mass_profile = new_mass_profile.new_profile_with_units_distance_converted(
                 units_distance=units_distance, kpc_per_arcsec=kpc_per_arcsec)
 
         if units_mass is not None:
-            new_mass_profile = new_mass_profile.new_mass_profile_with_units_mass_converted(units_mass=units_mass)
+            new_mass_profile = new_mass_profile.new_profile_with_units_mass_converted(units_mass=units_mass)
 
         return new_mass_profile
 
-    def new_mass_profile_with_units_mass_converted(self, units_mass):
+    def new_profile_with_units_mass_converted(self, units_mass):
         self.units_mass = units_mass
         return self
 
@@ -319,9 +319,9 @@ class EllipticalCoredPowerLaw(EllipticalMassProfile, MassProfile):
         """
         super(EllipticalCoredPowerLaw, self).__init__(centre=centre, axis_ratio=axis_ratio, phi=phi,
                                                       units_distance=units_distance, units_mass=units_mass)
-        self.einstein_radius = p.ParameterDistance(value=einstein_radius, unit=self.units_distance)
-        self.slope = p.ParameterNoUnit(value=slope)
-        self.core_radius = p.ParameterDistance(value=core_radius, unit=self.units_distance)
+        self.einstein_radius = units.FloatDistance(value=einstein_radius, unit=self.units_distance)
+        self.slope = units.FloatNone(value=slope)
+        self.core_radius = units.FloatDistance(value=core_radius, unit=self.units_distance)
 
     def summary(self, critical_surface_mass_density, radii, **kwargs):
         summary = super().summary(critical_surface_mass_density=critical_surface_mass_density, radii=radii, **kwargs)
@@ -331,7 +331,7 @@ class EllipticalCoredPowerLaw(EllipticalMassProfile, MassProfile):
         return summary + ['Mass within Einstein Radius = {:.4e} angular'.format(einstein_mass),
                           'Einstein Radius = {:.2f}"'.format(self.einstein_radius)]
 
-    def new_mass_profile_with_units_distance_converted(self, units_distance, kpc_per_arcsec=None):
+    def new_profile_with_units_distance_converted(self, units_distance, kpc_per_arcsec=None):
 
         self.units_distance = units_distance
         self.centre = self.centre.convert(unit=units_distance, kpc_per_arcsec=kpc_per_arcsec)
@@ -762,9 +762,9 @@ class AbstractEllipticalGeneralizedNFW(EllipticalMassProfile, MassProfile):
         super(AbstractEllipticalGeneralizedNFW, self).__init__(centre=centre, axis_ratio=axis_ratio, phi=phi,
                                                                units_distance=units_distance, units_mass=units_mass)
         super(MassProfile, self).__init__()
-        self.kappa_s = p.ParameterDistance(value=kappa_s, unit=self.units_mass)
-        self.scale_radius = p.ParameterDistance(value=scale_radius, unit=self.units_distance)
-        self.inner_slope = p.ParameterNoUnit(inner_slope)
+        self.kappa_s = units.FloatDistance(value=kappa_s, unit=self.units_mass)
+        self.scale_radius = units.FloatDistance(value=scale_radius, unit=self.units_distance)
+        self.inner_slope = units.FloatNone(inner_slope)
 
     def tabulate_integral(self, grid, tabulate_bins):
         """Tabulate an integral over the surface density of deflection potential of a mass profile. This is used in \
@@ -1065,8 +1065,8 @@ class SphericalTruncatedNFW(AbstractEllipticalGeneralizedNFW):
                                                     inner_slope=1.0, scale_radius=scale_radius,
                                                     units_distance=units_distance, units_mass=units_mass)
 
-        self.truncation_radius = p.ParameterDistance(value=truncation_radius, unit=self.units_distance)
-        self.tau = p.ParameterNoUnit(value=self.truncation_radius / self.scale_radius)
+        self.truncation_radius = units.FloatDistance(value=truncation_radius, unit=self.units_distance)
+        self.tau = units.FloatNone(value=self.truncation_radius / self.scale_radius)
 
     def summary(self, critical_surface_mass_density_arcsec, cosmic_average_mass_density_arcsec, **kwargs):
         summary = super().summary(critical_surface_mass_density_arcsec=critical_surface_mass_density_arcsec,
@@ -1147,8 +1147,8 @@ class SphericalTruncatedNFW(AbstractEllipticalGeneralizedNFW):
 class SphericalTruncatedNFWChallenge(SphericalTruncatedNFW):
 
     def __init__(self, centre=(0.0, 0.0), kappa_s=0.05, scale_radius=5.0, units_distance='arcsec', units_mass='angular'):
-        self.kappa_s = p.ParameterDistance(value=kappa_s, unit=self.units_distance)
-        self.scale_radius = p.ParameterDistance(value=scale_radius * 6.68549148608755, unit=self.units_distance)
+        self.kappa_s = units.FloatDistance(value=kappa_s, unit=self.units_distance)
+        self.scale_radius = units.FloatDistance(value=scale_radius * 6.68549148608755, unit=self.units_distance)
 
         truncation_radius = 2.0 * self.radius_at_200(critical_surface_mass_density_arcsec=1940654909.4133248,
                                                      cosmic_average_mass_density_arcsec=262.30319684750657)
@@ -1391,7 +1391,7 @@ class AbstractEllipticalSersic(light_profiles.AbstractEllipticalSersic, Elliptic
                                                        units_luminosity=units_luminosity)
         super(EllipticalMassProfile, self).__init__(centre=centre, axis_ratio=axis_ratio, phi=phi,
                                                     units_distance=units_distance, units_mass=units_mass)
-        self.mass_to_light_ratio = p.ParameterNoUnit(value=mass_to_light_ratio)
+        self.mass_to_light_ratio = units.FloatNone(value=mass_to_light_ratio)
 
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
@@ -1637,7 +1637,7 @@ class EllipticalSersicRadialGradient(AbstractEllipticalSersic):
                                                              mass_to_light_ratio=mass_to_light_ratio,
                                                              units_distance=units_distance,
                                                              units_luminosity=units_luminosity, units_mass=units_mass)
-        self.mass_to_light_gradient = p.ParameterNoUnit(value=mass_to_light_gradient)
+        self.mass_to_light_gradient = units.FloatNone(value=mass_to_light_gradient)
 
     @geometry_profiles.transform_grid
     @geometry_profiles.move_grid_to_radial_minimum
