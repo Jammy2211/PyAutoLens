@@ -1,5 +1,3 @@
-import inspect
-
 import numpy as np
 from scipy.integrate import quad
 
@@ -63,23 +61,6 @@ class EllipticalLightProfile(geometry_profiles.EllipticalProfile, LightProfile):
             Rotational angle of profiles ellipse counter-clockwise from positive x-axis
         """
         super(EllipticalLightProfile, self).__init__(centre=centre, axis_ratio=axis_ratio, phi=phi)
-
-    def new_profile_with_units_converted(self, units_distance=None, units_luminosity=None, kpc_per_arcsec=None,
-                                         exposure_time=None):
-        constructor_args = inspect.getfullargspec(self.__init__).args
-
-        def convert(value):
-            if units_distance is not None:
-                if isinstance(value, units.Distance):
-                    return value.convert(units_distance, kpc_per_arcsec)
-                if isinstance(value, tuple):
-                    return tuple(convert(item) for item in value)
-            if units_luminosity is not None and isinstance(value, units.Luminosity):
-                return value.convert(units_luminosity, exposure_time)
-            return value
-
-        return self.__class__(
-            **{key: convert(value) for key, value in self.__dict__.items() if key in constructor_args})
 
     def luminosity_within_circle(self, radius):
         """Integrate the light profile to compute the total luminosity within a circle of specified radius. This is \
