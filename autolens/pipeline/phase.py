@@ -7,7 +7,7 @@ from astropy import cosmology as cosmo
 from autofit import conf
 from autofit.optimize import non_linear
 from autofit.tools import phase as autofit_phase
-from autofit.tools.phase_property import PhasePropertyCollection
+from autofit.tools.phase_property import PhaseProperty
 from autolens import exc
 from autolens.data.array import mask as msk
 from autolens.data.plotters import ccd_plotters
@@ -15,7 +15,7 @@ from autolens.lens import lens_data as li, lens_fit
 from autolens.lens import ray_tracing
 from autolens.lens import sensitivity_fit
 from autolens.lens.plotters import sensitivity_fit_plotters, ray_tracing_plotters, lens_fit_plotters
-from autolens.model.galaxy import galaxy as g, galaxy_model as gm, galaxy_fit, galaxy_data as gd
+from autolens.model.galaxy import galaxy as g, galaxy_fit, galaxy_data as gd
 from autolens.model.galaxy.plotters import galaxy_fit_plotters
 from autolens.pipeline import tagging as tag
 
@@ -72,7 +72,7 @@ class AbstractPhase(autofit_phase.AbstractPhase):
         ModelInstance
             A model instance comprising all the constant objects in this lens
         """
-        return self.optimizer.constant
+        return self.optimizer.variable
 
     @property
     def variable(self):
@@ -87,87 +87,13 @@ class AbstractPhase(autofit_phase.AbstractPhase):
         return self.optimizer.variable
 
     @property
-    def galaxy_model_tuples(self):
-        """
-        Returns
-        -------
-        galaxy_model_tuples: [(String, GalaxyModel)]
-            A list of tuples containing galaxy model names and instances.
-        """
-        return [tup for tup in self.optimizer.variable.prior_model_tuples if
-                isinstance(tup.prior_model, gm.GalaxyModel)]
-
-    def match_instance_to_models(self, instance):
-        """
-        Matches named galaxies associated with the instance to named galaxies associated with this phase.
-
-        Parameters
-        ----------
-        instance: ModelInstance
-            An instance with named galaxy attributes.
-
-        Returns
-        -------
-        tuples: [(String, Galaxy, GalaxyModel)]
-            A list of tuples associating galaxy instances from the model instance object with galaxy models in this
-            phase.
-        """
-        galaxy_dict = dict(instance.name_instance_tuples_for_class(g.Galaxy))
-        return [(key, galaxy_dict[key], value) for key, value in self.galaxy_model_tuples if key in galaxy_dict]
-
-    def fit_priors(self, instance, fitting_function):
-        """
-        Update the priors in this phase by fitting each galaxy model to a galaxy with the same name from a previous
-        phase if such a galaxy exists.
-
-        Parameters
-        ----------
-        instance: ModelInstance
-            An object with named galaxy attributes
-        fitting_function: (Galaxy, GalaxyModel) -> GalaxyModel
-            A function that takes a galaxy and a galaxy model and returns a GalaxyModel produced by combining a best fit
-            between the original galaxy and galaxy model with prior widths given by the configuration.
-        """
-        tuples = self.match_instance_to_models(instance)
-        for t in tuples:
-            name = t[0]
-            galaxy = t[1]
-            galaxy_model = t[2]
-            new_galaxy_model = fitting_function(galaxy, galaxy_model)
-            for phase_property_collection in self.phase_property_collections:
-                if hasattr(phase_property_collection, name):
-                    setattr(phase_property_collection, name, new_galaxy_model)
-
-    def fit_priors_with_results(self, results, fitting_function):
-        """
-        Update the priors in this phase by fitting each galaxy model to a galaxy with the same name from a previous
-        phase if such a galaxy exists.
-
-        Results later in the list take precedence, with the last instance of any galaxies that share a name being kept.
-
-        Parameters
-        ----------
-        results: [Results]
-            A list of results from previous phases.
-        fitting_function: (Galaxy, GalaxyModel) -> GalaxyModel
-            A function that takes a galaxy and a galaxy model and returns a GalaxyModel produced by combining a best fit
-            between the original galaxy and galaxy model with prior widths given by the configuration.
-        """
-        if results is not None and len(results) > 0:
-            instances = [r.constant for r in results]
-            instance = instances[0]
-            for next_instance in instances[1:]:
-                instance += next_instance
-            self.fit_priors(instance, fitting_function)
-
-    @property
     def phase_property_collections(self):
         """
         Returns
         -------
-        phase_property_collections: [PhasePropertyCollection]
+        phase_property_collections: [PhaseProperty]
             A list of phase property collections associated with this phase. This is used in automated prior passing and
-            should be overridden for any phase that contains its own PhasePropertyCollections.
+            should be overridden for any phase that contains its own PhasePropertys.
         """
         return []
 
@@ -320,7 +246,7 @@ class Phase(AbstractPhase):
 
 
 class PhasePositions(AbstractPhase):
-    lens_galaxies = PhasePropertyCollection("lens_galaxies")
+    lens_galaxies = PhaseProperty("lens_galaxies")
 
     @property
     def phase_property_collections(self):
@@ -379,7 +305,6 @@ class PhasePositions(AbstractPhase):
     class Analysis(Phase.Analysis):
 
         def __init__(self, positions, pixel_scale, cosmology, results=None):
-
             super().__init__(cosmology=cosmology, results=results)
 
             self.positions = list(map(lambda position_set: np.asarray(position_set), positions))
@@ -826,6 +751,7 @@ def set_defaults(key):
     decorator
         A decorator that wraps the setter function to set defaults
     """
+
     def decorator(func):
         @functools.wraps(func)
         def wrapper(phase, new_value):
@@ -846,7 +772,7 @@ class LensPlanePhase(PhaseImaging):
     Fit only the lens galaxy light.
     """
 
-    _lens_galaxies = PhasePropertyCollection("lens_galaxies")
+    _lens_galaxies = PhaseProperty("lens_galaxies")
 
     @property
     def phase_property_collections(self):
@@ -908,8 +834,8 @@ class LensSourcePlanePhase(PhaseImaging):
     Fit a simple source and lens system.
     """
 
-    _lens_galaxies = PhasePropertyCollection("lens_galaxies")
-    _source_galaxies = PhasePropertyCollection("source_galaxies")
+    _lens_galaxies = PhaseProperty("lens_galaxies")
+    _source_galaxies = PhaseProperty("source_galaxies")
 
     @property
     def lens_galaxies(self):
@@ -1007,7 +933,7 @@ class MultiPlanePhase(PhaseImaging):
     Fit a simple source and lens system.
     """
 
-    galaxies = PhasePropertyCollection("galaxies")
+    galaxies = PhaseProperty("galaxies")
 
     @property
     def phase_property_collections(self):
@@ -1071,7 +997,7 @@ class MultiPlanePhase(PhaseImaging):
 
 
 class GalaxyFitPhase(AbstractPhase):
-    galaxies = PhasePropertyCollection("galaxies")
+    galaxies = PhaseProperty("galaxies")
 
     def __init__(self, phase_name, phase_tagging=True, phase_folders=None, galaxies=None, use_intensities=False,
                  use_convergence=False,
@@ -1395,9 +1321,9 @@ class GalaxyFitPhase(AbstractPhase):
 
 
 class SensitivityPhase(PhaseImaging):
-    lens_galaxies = PhasePropertyCollection("lens_galaxies")
-    source_galaxies = PhasePropertyCollection("source_galaxies")
-    sensitive_galaxies = PhasePropertyCollection("sensitive_galaxies")
+    lens_galaxies = PhaseProperty("lens_galaxies")
+    source_galaxies = PhaseProperty("source_galaxies")
+    sensitive_galaxies = PhaseProperty("sensitive_galaxies")
 
     def __init__(self, phase_name, tag_phases=None, phase_folders=None, lens_galaxies=None, source_galaxies=None,
                  sensitive_galaxies=None,
