@@ -7,7 +7,7 @@ from astropy import cosmology as cosmo
 from autofit import conf
 from autofit.optimize import non_linear
 from autofit.tools import phase as autofit_phase
-from autofit.tools.phase_property import PhasePropertyCollection
+from autofit.tools.phase_property import PhaseProperty
 from autolens import exc
 from autolens.data.array import mask as msk
 from autolens.data.plotters import ccd_plotters
@@ -165,9 +165,9 @@ class AbstractPhase(autofit_phase.AbstractPhase):
         """
         Returns
         -------
-        phase_property_collections: [PhasePropertyCollection]
+        phase_property_collections: [PhaseProperty]
             A list of phase property collections associated with this phase. This is used in automated prior passing and
-            should be overridden for any phase that contains its own PhasePropertyCollections.
+            should be overridden for any phase that contains its own PhasePropertys.
         """
         return []
 
@@ -320,7 +320,7 @@ class Phase(AbstractPhase):
 
 
 class PhasePositions(AbstractPhase):
-    lens_galaxies = PhasePropertyCollection("lens_galaxies")
+    lens_galaxies = PhaseProperty("lens_galaxies")
 
     @property
     def phase_property_collections(self):
@@ -846,7 +846,7 @@ class LensPlanePhase(PhaseImaging):
     Fit only the lens galaxy light.
     """
 
-    _lens_galaxies = PhasePropertyCollection("lens_galaxies")
+    _lens_galaxies = PhaseProperty("lens_galaxies")
 
     @property
     def phase_property_collections(self):
@@ -908,8 +908,8 @@ class LensSourcePlanePhase(PhaseImaging):
     Fit a simple source and lens system.
     """
 
-    _lens_galaxies = PhasePropertyCollection("lens_galaxies")
-    _source_galaxies = PhasePropertyCollection("source_galaxies")
+    _lens_galaxies = PhaseProperty("lens_galaxies")
+    _source_galaxies = PhaseProperty("source_galaxies")
 
     @property
     def lens_galaxies(self):
@@ -1007,7 +1007,7 @@ class MultiPlanePhase(PhaseImaging):
     Fit a simple source and lens system.
     """
 
-    galaxies = PhasePropertyCollection("galaxies")
+    galaxies = PhaseProperty("galaxies")
 
     @property
     def phase_property_collections(self):
@@ -1071,7 +1071,7 @@ class MultiPlanePhase(PhaseImaging):
 
 
 class GalaxyFitPhase(AbstractPhase):
-    galaxies = PhasePropertyCollection("galaxies")
+    galaxies = PhaseProperty("galaxies")
 
     def __init__(self, phase_name, phase_tagging=True, phase_folders=None, galaxies=None, use_intensities=False,
                  use_convergence=False,
@@ -1395,9 +1395,9 @@ class GalaxyFitPhase(AbstractPhase):
 
 
 class SensitivityPhase(PhaseImaging):
-    lens_galaxies = PhasePropertyCollection("lens_galaxies")
-    source_galaxies = PhasePropertyCollection("source_galaxies")
-    sensitive_galaxies = PhasePropertyCollection("sensitive_galaxies")
+    lens_galaxies = PhaseProperty("lens_galaxies")
+    source_galaxies = PhaseProperty("source_galaxies")
+    sensitive_galaxies = PhaseProperty("sensitive_galaxies")
 
     def __init__(self, phase_name, tag_phases=None, phase_folders=None, lens_galaxies=None, source_galaxies=None,
                  sensitive_galaxies=None,
