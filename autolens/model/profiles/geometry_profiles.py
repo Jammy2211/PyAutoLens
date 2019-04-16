@@ -2,8 +2,9 @@ import numpy as np
 from functools import wraps
 
 from autofit import conf
+from autofit.tools.dimension_type import map_types
 from autolens.model.profiles import units
-from autolens import exc
+
 
 def transform_grid(func):
     """Wrap the function in a function that checks whether the coordinates have been transformed. If they have not \ 
@@ -124,7 +125,8 @@ class TransformedGrid(np.ndarray):
 
 class GeometryProfile(object):
 
-    def __init__(self, centre=(0.0, 0.0), units_distance='arcsec'):
+    @map_types
+    def __init__(self, centre: units.Position = (0.0, 0.0)):
         """An abstract geometry profile, which describes profiles with y and x centre Cartesian coordinates
         
         Parameters
@@ -132,13 +134,7 @@ class GeometryProfile(object):
         centre : (float, float)
             The (y,x) arc-second coordinates of the profile centre.
         """
-        self.units_distance = units_distance
-        self.centre = units.TupleDistance(value=centre, unit_distance=self.units_distance)
-
-    def new_profile_with_units_distance_converted(self, units_distance, kpc_per_arcsec=None):
-        self.units_distance = units_distance
-        self.centre = self.centre.convert(unit_distance=units_distance, kpc_per_arcsec=kpc_per_arcsec)
-        return self
+        self.centre = centre
 
     def transform_grid_to_reference_frame(self, grid):
         raise NotImplemented()
@@ -155,8 +151,8 @@ class GeometryProfile(object):
 
 
 class SphericalProfile(GeometryProfile):
-
-    def __init__(self, centre=(0.0, 0.0), units_distance='arcsec'):
+    @map_types
+    def __init__(self, centre: units.Position = (0.0, 0.0)):
         """ A spherical profile, which describes profiles with y and x centre Cartesian coordinates.
 
         Parameters
@@ -164,7 +160,7 @@ class SphericalProfile(GeometryProfile):
         centre: (float, float)
             The (y,x) arc-second coordinates of the profile centre.
         """
-        super(SphericalProfile, self).__init__(centre=centre, units_distance=units_distance)
+        super(SphericalProfile, self).__init__(centre=centre)
 
     @transform_grid
     def grid_to_grid_radii(self, grid):
@@ -232,7 +228,7 @@ class SphericalProfile(GeometryProfile):
 
 class EllipticalProfile(SphericalProfile):
 
-    def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, units_distance='arcsec'):
+    def __init__(self, centre: units.Position = (0.0, 0.0), axis_ratio: float = 1.0, phi: float = 0.0):
         """ An elliptical profile, which describes profiles with y and x centre Cartesian coordinates, an axis-ratio \
         and rotational angle phi.
 
@@ -245,9 +241,9 @@ class EllipticalProfile(SphericalProfile):
         phi : float
             Rotation angle of profiles ellipse counter-clockwise from positive x-axis
         """
-        super(EllipticalProfile, self).__init__(centre=centre, units_distance=units_distance)
-        self.axis_ratio = units.FloatNone(value=axis_ratio)
-        self.phi = units.FloatNone(value=phi)
+        super(EllipticalProfile, self).__init__(centre=centre)
+        self.axis_ratio = axis_ratio
+        self.phi = phi
 
     @property
     def phi_radians(self):
@@ -361,4 +357,3 @@ class EllipticalProfile(SphericalProfile):
 
     def eta_u(self, u, coordinates):
         return np.sqrt((u * ((coordinates[1] ** 2) + (coordinates[0] ** 2 / (1 - (1 - self.axis_ratio ** 2) * u)))))
-

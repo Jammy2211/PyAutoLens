@@ -1,9 +1,8 @@
 import numpy as np
 from scipy.integrate import quad
 
-from autolens import exc
-from autolens.model.profiles import units
 from autolens.model.profiles import geometry_profiles
+from autolens.model.profiles import units
 
 
 class LightProfile(object):
@@ -47,8 +46,7 @@ class LightProfile(object):
 class EllipticalLightProfile(geometry_profiles.EllipticalProfile, LightProfile):
     """Generic class for an elliptical light profiles"""
 
-    def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, units_distance='arcsec',
-                 units_luminosity='electrons_per_second'):
+    def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0):
         """  Abstract class for an elliptical light-profile.
 
         Parameters
@@ -60,9 +58,7 @@ class EllipticalLightProfile(geometry_profiles.EllipticalProfile, LightProfile):
         phi : float
             Rotational angle of profiles ellipse counter-clockwise from positive x-axis
         """
-        super(EllipticalLightProfile, self).__init__(centre=centre, axis_ratio=axis_ratio, phi=phi,
-                                                     units_distance=units_distance)
-        self.units_luminosity = units_luminosity
+        super(EllipticalLightProfile, self).__init__(centre=centre, axis_ratio=axis_ratio, phi=phi)
 
     def new_profile_with_units_converted(self, units_distance=None, units_luminosity=None, kpc_per_arcsec=None,
                                          exposure_time=None):
@@ -70,12 +66,10 @@ class EllipticalLightProfile(geometry_profiles.EllipticalProfile, LightProfile):
         new_profile = self
 
         if units_distance is not None:
-
             new_profile = new_profile.new_profile_with_units_distance_converted(units_distance=units_distance,
                                                                                 kpc_per_arcsec=kpc_per_arcsec)
 
         if units_luminosity is not None:
-
             new_profile = new_profile.new_profile_with_units_luminosity_converted(units_luminosity=units_luminosity,
                                                                                   exposure_time=exposure_time)
 
@@ -264,7 +258,8 @@ class AbstractEllipticalSersic(EllipticalLightProfile):
     def new_profile_with_units_distance_converted(self, units_distance, kpc_per_arcsec=None):
         self.units_distance = units_distance
         self.centre = self.centre.convert(unit_distance=units_distance, kpc_per_arcsec=kpc_per_arcsec)
-        self.effective_radius = self.effective_radius.convert(unit_distance=units_distance, kpc_per_arcsec=kpc_per_arcsec)
+        self.effective_radius = self.effective_radius.convert(unit_distance=units_distance,
+                                                              kpc_per_arcsec=kpc_per_arcsec)
         return self
 
     @property
@@ -514,7 +509,8 @@ class EllipticalCoreSersic(EllipticalSersic):
     def new_profile_with_units_distance_converted(self, units_distance, kpc_per_arcsec=None):
         self.units_distance = units_distance
         self.centre = self.centre.convert(unit_distance=units_distance, kpc_per_arcsec=kpc_per_arcsec)
-        self.effective_radius = self.effective_radius.convert(unit_distance=units_distance, kpc_per_arcsec=kpc_per_arcsec)
+        self.effective_radius = self.effective_radius.convert(unit_distance=units_distance,
+                                                              kpc_per_arcsec=kpc_per_arcsec)
         self.radius_break = self.radius_break.convert(unit_distance=units_distance, kpc_per_arcsec=kpc_per_arcsec)
         return self
 
@@ -541,9 +537,9 @@ class EllipticalCoreSersic(EllipticalSersic):
         """
         self.units_luminosity = units_luminosity
         self.intensity = self.intensity.convert(unit_luminosity=units_luminosity, exposure_time=exposure_time)
-        self.intensity_break = self.intensity_break.convert(unit_luminosity=units_luminosity, exposure_time=exposure_time)
+        self.intensity_break = self.intensity_break.convert(unit_luminosity=units_luminosity,
+                                                            exposure_time=exposure_time)
         return self
-
 
     @property
     def intensity_prime(self):
@@ -573,7 +569,7 @@ class SphericalCoreSersic(EllipticalCoreSersic):
 
     def __init__(self, centre=(0.0, 0.0), intensity=0.1, effective_radius=0.6,
                  sersic_index=4.0, radius_break=0.01, intensity_break=0.05, gamma=0.25, alpha=3.0,
-                 units_distance='arcsec',  units_luminosity='electrons_per_second'):
+                 units_distance='arcsec', units_luminosity='electrons_per_second'):
         """ The elliptical cored-Sersic light profile.
 
         Parameters
