@@ -93,7 +93,7 @@ class MassProfile(object):
 
 class PointMass(geometry_profiles.SphericalProfile, MassProfile):
 
-    def __init__(self, centre=(0.0, 0.0), einstein_radius=1.0, units_distance='arcsec', units_mass='angular'):
+    def __init__(self, centre=(0.0, 0.0), einstein_radius=1.0, units_distance='arcsec', units_mass='solMass'):
         """
         Represents a point-mass.
 
@@ -105,7 +105,7 @@ class PointMass(geometry_profiles.SphericalProfile, MassProfile):
             The arc-second Einstein radius of the point-mass.
         """
         super(PointMass, self).__init__(centre=centre, units_distance=units_distance)
-        self.einstein_radius = einstein_radius
+        self.einstein_radius = units.FloatDistance(value=einstein_radius, unit_distance=self.units_distance)
         self.units_mass = units_mass
 
     @geometry_profiles.transform_grid
@@ -122,7 +122,7 @@ class PointMass(geometry_profiles.SphericalProfile, MassProfile):
 # noinspection PyAbstractClass
 class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
 
-    def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, units_distance='arcsec', units_mass='angular'):
+    def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, units_distance='arcsec', units_mass='solMass'):
         """
         Abstract class for elliptical mass profiles.
 
@@ -154,52 +154,20 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
 
     def new_profile_with_units_converted(self, units_distance=None, units_mass=None, kpc_per_arcsec=None):
 
-        new_mass_profile = self
+        new_profile = self
 
         if units_distance is not None:
-            new_mass_profile = new_mass_profile.new_profile_with_units_distance_converted(
-                units_distance=units_distance, kpc_per_arcsec=kpc_per_arcsec)
+            new_profile = new_profile.new_profile_with_units_distance_converted(units_distance=units_distance,
+                                                                                kpc_per_arcsec=kpc_per_arcsec)
 
         if units_mass is not None:
-            new_mass_profile = new_mass_profile.new_profile_with_units_mass_converted(units_mass=units_mass)
+            new_profile = new_profile.new_profile_with_units_mass_converted(units_mass=units_mass)
 
-        return new_mass_profile
+        return new_profile
 
     def new_profile_with_units_mass_converted(self, units_mass):
         self.units_mass = units_mass
         return self
-
-    def convert_mass_angular_to_units_mass(self, mass_angular, critical_surface_mass_density):
-        """Convert the angular mass computed in the *mass_within_* method to the units specified by the units_mass
-        parameter.
-
-        This function first checks that the necessary input parameters are input before performing the conversion. \
-        For example, the mass cannot be converted to solar masses if the critical surface mass density is not input.
-
-        The following units for mass can be specified and output:
-
-        - Dimensionless angular units (default) - 'angular'.
-        - Solar masses - 'angular' (multiplies the angular mass by the critical surface mass density).
-
-        Parameters
-        ----------
-        radius : float
-            The radius of the circle to compute the dimensionless mass within.
-        units_mass : str
-            The units the mass is returned in (angular | angular).
-        critical_surface_mass_density : float
-            The critical surface mass density of the strong lens configuration, which converts mass from angulalr \
-            units to physical units (e.g. solar masses).
-        """
-
-        if self.units_mass is 'angular' and critical_surface_mass_density is None:
-            raise exc.UnitsException('The mass for a mass profile has been requested in units of angular, '
-                                     'but a critical surface mass density was not supplied.')
-
-        if self.units_mass is 'angular':
-            return mass_angular
-        elif self.units_mass is 'angular':
-            return critical_surface_mass_density * mass_angular
 
     def mass_within_circle(self, radius, critical_surface_mass_density=None):
         """ Integrate the mass profiles's convergence profile to compute the total mass within a circle of \
@@ -220,9 +188,8 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
             The critical surface mass density of the strong lens configuration, which converts mass from angulalr \
             units to phsical units (e.g. solar masses).
         """
-        mass_angular = quad(self.mass_integral, a=0.0, b=radius, args=(1.0,))[0]
-        return self.convert_mass_angular_to_units_mass(mass_angular=mass_angular,
-                                                       critical_surface_mass_density=critical_surface_mass_density)
+        mass_angular = units.FloatMass(value=quad(self.mass_integral, a=0.0, b=radius, args=(1.0,))[0], unit_mass='angular')
+        return mass_angular.convert(unit_mass=self.units_mass, critical_surface_mass_density=critical_surface_mass_density)
 
     def mass_within_ellipse(self, major_axis, critical_surface_mass_density=None):
         """ Integrate the mass profiles's convergence profile to compute the total angular mass within an ellipse of \
@@ -243,9 +210,9 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
             The critical surface mass density of the strong lens configuration, which converts mass from angular \
             units to phsical units (e.g. solar masses).
         """
-        mass_angular = quad(self.mass_integral, a=0.0, b=major_axis, args=(self.axis_ratio,))[0]
-        return self.convert_mass_angular_to_units_mass(mass_angular=mass_angular,
-                                                       critical_surface_mass_density=critical_surface_mass_density)
+        mass_angular = units.FloatMass(value=quad(self.mass_integral, a=0.0, b=major_axis, args=(self.axis_ratio,))[0],
+                                       unit_mass='angular')
+        return mass_angular.convert(unit_mass=self.units_mass, critical_surface_mass_density=critical_surface_mass_density)
 
     def mass_integral(self, x, axis_ratio):
         """Routine to integrate an elliptical light profiles - set axis ratio to 1 to compute the luminosity within a \
@@ -298,7 +265,7 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
 class EllipticalCoredPowerLaw(EllipticalMassProfile, MassProfile):
 
     def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, einstein_radius=1.0, slope=2.0, core_radius=0.01,
-                 units_distance='arcsec', units_mass='angular'):
+                 units_distance='arcsec', units_mass='solMass'):
         """
         Represents a cored elliptical power-law density distribution
 
@@ -319,9 +286,9 @@ class EllipticalCoredPowerLaw(EllipticalMassProfile, MassProfile):
         """
         super(EllipticalCoredPowerLaw, self).__init__(centre=centre, axis_ratio=axis_ratio, phi=phi,
                                                       units_distance=units_distance, units_mass=units_mass)
-        self.einstein_radius = units.FloatDistance(value=einstein_radius, unit=self.units_distance)
+        self.einstein_radius = units.FloatDistance(value=einstein_radius, unit_distance=self.units_distance)
         self.slope = units.FloatNone(value=slope)
-        self.core_radius = units.FloatDistance(value=core_radius, unit=self.units_distance)
+        self.core_radius = units.FloatDistance(value=core_radius, unit_distance=self.units_distance)
 
     def summary(self, critical_surface_mass_density, radii, **kwargs):
         summary = super().summary(critical_surface_mass_density=critical_surface_mass_density, radii=radii, **kwargs)
@@ -334,9 +301,9 @@ class EllipticalCoredPowerLaw(EllipticalMassProfile, MassProfile):
     def new_profile_with_units_distance_converted(self, units_distance, kpc_per_arcsec=None):
 
         self.units_distance = units_distance
-        self.centre = self.centre.convert(unit=units_distance, kpc_per_arcsec=kpc_per_arcsec)
-        self.einstein_radius = self.einstein_radius.convert(unit=units_distance, kpc_per_arcsec=kpc_per_arcsec)
-        self.core_radius = self.core_radius.convert(unit=units_distance, kpc_per_arcsec=kpc_per_arcsec)
+        self.centre = self.centre.convert(unit_mass=units_distance, kpc_per_arcsec=kpc_per_arcsec)
+        self.einstein_radius = self.einstein_radius.convert(unit_mass=units_distance, kpc_per_arcsec=kpc_per_arcsec)
+        self.core_radius = self.core_radius.convert(unit_mass=units_distance, kpc_per_arcsec=kpc_per_arcsec)
 
         return self
 
@@ -437,7 +404,7 @@ class EllipticalCoredPowerLaw(EllipticalMassProfile, MassProfile):
 class SphericalCoredPowerLaw(EllipticalCoredPowerLaw):
 
     def __init__(self, centre=(0.0, 0.0), einstein_radius=1.0, slope=2.0, core_radius=0.0, units_distance='arcsec',
-                 units_mass='angular'):
+                 units_mass='solMass'):
         """
         Represents a cored spherical power-law density distribution
 
@@ -478,7 +445,7 @@ class SphericalCoredPowerLaw(EllipticalCoredPowerLaw):
 class EllipticalPowerLaw(EllipticalCoredPowerLaw):
 
     def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, einstein_radius=1.0, slope=2.0,
-                 units_distance='arcsec', units_mass='angular'):
+                 units_distance='arcsec', units_mass='solMass'):
         """
         Represents an elliptical power-law density distribution.
 
@@ -521,7 +488,7 @@ class EllipticalPowerLaw(EllipticalCoredPowerLaw):
 class SphericalPowerLaw(EllipticalPowerLaw):
 
     def __init__(self, centre=(0.0, 0.0), einstein_radius=1.0, slope=2.0, units_distance='arcsec',
-                 units_mass='angular'):
+                 units_mass='solMass'):
         """
         Represents a spherical power-law density distribution.
 
@@ -550,7 +517,7 @@ class SphericalPowerLaw(EllipticalPowerLaw):
 class EllipticalCoredIsothermal(EllipticalCoredPowerLaw):
 
     def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, einstein_radius=1.0, core_radius=0.05,
-                 units_distance='arcsec', units_mass='angular'):
+                 units_distance='arcsec', units_mass='solMass'):
         """
         Represents a cored elliptical isothermal density distribution, which is equivalent to the elliptical power-law
         density distribution for the value slope=2.0
@@ -577,7 +544,7 @@ class EllipticalCoredIsothermal(EllipticalCoredPowerLaw):
 class SphericalCoredIsothermal(SphericalCoredPowerLaw):
 
     def __init__(self, centre=(0.0, 0.0), einstein_radius=1.0, core_radius=0.05, units_distance='arcsec',
-                 units_mass='angular'):
+                 units_mass='solMass'):
         """
         Represents a cored spherical isothermal density distribution, which is equivalent to the elliptical power-law
         density distribution for the value slope=2.0
@@ -599,7 +566,7 @@ class SphericalCoredIsothermal(SphericalCoredPowerLaw):
 class EllipticalIsothermal(EllipticalPowerLaw):
 
     def __init__(self, centre=(0.0, 0.0), axis_ratio=0.9, phi=0.0, einstein_radius=1.0, units_distance='arcsec',
-                 units_mass='angular'):
+                 units_mass='solMass'):
         """
         Represents an elliptical isothermal density distribution, which is equivalent to the elliptical power-law
         density distribution for the value slope=2.0
@@ -654,7 +621,7 @@ class EllipticalIsothermal(EllipticalPowerLaw):
 
 class SphericalIsothermal(EllipticalIsothermal):
 
-    def __init__(self, centre=(0.0, 0.0), einstein_radius=1.0, units_distance='arcsec', units_mass='angular'):
+    def __init__(self, centre=(0.0, 0.0), einstein_radius=1.0, units_distance='arcsec', units_mass='solMass'):
         """
         Represents a spherical isothermal density distribution, which is equivalent to the spherical power-law
         density distribution for the value slope=2.0
@@ -737,7 +704,7 @@ class AbstractEllipticalGeneralizedNFW(EllipticalMassProfile, MassProfile):
                           'Mass at 200x cosmic average density = {:.2f} angular'.format(mass_at_200)]
 
     def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, kappa_s=0.05, inner_slope=1.0, scale_radius=5.0,
-                 units_distance='arcsec', units_mass='angular'):
+                 units_distance='arcsec', units_mass='solMass'):
         """
         The elliptical NFW profiles, used to fit the dark matter halo of the lens.
 
@@ -762,8 +729,8 @@ class AbstractEllipticalGeneralizedNFW(EllipticalMassProfile, MassProfile):
         super(AbstractEllipticalGeneralizedNFW, self).__init__(centre=centre, axis_ratio=axis_ratio, phi=phi,
                                                                units_distance=units_distance, units_mass=units_mass)
         super(MassProfile, self).__init__()
-        self.kappa_s = units.FloatDistance(value=kappa_s, unit=self.units_mass)
-        self.scale_radius = units.FloatDistance(value=scale_radius, unit=self.units_distance)
+        self.kappa_s = units.FloatNone(value=kappa_s)
+        self.scale_radius = units.FloatDistance(value=scale_radius, unit_distance=self.units_distance)
         self.inner_slope = units.FloatNone(inner_slope)
 
     def tabulate_integral(self, grid, tabulate_bins):
@@ -1001,7 +968,7 @@ class EllipticalGeneralizedNFW(AbstractEllipticalGeneralizedNFW):
 class SphericalGeneralizedNFW(EllipticalGeneralizedNFW):
 
     def __init__(self, centre=(0.0, 0.0), kappa_s=0.05, inner_slope=1.0, scale_radius=5.0, units_distance='arcsec',
-                 units_mass='angular'):
+                 units_mass='solMass'):
         """
         The spherical NFW profiles, used to fit the dark matter halo of the lens.
 
@@ -1060,12 +1027,12 @@ class SphericalGeneralizedNFW(EllipticalGeneralizedNFW):
 class SphericalTruncatedNFW(AbstractEllipticalGeneralizedNFW):
 
     def __init__(self, centre=(0.0, 0.0), kappa_s=0.05, scale_radius=5.0, truncation_radius=2.0,
-                 units_distance='arcsec', units_mass='angular'):
+                 units_distance='arcsec', units_mass='solMass'):
         super(SphericalTruncatedNFW, self).__init__(centre=centre, axis_ratio=1.0, phi=0.0, kappa_s=kappa_s,
                                                     inner_slope=1.0, scale_radius=scale_radius,
                                                     units_distance=units_distance, units_mass=units_mass)
 
-        self.truncation_radius = units.FloatDistance(value=truncation_radius, unit=self.units_distance)
+        self.truncation_radius = units.FloatDistance(value=truncation_radius, unit_distance=self.units_distance)
         self.tau = units.FloatNone(value=self.truncation_radius / self.scale_radius)
 
     def summary(self, critical_surface_mass_density_arcsec, cosmic_average_mass_density_arcsec, **kwargs):
@@ -1146,9 +1113,9 @@ class SphericalTruncatedNFW(AbstractEllipticalGeneralizedNFW):
 
 class SphericalTruncatedNFWChallenge(SphericalTruncatedNFW):
 
-    def __init__(self, centre=(0.0, 0.0), kappa_s=0.05, scale_radius=5.0, units_distance='arcsec', units_mass='angular'):
-        self.kappa_s = units.FloatDistance(value=kappa_s, unit=self.units_distance)
-        self.scale_radius = units.FloatDistance(value=scale_radius * 6.68549148608755, unit=self.units_distance)
+    def __init__(self, centre=(0.0, 0.0), kappa_s=0.05, scale_radius=5.0, units_distance='arcsec', units_mass='solMass'):
+        self.kappa_s = units.FloatDistance(value=kappa_s, unit_distance=self.units_distance)
+        self.scale_radius = units.FloatDistance(value=scale_radius * 6.68549148608755, unit_distance=self.units_distance)
 
         truncation_radius = 2.0 * self.radius_at_200(critical_surface_mass_density_arcsec=1940654909.4133248,
                                                      cosmic_average_mass_density_arcsec=262.30319684750657)
@@ -1169,7 +1136,7 @@ class SphericalTruncatedNFWChallenge(SphericalTruncatedNFW):
 class EllipticalNFW(AbstractEllipticalGeneralizedNFW):
 
     def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, kappa_s=0.05, scale_radius=5.0,
-                 units_distance='arcsec', units_mass='angular'):
+                 units_distance='arcsec', units_mass='solMass'):
         """
         The elliptical NFW profiles, used to fit the dark matter halo of the lens.
 
@@ -1281,7 +1248,7 @@ class EllipticalNFW(AbstractEllipticalGeneralizedNFW):
 
 class SphericalNFW(EllipticalNFW):
 
-    def __init__(self, centre=(0.0, 0.0), kappa_s=0.05, scale_radius=5.0, units_distance='arcsec', units_mass='angular'):
+    def __init__(self, centre=(0.0, 0.0), kappa_s=0.05, scale_radius=5.0, units_distance='arcsec', units_mass='solMass'):
         """
         The spherical NFW profiles, used to fit the dark matter halo of the lens.
 
@@ -1362,7 +1329,7 @@ class AbstractEllipticalSersic(light_profiles.AbstractEllipticalSersic, Elliptic
 
     def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=0.1, effective_radius=0.6,
                  sersic_index=4.0, mass_to_light_ratio=1.0, units_distance='arcsec',
-                 units_luminosity='electrons_per_second', units_mass='angular'):
+                 units_luminosity='electrons_per_second', units_mass='solMass'):
         """
         The Sersic mass profile, the mass profiles of the light profiles that are used to fit and subtract the lens \
         model_galaxy's light.
@@ -1390,7 +1357,8 @@ class AbstractEllipticalSersic(light_profiles.AbstractEllipticalSersic, Elliptic
                                                        sersic_index=sersic_index, units_distance=units_distance,
                                                        units_luminosity=units_luminosity)
         super(EllipticalMassProfile, self).__init__(centre=centre, axis_ratio=axis_ratio, phi=phi,
-                                                    units_distance=units_distance, units_mass=units_mass)
+                                                    units_distance=units_distance)
+        self.units_mass = units_mass
         self.mass_to_light_ratio = units.FloatNone(value=mass_to_light_ratio)
 
     @geometry_profiles.transform_grid
@@ -1463,7 +1431,7 @@ class SphericalSersic(EllipticalSersic):
 
     def __init__(self, centre=(0.0, 0.0), intensity=0.1, effective_radius=0.6, sersic_index=4.0,
                  mass_to_light_ratio=1.0, units_distance='arcsec', units_luminosity='electrons_per_second',
-                 units_mass='angular'):
+                 units_mass='solMass'):
         """
         The Sersic mass profile, the mass profiles of the light profiles that are used to fit and subtract the lens
         model_galaxy's light.
@@ -1493,7 +1461,7 @@ class EllipticalExponential(EllipticalSersic):
 
     def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=0.1, effective_radius=0.6,
                  mass_to_light_ratio=1.0, units_distance='arcsec', units_luminosity='electrons_per_second',
-                 units_mass='angular'):
+                 units_mass='solMass'):
         """
         The EllipticalExponential mass profile, the mass profiles of the light profiles that are used to fit and
         subtract the lens model_galaxy's light.
@@ -1515,6 +1483,7 @@ class EllipticalExponential(EllipticalSersic):
         """
         super(EllipticalExponential, self).__init__(centre=centre, axis_ratio=axis_ratio, phi=phi, intensity=intensity,
                                                     effective_radius=effective_radius,
+                                                    sersic_index=1.0,
                                                     mass_to_light_ratio=mass_to_light_ratio,
                                                     units_distance=units_distance, units_luminosity=units_luminosity,
                                                     units_mass=units_mass)
@@ -1523,7 +1492,7 @@ class EllipticalExponential(EllipticalSersic):
 class SphericalExponential(EllipticalExponential):
 
     def __init__(self, centre=(0.0, 0.0), intensity=0.1, effective_radius=0.6, mass_to_light_ratio=1.0,
-                 units_distance='arcsec', units_luminosity='electrons_per_second', units_mass='angular'):
+                 units_distance='arcsec', units_luminosity='electrons_per_second', units_mass='solMass'):
         """
         The Exponential mass profile, the mass profiles of the light profiles that are used to fit and subtract the lens
         model_galaxy's light.
@@ -1550,7 +1519,7 @@ class EllipticalDevVaucouleurs(EllipticalSersic):
 
     def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=0.1, effective_radius=0.6,
                  mass_to_light_ratio=1.0, units_distance='arcsec', units_luminosity='electrons_per_second',
-                 units_mass='angular'):
+                 units_mass='solMass'):
         """
         The EllipticalDevVaucouleurs mass profile, the mass profiles of the light profiles that are used to fit and
         subtract the lens model_galaxy's light.
@@ -1580,7 +1549,7 @@ class EllipticalDevVaucouleurs(EllipticalSersic):
 class SphericalDevVaucouleurs(EllipticalDevVaucouleurs):
 
     def __init__(self, centre=(0.0, 0.0), intensity=0.1, effective_radius=0.6, mass_to_light_ratio=1.0,
-                 units_distance='arcsec', units_luminosity='electrons_per_second', units_mass='angular'):
+                 units_distance='arcsec', units_luminosity='electrons_per_second', units_mass='solMass'):
         """
         The DevVaucouleurs mass profile, the mass profiles of the light profiles that are used to fit and subtract the
         lens model_galaxy's light.
@@ -1607,7 +1576,7 @@ class EllipticalSersicRadialGradient(AbstractEllipticalSersic):
 
     def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=0.1, effective_radius=0.6,
                  sersic_index=4.0, mass_to_light_ratio=1.0, mass_to_light_gradient=0.0, units_distance='arcsec',
-                 units_luminosity='electrons_per_second', units_mass='angular'):
+                 units_luminosity='electrons_per_second', units_mass='solMass'):
         """
         Setup a Sersic mass and light profiles.
 
@@ -1702,7 +1671,7 @@ class SphericalSersicRadialGradient(EllipticalSersicRadialGradient):
 
     def __init__(self, centre=(0.0, 0.0), intensity=0.1, effective_radius=0.6, sersic_index=4.0,
                  mass_to_light_ratio=1.0, mass_to_light_gradient=0.0, units_distance='arcsec',
-                 units_luminosity='electrons_per_second', units_mass='angular'):
+                 units_luminosity='electrons_per_second', units_mass='solMass'):
         """
         Setup a Sersic mass and light profiles.
 
@@ -1782,10 +1751,10 @@ class ExternalShear(geometry_profiles.EllipticalProfile, MassProfile):
     def einstein_radius(self):
         return 0.0
 
-    def mass_within_circle(self, radius, units_mass='angular', critical_surface_mass_density=None):
+    def mass_within_circle(self, radius, units_mass='solMass', critical_surface_mass_density=None):
         return 0.0
 
-    def mass_within_ellipse(self, radius, units_mass='angular', critical_surface_mass_density=None):
+    def mass_within_ellipse(self, radius, units_mass='solMass', critical_surface_mass_density=None):
         return 0.0
 
     def convergence_from_grid(self, grid):

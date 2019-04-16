@@ -97,6 +97,13 @@ class TestTaggers:
         tag = tagging.interp_pixel_scale_tag_from_interp_pixel_scale(interp_pixel_scale=0.234)
         assert tag == '_interp_0.234'
 
+    def test__fix_lens_light_tagger(self):
+
+        tag = tagging.fix_lens_light_tag_from_fix_lens_light(fix_lens_light=False)
+        assert tag == ''
+        tag = tagging.fix_lens_light_tag_from_fix_lens_light(fix_lens_light=True)
+        assert tag == '_fix_lens_light'
+
     def test__align_bulge_disk_taggers(self):
 
         tag = tagging.align_bulge_disk_centre_tag_from_align_bulge_disk_centre(align_bulge_disk_centre=False)
