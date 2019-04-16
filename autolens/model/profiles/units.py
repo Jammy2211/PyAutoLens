@@ -12,8 +12,6 @@ class Distance(dimension_type.DimensionType):
 
     def convert(self, unit_distance, kpc_per_arcsec=None):
 
-        print(self.unit, unit_distance, kpc_per_arcsec)
-
         if self.unit is not unit_distance and kpc_per_arcsec is None:
             raise exc.UnitsException('The distance for a obj has been requested in new units without a '
                                      'kpc_per_arcsec conversion factor.')
