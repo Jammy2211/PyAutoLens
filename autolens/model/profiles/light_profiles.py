@@ -155,12 +155,6 @@ class EllipticalGaussian(EllipticalLightProfile):
         self.intensity = intensity
         self.sigma = sigma
 
-    def new_profile_with_units_distance_converted(self, units_distance, kpc_per_arcsec=None):
-        self.units_distance = units_distance
-        self.centre = self.centre.convert(unit_distance=units_distance, kpc_per_arcsec=kpc_per_arcsec)
-        self.sigma = self.sigma.convert(unit_distance=units_distance, kpc_per_arcsec=kpc_per_arcsec)
-        return self
-
     def intensities_from_grid_radii(self, grid_radii):
         """Calculate the intensity of the Gaussian light profile on a grid of radial coordinates.
 
@@ -191,8 +185,7 @@ class EllipticalGaussian(EllipticalLightProfile):
 class SphericalGaussian(EllipticalGaussian):
 
     @map_types
-    def __init__(self, centre=(0.0, 0.0), intensity=0.1, sigma=0.01, units_distance='arcsec',
-                 units_luminosity='electrons_per_second'):
+    def __init__(self, centre: units.Position=(0.0, 0.0), intensity: units.Luminosity=0.1, sigma=0.01):
         """ The spherical Gaussian light profile.
 
         Parameters
@@ -205,8 +198,7 @@ class SphericalGaussian(EllipticalGaussian):
             The full-width half-maximum of the Gaussian.
         """
         super(SphericalGaussian, self).__init__(centre=centre, axis_ratio=1.0, phi=0.0, intensity=intensity,
-                                                sigma=sigma, units_luminosity=units_luminosity,
-                                                units_distance=units_distance)
+                                                sigma=sigma)
 
 
 class AbstractEllipticalSersic(EllipticalLightProfile):
