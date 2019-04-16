@@ -586,6 +586,7 @@ class TestAbstractPlane(object):
             plane = pl.AbstractPlane(galaxies=[g0, g.Galaxy(), g1, g.Galaxy(), g2], redshift=None)
             assert plane.phis_of_galaxy_mass_profiles == [[0.9], [0.8], [0.7, 0.6]]
 
+
 class TestAbstractPlaneGridded(object):
     class TestGridLensing:
 

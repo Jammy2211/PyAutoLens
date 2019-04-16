@@ -680,7 +680,7 @@ class TestAbstractTracer(object):
                                                          image_plane_grid_stack=grid_stack, cosmology=cosmo.Planck15)
 
             g0_mass = g0.mass_within_circle(
-                radius=1.0, critical_surface_mass_density=tracer.critical_surface_mass_density_arcsec)
+                radius=1.0, units_mass='solMass', critical_surface_mass_density=tracer.critical_surface_mass_density_arcsec)
 
             assert tracer.masses_of_image_plane_galaxies_within_circles_in_mass_units(radius=1.0)[0] == g0_mass
 
@@ -690,7 +690,7 @@ class TestAbstractTracer(object):
                                                          image_plane_grid_stack=grid_stack, cosmology=cosmo.Planck15)
 
             g0_mass = g0.mass_within_circle(
-                radius=2.0, critical_surface_mass_density=tracer.critical_surface_mass_density_arcsec)
+                radius=2.0, units_mass='solMass', critical_surface_mass_density=tracer.critical_surface_mass_density_arcsec)
 
             assert tracer.masses_of_image_plane_galaxies_within_circles_in_mass_units(radius=2.0)[0] == g0_mass
 
@@ -703,9 +703,9 @@ class TestAbstractTracer(object):
                                                          image_plane_grid_stack=grid_stack, cosmology=cosmo.Planck15)
 
             g0_mass = g0.mass_within_circle(
-                radius=1.0, critical_surface_mass_density=tracer.critical_surface_mass_density_arcsec)
+                radius=1.0, units_mass='solMass', critical_surface_mass_density=tracer.critical_surface_mass_density_arcsec)
             g1_mass = g1.mass_within_circle(
-                radius=1.0, critical_surface_mass_density=tracer.critical_surface_mass_density_arcsec)
+                radius=1.0,units_mass='solMass',  critical_surface_mass_density=tracer.critical_surface_mass_density_arcsec)
 
             assert tracer.masses_of_image_plane_galaxies_within_circles_in_mass_units(radius=1.0)[0] == g0_mass
             assert tracer.masses_of_image_plane_galaxies_within_circles_in_mass_units(radius=1.0)[1] == g1_mass
@@ -718,9 +718,9 @@ class TestAbstractTracer(object):
                                                          image_plane_grid_stack=grid_stack, cosmology=cosmo.Planck15)
 
             g0_mass = g0.mass_within_circle(
-                radius=2.0, critical_surface_mass_density=tracer.critical_surface_mass_density_arcsec)
+                radius=2.0, units_mass='solMass', critical_surface_mass_density=tracer.critical_surface_mass_density_arcsec)
             g1_mass = g1.mass_within_circle(
-                radius=2.0, critical_surface_mass_density=tracer.critical_surface_mass_density_arcsec)
+                radius=2.0,units_mass='solMass',  critical_surface_mass_density=tracer.critical_surface_mass_density_arcsec)
 
             assert tracer.masses_of_image_plane_galaxies_within_circles_in_mass_units(radius=2.0)[0] == g0_mass
             assert tracer.masses_of_image_plane_galaxies_within_circles_in_mass_units(radius=2.0)[1] == g1_mass
@@ -732,7 +732,7 @@ class TestAbstractTracer(object):
                                                          image_plane_grid_stack=grid_stack, cosmology=cosmo.Planck15)
 
             g0_mass = g0.mass_within_ellipse(
-                major_axis=1.0, critical_surface_mass_density=tracer.critical_surface_mass_density_arcsec)
+                major_axis=1.0, units_mass='solMass', critical_surface_mass_density=tracer.critical_surface_mass_density_arcsec)
 
             assert tracer.masses_of_image_plane_galaxies_within_ellipses_in_mass_units(major_axis=1.0)[0] == g0_mass
 
@@ -742,7 +742,7 @@ class TestAbstractTracer(object):
                                                          image_plane_grid_stack=grid_stack, cosmology=cosmo.Planck15)
 
             g0_mass = g0.mass_within_ellipse(
-                major_axis=2.0, critical_surface_mass_density=tracer.critical_surface_mass_density_arcsec)
+                major_axis=2.0, units_mass='solMass', critical_surface_mass_density=tracer.critical_surface_mass_density_arcsec)
 
             assert tracer.masses_of_image_plane_galaxies_within_ellipses_in_mass_units(major_axis=2.0)[0] == g0_mass
 
@@ -754,8 +754,8 @@ class TestAbstractTracer(object):
                                                          source_galaxies=[g.Galaxy(redshift=2.0)],
                                                          image_plane_grid_stack=grid_stack, cosmology=cosmo.Planck15)
 
-            g0_mass = g0.mass_within_ellipse(major_axis=1.0, critical_surface_mass_density=tracer.critical_surface_mass_density_arcsec)
-            g1_mass = g1.mass_within_ellipse(major_axis=1.0, critical_surface_mass_density=tracer.critical_surface_mass_density_arcsec)
+            g0_mass = g0.mass_within_ellipse(major_axis=1.0, units_mass='solMass', critical_surface_mass_density=tracer.critical_surface_mass_density_arcsec)
+            g1_mass = g1.mass_within_ellipse(major_axis=1.0, units_mass='solMass', critical_surface_mass_density=tracer.critical_surface_mass_density_arcsec)
 
             assert tracer.masses_of_image_plane_galaxies_within_ellipses_in_mass_units(major_axis=1.0)[0] == g0_mass
             assert tracer.masses_of_image_plane_galaxies_within_ellipses_in_mass_units(major_axis=1.0)[1] == g1_mass
@@ -768,9 +768,9 @@ class TestAbstractTracer(object):
                                                          image_plane_grid_stack=grid_stack, cosmology=cosmo.Planck15)
 
             g0_mass = g0.mass_within_ellipse(
-                major_axis=2.0, critical_surface_mass_density=tracer.critical_surface_mass_density_arcsec)
+                major_axis=2.0,units_mass='solMass',  critical_surface_mass_density=tracer.critical_surface_mass_density_arcsec)
             g1_mass = g1.mass_within_ellipse(
-                major_axis=2.0, critical_surface_mass_density=tracer.critical_surface_mass_density_arcsec)
+                major_axis=2.0,units_mass='solMass',  critical_surface_mass_density=tracer.critical_surface_mass_density_arcsec)
 
             assert tracer.masses_of_image_plane_galaxies_within_ellipses_in_mass_units(major_axis=2.0)[0] == g0_mass
             assert tracer.masses_of_image_plane_galaxies_within_ellipses_in_mass_units(major_axis=2.0)[1] == g1_mass
@@ -778,6 +778,7 @@ class TestAbstractTracer(object):
     class TestEinsteinRadiusAndMass:
 
         def test__x1_lens_galaxy__einstein_mass_is_correct(self, grid_stack):
+
             g0 = g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=1.0), redshift=1.0)
 
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0],
@@ -785,7 +786,7 @@ class TestAbstractTracer(object):
                                                          image_plane_grid_stack=grid_stack,
                                                          cosmology=cosmo.Planck15)
 
-            g0_mass = g0.mass_within_circle(
+            g0_mass = g0.mass_within_circle(units_mass='solMass',
                 radius=1.0, critical_surface_mass_density=tracer.critical_surface_mass_density_arcsec)
 
             assert tracer.einstein_radii_arcsec_of_planes[0] == 1.0
@@ -802,7 +803,7 @@ class TestAbstractTracer(object):
                                                          image_plane_grid_stack=grid_stack,
                                                          cosmology=cosmo.Planck15)
 
-            g0_mass = g0.mass_within_circle(
+            g0_mass = g0.mass_within_circle(units_mass='solMass',
                 radius=2.0, critical_surface_mass_density=tracer.critical_surface_mass_density_arcsec)
 
             assert tracer.einstein_radii_arcsec_of_planes[0] == 2.0
@@ -821,9 +822,9 @@ class TestAbstractTracer(object):
                                                          image_plane_grid_stack=grid_stack,
                                                          cosmology=cosmo.Planck15)
 
-            g0_mass = g0.mass_within_circle(
+            g0_mass = g0.mass_within_circle(units_mass='solMass',
                 radius=1.0, critical_surface_mass_density=tracer.critical_surface_mass_density_arcsec)
-            g1_mass = g1.mass_within_circle(
+            g1_mass = g1.mass_within_circle(units_mass='solMass',
                 radius=2.0, critical_surface_mass_density=tracer.critical_surface_mass_density_arcsec)
 
             assert tracer.einstein_radii_arcsec_of_planes[0] == 3.0
@@ -843,9 +844,9 @@ class TestAbstractTracer(object):
                                                          image_plane_grid_stack=grid_stack,
                                                          cosmology=cosmo.Planck15)
 
-            g0_mass = g0.mass_within_circle(
+            g0_mass = g0.mass_within_circle(units_mass='solMass',
                 radius=1.0, critical_surface_mass_density=tracer.critical_surface_mass_density_arcsec)
-            g1_mass = g1.mass_within_circle(
+            g1_mass = g1.mass_within_circle(units_mass='solMass',
                 radius=2.0, critical_surface_mass_density=tracer.critical_surface_mass_density_arcsec)
 
             assert tracer.einstein_radii_arcsec_of_planes[0] == 3.0
