@@ -1674,16 +1674,10 @@ class ExternalShear(geometry_profiles.EllipticalProfile, MassProfile):
     def einstein_radius(self):
         return 0.0
 
-    def mass_within_circle(self, radius):
+    def mass_within_circle(self, radius, units_mass, critical_surface_mass_density):
         return 0.0
 
-    def mass_within_ellipse(self, radius):
-        return 0.0
-
-    def mass_within_circle(self, radius, critical_surface_mass_density):
-        return 0.0
-
-    def mass_within_ellipse(self, radius, critical_surface_mass_density):
+    def mass_within_ellipse(self, radius, units_mass, critical_surface_mass_density):
         return 0.0
 
     def convergence_from_grid(self, grid):

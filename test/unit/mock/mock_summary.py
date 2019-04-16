@@ -10,7 +10,7 @@ class MockMassProfile(object):
     def einstein_radius(self):
         return 10.0
 
-    def mass_within_circle_in_mass_units(self, radius, critical_surface_mass_density):
+    def mass_within_circle(self, radius, critical_surface_mass_density):
         return 1000.0
 
 
