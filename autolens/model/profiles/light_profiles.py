@@ -103,7 +103,7 @@ class EllipticalLightProfile(geometry_profiles.EllipticalProfile, LightProfile):
             The exposure time of the observation, which converts luminosity from electrons per second units to counts.
         """
         self.units_luminosity = units_luminosity
-        self.intensity = self.intensity.convert(unit=units_luminosity, exposure_time=exposure_time)
+        self.intensity = self.intensity.convert(unit_luminosity=units_luminosity, exposure_time=exposure_time)
         return self
 
     def luminosity_within_circle(self, radius):
@@ -176,13 +176,13 @@ class EllipticalGaussian(EllipticalLightProfile):
         super(EllipticalGaussian, self).__init__(centre=centre, axis_ratio=axis_ratio, phi=phi,
                                                  units_luminosity=units_luminosity, units_distance=units_distance)
 
-        self.intensity = units.FloatLuminosity(value=intensity, unit=self.units_luminosity)
-        self.sigma = units.FloatDistance(value=sigma, unit=self.units_distance)
+        self.intensity = units.FloatLuminosity(value=intensity, unit_luminosity=self.units_luminosity)
+        self.sigma = units.FloatDistance(value=sigma, unit_distance=self.units_distance)
 
     def new_profile_with_units_distance_converted(self, units_distance, kpc_per_arcsec=None):
         self.units_distance = units_distance
-        self.centre = self.centre.convert(unit=units_distance, kpc_per_arcsec=kpc_per_arcsec)
-        self.sigma = self.sigma.convert(unit=units_distance, kpc_per_arcsec=kpc_per_arcsec)
+        self.centre = self.centre.convert(unit_distance=units_distance, kpc_per_arcsec=kpc_per_arcsec)
+        self.sigma = self.sigma.convert(unit_distance=units_distance, kpc_per_arcsec=kpc_per_arcsec)
         return self
 
     def intensities_from_grid_radii(self, grid_radii):
@@ -257,14 +257,14 @@ class AbstractEllipticalSersic(EllipticalLightProfile):
         """
         super(AbstractEllipticalSersic, self).__init__(centre=centre, axis_ratio=axis_ratio, phi=phi,
                                                        units_luminosity=units_luminosity, units_distance=units_distance)
-        self.intensity = units.FloatLuminosity(value=intensity, unit=self.units_luminosity)
-        self.effective_radius = units.FloatDistance(value=effective_radius, unit=self.units_distance)
+        self.intensity = units.FloatLuminosity(value=intensity, unit_luminosity=self.units_luminosity)
+        self.effective_radius = units.FloatDistance(value=effective_radius, unit_distance=self.units_distance)
         self.sersic_index = units.FloatNone(value=sersic_index)
 
     def new_profile_with_units_distance_converted(self, units_distance, kpc_per_arcsec=None):
         self.units_distance = units_distance
-        self.centre = self.centre.convert(unit=units_distance, kpc_per_arcsec=kpc_per_arcsec)
-        self.effective_radius = self.effective_radius.convert(unit=units_distance, kpc_per_arcsec=kpc_per_arcsec)
+        self.centre = self.centre.convert(unit_distance=units_distance, kpc_per_arcsec=kpc_per_arcsec)
+        self.effective_radius = self.effective_radius.convert(unit_distance=units_distance, kpc_per_arcsec=kpc_per_arcsec)
         return self
 
     @property
@@ -506,16 +506,16 @@ class EllipticalCoreSersic(EllipticalSersic):
         super(EllipticalCoreSersic, self).__init__(centre=centre, axis_ratio=axis_ratio, phi=phi, intensity=intensity,
                                                    effective_radius=effective_radius, sersic_index=sersic_index,
                                                    units_luminosity=units_luminosity, units_distance=units_distance)
-        self.radius_break = units.FloatDistance(value=radius_break, unit=self.units_distance)
-        self.intensity_break = units.FloatLuminosity(value=intensity_break, unit=self.units_luminosity)
+        self.radius_break = units.FloatDistance(value=radius_break, unit_distance=self.units_distance)
+        self.intensity_break = units.FloatLuminosity(value=intensity_break, unit_luminosity=self.units_luminosity)
         self.alpha = units.FloatNone(value=alpha)
         self.gamma = units.FloatNone(value=gamma)
 
     def new_profile_with_units_distance_converted(self, units_distance, kpc_per_arcsec=None):
         self.units_distance = units_distance
-        self.centre = self.centre.convert(unit=units_distance, kpc_per_arcsec=kpc_per_arcsec)
-        self.effective_radius = self.effective_radius.convert(unit=units_distance, kpc_per_arcsec=kpc_per_arcsec)
-        self.radius_break = self.radius_break.convert(unit=units_distance, kpc_per_arcsec=kpc_per_arcsec)
+        self.centre = self.centre.convert(unit_distance=units_distance, kpc_per_arcsec=kpc_per_arcsec)
+        self.effective_radius = self.effective_radius.convert(unit_distance=units_distance, kpc_per_arcsec=kpc_per_arcsec)
+        self.radius_break = self.radius_break.convert(unit_distance=units_distance, kpc_per_arcsec=kpc_per_arcsec)
         return self
 
     def new_profile_with_units_luminosity_converted(self, units_luminosity, exposure_time=None):
@@ -540,8 +540,8 @@ class EllipticalCoreSersic(EllipticalSersic):
             The exposure time of the observation, which converts luminosity from electrons per second units to counts.
         """
         self.units_luminosity = units_luminosity
-        self.intensity = self.intensity.convert(unit=units_luminosity, exposure_time=exposure_time)
-        self.intensity_break = self.intensity_break.convert(unit=units_luminosity, exposure_time=exposure_time)
+        self.intensity = self.intensity.convert(unit_luminosity=units_luminosity, exposure_time=exposure_time)
+        self.intensity_break = self.intensity_break.convert(unit_luminosity=units_luminosity, exposure_time=exposure_time)
         return self
 
 

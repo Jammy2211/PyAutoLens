@@ -133,11 +133,11 @@ class GeometryProfile(object):
             The (y,x) arc-second coordinates of the profile centre.
         """
         self.units_distance = units_distance
-        self.centre = units.TupleDistance(value=centre, unit=self.units_distance)
+        self.centre = units.TupleDistance(value=centre, unit_distance=self.units_distance)
 
     def new_profile_with_units_distance_converted(self, units_distance, kpc_per_arcsec=None):
         self.units_distance = units_distance
-        self.centre = self.centre.convert(unit=units_distance, kpc_per_arcsec=kpc_per_arcsec)
+        self.centre = self.centre.convert(unit_distance=units_distance, kpc_per_arcsec=kpc_per_arcsec)
         return self
 
     def transform_grid_to_reference_frame(self, grid):
