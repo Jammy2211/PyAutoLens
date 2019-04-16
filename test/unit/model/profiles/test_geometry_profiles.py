@@ -7,13 +7,28 @@ import os
 from os import path
 from autofit import conf
 from autolens import exc
+from autolens.model.profiles import units
 from autolens.model.profiles import geometry_profiles as gp
 
 directory = path.dirname(path.realpath(__file__))
 
+
+class TestUnits(object):
+
+    def test__geometry_profile_with_tuple_distance__conversion_converts_values(self):
+
+        profile_arcsec = gp.GeometryProfile(centre=(1.0, 2.0), units_distance='arcsec')
+
+        profile_arcsec = profile_arcsec.new_profile_with_units_distance_converted(units_distance='arcsec')
+        assert profile_arcsec.units_distance == 'arcsec'
+        assert profile_arcsec.centre == (1.0, 2.0)
+        assert profile_arcsec.centre.unit_type == 'distance'
+        assert profile_arcsec.centre.unit == 'arcsec'
+
 @pytest.fixture(scope="session", autouse=True)
 def do_something():
     conf.instance = conf.Config(config_path='{}/../../test_files/configs/radial_min'.format(directory))
+
 
 class TestMemoize(object):
 
@@ -81,27 +96,27 @@ class TestGeometryProfile(object):
         
         profile_arcsec = gp.GeometryProfile(centre=(1.0, 2.0))
 
-        profile_arcsec = profile_arcsec.new_geometry_profile_with_units_distance_converted(units_distance='arcsec')
+        profile_arcsec = profile_arcsec.new_profile_with_units_distance_converted(units_distance='arcsec')
         assert profile_arcsec.units_distance == 'arcsec'
         assert profile_arcsec.centre == (1.0, 2.0)
         assert profile_arcsec.centre.unit_type == 'distance'
         assert profile_arcsec.centre.unit == 'arcsec'
 
-        profile_kpc = profile_arcsec.new_geometry_profile_with_units_distance_converted(units_distance='kpc',
-                                                                                        kpc_per_arcsec=2.0)
+        profile_kpc = profile_arcsec.new_profile_with_units_distance_converted(units_distance='kpc',
+                                                                               kpc_per_arcsec=2.0)
         assert profile_kpc.units_distance == 'kpc'
         assert profile_kpc.centre == (2.0, 4.0)
         assert profile_kpc.centre.unit_type == 'distance'
         assert profile_kpc.centre.unit == 'kpc'
 
-        profile_kpc = profile_kpc.new_geometry_profile_with_units_distance_converted(units_distance='kpc')
+        profile_kpc = profile_kpc.new_profile_with_units_distance_converted(units_distance='kpc')
         assert profile_kpc.units_distance == 'kpc'
         assert profile_kpc.centre == (2.0, 4.0)
         assert profile_kpc.centre.unit_type == 'distance'
         assert profile_kpc.units_distance == 'kpc'
 
-        profile_arcsec = profile_kpc.new_geometry_profile_with_units_distance_converted(units_distance='arcsec',
-                                                                                        kpc_per_arcsec=2.0)
+        profile_arcsec = profile_kpc.new_profile_with_units_distance_converted(units_distance='arcsec',
+                                                                               kpc_per_arcsec=2.0)
         assert profile_arcsec.units_distance == 'arcsec'
         assert profile_arcsec.centre == (1.0, 2.0)
         assert profile_arcsec.centre.unit_type == 'distance'
@@ -112,14 +127,14 @@ class TestGeometryProfile(object):
         profile_arcsec = gp.GeometryProfile(centre=(1.0, 1.0))
 
         with pytest.raises(exc.UnitsException):
-            profile_arcsec.new_geometry_profile_with_units_distance_converted(units_distance='kpc')
+            profile_arcsec.new_profile_with_units_distance_converted(units_distance='kpc')
 
         profile_kpc = profile_arcsec
         profile_kpc.units_distance = 'kpc'
         profile_kpc.centre.unit = 'kpc'
 
         with pytest.raises(exc.UnitsException):
-            profile_kpc.new_geometry_profile_with_units_distance_converted(units_distance='arcsec')
+            profile_kpc.new_profile_with_units_distance_converted(units_distance='arcsec')
 
 
 class TestEllipticalProfile(object):
@@ -130,7 +145,7 @@ class TestEllipticalProfile(object):
 
             profile_arcsec = gp.EllipticalProfile(centre=(1.0, 2.0), axis_ratio=0.5, phi=45.0)
 
-            profile_arcsec = profile_arcsec.new_geometry_profile_with_units_distance_converted(units_distance='arcsec')
+            profile_arcsec = profile_arcsec.new_profile_with_units_distance_converted(units_distance='arcsec')
             assert profile_arcsec.units_distance == 'arcsec'
             assert profile_arcsec.centre == (1.0, 2.0)
             assert profile_arcsec.centre.unit_type == 'distance'
@@ -142,8 +157,8 @@ class TestEllipticalProfile(object):
             assert profile_arcsec.phi.unit_type == None
             assert profile_arcsec.phi.unit == None
 
-            profile_kpc = profile_arcsec.new_geometry_profile_with_units_distance_converted(units_distance='kpc',
-                                                                                            kpc_per_arcsec=2.0)
+            profile_kpc = profile_arcsec.new_profile_with_units_distance_converted(units_distance='kpc',
+                                                                                   kpc_per_arcsec=2.0)
             assert profile_kpc.units_distance == 'kpc'
             assert profile_kpc.centre == (2.0, 4.0)
             assert profile_kpc.centre.unit_type == 'distance'
@@ -155,7 +170,7 @@ class TestEllipticalProfile(object):
             assert profile_arcsec.phi.unit_type == None
             assert profile_arcsec.phi.unit == None
 
-            profile_kpc = profile_kpc.new_geometry_profile_with_units_distance_converted(units_distance='kpc')
+            profile_kpc = profile_kpc.new_profile_with_units_distance_converted(units_distance='kpc')
             assert profile_kpc.units_distance == 'kpc'
             assert profile_kpc.centre == (2.0, 4.0)
             assert profile_kpc.centre.unit_type == 'distance'
@@ -167,8 +182,8 @@ class TestEllipticalProfile(object):
             assert profile_arcsec.phi.unit_type == None
             assert profile_arcsec.phi.unit == None
 
-            profile_arcsec = profile_kpc.new_geometry_profile_with_units_distance_converted(units_distance='arcsec',
-                                                                                            kpc_per_arcsec=2.0)
+            profile_arcsec = profile_kpc.new_profile_with_units_distance_converted(units_distance='arcsec',
+                                                                                   kpc_per_arcsec=2.0)
             assert profile_arcsec.units_distance == 'arcsec'
             assert profile_arcsec.centre == (1.0, 2.0)
             assert profile_arcsec.centre.unit_type == 'distance'
@@ -407,27 +422,27 @@ class TestSphericalProfile(object):
 
             profile_arcsec = gp.SphericalProfile(centre=(1.0, 2.0))
 
-            profile_arcsec = profile_arcsec.new_geometry_profile_with_units_distance_converted(units_distance='arcsec')
+            profile_arcsec = profile_arcsec.new_profile_with_units_distance_converted(units_distance='arcsec')
             assert profile_arcsec.units_distance == 'arcsec'
             assert profile_arcsec.centre == (1.0, 2.0)
             assert profile_arcsec.centre.unit_type == 'distance'
             assert profile_arcsec.centre.unit == 'arcsec'
 
-            profile_kpc = profile_arcsec.new_geometry_profile_with_units_distance_converted(units_distance='kpc',
-                                                                                            kpc_per_arcsec=2.0)
+            profile_kpc = profile_arcsec.new_profile_with_units_distance_converted(units_distance='kpc',
+                                                                                   kpc_per_arcsec=2.0)
             assert profile_kpc.units_distance == 'kpc'
             assert profile_kpc.centre == (2.0, 4.0)
             assert profile_kpc.centre.unit_type == 'distance'
             assert profile_kpc.centre.unit == 'kpc'
 
-            profile_kpc = profile_kpc.new_geometry_profile_with_units_distance_converted(units_distance='kpc')
+            profile_kpc = profile_kpc.new_profile_with_units_distance_converted(units_distance='kpc')
             assert profile_kpc.units_distance == 'kpc'
             assert profile_kpc.centre == (2.0, 4.0)
             assert profile_kpc.centre.unit_type == 'distance'
             assert profile_kpc.units_distance == 'kpc'
 
-            profile_arcsec = profile_kpc.new_geometry_profile_with_units_distance_converted(units_distance='arcsec',
-                                                                                            kpc_per_arcsec=2.0)
+            profile_arcsec = profile_kpc.new_profile_with_units_distance_converted(units_distance='arcsec',
+                                                                                   kpc_per_arcsec=2.0)
             assert profile_arcsec.units_distance == 'arcsec'
             assert profile_arcsec.centre == (1.0, 2.0)
             assert profile_arcsec.centre.unit_type == 'distance'
