@@ -4,7 +4,7 @@ from autolens import exc
 from autolens.model.profiles import units
 
 
-class TestFloatDistance(object):
+class TestDistance(object):
 
     def test__conversions_from_arcsec_to_kpc_and_back__errors_raised_if_no_kpc_per_arcsec(self):
         unit_arcsec = units.Distance(value=2.0)
@@ -38,7 +38,7 @@ class TestFloatDistance(object):
             unit_arcsec.convert(unit_distance='lol')
 
 
-class TestFloatLuminosity(object):
+class TestLuminosity(object):
 
     def test__conversions_from_electrons_per_second_and_counts_and_back__errors_raised_if_no_exposure_time(self):
         unit_electrons_per_second = units.Luminosity(value=2.0)
@@ -72,7 +72,7 @@ class TestFloatLuminosity(object):
             unit_electrons_per_second.convert(unit_luminosity='lol')
 
 
-class TestFloatMass(object):
+class TestMass(object):
 
     def test__conversions_from_angular_and_sol_mass_and_back__errors_raised_if_no_exposure_time(self):
         unit_angular = units.Mass(value=2.0)

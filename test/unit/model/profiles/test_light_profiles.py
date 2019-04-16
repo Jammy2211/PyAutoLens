@@ -37,14 +37,13 @@ def vertical_sersic():
 
 class MockLightProfileUnits(lp.EllipticalLightProfile):
     
-    def __init__(self, centre, axis_ratio, phi, intensity, radius, units_luminosity='electrons_per_second',
-                 units_distance='arcsec'):
+    def __init__(self, centre : units.Position = (0.0, 0.0), axis_ratio: float = 1.0, phi: float = 0.0,
+                 intensity: float = 0.1, radius: units.Distance = 1.0):
         
-        super(MockLightProfileUnits, self).__init__(centre=centre, axis_ratio=axis_ratio, phi=phi, 
-                                                    units_luminosity=units_luminosity, units_distance=units_distance)
+        super(MockLightProfileUnits, self).__init__(centre=centre, axis_ratio=axis_ratio, phi=phi)
         
-        self.intensity = units.FloatLuminosity(value=intensity, unit_luminosity=units_luminosity)
-        self.radius = units.FloatDistance(value=radius, unit_distance=units_distance)
+        self.intensity = units.Luminosity(value=intensity, unit='electrons_per_second')
+        self.radius = units.Distance(value=radius, unit='arcsec')
 
 
 class TestUnits:
@@ -52,15 +51,16 @@ class TestUnits:
     def test__light_profile_with_tuple_distance_and_float_distance__conversions_convert_values(self):
 
         profile_arcsec = MockLightProfileUnits(centre=(1.0, 2.0), axis_ratio=0.5, phi=45.0, intensity=1.0,
-                                               radius=0.1, units_distance='arcsec')
+                                               radius=0.1)
 
         assert profile_arcsec.centre == (1.0, 2.0)
         assert profile_arcsec.axis_ratio == 0.5
         assert profile_arcsec.phi == 45.0
         assert profile_arcsec.intensity == 1.0
         assert profile_arcsec.radius == 0.1
-        assert profile_arcsec.units_distance == 'arcsec'
-        assert profile_arcsec.units_luminosity == 'electrons_per_second'
+        assert profile_arcsec.centre[0].unit == 'arcsec'
+        assert profile_arcsec.centre[1].unit == 'arcsec'
+        assert profile_arcsec.radius.unit == 'arcsec'
 
         profile_arcsec = profile_arcsec.new_profile_with_units_converted(units_distance='arcsec')
 
@@ -69,8 +69,9 @@ class TestUnits:
         assert profile_arcsec.phi == 45.0
         assert profile_arcsec.intensity == 1.0
         assert profile_arcsec.radius == 0.1
-        assert profile_arcsec.units_distance == 'arcsec'
-        assert profile_arcsec.units_luminosity == 'electrons_per_second'
+        assert profile_arcsec.centre[0].unit == 'arcsec'
+        assert profile_arcsec.centre[1].unit == 'arcsec'
+        assert profile_arcsec.radius.unit == 'arcsec'
 
         profile_kpc = profile_arcsec.new_profile_with_units_converted(units_distance='kpc', kpc_per_arcsec=2.0)
 
@@ -79,8 +80,9 @@ class TestUnits:
         assert profile_kpc.phi == 45.0
         assert profile_kpc.intensity == 1.0
         assert profile_kpc.radius == 0.2
-        assert profile_kpc.units_distance == 'kpc'
-        assert profile_kpc.units_luminosity == 'electrons_per_second'
+        assert profile_kpc.centre[0].unit == 'kpc'
+        assert profile_kpc.centre[1].unit == 'kpc'
+        assert profile_kpc.radius.unit == 'kpc'
 
         profile_kpc = profile_kpc.new_profile_with_units_converted(units_distance='kpc')
 
@@ -89,8 +91,9 @@ class TestUnits:
         assert profile_kpc.phi == 45.0
         assert profile_kpc.intensity == 1.0
         assert profile_kpc.radius == 0.2
-        assert profile_kpc.units_distance == 'kpc'
-        assert profile_kpc.units_luminosity == 'electrons_per_second'
+        assert profile_kpc.centre[0].unit == 'kpc'
+        assert profile_kpc.centre[1].unit == 'kpc'
+        assert profile_kpc.radius.unit == 'kpc'
 
         profile_arcsec = profile_arcsec.new_profile_with_units_converted(units_distance='arcsec',
                                                                            kpc_per_arcsec=2.0)
@@ -100,19 +103,9 @@ class TestUnits:
         assert profile_arcsec.phi == 45.0
         assert profile_arcsec.intensity == 1.0
         assert profile_arcsec.radius == 0.1
-        assert profile_arcsec.units_distance == 'arcsec'
-        assert profile_arcsec.units_luminosity == 'electrons_per_second'
-
-        profile_arcsec = profile_arcsec.new_profile_with_units_converted(units_luminosity='counts',
-                                                                           exposure_time=10.0)
-
-        assert profile_arcsec.centre == (1.0, 2.0)
-        assert profile_arcsec.axis_ratio == 0.5
-        assert profile_arcsec.phi == 45.0
-        assert profile_arcsec.intensity == 10.0
-        assert profile_arcsec.radius == 0.1
-        assert profile_arcsec.units_distance == 'arcsec'
-        assert profile_arcsec.units_luminosity == 'counts'
+        assert profile_arcsec.centre[0].unit == 'arcsec'
+        assert profile_arcsec.centre[1].unit == 'arcsec'
+        assert profile_arcsec.radius.unit == 'arcsec'
 
     def test__distance_conversion_requires_kpc_per_arcsec_but_does_not_supply_it_raises_error(self):
         
@@ -131,15 +124,13 @@ class TestUnits:
     def test__light_profile_with_float_luminosity__conversions_convert_values(self):
         
         profile_eps = MockLightProfileUnits(centre=(1.0, 2.0), axis_ratio=0.5, phi=45.0, intensity=1.0,
-                                               radius=0.1, units_luminosity='electrons_per_second')
+                                               radius=0.1)
 
         assert profile_eps.centre == (1.0, 2.0)
         assert profile_eps.axis_ratio == 0.5
         assert profile_eps.phi == 45.0
         assert profile_eps.intensity == 1.0
         assert profile_eps.radius == 0.1
-        assert profile_eps.units_distance == 'arcsec'
-        assert profile_eps.units_luminosity == 'electrons_per_second'
 
         profile_eps = profile_eps.new_profile_with_units_converted(units_luminosity='electrons_per_second')
 
@@ -148,8 +139,6 @@ class TestUnits:
         assert profile_eps.phi == 45.0
         assert profile_eps.intensity == 1.0
         assert profile_eps.radius == 0.1
-        assert profile_eps.units_distance == 'arcsec'
-        assert profile_eps.units_luminosity == 'electrons_per_second'
 
         profile_counts = profile_eps.new_profile_with_units_converted(units_luminosity='counts',
                                                                         exposure_time=10.0)
@@ -159,8 +148,6 @@ class TestUnits:
         assert profile_counts.phi == 45.0
         assert profile_counts.intensity == 10.0
         assert profile_counts.radius == 0.1
-        assert profile_counts.units_distance == 'arcsec'
-        assert profile_counts.units_luminosity == 'counts'
 
         profile_counts = profile_counts.new_profile_with_units_converted(units_luminosity='counts')
 
@@ -169,8 +156,6 @@ class TestUnits:
         assert profile_counts.phi == 45.0
         assert profile_counts.intensity == 10.0
         assert profile_counts.radius == 0.1
-        assert profile_counts.units_distance == 'arcsec'
-        assert profile_counts.units_luminosity == 'counts'
 
         profile_eps = profile_counts.new_profile_with_units_converted(units_luminosity='electrons_per_second',
                                                                         exposure_time=10.0)
@@ -180,8 +165,6 @@ class TestUnits:
         assert profile_eps.phi == 45.0
         assert profile_eps.intensity == 1.0
         assert profile_eps.radius == 0.1
-        assert profile_eps.units_distance == 'arcsec'
-        assert profile_eps.units_luminosity == 'electrons_per_second'
 
     def test__luminosity_conversion_requires_exposure_time_but_does_not_supply_it_raises_error(self):
 
