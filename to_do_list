@@ -15,6 +15,7 @@ Big Picture:
 
 Small Picture:
 
+TURN LOGGING OFF
 - Get Cosma runs going for lens, cti.
 - Lensing example test data suite.
 - Aggregator use and examples, for CTI and Lensing.
@@ -24,7 +25,6 @@ Small Picture:
 - hyper galaxy phase stuff.
 - unit conversions built into code.
 - classmethods to generate profiles from physical values (e.g. magnitudes, velocity dispersion, stellar mass, halo mass),
-  unit conversions.
 
 - Sort out radial minima tests.
 - Extract square around mask, so no rectnagular pixels.
