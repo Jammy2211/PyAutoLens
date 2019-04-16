@@ -184,7 +184,7 @@ class SphericalGaussian(EllipticalGaussian):
 class AbstractEllipticalSersic(EllipticalLightProfile):
 
     @map_types
-    def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=0.1, effective_radius=0.6,
+    def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity: units.Luminosity = 0.1, effecive_radius: units.Distance = 0.6,
                  sersic_index=4.0, units_distance='arcsec', units_luminosity='electrons_per_second'):
         """ Abstract base class for an elliptical Sersic light profile, used for computing its effective radius and
         Sersic constant.
@@ -252,7 +252,7 @@ class AbstractEllipticalSersic(EllipticalLightProfile):
 class EllipticalSersic(AbstractEllipticalSersic, EllipticalLightProfile):
 
     @map_types
-    def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=0.1, effective_radius=0.6,
+    def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity: units.Luminosity = 0.1, effecive_radius: units.Distance = 0.6,
                  sersic_index=4.0, units_distance='arcsec', units_luminosity='electrons_per_second'):
         """ The elliptical Sersic light profile.
 
@@ -308,7 +308,7 @@ class EllipticalSersic(AbstractEllipticalSersic, EllipticalLightProfile):
 class SphericalSersic(EllipticalSersic):
 
     @map_types
-    def __init__(self, centre=(0.0, 0.0), intensity=0.1, effective_radius=0.6, sersic_index=4.0,
+    def __init__(self, centre=(0.0, 0.0), intensity: units.Luminosity = 0.1, effecive_radius: units.Distance = 0.6, sersic_index=4.0,
                  units_distance='arcsec', units_luminosity='electrons_per_second'):
         """ The spherical Sersic light profile.
 
@@ -331,7 +331,7 @@ class SphericalSersic(EllipticalSersic):
 class EllipticalExponential(EllipticalSersic):
 
     @map_types
-    def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=0.1, effective_radius=0.6,
+    def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity: units.Luminosity = 0.1, effecive_radius: units.Distance = 0.6,
                  units_distance='arcsec', units_luminosity='electrons_per_second'):
         """ The elliptical exponential profile.
 
@@ -358,7 +358,7 @@ class EllipticalExponential(EllipticalSersic):
 class SphericalExponential(EllipticalExponential):
 
     @map_types
-    def __init__(self, centre=(0.0, 0.0), intensity=0.1, effective_radius=0.6, units_distance='arcsec',
+    def __init__(self, centre=(0.0, 0.0), intensity: units.Luminosity = 0.1, effecive_radius: units.Distance = 0.6, units_distance='arcsec',
                  units_luminosity='electrons_per_second'):
         """ The spherical exponential profile.
 
@@ -381,7 +381,7 @@ class SphericalExponential(EllipticalExponential):
 class EllipticalDevVaucouleurs(EllipticalSersic):
 
     @map_types
-    def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=0.1, effective_radius=0.6,
+    def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity: units.Luminosity = 0.1, effecive_radius: units.Distance = 0.6,
                  units_distance='arcsec', units_luminosity='electrons_per_second'):
         """ The elliptical Dev Vaucouleurs light profile.
 
@@ -409,7 +409,7 @@ class EllipticalDevVaucouleurs(EllipticalSersic):
 class SphericalDevVaucouleurs(EllipticalDevVaucouleurs):
 
     @map_types
-    def __init__(self, centre=(0.0, 0.0), intensity=0.1, effective_radius=0.6, units_distance='arcsec',
+    def __init__(self, centre=(0.0, 0.0), intensity: units.Luminosity = 0.1, effecive_radius: units.Distance = 0.6, units_distance='arcsec',
                  units_luminosity='electrons_per_second'):
         """ The spherical Dev Vaucouleurs light profile.
 
@@ -432,7 +432,7 @@ class SphericalDevVaucouleurs(EllipticalDevVaucouleurs):
 class EllipticalCoreSersic(EllipticalSersic):
 
     @map_types
-    def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=0.1, effective_radius=0.6,
+    def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity: units.Luminosity = 0.1, effecive_radius: units.Distance = 0.6,
                  sersic_index=4.0, radius_break=0.01, intensity_break=0.05, gamma=0.25, alpha=3.0,
                  units_distance='arcsec', units_luminosity='electrons_per_second'):
         """ The elliptical cored-Sersic light profile.
@@ -531,7 +531,7 @@ class EllipticalCoreSersic(EllipticalSersic):
 class SphericalCoreSersic(EllipticalCoreSersic):
 
     @map_types
-    def __init__(self, centre=(0.0, 0.0), intensity=0.1, effective_radius=0.6,
+    def __init__(self, centre=(0.0, 0.0), intensity: units.Luminosity = 0.1, effecive_radius: units.Distance = 0.6,
                  sersic_index=4.0, radius_break=0.01, intensity_break=0.05, gamma=0.25, alpha=3.0,
                  units_distance='arcsec', units_luminosity='electrons_per_second'):
         """ The elliptical cored-Sersic light profile.
