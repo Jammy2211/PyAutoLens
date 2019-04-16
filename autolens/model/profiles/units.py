@@ -1,24 +1,10 @@
+import typing
+
+from autofit.tools import dimension_type
 from autolens import exc
 
 
-class FloatNone(float):
-
-    def __new__(self, value):
-        return float.__new__(self, value)
-
-    def __init__(self, value):
-        float.__init__(value)
-        self.unit = None
-        self.unit_type = None
-
-    def convert(self):
-        raise exc.UnitsException('Cannot convert units for a dimensionless value')
-
-
-class FloatDistance(float):
-
-    def __new__(self, value, unit_distance):
-        return float.__new__(self, value)
+class Distance(dimension_type.DimensionType):
 
     def __init__(self, value, unit_distance):
         float.__init__(value)
@@ -45,13 +31,10 @@ class FloatDistance(float):
             raise exc.UnitsException('The unit specified for the distance of a obj was an invalid string, you '
                                      'must use (arcsec | kpc)')
 
-        return FloatDistance(value=obj, unit_distance=unit_distance)
+        return Distance(value=obj, unit_distance=unit_distance)
 
 
-class FloatLuminosity(float):
-
-    def __new__(self, value, unit_luminosity):
-        return float.__new__(self, value)
+class Luminosity(dimension_type.DimensionType):
 
     def __init__(self, value, unit_luminosity):
         float.__init__(value)
@@ -78,13 +61,10 @@ class FloatLuminosity(float):
             raise exc.UnitsException('The unit specified for the luminosity of a obj was an invalid string, you '
                                      'must use (electrons per second | counts)')
 
-        return FloatLuminosity(value=obj, unit_luminosity=unit_luminosity)
+        return Luminosity(value=obj, unit_luminosity=unit_luminosity)
 
 
-class FloatMass(float):
-
-    def __new__(self, value, unit_mass):
-        return float.__new__(self, value)
+class Mass(dimension_type.DimensionType):
 
     def __init__(self, value, unit_mass):
         float.__init__(value)
@@ -111,13 +91,10 @@ class FloatMass(float):
             raise exc.UnitsException('The unit specified for the mass of a obj was an invalid string, you '
                                      'must use (angular | solMass)')
 
-        return FloatMass(value=obj, unit_mass=unit_mass)
+        return Mass(value=obj, unit_mass=unit_mass)
 
 
-class FloatMassOverLuminosity(float):
-
-    def __new__(self, value, unit_mass, unit_luminosity):
-        return float.__new__(self, value)
+class MassOverLuminosity(dimension_type.DimensionType):
 
     def __init__(self, value, unit_mass, unit_luminosity):
         float.__init__(value)
@@ -159,41 +136,7 @@ class FloatMassOverLuminosity(float):
             raise exc.UnitsException('The unit specified for the luminosity of a obj was an invalid string, you '
                                      'must use (electrons per second | counts)')
 
-        return FloatMassOverLuminosity(value=obj, unit_mass=unit_mass, unit_luminosity=unit_luminosity)
+        return MassOverLuminosity(value=obj, unit_mass=unit_mass, unit_luminosity=unit_luminosity)
 
 
-class TupleUnit(tuple):
-
-    def __new__ (cls, value, unit):
-
-        obj = super(TupleUnit, cls).__new__(cls, value)
-        obj.unit = unit
-        return obj
-
-
-class TupleDistance(TupleUnit):
-
-    def __new__ (cls, value, unit_distance):
-
-        obj = super(TupleDistance, cls).__new__(cls, value, unit_distance)
-        obj.unit = unit_distance
-        obj.unit_type = 'distance'
-        return obj
-
-    def convert(self, unit_distance, kpc_per_arcsec=None):
-
-        if unit_distance is not self.unit and kpc_per_arcsec is None:
-            raise exc.UnitsException('The distance for a obj has been requested in new units without a '
-                                     'kpc_per_arcsec conversion factor.')
-
-        if self.unit is unit_distance:
-            obj = self
-        elif self.unit is 'arcsec' and unit_distance is 'kpc':
-            obj = (kpc_per_arcsec * self[0], kpc_per_arcsec * self[1])
-        elif self.unit is 'kpc' and unit_distance is 'arcsec':
-            obj = (self[0] / kpc_per_arcsec, self[1] / kpc_per_arcsec)
-        else:
-            raise exc.UnitsException('The unit specified for the distance of a obj was an invalid string, you '
-                                     'must use (arcsec | kpc)')
-
-        return TupleDistance(value=obj, unit_distance=unit_distance)
+Position = typing.Tuple[Distance, Distance]
