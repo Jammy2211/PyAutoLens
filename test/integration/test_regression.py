@@ -123,14 +123,15 @@ class TestPhaseModelMapper(object):
         assert initial_total_priors - 1 == phase.variable.prior_count
         assert len(phase.variable.flat_prior_model_tuples) == 1
 
+        print(phase.variable.flat_prior_model_tuples)
+        print(phase.variable.info)
+
         lines = list(
             filter(lambda line: "axis_ratio" in line or "intensity" in line, phase.variable.info.split("\n")))
 
         assert len(lines) == 2
-        assert "lens_axis_ratio                                             UniformPrior, lower_limit = 0.2, " \
-               "upper_limit = 1.0" in lines
-        assert "lens_intensity                                              UniformPrior, lower_limit = 0.2, " \
-               "upper_limit = 1.0" in lines
+        assert "lens_galaxies_lens_sersic_axis_ratio                                                  UniformPrior, lower_limit = 0.2, upper_limit = 1.0" in lines
+        assert "lens_galaxies_lens_sersic_intensity                                                   UniformPrior, lower_limit = 0.2, upper_limit = 1.0" in lines
 
     if os.path.exists(output_path):
         shutil.rmtree(output_path)
