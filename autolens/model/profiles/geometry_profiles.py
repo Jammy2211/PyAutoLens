@@ -228,6 +228,7 @@ class SphericalProfile(GeometryProfile):
 
 class EllipticalProfile(SphericalProfile):
 
+    @map_types
     def __init__(self, centre: units.Position = (0.0, 0.0), axis_ratio: float = 1.0, phi: float = 0.0):
         """ An elliptical profile, which describes profiles with y and x centre Cartesian coordinates, an axis-ratio \
         and rotational angle phi.

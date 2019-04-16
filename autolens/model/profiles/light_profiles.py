@@ -1,6 +1,7 @@
 import numpy as np
 from scipy.integrate import quad
 
+from autofit.tools.dimension_type import map_types
 from autolens.model.profiles import geometry_profiles
 from autolens.model.profiles import units
 
@@ -46,7 +47,8 @@ class LightProfile(object):
 class EllipticalLightProfile(geometry_profiles.EllipticalProfile, LightProfile):
     """Generic class for an elliptical light profiles"""
 
-    def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0):
+    @map_types
+    def __init__(self, centre: units.Position=(0.0, 0.0), axis_ratio: float=1.0, phi: float=0.0):
         """  Abstract class for an elliptical light-profile.
 
         Parameters
@@ -62,43 +64,18 @@ class EllipticalLightProfile(geometry_profiles.EllipticalProfile, LightProfile):
 
     def new_profile_with_units_converted(self, units_distance=None, units_luminosity=None, kpc_per_arcsec=None,
                                          exposure_time=None):
-
-        new_profile = self
-
-        if units_distance is not None:
-            new_profile = new_profile.new_profile_with_units_distance_converted(units_distance=units_distance,
-                                                                                kpc_per_arcsec=kpc_per_arcsec)
-
-        if units_luminosity is not None:
-            new_profile = new_profile.new_profile_with_units_luminosity_converted(units_luminosity=units_luminosity,
-                                                                                  exposure_time=exposure_time)
-
-        return new_profile
-
-    def new_profile_with_units_luminosity_converted(self, units_luminosity, exposure_time=None):
-        """Convert the luminosity in electrons per second computed in the *luminosity_within_* method to the units \
-        specified by the units_luminosity parameter.
-
-        This function first checks that the necessary input parameters are input before performing the conversion. \
-        For example, the luminosity cannot be converted to counts if the exposure time is not input.
-
-        The following units for mass can be specified and output:
-
-        - Electrons per second (default) - 'electrons_per_second'.
-        - Counts - 'counts' (multiplies the luminosity in electrons per second by the exposure time).
-
-        Parameters
-        ----------
-        radius : float
-            The radius of the circle to compute the dimensionless mass within.
-        units_luminosity : str
-            The units the luminosity is returned in (electrons_per_second | counts).
-        exposure_time : float or None
-            The exposure time of the observation, which converts luminosity from electrons per second units to counts.
-        """
-        self.units_luminosity = units_luminosity
-        self.intensity = self.intensity.convert(unit_luminosity=units_luminosity, exposure_time=exposure_time)
-        return self
+        pass
+        # new_profile = self
+        #
+        # if units_distance is not None:
+        #     new_profile = new_profile.new_profile_with_units_distance_converted(units_distance=units_distance,
+        #                                                                         kpc_per_arcsec=kpc_per_arcsec)
+        #
+        # if units_luminosity is not None:
+        #     new_profile = new_profile.new_profile_with_units_luminosity_converted(units_luminosity=units_luminosity,
+        #                                                                           exposure_time=exposure_time)
+        #
+        # return new_profile
 
     def luminosity_within_circle(self, radius):
         """Integrate the light profile to compute the total luminosity within a circle of specified radius. This is \
@@ -150,8 +127,9 @@ class EllipticalLightProfile(geometry_profiles.EllipticalProfile, LightProfile):
 
 class EllipticalGaussian(EllipticalLightProfile):
 
-    def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=0.1, sigma=0.01, units_distance='arcsec',
-                 units_luminosity='electrons_per_second'):
+    @map_types
+    def __init__(self, centre: units.Position = (0.0, 0.0), axis_ratio: float = 1.0, phi: float = 0.0,
+                 intensity: float = 0.1, sigma: float = 0.01):
         """ The elliptical Gaussian light profile.
 
         Parameters
@@ -167,11 +145,10 @@ class EllipticalGaussian(EllipticalLightProfile):
         sigma : float
             The full-width half-maximum of the Gaussian.
         """
-        super(EllipticalGaussian, self).__init__(centre=centre, axis_ratio=axis_ratio, phi=phi,
-                                                 units_luminosity=units_luminosity, units_distance=units_distance)
+        super(EllipticalGaussian, self).__init__(centre=centre, axis_ratio=axis_ratio, phi=phi)
 
-        self.intensity = units.FloatLuminosity(value=intensity, unit_luminosity=self.units_luminosity)
-        self.sigma = units.FloatDistance(value=sigma, unit_distance=self.units_distance)
+        self.intensity = intensity
+        self.sigma = sigma
 
     def new_profile_with_units_distance_converted(self, units_distance, kpc_per_arcsec=None):
         self.units_distance = units_distance
@@ -208,6 +185,7 @@ class EllipticalGaussian(EllipticalLightProfile):
 
 class SphericalGaussian(EllipticalGaussian):
 
+    @map_types
     def __init__(self, centre=(0.0, 0.0), intensity=0.1, sigma=0.01, units_distance='arcsec',
                  units_luminosity='electrons_per_second'):
         """ The spherical Gaussian light profile.
@@ -228,6 +206,7 @@ class SphericalGaussian(EllipticalGaussian):
 
 class AbstractEllipticalSersic(EllipticalLightProfile):
 
+    @map_types
     def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=0.1, effective_radius=0.6,
                  sersic_index=4.0, units_distance='arcsec', units_luminosity='electrons_per_second'):
         """ Abstract base class for an elliptical Sersic light profile, used for computing its effective radius and
@@ -295,6 +274,7 @@ class AbstractEllipticalSersic(EllipticalLightProfile):
 
 class EllipticalSersic(AbstractEllipticalSersic, EllipticalLightProfile):
 
+    @map_types
     def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=0.1, effective_radius=0.6,
                  sersic_index=4.0, units_distance='arcsec', units_luminosity='electrons_per_second'):
         """ The elliptical Sersic light profile.
@@ -350,6 +330,7 @@ class EllipticalSersic(AbstractEllipticalSersic, EllipticalLightProfile):
 
 class SphericalSersic(EllipticalSersic):
 
+    @map_types
     def __init__(self, centre=(0.0, 0.0), intensity=0.1, effective_radius=0.6, sersic_index=4.0,
                  units_distance='arcsec', units_luminosity='electrons_per_second'):
         """ The spherical Sersic light profile.
@@ -372,6 +353,7 @@ class SphericalSersic(EllipticalSersic):
 
 class EllipticalExponential(EllipticalSersic):
 
+    @map_types
     def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=0.1, effective_radius=0.6,
                  units_distance='arcsec', units_luminosity='electrons_per_second'):
         """ The elliptical exponential profile.
@@ -398,6 +380,7 @@ class EllipticalExponential(EllipticalSersic):
 
 class SphericalExponential(EllipticalExponential):
 
+    @map_types
     def __init__(self, centre=(0.0, 0.0), intensity=0.1, effective_radius=0.6, units_distance='arcsec',
                  units_luminosity='electrons_per_second'):
         """ The spherical exponential profile.
@@ -420,6 +403,7 @@ class SphericalExponential(EllipticalExponential):
 
 class EllipticalDevVaucouleurs(EllipticalSersic):
 
+    @map_types
     def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=0.1, effective_radius=0.6,
                  units_distance='arcsec', units_luminosity='electrons_per_second'):
         """ The elliptical Dev Vaucouleurs light profile.
@@ -447,6 +431,7 @@ class EllipticalDevVaucouleurs(EllipticalSersic):
 
 class SphericalDevVaucouleurs(EllipticalDevVaucouleurs):
 
+    @map_types
     def __init__(self, centre=(0.0, 0.0), intensity=0.1, effective_radius=0.6, units_distance='arcsec',
                  units_luminosity='electrons_per_second'):
         """ The spherical Dev Vaucouleurs light profile.
@@ -469,6 +454,7 @@ class SphericalDevVaucouleurs(EllipticalDevVaucouleurs):
 
 class EllipticalCoreSersic(EllipticalSersic):
 
+    @map_types
     def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0, intensity=0.1, effective_radius=0.6,
                  sersic_index=4.0, radius_break=0.01, intensity_break=0.05, gamma=0.25, alpha=3.0,
                  units_distance='arcsec', units_luminosity='electrons_per_second'):
@@ -567,6 +553,7 @@ class EllipticalCoreSersic(EllipticalSersic):
 
 class SphericalCoreSersic(EllipticalCoreSersic):
 
+    @map_types
     def __init__(self, centre=(0.0, 0.0), intensity=0.1, effective_radius=0.6,
                  sersic_index=4.0, radius_break=0.01, intensity_break=0.05, gamma=0.25, alpha=3.0,
                  units_distance='arcsec', units_luminosity='electrons_per_second'):
