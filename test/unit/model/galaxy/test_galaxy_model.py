@@ -5,6 +5,7 @@ from autofit import conf
 from autofit import exc
 from autofit.mapper import model_mapper as mm
 from autofit.mapper import prior
+from autofit.mapper import prior_model as pm
 
 from autolens.model.galaxy import galaxy as g, galaxy_model as gp
 from autolens.model.inversion import pixelizations, regularization
@@ -73,8 +74,8 @@ class TestLinkedModelForClasses(object):
         new_model = initial_model.linked_model_for_classes(light_profile=light_profiles.EllipticalDevVaucouleurs,
                                                            mass_profile=mass_profiles.EllipticalCoredIsothermal)
 
-        assert isinstance(new_model.light_profile, mm.PriorModel)
-        assert isinstance(new_model.mass_profile, mm.PriorModel)
+        assert isinstance(new_model.light_profile, pm.PriorModel)
+        assert isinstance(new_model.mass_profile, pm.PriorModel)
 
         assert new_model.light_profile is not initial_model.light_profile
         assert new_model.mass_profile is not initial_model.mass_profile
@@ -183,8 +184,8 @@ class TestNamedProfiles:
         galaxy_prior = gp.GalaxyModel(redshift=g.Redshift, light_profile=light_profiles.EllipticalSersic,
                                       mass_profile=mass_profiles.EllipticalSersic)
 
-        assert isinstance(galaxy_prior.light_profile, mm.PriorModel)
-        assert isinstance(galaxy_prior.mass_profile, mm.PriorModel)
+        assert isinstance(galaxy_prior.light_profile, pm.PriorModel)
+        assert isinstance(galaxy_prior.mass_profile, pm.PriorModel)
 
     def test_set_prior_model(self):
         mapper = mm.ModelMapper()
@@ -195,7 +196,7 @@ class TestNamedProfiles:
 
         assert 16 == len(mapper.prior_tuples_ordered_by_id)
 
-        galaxy_prior.light_profile = mm.PriorModel(light_profiles.LightProfile)
+        galaxy_prior.light_profile = pm.PriorModel(light_profiles.LightProfile)
 
         assert 9 == len(mapper.prior_tuples_ordered_by_id)
 
