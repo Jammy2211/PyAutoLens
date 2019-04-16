@@ -1,3 +1,5 @@
+import inspect
+
 import numpy as np
 from scipy.integrate import quad
 
@@ -48,7 +50,7 @@ class EllipticalLightProfile(geometry_profiles.EllipticalProfile, LightProfile):
     """Generic class for an elliptical light profiles"""
 
     @map_types
-    def __init__(self, centre: units.Position=(0.0, 0.0), axis_ratio: float=1.0, phi: float=0.0):
+    def __init__(self, centre: units.Position = (0.0, 0.0), axis_ratio: float = 1.0, phi: float = 0.0):
         """  Abstract class for an elliptical light-profile.
 
         Parameters
@@ -64,18 +66,21 @@ class EllipticalLightProfile(geometry_profiles.EllipticalProfile, LightProfile):
 
     def new_profile_with_units_converted(self, units_distance=None, units_luminosity=None, kpc_per_arcsec=None,
                                          exposure_time=None):
-        pass
-        # new_profile = self
-        #
-        # if units_distance is not None:
-        #     new_profile = new_profile.new_profile_with_units_distance_converted(units_distance=units_distance,
-        #                                                                         kpc_per_arcsec=kpc_per_arcsec)
-        #
-        # if units_luminosity is not None:
-        #     new_profile = new_profile.new_profile_with_units_luminosity_converted(units_luminosity=units_luminosity,
-        #                                                                           exposure_time=exposure_time)
-        #
-        # return new_profile
+        constructor_args = inspect.getfullargspec(self.__init__).args
+
+        def convert(value):
+            if units_distance is not None:
+                if isinstance(value, units.Distance):
+                    return value.convert(units_distance, kpc_per_arcsec)
+                if isinstance(value, tuple):
+                    return tuple(convert(item) for item in value)
+            if units_luminosity is not None and isinstance(value, units.Luminosity):
+                return value.convert(units_luminosity, exposure_time)
+            # TODO: what about mass?
+            return value
+
+        return self.__class__(
+            **{key: convert(value) for key, value in self.__dict__.items() if key in constructor_args})
 
     def luminosity_within_circle(self, radius):
         """Integrate the light profile to compute the total luminosity within a circle of specified radius. This is \
