@@ -1,10 +1,9 @@
-import inspect
 import numpy as np
 from functools import wraps
 
 from autofit import conf
 from autofit.tools.dimension_type import map_types
-from autolens.model.profiles import units
+from autolens.model import dimensions as dim
 
 
 def transform_grid(func):
@@ -124,10 +123,11 @@ class TransformedGrid(np.ndarray):
     pass
 
 
-class GeometryProfile(object):
+class GeometryProfile(dim.DimensionsProfile):
 
     @map_types
-    def __init__(self, centre: units.Position = (0.0, 0.0)):
+    def __init__(self,
+                 centre: dim.Position = (0.0, 0.0)):
         """An abstract geometry profile, which describes profiles with y and x centre Cartesian coordinates
         
         Parameters
@@ -135,26 +135,8 @@ class GeometryProfile(object):
         centre : (float, float)
             The (y,x) arc-second coordinates of the profile centre.
         """
+        super(GeometryProfile, self).__init__()
         self.centre = centre
-
-    def new_profile_with_units_converted(self, units_distance=None, units_luminosity=None, units_mass=None,
-                                         kpc_per_arcsec=None, exposure_time=None, critical_surface_mass_density=None):
-        constructor_args = inspect.getfullargspec(self.__init__).args
-
-        def convert(value):
-            if units_distance is not None:
-                if isinstance(value, units.Distance):
-                    return value.convert(units_distance, kpc_per_arcsec)
-                if isinstance(value, tuple):
-                    return tuple(convert(item) for item in value)
-            if units_luminosity is not None and isinstance(value, units.Luminosity):
-                return value.convert(units_luminosity, exposure_time)
-            if units_mass is not None and isinstance(value, units.Mass):
-                return value.convert(units_mass, critical_surface_mass_density)
-            return value
-
-        return self.__class__(
-            **{key: convert(value) for key, value in self.__dict__.items() if key in constructor_args})
 
     def transform_grid_to_reference_frame(self, grid):
         raise NotImplemented()
@@ -173,7 +155,8 @@ class GeometryProfile(object):
 class SphericalProfile(GeometryProfile):
 
     @map_types
-    def __init__(self, centre: units.Position = (0.0, 0.0)):
+    def __init__(self,
+                 centre: dim.Position = (0.0, 0.0)):
         """ A spherical profile, which describes profiles with y and x centre Cartesian coordinates.
 
         Parameters
@@ -250,7 +233,10 @@ class SphericalProfile(GeometryProfile):
 class EllipticalProfile(SphericalProfile):
 
     @map_types
-    def __init__(self, centre: units.Position = (0.0, 0.0), axis_ratio: float = 1.0, phi: float = 0.0):
+    def __init__(self,
+                 centre: dim.Position = (0.0, 0.0),
+                 axis_ratio: float = 1.0,
+                 phi: float = 0.0):
         """ An elliptical profile, which describes profiles with y and x centre Cartesian coordinates, an axis-ratio \
         and rotational angle phi.
 
