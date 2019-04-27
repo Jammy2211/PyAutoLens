@@ -28,7 +28,7 @@ class TestSersic(object):
 
         assert sersic.intensity == 1.0
         assert isinstance(sersic.intensity, dim.Luminosity)
-        assert sersic.intensity.unit == 'electrons_per_second'
+        assert sersic.intensity.unit == 'eps'
 
         assert sersic.effective_radius == 0.6
         assert isinstance(sersic.effective_radius, dim.Length)
@@ -39,7 +39,7 @@ class TestSersic(object):
 
         assert sersic.mass_to_light_ratio == 10.0
         assert isinstance(sersic.mass_to_light_ratio, dim.MassOverLuminosity)
-        assert sersic.mass_to_light_ratio.unit == 'angular / electrons_per_second'
+        assert sersic.mass_to_light_ratio.unit == 'angular / eps'
 
         assert sersic.sersic_constant == pytest.approx(7.66925, 1e-3)
         assert sersic.elliptical_effective_radius == 0.6 / np.sqrt(0.5)
@@ -61,7 +61,7 @@ class TestSersic(object):
 
         assert sersic.intensity == 1.0
         assert isinstance(sersic.intensity, dim.Luminosity)
-        assert sersic.intensity.unit == 'electrons_per_second'
+        assert sersic.intensity.unit == 'eps'
 
         assert sersic.effective_radius == 0.6
         assert isinstance(sersic.effective_radius, dim.Length)
@@ -72,7 +72,7 @@ class TestSersic(object):
 
         assert sersic.mass_to_light_ratio == 10.0
         assert isinstance(sersic.mass_to_light_ratio, dim.MassOverLuminosity)
-        assert sersic.mass_to_light_ratio.unit == 'angular / electrons_per_second'
+        assert sersic.mass_to_light_ratio.unit == 'angular / eps'
 
         assert sersic.sersic_constant == pytest.approx(7.66925, 1e-3)
         assert sersic.elliptical_effective_radius == 0.6
@@ -123,7 +123,7 @@ class TestExponential(object):
 
         assert exponential.intensity == 1.0
         assert isinstance(exponential.intensity, dim.Luminosity)
-        assert exponential.intensity.unit == 'electrons_per_second'
+        assert exponential.intensity.unit == 'eps'
 
         assert exponential.effective_radius == 0.6
         assert isinstance(exponential.effective_radius, dim.Length)
@@ -134,7 +134,7 @@ class TestExponential(object):
 
         assert exponential.mass_to_light_ratio == 10.0
         assert isinstance(exponential.mass_to_light_ratio, dim.MassOverLuminosity)
-        assert exponential.mass_to_light_ratio.unit == 'angular / electrons_per_second'
+        assert exponential.mass_to_light_ratio.unit == 'angular / eps'
 
         assert exponential.sersic_constant == pytest.approx(1.67838, 1e-3)
         assert exponential.elliptical_effective_radius == 0.6 / np.sqrt(0.5)
@@ -156,7 +156,7 @@ class TestExponential(object):
 
         assert exponential.intensity == 1.0
         assert isinstance(exponential.intensity, dim.Luminosity)
-        assert exponential.intensity.unit == 'electrons_per_second'
+        assert exponential.intensity.unit == 'eps'
 
         assert exponential.effective_radius == 0.6
         assert isinstance(exponential.effective_radius, dim.Length)
@@ -167,7 +167,7 @@ class TestExponential(object):
 
         assert exponential.mass_to_light_ratio == 10.0
         assert isinstance(exponential.mass_to_light_ratio, dim.MassOverLuminosity)
-        assert exponential.mass_to_light_ratio.unit == 'angular / electrons_per_second'
+        assert exponential.mass_to_light_ratio.unit == 'angular / eps'
 
         assert exponential.sersic_constant == pytest.approx(1.67838, 1e-3)
         assert exponential.elliptical_effective_radius == 0.6
@@ -216,7 +216,7 @@ class TestDevVaucouleurs(object):
 
         assert dev_vaucouleurs.intensity == 1.0
         assert isinstance(dev_vaucouleurs.intensity, dim.Luminosity)
-        assert dev_vaucouleurs.intensity.unit == 'electrons_per_second'
+        assert dev_vaucouleurs.intensity.unit == 'eps'
 
         assert dev_vaucouleurs.effective_radius == 0.6
         assert isinstance(dev_vaucouleurs.effective_radius, dim.Length)
@@ -227,7 +227,7 @@ class TestDevVaucouleurs(object):
 
         assert dev_vaucouleurs.mass_to_light_ratio == 10.0
         assert isinstance(dev_vaucouleurs.mass_to_light_ratio, dim.MassOverLuminosity)
-        assert dev_vaucouleurs.mass_to_light_ratio.unit == 'angular / electrons_per_second'
+        assert dev_vaucouleurs.mass_to_light_ratio.unit == 'angular / eps'
 
         assert dev_vaucouleurs.sersic_constant == pytest.approx(7.66924, 1e-3)
         assert dev_vaucouleurs.elliptical_effective_radius == 0.6 / np.sqrt(0.5)
@@ -249,7 +249,7 @@ class TestDevVaucouleurs(object):
 
         assert dev_vaucouleurs.intensity == 1.0
         assert isinstance(dev_vaucouleurs.intensity, dim.Luminosity)
-        assert dev_vaucouleurs.intensity.unit == 'electrons_per_second'
+        assert dev_vaucouleurs.intensity.unit == 'eps'
 
         assert dev_vaucouleurs.effective_radius == 0.6
         assert isinstance(dev_vaucouleurs.effective_radius, dim.Length)
@@ -260,7 +260,7 @@ class TestDevVaucouleurs(object):
 
         assert dev_vaucouleurs.mass_to_light_ratio == 10.0
         assert isinstance(dev_vaucouleurs.mass_to_light_ratio, dim.MassOverLuminosity)
-        assert dev_vaucouleurs.mass_to_light_ratio.unit == 'angular / electrons_per_second'
+        assert dev_vaucouleurs.mass_to_light_ratio.unit == 'angular / eps'
 
         assert dev_vaucouleurs.sersic_constant == pytest.approx(7.66924, 1e-3)
         assert dev_vaucouleurs.elliptical_effective_radius == 0.6
@@ -310,7 +310,7 @@ class TestSersicRadialGradient(object):
 
         assert sersic.intensity == 1.0
         assert isinstance(sersic.intensity, dim.Luminosity)
-        assert sersic.intensity.unit == 'electrons_per_second'
+        assert sersic.intensity.unit == 'eps'
 
         assert sersic.effective_radius == 0.6
         assert isinstance(sersic.effective_radius, dim.Length)
@@ -321,7 +321,7 @@ class TestSersicRadialGradient(object):
 
         assert sersic.mass_to_light_ratio == 10.0
         assert isinstance(sersic.mass_to_light_ratio, dim.MassOverLuminosity)
-        assert sersic.mass_to_light_ratio.unit == 'angular / electrons_per_second'
+        assert sersic.mass_to_light_ratio.unit == 'angular / eps'
 
         assert sersic.mass_to_light_gradient == -1.0
         assert isinstance(sersic.mass_to_light_gradient, float)
@@ -346,7 +346,7 @@ class TestSersicRadialGradient(object):
 
         assert sersic.intensity == 1.0
         assert isinstance(sersic.intensity, dim.Luminosity)
-        assert sersic.intensity.unit == 'electrons_per_second'
+        assert sersic.intensity.unit == 'eps'
 
         assert sersic.effective_radius == 0.6
         assert isinstance(sersic.effective_radius, dim.Length)
@@ -357,7 +357,7 @@ class TestSersicRadialGradient(object):
 
         assert sersic.mass_to_light_ratio == 10.0
         assert isinstance(sersic.mass_to_light_ratio, dim.MassOverLuminosity)
-        assert sersic.mass_to_light_ratio.unit == 'angular / electrons_per_second'
+        assert sersic.mass_to_light_ratio.unit == 'angular / eps'
 
         assert sersic.mass_to_light_gradient == -1.0
         assert isinstance(sersic.mass_to_light_gradient, float)

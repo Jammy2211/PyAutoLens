@@ -65,51 +65,62 @@ class EllipticalLightProfile(geometry_profiles.EllipticalProfile, LightProfile):
         """
         super(EllipticalLightProfile, self).__init__(centre=centre, axis_ratio=axis_ratio, phi=phi)
 
-    def luminosity_within_circle(self, radius: dim.Length,
-                                 units_luminosity='electrons_per_second',
-                                 kpc_per_arcsec=None, exposure_time=None):
+    def luminosity_within_circle(self, radius: dim.Length, unit_luminosity='eps', kpc_per_arcsec=None,
+                                 exposure_time=None):
         """Integrate the light profile to compute the total luminosity within a circle of specified radius. This is \
         centred on the light profile's centre.
 
         The following units for mass can be specified and output:
 
-        - Electrons per second (default) - 'electrons_per_second'.
+        - Electrons per second (default) - 'eps'.
         - Counts - 'counts' (multiplies the luminosity in electrons per second by the exposure time).
 
         Parameters
         ----------
         radius : float
             The radius of the circle to compute the dimensionless mass within.
-        units_luminosity : str
-            The units the luminosity is returned in (electrons_per_second | counts).
+        unit_luminosity : str
+            The units the luminosity is returned in (eps | counts).
         exposure_time : float or None
             The exposure time of the observation, which converts luminosity from electrons per second units to counts.
         """
-        profile = self.new_profile_with_units_converted(units_length=radius.unit, units_luminosity=units_luminosity,
-                                                        kpc_per_arcsec=kpc_per_arcsec, exposure_time=exposure_time)
-        luminosity = quad(profile.luminosity_integral, a=0.0, b=radius, args=(1.0,))[0]
-        return dim.Luminosity(value=luminosity, unit_luminosity=units_luminosity)
 
-    def luminosity_within_ellipse(self, major_axis, units_luminosity='electrons_per_second', exposure_time=None):
+        if not isinstance(radius, dim.Length):
+            radius = dim.Length(value=radius, unit='arcsec')
+
+        profile = self.new_profile_with_units_converted(unit_length=radius.unit, unit_luminosity=unit_luminosity,
+                                                        kpc_per_arcsec=kpc_per_arcsec, exposure_time=exposure_time)
+
+        luminosity = quad(profile.luminosity_integral, a=0.0, b=radius, args=(1.0,))[0]
+        return dim.Luminosity(luminosity, unit_luminosity)
+
+    def luminosity_within_ellipse(self, major_axis, unit_luminosity='eps', kpc_per_arcsec=None,
+                                  exposure_time=None):
         """Integrate the light profiles to compute the total luminosity within an ellipse of specified major axis. \
         This is centred on the light profile's centre.
 
         The following units for mass can be specified and output:
 
-        - Electrons per second (default) - 'electrons_per_second'.
+        - Electrons per second (default) - 'eps'.
         - Counts - 'counts' (multiplies the luminosity in electrons per second by the exposure time).
 
         Parameters
         ----------
         major_axis : float
             The major-axis radius of the ellipse.
-        units_luminosity : str
-            The units the luminosity is returned in (electrons_per_second | counts).
+        unit_luminosity : str
+            The units the luminosity is returned in (eps | counts).
         exposure_time : float or None
             The exposure time of the observation, which converts luminosity from electrons per second units to counts.
         """
-        profile = self.new_profile_with_units_converted(units_luminosity=units_luminosity, exposure_time=exposure_time)
-        return quad(profile.luminosity_integral, a=0.0, b=major_axis, args=(self.axis_ratio,))[0]
+
+        if not isinstance(major_axis, dim.Length):
+            major_axis = dim.Length(major_axis, 'arcsec')
+
+        profile = self.new_profile_with_units_converted(unit_length=major_axis.unit, unit_luminosity=unit_luminosity,
+                                                        exposure_time=exposure_time)
+        luminosity = quad(profile.luminosity_integral, a=0.0, b=major_axis, args=(self.axis_ratio,))[0]
+        return dim.Luminosity(luminosity, unit_luminosity)
 
     def luminosity_integral(self, x, axis_ratio):
         """Routine to integrate the luminosity of an elliptical light profile.
@@ -126,7 +137,7 @@ class EllipticalGaussian(EllipticalLightProfile):
                  centre: dim.Position = (0.0, 0.0),
                  axis_ratio: float = 1.0,
                  phi: float = 0.0,
-                 intensity: float = 0.1,
+                 intensity: dim.Luminosity = 0.1,
                  sigma: dim.Length = 0.01):
         """ The elliptical Gaussian light profile.
 

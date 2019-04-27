@@ -221,14 +221,14 @@ class TestAbstractPlane(object):
 
     class TestLuminosities:
 
-        def test__within_circle_in_electrons_per_second__same_as_galaxy_dimensionless_luminosities(self):
+        def test__within_circle_in_eps__same_as_galaxy_dimensionless_luminosities(self):
 
             g0 = g.Galaxy(luminosity=lp.SphericalSersic(intensity=1.0))
             g1 = g.Galaxy(luminosity=lp.SphericalSersic(intensity=2.0))
 
             g0_luminosity = g0.luminosity_within_circle(radius=1.0)
             g1_luminosity = g1.luminosity_within_circle(radius=1.0)
-            plane = pl.AbstractPlane(galaxies=[g0, g1], redshift=None, units_luminosity='electrons_per_second')
+            plane = pl.AbstractPlane(galaxies=[g0, g1], redshift=None, units_luminosity='eps')
             plane_luminosities = plane.luminosities_of_galaxies_within_circles(radius=1.0)
 
             assert plane_luminosities[0] == g0_luminosity
@@ -239,7 +239,7 @@ class TestAbstractPlane(object):
 
             g0_luminosity = g0.luminosity_within_circle(radius=2.0)
             g1_luminosity = g1.luminosity_within_circle(radius=2.0)
-            plane = pl.AbstractPlane(galaxies=[g0, g1], redshift=None, units_luminosity='electrons_per_second')
+            plane = pl.AbstractPlane(galaxies=[g0, g1], redshift=None, units_luminosity='eps')
             plane_luminosities = \
                 plane.luminosities_of_galaxies_within_circles(radius=2.0)
 
@@ -270,14 +270,14 @@ class TestAbstractPlane(object):
             assert plane_luminosities[0] == g0_luminosity
             assert plane_luminosities[1] == g1_luminosity
 
-        def test__luminosity_within_ellipse_in_electrons_per_second__same_as_galaxy_dimensionless_luminosities(self):
+        def test__luminosity_within_ellipse_in_eps__same_as_galaxy_dimensionless_luminosities(self):
 
             g0 = g.Galaxy(luminosity=lp.SphericalSersic(intensity=1.0))
             g1 = g.Galaxy(luminosity=lp.SphericalSersic(intensity=2.0))
 
             g0_luminosity = g0.luminosity_within_ellipse(major_axis=0.8)
             g1_luminosity = g1.luminosity_within_ellipse(major_axis=0.8)
-            plane = pl.AbstractPlane(galaxies=[g0, g1], redshift=None, units_luminosity='electrons_per_second')
+            plane = pl.AbstractPlane(galaxies=[g0, g1], redshift=None, units_luminosity='eps')
             plane_luminosities = plane.luminosities_of_galaxies_within_ellipses(major_axis=0.8)
 
             assert plane_luminosities[0] == g0_luminosity
@@ -288,7 +288,7 @@ class TestAbstractPlane(object):
 
             g0_luminosity = g0.luminosity_within_ellipse(major_axis=0.6)
             g1_luminosity = g1.luminosity_within_ellipse(major_axis=0.6)
-            plane = pl.AbstractPlane(galaxies=[g0, g1], redshift=None, units_luminosity='electrons_per_second')
+            plane = pl.AbstractPlane(galaxies=[g0, g1], redshift=None, units_luminosity='eps')
             plane_luminosities = plane.luminosities_of_galaxies_within_ellipses(major_axis=0.6)
 
             assert plane_luminosities[0] == g0_luminosity

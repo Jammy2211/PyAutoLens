@@ -14,7 +14,7 @@ from autolens.model.galaxy.util import galaxy_util
 class AbstractPlane(object):
 
     def __init__(self, redshift, galaxies, cosmology=cosmo.Planck15, units_distance='arcsec',
-                 units_luminosity='electrons_per_second', units_mass='solMass'):
+                 units_luminosity='eps', units_mass='solMass'):
         """An abstract plane which represents a set of galaxies that are close to one another in redshift-space.
 
         From an abstract plane, cosmological quantities like angular diameter distances can be computed. If the  \
@@ -151,7 +151,7 @@ class AbstractPlane(object):
         radius : float
             The radius of the circle to compute the dimensionless mass within.
         units_luminosity : str
-            The units the luminosity is returned in (electrons_per_second | counts).
+            The units the luminosity is returned in (eps | counts).
         exposure_time : float
             The exposure time of the observation, which converts luminosity from electrons per second units to counts.
         """
@@ -174,7 +174,7 @@ class AbstractPlane(object):
         major_axis : float
             The major-axis radius of the ellipse.
         units_luminosity : str
-            The units the luminosity is returned in (electrons_per_second | counts).
+            The units the luminosity is returned in (eps | counts).
         exposure_time : float
             The exposure time of the observation, which converts luminosity from electrons per second units to counts.
         """
@@ -214,7 +214,7 @@ class AbstractPlane(object):
         major_axis : float
             The major-axis radius of the ellipse.
         units_luminosity : str
-            The units the luminosity is returned in (electrons_per_second | counts).
+            The units the luminosity is returned in (eps | counts).
         exposure_time : float
             The exposure time of the observation, which converts luminosity from electrons per second units to counts.
         """

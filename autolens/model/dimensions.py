@@ -11,23 +11,23 @@ class DimensionsProfile(object):
 
         pass
 
-    def new_profile_with_units_converted(self, units_length=None, units_luminosity=None, units_mass=None,
+    def new_profile_with_units_converted(self, unit_length=None, unit_luminosity=None, unit_mass=None,
                                          kpc_per_arcsec=None, exposure_time=None, critical_surface_mass_density=None):
 
         constructor_args = inspect.getfullargspec(self.__init__).args
 
         def convert(value):
-            if units_length is not None:
+            if unit_length is not None:
                 if isinstance(value, Length):
-                    return value.convert(units_length, kpc_per_arcsec)
+                    return value.convert(unit_length, kpc_per_arcsec)
                 if isinstance(value, tuple):
                     return tuple(convert(item) for item in value)
-            if units_luminosity is not None and isinstance(value, Luminosity):
-                return value.convert(units_luminosity, exposure_time)
-            if units_mass is not None and isinstance(value, Mass):
-                return value.convert(units_mass, critical_surface_mass_density)
-            if (units_mass is not None or units_luminosity is not None) and isinstance(value, MassOverLuminosity):
-                return value.convert(units_mass, units_luminosity, critical_surface_mass_density, exposure_time)
+            if unit_luminosity is not None and isinstance(value, Luminosity):
+                return value.convert(unit_luminosity, exposure_time)
+            if unit_mass is not None and isinstance(value, Mass):
+                return value.convert(unit_mass, critical_surface_mass_density)
+            if (unit_mass is not None or unit_luminosity is not None) and isinstance(value, MassOverLuminosity):
+                return value.convert(unit_mass, unit_luminosity, critical_surface_mass_density, exposure_time)
             return value
 
         return self.__class__(
@@ -61,7 +61,7 @@ class Length(dimension_type.DimensionType):
 
 class Luminosity(dimension_type.DimensionType):
 
-    def __init__(self, value, unit_luminosity='electrons_per_second'):
+    def __init__(self, value, unit_luminosity='eps'):
         super().__init__(value)
         self.unit_luminosity = unit_luminosity
         self.unit_luminosity_power = 1.0
@@ -103,7 +103,7 @@ class Mass(dimension_type.DimensionType):
 
 class MassOverLuminosity(dimension_type.DimensionType):
 
-    def __init__(self, value, unit_mass="angular", unit_luminosity="electrons_per_second"):
+    def __init__(self, value, unit_mass="angular", unit_luminosity="eps"):
         super().__init__(value)
         self.unit_mass = unit_mass
         self.unit_mass_power = 1.0
@@ -144,9 +144,9 @@ def convert_luminosity(value, unit_current, unit_new, power, exposure_time):
 
     if unit_current is unit_new:
         return value
-    elif unit_current is 'electrons_per_second' and unit_new is 'counts':
+    elif unit_current is 'eps' and unit_new is 'counts':
         return (exposure_time**power) * value
-    elif unit_current is 'counts' and unit_new is 'electrons_per_second':
+    elif unit_current is 'counts' and unit_new is 'eps':
         return value / (exposure_time**power)
     else:
         raise exc.UnitsException('The unit specified for the luminosity of a value was an invalid string, you '
