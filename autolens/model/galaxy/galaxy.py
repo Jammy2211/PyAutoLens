@@ -134,7 +134,7 @@ class Galaxy(object):
         else:
             return np.zeros((grid.shape[0],))
 
-    def luminosity_within_circle(self, radius, units_luminosity='electrons_per_second', exposure_time=None):
+    def luminosity_within_circle(self, radius, units_luminosity='eps', exposure_time=None):
         """Compute the total luminosity of the galaxy's light profiles within a circle of specified radius.
 
         See *light_profiles.luminosity_within_circle* for details of how this is performed.
@@ -144,7 +144,7 @@ class Galaxy(object):
         radius : float
             The radius of the circle to compute the dimensionless mass within.
         units_luminosity : str
-            The units the luminosity is returned in (electrons_per_second | counts).
+            The units the luminosity is returned in (eps | counts).
         exposure_time : float
             The exposure time of the observation, which converts luminosity from electrons per second units to counts.
         """
@@ -155,7 +155,7 @@ class Galaxy(object):
         else:
             return None
 
-    def luminosity_within_ellipse(self, major_axis, units_luminosity='electrons_per_second', exposure_time=None):
+    def luminosity_within_ellipse(self, major_axis, units_luminosity='eps', exposure_time=None):
         """Compute the total luminosity of the galaxy's light profiles, within an ellipse of specified major axis. This 
         is performed via integration of each light profile and is centred, oriented and aligned with each light
         model's individual geometry.
@@ -167,7 +167,7 @@ class Galaxy(object):
         major_axis : float
             The major-axis radius of the ellipse.
         units_luminosity : str
-            The units the luminosity is returned in (electrons_per_second | counts).
+            The units the luminosity is returned in (eps | counts).
         exposure_time : float
             The exposure time of the observation, which converts luminosity from electrons per second units to counts.
         """
@@ -264,7 +264,7 @@ class Galaxy(object):
         major_axis : float
             The major-axis radius of the ellipse.
         units_luminosity : str
-            The units the luminosity is returned in (electrons_per_second | counts).
+            The units the luminosity is returned in (eps | counts).
         exposure_time : float
             The exposure time of the observation, which converts luminosity from electrons per second units to counts.
         """

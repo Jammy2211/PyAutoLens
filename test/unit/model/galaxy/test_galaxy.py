@@ -47,7 +47,7 @@ class TestLightProfiles(object):
 
     class TestLuminosityWithin:
 
-        def test__within_circle_in_electrons_per_second__one_profile_galaxy__integral_is_same_as_individual_profile(self):
+        def test__within_circle_in_eps__one_profile_galaxy__integral_is_same_as_individual_profile(self):
 
             sersic = lp.EllipticalSersic(axis_ratio=1.0, phi=0.0, intensity=3.0,
                                          effective_radius=2.0,
@@ -56,18 +56,18 @@ class TestLightProfiles(object):
             integral_radius = 5.5
 
             intensity_integral = sersic.luminosity_within_circle(radius=integral_radius,
-                                                                 units_luminosity='electrons_per_second')
+                                                                 units_luminosity='eps')
 
             gal_sersic = g.Galaxy(redshift=0.5,
                                   light_profile_1=lp.EllipticalSersic(axis_ratio=1.0, phi=0.0, intensity=3.0,
                                   effective_radius=2.0, sersic_index=1.0))
 
             gal_intensity_integral = gal_sersic.luminosity_within_circle(
-                radius=integral_radius, units_luminosity='electrons_per_second')
+                radius=integral_radius, units_luminosity='eps')
 
             assert intensity_integral == gal_intensity_integral
 
-        def test__within_circle_in_electrons_per_second__two_profile_galaxy__integral_is_sum_of_individual_profiles(self):
+        def test__within_circle_in_eps__two_profile_galaxy__integral_is_sum_of_individual_profiles(self):
 
             sersic_1 = lp.EllipticalSersic(axis_ratio=1.0, phi=0.0, intensity=3.0,
                                            effective_radius=2.0,
@@ -80,9 +80,9 @@ class TestLightProfiles(object):
             integral_radius = 5.5
 
             intensity_integral = sersic_1.luminosity_within_circle(radius=integral_radius,
-                                                                   units_luminosity='electrons_per_second')
+                                                                   units_luminosity='eps')
             intensity_integral += sersic_2.luminosity_within_circle(radius=integral_radius,
-                                                                    units_luminosity='electrons_per_second')
+                                                                    units_luminosity='eps')
 
             gal_sersic = g.Galaxy(redshift=0.5,
                                   light_profile_1=lp.EllipticalSersic(
@@ -99,11 +99,11 @@ class TestLightProfiles(object):
                                       sersic_index=2.0))
 
             gal_intensity_integral = gal_sersic.luminosity_within_circle(
-                radius=integral_radius, units_luminosity='electrons_per_second')
+                radius=integral_radius, units_luminosity='eps')
 
             assert intensity_integral == gal_intensity_integral
 
-        def test__within_ellipse_in_electrons_per_second___one_profile_galaxy__integral_is_same_as_individual_profile(self):
+        def test__within_ellipse_in_eps___one_profile_galaxy__integral_is_same_as_individual_profile(self):
             sersic = lp.EllipticalSersic(axis_ratio=0.5, phi=0.0, intensity=3.0,
                                          effective_radius=2.0,
                                          sersic_index=1.0)
@@ -121,11 +121,11 @@ class TestLightProfiles(object):
                                       sersic_index=1.0))
 
             gal_intensity_integral = gal_sersic.luminosity_within_ellipse(
-                major_axis=integral_radius, units_luminosity='electrons_per_second')
+                major_axis=integral_radius, units_luminosity='eps')
 
             assert intensity_integral == gal_intensity_integral
 
-        def test__within_ellipse_in_electrons_per_second___two_profile_galaxy__integral_is_sum_of_individual_profiles(self):
+        def test__within_ellipse_in_eps___two_profile_galaxy__integral_is_sum_of_individual_profiles(self):
             sersic_1 = lp.EllipticalSersic(axis_ratio=1.0, phi=0.0, intensity=3.0,
                                            effective_radius=2.0,
                                            sersic_index=1.0)
@@ -137,9 +137,9 @@ class TestLightProfiles(object):
             integral_radius = 5.5
 
             intensity_integral = sersic_1.luminosity_within_ellipse(major_axis=integral_radius,
-                                                                    units_luminosity='electrons_per_second')
+                                                                    units_luminosity='eps')
             intensity_integral += sersic_2.luminosity_within_ellipse(major_axis=integral_radius,
-                                                                     units_luminosity='electrons_per_second')
+                                                                     units_luminosity='eps')
 
             gal_sersic = g.Galaxy(redshift=0.5,
                                   light_profile_1=lp.EllipticalSersic(
@@ -156,7 +156,7 @@ class TestLightProfiles(object):
                                       sersic_index=2.0))
 
             gal_intensity_integral = gal_sersic.luminosity_within_ellipse(
-                major_axis=integral_radius, units_luminosity='electrons_per_second')
+                major_axis=integral_radius, units_luminosity='eps')
 
             assert intensity_integral == gal_intensity_integral
 
