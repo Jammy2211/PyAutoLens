@@ -751,9 +751,9 @@ class TestAbstractTracer(object):
                                                          image_plane_grid_stack=grid_stack,
                                                          cosmology=cosmo.Planck15)
 
-            g0_mass = g0.mass_within_circle(radius=1.0, units_mass='angular',
+            g0_mass = g0.mass_within_circle(radius=1.0, unit_mass='angular',
                                             critical_surface_mass_density=tracer.critical_surface_mass_density)
-            g1_mass = g1.mass_within_circle(radius=2.0, units_mass='angular',
+            g1_mass = g1.mass_within_circle(radius=2.0, unit_mass='angular',
                                             critical_surface_mass_density=tracer.critical_surface_mass_density)
 
             assert tracer.einstein_radii_of_planes[0] == 3.0

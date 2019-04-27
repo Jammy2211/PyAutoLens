@@ -134,7 +134,7 @@ class Galaxy(object):
         else:
             return np.zeros((grid.shape[0],))
 
-    def luminosity_within_circle(self, radius, units_luminosity='eps', exposure_time=None):
+    def luminosity_within_circle(self, radius, unit_luminosity='eps', kpc_per_arcsec=None, exposure_time=None):
         """Compute the total luminosity of the galaxy's light profiles within a circle of specified radius.
 
         See *light_profiles.luminosity_within_circle* for details of how this is performed.
@@ -143,19 +143,19 @@ class Galaxy(object):
         ----------
         radius : float
             The radius of the circle to compute the dimensionless mass within.
-        units_luminosity : str
+        unit_luminosity : str
             The units the luminosity is returned in (eps | counts).
         exposure_time : float
             The exposure time of the observation, which converts luminosity from electrons per second units to counts.
         """
         if self.has_light_profile:
-            return sum(map(lambda p: p.luminosity_within_circle(radius=radius, units_luminosity=units_luminosity,
-                                                                exposure_time=exposure_time),
+            return sum(map(lambda p: p.luminosity_within_circle(radius=radius, unit_luminosity=unit_luminosity,
+                                                                kpc_per_arcsec=kpc_per_arcsec, exposure_time=exposure_time),
                            self.light_profiles))
         else:
             return None
 
-    def luminosity_within_ellipse(self, major_axis, units_luminosity='eps', exposure_time=None):
+    def luminosity_within_ellipse(self, major_axis, unit_luminosity='eps', kpc_per_arcsec=None, exposure_time=None):
         """Compute the total luminosity of the galaxy's light profiles, within an ellipse of specified major axis. This 
         is performed via integration of each light profile and is centred, oriented and aligned with each light
         model's individual geometry.
@@ -166,14 +166,14 @@ class Galaxy(object):
         ----------
         major_axis : float
             The major-axis radius of the ellipse.
-        units_luminosity : str
+        unit_luminosity : str
             The units the luminosity is returned in (eps | counts).
         exposure_time : float
             The exposure time of the observation, which converts luminosity from electrons per second units to counts.
         """
         if self.has_light_profile:
-            return sum(map(lambda p: p.luminosity_within_ellipse(major_axis=major_axis, units_luminosity=units_luminosity,
-                                                                 exposure_time=exposure_time),
+            return sum(map(lambda p: p.luminosity_within_ellipse(major_axis=major_axis, unit_luminosity=unit_luminosity,
+                                                                 kpc_per_arcsec=kpc_per_arcsec, exposure_time=exposure_time),
                            self.light_profiles))
         else:
             return None
@@ -232,7 +232,7 @@ class Galaxy(object):
         else:
             return np.full((grid.shape[0], 2), 0.0)
 
-    def mass_within_circle(self, radius, units_mass='angular', critical_surface_mass_density=None):
+    def mass_within_circle(self, radius, unit_mass='angular', kpc_per_arcsec=None, critical_surface_mass_density=None):
         """Compute the total angular mass of the galaxy's mass profiles within a circle of specified radius.
 
         See *profiles.mass_profiles.mass_within_circle* for details of how this is performed.
@@ -241,20 +241,21 @@ class Galaxy(object):
         ----------
         radius : float
             The radius of the circle to compute the dimensionless mass within.
-        units_mass : str
+        unit_mass : str
             The units the mass is returned in (angular | solMass).
         critical_surface_mass_density : float
             The critical surface mass density of the strong lens configuration, which converts mass from angulalr \
             units to physical units (e.g. solar masses).
         """
         if self.has_mass_profile:
-            return sum(map(lambda p: p.mass_within_circle(radius=radius, units_mass=units_mass,
+            return sum(map(lambda p: p.mass_within_circle(radius=radius, unit_mass=unit_mass,
+                                                          kpc_per_arcsec=kpc_per_arcsec,
                                                           critical_surface_mass_density=critical_surface_mass_density),
                            self.mass_profiles))
         else:
             return None
 
-    def mass_within_ellipse(self, major_axis, units_mass='angular', critical_surface_mass_density=None):
+    def mass_within_ellipse(self, major_axis, unit_mass='angular', kpc_per_arcsec=None, critical_surface_mass_density=None):
         """Compute the total angular mass of the galaxy's mass profiles within an ellipse of specified major_axis.
 
         See *profiles.mass_profiles.angualr_mass_within_ellipse* for details of how this is performed.
@@ -269,7 +270,8 @@ class Galaxy(object):
             The exposure time of the observation, which converts luminosity from electrons per second units to counts.
         """
         if self.has_mass_profile:
-            return sum(map(lambda p: p.mass_within_ellipse(major_axis=major_axis, units_mass=units_mass,
+            return sum(map(lambda p: p.mass_within_ellipse(major_axis=major_axis, unit_mass=unit_mass,
+                                                           kpc_per_arcsec=kpc_per_arcsec,
                                                            critical_surface_mass_density=critical_surface_mass_density),
                            self.mass_profiles))
         else:
