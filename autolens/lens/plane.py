@@ -155,7 +155,7 @@ class AbstractPlane(object):
         exposure_time : float
             The exposure time of the observation, which converts luminosity from electrons per second units to counts.
         """
-        return list(map(lambda galaxy: galaxy.luminosity_within_circle(radius, units_luminosity=self.units_luminosity,
+        return list(map(lambda galaxy: galaxy.luminosity_within_circle(radius, unit_luminosity=self.units_luminosity,
                                                                        exposure_time=exposure_time),
                         self.galaxies))
 
@@ -178,7 +178,7 @@ class AbstractPlane(object):
         exposure_time : float
             The exposure time of the observation, which converts luminosity from electrons per second units to counts.
         """
-        return list(map(lambda galaxy: galaxy.luminosity_within_ellipse(major_axis, units_luminosity=self.units_luminosity,
+        return list(map(lambda galaxy: galaxy.luminosity_within_ellipse(major_axis, unit_luminosity=self.units_luminosity,
                                                                         exposure_time=exposure_time),
                         self.galaxies))
 
@@ -199,7 +199,7 @@ class AbstractPlane(object):
             units to physical units (e.g. solar masses).
         """
         return list(map(lambda galaxy: galaxy.mass_within_circle(
-                        radius=radius, units_mass=self.units_mass,
+                        radius=radius, unit_mass=self.units_mass,
                         critical_surface_mass_density=critical_surface_mass_density),
                         self.galaxies))
 
@@ -219,7 +219,7 @@ class AbstractPlane(object):
             The exposure time of the observation, which converts luminosity from electrons per second units to counts.
         """
         return list(map(lambda galaxy: galaxy.mass_within_ellipse(
-                        major_axis=major_axis, units_mass=self.units_mass,
+                        major_axis=major_axis, unit_mass=self.units_mass,
                         critical_surface_mass_density=critical_surface_mass_density),
                         self.galaxies))
 
