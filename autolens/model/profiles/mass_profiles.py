@@ -78,11 +78,17 @@ class MassProfile(object):
     def deflections_from_grid(self, grid):
         raise NotImplementedError("deflections_from_grid should be overridden")
 
-    def mass_within_circle(self, radius, unit_mass='angular', critical_surface_mass_density=None):
+    def mass_within_circle_in_units(self, radius, unit_mass='angular', critical_surface_mass_density=None):
         raise NotImplementedError()
 
-    def mass_within_ellipse(self, major_axis, unit_mass='angular', critical_surface_mass_density=None):
+    def mass_within_ellipse_in_units(self, major_axis, unit_mass='angular', critical_surface_mass_density=None):
         raise NotImplementedError()
+
+    def einstein_radius_in_units(self, unit_length : dim.Length, kpc_per_arcsec=None):
+        return NotImplementedError()
+
+    def einstein_mass_in_units(self, unit_mass='angular', critical_surface_mass_density=None):
+        return NotImplementedError()
 
     def summary(self, *args, **kwargs):
         return ["Mass Profile = {}".format(self.__class__.__name__), ""]
@@ -146,15 +152,15 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
         summary = super().summary(critical_surface_mass_density_arcsec=critical_surface_mass_density_arcsec,
                                   critical_surface_mass_density=critical_surface_mass_density, radii=radii, **kwargs)
         for radius in radii:
-            mass = self.mass_within_circle(
+            mass = self.mass_within_circle_in_units(
                 radius=radius, critical_surface_mass_density=critical_surface_mass_density)
 
             summary.append('Mass within {:.2f}" = {:.4e} angular'.format(radius, mass))
 
         return summary
 
-    def mass_within_circle(self, radius : dim.Length, unit_mass='angular', kpc_per_arcsec=None,
-                           critical_surface_mass_density=None):
+    def mass_within_circle_in_units(self, radius : dim.Length, unit_mass='angular', kpc_per_arcsec=None,
+                                    critical_surface_mass_density=None):
         """ Integrate the mass profiles's convergence profile to compute the total mass within a circle of \
         specified radius. This is centred on the mass profile.
 
@@ -175,15 +181,16 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
         """
 
         if not isinstance(radius, dim.Length):
-            radius = dim.Length(value=radius, unit='arcsec')
+            radius = dim.Length(value=radius, unit_length='arcsec')
 
-        profile = self.new_profile_with_units_converted(unit_length=radius.unit, kpc_per_arcsec=kpc_per_arcsec,
+        profile = self.new_profile_with_units_converted(unit_length=radius.unit_length, kpc_per_arcsec=kpc_per_arcsec,
                                                         critical_surface_mass_density=critical_surface_mass_density)
 
         mass_angular = dim.Mass(value=quad(profile.mass_integral, a=0.0, b=radius, args=(1.0,))[0], unit_mass='angular')
         return mass_angular.convert(unit_mass=unit_mass, critical_surface_mass_density=critical_surface_mass_density)
 
-    def mass_within_ellipse(self, major_axis, unit_mass='angular', kpc_per_arcsec=None, critical_surface_mass_density=None):
+    def mass_within_ellipse_in_units(self, major_axis, unit_mass='angular', kpc_per_arcsec=None,
+                                     critical_surface_mass_density=None):
         """ Integrate the mass profiles's convergence profile to compute the total angular mass within an ellipse of \
         specified major axis. This is centred on the mass profile.
 
@@ -204,9 +211,9 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
         """
 
         if not isinstance(major_axis, dim.Length):
-            major_axis = dim.Length(value=major_axis, unit='arcsec')
+            major_axis = dim.Length(value=major_axis, unit_length='arcsec')
 
-        profile = self.new_profile_with_units_converted(unit_length=major_axis.unit, kpc_per_arcsec=kpc_per_arcsec,
+        profile = self.new_profile_with_units_converted(unit_length=major_axis.unit_length, kpc_per_arcsec=kpc_per_arcsec,
                                                         critical_surface_mass_density=critical_surface_mass_density)
 
         mass_angular = dim.Mass(value=quad(profile.mass_integral, a=0.0, b=major_axis, args=(self.axis_ratio,))[0],
@@ -235,12 +242,11 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
             The radius of the outer annulus inside of which the density is estimated.
         """
         annuli_area = (np.pi * outer_annuli_radius ** 2.0) - (np.pi * inner_annuli_radius ** 2.0)
-        return (self.mass_within_circle(radius=outer_annuli_radius) -
-                self.mass_within_circle(radius=inner_annuli_radius)) \
+        return (self.mass_within_circle_in_units(radius=outer_annuli_radius) -
+                self.mass_within_circle_in_units(radius=inner_annuli_radius)) \
                / annuli_area
 
-    @property
-    def radius_where_average_convergence_in_circle_is_one(self):
+    def average_convergence_of_1_radius_in_units(self, unit_length='arcsec', kpc_per_arcsec=None):
         """The radius a critical curve forms for this mass profile, e.g. where the mean convergence is equal to 1.0.
 
          In case of ellipitical mass profiles, the 'average' critical curve is used, whereby the convergence is \
@@ -251,10 +257,23 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
          """
 
         def func(radius):
-            return self.mass_within_circle(radius=radius) - \
-                   np.pi * radius ** 2.0
+            radius = dim.Length(radius, unit_length=unit_length)
+            return self.mass_within_circle_in_units(radius=radius) - np.pi * radius ** 2.0
 
-        return self.ellipticity_rescale * root_scalar(func, bracket=[1e-4, 1000.0]).root
+        radius = self.ellipticity_rescale * root_scalar(func, bracket=[1e-4, 1000.0]).root
+        radius = dim.Length(radius, unit_length)
+        return radius.convert(unit_length=unit_length, kpc_per_arcsec=kpc_per_arcsec)
+
+    def einstein_radius_in_units(self, unit_length='arcsec', kpc_per_arcsec=None):
+        profile = self.new_profile_with_units_converted(unit_length=unit_length, kpc_per_arcsec=kpc_per_arcsec)
+        einstein_radius = profile.average_convergence_of_1_radius_in_units(unit_length=unit_length,
+                                                                           kpc_per_arcsec=kpc_per_arcsec)
+        return dim.Length(einstein_radius, unit_length)
+
+    def einstein_mass_in_units(self, unit_mass='angular', critical_surface_mass_density=None):
+        einstein_radius = self.average_convergence_of_1_radius_in_units()
+        return self.mass_within_circle_in_units(radius=einstein_radius, unit_mass=unit_mass,
+                                                critical_surface_mass_density=critical_surface_mass_density)
 
     @property
     def ellipticity_rescale(self):
@@ -296,7 +315,7 @@ class EllipticalCoredPowerLaw(EllipticalMassProfile, MassProfile):
 
     def summary(self, critical_surface_mass_density, radii, **kwargs):
         summary = super().summary(critical_surface_mass_density=critical_surface_mass_density, radii=radii, **kwargs)
-        einstein_mass = self.mass_within_circle(
+        einstein_mass = self.mass_within_circle_in_units(
             radius=self.einstein_radius, critical_surface_mass_density=critical_surface_mass_density)
 
         return summary + ['Mass within Einstein Radius = {:.4e} angular'.format(einstein_mass),
@@ -709,11 +728,11 @@ class AbstractEllipticalGeneralizedNFW(EllipticalMassProfile, MassProfile):
         mass_at_200 = self.mass_at_200(critical_surface_mass_density_arcsec=critical_surface_mass_density_arcsec,
                                        cosmic_average_mass_density_arcsec=cosmic_average_mass_density_arcsec)
 
-        einstein_mass = self.mass_within_circle(
-            radius=self.einstein_radius, critical_surface_mass_density=critical_surface_mass_density)
+        einstein_mass = self.mass_within_circle_in_units(
+            radius=self.einstein_radius_in_units, critical_surface_mass_density=critical_surface_mass_density)
 
         return summary + ['Mass within Einstein Radius = {:.4f} angular'.format(einstein_mass),
-                          'Einstein Radius = {:.2f}"'.format(self.einstein_radius),
+                          'Einstein Radius = {:.2f}"'.format(self.einstein_radius_in_units),
                           'Rho at scale radius = {:.2f}'.format(rho_at_scale_radius),
                           'Delta concentration = {:.2f}'.format(delta_concentration),
                           'Concentration = {:.2f}'.format(concentration),
@@ -798,10 +817,6 @@ class AbstractEllipticalGeneralizedNFW(EllipticalMassProfile, MassProfile):
     @property
     def ellipticity_rescale(self):
         return 1.0 - ((1.0 - self.axis_ratio) / 2.0)
-
-    @property
-    def einstein_radius(self):
-        return self.radius_where_average_convergence_in_circle_is_one
 
     @staticmethod
     def coord_func_f(grid_radius):
@@ -1421,10 +1436,6 @@ class AbstractEllipticalSersic(light_profiles.AbstractEllipticalSersic, Elliptic
     def ellipticity_rescale(self):
         return (1.0 - ((1.0 - self.axis_ratio) / 2.0))
 
-    @property
-    def einstein_radius(self):
-        return self.radius_where_average_convergence_in_circle_is_one
-
 
 class EllipticalSersic(AbstractEllipticalSersic):
 
@@ -1813,14 +1824,16 @@ class ExternalShear(geometry_profiles.EllipticalProfile, MassProfile):
         super(ExternalShear, self).__init__(centre=(0.0, 0.0), phi=phi, axis_ratio=1.0)
         self.magnitude = magnitude
 
-    @property
-    def einstein_radius(self):
+    def mass_within_circle_in_units(self, radius, unit_mass='solMass', critical_surface_mass_density=None):
         return 0.0
 
-    def mass_within_circle(self, radius, unit_mass='solMass', critical_surface_mass_density=None):
+    def mass_within_ellipse_in_units(self, radius, unit_mass='solMass', critical_surface_mass_density=None):
         return 0.0
 
-    def mass_within_ellipse(self, radius, unit_mass='solMass', critical_surface_mass_density=None):
+    def einstein_radius_in_units(self, unit_length : dim.Length, kpc_per_arcsec=None):
+        return 0.0
+
+    def einstein_mass_in_units(self, unit_mass='angular', critical_surface_mass_density=None):
         return 0.0
 
     def convergence_from_grid(self, grid):

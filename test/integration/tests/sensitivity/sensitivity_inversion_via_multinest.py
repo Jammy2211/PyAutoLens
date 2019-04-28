@@ -36,7 +36,7 @@ def make_pipeline(test_name):
 
             self.lens_galaxies.lens.mass.centre_0 = 0.0
             self.lens_galaxies.lens.mass.centre_1 = 0.0
-            self.lens_galaxies.lens.mass.einstein_radius = 1.6
+            self.lens_galaxies.lens.mass.einstein_radius_in_units = 1.6
 
             self.source_galaxies.source.pixelization.shape_0 = 8.0
             self.source_galaxies.source.pixelization.shape_1 = 8.0

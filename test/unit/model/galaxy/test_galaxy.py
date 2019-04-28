@@ -60,21 +60,21 @@ class TestLightProfiles(object):
 
             radius = dim.Length(0.5, 'arcsec')
 
-            luminosity = sersic_0.luminosity_within_circle(radius=radius, unit_luminosity='eps')
-            luminosity += sersic_1.luminosity_within_circle(radius=radius, unit_luminosity='eps')
+            luminosity = sersic_0.luminosity_within_circle_in_units(radius=radius, unit_luminosity='eps')
+            luminosity += sersic_1.luminosity_within_circle_in_units(radius=radius, unit_luminosity='eps')
 
-            gal_luminosity = gal_sersic.luminosity_within_circle(radius=radius, unit_luminosity='eps')
+            gal_luminosity = gal_sersic.luminosity_within_circle_in_units(radius=radius, unit_luminosity='eps')
 
             assert luminosity == gal_luminosity
 
-            luminosity = sersic_0.luminosity_within_ellipse(major_axis=radius,
-                                                                    unit_luminosity='eps')
-            luminosity += sersic_1.luminosity_within_ellipse(major_axis=radius,
+            luminosity = sersic_0.luminosity_within_ellipse_in_units(major_axis=radius,
                                                                      unit_luminosity='eps')
+            luminosity += sersic_1.luminosity_within_ellipse_in_units(major_axis=radius,
+                                                                      unit_luminosity='eps')
 
             gal_sersic = g.Galaxy(redshift=0.5, light_profile_0=sersic_0, light_profile_1=sersic_1)
 
-            gal_luminosity = gal_sersic.luminosity_within_ellipse(major_axis=radius, unit_luminosity='eps')
+            gal_luminosity = gal_sersic.luminosity_within_ellipse_in_units(major_axis=radius, unit_luminosity='eps')
 
             assert luminosity == gal_luminosity
 
@@ -87,14 +87,14 @@ class TestLightProfiles(object):
 
             radius = dim.Length(0.5, 'arcsec')
 
-            luminosity = sersic.luminosity_within_circle(radius=radius)
-            g_luminosity_arcsec = galaxy_arcsec.luminosity_within_circle(radius=radius)
+            luminosity = sersic.luminosity_within_circle_in_units(radius=radius)
+            g_luminosity_arcsec = galaxy_arcsec.luminosity_within_circle_in_units(radius=radius)
             assert luminosity == g_luminosity_arcsec
 
             radius = dim.Length(0.5, 'kpc')
 
-            luminosity = sersic.luminosity_within_circle(radius=radius, kpc_per_arcsec=2.0)
-            g_luminosity_kpc = galaxy_arcsec.luminosity_within_circle(radius=radius, kpc_per_arcsec=2.0)
+            luminosity = sersic.luminosity_within_circle_in_units(radius=radius, kpc_per_arcsec=2.0)
+            g_luminosity_kpc = galaxy_arcsec.luminosity_within_circle_in_units(radius=radius, kpc_per_arcsec=2.0)
             assert luminosity == g_luminosity_kpc
 
         def test__luminosity_unit_conversions__multiply_by_exposure_time(self):
@@ -105,20 +105,20 @@ class TestLightProfiles(object):
 
             radius = dim.Length(0.5, 'arcsec')
 
-            luminosity = sersic.luminosity_within_ellipse(major_axis=radius, unit_luminosity='eps', exposure_time=2.0)
-            gal_luminosity = galaxy.luminosity_within_ellipse(major_axis=radius, unit_luminosity='eps', exposure_time=2.0)
+            luminosity = sersic.luminosity_within_ellipse_in_units(major_axis=radius, unit_luminosity='eps', exposure_time=2.0)
+            gal_luminosity = galaxy.luminosity_within_ellipse_in_units(major_axis=radius, unit_luminosity='eps', exposure_time=2.0)
             assert luminosity == gal_luminosity
 
-            luminosity = sersic.luminosity_within_circle(radius=radius, unit_luminosity='counts', exposure_time=2.0)
-            gal_luminosity = galaxy.luminosity_within_circle(radius=radius, unit_luminosity='counts', exposure_time=2.0)
+            luminosity = sersic.luminosity_within_circle_in_units(radius=radius, unit_luminosity='counts', exposure_time=2.0)
+            gal_luminosity = galaxy.luminosity_within_circle_in_units(radius=radius, unit_luminosity='counts', exposure_time=2.0)
             assert luminosity == gal_luminosity
 
         def test__no_light_profile__returns_none(self):
 
             gal = g.Galaxy(redshift=0.5, mass=mp.SphericalIsothermal())
 
-            assert gal.luminosity_within_circle(radius=1.0) == None
-            assert gal.luminosity_within_ellipse(major_axis=1.0) == None
+            assert gal.luminosity_within_circle_in_units(radius=1.0) == None
+            assert gal.luminosity_within_ellipse_in_units(major_axis=1.0) == None
 
     class TestSymmetricProfiles(object):
 
@@ -257,19 +257,19 @@ class TestMassProfiles(object):
 
             radius = dim.Length(0.5, 'arcsec')
 
-            mass = sie_0.mass_within_circle(radius=radius, unit_mass='angular')
-            mass += sie_1.mass_within_circle(radius=radius, unit_mass='angular')
+            mass = sie_0.mass_within_circle_in_units(radius=radius, unit_mass='angular')
+            mass += sie_1.mass_within_circle_in_units(radius=radius, unit_mass='angular')
 
             gal_sie = g.Galaxy(redshift=0.5, mass_profile_0=sie_0, mass_profile_1=sie_1)
 
-            gal_mass = gal_sie.mass_within_circle(radius=radius, unit_mass='angular')
+            gal_mass = gal_sie.mass_within_circle_in_units(radius=radius, unit_mass='angular')
 
             assert mass == gal_mass
 
-            mass = sie_0.mass_within_ellipse(major_axis=radius, unit_mass='angular')
-            mass += sie_1.mass_within_ellipse(major_axis=radius, unit_mass='angular')
+            mass = sie_0.mass_within_ellipse_in_units(major_axis=radius, unit_mass='angular')
+            mass += sie_1.mass_within_ellipse_in_units(major_axis=radius, unit_mass='angular')
 
-            gal_mass = gal_sie.mass_within_ellipse(major_axis=radius, unit_mass='angular')
+            gal_mass = gal_sie.mass_within_ellipse_in_units(major_axis=radius, unit_mass='angular')
 
             assert mass == gal_mass
 
@@ -281,14 +281,14 @@ class TestMassProfiles(object):
 
             radius = dim.Length(0.5, 'arcsec')
 
-            mass = sie.mass_within_circle(radius=radius)
-            g_mass_arcsec = galaxy_arcsec.mass_within_circle(radius=radius)
+            mass = sie.mass_within_circle_in_units(radius=radius)
+            g_mass_arcsec = galaxy_arcsec.mass_within_circle_in_units(radius=radius)
             assert mass == g_mass_arcsec
 
             radius = dim.Length(0.5, 'kpc')
 
-            mass = sie.mass_within_circle(radius=radius, kpc_per_arcsec=2.0)
-            g_mass_kpc = galaxy_arcsec.mass_within_circle(radius=radius, kpc_per_arcsec=2.0)
+            mass = sie.mass_within_circle_in_units(radius=radius, kpc_per_arcsec=2.0)
+            g_mass_kpc = galaxy_arcsec.mass_within_circle_in_units(radius=radius, kpc_per_arcsec=2.0)
             assert mass == g_mass_kpc
 
         def test__mass_unit_conversions__same_as_individual_profile(self):
@@ -299,20 +299,20 @@ class TestMassProfiles(object):
 
             radius = dim.Length(0.5, 'arcsec')
 
-            mass = sie.mass_within_ellipse(major_axis=radius, unit_mass='angular', critical_surface_mass_density=2.0)
-            gal_mass = galaxy.mass_within_ellipse(major_axis=radius, unit_mass='angular', critical_surface_mass_density=2.0)
+            mass = sie.mass_within_ellipse_in_units(major_axis=radius, unit_mass='angular', critical_surface_mass_density=2.0)
+            gal_mass = galaxy.mass_within_ellipse_in_units(major_axis=radius, unit_mass='angular', critical_surface_mass_density=2.0)
             assert mass == gal_mass
 
-            mass = sie.mass_within_circle(radius=radius, unit_mass='solMass', critical_surface_mass_density=2.0)
-            gal_mass = galaxy.mass_within_circle(radius=radius, unit_mass='solMass', critical_surface_mass_density=2.0)
+            mass = sie.mass_within_circle_in_units(radius=radius, unit_mass='solMass', critical_surface_mass_density=2.0)
+            gal_mass = galaxy.mass_within_circle_in_units(radius=radius, unit_mass='solMass', critical_surface_mass_density=2.0)
             assert mass == gal_mass
 
         def test__no_mass_profile__returns_none(self):
 
             gal = g.Galaxy(redshift=0.5, light=lp.SphericalSersic())
 
-            assert gal.mass_within_circle(radius=1.0, critical_surface_mass_density=1.0) == None
-            assert gal.mass_within_ellipse(major_axis=1.0, critical_surface_mass_density=1.0) == None
+            assert gal.mass_within_circle_in_units(radius=1.0, critical_surface_mass_density=1.0) == None
+            assert gal.mass_within_ellipse_in_units(major_axis=1.0, critical_surface_mass_density=1.0) == None
 
     class TestSymmetricProfiles:
 
@@ -404,34 +404,17 @@ class TestMassProfiles(object):
             assert -1.0 * gal_isothermal.deflections_from_grid(np.array([[49.0, 49.0]]))[0, 1] == pytest.approx(
                 gal_isothermal.deflections_from_grid(np.array([[51.0, 51.0]]))[0, 1], 1e-5)
 
-    class TestEinsteinRadii:
+    class TestEinsteinRadiiMass:
 
-        def test__x2_sis_different_einstein_radii__einstein_radii_is_sum(self):
+        def test__x2_sis_different_einstein_radii_and_mass__einstein_radii_and_mass_are_sum(self):
 
             sis_0 = mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=1.0)
             sis_1 = mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=0.5)
 
             galaxy = g.Galaxy(mass_0=sis_0, mass_1=sis_1)
 
-            assert galaxy.einstein_radius == 1.5
-
-        def test__x2_si2_different_einstein_radii__einstein_radii_is_sum(self):
-
-            sis_0 = mp.EllipticalIsothermal(centre=(0.0, 0.0), einstein_radius=0.5, axis_ratio=0.9)
-            sis_1 = mp.EllipticalIsothermal(centre=(0.0, 0.0), einstein_radius=1.0, axis_ratio=0.7)
-
-            galaxy = g.Galaxy(mass_0=sis_0, mass_1=sis_1)
-
-            assert galaxy.einstein_radius == 1.5
-
-        def test__x2_nfw__einstein_radii_is_sum(self):
-
-            nfw_0 = mp.EllipticalNFW(centre=(0.0, 0.0), axis_ratio=0.8, kappa_s=0.2, scale_radius=5.0)
-            nfw_1 = mp.EllipticalNFW(centre=(0.0, 0.0), axis_ratio=0.8, phi=0.0, kappa_s=0.3, scale_radius=10.0)
-
-            galaxy = g.Galaxy(mass_0=nfw_0, mass_1=nfw_1)
-
-            assert galaxy.einstein_radius == nfw_0.einstein_radius + nfw_1.einstein_radius
+            assert galaxy.einstein_radius_in_units(unit_length='arcsec') == 1.5
+            assert galaxy.einstein_mass_in_units(unit_mass='angular') == np.pi*(1.0 + 0.5**2.0)
 
         def test__includes_shear__does_not_impact_values(self):
 
@@ -440,7 +423,8 @@ class TestMassProfiles(object):
 
             galaxy = g.Galaxy(mass_0=sis_0, shear=shear)
 
-            assert galaxy.einstein_radius == 1.0
+            assert galaxy.einstein_radius_in_units(unit_length='arcsec') == 1.0
+            assert galaxy.einstein_mass_in_units(unit_mass='angular') == np.pi
 
 
 class TestMassAndLightProfiles(object):

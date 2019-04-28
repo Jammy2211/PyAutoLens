@@ -219,7 +219,7 @@ class TestResultForArguments:
         arguments = {galaxy_prior.redshift.redshift: 0.5,
                      galaxy_prior.mass_profile.centre.centre_0: 1.0,
                      galaxy_prior.mass_profile.centre.centre_1: 0.2,
-                     galaxy_prior.mass_profile.einstein_radius: 0.3,
+                     galaxy_prior.mass_profile.einstein_radius_in_units: 0.3,
                      galaxy_prior.light_profile.axis_ratio: 0.4,
                      galaxy_prior.light_profile.phi: 0.5,
                      galaxy_prior.light_profile.intensity: 0.6,
@@ -243,7 +243,7 @@ class TestResultForArguments:
         arguments = {galaxy_prior.redshift.redshift: redshift_prior,
                      galaxy_prior.mass_profile.centre.centre_0: mm.GaussianPrior(2, 1),
                      galaxy_prior.mass_profile.centre.centre_1: mm.GaussianPrior(3, 1),
-                     galaxy_prior.mass_profile.einstein_radius: einstein_radius_prior,
+                     galaxy_prior.mass_profile.einstein_radius_in_units: einstein_radius_prior,
                      galaxy_prior.light_profile.axis_ratio: mm.GaussianPrior(5, 1),
                      galaxy_prior.light_profile.phi: mm.GaussianPrior(6, 1),
                      galaxy_prior.light_profile.intensity: intensity_prior,
@@ -253,7 +253,7 @@ class TestResultForArguments:
         gaussian_galaxy_prior_model = galaxy_prior.gaussian_prior_model_for_arguments(arguments)
 
         assert gaussian_galaxy_prior_model.redshift.redshift == redshift_prior
-        assert gaussian_galaxy_prior_model.mass_profile.einstein_radius == einstein_radius_prior
+        assert gaussian_galaxy_prior_model.mass_profile.einstein_radius_in_units == einstein_radius_prior
         assert gaussian_galaxy_prior_model.light_profile.intensity == intensity_prior
 
 

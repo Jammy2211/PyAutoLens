@@ -27,10 +27,10 @@ def summarize_einstein_radius_and_mass(summary_file, mass_profile, critical_surf
         The critical surface mass density of the lensing system, required to convert the mass to physical units.
     """
 
-    einstein_mass = mass_profile.mass_within_circle(
-        radius=mass_profile.einstein_radius, critical_surface_mass_density=critical_surface_mass_density)
+    einstein_mass = mass_profile.mass_within_circle_in_units(
+        radius=mass_profile.einstein_radius_in_units, critical_surface_mass_density=critical_surface_mass_density)
 
-    summary_file.write('Einstein Radius = {:.2f}"\n'.format(mass_profile.einstein_radius))
+    summary_file.write('Einstein Radius = {:.2f}"\n'.format(mass_profile.einstein_radius_in_units))
     summary_file.write('Mass within Einstein Radius = {:.4e} solMass\n'.format(einstein_mass))
 
 
@@ -50,7 +50,7 @@ def summarize_mass_within_radii(summary_file, mass_profile, critical_surface_mas
     """
 
     for radius in radii:
-        mass = mass_profile.mass_within_circle(
+        mass = mass_profile.mass_within_circle_in_units(
             radius=radius, critical_surface_mass_density=critical_surface_mass_density)
 
         summary_file.write('Mass within {:.2f}" = {:.4e} solMass\n'.format(radius, mass))

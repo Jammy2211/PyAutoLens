@@ -187,7 +187,7 @@ def plot_luminosity_within_circle_in_electrons_per_second_as_function_of_radius(
         minimum_radius=minimum_radius, maximum_radius=maximum_radius, radii_points=radii_bins)
 
     luminosities = list(map(lambda radius :
-                            light_profile.luminosity_within_circle(radius=radius),
+                            light_profile.luminosity_within_circle_in_units(radius=radius),
                             radii))
 
     quantity_radii_plotters.plot_quantity_as_function_of_radius(

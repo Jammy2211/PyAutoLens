@@ -52,7 +52,7 @@ class TestGaussian:
 
         assert gaussian.sigma == 0.1
         assert isinstance(gaussian.sigma, dim.Length)
-        assert gaussian.sigma.unit == 'arcsec'
+        assert gaussian.sigma.unit_length == 'arcsec'
 
         gaussian = lp.SphericalGaussian(centre=(1.0, 2.0), intensity=1.0, sigma=0.1)
 
@@ -74,7 +74,7 @@ class TestGaussian:
 
         assert gaussian.sigma == 0.1
         assert isinstance(gaussian.sigma, dim.Length)
-        assert gaussian.sigma.unit == 'arcsec'
+        assert gaussian.sigma.unit_length == 'arcsec'
 
     def test__intensity_as_radius__correct_value(self):
 
@@ -174,7 +174,7 @@ class TestSersic:
 
         assert sersic.effective_radius == 0.6
         assert isinstance(sersic.effective_radius, dim.Length)
-        assert sersic.effective_radius.unit == 'arcsec'
+        assert sersic.effective_radius.unit_length == 'arcsec'
 
         assert sersic.sersic_index == 4.0
         assert isinstance(sersic.sersic_index, float)
@@ -202,7 +202,7 @@ class TestSersic:
 
         assert sersic.effective_radius == 0.6
         assert isinstance(sersic.effective_radius, dim.Length)
-        assert sersic.effective_radius.unit == 'arcsec'
+        assert sersic.effective_radius.unit_length == 'arcsec'
 
         assert sersic.sersic_index == 4.0
         assert isinstance(sersic.sersic_index, float)
@@ -274,7 +274,7 @@ class TestExponential:
 
         assert exponential.effective_radius == 0.6
         assert isinstance(exponential.effective_radius, dim.Length)
-        assert exponential.effective_radius.unit == 'arcsec'
+        assert exponential.effective_radius.unit_length == 'arcsec'
 
         assert exponential.sersic_index == 1.0
         assert isinstance(exponential.sersic_index, float)
@@ -302,7 +302,7 @@ class TestExponential:
 
         assert exponential.effective_radius == 0.6
         assert isinstance(exponential.effective_radius, dim.Length)
-        assert exponential.effective_radius.unit == 'arcsec'
+        assert exponential.effective_radius.unit_length == 'arcsec'
 
         assert exponential.sersic_index == 1.0
         assert isinstance(exponential.sersic_index, float)
@@ -376,7 +376,7 @@ class TestDevVaucouleurs:
 
         assert dev_vaucouleurs.effective_radius == 0.6
         assert isinstance(dev_vaucouleurs.effective_radius, dim.Length)
-        assert dev_vaucouleurs.effective_radius.unit == 'arcsec'
+        assert dev_vaucouleurs.effective_radius.unit_length == 'arcsec'
 
         assert dev_vaucouleurs.sersic_index == 4.0
         assert isinstance(dev_vaucouleurs.sersic_index, float)
@@ -404,7 +404,7 @@ class TestDevVaucouleurs:
 
         assert dev_vaucouleurs.effective_radius == 0.6
         assert isinstance(dev_vaucouleurs.effective_radius, dim.Length)
-        assert dev_vaucouleurs.effective_radius.unit == 'arcsec'
+        assert dev_vaucouleurs.effective_radius.unit_length == 'arcsec'
 
         assert dev_vaucouleurs.sersic_index == 4.0
         assert isinstance(dev_vaucouleurs.sersic_index, float)
@@ -481,14 +481,14 @@ class TestCoreSersic(object):
 
         assert core_sersic.effective_radius == 0.6
         assert isinstance(core_sersic.effective_radius, dim.Length)
-        assert core_sersic.effective_radius.unit == 'arcsec'
+        assert core_sersic.effective_radius.unit_length == 'arcsec'
 
         assert core_sersic.sersic_index == 4.0
         assert isinstance(core_sersic.sersic_index, float)
 
         assert core_sersic.radius_break == 0.01
         assert isinstance(core_sersic.radius_break, dim.Length)
-        assert core_sersic.radius_break.unit == 'arcsec'
+        assert core_sersic.radius_break.unit_length == 'arcsec'
 
         assert core_sersic.intensity_break == 0.1
         assert isinstance(core_sersic.intensity_break, dim.Luminosity)
@@ -525,14 +525,14 @@ class TestCoreSersic(object):
 
         assert core_sersic.effective_radius == 0.6
         assert isinstance(core_sersic.effective_radius, dim.Length)
-        assert core_sersic.effective_radius.unit == 'arcsec'
+        assert core_sersic.effective_radius.unit_length == 'arcsec'
 
         assert core_sersic.sersic_index == 4.0
         assert isinstance(core_sersic.sersic_index, float)
 
         assert core_sersic.radius_break == 0.01
         assert isinstance(core_sersic.radius_break, dim.Length)
-        assert core_sersic.radius_break.unit == 'arcsec'
+        assert core_sersic.radius_break.unit_length == 'arcsec'
 
         assert core_sersic.intensity_break == 0.1
         assert isinstance(core_sersic.intensity_break, dim.Luminosity)
@@ -588,7 +588,7 @@ class TestLuminosityWithinCircle(object):
 
         luminosity_analytic = luminosity_from_radius_and_sersic(radius=radius, sersic=sersic)
 
-        luminosity_integral = sersic.luminosity_within_circle(radius=0.5)
+        luminosity_integral = sersic.luminosity_within_circle_in_units(radius=0.5)
 
         assert luminosity_analytic == pytest.approx(luminosity_integral, 1e-3)
 
@@ -612,7 +612,7 @@ class TestLuminosityWithinCircle(object):
                 if eta < radius:
                     luminosity_tot += sersic.intensities_from_grid_radii(eta) * area
 
-        luminosity_integral = sersic.luminosity_within_circle(radius=radius)
+        luminosity_integral = sersic.luminosity_within_circle_in_units(radius=radius)
 
         assert luminosity_tot == pytest.approx(luminosity_integral, 0.02)
 
@@ -625,8 +625,8 @@ class TestLuminosityWithinCircle(object):
 
         luminosity_analytic = luminosity_from_radius_and_sersic(radius=radius, sersic=sersic_eps)
 
-        luminosity_integral = sersic_eps.luminosity_within_circle(radius=radius, unit_luminosity='eps',
-                                                             exposure_time=3.0)
+        luminosity_integral = sersic_eps.luminosity_within_circle_in_units(radius=radius, unit_luminosity='eps',
+                                                                           exposure_time=3.0)
 
         # eps -> eps
     
@@ -634,7 +634,7 @@ class TestLuminosityWithinCircle(object):
         
         # eps -> counts
 
-        luminosity_integral = sersic_eps.luminosity_within_circle(radius=radius, unit_luminosity='counts', exposure_time=3.0)
+        luminosity_integral = sersic_eps.luminosity_within_circle_in_units(radius=radius, unit_luminosity='counts', exposure_time=3.0)
 
         assert 3.0*luminosity_analytic == pytest.approx(luminosity_integral, 1e-3)
         
@@ -644,14 +644,14 @@ class TestLuminosityWithinCircle(object):
         radius = dim.Length(0.5, 'arcsec')
 
         luminosity_analytic = luminosity_from_radius_and_sersic(radius=radius, sersic=sersic_counts)
-        luminosity_integral = sersic_counts.luminosity_within_circle(radius=radius, unit_luminosity='eps',
-                                                             exposure_time=3.0)
+        luminosity_integral = sersic_counts.luminosity_within_circle_in_units(radius=radius, unit_luminosity='eps',
+                                                                              exposure_time=3.0)
 
         # counts -> eps
 
         assert luminosity_analytic / 3.0 == pytest.approx(luminosity_integral, 1e-3)
 
-        luminosity_integral = sersic_counts.luminosity_within_circle(radius=radius, unit_luminosity='counts', exposure_time=3.0)
+        luminosity_integral = sersic_counts.luminosity_within_circle_in_units(radius=radius, unit_luminosity='counts', exposure_time=3.0)
 
         # counts -> counts
 
@@ -675,13 +675,13 @@ class TestLuminosityWithinCircle(object):
 
         # arcsec -> arcsec
 
-        luminosity_integral = sersic_arcsec.luminosity_within_circle(radius=radius)
+        luminosity_integral = sersic_arcsec.luminosity_within_circle_in_units(radius=radius)
 
         assert luminosity_analytic == pytest.approx(luminosity_integral, 1e-3)
 
         # arcsec -> kpc
 
-        luminosity_integral = sersic_kpc.luminosity_within_circle(radius=radius, kpc_per_arcsec=2.0)
+        luminosity_integral = sersic_kpc.luminosity_within_circle_in_units(radius=radius, kpc_per_arcsec=2.0)
 
         assert luminosity_analytic == pytest.approx(luminosity_integral, 1e-3)
 
@@ -691,13 +691,13 @@ class TestLuminosityWithinCircle(object):
 
         # kpc -> kpc
 
-        luminosity_integral = sersic_kpc.luminosity_within_circle(radius=radius)
+        luminosity_integral = sersic_kpc.luminosity_within_circle_in_units(radius=radius)
 
         assert luminosity_analytic == pytest.approx(luminosity_integral, 1e-3)
 
         # kpc -> arcsec
 
-        luminosity_integral = sersic_arcsec.luminosity_within_circle(radius=radius, kpc_per_arcsec=2.0)
+        luminosity_integral = sersic_arcsec.luminosity_within_circle_in_units(radius=radius, kpc_per_arcsec=2.0)
 
         assert luminosity_analytic == pytest.approx(luminosity_integral, 1e-3)
 
@@ -709,13 +709,13 @@ class TestLuminosityWithinCircle(object):
                                            sersic_index=1.0)
 
         radius = dim.Length(2.0, 'arcsec')
-        sersic_arcsec.luminosity_within_circle(radius=radius, unit_luminosity='eps')
+        sersic_arcsec.luminosity_within_circle_in_units(radius=radius, unit_luminosity='eps')
 
         with pytest.raises(exc.UnitsException):
-            sersic_arcsec.luminosity_within_circle(radius=0.5, unit_luminosity='counts', exposure_time=None)
+            sersic_arcsec.luminosity_within_circle_in_units(radius=0.5, unit_luminosity='counts', exposure_time=None)
             radius = dim.Length(2.0, 'kpc')
-            sersic_arcsec.luminosity_within_circle(radius=radius, unit_luminosity='eps',
-                                                    kpc_per_arcsec=None)
+            sersic_arcsec.luminosity_within_circle_in_units(radius=radius, unit_luminosity='eps',
+                                                            kpc_per_arcsec=None)
 
 
 class TestLuminosityWithinEllipse(object):
@@ -742,8 +742,8 @@ class TestLuminosityWithinEllipse(object):
                 if eta < radius:
                     luminosity_tot += sersic.intensities_from_grid_radii(eta) * area
 
-        luminosity_integral = sersic.luminosity_within_ellipse(major_axis=radius, unit_luminosity='counts',
-                                                              exposure_time=3.0)
+        luminosity_integral = sersic.luminosity_within_ellipse_in_units(major_axis=radius, unit_luminosity='counts',
+                                                                        exposure_time=3.0)
 
         assert 3.0*luminosity_tot[0] == pytest.approx(luminosity_integral, 0.02)
 
@@ -755,13 +755,13 @@ class TestLuminosityWithinEllipse(object):
                                            sersic_index=1.0)
 
         major_axis = dim.Length(2.0, 'arcsec')
-        sersic_arcsec.luminosity_within_ellipse(major_axis=major_axis, unit_luminosity='eps')
+        sersic_arcsec.luminosity_within_ellipse_in_units(major_axis=major_axis, unit_luminosity='eps')
 
         with pytest.raises(exc.UnitsException):
-            sersic_arcsec.luminosity_within_ellipse(major_axis=0.5, unit_luminosity='counts', exposure_time=None)
+            sersic_arcsec.luminosity_within_ellipse_in_units(major_axis=0.5, unit_luminosity='counts', exposure_time=None)
             major_axis = dim.Length(2.0, 'kpc')
-            sersic_arcsec.luminosity_within_ellipse(major_axis=major_axis, unit_luminosity='eps',
-                                                    kpc_per_arcsec=None)
+            sersic_arcsec.luminosity_within_ellipse_in_units(major_axis=major_axis, unit_luminosity='eps',
+                                                             kpc_per_arcsec=None)
 
 
 class TestGrids(object):
