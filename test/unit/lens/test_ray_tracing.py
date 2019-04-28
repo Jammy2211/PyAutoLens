@@ -7,6 +7,7 @@ from autolens.data.array import mask as msk
 from autolens.lens import plane as pl
 from autolens.lens import ray_tracing
 from autolens.lens.util import lens_util
+from autolens.model import cosmology_util
 from autolens.model.galaxy import galaxy as g
 from autolens.model.galaxy.util import galaxy_util
 from autolens.model.inversion import pixelizations, regularization
@@ -475,29 +476,32 @@ class TestAbstractTracer(object):
 
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g1],
                                                          image_plane_grid_stack=grid_stack,
-                                                         cosmology=cosmo.Planck15, units_mass='solMass',
-                                                         units_distance='kpc')
+                                                         cosmology=cosmo.Planck15)
 
-            assert tracer.image_plane.arcsec_per_kpc.value == pytest.approx(0.525060, 1e-5)
-            assert tracer.image_plane.kpc_per_arcsec.value == pytest.approx(1.904544, 1e-5)
-            assert tracer.image_plane.angular_diameter_distance_to_earth_in_units.value == \
+            assert tracer.image_plane.arcsec_per_kpc == pytest.approx(0.525060, 1e-5)
+            assert tracer.image_plane.kpc_per_arcsec == pytest.approx(1.904544, 1e-5)
+            assert tracer.image_plane.angular_diameter_distance_to_earth_in_units(unit_length='kpc') == \
                    pytest.approx(392840, 1e-5)
 
-            assert tracer.source_plane.arcsec_per_kpc.value == pytest.approx(0.1214785, 1e-5)
-            assert tracer.source_plane.kpc_per_arcsec.value == pytest.approx(8.231907, 1e-5)
-            assert tracer.source_plane.angular_diameter_distance_to_earth_in_units.value == \
+            assert tracer.source_plane.arcsec_per_kpc == pytest.approx(0.1214785, 1e-5)
+            assert tracer.source_plane.kpc_per_arcsec == pytest.approx(8.231907, 1e-5)
+            assert tracer.source_plane.angular_diameter_distance_to_earth_in_units(unit_length='kpc') == \
                    pytest.approx(1697952, 1e-5)
 
-            assert tracer.angular_diameter_distance_from_image_to_source_plane.value == \
+            assert tracer.angular_diameter_distance_from_image_to_source_plane_in_units(unit_length='kpc') == \
                    pytest.approx(1481890.4, 1e-5)
 
-            assert tracer.critical_surface_mass_density.value == pytest.approx(4.85e9, 1e-2)
+            assert tracer.critical_surface_mass_density_between_planes_in_units(i=0, j=1, unit_length='kpc',
+                                                                                unit_mass='solMass') == \
+                   pytest.approx(4.85e9, 1e-2)
 
             tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0], source_galaxies=[g1],
                                                          image_plane_grid_stack=grid_stack,
-                                                         cosmology=cosmo.Planck15, units_distance='arcsec')
+                                                         cosmology=cosmo.Planck15)
 
-            assert tracer.critical_surface_mass_density.value == pytest.approx(17593241668, 1e-2)
+            assert tracer.critical_surface_mass_density_between_planes_in_units(i=0, j=1, unit_length='arcsec',
+                                                                                unit_mass='solMass') == \
+                   pytest.approx(17593241668, 1e-2)
 
     class TestGalaxyLists:
 
@@ -615,6 +619,7 @@ class TestAbstractTracer(object):
             assert (traced_grid == tracer.planes[4].grid_stack.regular).all()
 
         def test__input_redshift_between_two_planes__performs_ray_tracing_calculation_correctly(self, grid_stack):
+
             g0 = g.Galaxy(mass_profile=mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=1.0), redshift=0.5)
             g1 = g.Galaxy(mass_profile=mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=2.0), redshift=0.75)
             g2 = g.Galaxy(redshift=2.0)
@@ -624,8 +629,8 @@ class TestAbstractTracer(object):
             traced_grid = tracer.grid_at_redshift_from_image_plane_grid_and_redshift(
                 image_plane_grid=grid_stack.regular, redshift=0.6)
 
-            scaling_factor = lens_util.scaling_factor_between_redshifts_for_cosmology(
-                z1=0.5, z2=0.6, z_final=2.0, cosmology=tracer.cosmology)
+            scaling_factor = cosmology_util.scaling_factor_between_redshifts_from_redshifts_and_cosmology(
+                redshift_0=0.5, redshift_1=0.6, redshift_final=2.0, cosmology=tracer.cosmology)
 
             deflection_stack = lens_util.scaled_deflection_stack_from_plane_and_scaling_factor(
                 plane=tracer.planes[0], scaling_factor=scaling_factor)
@@ -636,6 +641,7 @@ class TestAbstractTracer(object):
             assert (traced_grid_stack_manual.regular == traced_grid).all()
 
         def test__input_redshift_between_two_planes__two_planes_between_earth_and_input_redshift(self, grid_stack):
+
             g0 = g.Galaxy(mass_profile=mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=1.0), redshift=0.5)
             g1 = g.Galaxy(mass_profile=mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=2.0), redshift=0.75)
             g2 = g.Galaxy(redshift=2.0)
@@ -647,8 +653,8 @@ class TestAbstractTracer(object):
 
             # First loop, Plane index = 0 #
 
-            scaling_factor = lens_util.scaling_factor_between_redshifts_for_cosmology(
-                z1=0.5, z2=1.9, z_final=2.0, cosmology=tracer.cosmology)
+            scaling_factor = cosmology_util.scaling_factor_between_redshifts_from_redshifts_and_cosmology(
+                redshift_0=0.5, redshift_1=1.9, redshift_final=2.0, cosmology=tracer.cosmology)
 
             deflection_stack = lens_util.scaled_deflection_stack_from_plane_and_scaling_factor(
                 plane=tracer.planes[0], scaling_factor=scaling_factor)
@@ -658,8 +664,8 @@ class TestAbstractTracer(object):
 
             # Second loop, Plane index = 1 #
 
-            scaling_factor = lens_util.scaling_factor_between_redshifts_for_cosmology(
-                z1=0.75, z2=1.9, z_final=2.0, cosmology=tracer.cosmology)
+            scaling_factor = cosmology_util.scaling_factor_between_redshifts_from_redshifts_and_cosmology(
+                redshift_0=0.75, redshift_1=1.9, redshift_final=2.0, cosmology=tracer.cosmology)
 
             deflection_stack = lens_util.scaled_deflection_stack_from_plane_and_scaling_factor(
                 plane=tracer.planes[1], scaling_factor=scaling_factor)
@@ -683,44 +689,8 @@ class TestAbstractTracer(object):
 
     class TestEinsteinRadiusAndMass:
 
-        def test__x1_lens_galaxy__einstein_mass_is_correct(self, grid_stack):
-
-            g0 = g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=1.0), redshift=1.0)
-
-            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0],
-                                                         source_galaxies=[g.Galaxy(redshift=2.0)],
-                                                         image_plane_grid_stack=grid_stack,
-                                                         cosmology=cosmo.Planck15, units_distance='arcsec',
-                                                         units_mass='solMass')
-
-            g0_mass = g0.mass_within_circle_in_units(radius=1.0,
-                                                     critical_surface_mass_density=tracer.critical_surface_mass_density.value)
-
-            assert tracer.einstein_radii_of_planes[0] == 1.0
-            assert tracer.einstein_radii_of_planes[1] is None
-            assert tracer.einstein_radii_of_planes[0] == 1.0 * tracer.image_plane.kpc_per_arcsec
-            assert tracer.einstein_radii_of_planes[1] is None
-            assert tracer.einstein_masses_of_planes[0] == g0_mass
-            assert tracer.einstein_masses_of_planes[1] is None
-
-            g0 = g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=2.0), redshift=1.0)
-
-            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0],
-                                                         source_galaxies=[g.Galaxy(redshift=2.0)],
-                                                         image_plane_grid_stack=grid_stack,
-                                                         cosmology=cosmo.Planck15, units_distance='arcsec')
-
-            g0_mass = g0.mass_within_circle_in_units(radius=2.0,
-                                                     critical_surface_mass_density=tracer.critical_surface_mass_density.value)
-
-            assert tracer.einstein_radii_of_planes[0] == 2.0
-            assert tracer.einstein_radii_of_planes[1] is None
-            assert tracer.einstein_radii_of_planes[0] == 2.0 * tracer.image_plane.kpc_per_arcsec
-            assert tracer.einstein_radii_of_planes[1] is None
-            assert tracer.einstein_masses_of_planes[0] == g0_mass
-            assert tracer.einstein_masses_of_planes[1] is None
-
         def test__x2_lens_galaxies__values_are_sum_of_each_galaxy(self, grid_stack):
+
             g0 = g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=1.0), redshift=1.0)
             g1 = g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=2.0), redshift=1.0)
 
@@ -729,17 +699,31 @@ class TestAbstractTracer(object):
                                                          image_plane_grid_stack=grid_stack,
                                                          cosmology=cosmo.Planck15)
 
-            g0_mass = g0.mass_within_circle_in_units(
-                radius=1.0, critical_surface_mass_density=tracer.critical_surface_mass_density)
-            g1_mass = g1.mass_within_circle_in_units(
-                radius=2.0, critical_surface_mass_density=tracer.critical_surface_mass_density)
+            g0_einstein_radius = g0.einstein_radius_in_units(unit_length='arcsec')
+            g1_einstein_radius = g1.einstein_radius_in_units(unit_length='arcsec')
 
-            assert tracer.einstein_radii_of_planes[0] == 3.0
-            assert tracer.einstein_radii_of_planes[1] is None
-            assert tracer.einstein_radii_of_planes[0] == 3.0 * tracer.image_plane.kpc_per_arcsec
-            assert tracer.einstein_radii_of_planes[1] is None
-            assert tracer.einstein_masses_of_planes[0] == g0_mass + g1_mass
-            assert tracer.einstein_masses_of_planes[1] is None
+            assert tracer.einstein_radius_of_plane_in_units(i=0, unit_length='arcsec') == g0_einstein_radius + g1_einstein_radius
+            assert tracer.einstein_radius_of_plane_in_units(i=1, unit_length='arcsec') is None
+
+            # g0_mass = g0.einstein_mass_in_units(unit_mass='angular')
+            # g1_mass = g1.einstein_mass_in_units(unit_mass='angular')
+            # assert tracer.einstein_mass_of_plane_in_units(i=0, unit_mass='angular') == g0_mass + g1_mass
+            # assert tracer.einstein_mass_of_plane_in_units(i=1, unit_mass='angular') is None
+
+            kpc_per_arcsec = tracer.kpc_per_arcsec_proper_of_plane(i=0)
+
+            g0_einstein_radius = g0.einstein_radius_in_units(unit_length='kpc', kpc_per_arcsec=kpc_per_arcsec)
+            g1_einstein_radius = g1.einstein_radius_in_units(unit_length='kpc', kpc_per_arcsec=kpc_per_arcsec)
+            assert tracer.einstein_radius_of_plane_in_units(i=0, unit_length='kpc') == g0_einstein_radius + g1_einstein_radius
+            assert tracer.einstein_radius_of_plane_in_units(i=1, unit_length='kpc') is None
+
+            critical_surface_mass_density = tracer.critical_surface_mass_density_between_planes_in_units(i=0,j=1,
+                                                                                                         unit_mass='solMass')
+
+            g0_mass = g0.einstein_mass_in_units(unit_mass='solMass', critical_surface_mass_density=critical_surface_mass_density)
+            g1_mass = g1.einstein_mass_in_units(unit_mass='solMass', critical_surface_mass_density=critical_surface_mass_density)
+            assert tracer.einstein_mass_of_plane_in_units(i=0, unit_mass='solMass') == g0_mass + g1_mass
+            assert tracer.einstein_mass_of_plane_in_units(i=1, unit_mass='solMass') is None
 
         def test__same_as_above__include_shear__does_not_impact_calculations(self, grid_stack):
 
@@ -751,28 +735,31 @@ class TestAbstractTracer(object):
                                                          image_plane_grid_stack=grid_stack,
                                                          cosmology=cosmo.Planck15)
 
-            g0_mass = g0.mass_within_circle_in_units(radius=1.0, unit_mass='angular',
-                                                     critical_surface_mass_density=tracer.critical_surface_mass_density)
-            g1_mass = g1.mass_within_circle_in_units(radius=2.0, unit_mass='angular',
-                                                     critical_surface_mass_density=tracer.critical_surface_mass_density)
+            g0_einstein_radius = g0.einstein_radius_in_units(unit_length='arcsec')
+            g1_einstein_radius = g1.einstein_radius_in_units(unit_length='arcsec')
 
-            assert tracer.einstein_radii_of_planes[0] == 3.0
-            assert tracer.einstein_radii_of_planes[1] is None
-            assert tracer.einstein_radii_of_planes[0] == 3.0 * tracer.image_plane.kpc_per_arcsec
-            assert tracer.einstein_radii_of_planes[1] is None
-            assert tracer.einstein_masses_of_planes[0] == g0_mass + g1_mass
-            assert tracer.einstein_masses_of_planes[1] is None
+            assert tracer.einstein_radius_of_plane_in_units(i=0, unit_length='arcsec') == g0_einstein_radius + g1_einstein_radius
+            assert tracer.einstein_radius_of_plane_in_units(i=1, unit_length='arcsec') is None
 
-        def test__no_galaxy_redshifts__returns_none(self, grid_stack):
+            # g0_mass = g0.einstein_mass_in_units(unit_mass='angular')
+            # g1_mass = g1.einstein_mass_in_units(unit_mass='angular')
+            # assert tracer.einstein_mass_of_plane_in_units(i=0, unit_mass='angular') == g0_mass + g1_mass
+            # assert tracer.einstein_mass_of_plane_in_units(i=1, unit_mass='angular') is None
 
-            g0 = g.Galaxy(mass=mp.SphericalIsothermal(einstein_radius=1.0))
+            kpc_per_arcsec = tracer.kpc_per_arcsec_proper_of_plane(i=0)
 
-            tracer = ray_tracing.TracerImageSourcePlanes(lens_galaxies=[g0],
-                                                         source_galaxies=[g.Galaxy()],
-                                                         image_plane_grid_stack=grid_stack,
-                                                         cosmology=cosmo.Planck15)
+            g0_einstein_radius = g0.einstein_radius_in_units(unit_length='kpc', kpc_per_arcsec=kpc_per_arcsec)
+            g1_einstein_radius = g1.einstein_radius_in_units(unit_length='kpc', kpc_per_arcsec=kpc_per_arcsec)
+            assert tracer.einstein_radius_of_plane_in_units(i=0, unit_length='kpc') == g0_einstein_radius + g1_einstein_radius
+            assert tracer.einstein_radius_of_plane_in_units(i=1, unit_length='kpc') is None
 
-            assert tracer.einstein_masses_of_planes is None
+            critical_surface_mass_density = tracer.critical_surface_mass_density_between_planes_in_units(i=0,j=1,
+                                                                                                         unit_mass='solMass')
+
+            g0_mass = g0.einstein_mass_in_units(unit_mass='solMass', critical_surface_mass_density=critical_surface_mass_density)
+            g1_mass = g1.einstein_mass_in_units(unit_mass='solMass', critical_surface_mass_density=critical_surface_mass_density)
+            assert tracer.einstein_mass_of_plane_in_units(i=0, unit_mass='solMass') == g0_mass + g1_mass
+            assert tracer.einstein_mass_of_plane_in_units(i=1, unit_mass='solMass') is None
 
 
 class TestTracerImagePlane(object):
@@ -1135,9 +1122,11 @@ class TestTracerImageSourcePlanes(object):
 
 
 class TestMultiTracer(object):
+
     class TestCosmology:
 
         def test__3_planes__z01_z1__and_z2(self, grid_stack):
+
             g0 = g.Galaxy(redshift=0.1)
             g1 = g.Galaxy(redshift=1.0)
             g2 = g.Galaxy(redshift=2.0)
@@ -1148,40 +1137,47 @@ class TestMultiTracer(object):
             assert tracer.arcsec_per_kpc_proper_of_plane(i=0) == pytest.approx(0.525060, 1e-5)
             assert tracer.kpc_per_arcsec_proper_of_plane(i=0) == pytest.approx(1.904544, 1e-5)
 
-            assert tracer.angular_diameter_distance_of_plane_to_earth(i=0) == pytest.approx(392840, 1e-5)
-            assert tracer.angular_diameter_distance_between_planes(i=0, j=0) == 0.0
-            assert tracer.angular_diameter_distance_between_planes(i=0, j=1) == pytest.approx(1481890.4,
-                                                                                              1e-5)
-            assert tracer.angular_diameter_distance_between_planes(i=0, j=2) == pytest.approx(1626471,
-                                                                                              1e-5)
+            assert tracer.angular_diameter_distance_of_plane_to_earth_in_units(i=0, unit_length='kpc') == \
+                   pytest.approx(392840, 1e-5)
+            assert tracer.angular_diameter_distance_between_planes_in_units(i=0, j=0, unit_length='kpc') == 0.0
+            assert tracer.angular_diameter_distance_between_planes_in_units(i=0, j=1, unit_length='kpc') == \
+                   pytest.approx(1481890.4, 1e-5)
+            assert tracer.angular_diameter_distance_between_planes_in_units(i=0, j=2, unit_length='kpc') == \
+                   pytest.approx(1626471, 1e-5)
 
             assert tracer.arcsec_per_kpc_proper_of_plane(i=1) == pytest.approx(0.1214785, 1e-5)
             assert tracer.kpc_per_arcsec_proper_of_plane(i=1) == pytest.approx(8.231907, 1e-5)
 
-            assert tracer.angular_diameter_distance_of_plane_to_earth(i=1) == pytest.approx(1697952, 1e-5)
-            assert tracer.angular_diameter_distance_between_planes(i=1, j=0) == pytest.approx(-2694346,
-                                                                                              1e-5)
-            assert tracer.angular_diameter_distance_between_planes(i=1, j=1) == 0.0
-            assert tracer.angular_diameter_distance_between_planes(i=1, j=2) == pytest.approx(638544,
-                                                                                              1e-5)
+            assert tracer.angular_diameter_distance_of_plane_to_earth_in_units(i=1, unit_length='kpc') == \
+                   pytest.approx(1697952, 1e-5)
+            assert tracer.angular_diameter_distance_between_planes_in_units(i=1, j=0, unit_length='kpc') == \
+                   pytest.approx(-2694346, 1e-5)
+            assert tracer.angular_diameter_distance_between_planes_in_units(i=1, j=1, unit_length='kpc') == 0.0
+            assert tracer.angular_diameter_distance_between_planes_in_units(i=1, j=2, unit_length='kpc') == \
+                   pytest.approx(638544, 1e-5)
 
             assert tracer.arcsec_per_kpc_proper_of_plane(i=2) == pytest.approx(0.116500, 1e-5)
             assert tracer.kpc_per_arcsec_proper_of_plane(i=2) == pytest.approx(8.58368, 1e-5)
 
-            assert tracer.angular_diameter_distance_of_plane_to_earth(i=2) == pytest.approx(1770512, 1e-5)
-            assert tracer.angular_diameter_distance_between_planes(i=2, j=0) == pytest.approx(-4435831,
-                                                                                              1e-5)
-            assert tracer.angular_diameter_distance_between_planes(i=2, j=1) == pytest.approx(-957816)
-            assert tracer.angular_diameter_distance_between_planes(i=2, j=2) == 0.0
+            assert tracer.angular_diameter_distance_of_plane_to_earth_in_units(i=2, unit_length='kpc') == \
+                   pytest.approx(1770512, 1e-5)
+            assert tracer.angular_diameter_distance_between_planes_in_units(i=2, j=0, unit_length='kpc') == \
+                   pytest.approx(-4435831, 1e-5)
+            assert tracer.angular_diameter_distance_between_planes_in_units(i=2, j=1, unit_length='kpc') == \
+                   pytest.approx(-957816)
+            assert tracer.angular_diameter_distance_between_planes_in_units(i=2, j=2, unit_length='kpc') == 0.0
 
-            assert tracer.critical_surface_mass_density_between_planes(i=0, j=1) == pytest.approx(4.85e9, 1e-2)
-            assert tracer.critical_surface_mass_density_between_planes(i=0, j=1) == pytest.approx(17593241668, 1e-2)
+            assert tracer.critical_surface_mass_density_between_planes_in_units(
+                i=0, j=1, unit_length='kpc', unit_mass='solMass') == pytest.approx(4.85e9, 1e-2)
+            assert tracer.critical_surface_mass_density_between_planes_in_units(
+                i=0, j=1, unit_length='arcsec', unit_mass='solMass') == pytest.approx(17593241668, 1e-2)
 
             assert tracer.scaling_factor_between_planes(i=0, j=1) == pytest.approx(0.9500, 1e-4)
             assert tracer.scaling_factor_between_planes(i=0, j=2) == pytest.approx(1.0, 1e-4)
             assert tracer.scaling_factor_between_planes(i=1, j=2) == pytest.approx(1.0, 1e-4)
 
         def test__4_planes__z01_z1_z2_and_z3(self, grid_stack):
+
             g0 = g.Galaxy(redshift=0.1)
             g1 = g.Galaxy(redshift=1.0)
             g2 = g.Galaxy(redshift=2.0)
@@ -1193,51 +1189,59 @@ class TestMultiTracer(object):
             assert tracer.arcsec_per_kpc_proper_of_plane(i=0) == pytest.approx(0.525060, 1e-5)
             assert tracer.kpc_per_arcsec_proper_of_plane(i=0) == pytest.approx(1.904544, 1e-5)
 
-            assert tracer.angular_diameter_distance_of_plane_to_earth(i=0) == pytest.approx(392840, 1e-5)
-            assert tracer.angular_diameter_distance_between_planes(i=0, j=0) == 0.0
-            assert tracer.angular_diameter_distance_between_planes(i=0, j=1) == pytest.approx(1481890.4,
-                                                                                              1e-5)
-            assert tracer.angular_diameter_distance_between_planes(i=0, j=2) == pytest.approx(1626471,
-                                                                                              1e-5)
-            assert tracer.angular_diameter_distance_between_planes(i=0, j=3) == pytest.approx(1519417,
-                                                                                              1e-5)
+            assert tracer.angular_diameter_distance_of_plane_to_earth_in_units(i=0, unit_length='kpc') == \
+                   pytest.approx(392840, 1e-5)
+            assert tracer.angular_diameter_distance_between_planes_in_units(i=0, j=0, unit_length='kpc') == 0.0
+            assert tracer.angular_diameter_distance_between_planes_in_units(i=0, j=1, unit_length='kpc') == \
+                   pytest.approx(1481890.4, 1e-5)
+            assert tracer.angular_diameter_distance_between_planes_in_units(i=0, j=2, unit_length='kpc') == \
+                   pytest.approx(1626471, 1e-5)
+            assert tracer.angular_diameter_distance_between_planes_in_units(i=0, j=3, unit_length='kpc') == \
+                   pytest.approx(1519417, 1e-5)
 
             assert tracer.arcsec_per_kpc_proper_of_plane(i=1) == pytest.approx(0.1214785, 1e-5)
             assert tracer.kpc_per_arcsec_proper_of_plane(i=1) == pytest.approx(8.231907, 1e-5)
 
-            assert tracer.angular_diameter_distance_of_plane_to_earth(i=1) == pytest.approx(1697952, 1e-5)
-            assert tracer.angular_diameter_distance_between_planes(i=1, j=0) == pytest.approx(-2694346,
-                                                                                              1e-5)
-            assert tracer.angular_diameter_distance_between_planes(i=1, j=1) == 0.0
-            assert tracer.angular_diameter_distance_between_planes(i=1, j=2) == pytest.approx(638544,
-                                                                                              1e-5)
-            assert tracer.angular_diameter_distance_between_planes(i=1, j=3) == pytest.approx(778472,
-                                                                                              1e-5)
+            assert tracer.angular_diameter_distance_of_plane_to_earth_in_units(i=1, unit_length='kpc') == \
+                   pytest.approx(1697952, 1e-5)
+            assert tracer.angular_diameter_distance_between_planes_in_units(i=1, j=0, unit_length='kpc') == \
+                   pytest.approx(-2694346, 1e-5)
+            assert tracer.angular_diameter_distance_between_planes_in_units(i=1, j=1, unit_length='kpc') == 0.0
+            assert tracer.angular_diameter_distance_between_planes_in_units(i=1, j=2, unit_length='kpc') == \
+                   pytest.approx(638544, 1e-5)
+            assert tracer.angular_diameter_distance_between_planes_in_units(i=1, j=3, unit_length='kpc') == \
+                   pytest.approx(778472, 1e-5)
 
             assert tracer.arcsec_per_kpc_proper_of_plane(i=2) == pytest.approx(0.116500, 1e-5)
             assert tracer.kpc_per_arcsec_proper_of_plane(i=2) == pytest.approx(8.58368, 1e-5)
 
-            assert tracer.angular_diameter_distance_of_plane_to_earth(i=2) == pytest.approx(1770512, 1e-5)
-            assert tracer.angular_diameter_distance_between_planes(i=2, j=0) == pytest.approx(-4435831,
-                                                                                              1e-5)
-            assert tracer.angular_diameter_distance_between_planes(i=2, j=1) == pytest.approx(-957816)
-            assert tracer.angular_diameter_distance_between_planes(i=2, j=2) == 0.0
-            assert tracer.angular_diameter_distance_between_planes(i=2, j=3) == pytest.approx(299564)
+            assert tracer.angular_diameter_distance_of_plane_to_earth_in_units(i=2, unit_length='kpc') == \
+                   pytest.approx(1770512, 1e-5)
+            assert tracer.angular_diameter_distance_between_planes_in_units(i=2, j=0, unit_length='kpc') == \
+                   pytest.approx(-4435831, 1e-5)
+            assert tracer.angular_diameter_distance_between_planes_in_units(i=2, j=1, unit_length='kpc') == \
+                   pytest.approx(-957816)
+            assert tracer.angular_diameter_distance_between_planes_in_units(i=2, j=2, unit_length='kpc') == 0.0
+            assert tracer.angular_diameter_distance_between_planes_in_units(i=2, j=3, unit_length='kpc') == \
+                   pytest.approx(299564)
 
             assert tracer.arcsec_per_kpc_proper_of_plane(i=3) == pytest.approx(0.12674, 1e-5)
             assert tracer.kpc_per_arcsec_proper_of_plane(i=3) == pytest.approx(7.89009, 1e-5)
 
-            assert tracer.angular_diameter_distance_of_plane_to_earth(i=3) == pytest.approx(1627448, 1e-5)
-            assert tracer.angular_diameter_distance_between_planes(i=3, j=0) == pytest.approx(-5525155,
-                                                                                              1e-5)
-            assert tracer.angular_diameter_distance_between_planes(i=3, j=1) == pytest.approx(-1556945,
-                                                                                              1e-5)
-            assert tracer.angular_diameter_distance_between_planes(i=3, j=2) == pytest.approx(-399419,
-                                                                                              1e-5)
-            assert tracer.angular_diameter_distance_between_planes(i=3, j=3) == 0.0
+            assert tracer.angular_diameter_distance_of_plane_to_earth_in_units(i=3, unit_length='kpc') == \
+                   pytest.approx(1627448, 1e-5)
+            assert tracer.angular_diameter_distance_between_planes_in_units(i=3, j=0, unit_length='kpc') == \
+                   pytest.approx(-5525155, 1e-5)
+            assert tracer.angular_diameter_distance_between_planes_in_units(i=3, j=1, unit_length='kpc') == \
+                   pytest.approx(-1556945, 1e-5)
+            assert tracer.angular_diameter_distance_between_planes_in_units(i=3, j=2, unit_length='kpc') == \
+                   pytest.approx(-399419, 1e-5)
+            assert tracer.angular_diameter_distance_between_planes_in_units(i=3, j=3, unit_length='kpc') == 0.0
 
-            assert tracer.critical_surface_mass_density_between_planes(i=0, j=1) == pytest.approx(4.85e9, 1e-2)
-            assert tracer.critical_surface_mass_density_between_planes(i=0, j=1) == pytest.approx(17593241668, 1e-2)
+            assert tracer.critical_surface_mass_density_between_planes_in_units(
+                i=0, j=1, unit_length='kpc', unit_mass='solMass') == pytest.approx(4.85e9, 1e-2)
+            assert tracer.critical_surface_mass_density_between_planes_in_units(
+                i=0, j=1, unit_length='arcsec', unit_mass='solMass') == pytest.approx(17593241668, 1e-2)
 
             assert tracer.scaling_factor_between_planes(i=0, j=1) == pytest.approx(0.9348, 1e-4)
             assert tracer.scaling_factor_between_planes(i=0, j=2) == pytest.approx(0.984, 1e-4)
@@ -1625,9 +1629,12 @@ class TestMultiTracer(object):
 
 
 class TestMultiTracerFixedSlices(object):
+
+
     class TestCosmology:
 
         def test__4_planes_after_slicing(self, grid_stack):
+
             lens_g0 = g.Galaxy(redshift=0.5)
             source_g0 = g.Galaxy(redshift=2.0)
             los_g0 = g.Galaxy(redshift=1.0)
@@ -1637,97 +1644,63 @@ class TestMultiTracerFixedSlices(object):
                                                          image_plane_grid_stack=grid_stack,
                                                          cosmology=cosmo.Planck15)
 
-            assert tracer.arcsec_per_kpc_proper_of_plane(i=0) == tracer.cosmology.arcsec_per_kpc(z=0.25).value
-            assert tracer.kpc_per_arcsec_proper_of_plane(i=0) == 1.0 / tracer.cosmology.arcsec_per_kpc(
+            assert tracer.arcsec_per_kpc_proper_of_plane(i=0) == tracer.cosmology.arcsec_per_kpc_proper(z=0.25).value
+            assert tracer.kpc_per_arcsec_proper_of_plane(i=0) == 1.0 / tracer.cosmology.arcsec_per_kpc_proper(
                 z=0.25).value
 
-            assert tracer.angular_diameter_distance_of_plane_to_earth(
-                i=0) == tracer.cosmology.angular_diameter_distance(0.25).to('kpc').value
-            assert tracer.angular_diameter_distance_between_planes(
-                i=0,
-                j=0) == tracer.cosmology.angular_diameter_distance_z1z2(
-                0.25, 0.25).to('kpc').value
-            assert tracer.angular_diameter_distance_between_planes(
-                i=0,
-                j=1) == tracer.cosmology.angular_diameter_distance_z1z2(
-                0.25, 0.5).to('kpc').value
-            assert tracer.angular_diameter_distance_between_planes(
-                i=0,
-                j=2) == tracer.cosmology.angular_diameter_distance_z1z2(
-                0.25, 1.25).to('kpc').value
-            assert tracer.angular_diameter_distance_between_planes(
-                i=0,
-                j=3) == tracer.cosmology.angular_diameter_distance_z1z2(
-                0.25, 2.0).to('kpc').value
+            assert tracer.angular_diameter_distance_of_plane_to_earth_in_units(i=0, unit_length='kpc') == \
+                   tracer.cosmology.angular_diameter_distance(0.25).to('kpc').value
+            assert tracer.angular_diameter_distance_between_planes_in_units(i=0, j=0, unit_length='kpc') == \
+                   tracer.cosmology.angular_diameter_distance_z1z2(0.25, 0.25).to('kpc').value
+            assert tracer.angular_diameter_distance_between_planes_in_units(i=0,j=1, unit_length='kpc') == \
+                   tracer.cosmology.angular_diameter_distance_z1z2(0.25, 0.5).to('kpc').value
+            assert tracer.angular_diameter_distance_between_planes_in_units(i=0,j=2, unit_length='kpc') == \
+                   tracer.cosmology.angular_diameter_distance_z1z2(0.25, 1.25).to('kpc').value
+            assert tracer.angular_diameter_distance_between_planes_in_units(i=0, j=3, unit_length='kpc') == \
+                   tracer.cosmology.angular_diameter_distance_z1z2(0.25, 2.0).to('kpc').value
 
-            assert tracer.arcsec_per_kpc_proper_of_plane(i=1) == tracer.cosmology.arcsec_per_kpc(z=0.5).value
-            assert tracer.kpc_per_arcsec_proper_of_plane(i=1) == 1.0 / tracer.cosmology.arcsec_per_kpc(
-                z=0.5).value
+            assert tracer.arcsec_per_kpc_proper_of_plane(i=1) == tracer.cosmology.arcsec_per_kpc_proper(z=0.5).value
+            assert tracer.kpc_per_arcsec_proper_of_plane(i=1) == 1.0 / tracer.cosmology.arcsec_per_kpc_proper(z=0.5).value
 
-            assert tracer.angular_diameter_distance_of_plane_to_earth(
-                i=1) == tracer.cosmology.angular_diameter_distance(0.5).to('kpc').value
-            assert tracer.angular_diameter_distance_between_planes(
-                i=1,
-                j=0) == tracer.cosmology.angular_diameter_distance_z1z2(
-                0.5, 0.25).to('kpc').value
-            assert tracer.angular_diameter_distance_between_planes(
-                i=1,
-                j=1) == tracer.cosmology.angular_diameter_distance_z1z2(
-                0.5, 0.5).to('kpc').value
-            assert tracer.angular_diameter_distance_between_planes(
-                i=1,
-                j=2) == tracer.cosmology.angular_diameter_distance_z1z2(
-                0.5, 1.25).to('kpc').value
-            assert tracer.angular_diameter_distance_between_planes(
-                i=1,
-                j=3) == tracer.cosmology.angular_diameter_distance_z1z2(
-                0.5, 2.0).to('kpc').value
+            assert tracer.angular_diameter_distance_of_plane_to_earth_in_units(i=1, unit_length='kpc') == \
+                   tracer.cosmology.angular_diameter_distance(0.5).to('kpc').value
+            assert tracer.angular_diameter_distance_between_planes_in_units(i=1, j=0, unit_length='kpc') == \
+                   tracer.cosmology.angular_diameter_distance_z1z2(0.5, 0.25).to('kpc').value
+            assert tracer.angular_diameter_distance_between_planes_in_units(i=1,j=1, unit_length='kpc') == \
+                   tracer.cosmology.angular_diameter_distance_z1z2(0.5, 0.5).to('kpc').value
+            assert tracer.angular_diameter_distance_between_planes_in_units(i=1,j=2, unit_length='kpc') == \
+                   tracer.cosmology.angular_diameter_distance_z1z2(0.5, 1.25).to('kpc').value
+            assert tracer.angular_diameter_distance_between_planes_in_units(i=1,j=3, unit_length='kpc') == \
+                   tracer.cosmology.angular_diameter_distance_z1z2(0.5, 2.0).to('kpc').value
 
-            assert tracer.arcsec_per_kpc_proper_of_plane(i=2) == tracer.cosmology.arcsec_per_kpc(z=1.25).value
-            assert tracer.kpc_per_arcsec_proper_of_plane(i=2) == 1.0 / tracer.cosmology.arcsec_per_kpc(
-                z=1.25).value
+            assert tracer.arcsec_per_kpc_proper_of_plane(i=2) == tracer.cosmology.arcsec_per_kpc_proper(z=1.25).value
+            assert tracer.kpc_per_arcsec_proper_of_plane(i=2) == 1.0 / tracer.cosmology.arcsec_per_kpc_proper(z=1.25).value
 
-            assert tracer.angular_diameter_distance_of_plane_to_earth(
-                i=2) == tracer.cosmology.angular_diameter_distance(1.25).to('kpc').value
-            assert tracer.angular_diameter_distance_between_planes(
-                i=2,
-                j=0) == tracer.cosmology.angular_diameter_distance_z1z2(
-                1.25, 0.25).to('kpc').value
-            assert tracer.angular_diameter_distance_between_planes(
-                i=2,
-                j=1) == tracer.cosmology.angular_diameter_distance_z1z2(
-                1.25, 0.5).to('kpc').value
-            assert tracer.angular_diameter_distance_between_planes(
-                i=2,
-                j=2) == tracer.cosmology.angular_diameter_distance_z1z2(
-                1.25, 1.25).to('kpc').value
-            assert tracer.angular_diameter_distance_between_planes(
-                i=2,
-                j=3) == tracer.cosmology.angular_diameter_distance_z1z2(
-                1.25, 2.0).to('kpc').value
+            assert tracer.angular_diameter_distance_of_plane_to_earth_in_units(i=2, unit_length='kpc') == \
+                   tracer.cosmology.angular_diameter_distance(1.25).to('kpc').value
+            assert tracer.angular_diameter_distance_between_planes_in_units(i=2,j=0, unit_length='kpc') == \
+                   tracer.cosmology.angular_diameter_distance_z1z2(1.25, 0.25).to('kpc').value
+            assert tracer.angular_diameter_distance_between_planes_in_units(i=2,j=1, unit_length='kpc') == \
+                   tracer.cosmology.angular_diameter_distance_z1z2(1.25, 0.5).to('kpc').value
+            assert tracer.angular_diameter_distance_between_planes_in_units(i=2,j=2, unit_length='kpc') == \
+                   tracer.cosmology.angular_diameter_distance_z1z2(1.25, 1.25).to('kpc').value
+            assert tracer.angular_diameter_distance_between_planes_in_units(i=2,j=3, unit_length='kpc') == \
+                   tracer.cosmology.angular_diameter_distance_z1z2(1.25, 2.0).to('kpc').value
 
-            assert tracer.arcsec_per_kpc_proper_of_plane(i=3) == tracer.cosmology.arcsec_per_kpc(z=2.0).value
-            assert tracer.kpc_per_arcsec_proper_of_plane(i=3) == 1.0 / tracer.cosmology.arcsec_per_kpc(
+            assert tracer.arcsec_per_kpc_proper_of_plane(i=3) == tracer.cosmology.arcsec_per_kpc_proper(z=2.0).value
+            assert tracer.kpc_per_arcsec_proper_of_plane(i=3) == 1.0 / tracer.cosmology.arcsec_per_kpc_proper(
                 z=2.0).value
 
-            assert tracer.angular_diameter_distance_of_plane_to_earth(
-                i=3) == tracer.cosmology.angular_diameter_distance(2.0).to('kpc').value
-            assert tracer.angular_diameter_distance_between_planes(
-                i=3,
-                j=0) == tracer.cosmology.angular_diameter_distance_z1z2(
-                2.0, 0.25).to('kpc').value
-            assert tracer.angular_diameter_distance_between_planes(
-                i=3,
-                j=1) == tracer.cosmology.angular_diameter_distance_z1z2(
-                2.0, 0.5).to('kpc').value
-            assert tracer.angular_diameter_distance_between_planes(
-                i=3,
-                j=2) == tracer.cosmology.angular_diameter_distance_z1z2(
-                2.0, 1.25).to('kpc').value
-            assert tracer.angular_diameter_distance_between_planes(
-                i=3,
-                j=3) == tracer.cosmology.angular_diameter_distance_z1z2(
-                2.0, 2.0).to('kpc').value
+            assert tracer.angular_diameter_distance_of_plane_to_earth_in_units(i=3, unit_length='kpc') == \
+                   tracer.cosmology.angular_diameter_distance(2.0).to('kpc').value
+            assert tracer.angular_diameter_distance_between_planes_in_units(i=3,j=0, unit_length='kpc') == \
+                   tracer.cosmology.angular_diameter_distance_z1z2(2.0, 0.25).to('kpc').value
+            assert tracer.angular_diameter_distance_between_planes_in_units(i=3,j=1, unit_length='kpc') == \
+                   tracer.cosmology.angular_diameter_distance_z1z2(2.0, 0.5).to('kpc').value
+            assert tracer.angular_diameter_distance_between_planes_in_units(i=3,j=2, unit_length='kpc') == \
+                   tracer.cosmology.angular_diameter_distance_z1z2(2.0, 1.25).to('kpc').value
+            assert tracer.angular_diameter_distance_between_planes_in_units(i=3,j=3, unit_length='kpc') == \
+                   tracer.cosmology.angular_diameter_distance_z1z2(2.0, 2.0).to('kpc').value
 
     class TestPlaneSetup:
 
