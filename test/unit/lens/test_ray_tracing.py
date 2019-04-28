@@ -722,8 +722,8 @@ class TestAbstractTracer(object):
 
             g0_mass = g0.einstein_mass_in_units(unit_mass='solMass', critical_surface_mass_density=critical_surface_mass_density)
             g1_mass = g1.einstein_mass_in_units(unit_mass='solMass', critical_surface_mass_density=critical_surface_mass_density)
-            assert tracer.einstein_mass_of_plane_in_units(i=0, unit_mass='solMass') == g0_mass + g1_mass
-            assert tracer.einstein_mass_of_plane_in_units(i=1, unit_mass='solMass') is None
+            assert tracer.einstein_mass_between_planes_in_units(i=0, j=1, unit_mass='solMass') == g0_mass + g1_mass
+            assert tracer.einstein_mass_between_planes_in_units(i=1, j=1, unit_mass='solMass') is None
 
         def test__same_as_above__include_shear__does_not_impact_calculations(self, grid_stack):
 
@@ -738,7 +738,10 @@ class TestAbstractTracer(object):
             g0_einstein_radius = g0.einstein_radius_in_units(unit_length='arcsec')
             g1_einstein_radius = g1.einstein_radius_in_units(unit_length='arcsec')
 
-            assert tracer.einstein_radius_of_plane_in_units(i=0, unit_length='arcsec') == g0_einstein_radius + g1_einstein_radius
+            assert tracer.einstein_radius_of_plane_in_units(i=0, unit_length='arcsec') == \
+                   g0_einstein_radius + g1_einstein_radius
+            assert tracer.einstein_radius_of_image_plane_in_units(unit_length='arcsec') == \
+                   g0_einstein_radius + g1_einstein_radius
             assert tracer.einstein_radius_of_plane_in_units(i=1, unit_length='arcsec') is None
 
             # g0_mass = g0.einstein_mass_in_units(unit_mass='angular')
@@ -750,16 +753,23 @@ class TestAbstractTracer(object):
 
             g0_einstein_radius = g0.einstein_radius_in_units(unit_length='kpc', kpc_per_arcsec=kpc_per_arcsec)
             g1_einstein_radius = g1.einstein_radius_in_units(unit_length='kpc', kpc_per_arcsec=kpc_per_arcsec)
-            assert tracer.einstein_radius_of_plane_in_units(i=0, unit_length='kpc') == g0_einstein_radius + g1_einstein_radius
+            assert tracer.einstein_radius_of_plane_in_units(i=0, unit_length='kpc') == \
+                   g0_einstein_radius + g1_einstein_radius
+            assert tracer.einstein_radius_of_image_plane_in_units(unit_length='kpc') == \
+                   g0_einstein_radius + g1_einstein_radius
             assert tracer.einstein_radius_of_plane_in_units(i=1, unit_length='kpc') is None
 
             critical_surface_mass_density = tracer.critical_surface_mass_density_between_planes_in_units(i=0,j=1,
                                                                                                          unit_mass='solMass')
 
-            g0_mass = g0.einstein_mass_in_units(unit_mass='solMass', critical_surface_mass_density=critical_surface_mass_density)
-            g1_mass = g1.einstein_mass_in_units(unit_mass='solMass', critical_surface_mass_density=critical_surface_mass_density)
-            assert tracer.einstein_mass_of_plane_in_units(i=0, unit_mass='solMass') == g0_mass + g1_mass
-            assert tracer.einstein_mass_of_plane_in_units(i=1, unit_mass='solMass') is None
+            g0_mass = g0.einstein_mass_in_units(unit_mass='solMass',
+                                                critical_surface_mass_density=critical_surface_mass_density)
+            g1_mass = g1.einstein_mass_in_units(unit_mass='solMass',
+                                                critical_surface_mass_density=critical_surface_mass_density)
+            assert tracer.einstein_mass_between_planes_in_units(i=0, j=1, unit_mass='solMass') == g0_mass + g1_mass
+            assert tracer.einstein_mass_between_planes_in_units(i=1, j=1, unit_mass='solMass') is None
+            assert tracer.einstein_mass_between_image_and_source_plane_in_units(unit_mass='solMass') == \
+                   g0_mass + g1_mass
 
 
 class TestTracerImagePlane(object):

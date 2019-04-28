@@ -257,9 +257,9 @@ class AbstractTracer(AbstractTracerCosmology):
         kpc_per_arcsec = self.kpc_per_arcsec_proper_of_plane(i=i)
         return self.planes[i].einstein_radius_in_units(unit_length=unit_length, kpc_per_arcsec=kpc_per_arcsec)
 
-    def einstein_mass_of_plane_in_units(self, i, unit_length='arcsec', unit_mass='angular'):
+    def einstein_mass_between_planes_in_units(self, i, j, unit_length='arcsec', unit_mass='angular'):
         critical_suface_mass_density = self.critical_surface_mass_density_between_planes_in_units(
-                i=0, j=-1, unit_length=unit_length, unit_mass=unit_mass)
+                i=i, j=j, unit_length=unit_length, unit_mass=unit_mass)
         return self.planes[i].einstein_mass_in_units(unit_mass=unit_mass,
                                                      critical_surface_mass_density=critical_suface_mass_density)
 
@@ -388,6 +388,11 @@ class TracerImageSourcePlanes(AbstractTracer):
 
         super(TracerImageSourcePlanes, self).__init__(planes=[image_plane, source_plane], cosmology=cosmology)
 
+    def einstein_radius_of_image_plane_in_units(self, unit_length='arcsec'):
+        return self.einstein_radius_of_plane_in_units(i=0, unit_length=unit_length)
+
+    def einstein_mass_between_image_and_source_plane_in_units(self, unit_length='arcsec', unit_mass='angular'):
+        return self.einstein_mass_between_planes_in_units(i=0, j=1, unit_length=unit_length, unit_mass=unit_mass)
 
 class TracerMultiPlanes(AbstractTracer):
 
