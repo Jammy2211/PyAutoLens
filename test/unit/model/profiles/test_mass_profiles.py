@@ -2935,17 +2935,39 @@ class TestEinsteinRadiusMass(object):
         # assert nfw_kpc.einstein_mass_in_units(unit_mass='solMass', critical_surface_mass_density=2.0) == pytest.approx(2.76386, 1e-4)
 
 
+def mass_within_radius_of_profile_from_grid_calculation(radius, profile):
+
+    mass_total = 0.0
+
+    xs = np.linspace(-radius*1.5, radius*1.5, 40)
+    ys = np.linspace(-radius*1.5, radius*1.5, 40)
+
+    edge = xs[1] - xs[0]
+    area = edge ** 2
+
+    for x in xs:
+        for y in ys:
+
+            eta = profile.grid_to_elliptical_radii(np.array([[x,y]]))
+
+            if eta < radius:
+                mass_total += profile.convergence_func(eta) * area
+
+    return mass_total
+
+
 class TestMassWithinCircle(object):
 
     def test__mass_in_angular_units__singular_isothermal_sphere__compare_to_analytic(self):
 
         sis = mp.SphericalIsothermal(einstein_radius=2.0)
-        radius = 2.0
-        mass = sis.mass_within_circle_in_units(radius=radius, unit_mass='angular', critical_surface_mass_density=None)
+        radius = dim.Length(2.0, 'arcsec')
+        mass = sis.mass_within_circle_in_units(radius=radius, unit_mass='angular',
+                                               critical_surface_mass_density=None)
         assert math.pi * sis.einstein_radius * radius == pytest.approx(mass, 1e-3)
 
         sis = mp.SphericalIsothermal(einstein_radius=4.0)
-        radius = 4.0
+        radius = dim.Length(4.0, 'arcsec')
         mass = sis.mass_within_circle_in_units(radius=radius, unit_mass='angular',
                                                critical_surface_mass_density=None)
         assert math.pi * sis.einstein_radius * radius == pytest.approx(mass, 1e-3)
@@ -2954,27 +2976,14 @@ class TestMassWithinCircle(object):
 
         sis = mp.SphericalIsothermal(einstein_radius=2.0)
 
-        radius = 1.0
-        mass_total = 0.0
+        radius = dim.Length(1.0, 'arcsec')
 
-        xs = np.linspace(-1.5, 1.5, 40)
-        ys = np.linspace(-1.5, 1.5, 40)
-
-        edge = xs[1] - xs[0]
-        area = edge ** 2
-
-        for x in xs:
-            for y in ys:
-
-                eta = math.sqrt(x ** 2 + y ** 2)
-
-                if eta < radius:
-                    mass_total += sis.convergence_func(eta) * area
+        mass_grid = mass_within_radius_of_profile_from_grid_calculation(radius=radius, profile=sis)
 
         mass = sis.mass_within_circle_in_units(radius=radius, unit_mass='angular',
                                                critical_surface_mass_density=None)
 
-        assert mass_total == pytest.approx(mass, 0.02)
+        assert mass_grid == pytest.approx(mass, 0.02)
 
     def test__radius_units_conversions__mass_profile_updates_units_and_computes_correct_mass(self):
 
@@ -3001,7 +3010,8 @@ class TestMassWithinCircle(object):
                                          einstein_radius=dim.Length(2.0,'kpc'))
 
         radius = dim.Length(2.0, 'kpc')
-        mass = sis_kpc.mass_within_circle_in_units(radius=radius, unit_mass='angular', critical_surface_mass_density=None)
+        mass = sis_kpc.mass_within_circle_in_units(radius=radius, unit_mass='angular',
+                                                   critical_surface_mass_density=None)
         assert math.pi * sis_kpc.einstein_radius * radius == pytest.approx(mass, 1e-3)
 
         # kpc -> arcsec
@@ -3015,12 +3025,16 @@ class TestMassWithinCircle(object):
     def test__mass_units_conversions__multiplies_by_critical_surface_mass_density_factor(self):
 
         sis = mp.SphericalIsothermal(einstein_radius=2.0)
-        radius = 2.0
+        radius = dim.Length(2.0, 'arcsec')
 
-        mass = sis.mass_within_circle_in_units(radius=radius, unit_mass='angular', critical_surface_mass_density=2.0)
+        critical_surface_mass_density = dim.MassOverLength2(2.0, 'arcsec', 'angular')
+        mass = sis.mass_within_circle_in_units(radius=radius, unit_mass='angular',
+                                               critical_surface_mass_density=critical_surface_mass_density)
         assert math.pi * sis.einstein_radius * radius == pytest.approx(mass, 1e-3)
 
-        mass = sis.mass_within_circle_in_units(radius=radius, unit_mass='solMass', critical_surface_mass_density=2.0)
+        critical_surface_mass_density = dim.MassOverLength2(2.0, 'arcsec', 'solMass')
+        mass = sis.mass_within_circle_in_units(radius=radius, unit_mass='solMass',
+                                               critical_surface_mass_density=critical_surface_mass_density)
         assert 2.0 * math.pi * sis.einstein_radius * radius == pytest.approx(mass, 1e-3)
 
     def test__unit_conversions_check_correctly_that_inputs_are_given(self):
@@ -3088,25 +3102,11 @@ class TestMassWithinEllipse(object):
 
         major_axis = dim.Length(0.5, 'arcsec')
 
-        mass_tot = 0.0
-
-        xs = np.linspace(-1.0, 1.0, 40)
-        ys = np.linspace(-1.0, 1.0, 40)
-
-        edge = xs[1] - xs[0]
-        area = edge ** 2
-
-        for x in xs:
-            for y in ys:
-
-                eta = sie_arcsec.grid_to_elliptical_radii(np.array([[x, y]]))
-
-                if eta < major_axis:
-                    mass_tot += sie_arcsec.convergence_func(eta) * area
+        mass_grid = mass_within_radius_of_profile_from_grid_calculation(radius=major_axis, profile=sie_arcsec)
 
         mass = sie_arcsec.mass_within_ellipse_in_units(major_axis=major_axis, unit_mass='angular',
                                                        critical_surface_mass_density=None)
-        assert mass_tot == pytest.approx(mass, 0.1)
+        assert mass_grid == pytest.approx(mass, 0.1)
 
         # arcsec -> kpc
 
@@ -3114,7 +3114,7 @@ class TestMassWithinEllipse(object):
         mass = sie_arcsec.mass_within_ellipse_in_units(major_axis=major_axis, unit_mass='angular',
                                                        critical_surface_mass_density=None,
                                                        kpc_per_arcsec=2.0)
-        assert 2.0 * mass_tot == pytest.approx(mass, 0.1)
+        assert 2.0 * mass_grid == pytest.approx(mass, 0.1)
 
         # kpc -> kpc
 
@@ -3123,7 +3123,7 @@ class TestMassWithinEllipse(object):
 
         major_axis = dim.Length(0.5, 'kpc')
         mass = sie_kpc.mass_within_ellipse_in_units(major_axis=major_axis, unit_mass='angular', critical_surface_mass_density=None)
-        assert mass_tot == pytest.approx(mass, 0.1)
+        assert mass_grid == pytest.approx(mass, 0.1)
 
         # kpc -> arcsec
 
@@ -3131,33 +3131,29 @@ class TestMassWithinEllipse(object):
         mass = sie_kpc.mass_within_ellipse_in_units(major_axis=major_axis, unit_mass='angular',
                                                     critical_surface_mass_density=None,
                                                     kpc_per_arcsec=2.0)
-        assert 0.5 * mass_tot == pytest.approx(mass, 0.1)
+        assert 0.5 * mass_grid == pytest.approx(mass, 0.1)
 
     def test__mass_unit_conversions__compare_to_grid__mutliplies_by_critical_surface_mass_density(self):
 
         sie = mp.EllipticalIsothermal(einstein_radius=2.0, axis_ratio=0.5, phi=0.0)
 
-        radius = 0.5
-        mass_tot = 0.0
+        radius = dim.Length(2.0, 'arcsec')
 
-        xs = np.linspace(-1.0, 1.0, 40)
-        ys = np.linspace(-1.0, 1.0, 40)
+        mass_grid = mass_within_radius_of_profile_from_grid_calculation(radius=radius, profile=sie)
 
-        edge = xs[1] - xs[0]
-        area = edge ** 2
-
-        for x in xs:
-            for y in ys:
-
-                eta = sie.grid_to_elliptical_radii(np.array([[x, y]]))
-
-                if eta < radius:
-                    mass_tot += sie.convergence_func(eta) * area
-
-        mass = sie.mass_within_ellipse_in_units(major_axis=radius, unit_mass='solMass', critical_surface_mass_density=2.0)
+        critical_surface_mass_density = dim.MassOverLength2(2.0, 'arcsec', 'angular')
+        mass = sie.mass_within_ellipse_in_units(major_axis=radius, unit_mass='angular',
+                                                critical_surface_mass_density=critical_surface_mass_density)
 
         # Large errors required due to cusp at center of SIE - can get to errors of 0.01 for a 400 x 400 grid.
-        assert mass_tot == pytest.approx(0.5 * mass, 0.1)
+        assert mass_grid == pytest.approx(radius * sie.axis_ratio * mass, 0.1)
+
+        critical_surface_mass_density = dim.MassOverLength2(2.0, 'arcsec', 'solMass')
+        mass = sie.mass_within_ellipse_in_units(major_axis=radius, unit_mass='solMass',
+                                                critical_surface_mass_density=critical_surface_mass_density)
+
+        # Large errors required due to cusp at center of SIE - can get to errors of 0.01 for a 400 x 400 grid.
+        assert mass_grid == pytest.approx(0.5 * radius * sie.axis_ratio * mass, 0.1)
 
     def test__unit_conversions_check_correctly_that_inputs_are_given(self):
 

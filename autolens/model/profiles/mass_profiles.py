@@ -12,6 +12,7 @@ from scipy.optimize import root_scalar
 
 from autofit.tools.dimension_type import map_types
 from autolens import decorator_util
+from autolens import exc
 from autolens.data.array import grids
 from autolens.model import dimensions as dim
 from autolens.model.profiles import geometry_profiles
@@ -90,7 +91,7 @@ class MassProfile(object):
     def einstein_mass_in_units(self, unit_mass='angular', critical_surface_mass_density=None):
         return NotImplementedError()
 
-    def summary_in_units(self, radii=None, unit_length='arcsec', unit_mass='angular',
+    def summary_in_units(self, radii, unit_length='arcsec', unit_mass='angular',
                          kpc_per_arcsec=None, critical_surface_mass_density=None, cosmic_average_mass_density=None,
                          *args, **kwargs):
         return ["Mass Profile = {}".format(self.__class__.__name__), ""]
@@ -150,8 +151,25 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
         self.axis_ratio = axis_ratio
         self.phi = phi
 
-    def mass_within_circle_in_units(self, radius : dim.Length, unit_mass='angular', kpc_per_arcsec=None,
-                                    critical_surface_mass_density=None):
+    def mass_within_unit_check_and_convert_critical_surface_mass_density(self, radius, unit_mass, kpc_per_arcsec,
+                                                                         critical_surface_mass_density):
+
+        if not isinstance(radius, dim.Length):
+            raise exc.UnitsException('The radius input into the mass_wtihin_circle method must have dimensions of '
+                                     'length, using the dimensions.Length class')
+
+        if critical_surface_mass_density is not None:
+
+            if not isinstance(critical_surface_mass_density, dim.MassOverLength2):
+                raise exc.UnitsException('The critical surface masss density input into a method must have dimensions of '
+                                     'mass / length^2, using the dimensions.MassOverLuminosity2 class')
+
+            return critical_surface_mass_density.convert(unit_length=radius.unit_length, unit_mass=unit_mass,
+                                                         kpc_per_arcsec=kpc_per_arcsec,
+                                                         critical_surface_mass_density=critical_surface_mass_density)
+
+    def mass_within_circle_in_units(self, radius : dim.Length, unit_mass='angular',
+                                    kpc_per_arcsec=None, critical_surface_mass_density=None):
         """ Integrate the mass profiles's convergence profile to compute the total mass within a circle of \
         specified radius. This is centred on the mass profile.
 
@@ -171,11 +189,13 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
             units to phsical units (e.g. solar masses).
         """
 
-        if not isinstance(radius, dim.Length):
-            radius = dim.Length(value=radius, unit_length='arcsec')
+        critical_surface_mass_density = self.mass_within_unit_check_and_convert_critical_surface_mass_density(
+            radius=radius, unit_mass=unit_mass, kpc_per_arcsec=kpc_per_arcsec,
+            critical_surface_mass_density=critical_surface_mass_density)
 
-        profile = self.new_profile_with_units_converted(unit_length=radius.unit_length, kpc_per_arcsec=kpc_per_arcsec,
-                                                        critical_surface_mass_density=critical_surface_mass_density)
+        profile = self.new_profile_with_units_converted(
+            unit_length=radius.unit_length, unit_mass='angular',
+            kpc_per_arcsec=kpc_per_arcsec, critical_surface_mass_density=critical_surface_mass_density)
 
         mass_angular = dim.Mass(value=quad(profile.mass_integral, a=0.0, b=radius, args=(1.0,))[0], unit_mass='angular')
         return mass_angular.convert(unit_mass=unit_mass, critical_surface_mass_density=critical_surface_mass_density)
@@ -201,11 +221,13 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
             units to phsical units (e.g. solar masses).
         """
 
-        if not isinstance(major_axis, dim.Length):
-            major_axis = dim.Length(value=major_axis, unit_length='arcsec')
+        critical_surface_mass_density = self.mass_within_unit_check_and_convert_critical_surface_mass_density(
+            radius=major_axis, unit_mass=unit_mass, kpc_per_arcsec=kpc_per_arcsec,
+            critical_surface_mass_density=critical_surface_mass_density)
 
-        profile = self.new_profile_with_units_converted(unit_length=major_axis.unit_length, kpc_per_arcsec=kpc_per_arcsec,
-                                                        critical_surface_mass_density=critical_surface_mass_density)
+        profile = self.new_profile_with_units_converted(
+            unit_length=major_axis.unit_length, unit_mass='angular',
+            kpc_per_arcsec=kpc_per_arcsec, critical_surface_mass_density=critical_surface_mass_density)
 
         mass_angular = dim.Mass(value=quad(profile.mass_integral, a=0.0, b=major_axis, args=(self.axis_ratio,))[0],
                                 unit_mass='angular')
@@ -261,10 +283,11 @@ class EllipticalMassProfile(geometry_profiles.EllipticalProfile, MassProfile):
                                                                            kpc_per_arcsec=kpc_per_arcsec)
         return dim.Length(einstein_radius, unit_length)
 
-    def einstein_mass_in_units(self, unit_mass='angular', critical_surface_mass_density=None):
+    def einstein_mass_in_units(self, unit_mass='angular', kpc_per_arcsec=None, critical_surface_mass_density=None):
+
         einstein_radius = self.average_convergence_of_1_radius_in_units()
         return self.mass_within_circle_in_units(radius=einstein_radius, unit_mass=unit_mass,
-                                                critical_surface_mass_density=critical_surface_mass_density)
+                                                   critical_surface_mass_density=critical_surface_mass_density)
 
     def summary_in_units(self, radii, unit_length='arcsec', unit_mass='angular',
                          kpc_per_arcsec=None, critical_surface_mass_density=None, cosmic_average_mass_density=None,
@@ -433,6 +456,7 @@ class EllipticalCoredPowerLaw(EllipticalMassProfile, MassProfile):
             cosmic_average_mass_density=cosmic_average_mass_density, **kwargs)
 
         return summary
+
 
 class SphericalCoredPowerLaw(EllipticalCoredPowerLaw):
 
@@ -884,6 +908,7 @@ class AbstractEllipticalGeneralizedNFW(EllipticalMassProfile, MassProfile):
         summary.append('Mass at 200x cosmic average density = {:.2f} {}'.format(mass_at_200, unit_mass))
         return summary
 
+
 class EllipticalGeneralizedNFW(AbstractEllipticalGeneralizedNFW):
 
     @geometry_profiles.transform_grid
@@ -1174,6 +1199,7 @@ class SphericalTruncatedNFW(AbstractEllipticalGeneralizedNFW):
         summary.append('Mass at truncation radius = {:.2f} {}'.format(mass_at_truncation_radius, unit_mass))
         return summary
 
+
 class SphericalTruncatedNFWChallenge(SphericalTruncatedNFW):
 
     @map_types
@@ -1201,6 +1227,7 @@ class SphericalTruncatedNFWChallenge(SphericalTruncatedNFW):
             cosmic_average_mass_density=262.30319684750657, **kwargs)
 
         return summary
+
 
 class EllipticalNFW(AbstractEllipticalGeneralizedNFW):
 
@@ -1392,13 +1419,6 @@ class SphericalNFW(EllipticalNFW):
                                                np.arctanh(np.sqrt(np.add(1, - np.square(eta[eta < 1])))))
 
         return np.divide(np.add(np.log(np.divide(eta, 2.)), conditional_eta), eta)
-
-
-#   def characteristic_over_density(self, cosmic_average_density):
-
-
-#   def radius_at_200_times_critical_density(self):
-
 
 # noinspection PyAbstractClass
 class AbstractEllipticalSersic(light_profiles.AbstractEllipticalSersic, EllipticalMassProfile):

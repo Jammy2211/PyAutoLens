@@ -4,16 +4,17 @@ Let me know if you think anything is missing, or should be pushed up the to-do l
 
 9 Day Crash Course:
 
-- Get all unit tests passing, using units framework.
-- Integration tests + pipelines for redhift feature.
-- Integration tests + pipelines for noise scaling.
-- classmethods using ealistic lens units.
+- Units for critical surface mass density + mass calculations
+- Integration tests + pipelines for redshift feature.
+- classmethods using realistic lens units.
 - Lensing example test data suites.
 - Aggregator use examples.
+- Integration tests + pipelines for noise scaling.
+- RJLens pipeline.
+- Units for images, grids.
 - Implment weighted kmeans (day before Rich if psosible)
 - Multinest MPI.
 - Memory lite.
-- RJLens pipeline.
 
 - CTI model runs, generate results for papers.
 - CTI images, reqirements, via aggregator.
