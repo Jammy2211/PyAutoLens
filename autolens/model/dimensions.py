@@ -99,95 +99,95 @@ class Mass(dimension_type.DimensionType):
 
 class MassOverLuminosity(dimension_type.DimensionType):
 
-    def __init__(self, value, unit_mass="angular", unit_luminosity="eps"):
+    def __init__(self, value, unit_luminosity="eps", unit_mass="angular"):
         super().__init__(value)
-        self.unit_mass = unit_mass
-        self.unit_mass_power = 1.0
         self.unit_luminosity = unit_luminosity
         self.unit_luminosity_power = -1.0
+        self.unit_mass = unit_mass
+        self.unit_mass_power = 1.0
 
     @property
     def unit(self):
         return self.unit_mass + ' / ' + self.unit_luminosity
 
-    def convert(self, unit_mass, unit_luminosity, critical_surface_mass_density=None, exposure_time=None):
+    def convert(self, unit_luminosity, unit_mass,  exposure_time=None, critical_surface_mass_density=None):
         
         value = self
-        
-        if unit_mass is not None:
-            value = convert_mass(value=value, unit_current=self.unit_mass, unit_new=unit_mass,
-                                 critical_surface_mass_density=critical_surface_mass_density)
-        else:
-            unit_mass = value.unit_mass
 
         if unit_luminosity is not None:
             value = convert_luminosity(value=value, unit_current=self.unit_luminosity, unit_new=unit_luminosity,
                                        power=self.unit_luminosity_power, exposure_time=exposure_time)
         else:
             unit_luminosity = value.unit_luminosity
+        
+        if unit_mass is not None:
+            value = convert_mass(value=value, unit_current=self.unit_mass, unit_new=unit_mass,
+                                 critical_surface_mass_density=critical_surface_mass_density)
+        else:
+            unit_mass = value.unit_mass
 
         return MassOverLuminosity(value=value, unit_mass=unit_mass, unit_luminosity=unit_luminosity)
 
 
 class MassOverLength2(dimension_type.DimensionType):
 
-    def __init__(self, value, unit_mass="angular", unit_length="arcsec"):
+    def __init__(self, value, unit_length="arcsec", unit_mass="angular"):
         super().__init__(value)
-        self.unit_mass = unit_mass
-        self.unit_mass_power = 1.0
         self.unit_length = unit_length
         self.unit_length_power = -2.0
+        self.unit_mass = unit_mass
+        self.unit_mass_power = 1.0
 
     @property
     def unit(self):
         return self.unit_mass + ' / ' + self.unit_length + '^2'
 
-    def convert(self, unit_mass, unit_length, critical_surface_mass_density=None, kpc_per_arcsec=None):
+    def convert(self, unit_length, unit_mass, critical_surface_mass_density=None, kpc_per_arcsec=None):
 
         value = self
-
-        if unit_mass is not None:
-            value = convert_mass(value=value, unit_current=self.unit_mass, unit_new=unit_mass,
-                                 critical_surface_mass_density=critical_surface_mass_density)
-        else:
-            unit_mass = value.unit_mass
 
         if unit_length is not None:
             value = convert_length(value=value, unit_current=self.unit_length, unit_new=unit_length,
                                        power=self.unit_length_power, kpc_per_arcsec=kpc_per_arcsec)
         else:
             unit_length = value.unit_length
+
+        if unit_mass is not None:
+            value = convert_mass(value=value, unit_current=self.unit_mass, unit_new=unit_mass,
+                                 critical_surface_mass_density=critical_surface_mass_density)
+        else:
+            unit_mass = value.unit_mass
 
         return MassOverLength2(value=value, unit_mass=unit_mass, unit_length=unit_length)
 
 class MassOverLength3(dimension_type.DimensionType):
 
-    def __init__(self, value, unit_mass="angular", unit_length="arcsec"):
+    def __init__(self, value, unit_length="arcsec", unit_mass="angular"):
         super().__init__(value)
-        self.unit_mass = unit_mass
-        self.unit_mass_power = 1.0
         self.unit_length = unit_length
         self.unit_length_power = -3.0
+        self.unit_mass = unit_mass
+        self.unit_mass_power = 1.0
 
     @property
     def unit(self):
         return self.unit_mass + ' / ' + self.unit_length + '^3'
 
-    def convert(self, unit_mass, unit_length, critical_surface_mass_density=None, kpc_per_arcsec=None):
+    def convert(self, unit_length, unit_mass, critical_surface_mass_density=None, kpc_per_arcsec=None):
 
         value = self
-
-        if unit_mass is not None:
-            value = convert_mass(value=value, unit_current=self.unit_mass, unit_new=unit_mass,
-                                 critical_surface_mass_density=critical_surface_mass_density)
-        else:
-            unit_mass = value.unit_mass
 
         if unit_length is not None:
             value = convert_length(value=value, unit_current=self.unit_length, unit_new=unit_length,
                                        power=self.unit_length_power, kpc_per_arcsec=kpc_per_arcsec)
         else:
             unit_length = value.unit_length
+
+        if unit_mass is not None:
+            value = convert_mass(value=value, unit_current=self.unit_mass, unit_new=unit_mass,
+                                 critical_surface_mass_density=critical_surface_mass_density)
+        else:
+            unit_mass = value.unit_mass
 
         return MassOverLength3(value=value, unit_mass=unit_mass, unit_length=unit_length)
 
