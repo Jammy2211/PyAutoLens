@@ -7,14 +7,14 @@ from autolens import exc
 from autolens.data.array import grids
 from autolens.data.array import scaled_array
 from autolens.lens.util import lens_util
+from autolens.model import dimensions as dim
 from autolens.model import cosmology_util
 from autolens.model.galaxy.util import galaxy_util
 
 
 class AbstractPlane(object):
 
-    def __init__(self, redshift, galaxies, cosmology=cosmo.Planck15, units_distance='arcsec',
-                 units_luminosity='eps', units_mass='solMass'):
+    def __init__(self, redshift, galaxies, cosmology=cosmo.Planck15):
         """An abstract plane which represents a set of galaxies that are close to one another in redshift-space.
 
         From an abstract plane, cosmological quantities like angular diameter distances can be computed. If the  \
@@ -33,33 +33,27 @@ class AbstractPlane(object):
         self.redshift = redshift
         self.galaxies = galaxies
         self.cosmology = cosmology
-        self.units_distance = units_distance
-        self.units_luminosity = units_luminosity
-        self.units_mass = units_mass
 
     @property
     def galaxy_redshifts(self):
         return [galaxy.redshift for galaxy in self.galaxies]
 
     @property
-    def arcsec_per_kpc_proper(self):
-        return cosmology_util.arcsec_per_kpc_proper_from_redshift_and_cosmology(redshift=self.redshift,
-                                                                           cosmology=self.cosmology)
+    def arcsec_per_kpc(self):
+        return cosmology_util.arcsec_per_kpc_from_redshift_and_cosmology(redshift=self.redshift,
+                                                                         cosmology=self.cosmology)
 
     @property
-    def kpc_per_arcsec_proper(self):
-        return 1.0 / self.arcsec_per_kpc_proper
+    def kpc_per_arcsec(self):
+        return 1.0 / self.arcsec_per_kpc
 
-    @property
-    def angular_diameter_distance_to_earth(self):
+    def angular_diameter_distance_to_earth_in_units(self, unit_length='arcsec'):
         return cosmology_util.angular_diameter_distance_to_earth_from_redshift_and_cosmology(
-            redshift=self.redshift, cosmology=self.cosmology, units_distance=self.units_distance)
+            redshift=self.redshift, cosmology=self.cosmology, unit_length=unit_length)
 
-    @property
-    def cosmic_average_mass_density(self):
+    def cosmic_average_mass_density_in_units(self, unit_length='arcsec', unit_mass='solMass'):
         return cosmology_util.cosmic_average_mass_density_from_redshift_and_cosmology(
-            redshift=self.redshift, cosmology=self.cosmology, units_distance=self.units_distance,
-            units_mass=self.units_mass)
+            redshift=self.redshift, cosmology=self.cosmology, unit_length=unit_length, unit_mass=unit_mass)
 
     @property
     def has_light_profile(self):
@@ -140,7 +134,7 @@ class AbstractPlane(object):
 
             return None
 
-    def luminosities_of_galaxies_within_circles(self, radius, exposure_time=None):
+    def luminosities_of_galaxies_within_circles_in_units(self, radius : dim.Length, unit_luminosity='eps', exposure_time=None):
         """Compute the total luminosity of all galaxies in this plane within a circle of specified radius.
 
         See *galaxy.light_within_circle* and *light_profiles.light_within_circle* for details \
@@ -155,11 +149,13 @@ class AbstractPlane(object):
         exposure_time : float
             The exposure time of the observation, which converts luminosity from electrons per second units to counts.
         """
-        return list(map(lambda galaxy: galaxy.luminosity_within_circle(radius, unit_luminosity=self.units_luminosity,
-                                                                       exposure_time=exposure_time),
+        return list(map(lambda galaxy: galaxy.luminosity_within_circle_in_units(
+            radius=radius, unit_luminosity=unit_luminosity, kpc_per_arcsec=self.kpc_per_arcsec,
+            exposure_time=exposure_time),
                         self.galaxies))
 
-    def luminosities_of_galaxies_within_ellipses(self, major_axis, exposure_time=None):
+    def luminosities_of_galaxies_within_ellipses_in_units(self, major_axis : dim.Length, unit_luminosity='eps',
+                                                          exposure_time=None):
         """
         Compute the total luminosity of all galaxies in this plane within a ellipse of specified major-axis.
 
@@ -178,11 +174,13 @@ class AbstractPlane(object):
         exposure_time : float
             The exposure time of the observation, which converts luminosity from electrons per second units to counts.
         """
-        return list(map(lambda galaxy: galaxy.luminosity_within_ellipse(major_axis, unit_luminosity=self.units_luminosity,
-                                                                        exposure_time=exposure_time),
+        return list(map(lambda galaxy: galaxy.luminosity_within_ellipse_in_units(
+            major_axis=major_axis, unit_luminosity=unit_luminosity, kpc_per_arcsec=self.kpc_per_arcsec,
+            exposure_time=exposure_time),
                         self.galaxies))
 
-    def masses_of_galaxies_within_circles(self, radius, critical_surface_mass_density=None):
+    def masses_of_galaxies_within_circles_in_units(self, radius : dim.Length, unit_mass='angular',
+                                                   critical_surface_mass_density=None):
         """Compute the total mass of all galaxies in this plane within a circle of specified radius.
 
         See *galaxy.angular_mass_within_circle* and *mass_profiles.angular_mass_within_circle* for details
@@ -198,12 +196,13 @@ class AbstractPlane(object):
             The critical surface mass density of the strong lens configuration, which converts mass from angulalr \
             units to physical units (e.g. solar masses).
         """
-        return list(map(lambda galaxy: galaxy.mass_within_circle(
-                        radius=radius, unit_mass=self.units_mass,
+        return list(map(lambda galaxy: galaxy.mass_within_circle_in_units(
+                        radius=radius, unit_mass=unit_mass, kpc_per_arcsec=self.kpc_per_arcsec,
                         critical_surface_mass_density=critical_surface_mass_density),
                         self.galaxies))
 
-    def masses_of_galaxies_within_ellipses(self, major_axis, critical_surface_mass_density=None):
+    def masses_of_galaxies_within_ellipses_in_units(self, major_axis : dim.Length, unit_mass='angular',
+                                                    critical_surface_mass_density=None):
         """Compute the total mass of all galaxies in this plane within a ellipse of specified major-axis.
 
         See *galaxy.angular_mass_within_ellipse* and *mass_profiles.angular_mass_within_ellipse* for details \
@@ -218,35 +217,30 @@ class AbstractPlane(object):
         exposure_time : float
             The exposure time of the observation, which converts luminosity from electrons per second units to counts.
         """
-        return list(map(lambda galaxy: galaxy.mass_within_ellipse(
-                        major_axis=major_axis, unit_mass=self.units_mass,
+        return list(map(lambda galaxy: galaxy.mass_within_ellipse_in_units(
+                        major_axis=major_axis, unit_mass=unit_mass, kpc_per_arcsec=self.kpc_per_arcsec,
                         critical_surface_mass_density=critical_surface_mass_density),
                         self.galaxies))
 
-    @property
-    def einstein_radius(self):
-        if self.has_mass_profile:
-            einstein_radius_arcsec = sum(filter(None, list(map(lambda galaxy: galaxy.einstein_radius, self.galaxies))))
-
-            if self.units_distance is 'arcsec':
-                return einstein_radius_arcsec
-            elif self.units_distance is 'kpc':
-                return self.kpc_per_arcsec_proper * einstein_radius_arcsec
-
-    def einstein_mass(self, critical_surface_mass_density):
+    def einstein_radius_in_units(self, unit_length='arcsec', kpc_per_arcsec=None):
 
         if self.has_mass_profile:
-            return sum(filter(None, list(map(lambda galaxy:
-                                             galaxy.mass_within_circle(
-                                                 radius=galaxy.einstein_radius,
-                                                 critical_surface_mass_density=critical_surface_mass_density),
-                                             self.galaxies))))
+            return sum(filter(None,
+                   list(map(lambda galaxy: galaxy.einstein_radius_in_units(
+                       unit_length=unit_length, kpc_per_arcsec=kpc_per_arcsec),
+                            self.galaxies))))
 
+    def einstein_mass_in_units(self, unit_mass='angular', critical_surface_mass_density=None):
+
+        if self.has_mass_profile:
+            return sum(filter(None,
+                   list(map(lambda galaxy: galaxy.einstein_mass_in_units(
+                       unit_mass=unit_mass, critical_surface_mass_density=critical_surface_mass_density),
+                            self.galaxies))))
 
 class AbstractGriddedPlane(AbstractPlane):
 
-    def __init__(self, redshift, galaxies, grid_stack, border, compute_deflections, cosmology=cosmo.Planck15,
-                 units_distance='arcsec', units_luminosity='electons_per_second', units_mass='solMass'):
+    def __init__(self, redshift, galaxies, grid_stack, border, compute_deflections, cosmology=cosmo.Planck15):
         """An abstract plane which represents a set of galaxies that are close to one another in redshift-space and \
         have an associated grid on which lensing calcuations are performed.
 
@@ -270,9 +264,7 @@ class AbstractGriddedPlane(AbstractPlane):
             The cosmology associated with the plane, used to convert arc-second coordinates to physical values.
         """
 
-        super(AbstractGriddedPlane, self).__init__(redshift=redshift, galaxies=galaxies, cosmology=cosmology,
-                                                   units_distance=units_distance, units_luminosity=units_luminosity,
-                                                   units_mass=units_mass)
+        super(AbstractGriddedPlane, self).__init__(redshift=redshift, galaxies=galaxies, cosmology=cosmology)
 
         self.grid_stack = grid_stack
         self.border = border
@@ -390,8 +382,7 @@ class AbstractGriddedPlane(AbstractPlane):
 
 class Plane(AbstractGriddedPlane):
 
-    def __init__(self, galaxies, grid_stack, border=None, compute_deflections=True, cosmology=cosmo.Planck15,
-                 units_distance='arcsec', units_luminosity='electons_per_second', units_mass='solMass'):
+    def __init__(self, galaxies, grid_stack, border=None, compute_deflections=True, cosmology=cosmo.Planck15):
         """A plane of galaxies where all galaxies are at the same redshift.
 
         Parameters
@@ -420,9 +411,7 @@ class Plane(AbstractGriddedPlane):
                                               'does not have a redshift.')
 
         super(Plane, self).__init__(redshift=galaxies[0].redshift, galaxies=galaxies, grid_stack=grid_stack,
-                                    border=border, compute_deflections=compute_deflections, cosmology=cosmology,
-                                    units_distance=units_distance, units_luminosity=units_luminosity,
-                                    units_mass=units_mass)
+                                    border=border, compute_deflections=compute_deflections, cosmology=cosmology)
 
     def unmasked_blurred_image_of_galaxies_from_psf(self, padded_grid_stack, psf):
         """This is a utility function for the function above, which performs the iteration over each plane's galaxies \
@@ -447,8 +436,7 @@ class Plane(AbstractGriddedPlane):
 
 class PlaneSlice(AbstractGriddedPlane):
 
-    def __init__(self, galaxies, grid_stack, redshift, border=None, compute_deflections=True, cosmology=cosmo.Planck15,
-                 units_distance='arcsec', units_luminosity='electons_per_second', units_mass='solMass'):
+    def __init__(self, galaxies, grid_stack, redshift, border=None, compute_deflections=True, cosmology=cosmo.Planck15):
         """A plane of galaxies where the galaxies may be at different redshifts to the plane itself.
 
         Parameters
@@ -467,15 +455,12 @@ class PlaneSlice(AbstractGriddedPlane):
         """
 
         super(PlaneSlice, self).__init__(redshift=redshift, galaxies=galaxies, grid_stack=grid_stack, border=border,
-                                         compute_deflections=compute_deflections, cosmology=cosmology,
-                                         units_distance=units_distance, units_luminosity=units_luminosity,
-                                         units_mass=units_mass)
+                                         compute_deflections=compute_deflections, cosmology=cosmology)
 
 
 class PlanePositions(object):
 
-    def __init__(self, redshift, galaxies, positions, compute_deflections=True, cosmology=None,
-                 units_distance='arcsec', units_luminosity='electons_per_second', units_mass='solMass'):
+    def __init__(self, redshift, galaxies, positions, compute_deflections=True, cosmology=None):
         """A plane represents a set of galaxies at a given redshift in a ray-tracer_normal and the positions of image-plane \
         coordinates which mappers close to one another in the source-plane.
 
@@ -501,10 +486,6 @@ class PlanePositions(object):
             self.deflections = list(map(lambda pos: calculate_deflections(pos), self.positions))
 
         self.cosmology = cosmology
-
-        self.units_distance = units_distance
-        self.units_luminosity = units_luminosity
-        self.units_mass = units_mass
 
     def trace_to_next_plane(self):
         """Trace the positions to the next plane."""

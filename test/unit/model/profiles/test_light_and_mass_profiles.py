@@ -32,7 +32,7 @@ class TestSersic(object):
 
         assert sersic.effective_radius == 0.6
         assert isinstance(sersic.effective_radius, dim.Length)
-        assert sersic.effective_radius.unit == 'arcsec'
+        assert sersic.effective_radius.unit_length == 'arcsec'
 
         assert sersic.sersic_index == 4.0
         assert isinstance(sersic.sersic_index, float)
@@ -65,7 +65,7 @@ class TestSersic(object):
 
         assert sersic.effective_radius == 0.6
         assert isinstance(sersic.effective_radius, dim.Length)
-        assert sersic.effective_radius.unit == 'arcsec'
+        assert sersic.effective_radius.unit_length == 'arcsec'
 
         assert sersic.sersic_index == 4.0
         assert isinstance(sersic.sersic_index, float)
@@ -127,7 +127,7 @@ class TestExponential(object):
 
         assert exponential.effective_radius == 0.6
         assert isinstance(exponential.effective_radius, dim.Length)
-        assert exponential.effective_radius.unit == 'arcsec'
+        assert exponential.effective_radius.unit_length == 'arcsec'
 
         assert exponential.sersic_index == 1.0
         assert isinstance(exponential.sersic_index, float)
@@ -160,7 +160,7 @@ class TestExponential(object):
 
         assert exponential.effective_radius == 0.6
         assert isinstance(exponential.effective_radius, dim.Length)
-        assert exponential.effective_radius.unit == 'arcsec'
+        assert exponential.effective_radius.unit_length == 'arcsec'
 
         assert exponential.sersic_index == 1.0
         assert isinstance(exponential.sersic_index, float)
@@ -220,7 +220,7 @@ class TestDevVaucouleurs(object):
 
         assert dev_vaucouleurs.effective_radius == 0.6
         assert isinstance(dev_vaucouleurs.effective_radius, dim.Length)
-        assert dev_vaucouleurs.effective_radius.unit == 'arcsec'
+        assert dev_vaucouleurs.effective_radius.unit_length == 'arcsec'
 
         assert dev_vaucouleurs.sersic_index == 4.0
         assert isinstance(dev_vaucouleurs.sersic_index, float)
@@ -253,7 +253,7 @@ class TestDevVaucouleurs(object):
 
         assert dev_vaucouleurs.effective_radius == 0.6
         assert isinstance(dev_vaucouleurs.effective_radius, dim.Length)
-        assert dev_vaucouleurs.effective_radius.unit == 'arcsec'
+        assert dev_vaucouleurs.effective_radius.unit_length == 'arcsec'
 
         assert dev_vaucouleurs.sersic_index == 4.0
         assert isinstance(dev_vaucouleurs.sersic_index, float)
@@ -314,7 +314,7 @@ class TestSersicRadialGradient(object):
 
         assert sersic.effective_radius == 0.6
         assert isinstance(sersic.effective_radius, dim.Length)
-        assert sersic.effective_radius.unit == 'arcsec'
+        assert sersic.effective_radius.unit_length == 'arcsec'
 
         assert sersic.sersic_index == 4.0
         assert isinstance(sersic.sersic_index, float)
@@ -350,7 +350,7 @@ class TestSersicRadialGradient(object):
 
         assert sersic.effective_radius == 0.6
         assert isinstance(sersic.effective_radius, dim.Length)
-        assert sersic.effective_radius.unit == 'arcsec'
+        assert sersic.effective_radius.unit_length == 'arcsec'
 
         assert sersic.sersic_index == 4.0
         assert isinstance(sersic.sersic_index, float)

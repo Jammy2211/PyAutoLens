@@ -124,7 +124,7 @@ class AbstractTracerCosmology(object):
     def critical_surface_mass_density_between_planes(self, i, j):
         return cosmology_util.critical_surface_mass_density_between_redshifts_from_redshifts_and_cosmology(
             redshift_0=self.plane_redshifts[i], redshift_1=self.plane_redshifts[j], cosmology=self.cosmology,
-            units_mass=self.units_mass, units_distance=self.units_distance)
+            unit_mass=self.units_mass, units_distance=self.units_distance)
 
     def scaling_factor_between_planes(self, i, j):
         return cosmology_util.scaling_factor_between_redshifts_from_redshifts_and_cosmology(
@@ -267,11 +267,11 @@ class AbstractTracer(AbstractTracerCosmology):
 
     @property
     def einstein_radii_of_planes(self):
-        return [plane.einstein_radius for plane in self.planes]
+        return [plane.einstein_radius_in_units for plane in self.planes]
 
     @property
     def einstein_masses_of_planes(self):
-        return [plane.einstein_mass(critical_surface_mass_density=self.critical_surface_mass_density)
+        return [plane.einstein_mass_in_units(critical_surface_mass_density=self.critical_surface_mass_density)
                 for plane in self.planes]
 
     def grid_at_redshift_from_image_plane_grid_and_redshift(self, image_plane_grid, redshift):

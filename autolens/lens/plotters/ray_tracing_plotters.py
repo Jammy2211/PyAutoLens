@@ -201,7 +201,7 @@ def plot_image_plane_image(
         array=tracer.image_plane_image, mask=mask, extract_array_from_mask=extract_array_from_mask,
         zoom_around_mask=zoom_around_mask, positions=positions,
         as_subplot=as_subplot,
-        units=units, kpc_per_arcsec=tracer.image_plane.kpc_per_arcsec_proper, figsize=figsize, aspect=aspect,
+        units=units, kpc_per_arcsec=tracer.image_plane.kpc_per_arcsec, figsize=figsize, aspect=aspect,
         cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
         cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad, 
         cb_tick_values=cb_tick_values, cb_tick_labels=cb_tick_labels,
@@ -220,7 +220,7 @@ def plot_convergence(
     array_plotters.plot_array(
         array=tracer.convergence, mask=mask, extract_array_from_mask=extract_array_from_mask,
         zoom_around_mask=zoom_around_mask, as_subplot=as_subplot,
-        units=units, kpc_per_arcsec=tracer.image_plane.kpc_per_arcsec_proper, figsize=figsize, aspect=aspect,
+        units=units, kpc_per_arcsec=tracer.image_plane.kpc_per_arcsec, figsize=figsize, aspect=aspect,
         cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
         cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad, 
         cb_tick_values=cb_tick_values, cb_tick_labels=cb_tick_labels,
@@ -238,7 +238,7 @@ def plot_potential(
     array_plotters.plot_array(
         array=tracer.potential, mask=mask, extract_array_from_mask=extract_array_from_mask,
         zoom_around_mask=zoom_around_mask, as_subplot=as_subplot,
-        units=units, kpc_per_arcsec=tracer.image_plane.kpc_per_arcsec_proper, figsize=figsize, aspect=aspect,
+        units=units, kpc_per_arcsec=tracer.image_plane.kpc_per_arcsec, figsize=figsize, aspect=aspect,
         cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
         cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad, 
         cb_tick_values=cb_tick_values, cb_tick_labels=cb_tick_labels,
@@ -256,7 +256,7 @@ def plot_deflections_y(
     array_plotters.plot_array(
         array=tracer.deflections_y, mask=mask, extract_array_from_mask=extract_array_from_mask,
         zoom_around_mask=zoom_around_mask, as_subplot=as_subplot,
-        units=units, kpc_per_arcsec=tracer.image_plane.kpc_per_arcsec_proper, figsize=figsize, aspect=aspect,
+        units=units, kpc_per_arcsec=tracer.image_plane.kpc_per_arcsec, figsize=figsize, aspect=aspect,
         cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
         cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad, 
         cb_tick_values=cb_tick_values, cb_tick_labels=cb_tick_labels,
@@ -274,7 +274,7 @@ def plot_deflections_x(
     array_plotters.plot_array(
         array=tracer.deflections_x, mask=mask, extract_array_from_mask=extract_array_from_mask,
         zoom_around_mask=zoom_around_mask, as_subplot=as_subplot,
-        units=units, kpc_per_arcsec=tracer.image_plane.kpc_per_arcsec_proper, figsize=figsize, aspect=aspect,
+        units=units, kpc_per_arcsec=tracer.image_plane.kpc_per_arcsec, figsize=figsize, aspect=aspect,
         cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
         cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad, 
         cb_tick_values=cb_tick_values, cb_tick_labels=cb_tick_labels,

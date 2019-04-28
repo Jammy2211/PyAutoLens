@@ -11,7 +11,7 @@ class TestLength(object):
         unit_arcsec = dim.Length(value=2.0)
 
         assert unit_arcsec == 2.0
-        assert unit_arcsec.unit == 'arcsec'
+        assert unit_arcsec.unit_length == 'arcsec'
 
         unit_arcsec = unit_arcsec.convert(unit_length='arcsec')
 
@@ -178,6 +178,144 @@ class TestMassOverLuminosity(object):
             unit_eps.convert(unit_mass='lol', unit_luminosity='eps')
 
 
+class TestMassOverLength2(object):
+
+    def test__conversions_from_angular_and_sol_mass_and_back__errors_raised_if_critical_mass_density(self):
+
+        unit_angular = dim.MassOverLength2(value=2.0)
+
+        assert unit_angular == 2.0
+        assert unit_angular.unit == 'angular / arcsec^2'
+
+        unit_angular = unit_angular.convert(unit_mass='angular', unit_length='arcsec')
+
+        assert unit_angular == 2.0
+        assert unit_angular.unit == 'angular / arcsec^2'
+
+        unit_sol_mass = unit_angular.convert(unit_mass='solMass', critical_surface_mass_density=2.0,
+                                             unit_length='arcsec')
+
+        assert unit_sol_mass == 4.0
+        assert unit_sol_mass.unit == 'solMass / arcsec^2'
+
+        unit_sol_mass = unit_sol_mass.convert(unit_mass='solMass', unit_length='arcsec')
+
+        assert unit_sol_mass == 4.0
+        assert unit_sol_mass.unit == 'solMass / arcsec^2'
+
+        unit_angular = unit_sol_mass.convert(unit_mass='angular', critical_surface_mass_density=2.0,
+                                             unit_length='arcsec')
+
+        assert unit_angular == 2.0
+        assert unit_angular.unit == 'angular / arcsec^2'
+
+        with pytest.raises(exc.UnitsException):
+            unit_angular.convert(unit_mass='solMass', unit_length='eps')
+            unit_sol_mass.convert(unit_mass='angular', unit_length='eps')
+            unit_angular.convert(unit_mass='lol', unit_length='eps')
+
+    def test__conversions_from_arcsec_to_kpc_and_back__errors_raised_if_no_kpc_per_arcsec(self):
+
+        unit_arcsec = dim.MassOverLength2(value=2.0, unit_mass='solMass')
+
+        assert unit_arcsec == 2.0
+        assert unit_arcsec.unit == 'solMass / arcsec^2'
+
+        unit_arcsec = unit_arcsec.convert(unit_length='arcsec', unit_mass='solMass')
+
+        assert unit_arcsec == 2.0
+        assert unit_arcsec.unit == 'solMass / arcsec^2'
+
+        unit_kpc = unit_arcsec.convert(unit_length='kpc', kpc_per_arcsec=2.0, unit_mass='solMass')
+
+        assert unit_kpc == 2.0 / 2.0**2.0
+        assert unit_kpc.unit == 'solMass / kpc^2'
+
+        unit_kpc = unit_kpc.convert(unit_length='kpc', unit_mass='solMass')
+
+        assert unit_kpc == 2.0 / 2.0**2.0
+        assert unit_kpc.unit == 'solMass / kpc^2'
+
+        unit_arcsec = unit_kpc.convert(unit_length='arcsec', kpc_per_arcsec=2.0, unit_mass='solMass')
+
+        assert unit_arcsec == 2.0
+        assert unit_arcsec.unit == 'solMass / arcsec^2'
+
+        with pytest.raises(exc.UnitsException):
+            unit_arcsec.convert(unit_length='kpc', unit_mass='solMass')
+            unit_kpc.convert(unit_length='arcsec', unit_mass='solMass')
+            unit_arcsec.convert(unit_length='lol', unit_mass='solMass')
+
+
+class TestMassOverLength3(object):
+
+    def test__conversions_from_angular_and_sol_mass_and_back__errors_raised_if_critical_mass_density(self):
+
+        unit_angular = dim.MassOverLength3(value=2.0)
+
+        assert unit_angular == 2.0
+        assert unit_angular.unit == 'angular / arcsec^3'
+
+        unit_angular = unit_angular.convert(unit_mass='angular', unit_length='arcsec')
+
+        assert unit_angular == 2.0
+        assert unit_angular.unit == 'angular / arcsec^3'
+
+        unit_sol_mass = unit_angular.convert(unit_mass='solMass', critical_surface_mass_density=2.0,
+                                             unit_length='arcsec')
+
+        assert unit_sol_mass == 4.0
+        assert unit_sol_mass.unit == 'solMass / arcsec^3'
+
+        unit_sol_mass = unit_sol_mass.convert(unit_mass='solMass', unit_length='arcsec')
+
+        assert unit_sol_mass == 4.0
+        assert unit_sol_mass.unit == 'solMass / arcsec^3'
+
+        unit_angular = unit_sol_mass.convert(unit_mass='angular', critical_surface_mass_density=2.0,
+                                             unit_length='arcsec')
+
+        assert unit_angular == 2.0
+        assert unit_angular.unit == 'angular / arcsec^3'
+
+        with pytest.raises(exc.UnitsException):
+            unit_angular.convert(unit_mass='solMass', unit_length='eps')
+            unit_sol_mass.convert(unit_mass='angular', unit_length='eps')
+            unit_angular.convert(unit_mass='lol', unit_length='eps')
+
+    def test__conversions_from_arcsec_to_kpc_and_back__errors_raised_if_no_kpc_per_arcsec(self):
+
+        unit_arcsec = dim.MassOverLength3(value=2.0, unit_mass='solMass')
+
+        assert unit_arcsec == 2.0
+        assert unit_arcsec.unit == 'solMass / arcsec^3'
+
+        unit_arcsec = unit_arcsec.convert(unit_length='arcsec', unit_mass='solMass')
+
+        assert unit_arcsec == 2.0
+        assert unit_arcsec.unit == 'solMass / arcsec^3'
+
+        unit_kpc = unit_arcsec.convert(unit_length='kpc', kpc_per_arcsec=2.0, unit_mass='solMass')
+
+        assert unit_kpc == 2.0 / 2.0**3.0
+        assert unit_kpc.unit == 'solMass / kpc^3'
+
+        unit_kpc = unit_kpc.convert(unit_length='kpc', unit_mass='solMass')
+
+        assert unit_kpc == 2.0 / 2.0**3.0
+        assert unit_kpc.unit == 'solMass / kpc^3'
+
+        unit_arcsec = unit_kpc.convert(unit_length='arcsec', kpc_per_arcsec=2.0, unit_mass='solMass')
+
+        assert unit_arcsec == 2.0
+        assert unit_arcsec.unit == 'solMass / arcsec^3'
+
+        with pytest.raises(exc.UnitsException):
+            unit_arcsec.convert(unit_length='kpc', unit_mass='solMass')
+            unit_kpc.convert(unit_length='arcsec', unit_mass='solMass')
+            unit_arcsec.convert(unit_length='lol', unit_mass='solMass')
+
+
 class MockDimensionsProfile(dim.DimensionsProfile):
 
     @map_types
@@ -208,10 +346,10 @@ class TestDimensionsProfile(object):
                                                mass_over_luminosity=5.0)
 
         assert profile_arcsec.position == (1.0, 2.0)
-        assert profile_arcsec.position[0].unit == 'arcsec'
-        assert profile_arcsec.position[1].unit == 'arcsec'
+        assert profile_arcsec.position[0].unit_length == 'arcsec'
+        assert profile_arcsec.position[1].unit_length == 'arcsec'
         assert profile_arcsec.length == 4.0
-        assert profile_arcsec.length.unit == 'arcsec'
+        assert profile_arcsec.length.unit_length == 'arcsec'
 
         assert profile_arcsec.param_float == 2.0
         assert profile_arcsec.luminosity == 3.0

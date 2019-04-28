@@ -78,7 +78,7 @@ def plot_fit_subplot_lens_plane_only(
     plt.figure(figsize=figsize)
     plt.subplot(rows, columns, 1)
 
-    kpc_per_arcsec = fit.tracer.image_plane.kpc_per_arcsec_proper
+    kpc_per_arcsec = fit.tracer.image_plane.kpc_per_arcsec
 
     image_plane_pix_grid = lens_plotter_util.get_image_plane_pix_grid(should_plot_image_plane_pix, fit)
 
@@ -192,7 +192,7 @@ def plot_fit_subplot_lens_and_source_planes(
 
     plt.figure(figsize=figsize)
 
-    kpc_per_arcsec = fit.tracer.image_plane.kpc_per_arcsec_proper
+    kpc_per_arcsec = fit.tracer.image_plane.kpc_per_arcsec
 
     image_plane_pix_grid = lens_plotter_util.get_image_plane_pix_grid(should_plot_image_plane_pix, fit)
 
@@ -417,7 +417,7 @@ def plot_fit_individuals_lens_plane_only(
 
     mask = lens_plotter_util.get_mask(fit=fit, should_plot_mask=should_plot_mask)
 
-    kpc_per_arcsec = fit.tracer.image_plane.kpc_per_arcsec_proper
+    kpc_per_arcsec = fit.tracer.image_plane.kpc_per_arcsec
 
     if should_plot_image:
 
@@ -496,7 +496,7 @@ def plot_fit_individuals_lens_and_source_planes(
 
     mask = lens_plotter_util.get_mask(fit=fit, should_plot_mask=should_plot_mask)
 
-    kpc_per_arcsec = fit.tracer.image_plane.kpc_per_arcsec_proper
+    kpc_per_arcsec = fit.tracer.image_plane.kpc_per_arcsec
 
     if should_plot_image:
 

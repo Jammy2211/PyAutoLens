@@ -36,10 +36,10 @@ class LightProfile(object):
         """
         raise NotImplementedError("intensity_from_grid should be overridden")
 
-    def luminosity_within_circle(self, radius):
+    def luminosity_within_circle_in_units(self, radius):
         raise NotImplementedError()
 
-    def luminosity_within_ellipse(self, major_axis):
+    def luminosity_within_ellipse_in_units(self, major_axis):
         raise NotImplementedError()
 
 
@@ -65,8 +65,8 @@ class EllipticalLightProfile(geometry_profiles.EllipticalProfile, LightProfile):
         """
         super(EllipticalLightProfile, self).__init__(centre=centre, axis_ratio=axis_ratio, phi=phi)
 
-    def luminosity_within_circle(self, radius: dim.Length, unit_luminosity='eps', kpc_per_arcsec=None,
-                                 exposure_time=None):
+    def luminosity_within_circle_in_units(self, radius: dim.Length, unit_luminosity='eps', kpc_per_arcsec=None,
+                                          exposure_time=None):
         """Integrate the light profile to compute the total luminosity within a circle of specified radius. This is \
         centred on the light profile's centre.
 
@@ -86,16 +86,16 @@ class EllipticalLightProfile(geometry_profiles.EllipticalProfile, LightProfile):
         """
 
         if not isinstance(radius, dim.Length):
-            radius = dim.Length(value=radius, unit='arcsec')
+            radius = dim.Length(value=radius, unit_length='arcsec')
 
-        profile = self.new_profile_with_units_converted(unit_length=radius.unit, unit_luminosity=unit_luminosity,
+        profile = self.new_profile_with_units_converted(unit_length=radius.unit_length, unit_luminosity=unit_luminosity,
                                                         kpc_per_arcsec=kpc_per_arcsec, exposure_time=exposure_time)
 
         luminosity = quad(profile.luminosity_integral, a=0.0, b=radius, args=(1.0,))[0]
         return dim.Luminosity(luminosity, unit_luminosity)
 
-    def luminosity_within_ellipse(self, major_axis, unit_luminosity='eps', kpc_per_arcsec=None,
-                                  exposure_time=None):
+    def luminosity_within_ellipse_in_units(self, major_axis, unit_luminosity='eps', kpc_per_arcsec=None,
+                                           exposure_time=None):
         """Integrate the light profiles to compute the total luminosity within an ellipse of specified major axis. \
         This is centred on the light profile's centre.
 
@@ -117,8 +117,8 @@ class EllipticalLightProfile(geometry_profiles.EllipticalProfile, LightProfile):
         if not isinstance(major_axis, dim.Length):
             major_axis = dim.Length(major_axis, 'arcsec')
 
-        profile = self.new_profile_with_units_converted(unit_length=major_axis.unit, unit_luminosity=unit_luminosity,
-                                                        exposure_time=exposure_time)
+        profile = self.new_profile_with_units_converted(unit_length=major_axis.unit_length, unit_luminosity=unit_luminosity,
+                                                        kpc_per_arcsec=kpc_per_arcsec, exposure_time=exposure_time)
         luminosity = quad(profile.luminosity_integral, a=0.0, b=major_axis, args=(self.axis_ratio,))[0]
         return dim.Luminosity(luminosity, unit_luminosity)
 

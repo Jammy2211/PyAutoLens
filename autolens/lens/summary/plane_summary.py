@@ -13,5 +13,5 @@ def summarize_plane(summary_file, plane, critical_surface_mass_density, radii):
 
         galaxy_summary.summarize_galaxy(summary_file=summary_file, galaxy=galaxy,
                                         critical_surface_mass_density=critical_surface_mass_density,
-                                        cosmic_average_mass_density_arcsec=plane.cosmic_average_mass_density,
+                                        cosmic_average_mass_density_arcsec=plane.cosmic_average_mass_density_in_units,
                                         radii=radii)

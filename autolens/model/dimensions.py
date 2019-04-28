@@ -36,27 +36,23 @@ class DimensionsProfile(object):
 
 class Length(dimension_type.DimensionType):
 
-    def __init__(self, value, unit="arcsec"):
+    def __init__(self, value, unit_length="arcsec"):
         super().__init__(value)
-        self.unit = unit
+        self.unit_length = unit_length
+        self.unit_length_power = 1.0
+
+    @property
+    def unit(self):
+        return self.unit_length
 
     def convert(self, unit_length, kpc_per_arcsec=None):
 
-        if self.unit is not unit_length and kpc_per_arcsec is None:
-            raise exc.UnitsException('The length for a value has been requested in new units without a '
-                                     'kpc_per_arcsec conversion factor.')
+        value = self
 
-        if self.unit is unit_length:
-            value = self
-        elif self.unit is 'arcsec' and unit_length is 'kpc':
-            value = kpc_per_arcsec * self
-        elif self.unit is 'kpc' and unit_length is 'arcsec':
-            value = self / kpc_per_arcsec
-        else:
-            raise exc.UnitsException('The unit specified for the length of a value was an invalid string, you '
-                                     'must use (arcsec | kpc)')
+        value = convert_length(value=value, unit_current=self.unit_length, unit_new=unit_length,
+                               power=self.unit_length_power, kpc_per_arcsec=kpc_per_arcsec)
 
-        return Length(value=value, unit=unit_length)
+        return Length(value=value, unit_length=unit_length)
 
 
 class Luminosity(dimension_type.DimensionType):
@@ -133,8 +129,85 @@ class MassOverLuminosity(dimension_type.DimensionType):
         return MassOverLuminosity(value=value, unit_mass=unit_mass, unit_luminosity=unit_luminosity)
 
 
+class MassOverLength2(dimension_type.DimensionType):
+
+    def __init__(self, value, unit_mass="angular", unit_length="arcsec"):
+        super().__init__(value)
+        self.unit_mass = unit_mass
+        self.unit_mass_power = 1.0
+        self.unit_length = unit_length
+        self.unit_length_power = -2.0
+
+    @property
+    def unit(self):
+        return self.unit_mass + ' / ' + self.unit_length + '^2'
+
+    def convert(self, unit_mass, unit_length, critical_surface_mass_density=None, kpc_per_arcsec=None):
+
+        value = self
+
+        if unit_mass is not None:
+            value = convert_mass(value=value, unit_current=self.unit_mass, unit_new=unit_mass,
+                                 critical_surface_mass_density=critical_surface_mass_density)
+        else:
+            unit_mass = value.unit_mass
+
+        if unit_length is not None:
+            value = convert_length(value=value, unit_current=self.unit_length, unit_new=unit_length,
+                                       power=self.unit_length_power, kpc_per_arcsec=kpc_per_arcsec)
+        else:
+            unit_length = value.unit_length
+
+        return MassOverLength2(value=value, unit_mass=unit_mass, unit_length=unit_length)
+
+class MassOverLength3(dimension_type.DimensionType):
+
+    def __init__(self, value, unit_mass="angular", unit_length="arcsec"):
+        super().__init__(value)
+        self.unit_mass = unit_mass
+        self.unit_mass_power = 1.0
+        self.unit_length = unit_length
+        self.unit_length_power = -3.0
+
+    @property
+    def unit(self):
+        return self.unit_mass + ' / ' + self.unit_length + '^3'
+
+    def convert(self, unit_mass, unit_length, critical_surface_mass_density=None, kpc_per_arcsec=None):
+
+        value = self
+
+        if unit_mass is not None:
+            value = convert_mass(value=value, unit_current=self.unit_mass, unit_new=unit_mass,
+                                 critical_surface_mass_density=critical_surface_mass_density)
+        else:
+            unit_mass = value.unit_mass
+
+        if unit_length is not None:
+            value = convert_length(value=value, unit_current=self.unit_length, unit_new=unit_length,
+                                       power=self.unit_length_power, kpc_per_arcsec=kpc_per_arcsec)
+        else:
+            unit_length = value.unit_length
+
+        return MassOverLength3(value=value, unit_mass=unit_mass, unit_length=unit_length)
+
 Position = typing.Tuple[Length, Length]
 
+def convert_length(value, unit_current, unit_new, power, kpc_per_arcsec):
+    
+    if unit_current is not unit_new and kpc_per_arcsec is None:
+        raise exc.UnitsException('The length for a value has been requested in new units without a '
+                                 'kpc_per_arcsec conversion factor.')
+
+    if unit_current is unit_new:
+        return value
+    elif unit_current is 'arcsec' and unit_new is 'kpc':
+        return (kpc_per_arcsec**power) * value
+    elif unit_current is 'kpc' and unit_new is 'arcsec':
+        return value / (kpc_per_arcsec**power)
+    else:
+        raise exc.UnitsException('The unit specified for the length of a value was an invalid string, you '
+                                 'must use (arcsec | kpc)')
 
 def convert_luminosity(value, unit_current, unit_new, power, exposure_time):
     
