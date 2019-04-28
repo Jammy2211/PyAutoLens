@@ -1763,56 +1763,56 @@ class TestNFW(object):
 
     def test__rho_scale_radius_value(self):
         nfw = mp.SphericalNFW(centre=(0.0, 0.0), kappa_s=1.0, scale_radius=1.0)
-        assert nfw.rho_at_scale_radius(critical_surface_mass_density_arcsec=1.0) == pytest.approx(1.0, 1e-3)
+        assert nfw.rho_at_scale_radius(critical_surface_mass_density=1.0) == pytest.approx(1.0, 1e-3)
 
         nfw = mp.SphericalNFW(centre=(0.0, 0.0), kappa_s=3.0, scale_radius=1.0)
-        assert nfw.rho_at_scale_radius(critical_surface_mass_density_arcsec=1.0) == pytest.approx(3.0, 1e-3)
+        assert nfw.rho_at_scale_radius(critical_surface_mass_density=1.0) == pytest.approx(3.0, 1e-3)
 
         nfw = mp.SphericalNFW(centre=(0.0, 0.0), kappa_s=1.0, scale_radius=4.0)
-        assert nfw.rho_at_scale_radius(critical_surface_mass_density_arcsec=1.0) == pytest.approx(0.25, 1e-3)
+        assert nfw.rho_at_scale_radius(critical_surface_mass_density=1.0) == pytest.approx(0.25, 1e-3)
 
         nfw = mp.SphericalNFW(centre=(0.0, 0.0), kappa_s=1.0, scale_radius=1.0)
-        assert nfw.rho_at_scale_radius(critical_surface_mass_density_arcsec=5.0) == pytest.approx(5.0, 1e-3)
+        assert nfw.rho_at_scale_radius(critical_surface_mass_density=5.0) == pytest.approx(5.0, 1e-3)
 
         nfw = mp.SphericalNFW(centre=(0.0, 0.0), kappa_s=2.0, scale_radius=3.0)
-        assert nfw.rho_at_scale_radius(critical_surface_mass_density_arcsec=6.0) == pytest.approx(4.0, 1e-3)
+        assert nfw.rho_at_scale_radius(critical_surface_mass_density=6.0) == pytest.approx(4.0, 1e-3)
 
     def test__delta_concentration_value(self):
         nfw = mp.SphericalNFW(centre=(0.0, 0.0), kappa_s=1.0, scale_radius=1.0)
-        assert nfw.delta_concentration(critical_surface_mass_density_arcsec=1.0,
-                                       cosmic_average_mass_density_arcsec=1.0) == pytest.approx(1.0, 1e-3)
+        assert nfw.delta_concentration(critical_surface_mass_density=1.0,
+                                       cosmic_average_mass_density=1.0) == pytest.approx(1.0, 1e-3)
 
         nfw = mp.SphericalNFW(centre=(0.0, 0.0), kappa_s=3.0, scale_radius=1.0)
-        assert nfw.delta_concentration(critical_surface_mass_density_arcsec=1.0,
-                                       cosmic_average_mass_density_arcsec=1.0) == pytest.approx(3.0, 1e-3)
+        assert nfw.delta_concentration(critical_surface_mass_density=1.0,
+                                       cosmic_average_mass_density=1.0) == pytest.approx(3.0, 1e-3)
 
         nfw = mp.SphericalNFW(centre=(0.0, 0.0), kappa_s=1.0, scale_radius=4.0)
-        assert nfw.delta_concentration(critical_surface_mass_density_arcsec=1.0,
-                                       cosmic_average_mass_density_arcsec=1.0) == pytest.approx(0.25, 1e-3)
+        assert nfw.delta_concentration(critical_surface_mass_density=1.0,
+                                       cosmic_average_mass_density=1.0) == pytest.approx(0.25, 1e-3)
 
         nfw = mp.SphericalNFW(centre=(0.0, 0.0), kappa_s=1.0, scale_radius=1.0)
-        assert nfw.delta_concentration(critical_surface_mass_density_arcsec=5.0,
-                                       cosmic_average_mass_density_arcsec=1.0) == pytest.approx(5.0, 1e-3)
+        assert nfw.delta_concentration(critical_surface_mass_density=5.0,
+                                       cosmic_average_mass_density=1.0) == pytest.approx(5.0, 1e-3)
 
         nfw = mp.SphericalNFW(centre=(0.0, 0.0), kappa_s=2.0, scale_radius=1.0)
-        assert nfw.delta_concentration(critical_surface_mass_density_arcsec=5.0,
-                                       cosmic_average_mass_density_arcsec=1.0) == pytest.approx(10.0, 1e-3)
+        assert nfw.delta_concentration(critical_surface_mass_density=5.0,
+                                       cosmic_average_mass_density=1.0) == pytest.approx(10.0, 1e-3)
 
         nfw = mp.SphericalNFW(centre=(0.0, 0.0), kappa_s=2.0, scale_radius=20.0)
-        assert nfw.delta_concentration(critical_surface_mass_density_arcsec=5.0,
-                                       cosmic_average_mass_density_arcsec=1.0) == pytest.approx(0.5, 1e-3)
+        assert nfw.delta_concentration(critical_surface_mass_density=5.0,
+                                       cosmic_average_mass_density=1.0) == pytest.approx(0.5, 1e-3)
 
         nfw = mp.SphericalNFW(centre=(0.0, 0.0), kappa_s=1.0, scale_radius=1.0)
-        assert nfw.delta_concentration(critical_surface_mass_density_arcsec=5.0,
-                                       cosmic_average_mass_density_arcsec=2.0) == pytest.approx(2.5, 1e-3)
+        assert nfw.delta_concentration(critical_surface_mass_density=5.0,
+                                       cosmic_average_mass_density=2.0) == pytest.approx(2.5, 1e-3)
 
         nfw = mp.SphericalNFW(centre=(0.0, 0.0), kappa_s=2.0, scale_radius=1.0)
-        assert nfw.delta_concentration(critical_surface_mass_density_arcsec=5.0,
-                                       cosmic_average_mass_density_arcsec=5.0) == pytest.approx(2.0, 1e-3)
+        assert nfw.delta_concentration(critical_surface_mass_density=5.0,
+                                       cosmic_average_mass_density=5.0) == pytest.approx(2.0, 1e-3)
 
         nfw = mp.SphericalNFW(centre=(0.0, 0.0), kappa_s=2.0, scale_radius=20.0)
-        assert nfw.delta_concentration(critical_surface_mass_density_arcsec=5.0,
-                                       cosmic_average_mass_density_arcsec=5.0) == pytest.approx(0.1, 1e-3)
+        assert nfw.delta_concentration(critical_surface_mass_density=5.0,
+                                       cosmic_average_mass_density=5.0) == pytest.approx(0.1, 1e-3)
 
     def test__solve_concentration(self):
         nfw = mp.SphericalNFW(centre=(0.0, 0.0), kappa_s=1.0, scale_radius=1.0)
@@ -1827,39 +1827,39 @@ class TestNFW(object):
     def test__radius_at_200_times_cosmic_average_density(self):
         nfw = mp.SphericalNFW(centre=(0.0, 0.0), kappa_s=1.0, scale_radius=1.0)
 
-        concentration = nfw.concentration(critical_surface_mass_density_arcsec=5.0,
-                                          cosmic_average_mass_density_arcsec=5.0)
+        concentration = nfw.concentration(critical_surface_mass_density=5.0,
+                                          cosmic_average_mass_density=5.0)
 
-        radius_200 = nfw.radius_at_200(critical_surface_mass_density_arcsec=5.0,
-                                       cosmic_average_mass_density_arcsec=5.0)
+        radius_200 = nfw.radius_at_200(critical_surface_mass_density=5.0,
+                                       cosmic_average_mass_density=5.0)
 
         assert radius_200 == concentration * 1.0
 
         nfw = mp.SphericalNFW(centre=(0.0, 0.0), kappa_s=1.0, scale_radius=3.0)
 
-        concentration = nfw.concentration(critical_surface_mass_density_arcsec=5.0,
-                                          cosmic_average_mass_density_arcsec=8.0)
+        concentration = nfw.concentration(critical_surface_mass_density=5.0,
+                                          cosmic_average_mass_density=8.0)
 
-        radius_200 = nfw.radius_at_200(critical_surface_mass_density_arcsec=5.0,
-                                       cosmic_average_mass_density_arcsec=8.0)
+        radius_200 = nfw.radius_at_200(critical_surface_mass_density=5.0,
+                                       cosmic_average_mass_density=8.0)
 
         assert radius_200 == concentration * 3.0
 
         nfw = mp.SphericalNFW(centre=(0.0, 0.0), kappa_s=6.0, scale_radius=2.0)
 
-        concentration = nfw.concentration(critical_surface_mass_density_arcsec=5.0,
-                                          cosmic_average_mass_density_arcsec=2.0)
+        concentration = nfw.concentration(critical_surface_mass_density=5.0,
+                                          cosmic_average_mass_density=2.0)
 
-        radius_200 = nfw.radius_at_200(critical_surface_mass_density_arcsec=5.0,
-                                       cosmic_average_mass_density_arcsec=2.0)
+        radius_200 = nfw.radius_at_200(critical_surface_mass_density=5.0,
+                                       cosmic_average_mass_density=2.0)
 
         assert radius_200 == concentration * 2.0
 
     def test__mass_at_200(self):
         nfw = mp.SphericalNFW(centre=(0.0, 0.0), kappa_s=1.0, scale_radius=1.0)
 
-        mass_at_200 = nfw.mass_at_200(critical_surface_mass_density_arcsec=5.0,
-                                      cosmic_average_mass_density_arcsec=8.0)
+        mass_at_200 = nfw.mass_at_200(critical_surface_mass_density=5.0,
+                                      cosmic_average_mass_density=8.0)
 
         # radius_200 = 0.004658
         # mass_200 = 200.0 * ((4*pi)/3)  * (0.004658 ** 3.0)
@@ -1868,8 +1868,8 @@ class TestNFW(object):
 
         nfw = mp.SphericalNFW(centre=(0.0, 0.0), kappa_s=2.0, scale_radius=4.0)
 
-        mass_at_200 = nfw.mass_at_200(critical_surface_mass_density_arcsec=50.0,
-                                      cosmic_average_mass_density_arcsec=4.0)
+        mass_at_200 = nfw.mass_at_200(critical_surface_mass_density=50.0,
+                                      cosmic_average_mass_density=4.0)
 
         # radius_200 = 0.004658
         # mass_200 = 200.0 * ((4*pi)/3)  * (0.004658 ** 3.0)
@@ -2934,6 +2934,7 @@ class TestEinsteinRadiusMass(object):
         #     0.5 * 2.76386, 1e-4)
         # assert nfw_kpc.einstein_mass_in_units(unit_mass='solMass', critical_surface_mass_density=2.0) == pytest.approx(2.76386, 1e-4)
 
+
 class TestMassWithinCircle(object):
 
     def test__mass_in_angular_units__singular_isothermal_sphere__compare_to_analytic(self):
@@ -3203,3 +3204,43 @@ class TestDensityBetweenAnnuli(object):
         annuli_area = (np.pi * 2.0 ** 2.0) - (np.pi * 1.0 ** 2.0)
 
         assert (outer_mass - inner_mass) / annuli_area == pytest.approx(density_between_annuli, 1e-4)
+
+
+class TestSummarize(object):
+
+    def test__spherical_isothermal(self):
+
+        profile = mp.SphericalIsothermal(centre=(0.0, 0.0), einstein_radius=1.0)
+
+        summary_text = "\n".join(
+            profile.summary_in_units(radii=[10.0, 500.0], unit_length='arcsec', unit_mass='angular'))
+
+        expected_text = 'Mass Profile = SphericalIsothermal\n' \
+                        '\n' \
+                        'Mass within Einstein Radius = 3.1416e+00 angular\n' \
+                        'Einstein Radius = 1.00 arcsec\n' \
+                        'Mass within 10.00 arcsec = 3.1416e+01 angular\n' \
+                        'Mass within 500.00 arcsec = 1.5708e+03 angular' \
+
+        assert summary_text == expected_text
+
+    def test_truncated_nfw_challenge(self):
+
+        profile = mp.SphericalTruncatedNFWChallenge(centre=(0.0, 0.0), kappa_s=1.0)
+        summary_text = "\n".join(
+            profile.summary_in_units(radii=[10.0, 500.0], unit_length='arcsec', unit_mass='angular'))
+
+        expected_text = 'Mass Profile = SphericalTruncatedNFWChallenge\n' \
+                        '\n' \
+                        'Mass within Einstein Radius = 4.8413e+00 angular\n' \
+                        'Einstein Radius = 1.24 arcsec\n' \
+                        'Mass within 10.00 arcsec = 2.2069e+01 angular\n' \
+                        'Mass within 500.00 arcsec = 6.2025e+01 angular\n' \
+                        'Rho at scale radius = 1940654909.41\n' \
+                        'Delta concentration = 7398517.95\n' \
+                        'Concentration = 71.53\n' \
+                        'Radius at 200x cosmic average density = 71.53 arcsec\n' \
+                        'Mass at 200x cosmic average density = 80422989967.45 angular\n' \
+                        'Mass at truncation radius = 414917555342.53 angular'
+
+        assert summary_text == expected_text

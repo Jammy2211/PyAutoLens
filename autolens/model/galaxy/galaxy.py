@@ -304,6 +304,7 @@ class Galaxy(object):
         else:
             return None
 
+
 class HyperGalaxy(object):
     _ids = count()
 
