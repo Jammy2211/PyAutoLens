@@ -260,7 +260,7 @@ class PhasePositions(AbstractPhase):
                          optimizer_class=optimizer_class, cosmology=cosmology, auto_link_priors=auto_link_priors)
         self.lens_galaxies = lens_galaxies
 
-    def run(self, positions, pixel_scale, results=None, assert_optimizer_pickle_matches=True):
+    def run(self, positions, pixel_scale, results=None):
         """
         Run this phase.
 
@@ -411,7 +411,7 @@ class PhaseImaging(Phase):
         """
         return image
 
-    def run(self, data, results=None, mask=None, positions=None, assert_optimizer_pickle_matches=True):
+    def run(self, data, results=None, mask=None, positions=None):
         """
         Run this phase.
 
