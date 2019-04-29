@@ -107,10 +107,10 @@ class TestMassAndLightProfiles(object):
             galaxy_prior.profile.centre.centre_1: 0.2,
             galaxy_prior.profile.axis_ratio: 0.4,
             galaxy_prior.profile.phi: 0.5,
-            galaxy_prior.profile.intensity: 0.6,
-            galaxy_prior.profile.effective_radius: 0.7,
+            galaxy_prior.profile.intensity.value: 0.6,
+            galaxy_prior.profile.effective_radius.value: 0.7,
             galaxy_prior.profile.sersic_index: 0.8,
-            galaxy_prior.profile.mass_to_light_ratio: 3.0
+            galaxy_prior.profile.mass_to_light_ratio.value: 3.0
         }
 
         galaxy = galaxy_prior.instance_for_arguments(arguments)
