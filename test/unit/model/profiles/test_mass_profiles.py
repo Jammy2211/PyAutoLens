@@ -1430,6 +1430,7 @@ class TestTruncatedNFW(object):
                pytest.approx(np.array([value, value]), 1.0e-4)
 
     def test__convergence_correct_values(self):
+
         truncated_nfw = mp.SphericalTruncatedNFW(centre=(0.0, 0.0), kappa_s=1.0, scale_radius=1.0,
                                                  truncation_radius=2.0)
 
