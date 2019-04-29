@@ -1610,6 +1610,7 @@ class TestTruncatedNFW(object):
             truncated_nfw.mass_at_truncation_radius(critical_surface_density=critical_surface_density,
                                     cosmic_average_density=cosmic_average_density)
 
+
 class TestNFW(object):
 
     def test__constructor_and_units(self):
@@ -1789,22 +1790,106 @@ class TestNFW(object):
         assert (interp_deflections_manual_y != interp_deflections[:, 0]).all()
         assert (interp_deflections_manual_x != interp_deflections[:, 1]).all()
 
-    def test__rho_scale_radius_value(self):
+    def test__rho_at_scale_radius__numerical_values_in_default_units(self):
 
         nfw = mp.SphericalNFW(centre=(0.0, 0.0), kappa_s=1.0, scale_radius=1.0)
-        assert nfw.rho_at_scale_radius(critical_surface_density=1.0) == pytest.approx(1.0, 1e-3)
+
+        critical_surface_density = dim.MassOverLength2(1.0, 'arcsec', 'solMass')
+
+        assert nfw.rho_at_scale_radius_for_units(critical_surface_density=critical_surface_density) ==\
+               pytest.approx(1.0, 1e-3)
 
         nfw = mp.SphericalNFW(centre=(0.0, 0.0), kappa_s=3.0, scale_radius=1.0)
-        assert nfw.rho_at_scale_radius(critical_surface_density=1.0) == pytest.approx(3.0, 1e-3)
+        assert nfw.rho_at_scale_radius_for_units(critical_surface_density=critical_surface_density) == \
+               pytest.approx(3.0, 1e-3)
 
         nfw = mp.SphericalNFW(centre=(0.0, 0.0), kappa_s=1.0, scale_radius=4.0)
-        assert nfw.rho_at_scale_radius(critical_surface_density=1.0) == pytest.approx(0.25, 1e-3)
+        assert nfw.rho_at_scale_radius_for_units(critical_surface_density=critical_surface_density) == \
+               pytest.approx(0.25, 1e-3)
+
+        critical_surface_density = dim.MassOverLength2(5.0, 'arcsec', 'solMass')
 
         nfw = mp.SphericalNFW(centre=(0.0, 0.0), kappa_s=1.0, scale_radius=1.0)
-        assert nfw.rho_at_scale_radius(critical_surface_density=5.0) == pytest.approx(5.0, 1e-3)
+        assert nfw.rho_at_scale_radius_for_units(critical_surface_density=critical_surface_density) == \
+               pytest.approx(5.0, 1e-3)
+
+        critical_surface_density = dim.MassOverLength2(6.0, 'arcsec', 'solMass')
 
         nfw = mp.SphericalNFW(centre=(0.0, 0.0), kappa_s=2.0, scale_radius=3.0)
-        assert nfw.rho_at_scale_radius(critical_surface_density=6.0) == pytest.approx(4.0, 1e-3)
+        assert nfw.rho_at_scale_radius_for_units(critical_surface_density=critical_surface_density) == \
+               pytest.approx(4.0, 1e-3)
+
+    def test__rho_at_scale_radius__unit_conversions(self):
+
+        nfw_arcsec = mp.SphericalNFW(centre=(dim.Length(0.0, 'arcsec'), dim.Length(0.0, 'arcsec')),
+                                      kappa_s=1.0,
+                                      scale_radius=dim.Length(1.0, 'arcsec'))
+
+        critical_surface_density = dim.MassOverLength2(2.0, 'arcsec', 'solMass')
+
+        assert nfw_arcsec.rho_at_scale_radius_for_units(
+            unit_length='arcsec', unit_mass='solMass',
+            critical_surface_density=critical_surface_density) == pytest.approx(2.0, 1e-3)
+
+        assert nfw_arcsec.rho_at_scale_radius_for_units(
+            unit_length='kpc', unit_mass='solMass', kpc_per_arcsec=2.0,
+            critical_surface_density=critical_surface_density) == pytest.approx(2.0 / 2.0**3.0, 1e-3)
+
+        assert nfw_arcsec.rho_at_scale_radius_for_units(
+            unit_length='arcsec', unit_mass='angular',
+            critical_surface_density=critical_surface_density) == pytest.approx(1.0, 1e-3)
+
+        # This will convert the scale radius to 2.0, making rho = 1.0
+
+        critical_surface_density = dim.MassOverLength2(2.0, 'kpc', 'solMass')
+
+        assert nfw_arcsec.rho_at_scale_radius_for_units(
+            unit_length='kpc', unit_mass='solMass', kpc_per_arcsec=2.0,
+            critical_surface_density=critical_surface_density) == pytest.approx(1.0, 1e-3)
+
+        # This will convert the scale radius to 2.0, making rho = 1.0
+
+        critical_surface_density = dim.MassOverLength2(4.0, 'kpc', 'solMass')
+
+        assert nfw_arcsec.rho_at_scale_radius_for_units(
+            unit_length='kpc', unit_mass='solMass', kpc_per_arcsec=2.0,
+            critical_surface_density=critical_surface_density) == pytest.approx(2.0, 1e-3)
+
+
+
+        nfw_kpc = mp.SphericalNFW(centre=(dim.Length(0.0, 'kpc'), dim.Length(0.0, 'kpc')),
+                                      kappa_s=1.0,
+                                      scale_radius=dim.Length(1.0, 'kpc'))
+
+        critical_surface_density = dim.MassOverLength2(2.0, 'kpc', 'solMass')
+
+        assert nfw_kpc.rho_at_scale_radius_for_units(
+            unit_length='kpc', unit_mass='solMass',
+            critical_surface_density=critical_surface_density) == pytest.approx(2.0, 1e-3)
+
+        assert nfw_kpc.rho_at_scale_radius_for_units(
+            unit_length='arcsec', unit_mass='solMass', kpc_per_arcsec=2.0,
+            critical_surface_density=critical_surface_density) == pytest.approx(2.0 * 2.0**3.0, 1e-3)
+
+        assert nfw_kpc.rho_at_scale_radius_for_units(
+            unit_length='kpc', unit_mass='angular',
+            critical_surface_density=critical_surface_density) == pytest.approx(1.0, 1e-3)
+
+        # This will convert the scale radius to 0.5, making rho = 1.0
+
+        critical_surface_density = dim.MassOverLength2(0.5, 'arcsec', 'solMass')
+
+        assert nfw_kpc.rho_at_scale_radius_for_units(
+            unit_length='arcsec', unit_mass='solMass', kpc_per_arcsec=2.0,
+            critical_surface_density=critical_surface_density) == pytest.approx(1.0, 1e-3)
+
+        # This will convert the scale radius to 0.5
+
+        critical_surface_density = dim.MassOverLength2(1.0, 'arcsec', 'solMass')
+
+        assert nfw_kpc.rho_at_scale_radius_for_units(
+            unit_length='arcsec', unit_mass='solMass', kpc_per_arcsec=2.0,
+            critical_surface_density=critical_surface_density) == pytest.approx(2.0, 1e-3)
 
     def test__delta_concentration_value(self):
 
@@ -1866,7 +1951,7 @@ class TestNFW(object):
 
         assert concentration == pytest.approx(0.0074263, 1.0e-4)
 
-    def test__radius_at_200_times_cosmic_average_density(self):
+    def test__radius_at_200_times__values_use_cosmic_average_density(self):
 
         nfw = mp.SphericalNFW(centre=(0.0, 0.0), kappa_s=1.0, scale_radius=1.0)
 
@@ -1876,8 +1961,8 @@ class TestNFW(object):
         concentration = nfw.concentration(critical_surface_density=critical_surface_density,
                                           cosmic_average_density=cosmic_average_density)
 
-        radius_200 = nfw.radius_at_200(critical_surface_density=critical_surface_density,
-                                       cosmic_average_density=cosmic_average_density)
+        radius_200 = nfw.radius_at_200_for_units(critical_surface_density=critical_surface_density,
+                                                 cosmic_average_density=cosmic_average_density)
 
         assert radius_200 == concentration * 1.0
 
@@ -1888,8 +1973,8 @@ class TestNFW(object):
         concentration = nfw.concentration(critical_surface_density=critical_surface_density,
                                           cosmic_average_density=cosmic_average_density)
 
-        radius_200 = nfw.radius_at_200(critical_surface_density=critical_surface_density,
-                                       cosmic_average_density=cosmic_average_density)
+        radius_200 = nfw.radius_at_200_for_units(critical_surface_density=critical_surface_density,
+                                                 cosmic_average_density=cosmic_average_density)
 
         assert radius_200 == concentration * 3.0
 
@@ -1900,10 +1985,58 @@ class TestNFW(object):
         concentration = nfw.concentration(critical_surface_density=critical_surface_density,
                                           cosmic_average_density=cosmic_average_density)
 
-        radius_200 = nfw.radius_at_200(critical_surface_density=critical_surface_density,
-                                       cosmic_average_density=cosmic_average_density)
+        radius_200 = nfw.radius_at_200_for_units(critical_surface_density=critical_surface_density,
+                                                 cosmic_average_density=cosmic_average_density)
 
         assert radius_200 == concentration * 2.0
+
+    def test__radius_at_200__different_length_units_include_conversions(self):
+
+        nfw_arcsec = mp.SphericalNFW(centre=(dim.Length(0.0, 'arcsec'), dim.Length(0.0, 'arcsec')),
+                                     kappa_s=1.0,
+                                      scale_radius=dim.Length(1.0, 'arcsec'))
+
+        critical_surface_density = dim.MassOverLength2(5.0, 'arcsec', 'solMass')
+        cosmic_average_density = dim.MassOverLength3(5.0, 'arcsec', 'solMass')
+
+        concentration = nfw_arcsec.concentration(critical_surface_density=critical_surface_density,
+                                          cosmic_average_density=cosmic_average_density)
+
+        radius_200 = nfw_arcsec.radius_at_200_for_units(unit_length='arcsec',
+                                                        critical_surface_density=critical_surface_density,
+                                                        cosmic_average_density=cosmic_average_density)
+
+        assert radius_200 == concentration * 1.0
+
+        radius_200 = nfw_arcsec.radius_at_200_for_units(unit_length='kpc',
+                                                        kpc_per_arcsec=2.0,
+                                                        critical_surface_density=critical_surface_density,
+                                                        cosmic_average_density=cosmic_average_density)
+
+        assert radius_200 == 2.0 * concentration * 1.0
+        
+        nfw_kpc = mp.SphericalNFW(centre=(dim.Length(0.0, 'kpc'), dim.Length(0.0, 'kpc')),
+                                  kappa_s=1.0,
+                                  scale_radius=dim.Length(1.0, 'kpc'))
+
+        critical_surface_density = dim.MassOverLength2(5.0, 'kpc', 'solMass')
+        cosmic_average_density = dim.MassOverLength3(5.0, 'kpc', 'solMass')
+
+        concentration = nfw_kpc.concentration(critical_surface_density=critical_surface_density,
+                                          cosmic_average_density=cosmic_average_density)
+
+        radius_200 = nfw_kpc.radius_at_200_for_units(unit_length='kpc',
+                                                        critical_surface_density=critical_surface_density,
+                                                        cosmic_average_density=cosmic_average_density)
+
+        assert radius_200 == concentration * 1.0
+
+        radius_200 = nfw_kpc.radius_at_200_for_units(unit_length='arcsec',
+                                                     kpc_per_arcsec=2.0,
+                                                     critical_surface_density=critical_surface_density,
+                                                     cosmic_average_density=cosmic_average_density)
+
+        assert radius_200 ==  concentration * 1.0 / 2.0
 
     def test__mass_at_200(self):
 
@@ -1948,8 +2081,8 @@ class TestNFW(object):
             nfw.concentration(critical_surface_density=critical_surface_density,
                               cosmic_average_density=cosmic_average_density)
 
-            nfw.radius_at_200(critical_surface_density=critical_surface_density,
-                              cosmic_average_density=cosmic_average_density)
+            nfw.radius_at_200_for_units(critical_surface_density=critical_surface_density,
+                                        cosmic_average_density=cosmic_average_density)
 
             nfw.mass_at_200(critical_surface_density=critical_surface_density,
                             cosmic_average_density=cosmic_average_density)
@@ -1965,8 +2098,8 @@ class TestNFW(object):
             nfw.concentration(critical_surface_density=critical_surface_density,
                               cosmic_average_density=cosmic_average_density)
 
-            nfw.radius_at_200(critical_surface_density=critical_surface_density,
-                              cosmic_average_density=cosmic_average_density)
+            nfw.radius_at_200_for_units(critical_surface_density=critical_surface_density,
+                                        cosmic_average_density=cosmic_average_density)
 
             nfw.mass_at_200(critical_surface_density=critical_surface_density,
                             cosmic_average_density=cosmic_average_density)
@@ -3033,7 +3166,6 @@ class TestEinsteinRadiusMass(object):
         # assert nfw_kpc.einstein_mass_in_units(unit_mass='solMass', critical_surface_density=2.0) == pytest.approx(2.76386, 1e-4)
 
 
-
 def mass_within_radius_of_profile_from_grid_calculation(radius, profile):
 
     mass_total = 0.0
@@ -3272,6 +3404,7 @@ class TestMassWithinEllipse(object):
             sis.mass_within_ellipse_in_units(major_axis=radius, unit_mass='angular',
                                                critical_surface_density=critical_surface_density)
 
+
 class TestDensityBetweenAnnuli(object):
 
     def test__circular_annuli__sis__analyic_density_agrees(self):
@@ -3291,12 +3424,12 @@ class TestDensityBetweenAnnuli(object):
 
         assert (outer_mass - inner_mass) / annuli_area == pytest.approx(density_between_annuli, 1e-4)
 
-    def test__circular_annuli__nfw_profile__compare_to_manual_masss(self):
+    def test__circular_annuli__nfw_profile__compare_to_manual_mass(self):
 
         nfw = mp.EllipticalNFW(centre=(0.0, 0.0), axis_ratio=0.8, phi=45.0, kappa_s=1.0)
 
-        inner_mass = nfw.mass_within_circle_in_units(radius=dim.Length(1.0))
-        outer_mass = nfw.mass_within_circle_in_units(radius=dim.Length(2.0))
+        inner_mass = nfw.mass_within_circle_in_units(radius=dim.Length(1.0), unit_mass='angular')
+        outer_mass = nfw.mass_within_circle_in_units(radius=dim.Length(2.0), unit_mass='angular')
 
         density_between_annuli = nfw.density_between_circular_annuli_in_angular_units(inner_annuli_radius=dim.Length(1.0),
                                                                                       outer_annuli_radius=dim.Length(2.0))

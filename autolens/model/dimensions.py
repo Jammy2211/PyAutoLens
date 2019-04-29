@@ -1,8 +1,160 @@
 import inspect
 import typing
+from functools import wraps
 
 from autofit.tools import dimension_type
 from autolens import exc
+
+def convert_profile_to_input_units(func):
+    """
+
+    Parameters
+    ----------
+    func : (profiles, *args, **kwargs) -> Object
+        A function that requries the units of its input parameters to be checked.
+
+    Returns
+    -------
+        The original function
+    """
+
+    @wraps(func)
+    def wrapper(profile, *args, **kwargs):
+        """
+
+        Parameters
+        ----------
+        profile : DimensionsProfile
+            The profiles that owns the function
+
+        Returns
+        -------
+            The DimensionsProfile
+        """
+
+        def check_all_units_identical(list_units):
+            return list_units[1:] == list_units[:-1]
+
+        length_units = []
+        luminosity_units = []
+        mass_units = []
+
+        for key, value in kwargs.items():
+
+            if hasattr(value, 'unit_length'):
+                length_units.append(value.unit_length)
+
+            if hasattr(value, 'unit_luminosity'):
+                luminosity_units.append(value.unit_luminosity)
+
+            if hasattr(value, 'unit_mass'):
+                mass_units.append(value.unit_mass)
+
+        if not check_all_units_identical(list_units=length_units):
+            raise exc.UnitsException('The length units of the parametes input to this method are not identical')
+
+        if not check_all_units_identical(list_units=luminosity_units):
+            raise exc.UnitsException('The luminosity units of the parametes input to this method are not identical')
+
+        if not check_all_units_identical(list_units=mass_units):
+            raise exc.UnitsException('The mass units of the parametes input to this method are not identical')
+
+        if not length_units:
+            unit_length = None
+        else:
+            unit_length = length_units[0]
+
+        if not luminosity_units:
+            unit_luminosity = None
+        else:
+            unit_luminosity = luminosity_units[0]
+
+        if not mass_units:
+            unit_mass = None
+        else:
+            unit_mass = mass_units[0]
+
+        if 'kpc_per_arcsec' in kwargs:
+            kpc_per_arcsec = kwargs['kpc_per_arcsec']
+        else:
+            kpc_per_arcsec = None
+
+        if 'exposure_time' in kwargs:
+            exposure_time = kwargs['exposure_time']
+        else:
+            exposure_time = None
+
+        if 'critical_surface_density' in kwargs:
+            critical_surface_density = kwargs['critical_surface_density']
+        else:
+            critical_surface_density = None
+
+        profile = profile.new_profile_with_units_converted(unit_length=unit_length, unit_luminosity=unit_luminosity,
+                                                           unit_mass=unit_mass, kpc_per_arcsec=kpc_per_arcsec,
+                                                           exposure_time=exposure_time,
+                                                           critical_surface_density=critical_surface_density)
+
+        return func(profile, *args, **kwargs)
+
+    return wrapper
+
+def convert_profile_to_input_parameter_units(func):
+    """
+
+    Parameters
+    ----------
+    func : (profiles, *args, **kwargs) -> Object
+        A function that requries the units of its input parameters to be checked.
+
+    Returns
+    -------
+        The original function
+    """
+
+    @wraps(func)
+    def wrapper(profile, *args, **kwargs):
+        """
+
+        Parameters
+        ----------
+        profile : DimensionsProfile
+            The profiles that owns the function
+
+        Returns
+        -------
+            The DimensionsProfile
+        """
+
+        def check_all_units_identical(list_units):
+            return list_units[1:] == list_units[:-1]
+
+        length_units = []
+        luminosity_units = []
+        mass_units = []
+
+        for key, value in kwargs.items():
+
+            if hasattr(value, 'unit_length'):
+                length_units.append(value.unit_length)
+
+            if hasattr(value, 'unit_luminosity'):
+                luminosity_units.append(value.unit_luminosity)
+
+            if hasattr(value, 'unit_mass'):
+                mass_units.append(value.unit_mass)
+
+        if not check_all_units_identical(list_units=length_units):
+            raise exc.UnitsException('The length units of the parametes input to this method are not identical')
+
+        if not check_all_units_identical(list_units=luminosity_units):
+            raise exc.UnitsException('The luminosity units of the parametes input to this method are not identical')
+
+        if not check_all_units_identical(list_units=mass_units):
+            raise exc.UnitsException('The mass units of the parametes input to this method are not identical')
+
+        return func(profile, *args, **kwargs)
+
+    return wrapper
 
 
 class DimensionsProfile(object):
@@ -100,6 +252,7 @@ class Mass(dimension_type.DimensionType):
 class MassOverLuminosity(dimension_type.DimensionType):
 
     def __init__(self, value, unit_luminosity="eps", unit_mass="angular"):
+
         super().__init__(value)
         self.unit_luminosity = unit_luminosity
         self.unit_luminosity_power = -1.0

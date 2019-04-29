@@ -233,7 +233,7 @@ class Galaxy(object):
         else:
             return np.full((grid.shape[0], 2), 0.0)
 
-    def mass_within_circle_in_units(self, radius, unit_mass='angular', kpc_per_arcsec=None, critical_surface_density=None):
+    def mass_within_circle_in_units(self, radius, unit_mass='solMass', kpc_per_arcsec=None, critical_surface_density=None):
         """Compute the total angular mass of the galaxy's mass profiles within a circle of specified radius.
 
         See *profiles.mass_profiles.mass_within_circle* for details of how this is performed.
@@ -256,7 +256,7 @@ class Galaxy(object):
         else:
             return None
 
-    def mass_within_ellipse_in_units(self, major_axis, unit_mass='angular', kpc_per_arcsec=None, critical_surface_density=None):
+    def mass_within_ellipse_in_units(self, major_axis, unit_mass='solMass', kpc_per_arcsec=None, critical_surface_density=None):
         """Compute the total angular mass of the galaxy's mass profiles within an ellipse of specified major_axis.
 
         See *profiles.mass_profiles.angualr_mass_within_ellipse* for details of how this is performed.
@@ -290,7 +290,7 @@ class Galaxy(object):
         else:
             return None
 
-    def einstein_mass_in_units(self, unit_mass='angular', critical_surface_density=None):
+    def einstein_mass_in_units(self, unit_mass='solMass', critical_surface_density=None):
         """The Einstein Mass of this galaxy, which is the sum of Einstein Radii of its mass profiles.
 
         If the galaxy is composed of multiple ellipitcal profiles with different axis-ratios, this Einstein Mass \

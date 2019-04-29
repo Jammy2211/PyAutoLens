@@ -179,7 +179,7 @@ class AbstractPlane(object):
             exposure_time=exposure_time),
                         self.galaxies))
 
-    def masses_of_galaxies_within_circles_in_units(self, radius : dim.Length, unit_mass='angular',
+    def masses_of_galaxies_within_circles_in_units(self, radius : dim.Length, unit_mass='solMass',
                                                    critical_surface_density=None):
         """Compute the total mass of all galaxies in this plane within a circle of specified radius.
 
@@ -201,7 +201,7 @@ class AbstractPlane(object):
                         critical_surface_density=critical_surface_density),
                         self.galaxies))
 
-    def masses_of_galaxies_within_ellipses_in_units(self, major_axis : dim.Length, unit_mass='angular',
+    def masses_of_galaxies_within_ellipses_in_units(self, major_axis : dim.Length, unit_mass='solMass',
                                                     critical_surface_density=None):
         """Compute the total mass of all galaxies in this plane within a ellipse of specified major-axis.
 
@@ -230,7 +230,7 @@ class AbstractPlane(object):
                        unit_length=unit_length, kpc_per_arcsec=kpc_per_arcsec),
                             self.galaxies))))
 
-    def einstein_mass_in_units(self, unit_mass='angular', critical_surface_density=None):
+    def einstein_mass_in_units(self, unit_mass='solMass', critical_surface_density=None):
 
         if self.has_mass_profile:
             return sum(filter(None,
