@@ -391,8 +391,8 @@ class TestFixedProfiles(object):
         arguments = {galaxy_prior.redshift.redshift: 0.2,
                      galaxy_prior.variable_light.axis_ratio: 0.4,
                      galaxy_prior.variable_light.phi: 0.5,
-                     galaxy_prior.variable_light.intensity: 0.6,
-                     galaxy_prior.variable_light.effective_radius: 0.7,
+                     galaxy_prior.variable_light.intensity.value: 0.6,
+                     galaxy_prior.variable_light.effective_radius.value: 0.7,
                      galaxy_prior.variable_light.sersic_index: 0.8,
                      galaxy_prior.variable_light.centre.centre_0: 0,
                      galaxy_prior.variable_light.centre.centre_1: 0}
