@@ -222,18 +222,18 @@ class TestResultForArguments:
         arguments = {galaxy_prior.redshift.redshift: redshift_prior,
                      galaxy_prior.mass_profile.centre.centre_0: mm.GaussianPrior(2, 1),
                      galaxy_prior.mass_profile.centre.centre_1: mm.GaussianPrior(3, 1),
-                     galaxy_prior.mass_profile.einstein_radius: einstein_radius_prior,
+                     galaxy_prior.mass_profile.einstein_radius.value: einstein_radius_prior,
                      galaxy_prior.light_profile.axis_ratio: mm.GaussianPrior(5, 1),
                      galaxy_prior.light_profile.phi: mm.GaussianPrior(6, 1),
-                     galaxy_prior.light_profile.intensity: intensity_prior,
-                     galaxy_prior.light_profile.effective_radius: mm.GaussianPrior(8, 1),
+                     galaxy_prior.light_profile.intensity.value: intensity_prior,
+                     galaxy_prior.light_profile.effective_radius.value: mm.GaussianPrior(8, 1),
                      galaxy_prior.light_profile.sersic_index: mm.GaussianPrior(9, 1)}
 
         gaussian_galaxy_prior_model = galaxy_prior.gaussian_prior_model_for_arguments(arguments)
 
         assert gaussian_galaxy_prior_model.redshift.redshift == redshift_prior
-        assert gaussian_galaxy_prior_model.mass_profile.einstein_radius == einstein_radius_prior
-        assert gaussian_galaxy_prior_model.light_profile.intensity == intensity_prior
+        assert gaussian_galaxy_prior_model.mass_profile.einstein_radius.value == einstein_radius_prior
+        assert gaussian_galaxy_prior_model.light_profile.intensity.value == intensity_prior
 
 
 class TestPixelization(object):
