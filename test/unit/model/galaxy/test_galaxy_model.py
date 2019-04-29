@@ -1,12 +1,12 @@
 import os
 
 import pytest
+
 from autofit import conf
 from autofit import exc
 from autofit.mapper import model_mapper as mm
 from autofit.mapper import prior
 from autofit.mapper import prior_model as pm
-
 from autolens.model.galaxy import galaxy as g, galaxy_model as gp
 from autolens.model.inversion import pixelizations, regularization
 from autolens.model.profiles import mass_profiles, light_profiles, light_and_mass_profiles
@@ -63,25 +63,6 @@ def make_galaxy_prior(mapper, ):
                                     mass_profile=mass_profiles.EllipticalCoredIsothermal)
     mapper.galaxy_1 = galaxy_prior_1
     return galaxy_prior_1
-
-
-class TestLinkedModelForClasses(object):
-    def test_one_to_one(self):
-
-        initial_model = gp.GalaxyModel(light_profile=light_profiles.EllipticalDevVaucouleurs,
-                                       mass_profile=mass_profiles.EllipticalCoredIsothermal)
-
-        new_model = initial_model.linked_model_for_classes(light_profile=light_profiles.EllipticalDevVaucouleurs,
-                                                           mass_profile=mass_profiles.EllipticalCoredIsothermal)
-
-        assert isinstance(new_model.light_profile, pm.PriorModel)
-        assert isinstance(new_model.mass_profile, pm.PriorModel)
-
-        assert new_model.light_profile is not initial_model.light_profile
-        assert new_model.mass_profile is not initial_model.mass_profile
-
-        assert new_model.light_profile.intensity is initial_model.light_profile.intensity
-        assert new_model.mass_profile.axis_ratio is initial_model.mass_profile.axis_ratio
 
 
 class TestMassAndLightProfiles(object):
@@ -230,7 +211,6 @@ class TestResultForArguments:
         assert galaxy.light_profiles[0].centre[1] == 0.2
 
     def test_gaussian_prior_model_for_arguments(self):
-
         galaxy_prior = gp.GalaxyModel(redshift=g.Redshift, align_centres=True,
                                       light_profile=light_profiles.EllipticalSersic,
                                       mass_profile=mass_profiles.SphericalIsothermal)
