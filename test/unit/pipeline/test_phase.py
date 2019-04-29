@@ -719,17 +719,17 @@ class TestPhase(object):
         assert instance.lens_galaxies[0].sersic.centre[0] == 0.2
         assert instance.lens_galaxies[0].sis.centre[0] == 0.1
         assert instance.lens_galaxies[0].sis.centre[1] == 0.2
-        assert instance.lens_galaxies[0].sis.einstein_radius_in_units == 0.3
+        assert instance.lens_galaxies[0].sis.einstein_radius == 0.3
         assert instance.lens_galaxies[0].redshift == 0.4
         assert instance.lens_galaxies[1].sis.centre[0] == 0.9
         assert instance.lens_galaxies[1].sis.centre[1] == 0.5
-        assert instance.lens_galaxies[1].sis.einstein_radius_in_units == 0.7
+        assert instance.lens_galaxies[1].sis.einstein_radius == 0.7
         assert instance.lens_galaxies[1].redshift == 0.8
 
         class LensPlanePhase2(ph.LensPlanePhase):
             # noinspection PyUnusedLocal
             def pass_models(self, results):
-                self.lens_galaxies[0].sis.einstein_radius_in_units = prior.Constant(10.0)
+                self.lens_galaxies[0].sis.einstein_radius = prior.Constant(10.0)
 
         phase = LensPlanePhase2(lens_galaxies=[gm.GalaxyModel(sersic=lp.EllipticalSersic,
                                                               sis=mp.SphericalIsothermal,
@@ -749,11 +749,11 @@ class TestPhase(object):
         assert instance.lens_galaxies[0].sersic.centre[0] == 0.01
         assert instance.lens_galaxies[0].sis.centre[0] == 0.1
         assert instance.lens_galaxies[0].sis.centre[1] == 0.2
-        assert instance.lens_galaxies[0].sis.einstein_radius_in_units == 10.0
+        assert instance.lens_galaxies[0].sis.einstein_radius == 10.0
         assert instance.lens_galaxies[0].redshift == 0.4
         assert instance.lens_galaxies[1].sis.centre[0] == 0.5
         assert instance.lens_galaxies[1].sis.centre[1] == 0.5
-        assert instance.lens_galaxies[1].sis.einstein_radius_in_units == 0.7
+        assert instance.lens_galaxies[1].sis.einstein_radius == 0.7
         assert instance.lens_galaxies[1].redshift == 0.8
 
 
