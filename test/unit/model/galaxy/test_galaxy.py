@@ -299,12 +299,18 @@ class TestMassProfiles(object):
 
             radius = dim.Length(0.5, 'arcsec')
 
-            mass = sie.mass_within_ellipse_in_units(major_axis=radius, unit_mass='angular', critical_surface_density=2.0)
-            gal_mass = galaxy.mass_within_ellipse_in_units(major_axis=radius, unit_mass='angular', critical_surface_density=2.0)
+            critical_surface_density = dim.MassOverLength2(2.0, 'arcsec', 'solMass')
+
+            mass = sie.mass_within_ellipse_in_units(major_axis=radius, unit_mass='angular',
+                                                    critical_surface_density=critical_surface_density)
+            gal_mass = galaxy.mass_within_ellipse_in_units(major_axis=radius, unit_mass='angular',
+                                                           critical_surface_density=critical_surface_density)
             assert mass == gal_mass
 
-            mass = sie.mass_within_circle_in_units(radius=radius, unit_mass='solMass', critical_surface_density=2.0)
-            gal_mass = galaxy.mass_within_circle_in_units(radius=radius, unit_mass='solMass', critical_surface_density=2.0)
+            mass = sie.mass_within_circle_in_units(radius=radius, unit_mass='solMass',
+                                                   critical_surface_density=critical_surface_density)
+            gal_mass = galaxy.mass_within_circle_in_units(radius=radius, unit_mass='solMass',
+                                                          critical_surface_density=critical_surface_density)
             assert mass == gal_mass
 
         def test__no_mass_profile__returns_none(self):
