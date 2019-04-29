@@ -41,7 +41,7 @@ class MockTruncatedNFW(MockNFW, mp.SphericalTruncatedNFWChallenge):
     def __init__(self):
         super(MockTruncatedNFW, self).__init__()
 
-    def mass_at_truncation_radius(self, critical_surface_density_arcsec, cosmic_average_density_arcsec):
+    def mass_at_truncation_radius(self, critical_surface_density, cosmic_average_density):
         return 600.0
 
 

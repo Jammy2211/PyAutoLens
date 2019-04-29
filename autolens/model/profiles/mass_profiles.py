@@ -850,23 +850,27 @@ class AbstractEllipticalGeneralizedNFW(EllipticalMassProfile, MassProfile):
     def check_units_of_critical_surface_density_and_cosmic_average_density(self, critical_surface_density,
                                                                            cosmic_average_density):
 
-        if not isinstance(critical_surface_density, dim.MassOverLength2):
+        if critical_surface_density is not None:
+            if not isinstance(critical_surface_density, dim.MassOverLength2):
 
-            raise exc.UnitsException('The critical surface density input into a method must have dimensions of '
-                                      'mass / length^2, using the dimensions.MassOverLuminosity2 class')
+                raise exc.UnitsException('The critical surface density input into a method must have dimensions of '
+                                          'mass / length^2, using the dimensions.MassOverLuminosity2 class')
 
-        if not isinstance(cosmic_average_density, dim.MassOverLength3):
+        if cosmic_average_density is not None:
+            if not isinstance(cosmic_average_density, dim.MassOverLength3):
 
-            raise exc.UnitsException('The cosmic average mass density input into a method must have dimensions of '
-                                      'mass / length^3, using the dimensions.MassOverLuminosity3 class')
+                raise exc.UnitsException('The cosmic average mass density input into a method must have dimensions of '
+                                         'mass / length^3, using the dimensions.MassOverLuminosity3 class')
 
-        if critical_surface_density.unit_length is not cosmic_average_density.unit_length:
-            raise exc.UnitsException('The length units of the critical_surface_density and cosmic_average_density '
-                                     'supplied to a method are not the same')
+        if critical_surface_density is not None and cosmic_average_density is not None:
 
-        if critical_surface_density.unit_mass is not cosmic_average_density.unit_mass:
-            raise exc.UnitsException('The mass units of the critical_surface_density and cosmic_average_density '
-                                     'supplied to a method are not the same')
+            if critical_surface_density.unit_length is not cosmic_average_density.unit_length:
+                raise exc.UnitsException('The length units of the critical_surface_density and cosmic_average_density '
+                                         'supplied to a method are not the same')
+
+            if critical_surface_density.unit_mass is not cosmic_average_density.unit_mass:
+                raise exc.UnitsException('The mass units of the critical_surface_density and cosmic_average_density '
+                                         'supplied to a method are not the same')
 
     def rho_at_scale_radius(self, critical_surface_density):
         return self.kappa_s * critical_surface_density / self.scale_radius
@@ -1206,9 +1210,9 @@ class SphericalTruncatedNFW(AbstractEllipticalGeneralizedNFW):
 
         return self.grid_to_grid_cartesian(grid, deflection_grid)
 
-    def mass_at_truncation_radius(self, critical_surface_density_arcsec, cosmic_average_density_arcsec):
-        mass_at_200 = self.mass_at_200(critical_surface_density=critical_surface_density_arcsec,
-                                       cosmic_average_density=cosmic_average_density_arcsec)
+    def mass_at_truncation_radius(self, critical_surface_density, cosmic_average_density):
+        mass_at_200 = self.mass_at_200(critical_surface_density=critical_surface_density,
+                                       cosmic_average_density=cosmic_average_density)
 
         return mass_at_200 * (self.tau ** 2.0 / (self.tau ** 2.0 + 1.0) ** 2.0) * \
                (((self.tau ** 2.0 - 1) * np.log(self.tau)) + (self.tau * np.pi) - (self.tau ** 2.0 + 1))
@@ -1223,8 +1227,8 @@ class SphericalTruncatedNFW(AbstractEllipticalGeneralizedNFW):
             cosmic_average_density=cosmic_average_density, **kwargs)
 
         mass_at_truncation_radius = self.mass_at_truncation_radius(
-            critical_surface_density_arcsec=critical_surface_density,
-            cosmic_average_density_arcsec=cosmic_average_density)
+            critical_surface_density=critical_surface_density,
+            cosmic_average_density=cosmic_average_density)
 
         summary.append('Mass at truncation radius = {:.2f} {}'.format(mass_at_truncation_radius, unit_mass))
         return summary
@@ -1239,10 +1243,13 @@ class SphericalTruncatedNFWChallenge(SphericalTruncatedNFW):
                  scale_radius: dim.Length = 1.0):
 
         self.kappa_s = kappa_s
-        self.scale_radius = scale_radius * 6.68549148608755
+        self.scale_radius = dim.Length(scale_radius * 6.68549148608755, 'arcsec')
 
-        truncation_radius = 2.0 * self.radius_at_200(critical_surface_density=1940654909.4133248,
-                                                     cosmic_average_density=262.30319684750657)
+        critical_surface_density = dim.MassOverLength2(1940654909.4133248, 'arcsec', 'solMass')
+        cosmic_average_density = dim.MassOverLength3(262.30319684750657, 'arcsec', 'solMass')
+
+        truncation_radius = 2.0 * self.radius_at_200(critical_surface_density=critical_surface_density,
+                                                     cosmic_average_density=cosmic_average_density)
 
         super(SphericalTruncatedNFWChallenge, self).__init__(centre=centre, kappa_s=kappa_s, scale_radius=scale_radius,
                                                              truncation_radius=truncation_radius)
@@ -1251,10 +1258,13 @@ class SphericalTruncatedNFWChallenge(SphericalTruncatedNFW):
                          kpc_per_arcsec=None, critical_surface_density=None, cosmic_average_density=None,
                          **kwargs):
 
+        critical_surface_density = dim.MassOverLength2(1940654909.4133248, 'arcsec', 'solMass')
+        cosmic_average_density = dim.MassOverLength3(262.30319684750657, 'arcsec', 'solMass')
+
         summary = super().summary_in_units(
             radii=radii, unit_length=unit_length, unit_mass=unit_mass,
-            kpc_per_arcsec=kpc_per_arcsec, critical_surface_density=1940654909.4133248,
-            cosmic_average_density=262.30319684750657, **kwargs)
+            kpc_per_arcsec=kpc_per_arcsec, critical_surface_density=critical_surface_density,
+            cosmic_average_density=cosmic_average_density, **kwargs)
 
         return summary
 
