@@ -27,7 +27,7 @@ class DimensionsProfile(object):
             if unit_mass is not None and isinstance(value, Mass):
                 return value.convert(unit_mass, critical_surface_density)
             if (unit_mass is not None or unit_luminosity is not None) and isinstance(value, MassOverLuminosity):
-                return value.convert(unit_mass, unit_luminosity, critical_surface_density, exposure_time)
+                return value.convert(unit_luminosity, unit_mass, exposure_time, critical_surface_density)
             return value
 
         return self.__class__(
@@ -113,18 +113,17 @@ class MassOverLuminosity(dimension_type.DimensionType):
     def convert(self, unit_luminosity, unit_mass,  exposure_time=None, critical_surface_density=None):
         
         value = self
-
         if unit_luminosity is not None:
             value = convert_luminosity(value=value, unit_current=self.unit_luminosity, unit_new=unit_luminosity,
                                        power=self.unit_luminosity_power, exposure_time=exposure_time)
         else:
-            unit_luminosity = value.unit_luminosity
-        
+            unit_luminosity = self.unit_luminosity
+
         if unit_mass is not None:
             value = convert_mass(value=value, unit_current=self.unit_mass, unit_new=unit_mass,
                                  critical_surface_density=critical_surface_density)
         else:
-            unit_mass = value.unit_mass
+            unit_mass = self.unit_mass
 
         return MassOverLuminosity(value=value, unit_mass=unit_mass, unit_luminosity=unit_luminosity)
 
@@ -142,7 +141,7 @@ class MassOverLength2(dimension_type.DimensionType):
     def unit(self):
         return self.unit_mass + ' / ' + self.unit_length + '^2'
 
-    def convert(self, unit_length, unit_mass, critical_surface_density=None, kpc_per_arcsec=None):
+    def convert(self, unit_length, unit_mass, kpc_per_arcsec=None, critical_surface_density=None,):
 
         value = self
 
@@ -160,6 +159,7 @@ class MassOverLength2(dimension_type.DimensionType):
 
         return MassOverLength2(value=value, unit_mass=unit_mass, unit_length=unit_length)
 
+
 class MassOverLength3(dimension_type.DimensionType):
 
     def __init__(self, value, unit_length="arcsec", unit_mass="angular"):
@@ -173,7 +173,7 @@ class MassOverLength3(dimension_type.DimensionType):
     def unit(self):
         return self.unit_mass + ' / ' + self.unit_length + '^3'
 
-    def convert(self, unit_length, unit_mass, critical_surface_density=None, kpc_per_arcsec=None):
+    def convert(self, unit_length, unit_mass, kpc_per_arcsec=None, critical_surface_density=None):
 
         value = self
 

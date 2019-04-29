@@ -58,7 +58,7 @@ import os
 def make_pipeline(phase_folders=None, tag_phases=True, sub_grid_size=2, bin_up_factor=None, positions_threshold=None,
                   inner_mask_radii=None, interp_pixel_scale=0.05):
 
-    pipeline_name = 'pipeline_subhalo__lens_pl_shear_subhalo_source_sersic'
+    pipeline_name = 'pipeline_subhalo__lens_pl_shear_subhalo_source_sersic_2'
 
     phase_folders = path_util.phase_folders_from_phase_folders_and_pipeline_name(phase_folders=phase_folders,
                                                                                 pipeline_name=pipeline_name)
@@ -93,7 +93,7 @@ def make_pipeline(phase_folders=None, tag_phases=True, sub_grid_size=2, bin_up_f
 
     # In phase 2, we attempt to detect subhalos, by performing a NxN grid search of MultiNest searches, where:
 
-    # 1) The lens model and source-pixelization parameters are held fixed to the best-fit values from phase 1 of the 
+    # 1) The lens model and source-pixelization parameters are held fixed to the best-fit values from phase 1 of the
     #    initialization pipeline.
     # 2) Each grid search varies the subhalo (y,x) coordinates and mass as free parameters.
     # 3) The priors on these (y,x) coordinates are UniformPriors, with limits corresponding to the grid-cells.
@@ -113,29 +113,29 @@ def make_pipeline(phase_folders=None, tag_phases=True, sub_grid_size=2, bin_up_f
             ### Lens Subhalo, Adjust priors to physical masses (10^6 - 10^10) and concentrations (6-24)
 
             self.lens_galaxies.subhalo.mass.kappa_s = prior.UniformPrior(lower_limit=0.0001, upper_limit=0.1)
-            self.lens_galaxies.subhalo.mass.scale_radius = prior.UniformPrior(lower_limit=0.0, upper_limit=5.0)
+            self.lens_galaxies.subhalo.mass.scale_radius = prior.UniformPrior(lower_limit=0.0, upper_limit=10.0)
             self.lens_galaxies.subhalo.mass.centre_0 = prior.UniformPrior(lower_limit=-2.0, upper_limit=2.0)
             self.lens_galaxies.subhalo.mass.centre_1 = prior.UniformPrior(lower_limit=-2.0, upper_limit=2.0)
 
             ### Source Light, Sersic -> Sersic ###
 
             self.source_galaxies.source.light.centre = \
-                results.from_phase('phase_1_lens_pl_shear_source_sersic').variable_absolute(a=0.3).source.light.centre
+                results.from_phase('phase_1_lens_pl_shear_source_sersic').variable_absolute(a=0.05).source.light.centre
 
             self.source_galaxies.source.light.intensity = \
                 results.from_phase('phase_1_lens_pl_shear_source_sersic').variable_relative(r=0.5).source.light.intensity
 
             self.source_galaxies.source.light.effective_radius = \
-                results.from_phase('phase_1_lens_pl_shear_source_sersic').variable_absolute(a=1.0).source.light.effective_radius
+                results.from_phase('phase_1_lens_pl_shear_source_sersic').variable_relative(r=0.5).source.light.effective_radius
 
             self.source_galaxies.source.light.sersic_index = \
-                results.from_phase('phase_1_lens_pl_shear_source_sersic').variable_absolute(a=1.5).source.light.sersic_index
+                results.from_phase('phase_1_lens_pl_shear_source_sersic').variable_relative(r=0.5).source.light.sersic_index
 
             self.source_galaxies.source.light.axis_ratio = \
-                results.from_phase('phase_1_lens_pl_shear_source_sersic').variable_absolute(a=0.1).source.light.axis_ratio
+                results.from_phase('phase_1_lens_pl_shear_source_sersic').constant.source.light.axis_ratio
 
             self.source_galaxies.source.light.phi = \
-                results.from_phase('phase_1_lens_pl_shear_source_sersic').variable_absolute(a=10.0).source.light.phi
+                results.from_phase('phase_1_lens_pl_shear_source_sersic').constant.source.light.phi
 
 
     phase2 = GridPhase(phase_name='phase_2_subhalo_search', phase_folders=phase_folders,
@@ -164,11 +164,37 @@ def make_pipeline(phase_folders=None, tag_phases=True, sub_grid_size=2, bin_up_f
 
             ### Subhalo, TruncatedNFW -> TruncatedNFW ###
 
-            self.lens_galaxies.subhalo = results.from_phase('phase_2_subhalo_search').best_result.variable.subhalo
+            self.lens_galaxies.subhalo.mass.centre = \
+                results.from_phase('phase_2_subhalo_search').best_result.variable_absolute(a=0.3).subhalo.mass.centre
+
+            self.lens_galaxies.subhalo.mass.kappa_s = \
+                results.from_phase('phase_2_subhalo_search').best_result.variable_relative(r=0.5).subhalo.mass.kappa_s
+
+            self.lens_galaxies.subhalo.mass.scale_radius = \
+                results.from_phase('phase_2_subhalo_search').best_result.variable_relative(r=0.5).subhalo.mass.scale_radius
+
 
             ### Source Light, Sersic -> Sersic ###
 
             self.source_galaxies.source = results.from_phase('phase_2_subhalo_search').best_result.variable.source
+
+            self.source_galaxies.source.light.centre = \
+                results.from_phase('phase_2_subhalo_search').best_result.variable_absolute(a=0.05).source.light.centre
+
+            self.source_galaxies.source.light.intensity = \
+                results.from_phase('phase_2_subhalo_search').best_result.variable_relative(r=0.5).source.light.intensity
+
+            self.source_galaxies.source.light.effective_radius = \
+                results.from_phase('phase_2_subhalo_search').best_result.variable_relative(r=0.5).source.light.effective_radius
+
+            self.source_galaxies.source.light.sersic_index = \
+                results.from_phase('phase_2_subhalo_search').best_result.variable_relative(r=0.5).source.light.sersic_index
+
+            self.source_galaxies.source.light.axis_ratio = \
+                results.from_phase('phase_1_lens_pl_shear_source_sersic').variable_absolute(a=0.1).source.light.axis_ratio
+
+            self.source_galaxies.source.light.phi = \
+                results.from_phase('phase_1_lens_pl_shear_source_sersic').variable_absolute(a=10.0).source.light.phi
 
     phase3 = SubhaloPhase(phase_name='phase_3_subhalo_refine', phase_folders=phase_folders,
                           tag_phases=tag_phases,
@@ -181,7 +207,7 @@ def make_pipeline(phase_folders=None, tag_phases=True, sub_grid_size=2, bin_up_f
                           positions_threshold=positions_threshold, inner_mask_radii=inner_mask_radii,
                           interp_pixel_scale=interp_pixel_scale)
 
-    phase3.optimizer.const_efficiency_mode = True
+    phase3.optimizer.const_efficiency_mode = False
     phase3.optimizer.n_live_points = 80
     phase3.optimizer.sampling_efficiency = 0.3
 
