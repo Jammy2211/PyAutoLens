@@ -2975,6 +2975,7 @@ class TestEinsteinRadiusMass(object):
         # assert nfw_kpc.einstein_mass_in_units(unit_mass='solMass', critical_surface_density=2.0) == pytest.approx(2.76386, 1e-4)
 
 
+
 def mass_within_radius_of_profile_from_grid_calculation(radius, profile):
 
     mass_total = 0.0
@@ -3067,9 +3068,7 @@ class TestMassWithinCircle(object):
         sis = mp.SphericalIsothermal(einstein_radius=2.0)
         radius = dim.Length(2.0, 'arcsec')
 
-        critical_surface_density = dim.MassOverLength2(2.0, 'arcsec', 'angular')
-        mass = sis.mass_within_circle_in_units(radius=radius, unit_mass='angular',
-                                               critical_surface_density=critical_surface_density)
+        mass = sis.mass_within_circle_in_units(radius=radius, unit_mass='angular')
         assert math.pi * sis.einstein_radius * radius == pytest.approx(mass, 1e-3)
 
         critical_surface_density = dim.MassOverLength2(2.0, 'arcsec', 'solMass')
@@ -3089,6 +3088,17 @@ class TestMassWithinCircle(object):
             sis_arcsec.mass_within_circle_in_units(radius=0.5, unit_mass='solMass', critical_surface_density=None)
             radius = dim.Length(2.0,'kpc')
             sis_arcsec.mass_within_circle_in_units(radius=radius, unit_mass='angular', kpc_per_arcsec=None)
+
+    def test__radius_and_critical_surface_density_different_length_units__raises_exception(self):
+
+        sis = mp.SphericalIsothermal(einstein_radius=2.0)
+        radius = dim.Length(2.0, 'arcsec')
+
+        critical_surface_density = dim.MassOverLength2(2.0, 'kpc', 'angular')
+
+        with pytest.raises(exc.UnitsException):
+            sis.mass_within_circle_in_units(radius=radius, unit_mass='angular',
+                                               critical_surface_density=critical_surface_density)
 
 
 class TestMassWithinEllipse(object):
@@ -3168,9 +3178,7 @@ class TestMassWithinEllipse(object):
 
         mass_grid = mass_within_radius_of_profile_from_grid_calculation(radius=radius, profile=sie)
 
-        critical_surface_density = dim.MassOverLength2(2.0, 'arcsec', 'angular')
-        mass = sie.mass_within_ellipse_in_units(major_axis=radius, unit_mass='angular',
-                                                critical_surface_density=critical_surface_density)
+        mass = sie.mass_within_ellipse_in_units(major_axis=radius, unit_mass='angular')
 
         # Large errors required due to cusp at center of SIE - can get to errors of 0.01 for a 400 x 400 grid.
         assert mass_grid == pytest.approx(radius * sie.axis_ratio * mass, 0.1)
@@ -3195,6 +3203,16 @@ class TestMassWithinEllipse(object):
             major_axis = dim.Length(2.0,'kpc')
             sis_arcsec.mass_within_ellipse_in_units(major_axis=major_axis, unit_mass='angular', kpc_per_arcsec=None)
 
+    def test__radius_and_critical_surface_density_different_length_units__raises_exception(self):
+
+        sis = mp.SphericalIsothermal(einstein_radius=2.0)
+        radius = dim.Length(2.0, 'arcsec')
+
+        critical_surface_density = dim.MassOverLength2(2.0, 'kpc', 'angular')
+
+        with pytest.raises(exc.UnitsException):
+            sis.mass_within_ellipse_in_units(major_axis=radius, unit_mass='angular',
+                                               critical_surface_density=critical_surface_density)
 
 class TestDensityBetweenAnnuli(object):
 
