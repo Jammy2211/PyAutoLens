@@ -1,9 +1,7 @@
 from matplotlib import pyplot as plt
 
 from autolens import exc
-from autofit import conf
-from autolens.model.galaxy import galaxy_data as gd
-from autolens.data.array.plotters import plotter_util, array_plotters
+from autolens.plotters import plotter_util, array_plotters
 from autolens.lens.plotters import lens_plotter_util
 
 
@@ -77,7 +75,7 @@ def plot_fit_subplot(
         output_path=output_path, output_filename='', output_format=output_format)
 
     plotter_util.output_subplot_array(output_path=output_path, output_filename=output_filename,
-                               output_format=output_format)
+                                      output_format=output_format)
 
     plt.close()
 

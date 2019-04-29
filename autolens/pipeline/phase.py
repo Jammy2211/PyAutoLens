@@ -1,22 +1,23 @@
 import copy
 
+import functools
 import numpy as np
 from astropy import cosmology as cosmo
 
 from autofit import conf
 from autofit.optimize import non_linear
 from autofit.tools import phase as autofit_phase
-from autofit.tools.phase_property import PhasePropertyCollection
+from autofit.tools.phase_property import PhaseProperty
 from autolens import exc
-from autolens.pipeline import tagging as tag
 from autolens.data.array import mask as msk
 from autolens.data.plotters import ccd_plotters
 from autolens.lens import lens_data as li, lens_fit
 from autolens.lens import ray_tracing
 from autolens.lens import sensitivity_fit
 from autolens.lens.plotters import sensitivity_fit_plotters, ray_tracing_plotters, lens_fit_plotters
-from autolens.model.galaxy import galaxy as g, galaxy_model as gm, galaxy_fit, galaxy_data as gd
+from autolens.model.galaxy import galaxy as g, galaxy_fit, galaxy_data as gd
 from autolens.model.galaxy.plotters import galaxy_fit_plotters
+from autolens.pipeline import tagging as tag
 
 
 # from autolens.lens.summary import tracer_summary
@@ -41,7 +42,8 @@ def setup_phase_mask(data, mask, mask_function, inner_mask_radii):
 
 class AbstractPhase(autofit_phase.AbstractPhase):
 
-    def __init__(self, phase_name, phase_tag=None, phase_folders=None, tag_phases=True, optimizer_class=non_linear.MultiNest,
+    def __init__(self, phase_name, phase_tag=None, phase_folders=None, tag_phases=True,
+                 optimizer_class=non_linear.MultiNest,
                  cosmology=cosmo.Planck15, auto_link_priors=False):
         """
         A phase in an lens pipeline. Uses the set non_linear optimizer to try to fit models and hyper
@@ -70,7 +72,7 @@ class AbstractPhase(autofit_phase.AbstractPhase):
         ModelInstance
             A model instance comprising all the constant objects in this lens
         """
-        return self.optimizer.constant
+        return self.optimizer.variable
 
     @property
     def variable(self):
@@ -85,87 +87,13 @@ class AbstractPhase(autofit_phase.AbstractPhase):
         return self.optimizer.variable
 
     @property
-    def galaxy_model_tuples(self):
-        """
-        Returns
-        -------
-        galaxy_model_tuples: [(String, GalaxyModel)]
-            A list of tuples containing galaxy model names and instances.
-        """
-        return [tup for tup in self.optimizer.variable.prior_model_tuples if
-                isinstance(tup.prior_model, gm.GalaxyModel)]
-
-    def match_instance_to_models(self, instance):
-        """
-        Matches named galaxies associated with the instance to named galaxies associated with this phase.
-
-        Parameters
-        ----------
-        instance: ModelInstance
-            An instance with named galaxy attributes.
-
-        Returns
-        -------
-        tuples: [(String, Galaxy, GalaxyModel)]
-            A list of tuples associating galaxy instances from the model instance object with galaxy models in this
-            phase.
-        """
-        galaxy_dict = dict(instance.name_instance_tuples_for_class(g.Galaxy))
-        return [(key, galaxy_dict[key], value) for key, value in self.galaxy_model_tuples if key in galaxy_dict]
-
-    def fit_priors(self, instance, fitting_function):
-        """
-        Update the priors in this phase by fitting each galaxy model to a galaxy with the same name from a previous
-        phase if such a galaxy exists.
-
-        Parameters
-        ----------
-        instance: ModelInstance
-            An object with named galaxy attributes
-        fitting_function: (Galaxy, GalaxyModel) -> GalaxyModel
-            A function that takes a galaxy and a galaxy model and returns a GalaxyModel produced by combining a best fit
-            between the original galaxy and galaxy model with prior widths given by the configuration.
-        """
-        tuples = self.match_instance_to_models(instance)
-        for t in tuples:
-            name = t[0]
-            galaxy = t[1]
-            galaxy_model = t[2]
-            new_galaxy_model = fitting_function(galaxy, galaxy_model)
-            for phase_property_collection in self.phase_property_collections:
-                if hasattr(phase_property_collection, name):
-                    setattr(phase_property_collection, name, new_galaxy_model)
-
-    def fit_priors_with_results(self, results, fitting_function):
-        """
-        Update the priors in this phase by fitting each galaxy model to a galaxy with the same name from a previous
-        phase if such a galaxy exists.
-
-        Results later in the list take precedence, with the last instance of any galaxies that share a name being kept.
-
-        Parameters
-        ----------
-        results: [Results]
-            A list of results from previous phases.
-        fitting_function: (Galaxy, GalaxyModel) -> GalaxyModel
-            A function that takes a galaxy and a galaxy model and returns a GalaxyModel produced by combining a best fit
-            between the original galaxy and galaxy model with prior widths given by the configuration.
-        """
-        if results is not None and len(results) > 0:
-            instances = [r.constant for r in results]
-            instance = instances[0]
-            for next_instance in instances[1:]:
-                instance += next_instance
-            self.fit_priors(instance, fitting_function)
-
-    @property
     def phase_property_collections(self):
         """
         Returns
         -------
-        phase_property_collections: [PhasePropertyCollection]
+        phase_property_collections: [PhaseProperty]
             A list of phase property collections associated with this phase. This is used in automated prior passing and
-            should be overridden for any phase that contains its own PhasePropertyCollections.
+            should be overridden for any phase that contains its own PhasePropertys.
         """
         return []
 
@@ -318,15 +246,16 @@ class Phase(AbstractPhase):
 
 
 class PhasePositions(AbstractPhase):
-    lens_galaxies = PhasePropertyCollection("lens_galaxies")
+
+    lens_galaxies = PhaseProperty("lens_galaxies")
 
     @property
     def phase_property_collections(self):
         return [self.lens_galaxies]
 
-    def __init__(self, phase_name, tag_phases=True, phase_folders=None, lens_galaxies=None, optimizer_class=non_linear.MultiNest,
+    def __init__(self, phase_name, tag_phases=True, phase_folders=None, lens_galaxies=None,
+                 optimizer_class=non_linear.MultiNest,
                  cosmology=cosmo.Planck15, auto_link_priors=False):
-
         super().__init__(phase_name=phase_name, phase_tag=None, phase_folders=phase_folders, tag_phases=tag_phases,
                          optimizer_class=optimizer_class, cosmology=cosmology, auto_link_priors=auto_link_priors)
         self.lens_galaxies = lens_galaxies
@@ -809,18 +738,49 @@ class PhaseImaging(Phase):
             return self.lens_data.mask.map_2d_array_to_masked_1d_array(data)
 
 
+def set_defaults(key):
+    """
+    Load a default value for redshift from config and set it as the redshift for source or lens galaxies that have
+    falsey redshifts
+
+    Parameters
+    ----------
+    key: str
+
+    Returns
+    -------
+    decorator
+        A decorator that wraps the setter function to set defaults
+    """
+
+    def decorator(func):
+        @functools.wraps(func)
+        def wrapper(phase, new_value):
+            new_value = new_value or []
+            for item in new_value:
+                # noinspection PyTypeChecker
+                galaxy = new_value[item] if isinstance(item, str) else item
+                galaxy.redshift = galaxy.redshift or conf.instance.general.get("redshift", key, float)
+            return func(phase, new_value)
+
+        return wrapper
+
+    return decorator
+
+
 class LensPlanePhase(PhaseImaging):
     """
     Fit only the lens galaxy light.
     """
 
-    lens_galaxies = PhasePropertyCollection("lens_galaxies")
+    _lens_galaxies = PhaseProperty("lens_galaxies")
 
     @property
     def phase_property_collections(self):
         return [self.lens_galaxies]
 
-    def __init__(self, phase_name, tag_phases=True, phase_folders=None, lens_galaxies=None, optimizer_class=non_linear.MultiNest,
+    def __init__(self, phase_name, tag_phases=True, phase_folders=None, lens_galaxies=None,
+                 optimizer_class=non_linear.MultiNest,
                  sub_grid_size=2, bin_up_factor=None,
                  image_psf_shape=None, mask_function=None, inner_mask_radii=None, cosmology=cosmo.Planck15,
                  auto_link_priors=False):
@@ -836,6 +796,15 @@ class LensPlanePhase(PhaseImaging):
                                              cosmology=cosmology,
                                              auto_link_priors=auto_link_priors)
         self.lens_galaxies = lens_galaxies
+
+    @property
+    def lens_galaxies(self):
+        return self._lens_galaxies
+
+    @lens_galaxies.setter
+    @set_defaults("lens_default")
+    def lens_galaxies(self, new_value):
+        self._lens_galaxies = new_value
 
     class Analysis(PhaseImaging.Analysis):
         def figure_of_merit_for_fit(self, tracer):
@@ -866,8 +835,26 @@ class LensSourcePlanePhase(PhaseImaging):
     Fit a simple source and lens system.
     """
 
-    lens_galaxies = PhasePropertyCollection("lens_galaxies")
-    source_galaxies = PhasePropertyCollection("source_galaxies")
+    _lens_galaxies = PhaseProperty("lens_galaxies")
+    _source_galaxies = PhaseProperty("source_galaxies")
+
+    @property
+    def lens_galaxies(self):
+        return self._lens_galaxies
+
+    @lens_galaxies.setter
+    @set_defaults("lens_default")
+    def lens_galaxies(self, new_value):
+        self._lens_galaxies = new_value
+
+    @property
+    def source_galaxies(self):
+        return self._source_galaxies
+
+    @source_galaxies.setter
+    @set_defaults("source_default")
+    def source_galaxies(self, new_value):
+        self._source_galaxies = new_value
 
     @property
     def phase_property_collections(self):
@@ -875,7 +862,8 @@ class LensSourcePlanePhase(PhaseImaging):
 
     def __init__(self, phase_name, tag_phases=True, phase_folders=None,
                  lens_galaxies=None, source_galaxies=None, optimizer_class=non_linear.MultiNest,
-                 sub_grid_size=2, bin_up_factor=None, image_psf_shape=None, positions_threshold=None, mask_function=None,
+                 sub_grid_size=2, bin_up_factor=None, image_psf_shape=None, positions_threshold=None,
+                 mask_function=None,
                  interp_pixel_scale=None, inner_mask_radii=None, cosmology=cosmo.Planck15,
                  auto_link_priors=False):
         """
@@ -946,14 +934,16 @@ class MultiPlanePhase(PhaseImaging):
     Fit a simple source and lens system.
     """
 
-    galaxies = PhasePropertyCollection("galaxies")
+    galaxies = PhaseProperty("galaxies")
 
     @property
     def phase_property_collections(self):
         return [self.galaxies]
 
-    def __init__(self, phase_name, tag_phases=True, phase_folders=None, galaxies=None, optimizer_class=non_linear.MultiNest,
-                 sub_grid_size=2, bin_up_factor=None, image_psf_shape=None, positions_threshold=None, mask_function=None,
+    def __init__(self, phase_name, tag_phases=True, phase_folders=None, galaxies=None,
+                 optimizer_class=non_linear.MultiNest,
+                 sub_grid_size=2, bin_up_factor=None, image_psf_shape=None, positions_threshold=None,
+                 mask_function=None,
                  inner_mask_radii=None, cosmology=cosmo.Planck15, auto_link_priors=False):
         """
         A phase with a simple source/lens model
@@ -1008,9 +998,10 @@ class MultiPlanePhase(PhaseImaging):
 
 
 class GalaxyFitPhase(AbstractPhase):
-    galaxies = PhasePropertyCollection("galaxies")
+    galaxies = PhaseProperty("galaxies")
 
-    def __init__(self, phase_name, phase_tagging=True, phase_folders=None, galaxies=None, use_intensities=False, use_convergence=False,
+    def __init__(self, phase_name, phase_tagging=True, phase_folders=None, galaxies=None, use_intensities=False,
+                 use_convergence=False,
                  use_potential=False,
                  use_deflections=False, optimizer_class=non_linear.MultiNest, sub_grid_size=2,
                  mask_function=None, cosmology=cosmo.Planck15):
@@ -1026,7 +1017,8 @@ class GalaxyFitPhase(AbstractPhase):
             The side length of the subgrid
         """
 
-        super(GalaxyFitPhase, self).__init__(phase_name=phase_name, phase_tagging=phase_tagging, phase_folders=phase_folders,
+        super(GalaxyFitPhase, self).__init__(phase_name=phase_name, phase_tagging=phase_tagging,
+                                             phase_folders=phase_folders,
                                              optimizer_class=optimizer_class, cosmology=cosmology)
         self.use_intensities = use_intensities
         self.use_convergence = use_convergence
@@ -1330,9 +1322,9 @@ class GalaxyFitPhase(AbstractPhase):
 
 
 class SensitivityPhase(PhaseImaging):
-    lens_galaxies = PhasePropertyCollection("lens_galaxies")
-    source_galaxies = PhasePropertyCollection("source_galaxies")
-    sensitive_galaxies = PhasePropertyCollection("sensitive_galaxies")
+    lens_galaxies = PhaseProperty("lens_galaxies")
+    source_galaxies = PhaseProperty("source_galaxies")
+    sensitive_galaxies = PhaseProperty("sensitive_galaxies")
 
     def __init__(self, phase_name, tag_phases=None, phase_folders=None, lens_galaxies=None, source_galaxies=None,
                  sensitive_galaxies=None,
@@ -1350,7 +1342,8 @@ class SensitivityPhase(PhaseImaging):
             The side length of the subgrid
         """
 
-        super(SensitivityPhase, self).__init__(phase_name=phase_name, tag_phases=tag_phases, phase_folders=phase_folders,
+        super(SensitivityPhase, self).__init__(phase_name=phase_name, tag_phases=tag_phases,
+                                               phase_folders=phase_folders,
                                                optimizer_class=optimizer_class, sub_grid_size=sub_grid_size,
                                                bin_up_factor=bin_up_factor, mask_function=mask_function,
                                                cosmology=cosmology)

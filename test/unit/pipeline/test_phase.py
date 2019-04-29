@@ -173,6 +173,37 @@ def make_hyper_phase():
     return ph.HyperGalaxyPhase("hyper_galaxy_phase")
 
 
+class TestRedshift(object):
+    def test_lens_phase(self):
+        phase = ph.LensPlanePhase("lens phase")
+        phase.lens_galaxies = [g.Galaxy(), gm.GalaxyModel()]
+
+        assert phase.lens_galaxies[0].redshift == 0.5
+        assert phase.lens_galaxies[1].redshift == 0.5
+
+    def test_lens_source_phase(self):
+        phase = ph.LensSourcePlanePhase("lens source phase")
+        phase.lens_galaxies = [g.Galaxy(), gm.GalaxyModel()]
+        phase.source_galaxies = [g.Galaxy(), gm.GalaxyModel()]
+
+        assert phase.lens_galaxies[0].redshift == 0.5
+        assert phase.lens_galaxies[1].redshift == 0.5
+
+        assert phase.source_galaxies[0].redshift == 1.0
+        assert phase.source_galaxies[1].redshift == 1.0
+
+    def test_truthy_not_overridden(self):
+        phase = ph.LensSourcePlanePhase("lens source phase")
+        phase.lens_galaxies = [g.Galaxy(redshift=0.1), gm.GalaxyModel()]
+        phase.source_galaxies = [g.Galaxy(), gm.GalaxyModel(redshift=2.0)]
+
+        assert phase.lens_galaxies[0].redshift == 0.1
+        assert phase.lens_galaxies[1].redshift == 0.5
+
+        assert phase.source_galaxies[0].redshift == 1.0
+        assert phase.source_galaxies[1].redshift == 2.0
+
+
 class TestHyperGalaxyPhase(object):
     def test_analysis(self, hyper_lens_data, hyper_galaxy):
         analysis = ph.HyperGalaxyPhase.Analysis(hyper_lens_data, np.ones(5), np.ones(5))
@@ -309,94 +340,6 @@ class TestHyperGalaxyPhase(object):
         assert fit.figure_of_merit == -0.5 * (chi_squared + noise_normalization)
 
 
-class TestAutomaticPriorPassing(object):
-
-    def test_galaxy_model_dict(self, phase, galaxy_model):
-        phase.lens_galaxies = dict(galaxy_one=galaxy_model)
-        assert phase.galaxy_model_tuples == [("galaxy_one", galaxy_model)]
-
-    def test_match_galaxy_models_by_name(self, phase, galaxy_model, galaxy):
-        phase.lens_galaxies = dict(galaxy_one=galaxy_model)
-        instance = mm.ModelInstance()
-        instance.galaxy_one = galaxy
-
-        assert phase.match_instance_to_models(instance) == [("galaxy_one", galaxy, galaxy_model)]
-
-    def test_phase_property_collections(self, phase):
-        assert phase.phase_property_collections == [phase.lens_galaxies, phase.source_galaxies]
-
-    # noinspection PyUnresolvedReferences
-    def test_fit_priors(self, phase, galaxy_model, galaxy):
-        argument_tuples = []
-
-        new_galaxy_model = gm.GalaxyModel()
-
-        def fitting_function(best_fit_galaxy, initial_galaxy_model):
-            argument_tuples.append((best_fit_galaxy, initial_galaxy_model))
-            return new_galaxy_model
-
-        phase.lens_galaxies = dict(galaxy_one=galaxy_model)
-        assert phase.lens_galaxies.galaxy_one is not None
-
-        instance = mm.ModelInstance()
-        instance.galaxy_one = galaxy
-
-        phase.fit_priors(instance, fitting_function)
-
-        assert phase.lens_galaxies.galaxy_one == new_galaxy_model
-        assert argument_tuples == [(galaxy, galaxy_model)]
-
-    def test_model_instance_sum_priority(self):
-        instance_1 = mm.ModelInstance()
-        galaxy_1 = g.Galaxy()
-        instance_1.galaxy = galaxy_1
-
-        instance_2 = mm.ModelInstance()
-        galaxy_2 = g.Galaxy()
-        instance_2.galaxy = galaxy_2
-
-        assert (instance_1 + instance_2).galaxy == galaxy_2
-
-    # noinspection PyUnresolvedReferences
-    def test_fit_priors_with_results(self, phase):
-        argument_tuples = []
-
-        galaxy_model_one = gm.GalaxyModel()
-        galaxy_model_two = gm.GalaxyModel()
-
-        new_galaxy_model_one = gm.GalaxyModel()
-        new_galaxy_model_two = gm.GalaxyModel()
-
-        new_galaxy_models = {galaxy_model_one: new_galaxy_model_one, galaxy_model_two: new_galaxy_model_two}
-
-        def fitting_function(best_fit_galaxy, initial_galaxy_model):
-            argument_tuples.append((best_fit_galaxy, initial_galaxy_model))
-            return new_galaxy_models[initial_galaxy_model]
-
-        phase.lens_galaxies = dict(galaxy_one=galaxy_model_one, galaxy_two=galaxy_model_two)
-
-        instance_one = mm.ModelInstance()
-        galaxy_one = g.Galaxy()
-        instance_one.galaxy_one = galaxy_one
-        instance_one.galaxy_two = g.Galaxy()
-        results_one = MockResults(constant=instance_one)
-
-        instance_two = mm.ModelInstance()
-        galaxy_two = g.Galaxy()
-        instance_two.galaxy_two = galaxy_two
-        results_two = MockResults(constant=instance_two)
-
-        assert phase.lens_galaxies.galaxy_one == galaxy_model_one
-        assert phase.lens_galaxies.galaxy_two == galaxy_model_two
-
-        phase.fit_priors_with_results([results_one, results_two], fitting_function)
-
-        assert phase.lens_galaxies.galaxy_one == new_galaxy_model_one
-        assert phase.lens_galaxies.galaxy_two == new_galaxy_model_two
-        assert argument_tuples == [(galaxy_one, galaxy_model_one),
-                                   (galaxy_two, galaxy_model_two)]
-
-
 def clean_images():
     try:
         os.remove('{}/source_lens_phase/source_image_0.fits'.format(directory))
@@ -411,13 +354,11 @@ class TestPhase(object):
 
     def test_set_constants(self, phase, galaxy):
         phase.lens_galaxies = [galaxy]
-        assert phase.optimizer.constant.lens_galaxies == [galaxy]
-        assert phase.optimizer.variable.lens_galaxies == []
+        assert phase.optimizer.variable.lens_galaxies == [galaxy]
 
     def test_set_variables(self, phase, galaxy_model):
         phase.lens_galaxies = [galaxy_model]
         assert phase.optimizer.variable.lens_galaxies == [galaxy_model]
-        assert phase.optimizer.constant.lens_galaxies == []
 
     def test_make_analysis(self, phase, ccd_data, lens_data):
         analysis = phase.make_analysis(data=ccd_data)
@@ -766,9 +707,9 @@ class TestPhase(object):
     def test__phase_can_receive_list_of_galaxy_models(self):
         phase = ph.LensPlanePhase(lens_galaxies=[gm.GalaxyModel(sersic=lp.EllipticalSersic,
                                                                 sis=mp.SphericalIsothermal,
-                                                                variable_redshift=True),
+                                                                redshift=g.Redshift),
                                                  gm.GalaxyModel(sis=mp.SphericalIsothermal,
-                                                                variable_redshift=True)],
+                                                                redshift=g.Redshift)],
                                   optimizer_class=non_linear.MultiNest, phase_name='test_phase')
 
         instance = phase.optimizer.variable.instance_from_physical_vector(
@@ -792,9 +733,9 @@ class TestPhase(object):
 
         phase = LensPlanePhase2(lens_galaxies=[gm.GalaxyModel(sersic=lp.EllipticalSersic,
                                                               sis=mp.SphericalIsothermal,
-                                                              variable_redshift=True),
+                                                              redshift=g.Redshift),
                                                gm.GalaxyModel(sis=mp.SphericalIsothermal,
-                                                              variable_redshift=True)],
+                                                              redshift=g.Redshift)],
                                 optimizer_class=non_linear.MultiNest, phase_name='test_phase')
 
         # noinspection PyTypeChecker

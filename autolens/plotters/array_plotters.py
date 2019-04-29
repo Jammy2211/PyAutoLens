@@ -1,11 +1,10 @@
 from autolens import exc
 import matplotlib.pyplot as plt
 import matplotlib.colors as colors
-import matplotlib.patches as patches
 import numpy as np
 import itertools
 
-from autolens.data.array.plotters import plotter_util
+from autolens.plotters import plotter_util
 
 
 def plot_array(array, origin=None, mask=None, extract_array_from_mask=False, zoom_around_mask=False,

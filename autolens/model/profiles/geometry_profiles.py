@@ -2,8 +2,9 @@ import numpy as np
 from functools import wraps
 
 from autofit import conf
+from autofit.tools.dimension_type import map_types
+from autolens.model import dimensions as dim
 
-radial_minimum_config = conf.NamedConfig(f"{conf.instance.config_path}/radial_minimum.ini")
 
 def transform_grid(func):
     """Wrap the function in a function that checks whether the coordinates have been transformed. If they have not \ 
@@ -106,6 +107,7 @@ def move_grid_to_radial_minimum(func):
         -------
             A value or coordinate in the same coordinate system as those passed in.
         """
+        radial_minimum_config = conf.NamedConfig(f"{conf.instance.config_path}/radial_minimum.ini")
         grid_radial_minimum = radial_minimum_config.get("radial_minimum", profile.__class__.__name__, float)
         with np.errstate(all='ignore'):  # Division by zero fixed via isnan
             grid_radii = profile.grid_to_grid_radii(grid=grid)
@@ -121,9 +123,11 @@ class TransformedGrid(np.ndarray):
     pass
 
 
-class GeometryProfile(object):
+class GeometryProfile(dim.DimensionsProfile):
 
-    def __init__(self, centre=(0.0, 0.0)):
+    @map_types
+    def __init__(self,
+                 centre: dim.Position = (0.0, 0.0)):
         """An abstract geometry profile, which describes profiles with y and x centre Cartesian coordinates
         
         Parameters
@@ -131,6 +135,7 @@ class GeometryProfile(object):
         centre : (float, float)
             The (y,x) arc-second coordinates of the profile centre.
         """
+        super(GeometryProfile, self).__init__()
         self.centre = centre
 
     def transform_grid_to_reference_frame(self, grid):
@@ -149,7 +154,9 @@ class GeometryProfile(object):
 
 class SphericalProfile(GeometryProfile):
 
-    def __init__(self, centre=(0.0, 0.0)):
+    @map_types
+    def __init__(self,
+                 centre: dim.Position = (0.0, 0.0)):
         """ A spherical profile, which describes profiles with y and x centre Cartesian coordinates.
 
         Parameters
@@ -157,7 +164,7 @@ class SphericalProfile(GeometryProfile):
         centre: (float, float)
             The (y,x) arc-second coordinates of the profile centre.
         """
-        super(SphericalProfile, self).__init__(centre)
+        super(SphericalProfile, self).__init__(centre=centre)
 
     @transform_grid
     def grid_to_grid_radii(self, grid):
@@ -225,7 +232,11 @@ class SphericalProfile(GeometryProfile):
 
 class EllipticalProfile(SphericalProfile):
 
-    def __init__(self, centre=(0.0, 0.0), axis_ratio=1.0, phi=0.0):
+    @map_types
+    def __init__(self,
+                 centre: dim.Position = (0.0, 0.0),
+                 axis_ratio: float = 1.0,
+                 phi: float = 0.0):
         """ An elliptical profile, which describes profiles with y and x centre Cartesian coordinates, an axis-ratio \
         and rotational angle phi.
 
@@ -238,7 +249,7 @@ class EllipticalProfile(SphericalProfile):
         phi : float
             Rotation angle of profiles ellipse counter-clockwise from positive x-axis
         """
-        super(EllipticalProfile, self).__init__(centre)
+        super(EllipticalProfile, self).__init__(centre=centre)
         self.axis_ratio = axis_ratio
         self.phi = phi
 

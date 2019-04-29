@@ -7,6 +7,15 @@ test_path = '{}/../'.format(os.path.dirname(os.path.realpath(__file__)))
 
 
 def pixel_scale_from_data_resolution(data_resolution):
+    """Determine the pixel scale from a data resolution type based on real observations.
+
+    These options are representative of LSST, Euclid, HST, over-sampled HST and Adaptive Optics image.
+
+    Parameters
+    ----------
+    data_resolution : str
+        A string giving the resolution of the desired data type (LSST | Euclid | HST | HST_Up | AO).
+    """
     if data_resolution == 'LSST':
         return 0.2
     elif data_resolution == 'Euclid':
@@ -22,16 +31,25 @@ def pixel_scale_from_data_resolution(data_resolution):
 
 
 def shape_from_data_resolution(data_resolution):
+    """Determine the shape of an image from a data resolution type based on real observations.
+
+    These options are representative of LSST, Euclid, HST, over-sampled HST and Adaptive Optics image.
+
+    Parameters
+    ----------
+    data_resolution : str
+        A string giving the resolution of the desired data type (LSST | Euclid | HST | HST_Up | AO).
+    """
     if data_resolution == 'LSST':
-        return 100, 100
+        return (100, 100)
     elif data_resolution == 'Euclid':
-        return 150, 150
+        return (150, 150)
     elif data_resolution == 'HST':
-        return 250, 250
+        return (250, 250)
     elif data_resolution == 'HST_Up':
-        return 320, 320
+        return (320, 320)
     elif data_resolution == 'AO':
-        return 750, 750
+        return (750, 750)
     else:
         raise ValueError('An invalid data-type was entered - ', data_resolution)
 

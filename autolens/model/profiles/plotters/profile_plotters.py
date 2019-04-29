@@ -1,6 +1,6 @@
-import numpy as np
-
-from autolens.data.array.plotters import array_plotters
+from autolens.plotters import array_plotters
+from autolens.plotters import plotter_util
+from autolens.plotters import quantity_radii_plotters
 
 def plot_intensities(
         light_profile, grid, mask=None, extract_array_from_mask=False, zoom_around_mask=False, positions=None, 
@@ -174,10 +174,27 @@ def plot_deflections_x(
         mask_pointsize=mask_pointsize, position_pointsize=position_pointsize, grid_pointsize=grid_pointsize,
         output_path=output_path, output_format=output_format, output_filename=output_filename)
 
+def plot_luminosity_within_circle_in_electrons_per_second_as_function_of_radius(
+        light_profile, minimum_radius=1.0e-4, maximum_radius=10.0, radii_bins=10,
+        as_subplot=False, label='Light Profile', plot_axis_type='semilogy',
+        effective_radius_line=None, einstein_radius_line=None,
+        units='arcsec', kpc_per_arcsec=None, figsize=(7, 7), plot_legend=True,
+        title='Luminosity (Electrons Per Second) vs Radius', ylabel='Luminosity (Electrons Per Second)', titlesize=16,
+        xlabelsize=16, ylabelsize=16, xyticksize=16, legend_fontsize=12,
+        output_path=None, output_format='show', output_filename='luminosity_vs_radius'):
 
-def plot_1d_density_as_function_of_radius(mass_profile, minimum_radius=1.0e-4, maximum_radius=10.0, radii_bins=10):
-    radii_bin_size = (maximum_radius - minimum_radius) / (radii_bins - 1)
-    annuli_radii = np.linspace(start=minimum_radius - radii_bin_size / 2.0, stop=maximum_radius + radii_bin_size / 2.0,
-                               num=radii_bins + 1)
-    density_radii = np.linspace(start=minimum_radius, stop=maximum_radius, num=radii_bins)
-    pass
+    radii = plotter_util.quantity_radii_from_minimum_and_maximum_radii_and_radii_points(
+        minimum_radius=minimum_radius, maximum_radius=maximum_radius, radii_points=radii_bins)
+
+    luminosities = list(map(lambda radius :
+                            light_profile.luminosity_within_circle_in_units(radius=radius),
+                            radii))
+
+    quantity_radii_plotters.plot_quantity_as_function_of_radius(
+        quantity=luminosities, radii=radii,
+        as_subplot=as_subplot, label=label, plot_axis_type=plot_axis_type,
+        effective_radius_line=effective_radius_line, einstein_radius_line=einstein_radius_line,
+        units=units, kpc_per_arcsec=kpc_per_arcsec, figsize=figsize, plot_legend=plot_legend,
+        title=title, ylabel=ylabel, titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize, xyticksize=xyticksize,
+        legend_fontsize=legend_fontsize,
+        output_path=output_path, output_format=output_format, output_filename=output_filename)
