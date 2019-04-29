@@ -12,8 +12,7 @@ class TestCase:
         directory = os.path.dirname(os.path.realpath(__file__))
 
         config = conf.DefaultPriorConfig(
-            "{}/../../{}".format(directory,
-                                 "test_files/configs/galaxy_model/priors/default"))
+            "{}/../../{}".format(directory,"test_files/configs/galaxy_model/priors/default"))
 
         limit_config = conf.LimitConfig(
             "{}/../../{}".format(directory,
