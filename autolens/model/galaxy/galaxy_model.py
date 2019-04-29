@@ -143,21 +143,6 @@ class GalaxyModel(model_mapper.AbstractPriorModel):
 
         self.hyper_galaxy = pm.PriorModel(hyper_galaxy) if inspect.isclass(hyper_galaxy) else hyper_galaxy
 
-    def linked_model_for_classes(self, **classes):
-        light_profile_class_tuples = [(name, cls) for name, cls in classes.items() if is_light_profile_class(cls)]
-        mass_profile_class_tuples = [(name, cls) for name, cls in classes.items() if is_mass_profile_class(cls)]
-
-        def link_models_to_classes(models, class_tuples):
-            result = []
-            for n, class_tuple in enumerate(class_tuples):
-                result.append((class_tuple[0], models[n % len(models)].linked_model_for_class(class_tuple[1])))
-            return result
-
-        light_profile_model_tuples = link_models_to_classes(self.light_profile_prior_models, light_profile_class_tuples)
-        mass_profile_model_tuples = link_models_to_classes(self.mass_profile_prior_models, mass_profile_class_tuples)
-
-        return GalaxyModel(**{**dict(light_profile_model_tuples), **dict(mass_profile_model_tuples)})
-
     @property
     def constant_light_profiles(self):
         """
