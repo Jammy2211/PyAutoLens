@@ -214,16 +214,14 @@ class TestResultForArguments:
                                       light_profile=light_profiles.EllipticalSersic,
                                       mass_profile=mass_profiles.SphericalIsothermal)
 
-        print(galaxy_prior.redshift.cls)
-
         arguments = {galaxy_prior.redshift.redshift: 0.5,
                      galaxy_prior.mass_profile.centre.centre_0: 1.0,
                      galaxy_prior.mass_profile.centre.centre_1: 0.2,
-                     galaxy_prior.mass_profile.einstein_radius: 0.3,
+                     galaxy_prior.mass_profile.einstein_radius.value: 0.3,
                      galaxy_prior.light_profile.axis_ratio: 0.4,
                      galaxy_prior.light_profile.phi: 0.5,
-                     galaxy_prior.light_profile.intensity: 0.6,
-                     galaxy_prior.light_profile.effective_radius: 0.7,
+                     galaxy_prior.light_profile.intensity.value: 0.6,
+                     galaxy_prior.light_profile.effective_radius.value: 0.7,
                      galaxy_prior.light_profile.sersic_index: 2}
 
         galaxy = galaxy_prior.instance_for_arguments(arguments)
