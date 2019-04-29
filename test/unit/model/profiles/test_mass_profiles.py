@@ -1589,6 +1589,26 @@ class TestTruncatedNFW(object):
 
         assert mass_at_truncation_radius == pytest.approx(0.00033636625, 1.0e-4)
 
+    def test__check_critical_surface_density_and_cosmic_average_density_are_same_units(self):
+
+        truncated_nfw = mp.SphericalTruncatedNFW(centre=(0.0, 0.0), kappa_s=1.0, scale_radius=1.0,
+                                                 truncation_radius=1.0)
+
+        critical_surface_density = dim.MassOverLength2(5.0, 'arcsec', 'solMass')
+        cosmic_average_density = dim.MassOverLength3(8.0, 'kpc', 'solMass')
+
+        with pytest.raises(exc.UnitsException):
+
+            truncated_nfw.mass_at_truncation_radius(critical_surface_density=critical_surface_density,
+                                                     cosmic_average_density=cosmic_average_density)
+
+        critical_surface_density = dim.MassOverLength2(5.0, 'arcsec', 'solMass')
+        cosmic_average_density = dim.MassOverLength3(8.0, 'arcsec', 'angular')
+
+        with pytest.raises(exc.UnitsException):
+
+            truncated_nfw.mass_at_truncation_radius(critical_surface_density=critical_surface_density,
+                                    cosmic_average_density=cosmic_average_density)
 
 class TestNFW(object):
 
@@ -1912,6 +1932,44 @@ class TestNFW(object):
         # mass_200 = 200.0 * ((4*pi)/3)  * (0.004658 ** 3.0)
 
         assert mass_at_200 == pytest.approx(18.57133, 1.0e-5)
+
+    def test__check_critical_surface_density_and_cosmic_average_density_are_same_units(self):
+
+        nfw = mp.SphericalNFW(centre=(0.0, 0.0), kappa_s=1.0, scale_radius=1.0)
+
+        critical_surface_density = dim.MassOverLength2(5.0, 'arcsec', 'solMass')
+        cosmic_average_density = dim.MassOverLength3(8.0, 'kpc', 'solMass')
+
+        with pytest.raises(exc.UnitsException):
+
+            nfw.delta_concentration(critical_surface_density=critical_surface_density,
+                                    cosmic_average_density=cosmic_average_density)
+
+            nfw.concentration(critical_surface_density=critical_surface_density,
+                              cosmic_average_density=cosmic_average_density)
+
+            nfw.radius_at_200(critical_surface_density=critical_surface_density,
+                              cosmic_average_density=cosmic_average_density)
+
+            nfw.mass_at_200(critical_surface_density=critical_surface_density,
+                            cosmic_average_density=cosmic_average_density)
+
+        critical_surface_density = dim.MassOverLength2(5.0, 'arcsec', 'solMass')
+        cosmic_average_density = dim.MassOverLength3(8.0, 'arcsec', 'angular')
+
+        with pytest.raises(exc.UnitsException):
+
+            nfw.delta_concentration(critical_surface_density=critical_surface_density,
+                                    cosmic_average_density=cosmic_average_density)
+
+            nfw.concentration(critical_surface_density=critical_surface_density,
+                              cosmic_average_density=cosmic_average_density)
+
+            nfw.radius_at_200(critical_surface_density=critical_surface_density,
+                              cosmic_average_density=cosmic_average_density)
+
+            nfw.mass_at_200(critical_surface_density=critical_surface_density,
+                            cosmic_average_density=cosmic_average_density)
 
 
 class TestSersic(object):
