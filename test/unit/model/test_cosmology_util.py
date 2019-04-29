@@ -58,28 +58,28 @@ class TestCosmology:
 
     def test__critical_surface_mass_densities(self):
 
-        critical_surface_mass_density = \
-            cosmology_util.critical_surface_mass_density_between_redshifts_from_redshifts_and_cosmology(
+        critical_surface_density = \
+            cosmology_util.critical_surface_density_between_redshifts_from_redshifts_and_cosmology(
             redshift_0=0.1, redshift_1=1.0, cosmology=planck, unit_length='kpc')
 
-        assert critical_surface_mass_density.unit == 'solMass / kpc^2'
-        assert critical_surface_mass_density == pytest.approx(4.85e9, 1e-2)
+        assert critical_surface_density.unit == 'solMass / kpc^2'
+        assert critical_surface_density == pytest.approx(4.85e9, 1e-2)
 
-        critical_surface_mass_density = \
-            cosmology_util.critical_surface_mass_density_between_redshifts_from_redshifts_and_cosmology(
+        critical_surface_density = \
+            cosmology_util.critical_surface_density_between_redshifts_from_redshifts_and_cosmology(
             redshift_0=0.1, redshift_1=1.0, cosmology=planck, unit_mass='solMass', unit_length='arcsec')
 
-        assert critical_surface_mass_density.unit == 'solMass / arcsec^2'
-        assert critical_surface_mass_density == pytest.approx(17593241668, 1e-2)
+        assert critical_surface_density.unit == 'solMass / arcsec^2'
+        assert critical_surface_density == pytest.approx(17593241668, 1e-2)
 
-    def test__cosmic_average_mass_density(self):
+    def test__cosmic_average_density(self):
 
-        cosmic_average_mass_density = cosmology_util.cosmic_average_mass_density_from_redshift_and_cosmology(
+        cosmic_average_density = cosmology_util.cosmic_average_density_from_redshift_and_cosmology(
             redshift=0.6, cosmology=planck, unit_mass='solMass', unit_length='kpc')
 
-        assert cosmic_average_mass_density == pytest.approx(249.20874, 1.0e-4)
+        assert cosmic_average_density == pytest.approx(249.20874, 1.0e-4)
 
-        cosmic_average_mass_density = cosmology_util.cosmic_average_mass_density_from_redshift_and_cosmology(
+        cosmic_average_density = cosmology_util.cosmic_average_density_from_redshift_and_cosmology(
             redshift=0.6, cosmology=planck, unit_mass='solMass', unit_length='arcsec')
 
-        assert cosmic_average_mass_density == pytest.approx(81280.09116133313, 1.0e-4)
+        assert cosmic_average_density == pytest.approx(81280.09116133313, 1.0e-4)

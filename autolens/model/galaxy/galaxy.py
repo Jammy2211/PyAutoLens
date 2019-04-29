@@ -233,7 +233,7 @@ class Galaxy(object):
         else:
             return np.full((grid.shape[0], 2), 0.0)
 
-    def mass_within_circle_in_units(self, radius, unit_mass='angular', kpc_per_arcsec=None, critical_surface_mass_density=None):
+    def mass_within_circle_in_units(self, radius, unit_mass='angular', kpc_per_arcsec=None, critical_surface_density=None):
         """Compute the total angular mass of the galaxy's mass profiles within a circle of specified radius.
 
         See *profiles.mass_profiles.mass_within_circle* for details of how this is performed.
@@ -244,19 +244,19 @@ class Galaxy(object):
             The radius of the circle to compute the dimensionless mass within.
         unit_mass : str
             The units the mass is returned in (angular | solMass).
-        critical_surface_mass_density : float
+        critical_surface_density : float
             The critical surface mass density of the strong lens configuration, which converts mass from angulalr \
             units to physical units (e.g. solar masses).
         """
         if self.has_mass_profile:
             return sum(map(lambda p: p.mass_within_circle_in_units(radius=radius, unit_mass=unit_mass,
                                                                    kpc_per_arcsec=kpc_per_arcsec,
-                                                                   critical_surface_mass_density=critical_surface_mass_density),
+                                                                   critical_surface_density=critical_surface_density),
                            self.mass_profiles))
         else:
             return None
 
-    def mass_within_ellipse_in_units(self, major_axis, unit_mass='angular', kpc_per_arcsec=None, critical_surface_mass_density=None):
+    def mass_within_ellipse_in_units(self, major_axis, unit_mass='angular', kpc_per_arcsec=None, critical_surface_density=None):
         """Compute the total angular mass of the galaxy's mass profiles within an ellipse of specified major_axis.
 
         See *profiles.mass_profiles.angualr_mass_within_ellipse* for details of how this is performed.
@@ -273,7 +273,7 @@ class Galaxy(object):
         if self.has_mass_profile:
             return sum(map(lambda p: p.mass_within_ellipse_in_units(major_axis=major_axis, unit_mass=unit_mass,
                                                                     kpc_per_arcsec=kpc_per_arcsec,
-                                                                    critical_surface_mass_density=critical_surface_mass_density),
+                                                                    critical_surface_density=critical_surface_density),
                            self.mass_profiles))
         else:
             return None
@@ -290,7 +290,7 @@ class Galaxy(object):
         else:
             return None
 
-    def einstein_mass_in_units(self, unit_mass='angular', critical_surface_mass_density=None):
+    def einstein_mass_in_units(self, unit_mass='angular', critical_surface_density=None):
         """The Einstein Mass of this galaxy, which is the sum of Einstein Radii of its mass profiles.
 
         If the galaxy is composed of multiple ellipitcal profiles with different axis-ratios, this Einstein Mass \
@@ -299,7 +299,7 @@ class Galaxy(object):
         if self.has_mass_profile:
             return sum(
                 map(lambda p: p.einstein_mass_in_units(unit_mass=unit_mass,
-                                                       critical_surface_mass_density=critical_surface_mass_density),
+                                                       critical_surface_density=critical_surface_density),
                     self.mass_profiles))
         else:
             return None

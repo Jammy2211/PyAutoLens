@@ -116,8 +116,8 @@ class AbstractTracerCosmology(object):
         return cosmology_util.angular_diameter_distance_to_earth_from_redshift_and_cosmology(
             redshift=self.plane_redshifts[-1], cosmology=self.cosmology, unit_length=unit_length)
 
-    def critical_surface_mass_density_between_planes_in_units(self, i, j, unit_length='arcsec', unit_mass='angular'):
-        return cosmology_util.critical_surface_mass_density_between_redshifts_from_redshifts_and_cosmology(
+    def critical_surface_density_between_planes_in_units(self, i, j, unit_length='arcsec', unit_mass='angular'):
+        return cosmology_util.critical_surface_density_between_redshifts_from_redshifts_and_cosmology(
             redshift_0=self.plane_redshifts[i], redshift_1=self.plane_redshifts[j], cosmology=self.cosmology,
             unit_length=unit_length, unit_mass=unit_mass)
 
@@ -258,10 +258,10 @@ class AbstractTracer(AbstractTracerCosmology):
         return self.planes[i].einstein_radius_in_units(unit_length=unit_length, kpc_per_arcsec=kpc_per_arcsec)
 
     def einstein_mass_between_planes_in_units(self, i, j, unit_length='arcsec', unit_mass='angular'):
-        critical_suface_mass_density = self.critical_surface_mass_density_between_planes_in_units(
+        critical_suface_mass_density = self.critical_surface_density_between_planes_in_units(
                 i=i, j=j, unit_length=unit_length, unit_mass=unit_mass)
         return self.planes[i].einstein_mass_in_units(unit_mass=unit_mass,
-                                                     critical_surface_mass_density=critical_suface_mass_density)
+                                                     critical_surface_density=critical_suface_mass_density)
 
     def grid_at_redshift_from_image_plane_grid_and_redshift(self, image_plane_grid, redshift):
         """For an input grid of (y,x) arc-second image-plane coordinates, ray-trace the coordinates to any redshift in \
@@ -349,7 +349,7 @@ class TracerImagePlane(AbstractTracer):
 
         super(TracerImagePlane, self).__init__(planes=[image_plane], cosmology=cosmology)
 
-    def critical_surface_mass_density_between_planes_in_units(self, unit_length='arcsec', unit_mass='angular'):
+    def critical_surface_density_between_planes_in_units(self, unit_length='arcsec', unit_mass='angular'):
         return 0.0
 
 
