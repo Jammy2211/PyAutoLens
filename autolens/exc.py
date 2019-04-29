@@ -5,7 +5,7 @@ class ScaledArrayException(Exception):
     pass
 
 
-class ImagingException(Exception):
+class DataException(Exception):
     pass
 
 
@@ -14,6 +14,10 @@ class KernelException(Exception):
 
 
 class MaskException(Exception):
+    pass
+
+
+class CosmologyException(Exception):
     pass
 
 
@@ -42,4 +46,8 @@ class PlottingException(Exception):
 
 
 class PhaseException(Exception):
+    pass
+
+
+class UnitsException(Exception):
     pass

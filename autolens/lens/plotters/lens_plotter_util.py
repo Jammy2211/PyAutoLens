@@ -1,7 +1,6 @@
 from autolens import exc
-from autolens.data.array.plotters import array_plotters
+from autolens.plotters import array_plotters
 
-import numpy as np
 
 def plot_image(
         fit, mask=None, extract_array_from_mask=False, zoom_around_mask=False, positions=None,

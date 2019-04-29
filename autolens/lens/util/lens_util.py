@@ -137,17 +137,6 @@ def compute_deflections_at_next_plane(plane_index, total_planes):
     else:
         raise exc.RayTracingException('A galaxy was not correctly allocated its previous / next redshifts')
 
-def scaling_factor_between_redshifts_for_cosmology(z1, z2, z_final, cosmology):
-
-    angular_diameter_distance_between_z1_z2 = cosmology.angular_diameter_distance_z1z2(z1=z1, z2=z2).to('kpc').value
-    angular_diameter_distance_to_z_final = cosmology.angular_diameter_distance(z=z_final).to('kpc').value
-    angular_diameter_distance_of_z2_to_earth = cosmology.angular_diameter_distance(z=z2).to('kpc').value
-    angular_diameter_distance_between_z2_z_final = \
-        cosmology.angular_diameter_distance_z1z2(z1=z1, z2=z_final).to('kpc').value
-
-    return (angular_diameter_distance_between_z1_z2 * angular_diameter_distance_to_z_final) / \
-           (angular_diameter_distance_of_z2_to_earth * angular_diameter_distance_between_z2_z_final)
-
 def scaled_deflection_stack_from_plane_and_scaling_factor(plane, scaling_factor):
     """Given a plane and scaling factor, compute a set of scaled deflections.
 
@@ -176,7 +165,6 @@ def grid_stack_from_deflection_stack(grid_stack, deflection_stack):
             return grid - deflections
 
         return grid_stack.map_function(minus, deflection_stack)
-
 
 def traced_collection_for_deflections(grid_stack, deflections):
 

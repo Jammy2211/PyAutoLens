@@ -1,17 +1,19 @@
 import os
-import shutil
+
 import numpy as np
+import shutil
 
 from autofit import conf
 from autofit.mapper import model_mapper as mm
 from autofit.mapper import prior
+from autofit.mapper import prior_model as pm
 from autofit.optimize import non_linear as nl
 from autolens.data import ccd
-from autolens.data.array.util import array_util
 from autolens.data.array import grids
+from autolens.data.array.util import array_util
+from autolens.lens import ray_tracing
 from autolens.model.galaxy import galaxy, galaxy_model as gm
 from autolens.model.profiles import light_profiles as lp
-from autolens.lens import ray_tracing
 from autolens.pipeline import phase as ph
 from test.integration import integration_util
 
@@ -24,8 +26,8 @@ output_path = '{}/output'.format(dirpath)
 
 test_name = "test"
 
-def simulate_integration_image(test_name, pixel_scale, lens_galaxies, source_galaxies, target_signal_to_noise):
 
+def simulate_integration_image(test_name, pixel_scale, lens_galaxies, source_galaxies, target_signal_to_noise):
     output_path = "{}/test_files/data/".format(os.path.dirname(os.path.realpath(__file__))) + test_name + '/'
     psf_shape = (11, 11)
     image_shape = (150, 150)
@@ -66,6 +68,7 @@ def simulate_integration_image(test_name, pixel_scale, lens_galaxies, source_gal
     array_util.numpy_array_2d_to_fits(array_2d=ccd_simulated.exposure_time_map,
                                       file_path=output_path + '/exposure_map.fits', overwrite=True)
 
+
 class TestAdvancedModelMapper(object):
     def test_fully_qualified_paramnames(self):
         mapper = mm.ModelMapper()
@@ -95,7 +98,7 @@ class TestPhaseModelMapper(object):
         lens_galaxy = galaxy.Galaxy(light_profile=sersic)
 
         simulate_integration_image(test_name=test_name, pixel_scale=0.5, lens_galaxies=[lens_galaxy],
-                                                    source_galaxies=[], target_signal_to_noise=10.0)
+                                   source_galaxies=[], target_signal_to_noise=10.0)
 
         path = "{}/".format(
             os.path.dirname(os.path.realpath(__file__)))  # Setup path so we can output the simulated image.
@@ -120,14 +123,15 @@ class TestPhaseModelMapper(object):
         assert initial_total_priors - 1 == phase.variable.prior_count
         assert len(phase.variable.flat_prior_model_tuples) == 1
 
+        print(phase.variable.flat_prior_model_tuples)
+        print(phase.variable.info)
+
         lines = list(
             filter(lambda line: "axis_ratio" in line or "intensity" in line, phase.variable.info.split("\n")))
 
         assert len(lines) == 2
-        assert "lens_axis_ratio                                             UniformPrior, lower_limit = 0.2, " \
-               "upper_limit = 1.0" in lines
-        assert "lens_intensity                                              UniformPrior, lower_limit = 0.2, " \
-               "upper_limit = 1.0" in lines
+        assert "lens_galaxies_lens_sersic_axis_ratio                                                  UniformPrior, lower_limit = 0.2, upper_limit = 1.0" in lines
+        assert "lens_galaxies_lens_sersic_intensity                                                   UniformPrior, lower_limit = 0.2, upper_limit = 1.0" in lines
 
     if os.path.exists(output_path):
         shutil.rmtree(output_path)
@@ -144,7 +148,7 @@ class TestPhaseModelMapper(object):
         lens_galaxy = galaxy.Galaxy(light_profile=sersic)
 
         simulate_integration_image(test_name=test_name, pixel_scale=0.5, lens_galaxies=[lens_galaxy],
-                                                    source_galaxies=[], target_signal_to_noise=10.0)
+                                   source_galaxies=[], target_signal_to_noise=10.0)
         path = "{}/".format(
             os.path.dirname(os.path.realpath(__file__)))  # Setup path so we can output the simulated image.
 
@@ -172,7 +176,7 @@ class TestPhaseModelMapper(object):
 
         sersic = phase.variable.lens_galaxies[0].sersic
 
-        assert isinstance(sersic, mm.PriorModel)
+        assert isinstance(sersic, pm.PriorModel)
 
         assert isinstance(sersic.axis_ratio, prior.Constant)
         assert isinstance(sersic.phi, prior.Constant)

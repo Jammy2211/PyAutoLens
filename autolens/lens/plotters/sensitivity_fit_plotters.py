@@ -1,6 +1,6 @@
 from matplotlib import pyplot as plt
 
-from autolens.data.array.plotters import plotter_util
+from autolens.plotters import plotter_util
 from autolens.lens.plotters import lens_plotter_util
 
 
@@ -34,7 +34,7 @@ def plot_fit_subplot(
     plt.figure(figsize=figsize)
     plt.subplot(rows, columns, 1)
 
-    kpc_per_arcsec = fit.tracer_normal.image_plane.kpc_per_arcsec_proper
+    kpc_per_arcsec = fit.tracer_normal.image_plane.kpc_per_arcsec
 
     lens_plotter_util.plot_image(
         fit=fit.fit_normal, mask=mask, extract_array_from_mask=extract_array_from_mask,

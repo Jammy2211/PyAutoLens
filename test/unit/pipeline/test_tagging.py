@@ -24,7 +24,7 @@ class TestPhaseTag:
                                                           positions_threshold=None,
                                                           interp_pixel_scale=0.2)
 
-        assert phase_tag == '_sub_1_bin_up_3_image_psf_2x2_inversion_psf_3x3_interp_0.200'
+        assert phase_tag == '_sub_1_bin_up_3_image_psf_2x2_inv_psf_3x3_interp_0.200'
 
 
 class TestTaggers:
@@ -73,7 +73,6 @@ class TestTaggers:
         tag = tagging.image_psf_shape_tag_from_image_psf_shape(image_psf_shape=None)
         assert tag == ''
         tag = tagging.image_psf_shape_tag_from_image_psf_shape(image_psf_shape=(2,2))
-        print(tag.strip())
         assert tag == '_image_psf_2x2'
         tag = tagging.image_psf_shape_tag_from_image_psf_shape(image_psf_shape=(3,4))
         assert tag == '_image_psf_3x4'
@@ -83,10 +82,9 @@ class TestTaggers:
         tag = tagging.inversion_psf_shape_tag_from_inversion_psf_shape(inversion_psf_shape=None)
         assert tag == ''
         tag = tagging.inversion_psf_shape_tag_from_inversion_psf_shape(inversion_psf_shape=(2,2))
-        print(tag.strip())
-        assert tag == '_inversion_psf_2x2'
+        assert tag == '_inv_psf_2x2'
         tag = tagging.inversion_psf_shape_tag_from_inversion_psf_shape(inversion_psf_shape=(3,4))
-        assert tag == '_inversion_psf_3x4'
+        assert tag == '_inv_psf_3x4'
 
     def test__interp_pixel_scale_tagger(self):
 
@@ -98,6 +96,13 @@ class TestTaggers:
         assert tag == '_interp_0.250'
         tag = tagging.interp_pixel_scale_tag_from_interp_pixel_scale(interp_pixel_scale=0.234)
         assert tag == '_interp_0.234'
+
+    def test__fix_lens_light_tagger(self):
+
+        tag = tagging.fix_lens_light_tag_from_fix_lens_light(fix_lens_light=False)
+        assert tag == ''
+        tag = tagging.fix_lens_light_tag_from_fix_lens_light(fix_lens_light=True)
+        assert tag == '_fix_lens_light'
 
     def test__align_bulge_disk_taggers(self):
 

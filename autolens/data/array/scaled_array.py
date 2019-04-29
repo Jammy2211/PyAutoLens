@@ -364,7 +364,7 @@ class ScaledSquarePixelArray(ScaledArray):
         elif new_centre_pixels is None and new_centre_arcsec is not None:
             new_centre = self.arc_second_coordinates_to_pixel_coordinates(arc_second_coordinates=new_centre_arcsec)
         else:
-            raise exc.ImagingException('You have supplied two centres (pixels and arc-seconds) to the resize scaled'
+            raise exc.DataException('You have supplied two centres (pixels and arc-seconds) to the resize scaled'
                                        'array function')
 
         return self.new_with_array(array=array_util.resized_array_2d_from_array_2d_and_resized_shape(
@@ -385,7 +385,7 @@ class ScaledSquarePixelArray(ScaledArray):
                                                                                      bin_up_factor=bin_up_factor),
                                           pixel_scale=self.pixel_scale*bin_up_factor)
         else:
-            raise exc.ImagingException('The method used in binned_up_array_from_array is not a valid method '
+            raise exc.DataException('The method used in binned_up_array_from_array is not a valid method '
                                        '[mean | quadrature | sum]')
 
 

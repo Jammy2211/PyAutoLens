@@ -1,6 +1,6 @@
 from matplotlib import pyplot as plt
 
-from autolens.data.array.plotters import plotter_util, grid_plotters, array_plotters
+from autolens.plotters import plotter_util, grid_plotters, array_plotters
 
 
 def plot_image_plane_image(
@@ -9,14 +9,14 @@ def plot_image_plane_image(
         units='arcsec', figsize=(7, 7), aspect='square',
         cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
         cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
-        title='Plane CCD-Plane CCD', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
+        title='Plane Image-Plane Image', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
         mask_pointsize=10, position_pointsize=10.0, grid_pointsize=1,
         output_path=None, output_format='show', output_filename='plane_image_plane_image'):
 
     array_plotters.plot_array(
         array=plane.image_plane_image, mask=mask, extract_array_from_mask=extract_array_from_mask,
         zoom_around_mask=zoom_around_mask, positions=positions, grid=grid, as_subplot=as_subplot,
-        units=units, kpc_per_arcsec=plane.kpc_per_arcsec_proper, figsize=figsize, aspect=aspect,
+        units=units, kpc_per_arcsec=plane.kpc_per_arcsec, figsize=figsize, aspect=aspect,
         cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
         cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad, 
         cb_tick_values=cb_tick_values, cb_tick_labels=cb_tick_labels,
@@ -29,7 +29,7 @@ def plot_plane_image(
         units='arcsec', figsize=(7, 7), aspect='square',
         cmap='jet', norm='linear', norm_min=None, norm_max=None, linthresh=0.05, linscale=0.01,
         cb_ticksize=10, cb_fraction=0.047, cb_pad=0.01, cb_tick_values=None, cb_tick_labels=None,
-        title='Plane CCD', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
+        title='Plane Image', titlesize=16, xlabelsize=16, ylabelsize=16, xyticksize=16,
         position_pointsize=10, grid_pointsize=1,
         output_path=None, output_format='show', output_filename='plane_image'):
 
@@ -45,7 +45,7 @@ def plot_plane_image(
 
     array_plotters.plot_array(
         array=plane.plane_image, origin=origin, positions=positions, grid=grid, as_subplot=as_subplot,
-        units=units, kpc_per_arcsec=plane.kpc_per_arcsec_proper, figsize=figsize, aspect=aspect,
+        units=units, kpc_per_arcsec=plane.kpc_per_arcsec, figsize=figsize, aspect=aspect,
         cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
         cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad, 
         cb_tick_values=cb_tick_values, cb_tick_labels=cb_tick_labels,
@@ -64,7 +64,7 @@ def plot_convergence(
     array_plotters.plot_array(
         array=plane.convergence, mask=mask, extract_array_from_mask=extract_array_from_mask,
         zoom_around_mask=zoom_around_mask, as_subplot=as_subplot,
-        units=units, kpc_per_arcsec=plane.kpc_per_arcsec_proper, figsize=figsize, aspect=aspect,
+        units=units, kpc_per_arcsec=plane.kpc_per_arcsec, figsize=figsize, aspect=aspect,
         cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
         cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad, 
         cb_tick_values=cb_tick_values, cb_tick_labels=cb_tick_labels,
@@ -82,7 +82,7 @@ def plot_potential(
     array_plotters.plot_array(
         array=plane.potential, mask=mask, extract_array_from_mask=extract_array_from_mask,
         zoom_around_mask=zoom_around_mask, as_subplot=as_subplot,
-        units=units, kpc_per_arcsec=plane.kpc_per_arcsec_proper, figsize=figsize, aspect=aspect,
+        units=units, kpc_per_arcsec=plane.kpc_per_arcsec, figsize=figsize, aspect=aspect,
         cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
         cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad, 
         cb_tick_values=cb_tick_values, cb_tick_labels=cb_tick_labels,
@@ -100,7 +100,7 @@ def plot_deflections_y(
     array_plotters.plot_array(
         array=plane.deflections_y, mask=mask, extract_array_from_mask=extract_array_from_mask,
         zoom_around_mask=zoom_around_mask, as_subplot=as_subplot,
-        units=units, kpc_per_arcsec=plane.kpc_per_arcsec_proper, figsize=figsize, aspect=aspect,
+        units=units, kpc_per_arcsec=plane.kpc_per_arcsec, figsize=figsize, aspect=aspect,
         cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
         cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad, 
         cb_tick_values=cb_tick_values, cb_tick_labels=cb_tick_labels,
@@ -118,7 +118,7 @@ def plot_deflections_x(
     array_plotters.plot_array(
         array=plane.deflections_x, mask=mask, extract_array_from_mask=extract_array_from_mask,
         zoom_around_mask=zoom_around_mask, as_subplot=as_subplot,
-        units=units, kpc_per_arcsec=plane.kpc_per_arcsec_proper, figsize=figsize, aspect=aspect,
+        units=units, kpc_per_arcsec=plane.kpc_per_arcsec, figsize=figsize, aspect=aspect,
         cmap=cmap, norm=norm, norm_min=norm_min, norm_max=norm_max, linthresh=linthresh, linscale=linscale,
         cb_ticksize=cb_ticksize, cb_fraction=cb_fraction, cb_pad=cb_pad, 
         cb_tick_values=cb_tick_values, cb_tick_labels=cb_tick_labels,
@@ -138,7 +138,7 @@ def plot_image_and_source_plane_subplot(image_plane, source_plane, points=None, 
         plane=image_plane, axis_limits=axis_limits, points=points, as_subplot=True,
         units=units,
         pointsize=3, xyticksize=16, titlesize=10, xlabelsize=10, ylabelsize=10,
-        title='CCD-plane Grid',
+        title='Image-plane Grid',
         output_path=output_path, output_filename=output_filename, output_format=output_format)
 
     plt.subplot(rows, columns, 2)
@@ -163,7 +163,7 @@ def plot_plane_grid(plane, axis_limits=None, points=None, as_subplot=False,
 
     grid_plotters.plot_grid(
         grid=plane.grid_stack.regular, points=points, axis_limits=axis_limits, as_subplot=as_subplot,
-        units=units, kpc_per_arcsec=plane.kpc_per_arcsec_proper,
+        units=units, kpc_per_arcsec=plane.kpc_per_arcsec,
         figsize=figsize, pointsize=pointsize, xyticksize=xyticksize,
         title=title, titlesize=titlesize, xlabelsize=xlabelsize, ylabelsize=ylabelsize,
         output_path=output_path, output_format=output_format, output_filename=output_filename)

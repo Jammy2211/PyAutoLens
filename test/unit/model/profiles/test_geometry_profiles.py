@@ -3,16 +3,18 @@ from __future__ import division, print_function
 import numpy as np
 import pytest
 
-import os
 from os import path
 from autofit import conf
+from autolens.model import dimensions as dim
 from autolens.model.profiles import geometry_profiles as gp
 
 directory = path.dirname(path.realpath(__file__))
 
+
 @pytest.fixture(scope="session", autouse=True)
 def do_something():
     conf.instance = conf.Config(config_path='{}/../../test_files/configs/radial_min'.format(directory))
+
 
 class TestMemoize(object):
 
@@ -74,7 +76,39 @@ class TestMemoize(object):
         assert profile.method_two(np.array([0])) is not array
 
 
+class TestGeometryProfile(object):
+
+    def test__constructor_and_units(self):
+        
+        profile = gp.GeometryProfile(centre=(1.0, 2.0))
+
+        assert profile.centre == (1.0, 2.0)
+        assert isinstance(profile.centre[0], dim.Length)
+        assert isinstance(profile.centre[1], dim.Length)
+        assert profile.centre[0].unit == 'arcsec'
+        assert profile.centre[1].unit == 'arcsec'
+
+
 class TestEllipticalProfile(object):
+
+    class TestConstuctorUnits(object):
+
+        def test__constructor_and_units(self):
+
+            profile = gp.EllipticalProfile(centre=(1.0, 2.0), axis_ratio=0.5, phi=45.0)
+
+            assert profile.centre == (1.0, 2.0)
+            assert isinstance(profile.centre[0], dim.Length)
+            assert isinstance(profile.centre[1], dim.Length)
+            assert profile.centre[0].unit == 'arcsec'
+            assert profile.centre[1].unit == 'arcsec'
+
+            assert profile.axis_ratio == 0.5
+            assert isinstance(profile.axis_ratio, float)
+
+            assert profile.phi == 45.0
+            assert isinstance(profile.phi, float)
+
     class TestAnglesFromXAxis(object):
 
         def test__profile_angle_phi_is_0__cosine_and_sin_of_phi_is_1_and_0(self):
@@ -294,6 +328,18 @@ class TestEllipticalProfile(object):
 
 
 class TestSphericalProfile(object):
+
+    class TestConstuctorUnits(object):
+
+        def test__constructor_and_unit_conversions(self):
+            profile = gp.SphericalProfile(centre=(1.0, 2.0))
+
+            assert profile.centre == (1.0, 2.0)
+            assert isinstance(profile.centre[0], dim.Length)
+            assert isinstance(profile.centre[1], dim.Length)
+            assert profile.centre[0].unit == 'arcsec'
+            assert profile.centre[1].unit == 'arcsec'
+
     class TestCoordinatesMovement(object):
 
         def test__profile_cenre_y_0_x_0__grid_y_1_x_1__no_coordinate_movement_so_y_1_x_1(self):

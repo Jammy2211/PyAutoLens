@@ -4,6 +4,8 @@ from astropy.io import fits
 from autolens import exc
 from autolens.data.array.util import array_util
 
+import numpy as np
+
 def get_subplot_rows_columns_figsize(number_subplots):
     """Get the size of a sub plot in (rows, columns), based on the number of subplots that are going to be plotted.
 
@@ -86,7 +88,8 @@ def output_figure(array, as_subplot, output_path, output_filename, output_format
         elif output_format is 'png':
             plt.savefig(output_path + output_filename + '.png', bbox_inches='tight')
         elif output_format is 'fits':
-            array_util.numpy_array_2d_to_fits(array_2d=array, file_path=output_path + output_filename + '.fits', overwrite=True)
+            array_util.numpy_array_2d_to_fits(array_2d=array, file_path=output_path + output_filename + '.fits',
+                                              overwrite=True)
 
 
 def output_subplot_array(output_path, output_filename, output_format):
@@ -123,3 +126,26 @@ def close_figure(as_subplot):
     """
     if not as_subplot:
         plt.close()
+
+
+# def check_units_distance_can_be_plotted(units_distance, kpc_per_arcsec):
+
+
+def radii_bin_size_from_minimum_and_maximum_radii_and_radii_points(minimum_radius, maximum_radius, radii_points):
+    return (maximum_radius - minimum_radius) / radii_points
+
+
+def quantity_radii_from_minimum_and_maximum_radii_and_radii_points(minimum_radius, maximum_radius, radii_points):
+    return list(np.linspace(start=minimum_radius, stop=maximum_radius, num=radii_points + 1))
+
+
+def quantity_and_annuli_radii_from_minimum_and_maximum_radii_and_radii_points(minimum_radius, maximum_radius, radii_points):
+
+    radii_bin_size = radii_bin_size_from_minimum_and_maximum_radii_and_radii_points(
+        minimum_radius=minimum_radius, maximum_radius=maximum_radius, radii_points=radii_points)
+
+    quantity_radii = list(np.linspace(start=minimum_radius + radii_bin_size/2.0, stop=maximum_radius - radii_bin_size/2.0,
+                                      num=radii_points))
+    annuli_radii = list(np.linspace(start=minimum_radius, stop=maximum_radius, num=radii_points + 1))
+
+    return quantity_radii, annuli_radii

@@ -1,46 +1,15 @@
 import math
 
 import numpy as np
-from astropy import constants
 from astropy import cosmology as cosmo
 from functools import wraps
 
 from autolens import exc
+from autolens.model import cosmology_util
 from autolens.data.array import grids
 from autolens.lens import plane as pl
 from autolens.lens.util import lens_util
 from autolens.model.inversion import pixelizations as pix
-
-
-def check_tracer_for_redshifts(func):
-    """If a tracer's galaxies do not have redshifts, its cosmological quantities cannot be computed. This wrapper \
-    makes these functions return *None* if the galaxies do not have redshifts
-
-    Parameters
-    ----------
-    func : (self) -> Object
-        A property function that requires galaxies to have redshifts.
-    """
-
-    @wraps(func)
-    def wrapper(self):
-        """
-
-        Parameters
-        ----------
-        self
-
-        Returns
-        -------
-            A value or coordinate in the same coordinate system as those passed in.
-        """
-
-        if self.all_planes_have_redshifts is True:
-            return func(self)
-        else:
-            return None
-
-    return wrapper
 
 
 def check_tracer_for_light_profile(func):
@@ -127,46 +96,38 @@ class AbstractTracerCosmology(object):
     def total_planes(self):
         return len(self.plane_redshifts)
 
-    @property
-    def constant_kpc(self):
-        # noinspection PyUnresolvedReferences
-        return constants.c.to('kpc / s').value ** 2.0 / (4 * math.pi * constants.G.to('kpc3 / M_sun s2').value)
-
     def arcsec_per_kpc_proper_of_plane(self, i):
-        return self.cosmology.arcsec_per_kpc_proper(z=self.plane_redshifts[i]).value
+        return cosmology_util.arcsec_per_kpc_from_redshift_and_cosmology(redshift=self.plane_redshifts[i],
+                                                                         cosmology=self.cosmology)
 
     def kpc_per_arcsec_proper_of_plane(self, i):
-        return 1.0 / self.arcsec_per_kpc_proper_of_plane(i)
+        return 1.0 / self.arcsec_per_kpc_proper_of_plane(i=i)
 
-    def angular_diameter_distance_of_plane_to_earth(self, i):
-        return self.cosmology.angular_diameter_distance(self.plane_redshifts[i]).to('kpc').value
+    def angular_diameter_distance_of_plane_to_earth_in_units(self, i, unit_length='arcsec'):
+        return cosmology_util.angular_diameter_distance_to_earth_from_redshift_and_cosmology(
+            redshift=self.plane_redshifts[i], cosmology=self.cosmology, unit_length=unit_length)
 
-    def angular_diameter_distance_between_planes(self, i, j):
-        return self.cosmology.angular_diameter_distance_z1z2(self.plane_redshifts[i],
-                                                             self.plane_redshifts[j]).to('kpc').value
+    def angular_diameter_distance_between_planes_in_units(self, i, j, unit_length='arcsec'):
+        return cosmology_util.angular_diameter_distance_between_redshifts_from_redshifts_and_cosmlology(
+            redshift_0=self.plane_redshifts[i], redshift_1=self.plane_redshifts[j], cosmology=self.cosmology,
+            unit_length=unit_length)
 
-    @property
-    def angular_diameter_distance_to_source_plane(self):
-        return self.cosmology.angular_diameter_distance(self.plane_redshifts[-1]).to('kpc').value
+    def angular_diameter_distance_to_source_plane_in_units(self, unit_length='arcsec'):
+        return cosmology_util.angular_diameter_distance_to_earth_from_redshift_and_cosmology(
+            redshift=self.plane_redshifts[-1], cosmology=self.cosmology, unit_length=unit_length)
 
-    def critical_density_kpc_between_planes(self, i, j):
-        return self.constant_kpc * self.angular_diameter_distance_of_plane_to_earth(j) / \
-               (self.angular_diameter_distance_between_planes(i, j) *
-                self.angular_diameter_distance_of_plane_to_earth(i))
-
-    def critical_density_arcsec_between_planes(self, i, j):
-        return self.critical_density_kpc_between_planes(i=i, j=j) * self.kpc_per_arcsec_proper_of_plane(i=i) ** 2.0
+    def critical_surface_density_between_planes_in_units(self, i, j, unit_length='arcsec', unit_mass='angular'):
+        return cosmology_util.critical_surface_density_between_redshifts_from_redshifts_and_cosmology(
+            redshift_0=self.plane_redshifts[i], redshift_1=self.plane_redshifts[j], cosmology=self.cosmology,
+            unit_length=unit_length, unit_mass=unit_mass)
 
     def scaling_factor_between_planes(self, i, j):
-        return lens_util.scaling_factor_between_redshifts_for_cosmology(z1=self.plane_redshifts[i],
-                                                                        z2=self.plane_redshifts[j],
-                                                                        z_final=self.plane_redshifts[-1],
-                                                                        cosmology=self.cosmology)
+        return cosmology_util.scaling_factor_between_redshifts_from_redshifts_and_cosmology(
+            redshift_0=self.plane_redshifts[i],
+            redshift_1=self.plane_redshifts[j], redshift_final=self.plane_redshifts[-1], cosmology=self.cosmology)
 
-    @property
-    @check_tracer_for_redshifts
-    def angular_diameter_distance_from_image_to_source_plane(self):
-        return self.angular_diameter_distance_between_planes(i=0, j=-1)
+    def angular_diameter_distance_from_image_to_source_plane_in_units(self, unit_length='arcsec'):
+        return self.angular_diameter_distance_between_planes_in_units(i=0, j=-1, unit_length=unit_length)
 
 
 class AbstractTracer(AbstractTracerCosmology):
@@ -292,31 +253,15 @@ class AbstractTracer(AbstractTracerCosmology):
     def deflections_x(self):
         return sum([plane.deflections_x for plane in self.planes])
 
-    @property
-    @check_tracer_for_redshifts
-    def critical_surface_mass_density_kpc(self):
-        return self.constant_kpc * self.source_plane.angular_diameter_distance_to_earth / \
-               (self.angular_diameter_distance_from_image_to_source_plane *
-                self.image_plane.angular_diameter_distance_to_earth)
+    def einstein_radius_of_plane_in_units(self, i, unit_length='arcsec'):
+        kpc_per_arcsec = self.kpc_per_arcsec_proper_of_plane(i=i)
+        return self.planes[i].einstein_radius_in_units(unit_length=unit_length, kpc_per_arcsec=kpc_per_arcsec)
 
-    @property
-    @check_tracer_for_redshifts
-    def critical_surface_mass_density_arcsec(self):
-        return self.critical_surface_mass_density_kpc * self.image_plane.kpc_per_arcsec_proper ** 2.0
-
-    @property
-    def einstein_radii_arcsec_of_planes(self):
-        return [plane.einstein_radius_arcsec for plane in self.planes]
-
-    @property
-    def einstein_radii_kpc_of_planes(self):
-        return [plane.einstein_radius_kpc for plane in self.planes]
-
-    @property
-    @check_tracer_for_redshifts
-    def einstein_masses_in_solar_masses_of_planes(self):
-        return [plane.einstein_mass_in_mass_units(
-            critical_surface_mass_density_arcsec=self.critical_surface_mass_density_arcsec) for plane in self.planes]
+    def einstein_mass_between_planes_in_units(self, i, j, unit_length='arcsec', unit_mass='angular'):
+        critical_suface_mass_density = self.critical_surface_density_between_planes_in_units(
+                i=i, j=j, unit_length=unit_length, unit_mass=unit_mass)
+        return self.planes[i].einstein_mass_in_units(unit_mass=unit_mass,
+                                                     critical_surface_density=critical_suface_mass_density)
 
     def grid_at_redshift_from_image_plane_grid_and_redshift(self, image_plane_grid, redshift):
         """For an input grid of (y,x) arc-second image-plane coordinates, ray-trace the coordinates to any redshift in \
@@ -352,9 +297,9 @@ class AbstractTracer(AbstractTracerCosmology):
 
                 if plane_index > 0:
                     for previous_plane_index in range(plane_index):
-                        scaling_factor = lens_util.scaling_factor_between_redshifts_for_cosmology(
-                            z1=tracer.plane_redshifts[previous_plane_index], z2=redshift,
-                            z_final=tracer.plane_redshifts[-1], cosmology=tracer.cosmology)
+                        scaling_factor = cosmology_util.scaling_factor_between_redshifts_from_redshifts_and_cosmology(
+                            redshift_0=tracer.plane_redshifts[previous_plane_index], redshift_1=redshift,
+                            redshift_final=tracer.plane_redshifts[-1], cosmology=tracer.cosmology)
 
                         scaled_deflection_stack = lens_util.scaled_deflection_stack_from_plane_and_scaling_factor(
                             plane=tracer.planes[previous_plane_index], scaling_factor=scaling_factor)
@@ -371,55 +316,11 @@ class AbstractTracer(AbstractTracerCosmology):
 
                 return new_grid_stack.regular
 
-    def masses_of_image_plane_galaxies_within_circles_in_mass_units(self, radius):
-        """
-        Compute the total mass of all galaxies in the image-plane within a circle of specified radius, using the \
-        plane's critical surface density to convert this to physical units.
-
-        For a single galaxy, inputting the Einstein Radius should provide an accurate measurement of the Einstein \
-        mass. Use of other radii may be subject to systematic offsets, because lens does not directly measure the \
-        mass of a galaxy beyond the Einstein radius.
-
-        For multiple galaxies, the Einstein mass of the entire image-plane is evenly divided across its galaxies. \
-        This could be highly inaccurate and users are recommended to cross-check mass estimates using different radii.
-
-        See *galaxy.dimensionless_mass_within_circle* and *mass_profiles.dimensionless_mass_within_circle* for details \
-        of how this is performed.
-
-        Parameters
-        ----------
-        radius : float
-            The radius of the circle to compute the dimensionless mass within.
-        """
-        return self.image_plane.masses_of_galaxies_within_circles_in_mass_units(radius=radius,
-                        critical_surface_mass_density=self.critical_surface_mass_density_arcsec)
-
-    def masses_of_image_plane_galaxies_within_ellipses_in_mass_units(self, major_axis):
-        """
-        Compute the total mass of all galaxies in this plane within a ellipse of specified major-axis.
-
-        For a single galaxy, inputting the Einstein Radius should provide an accurate measurement of the Einstein \
-        mass. Use of other radii may be subject to systematic offsets, because lens does not directly measure the \
-        mass of a galaxy beyond the Einstein radius.
-
-        For multiple galaxies, the Einstein mass of the entire image-plane is evenly divided across its galaxies. \
-        This could be highly inaccurate and users are recommended to cross-check mass estimates using different radii.
-
-        See *galaxy.dimensionless_mass_within_ellipse* and *mass_profiles.dimensionless_mass_within_ellipse* for details
-        of how this is performed.
-
-        Parameters
-        ----------
-        major_axis : float
-            The major-axis of the ellipse to compute the dimensionless mass within.
-        """
-        return self.image_plane.masses_of_galaxies_within_ellipses_in_mass_units(major_axis=major_axis,
-                                 critical_surface_mass_density=self.critical_surface_mass_density_arcsec)
-
 
 class TracerImagePlane(AbstractTracer):
 
-    def __init__(self, lens_galaxies, image_plane_grid_stack, border=None, cosmology=cosmo.Planck15):
+    def __init__(self, lens_galaxies, image_plane_grid_stack, border=None, cosmology=cosmo.Planck15,
+                 units_distance='arcsec', units_luminosity='electons_per_second', units_mass='solMass'):
         """Ray tracer for a lens system with just an image-plane. 
         
         As there is only 1 plane, there are no ray-tracing calculations. This class is therefore only used for fitting \ 
@@ -448,12 +349,7 @@ class TracerImagePlane(AbstractTracer):
 
         super(TracerImagePlane, self).__init__(planes=[image_plane], cosmology=cosmology)
 
-    @property
-    def critical_surface_mass_density_kpc(self):
-        return 0.0
-
-    @property
-    def critical_surface_mass_density_arcsec(self):
+    def critical_surface_density_between_planes_in_units(self, unit_length='arcsec', unit_mass='angular'):
         return 0.0
 
 
@@ -492,6 +388,11 @@ class TracerImageSourcePlanes(AbstractTracer):
 
         super(TracerImageSourcePlanes, self).__init__(planes=[image_plane, source_plane], cosmology=cosmology)
 
+    def einstein_radius_of_image_plane_in_units(self, unit_length='arcsec'):
+        return self.einstein_radius_of_plane_in_units(i=0, unit_length=unit_length)
+
+    def einstein_mass_between_image_and_source_plane_in_units(self, unit_length='arcsec', unit_mass='angular'):
+        return self.einstein_mass_between_planes_in_units(i=0, j=1, unit_length=unit_length, unit_mass=unit_mass)
 
 class TracerMultiPlanes(AbstractTracer):
 
@@ -540,9 +441,9 @@ class TracerMultiPlanes(AbstractTracer):
 
             if plane_index > 0:
                 for previous_plane_index in range(plane_index):
-                    scaling_factor = lens_util.scaling_factor_between_redshifts_for_cosmology(
-                        z1=plane_redshifts[previous_plane_index], z2=plane_redshifts[plane_index],
-                        z_final=plane_redshifts[-1], cosmology=cosmology)
+                    scaling_factor = cosmology_util.scaling_factor_between_redshifts_from_redshifts_and_cosmology(
+                        redshift_0=plane_redshifts[previous_plane_index], redshift_1=plane_redshifts[plane_index],
+                        redshift_final=plane_redshifts[-1], cosmology=cosmology)
 
                     scaled_deflection_stack = lens_util.scaled_deflection_stack_from_plane_and_scaling_factor(
                         plane=planes[previous_plane_index], scaling_factor=scaling_factor)
@@ -616,9 +517,9 @@ class TracerMultiPlanesSliced(AbstractTracer):
             if plane_index > 0:
                 print()
                 for previous_plane_index in range(plane_index):
-                    scaling_factor = lens_util.scaling_factor_between_redshifts_for_cosmology(
-                        z1=plane_redshifts[previous_plane_index], z2=plane_redshifts[plane_index],
-                        z_final=plane_redshifts[-1], cosmology=cosmology)
+                    scaling_factor = cosmology_util.scaling_factor_between_redshifts_from_redshifts_and_cosmology(
+                        redshift_0=plane_redshifts[previous_plane_index], redshift_1=plane_redshifts[plane_index],
+                        redshift_final=plane_redshifts[-1], cosmology=cosmology)
 
                     scaled_deflection_stack = lens_util.scaled_deflection_stack_from_plane_and_scaling_factor(
                         plane=planes[previous_plane_index], scaling_factor=scaling_factor)
@@ -710,9 +611,9 @@ class TracerMultiPlanesPositions(AbstractTracer):
 
             if plane_index > 0:
                 for previous_plane_index in range(plane_index):
-                    scaling_factor = lens_util.scaling_factor_between_redshifts_for_cosmology(
-                        z1=plane_redshifts[previous_plane_index], z2=plane_redshifts[plane_index],
-                        z_final=plane_redshifts[-1], cosmology=cosmology)
+                    scaling_factor = cosmology_util.scaling_factor_between_redshifts_from_redshifts_and_cosmology(
+                        redshift_0=plane_redshifts[previous_plane_index], redshift_1=plane_redshifts[plane_index],
+                        redshift_final=plane_redshifts[-1], cosmology=cosmology)
 
                     scaled_deflections = list(map(lambda deflections:
                                                   np.multiply(scaling_factor, deflections),
