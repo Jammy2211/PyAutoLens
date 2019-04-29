@@ -1,12 +1,12 @@
 import os
 
 import pytest
+
 from autofit import conf
 from autofit import exc
 from autofit.mapper import model_mapper as mm
 from autofit.mapper import prior
 from autofit.mapper import prior_model as pm
-
 from autolens.model.galaxy import galaxy as g, galaxy_model as gp
 from autolens.model.inversion import pixelizations, regularization
 from autolens.model.profiles import mass_profiles, light_profiles, light_and_mass_profiles
@@ -65,25 +65,6 @@ def make_galaxy_prior(mapper, ):
     return galaxy_prior_1
 
 
-class TestLinkedModelForClasses(object):
-    def test_one_to_one(self):
-
-        initial_model = gp.GalaxyModel(light_profile=light_profiles.EllipticalDevVaucouleurs,
-                                       mass_profile=mass_profiles.EllipticalCoredIsothermal)
-
-        new_model = initial_model.linked_model_for_classes(light_profile=light_profiles.EllipticalDevVaucouleurs,
-                                                           mass_profile=mass_profiles.EllipticalCoredIsothermal)
-
-        assert isinstance(new_model.light_profile, pm.PriorModel)
-        assert isinstance(new_model.mass_profile, pm.PriorModel)
-
-        assert new_model.light_profile is not initial_model.light_profile
-        assert new_model.mass_profile is not initial_model.mass_profile
-
-        assert new_model.light_profile.intensity is initial_model.light_profile.intensity
-        assert new_model.mass_profile.axis_ratio is initial_model.mass_profile.axis_ratio
-
-
 class TestMassAndLightProfiles(object):
     def test_constant_profile(self, mass_and_light):
         prior = gp.GalaxyModel(profile=mass_and_light)
@@ -107,10 +88,10 @@ class TestMassAndLightProfiles(object):
             galaxy_prior.profile.centre.centre_1: 0.2,
             galaxy_prior.profile.axis_ratio: 0.4,
             galaxy_prior.profile.phi: 0.5,
-            galaxy_prior.profile.intensity: 0.6,
-            galaxy_prior.profile.effective_radius: 0.7,
+            galaxy_prior.profile.intensity.value: 0.6,
+            galaxy_prior.profile.effective_radius.value: 0.7,
             galaxy_prior.profile.sersic_index: 0.8,
-            galaxy_prior.profile.mass_to_light_ratio: 3.0
+            galaxy_prior.profile.mass_to_light_ratio.value: 3.0
         }
 
         galaxy = galaxy_prior.instance_for_arguments(arguments)
@@ -214,16 +195,14 @@ class TestResultForArguments:
                                       light_profile=light_profiles.EllipticalSersic,
                                       mass_profile=mass_profiles.SphericalIsothermal)
 
-        print(galaxy_prior.redshift.cls)
-
         arguments = {galaxy_prior.redshift.redshift: 0.5,
                      galaxy_prior.mass_profile.centre.centre_0: 1.0,
                      galaxy_prior.mass_profile.centre.centre_1: 0.2,
-                     galaxy_prior.mass_profile.einstein_radius: 0.3,
+                     galaxy_prior.mass_profile.einstein_radius.value: 0.3,
                      galaxy_prior.light_profile.axis_ratio: 0.4,
                      galaxy_prior.light_profile.phi: 0.5,
-                     galaxy_prior.light_profile.intensity: 0.6,
-                     galaxy_prior.light_profile.effective_radius: 0.7,
+                     galaxy_prior.light_profile.intensity.value: 0.6,
+                     galaxy_prior.light_profile.effective_radius.value: 0.7,
                      galaxy_prior.light_profile.sersic_index: 2}
 
         galaxy = galaxy_prior.instance_for_arguments(arguments)
@@ -232,7 +211,6 @@ class TestResultForArguments:
         assert galaxy.light_profiles[0].centre[1] == 0.2
 
     def test_gaussian_prior_model_for_arguments(self):
-
         galaxy_prior = gp.GalaxyModel(redshift=g.Redshift, align_centres=True,
                                       light_profile=light_profiles.EllipticalSersic,
                                       mass_profile=mass_profiles.SphericalIsothermal)
@@ -244,18 +222,18 @@ class TestResultForArguments:
         arguments = {galaxy_prior.redshift.redshift: redshift_prior,
                      galaxy_prior.mass_profile.centre.centre_0: mm.GaussianPrior(2, 1),
                      galaxy_prior.mass_profile.centre.centre_1: mm.GaussianPrior(3, 1),
-                     galaxy_prior.mass_profile.einstein_radius: einstein_radius_prior,
+                     galaxy_prior.mass_profile.einstein_radius.value: einstein_radius_prior,
                      galaxy_prior.light_profile.axis_ratio: mm.GaussianPrior(5, 1),
                      galaxy_prior.light_profile.phi: mm.GaussianPrior(6, 1),
-                     galaxy_prior.light_profile.intensity: intensity_prior,
-                     galaxy_prior.light_profile.effective_radius: mm.GaussianPrior(8, 1),
+                     galaxy_prior.light_profile.intensity.value: intensity_prior,
+                     galaxy_prior.light_profile.effective_radius.value: mm.GaussianPrior(8, 1),
                      galaxy_prior.light_profile.sersic_index: mm.GaussianPrior(9, 1)}
 
         gaussian_galaxy_prior_model = galaxy_prior.gaussian_prior_model_for_arguments(arguments)
 
         assert gaussian_galaxy_prior_model.redshift.redshift == redshift_prior
-        assert gaussian_galaxy_prior_model.mass_profile.einstein_radius == einstein_radius_prior
-        assert gaussian_galaxy_prior_model.light_profile.intensity == intensity_prior
+        assert gaussian_galaxy_prior_model.mass_profile.einstein_radius.value == einstein_radius_prior
+        assert gaussian_galaxy_prior_model.light_profile.intensity.value == intensity_prior
 
 
 class TestPixelization(object):
@@ -391,8 +369,8 @@ class TestFixedProfiles(object):
         arguments = {galaxy_prior.redshift.redshift: 0.2,
                      galaxy_prior.variable_light.axis_ratio: 0.4,
                      galaxy_prior.variable_light.phi: 0.5,
-                     galaxy_prior.variable_light.intensity: 0.6,
-                     galaxy_prior.variable_light.effective_radius: 0.7,
+                     galaxy_prior.variable_light.intensity.value: 0.6,
+                     galaxy_prior.variable_light.effective_radius.value: 0.7,
                      galaxy_prior.variable_light.sersic_index: 0.8,
                      galaxy_prior.variable_light.centre.centre_0: 0,
                      galaxy_prior.variable_light.centre.centre_1: 0}

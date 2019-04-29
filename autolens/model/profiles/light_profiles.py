@@ -2,8 +2,8 @@ import numpy as np
 from scipy.integrate import quad
 
 from autofit.tools.dimension_type import map_types
-from autolens.model.profiles import geometry_profiles
 from autolens.model import dimensions as dim
+from autolens.model.profiles import geometry_profiles
 
 
 class LightProfile(object):
@@ -49,7 +49,7 @@ class EllipticalLightProfile(geometry_profiles.EllipticalProfile, LightProfile):
 
     @map_types
     def __init__(self,
-                 centre : dim.Position = (0.0, 0.0),
+                 centre: dim.Position = (0.0, 0.0),
                  axis_ratio: float = 1.0,
                  phi: float = 0.0):
         """  Abstract class for an elliptical light-profile.
@@ -117,7 +117,8 @@ class EllipticalLightProfile(geometry_profiles.EllipticalProfile, LightProfile):
         if not isinstance(major_axis, dim.Length):
             major_axis = dim.Length(major_axis, 'arcsec')
 
-        profile = self.new_profile_with_units_converted(unit_length=major_axis.unit_length, unit_luminosity=unit_luminosity,
+        profile = self.new_profile_with_units_converted(unit_length=major_axis.unit_length,
+                                                        unit_luminosity=unit_luminosity,
                                                         kpc_per_arcsec=kpc_per_arcsec, exposure_time=exposure_time)
         luminosity = quad(profile.luminosity_integral, a=0.0, b=major_axis, args=(self.axis_ratio,))[0]
         return dim.Luminosity(luminosity, unit_luminosity)
@@ -190,8 +191,8 @@ class SphericalGaussian(EllipticalGaussian):
 
     @map_types
     def __init__(self,
-                 centre: dim.Position=(0.0, 0.0),
-                 intensity: dim.Luminosity=0.1,
+                 centre: dim.Position = (0.0, 0.0),
+                 intensity: dim.Luminosity = 0.1,
                  sigma: dim.Length = 0.01):
         """ The spherical Gaussian light profile.
 
@@ -212,7 +213,7 @@ class AbstractEllipticalSersic(EllipticalLightProfile):
 
     @map_types
     def __init__(self,
-                 centre: dim.Position=(0.0, 0.0),
+                 centre: dim.Position = (0.0, 0.0),
                  axis_ratio: float = 1.0,
                  phi: float = 0.0,
                  intensity: dim.Luminosity = 0.1,
@@ -286,7 +287,7 @@ class EllipticalSersic(AbstractEllipticalSersic, EllipticalLightProfile):
     def __init__(self,
                  centre: dim.Position = (0.0, 0.0),
                  axis_ratio: float = 1.0,
-                 phi: float  = 0.0,
+                 phi: float = 0.0,
                  intensity: dim.Luminosity = 0.1,
                  effective_radius: dim.Length = 0.6,
                  sersic_index: float = 4.0):
@@ -372,7 +373,7 @@ class EllipticalExponential(EllipticalSersic):
                  centre: dim.Position = (0.0, 0.0),
                  axis_ratio: float = 1.0,
                  phi: float = 0.0,
-                 intensity : dim.Luminosity = 0.1,
+                 intensity: dim.Luminosity = 0.1,
                  effective_radius: dim.Length = 0.6):
         """ The elliptical exponential profile.
 
@@ -484,8 +485,8 @@ class EllipticalCoreSersic(EllipticalSersic):
                  intensity: dim.Luminosity = 0.1,
                  effective_radius: dim.Length = 0.6,
                  sersic_index: float = 4.0,
-                 radius_break: dim.Length=0.01,
-                 intensity_break: dim.Luminosity=0.05,
+                 radius_break: dim.Length = 0.01,
+                 intensity_break: dim.Luminosity = 0.05,
                  gamma: float = 0.25,
                  alpha: float = 3.0):
         """ The elliptical cored-Sersic light profile.
