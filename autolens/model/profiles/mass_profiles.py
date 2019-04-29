@@ -814,7 +814,7 @@ class AbstractEllipticalGeneralizedNFW(EllipticalMassProfile, MassProfile):
             The grid of (y,x) arc-second coordinates the surface density is computed on.
         """
 
-        surface_density_grid = np.zeros(grid.shape[0])
+        surface_density_grid = np.zeros(shape=grid.shape[0])
 
         grid_eta = self.grid_to_elliptical_radii(grid)
 
@@ -829,7 +829,7 @@ class AbstractEllipticalGeneralizedNFW(EllipticalMassProfile, MassProfile):
 
     @staticmethod
     def coord_func_f(grid_radius):
-        f = np.where(grid_radius > 1.0,
+        f = np.where(np.real(grid_radius) > 1.0,
                      (1.0 / np.sqrt(np.square(grid_radius) - 1.0)) * np.arccos(np.divide(1.0, grid_radius)),
                      (1.0 / np.sqrt(1.0 - np.square(grid_radius))) * np.arccosh(np.divide(1.0, grid_radius)))
         f[np.isnan(f)] = 1.0
@@ -838,7 +838,7 @@ class AbstractEllipticalGeneralizedNFW(EllipticalMassProfile, MassProfile):
     def coord_func_g(self, grid_radius):
         f_r = self.coord_func_f(grid_radius=grid_radius)
 
-        g = np.where(grid_radius > 1.0,
+        g = np.where(np.real(grid_radius) > 1.0,
                      (1.0 - f_r) / (np.square(grid_radius) - 1.0),
                      (f_r - 1.0) / (1.0 - np.square(grid_radius)))
         g[np.isnan(g)] = 1.0 / 3.0
@@ -847,8 +847,9 @@ class AbstractEllipticalGeneralizedNFW(EllipticalMassProfile, MassProfile):
     def coord_func_h(self, grid_radius):
         return np.log(grid_radius / 2.0) + self.coord_func_f(grid_radius=grid_radius)
 
-    def check_units_of_critical_surface_density_and_cosmic_average_density(self, critical_surface_density,
-                                                                           cosmic_average_density):
+    def check_units_critical_surface_density_and_cosmic_average_density(self,
+                                                                        critical_surface_density : dim.MassOverLength2,
+                                                                        cosmic_average_density : dim.MassOverLength3):
 
         if critical_surface_density is not None:
             if not isinstance(critical_surface_density, dim.MassOverLength2):
@@ -872,12 +873,16 @@ class AbstractEllipticalGeneralizedNFW(EllipticalMassProfile, MassProfile):
                 raise exc.UnitsException('The mass units of the critical_surface_density and cosmic_average_density '
                                          'supplied to a method are not the same')
 
-    def rho_at_scale_radius(self, critical_surface_density):
+    def rho_at_scale_radius(self,
+                            critical_surface_density : dim.MassOverLength2):
+
         return self.kappa_s * critical_surface_density / self.scale_radius
 
-    def delta_concentration(self, critical_surface_density, cosmic_average_density):
+    def delta_concentration(self,
+                            critical_surface_density : dim.MassOverLength2,
+                            cosmic_average_density : dim.MassOverLength3):
 
-        self.check_units_of_critical_surface_density_and_cosmic_average_density(
+        self.check_units_critical_surface_density_and_cosmic_average_density(
             critical_surface_density=critical_surface_density, cosmic_average_density=cosmic_average_density)
 
         rho_scale_radius = self.rho_at_scale_radius(critical_surface_density=critical_surface_density)
@@ -898,14 +903,19 @@ class AbstractEllipticalGeneralizedNFW(EllipticalMassProfile, MassProfile):
         return 200.0 / 3.0 * (concentration * concentration * concentration /
                               (np.log(1 + concentration) - concentration / (1 + concentration))) - delta_concentration
 
-    def radius_at_200(self, critical_surface_density, cosmic_average_density):
+    def radius_at_200(self,
+                      critical_surface_density : dim.MassOverLength2,
+                      cosmic_average_density : dim.MassOverLength3):
 
         concentration = self.concentration(critical_surface_density=critical_surface_density,
                                            cosmic_average_density=cosmic_average_density)
 
         return concentration * self.scale_radius
 
-    def mass_at_200(self, critical_surface_density, cosmic_average_density):
+    def mass_at_200(self,
+                    critical_surface_density : dim.MassOverLength2,
+                    cosmic_average_density : dim.MassOverLength3):
+
         radius_at_200 = self.radius_at_200(critical_surface_density=critical_surface_density,
                                            cosmic_average_density=cosmic_average_density)
         return 200.0 * ((4.0 / 3.0) * np.pi) * cosmic_average_density * (radius_at_200 ** 3.0)
@@ -1159,6 +1169,7 @@ class SphericalTruncatedNFW(AbstractEllipticalGeneralizedNFW):
                                 self.truncation_radius))
 
     def coord_func_l(self, grid_radius):
+
         f_r = self.coord_func_f(grid_radius=grid_radius)
         g_r = self.coord_func_g(grid_radius=grid_radius)
         k_r = self.coord_func_k(grid_radius=grid_radius)
@@ -1172,6 +1183,7 @@ class SphericalTruncatedNFW(AbstractEllipticalGeneralizedNFW):
                                                                self.truncation_radius ** 2.0 + grid_radius ** 2.0)))) * k_r))
 
     def coord_func_m(self, grid_radius):
+
         f_r = self.coord_func_f(grid_radius=grid_radius)
         k_r = self.coord_func_k(grid_radius=grid_radius)
 
@@ -1183,8 +1195,8 @@ class SphericalTruncatedNFW(AbstractEllipticalGeneralizedNFW):
                         ((self.truncation_radius ** 2.0 - 1.0) / self.truncation_radius) * k_r - np.pi)))
 
     def convergence_func(self, grid_radius):
-        grid_radius = (1.0 / self.scale_radius) * grid_radius
-        return 2.0 * self.kappa_s * self.coord_func_l(grid_radius=grid_radius)
+        grid_radius = ((1.0 / self.scale_radius) * grid_radius) + 0j
+        return np.real(2.0 * self.kappa_s * self.coord_func_l(grid_radius=grid_radius))
 
     def deflection_func_sph(self, grid_radius):
         return self.coord_func_m(grid_radius=grid_radius)
@@ -1210,7 +1222,10 @@ class SphericalTruncatedNFW(AbstractEllipticalGeneralizedNFW):
 
         return self.grid_to_grid_cartesian(grid, deflection_grid)
 
-    def mass_at_truncation_radius(self, critical_surface_density, cosmic_average_density):
+    def mass_at_truncation_radius(self,
+                                  critical_surface_density : dim.MassOverLength2,
+                                  cosmic_average_density : dim.MassOverLength3):
+
         mass_at_200 = self.mass_at_200(critical_surface_density=critical_surface_density,
                                        cosmic_average_density=cosmic_average_density)
 
@@ -1354,8 +1369,8 @@ class EllipticalNFW(AbstractEllipticalGeneralizedNFW):
         return self.rotate_grid_from_profile(np.multiply(1.0, np.vstack((deflection_y, deflection_x)).T))
 
     def convergence_func(self, grid_radius):
-        grid_radius = (1.0 / self.scale_radius) * grid_radius
-        return 2.0 * self.kappa_s * self.coord_func_g(grid_radius=grid_radius)
+        grid_radius = (1.0 / self.scale_radius) * grid_radius + 0j
+        return np.real(2.0 * self.kappa_s * self.coord_func_g(grid_radius=grid_radius))
 
     @staticmethod
     def potential_func(u, y, x, axis_ratio, kappa_s, scale_radius):
